@@ -19,86 +19,114 @@ class TimeRange_T
 		TimeRange_T() {eps = 1E-12;}
 		~TimeRange_T() {}
 
-/* =========================================================================================================================
-	Test for the TimeRange constructors
-========================================================================================================================= */
+//==========================================================================================================================
+//	Test for the TimeRange constructors
+//==========================================================================================================================
 		int constructorTest ( void )
 		{
 			TestUtil testFramework( "TimeRange", "Constructor", __FILE__, __LINE__ );
-			testFramework.init();
-
 			std::string outputFormat = CivilTime().getDefaultFormat();
-//--------------TimeRange_ _1 - Verify default constructor does not throw errors
-			try {TimeRange emptyConstructed; testFramework.passTest();}
-			catch (...) {testFramework.failTest();}
+
+
+			//--------------------------------------------------------------------------------
+			//Verify default constructor does not throw errors and creates the expected object
+			//--------------------------------------------------------------------------------
+			try {TimeRange emptyConstructed; testFramework.assert(true, "Construction of empty TimeRange object worked", __LINE__);}
+			catch (...) {testFramework.assert(false, "Construction of empty TimeRange object failed", __LINE__);}
+
 			TimeRange emptyConstructed;
+			//Verify default constructor sets the proper values (This is important to verify the values in the copy constructor below.)
+			testFramework.assert(emptyConstructed.getStart() == gpstk::CommonTime::BEGINNING_OF_TIME, "Start value for empty TimeRange is not the expected value", __LINE__);
+			testFramework.assert(emptyConstructed.getEnd()   == gpstk::CommonTime::END_OF_TIME      , "End value for empty TimeRange is not the expected value"  , __LINE__);
 
-//--------------TimeRange_ _2 - Verify default constructor sets the proper values (This is important to verify the values in the copy constructor below.)
-			testFramework.assert( (emptyConstructed.getStart() == gpstk::CommonTime::BEGINNING_OF_TIME) &&
-				              (emptyConstructed.getEnd() == gpstk::CommonTime::END_OF_TIME) );
-			testFramework.next();
 
-//--------------TimeRange_ _3 - Verify copy constructor does not throw errors
-			try {TimeRange copyConstructed(emptyConstructed); testFramework.passTest();}
-			catch (...) {testFramework.failTest();}
+			//--------------------------------------------------------------------------------
+			//Verify copy constructor does not throw errors and creates the expected object
+			//--------------------------------------------------------------------------------
+			try {TimeRange copyConstructed(emptyConstructed); testFramework.assert(true, "Construction using TimeRange copy constructor worked", __LINE__);}
+			catch (...) {testFramework.assert(false, "Construction using TimeRange copy constructor failed", __LINE__);}
+
 			TimeRange copyConstructed(emptyConstructed);
+			testFramework.assert(emptyConstructed.getStart() == gpstk::CommonTime::BEGINNING_OF_TIME, "Start value for copy constructed TimeRange is not the expected value", __LINE__);
+			testFramework.assert(emptyConstructed.getEnd()   == gpstk::CommonTime::END_OF_TIME      , "End value for copy constructed TimeRange is not the expected value"  , __LINE__);
+	
 
-//--------------TimeRange_ _4 - Verify copy constructor sets the proper values
-			testFramework.assert( (copyConstructed.getStart() == gpstk::CommonTime::BEGINNING_OF_TIME) &&
-				              (copyConstructed.getEnd() == gpstk::CommonTime::END_OF_TIME) );
-			testFramework.next();	
+			
 
-		//Variables for input into constuctors with multiple inputs
+
+			//-----------------------------------------------------------------------------------------
+			//Verify CommonTime constructor does throws expected errors and creates the expected object
+			//-----------------------------------------------------------------------------------------
 			CommonTime startEndpoint = gpstk::CivilTime(2011,1, 1, 0, 0,0.0).convertToCommonTime();
 			CommonTime endEndpoint = gpstk::CivilTime(2011,1,31,23,59, 59.59).convertToCommonTime();
-			gpstk::TimeRange::DTPair inputPair, invertedPair;
-			inputPair = std::make_pair(startEndpoint,endEndpoint);
-			invertedPair = std::make_pair(endEndpoint,startEndpoint);			
 			bool beginningIncluded = true;
 			bool endIncluded = false;
 
-//--------------TimeRange_ _6 - Verify CommonTime constructor does throw an error endpoint when times are inverted
-			try {TimeRange fourInputConstructed(endEndpoint,startEndpoint,beginningIncluded, endIncluded); testFramework.failTest();}
-			catch (Exception& e) {testFramework.passTest();}
-			catch (...) {testFramework.failTest();}
+			//Verify CommonTime constructor does throw an error endpoint when times are inverted
+			try
+			{
+				TimeRange fourInputConstructed(endEndpoint,startEndpoint,beginningIncluded, endIncluded); 
+				testFramework.assert(false, "CommonTime constructor allowed for the end time to be earlier than the start time", __LINE__);
+			}
+			catch (Exception& e) {testFramework.assert(true, "CommonTime constructor threw the expected error", __LINE__);}
+			catch (...) {testFramework.assert(false, "CommonTime constructor threw an unexpected error for when the end time is earlier than the start time", __LINE__);}
 
-//--------------TimeRange_ _7 - Verify CommonTime constructor does not throw errors when times are ok
-			try {TimeRange fourInputConstructed(startEndpoint,endEndpoint,beginningIncluded, endIncluded); testFramework.passTest();}
-			catch (...) {testFramework.failTest();}
+			//Verify CommonTime constructor does not throw errors when times are ok
+			try 
+			{
+				TimeRange fourInputConstructed(startEndpoint,endEndpoint,beginningIncluded, endIncluded); 
+				testFramework.assert(true, "CommonTime constructor for valid data functioned properly", __LINE__);
+			}
+			catch (...) {testFramework.assert(false, "CommonTime constructor for valid data functioned threw an error", __LINE__);}
+
+			//Verify CommonTime constructor sets the proper values (Implies that CommonTime == comparisons work)
 			TimeRange fourInputConstructed(startEndpoint,endEndpoint,beginningIncluded, endIncluded);
+			testFramework.assert(fourInputConstructed.getStart() == startEndpoint, "CommonTime constructor did not set the start time properly", __LINE__);
+			testFramework.assert(fourInputConstructed.getEnd() == endEndpoint    , "CommonTime constructor did not set the end time properly"  , __LINE__);
+	
 
-//--------------TimeRange_ _8 - Verify CommonTime constructor sets the proper values (Implies that CommonTime == comparisons work)
-			testFramework.assert( (fourInputConstructed.getStart() == startEndpoint) &&
-				              (fourInputConstructed.getEnd() == endEndpoint) );
-			testFramework.next();	
+			//-----------------------------------------------------------------------------------------
+			//Verify CommonTime constructor does throws expected errors and creates the expected object
+			//-----------------------------------------------------------------------------------------
+			gpstk::TimeRange::DTPair inputPair, invertedPair;
+			inputPair = std::make_pair(startEndpoint,endEndpoint);
+			invertedPair = std::make_pair(endEndpoint,startEndpoint);
 
-//--------------TimeRange_ _9 - Verify DTpair constructor does throw an error when endpoint times are inverted
-			try {TimeRange threeInputConstructed(invertedPair,beginningIncluded, endIncluded); testFramework.failTest();}
-			catch (Exception& e) {testFramework.passTest();}
-			catch (...) {testFramework.failTest();}
+			//Verify DTpair constructor does throw an error when endpoint times are inverted
+			try 
+			{
+				TimeRange threeInputConstructed(invertedPair,beginningIncluded, endIncluded); 
+				testFramework.assert(false, "DTPair constructor allowed for the end time to be earlier than the start time", __LINE__);
+			}
+			catch (Exception& e) {testFramework.assert(true, "DTPair constructor threw the expected error", __LINE__);}
+			catch (...) {testFramework.assert(false, "DTPair constructor threw an unexpected error for when the end time is earlier than the start time", __LINE__);}
 		
-//--------------TimeRange_ _10 - Verify DTpair constructor does not throw errors
-			try {TimeRange threeInputConstructed(inputPair,beginningIncluded, endIncluded); testFramework.passTest();}
-			catch (...) {testFramework.failTest();}
-			TimeRange threeInputConstructed(inputPair,beginningIncluded, endIncluded);
+			//Verify DTpair constructor does not throw errors with proper inputs
+			try 
+			{
+				TimeRange threeInputConstructed(inputPair,beginningIncluded, endIncluded); 
+				testFramework.assert(true, "DTPair constructor for valid data functioned properly", __LINE__);
+			}
+			catch (...) {testFramework.assert(false, "DTPair constructor for valid data functioned threw an error", __LINE__);}
 
-//--------------TimeRange_ _11 - Verify DTpair constructor sets the proper values (Implies that CommonTime == comparisons work)
-			testFramework.assert( (threeInputConstructed.getStart() == startEndpoint) &&
-				              (threeInputConstructed.getEnd() == endEndpoint) );
-			testFramework.next();	
+			//Verify DTpair constructor sets the proper values (Implies that CommonTime == comparisons work)
+			TimeRange threeInputConstructed(inputPair,beginningIncluded, endIncluded);
+			testFramework.assert(threeInputConstructed.getStart() == startEndpoint, "CommonTime constructor did not set the start time properly", __LINE__);
+			testFramework.assert(threeInputConstructed.getEnd() == endEndpoint    , "CommonTime constructor did not set the end time properly"  , __LINE__);
+	
 
 			return testFramework.countFails();
 		}
 
-/* =========================================================================================================================
-	Test for the inRange method
-	If the target time occurs in the range, the method returns true.
-	Additonal tests to ensure the endpoints respond properly depending on whether they are to be included in the range
-========================================================================================================================= */
+//==========================================================================================================================
+//	Test for the inRange method
+//	If the target time occurs in the range, the method returns true.
+//	Additonal tests to ensure the endpoints respond properly depending on whether they are to be included in the range
+//==========================================================================================================================
 		int inRangeTest ( void )
 		{
 			TestUtil testFramework( "TimeRange", "inRange", __FILE__, __LINE__ );
-			testFramework.init();
+
 
 			CommonTime earlierThanRange = gpstk::CivilTime(2010,12,20, 0, 0, 0.0 ).convertToCommonTime();	
 			CommonTime startEndpoint    = gpstk::CivilTime(2011, 1, 1, 0, 0, 0.0 ).convertToCommonTime();
@@ -106,67 +134,46 @@ class TimeRange_T
 			CommonTime endEndpoint      = gpstk::CivilTime(2011, 1,31,23,59,59.59).convertToCommonTime();
 			CommonTime laterThanRange   = gpstk::CivilTime(2011, 2,20, 0, 0, 0.0 ).convertToCommonTime();
 
-		//Create a TimeRange where both ends are included
+			//Create a TimeRange where both ends are included
 			bool beginningIncluded = true;
 			bool endIncluded = true;
 			TimeRange bothEndsIncluded(startEndpoint, endEndpoint, beginningIncluded, endIncluded);
 		
-		//Create a TimeRange where both ends are excluded
+			//Create a TimeRange where both ends are excluded
 			beginningIncluded = false;
 			endIncluded = false;
 			TimeRange bothEndsExcluded(startEndpoint, endEndpoint, beginningIncluded, endIncluded);
 
-//--------------TimeRange_ _1 - Verify inRange returns false for time earlier than the range given when both ends are included
-			testFramework.assert( !bothEndsIncluded.inRange(earlierThanRange) );
-			testFramework.next();
+			//-----------------------------------------------------------------------------------------
+			//Verify inRange for a TimeRange with both ends included
+			//-----------------------------------------------------------------------------------------
+			testFramework.assert(!bothEndsIncluded.inRange(earlierThanRange), "inRange returned true for time before the TimeRange"                 , __LINE__);
+			testFramework.assert( bothEndsIncluded.inRange(startEndpoint)   , "inRange returned false for the start time for an inclusive TimeRange", __LINE__);
+			testFramework.assert( bothEndsIncluded.inRange(timeInRange)     , "inRange returned false for time internal to the TimeRange"           , __LINE__);
+			testFramework.assert( bothEndsIncluded.inRange(endEndpoint)     , "inRange returned false for the end time for an inclusive TimeRange"  , __LINE__);
+			testFramework.assert(!bothEndsIncluded.inRange(laterThanRange)  , "inRange returned true for time after the TimeRange"                  , __LINE__);
 
-//--------------TimeRange_ _2 - Verify inRange returns true for the starting endpoint when both ends are included
-			testFramework.assert( bothEndsIncluded.inRange(startEndpoint) );
-			testFramework.next();
 
-//--------------TimeRange_ _3 - Verify inRange returns true for time inside the range when both ends are included
-			testFramework.assert( bothEndsIncluded.inRange(timeInRange) );
-			testFramework.next();
-
-//--------------TimeRange_ _4 - Verify inRange returns true for the later endpoint when both ends are included
-			testFramework.assert( bothEndsIncluded.inRange(endEndpoint) );
-			testFramework.next();
-
-//--------------TimeRange_ _5 - Verify inRange returns false time after then time range when both ends are included
-			testFramework.assert( !bothEndsIncluded.inRange(laterThanRange) );
-			testFramework.next();
-
-//--------------TimeRange_ _6 - Verify inRange returns false for time earlier than the range given when both ends are excluded
-			testFramework.assert( !bothEndsExcluded.inRange(earlierThanRange) );
-			testFramework.next();
-
-//--------------TimeRange_ _7 - Verify inRange returns false for earlier endpoint when both ends are excluded
-			testFramework.assert( !bothEndsExcluded.inRange(startEndpoint) );
-			testFramework.next();
-
-//--------------TimeRange_ _8 - Verify inRange returns true for time inside the range when both ends are excluded
-			testFramework.assert( bothEndsExcluded.inRange(timeInRange) );
-			testFramework.next();
-
-//--------------TimeRange_ _9 - Verify inRange returns false for later endpoint when both ends are excluded
-			testFramework.assert( !bothEndsExcluded.inRange(endEndpoint) );
-			testFramework.next();
-
-//--------------TimeRange_ _10 - Verify inRange returns false for time later than the range given when both ends are excluded
-			testFramework.assert( !bothEndsExcluded.inRange(laterThanRange) );
-			testFramework.next();
+			//-----------------------------------------------------------------------------------------
+			//Verify inRange for a TimeRange with both ends included
+			//-----------------------------------------------------------------------------------------
+			testFramework.assert(!bothEndsExcluded.inRange(earlierThanRange), "inRange returned true for time before the TimeRange"                 , __LINE__);
+			testFramework.assert(!bothEndsExcluded.inRange(startEndpoint)   , "inRange returned true for the start time for an exclusive TimeRange" , __LINE__);
+			testFramework.assert( bothEndsExcluded.inRange(timeInRange)     , "inRange returned false for time internal to the TimeRange"           , __LINE__);
+			testFramework.assert(!bothEndsExcluded.inRange(endEndpoint)     , "inRange returned true for the end time for an exclusive TimeRange"   , __LINE__);
+			testFramework.assert(!bothEndsIncluded.inRange(laterThanRange)  , "inRange returned true for time after the TimeRange"                  , __LINE__);
 
 			return testFramework.countFails();
 		}
-/* =========================================================================================================================
-	Test for the isPriorTo method
-	Usage: referenceRange.isPriorTo(targetRange)
-	If the reference range occurs completely before the target range, the method returns true
-========================================================================================================================= */
+//==========================================================================================================================
+//	Test for the isPriorTo method
+//	Usage: referenceRange.isPriorTo(targetRange)
+//	If the reference range occurs completely before the target range, the method returns true
+//==========================================================================================================================
 		int isPriorToTest ( void )
 		{
 			TestUtil testFramework( "TimeRange", "isPriorTo", __FILE__, __LINE__ );
-			testFramework.init();
+
 			//Two time points before the reference TimeRange start endpoint
 			CommonTime earlierThanRangeStart = gpstk::CivilTime(2010,12,20, 0, 0, 0.0 ).convertToCommonTime();	
 			CommonTime earlierThanRangeEnd   = gpstk::CivilTime(2010,12,29, 0, 0, 0.0 ).convertToCommonTime();
@@ -200,71 +207,50 @@ class TimeRange_T
 			TimeRange afterEdgeCase            (endEndpoint,           laterThanRangeEnd,   beginningIncluded, endIncluded);
 			TimeRange afterEdgeCaseNoOverlap   (endEndpoint,           laterThanRangeEnd,   beginningIncluded, false      );
 
-//--------------TimeRange_ _1 - Verify isPriorTo returns false when the target range is completely before the reference range
-			testFramework.assert( !referenceTimeRange.isPriorTo(priorTimeRange) );
-			testFramework.next();
 
-//--------------TimeRange_ _2 - Verify isPriorTo returns false when the target range overlaps the earlier portion of the reference range
-			testFramework.assert( !referenceTimeRange.isPriorTo(earlyOverlapTimeRange) );
-			testFramework.next();
+			std::string testMessageArray[13];
+			testMessageArray[0]  = "isPriorTo returned true when the target TimeRange comes before the reference TimeRange";
+			testMessageArray[1]  = "isPriorTo returned true when the target TimeRange overlaps the beginning of the reference TimeRange";
+			testMessageArray[2]  = "isPriorTo returned true when the target TimeRange is interior to the reference TimeRange";
+			testMessageArray[3]  = "isPriorTo returned true when the target TimeRange overlaps a later portion of the reference TimeRange";
+			testMessageArray[4]  = "isPriorTo returned true when the reference TimeRange is interior to the target TimeRange";
+			testMessageArray[5]  = "isPriorTo returned false when the target TimeRange is after the reference TimeRange";
+			testMessageArray[6]  = "isPriorTo returned true when the target TimeRange ends at and includes the beginning of the reference TimeRange";
+			testMessageArray[7]  = "isPriorTo returned true when the target TimeRange ends at but does not include the beginning of the reference TimeRange";
+			testMessageArray[8]  = "isPriorTo returned true when the target TimeRange is interior to the reference TimeRange and shares a start value";
+			testMessageArray[9]  = "isPriorTo returned true when the target TimeRange is interior to the reference TimeRange and shares an end value";
+			testMessageArray[10] = "isPriorTo returned true when the target TimeRange starts at and includes the end of reference TimeRange";
+			testMessageArray[11] = "isPriorTo returned false when the target TimeRange starts at but does not include the end of reference TimeRange";
+			testMessageArray[12] = "isPriorTo returned true when the target TimeRange starts equals reference TimeRange";
+ 
+			testFramework.assert(!referenceTimeRange.isPriorTo(priorTimeRange)          , testMessageArray[0] , __LINE__);
+			testFramework.assert(!referenceTimeRange.isPriorTo(earlyOverlapTimeRange)   , testMessageArray[1] , __LINE__);
+			testFramework.assert(!referenceTimeRange.isPriorTo(interiorTimeRange)       , testMessageArray[2] , __LINE__);
+			testFramework.assert(!referenceTimeRange.isPriorTo(lateOverlapTimeRange)    , testMessageArray[3] , __LINE__);
+			testFramework.assert(!referenceTimeRange.isPriorTo(completeOverlapTimeRange), testMessageArray[4] , __LINE__);
+			testFramework.assert( referenceTimeRange.isPriorTo(afterTimeRange)          , testMessageArray[5] , __LINE__);
+			testFramework.assert(!referenceTimeRange.isPriorTo(priorEdgeCase)           , testMessageArray[6] , __LINE__);
+			testFramework.assert(!referenceTimeRange.isPriorTo(priorEdgeCaseNoOverlap)  , testMessageArray[7] , __LINE__);
+			testFramework.assert(!referenceTimeRange.isPriorTo(interiorEarlyEdge)       , testMessageArray[8] , __LINE__);
+			testFramework.assert(!referenceTimeRange.isPriorTo(interiorLateEdge)        , testMessageArray[9] , __LINE__);
+			testFramework.assert(!referenceTimeRange.isPriorTo(afterEdgeCase)           , testMessageArray[10], __LINE__);
+			testFramework.assert( referenceTimeRange.isPriorTo(afterEdgeCaseNoOverlap)  , testMessageArray[11], __LINE__);
+			testFramework.assert(!referenceTimeRange.isPriorTo(referenceTimeRange)      , testMessageArray[12], __LINE__);
 
-//--------------TimeRange_ _3 - Verify isPriorTo returns false when the target range is interior to the reference range
-			testFramework.assert( !referenceTimeRange.isPriorTo(interiorTimeRange) );
-			testFramework.next();
-
-//--------------TimeRange_ _4 - Verify isPriorTo returns false when the target range overlaps a later portion of the reference range
-			testFramework.assert( !referenceTimeRange.isPriorTo(lateOverlapTimeRange) );
-			testFramework.next();
-
-//--------------TimeRange_ _5 - Verify isPriorTo returns false when the reference range is interior to the target range
-			testFramework.assert( !referenceTimeRange.isPriorTo(completeOverlapTimeRange) );
-			testFramework.next();
-
-//--------------TimeRange_ _6 - Verify isPriorTo returns true when the target range is after the reference range
-			testFramework.assert( referenceTimeRange.isPriorTo(afterTimeRange) );
-			testFramework.next();
-
-//--------------TimeRange_ _7 - Verify isPriorTo returns false when the target range ends at and includes the beginning of the reference range
-			testFramework.assert( !referenceTimeRange.isPriorTo(priorEdgeCase) );
-			testFramework.next();
-
-//--------------TimeRange_ _8 - Verify isPriorTo returns false when the target range ends at but does not include the beginning of the reference range
-			testFramework.assert( !referenceTimeRange.isPriorTo(priorEdgeCaseNoOverlap) );
-			testFramework.next();
-
-//--------------TimeRange_ _9 - Verify isPriorTo returns false when the target range is interior to the reference range and shares a start value
-			testFramework.assert( !referenceTimeRange.isPriorTo(interiorEarlyEdge) );
-			testFramework.next();
-
-//--------------TimeRange_ _10 - Verify isPriorTo returns false when the target range is interior to the reference range and shares an end value
-			testFramework.assert( !referenceTimeRange.isPriorTo(interiorLateEdge) );
-			testFramework.next();
-
-//--------------TimeRange_ _11 - Verify isPriorTo returns false when the target range starts at and includes the end of reference range
-			testFramework.assert( !referenceTimeRange.isPriorTo(afterEdgeCase) );
-			testFramework.next();
-
-//--------------TimeRange_ _12 - Verify isPriorTo returns true when the target range starts at but does not include the end of reference range
-			testFramework.assert( referenceTimeRange.isPriorTo(afterEdgeCaseNoOverlap) );
-			testFramework.next();
-
-//--------------TimeRange_ _13 - Verify isPriorTo returns false when the target range starts equals reference range
-			testFramework.assert( !referenceTimeRange.isPriorTo(referenceTimeRange) );
-			testFramework.next();
 		
 
 			return testFramework.countFails();
 		}
 
-/* =========================================================================================================================
-	Test for the overlaps method
-	Usage: referenceRange.overlaps(targetRange)
-	If the target range and reference range intersect at all the method is to return true.
-========================================================================================================================= */
+//==========================================================================================================================
+//	Test for the overlaps method
+//	Usage: referenceRange.overlaps(targetRange)
+//	If the target range and reference range intersect at all the method is to return true.
+//==========================================================================================================================
 		int overlapsTest ( void )
 		{
 			TestUtil testFramework( "TimeRange", "overlaps", __FILE__, __LINE__ );
-			testFramework.init();
+
 			//Two time points before the reference TimeRange start endpoint
 			CommonTime earlierThanRangeStart = gpstk::CivilTime(2010,12,20, 0, 0, 0.0 ).convertToCommonTime();	
 			CommonTime earlierThanRangeEnd   = gpstk::CivilTime(2010,12,29, 0, 0, 0.0 ).convertToCommonTime();
@@ -298,71 +284,50 @@ class TimeRange_T
 			TimeRange afterEdgeCase            (endEndpoint,           laterThanRangeEnd,   beginningIncluded, endIncluded);
 			TimeRange afterEdgeCaseNoOverlap   (endEndpoint,           laterThanRangeEnd,   beginningIncluded, false      );
 
-//--------------TimeRange_ _1 - Verify overlaps returns false when the target range is completely before the reference range
-			testFramework.assert( !referenceTimeRange.overlaps(priorTimeRange) );
-			testFramework.next();
+			std::string testMessageArray[13];
+			testMessageArray[0]  = "overlaps returned true when the target TimeRange is completely before the reference TimeRange";
+			testMessageArray[1]  = "overlaps returned false when the target TimeRange overlaps the earlier portion of the reference TimeRange";
+			testMessageArray[2]  = "overlaps returned false when the target TimeRange is interior to the reference TimeRange";
+			testMessageArray[3]  = "overlaps returned false when the target TimeRange overlaps a later portion of the reference TimeRange";
+			testMessageArray[4]  = "overlaps returned false when the reference TimeRange is interior to the target TimeRange";
+			testMessageArray[5]  = "overlaps returned true when the target TimeRange is after the reference TimeRange";
+			testMessageArray[6]  = "overlaps returned false when the target TimeRange ends at and includes the beginning of the reference TimeRange";
+			testMessageArray[7]  = "overlaps returned true when the target TimeRange ends at but does not include the beginning of the reference TimeRange";
+			testMessageArray[8]  = "overlaps returned false when the target TimeRange is interior to the reference TimeRange and shares a start value";
+			testMessageArray[9]  = "overlaps returned false when the target TimeRange is interior to the reference TimeRange and shares an end value";
+			testMessageArray[10] = "overlaps returned false when the target TimeRange starts at and includes the end of reference TimeRange";
+			testMessageArray[11] = "overlaps returned true when the target TimeRange starts at but does not include the end of reference TimeRange";
+			testMessageArray[12] = "overlaps returned false when the target TimeRange starts equals reference TimeRange";
 
-//--------------TimeRange_ _2 - Verify overlaps returns true when the target range overlaps the earlier portion of the reference range
-			testFramework.assert( referenceTimeRange.overlaps(earlyOverlapTimeRange) );
-			testFramework.next();
 
-//--------------TimeRange_ _3 - Verify overlaps returns true when the target range is interior to the reference range
-			testFramework.assert( referenceTimeRange.overlaps(interiorTimeRange) );
-			testFramework.next();
+			testFramework.assert(!referenceTimeRange.overlaps(priorTimeRange)          , testMessageArray[0] , __LINE__);
+			testFramework.assert( referenceTimeRange.overlaps(earlyOverlapTimeRange)   , testMessageArray[1] , __LINE__);
+			testFramework.assert( referenceTimeRange.overlaps(interiorTimeRange)       , testMessageArray[2] , __LINE__);
+			testFramework.assert( referenceTimeRange.overlaps(lateOverlapTimeRange)    , testMessageArray[3] , __LINE__);
+			testFramework.assert( referenceTimeRange.overlaps(completeOverlapTimeRange), testMessageArray[4] , __LINE__);
+			testFramework.assert(!referenceTimeRange.overlaps(afterTimeRange)          , testMessageArray[5] , __LINE__);
+			testFramework.assert( referenceTimeRange.overlaps(priorEdgeCase)           , testMessageArray[6] , __LINE__);
+			testFramework.assert(!referenceTimeRange.overlaps(priorEdgeCaseNoOverlap)  , testMessageArray[7] , __LINE__);
+			testFramework.assert( referenceTimeRange.overlaps(interiorEarlyEdge)       , testMessageArray[8] , __LINE__);
+			testFramework.assert( referenceTimeRange.overlaps(interiorLateEdge)        , testMessageArray[9] , __LINE__);
+			testFramework.assert( referenceTimeRange.overlaps(afterEdgeCase)           , testMessageArray[10], __LINE__);
+			testFramework.assert(!referenceTimeRange.overlaps(afterEdgeCaseNoOverlap)  , testMessageArray[11], __LINE__);
+			testFramework.assert( referenceTimeRange.overlaps(referenceTimeRange)      , testMessageArray[12], __LINE__);
 
-//--------------TimeRange_ _4 - Verify overlaps returns true when the target range overlaps a later portion of the reference range
-			testFramework.assert( referenceTimeRange.overlaps(lateOverlapTimeRange) );
-			testFramework.next();
-
-//--------------TimeRange_ _5 - Verify overlaps returns true when the reference range is interior to the target range
-			testFramework.assert( referenceTimeRange.overlaps(completeOverlapTimeRange) );
-			testFramework.next();
-
-//--------------TimeRange_ _6 - Verify overlaps returns false when the target range is after the reference range
-			testFramework.assert( !referenceTimeRange.overlaps(afterTimeRange) );
-			testFramework.next();
-
-//--------------TimeRange_ _7 - Verify overlaps returns true when the target range ends at and includes the beginning of the reference range
-			testFramework.assert( referenceTimeRange.overlaps(priorEdgeCase) );
-			testFramework.next();
-
-//--------------TimeRange_ _8 - Verify overlaps returns false when the target range ends at but does not include the beginning of the reference range
-			testFramework.assert( !referenceTimeRange.overlaps(priorEdgeCaseNoOverlap) );
-			testFramework.next();
-
-//--------------TimeRange_ _9 - Verify overlaps returns true when the target range is interior to the reference range and shares a start value
-			testFramework.assert( referenceTimeRange.overlaps(interiorEarlyEdge) );
-			testFramework.next();
-
-//--------------TimeRange_ _10 - Verify overlaps returns true when the target range is interior to the reference range and shares an end value
-			testFramework.assert( referenceTimeRange.overlaps(interiorLateEdge) );
-			testFramework.next();
-
-//--------------TimeRange_ _11 - Verify overlaps returns true when the target range starts at and includes the end of reference range
-			testFramework.assert( referenceTimeRange.overlaps(afterEdgeCase) );
-			testFramework.next();
-
-//--------------TimeRange_ _12 - Verify overlaps returns false when the target range starts at but does not include the end of reference range
-			testFramework.assert( !referenceTimeRange.overlaps(afterEdgeCaseNoOverlap) );
-			testFramework.next();
-
-//--------------TimeRange_ _13 - Verify overlaps returns true when the target range starts equals reference range
-			testFramework.assert( referenceTimeRange.overlaps(referenceTimeRange) );
-			testFramework.next();
 		
 
 			return testFramework.countFails();
 		}
 
-/* =========================================================================================================================
-	Test for the isSubsetOf method
-	Usage: referenceRange.isSubsetOf(targetRange)
-	If the reference range is entirely within the target range, the method is to return to true.
-========================================================================================================================= */
+//==========================================================================================================================
+//	Test for the isSubsetOf method
+//	Usage: referenceRange.isSubsetOf(targetRange)
+//	If the reference range is entirely within the target range, the method is to return to true.
+//==========================================================================================================================
 		int isSubsetOfTest ( void )
 		{
 			TestUtil testFramework( "TimeRange", "isSubsetOf", __FILE__, __LINE__ );
-			testFramework.init();
+
 			//Two time points before the reference TimeRange start endpoint
 			CommonTime earlierThanRangeStart = gpstk::CivilTime(2010,12,20, 0, 0, 0.0 ).convertToCommonTime();	
 			CommonTime earlierThanRangeEnd   = gpstk::CivilTime(2010,12,29, 0, 0, 0.0 ).convertToCommonTime();
@@ -396,72 +361,49 @@ class TimeRange_T
 			TimeRange afterEdgeCase            (endEndpoint,           laterThanRangeEnd,   beginningIncluded, endIncluded);
 			TimeRange afterEdgeCaseNoOverlap   (endEndpoint,           laterThanRangeEnd,   beginningIncluded, false      );
 
-//--------------TimeRange_ _1 - Verify isSubsetOf returns false when the target range is completely before the reference range
-			testFramework.assert( !referenceTimeRange.isSubsetOf(priorTimeRange) );
-			testFramework.next();
+			std::string testMessageArray[13];
+			testMessageArray[0]  = "isSubsetOf returned true when the target TimeRange is completely before the reference TimeRange";
+			testMessageArray[1]  = "isSubsetOf returned true when the target TimeRange overlaps the earlier portion of the reference TimeRange";
+			testMessageArray[2]  = "isSubsetOf returned true when the target TimeRange is interior to the reference TimeRange";
+			testMessageArray[3]  = "isSubsetOf returned true when the target TimeRange overlaps a later portion of the reference TimeRange";
+			testMessageArray[4]  = "isSubsetOf returned false when the reference TimeRange is interior to the target TimeRange";
+			testMessageArray[5]  = "isSubsetOf returned true when the target TimeRange is after the reference TimeRange";
+			testMessageArray[6]  = "isSubsetOf returned true when the target TimeRange ends at and includes the beginning of the reference TimeRange";
+			testMessageArray[7]  = "isSubsetOf returned true when the target TimeRange ends at but does not include the beginning of the reference TimeRange";
+			testMessageArray[8]  = "isSubsetOf returned true when the target TimeRange is interior to the reference TimeRange and shares a start value";
+			testMessageArray[9]  = "isSubsetOf returned true when the target TimeRange is interior to the reference TimeRange and shares an end value";
+			testMessageArray[10] = "isSubsetOf returned true when the target TimeRange starts at and includes the end of reference TimeRange";
+			testMessageArray[11] = "isSubsetOf returned true when the target TimeRange starts at but does not include the end of reference TimeRange";
+			testMessageArray[12] = "isSubsetOf returned false when the target TimeRange starts equals reference TimeRange";
 
-//--------------TimeRange_ _2 - Verify isSubsetOf returns false when the target range overlaps the earlier portion of the reference range
-			testFramework.assert( !referenceTimeRange.isSubsetOf(earlyOverlapTimeRange) );
-			testFramework.next();
 
-//--------------TimeRange_ _3 - Verify isSubsetOf returns false when the target range is interior to the reference range
-			testFramework.assert( !referenceTimeRange.isSubsetOf(interiorTimeRange) );
-			testFramework.next();
-
-//--------------TimeRange_ _4 - Verify isSubsetOf returns false when the target range overlaps a later portion of the reference range
-			testFramework.assert( !referenceTimeRange.isSubsetOf(lateOverlapTimeRange) );
-			testFramework.next();
-
-//--------------TimeRange_ _5 - Verify isSubsetOf returns true when the reference range is interior to the target range
-			testFramework.assert( referenceTimeRange.isSubsetOf(completeOverlapTimeRange) );
-			testFramework.next();
-
-//--------------TimeRange_ _6 - Verify isSubsetOf returns false when the target range is after the reference range
-			testFramework.assert( !referenceTimeRange.isSubsetOf(afterTimeRange) );
-			testFramework.next();
-
-//--------------TimeRange_ _7 - Verify isSubsetOf returns false when the target range ends at and includes the beginning of the reference range
-			testFramework.assert( !referenceTimeRange.isSubsetOf(priorEdgeCase) );
-			testFramework.next();
-
-//--------------TimeRange_ _8 - Verify isSubsetOf returns false when the target range ends at but does not include the beginning of the reference range
-			testFramework.assert( !referenceTimeRange.isSubsetOf(priorEdgeCaseNoOverlap) );
-			testFramework.next();
-
-//--------------TimeRange_ _9 - Verify isSubsetOf returns false when the target range is interior to the reference range and shares a start value
-			testFramework.assert( !referenceTimeRange.isSubsetOf(interiorEarlyEdge) );
-			testFramework.next();
-
-//--------------TimeRange_ _10 - Verify isSubsetOf returns false when the target range is interior to the reference range and shares an end value
-			testFramework.assert( !referenceTimeRange.isSubsetOf(interiorLateEdge) );
-			testFramework.next();
-
-//--------------TimeRange_ _11 - Verify isSubsetOf returns false when the target range starts at and includes the end of reference range
-			testFramework.assert( !referenceTimeRange.isSubsetOf(afterEdgeCase) );
-			testFramework.next();
-
-//--------------TimeRange_ _12 - Verify isSubsetOf returns false when the target range starts at but does not include the end of reference range
-			testFramework.assert( !referenceTimeRange.isSubsetOf(afterEdgeCaseNoOverlap) );
-			testFramework.next();
-
-//--------------TimeRange_ _13 - Verify isSubsetOf returns true when the target range starts equals reference range
-			testFramework.assert( referenceTimeRange.isSubsetOf(referenceTimeRange) );
-			testFramework.next();
-		
+			testFramework.assert(!referenceTimeRange.isSubsetOf(priorTimeRange)          , testMessageArray[0] , __LINE__);
+			testFramework.assert(!referenceTimeRange.isSubsetOf(earlyOverlapTimeRange)   , testMessageArray[1] , __LINE__);
+			testFramework.assert(!referenceTimeRange.isSubsetOf(interiorTimeRange)       , testMessageArray[2] , __LINE__);
+			testFramework.assert(!referenceTimeRange.isSubsetOf(lateOverlapTimeRange)    , testMessageArray[3] , __LINE__);
+			testFramework.assert( referenceTimeRange.isSubsetOf(completeOverlapTimeRange), testMessageArray[4] , __LINE__);
+			testFramework.assert(!referenceTimeRange.isSubsetOf(afterTimeRange)          , testMessageArray[5] , __LINE__);
+			testFramework.assert(!referenceTimeRange.isSubsetOf(priorEdgeCase)           , testMessageArray[6] , __LINE__);
+			testFramework.assert(!referenceTimeRange.isSubsetOf(priorEdgeCaseNoOverlap)  , testMessageArray[7] , __LINE__);
+			testFramework.assert(!referenceTimeRange.isSubsetOf(interiorEarlyEdge)       , testMessageArray[8] , __LINE__);
+			testFramework.assert(!referenceTimeRange.isSubsetOf(interiorLateEdge)        , testMessageArray[9] , __LINE__);
+			testFramework.assert(!referenceTimeRange.isSubsetOf(afterEdgeCase)           , testMessageArray[10], __LINE__);
+			testFramework.assert(!referenceTimeRange.isSubsetOf(afterEdgeCaseNoOverlap)  , testMessageArray[11], __LINE__);
+			testFramework.assert( referenceTimeRange.isSubsetOf(referenceTimeRange)      , testMessageArray[12], __LINE__);
 
 			return testFramework.countFails();
 		}
 
 
-/* =========================================================================================================================
-	Test for the isAfter method
-	Usage: referenceRange.isAfter(targetRange)
-	If the reference range is entirely after the target range, the method is to return to true.
-========================================================================================================================= */
+//==========================================================================================================================
+//	Test for the isAfter method
+//	Usage: referenceRange.isAfter(targetRange)
+//	If the reference range is entirely after the target range, the method is to return to true.
+//==========================================================================================================================
 		int isAfterTest ( void )
 		{
 			TestUtil testFramework( "TimeRange", "isAfter", __FILE__, __LINE__ );
-			testFramework.init();
+
 			//Two time points before the reference TimeRange start endpoint
 			CommonTime earlierThanRangeStart = gpstk::CivilTime(2010,12,20, 0, 0, 0.0 ).convertToCommonTime();	
 			CommonTime earlierThanRangeEnd   = gpstk::CivilTime(2010,12,29, 0, 0, 0.0 ).convertToCommonTime();
@@ -495,70 +437,51 @@ class TimeRange_T
 			TimeRange afterEdgeCase            (endEndpoint,           laterThanRangeEnd,   beginningIncluded, endIncluded);
 			TimeRange afterEdgeCaseNoOverlap   (endEndpoint,           laterThanRangeEnd,   beginningIncluded, false      );
 
-//--------------TimeRange_ _1 - Verify isAfter returns true when the target range is completely before the reference range
-			testFramework.assert( referenceTimeRange.isAfter(priorTimeRange) );
-			testFramework.next();
 
-//--------------TimeRange_ _2 - Verify isAfter returns false when the target range overlaps the earlier portion of the reference range
-			testFramework.assert( !referenceTimeRange.isAfter(earlyOverlapTimeRange) );
-			testFramework.next();
+			std::string testMessageArray[13];
+			testMessageArray[0]  = "isAfter returned false when the target TimeRange is completely before the reference TimeRange";
+			testMessageArray[1]  = "isAfter returned true when the target TimeRange overlaps the earlier portion of the reference TimeRange";
+			testMessageArray[2]  = "isAfter returned true when the target TimeRange is interior to the reference TimeRange";
+			testMessageArray[3]  = "isAfter returned true when the target TimeRange overlaps a later portion of the reference TimeRange";
+			testMessageArray[4]  = "isAfter returned true when the reference TimeRange is interior to the target TimeRange";
+			testMessageArray[5]  = "isAfter returned true when the target TimeRange is after the reference TimeRange";
+			testMessageArray[6]  = "isAfter returned true when the target TimeRange ends at and includes the beginning of the reference TimeRange";
+			testMessageArray[7]  = "isAfter returned false when the target TimeRange ends at but does not include the beginning of the reference TimeRange";
+			testMessageArray[8]  = "isAfter returned true when the target TimeRange is interior to the reference TimeRange and shares a start value";
+			testMessageArray[9]  = "isAfter returned true when the target TimeRange is interior to the reference TimeRange and shares an end value";
+			testMessageArray[10] = "isAfter returned true when the target TimeRange starts at and includes the end of reference TimeRange";
+			testMessageArray[11] = "isAfter returned true when the target TimeRange starts at but does not include the end of reference TimeRange";
+			testMessageArray[12] = "isAfter returned true when the target TimeRange starts equals reference TimeRange";
 
-//--------------TimeRange_ _3 - Verify isAfter returns false when the target range is interior to the reference range
-			testFramework.assert( !referenceTimeRange.isAfter(interiorTimeRange) );
-			testFramework.next();
 
-//--------------TimeRange_ _4 - Verify isAfter returns false when the target range overlaps a later portion of the reference range
-			testFramework.assert( !referenceTimeRange.isAfter(lateOverlapTimeRange) );
-			testFramework.next();
+			testFramework.assert( referenceTimeRange.isAfter(priorTimeRange)          , testMessageArray[0] , __LINE__);
+			testFramework.assert(!referenceTimeRange.isAfter(earlyOverlapTimeRange)   , testMessageArray[1] , __LINE__);
+			testFramework.assert(!referenceTimeRange.isAfter(interiorTimeRange)       , testMessageArray[2] , __LINE__);
+			testFramework.assert(!referenceTimeRange.isAfter(lateOverlapTimeRange)    , testMessageArray[3] , __LINE__);
+			testFramework.assert(!referenceTimeRange.isAfter(completeOverlapTimeRange), testMessageArray[4] , __LINE__);
+			testFramework.assert(!referenceTimeRange.isAfter(afterTimeRange)          , testMessageArray[5] , __LINE__);
+			testFramework.assert(!referenceTimeRange.isAfter(priorEdgeCase)           , testMessageArray[6] , __LINE__);
+			testFramework.assert( referenceTimeRange.isAfter(priorEdgeCaseNoOverlap)  , testMessageArray[7] , __LINE__);
+			testFramework.assert(!referenceTimeRange.isAfter(interiorEarlyEdge)       , testMessageArray[8] , __LINE__);
+			testFramework.assert(!referenceTimeRange.isAfter(interiorLateEdge)        , testMessageArray[9] , __LINE__);
+			testFramework.assert(!referenceTimeRange.isAfter(afterEdgeCase)           , testMessageArray[10], __LINE__);
+			testFramework.assert(!referenceTimeRange.isAfter(afterEdgeCaseNoOverlap)  , testMessageArray[11], __LINE__);
+			testFramework.assert(!referenceTimeRange.isAfter(referenceTimeRange)      , testMessageArray[12], __LINE__);
 
-//--------------TimeRange_ _5 - Verify isAfter returns false when the reference range is interior to the target range
-			testFramework.assert( !referenceTimeRange.isAfter(completeOverlapTimeRange) );
-			testFramework.next();
-
-//--------------TimeRange_ _6 - Verify isAfter returns false when the target range is after the reference range
-			testFramework.assert( !referenceTimeRange.isAfter(afterTimeRange) );
-			testFramework.next();
-
-//--------------TimeRange_ _7 - Verify isAfter returns false when the target range ends at and includes the beginning of the reference range
-			testFramework.assert( !referenceTimeRange.isAfter(priorEdgeCase) );
-			testFramework.next();
-
-//--------------TimeRange_ _8 - Verify isAfter returns true when the target range ends at but does not include the beginning of the reference range
-			testFramework.assert( referenceTimeRange.isAfter(priorEdgeCaseNoOverlap) );
-			testFramework.next();
-
-//--------------TimeRange_ _9 - Verify isAfter returns false when the target range is interior to the reference range and shares a start value
-			testFramework.assert( !referenceTimeRange.isAfter(interiorEarlyEdge) );
-			testFramework.next();
-
-//--------------TimeRange_ _10 - Verify isAfter returns false when the target range is interior to the reference range and shares an end value
-			testFramework.assert( !referenceTimeRange.isAfter(interiorLateEdge) );
-			testFramework.next();
-
-//--------------TimeRange_ _11 - Verify isAfter returns false when the target range starts at and includes the end of reference range
-			testFramework.assert( !referenceTimeRange.isAfter(afterEdgeCase) );
-			testFramework.next();
-
-//--------------TimeRange_ _12 - Verify isAfter returns false when the target range starts at but does not include the end of reference range
-			testFramework.assert( !referenceTimeRange.isAfter(afterEdgeCaseNoOverlap) );
-			testFramework.next();
-
-//--------------TimeRange_ _13 - Verify isAfter returns false when the target range starts equals reference range
-			testFramework.assert( !referenceTimeRange.isAfter(referenceTimeRange) );
-			testFramework.next();
 		
 			return testFramework.countFails();
 		}
 
-/* =========================================================================================================================
-	Test for the equalsOperator method
-	Usage: referenceRange.isAfter(targetRange)
-	If the reference range is entirely after the target range, the method is to return to true.
-========================================================================================================================= */
+//==========================================================================================================================
+//	Test for the == Operator
+//	Usage: leftRange == rightRange
+//	If the left TimeRange is exactly (same start point, end point, 
+//	and endpoint inclusions) return true. Otherwise false
+//==========================================================================================================================
 		int equalsOperatorTest ( void )
 		{
-			TestUtil testFramework( "TimeRange", "equalsOperator", __FILE__, __LINE__ );
-			testFramework.init();
+			TestUtil testFramework( "TimeRange", "OperatorEquivalence", __FILE__, __LINE__ );
+
 
 			//Reference TimeRange endpoints
 			CommonTime startPoint  = gpstk::CivilTime(2011, 1, 1, 0, 0, 0.0 ).convertToCommonTime();
@@ -573,38 +496,25 @@ class TimeRange_T
 			TimeRange noFinalPoint      (startPoint,  endPoint,    true,  false);
 			TimeRange copiedTimeRange   (referenceTimeRange);			
 
-//--------------TimeRange_ _1 - Verify == returns false when the start time is different
-			testFramework.assert( !(referenceTimeRange == differentStart) );
-			testFramework.next();
+			testFramework.assert( !(referenceTimeRange == differentStart) , "Equivalence operator returned true when the start time is different"                  , __LINE__ );
+			testFramework.assert( !(referenceTimeRange == differentEnd)   , "Equivalence operator returned true when the end time is different"                    , __LINE__ );
+			testFramework.assert( !(referenceTimeRange == noInitialPoint) , "Equivalence operator returned true when the start time inclusion boolean is different", __LINE__ );
+			testFramework.assert( !(referenceTimeRange == noFinalPoint)   , "Equivalence operator returned true when the end time inclusion boolean is different"  , __LINE__ );
+			testFramework.assert(  (referenceTimeRange == copiedTimeRange), "Equivalence operator returned false when the time ranges are copies"                  , __LINE__ );
 
-//--------------TimeRange_ _2 - Verify == returns false when the end time is different
-			testFramework.assert( !(referenceTimeRange == differentEnd) );
-			testFramework.next();
-
-//--------------TimeRange_ _3 - Verify == returns false when the start time inclusion boolean is different
-			testFramework.assert( !(referenceTimeRange == noInitialPoint) );
-			testFramework.next();
-
-//--------------TimeRange_ _4 - Verify == returns false when the end time inclusion boolean is different
-			testFramework.assert( !(referenceTimeRange == noFinalPoint) );
-			testFramework.next();
-
-//--------------TimeRange_ _5 - Verify == returns true when the time ranges are copies
-			testFramework.assert( (referenceTimeRange == copiedTimeRange) );
-			testFramework.next();
 
 			return testFramework.countFails();
 		}
 
-/* =========================================================================================================================
-	Test for the set method
-	Method changes the internal values of the TimeRange object
-	Test that the interior attributes have changed.
-========================================================================================================================= */
+//==========================================================================================================================
+//	Test for the set method
+//	Method changes the internal values of the TimeRange object
+//	Test that the interior attributes have changed.
+//==========================================================================================================================
 		int setTest ( void )
 		{
 			TestUtil testFramework( "TimeRange", "set", __FILE__, __LINE__ );
-			testFramework.init();
+
 
 			//Reference TimeRange endpoints
 			CommonTime startPoint  = gpstk::CivilTime(2011, 1, 1, 0, 0, 0.0 ).convertToCommonTime();
@@ -615,52 +525,41 @@ class TimeRange_T
 			TimeRange referenceTimeRange(startPoint,  endPoint,    true,  true );
 			TimeRange changedTimeRange;
 
-//--------------TimeRange_ _1 - Verify set throws an exception if the time range provided is inverted
-			try {changedTimeRange.set(anotherTime, startPoint, true, true); testFramework.failTest();}
-			catch (Exception& e) {testFramework.passTest();}
-			catch (...) {testFramework.failTest();}
+			//-----------------------------------------------------------------------------------------
+			//Verify set method functions and throws exceptions when it should
+			//-----------------------------------------------------------------------------------------
+			try 
+			{
+				changedTimeRange.set(anotherTime, startPoint, true, true); 
+				testFramework.assert(false, "set method allowed for the end time to be earlier than the start time", __LINE__);
+			}
+			catch (Exception& e) {testFramework.assert(true, "set method threw the expected error", __LINE__);}
+			catch (...) {testFramework.assert(false, "set method threw an unexpected error for when the end time is earlier than the start time", __LINE__);}
 
-//--------------TimeRange_ _2 - Verify set does not throw an exception when inputs are valid
-			try {changedTimeRange.set(startPoint, endPoint, true, true); testFramework.passTest();}
-			catch (...) {testFramework.failTest();}
+
+			//Verify set does not throw an exception when inputs are valid
+			try 
+			{
+				changedTimeRange.set(startPoint, endPoint, true, true); 
+				testFramework.assert(true, "set method for valid data functioned properly", __LINE__);
+			}
+			catch (...) {testFramework.assert(false, "set method for valid data functioned threw an error", __LINE__);}
 
 			changedTimeRange.set(startPoint, endPoint, true, true);
-//--------------TimeRange_ _3 - Verify set input all four values correctly.
-			testFramework.assert( (changedTimeRange == referenceTimeRange) );
-			testFramework.next();
-
-			changedTimeRange.set(anotherTime, endPoint, true, true);
-//--------------TimeRange_ _4 - Verify set input all four values correctly.
-			testFramework.assert( !(changedTimeRange == referenceTimeRange) );
-			testFramework.next();
-
-			changedTimeRange.set(startPoint, anotherTime, true, true);
-//--------------TimeRange_ _5 - Verify set input all four values correctly.
-			testFramework.assert( !(changedTimeRange == referenceTimeRange) );
-			testFramework.next();
-
-			changedTimeRange.set(startPoint, endPoint, false, true);
-//--------------TimeRange_ _6 - Verify set input all four values correctly.
-			testFramework.assert( !(changedTimeRange == referenceTimeRange) );
-			testFramework.next();
-
-			changedTimeRange.set(startPoint, endPoint, true, false);
-//--------------TimeRange_ _7 - Verify set input all four values correctly.
-			testFramework.assert( !(changedTimeRange == referenceTimeRange) );
-			testFramework.next();
+			testFramework.assert( (changedTimeRange == referenceTimeRange), "One of the values was not set properly", __LINE__ );
 
 			return testFramework.countFails();
 		}
 
 
 
-/* =========================================================================================================================
-	Test for the printf method
-========================================================================================================================= */
+//==========================================================================================================================
+//	Test for the printf method
+//==========================================================================================================================
 		int printfTest ( void )
 		{
 			TestUtil testFramework( "TimeRange", "printf", __FILE__, __LINE__ );
-			testFramework.init();
+
 
 			std::stringstream printfOutputStream;
 
@@ -669,13 +568,20 @@ class TimeRange_T
 			CommonTime endPoint    = gpstk::CivilTime(2011, 1,31,23,59,59.59).convertToCommonTime();
 
 			//Create various TimeRanges
-			TimeRange includeBoth (startPoint, endPoint, true,  true  );
-			TimeRange includeStart(startPoint, endPoint, true,  false );
-			TimeRange includeEnd  (startPoint, endPoint, false, true  );
-			TimeRange excludeBoth (startPoint, endPoint, false, false );
+			TimeRange timeRangeArray[7];
+			timeRangeArray[0].set(startPoint, endPoint, true,  true  );
+			timeRangeArray[1].set(startPoint, endPoint, true,  false );
+			timeRangeArray[2].set(startPoint, endPoint, false, true  );
+			timeRangeArray[3].set(startPoint, endPoint, false, false );
+			timeRangeArray[4].set(startPoint, endPoint, true,  true  );
+			timeRangeArray[5].set(startPoint, endPoint, true,  true  );
+			timeRangeArray[6].set(startPoint, endPoint, true,  true  );
 
 			std::string testFmts[]=
 			{
+				"%Y %m %d %H %M %S",
+				"%Y %m %d %H %M %S",
+				"%Y %m %d %H %M %S",
 				"%Y %m %d %H %M %S",
 				"%02m/%02d/%02y %02H:%02M:%02S",
 				"%02b %02d, %04Y %02H:%02M:%02S",
@@ -694,75 +600,47 @@ class TimeRange_T
 				"[2011 1 0.000000, 2011 31 86399.590000]"
 			};
 
+			std::string testMessage = "Printed string did not match expected output";
 
-			printfOutputStream <<  includeBoth.printf(testFmts[0]);
-//--------------TimeRange_ _1 - Verify printf prints correctly
-			testFramework.assert( (printfOutputStream.str() == correctResults[0]) );
-			testFramework.next();
-			printfOutputStream.str(std::string());
-
-			printfOutputStream << includeStart.printf(testFmts[0]);
-//--------------TimeRange_ _2 - Verify printf prints correctly
-			testFramework.assert( (printfOutputStream.str() == correctResults[1]) );
-			testFramework.next();
-			printfOutputStream.str(std::string());
-
-			printfOutputStream << includeEnd.printf(testFmts[0]);
-//--------------TimeRange_ _3 - Verify printf prints correctly
-			testFramework.assert( (printfOutputStream.str() == correctResults[2]) );
-			testFramework.next();
-			printfOutputStream.str(std::string());
-
-			printfOutputStream << excludeBoth.printf(testFmts[0]);
-//--------------TimeRange_ _4 - Verify printf prints correctly
-			testFramework.assert( (printfOutputStream.str() == correctResults[3]) );
-			testFramework.next();
-			printfOutputStream.str(std::string());
-
-			printfOutputStream << includeBoth.printf(testFmts[1]);
-//--------------TimeRange_ _5 - Verify printf prints correctly
-			testFramework.assert( (printfOutputStream.str() == correctResults[4]) );
-			testFramework.next();
-			printfOutputStream.str(std::string());
-
-			printfOutputStream << includeBoth.printf(testFmts[2]);
-//--------------TimeRange_ _6 - Verify printf prints correctly
-			testFramework.assert( (printfOutputStream.str() == correctResults[5]) );
-			testFramework.next();
-			printfOutputStream.str(std::string());
-
-			printfOutputStream << includeBoth.printf(testFmts[3]);
-//--------------TimeRange_ _7 - Verify printf prints correctly
-			testFramework.assert( (printfOutputStream.str() == correctResults[6]) );
-			testFramework.next();
-
-
+			for (int i = 0; i < 7; i++)
+			{
+				printfOutputStream <<  timeRangeArray[i].printf(testFmts[i]);
+				testFramework.assert( (printfOutputStream.str() == correctResults[i]), testMessage, __LINE__ );
+				printfOutputStream.str(std::string());
+			}
 
 			return testFramework.countFails();
 		}
 
-/* =========================================================================================================================
-	Test for the dump method
-========================================================================================================================= */
+//==========================================================================================================================
+//	Test for the dump method
+//==========================================================================================================================
 		int dumpTest ( void )
 		{
 			TestUtil testFramework( "TimeRange", "dump", __FILE__, __LINE__ );
-			testFramework.init();
 
-			std::stringstream printfOutputStream;
+
+			std::stringstream dumpOutputStream;
 
 			//Reference TimeRange endpoints
 			CommonTime startPoint  = gpstk::CivilTime(2011, 1, 1, 0, 0, 0.0 ).convertToCommonTime();
 			CommonTime endPoint    = gpstk::CivilTime(2011, 1,31,23,59,59.59).convertToCommonTime();
 
 			//Create various TimeRanges
-			TimeRange includeBoth (startPoint, endPoint, true,  true  );
-			TimeRange includeStart(startPoint, endPoint, true,  false );
-			TimeRange includeEnd  (startPoint, endPoint, false, true  );
-			TimeRange excludeBoth (startPoint, endPoint, false, false );
+			TimeRange timeRangeArray[7];
+			timeRangeArray[0].set(startPoint, endPoint, true,  true  );
+			timeRangeArray[1].set(startPoint, endPoint, true,  false );
+			timeRangeArray[2].set(startPoint, endPoint, false, true  );
+			timeRangeArray[3].set(startPoint, endPoint, false, false );
+			timeRangeArray[4].set(startPoint, endPoint, true,  true  );
+			timeRangeArray[5].set(startPoint, endPoint, true,  true  );
+			timeRangeArray[6].set(startPoint, endPoint, true,  true  );
 
 			std::string testFmts[]=
 			{
+				"%Y %m %d %H %M %S",
+				"%Y %m %d %H %M %S",
+				"%Y %m %d %H %M %S",
 				"%Y %m %d %H %M %S",
 				"%02m/%02d/%02y %02H:%02M:%02S",
 				"%02b %02d, %04Y %02H:%02M:%02S",
@@ -781,51 +659,17 @@ class TimeRange_T
 				"[Start:2011 1 0.000000, End: 2011 31 86399.590000]"
 			};
 
+			std::string testMessage = "Printed string did not match expected output";
 
-			printfOutputStream <<  includeBoth.dump(testFmts[0]);
-//--------------TimeRange_ _1 - Verify dump prints correctly
-			testFramework.assert( (printfOutputStream.str() == correctResults[0]) );
-			testFramework.next();
-			printfOutputStream.str(std::string());
-
-			printfOutputStream << includeStart.dump(testFmts[0]);
-//--------------TimeRange_ _2 - Verify dump prints correctly
-			testFramework.assert( (printfOutputStream.str() == correctResults[1]) );
-			testFramework.next();
-			printfOutputStream.str(std::string());
-
-			printfOutputStream << includeEnd.dump(testFmts[0]);
-//--------------TimeRange_ _3 - Verify dump prints correctly
-			testFramework.assert( (printfOutputStream.str() == correctResults[2]) );
-			testFramework.next();
-			printfOutputStream.str(std::string());
-
-			printfOutputStream << excludeBoth.dump(testFmts[0]);
-//--------------TimeRange_ _4 - Verify dump prints correctly
-			testFramework.assert( (printfOutputStream.str() == correctResults[3]) );
-			testFramework.next();
-			printfOutputStream.str(std::string());
-
-			printfOutputStream << includeBoth.dump(testFmts[1]);
-//--------------TimeRange_ _5 - Verify dump prints correctly
-			testFramework.assert( (printfOutputStream.str() == correctResults[4]) );
-			testFramework.next();
-			printfOutputStream.str(std::string());
-
-			printfOutputStream << includeBoth.dump(testFmts[2]);
-//--------------TimeRange_ _6 - Verify dump prints correctly
-			testFramework.assert( (printfOutputStream.str() == correctResults[5]) );
-			testFramework.next();
-			printfOutputStream.str(std::string());
-
-			printfOutputStream << includeBoth.dump(testFmts[3]);
-//--------------TimeRange_ _7 - Verify dump prints correctly
-			testFramework.assert( (printfOutputStream.str() == correctResults[6]) );
-			testFramework.next();
-
-
+			for (int i = 0; i < 7; i++)
+			{
+				dumpOutputStream <<  timeRangeArray[i].dump(testFmts[i]);
+				testFramework.assert( (dumpOutputStream.str() == correctResults[i]), testMessage, __LINE__ );
+				dumpOutputStream.str(std::string());
+			}
 
 			return testFramework.countFails();
+
 		}
 	private:
 		double eps;

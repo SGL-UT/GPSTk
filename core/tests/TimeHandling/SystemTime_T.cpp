@@ -50,15 +50,15 @@ class SystemTime_T
         public: 
 		SystemTime_T(){}// Default Constructor, set the precision value
 		~SystemTime_T() {} // Default Desructor
-
-		/* SystemTime inherits from UnixTime. The only added ability is to read the time from the machine.
-                   This one test will read the system time and compare it with the ctime value. However, since
-                   this test will need to read the time twice no guarantees can be made for strict tolerances.
-                   In fact, the tolerance will be set so that the time will be accurate to the second only. */
+//==========================================================================================================================
+//	SystemTime inherits from UnixTime. The only added ability is to read the time from the machine.
+//	This one test will read the system time and compare it with the ctime value. However, since
+//	this test will need to read the time twice no guarantees can be made for strict tolerances.
+//	In fact, the tolerance will be set so that the time will be accurate to the second only.
+//==========================================================================================================================
 		int obtainTimeFromSystemTest ( void )
 		{
 			TestUtil testFramework( "SystemTime", "Constructor", __FILE__, __LINE__ );
-			testFramework.init();
 
 			long day, day2;
 			long sod, sod2;
@@ -74,18 +74,12 @@ class SystemTime_T
 
 			commonTime_SystemTime.get(day,sod,fsod);
 			commonTime_ctime.get(day2,sod2,fsod2);
-
-//--------------SystemTime_ _1 - Is the day value accurate?
-			testFramework.assert( day == day2 );
-			testFramework.next();
-
-//--------------SystemTime_ _2 - Is the second value accurate?
-			testFramework.assert( sod == sod2 );
-			testFramework.next();
-
-//--------------SystemTime_ _3 - Is the TimeSystem set to UTC
-			testFramework.assert( commonTime_SystemTime.getTimeSystem() == TimeSystem(7) );
-			testFramework.next();
+			//---------------------------------------------------------------------
+			//Was the time obtained properly?
+			//---------------------------------------------------------------------
+			testFramework.assert( day == day2, "The obtained day was not correct", __LINE__ );
+			testFramework.assert( sod == sod2, "The obtained sod was not correct", __LINE__ );
+			testFramework.assert( commonTime_SystemTime.getTimeSystem() == TimeSystem(7), "The set TimeSystem was unexpected", __LINE__ );
 
 			return testFramework.countFails();
 		}

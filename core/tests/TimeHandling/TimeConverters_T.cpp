@@ -40,275 +40,126 @@
 #include <fstream>
 #include <cmath>
 using namespace gpstk;
-using namespace std;
+
 
 class xTimeConverters
 {
 	public:
-		xTimeConverters(){eps = 1e-11;}// Default Constructor, set the precision value
+		xTimeConverters(){eps = 1e-12;}// Default Constructor, set the precision value
 		~xTimeConverters() {} // Default Desructor
 
-		// Julian Date (JD) to Calendar Date Tests
+//==========================================================================================================================
+//	Julian Date (JD) to Calendar Date Tests
+//==========================================================================================================================
 		int JDtoCalendarTest()
 		{
-			TestUtil testFramework( "TimeConverters", "JDtoCalendar", __FILE__, __LINE__ );
-			testFramework.init();
+			TestUtil testFramework( "TimeConverters", "convertJDtoCalendar", __FILE__, __LINE__ );
 
-			int year;
-			int month;
-			int day;
+			int year, month, day;
+                        int inputJD[8]       = {2453971, 2299159, 2342032, 2377095, 1721118, 1721424, 1648549, 1719657};
+			int expectedYear[8]  = {   2006,    1582,    1700,    1796,      -1,       1,    -200,      -5};
+			int expectedMonth[8] = {      8,      10,       3,       2,       3,       1,       6,       3};
+			int expectedDay[8]   = {     23,       3,       1,      29,       1,       1,      25,       1};
+
 			
-			convertJDtoCalendar(2453971,year,month,day);
-
-//--------------TimeConverters_JDtoCalandarTest_1 - Was the year value set to expectation?			
-			testFramework.assert((2006 == year));
-			testFramework.next();
-
-//--------------TimeConverters_JDtoCalandarTest_2 - Was the month value set to expectation?			
-			testFramework.assert(8 == month);
-			testFramework.next();
-
-//--------------TimeConverters_JDtoCalandarTest_3 - Was the day value set to expectation?			
-			testFramework.assert(23 == day);
-			testFramework.next();
-
-			convertJDtoCalendar(2299159,year,month,day);
-
-//--------------TimeConverters_JDtoCalandarTest_4 - Was the year value set to expectation?			
-			testFramework.assert((1582 == year));
-			testFramework.next();
-
-//--------------TimeConverters_JDtoCalandarTest_5 - Was the month value set to expectation?			
-			testFramework.assert(10 == month);
-			testFramework.next();
-
-//--------------TimeConverters_JDtoCalandarTest_6 - Was the day value set to expectation?			
-			testFramework.assert(3 == day);
-			testFramework.next();
-
-			convertJDtoCalendar(2342032,year,month,day);
-
-//--------------TimeConverters_JDtoCalandarTest_7 - Was the year value set to expectation?			
-			testFramework.assert((1700 == year));
-			testFramework.next();
-
-//--------------TimeConverters_JDtoCalandarTest_8 - Was the month value set to expectation?			
-			testFramework.assert(3 == month);
-			testFramework.next();
-
-//--------------TimeConverters_JDtoCalandarTest_9 - Was the day value set to expectation?			
-			testFramework.assert(1 == day);
-			testFramework.next();
-
-			convertJDtoCalendar(2377095,year,month,day);
-
-//--------------TimeConverters_JDtoCalandarTest_10 - Was the year value set to expectation?			
-			testFramework.assert((1796 == year));
-			testFramework.next();
-
-//--------------TimeConverters_JDtoCalandarTest_11 - Was the month value set to expectation?			
-			testFramework.assert(2 == month);
-			testFramework.next();
-
-//--------------TimeConverters_JDtoCalandarTest_12 - Was the day value set to expectation?			
-			testFramework.assert(29 == day);
-			testFramework.next();
-
-			convertJDtoCalendar(1721118,year,month,day);
-
-//--------------TimeConverters_JDtoCalandarTest_13 - Was the year value set to expectation?			
-			testFramework.assert((-1 == year));
-			testFramework.next();
-
-//--------------TimeConverters_JDtoCalandarTest_14 - Was the month value set to expectation?			
-			testFramework.assert(3 == month);
-			testFramework.next();
-
-//--------------TimeConverters_JDtoCalandarTest_15 - Was the day value set to expectation?			
-			testFramework.assert(1 == day);
-			testFramework.next();
-
-			convertJDtoCalendar(1721424,year,month,day);
-
-//--------------TimeConverters_JDtoCalandarTest_16 - Was the year value set to expectation?			
-			testFramework.assert((1 == year));
-			testFramework.next();
-
-//--------------TimeConverters_JDtoCalandarTest_17 - Was the month value set to expectation?			
-			testFramework.assert(1 == month);
-			testFramework.next();
-
-//--------------TimeConverters_JDtoCalandarTest_18 - Was the day value set to expectation?			
-			testFramework.assert(1 == day);
-			testFramework.next();
-
-			convertJDtoCalendar(1648549,year,month,day);
-
-//--------------TimeConverters_JDtoCalandarTest_19 - Was the year value set to expectation?			
-			testFramework.assert((-200 == year));
-			testFramework.next();
-
-//--------------TimeConverters_JDtoCalandarTest_20 - Was the month value set to expectation?			
-			testFramework.assert(6 == month);
-			testFramework.next();
-
-//--------------TimeConverters_JDtoCalandarTest_21 - Was the day value set to expectation?			
-			testFramework.assert(25 == day);
+			for (int i = 0; i < 8; i++)
+			{
+				convertJDtoCalendar(inputJD[i],year,month,day);
+				//---------------------------------------------------------------------
+				//Was the correct calendar day found for the above JD?
+				//---------------------------------------------------------------------		
+				testFramework.assert(expectedYear[i]  == year , "The year from the JD conversion was not correct",  __LINE__);			
+				testFramework.assert(expectedMonth[i] == month, "The month from the JD conversion was not correct", __LINE__);				
+				testFramework.assert(expectedDay[i]   == day  , "The day from the JD conversion was not correct",   __LINE__);	
+			}
 
 			return testFramework.countFails();
 		}
 
 
-		// Calendar to JD tests
+//==========================================================================================================================
+//	Calendar to JD tests
+//==========================================================================================================================
 		int CalendartoJDTest()
 		{
-			TestUtil testFramework( "TimeConverters", "CalendartoJD", __FILE__, __LINE__ );
-			testFramework.init();
+			TestUtil testFramework( "TimeConverters", "convertCalendarToJD", __FILE__, __LINE__ );
+
 
 			long JD;
-			int year, month, day;
+                        int expectedJD[8] = {2453971, 2299159, 2342032, 2377095, 1721118, 1721424, 1648549, 1719657};
+			int inputYear[8]  = {   2006,    1582,    1700,    1796,      -1,       1,    -200,      -5};
+			int inputMonth[8] = {      8,      10,       3,       2,       3,       1,       6,       3};
+			int inputDay[8]   = {     23,       3,       1,      29,       1,       1,      25,       1};
 
-			year = 2006;
-			month = 8;
-			day = 23;
-			JD = convertCalendarToJD(year,month,day);
-
-//--------------TimeConverters_CalendartoJD_1 - Was the julian date value set to expectation?
-			testFramework.assert((long int)2453971 == JD);
-			testFramework.next();
-
-			year = 1582;
-			month = 10;
-			day = 3;
-			JD = convertCalendarToJD(year,month,day);
-
-//--------------TimeConverters_CalendartoJD_2 - Was the julian date value set to expectation?
-			testFramework.assert((long int)2299159 == JD);
-			testFramework.next();
-
-			year = 1700;
-			month = 3;
-			day = 1;
-			JD = convertCalendarToJD(year,month,day);
-
-//--------------TimeConverters_CalendartoJD_3 - Was the julian date value set to expectation?
-			testFramework.assert((long int)2342032 == JD);
-			testFramework.next();
-
-			year = 0;
-			month = 3;
-			day = 1;
-			JD = convertCalendarToJD(year,month,day);
-
-//--------------TimeConverters_CalendartoJD_4 - Was the julian date value set to expectation?
-			testFramework.assert((long int)1721118 == JD);
-			testFramework.next();
-
-			year = -5;
-			month = 3;
-			day = 1;
-			JD = convertCalendarToJD(year,month,day);
-
-//--------------TimeConverters_CalendartoJD_5 - Was the julian date value set to expectation?
-			testFramework.assert((long int)1719657 == JD);
-			testFramework.next();
-
-			year = -200;
-			month = 6;
-			day = 25;
-			JD = convertCalendarToJD(year,month,day);
-
-//--------------TimeConverters_CalendartoJD_6 - Was the julian date value set to expectation?
-			testFramework.assert((long int)1648549 == JD);
+			for (int i = 0 ; i < 8; i++)
+			{
+				JD = convertCalendarToJD(inputYear[i],inputMonth[i],inputDay[i]);
+				//---------------------------------------------------------------------
+				//Was the correct JD found for the above Calendar day?
+				//---------------------------------------------------------------------	
+				testFramework.assert(expectedJD[i] == JD, "The JD found from the calendar-JD conversion was not correct",  __LINE__);	
+			}
 
 			return testFramework.countFails();
 		}
 
-		// Seconds of Day (SOD) to Time Tests
+
+//==========================================================================================================================
+//	Seconds of Day (SOD) to Time Tests
+//==========================================================================================================================
 		int SODtoTimeTest()
 		{
-			TestUtil testFramework( "TimeConverters", "Wrapping Backwards", __FILE__, __LINE__ );
-			testFramework.init();
+			TestUtil testFramework( "TimeConverters", "convertSODToTime", __FILE__, __LINE__ );
+
 
 			int hour;
 			int minute;
-			double second;
+			double second, relativeError;
+			double inputSOD[3]       = { -0.1, 86401.11, 12345.67};
+			int    expectedHour[3]   = {   23,        0,        3};
+			int    expectedMinute[3] = {   59,        0,       25};
+			double expectedSecond[3] = { 59.9,     1.11,    45.67};
 
-			//Wraps Backwards
-			convertSODtoTime(-.01,hour,minute,second);
-
-//--------------TimeConverters_SODtoTimeTest_1 - Was the hour value set to expectation?
-			testFramework.assert(23 == hour);
-			testFramework.next();
-
-//--------------TimeConverters_SODtoTimeTest_2 - Was the minute value set to expectation?
-			testFramework.assert(59 == minute);
-			testFramework.next();
-
-//--------------TimeConverters_SODtoTimeTest_3 - Was the second value set to expectation?
-			testFramework.assert(fabs(59.99-second) < eps);
-			testFramework.next();
-
-			//Wraps Forwards
-			testFramework.changeSourceMethod("Wrapping Forwards");
-			convertSODtoTime(24*60*60+1.11,hour,minute,second);
-
-//--------------TimeConverters_SODtoTimeTest_4 - Was the hour value set to expectation?			
-			testFramework.assert(0 == hour);
-			testFramework.next();
-
-//--------------TimeConverters_SODtoTimeTest_5 - Was the minute value set to expectation?
-			testFramework.assert(0 == minute);
-			testFramework.next();
-
-//--------------TimeConverters_SODtoTimeTest_6 - Was the second value set to expectation?
-			testFramework.assert(fabs(1.11 - second) < eps);
-			testFramework.next();
-
-			//Standard
-			testFramework.changeSourceMethod("Standard");
-			convertSODtoTime(12345.67,hour,minute,second);
-
-//--------------TimeConverters_SODtoTimeTest_7 - Was the hour value set to expectation?			
-			testFramework.assert(3 == hour);
-			testFramework.next();
-
-//--------------TimeConverters_SODtoTimeTest_8 - Was the minute value set to expectation?
-			testFramework.assert(25 == minute);
-			testFramework.next();
-
-//--------------TimeConverters_SODtoTimeTest_9 - Was the second value set to expectation?
-			testFramework.assert(fabs(45.67 - second) < eps);
+			for (int i = 0 ; i < 3; i++)
+			{
+				convertSODtoTime(inputSOD[i],hour,minute,second);
+				//---------------------------------------------------------------------
+				//Was the correct Time found for the above SOD?
+				//---------------------------------------------------------------------	
+				relativeError = fabs(expectedSecond[i]-second)/fabs(expectedSecond[i]);
+				testFramework.assert(expectedHour[i] == hour    , "The SOD to Time conversion found an incorrect hour"  , __LINE__ );
+				testFramework.assert(expectedMinute[i] == minute, "The SOD to Time conversion found an incorrect minute", __LINE__ );
+				testFramework.assert(relativeError < eps        , "The SOD to Time conversion found an incorrect second", __LINE__ );
+			}
 
 			return testFramework.countFails();
 		}
 
 
-		// Time to SOD Tests
+//==========================================================================================================================
+//	Time to SOD Tests
+//==========================================================================================================================
 		int TimetoSODTest()
 		{
+
+
+			TestUtil testFramework( "TimeConverters", "convertTimeToSOD", __FILE__, __LINE__ );
 			int hour, minute;
-			double second, SOD;
+			double second, SOD, relativeError;;
+			double expectedSOD[3] = {4230.5, 86399.99, 12345.67};
+			int    inputHour[3]   = {     1,       23,        3};
+			int    inputMinute[3] = {    10,       59,       25};
+			double inputSecond[3] = {  30.5,    59.99,    45.67};
 
-			TestUtil testFramework( "TimeConverters", "SODtoTime", __FILE__, __LINE__ );
-			testFramework.init();
-
-			hour = 1;
-			minute = 10;
-			second = 30.5;
-			SOD = convertTimeToSOD(hour,minute,second);
-
-//--------------TimeConverters_TimetoSODTest_1 - Was the SOD value set to expectation?
-			testFramework.assert(fabs(60*60+600+30.5 - SOD) < eps);
-			testFramework.next();
-
-			hour = 23;
-			minute = 59;
-			second = 59.99;
-			SOD = convertTimeToSOD(hour,minute,second);
-
-//--------------TimeConverters_TimetoSODTest_2 - Was the SOD value set to expectation?			
-			testFramework.assert(fabs(23*3600+59*60+59.99 - SOD) < eps);
+			for (int i = 0 ; i < 3; i++)
+			{
+				SOD = convertTimeToSOD(inputHour[i],inputMinute[i],inputSecond[i]);
+				//---------------------------------------------------------------------
+				//Was the correct SOD found for the above Time?
+				//---------------------------------------------------------------------	
+				relativeError = fabs(expectedSOD[i]-SOD)/fabs(expectedSOD[i]);
+				testFramework.assert(relativeError < eps, "The Time to SOD conversion found an incorrect SOD", __LINE__ );
+			}
 
 			return testFramework.countFails();
 		}

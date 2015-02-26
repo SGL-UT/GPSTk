@@ -54,23 +54,22 @@
 using namespace gpstk;
 using namespace std;
 
-/* =========================================================================================================================
-	This test file will contain a series of scanTime checks for each of the directly tested TimeTag classes.
-========================================================================================================================= */
-
+//==========================================================================================================================
+//	This test file will contain a series of scanTime checks for each of the directly tested TimeTag classes.
+//==========================================================================================================================
 class TimeString_T
 {
 	public:
 	TimeString_T() {}
 	~TimeString_T() {}
 
-/* =========================================================================================================================
-	ANSITime scanTime Test
-========================================================================================================================= */
+//==========================================================================================================================
+//	ANSITime scanTime Test
+//==========================================================================================================================
 	int scanTimeANSITime( void )
 	{
 		TestUtil testFramework( "TimeString", "scanTime(ANSITime)", __FILE__, __LINE__ );
-		testFramework.init();
+
 
 		ANSITime scannedTime;
 		CommonTime scannedCommonTime, hardcodedCommonTime;
@@ -82,34 +81,34 @@ class TimeString_T
 		timeString = hardcodedTime.printf(formatString);               //Print the time using that format
 		scanTime(scannedTime, timeString, formatString);               //Read the formatted string back into a new
 		                                                               //time variable
-//--------------TimeString_scanTimeANSITime_1 - Verify the scanned time is the same as the hardcoded time
-		testFramework.assert(scannedTime == hardcodedTime);
-		testFramework.next();
+		//Verify the scanned time is the same as the hardcoded time
+		testFramework.assert(scannedTime == hardcodedTime, "scanTime did not correctly create the ANSITime object.", __LINE__);
+
 		scannedTime.reset();                                           //Reset the TimeTag child object
 		scanTime(scannedCommonTime, timeString, formatString);         //Read the formatted string back into a
 		                                                               //CommonTime time variable
 		scannedTime.convertFromCommonTime(scannedCommonTime);          //Convert to the TimeTag child class
-//--------------TimeString_scanTimeANSITime_2 - Verify the scanned CommonTime time is the same as the hardcoded time
-		testFramework.assert(scannedTime == hardcodedTime);
-		testFramework.next();
+		//Verify the scanned CommonTime time is the same as the hardcoded time
+		testFramework.assert(scannedTime == hardcodedTime, "scanTime of CommonTime did not create the correct ANSITime object", __LINE__);
+
 		scannedCommonTime.reset();
 		scannedTime.reset();
 		mixedScanTime(scannedCommonTime, timeString, formatString);    //Read the formatted string back into a
 		                                                               //CommonTime time variable
 		scannedTime.convertFromCommonTime(scannedCommonTime);          //Convert to the TimeTag child class
-//--------------TimeString_scanTimeANSITime_3 - Verify the scanned CommonTime time is the same as the hardcoded time
-		testFramework.assert(scannedCommonTime == hardcodedCommonTime);     
+		//Verify the scanned CommonTime time is the same as the hardcoded time
+		testFramework.assert(scannedCommonTime == hardcodedCommonTime, "mixedScanTime did not generate the proper time", __LINE__);     
       
 		return testFramework.countFails();
 	}
 
-/* =========================================================================================================================
-	CivilTime scanTime Test
-========================================================================================================================= */
+//==========================================================================================================================
+//	CivilTime scanTime Test
+//==========================================================================================================================
 	int scanTimeCivilTime( void )
 	{
 		TestUtil testFramework( "TimeString", "scanTime(CivilTime)", __FILE__, __LINE__ );
-		testFramework.init();
+
 
 		CivilTime scannedTime;
 		CommonTime scannedCommonTime, hardcodedCommonTime;
@@ -121,24 +120,24 @@ class TimeString_T
 		timeString = hardcodedTime.printf(formatString);               //Print the time using that format
 		scanTime(scannedTime, timeString, formatString);               //Read the formatted string back into a new
 		                                                               //time variable
-//--------------TimeString_scanTimeCivilTime_1 - Verify the scanned time is the same as the hardcoded time
-		testFramework.assert(scannedTime == hardcodedTime);
-		testFramework.next();
+		//Verify the scanned time is the same as the hardcoded time
+		testFramework.assert(scannedTime == hardcodedTime, "scanTime did not correctly create the CivilTime object.", __LINE__);
+
 		scannedTime.reset();                                           //Reset the TimeTag child object
 		scanTime(scannedCommonTime, timeString, formatString);         //Read the formatted string back into a
 		                                                               //CommonTime time variable
 		scannedTime.convertFromCommonTime(scannedCommonTime);          //Convert to the TimeTag child class
-//--------------TimeString_scanTimeCivilTime_2 - Verify the scanned CommonTime time is the same as the hardcoded time
-		testFramework.assert(scannedTime == hardcodedTime);
-		testFramework.next();
+		//Verify the scanned CommonTime time is the same as the hardcoded time
+		testFramework.assert(scannedTime == hardcodedTime, "scanTime of CommonTime did not create the correct CivilTime object", __LINE__);
+
 		scannedCommonTime.reset();
 		scannedTime.reset();
 		mixedScanTime(scannedCommonTime, timeString, formatString);    //Read the formatted string back into a
 		                                                               //CommonTime time variable
 		scannedTime.convertFromCommonTime(scannedCommonTime);          //Convert to the TimeTag child class
-//--------------TimeString_scanTimeCivilTime_3 - Verify the scanned CommonTime time is the same as the hardcoded time
-		testFramework.assert(scannedCommonTime == hardcodedCommonTime); 
-		testFramework.next();
+		//Verify the scanned CommonTime time is the same as the hardcoded time
+		testFramework.assert(scannedCommonTime == hardcodedCommonTime, "mixedScanTime did not generate the proper time", __LINE__); 
+
 		scannedTime.reset();
 
 
@@ -146,100 +145,100 @@ class TimeString_T
 		timeString = hardcodedTime.printf(formatString);               //Print the time using that format
 		scanTime(scannedTime, timeString, formatString);               //Read the formatted string back into a new
 		                                                               //time variable
-//--------------TimeString_scanTimeCivilTime_4 - Verify the scanned time is the same as the hardcoded time
-		testFramework.assert(scannedTime == hardcodedTime);
-		testFramework.next();
+		//Verify the scanned time is the same as the hardcoded time
+		testFramework.assert(scannedTime == hardcodedTime, "scanTime did not correctly create the CivilTime object.", __LINE__);
+
 		scannedTime.reset();                                           //Reset the TimeTag child object
 		scanTime(scannedCommonTime, timeString, formatString);         //Read the formatted string back into a
 		                                                               //CommonTime time variable
 		scannedTime.convertFromCommonTime(scannedCommonTime);          //Convert to the TimeTag child class
-//--------------TimeString_scanTimeCivilTime_5 - Verify the scanned CommonTime time is the same as the hardcoded time
-		testFramework.assert(scannedTime == hardcodedTime);
-		testFramework.next();
+		//Verify the scanned CommonTime time is the same as the hardcoded time
+		testFramework.assert(scannedTime == hardcodedTime, "scanTime of CommonTime did not create the correct CivilTime object", __LINE__);
+
 		scannedCommonTime.reset();
 		scannedTime.reset();
 		mixedScanTime(scannedCommonTime, timeString, formatString);    //Read the formatted string back into a
 		                                                               //CommonTime time variable
 		scannedTime.convertFromCommonTime(scannedCommonTime);          //Convert to the TimeTag child class
 
-//--------------TimeString_scanTimeCivilTime_6 - Verify the scanned CommonTime time is the same as the hardcoded time
-		testFramework.assert(scannedCommonTime == hardcodedCommonTime); 
-		testFramework.next();
+		//Verify the scanned CommonTime time is the same as the hardcoded time
+		testFramework.assert(scannedCommonTime == hardcodedCommonTime, "mixedScanTime did not generate the proper time", __LINE__); 
+
 		scannedTime.reset();                                           //Reset the time for a new format to be scanned
 
 		formatString = "%04Y %03b %02d %02H %02M %02S %03P";           //Provide a format string
 		timeString = hardcodedTime.printf(formatString);               //Print the time using that format
 		scanTime(scannedTime, timeString, formatString);               //Read the formatted string back into a new
 		                                                               //time variable
-//--------------TimeString_scanTimeCivilTime_7 - Verify the scanned time is the same as the hardcoded time
-		testFramework.assert(scannedTime == hardcodedTime);
-		testFramework.next();
+		//Verify the scanned time is the same as the hardcoded time
+		testFramework.assert(scannedTime == hardcodedTime, "scanTime did not correctly create the CivilTime object.", __LINE__);
+
 		scannedTime.reset();                                           //Reset the TimeTag child object
 		scanTime(scannedCommonTime, timeString, formatString);         //Read the formatted string back into a
 		                                                               //CommonTime time variable
 		scannedTime.convertFromCommonTime(scannedCommonTime);          //Convert to the TimeTag child class
-//--------------TimeString_scanTimeCivilTime_8 - Verify the scanned CommonTime time is the same as the hardcoded time
-		testFramework.assert(scannedTime == hardcodedTime);
-		testFramework.next();
+		//Verify the scanned CommonTime time is the same as the hardcoded time
+		testFramework.assert(scannedTime == hardcodedTime, "scanTime of CommonTime did not create the correct CivilTime object", __LINE__);
+
 		scannedCommonTime.reset();
 		scannedTime.reset();
 		mixedScanTime(scannedCommonTime, timeString, formatString);    //Read the formatted string back into a
 		                                                               //CommonTime time variable
 		scannedTime.convertFromCommonTime(scannedCommonTime);          //Convert to the TimeTag child class
 
-//--------------TimeString_scanTimeCivilTime_9 - Verify the scanned CommonTime time is the same as the hardcoded time
-		testFramework.assert(scannedCommonTime == hardcodedCommonTime); 
-		testFramework.next();
+		//Verify the scanned CommonTime time is the same as the hardcoded time
+		testFramework.assert(scannedCommonTime == hardcodedCommonTime, "mixedScanTime did not generate the proper time", __LINE__); 
+
 		scannedTime.reset();                                           //Reset the time for a new format to be scanned
 
 		formatString = "%04Y %03b %02d %02H %02M %5.2f %03P";          //Provide a format string
 		timeString = hardcodedTime.printf(formatString);               //Print the time using that format
 		scanTime(scannedTime, timeString, formatString);               //Read the formatted string back into a new
 		                                                               //time variable
-//--------------TimeString_scanTimeCivilTime_10 - Verify the scanned time is the same as the hardcoded time
-		testFramework.assert(scannedTime == hardcodedTime);
-		testFramework.next();
+		//Verify the scanned time is the same as the hardcoded time
+		testFramework.assert(scannedTime == hardcodedTime, "scanTime did not correctly create the CivilTime object.", __LINE__);
+
 		scannedTime.reset();                                           //Reset the TimeTag child object
 		scanTime(scannedCommonTime, timeString, formatString);         //Read the formatted string back into a
 		                                                               //CommonTime time variable
 		scannedTime.convertFromCommonTime(scannedCommonTime);          //Convert to the TimeTag child class
-//--------------TimeString_scanTimeCivilTime_11 - Verify the scanned CommonTime time is the same as the hardcoded time
-		testFramework.assert(scannedTime == hardcodedTime);
-		testFramework.next();
+		//Verify the scanned CommonTime time is the same as the hardcoded time
+		testFramework.assert(scannedTime == hardcodedTime, "scanTime of CommonTime did not create the correct CivilTime object", __LINE__);
+
 		scannedCommonTime.reset();
 		scannedTime.reset();
 		mixedScanTime(scannedCommonTime, timeString, formatString);    //Read the formatted string back into a
 		                                                               //CommonTime time variable
 		scannedTime.convertFromCommonTime(scannedCommonTime);          //Convert to the TimeTag child class
 
-//--------------TimeString_scanTimeCivilTime_12 - Verify the scanned CommonTime time is the same as the hardcoded time
-		testFramework.assert(scannedCommonTime == hardcodedCommonTime); 
-		testFramework.next();
+		//Verify the scanned CommonTime time is the same as the hardcoded time
+		testFramework.assert(scannedCommonTime == hardcodedCommonTime, "mixedScanTime did not generate the proper time", __LINE__); 
+
 		scannedTime.reset();                                           //Reset the time for a new format to be scanned
 
 		formatString = "%02y %03b %02d %02H %02M %5.2f %03P";          //Provide a format string
 		timeString = hardcodedTime.printf(formatString);               //Print the time using that format
 		scanTime(scannedTime, timeString, formatString);               //Read the formatted string back into a new
 		                                                               //time variable
-//--------------TimeString_scanTimeCivilTime_13 - Verify the scanned time is the same as the hardcoded time
-		testFramework.assert(scannedTime == hardcodedTime);
-		testFramework.next();
+		//Verify the scanned time is the same as the hardcoded time
+		testFramework.assert(scannedTime == hardcodedTime, "scanTime did not correctly create the CivilTime object.", __LINE__);
+
 		scannedTime.reset();                                           //Reset the TimeTag child object
 		scanTime(scannedCommonTime, timeString, formatString);         //Read the formatted string back into a
 		                                                               //CommonTime time variable
 		scannedTime.convertFromCommonTime(scannedCommonTime);          //Convert to the TimeTag child class
-//--------------TimeString_scanTimeCivilTime_14 - Verify the scanned CommonTime time is the same as the hardcoded time
-		testFramework.assert(scannedTime == hardcodedTime);
-		testFramework.next();
+		//Verify the scanned CommonTime time is the same as the hardcoded time
+		testFramework.assert(scannedTime == hardcodedTime, "scanTime of CommonTime did not create the correct CivilTime object", __LINE__);
+
 		scannedCommonTime.reset();
 		scannedTime.reset();
 		mixedScanTime(scannedCommonTime, timeString, formatString);    //Read the formatted string back into a
 		                                                               //CommonTime time variable
 		scannedTime.convertFromCommonTime(scannedCommonTime);          //Convert to the TimeTag child class
 
-//--------------TimeString_scanTimeCivilTime_15 - Verify the scanned CommonTime time is the same as the hardcoded time
-		testFramework.assert(scannedCommonTime == hardcodedCommonTime); 
-		testFramework.next();
+		//Verify the scanned CommonTime time is the same as the hardcoded time
+		testFramework.assert(scannedCommonTime == hardcodedCommonTime, "mixedScanTime did not generate the proper time", __LINE__); 
+
 		scannedTime.reset();                                           //Reset the time for a new format to be scanned
 
 		return testFramework.countFails();
@@ -247,13 +246,13 @@ class TimeString_T
 
 
 
-/* =========================================================================================================================
-	GPSWeekSecond scanTime Test
-========================================================================================================================= */
+//==========================================================================================================================
+//	GPSWeekSecond scanTime Test
+//==========================================================================================================================
 	int scanTimeGPSWeekSecond( void )
 	{
 		TestUtil testFramework( "TimeString", "scanTime(GPSWeekSecond)", __FILE__, __LINE__ );
-		testFramework.init();
+
 
 		GPSWeekSecond scannedTime;
 		CommonTime scannedCommonTime, hardcodedCommonTime;
@@ -265,34 +264,34 @@ class TimeString_T
 		timeString = hardcodedTime.printf(formatString);               //Print the time using that format
 		scanTime(scannedTime, timeString, formatString);               //Read the formatted string back into a new
 		                                                               //time variable
-//--------------TimeString_scanTimeGPSWeekSecond_1 - Verify the scanned time is the same as the hardcoded time
-		testFramework.assert(scannedTime == hardcodedTime);
-		testFramework.next();
+		//Verify the scanned time is the same as the hardcoded time
+		testFramework.assert(scannedTime == hardcodedTime, "scanTime did not correctly create the GPSWeekSecond object.", __LINE__);
+
 		scannedTime.reset();                                           //Reset the TimeTag child object
 		scanTime(scannedCommonTime, timeString, formatString);         //Read the formatted string back into a
 		                                                               //CommonTime time variable
 		scannedTime.convertFromCommonTime(scannedCommonTime);          //Convert to the TimeTag child class
-//--------------TimeString_scanTimeGPSWeekSecond_2 - Verify the scanned CommonTime time is the same as the hardcoded time
-		testFramework.assert(scannedTime == hardcodedTime);
-		testFramework.next();
+		//Verify the scanned CommonTime time is the same as the hardcoded time
+		testFramework.assert(scannedTime == hardcodedTime, "scanTime of CommonTime did not create the correct GPSWeekSecond object", __LINE__);
+
 		scannedCommonTime.reset();
 		scannedTime.reset();
 		mixedScanTime(scannedCommonTime, timeString, formatString);    //Read the formatted string back into a
 		                                                               //CommonTime time variable
 		scannedTime.convertFromCommonTime(scannedCommonTime);          //Convert to the TimeTag child class
-//--------------TimeString_scanTimeGPSWeekSecond_3 - Verify the scanned CommonTime time is the same as the hardcoded time
-		testFramework.assert(scannedCommonTime == hardcodedCommonTime); 
+		//Verify the scanned CommonTime time is the same as the hardcoded time
+		testFramework.assert(scannedCommonTime == hardcodedCommonTime, "mixedScanTime did not generate the proper time", __LINE__); 
 
 		return testFramework.countFails();
 	}
 
-/* =========================================================================================================================
-	GPSWeekZcount scanTime Test
-========================================================================================================================= */
+//==========================================================================================================================
+//	GPSWeekZcount scanTime Test
+//==========================================================================================================================
 	int scanTimeGPSWeekZcount( void )
 	{
 		TestUtil testFramework( "TimeString", "scanTime(GPSWeekZcount)", __FILE__, __LINE__ );
-		testFramework.init();
+
 
 		GPSWeekZcount scannedTime;
 		CommonTime scannedCommonTime, hardcodedCommonTime;
@@ -304,24 +303,24 @@ class TimeString_T
 		timeString = hardcodedTime.printf(formatString);               //Print the time using that format
 		scanTime(scannedTime, timeString, formatString);               //Read the formatted string back into a new
 		                                                               //time variable
-//--------------TimeString_scanTimeGPSWeekZcount_1 - Verify the scanned time is the same as the hardcoded time
-		testFramework.assert(scannedTime == hardcodedTime);
-		testFramework.next();
+		//Verify the scanned time is the same as the hardcoded time
+		testFramework.assert(scannedTime == hardcodedTime, "scanTime did not correctly create the GPSWeekZcount object.", __LINE__);
+
 		scannedTime.reset();                                           //Reset the TimeTag child object
 		scanTime(scannedCommonTime, timeString, formatString);         //Read the formatted string back into a
 		                                                               //CommonTime time variable
 		scannedTime.convertFromCommonTime(scannedCommonTime);          //Convert to the TimeTag child class
-//--------------TimeString_scanTimeGPSWeekZcount_2 - Verify the scanned CommonTime time is the same as the hardcoded time
-		testFramework.assert(scannedTime == hardcodedTime);
-		testFramework.next();
+		//Verify the scanned CommonTime time is the same as the hardcoded time
+		testFramework.assert(scannedTime == hardcodedTime, "scanTime of CommonTime did not create the correct GPSWeekZcount object", __LINE__);
+
 		scannedCommonTime.reset();
 		scannedTime.reset();
 		mixedScanTime(scannedCommonTime, timeString, formatString);    //Read the formatted string back into a
 		                                                               //CommonTime time variable
 		scannedTime.convertFromCommonTime(scannedCommonTime);          //Convert to the TimeTag child class
-//--------------TimeString_scanTimeGPSWeekZcount_3 - Verify the scanned CommonTime time is the same as the hardcoded time
-		testFramework.assert(scannedCommonTime == hardcodedCommonTime); 
-		testFramework.next();
+		//Verify the scanned CommonTime time is the same as the hardcoded time
+		testFramework.assert(scannedCommonTime == hardcodedCommonTime, "mixedScanTime did not generate the proper time", __LINE__); 
+
 		scannedTime.reset();                                           //Reset the time for a new format to be scanned
 
 
@@ -329,24 +328,24 @@ class TimeString_T
 		timeString = hardcodedTime.printf(formatString);               //Print the time using that format
 		scanTime(scannedTime, timeString, formatString);               //Read the formatted string back into a new
 		                                                               //time variable
-//--------------TimeString_scanTimeGPSWeekZcount_4 - Verify the scanned time is the same as the hardcoded time
-		testFramework.assert(scannedTime == hardcodedTime);
-		testFramework.next();
+		//Verify the scanned time is the same as the hardcoded time
+		testFramework.assert(scannedTime == hardcodedTime, "scanTime did not correctly create the GPSWeekZcount object.", __LINE__);
+
 		scannedTime.reset();                                           //Reset the TimeTag child object
 		scanTime(scannedCommonTime, timeString, formatString);         //Read the formatted string back into a
 		                                                               //CommonTime time variable
 		scannedTime.convertFromCommonTime(scannedCommonTime);          //Convert to the TimeTag child class
-//--------------TimeString_scanTimeGPSWeekZcount_5 - Verify the scanned CommonTime time is the same as the hardcoded time
-		testFramework.assert(scannedTime == hardcodedTime);
-		testFramework.next();
+		//Verify the scanned CommonTime time is the same as the hardcoded time
+		testFramework.assert(scannedTime == hardcodedTime, "scanTime of CommonTime did not create the correct GPSWeekZcount object", __LINE__);
+
 		scannedCommonTime.reset();
 		scannedTime.reset();
 		mixedScanTime(scannedCommonTime, timeString, formatString);    //Read the formatted string back into a
 		                                                               //CommonTime time variable
 		scannedTime.convertFromCommonTime(scannedCommonTime);          //Convert to the TimeTag child class
-//--------------TimeString_scanTimeGPSWeekZcount_6 - Verify the scanned CommonTime time is the same as the hardcoded time
-		testFramework.assert(scannedCommonTime == hardcodedCommonTime); 
-		testFramework.next();
+		//Verify the scanned CommonTime time is the same as the hardcoded time
+		testFramework.assert(scannedCommonTime == hardcodedCommonTime, "mixedScanTime did not generate the proper time", __LINE__); 
+
 		scannedTime.reset();                                           //Reset the time for a new format to be scanned
 
 
@@ -354,35 +353,35 @@ class TimeString_T
 		timeString = hardcodedTime.printf(formatString);               //Print the time using that format
 		scanTime(scannedTime, timeString, formatString);               //Read the formatted string back into a new
 		                                                               //time variable
-//--------------TimeString_scanTimeGPSWeekZcount_7 - Verify the scanned time is the same as the hardcoded time
-		testFramework.assert(scannedTime == hardcodedTime);
-		testFramework.next();
+		//Verify the scanned time is the same as the hardcoded time
+		testFramework.assert(scannedTime == hardcodedTime, "scanTime did not correctly create the GPSWeekZcount object.", __LINE__);
+
 		scannedTime.reset();                                           //Reset the TimeTag child object
 		scanTime(scannedCommonTime, timeString, formatString);         //Read the formatted string back into a
 		                                                               //CommonTime time variable
 		scannedTime.convertFromCommonTime(scannedCommonTime);          //Convert to the TimeTag child class
 
-//--------------TimeString_scanTimeGPSWeekZcount_8 - Verify the scanned CommonTime time is the same as the hardcoded time
-		testFramework.assert(scannedTime == hardcodedTime);
-		testFramework.next();
+		//Verify the scanned CommonTime time is the same as the hardcoded time
+		testFramework.assert(scannedTime == hardcodedTime, "scanTime of CommonTime did not create the correct GPSWeekZcount object", __LINE__);
+
 		scannedCommonTime.reset();
 		scannedTime.reset();
 		mixedScanTime(scannedCommonTime, timeString, formatString);    //Read the formatted string back into a
 		                                                               //CommonTime time variable
 		scannedTime.convertFromCommonTime(scannedCommonTime);          //Convert to the TimeTag child class
-//--------------TimeString_scanTimeGPSWeekZcount_9 - Verify the scanned CommonTime time is the same as the hardcoded time
-		testFramework.assert(scannedCommonTime == hardcodedCommonTime); 
+		//Verify the scanned CommonTime time is the same as the hardcoded time
+		testFramework.assert(scannedCommonTime == hardcodedCommonTime, "mixedScanTime did not generate the proper time", __LINE__); 
 
 		return testFramework.countFails();
 	}
 
-/* =========================================================================================================================
-	JulianDate scanTime Test
-========================================================================================================================= */
+//==========================================================================================================================
+//	JulianDate scanTime Test
+//==========================================================================================================================
 	int scanTimeJulianDate( void )
 	{
 		TestUtil testFramework( "TimeString", "scanTime(JulianDate)", __FILE__, __LINE__ );
-		testFramework.init();
+
 
 		JulianDate scannedTime;
 		CommonTime scannedCommonTime, hardcodedCommonTime;
@@ -394,35 +393,35 @@ class TimeString_T
 		timeString = hardcodedTime.printf(formatString);               //Print the time using that format
 		scanTime(scannedTime, timeString, formatString);               //Read the formatted string back into a new
 		                                                               //time variable
-//--------------TimeString_scanTimeJulianDate_1 - Verify the scanned time is the same as the hardcoded time
-		testFramework.assert(scannedTime == hardcodedTime);
-		testFramework.next();
+		//Verify the scanned time is the same as the hardcoded time
+		testFramework.assert(scannedTime == hardcodedTime, "scanTime did not correctly create the JulianDate object.", __LINE__);
+
 		scannedTime.reset();                                           //Reset the TimeTag child object
 		scanTime(scannedCommonTime, timeString, formatString);         //Read the formatted string back into a
 		                                                               //CommonTime time variable
 		scannedTime.convertFromCommonTime(scannedCommonTime);          //Convert to the TimeTag child class
-//--------------TimeString_scanTimeJulianDate_2 - Verify the scanned CommonTime time is the same as the hardcoded time
-		testFramework.assert(scannedTime == hardcodedTime);
-		testFramework.next();
+		//Verify the scanned CommonTime time is the same as the hardcoded time
+		testFramework.assert(scannedTime == hardcodedTime, "scanTime of CommonTime did not create the correct JulianDate object", __LINE__);
+
 		scannedCommonTime.reset();
 		scannedTime.reset();
 		mixedScanTime(scannedCommonTime, timeString, formatString);    //Read the formatted string back into a
 		                                                               //CommonTime time variable
 		scannedTime.convertFromCommonTime(scannedCommonTime);          //Convert to the TimeTag child class
 
-//--------------TimeString_scanTimeJulianDate_3 - Verify the scanned CommonTime time is the same as the hardcoded time
-		testFramework.assert(scannedCommonTime == hardcodedCommonTime); 
+		//Verify the scanned CommonTime time is the same as the hardcoded time
+		testFramework.assert(scannedCommonTime == hardcodedCommonTime, "mixedScanTime did not generate the proper time", __LINE__); 
 
 		return testFramework.countFails();
 	}
 
-/* =========================================================================================================================
-	MJD scanTime Test
-========================================================================================================================= */
+//==========================================================================================================================
+//	MJD scanTime Test
+//==========================================================================================================================
 	int scanTimeMJD( void )
 	{
 		TestUtil testFramework( "TimeString", "scanTime(MJD)", __FILE__, __LINE__ );
-		testFramework.init();
+
 
 		MJD scannedTime;
 		CommonTime scannedCommonTime, hardcodedCommonTime;
@@ -434,34 +433,34 @@ class TimeString_T
 		timeString = hardcodedTime.printf(formatString);               //Print the time using that format
 		scanTime(scannedTime, timeString, formatString);               //Read the formatted string back into a new
 		                                                               //time variable
-//--------------TimeString_scanTimeMJD_1 - Verify the scanned time is the same as the hardcoded time
-		testFramework.assert(scannedTime == hardcodedTime);
-		testFramework.next();
+		//Verify the scanned time is the same as the hardcoded time
+		testFramework.assert(scannedTime == hardcodedTime, "scanTime did not correctly create the MJD object.", __LINE__);
+
 		scannedTime.reset();                                           //Reset the TimeTag child object
 		scanTime(scannedCommonTime, timeString, formatString);         //Read the formatted string back into a
 		                                                               //CommonTime time variable
 		scannedTime.convertFromCommonTime(scannedCommonTime);          //Convert to the TimeTag child class
-//--------------TimeString_scanTimeMJD_2 - Verify the scanned CommonTime time is the same as the hardcoded time
-		testFramework.assert(scannedTime == hardcodedTime);
-		testFramework.next();
+		//Verify the scanned CommonTime time is the same as the hardcoded time
+		testFramework.assert(scannedTime == hardcodedTime, "scanTime of CommonTime did not create the correct MJD object", __LINE__);
+
 		scannedCommonTime.reset();
 		scannedTime.reset();
 		mixedScanTime(scannedCommonTime, timeString, formatString);    //Read the formatted string back into a
 		                                                               //CommonTime time variable
 		scannedTime.convertFromCommonTime(scannedCommonTime);          //Convert to the TimeTag child class
-//--------------TimeString_scanTimeMJD_3 - Verify the scanned CommonTime time is the same as the hardcoded time
-		testFramework.assert(scannedCommonTime == hardcodedCommonTime); 
+		//Verify the scanned CommonTime time is the same as the hardcoded time
+		testFramework.assert(scannedCommonTime == hardcodedCommonTime, "mixedScanTime did not generate the proper time", __LINE__); 
 
 		return testFramework.countFails();
 	}
 
-/* =========================================================================================================================
-	UnixTime scanTime Test
-========================================================================================================================= */
+//==========================================================================================================================
+//	UnixTime scanTime Test
+//==========================================================================================================================
 	int scanTimeUnixTime( void )
 	{
 		TestUtil testFramework( "TimeString", "scanTime(UnixTime)", __FILE__, __LINE__ );
-		testFramework.init();
+
 
 		UnixTime scannedTime;
 		CommonTime scannedCommonTime, hardcodedCommonTime;
@@ -473,35 +472,35 @@ class TimeString_T
 		timeString = hardcodedTime.printf(formatString);               //Print the time using that format
 		scanTime(scannedTime, timeString, formatString);               //Read the formatted string back into a new
 		                                                               //time variable
-//--------------TimeString_scanTimeUnixTime_1 - Verify the scanned time is the same as the hardcoded time
-		testFramework.assert(scannedTime == hardcodedTime);
-		testFramework.next();
+		//Verify the scanned time is the same as the hardcoded time
+		testFramework.assert(scannedTime == hardcodedTime, "scanTime did not correctly create the UnixTime object.", __LINE__);
+
 		scannedTime.reset();                                           //Reset the TimeTag child object
 		scanTime(scannedCommonTime, timeString, formatString);         //Read the formatted string back into a
 		                                                               //CommonTime time variable
 		scannedTime.convertFromCommonTime(scannedCommonTime);          //Convert to the TimeTag child class
-//--------------TimeString_scanTimeUnixTime_2 - Verify the scanned CommonTime time is the same as the hardcoded time
-		testFramework.assert(scannedTime == hardcodedTime);
-		testFramework.next();
+		//Verify the scanned CommonTime time is the same as the hardcoded time
+		testFramework.assert(scannedTime == hardcodedTime, "scanTime of CommonTime did not create the correct UnixTime object", __LINE__);
+
 		scannedCommonTime.reset();
 		scannedTime.reset();
 		mixedScanTime(scannedCommonTime, timeString, formatString);    //Read the formatted string back into a
 		                                                               //CommonTime time variable
 		scannedTime.convertFromCommonTime(scannedCommonTime);          //Convert to the TimeTag child class
-//--------------TimeString_scanTimeUnixTime_3 - Verify the scanned CommonTime time is the same as the hardcoded time
-		testFramework.assert(scannedCommonTime == hardcodedCommonTime); 
+		//Verify the scanned CommonTime time is the same as the hardcoded time
+		testFramework.assert(scannedCommonTime == hardcodedCommonTime, "mixedScanTime did not generate the proper time", __LINE__); 
 
 		return testFramework.countFails();
 	}
 
 
-/* =========================================================================================================================
-	YDSTime scanTime Test
-========================================================================================================================= */
+//==========================================================================================================================
+//	YDSTime scanTime Test
+//==========================================================================================================================
 	int scanTimeYDSTime( void )
 	{
 		TestUtil testFramework( "TimeString", "scanTime(YDSTime)", __FILE__, __LINE__ );
-		testFramework.init();
+
 
 		YDSTime scannedTime;
 		CommonTime scannedCommonTime, hardcodedCommonTime;
@@ -513,24 +512,24 @@ class TimeString_T
 		timeString = hardcodedTime.printf(formatString);               //Print the time using that format
 		scanTime(scannedTime, timeString, formatString);               //Read the formatted string back into a new
 		                                                               //time variable
-//--------------TimeString_scanTimeYDSTime_1 - Verify the scanned time is the same as the hardcoded time
-		testFramework.assert(scannedTime == hardcodedTime);
-		testFramework.next();
+		//Verify the scanned time is the same as the hardcoded time
+		testFramework.assert(scannedTime == hardcodedTime, "scanTime did not correctly create the YDSTime object.", __LINE__);
+
 		scannedTime.reset();                                           //Reset the TimeTag child object
 		scanTime(scannedCommonTime, timeString, formatString);         //Read the formatted string back into a
 		                                                               //CommonTime time variable
 		scannedTime.convertFromCommonTime(scannedCommonTime);          //Convert to the TimeTag child class
-//--------------TimeString_scanTimeYDSTime_2 - Verify the scanned CommonTime time is the same as the hardcoded time
-		testFramework.assert(scannedTime == hardcodedTime);
-		testFramework.next();
+		//Verify the scanned CommonTime time is the same as the hardcoded time
+		testFramework.assert(scannedTime == hardcodedTime, "scanTime of CommonTime did not create the correct YDSTime object", __LINE__);
+
 		scannedCommonTime.reset();
 		scannedTime.reset();
 		mixedScanTime(scannedCommonTime, timeString, formatString);    //Read the formatted string back into a
 		                                                               //CommonTime time variable
 		scannedTime.convertFromCommonTime(scannedCommonTime);          //Convert to the TimeTag child class
-//--------------TimeString_scanTimeYDSTime_3 - Verify the scanned CommonTime time is the same as the hardcoded time
-		testFramework.assert(scannedCommonTime == hardcodedCommonTime); 
-		testFramework.next();
+		//Verify the scanned CommonTime time is the same as the hardcoded time
+		testFramework.assert(scannedCommonTime == hardcodedCommonTime, "mixedScanTime did not generate the proper time", __LINE__); 
+
 		scannedTime.reset();
 		scannedCommonTime.reset();
 
@@ -538,23 +537,23 @@ class TimeString_T
 		timeString = hardcodedTime.printf(formatString);               //Print the time using that format
 		scanTime(scannedTime, timeString, formatString);               //Read the formatted string back into a new
 		                                                               //time variable
-//--------------TimeString_scanTimeYDSTime_4 - Verify the scanned time is the same as the hardcoded time
-		testFramework.assert(scannedTime == hardcodedTime);
-		testFramework.next();
+		//Verify the scanned time is the same as the hardcoded time
+		testFramework.assert(scannedTime == hardcodedTime, "scanTime did not correctly create the YDSTime object.", __LINE__);
+
 		scannedTime.reset();                                           //Reset the TimeTag child object
 		scanTime(scannedCommonTime, timeString, formatString);         //Read the formatted string back into a
 		                                                               //CommonTime time variable
 		scannedTime.convertFromCommonTime(scannedCommonTime);          //Convert to the TimeTag child class
-//--------------TimeString_scanTimeYDSTime_5 - Verify the scanned CommonTime time is the same as the hardcoded time
-		testFramework.assert(scannedTime == hardcodedTime);
-		testFramework.next();
+		//Verify the scanned CommonTime time is the same as the hardcoded time
+		testFramework.assert(scannedTime == hardcodedTime, "scanTime of CommonTime did not create the correct YDSTime object", __LINE__);
+
 		scannedCommonTime.reset();
 		scannedTime.reset();
 		mixedScanTime(scannedCommonTime, timeString, formatString);    //Read the formatted string back into a
 		                                                               //CommonTime time variable
 		scannedTime.convertFromCommonTime(scannedCommonTime);          //Convert to the TimeTag child class
-//--------------TimeString_scanTimeYDSTime_6 - Verify the scanned CommonTime time is the same as the hardcoded time
-		testFramework.assert(scannedCommonTime == hardcodedCommonTime); 
+		//Verify the scanned CommonTime time is the same as the hardcoded time
+		testFramework.assert(scannedCommonTime == hardcodedCommonTime, "mixedScanTime did not generate the proper time", __LINE__); 
 		return testFramework.countFails();
 	}
 };
