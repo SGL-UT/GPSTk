@@ -265,7 +265,7 @@ int RinexNav_T :: headerExceptionTest( void )
 
           
           //------------------------------------------------------------
-          msg_test_desc = "InvalidLineLength test"
+          msg_test_desc = "InvalidLineLength test";
           try
           {
               InvalidLineLength >> Header;
@@ -281,7 +281,7 @@ int RinexNav_T :: headerExceptionTest( void )
           }
 
           //------------------------------------------------------------
-          msg_test_desc = "NotaNavFile test"
+          msg_test_desc = "NotaNavFile test";
           try
           {
               NotaNavFile >> Header;
@@ -297,7 +297,7 @@ int RinexNav_T :: headerExceptionTest( void )
           }
 
           //------------------------------------------------------------
-          std::string msg_test_desc = "UnknownHeaderLabel test"
+          msg_test_desc = "UnknownHeaderLabel test";
           try
           {
               UnknownHeaderLabel >> Header;
@@ -313,7 +313,7 @@ int RinexNav_T :: headerExceptionTest( void )
           }
 
           //------------------------------------------------------------
-          std::string msg_test_desc = "IncompleteHeader test"
+          msg_test_desc = "IncompleteHeader test";
           try
           {
               IncompleteHeader >> Header;
@@ -329,7 +329,7 @@ int RinexNav_T :: headerExceptionTest( void )
           }
 
           //------------------------------------------------------------
-          std::string msg_test_desc = "UnsupportedRinex test"
+          msg_test_desc = "UnsupportedRinex test";
           try
           {
               UnsupportedRinex >> Header;
@@ -345,7 +345,7 @@ int RinexNav_T :: headerExceptionTest( void )
           }
 
           //------------------------------------------------------------
-          std::string msg_test_desc = "BadHeader test"
+          msg_test_desc = "BadHeader test";
           try
           {
               BadHeader >> Header;
