@@ -1,4 +1,4 @@
-//============================================================================
+//-------------------------------------------------------=====================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -18,9 +18,9 @@
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
-//============================================================================
+//-------------------------------------------------------=====================
 
-//============================================================================
+//-------------------------------------------------------=====================
 //
 //This software developed by Applied Research Laboratories at the University of
 //Texas at Austin, under contract to an agency or agencies within the U.S. 
@@ -32,7 +32,7 @@
 // DISTRIBUTION STATEMENT A: This software has been approved for public 
 //                           release, distribution is unlimited.
 //
-//=============================================================================
+//-------------------------------------------------------======================
 
 #include <list>
 #include <string>
@@ -64,25 +64,25 @@ class RinexEphemerisStore_T
 	public:
 		RinexEphemerisStore_T() {}
 
-/* =========================================================================================================================
-	General test for the RinexEphemerisStore (RES) class
-	Test to assure the that RES throws its exceptions in the right place and
-	that it loads the RINEX Nav file correctly
-========================================================================================================================= */
+//==========================================================================================================================
+//	General test for the RinexEphemerisStore (RES) class
+//	Test to assure the that RES throws its exceptions in the right place and
+//	that it loads the RINEX Nav file correctly
+//==========================================================================================================================
 		int RESTest (void)
 		{
 			TestUtil testFramework( "RinexEphemerisStore", "Constructor", __FILE__, __LINE__ );
 
-			//=============================================
+			//-----------------------------------------------------------
 			//Verify the consturctor builds the RES object
-			//=============================================
+			//-----------------------------------------------------------
 			try {RinexEphemerisStore Store; testFramework.assert(true, "sedIdentifier", __LINE__);}
 			catch (...) {testFramework.assert(false, "Exception thrown creating RinexEphemerisStoreObject", __LINE__);}
 			RinexEphemerisStore Store; 
 
-			//=============================================
+			//-----------------------------------------------------------
 			//Verify the ability to load nonexistant files.
-			//=============================================
+			//-----------------------------------------------------------
 			testFramework.changeSourceMethod("loadFile");
 			try
 			{
@@ -94,9 +94,9 @@ class RinexEphemerisStore_T
 			  testFramework.assert(false, "Could not create and open new file.", __LINE__);
 			}
 
-			//=============================================
+			//---------------------------------------------
 			//Verify the ability to load existant files.
-			//=============================================
+			//---------------------------------------------
 			try {Store.loadFile(inputRinexNavData.c_str()); testFramework.assert(true, "sedIdentifier", __LINE__);}
 			catch (...) 
 			{
@@ -104,7 +104,7 @@ class RinexEphemerisStore_T
 				testFramework.assert(false, "Could not load existing file", __LINE__);
 			}
 
-//=================================================================================================
+//-------------------------------------------------------==========================================
 //   It would be nice to verify that the double name exception is indeed thrown. However the InvalidParameter exception 
 //   thrown will terminate the program even with a catch-all.
 /*
@@ -124,12 +124,12 @@ class RinexEphemerisStore_T
 				cout << "Expected exception received from RinexEphemerisStore!!!!!!!!!" << endl;
 			} }
 */
-//=================================================================================================
+//-------------------------------------------------------==========================================
 
 			testFramework.changeSourceMethod("clear");
-			//==================================================================================
+			//----------------------------------------------------------------------------------
 			//Verify that once a clear() has been performed the repeated filename can be opened.
-			//==================================================================================
+			//----------------------------------------------------------------------------------
 			Store.gpstk::FileStore<RinexNavHeader>::clear();
 			try {Store.loadFile(inputRinexNavData.c_str()); testFramework.assert(true, "sedIdentifier", __LINE__);}
 			catch (Exception& e) 
@@ -143,17 +143,17 @@ class RinexEphemerisStore_T
 		}
 
 
-/* =========================================================================================================================
-	Test to assure the quality of GPSEphemerisStore class member findEph()
+//==========================================================================================================================
+//	Test to assure the quality of GPSEphemerisStore class member findEph()
 
-	This test makes sure that exceptions are thrown if there is no ephemeris data
-	for the given PRN and also that an exception is thrown if there is no data for
-	the PRN at the given time. Furthermore, this test finds an Ephemeris for a given
-	CivilTime Time and PRN.
+//	This test makes sure that exceptions are thrown if there is no ephemeris data
+//	for the given PRN and also that an exception is thrown if there is no data for
+//	the PRN at the given time. Furthermore, this test finds an Ephemeris for a given
+//	CivilTime Time and PRN.
 
-	To see the ephemeris information for the selected Time and PRN please see
-	findEph#.txt
-========================================================================================================================= */
+//	To see the ephemeris information for the selected Time and PRN please see
+//	findEph#.txt
+//==========================================================================================================================
 		int findEphTest (void)
 		{
 			TestUtil testFramework( "GPSEphemerisStore", "findEphemeris", __FILE__, __LINE__ );
@@ -202,15 +202,15 @@ class RinexEphemerisStore_T
 				CivilTime crazy(1950,1,31,2,0,0,2);
 				const CommonTime Comcrazy = (CommonTime)crazy;
 
-				//==================================================
+				//--------------------------------------------------
 				//For proper input, will the method return properly?
-				//==================================================
+				//--------------------------------------------------
 				try {GStore.findEphemeris(sid1,ComTime); testFramework.assert(true, "sedIdentifier", __LINE__);}
 				catch (...) {testFramework.assert(false, "findEphemeris threw an exception when it shouldn't.", __LINE__);}
 
-				//===========================================================
+				//-----------------------------------------------------------
 				//For a wrong SatID (too small), will an exception be thrown?
-				//===========================================================
+				//-----------------------------------------------------------
 				try 
 				{
 					GStore.findEphemeris(sid0,CombTime); 
@@ -219,16 +219,16 @@ class RinexEphemerisStore_T
 				catch (InvalidRequest) {testFramework.assert(true, "sedIdentifier", __LINE__);}
 				catch (...) {testFramework.assert(false, "findEphemeris threw an unexpected exception", __LINE__);}
 
-				//===========================================================
+				//-----------------------------------------------------------
 				//For a wrong SatID (too large), will an exception be thrown?
-				//===========================================================
+				//-----------------------------------------------------------
 				try {GStore.findEphemeris(sid33,CombTime); testFramework.assert(false, "findEphemeris was successful when it shouldn't be", __LINE__);}
 				catch (InvalidRequest) {testFramework.assert(true, "sedIdentifier", __LINE__);}
 				catch (...) {testFramework.assert(false, "findEphemeris threw an unexpected exception", __LINE__);}
 
-				//==================================================
+				//-------------------------------------------------------
 				//For an improper time, will an exception be thrown?
-				//==================================================
+				//-------------------------------------------------------
 				try {GStore.findEphemeris(sid32,Comcrazy); testFramework.assert(false, "findEphemeris was successful when it shouldn't be", __LINE__);}
 				catch (InvalidRequest) {testFramework.assert(true, "sedIdentifier", __LINE__);}
 				catch (...) {testFramework.assert(false, "findEphemeris threw an unexpected exception", __LINE__);}
@@ -244,26 +244,26 @@ class RinexEphemerisStore_T
 			outputFileStream.close();
 
 			testFramework.changeSourceMethod("findEphemeris Output");
-			//=======================================================
+			//-------------------------------------------------------
 			//Check findEphemeris output with pre-determined standard
-			//=======================================================
+			//-------------------------------------------------------
 			testFramework.assert( testFramework.fileEqualTest( findEphTestOutput, findEphTestInput, 0), "Output file did not match regressive standard.", __LINE__ );
 
 			return testFramework.countFails();
 		}
 
 
-/* =========================================================================================================================
-	Test to assure the quality of GPSEphemerisStore class member getXvt()
+//==========================================================================================================================
+//	Test to assure the quality of GPSEphemerisStore class member getXvt()
 
-	This test makes sure that exceptions are thrown if there is no ephemeris data
-	for the given PRN and also that an exception is thrown if there is no data for
-	the PRN at the given time. Furthermore, this test finds an Xvt for a given
-	CivilTime Time and PRN.
+//	This test makes sure that exceptions are thrown if there is no ephemeris data
+//	for the given PRN and also that an exception is thrown if there is no data for
+//	the PRN at the given time. Furthermore, this test finds an Xvt for a given
+//	CivilTime Time and PRN.
 
-	To see the Xvt information for the selected Time and PRN please see the files
-	getXvt#.txt
-========================================================================================================================= */
+//	To see the Xvt information for the selected Time and PRN please see the files
+//	getXvt#.txt
+//==========================================================================================================================
 
 		int getXvtTest (void)
 		{
@@ -297,9 +297,9 @@ class RinexEphemerisStore_T
 			Xvt xvt32;
 			try
 			{
-				//=======================================================
+				//-------------------------------------------------------
 				//Does getXvt work in ideal settings?
-				//=======================================================
+				//-------------------------------------------------------
 				try 
 				{
 					Store.getXvt(sid1,ComTime);
@@ -319,9 +319,9 @@ class RinexEphemerisStore_T
 				fPRN15 << xvt15;
 				fPRN32 << xvt32;
 
-				//=======================================================
+				//-------------------------------------------------------
 				//Can I get an xvt for a unlisted (too small) SV?
-				//=======================================================
+				//-------------------------------------------------------
 				try 
 				{
 					Store.getXvt(sid0,CombTime);
@@ -333,9 +333,9 @@ class RinexEphemerisStore_T
 				}
 				catch (...) {testFramework.assert(false, "getXvt threw an unexpected exception", __LINE__);}
 
-				//=======================================================
+				//-------------------------------------------------------
 				//Can I get an xvt for a unlisted (too large) SV?
-				//=======================================================
+				//-------------------------------------------------------
 				try 
 				{
 					Store.getXvt(sid33,CombTime);
@@ -359,43 +359,43 @@ class RinexEphemerisStore_T
 			std::string comparisonOutput32 = "x:(8.40859e+06, 1.71989e+07, -1.87307e+07), v:(-2248.12, -606.201, -1577.94), clk bias:2.12814e-05, clk drift:3.41061e-12, relcorr:-5.04954e-09";
 			testFramework.changeSourceMethod("getXvt Output");
 
-			//=======================================================
+			//-------------------------------------------------------
 			//Compare data for SatID 1 with pre-determined standard
-			//=======================================================
+			//-------------------------------------------------------
 			testFramework.assert( fPRN1.str() == comparisonOutput1, "Xvt redirect did not match regressive standard.", __LINE__ );
 
-			//=======================================================
+			//-------------------------------------------------------
 			//Compare data for SatID 15 with pre-determined standard
-			//=======================================================
+			//-------------------------------------------------------
 			testFramework.assert( fPRN15.str() == comparisonOutput15, "Xvt redirect did not match regressive standard.", __LINE__ );
 
-			//=======================================================
+			//-------------------------------------------------------
 			//Compare data for SatID 32 with pre-determined standard
-			//=======================================================
+			//-------------------------------------------------------
 			testFramework.assert( fPRN32.str() == comparisonOutput32, "Xvt redirect did not match regressive standard.", __LINE__ );
 
 			return testFramework.countFails();
 		}
 
 
-/* =========================================================================================================================
-	Test to assure the quality of GPSEphemerisStore class member getXvt()
-	This test differs from the previous in that this getXvt() has another parameter
-	for the IODC
+//==========================================================================================================================
+//	Test to assure the quality of GPSEphemerisStore class member getXvt()
+//	This test differs from the previous in that this getXvt() has another parameter
+//	for the IODC
 
-	This test makes sure that exceptions are thrown if there is no ephemeris data
-	for the given PRN and also that an exception is thrown if there is no data for
-	the PRN at the given time. Furthermore, this test finds an Xvt for a given
-	CivilTime Time and PRN and IODC.
+//	This test makes sure that exceptions are thrown if there is no ephemeris data
+//	for the given PRN and also that an exception is thrown if there is no data for
+//	the PRN at the given time. Furthermore, this test finds an Xvt for a given
+//	CivilTime Time and PRN and IODC.
 
-	To see the Xvt information for the selected Time and PRN please see
-	getXvt2.txt
+//	To see the Xvt information for the selected Time and PRN please see
+//	getXvt2.txt
 
-NOTE: getXvt with an IODC option is now deprecated. Test is no longer necessary, but is
-      being left here in case the functionality returns.
+//NOTE: getXvt with an IODC option is now deprecated. Test is no longer necessary, but is
+//      being left here in case the functionality returns.
 
-NOTE: This test will need to be brought up to the newest standard should it be used again.
-========================================================================================================================= */
+//NOTE: This test will need to be brought up to the newest standard should it be used again.
+//==========================================================================================================================
 /*
 		int getXvt2Test (void)
 		{
@@ -504,14 +504,14 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 */
 
 
-/* =========================================================================================================================
-	Test to assure the quality of GPSEphemerisStore class member getSatHealth()
+//==========================================================================================================================
+//	Test to assure the quality of GPSEphemerisStore class member getSatHealth()
 
-	This test makes sure that exceptions are thrown if there is no ephemeris data
-	for the given PRN and also that an exception is thrown if there is no data for
-	the PRN at the given time. Furthermore, this test assures that for a specific PRN
-	and Time, that SV is as we expect it, health (0).
-========================================================================================================================= */
+//	This test makes sure that exceptions are thrown if there is no ephemeris data
+//	for the given PRN and also that an exception is thrown if there is no data for
+//	the PRN at the given time. Furthermore, this test assures that for a specific PRN
+//	and Time, that SV is as we expect it, health (0).
+//==========================================================================================================================
 		int getSatHealthTest (void)
 		{
 			TestUtil testFramework( "OrbitEphStore", "getSatHealth", __FILE__, __LINE__ );
@@ -546,47 +546,47 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 
 			try
 			{
-				//=======================================================
+				//-------------------------------------------------------
 				//Does getSatHealth work in ideal conditions?
-				//=======================================================
+				//-------------------------------------------------------
 				try {GStore.getSatHealth(sid1,ComTime); testFramework.assert(true, "sedIdentifier", __LINE__);}
 				catch (...) {testFramework.assert(false, "getXvt threw an exception in ideal conditions", __LINE__);}
 
-				//=======================================================
+				//-------------------------------------------------------
 				//Does getSatHealth return the proper value?
-				//=======================================================
+				//-------------------------------------------------------
 				testFramework.assert((short) 1 == GStore.getSatHealth(sid1,ComTime), "A listed healthy SV was not found or was found to be unhealthy.", __LINE__);
 
-				//=======================================================
+				//-------------------------------------------------------
 				//Does getSatHealth return the proper value?
-				//=======================================================
+				//-------------------------------------------------------
 				testFramework.assert((short) 1 == GStore.getSatHealth(sid15,ComTime), "A listed healthy SV was not found or was found to be unhealthy.", __LINE__);
 
-				//=======================================================
+				//-------------------------------------------------------
 				//Does getSatHealth return the proper value?
-				//=======================================================
+				//-------------------------------------------------------
 				testFramework.assert((short) 1 == GStore.getSatHealth(sid32,ComTime), "A listed healthy SV was not found or was found to be unhealthy.", __LINE__);
 
-				//=======================================================
+				//-------------------------------------------------------
 				//Does getSatHealth throw an error for bad SatID request?
-				//=======================================================
+				//-------------------------------------------------------
 				try {GStore.getSatHealth(sid0,CombTime); testFramework.assert(true, "sedIdentifier", __LINE__);}
 				catch (...) {testFramework.assert(false, "Error thrown for bad SatID request. 0 should have been returned.", __LINE__);}
 
-				//=======================================================
+				//-------------------------------------------------------
 				//Does getSatHealth throw an error for bad SatID request?
-				//=======================================================
+				//-------------------------------------------------------
 				try {GStore.getSatHealth(sid33,CombTime); testFramework.assert(true, "sedIdentifier", __LINE__);}
 				catch (...) {testFramework.assert(false, "Error thrown for bad SatID request. 0 should have been returned.", __LINE__);}
 
-				//================================================================
+				//-----------------------------------------------------------
 				//Does getSatHealth return the proper value for bad SatID request?
-				//================================================================
+				//-----------------------------------------------------------
 				testFramework.assert((short) 0 == GStore.getSatHealth(sid0,ComTime), "An unlisted SatID was not set to unhealthy", __LINE__);
 
-				//================================================================
+				//-----------------------------------------------------------
 				//Does getSatHealth return the proper value for bad SatID request?
-				//================================================================
+				//-----------------------------------------------------------
 				testFramework.assert((short) 0 == GStore.getSatHealth(sid33,ComTime), "An unlisted SatID was not set to unhealthy", __LINE__);
 			}
 			catch (Exception& e)
@@ -598,17 +598,17 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 		}
 
 
-/* =========================================================================================================================
-	Test to assure the quality of GPSEphemerisStore class member dump()
+//==========================================================================================================================
+//	Test to assure the quality of GPSEphemerisStore class member dump()
 
-	This test makes sure that dump() behaves as expected.  With paramters from
-	1-3 with each giving more and more respective information, this information is
-	then put into txt files.
+//	This test makes sure that dump() behaves as expected.  With paramters from
+//	1-3 with each giving more and more respective information, this information is
+//	then put into txt files.
 
-	To see the dump with paramter 1, please view DumpData1.txt
-	To see the dump with paramter 2, pleave view DumpData2.txt
-	To see the dump with paramter 3, please view DumpData3.txt
-========================================================================================================================= */
+//	To see the dump with paramter 1, please view DumpData1.txt
+//	To see the dump with paramter 2, pleave view DumpData2.txt
+//	To see the dump with paramter 3, please view DumpData3.txt
+//==========================================================================================================================
 		int dumpTest (void)
 		{
 			TestUtil testFramework( "GPSEphemerisStore", "dump", __FILE__, __LINE__ );
@@ -628,21 +628,21 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 
 			try
 			{
-				//===========================================================
+				//-----------------------------------------------------------
 				//Check that dump( , detail = 1) will work with no exceptions
-				//===========================================================
+				//-----------------------------------------------------------
 				try {Store.dump(dumpTestOutputStreamForDetail0,1); testFramework.assert(true, "sedIdentifier", __LINE__);}
 				catch (...) {testFramework.assert(false, "Dump with detail=1 threw an exception when it should not", __LINE__);}
 
-				//===========================================================
+				//-----------------------------------------------------------
 				//Check that dump( , detail = 2) will work with no exceptions
-				//===========================================================
+				//-----------------------------------------------------------
 				try {Store.dump(dumpTestOutputStreamForDetail1,2); testFramework.assert(true, "sedIdentifier", __LINE__);}
 				catch (...) {testFramework.assert(false, "Dump with detail=1 threw an exception when it should not", __LINE__);}
 
-				//===========================================================
+				//-----------------------------------------------------------
 				//Check that dump( , detail = 3) will work with no exceptions
-				//===========================================================
+				//-----------------------------------------------------------
 				try {Store.dump(dumpTestOutputStreamForDetail2,3); testFramework.assert(true, "sedIdentifier", __LINE__);}
 				catch (...) {testFramework.assert(false, "Dump with detail=1 threw an exception when it should not", __LINE__);}
 
@@ -657,31 +657,31 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 			dumpTestOutputStreamForDetail1.close();
 			dumpTestOutputStreamForDetail2.close();
 
-			//====================================================================
+			//-----------------------------------------------------------
 			//Check dump( , detail = 1) output against its pre-determined standard
-			//====================================================================
+			//-----------------------------------------------------------
 			testFramework.assert( testFramework.fileEqualTest( dumpTestOutputForDetail0, dumpTestInputForDetail0, 2), "Dump(*,detail=1) did not match its regressive output", __LINE__ );
 
-			//====================================================================
+			//-----------------------------------------------------------
 			//Check dump( , detail = 2) output against its pre-determined standard
-			//====================================================================
+			//-----------------------------------------------------------
 			testFramework.assert( testFramework.fileEqualTest( dumpTestOutputForDetail1, dumpTestInputForDetail1, 2), "Dump(*,detail=2) did not match its regressive output", __LINE__ );
 
-			//====================================================================
+			//-----------------------------------------------------------
 			//Check dump( , detail = 3) output against its pre-determined standard
-			//====================================================================
+			//-----------------------------------------------------------
 			testFramework.assert( testFramework.fileEqualTest( dumpTestOutputForDetail2, dumpTestInputForDetail2, 2), "Dump(*,detail=3) did not match its regressive output", __LINE__ );
 
 			return testFramework.countFails();
 		}
 
-/* =========================================================================================================================
-	Test to assure the quality of GPSEphemerisStore class member addEphemeris()
+//==========================================================================================================================
+//	Test to assure the quality of GPSEphemerisStore class member addEphemeris()
 
-	This test assures that no exceptions are thrown when an ephemeris, taken from Store
-	is added to a blank BCES Object.  Then the test makes sure that only that Ephemeris
-	is in the object by checking the start and end times of the Object
-========================================================================================================================= */
+//	This test assures that no exceptions are thrown when an ephemeris, taken from Store
+//	is added to a blank BCES Object.  Then the test makes sure that only that Ephemeris
+//	is in the object by checking the start and end times of the Object
+//==========================================================================================================================
 
 		int addEphemerisTest (void)
 		{
@@ -722,32 +722,32 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 
 			try
 			{
-				//====================================================================
+				//-----------------------------------------------------------
 				//Verify that addEphemeris runs with no errors
-				//====================================================================
+				//-----------------------------------------------------------
 				try{Blank.addEphemeris(eph); testFramework.assert(true, "sedIdentifier", __LINE__);}
 				catch (...) {testFramework.assert(false, "addEphemeris threw an exception when all necessary data has been provided", __LINE__);}
 
-				//====================================================================================
+				//-----------------------------------------------------------
 				//Verify that addEphemeris added by checking the initial time of the GPSEphemerisStore
-				//====================================================================================
+				//-----------------------------------------------------------
 				testFramework.assert( ComTimeB == Blank.getInitialTime(), "addEphemeris may not have added the ephemeris or updated the initial time", __LINE__);
 
-				//==================================================================================
+				//-----------------------------------------------------------
 				//Verify that addEphemeris added by checking the final time of the GPSEphemerisStore
-				//==================================================================================
+				//-----------------------------------------------------------
 				testFramework.assert( ComTimeE == Blank.getFinalTime(), "addEphemeris may not have added the ephemeris or updated the final time", __LINE__ );
 
 
 				Blank.clear();
-				//================================================================================
+				//-----------------------------------------------------------
 				//Verify that clear() worked by checking the initial time of the GPSEphemerisStore
-				//================================================================================
+				//-----------------------------------------------------------
 				testFramework.assert( ComDefB == Blank.getInitialTime(), "clear may not have functioned or reset the initial time", __LINE__ );
 
-				//================================================================================
+				//-----------------------------------------------------------
 				//Verify that clear() worked by checking the initial time of the GPSEphemerisStore
-				//================================================================================
+				//-----------------------------------------------------------
 				testFramework.assert( ComDefE == Blank.getFinalTime(), "clear may not have functioned or reset the final time", __LINE__ );
 			}
 			catch (Exception& e)
@@ -759,15 +759,15 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 		}
 
 
-/* =========================================================================================================================
-	Test to assure the quality of GPSEphemerisStore class member edit()
+//==========================================================================================================================
+//	Test to assure the quality of GPSEphemerisStore class member edit()
 
-	This test assures that no exceptions are thrown when we edit a RES object
-	then after we edit the RES Object, we test to make sure that our edit time
-	parameters are now the time endpoints of the object.
+//	This test assures that no exceptions are thrown when we edit a RES object
+//	then after we edit the RES Object, we test to make sure that our edit time
+//	parameters are now the time endpoints of the object.
 
-	For further inspection of the edit, please view editTest.txt
-========================================================================================================================= */
+//	For further inspection of the edit, please view editTest.txt
+//==========================================================================================================================
 		int editTest (void)
 		{
 
@@ -792,21 +792,21 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 
 			try
 			{
-				//====================================================================
+				//-----------------------------------------------------------
 				//Verify that the edit method runs
-				//====================================================================
+				//-----------------------------------------------------------
 				try{Store.edit(ComTMin, ComTMax); testFramework.assert(true, "sedIdentifier", __LINE__);}
 				catch (...) {testFramework.assert(false, "edit threw an error when it should have functioned", __LINE__);}
 
 				Store.edit(ComTMin, ComTMax);
-				//====================================================================
+				//-----------------------------------------------------------
 				//Verify that the edit method changed the initial time
-				//====================================================================
+				//-----------------------------------------------------------
 				testFramework.assert(ComTMin == Store.getInitialTime(), "Edit did not change the initial time", __LINE__);
 
-				//====================================================================
+				//-----------------------------------------------------------
 				//Verify that the edit method changed the final time
-				//====================================================================
+				//-----------------------------------------------------------
 				testFramework.assert(ComTMax == Store.getFinalTime(), "Edit did not change the initial time", __LINE__);
 
 
@@ -819,25 +819,25 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 			}
 
 			editTestOutputStream.close();
-			//====================================================================
+			//-----------------------------------------------------------
 			//Check edited output against its pre-determined standard
-			//====================================================================
+			//-----------------------------------------------------------
 			testFramework.assert( testFramework.fileEqualTest( editTestOutput, editTestInput, 0), "Output from edit does not match regressive standard", __LINE__ );
 
 			return testFramework.countFails();
 		}
 
-/* =========================================================================================================================
-	Test to assure the quality of GPSEphemerisStore class member wiper()
+//==========================================================================================================================
+//	Test to assure the quality of GPSEphemerisStore class member wiper()
 
-	This test assures that no exceptions are thrown when we wiper a RES object
-	then after we wiper the RES Object, we test to make sure that our wiper time
-	parameter in now the time endpoint of the object.
+//	This test assures that no exceptions are thrown when we wiper a RES object
+//	then after we wiper the RES Object, we test to make sure that our wiper time
+//	parameter in now the time endpoint of the object.
 
-	For further inspection of the edit, please view wiperTest.txt
+//	For further inspection of the edit, please view wiperTest.txt
 
-	Please note that this test also indirectly tests size
-========================================================================================================================= */
+//	Please note that this test also indirectly tests size
+//==========================================================================================================================
 /*		int wiperTest (void)
 		{
 			TestUtil testFramework( "RinexEphemerisStore", "wiper", __FILE__, __LINE__ );
@@ -917,15 +917,15 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 		}
 */
 
-/* =========================================================================================================================
-	Test to assure the quality of OrbitEphStore class member clear()
+//==========================================================================================================================
+//	Test to assure the quality of OrbitEphStore class member clear()
 
-	This test assures that no exceptions are thrown when we clear a RES object
-	then after we clear the RES Object, we test to make sure that END_OF_TIME is our
-	initial time and BEGINNING_OF_TIME is our final time
+//	This test assures that no exceptions are thrown when we clear a RES object
+//	then after we clear the RES Object, we test to make sure that END_OF_TIME is our
+//	initial time and BEGINNING_OF_TIME is our final time
 
-	For further inspection of the edit, please view clearTest.txt
-========================================================================================================================= */
+//	For further inspection of the edit, please view clearTest.txt
+//==========================================================================================================================
 		int clearTest (void)
 		{
 			TestUtil testFramework( "OrbitEphStore", "clear", __FILE__, __LINE__ );
@@ -939,20 +939,20 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 
 			try
 			{
-				//====================================================================
+				//-----------------------------------------------------------
 				//Verify the gpstk::OrbitEphStore::clear() method runs
-				//====================================================================
+				//-----------------------------------------------------------
 				try {Store.gpstk::OrbitEphStore::clear(); testFramework.assert(true, "sedIdentifier", __LINE__);}
 				catch (...) {testFramework.assert(false, "OrbitEphStore::clear() threw an exception when it should not have", __LINE__);}
 
-				//====================================================================
+				//-----------------------------------------------------------
 				//Verify that clear set the initial time to END_OF_TIME
-				//====================================================================
+				//-----------------------------------------------------------
 				testFramework.assert(CommonTime::END_OF_TIME == Store.getInitialTime(), "clear may not have cleared or may not have reset the initial time", __LINE__);
 
-				//====================================================================
+				//-----------------------------------------------------------
 				//Verify that clear set the final time to BEGINNING_OF_TIME
-				//====================================================================
+				//-----------------------------------------------------------
 				testFramework.assert(CommonTime::BEGINNING_OF_TIME == Store.getFinalTime(), "clear may not have cleared or may not have reset the final time", __LINE__);
 
 
@@ -964,30 +964,30 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 			}
 
 			clearTestOutputStream.close();
-			//====================================================================
+			//-----------------------------------------------------------
 			//Check partially wiped output against its pre-determined standard
-			//====================================================================
+			//-----------------------------------------------------------
 			testFramework.assert( testFramework.fileEqualTest( clearTestOutput, clearTestInput, 0), "Output from clear does not match its regressive standard.", __LINE__ );
 			return testFramework.countFails();
 		}
 
 
-/* =========================================================================================================================
-	Test to assure the quality of OrbitEphStore class member findUserOrbitEph()
+//==========================================================================================================================
+//	Test to assure the quality of OrbitEphStore class member findUserOrbitEph()
 
-	This test will be performed using OrbitEphStore's grand-child class GPSEphemerisStore
+//	This test will be performed using OrbitEphStore's grand-child class GPSEphemerisStore
 
-	findUserOrbitEph find the ephemeris which a) is within the fit tinterval for the
-	given time of interest and 2) is the last ephemeris transmitted before the time of
-	interest (i.e. min(toi-HOW time))
+//	findUserOrbitEph find the ephemeris which a) is within the fit tinterval for the
+//	given time of interest and 2) is the last ephemeris transmitted before the time of
+//	interest (i.e. min(toi-HOW time))
 
-	This test makes sure that exceptions are thrown if there is no ephemeris data
-	for the given PRN and also that an exception is thrown if there is no data for
-	the PRN at the given time. Store is then cleared and the ephemeris data is readded
-	for output purposes.
+//	This test makes sure that exceptions are thrown if there is no ephemeris data
+//	for the given PRN and also that an exception is thrown if there is no data for
+//	the PRN at the given time. Store is then cleared and the ephemeris data is readded
+//	for output purposes.
 
-	For further inspection of the find, please view findUserTest.txt
-========================================================================================================================= */
+//	For further inspection of the find, please view findUserTest.txt
+//==========================================================================================================================
 		int findUserOrbEphTest (void)
 		{
 			TestUtil testFramework( "OrbitEphStore", "findUserOrbitEph", __FILE__, __LINE__ );
@@ -1017,30 +1017,30 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 
 			try
 			{
-				//====================================================================
+				//-----------------------------------------------------------
 				//Check that a missing satID (too small) yields a thrown error
-				//====================================================================
+				//-----------------------------------------------------------
 				try {Store.findUserOrbitEph(sid0,ComTime); testFramework.assert(false, "findUserOrbitEph did not throw an exception when it should have", __LINE__);}
 				catch (InvalidRequest& e) {testFramework.assert(true, "sedIdentifier", __LINE__);}
 				catch (...) {testFramework.assert(false, "findUserOrbitEph threw an unexpected exception", __LINE__);}
 
-				//====================================================================
+				//-----------------------------------------------------------
 				//Check that a missing satID (too big) yields a thrown error
-				//====================================================================
+				//-----------------------------------------------------------
 				try {Store.findUserOrbitEph(sid33,ComTime); testFramework.assert(false, "findUserOrbitEph did not throw an exception when it should have", __LINE__);}
 				catch (InvalidRequest& e) {testFramework.assert(true, "sedIdentifier", __LINE__);}
 				catch (...) {testFramework.assert(false, "findUserOrbitEph threw an unexpected exception", __LINE__);}
 
-				//====================================================================
+				//-----------------------------------------------------------
 				//Check that an invalid time yields a thrown error
-				//====================================================================
+				//-----------------------------------------------------------
 				try {Store.findUserOrbitEph(sid1,CommonTime::END_OF_TIME); testFramework.assert(false, "findUserOrbitEph did not throw an exception when it should have", __LINE__);}
 				catch (InvalidRequest& e) {testFramework.assert(true, "sedIdentifier", __LINE__);}
 				catch (...) {testFramework.assert(false, "findUserOrbitEph threw an unexpected exception", __LINE__);}
 
-				//====================================================================
+				//-----------------------------------------------------------
 				//Verify that for ideal conditions findUserOrbitEph runs
-				//====================================================================
+				//-----------------------------------------------------------
 				try {Store.findUserOrbitEph(sid1, ComTime); testFramework.assert(true, "sedIdentifier", __LINE__);}
 				catch (...) {testFramework.assert(false, "findUserOrbitEph threw an exception when it should not have", __LINE__);}
 
@@ -1061,25 +1061,25 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 			}
 
 			findUserTestOutputStream.close();
-			//====================================================================
+			//-----------------------------------------------------------
 			//Check findUserOrbitEph output against its pre-determined standard
-			//====================================================================
+			//-----------------------------------------------------------
 			testFramework.assert( testFramework.fileEqualTest( findUserTestOutput, findUserTestInput, 0), "findUserOrbitEph output does not match its regressive standard", __LINE__ );
 			return testFramework.countFails();
 		}
 
-/* =========================================================================================================================
-	Test to assure the quality of GPSEphemerisStore class member findNearOrbitEph()
-	findNearOrbitEph finds the ephemeris with the HOW time closest to the time t, i.e
-	with the smalles fabs(t-HOW), but still within the fit interval
+//==========================================================================================================================
+//	Test to assure the quality of GPSEphemerisStore class member findNearOrbitEph()
+//	findNearOrbitEph finds the ephemeris with the HOW time closest to the time t, i.e
+//	with the smalles fabs(t-HOW), but still within the fit interval
 
-	This test makes sure that exceptions are thrown if there is no ephemeris data
-	for the given PRN and also that an exception is thrown if there is no data for
-	the PRN at the given time. Store is then cleared and the epeheris data is readded
-	for output purposes.
+//	This test makes sure that exceptions are thrown if there is no ephemeris data
+//	for the given PRN and also that an exception is thrown if there is no data for
+//	the PRN at the given time. Store is then cleared and the epeheris data is readded
+//	for output purposes.
 
-	For further inspection of the find, please view findNearTest.txt
-========================================================================================================================= */
+//	For further inspection of the find, please view findNearTest.txt
+//==========================================================================================================================
 
 
 
@@ -1112,30 +1112,30 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 
 			try
 			{
-				//====================================================================
+				//-----------------------------------------------------------
 				//Check that a missing satID (too small) yields a thrown error
-				//====================================================================
+				//-----------------------------------------------------------
 				try {Store.findNearOrbitEph(sid0,ComTime); testFramework.assert(false, "findNearOrbitEph did not throw an exception when it should have", __LINE__);}
 				catch (InvalidRequest& e) {testFramework.assert(true, "sedIdentifier", __LINE__);}
 				catch (...) {testFramework.assert(false, "findNearOrbitEph threw an unexpected exception", __LINE__);}
 
-				//====================================================================
+				//-----------------------------------------------------------
 				//Check that a missing satID (too big) yields a thrown error
-				//====================================================================
+				//-----------------------------------------------------------
 				try {Store.findNearOrbitEph(sid33,ComTime); testFramework.assert(false, "findNearOrbitEph did not throw an exception when it should have", __LINE__);}
 				catch (InvalidRequest& e) {testFramework.assert(true, "sedIdentifier", __LINE__);}
 				catch (...) {testFramework.assert(false, "findNearOrbitEph threw an unexpected exception", __LINE__);}
 
-				//====================================================================
+				//-----------------------------------------------------------
 				//Check that an invalid time yields a thrown error
-				//====================================================================
+				//-----------------------------------------------------------
 				try {Store.findNearOrbitEph(sid1,CommonTime::END_OF_TIME); testFramework.assert(false, "findNearOrbitEph did not throw an exception when it should have", __LINE__);}
 				catch (InvalidRequest& e) {testFramework.assert(true, "sedIdentifier", __LINE__);}
 				catch (...) {testFramework.assert(false, "findNearOrbitEph threw an unexpected exception", __LINE__);}
 
-				//====================================================================
+				//-----------------------------------------------------------
 				//Verify that for ideal conditions findUserOrbitEph runs
-				//====================================================================
+				//-----------------------------------------------------------
 				try {Store.findNearOrbitEph(sid1, ComTime); testFramework.assert(true, "sedIdentifier", __LINE__);}
 				catch (Exception& e) {cout << "Caught Exception: " << e << endl; testFramework.assert(false, "findUserOrbitEph threw an exception when it should not have", __LINE__);}
 				catch (...) {testFramework.assert(false, "findUserOrbitEph threw an exception when it should not have", __LINE__);}
@@ -1159,22 +1159,22 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 
 			findNearTestOutputStream.close();
 
-			//====================================================================
+			//-----------------------------------------------------------
 			//Check findNearOrbitEph output against its pre-determined standard
-			//====================================================================
+			//-----------------------------------------------------------
 			testFramework.assert( testFramework.fileEqualTest( findNearTestOutput, findNearTestInput, 0), "findNearOrbitEph output does not match its regressive standard", __LINE__ );
 			return testFramework.countFails();
 		}
 
 
 
-/* =========================================================================================================================
-	Test to assure the quality of GPSEphemerisStore class member addToList()
+//==========================================================================================================================
+//	Test to assure the quality of GPSEphemerisStore class member addToList()
 
-	This test creats a list of GPSEphemeris and then adds all of the ephemeris
-	members to that list.  After that of the List and Store are checked to be
-	equal.
-========================================================================================================================= */
+//	This test creats a list of GPSEphemeris and then adds all of the ephemeris
+//	members to that list.  After that of the List and Store are checked to be
+//	equal.
+//==========================================================================================================================
 
 		int addToListTest (void)
 		{
@@ -1208,9 +1208,9 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 			}
 			try
 			{
-				//====================================================================================
+				//-----------------------------------------------------------
 				//Assert that the number of added members equals the size of Store (all members added)
-				//====================================================================================
+				//-----------------------------------------------------------
 				testFramework.assert(Store.gpstk::OrbitEphStore::size() == GStore.gpstk::OrbitEphStore::size(), "The added entries are not reflected in the GPSEphemerisStore", __LINE__ );
 
 				testFramework.assert(Store.gpstk::OrbitEphStore::size() == numberOfEntries, "The total number of entries is not what is expected", __LINE__ );
@@ -1228,9 +1228,9 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 			return testFramework.countFails();
 		}
 
-/* =========================================================================================================================
-	Initialize Test Data Filenames
-========================================================================================================================= */
+//==========================================================================================================================
+//	Initialize Test Data Filenames
+//==========================================================================================================================
 
 		void init( void )
 		{

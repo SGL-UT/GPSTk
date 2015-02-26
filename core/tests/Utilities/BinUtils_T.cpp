@@ -487,7 +487,6 @@ class BinUtils_T
  		
  		failMesg = "The checksum for a single word char was not computed correctly";
 		char xc = gpstk::BinUtils::xorChecksum<char>("7");
-		testFramework.setFailMessage(failMesg, __LINE__);
 		testFramework.assert(xc == '7', failMesg, __LINE__);
 
 		char xc1 = gpstk::BinUtils::xorChecksum<char>("Bc");
