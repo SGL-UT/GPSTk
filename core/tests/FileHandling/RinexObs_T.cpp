@@ -161,6 +161,11 @@ int RinexObs_T :: headerExceptionTest( void )
 {
 
     TestUtil test1( "RinexObsStream", "dump", __FILE__, __LINE__ );
+
+    std::string msg_test_desc  = "RinexObsStream, headerExceptionTest";
+    std::string msg_false_pass = ", threw the wrong number of exceptions.";
+    std::string msg_fail       = ", threw an unexpected exception.";
+    
     try
     {
 
@@ -235,12 +240,11 @@ int RinexObs_T :: headerExceptionTest( void )
         ilh.dump( dump );
         gpstk::DisplayExtendedRinexObsTypes( dump );
 
-        test1.assert( 39 == RinexObsFileh.NumberHeaderRecordsToBeWritten() );
+        test1.assert( 39 == RinexObsFileh.NumberHeaderRecordsToBeWritten(), msg_test_desc + msg_false_pass, __LINE__ );
     }
     catch(...)
     {
-        test1.fail();
-        test1.print();
+        test1.assert( false, msg_test_desc + msg_fail, __LINE__ );
     }
 
     return( test1.countFails() );
@@ -262,6 +266,10 @@ int RinexObs_T :: hardCodeTest( void )
 
     TestUtil test2( "RinexObsStream", "dump", __FILE__, __LINE__ );
 
+    std::string msg_test_desc   = "RinexObsStream, read write test, comparing input file and output file";
+    std::string msg_fail_equal  = ", input and output do not match.";
+    std::string msg_fail_except = ", threw an unexpected exception.";
+
     try
     {
         gpstk::RinexObsStream RinexObsFile( dataRinexObsFile );
@@ -282,12 +290,11 @@ int RinexObs_T :: hardCodeTest( void )
         RinexObsFileh.dump( dump );
 
         files_equal = test2.fileEqualTest( dataRinexObsFile, dataTestOutput2, num_lines_skip );
-        test2.assert( files_equal );
+        test2.assert( files_equal, msg_test_desc + msg_fail_equal, __LINE__ );
     }
     catch(...)
     {
-        test2.fail();
-        test2.print();
+      test2.assert( false, msg_test_desc + msg_fail_except, __LINE__ );
     }
 
      return( test2.countFails() );
@@ -302,8 +309,12 @@ int RinexObs_T :: dataExceptionsTest( void )
 
     TestUtil test3( "RinexObsStream", "dump", __FILE__, __LINE__ );
 
+    std::string msg_test_desc   = "RinexObsStream, test various gpstk exception throws, including BadEpochLine and BadEpochFlag";
+    std::string msg_fail_throw  = ", not all gpstk exceptions were thrown as expected.";
+    std::string msg_fail_except = ", threw an unexpected exception.";
+
     try
-      {
+    {
         gpstk::RinexObsStream BadEpochLine( dataBadEpochLine );
         gpstk::RinexObsStream BadEpochFlag( dataBadEpochFlag );
         gpstk::RinexObsStream BadLineSize( dataBadLineSize );
@@ -315,29 +326,27 @@ int RinexObs_T :: dataExceptionsTest( void )
         gpstk::RinexObsData InvalidTimeFormatd;
 
         while( BadEpochLine >> BadEpochLined )
-          {
+        {
             out << BadEpochLined;
-          }
+        }
         while( BadEpochFlag >> BadEpochFlagd )
-          {
+        {
             out << BadEpochFlagd;
-          }
+        }
         while( BadLineSize >> BadLineSized )
-          {
+        {
             out << BadLineSized;
-          }
+        }
         while( InvalidTimeFormat >> InvalidTimeFormatd )
-          {
+        {
             out << InvalidTimeFormatd;
-          }
-        test3.pass();
-        test3.print();
-      }
+        }
+        test3.assert( true, msg_test_desc + msg_fail_throw, __LINE__ );
+    }
     catch(...)
-      {
-        test3.fail();
-        test3.print();
-      }
+    {
+        test3.assert( false, msg_test_desc + msg_fail_except, __LINE__ );
+    }
 
     return( test3.countFails() );
 
@@ -352,6 +361,8 @@ int RinexObs_T :: filterOperatorsTest( void )
 
     TestUtil test4( "RinexObsStream", "open", __FILE__, __LINE__ );
 
+    std::string msg_test_desc = "";
+    
     try
     {
         gpstk::RinexObsStream FilterStream1( dataFilterTest1 );
@@ -398,30 +409,26 @@ int RinexObs_T :: filterOperatorsTest( void )
         gpstk::RinexObsDataOperatorLessThanFull( merged.obsSet );
         out << merged.theHeader;
 
-        //----------------------------------------
         gpstk::RinexObsDataOperatorEqualsSimple EqualsSimple;
-        test4.assert( EqualsSimple( FilterData1, FilterData1 ) );
+        msg_test_desc = "RinexObsDataOperatorEqualsSimple( FilterData1, FilterData1 ), should evaluate as true";
+        test4.assert( EqualsSimple( FilterData1, FilterData1 ), msg_test_desc, __LINE__ );
 
-        //----------------------------------------
         gpstk::RinexObsDataOperatorLessThanSimple LessThanSimple;
-        test4.next();
-        test4.assert( !LessThanSimple( FilterData1, FilterData1 ) );
+        msg_test_desc = "RinexObsDataOperatorLessThanSimple( FilterData1, FilterData1 ) should evaluated as false";
+        test4.assert( !LessThanSimple( FilterData1, FilterData1 ), msg_test_desc, __LINE__ );
 
-        //----------------------------------------
-        //----------------------------------------
         gpstk::RinexObsDataOperatorLessThanFull LessThanFull( merged.obsSet );
-
-        test4.next();
-        test4.assert( !LessThanFull( FilterData1, FilterData1 ) );
-
-        test4.next();
-        test4.assert( !LessThanFull( FilterData1, FilterData2 ) );
+        msg_test_desc = "RinexObsDataOperator LessThanFull( FilterData1, FilterData1 ) should evaluate as false ";
+        test4.assert( !LessThanFull( FilterData1, FilterData1 ) , msg_test_desc, __LINE__ );
+        
+        msg_test_desc = " RinexObsDataOperator LessThanFull( FilterData1, FilterData2 ) should evaluate as false ";
+        test4.assert( !LessThanFull( FilterData1, FilterData2 ) , msg_test_desc, __LINE__ );
 
     }
     catch(...)
     {
-        test4.fail();
-        test4.print();
+        msg_test_desc = "One or more of the tests for RinexObsDataOperator LessThanFull threw an exception when it should not have";
+        test4.assert( false, msg_test_desc, __LINE__ );
     }
 
     return( test4.countFails() );
