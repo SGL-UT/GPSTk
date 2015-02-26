@@ -37,7 +37,6 @@
 #include "RACRotation.hpp"
 #include "Xvt.hpp"
 #include "Triple.hpp"
-//#include "icd_200_constants.hpp" //This will need to be replaced
 #include "GNSSconstants.hpp"
 #include "GPS_URA.hpp"
 #include "Position.hpp"
@@ -122,7 +121,7 @@ class RACRotation_T
    			testFramework.assert(0 == rotatedXYZ[1], failMesg, __LINE__);
 
 			failMesg = "Was the Z value rotated properly?";
-   			testFramework.assert(1 == rotatedXYZ[2]), failMesg, __LINE__;	
+   			testFramework.assert(1 == rotatedXYZ[2], failMesg, __LINE__);	
 
 			return testFramework.countFails();   
 		}
