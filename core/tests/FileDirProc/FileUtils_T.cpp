@@ -38,6 +38,9 @@
 #include "FileUtils.hpp"
 #include <iostream>
 #include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 using namespace std;
 using namespace gpstk;
@@ -95,14 +98,14 @@ void FileUtils_T :: init()
 //---------------------------------------------------------------------------
 void FileUtils_T :: cleanup()
 {
-      // remote files
+      // remove files
    vector<string>::reverse_iterator  fileIter = filesToRemove.rbegin();
    for ( ; fileIter != filesToRemove.rend(); ++fileIter)
    {
       chmod(fileIter->c_str(), 0644);
       unlink(fileIter->c_str() );
    }
-      // remote directories
+      // remove directories
    vector<string>::reverse_iterator  dirIter = dirsToRemove.rbegin();
    for ( ; dirIter != dirsToRemove.rend(); ++dirIter)
    {
