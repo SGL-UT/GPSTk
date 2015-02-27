@@ -16,14 +16,14 @@
 # Qué hora es? Dónde estamos? Y dónde vamos?
 #----------------------------------------
  
-build_date=`date +"%Y%m%d"`
-build_time=`date +"%Y%m%d_%H%M%S"`
-build_host=`hostname`
-build_who=`whoami`
+build_date=$(date +"%Y%m%d")
+build_time=$(date +"%Y%m%d_%H%M%S")
+build_host=$(hostname)
+build_who=$(whoami)
 
 gpstk_root=$PWD
 python_root=$gpstk_root/swig
-python_exe=`which python2.7`
+python_exe=$(which python2.7)
 
 system_install_prefix=/usr/local
 system_gpstk_install=/usr/local/gpstk
@@ -40,13 +40,13 @@ user_build_root=$gpstk_root/build
 #     Default = all of them!
 #----------------------------------------
 
-case `uname` in
+case $(uname) in
     Linux)
-        last_core_index=`cat /proc/cpuinfo | grep "processor" | awk '{print $3}' | tail -1`
-        num_cores=`echo "$last_core_index + 1" | bc`
+        last_core_index=$(cat /proc/cpuinfo | grep "processor" | awk '{print $3}' | tail -1)
+        num_cores=$(echo "$last_core_index + 1" | bc)
         ;;
     Darwin)
-        num_cores=`sysctl -n hw.ncpu`
+        num_cores=$(sysctl -n hw.ncpu)
         ;;
     *)
         num_cores=1
@@ -253,13 +253,13 @@ num_files_ext=0
 num_files_core=0
 
 if [ "$build_ext" ]; then
-    num_files_ext=`find $gpstk_root/ext/lib/ -type f -name "*.cpp" | wc -l`
+    num_files_ext=$(find $gpstk_root/ext/lib/ -type f -name "*.cpp" | wc -l)
     if [ "$num_files_ext" -eq 0 ]; then
         echo "$0: ERROR: $gpstk_root/ext/lib contains no *.cpp source files. Try building without /ext. See help: $0 -h"
         exit 1
     fi
 else
-    num_files_core=`find $gpstk_root/core/lib/ -type f -name "*.cpp" | wc -l`
+    num_files_core=$(find $gpstk_root/core/lib/ -type f -name "*.cpp" | wc -l)
     if [ "$num_files_core" -eq 0 ]; then
         echo "$0: ERROR: $gpstk_root/core/lib contains no *.cpp source files. Try building /ext. See help: $0 -h"
         exit 1
@@ -448,9 +448,9 @@ if [ "$test_switch" ]; then
     # summary results
     #----------------------------------------
 
-    test_count=`cat $ctest_log_save | wc -l`
-    tests_passed=`cat $ctest_log_save | grep "failBit=0" | wc -l`
-    tests_failed=`cat $ctest_log_save | grep "failBit=1" | wc -l`
+    test_count=$(cat $ctest_log_save | wc -l)
+    tests_passed=$(cat $ctest_log_save | grep "failBit=0" | wc -l)
+    tests_failed=$(cat $ctest_log_save | grep "failBit=1" | wc -l)
 
     echo ""
     echo "------------------------------------------------------------"
@@ -471,6 +471,7 @@ if [ "$test_switch" ]; then
     keyword_list+=("TimeConverters")
     keyword_list+=("TimeString")
     keyword_list+=("TimeTag")
+    keyword_list+=("TimeRange")
     keyword_list+=("CommonTime")
     keyword_list+=("CivilTime")
     keyword_list+=("ANSITime")
@@ -492,6 +493,7 @@ if [ "$test_switch" ]; then
     keyword_list+=("Store")
     keyword_list+=("Position")
     keyword_list+=("Xvt")
+    keyword_list+=("WxObsMap")
     keyword_list+=("ObsID")
     keyword_list+=("SatID")
     keyword_list+=("Matrix")
@@ -520,9 +522,9 @@ if [ "$test_switch" ]; then
 
     for keyword in "${keyword_list[@]}"; do
 
-        tests_run=`cat $ctest_log_save | grep -i "$keyword" | wc -l`
-        tests_passed=`cat $ctest_log_save | grep -i "$keyword" | grep "failBit=0" | wc -l`
-        tests_failed=`cat $ctest_log_save | grep -i "$keyword" | grep "failBit=1" | wc -l`
+        tests_run=$(cat $ctest_log_save | grep -i "$keyword" | wc -l)
+        tests_passed=$(cat $ctest_log_save | grep -i "$keyword" | grep "failBit=0" | wc -l)
+        tests_failed=$(cat $ctest_log_save | grep -i "$keyword" | grep "failBit=1" | wc -l)
         percent_pass=$(awk -v r=$tests_run -v p=$tests_passed 'BEGIN { print (100*(p/r)) }')
 
         printf "$myformat" "$keyword" "$tests_run" "$tests_passed" "$tests_failed" "$percent_pass"
@@ -654,9 +656,9 @@ echo "$0: Paths: Testing library load paths..."
 echo ""
 echo ""
 
-ldd_path_list=`ldconfig -v 2>/dev/null | grep -v ^$'\t' | sed -e 's/://g'`
-ld_lib_path_list=`echo $LD_LIBRARY_PATH`
-gpstk_install_path_test=`echo "$ldd_path_list $ld_lib_path_list" | grep -o "$gpstk_install"`
+ldd_path_list=$(ldconfig -v 2>/dev/null | grep -v ^$'\t' | sed -e 's/://g')
+ld_lib_path_list=$(echo $LD_LIBRARY_PATH)
+gpstk_install_path_test=$(echo "$ldd_path_list $ld_lib_path_list" | grep -o "$gpstk_install")
 
 if [ -z "$gpstk_install_path_test" ]; then
 
@@ -709,13 +711,13 @@ fi
 if [ "$build_python" ]; then
 
     # get the contents of sys.path, the python module search path
-    sys_path_raw=`$python_exe -c 'import sys;print(sys.path)'`
+    sys_path_raw=$($python_exe -c 'import sys;print(sys.path)')
 
     # filter the square brackets, commas, and quotes and put one path on each line
-    sys_path_list=`echo $sys_path_raw | sed 's/\(\[\|\]\)//g' | sed "s/'//g" | sed -e 's/,/ /g'`
+    sys_path_list=$(echo $sys_path_raw | sed 's/\(\[\|\]\)//g' | sed "s/'//g" | sed -e 's/,/ /g')
 
     # test the sys_path_list to see if it contains the path where this script installed GPSTk python module
-    sys_path_test=`echo "$sys_path_list" | grep -o "$python_install"`
+    sys_path_test=$(echo "$sys_path_list" | grep -o "$python_install")
 
     # if the path is in sys.path, then sys_path_test will NOT be empty
     if [ -z "$sys_path_test" ]; then
