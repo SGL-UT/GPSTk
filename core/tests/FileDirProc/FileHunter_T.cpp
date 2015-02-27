@@ -38,7 +38,9 @@
 #include "YDSTime.hpp"
 #include "TestUtil.hpp"
 #include <iostream>
-#include <algorithm>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 using namespace std;
 using namespace gpstk;
@@ -47,13 +49,13 @@ class FileHunter_T
 {
 public: 
 
-         // constructor
-		FileHunter_T() { init(); }
+      // constructor
+	FileHunter_T() { init(); }
 
-         // desructor
-		~FileHunter_T() { cleanup(); }
+      // desructor
+	~FileHunter_T() { cleanup(); }
 
-      // initialize tests
+      // initialize tests, throws on failure
    void init();
 
       // remove file system objectst created during tests
@@ -77,13 +79,24 @@ public:
 
 private:
 
+      // @param path Full path of the directory to create
+      // @note an exception will be thrown on failure
+   void newDir(const string& path);
+
+      // @param path Full path of the directory to create
+      // @note an exception will be thrown on failure
+   void newFile(const string& path);
+
+   bool contains(const vector<string>& vec, const string& str);
+
       // emit a vector of strings to standard output
       // @param strs vector of strings to emit 
    void dump(const vector<string>& strs);
 
-   string  dataFilePath;
-   string  tempFilePath;
-   string  testPrefix;
+   string  tempFilePath;  // includes trailing slash
+
+   vector<string>  dirsToRemove;
+   vector<string>  filesToRemove;
 
 }; // class FileHunter_T
 
@@ -91,21 +104,115 @@ private:
 //---------------------------------------------------------------------------
 void FileHunter_T :: init()
 {
-    TestUtil  tester;
+   TestUtil  tester;
 
-    dataFilePath = tester.getDataPath() + getFileSep()
-                 + "test_input_filehunter" + getFileSep();
+   tempFilePath = tester.getTempPath() + getFileSep() + "test_output_filehunter";
 
-    tempFilePath = tester.getTempPath();
+      // create directories and files for the find() tests
+   newDir(tempFilePath);
 
-    testPrefix = "test_output_filehunter_";
+   tempFilePath += getFileSep();  // ensure trailling slash
+
+   newFile(tempFilePath + "sample.data");
+   newFile(tempFilePath + "prn_08.data");
+   newFile(tempFilePath + "prn_16.data");
+   newFile(tempFilePath + "2001_123.data");
+   newFile(tempFilePath + "2001_234.data");
+   newFile(tempFilePath + "2002_123.data");
+   newFile(tempFilePath + "2002_234.data");
+   newFile(tempFilePath + "2001_123_08.data");
+   newFile(tempFilePath + "2001_234_08.data");
+   newFile(tempFilePath + "2002_123_16.data");
+   newFile(tempFilePath + "2002_234_16.data");
+   newDir(tempFilePath + "2003");
+   newDir(tempFilePath + "2004");
+   newFile(tempFilePath + "2003" + getFileSep() + "123_08.data");
+   newFile(tempFilePath + "2003" + getFileSep() + "123_16.data");
+   newFile(tempFilePath + "2003" + getFileSep() + "234_08.data");
+   newFile(tempFilePath + "2003" + getFileSep() + "234_16.data");
+   newFile(tempFilePath + "2004" + getFileSep() + "123_08.data");
+   newFile(tempFilePath + "2004" + getFileSep() + "123_16.data");
+   newFile(tempFilePath + "2004" + getFileSep() + "234_08.data");
+   newFile(tempFilePath + "2004" + getFileSep() + "234_16.data");
+   newFile(tempFilePath + "2003" + getFileSep() + "2003_123.data");
+   newFile(tempFilePath + "2003" + getFileSep() + "2003_234.data");
+   newFile(tempFilePath + "2004" + getFileSep() + "2004_123.data");
+   newFile(tempFilePath + "2004" + getFileSep() + "2004_234.data");
 }
+
+
+//---------------------------------------------------------------------------
+void FileHunter_T :: newDir(const string& path)
+{
+   if (mkdir(path.c_str(), 0755) != 0)
+   {
+      string  exc("failed to create test directory: " + path);
+      throw(exc);
+   }
+   else
+   {
+      dirsToRemove.push_back(path);
+   }
+}
+
+
+//---------------------------------------------------------------------------
+void FileHunter_T :: newFile(const string& path)
+{
+   ofstream  ofs(path.c_str(), ios::out);
+   if (!ofs)
+   {
+      string  exc("failed to create test file: " + path);
+      throw(exc);
+   }
+   else
+   {
+      filesToRemove.push_back(path);
+   }
+}
+
+
+//---------------------------------------------------------------------------
+bool FileHunter_T :: contains(const vector<string>& vec, const string& str)
+{
+   vector<string>::const_iterator  i = vec.begin();
+   for ( ; i != vec.end(); ++i)
+   {
+      if (0 == str.compare(*i) )
+      {
+         return true;
+      }
+   }
+   return false;
+}
+
+
+//---------------------------------------------------------------------------
+void FileHunter_T :: dump(const vector<string>& strs)
+{
+   cout << "  FILE DUMP:" << endl;
+   vector<string>::const_iterator  strIter = strs.begin();
+   for ( ; strIter != strs.end(); ++ strIter)
+      cout << "    " << *strIter << endl;
+}
+
 
 
 //---------------------------------------------------------------------------
 void FileHunter_T :: cleanup()
 {
-   // empty
+      // remove files
+   vector<string>::reverse_iterator  fileIter = filesToRemove.rbegin();
+   for ( ; fileIter != filesToRemove.rend(); ++fileIter)
+   {
+      unlink(fileIter->c_str() );
+   }
+      // remove directories
+   vector<string>::reverse_iterator  dirIter = dirsToRemove.rbegin();
+   for ( ; dirIter != dirsToRemove.rend(); ++dirIter)
+   {
+      rmdir(dirIter->c_str() );
+   }
 }
 
 
@@ -160,7 +267,8 @@ int FileHunter_T :: testInitialization()
 
    try   // absolute path file spec
    {
-      FileHunter  hunter(dataFilePath + "dir" + getFileSep() + "spec_%p");
+      FileHunter  hunter(tempFilePath + "dir"
+                        + getFileSep() + "spec_%p");
       tester.assert( true, "absolute path file spec", __LINE__ );
    }
    catch (...)
@@ -170,7 +278,8 @@ int FileHunter_T :: testInitialization()
 
    try   // multiple file spec type file spec
    {
-      FileHunter  hunter(dataFilePath + "dir" + getFileSep() + "spec_%p_%04Y_%03j_%05s");
+      FileHunter  hunter(tempFilePath + "dir"
+                        + getFileSep() + "spec_%p_%04Y_%03j_%05s");
       tester.assert( true, "multiple file spec type file spec", __LINE__ );
    }
    catch (...)
@@ -180,7 +289,8 @@ int FileHunter_T :: testInitialization()
 
    try   // multi-directory file spec
    {
-      FileHunter  hunter(dataFilePath + "dir_%n" + getFileSep() + "spec_%p");
+      FileHunter  hunter(tempFilePath + "dir_%n"
+                        + getFileSep() + "spec_%p");
       tester.assert( true, "multi-directory file spec", __LINE__ );
    }
    catch (...)
@@ -248,7 +358,8 @@ int FileHunter_T :: testNewHunt()
    try   // absolute path file spec
    {
       FileHunter  hunter("fixed_spec");
-      hunter.newHunt(dataFilePath + "dir" + getFileSep() + "spec_%p");
+      hunter.newHunt(tempFilePath + "2001"
+                    + getFileSep() + "spec_%p");
       tester.assert( true, "absolute path file spec", __LINE__ );
    }
    catch (...)
@@ -259,7 +370,8 @@ int FileHunter_T :: testNewHunt()
    try   // multiple file spec type file spec
    {
       FileHunter  hunter("fixed_spec");
-      hunter.newHunt(dataFilePath + "dir" + getFileSep() + "spec_%p_%04Y_%03j_%05s");
+      hunter.newHunt(tempFilePath + "2001"
+                    + getFileSep() + "spec_%p_%04Y_%03j_%05s");
       tester.assert( true, "multiple file spec type file spec", __LINE__ );
    }
    catch (...)
@@ -270,7 +382,8 @@ int FileHunter_T :: testNewHunt()
    try   // multi-directory file spec
    {
       FileHunter  hunter("fixed_spec");
-      hunter.newHunt(dataFilePath + "dir_%n" + getFileSep() + "spec_%p");
+      hunter.newHunt(tempFilePath + "2001_%n"
+                    + getFileSep() + "spec_%p");
       tester.assert( true, "multi-directory file spec", __LINE__ );
    }
    catch (...)
@@ -414,7 +527,7 @@ int FileHunter_T :: testFind()
 
    try   // fixed file spec (present)
    {
-      string  filename(dataFilePath + "sample.data");
+      string  filename(tempFilePath + "sample.data");
       FileHunter  hunter(filename);
       vector<string>  files = hunter.find();
       tester.assert( ( (files.size() == 1) && (0 == filename.compare(files[0]) ) ),
@@ -427,7 +540,7 @@ int FileHunter_T :: testFind()
 
    try   // fixed file spec (absent)
    {
-      string  filename(dataFilePath + "missing.data");
+      string  filename(tempFilePath + "missing.data");
       FileHunter  hunter(filename);
       vector<string>  files = hunter.find();
       tester.assert( (files.size() == 0),
@@ -440,12 +553,12 @@ int FileHunter_T :: testFind()
 
    try   // single file spec type (present)
    {
-      string  filename(dataFilePath + "prn_%02p.conf");
+      string  filename(tempFilePath + "prn_%02p.data");
       FileHunter  hunter(filename);
       vector<string>  files = hunter.find();
       tester.assert( (  (files.size() == 2)
-                     && (count(files.begin(), files.end(), dataFilePath + "prn_12.conf") > 0)
-                     && (count(files.begin(), files.end(), dataFilePath + "prn_24.conf") > 0) ),
+                     && (contains(files, tempFilePath + "prn_08.data") > 0)
+                     && (contains(files, tempFilePath + "prn_16.data") > 0) ),
                      "single file spec type (present)", __LINE__ );
    }
    catch (...)
@@ -455,7 +568,7 @@ int FileHunter_T :: testFind()
 
    try   // single file spec type (absent)
    {
-      string  filename(dataFilePath + "prn_%02p.data");
+      string  filename(tempFilePath + "prn_%02p.missing");
       FileHunter  hunter(filename);
       vector<string>  files = hunter.find();
       tester.assert( (files.size() == 0),
@@ -468,14 +581,31 @@ int FileHunter_T :: testFind()
 
    try   //  multiple file spec types (present)
    {
-      string  filename(dataFilePath + "%04Y_%03j.data");
+      string  filename(tempFilePath + "%04Y_%03j.data");
       FileHunter  hunter(filename);
       vector<string>  files = hunter.find();
       tester.assert( (  (files.size() == 4)
-                     && (count(files.begin(), files.end(), dataFilePath + "2001_123.data") > 0)
-                     && (count(files.begin(), files.end(), dataFilePath + "2001_234.data") > 0)
-                     && (count(files.begin(), files.end(), dataFilePath + "2002_123.data") > 0)
-                     && (count(files.begin(), files.end(), dataFilePath + "2002_234.data") > 0) ),
+                     && (contains(files, tempFilePath + "2001_123.data") > 0)
+                     && (contains(files, tempFilePath + "2001_234.data") > 0)
+                     && (contains(files, tempFilePath + "2002_123.data") > 0)
+                     && (contains(files, tempFilePath + "2002_234.data") > 0) ),
+                     "multiple file spec types (present)", __LINE__ );
+   }
+   catch (...)
+   {
+      tester.assert( false, "unexpected exception", __LINE__ );
+   }
+
+   try   //  multiple file spec types (present)
+   {
+      string  filename(tempFilePath + "%04Y_%03j_%02p.data");
+      FileHunter  hunter(filename);
+      vector<string>  files = hunter.find();
+      tester.assert( (  (files.size() == 4)
+                     && (contains(files, tempFilePath + "2001_123_08.data") > 0)
+                     && (contains(files, tempFilePath + "2001_234_16.data") > 0)
+                     && (contains(files, tempFilePath + "2002_123_08.data") > 0)
+                     && (contains(files, tempFilePath + "2002_234_16.data") > 0) ),
                      "multiple file spec types (present)", __LINE__ );
    }
    catch (...)
@@ -485,7 +615,7 @@ int FileHunter_T :: testFind()
 
    try   // multiple file spec types (absent)
    {
-      string  filename(dataFilePath + "%04Y_%03j.conf");
+      string  filename(tempFilePath + "%02p_%04Y_%03j.data");
       FileHunter  hunter(filename);
       vector<string>  files = hunter.find();
       tester.assert( (files.size() == 0),
@@ -498,18 +628,19 @@ int FileHunter_T :: testFind()
 
    try   //  multi-directory file spec (present)
    {
-      string  filename(dataFilePath + "%04Y" + getFileSep() + "%03j_%02p.data");
+      string  filename(tempFilePath + "%04Y"
+                      + getFileSep() + "%03j_%02p.data");
       FileHunter  hunter(filename);
       vector<string>  files = hunter.find();
       tester.assert( (  (files.size() == 8)
-                     && (count(files.begin(), files.end(), dataFilePath + "2003" + getFileSep() + "100_11.data") > 0)
-                     && (count(files.begin(), files.end(), dataFilePath + "2003" + getFileSep() + "100_22.data") > 0)
-                     && (count(files.begin(), files.end(), dataFilePath + "2003" + getFileSep() + "200_11.data") > 0)
-                     && (count(files.begin(), files.end(), dataFilePath + "2003" + getFileSep() + "200_22.data") > 0)
-                     && (count(files.begin(), files.end(), dataFilePath + "2004" + getFileSep() + "100_11.data") > 0)
-                     && (count(files.begin(), files.end(), dataFilePath + "2004" + getFileSep() + "100_22.data") > 0)
-                     && (count(files.begin(), files.end(), dataFilePath + "2004" + getFileSep() + "200_11.data") > 0)
-                     && (count(files.begin(), files.end(), dataFilePath + "2004" + getFileSep() + "200_22.data") > 0) ),
+                     && (contains(files, tempFilePath + "2003" + getFileSep() + "123_08.data") > 0)
+                     && (contains(files, tempFilePath + "2003" + getFileSep() + "123_16.data") > 0)
+                     && (contains(files, tempFilePath + "2003" + getFileSep() + "234_08.data") > 0)
+                     && (contains(files, tempFilePath + "2003" + getFileSep() + "234_16.data") > 0)
+                     && (contains(files, tempFilePath + "2004" + getFileSep() + "123_08.data") > 0)
+                     && (contains(files, tempFilePath + "2004" + getFileSep() + "234_16.data") > 0)
+                     && (contains(files, tempFilePath + "2004" + getFileSep() + "123_08.data") > 0)
+                     && (contains(files, tempFilePath + "2004" + getFileSep() + "234_16.data") > 0) ),
                      "multi-directory file spec (present)", __LINE__ );
    }
    catch (...)
@@ -519,7 +650,8 @@ int FileHunter_T :: testFind()
 
    try   // multi-directory file spec (absent)
    {
-      string  filename(dataFilePath + "%04Y" + getFileSep() + "%02p.%03j.data");
+      string  filename(tempFilePath + "%04Y"
+                      + getFileSep() + "%02p.%03j.data");
       FileHunter  hunter(filename);
       vector<string>  files = hunter.find();
       tester.assert( (files.size() == 0),
@@ -532,17 +664,18 @@ int FileHunter_T :: testFind()
 
    try   // single-value filtering (file)
    {
-      string  filename(dataFilePath + "%04Y" + getFileSep() + "%03j_%02p.data");
+      string  filename(tempFilePath + "%04Y"
+                      + getFileSep() + "%03j_%02p.data");
       FileHunter  hunter(filename);
       std::vector<string>  toFilter;
-      toFilter.push_back("22");
+      toFilter.push_back("16");
       hunter.setFilter(FileSpec::prn, toFilter);
       vector<string>  files = hunter.find();
       tester.assert( (  (files.size() == 4)
-                     && (count(files.begin(), files.end(), dataFilePath + "2003" + getFileSep() + "100_22.data") > 0)
-                     && (count(files.begin(), files.end(), dataFilePath + "2003" + getFileSep() + "200_22.data") > 0)
-                     && (count(files.begin(), files.end(), dataFilePath + "2004" + getFileSep() + "100_22.data") > 0)
-                     && (count(files.begin(), files.end(), dataFilePath + "2004" + getFileSep() + "200_22.data") > 0) ),
+                     && (contains(files, tempFilePath + "2003" + getFileSep() + "123_16.data") > 0)
+                     && (contains(files, tempFilePath + "2003" + getFileSep() + "234_16.data") > 0)
+                     && (contains(files, tempFilePath + "2004" + getFileSep() + "123_16.data") > 0)
+                     && (contains(files, tempFilePath + "2004" + getFileSep() + "234_16.data") > 0) ),
                      "single-value filtering (file)", __LINE__ );
    }
    catch (...)
@@ -552,17 +685,18 @@ int FileHunter_T :: testFind()
 
    try   // single-value filtering (dir)
    {
-      string  filename(dataFilePath + "%04Y" + getFileSep() + "%03j_%02p.data");
+      string  filename(tempFilePath + "%04Y"
+                      + getFileSep() + "%03j_%02p.data");
       FileHunter  hunter(filename);
       std::vector<string>  toFilter;
       toFilter.push_back("2004");
       hunter.setFilter(FileSpec::year, toFilter);
       vector<string>  files = hunter.find();
       tester.assert( (  (files.size() == 4)
-                     && (count(files.begin(), files.end(), dataFilePath + "2004" + getFileSep() + "100_11.data") > 0)
-                     && (count(files.begin(), files.end(), dataFilePath + "2004" + getFileSep() + "100_22.data") > 0)
-                     && (count(files.begin(), files.end(), dataFilePath + "2004" + getFileSep() + "200_11.data") > 0)
-                     && (count(files.begin(), files.end(), dataFilePath + "2004" + getFileSep() + "200_22.data") > 0) ),
+                     && (contains(files, tempFilePath + "2004" + getFileSep() + "123_08.data") > 0)
+                     && (contains(files, tempFilePath + "2004" + getFileSep() + "123_16.data") > 0)
+                     && (contains(files, tempFilePath + "2004" + getFileSep() + "234_08.data") > 0)
+                     && (contains(files, tempFilePath + "2004" + getFileSep() + "234_16.data") > 0) ),
                      "single-value filtering (dir)", __LINE__ );
    }
    catch (...)
@@ -572,7 +706,8 @@ int FileHunter_T :: testFind()
 
    try   // single-value filtering (missing)
    {
-      string  filename(dataFilePath + "%04Y" + getFileSep() + "%03j_%02p.data");
+      string  filename(tempFilePath + "%04Y"
+                      + getFileSep() + "%03j_%02p.data");
       FileHunter  hunter(filename);
       std::vector<string>  toFilter;
       toFilter.push_back("2005");
@@ -588,18 +723,19 @@ int FileHunter_T :: testFind()
 
    try   // multiple-value filtering
    {
-      string  filename(dataFilePath + "%04Y" + getFileSep() + "%03j_%02p.data");
+      string  filename(tempFilePath + "%04Y"
+                      + getFileSep() + "%03j_%02p.data");
       FileHunter  hunter(filename);
       std::vector<string>  yearFilter;
       yearFilter.push_back("2004");
       hunter.setFilter(FileSpec::year, yearFilter);
       std::vector<string>  prnFilter;
-      prnFilter.push_back("22");
+      prnFilter.push_back("16");
       hunter.setFilter(FileSpec::prn, prnFilter);
       vector<string>  files = hunter.find();
       tester.assert( (  (files.size() == 2)
-                     && (count(files.begin(), files.end(), dataFilePath + "2004" + getFileSep() + "100_22.data") > 0)
-                     && (count(files.begin(), files.end(), dataFilePath + "2004" + getFileSep() + "200_22.data") > 0) ),
+                     && (contains(files, tempFilePath + "2004" + getFileSep() + "123_16.data") > 0)
+                     && (contains(files, tempFilePath + "2004" + getFileSep() + "234_16.data") > 0) ),
                      "multiple-value filtering", __LINE__ );
    }
    catch (...)
@@ -609,7 +745,8 @@ int FileHunter_T :: testFind()
 
    try   // time filtering
    {
-      string  filename(dataFilePath + "%04Y" + getFileSep() + "%04Y_%03j_%02p.data");
+      string  filename(tempFilePath + "%04Y"
+                      + getFileSep() + "%04Y_%03j_%02p.data");
       FileHunter  hunter(filename);
       vector<string>  files;
       CommonTime  minTime; 
@@ -665,7 +802,8 @@ int FileHunter_T :: testFind()
 
    try   // multi-dir time filtering
    {
-      string  filename(dataFilePath + "%04Y" + getFileSep() + "%03j_%02p.data");
+      string  filename(tempFilePath + "%04Y"
+                      + getFileSep() + "%03j_%02p.data");
       FileHunter  hunter(filename);
       vector<string>  files;
       CommonTime  minTime; 
@@ -720,16 +858,6 @@ int FileHunter_T :: testFind()
    }
 
    return tester.countFails();
-}
-
-
-//---------------------------------------------------------------------------
-void FileHunter_T :: dump(const vector<string>& strs)
-{
-   cout << "  FILE DUMP:" << endl;
-   vector<string>::const_iterator  strIter = strs.begin();
-   for ( ; strIter != strs.end(); ++ strIter)
-      cout << "    " << *strIter << endl;
 }
 
  
