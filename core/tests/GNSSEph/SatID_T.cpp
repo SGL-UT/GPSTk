@@ -126,7 +126,7 @@ class SatID_T
 
 
 //==========================================================================================================================
-//	asStringTest checks the output from SatID::dump meets its expectations
+//	asStringTest checks that a SatID object can be reported as a string
 //==========================================================================================================================
 	int asStringTest(void)
 	{
@@ -279,7 +279,7 @@ class SatID_T
 
 		testFramework.changeSourceMethod("OperatorRedirect");
 		//---------------------------------------------------------------------
-		//Does the >= Operator function?
+		//Does the << Operator function?
 		//---------------------------------------------------------------------
 
 		std::string outputString, compareString;
