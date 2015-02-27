@@ -66,8 +66,8 @@ class JulianDate_T
 		//---------------------------------------------------------------------
 		//Were the attributes set to expectation with the explicit constructor?
 		//---------------------------------------------------------------------
-		testFramework.assert(fabs(1350000 - Compare.jd) < eps,         "Explicit constructor did not set the jd value properly",   __LINE__);
-		testFramework.assert(TimeSystem(2) == Compare.getTimeSystem(), "Explicit constructor did not set the TimeSystem properly", __LINE__);
+		testFramework.assert(fabs((long double)1350000 - Compare.jd) < eps,  "Explicit constructor did not set the jd value properly",   __LINE__);
+		testFramework.assert(TimeSystem(2) == Compare.getTimeSystem(),       "Explicit constructor did not set the TimeSystem properly", __LINE__);
 
 
 		testFramework.changeSourceMethod("ConstructorCopy");
@@ -75,8 +75,8 @@ class JulianDate_T
 		//---------------------------------------------------------------------
 		//Were the attributes set to expectation with the copy constructor?
 		//---------------------------------------------------------------------
-		testFramework.assert(fabs(1350000 - Copy.jd) < eps,         "Copy constructor did not set the jd value properly",   __LINE__);
-		testFramework.assert(TimeSystem(2) == Copy.getTimeSystem(), "Copy constructor did not set the TimeSystem properly", __LINE__);
+		testFramework.assert(fabs((long double)1350000 - Copy.jd) < eps, "Copy constructor did not set the jd value properly",   __LINE__);
+		testFramework.assert(TimeSystem(2) == Copy.getTimeSystem(),      "Copy constructor did not set the TimeSystem properly", __LINE__);
 
 
 		testFramework.changeSourceMethod("OperatorSet");
@@ -85,8 +85,8 @@ class JulianDate_T
 		//---------------------------------------------------------------------
 		//Were the attributes set to expectation with the Set Operator?
 		//---------------------------------------------------------------------
-		testFramework.assert(fabs(1350000 - Assigned.jd) < eps,         "Set Operator did not set the jd value properly",   __LINE__);
-		testFramework.assert(TimeSystem(2) == Assigned.getTimeSystem(), "Set Operator did not set the TimeSystem properly", __LINE__);
+		testFramework.assert(fabs((long double)1350000 - Assigned.jd) < eps, "Set Operator did not set the jd value properly",   __LINE__);
+		testFramework.assert(TimeSystem(2) == Assigned.getTimeSystem(),      "Set Operator did not set the TimeSystem properly", __LINE__);
 
 		return testFramework.countFails();
 	}

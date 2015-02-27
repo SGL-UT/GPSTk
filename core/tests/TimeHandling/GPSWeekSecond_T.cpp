@@ -62,7 +62,7 @@ class GPSWeekSecond_T
 		//Were the attributes set to expectation with the explicit constructor?
 		//---------------------------------------------------------------------
 		testFramework.assert(1300 == Compare.week,                     "Explicit constructor did not set the week value properly", __LINE__);
-		testFramework.assert(fabs(13500 - Compare.sow) < eps,          "Explicit constructor did not set the sow value properly",  __LINE__);
+		testFramework.assert(fabs((double)13500 - Compare.sow) < eps,  "Explicit constructor did not set the sow value properly",  __LINE__);
 		testFramework.assert(TimeSystem(2) == Compare.getTimeSystem(), "Explicit constructor did not set the TimeSystem properly", __LINE__);
 
 
@@ -72,7 +72,7 @@ class GPSWeekSecond_T
 		//Were the attributes set to expectation with the copy constructor?
 		//---------------------------------------------------------------------
 		testFramework.assert(1300 == Copy.week,                     "Copy constructor did not set the week value properly", __LINE__);
-		testFramework.assert(fabs(13500 - Copy.sow) < eps,          "Copy constructor did not set the sow value properly",  __LINE__);
+		testFramework.assert(fabs((double)13500 - Copy.sow) < eps,  "Copy constructor did not set the sow value properly",  __LINE__);
 		testFramework.assert(TimeSystem(2) == Copy.getTimeSystem(), "Copy constructor did not set the TimeSystem properly", __LINE__);
 
 
@@ -83,7 +83,7 @@ class GPSWeekSecond_T
 		//Were the attributes set to expectation with the Set operator?
 		//---------------------------------------------------------------------
 		testFramework.assert(1300 == Assigned.week,                     "Set Operator did not set the week value properly", __LINE__);
-		testFramework.assert(fabs(13500 - Assigned.sow) < eps,          "Set Operator did not set the sow value properly",  __LINE__);
+		testFramework.assert(fabs((double)13500 - Assigned.sow) < eps,  "Set Operator did not set the sow value properly",  __LINE__);
 		testFramework.assert(TimeSystem(2) == Assigned.getTimeSystem(), "Set Operator did not set the TimeSystem properly", __LINE__);
 
 		return testFramework.countFails();
