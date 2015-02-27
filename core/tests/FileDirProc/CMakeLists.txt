@@ -4,9 +4,9 @@
 #target_link_libraries(FileFilter_T gpstk)
 #add_test(FileDirProc_FileFilter FileFilter_T)
 
-#add_executable(FileHunter_T FileHunter_T.cpp)
-#target_link_libraries(FileHunter_T gpstk)
-#add_test(FileDirProc_FileHunter FileHunter_T)
+add_executable(FileHunter_T FileHunter_T.cpp)
+target_link_libraries(FileHunter_T gpstk)
+add_test(FileDirProc_FileHunter FileHunter_T)
 
 add_executable(FileSpec_T FileSpec_T.cpp)
 target_link_libraries(FileSpec_T gpstk)
