@@ -1,2 +1,0 @@
-SubDir TOP CivilTime ;
-TestMain CivilTime/xCivilTime.tst : CivilTime/xCivilTimeM.cpp CivilTime/xCivilTime.cpp CivilTime/CivilTime.cpp ;
