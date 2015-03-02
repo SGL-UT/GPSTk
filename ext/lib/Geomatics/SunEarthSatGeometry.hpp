@@ -54,7 +54,8 @@ namespace gpstk
 {
    /// Given a Position, compute unit vectors in ECEF coordinates in the Up, East and
    /// North directions at that position. Use geodetic coordinates, i.e. 'up' is
-   /// perpendicular to the geoid, not from center of Earth (UpEastNorthGeocentric()).   /// Return the vectors in the form of a 3x3 Matrix<double>, this is in fact the
+   /// perpendicular to the geoid, not from center of Earth (UpEastNorthGeocentric()).
+   /// Return the vectors in the form of a 3x3 Matrix<double>, this is in fact the
    /// rotation matrix that will take an ECEF vector into an 'up,east,north' vector.
    /// Individual unit vectors can be defined from this rotation matrix R by
    /// @code

@@ -140,10 +140,10 @@ int main(int argc, char **argv)
          name.resize(N);
          cout << "Add file " << argv[i] << " : state names " << name << endl;
          if(verbose) {
-            LabelledVector Lstate(name,state);
+            LabeledVector Lstate(name,state);
             Lstate.fixed().setw(16).setprecision(6);
             cout << "State" << endl << Lstate << endl;
-            LabelledMatrix Lcov(name,cov);
+            LabeledMatrix Lcov(name,cov);
             Lcov.scientific().setw(16).setprecision(6);
             cout << "Covariance" << endl << Lcov << endl;
          }
@@ -163,10 +163,10 @@ int main(int argc, char **argv)
       double small,big;
       S.getStateAndCovariance(state,cov,&small,&big);
       cout << endl;
-      LabelledVector Ls(name,state);
+      LabeledVector Ls(name,state);
       Ls.fixed().setw(16).setprecision(6);
       cout << "Final state" << endl << Ls << endl;
-      LabelledMatrix Lc(name,cov);
+      LabeledMatrix Lc(name,cov);
       Lc.scientific().setw(16).setprecision(6);
       cout << endl << "Final covariance" << endl << Lc << endl;
    }

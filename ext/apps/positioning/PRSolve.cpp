@@ -2581,7 +2581,7 @@ void SolutionObject::FinalOutput(void) throw(Exception)
             // print this covariance as labelled matrix
             Namelist NL;
             NL += "North"; NL += "East "; NL += "Up   ";
-            LabelledMatrix LM(NL,Cov);
+            LabeledMatrix LM(NL,Cov);
             LM.scientific().setprecision(3).setw(14);
             LOG(INFO) << "Covariance of " << statsNEUresid.getMessage() << endl << LM;
          }
