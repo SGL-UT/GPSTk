@@ -404,7 +404,7 @@ using namespace StringUtils;
 
             // stack the (R|Z)'s from both in one matrix;
             // all determines the columns, plus last column is for Z
-         unsigned int i,j,k,n,m,sm;
+         unsigned int i,j,n,m,sm;
          n = all.labels.size();
          m = R.rows();
          sm = S.R.rows();
@@ -415,8 +415,8 @@ using namespace StringUtils;
          for(j=0; j<m; j++) {
                // find where this column of R goes in A
                // (should never throw..)
-            k = all.index(names.labels[j]);
-            if(k == -1) {     // FIXME - k is unsigned!!!
+            int k = all.index(names.labels[j]);
+            if(k == -1) {
                MatrixException me("Algorithm error 1");
                GPSTK_THROW(me);
             }
@@ -429,8 +429,8 @@ using namespace StringUtils;
 
             // now do the same for S, but put S.R|S.Z below R|Z
          for(j=0; j<sm; j++) {
-            k = all.index(S.names.labels[j]);
-            if(k == -1) {     // FIXME - k is unsigned!!!
+            int k = all.index(S.names.labels[j]);
+            if(k == -1) {
                MatrixException me("Algorithm error 2");
                GPSTK_THROW(me);
             }
@@ -507,7 +507,7 @@ using namespace StringUtils;
       if(n >= int(R.rows()))
          return;
 
-      for(int i=0; i<n; i++) {
+      for(unsigned int i=0; i<n; i++) {
          for(unsigned int j=i; j<R.cols(); j++) 
             R(i,j) = 0.0;
          Z(i) = 0.0;
@@ -778,8 +778,8 @@ using namespace StringUtils;
          }
             // move the X(in) terms to the data vector on the RHS
          for(k=0; k<m; k++)
-            for( int ii=0; ii<indx[k]; ii++)
-               Z(ii) -= R(ii,indx[k])*value[k];
+            for(i=0; i<indx[k]; i++)
+               Z(i) -= R(i,indx[k])*value[k];
 
             // first remove the rows in indx
          bool skip;
@@ -933,10 +933,23 @@ using namespace StringUtils;
       throw(MatrixException,VectorException)
    {
       try {
-         Matrix<double> invR;
-         invR = inverseUT(R,ptrSmall,ptrBig);
+         double small,big;
+         Matrix<double> invR(inverseUT(R,&small,&big));
+         //cout << " small is " << scientific << setprecision(3) << small
+         //   << " and exponent is " << ::log(big) - ::log(small) << endl;
+         // how best to test?
+         //  ::log(big) - ::log(small) + 1 >= numeric_limits<double>::max_exponent
+         if(small <= 10*numeric_limits<double>::epsilon())
+         {
+            MatrixException me("Singular matrix: condition number is "
+                  + asString<double>(big) + " / " + asString<double>(small));
+            GPSTK_THROW(me);
+         }
          C = UTtimesTranspose(invR);
          X = invR * Z;
+
+         if(ptrSmall) *ptrSmall = small;
+         if(ptrBig) *ptrBig = big;
       }
       catch(MatrixException& me) {
          GPSTK_RETHROW(me);
