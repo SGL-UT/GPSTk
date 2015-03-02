@@ -149,6 +149,53 @@ namespace gpstk
                                     double& azimuth)
       throw(Exception);
 
+   /// Compute the angle from satellite to Earth to Sun; that is the angular
+   /// separation of the satellite and the Sun, as seen from the center of Earth.
+   /// This angle lies between zero and pi, and it reaches zero (pi)
+   /// only when the Sun lies exactly in the orbit plane at noon (midnight).
+   /// NB. Use either class SolarSystem (high accuracy) or module SolarPosition
+   /// (low accuracy) to get the Sun position.
+   /// Return the angle in radians.
+   /// @param SV Position        Satellite position
+   /// @param Sun Position       Sun position at tt
+   /// @return angle double      Angle in radians satellite-Earth-Sun
+   double SatelliteEarthSunAngle(const Position& SV, const Position& Sun)
+      throw(Exception);
+
+   /// Compute the angle between the Sun and the plane of the orbit of the satellite,
+   /// given the satellite position and velocity and Sun position, all at one time.
+   /// Return the angle in radians; it lies between +-PI/2 and has the sign of RxV.
+   /// That is, the angle is positive if the Sun is out of the orbit plane in the
+   /// direction of R cross V; then Sun "sees" the orbit motion as counter-clockwise.
+   /// Also return phi, the angle, in the plane of the orbit, from midnight to the
+   /// satellite; this lies between 0 and 2PI and increases in the direction of Vel.
+   /// NB. Use either class SolarSystem (high accuracy) or module SolarPosition
+   /// (lower accuracy) to get the Sun position.
+   /// @param Pos Position    Satellite position at time of interest
+   /// @param Vel Position    Satellite velocity at time of interest
+   /// @param Sun Position    Sun position at time of interest
+   /// @param phi double      Return angle in orbit plane, midn to satellite (radians)
+   /// @param beta double     Return angle sun to plane of satellite orbit (radians)
+   /// NB. phi, beta and sesa, the satellite-earth-sun angle, form a right spherical
+   /// triangle with sesa opposite the right angle. Thus cos(sesa)=cos(beta)*cos(phi).
+   void SunOrbitAngles(const Position& Pos, const Position& Vel, const Position& Sun,
+                       double& beta, double& phi)
+      throw(Exception);
+
+   /// Compute the nominal yaw angle of the satellite given the satellite position and
+   /// velocity and the Sun position at the given time, plus a flag for GPS Block IIR
+   /// and IIF satellites. Return the nominal yaw angle in radians, and the yaw rate
+   /// in radians/second.
+   /// @param P Position     Satellite position at time of interest
+   /// @param V Position     Satellite velocity at time of interest (Cartesian, m/s)
+   /// @param Sun Position   Sun position at time of interest
+   /// @param blkIIRF bool   True if the satellite is GPS block IIR or IIF
+   /// @param yawrate double Return yaw rate in radians/second
+   /// @return double yaw    Satellite yaw angle in radians
+   double SatelliteYawAngle(const Position& P, const Position& V, const Position& Sun,
+                            const bool& blkIIRF, double& yawrate)
+      throw(Exception);
+
 }  // end namespace gpstk
 
 #endif // SUN_EARTH_SATTELITE_INCLUDE

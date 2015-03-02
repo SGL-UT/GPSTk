@@ -42,9 +42,10 @@
  */
 
 // GPSTk includes
-#include "StringUtils.hpp"          // asString
-#include "GNSSconstants.hpp"             // DEG_TO_RAD
+#include "StringUtils.hpp"      // asString
+#include "GNSSconstants.hpp"    // DEG_TO_RAD
 #include "GNSSconstants.hpp"    // TWO_PI
+#include "GPSEllipsoid.hpp"
 // geomatics
 #include "SunEarthSatGeometry.hpp"
 #include "SolarPosition.hpp"
@@ -85,9 +86,9 @@ Matrix<double> NorthEastUp(Position& P, bool geocentric) throw(Exception)
 {
 try {
    Matrix<double> R(3,3);
-   P.transformTo(geocentric ? Position::Geodetic : Position::Geocentric);
+   P.transformTo(geocentric ? Position::Geocentric : Position::Geodetic);
 
-   double lat = (geocentric ? P.getGeodeticLatitude() : P.getGeocentricLatitude())
+   double lat = (geocentric ? P.getGeocentricLatitude() : P.getGeodeticLatitude())
       * DEG_TO_RAD;                                        // rad N
    double lon = P.getLongitude() * DEG_TO_RAD;             // rad E
    double ca = ::cos(lat);
@@ -388,6 +389,150 @@ void SatelliteNadirAzimuthAngles(const Position& SV,
    catch(Exception& e) { GPSTK_RETHROW(e); }
    catch(exception& e) {Exception E("std except: "+string(e.what())); GPSTK_THROW(E);}
    catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+}
+
+// --------------------------------------------------------------------------------
+// Compute the angle from satellite to Earth to Sun; that is the angular
+// separation of the satellite and the Sun, as seen from the center of Earth.
+// This angle lies between zero and pi, and it reaches zero (pi)
+// only when the Sun lies exactly in the orbit plane at noon (midnight).
+// NB. Use either class SolarSystem (high accuracy) or module SolarPosition
+// (low accuracy) to get the Sun position.
+// Return the angle in radians.
+// @param Sat Position Satellite position
+// @param Sun Position Sun position
+// @return double angle     Angle in radians satellite-Earth-Sun
+double SatelliteEarthSunAngle(const Position& Sat, const Position& Sun)
+   throw(Exception)
+{
+   try {
+      Position PSun(Sun), PSat(Sat);
+      Triple ssun(PSun.asECEF()), sat(PSat.asECEF());
+      double d;         // normalize
+      d = 1.0/ssun.mag(); ssun = d * ssun;
+      d = 1.0/sat.mag(); sat = d * sat;
+
+      // compute the angle
+      return (::acos(sat.dot(ssun)));
+   }
+   catch(Exception& e) { GPSTK_RETHROW(e); }
+   catch(exception& e) {
+      Exception E("std except: " + string(e.what()));
+      GPSTK_THROW(E);
+   }
+   catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+}
+
+// --------------------------------------------------------------------------------
+// Compute the angle between the Sun and the plane of the orbit of the satellite.
+// Return the angle in radians; it lies between +-pi/2 and has the sign of RxV.
+// That is, the angle is positive if the Sun is out of the orbit plane in the
+// direction of R cross V; then Sun "sees" the orbit motion as counter-clockwise.
+// Also return, in phi, the angle, in the plane of the orbit, from midnight to the
+// satellite; this lies between 0 and 2pi and increases in the direction of Vel.
+// NB. Use either class SolarSystem (high accuracy) or module SolarPosition
+// (lower accuracy) to get the Sun position.
+// @param Position Pos   Satellite position at time of interest
+// @param Position Vel   Satellite velocity at time of interest
+// @param Position Sun   Sun position at time of interest
+// @param double phi     Return angle in orbit plane, midn to satellite (radians)
+// @param double beta    Return angle sun to plane of satellite orbit (radians)
+// NB. phi, beta and sesa - the satellite-earth-sun angle - form a right spherical
+// triangle with sesa opposite the right angle. Thus cos(sesa)=cos(beta)*cos(phi).
+void SunOrbitAngles(const Position& Pos, const Position& Vel, const Position& Sun,
+                    double& beta, double& phi)
+   throw(Exception)
+{
+   try {
+      Position SatR(Pos),SatV(Vel),PSun(Sun);
+      GPSEllipsoid ellips;
+      double omega(ellips.angVelocity()); // 7.292115e-5 rad/sec
+
+      // compute inertial velocity
+      Position inertialV;
+      inertialV.setECEF(SatV.X()-omega*SatR.Y(),SatV.Y()+omega*SatR.X(),SatV.Z());
+
+      // use Triple
+      Triple ssun(PSun.asECEF()),sat(SatR.asECEF());
+      Triple vel(inertialV.asECEF()), u, w;
+
+      // normalize
+      double d;
+      d = 1.0/ssun.mag(); ssun = d * ssun;
+      d = 1.0/sat.mag(); sat = d * sat;
+      d = 1.0/vel.mag(); vel = d * vel;
+
+      // u is R cross V - normal to orbit plane
+      u = sat.cross(vel);
+
+      // compute the angle beta : u dot sun = sin(beta) = cos(PI/2-beta)
+      double udotsun(u.dot(ssun));
+      beta = PI/2.0 - ::acos(udotsun);
+
+      // compute phi, angle in orbit plane between sun and sat
+      // zero at midnight, increasing with satellite motion
+      // w = ssun - u*sin(beta) lies in the orbit plane but ~points to sun
+      // but if beta == pi/2, u==ssun and w==zero, phi indeterminate
+      w = ssun - udotsun*u;
+      d = w.mag();
+      if(d > 1.e-14) {
+         d = 1.0/d;
+         w = d * w;                    // normalize w
+         phi = ::acos(sat.dot(w));     // zero at noon where sat||w and dot=1
+         if(sat.dot(u.cross(w)) < 0.0) // make phi zero at midnight
+            phi = PI - phi;
+         else
+            phi += PI;
+      }
+      else
+         phi = 0.0;
+   }
+   catch(Exception& e) { GPSTK_RETHROW(e); }
+   catch(exception& e) {
+      Exception E("std except: " + string(e.what()));
+      GPSTK_THROW(E);
+   }
+   catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+}
+
+// --------------------------------------------------------------------------------
+// Compute the nominal yaw angle of the satellite given the satellite position and
+// velocity and the Sun position at the given time, plus a flag for GPS Block IIR
+// and IIF satellites. Return the nominal yaw angle in radians, and the yaw rate
+// in radians/second.
+// @param Position P     Satellite position at time of interest
+// @param Position V     Satellite velocity at time of interest (Cartesian, m/s)
+// @param Position Sun   Sun position at time of interest
+// @param bool blkIIRF   True if the satellite is GPS block IIR or IIF
+// @param double yawrate Return yaw rate in radians/second
+// @return double yaw    Satellite yaw angle in radians
+double SatelliteYawAngle(const Position& pos, const Position& vel,
+                         const Position& Sun, const bool& blkIIRF, double& yawrate)
+   throw(Exception)
+{
+   try {
+      // get orbit tilt beta, and in-plane orbit angle from midnight, mu
+      double beta, mu;
+      SunOrbitAngles(pos, vel, Sun, beta, mu);
+      double sinmu = ::sin(mu);  // mu is the in-orbit-plane "azimuth" from midnite
+      double cosmu = ::cos(mu);  // increasing in direction of satellite motion
+
+      // nominal yaw angle - cf Kouba(2009)
+      double tanb(::tan(beta)), yaw;
+      if(blkIIRF)
+         yaw = ::atan2(tanb, -sinmu);
+      else
+         yaw = ::atan2(-tanb, sinmu);
+
+      // orbit velocity (rad/sec)
+      double orbv = TWO_PI * vel.mag() / pos.mag();
+
+      // nominal yaw rate
+      yawrate = orbv * tanb * cosmu / (sinmu*sinmu+tanb*tanb);
+
+      return yaw;
+   }
+   catch(Exception& e) { GPSTK_RETHROW(e); }
 }
 
 // -----------------------------------------------------------------------------------
