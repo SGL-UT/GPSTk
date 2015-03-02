@@ -42,12 +42,12 @@
 #ifndef GPSTK_FILEUTILS_HPP
 #define GPSTK_FILEUTILS_HPP
 
-#ifdef __sun
-#include <libgen.h>
-#else
+// #ifdef __sun
+// #include <libgen.h>
+// #else
 #include <sys/stat.h>
 #include <sys/types.h>
-#endif
+// #endif
 
 #include <fstream>
 #include <string>
@@ -76,11 +76,11 @@ namespace gpstk
           * @param mode the permission of the new directory (like 0755)
           * @return always 0
           */
+     
+#ifdef _MSC_VER
       inline int makeDir(const std::string& path, unsigned mode)
       {
-#ifdef __sun
-         mkdirp(path.c_str(), mode);
-#else
+
          std::string::size_type i = 0;
 
          while ((i = path.find('/',i+1)) != std::string::npos)
@@ -88,22 +88,37 @@ namespace gpstk
             std::string thispath(path.substr(0,i));
             if (thispath[thispath.length() - 1] == '/')
                thispath.erase(thispath.length() - 1);
-#ifdef _MSC_VER
-            _mkdir(path.c_str());
-#else
-            mkdir(thispath.c_str(), mode);
-#endif
-         }
-#ifdef _MSC_VER
-         _mkdir(path.c_str());
-#else
-         mkdir(path.c_str(), mode);
-#endif
 
-#endif // __sun
+            _mkdir(path.c_str());
+
+
+         }
+         _mkdir(path.c_str());
          return 0;
       }
+#else
+      inline int makeDir(const std::string& path, unsigned mode)
+      {
+        //  #ifdef __sun
+        //      mkdirp(path.c_str(), mode);
+        //  #else
+         std::string::size_type i = 0;
 
+         while ((i = path.find('/',i+1)) != std::string::npos)
+         {
+            std::string thispath(path.substr(0,i));
+            if (thispath[thispath.length() - 1] == '/')
+               thispath.erase(thispath.length() - 1);
+
+            mkdir(thispath.c_str(), mode);
+
+         }
+         mkdir(path.c_str(), mode);
+         // #endif
+         return 0;
+      }
+     
+#endif
          /**
           * makeDir that takes a char* for an argument.
           * @param path the full path of the directory you want created
