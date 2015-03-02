@@ -349,7 +349,7 @@ try {
          if(doLinearize || doRobust)
             cout << " Iteration " << number_iterations;
          cout << endl;
-         LabelledVector LNX(names,NominalX);
+         LabeledVector LNX(names,NominalX);
          LNX.message(" Nominal X:");
          cout << LNX << endl;
          cout << " Pre-fit data residuals:  "
@@ -398,8 +398,8 @@ try {
       }
 
       if(doVerbose) {
-         cout << " Updated information matrix\n" << LabelledMatrix(names,R) << endl;
-         cout << " Updated information vector\n" << LabelledVector(names,Z) << endl;
+         cout << " Updated information matrix\n" << LabeledMatrix(names,R) << endl;
+         cout << " Updated information vector\n" << LabeledVector(names,Z) << endl;
       }
 
       // invert
@@ -421,7 +421,7 @@ try {
          Xsol += NominalX;
       }
       if(doVerbose) {
-         LabelledVector LXsol(names,Xsol);
+         LabeledVector LXsol(names,Xsol);
          LXsol.message(" Updated X:");
          cout << LXsol << endl;
       }
@@ -515,7 +515,7 @@ ostream& operator<<(ostream& os, const SRIleastSquares& srif)
    NL += string("State");
    Matrix<double> A;
    A = srif.R || srif.Z;
-   LabelledMatrix LM(NL,A);
+   LabeledMatrix LM(NL,A);
    LM.setw(os.width());
    LM.setprecision(os.precision());
    os << LM;

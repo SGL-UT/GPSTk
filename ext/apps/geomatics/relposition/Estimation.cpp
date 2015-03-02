@@ -555,7 +555,7 @@ try {
 
       // dump the nominal state (including biases, even if fixed)
    //if(CI.Verbose) {
-   //   LabelledVector LabSt(StateNL,State);
+   //   LabeledVector LabSt(StateNL,State);
    //   LabSt.setw(20).setprecision(6);
    //   oflog << "Nominal State :\n" << LabSt << endl;
    //}
@@ -630,7 +630,7 @@ try {
          NL += StateNL.getName(i);
          NL += StateNL.getName(j);
          NL += StateNL.getName(k);
-         LabelledMatrix Lapc(NL,R);
+         LabeledMatrix Lapc(NL,R);
          Lapc.setw(20).setprecision(3).scientific();
          Lapc.message("a priori covariance");
          oflog << Lapc << endl;
@@ -684,7 +684,7 @@ try {
                Matrix<double> R(Rslice);
                Namelist NL;
                for(n=0; n<indexes.size(); n++) NL += StateNL.getName(indexes[n]);
-               LabelledMatrix Lapc(NL,R);
+               LabeledMatrix Lapc(NL,R);
                Lapc.setw(20).setprecision(3).scientific();
                Lapc.message("a priori covariance");
                oflog << Lapc << endl;
@@ -727,7 +727,7 @@ try {
 
       // dump the whole matrix
    //if(CI.Verbose) {
-   //   LabelledMatrix Lapc(StateNL,apCov);
+   //   LabeledMatrix Lapc(StateNL,apCov);
    //   Lapc.setw(20).setprecision(3).scientific();
    //   Lapc.message("a priori covariance");
    //   oflog << Lapc << endl;
@@ -770,7 +770,7 @@ try {
    if(i > 0) {
       Data.resize(i);
       if(CI.Debug) {
-         LabelledVector LD(DataNL,Data);
+         LabeledVector LD(DataNL,Data);
          LD.setw(20).setprecision(6);
          oflog << "At count " << count
             << " found time " << printTime(SolutionEpoch,"%F %10.3g")
@@ -1069,14 +1069,14 @@ try {
             << endl;
    }
 
-   //LabelledVector LSol(StateNL,dX);
+   //LabeledVector LSol(StateNL,dX);
    //LSol.setw(20).setprecision(6);
    //oflog << "Solution\n" << LSol << endl;
 
-   ////LabelledMatrix LCov(StateNL,Cov);
+   ////LabeledMatrix LCov(StateNL,Cov);
    //Vector<double> Sig(N);
    //for(i=0; i<N; i++) Sig(i)=SQRT(Cov(i,i));
-   //LabelledVector LCov(StateNL,Sig);
+   //LabeledVector LCov(StateNL,Sig);
    //LCov.setw(20).setprecision(6);
    ////oflog << "Covariance\n" << LCov << endl;
    //oflog << "Sigma\n" << LCov << endl;

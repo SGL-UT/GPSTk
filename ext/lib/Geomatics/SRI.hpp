@@ -85,7 +85,7 @@ extern const Matrix<double> SRINullMatrix;
 /// of manipulating the different individual elements of R and Z, in addition it
 /// allows the user to attach 'human-readable' labels to the elements of the state
 /// vector, which is useful in adding, dropping and bumping states, and it makes
-/// printed results more readable (see the LabelledMatrix class in Namelist.hpp).
+/// printed results more readable (see the LabeledMatrix class in Namelist.hpp).
 ///
 /// The set of simultaneous equations represented by an SRI is R * X = Z, where X is
 /// the (unknown) state vector (the conventional solution vector) also of dimension N.

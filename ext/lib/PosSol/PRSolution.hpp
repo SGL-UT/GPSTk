@@ -304,7 +304,7 @@ namespace gpstk
                // print cov as labelled matrix
                Namelist NL;
                NL += "ECEF_X"; NL += "ECEF_Y"; NL += "ECEF_Z";
-               LabelledMatrix LM(NL,Cov);
+               LabeledMatrix LM(NL,Cov);
                LM.scientific().setprecision(3).setw(14);
 
                os << "Covariance: " << msg << std::endl << LM << std::endl;

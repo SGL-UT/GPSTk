@@ -955,7 +955,7 @@ using namespace StringUtils;
       NLC += string("State");
       Matrix<double> A;
       A = S.R || S.Z;
-      LabelledMatrix LM(NLR,NLC,A);
+      LabeledMatrix LM(NLR,NLC,A);
 
       ios_base::fmtflags flags = os.flags();
       if(flags & ios_base::scientific) LM.scientific();
