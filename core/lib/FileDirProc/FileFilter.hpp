@@ -86,52 +86,53 @@ namespace gpstk
          /// @warning bp MUST be a strict weak ordering!
       template <class Compare>
       FileFilter& sort(Compare comp)
-     {
-         // FIX: this someday...
-         // this is a total hack until Solaris gets their act together and
-         // gets list::sort() working again
-         // all the code below can be replaced (someday) by this one line:
-         //      dataVec.sort(comp);
+      {
+            // FIX: this someday...
+            // this is a total hack until Solaris gets their act together and
+            // gets list::sort() working again
+            // all the code below can be replaced (someday) by this one line:
+            //      dataVec.sort(comp);
 
-         // make a vector of pointer to list iterator objects...
-      std::vector<lItrType> data(dataVec.size());
-      lItrType itr = dataVec.begin();
-      typename std::vector<lItrType>::size_type i = 0;
-      while (itr != dataVec.end())
-      {
-         data[i] = itr;
-         i++;
-         itr++;
+            // make a vector of pointer to list iterator objects...
+         std::vector<lItrType> data(dataVec.size());
+         lItrType itr = dataVec.begin();
+         typename std::vector<lItrType>::size_type i = 0;
+         while (itr != dataVec.end())
+         {
+            data[i] = itr;
+            i++;
+            itr++;
+         }
+         
+            // use SortAdapter to use comp with the pointer vector
+            // then sort the vector
+         SortAdapter<Compare> sa(comp);
+         std::stable_sort(data.begin(), data.end(), sa);
+         
+            // make a new list of the data in the right order, then copy that
+            // over dataVec.
+         lType fdlist;
+         for (i = 0; i < data.size(); i++)
+         {
+            fdlist.push_back(*data[i]);
+         }
+         dataVec = fdlist;
+         
+         /*
+            // move the items into the correct order with splice.
+            // splice does nothing if (itr == data[i]) || (itr == ++data[i])
+            // so the data is inserted backwards to avoid this...
+         i = data.size();
+         while (i != 0)
+         {
+            itr = dataVec.begin();
+            --i;
+            dataVec.splice(itr, dataVec, data[i]);
+         }
+         */
+
+         return *this;
       }
-      
-         // use SortAdapter to use comp with the pointer vector
-         // then sort the vector
-      SortAdapter<Compare> sa(comp);
-      std::stable_sort(data.begin(), data.end(), sa);
-      
-         // make a new list of the data in the right order, then copy that
-         // over dataVec.
-      lType fdlist;
-      for (i = 0; i < data.size(); i++)
-      {
-         fdlist.push_back(*data[i]);
-      }
-      dataVec = fdlist;
-      
-/*
-         // move the items into the correct order with splice.
-         // splice does nothing if (itr == data[i]) || (itr == ++data[i])
-         // so the data is inserted backwards to avoid this...
-      i = data.size();
-      while (i != 0)
-      {
-         itr = dataVec.begin();
-         --i;
-         dataVec.splice(itr, dataVec, data[i]);
-      }
-*/            
-      return *this;
-   }
 
 
          /// Combines the data from the input filter to this object.
@@ -145,63 +146,70 @@ namespace gpstk
       FileFilter& merge(const FileFilter& right, Compare bp)
          { merge(right); sort(bp); return *this; }
 
-         /// After sorting, use this to filter the data.
+         /// After sorting, use this to ensure that each data value is unique.
+         /// Filtered count is incremented for each duplicate value removed.
+         /// @param bp Test for equality
          /// @warning The data must be sorted first
       template <class BinaryPredicate>
       FileFilter& unique(BinaryPredicate bp)
-   {
-         //  FIX: unique is broken or doesnt like my syntax
-         //  so i wrote my own version of it
-//      list<FileData>::iterator itr = 
-//         unique(dataVec.begin(), dataVec.end(), bp);
-      filtered = 0;
-     
-      typename std::list<FileData>::iterator first = dataVec.begin();
-      typename std::list<FileData>::iterator second= dataVec.begin();
-      second++;
-      
-         // keep only the first of many unique values
-      while (second != dataVec.end())
       {
-         if ( bp(*first, *second))
-         {
-            second = dataVec.erase(second);
-            filtered++;
-         }
-         else
-         {
-            first++;
+            //  FIX: unique is broken or doesnt like my syntax
+            //  so i wrote my own version of it.
+            //      list<FileData>::iterator itr = 
+            //         unique(dataVec.begin(), dataVec.end(), bp);
+         filtered = 0;
+        
+         typename std::list<FileData>::iterator first = dataVec.begin();
+         typename std::list<FileData>::iterator second= dataVec.begin();
+
+         if (second != dataVec.end() )
             second++;
+         else
+            return *this;  // empty list
+         
+            // keep only the first of many unique values
+         while (second != dataVec.end())
+         {
+            if ( bp(*first, *second))
+            {
+               second = dataVec.erase(second);
+               filtered++;
+            }
+            else
+            {
+               first++;
+               second++;
+            }
          }
+         
+         return *this;
       }
-      
-      return *this;
-   }
 
          /// This filters data based on a single test.  All data that
          /// passes the UnaryPredicate (i.e. it returns true) is removed
+         /// Filtered count is incremented for each value removed.
          /// @warning Depending on the filter, your data may need to be sorted
       template <class Predicate>
       FileFilter& filter(Predicate up)
-   {
-         // delete all values for which up() is true
-      filtered = 0;
-      
-      typename std::list<FileData>::iterator itr = dataVec.begin();
-      
-      while (itr != dataVec.end())
       {
-         if (up(*itr))
+            // delete all values for which up() is true
+         filtered = 0;
+         
+         typename std::list<FileData>::iterator itr = dataVec.begin();
+         
+         while (itr != dataVec.end())
          {
-            itr = dataVec.erase(itr);
-            filtered++;
+            if (up(*itr))
+            {
+               itr = dataVec.erase(itr);
+               filtered++;
+            }
+            else
+               itr++;
          }
-         else
-            itr++;
+         
+         return *this;
       }
-      
-      return *this;
-   }
 
          /// Applies Operation on all the data elements, counting each one that
          /// gets modified (for which Operation returns true). The operation
@@ -209,25 +217,28 @@ namespace gpstk
          /// for use by the program calling it.
       template <class Operation>
       FileFilter& touch(Operation& op)
-   {
-      filtered = 0;
-      
-      typename std::list<FileData>::iterator itr = dataVec.begin();
-      
-      while (itr != dataVec.end())
       {
-         if (op(*itr))
-            filtered++;
-         itr++;
+         filtered = 0;
+         
+         typename std::list<FileData>::iterator itr = dataVec.begin();
+         
+         while (itr != dataVec.end())
+         {
+            if (op(*itr))
+               filtered++;
+            itr++;
+         }
+         
+         return *this;
       }
-      
-      return *this;
-   }
 
          /// a const operator touch for the classes that need it.
       template <class Operation>
       FileFilter& touch(const Operation& op)
-         { Operation o(op); return touch(o); }
+      {
+         Operation o(op);
+         return touch(o);
+      }
 
          /// Returns two lists - one of the data in *this that isn't in r and
          /// the second of data in r that isn't in *this.  Remember that /a p
@@ -238,51 +249,53 @@ namespace gpstk
       template <class BinaryPredicate>
       std::pair< std::list<FileData>, std::list<FileData> > 
       diff(const FileFilter<FileData>& r, BinaryPredicate p) const
-   {
-      std::pair< std::list<FileData>, std::list<FileData> > toReturn;
-      
-      std::set_difference(dataVec.begin(), dataVec.end(),
-                          r.dataVec.begin(), r.dataVec.end(),
-                          std::inserter(toReturn.first, 
-                                        toReturn.first.begin()),
-                          p);
-      
-      std::set_difference(r.dataVec.begin(), r.dataVec.end(),
-                          dataVec.begin(), dataVec.end(),
-                          std::inserter(toReturn.second, 
-                                        toReturn.second.begin()),
-                          p);
-      
-      return toReturn;
-   }
+      {
+         std::pair< std::list<FileData>, std::list<FileData> > toReturn;
+         
+         std::set_difference(dataVec.begin(), dataVec.end(),
+                             r.dataVec.begin(), r.dataVec.end(),
+                             std::inserter(toReturn.first, 
+                                           toReturn.first.begin()),
+                             p);
+         
+         std::set_difference(r.dataVec.begin(), r.dataVec.end(),
+                             dataVec.begin(), dataVec.end(),
+                             std::inserter(toReturn.second, 
+                                           toReturn.second.begin()),
+                             p);
+         
+         return toReturn;
+      }
 
          /// Returns a list of data matching the given unary predicate.
       template <class Predicate>
       std::list<FileData> findAll(Predicate p) const
-   {
-      std::list<FileData> toReturn;
-      typename std::list<FileData>::const_iterator itr = dataVec.begin();
-      
-      while (itr != dataVec.end())
       {
-         if (p(*itr))
-            toReturn.push_back((*itr));
-         itr++;
+         std::list<FileData> toReturn;
+         typename std::list<FileData>::const_iterator itr = dataVec.begin();
+         
+         while (itr != dataVec.end())
+         {
+            if (p(*itr))
+               toReturn.push_back((*itr));
+            itr++;
+         }
+         
+         return toReturn;      
       }
-      
-      return toReturn;
-      
-   }
 
          /// Returns the number of items filtered from the last filter()
          /// touch() or unique() call.
-      int getFiltered() const {return filtered;}
+      int getFiltered() const
+         { return filtered; }
 
          /// Returns the contents of the data list.
-      std::list<FileData>& getData(void) {return dataVec;}
+      std::list<FileData>& getData(void)
+         { return dataVec; }
 
          /// Returns the contents of the data list, const.
-      std::list<FileData> getData(void) const {return dataVec;}
+      std::list<FileData> getData(void) const
+         { return dataVec; }
 
          /// Returns the number of data items in the filter.
       typename std::list<FileData>::size_type getDataCount(void) const 
