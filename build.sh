@@ -299,12 +299,15 @@ if [ ! -d "$build_root" ]; then
     fi
 fi
 
-if [ ! -d "$gpstk_install" ]; then
-    echo "$0: WARNING: install path $gpstk_install does not exist. Creating it now."
-    mkdir -p $gpstk_install
+if [[ -z "$build_only" ]]; then
+    # only test if user did NOT chose to build_only
     if [ ! -d "$gpstk_install" ]; then
-        echo "$0: ERROR: Unable to create the GPSTk C++ lib install directory $gpstk_install"
-        exit 1
+        echo "$0: WARNING: install path $gpstk_install does not exist. Creating it now."
+        mkdir -p $gpstk_install
+        if [ ! -d "$gpstk_install" ]; then
+            echo "$0: ERROR: Unable to create the GPSTk C++ lib install directory $gpstk_install"
+            exit 1
+        fi
     fi
 fi
 
