@@ -123,6 +123,46 @@ namespace gpstk
       std::string asString(const int startBit, 
                            const int numChars) const;
 
+         /* Unpack mehthods that join two disjoint 
+            navigation message areas as a single field
+            NOTE: startBit1 is associated with the most significant section
+                  startBit2 is associated with the least significant section
+         */
+         /* Unpack a split unsigned long integer */
+      unsigned long asUnsignedLong(const int startBit1, 
+                                   const int numBits1,
+                                   const int startBit2,
+                                   const int numBits2, 
+                                   const int scale ) const;
+
+         /* Unpack a signed long integer */
+      long asLong(const int startBit1, 
+                  const int numBits1, 
+                  const int startBit2,
+                  const int numBits2, 
+                  const int scale ) const;
+
+         /* Unpack a split unsigned double */
+      double asUnsignedDouble( const int startBit1, 
+                               const int numBits1, 
+                               const int startBit2,
+                               const int numBits2, 
+                               const int power2) const;
+
+         /* Unpack a split signed double */
+      double asSignedDouble( const int startBit1, 
+                             const int numBits1, 
+                             const int startBit2,
+                             const int numBits2, 
+                             const int power2) const;
+
+         /* Unpack a split double with units of semicircles */
+      double asDoubleSemiCircles( const int startBit1, 
+                                  const int numBits1, 
+                                  const int startBit2,
+                                  const int numBits2, 
+                                  const int power2) const;      
+
          /***    PACKING FUNCTIONS *********************************/
          /* Pack an unsigned long integer */
       void addUnsignedLong( const unsigned long value, 
