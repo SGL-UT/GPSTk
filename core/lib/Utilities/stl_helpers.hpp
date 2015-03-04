@@ -45,6 +45,7 @@
 #include <cmath>
 #include <algorithm>
 #include <list>
+#include <vector>
 
 namespace gpstk
 {

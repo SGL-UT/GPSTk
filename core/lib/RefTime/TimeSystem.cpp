@@ -82,7 +82,7 @@ namespace gpstk
       }
    }
 
-   ostream& operator<<(ostream os, const TimeSystem& ts)
+   ostream& operator<<(ostream& os, const TimeSystem& ts)
    {
       return os << ts.asString();
    }

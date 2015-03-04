@@ -11,5 +11,5 @@ add_subdirectory( GNSSEph )
 # add_subdirectory( AppFrame )
 # add_subdirectory( ClockModel )
 # add_subdirectory( CommandLine )
-# add_subdirectory( RefTime )
+add_subdirectory( RefTime )
 
