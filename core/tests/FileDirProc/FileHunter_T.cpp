@@ -52,13 +52,13 @@ public:
       // constructor
 	FileHunter_T() { init(); }
 
-      // desructor
+      // destructor
 	~FileHunter_T() { cleanup(); }
 
       // initialize tests, throws on failure
    void init();
 
-      // remove file system objectst created during tests
+      // remove file system objects created during tests
    void cleanup();
 
       // test creation of an initialization of FileHunter objects
@@ -87,6 +87,7 @@ private:
       // @note an exception will be thrown on failure
    void newFile(const string& path);
 
+      // @return true if the string is in the vector, false otherwise
    bool contains(const vector<string>& vec, const string& str);
 
       // emit a vector of strings to standard output
@@ -757,42 +758,42 @@ int FileHunter_T :: testFind()
       files = hunter.find(minTime, maxTime);
       tester.assert( (files.size() == 0),
                      "time filtering (all before)", __LINE__ );
-      if (files.size() != 0) dump(files);
+      if (files.size() != 0) dump(files);  // @debug
 
       minTime = YDSTime(2006, 1, 0, TimeSystem::Any); 
       maxTime = YDSTime(2007, 1, 0, TimeSystem::Any); 
       files = hunter.find(minTime, maxTime);
       tester.assert( (files.size() == 0),
                      "time filtering (all above)", __LINE__ );
-      if (files.size() != 0) dump(files);
+      if (files.size() != 0) dump(files);  // @debug
 
       minTime = YDSTime(2001, 1, 0, TimeSystem::Any);
       maxTime = YDSTime(2007, 1, 0, TimeSystem::Any);
       files = hunter.find(minTime, maxTime);
       tester.assert( (files.size() == 8),
                      "time filtering (all included)", __LINE__ );
-      if (files.size() != 8) dump(files);
+      if (files.size() != 8) dump(files);  // @debug
 
       minTime = YDSTime(2001,   1, 0, TimeSystem::Any);
       maxTime = YDSTime(2004, 150, 0, TimeSystem::Any);
       files = hunter.find(minTime, maxTime);
       tester.assert( (files.size() == 6),
                      "time filtering (lower 3/4)", __LINE__ );
-      if (files.size() != 6) dump(files);
+      if (files.size() != 6) dump(files);  // @debug
 
       minTime = YDSTime(2003, 150, 0, TimeSystem::Any);
       maxTime = YDSTime(2007,   1, 0, TimeSystem::Any);
       files = hunter.find(minTime, maxTime);
       tester.assert( (files.size() == 6),
                      "time filtering (upper 3/4)", __LINE__ );
-      if (files.size() != 6) dump(files);
+      if (files.size() != 6) dump(files);  // @debug
 
       minTime = YDSTime(2003, 150, 0, TimeSystem::Any);
       maxTime = YDSTime(2004, 150, 0, TimeSystem::Any);
       files = hunter.find(minTime, maxTime);
       tester.assert( (files.size() == 4),
                      "time filtering (middle)", __LINE__ );
-      if (files.size() != 4) dump(files);
+      if (files.size() != 4) dump(files);  // @debug
 
    }
    catch (...)
@@ -814,42 +815,42 @@ int FileHunter_T :: testFind()
       files = hunter.find(minTime, maxTime);
       tester.assert( (files.size() == 0),
                      "multi-dir time filtering (all before)", __LINE__ );
-      if (files.size() != 0) dump(files);
+      if (files.size() != 0) dump(files);  // @debug
 
       minTime = YDSTime(2006, 1, 0, TimeSystem::Any); 
       maxTime = YDSTime(2007, 1, 0, TimeSystem::Any); 
       files = hunter.find(minTime, maxTime);
       tester.assert( (files.size() == 0),
                      "multi-dir time filtering (all above)", __LINE__ );
-      if (files.size() != 0) dump(files);
+      if (files.size() != 0) dump(files);  // @debug
 
       minTime = YDSTime(2001, 1, 0, TimeSystem::Any);
       maxTime = YDSTime(2007, 1, 0, TimeSystem::Any);
       files = hunter.find(minTime, maxTime);
       tester.assert( (files.size() == 8),
                      "multi-dir time filtering (all included)", __LINE__ );
-      if (files.size() != 8) dump(files);
+      if (files.size() != 8) dump(files);  // @debug
 
       minTime = YDSTime(2001,   1, 0, TimeSystem::Any);
       maxTime = YDSTime(2004, 150, 0, TimeSystem::Any);
       files = hunter.find(minTime, maxTime);
       tester.assert( (files.size() == 6),
                      "multi-dir time filtering (lower 3/4)", __LINE__ );
-      if (files.size() != 6) dump(files);
+      if (files.size() != 6) dump(files);  // @debug
 
       minTime = YDSTime(2003, 150, 0, TimeSystem::Any);
       maxTime = YDSTime(2007,   1, 0, TimeSystem::Any);
       files = hunter.find(minTime, maxTime);
       tester.assert( (files.size() == 6),
                      "multi-dir time filtering (upper 3/4)", __LINE__ );
-      if (files.size() != 6) dump(files);
+      if (files.size() != 6) dump(files);  // @debug
 
       minTime = YDSTime(2003, 150, 0, TimeSystem::Any);
       maxTime = YDSTime(2004, 150, 0, TimeSystem::Any);
       files = hunter.find(minTime, maxTime);
       tester.assert( (files.size() == 4),
                      "multi-dir time filtering (middle)", __LINE__ );
-      if (files.size() != 4) dump(files);
+      if (files.size() != 4) dump(files);  // @debug
 
    }
    catch (...)
