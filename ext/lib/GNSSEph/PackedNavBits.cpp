@@ -230,6 +230,76 @@ namespace gpstk
       return(out);
    }
 
+
+      /* Unpack a split unsigned long integer */ 
+   unsigned long PackedNavBits::asUnsignedLong(const int startBit1,  const int numBits1,
+                                               const int startBit2,  const int numBits2, 
+                                               const int scale ) const
+   {
+      uint64_t temp1 = asUint64_t( startBit1, numBits1 );
+      uint64_t temp2 = asUint64_t( startBit2, numBits2 );
+      unsigned long ulong = (unsigned long) temp1;
+      ulong <<= numBits2;
+      ulong |= temp2;
+      ulong *= scale; 
+      return( ulong ); 
+   }
+
+      /* Unpack a split signed long integer */
+   long PackedNavBits::asLong(const int startBit1,   const int numBits1, 
+                              const int startBit2,   const int numBits2, 
+                              const int scale ) const
+   {
+      int64_t s = SignExtend( startBit1, numBits1);
+      uint64_t temp2 = asUint64_t( startBit2, numBits2 );
+      s <<= numBits2;
+      s |= temp2;
+      return( (long) (s * scale ) );
+   }
+
+      /* Unpack a split unsigned double */
+   double PackedNavBits::asUnsignedDouble( const int startBit1, const int numBits1, 
+                                           const int startBit2, const int numBits2, 
+                                          const int power2) const
+   {
+      uint64_t temp1 = asUint64_t( startBit1, numBits1 );
+      uint64_t temp2 = asUint64_t( startBit2, numBits2 );
+      unsigned long ulong = (unsigned long) temp1;
+      ulong <<= numBits2;
+      ulong |= temp2;
+      
+         // Convert to double and scale
+      double dval = (double) ulong;
+      dval *= pow(static_cast<double>(2), power2);
+      return( dval );
+   }
+
+      /* Unpack a split signed double */
+   double PackedNavBits::asSignedDouble( const int startBit1, const int numBits1, 
+                                         const int startBit2, const int numBits2, 
+                                         const int power2) const
+   {
+      int64_t s = SignExtend( startBit1, numBits1);
+      uint64_t temp2 = asUint64_t( startBit2, numBits2 );
+      s <<= numBits2;
+      s |= temp2;
+
+         // Convert to double and scale
+      double dval = (double) s;
+      dval *= pow(static_cast<double>(2), power2);
+      return( dval );
+   }
+
+      /* Unpack a split double with units of semicircles */
+   double PackedNavBits::asDoubleSemiCircles( const int startBit1, const int numBits1, 
+                                              const int startBit2, const int numBits2, 
+                                              const int power2) const
+   {
+      double drad = asSignedDouble( startBit1, numBits1, startBit2, numBits2, power2);
+      return (drad*PI);
+   }      
+
+
          /***    PACKING FUNCTIONS *********************************/
    void PackedNavBits::addUnsignedLong( const unsigned long value, 
                                         const int numBits,

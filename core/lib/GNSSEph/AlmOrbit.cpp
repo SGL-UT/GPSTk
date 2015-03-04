@@ -54,6 +54,7 @@ namespace gpstk
       Toa = xmit_time = 0;
 
       week = SV_health = 0;
+      PRN = 0;
    }
 
    AlmOrbit :: AlmOrbit(short prn, double aEcc, double ai_offset,
