@@ -1,8 +1,8 @@
 #Tests for FileDirProc Classes
 
-#add_executable(FileFilter_T FileFilter_T.cpp)
-#target_link_libraries(FileFilter_T gpstk)
-#add_test(FileDirProc_FileFilter FileFilter_T)
+add_executable(FileFilter_T FileFilter_T.cpp)
+target_link_libraries(FileFilter_T gpstk)
+add_test(FileDirProc_FileFilter FileFilter_T)
 
 add_executable(FileHunter_T FileHunter_T.cpp)
 target_link_libraries(FileHunter_T gpstk)
