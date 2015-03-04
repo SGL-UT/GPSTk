@@ -238,7 +238,7 @@ class Position_T
 			std::cout << "Exception encountered at: " << testFramework.countTests() << std::endl;
 			std::cout << "Test method failed" << std::endl;
 		}
-		return 12 - testFramework.countTests() + testFramework.countFails(); // Sets all unrun tests as failed and adds previous errors
+		return 20 - testFramework.countTests() + testFramework.countFails(); // Sets all unrun tests as failed and adds previous errors
 	}
 
 	/*	Test for scanning strings
@@ -289,7 +289,7 @@ class Position_T
 			std::cout << "Exception encountered at: " << testFramework.countTests() << std::endl;
 			std::cout << "Test method failed" << std::endl;
 		}
-		return 12 - testFramework.countTests() + testFramework.countFails(); // Sets all unrun tests as failed and adds previous errors
+		return 1 - testFramework.countTests() + testFramework.countFails(); // Sets all unrun tests as failed and adds previous errors
 	}
 
 	/*	Elevation and Azimuth tests
@@ -320,7 +320,7 @@ class Position_T
 			std::cout << "Exception encountered at: " << testFramework.countTests() << std::endl;
 			std::cout << "Test method failed" << std::endl;
 		}
-		return 12 - testFramework.countTests() + testFramework.countFails(); // Sets all unrun tests as failed and adds previous errors
+		return 2 - testFramework.countTests() + testFramework.countFails(); // Sets all unrun tests as failed and adds previous errors
 	}
 
 	/*	Transform tests at a pole. The pole is a unique location
@@ -403,7 +403,7 @@ class Position_T
 			std::cout << "Exception encountered at: " << testFramework.countTests() << std::endl;
 			std::cout << "Test method failed" << std::endl;
 		}
-		return 12 - testFramework.countTests() + testFramework.countFails(); // Sets all unrun tests as failed and adds previous errors
+		return 11 - testFramework.countTests() + testFramework.countFails(); // Sets all unrun tests as failed and adds previous errors
 	}
 
 	/*	Many of the tests above use the range() function to
@@ -437,7 +437,7 @@ class Position_T
 			std::cout << "Exception encountered at: " << testFramework.countTests() << std::endl;
 			std::cout << "Test method failed" << std::endl;
 		}
-		return 12 - testFramework.countTests() + testFramework.countFails(); // Sets all unrun tests as failed and adds previous errors
+		return 4 - testFramework.countTests() + testFramework.countFails(); // Sets all unrun tests as failed and adds previous errors
 	}
 };
 
