@@ -14,11 +14,11 @@
 #============================================================
 
 set( PYTHON "/usr/bin/python" )
-set( PYTHON_EXECUTABLE:FILEPATH "/usr/bin/python" ) 
-set( PYTHON_LIBRARY:FILEPATH "/usr/lib/libpython2.7.so" )
-set( PYTHON_LIBRARIES:FILEPATH "/usr/lib/libpython2.7.so" )  
-set( PYTHON_INCLUDE_DIR:PATH "/usr/include/python2.7" )
-set( PYTHON_VERSION:VERSION "2.7.6" ) 
+set( PYTHON_EXECUTABLE "/usr/bin/python" CACHE FILEPATH "File Path to system python executable" ) 
+set( PYTHON_LIBRARY "/usr/lib/libpython2.7.so" CACHE FILEPATH "File Path to system python shared object library" )
+set( PYTHON_LIBRARIES "/usr/lib/libpython2.7.so" CACHE FILEPATH "File Path to system python shared object library" )  
+set( PYTHON_INCLUDE_DIR "/usr/include/python2.7" CACHE PATH "Directory Path to system python includes" )
+set( PYTHON_VERSION "2.7.6" CACHE VERSION "System Python version number" ) 
 
 set( PYTHON_FOUND "TRUE" )
 set( PYTHONLIBS_FOUND "TRUE" )
