@@ -1,10 +1,18 @@
-#----------------------------------------
-# GPSTk: CMake Input: $GPSTK/CMakeLists.txt
-#----------------------------------------
+#============================================================
+# Name    = $GPSTK/CMakeLists.txt
+# Purpose = Generator of build framework (e.g. Makefiles) for GPSTk
+# Notes   = This is the top-level CMake input file
+#           Depends on $GPSTK/BuildSetup.cmake
+#           Is dependend on by $GPSTK/build.sh
+#============================================================
 
 cmake_minimum_required( VERSION 2.8.4 )
 
 project( gpstk )
+
+#============================================================
+# Set up
+#============================================================
 
 #----------------------------------------
 # Determine Installation Path Prefix
@@ -36,15 +44,18 @@ option( BUILD_EXT "HELP: BUILD_EXT: SWITCH, Default = OFF, Build the ext library
 option( TEST_SWITCH "HELP: TEST_SWITCH: SWITCH, Default = OFF, Turn on test mode." OFF )
 option( BUILD_PYTHON "HELP: BUILD_PYTHON: SWITCH, Default = OFF, Turn on processing of python extension package." OFF )
 
-
 #----------------------------------------
-# Build Config
+# Pull in Build Config
 #----------------------------------------
 
 include( BuildSetup.cmake )
 
+#============================================================
+# Core Library Target Files
+#============================================================
+
 #----------------------------------------
-# Define core library source files
+# Define $GPSTK/core/ library source files
 #----------------------------------------
 
 file( GLOB_RECURSE CORE_SRC "core/lib/*.cpp" )
@@ -53,31 +64,7 @@ file( GLOB_RECURSE CORE_HDRS "core/lib/*.h" )
 file( GLOB_RECURSE CORE_HDRS2 "core/lib/*.hpp" )
 
 #----------------------------------------
-# Define ext library source files
-#----------------------------------------
-
-if( BUILD_EXT )
-  file( GLOB_RECURSE EXT_SRC "ext/lib/*.cpp" )
-  file( GLOB_RECURSE EXT_SRC2 "ext/lib/*.c" )
-  file( GLOB_RECURSE EXT_HDRS "ext/lib/*.h" )
-  file( GLOB_RECURSE EXT_HDRS2 "ext/lib/*.hpp" )
-endif()
-
-#----------------------------------------
-# Remove getopt.h from non-Windows installs of /ext library
-#----------------------------------------
-
-if( NOT WIN32 )
-  foreach( _headerFile ${EXT_HDRS} )
-    get_filename_component( _name ${_headerFile} NAME )
-    if( ${_name} MATCHES "getopt.h" )
-      list( REMOVE_ITEM EXT_HDRS ${_headerFile} )
-    endif()
-  endforeach()
-endif()
-
-#----------------------------------------
-# Define core library include directories
+# Define /core library include directories
 #----------------------------------------
 
 # initialize list of include directories
@@ -99,94 +86,90 @@ list( REMOVE_DUPLICATES CORE_INCLUDE_DIRS )
 # to the project(gpstk) include_directories
 include_directories( ${CORE_INCLUDE_DIRS} )
 
-#----------------------------------------
-# Define ext library include directories
-#----------------------------------------
+# define src and include files needed to build library target
+set( GPSTK_SRC_FILES "" )
+set( GPSTK_HDR_FILES "" )
+list( APPEND GPSTK_SRC_FILES ${CORE_SRC} ${CORE_SRC2} )
+list( APPEND GPSTK_INC_FILES ${CORE_HDRS} ${CORE_HDRS2} )
+
+#============================================================
+# Define $GPSTK/ext/ additions to Library Target Files
+#============================================================
 
 if( BUILD_EXT )
-    # initialize list of include directories
-    set( EXT_INCLUDE_DIRS "" )
+  file( GLOB_RECURSE EXT_SRC "ext/lib/*.cpp" )
+  file( GLOB_RECURSE EXT_SRC2 "ext/lib/*.c" )
+  file( GLOB_RECURSE EXT_HDRS "ext/lib/*.h" )
+  file( GLOB_RECURSE EXT_HDRS2 "ext/lib/*.hpp" )
 
+  # Remove getopt.h from non-Windows installs of /ext library
+  if( NOT WIN32 )
     foreach( _headerFile ${EXT_HDRS} )
-        get_filename_component( _dir ${_headerFile} PATH )
-        get_filename_component( _name ${_headerFile} NAME )
-        list( APPEND EXT_INCLUDE_DIRS ${_dir} )
+      get_filename_component( _name ${_headerFile} NAME )
+      if( ${_name} MATCHES "getopt.h" )
+        list( REMOVE_ITEM EXT_HDRS ${_headerFile} )
+      endif()
     endforeach()
+  endif()
 
-    foreach( _headerFile ${EXT_HDRS2} )
-        get_filename_component( _dir ${_headerFile} PATH )
-        list( APPEND EXT_INCLUDE_DIRS ${_dir} )
-    endforeach()
+  # Define ext library include directories
+  set( EXT_INCLUDE_DIRS "" )
 
-    list( REMOVE_DUPLICATES EXT_INCLUDE_DIRS )
+  foreach( _headerFile ${EXT_HDRS} )
+    get_filename_component( _dir ${_headerFile} PATH )
+    get_filename_component( _name ${_headerFile} NAME )
+    list( APPEND EXT_INCLUDE_DIRS ${_dir} )
+  endforeach()
 
-    # Add every directory containing a header file
-	# to the project(gpstk) include_directories
-    include_directories( ${EXT_INCLUDE_DIRS} )
+  foreach( _headerFile ${EXT_HDRS2} )
+    get_filename_component( _dir ${_headerFile} PATH )
+    list( APPEND EXT_INCLUDE_DIRS ${_dir} )
+  endforeach()
+
+  list( REMOVE_DUPLICATES EXT_INCLUDE_DIRS )
+
+  # Add every directory containing a header file
+  # to the project(gpstk) include_directories
+  include_directories( ${EXT_INCLUDE_DIRS} )
+
+  # append ext include files needed to build library target
+  list( APPEND GPSTK_SRC_FILES ${EXT_SRC} ${EXT_SRC2} )
+  list( APPEND GPSTK_HDR_FILES ${EXT_HDRS} ${EXT_HDRS2} )
+
 endif()
 
+#============================================================
+# GPSTK Library, Build and Install Targets
+#============================================================
 
-#----------------------------------------
-# Define core and ext library build targets
-#----------------------------------------
-	
-if( NOT BUILD_EXT )
-    add_library( gpstk ${STADYN} ${CORE_SRC} ${CORE_SRC2} )
-else()
-    add_library( gpstk ${STADYN} ${CORE_SRC} ${CORE_SRC2} ${EXT_SRC} ${EXT_SRC2} )
-endif()
+# GPSTk shared-object library (e.g. libgpstk.so) build target
+add_library( gpstk ${STADYN} ${GPSTK_SRC_FILES} )
 
-#----------------------------------------
-# Define core and ext library install targets
-#----------------------------------------
-#
-# Install target destination paths assume CMAKE_INSTALL_PREFIX is prepended.
-# Example: install( FILES ${CORE_HDRS} DESTINATION include ) copies files ${CORE_HDRS}
-#          into the path ${CMAKE_INSTALL_PREFIX}/include/${CORE_HDRS}
-
-# Library install target
+# GPSTk library install target, ${CMAKE_INSTALL_PREFIX}/lib
 install( TARGETS gpstk DESTINATION lib )
 
-# Header file install target
-if( NOT BUILD_EXT )
-    install( FILES ${CORE_HDRS} ${CORE_HDRS2} DESTINATION include )
-else()
-    install( FILES ${CORE_HDRS} ${CORE_HDRS2} ${EXT_HDRS} ${EXT_HDRS2} DESTINATION include )
-endif()
+# GPSTk header file install target, ${CMAKE_INSTALL_PREFIX}/include
+install( FILES ${GPSTK_HDR_FILES} DESTINATION include )
 
-#----------------------------------------
-# Test target
-#----------------------------------------
+#============================================================
+# Testing
+#============================================================
 
-if( TEST_SWITCH )
-	# CMake command enable_testing() enables capability 
-	# to use CMake add_test() command for this directory and below. 
-	# This adds another build target, which is "test" for 
-	# Makefile generators, or "RUN_TESTS" for IDEs (e.g. Visual Studio).
-	# From that point on, you can use the ADD_TEST() command 
-	# to add tests cases to the project build target test:
-	#   add_test( testname Exename arg1 arg2 ... )
-	# Must call enable_test() prior to any add_subdirectory() 
-	# that is intended to contain test cases.
-	# Currently, there are tests under /core and /tests subdirectories.
-    enable_testing()
-endif()
-
-#----------------------------------------
-# Test Switch
-#----------------------------------------
+# CMake command enable_testing() enables capability 
+# to use CMake add_test() command for this directory and below. 
+# This adds another build target, which is "test" for 
+# Makefile generators, or "RUN_TESTS" for IDEs (e.g. Visual Studio).
+# From that point on, you can use the ADD_TEST() command 
+# to add tests cases to the project build target test:
+#
+#     add_test( testname Exename arg1 arg2 ... )
+#
+# Must call enable_test() prior to any add_subdirectory() 
+# that is intended to contain test cases.
 
 if( TEST_SWITCH )
   enable_testing()
   set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake/Modules )
-  find_package( CppUnit )
-  if (CPPUNIT_FOUND)
-    include_directories( ${CPPUNIT_INCLUDE_DIRS} )
-    link_directories( ${CPPUNIT_LIBRARIES} )
-    target_link_libraries(gpstk cppunit)
-  else( )
-    message( STATUS "CppUnit not installed.  Please install and try again." )
-  endif( )
 endif( )
 
 #----------------------------------------
@@ -204,8 +187,7 @@ if( BUILD_PYTHON )
    add_subdirectory( swig )
 endif()
 
-
-
-#------------------------------------------------------------
+#============================================================
 # The End
-#------------------------------------------------------------
+#============================================================
+
