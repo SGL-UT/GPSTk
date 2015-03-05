@@ -1,40 +1,34 @@
-#----------------------------------------
-# GPSTk: CMake Input: $GPSTK/CMakeLists.txt
-#----------------------------------------
 
-cmake_minimum_required( VERSION 2.8.4 )
 
-project( gpstk )
 
 #----------------------------------------
-# Determine Installation Path Prefix
-#     Path to which we will install the
-#     gpstk /lib, /bin, and /include dirs.
-#----------------------------------------
-	
-if( DEFINED CMAKE_INSTALL_PREFIX )
-    message( STATUS "CMAKE_INSTALL_PREFIX was defined by user with the cmake command line. CMAKE_INSTALL_PREFIX = ${CMAKE_INSTALL_PREFIX}" )
-elseif( DEFINED ENV{gpstk} )
-    set( CMAKE_INSTALL_PREFIX $ENV{gpstk} )
-    message( STATUS "CMAKE_INSTALL_PREFIX was defined the environment variable ENV{gpstk}. CMAKE_INSTALL_PREFIX = ${CMAKE_INSTALL_PREFIX} " )
-else()
-    message( STATUS "CMAKE_INSTALL_PREFIX was not defined by any supported method." )
-	message( STATUS "Either set an environment variable ENV{gpstk} or pass in a cmake variable as -DCMAKE_INSTALL_PREFIX")
-    message( FATAL_ERROR "CMAKE_INSTALL_PREFIX must be set by the user. Exitting now!" )
-    return()
-endif()
-
-#----------------------------------------
-# Option Switches
+# Debug Messages
 #
-# Usage: option( <option_variable> "help string" [initial value] )
+# The CMake command-line tool, message( STATUS ) displays 
+# messages on stdout and all other message types on stderr. 
 #----------------------------------------
 
-option( DEBUG_SWITCH "HELP: DEBUG_SWITCH: Default = OFF, print some CMake variable values to stdout." OFF )
-option( DEBUG_VERBOSE "HELP: DEBUG_VERBOSE: Default = OFF, print all CMake variable values." OFF )
-option( BUILD_EXT "HELP: BUILD_EXT: SWITCH, Default = OFF, Build the ext library, in addition to the core library." OFF )
-option( TEST_SWITCH "HELP: TEST_SWITCH: SWITCH, Default = OFF, Turn on test mode." OFF )
-option( PYTHON_USER_INSTALL "HELP: PYTHON_USER_INSTALL: SWITCH, Default = OFF, Install GPSTk python package into user home file tree instead of a system path." OFF )
+if( DEBUG_SWITCH )
+    message( STATUS "DEBUG: Included CMake file BuildSetup.cmake" )
+    message( STATUS "DEBUG: CMAKE_SYSTEM             = ${CMAKE_SYSTEM}" )      # e.g., Linux-3.2.0
+    message( STATUS "DEBUG: CMAKE_SYSTEM_NAME        = ${CMAKE_SYSTEM_NAME}" ) # e.g., Linux
+    message( STATUS "DEBUG: CMAKE_COMMAND            = ${CMAKE_COMMAND}" )     # e.g., /usr/bin/cmake
+    message( STATUS "DEBUG: CMAKE_VERSION            = ${CMAKE_VERSION}" )     # e.g., 2.8.9
+    message( STATUS "DEBUG: CMAKE_BUILD_TOOL         = ${CMAKE_BUILD_TOOL}" )  # e.g., /usr/bin/make
+    message( STATUS "DEBUG: CMAKE_CURRENT_LIST_DIR   = ${CMAKE_CURRENT_LIST_DIR}" )    # e.g., $HOME/git/gpstk
+    message( STATUS "DEBUG: CMAKE_CURRENT_LIST_FILE  = ${CMAKE_CURRENT_LIST_FILE}" )   # e.g., $HOME/git/gpstk/CMakeLists.txt
+    message( STATUS "DEBUG: CMAKE_SOURCE_DIR         = ${CMAKE_SOURCE_DIR}" )          # e.g., $HOME/git/gpstk
+    message( STATUS "DEBUG: CMAKE_CURRENT_SOURCE_DIR = ${CMAKE_CURRENT_SOURCE_DIR}" )  # e.g., $HOME/git/gpstk
+    message( STATUS "DEBUG: CMAKE_CURRENT_BINARY_DIR = ${CMAKE_CURRENT_BINARY_DIR}" )  # e.g., $HOME/git/gpstk/build
+    message( STATUS "DEBUG: PROJECT_NAME             = ${PROJECT_NAME}" )              # e.g., gpstk
+    message( STATUS "DEBUG: PROJECT_BINARY_DIR       = ${PROJECT_BINARY_DIR}" )        # e.g., $HOME/git/gpstk/build
+    message( STATUS "DEBUG: PROJECT_SOURCE_DIR       = ${PROJECT_SOURCE_DIR}" )        # e.g., $HOME/git/gpstk
+    message( STATUS "DEBUG: CMAKE_INSTALL_DIR        = ${CMAKE_INSTALL_DIR}" )         # e.g., /usr
+    message( STATUS "DEBUG: CMAKE_INSTALL_PREFIX     = ${CMAKE_INSTALL_PREFIX}" )      # e.g., $HOME/.local/gpstk
+    if( BUILD_PYTHON )
+        message( STATUS "DEBUG: PYTHON_INSTALL_PREFIX    = ${PYTHON_INSTALL_PREFIX}" )     # e.g., $HOME/.local
+    endif()
+endif()
 
 #----------------------------------------
 # Set Platform-Dependent Compiler options
@@ -79,6 +73,7 @@ elseif( WIN32 )
 
 endif( UNIX )
 
+
 #----------------------------------------
 # Set Build path options
 #----------------------------------------
@@ -102,40 +97,26 @@ if( "${isSystemDir}" STREQUAL "-1" )
    set( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}:$ORIGIN/../lib" )
 endif( "${isSystemDir}" STREQUAL "-1" )
 
+
 #----------------------------------------
-# Test target
+# Debug Verbose: print all cmake variables
 #----------------------------------------
 
-if( TEST_SWITCH )
-	# CMake command enable_testing() enables capability 
-	# to use CMake add_test() command for this directory and below. 
-	# This adds another build target, which is "test" for 
-	# Makefile generators, or "RUN_TESTS" for IDEs (e.g. Visual Studio).
-	# From that point on, you can use the ADD_TEST() command 
-	# to add tests cases to the project build target test:
-	#   add_test( testname Exename arg1 arg2 ... )
-	# Must call enable_test() prior to any add_subdirectory() 
-	# that is intended to contain test cases.
-	# Currently, there are tests under /core and /tests subdirectories.
-    enable_testing()
+if( DEBUG_VERBOSE )
+    get_cmake_property( _variableNames VARIABLES )
+    foreach( _variableName ${_variableNames} )
+        message( STATUS "---- DEBUG VERBOSE: ${_variableName} = ${${_variableName}}" )
+    endforeach()
 endif()
-
+		
 #----------------------------------------
-# Test Switch
+# Get CMake vars into C++
 #----------------------------------------
 
-if( TEST_SWITCH )
-  enable_testing()
-  set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake/Modules )
-  find_package( CppUnit )
-  if( CPPUNIT_FOUND )
-    include_directories( ${CPPUNIT_INCLUDE_DIRS} )
-    link_directories( ${CPPUNIT_LIBRARIES} )
-    target_link_libraries(gpstk cppunit)
-  else()
-    message( STATUS "CppUnit not installed. Please install and try again." )
-  endif()
-endif()
+configure_file( "${PROJECT_SOURCE_DIR}/build_config.h.in" "${PROJECT_BINARY_DIR}/generated/build_config.h" )
+include_directories( "${PROJECT_BINARY_DIR}/generated/" ) 
+install( FILES "${PROJECT_BINARY_DIR}/generated/build_config.h" DESTINATION include )
+
 
 #----------------------------------------
 # Experimental: build debs, tgz packages
@@ -159,47 +140,5 @@ set( CPACK_GENERATOR "DEB;TGZ" )
 include( CPack )
 
 #----------------------------------------
-# Machinery to pass source and build dirs into C++
-# via a config file that acts as a header and gets
-# generated along with the rest of the build generation
+# The End
 #----------------------------------------
-
-configure_file( "${PROJECT_SOURCE_DIR}/build_config.h.in" "${PROJECT_BINARY_DIR}/generated/build_config.h" )
-include_directories( "${PROJECT_BINARY_DIR}/generated/" ) 
-install( FILES "${PROJECT_BINARY_DIR}/generated/build_config.h" DESTINATION include )
-
-#----------------------------------------
-# Debug Messages
-#
-# The CMake command-line tool, message( STATUS ) displays 
-# messages on stdout and all other message types on stderr. 
-#----------------------------------------
-
-if( DEBUG_SWITCH )
-    message( STATUS "DEBUG: CMAKE_SYSTEM             = ${CMAKE_SYSTEM}" )      # e.g., Linux-3.2.0
-    message( STATUS "DEBUG: CMAKE_SYSTEM_NAME        = ${CMAKE_SYSTEM_NAME}" ) # e.g., Linux
-    message( STATUS "DEBUG: CMAKE_COMMAND            = ${CMAKE_COMMAND}" )     # e.g., /usr/bin/cmake
-    message( STATUS "DEBUG: CMAKE_VERSION            = ${CMAKE_VERSION}" )     # e.g., 2.8.9
-    message( STATUS "DEBUG: CMAKE_BUILD_TOOL         = ${CMAKE_BUILD_TOOL}" )  # e.g., /usr/bin/make
-    message( STATUS "DEBUG: CMAKE_CURRENT_LIST_DIR   = ${CMAKE_CURRENT_LIST_DIR}" )    # e.g., $HOME/git/gpstk
-    message( STATUS "DEBUG: CMAKE_CURRENT_LIST_FILE  = ${CMAKE_CURRENT_LIST_FILE}" )   # e.g., $HOME/git/gpstk/CMakeLists.txt
-    message( STATUS "DEBUG: CMAKE_SOURCE_DIR         = ${CMAKE_SOURCE_DIR}" )          # e.g., $HOME/git/gpstk
-    message( STATUS "DEBUG: CMAKE_CURRENT_SOURCE_DIR = ${CMAKE_CURRENT_SOURCE_DIR}" )  # e.g., $HOME/git/gpstk
-    message( STATUS "DEBUG: CMAKE_CURRENT_BINARY_DIR = ${CMAKE_CURRENT_BINARY_DIR}" )  # e.g., $HOME/git/gpstk/build
-    message( STATUS "DEBUG: PROJECT_NAME             = ${PROJECT_NAME}" )              # e.g., gpstk
-    message( STATUS "DEBUG: PROJECT_BINARY_DIR       = ${PROJECT_BINARY_DIR}" )        # e.g., $HOME/git/gpstk/build
-    message( STATUS "DEBUG: PROJECT_SOURCE_DIR       = ${PROJECT_SOURCE_DIR}" )        # e.g., $HOME/git/gpstk
-    message( STATUS "DEBUG: CMAKE_INSTALL_DIR        = ${CMAKE_INSTALL_DIR}" )         # e.g., /usr
-    message( STATUS "DEBUG: CMAKE_INSTALL_PREFIX     = ${CMAKE_INSTALL_PREFIX}" )      # e.g., $HOME/.local/gpstk
-endif()
-
-#----------------------------------------
-# Debug Verbose: print all cmake variables
-#----------------------------------------
-
-if( DEBUG_VERBOSE )
-    get_cmake_property( _variableNames VARIABLES )
-    foreach( _variableName ${_variableNames} )
-        message( STATUS "---- DEBUG VERBOSE: ${_variableName} = ${${_variableName}}" )
-    endforeach()
-endif()
