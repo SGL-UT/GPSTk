@@ -486,6 +486,7 @@ if [ "$test_switch" ]; then
     keyword_list+=("FileSpec")
     keyword_list+=("FileFilter")
     keyword_list+=("FileHunter")
+    keyword_list+=("FileStore")
     keyword_list+=("FileUtils")
     keyword_list+=("Rinex")
     keyword_list+=("RinexObs")
