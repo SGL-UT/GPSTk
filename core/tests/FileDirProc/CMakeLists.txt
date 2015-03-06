@@ -12,9 +12,9 @@ add_executable(FileSpec_T FileSpec_T.cpp)
 target_link_libraries(FileSpec_T gpstk)
 add_test(FileDirProc_FileSpec FileSpec_T)
 
-#add_executable(FileStore_T FileStore_T.cpp)
-#target_link_libraries(FileStore_T gpstk)
-#add_test(FileDirProc_FileStore FileStore_T)
+add_executable(FileStore_T FileStore_T.cpp)
+target_link_libraries(FileStore_T gpstk)
+add_test(FileDirProc_FileStore FileStore_T)
 
 add_executable(FileUtils_T FileUtils_T.cpp)
 target_link_libraries(FileUtils_T gpstk)
