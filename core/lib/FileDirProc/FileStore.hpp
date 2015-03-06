@@ -40,6 +40,7 @@
 #define GPSTK_FILE_STORE_INCLUDE
 
 #include <vector>
+#include <map>
 #include <iostream>
 #include <iomanip>
 #include "Exception.hpp"
