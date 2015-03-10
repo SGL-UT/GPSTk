@@ -1,2 +1,0 @@
-SubDir TOP SEM ;
-TestMain SEM/xSEM.tst : SEM/xSEM.cpp SEM/SEMBase.cpp SEM/SEMData.cpp SEM/SEMStream.cpp SEM/StringUtils.cpp ;
