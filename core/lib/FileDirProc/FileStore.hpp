@@ -96,11 +96,13 @@ namespace gpstk
       /// Access the header for a given filename
       const HeaderType& getHeader(const std::string& fn) const throw(InvalidRequest)
       {
-         if(headerMap.find(fn) == headerMap.end()) {
+         typename std::map<std::string, HeaderType>::const_iterator iter_fn = headerMap.find(fn);
+         if( iter_fn == headerMap.end())
+         {
             InvalidRequest e("File name not found");
             GPSTK_THROW(e);
          }
-         return headerMap.at(fn);
+         return iter_fn->second;
          // changed from headerMap[fn] since that is a non-const member of std::map
          // and therefore could modify headerMap, making this function not be side-effect free
       }
