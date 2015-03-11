@@ -109,7 +109,7 @@ namespace gpstk
          sumsq += z*z;
       }
    
-      s.sigma = sqrt(sumsq/(s.n-1));
+      s.sigma = sqrt((double)(sumsq/(s.n-1)));
 
       return s;
    }
@@ -119,7 +119,7 @@ namespace gpstk
    template <class T> int vectorindex(const std::vector<T>& vec, const T& value) 
    {
       typename std::vector<T>::const_iterator it;
-      it = find(vec.begin(), vec.end(), value);
+      it = std::find(vec.begin(), vec.end(), value);
       if(it == vec.end()) return -1;
       return int(it - vec.begin());
    }

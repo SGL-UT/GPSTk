@@ -38,272 +38,490 @@
 #include "Vector.hpp"
 #include "TestUtil.hpp"
 #include <iostream>
+#include <sstream>
 
 class Stats_T
 {
         public: 
-		Stats_T(){eps = 1e-12;}// Default Constructor, set the precision value
+		Stats_T() // Default Constructor, set the precision values
+		{
+			floatPrecision = 1e-7;
+			doublePrecision = 1e-14;
+			longDoublePrecision = 1e-30;
+		}
 		~Stats_T() {} // Default Desructor
 
-		/*	Test to add data. Want to add single values to empty Stats class.
-			Then add another stat on top with weight. I will use the average to check
-			that data was added and that the data added was correct. */
-		int AddTest()
+//==========================================================================================================================
+//	floatStatsTest tests the accuracy of the Stats class with floats
+//==========================================================================================================================
+		int floatStatsTest( void )
 		{
 			TestUtil testFramework( "Stats", "Add", __FILE__, __LINE__ );
 			std::string failMesg;
 
-			gpstk::Stats<double> test;
-			test.Add(5, 1);		
-			test.Add(11, 2);
-			test.Add(9,3);
-			//std::cout << "The Average is: " << test.Average() << std::endl;
+			gpstk::Stats<float> floatStatsObject;
 
-			failMesg = "The Add() method was unsucessful";
-			testFramework.assert(test.Average()==9, failMesg, __LINE__);
 
-			return testFramework.countFails();
-			
-		};
-		/*	Test to add data with a vector. Want to add a single vector to empty Stats class.
-			I will use the average to check that data was added 
-			and that the data added was correct. */
-		int AddVectorTest()
-		{
-			TestUtil testFramework( "Stats", "AddVector", __FILE__, __LINE__ );
-			std::string failMesg;
+			//----------------------------------------------------------
+			// Add values to the statistics
+			//----------------------------------------------------------
 
-			gpstk::Stats<double> test;
-			gpstk::Vector<double> input(5), weight(5);
-			for (int i = 0; i < 5; i++)
+			//Add a single value
+			floatStatsObject.Add((float)1.0, (float)1.0);
+			int expectedNAdd = 1;
+			testFramework.assert(floatStatsObject.N() == expectedNAdd, "Value was not added", __LINE__);
+
+			//Add a gpstk::Vector of values
+			testFramework.changeSourceMethod("AddGpstkVector");
+			gpstk::Vector<float> input(3), weight(3);
+			for (int i = 0; i < 3; i++)
 			{
-				input(i) = i+1;
-				weight(i) = i+2;
+				input(i) = (float)i+2;
+				weight(i) = (float)i+2;
 			}
-			test.Add(input, weight);
-			//std::cout << "The Average is: " << test.Average() << std::endl;
-			failMesg = "The AddVector() method was unsucessful";			
-			testFramework.assert((test.Average() > (3.5-eps)) && (test.Average() < (3.5+eps)), failMesg, __LINE__);
+			floatStatsObject.Add(input, weight); 
+			int expectedNVectorAdd = 4;
+			testFramework.assert(floatStatsObject.N() == expectedNVectorAdd, "GPSTk Vector of values was not added", __LINE__);
 
-			return testFramework.countFails();	
+
+			//----------------------------------------------------------
+			// Check statistics
+			//----------------------------------------------------------
+			float expectedAverage  = 3.0;
+			float expectedMaximum  = 4.0;
+			float expectedMinimum  = 1.0;
+			float expectedVariance = 1.0;
+			float expectedStdDev   = 1.0;
+			float expectedNormalization = 10.0;
+			float relativeError;
+
+			testFramework.changeSourceMethod("Average");
+			relativeError = fabs(floatStatsObject.Average() - expectedAverage)/expectedAverage;
+			testFramework.assert(relativeError < floatPrecision, "Average found was not correct", __LINE__);
+
+			testFramework.changeSourceMethod("Maximum");
+			relativeError = fabs(floatStatsObject.Maximum() - expectedMaximum)/expectedMaximum;
+			testFramework.assert(relativeError < floatPrecision, "Maximum found was not correct", __LINE__);
+
+			testFramework.changeSourceMethod("Minimum");
+			relativeError = fabs(floatStatsObject.Minimum() - expectedMinimum)/expectedMinimum;
+			testFramework.assert(relativeError < floatPrecision, "Minimum found was not correct", __LINE__);	
+
+			testFramework.changeSourceMethod("Variance");
+			relativeError = fabs(floatStatsObject.Variance() - expectedVariance)/expectedVariance;
+			testFramework.assert(relativeError < floatPrecision, "Variance found was not correct", __LINE__);
+
+			testFramework.changeSourceMethod("StdDev");
+			relativeError = fabs(floatStatsObject.StdDev() - expectedStdDev)/expectedStdDev;
+			testFramework.assert(relativeError < floatPrecision, "StdDev found was not correct", __LINE__);
+
+			testFramework.changeSourceMethod("Normalization");
+			relativeError = fabs(floatStatsObject.Normalization() - expectedNormalization)/expectedNormalization;
+			testFramework.assert(relativeError < floatPrecision, "Normalization found was not correct", __LINE__);
+
+			testFramework.changeSourceMethod("Weighted");
+			testFramework.assert(floatStatsObject.Weighted(), "Weighted returned false for weighted sample", __LINE__);
+
+
+			//----------------------------------------------------------
+			// Subtract Data
+			//----------------------------------------------------------	
+			testFramework.changeSourceMethod("Subtract");	
+			int expectedNSubtract = 3;
+			floatStatsObject.Subtract((float)1.0, (float)1.0);
+			testFramework.assert(floatStatsObject.N() == expectedNSubtract, "Value was not subtracted", __LINE__);
+
+			testFramework.changeSourceMethod("SubtractGpstkVector");	
+			int expectedNSubtractVector = 0;
+			float expectedAvgSubtracted = 0.0;
+			floatStatsObject.Subtract(input);
+			testFramework.assert(floatStatsObject.N() == expectedNSubtractVector, "GPSTk Vector was not subtracted", __LINE__);
+			relativeError = fabs(floatStatsObject.Average() - expectedAvgSubtracted);
+			testFramework.assert(relativeError < floatPrecision, "Subtraction did not remove all of the data. Average != 0", __LINE__);	
+			relativeError = fabs(floatStatsObject.Normalization() - float(0.0));
+			testFramework.assert(relativeError < floatPrecision, "Subtraction did not remove all of the data. Normalization != 0", __LINE__);
+			//----------------------------------------------------------
+			// Load Data into new Stats Object
+			//----------------------------------------------------------	
+			gpstk::Stats<float> loadedStatsObject;	
+			testFramework.changeSourceMethod("Load");
+			loadedStatsObject.Load(expectedNVectorAdd, expectedMinimum, expectedMaximum, expectedAverage, expectedVariance, true, expectedNormalization);
+
+			testFramework.assert(loadedStatsObject.N() == expectedNVectorAdd, "Load did not set n properly", __LINE__);
+			relativeError = fabs(loadedStatsObject.Average() - expectedAverage)/expectedAverage;
+			testFramework.assert(relativeError < floatPrecision, "Load did not set the correct average", __LINE__);
+			relativeError = fabs(loadedStatsObject.Maximum() - expectedMaximum)/expectedMaximum;
+			testFramework.assert(relativeError < floatPrecision, "Load did not set the correct maximum", __LINE__);
+			relativeError = fabs(loadedStatsObject.Minimum() - expectedMinimum)/expectedMinimum;
+			testFramework.assert(relativeError < floatPrecision, "Load did not set the correct minimum", __LINE__);	
+			relativeError = fabs(loadedStatsObject.Variance() - expectedVariance)/expectedVariance;
+			testFramework.assert(relativeError < floatPrecision, "Load did not set the correct variance", __LINE__);
+			relativeError = fabs(loadedStatsObject.Normalization() - expectedNormalization)/expectedNormalization;
+			testFramework.assert(relativeError < floatPrecision, "Load did not set the correct normalization", __LINE__);
+			testFramework.assert(loadedStatsObject.Weighted(), "Load did not set Weighted properly", __LINE__);
+
+
+			//----------------------------------------------------------
+			// Add the Stats objects and dump the information
+			//----------------------------------------------------------	
+			testFramework.changeSourceMethod("OperatorAddAndAssign");			
+			floatStatsObject += loadedStatsObject;
+
+			testFramework.assert(floatStatsObject.N() == expectedNVectorAdd, "Addition of stats objects did not set n properly", __LINE__);
+			relativeError = fabs(floatStatsObject.Average() - expectedAverage)/expectedAverage;
+			testFramework.assert(relativeError < floatPrecision, "Addition of stats objects did not set the correct average", __LINE__);
+			relativeError = fabs(floatStatsObject.Maximum() - expectedMaximum)/expectedMaximum;
+			testFramework.assert(relativeError < floatPrecision, "Addition of stats objects did not set the correct maximum", __LINE__);
+			relativeError = fabs(floatStatsObject.Minimum() - expectedMinimum)/expectedMinimum;
+			testFramework.assert(relativeError < floatPrecision, "Addition of stats objects did not set the correct minimum", __LINE__);	
+			relativeError = fabs(floatStatsObject.Variance() - expectedVariance)/expectedVariance;
+			testFramework.assert(relativeError < floatPrecision, "Addition of stats objects did not set the correct variance", __LINE__);
+			relativeError = fabs(floatStatsObject.Normalization() - expectedNormalization)/expectedNormalization;
+			testFramework.assert(relativeError < floatPrecision, "Addition of stats objects did not set the correct normalization", __LINE__);
+			testFramework.assert(floatStatsObject.Weighted(), "Addition of stats objects did not set Weighted properly", __LINE__);
+
+			std::stringstream obtainedOutput;
+			std::stringstream expectedOutput;
+
+			obtainedOutput << floatStatsObject;
+
+      			std::ofstream savefmt;
+      			savefmt.copyfmt(expectedOutput);
+      			expectedOutput << " N       = " << floatStatsObject.N() << (floatStatsObject.Weighted() ? " ":" not") << " weighted\n";
+			expectedOutput << " Minimum = ";  expectedOutput.copyfmt(savefmt);  expectedOutput << floatStatsObject.Minimum();
+			expectedOutput << " Maximum = ";  expectedOutput.copyfmt(savefmt);  expectedOutput << floatStatsObject.Maximum() << "\n";
+			expectedOutput << " Average = ";  expectedOutput.copyfmt(savefmt);  expectedOutput << floatStatsObject.Average();
+			expectedOutput << " Std Dev = ";  expectedOutput.copyfmt(savefmt);  expectedOutput << floatStatsObject.StdDev();
+			expectedOutput << " Variance = "; expectedOutput.copyfmt(savefmt);  expectedOutput << floatStatsObject.Variance();
+
+			testFramework.changeSourceMethod("OperatorRedirect");
+			testFramework.assert(obtainedOutput.str() == expectedOutput.str(), "Dump of Stats output is not what was expected", __LINE__);
+
+			return testFramework.countFails();					
 		}
-		/*	Verify the average calculation. */
-		int AverageTest()
+
+
+
+//==========================================================================================================================
+//	doubleStatsTest tests the accuracy of the Stats class with doubles
+//==========================================================================================================================
+		int doubleStatsTest( void )
 		{
-			TestUtil testFramework( "Stats", "Average", __FILE__, __LINE__ );
+			TestUtil testFramework( "Stats", "Add", __FILE__, __LINE__ );
 			std::string failMesg;
 
-			gpstk::Stats<double> test;
+			gpstk::Stats<double> doubleStatsObject;
+
+
+			//----------------------------------------------------------
+			// Add values to the statistics
+			//----------------------------------------------------------
+
+			//Add a single value
+			doubleStatsObject.Add((double)1.0, (double)1.0);
+			int expectedNAdd = 1;
+			testFramework.assert(doubleStatsObject.N() == expectedNAdd, "Value was not added", __LINE__);
+
+			//Add a gpstk::Vector of values
+			testFramework.changeSourceMethod("AddGpstkVector");
 			gpstk::Vector<double> input(3), weight(3);
 			for (int i = 0; i < 3; i++)
 			{
-				input(i) = i+1;
-				weight(i) = i+1;
+				input(i) = (double)i+2;
+				weight(i) = (double)i+2;
 			}
-			test.Add(input, weight); 
+			doubleStatsObject.Add(input, weight); 
+			int expectedNVectorAdd = 4;
+			testFramework.assert(doubleStatsObject.N() == expectedNVectorAdd, "GPSTk Vector of values was not added", __LINE__);
 
-			//std::cout << "The Average is: " << test.Average() << std::endl;
-			failMesg = "The Average() method was unsucessful";
-			testFramework.assert((test.Average() > (7.0/3.0-eps)) && (test.Average() < (7.0/3.0+eps)), failMesg, __LINE__);
 
-			return testFramework.countFails();
+			//----------------------------------------------------------
+			// Check statistics
+			//----------------------------------------------------------
+			double expectedAverage  = 3.0;
+			double expectedMaximum  = 4.0;
+			double expectedMinimum  = 1.0;
+			double expectedVariance = 1.0;
+			double expectedStdDev   = 1.0;
+			double expectedNormalization = 10.0;
+			double relativeError;
+
+			testFramework.changeSourceMethod("Average");
+			relativeError = fabs(doubleStatsObject.Average() - expectedAverage)/expectedAverage;
+			testFramework.assert(relativeError < doublePrecision, "Average found was not correct", __LINE__);
+
+			testFramework.changeSourceMethod("Maximum");
+			relativeError = fabs(doubleStatsObject.Maximum() - expectedMaximum)/expectedMaximum;
+			testFramework.assert(relativeError < doublePrecision, "Maximum found was not correct", __LINE__);
+
+			testFramework.changeSourceMethod("Minimum");
+			relativeError = fabs(doubleStatsObject.Minimum() - expectedMinimum)/expectedMinimum;
+			testFramework.assert(relativeError < doublePrecision, "Minimum found was not correct", __LINE__);	
+
+			testFramework.changeSourceMethod("Variance");
+			relativeError = fabs(doubleStatsObject.Variance() - expectedVariance)/expectedVariance;
+			testFramework.assert(relativeError < doublePrecision, "Variance found was not correct", __LINE__);
+
+			testFramework.changeSourceMethod("StdDev");
+			relativeError = fabs(doubleStatsObject.StdDev() - expectedStdDev)/expectedStdDev;
+			testFramework.assert(relativeError < doublePrecision, "StdDev found was not correct", __LINE__);
+
+			testFramework.changeSourceMethod("Normalization");
+			relativeError = fabs(doubleStatsObject.Normalization() - expectedNormalization)/expectedNormalization;
+			testFramework.assert(relativeError < doublePrecision, "Normalization found was not correct", __LINE__);
+
+			testFramework.changeSourceMethod("Weighted");
+			testFramework.assert(doubleStatsObject.Weighted(), "Weighted returned false for weighted sample", __LINE__);
+
+
+			//----------------------------------------------------------
+			// Subtract Data
+			//----------------------------------------------------------	
+			testFramework.changeSourceMethod("Subtract");	
+			int expectedNSubtract = 3;
+			doubleStatsObject.Subtract((double)1.0, (double)1.0);
+			testFramework.assert(doubleStatsObject.N() == expectedNSubtract, "Value was not subtracted", __LINE__);
+
+			testFramework.changeSourceMethod("SubtractGpstkVector");	
+			int expectedNSubtractVector = 0;
+			double expectedAvgSubtracted = 0.0;
+			doubleStatsObject.Subtract(input);
+			testFramework.assert(doubleStatsObject.N() == expectedNSubtractVector, "GPSTk Vector was not subtracted", __LINE__);
+			relativeError = fabs(doubleStatsObject.Average() - expectedAvgSubtracted);
+			testFramework.assert(relativeError < doublePrecision, "Subtraction did not remove all of the data. Average != 0", __LINE__);	
+			relativeError = fabs(doubleStatsObject.Normalization() - double(0.0));
+			testFramework.assert(relativeError < doublePrecision, "Subtraction did not remove all of the data. Normalization != 0", __LINE__);
+			//----------------------------------------------------------
+			// Load Data into new Stats Object
+			//----------------------------------------------------------	
+			gpstk::Stats<double> loadedStatsObject;	
+			testFramework.changeSourceMethod("Load");
+			loadedStatsObject.Load(expectedNVectorAdd, expectedMinimum, expectedMaximum, expectedAverage, expectedVariance, true, expectedNormalization);
+
+			testFramework.assert(loadedStatsObject.N() == expectedNVectorAdd, "Load did not set n properly", __LINE__);
+			relativeError = fabs(loadedStatsObject.Average() - expectedAverage)/expectedAverage;
+			testFramework.assert(relativeError < doublePrecision, "Load did not set the correct average", __LINE__);
+			relativeError = fabs(loadedStatsObject.Maximum() - expectedMaximum)/expectedMaximum;
+			testFramework.assert(relativeError < doublePrecision, "Load did not set the correct maximum", __LINE__);
+			relativeError = fabs(loadedStatsObject.Minimum() - expectedMinimum)/expectedMinimum;
+			testFramework.assert(relativeError < doublePrecision, "Load did not set the correct minimum", __LINE__);	
+			relativeError = fabs(loadedStatsObject.Variance() - expectedVariance)/expectedVariance;
+			testFramework.assert(relativeError < doublePrecision, "Load did not set the correct variance", __LINE__);
+			relativeError = fabs(loadedStatsObject.Normalization() - expectedNormalization)/expectedNormalization;
+			testFramework.assert(relativeError < doublePrecision, "Load did not set the correct normalization", __LINE__);
+			testFramework.assert(loadedStatsObject.Weighted(), "Load did not set Weighted properly", __LINE__);
+
+
+			//----------------------------------------------------------
+			// Add the Stats objects and dump the information
+			//----------------------------------------------------------	
+			testFramework.changeSourceMethod("OperatorAddAndAssign");			
+			doubleStatsObject += loadedStatsObject;
+
+			testFramework.assert(doubleStatsObject.N() == expectedNVectorAdd, "Addition of stats objects did not set n properly", __LINE__);
+			relativeError = fabs(doubleStatsObject.Average() - expectedAverage)/expectedAverage;
+			testFramework.assert(relativeError < doublePrecision, "Addition of stats objects did not set the correct average", __LINE__);
+			relativeError = fabs(doubleStatsObject.Maximum() - expectedMaximum)/expectedMaximum;
+			testFramework.assert(relativeError < doublePrecision, "Addition of stats objects did not set the correct maximum", __LINE__);
+			relativeError = fabs(doubleStatsObject.Minimum() - expectedMinimum)/expectedMinimum;
+			testFramework.assert(relativeError < doublePrecision, "Addition of stats objects did not set the correct minimum", __LINE__);	
+			relativeError = fabs(doubleStatsObject.Variance() - expectedVariance)/expectedVariance;
+			testFramework.assert(relativeError < doublePrecision, "Addition of stats objects did not set the correct variance", __LINE__);
+			relativeError = fabs(doubleStatsObject.Normalization() - expectedNormalization)/expectedNormalization;
+			testFramework.assert(relativeError < doublePrecision, "Addition of stats objects did not set the correct normalization", __LINE__);
+			testFramework.assert(doubleStatsObject.Weighted(), "Addition of stats objects did not set Weighted properly", __LINE__);
+
+			std::stringstream obtainedOutput;
+			std::stringstream expectedOutput;
+
+			obtainedOutput << doubleStatsObject;
+
+      			std::ofstream savefmt;
+      			savefmt.copyfmt(expectedOutput);
+      			expectedOutput << " N       = " << doubleStatsObject.N() << (doubleStatsObject.Weighted() ? " ":" not") << " weighted\n";
+			expectedOutput << " Minimum = ";  expectedOutput.copyfmt(savefmt);  expectedOutput << doubleStatsObject.Minimum();
+			expectedOutput << " Maximum = ";  expectedOutput.copyfmt(savefmt);  expectedOutput << doubleStatsObject.Maximum() << "\n";
+			expectedOutput << " Average = ";  expectedOutput.copyfmt(savefmt);  expectedOutput << doubleStatsObject.Average();
+			expectedOutput << " Std Dev = ";  expectedOutput.copyfmt(savefmt);  expectedOutput << doubleStatsObject.StdDev();
+			expectedOutput << " Variance = "; expectedOutput.copyfmt(savefmt);  expectedOutput << doubleStatsObject.Variance();
+
+			testFramework.changeSourceMethod("OperatorRedirect");
+			testFramework.assert(obtainedOutput.str() == expectedOutput.str(), "Dump of Stats output is not what was expected", __LINE__);
+
+			return testFramework.countFails();					
 		}
-		/*	Verify the maximum calculation. */
-		int MaxTest()
+
+
+
+//==========================================================================================================================
+//	longDoubleStatsTest tests the accuracy of the Stats class with doubles
+//==========================================================================================================================
+		int longDoubleStatsTest( void )
 		{
-			TestUtil testFramework( "Stats", "Max", __FILE__, __LINE__ );
+			TestUtil testFramework( "Stats", "Add", __FILE__, __LINE__ );
 			std::string failMesg;
 
-			gpstk::Stats<int> test;
-			gpstk::Vector<int> input(3), weight(3);
+			gpstk::Stats<long double> longDoubleStatsObject;
+
+
+			//----------------------------------------------------------
+			// Add values to the statistics
+			//----------------------------------------------------------
+
+			//Add a single value
+			longDoubleStatsObject.Add((long double)1.0, (long double)1.0);
+			int expectedNAdd = 1;
+			testFramework.assert(longDoubleStatsObject.N() == expectedNAdd, "Value was not added", __LINE__);
+
+			//Add a gpstk::Vector of values
+			testFramework.changeSourceMethod("AddGpstkVector");
+			gpstk::Vector<long double> input(3), weight(3);
 			for (int i = 0; i < 3; i++)
 			{
-				input(i) = i+1;
-				weight(i) = i+1;
+				input(i) = (long double)i+2;
+				weight(i) = (long double)i+2;
 			}
-			test.Add(input, weight);
+			longDoubleStatsObject.Add(input, weight); 
+			int expectedNVectorAdd = 4;
+			testFramework.assert(longDoubleStatsObject.N() == expectedNVectorAdd, "GPSTk Vector of values was not added", __LINE__);
 
-			//std::cout << "The Maximum is: " << test.Maximum() << std::endl;
 
-			failMesg = "The Maximum() method was unsucessful";
-			testFramework.assert(test.Maximum() == 3, failMesg, __LINE__);
+			//----------------------------------------------------------
+			// Check statistics
+			//----------------------------------------------------------
+			double expectedAverage  = 3.0;
+			double expectedMaximum  = 4.0;
+			double expectedMinimum  = 1.0;
+			double expectedVariance = 1.0;
+			double expectedStdDev   = 1.0;
+			double expectedNormalization = 10.0;
+			double relativeError;
 
-			return testFramework.countFails();
-		}
-		/*	Verify the minimum calculation */
-		int MinTest()
-		{
-			TestUtil testFramework( "Stats", "Min", __FILE__, __LINE__ );
-			std::string failMesg;
+			testFramework.changeSourceMethod("Average");
+			relativeError = fabs(longDoubleStatsObject.Average() - expectedAverage)/expectedAverage;
+			testFramework.assert(relativeError < doublePrecision, "Average found was not correct", __LINE__);
 
-			gpstk::Stats<int> test;
-			gpstk::Vector<int> input(3), weight(3);
-			for (int i = 0; i < 3; i++)
-			{
-				input(i) = i+1;
-				weight(i) = i+1;
-			}
-			test.Add(input, weight);
+			testFramework.changeSourceMethod("Maximum");
+			relativeError = fabs(longDoubleStatsObject.Maximum() - expectedMaximum)/expectedMaximum;
+			testFramework.assert(relativeError < doublePrecision, "Maximum found was not correct", __LINE__);
 
-			//std::cout << "The Minimum is: " << test.Minimum() << std::endl;
-			failMesg = "The Minimum() method was unsucessful";
-			testFramework.assert(test.Minimum() == 1, failMesg, __LINE__);
+			testFramework.changeSourceMethod("Minimum");
+			relativeError = fabs(longDoubleStatsObject.Minimum() - expectedMinimum)/expectedMinimum;
+			testFramework.assert(relativeError < doublePrecision, "Minimum found was not correct", __LINE__);	
 
-			return testFramework.countFails();
-		}
-		/*	Verify the variance calculation */
-		int VarianceTest()
-		{
-			TestUtil testFramework( "Stats", "Variance", __FILE__, __LINE__ );
-			std::string failMesg;
+			testFramework.changeSourceMethod("Variance");
+			relativeError = fabs(longDoubleStatsObject.Variance() - expectedVariance)/expectedVariance;
+			testFramework.assert(relativeError < doublePrecision, "Variance found was not correct", __LINE__);
 
-			gpstk::Stats<double> test;
-			gpstk::Vector<double> input(3), weight(3);
-			for (int i = 0; i < 3; i++)
-			{
-				input(i) = i+1;
-				weight(i) = i+2;
-			}
-			test.Add(input, weight);
-			//std::cout << "The Variance is: " << test.Variance() << std::endl;
-			failMesg = "The Minimum() method was unsucessful";
-			testFramework.assert(test.Variance() > (5.0/9.0-eps) && test.Variance() < (5.0/9.0+eps), failMesg, __LINE__);
+			testFramework.changeSourceMethod("StdDev");
+			relativeError = fabs(longDoubleStatsObject.StdDev() - expectedStdDev)/expectedStdDev;
+			testFramework.assert(relativeError < doublePrecision, "StdDev found was not correct", __LINE__);
 
-			return testFramework.countFails();
-		}
-		/*	Verify the Standard Deviation calculation.*/
-		int StdDevTest()
-		{
-			TestUtil testFramework( "Stats", "StdDev", __FILE__, __LINE__ );
-			std::string failMesg;
+			testFramework.changeSourceMethod("Normalization");
+			relativeError = fabs(longDoubleStatsObject.Normalization() - expectedNormalization)/expectedNormalization;
+			testFramework.assert(relativeError < doublePrecision, "Normalization found was not correct", __LINE__);
 
-			gpstk::Stats<double> test;
-			gpstk::Vector<double> input(3), weight(3);
-			for (int i = 0; i < 3; i++)
-			{
-				input(i) = i+1;
-				weight(i) = i+1;
-			}
-			test.Add(input, weight);
-			//std::cout << "The Standard Deviation is: " << test.StdDev() << std::endl;
-			failMesg = "The StdDev() method was unsucessful";			
-			testFramework.assert(test.StdDev() > (sqrt(5.0/9.0)-eps) && test.StdDev() < (sqrt(5.0/9.0)+eps), failMesg, __LINE__);
+			testFramework.changeSourceMethod("Weighted");
+			testFramework.assert(longDoubleStatsObject.Weighted(), "Weighted returned false for weighted sample", __LINE__);
 
-			return testFramework.countFails();
-		}
-		/*	Test to subtract data. Add a single vector to empty Stats class.
-			After, delete a weighted data portion. 
-            I will use the average and maxmimum to check data was removed.
-			Specifically I will remove the former maximum and show that it is
-			NOT reset. */
-		int SubtractTest()
-		{
-			TestUtil testFramework( "Stats", "Subtract", __FILE__, __LINE__ );
-			std::string failMesg;
 
-			gpstk::Stats<double> test;
-			gpstk::Vector<double> input(5), weight(5);
-			for (int i = 0; i < 5; i++)
-			{
-				input(i) = i+1;
-				weight(i) = i+2;
-			}
-			test.Add(input, weight);
-			//std::cout << "The Average is: " << test.Average() << std::endl;
-			test.Subtract(5);
-			//std::cout << "The Average is: " << test.Average() << std::endl;
-			test.Subtract(5); // Doing this twice to get 10/3 as a result
-			//std::cout << "The Average is: " << test.Average() << std::endl;
-			failMesg = "The Subtract() method was unsucessful";		
-			testFramework.assert(test.Average() > 3.2 && test.Average() < 3.4 && test.Maximum() == 5, failMesg, __LINE__);
+			//----------------------------------------------------------
+			// Subtract Data
+			//----------------------------------------------------------	
+			testFramework.changeSourceMethod("Subtract");	
+			int expectedNSubtract = 3;
+			longDoubleStatsObject.Subtract((long double)1.0, (long double)1.0);
+			testFramework.assert(longDoubleStatsObject.N() == expectedNSubtract, "Value was not subtracted", __LINE__);
 
-			return testFramework.countFails();			
-		}
-		/*	Test to subtract data with a vector. Add a single vector to empty Stats class.
-			After, delete with the same vector. 
-			I will use the average and maxmimum to check data was removed.
-			Specifically I will remove the former maximum and show that it is
-			NOT reset. */
-		int SubtractVectorTest()
-		{
-			TestUtil testFramework( "Stats", "SubtractVector", __FILE__, __LINE__ );
-			std::string failMesg;
+			testFramework.changeSourceMethod("SubtractGpstkVector");	
+			int expectedNSubtractVector = 0;
+			double expectedAvgSubtracted = 0.0;
+			longDoubleStatsObject.Subtract(input);
+			testFramework.assert(longDoubleStatsObject.N() == expectedNSubtractVector, "GPSTk Vector was not subtracted", __LINE__);
+			relativeError = fabs(longDoubleStatsObject.Average() - expectedAvgSubtracted);
+			testFramework.assert(relativeError < doublePrecision, "Subtraction did not remove all of the data. Average != 0", __LINE__);	
+			relativeError = fabs(longDoubleStatsObject.Normalization() - double(0.0));
+			testFramework.assert(relativeError < doublePrecision, "Subtraction did not remove all of the data. Normalization != 0", __LINE__);
+			//----------------------------------------------------------
+			// Load Data into new Stats Object
+			//----------------------------------------------------------	
+			gpstk::Stats<long double> loadedStatsObject;	
+			testFramework.changeSourceMethod("Load");
+			loadedStatsObject.Load(expectedNVectorAdd, expectedMinimum, expectedMaximum, expectedAverage, expectedVariance, true, expectedNormalization);
 
-			gpstk::Stats<int> test;
-			gpstk::Vector<int> input(5), weight(5);
-			for (int i = 0; i < 5; i++)
-			{
-				input(i) = i+1;
-				weight(i) = 1;
-			}
-			test.Add(input, weight);
-			test.Subtract(input);
-			failMesg = "The SubtractVector() method was unsucessful";			
-			testFramework.assert((test.Average() > -0.000001) && (test.Average() < 0.000001) && (test.Maximum() == 5), failMesg, __LINE__);
-	
-			return testFramework.countFails();
-		}
-		/*	Test to use the += and << operators. 
-			Uses the same data as in the previous steps and should match. */
-		int operatorTest()
-		{
-			TestUtil testFramework( "Stats", "+= Operator", __FILE__, __LINE__ );
-			std::string failMesg;
+			testFramework.assert(loadedStatsObject.N() == expectedNVectorAdd, "Load did not set n properly", __LINE__);
+			relativeError = fabs(loadedStatsObject.Average() - expectedAverage)/expectedAverage;
+			testFramework.assert(relativeError < doublePrecision, "Load did not set the correct average", __LINE__);
+			relativeError = fabs(loadedStatsObject.Maximum() - expectedMaximum)/expectedMaximum;
+			testFramework.assert(relativeError < doublePrecision, "Load did not set the correct maximum", __LINE__);
+			relativeError = fabs(loadedStatsObject.Minimum() - expectedMinimum)/expectedMinimum;
+			testFramework.assert(relativeError < doublePrecision, "Load did not set the correct minimum", __LINE__);	
+			relativeError = fabs(loadedStatsObject.Variance() - expectedVariance)/expectedVariance;
+			testFramework.assert(relativeError < doublePrecision, "Load did not set the correct variance", __LINE__);
+			relativeError = fabs(loadedStatsObject.Normalization() - expectedNormalization)/expectedNormalization;
+			testFramework.assert(relativeError < doublePrecision, "Load did not set the correct normalization", __LINE__);
+			testFramework.assert(loadedStatsObject.Weighted(), "Load did not set Weighted properly", __LINE__);
 
-			gpstk::Stats<int> test1, test2;
-			test1.Add(1,1);
-			test2.Add(2,2);
-			test1.Add(3,3);
-			test1 += test2;
-			std::cout << test1 << std::endl;
-			failMesg = "The += Operator was unsucessful";
-			testFramework.assert((test1.Average() > (7.0/3.0-eps)) && (test1.Average() < (7.0/3.0+eps)), failMesg, __LINE__);
 
-			return testFramework.countFails();
+			//----------------------------------------------------------
+			// Add the Stats objects and dump the information
+			//----------------------------------------------------------	
+			testFramework.changeSourceMethod("OperatorAddAndAssign");			
+			longDoubleStatsObject += loadedStatsObject;
+
+			testFramework.assert(longDoubleStatsObject.N() == expectedNVectorAdd, "Addition of stats objects did not set n properly", __LINE__);
+			relativeError = fabs(longDoubleStatsObject.Average() - expectedAverage)/expectedAverage;
+			testFramework.assert(relativeError < doublePrecision, "Addition of stats objects did not set the correct average", __LINE__);
+			relativeError = fabs(longDoubleStatsObject.Maximum() - expectedMaximum)/expectedMaximum;
+			testFramework.assert(relativeError < doublePrecision, "Addition of stats objects did not set the correct maximum", __LINE__);
+			relativeError = fabs(longDoubleStatsObject.Minimum() - expectedMinimum)/expectedMinimum;
+			testFramework.assert(relativeError < doublePrecision, "Addition of stats objects did not set the correct minimum", __LINE__);	
+			relativeError = fabs(longDoubleStatsObject.Variance() - expectedVariance)/expectedVariance;
+			testFramework.assert(relativeError < doublePrecision, "Addition of stats objects did not set the correct variance", __LINE__);
+			relativeError = fabs(longDoubleStatsObject.Normalization() - expectedNormalization)/expectedNormalization;
+			testFramework.assert(relativeError < doublePrecision, "Addition of stats objects did not set the correct normalization", __LINE__);
+			testFramework.assert(longDoubleStatsObject.Weighted(), "Addition of stats objects did not set Weighted properly", __LINE__);
+
+			std::stringstream obtainedOutput;
+			std::stringstream expectedOutput;
+
+			obtainedOutput << longDoubleStatsObject;
+
+      			std::ofstream savefmt;
+      			savefmt.copyfmt(expectedOutput);
+      			expectedOutput << " N       = " << longDoubleStatsObject.N() << (longDoubleStatsObject.Weighted() ? " ":" not") << " weighted\n";
+			expectedOutput << " Minimum = ";  expectedOutput.copyfmt(savefmt);  expectedOutput << longDoubleStatsObject.Minimum();
+			expectedOutput << " Maximum = ";  expectedOutput.copyfmt(savefmt);  expectedOutput << longDoubleStatsObject.Maximum() << "\n";
+			expectedOutput << " Average = ";  expectedOutput.copyfmt(savefmt);  expectedOutput << longDoubleStatsObject.Average();
+			expectedOutput << " Std Dev = ";  expectedOutput.copyfmt(savefmt);  expectedOutput << longDoubleStatsObject.StdDev();
+			expectedOutput << " Variance = "; expectedOutput.copyfmt(savefmt);  expectedOutput << longDoubleStatsObject.Variance();
+
+			testFramework.changeSourceMethod("OperatorRedirect");
+			testFramework.assert(obtainedOutput.str() == expectedOutput.str(), "Dump of Stats output is not what was expected", __LINE__);
+
+			return testFramework.countFails();					
 		}
 
 	private:
-			double eps;
+		float       floatPrecision;
+		double      doublePrecision;
+		long double longDoublePrecision;
 };
+
+
 
 int main() //Main function to initialize and run all tests above
 {
 	int check, errorCounter = 0;
 	Stats_T testClass;
 
-	check = testClass.AddTest();
+	check = testClass.floatStatsTest();
 	errorCounter += check;
 
-	check = testClass.AddVectorTest();
+	check = testClass.doubleStatsTest();
 	errorCounter += check;
 
-	check = testClass.AverageTest();
-	errorCounter += check;
-
-	check = testClass.MaxTest();
-	errorCounter += check;
-	check = testClass.MinTest();
-	errorCounter += check;
-
-// This will fail with MSNTk. Variance is not calculated correctly. GPSTK is also incorrect.
-	check = testClass.VarianceTest(); 
-	errorCounter += check;
-
-// Standard Deviation is not calculated correctly since variance is not calculated correctly. GPSTk is also incorrect.
-	check = testClass.StdDevTest(); 
-	errorCounter += check;
-
-/* Portion for testing the Subtract Routines. Commented out as they will fail as written.
-   However the tests are designed to demonstrate the shortcomings in these routines. */
-	check = testClass.SubtractTest();
-	errorCounter += check;
-
-	check = testClass.SubtractVectorTest();
-	errorCounter += check;
-
-	// This test will fail as well.
-
-	check = testClass.operatorTest();
+	check = testClass.longDoubleStatsTest();
 	errorCounter += check;
 
 	std::cout << "Total Failures for " << __FILE__ << ": " << errorCounter << std::endl;

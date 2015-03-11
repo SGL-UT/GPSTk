@@ -103,7 +103,7 @@ namespace gpstk
       inline T StdDev(void) const
       {
          if(n <= 1) return T();
-         return SQRT( (long double) Variance() );
+         return SQRT( Variance() );
       }
 
       /// return the normalization constant = sum weights
@@ -401,10 +401,10 @@ namespace gpstk
       }
 
       /// return computed X standard deviation
-      inline T StdDevX(void) const { return SQRT( (long double) VarianceX() ); }
+      inline T StdDevX(void) const { return SQRT( VarianceX() ); }
 
       /// return computed Y standard deviation
-      inline T StdDevY(void) const { return SQRT( (long double) VarianceY() ); }
+      inline T StdDevY(void) const { return SQRT( VarianceY() ); }
 
       /// return slope of best-fit line Y=slope*X + intercept
       inline T Slope(void) const
