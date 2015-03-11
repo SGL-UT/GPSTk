@@ -115,13 +115,18 @@ class Stl_helpers_T
 		gpstk::stats<int> (ilist1);
 		gpstk::stats<float> (flist1);
 
+		float expectedN = 5.0;
+		float expectedMean = 3.0;
+		float expectedSigma = 2.5;
+		expectedSigma = std::sqrt(2.5);
+
 		//---------------------------------------------------------------------------
 		//Verify n was calculated correctly
 		//---------------------------------------------------------------------------
 		testMesg = "The computed n value is incorrect for a integer";
 		testFramework.assert(gpstk::stats<int>(ilist1).n == 5, testMesg, __LINE__);
 		testMesg = "The computed n value is incorrect for a float";
-		testFramework.assert(fabs(gpstk::stats<float>(flist1).n - 5.0) < eps, testMesg, __LINE__);
+		testFramework.assert(fabs(gpstk::stats<float>(flist1).n - expectedN) < eps, testMesg, __LINE__);
 
 		//---------------------------------------------------------------------------
 		//Verify the mean was calculated correctly
@@ -129,7 +134,7 @@ class Stl_helpers_T
 		testMesg = "The computed mean value is incorrect for a integer";
 		testFramework.assert(gpstk::stats<int>(ilist1).mean == 3, testMesg, __LINE__);
 		testMesg = "The computed mean value is incorrect for a float";
-		testFramework.assert(fabs(gpstk::stats<float>(flist1).mean - 3.0) < eps, testMesg, __LINE__);
+		testFramework.assert(fabs(gpstk::stats<float>(flist1).mean - expectedMean) < eps, testMesg, __LINE__);
 		
 		//---------------------------------------------------------------------------
 		//Verify sigma was calculated correctly
@@ -137,7 +142,7 @@ class Stl_helpers_T
 		testMesg = "The computed sigma value is incorrect for a integer";
 		testFramework.assert(gpstk::stats<int>(ilist1).sigma == 1, testMesg, __LINE__);
 		testMesg = "The computed sigma value is incorrect for a float";
-		testFramework.assert(fabs(gpstk::stats<float>(flist1).sigma - (float)std::sqrt(2.5)) < eps, testMesg, __LINE__);
+		testFramework.assert(fabs(gpstk::stats<float>(flist1).sigma - expectedSigma) < eps, testMesg, __LINE__);
 
 		return testFramework.countFails();
 	}
@@ -171,15 +176,20 @@ class Stl_helpers_T
 		std::vector<float> fNone(5);
 		for (float i=10; i<15; i++) {iNone[i-10] = i;};
 
+
+		int expectedIndexOneTime = 3;
+		int expectedIndexTwoTimes = 2;
+		int expectedIndexNone = -1;
+
 		testMesg = "VectorIndex() did not find the first instance of a given integer element";
-		testFramework.assert(gpstk::vectorindex<int>(iOneTime, 3) == 3, testMesg, __LINE__);
-		testFramework.assert(gpstk::vectorindex<int>(iTwoTimes, 3) == 2, testMesg, __LINE__);
-		testFramework.assert(gpstk::vectorindex<int>(iNone, 3) == -1, testMesg, __LINE__);
+		testFramework.assert(gpstk::vectorindex<int>(iOneTime, 3) == expectedIndexOneTime, testMesg, __LINE__);
+		testFramework.assert(gpstk::vectorindex<int>(iTwoTimes, 3) == expectedIndexTwoTimes, testMesg, __LINE__);
+		testFramework.assert(gpstk::vectorindex<int>(iNone, 3) == expectedIndexNone, testMesg, __LINE__);
 		
 		testMesg = "VectorIndex() did not find the first instance of a given float element";
-		testFramework.assert(fabs(gpstk::vectorindex<float>(fOneTime, 3) - 3) < eps, testMesg, __LINE__);
-		testFramework.assert(fabs(gpstk::vectorindex<float>(fTwoTimes, 3) - 2) < eps, testMesg, __LINE__);
-		testFramework.assert(fabs(gpstk::vectorindex<float>(fNone, 3) + 1) < eps, testMesg, __LINE__);
+		testFramework.assert(gpstk::vectorindex<float>(fOneTime, 3) == expectedIndexOneTime, testMesg, __LINE__);
+		testFramework.assert(gpstk::vectorindex<float>(fTwoTimes, 3) == expectedIndexTwoTimes, testMesg, __LINE__);
+		testFramework.assert(gpstk::vectorindex<float>(fNone, 3) == expectedIndexNone, testMesg, __LINE__);
 
 		return testFramework.countFails();
 	}

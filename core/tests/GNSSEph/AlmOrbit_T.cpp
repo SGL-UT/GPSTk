@@ -46,7 +46,7 @@ class AlmOrbit_T : public gpstk::AlmOrbit
 		testMesg = "AF1 not initialized to 0";
 		testFramework.assert(fabs(AlmOrbit::AF1) < eps, testMesg, __LINE__);
 		testMesg = "Toa not initialized to 0";
-		testFramework.assert(fabs(AlmOrbit::Toa) < eps, testMesg, __LINE__);
+		testFramework.assert(AlmOrbit::Toa == 0, testMesg, __LINE__);
 		testMesg = "Xmit_time not initialized to 0";
 		testFramework.assert(AlmOrbit::xmit_time == 0, testMesg, __LINE__);
 		testMesg = "Week not initialized to 0";
