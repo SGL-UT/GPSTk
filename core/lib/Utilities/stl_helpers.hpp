@@ -109,7 +109,7 @@ namespace gpstk
          sumsq += z*z;
       }
    
-      s.sigma = sqrt((double)(sumsq/(s.n-1)));
+      s.sigma = std::sqrt( (double)(sumsq/(s.n-1)) );
 
       return s;
    }
