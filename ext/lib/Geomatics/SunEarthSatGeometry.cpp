@@ -81,6 +81,14 @@ Matrix<double> UpEastNorthGeocentric(Position& P) throw(Exception)
 }
 
 // -----------------------------------------------------------------------------------
+// Same as UpEastNorth, but using geodetic coordinates
+Matrix<double> UpEastNorthGeodetic(Position& P) throw(Exception)
+{
+   try { return UpEastNorth(P, false); }
+   catch(Exception& e) { GPSTK_RETHROW(e); }
+}
+
+// -----------------------------------------------------------------------------------
 // Same as UpEastNorth(), but with rows re-ordered.
 Matrix<double> NorthEastUp(Position& P, bool geocentric) throw(Exception)
 {
@@ -120,6 +128,14 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 Matrix<double> NorthEastUpGeocentric(Position& P) throw(Exception)
 {
    try { return NorthEastUp(P, true); }
+   catch(Exception& e) { GPSTK_RETHROW(e); }
+}
+
+// -----------------------------------------------------------------------------------
+// Same as UpEastNorthGeodetic(), but with rows re-ordered.
+Matrix<double> NorthEastUpGeodetic(Position& P) throw(Exception)
+{
+   try { return NorthEastUp(P, false); }
    catch(Exception& e) { GPSTK_RETHROW(e); }
 }
 

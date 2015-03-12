@@ -73,11 +73,17 @@ namespace gpstk
    /// direction will meet the center of Earth.
    Matrix<double> UpEastNorthGeocentric(Position& P) throw(Exception);
 
+   /// Same as UpEastNorth, but using geodetic coordinates
+   Matrix<double> UpEastNorthGeodetic(Position& P) throw(Exception);
+
    /// Same as UpEastNorth(), but with rows re-ordered.
    Matrix<double> NorthEastUp(Position& P, bool geoc=false) throw(Exception);
 
    /// Same as UpEastNorthGeocentric(), but with rows re-ordered.
    Matrix<double> NorthEastUpGeocentric(Position& P) throw(Exception);
+
+   /// Same as UpEastNorthGeodetic(), but with rows re-ordered.
+   Matrix<double> NorthEastUpGeodetic(Position& P) throw(Exception);
 
    /// Generate a 3x3 rotation Matrix, for direct rotations about one axis
    /// (for XYZ, axis=123), given the rotation angle in radians;
