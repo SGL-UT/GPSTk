@@ -61,69 +61,69 @@ include( BuildSetup.cmake )
 # Define $GPSTK/core/ library source files
 #----------------------------------------
 
-file( GLOB_RECURSE CORE_SRC "core/lib/*.cpp" "core/lib/*.c" )
-file( GLOB_RECURSE CORE_HDRS "core/lib/*.h" "core/lib/*.hpp" )
+file( GLOB_RECURSE CORE_SRC_FILES "core/lib/*.cpp" "core/lib/*.c" )
+file( GLOB_RECURSE CORE_INC_FILES "core/lib/*.h" "core/lib/*.hpp" )
 
 #----------------------------------------
 # Define /core library include directories
 #----------------------------------------
 
 # initialize list of include directories
-set( CORE_INCLUDE_DIRS "" )
+set( CORE_INC_DIRS "" )
 
-foreach( _headerFile ${CORE_HDRS} )
+foreach( _headerFile ${CORE_INC_FILES} )
     get_filename_component( _dir ${_headerFile} PATH )
-    list( APPEND CORE_INCLUDE_DIRS ${_dir} )
+    list( APPEND CORE_INC_DIRS ${_dir} )
 endforeach()
 
-list( REMOVE_DUPLICATES CORE_INCLUDE_DIRS )
+list( REMOVE_DUPLICATES CORE_INC_DIRS )
 
 # Add every directory containing a header file
 # to the project(gpstk) include_directories
-include_directories( ${CORE_INCLUDE_DIRS} )
+include_directories( ${CORE_INC_DIRS} )
 
 # define src and include files needed to build library target
 set( GPSTK_SRC_FILES "" )
-set( GPSTK_HDR_FILES "" )
-list( APPEND GPSTK_SRC_FILES ${CORE_SRC} )
-list( APPEND GPSTK_INC_FILES ${CORE_HDRS} )
+set( GPSTK_INC_FILES "" )
+list( APPEND GPSTK_SRC_FILES ${CORE_SRC_FILES} )
+list( APPEND GPSTK_INC_FILES ${CORE_INC_FILES} )
 
 #============================================================
 # Define $GPSTK/ext/ additions to Library Target Files
 #============================================================
 
 if( BUILD_EXT )
-  file( GLOB_RECURSE EXT_SRC "ext/lib/*.cpp" "ext/lib/*.c" )
-  file( GLOB_RECURSE EXT_HDRS "ext/lib/*.h" "ext/lib/*.hpp" )
+  file( GLOB_RECURSE EXT_SRC_FILES "ext/lib/*.cpp" "ext/lib/*.c" )
+  file( GLOB_RECURSE EXT_INC_FILES "ext/lib/*.h" "ext/lib/*.hpp" )
 
   # Remove getopt.h from non-Windows installs of /ext library
   if( NOT WIN32 )
-    foreach( _headerFile ${EXT_HDRS} )
+    foreach( _headerFile ${EXT_INC_FILES} )
       get_filename_component( _name ${_headerFile} NAME )
       if( ${_name} MATCHES "getopt.h" )
-        list( REMOVE_ITEM EXT_HDRS ${_headerFile} )
+        list( REMOVE_ITEM EXT_INC_FILES ${_headerFile} )
       endif()
     endforeach()
   endif()
 
   # Define ext library include directories
-  set( EXT_INCLUDE_DIRS "" )
+  set( EXT_INC_DIRS "" )
 
-  foreach( _headerFile ${EXT_HDRS} )
+  foreach( _headerFile ${EXT_INC_FILES} )
     get_filename_component( _dir ${_headerFile} PATH )
     get_filename_component( _name ${_headerFile} NAME )
-    list( APPEND EXT_INCLUDE_DIRS ${_dir} )
+    list( APPEND EXT_INC_DIRS ${_dir} )
   endforeach()
 
-  list( REMOVE_DUPLICATES EXT_INCLUDE_DIRS )
+  list( REMOVE_DUPLICATES EXT_INC_DIRS )
 
   # Add every directory containing a header file
   # to the project(gpstk) include_directories
-  include_directories( ${EXT_INCLUDE_DIRS} )
+  include_directories( ${EXT_INC_DIRS} )
 
   # append ext include files needed to build library target
-  list( APPEND GPSTK_SRC_FILES ${EXT_SRC} )
-  list( APPEND GPSTK_INC_FILES ${EXT_HDRS} )
+  list( APPEND GPSTK_SRC_FILES ${EXT_SRC_FILES} )
+  list( APPEND GPSTK_INC_FILES ${EXT_INC_FILES} )
 
 endif()
 
