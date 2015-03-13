@@ -35,6 +35,10 @@ else()
     return()
 endif()
 
+include( GNUInstallDirs )
+# For now, overrride to use 'lib' for the library install dir.
+set ( CMAKE_INSTALL_LIBDIR lib )
+
 #----------------------------------------
 # Option Switches
 #
@@ -134,11 +138,11 @@ endif()
 # GPSTk shared-object library (e.g. libgpstk.so) build target
 add_library( gpstk ${STADYN} ${GPSTK_SRC_FILES} )
 
-# GPSTk library install target, ${CMAKE_INSTALL_PREFIX}/lib
-install( TARGETS gpstk DESTINATION lib )
+# GPSTk library install target
+install( TARGETS gpstk DESTINATION "${CMAKE_INSTALL_LIBDIR}" )
 
-# GPSTk header file install target, ${CMAKE_INSTALL_PREFIX}/include
-install( FILES ${GPSTK_INC_FILES} DESTINATION include )
+# GPSTk header file install target
+install( FILES ${GPSTK_INC_FILES} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}" )
 
 #============================================================
 # Testing
@@ -158,7 +162,7 @@ install( FILES ${GPSTK_INC_FILES} DESTINATION include )
 
 if( TEST_SWITCH )
   enable_testing()
-  set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake/Modules )
+  list( append CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules )
 endif( )
 
 #----------------------------------------
