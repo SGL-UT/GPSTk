@@ -2,11 +2,11 @@
 
 add_executable(lsfilt lsfilt.cpp)
 target_link_libraries(lsfilt gpstk)
-install (TARGETS lsfilt DESTINATION bin)
+install (TARGETS lsfilt DESTINATION "${CMAKE_INSTALL_BINDIR}")
 #add_test(lsfiltTest lsfilt)
 
 add_executable(rstats rstats.cpp)
 target_link_libraries(rstats gpstk)
-install (TARGETS rstats DESTINATION bin)
+install (TARGETS rstats DESTINATION "${CMAKE_INSTALL_BINDIR}")
 #add_test(rstatsTest rstats)
 
