@@ -123,7 +123,7 @@ if( BUILD_EXT )
 
   # append ext include files needed to build library target
   list( APPEND GPSTK_SRC_FILES ${EXT_SRC} )
-  list( APPEND GPSTK_HDR_FILES ${EXT_HDRS} )
+  list( APPEND GPSTK_INC_FILES ${EXT_HDRS} )
 
 endif()
 
@@ -138,7 +138,7 @@ add_library( gpstk ${STADYN} ${GPSTK_SRC_FILES} )
 install( TARGETS gpstk DESTINATION lib )
 
 # GPSTk header file install target, ${CMAKE_INSTALL_PREFIX}/include
-install( FILES ${GPSTK_HDR_FILES} DESTINATION include )
+install( FILES ${GPSTK_INC_FILES} DESTINATION include )
 
 #============================================================
 # Testing
