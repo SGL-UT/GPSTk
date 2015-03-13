@@ -262,6 +262,7 @@ include_directories( ${SWIG_DOC_DIR} )
 #----------------------------------------
 
 # Provide ability to use CMake variables to define some values within the setup.py script
+set( PYTHON_PACKAGE_VERSION "${${PACKAGE_NAME}_VERSION_MAJOR}.${${PACKAGE_NAME}_VERSION_MINOR}" )
 set( SETUP_PY_IN "${CMAKE_CURRENT_SOURCE_DIR}/setup.py.in" )
 set( SETUP_PY    "${INSTALL_PACKAGE_PATH}/setup.py" )
 configure_file( ${SETUP_PY_IN} ${SETUP_PY} )
@@ -278,7 +279,7 @@ configure_file( ${SETUP_PY_IN} ${SETUP_PY} )
 
 if( NOT PYTHON_INSTALL_PREFIX )
     message( WARNING "PYTHON_INSTALL_PREFIX: Install prefix for python package was not set by user." )
-    set( PYTHON_INSTALL_PREFIX $CMAKE_INSTALL_PREFIX )
+    set( PYTHON_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}" )
     message( WARNING "PYTHON_INSTALL_PREFIX: Using CMAKE_INSTALL_PREFIX as the default, so that PYTHON_INSTALL_PREFIX = ${PYTHON_INSTALL_PREFIX}" )
 endif()
 
@@ -290,7 +291,7 @@ install( CODE "execute_process(COMMAND ${PYTHON} ${SETUP_PY} install --prefix=${
 #------------------------------------------------------------
 
 file( GLOB swig_includes ${CMAKE_CURRENT_SOURCE_DIR}/src/* )
-install( FILES ${swig_includes} ${CMAKE_CURRENT_SOURCE_DIR}/gpstk.i DESTINATION include )
+install( FILES ${swig_includes} ${CMAKE_CURRENT_SOURCE_DIR}/gpstk.i DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}" )
 
 #------------------------------------------------------------
 # The End
