@@ -9,6 +9,9 @@
 cmake_minimum_required( VERSION 2.8.4 )
 
 project( gpstk )
+set( gpstk_VERSION_MAJOR "2" )
+set( gpstk_VERSION_MINOR "3" )
+set( gpstk_VERSION_PATCH "1" )
 
 #============================================================
 # Set up
@@ -58,10 +61,8 @@ include( BuildSetup.cmake )
 # Define $GPSTK/core/ library source files
 #----------------------------------------
 
-file( GLOB_RECURSE CORE_SRC "core/lib/*.cpp" )
-file( GLOB_RECURSE CORE_SRC2 "core/lib/*.c" )
-file( GLOB_RECURSE CORE_HDRS "core/lib/*.h" )
-file( GLOB_RECURSE CORE_HDRS2 "core/lib/*.hpp" )
+file( GLOB_RECURSE CORE_SRC "core/lib/*.cpp" "core/lib/*.c" )
+file( GLOB_RECURSE CORE_HDRS "core/lib/*.h" "core/lib/*.hpp" )
 
 #----------------------------------------
 # Define /core library include directories
@@ -75,11 +76,6 @@ foreach( _headerFile ${CORE_HDRS} )
     list( APPEND CORE_INCLUDE_DIRS ${_dir} )
 endforeach()
 
-foreach( _headerFile ${CORE_HDRS2} )
-    get_filename_component( _dir ${_headerFile} PATH )
-    list( APPEND CORE_INCLUDE_DIRS ${_dir} )
-endforeach()
-
 list( REMOVE_DUPLICATES CORE_INCLUDE_DIRS )
 
 # Add every directory containing a header file
@@ -89,18 +85,16 @@ include_directories( ${CORE_INCLUDE_DIRS} )
 # define src and include files needed to build library target
 set( GPSTK_SRC_FILES "" )
 set( GPSTK_HDR_FILES "" )
-list( APPEND GPSTK_SRC_FILES ${CORE_SRC} ${CORE_SRC2} )
-list( APPEND GPSTK_INC_FILES ${CORE_HDRS} ${CORE_HDRS2} )
+list( APPEND GPSTK_SRC_FILES ${CORE_SRC} )
+list( APPEND GPSTK_INC_FILES ${CORE_HDRS} )
 
 #============================================================
 # Define $GPSTK/ext/ additions to Library Target Files
 #============================================================
 
 if( BUILD_EXT )
-  file( GLOB_RECURSE EXT_SRC "ext/lib/*.cpp" )
-  file( GLOB_RECURSE EXT_SRC2 "ext/lib/*.c" )
-  file( GLOB_RECURSE EXT_HDRS "ext/lib/*.h" )
-  file( GLOB_RECURSE EXT_HDRS2 "ext/lib/*.hpp" )
+  file( GLOB_RECURSE EXT_SRC "ext/lib/*.cpp" "ext/lib/*.c" )
+  file( GLOB_RECURSE EXT_HDRS "ext/lib/*.h" "ext/lib/*.hpp" )
 
   # Remove getopt.h from non-Windows installs of /ext library
   if( NOT WIN32 )
@@ -121,11 +115,6 @@ if( BUILD_EXT )
     list( APPEND EXT_INCLUDE_DIRS ${_dir} )
   endforeach()
 
-  foreach( _headerFile ${EXT_HDRS2} )
-    get_filename_component( _dir ${_headerFile} PATH )
-    list( APPEND EXT_INCLUDE_DIRS ${_dir} )
-  endforeach()
-
   list( REMOVE_DUPLICATES EXT_INCLUDE_DIRS )
 
   # Add every directory containing a header file
@@ -133,8 +122,8 @@ if( BUILD_EXT )
   include_directories( ${EXT_INCLUDE_DIRS} )
 
   # append ext include files needed to build library target
-  list( APPEND GPSTK_SRC_FILES ${EXT_SRC} ${EXT_SRC2} )
-  list( APPEND GPSTK_HDR_FILES ${EXT_HDRS} ${EXT_HDRS2} )
+  list( APPEND GPSTK_SRC_FILES ${EXT_SRC} )
+  list( APPEND GPSTK_HDR_FILES ${EXT_HDRS} )
 
 endif()
 
