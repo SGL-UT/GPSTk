@@ -9,6 +9,9 @@
 cmake_minimum_required( VERSION 2.8.4 )
 
 project( gpstk )
+set( gpstk_VERSION_MAJOR "2" )
+set( gpstk_VERSION_MINOR "3" )
+set( gpstk_VERSION_PATCH "1" )
 
 #============================================================
 # Set up
@@ -58,83 +61,69 @@ include( BuildSetup.cmake )
 # Define $GPSTK/core/ library source files
 #----------------------------------------
 
-file( GLOB_RECURSE CORE_SRC "core/lib/*.cpp" )
-file( GLOB_RECURSE CORE_SRC2 "core/lib/*.c" )
-file( GLOB_RECURSE CORE_HDRS "core/lib/*.h" )
-file( GLOB_RECURSE CORE_HDRS2 "core/lib/*.hpp" )
+file( GLOB_RECURSE CORE_SRC_FILES "core/lib/*.cpp" "core/lib/*.c" )
+file( GLOB_RECURSE CORE_INC_FILES "core/lib/*.h" "core/lib/*.hpp" )
 
 #----------------------------------------
 # Define /core library include directories
 #----------------------------------------
 
 # initialize list of include directories
-set( CORE_INCLUDE_DIRS "" )
+set( CORE_INC_DIRS "" )
 
-foreach( _headerFile ${CORE_HDRS} )
+foreach( _headerFile ${CORE_INC_FILES} )
     get_filename_component( _dir ${_headerFile} PATH )
-    list( APPEND CORE_INCLUDE_DIRS ${_dir} )
+    list( APPEND CORE_INC_DIRS ${_dir} )
 endforeach()
 
-foreach( _headerFile ${CORE_HDRS2} )
-    get_filename_component( _dir ${_headerFile} PATH )
-    list( APPEND CORE_INCLUDE_DIRS ${_dir} )
-endforeach()
-
-list( REMOVE_DUPLICATES CORE_INCLUDE_DIRS )
+list( REMOVE_DUPLICATES CORE_INC_DIRS )
 
 # Add every directory containing a header file
 # to the project(gpstk) include_directories
-include_directories( ${CORE_INCLUDE_DIRS} )
+include_directories( ${CORE_INC_DIRS} )
 
 # define src and include files needed to build library target
 set( GPSTK_SRC_FILES "" )
-set( GPSTK_HDR_FILES "" )
-list( APPEND GPSTK_SRC_FILES ${CORE_SRC} ${CORE_SRC2} )
-list( APPEND GPSTK_INC_FILES ${CORE_HDRS} ${CORE_HDRS2} )
+set( GPSTK_INC_FILES "" )
+list( APPEND GPSTK_SRC_FILES ${CORE_SRC_FILES} )
+list( APPEND GPSTK_INC_FILES ${CORE_INC_FILES} )
 
 #============================================================
 # Define $GPSTK/ext/ additions to Library Target Files
 #============================================================
 
 if( BUILD_EXT )
-  file( GLOB_RECURSE EXT_SRC "ext/lib/*.cpp" )
-  file( GLOB_RECURSE EXT_SRC2 "ext/lib/*.c" )
-  file( GLOB_RECURSE EXT_HDRS "ext/lib/*.h" )
-  file( GLOB_RECURSE EXT_HDRS2 "ext/lib/*.hpp" )
+  file( GLOB_RECURSE EXT_SRC_FILES "ext/lib/*.cpp" "ext/lib/*.c" )
+  file( GLOB_RECURSE EXT_INC_FILES "ext/lib/*.h" "ext/lib/*.hpp" )
 
   # Remove getopt.h from non-Windows installs of /ext library
   if( NOT WIN32 )
-    foreach( _headerFile ${EXT_HDRS} )
+    foreach( _headerFile ${EXT_INC_FILES} )
       get_filename_component( _name ${_headerFile} NAME )
       if( ${_name} MATCHES "getopt.h" )
-        list( REMOVE_ITEM EXT_HDRS ${_headerFile} )
+        list( REMOVE_ITEM EXT_INC_FILES ${_headerFile} )
       endif()
     endforeach()
   endif()
 
   # Define ext library include directories
-  set( EXT_INCLUDE_DIRS "" )
+  set( EXT_INC_DIRS "" )
 
-  foreach( _headerFile ${EXT_HDRS} )
+  foreach( _headerFile ${EXT_INC_FILES} )
     get_filename_component( _dir ${_headerFile} PATH )
     get_filename_component( _name ${_headerFile} NAME )
-    list( APPEND EXT_INCLUDE_DIRS ${_dir} )
+    list( APPEND EXT_INC_DIRS ${_dir} )
   endforeach()
 
-  foreach( _headerFile ${EXT_HDRS2} )
-    get_filename_component( _dir ${_headerFile} PATH )
-    list( APPEND EXT_INCLUDE_DIRS ${_dir} )
-  endforeach()
-
-  list( REMOVE_DUPLICATES EXT_INCLUDE_DIRS )
+  list( REMOVE_DUPLICATES EXT_INC_DIRS )
 
   # Add every directory containing a header file
   # to the project(gpstk) include_directories
-  include_directories( ${EXT_INCLUDE_DIRS} )
+  include_directories( ${EXT_INC_DIRS} )
 
   # append ext include files needed to build library target
-  list( APPEND GPSTK_SRC_FILES ${EXT_SRC} ${EXT_SRC2} )
-  list( APPEND GPSTK_HDR_FILES ${EXT_HDRS} ${EXT_HDRS2} )
+  list( APPEND GPSTK_SRC_FILES ${EXT_SRC_FILES} )
+  list( APPEND GPSTK_INC_FILES ${EXT_INC_FILES} )
 
 endif()
 
@@ -149,7 +138,7 @@ add_library( gpstk ${STADYN} ${GPSTK_SRC_FILES} )
 install( TARGETS gpstk DESTINATION lib )
 
 # GPSTk header file install target, ${CMAKE_INSTALL_PREFIX}/include
-install( FILES ${GPSTK_HDR_FILES} DESTINATION include )
+install( FILES ${GPSTK_INC_FILES} DESTINATION include )
 
 #============================================================
 # Testing
