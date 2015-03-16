@@ -741,6 +741,89 @@ class CommonTime_T : public CommonTime
             return testFramework.countFails();
         }
 
+
+        //============================================================
+        // Test Suite: rolloverTest()
+        //============================================================
+        //
+        // Test to check arithmetic operations function properly when
+        // rolling over or under the three time variables
+        //
+        //============================================================
+        int rolloverTest( void )
+        {
+            TestUtil testFramework( "CommonTime", "addSeconds", __FILE__, __LINE__ );
+
+	    CommonTime  fsodRollover;  fsodRollover.set(10 , 6789 , 0.000999);
+            CommonTime  msodRollover;  msodRollover.set(10 , 86399, 0.0001  );
+            CommonTime  dayRollunder;  dayRollunder.set(10 , 2    , 0.0001  );
+            CommonTime msodRollunder; msodRollunder.set(10 , 10   , 0.000001);
+
+            CommonTime  expectedfsodROver;  expectedfsodROver.set(10, 6789 , 0.001000);
+            CommonTime  expectedmsodROver;  expectedmsodROver.set(11, 0    , 0.0001);
+            CommonTime  expectedDayRUnder;  expectedDayRUnder.set( 9, 86399, 0.0001); 
+            CommonTime expectedmsodRUnder; expectedmsodRUnder.set(10, 9    , 0.999999);
+
+            long    obtainedDay,  expectedDay;
+            long   obtainedMsod, expectedMsod;
+            double obtainedFsod, expectedFsod;
+	    double diff;
+            long   incrementSecLong   = 1L      , decrementSecLong   = -3L;
+            double incrementSecDouble = 0.000001, decrementSecDouble = -0.000002;
+
+            //--------------------------------
+	    //Rollover Tests
+            //--------------------------------
+
+            //fsod Rollover test
+            fsodRollover.addSeconds(incrementSecDouble);
+            fsodRollover.get(obtainedDay,obtainedMsod,obtainedFsod);
+            expectedfsodROver.get(expectedDay,expectedMsod,expectedFsod);
+
+            testFramework.assert(obtainedDay == expectedDay  , "Rollover of fsod affected day value" , __LINE__);
+            testFramework.assert(obtainedMsod == expectedMsod, "Rollover of fsod did not change msod", __LINE__);
+            diff = fabs(obtainedFsod - expectedFsod);
+            testFramework.assert(diff < eps, "fsod did not rollover properly"      , __LINE__);
+ 
+
+            //msod Rollover test
+            msodRollover.addSeconds(incrementSecLong);
+            msodRollover.get(obtainedDay,obtainedMsod,obtainedFsod);
+            expectedmsodROver.get(expectedDay,expectedMsod,expectedFsod);
+
+            testFramework.assert(obtainedDay == expectedDay  , "Rollover of msod did not change day" , __LINE__);
+            testFramework.assert(obtainedMsod == expectedMsod, "msod did not rollover properly"       , __LINE__);
+            diff = fabs(obtainedFsod - expectedFsod);
+            testFramework.assert(diff < eps, "Rollover of msod affected fsod oddly", __LINE__);
+
+
+            //--------------------------------
+	    //Rollunder Tests
+            //--------------------------------
+
+            //fsod Rollover test
+            dayRollunder.addSeconds(decrementSecLong);
+            dayRollunder.get(obtainedDay,obtainedMsod,obtainedFsod);
+            expectedDayRUnder.get(expectedDay,expectedMsod,expectedFsod);
+
+            testFramework.assert(obtainedDay == expectedDay  , "Rollunder of msod did not change day" , __LINE__);
+            testFramework.assert(obtainedMsod == expectedMsod, "msod did not rollunder properly"       , __LINE__);
+            diff = fabs(obtainedFsod - expectedFsod);
+            testFramework.assert(diff < eps, "Rollunder of msod affected fsod oddly", __LINE__);
+ 
+
+            //msod Rollover test
+            msodRollunder.addSeconds(decrementSecDouble);
+            msodRollunder.get(obtainedDay,obtainedMsod,obtainedFsod);
+            expectedmsodRUnder.get(expectedDay,expectedMsod,expectedFsod);
+
+            testFramework.assert(obtainedDay == expectedDay  , "Rollunder of fsod affected day value" , __LINE__);
+            testFramework.assert(obtainedMsod == expectedMsod, "Rollunder of fsod did not change msod", __LINE__);
+            diff = fabs(obtainedFsod - expectedFsod);
+            testFramework.assert(diff < eps, "fsod did not rollunder properly"      , __LINE__);
+
+            return testFramework.countFails();
+        }
     private:
 
         double eps;
@@ -768,6 +851,9 @@ int main( void )
     errorCounter += check;
 
     check = testClass.arithmeticTest();
+    errorCounter += check;
+
+    check = testClass.rolloverTest();
     errorCounter += check;
 
     check = testClass.operatorTest();
