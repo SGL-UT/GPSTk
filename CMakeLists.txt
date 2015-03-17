@@ -162,7 +162,7 @@ install( FILES ${GPSTK_INC_FILES} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}" )
 
 if( TEST_SWITCH )
   enable_testing()
-  list( append CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules )
+  list( APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules )
 endif( )
 
 #----------------------------------------
