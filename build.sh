@@ -43,7 +43,7 @@ user_build_root=$gpstk_root/build
 case $(uname) in
     Linux)
         last_core_index=$(cat /proc/cpuinfo | grep "processor" | awk '{print $3}' | tail -1)
-        num_cores=$(echo "$last_core_index + 1" | bc)
+        num_cores=$(($last_core_index + 1))
         ;;
     Darwin)
         num_cores=$(sysctl -n hw.ncpu)
