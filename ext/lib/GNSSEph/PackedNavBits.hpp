@@ -69,7 +69,7 @@ namespace gpstk
                     const CommonTime& transmitTimeArg);
 
       PackedNavBits(const PackedNavBits& right);             // Copy constructor
-//      PackedNavBits& operator=(const PackedNavBits& right); // Copy assignment
+      PackedNavBits& operator=(const PackedNavBits& right); // Copy assignment
 
       PackedNavBits* clone() const;
 
@@ -123,44 +123,39 @@ namespace gpstk
       std::string asString(const int startBit, 
                            const int numChars) const;
 
-         /* Unpack mehthods that join two disjoint 
+         /* Unpack mehthods that join multiple disjoint 
             navigation message areas as a single field
             NOTE: startBit1 is associated with the most significant section
                   startBit2 is associated with the least significant section
          */
          /* Unpack a split unsigned long integer */
-      unsigned long asUnsignedLong(const int startBit1, 
-                                   const int numBits1,
-                                   const int startBit2,
-                                   const int numBits2, 
+      unsigned long asUnsignedLong(const unsigned startBits[],
+                                   const unsigned numBits[],
+                                   const unsigned len,
                                    const int scale ) const;
 
          /* Unpack a signed long integer */
-      long asLong(const int startBit1, 
-                  const int numBits1, 
-                  const int startBit2,
-                  const int numBits2, 
+      long asLong(const unsigned startBits[],
+                  const unsigned numBits[],
+                  const unsigned len, 
                   const int scale ) const;
 
          /* Unpack a split unsigned double */
-      double asUnsignedDouble( const int startBit1, 
-                               const int numBits1, 
-                               const int startBit2,
-                               const int numBits2, 
+      double asUnsignedDouble( const unsigned startBits[],
+                               const unsigned numBits[],
+                               const unsigned len,
                                const int power2) const;
 
          /* Unpack a split signed double */
-      double asSignedDouble( const int startBit1, 
-                             const int numBits1, 
-                             const int startBit2,
-                             const int numBits2, 
+      double asSignedDouble( const unsigned startBits[],
+                             const unsigned numBits[],
+                             const unsigned len,
                              const int power2) const;
 
          /* Unpack a split double with units of semicircles */
-      double asDoubleSemiCircles( const int startBit1, 
-                                  const int numBits1, 
-                                  const int startBit2,
-                                  const int numBits2, 
+      double asDoubleSemiCircles( const unsigned startBits[],
+                                  const unsigned numBits[],
+                                  const unsigned len,
                                   const int power2) const;      
 
          /***    PACKING FUNCTIONS *********************************/
@@ -202,6 +197,9 @@ namespace gpstk
           * If numChars > length of String, blanks will be added at the end. */
       void addString(const std::string String, 
                      const int numChars)
+         throw(InvalidParameter);
+      
+      void addPackedNavBits( const PackedNavBits &pnb)
          throw(InvalidParameter);
    
          /*

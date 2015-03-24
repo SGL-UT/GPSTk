@@ -83,7 +83,7 @@ namespace gpstk
          bits[i] = right.bits[i];
       }
    }
- /*  
+   
       // Copy assignment
    PackedNavBits& PackedNavBits::operator=(const PackedNavBits& right)
    {
@@ -97,7 +97,7 @@ namespace gpstk
          bits[i] = right.bits[i];
       }
    }
-*/
+
 
    PackedNavBits* PackedNavBits::clone() const
    {
@@ -232,41 +232,74 @@ namespace gpstk
 
 
       /* Unpack a split unsigned long integer */ 
-   unsigned long PackedNavBits::asUnsignedLong(const int startBit1,  const int numBits1,
-                                               const int startBit2,  const int numBits2, 
+   unsigned long PackedNavBits::asUnsignedLong(const unsigned startBits[],
+                                               const unsigned numBits[],
+                                               const unsigned len,
                                                const int scale ) const
    {
-      uint64_t temp1 = asUint64_t( startBit1, numBits1 );
-      uint64_t temp2 = asUint64_t( startBit2, numBits2 );
-      unsigned long ulong = (unsigned long) temp1;
-      ulong <<= numBits2;
-      ulong |= temp2;
+      
+      unsigned long ulong = (unsigned long) asUint64_t(startBits[0], numBits[0]);
+      uint64_t temp;
+      for(int i = 1; i < len; i++){
+         temp = asUint64_t(startBits[i], numBits[i]);
+         ulong <<= numBits[i];
+         ulong |= temp;
+      }
+      
+      //uint64_t temp1 = asUint64_t( startBit1, numBits1 );
+      //uint64_t temp2 = asUint64_t( startBit2, numBits2 );
+      //unsigned long ulong = (unsigned long) temp1;
+      //ulong <<= numBits2;
+      //ulong |= temp2;
+      
       ulong *= scale; 
       return( ulong ); 
    }
 
       /* Unpack a split signed long integer */
-   long PackedNavBits::asLong(const int startBit1,   const int numBits1, 
-                              const int startBit2,   const int numBits2, 
+   long PackedNavBits::asLong(const unsigned startBits[],
+                              const unsigned numBits[],
+                              const unsigned len,
                               const int scale ) const
    {
-      int64_t s = SignExtend( startBit1, numBits1);
-      uint64_t temp2 = asUint64_t( startBit2, numBits2 );
-      s <<= numBits2;
-      s |= temp2;
+      
+      int64_t s = SignExtend(startBits[0], numBits[0]);
+      uint64_t temp;
+      for(int i = 1; i < len; i++){
+         temp = asUint64_t(startBits[i], numBits[i]);
+         s <<= numBits[i];
+         s |= temp;
+      }
+      
+      //int64_t s = SignExtend( startBit1, numBits1);
+      //uint64_t temp2 = asUint64_t( startBit2, numBits2 );
+      //s <<= numBits2;
+      //s |= temp2;
+      
       return( (long) (s * scale ) );
    }
 
       /* Unpack a split unsigned double */
-   double PackedNavBits::asUnsignedDouble( const int startBit1, const int numBits1, 
-                                           const int startBit2, const int numBits2, 
+   double PackedNavBits::asUnsignedDouble(const unsigned startBits[],
+                                          const unsigned numBits[],
+                                          const unsigned len,
                                           const int power2) const
    {
-      uint64_t temp1 = asUint64_t( startBit1, numBits1 );
-      uint64_t temp2 = asUint64_t( startBit2, numBits2 );
-      unsigned long ulong = (unsigned long) temp1;
-      ulong <<= numBits2;
-      ulong |= temp2;
+      
+      unsigned long ulong = (unsigned long) asUint64_t(startBits[0], numBits[0]);
+      int64_t temp;
+      for(int i = 1; i < len; i++){
+         temp = asUint64_t(startBits[i], numBits[i]);
+         ulong <<= numBits[i];
+         ulong |= temp;
+      }
+      
+      
+      //uint64_t temp1 = asUint64_t( startBit1, numBits1 );
+      //uint64_t temp2 = asUint64_t( startBit2, numBits2 );
+      //unsigned long ulong = (unsigned long) temp1;
+      //ulong <<= numBits2;
+      //ulong |= temp2;
       
          // Convert to double and scale
       double dval = (double) ulong;
@@ -275,14 +308,23 @@ namespace gpstk
    }
 
       /* Unpack a split signed double */
-   double PackedNavBits::asSignedDouble( const int startBit1, const int numBits1, 
-                                         const int startBit2, const int numBits2, 
-                                         const int power2) const
+   double PackedNavBits::asSignedDouble(const unsigned startBits[],
+                                        const unsigned numBits[],
+                                        const unsigned len,
+                                        const int power2) const
    {
-      int64_t s = SignExtend( startBit1, numBits1);
-      uint64_t temp2 = asUint64_t( startBit2, numBits2 );
-      s <<= numBits2;
-      s |= temp2;
+      int64_t s = SignExtend(startBits[0], numBits[0]);
+      uint64_t temp;
+      for(int i = 1; i < len; i++){
+         temp = asUint64_t(startBits[i], numBits[i]);
+         s <<= numBits[i];
+         s |= temp;
+      }
+      
+      //int64_t s = SignExtend( startBit1, numBits1);
+      //uint64_t temp2 = asUint64_t( startBit2, numBits2 );
+      //s <<= numBits2;
+      //s |= temp2;
 
          // Convert to double and scale
       double dval = (double) s;
@@ -291,11 +333,12 @@ namespace gpstk
    }
 
       /* Unpack a split double with units of semicircles */
-   double PackedNavBits::asDoubleSemiCircles( const int startBit1, const int numBits1, 
-                                              const int startBit2, const int numBits2, 
-                                              const int power2) const
+   double PackedNavBits::asDoubleSemiCircles(const unsigned startBits[],
+                                             const unsigned numBits[],
+                                             const unsigned len,
+                                             const int power2) const
    {
-      double drad = asSignedDouble( startBit1, numBits1, startBit2, numBits2, power2);
+      double drad = asSignedDouble( startBits, numBits, len, power2);
       return (drad*PI);
    }      
 
@@ -432,6 +475,19 @@ namespace gpstk
       for (i = 0; i < numPadBlanks; ++i)
          addUint64_t(space, 8);
    }  
+
+   void PackedNavBits::addPackedNavBits(const PackedNavBits& right)
+      throw(InvalidParameter)
+   {
+      int old_bits_used = bits_used;
+      bits_used += right.bits_used;
+      bits.resize(bits_used);
+      
+      for (int i=0;i<bits_used;i++)
+      {
+         bits[i+old_bits_used] = right.bits[i];
+      }
+   }
 
    void PackedNavBits::addUint64_t( const uint64_t value, const int numBits )
    {
