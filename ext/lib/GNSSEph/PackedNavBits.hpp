@@ -221,7 +221,7 @@ namespace gpstk
           * nav messages while avoiding the time tags.
           */
       bool matchBits(const PackedNavBits& right, 
-                     short startBit=1, short endBit=-1) const;
+                     short startBit=0, short endBit=-1, bool checkOverhead=true) const;
       
          /* Resize the vector holding the packed data. */
       void trimsize();
