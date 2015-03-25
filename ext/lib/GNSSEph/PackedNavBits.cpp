@@ -634,17 +634,17 @@ namespace gpstk
    }
 
    bool PackedNavBits::matchBits(const PackedNavBits& right, 
-                                 short startBit, short endBit) const
+                                 short startBit, short endBit, bool checkOverhead ) const
    {
          // If the two objects don't have the same number of bits,
          // don't even try to compare them. 
       if (bits.size()!=right.bits.size()) return false; 
 
          // If not the same satellite, return false. 
-      if (satSys!=right.satSys) return false;
+      if (checkOverhead && satSys!=right.satSys) return false;
 
          // If not the same observation types (carrier, code) return false.
-      if (obsID!=right.obsID) return false;
+      if (checkOverhead && obsID!=right.obsID) return false;
 
          // Check for nonsense arguments
       if (endBit==-1 ||
