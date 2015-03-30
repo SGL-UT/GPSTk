@@ -29,7 +29,7 @@ target_link_libraries(iqdump simlib)
 
 add_executable(codeDump codeDump.cpp)
 target_link_libraries(codeDump simlib)
-install (TARGETS codeDump DESTINATION "${CMAKE_INSTALL_BINDIR}")
+install (TARGETS codeDump DESTINATION ${CMAKE_INSTALL_BINDIR} EXPORT ${EXPORT_TARGETS_FILENAME})
 
 add_executable(position position.cpp)
 target_link_libraries(position simlib)
