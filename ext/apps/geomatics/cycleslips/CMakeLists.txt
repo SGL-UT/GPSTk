@@ -2,6 +2,7 @@
 
 add_executable(DiscFix DiscFix.cpp)
 target_link_libraries(DiscFix gpstk)
-install (TARGETS DiscFix DESTINATION "${CMAKE_INSTALL_BINDIR}")
+install (TARGETS DiscFix DESTINATION ${CMAKE_INSTALL_BINDIR} EXPORT ${EXPORT_TARGETS_FILENAME})
+#add_test(DiscFixTest DiscFix)
 
 

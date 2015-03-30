@@ -24,7 +24,8 @@ target_link_libraries(baselib gpstk)
 
 add_executable(DDBase DDBase.cpp)
 target_link_libraries(DDBase baselib)
-install (TARGETS DDBase DESTINATION "${CMAKE_INSTALL_BINDIR}")
+install (TARGETS DDBase DESTINATION ${CMAKE_INSTALL_BINDIR} EXPORT ${EXPORT_TARGETS_FILENAME})
+#add_test(DDBaseTest DDBase)
 
 
 
