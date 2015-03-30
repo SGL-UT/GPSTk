@@ -6,12 +6,13 @@
 #           Is dependend on by $GPSTK/build.sh
 #============================================================
 
-cmake_minimum_required( VERSION 2.8.5 )
+cmake_minimum_required( VERSION 2.8.4 )
 
 project( gpstk )
-set( "${PROJECT_NAME}_VERSION_MAJOR" "2" )
-set( "${PROJECT_NAME}_VERSION_MINOR" "6" )
-set( "${PROJECT_NAME}_VERSION_PATCH" "0" )
+set( GPSTK_VERSION_MAJOR "2" )
+set( GPSTK_VERSION_MINOR "5" )
+set( GPSTK_VERSION_PATCH "0" )
+set( GPSTK_VERSION "${GPSTK_VERSION_MAJOR}.${GPSTK_VERSION_MINOR}.${GPSTK_VERSION_PATCH}" )
 
 #============================================================
 # Set up
@@ -35,9 +36,13 @@ else()
     return()
 endif()
 
+# This sets up veriables contining GNU standard installation locations.
 include( GNUInstallDirs )
-# For now, overrride to use 'lib' for the library install dir.
-set ( CMAKE_INSTALL_LIBDIR lib )
+# For now, override to use 'lib' for the library install dir.
+set( CMAKE_INSTALL_LIBDIR lib )
+
+# Set a filename for collecting exported targets.
+set( EXPORT_TARGETS_FILENAME "${PROJECT_NAME}Targets" )
 
 #----------------------------------------
 # Option Switches
@@ -92,16 +97,6 @@ set( GPSTK_INC_FILES "" )
 list( APPEND GPSTK_SRC_FILES ${CORE_SRC_FILES} )
 list( APPEND GPSTK_INC_FILES ${CORE_INC_FILES} )
 
-# Remove getopt.h from non-Windows installs
-if( NOT WIN32 )
-  foreach( _headerFile ${GPSTK_INC_FILES} )
-    get_filename_component( _name ${_headerFile} NAME )
-    if( ${_name} MATCHES "getopt.h" )
-      list( REMOVE_ITEM GPSTK_INC_FILES ${_headerFile} )
-    endif()
-  endforeach()
-endif()
-
 #============================================================
 # Define $GPSTK/ext/ additions to Library Target Files
 #============================================================
@@ -109,6 +104,16 @@ endif()
 if( BUILD_EXT )
   file( GLOB_RECURSE EXT_SRC_FILES "ext/lib/*.cpp" "ext/lib/*.c" )
   file( GLOB_RECURSE EXT_INC_FILES "ext/lib/*.h" "ext/lib/*.hpp" )
+
+  # Remove getopt.h from non-Windows installs of /ext library
+  if( NOT WIN32 )
+    foreach( _headerFile ${EXT_INC_FILES} )
+      get_filename_component( _name ${_headerFile} NAME )
+      if( ${_name} MATCHES "getopt.h" )
+        list( REMOVE_ITEM EXT_INC_FILES ${_headerFile} )
+      endif()
+    endforeach()
+  endif()
 
   # Define ext library include directories
   set( EXT_INC_DIRS "" )
@@ -136,13 +141,13 @@ endif()
 #============================================================
 
 # GPSTk shared-object library (e.g. libgpstk.so) build target
-add_library( gpstk ${STADYN} ${GPSTK_SRC_FILES} ${GPSTK_INC_FILES} )
+add_library( gpstk ${STADYN} ${GPSTK_SRC_FILES} )
 
 # GPSTk library install target
-install( TARGETS gpstk DESTINATION "${CMAKE_INSTALL_LIBDIR}" EXPORT "${PROJECT_NAME}Config" )
+install( TARGETS gpstk DESTINATION "${CMAKE_INSTALL_LIBDIR}" EXPORT "${EXPORT_TARGETS_FILENAME}" )
 
-# GPSTk header file install target \todo without "/gpstk"?
-install( FILES ${GPSTK_INC_FILES} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/gpstk" )
+# GPSTk header file install target
+install( FILES ${GPSTK_INC_FILES} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}" )
 
 #============================================================
 # Testing
@@ -184,10 +189,22 @@ endif()
 # Export the project import cmake files.
 #----------------------------------------
 
-configure_file( "${CMAKE_SOURCE_DIR}/ProjectConfig-misc.cmake.in" "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config-misc.cmake" )
-# \todo make smth with it
-#install( FILES "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config-misc.cmake" DESTINATION "${CMAKE_INSTALL_DATADIR}/cmake/${PROJECT_NAME}" )
-#install( EXPORT "${PROJECT_NAME}Config" DESTINATION "${CMAKE_INSTALL_DATADIR}/cmake/${PROJECT_NAME}" )
+include( CMakePackageConfigHelpers )
+set( INSTALL_CONFIG_DIR ${CMAKE_INSTALL_DATADIR}/cmake/${PROJECT_NAME})
+configure_package_config_file( ${CMAKE_CURRENT_SOURCE_DIR}/projectConfig.cmake.in 
+                               ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+                               INSTALL_DESTINATION ${INSTALL_CONFIG_DIR}
+                               PATH_VARS CMAKE_INSTALL_LIBDIR CMAKE_INSTALL_INCLUDEDIR CMAKE_INSTALL_BINDIR CMAKE_INSTALL_PREFIX INSTALL_CONFIG_DIR )
+write_basic_package_version_file( ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+                                  VERSION ${GPSTK_VERSION}
+                                  COMPATIBILITY ExactVersion )
+install( FILES 
+           ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake 
+           ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+         DESTINATION 
+           ${INSTALL_CONFIG_DIR} )
+
+install( EXPORT ${EXPORT_TARGETS_FILENAME} DESTINATION ${INSTALL_CONFIG_DIR} )
 
 #============================================================
 # The End

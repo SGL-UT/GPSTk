@@ -66,7 +66,7 @@ requirements_list = [ "python >= 2.7.3",
 #----------------------------------------
 
 setup( name              = "gpstk",
-       version           = "@PYTHON_PACKAGE_VERSION@",
+       version           = "@GPSTK_VERSION@",
        author            = "Space and Geophysics Lab, ARL, University of Texas at Austin",
        author_email      = "gpstk@arlut.utexas.edu",
        url               = "http://www.gpstk.org/",
