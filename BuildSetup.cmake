@@ -3,49 +3,53 @@ if( DEBUG_SWITCH )
     message( STATUS "DEBUG: Included CMake file BuildSetup.cmake" )
 endif()
 
-#----------------------------------------
-# Set Platform-Dependent Compiler options
-#----------------------------------------
+#========================================
+# Set Platform-Dependent Options
+#========================================
 
+#----------------------------------------
+# Shared(Dynamic) vs. Static libraries
+#----------------------------------------
 if( UNIX )
-
-    # Non-Windows platforms will use shared/dynamic libraries, not static
     set( STADYN "SHARED" )
-
-    if( APPLE )
-		# OSX Compiler Options
-        set( CMAKE_SHARED_LIBRARY_SUFFIX .dylib )
-        set( CMAKE_INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib" )
-        set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -shared" )
-    elseif( ${CMAKE_SYSTEM_NAME} MATCHES "SunOS" )
-        if( NOT CMAKE_COMPILER_IS_GNUCC )
-			# Solaris Compiler Options
-            set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -mt" )
-            set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -compat=5 -erroff=hidevf,wvarhidemem,badargtype2w" )
-        endif()
-    else()
-        set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -shared" )
-    endif()
-
 elseif( WIN32 )
-
-    # Windows platforms will use static libraries, not shared/dynamic
     set( STADYN "STATIC" )
+endif()
 
+#----------------------------------------
+# Platform-dependent Compiler flags
+#----------------------------------------
+if( ${CMAKE_SYSTEM_NAME} MATCHES "SunOS" )
+    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -compat=5 -erroff=hidevf,wvarhidemem,badargtype2w" )
+    set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -mt -shared" )
+elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
+    set( CMAKE_SHARED_LIBRARY_SUFFIX .dylib )
+    set( CMAKE_INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib" )
+    set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -shared" )
+elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" )
+    set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -shared" )
+elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
+
+else()
+    message( ERROR "ERROR: CMAKE_SYSTEM_NAME = ${CMAKE_SYSTEM_NAME}, not supported. Currently supported: Linux, Darwin, SunOS, " )
+endif()
+
+#----------------------------------------
+# Windows Visual Studio flags
+#----------------------------------------
+if( WIN32 )
     if( MSVC11 )
-		#Compiler Options for Microsoft Visual Studio 11 (2012)
+        #Compiler Options for Microsoft Visual Studio 11 (2012)
         add_definitions( /MP /D_SCL_SECURE_NO_WARNINGS /D_CRT_SECURE_NO_WARNINGS /D_USE_MATH_DEFINES /EHsc /GR /wd"4274"
             /wd"4503" /wd"4290" /wd"4267" /wd"4250" /wd"4244" /wd"4101" /wd"4800" /wd"4068" )
     elseif( MSVC10 ) 
-		#Compiler Options for Microsoft Visual Studio 10 (2010)
+        #Compiler Options for Microsoft Visual Studio 10 (2010)
         include_directories( "C:/Program\ Files\ (x86)/GnuWin32/include" )
         link_directories( "C:/Program\ Files\ (x86)/GnuWin32/lib" )
         add_definitions( /MP /D_SCL_SECURE_NO_WARNINGS /D_CRT_SECURE_NO_WARNINGS /D_USE_MATH_DEFINES /EHsc /GR /wd"4274"
             /wd"4503" /wd"4290" /wd"4267" /wd"4250" /wd"4244" /wd"4101" /wd"4800" /wd"4068" )
     endif( MSVC11 )
-
-endif( UNIX )
-
+endif()
 
 #----------------------------------------
 # Set Build path options
