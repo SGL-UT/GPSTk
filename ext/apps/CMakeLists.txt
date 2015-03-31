@@ -1,5 +1,6 @@
 # apps/CMakeLists.txt
 
+add_subdirectory (mdpscreen)
 add_subdirectory (checktools)
 add_subdirectory (clocktools)
 add_subdirectory (converters)
