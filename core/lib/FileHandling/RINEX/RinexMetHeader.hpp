@@ -220,7 +220,8 @@ namespace gpstk
     static const std::string stringEoH;           ///< "END OF HEADER"
     //@}
 
-  /// Struct for holding information about a sensor
+#ifndef SWIG // nested structs not supported by SWIG
+  /// Struct for holding information about a sensor 
    struct sensorType
    {
       std::string model;    ///< The manufacturer of the sensor.
@@ -228,7 +229,10 @@ namespace gpstk
       double accuracy;      ///< The accuracy of the sensor.
       RinexMetHeader::RinexMetType obsType; ///< The obs type this sensor corresponds to.
    };
+#endif
 
+
+#ifndef SWIG // nested structs not supported by SWIG
    /// Struct for holding info about a sensor position
    struct sensorPosType
    {
@@ -240,6 +244,7 @@ namespace gpstk
       /// The obs type of the sensor this position corresponds to.
       RinexMetHeader::RinexMetType obsType;
    };
+#endif
 
   protected:
 

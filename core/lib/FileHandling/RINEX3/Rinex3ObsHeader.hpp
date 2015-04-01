@@ -181,6 +181,7 @@ namespace gpstk
          allValid302            = 0x041205AB // RINEX 3.02
       };
    
+#ifndef SWIG // nested structs/classes not supported by SWIG
       /// RINEX 3 DCBS/PCVS info (for differential code bias and phase center variations corr.)
       struct Rinex3CorrInfo
       {
@@ -188,7 +189,9 @@ namespace gpstk
                      name,    ///< program name used to apply corrections
                      source;  ///< source of corrections (URL)
       };
+#endif
 
+#ifndef SWIG // nested structs/classes not supported by SWIG
       /// RINEX 2 extra "WAVELENGTH FACT" lines
       struct ExtraWaveFact
       {
@@ -197,6 +200,7 @@ namespace gpstk
          /// vector of wavelength factor values
          short wavelengthFactor[2];
       };
+#endif
 
       /// Storage for R2 <-> R3 conversion of obstypes during reallyGet/Put
       /// Vector of strings containing ver 2 obs types (e.g. "C1" "L2") defined in reallyGet;
@@ -240,7 +244,11 @@ namespace gpstk
       double        antennaZeroDirAzi;             ///< ANTENNA ZERODIR AZI            (optional)
       gpstk::Triple antennaZeroDirXYZ;             ///< ANTENNA ZERODIR XYZ            (optional)
       short wavelengthFactor[2];                   ///< default WAVELENGTH FACT        R2 only
+
+#ifndef SWIG // nested structs/classes not supported by SWIG
       std::vector<ExtraWaveFact> extraWaveFactList;///< extra (per sat) WAVELENGTH FACT R2 only
+#endif
+
       gpstk::Triple centerOfMass;                  ///< vehicle CENTER OF MASS: XYZ    (optional)
       std::vector<RinexObsID> obsTypeList;         ///< number & types of observations R2 only
       std::map<std::string,std::vector<RinexObsID> > mapObsTypes; ///< map <sys char, vec<ObsID> >;
@@ -250,8 +258,12 @@ namespace gpstk
       CivilTime firstObs,                          ///< TIME OF FIRST OBS
                  lastObs;                          ///< TIME OF LAST OBS               (optional)
       int receiverOffset;                          ///< RCV CLOCK OFFS APPL            (optional)
+
+#ifndef SWIG // nested structs/classes not supported by SWIG
       std::vector<Rinex3CorrInfo> infoDCBS;        ///< DCBS INFO                      (optional)
       std::vector<Rinex3CorrInfo> infoPCVS;        ///< PCVS INFO                      (optional)
+#endif
+
       int factor, factorPrev;                      ///< scale factor (temp holders)
       RinexObsID sysPhaseShiftObsID;               ///< save ObsID for cont. "PHASE SHIFT" R3.01
       std::map<std::string, std::map<RinexObsID, std::map<RinexSatID,double> > > sysPhaseShift;
