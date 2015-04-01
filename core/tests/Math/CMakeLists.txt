@@ -8,9 +8,37 @@ add_executable(MathBase_T MathBase_T.cpp)
 target_link_libraries(MathBase_T gpstk)
 add_test(Math_MathBase MathBase_T)
 
-add_executable(Matrix_T Matrix_T.cpp)
-target_link_libraries(Matrix_T gpstk)
-add_test(Math_Matrix Matrix_T)
+add_executable(Matrix_Initialization_T Matrix_Initialization_T.cpp)
+target_link_libraries(Matrix_Initialization_T gpstk)
+add_test(Math_Matrix_Initialization Matrix_Initialization_T)
+
+add_executable(Matrix_Operators_T Matrix_Operators_T.cpp)
+target_link_libraries(Matrix_Operators_T gpstk)
+add_test(Math_Matrix_Operators Matrix_Operators_T)
+
+add_executable(Matrix_Sizing_T Matrix_Sizing_T.cpp)
+target_link_libraries(Matrix_Sizing_T gpstk)
+add_test(Math_Matrix_Sizing Matrix_Sizing_T)
+
+add_executable(Matrix_InverseTranspose_T Matrix_InverseTranspose_T.cpp)
+target_link_libraries(Matrix_InverseTranspose_T gpstk)
+add_test(Math_Matrix_InverseTranspose Matrix_InverseTranspose_T)
+
+add_executable(Matrix_LUDecomp_T Matrix_LUDecomp_T.cpp)
+target_link_libraries(Matrix_LUDecomp_T gpstk)
+add_test(Math_Matrix_LUDecomp Matrix_LUDecomp_T)
+
+add_executable(Matrix_HouseHolder_T Matrix_HouseHolder_T.cpp)
+target_link_libraries(Matrix_HouseHolder_T gpstk)
+add_test(Math_Matrix_HouseHolder Matrix_HouseHolder_T)
+
+add_executable(Matrix_Cholesky_T Matrix_Cholesky_T.cpp)
+target_link_libraries(Matrix_Cholesky_T gpstk)
+add_test(Math_Matrix_Cholesky Matrix_Cholesky_T)
+
+add_executable(Matrix_SVD_T Matrix_SVD_T.cpp)
+target_link_libraries(Matrix_SVD_T gpstk)
+add_test(Math_Matrix_SVD Matrix_SVD_T)
 
 add_executable(MiscMath_T MiscMath_T.cpp)
 target_link_libraries(MiscMath_T gpstk)
