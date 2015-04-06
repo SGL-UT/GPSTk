@@ -1,3 +1,0 @@
-SubDir TOP IonoModel ;
-
-TestMain IonoModel/xIonoModel.tst : IonoModel/xIonoModelM.cpp IonoModel/xIonoModel.cpp IonoModel/IonoModel.cpp ;
