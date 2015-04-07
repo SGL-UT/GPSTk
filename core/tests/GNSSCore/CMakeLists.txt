@@ -4,9 +4,9 @@ add_executable(Convhelp_T Convhelp_T.cpp)
 target_link_libraries(Convhelp_T gpstk)
 add_test(GNSSCore_Convhelp Convhelp_T)
 
-#add_executable(IonoModel_T IonoModel_T.cpp)
-#target_link_libraries(IonoModel_T gpstk)
-#add_test(GNSSCore_IonoModel IonoModel_T)
+add_executable(IonoModel_T IonoModel_T.cpp)
+target_link_libraries(IonoModel_T gpstk)
+add_test(GNSSCore_IonoModel IonoModel_T)
 
 add_executable(IonoModelStore_T IonoModelStore_T.cpp)
 target_link_libraries(IonoModelStore_T gpstk)
