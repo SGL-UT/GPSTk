@@ -136,7 +136,7 @@ endif()
 #============================================================
 
 # GPSTk shared-object library (e.g. libgpstk.so) build target
-add_library( gpstk ${STADYN} ${GPSTK_SRC_FILES} )
+add_library( gpstk ${STADYN} ${GPSTK_SRC_FILES} ${GPSTK_INC_FILES} )
 
 # GPSTk library install target
 install( TARGETS gpstk DESTINATION "${CMAKE_INSTALL_LIBDIR}" EXPORT "${PROJECT_NAME}Config" )
