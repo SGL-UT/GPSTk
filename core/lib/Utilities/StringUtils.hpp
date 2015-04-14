@@ -1333,6 +1333,50 @@ namespace gpstk
 
          return toReturn;
       }
+      /** Split a string by whitespace, respecting single and double quotes
+       * @param  aStr           the string to be splitted
+       * @param  trimWhitespace will trim the token string, default is false
+       * @param  ignoreEmpty    will ignore the empty tokens, default is true
+       */
+   inline std::vector<std::string> splitOnWhitespace(const std::string& aStr,
+                                         bool trimWhitespace = false,
+                                         bool ignoreEmpty = true)
+   {
+      std::vector<std::string> toReturn;
+      std::string::size_type begPos = 0;
+      std::string::size_type endPos = 0;
+      std::string::size_type tokenLength = 0;
+      std::string currentDelimiter = " ";
+
+      while (std::string::npos != endPos && aStr.length() > begPos)
+      {
+         if ( aStr.compare(begPos,1,"\"") == 0 || aStr.compare(begPos,1,"\'") == 0)
+         {
+             // if the current char is a quote, use it as the current delimiter
+             currentDelimiter = aStr[begPos];
+         }
+         endPos = aStr.find_first_of(currentDelimiter, begPos+1);
+
+         tokenLength = endPos - begPos;
+         if (currentDelimiter.compare(0,1," ") != 0)
+         {
+             // if this token is quoted, make sure to capture the trailing quote
+             tokenLength++;
+         }
+
+         std::string token = aStr.substr(begPos, tokenLength);
+
+         if(trimWhitespace) token = gpstk::StringUtils::strip(token);
+
+         if(!token.empty() || !ignoreEmpty) toReturn.push_back(token);
+
+         // find the next token
+         begPos = endPos+1;
+      }
+
+      return toReturn;
+   }
+
 
    } // namespace StringUtils
 
