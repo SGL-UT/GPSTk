@@ -565,42 +565,75 @@ class StringUtils_T
             TestUtil testFramework( "StringUtils", "splitOnWhitespace", __FILE__, __LINE__ );
             std::string failMesg;
 
-
-
             // no quotes
-            std::string originalString1("String with no quotes");
-            std::vector<std::string> expectedResult1;
-            expectedResult1.push_back("String");
-            expectedResult1.push_back("with");
-            expectedResult1.push_back("no");
-            expectedResult1.push_back("quotes");
-            std::vector<std::string> observedResult1 = splitOnWhitespace(originalString1);
+            std::string originalString("String with no quotes");
+            std::vector<std::string> expectedResult;
+            expectedResult.push_back("String");
+            expectedResult.push_back("with");
+            expectedResult.push_back("no");
+            expectedResult.push_back("quotes");
+            std::vector<std::string> observedResult = splitOnWhitespace(originalString);
 
             failMesg = "Verify splitOnWhitespace works with no quotes";
-            testFramework.assert(expectedResult1 == observedResult1, failMesg, __LINE__);
-
+            testFramework.assert(expectedResult == observedResult, failMesg, __LINE__);
 
             // double quotes
-            std::string originalString2("String with \"double quoted values\"");
-            std::vector<std::string> expectedResult2;
-            expectedResult2.push_back("String");
-            expectedResult2.push_back("with");
-            expectedResult2.push_back("\"double quoted values\"");
-            std::vector<std::string> observedResult2 = splitOnWhitespace(originalString2);
+            originalString = std::string("String with \"double quoted values\"");
+            expectedResult.clear();
+            observedResult.clear();
+            expectedResult.push_back("String");
+            expectedResult.push_back("with");
+            expectedResult.push_back("\"double quoted values\"");
+            observedResult = splitOnWhitespace(originalString);
 
             failMesg = "Verify splitOnWhitespace works with double quotes";
-            testFramework.assert(expectedResult2 == observedResult2, failMesg, __LINE__);
+            testFramework.assert(expectedResult == observedResult, failMesg, __LINE__);
 
             // single quotes
-            std::string originalString3("String with \'single quoted values\'");
-            std::vector<std::string> expectedResult3;
-            expectedResult3.push_back("String");
-            expectedResult3.push_back("with");
-            expectedResult3.push_back("\'single quoted values\'");
-            std::vector<std::string> observedResult3 = splitOnWhitespace(originalString3);
+            originalString= std::string("String with \'single quoted values\'");
+            expectedResult.clear();
+            observedResult.clear();
+            expectedResult.push_back("String");
+            expectedResult.push_back("with");
+            expectedResult.push_back("\'single quoted values\'");
+            observedResult = splitOnWhitespace(originalString);
 
             failMesg = "Verify splitOnWhitespace works with double quotes";
-            testFramework.assert(expectedResult3 == observedResult3, failMesg, __LINE__);
+            testFramework.assert(expectedResult == observedResult, failMesg, __LINE__);
+
+            // leading quote
+            originalString= std::string("\"First words\" quoted");
+            expectedResult.clear();
+            observedResult.clear();
+            expectedResult.push_back("\"First words\"");
+            expectedResult.push_back("quoted");
+            std::cout << expectedResult.size() << std::endl;
+            std::cout << expectedResult[0] << std::endl;
+            std::cout << expectedResult[1] << std::endl;
+            observedResult = splitOnWhitespace(originalString);
+            std::cout << observedResult.size() << std::endl;
+            std::cout << observedResult[0] << std::endl;
+            std::cout << observedResult[1] << std::endl;
+
+            failMesg = "Verify splitOnWhitespace works with leading quote";
+            testFramework.assert(expectedResult == observedResult, failMesg, __LINE__);
+
+            // back to back quotes
+            originalString= std::string("\"Back to\" \"back quotes\"");
+            expectedResult.clear();
+            observedResult.clear();
+            expectedResult.push_back("\"Back to\"");
+            expectedResult.push_back("\"back quotes\"");
+            std::cout << expectedResult.size() << std::endl;
+            std::cout << expectedResult[0] << std::endl;
+            std::cout << expectedResult[1] << std::endl;
+            observedResult = splitOnWhitespace(originalString);
+            std::cout << observedResult.size() << std::endl;
+            std::cout << observedResult[0] << std::endl;
+            std::cout << observedResult[1] << std::endl;
+
+            failMesg = "Verify splitOnWhitespace works with leading quote";
+            testFramework.assert(expectedResult == observedResult, failMesg, __LINE__);
 
             return testFramework.countFails();
         }

@@ -1333,6 +1333,7 @@ namespace gpstk
 
          return toReturn;
       }
+
       /** Split a string by whitespace, respecting single and double quotes
        * @param  aStr           the string to be splitted
        * @param  trimWhitespace will trim the token string, default is false
@@ -1348,7 +1349,7 @@ namespace gpstk
       std::string::size_type tokenLength = 0;
       std::string currentDelimiter = " ";
 
-      while (std::string::npos != endPos && aStr.length() > begPos)
+      while (std::string::npos != endPos && aStr.length() != endPos)
       {
          if ( aStr.compare(begPos,1,"\"") == 0 || aStr.compare(begPos,1,"\'") == 0)
          {
@@ -1357,12 +1358,14 @@ namespace gpstk
          }
          endPos = aStr.find_first_of(currentDelimiter, begPos+1);
 
-         tokenLength = endPos - begPos;
-         if (currentDelimiter.compare(0,1," ") != 0)
+         if (currentDelimiter.compare(0,1," ") != 0
+                 && aStr.length() != endPos
+                 && std::string::npos != endPos)
          {
              // if this token is quoted, make sure to capture the trailing quote
-             tokenLength++;
+             endPos++;
          }
+         tokenLength = endPos - begPos;
 
          std::string token = aStr.substr(begPos, tokenLength);
 
@@ -1376,7 +1379,6 @@ namespace gpstk
 
       return toReturn;
    }
-
 
    } // namespace StringUtils
 
