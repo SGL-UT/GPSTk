@@ -577,6 +577,23 @@ class StringUtils_T
             failMesg = "Verify splitOnWhitespace works with no quotes";
             testFramework.assert(expectedResult == observedResult, failMesg, __LINE__);
 
+            // empty string
+            originalString = "";
+            expectedResult.clear();
+            observedResult = splitOnWhitespace(originalString);
+
+            failMesg = "Verify splitOnWhitespace works with empty string";
+            testFramework.assert(expectedResult == observedResult, failMesg, __LINE__);
+
+            // only whitespace
+            originalString = " ";
+            expectedResult.clear();
+            expectedResult.push_back(" ");
+            observedResult = splitOnWhitespace(originalString);
+
+            failMesg = "Verify splitOnWhitespace works with just whitespace";
+            testFramework.assert(expectedResult == observedResult, failMesg, __LINE__);
+
             // double quotes
             originalString = std::string("String with \"double quoted values\"");
             expectedResult.clear();
@@ -607,13 +624,7 @@ class StringUtils_T
             observedResult.clear();
             expectedResult.push_back("\"First words\"");
             expectedResult.push_back("quoted");
-            std::cout << expectedResult.size() << std::endl;
-            std::cout << expectedResult[0] << std::endl;
-            std::cout << expectedResult[1] << std::endl;
             observedResult = splitOnWhitespace(originalString);
-            std::cout << observedResult.size() << std::endl;
-            std::cout << observedResult[0] << std::endl;
-            std::cout << observedResult[1] << std::endl;
 
             failMesg = "Verify splitOnWhitespace works with leading quote";
             testFramework.assert(expectedResult == observedResult, failMesg, __LINE__);
@@ -624,13 +635,7 @@ class StringUtils_T
             observedResult.clear();
             expectedResult.push_back("\"Back to\"");
             expectedResult.push_back("\"back quotes\"");
-            std::cout << expectedResult.size() << std::endl;
-            std::cout << expectedResult[0] << std::endl;
-            std::cout << expectedResult[1] << std::endl;
             observedResult = splitOnWhitespace(originalString);
-            std::cout << observedResult.size() << std::endl;
-            std::cout << observedResult[0] << std::endl;
-            std::cout << observedResult[1] << std::endl;
 
             failMesg = "Verify splitOnWhitespace works with leading quote";
             testFramework.assert(expectedResult == observedResult, failMesg, __LINE__);
