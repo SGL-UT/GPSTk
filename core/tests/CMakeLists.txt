@@ -1,5 +1,6 @@
 # lib/CMakeLists.txt
 
+add_subdirectory( ClockModel )
 add_subdirectory( TimeHandling )  
 add_subdirectory( FileDirProc )
 add_subdirectory( Math )
@@ -9,7 +10,6 @@ add_subdirectory( Utilities )
 add_subdirectory( GNSSEph )
 
 # add_subdirectory( AppFrame )
-# add_subdirectory( ClockModel )
 # add_subdirectory( CommandLine )
 add_subdirectory( RefTime )
 
