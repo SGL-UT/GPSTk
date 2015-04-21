@@ -19,12 +19,14 @@ message( STATUS "Inside gpstk/swig/CMakeLists.txt, PYTHON_INSTALL_PREFIX = ${PYT
 # If user does not pass in the full-path to the python executable,
 # then figure it out by running python.
 if( NOT PYTHON_EXECUTABLE )
-    message( WARNING  "PYTHON_EXECUTABLE is undefined. Will attempt find a python instance. Next time, pass in a full path to cmake using, e.g., cmake -DPYTHON_EXECUTABLE=/usr/bin/python2.7" )
-    execute_process( COMMAND python -c
-		             "import sys; print sys.executable"
-                     OUTPUT_VARIABLE PYTHON_EXECUTABLE
-                     OUTPUT_STRIP_TRAILING_WHITESPACE
-                    )
+
+    find_package( PythonInterp )
+#    message( WARNING  "PYTHON_EXECUTABLE is undefined. Will attempt find a python instance. Next time, pass in a full path to cmake using, e.g., cmake -DPYTHON_EXECUTABLE=/usr/bin/python2.7" )
+#    execute_process( COMMAND python -c
+#		             "import sys; print sys.executable"
+#                     OUTPUT_VARIABLE PYTHON_EXECUTABLE
+#                     OUTPUT_STRIP_TRAILING_WHITESPACE
+#                    )
 endif()
 
 # If PYTHON_EXECUTABLE is still empty, something is severely wrong,
@@ -80,7 +82,7 @@ if( DEBUG_SWITCH )
     message( STATUS "DEBUG: SWIG: PYTHON_VERSION           = ${PYTHON_VERSION}" )
     message( STATUS "DEBUG: SWIG: PYTHON_LIBRARIES         = ${PYTHON_LIBRARIES}" )
     message( STATUS "DEBUG: SWIG: PYTHON_LIBRARY           = ${PYTHON_LIBRARY}" )
-    message( STATUS "DEBUG: SWIG: PYTHON_INCLUDE_DIR       = ${PYTHON_INCLUDE_DIR}" )
+    message( STATUS "DEBUG: SWIG: PYTHON_INCLUDE_DIRS      = ${PYTHON_INCLUDE_DIRS}" )
 endif()
 
 if( NOT PYTHONLIBS_FOUND )

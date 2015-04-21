@@ -177,6 +177,7 @@ if( BUILD_EXT )
 endif()
 	
 if( BUILD_PYTHON )
+   include( PythonSetup.cmake )
    add_subdirectory( swig )
 endif()
 
