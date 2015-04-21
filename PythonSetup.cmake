@@ -17,8 +17,8 @@ include( CustomPythonSetup.cmake
          OPTIONAL
          RESULT_VARIABLE PYTHON_CUSTOM_CONFIG )
 if( ${PYTHON_CUSTOM_CONFIG} MATCHES "NOTFOUND" )
-    find_package( PythonInterp )
-    find_package( PythonLibs ${PYTHON_VERSION} REQUIRED )
+    find_package( PythonInterp 2.7 )
+    find_package( PythonLibs ${PYTHON_VERSION_STRING} REQUIRED )
 
     set( PYTHON_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX} )
 endif()
