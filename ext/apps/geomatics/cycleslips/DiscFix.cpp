@@ -468,16 +468,16 @@ int ProcessOneEntireEpoch(RinexObsData& roe) throw(Exception)
          lli = vector<unsigned short>(4,0);
          ssi = vector<unsigned short>(4,0);
          otmap = it->second;
-         if( (jt = otmap.find(rhead.obsTypeList[inL1])) != otmap.end()) {
-            data[0] = jt->second.data;
-            lli[0] = jt->second.lli;
-            ssi[0] = jt->second.ssi;
-         }
-         if( (jt = otmap.find(rhead.obsTypeList[inL2])) != otmap.end()) {
-            data[1] = jt->second.data;
-            lli[1] = jt->second.lli;
-            ssi[1] = jt->second.ssi;
-         }
+//         if( (jt = otmap.find(rhead.obsTypeList[inL1])) != otmap.end()) {
+//            data[0] = jt->second.data;
+//            lli[0] = jt->second.lli;
+//            ssi[0] = jt->second.ssi;
+//         }
+//         if( (jt = otmap.find(rhead.obsTypeList[inL2])) != otmap.end()) {
+//            data[1] = jt->second.data;
+//            lli[1] = jt->second.lli;
+//            ssi[1] = jt->second.ssi;
+//         }
          if( (jt = otmap.find(rhead.obsTypeList[inP1])) != otmap.end()) {
             data[2] = jt->second.data;
             lli[2] = jt->second.lli;
