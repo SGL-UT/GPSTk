@@ -72,8 +72,8 @@ namespace gpstk {
       ObsID::cbDesc[ObsID::cbE5ab]      = "L5a+b";         //Rinex 8
       ObsID::cbDesc[ObsID::cbE6]        = "E6";            //Rinex 6
       ObsID::cbDesc[ObsID::cbB1]        = "B1";            //Rinex 1
-      ObsID::cbDesc[ObsID::cbB2]        = "B7";            //Rinex 7
-      ObsID::cbDesc[ObsID::cbB3]        = "B6";            //Rinex 6
+      ObsID::cbDesc[ObsID::cbB2]        = "B2";            //Rinex 7
+      ObsID::cbDesc[ObsID::cbB3]        = "B3";            //Rinex 6
       ObsID::cbDesc[ObsID::cbL1L2]      = "comboL1L2";     //Rinex 3
       ObsID::cbDesc[ObsID::cbUndefined] = "undefined";     //Rinex -
 
@@ -131,12 +131,12 @@ namespace gpstk {
       ObsID::tcDesc[ObsID::tcCI1]       = "BDSIB1";        //Rinex I    // BeiDou L1 I code
       ObsID::tcDesc[ObsID::tcCQ1]       = "BDSQB1";        //Rinex Q    // BeiDou L1 Q code
       ObsID::tcDesc[ObsID::tcCIQ1]      = "BDSI+QB1";      //Rinex X    // BeiDou L1 I+Q code
-      ObsID::tcDesc[ObsID::tcCI7]       = "BDSIL7";        //Rinex I    // BeiDou L7 I code
-      ObsID::tcDesc[ObsID::tcCQ7]       = "BDSQL7";        //Rinex Q    // BeiDou L7 Q code
-      ObsID::tcDesc[ObsID::tcCIQ7]      = "BDSI+QL7";      //Rinex X    // BeiDou L7 I+Q code
-      ObsID::tcDesc[ObsID::tcCI6]       = "BDSIL6";        //Rinex I    // BeiDou L6 I code
-      ObsID::tcDesc[ObsID::tcCQ6]       = "BDSQL6";        //Rinex Q    // BeiDou L6 Q code
-      ObsID::tcDesc[ObsID::tcCIQ6]      = "BDSI+QL6";      //Rinex X    // BeiDou L6 I+Q code
+      ObsID::tcDesc[ObsID::tcCI7]       = "BDSIB2";        //Rinex I    // BeiDou B2 I code
+      ObsID::tcDesc[ObsID::tcCQ7]       = "BDSQB2";        //Rinex Q    // BeiDou B2 Q code
+      ObsID::tcDesc[ObsID::tcCIQ7]      = "BDSI+QB2";      //Rinex X    // BeiDou B2 I+Q code
+      ObsID::tcDesc[ObsID::tcCI6]       = "BDSIB3";        //Rinex I    // BeiDou B3 I code
+      ObsID::tcDesc[ObsID::tcCQ6]       = "BDSQB3";        //Rinex Q    // BeiDou B3 Q code
+      ObsID::tcDesc[ObsID::tcCIQ6]      = "BDSI+QB3";      //Rinex X    // BeiDou B3 I+Q code
 
       ObsID::tcDesc[ObsID::tcUndefined] = "undefined";
 
@@ -215,8 +215,8 @@ namespace gpstk {
       ObsID::cb2char[ObsID::cbG1] = '1';
       ObsID::cb2char[ObsID::cbG2] = '2';
       ObsID::cb2char[ObsID::cbB1] = '1';
-      ObsID::cb2char[ObsID::cbB2] = '7';
-      ObsID::cb2char[ObsID::cbB3] = '6';
+      ObsID::cb2char[ObsID::cbB2] = '2';
+      ObsID::cb2char[ObsID::cbB3] = '3';
 
       ObsID::tc2char[ObsID::tcC]    = 'C';
       ObsID::tc2char[ObsID::tcGCA]  = 'C';
