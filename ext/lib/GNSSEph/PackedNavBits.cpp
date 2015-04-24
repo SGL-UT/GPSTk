@@ -83,7 +83,8 @@ namespace gpstk
          bits[i] = right.bits[i];
       }
    }
-   
+ 
+   /*
       // Copy assignment
    PackedNavBits& PackedNavBits::operator=(const PackedNavBits& right)
    {
@@ -96,8 +97,9 @@ namespace gpstk
       {
          bits[i] = right.bits[i];
       }
+	  //TODO: return *this;
    }
-
+   */
 
    PackedNavBits* PackedNavBits::clone() const
    {
