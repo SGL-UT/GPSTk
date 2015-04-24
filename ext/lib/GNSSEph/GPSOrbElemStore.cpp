@@ -149,7 +149,7 @@ namespace gpstk
                  << " TOC " << printTime(oe->ctToc,fmt)
                  << " KEY " << printTime(ei->first,fmt);
                s << " begVal: " << printTime(oe->beginValid,fmt)
-                 << "q endVal: " << printTime(oe->endValid,fmt); 
+                 << " endVal: " << printTime(oe->endValid,fmt); 
                 
                s << std::endl;
             } //end inner for-loop */
@@ -550,6 +550,7 @@ namespace gpstk
 	      OrbElemMap::iterator eiPrev;
          bool begin = true;
          double previousOffset = 0.0;
+         long previousToe = 0.0;
          bool previousIsOffset = false; 
          bool currentIsOffset = false;
          bool previousBeginAdjusted = false;
@@ -587,7 +588,9 @@ namespace gpstk
                //cout << " current, previous Offset = " << currentOffset << ", " << previousOffset << endl; 
             
                   // If this set is offset AND the previous set is offset AND
-                  // the two offsets are the same, then this is the SECOND
+                  // the two offsets are the same AND the difference
+                  // in time between the two Toe == two hours, 
+                  // then this is the SECOND
                   // set of elements in an upload.  In that case the OrbElem
                   // load routines have conservatively set the beginning time
                   // of validity to the transmit time because there was no
@@ -603,9 +606,11 @@ namespace gpstk
                   // loop without destroying the integrity of the
                   // iterator.  This is handled later in a second
                   // loop.  See notes on the second loop, below. 
+               long diffToe = Toe - previousToe;
                if (previousIsOffset &&
                    currentIsOffset  &&
-                   currentOffset==previousOffset)
+                   currentOffset==previousOffset &&
+                   diffToe==7200)
                {
                  //cout << "*** Adjusting beginValid.  Initial value: "
                  //     << printTime(oe->beginValid,tForm); 
@@ -686,6 +691,7 @@ namespace gpstk
             
                // Update condition flags for next loop
             previousIsOffset = currentIsOffset;
+            previousToe      = Toe;
 
                // If beginValid was adjusted for THIS oe, set
                // the flag previousBeginAdjusted so we have that
