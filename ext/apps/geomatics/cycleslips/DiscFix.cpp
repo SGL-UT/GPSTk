@@ -929,7 +929,7 @@ void WriteRINEXdata(CommonTime& WriteEpoch, const CommonTime targetTime) throw(E
                	rd.data = SPList[in].data(SPIndexList[in],L2);
                	roe.obs[sat][RinexObsHeader::L2] = rd;
 
-               	config.oflog << "Out "
+  /*             	config.oflog << "Out "
                	   << printTime(WriteEpoch,config.format)
                	   << " " << printTime(roe.time,config.format)
                	   << " " << sat
@@ -940,8 +940,9 @@ void WriteRINEXdata(CommonTime& WriteEpoch, const CommonTime targetTime) throw(E
                	   << " " << setw(13) << SPList[in].data(SPIndexList[in],P2)
                	   << " " << setw(13) << SPList[in].data(SPIndexList[in],L1)
                	   << " " << setw(13) << SPList[in].data(SPIndexList[in],L2)
-               	   << endl;
+               	   << endl; */
 					}
+			
 
                   // go to next point
                SPIndexList[in]++;
