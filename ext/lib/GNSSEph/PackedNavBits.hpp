@@ -69,7 +69,7 @@ namespace gpstk
                     const CommonTime& transmitTimeArg);
 
       PackedNavBits(const PackedNavBits& right);             // Copy constructor
-      PackedNavBits& operator=(const PackedNavBits& right); // Copy assignment
+      //PackedNavBits& operator=(const PackedNavBits& right); // Copy assignment
 
       PackedNavBits* clone() const;
 
