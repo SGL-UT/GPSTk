@@ -102,7 +102,7 @@ namespace gpstk
           * Store a subframe in this object.  This method is provided in 
           * order to allow construction of an EngEphemeris object for
           * cases where a receiver only provides the 24 msb of each
-          * word and strips the parity.l  
+          * word and strips the parity.
           * @param subframe ten word navigation subframe (minus the six
           * parity bits) stored in the 24 least-significant bits of
           * each array index.
@@ -444,7 +444,7 @@ namespace gpstk
           * Values contained in SubFrame 1.
           * @param tlm the new value for the TLM word
           * @param how the new value for the HOW
-          * @param asalert the new falue for the A-S alert flag
+          * @param asalert the new value for the A-S alert flag
           * @param fullweek the new value for the full GPS week
           * @param cflags the nve values for the L2 code flags
           * @param acc the new value for the SV accuracy flag
