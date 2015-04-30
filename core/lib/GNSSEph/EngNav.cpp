@@ -561,7 +561,8 @@ namespace gpstk
 
    uint32_t EngNav :: fixParity(uint32_t sfword,
                                 uint32_t psfword,
-                                bool nib)
+                                bool nib,
+                                bool knownUpright)
    {
       uint32_t bmask[6] = { 0x3B1F3480L, 0x1D8F9A40L, 0x2EC7CD00L,
                                  0x1763E680L, 0x2BB1F340L, 0x0B7A89C0L };
@@ -581,7 +582,7 @@ namespace gpstk
             d |= 0x00000080;
       }
 
-      D = computeParity(d, psfword);
+      D = computeParity(d, psfword, knownUpright);
 
       return D | d;
    }

@@ -110,7 +110,8 @@ namespace gpstk
        */
       static uint32_t fixParity(uint32_t sfword,
                                 uint32_t psfword,
-                                bool nib);
+                                bool nib,
+                                bool knownUpright = true);
             
       /**
        * Perform a parity check on a navigation message subframe.
