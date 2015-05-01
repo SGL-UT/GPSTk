@@ -63,17 +63,17 @@ namespace gpstk
       try
       {
          string rv( fmt );
-         rv = ANSITime(t).printf( rv );
-         rv = CivilTime(t).printf( rv );
-         rv = GPSWeekSecond(t).printf( rv );
-         rv = GPSWeekZcount(t).printf( rv );
-         rv = JulianDate(t).printf( rv );
-         rv = MJD(t).printf( rv );
-         rv = UnixTime(t).printf( rv );
-         rv = YDSTime(t).printf( rv );
-         rv = GALWeekSecond(t).printf( rv );
-         rv = BDSWeekSecond(t).printf( rv );
-         rv = QZSWeekSecond(t).printf( rv );
+         try {rv = ANSITime(t).printf( rv );} catch (gpstk::InvalidRequest e){};
+         try {rv = CivilTime(t).printf( rv );} catch (gpstk::InvalidRequest e){};
+         try {rv = GPSWeekSecond(t).printf( rv );} catch (gpstk::InvalidRequest e){};
+         try {rv = GPSWeekZcount(t).printf( rv );} catch (gpstk::InvalidRequest e){};
+         try {rv = JulianDate(t).printf( rv );} catch (gpstk::InvalidRequest e){};
+         try {rv = MJD(t).printf( rv );} catch (gpstk::InvalidRequest e){};
+         try {rv = UnixTime(t).printf( rv );} catch (gpstk::InvalidRequest e){};
+         try {rv = YDSTime(t).printf( rv );} catch (gpstk::InvalidRequest e){};
+         try {rv = GALWeekSecond(t).printf( rv );} catch (gpstk::InvalidRequest e){};
+         try {rv = BDSWeekSecond(t).printf( rv );} catch (gpstk::InvalidRequest e){};
+         try {rv = QZSWeekSecond(t).printf( rv );} catch (gpstk::InvalidRequest e){};
          return rv;
       }
       catch( gpstk::StringUtils::StringException& se )
