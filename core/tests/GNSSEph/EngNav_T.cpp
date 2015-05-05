@@ -125,18 +125,8 @@ class EngNav_T
 		testFramework.assert(gpstk::EngNav::fixParity(data1, 0, false) == CompareData1, testMesg, __LINE__);
 		testFramework.assert(gpstk::EngNav::fixParity(data2, CompareData1, false) == CompareData2, testMesg, __LINE__);
 		testFramework.assert(gpstk::EngNav::fixParity(data3, CompareData2, false) == CompareData3, testMesg, __LINE__);
-//===============================================================
-//	Test below FAILS!
-//
-//	fixParity method doesn't compliment the sf word when D*30 is 1
-//	computeParity does this, but can't calculate non-information
-//	parity bits for words 2 and 10
 
-//	Why do we have two different functions which each do half the
-//	work they need to? If fixParity is fixed for the compliment issue above,
-//	why ever use compute parity instead of fix parity? They do the same thing
-//================================================================
-		testFramework.assert(gpstk::EngNav::fixParity(data4, CompareData3, false) == CompareData4, testMesg, __LINE__);
+		testFramework.assert(gpstk::EngNav::fixParity(data4, CompareData3, false, false) == CompareData4, testMesg, __LINE__);
 
 		testFramework.assert(gpstk::EngNav::fixParity(data5, 0, true) == CompareData5, testMesg, __LINE__);
 
