@@ -596,8 +596,9 @@ namespace gpstk
       /*
       */
    int PackedNavBits::outputPackedBits(std::ostream& s,
-                                       short numPerLine,
-                                       char delimiter ) const
+                                       const short numPerLine,
+                                       const char delimiter,
+                                       const short numBitsPerWord ) const
    {
       ios::fmtflags oldFlags = s.flags();
 
@@ -613,7 +614,7 @@ namespace gpstk
          if (bits[i]) word++;
        
          numBitInWord++;
-         if (numBitInWord >= 32)
+         if (numBitInWord >= numBitsPerWord)
          {
             s << delimiter << " 0x" << setw(8) << setfill('0') << hex << word;
             word = 0;
