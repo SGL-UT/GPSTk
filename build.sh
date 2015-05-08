@@ -101,6 +101,10 @@ OPTIONS:
                            Also sets the build root to the following:
                                $user_build_root
 
+   -g     binary_tarball   Packages binaries into gzip tarball
+
+   -s     source_tarball   Packages source release into gzip tarball         
+
    -d     build_docs       Build, process, and install all documentation files.
                                * build Doxygen files (used for python docstrings)
                                * build Sphinx RST files into HTML documentation
@@ -134,13 +138,14 @@ exit 1
 # Parse input args
 #----------------------------------------
 
-while getopts "bcdehi:j:P:ptuvz" OPTION
+while getopts "bcdeghi:j:P:pstuvz" OPTION
 do
     case $OPTION in
     b)   build_only=1;;
     c)   clean=1;;
     d)   build_docs=1;;
     e)   build_ext=1;;
+    g)   binary_tarball=1;;
     h)   usage;;
     i)   install_prefix="$OPTARG";;
     j)   num_threads="$OPTARG";;
@@ -148,6 +153,7 @@ do
     P)   build_python=1
          python_exe="$OPTARG"
          ;;
+    s)   source_tarball=1;;
     t)   test_switch=1;;
     u)   user_install=1;;
     v)   verbosity=1;;
@@ -663,6 +669,32 @@ else
     INSTALL_OUTPUT_LOG=$build_root/install.log
     make install -j $num_threads 2>&1 | tee -a $INSTALL_OUTPUT_LOG
 fi
+
+#----------------------------------------
+# Package
+#----------------------------------------
+
+
+if [ "$binary_tarball" ]; then
+    echo ""
+    echo ""
+    echo "$0: Binary Tarball: Generating gzip tarball of binaries ..."
+    echo ""
+    echo ""
+    make package
+fi
+
+
+if [ "$source_tarball" ]; then
+    echo ""
+    echo ""
+    echo "$0: Source Release Tarball: Generating gzip tarball of source ..."
+    echo ""
+    echo ""
+    make package_source
+fi
+
+
 
 #----------------------------------------
 # Test Shell Environment, PATH, LD_LIBRARY_PATH
