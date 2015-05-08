@@ -31,7 +31,7 @@ building with CMake, both with Xcode on OSX and Visual Studio on Windows.
 Dependencies
 ------------
 
-This project uses CMake for all of its configuration, build & install tasks.
+This project uses CMake for all of its configuration, build, install & testing tasks.
    
     http://www.cmake.org/
 
@@ -72,8 +72,8 @@ The following procedure will build and install the GPSTk.
          $ cd $gpstk_root
 
 
-UNIX-like Environment: Automated Build and Install
---------------------------------------------------
+UNIX-like Environment: Automated Build, Install, and Package
+------------------------------------------------------------
 
 If you prefer automation, run the GPSTk script. See the script help for details 
 on those parameters:
@@ -103,9 +103,15 @@ Typical test install will look like this:
 
     $ ./build.sh -et -i /tmp/test
 
+Typical install and binary tarball package will look like this:
 
-UNIX-like Environment: Manual Build and Install
------------------------------------------------
+    $ export LD_LIBRARY_PATH=/tmp/test/lib:$LD_LIBRARY_PATH
+
+    $ ./build.sh -eg 
+
+
+UNIX-like Environment: Manual Build, Install, and Package
+----------------------------------------------------------
 
 If you instead prefer or need to run commands one at a time, run the following 
 commands instead of build.sh:
@@ -151,6 +157,18 @@ commands instead of build.sh:
          $ make install 
 
          $ export PATH=$HOME/.local/gpstk/bin:$PATH
+
+   5. If you want to package the binaries into a tarball, execute the following commands:
+
+         $ cd $gpstk_root/build
+
+         $ cmake -DPYTHON_INSTALL_PREFIX=$HOME/.local -DCMAKE_INSTALL_PREFIX=$HOME/.local/gpstk $gpstk_root
+
+         $ export LD_LIBRARY_PATH=$HOME/.local/gpstk/lib:$LD_LIBRARY_PATH
+
+         $ make       
+
+         $ make package
 
 
 OSX and XCode: Building and Installing with CMake
