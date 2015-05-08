@@ -1,0 +1,132 @@
+Testing of the GPSTk Library
+--------------------------------------------------
+
+Contents
+--------
+
+* Introduction
+* Testing Procedure
+* Testing Procedure: Automated Build and Test
+* Testing Procedure: Manual Build and Test
+* CTest Developer Testing Commands
+* Writing Unit Tests
+
+Introduction
+------------
+
+As an open source project, the source of the GPSTk is subject to intermittent updates, contributions, and corrections. The GPSTk library testing process has been redesigned to build confidence in the functionality of the library. Testing within the GPSTk library is designed with three distinct goals in mind:
+	
+	Testing is repeatable with a low amount of effort.
+	Testing is distributed along with the library to support both internal testing and to assure outside users and contributors of the quality of the library.
+	Testing is designed to accommodate easy additions to the existing test suite.
+  Testing is implemented to ensure changes have not broken functionality.
+
+Currently, the test suite is only supported for UNIX-like environments.
+
+
+Testing Procedure
+-----------------
+
+There are two main methods for running the GPSTk test suite:
+
+	Automated build and test utilizing the build.sh script
+	Manual build and test utilizing CMake and CTest
+
+NOTE: The automated build provides testing metrics that are not available through the manual build.
+	
+
+Testing Procedure: Automated Build and Test
+-------------------------------------------
+
+If you prefer automation, run the GPSTk script.
+
+Typical test build without install will look like this:
+	
+	$ ./build.sh -bet
+
+
+Typical test build with install will look like this:
+
+    $ export LD_LIBRARY_PATH=/tmp/test/lib:$LD_LIBRARY_PATH
+
+    $ ./build.sh -et -i /tmp/test
+
+
+Testing Procedure: Manual Build and Test
+----------------------------------------
+
+To manually build and test the GPSTk, follow the following steps:
+
+   1. Create a directory for your build:
+
+         $ cd $gpstk_root
+
+         $ mkdir $gpstk_root/build
+
+   2. Change into the $gpstk_root/build directory, this will be where all of the
+      build files will reside.
+
+   3. To build the GPSTk, execute the following commands:
+
+         $ cd $gpstk_root/build
+
+         $ cmake $gpstk_root -DTEST_SWITCH=ON
+
+         $ make
+   
+   4. To run the GPSTk test suite:
+
+   		 $  make test
+
+   		 	or
+
+   		 $ ctest
+
+
+CTest Developer Testing Commands
+--------------------------------
+
+Developers may not want to run the full suite of GPSTk tests, as outlined in the previous sections. CTest supports multiple methods to specify subset of tests to list, run, & omit.
+
+	To determine what tests are available in list format without running them:
+         
+         $ ctest -N
+
+    To run an individual test, specify the exact test name. For example:
+
+         $ ctest TestRinexHeader
+
+    To run one or more tests that match a regular expression, use the -R option. For example:
+
+         $ ctest -R Rinex
+
+    To omit one or more tests that match a regular expression, use the -E option. For example:
+
+         $ ctest -E Python     
+
+    To run tests using explicit test numbers, use option -I.  For example:
+
+         Format: -I [Start,End,Stride,test#,test#|Test file]
+
+         To run tests 3 - 5:
+         	
+         	$ ctest -I 3,5
+
+         To specify stride:
+
+         	$ ctest -I ,,3
+
+         To run individual tests:
+
+         	$ ctest -I 4,4,,4,7,13
+
+
+Unit Testing Guidelines
+-----------------------
+
+Guidelines for writing unit tests can be found at:
+
+  http://sglwiki/bin/view/GPSTk/GPSTk_UnitTesting
+
+For Unit Testing styles/tools, refer to /core/lib/TestFramework/TestUtil.hpp. 
+
