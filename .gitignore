@@ -1,6 +1,7 @@
 # Editor backup files:
 *~
 .*.swp
+build/*
 
 # Build output
 *.o
