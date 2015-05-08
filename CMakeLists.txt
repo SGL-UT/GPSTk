@@ -10,7 +10,7 @@ cmake_minimum_required( VERSION 2.8.5 )
 
 project( gpstk )
 set( "${PROJECT_NAME}_VERSION_MAJOR" "2" )
-set( "${PROJECT_NAME}_VERSION_MINOR" "5" )
+set( "${PROJECT_NAME}_VERSION_MINOR" "6" )
 set( "${PROJECT_NAME}_VERSION_PATCH" "0" )
 
 #============================================================
