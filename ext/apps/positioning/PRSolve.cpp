@@ -103,7 +103,7 @@ using namespace gpstk;
 using namespace gpstk::StringUtils;
 
 //------------------------------------------------------------------------------------
-string Version(string("5.0 8/1/13"));
+string Version(string("5.1 5/11/15"));
 
 // forward declarations
 class SolutionObject;
@@ -394,7 +394,7 @@ public:
       for(size_t i=0; i<frs.size(); i++) {         // loop over frequencies
          RawPR.push_back(0.0);                     // placeholder = 0 == missing
          usedobsids.push_back(string("---"));      // placeholder == none
-         for(size_t j=0; j<indexes[i].size(); j++) {  // loop over codes (RINEX indexes)
+         for(size_t j=0; j<indexes[i].size(); j++) {// loop over codes (RINEX indexes)
             int k = indexes[i][j];
             if(vrd[k].data == 0.0)                 // data is no good
                continue;
