@@ -248,10 +248,10 @@ int main()
 	check = testClass.newIDTest();
 	errorCounter += check;
 
-	check == testClass.asStringTest();
+	check = testClass.asStringTest();
 	errorCounter += check;
 
-	check == testClass.operatorTest();
+	check = testClass.operatorTest();
 	errorCounter += check;
 
 	std::cout << "Total Failures for " << __FILE__ << ": " << errorCounter << std::endl;
