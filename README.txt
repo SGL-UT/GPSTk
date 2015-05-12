@@ -9,6 +9,7 @@ Contents:
 * Description: GPSTk C++ Applications
 * Description: GPSTk Python Bindings
 * Installation
+* Testing
 * Help & Docs
 * Contribution guidelines
 * Contributor list
@@ -130,6 +131,7 @@ standard setup.py script using the python distutils module.
 
 For more details, see $GPSTK/python/bindings/swig/install_package/README.txt
 
+
 Installation:
 -------------
 
@@ -156,7 +158,7 @@ distutils for various steps in the build and install process.
 
 To build and install the C++ library and applications on POSIX platforms:
 
-* automated: run build.sh, minimally with the "-c" flag.
+* automated: run build.sh.
 * manual: see the contents of build.sh for command examples on how you might run cmake and make to build and install the library.
 
 To build and install the python bindings, you have two options:
@@ -164,6 +166,12 @@ To build and install the python bindings, you have two options:
 * automated: run the build.sh, minimally with the "-p" flag.
 * manual build: see build.sh for examples on calling cmake and swig
 * manual install: use the setup.py script in the install_package path. See $GPSTK/swig/install_package/INSTALL.txt for more details
+
+
+Testing:
+--------
+
+See the TESTING.txt for details.
 
 	
 Help & Docs:
