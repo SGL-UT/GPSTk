@@ -32,7 +32,7 @@ namespace Sinex
    const char         FIELD_DIV       = ' ';
    const size_t       MIN_LINE_LEN    = 1;
    const size_t       MAX_LINE_LEN    = 80;
-   const float        VERSION         = 2.02;
+   const float        VERSION         = 2.02f;
    const std::string  FILE_BEGIN("%=SNX");
    const std::string  FILE_END("%ENDSNX");
    const std::string  OBS_CODES("CDLMPR");

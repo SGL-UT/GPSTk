@@ -72,7 +72,7 @@ class WxObsMap_T
 		gpstk::CommonTime cTime;
 		cTime.set(500005,6,.7);
 
-		gpstk::WxObservation Compare1(cTime, 100, .5, .8);
+		gpstk::WxObservation Compare1(cTime, 100, .5f, .8f);
 
 		testFramework.changeSourceMethod("Explicit Constructor");
 
@@ -169,7 +169,7 @@ class WxObsMap_T
 		testFramework.changeSourceMethod("getMostRecent");
 
 		gpstk::WxObservation obs1 = Compare.getMostRecent(cTime);	
-		gpstk::WxObservation obs2(cTime, 108, 0.058, 0.088);
+		gpstk::WxObservation obs2(cTime, 108, 0.058f, 0.088f);
 
 		//std::cout<<obs2<<std::endl<<obs1<<std::endl;
 		
@@ -212,7 +212,7 @@ class WxObsMap_T
 		//return right object for explicit case
 		cTime.set((double)1003);
 		gpstk::WxObservation obs3 = Compare.getWxObservation(cTime, 0, false);
-		gpstk::WxObservation obs4(cTime, 103, 0.053, 0.083);
+		gpstk::WxObservation obs4(cTime, 103, 0.053f, 0.083f);
 
 		failMesg = "Did the getWxObservation return the correct object when called explicitly?	";
 		testFramework.assert(obs3.t == obs3.t && 
@@ -222,7 +222,7 @@ class WxObsMap_T
 
 		//return right object within range when theres only one
 		cTime.set((double)1009);
-		gpstk::WxObservation obs6(cTime, 109, 0.059, 0.089);
+		gpstk::WxObservation obs6(cTime, 109, 0.059f, 0.089f);
 		cTime.set((double)1010);		
 		gpstk::WxObservation obs5 = Compare.getWxObservation(cTime, 86401, false);
 
@@ -234,7 +234,7 @@ class WxObsMap_T
 
 		//return right object within range when theres multiple
 		cTime.set((double)1006);
-		gpstk::WxObservation obs8(cTime, 106, 0.056, 0.086);	
+		gpstk::WxObservation obs8(cTime, 106, 0.056f, 0.086f);	
 		gpstk::WxObservation obs7 = Compare.getWxObservation(cTime, 86401, false);
 
 		failMesg = "Did the getWxObservation return the correct object when called in a range containing 2 objects?";
@@ -248,7 +248,7 @@ class WxObsMap_T
 		//should have two values in range, where counter is 7 and 8
 		gpstk::WxObservation obs9 = Compare.getWxObservation(cTime, 43200, true);
 		//create object with what the interpolated values should be at the given time
-		gpstk::WxObservation obs10(cTime, 107.5, 0.0575, 0.0875);
+		gpstk::WxObservation obs10(cTime, 107.5f, 0.0575f, 0.0875f);
 
 		failMesg = "Did the getWxObservation perform linear interpolation succesfully?";
 		testFramework.assert(abs(obs9.t - obs10.t) < singlePrecisionError && 

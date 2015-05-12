@@ -302,7 +302,7 @@ class StringUtils_T
 			string baseString = "12345.67890";                                    //String to convert to a number
 			int resultingInt, comparisonInt = 12345;                              //Storage for converted string and the expected result value
 			double resultingDouble, comparisonDouble = 12345.67890;               //Storage for converted string and the expected result value
-			float resultingFloat, comparisonFloat = 12345.67890;                  //Storage for converted string and the expected result value
+			float resultingFloat, comparisonFloat = 12345.67890f;                  //Storage for converted string and the expected result value
 			long double resultingLongDouble, comparisonLongDouble = 12345.67890L; //Storage for converted string and the expected result value
 
 			resultingInt = asInt(baseString);
@@ -344,7 +344,7 @@ class StringUtils_T
 			string convertedString;                     //Storage for converted number
 			int sampleInt = 1234567890;                 //Example integer to test
 			double sampleDouble = 12345.67890;          //Example double to test
-			float sampleFloat = 12345.7;                //Example float to test
+			float sampleFloat = 12345.7f;                //Example float to test
 			long double sampleLongDouble = 12345.67890L;//Example long double to test
 
 			

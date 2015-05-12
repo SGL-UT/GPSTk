@@ -45,7 +45,7 @@ class Stats_T
         public: 
 		Stats_T() // Default Constructor, set the precision values
 		{
-			floatPrecision = 1e-7;
+			floatPrecision = 1e-7f;
 			doublePrecision = 1e-14;
 			longDoublePrecision = 1e-30;
 		}
