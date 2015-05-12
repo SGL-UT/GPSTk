@@ -119,7 +119,7 @@ commands instead of build.sh:
    1. If you want documentation of the C++ classes and improved python 
       docstrings:
 
-         $ cd $gpstk_root/doc
+         $ cd $gpstk_root
 
          $ doxygen 
 
@@ -158,7 +158,7 @@ commands instead of build.sh:
 
          $ export PATH=$HOME/.local/gpstk/bin:$PATH
 
-   5. If you want to package the binaries into a tarball, execute the following commands:
+   6. If you want to package the binaries into a tarball, execute the following commands:
 
          $ cd $gpstk_root/build
 
@@ -174,8 +174,7 @@ commands instead of build.sh:
 OSX and XCode: Building and Installing with CMake
 -------------------------------------------------
 
-Step-by-step procedure with pictures on building the GPSTk under Xcode can be
-found at gpstk.org:
+Step-by-step procedure with pictures on building, installing, and testing the GPSTk under Xcode can be found at gpstk.org:
 
     http://www.gpstk.org/bin/view/Documentation/BuildingGPSTkUnderOSX
 
@@ -183,10 +182,9 @@ found at gpstk.org:
 Windows and Microsoft Visual Studio: Building with CMake
 --------------------------------------------------------
 
-Step-by-step procedure with pictures on building the GPSTk under Visual Studio 
-2012 can be found at gpstk.org:
+Step-by-step procedure with pictures on building, installing, and testing the GPSTk under Visual Studio 2012 can be found at gpstk.org:
 
-    http://www.gpstk.org/BuildingGPSTkUnderWindows
+    http://www.gpstk.org/bin/view/Documentation/BuildingGPSTkUnderWindows
 
 
 Linking Against the GPSTk Library
