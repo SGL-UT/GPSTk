@@ -507,7 +507,7 @@ using namespace StringUtils;
       if(n >= int(R.rows()))
          return;
 
-      for(unsigned int i=0; i<n; i++) {
+      for(int i=0; i<n; i++) {
          for(unsigned int j=i; j<R.cols(); j++) 
             R(i,j) = 0.0;
          Z(i) = 0.0;

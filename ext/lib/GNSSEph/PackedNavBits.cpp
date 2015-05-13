@@ -242,7 +242,7 @@ namespace gpstk
       
       unsigned long ulong = (unsigned long) asUint64_t(startBits[0], numBits[0]);
       uint64_t temp;
-      for(int i = 1; i < len; i++){
+      for(unsigned int i = 1; i < len; i++){
          temp = asUint64_t(startBits[i], numBits[i]);
          ulong <<= numBits[i];
          ulong |= temp;
@@ -267,7 +267,7 @@ namespace gpstk
       
       int64_t s = SignExtend(startBits[0], numBits[0]);
       uint64_t temp;
-      for(int i = 1; i < len; i++){
+      for(unsigned int i = 1; i < len; i++){
          temp = asUint64_t(startBits[i], numBits[i]);
          s <<= numBits[i];
          s |= temp;
@@ -290,7 +290,7 @@ namespace gpstk
       
       unsigned long ulong = (unsigned long) asUint64_t(startBits[0], numBits[0]);
       int64_t temp;
-      for(int i = 1; i < len; i++){
+      for(unsigned int i = 1; i < len; i++){
          temp = asUint64_t(startBits[i], numBits[i]);
          ulong <<= numBits[i];
          ulong |= temp;
@@ -317,7 +317,7 @@ namespace gpstk
    {
       int64_t s = SignExtend(startBits[0], numBits[0]);
       uint64_t temp;
-      for(int i = 1; i < len; i++){
+      for(unsigned int i = 1; i < len; i++){
          temp = asUint64_t(startBits[i], numBits[i]);
          s <<= numBits[i];
          s |= temp;
