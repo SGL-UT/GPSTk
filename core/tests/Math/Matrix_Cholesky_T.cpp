@@ -76,7 +76,6 @@ void CholeskyInitializer(void)
 int Matrix_T::CholeskyInitializationTest()
 {
 	TestUtil testFramework("Matrix Cholesky", "Square decomposition", __FILE__, __LINE__);
-	int badCount = 0;
 
 	C5(A5);
 	C6(A6);

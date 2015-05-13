@@ -63,7 +63,6 @@ class Position_T
 		std::string failMesg;
 		try
    		{
-      			int i;
 	      		Position c,s,d,g; //An object for each of the Position types.
 			//cout << "Position() " << c << endl; // Show that it is empty.
 	
