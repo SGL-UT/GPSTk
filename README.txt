@@ -1,5 +1,5 @@
-README:
-=======
+README
+-------
 
 Contents:
 ---------
