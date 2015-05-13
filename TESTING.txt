@@ -1,8 +1,8 @@
 Testing of the GPSTk Library
 ----------------------------
 
-Contents
---------
+Contents:
+---------
 
 * Introduction
 * UNIX-like Environment: Testing Procedure
@@ -15,21 +15,25 @@ Contents
 * Writing New Unit Tests
 
 
-Introduction
-------------
+Introduction:
+-------------
 
-As an open source project, the source of the GPSTk is subject to intermittent updates, contributions, and corrections. The GPSTk library testing process has been redesigned to build confidence in the functionality of the library. Testing within the GPSTk library is designed with three distinct goals in mind:
+As an open source project, the source of the GPSTk is subject to intermittent updates, contributions, 
+and corrections. The GPSTk library testing process has been redesigned to build confidence in the 
+functionality of the library. Testing within the GPSTk library is designed with three distinct goals 
+in mind:
 	
 	Testing is repeatable with a low amount of effort.
-	Testing is distributed along with the library to support both internal testing and to assure outside users and contributors of the quality of the library.
+	Testing is distributed along with the library to support both internal testing and 
+     to assure outside users and contributors of the quality of the library.
 	Testing is designed to accommodate easy additions to the existing test suite.
   Testing is implemented to ensure changes have not broken functionality.
 
 Currently, the test suite is only supported for UNIX-like environments.
 
 
-UNIX-like Environment: Testing Procedure
-----------------------------------------
+UNIX-like Environment: Testing Procedure:
+-----------------------------------------
 
 There are two main methods for running the GPSTk test suite in a UNIX-like Environment:
 
@@ -39,8 +43,8 @@ There are two main methods for running the GPSTk test suite in a UNIX-like Envir
 NOTE: The automated build provides testing metrics that are not available through the manual build.
 	
 
-UNIX-like Environment: Automated Build and Test
------------------------------------------------
+UNIX-like Environment: Automated Build and Test:
+------------------------------------------------
 
 If you prefer automation, run the GPSTk script.
 
@@ -57,8 +61,8 @@ Typical test build with install will look like this:
 
 
 
-UNIX-like Environment: Manual Build and Test
---------------------------------------------
+UNIX-like Environment: Manual Build and Test:
+---------------------------------------------
 
 To manually build and test the GPSTk, follow the following steps:
 
@@ -88,27 +92,30 @@ To manually build and test the GPSTk, follow the following steps:
    		 $ ctest
 
 
-OSX and XCode: Testing Procedure
---------------------------------
+OSX and XCode: Testing Procedure:
+---------------------------------
 
 For development in Terminal, the above Unix-like Environment methods (automated/manual) can be used.
 
-Step-by-step procedure with pictures on building, installing, and testing the GPSTk under Xcode can be found at gpstk.org:
+Step-by-step procedure with pictures on building, installing, and testing the GPSTk under Xcode can 
+be found at gpstk.org:
 
     http://www.gpstk.org/bin/view/Documentation/BuildingGPSTkUnderOSX 
 
 
-Windows and Microsoft Visual Studio: Testing Procedure
-------------------------------------------------------
+Windows and Microsoft Visual Studio: Testing Procedure:
+-------------------------------------------------------
 
-Step-by-step procedure with pictures on building, installing, and testing the GPSTk under Visual Studio 2012 can be found at gpstk.org:
+Step-by-step procedure with pictures on building, installing, and testing the GPSTk under Visual 
+Studio 2012 can be found at gpstk.org:
 
     http://www.gpstk.org/bin/view/Documentation/BuildingGPSTkUnderWindows
 
-CTest Developer Testing Commands
---------------------------------
+CTest Developer Testing Commands:
+---------------------------------
 
-Developers may not want to run the full suite of GPSTk tests, as outlined in the previous sections. CTest supports multiple methods to specify subset of tests to list, run, & omit.
+Developers may not want to run the full suite of GPSTk tests, as outlined in the previous sections. 
+CTest supports multiple methods to specify subset of tests to list, run, & omit.
 
 	To determine what tests are available in list format without running them:
          
@@ -143,8 +150,8 @@ Developers may not want to run the full suite of GPSTk tests, as outlined in the
          	$ ctest -I 4,4,,4,7,13
 
 
-Unit Testing Guidelines
------------------------
+Unit Testing Guidelines:
+------------------------
 
 Guidelines for writing unit tests can be found at:
 
@@ -153,23 +160,30 @@ Guidelines for writing unit tests can be found at:
 For Unit Testing styles/tools, refer to /core/lib/TestFramework/TestUtil.hpp. 
 
 
-Writing New Unit Tests
-----------------------
+Writing New Unit Tests:
+-----------------------
 
 ----------------------
 Current Test Structure
 ----------------------
 
-   * Tests are run using CTest tools directly or as a part of the build process. For more information on running the tests refer to the above sections in this document.
-   * Unit tests for a particular GPSTk library class are often organized in a single cpp file titled by the GPSTk library class with a _T.cpp appended.
-   * The individual cpp files are broken into two parts, a test class to test the GPSTk library class and a main() segment to run those tests.
-   * The test class is organized into multiple public methods in which each method contains multiple assertions which test a particular feature of the GPSTk library class under test.
-   * The test class might inherit from the GPSTk library class in order to access protected members for direct checking of values.
+   * Tests are run using CTest tools directly or as a part of the build process. For more information on 
+      running the tests refer to the above sections in this document.
+   * Unit tests for a particular GPSTk library class are often organized in a single cpp file titled by 
+      the GPSTk library class with a _T.cpp appended.
+   * The individual cpp files are broken into two parts, a test class to test the GPSTk library class and 
+      a main() segment to run those tests.
+   * The test class is organized into multiple public methods in which each method contains multiple 
+      assertions which test a particular feature of the GPSTk library class under test.
+   * The test class might inherit from the GPSTk library class in order to access protected members for 
+      direct checking of values.
    * To facilitate reporting to the testing logs, GPSTk uses its own TestUtil class.
-   * TestUtil provides standardized output containing information on the GPSTk library class being tested, feature of class being tested, test file name, 
-     line number of test in that file, pass/fail bit, and a failure message should the test have failed. It also provides the number of failures
-     to the main() portion of the test cpp file.
-   * The main() portion of the code creates the test class object and executes its methods. It then tallies the number of failures and reports it to the screen/log.
+   * TestUtil provides standardized output containing information on the GPSTk library class being tested, 
+      feature of class being tested, test file name, line number of test in that file, pass/fail bit, and 
+      a failure message should the test have failed. It also provides the number of failures to the main() 
+      portion of the test cpp file.
+   * The main() portion of the code creates the test class object and executes its methods. It then tallies 
+      the number of failures and reports it to the screen/log.
 
 -------------------------
 Example Test File
@@ -227,7 +241,8 @@ Example Test File
         }
         catch(...)
         {
-            // If the creation of the Foo object did returns an error and it should not return an error, fail the assert with a false bit.
+            // If the creation of the Foo object did returns an error and it should not return an error, 
+            fail the assert with a false bit.
             testFramework.assert( false, "Description that the constructor could not create the object properly", __LINE__ );
         }
 
