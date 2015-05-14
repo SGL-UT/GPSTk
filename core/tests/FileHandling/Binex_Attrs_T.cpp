@@ -178,7 +178,7 @@ int BinexAttrs_T :: doMessageLengthTests()
  *
  * @return Total error count for all tests
  */
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
    int  errorTotal = 0;
 

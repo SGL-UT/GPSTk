@@ -48,13 +48,13 @@ public:
       sourceMethod( sourceMethodInput ),
       testFileName( testFileInput ),
       testFileLine( "0" ),
+      tolerance( 0 ),    
       testMessage( "Developer is a lazy slacker" ),
       failBit( 0 ),
-      failCount( 0 ),
+      verbosity( verbosityInput ),
       testCount( 0 ),
       subtestID( 1 ),
-      tolerance( 0 ),
-      verbosity( verbosityInput )
+      failCount( 0 )
   {
       // convert int to string
       setTestLine( testLineInput );
@@ -310,16 +310,18 @@ private:
   double      tolerance;     // acceptable difference between test output and
                              //  expected or baseline output
 
-  int         failBit;       // store the result of a test (0=pass, 1=fail)
-  int         verbosity;     // if verbosity>=0, print summary line; if verbosity>=1, print testMessage when fail() is called.
   std::string testMessage;   // if failBit==1 && verbosity>=1, print this string
                              // description of why the test failed to be set by the test app developer
+    
+  int         failBit;       // store the result of a test (0=pass, 1=fail)
+  int         verbosity;     // if verbosity>=0, print summary line; if verbosity>=1, print testMessage when fail() is called.
 
   //  since single test methods may contain multiple subtests.
 
+  int testCount; // Count of tests that have been run
   int subtestID; // ID of the current sub-test, used in TestUtil::print()
   int failCount; // Count of tests that have fails
-  int testCount; // Count of tests that have been run
+
 
   //============================================================
   // Private Methods 

@@ -143,8 +143,7 @@ class TripleTest
 			std::string failMesg;
 
 			Triple test(1,0,1),test2(-1,0,-1);
-			double angle;
-			
+            
 			failMesg = "Is the computed cosine value correct?";		
 			testFramework.assert(fabs(test.cosVector(test2) + 1) < eps, failMesg, __LINE__);
 
