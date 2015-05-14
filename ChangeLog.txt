@@ -2,6 +2,424 @@
 
 
 
+Version 2.6   Tuesday, May 12, 2015
+
+   General modifications
+   ---------------------
+   - CTest Infrastructure Complete - Unix, Linux, Mac, Xcode
+   - C++ & Python test code tested and works - Linux Only
+   - Suite of Unit-Tests added for Core
+   - Some Code Migrated from Ext to Core
+   - Updated build script
+      - Python Install
+      - Build Source and Binary Tarball
+   - This release includes new/modified source code comments for improved readability.
+   - Various Bug and Compile Warning Fixes 
+
+   Modifications by Author
+   ---------------------
+Adam Loggins (1):
+      fixing bug for updating markerNumber in the RinexHeader update in ExecuteEditCmd
+
+Andrew Joplin (3):
+      STLTemplates.i: several ObsID templates
+      STLTemplates.i: added wrapping for ValidType types
+      Install codeDump
+
+Andrew Kuck (1):
+      Added a new example script demonstrating RINEX Observation File writing.
+
+Anthony Hughes (40):
+      Refactored the BINEX types tests to use the TestUtils stuff and to read test input from files.
+      Updated some comments.
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Added filters for build output and for OS/X file system droppings.
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Refactored more BINEX tests to use TestUtils.
+      Ignore Sublime Text temp files
+      Adjusted (downward) test reporting granularity, avoided using of assert(), added fail text.
+      Added a fail message parameter to assert() which defaults to "none".  Pass constant strings by reference.  Improved code formatting consistency.
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Improved test framework usage and test failure output; did code cleanup.
+      Refactored in response to TestUtil refactor.
+      Refactored in response to TestUtil refactoring.
+      Refactored in response to TestUtil refactoring.
+      Refactored in response to TestUtil refactoring.
+      Updated test count logic for Update/Extract primitive tests.
+      Fixed backwards logic in Binex_Types tests and tweaked more test count logic in UpdateExtract.
+      Added tests for FileSpec.
+      Added FileUtils tests.
+      Fixed some error handling issues in setFilter() when file spec type is invalid or missing.
+      Added FileHunter test category.
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Added FileHunter tests.
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Test data for the FileHunter tests.
+      Changed FileHunter test setup to generate expected files and directories; tweaks.
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Added FileFilter tests.
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Fixed undefined behaviour in unique() when operating on an empty data set.  Fixed some distracting code formatting issues.
+      Added FileFilter tests and fixed some FileHunter test typos.
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Added a missing include for std::map.
+      Added tests for FileStore.
+      Removed deprecated BINEX tests.
+
+Brian Tolman (6):
+      Small changes, and move Namelist to Geomatics with SRI
+      Improve robustness of inversion, plus small fixes
+      Fix a bug and add 3 functions useful for eclipsing satellites
+      restore Namelist in lib/Geomatics
+      small addition
+      update version number
+
+Bryan Parsons (40):
+      Submitted by Brian Tolman - Fix for Clau specific PRSolve Bug. Problem - SPS algorithm in PRSolution.cpp in lib/Geomatics failed to converge due to garbage in the matrix problem.
+      Submitted by Brian Tolman - PRSplot.pl update
+      RefTime/TimeHandling Lib folders have migrated from Ext to Core.  First round of Unit Tests have been pulled from /tets folder for usage.
+      Merge RefTime/TimeHandling migration to UpStream Master changes.
+      Targetted MSN Merger Classes, with tests, have migrated from /ext and /tests to /core and /core/tests
+      Current tests have been consolidated, from Nick and /tests folder, into the current test framework.  Placeholder tests have been added and designated with an *, with some tests still needing attention due to build issues.
+      TimeTag class bug fix - Nick.  Ext -> Core file movement.
+      Pull down from gitlab repository.
+      Updated core test class names, updated ANSITime_T for new UnitTest class.
+      Moved Clocktools apps from SGLTk to GPSTk
+      Updated CivilTime_T to utilize new TestUtils class, as well as minor fixes.
+      Additions to CivilTime
+      Removed SMODF files from the GPSTk.  Added TimeTag_T test placeholder.
+      Changes made to CommonTime_T tests.
+      Added/Removed test Placeholders to match updated chart, cleaned up *'s
+      Resolving merge conflict from upstream changes.
+      Removing BDSEphemeris test placeholder, as it was added by mistake.
+      Removed BDSEphemeris Test
+      Merging Upstream changes to local branch.
+      Hide build/ directory from git. External submission by Github user jonyrock of Research & Engineering Center of Saint-Petersburg Electrotechnical University (REC-SPb-ETU)
+      Updated minimum required version of CMake. External submission by Github user jonyrock of REC-SPb-ETU.
+      Removed all commented out add_test() commands from ext app CMakeLists.
+      Per #144 - Added two new options to the build.sh script: -g for building binary Gzip tarball and -s for building source Gzip tarball.  BuildSetup.cmake, INSTALL.txt, CMakeLists.txt also updated for this change.
+      Per #146 - Added Testing document to root GPSTk.
+      Merge upstream changes on master to RC26 feature branch.
+      GPSTk Documentation update for RC v2.6
+      Minor fixes for tests that failed or passed warnings on Mac and Windows.
+      Hide build/ directory from git. External submission by Github user jonyrock of Research & Engineering Center of Saint-Petersburg Electrotechnical University (REC-SPb-ETU)
+      Updated minimum required version of CMake. External submission by Github user jonyrock of REC-SPb-ETU.
+      Removed all commented out add_test() commands from ext app CMakeLists.
+      Per #144 - Added two new options to the build.sh script: -g for building binary Gzip tarball and -s for building source Gzip tarball.  BuildSetup.cmake, INSTALL.txt, CMakeLists.txt also updated for this change.
+      Per #146 - Added Testing document to root GPSTk.
+      GPSTk Documentation update for RC v2.6
+      Minor fixes for tests that failed or passed warnings on Mac and Windows.
+      Additional minor fixes for warnings and errors under Windows Visual Studio 2012.
+      Resolving merge conflict, pushing out to feature branch RC26
+      Added Python documentation to source tree.  Additional tweaks to other documentation in preparation for RC2.6.
+      Cleaning up unused variables and semantics in /Core tests.
+      Resolving merge conflicts when pushing up to feature branch RC26.
+      Removing pragmas from migrated code flagged by Dirty Word Search.
+
+Jason Vestuto (113):
+      Fixed example so that path to needed data file is not hard-coded, but instead, determined by a module method.
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Python bindings and documentation, fixed docstring generator script:     - corrected file paths to match current gpstk file tree structure.     - removed all instances of magic numbers, using os.path methods instead.     - removed linux file seperators, and used os.path.sep instead.     - improved comments for clarity.
+      Python bindings, documentation, fixed copyright date in conf.py
+      Overhaul of build.sh and clean up of top-level CMakeLists.txt files for C++ and Python.
+      Build script, added test for source files when building /ext or /core. If *.cpp files not found, an error is printed to the screen, and the script exits.
+      Build script, fixed white-space problems and ordering of documentation processing.
+      Sphinx documentation, updates to the build instructions to account for recent changes to the GPSTk source file tree structure and the build.sh build script.
+      Updated build.sh script:     - fixed comments about install paths.     - moved determination of install paths above echo and tests of those paths.     - changed the file names of the documentation archives for clarity.
+      Build script, replaced tabs with spaces.
+      Decoupling of build and install processes:     - modified build.sh, adding new input flag "-b" to do "build only, no install"     - modified build.sh, adding an explicity $build_root variable     - modified build.sh, so that $build_root is /tmp/gpstk/build for non-user installs     - modified swig/CMakeLists.txt, changing the python package file copy commands from install targets into custom commands dependent on the swig module build target that builds the binding library _gpstk.so, so that the fiel tree gets recopied every time the library gets rebuilt.     - successfully tested separate build and install to user and systme paths on FAI Debian VM.
+      Updates to INSTALL.txt and build.sh to account for recent changes to the automated build framework.
+      Updated build script, adding num_threads as an input parameter.
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Updates to INSTALL.txt instructions to account for recent changes.
+      Initial overhaul of RINEX Obs test cases, including the following changes:
+      Initial commit of TestUtil utility class for use with unit testing of GPSTk.
+      Updates to Rinex_Obs_T test cases to demonstrate the use of TestUtil class.
+      Cleaning up comments.
+      Updates to TimeUtil class, including the following:
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Moved /tests to /ext/tests and updated /ext/CMake file accordingly.
+      Removing add_test( tests ) from top-level CMake file so that the one in core is not ignored.
+      Fixed constructor signature for TestUtil class, correcting const string& syntax.
+      Testing, overahuls of Rinex Obs and Rinex Nav tests so as to use the new testUtil class.
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Tests, refactored fileEqualTest() method out of separate Rinex file test apps, and moved it into the TestUtil class.
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Fixing bug in core/tests/TimeHandling CMakeList files introduced in commit 5788d72a.
+      Renamed Rinex FileHandling test files to match class names, per convention.
+      Updated tests RinexObs_T and RinexNav_T, including:
+      Renaming Rinex_Met_T file to RinexMet_T to follow test app naming conventions.
+      RinexMetHeader class, corrected scope problem for sensorType and sensorPosType:
+      RinexMet test class, first pass at complete overhaul and clean up:
+      Testing, RinexMet_T class, cleanup:
+      Testing, FileHandling build script, added "-Wall" flag to gcc builds.
+      Testing, Rewrote Rinex_T test app to follow current working test app style conventions for GPSTk.
+      Initial addition of SINEX file handling support:
+      SINEX, added include of stdint.h in SinexBase.hpp:
+      Testing, renamed sinex_test.cpp to Sinex_ReadWrite_T.cpp to follow GPSTk conventions.
+      Sweeping away the last remnants of the old CPPUNIT republic.
+      Updated build.sh to capture accurate measure of unit test results.
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Initial addition of RINEX3 data files for use in automated testing.
+      Testing, cleaned up implemetation of testLine in TestUtil.hpp to follow conventions followed elsewhere in the class.
+      Initial addition of sinex data files for use in automated testing.
+      Testing, Fixed source method name in print statement for Vector_T testing.
+      Testing, renamed Rinex_Clock_T.cpp to RinexClock_T.cpp to follow GPSTk test file name conventions.
+      Added capability to pass build-config-dependent variables into the C++ source:
+      Build Framework, preparaing ground work for refactoring build config.
+      Testing, Updates to Rinex test apps to use test data file paths
+      Testing, test data file migration for Rinex tests.     - This applies the new conventions in test data naming and location     - Updated all file paths to use the new top-level path $ gpstk_root/data     - Updated all file names to follow new data file naming conventions.     - New convention is to store all data files in $gpstk_root/data rather than spread across the source tree.     - New convention for file names is 5 tokens delimited by underscores.     - Obviously, all these conventions are subject to change in the future if everyone hates them.
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk     - Resolved Conflict in core/tests/FileHandling/CMakeLists.txt     - Removed all instances of "^M" that some windows user slopped into the file.     - Please use dos2unix or manually remove all instances of "^M" before future commits.     - Linux/Unix uses 0xA for a newline character. Windows uses a combination of two characters: 0xD 0xA. 0xD is the carriage return character. Most editors will display 0xD as "^M" and any file diffs on Linux will show them too.
+      Updates to build_config.h.in to add C++ style methods for paths.
+      Build config, made all functions inline.
+      Build, added getPathBuild method, cleaned up get methods for test data and temp paths.
+      Testing, update TestUtil implementation to adapt to changes to build_config.h
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Updated build framework, including addition of install prefix input and handling.
+      Building, bug fixes and updates for path and log file handling in build.sh, including:     - Removed initialization of build_root, and added initialization of system and use specific build roots.     - Added logic so that the system_build_root is the default, but user_build_root is used if -u flag is used.     - Removed build_root assignment syntax from help function usage()     - Added string formatting to echoed config values     - Added more detailed treatment of build and install paths, testing for their existence, trying to create them if not present, and exiting the process entirely if they cannot be created.     - Added the use of the tee command to calls to cmake, make, make install, and ctest so that all stdout and stderr are both sent to the screen and to new log files, which are saved to the build_root path.
+      Minor changes to variable names in build.sh for clairty.
+      Build, bug fixes for ctest file names and path test help comment updates
+      Updates to INSTALL.txt     - Updated information on using the build.sh script     - Updated information on using the CMake files directly     - Added example of how to link against libgpstk in your C++ apps
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Test Framework, Updates to TestUtil class     - added verbosity data member, with default 1     - added method setTestLine() that can accept an int or string     - modified constructor so as to strip off path from input test file name, e.g., __FILE__ returns a full path, but we don't need it     - added failMessage data member, which is reset to an empty string by next()     - added a setFailMessage() method     - overloaded setFailMessage() so that it can optionaly take a line number as a second input parameter, as either a string or an int, e.g. __LINE__     - overloaded fail() method so that it can optionally take a failMessage string and a line number, e.g. __LINE__     - overloaded failTest() method so that it can optionally take a failMessage string and a line number, e.g. __LINE__     - modified print() method to print "key=value" pairs instead of just values     - modified print() method to test for failBit and verbosity and to optionally print failMessage key=value pair     - added getTolerance() method     - changed log keyword from "TestOutput" to "GpstkTest"     - updated build.sh script to accomodate changes to test output log file
+      Testing, modified RinexMet_T.cpp to demonstrate use of newly updated TestUtil class.
+      Test Framework, TestUtil, fixed default values for failMessage.
+      Build script, added flags to control python binding process. Default off.     - modified build.sh, changing -p flag to set build_python=True     - modified build.sh, adding -P flag to accept input python executable path     - modified build.sh, wrapping all relevant blocks with test for build_python=1     - modified build.sh, passing "-DBUILD_PYTHON=ON" to cmake     - modified CMakeLists.txt, adding an optional switch BUILD_PYTHON, default OFF     - modified CMakelists.txt, wrapping the add_subdirectory(swig) with a test for BUILD_PYTHON
+      Build, Updated build.sh comments and echo/print statement text for clarity.
+      Build and Test, updated build.sh to compute percent passed for test categories.
+      Build, minor updates to test log parsing, additional test keywords counted.
+      Testing, overhaul to TestUtil class, rewritten CommonTime_T to demonstrate use.     - The design of TestUtil was found to be internally inconsistent and confusing     - The methods were trying to follow two different approaches:       (1) small simple methods, forcing many calls per test case       (2) large methods wrapping small methods, allowing fewer calls per test case     - The problem was all were public methods, and the two design approaches were       not independent or complete, so you had to use a mixture of both.     - Decision was made to make the interface almost entirely based on a new assert()       which wraps and calls all needed smaller methods, and to change all the smaller       wrapped methods from public to private, and deleting other methods that tried       to be both large and small, represented the worst of the mixed design.     - TestUtil, assert() updated to take failMessage and lineNumber, and call next()     - TestUtil, methods deprecated/removed include the following:       init(), passTest(), failTest(), assert(bool, string="none")     - TestUtil, methods changed from public to private:       print(), pass(), fail(), next(), undo()     - Complete rewrite of CommonTime_T.cpp to both use the new TestUtil as       the new design intends, and to demonstrate preferred code style for test apps,       including use of white-space and comment block delimiters. All test descriptions       were moved to the failMessage inputs to assert() but can still be searched.
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Testing, updates to TestUtil.assert() to finish off this overhaul     - removed assert(bool) signature so as to force test developers       to always give a message and line number, e.g. using __LINE__       to prevent assert(true) from givin n context and having the wrong file line     - changed provate data member failMessage to testMessage     - changed public method setFailMessage() to setTestMessage()     - changed assert() method, adding calls to setTestMessage()       and setTestLine() not just for cases where fail() is called     - Deleted comment blocks fo old deprecated methods     - updated CommonTime_T.cpp calls to assert(true) so they are       passed a testmessage and __LINE__     - updated conventions of test formatting used as test_message       passed to assert() calls to demonstrate a possible convention.
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Testing, updated to Rinex_T to use new TestUtil.assert() interface.     - refactored assert message strings     - added __LINE__ input for all assert calls     - added test description string input for all assert calls     - replaced all pass(), fail(), passTest(), failTest() calls with assert() calls.
+      Testing, updated to RinexNav_T to use new TestUtil.assert() interface.     - refactored assert message strings     - added __LINE__ input for all assert calls     - added test description string input for all assert calls     - replaced all pass(), fail(), passTest(), failTest() calls with assert() calls.     - removed all calls to next()     - fixed indentation and try/catch blocks
+      Testing, updated to RinexObs_T to use new TestUtil.assert() interface.     - refactored assert message strings     - added __LINE__ input for all assert calls     - added test description string input for all assert calls     - replaced all pass(), fail(), passTest(), failTest() calls with assert() calls.     - removed all calls to next()     - fixed indentation and try/catch blocks
+      Build, reordered add_subdirectory() directives so that the stuff that breaks is lower on the list, allowing the stuff that builds to be built and not skipped.
+      Testing, bug fixes to RinexNav_T
+      Testing, updates to RinexMet_T to use new TestUtil.assert() interface.
+      Build and Test, Updates to CmakeLists.txt files     - commented out CMake add_test() for broken test apps unilt they can be fixed     - changed order of some CMake add tests to push broken stuff to bottom     - added category for BinUtils to build.sh to report test results
+      Build script, replaced all command substitution backticks/graves with the more modern POSIX form, so value=`foo` changes to value=$(foo)
+      Updates to makeDir() in FileUtils.hpp to remove SunOS specific libraries.
+      Build script bug fix, install paths
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Testing, Cleaning out RinexNav "ext/tests" that have been replaced by new tests in "core/tests"
+      Testing, Cleaning out RinexObs "ext/tests" that have been replaced by new tests in "core/tests"
+      Testing, Cleaning out RinexMet "ext/tests" that have been replaced by new tests in "core/tests"
+      Testing, removing old redundant unused Rinex tests.
+      Build, refactored build configuration from CMakeLists.txt to BuildSetup.cmake
+      Build, simplify CMakeLists.txt to reduce scatter of /ext and /core conditionals
+      Python bindings, addition of PythonSetup.cmake for manual configuration.
+      Python bindings, fixes to CMake cache types for python config template.
+      Testing, cleaning old ext test files
+      Testing, removal of an old copy of a header that also lives in the core lib.     - test apps shall test only the current version of the headers     - test apps shall not test headers in the source tree, but only in the install tree     - this version of StringUtils.hpp is an old copy of the one in core/lib     - it had apparently been copied into the path with/for the test app that needed it.     - the effect was that the test was testing an old version of the class, not the current version     - as such, the test was made worse than simply dead code, it was misleading.     - code difference as compared to the current version is the removal of method x2int()     - x2int() was in the past replaced by x2uint() which does not strip off the "0x" part of HEX strings.
+      Testing, cleaning old test files, SEM
+      FileDirProc, fixed map interator problem in FileStore
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Utilities, added std:: scoping to sqrt()
+      Build, additional debug message() calls added to the BuildSetup
+      Install, fixed install target for include files, which was broken 2015-MAR-05 by commit aca11538.
+      Build, updated CMake variabel names for lists of source and include files to be consistent throughout the top level CMakeLists.txt
+      Build, Updated test summary list to add missing test app names and sort alphabetically.
+      Build, platform-dependent build config refactored, SunOS build improved.     - refactored shared/static flags, compiler flags, and Win32 IDE flags     - changed SunOS linker flags so that everything now builds and installs on x86 SunOS 5.10     - Tests compile and execute on Sun0S 5.10     - ctest calls to test apps run now when called from temp build directory     - need to verify cmake/ctest version numbers match SunOS and Linux platforms.
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      SWIG, wrapped nested structs/classes in Rinex headers with #ifndef SWIG
+      Tests, removal of all old code which has already been moved to core/tests.
+      Tests, migrated IonoModel_T test to new framework.
+      Tests, added basic structure for test class ObsClockModel_T
+      Build, modified project CMakeLists.txt library build target to explicitly encorporate include files as part of the gpstk library build target in the add_library() directive. This fixes some project issues for IDEs.
+      Testing, addition of implementation of test methods for testing constructors and getSvMode method. Removal of other methods not fully developed.
+      Testing, additions in build script and CMake files needed to execute test app for ObsClockModel.
+
+Johnathan York (1):
+      build.sh: Use bash arithmetic instead of assuming 'bc' installed for num_cores
+
+Jon Little (12):
+      Cleaning up unused dirs.
+      Making swig build part of the gpstk cmake tree
+      Needed to move the doc dir out of the source tree
+      Now installs .i files in include dir
+      Removing old jam/make detritus
+      Fixed a couple places where variable should have been used to reference package name
+      Fixing last couple file paths
+      Being pedantic about grammar.
+      Removed calling of isPrint in printTime to make it faster
+      Merge branch '141-DiscFix-Slowdown' into 'master'
+      Indention/tabs had become messed up. Fixed
+      Now should not throw errors when printing times that aren't representable in all systems.
+
+Joseph Voss (43):
+      Initial commit of modified time case tests
+      debugging, JulianDate_T has every printf error, MDT_T error with eps. Testing to see if eps needed
+      JulianDate and MDJ finished debugging, eps unecessary for MDJ
+      Finished debugging GPSWeekZcount
+      Finished debugging GPSWeekZcount
+      Cleaned up comments
+      Rewrote TimeConverters_T, but it isn't built by cmake. Why?
+      Working on converting YDS
+      YDSTime_T completed with initialization test
+      UnixTime_T completed, cleaned up comments in YDSTime_T
+      First attempt at rewrite of CommonTime_T
+      Completed GPSWeekSecond_T, and cleaned up GPSWeekZcount_T
+      Debugging GPSWeekSecond_T
+      Debugging CommonTime_T
+      Merging in TimeTest changes     Merge branch 'timetests'
+      Rewrote Vector_T in new testing standard
+      Modified CMake file allowing for Vector_T to build
+      Rewrote Matrix_T to new test standard, and fixed errors in Vector_T. Matrix_T will not build due to unknown errors
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Rewrote PolyFit_T, Fixed compiler error for Matrix.hpp
+      Rewrote RACRotation_T, Stats_T, Stats_TwoSampleStats_T, & Triple_T
+      Fixed redirection operator bug in Xvt
+      Added Xvt.cpp test
+      Adding GPSTk copyright headers
+      Fixed bug in ValidType.hpp, added convhelp and ValidType tests
+      Added SP3SatID_T and SatID_T tests
+      Changed #include from a cpp file to a hpp
+      Added WxObsMap_T and updated the respective CMake file
+      Moved file necessary for ObsID class to the core library
+      Added test for ObsID class
+      Minor spelling fix
+      Testing, added BinUtils_T, minor edits to BinUtils.hpp
+      Tests, Updated GNSSCore, Math, and Utilties tests in line with TestUtil changes
+      Finishing migration of BinUtils test from ext to core
+      Adding AlmOrbit_T, Timesystem_T, and Stl_helpers_T
+      Minor bug fix in Position_T to fix failing tests
+      Minor bug fix in the CMake build files
+      Refactoring Matrix_T, adding Matrix Function Tests     - Moved old Matrix test to core, refactored that test into multiple Matrix Function tests     - Matrix_T.cpp converted to header file for Matrix_T class, Matrix_T_*.cpp files now run Matrix_T tests     - Currently the Cholesky, Householder, and SVD tests FAIL     	- Cholesky factorization returns incorrect L, and U matrices. L * U doesn't = A     	- Housefolder decomp fails in one instance where entire column returned is incorrect     	- SVD function tested by verifying U * S * V^T = A, but the matrix returned is nonequivalent due to column negation and other errors
+      Testing, adding EngEphemeris and EngNav tests. Minor spelling fix in EngEphemeris_T     - fixParity function in EngNav fails, fixParity calls computeParity but doesn't pass     the knownUpright bool. See issue 147     - EngEphemeris test differs slightly from the TestUtil standard. Many of the EngEphemeris     functions store ephemeris data in different ways. To test this, a set of tests are put in     a function and are called to verify the storage method.     - Data for these tests was reconstructed from the RINEX Nav file     data/test_input_rinex_nav_FilterTest2.99n     - Minor spelling fix in EngEphemeris.hpp     - closes #96, closes #97
+      Added a default bool input to fixParity, passes to computeParity
+      Testing, Minor changes to AlmOrbit test
+      Merge branch 'issue_147' into 'master'
+
+Josh King (5):
+      Fixing time system issue caused from declarations in helmertTransform
+      Fix so that codeDump can run correctly for prn 0 (minor mod)
+      Updated version of SVNumXRef.cpp
+      Corrected SVNumXRef.cpp
+      Updated PackedNavBits.hpp & .cpp
+
+Nick Fitzsimmons (74):
+      Commiting the new test framework infrastructure. The testFramework class is located in core/lib/TestFramework/ .
+      Reverted the changes to the scanning functionality of the Time classes. The standard is now that the P option will be read as a string. Updating many tests to new infrastructure. Stats, Stats_TwoSampleStats, and GPSWeekSecond all FAIL. Awaiting further instruction to finalize the changes necessary to have them PASS.
+      Committing changes to Rinex_Obs Testing.
+      Merging Jason's changes to Rinex_Obs Tests.     Merge remote-tracking branch 'origin/master'
+      Changes to the TimeHandling tests so that they now match the new test class naming scheme (from xCLASS to CLASS_T) and adding the additional tests to ANSITime_T. Also a new test method has been added to CivilTime_T. Finally, the testFramework.hpp file is being removed in favor of TestUtil.hpp.
+      Update for TestUtil.hpp to include the three extra methods to change a string in the output and the passTest and failTest methods. ANSITime_T.cpp has been updated to reflect these changes.
+      Updated core/lib/GNSSEph/RinexEphemerisStore.cpp so that the loadFile method will open the file before reading from it. Updated TestUtil.hpp so that passTest() and failTest() will increment the test counter properly. Updated CivilTime_T.cpp so to remove a couple of redundant tests.
+      I broke the build. It is now fixed. RinexEphemerisStore::loadFile will no longer use the is_open method derived from the (great-grand)parent fstream class. The new method is to use a simple !RinexNavStream_Object to denote whether the file has been opened.
+      Adding minor comment changes to ANSITime_T and CivilTime_T. Also adding a completed RinexEphemerisStore_T. This new test has many failures associated with it. These failures are documented on GPSTk-MSNTk merger Test Bug list. Also some small functionality has been removed from GPSEphemeris in that the dumpHeader method will no longer rely on the SVNumXRef class in ext.
+      Commit to clean up a number of small issues:       1) core/tests/CMakeLists.txt now only includes directories where GPSTk tests have been written. Be sure to update this list as you move to the skipped directories.       2) core/tests/Math/Vector_T.cpp did not compile. This has been fixed.       3) core/tests/TimeHandling/CivilTime_T.cpp and core/tests/TimeHandling/YDSTime_T.cpp have been updated to fail as per the bug page.
+      Forgot to cleanup the GNSSEph directory and remove some comments as the test was being built. Also removing IonoModel_T so that the tests will build on non cppunit machines when cloned.
+      Commit changes the following:
+      Commit to add the SP3EphemerisStore_T.cpp test. Removed all stored output and comparison files associated with this test as they are no longer necessary.
+      Pulling changes which include the addition of Sinex.
+      Adding core/tests/Utilities/StringUtils_T.cpp tests.
+      When trying to build with the SunSolaris compiler, there are issues.     These issues stem from the use of __func__ which CC does not recognize.     The changes are:
+      Commit for test result filtering and new additions:     1) All test result output which contained additional commas have been revised.     2) RinexEphemerisStore_T test results now correctly reflect which of the parent        classes to RinexEphemerisStore is actually under test.     3) Added TimeRange.hpp and TimeRange.cpp from MSNTk to core/lib/TimeHandling     4) Added an unfinished test for TimeRange to core/tests/TimeHandling
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Build broke in last commit. Updating the CMakeLists.txt file to reflect the change fixes the build.
+      Commiting the completed TimeRange_T.cpp file.
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Updates to correct some errors in building using the SunSolaris compilers.     1)core/lib/Math/Stats.hpp now uses sqrt( (long double) ) castings to get the highest accuracy.       Note that the sqrt result is then cast back to whatever type the template is using.     2) core/lib/Utilities/ValidType.hpp now defaults the value variable to zero when using the default constructor.     3) core/tests/TimeHandling/UnixTime_T.cpp was not running its initialization test.     4) core/tests/Math/Triple_T.cpp now uses proper floating point comparisons in assertions.
+      RinexEphemerisStore_T.cpp has been updated to use the newest file path conventions. Also the files related to this test have been moved to the data directory.
+      SP3EphemerisStore_T.cpp has been updated to the new file path conventions. Its inputs have been moved to the data directory.
+      Edits to the files Joseph added. Mainly comments. Also deleted unused files in core/tests/Math/ which were remnants of CPPUNIT.
+      Adding the test for SystemTime.
+      Investigated why WxObsMap_T.cpp fails on the SunSolaris compiler.     Found that the failing comparisons were comparing two single precision floating     point values by using the absolute value of their difference and enforcing that     this difference be less than a tolerance. That tolerance was set to 1E-12, a     value appropriate only for double precision. This tolerance was changed to 1E-7.
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Updating StringUtils_T so that it will work on all platforms
+      I have been corrected.     The hexDataDump test has been split into two separate     methods. hexDataDumpTest will now test only for     formatting of the output. This means that any characters,     like end-of-file or end-of-line, which are not common     across all platforms will be replaced by alphanumeric ones.     The second test, hexToAsciiTest, will leave those characters     in to ensure that they are handled properly. This test will     need a revision so that an independent method (not using gpstk)     of converting those hex values to ASCII is used for the comparison     checks.
+      Use of captain showed a bug in Triple_T.cpp and Triple.cpp.     In the azimuth angle test you cannot get an azimuth angle if you     are referencing a vector the is parallel to the direction of the origin.     There is a built in test in Triple.cpp to check for this but the tolerance     on it was set to 1E-16 which is too small, especially when adding two     numbers which are on the order of computational round off error. This     tolerance has been raised to match the other test in the azAngle method     (This check to check is to ensure the observer position is NOT along     the z axis.).
+      Adding additional files to core/lib/GNSSCore from ext:     1) geometry.hpp - constants file which is needed by Triple, EphemerisRange, and HelmertTransform.     2) gps_constants.hpp - Needed by core/ClockModel and core/GNSSEph files.     3) compass_constants.hpp - Moving prior to merge with GNSSconstants.hpp
+      Moving files to end Rinex 3 dependencies on ext:     1) *Ephemeris.hpp (or .cpp) - These files will are used in Rinex 3     2) PZ90Ellipsoid.hpp - Needed by GloEphemeris.hpp     3) SVNumXRef.hpp - Needed by BDSEphemeris.cpp, EngEphemeris.cpp, and GPSEphemeris.cpp
+      3rd set of file moves from ext to core:     1) BrcKeplerOrbit.hpp and BrcClockCorrection.hpp - needed by EngEphemeris.hpp     2) ClockSatStore.hpp and PositionSatStore.hpp - needed by SP3EphemerisStore.hpp     3) TabularSatStore.hpp - needed by ClockSatStore.hpp and PositionSatStore.hpp     4) Xv.hpp - Needed by the BrcKeplerOrbit.hpp
+      Final set of moves for ending core's dependency on ext     Moved the remainder of the Utilities in ext to core. CommandLine.cpp depends on     a couple of these files, but after speaking with Bryan a decision was made to     move all the Utilities from ext to core.
+      Moving Apps Out of Core
+      Build of Core C++ Library No Longer Requires Ext
+      Removal of Core Dependence on SVNumXRef
+      Migration of geometry to GNSSconstants
+      Migrated compass_constants to GNSSconstants
+      Removed Dependencies on Xv
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Forgot to add the modifications to the source files in the last commit.
+      Previous Changes Broke The Build
+      Xv.hpp is now Deprecated
+      Edits to Tests
+      Fix for Matrix_T.cpp. The checks with the vectors now compare with the proper values.
+      Updated the failing Rinex tests to have fail messages.
+      Brought RinexEphemerisStore_T.cpp to the new testing standard.
+      ANSITime_T.cpp has been migrated to the new TestUtil standard.
+      Fixed CivilTime_T to work with the new standard. Also found I was dissatisfied with the organization of the TimeTag child class tests. Updated ANSITime_T to reflect those changes.
+      TimeTag Child Class Tests Reworked
+      More Updates to TimeHandling
+      Minor Test Fixes
+      More Test Updates
+      Test Labels
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      TimeTag Child Class Tests Update and Fixed SatID_T
+      Final Fixes for TestUtil Update
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Removing Some Pre-existing tests
+      Removal of More Pre-existing Tests
+      Pre-existing Test Migration Changes
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Pre-existing Test Migration Change
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Finished Cleanup of GPSZcount Test
+      Fixes for Test App Ambiguities on SunSolaris
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Removing RACRotation from ext/tests as it has already been migrated.
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Migration of DayTime Test Seeds
+      Update for reference in case mdpscreen needs to be custom built again.
+      Removed the mdpscreen additions as these should be left in SGLTk. Just wanted a reference point should mdpscreen need to be built without SGLTk again.
+
+Scot Nelsen (6):
+      CMakeLists.txt: added gpstk_VERSION_* variables and condensed recursive file collections.
+      CMakeLists.txt: include GNUInstallDirs module for standard directory definitions.
+      swig/CMakeLists.txt: PYTHON_INSTALL_PREFIX properly defaults to CMAKE_INSTALL_PREFIX
+      Unified definition of version (major, minor, patch) variables.
+      Generate package import cmake file for use by other cmake projects.
+      Correct CMakeLists.txt so it tries to remove getopt.h from the correct list.
+
+Steve Johnson (5):
+      Add StringUtils::splitOnWhitespace(...) method and tests
+      Add a few more splitOnWhitespace tests
+      Clean up debug output.  Add empty string test cases to StringUtils::splitOnWhitespace
+      Comment out broken assignment operator that breaks Windows build
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+
+Tom Gaussiran (4):
+      Fixed a portion of the code where the same call was issued twice.
+      Actually took out the line that were just commented out in the previous modification.
+      huh?
+      Hacked out the code which writes the log file. This will need to be handeled more elegantly but it does provide a 20x speed up.
+
+renfrob (5):
+      Adding split field unpacking to PackedNavBits
+      Generalized PackedNavBits.matchBits()
+      Tweaking BDS track codes
+      Fix to subtle bug in rationalize( )
+      Enhancement to provide more flexible output
+
+vestuto (2):
+      Merge branch 'issue_70' into 'master'
+      Merge branch 'issue_86' into 'master'
+
+
+
+
+	#################################################
+
+
+
 Version 2.5   Friday, October 10, 2014
 
    General modifications
