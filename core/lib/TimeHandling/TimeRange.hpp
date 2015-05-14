@@ -1,4 +1,3 @@
-#pragma ident "$Id: //depot/msn/main/code/shared/gpstk/TimeRange.hpp#5 $"
 /**
 *   A utility class that contains a pair of CommonTime objects that
 *   specify the beginning and end of a time range.  

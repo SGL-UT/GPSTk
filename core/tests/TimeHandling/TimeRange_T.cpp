@@ -1,5 +1,3 @@
-#pragma ident "$Id: //depot/msn/main/code/shared/gpstk/test/TimeRangeTest.cpp#5 $"
-
 #include <iostream>
 #include <sstream>
 #include <string>
