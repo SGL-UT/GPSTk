@@ -1,5 +1,3 @@
-#pragma ident "$Id: //depot/msn/main/code/shared/gpstk/test/sinex_test.cpp#2 $"
-
 #include "SinexStream.hpp"
 #include "SinexData.hpp"
 
