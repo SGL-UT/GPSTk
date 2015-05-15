@@ -201,7 +201,7 @@ class EngAlmanac_T
 
 		word 3
 		dID 	svID 		4 svconfigs
-		10 		1111 01 	10 0110 0110 0110 01 = 0x2F666640
+		10 		1111 11 	10 0110 0110 0110 01 = 0x2F666640
 
 		word 4,5,6,7
 		6 sv configs
@@ -219,7 +219,7 @@ class EngAlmanac_T
 		00 0000 0000 0000 0000 	1111 		00 			= 0x00000F00
 
 */
-		const long subframe447[10] = {0x22c000e4, 0x0000042c, 0x2F666640, 0x26666640, 0x26666640,
+		const long subframe447[10] = {0x22c000e4, 0x0000042c, 0x2FE66640, 0x26666640, 0x26666640,
 									  0x26666640, 0x26666640, 0x26667000, 0x00000000, 0x00000F00};
 		testMesg = "Adding subframe 4 page 25 failed";
 		testFramework.assert(dataStore.addSubframe(subframe447, 819), testMesg, __LINE__);
@@ -241,7 +241,7 @@ class EngAlmanac_T
 		beta3 = (222 - 256) * 2**16 / pi**3 = -71863.64306088151
 
 		//cabobobs
-		A0 = (4294967296 - 163400577205) * 2**-30 = -148.17864625621587
+		A0 = (3400577205 - 4294967296) * 2**-30 = -0.8329656822606921
 		//baddab
 		A1 = (12246443 - 16777216) * 2**-50 = -4.0241348031599955e-09
 		dtLS = 13 = 0x0d
@@ -279,60 +279,73 @@ class EngAlmanac_T
 		word 9
 		dtLS 		WNLSF 		DN 			parity
 		00001101 	11111110 	10100000 	000000 			= 0x037fa800
-
+	
 		word 10
 		dtLSF 		14b reserved 	2b 		parity
 		10011001 	11111111111111 	00 		000000 			= 0x267fff00
 */
 		const long subframe456[10] = {0x22c000e4, 0x0000042c, 0x2e37ab40, 0x2fbbf780, 0x2b703780,
 									  0x2eb76ac0, 0x32ac2c00, 0x2d5b9680, 0x037fa800, 0x267fff00};
+		std::cout<<"adding page18"<<std::endl;
 		testMesg = "Adding subframe 4 page 18 failed";
 		testFramework.assert(dataStore.addSubframe(subframe456, 819), testMesg, __LINE__);
+
+		int x;
 
 		//GPSTK documentation should really say what units these return as
 		for(int i=0; i<31; i++)
 		{
+			if ( i >= 7) x = i + 2; //switch to allow for skipped prn 8
+			else x = i + 1;
 			testMesg = "getEcc returned the wrong value";
-			testFramework.assert(std::abs(dataStore.getEcc(gpstk::SatID(1, gpstk::SatID::systemGPS)) - aData.ecc[0])*1E2 < eps, testMesg, __LINE__);
+			testFramework.assert(std::abs(dataStore.getEcc(gpstk::SatID(x, gpstk::SatID::systemGPS)) - aData.ecc[i])*1E2 < eps, testMesg, __LINE__);
 			testMesg = "getIOffset returned the wrong value";
-			testFramework.assert(std::abs(dataStore.getIOffset(gpstk::SatID(1, gpstk::SatID::systemGPS)) - (aData.oi[0] - .3*M_PI)) < eps, testMesg, __LINE__);
+			testFramework.assert(std::abs(dataStore.getIOffset(gpstk::SatID(x, gpstk::SatID::systemGPS)) - (aData.oi[i] - .3*M_PI)) < eps, testMesg, __LINE__);
 			testMesg = "getOmegadot returned the wrong value";
-			testFramework.assert(std::abs(dataStore.getOmegadot(gpstk::SatID(1, gpstk::SatID::systemGPS)) - aData.rora[0])*1E8 < eps, testMesg, __LINE__);
+			testFramework.assert(std::abs(dataStore.getOmegadot(gpstk::SatID(x, gpstk::SatID::systemGPS)) - aData.rora[i])*1E8 < eps, testMesg, __LINE__);
 			testMesg = "get6bitHealth returned the wrong value";
-			testFramework.assert(dataStore.get6bitHealth(gpstk::SatID(1, gpstk::SatID::systemGPS)) == 0 , testMesg, __LINE__);
+			testFramework.assert(dataStore.get6bitHealth(gpstk::SatID(x, gpstk::SatID::systemGPS)) == 0 , testMesg, __LINE__);
 			testMesg = "getSVHealth returned the wrong value";
-			testFramework.assert(dataStore.getSVHealth(gpstk::SatID(1, gpstk::SatID::systemGPS)) == 0, testMesg, __LINE__);
+			testFramework.assert(dataStore.getSVHealth(gpstk::SatID(x, gpstk::SatID::systemGPS)) == 0, testMesg, __LINE__);
 			testMesg = "getSVConfig returned the wrong value";
-			//testFramework.assert(std::abs(dataStore.getSVConfig(gpstk::SatID(1, gpstk::SatID::systemGPS)) == aData[0]) < eps, testMesg, __LINE__);
+			testFramework.assert(dataStore.getSVConfig(gpstk::SatID(x, gpstk::SatID::systemGPS)) == 9, testMesg, __LINE__); //9 is 1001
 			testMesg = "getAhalf returned the wrong value";
-			testFramework.assert(std::abs(dataStore.getAhalf(gpstk::SatID(1, gpstk::SatID::systemGPS)) - aData.sqrta[0])*1E-4 < eps, testMesg, __LINE__);
+			testFramework.assert(std::abs(dataStore.getAhalf(gpstk::SatID(x, gpstk::SatID::systemGPS)) - aData.sqrta[i])*1E-4 < eps, testMesg, __LINE__);
 			testMesg = "getA returned the wrong value";
-			testFramework.assert(std::abs(dataStore.getA(gpstk::SatID(1, gpstk::SatID::systemGPS)) - pow(aData.sqrta[0],2))*1E-8 < eps, testMesg, __LINE__);
+			testFramework.assert(std::abs(dataStore.getA(gpstk::SatID(x, gpstk::SatID::systemGPS)) - pow(aData.sqrta[i],2))*1E-8 < eps, testMesg, __LINE__);
 			testMesg = "getOmega0 returned the wrong value";
-			testFramework.assert(std::abs(dataStore.getOmega0(gpstk::SatID(1, gpstk::SatID::systemGPS)) - aData.raaw[0])*1E-1 < eps, testMesg, __LINE__);
+			testFramework.assert(std::abs(dataStore.getOmega0(gpstk::SatID(x, gpstk::SatID::systemGPS)) - aData.raaw[i])*1E-1 < eps, testMesg, __LINE__);
 			testMesg = "getW returned the wrong value";
-			testFramework.assert(std::abs(dataStore.getW(gpstk::SatID(1, gpstk::SatID::systemGPS)) - aData.aop[0]) < eps, testMesg, __LINE__);
+			testFramework.assert(std::abs(dataStore.getW(gpstk::SatID(x, gpstk::SatID::systemGPS)) - aData.aop[i]) < eps, testMesg, __LINE__);
 			testMesg = "getM0 returned the wrong value";
-			testFramework.assert(std::abs(dataStore.getM0(gpstk::SatID(1, gpstk::SatID::systemGPS)) - aData.ma[0])*1E-1 < eps, testMesg, __LINE__);
+			testFramework.assert(std::abs(dataStore.getM0(gpstk::SatID(x, gpstk::SatID::systemGPS)) - aData.ma[i])*1E-1 < eps, testMesg, __LINE__);
 			testMesg = "getAf0 returned the wrong value";
-			testFramework.assert(std::abs(dataStore.getAf0(gpstk::SatID(1, gpstk::SatID::systemGPS)) - aData.af0[0])*1E5 < eps, testMesg, __LINE__);
+			testFramework.assert(std::abs(dataStore.getAf0(gpstk::SatID(x, gpstk::SatID::systemGPS)) - aData.af0[i])*1E5 < eps, testMesg, __LINE__);
 			testMesg = "getAf1 returned the wrong value";
-			testFramework.assert(std::abs(dataStore.getAf1(gpstk::SatID(1, gpstk::SatID::systemGPS)) - aData.af1[0]) < eps, testMesg, __LINE__);
+			testFramework.assert(std::abs(dataStore.getAf1(gpstk::SatID(x, gpstk::SatID::systemGPS)) - aData.af1[i]) < eps, testMesg, __LINE__);
 		}
+
 
 		dataStore.check(std::cout);
 
 		double a[4], b[4];
 		dataStore.getIon(a, b);
 
-		testMesg = "getIon returned an incorrect value";
+		testMesg = "getIon returned an incorrect value for Alpha0";
 		testFramework.assert(std::abs(a[0] + 3.166496753692627e-08) < eps, testMesg, __LINE__);
+		testMesg = "getIon returned an incorrect value for Alpha1";
 		testFramework.assert(std::abs(a[1] + 1.968422573302286e-07) < eps, testMesg, __LINE__);
+		testMesg = "getIon returned an incorrect value for Alpha2";
 		testFramework.assert(std::abs(a[2] + 3.985880685087617e-07) < eps, testMesg, __LINE__);
+		testMesg = "getIon returned an incorrect value for Alpha3";
 		testFramework.assert(std::abs(a[3] + 3.26798013069863e-08) < eps, testMesg, __LINE__);
+		testMesg = "getIon returned an incorrect value for Beta0";
 		testFramework.assert(std::abs(b[0] + 69632) < eps, testMesg, __LINE__);
+		testMesg = "getIon returned an incorrect value for Beta1";
 		testFramework.assert(std::abs(b[1] + 432860.7015445238) < eps, testMesg, __LINE__);
+		testMesg = "getIon returned an incorrect value for Beta2";
 		testFramework.assert(std::abs(b[2] + 424971.8458357919) < eps, testMesg, __LINE__);
+		testMesg = "getIon returned an incorrect value for Beta3";
 		testFramework.assert(std::abs(b[3] + 71863.64306088151) < eps, testMesg, __LINE__);
 
 
@@ -340,27 +353,33 @@ class EngAlmanac_T
 		long tot;
 		int WNt, WNLSF, DN;
 		dataStore.getUTC(a0, a1, deltaTLS, tot, WNt, WNLSF, DN, deltaTLSF);
-		std::cout<<a0<<std::endl; //wrong
-		std::cout<<a1<<std::endl;
-		std::cout<<deltaTLS<<std::endl;
-		std::cout<<deltaTLSF<<std::endl;
-		std::cout<<tot<<std::endl;
+
+		//Values below aren't 'wrong' persay, but have additional operations done
+		// on them not specificed by the is-gps-200d
+
 		std::cout<<WNt<<std::endl; // out of range of 8 bit
 		std::cout<<WNLSF<<std::endl;// out of range of 8 bit
 		std::cout<<DN<<std::endl; //is right value, but IS-GPS-200D says right justified
 
-		testMesg = "getUTC returned an incorrect value";
-		testFramework.assert(std::abs(a0 + 148.17864625621587) < eps, testMesg, __LINE__);
+		testMesg = "getUTC returned an incorrect value for A0";
+		testFramework.assert(std::abs(a0 + 0.8329656822606921) < eps, testMesg, __LINE__);
+		testMesg = "getUTC returned an incorrect value for A1";
 		testFramework.assert(std::abs(a1 + 4.0241348031599955e-09) < eps, testMesg, __LINE__);
+		testMesg = "getUTC returned an incorrect value for Tot";
 		testFramework.assert(std::abs(deltaTLS - 13) < eps, testMesg, __LINE__);
+		testMesg = "getUTC returned an incorrect value for W";
 		testFramework.assert(std::abs(deltaTLSF + 103) < eps, testMesg, __LINE__);
+		testMesg = "getUTC returned an incorrect value for WNLSF";
 		testFramework.assert( tot == 450560, testMesg, __LINE__);
+		testMesg = "getUTC returned an incorrect value for DN";
 		testFramework.assert( WNt == 90, testMesg, __LINE__);
+		testMesg = "getUTC returned an incorrect value for A0";
 		testFramework.assert( WNLSF == 254, testMesg, __LINE__);
+		testMesg = "getUTC returned an incorrect value for A0";
 		testFramework.assert( DN == 5, testMesg, __LINE__);
 
 		return testFramework.countFails();
-	}
+	} 
 
 	int getTest(void);
 
