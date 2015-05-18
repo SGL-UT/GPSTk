@@ -105,6 +105,7 @@ class AlmanacData
 };
 
 //Converts almanac data to subframes
+//No parity! EngAlmanac doesn't test for parity
 class AlmanacSubframes
 {
 public:
