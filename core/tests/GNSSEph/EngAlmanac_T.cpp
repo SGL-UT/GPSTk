@@ -452,9 +452,7 @@ class EngAlmanac_T
 				failCount++;
 		}
 		testMesg = "getAf1 returned the wrong value";
-		testFramework.assert(failCount == 0, testMesg, __LINE__);			
-
-		dataStore.check(std::cout);
+		testFramework.assert(failCount == 0, testMesg, __LINE__);
 
 		double a[4], b[4];
 		dataStore.getIon(a, b);
@@ -476,18 +474,10 @@ class EngAlmanac_T
 		testMesg = "getIon returned an incorrect value for Beta3";
 		testFramework.assert(std::abs(b[3] + 71863.64306088151) < eps, testMesg, __LINE__);
 
-
 		double a0, a1, deltaTLS, deltaTLSF;
 		long tot;
 		int WNt, WNLSF, DN;
 		dataStore.getUTC(a0, a1, deltaTLS, tot, WNt, WNLSF, DN, deltaTLSF);
-
-		//Values below aren't 'wrong' persay, but have additional operations done
-		// on them not specificed by the is-gps-200d
-
-		std::cout<<WNt<<std::endl; // out of range of 8 bit
-		std::cout<<WNLSF<<std::endl;// out of range of 8 bit
-		std::cout<<DN<<std::endl; //is right value, but IS-GPS-200D says right justified
 
 		testMesg = "getUTC returned an incorrect value for A0";
 		testFramework.assert(std::abs(a0 + 0.8329656822606921) < eps, testMesg, __LINE__);
@@ -500,21 +490,25 @@ class EngAlmanac_T
 		testMesg = "getUTC returned an incorrect value for Tot";
 		testFramework.assert( tot == 450560, testMesg, __LINE__);
 		testMesg = "getUTC returned an incorrect value for WNt";
-		testFramework.assert( WNt == 90, testMesg, __LINE__);
+		testFramework.assert( WNt == int(851/256)*256 + 90, testMesg, __LINE__);
+
+		//Below test FAILS! in the 8 bit week conversion. Passing unsigned value into
+		//week conversion can cause diff to be larger than LIMIT[type], resulting in incorrect value
+		//See EngNav.cpp line 460
 		testMesg = "getUTC returned an incorrect value for WNLSF";
-		testFramework.assert( WNLSF == 254, testMesg, __LINE__);
+		testFramework.assert( WNLSF == int(851/256)*256 + 254, testMesg, __LINE__);
+		std::cout<<"WNlsf is: "<<WNLSF<<std::endl;// out of range of 8 bit
+
+		//Below test FAILS! DN is right justified according to IS-GPS-200D, but
+		//interpreted as left-justified here
 		testMesg = "getUTC returned an incorrect value for DN";
 		testFramework.assert( DN == 5, testMesg, __LINE__);
+		std::cout<<"DN is: "<<DN<<std::endl; //is correct value, but IS-GPS-200D says right justified
+
 
 		return testFramework.countFails();
 
 	}
-
-	int isDataTest(void);
-
-	int checkTest(void);
-
-	int dumpTest(void);
 
 	private:
 	double eps;
@@ -527,7 +521,9 @@ class EngAlmanac_T
 
 int main() //Main function to initialize and run all tests above
 {
-	std::ifstream iAlmanac("./data/test_input_gps_almanac.txt"); // Reads in almanac data from file
+	std::string pathData = gpstk::getPathData();
+	std::string almanacLocation = pathData + "/test_input_gps_almanac.txt";
+	std::ifstream iAlmanac(almanacLocation.c_str()); // Reads in almanac data from file
 	AlmanacData iAData(iAlmanac); // Parses file into data objects
 	AlmanacSubframes iASubframes(iAData); // Takes data objects and generates the subframes needed
 
