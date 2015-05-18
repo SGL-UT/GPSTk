@@ -71,14 +71,14 @@ class BinUtils_T
 		for (int i = sizeof(short)-1;i>=0;i--)
 		{
 			*ptrb = Store[i];
-			*ptrb++;	
+			*ptrb++;
 		}
 		
 		int c;
 		unsigned char *ptrc = (unsigned char *)& c;
 		for (int i = sizeof(int)-1;i>=0;i--)
 		{
-			*ptrc = Store[i];;
+			*ptrc = Store[i];
 			*ptrc++;
 		}
 		
@@ -86,8 +86,8 @@ class BinUtils_T
 		unsigned char *ptrd = (unsigned char *)& d;
 		for (int i = sizeof(long)-1;i>=0;i--)
 		{
-			*ptrd = Store[i];	
-			*ptrd++;	
+            *ptrd = Store[i];
+            *ptrd++;
 		}
 		
 		float e;
@@ -112,6 +112,7 @@ class BinUtils_T
 		{
 			*ptrg = Store[i];
 			*ptrg++;
+
 		}
 
 		char a1;
@@ -236,7 +237,8 @@ class BinUtils_T
 		//std::cout.setf(std::ios_base::hex,std::ios_base::basefield);
 
 		std::string stringTest = "Random";
-		char out = gpstk::BinUtils::decodeVar<char>(stringTest);
+		//char out =
+        gpstk::BinUtils::decodeVar<char>(stringTest);
 		
 		std::string failMesg;
 

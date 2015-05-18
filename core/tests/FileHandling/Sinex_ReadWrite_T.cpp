@@ -1,5 +1,3 @@
-#pragma ident "$Id: //depot/msn/main/code/shared/gpstk/test/sinex_test.cpp#2 $"
-
 #include "SinexStream.hpp"
 #include "SinexData.hpp"
 
@@ -20,7 +18,7 @@ using namespace gpstk;
     *
     * @return 0 if successful
     */
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
    if (argc < 2)
    {

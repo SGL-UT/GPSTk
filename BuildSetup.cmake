@@ -136,11 +136,12 @@ include_directories( "${PROJECT_BINARY_DIR}/generated/" )
 install( FILES "${PROJECT_BINARY_DIR}/generated/build_config.h" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}" )
 
 
-#----------------------------------------
-# Experimental: build debs, tgz packages
-# Usage: "$ make package"
-#----------------------------------------
+#-----------------------------------------
+# Build debs, tgz packages for binaries 
+# Usage: "$ make package" 
+#-----------------------------------------
 	
+
 set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "GPSTk libraries and applications for GNSS processing.") 
 set( CPACK_PACKAGE_VENDOR "ARL:UT SGL" )
 set( CPACK_PACKAGE_CONTACT "Bryan Parsons" )
@@ -155,6 +156,15 @@ set( CPACK_DEBIAN_SECTION "stable" )
 set( CPACK_DEBIAN_PACKAGE_SECTION "science" )
 
 set( CPACK_GENERATOR "DEB;TGZ" )
+
+#-----------------------------------------
+# Build tgz packages for source release
+# Usage: "$ make package_source" 
+#-----------------------------------------
+
+set( CPACK_SOURCE_IGNORE_FILES "/build/")
+set( CPACK_SOURCE_GENERATOR "TGZ")
+
 include( CPack )
 
 #----------------------------------------

@@ -371,7 +371,7 @@ int BinexUpdateExtract_T :: doMixedTestA()
    BinexData  record(1);  // id = 1
 
    size_t  offset = 0;
-   size_t  expectedOffset = 0;
+
 
       // add a mixture of data to the record . . .
 
@@ -497,7 +497,7 @@ int BinexUpdateExtract_T :: doMixedTestB()
    BinexData  record(1);  // id = 1
 
    size_t  offset = 0;
-   size_t  expectedOffset = 0;
+
 
       // add a mixture of data to the record . . .
 
@@ -623,7 +623,6 @@ int BinexUpdateExtract_T :: doMixedTestC()
    BinexData  record(1);  // id = 1
 
    size_t  offset = 0;
-   size_t  expectedOffset = 0;
 
       // add a mixture of data to the record . . .
 
@@ -744,7 +743,7 @@ int BinexUpdateExtract_T :: doMixedTestC()
  *
  * @return Total error count for all tests
  */
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
    int  errorTotal = 0;
 

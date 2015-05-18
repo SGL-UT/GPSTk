@@ -459,7 +459,6 @@ class PolyFit_T
 			std::string failMesg;
 
 			int n = 4;
-			int errorCounter = 0;
 			gpstk::PolyFit<double> test(n);
 			gpstk::Vector<double> soln;
 			// Set the independent variable to the same value

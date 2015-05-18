@@ -37,15 +37,19 @@
 #include "Matrix_T.hpp"
 
 gpstk::Matrix<double> A5, A6, A7, A8;
-gpstk::Vector<double> CompareSA5, CompareSA6, CompareSA7, CompareSA8;
-gpstk::Matrix<double> CompareUA5, CompareUA6, CompareUA7, CompareUA8,
-					  CompareVA5, CompareVA6, CompareVA7, CompareVA8;
+//gpstk::Vector<double> CompareSA5, CompareSA6, CompareSA7, CompareSA8;
+//gpstk::Matrix<double> CompareUA5, CompareUA6, CompareUA7, CompareUA8,
+//					  CompareVA5, CompareVA6, CompareVA7, CompareVA8;
 gpstk::SVD<double> SVD5, SVD6, SVD7, SVD8;
 
 /* Defines the A, U and V matrices and singular values for the SVD */
 void SVDinitializer(void)
 {
-	gpstk::Matrix<double> A5Temp(2,2), A6Temp(2,3), A7Temp(3,2), A8Temp(3,3);
+    
+//=================================================================================================================
+    //  Below details what the individual matrices of the SVD should be, but currently aren't used in this test
+
+/*	gpstk::Matrix<double> A5Temp(2,2), A6Temp(2,3), A7Temp(3,2), A8Temp(3,3);
 	gpstk::Matrix<double> CompareUA5Temp(2,2), CompareUA6Temp(2,2), CompareUA7Temp(3,3), CompareUA8Temp(3,3),
 						  CompareVA5Temp(2,2), CompareVA6Temp(3,3), CompareVA7Temp(2,2), CompareVA8Temp(3,3);	
 
@@ -76,7 +80,9 @@ void SVDinitializer(void)
 	A5 = A5Temp; A6 = A6Temp; A7 = A7Temp; A8 = A8Temp;
 	CompareUA5 = CompareUA5Temp; CompareUA6 = CompareUA6Temp; CompareUA7 = CompareUA7Temp; CompareUA8 = CompareUA8Temp;
 	CompareVA5 = CompareVA5Temp; CompareVA6 = CompareVA6Temp; CompareVA7 = CompareVA7Temp; CompareVA8 = CompareVA8Temp;
-
+*/
+//===================================================================================================================
+    
 	SVD5(A5); SVD6(A6); SVD7(A7); SVD8(A8);
 
 //Sort s values in correct order
@@ -108,7 +114,6 @@ int Matrix_T::SVDATest(void)
 {
 	TestUtil testFramework("Matrix SVD", "U * S * V^T = A", __FILE__, __LINE__);
 	int badCount = 0;
-	int negCount = 0;
 
 	gpstk::Matrix<double> CompareA5(2,2), CompareA6(2,3), CompareA7(3,2), CompareA8(3,3);
 
