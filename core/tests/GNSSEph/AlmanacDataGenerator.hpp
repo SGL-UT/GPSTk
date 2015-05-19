@@ -71,16 +71,16 @@ class AlmanacData
 		for (int i=0; i<31; i++)
 		{
 			getline(file, line); //skip
-			id[i] = readData(file);
+			id[i] = readData(file); // sat id
 			health[i] = readData(file);
-			ecc[i] = readData(file);
-			toa[i] = readData(file);
-			oi[i] = readData(file);
-			rora[i] = readData(file);
+			ecc[i] = readData(file); // eccentricity (e)
+			toa[i] = readData(file); // Time of Applicability (toa)
+			oi[i] = readData(file); // Orbital Inclination (detai)
+			rora[i] = readData(file); // Rate of Right Ascension (OMEGADOT)
 			sqrta[i] = readData(file);
-			raaw[i] = readData(file);
-			aop[i] = readData(file);
-			ma[i] = readData(file);
+			raaw[i] = readData(file); // Rate of Ascension at Week (OMEGA0)
+			aop[i] = readData(file); // Argument of Perigee (omega)
+			ma[i] = readData(file); // Mean Anomaly (M0)
 			af0[i] = readData(file);
 			af1[i] = readData(file);
 			week[i] = readData(file);

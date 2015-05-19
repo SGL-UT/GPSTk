@@ -39,6 +39,7 @@
 #include <iostream>
 
 #include "AlmanacDataGenerator.hpp"
+#include "BinUtils.hpp"
 
 class EngAlmanac_T
 {
@@ -212,7 +213,7 @@ class EngAlmanac_T
 		tot = 110 * 2**12 = 450560 = 0x6e
 		WNt = 90 = 0x5a
 		WNLSF = 254 = 0xFE
-		DN (right justified?) = 5 =>0xa0
+		DN (right justified) = 5 =>0x05
 		dtLSF = (153 - 256) = -103 = 0x99
 
 
@@ -242,14 +243,14 @@ class EngAlmanac_T
 
 		word 9
 		dtLS 		WNLSF 		DN 			parity
-		00001101 	11111110 	10100000 	000000 			= 0x037fa800
+		00001101 	11111110 	00000101 	000000 			= 0x037f8140
 	
 		word 10
 		dtLSF 		14b reserved 	2b 		parity
 		10011001 	11111111111111 	00 		000000 			= 0x267fff00
 */
 		const long subframe456[10] = {0x22c000e4, 0x0000042c, 0x2e37ab40, 0x2fbbf780, 0x2b703780,
-									  0x2eb76ac0, 0x32ac2c00, 0x2d5b9680, 0x037fa800, 0x267fff00};
+									  0x2eb76ac0, 0x32ac2c00, 0x2d5b9680, 0x037f8140, 0x267fff00};
 		testMesg = "Adding subframe 4 page 18 failed";
 		testFramework.assert(dataStore.addSubframe(subframe456, 819), testMesg, __LINE__);
 
@@ -494,17 +495,72 @@ class EngAlmanac_T
 
 		//Below test FAILS! in the 8 bit week conversion. Passing unsigned value into
 		//week conversion can cause diff to be larger than LIMIT[type], resulting in incorrect value
-		//See EngNav.cpp line 460
+		//See EngNav.cpp convertXbit
 		testMesg = "getUTC returned an incorrect value for WNLSF";
 		testFramework.assert( WNLSF == int(851/256)*256 + 254, testMesg, __LINE__);
 		std::cout<<"WNlsf is: "<<WNLSF<<std::endl;// out of range of 8 bit
 
-		//Below test FAILS! DN is right justified according to IS-GPS-200D, but
-		//interpreted as left-justified here
 		testMesg = "getUTC returned an incorrect value for DN";
 		testFramework.assert( DN == 5, testMesg, __LINE__);
-		std::cout<<"DN is: "<<DN<<std::endl; //is correct value, but IS-GPS-200D says right justified
 
+		testMesg = "getAlmOrbElem returned an incorrect AlmOrbit object";
+		failCount = 0;
+		for (int i=0; i<30; i++)
+		{
+			x = i+1;
+			if (x > 7) x = i+2;
+			gpstk::AlmOrbit Compare(aData.id[i], aData.ecc[i], (aData.oi[i] - .3*M_PI), aData.rora[i],
+				aData.sqrta[i], aData.raaw[i], aData.aop[i], aData.ma[i], aData.af0[i], aData.af1[i],
+				aData.toa[i], 0/*?*/, aData.week[i], aData.health[i]);
+			gpstk::AlmOrbit orbitData;
+			orbitData = dataStore.getAlmOrbElem(gpstk::SatID(x, gpstk::SatID::systemGPS));
+
+// No == operator for AlmOrbit, using AlmOrbit's get methods to compare
+// Too many tests, using counter. Uncomment to find specific error
+/*
+			testMesg = "PRN value in getAlmOrbElem is incorrect";
+			testFramework.assert(orbitData.getPRN() == Compare.getPRN(), testMesg, __LINE__);
+			testMesg = "ecc value in getAlmOrbElem is incorrect";
+			testFramework.assert(std::abs(orbitData.getecc() - Compare.getecc()) < eps, testMesg, __LINE__);
+			testMesg = "i_offset value in getAlmOrbElem is incorrect";
+			testFramework.assert(std::abs(orbitData.geti_offset() - Compare.geti_offset()) < eps, testMesg, __LINE__);
+			testMesg = "OMEGAdot value in getAlmOrbElem is incorrect";
+			testFramework.assert(std::abs(orbitData.getOMEGAdot() - Compare.getOMEGAdot()) < eps, testMesg, __LINE__);
+			testMesg = "Ahalf value in getAlmOrbElem is incorrect";
+			testFramework.assert(std::abs(orbitData.getAhalf() - Compare.getAhalf()) < eps, testMesg, __LINE__);
+			testMesg = "OMEGA0 value in getAlmOrbElem is incorrect";
+			testFramework.assert(std::abs(orbitData.getOMEGA0() - Compare.getOMEGA0()) < eps, testMesg, __LINE__);
+			testMesg = "w value in getAlmOrbElem is incorrect";
+			testFramework.assert(std::abs(orbitData.getw() - Compare.getw()) < eps, testMesg, __LINE__);
+			testMesg = "M0 value in getAlmOrbElem is incorrect";
+			testFramework.assert(std::abs(orbitData.getM0() - Compare.getM0()) < eps, testMesg, __LINE__);
+			testMesg = "AF0 value in getAlmOrbElem is incorrect";
+			testFramework.assert(std::abs(orbitData.getAF0() - Compare.getAF0()) < eps, testMesg, __LINE__);
+			testMesg = "AF1 value in getAlmOrbElem is incorrect";
+			testFramework.assert(std::abs(orbitData.getAF1() - Compare.getAF1()) < eps, testMesg, __LINE__);
+			testMesg = "ToaSOW value in getAlmOrbElem is incorrect";
+			testFramework.assert(orbitData.getToaSOW() == Compare.getToaSOW(), testMesg, __LINE__);
+			testMesg = "xmit_time value in getAlmOrbElem is incorrect";
+			testFramework.assert(orbitData.getxmit_time() == Compare.getxmit_time(), testMesg, __LINE__);
+			testMesg = "ToaWeek value in getAlmOrbElem is incorrect";
+			testFramework.assert(orbitData.getToaWeek() == Compare.getToaWeek(), testMesg, __LINE__);
+*/
+
+			if (!(orbitData.getPRN() == Compare.getPRN())) failCount++;
+			if (!(std::abs(orbitData.getecc() - Compare.getecc()) < eps)) failCount++;
+			if (!(std::abs(orbitData.geti_offset() - Compare.geti_offset()) < eps)) failCount++;
+			if (!(std::abs(orbitData.getOMEGAdot() - Compare.getOMEGAdot()) < eps)) failCount++;
+			if (!(std::abs(orbitData.getAhalf() - Compare.getAhalf()) < eps)) failCount++;
+			if (!(std::abs(orbitData.getOMEGA0() - Compare.getOMEGA0()) < eps)) failCount++;
+			if (!(std::abs(orbitData.getw() - Compare.getw()) < eps)) failCount++;
+			if (!(std::abs(orbitData.getM0() - Compare.getM0()) < eps)) failCount++;
+			if (!(std::abs(orbitData.getAF0() - Compare.getAF0()) < eps)) failCount++;
+			if (!(std::abs(orbitData.getAF1() - Compare.getAF1()) < eps)) failCount++;
+			if (!(orbitData.getToaSOW() == Compare.getToaSOW())) failCount++;
+			if (!(orbitData.getxmit_time() == Compare.getxmit_time())) failCount++;
+			if (!(orbitData.getToaWeek() == Compare.getToaWeek())) failCount++;
+		}
+		testFramework.assert(failCount == 0, testMesg, __LINE__);
 
 		return testFramework.countFails();
 
