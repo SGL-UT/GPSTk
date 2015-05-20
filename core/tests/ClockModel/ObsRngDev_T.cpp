@@ -44,6 +44,48 @@
 #include "RinexObsData.hpp"
 #include "RinexObsStream.hpp"
 
+//Reads Rinex data from file into stl objects for construction of ObsRngDev objects
+void dataGen(std::vector< std::map<int, float> > &prnPrange,
+			 std::vector<gpstk::CommonTime> &cTimeVec,
+			 gpstk::Position &receiverPos)
+{
+	std::string path = gpstk::getPathData() + "/test_input_rinex_obs_RinexObsFile.06o";
+	gpstk::RinexObsStream obsFileStream(path);
+	gpstk::RinexObsHeader obsHeader;
+	gpstk::RinexObsData obsData;
+
+	obsFileStream >> obsHeader;
+
+	//Index of P1 is 3 in file used
+	int indexP1 = 3;
+	gpstk::RinexObsType typeP1;
+	typeP1 = obsHeader.obsTypeList[indexP1];
+	
+	int i = 0;
+
+	//Cycles through stored Obs
+	while( obsFileStream >> obsData)
+	{
+		//Loops through all sats for current Obs
+		for (int j = 1; j<32; j++)
+		{
+			gpstk::SatID id = gpstk::SatID(j, gpstk::SatID::systemGPS); 
+			prnPrange[i][j] = obsData.obs[id][typeP1].data;
+		}
+
+		cTimeVec[i] = obsData.time;
+
+		i++;
+	}
+
+	receiverPos.setECEF(obsHeader.antennaPosition);
+}
+
+void commonTimeGen()
+{
+
+}
+
 
 class ObsRngDev_T
 {
@@ -56,59 +98,47 @@ class ObsRngDev_T
 		TestUtil testFramework("ObsRngDev", "initializationTest", __FILE__, __LINE__);
 
 // Normal
-		//need ephem data in form of Xvtstore for one sat
-		gpstk::RinexEphemerisStore dataStore;
-		std::string path = gpstk::getPathData() + "/test_input_rinex_nav_ephemerisData.031";
-		dataStore.loadFile(path);
 
-// Can either attempt a value by value constructor as below, or use RINEX heavily
-						//psuedorange cp from ...
+//NEED TO USE NEW DATA FILES!
+	// current ones have no overlap
+
+		//6 epochs are in file used
+		std::vector< std::map<int, float> > prnPrange(6);
+		std::vector<gpstk::CommonTime> cTimeVec(6);
+		gpstk::Position receiverPos;
+		gpstk::RinexEphemerisStore ephemStore;
+		std::string path = gpstk::getPathData() + "/test_input_rinex_nav_ephemerisData.031";
+
+		dataGen(prnPrange, cTimeVec, receiverPos);
+		ephemStore.loadFile(path);
+std::cout<<__LINE__<<std::endl;
+		gpstk::WGS84Ellipsoid em;
+std::cout<<__LINE__<<std::endl;
+		//list of prn's in file used
+		int prnList[] = {1, 5, 11, 14, 15, 18, 22, 25, 30};
+		std::vector<gpstk::ObsRngDev> ordVec;
+
+		int prn;
+		for (int i=0; i < cTimeVec.size(); i++)
+			//length of prnList
+			for (int j=0; j < 9; j++)
+			{
+				prn = prnList[j];
+				gpstk::SatID id(prn, gpstk::SatID::systemGPS);
+				std::cout<<__LINE__<<std::endl;
+				try {
+					gpstk::ObsRngDev ord(prnPrange[i][prn], id, cTimeVec[i],
+					receiverPos, ephemStore, em);
+				}
+				catch (gpstk::Exception e)
+				{
+					std::cout<<e<<std::endl;
+				} 
+				std::cout<<__LINE__<<std::endl;
+				ordVec.push_back(ord);
+			};
 		// gpstk::ObsRngDev(21665483.802, gpstk::SatID(9, gpstk::SatID::systemGPS),  )
 
-// RINEX Attempt
-		path = gpstk::getPathData() + "/test_input_rinex_obs_RinexObsFile.06o";
-		gpstk::RinexObsStream obsFileStream(path);
-		gpstk::RinexObsHeader obsHeader;
-		gpstk::RinexObsData obsData;
-
-		obsFileStream >> obsHeader;
-		obsHeader.dump(std::cout);
-
-		//Function shown in example4, but doesn't exist.
-		//int indexP1 = obsHeader.getObsIndex("P1");
-		int indexP1 = 3;
-		std::cout<<obsHeader.obsTypeList[indexP1]<<std::endl;
-		gpstk::RinexObsType typeP1;
-		typeP1 = obsHeader.obsTypeList[indexP1];
-		
-		//gpstk::RinexObsData::DataMap::const_iterator it;
-
-		std::vector<std::vector<float> > prange(6, std::vector<float>(31));
-
-		int i = 0;
-
-		//Cycles through stored Obs
-		while( obsFileStream >> obsData)
-		{
-/*
-		//loops through each satellite
-		for (it = obsData.obs.begin(); it != obsData.obs.end(); it++)
-		{
-			try prnPrange[(*it).first] = obsData.getObs((*it).first, indexP1);
-			catch(...) continue; // Ignore if psuedorange not found
-		};
-*/
-			//Loops through all sats for current Obs
-			for (int j = 1; j<32; j++)
-			{
-				gpstk::SatID id = gpstk::SatID(j, gpstk::SatID::systemGPS); 
-				prange[i][j-1] = obsData.obs[id][typeP1].data;
-				std::cout<<prange[i][j-1]<<std::endl;
-			}
-			i++;
-		}
-
-		// std::cout<<prange[0][6]<<std::endl;
 
 // IonoModel
 // TropModel
