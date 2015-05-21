@@ -40,12 +40,16 @@
 
 #include "RinexEphemerisStore.hpp"
 
+//obsDataGen
 #include "RinexObsHeader.hpp"
 #include "RinexObsData.hpp"
 #include "RinexObsStream.hpp"
 
+//ionoModelGen
+#include "/home/voss/gpstk/core/tests/GNSSEph/AlmanacDataGenerator.hpp"
+
 //Reads Rinex data from file into stl objects for construction of ObsRngDev objects
-void dataGen(std::vector< std::map<int, float> > &prnPrange,
+void obsDataGen(std::vector< std::map<int, float> > &prnPrange,
 			 std::vector<gpstk::CommonTime> &cTimeVec,
 			 gpstk::Position &receiverPos)
 {
@@ -88,6 +92,40 @@ void dataGen(std::vector< std::map<int, float> > &prnPrange,
 
 }
 
+gpstk::IonoModel ionoModelGen(void)
+{
+	gpstk::EngAlmanac dataStore;
+
+	std::string pathData = gpstk::getPathData();
+	std::string almanacLocation = pathData + "/test_input_gps_almanac.txt";
+	std::ifstream iAlmanac(almanacLocation.c_str()); // Reads in almanac data from file
+	AlmanacData aData(iAlmanac); // Parses file into data objects
+	AlmanacSubframes aSubframes(aData); // Takes data objects and generates the subframes needed
+
+	for (int i=0; i<31; i++) dataStore.addSubframe(aSubframes.totalSf[i], 819);
+
+	const long subframe551[10] = {0x22c000e4, 0x00000598, 0x2CD38CC0, 0x00000000, 0x00000FC0,
+								  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x11111110};		
+	const long subframe447[10] = {0x22c000e4, 0x0000042c, 0x2FE66640, 0x26666640, 0x26666640,
+								  0x26666640, 0x26666640, 0x26667000, 0x00000000, 0x00000F00};
+	const long subframe456[10] = {0x22c000e4, 0x0000042c, 0x2e37ab40, 0x2fbbf780, 0x2b703780,
+								  0x2eb76ac0, 0x32ac2c00, 0x2d5b9680, 0x037f8140, 0x267fff00};
+	dataStore.addSubframe(subframe551, 819);
+	dataStore.addSubframe(subframe447, 819);
+	dataStore.addSubframe(subframe456, 819);
+	
+	gpstk::IonoModel im(dataStore);
+
+
+//Need 9 epochs of data spaced by 30 sec each
+	//each data is composed of 2 arrays, each with size 4
+
+
+	return im;
+}
+
+
+
 class ObsRngDev_T
 {
     public: 
@@ -114,7 +152,7 @@ class ObsRngDev_T
 //	If file is changed, be sure to change prn list, length of prn list in for loop, & # of epochs
 //==================================================================================
 
-		dataGen(prnPrange, cTimeVec, receiverPos);
+		obsDataGen(prnPrange, cTimeVec, receiverPos);
 		receiverPos.asGeodetic();
 
 		ephemStore.loadFile(path);
@@ -124,11 +162,11 @@ class ObsRngDev_T
 		//list of prn's in file used
 		//int prnList[] = {1, 5, 11, 14, 15, 18, 22, 25, 30};
 		int prnList[] = {9, 2, 5, 6, 10, 21, 24, 26, 29, 30};
-		std::vector<gpstk::ObsRngDev> ordVec;
 
 //Basic ORD Generator
 //-----------------------------------------------------------------------------------------
 		int prn;
+		std::vector<gpstk::ObsRngDev> ordVec;
 		for (int i=0; i < cTimeVec.size(); i++)
 			//length of prnList
 			for (int j=0; j < 10; j++)
@@ -161,6 +199,38 @@ class ObsRngDev_T
 //------------------------------------------------------------------------------------------
 
 // IonoModel
+// Need valid IonoModel object, how get? Copying Almanac generation from EngAlmanac_T
+
+		gpstk::IonoModel im = ionoModelGen();
+		std::vector<gpstk::ObsRngDev> ordVecIon;
+		for (int i=0; i < cTimeVec.size(); i++)
+			//length of prnList
+			for (int j=0; j < 10; j++)
+			{
+				prn = prnList[j];
+				gpstk::SatID id(prn, gpstk::SatID::systemGPS);
+				try {
+					gpstk::ObsRngDev ord(prnPrange[i][prn], id, cTimeVec[i],
+										receiverPos, ephemStore, em);
+					ordVecIon.push_back(ord);
+				}
+				catch (gpstk::Exception e)
+				{
+					std::cout<<e<<std::endl;
+				}
+			};
+
+//Where go from here? I have a few options
+// 		1. Continue where I'm at, just create a dummy IonoStore object
+				//	Does it neeed to have the same data as the satellites already stored?
+// 		2. Rewrite the above rinex stuff so that I'm only testing a few ords.
+				//	Possible, simplier, but boring. Probably the best option though.
+				// 	The rinex stuff is unneccesary, and don't need to run same test
+				//	 On 100 ords. Creates problems for math checking though.
+					//	But who cares? No ones going to write a test for math checking
+//		Regardless, will still need IonomodelStore object, only have one EngAlmanac
+				//	need to generate Ionomodel's by hand
+
 // TropModel
 // Iono&Trop
 // gamma
@@ -168,9 +238,15 @@ class ObsRngDev_T
 		return testFramework.countFails();
 	}
 
+	int computeOrdRx(void);
+
+	int computeOrdTx(void);
+
 	int getMethodTest(void);
 
 	int operatorTest(void);
+
+	int computeTrop(void);
 
 
 	private:
