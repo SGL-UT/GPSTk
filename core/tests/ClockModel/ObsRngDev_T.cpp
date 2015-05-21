@@ -49,7 +49,12 @@ void dataGen(std::vector< std::map<int, float> > &prnPrange,
 			 std::vector<gpstk::CommonTime> &cTimeVec,
 			 gpstk::Position &receiverPos)
 {
-	std::string path = gpstk::getPathData() + "/test_input_rinex_obs_RinexObsFile.06o";
+//	std::string path = gpstk::getPathData() + "/test_input_rinex_obs_RinexObsFile.06o";
+	std::string path = gpstk::getPathData() + "/VossObs.06o";
+//==================================================================================
+//	If file is changed, be sure to change prn list, length of prn list in for loop, & # of epochs
+//==================================================================================
+
 	gpstk::RinexObsStream obsFileStream(path);
 	gpstk::RinexObsHeader obsHeader;
 	gpstk::RinexObsData obsData;
@@ -64,9 +69,10 @@ void dataGen(std::vector< std::map<int, float> > &prnPrange,
 	int i = 0;
 
 	//Cycles through stored Obs
-	while( obsFileStream >> obsData)
+	while(obsFileStream >> obsData)
 	{
 		//Loops through all sats for current Obs
+		//CAN I MAKE THIS LOOP THROUGH ONLY CURRENT SATS?
 		for (int j = 1; j<32; j++)
 		{
 			gpstk::SatID id = gpstk::SatID(j, gpstk::SatID::systemGPS); 
@@ -79,13 +85,8 @@ void dataGen(std::vector< std::map<int, float> > &prnPrange,
 	}
 
 	receiverPos.setECEF(obsHeader.antennaPosition);
-}
-
-void commonTimeGen()
-{
 
 }
-
 
 class ObsRngDev_T
 {
@@ -102,43 +103,62 @@ class ObsRngDev_T
 //NEED TO USE NEW DATA FILES!
 	// current ones have no overlap
 
-		//6 epochs are in file used
-		std::vector< std::map<int, float> > prnPrange(6);
-		std::vector<gpstk::CommonTime> cTimeVec(6);
+		//9 epochs are in file used
+		std::vector< std::map<int, float> > prnPrange(9);
+		std::vector<gpstk::CommonTime> cTimeVec(9);
 		gpstk::Position receiverPos;
 		gpstk::RinexEphemerisStore ephemStore;
-		std::string path = gpstk::getPathData() + "/test_input_rinex_nav_ephemerisData.031";
+//		std::string path = gpstk::getPathData() + "/test_input_rinex_nav_ephemerisData.031";
+		std::string path = gpstk::getPathData() + "/VossNav.06o";
+//==================================================================================
+//	If file is changed, be sure to change prn list, length of prn list in for loop, & # of epochs
+//==================================================================================
 
 		dataGen(prnPrange, cTimeVec, receiverPos);
+		receiverPos.asGeodetic();
+
 		ephemStore.loadFile(path);
-std::cout<<__LINE__<<std::endl;
+
 		gpstk::WGS84Ellipsoid em;
-std::cout<<__LINE__<<std::endl;
+
 		//list of prn's in file used
-		int prnList[] = {1, 5, 11, 14, 15, 18, 22, 25, 30};
+		//int prnList[] = {1, 5, 11, 14, 15, 18, 22, 25, 30};
+		int prnList[] = {9, 2, 5, 6, 10, 21, 24, 26, 29, 30};
 		std::vector<gpstk::ObsRngDev> ordVec;
 
+//Basic ORD Generator
+//-----------------------------------------------------------------------------------------
 		int prn;
 		for (int i=0; i < cTimeVec.size(); i++)
 			//length of prnList
-			for (int j=0; j < 9; j++)
+			for (int j=0; j < 10; j++)
 			{
 				prn = prnList[j];
 				gpstk::SatID id(prn, gpstk::SatID::systemGPS);
-				std::cout<<__LINE__<<std::endl;
 				try {
 					gpstk::ObsRngDev ord(prnPrange[i][prn], id, cTimeVec[i],
-					receiverPos, ephemStore, em);
+										receiverPos, ephemStore, em);
+					ordVec.push_back(ord);
 				}
 				catch (gpstk::Exception e)
 				{
 					std::cout<<e<<std::endl;
 				} 
-				std::cout<<__LINE__<<std::endl;
-				ordVec.push_back(ord);
 			};
-		// gpstk::ObsRngDev(21665483.802, gpstk::SatID(9, gpstk::SatID::systemGPS),  )
 
+		std::string testMesg = "Test Failed";
+		for (int i=0; i < ordVec.size(); i++)
+		{
+			//Have same timeVec for every 10 instances of ordVec
+			testFramework.assert(ordVec[i].obstime == cTimeVec[floor(i/10)], testMesg, __LINE__);
+			//Loop through prnList for every 10 instances of ordVec
+			prn = prnList[i % 10];
+			gpstk::SatID id(prn, gpstk::SatID::systemGPS);
+			testFramework.assert(ordVec[i].svid == id, testMesg, __LINE__);
+			std::cout<<ordVec[i]<<std::endl;
+			// std::cout<<ordVec[i].health<<std::endl;
+		}
+//------------------------------------------------------------------------------------------
 
 // IonoModel
 // TropModel
