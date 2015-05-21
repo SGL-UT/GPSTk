@@ -45,9 +45,6 @@
 #include "RinexObsData.hpp"
 #include "RinexObsStream.hpp"
 
-//ionoModelGen
-#include "/home/voss/gpstk/core/tests/GNSSEph/AlmanacDataGenerator.hpp"
-
 //Reads Rinex data from file into stl objects for construction of ObsRngDev objects
 void obsDataGen(std::vector< std::map<int, float> > &prnPrange,
 			 std::vector<gpstk::CommonTime> &cTimeVec,
@@ -84,7 +81,6 @@ void obsDataGen(std::vector< std::map<int, float> > &prnPrange,
 		}
 
 		cTimeVec[i] = obsData.time;
-
 		i++;
 	}
 
@@ -92,36 +88,30 @@ void obsDataGen(std::vector< std::map<int, float> > &prnPrange,
 
 }
 
-gpstk::IonoModel ionoModelGen(void)
+gpstk::IonoModelStore ionoModelStoreGen(std::vector<gpstk::CommonTime>& cTimeVec)
 {
-	gpstk::EngAlmanac dataStore;
-
-	std::string pathData = gpstk::getPathData();
-	std::string almanacLocation = pathData + "/test_input_gps_almanac.txt";
-	std::ifstream iAlmanac(almanacLocation.c_str()); // Reads in almanac data from file
-	AlmanacData aData(iAlmanac); // Parses file into data objects
-	AlmanacSubframes aSubframes(aData); // Takes data objects and generates the subframes needed
-
-	for (int i=0; i<31; i++) dataStore.addSubframe(aSubframes.totalSf[i], 819);
-
-	const long subframe551[10] = {0x22c000e4, 0x00000598, 0x2CD38CC0, 0x00000000, 0x00000FC0,
-								  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x11111110};		
-	const long subframe447[10] = {0x22c000e4, 0x0000042c, 0x2FE66640, 0x26666640, 0x26666640,
-								  0x26666640, 0x26666640, 0x26667000, 0x00000000, 0x00000F00};
-	const long subframe456[10] = {0x22c000e4, 0x0000042c, 0x2e37ab40, 0x2fbbf780, 0x2b703780,
-								  0x2eb76ac0, 0x32ac2c00, 0x2d5b9680, 0x037f8140, 0x267fff00};
-	dataStore.addSubframe(subframe551, 819);
-	dataStore.addSubframe(subframe447, 819);
-	dataStore.addSubframe(subframe456, 819);
-	
-	gpstk::IonoModel im(dataStore);
-
 
 //Need 9 epochs of data spaced by 30 sec each
 	//each data is composed of 2 arrays, each with size 4
 
+	gpstk::IonoModel im1; gpstk::IonoModel im2; gpstk::IonoModel im3;
+	gpstk::IonoModel im4; gpstk::IonoModel im5; gpstk::IonoModel im6;
+	gpstk::IonoModel im7; gpstk::IonoModel im8; gpstk::IonoModel im9;
 
-	return im;
+	double a[] = {1,2,3,4}; double b[] = {4,3,2,1};
+	im1.setModel(a, b); im2.setModel(a, b); im3.setModel(a, b); im4.setModel(a, b);
+	im5.setModel(a, b); im6.setModel(a, b); im7.setModel(a, b); im8.setModel(a, b);
+	im9.setModel(a, b);
+
+	gpstk::IonoModelStore ims;
+
+	ims.addIonoModel(cTimeVec[0], im1); ims.addIonoModel(cTimeVec[1], im2);
+	ims.addIonoModel(cTimeVec[2], im3); ims.addIonoModel(cTimeVec[3], im4);
+	ims.addIonoModel(cTimeVec[4], im5); ims.addIonoModel(cTimeVec[5], im6);
+	ims.addIonoModel(cTimeVec[6], im7); ims.addIonoModel(cTimeVec[7], im8);
+	ims.addIonoModel(cTimeVec[8], im9);
+
+	return ims;
 }
 
 
@@ -135,11 +125,10 @@ class ObsRngDev_T
 	int initializationTest(void)
 	{
 		TestUtil testFramework("ObsRngDev", "initializationTest", __FILE__, __LINE__);
+		std::string testMesg;
+		int failCount;
 
 // Normal
-
-//NEED TO USE NEW DATA FILES!
-	// current ones have no overlap
 
 		//9 epochs are in file used
 		std::vector< std::map<int, float> > prnPrange(9);
@@ -163,10 +152,12 @@ class ObsRngDev_T
 		//int prnList[] = {1, 5, 11, 14, 15, 18, 22, 25, 30};
 		int prnList[] = {9, 2, 5, 6, 10, 21, 24, 26, 29, 30};
 
-//Basic ORD Generator
 //-----------------------------------------------------------------------------------------
+
+//Basic ORD Generator
+
 		int prn;
-		std::vector<gpstk::ObsRngDev> ordVec;
+		//std::vector<gpstk::ObsRngDev> ordVec;
 		for (int i=0; i < cTimeVec.size(); i++)
 			//length of prnList
 			for (int j=0; j < 10; j++)
@@ -184,24 +175,47 @@ class ObsRngDev_T
 				} 
 			};
 
-		std::string testMesg = "Test Failed";
+		testMesg = "obstime value was not set correctly in the basic constructor";
+		//testFramework.assert(ordVec[i].obstime == cTimeVec[floor(i/10)], testMesg, __LINE__);
+		failCount = 0;
 		for (int i=0; i < ordVec.size(); i++)
 		{
 			//Have same timeVec for every 10 instances of ordVec
-			testFramework.assert(ordVec[i].obstime == cTimeVec[floor(i/10)], testMesg, __LINE__);
+			if(!(ordVec[i].obstime == cTimeVec[floor(i/10)]))
+				failCount++;
+		}
+		testFramework.assert(failCount == 0, testMesg, __LINE__);
+	
+		testMesg = "svid value was not set correctly in the basic constructor";
+		//testFramework.assert(ordVec[i].svid == id, testMesg, __LINE__);
+		failCount = 0;
+		for (int i=0; i < ordVec.size(); i++)
+		{
 			//Loop through prnList for every 10 instances of ordVec
 			prn = prnList[i % 10];
 			gpstk::SatID id(prn, gpstk::SatID::systemGPS);
-			testFramework.assert(ordVec[i].svid == id, testMesg, __LINE__);
-			std::cout<<ordVec[i]<<std::endl;
-			// std::cout<<ordVec[i].health<<std::endl;
+
+			if(!(ordVec[i].svid == id))
+				failCount++;
 		}
+		testFramework.assert(failCount == 0, testMesg, __LINE__);
+
+		testMesg = "health value was not set correctly in the basic constructor";
+		//testFramework.assert(ordVec[i].svid == id, testMesg, __LINE__);
+		failCount = 0;
+		for (int i=0; i < ordVec.size(); i++)
+		{
+			if(!(ordVec[i].health.get_value() == 0))
+				failCount++;
+		}
+		testFramework.assert(failCount == 0, testMesg, __LINE__);
 //------------------------------------------------------------------------------------------
 
 // IonoModel
 // Need valid IonoModel object, how get? Copying Almanac generation from EngAlmanac_T
 
-		gpstk::IonoModel im = ionoModelGen();
+		gpstk::IonoModelStore ims = ionoModelStoreGen(cTimeVec);
+		gpstk::IonoModel::Frequency L1 = gpstk::IonoModel::L1;
 		std::vector<gpstk::ObsRngDev> ordVecIon;
 		for (int i=0; i < cTimeVec.size(); i++)
 			//length of prnList
@@ -211,7 +225,7 @@ class ObsRngDev_T
 				gpstk::SatID id(prn, gpstk::SatID::systemGPS);
 				try {
 					gpstk::ObsRngDev ord(prnPrange[i][prn], id, cTimeVec[i],
-										receiverPos, ephemStore, em);
+										receiverPos, ephemStore, em, ims, L1);
 					ordVecIon.push_back(ord);
 				}
 				catch (gpstk::Exception e)
@@ -219,6 +233,211 @@ class ObsRngDev_T
 					std::cout<<e<<std::endl;
 				}
 			};
+		testMesg = "obstime value was not set correctly in the basic constructor";
+		//testFramework.assert(ordVecIon[i].obstime == cTimeVec[floor(i/10)], testMesg, __LINE__);
+		failCount = 0;
+		for (int i=0; i < ordVecIon.size(); i++)
+		{
+			//Have same timeVec for every 10 instances of ordVecIon
+			if(!(ordVecIon[i].obstime == cTimeVec[floor(i/10)]))
+				failCount++;
+		}
+		testFramework.assert(failCount == 0, testMesg, __LINE__);
+	
+		testMesg = "svid value was not set correctly in the basic constructor";
+		//testFramework.assert(ordVecIon[i].svid == id, testMesg, __LINE__);
+		failCount = 0;
+		for (int i=0; i < ordVecIon.size(); i++)
+		{
+			//Loop through prnList for every 10 instances of ordVecIon
+			prn = prnList[i % 10];
+			gpstk::SatID id(prn, gpstk::SatID::systemGPS);
+
+			if(!(ordVecIon[i].svid == id))
+				failCount++;
+		}
+		testFramework.assert(failCount == 0, testMesg, __LINE__);
+
+		testMesg = "health value was not set correctly in the basic constructor";
+		//testFramework.assert(ordVecIon[i].svid == id, testMesg, __LINE__);
+		failCount = 0;
+		for (int i=0; i < ordVecIon.size(); i++)
+		{
+			if(!(ordVecIon[i].health.get_value() == 0))
+				failCount++;
+		}
+		testFramework.assert(failCount == 0, testMesg, __LINE__);
+//------------------------------------------------------------------------------------------
+
+// TropModel
+
+		gpstk::SimpleTropModel stm(18.8889, 1021.2176, 77.7777); // Celsius, mmBar, %humidity		
+		std::vector<gpstk::ObsRngDev> ordVecTrop;
+		for (int i=0; i < cTimeVec.size(); i++)
+			//length of prnList
+			for (int j=0; j < 10; j++)
+			{
+				prn = prnList[j];
+				gpstk::SatID id(prn, gpstk::SatID::systemGPS);
+				try {
+					gpstk::ObsRngDev ord(prnPrange[i][prn], id, cTimeVec[i],
+										receiverPos, ephemStore, em, stm);
+					ordVecTrop.push_back(ord);
+				}
+				catch (gpstk::Exception e)
+				{
+					std::cout<<e<<std::endl;
+				}
+			};
+			testMesg = "obstime value was not set correctly in the basic constructor";
+		//testFramework.assert(ordVecTrop[i].obstime == cTimeVec[floor(i/10)], testMesg, __LINE__);
+		failCount = 0;
+		for (int i=0; i < ordVecTrop.size(); i++)
+		{
+			//Have same timeVec for every 10 instances of ordVecTrop
+			if(!(ordVecTrop[i].obstime == cTimeVec[floor(i/10)]))
+				failCount++;
+		}
+		testFramework.assert(failCount == 0, testMesg, __LINE__);
+	
+		testMesg = "svid value was not set correctly in the basic constructor";
+		//testFramework.assert(ordVecTrop[i].svid == id, testMesg, __LINE__);
+		failCount = 0;
+		for (int i=0; i < ordVecTrop.size(); i++)
+		{
+			//Loop through prnList for every 10 instances of ordVecTrop
+			prn = prnList[i % 10];
+			gpstk::SatID id(prn, gpstk::SatID::systemGPS);
+
+			if(!(ordVecTrop[i].svid == id))
+				failCount++;
+		}
+		testFramework.assert(failCount == 0, testMesg, __LINE__);
+
+		testMesg = "health value was not set correctly in the basic constructor";
+		//testFramework.assert(ordVecTrop[i].svid == id, testMesg, __LINE__);
+		failCount = 0;
+		for (int i=0; i < ordVecTrop.size(); i++)
+		{
+			if(!(ordVecTrop[i].health.get_value() == 0))
+				failCount++;
+		}
+		testFramework.assert(failCount == 0, testMesg, __LINE__);
+
+//------------------------------------------------------------------------------------------
+
+// Iono&Trop
+
+		// Previously Declared, here for reference
+//		gpstk::SimpleTropModel stm(18.8889, 1021.2176, 77.7777);
+//		gpstk::IonoModelStore ims = ionoModelStoreGen(cTimeVec);
+//		gpstk::IonoModel::Frequency L1 = gpstk::IonoModel::L1;		
+		std::vector<gpstk::ObsRngDev> ordVecTropIon;
+		for (int i=0; i < cTimeVec.size(); i++)
+			//length of prnList
+			for (int j=0; j < 10; j++)
+			{
+				prn = prnList[j];
+				gpstk::SatID id(prn, gpstk::SatID::systemGPS);
+				try {
+					gpstk::ObsRngDev ord(prnPrange[i][prn], id, cTimeVec[i],
+										receiverPos, ephemStore, em, stm, ims, L1);
+					ordVecTropIon.push_back(ord);
+				}
+				catch (gpstk::Exception e)
+				{
+					std::cout<<e<<std::endl;
+				}
+			};
+		testMesg = "obstime value was not set correctly in the basic constructor";
+		//testFramework.assert(ordVecTropIon[i].obstime == cTimeVec[floor(i/10)], testMesg, __LINE__);
+		failCount = 0;
+		for (int i=0; i < ordVecTropIon.size(); i++)
+		{
+			//Have same timeVec for every 10 instances of ordVecTropIon
+			if(!(ordVecTropIon[i].obstime == cTimeVec[floor(i/10)]))
+				failCount++;
+		}
+		testFramework.assert(failCount == 0, testMesg, __LINE__);
+	
+		testMesg = "svid value was not set correctly in the basic constructor";
+		//testFramework.assert(ordVecTropIon[i].svid == id, testMesg, __LINE__);
+		failCount = 0;
+		for (int i=0; i < ordVecTropIon.size(); i++)
+		{
+			//Loop through prnList for every 10 instances of ordVecTropIon
+			prn = prnList[i % 10];
+			gpstk::SatID id(prn, gpstk::SatID::systemGPS);
+
+			if(!(ordVecTropIon[i].svid == id))
+				failCount++;
+		}
+		testFramework.assert(failCount == 0, testMesg, __LINE__);
+
+		testMesg = "health value was not set correctly in the basic constructor";
+		//testFramework.assert(ordVecTropIon[i].svid == id, testMesg, __LINE__);
+		failCount = 0;
+		for (int i=0; i < ordVecTropIon.size(); i++)
+		{
+			if(!(ordVecTropIon[i].health.get_value() == 0))
+				failCount++;
+		}
+		testFramework.assert(failCount == 0, testMesg, __LINE__);
+
+
+
+//NEED PRANGE 1 AND 2 TO USE GAMMA IN CONSTRUCTOR
+//-----------------------------------------------------------------------------------------
+
+// gamma
+/*
+		double gamma = 1.2345;
+		std::vector<gpstk::ObsRngDev> ordVecGamma;
+		for (int i=0; i < cTimeVec.size(); i++)
+			//length of prnList
+			for (int j=0; j < 10; j++)
+			{
+				prn = prnList[j];
+				gpstk::SatID id(prn, gpstk::SatID::systemGPS);
+				try {
+					gpstk::ObsRngDev ord(prnPrange[i][prn], id, cTimeVec[i],
+										receiverPos, ephemStore, em, gamma);
+					ordVecTropIon.push_back(ord);
+				}
+				catch (gpstk::Exception e)
+				{
+					std::cout<<e<<std::endl;
+				}
+			};
+
+//-------------------------------------------------------------------------------------------
+
+// gamma&Trop
+
+		// Previously Declared, here for reference	
+//		gpstk::SimpleTropModel stm(18.8889, 1021.2176, 77.7777);
+//		double gamma = 1.2345;
+		std::vector<gpstk::ObsRngDev> ordVecTropIonGamma;
+
+		for (int i=0; i < cTimeVec.size(); i++)
+			//length of prnList
+			for (int j=0; j < 10; j++)
+			{
+				prn = prnList[j];
+				gpstk::SatID id(prn, gpstk::SatID::systemGPS);
+				try {
+					gpstk::ObsRngDev ord(prnPrange[i][prn], id, cTimeVec[i],
+										receiverPos, ephemStore, em, stm, gamma);
+					ordVecTropIonGamma.push_back(ord);
+				}
+				catch (gpstk::Exception e)
+				{
+					std::cout<<e<<std::endl;
+					//failCount++;
+				}
+			};
+*/
+//------------------------------------------------------------------------------------------
 
 //Where go from here? I have a few options
 // 		1. Continue where I'm at, just create a dummy IonoStore object
@@ -231,26 +450,115 @@ class ObsRngDev_T
 //		Regardless, will still need IonomodelStore object, only have one EngAlmanac
 				//	need to generate Ionomodel's by hand
 
-// TropModel
-// Iono&Trop
-// gamma
-// gamma&Trop
 		return testFramework.countFails();
 	}
 
-	int computeOrdRx(void);
+	int getFunctionsTest(int x)
+	{
+		TestUtil testFramework("ObsRngDev", "Get Methods", __FILE__, __LINE__);
+		std::string testMesg;
+		int failCount;
 
-	int computeOrdTx(void);
+		failCount = 0;
+		testMesg = "getTime returned an incorrect value";
+		//testFramework.assert(ordVec[i].getTime() == ordVec[i].obstime, testMesg, __LINE__);
+		for(int i=0; i<ordVec.size(); i++)
+		{
+			if (!(ordVec[i].getTime() == ordVec[i].obstime))
+				failCount++;
+		}
+		testFramework.assert(failCount == 0, testMesg, __LINE__);
 
-	int getMethodTest(void);
+		failCount = 0;
+		testMesg = "getSvID returned an incorrect value";
+		//testFramework.assert(ordVec[i].getSvID() == ordVec[i].svid, testMesg, __LINE__);
+		for(int i=0; i<ordVec.size(); i++)
+		{
+			if (!(ordVec[i].getSvID() == ordVec[i].svid))
+				failCount++;
+		}
+		testFramework.assert(failCount == 0, testMesg, __LINE__);
+
+		failCount = 0;
+		testMesg = "getAzim returned an incorrect value";
+		//testFramework.assert(ordVec[i].getAzimuth().get_value() == ordVec[i].azimuth.get_value(), testMesg, __LINE__);
+		for(int i=0; i<ordVec.size(); i++)
+		{
+			if (!(ordVec[i].getAzimuth().get_value() == ordVec[i].azimuth.get_value()))
+				failCount++;
+		}
+		testFramework.assert(failCount == 0, testMesg, __LINE__);
+
+		failCount = 0;
+		testMesg = "getElev returned an incorrect value";
+		//testFramework.assert(ordVec[i].getElevation().get_value() == ordVec[i].elevation.get_value(), testMesg, __LINE__);
+		for(int i=0; i<ordVec.size(); i++)
+		{
+			if (!(ordVec[i].getElevation().get_value() == ordVec[i].elevation.get_value()))
+				failCount++;
+		}
+		testFramework.assert(failCount == 0, testMesg, __LINE__);
+
+		failCount = 0;
+		testMesg = "getHealth returned an incorrect value";
+		//testFramework.assert(ordVec[i].getHealth().get_value() == ordVec[i].health.get_value(), testMesg, __LINE__);
+		for(int i=0; i<ordVec.size(); i++)
+		{
+			if (!(ordVec[i].getHealth().get_value() == ordVec[i].health.get_value()))
+				failCount++;
+		}
+		testFramework.assert(failCount == 0, testMesg, __LINE__);
+
+		failCount = 0;
+		testMesg = "getIODC returned an incorrect value";
+		//testFramework.assert(ordVec[i].getIODC().get_value() == ordVec[i].iodc.get_value(), testMesg, __LINE__);
+		for(int i=0; i<ordVec.size(); i++)
+		{
+			if (!(ordVec[i].getIODC().get_value() == ordVec[i].iodc.get_value()))
+				failCount++;
+		}
+		testFramework.assert(failCount == 0, testMesg, __LINE__);
+
+		failCount = 0;
+		testMesg = "getORD( returned an incorrect value";
+			//testFramework.assert(ordVec[i].getORD() == ordVec[i].ord, testMesg, __LINE__);
+		for(int i=0; i<ordVec.size(); i++)
+		{
+			if (!(ordVec[i].getORD() == ordVec[i].ord))
+				failCount++;
+		}
+		testFramework.assert(failCount == 0, testMesg, __LINE__);
+
+		failCount = 0;
+		testMesg = "getIono returned an incorrect value";
+		//testFramework.assert(ordVec[i].getIono().get_value() == ordVec[i].iono.get_value(), testMesg, __LINE__);
+		for(int i=0; i<ordVec.size(); i++)
+		{
+			if (!(ordVec[i].getIono().get_value() == ordVec[i].iono.get_value()))
+				failCount++;
+		}
+		testFramework.assert(failCount == 0, testMesg, __LINE__);
+
+		failCount = 0;
+		testMesg = "getTrop returned an incorrect value";
+		//testFramework.assert(ordVec[i].getTrop().get_value() == ordVec[i].trop.get_value(), testMesg, __LINE__);
+		for(int i=0; i<ordVec.size(); i++)
+		{
+			if (!(ordVec[i].getTrop().get_value() == ordVec[i].trop.get_value()))
+				failCount++;
+		}
+		testFramework.assert(failCount == 0, testMesg, __LINE__);
+
+		return testFramework.countFails();
+	}
 
 	int operatorTest(void);
 
-	int computeTrop(void);
-
+	int calculationTest(void);
 
 	private:
 		double eps;
+		std::vector<gpstk::ObsRngDev> ordVec;
 };
 
 
@@ -260,6 +568,9 @@ int main() //Main function to initialize and run all tests above
 	ObsRngDev_T testClass;
 
 	check = testClass.initializationTest();
+	errorCounter += check;
+
+	check = testClass.getFunctionsTest(1);
 	errorCounter += check;
 
 	std::cout << "Total Failures for " << __FILE__ << ": " << errorCounter << std::endl;
