@@ -45,7 +45,11 @@
 #include "RinexObsData.hpp"
 #include "RinexObsStream.hpp"
 
+#include "EphemerisRange.hpp"
+
 //Reads Rinex data from file into stl objects for construction of ObsRngDev objects
+
+//For hypothetical re-write, this only generats pseudorange 1&2 and commontime objects
 void obsDataGen(std::vector< std::map<int, float> > &prnPrange,
 			 std::vector<gpstk::CommonTime> &cTimeVec,
 			 gpstk::Position &receiverPos)
@@ -66,9 +70,7 @@ void obsDataGen(std::vector< std::map<int, float> > &prnPrange,
 	int indexP1 = 3;
 	gpstk::RinexObsType typeP1;
 	typeP1 = obsHeader.obsTypeList[indexP1];
-	
 	int i = 0;
-
 	//Cycles through stored Obs
 	while(obsFileStream >> obsData)
 	{
@@ -81,6 +83,7 @@ void obsDataGen(std::vector< std::map<int, float> > &prnPrange,
 		}
 
 		cTimeVec[i] = obsData.time;
+		std::cout<<obsData.time.getTimeSystem()<<std::endl;
 		i++;
 	}
 
@@ -128,13 +131,16 @@ class ObsRngDev_T
 		std::string testMesg;
 		int failCount;
 
+prnPrange.resize(10, std::map<int, float>() );
+cTimeVec.resize(10);
 // Normal
 
 		//9 epochs are in file used
-		std::vector< std::map<int, float> > prnPrange(9);
-		std::vector<gpstk::CommonTime> cTimeVec(9);
-		gpstk::Position receiverPos;
-		gpstk::RinexEphemerisStore ephemStore;
+		//Moving to global class members, need for other tests
+		// std::vector< std::map<int, float> > prnPrange(9);
+		// std::vector<gpstk::CommonTime> cTimeVec(9);
+		// gpstk::Position receiverPos;
+		// gpstk::RinexEphemerisStore ephemStore;
 //		std::string path = gpstk::getPathData() + "/test_input_rinex_nav_ephemerisData.031";
 		std::string path = gpstk::getPathData() + "/VossNav.06o";
 //==================================================================================
@@ -145,6 +151,7 @@ class ObsRngDev_T
 		receiverPos.asGeodetic();
 
 		ephemStore.loadFile(path);
+		std::cout<<std::endl<<ephemStore.getTimeSystem()<<std::endl; // Time system of the ENTIRE store
 
 		gpstk::WGS84Ellipsoid em;
 
@@ -153,6 +160,12 @@ class ObsRngDev_T
 		int prnList[] = {9, 2, 5, 6, 10, 21, 24, 26, 29, 30};
 
 //-----------------------------------------------------------------------------------------
+
+//============================================================================
+//Don't know where, but wherever the timeTables in the satTable of OrbitEphStore
+//	is generated, the commontime object is unknown instead of GPS
+//============================================================================
+
 
 //Basic ORD Generator
 
@@ -453,7 +466,7 @@ class ObsRngDev_T
 		return testFramework.countFails();
 	}
 
-	int getFunctionsTest(int x)
+	int getFunctionsTest(void)
 	{
 		TestUtil testFramework("ObsRngDev", "Get Methods", __FILE__, __LINE__);
 		std::string testMesg;
@@ -552,13 +565,47 @@ class ObsRngDev_T
 		return testFramework.countFails();
 	}
 
-	int operatorTest(void);
+	int operatorTest(void); //purely a dump method. How necessary is this?
 
-	int calculationTest(void);
+	int calculationTest(void) 
+	{
+		//need to test computeOrdRx, computeOrdTx, and computeTrop
+		//none of the math is actually done in this class, is entirely reliant on calls to other files.
+		//Therefore, how test? Calculation at it's core in Xvt::preciseRho
+
+		TestUtil testFramework("ObsRngDev", "ComputeOrdRx", __FILE__, __LINE__);
+		std::string testMesg;
+
+		gpstk::CorrectedEphemerisRange cer;
+		double rho;
+		double prange;
+		for (int i=0; i<ordVec.size(); i++)
+		{
+			prange = prnPrange[floor(i/10)][ordVec[i].svid.id];
+			rho = cer.ComputeAtTransmitTime(ordVec[i].obstime, prange, receiverPos, ordVec[i].svid, ephemStore);
+			testMesg = "Incorrect value for ord";
+			testFramework.assert(std::abs(ordVec[i].ord - (prnPrange[floor(i/10)][ordVec[i].svid.id] - rho)) < eps, testMesg, __LINE__);
+			testMesg = "Incorrect value for rho";
+			testFramework.assert(std::abs(ordVec[i].rho - rho) < eps, testMesg, __LINE__);
+			testMesg = "Incorrect value for azimuth";
+			testFramework.assert(std::abs(ordVec[i].azimuth - cer.azimuth) < eps, testMesg, __LINE__);
+			testMesg = "Incorrect value for elevation";
+			testFramework.assert(std::abs(ordVec[i].elevation - cer.elevation) < eps, testMesg, __LINE__);
+			std::cout<<ordVec[i].ord<<std::endl;
+			printf("%10.10f\n", ordVec[i].ord);
+			printf("%10.10f\n", (prnPrange[floor(i/10)][ordVec[i].svid.id] - rho));
+		}
+
+		return testFramework.countFails();
+	}
 
 	private:
 		double eps;
 		std::vector<gpstk::ObsRngDev> ordVec;
+		std::vector< std::map<int, float> > prnPrange;
+		std::vector<gpstk::CommonTime> cTimeVec;
+		gpstk::Position receiverPos;
+		gpstk::RinexEphemerisStore ephemStore;
 };
 
 
@@ -570,7 +617,10 @@ int main() //Main function to initialize and run all tests above
 	check = testClass.initializationTest();
 	errorCounter += check;
 
-	check = testClass.getFunctionsTest(1);
+	check = testClass.getFunctionsTest();
+	errorCounter += check;
+
+	check = testClass.calculationTest();
 	errorCounter += check;
 
 	std::cout << "Total Failures for " << __FILE__ << ": " << errorCounter << std::endl;
