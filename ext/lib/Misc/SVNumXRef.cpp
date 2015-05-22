@@ -109,6 +109,7 @@ SVNumXRef::SVNumXRef( )
    NtoBMap.insert( make_pair( 67,IIF ));
    NtoBMap.insert( make_pair( 68,IIF ));
    NtoBMap.insert( make_pair( 69,IIF ));
+   NtoBMap.insert( make_pair( 71,IIF ));
 
 
       // Note: This table start with Block I values
@@ -277,9 +278,10 @@ SVNumXRef::SVNumXRef( )
    NtoPMap.insert( std::pair<const int, XRefNode>( 37, XRefNode(  30, 
                                        CivilTime( 2013,  9, 19,  0,  0,  0.0, TimeSystem::GPS),
                                        CivilTime( 2013, 12,  2, 23, 59, 59.9, TimeSystem::GPS))));
+   // NANU 2015021 (end)
    NtoPMap.insert( std::pair<const int, XRefNode>( 38, XRefNode(  8, 
                                        CivilTime( 1997, 11,  6,  0,  0,  0.0, TimeSystem::GPS),
-                                       CommonTime::END_OF_TIME  )));
+                                       CivilTime( 2015, 10, 30, 22,  0,  0.0, TimeSystem::GPS))));
    // NANU 2014046 (end)
    NtoPMap.insert( std::pair<const int, XRefNode>( 39, XRefNode(  9, 
                                        CivilTime( 1993,  6, 26,  0,  0,  0.0, TimeSystem::GPS),
@@ -343,10 +345,15 @@ SVNumXRef::SVNumXRef( )
    NtoPMap.insert( std::pair<const int, XRefNode>( 49, XRefNode( 30, 
                                        CivilTime( 2013, 12, 18,  0,  0,  0.0, TimeSystem::GPS),
                                        CivilTime( 2014,  2, 20, 23, 59,  0.0, TimeSystem::GPS))));
-   //  NANU 2014032 (start), , 2014045 (end-IMPLIED)
+   //  NANU 2014032 (start), 2014045 (end-IMPLIED)
    NtoPMap.insert( std::pair<const int, XRefNode>( 49, XRefNode(  6, 
                                        CivilTime( 2014,  4,  3,  0,  0,  0.0, TimeSystem::GPS),
                                        CivilTime( 2014,  5, 15, 23, 59, 59.9, TimeSystem::GPS))));
+   //  NANU 2015032 (start)
+   NtoPMap.insert( std::pair<const int, XRefNode>( 49, XRefNode(  6, 
+                                       CivilTime( 2015,  4,  30,  0,  0,  0.0, TimeSystem::GPS),
+                                       CommonTime::END_OF_TIME  )));                                       
+                                       
    NtoPMap.insert( std::pair<const int, XRefNode>( 50, XRefNode(  5, 
                                        CivilTime( 2009,  8, 27,  0,  0,  0.0, TimeSystem::GPS),
                                        CommonTime::END_OF_TIME  )));
@@ -393,9 +400,11 @@ SVNumXRef::SVNumXRef( )
    NtoPMap.insert( std::pair<const int, XRefNode>( 64, XRefNode( 30,
                                        CivilTime( 2014,  2, 21,  0,  0,  0.0, TimeSystem::GPS),
                                        CommonTime::END_OF_TIME  )));
+                                       
    NtoPMap.insert( std::pair<const int, XRefNode>( 65, XRefNode( 24,
                                        CivilTime( 2012, 10,  4,  0,  0,  0.0, TimeSystem::GPS),
                                        CommonTime::END_OF_TIME  ))); 
+                                       
    NtoPMap.insert( std::pair<const int, XRefNode>( 66, XRefNode( 27,
                                        CivilTime( 2013,  5, 15,  0,  0,  0.0, TimeSystem::GPS),
                                        CommonTime::END_OF_TIME  )));
@@ -410,6 +419,10 @@ SVNumXRef::SVNumXRef( )
                                        
    NtoPMap.insert( std::pair<const int, XRefNode>( 69, XRefNode(  3,
                                        CivilTime( 2014,  10,  29,  0,  0,  0.0, TimeSystem::GPS),
+                                       CommonTime::END_OF_TIME  )));
+   //NANU  2015019 LAUNCH                   
+   NtoPMap.insert( std::pair<const int, XRefNode>( 71, XRefNode(  26,
+                                       CivilTime( 2015,   3,  25,  18,  36,  0.0, TimeSystem::GPS),
                                        CommonTime::END_OF_TIME  )));
                                        
       //Iterate through the data to produce the PtoNMap
