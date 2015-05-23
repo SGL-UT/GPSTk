@@ -55,7 +55,8 @@ namespace gpstk
    PackedNavBits::PackedNavBits()
                  : transmitTime(CommonTime::BEGINNING_OF_TIME),
                    bits(900),
-                   bits_used(0)
+                   bits_used(0),
+                   xMitCoerced(false)
    {
       transmitTime.setTimeSystem(TimeSystem::GPS);
    }
@@ -63,11 +64,13 @@ namespace gpstk
                                 const ObsID& obsIDArg,
                                 const CommonTime& transmitTimeArg)
                                 : bits(900),
-                                  bits_used(0)
+                                  bits_used(0),
+                                  xMitCoerced(false)
    {
       satSys = satSysArg;
       obsID = obsIDArg;
       transmitTime = transmitTimeArg;
+      xMitCoerced = false;
    }
 
       // Copy constructor
@@ -82,6 +85,7 @@ namespace gpstk
       {
          bits[i] = right.bits[i];
       }
+      xMitCoerced = right.xMitCoerced;
    }
  
    /*
