@@ -243,12 +243,19 @@ namespace gpstk
        void rawBitInput(const std::string inString )
           throw(InvalidParameter);       
 
+       void setXmitCoerced(bool tf=true) {xMitCoerced=tf;}
+       bool isXmitCoerced() const {return xMitCoerced;}
+
    private:
       SatID satSys;            /**< System ID (based on RINEX defintions */
       ObsID obsID;             /**< Defines carrier and code tracked */
-      CommonTime transmitTime; /**< Time nav message is trasnmitted */
+      CommonTime transmitTime; /**< Time nav message is transmitted */
       std::vector<bool> bits;  /**< Holds the packed data */
       int bits_used;
+      
+      bool xMitCoerced;        /**< Used to indicate that the transmit
+                                    time is NOT directly derived from
+                                    the SOW in the message */
 
          /** Unpack the bits */
       uint64_t asUint64_t(const int startBit, const int numBits ) const 
