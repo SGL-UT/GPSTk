@@ -67,7 +67,7 @@ gpstk::IonoModelStore ionoModelStoreGen(std::vector<gpstk::CommonTime>& cTimeVec
 class ObsRngDev_T
 {
     public: 
-	ObsRngDev_T(){ eps = 1E-6; }// Default Constructor, set the precision value to 6 digits due to float
+	ObsRngDev_T(){ eps = 1E-12; floatPrecision = 1E-6; }// Default Constructor, set the precision value to 6 digits due to float
 	~ObsRngDev_T() {} // Default Destructor
 
 	void initialization(void)
@@ -90,6 +90,11 @@ class ObsRngDev_T
 		std::string path = gpstk::getPathData() + "/test_input_rinex_nav_ephemerisData.031";
 		ephemStore.loadFile(path);
 	}	
+
+
+//=================================================================================
+//	Begin Constructor Tests
+//=================================================================================
 
 	int BasicConstructorTest(void)
 	{
@@ -289,7 +294,6 @@ class ObsRngDev_T
 		return testFramework.countFails();
 	}
 
-//-----------------------------------------------------------------------------------------
 	int GammaConstructorTest(void)
 	{
 		TestUtil testFramework("ObsRngDev", "GammaConstructor", __FILE__, __LINE__);
@@ -337,7 +341,7 @@ class ObsRngDev_T
 
 		return testFramework.countFails();
 	}
-//-------------------------------------------------------------------------------------------
+
 	int GammaTroposphericConstructorTest(void)
 	{
 		TestUtil testFramework("ObsRngDev", "GammaTroposphericConstructor", __FILE__, __LINE__);
@@ -386,6 +390,10 @@ class ObsRngDev_T
 
 		return testFramework.countFails();
 	}
+
+//===================================================================================
+// Begin Get Functions Test
+//===================================================================================
 
 	int getFunctionsTest(void)
 	{
@@ -494,6 +502,10 @@ class ObsRngDev_T
 
 		return testFramework.countFails();
 	}
+	
+//===================================================================================
+// Begin Calculations Test
+//===================================================================================
 
 	int BasicCalculationTest(void) 
 	{
@@ -527,10 +539,12 @@ class ObsRngDev_T
 			if (!(std::abs(ordVec[i].rho - rho) < eps)) failCount2++;
 			// testFramework.assert(std::abs(ordVec[i].rho - rho) < eps, testMesg, __LINE__);
 			// testMesg = "Incorrect value for azimuth";
-			if (!(std::abs(ordVec[i].azimuth - (float) cer.azimuth) < eps)) failCount3++;
+			relError = std::abs(ordVec[i].azimuth - (float) cer.azimuth) / cer.azimuth;
+			if (!(relError < floatPrecision)) failCount3++;
 			// testFramework.assert(std::abs(ordVec[i].azimuth - (float) cer.azimuth) < eps, testMesg, __LINE__);
 			// testMesg = "Incorrect value for elevation";
-			if (!(std::abs(ordVec[i].elevation - (float) cer.elevation) < eps)) failCount4++;
+			relError = std::abs(ordVec[i].elevation - (float) cer.elevation) / cer.elevation;
+			if (!(relError < floatPrecision)) failCount4++;
 			// testFramework.assert(std::abs(ordVec[i].elevation - (float) cer.elevation) < eps, testMesg, __LINE__);
 		}
 		testMesg = "Incorrect value for ord";
@@ -574,10 +588,12 @@ class ObsRngDev_T
 			if (!(std::abs(ordVecIon[i].rho - rho) < eps)) failCount2++;
 			// testFramework.assert(std::abs(ordVecIon[i].rho - rho) < eps, testMesg, __LINE__);
 			// testMesg = "Incorrect value for azimuth";
-			if (!(std::abs(ordVecIon[i].azimuth - (float) cer.azimuth) < eps)) failCount3++;
+			relError = std::abs(ordVecIon[i].azimuth - (float) cer.azimuth) / cer.azimuth;
+			if (!(relError < floatPrecision)) failCount3++;
 			// testFramework.assert(std::abs(ordVecIon[i].azimuth - (float) cer.azimuth) < eps, testMesg, __LINE__);
 			// testMesg = "Incorrect value for elevation";
-			if (!(std::abs(ordVecIon[i].elevation - (float) cer.elevation) < eps)) failCount4++;
+			relError = std::abs(ordVecIon[i].elevation - (float) cer.elevation) / cer.elevation;
+			if (!(relError < floatPrecision)) failCount4++;
 			// testFramework.assert(std::abs(ordVecIon[i].elevation - (float) cer.elevation) < eps, testMesg, __LINE__);
 		}
 		testMesg = "Incorrect value for ord";
@@ -621,10 +637,12 @@ class ObsRngDev_T
 			if (!(std::abs(ordVecTrop[i].rho - rho) < eps)) failCount2++;
 			// testFramework.assert(std::abs(ordVecTrop[i].rho - rho) < eps, testMesg, __LINE__);
 			// testMesg = "Incorrect value for azimuth";
-			if (!(std::abs(ordVecTrop[i].azimuth - (float) cer.azimuth) < eps)) failCount3++;
+			relError = std::abs(ordVecTrop[i].azimuth - (float) cer.azimuth) / cer.azimuth;
+			if (!(relError < floatPrecision)) failCount3++;
 			// testFramework.assert(std::abs(ordVecTrop[i].azimuth - (float) cer.azimuth) < eps, testMesg, __LINE__);
 			// testMesg = "Incorrect value for elevation";
-			if (!(std::abs(ordVecTrop[i].elevation - (float) cer.elevation) < eps)) failCount4++;
+			relError = std::abs(ordVecTrop[i].elevation - (float) cer.elevation) / cer.elevation;
+			if (!(relError < floatPrecision)) failCount4++;
 			// testFramework.assert(std::abs(ordVecTrop[i].elevation - (float) cer.elevation) < eps, testMesg, __LINE__);
 		}
 		testMesg = "Incorrect value for ord";
@@ -668,10 +686,12 @@ class ObsRngDev_T
 			if (!(std::abs(ordVecTropIon[i].rho - rho) < eps)) failCount2++;
 			// testFramework.assert(std::abs(ordVecTropIon[i].rho - rho) < eps, testMesg, __LINE__);
 			// testMesg = "Incorrect value for azimuth";
-			if (!(std::abs(ordVecTropIon[i].azimuth - (float) cer.azimuth) < eps)) failCount3++;
+			relError = std::abs(ordVecTropIon[i].azimuth - (float) cer.azimuth) / cer.azimuth;
+			if (!(relError < floatPrecision)) failCount3++;
 			// testFramework.assert(std::abs(ordVecTropIon[i].azimuth - (float) cer.azimuth) < eps, testMesg, __LINE__);
 			// testMesg = "Incorrect value for elevation";
-			if (!(std::abs(ordVecTropIon[i].elevation - (float) cer.elevation) < eps)) failCount4++;
+			relError = std::abs(ordVecTropIon[i].elevation - (float) cer.elevation) / cer.elevation;
+			if (!(relError < floatPrecision)) failCount4++;
 			// testFramework.assert(std::abs(ordVecTropIon[i].elevation - (float) cer.elevation) < eps, testMesg, __LINE__);
 		}
 		testMesg = "Incorrect value for ord";
@@ -716,10 +736,12 @@ class ObsRngDev_T
 			if (!(std::abs(ordVecGamma[i].rho - rho) < eps)) failCount2++;
 			// testFramework.assert(std::abs(ordVecGamma[i].rho - rho) < eps, testMesg, __LINE__);
 			// testMesg = "Incorrect value for azimuth";
-			if (!(std::abs(ordVecGamma[i].azimuth - (float) cer.azimuth) < eps)) failCount3++;
+			relError = std::abs(ordVecGamma[i].azimuth - (float) cer.azimuth) / cer.azimuth;
+			if (!(relError < floatPrecision)) failCount3++;
 			// testFramework.assert(std::abs(ordVecGamma[i].azimuth - (float) cer.azimuth) < eps, testMesg, __LINE__);
 			// testMesg = "Incorrect value for elevation";
-			if (!(std::abs(ordVecGamma[i].elevation - (float) cer.elevation) < eps)) failCount4++;
+			relError = std::abs(ordVecGamma[i].elevation - (float) cer.elevation) / cer.elevation;
+			if (!(relError < floatPrecision)) failCount4++;
 			// testFramework.assert(std::abs(ordVecGamma[i].elevation - (float) cer.elevation) < eps, testMesg, __LINE__);
 		}
 		testMesg = "Incorrect value for ord";
@@ -764,10 +786,12 @@ class ObsRngDev_T
 			if (!(std::abs(ordVecTropGamma[i].rho - rho) < eps)) failCount2++;
 			// testFramework.assert(std::abs(ordVecTropGamma[i].rho - rho) < eps, testMesg, __LINE__);
 			// testMesg = "Incorrect value for azimuth";
-			if (!(std::abs(ordVecTropGamma[i].azimuth - (float) cer.azimuth) < eps)) failCount3++;
+			relError = std::abs(ordVecTropGamma[i].azimuth - (float) cer.azimuth) / cer.azimuth;
+			if (!(relError < floatPrecision)) failCount3++;
 			// testFramework.assert(std::abs(ordVecTropGamma[i].azimuth - (float) cer.azimuth) < eps, testMesg, __LINE__);
 			// testMesg = "Incorrect value for elevation";
-			if (!(std::abs(ordVecTropGamma[i].elevation - (float) cer.elevation) < eps)) failCount4++;
+			relError = std::abs(ordVecTropGamma[i].elevation - (float) cer.elevation) / cer.elevation;
+			if (!(relError < floatPrecision)) failCount4++;
 			// testFramework.assert(std::abs(ordVecTropGamma[i].elevation - (float) cer.elevation) < eps, testMesg, __LINE__);
 		}
 		testMesg = "Incorrect value for ord";
@@ -784,6 +808,8 @@ class ObsRngDev_T
 
 	private:
 		double eps;
+		float floatPrecision;
+		float relError;
 		std::string testMesg;
 		int failCount;
 		gpstk::SatID id;
