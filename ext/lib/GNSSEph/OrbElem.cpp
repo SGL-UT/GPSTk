@@ -53,13 +53,8 @@ namespace gpstk
    using namespace std;
    using namespace gpstk;
     OrbElem::OrbElem()
-      :dataLoadedFlag(false),
-       ctToe(CommonTime::BEGINNING_OF_TIME),
-       ctToc(CommonTime::BEGINNING_OF_TIME),
-       beginValid(CommonTime::BEGINNING_OF_TIME),
-       endValid(CommonTime::BEGINNING_OF_TIME)
+      :ctToc(CommonTime::BEGINNING_OF_TIME)
    {
-      healthy = false;
       ctToe.setTimeSystem(TimeSystem::GPS);
       ctToc.setTimeSystem(TimeSystem::GPS);
       beginValid.setTimeSystem(TimeSystem::GPS);
