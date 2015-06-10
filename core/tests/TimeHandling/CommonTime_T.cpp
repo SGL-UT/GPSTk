@@ -400,10 +400,10 @@ class CommonTime_T : public CommonTime
             //----------------------------------------
             // Set in different ways
             //----------------------------------------
-            Test1.set(700001,1,.1);
-            Test2.set(700001,1.1);
-            Test3.set(700001 + dec);
-            Test4.setInternal(700001,1100,0.);
+            Test1.set(700001,1,.1);             //Set with set(long day,long sod,double fsod,TimeSystem timeSystem = TimeSystem::Unknown )
+            Test2.set(700001,1.1);              //Set with set(long day,double sod,TimeSystem timeSystem = TimeSystem::Unknown )
+            Test3.set(700001 + dec);            //Set with set(double day,TimeSystem timeSys = TimeSystem::Unknown )
+            Test4.setInternal(700001,1100,0.);  //Set with setInternal(long day,long msod,double fsod,TimeSystem timeSys = TimeSystem::Unknown );
 
             //Load up compare variables
             Test1.get(day,sod,fsod);
