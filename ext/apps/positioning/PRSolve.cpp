@@ -128,9 +128,9 @@ public:
 
    // Open the output file, and parse the strings used on the command line
    // return -4 if log file could not be opened
-   int ExtraProcessing(void) throw();
+   //int ExtraProcessing(void) throw();
    //TD on clau, this leads to the SPS algorithm failing to converge on some problems.
-   //int ExtraProcessing(string& errors, string& extras) throw();
+   int ExtraProcessing(string& errors, string& extras) throw();
 
    // update weather in the trop model using the Met store
    void setWeather(const CommonTime& ttag) throw(Exception);
@@ -1725,7 +1725,9 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
    }
 
    // extra parsing (perhaps add to cmdlineErrors, cmdlineExtras)
-   iret = ExtraProcessing(); //TD clau failure: cmdlineErrors, cmdlineExtras);
+   //TD clau failure: cmdlineErrors, cmdlineExtras);
+   //iret = ExtraProcessing();
+   iret = ExtraProcessing(cmdlineErrors, cmdlineExtras);
    if(iret == -4) return iret;      // log file could not be opened
 
    // output warning / error messages
@@ -1916,8 +1918,7 @@ string Configuration::BuildCommandLine(void) throw()
 }  // end Configuration::BuildCommandLine()
 
 //------------------------------------------------------------------------------------
-//TD clau failure: ExtraProcessing(string& errors, string& extras) throw()
-int Configuration::ExtraProcessing(void) throw()
+int Configuration::ExtraProcessing(string& errors, string& extras) throw()
 {
    int i,n;
    vector<string> fld;
@@ -1946,7 +1947,8 @@ int Configuration::ExtraProcessing(void) throw()
                << refPosStr << endl;
          else {
             try {
-               knownPos.setECEF(asDouble(fld[0]),asDouble(fld[1]),asDouble(fld[2]));
+               double X(asDouble(fld[0])),Y(asDouble(fld[1])),Z(asDouble(fld[2]));
+               knownPos.setECEF(X,Y,Z);
                ossx << "   Reference position --ref is "
                  << knownPos.printf("XYZ(m): %.3x %.3y %.3z = LLH: %.9A %.9L %.3h\n");
             }
@@ -2063,9 +2065,11 @@ int Configuration::ExtraProcessing(void) throw()
 
    // add new errors to the list
    msg = oss.str();
-   if(!msg.empty()) cmdlineErrors += msg;
+   //if(!msg.empty()) cmdlineErrors += msg;
+   if(!msg.empty()) errors += msg;
    msg = ossx.str();
-   if(!msg.empty()) cmdlineExtras += msg;
+   //if(!msg.empty()) cmdlineExtras += msg;
+   if(!msg.empty()) extras += msg;
 
    return 0;
 
