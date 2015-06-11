@@ -8,6 +8,7 @@ add_subdirectory (difftools)
 add_subdirectory (filetools)
 add_subdirectory (geomatics)
 add_subdirectory (mergetools)
+add_subdirectory (misc)
 add_subdirectory (time)
 
 # If on UNIX, do these
