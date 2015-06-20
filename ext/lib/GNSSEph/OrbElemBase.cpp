@@ -90,6 +90,20 @@ namespace gpstk
       return(healthy);
    }
 
+      // Compare the data contents of two OrbElemBase objects.
+      //
+   bool OrbElemBase::isSameData(const OrbElemBase* right) const
+   {
+      if (dataLoadedFlag != right->dataLoadedFlag) return false;
+      if (satID          != right->satID)          return false;
+      if (obsID          != right->obsID)          return false;
+      if (ctToe          != right->ctToe)          return false;
+      if (healthy        != right->healthy)        return false;
+      if (beginValid     != right->beginValid)     return false;
+      if (endValid       != right->endValid)       return false;
+      return true;
+   }
+
       // The base dump method exists in order that a dump() with
       // minimum functionality is guaranteed to exist.  The
       // test that the data are loaded is implemented, the header,

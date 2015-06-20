@@ -138,6 +138,19 @@ namespace gpstk
       virtual double svRelativity(const CommonTime& t) const throw( gpstk::InvalidRequest ) = 0;
 
 
+          /** Returns true if this two objects are 
+           *   a.) same concrete type, and
+           *   b.) same data contents.
+           * This is intended as a "data uniqueness test" to allow
+           * detection of successive transmissions of same data
+           * and avoid duplicate storage.  The exact rules for 
+           * uniqueness will vary by descendent class. 
+           * NOTE: This would be better as a pure virtual method.
+           * However, it came about late in the process, so it is
+           * implemmented here as a stub that returns false.  This
+           */
+      virtual bool isSameData(const OrbElemBase* right) const;
+
          /** Output the contents of this orbit data to the given stream.
           * @throw Invalid Request if the required data has not been stored.
           */
