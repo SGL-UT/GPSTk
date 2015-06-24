@@ -56,6 +56,7 @@ namespace gpstk
                  : transmitTime(CommonTime::BEGINNING_OF_TIME),
                    bits(900),
                    bits_used(0),
+                   rxID(""),
                    xMitCoerced(false)
    {
       transmitTime.setTimeSystem(TimeSystem::GPS);
@@ -65,6 +66,7 @@ namespace gpstk
                                 const CommonTime& transmitTimeArg)
                                 : bits(900),
                                   bits_used(0),
+                                  rxID(""),
                                   xMitCoerced(false)
    {
       satSys = satSysArg;
@@ -73,11 +75,28 @@ namespace gpstk
       xMitCoerced = false;
    }
 
+   PackedNavBits::PackedNavBits(const SatID& satSysArg, 
+                                const ObsID& obsIDArg,
+                                const std::string rxString,
+                                const CommonTime& transmitTimeArg)
+                                : bits(900),
+                                  bits_used(0),
+                                  rxID(""),
+                                  xMitCoerced(false)
+   {
+      satSys = satSysArg;
+      obsID = obsIDArg;
+      rxID = rxString;
+      transmitTime = transmitTimeArg;
+      xMitCoerced = false;
+   }
+
       // Copy constructor
    PackedNavBits::PackedNavBits(const PackedNavBits& right)
    {
       satSys = right.satSys; 
-      obsID = right.obsID;
+      obsID  = right.obsID;
+      rxID   = right.rxID;
       transmitTime = right.transmitTime;
       bits_used = right.bits_used;
       bits.resize(bits_used);
@@ -121,6 +140,12 @@ namespace gpstk
       obsID = obsIDArg;
       return;
    }
+   
+   void PackedNavBits::setRxID(const std::string rxString)
+   {
+      rxID = rxString; 
+      return; 
+   }
 
    void PackedNavBits::setTime(const CommonTime& TransmitTimeArg)
    {
@@ -143,7 +168,12 @@ namespace gpstk
    {
       return(satSys);
    }
-
+   
+   std::string PackedNavBits::getRxID() const
+   {
+      return(rxID); 
+   } 
+   
    CommonTime PackedNavBits::getTransmitTime() const
    {
       return(transmitTime);
@@ -235,7 +265,6 @@ namespace gpstk
       }
       return(out);
    }
-
 
       /* Unpack a split unsigned long integer */ 
    unsigned long PackedNavBits::asUnsignedLong(const unsigned startBits[],
@@ -559,7 +588,10 @@ namespace gpstk
         << "SatID: " << setw(4) << getsatSys() << endl
         << endl
         << "Carrier: " << ObsID::cbDesc[obsID.band] << "      "
-        << "Code: " << ObsID::tcDesc[obsID.code] << endl << endl
+        << "Code: " << ObsID::tcDesc[obsID.code] << endl;
+      if (rxID.size()>0) 
+         s << " RxID: " << rxID << endl;
+      s << endl
         << "Number Of Bits: " << dec << getNumBits() << endl
         << endl;
   
@@ -751,7 +783,6 @@ namespace gpstk
 
       return;
    }
-
 
    ostream& operator<<(ostream& s, const PackedNavBits& pnb)
    {
