@@ -106,7 +106,7 @@ namespace gpstk
       virtual bool isHealthy(const SatID& sat, const CommonTime& t) 
          const throw(InvalidRequest); 
 
-      virtual bool addOrbElem(const OrbElemBase& eph)
+      virtual bool addOrbElem(const OrbElemBase* eph)
          throw(InvalidParameter,Exception);
 
       /// Edit the dataset, removing data outside the indicated time interval
@@ -225,13 +225,13 @@ namespace gpstk
       TimeSystem timeSysForStore; 
 
       // Here is a method to simplify the .cpp
-      void updateInitialFinal(const OrbElemBase& eph)
+      void updateInitialFinal(const OrbElemBase* eph)
       {
-        if (eph.beginValid<initialTime)       
-          initialTime = eph.beginValid;
+        if (eph->beginValid<initialTime)       
+          initialTime = eph->beginValid;
          
-        if (eph.endValid>finalTime)               
-          finalTime = eph.endValid;
+        if (eph->endValid>finalTime)               
+          finalTime = eph->endValid;
       }
 
    }; // end class

@@ -183,13 +183,13 @@ namespace gpstk
 // Keeps only one OrbElemBase for a given SVN and Toe.
 // It should keep the one with the earliest transmit time.
 //------------------------------------------------------------------------------------ 
-   bool OrbElemStore::addOrbElem(const OrbElemBase& eph)
+   bool OrbElemStore::addOrbElem(const OrbElemBase* eph)
       throw(InvalidParameter,Exception)
    {
      try
      {
 
-     SatID sid = eph.satID;
+     SatID sid = eph->satID;
      OrbElemMap& oem = ube[sid];
      string ts = "%02m/%02d/%02y %02H:%02M:%02S";
 
@@ -207,7 +207,7 @@ namespace gpstk
        // if map is empty, load object and return
      if (oem.size()==0)
      {
-        oem[eph.beginValid] = eph.clone();
+        oem[eph->beginValid] = eph->clone();
         updateInitialFinal(eph);
         return (true);
      }
@@ -215,12 +215,12 @@ namespace gpstk
        // If found candidate, should be same data
        // as already in table. Test this by comparing
        // Toe values.
-     OrbElemMap::iterator it = oem.find(eph.beginValid);
+     OrbElemMap::iterator it = oem.find(eph->beginValid);
      if(it!=oem.end())
      {
         const OrbElemBase* oe = it->second;
           // Found duplicate already in table
-        if(oe->ctToe==eph.ctToe)
+        if(oe->ctToe==eph->ctToe)
         {
             return (false);
         }
@@ -229,10 +229,10 @@ namespace gpstk
         {
            string str = "Unexpectedly found matching beginValid times";
            stringstream os;
-           os << eph.satID;
+           os << eph->satID;
            str += " but different Toe.   SV = " + os.str();
-           str += ", beginValid= " + printTime(eph.beginValid,ts);
-           str += ", Toe(map)= " + printTime(eph.ctToe,ts);
+           str += ", beginValid= " + printTime(eph->beginValid,ts);
+           str += ", Toe(map)= " + printTime(eph->ctToe,ts);
            str += ", Toe(candidate)= "+ printTime(oe->ctToe," %6.0g");
            str += ". ";
            InvalidParameter exc( str );
@@ -242,19 +242,19 @@ namespace gpstk
         // Did not already find match to
         // beginValid in map
         // N.B:: lower_bound will reutrn element beyond key since there is no match
-     it = oem.lower_bound(eph.beginValid);
+     it = oem.lower_bound(eph->beginValid);
         // Case where candidate is before beginning of map
      if(it==oem.begin())
      {
         const OrbElemBase* oe = it->second;
-        if(oe->ctToe==eph.ctToe)
+        if(oe->ctToe==eph->ctToe)
         {
            oem.erase(it);
-           oem[eph.beginValid] = eph.clone();
+           oem[eph->beginValid] = eph->clone();
            updateInitialFinal(eph);
            return (true);
         }
-        oem[eph.beginValid] = eph.clone();
+        oem[eph->beginValid] = eph->clone();
         updateInitialFinal(eph);
         return (true);
      }
@@ -264,9 +264,9 @@ namespace gpstk
           // Get last item in map and check Toe
         OrbElemMap::reverse_iterator rit = oem.rbegin();
         const OrbElemBase* oe = rit->second;
-        if(oe->ctToe!=eph.ctToe)
+        if(oe->ctToe!=eph->ctToe)
         {
-           oem[eph.beginValid] = eph.clone();
+           oem[eph->beginValid] = eph->clone();
            updateInitialFinal(eph);
            return (true);
         }
@@ -276,10 +276,10 @@ namespace gpstk
         // Check if iterator points to late transmission of
         // same OrbElem as candidate
      const OrbElemBase* oe = it->second;
-     if(oe->ctToe==eph.ctToe)
+     if(oe->ctToe==eph->ctToe)
      {
         oem.erase(it);
-        oem[eph.beginValid] = eph.clone();
+        oem[eph->beginValid] = eph->clone();
         updateInitialFinal(eph);
         return (true);
      }
@@ -291,9 +291,9 @@ namespace gpstk
         // Already checked for it==oem.beginValid() earlier
      it--;
      const OrbElemBase* oe2 = it->second;
-     if(oe2->ctToe!=eph.ctToe)
+     if(oe2->ctToe!=eph->ctToe)
      {
-        oem[eph.beginValid] = eph.clone();
+        oem[eph->beginValid] = eph->clone();
         updateInitialFinal(eph);
         return (true);
      }
