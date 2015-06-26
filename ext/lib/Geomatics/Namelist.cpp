@@ -92,11 +92,12 @@ try {
 catch(Exception& e) { GPSTK_RETHROW(e); }
 }
 
-// add a name to the Namelist; do nothing if the name is not unique.
+// add a name to the Namelist; throw if the name is not unique.
 Namelist& Namelist::operator+=(const string& name)
 {
 try {
-   if(this->contains(name)) return *this;
+   if(this->contains(name))
+      GPSTK_THROW(Exception("Name is not unique: " + name));
    labels.push_back(name);
    return *this;
 }
@@ -400,7 +401,7 @@ try {
    os << endl;       // next line
 
    // print same space as with labels
-   s = rightJustify(string(""),nlp.msg.size()); //nlp.wid);
+   s = rightJustify(string(""),nlp.msg.size()+2); //nlp.wid);
    os << nlp.tag << " " << s << " ";
    if(nlp.form == 1) os << fixed;
    if(nlp.form == 2) os << scientific;
@@ -440,10 +441,10 @@ try {
       if(nlp.msg.size() > 0)                                      // msg
          s = nlp.msg + "  ";
       else
-         s = rightJustify(string(""),nlp.wid);
+         s = rightJustify(string(" "),nlp.wid);
       os << s << " ";
       if(int(nlp.msg.size()) > 0 && int(nlp.msg.size()) < nlp.wid)
-         os << rightJustify(string(""),nlp.wid-nlp.msg.size());   // space
+         os << rightJustify(string(" "),nlp.wid-nlp.msg.size());   // space
    }
       // print column labels
    if(nlp.rc != 1) { // but not if 'rows only'
@@ -461,7 +462,7 @@ try {
 
    if(nlp.form == 1) os << fixed;
    if(nlp.form == 2) os << scientific;
-   if(int(nlp.msg.size()) > nlp.wid) nspace = nlp.msg.size()-nlp.wid;
+   if(int(nlp.msg.size()) > nlp.wid) nspace = nlp.msg.size()-nlp.wid+2;
    else nspace = 0;
 
       // print one row per line

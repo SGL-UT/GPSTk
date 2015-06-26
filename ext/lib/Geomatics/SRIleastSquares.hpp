@@ -1,3 +1,8 @@
+/// @file SRIleastSquares.hpp
+/// Include file defining class SRIleastSquares, which inherits class SRI and
+/// implements a general least squares algorithm that includes linear or linearized
+/// problems, weighting, robust estimation, and sequential estimation.
+
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -34,13 +39,6 @@
 //
 //=============================================================================
 
-/**
- * @file SRIleastSquares.hpp
- * Include file defining class SRIleastSquares, which inherits class SRI and
- * implements a general least squares algorithm that includes linear or linearized
- * problems, weighting, robust estimation, and sequential estimation.
- */
-
 //------------------------------------------------------------------------------------
 #ifndef CLASS_SRI_LEAST_SQUARES_INCLUDE
 #define CLASS_SRI_LEAST_SQUARES_INCLUDE
@@ -56,15 +54,14 @@
 namespace gpstk {
 
 //------------------------------------------------------------------------------------
-/** class SRIleastSquares inherits SRI and implements a general least squares
- * algorithm using SRI, including weighted, linear or linearized, robust and/or
- * sequential algorithms.
- *
- * At any point the state X and covariance P are related to the SRI by
- * X = inverse(R) * z , P = inverse(R) * inverse(transpose(R)), or
- * R = upper triangular square root (Cholesky decomposition) of the inverse of P,
- * and z = R * X.
- */
+/// class SRIleastSquares inherits SRI and implements a general least squares
+/// algorithm using SRI, including weighted, linear or linearized, robust and/or
+/// sequential algorithms.
+///
+/// At any point the state X and covariance P are related to the SRI by
+/// X = inverse(R) * z , P = inverse(R) * inverse(transpose(R)), or
+/// R = upper triangular square root (Cholesky decomposition) of the inverse of P,
+/// and z = R * X.
 class SRIleastSquares : public SRI {
 public:
    /// empty constructor
@@ -188,9 +185,11 @@ public:
 
    /// if true, weight the equation using robust statistical techniques
    /// - default is false
+   /// (NB robust & sequential doesn't make much sense)
    bool doRobust;
 
    /// if true, save information for a sequential solution - default is false
+   /// (NB robust & sequential doesn't make much sense)
    bool doSequential;
 
    /// if true, equation F(X)=D is non-linear, the algorithm will be iterated,

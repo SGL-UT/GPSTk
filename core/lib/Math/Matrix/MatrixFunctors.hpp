@@ -356,8 +356,8 @@ namespace gpstk
 
       }  // end SVD::backSub
 
-         /// sort singular values
-      void sort(bool descending)
+         /// sort singular values - default in descending order
+      void sort(bool descending=true)
          throw(MatrixException)
       {
          size_t i;
@@ -408,9 +408,10 @@ namespace gpstk
 
    }; // end class SVD
 
-// Performs the lower/upper triangular decomposition of a matrix PA = LU.
-// The results are put into the matricies L, U, and P (pivot), and sign
-// (representing even (positive) or odd (negative) row swaps.
+   /// Performs the lower/upper triangular decomposition of a matrix PA = LU.
+   /// The results are put into the matricies L, U, and P (pivot), and sign
+   /// (representing even (positive) or odd (negative) row swaps.
+   /// LU stores both L and U (all diagonal elements of L are implied 1).
    template <class T>
    class LUDecomp
    {
@@ -427,7 +428,7 @@ namespace gpstk
                GPSTK_THROW(e);
             }
 
-            size_t N=m.rows(),i,j,k,imax=0;
+            size_t N=m.rows(),i,j,k,n,imax;
             T big,t,d;
             Vector<T> V(N,T(0));
 
@@ -486,8 +487,8 @@ namespace gpstk
             }
          }  // end LUDecomp()
 
-         // Compute inverse(m)*v, where *this is LUD(m), via back substitution
-         // Solution overwrites input Vector v
+         /// Compute inverse(m)*v, where *this is LUD(m), via back substitution
+         /// Solution overwrites input Vector v
       template <class BaseClass2>
       void backSub(RefVectorBase<T, BaseClass2>& v) const
          throw (MatrixException)
@@ -530,13 +531,13 @@ namespace gpstk
          return d;
       }
 
-         // The matrix in LU-decomposed form: L and U together;
-         // all diagonal elements of L are implied 1.
-         Matrix<T> LU;
-         /// The pivot array
-         Vector<int> Pivot;
-         /// Parity
-         int parity;
+      /// The matrix in LU-decomposed form: L and U together;
+      /// all diagonal elements of L are implied 1.
+      Matrix<T> LU;
+      /// The pivot array
+      Vector<int> Pivot;
+      /// Parity
+      int parity;
 
    }; // end class LUDecomp
 
@@ -752,7 +753,7 @@ namespace gpstk
                if(v(j) > T(0)) sum = -sum;
                A(j,j) = sum;
                v(j) = v(j) - sum;
-               sum = 1/(sum*v(j));
+               sum = T(1)/(sum*v(j));
 
                // loop over columns beyond j
                for(k=j+1; k<A.cols(); k++) {
@@ -762,6 +763,7 @@ namespace gpstk
                      alpha += A(i,k)*v(i);
                   }
                   alpha *= sum;
+                  if(alpha*alpha < EPS) continue;
                   // modify column k at and below j
                   for(i=j; i<A.rows(); i++) {
                      A(i,k) += alpha*v(i);

@@ -54,7 +54,9 @@
 // GPSTk
 #include "Vector.hpp"
 #include "Matrix.hpp"
+// geomatics
 #include "SRI.hpp"
+#include "SparseMatrix.hpp"
 
 namespace gpstk
 {
@@ -130,9 +132,19 @@ public:
       /// @param CM Measurement covariance matrix, dimension MxM.
       /// @throw if dimension N does not match dimension of SRI, or if other
       ///        dimensions are inconsistent, or if CM is singular.
-   void measurementUpdate(const Matrix<double>& H,
-                         Vector<double>& D,
-                         const Matrix<double>& CM=SRINullMatrix)
+   void measurementUpdate(const Matrix<double>& H, Vector<double>& D,
+                          const Matrix<double>& CM=SRINullMatrix)
+   throw(MatrixException,VectorException);
+
+      /// SRIF (Kalman) simple linear measurement update with optional weight matrix
+      /// SparseMatrix version
+      /// @param H  Partials matrix, dimension MxN.
+      /// @param D  Data vector, length M; on output D is post-fit residuals.
+      /// @param CM Measurement covariance matrix, dimension MxM.
+      /// @throw if dimension N does not match dimension of SRI, or if other
+      ///        dimensions are inconsistent, or if CM is singular.
+   void measurementUpdate(const SparseMatrix<double>& H, Vector<double>& D,
+                          const SparseMatrix<double>& CM=SRINullSparseMatrix)
    throw(MatrixException,VectorException);
 
       /// SRIF (Kalman) time update

@@ -381,10 +381,10 @@ try {
       //   measurementUpdate(Partials,Res);
       {
          Matrix<double> P(Partials);
-         Cholesky<double> Ch;
+         Matrix<double> CHL;
          if(doRobust || doWeight) {
-            Ch(MeasCov);
-            Matrix<double> L = inverse(Ch.L);
+            CHL = lowerCholesky(MeasCov);
+            Matrix<double> L = inverseLT(CHL);
             P = L * P;
             Res = L * Res;
          }
@@ -393,8 +393,8 @@ try {
          SrifMU(R, Z, P, Res);
 
          // un-whiten the residuals
-         if(doRobust || doWeight)
-            Res = Ch.L * Res;
+         if(doRobust || doWeight)            // NB same if above creates CHL
+            Res = CHL * Res;
       }
 
       if(doVerbose) {

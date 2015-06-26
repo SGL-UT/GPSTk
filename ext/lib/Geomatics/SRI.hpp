@@ -68,6 +68,8 @@ namespace gpstk
 //------------------------------------------------------------------------------------
 /// constant (empty) Matrix used for default input arguments
 extern const Matrix<double> SRINullMatrix;
+/// constant (empty) SparseMatrix used for default input arguments
+extern const SparseMatrix<double> SRINullSparseMatrix;
 
 //------------------------------------------------------------------------------------
 /// class SRI encapsulates all the information associated with the solution of a set
@@ -332,10 +334,16 @@ public:
       /// SRIF (Kalman) measurement update, or least squares update
       /// Call the SRI measurement update for this SRI and the given input. See doc.
       /// for SrifMU().
-   void measurementUpdate(Matrix<double>& Partials,
-                          Vector<double>& Data)
+   void measurementUpdate(Matrix<double>& Partials, Vector<double>& Data)
       throw(MatrixException)
-   { SrifMU(R, Z, Partials, Data); }
+         { SrifMU(R, Z, Partials, Data); }
+
+      /// SRIF (Kalman) measurement update, or least squares update, Sparse version.
+      /// Call the SRI measurement update for this SRI and the given input. See doc.
+      /// for SrifMU().
+   void measurementUpdate(SparseMatrix<double>& Partials, Vector<double>& Data)
+      throw(MatrixException)
+         { SrifMU(R, Z, Partials, Data); }
 
       /// Compute the condition number, or rather the largest and smallest eigenvalues
       /// of the SRI matrix R (the condition number is the ratio of the largest and

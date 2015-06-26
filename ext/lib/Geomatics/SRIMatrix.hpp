@@ -49,8 +49,8 @@
 // GPSTk
 #include "Vector.hpp"
 #include "Matrix.hpp"
-#include "StringUtils.hpp"
 // geomatics
+#include "SparseMatrix.hpp"
 
 namespace gpstk
 {
@@ -130,13 +130,12 @@ namespace gpstk
             Z = Vector<double>(A.cols()-1,0.0);
          }
          else {
-            MatrixException me("Invalid input dimensions:\n  R has dimension "
-               + StringUtils::asString<int>(R.rows()) + "x"
-               + StringUtils::asString<int>(R.cols()) + ",\n  Z has length "
-               + StringUtils::asString<int>(Z.size()) + ",\n  and A has dimension "
-               + StringUtils::asString<int>(A.rows()) + "x"
-               + StringUtils::asString<int>(A.cols()));
-            GPSTK_THROW(me);
+            std::ostringstream oss;
+            oss << "Invalid input dimensions:\n  R has dimension "
+               << R.rows() << "x" << R.cols() << ",\n  Z has length "
+               << Z.size() << ",\n  and A has dimension "
+               << A.rows() << "x" << A.cols();
+            GPSTK_THROW(MatrixException(oss.str()));
          }
       }
    
@@ -203,21 +202,20 @@ namespace gpstk
    ///             otherwise M = 0 (the default) and is ignored.
    /// @throw MatrixException if the input has inconsistent dimensions.
    template <class T>
-   void SrifMU(Matrix<T>& R,
-               Vector<T>& Z,
-               const Matrix<T>& H,
-               Vector<T>& D,
-               unsigned int M=0)
+   void SrifMU(Matrix<T>& R, Vector<T>& Z,
+               const Matrix<T>& H, Vector<T>& D, unsigned int M=0)
       throw(MatrixException)
    {
-      Matrix<double> A;
-      try { A = H || D; }
-      catch(MatrixException& me) { GPSTK_RETHROW(me); }
+      try {
+         Matrix<T> A;
+         A = H || D;
    
-      SrifMU(R,Z,A,M);
+         SrifMU(R,Z,A,M);
    
          // copy residuals out of A into D
-      D = Vector<double>(A.colCopy(A.cols()-1));
+         D = Vector<T>(A.colCopy(A.cols()-1));
+      }
+      catch(MatrixException& me) { GPSTK_RETHROW(me); }
    }
    
 
@@ -248,23 +246,23 @@ namespace gpstk
    Matrix<T> lowerCholesky(const Matrix<T>& A) throw(MatrixException)
    {
       if(A.rows() != A.cols() || A.rows() == 0) {
-         MatrixException me("Invalid input dimensions: "
-               + StringUtils::asString<int>(A.rows()) + "x"
-               + StringUtils::asString<int>(A.cols()));
-         GPSTK_THROW(me);
+         std::ostringstream oss;
+         oss << "Invalid input dimensions: " << A.rows() << "x" << A.cols();
+         GPSTK_THROW(MatrixException(oss.str()));
       }
    
       const unsigned int n=A.rows();
       unsigned int i,j,k;
-      Matrix<T> L(n,n,0.0);
+      Matrix<T> L(n,n,T(0));
    
       for(j=0; j<n; j++) {             // loop over cols
          T d(A(j,j));
          for(k=0; k<j; k++) d -= L(j,k)*L(j,k);
-         if(d <= 0.0) {
-            MatrixException e("Non-positive eigenvalue; "
-               "Cholesky requires positive-definite input");
-            GPSTK_THROW(e);
+         if(d <= T(0)) {
+            std::ostringstream oss;
+            oss << "Non-positive eigenvalue " << d << " at col " << j
+               << ": lowerCholesky() requires positive-definite input";
+            GPSTK_THROW(MatrixException(oss.str()));
          }
          L(j,j) = ::sqrt(d);
          for(i=j+1; i<n; i++) {        // loop over rows below diagonal
@@ -335,10 +333,9 @@ namespace gpstk
       throw(MatrixException)
    {
       if(UT.rows() != UT.cols() || UT.rows() == 0) {
-         MatrixException me("Invalid input dimensions: "
-               + StringUtils::asString<int>(UT.rows()) + "x"
-               + StringUtils::asString<int>(UT.cols()));
-         GPSTK_THROW(me);
+         std::ostringstream oss;
+         oss << "Invalid input dimensions: " << UT.rows() << "x" << UT.cols();
+         GPSTK_THROW(MatrixException(oss.str()));
       }
    
       unsigned int i,j,k,n=UT.rows();
@@ -348,40 +345,42 @@ namespace gpstk
          // start at the last row,col
       dum = UT(n-1,n-1);
       if(dum == T(0)) {
-         SingularMatrixException e("Singular matrix");
-         GPSTK_THROW(e);
+         GPSTK_THROW(SingularMatrixException("Singular matrix at element 0"));
       }
    
       big = small = fabs(dum);
       Inv(n-1,n-1) = T(1)/dum;
       if(n == 1) return Inv;                 // 1x1 matrix
-      for(i=0; i<n-1; i++) Inv(n-1,i)=0;
+      for(i=0; i<n-1; i++) Inv(n-1,i)=0;     // zero row i to left of diagonal
    
          // now move to rows i = n-2 to 0
-      for(i=n-2;; i--) {
-         if(UT(i,i) == T(0))
-            throw SingularMatrixException("Singular matrix");
+      for(i=n-2; ; i--) {
+         if(UT(i,i) == T(0)) {
+            std::ostringstream oss;
+            oss << "Singular matrix at element " << i;
+            GPSTK_THROW(MatrixException(oss.str()));
+         }
    
          if(fabs(UT(i,i)) > big) big = fabs(UT(i,i));
          if(fabs(UT(i,i)) < small) small = fabs(UT(i,i));
          dum = T(1)/UT(i,i);
          Inv(i,i) = dum;                        // diagonal element first
    
-            // now do off-diagonal elements (i,i+1) to (i,n-1)
+            // now do off-diagonal elements (i,i+1) to (i,n-1): row i to right
          for(j=i+1; j<n; j++) {
             sum = T(0);
             for(k=i+1; k<=j; k++)
                sum += Inv(k,j) * UT(i,k);
             Inv(i,j) = - sum * dum;
          }
-         for(j=0; j<i; j++) Inv(i,j)=0;
+         for(j=0; j<i; j++) Inv(i,j)=0;         // zero row i to left of diag
    
          if(i==0) break;         // NB i is unsigned, hence 0-1 = 4294967295!
       }
    
       if(ptrSmall) *ptrSmall=small;
       if(ptrBig) *ptrBig=big;
-   
+ 
       return Inv;
    }
    
@@ -399,10 +398,9 @@ namespace gpstk
    {
       const unsigned int n=UT.rows();
       if(n == 0 || UT.cols() != n) {
-         MatrixException me("Invalid input dimensions: "
-               + StringUtils::asString<int>(UT.rows()) + "x"
-               + StringUtils::asString<int>(UT.cols()));
-         GPSTK_THROW(me);
+         std::ostringstream oss;
+         oss << "Invalid input dimensions: " << UT.rows() << "x" << UT.cols();
+         GPSTK_THROW(MatrixException(oss.str()));
       }
    
       unsigned int i,j,k;
@@ -426,6 +424,68 @@ namespace gpstk
       return S;
    }
    
+   
+   //---------------------------------------------------------------------------------
+   /// Compute inverse of lower triangular matrix, returning smallest and largest
+   /// eigenvalues.
+   /// @param LT lower triangular matrix to be inverted
+   /// @param ptrS pointer to <T> small, on output *ptrS contains smallest eigenvalue.
+   /// @param ptrB pointer to <T> small, on output *ptrB contains largest eigenvalue.
+   /// @return inverse of input matrix.
+   /// @throw MatrixException if input is not square (assumed lower triangular also).
+   /// @throw SingularMatrixException if input is singular.
+   template <class T>
+   Matrix<T> inverseLT(const Matrix<T>& LT, T *ptrSmall=NULL, T *ptrBig=NULL)
+      throw(MatrixException)
+   {
+      if(LT.rows() != LT.cols() || LT.rows() == 0) {
+         std::ostringstream oss;
+         oss << "Invalid input dimensions: " << LT.rows() << "x" << LT.cols();
+         GPSTK_THROW(MatrixException(oss.str()));
+      }
+   
+      unsigned int i,j,k,n=LT.rows();
+      T big(0),small(0),sum,dum;
+      Matrix<T> Inv(LT.rows(),LT.cols(),T(0));
+   
+         // start at the first row,col
+      dum = LT(0,0);
+      if(dum == T(0)) {
+         SingularMatrixException e("Singular matrix at element 0");
+         GPSTK_THROW(e);
+      }
+   
+      big = small = fabs(dum);
+      Inv(0,0) = T(1)/dum;
+      if(n == 1) return Inv;                 // 1x1 matrix
+      //for(i=1; i<n; i++) Inv(0,i)=0;         // zero out columns to right of 0,0
+   
+         // now move to rows i = 1 to n-1
+      for(i=1; i<n; i++) {
+         if(LT(i,i) == T(0)) {
+            GPSTK_THROW(SingularMatrixException("Singular matrix at element 0"));
+         }
+   
+         if(fabs(LT(i,i)) > big) big = fabs(LT(i,i));
+         if(fabs(LT(i,i)) < small) small = fabs(LT(i,i));
+         dum = T(1)/LT(i,i);
+         Inv(i,i) = dum;                        // diagonal element first
+   
+            // now do off-diagonal elements to left of diag (i,0) to (i,i-1)
+         for(j=0; j<i; j++) {
+            sum = T(0);
+            for(k=j; k<i; k++)
+               sum += LT(i,k) * Inv(k,j);
+            if(sum != T(0)) Inv(i,j) = - sum * dum;
+         }
+         //for(j=i+1; j<n; j++) Inv(i,j) = 0;  // row i right of diagonal = 0
+      }
+   
+      if(ptrSmall) *ptrSmall=small;
+      if(ptrBig) *ptrBig=big;
+ 
+      return Inv;
+   }
    
 } // end namespace gpstk
    

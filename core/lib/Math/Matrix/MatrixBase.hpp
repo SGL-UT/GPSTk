@@ -172,6 +172,18 @@ namespace gpstk
             return toReturn;
          }
 
+         /// copies out diagonal into a vector
+      Vector<T> diagCopy(void) const
+         throw(MatrixException)
+         { 
+            size_t i, n(cols());
+            if(rows() < n) n = rows();
+            Vector<T> toReturn(n);
+            for(i=0; i<n; i++)
+               toReturn(i) = (*this)(i,i);
+            return toReturn;
+         }
+
    protected:
          /// returns the const (i,j) element from the matrix
       inline T constMatrixRef(size_t i, size_t j) const
