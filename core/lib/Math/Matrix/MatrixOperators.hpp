@@ -759,7 +759,7 @@ namespace gpstk
    }  // end inverseSVD
 
    /**
-    * Inverts the square symetrix positive definite matrix M using Cholesky-Crout
+    * Inverts the square symmetric positive definite matrix M using Cholesky-Crout
     * algorithm. Very fast and useful when M comes from using a Least Mean-Square 
     * (LMS) or Weighted Least Mean-Square (WLMS) method.
     */

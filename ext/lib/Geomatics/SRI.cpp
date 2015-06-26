@@ -66,6 +66,7 @@ using namespace StringUtils;
    // --------------------------------------------------------------------------------
    // used to mark optional input
    const Matrix<double> SRINullMatrix;
+   const SparseMatrix<double> SRINullSparseMatrix;
 
    //---------------------------------------------------------------------------------
    // constructor given the dimension N.
@@ -507,7 +508,7 @@ using namespace StringUtils;
       if(n >= int(R.rows()))
          return;
 
-      for(int i=0; i<n; i++) {
+      for(unsigned int i=0; i<n; i++) {
          for(unsigned int j=i; j<R.cols(); j++) 
             R(i,j) = 0.0;
          Z(i) = 0.0;
@@ -840,7 +841,7 @@ using namespace StringUtils;
       }
 
       try {
-         Matrix<double> InvCov = inverse(Cov);
+         Matrix<double> InvCov = inverseLUD(Cov);
          addAPrioriInformation(InvCov, X);
       }
       catch(MatrixException& me) {
@@ -865,9 +866,8 @@ using namespace StringUtils;
       }
 
       try {
-         Cholesky<double> Ch;
-         Ch(InvCov);
-         Matrix<double> apR(transpose(Ch.L));  // R = UT(inv(Cov))
+         Matrix<double> L(lowerCholesky(InvCov));
+         Matrix<double> apR(transpose(L));     // R = UT(inv(Cov))
          Vector<double> apZ(apR*X);            // Z = R*X
          SrifMU(R, Z, apR, apZ);
       }
