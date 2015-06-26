@@ -171,7 +171,7 @@ namespace gpstk
       /// Add an OrbElem object to this collection.
       /// @param eph the OrbElem to add
       /// @return true if OrbElem was added, false otherwise
-      bool addOrbElem( const OrbElem& eph )
+      bool addOrbElem( const OrbElem* eph )
          throw(InvalidParameter,Exception);
 
       /// Remove all data from this collection.
@@ -312,13 +312,13 @@ namespace gpstk
       bool strictMethod;
 
       // Here are a couple of methods to simplify the .cpp
-      void updateInitialFinal(const OrbElem& eph)
+      void updateInitialFinal(const OrbElem* eph)
       {
-        if (eph.beginValid<initialTime)       
-          initialTime = eph.beginValid;
+        if (eph->beginValid<initialTime)       
+          initialTime = eph->beginValid;
          
-        if (eph.endValid>finalTime)               
-          finalTime = eph.endValid;
+        if (eph->endValid>finalTime)               
+          finalTime = eph->endValid;
       }
       
      // virtual void dumpOnePRN( std::ostream& s = std::cout, OrbElemMap& em) const
