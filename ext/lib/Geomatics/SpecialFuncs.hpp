@@ -1,4 +1,4 @@
-/// @file SpecialFunctions.hpp
+/// @file SpecialFuncs.hpp
 /// Implementation of special functions, including log Gamma, factorial, binomial
 /// coefficients, beta, incomplete beta, and error functions, as well as
 /// probability density functions (PDFs) for various distributions, with their
