@@ -8,7 +8,7 @@
 
 cmake_minimum_required( VERSION 2.8.4 )
 
-project( gpstk )
+project( GPSTK )
 set( GPSTK_VERSION_MAJOR "2" )
 set( GPSTK_VERSION_MINOR "5" )
 set( GPSTK_VERSION_PATCH "0" )
@@ -42,7 +42,7 @@ include( GNUInstallDirs )
 set( CMAKE_INSTALL_LIBDIR lib )
 
 # Set a filename for collecting exported targets.
-set( EXPORT_TARGETS_FILENAME "${PROJECT_NAME}Targets" )
+set( EXPORT_TARGETS_FILENAME "GPSTKTargets" )
 
 #----------------------------------------
 # Option Switches
@@ -190,17 +190,17 @@ endif()
 #----------------------------------------
 
 include( CMakePackageConfigHelpers )
-set( INSTALL_CONFIG_DIR ${CMAKE_INSTALL_DATADIR}/cmake/${PROJECT_NAME})
+set( INSTALL_CONFIG_DIR ${CMAKE_INSTALL_DATADIR}/cmake/GPSTK)
 configure_package_config_file( ${CMAKE_CURRENT_SOURCE_DIR}/projectConfig.cmake.in 
-                               ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+                               ${CMAKE_CURRENT_BINARY_DIR}/GPSTKConfig.cmake
                                INSTALL_DESTINATION ${INSTALL_CONFIG_DIR}
                                PATH_VARS CMAKE_INSTALL_LIBDIR CMAKE_INSTALL_INCLUDEDIR CMAKE_INSTALL_BINDIR CMAKE_INSTALL_PREFIX INSTALL_CONFIG_DIR )
-write_basic_package_version_file( ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+write_basic_package_version_file( ${CMAKE_CURRENT_BINARY_DIR}/GPSTKConfigVersion.cmake
                                   VERSION ${GPSTK_VERSION}
                                   COMPATIBILITY ExactVersion )
 install( FILES 
-           ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake 
-           ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+           ${CMAKE_CURRENT_BINARY_DIR}/GPSTKConfig.cmake 
+           ${CMAKE_CURRENT_BINARY_DIR}/GPSTKConfigVersion.cmake
          DESTINATION 
            ${INSTALL_CONFIG_DIR} )
 
