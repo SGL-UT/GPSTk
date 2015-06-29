@@ -193,9 +193,10 @@ void SRIFilter::measurementUpdate(const SparseMatrix<double>& H, Vector<double>&
    }
    try {
       SparseMatrix<double> A(H || D);
-      SparseMatrix<double> CHL(lowerCholesky(CM));
+      SparseMatrix<double> CHL;
          // whiten partials and data
       if(&CM != &SRINullSparseMatrix) {
+         CHL = lowerCholesky(CM);
          SparseMatrix<double> L(inverseLT(CHL));
          A = L * A;
       }
@@ -204,8 +205,8 @@ void SRIFilter::measurementUpdate(const SparseMatrix<double>& H, Vector<double>&
       SrifMU(R, Z, A);
 
          // copy out D and un-whiten residuals
+      D = Vector<double>(A.colCopy(A.cols()-1));
       if(&CM != &SRINullSparseMatrix) {      // same if above creates CHL
-         D = Vector<double>(A.colCopy(A.cols()-1));
          D = CHL * D;
       }
    }
