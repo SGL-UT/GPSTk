@@ -247,7 +247,7 @@ public:
       /// Zero out all the first n rows of R and elements of Z, removing all
       /// information about those elements. Default value of the input is 0,
       /// meaning zero out the entire SRI.
-   void zeroAll(const int n=0)
+   void zeroAll(const unsigned int n=0)
       throw();
 
       /// Zero out (set all elements to zero) the state (Vector Z) only.
