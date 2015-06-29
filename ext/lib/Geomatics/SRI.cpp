@@ -496,7 +496,7 @@ using namespace StringUtils;
    // Zero out all the first n rows of R and elements of Z, removing all
    // information about those elements. Default value of the input is 0,
    // meaning zero out the entire SRI.
-   void SRI::zeroAll(const int n)
+   void SRI::zeroAll(const unsigned int n)
       throw()
    {
       if(n <= 0) {
