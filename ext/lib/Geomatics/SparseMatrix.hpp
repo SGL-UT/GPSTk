@@ -217,8 +217,8 @@ namespace gpstk
    SparseMatrix<T> upperCholesky(const SparseMatrix<T>& A) throw(Exception);
    // inverseLT
    template <class T>
-   SparseMatrix<T> inverseLT(const SparseMatrix<T>& LT,
-                             T *ptrSmall=NULL, T *ptrBig=NULL) throw(Exception);
+   SparseMatrix<T> inverseLT(const SparseMatrix<T>& LT, T *ptrSmall, T *ptrBig)
+                                                                throw(Exception);
    template <class T>
    SparseMatrix<T> inverseViaCholesky(const SparseMatrix<T>& A) throw(Exception);
 
@@ -238,9 +238,9 @@ namespace gpstk
    SparseMatrix<T> SparseHouseholder(const SparseMatrix<T>& A) throw(Exception);
 
    template <class T> void SrifMU(Matrix<T>& R, Vector<T>& Z, SparseMatrix<T>& A,
-                                  const unsigned int M=0) throw(Exception);
+                                  const unsigned int M) throw(Exception);
    template <class T> void SrifMU(Matrix<T>& R, Vector<T>& Z, SparseMatrix<T>& P,
-                             Vector<T>& D, const unsigned int M=0) throw(Exception);
+                             Vector<T>& D, const unsigned int M) throw(Exception);
 
    //---------------------------------------------------------------------------
    /// Class SparseMatrix
