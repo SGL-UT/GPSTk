@@ -61,6 +61,7 @@
 // geomatics
 #include "Namelist.hpp"
 #include "SRIMatrix.hpp"
+#include "SparseMatrix.hpp"
 
 namespace gpstk
 {
