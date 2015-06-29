@@ -518,7 +518,7 @@ namespace gpstk
       bits_used += right.bits_used;
       bits.resize(bits_used);
       
-      for (int i=0;i<bits_used;i++)
+      for (int i=0;i<right.bits_used;i++)
       {
          bits[i+old_bits_used] = right.bits[i];
       }
