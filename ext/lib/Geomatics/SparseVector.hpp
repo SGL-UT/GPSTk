@@ -14,6 +14,7 @@
 #include <sstream>
 
 #include "Vector.hpp"
+#include "Matrix.hpp"
 
 namespace gpstk
 {
@@ -218,7 +219,7 @@ namespace gpstk
 
       /// tolerance in considering element to be zero is std::abs(elem) < tolerance
       /// see zeroize(), where this is the default input value
-      static const double zeroTolerance=1.0e-14;
+      static const double zeroTolerance;
 
       /// empty constructor
       SparseVector(void) : len(0) { }
