@@ -10,3 +10,7 @@ target_link_libraries(rstats gpstk)
 install (TARGETS rstats DESTINATION ${CMAKE_INSTALL_BINDIR} EXPORT ${EXPORT_TARGETS_FILENAME})
 #add_test(rstatsTest rstats)
 
+add_executable(smtest smtest.cpp)
+target_link_libraries(smtest gpstk)
+install (TARGETS smtest DESTINATION "${CMAKE_INSTALL_BINDIR}")
+

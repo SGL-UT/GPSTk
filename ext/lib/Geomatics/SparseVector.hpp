@@ -4,7 +4,47 @@
 #define SPARSE_VECTOR_INCLUDE
 
 #include "MathBase.hpp"       // defines ABS SQRT
-//#include <cmath>      // in MathBase
+//============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 3.0 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
+//  
+//  Copyright 2004, The University of Texas at Austin
+//
+//============================================================================
+
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//=============================================================================
+
+/// @file SparseVector.hpp Class for template sparse vectors; use with SparseMatrix.
+
+// TODO
+// outer product?
+
 #include <cstdlib>
 
 #include <string>
@@ -23,7 +63,8 @@ namespace gpstk
    template <class T> class SparseMatrix;
 
    //---------------------------------------------------------------------------
-   /// Proxy class for elements of the SparseVector (SV).
+   /// Proxy class for elements of the SparseVector (SV). This allows disparate
+   /// treatment of rvalues and lvalues.
    template <class T> class SVecProxy
    {
    public:
@@ -148,7 +189,12 @@ namespace gpstk
                              Vector<T>& D, const unsigned int M=0) throw(Exception);
 
    //---------------------------------------------------------------------------
-   /// Class SparseVector
+   /// Class SparseVector. This class is designed to present an interface nearly
+   /// identical to class Vector, but more efficiently handle sparse vectors, in
+   /// which most of the elements are zero. The class stores only non-zero elements
+   /// in a map with key = index; it also stores a nominal length. The class uses
+   /// a proxy class, SVecProxy, to access elements; this allows rvalues and
+   /// lvalues to be treated separately.
    template <class T> class SparseVector
    {
    public:
@@ -272,7 +318,10 @@ namespace gpstk
       /// clear - set all data to 0 (i.e. remove all data); leave length alone
       inline void clear(void) { vecMap.clear(); }
 
-      /// zeroize - remove elements that are less than tolerance in abs value
+      /// zeroize - remove elements that are less than or equal to tolerance
+      /// in abs value. Called with a non-zero tolerance only by the user.
+      /// NB this class and SparseMatrix call this when constructing a new object,
+      /// e.g. after matrix multiply, but ONLY with the tolerance T(0).
       void zeroize(const T tol=static_cast<T>(zeroTolerance));
 
       /// true if the element is non-zero
@@ -377,7 +426,7 @@ namespace gpstk
       typename std::map<unsigned int, T>::iterator it = mySV.vecMap.find(index);
       if(it != mySV.vecMap.end())
          return it->second;
-      return T();
+      return T(0);
    }
 
    //---------------------------------------------------------------------------
@@ -385,7 +434,7 @@ namespace gpstk
    template <class T> void SVecProxy<T>::assign(T rhs)
    {
       // zero or default - remove from map
-      if(T(rhs) == T()) {
+      if(T(rhs) == T(0)) {
          typename std::map<unsigned int, T>::iterator it = mySV.vecMap.find(index);
          if(it != mySV.vecMap.end())
             mySV.vecMap.erase(it);
@@ -405,7 +454,7 @@ namespace gpstk
       if(it != mySV.vecMap.end())
          return (*it).second;
       else
-         return T();
+         return T(0);
    }
 
 
@@ -417,13 +466,13 @@ namespace gpstk
    {
       len = V.size();
       for(unsigned int i=0; i<len; i++) {
-         if(V[i] == T()) continue;
+         if(V[i] == T(0)) continue;
          // non-zero, must add it
          vecMap[i] = V[i];
       }
    }
 
-   /// cast to Vector<T>
+   // cast to Vector<T>
    template <class T> SparseVector<T>::operator Vector<T>() const
    {
       Vector<T> toRet(len,T(0));
@@ -435,10 +484,10 @@ namespace gpstk
       return toRet;
    }
 
-   /// zeroize - remove elements that are less than or equal to tolerance in abs value
-   /// Called with a non-zero tolerance only by the user.
-   /// NB this class and SparseMatrix call this when constructing a new object,
-   /// e.g. after matrix multiply, but ONLY with the tolerance T(0).
+   // zeroize - remove elements that are less than or equal to tolerance in abs value
+   // Called with a non-zero tolerance only by the user.
+   // NB this class and SparseMatrix call this when constructing a new object,
+   // e.g. after matrix multiply, but ONLY with the tolerance T(0).
    template <class T>
    void SparseVector<T>::zeroize(const T tol)
    {
@@ -454,7 +503,7 @@ namespace gpstk
          vecMap.erase(toDelete[i]);
    }
 
-   /// SparseVector stream output operator
+   // SparseVector stream output operator
    template <class T>
    std::ostream& operator<<(std::ostream& os, const SparseVector<T>& SV) 
    {
@@ -657,9 +706,8 @@ namespace gpstk
          else
             vecMap[Rit->first] -= Rit->second;
       }
-
       zeroize(T(0));
-
+ 
       return *this;
    }
 
@@ -671,14 +719,13 @@ namespace gpstk
          GPSTK_THROW(Exception("Incompatible dimensions op-=(V)"));
 
       for(unsigned int i=0; i<R.size(); i++) {
-         if(R[i] == T()) continue;
+         if(R[i] == T(0)) continue;
 
          if(vecMap.find(i) == vecMap.end())
             vecMap[i] = -R[i];
          else
             vecMap[i] -= R[i];
       }
-
       zeroize(T(0));
 
       return *this;
@@ -698,7 +745,6 @@ namespace gpstk
          else
             vecMap[Rit->first] += Rit->second;
       }
-
       zeroize(T(0));
 
       return *this;
@@ -713,14 +759,13 @@ namespace gpstk
       //std::cout << " op+=(V)" << std::endl;
 
       for(unsigned int i=0; i<R.size(); i++) {
-         if(R[i] == T()) continue;
+         if(R[i] == T(0)) continue;
 
          if(vecMap.find(i) == vecMap.end())
             vecMap[i] = R[i];
          else
             vecMap[i] += R[i];
       }
-
       zeroize(T(0));
 
       return *this;
@@ -730,7 +775,7 @@ namespace gpstk
    template <class T>
    SparseVector<T>& SparseVector<T>::operator*=(const T& value)
    {
-      if(value == T()) {
+      if(value == T(0)) {
          resize(0);
       }
       else {
@@ -747,7 +792,7 @@ namespace gpstk
    template <class T>
    SparseVector<T>& SparseVector<T>::operator/=(const T& value)
    {
-      if(value == T()) GPSTK_THROW(Exception("Divide by zero"));
+      if(value == T(0)) GPSTK_THROW(Exception("Divide by zero"));
 
       typename std::map<unsigned int, T>::iterator it;
       for(it=vecMap.begin(); it != vecMap.end(); ++it) {
@@ -767,6 +812,7 @@ namespace gpstk
       //std::cout << "Call copy ctor from op-(SV,SV)" << std::endl;
       SparseVector<T> retSV(L);
       retSV -= R;
+
       return retSV;
    }
 
@@ -780,6 +826,7 @@ namespace gpstk
 
       SparseVector<T> retSV(L);
       retSV -= R;
+
       return retSV;
    }
 
@@ -794,6 +841,7 @@ namespace gpstk
       SparseVector<T> retSV(R);
       retSV = -retSV;
       retSV += L;
+
       return retSV;
    }
 
@@ -807,6 +855,7 @@ namespace gpstk
 
       SparseVector<T> retSV(R);
       retSV += L;
+
       return retSV;
    }
 
@@ -820,6 +869,7 @@ namespace gpstk
 
       SparseVector<T> retSV(L);
       retSV += R;
+
       return retSV;
    }
 
@@ -833,6 +883,7 @@ namespace gpstk
 
       SparseVector<T> retSV(R);
       retSV += L;
+
       return retSV;
    }
 
