@@ -1,4 +1,40 @@
-/// @file SparseMatrix.hpp  Class for a sparse matrix.
+//============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 3.0 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
+//  
+//  Copyright 2004, The University of Texas at Austin
+//
+//============================================================================
+
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//=============================================================================
+
+/// @file SparseMatrix.hpp  Class for template sparse matrices; use with SparseVector.
 
 #ifndef SPARSE_MATRIX_INCLUDE
 #define SPARSE_MATRIX_INCLUDE
@@ -9,12 +45,12 @@
 
 #include "SparseVector.hpp"
 #include "Matrix.hpp"
-#include "stl_helpers.hpp"    // for vectorindex
 
 // TODO
 // >submatrix and subvector, ident, trace
-// >add concatenation && || to SparseMatrix
+// >add concatenations {&& ||}{SM SV M V} to SparseMatrix
 // >add minabs maxabs to Matrix
+// notes
 // >potential trap in that rowsMap[.].len may not agree with ncols...
 // >do we want a cast-to-Matrix function? Or do we want to replace with explicit func?
 // >watch out for implicit casts to Matrix - this could really confuse things.
@@ -25,18 +61,19 @@
 //
 // v >inverse,LUD,SVD,HH - only inverse Cholesky for now...cast to Matrix?
 //     costly to implement, how much benefit?  HH is used in SRIF
-//    not able to speed up LUD and SVD - cast to Matrix. Chol, HH< SRIFMU done.
+//     not able to speed up LUD and SVD - cast to Matrix. Chol, HH< SRIFMU done.
 // v >go through all the code and avoid using proxys; access maps directly; SV friend
 // v >is rowsMap.insert(pair(j,SparseVector) faster than rowsMap[j] = SV ?
-//   stackoverflow says no
+//     stackoverflow says no
 // v >worry about SparseVector::zeroTolerance - make it set-able? No, pass it
 // v > To zeroize or not? that is the question. If you zeroize inside routines here,
 //   there is the risk that you'll ruin the content of your data. For example, a
-//   m. cov. matrix where you set one value very small, to effectively constrain it.
+//   m. cov. matrix where you set one value very small, to effectively constrain.
 //   If you zeroize in, say, lowerCholesky, you may very well set it to zero which
 //   would make the matrix singular.
 // *** Zeroize ONLY when the user explicitly calls zeroize(), and let him pass the
 //  tolerance, except call zeroize(T(0)) after operations that might create zeros.
+//  Even better, ** never add zeros to the map **
 
 namespace gpstk
 {
@@ -128,7 +165,7 @@ namespace gpstk
       it = mySM.rowsMap.find(irow);
 
       // add a new row? only if row is not there, and rhs is not zero
-      if(T(rhs) != T() && it == mySM.rowsMap.end()) {
+      if(T(rhs) != T(0) && it == mySM.rowsMap.end()) {
          SparseVector<T> SVrow(mySM.ncols);
          mySM.rowsMap[irow] = SVrow;
          it = mySM.rowsMap.find(irow);
@@ -243,10 +280,17 @@ namespace gpstk
                              Vector<T>& D, const unsigned int M) throw(Exception);
 
    //---------------------------------------------------------------------------
-   /// Class SparseMatrix
+   /// Class SparseMatrix. This class is designed to present an interface nearly
+   /// identical to class Matrix, but more efficiently handle sparse matrices, in
+   /// which most of the elements are zero. The class stores only non-zero elements;
+   /// using a map of SparseVectors, with key = row index. it also stores a nominal
+   /// dimension - number of rows and columns. The class uses a proxy class,
+   /// SMatProxy, to access elements; this allows rvalues and lvalues to be treated
+   /// separately.
    /// Notes on speed. The most expensive parts are the Proxy::operator(), then
    /// find() and lower_bound(). Never use the Proxy stuff within the class, always
-   /// use iterators and assign values to the maps directly.
+   /// use iterators and assign values to the maps directly. Never assign zeros to
+   /// the maps. See timing and test results in the test program smtest.cpp
    /// Matrix multiply is orders of magnitude faster. Transpose() is much faster
    /// than the Matrix version, which is something of a surprise.
    /// Most time consuming is looping over columns; this is expected since the design
@@ -554,7 +598,7 @@ namespace gpstk
       for(i=0; i<nrows; i++) {
          bool haverow(false);                // rather than rowsMap.find() every time
          for(j=0; j<ncols; j++) {
-            if(M(i,j) == T()) continue;      // nothing to do - element(i,j) is zero
+            if(M(i,j) == T(0)) continue;     // nothing to do - element(i,j) is zero
 
             // non-zero, must add it
             if(!haverow) {                   // add row i
@@ -821,11 +865,11 @@ namespace gpstk
          T sum(0);
          // loop over rows of R and elements of V
          for(unsigned int k=0; k<jt->second.size(); k++)
-            if(V.isFilled(jt->second[k])) sum += V[jt->second[k]] * R(k,jt->first);
-         retSV.vecMap[jt->first] = sum;
+            if(V.isFilled(jt->second[k]))
+               sum += V[jt->second[k]] * R(k,jt->first);
+         if(sum != T(0)) retSV.vecMap[jt->first] = sum;
       }
 
-      retSV.zeroize(T(0));
       return retSV;
    }
 
@@ -839,16 +883,17 @@ namespace gpstk
             GPSTK_THROW(Exception("Incompatible dimensions op*(SV,M)"));
       #endif
 
+         T sum;
          SparseVector<T> retSV(R.cols());
 
          // loop over columns of R = elements of answer
          for(unsigned int j=0; j<R.cols(); j++) {
             // copy out the whole column as a Vector
             Vector<T> colR = R.colCopy(j);
-            retSV.vecMap[j] = dot(colR,V);
+            sum = dot(colR,V);
+            if(sum != T(0)) retSV.vecMap[j] = sum;
          }
 
-         retSV.zeroize(T(0));
          return retSV;
       }
       catch(Exception& e) { GPSTK_RETHROW(e); }
@@ -876,10 +921,9 @@ namespace gpstk
          // loop over rows of R and elements of V
          for(unsigned int k=0; k<jt->second.size(); k++)
             sum += V[jt->second[k]] * R(jt->second[k],jt->first);
-         retSV.vecMap[jt->first] = sum;
+         if(sum != T(0)) retSV.vecMap[jt->first] = sum;
       }
 
-      retSV.zeroize(T(0));
       return retSV;
    }
 
@@ -904,8 +948,7 @@ namespace gpstk
          for(jt = RT.rowsMap.begin(); jt != RT.rowsMap.end(); ++jt) {
             // answer(i,j) = dot product of Lrow and RTrow==Rcol
             T d(dot(it->second,jt->second));
-            //if(ABS(d) > SparseVector<T>::zeroTolerance)
-            if(d != T()) {
+            if(d != T(0)) {
                if(!haveRow) {
                   SparseVector<T> row(nc);
                   retSM.rowsMap[it->first] = row;
@@ -940,8 +983,7 @@ namespace gpstk
             for(unsigned int j=0; j<R.cols(); j++) {
                Vector<T> colR(R.colCopy(j));
                T d(dot(it->second,colR));
-               //if(ABS(d) > SparseVector<T>::zeroTolerance)
-               if(d != T()) {
+               if(d != T(0)) {
                   if(!haveRow) {
                      SparseVector<T> row(nc);
                      retSM.rowsMap[it->first] = row;
@@ -980,8 +1022,7 @@ namespace gpstk
          for(jt = RT.rowsMap.begin(); jt != RT.rowsMap.end(); ++jt) {
             // answer(i,j) = dot product of Lrow and RTrow==Rcol
             T d(dot(rowL,jt->second));
-            //if(ABS(d) > SparseVector<T>::zeroTolerance)
-            if(d != T()) {
+            if(d != T(0)) {
                if(!haveRow) {
                   SparseVector<T> row(nc);
                   retSM.rowsMap[i] = row;
@@ -1368,11 +1409,13 @@ namespace gpstk
          for(it = SM.rowsMap.begin(); it != SM.rowsMap.end(); ++it) {
             SparseVector<T> Vrow(SM.rows());
             toRet.rowsMap[it->first] = Vrow;
-            for(jt = SM.rowsMap.begin(); jt != SM.rowsMap.end(); ++jt)
-               toRet.rowsMap[it->first][jt->first] = dot(it->second,jt->second);
+            for(jt = SM.rowsMap.begin(); jt != SM.rowsMap.end(); ++jt) {
+               T d(dot(it->second,jt->second));
+               if(d != T(0)) toRet.rowsMap[it->first][jt->first] = d;
+            }
          }
 
-         toRet.zeroize(T(0));
+         //toRet.zeroize(T(0));
          return toRet;
 
       } catch(Exception& e) { GPSTK_RETHROW(e); }
@@ -1396,6 +1439,7 @@ namespace gpstk
          typename std::map< unsigned int, T >::const_iterator vt;
 
          Vector<T> toRet(P.rows(),T(0));
+         T sum;
 
          // loop over rows of P = columns of transpose(P)
          for(jt = P.rowsMap.begin(); jt != P.rowsMap.end(); ++jt) {
@@ -1405,10 +1449,10 @@ namespace gpstk
             // loop over columns of C up to and including j,
             // forming dot product prod(k) = P(rowj) * C(colk)
             for(unsigned int k=0; k<n; k++) {
-               T sum = T(0);
+               sum = T(0);
                for(vt=jt->second.vecMap.begin(); vt!=jt->second.vecMap.end(); ++vt)
                   sum += vt->second * C(vt->first,k);   
-               prod(k) = sum;
+               if(sum != T(0)) prod(k) = sum;
             }
             toRet(j) = dot(jt->second,prod);
          }
@@ -1437,6 +1481,16 @@ namespace gpstk
    //    Aii = Lii^2 + sum(k=0,i-1) Lik^2
    //    Aij = Lij*Ljj + sum(k=0,j-1) Lik*Ljk
    // These can be inverted by looping over columns, and filling L from diagonal down.
+   // So fill L in this way
+   //     d         do diagonal element first, then the column below it
+   //     1d        at each row i below the diagonal, save the element^2 in rowSums[i]
+   //     12d
+   //     123d
+   //     123 d
+   //     123  d
+   //     123   d
+   //     123    d
+   //     123 etc d
    
    /// Compute lower triangular square root of a symmetric positive definite matrix
    /// (Cholesky decomposition) Crout algorithm.
@@ -1457,71 +1511,72 @@ namespace gpstk
    
       const unsigned int n=A.rows();
       unsigned int i,j,k;
-      SparseMatrix<T> L(n,n);
+      T d, diag;
+      SparseMatrix<T> L(n,n);          // compute the answer
+      std::vector<T> rowSums;          // keep sum(k=0..j-1)[L(j,k)^2] for each row j
+      typename std::map< unsigned int, SparseVector<T> >::const_iterator it, jt;
+      typename std::map< unsigned int, SparseVector<T> >::iterator Lit, Ljt;
 
-      // get a column map
-      // colMap[column index] = vector of all row indexes, in ascending order
-      const std::map< unsigned int, std::vector<unsigned int> > colMap(A.columnMap());
-      std::map< unsigned int, std::vector<unsigned int> >::const_iterator jt;
-      typename std::map< unsigned int, SparseVector<T> >::const_iterator it;
-      typename std::map< unsigned int, SparseVector<T> >::iterator iit,jjt;
-
-      // loop over columns of A
-      for(j=0; j<n; j++) {                               // column j
-         jjt = L.rowsMap.find(j);            // row j of L
-         if(jjt == L.rowsMap.end()) {        // create if necessary
-            SparseVector<T> Vrow(n);
-            L.rowsMap[j] = Vrow;
-            jjt = L.rowsMap.find(j);
-         }
-
-         // A(j,j) must exist
-         T d(0);
-         jt = colMap.find(j);
-         if(jt != colMap.end() && vectorindex(jt->second,j) != -1) { // A(j,j) exists
-            it = A.rowsMap.find(j);    // ok b/c A(j,j) exists
-            d = it->second[j];         // ok b/c A(j,j) exists
-            // loop over columns before diagonal, subtract sum L(j,k)*L(j,k) from d
-            SparseVector<T> Vrow(jjt->second);
-            Vrow.truncate(j);          // this wipes elements >= j
-            d -= dot(Vrow,Vrow);
-         }
-         if(d <= T(0)) {
+      // A must have all rows - a zero row in A means its singular
+      // create all the rows in L; all exist b/c if any diagonal is 0 -> singular
+      // fill rowSums vector with zeros
+      for(it=A.rowsMap.begin(), i=0; it!=A.rowsMap.end(); i++, ++it) {
+         if(i != it->first) {
             std::ostringstream oss;
-            oss << "Non-positive eigenvalue " << std::scientific << d << " at col "
-               << j << ": Cholesky() requires positive-definite input";
+            oss << "lowerCholesky() requires positive-definite input:"
+               << " (zero rows at index " << i << ")";
             GPSTK_THROW(Exception(oss.str()));
          }
 
-         // assign L(j,j) - non-zero
-         T diag(SQRT(d));
-         jjt->second[j] = diag;
-         
-         // loop over rows below diagonal
-         for(i=j+1; i<n; i++) {
-            it = A.rowsMap.find(i);
-            // d = A(i,j)
-            d = (vectorindex(jt->second,i) != -1 ? it->second[j] : T(0));
+         SparseVector<T> Vrow(n);
+         L.rowsMap[i] = Vrow;
 
-            // loop over columns of L before diagonal, subtr sum L(i,k)*L(j,k) from d
-            // do it only if rows exist
-            iit = L.rowsMap.find(i);
-            if(iit != L.rowsMap.end()) {
-               //for(k=0; k<j; k++)
-               //   if(iit->second.isFilled(k) && jjt->second.isFilled(k))
-               //      d -= iit->second[k] * jjt->second[k];
-               SparseVector<T> Virow(iit->second), Vjrow(jjt->second);
-               Virow.truncate(j);
-               Vjrow.truncate(j);
-               d -= dot(Virow,Vjrow);
+         rowSums.push_back(T(0));
+      }
+
+      // loop over columns of A, at the same time looping over rows of L
+      // use jt to iterate over the columns of A, keeping count with (column) j
+      for(jt = A.rowsMap.begin(), Ljt = L.rowsMap.begin();
+            jt != A.rowsMap.end() && Ljt != L.rowsMap.end();  ++jt, ++Ljt)
+      {
+         j = jt->first;                            // column j (A) or row i (L)
+
+         // compute the j,j diagonal element of L
+         // start with diagonal of A(j,j)
+         d = jt->second[j];                     // A(j,j)
+
+         // subtract sum(k=0..j-1)[L(j,k)^2]
+         d -= rowSums[j];
+
+         // d is the eigenvalue - must not be zero
+         if(d <= T(0)) {
+            std::ostringstream oss;
+            oss << "Non-positive eigenvalue " << std::scientific << d << " at col "
+               << j << ": lowerCholesky() requires positive-definite input";
+            GPSTK_THROW(Exception(oss.str()));
+         }
+
+         diag = SQRT(d);
+         L.rowsMap[j].vecMap[j] = diag;         // L(j,j)
+
+         // now loop over rows below the diagonal, filling in this column
+         Lit = Ljt;
+         it = jt;
+         for(++Lit, ++it; Lit != L.rowsMap.end(); ++Lit, ++it) {
+            i = Lit->first;
+            d = (it->second.isFilled(j) ?  it->second[j] : T(0));
+            d -= dot_lim(Lit->second, Ljt->second, 0, j);
+
+            if(d != T(0)) {
+               d /= diag;
+               Lit->second.vecMap[j] = d;
+               rowSums[i] += d*d;  // save L(i,j)^2 term
             }
-            L(i,j) = d/diag;           // assign() it as d may be zero
-            //L.rowsMap[i].vecMap[j] = d/diag;    // assign() it as d may be zero
 
-         }  // end loop over i
-      } // end loop over jt/j
-   
-      L.zeroize(T(0));
+         }  // end loop over rows below the diagonal
+
+      }  // end loop over column j of A
+      
       return L;
    }
 
@@ -1772,21 +1827,22 @@ namespace gpstk
    void SrifMU(Matrix<T>& R, Vector<T>& Z, SparseMatrix<T>& A, const unsigned int M)
       throw(Exception)
    {
-      if(A.cols() <= 1 || A.cols() != R.cols()+1 || Z.size() < R.rows()) {
-         if(A.cols() > 1 && R.rows() == 0 && Z.size() == 0) {
-            // create R and Z
-            R = Matrix<double>(A.cols()-1,A.cols()-1,0.0);
-            Z = Vector<double>(A.cols()-1,0.0);
-         }
-         else {
-            std::ostringstream oss;
-            oss << "Invalid input dimensions:\n  R has dimension "
-               << R.rows() << "x" << R.cols() << ",\n  Z has length "
-               << Z.size() << ",\n  and A has dimension "
-               << A.rows() << "x" << A.cols();
-            GPSTK_THROW(MatrixException(oss.str()));
-         }
+      // if necessary, create R and Z
+      if(A.cols() > 1 && R.rows() == 0 && Z.size() == 0) {
+         R = Matrix<double>(A.cols()-1,A.cols()-1,0.0);
+         Z = Vector<double>(A.cols()-1,0.0);
       }
+
+   #ifdef RANGECHECK
+      if(A.cols() <= 1 || A.cols() != R.cols()+1 || Z.size() < R.rows()) {
+         std::ostringstream oss;
+         oss << "Invalid input dimensions:\n  R has dimension "
+            << R.rows() << "x" << R.cols() << ",\n  Z has length "
+            << Z.size() << ",\n  and A has dimension "
+            << A.rows() << "x" << A.cols();
+         GPSTK_THROW(Exception(oss.str()));
+      }
+   #endif
    
       const T EPS=T(1.e-20);
       const unsigned int m(M==0 || M>A.rows() ? A.rows() : M), n(R.rows());
