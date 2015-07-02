@@ -138,6 +138,19 @@ exit 1
 # Parse input args
 #----------------------------------------
 
+if [ $# -eq 0 ]; then
+    echo ""
+    echo ""
+    echo ""
+    echo ""
+    echo "      No arguments provided. Please read the help."
+    echo ""
+    echo ""
+    echo ""
+    echo ""
+    usage
+fi
+
 while getopts "bcdeghi:j:P:pstuvz" OPTION
 do
     case $OPTION in
