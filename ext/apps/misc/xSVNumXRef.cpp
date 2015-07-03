@@ -14,7 +14,6 @@ int main( int argc, char * argv[] )
    cout << "Entering xSVNumXRef" << endl;
 
    SVNumXRef svNumXRef;
-
    svNumXRef.dump(cout, true);
   
    return(0);
