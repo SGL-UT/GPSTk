@@ -35,3 +35,7 @@ add_test(GNSSCore_WxObsMap WxObsMap_T)
 add_executable(Xvt_T Xvt_T.cpp)
 target_link_libraries(Xvt_T gpstk)
 add_test(GNSSCore_Xvt Xvt_T)
+
+add_executable(SVNumXRef_T  SVNumXRef_T.cpp)
+target_link_libraries(SVNumXRef_T gpstk)
+add_test(GNSSCore_SVNumXRef SVNumXRef_T)

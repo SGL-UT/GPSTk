@@ -302,7 +302,7 @@ SVNumXRef::SVNumXRef( )
    // NANU 2014050 (start)
    NtoPMap.insert( std::pair<const int, XRefNode>(  39, XRefNode( 9,
                                        CivilTime( 2014,  6, 13,  0,  0,  0.0, TimeSystem::GPS),
-                                       CivilTime( 2014,  8,  2,  0,  0,  0.0, TimeSystem::GPS))));
+                                       CivilTime( 2014,  8,  1,  23,  59,  59.9, TimeSystem::GPS))));
    NtoPMap.insert( std::pair<const int, XRefNode>( 40, XRefNode( 10, 
                                        CivilTime( 1996,  7, 16,  0,  0,  0.0, TimeSystem::GPS),
                                        CommonTime::END_OF_TIME  )));
@@ -704,6 +704,7 @@ bool XRefNode::isApplicable( gpstk::CommonTime dt ) const
 std::string XRefNode::toString() const
 {
    std::string sout;
+   std::string tform = "%02m/%02d/9.4Y %03j %02H:%02M:%05.2f";
    //create stringstream to convert Num to a string to concatinate to sout
    std::stringstream ss;
    ss << Num;
@@ -712,16 +713,63 @@ std::string XRefNode::toString() const
    sout += "   "+numOut;
    //sout += "   "+string(begValid begDt);
    if( Num < 10 ){//used to create correct spacing
-      sout += "      "+printTime(begValid,"%02m/%02d/%04Y");
+      sout += "      "+printTime(begValid, tform/*"%02m/%02d/%04Y"*/);
    }else{
-      sout += "     "+printTime(begValid,"%02m/%02d/%04Y");
+      sout += "     "+printTime(begValid, tform/*"%02m/%02d/%04Y"*/);
    }
-   std::string endTime = printTime(endValid, "%02m/%02d/%04Y");
+   std::string endTime = printTime(endValid, tform/*"%02m/%02d/%04Y"*/);
    if(endTime == "01/01/4713"){//used to detect end of time
       sout += "   End Of Time";
    }else{
-      sout += "   "+printTime(endValid,"%02m/%02d/%04Y");
+      sout += "   "+printTime(endValid, tform/*"%02m/%02d/%04Y"*/);
    }
    return sout;
 }
 
+// Returns true if there are no overlaps, and false otherwise 		  
+bool SVNumXRef::isConsistent() const
+{
+   // Defining iterators
+   multimap<int, XRefNode>::const_iterator cit1;
+   multimap<int, XRefNode>::const_iterator cit2;
+   // loops through the multimap
+   for (cit1 = NtoPMap.begin(); cit1 != NtoPMap.end(); cit1++)
+   {
+      cit2 = cit1;
+      cit2++;  // cit2 always starts the nested loop one higher than cit1
+      for (; cit2 != NtoPMap.end(); cit2++)
+      {
+	 int key1 = cit1->first;		// keys represent the SVN numbers
+	 int key2 = cit2->first;
+         const XRefNode xr1 = cit1->second;	// these const xr variables represent the XRefNode so we can access the begin and end times
+	 const XRefNode xr2 = cit2->second;	// of each SVN/PRN pair
+	 int val1 = xr1.getPRNNum();		// vals represent the PRN numbers
+	 int val2 = xr2.getPRNNum();
+	 if ((key1 == key2) || (val1 == val2))	// checks initial condition for an overlap; if neither are true, there is no overlap
+	 {
+	    cout << "key 1 & 2: " << key1 << ", " << key2 << endl
+		 << "val 1 & 2: " << val1 << ", " << val2 << endl
+		 << "xr1:" << xr1.toString() << endl
+		 << "xr2:" << xr2.toString() << endl;
+	  
+	    if (overlap(xr1, xr2)) 		// if overlap() returns true, return false and exit
+	       return false;
+	 }
+      }
+   }
+   return true;					// if we reach this point, we know there are no overlaps
+}   
+
+// Returns true if there is an overlap, returns false otherwise
+bool SVNumXRef::overlap (const XRefNode& xr1, const XRefNode& xr2) const
+{
+   //if ((xr1.getBeginTime() > xr2.getEndTime()) || (xr1.getEndTime() < xr2.getBeginTime()))
+   if ((xr1.getBeginTime() < xr2.getEndTime()) && (xr1.getEndTime() > xr2.getBeginTime()))
+   {
+      cout << xr1.getBeginTime() << xr1.getEndTime() << endl 
+      << xr2.getBeginTime() << xr2.getEndTime() << endl;
+      return true;
+   }
+   return false;
+}
+   
