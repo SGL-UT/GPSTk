@@ -6,3 +6,4 @@ install (TARGETS novaRinex DESTINATION "${CMAKE_INSTALL_BINDIR}")
 
 
 
+

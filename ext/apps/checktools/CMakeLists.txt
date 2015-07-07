@@ -12,3 +12,4 @@ add_executable(rnwcheck rnwcheck.cpp)
 target_link_libraries(rnwcheck gpstk)
 install (TARGETS rnwcheck DESTINATION "${CMAKE_INSTALL_BINDIR}")
 
+
