@@ -62,6 +62,7 @@
 #include "GNSSconstants.hpp"
 #include "SatID.hpp"
 #include "ObsID.hpp"
+#include "Rinex3NavData.hpp"
 //#include "MathBase.hpp"
 
 namespace gpstk
@@ -167,7 +168,10 @@ namespace gpstk
          throw( InvalidRequest ) = 0;
 
       virtual void dump(std::ostream& s = std::cout) const
-	      throw( InvalidRequest );
+	       throw( InvalidRequest );
+
+      virtual Rinex3NavData makeRinex3NavData() const
+         throw( InvalidRequest );
 
          /// Overhead information
          //@{
