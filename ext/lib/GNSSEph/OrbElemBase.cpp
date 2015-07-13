@@ -126,4 +126,14 @@ namespace gpstk
       s.flags(oldFlags);
    }
 
+
+   Rinex3NavData OrbElemBase::makeRinex3NavData() const
+         throw( InvalidRequest )
+   {
+      InvalidRequest ir("Method makeRinex3NavData() not implemented.");
+      GPSTK_THROW(ir); 
+   }
+   
+
+
 } // namespace
