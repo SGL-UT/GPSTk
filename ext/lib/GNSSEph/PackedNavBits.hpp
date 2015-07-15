@@ -135,6 +135,27 @@ namespace gpstk
       std::string asString(const int startBit, 
                            const int numChars) const;
 
+         // The following three methods were added to support
+         // GLONASS sign/magnitude real values.
+         //
+         // Since GLONASS has no disjoint fields (at least not
+         // up through ICD Edition 5.1) there are no methods
+         // for unpacking disjoint-field sign/mag quantities. 
+         /* Unpack a sign/mag long */
+      long asSignMagLong(const int startBit, 
+                  const int numBits, 
+                  const int scale) const;
+                  
+         /* Unpack a sign/mag double */
+      double asSignMagDouble( const int startBit, 
+                             const int numBits, 
+                             const int power2) const;
+                             
+         /* Unpack a sign/mag double with units of semi-circles */
+      double asSignMagDoubleSemiCircles( const int startBit, 
+                                  const int numBits, 
+                                  const int power2) const;
+
          /* Unpack mehthods that join multiple disjoint 
             navigation message areas as a single field
             NOTE: startBit1 is associated with the most significant section
