@@ -188,6 +188,11 @@ namespace gpstk
       const OrbElemBase* findNearOrbElem( const SatID& sat, const CommonTime& t )
          const throw( InvalidRequest );
 
+      /// Return a list of SatID object representing the satellites that
+      /// are contained in the store.
+      /// @return list of SatID objects
+      std::list<gpstk::SatID> getSatIDList() const;
+
       /// Add all ephemerides to an existing list<OrbElemBase>.
       /// @return the number of ephemerides added.
       int addToList( std::list<OrbElemBase*>& v ) const

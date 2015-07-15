@@ -579,6 +579,20 @@ namespace gpstk
       }
       return(prn_i->second);
    }
+   
+//-----------------------------------------------------------------------------
+
+   list<gpstk::SatID> OrbElemStore::getSatIDList() const
+   {
+      list<gpstk::SatID> retList;
+      for( UBEMap::const_iterator ui = ube.begin(); ui != ube.end(); ui++)
+      {
+         SatID sid = ui->first;
+         retList.push_back(sid);
+      } 
+      return retList;
+   }
+
 
 //-----------------------------------------------------------------------------
 
