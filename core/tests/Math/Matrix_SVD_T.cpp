@@ -49,38 +49,38 @@ void SVDinitializer(void)
 //=================================================================================================================
     //  Below details what the individual matrices of the SVD should be, but currently aren't used in this test
 
-/*	gpstk::Matrix<double> A5Temp(2,2), A6Temp(2,3), A7Temp(3,2), A8Temp(3,3);
-	gpstk::Matrix<double> CompareUA5Temp(2,2), CompareUA6Temp(2,2), CompareUA7Temp(3,3), CompareUA8Temp(3,3),
-						  CompareVA5Temp(2,2), CompareVA6Temp(3,3), CompareVA7Temp(2,2), CompareVA8Temp(3,3);	
+	gpstk::Matrix<double> A5Temp(2,2), A6Temp(2,3), A7Temp(3,2), A8Temp(3,3);
+//	gpstk::Matrix<double> CompareUA5Temp(2,2), CompareUA6Temp(2,2), CompareUA7Temp(3,3), CompareUA8Temp(3,3),
+//						  CompareVA5Temp(2,2), CompareVA6Temp(3,3), CompareVA7Temp(2,2), CompareVA8Temp(3,3);	
 
 	double temp5[4] = {2,2,
 						1,-1};
-	double temp5S[2] = {1,1};
-	double temp5U[4] = {2*pow(2,.5), 0, 0, pow(2,.5)};
-	double temp5V[4] = {pow(2,-.5), -1*pow(2,-.5), pow(2,-.5), pow(2,-.5)};
+//	double temp5S[2] = {1,1};
+//	double temp5U[4] = {2*pow(2,.5), 0, 0, pow(2,.5)};
+//	double temp5V[4] = {pow(2,-.5), -1*pow(2,-.5), pow(2,-.5), pow(2,-.5)};
 	double temp6[6] = {4, 11, 14, 8, 7, -2};
-	double temp6S[2] = {6*pow(10,.5), 10*pow(10,.5)};
-	double temp6U[4] = {3*pow(10,-.5), pow(10,-.5), pow(10,.5), -3*pow(10,-.5)};
-	double temp6V[9] = {1./3, -2./3, 2./3, 2./3, -1./3, -2./3, 2./3, 2./3, 1./3};
+//	double temp6S[2] = {6*pow(10,.5), 10*pow(10,.5)};
+//	double temp6U[4] = {3*pow(10,-.5), pow(10,-.5), pow(10,.5), -3*pow(10,-.5)};
+//	double temp6V[9] = {1./3, -2./3, 2./3, 2./3, -1./3, -2./3, 2./3, 2./3, 1./3};
 	double temp7[6] = {1, -1, -2, 2, 2, -2};
-	double temp7S[3] = {3*pow(2,.5), 0};
-	double temp7U[9] = {1./3, 2*pow(5,-.5), -2*pow(45,.5), -2./3, pow(5,-.5), 4*pow(45,-.5), 2./3, 0, 5*pow(45,-.5)};
-	double temp7V[4] = {pow(2,-.5), -1*pow(2,-.5), pow(2,-.5), pow(2,-.5)};
+//	double temp7S[3] = {3*pow(2,.5), 0};
+//	double temp7U[9] = {1./3, 2*pow(5,-.5), -2*pow(45,.5), -2./3, pow(5,-.5), 4*pow(45,-.5), 2./3, 0, 5*pow(45,-.5)};
+//	double temp7V[4] = {pow(2,-.5), -1*pow(2,-.5), pow(2,-.5), pow(2,-.5)};
 	double temp8[9] = {-1,2,2,
 						2,2,-1,
 						2,-1,2};
-	double temp8S[3] = {3,3,3};
-	double temp8U[9] = {-1./3, 2./3, 2./3, 2./3, 2./3, -1./3, 2./3, -1./3, 2./3};
-	double temp8V[9] = {1,0,0,0,1,0,0,0,1};		
+//	double temp8S[3] = {3,3,3};
+//	double temp8U[9] = {-1./3, 2./3, 2./3, 2./3, 2./3, -1./3, 2./3, -1./3, 2./3};
+//	double temp8V[9] = {1,0,0,0,1,0,0,0,1};		
 
 	A5Temp = temp5; A6Temp = temp6; A7Temp = temp7; A8Temp = temp8;
-	CompareUA5Temp = temp5U; CompareUA6Temp = temp6U; CompareUA7Temp = temp7U; CompareUA8Temp = temp8U;
-	CompareVA5Temp = temp5V; CompareVA6Temp = temp6V; CompareVA7Temp = temp7V; CompareVA8Temp = temp8V;
+//	CompareUA5Temp = temp5U; CompareUA6Temp = temp6U; CompareUA7Temp = temp7U; CompareUA8Temp = temp8U;
+//	CompareVA5Temp = temp5V; CompareVA6Temp = temp6V; CompareVA7Temp = temp7V; CompareVA8Temp = temp8V;
 
 	A5 = A5Temp; A6 = A6Temp; A7 = A7Temp; A8 = A8Temp;
-	CompareUA5 = CompareUA5Temp; CompareUA6 = CompareUA6Temp; CompareUA7 = CompareUA7Temp; CompareUA8 = CompareUA8Temp;
-	CompareVA5 = CompareVA5Temp; CompareVA6 = CompareVA6Temp; CompareVA7 = CompareVA7Temp; CompareVA8 = CompareVA8Temp;
-*/
+//	CompareUA5 = CompareUA5Temp; CompareUA6 = CompareUA6Temp; CompareUA7 = CompareUA7Temp; CompareUA8 = CompareUA8Temp;
+//	CompareVA5 = CompareVA5Temp; CompareVA6 = CompareVA6Temp; CompareVA7 = CompareVA7Temp; CompareVA8 = CompareVA8Temp;
+
 //===================================================================================================================
     
 	SVD5(A5); SVD6(A6); SVD7(A7); SVD8(A8);
@@ -95,19 +95,19 @@ gpstk::Matrix<double> SMatrixGeneration(gpstk::Matrix<double> U, gpstk::Matrix<d
 	int sRows, sCols;
 	sRows = U.rows(); sCols = V.rows();
 
-	gpstk::Matrix<double> sMartix(sRows,sCols);
+	gpstk::Matrix<double> sMatrix(sRows,sCols);
 	for (int i=0; i < (sRows); i++)
 	{
 		for (int j=0; j < (sCols); j++)
 		{
-			sMartix(i,j) = 0;
-			if (i == j) sMartix(i,j) = vect(i);
+			sMatrix(i,j) = 0;
+			if (i == j) sMatrix(i,j) = vect(i);
 		}
 	}
 
-	//std::cout<<U<<"\n\n"<<sMartix<<"\n\n"<<V<<"\n\n";
+	//std::cout<<U<<"\n\n"<<sMatrix<<"\n\n"<<V<<"\n\n";
 
-	return U * sMartix * V;
+	return U * sMatrix * V;
 }
 
 int Matrix_T::SVDATest(void)
@@ -157,7 +157,7 @@ int Matrix_T::SVDATest(void)
 	failDescriptionStream << "Check if SVD of A8 returns the right matrix. " << badCount << " of the elements are incorrect.";
 	failDescriptionString = failDescriptionStream.str(); failDescriptionStream.str("");
     testFramework.assert(badCount==0, failDescriptionString, __LINE__);
-  	badCount = 0; // Reset error counter	
+  	badCount = 0; // Reset error counter
 	
 	return testFramework.countFails();
 }
