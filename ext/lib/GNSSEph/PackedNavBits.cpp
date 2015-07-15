@@ -249,7 +249,49 @@ namespace gpstk
    {
       double drad = asSignedDouble( startBits, numBits, power2);
       return (drad*PI);
-   };
+   }
+
+      //----
+        /*  Unpack a sign/mag long */ 
+   long PackedNavBits::asSignMagLong(const int startBit, 
+                                     const int numBits, 
+                                     const int scale) const
+   {
+         // Get the magnitude
+      int startBitMag = startBit + 1;
+      int numBitsMag = numBits - 1; 
+      unsigned long mag = asUnsignedLong(startBitMag, numBitsMag, scale);
+
+         // Get the sign bit
+      uint64_t uint = asUint64_t( startBit, 1 );
+
+      long smag = (long) mag;
+      if (uint==1) smag *= -1;
+      return smag; 
+   }
+                  
+         /* Unpack a sign/mag double */
+   double PackedNavBits::asSignMagDouble( const int startBit, 
+                             const int numBits, 
+                             const int power2) const
+   {
+      long smag = asSignMagLong(startBit, numBits, 1);  
+      
+         // Convert to double and scale
+      double dval = (double) smag;
+      dval *= pow(static_cast<double>(2), power2);
+      return( dval );
+   }
+                             
+         /* Unpack a sign/mag double with units of semi-circles */
+   double PackedNavBits::asSignMagDoubleSemiCircles( const int startBit, 
+                                  const int numBits, 
+                                  const int power2) const
+   {
+      double drad = asSignMagDouble( startBit, numBits, power2);
+      return (drad*PI);
+   }
+
 
    std::string PackedNavBits::asString(const int startBit, const int numChars) const 
    {
