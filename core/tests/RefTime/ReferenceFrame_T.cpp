@@ -20,50 +20,71 @@
 //
 //============================================================================
 
-#include "ReferenceFrame_T.hpp"
+
+#include "ReferenceFrame.hpp"
+#include "TestUtil.hpp"
 
 using namespace std;
 using namespace gpstk;
 
-CPPUNIT_TEST_SUITE_REGISTRATION (ReferenceFrame_T);
-
-void ReferenceFrame_T::getFrameTest()
+class ReferenceFrame_T
 {
+   public:
+   ReferenceFrame_T(){}
+   ~ReferenceFrame_T(){}
+
+int getFrameTest(void)
+{
+   TestUtil testFramework("ReferenceFrame", "getReferenceFrame", __FILE__, __LINE__);
+   std::string testMesg;
+
+   testMesg = "Get ReferenceFrame function failed";
    ReferenceFrame rf1((ReferenceFrame::Frames)0);
    ReferenceFrame::Frames frame1 = (ReferenceFrame::Frames)0;
-   CPPUNIT_ASSERT(rf1.getReferenceFrame() == frame1);
+   testFramework.assert(rf1.getReferenceFrame() == frame1, testMesg, __LINE__);
 
    ReferenceFrame rf2((ReferenceFrame::Frames)1);
    ReferenceFrame::Frames frame2 = (ReferenceFrame::Frames)1;
-   CPPUNIT_ASSERT(rf2.getReferenceFrame() == frame2);
+   testFramework.assert(rf2.getReferenceFrame() == frame2, testMesg, __LINE__);
 
    ReferenceFrame rf3((ReferenceFrame::Frames)2);
    ReferenceFrame::Frames frame3 = (ReferenceFrame::Frames)2;
-   CPPUNIT_ASSERT(rf3.getReferenceFrame() == frame3);
+   testFramework.assert(rf3.getReferenceFrame() == frame3, testMesg, __LINE__);
 
       //Fails to ReferenceFrame::Unknown
    ReferenceFrame rf4((ReferenceFrame::Frames)-1);
    ReferenceFrame::Frames frame4 = (ReferenceFrame::Frames)3;
-   CPPUNIT_ASSERT(rf4.getReferenceFrame() != frame4);
-   CPPUNIT_ASSERT(rf4.getReferenceFrame() == frame1);
+   testFramework.assert(rf4.getReferenceFrame() != frame4, testMesg, __LINE__);
+   testFramework.assert(rf4.getReferenceFrame() == frame1, testMesg, __LINE__);
+
+   return testFramework.countFails();
 }
-void ReferenceFrame_T::asStringTest()
+int asStringTest(void)
 {
+   TestUtil testFramework("ReferenceFrame", "asString", __FILE__, __LINE__);
+   std::string testMesg;
+
    string pz("PZ90");
    string wgs("WGS84");
    string unk("Unknown");
 
+   testMesg = "asString function failed";
    ReferenceFrame rf1(ReferenceFrame::PZ90);
-   CPPUNIT_ASSERT(rf1.asString() == pz);
+   testFramework.assert(rf1.asString() == pz, testMesg, __LINE__);
 
    ReferenceFrame rf2(ReferenceFrame::WGS84);
-   CPPUNIT_ASSERT(rf2.asString() == wgs);
+   testFramework.assert(rf2.asString() == wgs, testMesg, __LINE__);
 
    ReferenceFrame rf3(ReferenceFrame::Unknown);
-   CPPUNIT_ASSERT(rf3.asString() == unk);
+   testFramework.assert(rf3.asString() == unk, testMesg, __LINE__);
+
+   return testFramework.countFails();
 }
-void ReferenceFrame_T::equalityTest()
+int equalityTest(void)
 {
+   TestUtil testFramework("ReferenceFrame", "== Operator", __FILE__, __LINE__);
+   std::string testMesg;
+
    ReferenceFrame rf1(ReferenceFrame::PZ90);
    ReferenceFrame rf2(ReferenceFrame::WGS84);
    ReferenceFrame rf3(ReferenceFrame::Unknown);
@@ -72,31 +93,39 @@ void ReferenceFrame_T::equalityTest()
    ReferenceFrame rf6("Junk String That Will Never Match Up");
 
       //PZ90 Enum with...
-   CPPUNIT_ASSERT(rf1 == rf1);
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf1 == rf2 ));
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf1 == rf3 ));
-   CPPUNIT_ASSERT(rf1 == rf4);
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf1 == rf5 ));
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf1 == rf6 ));
+   testMesg = " == operator failed with PZ90";
+   testFramework.assert( rf1 == rf1, testMesg, __LINE__);
+   testFramework.assert(!(rf1 == rf2) , testMesg, __LINE__);
+   testFramework.assert(!(rf1 == rf3) , testMesg, __LINE__);
+   testFramework.assert( rf1 == rf4, testMesg, __LINE__);
+   testFramework.assert(!(rf1 == rf5) , testMesg, __LINE__);
+   testFramework.assert(!(rf1 == rf6) , testMesg, __LINE__);
 
       //WGS84 Enum with...
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf2 == rf1 ));
-   CPPUNIT_ASSERT( rf2 == rf2);
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf2 == rf3 ));
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf2 == rf4 ));
-   CPPUNIT_ASSERT( rf2 == rf5);
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf2 == rf6 ));
+   testMesg = " == operator failed with WGS84";
+   testFramework.assert(!(rf2 == rf1) , testMesg, __LINE__);
+   testFramework.assert( rf2 == rf2, testMesg, __LINE__);
+   testFramework.assert(!(rf2 == rf3) , testMesg, __LINE__);
+   testFramework.assert(!(rf2 == rf4) , testMesg, __LINE__);
+   testFramework.assert( rf2 == rf5, testMesg, __LINE__);
+   testFramework.assert(!(rf2 == rf6), testMesg, __LINE__);
 
       //Unknown Enum with... (Should fail every one)
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf3 == rf1 ));
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf3 == rf2 ));
-   CPPUNIT_ASSERT( rf3 == rf3 );
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf3 == rf4 ));
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf3 == rf5 ));
-   CPPUNIT_ASSERT( rf3 == rf6 );
+   testMesg = " == operator failed with Unknown";
+   testFramework.assert(!(rf3 == rf1) , testMesg, __LINE__);
+   testFramework.assert(!(rf3 == rf2) , testMesg, __LINE__);
+   testFramework.assert( (rf3 == rf3) , testMesg, __LINE__);
+   testFramework.assert(!(rf3 == rf4) , testMesg, __LINE__);
+   testFramework.assert(!(rf3 == rf5) , testMesg, __LINE__);
+   testFramework.assert( (rf3 == rf6) , testMesg, __LINE__);
+
+   return testFramework.countFails();
 }
-void ReferenceFrame_T::inequalityTest()
+int inequalityTest(void)
 {
+   TestUtil testFramework("ReferenceFrame", "!= Operator", __FILE__, __LINE__);
+   std::string testMesg;
+
    ReferenceFrame rf1(ReferenceFrame::PZ90);
    ReferenceFrame rf2(ReferenceFrame::WGS84);
    ReferenceFrame rf3(ReferenceFrame::Unknown);
@@ -105,31 +134,39 @@ void ReferenceFrame_T::inequalityTest()
    ReferenceFrame rf6("Junk String That Will Never Match Up");
 
       //PZ90 Enum with...
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf1 != rf1 ));
-   CPPUNIT_ASSERT( rf1 != rf2 );
-   CPPUNIT_ASSERT( rf1 != rf3 );
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf1 != rf4 ));
-   CPPUNIT_ASSERT( rf1 != rf5 );
-   CPPUNIT_ASSERT( rf1 != rf6 );
+   testMesg = " != operator failed with PZ90";
+   testFramework.assert( !(rf1 != rf1) , testMesg, __LINE__);
+   testFramework.assert( (rf1 != rf2) , testMesg, __LINE__);
+   testFramework.assert( (rf1 != rf3) , testMesg, __LINE__);
+   testFramework.assert( !(rf1 != rf4) , testMesg, __LINE__);
+   testFramework.assert( (rf1 != rf5) , testMesg, __LINE__);
+   testFramework.assert( (rf1 != rf6) , testMesg, __LINE__);
 
       //WGS84 Enum with...
-   CPPUNIT_ASSERT( rf2 != rf1 );
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf2 != rf2 ));
-   CPPUNIT_ASSERT( rf2 != rf3 );
-   CPPUNIT_ASSERT( rf2 != rf4 );
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf2 != rf5 ));
-   CPPUNIT_ASSERT( rf2 != rf6 );
+   testMesg = " != operator failed with WGS84";
+   testFramework.assert( (rf2 != rf1) , testMesg, __LINE__);
+   testFramework.assert( !(rf2 != rf2) , testMesg, __LINE__);
+   testFramework.assert( (rf2 != rf3) , testMesg, __LINE__);
+   testFramework.assert( (rf2 != rf4) , testMesg, __LINE__);
+   testFramework.assert( !(rf2 != rf5) , testMesg, __LINE__);
+   testFramework.assert( (rf2 != rf6) , testMesg, __LINE__);
 
       //Unknown Enum with...
-   CPPUNIT_ASSERT( rf3 != rf1 );
-   CPPUNIT_ASSERT( rf3 != rf2 );
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf3 != rf3 ));
-   CPPUNIT_ASSERT( rf3 != rf4 );
-   CPPUNIT_ASSERT( rf3 != rf5 );
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf3 != rf6 ));
+   testMesg = " != operator failed with Unknown";
+   testFramework.assert( (rf3 != rf1) , testMesg, __LINE__);
+   testFramework.assert( (rf3 != rf2) , testMesg, __LINE__);
+   testFramework.assert( !(rf3 != rf3) , testMesg, __LINE__);
+   testFramework.assert( (rf3 != rf4) , testMesg, __LINE__);
+   testFramework.assert( (rf3 != rf5) , testMesg, __LINE__);
+   testFramework.assert( !(rf3 != rf6) , testMesg, __LINE__);
+
+   return testFramework.countFails();
 }
-void ReferenceFrame_T::greaterThanTest()
+int greaterThanTest(void)
 {
+   TestUtil testFramework("ReferenceFrame", "> Operator", __FILE__, __LINE__);
+   std::string testMesg;
+
    ReferenceFrame rf1(ReferenceFrame::Unknown);
    ReferenceFrame rf2(ReferenceFrame::WGS84);
    ReferenceFrame rf3(ReferenceFrame::PZ90);
@@ -137,29 +174,37 @@ void ReferenceFrame_T::greaterThanTest()
    ReferenceFrame rf5("WGS84");
    ReferenceFrame rf6("PZ90");
 
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf1 > rf1 ));
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf1 > rf2 ));
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf1 > rf3 ));
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf1 > rf4 ));
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf1 > rf5 ));
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf1 > rf6 ));
+   testMesg = " > operator failed with Unknown";
+   testFramework.assert( !(rf1 > rf1) , testMesg, __LINE__);
+   testFramework.assert( !(rf1 > rf2) , testMesg, __LINE__);
+   testFramework.assert( !(rf1 > rf3) , testMesg, __LINE__);
+   testFramework.assert( !(rf1 > rf4) , testMesg, __LINE__);
+   testFramework.assert( !(rf1 > rf5) , testMesg, __LINE__);
+   testFramework.assert( !(rf1 > rf6) , testMesg, __LINE__);
 
-   CPPUNIT_ASSERT( rf2 > rf1 );
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf2 > rf2 ));
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf2 > rf3 ));
-   CPPUNIT_ASSERT( rf2 > rf4 );
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf2 > rf5 ));
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf2 > rf6 ));
+   testMesg = " > operator failed with WGS84";
+   testFramework.assert( (rf2 > rf1) , testMesg, __LINE__);
+   testFramework.assert( !(rf2 > rf2) , testMesg, __LINE__);
+   testFramework.assert( !(rf2 > rf3) , testMesg, __LINE__);
+   testFramework.assert( (rf2 > rf4) , testMesg, __LINE__);
+   testFramework.assert( !(rf2 > rf5) , testMesg, __LINE__);
+   testFramework.assert( !(rf2 > rf6) , testMesg, __LINE__);
 
-   CPPUNIT_ASSERT( rf3 > rf1 );
-   CPPUNIT_ASSERT( rf3 > rf2 );
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf3 > rf3 ));
-   CPPUNIT_ASSERT( rf3 > rf4 );
-   CPPUNIT_ASSERT( rf3 > rf5 );
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf3 > rf6 ));
+   testMesg = " > operator failed with PZ90";
+   testFramework.assert( (rf3 > rf1) , testMesg, __LINE__);
+   testFramework.assert( (rf3 > rf2) , testMesg, __LINE__);
+   testFramework.assert( !(rf3 > rf3) , testMesg, __LINE__);
+   testFramework.assert( (rf3 > rf4) , testMesg, __LINE__);
+   testFramework.assert( (rf3 > rf5) , testMesg, __LINE__);
+   testFramework.assert( !(rf3 > rf6) , testMesg, __LINE__);
+
+   return testFramework.countFails();
 }
-void ReferenceFrame_T::lessThanTest()
+int lessThanTest(void)
 {
+   TestUtil testFramework("ReferenceFrame", "< Operator", __FILE__, __LINE__);
+   std::string testMesg;
+
    ReferenceFrame rf1(ReferenceFrame::Unknown);
    ReferenceFrame rf2(ReferenceFrame::WGS84);
    ReferenceFrame rf3(ReferenceFrame::PZ90);
@@ -167,29 +212,37 @@ void ReferenceFrame_T::lessThanTest()
    ReferenceFrame rf5("WGS84");
    ReferenceFrame rf6("PZ90");
 
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf1 < rf1 ));
-   CPPUNIT_ASSERT( rf1 < rf2 );
-   CPPUNIT_ASSERT( rf1 < rf3 );
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf1 < rf4 ));
-   CPPUNIT_ASSERT( rf1 < rf5 );
-   CPPUNIT_ASSERT( rf1 < rf6 );
+   testMesg = " < operator failed with Unknown";
+   testFramework.assert( !(rf1 < rf1) , testMesg, __LINE__);
+   testFramework.assert( rf1 < rf2 , testMesg, __LINE__);
+   testFramework.assert( rf1 < rf3 , testMesg, __LINE__);
+   testFramework.assert( !(rf1 < rf4) , testMesg, __LINE__);
+   testFramework.assert( rf1 < rf5 , testMesg, __LINE__);
+   testFramework.assert( rf1 < rf6 , testMesg, __LINE__);
 
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf2 < rf1 ));
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf2 < rf2 ));
-   CPPUNIT_ASSERT( rf2 < rf3 );
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf2 < rf4 ));
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf2 < rf5 ));
-   CPPUNIT_ASSERT( rf2 < rf6 );
+   testMesg = " < operator failed with WGS84";
+   testFramework.assert( !(rf2 < rf1) , testMesg, __LINE__);
+   testFramework.assert( !(rf2 < rf2) , testMesg, __LINE__);
+   testFramework.assert( (rf2 < rf3) , testMesg, __LINE__);
+   testFramework.assert( !(rf2 < rf4) , testMesg, __LINE__);
+   testFramework.assert( !(rf2 < rf5) , testMesg, __LINE__);
+   testFramework.assert( (rf2 < rf6) , testMesg, __LINE__);
 
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf3 < rf1 ));
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf3 < rf2 ));
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf3 < rf3 ));
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf3 < rf4 ));
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf3 < rf5 ));
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf3 < rf6 ));
+   testMesg = " < operator failed with PZ90";
+   testFramework.assert( !(rf3 < rf1) , testMesg, __LINE__);
+   testFramework.assert( !(rf3 < rf2) , testMesg, __LINE__);
+   testFramework.assert( !(rf3 < rf3) , testMesg, __LINE__);
+   testFramework.assert( !(rf3 < rf4) , testMesg, __LINE__);
+   testFramework.assert( !(rf3 < rf5) , testMesg, __LINE__);
+   testFramework.assert( !(rf3 < rf6) , testMesg, __LINE__);
+
+   return testFramework.countFails();
 }
-void ReferenceFrame_T::greaterThanOrEqualToTest()
+int greaterThanOrEqualToTest(void)
 {
+   TestUtil testFramework("ReferenceFrame", ">= Operator", __FILE__, __LINE__);
+   std::string testMesg;
+
    ReferenceFrame rf1(ReferenceFrame::Unknown);
    ReferenceFrame rf2(ReferenceFrame::WGS84);
    ReferenceFrame rf3(ReferenceFrame::PZ90);
@@ -198,29 +251,37 @@ void ReferenceFrame_T::greaterThanOrEqualToTest()
    ReferenceFrame rf6("PZ90");
 
       //Unknown with...
-   CPPUNIT_ASSERT( rf1 >= rf1 );
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT(( rf1 >= rf2 )));
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT(( rf1 >= rf3 )));
-   CPPUNIT_ASSERT( rf1 >= rf4 );
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT(( rf1 >= rf5 )));
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT(( rf1 >= rf6 )));
+   testMesg = " >= operator failed with Unknown";
+   testFramework.assert( rf1 >= rf1 , testMesg, __LINE__);
+   testFramework.assert( !(rf1 >= rf2) , testMesg, __LINE__);
+   testFramework.assert( !(rf1 >= rf3) , testMesg, __LINE__);
+   testFramework.assert( rf1 >= rf4 , testMesg, __LINE__);
+   testFramework.assert( !(rf1 >= rf5) , testMesg, __LINE__);
+   testFramework.assert( !(rf1 >= rf6) , testMesg, __LINE__);
 
-   CPPUNIT_ASSERT( rf2 >= rf1 );
-   CPPUNIT_ASSERT( rf2 >= rf2 );
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT(( rf2 >= rf3 )));
-   CPPUNIT_ASSERT( rf2 >= rf4 );
-   CPPUNIT_ASSERT( rf2 >= rf5 );
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT(( rf2 >= rf6 )));
+   testMesg = " >= operator failed with WGS84";
+   testFramework.assert( rf2 >= rf1 , testMesg, __LINE__);
+   testFramework.assert( rf2 >= rf2 , testMesg, __LINE__);
+   testFramework.assert( !(rf2 >= rf3) , testMesg, __LINE__);
+   testFramework.assert( rf2 >= rf4 , testMesg, __LINE__);
+   testFramework.assert( rf2 >= rf5 , testMesg, __LINE__);
+   testFramework.assert( !(rf2 >= rf6) , testMesg, __LINE__);
 
-   CPPUNIT_ASSERT( rf3 >= rf1 );
-   CPPUNIT_ASSERT( rf3 >= rf2 );
-   CPPUNIT_ASSERT( rf3 >= rf3 );
-   CPPUNIT_ASSERT( rf3 >= rf4 );
-   CPPUNIT_ASSERT( rf3 >= rf5 );
-   CPPUNIT_ASSERT( rf3 >= rf6 );
+   testMesg = " >= operator failed with PZ90";
+   testFramework.assert( rf3 >= rf1 , testMesg, __LINE__);
+   testFramework.assert( rf3 >= rf2 , testMesg, __LINE__);
+   testFramework.assert( rf3 >= rf3 , testMesg, __LINE__);
+   testFramework.assert( rf3 >= rf4 , testMesg, __LINE__);
+   testFramework.assert( rf3 >= rf5 , testMesg, __LINE__);
+   testFramework.assert( rf3 >= rf6 , testMesg, __LINE__);
+
+   return testFramework.countFails();
 }
-void ReferenceFrame_T::lesserThanOrEqualToTest()
+int lesserThanOrEqualToTest(void)
 {
+   TestUtil testFramework("ReferenceFrame", "<= Operator", __FILE__, __LINE__);
+   std::string testMesg;
+
    ReferenceFrame rf1(ReferenceFrame::Unknown);
    ReferenceFrame rf2(ReferenceFrame::WGS84);
    ReferenceFrame rf3(ReferenceFrame::PZ90);
@@ -228,91 +289,140 @@ void ReferenceFrame_T::lesserThanOrEqualToTest()
    ReferenceFrame rf5("WGS84");
    ReferenceFrame rf6("PZ90");
 
-   CPPUNIT_ASSERT( rf1 <= rf1 );
-   CPPUNIT_ASSERT( rf1 <= rf2 );
-   CPPUNIT_ASSERT( rf1 <= rf3 );
-   CPPUNIT_ASSERT( rf1 <= rf4 );
-   CPPUNIT_ASSERT( rf1 <= rf5 );
-   CPPUNIT_ASSERT( rf1 <= rf6 );
+   testMesg = " <= operator failed with Unknown";
+   testFramework.assert( rf1 <= rf1 , testMesg, __LINE__);
+   testFramework.assert( rf1 <= rf2 , testMesg, __LINE__);
+   testFramework.assert( rf1 <= rf3 , testMesg, __LINE__);
+   testFramework.assert( rf1 <= rf4 , testMesg, __LINE__);
+   testFramework.assert( rf1 <= rf5 , testMesg, __LINE__);
+   testFramework.assert( rf1 <= rf6 , testMesg, __LINE__);
 
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf2 <= rf1 ));
-   CPPUNIT_ASSERT( rf2 <= rf2 );
-   CPPUNIT_ASSERT( rf2 <= rf3 );
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf2 <= rf4 ));
-   CPPUNIT_ASSERT( rf2 <= rf5 );
-   CPPUNIT_ASSERT( rf2 <= rf6 );
+   testMesg = " <= operator failed with WGS84";
+   testFramework.assert( !(rf2 <= rf1) , testMesg, __LINE__);
+   testFramework.assert( rf2 <= rf2 , testMesg, __LINE__);
+   testFramework.assert( rf2 <= rf3 , testMesg, __LINE__);
+   testFramework.assert( !(rf2 <= rf4) , testMesg, __LINE__);
+   testFramework.assert( rf2 <= rf5 , testMesg, __LINE__);
+   testFramework.assert( rf2 <= rf6 , testMesg, __LINE__);
 
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf3 <= rf1 ));
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf3 <= rf2 ));
-   CPPUNIT_ASSERT( rf3 <= rf3 );
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf3 <= rf4 ));
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf3 <= rf5 ));
-   CPPUNIT_ASSERT( rf3 <= rf6 );
+   testMesg = " <= operator failed with PZ90";
+   testFramework.assert( !(rf3 <= rf1) , testMesg, __LINE__);
+   testFramework.assert( !(rf3 <= rf2) , testMesg, __LINE__);
+   testFramework.assert( rf3 <= rf3 , testMesg, __LINE__);
+   testFramework.assert( !(rf3 <= rf4) , testMesg, __LINE__);
+   testFramework.assert( !(rf3 <= rf5) , testMesg, __LINE__);
+   testFramework.assert( rf3 <= rf6 , testMesg, __LINE__);
+
+   return testFramework.countFails();
 }
-void ReferenceFrame_T::setReferenceFrameTest()
+int setReferenceFrameTest(void)
 {
+   TestUtil testFramework("ReferenceFrame", "ReferenceFrame", __FILE__, __LINE__);
+   std::string testMesg;
+
    ReferenceFrame rf1(ReferenceFrame::Unknown);
    ReferenceFrame rf2(ReferenceFrame::WGS84);
    ReferenceFrame rf3(ReferenceFrame::PZ90);
 
+   testMesg = "setReferenceFrame failed";
    ReferenceFrame frame(ReferenceFrame::Unknown);
-   CPPUNIT_ASSERT(frame == rf1);
-   CPPUNIT_ASSERT(frame != rf2);
-   CPPUNIT_ASSERT(frame != rf3);
+   testFramework.assert(frame == rf1, testMesg, __LINE__);
+   testFramework.assert(frame != rf2, testMesg, __LINE__);
+   testFramework.assert(frame != rf3, testMesg, __LINE__);
 
    frame = ReferenceFrame((ReferenceFrame::Frames)0);
-   CPPUNIT_ASSERT(frame == rf1);
-   CPPUNIT_ASSERT(frame != rf2);
-   CPPUNIT_ASSERT(frame != rf3);
+   testFramework.assert(frame == rf1, testMesg, __LINE__);
+   testFramework.assert(frame != rf2, testMesg, __LINE__);
+   testFramework.assert(frame != rf3, testMesg, __LINE__);
 
    frame = ReferenceFrame("Unknown");
-   CPPUNIT_ASSERT(frame == rf1);
-   CPPUNIT_ASSERT(frame != rf2);
-   CPPUNIT_ASSERT(frame != rf3);
+   testFramework.assert(frame == rf1, testMesg, __LINE__);
+   testFramework.assert(frame != rf2, testMesg, __LINE__);
+   testFramework.assert(frame != rf3, testMesg, __LINE__);
 
    frame = ReferenceFrame("A Junk String that won't match up");
-   CPPUNIT_ASSERT(frame == rf1);
-   CPPUNIT_ASSERT(frame != rf2);
-   CPPUNIT_ASSERT(frame != rf3);
+   testFramework.assert(frame == rf1, testMesg, __LINE__);
+   testFramework.assert(frame != rf2, testMesg, __LINE__);
+   testFramework.assert(frame != rf3, testMesg, __LINE__);
 
    frame = ReferenceFrame((ReferenceFrame::Frames)-1);
-   CPPUNIT_ASSERT(frame == rf1);
-   CPPUNIT_ASSERT(frame != rf2);
-   CPPUNIT_ASSERT(frame != rf3);
+   testFramework.assert(frame == rf1, testMesg, __LINE__);
+   testFramework.assert(frame != rf2, testMesg, __LINE__);
+   testFramework.assert(frame != rf3, testMesg, __LINE__);
 
    frame = ReferenceFrame((ReferenceFrame::Frames)-1);
-   CPPUNIT_ASSERT(frame == rf1);
-   CPPUNIT_ASSERT(frame != rf2);
-   CPPUNIT_ASSERT(frame != rf3);
+   testFramework.assert(frame == rf1, testMesg, __LINE__);
+   testFramework.assert(frame != rf2, testMesg, __LINE__);
+   testFramework.assert(frame != rf3, testMesg, __LINE__);
 
    frame = ReferenceFrame(ReferenceFrame::WGS84);
-   CPPUNIT_ASSERT(frame != rf1);
-   CPPUNIT_ASSERT(frame == rf2);
-   CPPUNIT_ASSERT(frame != rf3);
+   testFramework.assert(frame != rf1, testMesg, __LINE__);
+   testFramework.assert(frame == rf2, testMesg, __LINE__);
+   testFramework.assert(frame != rf3, testMesg, __LINE__);
 
    frame = ReferenceFrame("WGS84");
-   CPPUNIT_ASSERT(frame != rf1);
-   CPPUNIT_ASSERT(frame == rf2);
-   CPPUNIT_ASSERT(frame != rf3);
+   testFramework.assert(frame != rf1, testMesg, __LINE__);
+   testFramework.assert(frame == rf2, testMesg, __LINE__);
+   testFramework.assert(frame != rf3, testMesg, __LINE__);
 
    frame = ReferenceFrame((ReferenceFrame::Frames)1);
-   CPPUNIT_ASSERT(frame != rf1);
-   CPPUNIT_ASSERT(frame == rf2);
-   CPPUNIT_ASSERT(frame != rf3);
+   testFramework.assert(frame != rf1, testMesg, __LINE__);
+   testFramework.assert(frame == rf2, testMesg, __LINE__);
+   testFramework.assert(frame != rf3, testMesg, __LINE__);
 
    frame = ReferenceFrame(ReferenceFrame::PZ90);
-   CPPUNIT_ASSERT(frame != rf1);
-   CPPUNIT_ASSERT(frame != rf2);
-   CPPUNIT_ASSERT(frame == rf3);
+   testFramework.assert(frame != rf1, testMesg, __LINE__);
+   testFramework.assert(frame != rf2, testMesg, __LINE__);
+   testFramework.assert(frame == rf3, testMesg, __LINE__);
 
    frame = ReferenceFrame("PZ90");
-   CPPUNIT_ASSERT(frame != rf1);
-   CPPUNIT_ASSERT(frame != rf2);
-   CPPUNIT_ASSERT(frame == rf3);
+   testFramework.assert(frame != rf1, testMesg, __LINE__);
+   testFramework.assert(frame != rf2, testMesg, __LINE__);
+   testFramework.assert(frame == rf3, testMesg, __LINE__);
 
    frame = ReferenceFrame((ReferenceFrame::Frames)6);
-   CPPUNIT_ASSERT(frame != rf1);
-   CPPUNIT_ASSERT(frame != rf2);
-   CPPUNIT_ASSERT(frame == rf3);
+   testFramework.assert(frame != rf1, testMesg, __LINE__);
+   testFramework.assert(frame != rf2, testMesg, __LINE__);
+   testFramework.assert(frame == rf3, testMesg, __LINE__);
+
+   return testFramework.countFails();
+}
+};
+
+int main(void)
+{
+   ReferenceFrame_T testClass;
+   int check, errorCounter = 0;
+
+   check = testClass.getFrameTest();
+   errorCounter += check;
+
+   check = testClass.asStringTest();
+   errorCounter += check;
+
+   check = testClass.equalityTest();
+   errorCounter += check;
+
+   check = testClass.inequalityTest();
+   errorCounter += check;
+
+   check = testClass.greaterThanTest();
+   errorCounter += check;
+
+   check = testClass.lessThanTest();
+   errorCounter += check;
+
+   check = testClass.greaterThanOrEqualToTest();
+   errorCounter += check;
+
+   check = testClass.lesserThanOrEqualToTest();
+   errorCounter += check;
+
+   check = testClass.setReferenceFrameTest();
+   errorCounter += check;
+
+   std::cout << "Total Failures for " << __FILE__ << ": " << errorCounter << std::endl;
+
+   return errorCounter;
 }
 
