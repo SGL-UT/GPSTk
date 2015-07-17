@@ -306,7 +306,7 @@ SVNumXRef::SVNumXRef( )
                                        CivilTime( 2014,  8,  1,  23,  59,  59.9, TimeSystem::GPS))));
    NtoPMap.insert( std::pair<const int, XRefNode>( 40, XRefNode( 10, 
                                        CivilTime( 1996,  7, 16,  0,  0,  0.0, TimeSystem::GPS),
-                                       CommonTime::END_OF_TIME  )));
+                                       CivilTime( 2015,  7, 16,  0,  0,  0.0, TimeSystem::GPS))));
    NtoPMap.insert( std::pair<const int, XRefNode>( 41, XRefNode( 14, 
                                        CivilTime( 2000, 11, 10,  0,  0,  0.0, TimeSystem::GPS),
                                        CommonTime::END_OF_TIME  )));
