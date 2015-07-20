@@ -195,6 +195,7 @@ namespace gpstk
          nsol = ndata = 0;
          APV = 0.0;
          was.reset();
+         APSolution = Vector<double>(4,0.0);
       }
 
       /// Define the systems, including their order, that will be in the apriori sol
