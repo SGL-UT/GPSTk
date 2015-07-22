@@ -64,6 +64,12 @@ namespace gpstk
          GPSTK_THROW(e);
       }
 
+      Xvt retVal = svXvtOverrideFit(epoch);
+      return retVal;
+   }
+
+   Xvt GloEphemeris::svXvtOverrideFit(const CommonTime& epoch) const
+   {
          // Values to be returned will be stored here
       Xvt sv;
 
