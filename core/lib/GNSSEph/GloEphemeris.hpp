@@ -89,6 +89,17 @@ namespace gpstk
       Xvt svXvt(const CommonTime& epoch) const
          throw( gpstk::InvalidRequest );
 
+         /** Compute satellite position & velocity at the given time
+          *  using this ephemeris data.  HOWEVER, DO NOT check whether
+          *  the requested time is in the fit interval for this data set.
+          *
+          *  THIS IS ONLY INTENDED FOR SPECIAL TEST PURPOSES.  GENERAL
+          *  USE IS STRONGLY DISCOURAGED. 
+          *
+          * @param epoch   Epoch to compute position and velocity.
+          *
+          */
+      Xvt svXvtOverrideFit(const CommonTime& epoch) const;
 
          /// Get the epoch time for this ephemeris
       CommonTime getEphemerisEpoch() const
