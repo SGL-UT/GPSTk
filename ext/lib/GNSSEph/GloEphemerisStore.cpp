@@ -105,7 +105,7 @@ namespace gpstk
          // Check that the given epoch is within the available time limits.
          // We have to add a margin of 15 minutes (900 seconds).
       if ( epoch <  (initialTime - 900.0) ||
-           epoch >= (finalTime   + 900.0)   )
+           epoch >  (finalTime   + 900.0)   )
       {
          InvalidRequest e( "Requested time is out of boundaries for satellite "
                           + StringUtils::asString(sat) );
@@ -388,8 +388,8 @@ namespace gpstk
    {
          // Check that the given epoch is within the available time limits.
          // We have to add a margin of 15 minutes (900 seconds).
-      if ( epoch <  (initialTime - 900.0) ||
-           epoch >= (finalTime   + 900.0)   )
+      if ( epoch < (initialTime - 900.0) ||
+           epoch > (finalTime   + 900.0)   )
       {
          InvalidRequest e( "Requested time is out of boundaries for satellite "
                           + StringUtils::asString(sat) );
@@ -429,8 +429,8 @@ namespace gpstk
 
          // Check that the given epoch is within the available time limits for
          // this specific satellite, with a margin of 15 minutes (900 seconds).
-      if ( epoch <  (i->first - 900.0) ||
-           epoch >= (i->first   + 900.0)   )
+      if ( epoch < (i->first - 900.0) ||
+           epoch > (i->first   + 900.0)   )
       {
          InvalidRequest e( "Requested time is out of boundaries for satellite "
                           + StringUtils::asString(sat) );
