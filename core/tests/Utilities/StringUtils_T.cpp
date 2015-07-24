@@ -574,7 +574,7 @@ class StringUtils_T
             expectedResult.push_back("quotes");
             std::vector<std::string> observedResult = splitWithQuotes(originalString);
 
-            failMesg = "Verify splitWithQuotes works with no quotes";
+            failMesg = "splitWithQuotes fails with no quotes";
             testFramework.assert(expectedResult == observedResult, failMesg, __LINE__);
 
             // empty string
@@ -582,63 +582,80 @@ class StringUtils_T
             expectedResult.clear();
             observedResult = splitWithQuotes(originalString);
 
-            failMesg = "Verify splitWithQuotes works with empty string";
+            failMesg = "splitWithQuotes fails with empty string";
             testFramework.assert(expectedResult == observedResult, failMesg, __LINE__);
 
             // only whitespace
             originalString = " ";
             expectedResult.clear();
-            expectedResult.push_back(" ");
-            observedResult = splitWithQuotes(originalString,' ',false);
+            expectedResult.push_back("");
+            expectedResult.push_back("");
+            observedResult = splitWithQuotes(originalString,' ',false,false);
 
-            failMesg = "Verify splitWithQuotes works with just whitespace";
+            failMesg = "splitWithQuotes fails with just whitespace";
             testFramework.assert(expectedResult == observedResult, failMesg, __LINE__);
 
             // double quotes
             originalString = std::string("String with \"double quoted values\"");
             expectedResult.clear();
-            observedResult.clear();
             expectedResult.push_back("String");
             expectedResult.push_back("with");
             expectedResult.push_back("double quoted values");
             observedResult = splitWithQuotes(originalString);
 
-            failMesg = "Verify splitWithQuotes works with double quotes";
+            failMesg = "splitWithQuotes fails with double quotes";
             testFramework.assert(expectedResult == observedResult, failMesg, __LINE__);
 
             // single quotes
             originalString= std::string("String with \'single quoted values\'");
             expectedResult.clear();
-            observedResult.clear();
             expectedResult.push_back("String");
             expectedResult.push_back("with");
             expectedResult.push_back("single quoted values");
             observedResult = splitWithQuotes(originalString);
 
-            failMesg = "Verify splitWithQuotes works with double quotes";
+            failMesg = "splitWithQuotes fails with double quotes";
             testFramework.assert(expectedResult == observedResult, failMesg, __LINE__);
 
             // leading quote
             originalString= std::string("\"First words\" quoted");
             expectedResult.clear();
-            observedResult.clear();
             expectedResult.push_back("First words");
             expectedResult.push_back("quoted");
             observedResult = splitWithQuotes(originalString);
 
-            failMesg = "Verify splitWithQuotes works with leading quote";
+            failMesg = "splitWithQuotes fails with leading quote";
             testFramework.assert(expectedResult == observedResult, failMesg, __LINE__);
 
             // back to back quotes
             originalString= std::string("\"Back to\" \"back quotes\"");
             expectedResult.clear();
-            observedResult.clear();
             expectedResult.push_back("Back to");
             expectedResult.push_back("back quotes");
             observedResult = splitWithQuotes(originalString);
 
-            failMesg = "Verify splitWithQuotes works with leading quote";
+            failMesg = "splitWithQuotes failed with leading quote";
             testFramework.assert(expectedResult == observedResult, failMesg, __LINE__);
+
+            // empty, non-whitespace fields
+            originalString =
+               std::string("Zan.35(KB04-KB01), +90  7  7.73619,,,,-1.52405,no,,,");
+            expectedResult.clear();
+            expectedResult.push_back("Zan.35(KB04-KB01)");
+            expectedResult.push_back("+90  7  7.73619");
+            expectedResult.push_back("");
+            expectedResult.push_back("");
+            expectedResult.push_back("");
+            expectedResult.push_back("-1.52405");
+            expectedResult.push_back("no");
+            expectedResult.push_back("");
+            expectedResult.push_back("");
+            expectedResult.push_back("");
+            observedResult = splitWithQuotes(originalString,',',true,false);
+
+            failMesg = "splitWithQuotes fails with empty non-white fields";
+            testFramework.assert(expectedResult == observedResult, failMesg, __LINE__);
+
 
             return testFramework.countFails();
         }
