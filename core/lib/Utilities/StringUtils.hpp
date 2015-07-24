@@ -2396,7 +2396,7 @@ namespace gpstk
          if(delimiter == '\'' || delimiter == '"')
             GPSTK_THROW(StringException("Delimiter must not be quote"));
 
-         while(std::string::npos != endPos && aStr.length() != endPos)
+         while(endPos != std::string::npos && endPos <= aStr.length())
          {
             currentDelimiter = delimiter;
 
@@ -2405,14 +2405,15 @@ namespace gpstk
             if(aStr.compare(begPos,1,"\'") == 0) currentDelimiter = '\'';
 
             // find next delimiter
-            endPos = aStr.find_first_of(currentDelimiter, begPos+1);
+            endPos = aStr.find_first_of(currentDelimiter,
+                                 begPos + (currentDelimiter == delimiter ? 0 : 1));
 
             // if this token is quoted, make sure to capture the trailing quote
-            if(currentDelimiter != delimiter   // delimiter is a quote
-               && std::string::npos != endPos) // second quote is found
-                  endPos++;
-            tokenLength = endPos - begPos;
+            // if(delimiter is a quote and second quote is found) include it
+            if(currentDelimiter != delimiter && std::string::npos != endPos) endPos++;
 
+            // length of new field
+            tokenLength = endPos - begPos;
             // copy out the field
             std::string token = aStr.substr(begPos, tokenLength);
 
@@ -2423,13 +2424,13 @@ namespace gpstk
             // remove whitespace at beginning and end
             if(trimWhitespace) token = gpstk::StringUtils::strip(token);
 
+            // save it
             if(!token.empty() || !ignoreEmpty) toReturn.push_back(token);
 
             // find the next token, and go back to delimiter
             begPos = endPos;
-            if(endPos != std::string::npos &&
-               (aStr[endPos] == delimiter || aStr[endPos] == currentDelimiter))
-                  begPos++;
+            if(begPos != std::string::npos) begPos++;
+            endPos = begPos;
          }
 
          return toReturn;
