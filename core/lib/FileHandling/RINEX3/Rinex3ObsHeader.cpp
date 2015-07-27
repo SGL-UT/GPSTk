@@ -1713,15 +1713,30 @@ namespace gpstk
          strm.timesystem == TimeSystem::Unknown)
       {
          if(fileSysSat.system == SatID::systemGPS)
+         {
             strm.timesystem = TimeSystem::GPS;
+            firstObs.setTimeSystem(TimeSystem::GPS);
+         }
          else if(fileSysSat.system == SatID::systemGlonass)
+         {
             strm.timesystem = TimeSystem::UTC;
+            firstObs.setTimeSystem(TimeSystem::UTC);
+         }
          else if(fileSysSat.system == SatID::systemGalileo)
+         {
             strm.timesystem = TimeSystem::GAL;
+            firstObs.setTimeSystem(TimeSystem::GAL);
+         }
          else if(fileSysSat.system == SatID::systemQZSS)
+         {
             strm.timesystem = TimeSystem::QZS;
+            firstObs.setTimeSystem(TimeSystem::QZS);
+         }
          else if(fileSysSat.system == SatID::systemBeiDou)
+         {
             strm.timesystem = TimeSystem::BDT;
+            firstObs.setTimeSystem(TimeSystem::BDT);
+         }
          else if(fileSysSat.system == SatID::systemMixed) {
             FFStreamError e("TimeSystem in MIXED files must be given by first obs");
             GPSTK_THROW(e);
