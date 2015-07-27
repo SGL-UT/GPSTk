@@ -76,7 +76,8 @@ namespace gpstk
          throw(std::exception, FFStreamError,
                StringUtils::StringException)
    {
-
+    convertTypes(); // updates all backwards compatibility members
+    
     Rinex3ClockStream& strm = dynamic_cast<Rinex3ClockStream&>(ffs);
 
     string line;
@@ -189,9 +190,55 @@ namespace gpstk
          if(n > 5) sig_accel = asDouble(line.substr(60,19));
       }
 
+      convertTypes(); //sets all the backwards compatibilty values
+
       return;
 
    }  // End of method 'Rinex3ClockData::reallyGetRecord(FFStream& ffs)'
+
+   void Rinex3ClockData::convertTypes(void) throw()
+   {
+    //Only used to relate name in v.3 to site and sat in v.2
+ 
+      if(name.empty() && site.empty() && sat.id != -1) // sat set
+       {
+          name = sat.toString();
+          site = name = tempName = tempSite;
+       }
+      else if(name.empty() && !site.empty() && (sat.id == -1)) //site set
+         name = tempName = site;
+      else if(!name.empty() site.empty() && (sat.id == -1)) //name set
+      {
+         try{sat.fromString(name); tempSat = sat;}
+         catch(gpstk::Exception e) {site = tempSite = name;}
+      }
+ 
+      //sat modified
+      if(sat != tempSat)
+      {
+       tempSat = sat;
+       name = tempName = sat.toString();
+      }
+ 
+      //site modified
+      if(site != tempSite)
+      {
+       name = tempName = tempSite = site;
+       sat = RinexSatID(-1,RinexSatID::systemGPS);
+      }
+ 
+      //name modified
+      if(name != tempName)
+      {
+         try{sat.fromString(name); tempSat = sat;}
+         catch(gpstk::Exception e) {site = tempSite = name;}
+         tempName = name;
+      }
+
+      tempName = name; tempSite = site; tempSat = sat;
+
+      return;
+     }  // End of method 'Rinex3ClockData::convertTypes'
 
 
 
