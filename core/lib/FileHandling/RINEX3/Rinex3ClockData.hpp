@@ -78,19 +78,38 @@ namespace gpstk
          ///< receiver or satellite name for which data are given
       std::string name;
 
-      RinexSatID sat;         ///< Satellite ID        (if AS)
-      std::string site;       ///< Site label (4-char) (if AR)
-
          ///< the corresponding time to the clock data record
       CommonTime time;
 
-      double bias;            ///< clock bias (seconds).
-      double sig_bias;        ///< clock bias sigma[optional] (seconds).
-      double drift;           ///< clock rate [optional] (dimensionless).
-      double sig_drift;       ///< clock rate sigma [optional] (dimensionless).
-      double accel;           ///< clock acceleration [optional] (per second).
-      double sig_accel;       ///< clock acceleration sigma [optional] (per second).
+      size_t numVal;
+         ///< clock data
+         ///< 0: clock bias (seconds).
+         ///< 1: clock bias sigma[optional] (seconds).
+         ///< 2: clock rate [optional] (dimensionless).
+         ///< 3: clock rate sigma [optional] (dimensionless).
+         ///< 4: clock acceleration [optional] (per second).
+         ///< 5: clock acceleration sigma [optional] (per second).
+      double data[6];
 
+
+      //Members imported for backwards compatabilty
+
+      ///< clock data type
+      std::string& type = datatype;
+      RinexSatID sat;         ///< Satellite ID        (if AS)
+      std::string site;       ///< Site label (4-char) (if AR)
+
+      double& bias = data[0];            ///< clock bias (seconds).
+      double& sig_bias = data[1];        ///< clock bias sigma[optional] (seconds).
+      double& drift = data[2];           ///< clock rate [optional] (dimensionless).
+      double& sig_drift = data[3];       ///< clock rate sigma [optional] (dimensionless).
+      double& accel = data[4];           ///< clock acceleration [optional] (per second).
+      double& sig_accel = data[5];       ///< clock acceleration sigma [optional] (per second).
+
+      //members for modification sensing
+      std::string tempName;
+      RinexSatID tempSat;
+      std::string tempSite;
 
          // The next four lines is our common interface
          /// RinexObsData is a "data", so this function always returns true.
@@ -107,12 +126,17 @@ namespace gpstk
 
       void clear(void) throw()
       {
-         datatype = std::string();
+         datatype = type = std::string();
          sat = RinexSatID(-1,RinexSatID::systemGPS);
-         site = "";
+         name = site = std::string();
          time = CommonTime::BEGINNING_OF_TIME;
          bias = sig_bias = drift = sig_drift = accel = sig_accel = 0.0;
+         for (int i=0; i++; i<6) data[i] = 0.0;
       }
+
+      //Ensures the storage of all public members
+      //And updates all related members if one is changed
+      void convertTypes(void) throw();
 
          /**
           * Writes a correctly formatted record from this data to stream \a s.
