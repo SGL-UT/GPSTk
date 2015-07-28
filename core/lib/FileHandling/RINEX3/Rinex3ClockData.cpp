@@ -207,7 +207,7 @@ namespace gpstk
        }
       else if(name.empty() && !site.empty() && (sat.id == -1)) //site set
          name = tempName = site;
-      else if(!name.empty() site.empty() && (sat.id == -1)) //name set
+      else if(!name.empty() && site.empty() && (sat.id == -1)) //name set
       {
          try{sat.fromString(name); tempSat = sat;}
          catch(gpstk::Exception e) {site = tempSite = name;}
