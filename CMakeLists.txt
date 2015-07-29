@@ -56,6 +56,12 @@ option( BUILD_EXT "HELP: BUILD_EXT: SWITCH, Default = OFF, Build the ext library
 option( TEST_SWITCH "HELP: TEST_SWITCH: SWITCH, Default = OFF, Turn on test mode." OFF )
 option( BUILD_PYTHON "HELP: BUILD_PYTHON: SWITCH, Default = OFF, Turn on processing of python extension package." OFF )
 
+if( BUILD_PYTHON AND !BUILD_EXT )
+    message( WARNING "Combination of BUILD_PYTHON=ON and BUILD_EXT=OFF is not allowed. Python swig bindings depend on gpstk/ext." )
+    message( WARNING "Setting BUILD_EXT = TRUE" )
+    set( BUILD_EXT TRUE )
+endif()
+
 #----------------------------------------
 # Pull in Build Config
 #----------------------------------------
