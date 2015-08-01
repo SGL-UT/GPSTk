@@ -186,9 +186,9 @@ namespace gpstk
       if(version >= 3 && (valid & validAntennaZeroDirAzi)) n++;
       if(version >= 3 && (valid & validAntennaZeroDirXYZ)) n++;
       if(version >= 3 && (valid & validCenterOfMass)) n++;
-      if(version < 3 && (valid & validNumObs))
-         n += 1 + (obsTypeList.size()-1)/9;
-      if(version >= 3 && (valid & validSystemObsType))
+      if(version < 3 && (valid & validNumObs) && R2ObsTypes.size() != 0)
+         n += 1 + (R2ObsTypes.size()-1)/9;
+      if(version >= 3 && (valid & validSystemObsType) && obsTypeList.size() != 0)
          n += 1 + (obsTypeList.size()-1)/9;
       if(version < 3 && (valid & validWaveFact)) {
          n++;
