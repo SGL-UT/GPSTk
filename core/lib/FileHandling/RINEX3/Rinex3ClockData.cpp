@@ -76,7 +76,7 @@ namespace gpstk
          throw(std::exception, FFStreamError,
                StringUtils::StringException)
    {
-    convertTypes(); // updates all backwards compatibility members
+   // convertTypes(); // updates all backwards compatibility members
     
     Rinex3ClockStream& strm = dynamic_cast<Rinex3ClockStream&>(ffs);
 
