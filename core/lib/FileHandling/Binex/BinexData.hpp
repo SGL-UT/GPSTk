@@ -43,7 +43,7 @@
 #define GPSTK_BINEXDATA_HPP
 
 #include "gpstkplatform.h"
-
+ 
 #include "BinUtils.hpp"
 #include "FFData.hpp"
 #include "FFStream.hpp"
@@ -54,8 +54,8 @@ namespace gpstk
 
    //@{
 
-      /** 
-       * This class stores, reads, and writes BINEX records. 
+      /**
+       * This class stores, reads, and writes BINEX records.
        *
        * @sa binex_read_write.cpp for an example.
        * @sa binex_test.cpp for an example.
@@ -72,10 +72,13 @@ namespace gpstk
       static const bool nativeLittleEndian = false;
    #endif
 
-      static const unsigned long INVALID_RECORD_ID    = 0xFFFFFFFF;
+      typedef uint32_t  RecordID;  ///< Record ID type
+      typedef uint8_t   SyncByte;  ///< Synchronization byte (record flags)
 
-      static const unsigned char DEFAULT_RECORD_FLAGS = 0x20;
-      static const unsigned char VALID_RECORD_FLAGS   = 0x38;
+      static const RecordID  INVALID_RECORD_ID    = 0xFFFFFFFF;
+
+      static const SyncByte  DEFAULT_RECORD_FLAGS = 0x20;
+      static const SyncByte  VALID_RECORD_FLAGS   = 0x38;
 
          // Flags indicating whether a record is reversed, whether a record
          // is big endian, and whether a record contains an enhanced CRC.
@@ -95,7 +98,7 @@ namespace gpstk
           * An unsigned integer stored using 1, 2, 3, or 4 bytes to represent
           * integers from 0 to 536870911; used to represent BINEX record IDs,
           * subrecord IDs, field IDs, and so on.
-          */      
+          */
       class UBNXI
       {
       public:
@@ -106,7 +109,7 @@ namespace gpstk
 
             /**
              * Default constructor - sets value to 0.
-             */      
+             */
          UBNXI();
 
             /**
@@ -241,7 +244,7 @@ namespace gpstk
              * Attempts to read a valid UBNXI from the specified input stream.
              * The stream can be in reverse order and can be
              * big or little endian.  If the method succeeds, the number
-             * of bytes used to contruct the UBNXI can be determined
+             * of bytes used to construct the UBNXI can be determined
              * by calling the getSize() method.
              * @param strm Stream from which to read
              * @param outBuffer Optional buffer to receive copy of raw input
@@ -265,10 +268,10 @@ namespace gpstk
              * big or little endian.  The method fails if the entire
              * UBNXI cannot be written to the stream.
              * @param strm Stream in which to write
-             * @param outBuffer Optional buffer to receive copy of raw ouput
+             * @param outBuffer Optional buffer to receive copy of raw output
              * @param offset Offset into outBuffer at which to copy output
              * @param reverseBytes Optional flag indicating whether
-             *                     the ouput bytes should be reversed
+             *                     the output bytes should be reversed
              * @param littleEndian Optional flag indicating byte order of output
              * @return Number of bytes added to the output stream
              */
@@ -292,7 +295,7 @@ namespace gpstk
           * modified version of a compression scheme developed by GFZ, plus
           * using "special" numbers to flag certain conditions, such as using
           * the 1-byte MFGZI to store "-0" to indicate "no value."
-          */      
+          */
       class MGFZI
       {
       public:
@@ -303,7 +306,7 @@ namespace gpstk
 
             /**
              * Default constructor - sets value to 0.
-             */      
+             */
          MGFZI();
 
             /**
@@ -437,7 +440,7 @@ namespace gpstk
              * Attempts to read a valid MGFZI from the specified input stream.
              * The stream can be in reverse order and can be
              * big or little endian.  If the method succeeds, the number
-             * of bytes used to contruct the MGFZI can be determined
+             * of bytes used to construct the MGFZI can be determined
              * by calling the getSize() method.
              * @param strm Stream from which to read
              * @param outBuffer Optional buffer to receive copy of raw input
@@ -459,9 +462,9 @@ namespace gpstk
              * big or little endian.  The method fails if the entire
              * MGFZI cannot be written to the stream.
              * @param strm Stream in which to write
-             * @param outBuffer Optional buffer to receive copy of raw ouput
+             * @param outBuffer Optional buffer to receive copy of raw output
              * @param reverseBytes Optional flag indicating whether
-             *                     the ouput bytes should be reversed
+             *                     the output bytes should be reversed
              * @param littleEndian Optional flag indicating byte order of output
              */
          size_t
@@ -494,8 +497,8 @@ namespace gpstk
          /**
           * Convenience constructor
           */
-      BinexData(unsigned long recordID,
-                unsigned char recordFlags = DEFAULT_RECORD_FLAGS)
+      BinexData(RecordID recordID,
+                SyncByte recordFlags = DEFAULT_RECORD_FLAGS)
          throw();
 
          /**
@@ -524,10 +527,10 @@ namespace gpstk
           */
       virtual void
       dump(std::ostream& s) const;
-      
+
          /**
           * Compares two BinexData objects.
-          * 
+          *
           * @param b BinexData object to compare to this object
           */
       bool
@@ -538,7 +541,7 @@ namespace gpstk
           * of the current record.  The individual flags can be extracted from
           * the returned value by AND-ing with values from recordFlagsEnum.
           */
-      inline unsigned char
+      inline SyncByte
       getRecordFlags() const
       {
             // Return only essential, valid flag bits listed in recordFlagMask
@@ -558,22 +561,22 @@ namespace gpstk
           *          Doing so is therefore highly discouraged.
           */
       BinexData&
-      setRecordFlags(unsigned char flags = DEFAULT_RECORD_FLAGS);
+      setRecordFlags(SyncByte flags = DEFAULT_RECORD_FLAGS);
 
          /**
           * Returns the ID of this BINEX record.
           */
-      inline unsigned long
+      inline RecordID
       getRecordID() const
       {
-         return recID;         
+         return recID;
       };
 
          /**
           * Sets the ID of this BINEX record.
           */
       BinexData&
-      setRecordID(unsigned long id)
+      setRecordID(RecordID id)
          throw(FFStreamError);
 
          /**
@@ -598,12 +601,23 @@ namespace gpstk
           */
       BinexData&
       ensureMessageCapacity(size_t cap)
-         throw(FFStreamError);
+         throw(InvalidParameter);
+
+         /**
+          * Returns the current length of the record head, i.e. the combined
+          * length of the synchronization byte, the record ID, and the message
+          * length.  In other words, the returned length is the offset of the
+          * message data from the start of the record.
+          *
+          * @return Record head length in bytes
+          */
+      size_t
+      getHeadLength() const;
 
          /**
           * Returns the length of the data in the record message buffer
           * (which is separate from the record message buffer's capacity).
-          * 
+          *
           * @return Record message data length in bytes
           */
       inline size_t
@@ -613,8 +627,22 @@ namespace gpstk
       };
 
          /**
+          * Returns the current length of the record tail, i.e. the combined
+          * length of the CRC, the optional reverse length, and the optional
+          * synchronization byte.  In other words, the returned length is the
+          * number of bytes in the record following the message data.
+          *
+          * @return Record tail length in bytes
+          */
+      inline size_t
+      getTailLength() const
+      {
+         return getRecordSize() - getHeadLength() - getMessageLength();
+      };
+
+         /**
           * Returns the capacity of the record message buffer (which is
-          * separate from the lenth of the data in the buffer).
+          * separate from the length of the data in the buffer).
           *
           * @return Record message capacity in bytes
           */
@@ -629,11 +657,9 @@ namespace gpstk
           * of the data is dependent upon the record flags at the time the
           * data was added to the message.
           */
-      //inline const char*
       inline const std::string&
       getMessageData() const
       {
-         //return msg.data();
          return msg;
       };
 
@@ -644,7 +670,7 @@ namespace gpstk
           * the message buffer.  After updating the message buffer, the
           * value of the offset parameter is updated by size to reference
           * the next available byte in the message buffer.
-          * 
+          *
           * @param offset Location within the message buffer at which to update
           * @param data   Data with which to update the message buffer
           */
@@ -661,7 +687,7 @@ namespace gpstk
           * the message buffer.  After updating the message buffer, the
           * value of the offset parameter is updated by size to reference
           * the next available byte in the message buffer.
-          * 
+          *
           * @param offset Location within the message buffer at which to update
           * @param data   Data with which to update the message buffer
           */
@@ -678,7 +704,7 @@ namespace gpstk
           * After updating the message buffer, the value of the offset
           * parameter is updated by size to reference the next available byte
           * in the message buffer.
-          * 
+          *
           * @param offset Location within the message buffer at which to update
           * @param data   Raw data with which to update the message buffer
           * @param size   Number of bytes of data to be copied
@@ -697,7 +723,7 @@ namespace gpstk
           * After updating the message buffer, the value of the offset
           * parameter is updated by size to reference the next available byte
           * in the message buffer.
-          * 
+          *
           * @param offset Location within the message buffer at which to update
           * @param data   Raw data with which to update the message buffer
           * @param size   Number of bytes of data to be copied
@@ -718,7 +744,7 @@ namespace gpstk
           * the message buffer.  After updating the message buffer, the
           * value of the offset parameter is updated by size to reference
           * the next available byte in the message buffer.
-          * 
+          *
           * @param offset Location within the message buffer at which to update
           * @param data   Data with which to update the message buffer
           * @param size   Number of bytes of data to be copied
@@ -755,12 +781,12 @@ namespace gpstk
       } // BinexData::updateMessageData()
 
          /**
-          * Extacts a UBNXI from the message buffer.  The location within the
+          * Extracts a UBNXI from the message buffer.  The location within the
           * message buffer is set by the offset parameter.  After extracting
           * the UBNXI from the message buffer, the value of the offset parameter
           * is updated by the UBNXI's size to reference the next available byte
           * in the message buffer.
-          * 
+          *
           * @param offset Location within the message buffer at which to extract
           * @param data   Location to store the extracted data
           */
@@ -771,12 +797,12 @@ namespace gpstk
             throw(FFStreamError, InvalidParameter);
 
          /**
-          * Extacts a MGFZI from the message buffer.  The location within the
+          * Extracts a MGFZI from the message buffer.  The location within the
           * message buffer is set by the offset parameter.  After extracting
           * the MGFZI from the message buffer, the value of the offset parameter
           * is updated by the MGFZI's size to reference the next available byte
           * in the message buffer.
-          * 
+          *
           * @param offset Location within the message buffer at which to extract
           * @param data   Location to store the extracted data
           */
@@ -787,14 +813,14 @@ namespace gpstk
             throw(FFStreamError, InvalidParameter);
 
          /**
-          * Extacts raw data from the message buffer.  The location within the
+          * Extracts raw data from the message buffer.  The location within the
           * message buffer is set by the offset parameter, and the size of the
           * data to extract is set by the size parameter.  This method checks
           * to ensure that all data is extracted from within the message
           * buffer.  After extracting data from the message buffer,
           * the value of the offset parameter is updated by size to reference
           * the next available byte in the message buffer.
-          * 
+          *
           * @param offset Location within the message buffer at which to extract
           * @param data   Location to store the extracted data
           * @param size   Number of bytes of data to be extracted
@@ -807,7 +833,7 @@ namespace gpstk
             throw(InvalidParameter);
 
          /**
-          * Extacts data from the message buffer.  The location within the
+          * Extracts data from the message buffer.  The location within the
           * message buffer is set by the offset parameter, and the size of the
           * data to extract is set by the size parameter.  This method checks
           * to ensure that the value of the size parameter does not exceed
@@ -815,7 +841,7 @@ namespace gpstk
           * message buffer.  After extracting data from the message buffer,
           * the value of the offset parameter is updated by size to reference
           * the next available byte in the message buffer.
-          * 
+          *
           * @param offset Location within the message buffer at which to extract
           * @param data   Location to store the extracted data
           * @param size   Number of bytes of data to be extracted
@@ -834,14 +860,14 @@ namespace gpstk
             errStrm << "Data size invalid: " << size;
             InvalidParameter ip(errStrm.str() );
             GPSTK_THROW(ip);
-         }  
+         }
          if (offset + size > msg.size() )
          {
             std::ostringstream errStrm;
             errStrm << "Message buffer offset invalid: " << offset;
             InvalidParameter ip(errStrm.str() );
             GPSTK_THROW(ip);
-         }  
+         }
          bool littleEndian  = ( (syncByte & eBigEndian) == 0) ? true : false;
          msg.copy(reinterpret_cast<char*>(&data), size, offset);
          if (littleEndian != nativeLittleEndian)
@@ -853,6 +879,23 @@ namespace gpstk
       } // BinexData::extractMessageData()
 
 
+         /**
+          * Writes the BINEX data to the specified generic output stream.
+          */
+      virtual void
+      putRecord(std::ostream& s) const
+         throw(std::exception, FFStreamError,
+               StringUtils::StringException);
+
+         /**
+          * Retrieves a BINEX record from the specified generic input stream.
+          * @return the number of bytes parsed in the stream.
+          */
+      virtual size_t
+      getRecord(std::istream& s)
+         throw(std::exception, FFStreamError,
+               StringUtils::StringException);
+
    protected:
 
          /**
@@ -860,10 +903,10 @@ namespace gpstk
           */
       virtual void
       reallyPutRecord(FFStream& s) const
-         throw(std::exception, FFStreamError, 
-               StringUtils::StringException);     
+         throw(std::exception, FFStreamError,
+               StringUtils::StringException);
 
-         /** 
+         /**
           * This function retrieves a BINEX record from the given FFStream.
           * If an error is encountered in reading from the stream, the stream
           * is returned to its original position and its fail-bit is set.
@@ -873,7 +916,7 @@ namespace gpstk
           *  stream to its pre-read position.
           */
       virtual void
-      reallyGetRecord(FFStream& s) 
+      reallyGetRecord(FFStream& s)
          throw(std::exception, FFStreamError,
                StringUtils::StringException);
 
@@ -889,7 +932,7 @@ namespace gpstk
 
          /**
           * Returns the number of bytes required to store the record's CRC
-          * based on the record's current contents. 
+          * based on the record's current contents.
           */
       size_t
       getCRCLength(size_t crcDataLen) const;
@@ -899,16 +942,16 @@ namespace gpstk
           * an expected correosponding tail sync byte if appropriate.
           */
       bool
-      isHeadSyncByteValid(unsigned char  headSync,
-                          unsigned char& expectedTailSync) const;
+      isHeadSyncByteValid(SyncByte  headSync,
+                          SyncByte& expectedTailSync) const;
 
          /**
           * Determines whether the supplied tail sync byte is valid an returns
           * an expected correosponding head sync byte.
           */
       bool
-      isTailSyncByteValid(unsigned char  tailSync,
-                          unsigned char& expectedHeadSync) const;
+      isTailSyncByteValid(SyncByte  tailSync,
+                          SyncByte& expectedHeadSync) const;
          /**
           * Converts a raw sequence of bytes into an unsigned long long integer.
           *
@@ -926,7 +969,7 @@ namespace gpstk
          /**
           * Reverses the order of the first bufferLength bytes in the
           * specified buffer.
-          * 
+          *
           * @param buffer       Pointer to the bytes
           * @param bufferLength Number of bytes to reverse
           */
@@ -937,7 +980,7 @@ namespace gpstk
          /**
           * Reverses the order of the first bufferLength bytes in the
           * specified buffer.
-          * 
+          *
           * @param buffer  String containing bytes to reverse
           * @param offset  Starting position of bytes to reverse
           * @param n       Number of bytes to reverse
@@ -950,9 +993,9 @@ namespace gpstk
          /** @name Attributes
           */
          //@{
-      unsigned char  syncByte;  ///< Flags for endianness, CRC, etc.
-      unsigned long  recID;     ///< Record ID
-      std::string    msg;       ///< Record message (opaque)
+      SyncByte     syncByte;  ///< Flags for endianness, CRC, etc.
+      RecordID     recID;     ///< Record ID
+      std::string  msg;       ///< Record message (opaque)
          //@}
 
    private:
