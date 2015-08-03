@@ -54,85 +54,23 @@ namespace gpstk
    void Rinex3ClockData::dump(std::ostream& s) const
    {
 
-      s << " " << datatype;
-      if(datatype == "AR") s << " " << site;
-      else s << " " << sat.toString() << " ";
-      s << " " << writeTime(time);
-      s << scientific << setprecision(12)
-          << " " << setw(19) << bias;
-      if (sig_bias != 0.0) s << " " << setw(19) << sig_bias; else s << " 0.0";
-      if (drift != 0.0) s << " " << setw(19) << sig_bias; else s << " 0.0";
-      if (sig_drift != 0.0) s << " " << setw(19) << sig_bias; else s << " 0.0";
-      if (accel != 0.0) s << " " << setw(19) << sig_bias; else s << " 0.0";
-      if (sig_accel != 0.0) s << " " << setw(19) << sig_bias; else s << " 0.0";
-      s << endl; // is this the only line ending?
+      cout << "WARNING: There is no implementation for "
+           << "Rinex3ClockData::dump()"
+           << endl;
 
       return;
 
    }  // End of method 'Rinex3ClockData::dump(std::ostream& s)'
 
 
-  void Rinex3ClockData::reallyPutRecord(FFStream& ffs) const 
+
+   void Rinex3ClockData::reallyPutRecord(FFStream& s) const 
          throw(std::exception, FFStreamError,
                StringUtils::StringException)
    {
-   // convertTypes(); // updates all backwards compatibility members
-    
-    Rinex3ClockStream& strm = dynamic_cast<Rinex3ClockStream&>(ffs);
-
-    string line;
-
-    line = datatype;
-    line += string(1,' ');
-
-    if(datatype == "AR") line += rightJustify(site,4);
-    else if(datatype == "AS") line += rightJustify(sat.toString(),4);
-    else
-    {
-         FFStreamError e("Unknown data type: " + datatype);
-         GPSTK_THROW(e);
-    }
-
-    line += string(1,' ');
-
-    line += writeTime(time);
-
-    // must count the data to output
-    int n = 2;
-    if(drift != 0.0) n=3;
-    if(sig_drift != 0.0) n=4;
-    if(accel != 0.0) n=5;
-    if(sig_accel != 0.0) n=6;
-    line += rightJustify(asString(n),3);
-    line += string(3,' ');
-
-    line += doubleToScientific(bias, 19, 12, 2);
-    line += string(1,' ');
-    line += doubleToScientific(sig_bias, 19, 12, 2);
-
-    strm << line << endl;
-    strm.lineNumber++;
-
-    // continuation line
-    if(n > 2) {
-       line = doubleToScientific(drift, 19, 12, 2);
-       line += string(1,' ');
-       if(n > 3) {
-          line += doubleToScientific(sig_drift, 19, 12, 2);
-          line += string(1,' ');
-       }
-       if(n > 4) {
-          line += doubleToScientific(accel, 19, 12, 2);
-          line += string(1,' ');
-       }
-       if(n > 5) {
-          line += doubleToScientific(sig_accel, 19, 12, 2);
-          line += string(1,' ');
-       }
-       strm << line << endl;
-       strm.lineNumber++;
-    }
-
+      cout << "WARNING: There is no implementation for "
+           << "Rinex3ClockData::reallyPutRecord()"
+           << endl;
 
       return;
 
@@ -147,98 +85,14 @@ namespace gpstk
    {
       Rinex3ClockStream& strm = dynamic_cast<Rinex3ClockStream&>(ffs);
 
-      clear();
-
       string line;
 
       strm.formattedGetLine(line, true);
-      stripTrailing(line);
-      if(line.length() < 59) {
-          FFStreamError e("Short line : " + line);
-          GPSTK_THROW(e);
-      }//expected line length is 79
-
-      datatype = line.substr(0,2);
-      site = line.substr(3,4);
-      if(datatype == "AS") {
-          strip(site);
-          sat.fromString(site);
-      }
-
-      time = CivilTime(asInt(line.substr( 8,4)),
-               asInt(line.substr(12,3)),
-               asInt(line.substr(15,3)),
-               asInt(line.substr(18,3)),
-               asInt(line.substr(21,3)),
-               asDouble(line.substr(24,10)),
-               TimeSystem::Any);
-      
-      int n(asInt(line.substr(34,3)));            //Number of data values in this line
-      bias = asDouble(line.substr(40,19));
-      if(n > 1 && line.length() >= 59) sig_bias = asDouble(line.substr(60,19));
-
-      if(n > 2) {
-         strm.formattedGetLine(line,true);
-         stripTrailing(line);
-         if(int(line.length()) < (n-2)*20-1) {
-            FFStreamError e("Short line : " + line);
-            GPSTK_THROW(e);
-         }
-         drift =     asDouble(line.substr( 0,19));
-         if(n > 3) sig_drift = asDouble(line.substr(20,19));
-         if(n > 4) accel     = asDouble(line.substr(40,19));
-         if(n > 5) sig_accel = asDouble(line.substr(60,19));
-      }
-
-      convertTypes(); //sets all the backwards compatibilty values
+      //cout << line << endl;
 
       return;
 
    }  // End of method 'Rinex3ClockData::reallyGetRecord(FFStream& ffs)'
-
-   void Rinex3ClockData::convertTypes(void) throw()
-   {
-    //Only used to relate name in v.3 to site and sat in v.2
- 
-      if(name.empty() && site.empty() && sat.id != -1) // sat set
-       {
-          name = sat.toString();
-          site = name = tempName = tempSite;
-       }
-      else if(name.empty() && !site.empty() && (sat.id == -1)) //site set
-         name = tempName = site;
-      else if(!name.empty() && site.empty() && (sat.id == -1)) //name set
-      {
-         try{sat.fromString(name); tempSat = sat;}
-         catch(gpstk::Exception e) {site = tempSite = name;}
-      }
- 
-      //sat modified
-      if(sat != tempSat)
-      {
-       tempSat = sat;
-       name = tempName = sat.toString();
-      }
- 
-      //site modified
-      if(site != tempSite)
-      {
-       name = tempName = tempSite = site;
-       sat = RinexSatID(-1,RinexSatID::systemGPS);
-      }
- 
-      //name modified
-      if(name != tempName)
-      {
-         try{sat.fromString(name); tempSat = sat;}
-         catch(gpstk::Exception e) {site = tempSite = name;}
-         tempName = name;
-      }
-
-      tempName = name; tempSite = site; tempSat = sat;
-
-      return;
-     }  // End of method 'Rinex3ClockData::convertTypes'
 
 
 
