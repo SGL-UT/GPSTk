@@ -199,6 +199,28 @@ namespace gpstk
       return string();
    }
 
+   string CommandOptionWithDecimalArg::checkArguments()
+   {
+      string errstr = CommandOption::checkArguments();
+
+      if (!errstr.empty())
+         return errstr;
+
+      vector<string>::size_type vecindex;
+      for(vecindex = 0; vecindex < value.size(); vecindex++)
+      {
+         if (!isDecimalString(value[vecindex]))
+         {
+            string errstr("Argument for ");
+            errstr += getOptionString();
+            errstr += string(" should be a decimal string.");
+            return errstr;
+         }
+      }
+
+      return string();
+   }
+
    string CommandOptionWithStringArg::checkArguments()
    {
       string errstr = CommandOption::checkArguments();
