@@ -36,6 +36,9 @@ add_executable(Rinex3Obs_T Rinex3Obs_T.cpp)
 target_link_libraries(Rinex3Obs_T gpstk)
 add_test(FileHandling_Rinex3Obs_T Rinex3Obs_T)
 
+add_executable(Rinex3Nav_T Rinex3Nav_T.cpp)
+target_link_libraries(Rinex3Nav_T gpstk)
+add_test(FileHandling_Rinex3Nav_T Rinex3Nav_T)
 
 # add_executable(RinexClock_T RinexClock_T.cpp)
 # target_link_libraries(RinexClock_T gpstk)
