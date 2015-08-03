@@ -377,6 +377,32 @@ namespace gpstk
       CommandOptionWithNumberArg() {}
    };
 
+      /// A CommandOption that requires a decimal numeric argument.
+   class CommandOptionWithDecimalArg : public CommandOptionWithArg
+   {
+   public:
+         /// Constructor
+      CommandOptionWithDecimalArg(const char shOpt, 
+                                 const std::string& loOpt, 
+                                 const std::string& desc,
+                                 const bool required = false)
+            : CommandOptionWithArg(stdType, shOpt, loOpt, desc, required)
+         {}
+
+         /// Destructor
+      virtual ~CommandOptionWithDecimalArg() {}
+
+      virtual std::string checkArguments();
+
+         /// Returns a string with the argument format. 
+      virtual std::string getArgString() const
+      { return "DEC"; }
+
+   protected:
+         /// Default Constructor
+      CommandOptionWithDecimalArg() {}
+   };
+
       /**
        * It only makes sense to have a single one of these set. It is
        * the option that takes the rest of the command line options
