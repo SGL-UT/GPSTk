@@ -130,7 +130,7 @@ void Rinex3Nav_T :: init( void )
     outputTestOutput         = tempFilePath + file_sep + "test_output_rinex2_nav_TestOutput.99n";
     outputTestOutput2        = tempFilePath + file_sep + "test_output_rinex2_nav_TestOutput2.99n";
     outputTestOutput3        = tempFilePath + file_sep + "test_output_rinex2_nav_TestOutput3.99n";
-    outputRinexDump          = tempFilePath + file_sep + "test_output_rinex2_nav_RinexDump";
+    outputRinexDump          = tempFilePath + file_sep + "test_output_rinex2_nav_RinexDump.txt";
 
     inputInvalidLineLength   = dataFilePath + file_sep + "test_input_rinex2_nav_InvalidLineLength.99n";
     inputNotaNavFile         = dataFilePath + file_sep + "test_input_rinex2_nav_NotaNavFile.99n";
@@ -166,24 +166,24 @@ void Rinex3Nav_T :: toRinex3(void)
     //---------------------------------------- 
     std::string file_sep = "/";
 
-    inputRinexNavExample     = dataFilePath + file_sep + "test_input_rinex3_nav_RinexNavExample.99n";
+    inputRinexNavExample     = dataFilePath + file_sep + "test_input_rinex3_nav_RinexNavExample.15n";
 
-    outputTestOutput         = tempFilePath + file_sep + "test_output_rinex3_nav_TestOutput.99n";
-    outputTestOutput2        = tempFilePath + file_sep + "test_output_rinex3_nav_TestOutput2.99n";
-    outputTestOutput3        = tempFilePath + file_sep + "test_output_rinex3_nav_TestOutput3.99n";
-    outputRinexDump          = tempFilePath + file_sep + "test_output_rinex3_nav_RinexDump";
+    outputTestOutput         = tempFilePath + file_sep + "test_output_rinex3_nav_TestOutput.15n";
+    outputTestOutput2        = tempFilePath + file_sep + "test_output_rinex3_nav_TestOutput2.15n";
+    outputTestOutput3        = tempFilePath + file_sep + "test_output_rinex3_nav_TestOutput3.15n";
+    outputRinexDump          = tempFilePath + file_sep + "test_output_rinex3_nav_RinexDump.txt";
 
-    inputInvalidLineLength   = dataFilePath + file_sep + "test_input_rinex3_nav_InvalidLineLength.99n";
-    inputNotaNavFile         = dataFilePath + file_sep + "test_input_rinex3_nav_NotaNavFile.99n";
-    inputUnknownHeaderLabel  = dataFilePath + file_sep + "test_input_rinex3_nav_UnknownHeaderLabel.99n";
-    inputIncompleteHeader    = dataFilePath + file_sep + "test_input_rinex3_nav_IncompleteHeader.99n";
-    inputUnsupportedRinex    = dataFilePath + file_sep + "test_input_rinex3_nav_UnsupportedRinex.99n";
-    inputBadHeader           = dataFilePath + file_sep + "test_input_rinex3_nav_BadHeader.99n";
-    outputTestOutputHeader   = tempFilePath + file_sep + "test_output_rinex3_nav_TestOutputHeader.99n";
+    inputInvalidLineLength   = dataFilePath + file_sep + "test_input_rinex3_nav_InvalidLineLength.15n";
+    inputNotaNavFile         = dataFilePath + file_sep + "test_input_rinex3_nav_NotaNavFile.15n";
+    inputUnknownHeaderLabel  = dataFilePath + file_sep + "test_input_rinex3_nav_UnknownHeaderLabel.15n";
+    inputIncompleteHeader    = dataFilePath + file_sep + "test_input_rinex3_nav_IncompleteHeader.15n";
+    inputUnsupportedRinex    = dataFilePath + file_sep + "test_input_rinex3_nav_UnsupportedRinex.15n";
+    inputBadHeader           = dataFilePath + file_sep + "test_input_rinex3_nav_BadHeader.15n";
+    outputTestOutputHeader   = tempFilePath + file_sep + "test_output_rinex3_nav_TestOutputHeader.15n";
 
-    inputFilterStream1       = dataFilePath + file_sep + "test_input_rinex3_nav_FilterTest1.99n";
-    inputFilterStream2       = dataFilePath + file_sep + "test_input_rinex3_nav_FilterTest2.99n";
-    inputFilterStream3       = dataFilePath + file_sep + "test_input_rinex3_nav_FilterTest3.99n";
+    inputFilterStream1       = dataFilePath + file_sep + "test_input_rinex3_nav_FilterTest1.15n";
+    inputFilterStream2       = dataFilePath + file_sep + "test_input_rinex3_nav_FilterTest2.15n";
+    inputFilterStream3       = dataFilePath + file_sep + "test_input_rinex3_nav_FilterTest3.15n";
     outputFilterOutput       = tempFilePath + file_sep + "test_output_rinex3_nav_FilterOutput.txt";
 
     outputRinexStore         = tempFilePath + file_sep + "test_output_rinex3_nav_RinexStore.txt";
@@ -237,7 +237,7 @@ int Rinex3Nav_T :: hardCodeTest( void )
       CompareVersion = 2.1;
       CompareFileProgram = (std::string)"XXRINEXN V3";
       CompareFileAgency = (std::string)"AIUB";
-      CompareDate = (std::string)"09/02/1999 19:22:36";
+      CompareDate = (std::string)"1999-09-02 19:22:36";
       CompareComment = (std::string)"THIS IS ONE COMMENT";
     }
 
@@ -458,6 +458,8 @@ int Rinex3Nav_T :: streamReadWriteTest( void )
     {
         Rinex3NavStream rinexInputStream( inputRinexNavExample.c_str()  );
         Rinex3NavStream rinexOutputStream( outputRinexStore.c_str(), std::ios::out );
+        Rinex3NavHeader streamTool;
+        rinexInputStream >> streamTool; // used to set rinexInputStream.header to a valid object
         rinexOutputStream.header = rinexInputStream.header;
         rinexOutputStream << rinexOutputStream.header;
 
