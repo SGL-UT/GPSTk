@@ -188,11 +188,11 @@ namespace gpstk
       if(version >= 3 && (valid & validCenterOfMass)) n++;
       if(version < 3 && (valid & validNumObs) && R2ObsTypes.size() != 0)
          n += 1 + (R2ObsTypes.size()-1)/9;
-      if(version >= 3 && (valid & validSystemObsType) && obsTypeList.size() != 0)
-         n += 1 + (obsTypeList.size()-1)/9;
+      if(version >= 3 && (valid & validSystemObsType) && numObs != 0)
+         n += 1 + (numObs-1)/9;
       if(version < 3 && (valid & validWaveFact)) {
          n++;
-         if(extraWaveFactList.size()) n += (extraWaveFactList.size()-1)/7;
+         if(extraWaveFactList.size() != 0) n += extraWaveFactList.size();
       }
       if(version >= 3 && (valid & validSigStrengthUnit)) n++;
       if(valid & validInterval         ) n++;
