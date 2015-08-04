@@ -121,6 +121,7 @@ OPTIONS:
 
    -p     build_python     Flag to build python extension package and set path to python intepreter
                            Default bit is build_python=0, but "-p" will set it to build_python=1
+                           Since the swig wrapper includes gpstk/ext, using the -p option will turn on the -e option
 
    -P     python_exe       Python executable used to help determine with python system libraries
                            will be used when building python extension package.
@@ -211,6 +212,7 @@ fi
 # and to further insure that if the user selects a crazy non-standard install path,
 # that the python stuff gets shoved into the same crazy place as the gpstk cpp junk
 if [ "$build_python" ]; then
+    build_ext=1
     python_install=${install_prefix}
 else
     python_install=

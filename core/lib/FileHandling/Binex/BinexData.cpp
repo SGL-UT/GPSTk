@@ -39,17 +39,17 @@
  * Encapsulate BINEX file data, including I/O
  */
 
-#include <cstring>
- 
 #include "BinexData.hpp"
 #include "BinexStream.hpp"
+#include <stdlib.h>
+#include <string.h>
 
 using namespace std;
 
 namespace gpstk
 {
    // =========================================================================
-   // BinexData::UBNXI Methods 
+   // BinexData::UBNXI Methods
    // =========================================================================
 
    // -------------------------------------------------------------------------
@@ -178,7 +178,7 @@ namespace gpstk
             ul1  = 0x00007f00 & (ul << 1);
             ul  &= 0x0000007f;
             ul  |= ul1 | ul2;
-            
+
             if (littleEndian != nativeLittleEndian)
             {
                   // Allow encoding to non-native byte ordering
@@ -221,7 +221,7 @@ namespace gpstk
                ul1  = 0x007f0000 & (ul << 1);
                ul  &= 0x00007fff;
                ul  |= ul1 | ul2;
-   
+
                if (nativeLittleEndian)
                {
                      // Allow encoding to non-native byte ordering
@@ -239,7 +239,7 @@ namespace gpstk
             FFStreamError err(errStrm.str() );
             GPSTK_THROW(err);
             break;
-      }      
+      }
       return size;
    }
 
@@ -259,7 +259,7 @@ namespace gpstk
 
       if (reverseBytes)
       {
-         /// @TODO
+         /// @todo
       }
       else
       {
@@ -267,13 +267,13 @@ namespace gpstk
          for (size = 0, value = 0L; (size < MAX_BYTES) && more; size++)
          {
             mask = (size < 3) ? 0x7f : 0xff;
-            
+
             strm.read(&buffer[size], 1);
             if (!strm.good() )
             {
                FFStreamError err("Error reading BINEX UBNXI");
                GPSTK_THROW(err);
-            }            
+            }
             if (littleEndian)
             {
                value  |= ( (unsigned long)buffer[size] & mask) << (size * 7);
@@ -349,7 +349,7 @@ namespace gpstk
    }
 
    // =========================================================================
-   // BinexData::MGFZI Methods 
+   // BinexData::MGFZI Methods
    // =========================================================================
 
    // -------------------------------------------------------------------------
@@ -364,15 +364,9 @@ namespace gpstk
    BinexData::MGFZI::MGFZI(long long ll)
       throw(FFStreamError)
    {
-
       value = ll;
-      long long absValue = value;
-      if (absValue < 0)
-      {
-         absValue = absValue*(-1);
-      } 
+      long long absValue = llabs(ll);
 
-      
       if (absValue < 16LL)
       {
          size = 1;
@@ -478,7 +472,7 @@ namespace gpstk
             {
                // "-0" reserved for "no data" indicator
                size = 0;
-               // TODO - throw
+               // todo - throw
             }
             else
             {
@@ -554,7 +548,7 @@ namespace gpstk
             {
                reverseBuffer( (unsigned char*)&ull, 8);
                ull >>= 16;
-            }                  
+            }
             absValue = littleEndian
                      ? ull >> 4
                      : ull & 0x00000fffffffffffULL;
@@ -624,13 +618,8 @@ namespace gpstk
          FFStreamError err(errStrm.str() );
          GPSTK_THROW(err);
       }
-      
-      long long absValue = value;
-      if (absValue < 0)
-      {
-         absValue = absValue*(-1);
-      } 
-      
+
+      long long      absValue = llabs(value);
       unsigned char  signBit  = (value < 0) ? 0x01 : 0x00;
 
       size_t result = size;  // Default
@@ -657,51 +646,51 @@ namespace gpstk
             absValue -= 14LL;
             if (littleEndian)
             {
-               us = ( (unsigned short)signBit <<  3) | (0xfff1
-                  & (0x0001 | (unsigned short)absValue << 4));
+               us = ( (unsigned short)signBit <<  3)
+                  | (0xfff1 & (0x0001 | (unsigned short)absValue << 4) );
             }
             else
             {
-               us = ((unsigned short)signBit << 15) | (0x1fff
-                  & (0x1000 | (unsigned short)absValue));
+               us = ((unsigned short)signBit << 15)
+                  | (0x1fff & (0x1000 | (unsigned short)absValue) );
             }
             if (littleEndian != nativeLittleEndian)
             {
                reverseBuffer( (unsigned char*)&us, 2);
             }
-            std::memcpy((void*)buffer, (const void*)&us, 2);
+            memcpy((void*)buffer, (const void*)&us, 2);
             break;
 
          case 3:
-            absValue -= 4109LL;   
+            absValue -= 4109LL;
             if (littleEndian)
             {
-               ul = ((unsigned long)signBit << 3) | (0x00fffff2
-                  & (0x00000002 | (unsigned long)absValue << 4));
+               ul = ((unsigned long)signBit << 3)
+                  | (0x00fffff2 & (0x00000002 | (unsigned long)absValue << 4) );
             }
             else
             {
-               ul = ((unsigned long)signBit << 31) | (0x2fffff00
-                  & (0x20000000 | (unsigned long)absValue << 8));
+               ul = ((unsigned long)signBit << 31)
+                  | (0x2fffff00 & (0x20000000 | (unsigned long)absValue << 8) );
             }
             if (littleEndian != nativeLittleEndian)
             {
                reverseBuffer( (unsigned char*)&ul, 4);
             }
-            std::memcpy((void*)buffer, (const void*)&ul, 3);
+            memcpy((void*)buffer, (const void*)&ul, 3);
             break;
 
          case 4:
             absValue -= 1052684LL;
             if (littleEndian)
             {
-               ul = ((unsigned long)signBit << 3) | (0xfffffff3
-                  & (0x00000003 | (unsigned long)absValue << 4));
+               ul = ((unsigned long)signBit << 3)
+                  | (0xfffffff3 & (0x00000003 | (unsigned long)absValue << 4) );
             }
             else
             {
-               ul = ((unsigned long)signBit << 31) | (0x3fffffff
-                  & (0x30000000 | (unsigned long)absValue));
+               ul = ((unsigned long)signBit << 31)
+                  | (0x3fffffff & (0x30000000 | (unsigned long)absValue) );
             }
             if (littleEndian != nativeLittleEndian)
             {
@@ -714,13 +703,13 @@ namespace gpstk
             absValue -= 269488139LL;
             if (littleEndian)
             {
-               ull = ((unsigned long long)signBit << 3) | (0x000000fffffffff4ULL
-                  & (0x0000000000000004ULL | (unsigned long long)absValue << 4));
+               ull = ((unsigned long long)signBit << 3)
+                   | (0x000000fffffffff4ULL & (0x0000000000000004ULL | (unsigned long long)absValue << 4) );
             }
             else
             {
-               ull = ((unsigned long long)signBit << 63) | (0x4fffffffff000000ULL
-                  & (0x4000000000000000ULL | (unsigned long long)absValue << 24));
+               ull = ((unsigned long long)signBit << 63)
+                   | (0x4fffffffff000000ULL & (0x4000000000000000ULL | (unsigned long long)absValue << 24) );
             }
             if (littleEndian != nativeLittleEndian)
             {
@@ -733,13 +722,13 @@ namespace gpstk
             absValue -= 68988964874LL;
             if (littleEndian)
             {
-               ull = ((unsigned long long)signBit << 3) | (0x0000fffffffffff5ULL
-                  & (0x0000000000000005ULL| (unsigned long long)absValue << 4));
+               ull = ((unsigned long long)signBit << 3)
+                   | (0x0000fffffffffff5ULL & (0x0000000000000005ULL | (unsigned long long)absValue << 4) );
             }
             else
             {
-               ull = ((unsigned long long)signBit << 63) | (0x5fffffffffff0000ULL
-                  & (0x5000000000000000ULL | (unsigned long long)absValue << 16));
+               ull = ((unsigned long long)signBit << 63)
+                   | (0x5fffffffffff0000ULL & (0x5000000000000000ULL | (unsigned long long)absValue << 16) );
             }
             if (littleEndian != nativeLittleEndian)
             {
@@ -752,13 +741,13 @@ namespace gpstk
             absValue -= 17661175009289LL;
             if (littleEndian)
             {
-               ull = ((unsigned long long)signBit << 3) | (0x00fffffffffffff6ULL
-                  & (0x0000000000000006ULL | (unsigned long long)absValue << 4));
+               ull = ((unsigned long long)signBit << 3)
+                   | (0x00fffffffffffff6ULL & (0x0000000000000006ULL | (unsigned long long)absValue << 4) );
             }
             else
             {
-               ull = ((unsigned long long)signBit << 63) | (0x6fffffffffffff00ULL
-                  & (0x6000000000000000ULL | (unsigned long long)absValue << 8));
+               ull = ((unsigned long long)signBit << 63)
+                   | (0x6fffffffffffff00ULL & (0x6000000000000000ULL | (unsigned long long)absValue << 8) );
             }
             if (littleEndian != nativeLittleEndian)
             {
@@ -771,13 +760,13 @@ namespace gpstk
             absValue -= 4521260802379784LL;
             if (littleEndian)
             {
-               ull = ((unsigned long long)signBit << 3) | (0xfffffffffffffff7ULL
-                  & (0x0000000000000007ULL | (unsigned long long)absValue << 4));
+               ull = ((unsigned long long)signBit << 3)
+                   | (0xfffffffffffffff7ULL & (0x0000000000000007ULL | (unsigned long long)absValue << 4) );
             }
             else
             {
-               ull = ((unsigned long long)signBit << 63) | (0x7fffffffffffffffULL
-                  & (0x7000000000000000ULL | (unsigned long long)absValue));
+               ull = ((unsigned long long)signBit << 63)
+                   | (0x7fffffffffffffffULL & (0x7000000000000000ULL | (unsigned long long)absValue) );
             }
             if (littleEndian != nativeLittleEndian)
             {
@@ -789,9 +778,7 @@ namespace gpstk
          default:
                // If the byte count is 0, store "no value"
             result    = 1;
-            unsigned char  nv;
-            nv = 0x80;
-            buffer[0] = nv;
+            buffer[0] = 0x80;
 
       } // switch
       outBuffer.replace(offset, size, buffer, size);
@@ -820,15 +807,13 @@ namespace gpstk
             ? buffer[0] & 0x0f
             : (buffer[0] >> 4) & 0x0f;
 
-         // Determine whether the final value is positive or negative
-         // and determine the number of bytes comprising the MGFZI.
-      //const short sign = (flags & 0x08) ? -1 : 1;      
+         // Determine the number of bytes comprising the MGFZI.
       size = (flags & 0x07) + 1;
 
       if (size > 1)
       {
          strm.read((char*)&buffer[1], size - 1);
-         if (!strm.good() || strm.gcount() != (std::streamsize)(size - 1))
+         if (!strm.good() || ((size_t)strm.gcount() + 1 != size))
          {
             FFStreamError err("Error reading BINEX MGFZI");
             GPSTK_THROW(err);
@@ -898,14 +883,14 @@ namespace gpstk
       if (!strm.good() )
       {
          FFStreamError err("Error writing BINEX MGFZI");
-         GPSTK_THROW(err);             
+         GPSTK_THROW(err);
       }
       return size;
    }
 
 
    // =========================================================================
-   // BinexData Methods 
+   // BinexData Methods
    // =========================================================================
 
    // -------------------------------------------------------------------------
@@ -924,8 +909,8 @@ namespace gpstk
 
 
    // -------------------------------------------------------------------------
-   BinexData::BinexData(unsigned long recordID,
-                        unsigned char recordFlags)
+   BinexData::BinexData(RecordID recordID,
+                        SyncByte recordFlags)
       throw()
    {
       setRecordFlags(recordFlags);
@@ -954,7 +939,7 @@ namespace gpstk
 
    // -------------------------------------------------------------------------
    BinexData&
-   BinexData::setRecordID(unsigned long id)
+   BinexData::setRecordID(RecordID id)
       throw(FFStreamError)
    {
       if (id > UBNXI::MAX_VALUE)
@@ -962,50 +947,44 @@ namespace gpstk
          FFStreamError err("BINEX record ID overflow");
          GPSTK_THROW(err);
       }
-         
+
       recID = id;
       return *this;
-      
+
    } // BinexData::setRecordID()
 
 
    // -------------------------------------------------------------------------
    BinexData&
-   BinexData::setRecordFlags(unsigned char flags)
+   BinexData::setRecordFlags(SyncByte flags)
    {
          // Set all unsupported bits to 0.
       syncByte = flags & VALID_RECORD_FLAGS;
-      
+
          // Set "regular CRC" bit (0x02) to the opposite of the enhanced CRC bit
          // and set the two leading always-on bits (0xC0).
       syncByte |= (flags & eEnhancedCRC) ? 0xC0 : 0xC2;
-      
+
       return *this;
    }
 
-   
+
    // -------------------------------------------------------------------------
    size_t
    BinexData::getRecordSize() const
    {
-      size_t recSize = 1;  // Start with sync byte
-      
-      UBNXI r(recID);             // Add record ID
-      recSize += r.getSize();        
-      UBNXI m(msg.size() );       // Add message length
-      recSize += m.getSize();        
-      recSize += msg.size();      // Add message
+      size_t headLen = getHeadLength();       // Start with head length
+      size_t recSize = headLen + msg.size();  // Add message length
+      size_t crcLen  = getCRCLength(recSize - 1);
 
-      size_t crcLen = getCRCLength(recSize - 1);
-
-      recSize += crcLen;          // Add CRC length
+      recSize += crcLen;                      // Add CRC length
 
       if (syncByte & eReverseReadable)
       {
-         UBNXI t(1 + r.getSize() + m.getSize() + msg.size() + crcLen);
-         
+         UBNXI t(headLen + msg.size() + crcLen);
+
          recSize += t.getSize();  // Add total reverse length
-         
+
          recSize += 1;            // Add sync byte
       }
 
@@ -1025,7 +1004,7 @@ namespace gpstk
    // -------------------------------------------------------------------------
    BinexData&
    BinexData::ensureMessageCapacity(size_t cap)
-      throw(FFStreamError)
+      throw(InvalidParameter)
    {
       if (cap > UBNXI::MAX_VALUE)
       {
@@ -1038,6 +1017,20 @@ namespace gpstk
       return *this;
 
    }  // BinexData::ensureMessageCapacity()
+
+   // -------------------------------------------------------------------------
+   size_t
+   BinexData::getHeadLength() const
+   {
+      size_t headLen = 1;  // Start with sync byte
+
+      UBNXI r(recID);          // Add record ID
+      headLen += r.getSize();
+      UBNXI m(msg.size() );    // Add message length
+      headLen += m.getSize();
+
+      return headLen;
+   }
 
    // -------------------------------------------------------------------------
    BinexData&
@@ -1155,7 +1148,7 @@ namespace gpstk
          errStrm << "Message buffer offset invalid: " << offset;
          InvalidParameter ip(errStrm.str() );
          GPSTK_THROW(ip);
-      } 
+      }
       data.assign(msg, offset, size);
       offset += size;
 
@@ -1164,22 +1157,27 @@ namespace gpstk
    // -------------------------------------------------------------------------
    void
    BinexData::reallyPutRecord(FFStream& ffs) const
-      throw(std::exception, FFStreamError, 
+      throw(std::exception, FFStreamError,
             StringUtils::StringException)
    {
-      //std::cout << "BinexData::reallyPutRecord: ENTER" << std::endl;
-
-      BinexStream* strm = dynamic_cast<BinexStream*>(&ffs);
-      if (NULL == strm)
+      if (NULL == dynamic_cast<BinexStream*>(&ffs))
       {
          FFStreamError e("Attempt to read a BinexData object"
                          " from a non-BinexStream FFStream.");
          GPSTK_THROW(e);
       }
+      putRecord(dynamic_cast<std::ostream&>(ffs));
+   }
 
+   // -------------------------------------------------------------------------
+   void
+   BinexData::putRecord(std::ostream& strm) const
+      throw(std::exception, FFStreamError,
+            StringUtils::StringException)
+   {
       try
       {
-         unsigned char syncTail;
+         SyncByte  syncTail;
          if (!isHeadSyncByteValid(syncByte, syncTail) )
          {
             std::ostringstream errStrm;
@@ -1210,8 +1208,8 @@ namespace gpstk
          bufLen += m.encode(headBuf, bufLen, littleEndian);
 
             // Write header buffer and message to the output stream
-         strm->write(headBuf.data(), headBuf.size() );
-         strm->write(msg.data(), msg.size() );
+         strm.write(headBuf.data(), headBuf.size() );
+         strm.write(msg.data(), msg.size() );
 
             // Calculate CRC and store it in the tail buffer
          std::string  tailBuf;
@@ -1230,7 +1228,7 @@ namespace gpstk
          }
 
             // Write the tail buffer to the output stream.
-         strm->write(tailBuf.data(), tailBuf.size() );
+         strm.write(tailBuf.data(), tailBuf.size() );
       }
       catch(std::exception& exc)
       {
@@ -1243,47 +1241,50 @@ namespace gpstk
          GPSTK_THROW(err);
       }
 
-      if (strm->fail() || strm->bad())
+      if (strm.fail() || strm.bad())
       {
          FFStreamError err("Error writing data");
          GPSTK_THROW(err);
       }
-
-      //std::cout << "BinexData::reallyPutRecord: EXIT" << std::endl;
    }
 
    // -------------------------------------------------------------------------
-   void BinexData::reallyGetRecord(FFStream& ffs) 
+   void BinexData::reallyGetRecord(FFStream& ffs)
       throw(std::exception, FFStreamError, StringUtils::StringException)
    {
-      //std::cout << "BinexData::reallyGetRecord: ENTER" << std::endl;
-
-      BinexStream* strm = dynamic_cast<BinexStream*>(&ffs);
-      if (NULL == strm)
+      if (NULL == dynamic_cast<BinexStream*>(&ffs))
       {
          FFStreamError e("Attempt to read a BinexData object"
-                                " from a non-BinexStream FFStream.");
+                         " from a non-BinexStream FFStream.");
          GPSTK_THROW(e);
       }
+      getRecord(dynamic_cast<std::istream&>(ffs));
+   }
 
+   // -------------------------------------------------------------------------
+   size_t BinexData::getRecord(std::istream& strm)
+      throw(std::exception, FFStreamError, StringUtils::StringException)
+   {
       size_t        offset            = 0;
-      
+
       std::string   crcBuf;
       size_t        crcBufLen = 0;
-      
-      unsigned char expectedSyncByte;
+
+      SyncByte      expectedSyncByte;
       std::string   expectedCrc;
       unsigned char crc               [16];
       size_t        crcLen            = 0;
-      unsigned char syncBuf;
+      SyncByte      syncBuf;
+      std::istream::pos_type stpos, endpos;
 
       try
       {
-         strm->read((char*)&syncBuf, 1);  // Read synchronization byte
+         stpos = endpos = strm.tellg();
+         strm.read((char*)&syncBuf, 1);  // Read synchronization byte
       }
       catch (std::exception &e)
       {
-         if ( (strm->gcount() == 0) && strm->eof() )
+         if ( (strm.gcount() == 0) && strm.eof() )
          {
                // Process as EOF
             EndOfFile err("EOF encountered");
@@ -1307,11 +1308,11 @@ namespace gpstk
             bool littleEndian = (syncByte & eBigEndian) == 0 ? true : false;
 
             UBNXI uRecID;
-            crcBufLen += uRecID.read(*strm, &crcBuf, crcBufLen, false, littleEndian);
-            setRecordID((unsigned long)uRecID);
+            crcBufLen += uRecID.read(strm, &crcBuf, crcBufLen, false, littleEndian);
+            setRecordID( (RecordID)uRecID);
 
             UBNXI uMsgLen;
-            crcBufLen += uMsgLen.read(*strm, &crcBuf, crcBufLen, false, littleEndian);
+            crcBufLen += uMsgLen.read(strm, &crcBuf, crcBufLen, false, littleEndian);
 
             unsigned long msgLen  = (unsigned long)uMsgLen;
 
@@ -1320,8 +1321,8 @@ namespace gpstk
                // The vector's memory will be reclaimed in all exit conditions
                // since the vector is allocated on the stack.
             std::vector<char>  msgBuf(msgLen);
-            strm->read((char*)&msgBuf[0], msgLen);
-            if (!strm->good() || (strm->gcount() != (std::streamsize)msgLen) )
+            strm.read((char*)&msgBuf[0], msgLen);
+            if (!strm.good() || ((unsigned long)strm.gcount() != msgLen) )
             {
                FFStreamError err("Incomplete BINEX record message");
                GPSTK_THROW(err);
@@ -1333,13 +1334,13 @@ namespace gpstk
             getCRC(crcBuf, msg, expectedCrc);
             crcLen = expectedCrc.size();
 
-            strm->read( (char*)crc, crcLen);
-            if (!strm->good() || (strm->gcount() != (std::streamsize)crcLen) )
+            strm.read( (char*)crc, crcLen);
+            if (!strm.good() || ((size_t)strm.gcount() != crcLen) )
             {
                FFStreamError err("Error reading BINEX CRC");
                GPSTK_THROW(err);
             }
-            if (std::memcmp(crc, expectedCrc.data(), crcLen) )
+            if (memcmp(crc, expectedCrc.data(), crcLen) )
             {
                FFStreamError err("Bad BINEX CRC");
                GPSTK_THROW(err);
@@ -1351,14 +1352,13 @@ namespace gpstk
             bool littleEndian = (expectedSyncByte & eBigEndian) == 0 ? true : false;
 
             UBNXI r, m, b;
-            b.read(*strm, NULL, 0, false, littleEndian);
+            b.read(strm, NULL, 0, false, littleEndian);
             unsigned long revRecSize = (unsigned long)b;
 
                // Read the entire remainder of the record into memory
             std::vector<char>  revRecVec(revRecSize);
-            strm->read( (char*)&revRecVec[0], revRecSize);
-            if (!strm->good()
-                || (strm->gcount() != (std::streamsize)revRecSize) )
+            strm.read( (char*)&revRecVec[0], revRecSize);
+            if (!strm.good() || ((unsigned long)strm.gcount() != revRecSize) )
             {
                FFStreamError err("Incomplete BINEX record message");
                GPSTK_THROW(err);
@@ -1375,10 +1375,10 @@ namespace gpstk
             offset += 1;
 
             offset += r.decode(revRecBuf, offset, littleEndian);
-            setRecordID((unsigned long)r);
-            // @TODO - Check against revRecSize
+            setRecordID( (RecordID)r);
+            // @todo - Check against revRecSize
             offset += m.decode(revRecBuf, offset, littleEndian);
-            // @TODO - Check against revRecSize
+            // @todo - Check against revRecSize
 
             msg.assign(revRecBuf, offset, (unsigned long)m);
             offset += msg.size();
@@ -1386,7 +1386,7 @@ namespace gpstk
                // Check CRC - first calculate expected, then compare to actual.
             getCRC(revRecBuf.substr(1, r.getSize() + m.getSize() ), msg, expectedCrc);
             crcLen = expectedCrc.size();
-            
+
             if ( (offset + crcLen != revRecSize)
                || expectedCrc.compare(revRecBuf.substr(offset, crcLen) ) )
             {
@@ -1403,6 +1403,7 @@ namespace gpstk
             GPSTK_THROW(err);
          }
 
+         endpos = strm.tellg();
       }
       catch(FFStreamError& exc)
       {
@@ -1419,7 +1420,7 @@ namespace gpstk
          GPSTK_THROW(err);
       }
 
-      //std::cout << "BinexData::reallyGetRecord: EXIT" << std::endl;
+      return (endpos-stpos);
    }
 
    void
@@ -1433,7 +1434,7 @@ namespace gpstk
 
       if (crcDataLen >= 1048576)
       {
-            // @TODO - Use 16-byte CRC (128-bit MD5 checksum)
+            // @todo - Use 16-byte CRC (128-bit MD5 checksum)
          crcLen  = 16;
       }
       else // (crcLen < 1048576)
@@ -1513,7 +1514,7 @@ namespace gpstk
                crcLen = 4;
             }
          } // Regular CRC
-         
+
             // Copy the CRC into the output
          if (!nativeLittleEndian)
          {
@@ -1564,7 +1565,7 @@ namespace gpstk
             }
 
          } // Regular CRC
-         
+
       } // (crcLen < 1048576)
 
       return crcLen;
@@ -1572,8 +1573,8 @@ namespace gpstk
 
    // -------------------------------------------------------------------------
    bool
-   BinexData::isHeadSyncByteValid(unsigned char  headSync,
-                                  unsigned char& expectedTailSync) const
+   BinexData::isHeadSyncByteValid(SyncByte  headSync,
+                                  SyncByte& expectedTailSync) const
    {
       switch (headSync)
       {
@@ -1608,8 +1609,8 @@ namespace gpstk
 
    // -------------------------------------------------------------------------
    bool
-   BinexData::isTailSyncByteValid(unsigned char  tailSync,
-                                  unsigned char& expectedHeadSync) const
+   BinexData::isTailSyncByteValid(SyncByte  tailSync,
+                                  SyncByte& expectedHeadSync) const
    {
       switch (tailSync)
       {
@@ -1683,13 +1684,16 @@ namespace gpstk
    void
    BinexData::reverseBuffer(std::string& buffer, size_t offset, size_t n)
    {
-      if ( offset > buffer.size() )
+      if (n < 2)
+         return;  // Nothing to do
+
+      if (offset >= buffer.size() )
       {
          FFStreamError err("Invalid offset reversing BINEX data buffer");
          GPSTK_THROW(err);
       }
-      size_t back = (n == std::string::npos) ? buffer.size() : offset + n;
-      if ( back > buffer.size() )
+      size_t back = (n == std::string::npos) ? buffer.size() - 1: offset + n;
+      if (back >= buffer.size() )
       {
          FFStreamError err("Invalid size reversing BINEX data buffer");
          GPSTK_THROW(err);

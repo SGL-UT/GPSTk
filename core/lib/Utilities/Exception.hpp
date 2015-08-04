@@ -365,6 +365,11 @@ namespace gpstk
 #define GPSTK_RETHROW(exc) { exc.addLocation(FILE_LOCATION); throw; }
 #endif
 
+/// Provide an "ASSERT" type macro
+#define GPSTK_ASSERT(CONDITION) if (!(CONDITION)) {                     \
+      gpstk::AssertionFailure exc("Assertion failed: " #CONDITION);     \
+      GPSTK_THROW(exc);                                                 \
+   }
 
 
 /**
