@@ -78,9 +78,15 @@ class Rinex3Nav_T
         int streamReadWriteTest( void );
         int filterOperatorsTest( void );
 
+        void toConversionTest(void);
+        int version2ToVersion3Test( void );
+        int version3ToVersion2Test( void );
+
     private:
 
         std::string dataFilePath;
+        std::string tempFilePath;
+        std::string file_sep;
 
         std::string inputRinexNavExample;
 
@@ -107,6 +113,12 @@ class Rinex3Nav_T
 	std::stringstream failDescriptionStream;
 	std::string       failDescriptionString;
 
+        std::string inputRinex3Nav;
+        std::string inputRinex2Nav;
+        std::string outputRinex3Nav;
+        std::string outputRinex2Nav;
+
+        bool fileCompare;
 };
 
 //============================================================
@@ -117,13 +129,13 @@ void Rinex3Nav_T :: init( void )
 {
 
     TestUtil test0;
-    std::string dataFilePath = test0.getDataPath();
-    std::string tempFilePath = test0.getTempPath();
+    dataFilePath = test0.getDataPath();
+    tempFilePath = test0.getTempPath();
 
     //---------------------------------------- 
     // Full file paths
     //---------------------------------------- 
-    std::string file_sep = "/";
+    file_sep = "/";
 
     inputRinexNavExample     = dataFilePath + file_sep + "test_input_rinex2_nav_RinexNavExample.99n";
 
@@ -157,14 +169,10 @@ void Rinex3Nav_T :: toRinex3(void)
 {
 
     std::cout<<"Running tests for Rinex version 3.0"<<std::endl;
-    TestUtil test0;
-    std::string dataFilePath = test0.getDataPath();
-    std::string tempFilePath = test0.getTempPath();
 
     //---------------------------------------- 
     // Full file paths
     //---------------------------------------- 
-    std::string file_sep = "/";
 
     inputRinexNavExample     = dataFilePath + file_sep + "test_input_rinex3_nav_RinexNavExample.15n";
 
@@ -190,6 +198,18 @@ void Rinex3Nav_T :: toRinex3(void)
 
 }
 
+//=============================================================
+// Change input and output file names for Rinex Conversion test
+//=============================================================
+
+void Rinex3Nav_T :: toConversionTest(void)
+{
+    inputRinex3Nav  = dataFilePath + file_sep + "test_input_rinex3_nav_RinexNavExample.15n";
+    inputRinex2Nav  = dataFilePath + file_sep + "test_input_rinex2_nav_Rinex3NavFile.15n";
+
+    outputRinex3Nav = tempFilePath + file_sep + "test_output_rinex3_nav_Rinex2to3Output.15n";
+    outputRinex2Nav = tempFilePath + file_sep + "test_output_rinex2_nav_Rinex3to2Output.15n";
+}
 
 //=============================================================================
 // Test Method Definitions
@@ -564,6 +584,72 @@ int Rinex3Nav_T :: filterOperatorsTest( void )
 
 }
 
+//------------------------------------------------------------
+// Tests if a input Rinex 3 file can be output as a version 2 file
+//------------------------------------------------------------
+
+int Rinex3Nav_T :: version3ToVersion2Test(void)
+{
+  TestUtil testFramework("Rinex3Nav", "Convert v.3 to v.2", __FILE__, __LINE__ );
+
+  gpstk::Rinex3NavStream inputStream(inputRinex3Nav.c_str());
+  gpstk::Rinex3NavStream outputStream(outputRinex2Nav.c_str(), std::ios::out);
+  gpstk::Rinex3NavHeader NavHeader;
+  gpstk::Rinex3NavData NavData;
+
+  inputStream >> NavHeader;
+
+  NavHeader.version = 2.11;
+
+  outputStream << NavHeader;
+  while(inputStream >> NavData)
+  {
+    outputStream << NavData;
+  }
+
+  //skip first 2 lines, not expected to match
+  fileCompare = testFramework.fileEqualTest(inputRinex2Nav, outputRinex2Nav, 2);
+
+  failDescriptionString = "Version 2.11 output does not match expected file";
+  testFramework.assert(fileCompare, failDescriptionString, __LINE__);
+
+  return testFramework.countFails();
+}
+
+//------------------------------------------------------------
+// Tests if a input Rinex 2 file can be output as a version 3 file
+//------------------------------------------------------------
+
+
+int Rinex3Nav_T :: version2ToVersion3Test(void)
+{
+  TestUtil testFramework("Rinex3Nav", "Convert v.2 to v.3", __FILE__, __LINE__ );
+
+  gpstk::Rinex3NavStream inputStream(inputRinex2Nav.c_str());
+  gpstk::Rinex3NavStream outputStream(outputRinex3Nav.c_str(), std::ios::out);
+  gpstk::Rinex3NavHeader NavHeader;
+  gpstk::Rinex3NavData NavData;
+
+  inputStream >> NavHeader;
+
+  NavHeader.version = 3.02;
+
+  outputStream << NavHeader;
+  while(inputStream >> NavData)
+  {
+    outputStream << NavData;
+  }
+
+  //skip first 2 lines, not expected to match
+  fileCompare = testFramework.fileEqualTest(inputRinex3Nav, outputRinex3Nav, 2);
+
+  failDescriptionString = "Version 3.02 output does not match expected file";
+  testFramework.assert(fileCompare, failDescriptionString, __LINE__);
+
+  return testFramework.countFails();
+}
+
+
 //============================================================
 // Run all the test methods defined above
 //============================================================
@@ -602,6 +688,14 @@ int main()
     errorTotal = errorTotal + errorCount;
 
     errorCount = testClass.filterOperatorsTest();
+    errorTotal = errorTotal + errorCount;
+
+    testClass.toConversionTest();
+
+    errorCount =  testClass.version2ToVersion3Test();
+    errorTotal = errorTotal + errorCount;
+
+    errorCount =  testClass.version3ToVersion2Test();
     errorTotal = errorTotal + errorCount;
 
     std::cout << "Total Failures for " << __FILE__ << ": " << errorTotal << std::endl;
