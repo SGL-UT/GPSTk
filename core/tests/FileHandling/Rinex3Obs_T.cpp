@@ -60,17 +60,25 @@ class Rinex3Obs_T
             init();
         }
 
-        // return values indicate number of failures, i.e., 0=PASS, !0=FAIL
         void init( void );
+
         void toRinex3( void );
+
+        // return values indicate number of failures, i.e., 0=PASS, !0=FAIL
         int headerExceptionTest( void );
         int hardCodeTest( void );
         int filterOperatorsTest( void );
         int dataExceptionsTest( void );
 
+        void toConversionTest( void );
+        int version2ToVersion3Test( void );
+        int version3ToVersion2Test( void );
+
     private:
 
         std::string dataFilePath;
+        std::string tempFilePath;
+        std::string file_sep;    
 
         std::string dataRinexObsFile;
         std::string dataIncompleteHeader;
@@ -100,6 +108,13 @@ class Rinex3Obs_T
         std::string dataTestOutputObsDump;
         std::string dataTestOutputDataException;
         std::string dataTestFilterOutput;
+
+        std::string dataInputRinex3ObsFile;
+        std::string dataInputRinex2ObsFile;
+        std::string dataOutputRinex3ObsFile;
+        std::string dataOutputRinex2ObsFile;
+
+        std::string testMesg;
 };
 
 //============================================================
@@ -112,13 +127,13 @@ void Rinex3Obs_T :: init( void )
     std::cout<<"Running tests for Rinex version 2.0"<<std::endl;
 
     TestUtil test0;
-    std::string dataFilePath = test0.getDataPath();
-    std::string tempFilePath = test0.getTempPath();
+    dataFilePath = test0.getDataPath();
+    tempFilePath = test0.getTempPath();
 
     //---------------------------------------- 
     // Full file paths
     //---------------------------------------- 
-    std::string file_sep = "/";
+    file_sep = "/";
 
     dataRinexObsFile            = dataFilePath + file_sep + "test_input_rinex2_obs_RinexObsFile.06o";
     dataIncompleteHeader        = dataFilePath + file_sep + "test_input_rinex2_obs_IncompleteHeader.06o";
@@ -151,19 +166,18 @@ void Rinex3Obs_T :: init( void )
 
 }
 
+//============================================================
+// Change input and output file names for Rinex v.3 types
+//============================================================
+
 void Rinex3Obs_T :: toRinex3(void)
 {
 
     std::cout<<"Running tests for Rinex version 3.0"<<std::endl;
 
-    TestUtil test0;
-    std::string dataFilePath = test0.getDataPath();
-    std::string tempFilePath = test0.getTempPath();
-
     //---------------------------------------- 
     // Full file paths
     //---------------------------------------- 
-    std::string file_sep = "/";
 
     dataRinexObsFile            = dataFilePath + file_sep + "test_input_rinex3_obs_RinexObsFile.15o";
     dataIncompleteHeader        = dataFilePath + file_sep + "test_input_rinex3_obs_IncompleteHeader.15o";
@@ -194,6 +208,19 @@ void Rinex3Obs_T :: toRinex3(void)
     dataTestOutputDataException = tempFilePath + file_sep + "test_output_rinex3_obs_DataExceptionOutput.15o";
     dataTestFilterOutput        = tempFilePath + file_sep + "test_output_rinex3_obs_FilterOutput.txt";
 
+}
+
+//=============================================================
+// Change input and output file names for Rinex Conversion test
+//=============================================================
+
+void Rinex3Obs_T :: toConversionTest( void )
+{
+    dataInputRinex3ObsFile  = dataFilePath + file_sep + "test_input_rinex3_obs_RinexObsFile.15o";
+    dataInputRinex2ObsFile  = dataFilePath + file_sep + "test_input_rinex2_obs_RinexObsFile.06o";
+
+    dataOutputRinex3ObsFile = tempFilePath + file_sep + "test_output_rinex3_obs_Rinex2to3Output.06o";
+    dataOutputRinex2ObsFile = tempFilePath + file_sep + "test_output_rinex2_obs_Rinex3to2Output.15o";
 }
 
 //============================================================
@@ -322,6 +349,10 @@ int Rinex3Obs_T :: hardCodeTest( void )
 {
 
     bool files_equal = false;
+    double CompareVersion;
+    std::string CompareFileProgram;
+    std::string CompareFileAgency;
+    std::string CompareDate;
 
     // Previous comments indicated that these Rinex methods
     // are not expected to match in the top two lines of the file
@@ -349,6 +380,27 @@ int Rinex3Obs_T :: hardCodeTest( void )
             out << Rinex3ObsFiled;
             // std::cout<<out.header.version<<std::endl; stream has header info passed to it
         }
+
+        if (Rinex3ObsFileh.version == 2.1)
+        {
+          CompareVersion = 2.10;
+          CompareFileProgram = (std::string)"row";
+          CompareFileAgency = (std::string)"Dataflow Processing";
+          CompareDate = (std::string)"04/11/2006 23:59:18";
+        }
+
+        else if (Rinex3ObsFileh.version == 3.02)
+        {
+          CompareVersion = 3.02;
+          CompareFileProgram = (std::string)"cnvtToRINEX 2.25.0";
+          CompareFileAgency = (std::string)"convertToRINEX OPR";
+          CompareDate = (std::string)"23-Jan-15 22:34 UTC";
+        }
+
+        test2.assert( Rinex3ObsFileh.version == CompareVersion,                  "RinexObs Header version comparison",      __LINE__ );
+        test2.assert( Rinex3ObsFileh.fileProgram == CompareFileProgram,          "RinexObs Header file program comparison", __LINE__ );
+        test2.assert( Rinex3ObsFileh.fileAgency == CompareFileAgency,            "RinexObs Header file agency comparison",  __LINE__ );
+        test2.assert( Rinex3ObsFileh.date == CompareDate,                        "RinexObs Header date comparison",         __LINE__ );
 
         Rinex3ObsFiled.dump( dump );
         Rinex3ObsFileh.dump( dump );
@@ -499,6 +551,73 @@ int Rinex3Obs_T :: filterOperatorsTest( void )
 
 }
 
+//------------------------------------------------------------
+// Tests if a input Rinex 3 file can be output as a version 2 file
+//------------------------------------------------------------
+
+int Rinex3Obs_T :: version3ToVersion2Test( void )
+{
+    TestUtil testFramework("Rinex3Obs", "Convert v.3 to v.2", __FILE__, __LINE__ );
+
+    gpstk::Rinex3ObsStream inputStream(dataInputRinex3ObsFile.c_str());
+    gpstk::Rinex3ObsStream outputStream(dataOutputRinex2ObsFile.c_str(), std::ios::out);
+    gpstk::Rinex3ObsHeader ObsHeader;
+    gpstk::Rinex3ObsData ObsData;
+
+    inputStream >> ObsHeader;
+
+    ObsHeader.PrepareVer2Write();
+
+    outputStream << ObsHeader;
+    while(inputStream >> ObsData)
+    {
+        outputStream << ObsData;
+    }
+
+    testMesg = "No automatic comparison implemented. If " + 
+        dataOutputRinex2ObsFile + " is not the proper conversion of " +
+        dataInputRinex3ObsFile + "test has failed. Currently PrepareVer2Write() " +
+        "function is BROKEN!";
+
+    testFramework.assert(false, testMesg, __LINE__);
+
+    return testFramework.countFails();
+}
+
+//------------------------------------------------------------
+// Tests if a input Rinex 2 file can be output as a version 3 file
+//------------------------------------------------------------
+
+int Rinex3Obs_T :: version2ToVersion3Test( void )
+{
+    TestUtil testFramework("Rinex3Obs", "Convert v.2 to v.3", __FILE__, __LINE__ );
+
+    gpstk::Rinex3ObsStream inputStream(dataInputRinex2ObsFile.c_str());
+    gpstk::Rinex3ObsStream outputStream(dataOutputRinex3ObsFile.c_str(), std::ios::out);
+    gpstk::Rinex3ObsHeader ObsHeader;
+    gpstk::Rinex3ObsData ObsData;
+
+    inputStream >> ObsHeader;
+
+    ObsHeader.version = 3.02; //No PrepareVersion3Write function, only way to change version number
+
+    outputStream << ObsHeader;
+    while(inputStream >> ObsData)
+    {
+        outputStream << ObsData;
+    }
+
+    testMesg = "No automatic comparison implemented. If " + 
+        dataOutputRinex2ObsFile + " is not the proper conversion of " +
+        dataInputRinex3ObsFile + "test has failed. Currently only conversion " +
+        "from v.2.11 to v.3.02 is to change version number by hand. This "
+        + "doesn't produce a valid header, so this functionality is MISSING!";
+
+    testFramework.assert(false, testMesg, __LINE__);
+
+    return testFramework.countFails();
+}
+
 //============================================================
 // Run all the test methods defined above
 //============================================================
@@ -536,6 +655,13 @@ int main()
     errorCount = testClass.filterOperatorsTest();
     errorTotal = errorTotal + errorCount;
 
+    testClass.toConversionTest();
+
+    errorCount = testClass.version3ToVersion2Test();
+    errorTotal = errorTotal + errorCount;
+
+    errorCount = testClass.version2ToVersion3Test();
+    errorTotal = errorTotal + errorCount;
 
     std::cout << "Total Failures for " << __FILE__ << ": " << errorTotal << std::endl;
 
