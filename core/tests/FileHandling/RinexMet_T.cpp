@@ -43,6 +43,8 @@
 #include "StringUtils.hpp"
 #include "Exception.hpp"
 
+#include "build_config.h"
+
 #include "TestUtil.hpp"
 #include <fstream>
 #include <string>
@@ -164,7 +166,7 @@ void RinexMet_T :: init( void )
     //---------------------------------------- 
     // Full file paths
     //---------------------------------------- 
-    std::string file_sep = "/";
+    std::string file_sep = getFileSep();
 
     inputRinexMetNormal       = dataFilePath  + file_sep + "test_input_rinex_met_408_110a.04m"    ; // Formerly without the "test_input_rinex_met_" prefix string
     inputRinexMetBLL          = dataFilePath  + file_sep + "test_input_rinex_met_BLL.04m"         ;
@@ -711,24 +713,24 @@ int RinexMet_T :: hardCodeTest( void )
     //============================================================
     
     msg_test_fail = "RinexMetHeader.version, does not match expected value ";
-    test7.assert( testRinexMetHeader.version     == 2.1, msg_test_desc + msg_test_fail, __LINE__ );
+    test7.assert( testRinexMetHeader.getVersion()     == 2.1, msg_test_desc + msg_test_fail, __LINE__ );
 
     msg_test_fail = "RinexMetHeader.fileType, does not match expected value ";
-    test7.assert( testRinexMetHeader.fileType    == (std::string)"Meteorological", msg_test_desc + msg_test_fail, __LINE__ );
+    test7.assert( testRinexMetHeader.getFileType()    == (std::string)"Meteorological", msg_test_desc + msg_test_fail, __LINE__ );
 
     msg_test_fail = "RinexMetHeader.fileProgram, does not match expected value ";
-    test7.assert( testRinexMetHeader.fileProgram == (std::string)"GFW - RMW", msg_test_desc + msg_test_fail, __LINE__ );
+    test7.assert( testRinexMetHeader.getFileProgram() == (std::string)"GFW - RMW", msg_test_desc + msg_test_fail, __LINE__ );
 
     msg_test_fail = "RinexMetHeader.fileAgency, does not match expected value ";
-    test7.assert( testRinexMetHeader.fileAgency  == (std::string)"NIMA", msg_test_desc + msg_test_fail, __LINE__ );
+    test7.assert( testRinexMetHeader.getFileAgency()  == (std::string)"NIMA", msg_test_desc + msg_test_fail, __LINE__ );
 
     msg_test_fail = "RinexMetHeader.date, does not match expected value ";
-    test7.assert( testRinexMetHeader.date        == (std::string)"04/18/2004 23:58:50", msg_test_desc + msg_test_fail, __LINE__ );
+    test7.assert( testRinexMetHeader.getDate()        == (std::string)"04/18/2004 23:58:50", msg_test_desc + msg_test_fail, __LINE__ );
 
 
-    std::vector<std::string>::const_iterator itr1 = testRinexMetHeader.commentList.begin();
+    std::vector<std::string>::const_iterator itr1 = testRinexMetHeader.getCommentList().begin();
     msg_test_fail = "weather data correct values message does not match";
-    while( itr1 != testRinexMetHeader.commentList.end() )
+    while( itr1 != testRinexMetHeader.getCommentList().end() )
     {
         test7.assert( (*itr1) == (std::string)"Some weather data may have corrected values", msg_test_desc + msg_test_fail, __LINE__ );
 
@@ -736,15 +738,15 @@ int RinexMet_T :: hardCodeTest( void )
     }
 
     msg_test_fail = "RinexMetHeader.markerName, does not match expected value ";
-    test7.assert( testRinexMetHeader.markerName   == (std::string)"85408", msg_test_desc + msg_test_fail, __LINE__ );
+    test7.assert( testRinexMetHeader.getMarkerName()   == (std::string)"85408", msg_test_desc + msg_test_fail, __LINE__ );
 
     msg_test_fail = "RinexMetHeader.markerNumber, does not match expected value ";
-    test7.assert( testRinexMetHeader.markerNumber == (std::string)"85408", msg_test_desc + msg_test_fail, __LINE__ );
+    test7.assert( testRinexMetHeader.getMarkerNumber() == (std::string)"85408", msg_test_desc + msg_test_fail, __LINE__ );
 
     
     msg_test_fail = "testRinexMetHeader.convertObsType(iterator) did not return expected value PR";
-    vector<RinexMetHeader::RinexMetType>::const_iterator itr2 = testRinexMetHeader.obsTypeList.begin();
-    if( itr2 != testRinexMetHeader.obsTypeList.end() )
+    vector<RinexMetHeader::RinexMetType>::const_iterator itr2 = testRinexMetHeader.getObsTypeList().begin();
+    if( itr2 != testRinexMetHeader.getObsTypeList().end() )
     {
         test7.assert( testRinexMetHeader.convertObsType(*itr2) == (std::string)"PR", msg_test_desc + msg_test_fail, __LINE__ );
         itr2++;
@@ -754,7 +756,7 @@ int RinexMet_T :: hardCodeTest( void )
 
     
     msg_test_fail = "testRinexMetHeader.convertObsType(iterator) did not return expected value TD";
-    if( itr2 != testRinexMetHeader.obsTypeList.end() )
+    if( itr2 != testRinexMetHeader.getObsTypeList().end() )
     {
         test7.assert( testRinexMetHeader.convertObsType(*itr2) == (std::string)"TD", msg_test_desc + msg_test_fail, __LINE__ );
         itr2++;
@@ -764,7 +766,7 @@ int RinexMet_T :: hardCodeTest( void )
 
     
     msg_test_fail = "testRinexMetHeader.convertObsType(iterator) did not return expected value HI";
-    if( itr2 != testRinexMetHeader.obsTypeList.end() )
+    if( itr2 != testRinexMetHeader.getObsTypeList().end() )
     {
         test7.assert( testRinexMetHeader.convertObsType(*itr2) == (std::string)"HI", msg_test_desc + msg_test_fail, __LINE__ );
     } else {
@@ -774,8 +776,8 @@ int RinexMet_T :: hardCodeTest( void )
     
     //------------------------------------------------------------
     //------------------------------------------------------------
-    vector<RinexMetHeader::sensorType>::const_iterator itr3 = testRinexMetHeader.sensorTypeList.begin();
-    if( itr3 != testRinexMetHeader.sensorTypeList.end() )
+    vector<RinexMetHeader::sensorType>::const_iterator itr3 = testRinexMetHeader.getSensorTypeList().begin();
+    if( itr3 != testRinexMetHeader.getSensorTypeList().end() )
     {
         msg_test_fail = "RinexMetHeader.sensorTypeList iterator.model did not return expected value Vaisala";
         test7.assert( (*itr3).model    == (std::string)"Vaisala", msg_test_desc + msg_test_fail, __LINE__ );
@@ -805,7 +807,7 @@ int RinexMet_T :: hardCodeTest( void )
     
     //------------------------------------------------------------
     //------------------------------------------------------------
-    if( itr3 != testRinexMetHeader.sensorTypeList.end() )
+    if( itr3 != testRinexMetHeader.getSensorTypeList().end() )
     {
         msg_test_fail = "RinexMetHeader.sensorTypeList iterator.model did not return expected value Vaisala";
         test7.assert( (*itr3).model    == (std::string)"Vaisala", msg_test_desc + msg_test_fail, __LINE__ );
@@ -835,7 +837,7 @@ int RinexMet_T :: hardCodeTest( void )
     
     //------------------------------------------------------------
     //------------------------------------------------------------
-    if( itr3 != testRinexMetHeader.sensorTypeList.end() )
+    if( itr3 != testRinexMetHeader.getSensorTypeList().end() )
     {
         msg_test_fail = "RinexMetHeader.sensorTypeList iterator.model did not return expected value Vaisala";
         test7.assert( (*itr3).model    == (std::string)"Vaisala", msg_test_desc + msg_test_fail, __LINE__ );
@@ -865,9 +867,9 @@ int RinexMet_T :: hardCodeTest( void )
 
     //------------------------------------------------------------
     //------------------------------------------------------------
-    vector<RinexMetHeader::sensorPosType>::const_iterator itr4 = testRinexMetHeader.sensorPosList.begin();
+    vector<RinexMetHeader::sensorPosType>::const_iterator itr4 = testRinexMetHeader.getSensorPosList().begin();
 
-    if( itr4 != testRinexMetHeader.sensorPosList.end() )
+    if( itr4 != testRinexMetHeader.getSensorPosList().end() )
     {
         msg_test_fail = "RinexMetHeader.sensorPosType iterator.position[0] did not return expected value";
         test7.assert( (*itr4).position[0] ==  -740289.8363, msg_test_desc + msg_test_fail, __LINE__ );
@@ -902,7 +904,7 @@ int RinexMet_T :: hardCodeTest( void )
 
     //------------------------------------------------------------
     //------------------------------------------------------------
-    if( itr4 != testRinexMetHeader.sensorPosList.end() )
+    if( itr4 != testRinexMetHeader.getSensorPosList().end() )
     {
         msg_test_fail = "RinexMetHeader.sensorPosType iterator.position[0] did not return expected value";
         test7.assert( (*itr4).position[0] ==  -740289.8363, msg_test_desc + msg_test_fail, __LINE__ );
