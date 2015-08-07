@@ -41,6 +41,8 @@
 #include "Rinex3ClockData.hpp"
 #include "Rinex3ClockStream.hpp"
 
+#include "build_config.h"
+
 class Rinex3Clock_T
 {
     public: 
@@ -82,7 +84,7 @@ void Rinex3Clock_T::init(void)
 
 	std::cout<<"Running tests for Rinex v.2 files"<<std::endl;
 
-	std::string file_sep = "/";
+	std::string file_sep = getFileSep();
 
 	dataBadEpochLine		= dataFilePath + file_sep + "test_input_rinex2_clock_BadEpochLine.96c";
 	dataIncompleteHeader	= dataFilePath + file_sep + "test_input_rinex2_clock_IncompleteHeader.96c";
@@ -100,7 +102,7 @@ void Rinex3Clock_T::toRinex3(void)
 {
 	std::cout<<"Running tests for Rinex v.3 files"<<std::endl;
 
-	std::string file_sep = "/";
+	std::string file_sep = getFileSep();
 
 	dataBadEpochLine		= dataFilePath + file_sep + "test_input_rinex3_clock_BadEpochLine.96c";
 	dataIncompleteHeader	= dataFilePath + file_sep + "test_input_rinex3_clock_IncompleteHeader.96c";

@@ -40,6 +40,8 @@
 #include "Rinex3ObsHeader.hpp"
 #include "Rinex3ObsFilterOperators.hpp"
 
+#include "build_config.h"
+
 #include "TestUtil.hpp"
 #include <iostream>
 #include <string>
@@ -133,7 +135,7 @@ void Rinex3Obs_T :: init( void )
     //---------------------------------------- 
     // Full file paths
     //---------------------------------------- 
-    file_sep = "/";
+    file_sep = getFileSep();
 
     dataRinexObsFile            = dataFilePath + file_sep + "test_input_rinex2_obs_RinexObsFile.06o";
     dataIncompleteHeader        = dataFilePath + file_sep + "test_input_rinex2_obs_IncompleteHeader.06o";
