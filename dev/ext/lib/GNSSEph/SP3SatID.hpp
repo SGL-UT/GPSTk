@@ -69,6 +69,8 @@ namespace gpstk
             case systemGPS:
             case systemGlonass:
             case systemGalileo:
+            case systemBeiDou:
+            case systemQZSS:
             case systemLEO: break;
             // invalidate anything non-SP3
             default:
@@ -146,6 +148,8 @@ namespace gpstk
             case systemGPS:     return 'G';
             case systemGalileo: return 'E';
             case systemGlonass: return 'R';
+            case systemBeiDou:  return 'C';
+            case systemQZSS:    return 'J';
             case systemLEO:     return 'L';
             case systemMixed:   return 'M';
             // non-SP3
@@ -160,6 +164,8 @@ namespace gpstk
             case systemGalileo: return "Galileo";
             case systemGlonass: return "Glonass";
             case systemLEO:     return "LEO";
+            case systemBeiDou:  return "BeiDou";
+            case systemQZSS:    return "QZSS";
             case systemMixed:   return "Mixed";
             default:            return "Unknown";
          }
@@ -196,6 +202,12 @@ namespace gpstk
                break;
             case 'L': case 'l':
                system = SatID::systemLEO;
+               break;
+            case 'C': case 'c':
+               system = SatID::systemBeiDou;
+               break;
+            case 'J': case 'j':
+               system = SatID::systemQZSS;
                break;
             case 'M': case 'm':
                system = SatID::systemMixed;
