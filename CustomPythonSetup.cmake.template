@@ -1,11 +1,11 @@
 #============================================================
 #
-# Name    = PythonSetup.cmake
+# Name    = CustomPythonSetup.cmake.template
 # Purpose = Template for Manual Config of Python
 # Usage   = Copy this file to CustomPythonTemplate.cmake and modifications.
 # Notes   = Should the CustomPythonTemplate.cmake file exist, the search
 #           for a python installation will be skipped in favor of the variables
-#           defined wihtin the cusom file.
+#           defined within the custom file.
 #============================================================
 
 #

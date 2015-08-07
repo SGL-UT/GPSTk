@@ -19,9 +19,9 @@ set( GPSTK_VERSION "${GPSTK_VERSION_MAJOR}.${GPSTK_VERSION_MINOR}.${GPSTK_VERSIO
 #============================================================
 
 #----------------------------------------
-# Determine Installation Path Prefix
-#     Path to which we will install the
-#     gpstk /lib, /bin, and /include dirs.
+# C++ Install Path Prefix
+# * Determine Installation Path Prefix for C++ Library and Applications
+# * Path to which we will install the gpstk /lib, /bin, and /include dirs.
 #----------------------------------------
 
 if( DEFINED CMAKE_INSTALL_PREFIX )
