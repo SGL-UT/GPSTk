@@ -18,9 +18,9 @@ set( "${PROJECT_NAME}_VERSION_PATCH" "0" )
 #============================================================
 
 #----------------------------------------
-# Determine Installation Path Prefix
-#     Path to which we will install the
-#     gpstk /lib, /bin, and /include dirs.
+# C++ Install Path Prefix
+# * Determine Installation Path Prefix for C++ Library and Applications
+# * Path to which we will install the gpstk /lib, /bin, and /include dirs.
 #----------------------------------------
 
 if( DEFINED CMAKE_INSTALL_PREFIX )
