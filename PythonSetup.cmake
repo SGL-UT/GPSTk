@@ -36,8 +36,18 @@ include( CustomPythonSetup.cmake
 if( ${PYTHON_CUSTOM_CONFIG} MATCHES "NOTFOUND" )
     find_package( PythonInterp 2.7 )
     find_package( PythonLibs ${PYTHON_VERSION_STRING} REQUIRED )
+endif()
 
-    set( PYTHON_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX} )
+#------------------------------------------------------------
+# Test the user-specified Python package install prefix
+#------------------------------------------------------------
+if( DEFINED PYTHON_INSTALL_PREFIX )
+    if( DEBUG_SWITCH )
+        message( STATUS "DEBUG: PYTHON_INSTALL_PREFIX value was set." ) 
+    endif()
+else()
+    message( FATAL_ERROR "ERROR: PYTHON_INSTALL_PREFIX value was not set." )
+    return()
 endif()
 
 #------------------------------------------------------------
