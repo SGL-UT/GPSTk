@@ -17,8 +17,8 @@ set( PYTHON_EXECUTABLE
      "/usr/bin/python"
      CACHE FILEPATH "File Path to system python executable" ) 
 set( PYTHON_VERSION_MAJOR "2" CACHE VERSION "System Python version major" )
-set( PYTHON_VERSION_MAJOR "7" CACHE VERSION "System Python version minor" )
-set( PYTHON_VERSION_MAJOR "6" CACHE VERSION "System Python version patch" )
+set( PYTHON_VERSION_MINOR "7" CACHE VERSION "System Python version minor" )
+set( PYTHON_VERSION_PATCH "6" CACHE VERSION "System Python version patch" )
 
 set( PYTHON_VERSION_STRING 
      "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}.${PYTHON_VERSION_PATCH}"
