@@ -53,7 +53,7 @@
 #endif
 
 #include "Exception.hpp"
-//#include <memory.h>
+#include <memory.h>
 
 #ifndef BYTE_ORDER
 #ifdef _MSC_VER
