@@ -11,7 +11,7 @@ message( STATUS "Inside gpstk/swig/CMakeLists.txt, PYTHON_INSTALL_PREFIX = ${PYT
 # Python Library includes
 #------------------------------------------------------------
 
-include_directories( ${PYTHON_INCLUDE_PATH} )
+include_directories( ${PYTHON_INCLUDE_DIRS} )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
 
 #------------------------------------------------------------
