@@ -212,22 +212,6 @@ namespace gpstk
          tmp = gpstk::BinUtils::hostToNet( v );
          return std::string( reinterpret_cast<char*>( &tmp ), sizeof( tmp ) );
       }
-
-         /**
-          * Insert the network ordered binary representation of a var
-          * into the the given vector<uint8_t> at the given position.
-          * @param v the object of type T to convert to a vector of uint8_t.
-          */
-      template<class T>
-      inline void encodeVar( const T& v, std::vector<uint8_t>& vec,
-                             unsigned& pos )
-      {
-         T tmp = v;
-         tmp = gpstk::BinUtils::hostToNet( tmp );
-         uint8_t *tmpPtr = reinterpret_cast<uint8_t*>(&tmp);
-         vec.insert(&vec[pos], tmpPtr, tmpPtr+sizeof(tmp) );
-         pos += sizeof(tmp);
-      }
       
          /// This is thrown when there is an error processing a CRC
          /// @ingroup exceptiongroup
