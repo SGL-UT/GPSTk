@@ -223,6 +223,14 @@ class EngEphemeris_T //: public gpstk::EngEphemeris
 		testMesg = testStream.str(); testStream.str("");
 		testFramework.assert(badCount == 0, testMesg, __LINE__);
 
+		testStream << "Empty ephemeris was incorrectly considered valid.";
+		testMesg = testStream.str(); testStream.str("");
+		testFramework.assert(Empty.isValid() == false, testMesg, __LINE__);
+
+		testStream << "Empty ephemeris was incorrectly considered complete.";
+		testMesg = testStream.str(); testStream.str("");
+		testFramework.assert(Empty.isDataSet() == false, testMesg, __LINE__);
+
 		return testFramework.countFails();
 	}
 
@@ -493,6 +501,16 @@ class EngEphemeris_T //: public gpstk::EngEphemeris
 
 		subframe1Check(dataStore, testFramework);
 
+		std::stringstream testStream;
+		
+		testStream << "Partially empty ephemeris was incorrectly considered valid.";
+		testMesg = testStream.str(); testStream.str("");
+		testFramework.assert(dataStore.isValid() == false, testMesg, __LINE__);
+
+		testStream << "Partially empty ephemeris was incorrectly considered complete.";
+		testMesg = testStream.str(); testStream.str("");
+		testFramework.assert(dataStore.isDataSet() == false, testMesg, __LINE__);
+
 		return testFramework.countFails();
 	}
 
@@ -522,6 +540,12 @@ class EngEphemeris_T //: public gpstk::EngEphemeris
 
 		subframe2Check(dataStore, testFramework);
 
+		std::stringstream testStream;
+		
+		testStream << "Partially empty ephemeris was incorrectly considered complete.";
+		testMesg = testStream.str(); testStream.str("");
+		testFramework.assert(dataStore.isDataSet() == false, testMesg, __LINE__);
+
 		return testFramework.countFails();
 	}
 
@@ -548,6 +572,12 @@ class EngEphemeris_T //: public gpstk::EngEphemeris
 						-2.0318111637599545*pow(b10,-9), 	.307155651409*pow(b10,-9));		
 
 		subframe3Check(dataStore, testFramework);
+
+		std::stringstream testStream;
+		
+		testStream << "Complete, valid ephemeris was incorrectly considered incomplete.";
+		testMesg = testStream.str(); testStream.str("");
+		testFramework.assert(dataStore.isDataSet() == true, testMesg, __LINE__);
 
 		return testFramework.countFails();
 	}

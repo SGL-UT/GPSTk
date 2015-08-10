@@ -106,9 +106,9 @@ namespace gpstk
       /// Compute the fit duration in hours, and adjust the times of validity, given
       /// the fit interval flag. NB IODC must be set before calling
       /// @param fitint fit interval flag
-      void setFitIntervalFlag(const short fitint)
+      void setFitIntervalFlag(const short fitintFlag)
       {
-         fitDuration = getFitInterval(IODC, fitint);
+         fitDuration = getFitInterval(IODC, fitintFlag);
          adjustValidity();
       }
 
@@ -127,7 +127,6 @@ namespace gpstk
       short fitDuration;         ///< duration of validity
       short fitint;              ///< for RINEX
 
-   private:
       /// Get the fit interval in hours from the fit interval flag and the IODC
       static short getFitInterval(const short IODC, const short fitIntFlag);
      
