@@ -1,3 +1,6 @@
+/// @file RinSum.cpp
+/// Read Rinex observation files (version 2 or 3) and output a summary of the content.
+
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -73,7 +76,7 @@ using namespace gpstk;
 using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
-string Version(string("2.2 10/31/13"));
+string Version(string("2.3 8/11/15"));
 
 //------------------------------------------------------------------------------------
 // Object for command line input and global data
@@ -280,7 +283,6 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 //------------------------------------------------------------------------------------
 int Configuration::ProcessUserInput(int argc, char **argv) throw()
 {
-   int i;
    string PrgmDesc,cmdlineUsage, cmdlineErrors, cmdlineExtras;
    vector<string> cmdlineUnrecognized;
 
@@ -309,7 +311,7 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
 
    // pull out file name without --obs
    if(cmdlineUnrecognized.size() > 0) {
-      for(i=cmdlineUnrecognized.size()-1; i >= 0; i--) {
+      for(int i=cmdlineUnrecognized.size()-1; i >= 0; i--) {
          try {
             string filename(cmdlineUnrecognized[i]);
             ifstream ifstrm(filename.c_str());
@@ -338,8 +340,8 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
    // output warning / error messages
    if(cmdlineUnrecognized.size() > 0) {
       LOG(WARNING) << "Warning - unrecognized arguments:";
-      for(size_t i=0; i<cmdlineUnrecognized.size(); i++)
-         LOG(WARNING) << "  " << cmdlineUnrecognized[i];
+      for(size_t j=0; j<cmdlineUnrecognized.size(); j++)
+         LOG(WARNING) << "  " << cmdlineUnrecognized[j];
       LOG(WARNING) << "End of unrecognized arguments";
    }
 
@@ -548,8 +550,8 @@ int ProcessFiles(void) throw(Exception)
 {
 try {
    Configuration& C(Configuration::Instance());
-   int iret,nfiles;
-   size_t i,k, j, nfile;
+   int iret,ii,k;
+   size_t i,j,nfile,nfiles;
    string tag;
    CommonTime lastObsTime, prevObsTime, firstObsTime;
    RinexSatID sat;
@@ -597,6 +599,8 @@ try {
          iret = 2;
          continue;
       }
+      if(Rhead.lastObs.getTimeSystem() != Rhead.firstObs.getTimeSystem())
+         Rhead.lastObs.setTimeSystem(Rhead.firstObs.getTimeSystem());
 
       // output file name and header
       if(C.brief) {
@@ -683,9 +687,8 @@ try {
 
          lastObsTime = Rdata.time;
          lastObsTime.setTimeSystem(Rhead.firstObs.getTimeSystem());
-         if(firstObsTime == CommonTime::BEGINNING_OF_TIME) {
+         if(firstObsTime == CommonTime::BEGINNING_OF_TIME)
             firstObsTime = lastObsTime;
-         }
 
          //LOG(INFO) << "";
          LOG(DEBUG) << " Read RINEX data: flag " << Rdata.epochFlag
@@ -710,16 +713,16 @@ try {
          if(C.gapdt > 0.0) {
             ncount = int(0.5+(lastObsTime-firstObsTime)/C.gapdt);
             // update gap count
-            if(C.gapcount.size() == 0) {       // create the list
-               C.gapcount.push_back(ncount);   // start time
-               C.gapcount.push_back(ncount-1); // end time
+            if(C.gapcount.size() == 0) {        // create the list
+               C.gapcount.push_back(ncount);    // start time
+               C.gapcount.push_back(ncount-1);  // end time
             }
             i = C.gapcount.size() - 1;
-            if(ncount == C.gapcount[i] + 1)    // no gap
+            if(ncount == C.gapcount[i] + 1)     // no gap
                C.gapcount[i] = ncount;
             else {                              // found a gap
-               C.gapcount.push_back(ncount);   // start time
-               C.gapcount.push_back(ncount);   // end time
+               C.gapcount.push_back(ncount);    // start time
+               C.gapcount.push_back(ncount);    // end time
             }
 
             // TD test after 50 epochs - wrong gapdt is disasterous
@@ -1015,42 +1018,34 @@ try {
       if(C.gapdt > 0.0) {
          // summary of gaps using count
          oss.str("");
-         oss << "\nSummary of gaps in the data in this file, assuming dt = "
-            << C.gapdt << " sec.\n";
+         oss << "\nSummary of gaps (vs count) in the data in this file, "
+            << "assuming dt = " << C.gapdt << " sec.\n";
          if(C.gapdt != dt) oss << " WARNING - computed dt does not match input dt\n";
          oss << " First epoch = " << printTime(firstObsTime,C.longfmt)
             << " and last epoch = " << printTime(lastObsTime,C.longfmt) << endl;
          oss << "    Sat    beg - end (count,size) ... "
             << "[count = # of dt's from first epoch]\n";
-
          // print for timetags = all sats
          k = C.gapcount.size()-1;               // size() is at least 2
          oss << "GAP ALL " << setw(5) << C.gapcount[0]
             << " - " << setw(5) << C.gapcount[k];
-         for(i=1; i<=k-2; i+=2) oss << " (" << C.gapcount[i]+1    // begin of gap
-            << "," << C.gapcount[i+1]-C.gapcount[i]-1 << ")";     // size
-         oss << endl;
 
-         //oss << "DUMP ";
-         //for(i=0; i<C.gapcount.size(); i++) oss << " " << C.gapcount[i]
-         //         << "(" << int(C.gapcount[i]/double(C.vres)) << ")";
-         //oss << "\n";
+         // NB DO NOT make ii size_t
+         for(ii=1; ii<=k-2; ii+=2)
+            oss << " (" << C.gapcount[ii]+1                          // begin of gap
+               << "," << C.gapcount[ii+1]-C.gapcount[ii]-1 << ")";   // size
+         oss << endl;
 
          // loop over sats
          for(tabIt = table.begin(); tabIt != table.end(); ++tabIt) {
             k = tabIt->gapcount.size() - 1;
             oss << "GAP " << tabIt->sat << " " << setw(5) << tabIt->gapcount[0]
                << " - " << setw(5) << tabIt->gapcount[k];
-            for(i=1; i<=k-2; i+=2)
-               oss << " (" << tabIt->gapcount[i]+1             // begin count of gap
-                  << "," << tabIt->gapcount[i+1]-tabIt->gapcount[i]-1 << ")"; // size
+            // NB DO NOT make ii size_t
+            for(ii=1; ii<=k-2; ii+=2)
+               oss << " (" << tabIt->gapcount[ii]+1 << ","      // begin count of gap
+                  << tabIt->gapcount[ii+1]-tabIt->gapcount[ii]-1 << ")";   // size
             oss << endl;
-
-            //oss << "DUMP ";
-            //for(i=0; i<tabIt->gapcount.size();i++)
-            //   oss << " " << tabIt->gapcount[i]
-            //      << "(" << int(tabIt->gapcount[i]/double(C.vres)) << ")";
-            //oss << "\n";
          }
 
          tag = oss.str(); stripTrailing(tag,"\n");
@@ -1059,7 +1054,7 @@ try {
          // summary of gaps using sow
          oss.str("");
          double t(static_cast<GPSWeekSecond>(firstObsTime).sow), d(C.gapdt);
-         oss << "\nSummary of gaps in the data in this file, assuming dt = "
+         oss << "\nSummary of gaps (vs SOW) in the data in this file, assuming dt = "
             << C.gapdt << " sec.\n";
          if(C.gapdt != dt) oss << " WARNING - computed dt does not match input dt\n";
          oss << " First epoch = " << printTime(firstObsTime,C.longfmt)
@@ -1070,8 +1065,10 @@ try {
          k = C.gapcount.size()-1;               // size() is at least 2
          oss << "GAP ALL " << fixed << setprecision(1) << setw(8) << t+d*C.gapcount[0]
             << " - " << setw(8) << t+d*C.gapcount[k];
-         for(i=1; i<=k-2; i+=2) oss << " (" << t+d*(C.gapcount[i]+1)// begin of gap
-            << "," << C.gapcount[i+1]-C.gapcount[i]-1 << ")";     // size
+         // NB DO NOT make ii size_t
+         for(ii=1; ii<=k-2; ii+=2)
+            oss << " (" << t+d*(C.gapcount[ii]+1)                    // begin of gap
+               << "," << C.gapcount[ii+1]-C.gapcount[ii]-1 << ")";   // size
          oss << endl;
 
          // loop over sats
@@ -1080,9 +1077,10 @@ try {
             oss << "GAP " << tabIt->sat << " " << fixed << setprecision(1)
                << setw(8) << t+d*tabIt->gapcount[0]
                << " - " << setw(8) << t+d*tabIt->gapcount[k];
-            for(i=1; i<=k-2; i+=2)
-               oss << " (" << t+d*(tabIt->gapcount[i]+1)        // begin sow of gap
-                  << "," << tabIt->gapcount[i+1]-tabIt->gapcount[i]-1 << ")"; // size
+            // NB DO NOT make ii size_t
+            for(ii=1; ii<=k-2; ii+=2)
+               oss << " (" << t+d*(tabIt->gapcount[ii]+1) << ","  // begin sow of gap
+                  << tabIt->gapcount[ii+1]-tabIt->gapcount[ii]-1 << ")";   // size
             oss << endl;
          }
 
@@ -1101,13 +1099,13 @@ try {
             oss << "VIS ALL ";
             bool isOn(false);
             for(k=0,i=0; i<C.gapcount.size()-1; i+=2) {
-               j = int(double(C.gapcount[i]/dn));
-               if(j-k > 0) { oss << string(j-k,' '); k = j; isOn = false; }
-               j = int(double(C.gapcount[i+1]/dn));
-               if(j-k > 0) {
-                  if(isOn) { oss << "x"; j--; }
-                  oss << string(j-k,'X');
-                  k = j;
+               ii = int(double(C.gapcount[i]/dn));
+               if(ii-k > 0) { oss << string(ii-k,' '); k = ii; isOn = false; }
+               ii = int(double(C.gapcount[i+1]/dn));
+               if(ii-k > 0) {
+                  if(isOn) { oss << "x"; ii--; }
+                  oss << string(ii-k,'X');
+                  k = ii;
                   isOn = true;
                }
             }
@@ -1118,9 +1116,7 @@ try {
             multimap<int,string> vtab;
 
             // loop over sats
-            //ostringstream ossvt;
             for(tabIt = table.begin(); tabIt != table.end(); ++tabIt) {
-               //ossvt.str("");
                oss.str("");
                oss << "VIS " << tabIt->sat << " ";
 
@@ -1133,7 +1129,6 @@ try {
                   if(!first) {
                      vtab.insert(multimap<int, string>::value_type(
                            kk, string("-")+asString(tabIt->sat)));
-                     //ossvt << " " << kk << "-,";
                      kk = j;
                   }
                   first = false;
@@ -1147,7 +1142,6 @@ try {
                   j = int(double(tabIt->gapcount[i+1]/dn));
                   vtab.insert(multimap<int, string>::value_type(
                         kk, string("+")+asString(tabIt->sat)));
-                  //ossvt << " " << kk << "+,";
                   kk = j;
                   jj = j-k;
                   if(jj > 0) {
@@ -1159,9 +1153,7 @@ try {
                }
                vtab.insert(multimap<int, string>::value_type(
                      kk, string("-")+asString(tabIt->sat)));
-               //oss << "-" << kk;
                LOG(INFO) << oss.str();
-               //LOG(INFO) << ossvt.str() << " " << kk << "-";
             }
 
             if(C.vistab) {
@@ -1308,3 +1300,7 @@ try {
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
 }  // end ProcessFiles()
+
+//------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------
