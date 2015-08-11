@@ -1,6 +1,6 @@
 /*********************************************************************
 *
-*  Demo program for gpstk/ext/lib/Misc/SVNumXRef.
+*  Demo program for gpstk/core/lib/GNSSCore/SVNumXRef.
 *
 *********************************************************************/
 #include <stdio.h>
