@@ -149,7 +149,7 @@ commands instead of build.sh:
 
          $ cd $gpstk_root/build
 
-         $ cmake -DPYTHON_INSTALL_PREFIX=$HOME/.local -DCMAKE_INSTALL_PREFIX=$HOME/.local/gpstk $gpstk_root
+         $ cmake -DPYTHON_INSTALL_PREFIX=$HOME/.local -DCMAKE_INSTALL_PREFIX=$HOME/.local/gpstk -DBUILD_EXT=1 -DBUILD_PYTHON=1 $gpstk_root
 
          $ export LD_LIBRARY_PATH=$HOME/.local/gpstk/lib:$LD_LIBRARY_PATH
 
