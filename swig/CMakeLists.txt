@@ -160,7 +160,7 @@ file( COPY ${METAFILES} DESTINATION ${INSTALL_PACKAGE_PATH} )
 
 set( SWIG_DOC_DIR ${CMAKE_CURRENT_BINARY_DIR}/doc )
 file( MAKE_DIRECTORY ${SWIG_DOC_DIR} )
-file( WRITE ${SWIG_DOC_DIR}/doc.i "#dummy file. Is replaced when docs are generated for bindings." )
+file( WRITE ${SWIG_DOC_DIR}/doc.i "// dummy file. Is replaced when docs are generated for bindings." )
 include_directories( ${SWIG_DOC_DIR} )
 
 #----------------------------------------
