@@ -1,41 +1,89 @@
 #============================================================
 #
 # Name    = PythonSetup.cmake
-# Purpose = Template for Manual Config of Python for SWIG Bindings
+# Purpose = Determine locations of Python library for use by SWIG
 # Usage   = add "include( PythonSetup.cmake )" to the appropriate CMakeLists.txt
-# Notes   = On systems where the user may have many installations
-#           of python, CMake find_package( PythonLibs ) can often 
-#           not find matching version numbers for the python library
+#
+# Scheme  = Top-Level CMakeLists.txt includes this present file
+#           First step herein is to look for a CustomPythonSetup.cmake
+#           If that fails, this file then tries the "normal" method to find PythonLibs
+#           If CMake cannot figure out which Python library to use by that method
+#           then modify the template CustomPythonSetup.cmake file to explicitly
+#           define the paths to the python library and headers you wish SWIG to use.
+#
+# Reason  = On systems where the user may have many installations
+#           of python, e.g. RedHat or OSX where the system version of Python
+#           is an old version not really intended for daily user use, so the user often
+#           installs an additional python environment from source or with some package manager.
+#           CMake find_package( PythonLibs ) will often stumble on pieces of multiple Python installs
+#           in an order that results in mismatching version numbers for the python library
 #           and the python include files, and thus cannot build the
 #           typemaps for wrapping the C++ code.
-#           The template below helps the user specify explicitly
-#           which components of their python install that CMake/SWIG
-#           should use.
+#
 #============================================================
 
-set( PYTHON "/usr/bin/python" )
-set( PYTHON_EXECUTABLE "/usr/bin/python" CACHE FILEPATH "File Path to system python executable" ) 
-set( PYTHON_LIBRARY "/usr/lib/libpython2.7.so" CACHE FILEPATH "File Path to system python shared object library" )
-set( PYTHON_LIBRARIES "/usr/lib/libpython2.7.so" CACHE FILEPATH "File Path to system python shared object library" )  
-set( PYTHON_INCLUDE_DIR "/usr/include/python2.7" CACHE PATH "Directory Path to system python includes" )
-set( PYTHON_VERSION "2.7.6" CACHE VERSION "System Python version number" ) 
 
-set( PYTHON_FOUND "TRUE" )
-set( PYTHONLIBS_FOUND "TRUE" )
+#------------------------------------------------------------
+# If the user provides a custom Python configuration, use it
+#------------------------------------------------------------
+include( CustomPythonSetup.cmake 
+         OPTIONAL
+         RESULT_VARIABLE PYTHON_CUSTOM_CONFIG )
 
-set( PYTHON_INSTALL_PREFIX $CMAKE_INSTALL_PREFIX )
+#------------------------------------------------------------
+# If a user-speccified python configuration is not found, let CMake try to find the system python
+#------------------------------------------------------------
+if( ${PYTHON_CUSTOM_CONFIG} MATCHES "NOTFOUND" )
+    find_package( PythonInterp 2.7 )
+    find_package( PythonLibs ${PYTHON_VERSION_STRING} REQUIRED )
+endif()
 
+#------------------------------------------------------------
+# Test the user-specified Python package install prefix
+#------------------------------------------------------------
+if( DEFINED PYTHON_INSTALL_PREFIX )
+    if( DEBUG_SWITCH )
+        message( STATUS "DEBUG: PYTHON_INSTALL_PREFIX value was set." ) 
+    endif()
+else()
+    message( FATAL_ERROR "ERROR: PYTHON_INSTALL_PREFIX value was not set." )
+    return()
+endif()
+
+#------------------------------------------------------------
+# Debug messaging
+#------------------------------------------------------------
 if( DEBUG_SWITCH )
-    message( STATUS "DEBUG: PythonConfig.cmake: PYTHON_FOUND             = ${PYTHON_FOUND}" )
-    message( STATUS "DEBUG: PythonConfig.cmake: PYTHONLIBS_FOUND         = ${PYTHONLIBS_FOUND}" )
-    message( STATUS "DEBUG: PythonConfig.cmake: PYTHON_VERSION           = ${PYTHON_VERSION}" )
-    message( STATUS "DEBUG: PythonConfig.cmake: PYTHON                   = ${PYTHON}" )
-    message( STATUS "DEBUG: PythonConfig.cmake: PYTHON_EXECUTABLE        = ${PYTHON_EXECUTABLE}" )
-    message( STATUS "DEBUG: PythonConfig.cmake: PYTHON_LIBRARIES         = ${PYTHON_LIBRARIES}" )
-    message( STATUS "DEBUG: PythonConfig.cmake: PYTHON_LIBRARY           = ${PYTHON_LIBRARY}" )
-    message( STATUS "DEBUG: PythonConfig.cmake: PYTHON_INCLUDE_DIR       = ${PYTHON_INCLUDE_DIR}" )
-    message( STATUS "DEBUG: PythonConfig.cmake: PYTHON_INSTALL_PREFIX    = ${PYTHON_INSTALL_PREFIX}" ) 
-enif()
+    message( STATUS "DEBUG: PYTHONINTERP_FOUND        = ${PYTHONINTERP_FOUND}" )
+    message( STATUS "DEBUG: PYTHON_EXECUTABLE         = ${PYTHON_EXECUTABLE}" )
+    message( STATUS "DEBUG: PYTHON_VERSION_STRING     = ${PYTHON_VERSION_STRING}" )
+    message( STATUS "DEBUG: PYTHONLIBS_FOUND          = ${PYTHONLIBS_FOUND}" )
+    message( STATUS "DEBUG: PYTHON_LIBRARIES          = ${PYTHON_LIBRARIES}" )
+    message( STATUS "DEBUG: PYTHON_INCLUDE_DIRS       = ${PYTHON_INCLUDE_DIRS}" )
+    message( STATUS "DEBUG: PYTHONLIBS_VERSION_STRING = ${PYTHONLIBS_VERSION_STRING}" )
+    message( STATUS "DEBUG: PYTHON_INSTALL_PREFIX     = ${PYTHON_INSTALL_PREFIX}" ) 
+endif()
+
+#------------------------------------------------------------
+# Consistent python library and headers could not be found
+#------------------------------------------------------------
+if( NOT PYTHONLIBS_FOUND )
+    message( STATUS "Cannot find requested version of PYTHONLIBS on your system." )
+    message( STATUS "Cannot build swig bindings without the right python libraries." )
+    message( STATUS "PYTHON_LIBRARY and PYTHON_INCLUDE_DIR versions must match PYTHON_EXECUTABLE." )
+    message( STATUS "DEBUG: SWIG: PYTHON_EXECUTABLE        = ${PYTHON_EXECUTABLE}" )
+    message( STATUS "DEBUG: SWIG: PYTHON_FOUND             = ${PYTHON_FOUND}" )
+    message( STATUS "DEBUG: SWIG: PYTHONLIBS_FOUND         = ${PYTHONLIBS_FOUND}" )
+    message( STATUS "DEBUG: SWIG: PYTHON                   = ${PYTHON}" )
+    message( STATUS "DEBUG: SWIG: PYTHON_VERSION           = ${PYTHON_VERSION}" )
+    message( STATUS "DEBUG: SWIG: PYTHON_LIBRARIES         = ${PYTHON_LIBRARIES}" )
+    message( STATUS "DEBUG: SWIG: PYTHON_LIBRARY           = ${PYTHON_LIBRARY}" )
+    message( STATUS "DEBUG: SWIG: PYTHON_INCLUDE_DIR       = ${PYTHON_INCLUDE_DIR}" )
+    message( FATAL_ERROR "Cannot find PYTHONLIBS. Cannot proceed. Exiting now!" )
+    return()
+else()
+    message( STATUS "PYTHONLIBS Version requested was found. Yay for you!" )
+endif()
 
 #============================================================
 # The End
