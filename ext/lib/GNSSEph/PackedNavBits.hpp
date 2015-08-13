@@ -68,13 +68,20 @@ namespace gpstk
                     const ObsID& obsIDArg,
                     const CommonTime& transmitTimeArg);
 
+      /// explicit constructor
+      PackedNavBits(const SatID& satSysArg, 
+                    const ObsID& obsIDArg,
+                    const std::string rxString,
+                    const CommonTime& transmitTimeArg);
+
       PackedNavBits(const PackedNavBits& right);             // Copy constructor
-      PackedNavBits& operator=(const PackedNavBits& right); // Copy assignment
+      //PackedNavBits& operator=(const PackedNavBits& right); // Copy assignment
 
       PackedNavBits* clone() const;
 
       void setSatID(const SatID& satSysArg);
       void setObsID(const ObsID& obsIDArg);
+      void setRxID(const std::string rxString); 
       void setTime(const CommonTime& transmitTimeArg);
       void clearBits();
 
@@ -83,6 +90,11 @@ namespace gpstk
 
          /* Returns Observation type, Carrier, and Tracking Code */
       ObsID getobsID() const;
+
+         /* Returns string defining the receiver that collected the data. 
+            NOTE: This was a late addition to PackedNavBits and may not  
+            be present in all applications */ 
+      std::string getRxID() const; 
 
          /* Returns time of transmission from SV */
       CommonTime getTransmitTime() const;
@@ -122,6 +134,27 @@ namespace gpstk
          /* Unpack a string */
       std::string asString(const int startBit, 
                            const int numChars) const;
+
+         // The following three methods were added to support
+         // GLONASS sign/magnitude real values.
+         //
+         // Since GLONASS has no disjoint fields (at least not
+         // up through ICD Edition 5.1) there are no methods
+         // for unpacking disjoint-field sign/mag quantities. 
+         /* Unpack a sign/mag long */
+      long asSignMagLong(const int startBit, 
+                  const int numBits, 
+                  const int scale) const;
+                  
+         /* Unpack a sign/mag double */
+      double asSignMagDouble( const int startBit, 
+                             const int numBits, 
+                             const int power2) const;
+                             
+         /* Unpack a sign/mag double with units of semi-circles */
+      double asSignMagDoubleSemiCircles( const int startBit, 
+                                  const int numBits, 
+                                  const int power2) const;
 
          /* Unpack mehthods that join multiple disjoint 
             navigation message areas as a single field
@@ -209,8 +242,9 @@ namespace gpstk
           * Returns the number of bits in the object.
           */
       int outputPackedBits(std::ostream& s = std::cout, 
-		           short numPerLine=4,
-			   char delimiter = ' ' ) const;
+		           const short numPerLine=4,
+		     	     const char delimiter = ' ',
+               const short numBitsPerWord=32 ) const;
 
          /*
           * Return true if all bits between start and end are identical
@@ -242,12 +276,20 @@ namespace gpstk
        void rawBitInput(const std::string inString )
           throw(InvalidParameter);       
 
+       void setXmitCoerced(bool tf=true) {xMitCoerced=tf;}
+       bool isXmitCoerced() const {return xMitCoerced;}
+
    private:
       SatID satSys;            /**< System ID (based on RINEX defintions */
       ObsID obsID;             /**< Defines carrier and code tracked */
-      CommonTime transmitTime; /**< Time nav message is trasnmitted */
+      std::string rxID;        /**< Defines the receiver that collected the data */
+      CommonTime transmitTime; /**< Time nav message is transmitted */
       std::vector<bool> bits;  /**< Holds the packed data */
       int bits_used;
+      
+      bool xMitCoerced;        /**< Used to indicate that the transmit
+                                    time is NOT directly derived from
+                                    the SOW in the message */
 
          /** Unpack the bits */
       uint64_t asUint64_t(const int startBit, const int numBits ) const 

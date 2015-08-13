@@ -358,29 +358,29 @@ namespace gpstk
  * returns the condition number of the matrix
  */
    template <class T, class BaseClass>
-   inline T condNum(const ConstMatrixBase<T, BaseClass>& m, T& big, T& small) 
+   inline T condNum(const ConstMatrixBase<T, BaseClass>& m, T& bigNum, T& smallNum) 
       throw ()
    {
       SVD<T> svd;
       svd(m);
       // SVD will not always sort singular values in descending order
       svd.sort(true);
-      big = svd.S(0);
-      small = svd.S(svd.S.size()-1);
-      if(small <= std::numeric_limits<T>::epsilon())
+      bigNum = svd.S(0);
+      smallNum = svd.S(svd.S.size()-1);
+      if(smallNum <= std::numeric_limits<T>::epsilon())
          return T(0);
-      return big/small;
+      return bigNum/smallNum;
    }
 
 /**
- * returns the condition number of the matrix, doesnt require big or small..
+ * returns the condition number of the matrix, doesnt require bigNum or smallNum..
  */
    template <class T, class BaseClass>
    inline T condNum(const ConstMatrixBase<T, BaseClass>& m) 
       throw ()
    {
-      T big, small;
-      return condNum(m, big, small);
+      T bigNum, smallNum;
+      return condNum(m, bigNum, smallNum);
    }
 
 /**
@@ -677,7 +677,7 @@ namespace gpstk
  */
    template <class T, class BaseClass>
    inline Matrix<T> inverseSVD(const ConstMatrixBase<T, BaseClass>& m,
-      T& big, T& small, const T tol=T(1.e-8)) throw (MatrixException)
+      T& bigNum, T& smallNum, const T tol=T(1.e-8)) throw (MatrixException)
    {
       if ((m.rows() != m.cols()) || (m.cols() == 0)) {
          MatrixException e("inverseSVD() requires non-trivial square matrix");
@@ -695,9 +695,9 @@ namespace gpstk
          GPSTK_THROW(e);
       }
 
-      // compute condition number = big/small
-      big = svd.S(0);
-      small = svd.S(svd.S.size()-1);
+      // compute condition number = bigNum/smallNum
+      bigNum = svd.S(0);
+      smallNum = svd.S(svd.S.size()-1);
 
       // edit singular values using input tolerance, output edited SVs
       for(i=1; i<N; i++) if(svd.S(i) < tol*svd.S(0)) svd.S(i)=T(0);
@@ -759,7 +759,7 @@ namespace gpstk
    }  // end inverseSVD
 
    /**
-    * Inverts the square symetrix positive definite matrix M using Cholesky-Crout
+    * Inverts the square symmetric positive definite matrix M using Cholesky-Crout
     * algorithm. Very fast and useful when M comes from using a Least Mean-Square 
     * (LMS) or Weighted Least Mean-Square (WLMS) method.
     */

@@ -12,9 +12,9 @@ add_test(ClockModel_ObsClockModel ObsClockModel_T)
 # target_link_libraries(ObsEpochMap_T gpstk)
 # add_test(ClockModel_ObsEpochMap ObsEpochMap_T)
 
-# add_executable(ObsRngDev_T ObsRngDev_T.cpp)
-# target_link_libraries(ObsRngDev_T gpstk)
-# add_test(ClockModel_ObsRngDev ObsRngDev_T)
+add_executable(ObsRngDev_T ObsRngDev_T.cpp)
+target_link_libraries(ObsRngDev_T gpstk)
+add_test(ClockModel_ObsRngDev ObsRngDev_T)
 
 # add_executable(ORDEpoch_T ORDEpoch_T.cpp)
 # target_link_libraries(ORDEpoch_T gpstk)

@@ -188,7 +188,7 @@ public:
 
    // editing commands
    bool HDdc,HDda,BZ;
-   string HDp,HDr,HDo,HDa,HDx,HDm,HDn,HDt,HDh;
+   string HDp,HDr,HDo,HDa,HDx,HDm,HDn,HDt,HDh,HDj,HDk,HDl,HDs;
    vector<string> HDc,DA,DAm,DAp,DO,DS,DSp,DSm,DD,DDp,DDm;
    vector<string> SD,SS,SL,SLp,SLm,BD,BDp,BDm,BS,BL;
 
@@ -689,6 +689,10 @@ int ExecuteEditCmd(const vector<EditCmd>::iterator& it, Rinex3ObsHeader& Rhead,
             if(!C.HDr.empty()) Rhead.fileAgency = C.HDr;
             if(!C.HDo.empty()) Rhead.observer = C.HDo;
             if(!C.HDa.empty()) Rhead.agency = C.HDa;
+            if(!C.HDj.empty()) Rhead.recNo = C.HDj;
+            if(!C.HDk.empty()) Rhead.recType = C.HDk;
+            if(!C.HDl.empty()) Rhead.recVers = C.HDl;            
+            if(!C.HDs.empty()) Rhead.antNo = C.HDs;
             if(!C.HDx.empty()) {
                flds = split(C.HDx,',');   // TD check n==3,doubles in Initialize
                for(i=0; i<3; i++) Rhead.antennaPosition[i] = asDouble(flds[i]);
@@ -930,11 +934,19 @@ string Configuration::BuildCommandLine(void) throw()
    opts.Add(0, "HDx", "x,y,z", false, false, &HDx, "",
             "Set header 'POSITION' field to <x,y,z> (ECEF, m)");
    opts.Add(0, "HDm", "m", false, false, &HDm, "",
-            "Set header 'MARKER' field to <m>");
+            "Set header 'MARKER NAME' field to <m>");
    opts.Add(0, "HDn", "n", false, false, &HDn, "",
-            "Set header 'NUMBER' field to <n>");
+            "Set header 'MARKER NUMBER' field to <n>");
+   opts.Add(0, "HDj", "n", false, false, &HDj, "",
+            "Set header 'REC #' field to <n>");
+   opts.Add(0, "HDk", "t", false, false, &HDk, "",
+            "Set header 'REC TYPE' field to <t>");
+   opts.Add(0, "HDl", "v", false, false, &HDl, "",
+            "Set header 'REC VERS' field to <v>");
+   opts.Add(0, "HDs", "n", false, false, &HDs, "",
+            "Set header 'ANT #' field to <n>");
    opts.Add(0, "HDt", "t", false, false, &HDt, "",
-            "Set header 'ANTENNA TYPE' field to <t>");
+            "Set header 'ANT TYPE' field to <t>");
    opts.Add(0, "HDh", "h,e,n", false, false, &HDh, "",
             "Set header 'ANTENNA OFFSET' field to <h,e,n> (Ht,East,North)");
    opts.Add(0, "HDc", "c", true, false, &HDc, "",

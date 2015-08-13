@@ -3,7 +3,7 @@
 add_executable(novaRinex novaRinex.cpp)
 target_link_libraries(novaRinex gpstk)
 install (TARGETS novaRinex DESTINATION "${CMAKE_INSTALL_BINDIR}")
-#add_test(novaRinexTest novaRinex)
+
 
 
 

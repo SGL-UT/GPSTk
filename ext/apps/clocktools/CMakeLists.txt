@@ -3,7 +3,6 @@
 add_executable(rmoutlier rmoutlier.cpp)
 target_link_libraries(rmoutlier gpstk)
 install (TARGETS rmoutlier DESTINATION "${CMAKE_INSTALL_BINDIR}")
-#add_test(rmoutlierTest rmoutlier -h)
 
 add_executable(dallandev dallandev.cpp)
 target_link_libraries(dallandev gpstk)

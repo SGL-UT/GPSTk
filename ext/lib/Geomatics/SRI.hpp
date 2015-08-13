@@ -61,6 +61,7 @@
 // geomatics
 #include "Namelist.hpp"
 #include "SRIMatrix.hpp"
+#include "SparseMatrix.hpp"
 
 namespace gpstk
 {
@@ -68,6 +69,8 @@ namespace gpstk
 //------------------------------------------------------------------------------------
 /// constant (empty) Matrix used for default input arguments
 extern const Matrix<double> SRINullMatrix;
+/// constant (empty) SparseMatrix used for default input arguments
+extern const SparseMatrix<double> SRINullSparseMatrix;
 
 //------------------------------------------------------------------------------------
 /// class SRI encapsulates all the information associated with the solution of a set
@@ -245,7 +248,7 @@ public:
       /// Zero out all the first n rows of R and elements of Z, removing all
       /// information about those elements. Default value of the input is 0,
       /// meaning zero out the entire SRI.
-   void zeroAll(const int n=0)
+   void zeroAll(const unsigned int n=0)
       throw();
 
       /// Zero out (set all elements to zero) the state (Vector Z) only.
@@ -332,10 +335,16 @@ public:
       /// SRIF (Kalman) measurement update, or least squares update
       /// Call the SRI measurement update for this SRI and the given input. See doc.
       /// for SrifMU().
-   void measurementUpdate(Matrix<double>& Partials,
-                          Vector<double>& Data)
+   void measurementUpdate(Matrix<double>& Partials, Vector<double>& Data)
       throw(MatrixException)
-   { SrifMU(R, Z, Partials, Data); }
+         { SrifMU(R, Z, Partials, Data); }
+
+      /// SRIF (Kalman) measurement update, or least squares update, Sparse version.
+      /// Call the SRI measurement update for this SRI and the given input. See doc.
+      /// for SrifMU().
+   void measurementUpdate(SparseMatrix<double>& Partials, Vector<double>& Data)
+      throw(MatrixException)
+         { SrifMU(R, Z, Partials, Data); }
 
       /// Compute the condition number, or rather the largest and smallest eigenvalues
       /// of the SRI matrix R (the condition number is the ratio of the largest and

@@ -468,16 +468,6 @@ int ProcessOneEntireEpoch(RinexObsData& roe) throw(Exception)
          lli = vector<unsigned short>(4,0);
          ssi = vector<unsigned short>(4,0);
          otmap = it->second;
-         if( (jt = otmap.find(rhead.obsTypeList[inL1])) != otmap.end()) {
-            data[0] = jt->second.data;
-            lli[0] = jt->second.lli;
-            ssi[0] = jt->second.ssi;
-         }
-         if( (jt = otmap.find(rhead.obsTypeList[inL2])) != otmap.end()) {
-            data[1] = jt->second.data;
-            lli[1] = jt->second.lli;
-            ssi[1] = jt->second.ssi;
-         }
          if( (jt = otmap.find(rhead.obsTypeList[inP1])) != otmap.end()) {
             data[2] = jt->second.data;
             lli[2] = jt->second.lli;
@@ -939,7 +929,7 @@ void WriteRINEXdata(CommonTime& WriteEpoch, const CommonTime targetTime) throw(E
                	rd.data = SPList[in].data(SPIndexList[in],L2);
                	roe.obs[sat][RinexObsHeader::L2] = rd;
 
-               	config.oflog << "Out "
+  /*             	config.oflog << "Out "
                	   << printTime(WriteEpoch,config.format)
                	   << " " << printTime(roe.time,config.format)
                	   << " " << sat
@@ -950,8 +940,9 @@ void WriteRINEXdata(CommonTime& WriteEpoch, const CommonTime targetTime) throw(E
                	   << " " << setw(13) << SPList[in].data(SPIndexList[in],P2)
                	   << " " << setw(13) << SPList[in].data(SPIndexList[in],L1)
                	   << " " << setw(13) << SPList[in].data(SPIndexList[in],L2)
-               	   << endl;
+               	   << endl; */
 					}
+			
 
                   // go to next point
                SPIndexList[in]++;

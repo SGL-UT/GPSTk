@@ -63,31 +63,17 @@ namespace gpstk
       try
       {
          string rv( fmt );
-            // Convert to each TimeTag type and run its printf using rv, but
-            // only if fmt contains the format characters of that type
-         if(willPrintAs<ANSITime>(rv))
-            rv = printAs<ANSITime>( t, rv );
-         if(willPrintAs<CivilTime>(rv))
-            rv = printAs<CivilTime>( t, rv );
-         if(willPrintAs<GPSWeekSecond>(rv))
-            rv = printAs<GPSWeekSecond>( t, rv );
-         if(willPrintAs<GPSWeekZcount>(rv))
-            rv = printAs<GPSWeekZcount>( t, rv );
-         if(willPrintAs<JulianDate>(rv))
-            rv = printAs<JulianDate>( t, rv );
-         if(willPrintAs<MJD>(rv))
-            rv = printAs<MJD>( t, rv );
-         if(willPrintAs<UnixTime>(rv))
-            rv = printAs<UnixTime>( t, rv );
-         if(willPrintAs<YDSTime>(rv))
-            rv = printAs<YDSTime>( t, rv );
-         if(willPrintAs<GALWeekSecond>(rv))
-            rv = printAs<GALWeekSecond>( t, rv );
-         if(willPrintAs<BDSWeekSecond>(rv))
-            rv = printAs<BDSWeekSecond>( t, rv );
-         if(willPrintAs<QZSWeekSecond>(rv))
-            rv = printAs<QZSWeekSecond>( t, rv );
-      
+         try {rv = ANSITime(t).printf( rv );} catch (gpstk::InvalidRequest e){};
+         try {rv = CivilTime(t).printf( rv );} catch (gpstk::InvalidRequest e){};
+         try {rv = GPSWeekSecond(t).printf( rv );} catch (gpstk::InvalidRequest e){};
+         try {rv = GPSWeekZcount(t).printf( rv );} catch (gpstk::InvalidRequest e){};
+         try {rv = JulianDate(t).printf( rv );} catch (gpstk::InvalidRequest e){};
+         try {rv = MJD(t).printf( rv );} catch (gpstk::InvalidRequest e){};
+         try {rv = UnixTime(t).printf( rv );} catch (gpstk::InvalidRequest e){};
+         try {rv = YDSTime(t).printf( rv );} catch (gpstk::InvalidRequest e){};
+         try {rv = GALWeekSecond(t).printf( rv );} catch (gpstk::InvalidRequest e){};
+         try {rv = BDSWeekSecond(t).printf( rv );} catch (gpstk::InvalidRequest e){};
+         try {rv = QZSWeekSecond(t).printf( rv );} catch (gpstk::InvalidRequest e){};
          return rv;
       }
       catch( gpstk::StringUtils::StringException& se )

@@ -5,11 +5,12 @@
 #include "TestUtil.hpp"
 #include <iostream>
 #include <sstream>
+using namespace gpstk;
 
-class AlmOrbit_T : public gpstk::AlmOrbit
+class AlmOrbit_T: public AlmOrbit
 {
     public: 
-	AlmOrbit_T(){ eps == 1E-12;}// Default Constructor, set the precision value
+	AlmOrbit_T(){ eps = 1E-12;}// Default Constructor, set the precision value
 	~AlmOrbit_T() {} // Default Desructor
 
 //=================================================================================
@@ -26,39 +27,40 @@ class AlmOrbit_T : public gpstk::AlmOrbit
 		//Does the default constructor function correctly?
 		//------------------------------------------------------------------------
 		testMesg = "PRN not initialized to 0";
-		testFramework.assert(AlmOrbit::PRN == 0, testMesg, __LINE__);
+		testFramework.assert(empty.getPRN() == 0, testMesg, __LINE__);
 		testMesg = "Ecc not initialized to 0";
-		testFramework.assert(fabs(AlmOrbit::ecc) < eps, testMesg, __LINE__);
+		testFramework.assert(fabs(empty.getecc()) < eps, testMesg, __LINE__);
 		testMesg = "Offset not initialized to 0";
-		testFramework.assert(fabs(AlmOrbit::i_offset) < eps, testMesg, __LINE__);
+		testFramework.assert(fabs(empty.geti_offset()) < eps, testMesg, __LINE__);
 		testMesg = "OMEGAdot not initialized to 0";
-		testFramework.assert(fabs(AlmOrbit::OMEGAdot) < eps, testMesg, __LINE__); 
+		testFramework.assert(fabs(empty.getOMEGAdot()) < eps, testMesg, __LINE__); 
 		testMesg = "Ahalf not initialized to 0";
-		testFramework.assert(fabs(AlmOrbit::Ahalf) < eps, testMesg, __LINE__);
+		testFramework.assert(fabs(empty.getAhalf()) < eps, testMesg, __LINE__);
 		testMesg = "OMEGA0 not initialized to 0";
-		testFramework.assert(fabs(AlmOrbit::OMEGA0) < eps, testMesg, __LINE__);
+		testFramework.assert(fabs(empty.getOMEGA0()) < eps, testMesg, __LINE__);
 		testMesg = "W not initialized to 0";
-		testFramework.assert(fabs(AlmOrbit::w) < eps, testMesg, __LINE__);
+		testFramework.assert(fabs(empty.getw()) < eps, testMesg, __LINE__);
 		testMesg = "M0 not initialized to 0";
-		testFramework.assert(fabs(AlmOrbit::M0) < eps, testMesg, __LINE__);
+		testFramework.assert(fabs(empty.getM0()) < eps, testMesg, __LINE__);
 		testMesg = "AF0 not initialized to 0";
-		testFramework.assert(fabs(AlmOrbit::AF0) < eps, testMesg, __LINE__);
+		testFramework.assert(fabs(empty.getAF0()) < eps, testMesg, __LINE__);
 		testMesg = "AF1 not initialized to 0";
-		testFramework.assert(fabs(AlmOrbit::AF1) < eps, testMesg, __LINE__);
+		testFramework.assert(fabs(empty.getAF1()) < eps, testMesg, __LINE__);
 		testMesg = "Toa not initialized to 0";
-		testFramework.assert(AlmOrbit::Toa == 0, testMesg, __LINE__);
+		testFramework.assert(empty.getToaSOW() == 0, testMesg, __LINE__);
 		testMesg = "Xmit_time not initialized to 0";
-		testFramework.assert(AlmOrbit::xmit_time == 0, testMesg, __LINE__);
+		testFramework.assert(empty.getxmit_time() == 0, testMesg, __LINE__);
 		testMesg = "Week not initialized to 0";
-		testFramework.assert(AlmOrbit::week == 0, testMesg, __LINE__);
-		testMesg = "SV_health not initialized to 0";
-		testFramework.assert(AlmOrbit::SV_health == 0, testMesg, __LINE__);
+		testFramework.assert(empty.getToaWeek() == 0, testMesg, __LINE__);
+//	No SV health get method
+//		testMesg = "SV_health not initialized to 0";
+//		testFramework.assert(empty.getSV_health() == 0, testMesg, __LINE__);
 
 //============================================================================
 
 //		Should be tested by testing the inhereted members as comparison points
-//		instead of using the get methods, but for the life of me I can't figure
-//		out why AlmOrbit::week/Compare.PRN don't work
+//		instead of using the get methods, but Compare.PRN doesn't work due to
+//		inheritance issues
 
 //============================================================================
 
@@ -96,8 +98,9 @@ class AlmOrbit_T : public gpstk::AlmOrbit
 		testFramework.assert(Compare.getxmit_time() == 250560, testMesg, __LINE__);
 		testMesg = "Week value was not initialized correctly";
 		testFramework.assert(Compare.getToaWeek() == 797, testMesg, __LINE__);
-		testMesg = "SV_health value was not initialized correctly";
-		testFramework.assert(AlmOrbit::SV_health == 0, testMesg, __LINE__);
+//	No SV health get method
+//		testMesg = "SV_health value was not initialized correctly";
+//		testFramework.assert(AlmOrbit::SV_health == 0, testMesg, __LINE__);
 
 		return testFramework.countFails();
 	

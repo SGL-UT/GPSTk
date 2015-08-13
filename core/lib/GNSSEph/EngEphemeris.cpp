@@ -317,6 +317,25 @@ namespace gpstk
 	  return true;
    }
 
+   bool EngEphemeris :: isValid() const
+      throw()
+   {
+      try
+      {
+         return ((PRNID >= 1) && (PRNID <= 37) &&
+                 (HOWtime[0] >= 0) && (HOWtime[0] <= 604784) &&
+                 (HOWtime[1] >= 0) && (HOWtime[1] <= 604784) &&
+                 (HOWtime[2] >= 0) && (HOWtime[2] <= 604784) &&
+                 (getToc() >= 0) && (getToc() <= 604784) &&
+                 (getToe() >= 0) && (getToe() <= 604784) &&
+                 (getEcc() >= 0) && (getEcc() <= 0.03));
+      }
+      catch( ... )
+      {
+         return false;
+      }
+   }
+
    bool EngEphemeris::isData(short subframe) const
       throw( InvalidRequest )
    {
@@ -328,6 +347,15 @@ namespace gpstk
       }
 
       return haveSubframe[subframe-1];
+   }
+
+   bool EngEphemeris :: isDataSet() const
+   {
+      if (haveSubframe[0] && haveSubframe[1] && haveSubframe[2])
+      {
+         return ((IODC & 0xff) == (IODE & 0xff));
+      }
+      return false;
    }
 
    void EngEphemeris::setAccuracy(const double& acc)
@@ -342,16 +370,19 @@ namespace gpstk
       orbit.setAccuracy(acc);
    }
 
-      /**
-      *This is for Block II/IIA
-      *Need update for Block IIR and IIF
-      */
    short EngEphemeris :: getFitInterval() const
-      throw( InvalidRequest )
+      throw(InvalidRequest)
    {
-      short iodc = getIODC();
-      short fiti = getFitInt();
+      return getFitInterval(getIODC(), getFitInt());
+   }
 
+      /**
+      * This is for Block II/IIA
+      * Need update for Block IIR and IIF
+      */
+   short EngEphemeris :: getFitInterval(short iodc, short fiti)
+      throw(InvalidRequest)
+   {
          /* check the IODC */
       if (iodc < 0 || iodc > 1023)
       {

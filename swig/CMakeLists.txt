@@ -168,7 +168,6 @@ include_directories( ${SWIG_DOC_DIR} )
 #----------------------------------------
 
 # Provide ability to use CMake variables to define some values within the setup.py script
-set( PYTHON_PACKAGE_VERSION "${gpstk_VERSION_MAJOR}.${gpstk_VERSION_MINOR}" )
 set( SETUP_PY_IN "${CMAKE_CURRENT_SOURCE_DIR}/setup.py.in" )
 set( SETUP_PY    "${INSTALL_PACKAGE_PATH}/setup.py" )
 configure_file( ${SETUP_PY_IN} ${SETUP_PY} )

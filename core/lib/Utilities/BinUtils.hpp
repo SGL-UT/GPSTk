@@ -87,7 +87,8 @@ namespace gpstk
           * double.
           * @param p object whose bytes are to be reversed.
           */
-      template <class T> void twiddle(T& p)
+      template <class T>
+      inline void twiddle(T& p)
          throw()
       {
          unsigned char *front = (unsigned char*)&p;
@@ -109,7 +110,8 @@ namespace gpstk
           * @param p the object whose bytes are to be modified.
           * @return a new object which is in Intel byte ordering.
           */
-      template <class T> T intelToHost(const T& p)
+      template <class T>
+      inline T intelToHost(const T& p)
          throw()
       {
          T temp(p);
@@ -124,7 +126,8 @@ namespace gpstk
           * @param p the object whose bytes are to be modified
           * @return a new object which is in host byte ordering.
           */
-      template <class T> T hostToIntel(const T& p)
+      template <class T>
+      inline T hostToIntel(const T& p)
          throw()
       {
          T temp(p);
@@ -139,7 +142,8 @@ namespace gpstk
           * @param p the object whose bytes are to be modified.
           * @return a new object which is in network byte order.
           */
-      template <class T> T netToHost(const T& p)
+      template <class T>
+      inline T netToHost(const T& p)
          throw()
       {
          T temp(p);
@@ -154,7 +158,8 @@ namespace gpstk
           * @param p the object whose bytes are to be modified.
           * @return a new object which is in host byte order.
           */
-      template <class T> T hostToNet(const T& p)
+      template <class T>
+      inline T hostToNet(const T& p)
          throw()
       {
          T temp(p);
@@ -164,31 +169,34 @@ namespace gpstk
          return temp;
       }
 
-         /** 
-          * Remove (optionally) the item specified from the string and convert it
+         /**
+          * Decode the item specified from the string and convert it
           * from network byte order to host byte order.
           * @param str the string from which to obtain data.
-          * @param pos an offset into the string to pull the data from. If this
-          * value is specified, the item is not removed from the string.
+          * @param pos offset into the string from which to pull the data.
           * @warn This function does not check for appropriate string length.
           */
       template <class T>
-      T decodeVar( std::string& str, std::string::size_type pos = std::string::npos)
+      inline T decodeVar( const std::string& str,
+                          std::string::size_type pos )
       {
          T t;
          char *cp = reinterpret_cast<char*>( &t );
+         str.copy( cp, sizeof(T), pos );
+         return gpstk::BinUtils::netToHost( t );
+      }
 
-         if (pos == std::string::npos)
-         {
-            str.copy( cp, sizeof(T) );
-            t = gpstk::BinUtils::netToHost( t );
-            str.erase( 0, sizeof(T) );
-         }
-         else
-         {
-            str.copy( cp, sizeof(T) , pos);
-            t = gpstk::BinUtils::netToHost( t );
-         }
+         /**
+          * Decode and remove the item specified from the head of the string
+          * and convert it from network byte order to host byte order.
+          * @param str the string from which to obtain data.
+          * @warn This function does not check for appropriate string length.
+          */
+      template <class T>
+      inline T decodeVar( std::string& str )
+      {
+         T t = gpstk::BinUtils::decodeVar<T>(str, 0);
+         str.erase( 0, sizeof(T) );
          return t;
       }
 
@@ -198,7 +206,7 @@ namespace gpstk
           * @param v the object of type T to convert to a string.
           */
       template<class T>
-      std::string encodeVar( const T& v )
+      inline std::string encodeVar( const T& v )
       {
          T tmp = v;
          tmp = gpstk::BinUtils::hostToNet( v );
@@ -389,9 +397,9 @@ namespace gpstk
       {
             // Stolen from http://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetParallel
          uint32_t c; // store the total here
-         const int S[] = {1, 2, 4, 8, 16}; // Magic Binary Numbers
-         const uint32_t B[] = {0x55555555, 0x33333333, 0x0F0F0F0F, 0x00FF00FF,
-                               0x0000FFFF};
+         static const int S[] = {1, 2, 4, 8, 16}; // Magic Binary Numbers
+         static const uint32_t B[] = {0x55555555, 0x33333333, 0x0F0F0F0F, 0x00FF00FF,
+                                      0x0000FFFF};
 
             // ...and if we were to turn this into a loop, it would
             // totally defeat the purpose.  The point here is to be

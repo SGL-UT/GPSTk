@@ -27,6 +27,7 @@ elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
     set( CMAKE_INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib" )
     set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -shared" )
 elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" )
+    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2" )
     set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -shared" )
 elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
 
@@ -136,11 +137,12 @@ include_directories( "${PROJECT_BINARY_DIR}/generated/" )
 install( FILES "${PROJECT_BINARY_DIR}/generated/build_config.h" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}" )
 
 
-#----------------------------------------
-# Experimental: build debs, tgz packages
-# Usage: "$ make package"
-#----------------------------------------
+#-----------------------------------------
+# Build debs, tgz packages for binaries 
+# Usage: "$ make package" 
+#-----------------------------------------
 	
+
 set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "GPSTk libraries and applications for GNSS processing.") 
 set( CPACK_PACKAGE_VENDOR "ARL:UT SGL" )
 set( CPACK_PACKAGE_CONTACT "Bryan Parsons" )
@@ -155,6 +157,15 @@ set( CPACK_DEBIAN_SECTION "stable" )
 set( CPACK_DEBIAN_PACKAGE_SECTION "science" )
 
 set( CPACK_GENERATOR "DEB;TGZ" )
+
+#-----------------------------------------
+# Build tgz packages for source release
+# Usage: "$ make package_source" 
+#-----------------------------------------
+
+set( CPACK_SOURCE_IGNORE_FILES "/build/")
+set( CPACK_SOURCE_GENERATOR "TGZ")
+
 include( CPack )
 
 #----------------------------------------

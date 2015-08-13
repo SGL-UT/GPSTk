@@ -1,3 +1,10 @@
+/// @file SRIFilter.cpp  Implementation of class SRIFilter.
+/// class SRIFilter implements the square root information matrix form of the
+/// Kalman filter.
+///
+/// Reference: "Factorization Methods for Discrete Sequential Estimation,"
+///             G.J. Bierman, Academic Press, 1977.
+
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -33,16 +40,6 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
-
-/**
- * @file SRIFilter.cpp
- * Implementation of class SRIFilter.
- * class SRIFilter implements the square root information matrix form of the
- * Kalman filter.
- *
- * Reference: "Factorization Methods for Discrete Sequential Estimation,"
- *             G.J. Bierman, Academic Press, 1977.
- */
 
 //------------------------------------------------------------------------------------
 #include "SRIFilter.hpp"
@@ -127,15 +124,14 @@ SRIFilter& SRIFilter::operator=(const SRIFilter& right)
 
 //------------------------------------------------------------------------------------
 // SRIF (Kalman) measurement update, or least squares update
-// Returns (whitened) residuals in D
-void SRIFilter::measurementUpdate(const Matrix<double>& H,
-                                  Vector<double>& D,
+// Returns unwhitened residuals in D
+void SRIFilter::measurementUpdate(const Matrix<double>& H, Vector<double>& D,
                                   const Matrix<double>& CM)
    throw(MatrixException,VectorException)
 {
    if(H.cols() != R.cols() || H.rows() != D.size() ||
-      (&CM != &SRINullMatrix && (CM.rows() != D.size() || CM.cols() != D.size())) ) {
-
+      (&CM != &SRINullMatrix && (CM.rows() != D.size() || CM.cols() != D.size())) )
+   {
       string msg("\nInvalid input dimensions:\n  SRI is ");
       msg += asString<int>(R.rows()) + "x"
           + asString<int>(R.cols()) + ",\n  Partials is "
@@ -150,14 +146,11 @@ void SRIFilter::measurementUpdate(const Matrix<double>& H,
       GPSTK_THROW(me);
    }
    try {
-      Matrix<double> P(H);
-      Cholesky<double> Ch;
-
          // whiten partials and data
+      Matrix<double> P(H);
+      Matrix<double> CHL(lowerCholesky(CM));
       if(&CM != &SRINullMatrix) {
-         Matrix<double> L;
-         Ch(CM);
-         L = inverse(Ch.L);
+         Matrix<double> L(inverseLT(CHL));
          P = L * P;
          D = L * D;
       }
@@ -166,8 +159,55 @@ void SRIFilter::measurementUpdate(const Matrix<double>& H,
       SrifMU(R, Z, P, D);
 
          // un-whiten residuals
-      if(&CM != &SRINullMatrix) {
-         D = Ch.L * D;
+      if(&CM != &SRINullMatrix) {         // same if above creates CHL
+         D = CHL * D;
+      }
+   }
+   catch(MatrixException& me) { GPSTK_RETHROW(me); }
+   catch(VectorException& ve) { GPSTK_RETHROW(ve); }
+}
+
+//------------------------------------------------------------------------------------
+// SRIF (Kalman) measurement update, or least squares update -- SparseMatrix version
+// Returns unwhitened residuals in D
+void SRIFilter::measurementUpdate(const SparseMatrix<double>& H, Vector<double>& D,
+                                  const SparseMatrix<double>& CM)
+   throw(MatrixException,VectorException)
+{
+   if(H.cols() != R.cols() || H.rows() != D.size() ||
+      (&CM != &SRINullSparseMatrix &&
+         (CM.rows() != D.size() || CM.cols() != D.size())) )
+   {
+      string msg("\nInvalid input dimensions:\n  SRI is ");
+      msg += asString<int>(R.rows()) + "x"
+          + asString<int>(R.cols()) + ",\n  Partials is "
+          + asString<int>(H.rows()) + "x"
+          + asString<int>(H.cols()) + ",\n  Data has length "
+          + asString<int>(D.size());
+      if(&CM != &SRINullSparseMatrix) msg += ",\n  and Cov is "
+          + asString<int>(CM.rows()) + "x"
+          + asString<int>(CM.cols());
+
+      MatrixException me(msg);
+      GPSTK_THROW(me);
+   }
+   try {
+      SparseMatrix<double> A(H || D);
+      SparseMatrix<double> CHL;
+         // whiten partials and data
+      if(&CM != &SRINullSparseMatrix) {
+         CHL = lowerCholesky(CM);
+         SparseMatrix<double> L(inverseLT(CHL));
+         A = L * A;
+      }
+
+         // update *this with the whitened information
+      SrifMU(R, Z, A);
+
+         // copy out D and un-whiten residuals
+      D = Vector<double>(A.colCopy(A.cols()-1));
+      if(&CM != &SRINullSparseMatrix) {      // same if above creates CHL
+         D = CHL * D;
       }
    }
    catch(MatrixException& me) { GPSTK_RETHROW(me); }
@@ -817,7 +857,7 @@ void SRIFilter::SrifSU_DM(Matrix<T>& P,
    }
 
 try {
-   G = G * inverse(Rw);
+   G = G * inverseLUD(Rw);
    Matrix<T> F;
    F = ident<T>(N) + G*Rwx;
    // update X
@@ -872,7 +912,7 @@ void DMsmootherUpdateWithControl(Matrix<double>& P,
    }
 
 try {
-   G = G * inverse(Rw);
+   G = G * inverseLUD(Rw);
    Matrix<T> F;
    F = ident<T>(N) + G*Rwx;
    // update X

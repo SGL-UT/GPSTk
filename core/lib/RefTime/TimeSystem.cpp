@@ -152,7 +152,8 @@ namespace gpstk
          { 1999,  1, 32 },
          { 2006,  1, 33 },
          { 2009,  1, 34 },
-         { 2012,  7, 35 }, // leave the last comma!
+         { 2012,  7, 35 },
+         { 2015,  7, 36 }, // leave the last comma!
          // add new entry here, of the form:
          // { year, month(1-12), leap_sec }, // leave the last comma!
       };

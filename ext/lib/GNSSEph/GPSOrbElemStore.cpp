@@ -149,7 +149,7 @@ namespace gpstk
                  << " TOC " << printTime(oe->ctToc,fmt)
                  << " KEY " << printTime(ei->first,fmt);
                s << " begVal: " << printTime(oe->beginValid,fmt)
-                 << "q endVal: " << printTime(oe->endValid,fmt); 
+                 << " endVal: " << printTime(oe->endValid,fmt); 
                 
                s << std::endl;
             } //end inner for-loop */
@@ -216,20 +216,20 @@ namespace gpstk
 // Keeps only one OrbElem for a given SVN and Toe.
 // It should keep the one with the earliest transmit time.
 //------------------------------------------------------------------------------------ 
-   bool GPSOrbElemStore::addOrbElem(const OrbElem& eph)
+   bool GPSOrbElemStore::addOrbElem(const OrbElem* eph)
       throw(InvalidParameter,Exception)
    {
      try
      {
 
-     SatID sid = eph.satID;
+     SatID sid = eph->satID;
      OrbElemMap& oem = ube[sid];
      string ts = "%02m/%02d/%02y %02H:%02M:%02S";
 
        // if map is empty, load object and return
      if (oem.size()==0)
      {
-        oem[eph.beginValid] = eph.clone();
+        oem[eph->beginValid] = eph->clone();
         updateInitialFinal(eph);
         return (true);
      }
@@ -237,12 +237,12 @@ namespace gpstk
        // If found candidate, should be same data
        // as already in table. Test this by comparing
        // Toe values.
-     OrbElemMap::iterator it = oem.find(eph.beginValid);
+     OrbElemMap::iterator it = oem.find(eph->beginValid);
      if(it!=oem.end())
      {
         const OrbElem* oe = it->second;
           // Found duplicate already in table
-        if(oe->ctToe==eph.ctToe)
+        if(oe->ctToe==eph->ctToe)
         {
             return (false);
         }
@@ -251,10 +251,10 @@ namespace gpstk
         {
            string str = "Unexpectedly found matching beginValid times";
            stringstream os;
-           os << eph.satID.id;
+           os << eph->satID.id;
            str += " but different Toe.   PRN= " + os.str();
-           str += ", beginValid= " + printTime(eph.beginValid,ts);
-           str += ", Toe(map)= " + printTime(eph.ctToe,ts);
+           str += ", beginValid= " + printTime(eph->beginValid,ts);
+           str += ", Toe(map)= " + printTime(eph->ctToe,ts);
            str += ", Toe(candidate)= "+ printTime(oe->ctToe," %6.0g");
            str += ". ";
            InvalidParameter exc( str );
@@ -264,19 +264,19 @@ namespace gpstk
         // Did not already find match to
         // beginValid in map
         // N.B:: lower_bound will reutrn element beyond key since there is no match
-     it = oem.lower_bound(eph.beginValid);
+     it = oem.lower_bound(eph->beginValid);
         // Case where candidate is before beginning of map
      if(it==oem.begin())
      {
         const OrbElem* oe = it->second;
-        if(oe->ctToe==eph.ctToe)
+        if(oe->ctToe==eph->ctToe)
         {
            oem.erase(it);
-           oem[eph.beginValid] = eph.clone();
+           oem[eph->beginValid] = eph->clone();
            updateInitialFinal(eph);
            return (true);
         }
-        oem[eph.beginValid] = eph.clone();
+        oem[eph->beginValid] = eph->clone();
         updateInitialFinal(eph);
         return (true);
      }
@@ -286,9 +286,9 @@ namespace gpstk
           // Get last item in map and check Toe
         OrbElemMap::reverse_iterator rit = oem.rbegin();
         const OrbElem* oe = rit->second;
-        if(oe->ctToe!=eph.ctToe)
+        if(oe->ctToe!=eph->ctToe)
         {
-           oem[eph.beginValid] = eph.clone();
+           oem[eph->beginValid] = eph->clone();
            updateInitialFinal(eph);
            return (true);
         }
@@ -298,10 +298,10 @@ namespace gpstk
         // Check if iterator points to late transmission of
         // same OrbElem as candidate
      const OrbElem* oe = it->second;
-     if(oe->ctToe==eph.ctToe)
+     if(oe->ctToe==eph->ctToe)
      {
         oem.erase(it);
-        oem[eph.beginValid] = eph.clone();
+        oem[eph->beginValid] = eph->clone();
         updateInitialFinal(eph);
         return (true);
      }
@@ -313,9 +313,9 @@ namespace gpstk
         // Already checked for it==oem.beginValid() earlier
      it--;
      const OrbElem* oe2 = it->second;
-     if(oe2->ctToe!=eph.ctToe)
+     if(oe2->ctToe!=eph->ctToe)
      {
-        oem[eph.beginValid] = eph.clone();
+        oem[eph->beginValid] = eph->clone();
         updateInitialFinal(eph);
         return (true);
      }
@@ -550,6 +550,7 @@ namespace gpstk
 	      OrbElemMap::iterator eiPrev;
          bool begin = true;
          double previousOffset = 0.0;
+         long previousToe = 0.0;
          bool previousIsOffset = false; 
          bool currentIsOffset = false;
          bool previousBeginAdjusted = false;
@@ -587,7 +588,9 @@ namespace gpstk
                //cout << " current, previous Offset = " << currentOffset << ", " << previousOffset << endl; 
             
                   // If this set is offset AND the previous set is offset AND
-                  // the two offsets are the same, then this is the SECOND
+                  // the two offsets are the same AND the difference
+                  // in time between the two Toe == two hours, 
+                  // then this is the SECOND
                   // set of elements in an upload.  In that case the OrbElem
                   // load routines have conservatively set the beginning time
                   // of validity to the transmit time because there was no
@@ -603,9 +606,11 @@ namespace gpstk
                   // loop without destroying the integrity of the
                   // iterator.  This is handled later in a second
                   // loop.  See notes on the second loop, below. 
+               long diffToe = Toe - previousToe;
                if (previousIsOffset &&
                    currentIsOffset  &&
-                   currentOffset==previousOffset)
+                   currentOffset==previousOffset &&
+                   diffToe==7200)
                {
                  //cout << "*** Adjusting beginValid.  Initial value: "
                  //     << printTime(oe->beginValid,tForm); 
@@ -686,6 +691,7 @@ namespace gpstk
             
                // Update condition flags for next loop
             previousIsOffset = currentIsOffset;
+            previousToe      = Toe;
 
                // If beginValid was adjusted for THIS oe, set
                // the flag previousBeginAdjusted so we have that

@@ -102,7 +102,7 @@ namespace gpstk
           * Store a subframe in this object.  This method is provided in 
           * order to allow construction of an EngEphemeris object for
           * cases where a receiver only provides the 24 msb of each
-          * word and strips the parity.l  
+          * word and strips the parity.
           * @param subframe ten word navigation subframe (minus the six
           * parity bits) stored in the 24 least-significant bits of
           * each array index.
@@ -151,6 +151,14 @@ namespace gpstk
                                  const short track);
 
          /**
+          * Checks all quantities (present or not) to determine
+          * whether they fall within the effective range as described
+          * in the IS-GPS-200.
+          * @return true if all values are within their effective range.
+          */
+      bool isValid() const throw();
+
+         /**
           * Query presence of subframe in this object.
           * @param subframe subframe ID (1-3) to check.
           * @return true if the given subframe is present in this object.
@@ -159,6 +167,15 @@ namespace gpstk
           */
       bool isData(short subframe) const
          throw( gpstk::InvalidRequest );
+
+         /**
+          * Return whether the ephemeris contains a complete data set,
+          * i.e. whether the ephemeris contains subframes 1-3 with matching
+          * IODC and IODE values.
+          * @return true if the ephemeris is a complete data set,
+          *         false if a data set cutover has occured
+          */
+      bool isDataSet() const;
 
          /**
           * Set the value of the SV accuracy (in meters).  This is the only
@@ -190,11 +207,20 @@ namespace gpstk
       short getFitInterval() const
          throw( gpstk::InvalidRequest );
 
+         /**
+          * Static version of the above.
+          * @param iodc the IODC of the ephemeris.
+          * @param fiti the fit interval flag of same ephemeris.
+          * @return the fit interval in hours (0 = failure).
+          * @throw InvalidRequest if data is missing.
+          */
+      static short getFitInterval(short iodc, short fiti)
+         throw(gpstk::InvalidRequest);
+
          /** Compute satellite position & velocity at the given time
           * using this ephemeris.
           * @throw InvalidRequest if a required subframe has not been stored.
           */
-
       Xvt svXvt(const CommonTime& t) const
          throw( gpstk::InvalidRequest );
 
@@ -444,7 +470,7 @@ namespace gpstk
           * Values contained in SubFrame 1.
           * @param tlm the new value for the TLM word
           * @param how the new value for the HOW
-          * @param asalert the new falue for the A-S alert flag
+          * @param asalert the new value for the A-S alert flag
           * @param fullweek the new value for the full GPS week
           * @param cflags the nve values for the L2 code flags
           * @param acc the new value for the SV accuracy flag

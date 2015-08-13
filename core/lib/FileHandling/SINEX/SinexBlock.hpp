@@ -17,6 +17,7 @@
 #include <vector>
 #include <map>
 #include "SinexBase.hpp"
+#include "SinexTypes.hpp"
 
 namespace gpstk
 {
@@ -112,7 +113,8 @@ namespace Sinex
          {
             try
             {
-               s << (std::string)(*i) << std::endl;
+               const Sinex::DataType&  d = *i;
+               s << (std::string)d << std::endl;
             }
             catch (Exception& exc)
             {

@@ -1,5 +1,3 @@
-#pragma ident "$Id: //depot/msn/main/code/shared/gpstk/TimeRange.cpp#7 $"
-
 #include "TimeRange.hpp"
 #include "TimeString.hpp"
 

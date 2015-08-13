@@ -136,7 +136,8 @@ public:
       /// operator=
    Namelist& operator=(const Namelist& right)
       { labels = right.labels; return *this; }
-      /// add a single name to the Namelist; do nothing if the name is not unique.
+      /// add a single name to the Namelist
+      /// @throw if the name is not unique
    Namelist& operator+=(const std::string&);
       /// remove a name from the Namelist; does nothing if the name is not found.
    Namelist& operator-=(const std::string&);
