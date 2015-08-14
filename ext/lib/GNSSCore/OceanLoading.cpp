@@ -181,7 +181,7 @@ namespace gpstk
       Vector<double> arguments(NUM_HARMONICS,0.0);
 
          // Get day of year
-      short year(static_cast<YDSTime>(time).year);
+      int year(static_cast<YDSTime>(time).year);
 
          // Fractional part of day, in seconds
       double fday(static_cast<YDSTime>(time).sod);

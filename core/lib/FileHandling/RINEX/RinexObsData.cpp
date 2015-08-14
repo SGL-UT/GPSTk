@@ -179,7 +179,7 @@ namespace gpstk
 
 
    void RinexObsData::reallyGetRecord(FFStream& ffs)
-      throw(exception, FFStreamError, gpstk::StringUtils::StringException)
+      throw(std::exception, FFStreamError, gpstk::StringUtils::StringException)
    {
       RinexObsStream& strm = dynamic_cast<RinexObsStream&>(ffs);
 

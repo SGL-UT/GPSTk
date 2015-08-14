@@ -391,7 +391,7 @@ covariance matrix.");
          satTypeValueMap dummy(gData.body.extractTypeID(TypeID::weight));
 
             // Count the number of satellites with weights
-         int nW(dummy.numSats());
+         size_t nW(dummy.numSats());
          for (int i=0; i<numMeas; i++)
          {
             if (nW == numMeas)   // Check if weights match

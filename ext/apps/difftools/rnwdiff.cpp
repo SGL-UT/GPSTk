@@ -159,7 +159,7 @@ void RNWDiff::process()
            << endl
            << "Terminating.." << endl;
    }
-   catch(exception& e)
+   catch(std::exception& e)
    {
       cout << e.what() << endl
            << endl
@@ -187,7 +187,7 @@ int main(int argc, char* argv[])
    {
       cout << e << endl;
    }
-   catch(exception& e)
+   catch(std::exception& e)
    {
       cout << e.what() << endl;
    }

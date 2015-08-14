@@ -385,7 +385,7 @@ int Robust::RobustPolyFit(double *xd, const double *td, int nd,
       return 0;
    }
    catch(Exception& e) { GPSTK_RETHROW(e); }
-   catch(exception& e) {
+   catch(std::exception& e) {
       Exception E("std except: "+string(e.what()));
       GPSTK_THROW(E);
    }
@@ -445,7 +445,7 @@ double gpstk::ADtest(double *xd, const int nd,
       return AD;
    }
    catch(Exception& e) { GPSTK_RETHROW(e); }
-   catch(exception& e) {
+   catch(std::exception& e) {
       Exception E("std except: "+string(e.what()));
       GPSTK_THROW(E);
    }

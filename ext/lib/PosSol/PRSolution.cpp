@@ -240,7 +240,7 @@ namespace gpstk
          }
 
          // dimension of the solution vector (3 pos + 1 clk/sys)
-         const int dim(3 + mySyss.size());
+         const size_t dim(3 + mySyss.size());
          if(dim > 4) Mixed = true;
 
          // require number of good satellites to be >= number unknowns (no RAIM here)

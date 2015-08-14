@@ -94,7 +94,7 @@ namespace gpstk
    }
 
    void RinexNavData::reallyPutRecord(FFStream& ffs) const
-      throw(exception, FFStreamError, StringException)
+      throw(std::exception, FFStreamError, StringException)
    {
       RinexNavStream& strm = dynamic_cast<RinexNavStream&>(ffs);
 
@@ -117,7 +117,7 @@ namespace gpstk
    }
 
    void RinexNavData::reallyGetRecord(FFStream& ffs)
-      throw(exception, FFStreamError, StringException)
+      throw(std::exception, FFStreamError, StringException)
    {
       RinexNavStream& strm = dynamic_cast<RinexNavStream&>(ffs);
 

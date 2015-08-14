@@ -106,7 +106,7 @@ namespace gpstk
          }
 
          // pull data out of the data table
-         int n,Nlow(Nhalf-1),Nhi(Nhalf),Nmatch(Nhalf);
+         size_t n,Nlow(Nhalf-1),Nhi(Nhalf),Nmatch(Nhalf);
          CommonTime ttag0(it1->first);
          vector<double> times,P[3],V[3],A[3],sigP[3],sigV[3],sigA[3];
 

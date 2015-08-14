@@ -52,7 +52,7 @@ public:
    typedef std::complex<C> Ctype;
 
    /// param d this is the number of samples to delay the code by
-   SimpleCorrelator(unsigned d=0) : delay(d+1), sum(0)
+   SimpleCorrelator(unsigned d=0) : delay(d+1), sum(0,0)
    {}
    
    inline void process(std::complex<C> in, Ctype code) throw()

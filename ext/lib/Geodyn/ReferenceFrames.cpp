@@ -171,7 +171,7 @@ namespace gpstk
       {
          GPSTK_RETHROW(e);
       }
-      catch(exception& e)
+      catch(std::exception& e)
       {
          Exception ee(e.what());
          GPSTK_THROW(ee);

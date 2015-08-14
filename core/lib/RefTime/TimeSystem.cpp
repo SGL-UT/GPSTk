@@ -178,8 +178,8 @@ namespace gpstk
 
             // found last record with < rec.year >= year and rec.month >= month
             // watch out - cannot use CommonTime here
-            int iday(day);
-            double dday(iday-int(day));
+            int iday(static_cast<int>(day));
+            double dday(static_cast<double>(iday-int(day)));
             if(iday == 0) { iday = 1; dday = 1.0-dday; }
             long JD0 = convertCalendarToJD(year,month,iday);
             long JD = convertCalendarToJD(preleap[i].year,preleap[i].month,1);

@@ -90,7 +90,7 @@ namespace gpstk
    const string Rinex3ObsHeader::stringEoH               = "END OF HEADER";
 
    void Rinex3ObsHeader::reallyPutRecord(FFStream& ffs) const
-      throw(exception, FFStreamError, StringException)
+      throw(std::exception, FFStreamError, StringException)
    {
       Rinex3ObsStream& strm = dynamic_cast<Rinex3ObsStream&>(ffs);
 
@@ -769,7 +769,7 @@ namespace gpstk
       if(version >= 3.01 && (valid & validGlonassFreqNo))
       {
          //map<RinexSatID,int> GlonassFreqNo;
-         int n(0),nsat(GlonassFreqNo.size());
+         size_t n(0),nsat(GlonassFreqNo.size());
          line = rightJustify(asString(nsat),3) + string(" ");
          map<RinexSatID,int>::const_iterator it,kt;
          for(it = GlonassFreqNo.begin(); it != GlonassFreqNo.end(); ++it) {
@@ -1429,7 +1429,7 @@ namespace gpstk
 
    // This function parses the entire header from the given stream
    void Rinex3ObsHeader::reallyGetRecord(FFStream& ffs)
-      throw(exception, FFStreamError, 
+      throw(std::exception, FFStreamError, 
             gpstk::StringUtils::StringException)
    {
       Rinex3ObsStream& strm = dynamic_cast<Rinex3ObsStream&>(ffs);

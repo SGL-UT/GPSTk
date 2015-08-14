@@ -214,7 +214,7 @@ namespace gpstk
        *   stream to its pre-read position.
        */
    void IonexData::reallyGetRecord(FFStream& ffs)
-      throw( exception, FFStreamError, gpstk::StringUtils::StringException )
+      throw( std::exception, FFStreamError, gpstk::StringUtils::StringException )
    {
 
       IonexStream& strm = dynamic_cast<IonexStream&>(ffs);

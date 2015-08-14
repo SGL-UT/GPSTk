@@ -395,7 +395,7 @@ int ReadFile(int nfile) throw(Exception)
       return iret;
    }
    catch(Exception& e) { GPSTK_RETHROW(e); }
-   catch(exception& e)
+   catch(std::exception& e)
       { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
    catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
@@ -558,7 +558,7 @@ int ProcessOneEntireEpoch(RinexObsData& roe) throw(Exception)
       return 0;
    }
    catch(Exception& e) { GPSTK_RETHROW(e); }
-   catch(exception& e)
+   catch(std::exception& e)
       { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
    catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
@@ -628,7 +628,7 @@ int ProcessOneSatOneEpoch(GSatID sat, CommonTime tt, unsigned short& flag,
 
    }
    catch(Exception& e) { GPSTK_RETHROW(e); }
-   catch(exception& e)
+   catch(std::exception& e)
       { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
    catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
@@ -692,7 +692,7 @@ void ProcessSatPass(int in) throw(Exception)
       // status == 100 means 'failed'
    }
    catch(Exception& e) { GPSTK_RETHROW(e); }
-   catch(exception& e)
+   catch(std::exception& e)
       { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
    catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
@@ -731,7 +731,7 @@ int AfterReadingFiles(void) throw(Exception)
       return 0;
    }
    catch(Exception& e) { GPSTK_RETHROW(e); }
-   catch(exception& e)
+   catch(std::exception& e)
       { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
    catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
@@ -776,7 +776,7 @@ void WriteToRINEXfile(void) throw(Exception)
       WriteRINEXdata(WriteEpoch,targetTime);
    }
    catch(Exception& e) { GPSTK_RETHROW(e); }
-   catch(exception& e)
+   catch(std::exception& e)
       { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
    catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
@@ -842,7 +842,7 @@ void WriteRINEXheader(void) throw(Exception)
       orfstr << rheadout;
    }
    catch(Exception& e) { GPSTK_RETHROW(e); }
-   catch(exception& e)
+   catch(std::exception& e)
       { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
    catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
@@ -964,7 +964,7 @@ void WriteRINEXdata(CommonTime& WriteEpoch, const CommonTime targetTime) throw(E
 
    }
    catch(Exception& e) { GPSTK_RETHROW(e); }
-   catch(exception& e)
+   catch(std::exception& e)
       { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
    catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
@@ -1540,7 +1540,7 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
 
    } // end try
    catch(Exception& e) { GPSTK_RETHROW(e); }
-   catch(exception& e)
+   catch(std::exception& e)
       { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
    catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
@@ -1622,7 +1622,7 @@ void PreProcessArgs(const char *arg, vector<string>& Args) throw(Exception)
       //if(debug) cout << "arg " << string(arg) << endl;
    }
    catch(Exception& e) { GPSTK_RETHROW(e); }
-   catch(exception& e)
+   catch(std::exception& e)
       { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
    catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }

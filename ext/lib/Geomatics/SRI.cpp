@@ -365,7 +365,7 @@ using namespace StringUtils;
          }
 
          // append to names at the end, and to R Z, zero filling
-         const int I(names.size());
+         const size_t I(names.size());
          *this += S.names;
 
          // just in case...to avoid overflow in loop below

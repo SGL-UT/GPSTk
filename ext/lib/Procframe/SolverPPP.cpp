@@ -354,13 +354,13 @@ covariance matrix.");
          SatIDSet currSatSet( gData.body.getSatID() );
 
             // Get the number of satellites currently visible
-         int numCurrentSV( gData.numSats() );
+         size_t numCurrentSV( gData.numSats() );
 
             // Update set with satellites being processed so far
          satSet.insert( currSatSet.begin(), currSatSet.end() );
 
             // Get the number of satellites to be processed
-         int numSV( satSet.size() );
+         size_t numSV( satSet.size() );
 
             // Number of measurements is twice the number of visible satellites
          numMeas = 2 * numCurrentSV;

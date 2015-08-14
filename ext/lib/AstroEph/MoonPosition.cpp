@@ -462,7 +462,7 @@ namespace gpstk
 
 
          // Centuries since J1900
-      double tt((MJD(t).mjd-15019.5)/36525.0);
+      double tt(static_cast<double>((MJD(t).mjd-15019.5)/36525.0));
 
 
          // Fundamental arguments (radians) and derivatives (radians per

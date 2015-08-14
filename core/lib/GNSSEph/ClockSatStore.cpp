@@ -84,7 +84,7 @@ namespace gpstk
          }
 
          // pull data out of the data table
-         int n,Nlow(Nhalf-1),Nhi(Nhalf),Nmatch(Nhalf);
+         size_t n,Nlow(Nhalf-1),Nhi(Nhalf),Nmatch(Nhalf);
          CommonTime ttag0(it1->first);
          vector<double> times,biases,drifts,accels,sig_biases,sig_drifts,sig_accels;
 
@@ -262,7 +262,7 @@ namespace gpstk
          }
 
          // pull data out of the data table
-         int n,Nhi(Nhalf);
+         size_t n,Nhi(Nhalf);
          CommonTime ttag0(it1->first);
          vector<double> times,biases,drifts;
 

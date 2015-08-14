@@ -612,7 +612,7 @@ int main(int argc, char **argv)
       return 0;
    }
    catch(Exception& e) { cout << "GPSTk Exception : " << e.what(); }
-   catch(exception& e) { cout << "standard exception : " << e.what(); }
+   catch(std::exception& e) { cout << "standard exception : " << e.what(); }
    catch (...) { cout << "Unknown error." << endl; }
    return -1;
 }   // end main()

@@ -408,7 +408,7 @@ namespace gpstk
             }
          }
          // string exceptions for substr are caught here
-         catch(exception &e)
+         catch(std::exception &e)
          {
             FFStreamError err("std::exception: " + string(e.what()));
             GPSTK_THROW(err);
@@ -469,7 +469,7 @@ namespace gpstk
          }  // end loop over numSVs
 
          // loop over all sats, reading obs data
-         int numObs(strm.header.R2ObsTypes.size());// number of R2 OTs in header
+         unsigned numObs(strm.header.R2ObsTypes.size());// number of R2 OTs in header
          rod.obs.clear();
          for(isv=0; isv < rod.numSVs; isv++) {
             //strm.formattedGetLine(line);           // get a line
@@ -530,7 +530,7 @@ namespace gpstk
 
 
    void Rinex3ObsData::reallyGetRecord(FFStream& ffs)
-      throw(exception, FFStreamError, gpstk::StringUtils::StringException)
+      throw(std::exception, FFStreamError, gpstk::StringUtils::StringException)
    {
       Rinex3ObsStream& strm = dynamic_cast<Rinex3ObsStream&>(ffs);
 

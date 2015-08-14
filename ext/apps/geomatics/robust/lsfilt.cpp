@@ -107,7 +107,7 @@ int lsfilterCoefficients(double* c, int nl, int nr, int poly, int lderiv)
 	   return 0;
    }
    catch(Exception& e) { GPSTK_RETHROW(e); }
-   catch(exception& e) {
+   catch(std::exception& e) {
       Exception E("std except: " + string(e.what()));
       GPSTK_THROW(E);
    }
@@ -341,7 +341,7 @@ int main(int argc, char **argv)
       return 0;
    }
    catch(Exception& e) { cout << "GPSTk Exception : " << e.what(); }
-   catch(exception& e) { cout << "standard exception : " << e.what(); }
+   catch(std::exception& e) { cout << "standard exception : " << e.what(); }
    catch (...) { cout << "Unknown error." << endl; }
    return -1;
 }   // end main()

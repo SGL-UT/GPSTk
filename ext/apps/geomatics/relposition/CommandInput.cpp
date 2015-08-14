@@ -137,7 +137,7 @@ try {
    OutputDDRFile = string("");
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -1063,7 +1063,7 @@ try {
    return 0;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -1147,7 +1147,7 @@ try {
    else Args.push_back(arg);
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -1351,7 +1351,7 @@ try {
    return (ok ? 0 : 1);
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -1489,7 +1489,7 @@ try {
    ofs << "End of command line input summary." << endl;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
