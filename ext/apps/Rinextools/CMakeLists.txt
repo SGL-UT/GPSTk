@@ -15,7 +15,7 @@ target_link_libraries(RinNav gpstk)
 install (TARGETS RinNav DESTINATION ${CMAKE_INSTALL_BINDIR} EXPORT ${EXPORT_TARGETS_FILENAME})
 #add_test(RinNavTest RinNav)
 
-add_executable(RinSum RinSum.cpp)
+add_executable(RinSum RinSum.cpp msecHandler.cpp)
 target_link_libraries(RinSum gpstk)
 install (TARGETS RinSum DESTINATION ${CMAKE_INSTALL_BINDIR} EXPORT ${EXPORT_TARGETS_FILENAME})
 #add_test(RinSumeTest RinSum)
