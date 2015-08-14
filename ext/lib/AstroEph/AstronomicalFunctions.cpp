@@ -89,7 +89,7 @@ namespace gpstk
       double h(yds.sod/3600.0);
 
          // Compute Julian Day, including decimals
-      double jd(JulianDate(t).jd);
+      double jd(static_cast<double>(JulianDate(t).jd));
 
          // Temporal value, in centuries
       double tt( (jd - 2451545.0)/36525.0 );

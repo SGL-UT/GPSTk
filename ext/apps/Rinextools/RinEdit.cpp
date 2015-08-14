@@ -500,7 +500,7 @@ try {
             iret = 3;
             break;
          }
-         catch(exception& e) {
+         catch(std::exception& e) {
             Exception ge(string("Std excep: ") + e.what());
             GPSTK_THROW(ge);
          }
@@ -1203,7 +1203,7 @@ EditCmd::EditCmd(const string intypestr, const string inarg) throw(Exception)
       tag = tag.substr(0,2);
 
       flds = split(arg,',');                          // split arg
-      const int n(flds.size());                       // number of args
+      const size_t n(flds.size());                       // number of args
 
       if(tag == "OF") {
          if(n != 1 && n != 3 && n != 7) return;
@@ -1339,7 +1339,7 @@ string EditCmd::asString(string msg) throw(Exception)
       return os.str();
    }
    catch(Exception& e) { GPSTK_RETHROW(e); }
-   catch(exception& e) {
+   catch(std::exception& e) {
       Exception E(string("std::except: ") + e.what());
       GPSTK_THROW(E);
    }

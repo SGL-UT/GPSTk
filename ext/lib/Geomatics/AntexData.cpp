@@ -441,7 +441,7 @@ namespace gpstk
    }
 
    void AntexData::reallyPutRecord(FFStream& ffs) const 
-      throw(exception, FFStreamError, StringException)
+      throw(std::exception, FFStreamError, StringException)
    {
       if(!isValid()) {
          FFStreamError fse(string("Cannot write invalid AntexData"));
@@ -633,7 +633,7 @@ namespace gpstk
 
 
    void AntexData::reallyGetRecord(FFStream& ffs) 
-      throw(exception, FFStreamError, StringUtils::StringException)
+      throw(std::exception, FFStreamError, StringUtils::StringException)
    {
       AntexStream& strm = dynamic_cast<AntexStream&>(ffs);
       
@@ -891,7 +891,7 @@ namespace gpstk
          return time;
       }
       // string exceptions for substr are caught here
-      catch (exception &e)
+      catch (std::exception &e)
       {
          FFStreamError err("std::exception: " + string(e.what()));
          GPSTK_THROW(err);

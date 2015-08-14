@@ -151,7 +151,7 @@ namespace gpstk
                   + string(" : ") + e.getText();
                return -3;
             }
-            catch(exception& e) {
+            catch(std::exception& e) {
                what = string("std excep: ") + e.what();
                return -3;
             }

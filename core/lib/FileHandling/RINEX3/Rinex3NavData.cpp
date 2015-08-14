@@ -324,7 +324,7 @@ namespace gpstk
        *          to its pre-read position.
        */
    void Rinex3NavData::reallyGetRecord(FFStream& ffs)
-      throw(exception, FFStreamError, StringException)
+      throw(std::exception, FFStreamError, StringException)
    {
 
       try {
@@ -335,7 +335,7 @@ namespace gpstk
             try {
                strm >> strm.header;
             }
-            catch(exception& e) {
+            catch(std::exception& e) {
                FFStreamError fse(string("std::exception reading header ") + e.what());
                GPSTK_THROW(fse);
             }
@@ -355,7 +355,7 @@ namespace gpstk
          if(satSys == "G" || satSys == "E" || satSys == "J" || satSys == "C")
             for(int i=4; i<=7; i++) getRecord(i, strm);
       }
-      catch(exception& e) {
+      catch(std::exception& e) {
          FFStreamError fse(string("std::exception: ") + e.what());
          GPSTK_THROW(fse);
       }
@@ -367,7 +367,7 @@ namespace gpstk
 
       // Outputs the record to the FFStream \a s.
    void Rinex3NavData::reallyPutRecord(FFStream& ffs) const
-      throw(exception, FFStreamError, StringException)
+      throw(std::exception, FFStreamError, StringException)
    {
 
       try {
@@ -385,7 +385,7 @@ namespace gpstk
          if(satSys == "G" || satSys == "C" || satSys == "E" || satSys == "J")
             for(int i=4; i<=7; i++) putRecord(i, strm);
       }
-      catch(exception& e) {
+      catch(std::exception& e) {
          FFStreamError fse(string("std::exception: ") + e.what());
          GPSTK_THROW(fse);
       }

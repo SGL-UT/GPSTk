@@ -474,7 +474,7 @@ namespace gpstk
 
          // Now we will take care of satellite-indexed variables inside each
          // specific "Equation" in "currentEquationsList"
-      int eqListSize( currentEquationsList.size() );
+      size_t eqListSize( currentEquationsList.size() );
       for( int i = 0; i < eqListSize; ++i )
       {
 
@@ -532,7 +532,7 @@ namespace gpstk
    void EquationSystem::getPhiQ( const gnssDataMap& gdsMap )
    {
 
-      const int numVar( varUnknowns.size() );
+      const size_t numVar( varUnknowns.size() );
 
          // Resize phiMatrix and qMatrix
       phiMatrix.resize( numVar, numVar, 0.0);

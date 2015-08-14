@@ -661,7 +661,7 @@ try {
             iret = 3;
             break;
          }
-         catch(exception& e) {
+         catch(std::exception& e) {
             Exception ge(string("Std excep: ") + e.what());
             GPSTK_THROW(ge);
          }
@@ -1090,7 +1090,7 @@ try {
          // visibility
          if(C.vres > 0) {
             // print visibility graphically, resolution C.vres = counts/character
-            double dn(C.vres);
+            double dn(static_cast<double>(C.vres));
             oss.str("");
             oss << "\nVisibility - resolution is " << dn << " epochs = " << dn*C.gapdt
                << " seconds.\n";
@@ -1122,7 +1122,7 @@ try {
 
                isOn = false;
                bool first(true);
-               int jj,kk(double(tabIt->gapcount[0]/dn)); // + 0.5);
+               int jj,kk(static_cast<int>(tabIt->gapcount[0]/dn)); // + 0.5);
                for(k=0,i=0; i<tabIt->gapcount.size()-1; i+=2) {
                   // satellite 'off'
                   j = int(double(tabIt->gapcount[i]/dn));

@@ -52,6 +52,7 @@ using namespace gpstk::StringUtils;
 #ifndef _WIN32
 #include <unistd.h>
 #include <dirent.h>
+#include <limits.h>
 #else
 #include <io.h>
 #include <direct.h>

@@ -67,7 +67,7 @@ try {
    return R;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -119,7 +119,7 @@ try {
    return R;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -168,7 +168,7 @@ try {
    return R;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -237,7 +237,7 @@ try {
    return shadow;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -326,7 +326,7 @@ Matrix<double> doSatAtt(const CommonTime& tt, const Position& SV,
       return R;
    }
    catch(Exception& e) { GPSTK_RETHROW(e); }
-   catch(exception& e) {Exception E("std except: "+string(e.what())); GPSTK_THROW(E);}
+   catch(std::exception& e) {Exception E("std except: "+string(e.what())); GPSTK_THROW(E);}
    catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -403,7 +403,7 @@ void SatelliteNadirAzimuthAngles(const Position& SV,
       if(azimuth < 0.0) azimuth += 360.;
    }
    catch(Exception& e) { GPSTK_RETHROW(e); }
-   catch(exception& e) {Exception E("std except: "+string(e.what())); GPSTK_THROW(E);}
+   catch(std::exception& e) {Exception E("std except: "+string(e.what())); GPSTK_THROW(E);}
    catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -432,7 +432,7 @@ double SatelliteEarthSunAngle(const Position& Sat, const Position& Sun)
       return (::acos(sat.dot(ssun)));
    }
    catch(Exception& e) { GPSTK_RETHROW(e); }
-   catch(exception& e) {
+   catch(std::exception& e) {
       Exception E("std except: " + string(e.what()));
       GPSTK_THROW(E);
    }
@@ -504,7 +504,7 @@ void SunOrbitAngles(const Position& Pos, const Position& Vel, const Position& Su
          phi = 0.0;
    }
    catch(Exception& e) { GPSTK_RETHROW(e); }
-   catch(exception& e) {
+   catch(std::exception& e) {
       Exception E("std except: " + string(e.what()));
       GPSTK_THROW(E);
    }

@@ -219,7 +219,7 @@ namespace gpstk
          store.clear();
       }
       catch(Exception& e) { GPSTK_RETHROW(e); }
-      catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+      catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
       catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
    }  // End of method 'PlanetEphemeris::readASCIIheader()'
@@ -260,7 +260,7 @@ namespace gpstk
          return 0;
       }
       catch(Exception& e) { GPSTK_RETHROW(e); }
-      catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+      catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
       catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
    }  // End of method 'PlanetEphemeris::readASCIIdata()'
@@ -351,7 +351,7 @@ namespace gpstk
          return iret;
       }
       catch(Exception& e) { GPSTK_RETHROW(e); }
-      catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+      catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
       catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
    }  // End of method 'PlanetEphemeris::readASCIIdata()'
@@ -447,7 +447,7 @@ namespace gpstk
          return 0;
       }
       catch(Exception& e) { GPSTK_RETHROW(e); }
-      catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+      catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
       catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
    }  // End of method 'PlanetEphemeris::writeASCIIheader()'
@@ -498,7 +498,7 @@ namespace gpstk
          return 0;
       }
       catch(Exception& e) { GPSTK_RETHROW(e); }
-      catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+      catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
       catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
    }  // End of method 'PlanetEphemeris::writeASCIIdata(ostream& os) '
@@ -627,7 +627,7 @@ namespace gpstk
          return 0;
       }
       catch(Exception& e) { GPSTK_RETHROW(e); }
-      catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+      catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
       catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
    }  // End of method 'PlanetEphemeris::writeBinaryFile()'
@@ -648,7 +648,7 @@ namespace gpstk
          return iret;
       }
       catch(Exception& e) { GPSTK_RETHROW(e); }
-      catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+      catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
       catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
    }  // End of method 'PlanetEphemeris::readBinaryFile(string filename)'
@@ -675,7 +675,7 @@ namespace gpstk
          return iret;
       }
       catch(Exception& e) { GPSTK_RETHROW(e); }
-      catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+      catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
       catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
    }  // End of method 'PlanetEphemeris::initializeWithBinaryFile(string filename) '
@@ -773,7 +773,7 @@ namespace gpstk
          return 0;
       }
       catch(Exception& e) { GPSTK_RETHROW(e); }
-      catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+      catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
       catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
    }  // End of method 'PlanetEphemeris::computeState()'
@@ -792,7 +792,7 @@ namespace gpstk
          }
       }
       catch(Exception& e) { GPSTK_RETHROW(e); }
-      catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+      catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
       catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
    }  // End of method 'PlanetEphemeris::writeBinary()'
@@ -811,7 +811,7 @@ namespace gpstk
          }
       }
       catch(Exception& e) { GPSTK_RETHROW(e); }
-      catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+      catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
       catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
    }  // End of method 'PlanetEphemeris::readBinary()'
@@ -947,7 +947,7 @@ namespace gpstk
          }
       }
       catch(Exception& e) { GPSTK_RETHROW(e); }
-      catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+      catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
       catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
    }  // End of method 'PlanetEphemeris::readBinaryHeader(std::string filename) '
@@ -1004,7 +1004,7 @@ namespace gpstk
          return iret;
       }
       catch(Exception& e) { GPSTK_RETHROW(e); }
-      catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+      catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
       catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
    }  // End of method 'PlanetEphemeris::readBinaryData(bool save)'
@@ -1037,7 +1037,7 @@ namespace gpstk
          return 0;
       }
       catch(Exception& e) { GPSTK_RETHROW(e); }
-      catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+      catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
       catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
    }  // End of method 'PlanetEphemeris::readBinaryRecord()'
@@ -1079,7 +1079,7 @@ namespace gpstk
          return 0;
       }
       catch(Exception& e) { GPSTK_RETHROW(e); }
-      catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+      catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
       catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
    }  // End of method 'PlanetEphemeris::seekToJD()'
@@ -1150,7 +1150,7 @@ namespace gpstk
          }
       }
       catch(Exception& e) { GPSTK_RETHROW(e); }
-      catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+      catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
       catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
    }  // End of method 'PlanetEphemeris::computeState()'

@@ -81,9 +81,9 @@ namespace gpstk
       throw(InvalidWeights)
    {
 
-      int N( Satellites.size() );
-      int Ne( elevationVector.size() );
-      int Na( azimuthVector.size() );
+      size_t N( Satellites.size() );
+      size_t Ne( elevationVector.size() );
+      size_t Na( azimuthVector.size() );
 
          // We need at least one satellite
       if (N == 0)
@@ -160,9 +160,9 @@ compute weights.");
       throw(InvalidWeights)
    {
 
-      int N( Satellites.size() );
-      int Ne( elevationVector.size() );
-      int Na( azimuthVector.size() );
+      size_t N( Satellites.size() );
+      size_t Ne( elevationVector.size() );
+      size_t Na( azimuthVector.size() );
 
          // We need at least one satellite
       if (N == 0)
@@ -220,7 +220,7 @@ compute weights.");
       throw(InvalidWeights)
    {
 
-      int N( Satellites.size() );
+      size_t N( Satellites.size() );
 
       double sigma2rx;    // Receiver noise sigma^2 in meters^2
 
