@@ -1,0 +1,7 @@
+     3.02           N: GNSS NAV DATA    G: GPS              RINEX VERSION / TYPE
+----------------------------------------------------------- COMMENT             
+GPSA   0.2794D-07 -0.7451D-08 -0.1192D-06  0.1192D-06       IONOSPHERIC CORR    
+GPSB   0.1372D+06 -0.4915D+05 -0.1311D+06 -0.2621D+06       IONOSPHERIC CORR    
+GPUT  0.1862645149D-08 0.444089210D-14  61440   25          TIME SYSTEM CORR    
+    16                                                      LEAP SECONDS        
+                                                            END OF HEADER       

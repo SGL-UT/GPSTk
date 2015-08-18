@@ -43,6 +43,8 @@
 #include "StringUtils.hpp"
 #include "Exception.hpp"
 
+#include "build_config.h"
+
 #include "TestUtil.hpp"
 #include <fstream>
 #include <string>
@@ -164,7 +166,7 @@ void RinexMet_T :: init( void )
     //---------------------------------------- 
     // Full file paths
     //---------------------------------------- 
-    std::string file_sep = "/";
+    std::string file_sep = gpstk::getFileSep();
 
     inputRinexMetNormal       = dataFilePath  + file_sep + "test_input_rinex_met_408_110a.04m"    ; // Formerly without the "test_input_rinex_met_" prefix string
     inputRinexMetBLL          = dataFilePath  + file_sep + "test_input_rinex_met_BLL.04m"         ;

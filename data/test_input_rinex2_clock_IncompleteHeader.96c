@@ -1,0 +1,22 @@
+     2.00           CLOCK DATA                              RINEX VERSION / TYPE
+TORINEXC V9.9       USNO                 3-APR-96 00:10     PGM / RUN BY / DATE
+CLK ANT Z-OFFSET(M): II/IIA 1.023; IIR 0.000                COMMENT
+EXAMPLE OF A CLOCK DATA FILE                                COMMENT
+IN THIS CASE ANALYSIS RESULTS ARE INCLUDED                  COMMENT
+No re-alignment of the clocks has been applied.             COMMENT
+    10                                                      LEAP SECONDS
+USN  USNO USING GIPSY/OASIS-II                              ANALYSIS CENTER
+     1 1994 07 14  0  0  0.000000 1994 07 14 20 59  0.000000# OF CLK REF
+USNO 40451S003                           -.123456789012E+00 ANALYSIS CLK REF
+     1 1994 07 14 21  0  0.000000 1994 07 14 21 59  0.000000# OF CLK REF
+TIDB 50103M108                          -0.123456789012E+00 ANALYSIS CLK REF
+     4    ITRF96                                            # OF SOLN STA / TRF
+GOLD 40405S031            1234567890 -1234567890 -1234567890SOLN STA NAME / NUM
+AREQ 42202M005           -1234567890  1234567890 -1234567890SOLN STA NAME / NUM
+TIDB 50103M108            1234567890 -1234567890  1234567890SOLN STA NAME / NUM
+HARK 30302M007           -1234567890  1234567890 -1234567890SOLN STA NAME / NUM
+USNO 40451S003            1234567890 -1234567890 -1234567890SOLN STA NAME / NUM
+    27                                                      # OF SOLN SATS 
+G01 G02 G03 G04 G05 G06 G07 G08 G09 G10 G13 G14 G15 G16 G17 PRN LIST
+G18 G19 G21 G22 G23 G24 G25 G26 G27 G29 G30 G31             PRN LIST
+                                                            END OF HEADER
