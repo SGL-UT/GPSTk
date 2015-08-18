@@ -45,6 +45,8 @@
 #include "Exception.hpp"
 #include "RinexEphemerisStore.hpp"
 
+#include "build_config.h"
+
 #include "TestUtil.hpp"
 #include <string>
 #include <iostream>
@@ -121,7 +123,7 @@ void RinexNav_T :: init( void )
     //---------------------------------------- 
     // Full file paths
     //---------------------------------------- 
-    std::string file_sep = "/";
+    std::string file_sep = getFileSep();
 
     inputRinexNavExample     = dataFilePath + file_sep + "test_input_rinex_nav_RinexNavExample.99n";
 

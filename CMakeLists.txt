@@ -19,9 +19,9 @@ set( GPSTK_VERSION "${GPSTK_VERSION_MAJOR}.${GPSTK_VERSION_MINOR}.${GPSTK_VERSIO
 #============================================================
 
 #----------------------------------------
-# Determine Installation Path Prefix
-#     Path to which we will install the
-#     gpstk /lib, /bin, and /include dirs.
+# C++ Install Path Prefix
+# * Determine Installation Path Prefix for C++ Library and Applications
+# * Path to which we will install the gpstk /lib, /bin, and /include dirs.
 #----------------------------------------
 
 if( DEFINED CMAKE_INSTALL_PREFIX )
@@ -172,7 +172,7 @@ install( FILES ${GPSTK_INC_FILES} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}" )
 # that is intended to contain test cases.
 
 if( TEST_SWITCH )
-  enable_testing()
+  include( CTest )
   list( APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules )
 endif( )
 
@@ -188,6 +188,7 @@ if( BUILD_EXT )
 endif()
 	
 if( BUILD_PYTHON )
+   include( PythonSetup.cmake )
    add_subdirectory( swig )
 endif()
 
