@@ -106,6 +106,9 @@ namespace gpstk
          /** This function returns the PRN ID of the SV. */
       short getPRNID() const throw(gpstk::InvalidRequest);
 
+         /** This function returns the OBS ID of the clock correction. */
+      ObsID getObsID() const throw(gpstk::InvalidRequest);
+
          /**
           * This function returns the value of the SV accuracy (m)
           * computed from the accuracy flag in the nav message. */

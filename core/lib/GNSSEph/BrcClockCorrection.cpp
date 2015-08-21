@@ -210,6 +210,17 @@ namespace gpstk
       return PRNID;
    }
 
+   ObsID BrcClockCorrection::getObsID() const
+      throw(InvalidRequest)
+   {
+      if(!dataLoaded)
+      {
+         InvalidRequest exc("Required data not stored.");
+         GPSTK_THROW(exc);
+      }
+      return obsID;
+   }
+
    short BrcClockCorrection::getFullWeek()  const
       throw(InvalidRequest)
    {

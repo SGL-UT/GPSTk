@@ -472,6 +472,17 @@ namespace gpstk
       return PRNID;
    }   
   
+   ObsID BrcKeplerOrbit::getObsID() const
+      throw(InvalidRequest)
+   {
+      if(!dataLoaded)
+      {
+         InvalidRequest exc("Required data not stored.");
+         GPSTK_THROW(exc);
+      }
+      return obsID;
+   }
+
    short BrcKeplerOrbit::getFullWeek()  const
       throw(InvalidRequest)
    {
