@@ -526,7 +526,7 @@ namespace gpstk
       inline T det(void)
          throw(MatrixException)
       {
-         T d(parity);
+         T d(static_cast<T>(parity));
          for(size_t i=0; i<LU.rows(); i++) d *= LU(i,i);
          return d;
       }

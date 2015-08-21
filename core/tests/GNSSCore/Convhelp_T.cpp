@@ -38,6 +38,7 @@
 
 #include "TestUtil.hpp"
 #include <iostream>
+#include <cmath>
 
 class Convhelp_T
 {
@@ -54,14 +55,14 @@ class Convhelp_T
 		gpstk::GPSEllipsoid gem;
 
 		failMesg = "Did the computation work with positive values?";
-		testFramework.assert(abs(gpstk::cycles2meters(100000.,400000.,wem) - 74948114.5) < eps, failMesg, __LINE__);
-		testFramework.assert(abs(gpstk::cycles2meters(10000,40000,gem) - 1.3342563807926082) < eps, failMesg, __LINE__);
+		testFramework.assert(std::abs(gpstk::cycles2meters(100000.,400000.,wem) - 74948114.5) < eps, failMesg, __LINE__);
+		testFramework.assert(std::abs(gpstk::cycles2meters(10000,40000,gem) - 1.3342563807926082) < eps, failMesg, __LINE__);
 		failMesg = "Did the computation work with a 0 value?";
 		testFramework.assert(gpstk::cycles2meters(0,5,wem) == 0, failMesg, __LINE__);
 		testFramework.assert(gpstk::cycles2meters(0,5,gem) == 0, failMesg, __LINE__);
 		failMesg = "Did the computation work with a negative value?";
-		testFramework.assert(abs(gpstk::cycles2meters(-100000.,400000.,wem) + 74948114.5) < eps, failMesg, __LINE__);
-		testFramework.assert(abs(gpstk::cycles2meters(-10000,40000,gem) + 1.3342563807926082) < eps, failMesg, __LINE__);
+		testFramework.assert(std::abs(gpstk::cycles2meters(-100000.,400000.,wem) + 74948114.5) < eps, failMesg, __LINE__);
+		testFramework.assert(std::abs(gpstk::cycles2meters(-10000,40000,gem) + 1.3342563807926082) < eps, failMesg, __LINE__);
 
 		return testFramework.countFails();
 	}
@@ -75,17 +76,17 @@ class Convhelp_T
 		gpstk::GPSEllipsoid gem;
 
 		failMesg = "Did the computation work with positive values?";
-		testFramework.assert(abs(gpstk::meters2cycles(74948114.5,400000.,wem) - 100000) < eps, failMesg, __LINE__);
+		testFramework.assert(std::abs(gpstk::meters2cycles(74948114.5,400000.,wem) - 100000) < eps, failMesg, __LINE__);
 		failMesg = "Did the above computation work with the GPS ellipsoid?";		
-		testFramework.assert(abs(gpstk::meters2cycles(10000,40000,gem) - 1.3342563807926082 ) < eps, failMesg, __LINE__);
+		testFramework.assert(std::abs(gpstk::meters2cycles(10000,40000,gem) - 1.3342563807926082 ) < eps, failMesg, __LINE__);
 		failMesg = "Did the computation work with a 0 value?";
 		testFramework.assert(gpstk::meters2cycles(0,5,wem) == 0, failMesg, __LINE__);
 		failMesg = "Did the above computation work with the GPS ellipsoid?";		
 		testFramework.assert(gpstk::meters2cycles(0,5,gem) == 0, failMesg, __LINE__);
 		failMesg = "Did the computation work with a negative value?";
-		testFramework.assert(abs(gpstk::meters2cycles(-74948114.5,400000.,wem) + 100000) < eps, failMesg, __LINE__);
+		testFramework.assert(std::abs(gpstk::meters2cycles(-74948114.5,400000.,wem) + 100000) < eps, failMesg, __LINE__);
 		failMesg = "Did the above computation work with the GPS ellipsoid?";
-		testFramework.assert(abs(gpstk::meters2cycles(-74948114.5,400000.,wem) + 100000) < eps, failMesg, __LINE__);
+		testFramework.assert(std::abs(gpstk::meters2cycles(-74948114.5,400000.,wem) + 100000) < eps, failMesg, __LINE__);
 
 		return testFramework.countFails();
 	}
@@ -126,11 +127,11 @@ class Convhelp_T
 		std::string failMesg;
 
 		failMesg = "Did the computation work with a postitive value?";
-		testFramework.assert(abs(gpstk::mb2hg(100) - 2.9529987508079487) < eps, failMesg, __LINE__);
+		testFramework.assert(std::abs(gpstk::mb2hg(100) - 2.9529987508079487) < eps, failMesg, __LINE__);
 		failMesg = "Did the computation work with a 0 value?";		
 		testFramework.assert(gpstk::mb2hg(0) == 0, failMesg, __LINE__);
 		failMesg = "Did the computation work with a negative value?";		
-		testFramework.assert(abs(gpstk::mb2hg(-100) + 2.9529987508079487) < eps, failMesg, __LINE__);
+		testFramework.assert(std::abs(gpstk::mb2hg(-100) + 2.9529987508079487) < eps, failMesg, __LINE__);
 
 		return testFramework.countFails();
 	}
@@ -141,11 +142,11 @@ class Convhelp_T
 		std::string failMesg;
 
 		failMesg = "Did the computation work with a postitive value?";
-		testFramework.assert(abs(gpstk::hg2mb(2.9529987508079487) - 100) < eps, failMesg, __LINE__);
+		testFramework.assert(std::abs(gpstk::hg2mb(2.9529987508079487) - 100) < eps, failMesg, __LINE__);
 		failMesg = "Did the computation work with a 0 value?";
 		testFramework.assert(gpstk::hg2mb(0) == 0, failMesg, __LINE__);
 		failMesg = "Did the computation work with a negative value?";	
-		testFramework.assert(abs(gpstk::hg2mb(-2.9529987508079487) + 100) < eps, failMesg, __LINE__);
+		testFramework.assert(std::abs(gpstk::hg2mb(-2.9529987508079487) + 100) < eps, failMesg, __LINE__);
 
 		return testFramework.countFails();
 	}
