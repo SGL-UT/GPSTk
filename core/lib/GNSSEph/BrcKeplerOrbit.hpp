@@ -167,6 +167,9 @@ namespace gpstk
          /** This function returns the PRN ID of the SV. */
       short getPRNID() const throw(gpstk::InvalidRequest);
 
+         /** This function returns the OBS ID of the orbit. */
+      ObsID getObsID() const throw(gpstk::InvalidRequest);
+
          /** This function returns the health status of the SV. */
       bool isHealthy() const throw(gpstk::InvalidRequest);
 
