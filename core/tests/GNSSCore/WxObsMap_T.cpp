@@ -40,6 +40,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <cmath>
 
 class WxObsMap_T
 {
