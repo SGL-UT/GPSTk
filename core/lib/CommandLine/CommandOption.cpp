@@ -108,6 +108,18 @@ namespace gpstk
       return opt;
    }
 
+      // get the order of the specified instance of this command option
+   unsigned long CommandOption::getOrder(unsigned long idx) const
+   {
+      if ((order.size() == 0) || (idx > order.size()))
+         return 0;
+
+      if (idx == (unsigned long)-1)
+         return order[order.size()-1];
+
+      return order[idx];
+   }
+
       // writes out the vector of values for this command option
    std::ostream& CommandOption::dumpValue(std::ostream& out) const
    {

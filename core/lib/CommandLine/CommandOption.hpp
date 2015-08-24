@@ -187,11 +187,20 @@ namespace gpstk
           */
       std::vector<std::string> getValue() const { return value; }
 
-         /// Returns the order which this command option was seen on the
-         /// command line, with 1 being the first option.  
-         //  If it can be repeated, this order represents the order of
-         /// the last occurance of this option.
-      unsigned int getOrder() const { return order; }
+         /** Returns the order which this command option was seen on
+          * the command line, with 1 being the first option.  If it
+          * can be repeated and idx is unspecified, this order
+          * represents the order of the last occurance of this
+          * option. 
+          *
+          * @param idx the index of the instance of this command
+          * option to get the order of.  This is used when the command
+          * option can appear multiple times, and idx is the same
+          * index as in the vector of values.  The first instance of
+          * this command option will be index 0, and so on.  If \a idx
+          * is invalid (i.e. it does not exist in the vector), a zero
+          * is returned. */
+      unsigned long getOrder(unsigned long idx = -1) const;
 
          /// Displays this->value to the stream \c out.
       std::ostream& dumpValue(std::ostream& out) const;
@@ -235,7 +244,7 @@ namespace gpstk
          /// If it's 0, then it's unlimited.
       unsigned long maxCount;
          /// The order in which this option was encountered on the command line
-      unsigned long order;
+      std::vector<unsigned long> order;
 
          /// Default Constructor
       CommandOption() {}
