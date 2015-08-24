@@ -351,7 +351,7 @@ namespace gpstk
       CommandOptionWithStringArg() {}
    };
 
-      /// A CommandOption that requires a numeric argument.
+      /// A CommandOption that requires a non-negative integer numeric argument.
    class CommandOptionWithNumberArg : public CommandOptionWithArg
    {
    public:
@@ -377,7 +377,7 @@ namespace gpstk
       CommandOptionWithNumberArg() {}
    };
 
-      /// A CommandOption that requires a decimal numeric argument.
+      /// A CommandOption that requires a fixed-point decimal numeric argument.
    class CommandOptionWithDecimalArg : public CommandOptionWithArg
    {
    public:
@@ -435,6 +435,56 @@ namespace gpstk
    protected:
          /// Default Constructor
       CommandOptionRest() {}
+   };
+
+      /**
+       * This is a special "command option" which is really a
+       * meta-option to make sure at least some specified number of a
+       * set of real options has been used.  You may also set the
+       * maximum count (using the setMaxCount() method) to specify a
+       * maximum number of times the real options are used in total.
+       * The default maximum is the same as the minimum, that is, the
+       * default behavior is that you have to specify N exactly, no
+       * more, no less.
+       *
+       * As an example, if you have real options x y and z as part of
+       * this grouping, and N=2, the user can specify xx or yy or zz
+       * or xy or xz and so on.
+       *
+       * \warning There's nothing to prevent you from, say, adding
+       * another meta-option to the list of mutually exclusive options
+       * contained in a CommandOptionNOf instance (or even itself),
+       * but the behavior if you try this is undefined.
+       */
+   class CommandOptionNOf : public CommandOption
+   {
+   public:
+         /**
+          * CommandOptionNOf contructor.  This sets the CommandOptionType
+          * for this object to metaType.
+          */
+      CommandOptionNOf(const unsigned long num)
+            : CommandOption(noArgument, metaType, 0, "", ""),
+              N(num)
+      {
+         setMaxCount(num);
+      }
+      
+         /// Destructor
+      virtual ~CommandOptionNOf() {}
+
+      virtual std::string checkArguments();
+
+         /// Add an option to the list of mutually exclusive options
+      void addOption(CommandOption* opt)
+      { optionVec.push_back(opt); }
+
+         /// @return the command options that were used (empty vector if none).
+      std::vector<CommandOption*> which() const;
+      
+   protected:
+      CommandOptionVec optionVec;
+      unsigned long N;
    };
 
       /**

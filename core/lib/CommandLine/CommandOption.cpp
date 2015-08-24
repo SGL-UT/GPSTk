@@ -279,6 +279,50 @@ namespace gpstk
       return string();
    }
 
+   string CommandOptionNOf::checkArguments()
+   {
+         // n-of doesn't call CommandOption::checkArguments because
+         // it doesn't use "required"
+      string fewerrstr("At least " + StringUtils::asString(N));
+
+      string manyerrstr("No more than " + StringUtils::asString(maxCount));
+      string errstr(" of the following options must be specified: ");
+
+      bool found = false;
+      unsigned long n = 0;
+
+      for (CommandOptionVec::size_type i = 0; i < optionVec.size(); i++)
+      {
+         n += optionVec[i]->getCount();
+         if (i > 0)
+            errstr += ", ";
+         errstr += optionVec[i]->getOptionString();
+      }
+
+      if (n < N)
+         return fewerrstr + errstr;
+      if (n > maxCount)
+         return manyerrstr + errstr;
+
+      return string();
+   }
+
+   std::vector<CommandOption*> CommandOptionNOf::which() const
+   {
+      std::vector<CommandOption*> rv;
+
+      for (CommandOptionVec::size_type i = 0; i < optionVec.size(); i++)
+      {
+         if (optionVec[i]->getCount())
+         {
+            rv.push_back(optionVec[i]);
+            break;
+         }
+      }
+
+      return rv;
+   }
+
    string CommandOptionOneOf::checkArguments()
    {
          // one-of doesn't call CommandOption::checkArguments because
