@@ -1,2 +1,0 @@
-SubDir TOP MSC ;
-TestMain MSC/xMSC.tst : MSC/xMSCM.cpp MSC/xMSC.cpp MSC/MSCData.cpp MSC/MSCStream.cpp ;

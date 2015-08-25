@@ -11,7 +11,6 @@
 #add_subdirectory (JulianDate)
 #add_subdirectory (Matrix)
 #add_subdirectory (MJD)
-#add_subdirectory (MSC)
 #add_subdirectory (PolyFit)
 #add_subdirectory (PowerSum)
 #add_subdirectory (RACRotation)
