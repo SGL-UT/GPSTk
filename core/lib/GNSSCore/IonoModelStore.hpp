@@ -104,6 +104,13 @@ namespace gpstk
                          const IonoModel& im )
          throw();
 
+         /** Edit the dataset, removing data outside the indicated time interval
+          *
+          * \param tmin defines the beginning of the time interval
+          * \param tmax defines the end of the time interval
+          */
+      void edit(const CommonTime& tmin, 
+                const CommonTime& tmax = CommonTime::END_OF_TIME);
 
    private:
 
