@@ -250,8 +250,55 @@ namespace gpstk
          throw();
       static short getSubframePattern(const uint32_t input[10])
          throw();
-      static void dump(std::ostream& s = std::cout);
-      
+
+      /**
+       * Given an SV/Page ID (1-63), set the subframe ID and page
+       * passed to the function.
+       * @param svpgid (input) the SV/Page ID to be translated
+       *   (typically extracted from subframe 4/5, word 3, bits 3-8
+       *   (bit 1=MSB).
+       * @param subframe (output) the subframe ID of svpgid (4,5)
+       * @param page (output) the page number of svpgid (1-25)
+       * @return false if svpgid was invalid
+       * @note Some SV/Page IDs are redundant, so the result will
+       * be one of the possible pages for that SV/Page ID.
+       */
+      static bool sv2page(short svpgid, short& subframe, short& page)
+         throw();
+
+
+      /**
+       * Given an SV/Page ID (1-63), set the subframe ID and page
+       * passed to the function.
+       * @param subframe (input) the subframe ID of svpgid (4,5)
+       * @param page (input) the page number of svpgid (1-25)
+       * @param svpgid (output) the SV/Page ID translated from subframe/page
+       * @return false if svpgid was invalid
+       * @note Some SV/Page IDs are redundant, so the result will
+       * be one of the possible pages for that SV/Page ID.
+       */
+      static bool sfpage2svid(short subframe, short page, short& svpgid)
+         throw();
+
+
+      /**
+       * Given a Z-count representing the TOW in the HOW of a
+       * navigation subframe (i.e. TOW * 4), set the subframe ID
+       * and page passed to the function.
+       * @param zcount (input) the TOW count, in z-counts, of a nav subframe
+       * @param subframe (output) the subframe ID of svpgid (4,5)
+       * @param page (output) the page number of svpgid (1-25)
+       * @return false if zcount was invalid
+       */
+      static bool zcount2page(unsigned long zcount,
+                              short& subframe, short& page)
+         throw();
+
+      /**
+       * Emit human-readable instance data to the specified stream.
+       * @param s stream to which data will be written
+       */
+      static void dump(std::ostream& s = std::cout);      
 
    private:
 
