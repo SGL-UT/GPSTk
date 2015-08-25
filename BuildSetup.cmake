@@ -20,7 +20,8 @@ endif()
 # Platform-dependent Compiler flags
 #----------------------------------------
 if( ${CMAKE_SYSTEM_NAME} MATCHES "SunOS" )
-    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -compat=5 -erroff=hidevf,wvarhidemem,badargtype2w" )
+    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -erroff=hidevf,wvarhidemem,badargtype2w" )
+    # add -DCMAKE_CXX_FLAGS=-std=c++03 or =-std=c++11 on the CMAKE invocation
     set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -mt -shared" )
 elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
     set( CMAKE_SHARED_LIBRARY_SUFFIX .dylib )

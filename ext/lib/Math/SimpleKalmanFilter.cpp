@@ -347,7 +347,7 @@ namespace gpstk
 
          // Create dummy matrices and vectors and call the full
          // Predict() method
-      int stateRow(previousState.size());
+      size_t stateRow(previousState.size());
 
       Matrix<double> dummyControMatrix(stateRow,1,0.0);
       Vector<double> dummyControlInput(1,0.0);
@@ -422,16 +422,16 @@ namespace gpstk
       throw(InvalidSolver)
    {
          // Let's check sizes before start
-      int aposterioriStateRow(xhat.size());
-      int controlInputRow(controlInput.size());
+      size_t aposterioriStateRow(xhat.size());
+      size_t controlInputRow(controlInput.size());
 
-      int phiCol(phiMatrix.cols());
-      int phiRow(phiMatrix.rows());
+      size_t phiCol(phiMatrix.cols());
+      size_t phiRow(phiMatrix.rows());
 
-      int controlCol(controlMatrix.cols());
-      int controlRow(controlMatrix.rows());
+      size_t controlCol(controlMatrix.cols());
+      size_t controlRow(controlMatrix.rows());
 
-      int processNoiseRow(processNoiseCovariance.rows());
+      size_t processNoiseRow(processNoiseCovariance.rows());
 
       if ( phiCol != phiRow )
       {
@@ -514,16 +514,16 @@ process noise covariance matrix do not match.");
       throw(InvalidSolver)
    {
          // Let's check sizes before start
-      int measRow(measurements.size());
-      int aprioriStateRow(xhatminus.size());
+      size_t measRow(measurements.size());
+      size_t aprioriStateRow(xhatminus.size());
 
-      int mMRow(measurementsMatrix.rows());
+      size_t mMRow(measurementsMatrix.rows());
 
-      int mNCCol(measurementsNoiseCovariance.cols());
-      int mNCRow(measurementsNoiseCovariance.rows());
+      size_t mNCCol(measurementsNoiseCovariance.cols());
+      size_t mNCRow(measurementsNoiseCovariance.rows());
 
-      int pMCol(Pminus.cols());
-      int pMRow(Pminus.rows());
+      size_t pMCol(Pminus.cols());
+      size_t pMRow(Pminus.rows());
 
       if ( ( mNCCol != mNCRow ) || 
            ( pMCol != pMRow )      )

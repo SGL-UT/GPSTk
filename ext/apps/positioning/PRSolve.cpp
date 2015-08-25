@@ -735,7 +735,7 @@ try {
          }
          catch(Exception& e) {
             os << "Exception: " << e.what() << endl; isValid = false; continue; }
-         catch(exception& e) {
+         catch(std::exception& e) {
             os << "exception: " << e.what(); isValid = false; continue; }
          startNameMap.insert(multimap<CommonTime,string>::value_type(
                header.time,C.InputSP3Files[nfile]));
@@ -1346,7 +1346,7 @@ try {
             iret = 3;
             break;
          }
-         catch(exception& e) {
+         catch(std::exception& e) {
             Exception ge(string("Std excep: ") + e.what());
             GPSTK_THROW(ge);
          }

@@ -86,7 +86,7 @@ namespace gpstk
             // Compute appropriate running averages
             // Get time difference between current epoch and
             // J2000.0, in years
-         double timedif((MJD(t).mjd - MJD(j2000).mjd)/365.25);
+         double timedif(static_cast<double>((MJD(t).mjd - MJD(j2000).mjd)/365.25));
 
          double xpbar(0.054 + timedif*0.00083);
          double ypbar(0.357 + timedif*0.00395);

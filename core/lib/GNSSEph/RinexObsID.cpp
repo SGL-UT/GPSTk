@@ -132,7 +132,7 @@ namespace gpstk
    // described in the Rinex 3 specification.
    bool isValidRinexObsID(const std::string& strID)
    {
-      int i(strID.length()-3);
+      int i(static_cast<int>(strID.length())-3);
       if(i < 0 || i > 1)
          return false;
 

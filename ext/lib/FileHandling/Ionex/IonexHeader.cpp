@@ -394,7 +394,7 @@ namespace gpstk
 
       // This function parses the entire header from the given stream
    void IonexHeader::reallyGetRecord(FFStream& ffs)
-      throw(exception, FFStreamError, StringException)
+      throw(std::exception, FFStreamError, StringException)
    {
 
       IonexStream& strm = dynamic_cast<IonexStream&> (ffs);
@@ -517,7 +517,7 @@ namespace gpstk
          grdfac[2] = lon[0]/lon[2];
          grdfac[3] = lon[1]/lon[2];
       }
-      catch(exception& e)
+      catch(std::exception& e)
       {
          cerr << "Problems computing grdfac: " << e.what() << endl;
          throw;
@@ -547,7 +547,7 @@ namespace gpstk
 
 
    void IonexHeader::reallyPutRecord(FFStream& ffs) const
-      throw(exception, FFStreamError, StringException)
+      throw(std::exception, FFStreamError, StringException)
    {
 
       IonexStream& strm = dynamic_cast<IonexStream&>(ffs);

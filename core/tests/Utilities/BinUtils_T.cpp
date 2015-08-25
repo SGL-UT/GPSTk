@@ -37,6 +37,7 @@
 #include "BinUtils.hpp"
 #include "Exception.hpp"
 #include <iostream>
+#include <cmath>
 
 class BinUtils_T
 {
@@ -189,9 +190,9 @@ class BinUtils_T
 		testFramework.assert(b1 == b, failMesg, __LINE__);
 		testFramework.assert(c1 == c, failMesg, __LINE__);
 		testFramework.assert(d1 == d, failMesg, __LINE__);
-		testFramework.assert(abs(e1-e) < 1e-50, failMesg, __LINE__);
-		testFramework.assert(abs(f1-f) < 1e-50, failMesg, __LINE__);
-		testFramework.assert(abs(g1-g) < 1e-50, failMesg, __LINE__);
+		testFramework.assert(std::abs(e1-e) < 1e-50, failMesg, __LINE__);
+		testFramework.assert(std::abs(f1-f) < 1e-50, failMesg, __LINE__);
+		testFramework.assert(std::abs(g1-g) < 1e-50, failMesg, __LINE__);
 
 		gpstk::BinUtils::twiddle(a);
 		gpstk::BinUtils::twiddle(b);
@@ -215,9 +216,9 @@ class BinUtils_T
 		testFramework.assert(b1 == b, failMesg, __LINE__);
 		testFramework.assert(c1 == c, failMesg, __LINE__);
 		testFramework.assert(d1 == d, failMesg, __LINE__);
-		testFramework.assert(abs(e1-e) < 1e-50, failMesg, __LINE__);
-		testFramework.assert(abs(f1-f) < 1e-50, failMesg, __LINE__);
-		testFramework.assert(abs(g1-g) < 1e-50, failMesg, __LINE__);		
+		testFramework.assert(std::abs(e1-e) < 1e-50, failMesg, __LINE__);
+		testFramework.assert(std::abs(f1-f) < 1e-50, failMesg, __LINE__);
+		testFramework.assert(std::abs(g1-g) < 1e-50, failMesg, __LINE__);		
 
 		return testFramework.countFails();
 	}
@@ -262,7 +263,7 @@ class BinUtils_T
 
 		unsigned bytes = 0x74686973;  // 'this' as ascii bytes
 		float fexpected = *(float*)&bytes;  // interpret bytes as a float
-		testFramework.assert(abs(out2 - fexpected) < 1e-12, failMesg, __LINE__);
+		testFramework.assert(std::abs(out2 - fexpected) < 1e-12, failMesg, __LINE__);
 
 		return testFramework.countFails();
 	}

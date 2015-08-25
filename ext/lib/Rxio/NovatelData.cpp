@@ -210,7 +210,7 @@ namespace gpstk
 
    // --------------------------------------------------------------------------------
    void NovatelData::reallyPutRecord(FFStream& s) const
-      throw(exception, StringUtils::StringException, FFStreamError)
+      throw(std::exception, StringUtils::StringException, FFStreamError)
    {
       FFStreamError e("Novatel::reallyPutRecord() is not implemented");
       GPSTK_THROW(e);
@@ -219,7 +219,7 @@ namespace gpstk
 
    // --------------------------------------------------------------------------------
    void NovatelData::reallyGetRecord(FFStream& ffs)
-      throw(exception, StringUtils::StringException, FFStreamError)
+      throw(std::exception, StringUtils::StringException, FFStreamError)
    {
    try {
       if(dynamic_cast<NovatelStream*>(&ffs)) {
@@ -245,7 +245,7 @@ namespace gpstk
             try {
                strm.read((char *)p2, 1);
             }
-            catch(exception& e) {
+            catch(std::exception& e) {
                if(debug) cout << "read 1 threw std exception: " << e.what() << endl;
                //FFStreamError fe(string("std exception: ")+e.what());
                //GPSTK_THROW(fe);
@@ -527,7 +527,7 @@ namespace gpstk
    catch(Exception e) {
       if(debug) cout << "reallyGetRecord caught GPSTK exception " << e << endl;
    }
-   catch(exception e) {
+   catch(std::exception e) {
       if(debug) cout << "reallyGetRecord caught std exception " << e.what() << endl;
    }
    catch(...) {
