@@ -511,6 +511,120 @@ namespace gpstk
       return iret;
    }
 
+
+   bool EngNav :: sv2page(short svpgid, short& subframe, short& page)
+      throw()
+   {
+      if (svpgid < 1)
+         return false;
+
+      if ((svpgid >= 1) && (svpgid <= 24))
+      {
+         subframe = 5;
+         page = svpgid;
+         return true;
+      }
+
+      switch (svpgid)
+      {
+         case 51:
+            subframe = 5;
+            page = 25;
+            return true;
+         case 29:
+         case 30:
+         case 31:
+         case 32:
+            subframe = 4;
+            page = svpgid - 22;
+            return true;
+         case 25:
+         case 26:
+         case 27:
+         case 28:
+            subframe = 4;
+            page = svpgid - 23;
+            return true;
+         case 57:
+            subframe = 4;
+            page = 1;
+            return true;
+         case 55:
+         case 56:
+         case 60:
+         case 61:
+         case 62:
+         case 63:
+            subframe = 4;
+            page = svpgid - 38;
+            return true;
+         case 52:
+         case 53:
+         case 54:
+         case 58:
+         case 59:
+            subframe = 4;
+            page = svpgid - 39;
+            return true;
+      }
+      return false;
+   }
+
+
+   bool EngNav :: sfpage2svid(short subframe, short page, short& svpgid)
+      throw()
+   {
+      static const short sf4pg[25] = { 57, 25, 26, 27, 28, 57, 29, 30, 31, 32,
+                                       57, 62, 52, 53, 54, 57, 55, 56, 58, 59,
+                                       57, 60, 61, 62, 63 };
+
+      svpgid = 0;
+
+      if ((page < 1) || (page > 25) || (subframe < 4) || (subframe > 5))
+         return false;
+
+      if (subframe == 4)
+      {
+         svpgid = sf4pg[page-1];
+      }
+      else if (page == 25)
+         svpgid = 51;
+      else
+         svpgid = page;
+
+      return true;
+   }
+
+
+   bool EngNav :: zcount2page(unsigned long zcount,
+                              short& subframe, short& page)
+      throw()
+   {
+      subframe = ((zcount % 20) / 4);
+      if (subframe == 0)
+         subframe = 5;
+      unsigned long mod500 = zcount % 500;
+
+      switch (subframe)
+      {
+         case 1:
+         case 2:
+         case 3:
+            page = 0;
+            break;
+         case 4:
+            page = ((mod500 - 12) / 20) + 1;
+            break;
+         case 5:
+            page = (mod500 > 0) ? ((mod500 - 16) / 20) + 1 : 25;
+            break;
+         default:
+            return false;
+      }
+      return true;
+   }
+
+
    uint32_t EngNav :: computeParity(uint32_t sfword,
                                     uint32_t psfword,
                                     bool knownUpright)
