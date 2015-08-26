@@ -1397,14 +1397,15 @@ try {
             if(totvec[k] == 0) {
                tag = string();
                if(Rhead.version < 3) {
-                  RinexObsID obsid(sit->first+asString((sit->second)[k]));
                   map<string,RinexObsID>::iterator it;
                   for(it = Rhead.mapSysR2toR3ObsID[sit->first].begin();
                       it != Rhead.mapSysR2toR3ObsID[sit->first].end(); ++it)
-                     if(it->second == obsid) {
+                  {
+                     if(it->second == sit->second[k]) {
                         tag = string(", ") + it->first + string(" in ver.2");
                         break;
                      }
+                  }
                }
                LOG(INFO) << " Warning - Obs type "
                   << sit->first << asString((sit->second)[k])
