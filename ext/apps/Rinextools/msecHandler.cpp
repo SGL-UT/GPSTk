@@ -68,6 +68,7 @@ namespace gpstk {
       N = ots.size();
       obstypes = ots;
       wavelengths = waves;
+      reset();
    }
 
    // -------------------------------------------------------------------------------
