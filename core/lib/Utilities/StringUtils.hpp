@@ -1507,15 +1507,15 @@ namespace gpstk
       {
          try
          {
-            std::string::size_type pos = s.length() - aString.length();
-
-               // empty string, etc.
-            if ((pos > s.length()) || (aString == ""))
+               // empty string, etc.; cannot let (size_type) pos = negative
+            if (s.length() < aString.length() || (aString == ""))
                return s;
 
+            std::string::size_type pos = s.length() - aString.length();
+
             while((num > 0) &&
-                  (s.rfind(aString,pos) == pos) &&
-                  (s.length() > 0))
+                  (s.length() >= aString.length()) &&
+                  (s.rfind(aString,pos) == pos))
             {
                s.erase(pos, std::string::npos);
                --num;
