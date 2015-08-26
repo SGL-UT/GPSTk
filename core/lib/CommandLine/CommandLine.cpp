@@ -725,9 +725,9 @@ try {
    // parse args, saving values -----------------------
    i = 0;
    while(i < Args.size()) {
+      arg = Args[i];                            // arg
       // does it match an option?
       for(j=0; j<options.size(); ++j) {
-         arg = Args[i];                            // arg
          if((arg.size() == 2 && arg[0] == '-' && arg[1] == options[j].shortOpt) ||
                (arg.substr(0,2) == "--" && arg.substr(2) == options[j].longOpt))
          {                                         // match

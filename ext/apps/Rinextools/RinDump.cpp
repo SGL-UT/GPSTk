@@ -92,7 +92,7 @@ using namespace gpstk;
 using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
-string Version(string("2.2 10/31/13"));
+string Version(string("2.3 8/26/15"));
 // TD
 // VI LAT LON not implemented
 // Code selection is not implemented - where to replace C1* with C1W ?
@@ -124,7 +124,7 @@ public:
    map<string, vector<string> > sysObsids;    // parallel vector of RinexObsIDs
 
    /// Constructor
-   LinCom() throw() : label(string("Undef")),value(0), limit0(false)  { }
+   LinCom() throw() : value(0), limit0(false), label(string("Undef")) { }
 
    /// parse input string
    bool ParseAndSave(const string& str, bool save=true) throw();
@@ -1199,7 +1199,7 @@ string Configuration::BuildCommandLine(void) throw()
             "Stop processing data at this epoch");
    opts.Add(0, "decimate", "dt", false, false, &decimate, "",
             "Decimate data to time interval dt (0: no decimation)");
-   opts.Add(0, "debias", "type,lim", true, false, &typeLimit, "",
+   opts.Add(0, "debias", "type:lim", true, false, &typeLimit, "",
             "Debias jumps in data larger than limit (0: no debias)");
    opts.Add(0, "debias0", "type", true, false, &typeLimit0, "",
             "Toggle initial debias of data <type> ()");
@@ -1418,7 +1418,11 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
 
    // debiasing limits
    for(i=0; i<typeLimit.size(); i++) {
-      fld = split(typeLimit[i],',');
+      fld = split(typeLimit[i],':');
+      if(fld.size() != 2) {
+         LOG(WARNING) << "Error - argument to --debias is invalid; use type:limit";
+         continue;
+      }
       debLimit[fld[0]] = asDouble(fld[1]);
    }
    for(i=0; i<typeLimit0.size(); i++) {
@@ -1572,6 +1576,7 @@ try {
          // normal EOF
          if(!istrm.good() || istrm.eof()) { iret = 0; break; }
 
+         //LOG(INFO) << "";
          LOG(DEBUG) << " Read RINEX data: flag " << Rdata.epochFlag
             << ", timetag " << printTime(Rdata.time,C.longfmt);
 
@@ -1589,6 +1594,7 @@ try {
 
          // decimate
          if(C.decimate > 0.0) {
+            if(C.decTime == CommonTime::BEGINNING_OF_TIME) C.decTime = Rdata.time;
             double dt(::fabs(Rdata.time - C.decTime));
             dt -= C.decimate * long(0.5 + dt/C.decimate);
             if(::fabs(dt) > 0.25) {
@@ -1897,8 +1903,10 @@ bool LinCom::ParseAndSave(const string& lab, bool save) throw()
    vector<string> fld(split(lab,':'));       // split into fields on :
 
    string tag(fld[0]);                       // LinCom tag ~ SI,VI,IF,GF,WLC,NLC,etc
-   if(find(C.LinComTags.begin(), C.LinComTags.end(), tag) == C.LinComTags.end())
-      return false;                          // tag is not in the list
+   //if(find(C.LinComTags.begin(), C.LinComTags.end(), tag) == C.LinComTags.end()) {
+   //   LOG(DEBUG2) << "tag is not in LinComTags list";
+   //   return false;                          // tag is not in the list
+   //}
 
    // set limit and limit0
    limit = C.debLimit[tag];
@@ -2166,7 +2174,12 @@ bool LinCom::ParseAndSave(const string& lab, bool save) throw()
       while(tag.size()) {
          pos = tag.find_first_of("GRESCLD"); // system or obsid
          if(pos == string::npos) break;
-         consts.push_back(asDouble(tag.substr(0,pos)));
+         if(tag.substr(0,pos).empty() || tag.substr(0,pos) == "+")
+            consts.push_back(1.0);
+         else if(tag.substr(0,pos) == "-")
+            consts.push_back(-1.0);
+         else
+            consts.push_back(asDouble(tag.substr(0,pos)));
          tag = tag.substr(pos);
 
          pos = tag.find_first_of("+-");

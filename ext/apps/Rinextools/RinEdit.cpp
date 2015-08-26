@@ -73,8 +73,9 @@ using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
 
-string Version(string("2.2 10/31/13"));
+string Version(string("2.3 8/26/15"));
 // TD
+// if reading a R2 file, allow obs types in cmds to be R2 versions (C1,etc)
 // option to replace input with output?
 // include optional fmt input for t in edit cmds - is this feasible?
 // if given a 4-char OT and SV, check their consistency
@@ -235,7 +236,7 @@ try {
    wallclkbeg.setLocalTime();
 
    // build title = first line of output
-   C.Title = "# " + C.PrgmName + ", part of the GPS Toolkit, Ver 2.2"
+   C.Title = "# " + C.PrgmName + ", part of the GPS Toolkit, Ver " + Version
       + ", Run " + printTime(wallclkbeg,C.calfmt);
    
    for(;;) {
@@ -580,6 +581,8 @@ try {
    }  // end loop over files
 
    // final clean up
+   LOG(INFO) << " Close output file.";
+   C.ostrm.close();
 
    if(iret < 0) return iret;
 
@@ -607,18 +610,30 @@ int ProcessOneEpoch(Rinex3ObsHeader& Rhead, Rinex3ObsHeader& RHout,
 
       else {                              // regular data
          vector<EditCmd>::iterator it, jt;
+         vector<EditCmd> toCurr;
 
          // for cmds with ttag <= now either execute and delete, or move to current
          it = C.vecCmds.begin();
          while(it != C.vecCmds.end()) {
             if(it->ttag <= now || ::fabs(it->ttag - now) < C.timetol) {
-	       // execute command;
                // delete one-time cmds, move others to curr and delete
                iret = ExecuteEditCmd(it, RHout, RDout);
-               if(iret < 0) return iret;
+               if(iret < 0) return iret;              // fatal error
 
                // keep this command on the current list
-               if(iret > 0) C.currCmds.push_back(*it);
+               if(iret > 0) toCurr.push_back(*it); // C.currCmds.push_back(*it);
+
+               // if this is a '-' cmd to be deleted, find matching '+' and delete it
+               // note FixEditCmdList() forced every - to have a corresponding +
+               if(iret == 0 && it->sign == -1) {
+                  for(jt = C.currCmds.begin(); jt != C.currCmds.end(); ++jt)
+                     if(jt->type==it->type && jt->sat==it->sat && jt->obs==it->obs)
+                        break;
+                  if(jt == C.currCmds.end())
+                     GPSTK_THROW(Exception(string(
+                        "Execute failed to find + cmd matching ") + it->asString()));
+                  C.currCmds.erase(jt);
+               }
 
                // remove from vecCmds
                it = C.vecCmds.erase(it);              // erase vector element
@@ -639,6 +654,9 @@ int ProcessOneEpoch(Rinex3ObsHeader& Rhead, Rinex3ObsHeader& RHout,
             else
                ++it;
          }
+
+         for(it = toCurr.begin(); it != toCurr.end(); ++it)
+            C.currCmds.push_back(*it);
       }
 
       return 0;
@@ -654,15 +672,16 @@ int ExecuteEditCmd(const vector<EditCmd>::iterator& it, Rinex3ObsHeader& Rhead,
    throw(Exception)
 {
    Configuration& C(Configuration::Instance());
-   size_t i;
+   size_t i,j;
    string sys;
    vector<string> flds;
-   Rinex3ObsData::DataMap::iterator kt;
+   vector<RinexSatID> sats;
+   Rinex3ObsData::DataMap::const_iterator kt;
    vector<RinexObsID>::iterator jt;
 
    try {
       if(it->type == EditCmd::INVALID) {
-         // message?
+         //LOG(DEBUG) << " Execute: invalid command " << it->asString();
          return 0;
       }
 
@@ -675,7 +694,7 @@ int ExecuteEditCmd(const vector<EditCmd>::iterator& it, Rinex3ObsHeader& Rhead,
          C.ostrm.open(it->field.c_str(),ios::out);
          if(!C.ostrm.is_open()) {
             LOG(ERROR) << "Error : could not open output file " << it->field;
-            return 1;
+            return -1;
          }
          C.ostrm.exceptions(ios::failbit);
 
@@ -694,7 +713,8 @@ int ExecuteEditCmd(const vector<EditCmd>::iterator& it, Rinex3ObsHeader& Rhead,
             if(!C.HDl.empty()) Rhead.recVers = C.HDl;            
             if(!C.HDs.empty()) Rhead.antNo = C.HDs;
             if(!C.HDx.empty()) {
-               flds = split(C.HDx,',');   // TD check n==3,doubles in Initialize
+               flds = split(C.HDx,',');
+               // TD check n==3,doubles in Initialize
                for(i=0; i<3; i++) Rhead.antennaPosition[i] = asDouble(flds[i]);
             }
             if(!C.HDm.empty()) Rhead.markerName = C.HDm;
@@ -720,16 +740,19 @@ int ExecuteEditCmd(const vector<EditCmd>::iterator& it, Rinex3ObsHeader& Rhead,
 
          // write the header
          C.ostrm << Rhead;
+         return 0;
       }
 
       // DA delete all ---------------------------------------------------------------
       else if(it->type == EditCmd::DA) {
          switch(it->sign) {
             case 1: case 0:
-               Rdata.numSVs = 0;                   // clear this data, return 0
+               Rdata.numSVs = 0;                   // clear this data, keep the cmd
                Rdata.obs.clear();
+               if(it->sign == 0) return 0;
                break;
-            case -1: return 1;                     // delete the (-) command
+            case -1:
+               return 0;                           // delete the (-) command
                break;
          }
       }
@@ -740,80 +763,105 @@ int ExecuteEditCmd(const vector<EditCmd>::iterator& it, Rinex3ObsHeader& Rhead,
          return 0;
 
       // DS delete satellite ---------------------------------------------------------
-      // TD what if entire system is deleted
       else if(it->type == EditCmd::DS) {
-         if(it->sign == -1) return 1;                 // delete the (-) command
-
+         if(it->sign == -1) return 0;                 // delete the (-) command
          // find the SV
-         kt = Rdata.obs.find(it->sat);
-         if(kt != Rdata.obs.end()) {                  // found the SV
-            Rdata.obs.erase(kt);                      // remove it
+         if(it->sat.id > 0) {
+            kt = Rdata.obs.find(it->sat);
+            if(kt != Rdata.obs.end())                // found the SV
+               sats.push_back(kt->first);
+            else
+               LOG(DEBUG) << " Execute: sat " << it->sat << " not found in data";
+         }
+         else {
+            sats.clear();
+            for(kt=Rdata.obs.begin(); kt!=Rdata.obs.end(); ++kt)
+               if(kt->first.system == it->sat.system)
+                  sats.push_back(kt->first);
+         }
+         for(j=0; j<sats.size(); j++) {
+            Rdata.obs.erase(sats[j]);                 // remove it
             Rdata.numSVs--;                           // don't count it
          }
-         if(it->sign == 0) return 1;                  // delete the one-time command
+         if(it->sign == 0) return 0;                  // delete the one-time command
       }
 
       // -----------------------------------------------------------------------------
       // the rest require that we find satellite and obsid in Rdata.obs
       else {
-         if(it->sign == -1) return 1;                 // delete the (-) command
-
-         kt = Rdata.obs.find(it->sat);                // find the sat
-         if(kt == Rdata.obs.end())                    // sat not found
-            return 0;                                 // (this may be normal)
+         if(it->sign == -1) return 0;                 // delete the (-) command
 
          sys = asString(it->sat.systemChar());        // find the system
 
          // find the OT in the header map, and get index into vector
          jt = find(Rhead.mapObsTypes[sys].begin(),
                    Rhead.mapObsTypes[sys].end(), it->obs);
-         if(jt == Rhead.mapObsTypes[sys].end())       // ObsID not found
+         if(jt == Rhead.mapObsTypes[sys].end()) {     // ObsID not found
             // TD message? user error: ask to delete one that's not there
-            return 0;
+            LOG(DEBUG) << " Execute: obstype " << it->obs << " not found in header";
+            return 0;                                 // delete the cmd
+         }
 
          i = (jt - Rhead.mapObsTypes[sys].begin());   // index into vector
 
-         switch(it->type) {
-            // DD delete data --------------------------------------------------------
-            case EditCmd::DD:
-               Rdata.obs[it->sat][i].data = 0.0;
-               Rdata.obs[it->sat][i].ssi = 0;
-               Rdata.obs[it->sat][i].lli = 0;
-               break;
-            // SD set data -----------------------------------------------------------
-            case EditCmd::SD:
-               Rdata.obs[it->sat][i].data = it->data;
-               break;
-            // SS set SSI ------------------------------------------------------------
-            case EditCmd::SS:
-               Rdata.obs[it->sat][i].ssi = it->idata;
-               break;
-            // SL set LLI ------------------------------------------------------------
-            case EditCmd::SL:
-               Rdata.obs[it->sat][i].lli = it->idata;
-               break;
-            // BD bias data ----------------------------------------------------------
-            case EditCmd::BD:
-               Rdata.obs[it->sat][i].data += it->data;
-               break;
-            // BS bias SSI -----------------------------------------------------------
-            case EditCmd::BS:
-               Rdata.obs[it->sat][i].ssi += it->idata;
-               break;
-            // BL bias LLI -----------------------------------------------------------
-            case EditCmd::BL:
-               Rdata.obs[it->sat][i].lli += it->idata;
-               break;
-            // never reached ---------------------------------------------------------
-            default:
-               // message?
-               break;
+         // find the sat
+         if(it->sat.id > 0) {
+            if(Rdata.obs.find(it->sat)==Rdata.obs.end()) { // sat not found
+               LOG(DEBUG) << " Execute: sat " << it->sat << " not found in data";
+            }
+            else
+               sats.push_back(it->sat);
+         }
+         else {
+            for(kt=Rdata.obs.begin(); kt!=Rdata.obs.end(); ++kt) {
+               if(kt->first.system == it->sat.system)
+                  sats.push_back(kt->first);
+            }
          }
 
-         if(it->sign == 0) return 1;                  // delete the one-time command
+         for(j=0; j<sats.size(); j++) {
+            switch(it->type) {
+               // DD delete data -----------------------------------------------------
+               case EditCmd::DD:
+                  Rdata.obs[sats[j]][i].data = 0.0;
+                  Rdata.obs[sats[j]][i].ssi = 0;
+                  Rdata.obs[sats[j]][i].lli = 0;
+                  break;
+               // SD set data --------------------------------------------------------
+               case EditCmd::SD:
+                  Rdata.obs[sats[j]][i].data = it->data;
+                  break;
+               // SS set SSI ---------------------------------------------------------
+               case EditCmd::SS:
+                  Rdata.obs[sats[j]][i].ssi = it->idata;
+                  break;
+               // SL set LLI ---------------------------------------------------------
+               case EditCmd::SL:
+                  Rdata.obs[sats[j]][i].lli = it->idata;
+                  break;
+               // BD bias data -------------------------------------------------------
+               case EditCmd::BD:
+                  Rdata.obs[sats[j]][i].data += it->data;
+                  break;
+               // BS bias SSI --------------------------------------------------------
+               case EditCmd::BS:
+                  Rdata.obs[sats[j]][i].ssi += it->idata;
+                  break;
+               // BL bias LLI --------------------------------------------------------
+               case EditCmd::BL:
+                  Rdata.obs[sats[j]][i].lli += it->idata;
+                  break;
+               // never reached ------------------------------------------------------
+               default:
+                  // message?
+                  break;
+            }
+         }
+
+         if(it->sign == 0) return 0;                  // delete the one-time command
       }
 
-      return 0;
+      return 1;
    }
    catch(Exception& e) { GPSTK_RETHROW(e); }
 }  // end ExecuteEditCmd()
@@ -875,7 +923,7 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
          << " command line configuration ------\n";
       opts.DumpConfiguration(oss);
       if(!cmdlineExtras.empty()) oss << "# Extra Processing:\n" << cmdlineExtras;
-      oss << "------ End configuration summary ------";
+      oss << "\n------ End configuration summary ------";
       LOG(DEBUG) << oss.str();
    }
 
@@ -1248,7 +1296,7 @@ EditCmd::EditCmd(const string intypestr, const string inarg) throw(Exception)
          string dat;
          if(tag != "DD") {                            // strip and save last arg (dsl)
             dat = flds[flds.size()-1];
-            stripTrailing(arg,","+dat);
+            stripTrailing(arg,string(",")+dat);
          }
          if(!parseTime(arg,ttag)) return;             // get the time
 
@@ -1361,9 +1409,12 @@ void FixEditCmdList(void) throw()
       if(it->sign == -1 && it->type != EditCmd::INVALID) {
          bool havePair(false);
          if(it != C.vecCmds.begin()) {
-            --(jt = it);
+            jt = it; --jt;  // --(jt = it);
             while(1) {                                // search backwards for match
-               if(jt->type == it->type && jt->sat == it->sat) {
+               if(jt->type == it->type &&
+                  jt->sat == it->sat &&
+                  jt->obs == it->obs)
+               {
                   if(jt->sign == 1) havePair=true;    // its a match
                   else if(jt->sign == -1) {           // this is an error
                      LOG(ERROR) << it->asString("Error: repeat '-'");
