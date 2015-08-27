@@ -188,6 +188,16 @@ namespace gpstk
       const OrbElemBase* findNearOrbElem( const SatID& sat, const CommonTime& t )
          const throw( InvalidRequest );
 
+      /// Find an OrbElemBase for the indicated satellite that has a Toe
+      /// corresponding to time t.  If no such OrbElemBase exists in the store,
+      /// throw an InvalidRequest exception
+      /// @param sat the SV of interest
+      /// @param t the time of interest
+      /// @return a reference to desired OrbElemBase
+      /// @throw InvalidRequest object thrown when no OrbElemBase is found
+      const OrbElemBase* findToe(const SatID& sat, const CommonTime& t)
+         const throw(InvalidRequest);
+
       /// Return a list of SatID object representing the satellites that
       /// are contained in the store.
       /// @return list of SatID objects

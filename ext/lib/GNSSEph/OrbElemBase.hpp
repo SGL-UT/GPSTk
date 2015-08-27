@@ -138,7 +138,6 @@ namespace gpstk
           */
       virtual double svRelativity(const CommonTime& t) const throw( gpstk::InvalidRequest ) = 0;
 
-
           /** Returns true if this two objects are 
            *   a.) same concrete type, and
            *   b.) same data contents.
@@ -151,6 +150,16 @@ namespace gpstk
            * implemmented here as a stub that returns false.  This
            */
       virtual bool isSameData(const OrbElemBase* right) const;
+
+          /** Compare two OrbElemBase descendent objects.
+           *  Any differences are summarized and written to the output stream
+           *  provided.
+           *  The base method compares the members common to the base.  The descendent classes
+           *  should add additional member comparisions as needed in order   
+           *  to provide a complete comparison of members of interest to be compared.   
+           *  The return list is a list of the members that disagreed.  
+           */
+      virtual std::list<std::string> compare(const OrbElemBase* right) const;
 
          /** Output the contents of this orbit data to the given stream.
           * @throw Invalid Request if the required data has not been stored.

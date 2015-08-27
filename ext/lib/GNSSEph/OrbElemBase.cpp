@@ -104,6 +104,20 @@ namespace gpstk
       return true;
    }
 
+      // Compare, but also return a list of all differences found
+   std::list<std::string> OrbElemBase::compare(const OrbElemBase* right) const
+   {
+      std::list<std::string> retList; 
+      if (dataLoadedFlag != right->dataLoadedFlag) retList.push_back("dataLoadedFlag");
+      if (satID          != right->satID)          retList.push_back("satID");
+      if (obsID          != right->obsID)          retList.push_back("obsID");
+      if (ctToe          != right->ctToe)          retList.push_back("ctToe");
+      if (healthy        != right->healthy)        retList.push_back("healthy");
+      if (beginValid     != right->beginValid)     retList.push_back("beginValid");
+      if (endValid       != right->endValid)       retList.push_back("endValid");
+      return retList; 
+   }
+
       // The base dump method exists in order that a dump() with
       // minimum functionality is guaranteed to exist.  The
       // test that the data are loaded is implemented, the header,

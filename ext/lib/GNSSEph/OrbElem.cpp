@@ -79,6 +79,61 @@ namespace gpstk
       return(dataLoadedFlag);
    }
 
+   bool OrbElem::isSameData(const OrbElem* right) const
+   {
+      if (!OrbElemBase::isSameData(right))   return false;
+      if (Cuc            != right->Cuc)      return false;
+      if (Cus            != right->Cus)      return false;
+      if (Crc            != right->Crc)      return false;
+      if (Crs            != right->Crs)      return false;
+      if (Cic            != right->Cic)      return false;
+      if (Cis            != right->Cis)      return false;
+      if (M0             != right->M0)       return false;
+      if (dn             != right->dn)       return false;
+      if (dndot          != right->dndot)    return false;
+      if (ecc            != right->ecc)      return false;
+      if (A              != right->A)        return false;
+      if (Adot           != right->Adot)     return false;
+      if (OMEGA0         != right->OMEGA0)   return false;
+      if (i0             != right->i0)       return false;
+      if (w              != right->w)        return false;
+      if (OMEGAdot       != right->OMEGAdot) return false;
+      if (idot           != right->idot)     return false;
+      if (ctToc          != right->ctToc)    return false;
+      if (af0            != right->af0)      return false;
+      if (af1            != right->af1)      return false;
+      if (af2            != right->af2)      return false;
+      return true;
+   }
+
+   std::list<std::string> OrbElem::compare(const OrbElem* right) const
+   {
+      std::list<std::string> retList = OrbElemBase::compare(right);
+      if (ctXmit         != right->ctXmit)   retList.push_back("ctXmit");
+      if (Cuc            != right->Cuc)      retList.push_back("Cuc");
+      if (Cus            != right->Cus)      retList.push_back("Cus");
+      if (Crc            != right->Crc)      retList.push_back("Crc");
+      if (Crs            != right->Crs)      retList.push_back("Crs");
+      if (Cic            != right->Cic)      retList.push_back("Cic");
+      if (Cis            != right->Cis)      retList.push_back("Cis");
+      if (M0             != right->M0)       retList.push_back("M0");
+      if (dn             != right->dn)       retList.push_back("dn");
+      if (dndot          != right->dndot)    retList.push_back("dndot");
+      if (ecc            != right->ecc)      retList.push_back("ecc");
+      if (A              != right->A)        retList.push_back("A");
+      if (Adot           != right->Adot)     retList.push_back("Adot");
+      if (OMEGA0         != right->OMEGA0)   retList.push_back("OMEGA0");
+      if (i0             != right->i0)       retList.push_back("i0");
+      if (w              != right->w)        retList.push_back("w");
+      if (OMEGAdot       != right->OMEGAdot) retList.push_back("OMEGAdot");
+      if (idot           != right->idot)     retList.push_back("idot");
+      if (ctToc          != right->ctToc)    retList.push_back("ctToc");
+      if (af0            != right->af0)      retList.push_back("af0");
+      if (af1            != right->af1)      retList.push_back("af1");
+      if (af2            != right->af2)      retList.push_back("af2");
+      return retList;
+   }
+
    bool OrbElem::isHealthy() const
       throw(InvalidRequest)
    {
