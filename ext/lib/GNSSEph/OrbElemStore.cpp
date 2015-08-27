@@ -521,6 +521,57 @@ namespace gpstk
       }
    }
       
+//-----------------------------------------------------------------------------
+   const OrbElemBase* OrbElemStore::
+   findToe(const SatID& sat, const CommonTime& t)
+      const throw(InvalidRequest)
+   {
+         // If the TimeSystem of the requested t doesn't match
+         // the TimeSystem stored in this store, throw an error.
+      if (timeSysForStore!=t.getTimeSystem())
+      {
+         std::stringstream ss;
+         ss << "Mismatched TimeSystems.  Time system of store: ";
+         ss << timeSysForStore << ", Time system of argument: ";
+         ss << t.getTimeSystem();
+         InvalidRequest e(ss.str());
+         GPSTK_THROW(e);
+      }
+   
+         // Check for any OrbElem for this SV            
+      UBEMap::const_iterator prn_i = ube.find(sat);
+      if (prn_i == ube.end())
+      {
+         InvalidRequest e("No OrbElem for satellite " + asString(sat));
+         GPSTK_THROW(e);
+      }
+
+         // Create a reference to map for this satellite
+      const OrbElemMap& em = prn_i->second;
+
+         // We are looking for an exact match for a Toe.
+         // The map is keyed with the beginValid time, so the
+         // only way to determine if there is a match is to iterate
+         // over the map and check.
+      OrbElemMap::const_iterator cit;
+      for (cit=em.begin();cit!=em.end();cit++)
+      {
+         const OrbElemBase* candidate = cit->second;
+         if (candidate->ctToe==t) return(candidate);
+      }         
+
+         // If we reached this point, we didn't find a match.
+      std::stringstream ss;
+      ss << "No match found for SV " << sat;
+      ss << " with Toe " << printTime(t,"%02m/%02d/%04Y %02H:%02M:%02S");
+      InvalidRequest e(ss.str());
+      GPSTK_THROW(e);
+
+         // Keep the compiler happy.
+      OrbElemBase* dummy = 0;    
+      return(dummy); 
+   }
+
 
 //-----------------------------------------------------------------------------
 

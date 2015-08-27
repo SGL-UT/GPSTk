@@ -104,6 +104,10 @@ namespace gpstk
 
       virtual std::string getNameLong() const = 0;
 
+      virtual bool isSameData(const OrbElem* right) const;
+
+      virtual std::list<std::string> compare(const OrbElem* right) const;
+
          /** This function returns the health status of the SV.
           * @throw Invalid Request if the required data has not been stored.
           */
