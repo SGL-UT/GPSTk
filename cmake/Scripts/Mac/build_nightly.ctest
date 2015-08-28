@@ -12,7 +12,7 @@
 set(CTEST_SOURCE_DIRECTORY "$ENV{HOME}/git/cdash/nightly/gpstk")
 set(CTEST_BINARY_DIRECTORY "$ENV{HOME}/git/cdash/nightly/gpstk/build")
 set(CTEST_SITE "applepie.arlut.utexas.edu")
-set(CTEST_BUILD_NAME "macosx64-experimental")
+set(CTEST_BUILD_NAME "macosx64-nightly")
 set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
 set(CTEST_CONFIGURATION_TYPE "Release")
 set(REPO "gitlab@repositories.arlut.utexas.edu:sgl/gpstk.git")
