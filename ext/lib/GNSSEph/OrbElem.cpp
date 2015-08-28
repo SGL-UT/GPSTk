@@ -109,7 +109,6 @@ namespace gpstk
    std::list<std::string> OrbElem::compare(const OrbElem* right) const
    {
       std::list<std::string> retList = OrbElemBase::compare(right);
-      if (ctXmit         != right->ctXmit)   retList.push_back("ctXmit");
       if (Cuc            != right->Cuc)      retList.push_back("Cuc");
       if (Cus            != right->Cus)      retList.push_back("Cus");
       if (Crc            != right->Crc)      retList.push_back("Crc");
