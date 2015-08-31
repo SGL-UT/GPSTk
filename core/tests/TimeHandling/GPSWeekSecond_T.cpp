@@ -259,6 +259,9 @@ class GPSWeekSecond_T
 		testFramework.assert(Test2.week==Compare.week,                       "Week provided found to be different after converting to and from CommonTime",       __LINE__);
 		testFramework.assert(Test2.sow==Compare.sow,                         "Second provided found to be different after converting to and from CommonTime",     __LINE__);
 
+		// @note - This failed before comparison operators were added to GPSWeekSecond 
+		testFramework.assert(Test2 == Test, "Test implicit conversion to/from CommonTime", __LINE__);
+
 		return testFramework.countFails();
 	}
 

@@ -88,6 +88,38 @@ namespace gpstk
          return e;
       }
 
+      /// @defgroup wsco WeekSecond Comparison Operators
+      /// All comparison operators have a parameter "right" which corresponds
+      /// to the GPSWeekSecond object to the right of the symbol.
+      /// All comparison operators are const and return true on success
+      /// and false on failure.
+         //@{
+      inline bool operator==( const GPSWeekSecond& right ) const
+      {
+         return WeekSecond::operator==( right );
+      }
+      inline bool operator!=( const GPSWeekSecond& right ) const
+      {
+         return WeekSecond::operator!=( right );
+      }
+      inline bool operator<( const GPSWeekSecond& right ) const
+      {
+         return WeekSecond::operator<( right );
+      }
+      inline bool operator>( const GPSWeekSecond& right ) const
+      {
+         return WeekSecond::operator>( right );
+      }
+      inline bool operator<=( const GPSWeekSecond& right ) const
+      {
+         return WeekSecond::operator<=( right );
+      }
+      inline bool operator>=( const GPSWeekSecond& right ) const
+      {
+         return WeekSecond::operator>=( right );
+      }
+         //@}
+
       /// Return a string containing the characters that this class
       /// understands when printing times.
       virtual std::string getPrintChars() const
