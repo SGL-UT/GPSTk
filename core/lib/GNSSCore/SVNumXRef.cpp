@@ -277,6 +277,10 @@ SVNumXRef::SVNumXRef( )
    NtoPMap.insert( std::pair<const int, XRefNode>( 36, XRefNode(  6, 
                                        CivilTime( 1995,  3, 10,  0,  0,  0.0, TimeSystem::GPS),
                                        CivilTime( 2014,  3, 3, 23, 59,  59.9, TimeSystem::GPS))));
+   // NANU 2015080 (start) 
+   NtoPMap.insert( std::pair<const int, XRefNode>( 36, XRefNode( 10, 
+                                       CivilTime( 2015, 9, 16,  0,  0,  0.0, TimeSystem::GPS),
+                                       CommonTime::END_OF_TIME  )));
    NtoPMap.insert( std::pair<const int, XRefNode>( 37, XRefNode(  7, 
                                        CivilTime( 1993,  5, 13,  0,  0,  0.0, TimeSystem::GPS),
                                        CivilTime( 2007,  7, 20, 23, 59, 59.9, TimeSystem::GPS))));
