@@ -173,7 +173,7 @@ public:
    string Title;                 // id line printed to screen and log
 
    // start command line input
-   bool help, verbose, typehelp, combohelp, noHeader;
+   bool help, verbose, typehelp, combohelp, noHeader, doTECU;
    int debug;
    string cfgfile;
 
@@ -780,7 +780,7 @@ void Configuration::SetDefaults(void) throw()
    elevlimit = 0.0;
 
    userfmt = gpsfmt;
-   help = verbose = noHeader = false;
+   help = verbose = noHeader = doTECU = false;
    debug = -1;
 
    NonObsTags.push_back("RNG");
@@ -883,7 +883,7 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
 "    > System(s) may be fixed by --sys, or specified as first of 4-char ObsID oi\n"
 "    > Below, beta = fi/fj (fi and fj are frequencies); alpha = beta^2 - 1\n"
 "    > Phases are multiplied by wavelength, leaving everything in units meters\n"
-"  SI:t:ij   Slant ionospheric delay\n"
+"  SI:t:ij   Slant ionospheric delay (in meters, unless --TECU)\n"
 "              e.g. SI:C:12 = (C1X - C2X)/alpha\n"
 "  VI:t:ij   Vertical ionospheric delay [requires --eph --ref --ionoht]\n"
 "              VI = SI * obliquity factor\n"
@@ -1220,6 +1220,8 @@ string Configuration::BuildCommandLine(void) throw()
             "Format for time tags (see GPSTK::Epoch::printf) in output");
    opts.Add(0, "headless", "", false, false, &noHeader, "",
             "Turn off printing of headers and no-eph-warnings in output");
+   opts.Add(0, "TECU", "", false, false, &doTECU, "",
+            "Compute iono delay (SI,VI) in TEC units (else meters)");
    opts.Add(0, "verbose", "", false, false, &verbose, "",
             "Print extra output information");
    opts.Add(0, "debug", "", false, false, &debug, "",
@@ -2061,9 +2063,24 @@ bool LinCom::ParseAndSave(const string& lab, bool save) throw()
          // TD VI LAT LON not implemented
          if(tag == string("SI") || tag == string("VI")) {         // iono delay
             double alpha(getAlpha(sat,n1,n2));
-            //LOG(DEBUG2) << "Parse alpha is " << fixed << setprecision(4) << alpha;
-            sysConsts[sys].push_back(1.0/alpha);
-            sysConsts[sys].push_back(-1.0/alpha);
+            // convert to TECU
+            double TECUperM(1.0);
+            if(C.doTECU) {
+               if(sat.system == SatID::systemGPS) {
+                  static const double GPSL1(L1_FREQ_GPS*1.e-8);
+                  TECUperM = GPSL1*GPSL1/40.28;
+               }
+               else if(sat.system == SatID::systemGlonass) {
+                  static const double GLOL1((L1_FREQ_GLO
+                                 + C.GLOfreqChan.count(sat)*L1_FREQ_STEP_GLO)*1.e-8);
+                  TECUperM = GLOL1*GLOL1/40.28;
+               }
+            }
+ 
+            //LOG(DEBUG2) << "Parse alpha is " << fixed << setprecision(4) << alpha
+            //   << " for sat " << sat << " and TECUperM " << scientific << TECUperM;
+            sysConsts[sys].push_back(TECUperM/alpha);
+            sysConsts[sys].push_back(-TECUperM/alpha);
          }
          else if(tag == string("IF")) {                           // iono-free
             double alpha(getAlpha(sat,n1,n2));
