@@ -708,7 +708,7 @@ namespace gpstk
       word <<= 32 - numBitInWord;
       if (numBitInWord>0)
       {
-         s << "  0x" << setw(8) << setfill('0') << hex << word;
+         s << delimiter << " 0x" << setw(8) << setfill('0') << hex << word;
       }
       s.flags(oldFlags);      // Reset whatever conditions pertained on entry
       return(bits.size()); 
