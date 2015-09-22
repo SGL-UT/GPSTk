@@ -68,6 +68,7 @@ namespace gpstk {
       N = ots.size();
       obstypes = ots;
       wavelengths = waves;
+      reset();
    }
 
    // -------------------------------------------------------------------------------
@@ -426,7 +427,7 @@ namespace gpstk {
                for(i=0; i<N; i++) {
                   if(iave[i] == 0) continue;
                   oss.str("");
-                  oss << "--BD+";
+                  oss << "--BD+ ";
                   if(obstypes[i].length() > 2) {
                      oss << obstypes[i][0] << "," << obstypes[i].substr(1);
                   }
@@ -435,7 +436,8 @@ namespace gpstk {
                   }
                   oss << printTime(currttag,",%F,%.3g");
                   oss << "," << fixed << setprecision(5) << - double(nadj)
-                        * (wavelengths[i] == 0.0 ? Rfact : Rfact/wavelengths[i]);
+                        * (wavelengths[i] == 0.0 ? Rfact : Rfact/wavelengths[i])
+                        << " # edit cmd for " << nadj << " millisecond adjust";
 
                   editCmds.push_back(oss.str());
                }

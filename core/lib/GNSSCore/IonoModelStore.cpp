@@ -108,4 +108,25 @@ namespace gpstk
    }  // End of method 'IonoModelStore::addIonoModel()'
 
 
+      /** Edit the dataset, removing data outside the indicated time interval
+       *
+       * \param tmin defines the beginning of the time interval
+       * \param tmax defines the end of the time interval
+       */
+   void IonoModelStore::edit(const CommonTime& tmin, 
+                             const CommonTime& tmax)
+    {
+      IonoModelMap::iterator lower = ims.lower_bound(tmin);
+      if (lower != ims.begin())
+      {
+         ims.erase(ims.begin(), lower);
+      }
+      IonoModelMap::iterator upper = ims.upper_bound(tmax);
+      if (upper != ims.end())
+      {
+         ims.erase(upper, ims.end());
+      }
+   }
+
+
 }  // End of namespace gpstk

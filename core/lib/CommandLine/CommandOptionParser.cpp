@@ -200,7 +200,7 @@ namespace gpstk
                   {
                      pickedOption->value.push_back(string(optarg));
                      pickedOption->count++;
-                     pickedOption->order = order;
+                     pickedOption->order.push_back(order);
                   }
 
                }
@@ -217,7 +217,7 @@ namespace gpstk
                   else if (pickedOption->optFlag == CommandOption::noArgument)
                   {
                      pickedOption->count++;
-                     pickedOption->order = order;
+                     pickedOption->order.push_back(order);
                   }
                }
             } // itr != end()

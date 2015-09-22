@@ -76,7 +76,7 @@ using namespace gpstk;
 using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
-string Version(string("4.0 8/12/15"));
+string Version(string("4.1 8/26/15"));
 
 //------------------------------------------------------------------------------------
 // Object for command line input and global data
@@ -686,6 +686,11 @@ try {
             RinexSatID rsid;
             rsid.fromString(sit->first);
             SatID sid(rsid);
+            // TD support only GPS currently
+            if(rsid.systemChar() != 'G') continue;
+            // excluded satellites/systems
+            if(find(C.exSats.begin(), C.exSats.end(), rsid) != C.exSats.end())
+               continue;
             // get the obstypes, prepend the system character
             for(i=0; i<sit->second.size(); i++) {
                tag = sit->second[i].asString();       // 3-char obs type
@@ -703,6 +708,9 @@ try {
          }
 
          C.msh.setObstypes(msots,waves);
+         LOG(DEBUG) << "Initialize millisecond handler with obs type, wavelength:";
+         for(i=0; i<msots.size(); i++) LOG(DEBUG) << " " << msots[i]
+               << fixed << setprecision(6) << " " << waves[i];
       }
 
       if(pLOGstrm == &cout && !C.brief)
@@ -1114,7 +1122,7 @@ try {
       if(C.dogaps) {
          // summary of gaps using count
          oss.str("");
-         oss << "\nSummary of gaps (vs count) in the data in this file, "
+         oss << "Summary of gaps (vs count) in the data in this file, "
             << "assuming dt = " << C.dt << " sec.\n";
          if(C.dt != dt) oss << " Warning - computed dt does not match input dt\n";
          oss << " First epoch = " << printTime(firstObsTime,C.longfmt)
@@ -1315,7 +1323,6 @@ try {
       if(C.doms) {
          C.msh.afterAddbeforeFix();
 
-         
          // true b/c no fixing, but false b/c editing commands follow
          LOG(INFO) << C.msh.getFindMessage(false);
 
@@ -1390,14 +1397,15 @@ try {
             if(totvec[k] == 0) {
                tag = string();
                if(Rhead.version < 3) {
-                  RinexObsID obsid(sit->first+asString((sit->second)[k]));
                   map<string,RinexObsID>::iterator it;
                   for(it = Rhead.mapSysR2toR3ObsID[sit->first].begin();
                       it != Rhead.mapSysR2toR3ObsID[sit->first].end(); ++it)
-                     if(it->second == obsid) {
+                  {
+                     if(it->second == sit->second[k]) {
                         tag = string(", ") + it->first + string(" in ver.2");
                         break;
                      }
+                  }
                }
                LOG(INFO) << " Warning - Obs type "
                   << sit->first << asString((sit->second)[k])

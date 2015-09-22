@@ -108,6 +108,18 @@ namespace gpstk
       return opt;
    }
 
+      // get the order of the specified instance of this command option
+   unsigned long CommandOption::getOrder(unsigned long idx) const
+   {
+      if ((order.size() == 0) || (idx > order.size()))
+         return 0;
+
+      if (idx == (unsigned long)-1)
+         return order[order.size()-1];
+
+      return order[idx];
+   }
+
       // writes out the vector of values for this command option
    std::ostream& CommandOption::dumpValue(std::ostream& out) const
    {
@@ -277,6 +289,50 @@ namespace gpstk
          return errstr;
 
       return string();
+   }
+
+   string CommandOptionNOf::checkArguments()
+   {
+         // n-of doesn't call CommandOption::checkArguments because
+         // it doesn't use "required"
+      string fewerrstr("At least " + StringUtils::asString(N));
+
+      string manyerrstr("No more than " + StringUtils::asString(maxCount));
+      string errstr(" of the following options must be specified: ");
+
+      bool found = false;
+      unsigned long n = 0;
+
+      for (CommandOptionVec::size_type i = 0; i < optionVec.size(); i++)
+      {
+         n += optionVec[i]->getCount();
+         if (i > 0)
+            errstr += ", ";
+         errstr += optionVec[i]->getOptionString();
+      }
+
+      if (n < N)
+         return fewerrstr + errstr;
+      if (n > maxCount)
+         return manyerrstr + errstr;
+
+      return string();
+   }
+
+   std::vector<CommandOption*> CommandOptionNOf::which() const
+   {
+      std::vector<CommandOption*> rv;
+
+      for (CommandOptionVec::size_type i = 0; i < optionVec.size(); i++)
+      {
+         if (optionVec[i]->getCount())
+         {
+            rv.push_back(optionVec[i]);
+            break;
+         }
+      }
+
+      return rv;
    }
 
    string CommandOptionOneOf::checkArguments()
