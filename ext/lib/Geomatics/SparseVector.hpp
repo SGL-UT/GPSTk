@@ -156,7 +156,6 @@ namespace gpstk
                                                 const Vector<T>& R);
    template <class T> SparseVector<T> operator+(const Vector<T>& L,
                                                 const SparseVector<T>& R);
-
    // SparseMatrix
    template <class T> SparseMatrix<T> transpose(const SparseMatrix<T>& M);
    template <class T> SparseMatrix<T> transform(const SparseMatrix<T>& M,
@@ -173,10 +172,17 @@ namespace gpstk
                                                 const SparseMatrix<T>& R);
    template <class T> SparseMatrix<T> operator||(const SparseMatrix<T>& L,
                                                  const Vector<T>& V);
+   template <class T> SparseMatrix<T> operator||(const SparseMatrix<T>& L,
+                                                 const SparseMatrix<T>& R);
+   template <class T> SparseMatrix<T> inverse(const SparseMatrix<T>& A)
+                                                               throw(Exception);
    template <class T> SparseMatrix<T> lowerCholesky(const SparseMatrix<T>& A)
                                                     throw(Exception);
    template <class T> SparseMatrix<T> inverseLT(const SparseMatrix<T>& LT,
                              T *ptrSmall=NULL, T *ptrBig=NULL) throw(Exception);
+   // special matrices
+   template <class T> SparseMatrix<T> identSparse(const unsigned int dim) throw();
+
    // diag of P * C * PT
    template <class T> Vector<T> transformDiag(const SparseMatrix<T>& P,
                                               const Matrix<T>& C) throw(Exception);
@@ -248,10 +254,16 @@ namespace gpstk
                                           const SparseMatrix<T>& R);
       friend SparseMatrix<T> operator||<T>(const SparseMatrix<T>& L,
                                            const Vector<T>& V);
+      friend SparseMatrix<T> operator||<T>(const SparseMatrix<T>& L,
+                                           const SparseMatrix<T>& R);
+      friend SparseMatrix<T> inverse<T>(const SparseMatrix<T>& A) throw(Exception);
       friend SparseMatrix<T> lowerCholesky<T>(const SparseMatrix<T>& A)
                                                     throw(Exception);
       friend SparseMatrix<T> inverseLT<T>(const SparseMatrix<T>& LT,
                              T *ptrSmall, T *ptrBig) throw(Exception);
+      // special matrices
+      friend SparseMatrix<T> identSparse<T>(const unsigned int dim) throw();
+
       // diag of P * C * PT
       friend Vector<T> transformDiag<T>(const SparseMatrix<T>& P,
                                         const Matrix<T>& C) throw(Exception);
@@ -275,6 +287,13 @@ namespace gpstk
 
       /// constructor from regular Vector<T>
       SparseVector(const Vector<T>& V);
+
+      /// subvector constructor
+      /// @param SV SparseVector to copy
+      /// @param ind starting index for the copy
+      /// @param len length of new SparseVector
+      SparseVector(const SparseVector<T>& SV,
+                  const unsigned int& ind, const unsigned int& len);
 
       // TD watch for unintended consequences - cast to Vector to use some Vector::fun
       /// cast to Vector or implicit conversion to Matrix<T>
@@ -379,6 +398,8 @@ namespace gpstk
       SparseVector<T>& operator+=(const Vector<T>& SV);
       SparseVector<T>& operator*=(const T& value);
       SparseVector<T>& operator/=(const T& value);
+      // special case for use with matrix inverse
+      void addScaledSparseVector(const T& a, const SparseVector<T>& SV);
 
       // unary minus
       SparseVector<T> operator-() const
@@ -469,6 +490,26 @@ namespace gpstk
          if(V[i] == T(0)) continue;
          // non-zero, must add it
          vecMap[i] = V[i];
+      }
+   }
+
+   // subvector constructor
+   // @param SV SparseVector to copy
+   // @param ind starting index for the copy
+   // @param n length of new SparseVector
+   template <class T> SparseVector<T>::SparseVector(const SparseVector<T>& SV,
+                                 const unsigned int& ind, const unsigned int& n)
+   {
+      if(ind+n > SV.len)
+         GPSTK_THROW(Exception("Invalid input subvector c'tor - out of range"));
+      if(n == 0) return;
+
+      len = n;
+      typename std::map<unsigned int, T>::const_iterator it;
+      for(it = SV.vecMap.begin(); it != SV.vecMap.end(); ++it) {
+         if(it->first < ind) continue;       // skip ones before ind
+         if(it->first > ind+n) break;
+         vecMap[it->first-ind] = it->second;
       }
    }
 
@@ -584,9 +625,7 @@ namespace gpstk
    /// dot (SparseVector, SparseVector)
    template <class T> T dot(const SparseVector<T>& SL, const SparseVector<T>& SR)
    {
-   #ifdef RANGECHECK
       if(SL.size() != SR.size()) GPSTK_THROW(Exception("length mismatch"));
-   #endif
       T value(0);
       typename std::map<unsigned int, T>::const_iterator it = SL.vecMap.begin();
       typename std::map<unsigned int, T>::const_iterator jt = SR.vecMap.begin();
@@ -608,9 +647,7 @@ namespace gpstk
    template <class T> T dot_lim(const SparseVector<T>& SL, const SparseVector<T>& SR,
                                 const unsigned int kb, const unsigned int ke)
    {
-   #ifdef RANGECHECK
       if(SL.size() != SR.size()) GPSTK_THROW(Exception("length mismatch"));
-   #endif
       T value(0);
       typename std::map<unsigned int, T>::const_iterator it = SL.vecMap.begin();
       typename std::map<unsigned int, T>::const_iterator jt = SR.vecMap.begin();
@@ -632,9 +669,7 @@ namespace gpstk
    /// dot (SparseVector, Vector)
    template <class T> T dot(const SparseVector<T>& SL, const Vector<T>& R)
    {
-   #ifdef RANGECHECK
       if(SL.size() != R.size()) GPSTK_THROW(Exception("length mismatch"));
-   #endif
       T value(0);
       typename std::map<unsigned int, T>::const_iterator it;
       for(it = SL.vecMap.begin(); it != SL.vecMap.end(); ++it) {
@@ -769,6 +804,25 @@ namespace gpstk
       zeroize(T(0));
 
       return *this;
+   }
+
+   // member function ~ op+=(a*SV)
+   template <class T>
+   void SparseVector<T>::addScaledSparseVector(const T& a, const SparseVector<T>& R)
+   {
+      if(a == T(0)) return;
+      if(len != R.size())
+         GPSTK_THROW(Exception("Incompatible dimensions addScaledSparseVector()"));
+
+      for(unsigned int i=0; i<R.size(); i++) {
+         if(R[i] == T(0)) continue;
+
+         if(vecMap.find(i) == vecMap.end())
+            vecMap[i] = a*R[i];
+         else
+            vecMap[i] += a*R[i];
+      }
+      zeroize(T(0));
    }
 
    // member function operator*=(scalar)
