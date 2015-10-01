@@ -521,6 +521,27 @@ namespace gpstk
          return oss.str();
       }
 
+      /// Convert to "dump-able" form : 3 parallel vectors; rows, cols, values
+      void flatten(std::vector<unsigned int>& rows,
+                   std::vector<unsigned int>& cols,
+                   std::vector<T>& values)
+         const
+      {
+         rows.clear(); cols.clear(); values.clear();
+         
+         // loop over rows, then columns
+         typename std::map< unsigned int, SparseVector<T> >::const_iterator it;
+         typename std::map<unsigned int, T>::const_iterator jt;
+         for(it = rowsMap.begin(); it != rowsMap.end(); ++it) {
+            unsigned int row(it->first);
+            for(jt = it->second.vecMap.begin(); jt != it->second.vecMap.end(); ++jt) {
+               rows.push_back(row);
+               cols.push_back(jt->first);
+               values.push_back(jt->second);
+            }
+         }
+      }
+
       /// Minimum element - return 0 if empty
       // arithmetic and other operators
       SparseMatrix<T>& operator-=(const SparseMatrix<T>& SM);

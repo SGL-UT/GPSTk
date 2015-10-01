@@ -202,9 +202,8 @@ namespace gpstk
    ///             otherwise M = 0 (the default) and is ignored.
    /// @throw MatrixException if the input has inconsistent dimensions.
    template <class T>
-   void SrifMU(Matrix<T>& R, Vector<T>& Z,
-               const Matrix<T>& H, Vector<T>& D, unsigned int M=0)
-      throw(MatrixException)
+   void SrifMU(Matrix<T>& R, Vector<T>& Z, const Matrix<T>& H, Vector<T>& D,
+                     unsigned int M=0) throw(MatrixException)
    {
       try {
          Matrix<T> A;
@@ -350,7 +349,11 @@ namespace gpstk
    
       big = small = fabs(dum);
       Inv(n-1,n-1) = T(1)/dum;
-      if(n == 1) return Inv;                 // 1x1 matrix
+      if(n == 1) {
+         if(ptrSmall) *ptrSmall=small;
+         if(ptrBig) *ptrBig=big;
+         return Inv;                 // 1x1 matrix
+      }
       for(i=0; i<n-1; i++) Inv(n-1,i)=0;     // zero row i to left of diagonal
    
          // now move to rows i = n-2 to 0
