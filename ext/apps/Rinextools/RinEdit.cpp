@@ -72,8 +72,7 @@ using namespace gpstk;
 using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
-
-string Version(string("2.3 8/26/15"));
+string Version(string("2.4 9/23/15 rev"));
 // TD
 // if reading a R2 file, allow obs types in cmds to be R2 versions (C1,etc)
 // option to replace input with output?
@@ -96,7 +95,7 @@ public:
    RinexSatID sat;   // satellite
    RinexObsID obs;   // observation type
    CommonTime ttag;  // associated time tag
-   int sign;         // sign +1,0,-1
+   int sign;         // sign +1,0,-1 meaning start, one-time, stop
    int idata;        // integer e.g. SSI or LLI
    double data;      // data e.g. bias value
    string field;     // OF file name
@@ -154,7 +153,7 @@ private:
    {
       defaultstartStr = string("[Beginning of dataset]");
       defaultstopStr = string("[End of dataset]");
-      beginTime = CommonTime::BEGINNING_OF_TIME;
+      beginTime = CivilTime(1980,1,6,0,0,0.0,TimeSystem::GPS).convertToCommonTime();
       endTime = CommonTime::END_OF_TIME;
       decimate = 0.0;
    
@@ -329,6 +328,8 @@ try {
          << "(--start) is not an even GPS-seconds-of-week mark.";
       C.decTime = static_cast<CommonTime>(
          GPSWeekSecond(static_cast<GPSWeekSecond>(C.decTime).week,0.0));
+      LOG(DEBUG) << "Decimate, with final decimate ref time "
+            << printTime(C.decTime,C.longfmt) << " and step " << C.decimate;
    }
 
    // -------- save errors and output
@@ -533,6 +534,7 @@ try {
          if(C.decimate > 0.0) {
             double dt(::fabs(Rdata.time - C.decTime));
             dt -= C.decimate * long(0.5 + dt/C.decimate);
+            LOG(DEBUG) << "Decimate? dt = " << fixed << setprecision(2) << dt;
             if(::fabs(dt) > 0.25) {
                LOG(DEBUG) << " Decimation rejects RINEX data timetag "
                   << printTime(Rdata.time,C.longfmt);
@@ -565,8 +567,13 @@ try {
          try { C.ostrm << RDout; }
          catch(Exception& e) { GPSTK_RETHROW(e); }
 
-         // debug: dump the RINEX data object
-         if(C.debug > -1) Rdata.dump(LOGstrm,Rhead);
+         // debug: dump the RINEX data objects input and output
+         if(C.debug > -1) {
+            LOG(DEBUG) << "INPUT data ---------------";
+            Rdata.dump(LOGstrm,Rhead);
+            LOG(DEBUG) << "OUTPUT data ---------------";
+            RDout.dump(LOGstrm,Rhead);
+         }
 
       }  // end while loop over epochs
 
@@ -615,6 +622,7 @@ int ProcessOneEpoch(Rinex3ObsHeader& Rhead, Rinex3ObsHeader& RHout,
          // for cmds with ttag <= now either execute and delete, or move to current
          it = C.vecCmds.begin();
          while(it != C.vecCmds.end()) {
+            LOG(DEBUG) << "Process vec cmd " << it->asString();
             if(it->ttag <= now || ::fabs(it->ttag - now) < C.timetol) {
                // delete one-time cmds, move others to curr and delete
                iret = ExecuteEditCmd(it, RHout, RDout);
@@ -645,6 +653,7 @@ int ProcessOneEpoch(Rinex3ObsHeader& Rhead, Rinex3ObsHeader& RHout,
          // apply current commands, deleting obsolete ones
          it = C.currCmds.begin();
          while(it != C.currCmds.end()) {
+            LOG(DEBUG) << "Execute current cmd " << it->asString();
             // execute command; delete obsolete commands
             iret = ExecuteEditCmd(it, RHout, RDout);
             if(iret < 0) return iret;
@@ -681,7 +690,7 @@ int ExecuteEditCmd(const vector<EditCmd>::iterator& it, Rinex3ObsHeader& Rhead,
 
    try {
       if(it->type == EditCmd::INVALID) {
-         //LOG(DEBUG) << " Execute: invalid command " << it->asString();
+         LOG(DEBUG) << " Invalid command " << it->asString();
          return 0;
       }
 
@@ -770,6 +779,7 @@ int ExecuteEditCmd(const vector<EditCmd>::iterator& it, Rinex3ObsHeader& Rhead,
       else if(it->type == EditCmd::DS) {
          if(it->sign == -1) return 0;                 // delete the (-) command
          // find the SV
+         LOG(DEBUG) << " Delete sat " << it->asString();
          if(it->sat.id > 0) {
             kt = Rdata.obs.find(it->sat);
             if(kt != Rdata.obs.end())                // found the SV
@@ -784,7 +794,7 @@ int ExecuteEditCmd(const vector<EditCmd>::iterator& it, Rinex3ObsHeader& Rhead,
                   sats.push_back(kt->first);
          }
          for(j=0; j<sats.size(); j++) {
-            Rdata.obs.erase(sats[j]);                 // remove it
+            Rdata.obs.erase(sats[j]);                 // remove it erase map
             Rdata.numSVs--;                           // don't count it
          }
          if(it->sign == 0) return 0;                  // delete the one-time command
@@ -1289,6 +1299,7 @@ EditCmd::EditCmd(const string intypestr, const string inarg) throw(Exception)
             stripLeading(arg,flds[0]+",");
             if(!parseTime(arg,ttag)) return;
          }
+         if(sign == 0 && n == 1) sign = 1;
          type = DS;
       }
       else {

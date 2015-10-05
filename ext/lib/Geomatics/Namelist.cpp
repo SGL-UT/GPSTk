@@ -372,7 +372,7 @@ try {
 catch(Exception& e) { GPSTK_RETHROW(e); }
 }
 
-ostream& operator<<(ostream& os, const LabeledVector& nlp)
+ostream& operator<<(ostream& os, const LabeledVector& LV)
 {
 try {
    size_t i;
@@ -382,34 +382,34 @@ try {
    //int wid=os.width(),prec=os.precision();
 
    // print message or blanks
-   os << nlp.tag << " ";
-   if(nlp.msg.size() > 0)
-      s = nlp.msg + "  ";
+   os << LV.tag << " ";
+   if(LV.msg.size() > 0)
+      s = LV.msg + "  ";
    else
-      s = rightJustify(string(""),nlp.msg.size()); //nlp.wid);
+      s = rightJustify(string(""),LV.msg.size()); //LV.wid);
    os << s << " ";
 
    // print each label
-   for(i=0; i<nlp.NL.size(); i++) {
-      if(int(nlp.NL.getName(i).size()) > nlp.wid)
-         s = leftJustify(nlp.NL.getName(i),nlp.wid);
+   for(i=0; i<LV.NL.size(); i++) {
+      if(int(LV.NL.getName(i).size()) > LV.wid)
+         s = leftJustify(LV.NL.getName(i),LV.wid);
       else
-         s = rightJustify(nlp.NL.getName(i),nlp.wid);
+         s = rightJustify(LV.NL.getName(i),LV.wid);
       os << s;
-      if(i-nlp.NL.size()+1) os << " ";
+      if(i-LV.NL.size()+1) os << " ";
    }
    os << endl;       // next line
 
    // print same space as with labels
-   s = rightJustify(string(""),nlp.msg.size()+2); //nlp.wid);
-   os << nlp.tag << " " << s << " ";
-   if(nlp.form == 1) os << fixed;
-   if(nlp.form == 2) os << scientific;
-   for(i=0; i<nlp.V.size(); i++) {
+   s = rightJustify(string(""),LV.msg.size()+2); //LV.wid);
+   os << LV.tag << " " << s << " ";
+   if(LV.form == 1) os << fixed;
+   if(LV.form == 2) os << scientific;
+   for(i=0; i<LV.V.size(); i++) {
       //os.copyfmt(savefmt);
-      //os << nlp.V(i);
-      os << setw(nlp.wid) << setprecision(nlp.prec) << nlp.V(i);
-      if(i-nlp.V.size()+1) os << " ";
+      //os << LV.V(i);
+      os << setw(LV.wid) << setprecision(LV.prec) << LV.V(i);
+      if(i-LV.V.size()+1) os << " ";
    }
 
    return os;
@@ -417,75 +417,76 @@ try {
 catch(Exception& e) { GPSTK_RETHROW(e); }
 }
 
-ostream& operator<<(ostream& os, const LabeledMatrix& nlp)
+ostream& operator<<(ostream& os, const LabeledMatrix& LM)
 {
 try {
    int nspace;
-   size_t i, j, n;
+   size_t i, j, jlast, n;
    string s;
-   const Namelist *pNLcol = &nlp.NLcols;
-   const Namelist *pNLrow = &nlp.NLrows;
+   const Namelist *pNLcol = &LM.NLcols;
+   const Namelist *pNLrow = &LM.NLrows;
 
       // first make sure we have both namelists
-   if(nlp.NLrows.size() == 0 && nlp.NLcols.size() == 0) {
+   if(LM.NLrows.size() == 0 && LM.NLcols.size() == 0) {
       os << " Error -- Namelists in LabeledMatrix are empty! ";
       return os;
    }
-   if(nlp.NLrows.size() == 0) pNLrow = pNLcol;
-   if(nlp.NLcols.size() == 0) pNLcol = pNLrow;
+   if(LM.NLrows.size() == 0) pNLrow = pNLcol;
+   if(LM.NLcols.size() == 0) pNLcol = pNLrow;
 
       // on column labels line
    os << setw(0);
-   if(nlp.rc == 0) {    // only if printing both column and row labels
-      os << nlp.tag << " ";                                       // tag
-      if(nlp.msg.size() > 0)                                      // msg
-         s = nlp.msg + "  ";
+   if(LM.rc == 0) {    // only if printing both column and row labels
+      os << LM.tag << " ";                                       // tag
+      if(LM.msg.size() > 0)                                      // msg
+         s = LM.msg; // + "  ";
       else
-         s = rightJustify(string(" "),nlp.wid);
+         s = rightJustify(string(" "),LM.wid);
       os << s << " ";
-      if(int(nlp.msg.size()) > 0 && int(nlp.msg.size()) < nlp.wid)
-         os << rightJustify(string(" "),nlp.wid-nlp.msg.size());   // space
+      if(int(LM.msg.size()) > 0 && int(LM.msg.size()) < LM.wid)
+         os << rightJustify(string(" "),LM.wid-LM.msg.size());   // space
    }
       // print column labels
-   if(nlp.rc != 1) { // but not if 'rows only'
-      n = (nlp.M.cols() < pNLcol->size() ? nlp.M.cols() : pNLcol->size());
+   if(LM.rc != 1) { // but not if 'rows only'
+      n = (LM.M.cols() < pNLcol->size() ? LM.M.cols() : pNLcol->size());
       for(i=0; i<n; i++) {
-         if(int(pNLcol->getName(i).size()) > nlp.wid)
-            s = leftJustify(pNLcol->getName(i),nlp.wid);
+         if(int(pNLcol->getName(i).size()) > LM.wid)
+            s = leftJustify(pNLcol->getName(i),LM.wid);
          else
-            s = rightJustify(pNLcol->getName(i),nlp.wid);
+            s = rightJustify(pNLcol->getName(i),LM.wid);
          os << s;                                                 // label
          if(i-n+1) os << " ";
       }
       os << endl;
    }
 
-   if(nlp.form == 1) os << fixed;
-   if(nlp.form == 2) os << scientific;
-   if(int(nlp.msg.size()) > nlp.wid) nspace = nlp.msg.size()-nlp.wid+2;
+   if(LM.form == 1) os << fixed;
+   if(LM.form == 2) os << scientific;
+   if(int(LM.msg.size()) > LM.wid) nspace = LM.msg.size()-LM.wid+2;
    else nspace = 0;
 
       // print one row per line
-   for(i=0; i<nlp.M.rows(); i++) {
-      os << nlp.tag << " ";                                       // tag
-      if(nspace) os << rightJustify(string(""),nspace);           // space
+   for(i=0; i<LM.M.rows(); i++) {
+      os << LM.tag << " ";                                       // tag
+      if(nspace) os << rightJustify(string(" "),nspace);          // space
          // print row labels
-      if(nlp.rc != 2) { // but not if 'columns only'
-         if( int(pNLrow->getName(i).size()) > nlp.wid)
-            s = leftJustify(pNLrow->getName(i),nlp.wid);
+      if(LM.rc != 2) { // but not if 'columns only'
+         if(int(pNLrow->getName(i).size()) > LM.wid)
+            s = leftJustify(pNLrow->getName(i),LM.wid);
          else
-            s = rightJustify(pNLrow->getName(i),nlp.wid);
+            s = rightJustify(pNLrow->getName(i),LM.wid);
          os << s << " ";                                          // label
       }
          // finally, print the data
-      for(j=0; j<nlp.M.cols(); j++) {
-         //if(nlp.M(i,j) == 0.0)                  // 'clean' print
-         //   os << rightJustify("0",nlp.wid);
-         //else
-         os << setw(nlp.wid) << setprecision(nlp.prec) << nlp.M(i,j);
-         if(j-nlp.M.cols()+1) os << " ";                          // data
+      jlast = (LM.sym ? i+1 : LM.M.cols());
+      for(j=0; j<jlast; j++) {
+         if(LM.cln && LM.M(i,j) == 0.0)                         // 'clean' print
+            os << rightJustify("0",LM.wid);
+         else
+            os << setw(LM.wid) << setprecision(LM.prec) << LM.M(i,j);
+         if(j-LM.M.rows()+1) os << " ";                                 // data
       }
-      if(i<nlp.M.rows()-1) os << endl;
+      if(i<LM.M.rows()-1) os << endl;
    }
 
    return os;

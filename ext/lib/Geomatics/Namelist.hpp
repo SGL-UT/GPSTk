@@ -84,19 +84,25 @@ public:
    int wid,prec;
    int form;         // format: 1=fixed, 2=scientific
    int rc;           // rows only (1) columns only (2) or both (0)
+   bool sym;         // if true, print only lower triangle
+   bool cln;         // if true, print 0.0 as "0"
    std::string msg;
    std::string tag;
    const Namelist& NLrows;
    const Namelist& NLcols;
    const Matrix<double>& M;
    LabeledMatrix(const Namelist& nl, const Matrix<double>& m)
-      : wid(12), prec(5), form(1), rc(0), NLrows(nl), NLcols(nl), M(m) { }
-   LabeledMatrix(const Namelist& nlr, const Namelist& nlc, const Matrix<double>& m)
-      : wid(12), prec(5), form(1), rc(0), NLrows(nlr), NLcols(nlc), M(m) { }
+      : sym(false), cln(false), wid(12), prec(5), form(1), rc(0),
+         M(m), NLrows(nl), NLcols(nl) { }
+   LabeledMatrix(const Namelist& nr, const Namelist& nc, const Matrix<double>& m)
+      : sym(false), cln(false), wid(12), prec(5), form(1), rc(0),
+         M(m), NLrows(nr), NLcols(nc) { }
    LabeledMatrix& setw(int w) { wid = w; return *this; }
    LabeledMatrix& setprecision(int p) { prec = p; return *this; }
    LabeledMatrix& fixed(void) { form = 1; return *this; }
    LabeledMatrix& scientific(void) { form = 2; return *this; }
+   LabeledMatrix& symmetric(bool s) { sym = s; return *this; }
+   LabeledMatrix& clean(bool s) { cln = s; return *this; }
    LabeledMatrix& both(void) { rc=0; return *this; }
    LabeledMatrix& rows(void) { rc=1; return *this; }
    LabeledMatrix& cols(void) { rc=2; return *this; }
@@ -104,8 +110,8 @@ public:
    LabeledMatrix& linetag(const std::string& m) { tag=m; return *this; }
 };
 
-std::ostream& operator<<(std::ostream&, const LabeledMatrix&);
-std::ostream& operator<<(std::ostream&, const LabeledVector&);
+std::ostream& operator<<(std::ostream& os, const LabeledMatrix& lm);
+std::ostream& operator<<(std::ostream& os, const LabeledVector& lv);
 
 
 //------------------------------------------------------------------------------------

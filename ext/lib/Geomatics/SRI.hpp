@@ -336,15 +336,25 @@ public:
       /// Call the SRI measurement update for this SRI and the given input. See doc.
       /// for SrifMU().
    void measurementUpdate(Matrix<double>& Partials, Vector<double>& Data)
-      throw(MatrixException)
-         { SrifMU(R, Z, Partials, Data); }
+      throw(Exception)
+   {
+      try {
+         SrifMU(R, Z, Partials, Data);
+      }
+      catch(Exception& me) { GPSTK_RETHROW(me); }
+   }
 
       /// SRIF (Kalman) measurement update, or least squares update, Sparse version.
       /// Call the SRI measurement update for this SRI and the given input. See doc.
       /// for SrifMU().
    void measurementUpdate(SparseMatrix<double>& Partials, Vector<double>& Data)
-      throw(MatrixException)
-         { SrifMU(R, Z, Partials, Data); }
+      throw(Exception)
+   {
+      try {
+         SrifMU(R, Z, Partials, Data);
+      }
+      catch(MatrixException& me) { GPSTK_RETHROW(me); }
+   }
 
       /// Compute the condition number, or rather the largest and smallest eigenvalues
       /// of the SRI matrix R (the condition number is the ratio of the largest and

@@ -47,7 +47,7 @@
 #include "Matrix.hpp"
 
 // TODO
-// >submatrix and subvector, ident, trace
+// >trace
 // >add concatenations {&& ||}{SM SV M V} to SparseMatrix
 // >add minabs maxabs to Matrix
 // notes
@@ -234,6 +234,8 @@ namespace gpstk
    // concatenation
    template <class T>
       SparseMatrix<T> operator||(const SparseMatrix<T>& L, const Vector<T>& V);
+   template <class T>
+      SparseMatrix<T> operator||(const SparseMatrix<T>& L, const SparseMatrix<T>& R);
    // addition and subtraction
    template <class T> SparseMatrix<T> operator-(const SparseMatrix<T>& L,
                                                 const SparseMatrix<T>& R);
@@ -247,6 +249,9 @@ namespace gpstk
                                                 const Matrix<T>& R);
    template <class T> SparseMatrix<T> operator+(const Matrix<T>& L,
                                                 const SparseMatrix<T>& R);
+   // inverse (via Gauss-Jordan)
+   template <class T>
+   SparseMatrix<T> inverse(const SparseMatrix<T>& A) throw(Exception);
    // Cholesky
    template <class T>
    SparseMatrix<T> lowerCholesky(const SparseMatrix<T>& A) throw(Exception);
@@ -258,6 +263,10 @@ namespace gpstk
                                                                 throw(Exception);
    template <class T>
    SparseMatrix<T> inverseViaCholesky(const SparseMatrix<T>& A) throw(Exception);
+
+   // special matrices
+   template <class T>
+   SparseMatrix<T> identSparse(const unsigned int dim) throw();
 
    // products MT*M, M*MT, M*C*MT etc
    // MT * M
@@ -352,6 +361,10 @@ namespace gpstk
       // concatenation
       friend SparseMatrix<T> operator||<T>(const SparseMatrix<T>& L,
                                            const Vector<T>& V);
+      friend SparseMatrix<T> operator||<T>(const SparseMatrix<T>& L,
+                                           const SparseMatrix<T>& R);
+      // inverse (via Gauss-Jordan)
+      friend SparseMatrix<T> inverse<T>(const SparseMatrix<T>& A) throw(Exception);
       // Cholesky
       friend SparseMatrix<T> lowerCholesky<T>(const SparseMatrix<T>& A)
                                                          throw(Exception);
@@ -361,6 +374,9 @@ namespace gpstk
                                           T *ptrSmall, T *ptrBig) throw(Exception);
       friend SparseMatrix<T> inverseViaCholesky<T>(const SparseMatrix<T>& A)
                                                           throw(Exception);
+      // special matrices
+      friend SparseMatrix<T> identSparse<T>(const unsigned int dim) throw();
+
       // MT * M
       friend SparseMatrix<T> transposeTimesMatrix<T>(const SparseMatrix<T>& M)
                                                           throw(Exception);
@@ -382,6 +398,14 @@ namespace gpstk
 
       /// constructor with dimensions
       SparseMatrix(unsigned int r, unsigned int c) : nrows(r), ncols(c) { }
+
+      /// sub-matrix constructor
+      /// @param SV SparseVector to copy
+      /// @param ind starting index for the copy
+      /// @param n length of new SparseVector
+      SparseMatrix(const SparseMatrix<T>& SM,
+                  const unsigned int& rind, const unsigned int& cind,
+                  const unsigned int& rnum, const unsigned int& cnum);
 
       /// constructor from regular Matrix<T>
       SparseMatrix(const Matrix<T>& M);
@@ -497,6 +521,27 @@ namespace gpstk
          return oss.str();
       }
 
+      /// Convert to "dump-able" form : 3 parallel vectors; rows, cols, values
+      void flatten(std::vector<unsigned int>& rows,
+                   std::vector<unsigned int>& cols,
+                   std::vector<T>& values)
+         const
+      {
+         rows.clear(); cols.clear(); values.clear();
+         
+         // loop over rows, then columns
+         typename std::map< unsigned int, SparseVector<T> >::const_iterator it;
+         typename std::map<unsigned int, T>::const_iterator jt;
+         for(it = rowsMap.begin(); it != rowsMap.end(); ++it) {
+            unsigned int row(it->first);
+            for(jt = it->second.vecMap.begin(); jt != it->second.vecMap.end(); ++jt) {
+               rows.push_back(row);
+               cols.push_back(jt->first);
+               values.push_back(jt->second);
+            }
+         }
+      }
+
       /// Minimum element - return 0 if empty
       // arithmetic and other operators
       SparseMatrix<T>& operator-=(const SparseMatrix<T>& SM);
@@ -589,6 +634,25 @@ namespace gpstk
    //---------------------------------------------------------------------------
    // implementation of SparseMatrix
    //---------------------------------------------------------------------------
+   // submatrix constructor
+   template <class T> SparseMatrix<T>::SparseMatrix(const SparseMatrix<T>& SM,
+                           const unsigned int& rind, const unsigned int& cind,
+                           const unsigned int& rnum, const unsigned int& cnum)
+   {
+      if(rnum == 0 || cnum == 0 || rind+rnum > SM.nrows || cind+cnum > SM.ncols)
+         GPSTK_THROW(Exception("Invalid input submatrix c'tor - out of range"));
+
+      nrows = rnum;
+      ncols = cnum;
+      typename std::map< unsigned int, SparseVector<T> >::const_iterator it;
+      for(it = SM.rowsMap.begin(); it != SM.rowsMap.end(); ++it) {
+         if(it->first < rind) continue;               // skip rows before rind
+         if(it->first > rind+rnum) break;             // done with rows
+         SparseVector<T> SV(it->second,cind,cnum);    // get sub-vector
+         if(!SV.isEmpty()) rowsMap[it->first] = SV;   // add it
+      }
+   }
+
    // constructor from regular Matrix<T>
    template <class T> SparseMatrix<T>::SparseMatrix(const Matrix<T>& M)
    {
@@ -775,10 +839,8 @@ namespace gpstk
    SparseVector<T> operator*(const SparseMatrix<T>& L, const SparseVector<T>& V)
    {
       try {
-      #ifdef RANGECHECK
          if(L.cols() != V.size())
             GPSTK_THROW(Exception("Incompatible dimensions op*(SM,SV)"));
-      #endif
 
          SparseVector<T> retSV(L.rows());
          typename std::map< unsigned int, SparseVector<T> >::const_iterator it;
@@ -798,10 +860,8 @@ namespace gpstk
    SparseVector<T> operator*(const Matrix<T>& L, const SparseVector<T>& V)
    {
       try {
-      #ifdef RANGECHECK
          if(L.cols() != V.size())
             GPSTK_THROW(Exception("Incompatible dimensions op*(M,SV)"));
-      #endif
 
          SparseVector<T> retSV(L.rows());
 
@@ -826,10 +886,8 @@ namespace gpstk
    SparseVector<T> operator*(const SparseMatrix<T>& L, const Vector<T>& V)
    {
       try {
-      #ifdef RANGECHECK
          if(L.cols() != V.size())
             GPSTK_THROW(Exception("Incompatible dimensions op*(SM,V)"));
-      #endif
 
          SparseVector<T> retSV(L.rows());
          typename std::map< unsigned int, SparseVector<T> >::const_iterator it;
@@ -848,10 +906,8 @@ namespace gpstk
    template <class T>
    SparseVector<T> operator*(const SparseVector<T>& V, const SparseMatrix<T>& R)
    {
-   #ifdef RANGECHECK
       if(V.size() != R.rows())
          GPSTK_THROW(Exception("Incompatible dimensions op*(SV,SM)"));
-   #endif
 
       SparseVector<T> retSV(R.cols());
 
@@ -878,10 +934,8 @@ namespace gpstk
    SparseVector<T> operator*(const SparseVector<T>& V, const Matrix<T>& R)
    {
       try {
-      #ifdef RANGECHECK
          if(V.size() != R.rows())
             GPSTK_THROW(Exception("Incompatible dimensions op*(SV,M)"));
-      #endif
 
          T sum;
          SparseVector<T> retSV(R.cols());
@@ -903,10 +957,8 @@ namespace gpstk
    template <class T>
    SparseVector<T> operator*(const Vector<T>& V, const SparseMatrix<T>& R)
    {
-   #ifdef RANGECHECK
       if(V.size() != R.rows())
          GPSTK_THROW(Exception("Incompatible dimensions op*(V,SM)"));
-   #endif
 
       SparseVector<T> retSV(R.cols());
 
@@ -931,10 +983,8 @@ namespace gpstk
    template <class T>
    SparseMatrix<T> operator*(const SparseMatrix<T>& L, const SparseMatrix<T>& R)
    {
-   #ifdef RANGECHECK
       if(L.cols() != R.rows())
          GPSTK_THROW(Exception("Incompatible dimensions op*(SM,SM)"));
-   #endif
 
       const unsigned int nr(L.rows()), nc(R.cols());
       SparseMatrix<T> retSM(nr,nc);                // empty but with correct dimen.
@@ -967,10 +1017,8 @@ namespace gpstk
    SparseMatrix<T> operator*(const SparseMatrix<T>& L, const Matrix<T>& R)
    {
       try {
-      #ifdef RANGECHECK
          if(L.cols() != R.rows())
             GPSTK_THROW(Exception("Incompatible dimensions op*(SM,M)"));
-      #endif
 
          const unsigned int nr(L.rows()), nc(R.cols());
          SparseMatrix<T> retSM(nr,nc);
@@ -1003,10 +1051,8 @@ namespace gpstk
    template <class T>
    SparseMatrix<T> operator*(const Matrix<T>& L, const SparseMatrix<T>& R)
    {
-      #ifdef RANGECHECK
       if(L.cols() != R.rows())
          GPSTK_THROW(Exception("Incompatible dimensions op*(M,SM)"));
-      #endif
 
       const unsigned int nr(L.rows()), nc(R.cols());
       SparseMatrix<T> retSM(nr,nc);
@@ -1042,10 +1088,8 @@ namespace gpstk
    template <class T>
    SparseMatrix<T> operator||(const SparseMatrix<T>& L, const Vector<T>& V)
    {
-   #ifdef RANGECHECK
       if(L.rows() != V.size())
-         GPSTK_THROW(Exception("Incompatible dimensions op-=(SM)"));
-   #endif
+         GPSTK_THROW(Exception("Incompatible dimensions op||(SM,V)"));
       
       SparseMatrix<T> toRet(L);
       toRet.ncols++;
@@ -1066,15 +1110,52 @@ namespace gpstk
    }
 
    //---------------------------------------------------------------------------
+   template <class T>
+   SparseMatrix<T> operator||(const SparseMatrix<T>& L, const SparseMatrix<T>& R)
+   {
+      if(L.rows() != R.rows())
+         GPSTK_THROW(Exception("Incompatible dimensions op||(SM,SM)"));
+
+      SparseMatrix<T> toRet(L);
+      toRet.ncols += R.ncols;
+
+      unsigned int i, N(L.ncols);
+      typename std::map< unsigned int, SparseVector<T> >::iterator it;
+      typename std::map< unsigned int, SparseVector<T> >::const_iterator jt;
+      it = toRet.rowsMap.begin();
+      jt = R.rowsMap.begin();
+      while(it != toRet.rowsMap.end() && jt != R.rowsMap.end()) {
+         if(it->first < jt->first) {         // R has no row here - do nothing
+            it->second.len += N;
+            ++it;
+         }
+         else if(it->first > jt->first) {    // R has a row where toRet does not
+            toRet.rowsMap[jt->first] = jt->second;
+            toRet.rowsMap[jt->first].len += N;
+            ++jt;
+         }
+         else {                              // equal indexes - both have rows
+            it->second.len += N;
+            typename std::map< unsigned int, T >::const_iterator vt;
+            for(vt = jt->second.vecMap.begin(); vt != jt->second.vecMap.end(); ++vt) {
+               toRet.rowsMap[it->first].vecMap[N+vt->first] = vt->second;
+            }
+            ++it;
+            ++jt;
+         }
+      }
+
+      return toRet;
+   }
+
+   //---------------------------------------------------------------------------
    //---------------------------------------------------------------------------
    /// Matrix subtraction: SparseMatrix -= SparseMatrix
    template <class T>
    SparseMatrix<T>& SparseMatrix<T>::operator-=(const SparseMatrix<T>& SM)
    {
-   #ifdef RANGECHECK
       if(SM.cols() != cols() || SM.rows() != rows())
          GPSTK_THROW(Exception("Incompatible dimensions op-=(SM)"));
-   #endif
       //std::cout << "SM::op-=(SM)" << std::endl;
 
       // loop over rows of SM
@@ -1095,10 +1176,8 @@ namespace gpstk
    template <class T>
    SparseMatrix<T>& SparseMatrix<T>::operator-=(const Matrix<T>& M)
    {
-   #ifdef RANGECHECK
       if(M.cols() != cols() || M.rows() != rows())
          GPSTK_THROW(Exception("Incompatible dimensions op-=(M)"));
-   #endif
       //std::cout << "SM::op-=(M)" << std::endl;
       
       // loop over rows of M
@@ -1120,10 +1199,8 @@ namespace gpstk
    template <class T>
    SparseMatrix<T> operator-(const SparseMatrix<T>& L, const SparseMatrix<T>& R)
    {
-   #ifdef RANGECHECK
       if(L.cols() != R.cols() || L.rows() != R.rows())
          GPSTK_THROW(Exception("Incompatible dimensions op-(SM,SM)"));
-   #endif
       //std::cout << "SM::op-(SM,SM)" << std::endl;
 
       SparseMatrix<T> retSM(L);
@@ -1136,10 +1213,8 @@ namespace gpstk
    template <class T>
    SparseMatrix<T> operator-(const SparseMatrix<T>& L, const Matrix<T>& R)
    {
-   #ifdef RANGECHECK
       if(L.cols() != R.cols() || L.rows() != R.rows())
          GPSTK_THROW(Exception("Incompatible dimensions op-(SM,M)"));
-   #endif
       //std::cout << "SM::op-(SM,M)" << std::endl;
 
       SparseMatrix<T> retSM(L);
@@ -1152,10 +1227,8 @@ namespace gpstk
    template <class T>
    SparseMatrix<T> operator-(const Matrix<T>& L, const SparseMatrix<T>& R)
    {
-   #ifdef RANGECHECK
       if(L.cols() != R.cols() || L.rows() != R.rows())
          GPSTK_THROW(Exception("Incompatible dimensions op-(M,SM)"));
-   #endif
       //std::cout << "SM::op-(M,SM)" << std::endl;
 
       SparseMatrix<T> retSM(R);
@@ -1170,10 +1243,8 @@ namespace gpstk
    template <class T>
    SparseMatrix<T>& SparseMatrix<T>::operator+=(const SparseMatrix<T>& SM)
    {
-   #ifdef RANGECHECK
       if(SM.cols() != cols() || SM.rows() != rows())
          GPSTK_THROW(Exception("Incompatible dimensions op+=(SM)"));
-   #endif
       //std::cout << "SM::op+=(SM)" << std::endl;
 
       // loop over rows of SM
@@ -1194,10 +1265,8 @@ namespace gpstk
    template <class T>
    SparseMatrix<T>& SparseMatrix<T>::operator+=(const Matrix<T>& M)
    {
-   #ifdef RANGECHECK
       if(M.cols() != cols() || M.rows() != rows())
          GPSTK_THROW(Exception("Incompatible dimensions op+=(M)"));
-   #endif
       //std::cout << "SM::op+=(M)" << std::endl;
       
       // loop over rows of M
@@ -1258,10 +1327,8 @@ namespace gpstk
    template <class T>
    SparseMatrix<T> operator+(const SparseMatrix<T>& L, const SparseMatrix<T>& R)
    {
-   #ifdef RANGECHECK
       if(L.cols() != R.cols() || L.rows() != R.rows())
          GPSTK_THROW(Exception("Incompatible dimensions op+(SM,SM)"));
-   #endif
       //std::cout << "SM::op+(SM,SM)" << std::endl;
 
       SparseMatrix<T> retSM(L);
@@ -1274,10 +1341,8 @@ namespace gpstk
    template <class T>
    SparseMatrix<T> operator+(const SparseMatrix<T>& L, const Matrix<T>& R)
    {
-   #ifdef RANGECHECK
       if(L.cols() != R.cols() || L.rows() != R.rows())
          GPSTK_THROW(Exception("Incompatible dimensions op+(SM,M)"));
-   #endif
       //std::cout << "SM::op+(SM,M)" << std::endl;
 
       SparseMatrix<T> retSM(L);
@@ -1290,10 +1355,8 @@ namespace gpstk
    template <class T>
    SparseMatrix<T> operator+(const Matrix<T>& L, const SparseMatrix<T>& R)
    {
-   #ifdef RANGECHECK
       if(L.cols() != R.cols() || L.rows() != R.rows())
          GPSTK_THROW(Exception("Incompatible dimensions op+(M,SM)"));
-   #endif
       //std::cout << "SM::op+(M,SM)" << std::endl;
 
       SparseMatrix<T> retSM(L);
@@ -1302,6 +1365,8 @@ namespace gpstk
       return retSM;
    }
 
+   //---------------------------------------------------------------------------
+   // row, col and diagonal copy, swap
    //---------------------------------------------------------------------------
    /// return row i of this SparseMatrix as a SparseVector
    template <class T>
@@ -1351,9 +1416,7 @@ namespace gpstk
    template <class T>
    void SparseMatrix<T>::swapRows(const unsigned int& ii, const unsigned int& jj)
    {
-   #ifdef RANGECHECK
       if(ii >= nrows || jj >= nrows) GPSTK_THROW(Exception("Invalid indexes"));
-   #endif
       
       typename std::map< unsigned int, SparseVector<T> >::iterator it, jt;
       it = rowsMap.find(ii);
@@ -1382,14 +1445,33 @@ namespace gpstk
    template <class T>
    void SparseMatrix<T>::swapCols(const unsigned int ii, const unsigned int jj)
    {
-   #ifdef RANGECHECK
       if(ii >= ncols || jj >= ncols) GPSTK_THROW(Exception("Invalid indexes"));
-   #endif
 
       // may not be the fastest, but may be fast enough - tranpose() is fast
       SparseMatrix<T> trans(transpose(*this));
       trans.swapRows(ii,jj);
       *this = transpose(*this);
+   }
+
+   //---------------------------------------------------------------------------------
+   // special matrices
+   //---------------------------------------------------------------------------------
+   /// Compute the identity matrix of dimension dim x dim
+   /// @param dim dimension of desired identity matrix (dim x dim)
+   /// @return identity matrix
+   template <class T>
+   SparseMatrix<T> identSparse(const unsigned int dim) throw()
+   {
+      if(dim == 0) return SparseMatrix<T>();
+
+      SparseMatrix<T> toRet(dim,dim);
+      for(unsigned int i=0; i<dim; i++) {
+         SparseVector<T> SV(dim);
+         SV.vecMap[i] = T(1);
+         toRet.rowsMap[i] = SV;
+      }
+
+      return toRet;
    }
 
    //---------------------------------------------------------------------------------
@@ -1415,7 +1497,6 @@ namespace gpstk
             }
          }
 
-         //toRet.zeroize(T(0));
          return toRet;
 
       } catch(Exception& e) { GPSTK_RETHROW(e); }
@@ -1429,10 +1510,8 @@ namespace gpstk
       throw(Exception)
    {
       try {
-      #ifdef RANGECHECK
          if(P.cols() != C.rows() || C.rows() != C.cols())
             GPSTK_THROW(Exception("Incompatible dimensions transformDiag()"));
-      #endif
 
          const unsigned int n(P.cols());
          typename std::map< unsigned int, SparseVector<T> >::const_iterator jt;
@@ -1457,6 +1536,118 @@ namespace gpstk
             toRet(j) = dot(jt->second,prod);
          }
          return toRet;
+
+      } catch(Exception& e) { GPSTK_RETHROW(e); }
+   }
+
+   //---------------------------------------------------------------------------
+   // inverse (via Gauss-Jordan)
+   //---------------------------------------------------------------------------
+   /// inverse via Gauss-Jordan; NB GJ involves only row operations.
+   /// NB not the best numerically; for high condition number, use inverseViaCholesky,
+   /// or cast to Matrix, use either LUD or SVD, then cast back to SparseMatrix.
+   template <class T>
+   SparseMatrix<T> inverse(const SparseMatrix<T>& A) throw(Exception)
+   {
+      try {
+         if(A.rows() != A.cols() || A.rows() == 0) {
+            std::ostringstream oss;
+            oss << "Invalid input dimensions: " << A.rows() << "x" << A.cols();
+            GPSTK_THROW(Exception(oss.str()));
+         }
+
+         unsigned int i,k;
+         T dtmp;
+         //T big, small;
+         typename std::map< unsigned int, SparseVector<T> >::const_iterator it;
+
+         // does A have any zero rows?
+         for(it = A.rowsMap.begin(), i=0; it != A.rowsMap.end(); i++, ++it) {
+            if(i != it->first) {
+               std::ostringstream oss;
+               oss << "Singular matrix - zero row at index " << i << ")";
+               GPSTK_THROW(Exception(oss.str()));
+            }
+         }
+
+         const unsigned int N(A.rows());
+         typename std::map< unsigned int, SparseVector<T> >::iterator jt,kt;
+         typename std::map< unsigned int, T >::iterator vt;
+         SparseMatrix<T> GJ(A || identSparse<T>(N));
+
+         //std::cout << "\nInitial:\n" << std::scientific
+         //            << std::setprecision(2) << std::setw(10) << GJ << std::endl;
+
+         // loop over rows of work matrix, making lower left triangular = unity
+         for(jt = GJ.rowsMap.begin(); jt != GJ.rowsMap.end(); ++jt) {
+
+            // divide row by diagonal element; if diagonal is zero, add another row
+            vt = jt->second.vecMap.find(jt->first);      // diagonal element GJ(j,j)
+            if(vt == jt->second.vecMap.end() || vt->second == T(0)) {
+               // find a lower row with non-zero element (same col); add to this row
+               for((kt=jt)++; kt != GJ.rowsMap.end(); ++kt) {
+                  vt = kt->second.vecMap.find(jt->first);      // GJ(k,j)
+                  if(vt == kt->second.vecMap.end() || vt->second == T(0))
+                     continue;                                 // nope, its zero
+
+                  // add the kt row to the jt row
+                  jt->second += kt->second;
+                  break;
+               }
+               if(kt == GJ.rowsMap.end())
+                  GPSTK_THROW(Exception("Singular matrix"));
+            }
+
+            dtmp = vt->second;
+            // are these scales 1/dtmp related to condition number? eigenvalues? det?
+            // they are close to condition number....
+            //if(jt == GJ.rowsMap.begin()) big = small = ::fabs(dtmp);
+            //if(::fabs(dtmp) > big) big = ::fabs(dtmp);
+            //if(::fabs(dtmp) < small) small = ::fabs(dtmp);
+
+            // normalize the j row
+            if(dtmp != T(1)) jt->second *= T(1)/dtmp;
+
+            //std::cout << "\nRow " << jt->first << " scaled with " << std::scientific
+            //   << std::setprecision(2) << T(1)/dtmp << "\n"
+            //   << std::setw(10) << GJ << std::endl;
+
+            // now zero out the column below the j diagonal
+            for((kt=jt)++; kt != GJ.rowsMap.end(); ++kt) {
+               vt = kt->second.vecMap.find(jt->first);      // GJ(k,j)
+               if(vt == kt->second.vecMap.end() || vt->second == T(0))
+                  continue;                                 // already zero
+
+               kt->second.addScaledSparseVector(-vt->second, jt->second);
+            }
+
+            //std::cout << "\nRow " << jt->first << " left-zeroed:\n"
+            //   << std::scientific << std::setprecision(2) << std::setw(10)
+            //   << GJ << std::endl;
+         }
+
+         // loop over rows of work matrix in reverse order,
+         // zero-ing out the column above the diag
+         typename std::map< unsigned int, SparseVector<T> >::reverse_iterator rjt,rkt;
+         for(rjt = GJ.rowsMap.rbegin(); rjt != GJ.rowsMap.rend(); ++rjt) {
+            // now zero out the column above the j diagonal
+            for((rkt=rjt)++; rkt != GJ.rowsMap.rend(); ++rkt) {
+               vt = rkt->second.vecMap.find(rjt->first);    // GJ(k,j)
+               if(vt == rkt->second.vecMap.end() || vt->second == T(0))
+                  continue;                                 // already zero
+               rkt->second.addScaledSparseVector(-vt->second, rjt->second);
+            }
+
+            //std::cout << "\nRow " << rjt->first << " right-zeroed:\n"
+            //   << std::scientific << std::setprecision(2) << std::setw(10)
+            //   << GJ << std::endl;
+         }
+
+         //std::cout << "\nbig and small for this matrix are: "
+         //   << std::scientific << std::setprecision(2)
+         //   << big << " " << small << " with ratio " << big/small << std::endl;
+
+         return (SparseMatrix<T>(GJ,0,N,N,N));
 
       } catch(Exception& e) { GPSTK_RETHROW(e); }
    }
@@ -1501,13 +1692,11 @@ namespace gpstk
    template <class T>
    SparseMatrix<T> lowerCholesky(const SparseMatrix<T>& A) throw(Exception)
    {
-   #ifdef RANGECHECK
       if(A.rows() != A.cols() || A.rows() == 0) {
          std::ostringstream oss;
          oss << "Invalid input dimensions: " << A.rows() << "x" << A.cols();
          GPSTK_THROW(Exception(oss.str()));
       }
-   #endif
    
       const unsigned int n=A.rows();
       unsigned int i,j,k;
@@ -1586,13 +1775,11 @@ namespace gpstk
    SparseMatrix<T> inverseLT(const SparseMatrix<T>& L, T *ptrSmall, T *ptrBig)
       throw(Exception)
    {
-   #ifdef RANGECHECK
       if(L.rows() != L.cols() || L.rows() == 0) {
          std::ostringstream oss;
          oss << "Invalid input dimensions: " << L.rows() << "x" << L.cols();
          GPSTK_THROW(Exception(oss.str()));
       }
-   #endif
 
       const unsigned int n(L.rows());
       unsigned int i,j,k;
@@ -1833,7 +2020,6 @@ namespace gpstk
          Z = Vector<double>(A.cols()-1,0.0);
       }
 
-   #ifdef RANGECHECK
       if(A.cols() <= 1 || A.cols() != R.cols()+1 || Z.size() < R.rows()) {
          std::ostringstream oss;
          oss << "Invalid input dimensions:\n  R has dimension "
@@ -1842,7 +2028,6 @@ namespace gpstk
             << A.rows() << "x" << A.cols();
          GPSTK_THROW(Exception(oss.str()));
       }
-   #endif
    
       const T EPS=T(1.e-20);
       const unsigned int m(M==0 || M>A.rows() ? A.rows() : M), n(R.rows());

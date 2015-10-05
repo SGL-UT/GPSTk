@@ -935,21 +935,22 @@ using namespace StringUtils;
       try {
          double small,big;
          Matrix<double> invR(inverseUT(R,&small,&big));
+         if(ptrSmall) *ptrSmall = small;
+         if(ptrBig) *ptrBig = big;
+
          //cout << " small is " << scientific << setprecision(3) << small
-         //   << " and exponent is " << ::log(big) - ::log(small) << endl;
+         //   << " and big is " << big;
+         //cout << " exponent is " << ::log(big) - ::log(small) << endl;
          // how best to test?
          //  ::log(big) - ::log(small) + 1 >= numeric_limits<double>::max_exponent
-         if(small <= 10*numeric_limits<double>::epsilon())
-         {
+         if(small <= 10*numeric_limits<double>::epsilon()) {
             MatrixException me("Singular matrix: condition number is "
                   + asString<double>(big) + " / " + asString<double>(small));
             GPSTK_THROW(me);
          }
+
          C = UTtimesTranspose(invR);
          X = invR * Z;
-
-         if(ptrSmall) *ptrSmall = small;
-         if(ptrBig) *ptrBig = big;
       }
       catch(MatrixException& me) {
          GPSTK_RETHROW(me);
