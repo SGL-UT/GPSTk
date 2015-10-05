@@ -171,7 +171,7 @@ namespace gpstk
           timeSystem != right.timeSystem)
          return false;
 
-      if( fabs(jd - right.jd) < CommonTime::eps )
+      if( std::abs(jd - right.jd) < CommonTime::eps )
       {
          return true;
       }
