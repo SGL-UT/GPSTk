@@ -193,7 +193,7 @@ if [ $build_docs ]; then
     
     if [[ -z $exclude_python && $build_ext ]] ; then
         log "Generating swig/python doc files from dOxygen output ..."
-        ${python_exe} $repo/swig/docstring_generator.py $build_root/doc $build_root/swig_doc >$build_root/swig_doc.log
+        ${python_exe} $repo/swig/docstring_generator.py $build_root/doc $build_root/swig/doc >$build_root/swig_doc.log
     fi
     
     path_graphviz=$build_root/doc/graphviz
@@ -208,7 +208,6 @@ elif [ $build_ext ]; then
     args+=" -DBUILD_PYTHON=ON"
     args+=${python_exe:+" -DPYTHON_EXECUTABLE=$python_exe"}
     args+=${python_install:+" -DPYTHON_INSTALL_PREFIX=$python_install"}
-    args+=" -DSWIG_DOC_DIR=$build_root/swig_doc"
 fi
 args+=${install_prefix:+" -DCMAKE_INSTALL_PREFIX=$install_prefix"}
 args+=${build_ext:+" -DBUILD_EXT=ON"}
@@ -232,18 +231,20 @@ fi
 
 if [ $build_docs ]; then
     log "Post-build documentation processing ..."
-    if [[ -z $exclude_python && $build_ext ]] ; then
-        log "Building RST documentation with Sphinx ..."
-        cd $repo/swig/sphinx
-        make html
-        tar -czf $build_root/gpstk_doc_python.tgz -C $repo/swig/sphinx/_build/html/ .
-    fi
+    # This is commented out because the RST documentation polutes the repo at the moment
+    # This process needs to be re-factored to use the CMAKE_CURRENT_BINARY_DIR
+#    if [[ -z $exclude_python && $build_ext ]] ; then
+#        log "Building RST documentation with Sphinx ..."
+#        cd $repo/swig/sphinx
+#        make html
+#        tar -czf $build_root/gpstk_doc_python.tgz -C $repo/swig/sphinx/_build/html/ .
+#    fi
 
     log "Generating GraphViz output PDF ..."
     dot -Tpdf $path_graphviz/gpstk_graphviz.dot -o $path_graphviz/gpstk_graphviz.pdf
 fi
 
-if [ $build_package ]; then
+if [ $build_packages ]; then
     log "Building packages ..."
     run make package
     run make package_source
