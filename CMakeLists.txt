@@ -18,26 +18,9 @@ set( GPSTK_VERSION "${GPSTK_VERSION_MAJOR}.${GPSTK_VERSION_MINOR}.${GPSTK_VERSIO
 # Set up
 #============================================================
 
-#----------------------------------------
-# C++ Install Path Prefix
-# * Determine Installation Path Prefix for C++ Library and Applications
-# * Path to which we will install the gpstk /lib, /bin, and /include dirs.
-#----------------------------------------
-
-if( DEFINED CMAKE_INSTALL_PREFIX )
-    message( STATUS "CMAKE_INSTALL_PREFIX was defined by user with the cmake command line. CMAKE_INSTALL_PREFIX = ${CMAKE_INSTALL_PREFIX}" )
-elseif( DEFINED ENV{gpstk} )
-    set( CMAKE_INSTALL_PREFIX $ENV{gpstk} )
-    message( STATUS "CMAKE_INSTALL_PREFIX was defined the environment variable ENV{gpstk}. CMAKE_INSTALL_PREFIX = ${CMAKE_INSTALL_PREFIX} " )
-else()
-    message( STATUS "CMAKE_INSTALL_PREFIX was not defined by any supported method." )
-	message( STATUS "Either set an environment variable ENV{gpstk} or pass in a cmake variable as -DCMAKE_INSTALL_PREFIX")
-    message( FATAL_ERROR "CMAKE_INSTALL_PREFIX must be set by the user. Exitting now!" )
-    return()
-endif()
-
 # This sets up veriables contining GNU standard installation locations.
 include( GNUInstallDirs )
+
 # For now, override to use 'lib' for the library install dir.
 set( CMAKE_INSTALL_LIBDIR lib )
 
@@ -46,8 +29,6 @@ set( EXPORT_TARGETS_FILENAME "GPSTKTargets" )
 
 #----------------------------------------
 # Option Switches
-#
-# Usage: option( <option_variable> "help string" [initial value] )
 #----------------------------------------
 
 option( DEBUG_SWITCH "HELP: DEBUG_SWITCH: Default = OFF, print some CMake variable values to stdout." OFF )
@@ -159,21 +140,9 @@ install( FILES ${GPSTK_INC_FILES} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}" )
 # Testing
 #============================================================
 
-# CMake command enable_testing() enables capability 
-# to use CMake add_test() command for this directory and below. 
-# This adds another build target, which is "test" for 
-# Makefile generators, or "RUN_TESTS" for IDEs (e.g. Visual Studio).
-# From that point on, you can use the ADD_TEST() command 
-# to add tests cases to the project build target test:
-#
-#     add_test( testname Exename arg1 arg2 ... )
-#
-# Must call enable_test() prior to any add_subdirectory() 
-# that is intended to contain test cases.
-
 if( TEST_SWITCH )
-  include( CTest )
-  list( APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules )
+  enable_testing()
+#  include( CTest )
 endif( )
 
 #----------------------------------------
@@ -185,12 +154,12 @@ add_subdirectory( core )
 if( BUILD_EXT )
    add_subdirectory( ext )
    add_subdirectory( examples )
+   if( BUILD_PYTHON )
+       include( PythonSetup.cmake )
+       add_subdirectory( swig )
+   endif()
 endif()
 	
-if( BUILD_PYTHON )
-   include( PythonSetup.cmake )
-   add_subdirectory( swig )
-endif()
 
 #----------------------------------------
 # Export the project import cmake files.
