@@ -1,23 +1,11 @@
 #!/usr/bin/env python
 
-"""GPSTk python-swig binding documentation generator.
-
-This reads every file in the $gpstk_root/doc/xml (where doxygen places its xml)
-Then uses $gpstk_root/swig/doxy2swig.py to create docstring output for a SWIG .i file.
-These .i files are placed in $gpstk_root/swig/doc.
-Then doc.i is auto-generated to include all of these new files in the doc/ folder.
-
-Usage:
-  $ cd $gpstk_root/swig
-  $ python docstring_generator.py
-"""
-
-
 import doxy2swig  # local file
 import glob
 import os
 import sys
 import subprocess
+import argparse
 
 
 def file_name(path):
@@ -48,24 +36,26 @@ def clean_errors(file):
     f.write(data)
     f.close()
 
-def generate_docs():
-    # This present script should live in '$gpstk_root/swig', 
-    # so to get the $gpstk_root, just strip off the file name 
+
+def generate_docs(args):
+    # This present script should live in '$gpstk_root/swig',
+    # so to get the $gpstk_root, just strip off the file name
     # and use split() to pop off the 'swig' directory from the
     # remaining file path.
     script_fullpath_name = os.path.realpath(__file__)
     path_gpstk_swig = os.path.dirname( script_fullpath_name )
     (gpstk_root, swig_dir) = os.path.split( path_gpstk_swig )
-    
+
     # Build a list of all the XML files that dOxygen output previously
-    xml_glob_pattern = gpstk_root + os.path.sep + 'doc' + os.path.sep + 'xml' + os.path.sep + '*.xml'
+    xml_glob_pattern = os.path.sep.join((args.src_dir, 'xml', '*.xml'))
     xml_files = glob.glob( xml_glob_pattern )
     num_files = len( xml_files )
     if num_files == 0:
         print 'WARNING: No doxygen-xml files found, docstrings cannot be generated.'
+        return
 
     # create directories for swig doc files
-    path_gpstk_swig_doc = path_gpstk_swig + os.path.sep + 'doc'
+    path_gpstk_swig_doc = args.dst_dir
     if not os.path.exists( path_gpstk_swig_doc ):
         os.makedirs( path_gpstk_swig_doc )
 
@@ -96,4 +86,23 @@ def generate_docs():
 
 
 if __name__ == '__main__':
-    generate_docs()
+    parser = argparse.ArgumentParser(description="""
+    GPSTk python-swig binding documentation generator.
+    This reads every file in the $doc_dir/xml (where doxygen places its xml)
+    Then uses $gpstk_root/swig/doxy2swig.py to create docstring output for a SWIG .i file.
+    These .i files are placed in $gpstk_root/swig/doc.
+    Then doc.i is auto-generated to include all of these new files in the doc/ folder.
+    """)
+
+    parser.add_argument("-d", default=0, dest="debug", action="count",
+        help="Increase the level of debug output.")
+
+    parser.add_argument(dest="src_dir",
+        help="Directory where the doxygen xml files are.")
+
+    parser.add_argument(dest="dst_dir",
+        help="Directory to write swig.i files to.")
+
+    args = parser.parse_args()
+
+    generate_docs(args)

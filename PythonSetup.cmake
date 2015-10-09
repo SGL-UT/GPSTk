@@ -38,30 +38,19 @@ if( ${PYTHON_CUSTOM_CONFIG} MATCHES "NOTFOUND" )
     find_package( PythonLibs ${PYTHON_VERSION_STRING} REQUIRED )
 endif()
 
-#------------------------------------------------------------
-# Test the user-specified Python package install prefix
-#------------------------------------------------------------
-if( DEFINED PYTHON_INSTALL_PREFIX )
-    if( DEBUG_SWITCH )
-        message( STATUS "DEBUG: PYTHON_INSTALL_PREFIX value was set." ) 
-    endif()
-else()
-    message( FATAL_ERROR "ERROR: PYTHON_INSTALL_PREFIX value was not set." )
-    return()
-endif()
 
 #------------------------------------------------------------
 # Debug messaging
 #------------------------------------------------------------
-if( DEBUG_SWITCH )
-    message( STATUS "DEBUG: PYTHONINTERP_FOUND        = ${PYTHONINTERP_FOUND}" )
-    message( STATUS "DEBUG: PYTHON_EXECUTABLE         = ${PYTHON_EXECUTABLE}" )
-    message( STATUS "DEBUG: PYTHON_VERSION_STRING     = ${PYTHON_VERSION_STRING}" )
-    message( STATUS "DEBUG: PYTHONLIBS_FOUND          = ${PYTHONLIBS_FOUND}" )
-    message( STATUS "DEBUG: PYTHON_LIBRARIES          = ${PYTHON_LIBRARIES}" )
-    message( STATUS "DEBUG: PYTHON_INCLUDE_DIRS       = ${PYTHON_INCLUDE_DIRS}" )
-    message( STATUS "DEBUG: PYTHONLIBS_VERSION_STRING = ${PYTHONLIBS_VERSION_STRING}" )
-    message( STATUS "DEBUG: PYTHON_INSTALL_PREFIX     = ${PYTHON_INSTALL_PREFIX}" ) 
+if( DEBUG_SWITCH OR NOT PYTHONLIBS_FOUND)
+    message( STATUS "PYTHONINTERP_FOUND        = ${PYTHONINTERP_FOUND}" )
+    message( STATUS "PYTHON_EXECUTABLE         = ${PYTHON_EXECUTABLE}" )
+    message( STATUS "PYTHON_VERSION_STRING     = ${PYTHON_VERSION_STRING}" )
+    message( STATUS "PYTHONLIBS_FOUND          = ${PYTHONLIBS_FOUND}" )
+    message( STATUS "PYTHON_LIBRARIES          = ${PYTHON_LIBRARIES}" )
+    message( STATUS "PYTHON_INCLUDE_DIRS       = ${PYTHON_INCLUDE_DIRS}" )
+    message( STATUS "PYTHONLIBS_VERSION_STRING = ${PYTHONLIBS_VERSION_STRING}" )
+    message( STATUS "PYTHON_INSTALL_PREFIX     = ${PYTHON_INSTALL_PREFIX}" ) 
 endif()
 
 #------------------------------------------------------------
@@ -71,20 +60,6 @@ if( NOT PYTHONLIBS_FOUND )
     message( STATUS "Cannot find requested version of PYTHONLIBS on your system." )
     message( STATUS "Cannot build swig bindings without the right python libraries." )
     message( STATUS "PYTHON_LIBRARY and PYTHON_INCLUDE_DIR versions must match PYTHON_EXECUTABLE." )
-    message( STATUS "DEBUG: SWIG: PYTHON_EXECUTABLE        = ${PYTHON_EXECUTABLE}" )
-    message( STATUS "DEBUG: SWIG: PYTHON_FOUND             = ${PYTHON_FOUND}" )
-    message( STATUS "DEBUG: SWIG: PYTHONLIBS_FOUND         = ${PYTHONLIBS_FOUND}" )
-    message( STATUS "DEBUG: SWIG: PYTHON                   = ${PYTHON}" )
-    message( STATUS "DEBUG: SWIG: PYTHON_VERSION           = ${PYTHON_VERSION}" )
-    message( STATUS "DEBUG: SWIG: PYTHON_LIBRARIES         = ${PYTHON_LIBRARIES}" )
-    message( STATUS "DEBUG: SWIG: PYTHON_LIBRARY           = ${PYTHON_LIBRARY}" )
-    message( STATUS "DEBUG: SWIG: PYTHON_INCLUDE_DIR       = ${PYTHON_INCLUDE_DIR}" )
     message( FATAL_ERROR "Cannot find PYTHONLIBS. Cannot proceed. Exiting now!" )
     return()
-else()
-    message( STATUS "PYTHONLIBS Version requested was found. Yay for you!" )
 endif()
-
-#============================================================
-# The End
-#============================================================
