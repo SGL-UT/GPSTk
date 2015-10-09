@@ -21,7 +21,7 @@ function run
     fi
     "$@" 2>&1 | tee -a $LOG
     rc=${PIPESTATUS[0]}
-    if [ $rc != 0 ]; then
+    if [[ $rc != 0 ]]; then
         log "Error, rc=$rc"
         if [ $exit_on_fail == 1 ]; then
             exit
@@ -33,7 +33,7 @@ function run
 
 # helper function: Print True Or False
 function ptof {
-    if [ -z $1 ]; then printf "False";
+    if [[ -z $1 ]]; then printf "False";
     else               printf "True";
     fi
 }
@@ -63,13 +63,14 @@ case `uname` in
     Darwin)
         num_cores=`sysctl -n hw.ncpu`
         ;;
+    SunOS)
+        num_cores=`kstat cpu_info | grep instance | wc -l`
+        ;;
     *)
         num_cores=1
 esac
 
-if ((num_cores<4)); then
-    num_threads=1
-elif ((num_cores>=4 && num_cores<16)); then
+if ((num_cores<16)); then
     num_threads=$((num_cores/2))
 else
     num_threads=$((num_cores*3/4))
@@ -89,8 +90,3 @@ git_branch=`cd $repo; git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 
 hostname=$(hostname)
 
 build_root=$repo/build-$hostname-$git_branch
-
-if [ false ]; then
-    echo "repo=$repo"
-    echo "build_root=$build_root"
-fi

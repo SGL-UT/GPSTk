@@ -71,7 +71,6 @@ endif()
 set( SWIG_MODULE "gpstk" )
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/src )
-include_directories( ${SWIG_DOC_DIR} )
 
 swig_add_module( ${SWIG_MODULE} python gpstk.i ) # why not also list all the other files.i here?!
 swig_link_libraries( ${SWIG_MODULE} gpstk )
@@ -114,7 +113,8 @@ file( COPY ${METAFILES} DESTINATION ${INSTALL_PACKAGE_PATH} )
 # Initialize a working space to build the doxygen/sphinx docs
 #--------------------------------------------
 
-set( SWIG_DOC_DIR ${CMAKE_CURRENT_BINARY_DIR}/swig_doc )
+set( SWIG_DOC_DIR ${CMAKE_CURRENT_BINARY_DIR}/doc )
+include_directories( ${SWIG_DOC_DIR} )
 file( MAKE_DIRECTORY ${SWIG_DOC_DIR} )
 file( WRITE ${SWIG_DOC_DIR}/doc.i "// dummy file. Is replaced when docs are generated for bindings." )
 
