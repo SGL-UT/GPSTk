@@ -87,6 +87,6 @@ system_python_install="/usr/local"
 user_python_install="~/.local"
 
 git_branch=`cd $repo; git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
-hostname=$(hostname)
+hostname=$(hostname -s)
 
 build_root=$repo/build-$hostname-$git_branch

@@ -35,8 +35,6 @@ examples:
 
 OPTIONS:
 
-   -h                   Show this message
-
    -h                   Display this help message.
 
    -b <build_path>      Specify the cmake build directory to use.
