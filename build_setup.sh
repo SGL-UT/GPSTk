@@ -59,12 +59,15 @@ case `uname` in
     Linux)
         last_core_index=`cat /proc/cpuinfo | grep "processor" | awk '{print $3}' | tail -1`
         num_cores=$(($last_core_index + 1))
+        hostname=$(hostname -s)
         ;;
     Darwin)
         num_cores=`sysctl -n hw.ncpu`
+        hostname=$(hostname -s)
         ;;
     SunOS)
         num_cores=`kstat cpu_info | grep instance | wc -l`
+        hostname=$(uname -n)
         ;;
     *)
         num_cores=1
@@ -87,6 +90,5 @@ system_python_install="/usr/local"
 user_python_install="~/.local"
 
 git_branch=`cd $repo; git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
-hostname=$(uname -n)
 
 build_root=$repo/build-$hostname-$git_branch
