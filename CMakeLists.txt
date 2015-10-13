@@ -164,7 +164,6 @@ endif()
 #----------------------------------------
 # Export the project import cmake files.
 #----------------------------------------
-
 include( CMakePackageConfigHelpers )
 set( INSTALL_CONFIG_DIR ${CMAKE_INSTALL_DATADIR}/cmake/GPSTK)
 configure_package_config_file( ${CMAKE_CURRENT_SOURCE_DIR}/GPSTKConfig.cmake.in 
@@ -181,4 +180,3 @@ install( FILES
     ${INSTALL_CONFIG_DIR} )
 
 install( EXPORT ${EXPORT_TARGETS_FILENAME} DESTINATION ${INSTALL_CONFIG_DIR} )
-
