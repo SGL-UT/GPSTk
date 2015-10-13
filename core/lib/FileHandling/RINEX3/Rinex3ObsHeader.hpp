@@ -71,7 +71,7 @@ namespace gpstk
    public:
 
       /// A Simple Constructor.
-      Rinex3ObsHeader() : valid(0), validEoH(false)
+      Rinex3ObsHeader() : valid(0), validEoH(false), PisY(false)
          {}
 
       /// Clear (empty out) header
@@ -280,6 +280,7 @@ namespace gpstk
                                                    ///< for cont. lines
             numObsPrev;                            ///< recall the prev # obs for cont. lines
       RinexSatID lastPRN;                          ///< save PRN while reading PRN/OBS cont. lines
+      bool PisY;                                   ///< Map P to Y code observations in RINEX 2 files
       //@}
 
       /// Destructor
