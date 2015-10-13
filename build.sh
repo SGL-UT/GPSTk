@@ -142,16 +142,10 @@ fi
 if [ $clean ]; then
     rm -rf $build_root/*
     log "Cleaned out $build_root ..."
-
-    #git clean -fxd $gpstk_root/swig/sphinx/
-    #if [ ! $build_only ]; then
-    #    rm -rf $gpstk_install/*;
-    #    rm -rf $python_install/gpstk*
-    #fi
 fi
 
 log "============================================================"
-log "Build config ..."
+log "GPSTk build config ..."
 log "repo            = $repo"
 log "build_root      = $build_root"
 log "install         = $(ptof $install)"
@@ -175,7 +169,6 @@ log "logfile         =" $LOG
 log
 
 
-# some commands are difficut to redirect...
 cd $build_root
 
 if [ $build_docs ]; then
@@ -193,9 +186,6 @@ if [ $build_docs ]; then
         log "Generating swig/python doc files from dOxygen output ..."
         ${python_exe} $repo/swig/docstring_generator.py $build_root/doc $build_root/swig/doc >$build_root/swig_doc.log
     fi
-    
-    path_graphviz=$build_root/doc/graphviz
-    mkdir -p $path_graphviz
 fi
 
 # setup the cmake command
@@ -211,16 +201,18 @@ args+=${install_prefix:+" -DCMAKE_INSTALL_PREFIX=$install_prefix"}
 args+=${build_ext:+" -DBUILD_EXT=ON"}
 args+=${verbose:+" -DDEBUG_SWITCH=ON"}
 args+=${test_switch:+" -DTEST_SWITCH=ON"}
-args+=${build_docs:+" --graphviz=$path_graphviz/gpstk_graphviz.dot"}
+args+=${build_docs:+" --graphviz=$build_root/doc/graphviz/gpstk_graphviz.dot"}
 
 exit_on_fail=1
+
 run cmake $args $repo
-run make -j $num_threads
+
+run make all -j $num_threads
 
 exit_on_fail=0
 if [ $test_switch ]; then
     run ctest -v -j $num_threads
-    log "See =$build_root/Testing/Temporary/LastTest.log for detailed results"
+    log "See $build_root/Testing/Temporary/LastTest.log for detailed results"
 fi
 
 if [ $install ]; then
@@ -239,11 +231,10 @@ if [ $build_docs ]; then
 #    fi
 
     log "Generating GraphViz output PDF ..."
-    dot -Tpdf $path_graphviz/gpstk_graphviz.dot -o $path_graphviz/gpstk_graphviz.pdf
+    dot -Tpdf $build_root/doc/graphviz/gpstk_graphviz.dot -o $build_root/doc/graphviz/gpstk_graphviz.pdf
 fi
 
 if [ $build_packages ]; then
-    log "Building packages ..."
     run make package
     run make package_source
     
@@ -266,5 +257,6 @@ if [ $build_packages ]; then
     fi
 fi
 
-log "Done. :-)"
+log
+log "GPSTk buld done. :-)"
 log `date`

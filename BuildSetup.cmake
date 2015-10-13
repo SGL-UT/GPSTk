@@ -1,4 +1,4 @@
-
+# gpstk/BuildSetup.cmake
 #========================================
 # Try to keep all the platform dependent
 # options in this file
@@ -74,6 +74,7 @@ if( "${isSystemDir}" STREQUAL "-1" )
 endif( "${isSystemDir}" STREQUAL "-1" )
 
 
+#----------------------------------------
 if( DEBUG_SWITCH AND NOT DEBUG_VERBOSE )
     message( STATUS "CMAKE_SYSTEM              = ${CMAKE_SYSTEM}" )      # e.g., Linux-3.2.0
     message( STATUS "CMAKE_SYSTEM_NAME         = ${CMAKE_SYSTEM_NAME}" ) # e.g., Linux
@@ -106,8 +107,6 @@ if( DEBUG_SWITCH AND NOT DEBUG_VERBOSE )
 endif()
 
 #----------------------------------------
-# Debug Verbose: print all cmake variables
-#----------------------------------------
 if( DEBUG_VERBOSE )
     get_cmake_property( _variableNames VARIABLES )
     foreach( _variableName ${_variableNames} )
@@ -123,6 +122,7 @@ include_directories( "${PROJECT_BINARY_DIR}/generated/" )
 install( FILES "${PROJECT_BINARY_DIR}/generated/build_config.h" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}" )
 
 
+#----------------------------------------
 if( ${CMAKE_SYSTEM_NAME} MATCHES "SunOS" )
     set( CPACK_GENERATOR "TGZ" )
 elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )

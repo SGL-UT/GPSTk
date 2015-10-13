@@ -14,12 +14,13 @@ function log
 
 function run
 {
-    log "============================================================"
+    log "========================================"
+    log "$@"
     if [ $verbose ]; then
-        log "$@"
-        log
+        "$@" 2>&1 | tee -a $LOG
+    else
+        "$@" 2>&1 >> $LOG
     fi
-    "$@" 2>&1 | tee -a $LOG
     rc=${PIPESTATUS[0]}
     if [[ $rc != 0 ]]; then
         log "Error, rc=$rc"
@@ -27,7 +28,6 @@ function run
             exit
         fi
     fi
-    log
     return $rc
 }
 
