@@ -1463,7 +1463,7 @@ namespace gpstk
 
          try
          {
-//            std::cout << "Parse header record >" << line << "<" << std::endl;
+            //std::cout << "Parse header record >" << line << "<" << std::endl;
             ParseHeaderRecord(line);
          }
          catch(FFStreamError& e)
@@ -1504,125 +1504,73 @@ namespace gpstk
             syss.push_back("S");    // ??
             syss.push_back("E");
          }
-         // are there any sats with non-1 wavelength factors? if so must add "N" types
-         //bool haveL1WaveFact(false), haveL2WaveFact(false);
-         //bool haveMultipleL1WaveFact(false), haveMultipleL2WaveFact(false);
-         //if(find(syss.begin(),syss.end(),"G") != syss.end()) {     // has GPS
-         //   if(wavelengthFactor[0] != 1) haveL1WaveFact = true;
-         //   if(wavelengthFactor[1] != 1) haveL2WaveFact = true;
-         //   for(int i=0; i < extraWaveFactList.size(); i++) {
-         //      if(extraWaveFactList[i].wavelengthFactor[0] != 1)
-         //         haveMultipleL1WaveFact = true;
-         //      if(extraWaveFactList[i].wavelengthFactor[1] != 1)
-         //         haveMultipleL2WaveFact = true;
-         //   }
-         //}
 
          // given systems and list of R2ObsTypes, compute mapObsTypes and mapSysR2toR3ObsID
          mapSysR2toR3ObsID.clear();
          for(size_t i=0; i<syss.size(); i++) {
             const string s(syss[i]);
             vector<RinexObsID> obsids;
-            //bool isPrecise(
-            //   find(R2ObsTypes.begin(),R2ObsTypes.end(),"P1") != R2ObsTypes.end() ||
-            //   find(R2ObsTypes.begin(),R2ObsTypes.end(),"P2") != R2ObsTypes.end()
-            //); //Unused, commenting out for now
-            // loop over R2 obs types
-            for(size_t j=0; j<R2ObsTypes.size(); ++j) {
-               string ot(R2ObsTypes[j]), obsid, type, tc;
-               bool isPrecise(find(R2ObsTypes.begin(),R2ObsTypes.end(),
-                              string(s+"P"+ot[1])) != R2ObsTypes.end());
+            
+            // Assume D1, S1, and L1 come from C/A unless P is being treated as Y and P1 is present
+            bool hasL1P = find(R2ObsTypes.begin(),R2ObsTypes.end(), string("P2")) != R2ObsTypes.end();
+            string code1 = "C";
+            if (PisY && hasL1P) code1 = "Y";
+            
+            // Assume D2, S2, and L2 come from Y if P is being treated as Y and P2 is present
+            // codeless unless L2C is tracked
+            bool hasL2P = find(R2ObsTypes.begin(),R2ObsTypes.end(), string("P2")) != R2ObsTypes.end();
+            bool hasL2C = find(R2ObsTypes.begin(),R2ObsTypes.end(), string("C2")) != R2ObsTypes.end();
+            string code2 = "W";
+            if (PisY && hasL2P) code2 = "Y";
+            else if (hasL2C) code2 = "X";
+            
+            for(size_t j=0; j<R2ObsTypes.size(); ++j)
+            {
+               string ot(R2ObsTypes[j]);
+               string obsid(s);
+               if      (ot == "C1") obsid += "C1C";
+               else if (ot == "P1") obsid += "C1" + code1;
+               else if (ot == "L1") obsid += "L1" + code1;
+               else if (ot == "D1") obsid += "D1" + code1;
+               else if (ot == "S1") obsid += "S1" + code1;
+               
+               else if (ot == "C2") obsid += "C2X";
+               else if (ot == "P2") obsid += "C2" + code2;
+               else if (ot == "L2") obsid += "L2" + code1;
+               else if (ot == "D2") obsid += "D2" + code2;
+               else if (ot == "S2") obsid += "S2" + code2;
+               
+               else if (ot == "C5") obsid += "C5X";
+               else if (ot == "L5") obsid += "L5X";
+               else if (ot == "D5") obsid += "D5X";
+               else if (ot == "S5") obsid += "S5X";
 
-               // GPS L2
-               // C2    L2 S2 D2  =>  C2X     L2X S2X D2X   (C2 not P2)
-               //    P2 L2 S2 D2  =>      C2W L2W S2W D2W   (P2 not C2)
-               // C2 P2 L2 S2 D2  =>  C2X C2W L2W S2W D2W   (C2 and P2)
-               if(s=="G" && ot[1]=='2') {
-                  if(ot[0] == 'C') { type = "C"; tc = "X"; }         // C2
-                  else if(ot[0] == 'P') { type = "C"; tc = "W"; }    // P2
-                  else { type = ot[0]; tc = (isPrecise ? "W":"X"); } // L2 S2 D2
-                  obsid = string(s+type+string(1,ot[1])+tc);
-               }
+               else if (ot == "C6") obsid += "C6X";
+               else if (ot == "L6") obsid += "L6X";
+               else if (ot == "D6") obsid += "D6X";
+               else if (ot == "S6") obsid += "S6X";
+               
+               else if (ot == "C7") obsid += "C7X";
+               else if (ot == "L7") obsid += "L7X";
+               else if (ot == "D7") obsid += "D7X";
+               else if (ot == "S7") obsid += "S7X";
+               
+               else if (ot == "C8") obsid += "C8X";
+               else if (ot == "L8") obsid += "L8X";
+               else if (ot == "D8") obsid += "D8X";
+               else if (ot == "S8") obsid += "S8X";
 
-               // GPS+GLO 1+2
-               // GPS and GLO (but GPS w/ wavelengthFactor -> tracking code N)
-               // C1 L1 S1 D1     =>  C1C L1C S1C D1C          (C1 not P1)
-               // P1 L1 S1 D1     =>  C1P L1P S1P D1P          (P1 not C1)
-               // C1 P1 L1 S1 D1  =>  C1C C1P L1P S1P D1P
-               // C2 L2 S2 D2     =>  C2C L2C S2C D2C          (C2 not P2)
-               // P2 L2 S2 D2     =>  C2P L2P S2P D2P          (P2 not C2)
-               // C2 P2 L2 S2 D2  =>  C2C C2P L2P S2P D2P
-               else if((s=="G" || s=="R") && (ot[1]=='1' || ot[1]=='2')) {
-                  if(ot[0] == 'C') { type = tc = "C"; }              // C1
-                  else if(ot[0] == 'P') { type = "C"; tc = "P"; }    // P12
-                  else { type = ot[0]; tc = (isPrecise ? "P":"C"); } // L12 S12 D12
-
-                  // wavelengthFactor: all sats -> N replaces C/P, some -> N & C/P
-                  // TD but this screws up the ordering of obs for Data::really*()
-                  //if(ot[1]=='1' && haveMultipleL1WaveFact) {
-                  //   OT = RinexObsID(s+type+string(1,ot[1])+tc);
-                  //   obsids.push_back(OT);                           // have both
-                  //   tc = "N"; // TD there is no C1N or C2N
-                  //}
-                  //if(ot[1]=='1' && haveL1WaveFact) tc = "N";
-                  //if(ot[1]=='2' && haveMultipleL2WaveFact) {
-                  //   OT = RinexObsID(s+type+string(1,ot[1])+tc);
-                  //   obsids.push_back(OT);
-                  //   tc = "N";
-                  //}
-                  //if(ot[1]=='2' && haveL2WaveFact) tc = "N";
-
-                  obsid = string(s+type+string(1,ot[1])+tc);
-               }
-
-               // GPS 5
-               // C5 L5 S5 D5     =>  C5X L5X S5X D5X
-               else if(s == "G" && ot[1] == '5') {
-                  if(ot == "C5") obsid = string("GC5X");       // C5
-                  else obsid = string(s+ot+"X");               // L5 S5 D5
-               }
-
-               // GAL
-               // C1 L1 S1 D1     =>  C1C L1C S1C D1C (E2-L1-E1)
-               // C5 L5 S5 D5     =>  C5X L5X S5X D5X (E5a)
-               // C6 L6 S6 D6     =>  C6X L6X S6X D6X (E6)
-               // C7 L7 S7 D7     =>  C7X L7X S7X D7X (E5b)
-               // C8 L8 S8 D8     =>  C8X L8X S8X D8X (E5a+b)
-               else if(s == "E") {
-                  if(ot[0] != 'P' && ot[1] != '2')   // CLDS x 15678
-                     obsid = string(s+ot+(ot[1]=='1' ? "C" : "X"));
-                  //else obsid = string("EC1*");      // (P*,*2) not allowed
-               }
-
-               // SBAS / GEO
-               // C1 L1 D1        =>  C1C L1C D1C S1C
-               // C5 L5 D5        =>  C5X L5X D5X S5X
-               else if(s == "S") {
-                       if(ot == "C1") obsid = string("SC1C");
-                  else if(ot == "L1") obsid = string("SL1C");
-                  else if(ot == "D1") obsid = string("SD1C");
-                  else if(ot == "S1") obsid = string("SS1C");
-                  else if(ot == "C5") obsid = string("SC5X");
-                  else if(ot == "L5") obsid = string("SL5X");
-                  else if(ot == "D5") obsid = string("SD5X");
-                  else if(ot == "S5") obsid = string("SS5X");
-               }
-
-               // create the obs id and save it
-               if(!obsid.empty()) {
-                  RinexObsID OT;
-                  try {
-                     OT = RinexObsID(obsid);
-                  }
-                  catch(InvalidParameter& ip) {
-                     FFStreamError fse("InvalidParameter: "+ip.what());
-                     GPSTK_THROW(fse);
-                  }
-
+               try
+               {
+                  RinexObsID OT(obsid);
                   obsids.push_back(OT);
                   mapSysR2toR3ObsID[syss[i]][ot] = OT; //map<string, map<string, RinexObsID> >
                }
-
+               catch(InvalidParameter& ip)
+               {
+                  FFStreamError fse("InvalidParameter: "+ip.what());
+                  GPSTK_THROW(fse);
+               }
             }  // end for
 
             // TD if GPS and have wavelengthFactors, add more ObsIDs with tc=N
@@ -2111,7 +2059,6 @@ namespace gpstk
          // 'old-style' type: Let's change it to 'new style'.
       if( type.size() == 2 )
       {
-
          if( type == "C1" ) type = "C1C";
          else if( type == "P1" ) type = "C1P";
          else if( type == "L1" ) type = "L1P";

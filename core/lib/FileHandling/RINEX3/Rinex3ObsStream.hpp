@@ -68,7 +68,7 @@ namespace gpstk
       /// Default constructor
       Rinex3ObsStream()
          : headerRead(false), timesystem(TimeSystem::GPS)
-            {};
+      {};
 
 
       /** Common constructor.
@@ -130,6 +130,7 @@ namespace gpstk
 
       /// Time system for epochs in this file
       TimeSystem timesystem;
+
 
       /// Check if the input stream is the kind of Rinex3ObsStream
       static bool IsRinex3ObsStream(std::istream& i)
