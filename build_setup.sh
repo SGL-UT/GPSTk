@@ -58,7 +58,7 @@ absdir()
 case `uname` in
     Linux)
         last_core_index=`cat /proc/cpuinfo | grep "processor" | awk '{print $3}' | tail -1`
-        num_cores=$(($last_core_index + 1))
+        num_cores=`nproc`
         hostname=$(hostname -s)
         ;;
     Darwin)
