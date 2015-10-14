@@ -1,0 +1,70 @@
+# This is a CTest script for a user build.  It is meant to be called like so:
+# ctest -S <path-to-script> -V
+# 
+# It uses the current dir as the root of the repo to test
+# and uses the build-hostname-branch as the build dir
+#
+
+# Find the name of the git branch
+execute_process(
+    COMMAND git branch --no-color
+    COMMAND sed -ne "s/^* \\(.*\\)/\\1/p"
+    OUTPUT_VARIABLE branch OUTPUT_STRIP_TRAILING_WHITESPACE )
+
+# The $ENV{HOSTNAME} var doesn't seem to work. Hmm.
+if(${CMAKE_SYSTEM_NAME} MATCHES "SunOS")
+    execute_process(
+        COMMAND hostname
+        OUTPUT_VARIABLE uname -n OUTPUT_STRIP_TRAILING_WHITESPACE )
+else()
+    execute_process(
+        COMMAND hostname
+        OUTPUT_VARIABLE hostname OUTPUT_STRIP_TRAILING_WHITESPACE )
+endif()
+
+# Figure out how many cores to use
+if (${CMAKE_SYSTEM_NAME} MATCHES "SunOS" )
+    execute_process(
+        COMMAND kstat cpu_info
+        COMMAND grep instance
+        COMMAND wc -l
+        OUTPUT_VARIABLE num_cores )
+elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
+    execute_process(
+        COMMAND sysctl -n hw.ncpu
+        OUTPUT_VARIABLE num_cores )
+elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" )
+    execute_process(
+        COMMAND nproc
+        OUTPUT_VARIABLE num_cores)
+    math(EXPR num_cores "${num_cores} + 1" )
+elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
+    set( num_cores 1 )
+else()
+    message( ERROR "CMAKE_SYSTEM_NAME = ${CMAKE_SYSTEM_NAME}, not supported. Currently supported: Linux, Darwin, SunOS, Windows" )
+endif()
+
+math(EXPR num_threads "${num_cores}/2")
+
+set( CTEST_BUILD_FLAGS -j${num_threads} )
+set( CTEST_SOURCE_DIRECTORY "$ENV{PWD}" )
+set( CTEST_BUILD_NAME "${hostname}-${branch}" )
+set( CTEST_BINARY_DIRECTORY "$ENV{PWD}/build-${CTEST_BUILD_NAME}" )
+set( CTEST_SITE "${BUILD_NAME}" )
+set( CTEST_CMAKE_GENERATOR "Unix Makefiles" )
+set( CTEST_CONFIGURATION_TYPE "Experimental" )
+set( DEBUG_VALUE "false" )
+
+find_program( CTEST_GIT_COMMAND NAMES git )
+find_program( CTEST_CMAKE_COMMAND NAMES cmake )
+
+set( CTEST_CMAKE_COMMAND "${CTEST_CMAKE_COMMAND} -Wno-dev "
+    "-DDEBUG_SWITCH=${DEBUG_VALUE} -DTEST_SWITCH=ON -DBUILD_EXT=ON" )
+set( CTEST_CONFIGURE_COMMAND "${CTEST_CMAKE_COMMAND} \"-G${CTEST_CMAKE_GENERATOR}\"" )
+set( CTEST_CONFIGURE_COMMAND "${CTEST_CONFIGURE_COMMAND} ${CTEST_SOURCE_DIRECTORY}" )
+
+ctest_start ( "Experimental" )
+ctest_configure()
+ctest_build()
+ctest_test()
+
