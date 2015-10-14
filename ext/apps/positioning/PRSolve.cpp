@@ -103,7 +103,7 @@ using namespace gpstk;
 using namespace gpstk::StringUtils;
 
 //------------------------------------------------------------------------------------
-string Version(string("5.1 5/11/15"));
+string Version(string("5.2 10/13/15"));
 
 // forward declarations
 class SolutionObject;
@@ -172,6 +172,7 @@ public:
    bool searchUser;           // use SearchUser() for BCE, else SearchNear()
    vector<RinexSatID> exclSat;// exclude satellites
 
+   bool PisY;                 // Interpret RINEX 2 P code as if the receiver was keyed
    bool SPSout,ORDout;        // output autonomous solutions? ORDs?
    bool outver2;              // output RINEX version 2 (OutputObsFile)
    string LogFile;            // output log file (required)
@@ -1220,6 +1221,12 @@ try {
       Rinex3ObsHeader Rhead, Rheadout;
       Rinex3ObsData Rdata;
       string filename(C.InputObsFiles[nfile]);
+      
+      if (C.PisY)
+      {
+         LOG(DEBUG) << "Converting P/W code data to Y code";
+         Rhead.PisY = C.PisY;
+      }
 
       // iret is set to 0 ok, or could not: 1 open file, 2 read header, 3 read data
       iret = 0;
@@ -1270,7 +1277,7 @@ try {
          }
          break;
       }
-
+      
       // do on first epoch only
       if(firstepoch) {
          // if writing to output RINEX, open and write header ---------
@@ -1582,6 +1589,7 @@ void Configuration::SetDefaults(void) throw()
    beginTime = gpsBeginTime = GPSWeekSecond(0,0.,TimeSystem::Any);
    endTime = CommonTime::END_OF_TIME;
 
+   PisY = false;
    SOLhelp = false;
 
    TropType = string("NewB");
@@ -1861,7 +1869,8 @@ string Configuration::BuildCommandLine(void) throw()
             "Exclude this satellite [eg. G24 | R | R23,G31]");
    opts.Add(0, "BCEpast", "", false, false, &searchUser, "",
             "Use 'User' find-ephemeris-algorithm (else nearest) (--nav only)");
-
+   opts.Add(0, "PisY", "", false, false, &PisY, "",
+            "P code data is actually Y code data");
    opts.Add(0, "sol", "S:F:C", true, false, &inSolDesc,
             "# Solution Descriptors <S:F:C> define data used in solution algorithm",
             "Specify data System:Freqs:Codes to be used to generate solution(s)");
