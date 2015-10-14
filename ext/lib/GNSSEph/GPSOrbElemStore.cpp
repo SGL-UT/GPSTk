@@ -121,7 +121,7 @@ namespace gpstk
               << " has " << em.size() << " entries." << std::endl;
             OrbElemMap::const_iterator ei;
 
-            s << "  PRN  MM/DD/YY      Key     Begin       Toe       Toc      End" << endl;
+            s << "  PRN  MM/DD/YY      Key     Begin       Toe       Toc      End  Healthy" << endl;
 
             for (ei = em.begin(); ei != em.end(); ei++) 
             {
@@ -134,6 +134,8 @@ namespace gpstk
                               << "  " << printTime(oe->ctToe,tf2)
                               << "  " << printTime(oe->ctToc,tf2)
                               << "  " << printTime(oe->endValid,tf2);
+	       if (oe->healthy) s << "  " << "   Yes";
+	        else            s << "  " << "    No";
                s << std::endl;
 
             } //end inner for-loop */
