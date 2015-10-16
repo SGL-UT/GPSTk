@@ -1,15 +1,242 @@
       #################################################
 
-
-
 Version 2.7   Friday, October 16, 2015
 
    General modifications
    ---------------------
-
+   - Supported Platform updated
+      - Solaris Sparc no longer supported
+      - XCode no longer supported
+   - Substantial Clean-up and Updates to build.sh script
+   - Python bindings now work under Linux, Solaris, & Mac
+   - CTest Infrastructure Complete - all platforms
+      - C++ test code tested and works on all platforms
+      - Linux, Solaris, OSx , Windows (VS2012)
+      - This include tests for library
+   - CDash Scripts added to repository
+   - More Unit Tests code added for Core
+   - Bug fixes for RINEX tools
+   - Sinex Bug Fix for Solaris x86
+   - SVNumXRef moved from /ext/lib/Misc to /core/lig/GNSSCore
+   - Additional in-source documentation
+   - This release includes new/modified source code comments for improved readability.
+   - Various Bug and Compile Warning Fixes
 
    Modifications by Author
    ---------------------
+Anthony Hughes (14):
+      Ensure that SinexBlock contents are subclasses of Sinex::DataType.
+      Updated BINEX classes with latest MSN changes: typedefs, bugfixes, and tweeks.
+      Added GPSTK_ASSERT macro.
+      Added CommandOptionWithDecimalArg.
+      Added const versions of encodeVar and decodeVar; added some inline directives; fixed a decodeVar unit test error.
+      Added back memory.h after accidentally removing it.
+      Made getFitInterval static; added isValid and isDataSet.
+      Removed broken arbitrary location encodeVar().
+      Added public accessors for ObsID.
+      Added CommandOptionNof.
+      Added an index parameter to CommandOption::getOrder; changed 'order' attribute to a vector.
+      Added an edit method to IonoModelStore.
+      Added utility methods to EngNav: sv2page(), sfpage2svid(), and zcount2page().
+      Added comparison operators for GPSWeekSecond to guide implicit type conversions.
+
+Audric Terry (6):
+      Updating SVNumXRef
+      Moved SVNumXRef from gpstk/ext/ to gpstk/core/ and added its test program to gpstk/core/tests/GNSSCore/.
+      Updated SVNumXRef.cpp to include SVN72/PRN08 relationship and changed a comment in xSVumXRef.cpp
+      Added end date to SVN40/PRN10 in SVNumXRef.cpp
+      fixed conditional statement
+      Updated SVNumXRef.cpp to include SVN36/PRN10 relationship.
+
+Brian Tolman (24):
+      fix bug introduced in previous commit
+      add leap second
+      Add sparse matrix package to Geomatics, add diagDopy to Matrix, small changes
+      fix for windows
+      fix for windows
+      small change to increase efficiency
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      avoid duplicate file name
+      refine sparse matrix classes and add test program
+      remove until a windows version works
+      subtle bug arises when no reference position supplied
+      fix and rename strip() that respects quotes
+      fix test for splitWithQuotes
+      handle repeated empty fields in splitWithQuotes
+      Fixed bug introduced by changing int to size_t everywhere
+      Add option to find millisecond clock adjusts
+      bug when string-without-trailer is shorter than trailer
+      update and repair several things in RINEX tools
+      not handling R ver.2 obs types correctly in warnings
+      another bug
+      add option to output in TEC units
+      add some functionality
+      bugs in decimate (--TN) and delete sats (--DS)
+      bug fix in inverseUT() for 1x1 matrix, other small additions
+
+Bryan Parsons (14):
+      Merge branch 'RC26' into 'master'
+      Merge branch 'SVNumXRef' into 'master'
+      Merge branch 'Rinex_Merger' into 'master'
+      Added initial files for CDash support
+      Merging CDash Integration feature branch into 'master'
+      Tweaks to Mac CDash scripts.
+      Tweaking Linux and Solaris nightly CDash scripts.
+      Removing CDash scripts from the GPSTk repository.
+      Merge branch 'issue_201_removescripts' into 'master'
+      Spelling Tweaks in build.sh.
+      Updated documents with new refactored build scripts and for RC27 release.
+      Resolving merge issues.
+      Minor tweak to setup.py.in to match new documentation name.
+      Merge branch 'issue_197_refactor_build' into 'master'
+
+Jason Vestuto (8):
+      Added test for zero input args to build.sh, and if found, call the usage() fucntion to print the help to the screen.
+      Updates to force building gpstk/ext when the python bindings are built.
+      Updates to comments for Python build configuration files.
+      Fixed PYTHON_VERSION variable names for custom python build config.
+      Custom python build config changes
+      SWIG, minor bug fix to doc.i created by CMake that caused a compiler error on OSX.
+      Merge branch 'master' into issue_121
+      CMake Python Config, python version changed to match that of the shared test host.
+
+Jon C. Little (2):
+      So we can ignore all build directotries...
+      Still getting the hostname right on all platforms
+
+Jon Little (24):
+      Better diagnostics for the config mode
+      Code now compiles under solaris studio 12.4 with --std=c++11 option
+      Letting the default C++ ABI be used by CC.     This can be overridden by specifying -DCMAKE_CXX_FLAGS=-std=c++11 on the cmake invocation
+      Merge branch 'master' into issue_185_c++11
+      Fixing the test apps
+      Removing depricated tests for the MSC class
+      Fixing bugs found by clang
+      Merge remote-tracking branch 'origin' into issue_185_c++11
+      Merge branch 'master' into issue_185_c++11
+      Merge branch 'issue_185_c++11' into 'master'
+      First cut at making complete out of tree build
+      Now build through packages on Linux
+      Now builds and bundles on Darwin
+      Fixed problem with finding hostname under solaris
+      Now can do a joint build with sgltk
+      Updated PRSolve and Rinex3 support to allow the user to specify P code data is really Y code data.
+      Added back some reporting on tests
+      Making ctest work on multiple platforms.
+      Merge remote-tracking branch 'origin/master' into issue_197_refactor_build
+      Fixing the var for the python executable. I really don't know how this worked before :-/
+      Merge remote-tracking branch 'origin/issue_197_refactor_build' into issue_197_refactor_build
+      Fixing problem with building the python package.
+      Merge remote-tracking branch 'origin' into issue_197_refactor_build
+      Merge remote-tracking branch 'origin/issue_197_refactor_build' into issue_197_refactor_build
+
+Joseph Voss (35):
+      Adding EngAlmanac Test     - Uses classes from AlmanacDataGenerator to parse gps almanac files, creates comparison data and generates subframes for testing     - Other subframes necessary are generated by hand, see comments in EngAlmanac_T     - Debugging getUTC method, returns certain values out of range
+      Corrected binary sv id for subframe 4 page 25 which prevented the page from being stored
+      Refactored the get method tests
+      Finishing EngAlmanac_T     - Conversion of WNlsf from the binary subframe to an integer value is     incorrect due to an error in EngNav's convertXbit method. This method     implicitly signs the values passed to it, causing an error for unsigned values     - Conversion of DN from bthe binary subframe to an integer value is     incorrect. The IS-GPS-200D states that the DN value is subframe 4 page 18     is right justified, but the gpstk treats it as left-justified     - Resolved error in EngAlmanac_T UTC parameters     - Closes 95
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Minor fixes to EngAlmanac test, DN test now passes
+      Initial commit of ObsRngDev Test     - Working on initialization of ObsRngDev Object using Rinex Ephemeris Store     - Using Rinex file stream for generator of ObsRngDev pseudorange data     - Need to use Rinex to get receiver position and CommonTime object
+      Generated all the data necessary to construct the ORDS, but need new data files
+      Successfully generated ObsRngDev objects, completed basic test     - RinexNavData time system set to GPS by default, bad. How else can time system be set?
+      Successfully created one IonoModel object using EngAlmanac, but too much overhead. Rewriting to generate IonoModelStore entirely by hand
+      Factoring tests into fail counters, 91 tests count as one     - Added basic initialization tests for single frequency constructors     - Completed get function testing
+      Decided to remove the RinexObs dependencies and generate Ords by hand     Ran into invalid time system issues, can't find where the error is, so making test much simpler     Committing to backup the existing test before the purge of RinexObs
+      Refactoring
+      Added calculation testing for every instance of ObsRngDev
+      Merge branch 'issue_89' into 'master'
+      Resetting a library file that was editted for testing
+      Fixed the way that floats are compared in ObsRngDev_T
+      Minor fixes to Matrix_SVD test (on the right branch this time)
+      Replaced CPPUNIT with TestUtil for ReferenceFrame_T     - closes #73
+      Merging Rinex3ClockData      - Implemented dump member function      - Implemented reallyPutRecord member function      - Uses RinexSatID to support GNSS
+      Updating Rinex3ClockData with the RinexClockData public members
+      Initial commit of Rinex3Obs_T and all depending test files
+      Commenting out modifier function in Rinex3ClockData that broke the build
+      Fixed error within the NumberHeaderRecordsToBeWritten
+      Initial commit of Rinex3Nav_T and all dependent test files
+      Reverting back to current GPSTk Rinex3Clock class for testing
+      Initial commit of Rinex3Clock_T and all dependent test data files
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk into Rinex_Merger
+      Minor changes to fix failing tests
+      Added Rinex version conversion tests to Rinex3Obs_T & Rinex3Nav_T
+      Merge branch 'issue_73'
+      Replaced hard-coded file seperator with a cross-platform call to getFileSep
+      Updated all RINEX tests to use a platform independent file seperator
+      Minor fix to errors that broke the build
+      Removing test from CMakeFile that's not in the GPSTK repo
+
+Josh King (1):
+      SVNumXRef updates
+
+Kevin Kraatz (3):
+      set firstObs TimeSytem to VERSION/TYPE if unset
+      add header edit for REC #/TYPE/VERS and ANT #
+      Fix writing of marker number
+
+Nick Fitzsimmons (1):
+      Update to CommonTime_T comments.
+
+Scot Nelsen (4):
+      Standardize variable names and versions numbering used in CMake build generation.
+      Add ext binaries to the list of targets in the gpstkTargets file.
+      Rework PythonSetup.cmake to import Python config through either system or custom config.
+      Remove extra python configurationfrom swig/CMakeLists.txt and ensure Python Interp and Libs versions match.
+
+Scotland Nelsen (4):
+      Standardize on "GPSTK" as the CMake project name.
+      Missed a usage of projectConfig.cmake.in in the CMakeLists.txt file.
+      Merge branch 'iss43'
+      Update swig/CMakeLists.txt to use non-deprecated python paths.
+
+Steve Johnson (1):
+      Rename 'small' and 'big' variables to avoid conflict with Qt when building on Windows
+
+anthony (11):
+      Merge branch 'issue_180_binex' into 'master'
+      Merge branch 'issue_181_assert' into 'master'
+      Merge branch 'issue_182_decimalarg' into 'master'
+      Merge branch 'issue_183_binutils' into 'master'
+      Merge branch 'issue_184_engeph' into 'master'
+      Merge branch 'issue_187_getObsID' into 'master'
+      Merge branch 'issue_188_CommandOptionNof' into 'master'
+      Merge branch 'issue_189_getOrder' into 'master'
+      Merge branch 'issue_191' into 'master'
+      Merge branch 'issue_192_engnav' into 'master'
+      Merge branch 'issue_195_GPSWeekSecond_Comparison' into 'master'
+
+aterry (1):
+      Merge branch 'svnumref' into 'master'
+
+kolensky (1):
+      Merge branch 'issue_198_prsolve_rinex2' into 'master'
+
+renfrob (16):
+      Added flag to PackedNavBits - Fully backward compatible
+      Extending OrbElem class hierarchy to cover GLONASS
+      Adding isSameData() method to OrbElemBase
+      Refactor OrbElemStore classes for greater commonality
+      Adding receiver ID option to PackedNavBits
+      Polymorphic behavior requires pointers.
+      Fix to addPackedBit( ) method.
+      Adding Rinex3Nav output options
+      Adding Sign & Mag capability to PackedNavBits
+      Adding OrbElemStore.getSatList()
+      Add method to override fit interval limit
+      Tweak boundary limits
+      Changes to support development of sgltk/apps/filetools/rnwcompare
+      Adding an overlooked modification
+      Fixing missing comma in CNAV raw output
+      Tweak to dump() output format.
+
+unknown (1):
+      fixes for windows
+
+vestuto (2):
+      Merge branch 'issue_121' into 'master'
+      Merge branch 'issue_185_c++11' into 'master'
+
 
 
 
@@ -49,11 +276,7 @@ Anthony Hughes (40):
       Refactored the BINEX types tests to use the TestUtils stuff and to read test input from files.
       Updated some comments.
       Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
-      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
-      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
       Added filters for build output and for OS/X file system droppings.
-      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
-      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
       Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
       Refactored more BINEX tests to use TestUtils.
       Ignore Sublime Text temp files
