@@ -54,7 +54,7 @@ OPTIONS:
                         Default (without -e) will build only core
                         Optional (with -e) will build core, ext, and swig
 
-   -u                   Install the build to the path in the \$sgltk environment variable.
+   -u                   Install the build to the path in the \$gpstk environment variable.
                         If this variable is not set, it will be installed to
                         $user_install_prefix.
 
@@ -73,7 +73,7 @@ OPTIONS:
 
    -p                   Build supported packages (source, binary, deb,  ...)
 
-   -v                   Include debuging output.
+   -v                   Include debugging output.
 
 Notes:
    Remember to add user and non-standard locations to your environment. Eg:
@@ -258,5 +258,5 @@ if [ $build_packages ]; then
 fi
 
 log
-log "GPSTk buld done. :-)"
+log "GPSTk build done. :-)"
 log `date`
