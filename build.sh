@@ -239,21 +239,8 @@ if [ $build_packages ]; then
     run make package_source
     
     if [[ -z $exclude_python && $build_ext ]] ; then
-        cd $repo/swig/install_package
+        cd $build_root/swig/install_package
         ${python_exe} setup.py sdist --formats=zip,gztar
-
-	package_debian=0
-        if [ $package_debian = 1 ]; then
-            # py2dsc will convert a distutils-built source tarball into a Debian source package.
-            # py2dsc is not typically installed, so we need to add a check before trying to run it.
-            command -v py2dsc 1>/dev/null 2>/dev/null # exit status 0 indicated program exists
-            if [[ $? -eq 0 ]] ; then
-                cd $repo/swig/install_package/dist
-                py2dsc gpstk-2.5.tar.gz
-                cd $repo/swig/install_package/dist/deb_dist/gpstk-2.5/
-                dpkg-buildpackage -rfakeroot -uc -us
-            fi
-        fi
     fi
 fi
 
