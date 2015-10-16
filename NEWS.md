@@ -2,6 +2,9 @@ $Id$
 
 GPS Toolkit News
 ------------------------------------------------------------------------------
+   October 16, 2015  . .  Release Candidate for Version 2.7 is frozen in the 
+                          repository 
+
    May 12, 2015  . . . .  Release Candidate for Version 2.6 is frozen in the 
                           repository 
 
