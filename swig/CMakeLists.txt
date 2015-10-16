@@ -127,7 +127,7 @@ configure_file( ${SETUP_PY_IN} ${SETUP_PY} )
 # Note: The two words "WORKING_DIRECTORY ${INSTALL_PACKAGE_PATH}" are a key-value pair
 #       This sets the value of WORKING_DIRECTORY equal to ${INSTALL_PACKAGE_PATH}, i.e.
 #       the command being run treats ${INSTALL_PACKAGE_PATH} as the current working directory
-install( CODE "execute_process(COMMAND ${PYTHON} ${SETUP_PY} install --prefix=${PYTHON_INSTALL_PREFIX} WORKING_DIRECTORY ${INSTALL_PACKAGE_PATH})" )
+install( CODE "execute_process(COMMAND ${PYTHON_EXECUTABLE} ${SETUP_PY} install --prefix=${PYTHON_INSTALL_PREFIX} WORKING_DIRECTORY ${INSTALL_PACKAGE_PATH})" )
 
 #------------------------------------------------------------
 # These files aren't required to use the bindings but are
