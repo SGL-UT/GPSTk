@@ -88,7 +88,7 @@ will need to export the library install path if you install to a
 non-standard path. The build script will test your paths to and warn
 you if your installs cannot be found.
 
-Typical system installs will look like this:
+Typical builds (no install) will look like this:
 
     $ ./build.sh -e
 
@@ -98,17 +98,17 @@ Typical user installs will look like this:
 
     $ ./build.sh -eu
 
-Typical test install will look like this:
+Typical test and install will look like this:
 
     $ export LD_LIBRARY_PATH=/tmp/test/lib:$LD_LIBRARY_PATH
 
     $ ./build.sh -et -i /tmp/test
 
-Typical install and binary tarball package will look like this:
+Typical install and binary tarball package (in build folder) will look like this:
 
     $ export LD_LIBRARY_PATH=/tmp/test/lib:$LD_LIBRARY_PATH
 
-    $ ./build.sh -eg 
+    $ ./build.sh -ep -i /tmp/test
 
 
 UNIX-like Environment: Manual Build, Install, and Package:
@@ -175,8 +175,7 @@ commands instead of build.sh:
 UNIX-like Environment: Python Bindings Build and Install:
 ---------------------------------------------------------
 
-The build.sh script must be used to build and install the GPSTk Python Bindings. See the script help for details 
-on those parameters:
+As the build.sh script builds the Python Bindings by default:
 
     $ cd $gpstk_root
 
@@ -189,15 +188,15 @@ you if your installs cannot be found.
 
 Typical system installs with python bindings will look like this:
 
-    $ ./build.sh -ep
+    $ ./build.sh -e
 
 Typical user installs with python bindings will look like this:
 
-    $ ./build.sh -eup
+    $ ./build.sh -eu
 
 Typical user installs with python bindings and documentation will look like this:
 
-    $ ./build.sh -eupd
+    $ ./build.sh -eud
 
 
 OSX and XCode: Building and Installing with CMake:
