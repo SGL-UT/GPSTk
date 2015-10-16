@@ -20,7 +20,7 @@ Introduction:
 
 As an open source project, the source of the GPSTk is subject to intermittent updates, contributions, 
 and corrections. The GPSTk library testing process has been redesigned to build confidence in the 
-functionality of the library. Testing within the GPSTk library is designed with three distinct goals 
+functionality of the library. Testing within the GPSTk library is designed with the following distinct goals 
 in mind:
 	
 	Testing is repeatable with a low amount of effort.
@@ -40,17 +40,15 @@ There are two main methods for running the GPSTk test suite in a UNIX-like Envir
 	Automated build and test utilizing the build.sh script
 	Manual build and test utilizing CMake and CTest
 
-NOTE: The automated build provides testing metrics that are not available through the manual build.
-	
 
 UNIX-like Environment: Automated Build and Test:
 ------------------------------------------------
 
-If you prefer automation, run the GPSTk script.
+If you prefer automation, run the build.sh script.
 
 Typical test build without install will look like this:
 	
-	$ ./build.sh -bet
+	$ ./build.sh -et
 
 
 Typical test build with install will look like this:
@@ -58,6 +56,11 @@ Typical test build with install will look like this:
     $ export LD_LIBRARY_PATH=/tmp/test/lib:$LD_LIBRARY_PATH
 
     $ ./build.sh -et -i /tmp/test
+
+
+To run a detailed test report after after build, install, and test:
+
+    $ ./test-report.sh
 
 
 UNIX-like Environment: Manual Build and Test:
@@ -89,6 +92,12 @@ To manually build and test the GPSTk, follow the following steps:
    		 	or
 
    		 $ ctest
+
+   5. To run a test report:
+
+       $ cd $gpstk_root
+
+       $ ./test-report.sh
 
 
 OSX and XCode: Testing Procedure:
