@@ -20,7 +20,7 @@ Introduction:
 
 As an open source project, the source of the GPSTk is subject to intermittent updates, contributions, 
 and corrections. The GPSTk library testing process has been redesigned to build confidence in the 
-functionality of the library. Testing within the GPSTk library is designed with three distinct goals 
+functionality of the library. Testing within the GPSTk library is designed with the following distinct goals 
 in mind:
 	
 	Testing is repeatable with a low amount of effort.
@@ -40,17 +40,15 @@ There are two main methods for running the GPSTk test suite in a UNIX-like Envir
 	Automated build and test utilizing the build.sh script
 	Manual build and test utilizing CMake and CTest
 
-NOTE: The automated build provides testing metrics that are not available through the manual build.
-	
 
 UNIX-like Environment: Automated Build and Test:
 ------------------------------------------------
 
-If you prefer automation, run the GPSTk script.
+If you prefer automation, run the build.sh script.
 
 Typical test build without install will look like this:
 	
-	$ ./build.sh -bet
+	$ ./build.sh -et
 
 
 Typical test build with install will look like this:
@@ -59,6 +57,10 @@ Typical test build with install will look like this:
 
     $ ./build.sh -et -i /tmp/test
 
+
+To run a detailed test report after after build, install, and test:
+
+    $ ./test-report.sh
 
 
 UNIX-like Environment: Manual Build and Test:
@@ -91,6 +93,12 @@ To manually build and test the GPSTk, follow the following steps:
 
    		 $ ctest
 
+   5. To run a test report:
+
+       $ cd $gpstk_root
+
+       $ ./test-report.sh
+
 
 OSX and XCode: Testing Procedure:
 ---------------------------------
@@ -110,6 +118,7 @@ Step-by-step procedure with pictures on building, installing, and testing the GP
 Studio 2012 can be found at gpstk.org:
 
     http://www.gpstk.org/bin/view/Documentation/BuildingGPSTkUnderWindows
+
 
 CTest Developer Testing Commands:
 ---------------------------------
@@ -185,6 +194,7 @@ Current Test Structure
    * The main() portion of the code creates the test class object and executes its methods. It then tallies 
       the number of failures and reports it to the screen/log.
 
+
 -------------------------
 Example Test File
 -------------------------
@@ -243,6 +253,7 @@ Example Test File
         {
             // If the creation of the Foo object did returns an error and it should not return an error, 
             fail the assert with a false bit.
+
             testFramework.assert( false, "Description that the constructor could not create the object properly", __LINE__ );
         }
 

@@ -6,11 +6,11 @@
 #           Is dependend on by $GPSTK/build.sh
 #============================================================
 
-cmake_minimum_required( VERSION 2.8.4 )
+cmake_minimum_required( VERSION 2.8.5 )
 
 project( GPSTK )
 set( GPSTK_VERSION_MAJOR "2" )
-set( GPSTK_VERSION_MINOR "5" )
+set( GPSTK_VERSION_MINOR "7" )
 set( GPSTK_VERSION_PATCH "0" )
 set( GPSTK_VERSION "${GPSTK_VERSION_MAJOR}.${GPSTK_VERSION_MINOR}.${GPSTK_VERSION_PATCH}" )
 
@@ -84,6 +84,16 @@ set( GPSTK_INC_FILES "" )
 list( APPEND GPSTK_SRC_FILES ${CORE_SRC_FILES} )
 list( APPEND GPSTK_INC_FILES ${CORE_INC_FILES} )
 
+# Remove getopt.h from non-Windows installs
+if( NOT WIN32 )
+  foreach( _headerFile ${GPSTK_INC_FILES} )
+    get_filename_component( _name ${_headerFile} NAME )
+    if( ${_name} MATCHES "getopt.h" )
+      list( REMOVE_ITEM GPSTK_INC_FILES ${_headerFile} )
+    endif()
+  endforeach()
+endif()
+
 #============================================================
 # Define $GPSTK/ext/ additions to Library Target Files
 #============================================================
@@ -91,16 +101,6 @@ list( APPEND GPSTK_INC_FILES ${CORE_INC_FILES} )
 if( BUILD_EXT )
   file( GLOB_RECURSE EXT_SRC_FILES "ext/lib/*.cpp" "ext/lib/*.c" )
   file( GLOB_RECURSE EXT_INC_FILES "ext/lib/*.h" "ext/lib/*.hpp" )
-
-  # Remove getopt.h from non-Windows installs of /ext library
-  if( NOT WIN32 )
-    foreach( _headerFile ${EXT_INC_FILES} )
-      get_filename_component( _name ${_headerFile} NAME )
-      if( ${_name} MATCHES "getopt.h" )
-        list( REMOVE_ITEM EXT_INC_FILES ${_headerFile} )
-      endif()
-    endforeach()
-  endif()
 
   # Define ext library include directories
   set( EXT_INC_DIRS "" )
@@ -128,7 +128,7 @@ endif()
 #============================================================
 
 # GPSTk shared-object library (e.g. libgpstk.so) build target
-add_library( gpstk ${STADYN} ${GPSTK_SRC_FILES} )
+add_library( gpstk ${STADYN} ${GPSTK_SRC_FILES} ${GPSTK_INC_FILES} )
 
 # GPSTk library install target
 install( TARGETS gpstk DESTINATION "${CMAKE_INSTALL_LIBDIR}" EXPORT "${EXPORT_TARGETS_FILENAME}" )
