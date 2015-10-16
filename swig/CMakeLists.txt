@@ -124,9 +124,6 @@ set( SETUP_PY    "${INSTALL_PACKAGE_PATH}/setup.py" )
 configure_file( ${SETUP_PY_IN} ${SETUP_PY} )
 
 # Note: For setup.py install options, see https://docs.python.org/2/install/
-# Note: The two words "WORKING_DIRECTORY ${INSTALL_PACKAGE_PATH}" are a key-value pair
-#       This sets the value of WORKING_DIRECTORY equal to ${INSTALL_PACKAGE_PATH}, i.e.
-#       the command being run treats ${INSTALL_PACKAGE_PATH} as the current working directory
 install( CODE "execute_process(COMMAND ${PYTHON_EXECUTABLE} ${SETUP_PY} install --prefix=${PYTHON_INSTALL_PREFIX} WORKING_DIRECTORY ${INSTALL_PACKAGE_PATH})" )
 
 #------------------------------------------------------------
