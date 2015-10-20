@@ -147,7 +147,7 @@ namespace gpstk
            * uniqueness will vary by descendent class. 
            * NOTE: This would be better as a pure virtual method.
            * However, it came about late in the process, so it is
-           * implemmented here as a stub that returns false.  This
+           * implemented here as a stub that returns false.
            */
       virtual bool isSameData(const OrbElemBase* right) const;
 

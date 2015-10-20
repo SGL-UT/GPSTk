@@ -186,12 +186,21 @@ namespace gpstk
    bool OrbElemStore::addOrbElem(const OrbElemBase* eph)
       throw(InvalidParameter,Exception)
    {
+     bool dbg = false;
+     //if (eph->satID.id==2 ||
+     //    eph->satID.id==5) dbg = true;
+     
      try
      {
-
      SatID sid = eph->satID;
      OrbElemMap& oem = ube[sid];
      string ts = "%02m/%02d/%02y %02H:%02M:%02S";
+
+     if (dbg)
+     {
+         cout << "Entering OrbElemStore::addOrbElem." << endl;
+         cout << "   Toe = " << printTime(eph->ctToe,ts) << endl;
+     }
 
        // If satellite system is wrong type for this store, throw an error
      if (!isSatSysPresent(sid.system))
@@ -205,6 +214,7 @@ namespace gpstk
      }
 
        // if map is empty, load object and return
+     if (dbg) cout << "oes::addOE.  Checking oem.size()" << endl;
      if (oem.size()==0)
      {
         oem[eph->beginValid] = eph->clone();
@@ -213,15 +223,18 @@ namespace gpstk
      }
        // Search for beginValid in current keys.
        // If found candidate, should be same data
-       // as already in table. Test this by comparing
-       // Toe values.
+       // as already in table. Test this by using the
+       // isSameData() method.
+     if (dbg) cout << "oes::addOE.  Searching for beginValid()" << endl;
      OrbElemMap::iterator it = oem.find(eph->beginValid);
      if(it!=oem.end())
      {
         const OrbElemBase* oe = it->second;
           // Found duplicate already in table
-        if(oe->ctToe==eph->ctToe)
+        //if(oe->ctToe==eph->ctToe)
+        if(oe->isSameData(eph))
         {
+            if (dbg) cout << "oes::addOE.  isSameData() returned true." << endl;
             return (false);
         }
           // Found matching beginValid but different Toe - This shouldn't happen
@@ -241,19 +254,24 @@ namespace gpstk
      }
         // Did not already find match to
         // beginValid in map
-        // N.B:: lower_bound will reutrn element beyond key since there is no match
+        // N.B:: lower_bound will return element beyond key since there is no match
+     if (dbg) cout << "oes::addOE.  Did not find beginValid in map." << endl;
      it = oem.lower_bound(eph->beginValid);
         // Case where candidate is before beginning of map
      if(it==oem.begin())
      {
+        if (dbg) cout << "oes::addOE.  Case of beginning of map" << endl;
         const OrbElemBase* oe = it->second;
-        if(oe->ctToe==eph->ctToe)
+        //if(oe->ctToe==eph->ctToe)
+        if(oe->isSameData(eph))
         {
+           if (dbg) cout << "oes::addOE.  isSameData() returned true." << endl;
            oem.erase(it);
            oem[eph->beginValid] = eph->clone();
            updateInitialFinal(eph);
            return (true);
         }
+        if (dbg) cout << "oes::addOE.  Added to beginning of map." << endl;
         oem[eph->beginValid] = eph->clone();
         updateInitialFinal(eph);
         return (true);
@@ -261,22 +279,27 @@ namespace gpstk
           // Case where candidate is after end of current map
      if(it==oem.end())
      {
+        if (dbg) cout << "oes::addOE.  Candidate after end of map." << endl;
           // Get last item in map and check Toe
         OrbElemMap::reverse_iterator rit = oem.rbegin();
         const OrbElemBase* oe = rit->second;
-        if(oe->ctToe!=eph->ctToe)
+        //if(oe->ctToe!=eph->ctToe)
+        if(!oe->isSameData(eph))
         {
+           if (dbg) cout << "oes::addOE.  isSameData() returned false.  Adding to end." << endl;
            oem[eph->beginValid] = eph->clone();
            updateInitialFinal(eph);
            return (true);
         }
+        if (dbg) cout << "oes::addOE. isSameData() returned true.  No need to add." << endl;
         return (false);
      }
         // case where candidate is "In the middle"
         // Check if iterator points to late transmission of
         // same OrbElem as candidate
      const OrbElemBase* oe = it->second;
-     if(oe->ctToe==eph->ctToe)
+     //if(oe->ctToe==eph->ctToe)
+     if(oe->isSameData(eph))
      {
         oem.erase(it);
         oem[eph->beginValid] = eph->clone();
@@ -291,7 +314,8 @@ namespace gpstk
         // Already checked for it==oem.beginValid() earlier
      it--;
      const OrbElemBase* oe2 = it->second;
-     if(oe2->ctToe!=eph->ctToe)
+     //if(oe2->ctToe!=eph->ctToe)
+     if(!oe2->isSameData(eph))
      {
         oem[eph->beginValid] = eph->clone();
         updateInitialFinal(eph);

@@ -92,14 +92,24 @@ namespace gpstk
 
       // Compare the data contents of two OrbElemBase objects.
       //
+      // 1.) The beginValid comparison is omitted since beginValid
+      // is fequently derived from the transmit time.  Therefore,
+      // two otherwise identical sets of data could disagree
+      // on beginValid and still be the same data set. 
+      //
+      // 2.) The obsID comparison is omitted due to the fact that
+      // in most cases, data should be identical across different
+      // carriers/codes. This may be address by keeping separate 
+      // stores of messages at a higher level. 
+      //
    bool OrbElemBase::isSameData(const OrbElemBase* right) const
    {
       if (dataLoadedFlag != right->dataLoadedFlag) return false;
       if (satID          != right->satID)          return false;
-      if (obsID          != right->obsID)          return false;
+      //if (obsID          != right->obsID)          return false;
       if (ctToe          != right->ctToe)          return false;
       if (healthy        != right->healthy)        return false;
-      if (beginValid     != right->beginValid)     return false;
+      //if (beginValid     != right->beginValid)     return false;
       if (endValid       != right->endValid)       return false;
       return true;
    }
