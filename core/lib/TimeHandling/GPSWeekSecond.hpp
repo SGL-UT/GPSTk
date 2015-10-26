@@ -174,9 +174,9 @@ namespace gpstk
             rv = formattedPrint( rv, getFormatPrefixInt() + "G",
                                  "Gs", "BadGPSmweek");
             rv = formattedPrint( rv, getFormatPrefixInt() + "w",
-                                 "wu", "BadGPSdow");
+                                 "ws", "BadGPSdow");
             rv = formattedPrint( rv, getFormatPrefixFloat() + "g",
-                                 "gf", "BadGPSsow");
+                                 "gs", "BadGPSsow");
             rv = formattedPrint( rv, getFormatPrefixInt() + "P",
                                  "Ps", "BadGPSsys");
             return rv;
