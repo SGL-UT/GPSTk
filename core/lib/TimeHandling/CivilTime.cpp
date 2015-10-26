@@ -193,22 +193,20 @@ namespace gpstk
                break;
 
             case 'y':
-               switch( i->second.length() )
-               {
-                  case 2:
-                     year = asInt( i->second ) + 1900;
-                     if( year < 1980 )
-                        year += 100;
-                     break;
-                  case 3:
-                     year = asInt( i->second ) + 1000;
-                     if( year < 1980 )
-                        year += 100;
-                     break;
-                  default:
-                     year = asInt( i->second );
-                     break;
-               };
+                  // match the POSIX strptime() function:
+                  /* Year within century. When a century is not
+                   * otherwise specified, values in the range 69-99
+                   * refer to years in the twentieth century (1969 to
+                   * 1999 inclusive); values in the range 00-68 refer
+                   * to years in the twenty-first century (2000 to
+                   * 2068 inclusive). */
+               if( i->second.length() > 2)
+                  return false;
+               year = asInt( i->second );
+               if (year >= 69)
+                  year += 1900;
+               else
+                  year += 2000;
                break;
 
             case 'm':
