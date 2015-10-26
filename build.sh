@@ -3,7 +3,7 @@
 #
 # Purpose: GPSTk build and install script
 #
-#     Automate the use of CMake, SWIG, dOxygen, Sphinx, and distutils
+#     Automate the use of CMake, SWIG, Doxygen, Sphinx, and distutils
 #     to build and install the GPSTK C++ Library, C++ Applications, 
 #     Python bindings, and documentation.
 #
@@ -129,7 +129,7 @@ while getopts "hb:cdepi:j:xP:sutv" OPTION; do
 done
 
 shift $(($OPTIND - 1))
-LOG=$build_root/build.log
+LOG="$build_root"/build.log
 
 
 #----------------------------------------
@@ -140,7 +140,7 @@ if [ ! -d "$build_root" ]; then
 fi
 
 if [ $clean ]; then
-    rm -rf $build_root/*
+    rm -rf "$build_root"/*
     log "Cleaned out $build_root ..."
 fi
 
@@ -169,7 +169,7 @@ log "logfile         =" $LOG
 log
 
 
-cd $build_root
+cd "$build_root"
 
 if [ $build_docs ]; then
     log "Pre-build documentation processing ..."
@@ -178,13 +178,13 @@ if [ $build_docs ]; then
     if [ $build_ext ]; then
         sources+=" $repo/ext/lib"
     fi
-    log "Generating dOxygen files from C/C++ source ..."
-    sed -e "s#gpstk_sources#$sources#g" -e "s#gpstk_doc_dir#$build_root/doc#g" $repo/Doxyfile | doxygen - >$build_root/dOxygen.log
+    log "Generating Doxygen files from C/C++ source ..."
+    sed -e "s#gpstk_sources#$sources#g" -e "s#gpstk_doc_dir#$build_root/doc#g" $repo/Doxyfile | doxygen - >"$build_root"/Doxygen.log
     tar -czf gpstk_doc_cpp.tgz -C doc/html .
     
     if [[ -z $exclude_python && $build_ext ]] ; then
-        log "Generating swig/python doc files from dOxygen output ..."
-        ${python_exe} $repo/swig/docstring_generator.py $build_root/doc $build_root/swig/doc >$build_root/swig_doc.log
+        log "Generating swig/python doc files from Doxygen output ..."
+        ${python_exe} $repo/swig/docstring_generator.py "$build_root"/doc "$build_root"/swig/doc >"$build_root"/swig_doc.log
     fi
 fi
 
@@ -209,7 +209,10 @@ run cmake $args $repo
 
 run make all -j $num_threads
 
-exit_on_fail=0
+#Commented out so that the script doesn't install a build that fails
+#to pass self-tests.  If you really don't care about self-tests, then
+#don't run them.
+#exit_on_fail=0
 if [ $test_switch ]; then
     run ctest -v -j $num_threads
     log "See $build_root/Testing/Temporary/LastTest.log for detailed results"
@@ -231,7 +234,7 @@ if [ $build_docs ]; then
 #    fi
 
     log "Generating GraphViz output PDF ..."
-    dot -Tpdf $build_root/doc/graphviz/gpstk_graphviz.dot -o $build_root/doc/graphviz/gpstk_graphviz.pdf
+    dot -Tpdf "$build_root"/doc/graphviz/gpstk_graphviz.dot -o "$build_root"/doc/graphviz/gpstk_graphviz.pdf
 fi
 
 if [ $build_packages ]; then
@@ -239,7 +242,7 @@ if [ $build_packages ]; then
     run make package_source
     
     if [[ -z $exclude_python && $build_ext ]] ; then
-        cd $build_root/swig/install_package
+        cd "$build_root"/swig/install_package
         ${python_exe} setup.py sdist --formats=zip,gztar
     fi
 fi
