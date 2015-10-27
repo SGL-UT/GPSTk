@@ -169,7 +169,7 @@ log "git tag         =" $git_tag
 log "git hash        =" $git_hash
 log "logfile         =" $LOG
 log
-exit
+
 cd "$build_root"
 
 if [ $build_docs ]; then
