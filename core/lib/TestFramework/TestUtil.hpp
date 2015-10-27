@@ -145,9 +145,9 @@ public:
       std::string mess;
       if (test_message.empty())
       {
-         ostringstream ostr;
-         ostr << "Expected:'" << expected << "'" << endl << " But got:'"
-              << got << "'" << endl;
+         std::ostringstream ostr;
+         ostr << "Expected:'" << expected << "'" << std::endl << " But got:'"
+              << got << "'" << std::endl;
          mess = ostr.str();
       }
       assert(expected == got, mess, line_number);
