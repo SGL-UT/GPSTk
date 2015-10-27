@@ -24,7 +24,7 @@ function run
     rc=${PIPESTATUS[0]}
     if [[ $rc != 0 ]]; then
         log "Error, rc=$rc"
-        if [ $exit_on_fail == 1 ]; then
+        if [[ $exit_on_fail == 1 ]]; then
             exit
         fi
     fi
@@ -89,6 +89,14 @@ python_exe=`which python2.7`
 system_python_install="/usr/local"
 user_python_install="~/.local"
 
-git_branch=`cd $repo; git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
+git_hash=`cd $repo; git rev-parse HEAD`
+git_branch=`cd $repo; git name-rev --name-only $git_hash`
+git_branch=${git_branch%^0}
+git_tag=`cd $repo; git name-rev --tags --name-only $git_hash`
+git_tag=${git_tag%^0}
 
-build_root=$repo/build-$hostname-$git_branch
+if [ "$git_tag" != "undefined" ]; then
+    build_root=$repo/build-$hostname-$git_tag
+else
+    build_root=$repo/build-$hostname-$git_branch
+fi

@@ -165,10 +165,11 @@ log "time            =" `date`
 log "hostname        =" $hostname
 log "uname           =" `uname -a`
 log "git branch      =" $git_branch
+log "git tag         =" $git_tag
+log "git hash        =" $git_hash
 log "logfile         =" $LOG
 log
-
-
+exit
 cd "$build_root"
 
 if [ $build_docs ]; then
