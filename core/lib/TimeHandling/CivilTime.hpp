@@ -159,6 +159,18 @@ namespace gpstk
 
       virtual void reset();
 
+         /** Translate a month abbreviation to its integer equivalent.
+          * Comparisons are case-insensitive.
+          * @param amonStr the abbreviated month name. 
+          * @return month number 1-12 or 0 on error. */
+      static int monthAbbrev(const std::string& amonStr);
+
+         /** Translate a month name to its integer equivalent.
+          * Comparisons are case-insensitive.
+          * @param monStr the month name. 
+          * @return month number 1-12 or 0 on error. */
+      static int monthLong(const std::string& monStr);
+
          /**
           * @defgroup ctco CivilTime Comparison Operators
           * All comparison operators have a parameter "right" which corresponds

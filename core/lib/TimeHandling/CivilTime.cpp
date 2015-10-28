@@ -214,28 +214,15 @@ namespace gpstk
                break;
 
             case 'b':
-            case 'B':
-            {
-               std::string thisMonth( i->second );
-               lowerCase(thisMonth);
-
-               if (isLike(thisMonth, "jan.*")) month = 1;
-               else if (isLike(thisMonth, "feb.*")) month = 2;
-               else if (isLike(thisMonth, "mar.*")) month = 3;
-               else if (isLike(thisMonth, "apr.*")) month = 4;
-               else if (isLike(thisMonth, "may.*")) month = 5;
-               else if (isLike(thisMonth, "jun.*")) month = 6;
-               else if (isLike(thisMonth, "jul.*")) month = 7;
-               else if (isLike(thisMonth, "aug.*")) month = 8;
-               else if (isLike(thisMonth, "sep.*")) month = 9;
-               else if (isLike(thisMonth, "oct.*")) month = 10;
-               else if (isLike(thisMonth, "nov.*")) month = 11;
-               else if (isLike(thisMonth, "dec.*")) month = 12;
-               else
-               {
+               month = monthAbbrev( i->second );
+               if (month < 1)
                   return false;
-               }
-            }
+               break;
+
+            case 'B':
+               month = monthLong( i->second );
+               if (month < 1)
+                  return false;
                break;
 
             case 'd':
@@ -288,6 +275,28 @@ namespace gpstk
       hour = minute = 0;
       second = 0.0;
       timeSystem = TimeSystem::Unknown;
+   }
+
+   int CivilTime::monthAbbrev(const std::string& amonStr)
+   {
+      using gpstk::StringUtils::lowerCase;
+      for (unsigned i = 1; i <= 12; i++)
+      {
+         if (lowerCase(amonStr) == lowerCase(MonthAbbrevNames[i]))
+            return i;
+      }
+      return 0;
+   }
+
+   int CivilTime::monthLong(const std::string& monStr)
+   {
+      using gpstk::StringUtils::lowerCase;
+      for (unsigned i = 1; i <= 12; i++)
+      {
+         if (lowerCase(monStr) == lowerCase(MonthNames[i]))
+            return i;
+      }
+      return 0;
    }
 
    bool CivilTime::operator==( const CivilTime& right ) const
