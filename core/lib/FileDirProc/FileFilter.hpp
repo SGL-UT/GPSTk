@@ -51,8 +51,8 @@
 
 namespace gpstk
 {
-   /** @defgroup filedirgroup File and Directory Processing Utilities */
-   //@{
+      /** @defgroup filedirgroup File and Directory Processing Utilities */
+      //@{
 
       /**
        * This class is a framework for sorting and filtering file data.
@@ -118,18 +118,18 @@ namespace gpstk
          }
          dataVec = fdlist;
          
-         /*
-            // move the items into the correct order with splice.
-            // splice does nothing if (itr == data[i]) || (itr == ++data[i])
-            // so the data is inserted backwards to avoid this...
-         i = data.size();
-         while (i != 0)
-         {
-            itr = dataVec.begin();
-            --i;
-            dataVec.splice(itr, dataVec, data[i]);
-         }
-         */
+            /*
+               // move the items into the correct order with splice.
+                  // splice does nothing if (itr == data[i]) || (itr == ++data[i])
+                     // so the data is inserted backwards to avoid this...
+                     i = data.size();
+                     while (i != 0)
+                     {
+                     itr = dataVec.begin();
+                     --i;
+                     dataVec.splice(itr, dataVec, data[i]);
+                     }
+            */
 
          return *this;
       }
@@ -144,7 +144,7 @@ namespace gpstk
          /// forte...
       template <class Compare>
       FileFilter& merge(const FileFilter& right, Compare bp)
-         { merge(right); sort(bp); return *this; }
+      { merge(right); sort(bp); return *this; }
 
          /// After sorting, use this to ensure that each data value is unique.
          /// Filtered count is incremented for each duplicate value removed.
@@ -287,52 +287,64 @@ namespace gpstk
          /// Returns the number of items filtered from the last filter()
          /// touch() or unique() call.
       int getFiltered() const
-         { return filtered; }
+      { return filtered; }
 
          /// Returns the contents of the data list.
       std::list<FileData>& getData(void)
-         { return dataVec; }
+      { return dataVec; }
 
          /// Returns the contents of the data list, const.
       std::list<FileData> getData(void) const
-         { return dataVec; }
+      { return dataVec; }
 
          /// Returns the number of data items in the filter.
       typename std::list<FileData>::size_type getDataCount(void) const 
-         { return dataVec.size(); }
+      { return dataVec.size(); }
 
       typename std::list<FileData>::const_iterator begin() const
-         { return dataVec.begin(); }
+      { return dataVec.begin(); }
 
       typename std::list<FileData>::const_iterator end() const
-         { return dataVec.end(); }
+      { return dataVec.end(); }
 
       typename std::list<FileData>::iterator begin() 
-         { return dataVec.begin(); }
+      { return dataVec.begin(); }
 
       typename std::list<FileData>::iterator end() 
-         { return dataVec.end(); }
+      { return dataVec.end(); }
 
       bool empty() const
-         { return dataVec.empty(); }
+      { return dataVec.empty(); }
 
       void clear()
-         { dataVec.clear(); }
+      { dataVec.clear(); }
 
       typename std::list<FileData>::size_type size()
-         { return dataVec.size(); }
+      { return dataVec.size(); }
 
       FileData& front()
-         { return dataVec.front(); }
+      {
+         GPSTK_ASSERT(!empty());
+         return dataVec.front();
+      }
 
       const FileData& front() const
-         { return dataVec.front(); }
+      {
+         GPSTK_ASSERT(!empty());
+         return dataVec.front();
+      }
 
       FileData& back()
-         { return dataVec.back(); }
+      {
+         GPSTK_ASSERT(!empty());
+         return dataVec.back();
+      }
 
       const FileData& back() const
-         { return dataVec.back(); }
+      {
+         GPSTK_ASSERT(!empty());
+         return dataVec.back();
+      }
 
    protected:
          /// List of file data to be filtered.
@@ -351,13 +363,13 @@ namespace gpstk
       public:
          SortAdapter(Compare& c)
                : comp(c)
-            {}
+         {}
 
          bool operator()(const lItrType l,
                          const lItrType r) const
-            {
-               return comp(*l, *r);
-            }
+         {
+            return comp(*l, *r);
+         }
       private:
          Compare comp;
       };
@@ -366,9 +378,9 @@ namespace gpstk
       int filtered;
    };
 
-   //@}
+      //@}
 
-      template<class FileData>
+   template<class FileData>
    FileFilter<FileData> :: FileFilter(void)
          : filtered(0)
    {}
