@@ -65,17 +65,40 @@ namespace gpstk
          FileSpec::unknown : FileSpec::FileSpecType(fst+1);
    }
 
-      // compares substrings of \a l and \a r
-   bool FileSpec::FileSpecSort::operator() (const std::string& l, 
-                                            const std::string& r) const
+
+   bool FileSpec::FileSpecSort::operator() (const std::string& l,
+                                            const std::string& r)
+      const
    {
-         // if there are directories, don't include them in the comparison
-      std::string tl(l, offset + l.find_last_of(slash) + 1, length);
-      std::string tr(r, offset + r.find_last_of(slash) + 1, length);
-      if (sortBy == ascending)
-         return tl < tr;
-      else
-         return tl > tr;
+         // This sort operator compares all fields in the order
+         // defined in the FileSpecType enum.
+      for(FileSpecType fst = FileSpecType(unknown+1); fst < end; fst++)
+      {
+         if (fileSpec.hasField(fst))
+         {
+            for (unsigned i = 0; i < fileSpec.fileSpecList.size(); i++)
+            {
+               std::string::size_type offset = fileSpec.fileSpecList[i].offset;
+               std::string::size_type numCh = fileSpec.fileSpecList[i].numCh;
+               if (fileSpec.fileSpecList[i].type == fst)
+               {
+                  std::string lsub(l.substr(offset, numCh));
+                  std::string rsub(r.substr(offset, numCh));
+                  if (((sortDir == ascending) && (lsub < rsub)) ||
+                      ((sortDir == descending) && (lsub > rsub)))
+                  {
+                     return true; // l comes before r
+                  }
+                  if (lsub == rsub)
+                  {
+                     continue; // l and r are the same for this field
+                  }
+                  return false; // r comes before l
+               }
+            }
+         }
+      }
+      return false; // r and l are the same
    }
    
    string FileSpec::convertFileSpecType(const FileSpecType fst)
@@ -321,34 +344,8 @@ namespace gpstk
                            const FileSpecSortType fsst) const
       throw(FileSpecException)
    {
-         // gotta sort them in order as they appear in FileSpecType.
-         // This is kinda like Radix sort... sort one field at a time.
-      for(FileSpecType fst = FileSpecType(end-1); fst > unknown; fst--)
-      {
-         if (hasField(fst))
-         {
-               // check the FileSpec for this type of FST
-            vector<FileSpecElement>::const_iterator itr = fileSpecList.begin();
-            string::size_type ofs, len;
-            while (itr != fileSpecList.end())
-            {
-                  // found it - get the substring and return
-               if ((*itr).type == fst)
-               {
-                  ofs = (*itr).offset;
-                  len = (*itr).numCh;
-                  if (fsst != none)
-                  {
-                     FileSpecSort q(ofs, len, fsst);
-                     stable_sort(fileList.begin(), fileList.end(), q);
-                  }
-               }
-               
-                  // didn't find it on this iteration
-               itr++;
-            }
-         }
-      }
+      FileSpecSort q(*this, fsst);
+      stable_sort(fileList.begin(), fileList.end(), q);
 
          // to filter out versions, generate a list of the version FSEs first
          // and copy the file list.  then make a map of the file name without

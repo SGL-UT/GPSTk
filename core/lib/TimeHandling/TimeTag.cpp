@@ -65,13 +65,13 @@ namespace gpstk
                           const std::string& fmt,
                           IdToValue& info )
    {
+         // Copy the arguments to strings we can modify.
+      std::string f = fmt;
+      std::string s = str;
+
       try
       {
          using namespace gpstk::StringUtils;
-
-            // Copy the arguments to strings we can modify.
-         std::string f = fmt;
-         std::string s = str;
 
             // Parse strings...  As we process each part, it's removed from both
             // strings so when we reach 0, we're done
@@ -133,9 +133,9 @@ namespace gpstk
                   }
                   else
                   {
-                     // if the there is no delimiter character and the next field
-                     // is another part of the time to parse, assume the length
-                     // of this field is 1
+                     // if the there is no delimiter character and the
+                     // next field is another part of the time to
+                     // parse, assume the length of this field is 1
                      fieldLength = 1;
                   }
                }
@@ -164,6 +164,13 @@ namespace gpstk
       catch( gpstk::StringUtils::StringException& se )
       {
          GPSTK_RETHROW( se );
+      }
+         // make sure the format string was fully processed.
+      if (!f.empty())
+      {
+         gpstk::StringUtils::StringException
+            exc("Failed to process time string");
+         GPSTK_THROW(exc);
       }
    }
 
