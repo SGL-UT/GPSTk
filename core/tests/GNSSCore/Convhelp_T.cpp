@@ -56,13 +56,13 @@ class Convhelp_T
 
 		failMesg = "Did the computation work with positive values?";
 		testFramework.assert(std::abs(gpstk::cycles2meters(100000.,400000.,wem) - 74948114.5) < eps, failMesg, __LINE__);
-		testFramework.assert(std::abs(gpstk::cycles2meters(10000,40000,gem) - 1.3342563807926082) < eps, failMesg, __LINE__);
+		testFramework.assert(std::abs(gpstk::cycles2meters(10000,40000,gem) - 74948114.5) < eps, failMesg, __LINE__);
 		failMesg = "Did the computation work with a 0 value?";
 		testFramework.assert(gpstk::cycles2meters(0,5,wem) == 0, failMesg, __LINE__);
 		testFramework.assert(gpstk::cycles2meters(0,5,gem) == 0, failMesg, __LINE__);
 		failMesg = "Did the computation work with a negative value?";
 		testFramework.assert(std::abs(gpstk::cycles2meters(-100000.,400000.,wem) + 74948114.5) < eps, failMesg, __LINE__);
-		testFramework.assert(std::abs(gpstk::cycles2meters(-10000,40000,gem) + 1.3342563807926082) < eps, failMesg, __LINE__);
+		testFramework.assert(std::abs(gpstk::cycles2meters(-10000,40000,gem) + 74948114.5) < eps, failMesg, __LINE__);
 
 		return testFramework.countFails();
 	}
