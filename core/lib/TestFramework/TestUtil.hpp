@@ -5,6 +5,10 @@
 #include <sstream>
 #include "build_config.h"
 
+// Basic macro for doing equality tests.  Expects a TestUtil instance
+// named testFramework.
+#define TFASSERTE(TYPE,EXP,GOT) testFramework.assert_equals<TYPE>(EXP,GOT,__LINE__)
+
 //============================================================
 // class:   TestUtil
 // purpose: TestUtil is a proposed utility class (not parent class)

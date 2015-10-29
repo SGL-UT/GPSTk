@@ -39,8 +39,6 @@
 #include <iostream>
 #include <cmath>
 
-#define TFASSERTE(TYPE,EXP,GOT) testFramework.assert_equals<TYPE>(EXP,GOT,__LINE__)
-
 class BinUtils_T
 {
 public:
