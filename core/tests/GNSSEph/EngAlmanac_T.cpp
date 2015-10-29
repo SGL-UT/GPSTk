@@ -507,7 +507,6 @@ public:
           */
       testMesg = "getUTC returned an incorrect value for WNLSF";
       testFramework.assert( WNLSF == 766, testMesg, __LINE__);
-      std::cout<<"WNlsf is: "<<WNLSF<<std::endl;// out of range of 8 bit
 
       testMesg = "getUTC returned an incorrect value for DN";
       testFramework.assert( DN == 5, testMesg, __LINE__);
