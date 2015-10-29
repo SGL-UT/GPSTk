@@ -236,6 +236,10 @@ int FileUtils_T :: testFileAccessCheck()
       filesToRemove.push_back(filename);  // just in case
       tester.assert( !FileUtils::fileAccessCheck(filename),           "expected missing file failure", __LINE__ );
       tester.assert( !FileUtils::fileAccessCheck(filename, ios::in),  "expected missing file failure", __LINE__ );
+         // Opening a file for output in a directory the user has
+         // write access to will always succeed, so try to open a file
+         // in a directory that almost certainly won't exist.
+      filename = getFileSep() + "asdfasdflkj" + getFileSep() + "missing_dir";
       tester.assert( !FileUtils::fileAccessCheck(filename, ios::out), "expected missing file failure", __LINE__ );
    }
    catch (...)
