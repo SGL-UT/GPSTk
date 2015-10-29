@@ -106,6 +106,12 @@ namespace gpstk
       throw(FileHunterException)
    {
       std::string  fileSpecType;
+      if (filter.empty())
+      {
+         FileHunterException exc("FileHunter::setFilter with empty filter"
+                                 " would result in no matches");
+         GPSTK_THROW(exc);
+      }
       try
       {     // ensure a valid file spec type
          fileSpecType = FileSpec::convertFileSpecType(fst);
@@ -137,6 +143,7 @@ namespace gpstk
       return *this;
    }
 
+
    vector<string> FileHunter::find(const CommonTime& start,
                                    const CommonTime& end,
                                    const FileSpec::FileSpecSortType fsst,
@@ -157,41 +164,37 @@ namespace gpstk
       switch(chunk)
       {
          case WEEK:
-            //exStart = CivilTime(static_cast<GPSWeekSecond>(start).week, 0.0, static_cast<CivilTime>(start).year);
-            exStart = GPSWeekSecond(static_cast<GPSWeekSecond>(start).week, 0.0);
+            exStart = GPSWeekSecond(static_cast<GPSWeekSecond>(start).week,0.0);
             break;
          case DAY:
-            //exStart = CivilTime(static_cast<YDSTime>(start).year, static_cast<YDSTime>(start).doy, 0.0);
-            exStart = YDSTime(static_cast<YDSTime>(start).year, static_cast<YDSTime>(start).doy, 0.0);
+            exStart = YDSTime(static_cast<YDSTime>(start).year,
+                              static_cast<YDSTime>(start).doy, 0.0);
             break;
          case HOUR:
-            exStart = CivilTime(static_cast<YDSTime>(start).year, static_cast<CivilTime>(start).month,
-                              static_cast<CivilTime>(start).day, static_cast<CivilTime>(start).hour,
-                              0, 0.0);
+            exStart = CivilTime(static_cast<YDSTime>(start).year,
+                                static_cast<CivilTime>(start).month,
+                                static_cast<CivilTime>(start).day,
+                                static_cast<CivilTime>(start).hour,
+                                0, 0.0);
             break;
          case MINUTE:
-            exStart = CivilTime(static_cast<YDSTime>(start).year, static_cast<CivilTime>(start).month,
-                              static_cast<CivilTime>(start).day, static_cast<CivilTime>(start).hour,
-                              static_cast<CivilTime>(start).minute, 0.0);
+            exStart = CivilTime(static_cast<YDSTime>(start).year,
+                                static_cast<CivilTime>(start).month,
+                                static_cast<CivilTime>(start).day,
+                                static_cast<CivilTime>(start).hour,
+                                static_cast<CivilTime>(start).minute, 0.0);
             break;
       }
       
       vector<string> toReturn;
-         // seed the return vector with an empty string.  you'll see why later
+         // Seed the return vector with an empty string which will be
+         // appended to with the root directory or drive, depending on
+         // your O/S.  This being empty is a termination condition for
+         // an inner loop.
       toReturn.push_back(string());
-
-         // debug
-         /*
-      printf("FileHunter.fileSpecList.size() = %d\n",(int)fileSpecList.size());
-      int dcount = 0;
-      vector<FileSpec>::const_iterator ditr;
-      for (ditr=fileSpecList.begin(); ditr!=fileSpecList.end(); ++ditr)
-      {
-         printf("%2d:''%s''\n",dcount,(*ditr).getSpecString().c_str());
-         dcount++;
-      }
-      printf("END OF LIST.\n");
-          */
+         // complete file spec string, i.e. full path,
+         // i.e. aggregation of fileSpecList for final time filtering.
+      string fileSpecStr;
 
       try
       {
@@ -202,6 +205,7 @@ namespace gpstk
          if (itr != fileSpecList.end())
          {
             toReturn[0] = (*itr).getSpecString() + string(1,'\\');
+            fileSpecStr = (*itr).getSpecString() + string(1,'\\'); 
             itr++;
          }
 #endif
@@ -211,6 +215,7 @@ namespace gpstk
          if (itr != fileSpecList.end())
          { 
             toReturn[0] = string(1,slash) + (*itr).getSpecString();
+            fileSpecStr = string(1,slash) + (*itr).getSpecString();
             itr++;
          }
 #endif
@@ -218,141 +223,72 @@ namespace gpstk
          while (itr != fileSpecList.end())
          {
             vector<string> toReturnTemp;
-            
-               // counting variables            vector<string>::size_type i,j;
-            
+#ifdef _WIN32
+            fileSpecStr += string(1, '\\') + itr->getSpecString();
+#else
+            fileSpecStr += string(1, slash) + itr->getSpecString();
+#endif
             for(size_t i = 0; i < toReturn.size(); i++)
             {
                   // search for the next entries
-                  
-         //Debug
-         //printf("In .find() before call to searchHelper()\n");
-         //string temp = (*itr).createSearchString();
-         //printf(" toReturn[%d]:'%s', spec:'%s'\n",
-         //         i,toReturn[i].c_str(),temp.c_str());
-
                vector<string> newEntries = searchHelper(toReturn[i],*itr);
-         //Debug
-         /*         
-         vector<string>::iterator itr1 = newEntries.begin();
-         int j1 = 0;
-         printf("In .find() after call to searchHelper\n");
-         printf("  newEntries.size() = %d\n",(int)newEntries.size() ); 
-         while (itr1 != newEntries.end())
-         {
-            printf("newEntries[%d],item %d,'%s'\n",i,j1,(*itr1).c_str());
-            itr1++;
-            j1++;
-         }
-         printf("In .find().  end of newEntries list\n");
-         */
                   // after getting the potential entries, filter
                   // them based on the user criteria...
                filterHelper(newEntries, *itr);
-
-         //Debug
-         /*
-         printf("In .find() after call to filterHelper\n");
-         
-         vector<string>::iterator itr2 = newEntries.begin();
-         int j2 = 0;
-         while (itr2 != newEntries.end())
-         {
-            printf("newEntries[%d],item %d,'%s'\n",i,j2,(*itr2).c_str());
-            itr2++;
-            j2++;
-         }
-         printf("In .find().  end of newEntries list\n");
-         printf("newEntries.size() : %d.\n", (int) newEntries.size() ); 
-         */
-         
                   // for each new entry, check the time (if possible)
                   // then add it if it's in the correct time range.
                   // this is why we need to enter an empty string to 
                   // seed toReturn
                for(size_t j = 0; j < newEntries.size(); j++)
                {
-                  try
-                  {
-                     CommonTime fileDT = (*itr).extractCommonTime(newEntries[j]);
-                     if ( (fileDT >= exStart) && (fileDT <= end) )
-                     {
 #ifdef _WIN32
-                        if (toReturn[i].empty())
-                           toReturnTemp.push_back(newEntries[j]);
-                        else
-                        {
-                           if ( toReturn[i][toReturn[i].size()-1]=='\\')
-                              toReturnTemp.push_back(toReturn[i] + newEntries[j]);
-                           else
-                              toReturnTemp.push_back(toReturn[i] + string(1,'\\') + 
-                                               newEntries[j]);
-                        }
-#else
-                        toReturnTemp.push_back(toReturn[i] + string(1,slash) + 
-                                               newEntries[j]);
-#endif
-                     }
-                  }
-                     // if you can't make a CommonTime, just add it - 
-                     // most likely, this is a field that you can't
-                     // make a CommonTime out of
-                  catch (FileSpecException &e)
+                  if (toReturn[i].empty())
+                     toReturnTemp.push_back(newEntries[j]);
+                  else
                   {
-#ifdef _WIN32
-                        if (toReturn[i].empty())
-                           toReturnTemp.push_back(newEntries[j]);
-                        else
-                        {
-                           if ( toReturn[i][toReturn[i].size()-1]=='\\')
-                              toReturnTemp.push_back(toReturn[i] + newEntries[j]);
-                           else
-                              toReturnTemp.push_back(toReturn[i] + string(1,'\\') + 
-                                            newEntries[j]);
-                        }
-#else
-                        toReturnTemp.push_back(toReturn[i] + string(1,slash) + 
-                                            newEntries[j]);
-#endif
+                     if ( toReturn[i][toReturn[i].size()-1]=='\\')
+                        toReturnTemp.push_back(toReturn[i] + newEntries[j]);
+                     else
+                        toReturnTemp.push_back(toReturn[i] + string(1,'\\') + 
+                                               newEntries[j]);
                   }
-               }
-            }
+#else
+                  toReturnTemp.push_back(toReturn[i] + string(1,slash) + 
+                                         newEntries[j]);
+#endif
+               } // for(size_t j = 0; j < newEntries.size(); j++)
+            } // for(size_t i = 0; i < toReturn.size(); i++)
 
-            
             toReturn = toReturnTemp;
-            
-               // Debug
-         /*         
-         vector<string>::iterator itr3 = toReturn.begin();
-         int j3 = 0;
-         printf("In .find() just above toReturn empty check.\n");
-         while (itr3 != toReturn.end())
-         {
-            printf("toReturn[%d],'%s'\n",j3,(*itr3).c_str());
-            itr3++;
-            j3++;
-         }
-         printf("In .find().  end of list\n");
-         */
-
                // if at any time toReturn is empty, then there are no matches
                // so just return
             if (toReturn.empty())
                return toReturn;
 
             itr++;
-         }
+         } // while (itr != fileSpecList.end())
 
             // sort the list by the file spec of the last field
          itr--;
          (*itr).sortList(toReturn, fsst);
-
-         return toReturn;
       }
-      catch(...)
+      catch(gpstk::Exception& exc)
       {
-         return toReturn;
+         FileHunterException nexc(exc);
+         GPSTK_THROW(nexc);
       }
+         // filter by time
+      vector<string> filtered;
+      FileSpec fullSpec(fileSpecStr);
+      for (unsigned i = 0; i < toReturn.size(); i++)
+      {
+         CommonTime fileTime = fullSpec.extractCommonTime(toReturn[i]);
+         if ((fileTime >= exStart) && (fileTime <= end))
+         {
+            filtered.push_back(toReturn[i]);
+         }
+      }
+      return filtered;
    }
 
    void FileHunter::init(const string& filespec)
@@ -361,6 +297,11 @@ namespace gpstk
          // debug
       try
       {
+         if (filespec.empty())
+         {
+            FileHunterException exc("FileHunter: empty file spec is invalid");
+            GPSTK_THROW(exc);
+         }
          fileSpecList.clear();
          filterList.clear();
 
@@ -553,7 +494,6 @@ namespace gpstk
 
             // generate a search string
          string searchString = fs.createSearchString();
-         
 #ifndef _WIN32
             // open the dir
          DIR* theDir;

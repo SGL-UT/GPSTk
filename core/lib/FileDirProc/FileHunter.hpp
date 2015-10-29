@@ -46,7 +46,7 @@
 
 namespace gpstk
 {
-   /** @addtogroup filedirgroup */
+      /** @addtogroup filedirgroup */
       //@{
 
       /// The only exception that class FileHunter throws.
@@ -87,10 +87,10 @@ namespace gpstk
        * %3j would be used for the day field.
        * Also, wildcards cannot be used.  Sorry - it's a limitation of how
        * regular expressions are used.
-       * Finally, if you specify a version field, all files matching will
-       * be reurned.  You can either use extractField() on the returned files
-       * to determine the latest version or select the version you want
-       * returned by using setFilter().
+       * Finally, if you specify a version field, all files matching
+       * will be returned.  You can either use extractField() on the
+       * returned files to determine the latest version or select the
+       * version you want returned by using setFilter().
        */
    class FileHunter
    {
@@ -109,7 +109,7 @@ namespace gpstk
          /// Pairs of FileSpecTypes and lists of strings for filtering
          /// the search results.
       typedef std::pair<FileSpec::FileSpecType, std::vector<std::string> >
-         FilterPair;
+      FilterPair;
 
          /**
           * Constructs a FileHunter using a file specification.  This
@@ -141,21 +141,21 @@ namespace gpstk
           */
       FileHunter& newHunt(const FileSpec& filespec)
          throw(FileHunterException)
-         {return newHunt(filespec.getSpecString());}
+      {return newHunt(filespec.getSpecString());}
 
          /** 
-          * Filters FOR the strings in /a filter in the field specified
-          * by /a fst when searching.
+          * Filters FOR the strings in \a filter in the field specified
+          * by \a fst when searching.
           * @param fst A FileSpecType you want to run a filter on.
           * @param filter a list of strings to search for.in the filter.
-          * @throw FileHunterException when /a fst can't be found.
+          * @throw FileHunterException when \a fst can't be found.
           */
       FileHunter& setFilter(const FileSpec::FileSpecType fst,
-                                    const std::vector<std::string>& filter)
+                            const std::vector<std::string>& filter)
          throw(FileHunterException);
 
          /**
-          * Does the searching for the files.  Set /a start and /a end
+          * Does the searching for the files.  Set \a start and \a end
           * for specifying times of files (according to their file names)
           * for returning.
           * \warning This method is NOT MT-Safe.
@@ -210,7 +210,7 @@ namespace gpstk
       std::vector<FilterPair> filterList;
    }; // FileHunter
 
-   //@}
+      //@}
 
 } // namespace
 

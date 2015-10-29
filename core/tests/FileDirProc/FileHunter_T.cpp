@@ -147,13 +147,13 @@ void FileHunter_T :: newDir(const string& path)
 {
    if (mkdir(path.c_str(), 0755) != 0)
    {
-      string  exc("failed to create test directory: " + path);
-      throw(exc);
+      if (errno != EEXIST)
+      {
+         string  exc("failed to create test directory: " + path);
+         throw(exc);
+      }
    }
-   else
-   {
-      dirsToRemove.push_back(path);
-   }
+   dirsToRemove.push_back(path);
 }
 
 
@@ -227,13 +227,13 @@ int FileHunter_T :: testInitialization()
       FileHunter  hunter("");
       tester.assert( false, "expected exception for empty file spec", __LINE__ );
    }
-   catch (FileSpecException& fse)
+   catch (FileHunterException& fse)
    {
       tester.assert( true, "expected exception for empty file spec", __LINE__ );
    }
    catch (...)
    {
-      tester.assert( false, "expected FileSpecException exception", __LINE__ );
+      tester.assert( false, "expected FileHunterException exception", __LINE__ );
    }
 
    try   // fixed file spec
@@ -314,13 +314,13 @@ int FileHunter_T :: testNewHunt()
       hunter.newHunt("");
       tester.assert( false, "expected exception for empty file spec", __LINE__ );
    }
-   catch (FileSpecException& fse)
+   catch (FileHunterException& fse)
    {
       tester.assert( true, "expected exception for empty file spec", __LINE__ );
    }
    catch (...)
    {
-      tester.assert( false, "expected FileSpecException exception", __LINE__ );
+      tester.assert( false, "expected FileHunterException exception", __LINE__ );
    }
 
    try   // fixed file spec
@@ -604,8 +604,8 @@ int FileHunter_T :: testFind()
       vector<string>  files = hunter.find();
       tester.assert( (  (files.size() == 4)
                      && (contains(files, tempFilePath + "2001_123_08.data") > 0)
-                     && (contains(files, tempFilePath + "2001_234_16.data") > 0)
-                     && (contains(files, tempFilePath + "2002_123_08.data") > 0)
+                     && (contains(files, tempFilePath + "2001_234_08.data") > 0)
+                     && (contains(files, tempFilePath + "2002_123_16.data") > 0)
                      && (contains(files, tempFilePath + "2002_234_16.data") > 0) ),
                      "multiple file spec types (present)", __LINE__ );
    }
@@ -747,7 +747,7 @@ int FileHunter_T :: testFind()
    try   // time filtering
    {
       string  filename(tempFilePath + "%04Y"
-                      + getFileSep() + "%04Y_%03j_%02p.data");
+                      + getFileSep() + "%03j_%02p.data");
       FileHunter  hunter(filename);
       vector<string>  files;
       CommonTime  minTime; 
