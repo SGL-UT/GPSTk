@@ -277,7 +277,7 @@ namespace gpstk
           * \li CRC-16 order=16 polynom=8005 initial=0 final=0 direct=true refin=true refout=true
           * \li CRC-32 order=32 polynom=4c11db7 initial=ffffffff final=ffffffff direct=true refin=true refout=true
           * @param data data to process CRC on.
-          * @param len length of data to process.
+          * @param len length of data to process (in bytes).
           * @param params see documentation of CRCParam:w
           * @return the CRC value
           */
