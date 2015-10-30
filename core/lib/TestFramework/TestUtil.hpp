@@ -5,9 +5,15 @@
 #include <sstream>
 #include "build_config.h"
 
+// Define a TestUtil object named testFramework
+#define TUDEF(CLASS,METHOD) TestUtil testFramework(CLASS, METHOD, __FILE__, __LINE__)
 // Basic macro for doing equality tests.  Expects a TestUtil instance
 // named testFramework.
 #define TFASSERTE(TYPE,EXP,GOT) testFramework.assert_equals<TYPE>(EXP,GOT,__LINE__)
+// Fail the test with a message.
+#define TUFAIL(MSG) testFramework.assert(false, MSG, __LINE__)
+// Pass the test with a (unprinted) message.
+#define TUPASS(MSG) testFramework.assert(true, MSG, __LINE__)
 
 //============================================================
 // class:   TestUtil
