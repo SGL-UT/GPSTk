@@ -391,7 +391,7 @@ int RinexNav_T :: streamReadWriteTest( void )
     {
         RinexNavStream rinexInputStream( inputRinexNavExample.c_str()  );
         RinexNavStream rinexOutputStream( outputRinexStore.c_str(), std::ios::out );
-        rinexOutputStream.header = rinexInputStream.header;
+        rinexInputStream >> rinexOutputStream.header;
         rinexOutputStream << rinexOutputStream.header;
 
 	RinexNavData data;

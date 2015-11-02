@@ -91,8 +91,8 @@ namespace gpstk
       
       if (valid & versionValid)
       {
-         line  = rightJustify(asString(version,3), 10);
-         line += string(10, ' ');
+         line  = rightJustify(asString(version,2), 9);
+         line += string(11, ' ');
          line += string("NAVIGATION"); //leftJustify(fileType, 20);
          line += string(30, ' ');
          line += versionString;
