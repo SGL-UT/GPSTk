@@ -279,7 +279,15 @@ namespace gpstk
 
       if (thisLabel == stringVersion)
       {
-        version = asDouble(line.substr(0,20));
+        std::string verstr(strip(line.substr(0,20)));
+        if ((verstr != "2.0") && (verstr != "2.1") && (verstr != "2.00") &&
+            (verstr != "2.10") && (verstr != "2.11") && (verstr != "3.0"))
+        {
+           FFStreamError e("Unknown or unsupported RINEX version " + 
+                           asString(version));
+           GPSTK_THROW(e);
+        }
+        version = asDouble(verstr);
         fileType = strip(line.substr(20,20));
         if ( (fileType[0] != 'M') && (fileType[0] != 'm'))
         {
@@ -432,14 +440,14 @@ namespace gpstk
 
     if (!obsTypeList.empty())
     {
-      cout << "Obs types:" << endl;
+      s << "Obs types:" << endl;
       vector<RinexMetType>::const_iterator itr = obsTypeList.begin();
       while (itr != obsTypeList.end())
       {
-        cout << convertObsType(*itr) << " ";
+        s << convertObsType(*itr) << " ";
         itr++;
       }
-      cout << endl;
+      s << endl;
     }
   }
 
