@@ -96,28 +96,22 @@ public:
       float relativeError;
 
       testFramework.changeSourceMethod("Average");
-      relativeError = fabs(floatStatsObject.Average() - expectedAverage)/expectedAverage;
-      testFramework.assert(relativeError < floatPrecision, "Average found was not correct", __LINE__);
+      TFASSERTFE(expectedAverage, floatStatsObject.Average());
 
       testFramework.changeSourceMethod("Maximum");
-      relativeError = fabs(floatStatsObject.Maximum() - expectedMaximum)/expectedMaximum;
-      testFramework.assert(relativeError < floatPrecision, "Maximum found was not correct", __LINE__);
+      TFASSERTFE(expectedMaximum, floatStatsObject.Maximum());
 
       testFramework.changeSourceMethod("Minimum");
-      relativeError = fabs(floatStatsObject.Minimum() - expectedMinimum)/expectedMinimum;
-      testFramework.assert(relativeError < floatPrecision, "Minimum found was not correct", __LINE__);  
+      TFASSERTFE(expectedMinimum, floatStatsObject.Minimum());
 
       testFramework.changeSourceMethod("Variance");
-      relativeError = fabs(floatStatsObject.Variance() - expectedVariance)/expectedVariance;
-      testFramework.assert(relativeError < floatPrecision, "Variance found was not correct", __LINE__);
+      TFASSERTFE(expectedVariance, floatStatsObject.Variance());
 
       testFramework.changeSourceMethod("StdDev");
-      relativeError = fabs(floatStatsObject.StdDev() - expectedStdDev)/expectedStdDev;
-      testFramework.assert(relativeError < floatPrecision, "StdDev found was not correct", __LINE__);
+      TFASSERTFE(expectedStdDev, floatStatsObject.StdDev());
 
       testFramework.changeSourceMethod("Normalization");
-      relativeError = fabs(floatStatsObject.Normalization() - expectedNormalization)/expectedNormalization;
-      testFramework.assert(relativeError < floatPrecision, "Normalization found was not correct", __LINE__);
+      TFASSERTFE(expectedNormalization, floatStatsObject.Normalization());
 
       testFramework.changeSourceMethod("Weighted");
       testFramework.assert(floatStatsObject.Weighted(), "Weighted returned false for weighted sample", __LINE__);
