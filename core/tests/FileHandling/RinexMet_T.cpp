@@ -1122,19 +1122,23 @@ int RinexMet_T :: filterOperatorsTest( void )
         gpstk::RinexMetData FilterData1;
         gpstk::RinexMetData FilterData2;
         gpstk::RinexMetData FilterData3;
+        gpstk::RinexMetData rmdata;
 
         FilterStream1 >> FilterHeader1;
         FilterStream2 >> FilterHeader2;
         FilterStream3 >> FilterHeader3;
 
-        while( FilterStream1 >> FilterData1 )
+        while( FilterStream1 >> rmdata )
         {
+           FilterData1 = rmdata;
         }
-        while( FilterStream2 >> FilterData2 )
+        while( FilterStream2 >> rmdata )
         {
+           FilterData2 = rmdata;
         }
-        while( FilterStream3 >> FilterData3 )
+        while( FilterStream3 >> rmdata )
         {
+           FilterData3 = rmdata;
         }
 
         gpstk::RinexMetHeaderTouchHeaderMerge merged;
