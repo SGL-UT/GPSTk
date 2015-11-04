@@ -14,6 +14,8 @@ set( GPSTK_VERSION_MINOR "7" )
 set( GPSTK_VERSION_PATCH "0" )
 set( GPSTK_VERSION "${GPSTK_VERSION_MAJOR}.${GPSTK_VERSION_MINOR}.${GPSTK_VERSION_PATCH}" )
 
+set( GPSTK_TEST_DATA_DIR ${CMAKE_SOURCE_DIR}/data )
+
 #============================================================
 # Set up
 #============================================================
