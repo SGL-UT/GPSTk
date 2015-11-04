@@ -140,6 +140,11 @@ namespace gpstk
     CommonTime parseTime(const std::string& line) const
       throw(FFStreamError);
 
+         /// Writes the CommonTime object into RINEX format. If it's a bad time,
+         /// it will return blanks.
+      std::string writeTime(const CommonTime& dt) const
+         throw(gpstk::StringUtils::StringException);
+
   };  // class RinexMetData
 
   //@}

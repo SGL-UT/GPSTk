@@ -89,7 +89,8 @@ void RMWDiff::process()
 
       set<RinexMetHeader::RinexMetType> intersection = merged.obsSet;
 
-      cout << "Comparing the following fields (other header data is ignored):" << endl;
+      cout << "Comparing the following fields (other header data is ignored):"
+           << endl;
       set<RinexMetHeader::RinexMetType>::iterator m = intersection.begin();
       while (m != intersection.end())
       {
@@ -122,9 +123,10 @@ void RMWDiff::process()
          {
             if (firstitr->time == seconditr->time)
             {
-               cout << setw(3) << static_cast<YDSTime>(firstitr->time) << ' ' 
+               YDSTime recTime(firstitr->time);
+               cout << setw(3) << recTime.doy << ' ' 
                     << setw(10) << setprecision(0)
-                    << static_cast<YDSTime>(firstitr->time) << ' ' 
+                    << recTime.sod << ' ' 
                     << ff1.frontHeader().markerName << ' '
                     << ff2.frontHeader().markerName << ' ';
 
