@@ -1,5 +1,7 @@
 # tests/CMakeLists.txt
 
+add_subdirectory (difftools)
+
 #add_subdirectory (ANSITime)
 #add_subdirectory (BinUtils)
 #add_subdirectory (CivilTime)

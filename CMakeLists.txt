@@ -14,13 +14,16 @@ set( GPSTK_VERSION_MINOR "7" )
 set( GPSTK_VERSION_PATCH "0" )
 set( GPSTK_VERSION "${GPSTK_VERSION_MAJOR}.${GPSTK_VERSION_MINOR}.${GPSTK_VERSION_PATCH}" )
 
+# Test data file source directory
 set( GPSTK_TEST_DATA_DIR ${CMAKE_SOURCE_DIR}/data )
+# Test output directory
+set( GPSTK_TEST_OUTPUT_DIR ${PROJECT_BINARY_DIR}/Testing/Temporary )
 
 #============================================================
 # Set up
 #============================================================
 
-# This sets up veriables contining GNU standard installation locations.
+# This sets up variables contining GNU standard installation locations.
 include( GNUInstallDirs )
 
 # For now, override to use 'lib' for the library install dir.

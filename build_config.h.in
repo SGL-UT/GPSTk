@@ -82,7 +82,7 @@ namespace gpstk
   //----------------------------------------
   inline std::string getPathTestTemp( void )
   {
-    return( gpstk::getPathBuild() + gpstk::getFileSep() + "Testing" + gpstk::getFileSep() + "Temporary"  );
+     return( "@GPSTK_TEST_OUTPUT_DIR@" );
   }
 
 
