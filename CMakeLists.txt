@@ -15,7 +15,7 @@ set( GPSTK_VERSION_PATCH "0" )
 set( GPSTK_VERSION "${GPSTK_VERSION_MAJOR}.${GPSTK_VERSION_MINOR}.${GPSTK_VERSION_PATCH}" )
 
 # Test data file source directory
-set( GPSTK_TEST_DATA_DIR ${CMAKE_SOURCE_DIR}/data )
+set( GPSTK_TEST_DATA_DIR ${PROJECT_SOURCE_DIR}/data )
 # Test output directory
 set( GPSTK_TEST_OUTPUT_DIR ${PROJECT_BINARY_DIR}/Testing/Temporary )
 

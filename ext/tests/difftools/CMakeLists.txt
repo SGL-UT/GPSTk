@@ -8,7 +8,7 @@ add_test(NAME rmwdiff_CmdOpt_1
          -DTEST_PROG=$<TARGET_FILE:rmwdiff>
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/testhelp.cmake)
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testhelp.cmake)
 
 # check that rmwdiff fails with missing files
 add_test(NAME rmwdiff_CmdOpt_2

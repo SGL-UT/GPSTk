@@ -203,10 +203,10 @@ void TimCvt::process()
 
       cout << endl
            << eight << leftJustify("Month/Day/Year H:M:S", 32) 
-           << CivilTime(ct) << endl
+           << CivilTime(ct).printf("%02m/%02d/%04Y %02H:%02M:%02S") << endl
 
            << eight << leftJustify("Modified Julian Date", 32)
-           << setprecision(15) << MJD(ct) << endl
+           << setprecision(15) << MJD(ct).printf("%15.9Q") << endl
 
            << eight << leftJustify("GPSweek DayOfWeek SecOfWeek", 32)
            << GPSWeekSecond(ct).printf("%G %w % 13.6g") << endl
