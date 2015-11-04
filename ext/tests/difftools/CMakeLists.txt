@@ -50,3 +50,25 @@ add_test(NAME rmwdiff_Diff_3
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testdiff.cmake)
+
+# check differences where one file is invalid
+add_test(NAME rmwdiff_Diff_4
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:rmwdiff>
+         -DFILE1=arlm200a.15o
+         -DFILE2=arlm200z.15m
+         -DTESTBASE=rmwdiff4
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/testfail.cmake)
+
+# check differences where the set of observables is different
+add_test(NAME rmwdiff_Diff_5
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:rmwdiff>
+         -DFILE1=arlm200a.15m
+         -DFILE2=arlm200y.15m
+         -DTESTBASE=rmwdiff5
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/testdiff.cmake)
