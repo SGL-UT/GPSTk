@@ -102,7 +102,7 @@ add_test(NAME rmwdiff_Diff_1
 ...
 ```
 
-####gpstk/core/tests/difftools/testdiff.cmake:
+#### gpstk/core/tests/difftools/testdiff.cmake:
 
 ```
 # test that files differ
@@ -120,12 +120,12 @@ execute_process(COMMAND ${CMAKE_COMMAND} -E compare_files
     RESULT_VARIABLE DIFFERENT)
 if(DIFFERENT)
     message(FATAL_ERROR "Test failed - files differ")
-endif()```
-
-
+endif()
+```
 
 ### Class Unit Test Example
 #### gpstk/core/tests/Utilities/CMakelists.txt:
+
 ```
 ...
 add_executable(ValidType_T ValidType_T.cpp)
@@ -136,7 +136,7 @@ add_test(Utilities_ValidType ValidType_T)
 
 #### gpstk/core/tests/Utilities/ValidType_T.cpp:
 
-```c++
+```
 #include "ValidType.hpp"
 #include "TestUtil.hpp"
 #include <iostream>
