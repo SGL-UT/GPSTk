@@ -136,7 +136,7 @@ add_test(Utilities_ValidType ValidType_T)
 
 #### gpstk/core/tests/Utilities/ValidType_T.cpp:
 
-```
+```c++
 #include "ValidType.hpp"
 #include "TestUtil.hpp"
 #include <iostream>
