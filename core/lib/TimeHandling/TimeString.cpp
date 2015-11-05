@@ -322,7 +322,7 @@ namespace gpstk
          } // end of if( hyear )
 
          if( hzcount32 ||
-             (hfullweek && hzcount) ||
+             (hfullweek && (hzcount || hzcount29)) ||
              (hepoch && (hzcount29 || 
                          (hweek && hzcount))) )
          {
@@ -355,6 +355,7 @@ namespace gpstk
                }
             }
             t = ptt->convertToCommonTime();
+            delete ptt;
             return;
          }
 
@@ -444,19 +445,19 @@ namespace gpstk
 
                case 'Q':
                   t = MJD( asLongDouble(itr->second) );
-                  return;
+                  break;
 
                case 'J':
                   t = JulianDate( asLongDouble(itr->second) );
-                  return;
+                  break;
                   
                case 'C':
                   t = GPSWeekZcount().setZcount32( asInt(itr->second) );
-                  return;
+                  break;
 
                case 'K':
                   t = ANSITime( asInt(itr->second) );
-                  return;
+                  break;
                   
                case 'U':
                case 'u':
@@ -464,10 +465,11 @@ namespace gpstk
                   UnixTime tt;
                   tt.setFromInfo( info );
                   t = tt.convertToCommonTime();
-                  return;
+                  break;
                }
                break;
 
+               case 'z':
                case 'Z':
                   hzcount = true;
                   izcount = asInt(itr->second);
@@ -504,15 +506,55 @@ namespace gpstk
                   break;
 
                case 'b':
+                  hmonth = true;
+                  imonth = CivilTime::monthAbbrev(itr->second);
+                  if (imonth < 1)
+                  {
+                        ///@todo use a more appropriate exception class
+                     Exception
+                        exc("Invalid month abbreviation: " + itr->second);
+                     GPSTK_THROW(exc);
+                  }
+                  break;
+
                case 'B':
                   hmonth = true;
-                  imonth = asInt(itr->second);
+                  imonth = CivilTime::monthLong(itr->second);
+                  if (imonth < 1)
+                  {
+                        ///@todo use a more appropriate exception class
+                     Exception
+                        exc("Invalid month name: " + itr->second);
+                     GPSTK_THROW(exc);
+                  }
                   break;
 
                case 'Y':
-               case 'y':
                   hyear = true;
                   iyear = asInt(itr->second);
+                  break;
+
+               case 'y':
+                  hyear = true;
+                     // match the POSIX strptime() function:
+                     /* Year within century. When a century is not
+                      * otherwise specified, values in the range 69-99
+                      * refer to years in the twentieth century (1969
+                      * to 1999 inclusive); values in the range 00-68
+                      * refer to years in the twenty-first century
+                      * (2000 to 2068 inclusive). */
+                  if( itr->second.length() > 2)
+                  {
+                        ///@todo use a more appropriate exception class
+                     Exception
+                        exc("Invalid format for %y: expected 2 digits");
+                     GPSTK_THROW(exc);
+                  }
+                  iyear = asInt( itr->second );
+                  if (iyear >= 69)
+                     iyear += 1900;
+                  else
+                     iyear += 2000;
                   break;
 
                case 'a':
@@ -571,9 +613,20 @@ namespace gpstk
                   iepoch = asInt(itr->second);
                   break;
 
-               case 'R': hepoch = hbdse = true; iepoch = asInt(itr->second); break;
-               case 'T': hepoch = hgale = true; iepoch = asInt(itr->second); break;
-               case 'V': hepoch = hqzse = true; iepoch = asInt(itr->second); break;
+               case 'R':
+                  hepoch = hbdse = true;
+                  iepoch = asInt(itr->second);
+                  break;
+
+               case 'T':
+                  hepoch = hgale = true;
+                  iepoch = asInt(itr->second);
+                  break;
+
+               case 'V':
+                  hepoch = hqzse = true;
+                  iepoch = asInt(itr->second);
+                  break;
 
                case 'D': hfullweek = hbdsfw = true; break;
                case 'e': hweek = hbdsw = true; break;
@@ -594,7 +647,7 @@ namespace gpstk
          bool hqzs(hqzse || hqzsfw || hqzsw);
 
             // We'll copy this time to 't' after all of the processing.
-         CommonTime ct;
+         CommonTime ct(t);
          ct.setTimeSystem(t.getTimeSystem());
          
             // Go through all of the types in order of least precise to most
@@ -608,6 +661,7 @@ namespace gpstk
             else ptt = new GPSWeekSecond(ct);
             ptt->setEpoch( iepoch );
             ct = ptt->convertToCommonTime();
+            delete ptt;
          }
          
          if( hyear )
@@ -632,9 +686,10 @@ namespace gpstk
             else if(hgal) ptt = new GALWeekSecond();
             else ptt = new GPSWeekSecond();
 
-            //When if( hfullweek ) is the first if entered in the list of if's
-            //the conversion of CommonTime to WeekSecond causes an InvalidParameter
-            //error. The following if-else is a workaround.
+            //When if( hfullweek ) is the first if entered in the list
+            //of if's the conversion of CommonTime to WeekSecond
+            //causes an InvalidParameter error. The following if-else
+            //is a workaround.
 	    if (ct == CommonTime::BEGINNING_OF_TIME)
             {
               ptt->week = ifullweek;
@@ -646,6 +701,7 @@ namespace gpstk
             }
 
             ct = ptt->convertToCommonTime();
+            delete ptt;
          }
          
          if( hweek )
@@ -657,6 +713,7 @@ namespace gpstk
             else ptt = new GPSWeekSecond(ct);
             ptt->setModWeek(iweek);
             ct = ptt->convertToCommonTime();
+            delete ptt;
          }
          
          if( hdow )
@@ -668,6 +725,7 @@ namespace gpstk
             else ptt = new GPSWeekSecond(ct);
             ptt->sow = static_cast<double>(idow) * SEC_PER_DAY;
             ct = ptt->convertToCommonTime();
+            delete ptt;
          }
          
          if( hday )
@@ -721,6 +779,7 @@ namespace gpstk
             else ptt =  new GPSWeekSecond(ct);
             ptt->sow = isow;
             ct = ptt->convertToCommonTime();
+            delete ptt;
          }
          
          if( hsod )
