@@ -1833,11 +1833,68 @@ namespace gpstk
 
       // This method maps v2.11 Galileo observation types to the v3 equivalent.
       // Since only Galileo and only v2.11 are of interest no L2 types
-      // are considered.
+      // are considered.  Furthermore, Rinex v2.11 states that there is no
+      // P for Galileo.  (Where that leaves the PRS is a good question.)
+      //
+      // In RINEX v3, there are 3-5 tracking codes defined for each carrier. 
+      // Given the current lack of experience, the code makes some 
+      // guesses on what the v2.11 translations should mean.   
    vector<RinexObsID> Rinex3ObsHeader::mapR2ObsToR3Obs_E()
                       throw(FFStreamError)
    {
       vector<RinexObsID> obsids;
+
+      string code1 = "B";  // Corresponds to the open service
+      string code5 = "I";  // Corresponds to the open service
+      string code7 = "X";  // Corresponds to I + Q tracking
+      string code8 = "X";  // Corresponds to I + Q tracking
+      string code6 = "X";  // Corresponds to B + C tracking
+
+      string syss("E");     
+      for(size_t j=0; j<R2ObsTypes.size(); ++j)
+      {
+         string ot(R2ObsTypes[j]);
+         string obsid(syss);
+         if      (ot == "C1") obsid += "C1" + code1;
+         else if (ot == "L1") obsid += "L1" + code1;
+         else if (ot == "D1") obsid += "D1" + code1;
+         else if (ot == "S1") obsid += "S1" + code1;
+               
+         else if (ot == "C5") obsid += "C5" + code5;
+         else if (ot == "L5") obsid += "L5" + code5;
+         else if (ot == "D5") obsid += "D5" + code5;
+         else if (ot == "S5") obsid += "S5" + code5;
+
+         else if (ot == "C6") obsid += "C6" + code6;
+         else if (ot == "L6") obsid += "L6" + code6;
+         else if (ot == "D6") obsid += "D6" + code6;
+         else if (ot == "S6") obsid += "S6" + code6;
+               
+         else if (ot == "C7") obsid += "C7" + code7;
+         else if (ot == "L7") obsid += "L7" + code7;
+         else if (ot == "D7") obsid += "D7" + code7;
+         else if (ot == "S7") obsid += "S7" + code7;
+               
+         else if (ot == "C8") obsid += "C8" + code8;
+         else if (ot == "L8") obsid += "L8" + code8;
+         else if (ot == "D8") obsid += "D8" + code8;
+         else if (ot == "S8") obsid += "S8" + code8;
+
+            // If the obs type isn't valid for Galileo, skip it.
+         else continue;
+         
+         try
+         {
+            RinexObsID OT(obsid);
+            obsids.push_back(OT);
+            mapSysR2toR3ObsID[syss][ot] = OT; //map<string, map<string, RinexObsID> >
+         }
+         catch(InvalidParameter& ip)
+         {
+            FFStreamError fse("InvalidParameter: "+ip.what());
+            GPSTK_THROW(fse);
+         }
+      }
       return obsids;
    }
 
@@ -1849,43 +1906,44 @@ namespace gpstk
                       throw(FFStreamError)
    {
       vector<RinexObsID> obsids;
+
+      string code1 = "C";  // Only option
+      string code5 = "X";  // Corresponds to I + Q tracking
+
+      string syss("S");     
+      for(size_t j=0; j<R2ObsTypes.size(); ++j)
+      {
+         string ot(R2ObsTypes[j]);
+         string obsid(syss);
+         if      (ot == "C1") obsid += "C1" + code1;
+         else if (ot == "L1") obsid += "L1" + code1;
+         else if (ot == "D1") obsid += "D1" + code1;
+         else if (ot == "S1") obsid += "S1" + code1;
+               
+         else if (ot == "C5") obsid += "C5" + code5;
+         else if (ot == "L5") obsid += "L5" + code5;
+         else if (ot == "D5") obsid += "D5" + code5;
+         else if (ot == "S5") obsid += "S5" + code5;
+
+            // If the obs type isn't valid for SBAS, skip it.
+         else continue;
+         
+         try
+         {
+            RinexObsID OT(obsid);
+            obsids.push_back(OT);
+            mapSysR2toR3ObsID[syss][ot] = OT; //map<string, map<string, RinexObsID> >
+         }
+         catch(InvalidParameter& ip)
+         {
+            FFStreamError fse("InvalidParameter: "+ip.what());
+            GPSTK_THROW(fse);
+         }
+      }
       return obsids;
    }
-   
 
-/*
-               if      (ot == "C1") obsid += "C1C";
-               else if (ot == "P1") obsid += "C1" + code1;
-               else if (ot == "L1") obsid += "L1" + code1;
-               else if (ot == "D1") obsid += "D1" + code1;
-               else if (ot == "S1") obsid += "S1" + code1;
-               
-               else if (ot == "C2") obsid += "C2X";
-               else if (ot == "P2") obsid += "C2" + code2;
-               else if (ot == "L2") obsid += "L2" + code1;
-               else if (ot == "D2") obsid += "D2" + code2;
-               else if (ot == "S2") obsid += "S2" + code2;
-               
-               else if (ot == "C5") obsid += "C5X";
-               else if (ot == "L5") obsid += "L5X";
-               else if (ot == "D5") obsid += "D5X";
-               else if (ot == "S5") obsid += "S5X";
 
-               else if (ot == "C6") obsid += "C6X";
-               else if (ot == "L6") obsid += "L6X";
-               else if (ot == "D6") obsid += "D6X";
-               else if (ot == "S6") obsid += "S6X";
-               
-               else if (ot == "C7") obsid += "C7X";
-               else if (ot == "L7") obsid += "L7X";
-               else if (ot == "D7") obsid += "D7X";
-               else if (ot == "S7") obsid += "S7X";
-               
-               else if (ot == "C8") obsid += "C8X";
-               else if (ot == "L8") obsid += "L8X";
-               else if (ot == "D8") obsid += "D8X";
-               else if (ot == "S8") obsid += "S8X";
-*/
    CivilTime Rinex3ObsHeader::parseTime(const string& line) const
    {
       int year, month, day, hour, min;
