@@ -156,7 +156,7 @@ void RMWDiff::process()
       list<RinexMetData>::iterator itr = difflist.first.begin();
       while (itr != difflist.first.end())
       {
-         (*itr).dump(cout << '<');
+         cout << '<' << itr->stableText();
          itr++;
       }
 
@@ -165,7 +165,7 @@ void RMWDiff::process()
       itr = difflist.second.begin();
       while (itr != difflist.second.end())
       {
-         (*itr).dump(cout << '>');
+         cout << '>' << itr->stableText();
          itr++;
       }
 

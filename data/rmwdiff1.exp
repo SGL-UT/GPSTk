@@ -1,7 +1,7 @@
 Comparing the following fields (other header data is ignored):
 PR TD HR 
 <   15  7 19  0  0  0
-  PR 986
+  PR 986.0
   TD 38.8
   HR 34.8
 <   15  7 19  0 15  0
@@ -22,7 +22,7 @@ PR TD HR
   TD 35.1
   HR 41.5
 >   15  7 19  1 15  0
-  PR 986
+  PR 986.0
   TD 34.5
   HR 42.5
 >   15  7 19  1 30  0

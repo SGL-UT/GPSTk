@@ -72,3 +72,68 @@ add_test(NAME rmwdiff_Diff_5
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testdiff.cmake)
+
+
+###############################################################################
+# TEST rnwdiff
+###############################################################################
+
+# check that -h option is valid
+add_test(NAME rnwdiff_CmdOpt_1
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:rnwdiff>
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testhelp.cmake)
+
+# check that rnwdiff fails with missing files
+add_test(NAME rnwdiff_CmdOpt_2
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:rnwdiff>
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/testmissing.cmake)
+
+# check differences where there is no overlap in time
+add_test(NAME rnwdiff_Diff_1
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:rnwdiff>
+         -DFILE1=arlm200a.15n
+         -DFILE2=arlm200b.15n
+         -DTESTBASE=rnwdiff1
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/testdiff.cmake)
+
+# check differences where there are none
+add_test(NAME rnwdiff_Diff_2
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:rnwdiff>
+         -DFILE1=arlm2000.15n
+         -DFILE2=arlm2001.15n
+         -DTESTBASE=rnwdiff2
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/testsame.cmake)
+
+# check differences where there is time overlap and some data differences
+add_test(NAME rnwdiff_Diff_3
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:rnwdiff>
+         -DFILE1=arlm200a.15n
+         -DFILE2=arlm200z.15n
+         -DTESTBASE=rnwdiff3
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/testdiff.cmake)
+
+# check differences where one file is invalid
+add_test(NAME rnwdiff_Diff_4
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:rnwdiff>
+         -DFILE1=arlm200a.15o
+         -DFILE2=arlm200z.15n
+         -DTESTBASE=rnwdiff4
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/testfail.cmake)

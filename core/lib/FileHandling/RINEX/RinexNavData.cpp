@@ -152,6 +152,19 @@ namespace gpstk
       getBroadcastOrbit7(line);
    }
 
+   std::string RinexNavData::stableText() const
+   {
+      ostringstream s;
+      CivilTime t(time);
+      s << "PRN: " << setw(2) << PRNID
+        << " TOE: " << t.printf("%02m/%02d/%04Y %02H:%02M:%02S")
+        << " TOC: " << setw(4) << weeknum << " "
+        << fixed << setw(10) << setprecision(3) << Toc
+        << " IODE: " << setw(4) << int(IODE)            // IODE should be int
+        << " HOWtime: " << setw(6) << HOWtime;          // HOW should be double
+      return s.str();
+   }
+
    void RinexNavData::dump(ostream& s) const
    {
       s << "PRN: " << setw(2) << PRNID
@@ -302,10 +315,23 @@ namespace gpstk
       throw(StringException)
    {
       string line;
-      CivilTime civTime(time);
-      
       line += rightJustify(asString(PRNID), 2);
+      line += writeTime(time);
       line += string(1, ' ');
+      line += doub2for(af0, 18, 2);
+      line += string(1, ' ');
+      line += doub2for(af1, 18, 2);
+      line += string(1, ' ');
+      line += doub2for(af2, 18, 2);
+      return line;
+   }
+
+   string RinexNavData::writeTime(const CommonTime& dt) const
+      throw(StringException)
+   {
+         //line += rightJustify(asString(PRNID), 2);
+      string line(" ");
+      CivilTime civTime(dt);
          // year is padded with 0s but none of the rest are
       line += rightJustify(asString<short>(civTime.year), 2, '0');
       line += string(1, ' ');
@@ -317,12 +343,6 @@ namespace gpstk
       line += string(1, ' ');
       line += rightJustify(asString<short>(civTime.minute), 2);
       line += rightJustify(asString(civTime.second, 1), 5);
-      line += string(1, ' ');
-      line += doub2for(af0, 18, 2);
-      line += string(1, ' ');
-      line += doub2for(af1, 18, 2);
-      line += string(1, ' ');
-      line += doub2for(af2, 18, 2);
       return line;
    }
 

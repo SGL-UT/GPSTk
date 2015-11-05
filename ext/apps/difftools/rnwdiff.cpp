@@ -89,9 +89,10 @@ void RNWDiff::process()
                 (firstitr->PRNID == seconditr->PRNID) &&
                 (firstitr->HOWtime == seconditr->HOWtime) )
             {
-               cout << fixed << setw(3) << static_cast<YDSTime>(firstitr->time) << ' ' 
+               YDSTime recTime(firstitr->time);
+               cout << fixed << setw(3) << recTime.doy << ' ' 
                     << setw(10) << setprecision(0)
-                    << static_cast<YDSTime>(firstitr->time) << ' ' 
+                    << recTime.sod << ' ' 
                     << setw(19) << setprecision(12) << scientific
                     << (firstitr->af0      - seconditr->af0) << ' '
                     << (firstitr->af1      - seconditr->af1) << ' '
@@ -139,7 +140,7 @@ void RNWDiff::process()
       list<RinexNavData>::iterator itr = difflist.first.begin();
       while (itr != difflist.first.end())
       {
-         (*itr).dump(cout << '<');
+         cout << '<' << itr->stableText() << endl;
          itr++;
       }
 
@@ -148,7 +149,7 @@ void RNWDiff::process()
       itr = difflist.second.begin();
       while (itr != difflist.second.end())
       {
-         (*itr).dump(cout << '>');
+         cout << '>' << itr->stableText() << endl;
          itr++;
       }
 

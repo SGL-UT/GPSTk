@@ -251,7 +251,7 @@ namespace gpstk
       }
 
       string line(" ");
-      CivilTime civtime(time);
+      CivilTime civtime(dt);
       line += rightJustify(asString<short>(civtime.year  ),2,'0');
       line += " ";
       line += rightJustify(asString<short>(civtime.month ),2);
@@ -277,6 +277,20 @@ namespace gpstk
          s << "  " << RinexMetHeader::convertObsType((*itr).first)
            << " " << (*itr).second << endl;
       }
+   }
+
+   string RinexMetData::stableText() const
+   {
+      ostringstream s;
+      s << "  " << writeTime(time) << endl;
+
+      RinexMetMap::const_iterator itr;
+      for(itr = data.begin(); itr != data.end(); itr++)
+      {
+         s << "  " << RinexMetHeader::convertObsType((*itr).first)
+           << " " << fixed << setprecision(1) << (*itr).second << endl;
+      }
+      return s.str();
    }
 
 }  // end of namespace

@@ -85,8 +85,15 @@ namespace gpstk
       virtual bool isData(void) const {return true;}
      
          /**
+          * Returns a string representation of the data in this record.
+          * Interface stability: Committed
+          */
+      virtual std::string stableText() const;
+
+         /**
           * A debug output function.
           * Prints the PRN id and the IODC for this record.
+          * Interface stability: Volatile
           */ 
       virtual void dump(std::ostream& s) const;
 
@@ -160,6 +167,9 @@ namespace gpstk
          //@}      
 
    private:
+         /// Writes the CommonTime object into RINEX format.
+      std::string writeTime(const CommonTime& dt) const
+         throw(gpstk::StringUtils::StringException);
          /// Parses string \a currentLine to obtain PRN id and epoch.
       void getPRNEpoch(const std::string& currentLine)
          throw(gpstk::StringUtils::StringException, FFStreamError);
