@@ -110,7 +110,7 @@ private:
       endTime.setTimeSystem(TimeSystem::Any);
       userfmt = gpsfmt;
       help = verbose = brief = nohead = notab = gpstime = sorttime = vistab
-         = dogaps = doms = false;
+         = dogaps = doms = ycode = false;
       debug = -1;
       dt = -1.0;
       vres = 0;
@@ -124,7 +124,7 @@ public:
    string Title;                 // id line printed to screen and log
 
    // start command line input
-   bool help, verbose, brief, nohead, notab, gpstime, sorttime, dogaps, doms, vistab;
+   bool help, verbose, brief, nohead, notab, gpstime, sorttime, dogaps, doms, vistab, ycode;
    int debug, vres;
    double dt;
    string cfgfile, userfmt;
@@ -434,7 +434,9 @@ string Configuration::BuildCommandLine(void) throw()
    opts.Add(0, "vtab", "", false, false, &vistab, "",
             "Print tabular visibility [req's --gaps and --vis]");
 
-   opts.Add(0, "verbose", "", false, false, &verbose, "# Other:",
+   opts.Add(0, "ycode", "", false, false, &ycode, "# Other:",
+            "Assume v2.11 P mean Y");
+   opts.Add(0, "verbose", "", false, false, &verbose, "",
             "Print extra output information");
    opts.Add(0, "debug", "", false, false, &debug, "",
             "Print debug output at level 0 [debug<n> for level n=1-7]");
@@ -591,6 +593,14 @@ try {
       Rinex3ObsHeader Rhead, Rheadout;
       Rinex3ObsData Rdata;
 
+         // If command line specified P1/P2 are to be considered
+         // as Y-code, set the Rinex3ObsHeader flag to indicate such.
+      if (C.ycode)
+      {
+          Rhead.PisY = true;
+          Rheadout.PisY = true;
+      }
+      
       cacheon = false;
       cache.clear(); cachetime.clear();
 
