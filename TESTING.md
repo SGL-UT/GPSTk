@@ -1,347 +1,276 @@
 Testing of the GPSTk Library
 ----------------------------
 
-Contents:
----------
-
-* Introduction
-* UNIX-like Environment: Testing Procedure
-* UNIX-like Environment: Automated Build and Test
-* UNIX-like Environment: Manual Build and Test
-* OSX and XCode: Testing Procedure
-* Windows and Microsoft Visual Studio: Testing Procedure
-* CTest Developer Testing Commands
-* Unit Test Guidelines
-* Writing New Unit Tests
-
-
-Introduction:
--------------
-
+Introduction
+------------
 As an open source project, the source of the GPSTk is subject to intermittent updates, contributions, 
 and corrections. The GPSTk library testing process has been redesigned to build confidence in the 
 functionality of the library. Testing within the GPSTk library is designed with the following distinct goals 
 in mind:
 	
-	Testing is repeatable with a low amount of effort.
-	Testing is distributed along with the library to support both internal testing and 
-     to assure outside users and contributors of the quality of the library.
-	Testing is designed to accommodate easy additions to the existing test suite.
-  Testing is implemented to ensure changes have not broken functionality.
+* Testing is repeatable with a low amount of effort.
+* Testing is distributed along with the library to support both internal testing and to assure outside users and contributors of the quality of the library.
+* Testing is designed to accommodate easy additions to the existing test suite.
+* Testing is implemented to ensure changes have not broken functionality.
 
-Currently, the test suite is only supported for UNIX-like environments.
+All testing is performed using cmake/ctest. This allows the testing to function on all supported platforms.
 
+The goal is to have some level of testing performed on all classes and applications in the GPSTk core. It is
+encouraged that tests be written for all developed code whether it be in the core or ext. In general an 'entrance
+criteria' for code to be included in the core is that it is tested and stable.
 
-UNIX-like Environment: Testing Procedure:
------------------------------------------
 
-There are two main methods for running the GPSTk test suite in a UNIX-like Environment:
-
-	Automated build and test utilizing the build.sh script
-	Manual build and test utilizing CMake and CTest
-
-
-UNIX-like Environment: Automated Build and Test:
-------------------------------------------------
-
-If you prefer automation, run the build.sh script.
-
-Typical test build without install will look like this:
-	
-	$ ./build.sh -et
-
-
-Typical test build with install will look like this:
-
-    $ export LD_LIBRARY_PATH=/tmp/test/lib:$LD_LIBRARY_PATH
-
-    $ ./build.sh -et -i /tmp/test
-
-
-To run a detailed test report after after build, install, and test:
-
-    $ ./test-report.sh
-
-
-UNIX-like Environment: Manual Build and Test:
----------------------------------------------
-
-To manually build and test the GPSTk, follow the following steps:
-
-   1. Create a directory for your build:
-
-         $ cd $gpstk_root
-
-         $ mkdir $gpstk_root/build
-
-   2. Change into the $gpstk_root/build directory, this will be where all of the
-      build files will reside.
-
-   3. To build the GPSTk, execute the following commands:
-
-         $ cd $gpstk_root/build
-
-         $ cmake -DTEST_SWITCH=ON $gpstk_root
-
-         $ make
-   
-   4. To run the GPSTk test suite:
-
-   		 $  make test
-
-   		 	or
-
-   		 $ ctest
-
-   5. To run a test report:
-
-       $ cd $gpstk_root
-
-       $ ./test-report.sh
-
-
-OSX and XCode: Testing Procedure:
----------------------------------
-
-For development in Terminal, the above Unix-like Environment methods (automated/manual) can be used.
-
-Step-by-step procedure with pictures on building, installing, and testing the GPSTk under Xcode can 
-be found at gpstk.org:
-
-    http://www.gpstk.org/bin/view/Documentation/BuildingGPSTkUnderOSX 
-
-
-Windows and Microsoft Visual Studio: Testing Procedure:
--------------------------------------------------------
-
-Step-by-step procedure with pictures on building, installing, and testing the GPSTk under Visual 
-Studio 2012 can be found at gpstk.org:
-
-    http://www.gpstk.org/bin/view/Documentation/BuildingGPSTkUnderWindows
-
-
-CTest Developer Testing Commands:
----------------------------------
-
-Developers may not want to run the full suite of GPSTk tests, as outlined in the previous sections. 
-CTest supports multiple methods to specify subset of tests to list, run, & omit.
-
-	To determine what tests are available in list format without running them:
-         
-         $ ctest -N
-
-    To run an individual test, specify the exact test name. For example:
-
-         $ ctest TestRinexHeader
-
-    To run one or more tests that match a regular expression, use the -R option. For example:
-
-         $ ctest -R Rinex
-
-    To omit one or more tests that match a regular expression, use the -E option. For example:
-
-         $ ctest -E Python     
-
-    To run tests using explicit test numbers, use option -I.  For example:
-
-         Format: -I [Start,End,Stride,test#,test#|Test file]
-
-         To run tests 3 - 5:
-         	
-         	$ ctest -I 3,5
-
-         To specify stride:
-
-         	$ ctest -I ,,3
-
-         To run individual tests:
-
-         	$ ctest -I 4,4,,4,7,13
-
-
-Unit Testing Guidelines:
-------------------------
-
-Guidelines for writing unit tests can be found at:
-
-  http://sglwiki/bin/view/GPSTk/GPSTk_UnitTesting
-
-For Unit Testing styles/tools, refer to /core/lib/TestFramework/TestUtil.hpp. 
-
-
-Writing New Unit Tests:
------------------------
-
-----------------------
-Current Test Structure
-----------------------
-
-   * Tests are run using CTest tools directly or as a part of the build process. For more information on 
-      running the tests refer to the above sections in this document.
-   * Unit tests for a particular GPSTk library class are often organized in a single cpp file titled by 
-      the GPSTk library class with a _T.cpp appended.
-   * The individual cpp files are broken into two parts, a test class to test the GPSTk library class and 
-      a main() segment to run those tests.
-   * The test class is organized into multiple public methods in which each method contains multiple 
-      assertions which test a particular feature of the GPSTk library class under test.
-   * The test class might inherit from the GPSTk library class in order to access protected members for 
-      direct checking of values.
-   * To facilitate reporting to the testing logs, GPSTk uses its own TestUtil class.
-   * TestUtil provides standardized output containing information on the GPSTk library class being tested, 
-      feature of class being tested, test file name, line number of test in that file, pass/fail bit, and 
-      a failure message should the test have failed. It also provides the number of failures to the main() 
-      portion of the test cpp file.
-   * The main() portion of the code creates the test class object and executes its methods. It then tallies 
-      the number of failures and reports it to the screen/log.
-
-
+How to execute unit tests
 -------------------------
-Example Test File
--------------------------
+1. Using build.sh
+   * `$ cd ~/git/gpstk`
+   * `$ build.sh -te`
+1. Manually
+   * `$ cd ~/git/gpstk/build`
+   * `$ cmake .. -DTEST_SWITCH=ON`
+   * `$ make`
+   * `$ ctest`
 
-  #include "Foo.hpp"
-  #include "Exception.hpp"
-  #include "TestUtil.hpp"
-  #include <iostream>
+How to debug the unit test results
+----------------------------------
+1. Run ctest with -V option
+1. Examine the test.log generated by build.sh in the build directory
+1. Examine the detailed log generated by ctest
+   * build/Testing/Temporary/LastTest.log
+1. Run a test report:
+   * `$ cd ~/git/gpstk`
+   * `$ test-report.sh`
 
+How to write application tests
+------------------------------
+1. Write a cmake sytax script to test the program and stor it in the core/tests/dir where dir corresponds to the core/apps/dir where the program source resides. Name the file after the tet that is being run. 
+1. Add the test to the CMakeLists.txt file in the same dir.
+1. Add any required source data to gpstk/data
+1. Add any required reference output data to gpstk/data (make the file name have something to
+do with the application that is being tested)
 
-  // Foo_T is the test class for the Foo class.
-  // The Test class is designed to be a container for test methods. The test methods
-  // will then run the single unit test assertions. 
-  class Foo_T : public gpstk::Foo
-  {
-      public:
-    //------------------------------------------------------------
-    // Default Constructor for the Test class
-    //------------------------------------------------------------
-    Foo_T()
-    {
-        eps = 1e-14;
-    }
+How to write class unit tests
+-----------------------------
+1. Write a C++ program in core/tests/... or ext/tests/...
+   * File name starts with class name and ends with _T before the ".cpp"
+1. Add any required data to gpstk/data
+1. Modify the CMakeLists.text to build and run the tests
 
-
-    //============================================================
-    // Test Suite: constructorTest()
-    //============================================================
-    //  Test to see if any of the constructors work as planned
-    //============================================================
-    int constructorTest( void )
-    {
-        //Create a TestUtil object to store relevant info about:
-        //      1) The class being tested
-        //      2) What method/feature of the class is being tested
-        //      3) Which test file is this? (For reporting in the logs)
-        //      4) Which TestUtil object to which the later assertions belong 
-
-        TestUtil testFramework( "Foo", "Constructor", __FILE__, __LINE__ );
-
-        //----------------------------------------
-        // Default Constructor test
-        //----------------------------------------
-        try
-        {
-            // Create a Foo object
-            Foo foo;
-            
-            // The below assert tests if the creation of the Foo object did not return an error and 
-            // it should not return an error, pass the assert with a true bit.
-            // Note that the assert still requires all 3 inputs: 1) The bool, 
-            // 2) The failure description, and 3) the line of the assert.
-            testFramework.assert( true, "Description that the constructor worked properly", __LINE__ );
-        }
-        catch(...)
-        {
-            // If the creation of the Foo object did returns an error and it should not return an error, 
-            fail the assert with a false bit.
-
-            testFramework.assert( false, "Description that the constructor could not create the object properly", __LINE__ );
-        }
-
-        //Return the number of failed tests
-        return testFramework.countFails();
-    }
-
-
-    //============================================================
-    // Test Suite: methodTest()
-    //============================================================
-    // These tests check to see if methods/features of the class
-    // work as intended
-    //
-    //
-    //
-    // For the purposes of this demonstration:
-    // Imagine that the Foo class has a method bar() which should 
-    // return true by default and a method getX() which is returns
-    // a double that is always less than 100.0.
-    //============================================================
-    int constructorTest( void )
-    {
-        TestUtil testFramework( "Foo", "bar", __FILE__, __LINE__ );
-
-        double diff;
-        Foo foo;
-
-        // The assert line to check if bar() does indeed return true would look like:
-        testFramework.assert(foo.bar(), "Error Message describing how/that bar() returned false", __LINE__)
-
-        // If multiple class methods are tested in the same block you can change the method name.
-        testFramework.changeSourceMethod("getX")
-
-        // The assert line to check if x fits within its necessary bound would look like:
-        diff = fabs(100.0 - foo.getX())/100.0;
-        testFramework.assert(diff < eps, "Error Message describing how x is greater than 100.0", __LINE__)
-
-
-        //Return the number of failed tests
-        return testFramework.countFails();
-    }
-
-     private:
-       double eps; //Tolerance for floating point differences
-  };
-
-
-  //============================================================
-  // Main function to initialize and run all tests above
-  //============================================================
-  int main( void )
-  {
-      int check, errorCounter = 0;
-      Foo_T testClass;
-
-      //----------------------------------------
-      // Run all test methods
-      //----------------------------------------
-
-      check = testClass.constructorTest();
-      errorCounter += check;
-
-      check = testClass.methodTest();
-      errorCounter += check;
-
-      //----------------------------------------
-      // Echo total fails to stdout
-      //----------------------------------------
-      std::cout << "Total Failures for " << __FILE__ << ": " << errorCounter << std::endl;
-
-      //----------------------------------------
-      // Return total fails
-      //----------------------------------------
-      return errorCounter;
-  }
-
-
+Current test structure
 ----------------------
-Example Test Output
-----------------------
+* Unit tests for a particular GPSTk library class are often organized in a single cpp file titled by 
+  the GPSTk library class with a _T.cpp appended.
+* Unit test files are kept in gpstk/core/tests and gpstk/ext/tests
+* The individual cpp files are broken into two parts, a test class to test the GPSTk library class and 
+  a main() segment to run those tests.
+* The test class is organized into multiple public methods in which each method contains multiple 
+  assertions which test a particular feature of the GPSTk library class under test.
+* The test class might inherit from the GPSTk library class in order to access protected members for 
+    direct checking of values.
+* To facilitate reporting to the testing logs, GPSTk uses its own TestUtil class.
+* TestUtil provides standardized output containing information on the GPSTk library class being tested, 
+  feature of class being tested, test file name, line number of test in that file, pass/fail bit, and 
+  a failure message should the test have failed. It also provides the number of failures to the main() 
+  portion of the test cpp file.
+* The main() portion of the code creates the test class object and executes its methods. It then tallies 
+  the number of failures and reports it to the screen/log.
+* Data for testing is located in the gpstk/data directory. Only place data in there that is publicly releasable.
+* The file build_config.h.in is configured by the cmake process to define some functions to allow C++ programs
+to find this data after they are compiled.
+* The CMAKE variable GPSTK_TEST_DATA_DIR can be used to find the data from cmake
+* Applications are tested by using ctest/cmake in some clever ways. This allows the tests to not require any other scripting tools (bash/sed/diff) to perfom the tests.
 
-Presuming that the default constructor works properly, the bar() method returns false, and the getX method functions, the output will look like:
+Examples
+--------
+### Application Test Example
+This illustrates one test on the rmwdiff application. It requires three files 
+to be in the gpstk/data dir. Two rinex met files; arlm200a.15m and arlm200b.15m,
+and an expected output file; rmwdiff1.exp.
+#### gpstk/ext/tests/difftools/CMakeLists.txt:
+```
+...
+# check differences where there is no overlap in time
+add_test(NAME rmwdiff_Diff_1
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:rmwdiff>
+         -DFILE1=arlm200a.15m
+         -DFILE2=arlm200b.15m
+         -DTESTBASE=rmwdiff1
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/testdiff.cmake)
+...
+```
+
+####gpstk/core/tests/difftools/testdiff.cmake:
+
+```
+# test that files differ
+
+execute_process(COMMAND ${TEST_PROG} ${SOURCEDIR}/${FILE1} ${SOURCEDIR}/${FILE2}
+                OUTPUT_FILE ${TARGETDIR}/${TESTBASE}.out
+                RESULT_VARIABLE HAD_ERROR)
+# files are expected to be different
+if(!HAD_ERROR)
+    message(FATAL_ERROR "Test failed")
+endif()
+
+execute_process(COMMAND ${CMAKE_COMMAND} -E compare_files
+    ${TARGETDIR}/${TESTBASE}.out ${SOURCEDIR}/${TESTBASE}.exp
+    RESULT_VARIABLE DIFFERENT)
+if(DIFFERENT)
+    message(FATAL_ERROR "Test failed - files differ")
+endif()```
 
 
-  GpstkTest, Class=Foo, Method=Constructor, testFile=Foo_T.cpp, testLine=49, subtest=1, failBit=0
-  GpstkTest, Class=Foo, Method=bar, testFile=Foo_T.cpp, testLine=83, subtest=1, failBit=1, testMsg=Error Message describing how/that bar() returned false
-  GpstkTest, Class=Foo, Method=getX, testFile=Foo_T.cpp, testLine=90, subtest=2, failBit=0
-  Total Failures for /home/nfitz/git/gpstk/core/tests/TimeHandling/ANSITime_T.cpp: 1
 
+### Class Unit Test Example
+#### gpstk/core/tests/Utilities/CMakelists.txt:
+```
+...
+add_executable(ValidType_T ValidType_T.cpp)
+target_link_libraries(ValidType_T gpstk)
+add_test(Utilities_ValidType ValidType_T)
+...
+```
 
+#### gpstk/core/tests/Utilities/ValidType_T.cpp:
+
+```
+#include "ValidType.hpp"
+#include "TestUtil.hpp"
+#include <iostream>
+#include <string>
+#include <sstream>
+#include <cmath>
+
+class ValidType_T
+{
+public: 
+   ValidType_T(){ eps = 1E-12;}// Default Constructor, set the precision value
+   ~ValidType_T() {} // Default Desructor
+
+   int methodTest(void)
+   {
+      TestUtil testFramework( "ValidType", "Various Methods", __FILE__, __LINE__ );
+      std::string failMesg;
+
+      gpstk::ValidType<float> vfloat0;
+
+      failMesg = "Is the invalid Valid object set as valid?";
+      testFramework.assert(!vfloat0.is_valid(), failMesg, __LINE__);
+
+      failMesg = "Is the invalid Valid object's value 0?";
+      testFramework.assert(std::abs(vfloat0.get_value()) < eps, failMesg, __LINE__);
+
+      gpstk::ValidType<float> vfloat (5);
+
+      failMesg = "Does the get_value method return the correct value?";
+      testFramework.assert(vfloat.get_value() == 5, failMesg, __LINE__);
+
+      failMesg = "Is the valid Valid object set as valid?";
+      testFramework.assert(vfloat.is_valid(), failMesg, __LINE__);
+
+      vfloat.set_valid(false);
+
+      failMesg = "Was the valid Valid object correctly set to invalid?";
+      testFramework.assert(!vfloat.is_valid(), failMesg, __LINE__);
+
+      return testFramework.countFails();
+   }
+
+   int operatorTest(void)
+   {
+      TestUtil testFramework( "ValidType", "== Operator", __FILE__, __LINE__ );
+      std::string failMesg;
+
+      gpstk::ValidType<float> Compare1 (6.);
+      gpstk::ValidType<float> Compare2 (6.);
+      gpstk::ValidType<float> Compare3 (8.);
+      gpstk::ValidType<int> Compare4 (6);
+      gpstk::ValidType<float> vfloat;
+
+      failMesg = "Are two equvalent objects equal?";
+      testFramework.assert(Compare1 == Compare2, failMesg, __LINE__);
+
+      failMesg = "Are two non-equvalent objects equal?";
+      testFramework.assert(Compare1 != Compare3, failMesg, __LINE__);
+
+      vfloat = 7.;
+
+      testFramework.changeSourceMethod("= Operator");
+      failMesg = "Did the = operator store the value correctly?";
+      testFramework.assert(vfloat.get_value() == 7., failMesg, __LINE__);
+
+      failMesg = "Did the = operator set the object as valid?";
+      testFramework.assert(vfloat.is_valid(), failMesg, __LINE__);
+
+      testFramework.changeSourceMethod("+= Operator");
+
+      vfloat += 3.;
+      failMesg = "Did the += operator store the value correctly?";
+      testFramework.assert(vfloat.get_value() == 10., failMesg, __LINE__);
+
+      failMesg = "Did the += operator change the object's valid bool?";
+      testFramework.assert(vfloat.is_valid(), failMesg, __LINE__);		
+
+      testFramework.changeSourceMethod("-= Operator");
+
+      vfloat -= 5.;
+
+      failMesg = "Did the -= operator store the value correctly?";
+      testFramework.assert(vfloat.get_value() == 5., failMesg, __LINE__);
+
+      failMesg = "Did the -= operator change the object's valid bool?";
+      testFramework.assert(vfloat.is_valid(), failMesg, __LINE__);
+
+      testFramework.changeSourceMethod("<< Operator");
+
+      vfloat = 11;
+
+      std::stringstream streamOutput;
+      std::string stringOutput;
+      std::string stringCompare;
+
+      streamOutput <<  vfloat;
+      stringOutput = streamOutput.str();
+
+      stringCompare = "11";
+
+      failMesg = "Did the << operator ouput valid object correctly?";
+      testFramework.assert(stringCompare == stringOutput, failMesg, __LINE__);
+
+      streamOutput.str("");	// Resetting stream
+      vfloat.set_valid(false);
+
+      streamOutput << vfloat;
+      stringOutput = streamOutput.str();
+
+      stringCompare = "Unknown";
+
+      failMesg = " Did the << operator output invalid object correctly?";
+      testFramework.assert(stringCompare == stringOutput, failMesg, __LINE__);
+
+      return testFramework.countFails();
+   }
+
+private:
+   double eps;
+};
+
+int main() //Main function to initialize and run all tests above
+{
+	int check = 0, errorCounter = 0;
+	ValidType_T testClass;
+
+	check = testClass.methodTest();
+	errorCounter += check;
+
+	check = testClass.operatorTest();
+	errorCounter += check;
+
+	std::cout << "Total Failures for " << __FILE__ << ": " << errorCounter << std::endl;
+
+	return errorCounter; //Return the total number of errors
+}
+```
