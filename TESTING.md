@@ -1,15 +1,15 @@
-Testing of the GPSTk Library
-----------------------------
+Testing of the GPSTk
+--------------------
 
 Introduction
 ------------
 As an open source project, the source of the GPSTk is subject to intermittent updates, contributions, 
-and corrections. The GPSTk library testing process has been redesigned to build confidence in the 
-functionality of the library. Testing within the GPSTk library is designed with the following distinct goals 
+and corrections. The GPSTk testing process has been redesigned to build confidence in the 
+functionality of the. Testing within the GPSTk is designed with the following distinct goals 
 in mind:
 	
 * Testing is repeatable with a low amount of effort.
-* Testing is distributed along with the library to support both internal testing and to assure outside users and contributors of the quality of the library.
+* Testing is distributed along with the source to support both internal testing and to assure outside users and contributors of the quality of the library.
 * Testing is designed to accommodate easy additions to the existing test suite.
 * Testing is implemented to ensure changes have not broken functionality.
 
