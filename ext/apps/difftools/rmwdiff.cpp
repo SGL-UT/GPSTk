@@ -49,6 +49,10 @@ using namespace gpstk;
 class RMWDiff : public DiffFrame
 {
 public:
+      /// Input file does not exist exit code
+   static const int EXIST_ERROR = 2;
+      /// Differences found in input files
+   static const int DIFFS_CODE = 1;
    RMWDiff(char* arg0)
          : DiffFrame(arg0, 
                      std::string("RINEX Met"))
@@ -81,8 +85,9 @@ void RMWDiff::process()
       {
          cerr << "Check that files exist." << endl;
          cerr << "diff failed." << endl;
-         exit(1);
-      }
+         exitCode = EXIST_ERROR;
+         return;
+     }
 
       merged(ff1.frontHeader());
       merged(ff2.frontHeader());
@@ -112,7 +117,14 @@ void RMWDiff::process()
          ff1.diff(ff2, RinexMetDataOperatorLessThanFull(intersection));
 
       if (difflist.first.empty() && difflist.second.empty())
-         exit(0);
+      {
+            // no differences
+         exitCode = 0;
+         return;
+      }
+
+         // differences found
+      exitCode = DIFFS_CODE;
 
       list<RinexMetData>::iterator firstitr = difflist.first.begin();
       while (firstitr != difflist.first.end())
@@ -172,18 +184,21 @@ void RMWDiff::process()
    }
    catch(Exception& e)
    {
+      exitCode = BasicFramework::EXCEPTION_ERROR;
       cout << e << endl
            << endl
            << "Terminating.." << endl;
    }
    catch(std::exception& e)
    {
+      exitCode = BasicFramework::EXCEPTION_ERROR;
       cout << e.what() << endl
            << endl
            << "Terminating.." << endl;
    }
    catch(...)
    {
+      exitCode = BasicFramework::EXCEPTION_ERROR;
       cout << "Unknown exception... terminating..." << endl;
    }
 }
@@ -195,11 +210,11 @@ int main(int argc, char* argv[])
    {
       RMWDiff m(argv[0]);
       if (!m.initialize(argc, argv))
-         return 0;
+         return m.exitCode;
       if (!m.run())
-         return 1;
+         return m.exitCode;
       
-      return 0;
+      return m.exitCode;
    }
    catch(Exception& e)
    {
@@ -213,5 +228,6 @@ int main(int argc, char* argv[])
    {
       cout << "unknown error" << endl;
    }
-   return 1;
+      // only reach this point if an exception was caught
+   return BasicFramework::EXCEPTION_ERROR;
 }

@@ -9,7 +9,7 @@ if(!HAD_ERROR)
 endif()
 
 execute_process(COMMAND ${CMAKE_COMMAND} -E compare_files
-    ${TARGETDIR}/${TESTBASE}.out ${SOURCEDIR}/${TESTBASE}.exp
+    ${SOURCEDIR}/${TESTBASE}.exp ${TARGETDIR}/${TESTBASE}.out
     RESULT_VARIABLE DIFFERENT)
 if(DIFFERENT)
     message(FATAL_ERROR "Test failed - files differ")

@@ -249,9 +249,9 @@ identFile(const string& fname, FFData*& hdr)
 
 int main(int argc, char* argv[])
 {
-   RinexHeaderDiff m(argv[0]);
    try
    {
+      RinexHeaderDiff m(argv[0]);
       if (!m.initialize(argc, argv))
          return m.exitCode;
       if (!m.run())
@@ -262,16 +262,15 @@ int main(int argc, char* argv[])
    catch(Exception& e)
    {
       cout << e << endl;
-      m.exitCode = BasicFramework::EXCEPTION_ERROR;
    }
    catch(std::exception& e)
    {
       cout << e.what() << endl;
-      m.exitCode = BasicFramework::EXCEPTION_ERROR;
    }
    catch(...)
    {
       cout << "unknown error" << endl;
    }
-   return m.exitCode;
+      // only reach this point if an exception was caught
+   return BasicFramework::EXCEPTION_ERROR;
 }

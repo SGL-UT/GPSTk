@@ -50,6 +50,10 @@ using namespace gpstk;
 class ROWDiff : public DiffFrame
 {
 public:
+      /// Input file does not exist exit code
+   static const int EXIST_ERROR = 2;
+      /// Differences found in input files
+   static const int DIFFS_CODE = 1;
    ROWDiff(char* arg0)
       : DiffFrame(arg0,
                   std::string("RINEX Obs"))
@@ -76,7 +80,8 @@ void ROWDiff::process()
    {
       cerr << "Check that files exist." << endl;
       cerr << "diff failed." << endl;
-      exit(1);
+      exitCode = EXIST_ERROR;
+      return;
    }
 
    // determine whether the two input files have the same observation types
@@ -136,11 +141,15 @@ void ROWDiff::process()
    if (difflist.first.empty() && difflist.second.empty())
    {
       //Indicate to the user, before exiting, that rowdiff
-      //performed properly and no differenes were found.
+      //performed properly and no differences were found.
       cout << "For the observation types that were compared, "
            << "no differences were found." << endl;
-      exit(0);
+      exitCode = 0;
+      return;
    }
+
+      // differences found
+   exitCode = DIFFS_CODE;
 
    list<RinexObsData>::iterator firstitr = difflist.first.begin();
    if (verboseLevel)
@@ -193,7 +202,6 @@ void ROWDiff::process()
 
    list<RinexObsData>::iterator itr = difflist.first.begin();
 
-   cout << endl;
    if (verboseLevel)
       cout << "Epochs only in first file:" << endl;
    while (itr != difflist.first.end())
@@ -219,11 +227,11 @@ int main(int argc, char* argv[])
    {
       ROWDiff m(argv[0]);
       if (!m.initialize(argc, argv))
-         return 0;
+         return m.exitCode;
       if (!m.run())
-         return 1;
+         return m.exitCode;
 
-      return 0;
+      return m.exitCode;
    }
    catch(Exception& e)
    {
@@ -237,5 +245,6 @@ int main(int argc, char* argv[])
    {
       cout << "unknown error" << endl;
    }
-   return 1;
+      // only reach this point if an exception was caught
+   return BasicFramework::EXCEPTION_ERROR;
 }

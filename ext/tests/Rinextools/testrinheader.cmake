@@ -16,7 +16,19 @@ endif()
 
 
 # Check that headers are the same when excluding expected changes
-execute_process(COMMAND ${RINHEADDIFF} ${SOURCEDIR}/${INFILE} ${TARGETDIR}/${TESTBASE}.out -x \"PGM / RUN BY / DATE\" -x \"APPROX POSITION XYZ\" -x \"MARKER NUMBER\" -x \"MARKER NAME\" -x \"OBSERVER / AGENCY\"
+# Both of these sets of "set" directives seem to work under Solaris.
+# Not sure if portable.
+#set( EXCL1 PGM\ /\ RUN\ BY\ /\ DATE )
+#set( EXCL2 APPROX\ POSITION\ XYZ )
+#set( EXCL3 MARKER\ NUMBER )
+#set( EXCL4 MARKER\ NAME )
+#set( EXCL5 OBSERVER\ /\ AGENCY )
+set( EXCL1 "PGM / RUN BY / DATE" )
+set( EXCL2 "APPROX POSITION XYZ" )
+set( EXCL3 "MARKER NUMBER" )
+set( EXCL4 "MARKER NAME" )
+set( EXCL5 "OBSERVER / AGENCY" )
+execute_process(COMMAND ${RINHEADDIFF} -x ${EXCL1} -x ${EXCL2} -x ${EXCL3} -x ${EXCL4} -x ${EXCL5} ${SOURCEDIR}/${INFILE} ${TARGETDIR}/${TESTBASE}.out
                 RESULT_VARIABLE DIFFERENT)
 if(DIFFERENT)
     message(FATAL_ERROR "Test failed - unexpected header change")
