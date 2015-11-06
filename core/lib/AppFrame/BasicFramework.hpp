@@ -89,7 +89,13 @@ namespace gpstk
    class BasicFramework
    {
    public:
-
+         /** Exit code used when an exception has been caught in
+          * run().  Not guaranteed to be unique to this condition. */
+      static const int EXCEPTION_ERROR = 1;
+         /** Exit code used when an error has occurred in processing
+          * command-line options.  Not guaranteed to be unique to this
+          * condition. */
+      static const int OPTION_ERROR = 2;
 
          /** Constructor for BasicFramework.
           *
@@ -129,6 +135,14 @@ namespace gpstk
           * @return false if an exception occurred
           */
       bool run() throw();
+
+
+         /** A place to store the exit code for the application.
+          * Defaults to 0 which indicates successful completion.
+          * It is recommended that your application:
+          *   1) Set this value on terminal error.
+          *   2) Return this value from main in all cases. */
+      int exitCode;
 
 
    protected:
