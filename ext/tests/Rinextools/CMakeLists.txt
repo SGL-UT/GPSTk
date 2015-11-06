@@ -4,7 +4,7 @@
 
 # Header change test
 add_test(NAME RinEdit_Header
-         COMMAND ${CMAKE_COMMAND} --trace --debug-output -DCMAKE_VERBOSE_MAKEFILE=ON
+         COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:RinEdit>
          -DRINHEADDIFF=$<TARGET_FILE:rinheaddiff>
          -DROWDIFF=$<TARGET_FILE:rowdiff>

@@ -227,74 +227,74 @@ add_test(NAME rinheaddiff_CmdOpt_1
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testhelp.cmake)
 
 # Make sure that the same file is the same file...
-add_test(NAME rinheaddiff_Diff_0
+add_test(NAME rinheaddiff_3OBS_Diff_0
          COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:rinheaddiff>
          -DFILE1=RINEX3_OBS_ref.txt
          -DFILE2=RINEX3_OBS_ref.txt
-         -DTESTBASE=rinheaddiff0
+         -DTESTBASE=rinheaddiff_3obs_0
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}/rinheaddiff
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinheadsame.cmake)
 
 # Make sure that headers with irrelevant changes (comment order,
 # format name) are considered the same...
-add_test(NAME rinheaddiff_Diff_1
+add_test(NAME rinheaddiff_3OBS_Diff_1
          COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:rinheaddiff>
          -DFILE1=RINEX3_OBS_ref.txt
          -DFILE2=RINEX3_OBS_1.txt
-         -DTESTBASE=rinheaddiff1
+         -DTESTBASE=rinheaddiff_3obs_1
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}/rinheaddiff
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinheadsame.cmake)
 
 # Make sure differences are recognized
-add_test(NAME rinheaddiff_Diff_2a
+add_test(NAME rinheaddiff_3OBS_Diff_2a
          COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:rinheaddiff>
          -DFILE1=RINEX3_OBS_ref.txt
          -DFILE2=RINEX3_OBS_2.txt
-         -DTESTBASE=rinheaddiff2a
+         -DTESTBASE=rinheaddiff_3obs_2a
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}/rinheaddiff
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinheaddiff.cmake)
 
 # Make sure differences are recognized with one exclusion
 set( OPT_2B --exclude=COMMENT )
-add_test(NAME rinheaddiff_Diff_2b
+add_test(NAME rinheaddiff_3OBS_Diff_2b
          COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:rinheaddiff>
          -DFILE1=RINEX3_OBS_ref.txt
          -DFILE2=RINEX3_OBS_2.txt
          -DIXOPTS=${OPT_2B}
-         -DTESTBASE=rinheaddiff2b
+         -DTESTBASE=rinheaddiff_3obs_2b
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}/rinheaddiff
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinheaddiff.cmake)
 
 # Make sure differences are recognized with one inclusion
 set( OPT_2C --include=COMMENT )
-add_test(NAME rinheaddiff_Diff_2c
+add_test(NAME rinheaddiff_3OBS_Diff_2c
          COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:rinheaddiff>
          -DFILE1=RINEX3_OBS_ref.txt
          -DFILE2=RINEX3_OBS_2.txt
          -DIXOPTS=${OPT_2C}
-         -DTESTBASE=rinheaddiff2c
+         -DTESTBASE=rinheaddiff_3obs_2c
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}/rinheaddiff
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinheaddiff.cmake)
 
 # Make sure sameness is recognized with one inclusion
 set( OPT_2D "LEAP SECONDS" )
-add_test(NAME rinheaddiff_Diff_2d
+add_test(NAME rinheaddiff_3OBS_Diff_2d
          COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:rinheaddiff>
          -DFILE1=RINEX3_OBS_ref.txt
          -DFILE2=RINEX3_OBS_2.txt
          -DIXOPTS=--include=${OPT_2D}
-         -DTESTBASE=rinheaddiff2d
+         -DTESTBASE=rinheaddiff_3obs_2d
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}/rinheaddiff
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinheadsame.cmake)
@@ -302,13 +302,105 @@ add_test(NAME rinheaddiff_Diff_2d
 # Make sure sameness is recognized when excluding all differences.
 # Uses a separate script because I can't be bothered to spend any more
 # time trying to figure out how to get escaped parameters to the app.
-add_test(NAME rinheaddiff_Diff_2e
+add_test(NAME rinheaddiff_3OBS_Diff_2e
          COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:rinheaddiff>
          -DFILE1=RINEX3_OBS_ref.txt
          -DFILE2=RINEX3_OBS_2.txt
          -DIXOPTS=--include=${OPT_2E}
-         -DTESTBASE=rinheaddiff2e
+         -DTESTBASE=rinheaddiff_3obs_2e
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}/rinheaddiff
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinhead2e.cmake)
+
+
+###############################################################################
+# TEST rinheaddiff (RINEX 2 OBS)
+###############################################################################
+
+# Make sure that the same file is the same file...
+add_test(NAME rinheaddiff_2OBS_Diff_0
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:rinheaddiff>
+         -DFILE1=RINEX2_OBS_ref.txt
+         -DFILE2=RINEX2_OBS_ref.txt
+         -DTESTBASE=rinheaddiff_2obs_0
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}/rinheaddiff
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinheadsame.cmake)
+
+# Make sure that headers with irrelevant changes (comment order,
+# format name) are considered the same...
+add_test(NAME rinheaddiff_2OBS_Diff_1
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:rinheaddiff>
+         -DFILE1=RINEX2_OBS_ref.txt
+         -DFILE2=RINEX2_OBS_1.txt
+         -DTESTBASE=rinheaddiff_2obs_1
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}/rinheaddiff
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinheadsame.cmake)
+
+# Make sure differences are recognized
+add_test(NAME rinheaddiff_2OBS_Diff_2a
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:rinheaddiff>
+         -DFILE1=RINEX2_OBS_ref.txt
+         -DFILE2=RINEX2_OBS_2.txt
+         -DTESTBASE=rinheaddiff_2obs_2a
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}/rinheaddiff
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinheaddiff.cmake)
+
+# Make sure differences are recognized with one exclusion
+set( OPT_2B --exclude=COMMENT )
+add_test(NAME rinheaddiff_2OBS_Diff_2b
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:rinheaddiff>
+         -DFILE1=RINEX2_OBS_ref.txt
+         -DFILE2=RINEX2_OBS_2.txt
+         -DIXOPTS=${OPT_2B}
+         -DTESTBASE=rinheaddiff_2obs_2b
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}/rinheaddiff
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinheaddiff.cmake)
+
+# Make sure differences are recognized with one inclusion
+set( OPT_2C --include=COMMENT )
+add_test(NAME rinheaddiff_2OBS_Diff_2c
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:rinheaddiff>
+         -DFILE1=RINEX2_OBS_ref.txt
+         -DFILE2=RINEX2_OBS_2.txt
+         -DIXOPTS=${OPT_2C}
+         -DTESTBASE=rinheaddiff_2obs_2c
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}/rinheaddiff
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinheaddiff.cmake)
+
+# Make sure sameness is recognized with one inclusion
+set( OPT_2D "LEAP SECONDS" )
+add_test(NAME rinheaddiff_2OBS_Diff_2d
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:rinheaddiff>
+         -DFILE1=RINEX2_OBS_ref.txt
+         -DFILE2=RINEX2_OBS_2.txt
+         -DIXOPTS=--include=${OPT_2D}
+         -DTESTBASE=rinheaddiff_2obs_2d
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}/rinheaddiff
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinheadsame.cmake)
+
+# Make sure sameness is recognized when excluding all differences.
+# Uses a separate script because I can't be bothered to spend any more
+# time trying to figure out how to get escaped parameters to the app.
+add_test(NAME rinheaddiff_2OBS_Diff_2e
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:rinheaddiff>
+         -DFILE1=RINEX2_OBS_ref.txt
+         -DFILE2=RINEX2_OBS_2.txt
+         -DIXOPTS=--include=${OPT_2E}
+         -DTESTBASE=rinheaddiff_2obs_2e
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}/rinheaddiff
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinhead2e.cmake)
