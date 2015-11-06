@@ -51,6 +51,44 @@ namespace gpstk
 {
    CommandOptionVec defaultCommandOptionList;
 
+   CommandOption::CommandOption(
+      const CommandOption::CommandOptionFlag of, 
+      const CommandOption::CommandOptionType ot,
+      const char shOpt, 
+      const std::string& loOpt, 
+      const std::string& desc,
+      const bool req,
+      CommandOptionVec& optVectorList)
+         : optFlag(of),  optType(ot),
+           shortOpt(shOpt), longOpt(loOpt), description(desc),
+           required(req), count(0), maxCount(0), order(0)
+   {
+      if (ot == CommandOption::stdType)
+      {
+         if ( (shOpt == 0) && (loOpt.size() == 0) )
+         {
+            InvalidParameter  exc("A short or long command option must be specified");
+            GPSTK_THROW(exc);
+         }
+            // if short option is specified, allow only printable, non-space characters
+         if ( (shOpt != 0) && !isgraph(shOpt) )
+         {
+            InvalidParameter  exc("Invalid short command option character");
+            GPSTK_THROW(exc);
+         }
+            // if long option is specified, allow only printable, non-space characters
+         for ( size_t i = longOpt.size(); i > 0; --i )
+         {
+            if ( !isgraph(longOpt[i - 1]) )
+            {
+               InvalidParameter  exc("Invalid long command option character");
+               GPSTK_THROW(exc);
+            }
+         }
+      }
+      optVectorList.push_back(this);
+   }
+
       // Prints out short options with a leading '-' and long ones with '--'.
       // Puts a '|' between them if it has both.
    string CommandOption::getOptionString() const
@@ -83,6 +121,11 @@ namespace gpstk
             if (optFlag == hasArgument)
                toReturn += "=" + getArgString();
          }
+         else
+         {
+            if (optFlag == hasArgument)
+               toReturn += "  " + getArgString();
+         }
       }
       else
       {
@@ -111,11 +154,14 @@ namespace gpstk
       // get the order of the specified instance of this command option
    unsigned long CommandOption::getOrder(unsigned long idx) const
    {
-      if ((order.size() == 0) || (idx > order.size()))
+      if (order.size() == 0)
          return 0;
 
       if (idx == (unsigned long)-1)
          return order[order.size()-1];
+
+      if (idx >= order.size())
+         return 0;
 
       return order[idx];
    }

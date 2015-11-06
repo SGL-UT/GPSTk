@@ -57,6 +57,57 @@ using namespace gpstk::StringUtils;
 namespace gpstk
 {
 
+   CommandOptionParser::CommandOptionParser(
+      const std::string& description,
+      const CommandOptionVec& optList)
+         : hasRequiredArguments(false), 
+           hasOptionalArguments(false),
+           text(description)
+
+   {
+      CommandOptionVec::const_iterator  optIter = optList.begin();
+      for ( ; optIter != optList.end() ; ++optIter)
+      {
+         addOption( *(*optIter) );
+      }
+   }
+
+
+      // validate a new option and add it to optionVec
+   CommandOptionParser&
+   CommandOptionParser::addOption(gpstk::CommandOption& co)
+   {
+      CommandOptionVec::const_iterator  optIter = optionVec.begin();
+      for ( ; optIter != optionVec.end() ; ++optIter)
+      {
+         if (  (co.shortOpt != 0)
+            && ((*optIter)->shortOpt == co.shortOpt) )
+         {
+            std::string  msg("Short option already in use: ");
+            msg.append(1, co.shortOpt);
+            gpstk::InvalidParameter  exc(msg);
+            GPSTK_THROW(exc);            
+         }
+         if (  (co.longOpt.size() != 0)
+            && ((*optIter)->longOpt.compare(co.longOpt) == 0) )
+         {
+            std::string  msg("Long option already in use: ");
+            msg.append(co.longOpt);
+            gpstk::InvalidParameter  exc(msg);
+            GPSTK_THROW(exc);            
+         }
+         if (  ((*optIter)->optType == CommandOption::trailingType)
+            && (co.optType == CommandOption::trailingType) )
+         {
+            gpstk::InvalidParameter  exc("Multiple trailing options are disallowed");
+            GPSTK_THROW(exc);            
+         }
+      }
+      optionVec.push_back( &co );
+      return *this;
+   }
+
+
       // parses the command line input
    void
    CommandOptionParser::parseOptions(int argc,
@@ -134,6 +185,9 @@ namespace gpstk
 
       int cha;
       int optionIndex;
+
+         // ensure parsing begins at the first option
+      optind = 1;
 
          // disable internal error messages
       opterr = 0;
@@ -236,8 +290,11 @@ namespace gpstk
             int i;
             for(i = optind; i < argc; i++)
             {
+               order++;
+               
                trailing->value.push_back(string(argv[i]));
                trailing->count++;
+               trailing->order.push_back(order);
             }
          }
             // the case where trailing==null is handled above
@@ -264,6 +321,7 @@ namespace gpstk
    
       delete [] optArray;
    }
+
 
    ostream& CommandOptionParser::dumpErrors(ostream& out)
    {
@@ -338,6 +396,7 @@ namespace gpstk
 
       return out;
    }
+
 
       // resizes the array for getopt_long
    void CommandOptionParser::resizeOptionArray(struct option *&oldArray,

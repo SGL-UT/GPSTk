@@ -501,6 +501,7 @@ if [ "$test_switch" ]; then
     keyword_list+=("BivarStats")
     keyword_list+=("CivilTime")
     keyword_list+=("ClockModel")
+    keyword_list+=("CommandOption")
     keyword_list+=("CommonTime")
     keyword_list+=("Convhelp")
     keyword_list+=("FileFilter")

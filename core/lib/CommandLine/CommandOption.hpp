@@ -147,11 +147,7 @@ namespace gpstk
                     const std::string& desc,
                     const bool req = false,
                     CommandOptionVec& optVectorList =  
-                       defaultCommandOptionList)
-            : optFlag(of),  optType(ot),
-              shortOpt(shOpt), longOpt(loOpt), description(desc),
-              required(req), count(0), maxCount(0), order(0)
-         {optVectorList.push_back(this);}
+                       defaultCommandOptionList);
 
          /// Sets the maximum number of times this should appear on the 
          /// command line.
@@ -250,7 +246,9 @@ namespace gpstk
       CommandOption() {}
    };
 
-      /// A subclass of CommandOption that is a required command line option.
+      /**
+       * A subclass of CommandOption that is a required command line option.
+       */
    class RequiredOption : public CommandOption
    {
    public:
@@ -271,7 +269,9 @@ namespace gpstk
       RequiredOption() {}
    };
 
-      /// A subclass of CommandOption that has no arguments
+      /**
+       * A standard CommandOption that has no arguments.
+       */
    class CommandOptionNoArg : public CommandOption
    {
    public:
@@ -293,7 +293,9 @@ namespace gpstk
       CommandOptionNoArg() {}
    };
 
-      /// A subclass of CommandOption that has an argument.
+      /**
+       * A subclass of CommandOption that has an argument.
+       */
    class CommandOptionWithArg : public CommandOption
    {
    public:
@@ -314,7 +316,9 @@ namespace gpstk
       CommandOptionWithArg() {}
    };
 
-      /// A CommandOption that requires a string argument.
+      /**
+       * A standard CommandOption that requires a string argument.
+       */
    class CommandOptionWithAnyArg : public CommandOptionWithArg
    {
    public:
@@ -334,7 +338,10 @@ namespace gpstk
       CommandOptionWithAnyArg() {}
    };
 
-      /// A CommandOption that requires a string argument.
+      /**
+       * A standard CommandOption that requires an alphabetic
+       * string argument.
+       */
    class CommandOptionWithStringArg : public CommandOptionWithArg
    {
    public:
@@ -360,7 +367,10 @@ namespace gpstk
       CommandOptionWithStringArg() {}
    };
 
-      /// A CommandOption that requires a non-negative integer numeric argument.
+      /**
+       * A standard CommandOption that requires a non-negative
+       * integer numeric argument.
+       */
    class CommandOptionWithNumberArg : public CommandOptionWithArg
    {
    public:
@@ -386,7 +396,10 @@ namespace gpstk
       CommandOptionWithNumberArg() {}
    };
 
-      /// A CommandOption that requires a fixed-point decimal numeric argument.
+      /**
+       * A standard CommandOption that requires a fixed-point
+       * decimal numeric argument.
+       */
    class CommandOptionWithDecimalArg : public CommandOptionWithArg
    {
    public:

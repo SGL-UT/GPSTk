@@ -88,26 +88,25 @@ namespace gpstk
          /// associated CommandOption.
       typedef std::map<std::string, gpstk::CommandOption*> CommandOptionMap;
       
-         /**
-          * Constructor given a text description of the program.
+         /** Constructor given a text description of the program.
+          * @warning The CommandOptions in optList must exist for the entire
+          *          lifetime of this CommandOptionParser.
           * @param description a short description of this program
           * @param optList a CommandOptionVec with the list of
           *   CommandOptions for this parser.
           */
       CommandOptionParser(const std::string& description,
-                          const CommandOptionVec optList = 
-                          defaultCommandOptionList)
-         : optionVec(optList), hasRequiredArguments(false), 
-           hasOptionalArguments(false), text(description)
+                          const CommandOptionVec& optList = 
+                          defaultCommandOptionList);
 
-         {}
-
-         /// Adds the CommandOption to the list for parsing.
-      CommandOptionParser& addOption(gpstk::CommandOption& co)
-         { optionVec.push_back(&co); return *this; }
+         /** Adds the CommandOption to the list for parsing.
+          * @warning The CommandOption must exist for the entire
+          *          lifetime of this CommandOptionParser.
+          */
+      CommandOptionParser& addOption(gpstk::CommandOption& co);
       
          /// Parses the command line.
-      void parseOptions(int argc,  char* argv[]);
+      void parseOptions(int argc, char* argv[]);
       
          /// Returns true if any processing errors occurred.
       bool hasErrors() { return !errorStrings.empty(); }
