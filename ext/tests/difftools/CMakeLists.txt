@@ -215,7 +215,7 @@ add_test(NAME rowdiff_Diff_4
 
 
 ###############################################################################
-# TEST rinheaddiff
+# TEST rinheaddiff (RINEX 3 OBS)
 ###############################################################################
 
 # check that -h option is valid
@@ -225,3 +225,90 @@ add_test(NAME rinheaddiff_CmdOpt_1
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testhelp.cmake)
+
+# Make sure that the same file is the same file...
+add_test(NAME rinheaddiff_Diff_0
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:rinheaddiff>
+         -DFILE1=RINEX3_OBS_ref.txt
+         -DFILE2=RINEX3_OBS_ref.txt
+         -DTESTBASE=rinheaddiff0
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}/rinheaddiff
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinheadsame.cmake)
+
+# Make sure that headers with irrelevant changes (comment order,
+# format name) are considered the same...
+add_test(NAME rinheaddiff_Diff_1
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:rinheaddiff>
+         -DFILE1=RINEX3_OBS_ref.txt
+         -DFILE2=RINEX3_OBS_1.txt
+         -DTESTBASE=rinheaddiff1
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}/rinheaddiff
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinheadsame.cmake)
+
+# Make sure differences are recognized
+add_test(NAME rinheaddiff_Diff_2a
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:rinheaddiff>
+         -DFILE1=RINEX3_OBS_ref.txt
+         -DFILE2=RINEX3_OBS_2.txt
+         -DTESTBASE=rinheaddiff2a
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}/rinheaddiff
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinheaddiff.cmake)
+
+# Make sure differences are recognized with one exclusion
+set( OPT_2B --exclude=COMMENT )
+add_test(NAME rinheaddiff_Diff_2b
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:rinheaddiff>
+         -DFILE1=RINEX3_OBS_ref.txt
+         -DFILE2=RINEX3_OBS_2.txt
+         -DIXOPTS=${OPT_2B}
+         -DTESTBASE=rinheaddiff2b
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}/rinheaddiff
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinheaddiff.cmake)
+
+# Make sure differences are recognized with one inclusion
+set( OPT_2C --include=COMMENT )
+add_test(NAME rinheaddiff_Diff_2c
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:rinheaddiff>
+         -DFILE1=RINEX3_OBS_ref.txt
+         -DFILE2=RINEX3_OBS_2.txt
+         -DIXOPTS=${OPT_2C}
+         -DTESTBASE=rinheaddiff2c
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}/rinheaddiff
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinheaddiff.cmake)
+
+# Make sure sameness is recognized with one inclusion
+set( OPT_2D "LEAP SECONDS" )
+add_test(NAME rinheaddiff_Diff_2d
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:rinheaddiff>
+         -DFILE1=RINEX3_OBS_ref.txt
+         -DFILE2=RINEX3_OBS_2.txt
+         -DIXOPTS=--include=${OPT_2D}
+         -DTESTBASE=rinheaddiff2d
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}/rinheaddiff
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinheadsame.cmake)
+
+# Make sure sameness is recognized when excluding all differences.
+# Uses a separate script because I can't be bothered to spend any more
+# time trying to figure out how to get escaped parameters to the app.
+add_test(NAME rinheaddiff_Diff_2e
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:rinheaddiff>
+         -DFILE1=RINEX3_OBS_ref.txt
+         -DFILE2=RINEX3_OBS_2.txt
+         -DIXOPTS=--include=${OPT_2E}
+         -DTESTBASE=rinheaddiff2e
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}/rinheaddiff
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinhead2e.cmake)
