@@ -63,8 +63,6 @@ public:
 
    RinexHeaderDiff(const string& applName);
 
-   int rc;
-
    static FileType identFile(const string& fname, FFData*& hdr);
 
 protected:
@@ -80,7 +78,6 @@ protected:
 RinexHeaderDiff::RinexHeaderDiff(const string& applName)
       : BasicFramework(applName, "Print the differences between the headers"
                        " of two RINEX files"),
-        rc(1), // fail by default. Success means identical openable headers
         exclOption('x', "exclude", "RINEX header lines to exclude"),
         inclOption('i', "include", "RINEX header lines to compare"),
         inputFileOption("FILES", true),
@@ -102,6 +99,8 @@ process()
       fn2(inputFileOption.getValue()[1]);
    bool giveUp = false, including = false;
    std::vector<std::string> diffs, inclExclList;
+      // Assume the headers are different until proved otherwise.
+   exitCode = 1;
 
    if (inclOption.getCount())
    {
@@ -167,7 +166,7 @@ process()
                    diffs, inclExclList, including))
             {
                   // compare success
-               rc = 0;
+               exitCode = 0;
             }
             break;
          default:
@@ -182,7 +181,7 @@ process()
    }
    if (giveUp)
       return;
-   if (rc)
+   if (exitCode)
    {
          // found some differences
       cout << "Headers are different:" << endl;
@@ -250,27 +249,29 @@ identFile(const string& fname, FFData*& hdr)
 
 int main(int argc, char* argv[])
 {
+   RinexHeaderDiff m(argv[0]);
    try
    {
-      RinexHeaderDiff m(argv[0]);
       if (!m.initialize(argc, argv))
-         return 1;
+         return m.exitCode;
       if (!m.run())
-         return 1;
+         return m.exitCode;
 
-      return m.rc;
+      return m.exitCode;
    }
    catch(Exception& e)
    {
       cout << e << endl;
+      m.exitCode = BasicFramework::EXCEPTION_ERROR;
    }
    catch(std::exception& e)
    {
       cout << e.what() << endl;
+      m.exitCode = BasicFramework::EXCEPTION_ERROR;
    }
    catch(...)
    {
       cout << "unknown error" << endl;
    }
-   return 1;
+   return m.exitCode;
 }
