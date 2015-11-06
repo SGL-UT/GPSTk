@@ -252,7 +252,9 @@ try {
       }
       if(!errs.empty()) LOG(INFO) << errs;         // Warnings are here too
 
-      iret = ProcessFiles();                       // iret == number of files
+      ProcessFiles();
+         // iret = 0 = success
+      iret = 0;
 
       break;      // mandatory
    }

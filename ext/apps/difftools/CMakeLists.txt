@@ -12,6 +12,6 @@ add_executable(rmwdiff rmwdiff.cpp)
 target_link_libraries(rmwdiff gpstk)
 install (TARGETS rmwdiff DESTINATION "${CMAKE_INSTALL_BINDIR}")
 
-
-
-
+add_executable(rinheaddiff rinheaddiff.cpp)
+target_link_libraries(rinheaddiff gpstk)
+install (TARGETS rinheaddiff DESTINATION "${CMAKE_INSTALL_BINDIR}")

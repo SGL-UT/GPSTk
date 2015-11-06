@@ -1,6 +1,7 @@
 # tests/CMakeLists.txt
 
 add_subdirectory (difftools)
+add_subdirectory (Rinextools)
 add_subdirectory (time)
 
 #add_subdirectory (ANSITime)

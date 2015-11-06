@@ -41,6 +41,7 @@
 
 #include <sstream>
 #include <algorithm>
+#include <set>
 
 #include "StringUtils.hpp"
 #include "SystemTime.hpp"
@@ -2128,6 +2129,120 @@ namespace gpstk
       return index;
 
    }  // End of method 'Rinex3ObsHeader::getObsIndex()'
+
+
+   bool Rinex3ObsHeader::compare(const Rinex3ObsHeader& right,
+                                 std::vector<std::string>& diffs,
+                                 const std::vector<std::string>& inclExclList,
+                                 bool incl)
+   {
+         // map header token to comparison result
+      std::map<std::string,bool> lineMap;
+      std::map<std::string,bool>::const_iterator lmi;
+         // Put the comments in a sorted set, we don't really care
+         // about the ordering.
+      std::set<std::string>
+         lcomments(commentList.begin(), commentList.end()),
+         rcomments(right.commentList.begin(), right.commentList.end());
+      std::set<RinexObsID>
+         lobs(obsTypeList.begin(), obsTypeList.end()),
+         robs(right.obsTypeList.begin(), right.obsTypeList.end());
+         // Compare everything first...
+         // deliberately ignoring valid flags
+
+         // only comparing first character of file type because that's
+         // all that matters according to RINEX
+      lineMap[stringVersion] =
+         ((version == right.version) &&
+          (fileType[0] == right.fileType[0]) &&
+          (fileSysSat.system == right.fileSysSat.system));
+      lineMap[stringRunBy] =
+         ((fileProgram == right.fileProgram) &&
+          (fileAgency == right.fileAgency) &&
+          (date == right.date));
+      lineMap[stringComment] = (lcomments == rcomments);
+      lineMap[stringMarkerName] = (markerName == right.markerName);
+      lineMap[stringMarkerNumber] = (markerNumber == right.markerNumber);
+      lineMap[stringMarkerType] = (markerType == right.markerType);
+      lineMap[stringObserver] =
+         ((observer == right.observer) &&
+          (agency == right.agency));
+      lineMap[stringReceiver] =
+         ((recNo == right.recNo) &&
+          (recType == right.recType) &&
+          (recVers == right.recVers));
+      lineMap[stringAntennaType] =
+         ((antNo == right.antNo) &&
+          (antType == right.antType));
+      lineMap[stringAntennaPosition] =
+         (antennaPosition == right.antennaPosition);
+      lineMap[stringAntennaDeltaHEN] =
+         (antennaDeltaHEN == right.antennaDeltaHEN);
+      lineMap[stringAntennaDeltaXYZ] =
+         (antennaDeltaXYZ == right.antennaDeltaXYZ);
+      lineMap[stringAntennaPhaseCtr] =
+         (antennaPhaseCtr == right.antennaPhaseCtr);
+      lineMap[stringAntennaBsightXYZ] =
+         (antennaBsightXYZ == right.antennaBsightXYZ);
+      lineMap[stringAntennaZeroDirAzi] =
+         (antennaZeroDirAzi == right.antennaZeroDirAzi);
+      lineMap[stringAntennaZeroDirXYZ] =
+         (antennaZeroDirXYZ == right.antennaZeroDirXYZ);
+      lineMap[stringCenterOfMass] = (centerOfMass == right.centerOfMass);
+      lineMap[stringNumObs] = (lobs == robs);
+      lineMap[stringSystemNumObs] = true;
+      lineMap[stringWaveFact] =
+         (memcmp(wavelengthFactor, right.wavelengthFactor,
+                 sizeof(wavelengthFactor)) == 0);
+      lineMap[stringSigStrengthUnit] =
+         (sigStrengthUnit == right.sigStrengthUnit);
+      lineMap[stringInterval] = (interval == right.interval);
+      lineMap[stringFirstTime] = (firstObs == right.firstObs);
+      lineMap[stringLastTime] = (lastObs == right.lastObs);
+      lineMap[stringReceiverOffset] = (receiverOffset == right.receiverOffset);
+      lineMap[stringSystemDCBSapplied] = true;
+      lineMap[stringSystemPCVSapplied] = true;
+      lineMap[stringSystemScaleFac] = true;
+      lineMap[stringSystemPhaseShift] = true;
+      lineMap[stringGlonassSlotFreqNo] = true;
+      lineMap[stringGlonassCodPhsBias] = true;
+      lineMap[stringLeapSeconds] = (leapSeconds == right.leapSeconds);
+      lineMap[stringNumSats] = (numSVs == right.numSVs);
+      lineMap[stringPrnObs] = true;
+         // ...then filter by inclExclList later
+      if (incl)
+      {
+         std::map<std::string,bool> oldLineMap(lineMap);
+         std::map<std::string,bool>::const_iterator olmi;
+         lineMap.clear();
+         for (unsigned i = 0; i < inclExclList.size(); i++)
+         {
+            if ((olmi = oldLineMap.find(inclExclList[i])) != oldLineMap.end())
+            {
+               lineMap[olmi->first] = olmi->second;
+            }
+         }
+      }
+      else
+      {
+            // exclude, remove items in inclExclList
+         for (unsigned i = 0; i < inclExclList.size(); i++)
+         {
+            lineMap.erase(inclExclList[i]);
+         }
+      }
+         // check the equality of the final remaining set of header lines
+      bool rv = true;
+      for (lmi = lineMap.begin(); lmi != lineMap.end(); lmi++)
+      {
+         if (!lmi->second)
+         {
+            diffs.push_back(lmi->first);
+            rv = false;
+         }
+      }
+      return rv;
+   } // bool Rinex3ObsHeader::compare
 
 
 } // namespace gpstk

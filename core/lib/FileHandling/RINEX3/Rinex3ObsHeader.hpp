@@ -335,6 +335,18 @@ namespace gpstk
       /// Compute map of obs types for use in writing version 2 header and data
       void PrepareVer2Write(void) throw();
 
+         /** Compare this header with another.
+          * @param right the header to compare this with.
+          * @param inclExclList a list of header strings to be ignored
+          *   or used when making the comparison (e.g. "RINEX VERSION / TYPE").
+          * @param incl When true, only header lines listed in
+          *   inclExclList will be compared.  When false, differences in
+          *   header lines in inclExclList will be ignored. */
+      bool compare(const Rinex3ObsHeader& right,
+                   std::vector<std::string>& diffs,
+                   const std::vector<std::string>& inclExclList,
+                   bool incl = false);
+
 
    protected:
 
