@@ -56,6 +56,7 @@ namespace gpstk
       throw()
          : debugLevel(0),
            verboseLevel(0),
+           exitCode(0),
            argv0(applName),
            appDesc(applDesc),
            debugOption('d', "debug", "Increase debug level"),
@@ -87,6 +88,7 @@ namespace gpstk
       {
          cop.dumpErrors(cerr);
          cop.displayUsage(cerr, pretty);
+         exitCode = OPTION_ERROR;
          return false;
       }
 
@@ -109,11 +111,13 @@ namespace gpstk
       catch (Exception& exc)
       {
          cerr << exc;
+         exitCode = EXCEPTION_ERROR;
          return false;
       }
       catch (...)
       {
          cerr << "Caught unknown exception" << endl;
+         exitCode = EXCEPTION_ERROR;
          return false;
       }
 
