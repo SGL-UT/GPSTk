@@ -8,8 +8,8 @@ add_subdirectory( GNSSCore )
 add_subdirectory( FileHandling ) 
 add_subdirectory( Utilities )
 add_subdirectory( GNSSEph )
+add_subdirectory( RefTime )
+add_subdirectory( CommandLine )
 
 # add_subdirectory( AppFrame )
-# add_subdirectory( CommandLine )
-add_subdirectory( RefTime )
 
