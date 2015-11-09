@@ -56,6 +56,7 @@ namespace gpstk
       throw()
          : debugLevel(0),
            verboseLevel(0),
+           exitCode(0),
            argv0(applName),
            appDesc(applDesc),
            debugOption('d', "debug", "Increase debug level"),
@@ -87,6 +88,7 @@ namespace gpstk
       {
          cop.dumpErrors(cerr);
          cop.displayUsage(cerr, pretty);
+         exitCode = OPTION_ERROR;
          return false;
       }
 
@@ -94,41 +96,6 @@ namespace gpstk
       verboseLevel = verboseOption.getCount();
 
       return true;
-
-   }  // End of method 'BasicFramework::initialize()'
-
-       
-   bool BasicFramework :: initialize( std::string cmdLine,
-                                      bool pretty )
-      throw()
-   {
-      std::vector<std::string> vArgs;
-      vArgs.clear();
-
-      std::string cmd(cmdLine);
-      while(cmd.length())
-      {
-         vArgs.push_back(StringUtils::stripFirstWord(cmd));
-      }
-
-      int argc = vArgs.size();
-      char** argv = new char*[argc];
-      if(!argv)
-      {
-         return false;
-      }
-
-      for(int i=0; i<argc; i++)
-      {
-         argv[i] = &vArgs[i][0];
-      }
-
-      bool state = initialize(argc, argv, pretty);
-
-      // delete memory *char[]
-      delete[] argv;
-
-      return state;
 
    }  // End of method 'BasicFramework::initialize()'
 
@@ -144,11 +111,13 @@ namespace gpstk
       catch (Exception& exc)
       {
          cerr << exc;
+         exitCode = EXCEPTION_ERROR;
          return false;
       }
       catch (...)
       {
          cerr << "Caught unknown exception" << endl;
+         exitCode = EXCEPTION_ERROR;
          return false;
       }
 

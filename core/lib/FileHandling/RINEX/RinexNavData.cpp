@@ -243,8 +243,7 @@ namespace gpstk
          gpse.Tgd = Tgd;
 
          gpse.HOWtime = HOWtime;
-         week = static_cast<GPSWeekSecond>(gpse.ctToe).getWeek();
-         gpse.transmitTime = GPSWeekSecond(week, static_cast<double>(HOWtime),
+         gpse.transmitTime = GPSWeekSecond(weeknum, static_cast<double>(HOWtime),
             TimeSystem::GPS);
 
          gpse.codeflags = codeflgs;
@@ -474,7 +473,7 @@ namespace gpstk
          // Real Rinex has epochs 'yy mm dd hr 59 60.0' surprisingly often....
          double ds=0;
          if(sec >= 60.) { ds=sec; sec=0.0; }
-         time = CivilTime(yr,mo,day,hr,min,sec).convertToCommonTime();
+         time = CivilTime(yr,mo,day,hr,min,sec,gpstk::TimeSystem::GPS).convertToCommonTime();
          if(ds != 0) time += ds;
 
          Toc = (static_cast<GPSWeekSecond>(time)).sow;

@@ -163,9 +163,9 @@ To build and install the C++ library and applications on POSIX platforms:
 
 To build and install the python bindings, you have two options:
 
-* automated: run the build.sh, minimally with the "-p" flag.
+* automated: python bindings automatically build with the build.sh. Use -P for install.
 * manual build: see build.sh for examples on calling cmake and swig
-* manual install: use the setup.py script in the install_package path. See $GPSTK/swig/install_package/INSTALL.txt for more details
+* manual install: 
 
 
 Testing:

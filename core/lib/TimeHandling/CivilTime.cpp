@@ -193,22 +193,20 @@ namespace gpstk
                break;
 
             case 'y':
-               switch( i->second.length() )
-               {
-                  case 2:
-                     year = asInt( i->second ) + 1900;
-                     if( year < 1980 )
-                        year += 100;
-                     break;
-                  case 3:
-                     year = asInt( i->second ) + 1000;
-                     if( year < 1980 )
-                        year += 100;
-                     break;
-                  default:
-                     year = asInt( i->second );
-                     break;
-               };
+                  // match the POSIX strptime() function:
+                  /* Year within century. When a century is not
+                   * otherwise specified, values in the range 69-99
+                   * refer to years in the twentieth century (1969 to
+                   * 1999 inclusive); values in the range 00-68 refer
+                   * to years in the twenty-first century (2000 to
+                   * 2068 inclusive). */
+               if( i->second.length() > 2)
+                  return false;
+               year = asInt( i->second );
+               if (year >= 69)
+                  year += 1900;
+               else
+                  year += 2000;
                break;
 
             case 'm':
@@ -216,28 +214,15 @@ namespace gpstk
                break;
 
             case 'b':
-            case 'B':
-            {
-               std::string thisMonth( i->second );
-               lowerCase(thisMonth);
-
-               if (isLike(thisMonth, "jan.*")) month = 1;
-               else if (isLike(thisMonth, "feb.*")) month = 2;
-               else if (isLike(thisMonth, "mar.*")) month = 3;
-               else if (isLike(thisMonth, "apr.*")) month = 4;
-               else if (isLike(thisMonth, "may.*")) month = 5;
-               else if (isLike(thisMonth, "jun.*")) month = 6;
-               else if (isLike(thisMonth, "jul.*")) month = 7;
-               else if (isLike(thisMonth, "aug.*")) month = 8;
-               else if (isLike(thisMonth, "sep.*")) month = 9;
-               else if (isLike(thisMonth, "oct.*")) month = 10;
-               else if (isLike(thisMonth, "nov.*")) month = 11;
-               else if (isLike(thisMonth, "dec.*")) month = 12;
-               else
-               {
+               month = monthAbbrev( i->second );
+               if (month < 1)
                   return false;
-               }
-            }
+               break;
+
+            case 'B':
+               month = monthLong( i->second );
+               if (month < 1)
+                  return false;
                break;
 
             case 'd':
@@ -290,6 +275,28 @@ namespace gpstk
       hour = minute = 0;
       second = 0.0;
       timeSystem = TimeSystem::Unknown;
+   }
+
+   int CivilTime::monthAbbrev(const std::string& amonStr)
+   {
+      using gpstk::StringUtils::lowerCase;
+      for (unsigned i = 1; i <= 12; i++)
+      {
+         if (lowerCase(amonStr) == lowerCase(MonthAbbrevNames[i]))
+            return i;
+      }
+      return 0;
+   }
+
+   int CivilTime::monthLong(const std::string& monStr)
+   {
+      using gpstk::StringUtils::lowerCase;
+      for (unsigned i = 1; i <= 12; i++)
+      {
+         if (lowerCase(monStr) == lowerCase(MonthNames[i]))
+            return i;
+      }
+      return 0;
    }
 
    bool CivilTime::operator==( const CivilTime& right ) const

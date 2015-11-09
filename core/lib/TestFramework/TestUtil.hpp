@@ -136,6 +136,23 @@ public:
       next();
   }
 
+
+   template <class T>
+   void assert_equals( const T& expected, const T& got,
+                       int line_number,
+                       const std::string& test_message = std::string() )
+   {
+      std::string mess;
+      if (test_message.empty())
+      {
+         std::ostringstream ostr;
+         ostr << "Expected:'" << expected << "'" << std::endl << " But got:'"
+              << got << "'" << std::endl;
+         mess = ostr.str();
+      }
+      assert(expected == got, mess, line_number);
+   }
+
   //----------------------------------------
   // Method:  TestUtil::countFails()
   // Purpose: Return the number of tests that have failed so far
