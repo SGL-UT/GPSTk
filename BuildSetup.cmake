@@ -37,17 +37,15 @@ endif()
 # Windows Visual Studio flags
 #----------------------------------------
 if( WIN32 )
-    if( MSVC11 )
+    if( MSVC14 )
         #Compiler Options for Microsoft Visual Studio 11 (2012)
         add_definitions( /MP /D_SCL_SECURE_NO_WARNINGS /D_CRT_SECURE_NO_WARNINGS /D_USE_MATH_DEFINES /EHsc /GR /wd"4274"
             /wd"4503" /wd"4290" /wd"4267" /wd"4250" /wd"4244" /wd"4101" /wd"4800" /wd"4068" )
-    elseif( MSVC10 ) 
-        #Compiler Options for Microsoft Visual Studio 10 (2010)
-        include_directories( "C:/Program\ Files\ (x86)/GnuWin32/include" )
-        link_directories( "C:/Program\ Files\ (x86)/GnuWin32/lib" )
+    elseif( MSVC11 )
+        #Compiler Options for Microsoft Visual Studio 11 (2012)
         add_definitions( /MP /D_SCL_SECURE_NO_WARNINGS /D_CRT_SECURE_NO_WARNINGS /D_USE_MATH_DEFINES /EHsc /GR /wd"4274"
             /wd"4503" /wd"4290" /wd"4267" /wd"4250" /wd"4244" /wd"4101" /wd"4800" /wd"4068" )
-    endif( MSVC11 )
+    endif( MSVC14 )
 endif()
 
 #----------------------------------------
