@@ -498,8 +498,7 @@ namespace gpstk
       virtual std::string checkArguments();
 
          /// Add an option to the list of mutually exclusive options
-      void addOption(CommandOption* opt)
-      { optionVec.push_back(opt); }
+      void addOption(CommandOption* opt);
 
          /// @return the command options that were used (empty vector if none).
       std::vector<CommandOption*> which() const;
@@ -535,8 +534,7 @@ namespace gpstk
       virtual std::string checkArguments();
 
          /// Add an option to the list of mutually exclusive options
-      void addOption(CommandOption* opt)
-      { optionVec.push_back(opt); }
+      void addOption(CommandOption* opt);
 
          /// @return the command option that was used (NULL if none).
       CommandOption* whichOne() const;
@@ -633,10 +631,7 @@ namespace gpstk
           * @param child ...is used.
           */
       CommandOptionDependent(const CommandOption* parent,
-                             const CommandOption* child)
-            : CommandOption(noArgument, metaType, 0, "", ""),
-              requiree(parent), requirer(child)
-      {}
+                             const CommandOption* child);
 
          /// Destructor
       virtual ~CommandOptionDependent() {}

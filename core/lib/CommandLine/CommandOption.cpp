@@ -337,6 +337,16 @@ namespace gpstk
       return string();
    }
 
+   void CommandOptionNOf::addOption(CommandOption* opt)
+   {
+      if (NULL == opt)
+      {
+         InvalidParameter  exc("Invalid option address");
+         GPSTK_THROW(exc);
+      }
+      optionVec.push_back(opt);
+   }
+
    string CommandOptionNOf::checkArguments()
    {
          // n-of doesn't call CommandOption::checkArguments because
@@ -379,6 +389,16 @@ namespace gpstk
       }
 
       return rv;
+   }
+
+   void CommandOptionOneOf::addOption(CommandOption* opt)
+   {
+      if (NULL == opt)
+      {
+         InvalidParameter  exc("Invalid option address");
+         GPSTK_THROW(exc);
+      }
+      optionVec.push_back(opt);
    }
 
    string CommandOptionOneOf::checkArguments()
@@ -451,6 +471,25 @@ namespace gpstk
          rv += optionVec[i]->getCount();
       }
       return rv;
+   }
+
+   CommandOptionDependent::CommandOptionDependent(
+      const CommandOption* parent,
+      const CommandOption* child)
+         : CommandOption(noArgument, metaType, 0, "", "")
+   {
+      if (NULL == parent)
+      {
+         InvalidParameter  exc("Invalid parent address");
+         GPSTK_THROW(exc);
+      }
+      if (NULL == child)
+      {
+         InvalidParameter  exc("Invalid child address");
+         GPSTK_THROW(exc);
+      }
+      requiree = parent;
+      requirer = child;
    }
 
    string CommandOptionDependent::checkArguments()

@@ -1008,6 +1008,7 @@ int CommandOptionParser_T::testOptionPresence()
       else
       {
          tester.assert( true, "CommandOptionParser parsed without errors.", __LINE__ );
+         tester.assert( com.whichOne() == &cmdOptF, "whichOne() reported an unexpected option.", __LINE__ );
       }
    }
    catch ( ... )
@@ -1218,6 +1219,7 @@ int CommandOptionParser_T::testOptionPresence()
       else
       {
          tester.assert( true, "CommandOptionParser parsed without errors.", __LINE__ );
+         // @todo - Check which() result
       }
    }
    catch ( ... )
@@ -1253,6 +1255,7 @@ int CommandOptionParser_T::testOptionPresence()
       else
       {
          tester.assert( true, "CommandOptionParser parsed without errors.", __LINE__ );
+         // @todo - Check which() result
       }
    }
    catch ( ... )
@@ -1290,6 +1293,7 @@ int CommandOptionParser_T::testOptionPresence()
       else
       {
          tester.assert( true, "CommandOptionParser parsed without errors.", __LINE__ );
+         // @todo - Check which() result
       }
    }
    catch ( ... )
@@ -1327,6 +1331,7 @@ int CommandOptionParser_T::testOptionPresence()
       else
       {
          tester.assert( true, "CommandOptionParser parsed without errors.", __LINE__ );
+         // @todo - Check which() result
       }
    }
    catch ( ... )
@@ -1443,6 +1448,7 @@ int CommandOptionParser_T::testOptionPresence()
       else
       {
          tester.assert( true, "CommandOptionParser parsed without errors.", __LINE__ );
+         tester.assert( cooo.whichOne() == &cmdOptB, "whichOne() reported an unexpected option.", __LINE__ );
       }
    }
    catch ( ... )
@@ -1480,6 +1486,7 @@ int CommandOptionParser_T::testOptionPresence()
       else
       {
          tester.assert( true, "CommandOptionParser parsed without errors.", __LINE__ );
+         tester.assert( cooo.whichOne() == &cmdOptF, "whichOne() reported an unexpected option.", __LINE__ );
       }
    }
    catch ( ... )
@@ -1646,6 +1653,7 @@ int CommandOptionParser_T::testOptionPresence()
       else
       {
          tester.assert( true, "CommandOptionParser parsed without errors.", __LINE__ );
+         tester.assert( cogo.whichOne() == &cmdOptF, "whichOne() reported an unexpected option.", __LINE__ );
       }
    }
    catch ( ... )
@@ -1711,6 +1719,7 @@ int CommandOptionParser_T::testOptionPresence()
       else
       {
          tester.assert( true, "CommandOptionParser parsed without errors.", __LINE__ );
+         tester.assert( coga.whichOne() == &cmdOptF, "whichOne() reported an unexpected option.", __LINE__ );
       }
    }
    catch ( ... )

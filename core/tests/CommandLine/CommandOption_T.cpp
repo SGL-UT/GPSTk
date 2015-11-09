@@ -323,8 +323,6 @@ int CommandOption_T::testRequiredOption()
 {
    TestUtil  tester( "RequiredOption", "Initialization", __FILE__, __LINE__ );
 
-   CommandOptionVec  testCmdOptVec;
-
    defaultCommandOptionList.clear();
 
    try   // No arg, trailing
@@ -395,8 +393,6 @@ int CommandOption_T::testCommandOptionWithArg()
 {
    TestUtil  tester( "CommandOptionWithArg", "Initialization", __FILE__, __LINE__ );
 
-   CommandOptionVec  testCmdOptVec;
-
    defaultCommandOptionList.clear();
 
    try
@@ -437,8 +433,6 @@ int CommandOption_T::testCommandOptionWithArg()
 int CommandOption_T::testCommandOptionWithAnyArg()
 {
    TestUtil  tester( "CommandOptionWithAnyArg", "Initialization", __FILE__, __LINE__ );
-
-   CommandOptionVec  testCmdOptVec;
 
    defaultCommandOptionList.clear();
 
@@ -481,8 +475,6 @@ int CommandOption_T::testCommandOptionWithStringArg()
 {
    TestUtil  tester( "CommandOptionWithStringArg", "Initialization", __FILE__, __LINE__ );
 
-   CommandOptionVec  testCmdOptVec;
-
    defaultCommandOptionList.clear();
 
    try
@@ -523,8 +515,6 @@ int CommandOption_T::testCommandOptionWithStringArg()
 int CommandOption_T::testCommandOptionWithNumberArg()
 {
    TestUtil  tester( "CommandOptionWithNumberArg", "Initialization", __FILE__, __LINE__ );
-
-   CommandOptionVec  testCmdOptVec;
 
    defaultCommandOptionList.clear();
 
@@ -567,8 +557,6 @@ int CommandOption_T::testCommandOptionWithDecimalArg()
 {
    TestUtil  tester( "CommandOptionWithDecimalArg", "Initialization", __FILE__, __LINE__ );
 
-   CommandOptionVec  testCmdOptVec;
-
    defaultCommandOptionList.clear();
 
    try
@@ -610,8 +598,6 @@ int CommandOption_T::testCommandOptionRest()
 {
    TestUtil  tester( "CommandOptionRest", "Initialization", __FILE__, __LINE__ );
 
-   CommandOptionVec  testCmdOptVec;
-
    defaultCommandOptionList.clear();
 
    try
@@ -641,8 +627,6 @@ int CommandOption_T::testCommandOptionNOf()
 {
    TestUtil  tester( "CommandOptionNOf", "Initialization", __FILE__, __LINE__ );
 
-   CommandOptionVec  testCmdOptVec;
-
    defaultCommandOptionList.clear();
 
    try
@@ -652,6 +636,27 @@ int CommandOption_T::testCommandOptionNOf()
       tester.assert( (cmdOpt.getCount() == 0), "CommandOptionNOf count should be 0.", __LINE__ );
       tester.assert( (cmdOpt.checkArguments().size() != 0), "CommandOptionNOf checkArguments() should have returned an error", __LINE__ );
       tester.assert( (defaultCommandOptionList.size() == 1), "CommandOptionNOf was not added to the default list.", __LINE__ );
+
+      try
+      {
+         cmdOpt.addOption(NULL);
+         tester.assert( false, "CommandOptionNOf()::addOption() succeeded but should have failed due to an valid option address.", __LINE__ );
+      }
+      catch ( ... )
+      {
+         tester.assert( true, "CommandOptionNOf::addOption() threw an exception as expected.", __LINE__ );
+      }
+
+      try
+      {
+         CommandOptionWithAnyArg  cowaa('f', "foo", "Foo", false);
+         cmdOpt.addOption(&cowaa);
+         tester.assert( true, "CommandOptionNOf()::addOption() succeeded.", __LINE__ );
+      }
+      catch ( ... )
+      {
+         tester.assert( false, "CommandOptionNOf::addOption() threw an exception but should not have.", __LINE__ );
+      }
    }
    catch ( ... )
    {
@@ -669,8 +674,6 @@ int CommandOption_T::testCommandOptionOneOf()
 {
    TestUtil  tester( "CommandOptionOneOf", "Initialization", __FILE__, __LINE__ );
 
-   CommandOptionVec  testCmdOptVec;
-
    defaultCommandOptionList.clear();
 
    try
@@ -680,6 +683,27 @@ int CommandOption_T::testCommandOptionOneOf()
       tester.assert( (cmdOpt.getCount() == 0), "CommandOptionOneOf count should be 0.", __LINE__ );
       tester.assert( (cmdOpt.checkArguments().size() != 0), "CommandOptionOneOf checkArguments() should have reported an error", __LINE__ );
       tester.assert( (defaultCommandOptionList.size() == 1), "CommandOptionOneOf was not added to the default list.", __LINE__ );
+
+      try
+      {
+         cmdOpt.addOption(NULL);
+         tester.assert( false, "CommandOptionOneOf()::addOption() succeeded but should have failed due to an valid option address.", __LINE__ );
+      }
+      catch ( ... )
+      {
+         tester.assert( true, "CommandOptionOneOf::addOption() threw an exception as expected.", __LINE__ );
+      }
+
+      try
+      {
+         CommandOptionWithAnyArg  cowaa('f', "foo", "Foo", false);
+         cmdOpt.addOption(&cowaa);
+         tester.assert( true, "CommandOptionOneOf()::addOption() succeeded.", __LINE__ );
+      }
+      catch ( ... )
+      {
+         tester.assert( false, "CommandOptionOneOf::addOption() threw an exception but should not have.", __LINE__ );
+      }
    }
    catch ( ... )
    {
@@ -697,8 +721,6 @@ int CommandOption_T::testCommandOptionAllOf()
 {
    TestUtil  tester( "CommandOptionAllOf", "Initialization", __FILE__, __LINE__ );
 
-   CommandOptionVec  testCmdOptVec;
-
    defaultCommandOptionList.clear();
 
    try
@@ -708,6 +730,27 @@ int CommandOption_T::testCommandOptionAllOf()
       tester.assert( (cmdOpt.getCount() == 0), "CommandOptionAllOf count should be 0.", __LINE__ );
       tester.assert( (cmdOpt.checkArguments().size() == 0), "CommandOptionAllOf checkArguments() should return nothing.", __LINE__ );
       tester.assert( (defaultCommandOptionList.size() == 1), "CommandOptionAllOf was not added to the default list.", __LINE__ );
+
+      try
+      {
+         cmdOpt.addOption(NULL);
+         tester.assert( false, "CommandOptionAllOf()::addOption() succeeded but should have failed due to an valid option address.", __LINE__ );
+      }
+      catch ( ... )
+      {
+         tester.assert( true, "CommandOptionAllOf::addOption() threw an exception as expected.", __LINE__ );
+      }
+
+      try
+      {
+         CommandOptionWithAnyArg  cowaa('f', "foo", "Foo", false);
+         cmdOpt.addOption(&cowaa);
+         tester.assert( true, "CommandOptionAllOf()::addOption() succeeded.", __LINE__ );
+      }
+      catch ( ... )
+      {
+         tester.assert( false, "CommandOptionAllOf::addOption() threw an exception but should not have.", __LINE__ );
+      }
    }
    catch ( ... )
    {
@@ -725,8 +768,6 @@ int CommandOption_T::testCommandOptionMutex()
 {
    TestUtil  tester( "CommandOptionMutex", "Initialization", __FILE__, __LINE__ );
 
-   CommandOptionVec  testCmdOptVec;
-
    defaultCommandOptionList.clear();
 
    try
@@ -736,6 +777,27 @@ int CommandOption_T::testCommandOptionMutex()
       tester.assert( (cmdOpt.getCount() == 0), "CommandOptionMutex count should be 0.", __LINE__ );
       tester.assert( (cmdOpt.checkArguments().size() == 0), "CommandOptionMutex checkArguments() should return nothing.", __LINE__ );
       tester.assert( (defaultCommandOptionList.size() == 1), "CommandOptionMutex was not added to the default list.", __LINE__ );
+
+      try
+      {
+         cmdOpt.addOption(NULL);
+         tester.assert( false, "CommandOptionMutex()::addOption() succeeded but should have failed due to an valid option address.", __LINE__ );
+      }
+      catch ( ... )
+      {
+         tester.assert( true, "CommandOptionMutex::addOption() threw an exception as expected.", __LINE__ );
+      }
+
+      try
+      {
+         CommandOptionWithAnyArg  cowaa('f', "foo", "Foo", false);
+         cmdOpt.addOption(&cowaa);
+         tester.assert( true, "CommandOptionMutex()::addOption() succeeded.", __LINE__ );
+      }
+      catch ( ... )
+      {
+         tester.assert( false, "CommandOptionMutex::addOption() threw an exception but should not have.", __LINE__ );
+      }
    }
    catch ( ... )
    {
@@ -753,21 +815,16 @@ int CommandOption_T::testCommandOptionDependent()
 {
    TestUtil  tester( "CommandOptionDependent", "Initialization", __FILE__, __LINE__ );
 
-   CommandOptionVec  testCmdOptVec;
-
    defaultCommandOptionList.clear();
 
    try
    {
       CommandOptionDependent  cmdOpt(NULL, NULL);
-      tester.assert( true, "CommandOptionDependent was created successfully.", __LINE__ );
-      tester.assert( (cmdOpt.getCount() == 0), "CommandOptionDependent count should be 0.", __LINE__ );
-      tester.assert( (cmdOpt.checkArguments().size() == 0), "CommandOptionDependent checkArguments() should return nothing.", __LINE__ );
-      tester.assert( (defaultCommandOptionList.size() == 1), "CommandOptionDependent was not added to the default list.", __LINE__ );
+      tester.assert( false, "CommandOptionDependent creation should have failed due to NULL addresses.", __LINE__ );
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionDependent() threw an exception but should not have.", __LINE__ );
+      tester.assert( true, "CommandOptionDependent() threw an exception as expected.", __LINE__ );
    }
    defaultCommandOptionList.clear();
 
@@ -781,8 +838,6 @@ int CommandOption_T::testCommandOptionGroupOr()
 {
    TestUtil  tester( "CommandOptionGroupOr", "Initialization", __FILE__, __LINE__ );
 
-   CommandOptionVec  testCmdOptVec;
-
    defaultCommandOptionList.clear();
 
    try
@@ -792,6 +847,27 @@ int CommandOption_T::testCommandOptionGroupOr()
       tester.assert( (cmdOpt.getCount() == 0), "CommandOptionGroupOr count should be 0.", __LINE__ );
       tester.assert( (cmdOpt.checkArguments().size() == 0), "CommandOptionGroupOr checkArguments() should return nothing.", __LINE__ );
       tester.assert( (defaultCommandOptionList.size() == 1), "CommandOptionGroupOr was not added to the default list.", __LINE__ );
+
+      try
+      {
+         cmdOpt.addOption(NULL);
+         tester.assert( false, "CommandOptionGroupOr()::addOption() succeeded but should have failed due to an valid option address.", __LINE__ );
+      }
+      catch ( ... )
+      {
+         tester.assert( true, "CommandOptionGroupOr::addOption() threw an exception as expected.", __LINE__ );
+      }
+
+      try
+      {
+         CommandOptionWithAnyArg  cowaa('f', "foo", "Foo", false);
+         cmdOpt.addOption(&cowaa);
+         tester.assert( true, "CommandOptionGroupOr()::addOption() succeeded.", __LINE__ );
+      }
+      catch ( ... )
+      {
+         tester.assert( false, "CommandOptionGroupOr::addOption() threw an exception but should not have.", __LINE__ );
+      }
    }
    catch ( ... )
    {
@@ -809,8 +885,6 @@ int CommandOption_T::testCommandOptionGroupAnd()
 {
    TestUtil  tester( "CommandOptionGroupAnd", "Initialization", __FILE__, __LINE__ );
 
-   CommandOptionVec  testCmdOptVec;
-
    defaultCommandOptionList.clear();
 
    try
@@ -820,6 +894,27 @@ int CommandOption_T::testCommandOptionGroupAnd()
       tester.assert( (cmdOpt.getCount() == 0), "CommandOptionGroupAnd count should be 0.", __LINE__ );
       tester.assert( (cmdOpt.checkArguments().size() == 0), "CommandOptionGroupAnd checkArguments() should return nothing.", __LINE__ );
       tester.assert( (defaultCommandOptionList.size() == 1), "CommandOptionGroupAnd was not added to the default list.", __LINE__ );
+
+      try
+      {
+         cmdOpt.addOption(NULL);
+         tester.assert( false, "CommandOptionGroupAnd()::addOption() succeeded but should have failed due to an valid option address.", __LINE__ );
+      }
+      catch ( ... )
+      {
+         tester.assert( true, "CommandOptionGroupAnd::addOption() threw an exception as expected.", __LINE__ );
+      }
+
+      try
+      {
+         CommandOptionWithAnyArg  cowaa('f', "foo", "Foo", false);
+         cmdOpt.addOption(&cowaa);
+         tester.assert( true, "CommandOptionGroupAnd()::addOption() succeeded.", __LINE__ );
+      }
+      catch ( ... )
+      {
+         tester.assert( false, "CommandOptionGroupAnd::addOption() threw an exception but should not have.", __LINE__ );
+      }
    }
    catch ( ... )
    {
