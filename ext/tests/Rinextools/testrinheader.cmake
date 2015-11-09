@@ -10,7 +10,7 @@ endif()
 # Check that headers are in fact different
 execute_process(COMMAND ${RINHEADDIFF} ${SOURCEDIR}/${INFILE} ${TARGETDIR}/${TESTBASE}.out
                 RESULT_VARIABLE DIFFERENT)
-if(!DIFFERENT)
+if(DIFFERENT EQUAL 0)
     message(FATAL_ERROR "Test failed - expected non-zero result")
 endif()
 

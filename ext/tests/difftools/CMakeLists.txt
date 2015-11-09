@@ -81,7 +81,7 @@ add_test(NAME rmwdiff_Diff_5
          -DTESTBASE=rmwdiff5
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/testdiff.cmake)
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/testsame.cmake)
 
 
 ###############################################################################

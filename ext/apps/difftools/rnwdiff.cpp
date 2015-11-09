@@ -34,7 +34,7 @@
 //
 //=============================================================================
 
-#include "FileFilterFrame.hpp"
+#include "FileFilterFrameWithHeader.hpp"
 
 #include "RinexNavData.hpp"
 #include "RinexNavStream.hpp"
@@ -67,8 +67,25 @@ void RNWDiff::process()
 {
    try
    {
-      FileFilterFrame<RinexNavStream, RinexNavData> ff1(inputFileOption.getValue()[0]);
-      FileFilterFrame<RinexNavStream, RinexNavData> ff2(inputFileOption.getValue()[1]);
+      FileFilterFrameWithHeader<RinexNavStream, RinexNavData, RinexNavHeader>
+         ff1(inputFileOption.getValue()[0]),
+         ff2(inputFileOption.getValue()[1]);
+
+         // no data?  FIX make this program faster.. if one file
+         // doesn't exist, there's little point in reading any.
+      if (ff1.emptyHeader())
+         cerr << "No header information for " << inputFileOption.getValue()[0]
+              << endl;
+      if (ff2.emptyHeader())
+         cerr << "No header information for " << inputFileOption.getValue()[1]
+              << endl;
+      if (ff1.emptyHeader() || ff2.emptyHeader())
+      {
+         cerr << "Check that files exist." << endl;
+         cerr << "diff failed." << endl;
+         exitCode = EXIST_ERROR;
+         return;
+      }
       
       ff1.sort(RinexNavDataOperatorLessThanFull());
       ff2.sort(RinexNavDataOperatorLessThanFull());

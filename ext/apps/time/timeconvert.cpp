@@ -231,11 +231,28 @@ void TimCvt::process()
 
 int main(int argc, char* argv[])
 {
-   TimCvt tc(argv[0]);
-   if (!tc.initialize(argc, argv))
-      return 0;
-   if (!tc.run())
-      return 1;
-   
-   return 0;
+   try
+   {
+      TimCvt m(argv[0]);
+      if (!m.initialize(argc, argv))
+         return m.exitCode;
+      if (!m.run())
+         return m.exitCode;
+      
+      return m.exitCode;
+   }
+   catch(Exception& e)
+   {
+      cout << e << endl;
+   }
+   catch(std::exception& e)
+   {
+      cout << e.what() << endl;
+   }
+   catch(...)
+   {
+      cout << "unknown error" << endl;
+   }
+      // only reach this point if an exception was caught
+   return BasicFramework::EXCEPTION_ERROR;
 }

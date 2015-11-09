@@ -68,7 +68,8 @@ void RMWDiff::process()
    try
    {
       FileFilterFrameWithHeader<RinexMetStream, RinexMetData, RinexMetHeader>
-         ff1(inputFileOption.getValue()[0]), ff2(inputFileOption.getValue()[1]);
+         ff1(inputFileOption.getValue()[0]),
+         ff2(inputFileOption.getValue()[1]);
 
          // find the obs data intersection
       RinexMetHeaderTouchHeaderMerge merged;
@@ -87,7 +88,7 @@ void RMWDiff::process()
          cerr << "diff failed." << endl;
          exitCode = EXIST_ERROR;
          return;
-     }
+      }
 
       merged(ff1.frontHeader());
       merged(ff2.frontHeader());

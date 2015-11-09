@@ -4,7 +4,7 @@ execute_process(COMMAND ${TEST_PROG} ${IXOPTS} ${SOURCEDIR}/${FILE1} ${SOURCEDIR
                 OUTPUT_FILE ${TARGETDIR}/${TESTBASE}.out
                 RESULT_VARIABLE HAD_ERROR)
 # files are expected to be different
-if(!HAD_ERROR)
+if(HAD_ERROR EQUAL 0)
     message(FATAL_ERROR "Test failed")
 endif()
 
