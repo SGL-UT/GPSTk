@@ -3,7 +3,9 @@
 #include <string>
 #include <iomanip>
 #include <sstream>
+#include <cmath>
 #include "build_config.h"
+#include "float.h"
 
 // Define a TestUtil object named testFramework
 #define TUDEF(CLASS,METHOD) TestUtil testFramework(CLASS, METHOD, __FILE__, __LINE__)

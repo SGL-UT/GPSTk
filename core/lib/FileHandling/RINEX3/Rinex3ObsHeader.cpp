@@ -42,6 +42,7 @@
 #include <sstream>
 #include <algorithm>
 #include <set>
+#include <string.h>
 
 #include "StringUtils.hpp"
 #include "SystemTime.hpp"
