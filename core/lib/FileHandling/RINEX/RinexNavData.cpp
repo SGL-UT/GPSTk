@@ -243,8 +243,7 @@ namespace gpstk
          gpse.Tgd = Tgd;
 
          gpse.HOWtime = HOWtime;
-         week = static_cast<GPSWeekSecond>(gpse.ctToe).getWeek();
-         gpse.transmitTime = GPSWeekSecond(week, static_cast<double>(HOWtime),
+         gpse.transmitTime = GPSWeekSecond(weeknum, static_cast<double>(HOWtime),
             TimeSystem::GPS);
 
          gpse.codeflags = codeflgs;
