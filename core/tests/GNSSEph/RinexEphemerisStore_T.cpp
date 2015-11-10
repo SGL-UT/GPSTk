@@ -781,7 +781,7 @@ return testFramework.countFails();
             TUPASS("sedIdentifier");
          }
          catch (...) {
-            TUFAIL("Dump with detail=1 threw an exception when it should not");
+            TUFAIL("Dump with detail=2 threw an exception when it should not");
          }
 
             //-----------------------------------------------------------
@@ -792,7 +792,7 @@ return testFramework.countFails();
             TUPASS("sedIdentifier");
          }
          catch (...) {
-            TUFAIL("Dump with detail=1 threw an exception when it should not");
+            TUFAIL("Dump with detail=3 threw an exception when it should not");
          }
 
 
@@ -980,7 +980,7 @@ return testFramework.countFails();
          testFramework.assert(ComTMax == rinEphStore.getFinalTime(), "Edit did not change the initial time", __LINE__);
 
 
-         rinEphStore.dump(editTestOutputStream,1);
+         rinEphStore.dump(editTestOutputStream,2);
 
       }
       catch (Exception& e)
@@ -1207,54 +1207,53 @@ return testFramework.countFails();
             //-----------------------------------------------------------
             // Check that a missing satID (too small) yields a thrown error
             //-----------------------------------------------------------
-         try {
-            rinEphStore.findUserOrbitEph(sid0,ComTime);
-            TUFAIL("findUserOrbitEph did not throw an exception when it should have");
-         }
-         catch (InvalidRequest& e) {
+         const OrbitEph* oe = rinEphStore.findUserOrbitEph(sid0,ComTime);
+         if (oe==NULL)
+         {
             TUPASS("sedIdentifier");
          }
-         catch (...) {
-            TUFAIL("findUserOrbitEph threw an unexpected exception");
+         else
+         {
+            TUFAIL("findUserOrbitEph returned a valid pointer when it should not");
          }
 
             //-----------------------------------------------------------
             // Check that a missing satID (too big) yields a thrown error
             //-----------------------------------------------------------
-         try {
-            rinEphStore.findUserOrbitEph(sid33,ComTime);
-            TUFAIL("findUserOrbitEph did not throw an exception when it should have");
-         }
-         catch (InvalidRequest& e) {
+         oe = rinEphStore.findUserOrbitEph(sid33,ComTime);
+         if (oe==NULL)
+         {
             TUPASS("sedIdentifier");
          }
-         catch (...) {
-            TUFAIL("findUserOrbitEph threw an unexpected exception");
+         else
+         {
+            TUFAIL("findUserOrbitEph returned a valid pointer when it should not");         
          }
-
+         
             //-----------------------------------------------------------
             // Check that an invalid time yields a thrown error
             //-----------------------------------------------------------
-         try {
-            rinEphStore.findUserOrbitEph(sid1,CommonTime::END_OF_TIME);
-            TUFAIL("findUserOrbitEph did not throw an exception when it should have");
-         }
-         catch (InvalidRequest& e) {
+         oe = rinEphStore.findUserOrbitEph(sid1,CommonTime::END_OF_TIME);
+         if (oe==NULL)
+         {
             TUPASS("sedIdentifier");
          }
-         catch (...) {
-            TUFAIL("findUserOrbitEph threw an unexpected exception");
+         else
+         {
+            TUFAIL("findUserOrbitEph returned a valid pointer when it should not");
          }
-
+         
             //-----------------------------------------------------------
             // Verify that for ideal conditions findUserOrbitEph runs
             //-----------------------------------------------------------
-         try {
-            rinEphStore.findUserOrbitEph(sid1, ComTime);
-            TUPASS("sedIdentifier");
+         oe = rinEphStore.findUserOrbitEph(sid1, ComTime);
+         if (oe==NULL)
+         {
+            TUFAIL("findUserOrbitEph failed to find orbit elements when it should have succeeded");
          }
-         catch (...) {
-            TUFAIL("findUserOrbitEph threw an exception when it should not have");
+         else
+         {
+            TUPASS("sedIdentifier");
          }
 
          const OrbitEph* Eph1 = rinEphStore.findUserOrbitEph(sid1, ComTime);
@@ -1265,7 +1264,7 @@ return testFramework.countFails();
          orbEphStore.addEphemeris(Eph15);
          orbEphStore.addEphemeris(Eph32);
 
-         orbEphStore.dump(findUserTestOutputStream,1);
+         orbEphStore.dump(findUserTestOutputStream,2);
 
       }
       catch (Exception& e)
@@ -1330,58 +1329,59 @@ return testFramework.countFails();
             //-----------------------------------------------------------
             // Check that a missing satID (too small) yields a thrown error
             //-----------------------------------------------------------
-         try {
-            rinEphStore.findNearOrbitEph(sid0,ComTime);
-            TUFAIL("findNearOrbitEph did not throw an exception when it should have");
-         }
-         catch (InvalidRequest& e) {
+         const OrbitEph* oe = rinEphStore.findNearOrbitEph(sid0,ComTime); 
+         if (oe==NULL)
+         {
             TUPASS("sedIdentifier");
          }
-         catch (...) {
-            TUFAIL("findNearOrbitEph threw an unexpected exception");
+         else
+         {
+            TUFAIL("findUserOrbitEph returned a valid pointer when it should not");         
          }
 
             //-----------------------------------------------------------
             // Check that a missing satID (too big) yields a thrown error
             //-----------------------------------------------------------
-         try {
-            rinEphStore.findNearOrbitEph(sid33,ComTime);
-            TUFAIL("findNearOrbitEph did not throw an exception when it should have");
-         }
-         catch (InvalidRequest& e) {
+         oe = rinEphStore.findNearOrbitEph(sid33,ComTime);
+         if (oe==NULL)
+         {
             TUPASS("sedIdentifier");
          }
-         catch (...) {
-            TUFAIL("findNearOrbitEph threw an unexpected exception");
+         else
+         {
+            TUFAIL("findUserOrbitEph returned a valid pointer when it should not");         
          }
 
             //-----------------------------------------------------------
             // Check that an invalid time yields a thrown error
+            //
+            // TEST REMOVED.  findNearOrbitEph( ) does not check
+            // that the elements are within their fit interval.  Therefore
+            // there is no concept of an "invalid time". 
             //-----------------------------------------------------------
-         try {
-            rinEphStore.findNearOrbitEph(sid1,CommonTime::END_OF_TIME);
-            TUFAIL("findNearOrbitEph did not throw an exception when it should have");
-         }
-         catch (InvalidRequest& e) {
+         /*
+         oe = rinEphStore.findNearOrbitEph(sid1,CommonTime::END_OF_TIME);
+         if (oe==NULL)
+         {
             TUPASS("sedIdentifier");
          }
-         catch (...) {
-            TUFAIL("findNearOrbitEph threw an unexpected exception");
+         else
+         {
+            TUFAIL("findUserOrbitEph returned a valid pointer when it should not");         
          }
-
+         */
+         
             //-----------------------------------------------------------
             // Verify that for ideal conditions findUserOrbitEph runs
             //-----------------------------------------------------------
-         try {
-            rinEphStore.findNearOrbitEph(sid1, ComTime);
+         oe = rinEphStore.findNearOrbitEph(sid1, ComTime);
+         if (oe==NULL)
+         {
+            TUFAIL("findUserOrbitEph failed to find orbit elements when it should have succeeded");
+         }
+         else
+         {
             TUPASS("sedIdentifier");
-         }
-         catch (Exception& e) {
-            cout << "Caught Exception: " << e << endl;
-            TUFAIL("findUserOrbitEph threw an exception when it should not have");
-         }
-         catch (...) {
-            TUFAIL("findUserOrbitEph threw an exception when it should not have");
          }
 
          const OrbitEph* Eph1 = rinEphStore.findUserOrbitEph(sid1, ComTime);
@@ -1392,7 +1392,7 @@ return testFramework.countFails();
          orbEphStore.addEphemeris(Eph15);
          orbEphStore.addEphemeris(Eph32);
 
-         orbEphStore.dump(findNearTestOutputStream,1);
+         orbEphStore.dump(findNearTestOutputStream,2);
 
       }
       catch (Exception& e)
