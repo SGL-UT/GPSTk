@@ -1,11 +1,9 @@
-Dump Rinex3EphemerisStore:
-Dump of FileStore
- File  1: TestRinex06.031
-End dump of FileStore
-Dump of GPSEphemerisStore:
- Span is 1360 172800.000 = 2006/01/31 00:00:00 GPS to 1360 266400.000 = 2006/02/01 02:00:00 GPS with 41 entries.
-Dump of GloEphemerisStore:
- Span is End_time to Begin_time with 0 entries.
-Dump of GalEphemerisStore:
- Span is End_time to Begin_time with 0 entries.
-End dump Rinex3EphemerisStore.
+Dump of RinexEphemerisStore:
+/home/renfrob/git/gpstk/data/test_input_rinex_nav_ephemerisData.031
+Dump of GPSEphemerisStore (detail level=1):
+ BCE table for all satellites has 41 entries; Time span is 2006/01/31 00:00:00 GPS to 2006/02/01 02:00:00 GPS
+ Search method is User
+Sat G01 has  15 entries; Time span is 2006/01/31 00:00:00 GPS to 2006/01/31 22:00:00 GPS
+Sat G15 has  13 entries; Time span is 2006/01/31 00:00:00 GPS to 2006/01/31 22:00:00 GPS
+Sat G32 has  13 entries; Time span is 2006/01/31 00:00:00 GPS to 2006/01/31 22:00:00 GPS
+END Dump of GPSEphemerisStore (detail level=1)
