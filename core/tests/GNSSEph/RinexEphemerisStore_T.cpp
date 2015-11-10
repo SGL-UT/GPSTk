@@ -992,7 +992,7 @@ return testFramework.countFails();
          //-----------------------------------------------------------
          // Check edited output against its pre-determined standard
          //-----------------------------------------------------------
-      testFramework.assert( testFramework.fileEqualTest( editTestOutput, editTestInput, 0), "Output from edit does not match regressive standard", __LINE__ );
+      testFramework.assert( testFramework.fileEqualTest( editTestOutput, editTestInput, 2), "Output from edit does not match regressive standard", __LINE__ );
 
       return testFramework.countFails();
    }
@@ -1150,7 +1150,7 @@ return testFramework.countFails();
          //-----------------------------------------------------------
          // Check partially wiped output against its pre-determined standard
          //-----------------------------------------------------------
-      testFramework.assert( testFramework.fileEqualTest( clearTestOutput, clearTestInput, 0), "Output from clear does not match its regressive standard.", __LINE__ );
+      testFramework.assert( testFramework.fileEqualTest( clearTestOutput, clearTestInput, 2), "Output from clear does not match its regressive standard.", __LINE__ );
       return testFramework.countFails();
    }
 
