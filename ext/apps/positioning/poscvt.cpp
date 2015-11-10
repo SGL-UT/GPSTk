@@ -81,7 +81,8 @@ PosCvt::PosCvt(char* arg0)
         listFormatsOption('l', "list-formats", "List the available format codes"
                           " for use by the input and output format options."),
         outputFormatOption('F', "output-format", "Write the position with the"
-                           " given format.")
+                           " given format."),
+        mutexOption(true)
 {
    ecefOption.setMaxCount(1);
    geodeticOption.setMaxCount(1);
@@ -187,12 +188,12 @@ int main(int argc, char* argv[])
       PosCvt pc(argv[0]);
 
       if (!pc.initialize(argc, argv))
-         return 0;
+         return pc.exitCode;
       
       if(!pc.run())
-         return 1;
+         return pc.exitCode;
 
-      return 0;
+      return pc.exitCode;
    }
    catch(Exception& e)
    {
@@ -206,6 +207,6 @@ int main(int argc, char* argv[])
    {
       cout << "Caught an unknown exception." << endl;
    }
-
-   return 1;
+      // only reach this point if an exception was caught
+   return BasicFramework::EXCEPTION_ERROR;
 }
