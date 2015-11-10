@@ -105,7 +105,7 @@ bool PosCvt::initialize(int argc, char *argv[])
    
    if(listFormatsOption.getCount())
    {
-      cout << "  %X %Y %Z  (cartesian or ECEF in kilometers)" << endl
+      cout << " %X %Y %Z  (cartesian or ECEF in kilometers)" << endl
            << " %x %y %z  (cartesian or ECEF in meters)" << endl
            << " %a %l %r  (geocentric lat,lon,radius, longitude E, "
          "radius in meters)" << endl

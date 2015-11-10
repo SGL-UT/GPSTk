@@ -168,17 +168,17 @@ int main(int argc, char *argv[])
 
       cop.parseOptions(argc, argv);
 
+      if(helpOption.getCount())
+      {
+         cop.displayUsage(cout);
+         return 0;
+      }
+
       if (cop.hasErrors())
       {
          cop.dumpErrors(cout);
          cop.displayUsage(cout);
          return 1;
-      }
-
-      if(helpOption.getCount())
-      {
-         cop.displayUsage(cout);
-         return 0;
       }
 
       CommonTime now = SystemTime();
