@@ -160,6 +160,24 @@ process()
          // compare headers
       switch (ft1)
       {
+         case RinexMet:
+            if (dynamic_cast<RinexMetHeader*>(header1)->compare(
+                   *(dynamic_cast<RinexMetHeader*>(header2)),
+                   diffs, inclExclList, including))
+            {
+                  // compare success
+               exitCode = 0;
+            }
+            break;
+         case RinexNav:
+            if (dynamic_cast<Rinex3NavHeader*>(header1)->compare(
+                   *(dynamic_cast<Rinex3NavHeader*>(header2)),
+                   diffs, inclExclList, including))
+            {
+                  // compare success
+               exitCode = 0;
+            }
+            break;
          case RinexObs:
             if (dynamic_cast<Rinex3ObsHeader*>(header1)->compare(
                    *(dynamic_cast<Rinex3ObsHeader*>(header2)),
