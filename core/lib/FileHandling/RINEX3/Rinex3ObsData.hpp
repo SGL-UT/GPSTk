@@ -50,22 +50,10 @@
 #include "FFStream.hpp"
 #include "Rinex3ObsBase.hpp"
 #include "Rinex3ObsHeader.hpp"
+#include "RinexDatum.hpp"
 
 namespace gpstk
 {
-
-   /// A structure used to store a single RINEX Data point.
-   #ifndef GPSTK_RINEXDATUM
-   #define GPSTK_RINEXDATUM
-   struct RinexDatum
-   {
-      RinexDatum() : data(0), lli(0), ssi(0) {} ///< constructor
-      double data;  ///< The actual data point.
-      short lli;    ///< See the RINEX Spec. for an explanation.
-      short ssi;    ///< See the RINEX Spec. for an explanation.
-   };
-   #endif // GPSTK_RINEXDATUM
-
 
       /** @addtogroup Rinex3Obs */
       //@{

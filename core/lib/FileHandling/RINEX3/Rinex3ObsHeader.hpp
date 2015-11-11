@@ -71,23 +71,10 @@ namespace gpstk
    public:
 
       /// A Simple Constructor.
-      Rinex3ObsHeader() : valid(0), validEoH(false), PisY(false)
-         {}
+      Rinex3ObsHeader();
 
       /// Clear (empty out) header
-      inline void clear()
-      {
-         commentList.clear();
-         obsTypeList.clear();
-         numObsForSat.clear();
-         mapObsTypes.clear();
-         wavelengthFactor[0] = wavelengthFactor[1] = 1;
-         extraWaveFactList.clear();
-         valid  = 0;
-         validEoH = false;
-         numObs = 0;
-         lastPRN.id = -1;
-      }
+      void clear();
 
       /// @name Rinex3ObsHeaderFormatStrings
       /// RINEX observation file header formatting strings
@@ -219,10 +206,19 @@ namespace gpstk
       double version;                              ///< RINEX 3 version/type
       std::string fileType,                        ///< RINEX 3 file type
                   fileSys;                         ///< file sys char: RinexSatID system OR Mixed
+         /** If false, the file type and system will be re-generated
+          * in the gpstk preferred format when writing the header,
+          * otherwise the strings fileType fileSys will be written
+          * unaltered */
+      bool preserveVerType;
       SatID fileSysSat;                            ///< fileSys as a SatID
       std::string fileProgram,                     ///< program used to generate file
                   fileAgency,                      ///< who ran program
                   date;                            ///< when program was run
+         /** If false, the current system time will be used when
+          * writing the header, otherwise the value in date will be
+          * used. */
+      bool preserveDate;
       std::vector<std::string> commentList;        ///< comments in header             (optional)
       std::string markerName,                      ///< MARKER NAME
                   markerNumber,                    ///< MARKER NUMBER                  (optional)

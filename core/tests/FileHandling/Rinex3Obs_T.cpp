@@ -71,6 +71,8 @@ public:
    int hardCodeTest( void );
    int filterOperatorsTest( void );
    int dataExceptionsTest( void );
+      /// round-trip test for RINEX 3, read, write, compare.
+   int roundTripTest( void );
 
    void toConversionTest( void );
    int version2ToVersion3Test( void );
@@ -107,6 +109,7 @@ private:
    std::string dataTestOutput;
    std::string dataTestOutput2;
    std::string dataTestOutput3;
+   std::string dataTestOutput4;
    std::string dataTestOutputObsDump;
    std::string dataTestOutputDataException;
    std::string dataTestFilterOutput;
@@ -162,6 +165,7 @@ void Rinex3Obs_T :: init( void )
    dataTestOutput              = tempFilePath + file_sep + "test_output_rinex2_obs_TestOutput.06o";
    dataTestOutput2             = tempFilePath + file_sep + "test_output_rinex2_obs_TestOutput2.06o";
    dataTestOutput3             = tempFilePath + file_sep + "test_output_rinex2_obs_TestOutput3.06o";
+   dataTestOutput4             = tempFilePath + file_sep + "test_output_rinex2_obs_TestOutput4.06o";
    dataTestOutputObsDump       = tempFilePath + file_sep + "test_output_rinex2_obs_ObsDump.06o";
    dataTestOutputDataException = tempFilePath + file_sep + "test_output_rinex2_obs_DataExceptionOutput.06o";
    dataTestFilterOutput        = tempFilePath + file_sep + "test_output_rinex2_obs_FilterOutput.txt";
@@ -206,6 +210,7 @@ void Rinex3Obs_T :: toRinex3(void)
    dataTestOutput              = tempFilePath + file_sep + "test_output_rinex3_obs_TestOutput.15o";
    dataTestOutput2             = tempFilePath + file_sep + "test_output_rinex3_obs_TestOutput2.15o";
    dataTestOutput3             = tempFilePath + file_sep + "test_output_rinex3_obs_TestOutput3.15o";
+   dataTestOutput4             = tempFilePath + file_sep + "test_output_rinex3_obs_TestOutput4.15o";
    dataTestOutputObsDump       = tempFilePath + file_sep + "test_output_rinex3_obs_ObsDump.15o";
    dataTestOutputDataException = tempFilePath + file_sep + "test_output_rinex3_obs_DataExceptionOutput.15o";
    dataTestFilterOutput        = tempFilePath + file_sep + "test_output_rinex3_obs_FilterOutput.txt";
@@ -620,52 +625,73 @@ int Rinex3Obs_T :: version2ToVersion3Test( void )
    return testFramework.countFails();
 }
 
+int Rinex3Obs_T::roundTripTest( void )
+{
+   TUDEF("Rinex3ObsHeader/Data", "operator<<");
+
+   try
+   {
+      gpstk::Rinex3ObsStream infile( dataRinexObsFile );
+      gpstk::Rinex3ObsStream outfile( dataTestOutput4, std::ios::out );
+      gpstk::Rinex3ObsHeader roh;
+      gpstk::Rinex3ObsData rod;
+
+      infile >> roh;
+      roh.preserveDate = true;
+      roh.preserveVerType = true;
+      outfile << roh;
+      while (infile >> rod)
+      {
+         outfile << rod;
+      }
+      infile.close();
+      outfile.close();
+      std::string failMsg = "input and output do not match: " +
+         dataRinexObsFile + " " + dataTestOutput4;
+      testFramework.assert_files_equal(
+         __LINE__, dataRinexObsFile, dataTestOutput4,
+         failMsg, 0, false, true );
+   }
+   catch (...)
+   {
+      TUFAIL("exception thrown during processing");
+   }
+
+   return testFramework.countFails();
+}
+
 //============================================================
 // Run all the test methods defined above
 //============================================================
 
 int main()
 {
-   int errorCount = 0;
    int errorTotal = 0;
    Rinex3Obs_T testClass;
 
-   errorCount = testClass.headerExceptionTest();
-   errorTotal = errorTotal + errorCount;
-
-   errorCount = testClass.hardCodeTest();
-   errorTotal = errorTotal + errorCount;
-
-   errorCount = testClass.dataExceptionsTest();
-   errorTotal = errorTotal + errorCount;
-
-   errorCount = testClass.filterOperatorsTest();
-   errorTotal = errorTotal + errorCount;
+   errorTotal += testClass.headerExceptionTest();
+   errorTotal += testClass.hardCodeTest();
+   errorTotal += testClass.dataExceptionsTest();
+   errorTotal += testClass.filterOperatorsTest();
+   errorTotal += testClass.roundTripTest();
 
       //Change to test v.3
    testClass.toRinex3();
 
-   errorCount = testClass.headerExceptionTest();
-   errorTotal = errorTotal + errorCount;
 
-   errorCount = testClass.hardCodeTest();
-   errorTotal = errorTotal + errorCount;
-
-   errorCount = testClass.dataExceptionsTest();
-   errorTotal = errorTotal + errorCount;
-
-   errorCount = testClass.filterOperatorsTest();
-   errorTotal = errorTotal + errorCount;
+   errorTotal += testClass.headerExceptionTest();
+   errorTotal += testClass.hardCodeTest();
+   errorTotal += testClass.dataExceptionsTest();
+   errorTotal += testClass.filterOperatorsTest();
 
    testClass.toConversionTest();
 
-   errorCount = testClass.version3ToVersion2Test();
-   errorTotal = errorTotal + errorCount;
+   errorTotal += testClass.version3ToVersion2Test();
+   errorTotal += testClass.version2ToVersion3Test();
+   errorTotal += testClass.roundTripTest();
 
-   errorCount = testClass.version2ToVersion3Test();
-   errorTotal = errorTotal + errorCount;
-
-   std::cout << "Total Failures for " << __FILE__ << ": " << errorTotal << std::endl;
+   std::cout << "Total Failures for " << __FILE__ << ": " << errorTotal
+             << std::endl;
 
    return( errorTotal );
 }
