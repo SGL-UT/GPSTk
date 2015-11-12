@@ -55,67 +55,110 @@ using namespace gpstk::StringUtils;
 
 namespace gpstk
 {
-   const string Rinex3ObsHeader::stringVersion           = "RINEX VERSION / TYPE";
-   const string Rinex3ObsHeader::stringRunBy             = "PGM / RUN BY / DATE";
-   const string Rinex3ObsHeader::stringComment           = "COMMENT";
-   const string Rinex3ObsHeader::stringMarkerName        = "MARKER NAME";
-   const string Rinex3ObsHeader::stringMarkerNumber      = "MARKER NUMBER";
-   const string Rinex3ObsHeader::stringMarkerType        = "MARKER TYPE";
-   const string Rinex3ObsHeader::stringObserver          = "OBSERVER / AGENCY";
-   const string Rinex3ObsHeader::stringReceiver          = "REC # / TYPE / VERS";
-   const string Rinex3ObsHeader::stringAntennaType       = "ANT # / TYPE";
-   const string Rinex3ObsHeader::stringAntennaPosition   = "APPROX POSITION XYZ";
-   const string Rinex3ObsHeader::stringAntennaDeltaHEN   = "ANTENNA: DELTA H/E/N";
-   const string Rinex3ObsHeader::stringAntennaDeltaXYZ   = "ANTENNA: DELTA X/Y/Z";
-   const string Rinex3ObsHeader::stringAntennaPhaseCtr   = "ANTENNA: PHASECENTER";
-   const string Rinex3ObsHeader::stringAntennaBsightXYZ  = "ANTENNA: B.SIGHT XYZ";
-   const string Rinex3ObsHeader::stringAntennaZeroDirAzi = "ANTENNA: ZERODIR AZI";
-   const string Rinex3ObsHeader::stringAntennaZeroDirXYZ = "ANTENNA: ZERODIR XYZ";
-   const string Rinex3ObsHeader::stringCenterOfMass      = "CENTER OF MASS: XYZ";
-   const string Rinex3ObsHeader::stringNumObs            = "# / TYPES OF OBSERV";      // R2
-   const string Rinex3ObsHeader::stringSystemNumObs      = "SYS / # / OBS TYPES";
-   const string Rinex3ObsHeader::stringWaveFact          = "WAVELENGTH FACT L1/2";     // R2
-   const string Rinex3ObsHeader::stringSigStrengthUnit   = "SIGNAL STRENGTH UNIT";
-   const string Rinex3ObsHeader::stringInterval          = "INTERVAL";
-   const string Rinex3ObsHeader::stringFirstTime         = "TIME OF FIRST OBS";
-   const string Rinex3ObsHeader::stringLastTime          = "TIME OF LAST OBS";
-   const string Rinex3ObsHeader::stringReceiverOffset    = "RCV CLOCK OFFS APPL";
-   const string Rinex3ObsHeader::stringSystemDCBSapplied = "SYS / DCBS APPLIED";
-   const string Rinex3ObsHeader::stringSystemPCVSapplied = "SYS / PCVS APPLIED";
-   const string Rinex3ObsHeader::stringSystemScaleFac    = "SYS / SCALE FACTOR";
-   const string Rinex3ObsHeader::stringSystemPhaseShift  = "SYS / PHASE SHIFT";
-   const string Rinex3ObsHeader::stringGlonassSlotFreqNo = "GLONASS SLOT / FRQ #";
-   const string Rinex3ObsHeader::stringGlonassCodPhsBias = "GLONASS COD/PHS/BIS";
-   const string Rinex3ObsHeader::stringLeapSeconds       = "LEAP SECONDS";
-   const string Rinex3ObsHeader::stringNumSats           = "# OF SATELLITES";
-   const string Rinex3ObsHeader::stringPrnObs            = "PRN / # OF OBS";
-   const string Rinex3ObsHeader::stringEoH               = "END OF HEADER";
+   const string Rinex3ObsHeader::hsVersion           = "RINEX VERSION / TYPE";
+   const string Rinex3ObsHeader::hsRunBy             = "PGM / RUN BY / DATE";
+   const string Rinex3ObsHeader::hsComment           = "COMMENT";
+   const string Rinex3ObsHeader::hsMarkerName        = "MARKER NAME";
+   const string Rinex3ObsHeader::hsMarkerNumber      = "MARKER NUMBER";
+   const string Rinex3ObsHeader::hsMarkerType        = "MARKER TYPE";
+   const string Rinex3ObsHeader::hsObserver          = "OBSERVER / AGENCY";
+   const string Rinex3ObsHeader::hsReceiver          = "REC # / TYPE / VERS";
+   const string Rinex3ObsHeader::hsAntennaType       = "ANT # / TYPE";
+   const string Rinex3ObsHeader::hsAntennaPosition   = "APPROX POSITION XYZ";
+   const string Rinex3ObsHeader::hsAntennaDeltaHEN   = "ANTENNA: DELTA H/E/N";
+   const string Rinex3ObsHeader::hsAntennaDeltaXYZ   = "ANTENNA: DELTA X/Y/Z";
+   const string Rinex3ObsHeader::hsAntennaPhaseCtr   = "ANTENNA: PHASECENTER";
+   const string Rinex3ObsHeader::hsAntennaBsightXYZ  = "ANTENNA: B.SIGHT XYZ";
+   const string Rinex3ObsHeader::hsAntennaZeroDirAzi = "ANTENNA: ZERODIR AZI";
+   const string Rinex3ObsHeader::hsAntennaZeroDirXYZ = "ANTENNA: ZERODIR XYZ";
+   const string Rinex3ObsHeader::hsCenterOfMass      = "CENTER OF MASS: XYZ";
+   const string Rinex3ObsHeader::hsNumObs            = "# / TYPES OF OBSERV";
+   const string Rinex3ObsHeader::hsSystemNumObs      = "SYS / # / OBS TYPES";
+   const string Rinex3ObsHeader::hsWaveFact          = "WAVELENGTH FACT L1/2";
+   const string Rinex3ObsHeader::hsSigStrengthUnit   = "SIGNAL STRENGTH UNIT";
+   const string Rinex3ObsHeader::hsInterval          = "INTERVAL";
+   const string Rinex3ObsHeader::hsFirstTime         = "TIME OF FIRST OBS";
+   const string Rinex3ObsHeader::hsLastTime          = "TIME OF LAST OBS";
+   const string Rinex3ObsHeader::hsReceiverOffset    = "RCV CLOCK OFFS APPL";
+   const string Rinex3ObsHeader::hsSystemDCBSapplied = "SYS / DCBS APPLIED";
+   const string Rinex3ObsHeader::hsSystemPCVSapplied = "SYS / PCVS APPLIED";
+   const string Rinex3ObsHeader::hsSystemScaleFac    = "SYS / SCALE FACTOR";
+   const string Rinex3ObsHeader::hsSystemPhaseShift  = "SYS / PHASE SHIFT";
+   const string Rinex3ObsHeader::hsGlonassSlotFreqNo = "GLONASS SLOT / FRQ #";
+   const string Rinex3ObsHeader::hsGlonassCodPhsBias = "GLONASS COD/PHS/BIS";
+   const string Rinex3ObsHeader::hsLeapSeconds       = "LEAP SECONDS";
+   const string Rinex3ObsHeader::hsNumSats           = "# OF SATELLITES";
+   const string Rinex3ObsHeader::hsPrnObs            = "PRN / # OF OBS";
+   const string Rinex3ObsHeader::hsEoH               = "END OF HEADER";
 
 
    Rinex3ObsHeader::Rinex3ObsHeader()
-         : valid(0),
-           validEoH(false),
-           PisY(false),
-           preserveDate(false),
-           preserveVerType(false)
    {
+      clear();
    }
 
 
    void Rinex3ObsHeader::clear()
    {
+      version = 3.02;
+      fileType = "O";          // observation data
+      fileSys = "G";           // GPS only by default
+      preserveVerType = false; // let the write methods chose the above
+      fileSysSat = SatID(-1,SatID::systemGPS);
+      fileProgram.clear();
+      fileAgency.clear();
+      date.clear();
+      preserveDate = false;
       commentList.clear();
-      obsTypeList.clear();
-      numObsForSat.clear();
+      markerName.clear();
+      markerNumber.clear();
+      markerType.clear();
+      observer.clear();
+      agency.clear();
+      recNo.clear();
+      recType.clear();
+      recVers.clear();
+      antNo.clear();
+      antType.clear();
+      antennaPosition = Triple();
+      antennaDeltaHEN = Triple();
+      antennaDeltaXYZ = Triple();
+      antennaSatSys.clear();
+      antennaObsCode.clear();
+      antennaPhaseCtr = Triple();
+      antennaBsightXYZ = Triple();
+      antennaZeroDirAzi = 0.;
+      antennaZeroDirXYZ = Triple();
+      centerOfMass = Triple();
       mapObsTypes.clear();
       wavelengthFactor[0] = wavelengthFactor[1] = 1;
       extraWaveFactList.clear();
+      sigStrengthUnit.clear();
+      interval = 0.;
+      firstObs = CivilTime();
+      lastObs = CivilTime();
+      receiverOffset = 0;
+      infoDCBS.clear();
+      infoPCVS.clear();
+      sysSfacMap.clear();
+      sysPhaseShift.clear();
+      glonassFreqNo.clear();
+      glonassCodPhsBias.clear();
+      leapSeconds = 0;
+      numSVs = 0;
+      numObsForSat.clear();
+      obsTypeList.clear();
       valid  = 0;
       validEoH = false;
+      PisY = false;
+      sysPhaseShiftObsID = RinexObsID();
+      satSysTemp.clear();
+      satSysPrev.clear();
       numObs = 0;
-      lastPRN.id = -1;
-      preserveDate = false;
-      preserveVerType = false;
+      numObsPrev = 0;
+      lastPRN = RinexSatID();
+      factor = 0;
+      factorPrev = 0;
    }
 
 
@@ -163,13 +206,13 @@ namespace gpstk
          if(version <  3)
             msg << "# Obs Type      " << setw(8) << (valid & validNumObs) << endl;
          if(version >= 3)
-            msg << "Sys Obs Type    " << setw(8) << (valid & validSystemObsType  ) << endl;
+            msg << "Sys Obs Type    " << setw(8) << (valid & validSystemNumObs  ) << endl;
          if(version <  3)
             msg << "Wave Fact       " << setw(8) << (valid & validWaveFact) << endl;
          if(version >= 3.01)
             msg << "Sys Phs Shft    " << setw(8) << (valid & validSystemPhaseShift)<< endl;
          if(version >= 3.01)
-            msg << "GLO Freq No     " << setw(8) << (valid & validGlonassFreqNo  ) << endl;
+            msg << "GLO Freq No     " << setw(8) << (valid & validGlonassSlotFreqNo  ) << endl;
          if(version >= 3.02)
             msg << "GLO Cod-Phs Bias" << setw(8) << (valid & validGlonassCodPhsBias) << endl;
          msg << "Interval        " << setw(8) << (valid & validInterval       ) << endl;
@@ -183,7 +226,7 @@ namespace gpstk
 
       try
       {
-         WriteHeaderRecords(strm);
+         writeHeaderRecords(strm);
       }
       catch(FFStreamError& e)
       {
@@ -198,9 +241,9 @@ namespace gpstk
 
 
       // This function computes the number of valid header records
-      // which WriteHeaderRecords will write.
+      // which writeHeaderRecords will write.
       // NB not used in Rinex3Obs....
-   int Rinex3ObsHeader::NumberHeaderRecordsToBeWritten(void) const throw()
+   int Rinex3ObsHeader::numberHeaderRecordsToBeWritten(void) const throw()
    {
       int n = 0;
 
@@ -223,7 +266,7 @@ namespace gpstk
       if(version >= 3 && (valid & validCenterOfMass)) n++;
       if(version < 3 && (valid & validNumObs) && R2ObsTypes.size() != 0)
          n += 1 + (R2ObsTypes.size()-1)/9;
-      if(version >= 3 && (valid & validSystemObsType) && numObs != 0)
+      if(version >= 3 && (valid & validSystemNumObs) && numObs != 0)
          n += 1 + (numObs-1)/9;
       if(version < 3 && (valid & validWaveFact))
       {
@@ -239,7 +282,7 @@ namespace gpstk
       if(version >= 3 && (valid & validSystemPCVSapplied)) n++;
       if(version >= 3 && (valid & validSystemScaleFac)) n++;
       if(version >= 3.01 && (valid & validSystemPhaseShift)) n++;        // one per system at least
-      if(version >= 3.01 && (valid & validGlonassFreqNo)) n++;  // TODO: continuation lines...
+      if(version >= 3.01 && (valid & validGlonassSlotFreqNo)) n++;  // TODO: continuation lines...
       if(version >= 3.02 && (valid & validGlonassCodPhsBias)) n++;
       if(valid & validLeapSeconds      ) n++;
       if(valid & validNumSats          ) n++;
@@ -252,7 +295,7 @@ namespace gpstk
 
 
       // This function writes all valid header records.
-   void Rinex3ObsHeader::WriteHeaderRecords(FFStream& ffs) const
+   void Rinex3ObsHeader::writeHeaderRecords(FFStream& ffs) const
       throw(FFStreamError, StringException)
    {
       Rinex3ObsStream& strm = dynamic_cast<Rinex3ObsStream&>(ffs);
@@ -294,7 +337,7 @@ namespace gpstk
             }
             line += leftJustify(str, 20);
          }
-         line += stringVersion;
+         line += hsVersion;
          strm << line << endl;
          strm.lineNumber++;
       }
@@ -312,7 +355,7 @@ namespace gpstk
             string curDate = printTime(sysTime,"%04Y%02m%02d %02H%02M%02S %P");
             line += leftJustify(curDate, 20);
          }
-         line += stringRunBy;
+         line += hsRunBy;
          strm << line << endl;
          strm.lineNumber++;
       }
@@ -322,7 +365,7 @@ namespace gpstk
          while (itr != commentList.end())
          {
             line  = leftJustify((*itr), 60);
-            line += stringComment;
+            line += hsComment;
             strm << line << endl;
             strm.lineNumber++;
             itr++;
@@ -331,7 +374,7 @@ namespace gpstk
       if(valid & validMarkerName)
       {
          line  = leftJustify(markerName, 60);
-         line += stringMarkerName;
+         line += hsMarkerName;
          strm << line << endl;
          strm.lineNumber++;
       }
@@ -339,7 +382,7 @@ namespace gpstk
       {
          line  = leftJustify(markerNumber, 20);
          line += string(40, ' ');
-         line += stringMarkerNumber;
+         line += hsMarkerNumber;
          strm << line << endl;
          strm.lineNumber++;
       }
@@ -347,7 +390,7 @@ namespace gpstk
       {
          line  = leftJustify(markerType, 20);
          line += string(40, ' ');
-         line += stringMarkerType;
+         line += hsMarkerType;
          strm << line << endl;
          strm.lineNumber++;
       }
@@ -355,7 +398,7 @@ namespace gpstk
       {
          line  = leftJustify(observer, 20);
          line += leftJustify(agency  , 40);
-         line += stringObserver;
+         line += hsObserver;
          strm << line << endl;
          strm.lineNumber++;
       }
@@ -364,7 +407,7 @@ namespace gpstk
          line  = leftJustify(recNo  , 20);
          line += leftJustify(recType, 20);
          line += leftJustify(recVers, 20);
-         line += stringReceiver;
+         line += hsReceiver;
          strm << line << endl;
          strm.lineNumber++;
       }
@@ -373,7 +416,7 @@ namespace gpstk
          line  = leftJustify(antNo  , 20);
          line += leftJustify(antType, 20);
          line += string(20, ' ');
-         line += stringAntennaType;
+         line += hsAntennaType;
          strm << line << endl;
          strm.lineNumber++;
       }
@@ -383,7 +426,7 @@ namespace gpstk
          line += rightJustify(asString(antennaPosition[1], 4), 14);
          line += rightJustify(asString(antennaPosition[2], 4), 14);
          line += string(18, ' ');
-         line += stringAntennaPosition;
+         line += hsAntennaPosition;
          strm << line << endl;
          strm.lineNumber++;
       }
@@ -393,7 +436,7 @@ namespace gpstk
          line += rightJustify(asString(antennaDeltaHEN[1], 4), 14);
          line += rightJustify(asString(antennaDeltaHEN[2], 4), 14);
          line += string(18, ' ');
-         line += stringAntennaDeltaHEN;
+         line += hsAntennaDeltaHEN;
          strm << line << endl;
          strm.lineNumber++;
       }
@@ -403,7 +446,7 @@ namespace gpstk
          line += rightJustify(asString(antennaDeltaXYZ[1], 4), 14);
          line += rightJustify(asString(antennaDeltaXYZ[2], 4), 14);
          line += string(18, ' ');
-         line += stringAntennaDeltaXYZ;
+         line += hsAntennaDeltaXYZ;
          strm << line << endl;
          strm.lineNumber++;
       }
@@ -416,7 +459,7 @@ namespace gpstk
          line += rightJustify(asString(antennaPhaseCtr[1], 4), 14);
          line += rightJustify(asString(antennaPhaseCtr[2], 4), 14);
          line += string(18, ' ');
-         line += stringAntennaPhaseCtr;
+         line += hsAntennaPhaseCtr;
          strm << line << endl;
          strm.lineNumber++;
       }
@@ -426,7 +469,7 @@ namespace gpstk
          line += rightJustify(asString(antennaBsightXYZ[1], 4), 14);
          line += rightJustify(asString(antennaBsightXYZ[2], 4), 14);
          line += string(18, ' ');
-         line += stringAntennaBsightXYZ;
+         line += hsAntennaBsightXYZ;
          strm << line << endl;
          strm.lineNumber++;
       }
@@ -434,7 +477,7 @@ namespace gpstk
       {
          line  = rightJustify(asString(antennaZeroDirAzi, 4), 14);
          line += string(46, ' ');
-         line += stringAntennaZeroDirAzi;
+         line += hsAntennaZeroDirAzi;
          strm << line << endl;
          strm.lineNumber++;
       }
@@ -444,7 +487,7 @@ namespace gpstk
          line += rightJustify(asString(antennaZeroDirXYZ[1], 4), 14);
          line += rightJustify(asString(antennaZeroDirXYZ[2], 4), 14);
          line += string(18, ' ');
-         line += stringAntennaZeroDirXYZ;
+         line += hsAntennaZeroDirXYZ;
          strm << line << endl;
          strm.lineNumber++;
       }
@@ -454,7 +497,7 @@ namespace gpstk
          line += rightJustify(asString(centerOfMass[1], 4), 14);
          line += rightJustify(asString(centerOfMass[2], 4), 14);
          line += string(18, ' ');
-         line += stringCenterOfMass;
+         line += hsCenterOfMass;
          strm << line << endl;
          strm.lineNumber++;
       }
@@ -474,7 +517,7 @@ namespace gpstk
                // if you hit 9, write out the line and start a new one
             else if((obsWritten % maxObsPerLine) == 0)
             {
-               line += stringNumObs;
+               line += hsNumObs;
                strm << line << endl;
                strm.lineNumber++;
                line  = string(6, ' ');
@@ -485,11 +528,11 @@ namespace gpstk
          }
 
          line += string(60 - line.size(), ' ');
-         line += stringNumObs;
+         line += hsNumObs;
          strm << line << endl;
          strm.lineNumber++;
       }
-      if(version >= 3 && (valid & validSystemObsType))
+      if(version >= 3 && (valid & validSystemNumObs))
       {
          static const int maxObsPerLine = 13;
 
@@ -515,7 +558,7 @@ namespace gpstk
                else if((obsWritten % maxObsPerLine) == 0)
                {
                   line += string(2, ' ');
-                  line += stringSystemNumObs;
+                  line += hsSystemNumObs;
                   strm << line << endl;
                   strm.lineNumber++;
                   line  = string(6, ' ');
@@ -525,7 +568,7 @@ namespace gpstk
                obsWritten++;
             }
             line += string(60 - line.size(), ' ');
-            line += stringSystemNumObs;
+            line += hsSystemNumObs;
             strm << line << endl;
             strm.lineNumber++;
          }
@@ -536,7 +579,7 @@ namespace gpstk
          line  = rightJustify(asString<short>(wavelengthFactor[0]),6);
          line += rightJustify(asString<short>(wavelengthFactor[1]),6);
          line += string(48, ' ');
-         line += stringWaveFact;
+         line += hsWaveFact;
          strm << line << endl;
          strm.lineNumber++;
          
@@ -575,7 +618,7 @@ namespace gpstk
                   {
                         // output a complete line
                      line += string(60 - line.size(), ' ');
-                     line += stringWaveFact;
+                     line += hsWaveFact;
                      strm << line << endl;
                      strm.lineNumber++;
                      satsWritten = 0;
@@ -590,7 +633,7 @@ namespace gpstk
       {
          line  = leftJustify(sigStrengthUnit, 20);
          line += string(40, ' ');
-         line += stringSigStrengthUnit;
+         line += hsSigStrengthUnit;
          strm << line << endl;
          strm.lineNumber++;
       }
@@ -598,7 +641,7 @@ namespace gpstk
       {
          line  = rightJustify(asString(interval, 3), 10);
          line += string(50, ' ');
-         line += stringInterval;
+         line += hsInterval;
          strm << line << endl;
          strm.lineNumber++;
       }
@@ -606,7 +649,7 @@ namespace gpstk
       {
          line  = writeTime(firstObs);
          line += string(60 - line.size(), ' ');
-         line += stringFirstTime;
+         line += hsFirstTime;
          strm << line << endl;
          strm.lineNumber++;
       }
@@ -614,7 +657,7 @@ namespace gpstk
       {
          line  = writeTime(lastObs);
          line += string(60 - line.size(), ' ');
-         line += stringLastTime;
+         line += hsLastTime;
          strm << line << endl;
          strm.lineNumber++;
       }
@@ -622,7 +665,7 @@ namespace gpstk
       {
          line  = rightJustify(asString(receiverOffset), 6);
          line += string(54, ' ');
-         line += stringReceiverOffset;
+         line += hsReceiverOffset;
          strm << line << endl;
          strm.lineNumber++;
       }
@@ -635,7 +678,7 @@ namespace gpstk
             line += leftJustify(infoDCBS[i].name  , 17);
             line += string(1, ' ');
             line += leftJustify(infoDCBS[i].source, 40);
-            line += stringSystemDCBSapplied;
+            line += hsSystemDCBSapplied;
             strm << line << endl;
             strm.lineNumber++;
          }
@@ -649,7 +692,7 @@ namespace gpstk
             line += leftJustify(infoPCVS[i].name  , 17);
             line += string(1, ' ');
             line += leftJustify(infoPCVS[i].source, 40);
-            line += stringSystemPCVSapplied;
+            line += hsSystemPCVSapplied;
             strm << line << endl;
             strm.lineNumber++;
          }
@@ -663,7 +706,7 @@ namespace gpstk
          vector<string> obsTypes;
 
             // loop over GNSSes
-         map<string, sfacMap>::const_iterator mapIter;
+         map<string, ScaleFacMap>::const_iterator mapIter;
          for(mapIter = sysSfacMap.begin(); mapIter != sysSfacMap.end(); mapIter++)
          {
             map<RinexObsID, int>::const_iterator iter;
@@ -697,7 +740,7 @@ namespace gpstk
                   {
                         // need continuation; end current line
                      line += string(2, ' ');
-                     line += stringSystemScaleFac;
+                     line += hsSystemScaleFac;
                      strm << line << endl;
                      strm.lineNumber++;
                      line  = string(10, ' ');
@@ -707,7 +750,7 @@ namespace gpstk
                }
                int space = 60 - 10 - 4*(count % maxObsPerLine);
                line += string(space, ' ');
-               line += stringSystemScaleFac;
+               line += hsSystemScaleFac;
                strm << line << endl;
                strm.lineNumber++;
             }
@@ -725,7 +768,7 @@ namespace gpstk
             {
                line  = sys;
                line += string(60-line.length(), ' ');
-               line += stringSystemPhaseShift;
+               line += hsSystemPhaseShift;
                strm << line << endl;
                strm.lineNumber++;
             }
@@ -742,7 +785,7 @@ namespace gpstk
                   if(sat.id == -1)
                   {
                      line += string(60-line.length(), ' ');
-                     line += stringSystemPhaseShift;
+                     line += hsSystemPhaseShift;
                      strm << line << endl;
                      strm.lineNumber++;
                   }
@@ -762,7 +805,7 @@ namespace gpstk
                         {
                               // end this line
                            line += string(60-line.length(), ' ');
-                           line += stringSystemPhaseShift;
+                           line += hsSystemPhaseShift;
                            strm << line << endl;
                            strm.lineNumber++;
                            n = 0;
@@ -776,26 +819,26 @@ namespace gpstk
             } // else
          } // for(it=sysPhaseShift.begin(); it!=sysPhaseShift.end(); ++it)
       } // if(version >= 3.01 && (valid & validSystemPhaseShift))
-      if(version >= 3.01 && (valid & validGlonassFreqNo))
+      if(version >= 3.01 && (valid & validGlonassSlotFreqNo))
       {
             //map<RinexSatID,int> GlonassFreqNo;
-         size_t n(0),nsat(GlonassFreqNo.size());
+         size_t n(0),nsat(glonassFreqNo.size());
          line = rightJustify(asString(nsat),3) + string(" ");
          map<RinexSatID,int>::const_iterator it,kt;
-         for(it = GlonassFreqNo.begin(); it != GlonassFreqNo.end(); ++it)
+         for(it = glonassFreqNo.begin(); it != glonassFreqNo.end(); ++it)
          {
             line += it->first.toString();
             line += rightJustify(asString(it->second),3);
-            if(++n == 8 || ++(kt=it) == GlonassFreqNo.end())
+            if(++n == 8 || ++(kt=it) == glonassFreqNo.end())
             {
                   // write it
                line += string(60-line.length(), ' ');
-               line += stringGlonassSlotFreqNo;
+               line += hsGlonassSlotFreqNo;
                strm << line << endl;
                strm.lineNumber++;
                n = 0;
                   // are there more for a continuation line?
-               if(kt != GlonassFreqNo.end())
+               if(kt != glonassFreqNo.end())
                   line = string(4,' ');
             }
          }
@@ -807,11 +850,11 @@ namespace gpstk
          for(int i=0; i<4; i++)
          {
             RinexObsID obsid(RinexObsID("R"+labs[i]));
-            it = GlonassCodePhaseBias.find(obsid);
-            double bias = (it == GlonassCodePhaseBias.end() ? it->second : 0.0);
+            it = glonassCodPhsBias.find(obsid);
+            double bias = (it == glonassCodPhsBias.end() ? it->second : 0.0);
             line += " " + labs[i] + rightJustify(asString(bias,3),8);
          }
-         line += "        " + stringGlonassCodPhsBias;
+         line += "        " + hsGlonassCodPhsBias;
          strm << line << endl;
          strm.lineNumber++;
       }
@@ -819,7 +862,7 @@ namespace gpstk
       {
          line  = rightJustify(asString(leapSeconds), 6);
          line += string(54, ' ');
-         line += stringLeapSeconds;
+         line += hsLeapSeconds;
          strm << line << endl;
          strm.lineNumber++;
       }
@@ -827,7 +870,7 @@ namespace gpstk
       {
          line  = rightJustify(asString(numSVs), 6);
          line += string(54, ' ');
-         line += stringNumSats;
+         line += hsNumSats;
          strm << line << endl;
          strm.lineNumber++;
       }
@@ -882,7 +925,7 @@ namespace gpstk
                else if((numObsWritten % maxObsPerLine) == 0)
                {
                      // end of line
-                  line += stringPrnObs;
+                  line += hsPrnObs;
                   strm << line << endl;
                   strm.lineNumber++;
                   line  = string(6, ' ');
@@ -895,7 +938,7 @@ namespace gpstk
 
                // finish last line
             line += string(60 - line.size(), ' ');
-            line += stringPrnObs;
+            line += hsPrnObs;
             strm << line << endl;
             strm.lineNumber++;
             itr++;
@@ -904,21 +947,21 @@ namespace gpstk
       if(validEoH)
       {
          line  = string(60, ' ');
-         line += stringEoH;
+         line += hsEoH;
          strm << line << endl;
          strm.lineNumber++;
       }
-   } // end WriteHeaderRecords
+   } // end writeHeaderRecords
 
 
       // This function parses a single header record.
-   void Rinex3ObsHeader::ParseHeaderRecord(string& line)
+   void Rinex3ObsHeader::parseHeaderRecord(string& line)
       throw(FFStreamError)
    {
       int i;
       string label(line, 60, 20);
          
-      if(label == stringVersion)
+      if(label == hsVersion)
       {
          version  = asDouble(line.substr( 0,20));
          fileType = strip(   line.substr(20,20));
@@ -941,74 +984,74 @@ namespace gpstk
 
          valid |= validVersion;
       }
-      else if(label == stringRunBy)
+      else if(label == hsRunBy)
       {
          fileProgram = strip(line.substr( 0,20));
          fileAgency  = strip(line.substr(20,20));
          date        = strip(line.substr(40,20));
          valid |= validRunBy;
       }
-      else if(label == stringComment)
+      else if(label == hsComment)
       {
          commentList.push_back(strip(line.substr(0,60)));
          valid |= validComment;
       }
-      else if(label == stringMarkerName)
+      else if(label == hsMarkerName)
       {
          markerName = strip(line.substr(0,60));
          valid |= validMarkerName;
       }
-      else if(label == stringMarkerNumber)
+      else if(label == hsMarkerNumber)
       {
          markerNumber = strip(line.substr(0,20));
          valid |= validMarkerNumber;
       }
-      else if(label == stringMarkerType)
+      else if(label == hsMarkerType)
       {
          markerType = strip(line.substr(0,20));
          valid |= validMarkerType;
       }
-      else if(label == stringObserver)
+      else if(label == hsObserver)
       {
          observer = strip(line.substr( 0,20));
          agency   = strip(line.substr(20,40));
          valid |= validObserver;
       }
-      else if(label == stringReceiver)
+      else if(label == hsReceiver)
       {
          recNo   = strip(line.substr( 0,20));
          recType = strip(line.substr(20,20));
          recVers = strip(line.substr(40,20));
          valid |= validReceiver;
       }
-      else if(label ==stringAntennaType)
+      else if(label ==hsAntennaType)
       {
          antNo   = strip(line.substr( 0,20));
          antType = strip(line.substr(20,20));
          valid |= validAntennaType;
       }
-      else if(label == stringAntennaPosition)
+      else if(label == hsAntennaPosition)
       {
          antennaPosition[0] = asDouble(line.substr( 0,14));
          antennaPosition[1] = asDouble(line.substr(14,14));
          antennaPosition[2] = asDouble(line.substr(28,14));
          valid |= validAntennaPosition;
       }
-      else if(label == stringAntennaDeltaHEN)
+      else if(label == hsAntennaDeltaHEN)
       {
          antennaDeltaHEN[0] = asDouble(line.substr( 0,14));
          antennaDeltaHEN[1] = asDouble(line.substr(14,14));
          antennaDeltaHEN[2] = asDouble(line.substr(28,14));
          valid |= validAntennaDeltaHEN;
       }
-      else if(label == stringAntennaDeltaXYZ)
+      else if(label == hsAntennaDeltaXYZ)
       {
          antennaDeltaXYZ[0] = asDouble(line.substr( 0,14));
          antennaDeltaXYZ[1] = asDouble(line.substr(14,14));
          antennaDeltaXYZ[2] = asDouble(line.substr(28,14));
          valid |= validAntennaDeltaXYZ;
       }
-      else if(label == stringAntennaPhaseCtr)
+      else if(label == hsAntennaPhaseCtr)
       {
          antennaSatSys  = strip(line.substr(0,2));
          antennaObsCode = strip(line.substr(2,3));
@@ -1017,33 +1060,33 @@ namespace gpstk
          antennaPhaseCtr[2] = asDouble(line.substr(28,14));
          valid |= validAntennaPhaseCtr;
       }
-      else if(label == stringAntennaBsightXYZ)
+      else if(label == hsAntennaBsightXYZ)
       {
          antennaBsightXYZ[0] = asDouble(line.substr( 0,14));
          antennaBsightXYZ[1] = asDouble(line.substr(14,14));
          antennaBsightXYZ[2] = asDouble(line.substr(28,14));
          valid |= validAntennaBsightXYZ;
       }
-      else if(label == stringAntennaZeroDirAzi)
+      else if(label == hsAntennaZeroDirAzi)
       {
          antennaZeroDirAzi = asDouble(line.substr(0,14));
          valid |= validAntennaBsightXYZ;
       }
-      else if(label == stringAntennaZeroDirXYZ)
+      else if(label == hsAntennaZeroDirXYZ)
       {
          antennaZeroDirXYZ[0] = asDouble(line.substr( 0,14));
          antennaZeroDirXYZ[1] = asDouble(line.substr(14,14));
          antennaZeroDirXYZ[2] = asDouble(line.substr(28,14));
          valid |= validAntennaBsightXYZ;
       }
-      else if(label == stringCenterOfMass)
+      else if(label == hsCenterOfMass)
       {
          centerOfMass[0] = asDouble(line.substr( 0,14));
          centerOfMass[1] = asDouble(line.substr(14,14));
          centerOfMass[2] = asDouble(line.substr(28,14));
          valid |= validCenterOfMass;
       }
-      else if(label == stringNumObs)        // R2 only
+      else if(label == hsNumObs)        // R2 only
       {
          if(version >= 3)
          {
@@ -1083,7 +1126,7 @@ namespace gpstk
             R2ObsTypes = newTypeList;
          }
       }
-      else if(label == stringSystemNumObs)
+      else if(label == hsSystemNumObs)
       {
          if(version < 3)
          {
@@ -1134,9 +1177,9 @@ namespace gpstk
          satSysPrev = satSysTemp;
          numObsPrev = numObs;
 
-         valid |= validSystemObsType;
+         valid |= validSystemNumObs;
       }
-      else if(label == stringWaveFact)         // R2 only
+      else if(label == hsWaveFact)         // R2 only
       {
             // first time reading this
          if(!(valid & validWaveFact))
@@ -1157,7 +1200,7 @@ namespace gpstk
                
             if(Nsats > maxSatsPerLine)   // > not >=
             {
-               FFStreamError e("Invalid number of Sats for " + stringWaveFact);
+               FFStreamError e("Invalid number of Sats for " + hsWaveFact);
                GPSTK_THROW(e);
             }
                
@@ -1178,33 +1221,33 @@ namespace gpstk
             extraWaveFactList.push_back(ewf);
          }
       }
-      else if(label == stringSigStrengthUnit)
+      else if(label == hsSigStrengthUnit)
       {
          sigStrengthUnit = strip(line.substr(0,20));
          valid |= validSigStrengthUnit;
       }
-      else if(label == stringInterval)
+      else if(label == hsInterval)
       {
          interval = asDouble(line.substr(0,10));
          valid |= validInterval;
       }
-      else if(label == stringFirstTime)
+      else if(label == hsFirstTime)
       {
          firstObs = parseTime(line);
          valid |= validFirstTime;
       }
-      else if(label == stringLastTime)
+      else if(label == hsLastTime)
       {
          lastObs = parseTime(line);
          valid |= validLastTime;
       }
-      else if(label == stringReceiverOffset)
+      else if(label == hsReceiverOffset)
       {
          receiverOffset = asInt(line.substr(0,6));
          valid |= validReceiverOffset;
       }
 
-      else if(label == stringSystemDCBSapplied)
+      else if(label == hsSystemDCBSapplied)
       {
          Rinex3CorrInfo tempInfo;
          tempInfo.satSys = strip(line.substr( 0, 1));
@@ -1213,7 +1256,7 @@ namespace gpstk
          infoDCBS.push_back(tempInfo);
          valid |= validSystemDCBSapplied;
       }
-      else if(label == stringSystemPCVSapplied)
+      else if(label == hsSystemPCVSapplied)
       {
          Rinex3CorrInfo tempInfo;
          tempInfo.satSys = strip(line.substr( 0, 1));
@@ -1222,7 +1265,7 @@ namespace gpstk
          infoPCVS.push_back(tempInfo);
          valid |= validSystemPCVSapplied;
       }
-      else if(label == stringSystemScaleFac)
+      else if(label == hsSystemScaleFac)
       {
          static const int maxObsPerLine = 12;
 
@@ -1246,7 +1289,7 @@ namespace gpstk
             // in appropriate obsTypeList
          if(numObs == 0) numObs = mapObsTypes[satSysTemp].size();
 
-         sfacMap tempSfacMap = sysSfacMap[satSysTemp];
+         ScaleFacMap tempSfacMap = sysSfacMap[satSysTemp];
          for(i = startPosition;
              (i < numObs) && ((i % maxObsPerLine) < maxObsPerLine); i++)
          {
@@ -1256,8 +1299,8 @@ namespace gpstk
          }
          sysSfacMap[satSysTemp] = tempSfacMap;
 
-         sfacMap::const_iterator iter;
-         sfacMap tempmap;
+         ScaleFacMap::const_iterator iter;
+         ScaleFacMap tempmap;
          tempmap = sysSfacMap[satSysTemp];
 
             // save values in case next line is a continuation line
@@ -1267,7 +1310,7 @@ namespace gpstk
 
          valid |= validSystemScaleFac;
       }
-      else if(label == stringSystemPhaseShift) ///< "SYS / PHASE SHIFT"    R3.01
+      else if(label == hsSystemPhaseShift) ///< "SYS / PHASE SHIFT"    R3.01
       {
          RinexSatID sat;
             // system
@@ -1342,9 +1385,9 @@ namespace gpstk
             valid |= validSystemPhaseShift;
          }
       }
-      else if(label == stringGlonassSlotFreqNo)
+      else if(label == hsGlonassSlotFreqNo)
       {
-            //map<RinexSatID,int> GlonassFreqNo;
+            //map<RinexSatID,int> glonassFreqNo;
          int tmp;
          RinexSatID sat;
          string str(strip(line.substr(0,3)));
@@ -1356,35 +1399,35 @@ namespace gpstk
             sat = RinexSatID(str);
             str = strip(line.substr(8+i*7,2));
             tmp = asInt(str);
-            GlonassFreqNo.insert(make_pair(sat,tmp));
+            glonassFreqNo.insert(make_pair(sat,tmp));
          }
 
-         valid |= validGlonassFreqNo;
+         valid |= validGlonassSlotFreqNo;
       }
-      else if(label == stringGlonassCodPhsBias)
+      else if(label == hsGlonassCodPhsBias)
       {
-            //std::map<RinexObsID,double> GlonassCodePhaseBias; ///< "GLONASS COD/PHS/BIS"            R3.02
+            //std::map<RinexObsID,double> glonassCodPhsBias; ///< "GLONASS COD/PHS/BIS"            R3.02
          for(i=0; i<4; i++)
          {
             string str(strip(line.substr(i*13+1,3)));
             if(str.empty()) continue;
             RinexObsID obsid("R"+str);
             double bias(asDouble(strip(line.substr(i*13+5,8))));
-            GlonassCodePhaseBias[obsid] = bias;
+            glonassCodPhsBias[obsid] = bias;
          }
          valid |= validGlonassCodPhsBias;
       }
-      else if(label == stringLeapSeconds)
+      else if(label == hsLeapSeconds)
       {
          leapSeconds = asInt(line.substr(0,6));
          valid |= validLeapSeconds;
       }
-      else if(label == stringNumSats)
+      else if(label == hsNumSats)
       {
          numSVs = asInt(line.substr(0,6)) ;
          valid |= validNumSats;
       }
-      else if(label == stringPrnObs)
+      else if(label == hsPrnObs)
       {
             // this assumes 'PRN / # OF OBS' comes after '# / TYPES OF OBSERV' or 'SYS / # / OBS TYPES'
          static const int maxObsPerLine = 9;
@@ -1445,7 +1488,7 @@ namespace gpstk
 
          valid |= validPrnObs;
       }
-      else if(label == stringEoH)
+      else if(label == hsEoH)
       {
          validEoH = true;
       }
@@ -1454,7 +1497,7 @@ namespace gpstk
          FFStreamError e("Unidentified label: >" + label + "<");
          GPSTK_THROW(e);
       }
-   } // end of ParseHeaderRecord
+   } // end of parseHeaderRecord
 
 
       // This function parses the entire header from the given stream
@@ -1493,7 +1536,7 @@ namespace gpstk
 
          try
          {
-            ParseHeaderRecord(line);
+            parseHeaderRecord(line);
          }
          catch(FFStreamError& e)
          {
@@ -1635,7 +1678,7 @@ namespace gpstk
          // Since technically the Phase Shift record is required in ver 3.01,
          // create SystemPhaseShift record(s) if not present.
          //map<string, map<RinexObsID, map<RinexSatID,double> > > sysPhaseShift;
-      if(version >= 3.01 && (valid & validSystemObsType)
+      if(version >= 3.01 && (valid & validSystemNumObs)
          && !(valid & validSystemPhaseShift))
       {
             // loop over obs types to get systems
@@ -1760,7 +1803,7 @@ namespace gpstk
    } // end writeTime
 
       // Compute map of obs types for use in writing version 2 header and data, call before writing
-   void Rinex3ObsHeader::PrepareVer2Write(void) throw()
+   void Rinex3ObsHeader::prepareVer2Write(void) throw()
    {
       size_t i;
 
@@ -1833,7 +1876,7 @@ namespace gpstk
       }  // end if mapSysR2toR3ObsID is defined already
          // else version 2 was read and R2ObsTypes and mapSysR2toR3ObsID were filled in reallyGet
 
-   }  // end PrepareVer2Write()
+   }  // end prepareVer2Write()
 
    void Rinex3ObsHeader::dump(ostream& s) const
    {
@@ -1909,10 +1952,10 @@ namespace gpstk
          if(!(valid & validAntennaPosition)) s << " Antenna Position\n";
          if(!(valid & validAntennaDeltaHEN)) s << " Antenna Delta HEN\n";
          if(version < 3 && !(valid & validNumObs)) s << " # / TYPES OF OBSERV\n";
-         if(version >= 3 && !(valid & validSystemObsType  )) s << " Sys / # / Obs Type\n";
+         if(version >= 3 && !(valid & validSystemNumObs  )) s << " Sys / # / Obs Type\n";
          if(!(valid & validFirstTime)) s << " Time of First Obs\n";
          if(version >= 3.01 && !(valid & validSystemPhaseShift)) s << " SYS / PHASE SHIFT\n";
-         if(version >= 3.01 && !(valid & validGlonassFreqNo)) s << " GLONASS SLOT / FRQ #\n";
+         if(version >= 3.01 && !(valid & validGlonassSlotFreqNo)) s << " GLONASS SLOT / FRQ #\n";
          if(version >= 3.02 && !(valid & validGlonassCodPhsBias)) s << " GLONASS COD/PHS/BIS\n";
          if(!(validEoH)) s << " END OF HEADER\n";
          s << "END Invalid header records." << endl;
@@ -1980,7 +2023,7 @@ namespace gpstk
       }
       if(valid & validSystemScaleFac   )
       {
-         map<string, sfacMap>::const_iterator mapIter;
+         map<string, ScaleFacMap>::const_iterator mapIter;
             // loop over GNSSes
          for(mapIter = sysSfacMap.begin(); mapIter != sysSfacMap.end(); mapIter++)
          {
@@ -2015,12 +2058,12 @@ namespace gpstk
             }
          }
       }
-      if(valid & validGlonassFreqNo)
+      if(valid & validGlonassSlotFreqNo)
       {
          int n(0);
          map<RinexSatID,int>::const_iterator it;
          s << "GLONASS frequency channels:\n";
-         for(it=GlonassFreqNo.begin(); it!=GlonassFreqNo.end(); ++it)
+         for(it=glonassFreqNo.begin(); it!=glonassFreqNo.end(); ++it)
          {
             s << " " << it->first.toString() << " " << setw(2) << it->second;
             if(++n > 1 && (n%8)==0) s << endl;
@@ -2031,7 +2074,7 @@ namespace gpstk
       {
          map<RinexObsID,double>::const_iterator it;
          s << "GLONASS Code-phase biases:\n" << fixed << setprecision(3);
-         for(it=GlonassCodePhaseBias.begin(); it!=GlonassCodePhaseBias.end(); ++it)
+         for(it=glonassCodPhsBias.begin(); it!=glonassCodPhsBias.end(); ++it)
             s << " " << it->first.asString() << " " << setw(8) << it->second;
          s << endl;
       }
@@ -2082,23 +2125,24 @@ namespace gpstk
        *
        * @param type String representing the observation type.
        */
-   int Rinex3ObsHeader::getObsIndex( std::string type ) const
+   int Rinex3ObsHeader::getObsIndex(const std::string& type ) const
       throw(InvalidRequest)
    {
-
+      std::string newType(type);
+      
          // 'old-style' type: Let's change it to 'new style'.
-      if( type.size() == 2 )
+      if( newType.size() == 2 )
       {
-         if( type == "C1" ) type = "C1C";
-         else if( type == "P1" ) type = "C1P";
-         else if( type == "L1" ) type = "L1P";
-         else if( type == "D1" ) type = "D1P";
-         else if( type == "S1" ) type = "S1P";
-         else if( type == "C2" ) type = "C2C";
-         else if( type == "P2" ) type = "C2P";
-         else if( type == "L2" ) type = "L2P";
-         else if( type == "D2" ) type = "D2P";
-         else if( type == "S2" ) type = "S2P";
+         if( newType == "C1" ) newType = "C1C";
+         else if( newType == "P1" ) newType = "C1P";
+         else if( newType == "L1" ) newType = "L1P";
+         else if( newType == "D1" ) newType = "D1P";
+         else if( newType == "S1" ) newType = "S1P";
+         else if( newType == "C2" ) newType = "C2C";
+         else if( newType == "P2" ) newType = "C2P";
+         else if( newType == "L2" ) newType = "L2P";
+         else if( newType == "D2" ) newType = "D2P";
+         else if( newType == "S2" ) newType = "S2P";
          else
          {
             InvalidRequest exc("Invalid type.");
@@ -2107,23 +2151,23 @@ namespace gpstk
       }
 
          // Add GNSS code. By default the system is GPS
-      if( type.size() == 3 )
+      if( newType.size() == 3 )
       {
-         type = "G" + type;
+         newType = "G" + newType;
       }
 
-         // Check if resulting 'type' is valid
-      if( !isValidRinexObsID(type) )
+         // Check if resulting 'newType' is valid
+      if( !isValidRinexObsID(newType) )
       {
-         InvalidRequest ir(type + " is not a valid RinexObsID!.");
+         InvalidRequest ir(newType + " is not a valid RinexObsID!.");
          GPSTK_THROW(ir);
       }
 
-         // Extract the GNSS from the type
-      string sysStr( type, 0, 1 );
+         // Extract the GNSS from the newType
+      string sysStr( newType, 0, 1 );
       
-         // Create a RinexObsID object from current type
-      RinexObsID robs(type);
+         // Create a RinexObsID object from current newType
+      RinexObsID robs(newType);
 
          // We need to look for the GNSS in the map
       map<std::string,vector<RinexObsID> >::const_iterator it;
@@ -2151,7 +2195,7 @@ namespace gpstk
          // This observation type is not stored
       if( !found )
       {
-         InvalidRequest ir(type + " RinexObsID is not stored!.");
+         InvalidRequest ir(newType + " RinexObsID is not stored!.");
          GPSTK_THROW(ir);
       }
 
@@ -2181,63 +2225,63 @@ namespace gpstk
 
          // only comparing first character of file type because that's
          // all that matters according to RINEX
-      lineMap[stringVersion] =
+      lineMap[hsVersion] =
          ((version == right.version) &&
           (fileType[0] == right.fileType[0]) &&
           (fileSysSat.system == right.fileSysSat.system));
-      lineMap[stringRunBy] =
+      lineMap[hsRunBy] =
          ((fileProgram == right.fileProgram) &&
           (fileAgency == right.fileAgency) &&
           (date == right.date));
-      lineMap[stringComment] = (lcomments == rcomments);
-      lineMap[stringMarkerName] = (markerName == right.markerName);
-      lineMap[stringMarkerNumber] = (markerNumber == right.markerNumber);
-      lineMap[stringMarkerType] = (markerType == right.markerType);
-      lineMap[stringObserver] =
+      lineMap[hsComment] = (lcomments == rcomments);
+      lineMap[hsMarkerName] = (markerName == right.markerName);
+      lineMap[hsMarkerNumber] = (markerNumber == right.markerNumber);
+      lineMap[hsMarkerType] = (markerType == right.markerType);
+      lineMap[hsObserver] =
          ((observer == right.observer) &&
           (agency == right.agency));
-      lineMap[stringReceiver] =
+      lineMap[hsReceiver] =
          ((recNo == right.recNo) &&
           (recType == right.recType) &&
           (recVers == right.recVers));
-      lineMap[stringAntennaType] =
+      lineMap[hsAntennaType] =
          ((antNo == right.antNo) &&
           (antType == right.antType));
-      lineMap[stringAntennaPosition] =
+      lineMap[hsAntennaPosition] =
          (antennaPosition == right.antennaPosition);
-      lineMap[stringAntennaDeltaHEN] =
+      lineMap[hsAntennaDeltaHEN] =
          (antennaDeltaHEN == right.antennaDeltaHEN);
-      lineMap[stringAntennaDeltaXYZ] =
+      lineMap[hsAntennaDeltaXYZ] =
          (antennaDeltaXYZ == right.antennaDeltaXYZ);
-      lineMap[stringAntennaPhaseCtr] =
+      lineMap[hsAntennaPhaseCtr] =
          (antennaPhaseCtr == right.antennaPhaseCtr);
-      lineMap[stringAntennaBsightXYZ] =
+      lineMap[hsAntennaBsightXYZ] =
          (antennaBsightXYZ == right.antennaBsightXYZ);
-      lineMap[stringAntennaZeroDirAzi] =
+      lineMap[hsAntennaZeroDirAzi] =
          (antennaZeroDirAzi == right.antennaZeroDirAzi);
-      lineMap[stringAntennaZeroDirXYZ] =
+      lineMap[hsAntennaZeroDirXYZ] =
          (antennaZeroDirXYZ == right.antennaZeroDirXYZ);
-      lineMap[stringCenterOfMass] = (centerOfMass == right.centerOfMass);
-      lineMap[stringNumObs] = (lobs == robs);
-      lineMap[stringSystemNumObs] = true;
-      lineMap[stringWaveFact] =
+      lineMap[hsCenterOfMass] = (centerOfMass == right.centerOfMass);
+      lineMap[hsNumObs] = (lobs == robs);
+      lineMap[hsSystemNumObs] = true;
+      lineMap[hsWaveFact] =
          (memcmp(wavelengthFactor, right.wavelengthFactor,
                  sizeof(wavelengthFactor)) == 0);
-      lineMap[stringSigStrengthUnit] =
+      lineMap[hsSigStrengthUnit] =
          (sigStrengthUnit == right.sigStrengthUnit);
-      lineMap[stringInterval] = (interval == right.interval);
-      lineMap[stringFirstTime] = (firstObs == right.firstObs);
-      lineMap[stringLastTime] = (lastObs == right.lastObs);
-      lineMap[stringReceiverOffset] = (receiverOffset == right.receiverOffset);
-      lineMap[stringSystemDCBSapplied] = true;
-      lineMap[stringSystemPCVSapplied] = true;
-      lineMap[stringSystemScaleFac] = true;
-      lineMap[stringSystemPhaseShift] = true;
-      lineMap[stringGlonassSlotFreqNo] = true;
-      lineMap[stringGlonassCodPhsBias] = true;
-      lineMap[stringLeapSeconds] = (leapSeconds == right.leapSeconds);
-      lineMap[stringNumSats] = (numSVs == right.numSVs);
-      lineMap[stringPrnObs] = true;
+      lineMap[hsInterval] = (interval == right.interval);
+      lineMap[hsFirstTime] = (firstObs == right.firstObs);
+      lineMap[hsLastTime] = (lastObs == right.lastObs);
+      lineMap[hsReceiverOffset] = (receiverOffset == right.receiverOffset);
+      lineMap[hsSystemDCBSapplied] = true;
+      lineMap[hsSystemPCVSapplied] = true;
+      lineMap[hsSystemScaleFac] = true;
+      lineMap[hsSystemPhaseShift] = true;
+      lineMap[hsGlonassSlotFreqNo] = true;
+      lineMap[hsGlonassCodPhsBias] = true;
+      lineMap[hsLeapSeconds] = (leapSeconds == right.leapSeconds);
+      lineMap[hsNumSats] = (numSVs == right.numSVs);
+      lineMap[hsPrnObs] = true;
          // ...then filter by inclExclList later
       if (incl)
       {

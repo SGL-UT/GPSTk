@@ -328,12 +328,12 @@ int Rinex3Obs_T :: headerExceptionTest( void )
          // gpstk::DisplayExtendedRinexObsTypes( dump );
          // testID.dump( dump );
 
-         // std::cout<<Rinex3ObsFileh.NumberHeaderRecordsToBeWritten()<<std::endl;
+         // std::cout<<Rinex3ObsFileh.numberHeaderRecordsToBeWritten()<<std::endl;
 
       if ( Rinex3ObsFileh.version == 2.1 ) HeaderRecordNumber = 40;
       if ( Rinex3ObsFileh.version > 3 ) HeaderRecordNumber = 30; 
 
-      test1.assert( HeaderRecordNumber == Rinex3ObsFileh.NumberHeaderRecordsToBeWritten(), msg_test_desc + msg_false_pass, __LINE__ );
+      test1.assert( HeaderRecordNumber == Rinex3ObsFileh.numberHeaderRecordsToBeWritten(), msg_test_desc + msg_false_pass, __LINE__ );
    }
    catch(gpstk::Exception e)
    {
@@ -573,7 +573,7 @@ int Rinex3Obs_T :: version3ToVersion2Test( void )
 
    inputStream >> ObsHeader;
 
-   ObsHeader.PrepareVer2Write();
+   ObsHeader.prepareVer2Write();
 
    outputStream << ObsHeader;
    while(inputStream >> ObsData)
@@ -583,7 +583,7 @@ int Rinex3Obs_T :: version3ToVersion2Test( void )
 
    testMesg = "No automatic comparison implemented. If " + 
       dataOutputRinex2ObsFile + " is not the proper conversion of " +
-      dataInputRinex3ObsFile + "test has failed. Currently PrepareVer2Write() " +
+      dataInputRinex3ObsFile + "test has failed. Currently prepareVer2Write() " +
       "function is BROKEN!";
 
    testFramework.assert(false, testMesg, __LINE__);
@@ -606,7 +606,7 @@ int Rinex3Obs_T :: version2ToVersion3Test( void )
 
    inputStream >> ObsHeader;
 
-   ObsHeader.version = 3.02; //No PrepareVersion3Write function, only way to change version number
+   ObsHeader.version = 3.02; //No prepareVersion3Write function, only way to change version number
 
    outputStream << ObsHeader;
    while(inputStream >> ObsData)

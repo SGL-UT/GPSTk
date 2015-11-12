@@ -62,7 +62,7 @@ namespace gpstk
 
       if( rod.epochFlag>=2
           && rod.epochFlag<=5
-          && rod.auxHeader.NumberHeaderRecordsToBeWritten()==0 ) return;
+          && rod.auxHeader.numberHeaderRecordsToBeWritten()==0 ) return;
 
          // first the epoch line to 'line'
          //line  = writeTime(rod.time); // (ver 2 RinexObsData::writeTime)
@@ -135,7 +135,7 @@ namespace gpstk
       {
          try
          {
-            rod.auxHeader.WriteHeaderRecords(strm);
+            rod.auxHeader.writeHeaderRecords(strm);
          }
          catch(FFStreamError& e)
          {
@@ -284,7 +284,7 @@ namespace gpstk
       if( (epochFlag == 0 || epochFlag == 1 || epochFlag == 6)
           && (numSVs==0 || obs.empty())) return;
 //    if( (epochFlag >= 2 && epochFlag <= 5) &&
-//         auxHeader.NumberHeaderRecordsToBeWritten() == 0 ) return;
+//         auxHeader.numberHeaderRecordsToBeWritten() == 0 ) return;
 
       Rinex3ObsStream& strm = dynamic_cast<Rinex3ObsStream&>(ffs);
 
@@ -344,7 +344,7 @@ namespace gpstk
       {
          try
          {
-            auxHeader.WriteHeaderRecords(strm);
+            auxHeader.writeHeaderRecords(strm);
          }
          catch(FFStreamError& e)
          {
@@ -554,7 +554,7 @@ namespace gpstk
             StringUtils::stripTrailing(line);
             try
             {
-               rod.auxHeader.ParseHeaderRecord(line);
+               rod.auxHeader.parseHeaderRecord(line);
             }
             catch(FFStreamError& e)
             {
@@ -682,7 +682,7 @@ namespace gpstk
             StringUtils::stripTrailing(line);
             try
             {
-               auxHeader.ParseHeaderRecord(line);
+               auxHeader.parseHeaderRecord(line);
             }
             catch(FFStreamError& e)
             {

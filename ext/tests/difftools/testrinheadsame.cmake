@@ -1,5 +1,7 @@
 # tests for rinheaddiff
 
+message(STATUS "running ${TEST_PROG} ${IXOPTS} ${SOURCEDIR}/${FILE1} ${SOURCEDIR}/${FILE2}")
+
 execute_process(COMMAND ${TEST_PROG} ${IXOPTS} ${SOURCEDIR}/${FILE1} ${SOURCEDIR}/${FILE2}
                 OUTPUT_FILE ${TARGETDIR}/${TESTBASE}.out
                 RESULT_VARIABLE HAD_ERROR)

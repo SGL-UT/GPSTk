@@ -445,9 +445,9 @@ try {
             if(jt != RHout.numObsForSat.end()) RHout.numObsForSat.erase(jt);
 
             map<RinexSatID, int>::iterator kt;
-            kt = RHout.GlonassFreqNo.find(it->sat);
+            kt = RHout.glonassFreqNo.find(it->sat);
             // if its there, delete it
-            if(kt != RHout.GlonassFreqNo.end()) RHout.GlonassFreqNo.erase(kt);
+            if(kt != RHout.glonassFreqNo.end()) RHout.glonassFreqNo.erase(kt);
 
             // TD do for sysPhaseShift, ...?
          }
@@ -488,7 +488,8 @@ try {
       }
 
       // must use the header defined in input and stored in output stream.
-      if(C.outver2) RHout.PrepareVer2Write();
+      if(C.outver2)
+         RHout.prepareVer2Write();
       // NB. header will be written by ExecuteEditCmd
       // -----------------------------------------------------------------
 

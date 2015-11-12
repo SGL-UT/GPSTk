@@ -1298,7 +1298,7 @@ try {
 
                // output version 2
                if(C.outver2)
-                  Rheadout.PrepareVer2Write();
+                  Rheadout.prepareVer2Write();
 
                ostrm << Rheadout;
             }
