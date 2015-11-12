@@ -291,7 +291,7 @@ namespace gpstk
       if(validEoH                      ) n++;
 
       return n;
-   }  // end NumberHeaderRecordsToBeWritten
+   }  // end numberHeaderRecordsToBeWritten
 
 
       // This function writes all valid header records.
@@ -821,7 +821,7 @@ namespace gpstk
       } // if(version >= 3.01 && (valid & validSystemPhaseShift))
       if(version >= 3.01 && (valid & validGlonassSlotFreqNo))
       {
-            //map<RinexSatID,int> GlonassFreqNo;
+            //map<RinexSatID,int> glonassFreqNo;
          size_t n(0),nsat(glonassFreqNo.size());
          line = rightJustify(asString(nsat),3) + string(" ");
          map<RinexSatID,int>::const_iterator it,kt;
@@ -1589,67 +1589,21 @@ namespace gpstk
             const string s(syss[i]);
             vector<RinexObsID> obsids;
             
-               // Assume D1, S1, and L1 come from C/A unless P is being treated as Y and P1 is present
-            bool hasL1P = find(R2ObsTypes.begin(),R2ObsTypes.end(), string("P2")) != R2ObsTypes.end();
-            string code1 = "C";
-            if (PisY && hasL1P) code1 = "Y";
-            
-               // Assume D2, S2, and L2 come from Y if P is being treated as Y and P2 is present
-               // codeless unless L2C is tracked
-            bool hasL2P = find(R2ObsTypes.begin(),R2ObsTypes.end(), string("P2")) != R2ObsTypes.end();
-            bool hasL2C = find(R2ObsTypes.begin(),R2ObsTypes.end(), string("C2")) != R2ObsTypes.end();
-            string code2 = "W";
-            if (PisY && hasL2P) code2 = "Y";
-            else if (hasL2C) code2 = "X";
-            
-            for(size_t j=0; j<R2ObsTypes.size(); ++j)
+            try 
             {
-               string ot(R2ObsTypes[j]);
-               string obsid(s);
-               if      (ot == "C1") obsid += "C1C";
-               else if (ot == "P1") obsid += "C1" + code1;
-               else if (ot == "L1") obsid += "L1" + code1;
-               else if (ot == "D1") obsid += "D1" + code1;
-               else if (ot == "S1") obsid += "S1" + code1;
-               
-               else if (ot == "C2") obsid += "C2X";
-               else if (ot == "P2") obsid += "C2" + code2;
-               else if (ot == "L2") obsid += "L2" + code1;
-               else if (ot == "D2") obsid += "D2" + code2;
-               else if (ot == "S2") obsid += "S2" + code2;
-               
-               else if (ot == "C5") obsid += "C5X";
-               else if (ot == "L5") obsid += "L5X";
-               else if (ot == "D5") obsid += "D5X";
-               else if (ot == "S5") obsid += "S5X";
-
-               else if (ot == "C6") obsid += "C6X";
-               else if (ot == "L6") obsid += "L6X";
-               else if (ot == "D6") obsid += "D6X";
-               else if (ot == "S6") obsid += "S6X";
-               
-               else if (ot == "C7") obsid += "C7X";
-               else if (ot == "L7") obsid += "L7X";
-               else if (ot == "D7") obsid += "D7X";
-               else if (ot == "S7") obsid += "S7X";
-               
-               else if (ot == "C8") obsid += "C8X";
-               else if (ot == "L8") obsid += "L8X";
-               else if (ot == "D8") obsid += "D8X";
-               else if (ot == "S8") obsid += "S8X";
-
-               try
-               {
-                  RinexObsID OT(obsid);
-                  obsids.push_back(OT);
-                  mapSysR2toR3ObsID[syss[i]][ot] = OT; //map<string, map<string, RinexObsID> >
-               }
-               catch(InvalidParameter& ip)
-               {
-                  FFStreamError fse("InvalidParameter: "+ip.what());
-                  GPSTK_THROW(fse);
-               }
-            }  // end for
+               if       (s=="G") 
+                  obsids = mapR2ObsToR3Obs_G(); 
+               else if (s=="R") 
+                  obsids = mapR2ObsToR3Obs_R();
+               else if (s=="E") 
+                  obsids = mapR2ObsToR3Obs_E();
+               else if (s=="S") 
+                  obsids = mapR2ObsToR3Obs_S();
+            }
+            catch(FFStreamError fse)
+            {
+               GPSTK_RETHROW(fse); 
+            }
 
                // TD if GPS and have wavelengthFactors, add more ObsIDs with tc=N
 
@@ -1764,6 +1718,298 @@ namespace gpstk
       }
 
    } // end reallyGetRecord
+
+      // This method maps v2.11 GPS observation types to the v3 equivalent.
+      // Since only GPS and only v2.11 are of interest, only L1/L2/L5
+      // are considered.
+   vector<RinexObsID> Rinex3ObsHeader::mapR2ObsToR3Obs_G()
+      throw(FFStreamError)
+   {
+      vector<RinexObsID> obsids;
+       
+         // Assume D1, S1, and L1 come from C/A unless P is being treated as Y and P1 is present
+         // Furthermore, if P1 is present and P is NOT being treated as Y, assume that P1 
+         // is some Z-mode or equivalent "smart" codeless process.
+         //
+         // Condition           Result
+         // PisY   P1?
+         //    N    Y     L1,D1,S1 considered C,  P1 becomes C1W
+         //    N    N     L1,D1,S1 considered C
+         //    Y    Y     L1,D1,S1 considered Y,  P1 becomes C1Y
+         //    Y    N     L1,D1,S1 considered C  
+         //
+      bool hasL1P = find(R2ObsTypes.begin(),R2ObsTypes.end(), string("P1")) != R2ObsTypes.end();
+      string code1 = "C";
+      string code1P = "W";
+      if (PisY && hasL1P)
+      { 
+         code1 = "Y";
+         code1P = "Y";
+      }
+            
+         // Assume D2, S2, and L2 come from Y if P is being treated as Y and P2 is present
+         // codeless unless L2C is tracked.
+         // If BOTH C2 and P2 are present, and P is NOT being treated as Y, assume C2 
+         // is code tracking the open signal and that P2 is codelessly tracking an
+         // authorized signal.
+         //
+         // Condition           Result
+         // PisY   C2?   P2? 
+         //    N    Y     N     L2,D2,S2 considered X,
+         //    N    Y     Y     L2,D2,S2 considered W,  P2 becomes C2W**
+         //    N    N     Y     L2,D2,S2 considered W,  P2 becomes C2W
+         //    N    N     N     L2,D2,S2 considered X*
+         //    Y    Y     N     L2,D2,S2 considered X
+         //    Y    Y     Y     L2,D2,S2 considered Y,  P2 becomes C2Y
+         //    Y    N     Y     L2,D2,S2 considered Y,  P2 becomes C2Y
+         //    Y    N     N     L2,D2,S2 considered X*
+         // * - Probably not a reasonable set of conditions.  It implies no L2 pseudoranges
+         //     were collected on any tracking code.
+         // **- Interesting case.  Currently presence of C2 in the header means
+         //     that the data MAY be present.  However, since only some of the GPS
+         //     SVs have L2C, the C2 data field will frequently be empty.
+         //     Therefore, we'll go with "W" if P2 is present.  The other option
+         //     would be to add smarts to the SV-by-SV record reading process to
+         //     coerce this to X if there are actually data in the C2 field at
+         //     the time the observations are read.  That would really do violence
+         //     to the existing logic.  Better to hope for a transition to Rinex 3
+         //     before this becomes a real issue. 
+         // 
+         // N.B.:  This logic (both for P1 and P2) assumes P is NEVER P.  If we want to allow for 
+         // live sky (or simulator capture) P code, we'll have to add more logic
+         // to differentate between PisY, PisW, and PisP. That will have to be 
+         // "beyond RINEX v2.11" extra-special handling.
+         //
+      bool hasL2P = find(R2ObsTypes.begin(),R2ObsTypes.end(), string("P2")) != R2ObsTypes.end();
+      bool hasL2C = find(R2ObsTypes.begin(),R2ObsTypes.end(), string("C2")) != R2ObsTypes.end();
+
+      string code2 = "X";   // Correct condition as long as P2 is not in the list
+      string code2P = "X";  // Condition is irrelvant unless P2 is in the list
+      if (hasL2P)
+      {
+         if (PisY)
+         {
+            code2  = "Y";
+            code2P = "Y";
+         }
+         else
+         {
+            code2 = "W";
+            code2P = "W";
+         }
+      }
+/*
+  string code2 = "W";
+  if (PisY && hasL2P) code2 = "Y";
+  else if (hasL2C) code2 = "X";
+*/
+      string syss("G");
+      for(size_t j=0; j<R2ObsTypes.size(); ++j)
+      {
+         string ot(R2ObsTypes[j]);
+         string obsid(syss);
+
+         if      (ot == "C1") obsid += "C1C";
+         else if (ot == "P1") obsid += "C1" + code1P;
+         else if (ot == "L1") obsid += "L1" + code1;
+         else if (ot == "D1") obsid += "D1" + code1;
+         else if (ot == "S1") obsid += "S1" + code1;
+               
+         else if (ot == "C2") obsid += "C2X";
+         else if (ot == "P2") obsid += "C2" + code2P;
+         else if (ot == "L2") obsid += "L2" + code2;
+         else if (ot == "D2") obsid += "D2" + code2;
+         else if (ot == "S2") obsid += "S2" + code2;
+               
+         else if (ot == "C5") obsid += "C5X";
+         else if (ot == "L5") obsid += "L5X";
+         else if (ot == "D5") obsid += "D5X";
+         else if (ot == "S5") obsid += "S5X";
+
+            // If the obs type isn't valid for GPS, skip it.
+         else continue;
+               
+         try
+         {
+            RinexObsID OT(obsid);
+            obsids.push_back(OT);
+            mapSysR2toR3ObsID[syss][ot] = OT; //map<string, map<string, RinexObsID> >
+         }
+         catch(InvalidParameter& ip)
+         {
+            FFStreamError fse("InvalidParameter: "+ip.what());
+            GPSTK_THROW(fse);
+         }
+      }
+      return obsids;
+   }
+
+      // This method maps v2.11 GLONASS observation types to the v3 equivalent.
+      // Since only GLONASS and only v2.11 are of interest, only L1/L2
+      // are considered.
+   vector<RinexObsID> Rinex3ObsHeader::mapR2ObsToR3Obs_R( )
+      throw(FFStreamError)
+   {
+      vector<RinexObsID> obsids;
+      
+         // Assume D1, S1, and L1 come from C/A
+         // This assumes that any files claiming to track GLONASS P1 is 
+         // actually doing so with a codeless technique.  There is no RINEX V3
+         // "C1W" for GLONASS, so we'll leave P1 as C1P as the closest approximation.
+      bool hasL1P = find(R2ObsTypes.begin(),R2ObsTypes.end(), string("P1")) != R2ObsTypes.end();
+      string code1 = "C";
+
+         // Assume D2, S2, and L2 come from C/A.  Same logic as above.
+      bool hasL2P = find(R2ObsTypes.begin(),R2ObsTypes.end(), string("P2")) != R2ObsTypes.end();
+      string code2 = "C";
+
+      string syss("R");     
+      for(size_t j=0; j<R2ObsTypes.size(); ++j)
+      {
+         string ot(R2ObsTypes[j]);
+         string obsid(syss);
+         
+         if      (ot == "C1") obsid += "C1C";
+         else if (ot == "P1") obsid += "C1P";
+         else if (ot == "L1") obsid += "L1" + code1;
+         else if (ot == "D1") obsid += "D1" + code1;
+         else if (ot == "S1") obsid += "S1" + code1;
+            
+         else if (ot == "C2") obsid += "C2C";
+         else if (ot == "P2") obsid += "C2P";
+         else if (ot == "L2") obsid += "L2" + code2;
+         else if (ot == "D2") obsid += "D2" + code2;
+         else if (ot == "S2") obsid += "S2" + code2;
+
+            // If the obs type isn't valid for GLONASS, skip it.
+         else continue;
+         
+         try
+         {
+            RinexObsID OT(obsid);
+            obsids.push_back(OT);
+            mapSysR2toR3ObsID[syss][ot] = OT; //map<string, map<string, RinexObsID> >
+         }
+         catch(InvalidParameter& ip)
+         {
+            FFStreamError fse("InvalidParameter: "+ip.what());
+            GPSTK_THROW(fse);
+         }
+      }
+      return obsids;
+   }
+
+      // This method maps v2.11 Galileo observation types to the v3 equivalent.
+      // Since only Galileo and only v2.11 are of interest no L2 types
+      // are considered.  Furthermore, Rinex v2.11 states that there is no
+      // P for Galileo.  (Where that leaves the PRS is a good question.)
+      //
+      // In RINEX v3, there are 3-5 tracking codes defined for each carrier. 
+      // Given the current lack of experience, the code makes some 
+      // guesses on what the v2.11 translations should mean.   
+   vector<RinexObsID> Rinex3ObsHeader::mapR2ObsToR3Obs_E()
+      throw(FFStreamError)
+   {
+      vector<RinexObsID> obsids;
+
+      string code1 = "B";  // Corresponds to the open service
+      string code5 = "I";  // Corresponds to the open service
+      string code7 = "X";  // Corresponds to I + Q tracking
+      string code8 = "X";  // Corresponds to I + Q tracking
+      string code6 = "X";  // Corresponds to B + C tracking
+
+      string syss("E");     
+      for(size_t j=0; j<R2ObsTypes.size(); ++j)
+      {
+         string ot(R2ObsTypes[j]);
+         string obsid(syss);
+         if      (ot == "C1") obsid += "C1" + code1;
+         else if (ot == "L1") obsid += "L1" + code1;
+         else if (ot == "D1") obsid += "D1" + code1;
+         else if (ot == "S1") obsid += "S1" + code1;
+               
+         else if (ot == "C5") obsid += "C5" + code5;
+         else if (ot == "L5") obsid += "L5" + code5;
+         else if (ot == "D5") obsid += "D5" + code5;
+         else if (ot == "S5") obsid += "S5" + code5;
+
+         else if (ot == "C6") obsid += "C6" + code6;
+         else if (ot == "L6") obsid += "L6" + code6;
+         else if (ot == "D6") obsid += "D6" + code6;
+         else if (ot == "S6") obsid += "S6" + code6;
+               
+         else if (ot == "C7") obsid += "C7" + code7;
+         else if (ot == "L7") obsid += "L7" + code7;
+         else if (ot == "D7") obsid += "D7" + code7;
+         else if (ot == "S7") obsid += "S7" + code7;
+               
+         else if (ot == "C8") obsid += "C8" + code8;
+         else if (ot == "L8") obsid += "L8" + code8;
+         else if (ot == "D8") obsid += "D8" + code8;
+         else if (ot == "S8") obsid += "S8" + code8;
+
+            // If the obs type isn't valid for Galileo, skip it.
+         else continue;
+         
+         try
+         {
+            RinexObsID OT(obsid);
+            obsids.push_back(OT);
+            mapSysR2toR3ObsID[syss][ot] = OT; //map<string, map<string, RinexObsID> >
+         }
+         catch(InvalidParameter& ip)
+         {
+            FFStreamError fse("InvalidParameter: "+ip.what());
+            GPSTK_THROW(fse);
+         }
+      }
+      return obsids;
+   }
+
+
+      // This method maps v2.11 SBAS observation types to the v3 equivalent.
+      // Since only SBAS and only v2.11 are of interest only L1/L5
+      // are considered.
+   vector<RinexObsID> Rinex3ObsHeader::mapR2ObsToR3Obs_S()
+      throw(FFStreamError)
+   {
+      vector<RinexObsID> obsids;
+
+      string code1 = "C";  // Only option
+      string code5 = "X";  // Corresponds to I + Q tracking
+
+      string syss("S");     
+      for(size_t j=0; j<R2ObsTypes.size(); ++j)
+      {
+         string ot(R2ObsTypes[j]);
+         string obsid(syss);
+         if      (ot == "C1") obsid += "C1" + code1;
+         else if (ot == "L1") obsid += "L1" + code1;
+         else if (ot == "D1") obsid += "D1" + code1;
+         else if (ot == "S1") obsid += "S1" + code1;
+               
+         else if (ot == "C5") obsid += "C5" + code5;
+         else if (ot == "L5") obsid += "L5" + code5;
+         else if (ot == "D5") obsid += "D5" + code5;
+         else if (ot == "S5") obsid += "S5" + code5;
+
+            // If the obs type isn't valid for SBAS, skip it.
+         else continue;
+         
+         try
+         {
+            RinexObsID OT(obsid);
+            obsids.push_back(OT);
+            mapSysR2toR3ObsID[syss][ot] = OT; //map<string, map<string, RinexObsID> >
+         }
+         catch(InvalidParameter& ip)
+         {
+            FFStreamError fse("InvalidParameter: "+ip.what());
+            GPSTK_THROW(fse);
+         }
+      }
+      return obsids;
+   }
 
 
    CivilTime Rinex3ObsHeader::parseTime(const string& line) const
@@ -2125,11 +2371,11 @@ namespace gpstk
        *
        * @param type String representing the observation type.
        */
-   int Rinex3ObsHeader::getObsIndex(const std::string& type ) const
+   int Rinex3ObsHeader::getObsIndex( const std::string& type ) const
       throw(InvalidRequest)
    {
       std::string newType(type);
-      
+
          // 'old-style' type: Let's change it to 'new style'.
       if( newType.size() == 2 )
       {

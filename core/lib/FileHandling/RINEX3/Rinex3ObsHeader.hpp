@@ -490,6 +490,18 @@ namespace gpstk
          throw(std::exception, FFStreamError,
                gpstk::StringUtils::StringException);
 
+
+      /// Helper methods
+      /// The conversion between RINEX v2.11 to RINEX v3 observation
+      /// type is fraught with system-specific idiosyncracies.   These 
+      /// methods read the list of v2.11 obs types stored in R2ObsTypes
+      /// and attempt to build a corresponding list of v3 observation
+      /// types where appropriate.
+      std::vector<RinexObsID> mapR2ObsToR3Obs_G() throw(FFStreamError);
+      std::vector<RinexObsID> mapR2ObsToR3Obs_R() throw(FFStreamError);
+      std::vector<RinexObsID> mapR2ObsToR3Obs_E() throw(FFStreamError);
+      std::vector<RinexObsID> mapR2ObsToR3Obs_S() throw(FFStreamError);
+
       friend class Rinex3ObsData;
 
 
