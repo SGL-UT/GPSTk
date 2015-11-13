@@ -8,7 +8,7 @@ add_test(NAME mergeRinMet_CmdOpt_1
          -DTEST_PROG=$<TARGET_FILE:mergeRinMet>
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testhelp.cmake)
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../../../core/tests/testhelp.cmake)
 
 add_test(NAME mergeRinMet_1
          COMMAND ${CMAKE_COMMAND}
@@ -33,7 +33,7 @@ add_test(NAME mergeRinNav_CmdOpt_1
          -DTEST_PROG=$<TARGET_FILE:mergeRinNav>
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testhelp.cmake)
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../../../core/tests/testhelp.cmake)
 
 add_test(NAME mergeRinNav_1
          COMMAND ${CMAKE_COMMAND}
@@ -58,7 +58,7 @@ add_test(NAME mergeRinObs_CmdOpt_1
          -DTEST_PROG=$<TARGET_FILE:mergeRinObs>
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testhelp.cmake)
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../../../core/tests/testhelp.cmake)
 
 add_test(NAME mergeRinObs_1
          COMMAND ${CMAKE_COMMAND}

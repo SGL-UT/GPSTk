@@ -8,4 +8,4 @@ add_test(NAME mpsolve_CmdOpt_1
          -DTEST_PROG=$<TARGET_FILE:mpsolve>
          -DSOURCEDIR=${SGLTK_TEST_DATA_DIR}
          -DTARGETDIR=${SGLTK_TEST_OUTPUT_DIR}
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testhelp.cmake)
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../../../core/tests/testhelp.cmake)

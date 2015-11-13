@@ -18,7 +18,7 @@ add_test(NAME rmwdiff_CmdOpt_1
          -DTEST_PROG=$<TARGET_FILE:rmwdiff>
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testhelp.cmake)
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../../../core/tests/testhelp.cmake)
 
 # check that rmwdiff fails with missing files
 add_test(NAME rmwdiff_CmdOpt_2
@@ -94,7 +94,7 @@ add_test(NAME rnwdiff_CmdOpt_1
          -DTEST_PROG=$<TARGET_FILE:rnwdiff>
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testhelp.cmake)
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../../../core/tests/testhelp.cmake)
 
 # check that rnwdiff fails with missing files
 add_test(NAME rnwdiff_CmdOpt_2
@@ -159,7 +159,7 @@ add_test(NAME rowdiff_CmdOpt_1
          -DTEST_PROG=$<TARGET_FILE:rowdiff>
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testhelp.cmake)
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../../../core/tests/testhelp.cmake)
 
 # check that rowdiff fails with missing files
 add_test(NAME rowdiff_CmdOpt_2
@@ -224,7 +224,7 @@ add_test(NAME rinheaddiff_CmdOpt_1
          -DTEST_PROG=$<TARGET_FILE:rinheaddiff>
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testhelp.cmake)
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../../../core/tests/testhelp.cmake)
 
 # Make sure that the same file is the same file...
 add_test(NAME rinheaddiff_3OBS_Diff_0
