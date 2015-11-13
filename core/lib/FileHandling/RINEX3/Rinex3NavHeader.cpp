@@ -52,6 +52,7 @@
 
 #include <iostream>
 #include <set>
+#include <cmath>
 
 using namespace gpstk::StringUtils;
 using namespace std;
