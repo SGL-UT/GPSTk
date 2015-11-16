@@ -256,6 +256,7 @@ using namespace gpstk;
 %include "Rinex3ObsBase.hpp"
 %include "Rinex3ObsHeader.hpp"
 %include "Rinex3ObsData.hpp"
+%include "RinexDatum.hpp"
 %include "Rinex3ObsStream.hpp"
 %include "Rinex3ClockHeader.hpp"
 %include "Rinex3ClockData.hpp"
