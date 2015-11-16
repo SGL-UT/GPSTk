@@ -399,7 +399,7 @@ namespace gpstk
                line += string(15, ' ');
                if (clkItr->clkConstraint != 0)
                {
-                  line += rightJustify(asString(clkItr->clkConstraint, 12), 19);
+                  line += rightJustify(doub2for(clkItr->clkConstraint, 18, 2, false), 19);
                }
                else
                {

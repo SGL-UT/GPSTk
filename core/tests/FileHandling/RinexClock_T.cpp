@@ -57,14 +57,23 @@ public:
       /// Check that exceptions are thrown/not thrown for invalid/valid headers
    int headerExceptionTest();
       /** Check that reading a file and writing it back out results in
-       * identical files. */
+       * identical files.
+       * @note This is not a *true* round trip, as the source file may
+       * have numbers with leading zeroes that are absent in the
+       * output and vice versa.  A different reference file is used
+       * that has consistent leading zero behavior, which is not
+       * required for the input file, but is required for the test. */
    int roundTripTest();
+      /** Check that data with an invalid epoch will cause an
+       * exception when exceptions are enabled. */
+   int dataExceptionTest();
 
+   std::string dataRinexClockFile;
+   std::string dataRinexClockRef;
    std::string dataBadEpochLine;
    std::string dataIncompleteHeader;
    std::string dataInvalidLineLength;
    std::string dataNotAClockFile;
-   std::string dataRinexClockFile;
    std::string dataUnknownHeaderLabel;
 
    std::string dataTestOutput;
@@ -87,6 +96,11 @@ init()
    std::string oPath = test0.getTempPath() + getFileSep();
 
    dataRinexClockFile     = iPath + "test_input_rinex2_clock_RinexClockExample.96c";
+      // This file is the same *content* as dataRinexClockFile, except
+      // that the formatting of numbers has been made more consistent.
+      // The example file may sometimes have leading zeroes on numbers
+      // but not always.
+   dataRinexClockRef      = iPath + "test_input_rinex2_clock_RinexClockReference.96c";
    dataBadEpochLine       = iPath + "test_input_rinex2_clock_BadEpochLine.96c";
    dataIncompleteHeader   = iPath + "test_input_rinex2_clock_IncompleteHeader.96c";
    dataInvalidLineLength  = iPath + "test_input_rinex2_clock_InvalidLineLength.96c";
@@ -177,12 +191,15 @@ headerExceptionTest()
       }
       try
       {
+            // The error in this header will not have made it into the
+            // data structure, being an invalid header line, thus
+            // output is expected to succeed in this case.
          out << uhh;
-         TUFAIL("No Exception while writing invalid RINEX clock header");
+         TUPASS("exception");
       }
       catch (...)
       {
-         TUPASS("exception");
+         TUFAIL("Exception while writing valid(ish) RINEX clock header");
       }
       while( rinexClockFile >> rinexClockData )
       {
@@ -225,13 +242,57 @@ roundTripTest()
       out.close();
 
       testFramework.assert_files_equal(
-         __LINE__, dataRinexClockFile, dataRoundTripOutput,
-         "files do not match: " + dataRinexClockFile + " " + dataRoundTripOutput,
+         __LINE__, dataRinexClockRef, dataRoundTripOutput,
+         "files do not match: " + dataRinexClockRef + " " + dataRoundTripOutput,
          numLinesSkip, false, true );
    }
    catch (...)
    {
       TUFAIL("Caught unanticipated exception");
+   }
+
+   return testFramework.countFails();
+}
+
+
+int RinexClock_T::dataExceptionTest()
+{
+   TUDEF("RinexClockStream", "DataExceptions");
+
+   std::string msg_desc                 = "";
+   std::string msg_expect               = ", should throw gpstk::Exception";
+   std::string msg_falsePass    = " but threw no exception.";
+   std::string msg_trueFail     = " but instead threw an unknown exception";
+
+   try
+   {
+      gpstk::RinexClockStream badEpochLine(dataBadEpochLine.c_str());
+      badEpochLine.exceptions(std::fstream::failbit);
+      gpstk::RinexClockData cd;
+
+      msg_desc = "BadEpochLine test";
+      try
+      {
+         while (badEpochLine >> cd);
+         TUFAIL(msg_desc + msg_expect + msg_falsePass);
+      }
+      catch(gpstk::Exception e)
+      {
+         TUPASS(msg_desc + msg_expect);
+      }
+      catch(...)
+      {
+         TUFAIL(msg_desc + msg_expect + msg_trueFail);
+      }
+
+   }
+   catch(gpstk::Exception e)
+   {
+      TUFAIL("Error thrown when running dataExceptionTest: "+e.what());
+   }
+   catch(...)
+   {
+      TUFAIL("Unknown error thrown when running dataExceptionTest");
    }
 
    return testFramework.countFails();
@@ -245,6 +306,7 @@ int main() //Main function to initialize and run all tests above
 
    errorTotal += testClass.headerExceptionTest();
    errorTotal += testClass.roundTripTest();
+   errorTotal += testClass.dataExceptionTest();
 
    std::cout << "Total Failures for " << __FILE__ << ": " << errorTotal
              << std::endl;

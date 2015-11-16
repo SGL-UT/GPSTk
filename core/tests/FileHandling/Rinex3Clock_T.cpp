@@ -243,7 +243,7 @@ int Rinex3Clock_T::headerExceptionTest(void)
 
 int Rinex3Clock_T::dataExceptionTest(void)
 {
-   TUDEF("RinexClockStream", "DataExceptions");
+   TUDEF("Rinex3ClockStream", "DataExceptions");
 
    std::string msg_desc                 = "";
    std::string msg_expect               = ", should throw gpstk::Exception";
@@ -287,7 +287,7 @@ int Rinex3Clock_T::dataExceptionTest(void)
 //Test that reading/writing out the file doesn't change it
 int Rinex3Clock_T::hardCodeTest(void) 
 {
-   TUDEF("RinexClockStream", "Read & write to file");
+   TUDEF("Rinex3ClockStream", "Read & write to file");
 
    gpstk::Rinex3ClockHeader ch;
    gpstk::Rinex3ClockData cd;
