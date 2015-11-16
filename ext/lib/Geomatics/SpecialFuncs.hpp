@@ -161,7 +161,7 @@ namespace gpstk
          if(x < 0) GPSTK_THROW(Exception("Negative first argument"));
          if(a <= 0) GPSTK_THROW(Exception("Non-positive second argument"));
 
-         static const int imax(400);
+         static const int imax(600);
          static const double eps(10*std::numeric_limits<double>().epsilon());
 
          double lngamma(lnGamma(a));
@@ -194,7 +194,7 @@ namespace gpstk
          if(x < 0) GPSTK_THROW(Exception("Negative first argument"));
          if(a <= 0) GPSTK_THROW(Exception("Non-positive second argument"));
 
-         static const int imax(100);
+         static const int imax(600);
          static const double eps(10*std::numeric_limits<double>().epsilon());
          static const double fpmin(10*std::numeric_limits<double>().min());
 
