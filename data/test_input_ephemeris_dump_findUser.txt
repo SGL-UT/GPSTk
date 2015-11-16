@@ -1,9 +1,12 @@
-Dump of GPSEphemerisStore:
-  BCE map for satellite 1 has 1 entries.
-PRN  1 TOE 1360 223200.000 GPS TOC 223200.000 HOW 216006.000 KEY 1360 216000.000 GPS
-  BCE map for satellite 15 has 1 entries.
-PRN 15 TOE 1360 223200.000 GPS TOC 223200.000 HOW 216006.000 KEY 1360 216000.000 GPS
-  BCE map for satellite 32 has 1 entries.
-PRN 32 TOE 1360 223200.000 GPS TOC 223200.000 HOW 216006.000 KEY 1360 216000.000 GPS
-  End of GPSEphemerisStore data.
+Dump of OrbitEphStore (detail level=2):
+ BCE table for all satellites has 3 entries; Time span is 2006/01/31 12:00:00 Any to 2006/01/31 16:00:00 Any
+ Search method is User
+Sat G01 has 1 entries, with times from 2006/01/31 12:00:00 Any to 2006/01/31 12:00:00 Any
+SAT G01 TOE 2006/01/31 14:00:00 GPS TOC 2006/01/31 14:00:00 GPS KEY 2006/01/31 12:00:00 GPS HRS  4.00
+Sat G15 has 1 entries, with times from 2006/01/31 12:00:00 Any to 2006/01/31 12:00:00 Any
+SAT G15 TOE 2006/01/31 14:00:00 GPS TOC 2006/01/31 14:00:00 GPS KEY 2006/01/31 12:00:00 GPS HRS  4.00
+Sat G32 has 1 entries, with times from 2006/01/31 12:00:00 Any to 2006/01/31 12:00:00 Any
+SAT G32 TOE 2006/01/31 14:00:00 GPS TOC 2006/01/31 14:00:00 GPS KEY 2006/01/31 12:00:00 GPS HRS  4.00
+  End of OrbitEphStore data.
 
+END Dump of OrbitEphStore (detail level=2)

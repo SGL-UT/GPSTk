@@ -182,10 +182,9 @@ void RinexMet_T :: init( void )
     inputRinexMetObsHdrStrErr = dataFilePath  + file_sep + "test_input_rinex_met_ObsHeaderStringError.04m" ;
     inputRinexMetMissingMkr   = dataFilePath  + file_sep + "test_input_rinex_met_MissingMarkerName";
     inputRinexMetInvTimeFmt   = dataFilePath  + file_sep + "test_input_rinex_met_InvalidTimeFormat.04m";
-    inputRinexMetFilterTest1  = dataFilePath  + file_sep + "test_input_rinex_met_FilterTest1.04m"  ;
-    inputRinexMetFilterTest2  = dataFilePath  + file_sep + "test_input_rinex_met_FilterTest2.04m"  ;
-    inputRinexMetFilterTest3  = dataFilePath  + file_sep + "test_input_rinex_met_FilterTest3.04m"  ;
-    inputRinexMetFilterTest4  = dataFilePath  + file_sep + "test_input_rinex_met_FilterTest4.04m"  ;
+    inputRinexMetFilterTest1  = dataFilePath  + file_sep + "test_input_rinex_met_Filter1.04m"  ;
+    inputRinexMetFilterTest2  = dataFilePath  + file_sep + "test_input_rinex_met_Filter2.04m"  ;
+    inputRinexMetFilterTest3  = dataFilePath  + file_sep + "test_input_rinex_met_Filter3.04m"  ;
 
     outputRinexMetHardCode    = tempFilePath  + file_sep + "test_output_rinex_met_Output.txt";         // formerly Output.txt
     outputRinexMetExtraOutput = tempFilePath  + file_sep + "test_output_rinex_met_ExtraOutput.txt";    // formerly ExtraOutput.txt
@@ -285,6 +284,8 @@ int RinexMet_T :: reallyPutRecordTest( void )
     gpstk::RinexMetStream output( outputRinexMetExtraOutput.c_str(), std::ios::out );
 
     output.exceptions( std::fstream::failbit );
+    UnSupRinex.exceptions( std::fstream::failbit );
+    MissingMarkerName.exceptions( std::fstream::failbit );
 
     //------------------------------------------------------------
     // Unsupported Rinex
@@ -540,6 +541,7 @@ int RinexMet_T :: reallyGetRecordTest( void )
     }
     catch( gpstk::Exception e)
     {
+       cout << e << endl;
         test4.assert( false, msg_test_desc + msg_fail_gpstk, __LINE__ );
     }
     catch(...)
@@ -1061,6 +1063,10 @@ int RinexMet_T :: dataExceptionsTest( void )
     gpstk::RinexMetHeader rmh;
     gpstk::RinexMetData rme;
 
+    NoObs.exceptions( std::fstream::failbit );
+    InvalidTimeFormat.exceptions( std::fstream::failbit );
+    out.exceptions( std::fstream::failbit );
+
     try{
         NoObs >> rmh;
         out << rmh;
@@ -1107,35 +1113,32 @@ int RinexMet_T :: filterOperatorsTest( void )
         FilterStream1.open( inputRinexMetFilterTest1.c_str(), std::ios::in );
         gpstk::RinexMetStream FilterStream2( inputRinexMetFilterTest2.c_str() );
         gpstk::RinexMetStream FilterStream3( inputRinexMetFilterTest3.c_str() );
-        gpstk::RinexMetStream FilterStream4( inputRinexMetFilterTest4.c_str() );
         gpstk::RinexMetStream out( outputRinexMetFilterTest.c_str(), std::ios::out );
 
         gpstk::RinexMetHeader FilterHeader1;
         gpstk::RinexMetHeader FilterHeader2;
         gpstk::RinexMetHeader FilterHeader3;
-        gpstk::RinexMetHeader FilterHeader4;
 
         gpstk::RinexMetData FilterData1;
         gpstk::RinexMetData FilterData2;
         gpstk::RinexMetData FilterData3;
-        gpstk::RinexMetData FilterData4;
+        gpstk::RinexMetData rmdata;
 
         FilterStream1 >> FilterHeader1;
         FilterStream2 >> FilterHeader2;
         FilterStream3 >> FilterHeader3;
-        FilterStream4 >> FilterHeader4;
 
-        while( FilterStream1 >> FilterData1 )
+        while( FilterStream1 >> rmdata )
         {
+           FilterData1 = rmdata;
         }
-        while( FilterStream2 >> FilterData2 )
+        while( FilterStream2 >> rmdata )
         {
+           FilterData2 = rmdata;
         }
-        while( FilterStream3 >> FilterData3 )
+        while( FilterStream3 >> rmdata )
         {
-        }
-        while( FilterStream4 >> FilterData4 )
-        {
+           FilterData3 = rmdata;
         }
 
         gpstk::RinexMetHeaderTouchHeaderMerge merged;
@@ -1185,6 +1188,12 @@ int RinexMet_T :: filterOperatorsTest( void )
 
 	msg_test_fail = "FilterTime2(FilterData1) == false, should evaluate as true but evaluated as false";
         test10.assert( FilterTime2(FilterData1) == false, msg_test_desc + msg_test_fail, __LINE__ );
+    }
+    catch(gpstk::Exception& exc)
+    {
+       cout << exc << endl;
+        msg_test_fail = "Unexpected exception was thrown";
+        test10.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
     }
     catch(...)
     {

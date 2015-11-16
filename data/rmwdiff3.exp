@@ -1,0 +1,14 @@
+Comparing the following fields (other header data is ignored):
+PR TD HR 
+200        900 85408 85408   -14.0 PR     0.0 TD     0.0 HR 
+200       1800 85408 85408     0.0 PR   -64.3 TD     0.0 HR 
+200       2700 85408 85408     0.0 PR     0.0 TD   -59.2 HR 
+<   15  7 19  0  0  0
+  PR 986.0
+  TD 38.8
+  HR 34.8
+
+>   15  7 19  1  0  0
+  PR 985.9
+  TD 35.1
+  HR 41.5

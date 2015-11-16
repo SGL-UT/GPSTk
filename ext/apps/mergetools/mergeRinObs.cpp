@@ -99,11 +99,11 @@ int main(int argc, char* argv[])
    {
       MergeRinObs m(argv[0]);
       if (!m.initialize(argc, argv))
-         return 0;
+         return m.exitCode;
       if (!m.run())
-         return 1;
+         return m.exitCode;
       
-      return 0;
+      return m.exitCode;
    }
    catch(Exception& e)
    {
@@ -117,5 +117,6 @@ int main(int argc, char* argv[])
    {
       cout << "unknown error" << endl;
    }
-   return 1;
+      // only reach this point if an exception was caught
+   return BasicFramework::EXCEPTION_ERROR;
 }

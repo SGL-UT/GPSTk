@@ -384,6 +384,7 @@ int RinexObs_T :: filterOperatorsTest( void )
         gpstk::RinexObsData FilterData2;
         gpstk::RinexObsData FilterData3;
         gpstk::RinexObsData FilterData4;
+        gpstk::RinexObsData rodata;
 
 
         FilterStream1 >> FilterHeader1;
@@ -391,17 +392,21 @@ int RinexObs_T :: filterOperatorsTest( void )
         FilterStream3 >> FilterHeader3;
         FilterStream4 >> FilterHeader4;
 
-        while( FilterStream1 >> FilterData1)
+        while( FilterStream1 >> rodata)
         {
+           FilterData1 = rodata;
         }
-        while( FilterStream2 >> FilterData2)
+        while( FilterStream2 >> rodata)
         {
+           FilterData2 = rodata;
         }
-        while( FilterStream3 >> FilterData3)
+        while( FilterStream3 >> rodata)
         {
+           FilterData3 = rodata;
         }
-        while( FilterStream4 >> FilterData4)
+        while( FilterStream4 >> rodata)
         {
+           FilterData4 = rodata;
         }
 
         gpstk::RinexObsHeaderTouchHeaderMerge merged;

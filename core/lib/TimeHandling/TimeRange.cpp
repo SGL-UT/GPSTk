@@ -140,15 +140,43 @@ namespace gpstk
    bool TimeRange::isPriorTo( const TimeRange& right ) const
    {
       if (end < right.start) return true;
+
+         // Now handle two edge cases.  These are where
+         // the edges of "this" and right align such that
+         //   [  this )                     [ this ]
+         //           [ right ]   - or -           (  right  ]
+         // In these cases, "this" qualifies as being prior to right.
+      if (end==right.start && 
+          (!includeEndTime || !right.includeStartTime) ) return true;
+
       return false;
    }
 
-      // True if this.start < right.end and 
-      //         this.end > right.start   
+      // True if this.start <= right.end and 
+      //         this.end >= right.start   
    bool TimeRange::overlaps( const TimeRange& right ) const
    {
-      if (start<right.end &&
-            end>right.start ) return true;
+        // Check the simple case first
+      if ( start<right.end &&
+             end>right.start ) return true;
+
+        // Then check edge cases.  There are two picky edge 
+        // cases.  One where "this" leads right, both have boundaries
+        // included and the end of "this" is aligned with the end of "right"
+        //    [  this ]
+        //            [ right ]
+        // The second is similar, but reversed.
+        //            [  this ]
+        //    [ right ]
+        //
+      if (       includeEndTime && 
+           right.includeStartTime && 
+                 end==right.start ) return true;
+
+      if (       includeStartTime && 
+           right.includeEndTime && 
+                 start==right.end ) return true;
+             
       return false;
    }
 
@@ -166,6 +194,15 @@ namespace gpstk
    bool TimeRange::isAfter( const TimeRange& right ) const
    {
       if (start > right.end) return true;
+
+         // Now handle two edge cases.  These are where
+         // the edges of "this" and right align such that
+         //            [  this ]                        ( this ]
+         //    [ right )           - or -     [  right  ]
+         // In these cases, "this" qualifies as being after right.
+      if (start==right.end && 
+          (!includeStartTime || !right.includeEndTime) ) return true;
+
       return false;
    }
 
@@ -258,6 +295,7 @@ namespace gpstk
       if (end<start)
       {
          TimeRangeException tre("Ending time is prior to beginning time");
+
          GPSTK_THROW(tre);
       }
 

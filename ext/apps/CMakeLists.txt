@@ -19,7 +19,6 @@ if (UNIX)
 endif (UNIX)
 
 add_subdirectory (multipath)
-add_subdirectory (positioning)
 add_subdirectory (Rinextools)
 
 

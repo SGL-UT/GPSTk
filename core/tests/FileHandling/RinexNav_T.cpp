@@ -391,7 +391,7 @@ int RinexNav_T :: streamReadWriteTest( void )
     {
         RinexNavStream rinexInputStream( inputRinexNavExample.c_str()  );
         RinexNavStream rinexOutputStream( outputRinexStore.c_str(), std::ios::out );
-        rinexOutputStream.header = rinexInputStream.header;
+        rinexInputStream >> rinexOutputStream.header;
         rinexOutputStream << rinexOutputStream.header;
 
 	RinexNavData data;
@@ -416,14 +416,14 @@ int RinexNav_T :: streamReadWriteTest( void )
 //------------------------------------------------------------
 int RinexNav_T :: filterOperatorsTest( void )
 {
-    TestUtil test4( "RinexNavStream", "open", __FILE__, __LINE__ );
+   TestUtil test4( "RinexNavStream", "open", __FILE__, __LINE__ );
 
-    std::string msg_test_desc = "";
-    std::string msg_expected  = ", ";
-    std::string msg_fail      = ", ";
+   std::string msg_test_desc = "";
+   std::string msg_expected  = ", ";
+   std::string msg_fail      = ", ";
 
-    try
-    {
+   try
+   {
 
       gpstk::RinexNavStream FilterStream1( inputFilterStream1.c_str() );
       FilterStream1.open( inputFilterStream1.c_str(), std::ios::in );
@@ -438,20 +438,24 @@ int RinexNav_T :: filterOperatorsTest( void )
       gpstk::RinexNavData FilterData1;
       gpstk::RinexNavData FilterData2;
       gpstk::RinexNavData FilterData3;
+      gpstk::RinexNavData rndata;
 
       FilterStream1 >> FilterHeader1;
       FilterStream2 >> FilterHeader2;
       FilterStream3 >> FilterHeader3;
 
-      while (FilterStream1 >> FilterData1)
-        {
-        }
-      while (FilterStream2 >> FilterData2)
-        {
-        }
-      while (FilterStream3 >> FilterData3)
-        {
-        }
+      while (FilterStream1 >> rndata)
+      {
+         FilterData1 = rndata;
+      }
+      while (FilterStream2 >> rndata)
+      {
+         FilterData2 = rndata;
+      }
+      while (FilterStream3 >> rndata)
+      {
+         FilterData3 = rndata;
+      }
 
       gpstk::RinexNavHeaderTouchHeaderMerge merged;
       merged( FilterHeader1 );
@@ -469,13 +473,13 @@ int RinexNav_T :: filterOperatorsTest( void )
       
       msg_test_desc = "RinexNavDataOperatorLessThanSimple, not LessThanSimple FilterData1 FilterData3, fail";
       test4.assert( !LessThanSimple(FilterData1, FilterData2), msg_test_desc, __LINE__ );
-      //CPPUNIT_ASSERT_EQUAL(true,LessThanSimple(FilterData1, FilterData3));
+         //CPPUNIT_ASSERT_EQUAL(true,LessThanSimple(FilterData1, FilterData3));
 
       gpstk::RinexNavDataOperatorLessThanFull LessThanFull;
 
       msg_test_desc = "RinexNavDataOperatorLessThanFull, not LessThanFull FilterData1 FilterData1, fail";
-      //CPPUNIT_ASSERT_EQUAL(true,LessThanFull(FilterData1, FilterData3));
-      //CPPUNIT_ASSERT_EQUAL(false,LessThanFull(FilterData3, FilterData1));
+         //CPPUNIT_ASSERT_EQUAL(true,LessThanFull(FilterData1, FilterData3));
+         //CPPUNIT_ASSERT_EQUAL(false,LessThanFull(FilterData3, FilterData1));
       test4.assert( !LessThanFull(FilterData1, FilterData1), msg_test_desc, __LINE__ );
 
       std::list<long> list;
@@ -483,15 +487,15 @@ int RinexNav_T :: filterOperatorsTest( void )
       gpstk::RinexNavDataFilterPRN FilterPRN(list);
       msg_test_desc = "RinexNavDataFilterPRN, FilterPRN FilterData3, fail";
       test4.assert( FilterPRN( FilterData3 ), msg_test_desc, __LINE__ );
-      //cout << FilterPRN(FilterData3) << std:endl;
-    }
-    catch(...)
-    {
-        msg_test_desc = "filterOperatorsTest, threw unexpected exception, fail";
-        test4.assert( false, msg_test_desc, __LINE__ );
-    }
+         //cout << FilterPRN(FilterData3) << std:endl;
+   }
+   catch(...)
+   {
+      msg_test_desc = "filterOperatorsTest, threw unexpected exception, fail";
+      test4.assert( false, msg_test_desc, __LINE__ );
+   }
 
-    return( test4.countFails() );
+   return( test4.countFails() );
 
 }
 

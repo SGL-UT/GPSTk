@@ -49,6 +49,10 @@ using namespace gpstk;
 class RMWDiff : public DiffFrame
 {
 public:
+      /// Input file does not exist exit code
+   static const int EXIST_ERROR = 2;
+      /// Differences found in input files
+   static const int DIFFS_CODE = 1;
    RMWDiff(char* arg0)
          : DiffFrame(arg0, 
                      std::string("RINEX Met"))
@@ -64,7 +68,8 @@ void RMWDiff::process()
    try
    {
       FileFilterFrameWithHeader<RinexMetStream, RinexMetData, RinexMetHeader>
-         ff1(inputFileOption.getValue()[0]), ff2(inputFileOption.getValue()[1]);
+         ff1(inputFileOption.getValue()[0]),
+         ff2(inputFileOption.getValue()[1]);
 
          // find the obs data intersection
       RinexMetHeaderTouchHeaderMerge merged;
@@ -81,7 +86,8 @@ void RMWDiff::process()
       {
          cerr << "Check that files exist." << endl;
          cerr << "diff failed." << endl;
-         exit(1);
+         exitCode = EXIST_ERROR;
+         return;
       }
 
       merged(ff1.frontHeader());
@@ -89,7 +95,8 @@ void RMWDiff::process()
 
       set<RinexMetHeader::RinexMetType> intersection = merged.obsSet;
 
-      cout << "Comparing the following fields (other header data is ignored):" << endl;
+      cout << "Comparing the following fields (other header data is ignored):"
+           << endl;
       set<RinexMetHeader::RinexMetType>::iterator m = intersection.begin();
       while (m != intersection.end())
       {
@@ -111,7 +118,14 @@ void RMWDiff::process()
          ff1.diff(ff2, RinexMetDataOperatorLessThanFull(intersection));
 
       if (difflist.first.empty() && difflist.second.empty())
-         exit(0);
+      {
+            // no differences
+         exitCode = 0;
+         return;
+      }
+
+         // differences found
+      exitCode = DIFFS_CODE;
 
       list<RinexMetData>::iterator firstitr = difflist.first.begin();
       while (firstitr != difflist.first.end())
@@ -122,9 +136,10 @@ void RMWDiff::process()
          {
             if (firstitr->time == seconditr->time)
             {
-               cout << setw(3) << static_cast<YDSTime>(firstitr->time) << ' ' 
+               YDSTime recTime(firstitr->time);
+               cout << setw(3) << recTime.doy << ' ' 
                     << setw(10) << setprecision(0)
-                    << static_cast<YDSTime>(firstitr->time) << ' ' 
+                    << recTime.sod << ' ' 
                     << ff1.frontHeader().markerName << ' '
                     << ff2.frontHeader().markerName << ' ';
 
@@ -154,7 +169,7 @@ void RMWDiff::process()
       list<RinexMetData>::iterator itr = difflist.first.begin();
       while (itr != difflist.first.end())
       {
-         (*itr).dump(cout << '<');
+         cout << '<' << itr->stableText();
          itr++;
       }
 
@@ -163,25 +178,28 @@ void RMWDiff::process()
       itr = difflist.second.begin();
       while (itr != difflist.second.end())
       {
-         (*itr).dump(cout << '>');
+         cout << '>' << itr->stableText();
          itr++;
       }
 
    }
    catch(Exception& e)
    {
+      exitCode = BasicFramework::EXCEPTION_ERROR;
       cout << e << endl
            << endl
            << "Terminating.." << endl;
    }
    catch(std::exception& e)
    {
+      exitCode = BasicFramework::EXCEPTION_ERROR;
       cout << e.what() << endl
            << endl
            << "Terminating.." << endl;
    }
    catch(...)
    {
+      exitCode = BasicFramework::EXCEPTION_ERROR;
       cout << "Unknown exception... terminating..." << endl;
    }
 }
@@ -193,11 +211,11 @@ int main(int argc, char* argv[])
    {
       RMWDiff m(argv[0]);
       if (!m.initialize(argc, argv))
-         return 0;
+         return m.exitCode;
       if (!m.run())
-         return 1;
+         return m.exitCode;
       
-      return 0;
+      return m.exitCode;
    }
    catch(Exception& e)
    {
@@ -211,5 +229,6 @@ int main(int argc, char* argv[])
    {
       cout << "unknown error" << endl;
    }
-   return 1;
+      // only reach this point if an exception was caught
+   return BasicFramework::EXCEPTION_ERROR;
 }

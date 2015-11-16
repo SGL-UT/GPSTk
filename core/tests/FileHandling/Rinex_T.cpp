@@ -97,7 +97,7 @@ void Rinex_T :: init( void )
 int Rinex_T :: run( void )
 {
 
-  TestUtil test1( "Rinex", "run", __FILE__, __LINE__ );
+  TestUtil testFramework( "Rinex", "run", __FILE__, __LINE__ );
 
   std::stringstream before;
   std::stringstream after;
@@ -110,15 +110,17 @@ int Rinex_T :: run( void )
    ee_orig.addSubframe( subframe1, weeknum, 3, 1 );
    ee_orig.addSubframe( subframe2, weeknum, 3, 1 );
    ee_orig.addSubframe( subframe3, weeknum, 3, 1 );
+   ee_orig.setFIC(false); // make the dump text look the same
    ee_orig.dump( before );
 
    RinexNavData rnd = RinexNavData( ee_orig ); //constructor
 
    ee_copy = EngEphemeris( rnd ); //cast
+   ee_copy.setFIC(false); // make the dump text look the same
    ee_copy.dump( after );
 
-   test1.assert( before.str() == after.str(), test_desc + test_fail, __LINE__ );
-   return( test1.countFails() );
+   TFASSERTE( std::string, before.str(), after.str() );
+   return( testFramework.countFails() );
 }
 
 //------------------------------------------------------------

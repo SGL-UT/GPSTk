@@ -54,8 +54,6 @@
 using namespace gpstk;
 using namespace std;
 
-#define TFASSERTE(TYPE,EXP,GOT) testFramework.assert_equals<TYPE>(EXP,GOT,__LINE__)
-
 //=============================================================================
 //	This test file will contain a series of scanTime checks for
 //	each of the directly tested TimeTag classes.

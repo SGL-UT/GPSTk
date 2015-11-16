@@ -34,8 +34,9 @@
 //
 //=============================================================================
 
-/// @file Rinex3ObsData.cpp
-/// Encapsulate RINEX 3 observation file data, including I/O.
+/** @file Rinex3ObsData.cpp
+ * Encapsulate RINEX 3 observation file data, including I/O.
+ */
 
 #include <algorithm>
 #include "StringUtils.hpp"
@@ -50,8 +51,6 @@ using namespace std;
 
 namespace gpstk
 {
-
-
    void reallyPutRecordVer2( Rinex3ObsStream& strm,
                              const Rinex3ObsData& rod )
       throw(FFStreamError, StringException)
@@ -63,10 +62,10 @@ namespace gpstk
 
       if( rod.epochFlag>=2
           && rod.epochFlag<=5
-          && rod.auxHeader.NumberHeaderRecordsToBeWritten()==0 ) return;
+          && rod.auxHeader.numberHeaderRecordsToBeWritten()==0 ) return;
 
-      // first the epoch line to 'line'
-      //line  = writeTime(rod.time); // (ver 2 RinexObsData::writeTime)
+         // first the epoch line to 'line'
+         //line  = writeTime(rod.time); // (ver 2 RinexObsData::writeTime)
       string line;
       if(rod.time == CommonTime::BEGINNING_OF_TIME)
          line = string(26, ' ');
@@ -136,7 +135,7 @@ namespace gpstk
       {
          try
          {
-            rod.auxHeader.WriteHeaderRecords(strm);
+            rod.auxHeader.writeHeaderRecords(strm);
          }
          catch(FFStreamError& e)
          {
@@ -169,17 +168,19 @@ namespace gpstk
                   // get the R3 obs ID from the map
                RinexObsID obsid;
                obsid =
-                 strm.header.mapSysR2toR3ObsID[sys][strm.header.R2ObsTypes[i]];
+                  strm.header.mapSysR2toR3ObsID[sys][strm.header.R2ObsTypes[i]];
 
-                 // now find index of that data from R3 header
+                  // now find index of that data from R3 header
                const vector<RinexObsID>& vecData(strm.header.mapObsTypes[sys]);
 
                vector<RinexObsID>::const_iterator jt;
                jt = find(vecData.begin(), vecData.end(), obsid);
 
-               int ind(-1);                           // index into vecData
+                  // index into vecData
+               int ind(-1);
 
-               if( jt != vecData.end() ) ind = jt-vecData.begin();
+               if( jt != vecData.end() )
+                  ind = jt-vecData.begin();
 
                   // need a continuation line?
                if( obsWritten != 0 && (obsWritten % maxObsPerLine) == 0 )
@@ -190,14 +191,15 @@ namespace gpstk
                }
 
                   // write the line
-               line += rightJustify(asString(            // double 14.3
-                          ( ind == -1 ? 0.0 : itr->second[ind].data),3),14 );
-               line += (ind == -1 || itr->second[ind].lli == 0)
-                       ? string(1, ' ')
-                       : rightJustify(asString<short>(itr->second[ind].lli),1);
-               line += (ind == -1 || itr->second[ind].ssi == 0)
-                       ? string(1, ' ')
-                       : rightJustify(asString<short>(itr->second[ind].ssi),1);
+               if (ind == -1)
+               {
+                  RinexDatum empty;
+                  line += empty.asString();
+               }
+               else
+               {
+                  line += itr->second[ind].asString();
+               }
                obsWritten++;
 
             }  // End of 'for( i=0; i<strm.header.R2ObsTypes.size(); i++ )'
@@ -245,14 +247,14 @@ namespace gpstk
    }  // End of method 'Rinex3ObsData::getObs()'
 
 
-     /* This method returns the RinexDatum of a given observation
-      *
-      * @param sat  Satellite whose observation we want to fetch.
-      * @param type String representing the observation type.
-      * @param hdr  RINEX Observation Header for current RINEX file.
-      */
+      /* This method returns the RinexDatum of a given observation
+       *
+       * @param sat  Satellite whose observation we want to fetch.
+       * @param type String representing the observation type.
+       * @param hdr  RINEX Observation Header for current RINEX file.
+       */
    RinexDatum Rinex3ObsData::getObs( const SatID& sat, std::string type,
-                                             const Rinex3ObsHeader& hdr ) const
+                                     const Rinex3ObsHeader& hdr ) const
       throw(InvalidRequest)
    {
 
@@ -278,26 +280,31 @@ namespace gpstk
    void Rinex3ObsData::reallyPutRecord(FFStream& ffs) const
       throw(std::exception, FFStreamError, StringException)
    {
-      // is there anything to write?
+         // is there anything to write?
       if( (epochFlag == 0 || epochFlag == 1 || epochFlag == 6)
-              && (numSVs==0 || obs.empty())) return;
+          && (numSVs==0 || obs.empty())) return;
 //    if( (epochFlag >= 2 && epochFlag <= 5) &&
-//         auxHeader.NumberHeaderRecordsToBeWritten() == 0 ) return;
+//         auxHeader.numberHeaderRecordsToBeWritten() == 0 ) return;
 
       Rinex3ObsStream& strm = dynamic_cast<Rinex3ObsStream&>(ffs);
 
-      // call the version for RINEX ver 2
-      if(strm.header.version < 3) {
-         try {
+         // call the version for RINEX ver 2
+      if(strm.header.version < 3)
+      {
+         try
+         {
             reallyPutRecordVer2(strm, *this);
          }
-         catch(Exception& e) { GPSTK_RETHROW(e); }
+         catch(Exception& e)
+         {
+            GPSTK_RETHROW(e);
+         }
          return;
       }
 
       string line;
 
-      // first the epoch line
+         // first the epoch line
       line  = ">";
       line += writeTime(time);
       line += string(2, ' ');
@@ -305,33 +312,25 @@ namespace gpstk
       line += rightJustify(asString<short>(numSVs   ), 3);
       line += string(6, ' ');
       if(clockOffset != 0.0) // optional data; need to test for its existence
-      line += rightJustify(asString(clockOffset, 12), 15);
+         line += rightJustify(asString(clockOffset, 12), 15);
 
       strm << line << endl;
       strm.lineNumber++;
       line.erase();
 
-      if(epochFlag == 0 || epochFlag == 1 || epochFlag == 6) {
+      if(epochFlag == 0 || epochFlag == 1 || epochFlag == 6)
+      {
          DataMap::const_iterator itr = obs.begin();
 
-         while(itr != obs.end()) {
+         while(itr != obs.end())
+         {
             line = itr->first.toString();
 
-            for(size_t i=0; i < itr->second.size(); i++) {
-               RinexDatum thisData = itr->second[i];
-               line += rightJustify(asString(thisData.data,3),14);
-
-               if(thisData.lli == 0)
-                  line += string(1, ' ');
-               else
-                  line += rightJustify(asString<short>(thisData.lli),1);
-
-               if(thisData.ssi == 0)
-                  line += string(1, ' ');
-               else
-                  line += rightJustify(asString<short>(thisData.ssi),1);
+            for(size_t i=0; i < itr->second.size(); i++)
+            {
+               line += itr->second[i].asString();
             }
-            // write the data line out
+               // write the data line out
             strm << line << endl;
             strm.lineNumber++;
             line.erase();
@@ -340,13 +339,21 @@ namespace gpstk
          } // end loop over sats and data
       }
 
-      // write the auxiliary header records, if any
-      else if(epochFlag >= 2 && epochFlag <= 5) {
-         try {
-            auxHeader.WriteHeaderRecords(strm);
+         // write the auxiliary header records, if any
+      else if(epochFlag >= 2 && epochFlag <= 5)
+      {
+         try
+         {
+            auxHeader.writeHeaderRecords(strm);
          }
-         catch(FFStreamError& e) { GPSTK_RETHROW(e); }
-         catch(StringException& e) { GPSTK_RETHROW(e); }
+         catch(FFStreamError& e)
+         {
+            GPSTK_RETHROW(e);
+         }
+         catch(StringException& e)
+         {
+            GPSTK_RETHROW(e);
+         }
       }
 
    }   // end Rinex3ObsData::reallyPutRecord
@@ -356,53 +363,60 @@ namespace gpstk
    {
       static CommonTime previousTime(CommonTime::BEGINNING_OF_TIME);
 
-      // get the epoch line and check
+         // get the epoch line and check
       string line;
       while(line.empty())        // ignore blank lines in place of epoch lines
          strm.formattedGetLine(line, true);
 
-      if(line.size()>80 || line[0] != ' ' || line[3] != ' ' || line[6] != ' ') {
+      if(line.size()>80 || line[0] != ' ' || line[3] != ' ' || line[6] != ' ')
+      {
          FFStreamError e("Bad epoch line: >" + line + "<");
          GPSTK_THROW(e);
       }
 
-      // process the epoch line, including SV list and clock bias
+         // process the epoch line, including SV list and clock bias
       rod.epochFlag = asInt(line.substr(28,1));
-      if((rod.epochFlag < 0) || (rod.epochFlag > 6)) {
+      if((rod.epochFlag < 0) || (rod.epochFlag > 6))
+      {
          FFStreamError e("Invalid epoch flag: " + asString(rod.epochFlag));
          GPSTK_THROW(e);
       }
 
-      // Not all epoch flags are required to have a time.
-      // Specifically, 0,1,5,6 must have an epoch time; it is optional for 2,3,4.
-      // If there is and epoch time, parse it and load it in the member "time".
-      // If epoch flag=0, 1, 5, or 6 and there is NO epoch time, then throw.
-      // If epoch flag=2, 3, or 4 and there is no epoch time,
-      // use the time of the previous record.
+         // Not all epoch flags are required to have a time.
+         // Specifically, 0,1,5,6 must have an epoch time; it is
+         // optional for 2,3,4.  If there is and epoch time, parse it
+         // and load it in the member "time".
+         // If epoch flag=0, 1, 5, or 6 and there is NO epoch time, then throw.
+         // If epoch flag=2, 3, or 4 and there is no epoch time,
+         // use the time of the previous record.
       bool noEpochTime = (line.substr(0,26) == string(26, ' '));
       if(noEpochTime && (rod.epochFlag==0 || rod.epochFlag==1 ||
-                         rod.epochFlag==5 || rod.epochFlag==6 )) {
+                         rod.epochFlag==5 || rod.epochFlag==6 ))
+      {
          FFStreamError e("Required epoch time missing: " + line);
          GPSTK_THROW(e);
       }
       else if(noEpochTime)
          rod.time = previousTime;
-      else {
-         try {
-            // check if the spaces are in the right place - an easy
-            // way to check if there's corruption in the file
+      else
+      {
+         try
+         {
+               // check if the spaces are in the right place - an easy
+               // way to check if there's corruption in the file
             if((line[0] != ' ') || (line[3] != ' ') || (line[6] != ' ') ||
-                 (line[9] != ' ') || (line[12] != ' ') || (line[15] != ' '))
+               (line[9] != ' ') || (line[12] != ' ') || (line[15] != ' '))
             {
                FFStreamError e("Invalid time format");
                GPSTK_THROW(e);
             }
 
-            // if there's no time, just use a bad time
+               // if there's no time, just use a bad time
             if(line.substr(0,26) == string(26, ' '))
                rod.time = CommonTime::BEGINNING_OF_TIME;
                //rod.time = previousTime; ??
-            else {
+            else
+            {
                int year, month, day, hour, min;
                double sec;
                int yy = (static_cast<CivilTime>(strm.header.firstObs)).year/100;
@@ -415,16 +429,22 @@ namespace gpstk
                min   = asInt(   line.substr(13, 2 ));
                sec   = asDouble(line.substr(15, 11));
 
-               // Real Rinex has epochs 'yy mm dd hr 59 60.0' surprisingly often....
+                  // Real Rinex has epochs 'yy mm dd hr 59 60.0'
+                  // surprisingly often....
                double ds(0);
-               if(sec >= 60.) { ds=sec; sec=0.0; }
-               CivilTime rv(yy+year, month, day, hour, min, sec, TimeSystem::GPS);
+               if(sec >= 60.)
+               {
+                  ds=sec;
+                  sec=0.0;
+               }
+               CivilTime rv(yy+year, month, day, hour, min, sec,
+                            TimeSystem::GPS);
                if(ds != 0) rv.second += ds;
 
                rod.time = rv.convertToCommonTime();
             }
          }
-         // string exceptions for substr are caught here
+            // string exceptions for substr are caught here
          catch(std::exception &e)
          {
             FFStreamError err("std::exception: " + string(e.what()));
@@ -432,88 +452,90 @@ namespace gpstk
          }
          catch(Exception& e)
          {
-            string text;
-            for(size_t i=0; i<e.getTextCount(); i++) text += e.getText(i);
-            FFStreamError err("gpstk::Exception in parseTime(): " + text);
+            FFStreamError err(e);
             GPSTK_THROW(err);
          }
-         // end rod.time = parseTime(line, strm.header);
+            // end rod.time = parseTime(line, strm.header);
 
-         // save for next call
+            // save for next call
          previousTime = rod.time;
       }
 
-      // number of satellites
+         // number of satellites
       rod.numSVs = asInt(line.substr(29,3));
 
-      // clock offset
+         // clock offset
       if(line.size() > 68 )
          rod.clockOffset = asDouble(line.substr(68, 12));
       else
          rod.clockOffset = 0.0;
 
-      // Read the observations ...
-      if(rod.epochFlag==0 || rod.epochFlag==1 || rod.epochFlag==6) {
-         // first read the SatIDs off the epoch line
+         // Read the observations ...
+      if(rod.epochFlag==0 || rod.epochFlag==1 || rod.epochFlag==6)
+      {
+            // first read the SatIDs off the epoch line
          int isv, ndx, line_ndx;
          string satsys;
          RinexSatID sat;
          vector<RinexSatID> satIndex(rod.numSVs);
-         for(isv=1, ndx=0; ndx<rod.numSVs; isv++, ndx++) {
-            if(!(isv % 13)) {                   // get a new continuation line
+         for(isv=1, ndx=0; ndx<rod.numSVs; isv++, ndx++)
+         {
+            if(!(isv % 13))
+            {                   // get a new continuation line
                strm.formattedGetLine(line);
                isv = 1;
-               if(line.size() > 80) {
-                  FFStreamError err("Invalid line size:" + asString(line.size()));
+               if(line.size() > 80)
+               {
+                  FFStreamError err("Invalid line size:" +
+                                    asString(line.size()));
                   GPSTK_THROW(err);
                }
             }
 
-            // read the sat id
-            try {
+               // read the sat id
+            try
+            {
                sat = RinexSatID(line.substr(30+isv*3-1, 3));
                satIndex[ndx] = sat;
-               //// if this system does not have obs types assigned, do so
-               //string satsys = asString(sat.systemChar());
-               //if(strm.header.mapObsTypes[satsys].size() == 0) {
-               //   strm.header.mapObsTypes[satsys] = strm.header.mapObsTypes["G"];
-               //}
             }
-            catch (Exception& e) {
+            catch (Exception& e)
+            {
                FFStreamError ffse(e);
                GPSTK_THROW(ffse);
             }
          }  // end loop over numSVs
 
-         // loop over all sats, reading obs data
-         unsigned numObs(strm.header.R2ObsTypes.size());// number of R2 OTs in header
+            // number of R2 OTs in header
+         unsigned numObs(strm.header.R2ObsTypes.size());
          rod.obs.clear();
-         for(isv=0; isv < rod.numSVs; isv++) {
-            //strm.formattedGetLine(line);           // get a line
-            //line.resize(80, ' ');                  // pad just in case
+            // loop over all sats, reading obs data
+         for(isv=0; isv < rod.numSVs; isv++)
+         {
             sat = satIndex[isv];                   // sat for this data
             satsys = asString(sat.systemChar());   // system for this sat
             vector<RinexDatum> data;
-            // loop over data in the line
-            for(ndx=0, line_ndx=0; ndx < numObs; ndx++, line_ndx++) {
-               if(! (line_ndx % 5)) {              // get a new line
+               // loop over data in the line
+            for(ndx=0, line_ndx=0; ndx < numObs; ndx++, line_ndx++)
+            {
+               if(! (line_ndx % 5))
+               {              // get a new line
                   strm.formattedGetLine(line);
                   line.resize(80, ' ');            // pad just in case
                   line_ndx = 0;
-                  if(line.size() > 80) {
-                     FFStreamError err("Invalid line size:" + asString(line.size()));
+                  if(line.size() > 80)
+                  {
+                     FFStreamError err("Invalid line size:" +
+                                       asString(line.size()));
                      GPSTK_THROW(err);
                   }
                }
 
-               // does this R2 OT map into a valid R3 ObsID?
+                  // does this R2 OT map into a valid R3 ObsID?
                string R2ot(strm.header.R2ObsTypes[ndx]);
                string R3ot(strm.header.mapSysR2toR3ObsID[satsys][R2ot].asString());
-               if(R3ot != string("   ")) {
-                  RinexDatum tempData;
-                  tempData.data = asDouble(line.substr(line_ndx*16,   14));
-                  tempData.lli =     asInt(line.substr(line_ndx*16+14, 1));
-                  tempData.ssi =     asInt(line.substr(line_ndx*16+15, 1));
+               if(R3ot != string("   "))
+               {
+                  RinexDatum tempData(line.substr(line_ndx*16, 16));
                   data.push_back(tempData);
                }
             }
@@ -522,18 +544,26 @@ namespace gpstk
          }  // end loop over sats to read obs data
       }
 
-      // ... or the auxiliary header information
-      else if(rod.numSVs > 0) {
+         // ... or the auxiliary header information
+      else if(rod.numSVs > 0)
+      {
          rod.auxHeader.clear();
          for(int i=0; i<rod.numSVs; i++)
          {
             strm.formattedGetLine(line);
             StringUtils::stripTrailing(line);
-            try {
-               rod.auxHeader.ParseHeaderRecord(line);
+            try
+            {
+               rod.auxHeader.parseHeaderRecord(line);
             }
-            catch(FFStreamError& e) { GPSTK_RETHROW(e); }
-            catch(StringException& e) { GPSTK_RETHROW(e); }
+            catch(FFStreamError& e)
+            {
+               GPSTK_RETHROW(e);
+            }
+            catch(StringException& e)
+            {
+               GPSTK_RETHROW(e);
+            }
          }
       }
    }  // end void reallyGetRecordVer2(Rinex3ObsStream& strm, Rinex3ObsData& rod)
@@ -544,36 +574,43 @@ namespace gpstk
    {
       Rinex3ObsStream& strm = dynamic_cast<Rinex3ObsStream&>(ffs);
 
-      // If the header hasn't been read, read it.
+         // If the header hasn't been read, read it.
       if(!strm.headerRead) strm >> strm.header;
 
-      // call the version for RINEX ver 2
-      if(strm.header.version < 3) {
-         try {
+         // call the version for RINEX ver 2
+      if(strm.header.version < 3)
+      {
+         try
+         {
             reallyGetRecordVer2(strm, *this);
          }
-         catch(Exception& e) { GPSTK_RETHROW(e); }
+         catch(Exception& e)
+         {
+            GPSTK_RETHROW(e);
+         }
          return;
       }
 
       string line;
       Rinex3ObsData rod;
 
-      // clear out this ObsData
+         // clear out this ObsData
       *this = rod;
 
-      // read the first (epoch) line
+         // read the first (epoch) line
       strm.formattedGetLine(line, true);
 
-      // Check and parse the epoch line -----------------------------------
-      // Check for epoch marker ('>') and following space.
-      if(line[0] != '>' || line[1] != ' ') {
+         // Check and parse the epoch line -----------------------------------
+         // Check for epoch marker ('>') and following space.
+      if(line[0] != '>' || line[1] != ' ')
+      {
          FFStreamError e("Bad epoch line: >" + line + "<");
          GPSTK_THROW(e);
       }
 
       epochFlag = asInt(line.substr(31,1));
-      if(epochFlag < 0 || epochFlag > 6) {
+      if(epochFlag < 0 || epochFlag > 6)
+      {
          FFStreamError e("Invalid epoch flag: " + asString(epochFlag));
          GPSTK_THROW(e);
       }
@@ -587,62 +624,74 @@ namespace gpstk
       else
          clockOffset = 0.0;
 
-      // Read the observations: SV ID and data ----------------------------
-      if(epochFlag == 0 || epochFlag == 1 || epochFlag == 6) {
+         // Read the observations: SV ID and data ----------------------------
+      if(epochFlag == 0 || epochFlag == 1 || epochFlag == 6)
+      {
          vector<RinexSatID> satIndex(numSVs);
          map<RinexSatID, vector<RinexDatum> > tempDataMap;
 
-         for(int isv = 0; isv < numSVs; isv++) {
+         for(int isv = 0; isv < numSVs; isv++)
+         {
             strm.formattedGetLine(line);
 
-            // get the SV ID
-            try {
+               // get the SV ID
+            try
+            {
                satIndex[isv] = RinexSatID(line.substr(0,3));
             }
-            catch (Exception& e) {
+            catch (Exception& e)
+            {
                FFStreamError ffse(e);
                GPSTK_THROW(ffse);
             }
 
-            // get the # data items (# entries in ObsType map of maps from header)
+               // get the # data items (# entries in ObsType map of
+               // maps from header)
             string gnss = asString(satIndex[isv].systemChar());
             int size = strm.header.mapObsTypes[gnss].size();
 
-            // Some receivers leave blanks for missing Obs (which is OK by RINEX 3).
-            // If the last Obs are the ones missing, it won't necessarily be padded
-            // with spaces, so the parser will break.  This adds the padding to let
-            // the parser do its job and interpret spaces as zeroes.
+               // Some receivers leave blanks for missing Obs (which
+               // is OK by RINEX 3).  If the last Obs are the ones
+               // missing, it won't necessarily be padded with spaces,
+               // so the parser will break.  This adds the padding to
+               // let the parser do its job and interpret spaces as
+               // zeroes.
             size_t minSize = 3 + 16*size;
             if(line.size() < minSize)
                line += string(minSize-line.size(), ' ');
 
-            // get the data (# entries in ObsType map of maps from header)
+               // get the data (# entries in ObsType map of maps from header)
             vector<RinexDatum> data;
-            for(int i = 0; i < size; i++) {
+            for(int i = 0; i < size; i++)
+            {
                size_t pos = 3 + 16*i;
-               RinexDatum tempData;
-               tempData.data = asDouble(line.substr(pos   , 14));
-               if( line.size() > pos+14 )
-                  tempData.lli  = asInt( line.substr(pos+14,  1));
-               if( line.size() > pos+15 )
-                  tempData.ssi  = asInt( line.substr(pos+15,  1));
+               RinexDatum tempData(line.substr(pos,16));
                data.push_back(tempData);
             }
             obs[satIndex[isv]] = data;
          }
       }
 
-      // ... or the auxiliary header information
-      else if(numSVs > 0) {
+         // ... or the auxiliary header information
+      else if(numSVs > 0)
+      {
          auxHeader.clear();
-         for(int i = 0; i < numSVs; i++) {
+         for(int i = 0; i < numSVs; i++)
+         {
             strm.formattedGetLine(line);
             StringUtils::stripTrailing(line);
-            try {
-               auxHeader.ParseHeaderRecord(line);
+            try
+            {
+               auxHeader.parseHeaderRecord(line);
             }
-            catch(FFStreamError& e) { GPSTK_RETHROW(e); }
-            catch(StringException& e) { GPSTK_RETHROW(e); }
+            catch(FFStreamError& e)
+            {
+               GPSTK_RETHROW(e);
+            }
+            catch(StringException& e)
+            {
+               GPSTK_RETHROW(e);
+            }
          }
       }
 
@@ -656,53 +705,58 @@ namespace gpstk
                                        const TimeSystem& ts) const
       throw(FFStreamError)
    {
-   try {
-      // check if the spaces are in the right place - an easy
-      // way to check if there's corruption in the file
-      if( (line[ 1] != ' ') || (line[ 6] != ' ') || (line[ 9] != ' ') ||
-          (line[12] != ' ') || (line[15] != ' ') || (line[18] != ' ') ||
-          (line[29] != ' ') || (line[30] != ' '))
+      try
       {
-         FFStreamError e("Invalid time format");
-         GPSTK_THROW(e);
+            // check if the spaces are in the right place - an easy
+            // way to check if there's corruption in the file
+         if( (line[ 1] != ' ') || (line[ 6] != ' ') || (line[ 9] != ' ') ||
+             (line[12] != ' ') || (line[15] != ' ') || (line[18] != ' ') ||
+             (line[29] != ' ') || (line[30] != ' '))
+         {
+            FFStreamError e("Invalid time format");
+            GPSTK_THROW(e);
+         }
+
+            // if there's no time, just return a bad time
+         if(line.substr(2,27) == string(27, ' '))
+            return CommonTime::BEGINNING_OF_TIME;
+
+         int year, month, day, hour, min;
+         double sec;
+
+         year  = asInt(   line.substr( 2,  4));
+         month = asInt(   line.substr( 7,  2));
+         day   = asInt(   line.substr(10,  2));
+         hour  = asInt(   line.substr(13,  2));
+         min   = asInt(   line.substr(16,  2));
+         sec   = asDouble(line.substr(19, 11));
+
+            // Real Rinex has epochs 'yy mm dd hr 59 60.0' surprisingly often.
+         double ds = 0;
+         if(sec >= 60.)
+         {
+            ds = sec;
+            sec = 0.0;
+         }
+
+         CommonTime rv = CivilTime(year,month,day,hour,min,sec).convertToCommonTime();
+         if(ds != 0) rv += ds;
+
+         rv.setTimeSystem(ts);
+
+         return rv;
       }
-
-      // if there's no time, just return a bad time
-      if(line.substr(2,27) == string(27, ' '))
-         return CommonTime::BEGINNING_OF_TIME;
-
-      int year, month, day, hour, min;
-      double sec;
-
-      year  = asInt(   line.substr( 2,  4));
-      month = asInt(   line.substr( 7,  2));
-      day   = asInt(   line.substr(10,  2));
-      hour  = asInt(   line.substr(13,  2));
-      min   = asInt(   line.substr(16,  2));
-      sec   = asDouble(line.substr(19, 11));
-
-      // Real Rinex has epochs 'yy mm dd hr 59 60.0' surprisingly often.
-      double ds = 0;
-      if(sec >= 60.) { ds = sec; sec = 0.0; }
-
-      CommonTime rv = CivilTime(year,month,day,hour,min,sec).convertToCommonTime();
-      if(ds != 0) rv += ds;
-
-      rv.setTimeSystem(ts);
-
-      return rv;
-   }
-   // string exceptions for substr are caught here
-   catch (std::exception &e) {
-      FFStreamError err("std::exception: " + string(e.what()));
-      GPSTK_THROW(err);
-   }
-   catch (gpstk::Exception& e) {
-      string text;
-     for(size_t i=0; i<e.getTextCount(); i++) text += e.getText(i);
-      FFStreamError err("gpstk::Exception in parseTime(): " + text);
-      GPSTK_THROW(err);
-   }
+         // string exceptions for substr are caught here
+      catch (std::exception &e)
+      {
+         FFStreamError err("std::exception: " + string(e.what()));
+         GPSTK_THROW(err);
+      }
+      catch (gpstk::Exception& e)
+      {
+         FFStreamError err(e);
+         GPSTK_THROW(err);
+      }
    }  // end parseTime
 
    string Rinex3ObsData::writeTime(const CommonTime& ct) const
@@ -736,23 +790,27 @@ namespace gpstk
          return;
 
       s << "Dump of Rinex3ObsData" << endl << " - time: " << writeTime(time)
-         << " epochFlag: " << " " << epochFlag
-         << " numSVs: " << numSVs
-         << fixed << setprecision(9) << " clk offset: " << clockOffset << endl;
+        << " epochFlag: " << " " << epochFlag
+        << " numSVs: " << numSVs
+        << fixed << setprecision(9) << " clk offset: " << clockOffset << endl;
 
-      if(epochFlag == 0 || epochFlag == 1) {
+      if(epochFlag == 0 || epochFlag == 1)
+      {
          DataMap::const_iterator jt;
-         for(jt = obs.begin(); jt != obs.end(); jt++) {
-            s << " " << (jt->first).toString() << ":" << fixed << setprecision(3);
+         for(jt = obs.begin(); jt != obs.end(); jt++)
+         {
+            s << " " << (jt->first).toString() << ":" << fixed
+              << setprecision(3);
             for(size_t i = 0; i < jt->second.size(); i++)
             {
                s << " " << setw(12) << jt->second[i].data
-                  << "/" << jt->second[i].lli << "/" << jt->second[i].ssi;
+                 << "/" << jt->second[i].lli << "/" << jt->second[i].ssi;
             }
             s << endl;
          }
       }
-      else {
+      else
+      {
          s << "aux. header info:\n";
          auxHeader.dump(s);
       }
@@ -766,18 +824,25 @@ namespace gpstk
          << " flag " << epochFlag << " NSVs " << numSVs
          << fixed << setprecision(6) << " clk " << clockOffset;
 
-      if(obs.empty()) { os << " : EMPTY" << endl; return; }
+      if(obs.empty())
+      {
+         os << " : EMPTY" << endl;
+         return;
+      }
       else os << endl;
 
-      if(epochFlag >= 2) {
+      if(epochFlag >= 2)
+      {
          os << "Auxiliary header:\n";
          auxHeader.dump(os);
          return;
       }
 
-      for(DataMap::const_iterator jt=obs.begin(); jt != obs.end(); jt++) {
+      for(DataMap::const_iterator jt=obs.begin(); jt != obs.end(); jt++)
+      {
          RinexSatID sat(jt->first);
-         const vector<RinexObsID> types(head.mapObsTypes[sat.toString().substr(0,1)]);
+         const vector<RinexObsID>
+            types(head.mapObsTypes[sat.toString().substr(0,1)]);
          os << " " << sat.toString() << fixed << setprecision(3);
          for(size_t i=0; i<jt->second.size(); i++)
             os << " " << setw(13) << jt->second[i].data

@@ -13,9 +13,9 @@ G    8 C1C C2W C2X C5X L1C L2W L2X L5X                      SYS / # / OBS TYPES
   2014    10    31    20    28    0.0000000     GPS         TIME OF FIRST OBS   
   2014    10    31    20    36    0.0000000     GPS         TIME OF LAST OBS    
      0                                                      RCV CLOCK OFFS APPL 
-G L1C 0.00000                                               SYS / PHASE SHIFT   
+G L1C  0.00000                                              SYS / PHASE SHIFT   
 G L2X -0.25000                                              SYS / PHASE SHIFT   
-G L5X 0.00000                                               SYS / PHASE SHIFT   
+G L5X  0.00000                                              SYS / PHASE SHIFT   
     16                                                      LEAP SECONDS        
      9                                                      # OF SATELLITES     
    G05    70     0     0     0    63     0     0     0      PRN / # OF OBS      

@@ -34,7 +34,7 @@
 //
 //=============================================================================
 
-#include "FileFilterFrame.hpp"
+#include "FileFilterFrameWithHeader.hpp"
 
 #include "RinexNavData.hpp"
 #include "RinexNavStream.hpp"
@@ -49,6 +49,10 @@ using namespace gpstk;
 class RNWDiff : public DiffFrame
 {
 public:
+      /// Input file does not exist exit code
+   static const int EXIST_ERROR = 2;
+      /// Differences found in input files
+   static const int DIFFS_CODE = 1;
    RNWDiff(char* arg0)
          : DiffFrame(arg0, 
                      std::string("RINEX Nav"))
@@ -63,8 +67,25 @@ void RNWDiff::process()
 {
    try
    {
-      FileFilterFrame<RinexNavStream, RinexNavData> ff1(inputFileOption.getValue()[0]);
-      FileFilterFrame<RinexNavStream, RinexNavData> ff2(inputFileOption.getValue()[1]);
+      FileFilterFrameWithHeader<RinexNavStream, RinexNavData, RinexNavHeader>
+         ff1(inputFileOption.getValue()[0]),
+         ff2(inputFileOption.getValue()[1]);
+
+         // no data?  FIX make this program faster.. if one file
+         // doesn't exist, there's little point in reading any.
+      if (ff1.emptyHeader())
+         cerr << "No header information for " << inputFileOption.getValue()[0]
+              << endl;
+      if (ff2.emptyHeader())
+         cerr << "No header information for " << inputFileOption.getValue()[1]
+              << endl;
+      if (ff1.emptyHeader() || ff2.emptyHeader())
+      {
+         cerr << "Check that files exist." << endl;
+         cerr << "diff failed." << endl;
+         exitCode = EXIST_ERROR;
+         return;
+      }
       
       ff1.sort(RinexNavDataOperatorLessThanFull());
       ff2.sort(RinexNavDataOperatorLessThanFull());
@@ -73,7 +94,14 @@ void RNWDiff::process()
          ff1.diff(ff2, RinexNavDataOperatorLessThanFull());
       
       if (difflist.first.empty() && difflist.second.empty())
-         exit(0);
+      {
+            // no differences
+         exitCode = 0;
+         return;
+      }
+
+         // differences found
+      exitCode = DIFFS_CODE;
 
       list<RinexNavData>::iterator firstitr = difflist.first.begin();
       while (firstitr != difflist.first.end())
@@ -89,9 +117,10 @@ void RNWDiff::process()
                 (firstitr->PRNID == seconditr->PRNID) &&
                 (firstitr->HOWtime == seconditr->HOWtime) )
             {
-               cout << fixed << setw(3) << static_cast<YDSTime>(firstitr->time) << ' ' 
+               YDSTime recTime(firstitr->time);
+               cout << fixed << setw(3) << recTime.doy << ' ' 
                     << setw(10) << setprecision(0)
-                    << static_cast<YDSTime>(firstitr->time) << ' ' 
+                    << recTime.sod << ' ' 
                     << setw(19) << setprecision(12) << scientific
                     << (firstitr->af0      - seconditr->af0) << ' '
                     << (firstitr->af1      - seconditr->af1) << ' '
@@ -139,7 +168,7 @@ void RNWDiff::process()
       list<RinexNavData>::iterator itr = difflist.first.begin();
       while (itr != difflist.first.end())
       {
-         (*itr).dump(cout << '<');
+         cout << '<' << itr->stableText() << endl;
          itr++;
       }
 
@@ -148,25 +177,28 @@ void RNWDiff::process()
       itr = difflist.second.begin();
       while (itr != difflist.second.end())
       {
-         (*itr).dump(cout << '>');
+         cout << '>' << itr->stableText() << endl;
          itr++;
       }
 
    }
    catch(Exception& e)
    {
+      exitCode = BasicFramework::EXCEPTION_ERROR;
       cout << e << endl
            << endl
            << "Terminating.." << endl;
    }
    catch(std::exception& e)
    {
+      exitCode = BasicFramework::EXCEPTION_ERROR;
       cout << e.what() << endl
            << endl
            << "Terminating.." << endl;
    }
    catch(...)
    {
+      exitCode = BasicFramework::EXCEPTION_ERROR;
       cout << "Unknown exception... terminating..." << endl;
    }
 }
@@ -177,11 +209,11 @@ int main(int argc, char* argv[])
    {
       RNWDiff m(argv[0]);
       if (!m.initialize(argc, argv))
-         return 0;
+         return m.exitCode;
       if (!m.run())
-         return 1;
+         return m.exitCode;
       
-      return 0;
+      return m.exitCode;
    }
    catch(Exception& e)
    {
@@ -195,5 +227,6 @@ int main(int argc, char* argv[])
    {
       cout << "unknown error" << endl;
    }
-   return 1;
+      // only reach this point if an exception was caught
+   return BasicFramework::EXCEPTION_ERROR;
 }

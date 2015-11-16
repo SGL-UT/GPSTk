@@ -81,7 +81,8 @@ PosCvt::PosCvt(char* arg0)
         listFormatsOption('l', "list-formats", "List the available format codes"
                           " for use by the input and output format options."),
         outputFormatOption('F', "output-format", "Write the position with the"
-                           " given format.")
+                           " given format."),
+        mutexOption(true)
 {
    ecefOption.setMaxCount(1);
    geodeticOption.setMaxCount(1);
@@ -104,7 +105,7 @@ bool PosCvt::initialize(int argc, char *argv[])
    
    if(listFormatsOption.getCount())
    {
-      cout << "  %X %Y %Z  (cartesian or ECEF in kilometers)" << endl
+      cout << " %X %Y %Z  (cartesian or ECEF in kilometers)" << endl
            << " %x %y %z  (cartesian or ECEF in meters)" << endl
            << " %a %l %r  (geocentric lat,lon,radius, longitude E, "
          "radius in meters)" << endl
@@ -187,12 +188,12 @@ int main(int argc, char* argv[])
       PosCvt pc(argv[0]);
 
       if (!pc.initialize(argc, argv))
-         return 0;
+         return pc.exitCode;
       
       if(!pc.run())
-         return 1;
+         return pc.exitCode;
 
-      return 0;
+      return pc.exitCode;
    }
    catch(Exception& e)
    {
@@ -206,6 +207,6 @@ int main(int argc, char* argv[])
    {
       cout << "Caught an unknown exception." << endl;
    }
-
-   return 1;
+      // only reach this point if an exception was caught
+   return BasicFramework::EXCEPTION_ERROR;
 }

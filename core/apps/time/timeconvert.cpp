@@ -203,10 +203,10 @@ void TimCvt::process()
 
       cout << endl
            << eight << leftJustify("Month/Day/Year H:M:S", 32) 
-           << CivilTime(ct) << endl
+           << CivilTime(ct).printf("%02m/%02d/%04Y %02H:%02M:%02S") << endl
 
            << eight << leftJustify("Modified Julian Date", 32)
-           << setprecision(15) << MJD(ct) << endl
+           << setprecision(15) << MJD(ct).printf("%15.9Q") << endl
 
            << eight << leftJustify("GPSweek DayOfWeek SecOfWeek", 32)
            << GPSWeekSecond(ct).printf("%G %w % 13.6g") << endl
@@ -231,11 +231,28 @@ void TimCvt::process()
 
 int main(int argc, char* argv[])
 {
-   TimCvt tc(argv[0]);
-   if (!tc.initialize(argc, argv))
-      return 0;
-   if (!tc.run())
-      return 1;
-   
-   return 0;
+   try
+   {
+      TimCvt m(argv[0]);
+      if (!m.initialize(argc, argv))
+         return m.exitCode;
+      if (!m.run())
+         return m.exitCode;
+      
+      return m.exitCode;
+   }
+   catch(Exception& e)
+   {
+      cout << e << endl;
+   }
+   catch(std::exception& e)
+   {
+      cout << e.what() << endl;
+   }
+   catch(...)
+   {
+      cout << "unknown error" << endl;
+   }
+      // only reach this point if an exception was caught
+   return BasicFramework::EXCEPTION_ERROR;
 }

@@ -1,4 +1,4 @@
-Application: timcvt.exe
+Application: timecvt.exe
 Purpose:     To convert time between different time specifications
 Usage:       timcvt {option}  "{time specification}"
 Help:        timcvt -h

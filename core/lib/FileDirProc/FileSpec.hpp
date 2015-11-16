@@ -56,8 +56,8 @@ const char slash = '/';
 
 namespace gpstk
 {
-   /** @addtogroup filedirgroup */
-   //@{
+      /** @addtogroup filedirgroup */
+      //@{
 
       /// This exception is thrown when there is a problem with
       /// handling file specifications.
@@ -135,7 +135,6 @@ namespace gpstk
          /// from FileHunter.
       enum FileSpecSortType
       {
-         none,
          ascending,
          descending
       };
@@ -146,7 +145,7 @@ namespace gpstk
          /// Constructor with a string to parse
       FileSpec(const std::string& fileSpec)
          throw(FileSpecException)
-         {init(fileSpec);}
+      {init(fileSpec);}
 
          /// Destructor
       virtual ~FileSpec() {}
@@ -154,11 +153,11 @@ namespace gpstk
          /// Reinitializes this FileSpec with the new string
       virtual FileSpec& newSpec(const std::string& fileSpec)
          throw(FileSpecException)
-         {init(fileSpec); return *this;}
+      {init(fileSpec); return *this;}
 
          /// Returns the string of the filespec
       virtual std::string getSpecString(void) const
-         {return fileSpecString;}
+      {return fileSpecString;}
 
          /**
           * Returns a string that can be used to search for files
@@ -178,7 +177,7 @@ namespace gpstk
           *  in the FileSpec
           */
       virtual std::string extractField(const std::string& filename, 
-                               const FileSpecType) const
+                                       const FileSpecType) const
          throw(FileSpecException);
 
          /**
@@ -194,7 +193,8 @@ namespace gpstk
           * most file types, all times are set to midnight of that day.
           * @throw FileSpecException when a time can't be formed
           */
-      virtual gpstk::CommonTime extractCommonTime(const std::string& filename) const
+      virtual gpstk::CommonTime extractCommonTime(const std::string& filename)
+         const
          throw(FileSpecException);
 
          /**
@@ -224,7 +224,7 @@ namespace gpstk
           * out older versions of files in the fileList.
           */
       virtual void sortList(std::vector<std::string>& fileList, 
-                    const FileSpecSortType fsst = ascending) const
+                            const FileSpecSortType fsst = ascending) const
          throw(FileSpecException);
 
          /// semi-nicely print the FileSpec to the stream.
@@ -242,7 +242,7 @@ namespace gpstk
           *  any known types
           */
       static std::string convertFileSpecType(const FileSpecType)
-         throw(FileSpecException);
+      throw(FileSpecException);
 
          /**
           * Converts the string into its corresponding FileSpecType
@@ -264,7 +264,7 @@ namespace gpstk
                          const FileSpecType fst = unknown,
                          const std::string& fld = std::string())
                : numCh(numChars), offset(offs), type(fst), field(fld)
-            {};
+         {}
          
             /// The number of characters this field is in the file name.
          std::string::size_type numCh;
@@ -278,34 +278,30 @@ namespace gpstk
          std::string field;
       };
 
-         /// Another private, internal class for doing sorting
-         /// by substring.
-      struct FileSpecSort : 
+      struct FileSpecSort :
          public std::binary_function<std::string,std::string,bool>
       {
       public:
-         FileSpecSort(std::string::size_type o, std::string::size_type l,
-                      const FileSpecSortType s)
-               : offset(o), length(l), sortBy(s) {}
+         FileSpecSort(const FileSpec& fs, const FileSpecSortType s)
+               : fileSpec(fs), sortDir(s) {}
             /// Compares two strings based on the substrings defined by
             /// offset and length accounting for any directory names
             /// in the strings
          bool operator() (const std::string& l, const std::string& r) const;
       private:
-            /// the offset of the substring to compare
-         std::string::size_type offset;
-            /// the length of the substring to compare
-         std::string::size_type length;
-            /// ascending, descending or none
-         FileSpecSortType sortBy;
+            /// ascending or descending
+         FileSpecSortType sortDir;
+            /// The FileSpec doing the sorting
+         const FileSpec &fileSpec;
       };
 
          /// Holds all of the FileSpecElements for this FileSpec
       std::vector<FileSpecElement> fileSpecList;
          /// Holds the string that the fileSpecList was generated from
       std::string fileSpecString;
-          
-      
+
+      friend struct FileSpecSort;
+
    }; // class FileSpec
 
       /// Operator-- for FileSpecType
@@ -313,7 +309,7 @@ namespace gpstk
       /// Operator++ for FileSpecType
    FileSpec::FileSpecType& operator++ (FileSpec::FileSpecType& fst, int);
 
-   //@}
+      //@}
 
 } // namespace gpstk
 

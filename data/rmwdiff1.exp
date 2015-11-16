@@ -1,0 +1,35 @@
+Comparing the following fields (other header data is ignored):
+PR TD HR 
+<   15  7 19  0  0  0
+  PR 986.0
+  TD 38.8
+  HR 34.8
+<   15  7 19  0 15  0
+  PR 985.9
+  TD 37.3
+  HR 36.6
+<   15  7 19  0 30  0
+  PR 985.8
+  TD 35.6
+  HR 39.8
+<   15  7 19  0 45  0
+  PR 985.9
+  TD 35.3
+  HR 40.7
+
+>   15  7 19  1  0  0
+  PR 985.9
+  TD 35.1
+  HR 41.5
+>   15  7 19  1 15  0
+  PR 986.0
+  TD 34.5
+  HR 42.5
+>   15  7 19  1 30  0
+  PR 985.7
+  TD 33.3
+  HR 45.1
+>   15  7 19  1 45  0
+  PR 985.8
+  TD 32.2
+  HR 48.2

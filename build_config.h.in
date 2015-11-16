@@ -73,7 +73,7 @@ namespace gpstk
   //----------------------------------------
   inline std::string getPathData( void )
   {
-    return( gpstk::getPathSrc() + gpstk::getFileSep() + "data" );
+    return( "@GPSTK_TEST_DATA_DIR@" );
   }
 
   //----------------------------------------
@@ -82,7 +82,7 @@ namespace gpstk
   //----------------------------------------
   inline std::string getPathTestTemp( void )
   {
-    return( gpstk::getPathBuild() + gpstk::getFileSep() + "Testing" + gpstk::getFileSep() + "Temporary"  );
+     return( "@GPSTK_TEST_OUTPUT_DIR@" );
   }
 
 

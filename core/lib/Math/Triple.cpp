@@ -48,7 +48,7 @@ namespace gpstk
    using namespace std;
 
    Triple :: Triple()
-         : theArray(3)
+         : theArray(0., 3)
    {
    }
 

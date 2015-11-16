@@ -1,0 +1,14 @@
+     2.10           Meteorological                          RINEX VERSION / TYPE
+hgextrmet           John Knutson        11/04/2015 21:07:51 PGM / RUN BY / DATE
+85408                                                       MARKER NAME
+85408                                                       MARKER NUMBER
+     2    PR    TD                                          # / TYPES OF OBSERV
+Vaisala             PTU300                        0.1    PR SENSOR MOD/TYPE/ACC
+Vaisala             PTU300                        0.3    TD SENSOR MOD/TYPE/ACC
+  -740290.0474 -5457071.7224  3207245.4169      217.5870 PR SENSOR POS XYZ/H
+  -740290.0474 -5457071.7224  3207245.4169      217.5870 TD SENSOR POS XYZ/H
+                                                            END OF HEADER
+ 15  7 19  0  0  0  986.0   38.8
+ 15  7 19  0 15  0  985.9   37.3
+ 15  7 19  0 30  0  985.8   35.6
+ 15  7 19  0 45  0  985.9   35.3

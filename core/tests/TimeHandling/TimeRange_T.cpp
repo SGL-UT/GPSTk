@@ -203,8 +203,7 @@ class TimeRange_T
 			TimeRange interiorEarlyEdge        (startEndpoint,         timeInRangeEnd,      beginningIncluded, endIncluded);
 			TimeRange interiorLateEdge         (timeInRangeStart,      endEndpoint,         beginningIncluded, endIncluded);
 			TimeRange afterEdgeCase            (endEndpoint,           laterThanRangeEnd,   beginningIncluded, endIncluded);
-			TimeRange afterEdgeCaseNoOverlap   (endEndpoint,           laterThanRangeEnd,   beginningIncluded, false      );
-
+			TimeRange afterEdgeCaseNoOverlap   (endEndpoint,           laterThanRangeEnd,               false, endIncluded);
 
 			std::string testMessageArray[13];
 			testMessageArray[0]  = "isPriorTo returned true when the target TimeRange comes before the reference TimeRange";
@@ -220,24 +219,6 @@ class TimeRange_T
 			testMessageArray[10] = "isPriorTo returned true when the target TimeRange starts at and includes the end of reference TimeRange";
 			testMessageArray[11] = "isPriorTo returned false when the target TimeRange starts at but does not include the end of reference TimeRange";
 			testMessageArray[12] = "isPriorTo returned true when the target TimeRange starts equals reference TimeRange";
- 
-			testFramework.assert(!referenceTimeRange.isPriorTo(priorTimeRange)          , testMessageArray[0] , __LINE__);
-			testFramework.assert(!referenceTimeRange.isPriorTo(earlyOverlapTimeRange)   , testMessageArray[1] , __LINE__);
-			testFramework.assert(!referenceTimeRange.isPriorTo(interiorTimeRange)       , testMessageArray[2] , __LINE__);
-			testFramework.assert(!referenceTimeRange.isPriorTo(lateOverlapTimeRange)    , testMessageArray[3] , __LINE__);
-			testFramework.assert(!referenceTimeRange.isPriorTo(completeOverlapTimeRange), testMessageArray[4] , __LINE__);
-			testFramework.assert( referenceTimeRange.isPriorTo(afterTimeRange)          , testMessageArray[5] , __LINE__);
-			testFramework.assert(!referenceTimeRange.isPriorTo(priorEdgeCase)           , testMessageArray[6] , __LINE__);
-			testFramework.assert(!referenceTimeRange.isPriorTo(priorEdgeCaseNoOverlap)  , testMessageArray[7] , __LINE__);
-			testFramework.assert(!referenceTimeRange.isPriorTo(interiorEarlyEdge)       , testMessageArray[8] , __LINE__);
-			testFramework.assert(!referenceTimeRange.isPriorTo(interiorLateEdge)        , testMessageArray[9] , __LINE__);
-			testFramework.assert(!referenceTimeRange.isPriorTo(afterEdgeCase)           , testMessageArray[10], __LINE__);
-			testFramework.assert( referenceTimeRange.isPriorTo(afterEdgeCaseNoOverlap)  , testMessageArray[11], __LINE__);
-			testFramework.assert(!referenceTimeRange.isPriorTo(referenceTimeRange)      , testMessageArray[12], __LINE__);
-
-		
-
-			return testFramework.countFails();
 		}
 
 //==========================================================================================================================
@@ -280,7 +261,7 @@ class TimeRange_T
 			TimeRange interiorEarlyEdge        (startEndpoint,         timeInRangeEnd,      beginningIncluded, endIncluded);
 			TimeRange interiorLateEdge         (timeInRangeStart,      endEndpoint,         beginningIncluded, endIncluded);
 			TimeRange afterEdgeCase            (endEndpoint,           laterThanRangeEnd,   beginningIncluded, endIncluded);
-			TimeRange afterEdgeCaseNoOverlap   (endEndpoint,           laterThanRangeEnd,   beginningIncluded, false      );
+			TimeRange afterEdgeCaseNoOverlap   (endEndpoint,           laterThanRangeEnd,               false, endIncluded);
 
 			std::string testMessageArray[13];
 			testMessageArray[0]  = "overlaps returned true when the target TimeRange is completely before the reference TimeRange";

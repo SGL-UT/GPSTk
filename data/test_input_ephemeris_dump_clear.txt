@@ -1,13 +1,6 @@
-Dump Rinex3EphemerisStore:
-Dump of FileStore
-End dump of FileStore
-Dump of GPSEphemerisStore:
-  End of GPSEphemerisStore data.
-
-Dump of GloEphemerisStore:
-  End of GloEphemerisStore data.
-
-Dump of GalEphemerisStore:
-  End of GalEphemerisStore data.
-
-End dump Rinex3EphemerisStore.
+Dump of RinexEphemerisStore:
+/home/renfrob/git/gpstk/data/test_input_rinex_nav_ephemerisData.031
+Dump of GPSEphemerisStore (detail level=1):
+ BCE table for all satellites has 0 entries; Time span is End_time to Begin_time
+ Search method is User
+END Dump of GPSEphemerisStore (detail level=1)

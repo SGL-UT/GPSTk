@@ -50,23 +50,12 @@
 #include "FFStream.hpp"
 #include "RinexObsBase.hpp"
 #include "RinexObsHeader.hpp"
+#include "RinexDatum.hpp"
 
 namespace gpstk
 {
    /** @addtogroup RinexObs */
    //@{
-
-      /// A structure used to store a single RINEX Data point.
-   #ifndef GPSTK_RINEXDATUM
-   #define GPSTK_RINEXDATUM
-   struct RinexDatum
-   {
-      RinexDatum() : data(0), lli(0), ssi(0) {}
-      double data;  ///< The actual data point.
-      short lli;    ///< See the RINEX Spec. for an explanation.
-      short ssi;    ///< See the RINEX Spec. for an explanation.
-   };
-   #endif // GPSTK_RINEXDATUM
 
       /**
        * This class models a RINEX Observation Data Record.
@@ -79,9 +68,9 @@ namespace gpstk
    public:
 
          /// map from RinexObsType to RinexDatum.
-      typedef std::map<RinexObsType, RinexDatum> RinexObsTypeMap;
+      typedef std::map<RinexObsType, gpstk::RinexDatum> RinexObsTypeMap;
          /// map from SatID to RinexObsTypeMap.
-      typedef std::map<SatID, RinexObsTypeMap> RinexSatMap;
+      typedef std::map<gpstk::SatID, RinexObsTypeMap> RinexSatMap;
 
       gpstk::CommonTime time;    ///< the time corresponding to the observations
         /** Epoch flag has the following values

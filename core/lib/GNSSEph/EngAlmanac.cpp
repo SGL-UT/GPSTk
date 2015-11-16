@@ -99,9 +99,9 @@ namespace gpstk
          GPSTK_THROW(exc);
       }
 
-      //short svid = (subframe[3] >> 22) & 0x3F;
-      //short sfid = (subframe[2] >> 8) & 0x7;
-      //long tow = ((subframe[2] >> 13) & 0x1ffff) * 6;
+         //short svid = (subframe[3] >> 22) & 0x3F;
+         //short sfid = (subframe[2] >> 8) & 0x7;
+         //long tow = ((subframe[2] >> 13) & 0x1ffff) * 6;
        
       switch(pat)
       {
@@ -119,10 +119,11 @@ namespace gpstk
                if (prn) {
                   SatID sat(prn,SatID::systemGPS);
                   almPRN[sat] = AlmOrbit(prn, ficked[7], ficked[9], ficked[10],
-                                      ficked[12], ficked[13], ficked[14],
+                                         ficked[12], ficked[13], ficked[14],
                                          ficked[15], ficked[16], ficked[17],
                                          static_cast<long>( ficked[8] ),
-                                         static_cast<long>( ficked[2] ), gpsWeek,
+                                         static_cast<long>( ficked[2] ),
+                                         gpsWeek,
                                          static_cast<short>( ficked[11] ));
                }
             }
@@ -518,7 +519,8 @@ namespace gpstk
       s << endl << "           Page 25 Health, AS, & SV config" << endl << endl;
 
       s << "Toa:    " << setfill(' ') << setw(8) << t_oa
-        << ", week: " << setw(5) << wn_a << " (" << alm_wk << ")" << endl << endl
+        << ", week: " << setw(5) << wn_a << " (" << alm_wk << ")" << endl
+        << endl
         << "PRN   health  AS  cfg    PRN   health  AS  cfg" << endl;
       string bits[33];
 

@@ -665,40 +665,23 @@ int main()
 
     std::cout << "Running tests for Rinex version 2.1" << std::endl;
 
-    errorCount = testClass.headerExceptionTest();
-    errorTotal = errorTotal + errorCount;
+    errorTotal += testClass.headerExceptionTest();
+    errorTotal += testClass.hardCodeTest();
+    errorTotal += testClass.streamReadWriteTest();
+    errorTotal += testClass.filterOperatorsTest();
 
-    errorCount = testClass.hardCodeTest();
-    errorTotal = errorTotal + errorCount;
-
-    errorCount = testClass.streamReadWriteTest();
-    errorTotal = errorTotal + errorCount;
-
-    errorCount = testClass.filterOperatorsTest();
-    errorTotal = errorTotal + errorCount;
-
-    //Change to test v.3 Rinex files
+       //Change to test v.3 Rinex files
     testClass.toRinex3();
 
-    errorCount = testClass.headerExceptionTest();
-    errorTotal = errorTotal + errorCount;
+    errorTotal += testClass.headerExceptionTest();
+    errorTotal += testClass.hardCodeTest();
+    errorTotal += testClass.streamReadWriteTest();
+    errorTotal += testClass.filterOperatorsTest();
 
-    errorCount = testClass.hardCodeTest();
-    errorTotal = errorTotal + errorCount;
-
-    errorCount = testClass.streamReadWriteTest();
-    errorTotal = errorTotal + errorCount;
-
-    errorCount = testClass.filterOperatorsTest();
-    errorTotal = errorTotal + errorCount;
-
-    testClass.toConversionTest();
-
-    errorCount =  testClass.version2ToVersion3Test();
-    errorTotal = errorTotal + errorCount;
-
-    errorCount =  testClass.version3ToVersion2Test();
-    errorTotal = errorTotal + errorCount;
+       // Unimplemented features
+       //testClass.toConversionTest();
+       //errorTotal += testClass.version2ToVersion3Test();
+       //errorTotal += testClass.version3ToVersion2Test();
 
     std::cout << "Total Failures for " << __FILE__ << ": " << errorTotal << std::endl;
 
