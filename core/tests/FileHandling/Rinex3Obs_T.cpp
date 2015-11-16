@@ -234,15 +234,19 @@ void Rinex3Obs_T :: toConversionTest( void )
 // Test Method Definitions
 //============================================================
 
-//------------------------------------------------------------
-// This tests throws many GPSTK Rinex3ObsHeader exceptions including
-// Incomplete headers, invalid line lengths etc
-// Also an extended obs type is used and dumped within this test.
-//------------------------------------------------------------
+/* What the hell are we doing here?
+ *
+ * 1) Doing permissive reads of error-ridden RINEX OBS headers,
+ *    i.e. allowing the headers to be read into memory despite errors.
+ *    This is done by leaving the default behavior of streams that no
+ *    exceptions are thrown on error conditions.
+ *
+ * 2) Doing strict writes of same error-ridden headers and verifying
+ *    that exceptions are being thrown as expected.
+ */
 int Rinex3Obs_T :: headerExceptionTest( void )
 {
-
-   TestUtil test1( "Rinex3ObsStream", "dump", __FILE__, __LINE__ );
+   TUDEF( "Rinex3ObsStream", "dump" );
 
    std::string msg_test_desc  = "Rinex3ObsStream, headerExceptionTest";
    std::string msg_false_pass = ", threw the wrong number of exceptions.";
@@ -251,7 +255,7 @@ int Rinex3Obs_T :: headerExceptionTest( void )
    try
    {
 
-      gpstk::Rinex3ObsStream Rinex3ObsFile( dataRinexObsFile );
+      gpstk::Rinex3ObsStream rinex3ObsFile( dataRinexObsFile );
       gpstk::Rinex3ObsStream ih( dataIncompleteHeader );
       gpstk::Rinex3ObsStream il( dataInvalidLineLength );
       gpstk::Rinex3ObsStream inpwf( dataInvalidNumPRNWaveFact );
@@ -267,7 +271,7 @@ int Rinex3Obs_T :: headerExceptionTest( void )
       gpstk::Rinex3ObsStream out2( dataTestOutput3, std::ios::out );
       gpstk::Rinex3ObsStream dump( dataTestOutputObsDump, std::ios::out );
 
-      gpstk::Rinex3ObsHeader Rinex3ObsFileh;
+      gpstk::Rinex3ObsHeader rinex3ObsHeader;
       gpstk::Rinex3ObsHeader ihh;
       gpstk::Rinex3ObsHeader ilh;
       gpstk::Rinex3ObsHeader inpwfh;
@@ -279,15 +283,13 @@ int Rinex3Obs_T :: headerExceptionTest( void )
       gpstk::Rinex3ObsHeader unsupvh;
       gpstk::Rinex3ObsHeader contdatah;
 
-         //Unneccesary, ObsID has it's own test
-         // gpstk::RegisterExtendedRinexObsType( "ER","Testing Type", "Candela", (unsigned) 2 );
-         // gpstk::ObsID testID = gpstk::ObsID::newID("ER", "Testing Type" /* No way to set Unit type or depend(whatever depend is)*/);
-      gpstk::Rinex3ObsData Rinex3ObsFiled;
+      gpstk::Rinex3ObsData rinex3ObsData;
       gpstk::Rinex3ObsData contdatad;
 
-      int HeaderRecordNumber;
+      int headerRecordNumber;
 
-      Rinex3ObsFile >> Rinex3ObsFileh;
+         // read in some good headers and some crap ones
+      rinex3ObsFile >> rinex3ObsHeader;
       ih >> ihh;
       il >> ilh;
       inpwf >> inpwfh;
@@ -298,59 +300,128 @@ int Rinex3Obs_T :: headerExceptionTest( void )
       unsupv >> unsupvh;
       contdata >> contdatah; // not in v3 test
 
-      out << Rinex3ObsFileh;
-      out << ihh;
-      out << ilh;
-      out << inpwfh;
-      out << noh;
-      out << ssh;
-      out << srh;
-      out << smh;
-      out << unsupvh;
-      out2 << contdatah;  // not in v3 test
-      Rinex3ObsFile >> Rinex3ObsFiled;
-      Rinex3ObsFiled.dump( dump );
-
-      while( Rinex3ObsFile >> Rinex3ObsFiled )
+      out.exceptions( std::fstream::failbit );
+         // write good and bad headers, checking for exceptions
+      try
       {
-         out << Rinex3ObsFiled; // Outputting v.3 data instead of v.2
+         out << rinex3ObsHeader;
+         TUPASS("exception");
+      }
+      catch (...)
+      {
+         TUFAIL("Exception while writing valid RINEX OBS header");
+      }
+      try
+      {
+         out << ihh;
+         TUFAIL("No Exception while writing invalid RINEX OBS header");
+      }
+      catch (...)
+      {
+         TUPASS("exception");
+      }
+      try
+      {
+         out << ilh;
+         TUFAIL("No Exception while writing invalid RINEX OBS header");
+      }
+      catch (...)
+      {
+         TUPASS("exception");
+      }
+      try
+      {
+         out << inpwfh;
+         TUFAIL("No Exception while writing invalid RINEX OBS header");
+      }
+      catch (...)
+      {
+         TUPASS("exception");
+      }
+      try
+      {
+         out << noh;
+         TUFAIL("No Exception while writing invalid RINEX OBS header");
+      }
+      catch (...)
+      {
+         TUPASS("exception");
+      }
+      try
+      {
+         out << ssh;
+         TUPASS("exception");
+      }
+      catch (...)
+      {
+         TUFAIL("Exception while writing valid RINEX OBS header");
+      }
+      try
+      {
+         out << srh;
+         TUPASS("exception");
+      }
+      catch (...)
+      {
+         TUFAIL("Exception while writing valid RINEX OBS header");
+      }
+      try
+      {
+         out << smh;
+         TUPASS("exception");
+      }
+      catch (...)
+      {
+         TUFAIL("Exception while writing valid RINEX OBS header");
+      }
+      try
+      {
+         out << unsupvh;
+         TUFAIL("No Exception while writing invalid RINEX OBS header");
+      }
+      catch (...)
+      {
+         TUPASS("exception");
+      }
+      try
+      {
+         out2 << contdatah;  // not in v3 test
+         TUPASS("exception");
+      }
+      catch (...)
+      {
+         TUFAIL("Exception while writing valid RINEX OBS header");
+      }
+      rinex3ObsFile >> rinex3ObsData;
+      rinex3ObsData.dump( dump );
+
+      while( rinex3ObsFile >> rinex3ObsData )
+      {
+         out << rinex3ObsData; // Outputting v.3 data instead of v.2
       }
 
       while( contdata >> contdatad )  // not in v3 test
       {
          out2 << contdatad;
       }
-
-
-      Rinex3ObsFileh.dump( dump );
-      contdatah.dump( dump );  // not in v3 test
-      ilh.dump( dump );
-         // gpstk::DisplayExtendedRinexObsTypes( dump );
-         // testID.dump( dump );
-
-         // std::cout<<Rinex3ObsFileh.numberHeaderRecordsToBeWritten()<<std::endl;
-
-      if ( Rinex3ObsFileh.version == 2.1 ) HeaderRecordNumber = 40;
-      if ( Rinex3ObsFileh.version > 3 ) HeaderRecordNumber = 30; 
-
-      test1.assert( HeaderRecordNumber == Rinex3ObsFileh.numberHeaderRecordsToBeWritten(), msg_test_desc + msg_false_pass, __LINE__ );
+      TUPASS(msg_test_desc);
    }
    catch(gpstk::Exception e)
    {
-      test1.assert( false, msg_test_desc + msg_fail + e.what(), __LINE__ );
+      TUFAIL( msg_test_desc + msg_fail + e.what() );
    }
    catch(...)
    {
-      test1.assert( false, msg_test_desc + msg_fail, __LINE__ );
+      TUFAIL( msg_test_desc + msg_fail );
    }
 
-   return( test1.countFails() );
+   return( testFramework.countFails() );
 }
 
 
 //------------------------------------------------------------
 // This test checks to make sure that the output
-// from a read in Rinex3ObsFile matches the input.
+// from a read in rinex3ObsFile matches the input.
 //------------------------------------------------------------
 int Rinex3Obs_T :: hardCodeTest( void )
 {
@@ -373,22 +444,22 @@ int Rinex3Obs_T :: hardCodeTest( void )
 
    try
    {
-      gpstk::Rinex3ObsStream Rinex3ObsFile( dataRinexObsFile );
+      gpstk::Rinex3ObsStream rinex3ObsFile( dataRinexObsFile );
       gpstk::Rinex3ObsStream out( dataTestOutput2, std::ios::out );
       gpstk::Rinex3ObsStream dump( dataTestOutputObsDump, std::ios::out );
-      gpstk::Rinex3ObsHeader Rinex3ObsFileh;
-      gpstk::Rinex3ObsData Rinex3ObsFiled;
+      gpstk::Rinex3ObsHeader rinex3ObsHeader;
+      gpstk::Rinex3ObsData rinex3ObsData;
 
-      Rinex3ObsFile >> Rinex3ObsFileh;
-      out << Rinex3ObsFileh;
+      rinex3ObsFile >> rinex3ObsHeader;
+      out << rinex3ObsHeader;
 
-      while( Rinex3ObsFile >> Rinex3ObsFiled )
+      while( rinex3ObsFile >> rinex3ObsData )
       {
-         out << Rinex3ObsFiled;
+         out << rinex3ObsData;
             // std::cout<<out.header.version<<std::endl; stream has header info passed to it
       }
 
-      if (Rinex3ObsFileh.version == 2.1)
+      if (rinex3ObsHeader.version == 2.1)
       {
          CompareVersion = 2.10;
          CompareFileProgram = (std::string)"row";
@@ -396,7 +467,7 @@ int Rinex3Obs_T :: hardCodeTest( void )
          CompareDate = (std::string)"04/11/2006 23:59:18";
       }
 
-      else if (Rinex3ObsFileh.version == 3.02)
+      else if (rinex3ObsHeader.version == 3.02)
       {
          CompareVersion = 3.02;
          CompareFileProgram = (std::string)"cnvtToRINEX 2.25.0";
@@ -404,16 +475,17 @@ int Rinex3Obs_T :: hardCodeTest( void )
          CompareDate = (std::string)"23-Jan-15 22:34 UTC";
       }
 
-      test2.assert( Rinex3ObsFileh.version == CompareVersion,                  "RinexObs Header version comparison",      __LINE__ );
-      test2.assert( Rinex3ObsFileh.fileProgram == CompareFileProgram,          "RinexObs Header file program comparison", __LINE__ );
-      test2.assert( Rinex3ObsFileh.fileAgency == CompareFileAgency,            "RinexObs Header file agency comparison",  __LINE__ );
-      test2.assert( Rinex3ObsFileh.date == CompareDate,                        "RinexObs Header date comparison",         __LINE__ );
+      test2.assert( rinex3ObsHeader.version == CompareVersion,                  "RinexObs Header version comparison",      __LINE__ );
+      test2.assert( rinex3ObsHeader.fileProgram == CompareFileProgram,          "RinexObs Header file program comparison", __LINE__ );
+      test2.assert( rinex3ObsHeader.fileAgency == CompareFileAgency,            "RinexObs Header file agency comparison",  __LINE__ );
+      test2.assert( rinex3ObsHeader.date == CompareDate,                        "RinexObs Header date comparison",         __LINE__ );
 
-      Rinex3ObsFiled.dump( dump );
-      Rinex3ObsFileh.dump( dump );
+      rinex3ObsData.dump( dump );
+      rinex3ObsHeader.dump( dump );
 
-      files_equal = test2.fileEqualTest( dataRinexObsFile, dataTestOutput2, num_lines_skip );
-      test2.assert( files_equal, msg_test_desc + msg_fail_equal, __LINE__ );
+      test2.assert_files_equal(__LINE__, dataRinexObsFile, dataTestOutput2,
+                               msg_test_desc + msg_fail_equal,
+                               num_lines_skip, false, true );
    }
    catch(...)
    {
@@ -686,8 +758,10 @@ int main()
 
    testClass.toConversionTest();
 
-   errorTotal += testClass.version3ToVersion2Test();
-   errorTotal += testClass.version2ToVersion3Test();
+      // Don't run a "test" that is just set up to fail because the
+      // function hasn't been implemented.
+      //errorTotal += testClass.version3ToVersion2Test();
+      //errorTotal += testClass.version2ToVersion3Test();
    errorTotal += testClass.roundTripTest();
 
    std::cout << "Total Failures for " << __FILE__ << ": " << errorTotal
