@@ -20,6 +20,10 @@ add_executable(Rinex_T Rinex_T.cpp)
 target_link_libraries(Rinex_T gpstk)
 add_test(FileHandling_Rinex_T Rinex_T)
 
+add_executable(RinexClock_T RinexClock_T.cpp)
+target_link_libraries(RinexClock_T gpstk)
+add_test(FileHandling_RinexClock_T RinexClock_T)
+
 add_executable(RinexMet_T RinexMet_T.cpp)
 target_link_libraries(RinexMet_T gpstk)
 add_test(FileHandling_RinexMet_T RinexMet_T)

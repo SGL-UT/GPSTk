@@ -384,7 +384,8 @@ int main(void) //Main function to initialize and run all tests above
    errorCounter += check;
 #endif
 
-   std::cout << "Total Failures for " << __FILE__ << ": " << errorCounter << std::endl;
+   std::cout << "Total Failures for " << __FILE__ << ": " << errorCounter
+             << std::endl;
 
    return errorCounter; //Return the total number of errors
 }

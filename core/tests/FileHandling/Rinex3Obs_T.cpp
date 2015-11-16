@@ -286,8 +286,6 @@ int Rinex3Obs_T :: headerExceptionTest( void )
       gpstk::Rinex3ObsData rinex3ObsData;
       gpstk::Rinex3ObsData contdatad;
 
-      int headerRecordNumber;
-
          // read in some good headers and some crap ones
       rinex3ObsFile >> rinex3ObsHeader;
       ih >> ihh;
