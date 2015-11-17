@@ -86,7 +86,7 @@ public:
          // Read the formatted string back into a new time variable
       scanTime(scannedTime, timeString, formatString);
          // Verify the scanned time is the same as the hardcoded time
-      TFASSERTE(ANSITime,hardcodedTime,scannedTime);
+      TUASSERTE(ANSITime,hardcodedTime,scannedTime);
 
          // Reset the TimeTag child object
       scannedTime.reset();
@@ -97,7 +97,7 @@ public:
       scannedTime.convertFromCommonTime(scannedCommonTime);
          // Verify the scanned CommonTime time is the same as the
          // hardcoded time
-      TFASSERTE(ANSITime,hardcodedTime,scannedTime);
+      TUASSERTE(ANSITime,hardcodedTime,scannedTime);
 
       scannedCommonTime.reset();
       scannedTime.reset();
@@ -108,7 +108,7 @@ public:
       scannedTime.convertFromCommonTime(scannedCommonTime);
          // Verify the scanned CommonTime time is the same as the
          // hardcoded time
-      TFASSERTE(CommonTime,hardcodedCommonTime,scannedCommonTime);
+      TUASSERTE(CommonTime,hardcodedCommonTime,scannedCommonTime);
       
       return testFramework.countFails();
    }
@@ -135,7 +135,7 @@ public:
          // Read the formatted string back into a new time variable
       scanTime(scannedTime, timeString, formatString);
          // Verify the scanned time is the same as the hardcoded time
-      TFASSERTE(CivilTime,hardcodedTime,scannedTime);
+      TUASSERTE(CivilTime,hardcodedTime,scannedTime);
 
          // Reset the TimeTag child object
       scannedTime.reset();
@@ -146,7 +146,7 @@ public:
       scannedTime.convertFromCommonTime(scannedCommonTime);
          // Verify the scanned CommonTime time is the same as the
          // hardcoded time
-      TFASSERTE(CivilTime,hardcodedTime,scannedTime);
+      TUASSERTE(CivilTime,hardcodedTime,scannedTime);
 
       scannedCommonTime.reset();
       scannedTime.reset();
@@ -157,7 +157,7 @@ public:
       scannedTime.convertFromCommonTime(scannedCommonTime);
          // Verify the scanned CommonTime time is the same as the
          // hardcoded time
-      TFASSERTE(CommonTime,hardcodedCommonTime,scannedCommonTime); 
+      TUASSERTE(CommonTime,hardcodedCommonTime,scannedCommonTime); 
 
       scannedTime.reset();
 
@@ -169,7 +169,7 @@ public:
          // Read the formatted string back into a new time variable
       scanTime(scannedTime, timeString, formatString);
          // Verify the scanned time is the same as the hardcoded time
-      TFASSERTE(CivilTime,hardcodedTime,scannedTime);
+      TUASSERTE(CivilTime,hardcodedTime,scannedTime);
 
          // Reset the TimeTag child object
       scannedTime.reset();
@@ -180,7 +180,7 @@ public:
       scannedTime.convertFromCommonTime(scannedCommonTime);
          // Verify the scanned CommonTime time is the same as the
          // hardcoded time
-      TFASSERTE(CivilTime,hardcodedTime,scannedTime);
+      TUASSERTE(CivilTime,hardcodedTime,scannedTime);
 
       scannedCommonTime.reset();
       scannedTime.reset();
@@ -192,7 +192,7 @@ public:
 
          // Verify the scanned CommonTime time is the same as the
          // hardcoded time
-      TFASSERTE(CommonTime,hardcodedCommonTime,scannedCommonTime);
+      TUASSERTE(CommonTime,hardcodedCommonTime,scannedCommonTime);
 
          // Reset the time for a new format to be scanned
       scannedTime.reset();
@@ -204,7 +204,7 @@ public:
          // Read the formatted string back into a new time variable
       scanTime(scannedTime, timeString, formatString);
          // Verify the scanned time is the same as the hardcoded time
-      TFASSERTE(CivilTime,hardcodedTime,scannedTime);
+      TUASSERTE(CivilTime,hardcodedTime,scannedTime);
 
          // Reset the TimeTag child object
       scannedTime.reset();
@@ -215,7 +215,7 @@ public:
       scannedTime.convertFromCommonTime(scannedCommonTime);
          // Verify the scanned CommonTime time is the same as the
          // hardcoded time
-      TFASSERTE(CivilTime,hardcodedTime,scannedTime);
+      TUASSERTE(CivilTime,hardcodedTime,scannedTime);
 
       scannedCommonTime.reset();
       scannedTime.reset();
@@ -227,7 +227,7 @@ public:
 
          // Verify the scanned CommonTime time is the same as the
          // hardcoded time
-      TFASSERTE(CommonTime,hardcodedCommonTime,scannedCommonTime); 
+      TUASSERTE(CommonTime,hardcodedCommonTime,scannedCommonTime); 
 
          // Reset the time for a new format to be scanned
       scannedTime.reset();
@@ -239,7 +239,7 @@ public:
          // Read the formatted string back into a new time variable
       scanTime(scannedTime, timeString, formatString);
          // Verify the scanned time is the same as the hardcoded time
-      TFASSERTE(CivilTime,hardcodedTime,scannedTime);
+      TUASSERTE(CivilTime,hardcodedTime,scannedTime);
 
          // Reset the TimeTag child object
       scannedTime.reset();
@@ -250,7 +250,7 @@ public:
       scannedTime.convertFromCommonTime(scannedCommonTime);
          // Verify the scanned CommonTime time is the same as the
          // hardcoded time
-      TFASSERTE(CivilTime,hardcodedTime,scannedTime);
+      TUASSERTE(CivilTime,hardcodedTime,scannedTime);
 
       scannedCommonTime.reset();
       scannedTime.reset();
@@ -262,7 +262,7 @@ public:
 
          // Verify the scanned CommonTime time is the same as the
          // hardcoded time
-      TFASSERTE(CommonTime,hardcodedCommonTime,scannedCommonTime); 
+      TUASSERTE(CommonTime,hardcodedCommonTime,scannedCommonTime); 
 
          // Reset the time for a new format to be scanned
       scannedTime.reset();
@@ -274,7 +274,7 @@ public:
          // Read the formatted string back into a new time variable
       scanTime(scannedTime, timeString, formatString);
          // Verify the scanned time is the same as the hardcoded time
-      TFASSERTE(CivilTime,hardcodedTime,scannedTime);
+      TUASSERTE(CivilTime,hardcodedTime,scannedTime);
 
          // Reset the TimeTag child object
       scannedTime.reset();
@@ -285,7 +285,7 @@ public:
       scannedTime.convertFromCommonTime(scannedCommonTime);
          // Verify the scanned CommonTime time is the same as the
          // hardcoded time
-      TFASSERTE(CivilTime,hardcodedTime,scannedTime);
+      TUASSERTE(CivilTime,hardcodedTime,scannedTime);
 
       scannedCommonTime.reset();
       scannedTime.reset();
@@ -297,7 +297,7 @@ public:
 
          // Verify the scanned CommonTime time is the same as the
          // hardcoded time
-      TFASSERTE(CommonTime,hardcodedCommonTime,scannedCommonTime); 
+      TUASSERTE(CommonTime,hardcodedCommonTime,scannedCommonTime); 
 
          // Reset the time for a new format to be scanned
       scannedTime.reset();
@@ -329,7 +329,7 @@ public:
          // Read the formatted string back into a new time variable
       scanTime(scannedTime, timeString, formatString);
          // Verify the scanned time is the same as the hardcoded time
-      TFASSERTE(GPSWeekSecond,hardcodedTime,scannedTime);
+      TUASSERTE(GPSWeekSecond,hardcodedTime,scannedTime);
 
          // Reset the TimeTag child object
       scannedTime.reset();
@@ -340,7 +340,7 @@ public:
       scannedTime.convertFromCommonTime(scannedCommonTime);
          // Verify the scanned CommonTime time is the same as the
          // hardcoded time
-      TFASSERTE(GPSWeekSecond,hardcodedTime,scannedTime);
+      TUASSERTE(GPSWeekSecond,hardcodedTime,scannedTime);
 
       scannedCommonTime.reset();
       scannedTime.reset();
@@ -351,7 +351,7 @@ public:
       scannedTime.convertFromCommonTime(scannedCommonTime);
          // Verify the scanned CommonTime time is the same as the
          // hardcoded time
-      TFASSERTE(CommonTime,hardcodedCommonTime,scannedCommonTime); 
+      TUASSERTE(CommonTime,hardcodedCommonTime,scannedCommonTime); 
 
       return testFramework.countFails();
    }
@@ -378,7 +378,7 @@ public:
          // Read the formatted string back into a new time variable
       scanTime(scannedTime, timeString, formatString);
          // Verify the scanned time is the same as the hardcoded time
-      TFASSERTE(GPSWeekZcount,hardcodedTime,scannedTime);
+      TUASSERTE(GPSWeekZcount,hardcodedTime,scannedTime);
 
          // Reset the TimeTag child object
       scannedTime.reset();
@@ -389,7 +389,7 @@ public:
       scannedTime.convertFromCommonTime(scannedCommonTime);
          // Verify the scanned CommonTime time is the same as the
          // hardcoded time
-      TFASSERTE(GPSWeekZcount,hardcodedTime,scannedTime);
+      TUASSERTE(GPSWeekZcount,hardcodedTime,scannedTime);
 
       scannedCommonTime.reset();
       scannedTime.reset();
@@ -400,7 +400,7 @@ public:
       scannedTime.convertFromCommonTime(scannedCommonTime);
          // Verify the scanned CommonTime time is the same as the
          // hardcoded time
-      TFASSERTE(CommonTime,hardcodedCommonTime,scannedCommonTime); 
+      TUASSERTE(CommonTime,hardcodedCommonTime,scannedCommonTime); 
 
          // Reset the time for a new format to be scanned
       scannedTime.reset();
@@ -413,7 +413,7 @@ public:
          // Read the formatted string back into a new time variable
       scanTime(scannedTime, timeString, formatString);
          // Verify the scanned time is the same as the hardcoded time
-      TFASSERTE(GPSWeekZcount,hardcodedTime,scannedTime);
+      TUASSERTE(GPSWeekZcount,hardcodedTime,scannedTime);
 
          // Reset the TimeTag child object
       scannedTime.reset();
@@ -424,7 +424,7 @@ public:
       scannedTime.convertFromCommonTime(scannedCommonTime);
          // Verify the scanned CommonTime time is the same as the
          // hardcoded time
-      TFASSERTE(GPSWeekZcount,hardcodedTime,scannedTime);
+      TUASSERTE(GPSWeekZcount,hardcodedTime,scannedTime);
 
       scannedCommonTime.reset();
       scannedTime.reset();
@@ -435,7 +435,7 @@ public:
       scannedTime.convertFromCommonTime(scannedCommonTime);
          // Verify the scanned CommonTime time is the same as the
          // hardcoded time
-      TFASSERTE(CommonTime,hardcodedCommonTime,scannedCommonTime); 
+      TUASSERTE(CommonTime,hardcodedCommonTime,scannedCommonTime); 
 
          // Reset the time for a new format to be scanned
       scannedTime.reset();
@@ -448,7 +448,7 @@ public:
          // Read the formatted string back into a new time variable
       scanTime(scannedTime, timeString, formatString);
          // Verify the scanned time is the same as the hardcoded time
-      TFASSERTE(GPSWeekZcount,hardcodedTime,scannedTime);
+      TUASSERTE(GPSWeekZcount,hardcodedTime,scannedTime);
 
          // Reset the TimeTag child object
       scannedTime.reset();
@@ -460,7 +460,7 @@ public:
 
          // Verify the scanned CommonTime time is the same as the
          // hardcoded time
-      TFASSERTE(GPSWeekZcount,hardcodedTime,scannedTime);
+      TUASSERTE(GPSWeekZcount,hardcodedTime,scannedTime);
 
       scannedCommonTime.reset();
       scannedTime.reset();
@@ -471,7 +471,7 @@ public:
       scannedTime.convertFromCommonTime(scannedCommonTime);
          // Verify the scanned CommonTime time is the same as the
          // hardcoded time
-      TFASSERTE(CommonTime,hardcodedCommonTime,scannedCommonTime); 
+      TUASSERTE(CommonTime,hardcodedCommonTime,scannedCommonTime); 
 
       return testFramework.countFails();
    }
@@ -498,7 +498,7 @@ public:
          // Read the formatted string back into a new time variable
       scanTime(scannedTime, timeString, formatString);
          // Verify the scanned time is the same as the hardcoded time
-      TFASSERTE(JulianDate,hardcodedTime,scannedTime);
+      TUASSERTE(JulianDate,hardcodedTime,scannedTime);
 
          // Reset the TimeTag child object
       scannedTime.reset();
@@ -509,7 +509,7 @@ public:
       scannedTime.convertFromCommonTime(scannedCommonTime);
          // Verify the scanned CommonTime time is the same as the
          // hardcoded time
-      TFASSERTE(JulianDate,hardcodedTime,scannedTime);
+      TUASSERTE(JulianDate,hardcodedTime,scannedTime);
 
       scannedCommonTime.reset();
       scannedTime.reset();
@@ -521,7 +521,7 @@ public:
 
          // Verify the scanned CommonTime time is the same as the
          // hardcoded time
-      TFASSERTE(CommonTime,hardcodedCommonTime,scannedCommonTime); 
+      TUASSERTE(CommonTime,hardcodedCommonTime,scannedCommonTime); 
 
       return testFramework.countFails();
    }
@@ -548,7 +548,7 @@ public:
          // Read the formatted string back into a new time variable
       scanTime(scannedTime, timeString, formatString);
          // Verify the scanned time is the same as the hardcoded time
-      TFASSERTE(MJD,hardcodedTime,scannedTime);
+      TUASSERTE(MJD,hardcodedTime,scannedTime);
 
          // Reset the TimeTag child object
       scannedTime.reset();
@@ -559,7 +559,7 @@ public:
       scannedTime.convertFromCommonTime(scannedCommonTime);
          // Verify the scanned CommonTime time is the same as the
          // hardcoded time
-      TFASSERTE(MJD,hardcodedTime,scannedTime);
+      TUASSERTE(MJD,hardcodedTime,scannedTime);
 
       scannedCommonTime.reset();
       scannedTime.reset();
@@ -570,7 +570,7 @@ public:
       scannedTime.convertFromCommonTime(scannedCommonTime);
          // Verify the scanned CommonTime time is the same as the
          // hardcoded time
-      TFASSERTE(CommonTime,hardcodedCommonTime,scannedCommonTime); 
+      TUASSERTE(CommonTime,hardcodedCommonTime,scannedCommonTime); 
 
       return testFramework.countFails();
    }
@@ -597,7 +597,7 @@ public:
          // Read the formatted string back into a new time variable
       scanTime(scannedTime, timeString, formatString);
          // Verify the scanned time is the same as the hardcoded time
-      TFASSERTE(UnixTime,hardcodedTime,scannedTime);
+      TUASSERTE(UnixTime,hardcodedTime,scannedTime);
 
          // Reset the TimeTag child object
       scannedTime.reset();
@@ -608,7 +608,7 @@ public:
       scannedTime.convertFromCommonTime(scannedCommonTime);
          // Verify the scanned CommonTime time is the same as the
          // hardcoded time
-      TFASSERTE(UnixTime,hardcodedTime,scannedTime);
+      TUASSERTE(UnixTime,hardcodedTime,scannedTime);
 
       scannedCommonTime.reset();
       scannedTime.reset();
@@ -619,7 +619,7 @@ public:
       scannedTime.convertFromCommonTime(scannedCommonTime);
          // Verify the scanned CommonTime time is the same as the
          // hardcoded time
-      TFASSERTE(CommonTime,hardcodedCommonTime,scannedCommonTime); 
+      TUASSERTE(CommonTime,hardcodedCommonTime,scannedCommonTime); 
 
       return testFramework.countFails();
    }
@@ -647,7 +647,7 @@ public:
          // Read the formatted string back into a new time variable
       scanTime(scannedTime, timeString, formatString);
          // Verify the scanned time is the same as the hardcoded time
-      TFASSERTE(YDSTime,hardcodedTime,scannedTime);
+      TUASSERTE(YDSTime,hardcodedTime,scannedTime);
 
          // Reset the TimeTag child object
       scannedTime.reset();
@@ -658,7 +658,7 @@ public:
       scannedTime.convertFromCommonTime(scannedCommonTime);
          // Verify the scanned CommonTime time is the same as the
          // hardcoded time
-      TFASSERTE(YDSTime,hardcodedTime,scannedTime);
+      TUASSERTE(YDSTime,hardcodedTime,scannedTime);
 
       scannedCommonTime.reset();
       scannedTime.reset();
@@ -669,7 +669,7 @@ public:
       scannedTime.convertFromCommonTime(scannedCommonTime);
          // Verify the scanned CommonTime time is the same as the
          // hardcoded time
-      TFASSERTE(CommonTime,hardcodedCommonTime,scannedCommonTime); 
+      TUASSERTE(CommonTime,hardcodedCommonTime,scannedCommonTime); 
 
       scannedTime.reset();
       scannedCommonTime.reset();
@@ -681,7 +681,7 @@ public:
          // Read the formatted string back into a new time variable
       scanTime(scannedTime, timeString, formatString);
          // Verify the scanned time is the same as the hardcoded time
-      TFASSERTE(YDSTime,hardcodedTime,scannedTime);
+      TUASSERTE(YDSTime,hardcodedTime,scannedTime);
 
          // Reset the TimeTag child object
       scannedTime.reset();
@@ -692,7 +692,7 @@ public:
       scannedTime.convertFromCommonTime(scannedCommonTime);
          // Verify the scanned CommonTime time is the same as the
          // hardcoded time
-      TFASSERTE(YDSTime,hardcodedTime,scannedTime);
+      TUASSERTE(YDSTime,hardcodedTime,scannedTime);
 
       scannedCommonTime.reset();
       scannedTime.reset();
@@ -703,7 +703,7 @@ public:
       scannedTime.convertFromCommonTime(scannedCommonTime);
          // Verify the scanned CommonTime time is the same as the
          // hardcoded time
-      TFASSERTE(CommonTime,hardcodedCommonTime,scannedCommonTime); 
+      TUASSERTE(CommonTime,hardcodedCommonTime,scannedCommonTime); 
       return testFramework.countFails();
    }
 };

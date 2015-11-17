@@ -119,7 +119,7 @@ int Rinex_T :: run( void )
    ee_copy.setFIC(false); // make the dump text look the same
    ee_copy.dump( after );
 
-   TFASSERTE( std::string, before.str(), after.str() );
+   TUASSERTE( std::string, before.str(), after.str() );
    return( testFramework.countFails() );
 }
 

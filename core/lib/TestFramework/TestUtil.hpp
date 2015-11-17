@@ -48,10 +48,14 @@
 #define TUDEF(CLASS,METHOD) TestUtil testFramework(CLASS, METHOD, __FILE__, __LINE__)
 // Basic macro for doing equality tests.  Expects a TestUtil instance
 // named testFramework.
-#define TFASSERTE(TYPE,EXP,GOT) testFramework.assert_equals<TYPE>(EXP,GOT,__LINE__)
+#define TUASSERTE(TYPE,EXP,GOT) testFramework.assert_equals<TYPE>(EXP,GOT,__LINE__)
 // Macro for doing equality tests of double/float values.  Expects a
 // TestUtil instance named testFramework.
-#define TFASSERTFE(EXP,GOT) testFramework.assert_equals(EXP,GOT,__LINE__)
+#define TUASSERTFE(EXP,GOT) testFramework.assert_equals(EXP,GOT,__LINE__)
+// Macro for doing equality tests of double/float values with a
+// specified epsilon.  Expects a TestUtil instance named
+// testFramework.
+#define TUASSERTFEPS(EXP,GOT,EPS) testFramework.assert_equals(EXP,GOT,__LINE__,"", EPS)
 // Fail the test with a message.
 #define TUFAIL(MSG) testFramework.assert(false, MSG, __LINE__)
 // Pass the test with a (unprinted) message.
@@ -208,7 +212,8 @@ public:
 
    void assert_equals( double expected, double got,
                        int line_number,
-                       const std::string& test_message = std::string() )
+                       const std::string& test_message = std::string(),
+                       double epsilon = DBL_EPSILON )
    {
       std::string mess;
       if (test_message.empty())
@@ -218,13 +223,14 @@ public:
               << got << "'" << std::endl;
          mess = ostr.str();
       }
-      assert(fabs(expected-got) <= DBL_EPSILON, mess, line_number);
+      assert(fabs(expected-got) <= epsilon, mess, line_number);
    }
 
 
    void assert_equals( float expected, float got,
                        int line_number,
-                       const std::string& test_message = std::string() )
+                       const std::string& test_message = std::string(),
+                       float epsilon = FLT_EPSILON )
    {
       std::string mess;
       if (test_message.empty())
@@ -234,7 +240,7 @@ public:
               << got << "'" << std::endl;
          mess = ostr.str();
       }
-      assert(fabs(expected-got) <= FLT_EPSILON, mess, line_number);
+      assert(fabs(expected-got) <= epsilon, mess, line_number);
    }
 
 
