@@ -339,39 +339,39 @@ public:
 
          // Test a standard CRC-32
       crc = computeCRC(data1, len1, gpstk::BinUtils::CRC32);
-      TFASSERTE(unsigned long, 0xeaa96e4d, crc);
+      TUASSERTE(unsigned long, 0xeaa96e4d, crc);
 
          // Test a standard CRC-16
       crc = computeCRC(data1, len1, gpstk::BinUtils::CRC16);
-      TFASSERTE(unsigned long, 0x2c74, crc);
+      TUASSERTE(unsigned long, 0x2c74, crc);
 
          // Test a standard CRC-CCITT
       crc = computeCRC(data1, len1, gpstk::BinUtils::CRCCCITT);
-      TFASSERTE(unsigned long, 0x3bcc, crc);
+      TUASSERTE(unsigned long, 0x3bcc, crc);
 
          // Test a standard CRC-24Q
       crc = computeCRC(data1, len1, gpstk::BinUtils::CRC24Q);
-      TFASSERTE(unsigned long, 0x6fa2f6, crc);
+      TUASSERTE(unsigned long, 0x6fa2f6, crc);
 
          // non-direct test
       CRCParam nonDirect(24, 0x823ba9, 0xffffff, 0xffffff, false, false,false);
       crc = computeCRC(data1, len1, nonDirect);
-      TFASSERTE(unsigned long, 0x982748, crc);
+      TUASSERTE(unsigned long, 0x982748, crc);
 
          // Parity bit.
       CRCParam parity(1, 1, 0, 0, true, false, false);
       crc = computeCRC(data1, len1, parity);
-      TFASSERTE(unsigned long, 1, crc);
+      TUASSERTE(unsigned long, 1, crc);
 
          //test crc computation on 1 ASCII char
       unsigned char data2[] = { 0x72 };
       unsigned long len2 = 1;
       crc = computeCRC(data2, len2, gpstk::BinUtils::CRC32);
-      TFASSERTE(unsigned long, 0x6c09ff9d, crc);
+      TUASSERTE(unsigned long, 0x6c09ff9d, crc);
       crc = computeCRC(data2, len2, gpstk::BinUtils::CRC16);
-      TFASSERTE(unsigned long, 0x2580, crc);
+      TUASSERTE(unsigned long, 0x2580, crc);
       crc = computeCRC(data2, len2, gpstk::BinUtils::CRCCCITT);
-      TFASSERTE(unsigned long, 0xbf25, crc);
+      TUASSERTE(unsigned long, 0xbf25, crc);
 
       return testFramework.countFails();
    }

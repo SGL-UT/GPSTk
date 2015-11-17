@@ -281,45 +281,45 @@ cout << "Expected exception received from RinexEphemerisStore!!!!!!!!!" << endl;
          CommonTime tocCT(toc);
          double Ahalf = .515367877960e+04;
          double A = Ahalf * Ahalf;
-         TFASSERTE(CommonTime, xmitTimeCT, eph.transmitTime);
-         TFASSERTE(long, 208806, eph.HOWtime);
-         TFASSERTE(short, 0x174, eph.IODC);
-         TFASSERTE(short, 0x74, eph.IODE);
-         TFASSERTE(short, 0, eph.health);
-         TFASSERTE(short, 2, eph.accuracyFlag);
+         TUASSERTE(CommonTime, xmitTimeCT, eph.transmitTime);
+         TUASSERTE(long, 208806, eph.HOWtime);
+         TUASSERTE(short, 0x174, eph.IODC);
+         TUASSERTE(short, 0x74, eph.IODE);
+         TUASSERTE(short, 0, eph.health);
+         TUASSERTE(short, 2, eph.accuracyFlag);
             // skipping accuracy which is converted from accuracyFlag
             // and is supposed to be a range rather than a single
             // number.
-         TFASSERTFE(-3.25962901E-09, eph.Tgd);
-         TFASSERTE(short, 1, eph.codeflags);
-         TFASSERTE(short, 0, eph.L2Pdata);
-         TFASSERTE(short, 4, eph.fitDuration);
+         TUASSERTFE(-3.25962901E-09, eph.Tgd);
+         TUASSERTE(short, 1, eph.codeflags);
+         TUASSERTE(short, 0, eph.L2Pdata);
+         TUASSERTE(short, 4, eph.fitDuration);
             // This really should be zero, but the toolkit is
             // inconsistent in its use of this data.
-         TFASSERTE(short, 4, eph.fitint);
+         TUASSERTE(short, 4, eph.fitint);
             // OrbitEph data
-         TFASSERTE(SatID, SatID(1, SatID::systemGPS), eph.satID);
+         TUASSERTE(SatID, SatID(1, SatID::systemGPS), eph.satID);
             // skipping obsID which is unknown, not stored in RINEX
-         TFASSERTE(CommonTime, toeCT, eph.ctToe);
-         TFASSERTE(CommonTime, tocCT, eph.ctToc);
-         TFASSERTFE( .342056155205e-04, eph.af0);
-         TFASSERTFE( .193267624127e-11, eph.af1);
-         TFASSERTFE( .000000000000e+00, eph.af2);
-         TFASSERTFE( .231892822330e+00, eph.M0);
-         TFASSERTFE( .415874465698e-08, eph.dn);
-         TFASSERTFE( .632588984445e-02, eph.ecc);
-         TFASSERTFE( A, eph.A);
-         TFASSERTFE(-.171556435925e+01, eph.OMEGA0);
-         TFASSERTFE( .986372320378e+00, eph.i0);
-         TFASSERTFE(-.171070282354e+01, eph.w);
-         TFASSERTFE(-.827605901679e-08, eph.OMEGAdot);
-         TFASSERTFE( .533236497155e-09, eph.idot);
-         TFASSERTFE( .578165054321e-05, eph.Cuc);
-         TFASSERTFE( .529363751411e-05, eph.Cus);
-         TFASSERTFE( .290062500000e+03, eph.Crc);
-         TFASSERTFE( .113406250000e+03, eph.Crs);
-         TFASSERTFE(-.745058059692e-07, eph.Cic);
-         TFASSERTFE(-.279396772385e-07, eph.Cis);
+         TUASSERTE(CommonTime, toeCT, eph.ctToe);
+         TUASSERTE(CommonTime, tocCT, eph.ctToc);
+         TUASSERTFE( .342056155205e-04, eph.af0);
+         TUASSERTFE( .193267624127e-11, eph.af1);
+         TUASSERTFE( .000000000000e+00, eph.af2);
+         TUASSERTFE( .231892822330e+00, eph.M0);
+         TUASSERTFE( .415874465698e-08, eph.dn);
+         TUASSERTFE( .632588984445e-02, eph.ecc);
+         TUASSERTFE( A, eph.A);
+         TUASSERTFE(-.171556435925e+01, eph.OMEGA0);
+         TUASSERTFE( .986372320378e+00, eph.i0);
+         TUASSERTFE(-.171070282354e+01, eph.w);
+         TUASSERTFE(-.827605901679e-08, eph.OMEGAdot);
+         TUASSERTFE( .533236497155e-09, eph.idot);
+         TUASSERTFE( .578165054321e-05, eph.Cuc);
+         TUASSERTFE( .529363751411e-05, eph.Cus);
+         TUASSERTFE( .290062500000e+03, eph.Crc);
+         TUASSERTFE( .113406250000e+03, eph.Crs);
+         TUASSERTFE(-.745058059692e-07, eph.Cic);
+         TUASSERTFE(-.279396772385e-07, eph.Cis);
       }
       catch (Exception& e)
       {
