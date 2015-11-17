@@ -93,6 +93,7 @@ namespace gpstk
 
 
    Rinex3ObsHeader::Rinex3ObsHeader()
+         : PisY(false)
    {
       clear();
    }
@@ -150,7 +151,9 @@ namespace gpstk
       obsTypeList.clear();
       valid  = 0;
       validEoH = false;
-      PisY = false;
+         // Only do this in the constructor so the desired handling of
+         // "P" code in RINEX 2 stays the same.
+         //PisY = false;
       sysPhaseShiftObsID = RinexObsID();
       satSysTemp.clear();
       satSysPrev.clear();
@@ -1287,7 +1290,8 @@ namespace gpstk
 
             // 0/blank numObs means factor applies to all obs types
             // in appropriate obsTypeList
-         if(numObs == 0) numObs = mapObsTypes[satSysTemp].size();
+         if(numObs == 0)
+            numObs = mapObsTypes[satSysTemp].size();
 
          ScaleFacMap tempSfacMap = sysSfacMap[satSysTemp];
          for(i = startPosition;
