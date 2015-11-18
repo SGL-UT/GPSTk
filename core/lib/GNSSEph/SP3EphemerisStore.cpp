@@ -53,9 +53,9 @@
 #include "SP3Header.hpp"
 #include "SP3Data.hpp"
 
-#include "RinexClockStream.hpp"
-#include "RinexClockHeader.hpp"
-#include "RinexClockData.hpp"
+#include "Rinex3ClockStream.hpp"
+#include "Rinex3ClockHeader.hpp"
+#include "Rinex3ClockData.hpp"
 
 #include "FileStore.hpp"
 #include "ClockSatStore.hpp"
@@ -548,7 +548,7 @@ namespace gpstk
          if(useSP3clock) useRinexClockData();
 
          // open the input stream
-         RinexClockStream strm(filename.c_str());
+         Rinex3ClockStream strm(filename.c_str());
          if(!strm.is_open()) {
             Exception e("File " + filename + " could not be opened");
             GPSTK_THROW(e);
@@ -557,8 +557,8 @@ namespace gpstk
          //cout << "Opened file " << filename << endl;
 
          // declare header and data
-         RinexClockHeader head;
-         RinexClockData data;
+         Rinex3ClockHeader head;
+         Rinex3ClockData data;
 
          // read the RINEX clock header
          try {

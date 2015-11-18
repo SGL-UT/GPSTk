@@ -96,22 +96,22 @@ public:
       float relativeError;
 
       testFramework.changeSourceMethod("Average");
-      TFASSERTFE(expectedAverage, floatStatsObject.Average());
+      TUASSERTFE(expectedAverage, floatStatsObject.Average());
 
       testFramework.changeSourceMethod("Maximum");
-      TFASSERTFE(expectedMaximum, floatStatsObject.Maximum());
+      TUASSERTFE(expectedMaximum, floatStatsObject.Maximum());
 
       testFramework.changeSourceMethod("Minimum");
-      TFASSERTFE(expectedMinimum, floatStatsObject.Minimum());
+      TUASSERTFE(expectedMinimum, floatStatsObject.Minimum());
 
       testFramework.changeSourceMethod("Variance");
-      TFASSERTFE(expectedVariance, floatStatsObject.Variance());
+      TUASSERTFE(expectedVariance, floatStatsObject.Variance());
 
       testFramework.changeSourceMethod("StdDev");
-      TFASSERTFE(expectedStdDev, floatStatsObject.StdDev());
+      TUASSERTFE(expectedStdDev, floatStatsObject.StdDev());
 
       testFramework.changeSourceMethod("Normalization");
-      TFASSERTFE(expectedNormalization, floatStatsObject.Normalization());
+      TUASSERTFE(expectedNormalization, floatStatsObject.Normalization());
 
       testFramework.changeSourceMethod("Weighted");
       testFramework.assert(floatStatsObject.Weighted(), "Weighted returned false for weighted sample", __LINE__);

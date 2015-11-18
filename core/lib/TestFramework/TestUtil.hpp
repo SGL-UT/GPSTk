@@ -41,17 +41,23 @@
 #include <iomanip>
 #include <sstream>
 #include <cmath>
+#include <vector>
+#include <float.h>
 #include "build_config.h"
-#include "float.h"
+#include "StringUtils.hpp"
 
 // Define a TestUtil object named testFramework
 #define TUDEF(CLASS,METHOD) TestUtil testFramework(CLASS, METHOD, __FILE__, __LINE__)
 // Basic macro for doing equality tests.  Expects a TestUtil instance
 // named testFramework.
-#define TFASSERTE(TYPE,EXP,GOT) testFramework.assert_equals<TYPE>(EXP,GOT,__LINE__)
+#define TUASSERTE(TYPE,EXP,GOT) testFramework.assert_equals<TYPE>(EXP,GOT,__LINE__)
 // Macro for doing equality tests of double/float values.  Expects a
 // TestUtil instance named testFramework.
-#define TFASSERTFE(EXP,GOT) testFramework.assert_equals(EXP,GOT,__LINE__)
+#define TUASSERTFE(EXP,GOT) testFramework.assert_equals(EXP,GOT,__LINE__)
+// Macro for doing equality tests of double/float values with a
+// specified epsilon.  Expects a TestUtil instance named
+// testFramework.
+#define TUASSERTFEPS(EXP,GOT,EPS) testFramework.assert_equals(EXP,GOT,__LINE__,"", EPS)
 // Fail the test with a message.
 #define TUFAIL(MSG) testFramework.assert(false, MSG, __LINE__)
 // Pass the test with a (unprinted) message.
@@ -208,7 +214,8 @@ public:
 
    void assert_equals( double expected, double got,
                        int line_number,
-                       const std::string& test_message = std::string() )
+                       const std::string& test_message = std::string(),
+                       double epsilon = DBL_EPSILON )
    {
       std::string mess;
       if (test_message.empty())
@@ -218,13 +225,14 @@ public:
               << got << "'" << std::endl;
          mess = ostr.str();
       }
-      assert(fabs(expected-got) <= DBL_EPSILON, mess, line_number);
+      assert(fabs(expected-got) <= epsilon, mess, line_number);
    }
 
 
    void assert_equals( float expected, float got,
                        int line_number,
-                       const std::string& test_message = std::string() )
+                       const std::string& test_message = std::string(),
+                       float epsilon = FLT_EPSILON )
    {
       std::string mess;
       if (test_message.empty())
@@ -234,7 +242,7 @@ public:
               << got << "'" << std::endl;
          mess = ostr.str();
       }
-      assert(fabs(expected-got) <= FLT_EPSILON, mess, line_number);
+      assert(fabs(expected-got) <= epsilon, mess, line_number);
    }
 
 
@@ -244,11 +252,12 @@ public:
                             const std::string& testMsg,
                             int numLinesSkip=0,
                             bool ignoreLeadingSpaces = false,
-                            bool ignoreTrailingSpaces = false )
+                            bool ignoreTrailingSpaces = false,
+                            std::vector<std::string> ignoreRegex = std::vector<std::string>(0) )
    {
       bool eq = fileEqualTest(
          file1Name, file2Name, numLinesSkip, ignoreLeadingSpaces,
-         ignoreTrailingSpaces );
+         ignoreTrailingSpaces, ignoreRegex );
       assert(eq, testMsg, lineNumber);
    }
 
@@ -352,83 +361,108 @@ public:
 
 
       /** Compare two files for differences.
-       * @param[in] file1Name One file to compare, typically the reference file
-       * @param[in] file2Name One file to compare, typically the generated file
+       * @param[in] refFile The reference file to compare against.
+       * @param[in] checkFile The generated file being compared.
        * @param[in] numLinesSkip Number of lines to ignore at the
        *   start of each file.
        * @param[in] ignoreLeadingSpaces If true, ignore any changes in
        *   whitespace at the beginning of each line.
        * @param[in] ignoreTrailingSpaces If true, ignore any changes in
        *   whitespace at the end of each line.
+       * @param[in] ignoreRegex A vector of POSIX regular expressions
+       *   that, if matched in refFile, differences in those lines
+       *   will be ignored.  Regular expressions are not matched
+       *   against checkFile.
        * @return true if the files are equal, false if not.
        */
-   bool fileEqualTest( const std::string& file1Name,
-                       const std::string& file2Name,
+   bool fileEqualTest( const std::string& refFile,
+                       const std::string& checkFile,
                        int numLinesSkip=0,
                        bool ignoreLeadingSpaces = false,
-                       bool ignoreTrailingSpaces = false )
+                       bool ignoreTrailingSpaces = false,
+                       std::vector<std::string> ignoreRegex = std::vector<std::string>(0) )
    {
       int           lineNumber = 0;
       bool          filesEqual = false;
-      std::ifstream file1Stream;
-      std::ifstream file2Stream;
-      std::string   file1Line;
-      std::string   file2Line;
+      std::ifstream refStream;
+      std::ifstream checkStream;
+      std::string   refLine;
+      std::string   checkLine;
 
-      file1Stream.open( file1Name.c_str() );
-      file2Stream.open( file2Name.c_str() );
+      refStream.open( refFile.c_str() );
+      checkStream.open( checkFile.c_str() );
 
-         // Compare each line until you reach the end of File1
-      while( !file1Stream.eof() )
+         // Compare each line until you reach the end of Ref
+      while( !refStream.eof() )
       {
          lineNumber++;
-
-            // If we reach the end of File2, but there is
-            // more left in File1, then they are not equal
-         if( file2Stream.eof() )
+            
+            // If we reach the end of Check, but there is
+            // more left in Ref, then they are not equal
+         if( checkStream.eof() )
          {
             filesEqual = false;
             return( filesEqual );
          }
 
             // get the next line and compare
-         getline( file1Stream, file1Line );
-         getline( file2Stream, file2Line );
+         getline( refStream, refLine );
+         getline( checkStream, checkLine );
+
+         if (lineNumber <= numLinesSkip)
+            continue;
 
          if (ignoreLeadingSpaces)
          {
-            std::size_t idx = file1Line.find_first_not_of(" \t\r\n\f\v");
+            std::size_t idx = refLine.find_first_not_of(" \t\r\n\f\v");
             if (idx != std::string::npos)
-               file1Line.erase(0,idx-1);
-            idx = file2Line.find_first_not_of(" \t\r\n\f\v");
+               refLine.erase(0,idx-1);
+            idx = checkLine.find_first_not_of(" \t\r\n\f\v");
             if (idx != std::string::npos)
-               file2Line.erase(0,idx-1);
+               checkLine.erase(0,idx-1);
          }
          if (ignoreTrailingSpaces)
          {
-            std::size_t idx = file1Line.find_last_not_of(" \t\r\n\f\v");
+            std::size_t idx = refLine.find_last_not_of(" \t\r\n\f\v");
             if (idx != std::string::npos)
-               file1Line.erase(idx+1);
+               refLine.erase(idx+1);
             else
-               file1Line.clear(); // all whitespace
-            idx = file2Line.find_last_not_of(" \t\r\n\f\v");
+               refLine.clear(); // all whitespace
+            idx = checkLine.find_last_not_of(" \t\r\n\f\v");
             if (idx != std::string::npos)
-               file2Line.erase(idx+1);
+               checkLine.erase(idx+1);
             else
-               file2Line.clear(); // all whitespace
+               checkLine.clear(); // all whitespace
+         }
+         if (!ignoreRegex.empty())
+         {
+               // check for regular expressions
+               // Use a flag because break/continue in C++ doesn't
+               // allow you to skip multiple levels.
+            bool ignore = false;
+            for (int i = 0; i < ignoreRegex.size(); i++)
+            {
+               if (gpstk::StringUtils::isLike(refLine, ignoreRegex[i]))
+               {
+                  ignore = true;
+                  break;
+               }
+            }
+            if (ignore)
+               continue;
          }
 
             // only fail if you find differences AFTER the skipped lines
-         if( (lineNumber > numLinesSkip) && (file1Line != file2Line) )
+         if (refLine != checkLine)
          {
             filesEqual = false;
             return( filesEqual );
          }
       }
 
-         // If we reach the end of File1, but there is
-         // more left in File2, then they are not equal
-      if( !file2Stream.eof() )
+         // If we reach the end of Ref, but there is
+         // more left in Check, then they are not equal
+      if( !checkStream.eof() )
       {
          filesEqual = false;
          return( filesEqual );

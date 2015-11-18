@@ -98,10 +98,13 @@ namespace gpstk
    std::string IonoCorr ::
    asString() const throw()
    {
-      switch(type) {
+      switch(type)
+      {
          case GAL:  return std::string("GAL");
          case GPSA: return std::string("GPSA");
          case GPSB: return std::string("GPSB");
+         case Unknown:
+            break;
       }
       return std::string("ERROR");
    }
@@ -561,6 +564,11 @@ namespace gpstk
                      line += leftJustify(stringIonBeta,20);
                   }
                   break;
+               case IonoCorr::Unknown:
+               default:
+                  FFStreamError err("Unknown IonoCorr type " + asString(it->second.type));
+                  GPSTK_THROW(err);
+                  break;
             }
             strm << stripTrailing(line) << endl;
             strm.lineNumber++;
@@ -731,6 +739,11 @@ namespace gpstk
                  << " " << icit->second.param[1]
                  << " " << icit->second.param[2]
                  << " " << icit->second.param[3];
+               break;
+            case IonoCorr::Unknown:
+            default:
+               FFStreamError err("Unknown IonoCorr type " + asString(icit->second.type));
+               GPSTK_THROW(err);
                break;
          }
          s << endl;
