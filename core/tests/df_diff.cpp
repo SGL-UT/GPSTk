@@ -41,6 +41,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <cmath>
 
 #include "BasicFramework.hpp"
 #include "StringUtils.hpp"
@@ -171,11 +172,11 @@ protected:
                if (df1 && df2)
                {
                   double diff = d1-d2;
-                  double err=d2;
+                  double err = d2;
                   if (d1 != 0)
                      err = diff/d1;
                
-                  if (::abs(err) > epsilon)
+                  if (abs(err) > epsilon)
                      exitCode += 1;
                   
                   if (verboseLevel)

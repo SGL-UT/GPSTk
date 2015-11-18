@@ -4,9 +4,9 @@ execute_process(COMMAND
     ${TEST_PROG}
     -1 ${SOURCEDIR}/arlm200b.15o
     -2 ${SOURCEDIR}/df_diff.in
-    RESULT_VARIABLE HAD_ERROR)
+    RESULT_VARIABLE RC)
 
-if(NOT HAD_ERROR)
+if(NOT RC EQUAL 2)
     message(FATAL_ERROR "Test failed.")
 endif()
 
@@ -15,8 +15,20 @@ execute_process(COMMAND
     -1 ${SOURCEDIR}/arlm200b.15o
     -2 ${SOURCEDIR}/df_diff.in
     -l 2
-    RESULT_VARIABLE HAD_ERROR)
+    RESULT_VARIABLE RC)
 
-if(HAD_ERROR)
+if(NOT RC EQUAL 1)
+    message(FATAL_ERROR "Test failed.")
+endif()
+
+execute_process(COMMAND
+    ${TEST_PROG}
+    -1 ${SOURCEDIR}/arlm200b.15o
+    -2 ${SOURCEDIR}/df_diff.in
+    -l 2
+    -e 1e-4
+    RESULT_VARIABLE RC)
+
+if(NOT RC EQUAL 0)
     message(FATAL_ERROR "Test failed.")
 endif()
