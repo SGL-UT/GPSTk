@@ -17,7 +17,7 @@ endif()
 # Platform-dependent Compiler flags
 #----------------------------------------
 if( ${CMAKE_SYSTEM_NAME} MATCHES "SunOS" )
-    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -erroff=hidevf,wvarhidemem,badargtype2w" )
+    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -erroff=hidevf,badargtype2w" )
     # add -DCMAKE_CXX_FLAGS=-std=c++03 or =-std=c++11 on the CMAKE invocation
     set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -mt -shared" )
 elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
@@ -111,7 +111,7 @@ if( DEBUG_VERBOSE )
         message( STATUS "---- ${_variableName} = ${${_variableName}}" )
     endforeach()
 endif()
-		
+        
 #----------------------------------------
 # Get CMake vars into C++
 #----------------------------------------
@@ -126,9 +126,23 @@ if( ${CMAKE_SYSTEM_NAME} MATCHES "SunOS" )
 elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
     set( CPACK_GENERATOR "TGZ" )
 elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" )
-    set( CPACK_GENERATOR "DEB;TGZ" )
+    execute_process(COMMAND "/usr/bin/lsb_release" "-is"
+                    TIMEOUT 4
+                    OUTPUT_VARIABLE LINUX_DISTRO
+                    ERROR_QUIET
+                    OUTPUT_STRIP_TRAILING_WHITESPACE)
+    if (${LINUX_DISTRO} MATCHES "RedHatEnterpriseServer")
+        message( STATUS "Detected a Linux Red Hat machine")
+        set( CPACK_GENERATOR "DEB;TGZ;RPM")
+    elseif (${LINUX_DISTRO} MATCHES "Debian")
+        message( STATUS "Detected a Linux Debian machine")
+        set( CPACK_GENERATOR "DEB;TGZ" )
+    else (${LINUX_DISTRO} MATCHES "RedHatEnterpriseServer")
+        message( STATUS "Detected a Linux machine")
+        set( CPACK_GENERATOR "DEB;TGZ" )    
+    endif()
 elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
-    set( CPACK_GENERATOR "ZIP" )
+    set( CPACK_GENERATOR "NSIS;ZIP" )
 endif()
 
 set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "GPSTk libraries and applications for GNSS processing.") 
