@@ -56,30 +56,27 @@ public:
          : gpstk::BasicFramework(arg0, 
                                  "Sorts and merges input " + type +
                                  " files into a single file. " + message),
-         inputFileOption('i',
-                         "input",
-                         "An input " + type +
-                         " file, can be repeated as many times as needed.",
-                         true),
-         outputFileOption('o',
-                          "output",
-                          "Name for the merged output " + type + " file. Any "
-                          "existing file with that name will be overwritten.", 
-                          true)
-      {
-         outputFileOption.setMaxCount(1);
-      }
+           inputFileOption("<" + type + " file> [...]", true),
+           outputFileOption('o',
+                            "output",
+                            "Name for the merged output " + type + " file."
+                            " Any existing file with that name will be"
+                            " overwritten.", 
+                            true)
+   {
+      outputFileOption.setMaxCount(1);
+   }
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Woverloaded-virtual"
    virtual bool initialize(int argc, char* argv[]) throw()
-      {
-         return gpstk::BasicFramework::initialize(argc, argv);
-      }
+   {
+      return gpstk::BasicFramework::initialize(argc, argv);
+   }
 #pragma clang diagnostic pop
 protected:
    virtual void process() = 0;
 
-   gpstk::CommandOptionWithAnyArg inputFileOption;
+   gpstk::CommandOptionRest inputFileOption;
    gpstk::CommandOptionWithAnyArg outputFileOption;
 };
 
