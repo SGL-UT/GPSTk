@@ -15,6 +15,7 @@ add_subdirectory( CommandLine )
 # application testing
 add_subdirectory( time )
 add_subdirectory (positioning)
+add_subdirectory( Rinextools )
 
 # add_subdirectory( AppFrame )
 

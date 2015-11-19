@@ -1,5 +1,17 @@
 ###############################################################################
-# TEST RinEdit
+# TEST PRSolve
+###############################################################################
+
+# check that -h option is valid
+add_test(NAME PRSolve_CmdOpt_1
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:PRSolve>
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testhelp.cmake)
+
+###############################################################################
+# TEST poscvt
 ###############################################################################
 
 # check that -h option is valid

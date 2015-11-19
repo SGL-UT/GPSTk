@@ -10,6 +10,7 @@ add_subdirectory (geomatics)
 add_subdirectory (mergetools)
 add_subdirectory (misc)
 add_subdirectory (time)
+add_subdirectory (positioning)
 
 # If on UNIX, do these
 if (UNIX)
