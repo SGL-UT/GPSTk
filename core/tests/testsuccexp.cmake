@@ -9,6 +9,8 @@
 # ARGS: a space-separated argument list (optional)
 # SPARG1: a single escaped argument (optional)
 # SPARG2: a single escaped argument (optional)
+# SPARG3: a single escaped argument (optional)
+# SPARG4: a single escaped argument (optional)
 #
 # Flags:
 # OWNOUTPUT: if unset, stdout will be captured to ${TESTBASE}.out.  If
@@ -23,17 +25,17 @@ IF(DEFINED ARGS)
    string(REPLACE " " ";" ARG_LIST ${ARGS})
 ENDIF(DEFINED ARGS)
 
-message(STATUS "running ${TEST_PROG} ${ARGS} ${SPARG1} ${SPARG2}")
+message(STATUS "running ${TEST_PROG} ${ARGS} ${SPARG1} ${SPARG2} ${SPARG3} ${SPARG4}")
 
 IF(NOT DEFINED OWNOUTPUT)
-   execute_process(COMMAND ${TEST_PROG} ${ARG_LIST} ${SPARG1} ${SPARG2}
+   execute_process(COMMAND ${TEST_PROG} ${ARG_LIST} ${SPARG1} ${SPARG2} ${SPARG3} ${SPARG4}
                    OUTPUT_FILE ${TARGETDIR}/${TESTBASE}.out
                    RESULT_VARIABLE HAD_ERROR)
    if(HAD_ERROR)
        message(FATAL_ERROR "Test failed, exit code: ${HAD_ERROR}")
    endif(HAD_ERROR)
 ELSE(NOT DEFINED OWNOUTPUT)
-   execute_process(COMMAND ${TEST_PROG} ${ARG_LIST} ${SPARG1} ${SPARG2}
+   execute_process(COMMAND ${TEST_PROG} ${ARG_LIST} ${SPARG1} ${SPARG2} ${SPARG3} ${SPARG4}
                    OUTPUT_QUIET
                    RESULT_VARIABLE HAD_ERROR)
    if(HAD_ERROR)
@@ -46,6 +48,6 @@ IF(NOT DEFINED NODIFF)
        ${SOURCEDIR}/${TESTBASE}.exp ${TARGETDIR}/${TESTBASE}.out
        RESULT_VARIABLE DIFFERENT)
    if(DIFFERENT)
-       message(FATAL_ERROR "Test failed - files differ")
+       message(FATAL_ERROR "Test failed - files differ: ${DIFFERENT}")
    endif(DIFFERENT)
 ENDIF(NOT DEFINED NODIFF)
