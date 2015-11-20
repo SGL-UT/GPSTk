@@ -237,6 +237,27 @@ namespace gpstk
    
          gpse.dataLoadedFlag = true;
 
+            // Special case to address common problem in IGS aggregate brdc
+            // files.   In some cases (typ. beginning of week) the last
+            // SF 1/2/3 for the previous day is being output with a HOWtime of 
+            // zero.  This leaves it in conflict with the first SF 1/2/3 of
+            // the new day (which typically has a HOW of zero)
+         long adjHOWtime = HOWtime;
+         short adjWeeknum = weeknum;
+         long lToc = (long) Toc;
+         if ((HOWtime%SEC_PER_DAY)==0 && 
+            ((lToc)%SEC_PER_DAY)==0 &&
+              HOWtime == lToc) 
+         {
+            adjHOWtime = HOWtime - 30;  
+            if (adjHOWtime<0)
+            {
+               adjHOWtime += FULLWEEK;  
+               adjWeeknum--;     
+            }
+         }
+         // end special case adjustment (except for use of adjHOWtime below)
+
          // get the epochs right
          CommonTime ct = time;
          //unsigned int year = static_cast<CivilTime>(ct).year;
@@ -256,8 +277,9 @@ namespace gpstk
          gpse.Tgd = Tgd;
 
          gpse.HOWtime = HOWtime;
-         gpse.transmitTime = GPSWeekSecond(weeknum, static_cast<double>(HOWtime),
-            TimeSystem::GPS);
+         gpse.transmitTime = GPSWeekSecond(adjWeeknum, 
+                                           static_cast<double>(HOWtime),
+                                           TimeSystem::GPS);
 
          gpse.codeflags = codeflgs;
          gpse.L2Pdata = L2Pdata;
