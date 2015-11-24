@@ -14,6 +14,8 @@ add_test(NAME RinEdit_Header
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinheader.cmake)
 
+
+
 # Check RinSum output with --ycode option
 add_test(NAME RinSum_ycode
          COMMAND ${CMAKE_COMMAND}
@@ -24,3 +26,6 @@ add_test(NAME RinSum_ycode
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -DOPTS=--ycode
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinsum.cmake)
+
+
+

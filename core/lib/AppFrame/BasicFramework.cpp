@@ -74,26 +74,47 @@ namespace gpstk
 
          // Creating the parser here ensures that all the subclasses'
          // option objects are constructed.
-      CommandOptionParser cop(appDesc);
-
-      cop.parseOptions(argc, argv);
-
-      if (helpOption.getCount())
+      try
       {
-         cop.displayUsage(cerr, pretty);
+         CommandOptionParser cop(appDesc);
+
+         cop.parseOptions(argc, argv);
+
+         if (helpOption.getCount())
+         {
+            cop.displayUsage(cerr, pretty);
+            return false;
+         }
+
+         if (cop.hasErrors())
+         {
+            cop.dumpErrors(cerr);
+            cop.displayUsage(cerr, pretty);
+            exitCode = OPTION_ERROR;
+            return false;
+         }
+
+         debugLevel = debugOption.getCount();
+         verboseLevel = verboseOption.getCount();
+      }
+      catch (gpstk::Exception &exc)
+      {
+         cerr << exc << endl;
+         exitCode=OPTION_ERROR;
          return false;
       }
-
-      if (cop.hasErrors())
+      catch (std::exception &exc)
       {
-         cop.dumpErrors(cerr);
-         cop.displayUsage(cerr, pretty);
-         exitCode = OPTION_ERROR;
+         cerr << "BasicFramework::initialize caught " << exc.what() << endl;
+         exitCode=OPTION_ERROR;
          return false;
       }
-
-      debugLevel = debugOption.getCount();
-      verboseLevel = verboseOption.getCount();
+      catch (...)
+      {
+         cerr << "BasicFramework::initialize caught unknown exception" << endl;
+         exitCode=OPTION_ERROR;
+         return false;
+      }
 
       return true;
 

@@ -1,0 +1,8275 @@
+%!
+%% Created by vdraw
+%%
+% Rectangle
+newpath
+0 792 moveto
+612 792 lineto
+612 0 lineto
+0 0 lineto
+closepath
+gsave
+1 1 1 setrgbcolor 
+fill
+grestore
+1 1 1 setrgbcolor 
+0 setlinewidth
+[ ] 0 setdash 
+stroke
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/center { dup stringwidth pop 2 div neg 0 rmoveto } def
+/Helvetica-Bold findfont
+29.76 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+306 715.92 moveto
+(GPS Calendar 2015) center show
+% Text
+/Helvetica-Bold findfont
+14.94 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+118 662.19 moveto
+(January) center show
+% Rectangle
+newpath
+33 654.72 moveto
+203 654.72 lineto
+203 630.82 lineto
+33 630.82 lineto
+closepath
+gsave
+0.90196 0.90196 0.90196 setrgbcolor 
+fill
+grestore
+0.90196 0.90196 0.90196 setrgbcolor 
+0 setlinewidth
+[ ] 0 setdash 
+stroke
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+50 637.99 moveto
+(1825) center show
+% Text
+0 0 0 setrgbcolor 
+newpath
+50 614.08 moveto
+(1826) center show
+% Rectangle
+newpath
+33 606.91 moveto
+203 606.91 lineto
+203 583.01 lineto
+33 583.01 lineto
+closepath
+gsave
+0.90196 0.90196 0.90196 setrgbcolor 
+fill
+grestore
+0.90196 0.90196 0.90196 setrgbcolor 
+0 setlinewidth
+[ ] 0 setdash 
+stroke
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+0 0 0 setrgbcolor 
+newpath
+50 590.18 moveto
+(1827) center show
+% Text
+0 0 0 setrgbcolor 
+newpath
+50 566.28 moveto
+(1828) center show
+% Rectangle
+newpath
+33 559.1 moveto
+203 559.1 lineto
+203 535.2 lineto
+33 535.2 lineto
+closepath
+gsave
+0.90196 0.90196 0.90196 setrgbcolor 
+fill
+grestore
+0.90196 0.90196 0.90196 setrgbcolor 
+0 setlinewidth
+[ ] 0 setdash 
+stroke
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+0 0 0 setrgbcolor 
+newpath
+50 542.37 moveto
+(1829) center show
+% Text
+0 0 0 setrgbcolor 
+newpath
+154.43 642.77 moveto
+(1) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/right { dup stringwidth pop neg 0 rmoveto } def
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+164.14 633.21 moveto
+(1) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+173.86 642.77 moveto
+(2) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+183.57 633.21 moveto
+(2) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+193.29 642.77 moveto
+(3) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+203 633.21 moveto
+(3) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+76.714 618.86 moveto
+(4) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+86.429 609.3 moveto
+(4) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+96.143 618.86 moveto
+(5) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+105.86 609.3 moveto
+(5) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+115.57 618.86 moveto
+(6) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+125.29 609.3 moveto
+(6) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+135 618.86 moveto
+(7) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+144.71 609.3 moveto
+(7) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+154.43 618.86 moveto
+(8) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+164.14 609.3 moveto
+(8) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+173.86 618.86 moveto
+(9) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+183.57 609.3 moveto
+(9) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+193.29 618.86 moveto
+(10) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+203 609.3 moveto
+(10) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+76.714 594.96 moveto
+(11) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+86.429 585.4 moveto
+(11) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+96.143 594.96 moveto
+(12) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+105.86 585.4 moveto
+(12) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+115.57 594.96 moveto
+(13) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+125.29 585.4 moveto
+(13) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+135 594.96 moveto
+(14) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+144.71 585.4 moveto
+(14) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+154.43 594.96 moveto
+(15) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+164.14 585.4 moveto
+(15) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+173.86 594.96 moveto
+(16) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+183.57 585.4 moveto
+(16) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+193.29 594.96 moveto
+(17) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+203 585.4 moveto
+(17) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+76.714 571.06 moveto
+(18) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+86.429 561.49 moveto
+(18) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+96.143 571.06 moveto
+(19) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+105.86 561.49 moveto
+(19) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+115.57 571.06 moveto
+(20) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+125.29 561.49 moveto
+(20) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+135 571.06 moveto
+(21) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+144.71 561.49 moveto
+(21) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+154.43 571.06 moveto
+(22) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+164.14 561.49 moveto
+(22) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+173.86 571.06 moveto
+(23) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+183.57 561.49 moveto
+(23) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+193.29 571.06 moveto
+(24) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+203 561.49 moveto
+(24) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+76.714 547.15 moveto
+(25) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+86.429 537.59 moveto
+(25) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+96.143 547.15 moveto
+(26) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+105.86 537.59 moveto
+(26) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+115.57 547.15 moveto
+(27) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+125.29 537.59 moveto
+(27) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+135 547.15 moveto
+(28) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+144.71 537.59 moveto
+(28) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+154.43 547.15 moveto
+(29) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+164.14 537.59 moveto
+(29) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+173.86 547.15 moveto
+(30) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+183.57 537.59 moveto
+(30) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+193.29 547.15 moveto
+(31) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+203 537.59 moveto
+(31) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Helvetica-Bold findfont
+14.94 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+306 662.19 moveto
+(February) center show
+% Text
+/Times-Bold findfont
+11.952 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+238 633.8 moveto
+(1830) center show
+% Rectangle
+newpath
+221 624.84 moveto
+391 624.84 lineto
+391 594.96 lineto
+221 594.96 lineto
+closepath
+gsave
+0.90196 0.90196 0.90196 setrgbcolor 
+fill
+grestore
+0.90196 0.90196 0.90196 setrgbcolor 
+0 setlinewidth
+[ ] 0 setdash 
+stroke
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+0 0 0 setrgbcolor 
+newpath
+238 603.92 moveto
+(1831) center show
+% Text
+0 0 0 setrgbcolor 
+newpath
+238 574.04 moveto
+(1832) center show
+% Rectangle
+newpath
+221 565.08 moveto
+391 565.08 lineto
+391 535.2 lineto
+221 535.2 lineto
+closepath
+gsave
+0.90196 0.90196 0.90196 setrgbcolor 
+fill
+grestore
+0.90196 0.90196 0.90196 setrgbcolor 
+0 setlinewidth
+[ ] 0 setdash 
+stroke
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+0 0 0 setrgbcolor 
+newpath
+238 544.16 moveto
+(1833) center show
+% Text
+0 0 0 setrgbcolor 
+newpath
+264.71 639.78 moveto
+(1) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+8.0676 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+274.43 627.83 moveto
+(32) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+11.952 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+284.14 639.78 moveto
+(2) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+8.0676 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+293.86 627.83 moveto
+(33) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+11.952 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+303.57 639.78 moveto
+(3) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+8.0676 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+313.29 627.83 moveto
+(34) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+11.952 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+323 639.78 moveto
+(4) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+8.0676 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+332.71 627.83 moveto
+(35) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+11.952 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+342.43 639.78 moveto
+(5) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+8.0676 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+352.14 627.83 moveto
+(36) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+11.952 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+361.86 639.78 moveto
+(6) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+8.0676 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+371.57 627.83 moveto
+(37) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+11.952 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+381.29 639.78 moveto
+(7) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+8.0676 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+391 627.83 moveto
+(38) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+11.952 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+264.71 609.9 moveto
+(8) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+8.0676 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+274.43 597.95 moveto
+(39) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+11.952 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+284.14 609.9 moveto
+(9) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+8.0676 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+293.86 597.95 moveto
+(40) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+11.952 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+303.57 609.9 moveto
+(10) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+8.0676 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+313.29 597.95 moveto
+(41) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+11.952 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+323 609.9 moveto
+(11) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+8.0676 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+332.71 597.95 moveto
+(42) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+11.952 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+342.43 609.9 moveto
+(12) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+8.0676 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+352.14 597.95 moveto
+(43) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+11.952 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+361.86 609.9 moveto
+(13) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+8.0676 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+371.57 597.95 moveto
+(44) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+11.952 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+381.29 609.9 moveto
+(14) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+8.0676 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+391 597.95 moveto
+(45) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+11.952 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+264.71 580.02 moveto
+(15) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+8.0676 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+274.43 568.07 moveto
+(46) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+11.952 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+284.14 580.02 moveto
+(16) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+8.0676 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+293.86 568.07 moveto
+(47) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+11.952 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+303.57 580.02 moveto
+(17) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+8.0676 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+313.29 568.07 moveto
+(48) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+11.952 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+323 580.02 moveto
+(18) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+8.0676 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+332.71 568.07 moveto
+(49) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+11.952 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+342.43 580.02 moveto
+(19) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+8.0676 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+352.14 568.07 moveto
+(50) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+11.952 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+361.86 580.02 moveto
+(20) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+8.0676 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+371.57 568.07 moveto
+(51) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+11.952 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+381.29 580.02 moveto
+(21) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+8.0676 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+391 568.07 moveto
+(52) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+11.952 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+264.71 550.14 moveto
+(22) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+8.0676 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+274.43 538.19 moveto
+(53) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+11.952 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+284.14 550.14 moveto
+(23) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+8.0676 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+293.86 538.19 moveto
+(54) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+11.952 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+303.57 550.14 moveto
+(24) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+8.0676 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+313.29 538.19 moveto
+(55) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+11.952 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+323 550.14 moveto
+(25) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+8.0676 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+332.71 538.19 moveto
+(56) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+11.952 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+342.43 550.14 moveto
+(26) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+8.0676 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+352.14 538.19 moveto
+(57) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+11.952 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+361.86 550.14 moveto
+(27) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+8.0676 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+371.57 538.19 moveto
+(58) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+11.952 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+381.29 550.14 moveto
+(28) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+8.0676 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+391 538.19 moveto
+(59) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Helvetica-Bold findfont
+14.94 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+494 662.19 moveto
+(March) center show
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+426 637.99 moveto
+(1834) center show
+% Rectangle
+newpath
+409 630.82 moveto
+579 630.82 lineto
+579 606.91 lineto
+409 606.91 lineto
+closepath
+gsave
+0.90196 0.90196 0.90196 setrgbcolor 
+fill
+grestore
+0.90196 0.90196 0.90196 setrgbcolor 
+0 setlinewidth
+[ ] 0 setdash 
+stroke
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+0 0 0 setrgbcolor 
+newpath
+426 614.08 moveto
+(1835) center show
+% Text
+0 0 0 setrgbcolor 
+newpath
+426 590.18 moveto
+(1836) center show
+% Rectangle
+newpath
+409 583.01 moveto
+579 583.01 lineto
+579 559.1 lineto
+409 559.1 lineto
+closepath
+gsave
+0.90196 0.90196 0.90196 setrgbcolor 
+fill
+grestore
+0.90196 0.90196 0.90196 setrgbcolor 
+0 setlinewidth
+[ ] 0 setdash 
+stroke
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+0 0 0 setrgbcolor 
+newpath
+426 566.28 moveto
+(1837) center show
+% Text
+0 0 0 setrgbcolor 
+newpath
+426 542.37 moveto
+(1838) center show
+% Text
+0 0 0 setrgbcolor 
+newpath
+452.71 642.77 moveto
+(1) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+462.43 633.21 moveto
+(60) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+472.14 642.77 moveto
+(2) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+481.86 633.21 moveto
+(61) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+491.57 642.77 moveto
+(3) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+501.29 633.21 moveto
+(62) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+511 642.77 moveto
+(4) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+520.71 633.21 moveto
+(63) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+530.43 642.77 moveto
+(5) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+540.14 633.21 moveto
+(64) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+549.86 642.77 moveto
+(6) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+559.57 633.21 moveto
+(65) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+569.29 642.77 moveto
+(7) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+579 633.21 moveto
+(66) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+452.71 618.86 moveto
+(8) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+462.43 609.3 moveto
+(67) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+472.14 618.86 moveto
+(9) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+481.86 609.3 moveto
+(68) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+491.57 618.86 moveto
+(10) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+501.29 609.3 moveto
+(69) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+511 618.86 moveto
+(11) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+520.71 609.3 moveto
+(70) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+530.43 618.86 moveto
+(12) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+540.14 609.3 moveto
+(71) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+549.86 618.86 moveto
+(13) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+559.57 609.3 moveto
+(72) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+569.29 618.86 moveto
+(14) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+579 609.3 moveto
+(73) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+452.71 594.96 moveto
+(15) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+462.43 585.4 moveto
+(74) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+472.14 594.96 moveto
+(16) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+481.86 585.4 moveto
+(75) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+491.57 594.96 moveto
+(17) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+501.29 585.4 moveto
+(76) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+511 594.96 moveto
+(18) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+520.71 585.4 moveto
+(77) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+530.43 594.96 moveto
+(19) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+540.14 585.4 moveto
+(78) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+549.86 594.96 moveto
+(20) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+559.57 585.4 moveto
+(79) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+569.29 594.96 moveto
+(21) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+579 585.4 moveto
+(80) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+452.71 571.06 moveto
+(22) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+462.43 561.49 moveto
+(81) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+472.14 571.06 moveto
+(23) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+481.86 561.49 moveto
+(82) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+491.57 571.06 moveto
+(24) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+501.29 561.49 moveto
+(83) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+511 571.06 moveto
+(25) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+520.71 561.49 moveto
+(84) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+530.43 571.06 moveto
+(26) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+540.14 561.49 moveto
+(85) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+549.86 571.06 moveto
+(27) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+559.57 561.49 moveto
+(86) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+569.29 571.06 moveto
+(28) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+579 561.49 moveto
+(87) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+452.71 547.15 moveto
+(29) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+462.43 537.59 moveto
+(88) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+472.14 547.15 moveto
+(30) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+481.86 537.59 moveto
+(89) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+491.57 547.15 moveto
+(31) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+501.29 537.59 moveto
+(90) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Helvetica-Bold findfont
+14.94 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+118 494.79 moveto
+(April) center show
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+50 470.59 moveto
+(1838) center show
+% Rectangle
+newpath
+33 463.42 moveto
+203 463.42 lineto
+203 439.51 lineto
+33 439.51 lineto
+closepath
+gsave
+0.90196 0.90196 0.90196 setrgbcolor 
+fill
+grestore
+0.90196 0.90196 0.90196 setrgbcolor 
+0 setlinewidth
+[ ] 0 setdash 
+stroke
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+0 0 0 setrgbcolor 
+newpath
+50 446.68 moveto
+(1839) center show
+% Text
+0 0 0 setrgbcolor 
+newpath
+50 422.78 moveto
+(1840) center show
+% Rectangle
+newpath
+33 415.61 moveto
+203 415.61 lineto
+203 391.7 lineto
+33 391.7 lineto
+closepath
+gsave
+0.90196 0.90196 0.90196 setrgbcolor 
+fill
+grestore
+0.90196 0.90196 0.90196 setrgbcolor 
+0 setlinewidth
+[ ] 0 setdash 
+stroke
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+0 0 0 setrgbcolor 
+newpath
+50 398.88 moveto
+(1841) center show
+% Text
+0 0 0 setrgbcolor 
+newpath
+50 374.97 moveto
+(1842) center show
+% Text
+0 0 0 setrgbcolor 
+newpath
+135 475.37 moveto
+(1) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+144.71 465.81 moveto
+(91) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+154.43 475.37 moveto
+(2) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+164.14 465.81 moveto
+(92) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+173.86 475.37 moveto
+(3) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+183.57 465.81 moveto
+(93) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+193.29 475.37 moveto
+(4) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+203 465.81 moveto
+(94) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+76.714 451.46 moveto
+(5) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+86.429 441.9 moveto
+(95) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+96.143 451.46 moveto
+(6) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+105.86 441.9 moveto
+(96) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+115.57 451.46 moveto
+(7) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+125.29 441.9 moveto
+(97) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+135 451.46 moveto
+(8) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+144.71 441.9 moveto
+(98) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+154.43 451.46 moveto
+(9) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+164.14 441.9 moveto
+(99) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+173.86 451.46 moveto
+(10) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+183.57 441.9 moveto
+(100) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+193.29 451.46 moveto
+(11) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+203 441.9 moveto
+(101) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+76.714 427.56 moveto
+(12) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+86.429 418 moveto
+(102) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+96.143 427.56 moveto
+(13) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+105.86 418 moveto
+(103) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+115.57 427.56 moveto
+(14) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+125.29 418 moveto
+(104) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+135 427.56 moveto
+(15) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+144.71 418 moveto
+(105) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+154.43 427.56 moveto
+(16) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+164.14 418 moveto
+(106) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+173.86 427.56 moveto
+(17) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+183.57 418 moveto
+(107) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+193.29 427.56 moveto
+(18) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+203 418 moveto
+(108) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+76.714 403.66 moveto
+(19) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+86.429 394.09 moveto
+(109) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+96.143 403.66 moveto
+(20) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+105.86 394.09 moveto
+(110) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+115.57 403.66 moveto
+(21) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+125.29 394.09 moveto
+(111) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+135 403.66 moveto
+(22) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+144.71 394.09 moveto
+(112) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+154.43 403.66 moveto
+(23) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+164.14 394.09 moveto
+(113) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+173.86 403.66 moveto
+(24) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+183.57 394.09 moveto
+(114) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+193.29 403.66 moveto
+(25) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+203 394.09 moveto
+(115) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+76.714 379.75 moveto
+(26) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+86.429 370.19 moveto
+(116) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+96.143 379.75 moveto
+(27) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+105.86 370.19 moveto
+(117) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+115.57 379.75 moveto
+(28) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+125.29 370.19 moveto
+(118) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+135 379.75 moveto
+(29) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+144.71 370.19 moveto
+(119) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+154.43 379.75 moveto
+(30) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+164.14 370.19 moveto
+(120) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Helvetica-Bold findfont
+14.94 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+306 494.79 moveto
+(May) center show
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+238 473.38 moveto
+(1842) center show
+% Rectangle
+newpath
+221 467.4 moveto
+391 467.4 lineto
+391 447.48 lineto
+221 447.48 lineto
+closepath
+gsave
+0.90196 0.90196 0.90196 setrgbcolor 
+fill
+grestore
+0.90196 0.90196 0.90196 setrgbcolor 
+0 setlinewidth
+[ ] 0 setdash 
+stroke
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+0 0 0 setrgbcolor 
+newpath
+238 453.46 moveto
+(1843) center show
+% Text
+0 0 0 setrgbcolor 
+newpath
+238 433.54 moveto
+(1844) center show
+% Rectangle
+newpath
+221 427.56 moveto
+391 427.56 lineto
+391 407.64 lineto
+221 407.64 lineto
+closepath
+gsave
+0.90196 0.90196 0.90196 setrgbcolor 
+fill
+grestore
+0.90196 0.90196 0.90196 setrgbcolor 
+0 setlinewidth
+[ ] 0 setdash 
+stroke
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+0 0 0 setrgbcolor 
+newpath
+238 413.62 moveto
+(1845) center show
+% Text
+0 0 0 setrgbcolor 
+newpath
+238 393.7 moveto
+(1846) center show
+% Rectangle
+newpath
+221 387.72 moveto
+391 387.72 lineto
+391 367.8 lineto
+221 367.8 lineto
+closepath
+gsave
+0.90196 0.90196 0.90196 setrgbcolor 
+fill
+grestore
+0.90196 0.90196 0.90196 setrgbcolor 
+0 setlinewidth
+[ ] 0 setdash 
+stroke
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+0 0 0 setrgbcolor 
+newpath
+238 373.78 moveto
+(1847) center show
+% Text
+0 0 0 setrgbcolor 
+newpath
+361.86 477.36 moveto
+(1) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+371.57 469.39 moveto
+(121) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+381.29 477.36 moveto
+(2) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+391 469.39 moveto
+(122) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+264.71 457.44 moveto
+(3) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+274.43 449.47 moveto
+(123) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+284.14 457.44 moveto
+(4) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+293.86 449.47 moveto
+(124) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+303.57 457.44 moveto
+(5) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+313.29 449.47 moveto
+(125) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+323 457.44 moveto
+(6) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+332.71 449.47 moveto
+(126) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+342.43 457.44 moveto
+(7) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+352.14 449.47 moveto
+(127) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+361.86 457.44 moveto
+(8) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+371.57 449.47 moveto
+(128) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+381.29 457.44 moveto
+(9) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+391 449.47 moveto
+(129) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+264.71 437.52 moveto
+(10) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+274.43 429.55 moveto
+(130) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+284.14 437.52 moveto
+(11) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+293.86 429.55 moveto
+(131) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+303.57 437.52 moveto
+(12) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+313.29 429.55 moveto
+(132) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+323 437.52 moveto
+(13) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+332.71 429.55 moveto
+(133) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+342.43 437.52 moveto
+(14) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+352.14 429.55 moveto
+(134) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+361.86 437.52 moveto
+(15) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+371.57 429.55 moveto
+(135) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+381.29 437.52 moveto
+(16) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+391 429.55 moveto
+(136) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+264.71 417.6 moveto
+(17) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+274.43 409.63 moveto
+(137) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+284.14 417.6 moveto
+(18) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+293.86 409.63 moveto
+(138) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+303.57 417.6 moveto
+(19) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+313.29 409.63 moveto
+(139) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+323 417.6 moveto
+(20) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+332.71 409.63 moveto
+(140) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+342.43 417.6 moveto
+(21) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+352.14 409.63 moveto
+(141) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+361.86 417.6 moveto
+(22) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+371.57 409.63 moveto
+(142) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+381.29 417.6 moveto
+(23) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+391 409.63 moveto
+(143) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+264.71 397.68 moveto
+(24) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+274.43 389.71 moveto
+(144) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+284.14 397.68 moveto
+(25) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+293.86 389.71 moveto
+(145) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+303.57 397.68 moveto
+(26) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+313.29 389.71 moveto
+(146) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+323 397.68 moveto
+(27) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+332.71 389.71 moveto
+(147) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+342.43 397.68 moveto
+(28) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+352.14 389.71 moveto
+(148) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+361.86 397.68 moveto
+(29) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+371.57 389.71 moveto
+(149) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+381.29 397.68 moveto
+(30) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+391 389.71 moveto
+(150) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+264.71 377.76 moveto
+(31) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+274.43 369.79 moveto
+(151) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Helvetica-Bold findfont
+14.94 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+494 494.79 moveto
+(June) center show
+% Rectangle
+newpath
+409 487.32 moveto
+579 487.32 lineto
+579 463.42 lineto
+409 463.42 lineto
+closepath
+gsave
+0.90196 0.90196 0.90196 setrgbcolor 
+fill
+grestore
+0.90196 0.90196 0.90196 setrgbcolor 
+0 setlinewidth
+[ ] 0 setdash 
+stroke
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+426 470.59 moveto
+(1847) center show
+% Text
+0 0 0 setrgbcolor 
+newpath
+426 446.68 moveto
+(1848) center show
+% Rectangle
+newpath
+409 439.51 moveto
+579 439.51 lineto
+579 415.61 lineto
+409 415.61 lineto
+closepath
+gsave
+0.90196 0.90196 0.90196 setrgbcolor 
+fill
+grestore
+0.90196 0.90196 0.90196 setrgbcolor 
+0 setlinewidth
+[ ] 0 setdash 
+stroke
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+0 0 0 setrgbcolor 
+newpath
+426 422.78 moveto
+(1849) center show
+% Text
+0 0 0 setrgbcolor 
+newpath
+426 398.88 moveto
+(1850) center show
+% Rectangle
+newpath
+409 391.7 moveto
+579 391.7 lineto
+579 367.8 lineto
+409 367.8 lineto
+closepath
+gsave
+0.90196 0.90196 0.90196 setrgbcolor 
+fill
+grestore
+0.90196 0.90196 0.90196 setrgbcolor 
+0 setlinewidth
+[ ] 0 setdash 
+stroke
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+0 0 0 setrgbcolor 
+newpath
+426 374.97 moveto
+(1851) center show
+% Text
+0 0 0 setrgbcolor 
+newpath
+472.14 475.37 moveto
+(1) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+481.86 465.81 moveto
+(152) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+491.57 475.37 moveto
+(2) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+501.29 465.81 moveto
+(153) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+511 475.37 moveto
+(3) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+520.71 465.81 moveto
+(154) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+530.43 475.37 moveto
+(4) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+540.14 465.81 moveto
+(155) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+549.86 475.37 moveto
+(5) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+559.57 465.81 moveto
+(156) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+569.29 475.37 moveto
+(6) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+579 465.81 moveto
+(157) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+452.71 451.46 moveto
+(7) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+462.43 441.9 moveto
+(158) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+472.14 451.46 moveto
+(8) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+481.86 441.9 moveto
+(159) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+491.57 451.46 moveto
+(9) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+501.29 441.9 moveto
+(160) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+511 451.46 moveto
+(10) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+520.71 441.9 moveto
+(161) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+530.43 451.46 moveto
+(11) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+540.14 441.9 moveto
+(162) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+549.86 451.46 moveto
+(12) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+559.57 441.9 moveto
+(163) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+569.29 451.46 moveto
+(13) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+579 441.9 moveto
+(164) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+452.71 427.56 moveto
+(14) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+462.43 418 moveto
+(165) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+472.14 427.56 moveto
+(15) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+481.86 418 moveto
+(166) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+491.57 427.56 moveto
+(16) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+501.29 418 moveto
+(167) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+511 427.56 moveto
+(17) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+520.71 418 moveto
+(168) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+530.43 427.56 moveto
+(18) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+540.14 418 moveto
+(169) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+549.86 427.56 moveto
+(19) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+559.57 418 moveto
+(170) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+569.29 427.56 moveto
+(20) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+579 418 moveto
+(171) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+452.71 403.66 moveto
+(21) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+462.43 394.09 moveto
+(172) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+472.14 403.66 moveto
+(22) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+481.86 394.09 moveto
+(173) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+491.57 403.66 moveto
+(23) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+501.29 394.09 moveto
+(174) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+511 403.66 moveto
+(24) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+520.71 394.09 moveto
+(175) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+530.43 403.66 moveto
+(25) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+540.14 394.09 moveto
+(176) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+549.86 403.66 moveto
+(26) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+559.57 394.09 moveto
+(177) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+569.29 403.66 moveto
+(27) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+579 394.09 moveto
+(178) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+452.71 379.75 moveto
+(28) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+462.43 370.19 moveto
+(179) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+472.14 379.75 moveto
+(29) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+481.86 370.19 moveto
+(180) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+491.57 379.75 moveto
+(30) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+501.29 370.19 moveto
+(181) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Helvetica-Bold findfont
+14.94 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+118 327.39 moveto
+(July) center show
+% Rectangle
+newpath
+33 319.92 moveto
+203 319.92 lineto
+203 296.02 lineto
+33 296.02 lineto
+closepath
+gsave
+0.90196 0.90196 0.90196 setrgbcolor 
+fill
+grestore
+0.90196 0.90196 0.90196 setrgbcolor 
+0 setlinewidth
+[ ] 0 setdash 
+stroke
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+50 303.19 moveto
+(1851) center show
+% Text
+0 0 0 setrgbcolor 
+newpath
+50 279.28 moveto
+(1852) center show
+% Rectangle
+newpath
+33 272.11 moveto
+203 272.11 lineto
+203 248.21 lineto
+33 248.21 lineto
+closepath
+gsave
+0.90196 0.90196 0.90196 setrgbcolor 
+fill
+grestore
+0.90196 0.90196 0.90196 setrgbcolor 
+0 setlinewidth
+[ ] 0 setdash 
+stroke
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+0 0 0 setrgbcolor 
+newpath
+50 255.38 moveto
+(1853) center show
+% Text
+0 0 0 setrgbcolor 
+newpath
+50 231.48 moveto
+(1854) center show
+% Rectangle
+newpath
+33 224.3 moveto
+203 224.3 lineto
+203 200.4 lineto
+33 200.4 lineto
+closepath
+gsave
+0.90196 0.90196 0.90196 setrgbcolor 
+fill
+grestore
+0.90196 0.90196 0.90196 setrgbcolor 
+0 setlinewidth
+[ ] 0 setdash 
+stroke
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+0 0 0 setrgbcolor 
+newpath
+50 207.57 moveto
+(1855) center show
+% Text
+0 0 0 setrgbcolor 
+newpath
+135 307.97 moveto
+(1) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+144.71 298.41 moveto
+(182) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+154.43 307.97 moveto
+(2) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+164.14 298.41 moveto
+(183) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+173.86 307.97 moveto
+(3) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+183.57 298.41 moveto
+(184) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+193.29 307.97 moveto
+(4) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+203 298.41 moveto
+(185) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+76.714 284.06 moveto
+(5) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+86.429 274.5 moveto
+(186) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+96.143 284.06 moveto
+(6) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+105.86 274.5 moveto
+(187) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+115.57 284.06 moveto
+(7) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+125.29 274.5 moveto
+(188) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+135 284.06 moveto
+(8) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+144.71 274.5 moveto
+(189) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+154.43 284.06 moveto
+(9) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+164.14 274.5 moveto
+(190) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+173.86 284.06 moveto
+(10) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+183.57 274.5 moveto
+(191) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+193.29 284.06 moveto
+(11) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+203 274.5 moveto
+(192) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+76.714 260.16 moveto
+(12) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+86.429 250.6 moveto
+(193) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+96.143 260.16 moveto
+(13) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+105.86 250.6 moveto
+(194) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+115.57 260.16 moveto
+(14) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+125.29 250.6 moveto
+(195) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+135 260.16 moveto
+(15) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+144.71 250.6 moveto
+(196) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+154.43 260.16 moveto
+(16) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+164.14 250.6 moveto
+(197) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+173.86 260.16 moveto
+(17) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+183.57 250.6 moveto
+(198) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+193.29 260.16 moveto
+(18) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+203 250.6 moveto
+(199) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+76.714 236.26 moveto
+(19) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+86.429 226.69 moveto
+(200) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+96.143 236.26 moveto
+(20) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+105.86 226.69 moveto
+(201) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+115.57 236.26 moveto
+(21) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+125.29 226.69 moveto
+(202) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+135 236.26 moveto
+(22) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+144.71 226.69 moveto
+(203) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+154.43 236.26 moveto
+(23) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+164.14 226.69 moveto
+(204) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+173.86 236.26 moveto
+(24) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+183.57 226.69 moveto
+(205) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+193.29 236.26 moveto
+(25) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+203 226.69 moveto
+(206) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+76.714 212.35 moveto
+(26) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+86.429 202.79 moveto
+(207) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+96.143 212.35 moveto
+(27) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+105.86 202.79 moveto
+(208) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+115.57 212.35 moveto
+(28) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+125.29 202.79 moveto
+(209) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+135 212.35 moveto
+(29) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+144.71 202.79 moveto
+(210) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+154.43 212.35 moveto
+(30) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+164.14 202.79 moveto
+(211) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+173.86 212.35 moveto
+(31) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+183.57 202.79 moveto
+(212) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Helvetica-Bold findfont
+14.94 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+306 327.39 moveto
+(August) center show
+% Rectangle
+newpath
+221 319.92 moveto
+391 319.92 lineto
+391 300 lineto
+221 300 lineto
+closepath
+gsave
+0.90196 0.90196 0.90196 setrgbcolor 
+fill
+grestore
+0.90196 0.90196 0.90196 setrgbcolor 
+0 setlinewidth
+[ ] 0 setdash 
+stroke
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+238 305.98 moveto
+(1855) center show
+% Text
+0 0 0 setrgbcolor 
+newpath
+238 286.06 moveto
+(1856) center show
+% Rectangle
+newpath
+221 280.08 moveto
+391 280.08 lineto
+391 260.16 lineto
+221 260.16 lineto
+closepath
+gsave
+0.90196 0.90196 0.90196 setrgbcolor 
+fill
+grestore
+0.90196 0.90196 0.90196 setrgbcolor 
+0 setlinewidth
+[ ] 0 setdash 
+stroke
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+0 0 0 setrgbcolor 
+newpath
+238 266.14 moveto
+(1857) center show
+% Text
+0 0 0 setrgbcolor 
+newpath
+238 246.22 moveto
+(1858) center show
+% Rectangle
+newpath
+221 240.24 moveto
+391 240.24 lineto
+391 220.32 lineto
+221 220.32 lineto
+closepath
+gsave
+0.90196 0.90196 0.90196 setrgbcolor 
+fill
+grestore
+0.90196 0.90196 0.90196 setrgbcolor 
+0 setlinewidth
+[ ] 0 setdash 
+stroke
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+0 0 0 setrgbcolor 
+newpath
+238 226.3 moveto
+(1859) center show
+% Text
+0 0 0 setrgbcolor 
+newpath
+238 206.38 moveto
+(1860) center show
+% Text
+0 0 0 setrgbcolor 
+newpath
+381.29 309.96 moveto
+(1) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+391 301.99 moveto
+(213) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+264.71 290.04 moveto
+(2) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+274.43 282.07 moveto
+(214) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+284.14 290.04 moveto
+(3) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+293.86 282.07 moveto
+(215) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+303.57 290.04 moveto
+(4) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+313.29 282.07 moveto
+(216) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+323 290.04 moveto
+(5) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+332.71 282.07 moveto
+(217) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+342.43 290.04 moveto
+(6) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+352.14 282.07 moveto
+(218) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+361.86 290.04 moveto
+(7) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+371.57 282.07 moveto
+(219) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+381.29 290.04 moveto
+(8) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+391 282.07 moveto
+(220) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+264.71 270.12 moveto
+(9) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+274.43 262.15 moveto
+(221) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+284.14 270.12 moveto
+(10) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+293.86 262.15 moveto
+(222) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+303.57 270.12 moveto
+(11) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+313.29 262.15 moveto
+(223) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+323 270.12 moveto
+(12) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+332.71 262.15 moveto
+(224) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+342.43 270.12 moveto
+(13) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+352.14 262.15 moveto
+(225) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+361.86 270.12 moveto
+(14) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+371.57 262.15 moveto
+(226) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+381.29 270.12 moveto
+(15) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+391 262.15 moveto
+(227) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+264.71 250.2 moveto
+(16) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+274.43 242.23 moveto
+(228) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+284.14 250.2 moveto
+(17) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+293.86 242.23 moveto
+(229) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+303.57 250.2 moveto
+(18) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+313.29 242.23 moveto
+(230) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+323 250.2 moveto
+(19) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+332.71 242.23 moveto
+(231) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+342.43 250.2 moveto
+(20) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+352.14 242.23 moveto
+(232) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+361.86 250.2 moveto
+(21) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+371.57 242.23 moveto
+(233) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+381.29 250.2 moveto
+(22) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+391 242.23 moveto
+(234) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+264.71 230.28 moveto
+(23) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+274.43 222.31 moveto
+(235) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+284.14 230.28 moveto
+(24) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+293.86 222.31 moveto
+(236) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+303.57 230.28 moveto
+(25) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+313.29 222.31 moveto
+(237) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+323 230.28 moveto
+(26) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+332.71 222.31 moveto
+(238) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+342.43 230.28 moveto
+(27) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+352.14 222.31 moveto
+(239) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+361.86 230.28 moveto
+(28) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+371.57 222.31 moveto
+(240) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+381.29 230.28 moveto
+(29) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+391 222.31 moveto
+(241) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+264.71 210.36 moveto
+(30) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+274.43 202.39 moveto
+(242) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+7.968 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+284.14 210.36 moveto
+(31) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+5.3784 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+293.86 202.39 moveto
+(243) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Helvetica-Bold findfont
+14.94 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+494 327.39 moveto
+(September) center show
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+426 303.19 moveto
+(1860) center show
+% Rectangle
+newpath
+409 296.02 moveto
+579 296.02 lineto
+579 272.11 lineto
+409 272.11 lineto
+closepath
+gsave
+0.90196 0.90196 0.90196 setrgbcolor 
+fill
+grestore
+0.90196 0.90196 0.90196 setrgbcolor 
+0 setlinewidth
+[ ] 0 setdash 
+stroke
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+0 0 0 setrgbcolor 
+newpath
+426 279.28 moveto
+(1861) center show
+% Text
+0 0 0 setrgbcolor 
+newpath
+426 255.38 moveto
+(1862) center show
+% Rectangle
+newpath
+409 248.21 moveto
+579 248.21 lineto
+579 224.3 lineto
+409 224.3 lineto
+closepath
+gsave
+0.90196 0.90196 0.90196 setrgbcolor 
+fill
+grestore
+0.90196 0.90196 0.90196 setrgbcolor 
+0 setlinewidth
+[ ] 0 setdash 
+stroke
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+0 0 0 setrgbcolor 
+newpath
+426 231.48 moveto
+(1863) center show
+% Text
+0 0 0 setrgbcolor 
+newpath
+426 207.57 moveto
+(1864) center show
+% Text
+0 0 0 setrgbcolor 
+newpath
+491.57 307.97 moveto
+(1) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+501.29 298.41 moveto
+(244) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+511 307.97 moveto
+(2) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+520.71 298.41 moveto
+(245) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+530.43 307.97 moveto
+(3) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+540.14 298.41 moveto
+(246) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+549.86 307.97 moveto
+(4) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+559.57 298.41 moveto
+(247) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+569.29 307.97 moveto
+(5) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+579 298.41 moveto
+(248) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+452.71 284.06 moveto
+(6) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+462.43 274.5 moveto
+(249) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+472.14 284.06 moveto
+(7) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+481.86 274.5 moveto
+(250) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+491.57 284.06 moveto
+(8) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+501.29 274.5 moveto
+(251) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+511 284.06 moveto
+(9) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+520.71 274.5 moveto
+(252) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+530.43 284.06 moveto
+(10) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+540.14 274.5 moveto
+(253) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+549.86 284.06 moveto
+(11) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+559.57 274.5 moveto
+(254) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+569.29 284.06 moveto
+(12) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+579 274.5 moveto
+(255) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+452.71 260.16 moveto
+(13) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+462.43 250.6 moveto
+(256) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+472.14 260.16 moveto
+(14) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+481.86 250.6 moveto
+(257) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+491.57 260.16 moveto
+(15) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+501.29 250.6 moveto
+(258) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+511 260.16 moveto
+(16) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+520.71 250.6 moveto
+(259) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+530.43 260.16 moveto
+(17) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+540.14 250.6 moveto
+(260) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+549.86 260.16 moveto
+(18) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+559.57 250.6 moveto
+(261) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+569.29 260.16 moveto
+(19) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+579 250.6 moveto
+(262) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+452.71 236.26 moveto
+(20) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+462.43 226.69 moveto
+(263) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+472.14 236.26 moveto
+(21) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+481.86 226.69 moveto
+(264) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+491.57 236.26 moveto
+(22) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+501.29 226.69 moveto
+(265) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+511 236.26 moveto
+(23) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+520.71 226.69 moveto
+(266) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+530.43 236.26 moveto
+(24) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+540.14 226.69 moveto
+(267) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+549.86 236.26 moveto
+(25) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+559.57 226.69 moveto
+(268) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+569.29 236.26 moveto
+(26) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+579 226.69 moveto
+(269) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+452.71 212.35 moveto
+(27) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+462.43 202.79 moveto
+(270) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+472.14 212.35 moveto
+(28) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+481.86 202.79 moveto
+(271) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+491.57 212.35 moveto
+(29) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+501.29 202.79 moveto
+(272) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+511 212.35 moveto
+(30) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+520.71 202.79 moveto
+(273) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Helvetica-Bold findfont
+14.94 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+118 159.99 moveto
+(October) center show
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+50 135.79 moveto
+(1864) center show
+% Rectangle
+newpath
+33 128.62 moveto
+203 128.62 lineto
+203 104.71 lineto
+33 104.71 lineto
+closepath
+gsave
+0.90196 0.90196 0.90196 setrgbcolor 
+fill
+grestore
+0.90196 0.90196 0.90196 setrgbcolor 
+0 setlinewidth
+[ ] 0 setdash 
+stroke
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+0 0 0 setrgbcolor 
+newpath
+50 111.88 moveto
+(1865) center show
+% Text
+0 0 0 setrgbcolor 
+newpath
+50 87.979 moveto
+(1866) center show
+% Rectangle
+newpath
+33 80.808 moveto
+203 80.808 lineto
+203 56.904 lineto
+33 56.904 lineto
+closepath
+gsave
+0.90196 0.90196 0.90196 setrgbcolor 
+fill
+grestore
+0.90196 0.90196 0.90196 setrgbcolor 
+0 setlinewidth
+[ ] 0 setdash 
+stroke
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+0 0 0 setrgbcolor 
+newpath
+50 64.075 moveto
+(1867) center show
+% Text
+0 0 0 setrgbcolor 
+newpath
+50 40.171 moveto
+(1868) center show
+% Text
+0 0 0 setrgbcolor 
+newpath
+154.43 140.57 moveto
+(1) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+164.14 131.01 moveto
+(274) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+173.86 140.57 moveto
+(2) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+183.57 131.01 moveto
+(275) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+193.29 140.57 moveto
+(3) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+203 131.01 moveto
+(276) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+76.714 116.66 moveto
+(4) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+86.429 107.1 moveto
+(277) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+96.143 116.66 moveto
+(5) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+105.86 107.1 moveto
+(278) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+115.57 116.66 moveto
+(6) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+125.29 107.1 moveto
+(279) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+135 116.66 moveto
+(7) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+144.71 107.1 moveto
+(280) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+154.43 116.66 moveto
+(8) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+164.14 107.1 moveto
+(281) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+173.86 116.66 moveto
+(9) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+183.57 107.1 moveto
+(282) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+193.29 116.66 moveto
+(10) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+203 107.1 moveto
+(283) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+76.714 92.76 moveto
+(11) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+86.429 83.198 moveto
+(284) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+96.143 92.76 moveto
+(12) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+105.86 83.198 moveto
+(285) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+115.57 92.76 moveto
+(13) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+125.29 83.198 moveto
+(286) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+135 92.76 moveto
+(14) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+144.71 83.198 moveto
+(287) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+154.43 92.76 moveto
+(15) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+164.14 83.198 moveto
+(288) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+173.86 92.76 moveto
+(16) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+183.57 83.198 moveto
+(289) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+193.29 92.76 moveto
+(17) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+203 83.198 moveto
+(290) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+76.714 68.856 moveto
+(18) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+86.429 59.294 moveto
+(291) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+96.143 68.856 moveto
+(19) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+105.86 59.294 moveto
+(292) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+115.57 68.856 moveto
+(20) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+125.29 59.294 moveto
+(293) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+135 68.856 moveto
+(21) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+144.71 59.294 moveto
+(294) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+154.43 68.856 moveto
+(22) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+164.14 59.294 moveto
+(295) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+173.86 68.856 moveto
+(23) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+183.57 59.294 moveto
+(296) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+193.29 68.856 moveto
+(24) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+203 59.294 moveto
+(297) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+76.714 44.952 moveto
+(25) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+86.429 35.39 moveto
+(298) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+96.143 44.952 moveto
+(26) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+105.86 35.39 moveto
+(299) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+115.57 44.952 moveto
+(27) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+125.29 35.39 moveto
+(300) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+135 44.952 moveto
+(28) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+144.71 35.39 moveto
+(301) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+154.43 44.952 moveto
+(29) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+164.14 35.39 moveto
+(302) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+173.86 44.952 moveto
+(30) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+183.57 35.39 moveto
+(303) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+193.29 44.952 moveto
+(31) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+203 35.39 moveto
+(304) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Helvetica-Bold findfont
+14.94 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+306 159.99 moveto
+(November) center show
+% Rectangle
+newpath
+221 152.52 moveto
+391 152.52 lineto
+391 128.62 lineto
+221 128.62 lineto
+closepath
+gsave
+0.90196 0.90196 0.90196 setrgbcolor 
+fill
+grestore
+0.90196 0.90196 0.90196 setrgbcolor 
+0 setlinewidth
+[ ] 0 setdash 
+stroke
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+238 135.79 moveto
+(1869) center show
+% Text
+0 0 0 setrgbcolor 
+newpath
+238 111.88 moveto
+(1870) center show
+% Rectangle
+newpath
+221 104.71 moveto
+391 104.71 lineto
+391 80.808 lineto
+221 80.808 lineto
+closepath
+gsave
+0.90196 0.90196 0.90196 setrgbcolor 
+fill
+grestore
+0.90196 0.90196 0.90196 setrgbcolor 
+0 setlinewidth
+[ ] 0 setdash 
+stroke
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+0 0 0 setrgbcolor 
+newpath
+238 87.979 moveto
+(1871) center show
+% Text
+0 0 0 setrgbcolor 
+newpath
+238 64.075 moveto
+(1872) center show
+% Rectangle
+newpath
+221 56.904 moveto
+391 56.904 lineto
+391 33 lineto
+221 33 lineto
+closepath
+gsave
+0.90196 0.90196 0.90196 setrgbcolor 
+fill
+grestore
+0.90196 0.90196 0.90196 setrgbcolor 
+0 setlinewidth
+[ ] 0 setdash 
+stroke
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+0 0 0 setrgbcolor 
+newpath
+238 40.171 moveto
+(1873) center show
+% Text
+0 0 0 setrgbcolor 
+newpath
+264.71 140.57 moveto
+(1) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+274.43 131.01 moveto
+(305) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+284.14 140.57 moveto
+(2) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+293.86 131.01 moveto
+(306) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+303.57 140.57 moveto
+(3) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+313.29 131.01 moveto
+(307) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+323 140.57 moveto
+(4) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+332.71 131.01 moveto
+(308) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+342.43 140.57 moveto
+(5) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+352.14 131.01 moveto
+(309) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+361.86 140.57 moveto
+(6) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+371.57 131.01 moveto
+(310) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+381.29 140.57 moveto
+(7) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+391 131.01 moveto
+(311) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+264.71 116.66 moveto
+(8) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+274.43 107.1 moveto
+(312) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+284.14 116.66 moveto
+(9) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+293.86 107.1 moveto
+(313) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+303.57 116.66 moveto
+(10) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+313.29 107.1 moveto
+(314) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+323 116.66 moveto
+(11) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+332.71 107.1 moveto
+(315) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+342.43 116.66 moveto
+(12) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+352.14 107.1 moveto
+(316) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+361.86 116.66 moveto
+(13) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+371.57 107.1 moveto
+(317) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+381.29 116.66 moveto
+(14) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+391 107.1 moveto
+(318) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+264.71 92.76 moveto
+(15) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+274.43 83.198 moveto
+(319) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+284.14 92.76 moveto
+(16) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+293.86 83.198 moveto
+(320) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+303.57 92.76 moveto
+(17) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+313.29 83.198 moveto
+(321) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+323 92.76 moveto
+(18) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+332.71 83.198 moveto
+(322) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+342.43 92.76 moveto
+(19) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+352.14 83.198 moveto
+(323) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+361.86 92.76 moveto
+(20) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+371.57 83.198 moveto
+(324) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+381.29 92.76 moveto
+(21) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+391 83.198 moveto
+(325) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+264.71 68.856 moveto
+(22) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+274.43 59.294 moveto
+(326) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+284.14 68.856 moveto
+(23) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+293.86 59.294 moveto
+(327) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+303.57 68.856 moveto
+(24) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+313.29 59.294 moveto
+(328) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+323 68.856 moveto
+(25) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+332.71 59.294 moveto
+(329) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+342.43 68.856 moveto
+(26) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+352.14 59.294 moveto
+(330) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+361.86 68.856 moveto
+(27) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+371.57 59.294 moveto
+(331) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+381.29 68.856 moveto
+(28) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+391 59.294 moveto
+(332) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+264.71 44.952 moveto
+(29) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+274.43 35.39 moveto
+(333) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+284.14 44.952 moveto
+(30) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+293.86 35.39 moveto
+(334) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Helvetica-Bold findfont
+14.94 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+494 159.99 moveto
+(December) center show
+% Rectangle
+newpath
+409 152.52 moveto
+579 152.52 lineto
+579 128.62 lineto
+409 128.62 lineto
+closepath
+gsave
+0.90196 0.90196 0.90196 setrgbcolor 
+fill
+grestore
+0.90196 0.90196 0.90196 setrgbcolor 
+0 setlinewidth
+[ ] 0 setdash 
+stroke
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+426 135.79 moveto
+(1873) center show
+% Text
+0 0 0 setrgbcolor 
+newpath
+426 111.88 moveto
+(1874) center show
+% Rectangle
+newpath
+409 104.71 moveto
+579 104.71 lineto
+579 80.808 lineto
+409 80.808 lineto
+closepath
+gsave
+0.90196 0.90196 0.90196 setrgbcolor 
+fill
+grestore
+0.90196 0.90196 0.90196 setrgbcolor 
+0 setlinewidth
+[ ] 0 setdash 
+stroke
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+0 0 0 setrgbcolor 
+newpath
+426 87.979 moveto
+(1875) center show
+% Text
+0 0 0 setrgbcolor 
+newpath
+426 64.075 moveto
+(1876) center show
+% Rectangle
+newpath
+409 56.904 moveto
+579 56.904 lineto
+579 33 lineto
+409 33 lineto
+closepath
+gsave
+0.90196 0.90196 0.90196 setrgbcolor 
+fill
+grestore
+0.90196 0.90196 0.90196 setrgbcolor 
+0 setlinewidth
+[ ] 0 setdash 
+stroke
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+0 0 0 setrgbcolor 
+newpath
+426 40.171 moveto
+(1877) center show
+% Text
+0 0 0 setrgbcolor 
+newpath
+491.57 140.57 moveto
+(1) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+501.29 131.01 moveto
+(335) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+511 140.57 moveto
+(2) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+520.71 131.01 moveto
+(336) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+530.43 140.57 moveto
+(3) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+540.14 131.01 moveto
+(337) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+549.86 140.57 moveto
+(4) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+559.57 131.01 moveto
+(338) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+569.29 140.57 moveto
+(5) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+579 131.01 moveto
+(339) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+452.71 116.66 moveto
+(6) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+462.43 107.1 moveto
+(340) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+472.14 116.66 moveto
+(7) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+481.86 107.1 moveto
+(341) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+491.57 116.66 moveto
+(8) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+501.29 107.1 moveto
+(342) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+511 116.66 moveto
+(9) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+520.71 107.1 moveto
+(343) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+530.43 116.66 moveto
+(10) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+540.14 107.1 moveto
+(344) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+549.86 116.66 moveto
+(11) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+559.57 107.1 moveto
+(345) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+569.29 116.66 moveto
+(12) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+579 107.1 moveto
+(346) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+452.71 92.76 moveto
+(13) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+462.43 83.198 moveto
+(347) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+472.14 92.76 moveto
+(14) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+481.86 83.198 moveto
+(348) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+491.57 92.76 moveto
+(15) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+501.29 83.198 moveto
+(349) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+511 92.76 moveto
+(16) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+520.71 83.198 moveto
+(350) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+530.43 92.76 moveto
+(17) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+540.14 83.198 moveto
+(351) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+549.86 92.76 moveto
+(18) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+559.57 83.198 moveto
+(352) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+569.29 92.76 moveto
+(19) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+579 83.198 moveto
+(353) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+452.71 68.856 moveto
+(20) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+462.43 59.294 moveto
+(354) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+472.14 68.856 moveto
+(21) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+481.86 59.294 moveto
+(355) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+491.57 68.856 moveto
+(22) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+501.29 59.294 moveto
+(356) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+511 68.856 moveto
+(23) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+520.71 59.294 moveto
+(357) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+530.43 68.856 moveto
+(24) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+540.14 59.294 moveto
+(358) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+549.86 68.856 moveto
+(25) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+559.57 59.294 moveto
+(359) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+569.29 68.856 moveto
+(26) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+579 59.294 moveto
+(360) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+452.71 44.952 moveto
+(27) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+462.43 35.39 moveto
+(361) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+472.14 44.952 moveto
+(28) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+481.86 35.39 moveto
+(362) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+491.57 44.952 moveto
+(29) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+501.29 35.39 moveto
+(363) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+511 44.952 moveto
+(30) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+520.71 35.39 moveto
+(364) right show
+0 0 0 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+9.5616 scalefont setfont
+0 0 0 setrgbcolor 
+newpath
+530.43 44.952 moveto
+(31) center show
+0 0 1 setrgbcolor 
+1 setlinewidth
+[ ] 0 setdash 
+% Text
+/Times-Bold findfont
+6.4541 scalefont setfont
+0 0 1 setrgbcolor 
+newpath
+540.14 35.39 moveto
+(365) right show
+showpage
