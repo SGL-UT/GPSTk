@@ -146,7 +146,7 @@ set( CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.13)" )
 set( CPACK_DEBIAN_SECTION "stable" )
 set( CPACK_DEBIAN_PACKAGE_SECTION "science" )
 
-set( CPACK_SOURCE_IGNORE_FILES "${PROJECT_BINARY_DIR}" "build-*/" "/.git" )
+set( CPACK_SOURCE_IGNORE_FILES "${PROJECT_BINARY_DIR}" "/build-.*/" ".*/[.].*" )
 set( CPACK_SOURCE_GENERATOR "TGZ")
 
 include( CPack )
