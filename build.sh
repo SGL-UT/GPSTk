@@ -119,7 +119,7 @@ while getopts "hb:cdepi:j:xP:sutv" OPTION; do
            ;;
         t) test_switch=1
            ;;
-        v) verbose=1
+        v) verbose+=1
            ;;
         *) echo "Invalid option: -$OPTARG" >&2
            usage
@@ -169,6 +169,10 @@ log "git tag         =" $git_tag
 log "git hash        =" $git_hash
 log "logfile         =" $LOG
 log
+
+if ((verbose>3)); then
+    exit
+fi
 
 cd "$build_root"
 

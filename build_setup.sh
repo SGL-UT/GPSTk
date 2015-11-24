@@ -38,19 +38,34 @@ function ptof {
     fi
 }
 
+
 abspath()
 {
-    cd "$(dirname "$1")"
-    printf "%s/%s\n" "$(pwd)" "$(basename "$1")"
-    cd "$OLDPWD"
+    if [ -d "$1" ]; then
+        (cd "$1"; pwd)
+    elif [ -f "$1" ]; then
+        if [[ $1 == */* ]]; then
+            echo "$(cd "${1%/*}"; pwd)/${1##*/}"
+        else
+            echo "$(pwd)/$1"
+        fi
+    else
+        # It doesn't exist...
+        echo "path:" $1 ${1:0:1} >&2
+        if [[ ${1:0:1} == "/" ]]; then
+            printf "$1"
+        elif [[ ${1:0:2} == "./" ]]; then
+            printf "$(pwd)/"${1:2}
+        elif [[ ${1:0:2} == "~/" ]]; then
+            printf "$(HOME)/"${1:2}
+        elif [[ ${1:0:3} == "../" ]]; then
+            printf "$(cd ..;pwd)/"${1:3}
+        else
+            printf $(pwd)/${1}
+        fi
+    fi
 }
 
-absdir()
-{
-    cd $1
-    pwd
-    cd $OLDPATH
-}
 
 #----------------------------------------
 # Determine number of cores for compiling.
@@ -79,7 +94,7 @@ else
     num_threads=$((num_cores*3/4))
 fi
 
-repo=$(absdir $(dirname $0))
+repo=$(abspath $(dirname $0))
 
 user_install_prefix=$HOME/.local
 system_install_prefix=/usr/local
