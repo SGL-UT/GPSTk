@@ -309,13 +309,17 @@ namespace gpstk
             goNext = true;
 
             while(strm >> data) {
-            //cout << "Read data " << data.RecType
-            //<< " at " << printTime(data.time,"%Y %m %d %H %M %S") << endl;
+               //cout << "Read data " << data.RecType
+               //<< " at " << printTime(data.time,"%Y %m %d %H %M %S") << endl;
 
                // The SP3 doc says that records will be in order....
                // use while to loop twice, if necessary: as soon as a RecType is
                // repeated, the current records are output, then the loop
                // returns to start filling the records again.
+               //strm.dumpState();
+               if (strm.eof())
+                  break;
+               
                while(1) {
                   if(data.RecType == '*') {                                // epoch
                      if(haveP || haveV)
