@@ -311,14 +311,9 @@ namespace gpstk
 
          if (s.good())
          {
-            s.exceptions(std::ios::failbit);
-         
             FileData data;
-         
             while (s >> data)
-            {
                this->addData(data);
-            }
          }
       }
    }
