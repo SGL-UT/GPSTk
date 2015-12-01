@@ -250,10 +250,10 @@ public:
    void setTestMessage( const std::string& testMsg, const int lineNumber );
 
 
-   void setTestLine( const int lineNumber_int );
+   void setTestLine( const int lineNumber );
 
 
-      /** Compare two files for differences.
+      /** Compare two text files for differences, line by line.
        * @param[in] refFile The reference file to compare against.
        * @param[in] checkFile The generated file being compared.
        * @param[in] numLinesSkip Number of lines to ignore at the
@@ -274,6 +274,17 @@ public:
                        bool ignoreLeadingSpaces = false,
                        bool ignoreTrailingSpaces = false,
                        std::vector<std::string> ignoreRegex = std::vector<std::string>(0) );
+
+
+      /** Compare two binary files for differences, byte by byte.
+       * @param[in] refFile The reference file to compare against.
+       * @param[in] checkFile The generated file being compared.
+       * @param[in] from First byte to compare.
+       * @param[in] to Last byte to compare. */
+   bool fileCompTest( const std::string& refFile,
+                      const std::string& checkFile,
+                      unsigned long long from = 0,
+                      unsigned long long to = -1);
 
 private:
 
@@ -326,11 +337,11 @@ private:
 
       /** Fail the test! Record a failure by setting the failBit and
        * incrementing failCount. */
-   void fail( const std::string& fail_message );
+   void fail( const std::string& failMsg );
 
       /** Fail the test! Record a failure by setting the failBit and
        * incrementing failCount. */
-   void fail( const std::string& fail_message, const int lineNumber );
+   void fail( const std::string& failMsg, const int lineNumber );
 
       /** Increment the failCount and reset subtestID based on current
        * testCount. */
@@ -516,10 +527,10 @@ setTestMessage( const std::string& testMsg, const int lineNumber )
 
 
 void TestUtil ::
-setTestLine( const int lineNumber_int )
+setTestLine( const int lineNumber )
 {
    std::ostringstream conversionStringStream;
-   conversionStringStream << lineNumber_int;
+   conversionStringStream << lineNumber;
    testFileLine = conversionStringStream.str();
 }
 
@@ -625,6 +636,35 @@ fileEqualTest( const std::string& refFile,
 }
 
 
+bool TestUtil ::
+fileCompTest( const std::string& refFile,
+              const std::string& checkFile,
+              unsigned long long from,
+              unsigned long long to)
+{
+   static const unsigned bufsize = 4096;
+   std::vector<char> refBuf(bufsize, 0), checkBuf(bufsize, 0);
+   std::ifstream ref(refFile.c_str()), check(checkFile.c_str());
+   if (!ref || !check)
+      return false; // missing or inaccessible file
+   if (!ref.seekg(from, std::ios_base::beg))
+      return false; // seek failure, usually file too short
+   if (!check.seekg(from, std::ios_base::beg))
+      return false; // seek failure, usually file too short
+
+   while (ref && check)
+   {
+         // don't really care about short buffers, as the buffer
+         // contents should be the same regardless.
+      ref.read(&refBuf[0], bufsize);
+      check.read(&checkBuf[0], bufsize);
+      if (refBuf != checkBuf)
+         return false;
+   }
+   return true;
+}
+
+
 void TestUtil ::
 print( void )
 {
@@ -675,17 +715,17 @@ fail( void )
 
 
 void TestUtil ::
-fail( const std::string& fail_message )
+fail( const std::string& failMsg )
 {
-   setTestMessage( fail_message );
+   setTestMessage( failMsg );
    fail();
 }
 
 
 void TestUtil ::
-fail( const std::string& fail_message, const int lineNumber )
+fail( const std::string& failMsg, const int lineNumber )
 {
-   setTestMessage( fail_message );
+   setTestMessage( failMsg );
    setTestLine( lineNumber );
    fail();
 }
