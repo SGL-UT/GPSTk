@@ -83,7 +83,6 @@
 class TestUtil
 {
 public:
-
       /** Constructor to be called at the start of each test method.
        * @param[in] sourceClassInput the name of the source class
        *   being tested
@@ -103,20 +102,17 @@ public:
              const         int& verbosityInput    = 1
              );
 
-
       /** Get file system path to test input and baseline output data.
        * @note This is only valid for gpstk tests.  Tests in other
        *   libraries should not use this method.
        * @return test input data path, with no trailing slash */
    inline std::string getDataPath( void );
 
-
       /** Get file system path to location to write temp test output.
        * @note This is only valid for gpstk tests.  Tests in other
        *   libraries should not use this method.
        * @return test output data path, with no trailing slash */
    inline std::string getTempPath( void );
-
 
       /** Takes a boolean expression, passes or fails the test,
        * depending on whether the assertion is true or false, and then
@@ -129,7 +125,6 @@ public:
    void assert( bool testExpression,
                 const std::string& testMsg,
                 const int lineNumber );
-
 
       /** Takes two values of the same type, compares them and passes
        * the test if the values are equal.
@@ -146,7 +141,6 @@ public:
                        const T& got,
                        int lineNumber,
                        const std::string& testMsg = std::string() );
-
 
       /** Takes two double values, compares them and passes the test
        * if the values are equal within an epsilon.
@@ -167,7 +161,6 @@ public:
                        const std::string& testMsg = std::string(),
                        double epsilon = DBL_EPSILON );
 
-
       /** Takes two single-precision floating point values, compares
        * them and passes the test if the values are equal within an
        * epsilon.
@@ -187,7 +180,6 @@ public:
                        int lineNumber,
                        const std::string& testMsg = std::string(),
                        float epsilon = FLT_EPSILON );
-
 
       /** Compare two text files, line-by-line.  Test passes if there
        * are no differences according to the rules set by parameters.
@@ -219,27 +211,41 @@ public:
                             bool ignoreTrailingSpaces = false,
                             std::vector<std::string> ignoreRegex = std::vector<std::string>(0) );
 
+      /** Compare two binary files, byte-by-byte.  Test passes if there
+       * are no differences in the data.
+       * @param[in] lineNumber The line of source in the test file
+       *   where this assert is being performed, typically __LINE__.
+       * @param[in] file1Name The full path to the reference file
+       *   being compared against.
+       * @param[in] file2Name The full path to the test output file to
+       *   compare to the reference.
+       * @param[in] testMsg A message to be printed on failure.
+       * @param[in] from First byte to compare.
+       * @param[in] to Last byte to compare.
+       */
+   void assert_binary_files_equal( int lineNumber,
+                                   const std::string& file1Name,
+                                   const std::string& file2Name,
+                                   const std::string& testMsg,
+                                   unsigned long long from = 0,
+                                   unsigned long long to = -1);
 
       /// @return the number of tests that have failed so far.
    int countFails( void );
 
-
       /// @return the number of tests that have been executed so far.
    int countTests( void );
-
 
       /** Change the method, function, or feature of the source class
        * under test in the test output stream.
        * @param[in] newMethod the name of the method under test */
    void changeSourceMethod( const std::string& newMethod );
 
-
       /** Set the message text that is reported when print() is
        * called, usually a fail message.
        * @param[in] testMsg the text to be sent to a log, usually to
        *   describe what failed and why. */
    void setTestMessage( const std::string& testMsg );
-
 
       /** Set the message text that is reported when print() is
        * called, usually a fail message.
@@ -249,9 +255,7 @@ public:
        *   pass(), fail(), assert() was called */
    void setTestMessage( const std::string& testMsg, const int lineNumber );
 
-
    void setTestLine( const int lineNumber );
-
 
       /** Compare two text files for differences, line by line.
        * @param[in] refFile The reference file to compare against.
@@ -274,7 +278,6 @@ public:
                        bool ignoreLeadingSpaces = false,
                        bool ignoreTrailingSpaces = false,
                        std::vector<std::string> ignoreRegex = std::vector<std::string>(0) );
-
 
       /** Compare two binary files for differences, byte by byte.
        * @param[in] refFile The reference file to compare against.
@@ -491,6 +494,19 @@ assert_files_equal( int lineNumber,
 }
 
 
+void TestUtil ::
+assert_binary_files_equal( int lineNumber,
+                           const std::string& file1Name,
+                           const std::string& file2Name,
+                           const std::string& testMsg,
+                           unsigned long long from,
+                           unsigned long long to)
+{
+   bool eq = fileCompTest(file1Name, file2Name, from, to);
+   assert(eq, testMsg, lineNumber);
+}
+
+
 int TestUtil ::
 countFails( void )
 {
@@ -643,21 +659,38 @@ fileCompTest( const std::string& refFile,
               unsigned long long to)
 {
    static const unsigned bufsize = 4096;
+   unsigned readsize = bufsize;
+   bool done = false;
    std::vector<char> refBuf(bufsize, 0), checkBuf(bufsize, 0);
    std::ifstream ref(refFile.c_str()), check(checkFile.c_str());
    if (!ref || !check)
       return false; // missing or inaccessible file
+      // get the file sizes
+   unsigned long long refSize, checkSize, curPos;
+   ref.seekg(0, std::ios_base::end);
+   refSize = ref.tellg();
+   check.seekg(0, std::ios_base::end);
+   checkSize = check.tellg();
+   if (refSize != checkSize)
+      return false; // files not the same size
+      // set our limit to the smaller of the file size and "to"
+   to = std::min(to, refSize);
    if (!ref.seekg(from, std::ios_base::beg))
       return false; // seek failure, usually file too short
    if (!check.seekg(from, std::ios_base::beg))
       return false; // seek failure, usually file too short
 
-   while (ref && check)
+   while (!done)
    {
-         // don't really care about short buffers, as the buffer
-         // contents should be the same regardless.
-      ref.read(&refBuf[0], bufsize);
-      check.read(&checkBuf[0], bufsize);
+      curPos = ref.tellg();
+         // stop where requested
+      if ((curPos + readsize) > to)
+      {
+         readsize = 1+(to - curPos);
+         done = true;
+      }
+      ref.read(&refBuf[0], readsize);
+      check.read(&checkBuf[0], readsize);
       if (refBuf != checkBuf)
          return false;
    }
