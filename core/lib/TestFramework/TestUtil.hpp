@@ -84,168 +84,132 @@ class TestUtil
 {
 public:
 
-      //----------------------------------------
-      // Method:  TestUtil::TestUtil()
-      // Purpose: Constructor
-      // Usage:   To be called at the start of each test method
-      // Inputs:  sourceClassInput  = the name of the source class being tested
-      //          sourceMethodInput = the name of the source method being tested
-      //          testFileInput     = the name of file containing the test code, e.g., __FILE__
-      //          testLineInput     = the line number in the file where testing is done, e.g. __LINE__
-      //          verbosityInput    = the level of verbosity in the print output, default=1, but set to 0 will supress fail messages
-      // Outputs: none
-      //----------------------------------------
+      /** Constructor to be called at the start of each test method.
+       * @param[in] sourceClassInput the name of the source class
+       *   being tested
+       * @param[in] sourceMethodInput the name of the source method
+       *   being tested
+       * @param[in] testFileInput the name of file containing the test
+       *   code, e.g., __FILE__
+       * @param[in] testLineInput the line number in the file where
+       *   testing is done, e.g. __LINE__
+       * @param[in] verbosityInput the level of verbosity in the print
+       *   output, default=1, but set to 0 will supress fail messages
+       */
    TestUtil( const std::string& sourceClassInput  = "Unknown",
              const std::string& sourceMethodInput = "Unknown",
              const std::string& testFileInput     = "Unknown",
              const         int& testLineInput     = 0,
              const         int& verbosityInput    = 1
-             ):
-         outputKeyword( "GpstkTest" ),
-         sourceClass( sourceClassInput  ),
-         sourceMethod( sourceMethodInput ),
-         testFileName( testFileInput ),
-         testFileLine( "0" ),
-         tolerance( 0 ),    
-         testMessage( "Developer is a lazy slacker" ),
-      failBit( 0 ),
-      verbosity( verbosityInput ),
-      testCount( 0 ),
-      subtestID( 1 ),
-      failCount( 0 )
-   {
-         // convert int to string
-      setTestLine( testLineInput );
-
-         // strip off the path from the full-path filename
-         // so that "/home/user/test.txt" becomes "test.txt"
-      std::string file_sep = gpstk::getFileSep();
-      testFileName = testFileName.substr( testFileName.find_last_of( file_sep ) + 1 );
-   }
+             );
 
 
-      //----------------------------------------
-      // Method:  getDataPath
-      // Purpose: get file system path to test input and baseline output data
-      // Usage:   std::string data_path = myTestUtil.getDataPath()
-      // Inputs:  0
-      // Outputs: std::string equal to path, with no trailing slash
-      //----------------------------------------
-   inline std::string getDataPath( void )
-   {
-      return( gpstk::getPathData() );
-   }
+      /** Get file system path to test input and baseline output data.
+       * @note This is only valid for gpstk tests.  Tests in other
+       *   libraries should not use this method.
+       * @return test input data path, with no trailing slash */
+   inline std::string getDataPath( void );
 
 
-      //----------------------------------------
-      // Method:  getTempPath
-      // Purpose: get file system path to location to write temp test output
-      // Usage:   std::string temp_path = myTestUtil.getTempPath()
-      // Inputs:  0
-      // Outputs: std::string equal to path, with no trailing slash
-      //----------------------------------------
-   inline std::string getTempPath( void )
-   {
-      return( gpstk::getPathTestTemp() );
-   }
-
-      //----------------------------------------
-      // Method:  TestUtil::assert()
-      // Purpose: Takes a boolean expression, passes or fails the test, depending on
-      //          whether the assertion is true or false, and then prints the result
-      // Usage:   Use when a test can be written as boolean expression.
-      // Inputs:  boolean testExpression
-      // Outputs: none
-      //----------------------------------------
-   void assert( bool testExpression, const std::string& test_message, const int line_number )
-   {
-      setTestMessage( test_message );
-      setTestLine( line_number );
-      
-      if( testExpression == false )
-      {
-         fail();
-      }
-      else
-      {
-         pass();
-      }
-
-      print();
-      next();
-   }
+      /** Get file system path to location to write temp test output.
+       * @note This is only valid for gpstk tests.  Tests in other
+       *   libraries should not use this method.
+       * @return test output data path, with no trailing slash */
+   inline std::string getTempPath( void );
 
 
-   void assert( bool testExpression, const std::string& test_message, const std::string& line_number )
-   {
-      setTestMessage( test_message );
-      setTestLine( line_number );
-      
-      if( testExpression == false )
-      {
-         fail();
-      }
-      else
-      {
-         pass();
-      }
-
-      print();
-      next();
-   }
+      /** Takes a boolean expression, passes or fails the test,
+       * depending on whether the assertion is true or false, and then
+       * prints the result.
+       * @param[in] testExpression Boolean value that is expected to be true.
+       * @param[in] testMsg A message to be printed on failure.
+       * @param[in] lineNumber The line of source in the test file
+       *   where this assert is being performed, typically __LINE__.
+       */
+   void assert( bool testExpression,
+                const std::string& testMsg,
+                const int lineNumber );
 
 
+      /** Takes two values of the same type, compares them and passes
+       * the test if the values are equal.
+       * @param[in] expected The expected value to be compared against.
+       * @param[in] got The value produced by the method under test.
+       * @param[in] lineNumber The line of source in the test file
+       *   where this assert is being performed, typically __LINE__.
+       * @param[in] testMsg A message to be printed on failure.
+       *   A default message will simply say what was expected and
+       *   what the value actually was when expected != got.
+       */
    template <class T>
-   void assert_equals( const T& expected, const T& got,
-                       int line_number,
-                       const std::string& test_message = std::string() )
-   {
-      std::string mess;
-      if (test_message.empty())
-      {
-         std::ostringstream ostr;
-         ostr << "Expected:'" << expected << "'" << std::endl << " But got:'"
-              << got << "'" << std::endl;
-         mess = ostr.str();
-      }
-      assert(expected == got, mess, line_number);
-   }
+   void assert_equals( const T& expected,
+                       const T& got,
+                       int lineNumber,
+                       const std::string& testMsg = std::string() );
 
 
-   void assert_equals( double expected, double got,
-                       int line_number,
-                       const std::string& test_message = std::string(),
-                       double epsilon = DBL_EPSILON )
-   {
-      std::string mess;
-      if (test_message.empty())
-      {
-         std::ostringstream ostr;
-         ostr << "Expected:'" << expected << "'" << std::endl << " But got:'"
-              << got << "'" << std::endl;
-         mess = ostr.str();
-      }
-      assert(fabs(expected-got) <= epsilon, mess, line_number);
-   }
+      /** Takes two double values, compares them and passes the test
+       * if the values are equal within an epsilon.
+       * @param[in] expected The expected value to be compared against.
+       * @param[in] got The value produced by the method under test.
+       * @param[in] lineNumber The line of source in the test file
+       *   where this assert is being performed, typically __LINE__.
+       * @param[in] testMsg A message to be printed on failure.
+       *   A default message will simply say what was expected and
+       *   what the value actually was when expected != got.
+       * @param[in] epsilon The maximum difference between expected
+       *   and got that will be considered "equal". By default, the
+       *   type's epsilon is used.
+       */
+   void assert_equals( double expected,
+                       double got,
+                       int lineNumber,
+                       const std::string& testMsg = std::string(),
+                       double epsilon = DBL_EPSILON );
 
 
-   void assert_equals( float expected, float got,
-                       int line_number,
-                       const std::string& test_message = std::string(),
-                       float epsilon = FLT_EPSILON )
-   {
-      std::string mess;
-      if (test_message.empty())
-      {
-         std::ostringstream ostr;
-         ostr << "Expected:'" << expected << "'" << std::endl << " But got:'"
-              << got << "'" << std::endl;
-         mess = ostr.str();
-      }
-      assert(fabs(expected-got) <= epsilon, mess, line_number);
-   }
+      /** Takes two single-precision floating point values, compares
+       * them and passes the test if the values are equal within an
+       * epsilon.
+       * @param[in] expected The expected value to be compared against.
+       * @param[in] got The value produced by the method under test.
+       * @param[in] lineNumber The line of source in the test file
+       *   where this assert is being performed, typically __LINE__.
+       * @param[in] testMsg A message to be printed on failure.
+       *   A default message will simply say what was expected and
+       *   what the value actually was when expected != got.
+       * @param[in] epsilon The maximum difference between expected
+       *   and got that will be considered "equal". By default, the
+       *   type's epsilon is used.
+       */
+   void assert_equals( float expected,
+                       float got,
+                       int lineNumber,
+                       const std::string& testMsg = std::string(),
+                       float epsilon = FLT_EPSILON );
 
 
+      /** Compare two text files, line-by-line.  Test passes if there
+       * are no differences according to the rules set by parameters.
+       * @param[in] lineNumber The line of source in the test file
+       *   where this assert is being performed, typically __LINE__.
+       * @param[in] file1Name The full path to the reference file
+       *   being compared against.
+       * @param[in] file2Name The full path to the test output file to
+       *   compare to the reference.
+       * @param[in] testMsg A message to be printed on failure.
+       * @param[in] numLinesSkip The number of lines to ignore in the
+       *   two files, starting from the beginning.
+       * @param[in] ignoreLeadingSpaces If true, changes are ignored
+       *   between the two files in white space at the beginning of a
+       *   line.
+       * @param[in] ignoreTrailingSpaces If true, changes are ignored
+       *   between the two files in white space at the end of a
+       *   line.
+       * @param[in] ignoreRegex An optional vector of regular
+       *   expression strings that, if matched in the SOURCE FILE
+       *   (i.e. file1name), differences on that line will be ignored.
+       */
    void assert_files_equal( int lineNumber,
                             const std::string& file1Name,
                             const std::string& file2Name,
@@ -253,111 +217,40 @@ public:
                             int numLinesSkip=0,
                             bool ignoreLeadingSpaces = false,
                             bool ignoreTrailingSpaces = false,
-                            std::vector<std::string> ignoreRegex = std::vector<std::string>(0) )
-   {
-      bool eq = fileEqualTest(
-         file1Name, file2Name, numLinesSkip, ignoreLeadingSpaces,
-         ignoreTrailingSpaces, ignoreRegex );
-      assert(eq, testMsg, lineNumber);
-   }
+                            std::vector<std::string> ignoreRegex = std::vector<std::string>(0) );
 
 
-      //----------------------------------------
-      // Method:  TestUtil::countFails()
-      // Purpose: Return the number of tests that have failed so far
-      // Usage:   To be called at the end of the test method and AFTER all tests
-      // Inputs:  none
-      // Outputs: int failCount
-      //----------------------------------------
-   int countFails( void )
-   {
-      return( failCount );
-   }
+      /// @return the number of tests that have failed so far.
+   int countFails( void );
 
 
-      //----------------------------------------
-      // Method:  TestUtil::countTests()
-      // Purpose: Return the number of tests that have been run so far
-      // Usage:   To be called at the end of the test method and AFTER all tests
-      // Inputs:  none
-      // Outputs: int testCount
-      //----------------------------------------
-   int countTests( void )
-   {
-      return( testCount );
-   }
+      /// @return the number of tests that have been executed so far.
+   int countTests( void );
 
 
-      //----------------------------------------
-      // Method:  getTolerance
-      // Purpose: return numerical value of test tolerance
-      //----------------------------------------
-   inline double getTolerance( void )
-   {
-      return( tolerance );
-   }
+      /** Change the method, function, or feature of the source class
+       * under test in the test output stream.
+       * @param[in] newMethod the name of the method under test */
+   void changeSourceMethod( const std::string& newMethod );
 
 
-      //----------------------------------------
-      // Method:  changeSourceMethod()
-      // Purpose: changeSourceMethod allows for the change of the method,
-      //          function, or feature of the source class under test
-      //          in the test output stream.
-      // Usage:   to be called as needed to change the sourceMethod string
-      // Inputs:  1
-      //          string newMethod
-      // Outputs: none
-      //----------------------------------------
-   void changeSourceMethod( const std::string& newMethod )
-   {
-      sourceMethod = newMethod;
-   }
+      /** Set the message text that is reported when print() is
+       * called, usually a fail message.
+       * @param[in] testMsg the text to be sent to a log, usually to
+       *   describe what failed and why. */
+   void setTestMessage( const std::string& testMsg );
 
 
-      //----------------------------------------
-      // Method:  setTestMessage()
-      // Purpose: Set the message text that is reported when print() is called, usually a fail message
-      // Inputs:  2
-      //          std::string test_message, the text to be sent to a log, usually to describe what failed and why
-      //          int         line_number, the line number in the test app where pass(), fail(), assert() was called
-      // Outputs: none
-      //----------------------------------------
-   void setTestMessage( const std::string& test_message )
-   {
-      testMessage  = test_message;
-   }
-
-   void setTestMessage( const std::string& test_message, const int line_number )
-   {
-      setTestMessage( test_message );
-      setTestLine( line_number );
-   }
-
-   void setTestMessage( const std::string& test_message, const std::string& line_number )
-   {
-      setTestMessage( test_message );
-      setTestLine( line_number );
-   }
+      /** Set the message text that is reported when print() is
+       * called, usually a fail message.
+       * @param[in] testMsg The text to be sent to a log, usually to
+       *   describe what failed and why.
+       * @param[in] lineNumber The line number in the test app where
+       *   pass(), fail(), assert() was called */
+   void setTestMessage( const std::string& testMsg, const int lineNumber );
 
 
-      //----------------------------------------
-      // Method:  setTestLine()
-      // Purpose: Set the testFileLine
-      // Inputs:  1
-      //          int         line_number, the line number in the test app where fail() was called
-      // Outputs: none
-      //----------------------------------------
-   void setTestLine( const int line_number_int )
-   {
-      std::ostringstream conversionStringStream;
-      conversionStringStream << line_number_int;
-      testFileLine = conversionStringStream.str();
-   }
-
-   void setTestLine( const std::string& line_number_string )
-   {
-      testFileLine = line_number_string;
-   }
+   void setTestLine( const int lineNumber_int );
 
 
       /** Compare two files for differences.
@@ -380,273 +273,449 @@ public:
                        int numLinesSkip=0,
                        bool ignoreLeadingSpaces = false,
                        bool ignoreTrailingSpaces = false,
-                       std::vector<std::string> ignoreRegex = std::vector<std::string>(0) )
+                       std::vector<std::string> ignoreRegex = std::vector<std::string>(0) );
+
+private:
+
+      // The following are all used as part of the output from
+      // TestUtil::print() to facilitate filtering of output that is
+      // thus printed to stdout
+
+      /// Identifies a stdout line as a test record from this class
+   std::string outputKeyword;
+      /// help locate source class causing a test failure
+   std::string sourceClass;
+      /// help locate source method causing a test failure
+   std::string sourceMethod;
+      /// help locate test file that discovered a failure
+   std::string testFileName;
+      /// help locate test line where the failure occured
+   std::string testFileLine;
+
+      /** if failBit==1 && verbosity>=1, print this string description
+       * of why the test failed to be set by the test app developer */
+   std::string testMessage;
+    
+      /// store the result of a test (0=pass, 1=fail)
+   int failBit;
+      /** if verbosity>=0, print summary line; if verbosity>=1, print
+       * testMessage when fail() is called. */
+   int verbosity;
+
+      //  since single test methods may contain multiple subtests.
+
+   int testCount; ///< Count of tests that have been run
+   int subtestID; ///< ID of the current sub-test, used in TestUtil::print()
+   int failCount; ///< Count of tests that have failed
+
+
+
+      /** Print test results and information on classes being tested
+       * to stdout in a common format that is both human-readable and
+       * easy to filter using tools like grep so as to help isolate
+       * where problems are happening. */
+   void print( void );
+
+      /** Pass the test! Record a pass by setting the failBit=0 and
+       * incrementing the testCount */
+   void pass( void );
+
+      /** Fail the test! Record a failure by setting the failBit and
+       * incrementing failCount. */
+   void fail( void );
+
+      /** Fail the test! Record a failure by setting the failBit and
+       * incrementing failCount. */
+   void fail( const std::string& fail_message );
+
+      /** Fail the test! Record a failure by setting the failBit and
+       * incrementing failCount. */
+   void fail( const std::string& fail_message, const int lineNumber );
+
+      /** Increment the failCount and reset subtestID based on current
+       * testCount. */
+   void next( void );
+
+      /** Undo the test! Undo a pass/fail by unsetting failBit and
+       * decrementing failCount (only if failed) and decrementing the
+       * testCount. */
+   void undo( void );
+}; // class TestUtil
+
+
+
+TestUtil ::
+TestUtil( const std::string& sourceClassInput,
+          const std::string& sourceMethodInput,
+          const std::string& testFileInput,
+          const         int& testLineInput,
+          const         int& verbosityInput )
+      : outputKeyword( "GpstkTest" ),
+        sourceClass( sourceClassInput  ),
+        sourceMethod( sourceMethodInput ),
+        testFileName( testFileInput ),
+        testFileLine( "0" ),
+        testMessage( "Developer is a lazy slacker" ),
+        failBit( 0 ),
+        verbosity( verbosityInput ),
+        testCount( 0 ),
+        subtestID( 1 ),
+        failCount( 0 )
+{
+      // convert int to string
+   setTestLine( testLineInput );
+
+      // strip off the path from the full-path filename
+      // so that "/home/user/test.txt" becomes "test.txt"
+   std::string file_sep = gpstk::getFileSep();
+   testFileName = testFileName.substr(
+      testFileName.find_last_of( file_sep ) + 1 );
+}
+
+
+std::string TestUtil ::
+getDataPath( void )
+{
+   return( gpstk::getPathData() );
+}
+
+
+std::string TestUtil ::
+getTempPath( void )
+{
+   return( gpstk::getPathTestTemp() );
+}
+
+
+void TestUtil ::
+assert( bool testExpression,
+        const std::string& testMsg,
+        const int lineNumber )
+{
+   setTestMessage( testMsg );
+   setTestLine( lineNumber );
+      
+   if( testExpression == false )
    {
-      int           lineNumber = 0;
-      bool          filesEqual = false;
-      std::ifstream refStream;
-      std::ifstream checkStream;
-      std::string   refLine;
-      std::string   checkLine;
+      fail();
+   }
+   else
+   {
+      pass();
+   }
 
-      refStream.open( refFile.c_str() );
-      checkStream.open( checkFile.c_str() );
+   print();
+   next();
+}
 
-         // Compare each line until you reach the end of Ref
-      while( !refStream.eof() )
-      {
-         lineNumber++;
-            
-            // If we reach the end of Check, but there is
-            // more left in Ref, then they are not equal
-         if( checkStream.eof() )
-         {
-            filesEqual = false;
-            return( filesEqual );
-         }
 
-            // get the next line and compare
-         getline( refStream, refLine );
-         getline( checkStream, checkLine );
+template <class T>
+void TestUtil ::
+assert_equals( const T& expected, const T& got,
+                    int lineNumber,
+                    const std::string& testMsg )
+{
+   std::string mess;
+   if (testMsg.empty())
+   {
+      std::ostringstream ostr;
+      ostr << "Expected:'" << expected << "'" << std::endl << " But got:'"
+           << got << "'" << std::endl;
+      mess = ostr.str();
+   }
+   assert(expected == got, mess, lineNumber);
+}
 
-         if (lineNumber <= numLinesSkip)
-            continue;
 
-         if (ignoreLeadingSpaces)
-         {
-            std::size_t idx = refLine.find_first_not_of(" \t\r\n\f\v");
-            if (idx != std::string::npos)
-               refLine.erase(0,idx-1);
-            idx = checkLine.find_first_not_of(" \t\r\n\f\v");
-            if (idx != std::string::npos)
-               checkLine.erase(0,idx-1);
-         }
-         if (ignoreTrailingSpaces)
-         {
-            std::size_t idx = refLine.find_last_not_of(" \t\r\n\f\v");
-            if (idx != std::string::npos)
-               refLine.erase(idx+1);
-            else
-               refLine.clear(); // all whitespace
-            idx = checkLine.find_last_not_of(" \t\r\n\f\v");
-            if (idx != std::string::npos)
-               checkLine.erase(idx+1);
-            else
-               checkLine.clear(); // all whitespace
-         }
-         if (!ignoreRegex.empty())
-         {
-               // check for regular expressions
-               // Use a flag because break/continue in C++ doesn't
-               // allow you to skip multiple levels.
-            bool ignore = false;
-            for (int i = 0; i < ignoreRegex.size(); i++)
-            {
-               if (gpstk::StringUtils::isLike(refLine, ignoreRegex[i]))
-               {
-                  ignore = true;
-                  break;
-               }
-            }
-            if (ignore)
-               continue;
-         }
+void TestUtil ::
+assert_equals( double expected, double got,
+                    int lineNumber,
+                    const std::string& testMsg,
+                    double epsilon )
+{
+   std::string mess;
+   if (testMsg.empty())
+   {
+      std::ostringstream ostr;
+      ostr << "Expected:'" << expected << "'" << std::endl << " But got:'"
+           << got << "'" << std::endl;
+      mess = ostr.str();
+   }
+   assert(fabs(expected-got) <= epsilon, mess, lineNumber);
+}
 
-            // only fail if you find differences AFTER the skipped lines
-         if (refLine != checkLine)
-         {
-            filesEqual = false;
-            return( filesEqual );
-         }
-      }
 
-         // If we reach the end of Ref, but there is
-         // more left in Check, then they are not equal
-      if( !checkStream.eof() )
+void TestUtil ::
+assert_equals( float expected, float got,
+                    int lineNumber,
+                    const std::string& testMsg,
+                    float epsilon )
+{
+   std::string mess;
+   if (testMsg.empty())
+   {
+      std::ostringstream ostr;
+      ostr << "Expected:'" << expected << "'" << std::endl << " But got:'"
+           << got << "'" << std::endl;
+      mess = ostr.str();
+   }
+   assert(fabs(expected-got) <= epsilon, mess, lineNumber);
+}
+
+
+void TestUtil ::
+assert_files_equal( int lineNumber,
+                         const std::string& file1Name,
+                         const std::string& file2Name,
+                         const std::string& testMsg,
+                         int numLinesSkip,
+                         bool ignoreLeadingSpaces,
+                         bool ignoreTrailingSpaces,
+                    std::vector<std::string> ignoreRegex )
+{
+   bool eq = fileEqualTest(
+      file1Name, file2Name, numLinesSkip, ignoreLeadingSpaces,
+      ignoreTrailingSpaces, ignoreRegex );
+   assert(eq, testMsg, lineNumber);
+}
+
+
+int TestUtil ::
+countFails( void )
+{
+   return( failCount );
+}
+
+
+int TestUtil ::
+countTests( void )
+{
+   return( testCount );
+}
+
+
+void TestUtil ::
+changeSourceMethod( const std::string& newMethod )
+{
+   sourceMethod = newMethod;
+}
+
+
+void TestUtil ::
+setTestMessage( const std::string& testMsg )
+{
+   testMessage  = testMsg;
+}
+
+void TestUtil ::
+setTestMessage( const std::string& testMsg, const int lineNumber )
+{
+   setTestMessage( testMsg );
+   setTestLine( lineNumber );
+}
+
+
+void TestUtil ::
+setTestLine( const int lineNumber_int )
+{
+   std::ostringstream conversionStringStream;
+   conversionStringStream << lineNumber_int;
+   testFileLine = conversionStringStream.str();
+}
+
+
+bool TestUtil ::
+fileEqualTest( const std::string& refFile,
+               const std::string& checkFile,
+               int numLinesSkip,
+               bool ignoreLeadingSpaces,
+               bool ignoreTrailingSpaces,
+               std::vector<std::string> ignoreRegex )
+{
+   int           lineNumber = 0;
+   bool          filesEqual = false;
+   std::ifstream refStream;
+   std::ifstream checkStream;
+   std::string   refLine;
+   std::string   checkLine;
+   
+   refStream.open( refFile.c_str() );
+   checkStream.open( checkFile.c_str() );
+   
+      // Compare each line until you reach the end of Ref
+   while( !refStream.eof() )
+   {
+      lineNumber++;
+      
+         // If we reach the end of Check, but there is
+         // more left in Ref, then they are not equal
+      if( checkStream.eof() )
       {
          filesEqual = false;
          return( filesEqual );
       }
-      else
+      
+         // get the next line and compare
+      getline( refStream, refLine );
+      getline( checkStream, checkLine );
+      
+      if (lineNumber <= numLinesSkip)
+         continue;
+      
+      if (ignoreLeadingSpaces)
       {
-         filesEqual = true;
+         std::size_t idx = refLine.find_first_not_of(" \t\r\n\f\v");
+         if (idx != std::string::npos)
+            refLine.erase(0,idx-1);
+         idx = checkLine.find_first_not_of(" \t\r\n\f\v");
+         if (idx != std::string::npos)
+            checkLine.erase(0,idx-1);
+      }
+      if (ignoreTrailingSpaces)
+      {
+         std::size_t idx = refLine.find_last_not_of(" \t\r\n\f\v");
+         if (idx != std::string::npos)
+            refLine.erase(idx+1);
+         else
+            refLine.clear(); // all whitespace
+         idx = checkLine.find_last_not_of(" \t\r\n\f\v");
+         if (idx != std::string::npos)
+            checkLine.erase(idx+1);
+         else
+            checkLine.clear(); // all whitespace
+      }
+      if (!ignoreRegex.empty())
+      {
+            // check for regular expressions
+            // Use a flag because break/continue in C++ doesn't
+            // allow you to skip multiple levels.
+         bool ignore = false;
+         for (int i = 0; i < ignoreRegex.size(); i++)
+         {
+            if (gpstk::StringUtils::isLike(refLine, ignoreRegex[i]))
+            {
+               ignore = true;
+               break;
+            }
+         }
+         if (ignore)
+            continue;
+      }
+      
+         // only fail if you find differences AFTER the skipped lines
+      if (refLine != checkLine)
+      {
+         filesEqual = false;
          return( filesEqual );
       }
    }
-
-private:
-
-      //============================================================
-      // Private Data Members
-      //============================================================
-
-      // The following are all used as part of the output from TestUtil::print()
-      // to facilitate filtering of output that is thus printed to stdout
-
-   std::string outputKeyword; // Identifies a stdout line as a test record from this class
-   std::string sourceClass;   // help locate source class causing a test failure
-   std::string sourceMethod;  // help locate source method causing a test failure
-   std::string testFileName;  // help locate test file that discovered a failure
-   std::string testFileLine;  // help locate test line where the failure occured
-
-   double      tolerance;     // acceptable difference between test output and
-      //  expected or baseline output
-
-   std::string testMessage;   // if failBit==1 && verbosity>=1, print this string
-      // description of why the test failed to be set by the test app developer
-    
-   int         failBit;       // store the result of a test (0=pass, 1=fail)
-   int         verbosity;     // if verbosity>=0, print summary line; if verbosity>=1, print testMessage when fail() is called.
-
-      //  since single test methods may contain multiple subtests.
-
-   int testCount; // Count of tests that have been run
-   int subtestID; // ID of the current sub-test, used in TestUtil::print()
-   int failCount; // Count of tests that have fails
-
-
-      //============================================================
-      // Private Methods 
-      //============================================================
-
-      //----------------------------------------
-      // Method:  TestUtil::print()
-      // Purpose: print test results and information on classes being tested
-      //          to stdout in a common format that is both human-readable
-      //          and easy to filter using tools like grep so as to help
-      //          isolate where problems are happening.
-      // Usage:   to be called after each test method subtest is performed
-      // Inputs:  none
-      // Outputs: none
-      // STDOUT:  "outputKeyword, sourceClass, sourceMethod, testFileName,
-      //             testMethod, subtestID, failBit"
-      //----------------------------------------
-   void print( void )
+   
+      // If we reach the end of Ref, but there is
+      // more left in Check, then they are not equal
+   if( !checkStream.eof() )
    {
-         // print test summary description and result to stdout
-      if( failBit==1 && verbosity >=1 )
-      {
-         std::cout     <<
-            outputKeyword << ", " <<
-            "Class="      << sourceClass   << ", " <<
-            "Method="     << sourceMethod  << ", " <<
-            "testFile="   << testFileName  << ", " <<
-            "testLine="   << testFileLine  << ", " <<
-            "subtest="    << subtestID     << ", " <<
-            "failBit="    << failBit       << ", " <<
-            "testMsg="    << testMessage
-                          << std::endl;     // implicit conversion from int to string
-
-      }
-      else
-      {
-         std::cout     <<
-            outputKeyword << ", " <<
-            "Class="      << sourceClass   << ", " <<
-            "Method="     << sourceMethod  << ", " <<
-            "testFile="   << testFileName  << ", " <<
-            "testLine="   << testFileLine  << ", " <<
-            "subtest="    << subtestID     << ", " <<
-            "failBit="    << failBit
-                          << std::endl;     // implicit conversion from int to string
-
-      }
+      filesEqual = false;
+      return( filesEqual );
    }
+   else
+   {
+      filesEqual = true;
+      return( filesEqual );
+   }
+}
 
-      //----------------------------------------
-      // Method:  TestUtil::pass()
-      // Purpose: Pass the test! Record a pass by setting the failBit=0 and
-      //           incrementing the testCount
-      // Usage:   To be called (once!) at the end of any subtest that has passed
-      // Inputs:  none
-      // Outputs: none
-      //----------------------------------------
-   void pass( void )
+
+void TestUtil ::
+print( void )
+{
+      // print test summary description and result to stdout
+   if( failBit==1 && verbosity >=1 )
+   {
+      std::cout
+         << outputKeyword << ", "
+         << "Class="      << sourceClass   << ", "
+         << "Method="     << sourceMethod  << ", "
+         << "testFile="   << testFileName  << ", "
+         << "testLine="   << testFileLine  << ", "
+         << "subtest="    << subtestID     << ", "
+         << "failBit="    << failBit       << ", "
+         << "testMsg="    << testMessage
+         << std::endl;     // implicit conversion from int to string
+   }
+   else
+   {
+      std::cout
+         << outputKeyword << ", "
+         << "Class="      << sourceClass   << ", "
+         << "Method="     << sourceMethod  << ", "
+         << "testFile="   << testFileName  << ", "
+         << "testLine="   << testFileLine  << ", "
+         << "subtest="    << subtestID     << ", "
+         << "failBit="    << failBit
+         << std::endl;     // implicit conversion from int to string
+   }
+}
+
+
+void TestUtil ::
+pass( void )
+{
+   failBit = 0;
+   testCount++;
+}
+
+
+void TestUtil ::
+fail( void )
+{
+   failBit = 1;
+   failCount++;
+   testCount++;
+}
+
+
+void TestUtil ::
+fail( const std::string& fail_message )
+{
+   setTestMessage( fail_message );
+   fail();
+}
+
+
+void TestUtil ::
+fail( const std::string& fail_message, const int lineNumber )
+{
+   setTestMessage( fail_message );
+   setTestLine( lineNumber );
+   fail();
+}
+
+
+void TestUtil ::
+next( void )
+{
+      // increment subtest counter/ID
+   subtestID = countTests() + 1;
+   
+      // reset fail parameters for next/new subtest
+   failBit = 0;
+   testMessage = "Developer is a lazy slacker";
+}
+
+
+void TestUtil ::
+undo( void )
+{
+   if( failBit==1 )
    {
       failBit = 0;
-      testCount++;
+      failCount--;
+      testCount--;
    }
-
-      //----------------------------------------
-      // Method:  TestUtil::fail()
-      // Purpose: Fail the test! Record a failure by setting the failBit and
-      //           incrementing failCount
-      // Usage:   To be called (once!) at the end of any subtest that has failed
-      // Inputs:  2 [optional]
-      //          string fail_message
-      //          int    line_number
-      // Outputs: none
-      //----------------------------------------
-   void fail( void )
+   else
    {
-      failBit = 1;
-      failCount++;
-      testCount++;
-   }
-
-   void fail( const std::string& fail_message )
-   {
-      setTestMessage( fail_message );
-      fail();
-   }
-
-   void fail( const std::string& fail_message, const int line_number )
-   {
-      setTestMessage( fail_message );
-      setTestLine( line_number );
-      fail();
-   }
-
-   void fail( const std::string& fail_message, const std::string& line_number )
-   {
-      setTestMessage( fail_message );
-      setTestLine( line_number );
-      fail();
-   }
-
-
-      //----------------------------------------
-      // Method:  TestUtil::next()
-      // Purpose: Increment the failCount and reset subtestID based on current testCount
-      // Usage:   To be called at the beginning of each subtest AFTER the first
-      // Inputs:  none
-      // Outputs: none
-      //----------------------------------------
-   void next( void )
-   {
-         // increment subtest counter/ID
-      subtestID = countTests() + 1;
-
-         // reset fail parameters for next/new subtest
       failBit = 0;
-      testMessage = "Developer is a lazy slacker";
+      testCount--;
    }
-
-
-      //----------------------------------------
-      // Method:  TestUtil::undo()
-      // Purpose: undo the test! Undo a pass/fail by unsetting failBit and
-      //           decrementing failCount (only if failed) and
-      //           decrementing the testCount
-      // Usage:   To be called at the end of any subtest that needs to be undone
-      // Inputs:  none
-      // Outputs: none
-      //----------------------------------------
-   void undo( void )
-   {
-      if( failBit==1 )
-      {
-         failBit = 0;
-         failCount--;
-         testCount--;
-      }
-      else
-      {
-         failBit = 0;
-         testCount--;
-      }
-      next();
-   }
-
-
-};
+   next();
+}
