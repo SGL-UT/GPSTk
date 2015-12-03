@@ -46,8 +46,8 @@
 
 namespace gpstk
 {
-   /** @defgroup formattedfile Formatted file I/O */
-   //@{
+      /// @ingroup formattedfile
+      //@{
  
       /**
        * This is an FFStream that is required to be binary.  It also includes
@@ -57,109 +57,67 @@ namespace gpstk
    class FFBinaryStream : public FFStream
    {
    public:
-         /// destructor
-      virtual ~FFBinaryStream() {};
-      
          /// Default constructor
-      FFBinaryStream() {}
+      FFBinaryStream();
 
+         /// destructor
+      virtual ~FFBinaryStream();
+      
          /**
           * Constructor - opens the stream in binary mode if not set.
-          * @param fn file name.
-          * @param mode file open mode (std::ios)
+          * @param[in] fn file name.
+          * @param[in] mode file open mode
           */
       FFBinaryStream(const char* fn, 
-                     std::ios::openmode mode=std::ios::in|std::ios::binary)
-         : FFStream(fn, mode|std::ios::binary) {}
+                     std::ios::openmode mode=std::ios::in|std::ios::binary);
 
          /// Overrides open to ensure binary mode opens
-      virtual void open(const char* fn, std::ios::openmode mode)
-         { FFStream::open(fn, mode|std::ios::binary); }
+      virtual void open(const char* fn, std::ios::openmode mode);
 
          /**
-          * Reads a T-object directly from the stream
-          * in binary form.
+          * Reads a T-object directly from the stream in binary form.
           * @throw FFStreamError when the size of the data read
-          * from this stream doesn't match the size of a T-object.
+          *   from this stream doesn't match the size of a T-object.
           * @return a T-object
           */
-      template <class T> T getData() throw(FFStreamError, EndOfFile)
-      {
-         T data;
-         getData((char*)&data, sizeof(T));
-         return data;
-      } // end of getData(FFStream& strm)
+      template <class T> T getData() throw(FFStreamError, EndOfFile);
 
-      void getData(char* buff, size_t length) throw(FFStreamError, EndOfFile)
-      {
-         try
-         {
-            read(buff, length);
-         }
-         catch(std::exception& exc)
-         {
-            if (gcount() != (std::streamsize)length && eof())
-            {
-               EndOfFile err("EOF encountered");
-               GPSTK_THROW(err);
-            }
-            else
-            {
-               FFStreamError err(exc.what());
-               std::cout << err << std::endl;
-               GPSTK_THROW(err);
-            }
-         }
-         catch(...)
-         {
-            FFStreamError err("Unknown exception");
-            GPSTK_THROW(err);
-         }
-      } // end of getData(char*, size_t))
+      void getData(char* buff, size_t length) throw(FFStreamError, EndOfFile);
 
          /**
-          * Writes a T-object directly from the stream
-          * in binary form.
-          * @param data the data to be written.
+          * Writes a T-object directly from the stream in binary form.
+          * @param[in] data the data to be written.
           * @throw FFStreamError when the size of the data written
-          * to this stream doesn't match the size of a T-object.
+          *   to this stream doesn't match the size of a T-object.
           * @return a T-object
           */
       template <class T> void writeData(const T& data)
-         throw(FFStreamError)
-      {
-         //T temp = data;
-          writeData((char*)&data, sizeof(T));
-         return;
-      } // end of writeData(FFStream& strm, const T& data)
+         throw(FFStreamError);
 
       void writeData(const char* buff, size_t length)
-         throw(FFStreamError)
-      {
-         try
-         {
-            write(buff, length);
-         }
-         catch(std::exception& exc)
-         {
-            FFStreamError err(exc.what());
-            GPSTK_THROW(err);
-         }
-         catch(...)
-         {
-            FFStreamError err("Unknown exception");
-            GPSTK_THROW(err);
-         }
-      
-         if (fail() || bad())
-         {
-            FFStreamError err("Error writing data");
-            GPSTK_THROW(err);
-         }
-         return;
-      } // end of writeData(const char*, size_t)
+         throw(FFStreamError);
 
    };
-   //@}
+      //@}
+
+
+   template <class T>
+   T FFBinaryStream ::
+   getData() throw(FFStreamError, EndOfFile)
+   {
+      T data;
+      getData((char*)&data, sizeof(T));
+      return data; 
+   }
+
+
+   template <class T>
+   void FFBinaryStream ::
+   writeData(const T& data)
+      throw(FFStreamError)
+   {
+      writeData((char*)&data, sizeof(T));
+      return;
+   }
 }
 #endif

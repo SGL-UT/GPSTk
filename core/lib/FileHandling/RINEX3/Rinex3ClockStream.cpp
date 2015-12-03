@@ -35,48 +35,45 @@
 //=============================================================================
 
 /**
- * @file BinexStream.hpp
- * File stream for BINEX files
+ * @file Rinex3ClockStream.cpp
+ * gpstk::Rinex3ClockStream - RINEX Clock format file stream
  */
 
-#ifndef GPSTK_BINEXSTREAM_HPP
-#define GPSTK_BINEXSTREAM_HPP
-
-#include "FFBinaryStream.hpp"
+#include "Rinex3ClockStream.hpp"
 
 namespace gpstk
 {
-      /// @ingroup formattedfile
-      //@{
-
-      /**
-       * This class performs file i/o on a BINEX file for the 
-       * BinexData classes.
-       *
-       * @sa binex_read_write.cpp for an example.
-       * @sa binex_test.cpp for an example.
-       * @sa BinexData.
-       *
-       */
-   class BinexStream : public FFBinaryStream
+   Rinex3ClockStream ::
+   Rinex3ClockStream() 
    {
-   public:
-         /// Destructor
-      virtual ~BinexStream() {}
+      init();
+   }
       
-         /// Default constructor
-      BinexStream() {}
-      
-         /** Constructor 
-          * Opens a file named \a fn using ios::openmode \a mode.
-          */
-      BinexStream(const char* fn,
-                  std::ios::openmode mode=std::ios::in | std::ios::binary)
-            : FFBinaryStream(fn, mode) {};
-   };
+   Rinex3ClockStream ::
+   Rinex3ClockStream(const char* filename, std::ios::openmode mode)
+         : FFTextStream(filename, mode)
+   {
+      init();
+   }
 
-      //@}
 
+   Rinex3ClockStream ::
+   ~Rinex3ClockStream()
+   {
+   }
+
+   void Rinex3ClockStream ::
+   open(const char* filename, std::ios::openmode mode)
+   {
+      FFTextStream::open(filename, mode);
+      init();
+   }
+
+
+   void Rinex3ClockStream ::
+   init()
+   {
+      headerRead = false;
+   }
+   
 } // namespace gpstk
-
-#endif // GPSTK_BINEXSTREAM_HPP

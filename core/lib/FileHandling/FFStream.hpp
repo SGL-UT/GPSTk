@@ -52,15 +52,20 @@
 #include "FFData.hpp"
 #include "StringUtils.hpp"
 
-
 namespace gpstk
 {
-   /** @addtogroup formattedfile */
-   //@{
+      /** @defgroup formattedfile Formatted File I/O.
+       *
+       * This module includes the data types used for File I/O of
+       * structured data formats, e.g. RINEX.
+       */
 
       /// This gets thrown if a valid EOF occurs on formattedGetLine.
       /// @ingroup exceptionclass
    NEW_EXCEPTION_CLASS(EndOfFile, gpstk::FFStreamError);
+
+      /// @ingroup formattedfile
+      //@{
 
       /**
        * Formatted File Stream (FFStream).

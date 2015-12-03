@@ -45,8 +45,8 @@ namespace gpstk
 {
    FFTextStream ::
    FFTextStream()
-         : lineNumber(0)
    {
+      init();
    }
 
 
@@ -59,8 +59,7 @@ namespace gpstk
    FFTextStream ::
    FFTextStream( const char* fn,
                  std::ios::openmode mode )
-         : FFStream(fn, mode),
-           lineNumber(0)
+         : FFStream(fn, mode)
    {
       init();
    }
@@ -69,8 +68,7 @@ namespace gpstk
    FFTextStream ::
    FFTextStream( const std::string& fn,
                  std::ios::openmode mode )
-         : FFStream( fn.c_str(), mode ),
-           lineNumber(0)
+         : FFStream( fn.c_str(), mode )
    {
       init();
    }

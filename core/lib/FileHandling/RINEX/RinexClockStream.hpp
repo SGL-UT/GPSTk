@@ -49,6 +49,9 @@
 
 namespace gpstk
 {
+      /// @ingroup formattedfile
+      //@{
+
       /**
        * This class performs file i/o on a RINEX clock file for the
        * RinexClockHeader and RinexClockData classes.
@@ -58,12 +61,8 @@ namespace gpstk
    class RinexClockStream : public FFTextStream
    {
    public:
-      
-      
          /// Default constructor
-      RinexClockStream()
-            : headerRead(false) {}
-      
+      RinexClockStream();
       
          /** Common constructor.
           *
@@ -71,37 +70,26 @@ namespace gpstk
           * @param mode    how to open \a fn.
           */
       RinexClockStream( const char* fn,
-                        std::ios::openmode mode=std::ios::in )
-            : FFTextStream(fn, mode), headerRead(false) {}
-      
+                        std::ios::openmode mode=std::ios::in );
               
          /** Common constructor.
           *
           * @param fn      the RINEX clock data file to open
           * @param mode    how to open \a fn.
           */
-      RinexClockStream( const std::string fn,
-                        std::ios::openmode mode=std::ios::in )
-            : FFTextStream(fn.c_str(), mode), headerRead(false) {}
-            
+      RinexClockStream( const std::string& fn,
+                        std::ios::openmode mode=std::ios::in );
       
          /// Destructor
-      virtual ~RinexClockStream() {}
-      
-      
+      virtual ~RinexClockStream();
+
          /** Overrides open to reset the header
           *
           * @param fn      the RINEX clock data file to open
           * @param mode    how to open \a fn.
           */
       virtual void open( const char* fn,
-                         std::ios::openmode mode )
-      {
-         FFTextStream::open(fn, mode);
-         headerRead = false;
-         header = RinexClockHeader();
-      }
-      
+                         std::ios::openmode mode );
       
          /** Overrides open to reset the header
           *
@@ -109,15 +97,17 @@ namespace gpstk
           * @param mode    how to open \a fn.
           */
       virtual void open( const std::string& fn,
-                         std::ios::openmode mode )
-      { open(fn.c_str(), mode); }
-            
+                         std::ios::openmode mode );
       
          /// Whether or not the RinexClockHeader has been read
       bool headerRead;
       
          /// The header for this file.
       RinexClockHeader header;
+
+   private:
+         /// Initialize internal data structures
+      void init();
    }; // End of class 'RinexClockStream'
    
       //@}

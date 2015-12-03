@@ -35,48 +35,83 @@
 //=============================================================================
 
 /**
- * @file BinexStream.hpp
- * File stream for BINEX files
+ * @file RinexObsStream.cpp
+ * File stream for Rinex observation file data
  */
 
-#ifndef GPSTK_BINEXSTREAM_HPP
-#define GPSTK_BINEXSTREAM_HPP
-
-#include "FFBinaryStream.hpp"
+#include "RinexObsStream.hpp"
 
 namespace gpstk
 {
-      /// @ingroup formattedfile
-      //@{
-
-      /**
-       * This class performs file i/o on a BINEX file for the 
-       * BinexData classes.
-       *
-       * @sa binex_read_write.cpp for an example.
-       * @sa binex_test.cpp for an example.
-       * @sa BinexData.
-       *
-       */
-   class BinexStream : public FFBinaryStream
+   RinexObsStream ::
+   RinexObsStream()
    {
-   public:
-         /// Destructor
-      virtual ~BinexStream() {}
-      
-         /// Default constructor
-      BinexStream() {}
-      
-         /** Constructor 
-          * Opens a file named \a fn using ios::openmode \a mode.
-          */
-      BinexStream(const char* fn,
-                  std::ios::openmode mode=std::ios::in | std::ios::binary)
-            : FFBinaryStream(fn, mode) {};
-   };
+      init();
+   }
 
-      //@}
 
-} // namespace gpstk
+   RinexObsStream ::
+   RinexObsStream( const char* fn,
+                   std::ios::openmode mode )
+         : FFTextStream(fn, mode)
+   {
+      init();
+   }
 
-#endif // GPSTK_BINEXSTREAM_HPP
+
+   RinexObsStream ::
+   RinexObsStream( const std::string fn,
+                   std::ios::openmode mode )
+         : FFTextStream(fn.c_str(), mode)
+   {
+      init();
+   }
+
+
+   RinexObsStream ::
+   ~RinexObsStream()
+   {
+   }
+
+
+   void RinexObsStream ::
+   open( const char* fn,
+              std::ios::openmode mode )
+   {
+      FFTextStream::open(fn, mode);
+      init();
+   }
+
+
+   void RinexObsStream ::
+   open( const std::string& fn,
+              std::ios::openmode mode )
+   {
+      open(fn.c_str(), mode);
+   }
+
+
+   bool RinexObsStream ::
+   isRinexObsStream(std::istream& i)
+   {
+      try
+      { 
+         (void)dynamic_cast<RinexObsStream&>(i);
+      }
+      catch(...)
+      {
+         return false;
+      }
+
+      return true;
+   }
+
+
+   void RinexObsStream ::
+   init()
+   {
+      headerRead = false;
+      header = RinexObsHeader();
+   }
+
+}  // End of namespace gpstk

@@ -35,48 +35,83 @@
 //=============================================================================
 
 /**
- * @file BinexStream.hpp
- * File stream for BINEX files
+ * @file Rinex3ObsStream.cpp
+ * File stream for RINEX 3 observation file data.
  */
 
-#ifndef GPSTK_BINEXSTREAM_HPP
-#define GPSTK_BINEXSTREAM_HPP
-
-#include "FFBinaryStream.hpp"
+#include "Rinex3ObsStream.hpp"
 
 namespace gpstk
 {
-      /// @ingroup formattedfile
-      //@{
-
-      /**
-       * This class performs file i/o on a BINEX file for the 
-       * BinexData classes.
-       *
-       * @sa binex_read_write.cpp for an example.
-       * @sa binex_test.cpp for an example.
-       * @sa BinexData.
-       *
-       */
-   class BinexStream : public FFBinaryStream
+   Rinex3ObsStream ::
+   Rinex3ObsStream()
    {
-   public:
-         /// Destructor
-      virtual ~BinexStream() {}
-      
-         /// Default constructor
-      BinexStream() {}
-      
-         /** Constructor 
-          * Opens a file named \a fn using ios::openmode \a mode.
-          */
-      BinexStream(const char* fn,
-                  std::ios::openmode mode=std::ios::in | std::ios::binary)
-            : FFBinaryStream(fn, mode) {};
-   };
+      init();
+   }
 
-      //@}
+
+   Rinex3ObsStream ::
+   Rinex3ObsStream( const char* fn,
+                    std::ios::openmode mode )
+         : FFTextStream(fn, mode)
+   {
+      init();
+   }
+
+
+   Rinex3ObsStream ::
+   Rinex3ObsStream( const std::string fn,
+                    std::ios::openmode mode )
+         : FFTextStream(fn.c_str(), mode)
+   {
+      init();
+   }
+
+
+   Rinex3ObsStream ::
+   ~Rinex3ObsStream()
+   {
+   }
+
+
+   void Rinex3ObsStream ::
+   open( const char* fn,
+         std::ios::openmode mode )
+   {
+      FFTextStream::open(fn, mode);
+   }
+
+
+   void Rinex3ObsStream ::
+   init()
+   {
+      headerRead = false;
+      header = Rinex3ObsHeader();
+      timesystem = TimeSystem::GPS;
+   }
+
+
+   void Rinex3ObsStream ::
+   open( const std::string& fn,
+         std::ios::openmode mode )
+   {
+      open(fn.c_str(), mode);
+   }
+
+
+   bool Rinex3ObsStream ::
+   isRinex3ObsStream(std::istream& i)
+   {
+      try
+      {
+         (void)dynamic_cast<Rinex3ObsStream&>(i);
+      }
+      catch(...)
+      {
+         return false;
+      }
+
+      return true;
+   }
 
 } // namespace gpstk
-
-#endif // GPSTK_BINEXSTREAM_HPP

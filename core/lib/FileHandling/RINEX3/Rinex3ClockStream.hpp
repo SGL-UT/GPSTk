@@ -49,46 +49,40 @@
 
 namespace gpstk
 {
-   /// @addtogroup Rinex3Clock
-   //@{
+      /// @ingroup formattedfile
+      //@{
 
-       /// This class performs file I/O on an RINEX Clock format file for the
-       /// Rinex3ClockHeader and Rinex3ClockData classes.
+      /** This class performs file I/O on an RINEX Clock format file
+       * for the Rinex3ClockHeader and Rinex3ClockData classes. */
    class Rinex3ClockStream : public FFTextStream
    {
    public:
          /// Default constructor
-      Rinex3ClockStream() 
-            : headerRead(false)
-         {}
-      
-         /// Common constructor: open (default: read mode)
-         /// @param filename the name of the ASCII Rinex3Clock format file to be opened
-         /// @param mode the ios::openmode to be used
-      Rinex3ClockStream(const char* filename, std::ios::openmode mode=std::ios::in)
-            : FFTextStream(filename, mode), headerRead(false)
-            { }
+      Rinex3ClockStream();
 
-         /// destructor; override to force 'close'
-      virtual ~Rinex3ClockStream() { }
+         /** Common constructor: open (default: read mode)
+          * @param[in] filename the name of the ASCII Rinex3Clock
+          *   format file to be opened
+          * @param[in] mode the ios::openmode to be used */
+      Rinex3ClockStream(const char* filename,
+                        std::ios::openmode mode=std::ios::in);
 
-         /// override open() to reset the header
-         /// @param filename the name of the ASCII RINEX Clock format file
-         /// @param mode the ios::openmode to be used
-      virtual void open(const char* filename, std::ios::openmode mode)
-      {
-         FFTextStream::open(filename, mode);
-         headerRead = false;
-      }
+         /// destructor
+      virtual ~Rinex3ClockStream();
 
-         ///@name data members
-         //@{
+         /** override open() to reset the header
+          * @param[in] filename the name of the ASCII RINEX Clock format file
+          * @param[in] mode the ios::openmode to be used */
+      virtual void open(const char* filename, std::ios::openmode mode);
+
       bool headerRead;             ///< true if the header has been read
-         //@}
 
+   private:
+         /// initialize internal data structures
+      void init();
    }; // class Rinex3ClockStream
    
-   //@}
+      //@}
    
 } // namespace gpstk
 
