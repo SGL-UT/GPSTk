@@ -115,39 +115,64 @@ void RinexObs_T :: init( void )
    std::string dataFilePath = test0.getDataPath();
    std::string tempFilePath = test0.getTempPath();
 
-      //---------------------------------------- 
+      //----------------------------------------
       // Full file paths
-      //---------------------------------------- 
+      //----------------------------------------
    std::string file_sep = getFileSep();
 
-   dataRinexObsFile            = dataFilePath + file_sep + "test_input_rinex_obs_RinexObsFile.06o";
-   dataIncompleteHeader        = dataFilePath + file_sep + "test_input_rinex_obs_IncompleteHeader.06o";
-   dataInvalidLineLength       = dataFilePath + file_sep + "test_input_rinex_obs_InvalidLineLength.06o";
-   dataInvalidNumPRNWaveFact   = dataFilePath + file_sep + "test_input_rinex_obs_InvalidNumPRNWaveFact.06o";
-   dataNotObs                  = dataFilePath + file_sep + "test_input_rinex_obs_NotObs.06o";
-   dataSystemGeosync           = dataFilePath + file_sep + "test_input_rinex_obs_SystemGeosync.06o";
-   dataSystemGlonass           = dataFilePath + file_sep + "test_input_rinex_obs_SystemGlonass.06o";
-   dataSystemMixed             = dataFilePath + file_sep + "test_input_rinex_obs_SystemMixed.06o";
-   dataSystemTransit           = dataFilePath + file_sep + "test_input_rinex_obs_SystemTransit.06o";
-   dataUnSupVersion            = dataFilePath + file_sep + "test_input_rinex_obs_UnSupVersion.06o";
-   dataRinexContData           = dataFilePath + file_sep + "test_input_rinex_obs_RinexContData.06o";
+   dataRinexObsFile            = dataFilePath + file_sep +
+                                 "test_input_rinex_obs_RinexObsFile.06o";
+   dataIncompleteHeader        = dataFilePath + file_sep +
+                                 "test_input_rinex_obs_IncompleteHeader.06o";
+   dataInvalidLineLength       = dataFilePath + file_sep +
+                                 "test_input_rinex_obs_InvalidLineLength.06o";
+   dataInvalidNumPRNWaveFact   = dataFilePath + file_sep +
+                                 "test_input_rinex_obs_InvalidNumPRNWaveFact.06o";
+   dataNotObs                  = dataFilePath + file_sep +
+                                 "test_input_rinex_obs_NotObs.06o";
+   dataSystemGeosync           = dataFilePath + file_sep +
+                                 "test_input_rinex_obs_SystemGeosync.06o";
+   dataSystemGlonass           = dataFilePath + file_sep +
+                                 "test_input_rinex_obs_SystemGlonass.06o";
+   dataSystemMixed             = dataFilePath + file_sep +
+                                 "test_input_rinex_obs_SystemMixed.06o";
+   dataSystemTransit           = dataFilePath + file_sep +
+                                 "test_input_rinex_obs_SystemTransit.06o";
+   dataUnSupVersion            = dataFilePath + file_sep +
+                                 "test_input_rinex_obs_UnSupVersion.06o";
+   dataRinexContData           = dataFilePath + file_sep +
+                                 "test_input_rinex_obs_RinexContData.06o";
 
-   dataBadEpochLine            = dataFilePath + file_sep + "test_input_rinex_obs_BadEpochLine.06o";
-   dataBadEpochFlag            = dataFilePath + file_sep + "test_input_rinex_obs_BadEpochFlag.06o";
-   dataBadLineSize             = dataFilePath + file_sep + "test_input_rinex_obs_BadLineSize.06o";
-   dataInvalidTimeFormat       = dataFilePath + file_sep + "test_input_rinex_obs_InvalidTimeFormat.06o";
+   dataBadEpochLine            = dataFilePath + file_sep +
+                                 "test_input_rinex_obs_BadEpochLine.06o";
+   dataBadEpochFlag            = dataFilePath + file_sep +
+                                 "test_input_rinex_obs_BadEpochFlag.06o";
+   dataBadLineSize             = dataFilePath + file_sep +
+                                 "test_input_rinex_obs_BadLineSize.06o";
+   dataInvalidTimeFormat       = dataFilePath + file_sep +
+                                 "test_input_rinex_obs_InvalidTimeFormat.06o";
 
-   dataFilterTest1             = dataFilePath + file_sep + "test_input_rinex_obs_FilterTest1.06o";
-   dataFilterTest2             = dataFilePath + file_sep + "test_input_rinex_obs_FilterTest2.06o";
-   dataFilterTest3             = dataFilePath + file_sep + "test_input_rinex_obs_FilterTest3.06o";
-   dataFilterTest4             = dataFilePath + file_sep + "test_input_rinex_obs_FilterTest4.06o";
+   dataFilterTest1             = dataFilePath + file_sep +
+                                 "test_input_rinex_obs_FilterTest1.06o";
+   dataFilterTest2             = dataFilePath + file_sep +
+                                 "test_input_rinex_obs_FilterTest2.06o";
+   dataFilterTest3             = dataFilePath + file_sep +
+                                 "test_input_rinex_obs_FilterTest3.06o";
+   dataFilterTest4             = dataFilePath + file_sep +
+                                 "test_input_rinex_obs_FilterTest4.06o";
 
-   dataTestOutput              = tempFilePath + file_sep + "test_output_rinex_obs_TestOutput.06o";
-   dataTestOutput2             = tempFilePath + file_sep + "test_output_rinex_obs_TestOutput2.06o";
-   dataTestOutput3             = tempFilePath + file_sep + "test_output_rinex_obs_TestOutput3.06o";
-   dataTestOutputObsDump       = tempFilePath + file_sep + "test_output_rinex_obs_ObsDump.06o";
-   dataTestOutputDataException = tempFilePath + file_sep + "test_output_rinex_obs_DataExceptionOutput.06o";
-   dataTestFilterOutput        = tempFilePath + file_sep + "test_output_rinex_obs_FilterOutput.txt";
+   dataTestOutput              = tempFilePath + file_sep +
+                                 "test_output_rinex_obs_TestOutput.06o";
+   dataTestOutput2             = tempFilePath + file_sep +
+                                 "test_output_rinex_obs_TestOutput2.06o";
+   dataTestOutput3             = tempFilePath + file_sep +
+                                 "test_output_rinex_obs_TestOutput3.06o";
+   dataTestOutputObsDump       = tempFilePath + file_sep +
+                                 "test_output_rinex_obs_ObsDump.06o";
+   dataTestOutputDataException = tempFilePath + file_sep +
+                                 "test_output_rinex_obs_DataExceptionOutput.06o";
+   dataTestFilterOutput        = tempFilePath + file_sep +
+                                 "test_output_rinex_obs_FilterOutput.txt";
 
 }
 
@@ -168,7 +193,7 @@ int RinexObs_T :: headerExceptionTest( void )
    std::string msg_test_desc  = "RinexObsStream, headerExceptionTest";
    std::string msg_false_pass = ", threw the wrong number of exceptions.";
    std::string msg_fail       = ", threw an unexpected exception.";
-    
+
    try
    {
 
@@ -200,7 +225,8 @@ int RinexObs_T :: headerExceptionTest( void )
       gpstk::RinexObsHeader unsupvh;
       gpstk::RinexObsHeader contdatah;
 
-      gpstk::RegisterExtendedRinexObsType( "ER","Testing Type", "Candela", (unsigned) 2 );
+      gpstk::RegisterExtendedRinexObsType( "ER","Testing Type", "Candela",
+                                           (unsigned) 2 );
       gpstk::RinexObsData RinexObsFiled;
       gpstk::RinexObsData contdatad;
 
@@ -243,7 +269,8 @@ int RinexObs_T :: headerExceptionTest( void )
       ilh.dump( dump );
       gpstk::DisplayExtendedRinexObsTypes( dump );
 
-      testFramework.assert( 39 == RinexObsFileh.NumberHeaderRecordsToBeWritten(), msg_test_desc + msg_false_pass, __LINE__ );
+      testFramework.assert( 39 == RinexObsFileh.NumberHeaderRecordsToBeWritten(),
+                            msg_test_desc + msg_false_pass, __LINE__ );
    }
    catch(...)
    {
@@ -269,7 +296,8 @@ int RinexObs_T :: hardCodeTest( void )
 
    TUDEF( "RinexObsStream", "dump" );
 
-   std::string msg_test_desc   = "RinexObsStream, read write test, comparing input file and output file";
+   std::string msg_test_desc   =
+      "RinexObsStream, read write test, comparing input file and output file";
    std::string msg_fail_equal  = ", input and output do not match.";
    std::string msg_fail_except = ", threw an unexpected exception.";
 
@@ -292,7 +320,8 @@ int RinexObs_T :: hardCodeTest( void )
       RinexObsFiled.dump( dump );
       RinexObsFileh.dump( dump );
 
-      files_equal = testFramework.fileEqualTest( dataRinexObsFile, dataTestOutput2, num_lines_skip );
+      files_equal = testFramework.fileEqualTest( dataRinexObsFile, dataTestOutput2,
+                    num_lines_skip );
       testFramework.assert( files_equal, msg_test_desc + msg_fail_equal, __LINE__ );
    }
    catch(...)
@@ -312,8 +341,10 @@ int RinexObs_T :: dataExceptionsTest( void )
 
    TUDEF( "RinexObsStream", "dump" );
 
-   std::string msg_test_desc   = "RinexObsStream, test various gpstk exception throws, including BadEpochLine and BadEpochFlag";
-   std::string msg_fail_throw  = ", not all gpstk exceptions were thrown as expected.";
+   std::string msg_test_desc   =
+      "RinexObsStream, test various gpstk exception throws, including BadEpochLine and BadEpochFlag";
+   std::string msg_fail_throw  =
+      ", not all gpstk exceptions were thrown as expected.";
    std::string msg_fail_except = ", threw an unexpected exception.";
 
    try
@@ -365,7 +396,7 @@ int RinexObs_T :: filterOperatorsTest( void )
    TUDEF( "RinexObsStream", "open" );
 
    std::string msg_test_desc = "";
-    
+
    try
    {
       gpstk::RinexObsStream FilterStream1( dataFilterTest1 );
@@ -418,24 +449,33 @@ int RinexObs_T :: filterOperatorsTest( void )
       out << merged.theHeader;
 
       gpstk::RinexObsDataOperatorEqualsSimple EqualsSimple;
-      msg_test_desc = "RinexObsDataOperatorEqualsSimple( FilterData1, FilterData1 ), should evaluate as true";
-      testFramework.assert( EqualsSimple( FilterData1, FilterData1 ), msg_test_desc, __LINE__ );
+      msg_test_desc =
+         "RinexObsDataOperatorEqualsSimple( FilterData1, FilterData1 ), should evaluate as true";
+      testFramework.assert( EqualsSimple( FilterData1, FilterData1 ), msg_test_desc,
+                            __LINE__ );
 
       gpstk::RinexObsDataOperatorLessThanSimple LessThanSimple;
-      msg_test_desc = "RinexObsDataOperatorLessThanSimple( FilterData1, FilterData1 ) should evaluated as false";
-      testFramework.assert( !LessThanSimple( FilterData1, FilterData1 ), msg_test_desc, __LINE__ );
+      msg_test_desc =
+         "RinexObsDataOperatorLessThanSimple( FilterData1, FilterData1 ) should evaluated as false";
+      testFramework.assert( !LessThanSimple( FilterData1, FilterData1 ),
+                            msg_test_desc, __LINE__ );
 
       gpstk::RinexObsDataOperatorLessThanFull LessThanFull( merged.obsSet );
-      msg_test_desc = "RinexObsDataOperator LessThanFull( FilterData1, FilterData1 ) should evaluate as false ";
-      testFramework.assert( !LessThanFull( FilterData1, FilterData1 ) , msg_test_desc, __LINE__ );
-        
-      msg_test_desc = " RinexObsDataOperator LessThanFull( FilterData1, FilterData2 ) should evaluate as false ";
-      testFramework.assert( !LessThanFull( FilterData1, FilterData2 ) , msg_test_desc, __LINE__ );
+      msg_test_desc =
+         "RinexObsDataOperator LessThanFull( FilterData1, FilterData1 ) should evaluate as false ";
+      testFramework.assert( !LessThanFull( FilterData1, FilterData1 ) ,
+                            msg_test_desc, __LINE__ );
+
+      msg_test_desc =
+         " RinexObsDataOperator LessThanFull( FilterData1, FilterData2 ) should evaluate as false ";
+      testFramework.assert( !LessThanFull( FilterData1, FilterData2 ) ,
+                            msg_test_desc, __LINE__ );
 
    }
    catch(...)
    {
-      msg_test_desc = "One or more of the tests for RinexObsDataOperator LessThanFull threw an exception when it should not have";
+      msg_test_desc =
+         "One or more of the tests for RinexObsDataOperator LessThanFull threw an exception when it should not have";
       testFramework.assert( false, msg_test_desc, __LINE__ );
    }
 

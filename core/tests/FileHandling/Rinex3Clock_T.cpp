@@ -15,7 +15,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -23,13 +23,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -45,7 +45,7 @@
 
 class Rinex3Clock_T
 {
-public: 
+public:
    Rinex3Clock_T()  {} // Default Constructor, set the precision value
    ~Rinex3Clock_T() {} // Default Destructor
 
@@ -86,14 +86,21 @@ void Rinex3Clock_T::init(void)
 
    std::string file_sep = gpstk::getFileSep();
 
-   dataBadEpochLine             = dataFilePath + file_sep + "test_input_rinex2_clock_BadEpochLine.96c";
-   dataIncompleteHeader = dataFilePath + file_sep + "test_input_rinex2_clock_IncompleteHeader.96c";
-   dataInvalidLineLength        = dataFilePath + file_sep + "test_input_rinex2_clock_InvalidLineLength.96c";
-   dataNotAClockFile            = dataFilePath + file_sep + "test_input_rinex2_clock_NotAClockFile.96c";
-   dataRinexClockFile           = dataFilePath + file_sep + "test_input_rinex2_clock_RinexClockExample.96c";
-   dataUnknownHeaderLabel  = dataFilePath + file_sep + "test_input_rinex2_clock_UnknownHeaderLabel.96c";
+   dataBadEpochLine             = dataFilePath + file_sep +
+                                  "test_input_rinex2_clock_BadEpochLine.96c";
+   dataIncompleteHeader = dataFilePath + file_sep +
+                          "test_input_rinex2_clock_IncompleteHeader.96c";
+   dataInvalidLineLength        = dataFilePath + file_sep +
+                                  "test_input_rinex2_clock_InvalidLineLength.96c";
+   dataNotAClockFile            = dataFilePath + file_sep +
+                                  "test_input_rinex2_clock_NotAClockFile.96c";
+   dataRinexClockFile           = dataFilePath + file_sep +
+                                  "test_input_rinex2_clock_RinexClockExample.96c";
+   dataUnknownHeaderLabel  = dataFilePath + file_sep +
+                             "test_input_rinex2_clock_UnknownHeaderLabel.96c";
 
-   dataTestOutput                       = tempFilePath + file_sep + "test_output_rinex2_clock_TestOutput.96c";
+   dataTestOutput                       = tempFilePath + file_sep +
+                                          "test_output_rinex2_clock_TestOutput.96c";
 
 
 }
@@ -104,13 +111,19 @@ void Rinex3Clock_T::toRinex3(void)
 
    std::string file_sep = gpstk::getFileSep();
 
-   dataBadEpochLine             = dataFilePath + file_sep + "test_input_rinex3_clock_BadEpochLine.96c";
-   dataIncompleteHeader = dataFilePath + file_sep + "test_input_rinex3_clock_IncompleteHeader.96c";
-   dataInvalidLineLength        = dataFilePath + file_sep + "test_input_rinex3_clock_InvalidLineLength.96c";
-   dataNotAClockFile            = dataFilePath + file_sep + "test_input_rinex3_clock_NotAClockFile.96c";
-   dataRinexClockFile           = dataFilePath + file_sep + "test_input_rinex3_clock_RinexClockExample.96c";
+   dataBadEpochLine             = dataFilePath + file_sep +
+                                  "test_input_rinex3_clock_BadEpochLine.96c";
+   dataIncompleteHeader = dataFilePath + file_sep +
+                          "test_input_rinex3_clock_IncompleteHeader.96c";
+   dataInvalidLineLength        = dataFilePath + file_sep +
+                                  "test_input_rinex3_clock_InvalidLineLength.96c";
+   dataNotAClockFile            = dataFilePath + file_sep +
+                                  "test_input_rinex3_clock_NotAClockFile.96c";
+   dataRinexClockFile           = dataFilePath + file_sep +
+                                  "test_input_rinex3_clock_RinexClockExample.96c";
 
-   dataTestOutput                       = tempFilePath + file_sep + "test_output_rinex3_clock_TestOutput.96c";
+   dataTestOutput                       = tempFilePath + file_sep +
+                                          "test_output_rinex3_clock_TestOutput.96c";
 
 }
 
@@ -140,30 +153,30 @@ int Rinex3Clock_T::headerExceptionTest(void)
       NotAClockFile.exceptions(std::fstream::failbit);
       RinexClockFile.exceptions(std::fstream::failbit);
       UnknownHeaderLabel.exceptions(std::fstream::failbit);
-/*
-   //---------------------------------------------------------------------
-   msg_desc = "BadEpochLine test";
-   try
-   {
-   BadEpochLine >> ch;
-   TUFAIL(msg_desc + msg_expect + msg_falsePass);
-   }
-   catch(gpstk::Exception e)
-   {
-   TUPASS(msg_desc + msg_expect);
-   }
-   catch(...)
-   {
-   TUFAIL(msg_desc + msg_expect + msg_trueFail);
-   }
-*/
+         /*
+            //---------------------------------------------------------------------
+            msg_desc = "BadEpochLine test";
+            try
+            {
+            BadEpochLine >> ch;
+            TUFAIL(msg_desc + msg_expect + msg_falsePass);
+            }
+            catch(gpstk::Exception e)
+            {
+            TUPASS(msg_desc + msg_expect);
+            }
+            catch(...)
+            {
+            TUFAIL(msg_desc + msg_expect + msg_trueFail);
+            }
+         */
          //--------------------------------------------------------------------
 
 #ifdef RINEX_3_CLOCK_ACTUALLY_IMPLEMENTED
       msg_desc = "IncompleteHeader test";
       try
       {
-         IncompleteHeader >> ch; //Not valid but doesn't throw errors 
+         IncompleteHeader >> ch; //Not valid but doesn't throw errors
          TUFAIL(msg_desc + msg_expect + msg_falsePass);
       }
       catch(gpstk::Exception e)
@@ -285,7 +298,7 @@ int Rinex3Clock_T::dataExceptionTest(void)
 }
 
 //Test that reading/writing out the file doesn't change it
-int Rinex3Clock_T::hardCodeTest(void) 
+int Rinex3Clock_T::hardCodeTest(void)
 {
    TUDEF("Rinex3ClockStream", "Read & write to file");
 
@@ -297,18 +310,18 @@ int Rinex3Clock_T::hardCodeTest(void)
       gpstk::Rinex3ClockStream inputStream(dataRinexClockFile.c_str());
       TUPASS(testMesg);
    }
-   catch (gpstk::Exception e) 
+   catch (gpstk::Exception e)
    {
       testMesg = "Input stream failed to open: " + e.what();
       TUFAIL(testMesg);
    }
 
-   try 
+   try
    {
       gpstk::Rinex3ClockStream outputStream(dataTestOutput.c_str());
       TUPASS(testMesg);
    }
-   catch (gpstk::Exception e) 
+   catch (gpstk::Exception e)
    {
       testMesg = "Output stream failed to open: " + e.what();
       TUFAIL(testMesg);
@@ -330,7 +343,7 @@ int Rinex3Clock_T::hardCodeTest(void)
          outputStream << cd;
       }
 
-      TUPASS(testMesg);   
+      TUPASS(testMesg);
    }
    catch (gpstk::Exception e)
    {
@@ -342,7 +355,7 @@ int Rinex3Clock_T::hardCodeTest(void)
 
    int skipLines = 2; //First two lines of the header are not supposed to match
 
-   fileEqual = testFramework.fileEqualTest(dataRinexClockFile, 
+   fileEqual = testFramework.fileEqualTest(dataRinexClockFile,
                                            dataTestOutput, skipLines);
 
    testMesg = "Files are not consistent after input & out";

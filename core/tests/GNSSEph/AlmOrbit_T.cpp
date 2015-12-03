@@ -9,8 +9,11 @@ using namespace gpstk;
 
 class AlmOrbit_T: public AlmOrbit
 {
-public: 
-   AlmOrbit_T(){ eps = 1E-12;}// Default Constructor, set the precision value
+public:
+   AlmOrbit_T()
+   {
+      eps = 1E-12;  // Default Constructor, set the precision value
+   }
    ~AlmOrbit_T() {} // Default Desructor
 
 //=============================================================================
@@ -33,7 +36,7 @@ public:
       testMesg = "Offset not initialized to 0";
       TUASSERTFEPS(0, empty.geti_offset(), eps);
       testMesg = "OMEGAdot not initialized to 0";
-      TUASSERTFEPS(0, empty.getOMEGAdot(), eps); 
+      TUASSERTFEPS(0, empty.getOMEGAdot(), eps);
       testMesg = "Ahalf not initialized to 0";
       TUASSERTFEPS(0, empty.getAhalf(), eps);
       testMesg = "OMEGA0 not initialized to 0";
@@ -79,7 +82,7 @@ public:
       testMesg = "Offset value was not initialized correctly";
       TUASSERTFEPS(0.00388718, compare.geti_offset(), eps);
       testMesg = "OMEGAdot value was not initialized correctly";
-      TUASSERTFEPS(-8.01176E-09, compare.getOMEGAdot(), eps); 
+      TUASSERTFEPS(-8.01176E-09, compare.getOMEGAdot(), eps);
       testMesg = "Ahalf value was not initialized correctly";
       TUASSERTFEPS(5153.58, compare.getAhalf(), eps);
       testMesg = "OMEGA0 value was not initialized correctly";
@@ -119,24 +122,24 @@ public:
 
       std::stringstream outputStream1, outputStream2, outputStream3;
       std::string outputString1, referenceString1, outputString2,
-         referenceString2, outputString3, referenceString3;
+          referenceString2, outputString3, referenceString3;
 
       referenceString1 = "1, 466944, 797, 0, 1.4877e-04, 7.6398e-11,"
-         " 3.4666e-03, -1.3189e+00, 5.1536e+03, 2.7939e+00, -2.9618e-01, "
-         "-8.0118e-09, 3.8872e-03\n";
+                         " 3.4666e-03, -1.3189e+00, 5.1536e+03, 2.7939e+00, -2.9618e-01, "
+                         "-8.0118e-09, 3.8872e-03\n";
       compare.dump(outputStream1, 0);
       outputString1 = outputStream1.str();
 
          //-----------------------------------------------------------------
-         //Did the least verbose dump method function correctly?  
+         //Did the least verbose dump method function correctly?
          //-----------------------------------------------------------------
       testMesg = "Least-verbose dump method did not function correctly";
       TUASSERTE(std::string, referenceString1, outputString1);
 
       referenceString2 = "PRN:1 Toa:466944 H:0 AFO:1.4877e-04 AF1:7.6398e-11 "
-         "Ecc:3.4666e-03\n   w:-1.3189e+00 Ahalf:5.1536e+03 "
-         "M0:2.7939e+00\n   OMEGA0:-2.9618e-01 "
-         "OMEGAdot:-8.0118e-09 Ioff:3.8872e-03\n";
+                         "Ecc:3.4666e-03\n   w:-1.3189e+00 Ahalf:5.1536e+03 "
+                         "M0:2.7939e+00\n   OMEGA0:-2.9618e-01 "
+                         "OMEGAdot:-8.0118e-09 Ioff:3.8872e-03\n";
       compare.dump(outputStream2, 1);
       outputString2 = outputStream2.str();
 
@@ -148,19 +151,19 @@ public:
 
 
       referenceString3 = "PRN:                   1\n"
-         "Toa:                   466944\n"
-         "xmit_time:             250560\n"
-         "week:                  797\n"
-         "SV_health:             0\n"
-         "AFO:                     1.4877e-04 sec\n"
-         "AF1:                     7.6398e-11 sec/sec\n"
-         "Sqrt A:                  5.1536e+03 sqrt meters\n"
-         "Eccentricity:            3.4666e-03\n"
-         "Arg of perigee:         -1.3189e+00 rad\n"
-         "Mean anomaly at epoch:   2.7939e+00 rad\n"
-         "Right ascension:        -2.9618e-01 rad"
-         "         -8.0118e-09 rad/sec\n"
-         "Inclination offset:      3.8872e-03 rad    \n";
+                         "Toa:                   466944\n"
+                         "xmit_time:             250560\n"
+                         "week:                  797\n"
+                         "SV_health:             0\n"
+                         "AFO:                     1.4877e-04 sec\n"
+                         "AF1:                     7.6398e-11 sec/sec\n"
+                         "Sqrt A:                  5.1536e+03 sqrt meters\n"
+                         "Eccentricity:            3.4666e-03\n"
+                         "Arg of perigee:         -1.3189e+00 rad\n"
+                         "Mean anomaly at epoch:   2.7939e+00 rad\n"
+                         "Right ascension:        -2.9618e-01 rad"
+                         "         -8.0118e-09 rad/sec\n"
+                         "Inclination offset:      3.8872e-03 rad    \n";
       compare.dump(outputStream3, 2);
       outputString3 = outputStream3.str();
 
@@ -171,7 +174,7 @@ public:
       TUASSERTE(std::string, referenceString3, outputString3);
 
       return testFramework.countFails();
- 
+
    }
 //=============================================================================
 // Test will check the various operators
@@ -189,14 +192,14 @@ public:
                               7.63976E-11, 466944, 250560, 797, 0);
 
       referenceString = "PRN:1 Toa:466944 H:0 AFO:1.4877e-04 AF1:7.6398e-11 "
-         "Ecc:3.4666e-03\n   w:-1.3189e+00 Ahalf:5.1536e+03 "
-         "M0:2.7939e+00\n   OMEGA0:-2.9618e-01 "
-         "OMEGAdot:-8.0118e-09 Ioff:3.8872e-03\n";
+                        "Ecc:3.4666e-03\n   w:-1.3189e+00 Ahalf:5.1536e+03 "
+                        "M0:2.7939e+00\n   OMEGA0:-2.9618e-01 "
+                        "OMEGAdot:-8.0118e-09 Ioff:3.8872e-03\n";
 
       outputStream << compare;
       outputString = outputStream.str();
 
-  
+
          //-----------------------------------------------------------------
          //Did the << operator function correctly?
          //-----------------------------------------------------------------
@@ -204,7 +207,7 @@ public:
       TUASSERTE(std::string, referenceString, outputString);
 
       return testFramework.countFails();
- 
+
    }
 //=============================================================================
 // Test will check the various get methods

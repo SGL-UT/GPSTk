@@ -15,7 +15,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -23,13 +23,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -49,7 +49,10 @@ class BinexUpdateExtract_T
 public:
 
       // constructor
-   BinexUpdateExtract_T() : verboseLevel(0) { init(); };
+   BinexUpdateExtract_T() : verboseLevel(0)
+   {
+      init();
+   };
 
       // destructor
    virtual ~BinexUpdateExtract_T() {};
@@ -98,13 +101,13 @@ private:
       // return a string describing a value mismatch
    template<class T>
    string mismatchMsg(T actual, T expected);
-   
+
 }; // class BinexUpdateExtract_T
 
 
 void BinexUpdateExtract_T :: init( void )
 {
-   // empty
+      // empty
 }
 
 
@@ -133,7 +136,8 @@ long BinexUpdateExtract_T :: getSemiRandomValue<long>(int seed)
 
 
 template<>
-BinexData::UBNXI BinexUpdateExtract_T :: getSemiRandomValue<BinexData::UBNXI>(int seed)
+BinexData::UBNXI BinexUpdateExtract_T :: getSemiRandomValue<BinexData::UBNXI>
+(int seed)
 {
 
    BinexData::UBNXI  val = ( abs(seed) * 12377ul) % 0xFFFFFFFFul;
@@ -142,7 +146,8 @@ BinexData::UBNXI BinexUpdateExtract_T :: getSemiRandomValue<BinexData::UBNXI>(in
 
 
 template<>
-BinexData::MGFZI BinexUpdateExtract_T :: getSemiRandomValue<BinexData::MGFZI>(int seed)
+BinexData::MGFZI BinexUpdateExtract_T :: getSemiRandomValue<BinexData::MGFZI>
+(int seed)
 {
 
    BinexData::MGFZI  val = (seed * 123797ul) % BinexData::MGFZI::MAX_VALUE;
@@ -199,7 +204,7 @@ int BinexUpdateExtract_T :: doPrimitiveTests()
             data.push_back(value);
 
             tester.assert( (  (offset == expectedOffset)
-                           && (offset == record.getMessageLength()) ),
+                              && (offset == record.getMessageLength()) ),
                            "incorrect offset", __LINE__ );
          }
          catch (Exception& e)
@@ -262,7 +267,7 @@ int BinexUpdateExtract_T :: doUbnxiTests()
             data.push_back(value);
 
             tester.assert( (  (offset == expectedOffset)
-                           && (offset == record.getMessageLength()) ),
+                              && (offset == record.getMessageLength()) ),
                            "incorrect offset", __LINE__ );
          }
          catch (Exception& e)
@@ -325,7 +330,7 @@ int BinexUpdateExtract_T :: doMgfziTests()
             data.push_back(value);
 
             tester.assert ( (  (offset == expectedOffset)
-                            && (offset == record.getMessageLength()) ),
+                               && (offset == record.getMessageLength()) ),
                             "incorrect offset", __LINE__ );
          }
          catch (Exception& e)
@@ -364,9 +369,10 @@ int BinexUpdateExtract_T :: doMgfziTests()
 
 int BinexUpdateExtract_T :: doMixedTestA()
 {
-   TestUtil  tester( "BinexData", "Update/Extract (Mixed A)", __FILE__, __LINE__ );
+   TestUtil  tester( "BinexData", "Update/Extract (Mixed A)", __FILE__,
+                     __LINE__ );
 
-   // A Data = s U U M c l l s c c M M U l s
+      // A Data = s U U M c l l s c c M M U l s
 
    BinexData  record(1);  // id = 1
 
@@ -490,9 +496,10 @@ int BinexUpdateExtract_T :: doMixedTestA()
 
 int BinexUpdateExtract_T :: doMixedTestB()
 {
-   TestUtil  tester( "BinexData", "Update/Extract (Mixed B)", __FILE__, __LINE__ );
+   TestUtil  tester( "BinexData", "Update/Extract (Mixed B)", __FILE__,
+                     __LINE__ );
 
-   // B Data = M l s s U c U l M s c l M U c
+      // B Data = M l s s U c U l M s c l M U c
 
    BinexData  record(1);  // id = 1
 
@@ -616,9 +623,10 @@ int BinexUpdateExtract_T :: doMixedTestB()
 
 int BinexUpdateExtract_T :: doMixedTestC()
 {
-   TestUtil  tester( "BinexData", "Update/Extract (Mixed C)", __FILE__, __LINE__ );
+   TestUtil  tester( "BinexData", "Update/Extract (Mixed C)", __FILE__,
+                     __LINE__ );
 
-   // C Data = c M U l s s s M c l U U l c M 
+      // C Data = c M U l s s s M c l U U l c M
 
    BinexData  record(1);  // id = 1
 
@@ -739,10 +747,10 @@ int BinexUpdateExtract_T :: doMixedTestC()
 }
 
 
-/** Run the program.
- *
- * @return Total error count for all tests
- */
+   /** Run the program.
+    *
+    * @return Total error count for all tests
+    */
 int main(int argc, char *argv[])
 {
    int  errorTotal = 0;
@@ -766,5 +774,5 @@ int main(int argc, char *argv[])
    errorTotal += testClass.doMixedTestC();
 
    return( errorTotal );
-   
+
 } // main()

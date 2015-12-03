@@ -49,7 +49,7 @@ using namespace gpstk;
 
 class RinexClock_T
 {
-public: 
+public:
    RinexClock_T();
 
    void init();
@@ -95,33 +95,38 @@ init()
    std::string iPath = test0.getDataPath() + getFileSep();
    std::string oPath = test0.getTempPath() + getFileSep();
 
-   dataRinexClockFile     = iPath + "test_input_rinex2_clock_RinexClockExample.96c";
+   dataRinexClockFile     = iPath +
+                            "test_input_rinex2_clock_RinexClockExample.96c";
       // This file is the same *content* as dataRinexClockFile, except
       // that the formatting of numbers has been made more consistent.
       // The example file may sometimes have leading zeroes on numbers
       // but not always.
-   dataRinexClockRef      = iPath + "test_input_rinex2_clock_RinexClockReference.96c";
+   dataRinexClockRef      = iPath +
+                            "test_input_rinex2_clock_RinexClockReference.96c";
    dataBadEpochLine       = iPath + "test_input_rinex2_clock_BadEpochLine.96c";
-   dataIncompleteHeader   = iPath + "test_input_rinex2_clock_IncompleteHeader.96c";
-   dataInvalidLineLength  = iPath + "test_input_rinex2_clock_InvalidLineLength.96c";
+   dataIncompleteHeader   = iPath +
+                            "test_input_rinex2_clock_IncompleteHeader.96c";
+   dataInvalidLineLength  = iPath +
+                            "test_input_rinex2_clock_InvalidLineLength.96c";
    dataNotAClockFile      = iPath + "test_input_rinex2_clock_NotAClockFile.96c";
-   dataUnknownHeaderLabel = iPath + "test_input_rinex2_clock_UnknownHeaderLabel.96c";
+   dataUnknownHeaderLabel = iPath +
+                            "test_input_rinex2_clock_UnknownHeaderLabel.96c";
 
    dataTestOutput         = oPath + "test_output_rinex_clock_TestOutput.96o";
    dataRoundTripOutput    = oPath + "test_output_rinex_clock_RoundTripOutput.96o";
 }
 
 
-/* What the hell are we doing here?
- *
- * 1) Doing permissive reads of error-ridden RINEX OBS headers,
- *    i.e. allowing the headers to be read into memory despite errors.
- *    This is done by leaving the default behavior of streams that no
- *    exceptions are thrown on error conditions.
- *
- * 2) Doing strict writes of same error-ridden headers and verifying
- *    that exceptions are being thrown as expected.
- */
+   /* What the hell are we doing here?
+    *
+    * 1) Doing permissive reads of error-ridden RINEX OBS headers,
+    *    i.e. allowing the headers to be read into memory despite errors.
+    *    This is done by leaving the default behavior of streams that no
+    *    exceptions are thrown on error conditions.
+    *
+    * 2) Doing strict writes of same error-ridden headers and verifying
+    *    that exceptions are being thrown as expected.
+    */
 int RinexClock_T ::
 headerExceptionTest()
 {
@@ -130,18 +135,18 @@ headerExceptionTest()
    try
    {
       gpstk::RinexClockStream
-         rinexClockFile( dataRinexClockFile.c_str() ),
-         ih( dataIncompleteHeader.c_str() ),
-         il( dataInvalidLineLength.c_str() ),
-         no( dataNotAClockFile.c_str() ),
-         uh( dataUnknownHeaderLabel.c_str() ),
-         out( dataTestOutput.c_str(), std::ios::out );
+      rinexClockFile( dataRinexClockFile.c_str() ),
+                      ih( dataIncompleteHeader.c_str() ),
+                      il( dataInvalidLineLength.c_str() ),
+                      no( dataNotAClockFile.c_str() ),
+                      uh( dataUnknownHeaderLabel.c_str() ),
+                      out( dataTestOutput.c_str(), std::ios::out );
       gpstk::RinexClockHeader
-         rinexClockHeader,
-         ihh,
-         ilh,
-         noh,
-         uhh;
+      rinexClockHeader,
+      ihh,
+      ilh,
+      noh,
+      uhh;
       gpstk::RinexClockData rinexClockData;
 
          // read in some good and some bad headers
@@ -223,8 +228,8 @@ roundTripTest()
    try
    {
       gpstk::RinexClockStream
-         rinexClockFile( dataRinexClockFile.c_str() ),
-         out( dataRoundTripOutput.c_str(), std::ios::out );
+      rinexClockFile( dataRinexClockFile.c_str() ),
+                      out( dataRoundTripOutput.c_str(), std::ios::out );
       gpstk::RinexClockHeader rinexClockHeader;
       gpstk::RinexClockData rinexClockData;
 

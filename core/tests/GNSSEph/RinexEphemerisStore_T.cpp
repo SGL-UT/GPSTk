@@ -1,4 +1,4 @@
-//-------------------------------------------------------=====================
+   //-------------------------------------------------------=====================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -76,33 +76,36 @@ public:
          //-----------------------------------------------------------
          // Verify the consturctor builds the RES object
          //-----------------------------------------------------------
-      try {
+      try
+      {
          RinexEphemerisStore rinEphStore;
          TUPASS("sedIdentifier");
       }
-      catch (...) {
+      catch (...)
+      {
          TUFAIL("Exception thrown creating RinexEphemerisStoreObject");
       }
       RinexEphemerisStore rinEphStore;
 
          //-----------------------------------------------------------
-         // Verify the ability to load nonexistant files.
+         // Verify the inability to load nonexistent files.
          //-----------------------------------------------------------
       testFramework.changeSourceMethod("loadFile");
       try
       {
          rinEphStore.loadFile(inputNotaFile.c_str());
-         TUPASS("sedIdentifier");
+         TUFAIL("Loaded a non-existent file.");
       }
       catch (Exception& e)
       {
-         TUFAIL("Could not create and open new file.");
+         TUPASS("sedIdentifier");
       }
 
          //---------------------------------------------
          // Verify the ability to load existant files.
          //---------------------------------------------
-      try {
+      try
+      {
          rinEphStore.loadFile(inputRinexNavData.c_str());
          TUPASS("sedIdentifier");
       }
@@ -115,23 +118,23 @@ public:
 //   It would be nice to verify that the double name exception is
 //   indeed thrown. However the InvalidParameter exception thrown will
 //   terminate the program even with a catch-all.
-/*
-//--------------RinexEphemerisStore_RESTest_# - Verify that a repeated filename returns an exception
-try
-{
-Store.loadFile(inputRinexNavData.c_str());
-testFramework.failTest();
-}
-catch (Exception& e)
-{
-TUPASS("sedIdentifier");
-cout << "Expected exception received from RinexEphemerisStore" << endl;
-}
-catch (...)
-{
-cout << "Expected exception received from RinexEphemerisStore!!!!!!!!!" << endl;
-} }
-*/
+         /*
+         //--------------RinexEphemerisStore_RESTest_# - Verify that a repeated filename returns an exception
+         try
+         {
+         Store.loadFile(inputRinexNavData.c_str());
+         testFramework.failTest();
+         }
+         catch (Exception& e)
+         {
+         TUPASS("sedIdentifier");
+         cout << "Expected exception received from RinexEphemerisStore" << endl;
+         }
+         catch (...)
+         {
+         cout << "Expected exception received from RinexEphemerisStore!!!!!!!!!" << endl;
+         } }
+         */
 //-------------------------------------------------------======================
 
       testFramework.changeSourceMethod("clear");
@@ -140,7 +143,8 @@ cout << "Expected exception received from RinexEphemerisStore!!!!!!!!!" << endl;
          // filename can be opened.
          //--------------------------------------------------------------------
       rinEphStore.gpstk::FileStore<RinexNavHeader>::clear();
-      try {
+      try
+      {
          rinEphStore.loadFile(inputRinexNavData.c_str());
          TUPASS("sedIdentifier");
       }
@@ -218,11 +222,13 @@ cout << "Expected exception received from RinexEphemerisStore!!!!!!!!!" << endl;
             //--------------------------------------------------
             // For proper input, will the method return properly?
             //--------------------------------------------------
-         try {
+         try
+         {
             gpsEphStore.findEphemeris(sid1,ComTime);
             TUPASS("sedIdentifier");
          }
-         catch (...) {
+         catch (...)
+         {
             TUFAIL("findEphemeris threw an exception when it shouldn't.");
          }
 
@@ -234,38 +240,46 @@ cout << "Expected exception received from RinexEphemerisStore!!!!!!!!!" << endl;
             gpsEphStore.findEphemeris(sid0,CombTime);
             TUFAIL("findEphemeris was successful when it shouldn't be");
          }
-         catch (InvalidRequest) {
+         catch (InvalidRequest)
+         {
             TUPASS("sedIdentifier");
          }
-         catch (...) {
+         catch (...)
+         {
             TUFAIL("findEphemeris threw an unexpected exception");
          }
 
             //-----------------------------------------------------------
             // For a wrong SatID (too large), will an exception be thrown?
             //-----------------------------------------------------------
-         try {
+         try
+         {
             gpsEphStore.findEphemeris(sid33,CombTime);
             TUFAIL("findEphemeris was successful when it shouldn't be");
          }
-         catch (InvalidRequest) {
+         catch (InvalidRequest)
+         {
             TUPASS("sedIdentifier");
          }
-         catch (...) {
+         catch (...)
+         {
             TUFAIL("findEphemeris threw an unexpected exception");
          }
 
             //-------------------------------------------------------
             // For an improper time, will an exception be thrown?
             //-------------------------------------------------------
-         try {
+         try
+         {
             gpsEphStore.findEphemeris(sid32,Comcrazy);
             TUFAIL("findEphemeris was successful when it shouldn't be");
          }
-         catch (InvalidRequest) {
+         catch (InvalidRequest)
+         {
             TUPASS("sedIdentifier");
          }
-         catch (...) {
+         catch (...)
+         {
             TUFAIL("findEphemeris threw an unexpected exception");
          }
 
@@ -418,7 +432,8 @@ cout << "Expected exception received from RinexEphemerisStore!!!!!!!!!" << endl;
          {
             TUPASS("sedIdentifier");
          }
-         catch (...) {
+         catch (...)
+         {
             TUFAIL("getXvt threw an unexpected exception");
          }
 
@@ -434,7 +449,8 @@ cout << "Expected exception received from RinexEphemerisStore!!!!!!!!!" << endl;
          {
             TUPASS("sedIdentifier");
          }
-         catch (...) {
+         catch (...)
+         {
             TUFAIL("getXvt threw an unexpected exception");
          }
       }
@@ -468,17 +484,20 @@ cout << "Expected exception received from RinexEphemerisStore!!!!!!!!!" << endl;
          //-------------------------------------------------------
          // Compare data for SatID 1 with pre-determined standard
          //-------------------------------------------------------
-      testFramework.assert( fPRN1.str() == comparisonOutput1, "Xvt redirect did not match regressive standard.", __LINE__ );
+      testFramework.assert( fPRN1.str() == comparisonOutput1,
+                            "Xvt redirect did not match regressive standard.", __LINE__ );
 
          //-------------------------------------------------------
          // Compare data for SatID 15 with pre-determined standard
          //-------------------------------------------------------
-      testFramework.assert( fPRN15.str() == comparisonOutput15, "Xvt redirect did not match regressive standard.", __LINE__ );
+      testFramework.assert( fPRN15.str() == comparisonOutput15,
+                            "Xvt redirect did not match regressive standard.", __LINE__ );
 
          //-------------------------------------------------------
          // Compare data for SatID 32 with pre-determined standard
          //-------------------------------------------------------
-      testFramework.assert( fPRN32.str() == comparisonOutput32, "Xvt redirect did not match regressive standard.", __LINE__ );
+      testFramework.assert( fPRN32.str() == comparisonOutput32,
+                            "Xvt redirect did not match regressive standard.", __LINE__ );
 
       return testFramework.countFails();
    }
@@ -503,122 +522,122 @@ cout << "Expected exception received from RinexEphemerisStore!!!!!!!!!" << endl;
 // NOTE: This test will need to be brought up to the newest standard
 // should it be used again.
 //=============================================================================
-/*
-  int getXvt2Test (void)
-  {
-  TUDEF("OrbitEphStore", "getXvt with IODC");
+      /*
+        int getXvt2Test (void)
+        {
+        TUDEF("OrbitEphStore", "getXvt with IODC");
 
 
-  ofstream fPRN1;
-  ofstream fPRN15;
-  ofstream fPRN32;
+        ofstream fPRN1;
+        ofstream fPRN15;
+        ofstream fPRN32;
 
-  string filename;
-  filename = __FILE__;
-  filename = filename.substr(0, filename.find_last_of("\\/"));
+        string filename;
+        filename = __FILE__;
+        filename = filename.substr(0, filename.find_last_of("\\/"));
 
-  fPRN1.open ((filename+"/Logs/getXvt2_1.txt").c_str());
-  fPRN15.open ((filename+"/Logs/getXvt2_15.txt").c_str());
-  fPRN32.open ((filename+"/Logs/getXvt2_32.txt").c_str());
+        fPRN1.open ((filename+"/Logs/getXvt2_1.txt").c_str());
+        fPRN15.open ((filename+"/Logs/getXvt2_15.txt").c_str());
+        fPRN32.open ((filename+"/Logs/getXvt2_32.txt").c_str());
 
-  RinexEphemerisStore rinEphStore;
-  rinEphStore.loadFile(inputRinexNavData.c_str());
+        RinexEphemerisStore rinEphStore;
+        rinEphStore.loadFile(inputRinexNavData.c_str());
 
-  std::list<RinexNavData> R3NList;
-  GPSEphemerisStore gpsEphStore;
-  list<RinexNavData>::const_iterator it;
-  rinEphStore.addToList(R3NList);
-  for (it = R3NList.begin(); it != R3NList.end(); ++it)
-  gpsEphStore.addEphemeris(EngEphemeris(*it));
+        std::list<RinexNavData> R3NList;
+        GPSEphemerisStore gpsEphStore;
+        list<RinexNavData>::const_iterator it;
+        rinEphStore.addToList(R3NList);
+        for (it = R3NList.begin(); it != R3NList.end(); ++it)
+        gpsEphStore.addEphemeris(EngEphemeris(*it));
 
-  const short PRN0 = 0; // Zero PRN (Border test case)
-  const short PRN1 = 1;
-  const short PRN15 = 15;
-  const short PRN32 = 32;
-  const short PRN33 = 33;  // Top PRN (33) (Border test case);
-  SatID sid0(PRN0,SatID::systemGPS);
-  SatID sid1(PRN1,SatID::systemGPS);
-  SatID sid15(PRN15,SatID::systemGPS);
-  SatID sid32(PRN32,SatID::systemGPS);
-  SatID sid33(PRN33,SatID::systemGPS);
+        const short PRN0 = 0; // Zero PRN (Border test case)
+        const short PRN1 = 1;
+        const short PRN15 = 15;
+        const short PRN32 = 32;
+        const short PRN33 = 33;  // Top PRN (33) (Border test case);
+        SatID sid0(PRN0,SatID::systemGPS);
+        SatID sid1(PRN1,SatID::systemGPS);
+        SatID sid15(PRN15,SatID::systemGPS);
+        SatID sid32(PRN32,SatID::systemGPS);
+        SatID sid33(PRN33,SatID::systemGPS);
 
-  short IODC0 = 89;
-  short IODC1 = 372;
-  short IODC15 = 455;
-  short IODC32 = 441;
-  short IODC33 = 392;
+        short IODC0 = 89;
+        short IODC1 = 372;
+        short IODC15 = 455;
+        short IODC32 = 441;
+        short IODC33 = 392;
 
-  CivilTime Time(2006,1,31,11,45,0,2);
-  CivilTime bTime(2006,1,31,2,0,0,2); // Border Time (Time of Border test cases)
-  const CommonTime ComTime = (CommonTime)Time;
-  const CommonTime CombTime = (CommonTime)bTime;
+        CivilTime Time(2006,1,31,11,45,0,2);
+        CivilTime bTime(2006,1,31,2,0,0,2); // Border Time (Time of Border test cases)
+        const CommonTime ComTime = (CommonTime)Time;
+        const CommonTime CombTime = (CommonTime)bTime;
 
-  try
-  {
-//--------------RinexEphemerisStore_getXvt2Test_1 - Does getXvt work in ideal settings?
-try
-{
-rinEphStore.getXvt(sid1,ComTime,IODC1);
-TUPASS("sedIdentifier");
-}
-catch (...) {
-testFramework.failTest();
-}
+        try
+        {
+      //--------------RinexEphemerisStore_getXvt2Test_1 - Does getXvt work in ideal settings?
+      try
+      {
+      rinEphStore.getXvt(sid1,ComTime,IODC1);
+      TUPASS("sedIdentifier");
+      }
+      catch (...) {
+      testFramework.failTest();
+      }
 
-fPRN1 << rinEphStore.getXvt(sid1,ComTime,IODC1) << endl;
-fPRN15 << rinEphStore.getXvt(sid15,ComTime,IODC15) << endl;
-fPRN32 << rinEphStore.getXvt(sid32,ComTime,IODC32) << endl;
+      fPRN1 << rinEphStore.getXvt(sid1,ComTime,IODC1) << endl;
+      fPRN15 << rinEphStore.getXvt(sid15,ComTime,IODC15) << endl;
+      fPRN32 << rinEphStore.getXvt(sid32,ComTime,IODC32) << endl;
 
 
-//--------------RinexEphemerisStore_getXvt2Test_2 - Is an error thrown when SatID is too small?
-try
-{
-rinEphStore.getXvt(sid0,CombTime,IODC0);
-testFramework.failTest();
-}
-catch (InvalidRequest& e) {
-TUPASS("sedIdentifier");
-}
-catch (...) {
-testFramework.failTest();
-}
+      //--------------RinexEphemerisStore_getXvt2Test_2 - Is an error thrown when SatID is too small?
+      try
+      {
+      rinEphStore.getXvt(sid0,CombTime,IODC0);
+      testFramework.failTest();
+      }
+      catch (InvalidRequest& e) {
+      TUPASS("sedIdentifier");
+      }
+      catch (...) {
+      testFramework.failTest();
+      }
 
-//--------------RinexEphemerisStore_getXvt2Test_3 - Is an error thrown when SatID is too large?
-try
-{
-rinEphStore.getXvt(sid33,CombTime,IODC33);
-testFramework.failTest();
-}
-catch (InvalidRequest& e) {
-TUPASS("sedIdentifier");
-}
-catch (...) {
-testFramework.failTest();
-}
-}
-catch (Exception& e)
-{
-   // cout << e;
-   }
+      //--------------RinexEphemerisStore_getXvt2Test_3 - Is an error thrown when SatID is too large?
+      try
+      {
+      rinEphStore.getXvt(sid33,CombTime,IODC33);
+      testFramework.failTest();
+      }
+      catch (InvalidRequest& e) {
+      TUPASS("sedIdentifier");
+      }
+      catch (...) {
+      testFramework.failTest();
+      }
+      }
+      catch (Exception& e)
+      {
+         // cout << e;
+         }
 
-   fPRN1.close();
-   fPRN15.close();
-   fPRN32.close();
+         fPRN1.close();
+         fPRN15.close();
+         fPRN32.close();
 
-   testFramework.changeSourceMethod("getXvt with IODC Output");
-//--------------RinexEphemerisStore_getXvt2Test_4 - Compare data for SatID 1 with pre-determined standard
-testFramework.assert(fileEqualTest((char*)(filename+"/Logs/getXvt2_1.txt").c_str(),(char*)(filename+"/Checks/getPrnXvt1.chk").c_str()));
-testFramework.next();
-//--------------RinexEphemerisStore_getXvt2Test_5 - Compare data for SatID 15 with pre-determined standard
-testFramework.assert(fileEqualTest((char*)(filename+"/Logs/getXvt2_15.txt").c_str(),(char*)(filename+"/Checks/getPrnXvt15.chk").c_str()));
-testFramework.next();
-//--------------RinexEphemerisStore_getXvt2Test_6 - Compare data for SatID 32 with pre-determined standard
-testFramework.assert(fileEqualTest((char*)(filename+"/Logs/getXvt2_32.txt").c_str(),(char*)(filename+"/Checks/getPrnXvt32.chk").c_str()));
-testFramework.next();
+         testFramework.changeSourceMethod("getXvt with IODC Output");
+      //--------------RinexEphemerisStore_getXvt2Test_4 - Compare data for SatID 1 with pre-determined standard
+      testFramework.assert(fileEqualTest((char*)(filename+"/Logs/getXvt2_1.txt").c_str(),(char*)(filename+"/Checks/getPrnXvt1.chk").c_str()));
+      testFramework.next();
+      //--------------RinexEphemerisStore_getXvt2Test_5 - Compare data for SatID 15 with pre-determined standard
+      testFramework.assert(fileEqualTest((char*)(filename+"/Logs/getXvt2_15.txt").c_str(),(char*)(filename+"/Checks/getPrnXvt15.chk").c_str()));
+      testFramework.next();
+      //--------------RinexEphemerisStore_getXvt2Test_6 - Compare data for SatID 32 with pre-determined standard
+      testFramework.assert(fileEqualTest((char*)(filename+"/Logs/getXvt2_32.txt").c_str(),(char*)(filename+"/Checks/getPrnXvt32.chk").c_str()));
+      testFramework.next();
 
-return testFramework.countFails();
-}
-*/
+      return testFramework.countFails();
+      }
+      */
 
 
 //=============================================================================
@@ -668,60 +687,71 @@ return testFramework.countFails();
             //-------------------------------------------------------
             // Does getSatHealth work in ideal conditions?
             //-------------------------------------------------------
-         try {
+         try
+         {
             gpsEphStore.getSatHealth(sid1,ComTime);
             TUPASS("sedIdentifier");
          }
-         catch (...) {
+         catch (...)
+         {
             TUFAIL("getXvt threw an exception in ideal conditions");
          }
 
             //-------------------------------------------------------
             // Does getSatHealth return the proper value?
             //-------------------------------------------------------
-         testFramework.assert((short) 1 == gpsEphStore.getSatHealth(sid1,ComTime), "A listed healthy SV was not found or was found to be unhealthy.", __LINE__);
+         testFramework.assert((short) 1 == gpsEphStore.getSatHealth(sid1,ComTime),
+                              "A listed healthy SV was not found or was found to be unhealthy.", __LINE__);
 
             //-------------------------------------------------------
             // Does getSatHealth return the proper value?
             //-------------------------------------------------------
-         testFramework.assert((short) 1 == gpsEphStore.getSatHealth(sid15,ComTime), "A listed healthy SV was not found or was found to be unhealthy.", __LINE__);
+         testFramework.assert((short) 1 == gpsEphStore.getSatHealth(sid15,ComTime),
+                              "A listed healthy SV was not found or was found to be unhealthy.", __LINE__);
 
             //-------------------------------------------------------
             // Does getSatHealth return the proper value?
             //-------------------------------------------------------
-         testFramework.assert((short) 1 == gpsEphStore.getSatHealth(sid32,ComTime), "A listed healthy SV was not found or was found to be unhealthy.", __LINE__);
+         testFramework.assert((short) 1 == gpsEphStore.getSatHealth(sid32,ComTime),
+                              "A listed healthy SV was not found or was found to be unhealthy.", __LINE__);
 
             //-------------------------------------------------------
             // Does getSatHealth throw an error for bad SatID request?
             //-------------------------------------------------------
-         try {
+         try
+         {
             gpsEphStore.getSatHealth(sid0,CombTime);
             TUPASS("sedIdentifier");
          }
-         catch (...) {
+         catch (...)
+         {
             TUFAIL("Error thrown for bad SatID request. 0 should have been returned.");
          }
 
             //-------------------------------------------------------
             // Does getSatHealth throw an error for bad SatID request?
             //-------------------------------------------------------
-         try {
+         try
+         {
             gpsEphStore.getSatHealth(sid33,CombTime);
             TUPASS("sedIdentifier");
          }
-         catch (...) {
+         catch (...)
+         {
             TUFAIL("Error thrown for bad SatID request. 0 should have been returned.");
          }
 
             //-----------------------------------------------------------
             // Does getSatHealth return the proper value for bad SatID request?
             //-----------------------------------------------------------
-         testFramework.assert((short) 0 == gpsEphStore.getSatHealth(sid0,ComTime), "An unlisted SatID was not set to unhealthy", __LINE__);
+         testFramework.assert((short) 0 == gpsEphStore.getSatHealth(sid0,ComTime),
+                              "An unlisted SatID was not set to unhealthy", __LINE__);
 
             //-----------------------------------------------------------
             // Does getSatHealth return the proper value for bad SatID request?
             //-----------------------------------------------------------
-         testFramework.assert((short) 0 == gpsEphStore.getSatHealth(sid33,ComTime), "An unlisted SatID was not set to unhealthy", __LINE__);
+         testFramework.assert((short) 0 == gpsEphStore.getSatHealth(sid33,ComTime),
+                              "An unlisted SatID was not set to unhealthy", __LINE__);
       }
       catch (Exception& e)
       {
@@ -765,33 +795,39 @@ return testFramework.countFails();
             //-----------------------------------------------------------
             // Check that dump( , detail = 1) will work with no exceptions
             //-----------------------------------------------------------
-         try {
+         try
+         {
             rinEphStore.dump(dumpTestOutputStreamForDetail0,1);
             TUPASS("sedIdentifier");
          }
-         catch (...) {
+         catch (...)
+         {
             TUFAIL("Dump with detail=1 threw an exception when it should not");
          }
 
             //-----------------------------------------------------------
             // Check that dump( , detail = 2) will work with no exceptions
             //-----------------------------------------------------------
-         try {
+         try
+         {
             rinEphStore.dump(dumpTestOutputStreamForDetail1,2);
             TUPASS("sedIdentifier");
          }
-         catch (...) {
+         catch (...)
+         {
             TUFAIL("Dump with detail=2 threw an exception when it should not");
          }
 
             //-----------------------------------------------------------
             // Check that dump( , detail = 3) will work with no exceptions
             //-----------------------------------------------------------
-         try {
+         try
+         {
             rinEphStore.dump(dumpTestOutputStreamForDetail2,3);
             TUPASS("sedIdentifier");
          }
-         catch (...) {
+         catch (...)
+         {
             TUFAIL("Dump with detail=3 threw an exception when it should not");
          }
 
@@ -810,19 +846,25 @@ return testFramework.countFails();
          // Check dump( , detail = 1) output against its
          // pre-determined standard
          //-----------------------------------------------------------
-      testFramework.assert( testFramework.fileEqualTest( dumpTestOutputForDetail0, dumpTestInputForDetail0, 2), "Dump(*,detail=1) did not match its regressive output", __LINE__ );
+      testFramework.assert( testFramework.fileEqualTest( dumpTestOutputForDetail0,
+                            dumpTestInputForDetail0, 2),
+                            "Dump(*,detail=1) did not match its regressive output", __LINE__ );
 
          //-----------------------------------------------------------
          // Check dump( , detail = 2) output against its
          // pre-determined standard
          //-----------------------------------------------------------
-      testFramework.assert( testFramework.fileEqualTest( dumpTestOutputForDetail1, dumpTestInputForDetail1, 2), "Dump(*,detail=2) did not match its regressive output", __LINE__ );
+      testFramework.assert( testFramework.fileEqualTest( dumpTestOutputForDetail1,
+                            dumpTestInputForDetail1, 2),
+                            "Dump(*,detail=2) did not match its regressive output", __LINE__ );
 
          //-----------------------------------------------------------
          // Check dump( , detail = 3) output against its
          // pre-determined standard
          //-----------------------------------------------------------
-      testFramework.assert( testFramework.fileEqualTest( dumpTestOutputForDetail2, dumpTestInputForDetail2, 2), "Dump(*,detail=3) did not match its regressive output", __LINE__ );
+      testFramework.assert( testFramework.fileEqualTest( dumpTestOutputForDetail2,
+                            dumpTestInputForDetail2, 2),
+                            "Dump(*,detail=3) did not match its regressive output", __LINE__ );
 
       return testFramework.countFails();
    }
@@ -879,11 +921,13 @@ return testFramework.countFails();
             //-----------------------------------------------------------
             // Verify that addEphemeris runs with no errors
             //-----------------------------------------------------------
-         try{
+         try
+         {
             Blank.addEphemeris(eph);
             TUPASS("sedIdentifier");
          }
-         catch (...) {
+         catch (...)
+         {
             TUFAIL("addEphemeris threw an exception when all necessary data has been provided");
          }
 
@@ -891,13 +935,17 @@ return testFramework.countFails();
             // Verify that addEphemeris added by checking the initial
             // time of the GPSEphemerisStore
             //-----------------------------------------------------------
-         testFramework.assert( ComTimeB == Blank.getInitialTime(), "addEphemeris may not have added the ephemeris or updated the initial time", __LINE__);
+         testFramework.assert( ComTimeB == Blank.getInitialTime(),
+                               "addEphemeris may not have added the ephemeris or updated the initial time",
+                               __LINE__);
 
             //-----------------------------------------------------------
             // Verify that addEphemeris added by checking the final
             // time of the GPSEphemerisStore
             //-----------------------------------------------------------
-         testFramework.assert( ComTimeE == Blank.getFinalTime(), "addEphemeris may not have added the ephemeris or updated the final time", __LINE__ );
+         testFramework.assert( ComTimeE == Blank.getFinalTime(),
+                               "addEphemeris may not have added the ephemeris or updated the final time",
+                               __LINE__ );
 
 
          Blank.clear();
@@ -905,13 +953,15 @@ return testFramework.countFails();
             // Verify that clear() worked by checking the initial time
             // of the GPSEphemerisStore
             //-----------------------------------------------------------
-         testFramework.assert( ComDefB == Blank.getInitialTime(), "clear may not have functioned or reset the initial time", __LINE__ );
+         testFramework.assert( ComDefB == Blank.getInitialTime(),
+                               "clear may not have functioned or reset the initial time", __LINE__ );
 
             //-----------------------------------------------------------
             // Verify that clear() worked by checking the initial time
             // of the GPSEphemerisStore
             //-----------------------------------------------------------
-         testFramework.assert( ComDefE == Blank.getFinalTime(), "clear may not have functioned or reset the final time", __LINE__ );
+         testFramework.assert( ComDefE == Blank.getFinalTime(),
+                               "clear may not have functioned or reset the final time", __LINE__ );
       }
       catch (Exception& e)
       {
@@ -960,11 +1010,13 @@ return testFramework.countFails();
             //-----------------------------------------------------------
             // Verify that the edit method runs
             //-----------------------------------------------------------
-         try{
+         try
+         {
             rinEphStore.edit(ComTMin, ComTMax);
             TUPASS("sedIdentifier");
          }
-         catch (...) {
+         catch (...)
+         {
             TUFAIL("edit threw an error when it should have functioned");
          }
 
@@ -972,12 +1024,14 @@ return testFramework.countFails();
             //-----------------------------------------------------------
             // Verify that the edit method changed the initial time
             //-----------------------------------------------------------
-         testFramework.assert(ComTMin == rinEphStore.getInitialTime(), "Edit did not change the initial time", __LINE__);
+         testFramework.assert(ComTMin == rinEphStore.getInitialTime(),
+                              "Edit did not change the initial time", __LINE__);
 
             //-----------------------------------------------------------
             // Verify that the edit method changed the final time
             //-----------------------------------------------------------
-         testFramework.assert(ComTMax == rinEphStore.getFinalTime(), "Edit did not change the initial time", __LINE__);
+         testFramework.assert(ComTMax == rinEphStore.getFinalTime(),
+                              "Edit did not change the initial time", __LINE__);
 
 
          rinEphStore.dump(editTestOutputStream,2);
@@ -992,7 +1046,9 @@ return testFramework.countFails();
          //-----------------------------------------------------------
          // Check edited output against its pre-determined standard
          //-----------------------------------------------------------
-      testFramework.assert( testFramework.fileEqualTest( editTestOutput, editTestInput, 2), "Output from edit does not match regressive standard", __LINE__ );
+      testFramework.assert( testFramework.fileEqualTest( editTestOutput,
+                            editTestInput, 2), "Output from edit does not match regressive standard",
+                            __LINE__ );
 
       return testFramework.countFails();
    }
@@ -1010,88 +1066,88 @@ return testFramework.countFails();
 //
 //      Please note that this test also indirectly tests size
 //=============================================================================
-/*              int wiperTest (void)
-                {
-                TUDEF("RinexEphemerisStore", "wiper");
+      /*              int wiperTest (void)
+                      {
+                      TUDEF("RinexEphemerisStore", "wiper");
 
 
-                ofstream DumpData1;
-                ofstream DumpData2;
-                outputTestOutput1 = outputTestOutput + "wiperTest.txt";
-                outputTestOutput15 = outputTestOutput + "wiperTest2.txt";
-                DumpData1.open (outputTestOutput1.c_str());
-                DumpData2.open (outputTestOutput15.c_str());
+                      ofstream DumpData1;
+                      ofstream DumpData2;
+                      outputTestOutput1 = outputTestOutput + "wiperTest.txt";
+                      outputTestOutput15 = outputTestOutput + "wiperTest2.txt";
+                      DumpData1.open (outputTestOutput1.c_str());
+                      DumpData2.open (outputTestOutput15.c_str());
 
 
-                RinexEphemerisStore rinEphStore;
-                rinEphStore.loadFile(inputRinexNavData.c_str());
+                      RinexEphemerisStore rinEphStore;
+                      rinEphStore.loadFile(inputRinexNavData.c_str());
 
-                std::list<GPSEphemeris> R3NList;
-                GPSEphemerisStore gpsEphStore;
-                list<GPSEphemeris>::const_iterator it;
-                rinEphStore.addToList(R3NList);
-                for (it = R3NList.begin(); it != R3NList.end(); ++it)
-                {
-                gpsEphStore.addEphemeris(GPSEphemeris(*it));
-                }
+                      std::list<GPSEphemeris> R3NList;
+                      GPSEphemerisStore gpsEphStore;
+                      list<GPSEphemeris>::const_iterator it;
+                      rinEphStore.addToList(R3NList);
+                      for (it = R3NList.begin(); it != R3NList.end(); ++it)
+                      {
+                      gpsEphStore.addEphemeris(GPSEphemeris(*it));
+                      }
 
-                CivilTime Time(2006,1,31,11,45,0,2);
-                const CommonTime ComTime = (CommonTime)Time;
+                      CivilTime Time(2006,1,31,11,45,0,2);
+                      const CommonTime ComTime = (CommonTime)Time;
 
-                try
-                {
-//--------------RinexEphemerisStore_wiperTest_1 - Verify that the wiper method runs (but shouldn't wipe anything this time)
-try {
-gpsEphStore.wiper(CommonTime::BEGINNING_OF_TIME); TUPASS("sedIdentifier");
-}
-catch (...) {
-testFramework.failTest();
-}
+                      try
+                      {
+      //--------------RinexEphemerisStore_wiperTest_1 - Verify that the wiper method runs (but shouldn't wipe anything this time)
+      try {
+      gpsEphStore.wiper(CommonTime::BEGINNING_OF_TIME); TUPASS("sedIdentifier");
+      }
+      catch (...) {
+      testFramework.failTest();
+      }
 
-   // Wipe everything outside interval and make sure that we did wipe all the data
-      // up to the provided time.
-      gpsEphStore.wiper(ComTime);
+         // Wipe everything outside interval and make sure that we did wipe all the data
+            // up to the provided time.
+            gpsEphStore.wiper(ComTime);
 
-      gpsEphStore.dump(DumpData1,1);
+            gpsEphStore.dump(DumpData1,1);
 
-//--------------RinexEphemerisStore_wiperTest_2 - Verify that the new initial time is the time provided (partial wipe)
-testFramework.assert(ComTime == gpsEphStore.getInitialTime());
-testFramework.next();
+      //--------------RinexEphemerisStore_wiperTest_2 - Verify that the new initial time is the time provided (partial wipe)
+      testFramework.assert(ComTime == gpsEphStore.getInitialTime());
+      testFramework.next();
 
-   // Wipe everything, return size (should be zero)
-   gpsEphStore.wiper(CommonTime::END_OF_TIME);
-   unsigned int Num = gpsEphStore.gpstk::OrbitEphStore::size(); // Get the size of the GPSEphemerisStore
+         // Wipe everything, return size (should be zero)
+         gpsEphStore.wiper(CommonTime::END_OF_TIME);
+         unsigned int Num = gpsEphStore.gpstk::OrbitEphStore::size(); // Get the size of the GPSEphemerisStore
 
-//--------------RinexEphemerisStore_wiperTest_3 - Verify that the store is empty (total wipe)
-testFramework.assert((unsigned int) 0 == Num);
-testFramework.next();
+      //--------------RinexEphemerisStore_wiperTest_3 - Verify that the store is empty (total wipe)
+      testFramework.assert((unsigned int) 0 == Num);
+      testFramework.next();
 
-//--------------RinexEphemerisStore_wiperTest_4 - Verify that the initial time is the default END_OF_TIME (indicates empty GPSEphemerisStore)
-testFramework.assert(CommonTime::END_OF_TIME == gpsEphStore.getInitialTime());
-testFramework.next();
+      //--------------RinexEphemerisStore_wiperTest_4 - Verify that the initial time is the default END_OF_TIME (indicates empty GPSEphemerisStore)
+      testFramework.assert(CommonTime::END_OF_TIME == gpsEphStore.getInitialTime());
+      testFramework.next();
 
-gpsEphStore.dump(DumpData2,1);
-}
-catch (Exception& e)
-{
-   // cout << e;
-   }
-   DumpData1.close();
-   DumpData2.close();
-   inputComparisonOutput1  = inputComparisonOutput + "wiperTest.chk";
-   inputComparisonOutput15 = inputComparisonOutput + "wiperTest2.chk";
+      gpsEphStore.dump(DumpData2,1);
+      }
+      catch (Exception& e)
+      {
+         // cout << e;
+         }
+         DumpData1.close();
+         DumpData2.close();
+         inputComparisonOutput1  = inputComparisonOutput + "wiperTest.chk";
+         inputComparisonOutput15 = inputComparisonOutput + "wiperTest2.chk";
 
-//--------------RinexEphemerisStore_dumpTest_5 - Check partially wiped output against its pre-determined standard
-testFramework.assert( testFramework.fileEqualTest( outputTestOutput1, inputComparisonOutput1, 0) );
-testFramework.next();
+      //--------------RinexEphemerisStore_dumpTest_5 - Check partially wiped output against its pre-determined standard
+      testFramework.assert( testFramework.fileEqualTest( outputTestOutput1, inputComparisonOutput1, 0) );
+      testFramework.next();
 
-//--------------RinexEphemerisStore_dumpTest_6 - Check totally wiped output against its pre-determined standard
-testFramework.assert( testFramework.fileEqualTest( outputTestOutput15, inputComparisonOutput15, 0) );
-testFramework.next();
+      //--------------RinexEphemerisStore_dumpTest_6 - Check totally wiped output against its pre-determined standard
+      testFramework.assert( testFramework.fileEqualTest( outputTestOutput15, inputComparisonOutput15, 0) );
+      testFramework.next();
 
-return testFramework.countFails();
-}
-*/
+      return testFramework.countFails();
+      }
+      */
 
 //=============================================================================
 //      Test to assure the quality of OrbitEphStore class member
@@ -1120,23 +1176,28 @@ return testFramework.countFails();
             //-----------------------------------------------------------
             // Verify the gpstk::OrbitEphStore::clear() method runs
             //-----------------------------------------------------------
-         try {
+         try
+         {
             rinEphStore.gpstk::OrbitEphStore::clear();
             TUPASS("sedIdentifier");
          }
-         catch (...) {
+         catch (...)
+         {
             TUFAIL("OrbitEphStore::clear() threw an exception when it should not have");
          }
 
             //-----------------------------------------------------------
             // Verify that clear set the initial time to END_OF_TIME
             //-----------------------------------------------------------
-         testFramework.assert(CommonTime::END_OF_TIME == rinEphStore.getInitialTime(), "clear may not have cleared or may not have reset the initial time", __LINE__);
+         testFramework.assert(CommonTime::END_OF_TIME == rinEphStore.getInitialTime(),
+                              "clear may not have cleared or may not have reset the initial time", __LINE__);
 
             //-----------------------------------------------------------
             // Verify that clear set the final time to BEGINNING_OF_TIME
             //-----------------------------------------------------------
-         testFramework.assert(CommonTime::BEGINNING_OF_TIME == rinEphStore.getFinalTime(), "clear may not have cleared or may not have reset the final time", __LINE__);
+         testFramework.assert(CommonTime::BEGINNING_OF_TIME ==
+                              rinEphStore.getFinalTime(),
+                              "clear may not have cleared or may not have reset the final time", __LINE__);
 
 
          rinEphStore.dump(clearTestOutputStream,1);
@@ -1150,7 +1211,9 @@ return testFramework.countFails();
          //-----------------------------------------------------------
          // Check partially wiped output against its pre-determined standard
          //-----------------------------------------------------------
-      testFramework.assert( testFramework.fileEqualTest( clearTestOutput, clearTestInput, 2), "Output from clear does not match its regressive standard.", __LINE__ );
+      testFramework.assert( testFramework.fileEqualTest( clearTestOutput,
+                            clearTestInput, 2),
+                            "Output from clear does not match its regressive standard.", __LINE__ );
       return testFramework.countFails();
    }
 
@@ -1227,9 +1290,9 @@ return testFramework.countFails();
          }
          else
          {
-            TUFAIL("findUserOrbitEph returned a valid pointer when it should not");         
+            TUFAIL("findUserOrbitEph returned a valid pointer when it should not");
          }
-         
+
             //-----------------------------------------------------------
             // Check that an invalid time yields a thrown error
             //-----------------------------------------------------------
@@ -1242,7 +1305,7 @@ return testFramework.countFails();
          {
             TUFAIL("findUserOrbitEph returned a valid pointer when it should not");
          }
-         
+
             //-----------------------------------------------------------
             // Verify that for ideal conditions findUserOrbitEph runs
             //-----------------------------------------------------------
@@ -1276,7 +1339,9 @@ return testFramework.countFails();
          //-----------------------------------------------------------
          // Check findUserOrbitEph output against its pre-determined standard
          //-----------------------------------------------------------
-      testFramework.assert( testFramework.fileEqualTest( findUserTestOutput, findUserTestInput, 0), "findUserOrbitEph output does not match its regressive standard", __LINE__ );
+      testFramework.assert( testFramework.fileEqualTest( findUserTestOutput,
+                            findUserTestInput, 0),
+                            "findUserOrbitEph output does not match its regressive standard", __LINE__ );
       return testFramework.countFails();
    }
 
@@ -1329,14 +1394,14 @@ return testFramework.countFails();
             //-----------------------------------------------------------
             // Check that a missing satID (too small) yields a thrown error
             //-----------------------------------------------------------
-         const OrbitEph* oe = rinEphStore.findNearOrbitEph(sid0,ComTime); 
+         const OrbitEph* oe = rinEphStore.findNearOrbitEph(sid0,ComTime);
          if (oe==NULL)
          {
             TUPASS("sedIdentifier");
          }
          else
          {
-            TUFAIL("findUserOrbitEph returned a valid pointer when it should not");         
+            TUFAIL("findUserOrbitEph returned a valid pointer when it should not");
          }
 
             //-----------------------------------------------------------
@@ -1349,7 +1414,7 @@ return testFramework.countFails();
          }
          else
          {
-            TUFAIL("findUserOrbitEph returned a valid pointer when it should not");         
+            TUFAIL("findUserOrbitEph returned a valid pointer when it should not");
          }
 
             //-----------------------------------------------------------
@@ -1357,20 +1422,20 @@ return testFramework.countFails();
             //
             // TEST REMOVED.  findNearOrbitEph( ) does not check
             // that the elements are within their fit interval.  Therefore
-            // there is no concept of an "invalid time". 
+            // there is no concept of an "invalid time".
             //-----------------------------------------------------------
-         /*
-         oe = rinEphStore.findNearOrbitEph(sid1,CommonTime::END_OF_TIME);
-         if (oe==NULL)
-         {
-            TUPASS("sedIdentifier");
-         }
-         else
-         {
-            TUFAIL("findUserOrbitEph returned a valid pointer when it should not");         
-         }
-         */
-         
+            /*
+            oe = rinEphStore.findNearOrbitEph(sid1,CommonTime::END_OF_TIME);
+            if (oe==NULL)
+            {
+               TUPASS("sedIdentifier");
+            }
+            else
+            {
+               TUFAIL("findUserOrbitEph returned a valid pointer when it should not");
+            }
+            */
+
             //-----------------------------------------------------------
             // Verify that for ideal conditions findUserOrbitEph runs
             //-----------------------------------------------------------
@@ -1406,7 +1471,9 @@ return testFramework.countFails();
          //-----------------------------------------------------------
          // Check findNearOrbitEph output against its pre-determined standard
          //-----------------------------------------------------------
-      testFramework.assert( testFramework.fileEqualTest( findNearTestOutput, findNearTestInput, 0), "findNearOrbitEph output does not match its regressive standard", __LINE__ );
+      testFramework.assert( testFramework.fileEqualTest( findNearTestOutput,
+                            findNearTestInput, 0),
+                            "findNearOrbitEph output does not match its regressive standard", __LINE__ );
       return testFramework.countFails();
    }
 
@@ -1457,15 +1524,25 @@ return testFramework.countFails();
             // Assert that the number of added members equals the size
             // of Store (all members added)
             //-----------------------------------------------------------
-         testFramework.assert(rinEphStore.gpstk::OrbitEphStore::size() == gpsEphStore.gpstk::OrbitEphStore::size(), "The added entries are not reflected in the GPSEphemerisStore", __LINE__ );
+         testFramework.assert(rinEphStore.gpstk::OrbitEphStore::size() ==
+                              gpsEphStore.gpstk::OrbitEphStore::size(),
+                              "The added entries are not reflected in the GPSEphemerisStore", __LINE__ );
 
-         testFramework.assert(rinEphStore.gpstk::OrbitEphStore::size() == numberOfEntries, "The total number of entries is not what is expected", __LINE__ );
+         testFramework.assert(rinEphStore.gpstk::OrbitEphStore::size() ==
+                              numberOfEntries, "The total number of entries is not what is expected",
+                              __LINE__ );
 
-         testFramework.assert(rinEphStore.gpstk::OrbitEphStore::size(sid1) == numberOfEntries1, "The total number of entries for SatID 1 is not what is expected", __LINE__ );
+         testFramework.assert(rinEphStore.gpstk::OrbitEphStore::size(
+                                 sid1) == numberOfEntries1,
+                              "The total number of entries for SatID 1 is not what is expected", __LINE__ );
 
-         testFramework.assert(rinEphStore.gpstk::OrbitEphStore::size(sid15) == numberOfEntries15, "The total number of entries for SatID 15 is not what is expected", __LINE__ );
+         testFramework.assert(rinEphStore.gpstk::OrbitEphStore::size(
+                                 sid15) == numberOfEntries15,
+                              "The total number of entries for SatID 15 is not what is expected", __LINE__ );
 
-         testFramework.assert(rinEphStore.gpstk::OrbitEphStore::size(sid32) == numberOfEntries32, "The total number of entries for SatID 32 is not what is expected", __LINE__ );
+         testFramework.assert(rinEphStore.gpstk::OrbitEphStore::size(
+                                 sid32) == numberOfEntries32,
+                              "The total number of entries for SatID 32 is not what is expected", __LINE__ );
       }
       catch (Exception& e)
       {
@@ -1486,31 +1563,48 @@ return testFramework.countFails();
       std::string tempFilePath = test0.getTempPath();
       std::string file_sep = "/";
 
-      inputRinexNavData             = dataFilePath + file_sep + "test_input_rinex_nav_ephemerisData.031";
+      inputRinexNavData             = dataFilePath + file_sep +
+                                      "test_input_rinex_nav_ephemerisData.031";
       inputNotaFile                 = dataFilePath + file_sep + "NotaFILE";
 
-      findEphTestOutput             = tempFilePath + file_sep + "test_output_ephemeris_dump_findEph.txt";
-      findEphTestInput              = dataFilePath + file_sep + "test_input_ephemeris_dump_findEph.txt";
+      findEphTestOutput             = tempFilePath + file_sep +
+                                      "test_output_ephemeris_dump_findEph.txt";
+      findEphTestInput              = dataFilePath + file_sep +
+                                      "test_input_ephemeris_dump_findEph.txt";
       gpsEphemerisStoreDumpOutput   = tempFilePath + file_sep + "DataDump.txt";
 
-      dumpTestOutputForDetail0      = tempFilePath + file_sep + "test_output_ephemeris_dump_detail0.txt";
-      dumpTestOutputForDetail1      = tempFilePath + file_sep + "test_output_ephemeris_dump_detail1.txt";
-      dumpTestOutputForDetail2      = tempFilePath + file_sep + "test_output_ephemeris_dump_detail2.txt";
-      dumpTestInputForDetail0       = dataFilePath + file_sep + "test_input_ephemeris_dump_detail0.txt";
-      dumpTestInputForDetail1       = dataFilePath + file_sep + "test_input_ephemeris_dump_detail1.txt";
-      dumpTestInputForDetail2       = dataFilePath + file_sep + "test_input_ephemeris_dump_detail2.txt";
+      dumpTestOutputForDetail0      = tempFilePath + file_sep +
+                                      "test_output_ephemeris_dump_detail0.txt";
+      dumpTestOutputForDetail1      = tempFilePath + file_sep +
+                                      "test_output_ephemeris_dump_detail1.txt";
+      dumpTestOutputForDetail2      = tempFilePath + file_sep +
+                                      "test_output_ephemeris_dump_detail2.txt";
+      dumpTestInputForDetail0       = dataFilePath + file_sep +
+                                      "test_input_ephemeris_dump_detail0.txt";
+      dumpTestInputForDetail1       = dataFilePath + file_sep +
+                                      "test_input_ephemeris_dump_detail1.txt";
+      dumpTestInputForDetail2       = dataFilePath + file_sep +
+                                      "test_input_ephemeris_dump_detail2.txt";
 
-      editTestOutput                = tempFilePath + file_sep + "test_output_ephemeris_dump_edit.txt";
-      editTestInput                 = dataFilePath + file_sep + "test_input_ephemeris_dump_edit.txt";
+      editTestOutput                = tempFilePath + file_sep +
+                                      "test_output_ephemeris_dump_edit.txt";
+      editTestInput                 = dataFilePath + file_sep +
+                                      "test_input_ephemeris_dump_edit.txt";
 
-      clearTestOutput               = tempFilePath + file_sep + "test_output_ephemeris_dump_clear.txt";
-      clearTestInput                = dataFilePath + file_sep + "test_input_ephemeris_dump_clear.txt";
+      clearTestOutput               = tempFilePath + file_sep +
+                                      "test_output_ephemeris_dump_clear.txt";
+      clearTestInput                = dataFilePath + file_sep +
+                                      "test_input_ephemeris_dump_clear.txt";
 
-      findUserTestOutput            = tempFilePath + file_sep + "test_output_ephemeris_dump_findUser.txt";
-      findUserTestInput             = dataFilePath + file_sep + "test_input_ephemeris_dump_findUser.txt";
+      findUserTestOutput            = tempFilePath + file_sep +
+                                      "test_output_ephemeris_dump_findUser.txt";
+      findUserTestInput             = dataFilePath + file_sep +
+                                      "test_input_ephemeris_dump_findUser.txt";
 
-      findNearTestOutput            = tempFilePath + file_sep + "test_output_ephemeris_dump_findNear.txt";
-      findNearTestInput             = dataFilePath + file_sep + "test_input_ephemeris_dump_findNear.txt";
+      findNearTestOutput            = tempFilePath + file_sep +
+                                      "test_output_ephemeris_dump_findNear.txt";
+      findNearTestInput             = dataFilePath + file_sep +
+                                      "test_input_ephemeris_dump_findNear.txt";
    }
 
 private:
@@ -1580,7 +1674,8 @@ int main() // Main function to initialize and run all tests above
    check = testClass.findNearOrbEphTest();
    errorCounter += check;
 
-   std::cout << "Total Failures for " << __FILE__ << ": " << errorCounter << std::endl;
+   std::cout << "Total Failures for " << __FILE__ << ": " << errorCounter <<
+             std::endl;
 
    return errorCounter; // Return the total number of errors
 }
