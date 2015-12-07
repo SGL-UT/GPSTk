@@ -167,6 +167,7 @@ headerExceptionTest()
       {
          TUFAIL("Exception while writing valid RINEX clock header");
       }
+      out.clear();
       try
       {
          out << ihh;
@@ -175,8 +176,8 @@ headerExceptionTest()
       catch (...)
       {
          TUPASS("exception");
-         out.clear();
       }
+      out.clear();
       try
       {
          out << ilh;
@@ -185,8 +186,8 @@ headerExceptionTest()
       catch (...)
       {
          TUPASS("exception");
-         out.clear();
       }
+      out.clear();
       try
       {
          out << noh;
@@ -195,8 +196,8 @@ headerExceptionTest()
       catch (...)
       {
          TUPASS("exception");
-         out.clear();
       }
+      out.clear();
       try
       {
             // The error in this header will not have made it into the
@@ -209,6 +210,7 @@ headerExceptionTest()
       {
          TUFAIL("Exception while writing valid(ish) RINEX clock header");
       }
+      out.clear();
       while( rinexClockFile >> rinexClockData )
       {
          out << rinexClockData;

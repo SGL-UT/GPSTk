@@ -1274,8 +1274,8 @@ int RinexMet_T :: dataExceptionsTest()
       catch (...)
       {
          TUPASS("exception");
-         InvalidTimeFormat.clear();
       }
+      InvalidTimeFormat.clear();
          // try to read a second improperly formatted record.. but is
          // it really doing it, or has the stream backed-up to before
          // the previous bad record and it's just trying to read the
@@ -1288,8 +1288,8 @@ int RinexMet_T :: dataExceptionsTest()
       catch (...)
       {
          TUPASS("exception");
-         InvalidTimeFormat.clear();
       }
+      InvalidTimeFormat.clear();
    }
    catch (...)
    {
