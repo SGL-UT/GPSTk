@@ -45,14 +45,14 @@
 
 namespace gpstk
 {
-   // A class to hid the details of setting up an iostream to take data from
-   // write data to one of several sources:
-   //   standard input/output
-   //   a file
-   //   a tcp socket
-   //   a serial port
-   // See the open() function for how to specify these targets
-   // Note that the base type needs to be a decendant of an fstream for this class to work.
+      // A class to hid the details of setting up an iostream to take data from
+      // write data to one of several sources:
+      //   standard input/output
+      //   a file
+      //   a tcp socket
+      //   a serial port
+      // See the open() function for how to specify these targets
+      // Note that the base type needs to be a decendant of an fstream for this class to work.
    template<class T>
    class DeviceStream : public T
    {
@@ -87,7 +87,7 @@ namespace gpstk
 
    template<class T>
    DeviceStream<T>::DeviceStream(void)
-      : fdbuff(NULL)
+         : fdbuff(NULL)
    {
       open("");
    }
@@ -95,8 +95,8 @@ namespace gpstk
 
    template<class T>
    DeviceStream<T>::DeviceStream(const std::string& target, std::ios::openmode mode)
-      : fdbuff(NULL), 
-        target(target)
+         : fdbuff(NULL), 
+           target(target)
    {
       open(target, mode);
    };
@@ -128,6 +128,7 @@ namespace gpstk
    template<class T>
    void DeviceStream<T>::open(const std::string& target, std::ios::openmode mode)
    {
+      using namespace std;
       this->target = target;
       if (target != "")
       {
@@ -168,11 +169,11 @@ namespace gpstk
                return;
             }
 
-	    // Not sure why this was being done it really should have been
-	    // This is just another way to force blocking I/O
+               // Not sure why this was being done it really should have been
+               // This is just another way to force blocking I/O
             int rc;
             rc = fcntl(fd, F_SETFL, 0);
-           if (rc < 0)
+            if (rc < 0)
             {
                cout << "Error in fcntl, rc=" << rc << endl;
                return;
@@ -195,7 +196,7 @@ namespace gpstk
             if (rc==cfsetispeed(&options, B115200))
                cout << "Error in cfsetispeed(), rc=" << rc << endl;
 
-            // Final step... apply them
+               // Final step... apply them
             if (rc==tcsetattr(fd, TCSANOW, &options))
                cout << "Error in tcsetattr(), rc=" << rc << endl;
 
