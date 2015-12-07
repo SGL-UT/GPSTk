@@ -53,7 +53,7 @@ public:
       //==========================================================
    int twiddleTest(void)
    {
-      TestUtil testFramework("BinUtils", "twiddle", __FILE__, __LINE__);
+      TUDEF("BinUtils", "twiddle");
 
          //std::cout.setf(std::ios_base::hex,std::ios_base::basefield);
 
@@ -91,6 +91,11 @@ public:
          ptrd++;
       }
 
+/* JMK 2015/12/07 commented out all the floating point types because
+ * the data array above produces numbers that evaluate to NaN - not a
+ * good idea.  The test is reasonable to cover integer types only,
+ * given that the function under test is a template.
+
       float e;
       unsigned char *ptre = (unsigned char *)& e;
       for (int i = sizeof(float)-1;i>=0;i--)
@@ -113,7 +118,15 @@ public:
       {
          *ptrg = Store[i];
          ptrg++;
+      }
+*/
 
+      long long h;
+      unsigned char *ptrh = (unsigned char *)& h;
+      for (int i = sizeof(long long)-1;i>=0;i--)
+      {
+         *ptrh = Store[i];
+         ptrh++;
       }
 
       char a1;
@@ -148,6 +161,7 @@ public:
          ptrd1++;
       }
 
+/*
       float e1;
       unsigned char *ptre1 = (unsigned char *)& e1;
       for (int i =0;i<sizeof(float);i++)
@@ -171,6 +185,15 @@ public:
          *ptrg1 = Store[i];
          ptrg1++;
       }
+*/
+
+      long long h1;
+      unsigned char *ptrh1 = (unsigned char *)& h1;
+      for (int i =0;i<sizeof(long long);i++)
+      {
+         *ptrh1 = Store[i];
+         ptrh1++;
+      }
 
 
          // Testing twiddle for little Endian
@@ -179,9 +202,12 @@ public:
       gpstk::BinUtils::twiddle(b);
       gpstk::BinUtils::twiddle(c);
       gpstk::BinUtils::twiddle(d);
+/*
       gpstk::BinUtils::twiddle(e);
       gpstk::BinUtils::twiddle(f);
       gpstk::BinUtils::twiddle(g);
+*/
+      gpstk::BinUtils::twiddle(h);
 
 
       std::string failMesg;
@@ -190,25 +216,34 @@ public:
       testFramework.assert(b1 == b, failMesg, __LINE__);
       testFramework.assert(c1 == c, failMesg, __LINE__);
       testFramework.assert(d1 == d, failMesg, __LINE__);
+/*
       testFramework.assert(std::abs(e1-e) < 1e-50, failMesg, __LINE__);
       testFramework.assert(std::abs(f1-f) < 1e-50, failMesg, __LINE__);
       testFramework.assert(std::abs(g1-g) < 1e-50, failMesg, __LINE__);
+*/
+      TUASSERTE(long long, h1, h);
 
       gpstk::BinUtils::twiddle(a);
       gpstk::BinUtils::twiddle(b);
       gpstk::BinUtils::twiddle(c);
       gpstk::BinUtils::twiddle(d);
+/*
       gpstk::BinUtils::twiddle(e);
       gpstk::BinUtils::twiddle(f);
       gpstk::BinUtils::twiddle(g);
+*/
+      gpstk::BinUtils::twiddle(h);
 
       gpstk::BinUtils::twiddle(a1);
       gpstk::BinUtils::twiddle(b1);
       gpstk::BinUtils::twiddle(c1);
       gpstk::BinUtils::twiddle(d1);
+/*
       gpstk::BinUtils::twiddle(e1);
       gpstk::BinUtils::twiddle(f1);
       gpstk::BinUtils::twiddle(g1);
+*/
+      gpstk::BinUtils::twiddle(h1);
 
          // Testing twiddle for big Endian
 
@@ -216,9 +251,12 @@ public:
       testFramework.assert(b1 == b, failMesg, __LINE__);
       testFramework.assert(c1 == c, failMesg, __LINE__);
       testFramework.assert(d1 == d, failMesg, __LINE__);
+/*
       testFramework.assert(std::abs(e1-e) < 1e-50, failMesg, __LINE__);
       testFramework.assert(std::abs(f1-f) < 1e-50, failMesg, __LINE__);
       testFramework.assert(std::abs(g1-g) < 1e-50, failMesg, __LINE__);
+*/
+      TUASSERTE(long long, h1, h);
       return testFramework.countFails();
    }
 
