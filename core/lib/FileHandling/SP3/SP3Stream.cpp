@@ -71,17 +71,20 @@ namespace gpstk
    void SP3Stream ::
    close(void) throw(Exception)
    {
-      try {
-            // if writing, add the final line
-         if(writingMode && !wroteEOF) {
-            (*this) << "EOF\n"; 
-            wroteEOF = true;
+      if (is_open())
+      {
+         try {
+               // if writing, add the final line
+            if(writingMode && !wroteEOF) {
+               (*this) << "EOF\n"; 
+               wroteEOF = true;
+            }
+            FFTextStream::close();
          }
-         FFTextStream::close();
-      }
-      catch(std::exception& e) {
-         Exception ge(e.what());
-         GPSTK_THROW(ge);
+         catch(std::exception& e) {
+            Exception ge(e.what());
+            GPSTK_THROW(ge);
+         }
       }
    }
 
