@@ -160,6 +160,13 @@ namespace gpstk
    void FFStream::tryFFStreamGet(FFData& rec)
       throw(FFStreamError, gpstk::StringUtils::StringException)
    {
+         // JMK 2015/12/07 - some implementations of streams will
+         // raise exceptions in tellg if eofbit is set but not
+         // failbit.  This attempts to work around this situation and
+         // make FFStream work more like one would expect, i.e. don't
+         // fail until the failbit is set.
+      if (rdstate() == std::ios::eofbit)
+         clear(); // clear ONLY if eofbit is the only state flag set
          // Mark where we start in case there is an error.
       long initialPosition = tellg();
       unsigned long initialRecordNumber = recordNumber;
