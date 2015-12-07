@@ -225,7 +225,7 @@ int RinexMet_T :: openMissingFileTest()
 
 int RinexMet_T :: bitsAsStringTest()
 {
-   TestUtil test1( "RinexMetHeader", "bitsAsString", __FILE__, __LINE__ );
+   TUDEF( "RinexMetHeader", "bitsAsString" );
 
    std::string test_desc =
       "RinexMetHeader, bitsAsString, file read compared to expected string, did not match";
@@ -243,29 +243,29 @@ int RinexMet_T :: bitsAsStringTest()
    std::string expected_string_i = "END OF HEADER";
    std::string expected_string_z = "*UNKNOWN/INVALID BITS*";
 
-   test1.assert( expected_string_a == RinexMetHeader.bitsAsString(
-                    RinexMetHeader.validVersion)      , test_desc, __LINE__ );
-   test1.assert( expected_string_b == RinexMetHeader.bitsAsString(
-                    RinexMetHeader.validRunBy)        , test_desc, __LINE__ );
-   test1.assert( expected_string_c == RinexMetHeader.bitsAsString(
-                    RinexMetHeader.validComment)      , test_desc, __LINE__ );
-   test1.assert( expected_string_d == RinexMetHeader.bitsAsString(
-                    RinexMetHeader.validMarkerName)   , test_desc, __LINE__ );
-   test1.assert( expected_string_e == RinexMetHeader.bitsAsString(
-                    RinexMetHeader.validMarkerNumber) , test_desc, __LINE__ );
-   test1.assert( expected_string_f == RinexMetHeader.bitsAsString(
-                    RinexMetHeader.validObsType)      , test_desc, __LINE__ );
-   test1.assert( expected_string_g == RinexMetHeader.bitsAsString(
-                    RinexMetHeader.validSensorType)   , test_desc, __LINE__ );
-   test1.assert( expected_string_h == RinexMetHeader.bitsAsString(
-                    RinexMetHeader.validSensorPos)    , test_desc, __LINE__ );
-   test1.assert( expected_string_i == RinexMetHeader.bitsAsString(
-                    RinexMetHeader.validEoH)          , test_desc, __LINE__ );
+   testFramework.assert( expected_string_a == RinexMetHeader.bitsAsString(
+                            RinexMetHeader.validVersion)      , test_desc, __LINE__ );
+   testFramework.assert( expected_string_b == RinexMetHeader.bitsAsString(
+                            RinexMetHeader.validRunBy)        , test_desc, __LINE__ );
+   testFramework.assert( expected_string_c == RinexMetHeader.bitsAsString(
+                            RinexMetHeader.validComment)      , test_desc, __LINE__ );
+   testFramework.assert( expected_string_d == RinexMetHeader.bitsAsString(
+                            RinexMetHeader.validMarkerName)   , test_desc, __LINE__ );
+   testFramework.assert( expected_string_e == RinexMetHeader.bitsAsString(
+                            RinexMetHeader.validMarkerNumber) , test_desc, __LINE__ );
+   testFramework.assert( expected_string_f == RinexMetHeader.bitsAsString(
+                            RinexMetHeader.validObsType)      , test_desc, __LINE__ );
+   testFramework.assert( expected_string_g == RinexMetHeader.bitsAsString(
+                            RinexMetHeader.validSensorType)   , test_desc, __LINE__ );
+   testFramework.assert( expected_string_h == RinexMetHeader.bitsAsString(
+                            RinexMetHeader.validSensorPos)    , test_desc, __LINE__ );
+   testFramework.assert( expected_string_i == RinexMetHeader.bitsAsString(
+                            RinexMetHeader.validEoH)          , test_desc, __LINE__ );
       //Default Case
-   test1.assert( expected_string_z == RinexMetHeader.bitsAsString(
-                    RinexMetHeader.allValid21)        , test_desc, __LINE__ );
+   testFramework.assert( expected_string_z == RinexMetHeader.bitsAsString(
+                            RinexMetHeader.allValid21)        , test_desc, __LINE__ );
 
-   return( test1.countFails() );
+   return( testFramework.countFails() );
 }
 
 //------------------------------------------------------------
@@ -273,7 +273,7 @@ int RinexMet_T :: bitsAsStringTest()
 //------------------------------------------------------------
 int RinexMet_T :: bitStringTest()
 {
-   TestUtil test2( "RinexMetHeader", "bitString", __FILE__, __LINE__ );
+   TUDEF( "RinexMetHeader", "bitString" );
 
    std::string test_desc =
       "RinexMetHeader, bitString, test to assure that the version validity bits are what we expect them to be";
@@ -287,19 +287,19 @@ int RinexMet_T :: bitStringTest()
       "\"RINEX VERSION / TYPE\", \"PGM / RUN BY / DATE\", \"MARKER NAME\", \"# / TYPES OF OBSERV\", \"SENSOR MOD/TYPE/ACC\", \"SENSOR POS XYZ/H\", \"END OF HEADER\"";
 
    test_fail = ", validVersion failed";
-   test2.assert( expected_string_a == RinexMetHeader.bitString(
-                    RinexMetHeader.validVersion, '\"', sep ), test_desc + test_fail, __LINE__ );
+   testFramework.assert( expected_string_a == RinexMetHeader.bitString(
+                            RinexMetHeader.validVersion, '\"', sep ), test_desc + test_fail, __LINE__ );
 
    test_fail = ", allValid21 failed";
-   test2.assert( expected_string_b == RinexMetHeader.bitString(
-                    RinexMetHeader.allValid21, '\"', sep ),   test_desc + test_fail, __LINE__ );
+   testFramework.assert( expected_string_b == RinexMetHeader.bitString(
+                            RinexMetHeader.allValid21, '\"', sep ),   test_desc + test_fail, __LINE__ );
 
    test_fail = ", allValid20 failed";
-   test2.assert( expected_string_b == RinexMetHeader.bitString(
-                    RinexMetHeader.allValid20, '\"', sep ),   test_desc + test_fail, __LINE__ );
-      // test2.assert( expected_string_b, RinexMetHeader.bitString(RinexMetHeader.allValid20,' ',sep),   test_desc + test_fail, __LINE__ );
+   testFramework.assert( expected_string_b == RinexMetHeader.bitString(
+                            RinexMetHeader.allValid20, '\"', sep ),   test_desc + test_fail, __LINE__ );
+      // testFramework.assert( expected_string_b, RinexMetHeader.bitString(RinexMetHeader.allValid20,' ',sep),   test_desc + test_fail, __LINE__ );
 
-   return test2.countFails();
+   return testFramework.countFails();
 }
 
 //------------------------------------------------------------
@@ -309,7 +309,7 @@ int RinexMet_T :: bitStringTest()
 //------------------------------------------------------------
 int RinexMet_T :: reallyPutRecordTest()
 {
-   TestUtil test3( "RinexMetHeader", "exceptions", __FILE__, __LINE__ );
+   TUDEF( "RinexMetHeader", "exceptions" );
 
    std::string msg_test_desc   =
       "RinexMetHeader, reallyPutRecordTest, exception tests";
@@ -338,16 +338,15 @@ int RinexMet_T :: reallyPutRecordTest()
    try
    {
       UnSupRinex >> RinexMetHeader;
-      test3.assert( false, msg_test_desc + msg_test_detail + msg_false_pass,
-                    __LINE__ );
+      TUFAIL( msg_test_desc + msg_test_detail + msg_false_pass );
    }
    catch( gpstk::Exception e )
    {
-      test3.assert( true, msg_test_desc + msg_test_detail, __LINE__ );
+      TUPASS( msg_test_desc + msg_test_detail );
    }
    catch(...)
    {
-      test3.assert( false, msg_test_desc + msg_test_detail + msg_fail, __LINE__ );
+      TUFAIL( msg_test_desc + msg_test_detail + msg_fail );
    }
 
       //------------------------------------------------------------
@@ -357,19 +356,18 @@ int RinexMet_T :: reallyPutRecordTest()
    try
    {
       MissingMarkerName >> RinexMetHeader;
-      test3.assert( false, msg_test_desc + msg_test_detail + msg_false_pass,
-                    __LINE__ );
+      TUFAIL( msg_test_desc + msg_test_detail + msg_false_pass );
    }
    catch( gpstk::Exception e )
    {
-      test3.assert( true, msg_test_desc + msg_test_detail, __LINE__ );
+      TUPASS( msg_test_desc + msg_test_detail );
    }
    catch(...)
    {
-      test3.assert( false, msg_test_desc + msg_test_detail + msg_fail, __LINE__ );
+      TUFAIL( msg_test_desc + msg_test_detail + msg_fail );
    }
 
-   return test3.countFails();
+   return testFramework.countFails();
 }
 
 // ------------------------------------------------------------
@@ -379,7 +377,7 @@ int RinexMet_T :: reallyPutRecordTest()
 // ------------------------------------------------------------
 int RinexMet_T :: reallyGetRecordTest()
 {
-   TestUtil test4( "RinexMetHeader", "exceptions", __FILE__, __LINE__ );
+   TUDEF( "RinexMetHeader", "exceptions" );
 
    std::string msg_test_desc = "";
    std::string msg_false_pass  =
@@ -445,15 +443,15 @@ int RinexMet_T :: reallyGetRecordTest()
    try
    {
       ExtraH >> RinexMetHeader;
-      test4.assert( false, msg_test_desc + msg_false_pass, __LINE__ );
+      TUFAIL(msg_test_desc + msg_false_pass );
    }
    catch( gpstk::Exception e )
    {
-      test4.assert( true, msg_test_desc, __LINE__ );
+      TUPASS(msg_test_desc );
    }
    catch(...)
    {
-      test4.assert( false, msg_test_desc + msg_fail, __LINE__ );
+      TUFAIL(msg_test_desc + msg_fail );
    }
 
       //----------------------------------------
@@ -462,15 +460,15 @@ int RinexMet_T :: reallyGetRecordTest()
    try
    {
       UnSupRinex >> RinexMetHeader;
-      test4.assert( false, msg_test_desc + msg_false_pass, __LINE__ );
+      TUFAIL(msg_test_desc + msg_false_pass );
    }
    catch( gpstk::Exception e )
    {
-      test4.assert( true, msg_test_desc, __LINE__ );
+      TUPASS(msg_test_desc );
    }
    catch(...)
    {
-      test4.assert( false, msg_test_desc + msg_fail, __LINE__ );
+      TUFAIL(msg_test_desc + msg_fail );
    }
 
       //----------------------------------------
@@ -479,15 +477,15 @@ int RinexMet_T :: reallyGetRecordTest()
    try
    {
       MissingSPos >> RinexMetHeader;
-      test4.assert( false, msg_test_desc + msg_false_pass, __LINE__ );
+      TUFAIL(msg_test_desc + msg_false_pass );
    }
    catch( gpstk::Exception e )
    {
-      test4.assert( true, msg_test_desc, __LINE__ );
+      TUPASS(msg_test_desc );
    }
    catch(...)
    {
-      test4.assert( false, msg_test_desc + msg_fail, __LINE__ );
+      TUFAIL(msg_test_desc + msg_fail );
    }
 
       //----------------------------------------
@@ -496,15 +494,15 @@ int RinexMet_T :: reallyGetRecordTest()
    try
    {
       ObsHeaderStringError >> RinexMetHeader;
-      test4.assert( false, msg_test_desc + msg_false_pass, __LINE__ );
+      TUFAIL(msg_test_desc + msg_false_pass );
    }
    catch( gpstk::Exception e )
    {
-      test4.assert( true, msg_test_desc, __LINE__ );
+      TUPASS(msg_test_desc );
    }
    catch(...)
    {
-      test4.assert( false, msg_test_desc + msg_fail, __LINE__ );
+      TUFAIL(msg_test_desc + msg_fail );
    }
 
       //----------------------------------------
@@ -513,15 +511,15 @@ int RinexMet_T :: reallyGetRecordTest()
    try
    {
       SensorType >> RinexMetHeader;
-      test4.assert( false, msg_test_desc + msg_false_pass, __LINE__ );
+      TUFAIL(msg_test_desc + msg_false_pass );
    }
    catch( gpstk::Exception e )
    {
-      test4.assert( true, msg_test_desc, __LINE__ );
+      TUPASS(msg_test_desc );
    }
    catch(...)
    {
-      test4.assert( false, msg_test_desc + msg_fail, __LINE__ );
+      TUFAIL(msg_test_desc + msg_fail );
    }
 
       //----------------------------------------
@@ -530,15 +528,15 @@ int RinexMet_T :: reallyGetRecordTest()
    try
    {
       BLL >> RinexMetHeader;
-      test4.assert( false, msg_test_desc + msg_false_pass, __LINE__ );
+      TUFAIL(msg_test_desc + msg_false_pass );
    }
    catch( gpstk::Exception e )
    {
-      test4.assert( true, msg_test_desc, __LINE__ );
+      TUPASS(msg_test_desc );
    }
    catch(...)
    {
-      test4.assert( false, msg_test_desc + msg_fail, __LINE__ );
+      TUFAIL(msg_test_desc + msg_fail );
    }
 
       //----------------------------------------
@@ -547,15 +545,15 @@ int RinexMet_T :: reallyGetRecordTest()
    try
    {
       NMF >> RinexMetHeader;
-      test4.assert( false, msg_test_desc + msg_false_pass, __LINE__ );
+      TUFAIL(msg_test_desc + msg_false_pass );
    }
    catch( gpstk::Exception e )
    {
-      test4.assert( true, msg_test_desc, __LINE__ );
+      TUPASS(msg_test_desc );
    }
    catch(...)
    {
-      test4.assert( false, msg_test_desc + msg_fail, __LINE__ );
+      TUFAIL(msg_test_desc + msg_fail );
    }
 
       //----------------------------------------
@@ -564,15 +562,15 @@ int RinexMet_T :: reallyGetRecordTest()
    try
    {
       BOL >> RinexMetHeader;
-      test4.assert( false, msg_test_desc + msg_false_pass, __LINE__ );
+      TUFAIL(msg_test_desc + msg_false_pass );
    }
    catch( gpstk::Exception e )
    {
-      test4.assert( true, msg_test_desc, __LINE__ );
+      TUPASS(msg_test_desc );
    }
    catch(...)
    {
-      test4.assert( false, msg_test_desc + msg_fail, __LINE__ );
+      TUFAIL(msg_test_desc + msg_fail );
    }
 
 
@@ -587,21 +585,21 @@ int RinexMet_T :: reallyGetRecordTest()
    try
    {
       Normal >> RinexMetHeader;
-      test4.assert( true, msg_test_desc, __LINE__ );
+      TUPASS(msg_test_desc );
    }
    catch( gpstk::Exception e)
    {
       cout << e << endl;
-      test4.assert( false, msg_test_desc + msg_fail_gpstk, __LINE__ );
+      TUFAIL(msg_test_desc + msg_fail_gpstk );
    }
    catch(...)
    {
-      test4.assert( false, msg_test_desc + msg_fail_other, __LINE__ );
+      TUFAIL(msg_test_desc + msg_fail_other );
    }
 
 
 
-   return test4.countFails();
+   return testFramework.countFails();
 }
 
 //------------------------------------------------------------
@@ -611,7 +609,7 @@ int RinexMet_T :: reallyGetRecordTest()
 
 int RinexMet_T :: convertObsTypeSTRTest()
 {
-   TestUtil test5( "RinexMetHeader", "convertObsType", __FILE__, __LINE__ );
+   TUDEF( "RinexMetHeader", "convertObsType" );
    std::string msg_test_desc = "convertObsTypeSTRTest, ";
    std::string msg_test_fail = "";
 
@@ -638,36 +636,36 @@ int RinexMet_T :: convertObsTypeSTRTest()
    std::string HIS = "HI";
 
    msg_test_fail = "convertObsType(PRS) did not return expected value";
-   test5.assert( PR == RinexMetHeader.convertObsType(PRS),
-                 msg_test_desc + msg_test_fail, __LINE__ );
+   testFramework.assert( PR == RinexMetHeader.convertObsType(PRS),
+                         msg_test_desc + msg_test_fail, __LINE__ );
 
    msg_test_fail = "convertObsType(TDS) did not return expected value";
-   test5.assert( TD == RinexMetHeader.convertObsType(TDS),
-                 msg_test_desc + msg_test_fail, __LINE__ );
+   testFramework.assert( TD == RinexMetHeader.convertObsType(TDS),
+                         msg_test_desc + msg_test_fail, __LINE__ );
 
    msg_test_fail = "convertObsType(HRS) did not return expected value";
-   test5.assert( HR == RinexMetHeader.convertObsType(HRS),
-                 msg_test_desc + msg_test_fail, __LINE__ );
+   testFramework.assert( HR == RinexMetHeader.convertObsType(HRS),
+                         msg_test_desc + msg_test_fail, __LINE__ );
 
    msg_test_fail = "convertObsType(ZWS) did not return expected value";
-   test5.assert( ZW == RinexMetHeader.convertObsType(ZWS),
-                 msg_test_desc + msg_test_fail, __LINE__ );
+   testFramework.assert( ZW == RinexMetHeader.convertObsType(ZWS),
+                         msg_test_desc + msg_test_fail, __LINE__ );
 
    msg_test_fail = "convertObsType(ZDS) did not return expected value";
-   test5.assert( ZD == RinexMetHeader.convertObsType(ZDS),
-                 msg_test_desc + msg_test_fail, __LINE__ );
+   testFramework.assert( ZD == RinexMetHeader.convertObsType(ZDS),
+                         msg_test_desc + msg_test_fail, __LINE__ );
 
    msg_test_fail = "convertObsType(ZTS) did not return expected value";
-   test5.assert( ZT == RinexMetHeader.convertObsType(ZTS),
-                 msg_test_desc + msg_test_fail, __LINE__ );
+   testFramework.assert( ZT == RinexMetHeader.convertObsType(ZTS),
+                         msg_test_desc + msg_test_fail, __LINE__ );
 
    msg_test_fail = "convertObsType(HIS) did not return expected value";
-   test5.assert( HI == RinexMetHeader.convertObsType(HIS),
-                 msg_test_desc + msg_test_fail, __LINE__ );
+   testFramework.assert( HI == RinexMetHeader.convertObsType(HIS),
+                         msg_test_desc + msg_test_fail, __LINE__ );
 
 
 
-   return test5.countFails();
+   return testFramework.countFails();
 }
 
 //------------------------------------------------------------
@@ -678,7 +676,7 @@ int RinexMet_T :: convertObsTypeSTRTest()
 //------------------------------------------------------------
 int RinexMet_T :: convertObsTypeHeaderTest()
 {
-   TestUtil test6( "RinexMetHeader", "convertObsType", __FILE__, __LINE__ );
+   TUDEF( "RinexMetHeader", "convertObsType" );
    std::string msg_test_desc = "convertObsTypeHeaderTest, ";
    std::string msg_test_fail = "";
 
@@ -703,28 +701,28 @@ int RinexMet_T :: convertObsTypeHeaderTest()
    std::string ZTS = "ZT";
 
    msg_test_fail = "convertObsType(PR) did not return expected value";
-   test6.assert( PRS == RinexMetHeader.convertObsType(PR),
-                 msg_test_desc + msg_test_fail, __LINE__ );
+   testFramework.assert( PRS == RinexMetHeader.convertObsType(PR),
+                         msg_test_desc + msg_test_fail, __LINE__ );
 
    msg_test_fail = "convertObsType(TD) did not return expected value";
-   test6.assert( TDS == RinexMetHeader.convertObsType(TD),
-                 msg_test_desc + msg_test_fail, __LINE__ );
+   testFramework.assert( TDS == RinexMetHeader.convertObsType(TD),
+                         msg_test_desc + msg_test_fail, __LINE__ );
 
    msg_test_fail = "convertObsType(HR) did not return expected value";
-   test6.assert( HRS == RinexMetHeader.convertObsType(HR),
-                 msg_test_desc + msg_test_fail, __LINE__ );
+   testFramework.assert( HRS == RinexMetHeader.convertObsType(HR),
+                         msg_test_desc + msg_test_fail, __LINE__ );
 
    msg_test_fail = "convertObsType(ZW) did not return expected value";
-   test6.assert( ZWS == RinexMetHeader.convertObsType(ZW),
-                 msg_test_desc + msg_test_fail, __LINE__ );
+   testFramework.assert( ZWS == RinexMetHeader.convertObsType(ZW),
+                         msg_test_desc + msg_test_fail, __LINE__ );
 
    msg_test_fail = "convertObsType(ZD) did not return expected value";
-   test6.assert( ZDS == RinexMetHeader.convertObsType(ZD),
-                 msg_test_desc + msg_test_fail, __LINE__ );
+   testFramework.assert( ZDS == RinexMetHeader.convertObsType(ZD),
+                         msg_test_desc + msg_test_fail, __LINE__ );
 
    msg_test_fail = "convertObsType(ZT) did not return expected value";
-   test6.assert( ZTS == RinexMetHeader.convertObsType(ZT),
-                 msg_test_desc + msg_test_fail, __LINE__ );
+   testFramework.assert( ZTS == RinexMetHeader.convertObsType(ZT),
+                         msg_test_desc + msg_test_fail, __LINE__ );
 
 
       //----------------------------------------
@@ -736,21 +734,21 @@ int RinexMet_T :: convertObsTypeHeaderTest()
    try
    {
       RinexMetHeader.convertObsType( "KE" );
-      test6.assert( false, msg_test_desc + msg_false_pass, __LINE__ );
+      TUFAIL(msg_test_desc + msg_false_pass );
    }
    catch(gpstk::FFStreamError)
    {
-      test6.assert( true, msg_test_desc, __LINE__  );
+      TUPASS(msg_test_desc  );
    }
    catch(...)
    {
-      test6.assert( false, msg_test_desc + msg_fail_other, __LINE__  );
+      TUFAIL(msg_test_desc + msg_fail_other  );
    }
 
 
 
 
-   return test6.countFails();
+   return testFramework.countFails();
 }
 
 //------------------------------------------------------------
@@ -763,7 +761,7 @@ int RinexMet_T :: convertObsTypeHeaderTest()
 //------------------------------------------------------------
 int RinexMet_T :: hardCodeTest()
 {
-   TestUtil test7( "RinexMetHeader", "version", __FILE__, __LINE__ );
+   TUDEF( "RinexMetHeader", "version" );
    std::string msg_test_desc = "RinexMetHeader data member value tests, ";
    std::string msg_test_fail = "";
 
@@ -778,24 +776,24 @@ int RinexMet_T :: hardCodeTest()
       //============================================================
 
    msg_test_fail = "RinexMetHeader.version, does not match expected value ";
-   test7.assert( testRinexMetHeader.version     == 2.1,
-                 msg_test_desc + msg_test_fail, __LINE__ );
+   testFramework.assert( testRinexMetHeader.version     == 2.1,
+                         msg_test_desc + msg_test_fail, __LINE__ );
 
    msg_test_fail = "RinexMetHeader.fileType, does not match expected value ";
-   test7.assert( testRinexMetHeader.fileType    == (std::string)"Meteorological",
-                 msg_test_desc + msg_test_fail, __LINE__ );
+   testFramework.assert( testRinexMetHeader.fileType    == (std::string)"Meteorological",
+                         msg_test_desc + msg_test_fail, __LINE__ );
 
    msg_test_fail = "RinexMetHeader.fileProgram, does not match expected value ";
-   test7.assert( testRinexMetHeader.fileProgram == (std::string)"GFW - RMW",
-                 msg_test_desc + msg_test_fail, __LINE__ );
+   testFramework.assert( testRinexMetHeader.fileProgram == (std::string)"GFW - RMW",
+                         msg_test_desc + msg_test_fail, __LINE__ );
 
    msg_test_fail = "RinexMetHeader.fileAgency, does not match expected value ";
-   test7.assert( testRinexMetHeader.fileAgency  == (std::string)"NIMA",
-                 msg_test_desc + msg_test_fail, __LINE__ );
+   testFramework.assert( testRinexMetHeader.fileAgency  == (std::string)"NIMA",
+                         msg_test_desc + msg_test_fail, __LINE__ );
 
    msg_test_fail = "RinexMetHeader.date, does not match expected value ";
-   test7.assert( testRinexMetHeader.date        == (std::string)
-                 "04/18/2004 23:58:50", msg_test_desc + msg_test_fail, __LINE__ );
+   testFramework.assert( testRinexMetHeader.date        == (std::string)
+                         "04/18/2004 23:58:50", msg_test_desc + msg_test_fail, __LINE__ );
 
 
    std::vector<std::string>::const_iterator itr1 =
@@ -803,20 +801,20 @@ int RinexMet_T :: hardCodeTest()
    msg_test_fail = "weather data correct values message does not match";
    while( itr1 != testRinexMetHeader.commentList.end() )
    {
-      test7.assert( (*itr1) == (std::string)
-                    "Some weather data may have corrected values", msg_test_desc + msg_test_fail,
-                    __LINE__ );
+      testFramework.assert( (*itr1) == (std::string)
+                            "Some weather data may have corrected values", msg_test_desc + msg_test_fail,
+                            __LINE__ );
 
       itr1++;
    }
 
    msg_test_fail = "RinexMetHeader.markerName, does not match expected value ";
-   test7.assert( testRinexMetHeader.markerName   == (std::string)"85408",
-                 msg_test_desc + msg_test_fail, __LINE__ );
+   testFramework.assert( testRinexMetHeader.markerName   == (std::string)"85408",
+                         msg_test_desc + msg_test_fail, __LINE__ );
 
    msg_test_fail = "RinexMetHeader.markerNumber, does not match expected value ";
-   test7.assert( testRinexMetHeader.markerNumber == (std::string)"85408",
-                 msg_test_desc + msg_test_fail, __LINE__ );
+   testFramework.assert( testRinexMetHeader.markerNumber == (std::string)"85408",
+                         msg_test_desc + msg_test_fail, __LINE__ );
 
 
    msg_test_fail =
@@ -825,13 +823,13 @@ int RinexMet_T :: hardCodeTest()
       testRinexMetHeader.obsTypeList.begin();
    if( itr2 != testRinexMetHeader.obsTypeList.end() )
    {
-      test7.assert( testRinexMetHeader.convertObsType(*itr2) == (std::string)"PR",
-                    msg_test_desc + msg_test_fail, __LINE__ );
+      testFramework.assert( testRinexMetHeader.convertObsType(*itr2) == (std::string)"PR",
+                            msg_test_desc + msg_test_fail, __LINE__ );
       itr2++;
    }
    else
    {
-      test7.assert( false, msg_test_desc, __LINE__ );
+      TUFAIL(msg_test_desc );
    }
 
 
@@ -839,13 +837,13 @@ int RinexMet_T :: hardCodeTest()
       "testRinexMetHeader.convertObsType(iterator) did not return expected value TD";
    if( itr2 != testRinexMetHeader.obsTypeList.end() )
    {
-      test7.assert( testRinexMetHeader.convertObsType(*itr2) == (std::string)"TD",
-                    msg_test_desc + msg_test_fail, __LINE__ );
+      testFramework.assert( testRinexMetHeader.convertObsType(*itr2) == (std::string)"TD",
+                            msg_test_desc + msg_test_fail, __LINE__ );
       itr2++;
    }
    else
    {
-      test7.assert( false, msg_test_desc, __LINE__ );
+      TUFAIL(msg_test_desc );
    }
 
 
@@ -853,12 +851,12 @@ int RinexMet_T :: hardCodeTest()
       "testRinexMetHeader.convertObsType(iterator) did not return expected value HI";
    if( itr2 != testRinexMetHeader.obsTypeList.end() )
    {
-      test7.assert( testRinexMetHeader.convertObsType(*itr2) == (std::string)"HI",
-                    msg_test_desc + msg_test_fail, __LINE__ );
+      testFramework.assert( testRinexMetHeader.convertObsType(*itr2) == (std::string)"HI",
+                            msg_test_desc + msg_test_fail, __LINE__ );
    }
    else
    {
-      test7.assert( false, msg_test_desc, __LINE__ );
+      TUFAIL(msg_test_desc );
    }
 
 
@@ -870,23 +868,23 @@ int RinexMet_T :: hardCodeTest()
    {
       msg_test_fail =
          "RinexMetHeader.sensorTypeList iterator.model did not return expected value Vaisala";
-      test7.assert( (*itr3).model    == (std::string)"Vaisala",
-                    msg_test_desc + msg_test_fail, __LINE__ );
+      testFramework.assert( (*itr3).model    == (std::string)"Vaisala",
+                            msg_test_desc + msg_test_fail, __LINE__ );
 
       msg_test_fail =
          "RinexMetHeader.sensorTypeList iterator.type did not return expected value PTB220";
-      test7.assert( (*itr3).type     == (std::string)"PTB220",
-                    msg_test_desc + msg_test_fail, __LINE__  );
+      testFramework.assert( (*itr3).type     == (std::string)"PTB220",
+                            msg_test_desc + msg_test_fail, __LINE__  );
 
       msg_test_fail =
          "RinexMetHeader.sensorTypeList iterator.accuracy did not return expected value 0.1";
-      test7.assert( (*itr3).accuracy == 0.1, msg_test_desc + msg_test_fail,
-                    __LINE__ );
+      testFramework.assert( (*itr3).accuracy == 0.1, msg_test_desc + msg_test_fail,
+                            __LINE__ );
 
       msg_test_fail =
          "RinexMetHeader.convertObsType iterator.obsType did not return expected value PR";
-      test7.assert( testRinexMetHeader.convertObsType((*itr3).obsType) ==
-                    (std::string)"PR", msg_test_desc + msg_test_fail, __LINE__ );
+      testFramework.assert( testRinexMetHeader.convertObsType((*itr3).obsType) ==
+                            (std::string)"PR", msg_test_desc + msg_test_fail, __LINE__ );
 
       itr3++;
    }
@@ -895,16 +893,16 @@ int RinexMet_T :: hardCodeTest()
          // Must fail all four tests above
       msg_test_fail =
          "RinexMetHeader.sensorTypeList iterator.model test is in a block that failed";
-      test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+      TUFAIL(msg_test_desc + msg_test_fail );
       msg_test_fail =
          "RinexMetHeader.sensorTypeList iterator.type test is in a block that failed";
-      test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+      TUFAIL(msg_test_desc + msg_test_fail );
       msg_test_fail =
          "RinexMetHeader.sensorTypeList iterator.accuracy test is in a block that failed";
-      test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+      TUFAIL(msg_test_desc + msg_test_fail );
       msg_test_fail =
          "RinexMetHeader.convertObsType iterator.obsType test is in a block that failed";
-      test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+      TUFAIL(msg_test_desc + msg_test_fail );
    }
 
 
@@ -914,23 +912,23 @@ int RinexMet_T :: hardCodeTest()
    {
       msg_test_fail =
          "RinexMetHeader.sensorTypeList iterator.model did not return expected value Vaisala";
-      test7.assert( (*itr3).model    == (std::string)"Vaisala",
-                    msg_test_desc + msg_test_fail, __LINE__ );
+      testFramework.assert( (*itr3).model    == (std::string)"Vaisala",
+                            msg_test_desc + msg_test_fail, __LINE__ );
 
       msg_test_fail =
          "RinexMetHeader.sensorTypeList iterator.type did not return expected value HMP230";
-      test7.assert( (*itr3).type     == (std::string)"HMP230",
-                    msg_test_desc + msg_test_fail, __LINE__ );
+      testFramework.assert( (*itr3).type     == (std::string)"HMP230",
+                            msg_test_desc + msg_test_fail, __LINE__ );
 
       msg_test_fail =
          "RinexMetHeader.sensorTypeList iterator.accuracy did not return expected value 0.1";
-      test7.assert( (*itr3).accuracy == 0.1, msg_test_desc + msg_test_fail,
-                    __LINE__ );
+      testFramework.assert( (*itr3).accuracy == 0.1, msg_test_desc + msg_test_fail,
+                            __LINE__ );
 
       msg_test_fail =
          "RinexMetHeader.convertObsType iterator.obsType did not return expected value TD";
-      test7.assert( testRinexMetHeader.convertObsType((*itr3).obsType) ==
-                    (std::string)"TD", msg_test_desc + msg_test_fail, __LINE__ );
+      testFramework.assert( testRinexMetHeader.convertObsType((*itr3).obsType) ==
+                            (std::string)"TD", msg_test_desc + msg_test_fail, __LINE__ );
 
       itr3++;
    }
@@ -939,16 +937,16 @@ int RinexMet_T :: hardCodeTest()
          // Must fail all four tests above
       msg_test_fail =
          "RinexMetHeader.sensorTypeList iterator.model test is in a block that failed";
-      test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+      TUFAIL(msg_test_desc + msg_test_fail );
       msg_test_fail =
          "RinexMetHeader.sensorTypeList iterator.type test is in a block that failed";
-      test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+      TUFAIL(msg_test_desc + msg_test_fail );
       msg_test_fail =
          "RinexMetHeader.sensorTypeList iterator.accuracy test is in a block that failed";
-      test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+      TUFAIL(msg_test_desc + msg_test_fail );
       msg_test_fail =
          "RinexMetHeader.convertObsType iterator.obsType test is in a block that failed";
-      test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+      TUFAIL(msg_test_desc + msg_test_fail );
    }
 
 
@@ -958,23 +956,23 @@ int RinexMet_T :: hardCodeTest()
    {
       msg_test_fail =
          "RinexMetHeader.sensorTypeList iterator.model did not return expected value Vaisala";
-      test7.assert( (*itr3).model    == (std::string)"Vaisala",
-                    msg_test_desc + msg_test_fail, __LINE__ );
+      testFramework.assert( (*itr3).model    == (std::string)"Vaisala",
+                            msg_test_desc + msg_test_fail, __LINE__ );
 
       msg_test_fail =
          "RinexMetHeader.sensorTypeList iterator.type did not return expected value HMP230";
-      test7.assert( (*itr3).type     == (std::string)"HMP230",
-                    msg_test_desc + msg_test_fail, __LINE__  );
+      testFramework.assert( (*itr3).type     == (std::string)"HMP230",
+                            msg_test_desc + msg_test_fail, __LINE__  );
 
       msg_test_fail =
          "RinexMetHeader.sensorTypeList iterator.accuracy did not return expected value 0.1";
-      test7.assert( (*itr3).accuracy == 0.1, msg_test_desc + msg_test_fail,
-                    __LINE__ );
+      testFramework.assert( (*itr3).accuracy == 0.1, msg_test_desc + msg_test_fail,
+                            __LINE__ );
 
       msg_test_fail =
          "RinexMetHeader.convertObsType iterator.obsType did not return expected value HI";
-      test7.assert( testRinexMetHeader.convertObsType((*itr3).obsType) ==
-                    (std::string)"HI", msg_test_desc + msg_test_fail, __LINE__ );
+      testFramework.assert( testRinexMetHeader.convertObsType((*itr3).obsType) ==
+                            (std::string)"HI", msg_test_desc + msg_test_fail, __LINE__ );
 
       itr3++;
 
@@ -984,16 +982,16 @@ int RinexMet_T :: hardCodeTest()
          // Must fail all four tests above
       msg_test_fail =
          "RinexMetHeader.sensorTypeList iterator.model test is in a block that failed";
-      test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+      TUFAIL(msg_test_desc + msg_test_fail );
       msg_test_fail =
          "RinexMetHeader.sensorTypeList iterator.type test is in a block that failed";
-      test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+      TUFAIL(msg_test_desc + msg_test_fail );
       msg_test_fail =
          "RinexMetHeader.sensorTypeList iterator.accuracy test is in a block that failed";
-      test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+      TUFAIL(msg_test_desc + msg_test_fail );
       msg_test_fail =
          "RinexMetHeader.convertObsType iterator.obsType test is in a block that failed";
-      test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+      TUFAIL(msg_test_desc + msg_test_fail );
    }
 
       //------------------------------------------------------------
@@ -1005,28 +1003,28 @@ int RinexMet_T :: hardCodeTest()
    {
       msg_test_fail =
          "RinexMetHeader.sensorPosType iterator.position[0] did not return expected value";
-      test7.assert( (*itr4).position[0] ==  -740289.8363,
-                    msg_test_desc + msg_test_fail, __LINE__ );
+      testFramework.assert( (*itr4).position[0] ==  -740289.8363,
+                            msg_test_desc + msg_test_fail, __LINE__ );
 
       msg_test_fail =
          "RinexMetHeader.sensorPosType iterator.position[1] did not return expected value";
-      test7.assert( (*itr4).position[1] == -5457071.7414,
-                    msg_test_desc + msg_test_fail, __LINE__ );
+      testFramework.assert( (*itr4).position[1] == -5457071.7414,
+                            msg_test_desc + msg_test_fail, __LINE__ );
 
       msg_test_fail =
          "RinexMetHeader.sensorPosType iterator.position[2] did not return expected value";
-      test7.assert( (*itr4).position[2] ==  3207245.6207,
-                    msg_test_desc + msg_test_fail, __LINE__ );
+      testFramework.assert( (*itr4).position[2] ==  3207245.6207,
+                            msg_test_desc + msg_test_fail, __LINE__ );
 
       msg_test_fail =
          "RinexMetHeader.sensorPosType iterator.height did not return expected value";
-      test7.assert( (*itr4).height      ==        0.0000,
-                    msg_test_desc + msg_test_fail, __LINE__ );
+      testFramework.assert( (*itr4).height      ==        0.0000,
+                            msg_test_desc + msg_test_fail, __LINE__ );
 
       msg_test_fail =
          "RinexMetHeader.convertObsType iterator.obsType did not return expected value PR";
-      test7.assert( testRinexMetHeader.convertObsType((*itr4).obsType) ==
-                    (std::string) "PR", msg_test_desc + msg_test_fail, __LINE__ );
+      testFramework.assert( testRinexMetHeader.convertObsType((*itr4).obsType) ==
+                            (std::string) "PR", msg_test_desc + msg_test_fail, __LINE__ );
 
       itr4++;
 
@@ -1036,19 +1034,19 @@ int RinexMet_T :: hardCodeTest()
          // Must fail all five tests above
       msg_test_fail =
          "RinexMetHeader.sensorPosType iterator.position[0] test is in a block that failed";
-      test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+      TUFAIL(msg_test_desc + msg_test_fail );
       msg_test_fail =
          "RinexMetHeader.sensorPosType iterator.position[1] test is in a block that failed";
-      test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+      TUFAIL(msg_test_desc + msg_test_fail );
       msg_test_fail =
          "RinexMetHeader.sensorPosType iterator.position[2] test is in a block that failed";
-      test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+      TUFAIL(msg_test_desc + msg_test_fail );
       msg_test_fail =
          "RinexMetHeader.sensorPosType iterator.height test is in a block that failed";
-      test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+      TUFAIL(msg_test_desc + msg_test_fail );
       msg_test_fail =
          "RinexMetHeader.convertObsType iterator.obsType test is in a block that failed";
-      test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+      TUFAIL(msg_test_desc + msg_test_fail );
    }
 
       //------------------------------------------------------------
@@ -1057,28 +1055,28 @@ int RinexMet_T :: hardCodeTest()
    {
       msg_test_fail =
          "RinexMetHeader.sensorPosType iterator.position[0] did not return expected value";
-      test7.assert( (*itr4).position[0] ==  -740289.8363,
-                    msg_test_desc + msg_test_fail, __LINE__ );
+      testFramework.assert( (*itr4).position[0] ==  -740289.8363,
+                            msg_test_desc + msg_test_fail, __LINE__ );
 
       msg_test_fail =
          "RinexMetHeader.sensorPosType iterator.position[1] did not return expected value";
-      test7.assert( (*itr4).position[1] == -5457071.7414,
-                    msg_test_desc + msg_test_fail, __LINE__ );
+      testFramework.assert( (*itr4).position[1] == -5457071.7414,
+                            msg_test_desc + msg_test_fail, __LINE__ );
 
       msg_test_fail =
          "RinexMetHeader.sensorPosType iterator.position[2] did not return expected value";
-      test7.assert( (*itr4).position[2] ==  3207245.6207,
-                    msg_test_desc + msg_test_fail, __LINE__ );
+      testFramework.assert( (*itr4).position[2] ==  3207245.6207,
+                            msg_test_desc + msg_test_fail, __LINE__ );
 
       msg_test_fail =
          "RinexMetHeader.sensorPosType iterator.height did not return expected value";
-      test7.assert( (*itr4).height      ==        0.0000,
-                    msg_test_desc + msg_test_fail, __LINE__ );
+      testFramework.assert( (*itr4).height      ==        0.0000,
+                            msg_test_desc + msg_test_fail, __LINE__ );
 
       msg_test_fail =
          "RinexMetHeader.convertObsType iterator.obsType did not return expected value TD";
-      test7.assert( testRinexMetHeader.convertObsType((*itr4).obsType) ==
-                    (std::string) "TD", msg_test_desc + msg_test_fail, __LINE__ );
+      testFramework.assert( testRinexMetHeader.convertObsType((*itr4).obsType) ==
+                            (std::string) "TD", msg_test_desc + msg_test_fail, __LINE__ );
 
    }
    else
@@ -1086,19 +1084,19 @@ int RinexMet_T :: hardCodeTest()
          // Must fail all five tests above
       msg_test_fail =
          "RinexMetHeader.sensorPosType iterator.position[0] test is in a block that failed";
-      test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+      TUFAIL(msg_test_desc + msg_test_fail );
       msg_test_fail =
          "RinexMetHeader.sensorPosType iterator.position[1] test is in a block that failed";
-      test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+      TUFAIL(msg_test_desc + msg_test_fail );
       msg_test_fail =
          "RinexMetHeader.sensorPosType iterator.position[2] test is in a block that failed";
-      test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+      TUFAIL(msg_test_desc + msg_test_fail );
       msg_test_fail =
          "RinexMetHeader.sensorPosType iterator.height test is in a block that failed";
-      test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+      TUFAIL(msg_test_desc + msg_test_fail );
       msg_test_fail =
          "RinexMetHeader.convertObsType iterator.obsType test is in a block that failed";
-      test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+      TUFAIL(msg_test_desc + msg_test_fail );
    }
       //End of Header
 
@@ -1117,40 +1115,40 @@ int RinexMet_T :: hardCodeTest()
 
 
    msg_test_fail = "RinexMetData.time did not equal TimeGuess";
-   test7.assert( testRinexMetData.time == (gpstk::CommonTime)TimeGuess,
-                 msg_test_desc + msg_test_fail, __LINE__ );
+   testFramework.assert( testRinexMetData.time == (gpstk::CommonTime)TimeGuess,
+                         msg_test_desc + msg_test_fail, __LINE__ );
 
    msg_test_fail = "RinexMetData.data for PR does not match expected value ";
-   test7.assert( testRinexMetData.data[testRinexMetHeader.convertObsType( "PR" )]
-                 == 992.6, msg_test_desc + msg_test_fail, __LINE__ );
+   testFramework.assert( testRinexMetData.data[testRinexMetHeader.convertObsType( "PR" )]
+                         == 992.6, msg_test_desc + msg_test_fail, __LINE__ );
 
    msg_test_fail = "RinexMetData.data for TD does not match expected value ";
-   test7.assert( testRinexMetData.data[testRinexMetHeader.convertObsType( "TD" )]
-                 ==  23.9, msg_test_desc + msg_test_fail, __LINE__ );
+   testFramework.assert( testRinexMetData.data[testRinexMetHeader.convertObsType( "TD" )]
+                         ==  23.9, msg_test_desc + msg_test_fail, __LINE__ );
 
    msg_test_fail = "RinexMetData.data for HI does not match expected value ";
-   test7.assert( testRinexMetData.data[testRinexMetHeader.convertObsType( "HI" )]
-                 ==  59.7, msg_test_desc + msg_test_fail, __LINE__ );
+   testFramework.assert( testRinexMetData.data[testRinexMetHeader.convertObsType( "HI" )]
+                         ==  59.7, msg_test_desc + msg_test_fail, __LINE__ );
 
    out << testRinexMetData;
    testRinexMetStream >> testRinexMetData;
    gpstk::CivilTime TimeGuess2(2004,4,19,0,15,0);
 
    msg_test_fail = "RinexMetData.time did not equal TimeGuess2";
-   test7.assert( testRinexMetData.time == (gpstk::CommonTime)TimeGuess2,
-                 msg_test_desc + msg_test_fail, __LINE__ );
+   testFramework.assert( testRinexMetData.time == (gpstk::CommonTime)TimeGuess2,
+                         msg_test_desc + msg_test_fail, __LINE__ );
 
    msg_test_fail = "RinexMetData.data for PR does not match expected value";
-   test7.assert( testRinexMetData.data[testRinexMetHeader.convertObsType( "PR" )]
-                 == 992.8, msg_test_desc + msg_test_fail, __LINE__ );
+   testFramework.assert( testRinexMetData.data[testRinexMetHeader.convertObsType( "PR" )]
+                         == 992.8, msg_test_desc + msg_test_fail, __LINE__ );
 
    msg_test_fail = "RinexMetData.data for TD does not match expected value";
-   test7.assert( testRinexMetData.data[testRinexMetHeader.convertObsType( "TD" )]
-                 ==  23.6, msg_test_desc + msg_test_fail, __LINE__ );
+   testFramework.assert( testRinexMetData.data[testRinexMetHeader.convertObsType( "TD" )]
+                         ==  23.6, msg_test_desc + msg_test_fail, __LINE__ );
 
    msg_test_fail = "RinexMetData.data for HI does not match expected value";
-   test7.assert( testRinexMetData.data[testRinexMetHeader.convertObsType( "HI" )]
-                 ==  61.6, msg_test_desc + msg_test_fail, __LINE__ );
+   testFramework.assert( testRinexMetData.data[testRinexMetHeader.convertObsType( "HI" )]
+                         ==  61.6, msg_test_desc + msg_test_fail, __LINE__ );
 
    out << testRinexMetData;
    while( testRinexMetStream >> testRinexMetData )
@@ -1160,15 +1158,15 @@ int RinexMet_T :: hardCodeTest()
 
    msg_test_fail =
       "files not equal, inputNormal and outputHardCode";
-   test7.assert( test7.fileEqualTest( inputNormal, outputHardCode,
-                                      2), msg_test_desc + msg_test_fail, __LINE__  );
+   testFramework.assert( testFramework.fileEqualTest( inputNormal, outputHardCode,
+                                                      2), msg_test_desc + msg_test_fail, __LINE__  );
 
    gpstk::RinexMetStream MetDumps( outputDumps.c_str(), std::ios::out );
    testRinexMetHeader.dump( MetDumps );
    testRinexMetData.dump( MetDumps );
 
 
-   return test7.countFails();
+   return testFramework.countFails();
 }
 
 //------------------------------------------------------------
@@ -1180,7 +1178,7 @@ int RinexMet_T :: hardCodeTest()
 
 int RinexMet_T :: continuationTest()
 {
-   TestUtil test8( "RinexMetHeader", "continuation", __FILE__, __LINE__ );
+   TUDEF( "RinexMetHeader", "continuation" );
    std::string msg_test_desc = "continuation file comparison";
    std::string msg_test_fail =
       ", files are not equal, inputContLines outputContLines";
@@ -1207,14 +1205,14 @@ int RinexMet_T :: continuationTest()
          out << RinexMetData;
       }
 
-      test8.assert( test8.fileEqualTest( inputContLines,
-                                         outputContLines, 2), msg_test_desc + msg_test_fail, __LINE__ );
+      testFramework.assert( testFramework.fileEqualTest( inputContLines,
+                                                         outputContLines, 2), msg_test_desc + msg_test_fail, __LINE__ );
    }
    catch(...)
    {
-      test8.assert( false, msg_test_desc + msg_fail_exception, __LINE__ );
+      TUFAIL(msg_test_desc + msg_fail_exception );
    }
-   return test8.countFails();
+   return testFramework.countFails();
 }
 
 //------------------------------------------------------------
@@ -1229,7 +1227,7 @@ int RinexMet_T :: continuationTest()
 //------------------------------------------------------------
 int RinexMet_T :: dataExceptionsTest()
 {
-   TestUtil test9( "RinexMetHeader", "nodata", __FILE__, __LINE__ );
+   TUDEF( "RinexMetHeader", "nodata" );
    std::string msg_test_desc = "dataExceptionsTest, ";
    std::string msg_test_fail = "";
 
@@ -1246,32 +1244,58 @@ int RinexMet_T :: dataExceptionsTest()
    try
    {
       NoObs >> rmh;
-      out << rmh;
-
-      while( NoObs >> rme )
+      try
       {
-         out << rme;
+         out << rmh;
+         TUPASS("header");
       }
-      InvalidTimeFormat >> rme;
-      out << rme;
-      InvalidTimeFormat >> rme;
-      out << rme;
+      catch (...)
+      {
+         TUFAIL("Failed to write valid header");
+      }
 
-      test9.assert( false,
-                    "Test looking for a gpstk::Exception to be thrown when there is no header obs. No exception was thrown.",
-                    __LINE__);
+      try
+      {
+         while( NoObs >> rme )
+         {
+            out << rme;
+         }
+         TUPASS("data");
+      }
+      catch (...)
+      {
+         TUFAIL("Failed to read/write valid data");
+      }
+      try
+      {
+         InvalidTimeFormat >> rme;
+         TUFAIL("Read improperly formatted data");
+      }
+      catch (...)
+      {
+         TUPASS("exception");
+      }
+      InvalidTimeFormat.clear();
+         // try to read a second improperly formatted record.. but is
+         // it really doing it, or has the stream backed-up to before
+         // the previous bad record and it's just trying to read the
+         // same broken one?
+      try
+      {
+         InvalidTimeFormat >> rme;
+         TUFAIL("Read improperly formatted data");
+      }
+      catch (...)
+      {
+         TUPASS("exception");
+      }
+      InvalidTimeFormat.clear();
    }
-   catch( gpstk::Exception& e )
+   catch (...)
    {
-      test9.assert( true, msg_test_desc, __LINE__ );
+      TUFAIL(msg_test_desc);
    }
-   catch(...)
-   {
-      test9.assert( false,
-                    "Test looking for a gpstk::Exception to be thrown when there is no header obs. A different exception was thrown.",
-                    __LINE__);
-   }
-   return test9.countFails();
+   return testFramework.countFails();
 }
 
 //------------------------------------------------------------
@@ -1283,7 +1307,7 @@ int RinexMet_T :: dataExceptionsTest()
 //------------------------------------------------------------
 int RinexMet_T :: filterOperatorsTest()
 {
-   TestUtil test10( "RinexMetStream", "filter", __FILE__, __LINE__ );
+   TUDEF( "RinexMetStream", "filter" );
    std::string msg_test_desc = "filterOperatorsTest, ";
    std::string msg_test_fail = "";
 
@@ -1332,46 +1356,46 @@ int RinexMet_T :: filterOperatorsTest()
 
       msg_test_fail =
          "Check to see if two equivalent files have the same times. They DO NOT.";
-      test10.assert( EqualsSimple(FilterData1, FilterData2) == true,
-                     msg_test_desc + msg_test_fail, __LINE__ );
+      testFramework.assert( EqualsSimple(FilterData1, FilterData2) == true,
+                            msg_test_desc + msg_test_fail, __LINE__ );
 
       msg_test_fail =
          "Check to see if two files with different times have the same time values. They DO.";
-      test10.assert( EqualsSimple(FilterData1, FilterData3) == false,
-                     msg_test_desc + msg_test_fail, __LINE__ );
+      testFramework.assert( EqualsSimple(FilterData1, FilterData3) == false,
+                            msg_test_desc + msg_test_fail, __LINE__ );
 
       gpstk::RinexMetDataOperatorLessThanSimple LessThanSimple;
       msg_test_fail =
          "Check to see if one file occurred earlier than another using equivalent files. One is found to be earlier than the other.";
-      test10.assert( LessThanSimple(FilterData1, FilterData2) == false,
-                     msg_test_desc + msg_test_fail, __LINE__ );
+      testFramework.assert( LessThanSimple(FilterData1, FilterData2) == false,
+                            msg_test_desc + msg_test_fail, __LINE__ );
 
       msg_test_fail =
          "Check to see if one file occurred earlier than another using two files with different times. The earlier file is not found to be earlier.";
-      test10.assert( LessThanSimple(FilterData1, FilterData3) == true,
-                     msg_test_desc + msg_test_fail, __LINE__ );
+      testFramework.assert( LessThanSimple(FilterData1, FilterData3) == true,
+                            msg_test_desc + msg_test_fail, __LINE__ );
 
       gpstk::RinexMetDataOperatorLessThanFull LessThanFull(merged.obsSet);
 
       msg_test_fail =
          "Perform the full less than comparison on two identical files. FilterData1 has been found to be different than FilterData2.";
-      test10.assert( LessThanFull(FilterData1, FilterData2) == false,
-                     msg_test_desc + msg_test_fail, __LINE__ );
+      testFramework.assert( LessThanFull(FilterData1, FilterData2) == false,
+                            msg_test_desc + msg_test_fail, __LINE__ );
 
       msg_test_fail =
          "Perform the full less than comparison on two identical files. FilterData1 has been found to be different than FilterData2.";
-      test10.assert( LessThanFull(FilterData2, FilterData1) == false,
-                     msg_test_desc + msg_test_fail, __LINE__ );
+      testFramework.assert( LessThanFull(FilterData2, FilterData1) == false,
+                            msg_test_desc + msg_test_fail, __LINE__ );
 
       msg_test_fail =
          "Perform the full less than comparison on two different files. FilterData1, an earlier date, has been found to NOT be less than FilterData3.";
-      test10.assert( LessThanFull(FilterData1, FilterData3) == true,
-                     msg_test_desc + msg_test_fail, __LINE__ );
+      testFramework.assert( LessThanFull(FilterData1, FilterData3) == true,
+                            msg_test_desc + msg_test_fail, __LINE__ );
 
       msg_test_fail =
          "Perform the full less than comparison on two different files. FilterData3, a later date, has been found to be less than FilterData1.";
-      test10.assert( LessThanFull(FilterData3, FilterData1) == false,
-                     msg_test_desc + msg_test_fail, __LINE__ );
+      testFramework.assert( LessThanFull(FilterData3, FilterData1) == false,
+                            msg_test_desc + msg_test_fail, __LINE__ );
 
       gpstk::CivilTime Start = gpstk::CommonTime::END_OF_TIME;
       gpstk::CivilTime End = gpstk::CommonTime::BEGINNING_OF_TIME;
@@ -1382,28 +1406,27 @@ int RinexMet_T :: filterOperatorsTest()
 
       msg_test_fail =
          "FilterTime(FilterData1) == true, should evaluate as true but evaluated as false";
-      test10.assert( FilterTime(FilterData1) == true, msg_test_desc + msg_test_fail,
-                     __LINE__ );
+      testFramework.assert( FilterTime(FilterData1) == true, msg_test_desc + msg_test_fail,
+                            __LINE__ );
 
       msg_test_fail =
          "FilterTime2(FilterData1) == false, should evaluate as true but evaluated as false";
-      test10.assert( FilterTime2(FilterData1) == false,
-                     msg_test_desc + msg_test_fail, __LINE__ );
+      testFramework.assert( FilterTime2(FilterData1) == false,
+                            msg_test_desc + msg_test_fail, __LINE__ );
    }
    catch(gpstk::Exception& exc)
    {
       cout << exc << endl;
       msg_test_fail = "Unexpected exception was thrown";
-      test10.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+      TUFAIL(msg_test_desc + msg_test_fail );
    }
    catch(...)
    {
       msg_test_fail = "Unexpected exception was thrown";
-      test10.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+      TUFAIL(msg_test_desc + msg_test_fail );
    }
 
-
-   return test10.countFails();
+   return testFramework.countFails();
 }
 
 //============================================================
