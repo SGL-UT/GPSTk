@@ -50,7 +50,7 @@ namespace gpstk
    
    void CiraExponentialDrag::test()
    {
-      cout<<"testing CiraExponentialDrag"<<endl;
+      std::cout << "testing CiraExponentialDrag" << std::endl;
 
    
       Vector<double> r(3),v(3);
@@ -84,20 +84,20 @@ namespace gpstk
                                               Vector<double> r, 
                                               Vector<double> v)
    {
-      // Get the J2000 to TOD transformation
+         // Get the J2000 to TOD transformation
       Matrix<double> N = ReferenceFrames::J2kToTODMatrix(utc);
 
-      // Transform r from J2000 to TOD
+         // Transform r from J2000 to TOD
       Vector<double> r_tod = N*r;
 
       Position geoidPos(r_tod(0),r_tod(1),r_tod(3),Position::Cartesian);
       double height = geoidPos.getAltitude()/1000.0;              //  convert to [km]
 
-      // check to see if too low
+         // check to see if too low
       if (height < h0[0])
       {
-         string msg = "CiraExponentialDrag is valid for 50.0 km t0 1000.0 km"
-            + string("the altitude you try is ")
+         std::string msg = "CiraExponentialDrag is valid for 50.0 km t0"
+            " 1000.0 km the altitude you try is "
             + StringUtils::asString(height) + " km!";
 
          Exception e(msg);
@@ -105,7 +105,7 @@ namespace gpstk
          GPSTK_THROW(e);
       }
 
-      // find the right height bracket
+         // find the right height bracket
       int n = CIRA_SIZE; //h0.length;
       int bracket = 0;
       if (height >= h0[n-1]) 
@@ -123,7 +123,7 @@ namespace gpstk
          }
       }
 
-      // compute the density
+         // compute the density
       this->brack = bracket;
       double rho = rho_0[bracket] * std::exp((h0[bracket] - height)/H[bracket]);
 

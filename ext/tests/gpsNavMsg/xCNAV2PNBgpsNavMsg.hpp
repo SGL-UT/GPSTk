@@ -41,7 +41,6 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include "CNAV2EphClk.hpp"
 
-using namespace std;
 
 class xCNAV2PNBgpsNavMsg: public CPPUNIT_NS :: TestFixture
 {

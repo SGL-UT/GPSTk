@@ -41,7 +41,6 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include "CNAVClock.hpp"
 
-using namespace std;
 
 class xCNAVClockPNBgpsNavMsg: public CPPUNIT_NS :: TestFixture
 {

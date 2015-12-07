@@ -40,8 +40,6 @@
 #include "CommandOptionWithTimeArg.hpp"
 #include "BasicFramework.hpp"
 
-using namespace std;
-using namespace gpstk;
 
 class DiffFrame : public gpstk::BasicFramework
 {
@@ -86,8 +84,8 @@ public:
          return false;
       }
       
-      string fname1 = inputFileOption.getValue()[0];
-      string fname2 = inputFileOption.getValue()[1];
+      std::string fname1 = inputFileOption.getValue()[0];
+      std::string fname2 = inputFileOption.getValue()[1];
       
       //
 

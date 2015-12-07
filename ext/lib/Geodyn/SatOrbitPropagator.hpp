@@ -106,9 +106,9 @@ namespace gpstk
          /// Default destructor
       virtual ~SatOrbitPropagator();
 
-      /* set force model setting
-      */
-      //void setForceModel(ForceModelSetting& fms);
+         /* set force model setting
+          */
+         //void setForceModel(ForceModelSetting& fms);
    
 
          /// set integrator, default is Rungge-Kutta 78
@@ -169,7 +169,7 @@ namespace gpstk
       { return curState;}
 
          /// get numble of force model parameters
-      int getNP()
+      int getNP() const
       { return (curState.size() - 42) / 6; }
 
          /// get the pointer to the satellite orbit object
@@ -177,19 +177,19 @@ namespace gpstk
       { return pOrbit; }
 
          /// write curT curState to a file
-      void writeToFile(ostream& s);
+      void writeToFile(std::ostream& s) const;
 
-      /*
-      * try to integrate ephemeris and print it to a file
-      * just for compare it with stk8.1
-      * 
-      * yanwei,Sep 19 th,2009
-      */
-      //void makeSatEph(OrbitSetting& os,string fileName);
-      //void makeRefSatEph(OrbitSetting& os,string fileName);
+         /*
+          * try to integrate ephemeris and print it to a file
+          * just for compare it with stk8.1
+          * 
+          * yanwei,Sep 19 th,2009
+          */
+         //void makeSatEph(OrbitSetting& os,string fileName);
+         //void makeRefSatEph(OrbitSetting& os,string fileName);
 
-      /* For Testing and Debuging...
-      */
+         /* For Testing and Debuging...
+          */
       void test();
 
    protected:
@@ -203,16 +203,16 @@ namespace gpstk
           */
       virtual Vector<double> integrateTo(double t, Vector<double> y, double tf);
 
-      /* set initial state of the the integrator
-      *
-      *  v      3
-      * dr_dr0    3*3
-      * dr_dv0   3*3
-      * dr_dp0   3*np
-      * dv_dr0   3*3
-      * dv_dv0   3*3
-      * dv_dp0   3*np
-      */
+         /* set initial state of the the integrator
+          *
+          *  v      3
+          * dr_dr0    3*3
+          * dr_dv0   3*3
+          * dr_dp0   3*np
+          * dv_dr0   3*3
+          * dv_dv0   3*3
+          * dv_dp0   3*np
+          */
       void setState(Vector<double> state);
 
          /// set reference epoch
@@ -263,19 +263,21 @@ namespace gpstk
       std::set<ForceModel::ForceModelType> setFMT;
 
    }; // End of class 'SatOrbitPropagator'
-   
-
-      /**
-       * Stream output for OrbitPropagator objects.  Typically used for debugging.
-       * @param s stream to append formatted CommonTime to.
-       * @param t CommonTime to append to stream  s.
-       * @return reference to  s.
-       */
-   ostream& operator<<(ostream& s, SatOrbitPropagator& op);
 
       // @}
 
 } // end namespace 'gpstk'
+   
+
+   /**
+    * Stream output for OrbitPropagator objects.  Typically used
+    * for debugging.
+    * @param s stream to append formatted CommonTime to.
+    * @param t CommonTime to append to stream  s.
+    * @return reference to  s.
+    */
+// Commented out because of compiler errors I can't be bothered to figure out
+//std::ostream& operator<<(std::ostream& s, const gpstk::SatOrbitPropagator& op);
 
 
 #endif   // GPSTK_SAT_ORBIT_PROPAGATOR_HPP

@@ -41,7 +41,6 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include "EngEphemeris.hpp"
 
-using namespace std;
 
 class xEngEphemerisgpsNavMsg: public CPPUNIT_NS :: TestFixture
 {

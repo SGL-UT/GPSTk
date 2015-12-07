@@ -42,7 +42,6 @@
 #include "BrcKeplerOrbit.hpp"
 #include "EngEphemeris.hpp"
 
-using namespace std;
 
 class xBrcKeplerOrbitgpsNavMsg: public CPPUNIT_NS :: TestFixture
 {

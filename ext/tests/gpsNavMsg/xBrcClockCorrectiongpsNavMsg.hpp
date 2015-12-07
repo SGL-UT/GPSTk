@@ -42,7 +42,6 @@
 #include "BrcClockCorrection.hpp"
 #include "EngEphemeris.hpp"
 
-using namespace std;
 
 class xBrcClockCorrectiongpsNavMsg: public CPPUNIT_NS :: TestFixture
 {

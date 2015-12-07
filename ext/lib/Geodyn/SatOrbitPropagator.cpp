@@ -47,22 +47,40 @@
 #include "ReferenceFrames.hpp"
 #include "IERS.hpp"
 
+using namespace std;
+
+   /*
+    * Stream output for OrbitPropagator objects.  Typically used for debugging.
+    * @param s stream to append formatted CommonTime to.
+    * @param t CommonTime to append to stream  s.
+    * @return reference to  s.
+    */
+// Commented out because of compiler errors I can't be bothered to figure out
+/*
+std::ostream& operator<<(std::ostream& s, const gpstk::SatOrbitPropagator& op)
+{
+   op.writeToFile(s);
+   
+   return s;
+}
+*/
+
 namespace gpstk
 {
 
       // Constructor
    SatOrbitPropagator::SatOrbitPropagator()
-      : pIntegrator(NULL),
-        curT(0.0)
+         : pIntegrator(NULL),
+           curT(0.0)
    {
       setDefaultIntegrator();
       setDefaultOrbit();
 
       setStepSize(1.0);
 
-       setFMT.clear();
-      //setFMT.insert(ForceModel::Cd);
-      //setFMT.insert(ForceModel::Cr);
+      setFMT.clear();
+         //setFMT.insert(ForceModel::Cd);
+         //setFMT.insert(ForceModel::Cr);
       pOrbit->setForceModelType(setFMT);
 
      
@@ -145,7 +163,7 @@ namespace gpstk
       curT = double(0.0);
       curState.resize(42+6*np,0.0);
       
-      // position and velocity
+         // position and velocity
       curState(0) = rv0(0);
       curState(1) = rv0(1);
       curState(2) = rv0(2);
@@ -163,7 +181,7 @@ namespace gpstk
       
       updateMatrix();
       
-      // set reference epoch
+         // set reference epoch
       setRefEpoch(utc0);
 
 
@@ -198,10 +216,10 @@ namespace gpstk
          dv_dp0 = curState(42+3*np+i);
       }
 
-      // update phiMatrix
+         // update phiMatrix
       phiMatrix.resize(6,6,0.0);
 
-      // dr/dr0
+         // dr/dr0
       phiMatrix(0,0) = dr_dr0(0);
       phiMatrix(0,1) = dr_dr0(1);
       phiMatrix(0,2) = dr_dr0(2);
@@ -211,7 +229,7 @@ namespace gpstk
       phiMatrix(2,0) = dr_dr0(6);
       phiMatrix(2,1) = dr_dr0(7);
       phiMatrix(2,2) = dr_dr0(8);
-      // dr/dv0
+         // dr/dv0
       phiMatrix(0,3) = dr_dv0(0);
       phiMatrix(0,4) = dr_dv0(1);
       phiMatrix(0,5) = dr_dv0(2);
@@ -221,7 +239,7 @@ namespace gpstk
       phiMatrix(2,3) = dr_dv0(6);
       phiMatrix(2,4) = dr_dv0(7);
       phiMatrix(2,5) = dr_dv0(8);
-      // dv/dr0
+         // dv/dr0
       phiMatrix(3,0) = dv_dr0(0);
       phiMatrix(3,1) = dv_dr0(1);
       phiMatrix(3,2) = dv_dr0(2);
@@ -231,7 +249,7 @@ namespace gpstk
       phiMatrix(5,0) = dv_dr0(6);
       phiMatrix(5,1) = dv_dr0(7);
       phiMatrix(5,2) = dv_dr0(8);
-      // dv/dv0
+         // dv/dv0
       phiMatrix(3,3) = dv_dv0(0);
       phiMatrix(3,4) = dv_dv0(1);
       phiMatrix(3,5) = dv_dv0(2);
@@ -242,7 +260,7 @@ namespace gpstk
       phiMatrix(5,4) = dv_dv0(7);
       phiMatrix(5,5) = dv_dv0(8);
 
-      // update sMatrix 6*np
+         // update sMatrix 6*np
       sMatrix.resize(6,np,0.0);
       for(int i = 0; i<np; i++)
       {
@@ -255,7 +273,7 @@ namespace gpstk
          sMatrix(5,i) = dv_dp0(2*np+i);
       }
       
-      // update rvVector
+         // update rvVector
       rvVector.resize(6,0.0);
       for(int i = 0; i < 6; i++) 
       { 
@@ -311,7 +329,7 @@ namespace gpstk
 
 
       /// write curT curState to a file
-   void SatOrbitPropagator::writeToFile(ostream& s)
+   void SatOrbitPropagator::writeToFile(ostream& s) const
    {
       UTCTime utcRef = pOrbit->getRefEpoch();
       UTCTime utc = utcRef;
@@ -329,7 +347,7 @@ namespace gpstk
       }
       s << endl;
 
-      // [phi s]
+         // [phi s]
       for(int i=0;i<6;i++)
       {
          for(int j=0;j<6;j++)
@@ -345,37 +363,24 @@ namespace gpstk
       }
    }
 
+
       /*
-       * Stream output for OrbitPropagator objects.  Typically used for debugging.
-       * @param s stream to append formatted CommonTime to.
-       * @param t CommonTime to append to stream  s.
-       * @return reference to  s.
-       */
-   ostream& operator<<(ostream& s,SatOrbitPropagator& op)
-   {
-      op.writeToFile(s);
-
-      return s;
-   }
-
-
-   /*
-   void OrbitPropagator::setForceModel(ForceModelSetting& fms)
-   {
-      if(pOrbit)
-      {
-         pOrbit->setForceModel(fms);
-      }
-   }*/
+        void OrbitPropagator::setForceModel(ForceModelSetting& fms)
+        {
+        if(pOrbit)
+        {
+        pOrbit->setForceModel(fms);
+        }
+        }*/
 
       /* For Testing and Debuging...
        */
    void SatOrbitPropagator::test()
    {
-      cout<<"testing OrbitPropagator[KeplerOrbit]"<<endl;
-      cout<<fixed<<setprecision(6);
+      cout << "testing OrbitPropagator[KeplerOrbit]" << endl;
+      cout << fixed << setprecision(6);
 
-      // load global data
+         // load global data
       IERS::loadSTKFile("InputData\\EOP-v1.1.txt");
       ReferenceFrames::setJPLEphFile("InputData\\DE405\\jplde405");
      
@@ -384,18 +389,18 @@ namespace gpstk
       UTCTime utc0(2002,3,1,0,0,0.0);
 
       double state[42]={2682920.8943,4652720.5672,4244260.0400,2215.5999,4183.3573,-5989.0576,
-      1,0,0,
-      0,1,0,
-      0,0,1,
-      0,0,0,
-      0,0,0,
-      0,0,0,
-      0,0,0,
-      0,0,0,
-      0,0,0,
-      1,0,0,
-      0,1,0,
-      0,0,1};
+                        1,0,0,
+                        0,1,0,
+                        0,0,1,
+                        0,0,0,
+                        0,0,0,
+                        0,0,0,
+                        0,0,0,
+                        0,0,0,
+                        0,0,0,
+                        1,0,0,
+                        0,1,0,
+                        0,0,1};
       
       Vector<double> y0(42,0.0);
       y0 = state;
@@ -425,14 +430,15 @@ namespace gpstk
       double tt = 3600.0*24;
       double step = 60.0;
 
-      cout << fixed << setw(12)<<setprecision(5);
+      cout << fixed << setw(12) << setprecision(5);
       
       double t=0.0;
       while(t < tt)
       {
          Vector<double> yy = op.integrateTo(t,y0,t+step);
 
-         fout << op;
+// Commented out because of compiler errors I can't be bothered to figure out
+//         fout << op;
 
          Vector<double> yy_prev(6,0.0);
          Vector<double> yy_out(6,0.0);

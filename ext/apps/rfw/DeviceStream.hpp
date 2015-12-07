@@ -128,7 +128,6 @@ namespace gpstk
    template<class T>
    void DeviceStream<T>::open(const std::string& target, std::ios::openmode mode)
    {
-      using namespace std;
       this->target = target;
       if (target != "")
       {

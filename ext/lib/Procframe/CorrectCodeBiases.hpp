@@ -49,12 +49,12 @@
 
 namespace gpstk
 {
-   using namespace std;
 
       /** @addtogroup DataStructures */
       //@{
 
-      /** This class corrects observables from differential code biases.(P1-P2) or (P1-C1)
+      /** This class corrects observables from differential code
+       * biases.(P1-P2) or (P1-C1)
        *
        * This class is meant to be used with the GNSS data structures objects
        * found in "DataStructures" class.
@@ -99,8 +99,8 @@ namespace gpstk
           * @param name      Name of the file containing DCB(P1-P2)
           * @param name      Name of the file containing DCB(P1-C1)
           */
-      virtual CorrectCodeBiases& setDCBFile( const string& fileP1P2,
-                                             const string& fileP1C1);
+      virtual CorrectCodeBiases& setDCBFile( const std::string& fileP1P2,
+                                             const std::string& fileP1C1);
 
          /** Set if C1 has been used as P1 to calculate some combinations 
           * @param useC1      If C1 has been used as P1, then set it to true
@@ -112,7 +112,7 @@ namespace gpstk
          /** Set receiver name 
           * @param receiver      Name of receiver with 4 char
           */
-      virtual CorrectCodeBiases& setReceiver(const string& receiver)
+      virtual CorrectCodeBiases& setReceiver(const std::string& receiver)
       { receiverName = receiver; return (*this);}
       
 
@@ -154,7 +154,7 @@ namespace gpstk
    protected:
 
          /// get DCB(Differental Code Biases) corrections
-      virtual double getDCBCorrection(const string& receiver, 
+      virtual double getDCBCorrection(const std::string& receiver, 
                                       const SatID&  sat,
                                       const TypeID& type,
                                       const bool&   useC1 = false);

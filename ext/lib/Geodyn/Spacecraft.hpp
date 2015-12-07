@@ -51,7 +51,6 @@
 
 namespace gpstk
 {
-   using namespace std;
 
       /** @addtogroup GeoDynamics */
       //@{
@@ -163,7 +162,7 @@ namespace gpstk
       void resetState();
       
          /// name: The name of the spacecraft (e.g. "NCC-1701-D") 
-      string scName;
+      std::string scName;
       
          /// Object to hold epoch in UTC
       UTCTime utc;
