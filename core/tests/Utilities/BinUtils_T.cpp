@@ -64,7 +64,7 @@ public:
       for (int i = sizeof(char)-1;i>=0;i--)
       {
          *ptra = Store[i];
-         *ptra++;
+         ptra++;
       }
 
       short b;
@@ -72,7 +72,7 @@ public:
       for (int i = sizeof(short)-1;i>=0;i--)
       {
          *ptrb = Store[i];
-         *ptrb++;
+         ptrb++;
       }
 
       int c;
@@ -80,7 +80,7 @@ public:
       for (int i = sizeof(int)-1;i>=0;i--)
       {
          *ptrc = Store[i];
-         *ptrc++;
+         ptrc++;
       }
 
       long d;
@@ -88,7 +88,7 @@ public:
       for (int i = sizeof(long)-1;i>=0;i--)
       {
          *ptrd = Store[i];
-         *ptrd++;
+         ptrd++;
       }
 
       float e;
@@ -96,7 +96,7 @@ public:
       for (int i = sizeof(float)-1;i>=0;i--)
       {
          *ptre = Store[i];
-         *ptre++;
+         ptre++;
       }
 
       double f;
@@ -104,7 +104,7 @@ public:
       for (int i = sizeof(double)-1;i>=0;i--)
       {
          *ptrf = Store[i];
-         *ptrf++;
+         ptrf++;
       }
 
       long double g;
@@ -112,7 +112,7 @@ public:
       for (int i = sizeof(long double)-1;i>=0;i--)
       {
          *ptrg = Store[i];
-         *ptrg++;
+         ptrg++;
 
       }
 
@@ -121,7 +121,7 @@ public:
       for (int i =0;i<sizeof(char);i++)
       {
          *ptra1 = Store[i];
-         *ptra1++;
+         ptra1++;
       }
 
       short b1;
@@ -129,7 +129,7 @@ public:
       for (int i =0;i<sizeof(short);i++)
       {
          *ptrb1 = Store[i];
-         *ptrb1++;
+         ptrb1++;
       }
 
       int c1;
@@ -137,7 +137,7 @@ public:
       for (int i =0;i<sizeof(int);i++)
       {
          *ptrc1 = Store[i];
-         *ptrc1++;
+         ptrc1++;
       }
 
       long d1;
@@ -145,7 +145,7 @@ public:
       for (int i =0;i<sizeof(long);i++)
       {
          *ptrd1 = Store[i];
-         *ptrd1++;
+         ptrd1++;
       }
 
       float e1;
@@ -153,7 +153,7 @@ public:
       for (int i =0;i<sizeof(float);i++)
       {
          *ptre1 = Store[i];
-         *ptre1++;
+         ptre1++;
       }
 
       double f1;
@@ -161,7 +161,7 @@ public:
       for (int i =0;i<sizeof(double);i++)
       {
          *ptrf1 = Store[i];
-         *ptrf1++;
+         ptrf1++;
       }
 
       long double g1;
@@ -169,7 +169,7 @@ public:
       for (int i =0;i<sizeof(long double);i++)
       {
          *ptrg1 = Store[i];
-         *ptrg1++;
+         ptrg1++;
       }
 
 

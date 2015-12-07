@@ -130,9 +130,9 @@ public:
       float expectedAvgSubtracted = 0.0;
       floatStatsObject.Subtract(input);
       testFramework.assert(floatStatsObject.N() == expectedNSubtractVector, "GPSTk Vector was not subtracted", __LINE__);
-      relativeError = fabs(floatStatsObject.Average() - expectedAvgSubtracted);
+      relativeError = std::abs(floatStatsObject.Average() - expectedAvgSubtracted);
       testFramework.assert(relativeError < floatPrecision, "Subtraction did not remove all of the data. Average != 0", __LINE__);       
-      relativeError = fabs(floatStatsObject.Normalization() - float(0.0));
+      relativeError = std::abs(floatStatsObject.Normalization() - float(0.0));
       testFramework.assert(relativeError < floatPrecision, "Subtraction did not remove all of the data. Normalization != 0", __LINE__);
          //----------------------------------------------------------
          // Load Data into new Stats Object
@@ -142,15 +142,15 @@ public:
       loadedStatsObject.Load(expectedNVectorAdd, expectedMinimum, expectedMaximum, expectedAverage, expectedVariance, true, expectedNormalization);
 
       testFramework.assert(loadedStatsObject.N() == expectedNVectorAdd, "Load did not set n properly", __LINE__);
-      relativeError = fabs(loadedStatsObject.Average() - expectedAverage)/expectedAverage;
+      relativeError = std::abs(loadedStatsObject.Average() - expectedAverage)/expectedAverage;
       testFramework.assert(relativeError < floatPrecision, "Load did not set the correct average", __LINE__);
-      relativeError = fabs(loadedStatsObject.Maximum() - expectedMaximum)/expectedMaximum;
+      relativeError = std::abs(loadedStatsObject.Maximum() - expectedMaximum)/expectedMaximum;
       testFramework.assert(relativeError < floatPrecision, "Load did not set the correct maximum", __LINE__);
-      relativeError = fabs(loadedStatsObject.Minimum() - expectedMinimum)/expectedMinimum;
+      relativeError = std::abs(loadedStatsObject.Minimum() - expectedMinimum)/expectedMinimum;
       testFramework.assert(relativeError < floatPrecision, "Load did not set the correct minimum", __LINE__);   
-      relativeError = fabs(loadedStatsObject.Variance() - expectedVariance)/expectedVariance;
+      relativeError = std::abs(loadedStatsObject.Variance() - expectedVariance)/expectedVariance;
       testFramework.assert(relativeError < floatPrecision, "Load did not set the correct variance", __LINE__);
-      relativeError = fabs(loadedStatsObject.Normalization() - expectedNormalization)/expectedNormalization;
+      relativeError = std::abs(loadedStatsObject.Normalization() - expectedNormalization)/expectedNormalization;
       testFramework.assert(relativeError < floatPrecision, "Load did not set the correct normalization", __LINE__);
       testFramework.assert(loadedStatsObject.Weighted(), "Load did not set Weighted properly", __LINE__);
 
@@ -162,15 +162,15 @@ public:
       floatStatsObject += loadedStatsObject;
 
       testFramework.assert(floatStatsObject.N() == expectedNVectorAdd, "Addition of stats objects did not set n properly", __LINE__);
-      relativeError = fabs(floatStatsObject.Average() - expectedAverage)/expectedAverage;
+      relativeError = std::abs(floatStatsObject.Average() - expectedAverage)/expectedAverage;
       testFramework.assert(relativeError < floatPrecision, "Addition of stats objects did not set the correct average", __LINE__);
-      relativeError = fabs(floatStatsObject.Maximum() - expectedMaximum)/expectedMaximum;
+      relativeError = std::abs(floatStatsObject.Maximum() - expectedMaximum)/expectedMaximum;
       testFramework.assert(relativeError < floatPrecision, "Addition of stats objects did not set the correct maximum", __LINE__);
-      relativeError = fabs(floatStatsObject.Minimum() - expectedMinimum)/expectedMinimum;
+      relativeError = std::abs(floatStatsObject.Minimum() - expectedMinimum)/expectedMinimum;
       testFramework.assert(relativeError < floatPrecision, "Addition of stats objects did not set the correct minimum", __LINE__);      
-      relativeError = fabs(floatStatsObject.Variance() - expectedVariance)/expectedVariance;
+      relativeError = std::abs(floatStatsObject.Variance() - expectedVariance)/expectedVariance;
       testFramework.assert(relativeError < floatPrecision, "Addition of stats objects did not set the correct variance", __LINE__);
-      relativeError = fabs(floatStatsObject.Normalization() - expectedNormalization)/expectedNormalization;
+      relativeError = std::abs(floatStatsObject.Normalization() - expectedNormalization)/expectedNormalization;
       testFramework.assert(relativeError < floatPrecision, "Addition of stats objects did not set the correct normalization", __LINE__);
       testFramework.assert(floatStatsObject.Weighted(), "Addition of stats objects did not set Weighted properly", __LINE__);
 
@@ -241,27 +241,27 @@ public:
       double relativeError;
 
       testFramework.changeSourceMethod("Average");
-      relativeError = fabs(doubleStatsObject.Average() - expectedAverage)/expectedAverage;
+      relativeError = std::abs(doubleStatsObject.Average() - expectedAverage)/expectedAverage;
       testFramework.assert(relativeError < doublePrecision, "Average found was not correct", __LINE__);
 
       testFramework.changeSourceMethod("Maximum");
-      relativeError = fabs(doubleStatsObject.Maximum() - expectedMaximum)/expectedMaximum;
+      relativeError = std::abs(doubleStatsObject.Maximum() - expectedMaximum)/expectedMaximum;
       testFramework.assert(relativeError < doublePrecision, "Maximum found was not correct", __LINE__);
 
       testFramework.changeSourceMethod("Minimum");
-      relativeError = fabs(doubleStatsObject.Minimum() - expectedMinimum)/expectedMinimum;
+      relativeError = std::abs(doubleStatsObject.Minimum() - expectedMinimum)/expectedMinimum;
       testFramework.assert(relativeError < doublePrecision, "Minimum found was not correct", __LINE__); 
 
       testFramework.changeSourceMethod("Variance");
-      relativeError = fabs(doubleStatsObject.Variance() - expectedVariance)/expectedVariance;
+      relativeError = std::abs(doubleStatsObject.Variance() - expectedVariance)/expectedVariance;
       testFramework.assert(relativeError < doublePrecision, "Variance found was not correct", __LINE__);
 
       testFramework.changeSourceMethod("StdDev");
-      relativeError = fabs(doubleStatsObject.StdDev() - expectedStdDev)/expectedStdDev;
+      relativeError = std::abs(doubleStatsObject.StdDev() - expectedStdDev)/expectedStdDev;
       testFramework.assert(relativeError < doublePrecision, "StdDev found was not correct", __LINE__);
 
       testFramework.changeSourceMethod("Normalization");
-      relativeError = fabs(doubleStatsObject.Normalization() - expectedNormalization)/expectedNormalization;
+      relativeError = std::abs(doubleStatsObject.Normalization() - expectedNormalization)/expectedNormalization;
       testFramework.assert(relativeError < doublePrecision, "Normalization found was not correct", __LINE__);
 
       testFramework.changeSourceMethod("Weighted");
@@ -281,9 +281,9 @@ public:
       double expectedAvgSubtracted = 0.0;
       doubleStatsObject.Subtract(input);
       testFramework.assert(doubleStatsObject.N() == expectedNSubtractVector, "GPSTk Vector was not subtracted", __LINE__);
-      relativeError = fabs(doubleStatsObject.Average() - expectedAvgSubtracted);
+      relativeError = std::abs(doubleStatsObject.Average() - expectedAvgSubtracted);
       testFramework.assert(relativeError < doublePrecision, "Subtraction did not remove all of the data. Average != 0", __LINE__);      
-      relativeError = fabs(doubleStatsObject.Normalization() - double(0.0));
+      relativeError = std::abs(doubleStatsObject.Normalization() - double(0.0));
       testFramework.assert(relativeError < doublePrecision, "Subtraction did not remove all of the data. Normalization != 0", __LINE__);
          //----------------------------------------------------------
          // Load Data into new Stats Object
@@ -293,15 +293,15 @@ public:
       loadedStatsObject.Load(expectedNVectorAdd, expectedMinimum, expectedMaximum, expectedAverage, expectedVariance, true, expectedNormalization);
 
       testFramework.assert(loadedStatsObject.N() == expectedNVectorAdd, "Load did not set n properly", __LINE__);
-      relativeError = fabs(loadedStatsObject.Average() - expectedAverage)/expectedAverage;
+      relativeError = std::abs(loadedStatsObject.Average() - expectedAverage)/expectedAverage;
       testFramework.assert(relativeError < doublePrecision, "Load did not set the correct average", __LINE__);
-      relativeError = fabs(loadedStatsObject.Maximum() - expectedMaximum)/expectedMaximum;
+      relativeError = std::abs(loadedStatsObject.Maximum() - expectedMaximum)/expectedMaximum;
       testFramework.assert(relativeError < doublePrecision, "Load did not set the correct maximum", __LINE__);
-      relativeError = fabs(loadedStatsObject.Minimum() - expectedMinimum)/expectedMinimum;
+      relativeError = std::abs(loadedStatsObject.Minimum() - expectedMinimum)/expectedMinimum;
       testFramework.assert(relativeError < doublePrecision, "Load did not set the correct minimum", __LINE__);  
-      relativeError = fabs(loadedStatsObject.Variance() - expectedVariance)/expectedVariance;
+      relativeError = std::abs(loadedStatsObject.Variance() - expectedVariance)/expectedVariance;
       testFramework.assert(relativeError < doublePrecision, "Load did not set the correct variance", __LINE__);
-      relativeError = fabs(loadedStatsObject.Normalization() - expectedNormalization)/expectedNormalization;
+      relativeError = std::abs(loadedStatsObject.Normalization() - expectedNormalization)/expectedNormalization;
       testFramework.assert(relativeError < doublePrecision, "Load did not set the correct normalization", __LINE__);
       testFramework.assert(loadedStatsObject.Weighted(), "Load did not set Weighted properly", __LINE__);
 
@@ -313,15 +313,15 @@ public:
       doubleStatsObject += loadedStatsObject;
 
       testFramework.assert(doubleStatsObject.N() == expectedNVectorAdd, "Addition of stats objects did not set n properly", __LINE__);
-      relativeError = fabs(doubleStatsObject.Average() - expectedAverage)/expectedAverage;
+      relativeError = std::abs(doubleStatsObject.Average() - expectedAverage)/expectedAverage;
       testFramework.assert(relativeError < doublePrecision, "Addition of stats objects did not set the correct average", __LINE__);
-      relativeError = fabs(doubleStatsObject.Maximum() - expectedMaximum)/expectedMaximum;
+      relativeError = std::abs(doubleStatsObject.Maximum() - expectedMaximum)/expectedMaximum;
       testFramework.assert(relativeError < doublePrecision, "Addition of stats objects did not set the correct maximum", __LINE__);
-      relativeError = fabs(doubleStatsObject.Minimum() - expectedMinimum)/expectedMinimum;
+      relativeError = std::abs(doubleStatsObject.Minimum() - expectedMinimum)/expectedMinimum;
       testFramework.assert(relativeError < doublePrecision, "Addition of stats objects did not set the correct minimum", __LINE__);     
-      relativeError = fabs(doubleStatsObject.Variance() - expectedVariance)/expectedVariance;
+      relativeError = std::abs(doubleStatsObject.Variance() - expectedVariance)/expectedVariance;
       testFramework.assert(relativeError < doublePrecision, "Addition of stats objects did not set the correct variance", __LINE__);
-      relativeError = fabs(doubleStatsObject.Normalization() - expectedNormalization)/expectedNormalization;
+      relativeError = std::abs(doubleStatsObject.Normalization() - expectedNormalization)/expectedNormalization;
       testFramework.assert(relativeError < doublePrecision, "Addition of stats objects did not set the correct normalization", __LINE__);
       testFramework.assert(doubleStatsObject.Weighted(), "Addition of stats objects did not set Weighted properly", __LINE__);
 
@@ -392,27 +392,27 @@ public:
       double relativeError;
 
       testFramework.changeSourceMethod("Average");
-      relativeError = fabs(longDoubleStatsObject.Average() - expectedAverage)/expectedAverage;
+      relativeError = std::abs(longDoubleStatsObject.Average() - expectedAverage)/expectedAverage;
       testFramework.assert(relativeError < doublePrecision, "Average found was not correct", __LINE__);
 
       testFramework.changeSourceMethod("Maximum");
-      relativeError = fabs(longDoubleStatsObject.Maximum() - expectedMaximum)/expectedMaximum;
+      relativeError = std::abs(longDoubleStatsObject.Maximum() - expectedMaximum)/expectedMaximum;
       testFramework.assert(relativeError < doublePrecision, "Maximum found was not correct", __LINE__);
 
       testFramework.changeSourceMethod("Minimum");
-      relativeError = fabs(longDoubleStatsObject.Minimum() - expectedMinimum)/expectedMinimum;
+      relativeError = std::abs(longDoubleStatsObject.Minimum() - expectedMinimum)/expectedMinimum;
       testFramework.assert(relativeError < doublePrecision, "Minimum found was not correct", __LINE__); 
 
       testFramework.changeSourceMethod("Variance");
-      relativeError = fabs(longDoubleStatsObject.Variance() - expectedVariance)/expectedVariance;
+      relativeError = std::abs(longDoubleStatsObject.Variance() - expectedVariance)/expectedVariance;
       testFramework.assert(relativeError < doublePrecision, "Variance found was not correct", __LINE__);
 
       testFramework.changeSourceMethod("StdDev");
-      relativeError = fabs(longDoubleStatsObject.StdDev() - expectedStdDev)/expectedStdDev;
+      relativeError = std::abs(longDoubleStatsObject.StdDev() - expectedStdDev)/expectedStdDev;
       testFramework.assert(relativeError < doublePrecision, "StdDev found was not correct", __LINE__);
 
       testFramework.changeSourceMethod("Normalization");
-      relativeError = fabs(longDoubleStatsObject.Normalization() - expectedNormalization)/expectedNormalization;
+      relativeError = std::abs(longDoubleStatsObject.Normalization() - expectedNormalization)/expectedNormalization;
       testFramework.assert(relativeError < doublePrecision, "Normalization found was not correct", __LINE__);
 
       testFramework.changeSourceMethod("Weighted");
@@ -432,9 +432,9 @@ public:
       double expectedAvgSubtracted = 0.0;
       longDoubleStatsObject.Subtract(input);
       testFramework.assert(longDoubleStatsObject.N() == expectedNSubtractVector, "GPSTk Vector was not subtracted", __LINE__);
-      relativeError = fabs(longDoubleStatsObject.Average() - expectedAvgSubtracted);
+      relativeError = std::abs(longDoubleStatsObject.Average() - expectedAvgSubtracted);
       testFramework.assert(relativeError < doublePrecision, "Subtraction did not remove all of the data. Average != 0", __LINE__);      
-      relativeError = fabs(longDoubleStatsObject.Normalization() - double(0.0));
+      relativeError = std::abs(longDoubleStatsObject.Normalization() - double(0.0));
       testFramework.assert(relativeError < doublePrecision, "Subtraction did not remove all of the data. Normalization != 0", __LINE__);
          //----------------------------------------------------------
          // Load Data into new Stats Object
@@ -444,15 +444,15 @@ public:
       loadedStatsObject.Load(expectedNVectorAdd, expectedMinimum, expectedMaximum, expectedAverage, expectedVariance, true, expectedNormalization);
 
       testFramework.assert(loadedStatsObject.N() == expectedNVectorAdd, "Load did not set n properly", __LINE__);
-      relativeError = fabs(loadedStatsObject.Average() - expectedAverage)/expectedAverage;
+      relativeError = std::abs(loadedStatsObject.Average() - expectedAverage)/expectedAverage;
       testFramework.assert(relativeError < doublePrecision, "Load did not set the correct average", __LINE__);
-      relativeError = fabs(loadedStatsObject.Maximum() - expectedMaximum)/expectedMaximum;
+      relativeError = std::abs(loadedStatsObject.Maximum() - expectedMaximum)/expectedMaximum;
       testFramework.assert(relativeError < doublePrecision, "Load did not set the correct maximum", __LINE__);
-      relativeError = fabs(loadedStatsObject.Minimum() - expectedMinimum)/expectedMinimum;
+      relativeError = std::abs(loadedStatsObject.Minimum() - expectedMinimum)/expectedMinimum;
       testFramework.assert(relativeError < doublePrecision, "Load did not set the correct minimum", __LINE__);  
-      relativeError = fabs(loadedStatsObject.Variance() - expectedVariance)/expectedVariance;
+      relativeError = std::abs(loadedStatsObject.Variance() - expectedVariance)/expectedVariance;
       testFramework.assert(relativeError < doublePrecision, "Load did not set the correct variance", __LINE__);
-      relativeError = fabs(loadedStatsObject.Normalization() - expectedNormalization)/expectedNormalization;
+      relativeError = std::abs(loadedStatsObject.Normalization() - expectedNormalization)/expectedNormalization;
       testFramework.assert(relativeError < doublePrecision, "Load did not set the correct normalization", __LINE__);
       testFramework.assert(loadedStatsObject.Weighted(), "Load did not set Weighted properly", __LINE__);
 
@@ -464,15 +464,15 @@ public:
       longDoubleStatsObject += loadedStatsObject;
 
       testFramework.assert(longDoubleStatsObject.N() == expectedNVectorAdd, "Addition of stats objects did not set n properly", __LINE__);
-      relativeError = fabs(longDoubleStatsObject.Average() - expectedAverage)/expectedAverage;
+      relativeError = std::abs(longDoubleStatsObject.Average() - expectedAverage)/expectedAverage;
       testFramework.assert(relativeError < doublePrecision, "Addition of stats objects did not set the correct average", __LINE__);
-      relativeError = fabs(longDoubleStatsObject.Maximum() - expectedMaximum)/expectedMaximum;
+      relativeError = std::abs(longDoubleStatsObject.Maximum() - expectedMaximum)/expectedMaximum;
       testFramework.assert(relativeError < doublePrecision, "Addition of stats objects did not set the correct maximum", __LINE__);
-      relativeError = fabs(longDoubleStatsObject.Minimum() - expectedMinimum)/expectedMinimum;
+      relativeError = std::abs(longDoubleStatsObject.Minimum() - expectedMinimum)/expectedMinimum;
       testFramework.assert(relativeError < doublePrecision, "Addition of stats objects did not set the correct minimum", __LINE__);     
-      relativeError = fabs(longDoubleStatsObject.Variance() - expectedVariance)/expectedVariance;
+      relativeError = std::abs(longDoubleStatsObject.Variance() - expectedVariance)/expectedVariance;
       testFramework.assert(relativeError < doublePrecision, "Addition of stats objects did not set the correct variance", __LINE__);
-      relativeError = fabs(longDoubleStatsObject.Normalization() - expectedNormalization)/expectedNormalization;
+      relativeError = std::abs(longDoubleStatsObject.Normalization() - expectedNormalization)/expectedNormalization;
       testFramework.assert(relativeError < doublePrecision, "Addition of stats objects did not set the correct normalization", __LINE__);
       testFramework.assert(longDoubleStatsObject.Weighted(), "Addition of stats objects did not set Weighted properly", __LINE__);
 

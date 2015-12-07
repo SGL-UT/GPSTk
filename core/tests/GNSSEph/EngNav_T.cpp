@@ -267,10 +267,10 @@ public:
       testMesg = "Clock Drift Rate is incorrect";
       testFramework.assert(output1[13] == 0, testMesg, __LINE__);
       testMesg = "Clock Drift is incorrect";
-      testFramework.assert(abs(output1[14] + .165982783074E-10)*pow(b10,10) < eps,
+      testFramework.assert(std::abs(output1[14] + .165982783074E-10)*pow(b10,10) < eps,
                            testMesg, __LINE__);
       testMesg = "Clock Bias is incorrect";
-      testFramework.assert(abs(output1[15] + .839701388031E-03)*pow(b10,3) < eps,
+      testFramework.assert(std::abs(output1[15] + .839701388031E-03)*pow(b10,3) < eps,
                            testMesg, __LINE__);
 
       testMesg = "Subframe Convert function failed";
@@ -291,24 +291,24 @@ public:
       testFramework.assert(output2[5]/2048 == 91, testMesg,
                            __LINE__); //AODE to IODE conversion, pg 15 of GR-SGL-99-14 FIC Definiton file
       testMesg = "CRS is incorrect";
-      testFramework.assert(abs(output2[6] - 93.40625) < eps, testMesg, __LINE__);
+      testFramework.assert(std::abs(output2[6] - 93.40625) < eps, testMesg, __LINE__);
       testMesg = "Correction to Mean Motion is incorrect";
-      testFramework.assert(abs(output2[7] - (.11604054784E-8))*pow(b10,8) < eps,
+      testFramework.assert(std::abs(output2[7] - (.11604054784E-8))*pow(b10,8) < eps,
                            testMesg, __LINE__);
       testMesg = "Mean Anomaly at Epoch is incorrect";
-      testFramework.assert(abs(output2[8] - 0.162092304801) < eps, testMesg,
+      testFramework.assert(std::abs(output2[8] - 0.162092304801) < eps, testMesg,
                            __LINE__);
       testMesg = "CUC is incorrect";
-      testFramework.assert(abs(output2[9] - .484101474285E-5)*pow(b10,5) < eps,
+      testFramework.assert(std::abs(output2[9] - .484101474285E-5)*pow(b10,5) < eps,
                            testMesg, __LINE__);
       testMesg = "Eccentricity is incorrect";
-      testFramework.assert(abs(output2[10] - .626740418375E-2)*pow(b10,2) < eps,
+      testFramework.assert(std::abs(output2[10] - .626740418375E-2)*pow(b10,2) < eps,
                            testMesg, __LINE__);
       testMesg = "CUS is incorrect";
-      testFramework.assert(abs(output2[11] - .652112066746E-5)*pow(b10,5) < eps,
+      testFramework.assert(std::abs(output2[11] - .652112066746E-5)*pow(b10,5) < eps,
                            testMesg, __LINE__);
       testMesg = "Square Root of Semi-Major Axis is incorrect";
-      testFramework.assert(abs(output2[12] - .515365489006E4)*pow(b10,-4) < eps,
+      testFramework.assert(std::abs(output2[12] - .515365489006E4)*pow(b10,-4) < eps,
                            testMesg, __LINE__);
       testMesg = "Time of Epoch is incorrect";
       testFramework.assert(output2[13] == 409904, testMesg, __LINE__);
@@ -330,31 +330,31 @@ public:
       testMesg = "Subframe ID is incorrect";
       testFramework.assert(output3[4] == 3, testMesg, __LINE__);
       testMesg = "CIC is incorrect";
-      testFramework.assert(abs(output3[5] + .242143869400E-7)*pow(b10,7) < eps,
+      testFramework.assert(std::abs(output3[5] + .242143869400E-7)*pow(b10,7) < eps,
                            testMesg, __LINE__);
       testMesg = "Right ascension of ascending node is incorrect";
-      testFramework.assert(abs(output3[6] - .329237003460) < eps, testMesg,
+      testFramework.assert(std::abs(output3[6] - .329237003460) < eps, testMesg,
                            __LINE__);
       testMesg = "CIS is incorrect";
-      testFramework.assert(abs(output3[7] + .596046447754E-7)*pow(b10,7) < eps,
+      testFramework.assert(std::abs(output3[7] + .596046447754E-7)*pow(b10,7) < eps,
                            testMesg, __LINE__);
       testMesg = "Inclination is incorrect";
-      testFramework.assert(abs(output3[8] - 1.11541663136) < eps, testMesg,
+      testFramework.assert(std::abs(output3[8] - 1.11541663136) < eps, testMesg,
                            __LINE__);
       testMesg = "CRC is incorrect";
-      testFramework.assert(abs(output3[9] - 326.59375)*pow(b10, -3) < eps, testMesg,
+      testFramework.assert(std::abs(output3[9] - 326.59375)*pow(b10, -3) < eps, testMesg,
                            __LINE__);
       testMesg =
          "Arguement of perigee is incorrect"; // All other values needed to be converted to semi-circles, IDK why this one wasn't
-      testFramework.assert(abs(output3[10] - 2.06958726335)*pow(b10, -1) < eps,
+      testFramework.assert(std::abs(output3[10] - 2.06958726335)*pow(b10, -1) < eps,
                            testMesg, __LINE__);
       testMesg = "Right ascension of ascending node time derivative is incorrect";
-      testFramework.assert(abs(output3[11] + .638312302555E-8)*pow(b10,10) < eps,
+      testFramework.assert(std::abs(output3[11] + .638312302555E-8)*pow(b10,10) < eps,
                            testMesg, __LINE__);
       testMesg = "AODE? is incorrect";
       testFramework.assert(output3[12]/2048 == 91, testMesg, __LINE__);
       testMesg = "Inclination time derivative is incorrect";
-      testFramework.assert(abs(output3[13] - .307155651409E-9)*pow(b10,9) < eps,
+      testFramework.assert(std::abs(output3[13] - .307155651409E-9)*pow(b10,9) < eps,
                            testMesg, __LINE__);//AODE to IODE conversion, pg 15 of GR-SGL-99-14 FIC Definiton file
 
       return testFramework.countFails();
