@@ -138,9 +138,9 @@ Position SolarPosition(CommonTime t, double& AR) throw()
    // convert to meters
    R *= 149598.0e6;
 
-   Position ES;
-   ES.setECEF(R*xhat,R*yhat,R*zhat);
-   return ES;
+   Position es;
+   es.setECEF(R*xhat,R*yhat,R*zhat);
+   return es;
 }
 
 //------------------------------------------------------------------------------------
