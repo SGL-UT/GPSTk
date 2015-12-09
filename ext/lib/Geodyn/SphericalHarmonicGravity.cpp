@@ -159,7 +159,7 @@ namespace gpstk
          GPSTK_THROW(e);
       }
 
-      Matrix<double> CS = gmData.unnormalizedCS;
+      Matrix<double> cs = gmData.unnormalizedCS;
 
    
          // Calculate accelerations ax,ay,az
@@ -171,7 +171,7 @@ namespace gpstk
          {
             if (m==0) 
             {
-               double C = CS[n][0];               // = C_n,0
+               double C = cs[n][0];               // = C_n,0
 
                ax -=       C * V[n+1][1];
                ay -=       C * W[n+1][1];
@@ -179,8 +179,8 @@ namespace gpstk
             }
             else 
             {
-               double C = CS[n][m];   // = C_n,m
-               double S = CS[m-1][n]; // = S_n,m
+               double C = cs[n][m];   // = C_n,m
+               double S = cs[m-1][n]; // = S_n,m
                double Fac = 0.5 * (n-m+1) * (n-m+2);
                
                ax += 0.5*(-C*V[n+1][m+1] - S*W[n+1][m+1]) + Fac*(C*V[n+1][m-1] + S*W[n+1][m-1]);
@@ -224,7 +224,7 @@ namespace gpstk
          GPSTK_THROW(e);
       }
 
-      Matrix<double> CS = gmData.unnormalizedCS;
+      Matrix<double> cs = gmData.unnormalizedCS;
 
    
       double xx = 0.0;     
@@ -242,15 +242,15 @@ namespace gpstk
          {
             double Fac = (n-m+2)*(n-m+1);
             
-            double C = CS[n][m];
-            double S = (m==0) ? 0.0 : CS[m-1][n];   // yan changed
-               //S = (m==0)?Sn0(n):CS[m-1][n];   // yan changed
+            double C = cs[n][m];
+            double S = (m==0) ? 0.0 : cs[m-1][n];   // yan changed
+               //S = (m==0)?Sn0(n):cs[m-1][n];   // yan changed
 
             zz += Fac*(C*V[n+2][m] + S*W[n+2][m]);
 
             if (m==0) 
             {
-               C = CS[n][0];   // = C_n,0
+               C = cs[n][0];   // = C_n,0
 
                Fac = (n+2)*(n+1);
                xx += 0.5 * (C*V[n+2][2] - Fac*C*V[n+2][0]);
@@ -262,8 +262,8 @@ namespace gpstk
             }
             if (m > 0)
             {
-               C = CS[n][m];
-               S = CS[m-1][n];
+               C = cs[n][m];
+               S = cs[m-1][n];
                
                double f1 = 0.5*(n-m+1);
                double f2 = (n-m+3)*(n-m+2)*f1;
@@ -365,9 +365,11 @@ namespace gpstk
       // Correct tides to coefficients 
    void SphericalHarmonicGravity::correctCSTides(UTCTime t,bool solidFlag,bool oceanFlag,bool poleFlag)
    {
+         // lower-case because 1) upper case is ugly and 2) name
+         // collisions with macros.
          // copy CS
-      Matrix<double> CS = gmData.unnormalizedCS;
-      Vector<double> Sn0(CS.rows(),0.0);
+      Matrix<double> cs = gmData.unnormalizedCS;
+      Vector<double> Sn0(cs.rows(),0.0);
 
          // 
       double mjd = static_cast<Epoch>(t).MJD();
@@ -377,9 +379,9 @@ namespace gpstk
       double detC21 = normFactor(2,1)*leapYears*gmData.dotC21;
       double detS21 = normFactor(2,1)*leapYears*gmData.dotS21;
 
-      CS(2,0) += detC20;
-      CS(2,1) += detC21;
-      CS(0,2) += detS21;
+      cs(2,0) += detC20;
+      cs(2,1) += detC21;
+      cs(0,2) += detS21;
       
          // correct solid tide
       if(solidFlag)
@@ -390,27 +392,27 @@ namespace gpstk
          solidTide.getSolidTide(t.mjdUTC(),dc,ds);
 
             // c
-         CS(2,0) += normFactor(2,0)*dc[0];
-         CS(2,1) += normFactor(2,1)*dc[1];
-         CS(2,2) += normFactor(2,2)*dc[2];
-         CS(3,0) += normFactor(3,0)*dc[3];
-         CS(3,1) += normFactor(3,1)*dc[4];
-         CS(3,2) += normFactor(3,2)*dc[5];
-         CS(3,3) += normFactor(3,3)*dc[6];
-         CS(4,0) += normFactor(4,0)*dc[7];
-         CS(4,1) += normFactor(4,1)*dc[8];
-         CS(4,2) += normFactor(4,2)*dc[9];
+         cs(2,0) += normFactor(2,0)*dc[0];
+         cs(2,1) += normFactor(2,1)*dc[1];
+         cs(2,2) += normFactor(2,2)*dc[2];
+         cs(3,0) += normFactor(3,0)*dc[3];
+         cs(3,1) += normFactor(3,1)*dc[4];
+         cs(3,2) += normFactor(3,2)*dc[5];
+         cs(3,3) += normFactor(3,3)*dc[6];
+         cs(4,0) += normFactor(4,0)*dc[7];
+         cs(4,1) += normFactor(4,1)*dc[8];
+         cs(4,2) += normFactor(4,2)*dc[9];
             /// s
          Sn0(2)  += normFactor(2,0)*ds[0];   // s20
-         CS(0,2) += normFactor(2,1)*ds[1];
-         CS(1,2) += normFactor(2,2)*ds[2];
+         cs(0,2) += normFactor(2,1)*ds[1];
+         cs(1,2) += normFactor(2,2)*ds[2];
          Sn0(3)  += normFactor(3,0)*ds[3];   // s30
-         CS(0,3) += normFactor(3,1)*ds[4];
-         CS(1,3) += normFactor(3,2)*ds[5];
-         CS(2,3) += normFactor(3,3)*ds[6];   
+         cs(0,3) += normFactor(3,1)*ds[4];
+         cs(1,3) += normFactor(3,2)*ds[5];
+         cs(2,3) += normFactor(3,3)*ds[6];   
          Sn0(4)  += normFactor(4,0)*ds[7];   // s40
-         CS(0,4) += normFactor(4,1)*ds[8];
-         CS(1,4) += normFactor(4,2)*ds[9];
+         cs(0,4) += normFactor(4,1)*ds[8];
+         cs(1,4) += normFactor(4,2)*ds[9];
 
       }
       
@@ -423,33 +425,33 @@ namespace gpstk
          oceanTide.getOceanTide(t.mjdUTC(),dc,ds);
          
             // c
-         CS(2,0) += normFactor(2,0)*dc[0];
-         CS(2,1) += normFactor(2,1)*dc[1];
-         CS(2,2) += normFactor(2,2)*dc[2];
-         CS(3,0) += normFactor(3,0)*dc[3];
-         CS(3,1) += normFactor(3,1)*dc[4];
-         CS(3,2) += normFactor(3,2)*dc[5];
-         CS(3,3) += normFactor(3,3)*dc[6];
-         CS(4,0) += normFactor(4,0)*dc[7];
-         CS(4,1) += normFactor(4,1)*dc[8];
-         CS(4,2) += normFactor(4,2)*dc[9];
-         CS(4,3) += normFactor(4,3)*dc[10];
-         CS(4,4) += normFactor(4,4)*dc[11];
+         cs(2,0) += normFactor(2,0)*dc[0];
+         cs(2,1) += normFactor(2,1)*dc[1];
+         cs(2,2) += normFactor(2,2)*dc[2];
+         cs(3,0) += normFactor(3,0)*dc[3];
+         cs(3,1) += normFactor(3,1)*dc[4];
+         cs(3,2) += normFactor(3,2)*dc[5];
+         cs(3,3) += normFactor(3,3)*dc[6];
+         cs(4,0) += normFactor(4,0)*dc[7];
+         cs(4,1) += normFactor(4,1)*dc[8];
+         cs(4,2) += normFactor(4,2)*dc[9];
+         cs(4,3) += normFactor(4,3)*dc[10];
+         cs(4,4) += normFactor(4,4)*dc[11];
 
 
             /// s
          Sn0(2)  += normFactor(2,0)*ds[0];   // s20
-         CS(0,2) += normFactor(2,1)*ds[1];
-         CS(1,2) += normFactor(2,2)*ds[2];
+         cs(0,2) += normFactor(2,1)*ds[1];
+         cs(1,2) += normFactor(2,2)*ds[2];
          Sn0(3)  += normFactor(3,0)*ds[3];   // s30
-         CS(0,3) += normFactor(3,1)*ds[4];
-         CS(1,3) += normFactor(3,2)*ds[5];
-         CS(2,3) += normFactor(3,3)*ds[6];
+         cs(0,3) += normFactor(3,1)*ds[4];
+         cs(1,3) += normFactor(3,2)*ds[5];
+         cs(2,3) += normFactor(3,3)*ds[6];
          Sn0(4)  += normFactor(4,0)*ds[7];   // s40
-         CS(1,4) += normFactor(4,1)*ds[8];
-         CS(2,4) += normFactor(4,2)*ds[9];
-         CS(3,4) += normFactor(4,1)*ds[10];
-         CS(4,4) += normFactor(4,2)*ds[11];
+         cs(1,4) += normFactor(4,1)*ds[8];
+         cs(2,4) += normFactor(4,2)*ds[9];
+         cs(3,4) += normFactor(4,1)*ds[10];
+         cs(4,4) += normFactor(4,2)*ds[11];
 
       }
       
@@ -460,8 +462,8 @@ namespace gpstk
          double dS21=0.0;
          poleTide.getPoleTide(t.mjdUTC(),dC21,dS21);
 
-         CS(2,1) += normFactor(2,1)*dC21;
-         CS(0,2) += normFactor(2,1)*dS21;
+         cs(2,1) += normFactor(2,1)*dC21;
+         cs(0,2) += normFactor(2,1)*dS21;
       }
 
    }  // End of method 'SphericalHarmonicGravity::correctCSTides()'

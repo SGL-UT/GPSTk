@@ -339,6 +339,16 @@ public:
          // endian system.  If so, byte order reversed.
       testFramework.assert(stringTest3 == "\x52\x9A\x66\xD8", failMesg, __LINE__);
 
+         // odd value that has been causing issues with MDP tests
+      static const double test4 = 2.4573306210644260e-12;
+         // big-endian, converted using
+         // http://babbage.cs.qc.edu/IEEE-754.old/64bit.html
+      static const unsigned char test4Arr[] = { 0x3d, 0x85, 0x9d, 0x6a,
+                                                0xa8, 0x91, 0xf3, 0x7f };
+      static const std::string test4Str((char*)test4Arr, sizeof(test4Arr));
+      std::string encBE(gpstk::BinUtils::encodeVar<double>(test4));
+      TUASSERTE(std::string, test4Str, encBE);
+
       return testFramework.countFails();
    }
 

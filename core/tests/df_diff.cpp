@@ -190,7 +190,7 @@ protected:
             }
          } while (input1 && input2);
       }
-      catch (exception& e)
+      catch (std::exception& e)
       {
          cout << e.what() << endl;
          exitCode += 1;
