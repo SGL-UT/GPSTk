@@ -81,13 +81,13 @@ int main()
    SVDTest(2, 2, a22, b2, bs2, testFramework, "2x2");
 
    double a23[] = {4, 11, 14, 8, 7, -2};
-   SVDTest(3, 3, a33, b3, bs3, testFramework, "3x3");
    SVDTest(2, 3, a23, NULL, NULL, testFramework, "2x3");
+   SVDTest(3, 2, a23, NULL, NULL, testFramework, "3x2");
 
    double a33[] = {2,-1,0,-1,2,-1,0,-1,2};
    double b3[] = {7,-3,2};
    double bs3[] = {4.25,1.5,1.75};
-   SVDTest(3, 2, a23, NULL, NULL, testFramework, "3x2");
+   SVDTest(3, 3, a33, b3, bs3, testFramework, "3x3");
 
    double a44[] = {2,-1,0,0,-1,2,-1,0,0,-1,2,-1,0,0,-1,2};
    double b4[] = {5,1,-2,6};
