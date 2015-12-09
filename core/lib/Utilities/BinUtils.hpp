@@ -79,7 +79,7 @@ namespace gpstk
    {
          /** @defgroup binutilsgroup Binary Data Manipulation Tools */
          //@{
-      
+
          /**
           * Reverse bytes.
           * This function will reverse the bytes in any type, though it
@@ -180,10 +180,15 @@ namespace gpstk
       inline T decodeVar( const std::string& str,
                           std::string::size_type pos )
       {
-         T t;
-         char *cp = reinterpret_cast<char*>( &t );
-         str.copy( cp, sizeof(T), pos );
-         return gpstk::BinUtils::netToHost( t );
+         T rv;
+#if BYTE_ORDER == LITTLE_ENDIAN
+         std::string scopy(str, pos, sizeof(T));
+         std::reverse(scopy.begin(), scopy.end());
+         std::memcpy(&rv, scopy.c_str(), sizeof(T));
+#else
+         std::memcpy(&rv, &str[0], sizeof(T));
+#endif
+         return rv;
       }
 
          /**
@@ -208,9 +213,11 @@ namespace gpstk
       template<class T>
       inline std::string encodeVar( const T& v )
       {
-         T tmp = v;
-         tmp = gpstk::BinUtils::hostToNet( v );
-         return std::string( reinterpret_cast<char*>( &tmp ), sizeof( tmp ) );
+         std::string rv((const char*)&v, sizeof(v));
+#if BYTE_ORDER == LITTLE_ENDIAN
+         std::reverse(rv.begin(), rv.end());
+#endif
+         return rv;
       }
       
          /// This is thrown when there is an error processing a CRC
