@@ -45,6 +45,7 @@
 #include <float.h>
 #include "build_config.h"
 #include "StringUtils.hpp"
+#include "Matrix.hpp"
 
 // Define a TestUtil object named testFramework
 #define TUDEF(CLASS,METHOD) TestUtil testFramework(CLASS, METHOD, __FILE__, __LINE__)
@@ -159,8 +160,8 @@ public:
                        double got,
                        int lineNumber,
                        const std::string& testMsg = std::string(),
-                       double epsilon = DBL_EPSILON );
-
+                       double epsilon = DBL_EPSILON);
+   
       /** Takes two single-precision floating point values, compares
        * them and passes the test if the values are equal within an
        * epsilon.
@@ -181,6 +182,32 @@ public:
                        const std::string& testMsg = std::string(),
                        float epsilon = FLT_EPSILON );
 
+      /** Takes two matricies, compares them and passes the test
+       * if the values are equal within an epsilon.
+       * @param[in] expected The expected value to be compared against.
+       * @param[in] got The value produced by the method under test.
+       * @param[in] lineNumber The line of source in the test file
+       *   where this assert is being performed, typically __LINE__.
+       * @param[in] testMsg A message to be printed on failure.
+       *   A default message will simply say what was expected and
+       *   what the value actually was when expected != got.
+       * @param[in] epsilon The maximum difference between expected
+       *   and got that will be considered "equal". By default, the
+       *   type's epsilon is used.
+       */
+   template<class T>
+   void assert_equals( const gpstk::Matrix<T>& expected,
+                              const gpstk::Matrix<T>& got,
+                              int lineNumber,
+                              const std::string& testMsg = std::string(),
+                              T epsilon = DBL_EPSILON);
+   template<class T>
+   void assert_equals( const gpstk::Vector<T>& expected,
+                              const gpstk::Vector<T>& got,
+                              int lineNumber,
+                              const std::string& testMsg = std::string(),
+                              T epsilon = DBL_EPSILON);
+   
       /** Compare two text files, line-by-line.  Test passes if there
        * are no differences according to the rules set by parameters.
        * @param[in] lineNumber The line of source in the test file
@@ -364,7 +391,7 @@ TestUtil( const std::string& sourceClassInput,
           const std::string& testFileInput,
           const         int& testLineInput,
           const         int& verbosityInput )
-      : outputKeyword( "GpstkTest" ),
+      : outputKeyword( "GPSTkTest" ),
         sourceClass( sourceClassInput  ),
         sourceMethod( sourceMethodInput ),
         testFileName( testFileInput ),
@@ -426,33 +453,32 @@ assert( bool testExpression,
 template <class T>
 void TestUtil ::
 assert_equals( const T& expected, const T& got,
-                    int lineNumber,
-                    const std::string& testMsg )
+               int lineNumber,
+               const std::string& testMsg )
 {
-   std::string mess;
+   std::string mess(testMsg);
    if (testMsg.empty())
    {
       std::ostringstream ostr;
-      ostr << "Expected:'" << expected << "'" << std::endl << " But got:'"
-           << got << "'" << std::endl;
+      ostr << "Expected:'" << expected << "' ,But got:'" << got << "'";
       mess = ostr.str();
    }
+      
    assert(expected == got, mess, lineNumber);
 }
 
 
 void TestUtil ::
 assert_equals( double expected, double got,
-                    int lineNumber,
-                    const std::string& testMsg,
-                    double epsilon )
+               int lineNumber,
+               const std::string& testMsg,
+               double epsilon )
 {
-   std::string mess;
+   std::string mess(testMsg);
    if (testMsg.empty())
    {
       std::ostringstream ostr;
-      ostr << "Expected:'" << expected << "'" << std::endl << " But got:'"
-           << got << "'" << std::endl;
+      ostr << "Expected:'" << expected << "' but got:'" << got << "'";
       mess = ostr.str();
    }
    assert(fabs(expected-got) <= epsilon, mess, lineNumber);
@@ -461,30 +487,67 @@ assert_equals( double expected, double got,
 
 void TestUtil ::
 assert_equals( float expected, float got,
-                    int lineNumber,
-                    const std::string& testMsg,
-                    float epsilon )
+               int lineNumber,
+               const std::string& testMsg,
+               float epsilon )
 {
-   std::string mess;
+   std::string mess(testMsg);
    if (testMsg.empty())
    {
       std::ostringstream ostr;
-      ostr << "Expected:'" << expected << "'" << std::endl << " But got:'"
-           << got << "'" << std::endl;
+      ostr << "Expected:'" << expected << "' but got:'" << got << "'";
       mess = ostr.str();
    }
    assert(fabs(expected-got) <= epsilon, mess, lineNumber);
 }
 
+template<class T>
+void TestUtil ::
+assert_equals( const gpstk::Matrix<T>& expected,
+               const gpstk::Matrix<T>& got,
+               int lineNumber,
+               const std::string& testMsg,
+               T epsilon )
+{
+   std::string mess(testMsg);
+   T mag = maxabs(expected - got);
+   if (testMsg.empty())
+   {
+      std::ostringstream ostr;
+      ostr << "absmag(expected-computed) = " << mag;
+      mess = ostr.str();
+   }
+   assert_equals(T(mag) , T(0.0), lineNumber, mess, epsilon);
+}
+
+
+template<class T>
+void TestUtil ::
+assert_equals( const gpstk::Vector<T>& expected,
+               const gpstk::Vector<T>& got,
+               int lineNumber,
+               const std::string& testMsg,
+               T epsilon )
+{
+   std::string mess(testMsg);
+   T mag = maxabs(expected - got);
+   if (testMsg.empty())
+   {
+      std::ostringstream ostr;
+      ostr << "absmag(expected-computed) = " << mag;
+      mess = ostr.str();
+   }
+   assert_equals(T(mag) , T(0.0), lineNumber, mess, epsilon);
+}
 
 void TestUtil ::
 assert_files_equal( int lineNumber,
-                         const std::string& file1Name,
-                         const std::string& file2Name,
-                         const std::string& testMsg,
-                         int numLinesSkip,
-                         bool ignoreLeadingSpaces,
-                         bool ignoreTrailingSpaces,
+                    const std::string& file1Name,
+                    const std::string& file2Name,
+                    const std::string& testMsg,
+                    int numLinesSkip,
+                    bool ignoreLeadingSpaces,
+                    bool ignoreTrailingSpaces,
                     std::vector<std::string> ignoreRegex )
 {
    bool eq = fileEqualTest(

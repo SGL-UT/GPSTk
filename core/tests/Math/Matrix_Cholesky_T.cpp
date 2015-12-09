@@ -42,89 +42,49 @@
 
 using namespace std;
 
-
-double max(const gpstk::Matrix<double>& A)
-{
-   double m=0;
-   for(int i = 0; i < A.rows(); i++)
-   {
-      for(int j = 0; j < A.cols(); j++)
-      {
-         double mag=std::abs(A(i,j));
-         if (mag > m)
-            m = mag;
-      }
-   }
-   return m;
-}
-
-double max(const gpstk::Vector<double>& V)
-{
-   double m=0;
-   for(int i = 0; i < V.size(); i++)
-   {
-      double mag=std::abs(V(i));
-      if (mag > m)
-         m = mag;
-   }
-   return m;
-}
-
 void choleskyTest(size_t r, size_t c,
                   double _A[], double _B[], double _BSref[],
                   TestUtil& testFramework, const std::string& str)
 {
    testFramework.changeSourceMethod(str);
+   double eps=5*DBL_EPSILON;
    gpstk::Matrix<double> A(r,c);
    A = _A;
    gpstk::Cholesky<double> C;
    C(A);
+
+   TUASSERTFEPS( A, C.L * transpose(C.L), eps);
+   TUASSERTFEPS( A, C.U * transpose(C.U), eps);
+   
    gpstk::Vector<double> B(r), BSref(r);
    B = _B;
    BSref = _BSref;
    C.backSub(B);
-   
-   gpstk::Matrix<double> LLt(r,c), UUt(r,c);
-   LLt = C.L * transpose(C.L);
-   UUt = C.U * transpose(C.U);
-
-   double eps=10*DBL_EPSILON;
-   testFramework.assert( max(A-LLt) < eps, "L * transpose(L) != A", __LINE__);
-   testFramework.assert( max(A-UUt) < eps, "U * transpose(U) != A", __LINE__);
-   testFramework.assert( max(B-BSref) < eps, "Back subsitution incorrect", __LINE__);
-   if (false)
-      cout << "A-LLt:" << A - LLt << endl
-           << "A-UUt:" << A - UUt << endl
-           << "B-BSref:" << B-BSref << endl;
+   TUASSERTFEPS( B, BSref, eps);   
 }
+
 
 void choleskyCroutTest(size_t r, size_t c,
                   double _A[], double _B[], double _BSref[],
                   TestUtil& testFramework, const std::string& str)
 {
    testFramework.changeSourceMethod(str);
+   double eps=5*DBL_EPSILON;
    gpstk::Matrix<double> A(r,c);
    A = _A;
    gpstk::CholeskyCrout<double> C;
    C(A);
+   
+   TUASSERTFEPS( A, C.L * transpose(C.L), eps);
+   TUASSERTFEPS( A, transpose(C.U) * C.U, eps);
+   
    gpstk::Vector<double> B(r), BSref(r);
    B = _B;
    BSref = _BSref;
    C.backSub(B);
-   
-   gpstk::Matrix<double> LLt(r,c), UtU(r,c);
-   LLt = C.L * transpose(C.L);
-   UtU = transpose(C.U) * C.U;
-
-   double eps=10*DBL_EPSILON;
-   testFramework.assert( max(A-LLt) < eps, "L * transpose(L) != A", __LINE__);
-   testFramework.assert( max(A-UtU) < eps, "transpose(U) * U != A", __LINE__);
-   testFramework.assert( max(B-BSref) < eps, "Back subsitution incorrect", __LINE__);
-   if (false)
-      cout << "A-LLt:" << A - LLt << endl
-           << "A-UtU:" << A - UtU << endl
-           << "B-BSref:" << B-BSref << endl;
+   TUASSERTFEPS( B, BSref, eps);
 }
+
 
 int main()
 {
@@ -149,8 +109,9 @@ int main()
    choleskyCroutTest(2, 2, a22, b2, bs2, testFramework2, "2x2");
    choleskyCroutTest(3, 3, a33, b3, bs3, testFramework2, "3x3");
    choleskyCroutTest(4, 4, a44, b4, bs4, testFramework2, "4x4");
-   
-   std::cout << "Total Failures for " << __FILE__ << ": " << testFramework.countFails() << std::endl;
 
-   return testFramework.countFails();
+   unsigned tf = testFramework.countFails() + testFramework2.countFails();
+   std::cout << "Total Failures for " << __FILE__ << ": " << tf << std::endl;
+
+   return tf;
 }
