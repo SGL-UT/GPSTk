@@ -43,13 +43,13 @@
 using namespace std;
 
 void choleskyTest(size_t r, size_t c,
-                  double _A[], double _B[], double _BSref[],
+                  double xA[], double xB[], double xBSref[],
                   TestUtil& testFramework, const std::string& str)
 {
    testFramework.changeSourceMethod(str);
    double eps=5*DBL_EPSILON;
    gpstk::Matrix<double> A(r,c);
-   A = _A;
+   A = xA;
    gpstk::Cholesky<double> C;
    C(A);
 
@@ -57,21 +57,21 @@ void choleskyTest(size_t r, size_t c,
    TUASSERTFEPS( A, C.U * transpose(C.U), eps);
    
    gpstk::Vector<double> B(r), BSref(r);
-   B = _B;
-   BSref = _BSref;
+   B = xB;
+   BSref = xBSref;
    C.backSub(B);
    TUASSERTFEPS( B, BSref, eps);   
 }
 
 
 void choleskyCroutTest(size_t r, size_t c,
-                  double _A[], double _B[], double _BSref[],
+                  double xA[], double xB[], double xBSref[],
                   TestUtil& testFramework, const std::string& str)
 {
    testFramework.changeSourceMethod(str);
    double eps=5*DBL_EPSILON;
    gpstk::Matrix<double> A(r,c);
-   A = _A;
+   A = xA;
    gpstk::CholeskyCrout<double> C;
    C(A);
    
@@ -79,8 +79,8 @@ void choleskyCroutTest(size_t r, size_t c,
    TUASSERTFEPS( A, transpose(C.U) * C.U, eps);
    
    gpstk::Vector<double> B(r), BSref(r);
-   B = _B;
-   BSref = _BSref;
+   B = xB;
+   BSref = xBSref;
    C.backSub(B);
    TUASSERTFEPS( B, BSref, eps);
 }

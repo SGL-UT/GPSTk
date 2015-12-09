@@ -43,13 +43,13 @@
 using namespace std;
 
 void SVDTest(size_t r, size_t c,
-                  double _A[], double _B[], double _BSref[],
+                  double xA[], double xB[], double xBSref[],
                   TestUtil& testFramework, const std::string& str)
 {
    testFramework.changeSourceMethod(str);
    double eps=100*DBL_EPSILON;
    gpstk::Matrix<double> A(r,c);
-   A = _A;
+   A = xA;
    gpstk::SVD<double> svd;
    svd(A);
    gpstk::Matrix<double> S(r, c, 0.0);
@@ -63,8 +63,8 @@ void SVDTest(size_t r, size_t c,
    if (r == c)
    {
       gpstk::Vector<double> B(r), BSref(r);
-      B = _B;
-      BSref = _BSref;
+      B = xB;
+      BSref = xBSref;
       svd.backSub(B);
       TUASSERTFEPS( B, BSref, eps);
    }
