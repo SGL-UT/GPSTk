@@ -130,18 +130,6 @@ public:
    int LUATest(void);
    int LUbackSubTest(void);
 
-   //Functions in Matrix_HouseHolder_T.cpp
-   int HHSquareTest(void);
-   int HHUpperTriangularTest(void);
-   int HHRMatrixTest(void);
-
-   //Functions in Matrix_Cholesky_T.cpp
-   int CholeskyInitializationTest(void);
-   int CholeskyLTest(void);
-   int CholeskyUTest(void);
-   int CholeskyLUTest(void);
-   int CholeskyBackSubTest(void);
-
    //Functions in Matrix_SVD_T.cpp
    int SVDATest(void);
    int SVDBackSubTest(void);
