@@ -42,6 +42,8 @@
 #ifndef BINUTILS_HPP
 #define BINUTILS_HPP
 
+#include <cstring>
+#include <algorithm>
 #include "gpstkplatform.h"
 
 #ifdef __sun

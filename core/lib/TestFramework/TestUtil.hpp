@@ -35,6 +35,7 @@
 //
 //=============================================================================
 
+#include <typeinfo>
 #include <iostream>
 #include <fstream>
 #include <string>
