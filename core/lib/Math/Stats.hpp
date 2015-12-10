@@ -201,7 +201,7 @@ namespace gpstk
          n = in_n;
          min = in_min;
          max = in_max;
-         var = in_var;
+         var = in_var * T(n-1)/T(n);
          ave = in_ave;
          weighted = wtd;
          W = norm;
