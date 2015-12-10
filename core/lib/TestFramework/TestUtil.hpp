@@ -64,6 +64,35 @@
 // Pass the test with a (unprinted) message.
 #define TUPASS(MSG) testFramework.assert(true, MSG, __LINE__)
 
+
+/// @return returns the EPSILON for the given type
+template<typename T>
+T epsilon()
+{
+   if (typeid(T) == typeid(long double))
+      return LDBL_EPSILON;
+   else if (typeid(T) == typeid(double))
+      return DBL_EPSILON;
+   else if (typeid(T) == typeid(float))
+      return FLT_EPSILON;
+   else
+      return 0;
+}
+
+/// @return a string with the name of the type
+template<typename T>
+std::string typeString()
+{
+   if (typeid(T) == typeid(long double))
+      return std::string("long double");
+   else if (typeid(T) == typeid(double))
+      return std::string("double");
+   else if (typeid(T) == typeid(float))
+      return std::string("float");
+   else
+      return 0;
+}
+
 //============================================================
 // class:   TestUtil
 // purpose: TestUtil is a proposed utility class (not parent class)
@@ -141,9 +170,9 @@ public:
    void assert_equals( const T& expected,
                        const T& got,
                        int lineNumber,
-                       const std::string& testMsg = std::string() );
+                       const std::string& testMsg = std::string());
 
-      /** Takes two double values, compares them and passes the test
+      /** Takes two floating point values, compares them and passes the test
        * if the values are equal within an epsilon.
        * @param[in] expected The expected value to be compared against.
        * @param[in] got The value produced by the method under test.
@@ -160,27 +189,30 @@ public:
                        double got,
                        int lineNumber,
                        const std::string& testMsg = std::string(),
-                       double epsilon = DBL_EPSILON);
+                       double epsilon=-1)
+   {assert_equals_fp<double>(expected, got, lineNumber, testMsg, epsilon);}
    
-      /** Takes two single-precision floating point values, compares
-       * them and passes the test if the values are equal within an
-       * epsilon.
-       * @param[in] expected The expected value to be compared against.
-       * @param[in] got The value produced by the method under test.
-       * @param[in] lineNumber The line of source in the test file
-       *   where this assert is being performed, typically __LINE__.
-       * @param[in] testMsg A message to be printed on failure.
-       *   A default message will simply say what was expected and
-       *   what the value actually was when expected != got.
-       * @param[in] epsilon The maximum difference between expected
-       *   and got that will be considered "equal". By default, the
-       *   type's epsilon is used.
-       */
+   void assert_equals( long double expected,
+                       long double got,
+                       int lineNumber,
+                       const std::string& testMsg = std::string(),
+                       long double epsilon=-1)
+   {assert_equals_fp<double>(expected, got, lineNumber, testMsg, epsilon);}
+   
    void assert_equals( float expected,
                        float got,
                        int lineNumber,
                        const std::string& testMsg = std::string(),
-                       float epsilon = FLT_EPSILON );
+                       float epsilon=-1)
+   {assert_equals_fp<double>(expected, got, lineNumber, testMsg, epsilon);}
+   
+   template <typename T>
+   void assert_equals_fp( const T& expected,
+                          const T& got,
+                          int lineNumber,
+                          const std::string& testMsg = std::string(),
+                          T epsilon = -1);
+   
 
       /** Takes two matricies, compares them and passes the test
        * if the values are equal within an epsilon.
@@ -452,9 +484,10 @@ assert( bool testExpression,
 
 template <class T>
 void TestUtil ::
-assert_equals( const T& expected, const T& got,
+assert_equals( const T& expected,
+               const T& got,
                int lineNumber,
-               const std::string& testMsg )
+               const std::string& testMsg)
 {
    std::string mess(testMsg);
    if (testMsg.empty())
@@ -463,43 +496,47 @@ assert_equals( const T& expected, const T& got,
       ostr << "Expected:'" << expected << "' ,But got:'" << got << "'";
       mess = ostr.str();
    }
-      
    assert(expected == got, mess, lineNumber);
 }
 
-
+template<typename T>
 void TestUtil ::
-assert_equals( double expected, double got,
-               int lineNumber,
-               const std::string& testMsg,
-               double epsilon )
+assert_equals_fp( const T& expected,
+                  const T& got,
+                  int lineNumber,
+                  const std::string& testMsg,
+                  T epsilon )
 {
+   T err = std::abs(expected - got);
+//   T typeEps = epsilon<T>();
+   if (epsilon < 0)
+   {
+      if (typeid(T) == typeid(long double))
+         epsilon = LDBL_EPSILON;
+      else if (typeid(T) == typeid(double))
+         epsilon = DBL_EPSILON;
+      else if (typeid(T) == typeid(float))
+         epsilon = FLT_EPSILON;
+      else
+         epsilon = 0;
+   }
+
+   bool good = err < epsilon;
    std::string mess(testMsg);
    if (testMsg.empty())
    {
       std::ostringstream ostr;
-      ostr << "Expected:'" << expected << "' but got:'" << got << "'";
+      ostr << "abs(" << expected << " - " << got << ") = " << err;
+      if (good)
+         ostr << " <= ";
+      else
+         ostr << " > ";
+      ostr << epsilon;
       mess = ostr.str();
-   }
-   assert(fabs(expected-got) <= epsilon, mess, lineNumber);
+   }      
+   assert(good, mess, lineNumber);
 }
 
-
-void TestUtil ::
-assert_equals( float expected, float got,
-               int lineNumber,
-               const std::string& testMsg,
-               float epsilon )
-{
-   std::string mess(testMsg);
-   if (testMsg.empty())
-   {
-      std::ostringstream ostr;
-      ostr << "Expected:'" << expected << "' but got:'" << got << "'";
-      mess = ostr.str();
-   }
-   assert(fabs(expected-got) <= epsilon, mess, lineNumber);
-}
 
 template<class T>
 void TestUtil ::
