@@ -59,14 +59,8 @@ void SVDTest(size_t r, size_t c,
    TUASSERTFEPS( A, svd.U * S * transpose(svd.V), eps);
    
    TUASSERTFEPS( gpstk::ident<T>(r), svd.U * transpose(svd.U), eps);
-   TUASSERTFEPS( gpstk::ident<T>(r), svd.U * transpose(svd.U), eps);
+   TUASSERTFEPS( gpstk::ident<T>(c), svd.V * transpose(svd.V), eps);
 
-   cout << "A " << A << endl
-        << "USVT " << svd.U * S * transpose(svd.V) << endl
-        << "svd.U " << svd.U << endl
-        << "S " << S << endl
-        << "svd.V " << svd.V << endl;
-   
    if (r == c)
    {
       gpstk::Vector<T> B(r), BSref(r);
