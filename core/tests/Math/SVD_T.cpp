@@ -41,6 +41,10 @@ void SVDTest(size_t r, size_t c,
 
 int main()
 {
+   double a44[] = {2,-1,0,0,-1,2,-1,0,0,-1,2,-1,0,0,-1,2};
+   double b4[] = {5,1,-2,6};
+   double bs4[] ={5,5,4,5};   
+   
    double a22[] = {2,1,1,2};
    double b2[] = {1,2};
    double bs2[] = {0,1};
@@ -55,8 +59,10 @@ int main()
    double bs3[] = {4.25,1.5,1.75};
    SVDTest(3, 3, a33, b3, bs3);
 
-   double a44[] = {2,-1,0,0,-1,2,-1,0,0,-1,2,-1,0,0,-1,2};
-   double b4[] = {5,1,-2,6};
-   double bs4[] ={5,5,4,5};   
    SVDTest(4, 4, a44, b4, bs4);
+   SVDTest(2, 8, a44, NULL, NULL);
+   SVDTest(8, 2, a44, NULL, NULL);
+   cout << "barf" << endl;
+   gpstk::SVD<double> foo;
+   cout << "bar" << endl;
 }
