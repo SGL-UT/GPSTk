@@ -42,27 +42,34 @@
 
 using namespace std;
 
+template<typename T>
 void SVDTest(size_t r, size_t c,
-                  double xA[], double xB[], double xBSref[],
+                  T xA[], T xB[], T xBSref[],
                   TestUtil& testFramework, const std::string& str)
 {
    testFramework.changeSourceMethod(str);
-   double eps=100*DBL_EPSILON;
-   gpstk::Matrix<double> A(r,c);
+   T eps=100*std::numeric_limits<T>::epsilon();
+   gpstk::Matrix<T> A(r,c);
    A = xA;
-   gpstk::SVD<double> svd;
+   gpstk::SVD<T> svd;
    svd(A);
-   gpstk::Matrix<double> S(r, c, 0.0);
+   gpstk::Matrix<T> S(r, c, 0.0);
    for (int i=0; i<r; i++)
       S(i,i) = svd.S(i);
    TUASSERTFEPS( A, svd.U * S * transpose(svd.V), eps);
    
-   TUASSERTFEPS( gpstk::ident<double>(r), svd.U * transpose(svd.U), eps);
-   TUASSERTFEPS( gpstk::ident<double>(r), svd.U * transpose(svd.U), eps);
+   TUASSERTFEPS( gpstk::ident<T>(r), svd.U * transpose(svd.U), eps);
+   TUASSERTFEPS( gpstk::ident<T>(r), svd.U * transpose(svd.U), eps);
 
+   cout << "A " << A << endl
+        << "USVT " << svd.U * S * transpose(svd.V) << endl
+        << "svd.U " << svd.U << endl
+        << "S " << S << endl
+        << "svd.V " << svd.V << endl;
+   
    if (r == c)
    {
-      gpstk::Vector<double> B(r), BSref(r);
+      gpstk::Vector<T> B(r), BSref(r);
       B = xB;
       BSref = xBSref;
       svd.backSub(B);
@@ -71,30 +78,41 @@ void SVDTest(size_t r, size_t c,
 }
 
 
-int main()
+template<typename T>
+unsigned multipass()
 {
-   TestUtil testFramework("Matrix SVD", "--", __FILE__, __LINE__);
-   
-   double a22[] = {2,1,1,2};
-   double b2[] = {1,2};
-   double bs2[] = {0,1};
+   TestUtil testFramework("Matrix SVD<"+typeString<T>()+">", "--", __FILE__, __LINE__);
+   T a22[] = {2,1,1,2};
+   T b2[] = {1,2};
+   T bs2[] = {0,1};
    SVDTest(2, 2, a22, b2, bs2, testFramework, "2x2");
 
-   double a23[] = {4, 11, 14, 8, 7, -2};
-   SVDTest(2, 3, a23, NULL, NULL, testFramework, "2x3");
-   SVDTest(3, 2, a23, NULL, NULL, testFramework, "3x2");
+   T a23[] = {4, 11, 14, 8, 7, -2};
+   SVDTest<T>(3, 2, a23, NULL, NULL, testFramework, "3x2");
+   SVDTest<T>(2, 3, a23, NULL, NULL, testFramework, "2x3");
 
-   double a33[] = {2,-1,0,-1,2,-1,0,-1,2};
-   double b3[] = {7,-3,2};
-   double bs3[] = {4.25,1.5,1.75};
-   SVDTest(3, 3, a33, b3, bs3, testFramework, "3x3");
+   T a33[] = {2,-1,0,-1,2,-1,0,-1,2};
+   T b3[] = {7,-3,2};
+   T bs3[] = {4.25,1.5,1.75};
+   SVDTest<T>(3, 3, a33, b3, bs3, testFramework, "3x3");
 
-   double a44[] = {2,-1,0,0,-1,2,-1,0,0,-1,2,-1,0,0,-1,2};
-   double b4[] = {5,1,-2,6};
-   double bs4[] ={5,5,4,5};   
-   SVDTest(4, 4, a44, b4, bs4, testFramework, "4x4");
-
-   std::cout << "Total Failures for " << __FILE__ << ": " << testFramework.countFails() << std::endl;
-
+   T a44[] = {2,-1,0,0,-1,2,-1,0,0,-1,2,-1,0,0,-1,2};
+   T b4[] = {5,1,-2,6};
+   T bs4[] ={5,5,4,5};   
+   SVDTest<T>(4, 4, a44, b4, bs4, testFramework, "4x4");
    return testFramework.countFails();
+}
+
+
+int main()
+{
+   unsigned ec=0;
+
+   ec += multipass<float>();
+   ec += multipass<double>();
+   ec += multipass<long double>();
+   
+   std::cout << "Total Failures for " << __FILE__ << ": " << ec << std::endl;
+
+   return ec;
 }

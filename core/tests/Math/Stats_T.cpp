@@ -48,7 +48,7 @@ template<class T>
 size_t statsTest()
 {
    std::string typeName = typeString<T>();
-   T precision = 10*epsilon<T>();
+   T precision = 10*std::numeric_limits<T>::epsilon();
    TestUtil testFramework( "Stats<"+typeName+">", "--", __FILE__, __LINE__ );
 
    gpstk::Stats<T> statsObject;
@@ -64,7 +64,6 @@ size_t statsTest()
    N+=1; // Since there was already one value in the object
    TUA(N, statsObject.N(), "Add(Vector<"+typeName+">)");
    std::cout << std::setprecision(25) << statsObject << std::endl;
-//                                1.333333333333333333152633    1.15470053837925152890459
    T eMin=1, eMax=4, eAvg=3, eVar=1.333333333333333333333, eStd=1.15470053837925152890459, eNorm=10;
 
    TUAE(eAvg, statsObject.Average(), precision, "Average()");

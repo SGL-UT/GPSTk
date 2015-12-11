@@ -66,20 +66,6 @@
 #define TUPASS(MSG) testFramework.assert(true, MSG, __LINE__)
 
 
-/// @return returns the EPSILON for the given type
-template<typename T>
-T epsilon()
-{
-   if (typeid(T) == typeid(long double))
-      return LDBL_EPSILON;
-   else if (typeid(T) == typeid(double))
-      return DBL_EPSILON;
-   else if (typeid(T) == typeid(float))
-      return FLT_EPSILON;
-   else
-      return 0;
-}
-
 /// @return a string with the name of the type
 template<typename T>
 std::string typeString()
@@ -183,8 +169,8 @@ public:
        *   A default message will simply say what was expected and
        *   what the value actually was when expected != got.
        * @param[in] epsilon The maximum difference between expected
-       *   and got that will be considered "equal". By default, the
-       *   type's epsilon is used.
+       *   and got that will be considered "equal". If this number is 
+       *   less than zero, the type's epsilon is used.
        */
    void assert_equals( double expected,
                        double got,
@@ -225,21 +211,21 @@ public:
        *   A default message will simply say what was expected and
        *   what the value actually was when expected != got.
        * @param[in] epsilon The maximum difference between expected
-       *   and got that will be considered "equal". By default, the
-       *   type's epsilon is used.
+       *   and got that will be considered "equal". If this number is 
+       *   less than zero, the type's epsilon is used.
        */
-   template<class T>
+   template<typename T>
    void assert_equals( const gpstk::Matrix<T>& expected,
                               const gpstk::Matrix<T>& got,
                               int lineNumber,
                               const std::string& testMsg = std::string(),
-                              T epsilon = DBL_EPSILON);
-   template<class T>
+                              T epsilon = -1);
+   template<typename T>
    void assert_equals( const gpstk::Vector<T>& expected,
                               const gpstk::Vector<T>& got,
                               int lineNumber,
                               const std::string& testMsg = std::string(),
-                              T epsilon = DBL_EPSILON);
+                              T epsilon = -1);
    
       /** Compare two text files, line-by-line.  Test passes if there
        * are no differences according to the rules set by parameters.
@@ -500,6 +486,7 @@ assert_equals( const T& expected,
    assert(expected == got, mess, lineNumber);
 }
 
+
 template<typename T>
 void TestUtil ::
 assert_equals_fp( const T& expected,
@@ -509,18 +496,8 @@ assert_equals_fp( const T& expected,
                   T epsilon )
 {
    T err = std::abs(expected - got);
-//   T typeEps = epsilon<T>();
    if (epsilon < 0)
-   {
-      if (typeid(T) == typeid(long double))
-         epsilon = LDBL_EPSILON;
-      else if (typeid(T) == typeid(double))
-         epsilon = DBL_EPSILON;
-      else if (typeid(T) == typeid(float))
-         epsilon = FLT_EPSILON;
-      else
-         epsilon = 0;
-   }
+      epsilon = std::numeric_limits<T>::epsilon();
 
    bool good = err < epsilon;
    std::string mess(testMsg);
@@ -539,7 +516,7 @@ assert_equals_fp( const T& expected,
 }
 
 
-template<class T>
+template<typename T>
 void TestUtil ::
 assert_equals( const gpstk::Matrix<T>& expected,
                const gpstk::Matrix<T>& got,
@@ -547,6 +524,9 @@ assert_equals( const gpstk::Matrix<T>& expected,
                const std::string& testMsg,
                T epsilon )
 {
+   if (epsilon < 0)
+      epsilon = std::numeric_limits<T>::epsilon();
+   
    std::string mess(testMsg);
    T mag = maxabs(expected - got);
    if (testMsg.empty())
@@ -559,7 +539,7 @@ assert_equals( const gpstk::Matrix<T>& expected,
 }
 
 
-template<class T>
+template<typename T>
 void TestUtil ::
 assert_equals( const gpstk::Vector<T>& expected,
                const gpstk::Vector<T>& got,
@@ -567,6 +547,8 @@ assert_equals( const gpstk::Vector<T>& expected,
                const std::string& testMsg,
                T epsilon )
 {
+   if (epsilon < 0)
+      epsilon = std::numeric_limits<T>::epsilon();
    std::string mess(testMsg);
    T mag = maxabs(expected - got);
    if (testMsg.empty())
