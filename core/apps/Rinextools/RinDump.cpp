@@ -999,6 +999,7 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
          RinexSatID sat;
          string tag(cmdlineUnrecognized[i]);
          upperCase(tag);
+         LOG(DEBUG) << "# unrecognized cmdline arg: " << tag;
 
          // Rinex obs type?
          if(isValidRinexObsID(tag)) {
