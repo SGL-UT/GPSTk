@@ -188,7 +188,7 @@ namespace gpstk
          std::reverse(scopy.begin(), scopy.end());
          std::memcpy(&rv, scopy.c_str(), sizeof(T));
 #else
-         std::memcpy(&rv, &str[0], sizeof(T));
+         std::memcpy(&rv, &str[pos], sizeof(T));
 #endif
          return rv;
       }
