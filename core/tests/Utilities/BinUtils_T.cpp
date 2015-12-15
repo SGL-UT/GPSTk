@@ -39,226 +39,12 @@
 #include <iostream>
 #include <cmath>
 
+using namespace std;
+
 class BinUtils_T
 {
 public:
 
-      //==========================================================
-      //        Test Suite: twiddleTest()
-      //==========================================================
-      //
-      //        Stores hex values as every type in big & little endian,
-      //        then verifies that twiddle reverses byte order
-      //
-      //==========================================================
-   int twiddleTest(void)
-   {
-      TUDEF("BinUtils", "twiddle");
-
-         //std::cout.setf(std::ios_base::hex,std::ios_base::basefield);
-
-      unsigned char Store[16] = {0x11,0x33,0x77,0xFF,0xBB,0x22,0xDD,0x44,0x00,0x00,0xDD,0xAA,0x44,0x22,0xBB,0xAA};
-
-      char a;
-      unsigned char *ptra = (unsigned char *)& a;
-      for (int i = sizeof(char)-1;i>=0;i--)
-      {
-         *ptra = Store[i];
-         ptra++;
-      }
-
-      short b;
-      unsigned char *ptrb = (unsigned char *)& b;
-      for (int i = sizeof(short)-1;i>=0;i--)
-      {
-         *ptrb = Store[i];
-         ptrb++;
-      }
-
-      int c;
-      unsigned char *ptrc = (unsigned char *)& c;
-      for (int i = sizeof(int)-1;i>=0;i--)
-      {
-         *ptrc = Store[i];
-         ptrc++;
-      }
-
-      long d;
-      unsigned char *ptrd = (unsigned char *)& d;
-      for (int i = sizeof(long)-1;i>=0;i--)
-      {
-         *ptrd = Store[i];
-         ptrd++;
-      }
-
-/* JMK 2015/12/07 commented out all the floating point types because
- * the data array above produces numbers that evaluate to NaN - not a
- * good idea.  The test is reasonable to cover integer types only,
- * given that the function under test is a template.
-
-      float e;
-      unsigned char *ptre = (unsigned char *)& e;
-      for (int i = sizeof(float)-1;i>=0;i--)
-      {
-         *ptre = Store[i];
-         ptre++;
-      }
-
-      double f;
-      unsigned char *ptrf = (unsigned char *)& f;
-      for (int i = sizeof(double)-1;i>=0;i--)
-      {
-         *ptrf = Store[i];
-         ptrf++;
-      }
-
-      long double g;
-      unsigned char *ptrg = (unsigned char *)& g;
-      for (int i = sizeof(long double)-1;i>=0;i--)
-      {
-         *ptrg = Store[i];
-         ptrg++;
-      }
-*/
-
-      long long h;
-      unsigned char *ptrh = (unsigned char *)& h;
-      for (int i = sizeof(long long)-1;i>=0;i--)
-      {
-         *ptrh = Store[i];
-         ptrh++;
-      }
-
-      char a1;
-      unsigned char *ptra1 = (unsigned char *)& a1;
-      for (int i =0;i<sizeof(char);i++)
-      {
-         *ptra1 = Store[i];
-         ptra1++;
-      }
-
-      short b1;
-      unsigned char *ptrb1 = (unsigned char *)& b1;
-      for (int i =0;i<sizeof(short);i++)
-      {
-         *ptrb1 = Store[i];
-         ptrb1++;
-      }
-
-      int c1;
-      unsigned char *ptrc1 = (unsigned char *)& c1;
-      for (int i =0;i<sizeof(int);i++)
-      {
-         *ptrc1 = Store[i];
-         ptrc1++;
-      }
-
-      long d1;
-      unsigned char *ptrd1 = (unsigned char *)& d1;
-      for (int i =0;i<sizeof(long);i++)
-      {
-         *ptrd1 = Store[i];
-         ptrd1++;
-      }
-
-/*
-      float e1;
-      unsigned char *ptre1 = (unsigned char *)& e1;
-      for (int i =0;i<sizeof(float);i++)
-      {
-         *ptre1 = Store[i];
-         ptre1++;
-      }
-
-      double f1;
-      unsigned char *ptrf1 = (unsigned char *)& f1;
-      for (int i =0;i<sizeof(double);i++)
-      {
-         *ptrf1 = Store[i];
-         ptrf1++;
-      }
-
-      long double g1;
-      unsigned char *ptrg1 = (unsigned char *)& g1;
-      for (int i =0;i<sizeof(long double);i++)
-      {
-         *ptrg1 = Store[i];
-         ptrg1++;
-      }
-*/
-
-      long long h1;
-      unsigned char *ptrh1 = (unsigned char *)& h1;
-      for (int i =0;i<sizeof(long long);i++)
-      {
-         *ptrh1 = Store[i];
-         ptrh1++;
-      }
-
-
-         // Testing twiddle for little Endian
-
-      gpstk::BinUtils::twiddle(a);
-      gpstk::BinUtils::twiddle(b);
-      gpstk::BinUtils::twiddle(c);
-      gpstk::BinUtils::twiddle(d);
-/*
-      gpstk::BinUtils::twiddle(e);
-      gpstk::BinUtils::twiddle(f);
-      gpstk::BinUtils::twiddle(g);
-*/
-      gpstk::BinUtils::twiddle(h);
-
-
-      std::string failMesg;
-      failMesg = "The twiddle method was not successful";
-      testFramework.assert(a1 == a, failMesg, __LINE__);
-      testFramework.assert(b1 == b, failMesg, __LINE__);
-      testFramework.assert(c1 == c, failMesg, __LINE__);
-      testFramework.assert(d1 == d, failMesg, __LINE__);
-/*
-      testFramework.assert(std::abs(e1-e) < 1e-50, failMesg, __LINE__);
-      testFramework.assert(std::abs(f1-f) < 1e-50, failMesg, __LINE__);
-      testFramework.assert(std::abs(g1-g) < 1e-50, failMesg, __LINE__);
-*/
-      TUASSERTE(long long, h1, h);
-
-      gpstk::BinUtils::twiddle(a);
-      gpstk::BinUtils::twiddle(b);
-      gpstk::BinUtils::twiddle(c);
-      gpstk::BinUtils::twiddle(d);
-/*
-      gpstk::BinUtils::twiddle(e);
-      gpstk::BinUtils::twiddle(f);
-      gpstk::BinUtils::twiddle(g);
-*/
-      gpstk::BinUtils::twiddle(h);
-
-      gpstk::BinUtils::twiddle(a1);
-      gpstk::BinUtils::twiddle(b1);
-      gpstk::BinUtils::twiddle(c1);
-      gpstk::BinUtils::twiddle(d1);
-/*
-      gpstk::BinUtils::twiddle(e1);
-      gpstk::BinUtils::twiddle(f1);
-      gpstk::BinUtils::twiddle(g1);
-*/
-      gpstk::BinUtils::twiddle(h1);
-
-         // Testing twiddle for big Endian
-
-      testFramework.assert(a1 == a, failMesg, __LINE__);
-      testFramework.assert(b1 == b, failMesg, __LINE__);
-      testFramework.assert(c1 == c, failMesg, __LINE__);
-      testFramework.assert(d1 == d, failMesg, __LINE__);
-/*
-      testFramework.assert(std::abs(e1-e) < 1e-50, failMesg, __LINE__);
-      testFramework.assert(std::abs(f1-f) < 1e-50, failMesg, __LINE__);
-      testFramework.assert(std::abs(g1-g) < 1e-50, failMesg, __LINE__);
-*/
-      TUASSERTE(long long, h1, h);
-      return testFramework.countFails();
-   }
 
       //==========================================================
       //        Test Suite: decodeVarTest()
@@ -548,32 +334,21 @@ int main (void)
 //      Not testing inteltoHost, host to intel
 //              They only ensure the byte order is little-endian
 //
-//      Same for netToHost, or hostToNet, but they ensure byte order is big-endian
+//      Same for netToHost, or hostToNet, but they ensure byte order
+//      is big-endian
 //
 //=============================================================================
 
-   int check = 0, errorCounter = 0;
+   int errorTotal = 0;
    BinUtils_T testClass;
 
-   check = testClass.twiddleTest();
-   errorCounter += check;
+   errorTotal += testClass.decodeVarTest();
+   errorTotal += testClass.encodeVarTest();
+   errorTotal += testClass.computeCRCTest();
+   errorTotal += testClass.xorChecksumTest(); //dependent on size of variables, may fail on other platforms
+   errorTotal += testClass.countBitsTest();
 
-   check = testClass.decodeVarTest();
-   errorCounter += check;
+   cout << "Total Failures for " << __FILE__ << ": " << errorTotal << endl;
 
-   check = testClass.encodeVarTest();
-   errorCounter += check;
-
-   check = testClass.computeCRCTest(); //unable to verify, see comments in computeCRCTest
-   errorCounter += check;
-
-   check = testClass.xorChecksumTest(); //dependent on size of variables, may fail on other platforms
-   errorCounter += check;
-
-   check = testClass.countBitsTest();
-   errorCounter += check;
-
-   std::cout << "Total Failures for " << __FILE__ << ": " << errorCounter << std::endl;
-
-   return errorCounter; //Return the total number of errors
+   return errorTotal; //Return the total number of errors
 }

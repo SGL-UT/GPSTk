@@ -150,6 +150,17 @@ namespace gpstk
                           std::string::size_type pos );
 
          /**
+          * Decode the item specified from the string and convert it
+          * from little-endian byte order to host byte order.
+          * @param str the string from which to obtain data.
+          * @param pos offset into the string from which to pull the data.
+          * @warn This function does not check for appropriate string length.
+          */
+      template <class T>
+      inline T decodeVarLE( const std::string& str,
+                            std::string::size_type pos );
+
+         /**
           * Decode and remove the item specified from the head of the string
           * and convert it from network byte order to host byte order.
           * @param str the string from which to obtain data.
@@ -290,6 +301,23 @@ namespace gpstk
          return rv;
       }
 
+
+
+      template <class T>
+      inline T decodeVarLE( const std::string& str,
+                            std::string::size_type pos )
+      {
+         T rv;
+#if BYTE_ORDER == BIG_ENDIAN
+         std::string scopy(str, pos, sizeof(T));
+         std::reverse(scopy.begin(), scopy.end());
+         std::memcpy(&rv, scopy.c_str(), sizeof(T));
+#else
+         std::memcpy(&rv, &str[pos], sizeof(T));
+#endif
+         return rv;
+      }
+
       template <class T>
       inline T decodeVar( std::string& str )
       {
@@ -326,7 +354,7 @@ namespace gpstk
          str.replace(pos, sizeof(T), reinterpret_cast<const char*>(&v),
                      sizeof(T));
 #if BYTE_ORDER == BIG_ENDIAN
-         std::reverse(rv.begin()+pos, rv.begin()+pos+sizeof(T));
+         std::reverse(str.begin()+pos, str.begin()+pos+sizeof(T));
 #endif
       }
 
