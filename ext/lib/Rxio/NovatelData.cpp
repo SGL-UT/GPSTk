@@ -60,13 +60,13 @@ static bool debug=false;
 namespace gpstk
 {
 
-   // --------------------------------------------------------------------------------
+   // --------------------------------------------------------------------------
    const double CFF=C_MPS/OSC_FREQ_GPS;
    const double wl1=CFF/L1_MULT_GPS;
    const double wl2=CFF/L2_MULT_GPS;
    const double PhaseRollover=8388608;
 
-   // --------------------------------------------------------------------------------
+   // --------------------------------------------------------------------------
    const string NovatelData::RecNames[] = {
          string("Unknown"),
          string("RGEB obs"),
@@ -79,7 +79,7 @@ namespace gpstk
          string("RAWEPHEM nav")
       };
 
-   // --------------------------------------------------------------------------------
+   // --------------------------------------------------------------------------
    bool NovatelData::isNav(void) const
    {
       switch(rectype) {
@@ -100,7 +100,7 @@ namespace gpstk
       }
    }
 
-   // --------------------------------------------------------------------------------
+   // --------------------------------------------------------------------------
    bool NovatelData::isObs(void) const
    {
       switch(rectype) {
@@ -121,7 +121,7 @@ namespace gpstk
       }
    }
 
-   // --------------------------------------------------------------------------------
+   // --------------------------------------------------------------------------
    bool NovatelData::isAux(void) const
    {
       switch(rectype) {
@@ -142,7 +142,7 @@ namespace gpstk
       }
    }
 
-   // --------------------------------------------------------------------------------
+   // --------------------------------------------------------------------------
       // True if this record belongs to OEM2 receivers
    bool NovatelData::isOEM2(void) const
    {
@@ -162,7 +162,7 @@ namespace gpstk
       }
    }
 
-   // --------------------------------------------------------------------------------
+   // --------------------------------------------------------------------------
       // True if this record belongs to OEM4 receivers
    bool NovatelData::isOEM4(void) const
    {
@@ -182,7 +182,7 @@ namespace gpstk
       }
    }
 
-   // --------------------------------------------------------------------------------
+   // --------------------------------------------------------------------------
    bool NovatelData::isValid(void) const
    {
       switch(rectype) {
@@ -202,13 +202,13 @@ namespace gpstk
       }
    }
 
-   // --------------------------------------------------------------------------------
+   // --------------------------------------------------------------------------
    void NovatelData::dump(ostream& str) const
    {
       str << "Record type is " << rectype << endl;
    }
 
-   // --------------------------------------------------------------------------------
+   // --------------------------------------------------------------------------
    void NovatelData::reallyPutRecord(FFStream& s) const
       throw(std::exception, StringUtils::StringException, FFStreamError)
    {
@@ -217,7 +217,7 @@ namespace gpstk
    }
 
 
-   // --------------------------------------------------------------------------------
+   // --------------------------------------------------------------------------
    void NovatelData::reallyGetRecord(FFStream& ffs)
       throw(std::exception, StringUtils::StringException, FFStreamError)
    {
@@ -290,16 +290,14 @@ namespace gpstk
                else if(*p4==0x0E) rectype = REPB;
                else if(*p4==0x0D) rectype = RCSB;
                else               rectype = Unknown;
-               recnum = int(*p4);
-               intelToHost(recnum);
+               recnum = static_cast<int>(*p4);
 
                   // read the rest of the record
                failure = 0;
                if(rectype != Unknown) {
 
                      // get the size of the record
-                  std::memmove(&datasize, &(buffer[8]), 4);
-                  intelToHost(datasize);
+                  itohl(buffer, datasize, 8);
                   if (debug)
                      cout << "datasize:" << datasize << endl;
 
@@ -382,52 +380,34 @@ namespace gpstk
                   // Ref OEM4 Manual pg 16
                   // (only need some of the data here - cast to Rinex functions
                   // will parse the whole thing)
-               unsigned char headerLength;
-               std::memmove(&headerLength, &(buffer[3]), 1);  intelToHost(headerLength);
-               short messageID;
-               std::memmove(&messageID, &(buffer[4]), 2);     intelToHost(messageID);
-               //char messageType;
-               //memmove(&messageType, &(buffer[6]), 1);   intelToHost(messageType);
-               //char portAddress;
-               //memmove(&portAddress, &(buffer[7]), 1);   intelToHost(portAddress);
-               short messageLength;
-               std::memmove(&messageLength, &(buffer[8]), 2); intelToHost(messageLength);
-               //short sequence;
-               //memmove(&sequence, &(buffer[10]), 2);     intelToHost(sequence);
-               //char idleTime;
-               //memmove(&idleTime, &(buffer[12]), 1);     intelToHost(idleTime);
-               //char timeStatus;
-               //memmove(&timeStatus, &(buffer[13]), 1);   intelToHost(timeStatus);
-               //short week;
-               //memmove(&week, &(buffer[14]), 2);         intelToHost(week);
-               //long msecOfWeek;
-               //memmove(&msecOfWeek, &(buffer[16]), 4);   intelToHost(msecOfWeek);
-               //long rxStatus;
-               //memmove(&rxStatus, &(buffer[20]), 4);     intelToHost(rxStatus);
-               //short reserved;
-               //memmove(&reserved, &(buffer[24]), 2);     intelToHost(reserved);
-               //short rxSWVersion;
-               //memmove(&rxSWVersion, &(buffer[26]), 2);  intelToHost(rxSWVersion);
+               uint8_t headerLength = buffer[3];
+               uint16_t messageID;
+               uint16_t messageLength;
+               itohs(buffer, messageID, 4);
+               itohs(buffer, messageLength, 8);
 
                datasize = messageLength;
-               headersize = int(headerLength);
+               headersize = static_cast<int>(headerLength);
                recnum = messageID;
 
-               if(headersize != 28) {   // manual warns that changes may be made
+               if(headersize != 28)
+               {
+                     // manual warns that changes may be made
                   Exception e("Header size : expected 28 but found "
                      + StringUtils::asString(headersize) + " for record ID "
                      + StringUtils::asString(recnum));
                   GPSTK_THROW(e);
                }
 
-               if(debug) cout << "hL " << int(headerLength)
-                     << " ID " << messageID
-                     << " mL " << messageLength
-                     //<< " seq " << sequence
-                     //<< " week " << week
-                     //<< " msow " << msecOfWeek
-                     //<< " rxver " << rxSWVersion
-                     << endl;
+               if(debug)
+                  cout << "hL " << int(headerLength)
+                       << " ID " << messageID
+                       << " mL " << messageLength
+                        //<< " seq " << sequence
+                        //<< " week " << week
+                        //<< " msow " << msecOfWeek
+                        //<< " rxver " << rxSWVersion
+                       << endl;
 
                if(     recnum ==  43) rectype = RANGE;
                else if(recnum == 140) rectype = RANGECMP;
@@ -537,7 +517,7 @@ namespace gpstk
    }  // end NovatelData::reallyGetRecord
 
 
-   // --------------------------------------------------------------------------------
+   // --------------------------------------------------------------------------
    NovatelData::operator RinexNavData()
       throw(Exception)
    {
@@ -666,7 +646,7 @@ namespace gpstk
    }  // end NovatelData::operator RinexNavData()
 
 
-   // --------------------------------------------------------------------------------
+   // --------------------------------------------------------------------------
    NovatelData::operator RinexObsData()
       throw(Exception)
    {

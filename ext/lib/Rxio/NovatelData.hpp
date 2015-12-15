@@ -134,8 +134,8 @@ namespace gpstk
          /// public data members
       RecType rectype;              ///< record type (cf. enum RecType)
       int recnum;                   ///< record number (byte 4 of record)
-      long datasize;                ///< size of data in bytes
-      int headersize;               ///< size of header in bytes (=3 for OEM2)
+      uint32_t datasize;            ///< size of data in bytes
+      uint16_t headersize;          ///< size of header in bytes (=3 for OEM2)
 
    protected:
          /// Write this record to the stream \a s.
