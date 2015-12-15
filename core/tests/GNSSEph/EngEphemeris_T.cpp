@@ -1,4 +1,4 @@
-   //============================================================================
+//============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -257,13 +257,13 @@ public:
          //Parity was calculated using the verified functions from EngNav, bad use of time to
          //       do at least 30 binary calculations with take >5 minutes each
 
-      const long subframe1P[10] = {0x22c000e4, 0x215ba160, 0x00180012, 0x1fffffc0, 0x3fffffc3,
+      const uint32_t subframe1P[10] = {0x22c000e4, 0x215ba160, 0x00180012, 0x1fffffc0, 0x3fffffc3,
                                    0x3ffffffc, 0x3fffc009, 0x16d904f0, 0x003fdbac, 0x1b83ed54
                                   };
-      const long subframe2P[10] = {0x22c000e4, 0x215bc2f0, 0x16c2eb4d, 0x09f7c524, 0x2fdc3384,
+      const uint32_t subframe2P[10] = {0x22c000e4, 0x215bc2f0, 0x16c2eb4d, 0x09f7c524, 0x2fdc3384,
                                    0x0289c0dd, 0x0d5ecc38, 0x036b6842, 0x034f4df0, 0x1904c0b4
                                   };
-      const long subframe3P[10] = {0x22c000e4, 0x215be378, 0x3ffcc344, 0x1a8441d8, 0x3ff80b74,
+      const uint32_t subframe3P[10] = {0x22c000e4, 0x215be378, 0x3ffcc344, 0x1a8441d8, 0x3ff80b74,
                                    0x1c8deb5e, 0x0a34d525, 0x14a5012e, 0x3fee8c06, 0x16c35c80
                                   };
       dataStore = fakeEphemerisInit();
@@ -358,7 +358,7 @@ public:
          // Is this function designed to just update already stored subframes?
          // Must be, because loop to see if all 3 subframes stored
 
-      const long subframe1[10] = {0x8B0003, 0x856E84, 0x006000, 0x7FFFFF, 0xFFFFFF,
+      const uint32_t subframe1[10] = {0x8B0003, 0x856E84, 0x006000, 0x7FFFFF, 0xFFFFFF,
                                   0xFFFFFF, 0xFFFF00, 0x5B6413, 0x00FF6E, 0x91F04C
                                  };
 
@@ -425,7 +425,7 @@ public:
                0110 0100 0001 0011  0     000 00      00 = 0x641300
          */
 
-      const long subframe2[10] = {0x8B0003, 0x856F08, 0x5B0BAD, 0x0CB106, 0x9AAF1F,
+      const uint32_t subframe2[10] = {0x8B0003, 0x856F08, 0x5B0BAD, 0x0CB106, 0x9AAF1F,
                                   0x0A2703, 0x357B30, 0x0DADA1, 0x0D3D37, 0x641300
                                  };
 
@@ -488,7 +488,7 @@ public:
          0101 1011      0000 1101 0111 00             00        = 0x5B0D70
          */
 
-      const long subframe3[10] = {0x8B0003, 0x856F8C, 0xFFF30D, 0x6A1107, 0xFFE02D,
+      const uint32_t subframe3[10] = {0x8B0003, 0x856F8C, 0xFFF30D, 0x6A1107, 0xFFE02D,
                                   0x7237AD, 0x28D354, 0x529404, 0xFFBA30, 0x5B0D70
                                  };
 
@@ -788,13 +788,13 @@ public:
 
       gpstk::EngEphemeris dataStore;
 
-      const long subframe1P[8] = {0x00180012, 0x1fffffc0, 0x3fffffc3, 0x3ffffffc,
+      const uint32_t subframe1P[8] = {0x00180012, 0x1fffffc0, 0x3fffffc3, 0x3ffffffc,
                                   0x3fffc009, 0x16d904f0, 0x003fdbac, 0x1b83ed54
                                  };
-      const long subframe2P[8] = {0x16c2eb4d, 0x09f7c524, 0x2fdc3384, 0x0289c0dd,
+      const uint32_t subframe2P[8] = {0x16c2eb4d, 0x09f7c524, 0x2fdc3384, 0x0289c0dd,
                                   0x0d5ecc38, 0x036b6842, 0x034f4df0, 0x1904c0b4
                                  };
-      const long subframe3P[8] = {0x3ffcc344, 0x1a8441d8, 0x3ff80b74, 0x1c8deb5e,
+      const uint32_t subframe3P[8] = {0x3ffcc344, 0x1a8441d8, 0x3ff80b74, 0x1c8deb5e,
                                   0x0a34d525, 0x14a5012e, 0x3fee8c06, 0x16c35c80
                                  };
 
