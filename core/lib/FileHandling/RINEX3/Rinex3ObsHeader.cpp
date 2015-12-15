@@ -1720,10 +1720,9 @@ namespace gpstk
             // assume that file creator knew what he was doing,
             // and use TimeSystem::GPS by default
             strm.timesystem = TimeSystem::GPS;
-            firstObs.setTimeSystem(TimeSystem::BDT);
+            firstObs.setTimeSystem(TimeSystem::GPS);
          }
-         else
-         {
+         else {
             FFStreamError e("Unknown file system type");
             GPSTK_THROW(e);
          }
