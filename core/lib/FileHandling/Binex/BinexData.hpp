@@ -765,15 +765,12 @@ namespace gpstk
             GPSTK_THROW(ip);
          }
          bool   littleEndian  = ( (syncByte & eBigEndian) == 0) ? true : false;
-         if (littleEndian == nativeLittleEndian)
+         msg.replace(offset, size, reinterpret_cast<const char*>(&data), size);
+         if (littleEndian != nativeLittleEndian)
          {
-            msg.replace(offset, size, reinterpret_cast<const char*>(&data), size);
-         }
-         else
-         {
-            T tmpData(data);
-            BinUtils::twiddle(tmpData);
-            msg.replace(offset, size, reinterpret_cast<const char*>(&tmpData), size);
+               // host endian-ness does not match file endian-ness, so
+               // reverse the bytes
+            std::reverse(msg.begin()+offset, msg.begin()+offset+size);
          }
          offset += size;
          return *this;
@@ -869,11 +866,10 @@ namespace gpstk
             GPSTK_THROW(ip);
          }
          bool littleEndian  = ( (syncByte & eBigEndian) == 0) ? true : false;
-         msg.copy(reinterpret_cast<char*>(&data), size, offset);
-         if (littleEndian != nativeLittleEndian)
-         {
-            BinUtils::twiddle(data);
-         }
+         if (littleEndian)
+            data = BinUtils::decodeVarLE<T>(msg, offset);
+         else
+            data = BinUtils::decodeVar<T>(msg, offset);
          offset += size;
 
       } // BinexData::extractMessageData()
