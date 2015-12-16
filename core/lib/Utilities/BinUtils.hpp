@@ -169,6 +169,15 @@ namespace gpstk
       template <class T>
       inline T decodeVar( std::string& str );
 
+         /**
+          * Decode and remove the item specified from the head of the string
+          * and convert it from little-endian byte order to host byte order.
+          * @param str the string from which to obtain data.
+          * @warn This function does not check for appropriate string length.
+          */
+      template <class T>
+      inline T decodeVarLE( std::string& str );
+
          /** 
           * Add the network ordered binary representation of a var to the
           * the given string.
@@ -322,6 +331,14 @@ namespace gpstk
       inline T decodeVar( std::string& str )
       {
          T t = gpstk::BinUtils::decodeVar<T>(str, 0);
+         str.erase( 0, sizeof(T) );
+         return t;
+      }
+
+      template <class T>
+      inline T decodeVarLE( std::string& str )
+      {
+         T t = gpstk::BinUtils::decodeVarLE<T>(str, 0);
          str.erase( 0, sizeof(T) );
          return t;
       }

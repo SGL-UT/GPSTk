@@ -130,6 +130,26 @@ namespace gpstk
       //@}
 
 
+// Macro because all the getData functions are basically the same.
+// Use a character buffer because typed data can have bad side effects
+// causing data corruption.
+#define FFBIN_GET_DATA(ITOH_FN,NTOH_FN)         \
+   char buf[sizeof(v)];                         \
+   getData(buf, sizeof(v));                     \
+   if (isStreamLittleEndian())                  \
+      BinUtils::ITOH_FN(buf, v);                \
+   else                                         \
+      BinUtils::NTOH_FN(buf, v);
+
+#define FFBIN_WRITE_DATA(HTOI_FN,HTON_FN)       \
+   char buf[sizeof(v)];                         \
+   if (isStreamLittleEndian())                  \
+      BinUtils::HTOI_FN(buf, v);                \
+   else                                         \
+      BinUtils::HTON_FN(buf, v);                \
+   writeData(buf, sizeof(v));
+
+
    inline void FFBinaryStream :: getData(uint8_t& v)
       throw(FFStreamError, EndOfFile)
    {
@@ -140,52 +160,119 @@ namespace gpstk
    inline void FFBinaryStream :: getData(uint16_t& v)
       throw(FFStreamError, EndOfFile)
    {
-      char buf[sizeof(v)];
-      getData(buf, sizeof(v));
-      if (isStreamLittleEndian())
-         BinUtils::itohs(buf, v);
-      else
-         BinUtils::ntohs(buf, v);
+      FFBIN_GET_DATA(itohs,ntohs);
    }
 
    inline void FFBinaryStream :: getData(uint32_t& v)
       throw(FFStreamError, EndOfFile)
    {
+      FFBIN_GET_DATA(itohl,ntohl);
    }
 
    inline void FFBinaryStream :: getData(uint64_t& v)
       throw(FFStreamError, EndOfFile)
    {
+      FFBIN_GET_DATA(itohll,ntohll);
    }
 
    inline void FFBinaryStream :: getData(int8_t& v)
       throw(FFStreamError, EndOfFile)
    {
+      char *buf = static_cast<char*>(&v);
+      getData(buf, sizeof(v));
    }
 
    inline void FFBinaryStream :: getData(int16_t& v)
       throw(FFStreamError, EndOfFile)
    {
+      FFBIN_GET_DATA(itohss,ntohss);
    }
 
    inline void FFBinaryStream :: getData(int32_t& v)
       throw(FFStreamError, EndOfFile)
    {
+      FFBIN_GET_DATA(itohsl,ntohsl);
    }
 
    inline void FFBinaryStream :: getData(int64_t& v)
       throw(FFStreamError, EndOfFile)
    {
+      FFBIN_GET_DATA(itohsll,ntohsll);
    }
 
    inline void FFBinaryStream :: getData(float& v)
       throw(FFStreamError, EndOfFile)
    {
+      FFBIN_GET_DATA(itohf,ntohf);
    }
 
    inline void FFBinaryStream :: getData(double& v)
       throw(FFStreamError, EndOfFile)
    {
+      FFBIN_GET_DATA(itohd,ntohd);
+   }
+
+
+   inline void FFBinaryStream :: writeData(uint8_t v)
+      throw(FFStreamError)
+   {
+      char *buf = reinterpret_cast<char*>(&v);
+      writeData(buf, sizeof(v));
+   }
+
+   inline void FFBinaryStream :: writeData(uint16_t v)
+      throw(FFStreamError)
+   {
+      FFBIN_WRITE_DATA(htois,htons);
+   }
+
+   inline void FFBinaryStream :: writeData(uint32_t v)
+      throw(FFStreamError)
+   {
+      FFBIN_WRITE_DATA(htoil,htonl);
+   }
+
+   inline void FFBinaryStream :: writeData(uint64_t v)
+      throw(FFStreamError)
+   {
+      FFBIN_WRITE_DATA(htoill,htonll);
+   }
+
+   inline void FFBinaryStream :: writeData(int8_t v)
+      throw(FFStreamError)
+   {
+      char *buf = static_cast<char*>(&v);
+      writeData(buf, sizeof(v));
+   }
+
+   inline void FFBinaryStream :: writeData(int16_t v)
+      throw(FFStreamError)
+   {
+      FFBIN_WRITE_DATA(htoiss,htonss);
+   }
+
+   inline void FFBinaryStream :: writeData(int32_t v)
+      throw(FFStreamError)
+   {
+      FFBIN_WRITE_DATA(htoisl,htonsl);
+   }
+
+   inline void FFBinaryStream :: writeData(int64_t v)
+      throw(FFStreamError)
+   {
+      FFBIN_WRITE_DATA(htoisll,htonsll);
+   }
+
+   inline void FFBinaryStream :: writeData(float v)
+      throw(FFStreamError)
+   {
+      FFBIN_WRITE_DATA(htoif,htonf);
+   }
+
+   inline void FFBinaryStream :: writeData(double v)
+      throw(FFStreamError)
+   {
+      FFBIN_WRITE_DATA(htoid,htond);
    }
 
 }
