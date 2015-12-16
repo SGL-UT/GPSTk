@@ -862,12 +862,12 @@ namespace gpstk
          uint8_t *cp = (uint8_t*)p + pos;
          uint8_t *vp = (uint8_t*)&v;
 #if BYTE_ORDER == LITTLE_ENDIAN
-         std::memcpy(vp, cp, sizeof(float));
+         std::memcpy(cp, vp, sizeof(float));
 #else
-         vp[0] = cp[3];
-         vp[1] = cp[2];
-         vp[2] = cp[1];
-         vp[3] = cp[0];
+         cp[0] = vp[3];
+         cp[1] = vp[2];
+         cp[2] = vp[1];
+         cp[3] = vp[0];
 #endif
       }
 
@@ -877,16 +877,16 @@ namespace gpstk
          uint8_t *cp = (uint8_t*)p + pos;
          uint8_t *vp = (uint8_t*)&v;
 #if BYTE_ORDER == LITTLE_ENDIAN
-         std::memcpy(vp, cp, sizeof(double));
+         std::memcpy(cp, vp, sizeof(double));
 #else
-         vp[0] = cp[7];
-         vp[1] = cp[6];
-         vp[2] = cp[5];
-         vp[3] = cp[4];
-         vp[4] = cp[3];
-         vp[5] = cp[2];
-         vp[6] = cp[1];
-         vp[7] = cp[0];
+         cp[0] = vp[7];
+         cp[1] = vp[6];
+         cp[2] = vp[5];
+         cp[3] = vp[4];
+         cp[4] = vp[3];
+         cp[5] = vp[2];
+         cp[6] = vp[1];
+         cp[7] = vp[0];
 #endif
       }
 
@@ -994,12 +994,12 @@ namespace gpstk
          uint8_t *cp = static_cast<uint8_t*>(p) + pos;
          uint8_t *vp = reinterpret_cast<uint8_t*>(&v);
 #if BYTE_ORDER == BIG_ENDIAN
-         std::memcpy(vp, cp, sizeof(float));
+         std::memcpy(cp, vp, sizeof(float));
 #else
-         vp[0] = cp[3];
-         vp[1] = cp[2];
-         vp[2] = cp[1];
-         vp[3] = cp[0];
+         cp[0] = vp[3];
+         cp[1] = vp[2];
+         cp[2] = vp[1];
+         cp[3] = vp[0];
 #endif
       }
 
@@ -1009,16 +1009,16 @@ namespace gpstk
          uint8_t *cp = static_cast<uint8_t*>(p) + pos;
          uint8_t *vp = reinterpret_cast<uint8_t*>(&v);
 #if BYTE_ORDER == BIG_ENDIAN
-         std::memcpy(vp, cp, sizeof(double));
+         std::memcpy(cp, vp, sizeof(double));
 #else
-         vp[0] = cp[7];
-         vp[1] = cp[6];
-         vp[2] = cp[5];
-         vp[3] = cp[4];
-         vp[4] = cp[3];
-         vp[5] = cp[2];
-         vp[6] = cp[1];
-         vp[7] = cp[0];
+         cp[0] = vp[7];
+         cp[1] = vp[6];
+         cp[2] = vp[5];
+         cp[3] = vp[4];
+         cp[4] = vp[3];
+         cp[5] = vp[2];
+         cp[6] = vp[1];
+         cp[7] = vp[0];
 #endif
       }
 

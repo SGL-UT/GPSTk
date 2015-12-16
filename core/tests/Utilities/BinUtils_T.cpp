@@ -329,15 +329,8 @@ public:
 int main (void)
 {
 
-//=============================================================================
-//
-//      Not testing inteltoHost, host to intel
-//              They only ensure the byte order is little-endian
-//
-//      Same for netToHost, or hostToNet, but they ensure byte order
-//      is big-endian
-//
-//=============================================================================
+      // ntoh, itoh, htoi, hton are not tested here - they are tested
+      // through FFBinaryStream_T
 
    int errorTotal = 0;
    BinUtils_T testClass;
@@ -345,6 +338,9 @@ int main (void)
    errorTotal += testClass.decodeVarTest();
    errorTotal += testClass.encodeVarTest();
    errorTotal += testClass.computeCRCTest();
+      /** @todo Seriously, if you recognize the fact that simple
+       * atomic type definitions are architecture dependent, write the
+       * test using atomic types that aren't e.g. uint16_t */
    errorTotal += testClass.xorChecksumTest(); //dependent on size of variables, may fail on other platforms
    errorTotal += testClass.countBitsTest();
 
