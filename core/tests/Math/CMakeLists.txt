@@ -67,6 +67,3 @@ add_test(Math_Triple Triple_T)
 add_executable(Vector_T Vector_T.cpp)
 target_link_libraries(Vector_T gpstk)
 add_test(Math_Vector Vector_T)
-
-add_executable(SVD_T SVD_T.cpp)
-target_link_libraries(SVD_T gpstk)
