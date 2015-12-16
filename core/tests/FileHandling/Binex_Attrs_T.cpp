@@ -133,32 +133,6 @@ int BinexAttrs_T :: doRecordIdTests()
 }
 
 
-int BinexAttrs_T :: doMessageCapacityTests()
-{
-   TestUtil  tester( "BinexData", "messageCapacity", __FILE__, __LINE__ );
-
-   BinexData  rec;
-   tester.assert( (rec.getMessageCapacity() == 0),
-                  "expected 0 capacity", __LINE__ );
-
-   BinexData::UBNXI  u;
-   size_t  offset = 0;
-   rec.updateMessageData(offset, u);
-   tester.assert( (rec.getMessageCapacity() > 0),
-                  "non-zero capacity expected", __LINE__ );
-
-   rec.ensureMessageCapacity(1024);
-   tester.assert( (rec.getMessageCapacity() == 1024),
-                  "expected capacity 1024", __LINE__ );
-
-   rec.ensureMessageCapacity(2048);
-   tester.assert( (rec.getMessageCapacity() == 2048),
-                  "expected capacity 2048", __LINE__ );
-
-   return tester.countFails();
-}
-
-
 int BinexAttrs_T :: doMessageLengthTests()
 {
    TestUtil  tester( "BinexData", "messageLength", __FILE__, __LINE__ );
@@ -192,8 +166,6 @@ int main(int argc, char *argv[])
    errorTotal += testClass.doRecordFlagsTests();
 
    errorTotal += testClass.doRecordIdTests();
-
-   errorTotal += testClass.doMessageCapacityTests();
 
    errorTotal += testClass.doMessageLengthTests();
 

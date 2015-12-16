@@ -641,18 +641,6 @@ namespace gpstk
       };
 
          /**
-          * Returns the capacity of the record message buffer (which is
-          * separate from the length of the data in the buffer).
-          *
-          * @return Record message capacity in bytes
-          */
-      inline size_t
-      getMessageCapacity() const
-      {
-         return msg.capacity();
-      };
-
-         /**
           * Returns a pointer to the raw message data.  Note that the format
           * of the data is dependent upon the record flags at the time the
           * data was added to the message.
