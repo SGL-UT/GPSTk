@@ -2,7 +2,6 @@
 
 add_subdirectory (checktools)
 add_subdirectory (clocktools)
-add_subdirectory (converters)
 add_subdirectory (differential)
 add_subdirectory (difftools)
 add_subdirectory (filetools)
