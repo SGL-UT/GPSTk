@@ -532,7 +532,7 @@ assert_equals( const gpstk::Matrix<T>& expected,
    if (testMsg.empty())
    {
       std::ostringstream ostr;
-      ostr << "absmag(expected-computed) = " << mag;
+      ostr << "maxabs(expected-computed) = " << mag;
       mess = ostr.str();
    }
    assert_equals(T(mag) , T(0.0), lineNumber, mess, epsilon);
