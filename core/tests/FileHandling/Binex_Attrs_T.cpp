@@ -159,15 +159,18 @@ int BinexAttrs_T :: doMessageCapacityTests()
    BinexData::UBNXI  u;
    size_t  offset = 0;
    rec.updateMessageData(offset, u);
+   cout << "capacity:" << rec.getMessageData().capacity() << endl;
    tester.assert( (rec.getMessageData().capacity() > 0),
                   "non-zero capacity expected", __LINE__ );
 
    rec.ensureMessageCapacity(1024);
-   tester.assert( (rec.getMessageData().capacity() > 1024),
+   cout << "capacity:" << rec.getMessageData().capacity() << endl;
+   tester.assert( (rec.getMessageData().capacity() >= 1024),
                   "expected capacity of at least 1024", __LINE__ );
 
    rec.ensureMessageCapacity(2048);
-   tester.assert( (rec.getMessageData().capacity() > 2048),
+   cout << "capacity:" << rec.getMessageData().capacity() << endl;
+   tester.assert( (rec.getMessageData().capacity() >= 2048),
                   "expected capacity of at least 2048", __LINE__ );
 
    return tester.countFails();
