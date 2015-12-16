@@ -45,16 +45,18 @@ using namespace std;
 template<typename T>
 void SVDTest(size_t r, size_t c,
                   T xA[], T xB[], T xBSref[],
-                  TestUtil& testFramework, const std::string& str)
+                  TestUtil& testFramework)
 {
-   testFramework.changeSourceMethod(str);
+   ostringstream oss;
+   oss << r << "x" << c;
+   testFramework.changeSourceMethod(oss.str());
    T eps=100*std::numeric_limits<T>::epsilon();
    gpstk::Matrix<T> A(r,c);
    A = xA;
    gpstk::SVD<T> svd;
    svd(A);
    gpstk::Matrix<T> S(r, c, 0.0);
-   for (int i=0; i<r; i++)
+   for (int i=0; i < min(r,c); i++)
       S(i,i) = svd.S(i);
    TUASSERTFEPS( A, svd.U * S * transpose(svd.V), eps);
    
@@ -79,21 +81,23 @@ unsigned multipass()
    T a22[] = {2,1,1,2};
    T b2[] = {1,2};
    T bs2[] = {0,1};
-   SVDTest(2, 2, a22, b2, bs2, testFramework, "2x2");
+   SVDTest(2, 2, a22, b2, bs2, testFramework);
 
    T a23[] = {4, 11, 14, 8, 7, -2};
-   SVDTest<T>(3, 2, a23, NULL, NULL, testFramework, "3x2");
-   SVDTest<T>(2, 3, a23, NULL, NULL, testFramework, "2x3");
+   SVDTest<T>(3, 2, a23, NULL, NULL, testFramework);
+   SVDTest<T>(2, 3, a23, NULL, NULL, testFramework);
 
    T a33[] = {2,-1,0,-1,2,-1,0,-1,2};
    T b3[] = {7,-3,2};
    T bs3[] = {4.25,1.5,1.75};
-   SVDTest<T>(3, 3, a33, b3, bs3, testFramework, "3x3");
+   SVDTest<T>(3, 3, a33, b3, bs3, testFramework);
 
    T a44[] = {2,-1,0,0,-1,2,-1,0,0,-1,2,-1,0,0,-1,2};
    T b4[] = {5,1,-2,6};
    T bs4[] ={5,5,4,5};   
-   SVDTest<T>(4, 4, a44, b4, bs4, testFramework, "4x4");
+   SVDTest<T>(4, 4, a44, b4, bs4, testFramework);
+   SVDTest<T>(2, 8, a44, NULL, NULL, testFramework);
+   SVDTest<T>(8, 2, a44, NULL, NULL, testFramework);
    return testFramework.countFails();
 }
 
