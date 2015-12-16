@@ -173,7 +173,7 @@ namespace gpstk
           * and then will provide a week number for for the nav
           * records. If not set by the user, it will be set by the
           * system time, and then by the first obs record. */
-      long gpsWeek;
+      uint32_t gpsWeek;
       
    }; // end class NovatelData
 

@@ -201,7 +201,7 @@ namespace gpstk
          case RGEC:
          case RANGE:
          case RANGECMP:
-            if(datasize == 0 || headersize==0) return false;
+            if (datasize == 0 || headersize==0) return false;
             return true;
          case Unknown:
          default:
@@ -230,7 +230,7 @@ namespace gpstk
    {
       try
       {
-         if(dynamic_cast<NovatelStream*>(&ffs))
+         if (dynamic_cast<NovatelStream*>(&ffs))
          {
             NovatelStream& strm = dynamic_cast<NovatelStream&>(ffs);
 
@@ -242,7 +242,7 @@ namespace gpstk
             int i,j,k,failure;
             long filepos;
 
-            if(debug) cout << "Entered NovatelData::reallyGetRecord()" << endl;
+            if (debug) cout << "Entered NovatelData::reallyGetRecord()" << endl;
                // read loop
             do
             {
@@ -258,64 +258,64 @@ namespace gpstk
                }
                catch(std::exception& e)
                {
-                  if(debug)
+                  if (debug)
                      cout << "read 1 threw std exception: " << e.what() << endl;
                      //FFStreamError fe(string("std exception: ")+e.what());
                      //GPSTK_THROW(fe);
                }
 
-               if(strm.bad())
+               if (strm.bad())
                {
                   FFStreamError fe("Read error");
                   GPSTK_THROW(fe);
                }
-               if(strm.eof())
+               if (strm.eof())
                {
-                  if(debug) cout << "Reached EOF" << endl;
+                  if (debug) cout << "Reached EOF" << endl;
                   break;
                }
 
-               if(debug)
+               if (debug)
                {
                   cout << "got char 0x" << hex << uppercase << int(buffer[2])
                        << dec << endl;
                }
 
                   // look for sync bytes
-               if(*p0==0xAA && *p1==0x44 && *p2==0x11)
+               if (*p0==0xAA && *p1==0x44 && *p2==0x11)
                {
                      // -------------------------------------------------- OEM2
-                  if(debug) cout << "Found OEM2 sync" << endl;
+                  if (debug) cout << "Found OEM2 sync" << endl;
 
                      // save position in case of failure
                   filepos = strm.tellg();
-                  if(debug) cout << "File position " << filepos << endl;
+                  if (debug) cout << "File position " << filepos << endl;
 
                      // read 9 more characters into buffer, giving total of 12
                   strm.read((char *)p3,9);
-                  if(strm.bad())
+                  if (strm.bad())
                   {
                      FFStreamError fe("Read error");
                      GPSTK_THROW(fe);
                   }
-                  if(strm.eof())
+                  if (strm.eof())
                   {
-                     if(debug) cout << "Reached EOF" << endl;
+                     if (debug) cout << "Reached EOF" << endl;
                      break;
                   }
 
                      // read the record ID
-                  if(*p4==0x20) rectype = RGEB;
-                  else if(*p4==0x21) rectype = RGEC;
-                  else if(*p4==0x01) rectype = POSB;
-                  else if(*p4==0x0E) rectype = REPB;
-                  else if(*p4==0x0D) rectype = RCSB;
+                  if (*p4==0x20) rectype = RGEB;
+                  else if (*p4==0x21) rectype = RGEC;
+                  else if (*p4==0x01) rectype = POSB;
+                  else if (*p4==0x0E) rectype = REPB;
+                  else if (*p4==0x0D) rectype = RCSB;
                   else               rectype = Unknown;
                   recnum = static_cast<int>(*p4);
 
                      // read the rest of the record
                   failure = 0;
-                  if(rectype != Unknown)
+                  if (rectype != Unknown)
                   {
                         // get the size of the record
                      itohl(buffer, datasize, 8);
@@ -323,7 +323,7 @@ namespace gpstk
                         cout << "datasize:" << datasize << endl;
 
                         // read the rest of the record
-                     if(datasize-12 >= 1024)
+                     if (datasize-12 >= 1024)
                      {
                            //FFStreamError fe("Read error - buffer overflow");
                            //GPSTK_THROW(fe);
@@ -332,14 +332,14 @@ namespace gpstk
                      else
                      {
                         strm.read((char *)&buffer[12],datasize-12);
-                        if(strm.bad())
+                        if (strm.bad())
                         {
                            FFStreamError fe("Read error");
                            GPSTK_THROW(fe);
                         }
-                        if(strm.eof())
+                        if (strm.eof())
                         {
-                           if(debug) cout << "Reached EOF" << endl;
+                           if (debug) cout << "Reached EOF" << endl;
                            break;
                         }
                         headersize = 3;             // just the sync bytes
@@ -352,7 +352,7 @@ namespace gpstk
                         checksum ^= buffer[2];
                         for(i=4; i<datasize; i++) checksum ^= buffer[i];
 
-                        if(checksum == buffer[3]) break;    // success
+                        if (checksum == buffer[3]) break;    // success
                         failure = 2;
 
                      }  // end if datasize fits into buffer
@@ -365,12 +365,12 @@ namespace gpstk
 
                      // failure - either type unknown, buffer overflow
                      // or failed checksum
-                  if(debug)
+                  if (debug)
                   {
                      cout << "Failure - ";
-                     if(failure == 0) cout << "type unknown";
-                     else if(failure == 1) cout << "buffer overflow";
-                     else if(failure == 2) cout << "failed checksum";
+                     if (failure == 0) cout << "type unknown";
+                     else if (failure == 1) cout << "buffer overflow";
+                     else if (failure == 2) cout << "failed checksum";
                      cout << " for recnum " << recnum
                           << " with headersize " << headersize
                           << " and message size " << datasize << endl;
@@ -381,28 +381,28 @@ namespace gpstk
 
                }  // end if OEM2 sync
 
-               else if(*p0==0xAA && *p1==0x44 && *p2==0x12)
+               else if (*p0==0xAA && *p1==0x44 && *p2==0x12)
                {
                      // -------------------------------------------------- OEM4
                      // Ref OEM4 Manual pg 15
 
-                  if(debug) cout << "Found OEM4 sync" << endl;
+                  if (debug) cout << "Found OEM4 sync" << endl;
 
                      // save position in case of failure
                   filepos = strm.tellg();
-                  if(debug) cout << "File position " << filepos << endl;
+                  if (debug) cout << "File position " << filepos << endl;
 
                      // ---------------------------------------
                      // read header, 25 characters, into buffer
                   strm.read((char *)p3,25);
-                  if(strm.bad())
+                  if (strm.bad())
                   {
                      FFStreamError fe("Read error");
                      GPSTK_THROW(fe);
                   }
-                  if(strm.eof())
+                  if (strm.eof())
                   {
-                     if(debug) cout << "Reached EOF" << endl;
+                     if (debug) cout << "Reached EOF" << endl;
                      break;
                   }
 
@@ -420,7 +420,7 @@ namespace gpstk
                   headersize = static_cast<int>(headerLength);
                   recnum = messageID;
 
-                  if(headersize != 28)
+                  if (headersize != 28)
                   {
                         // manual warns that changes may be made
                      Exception e("Header size : expected 28 but found "
@@ -430,7 +430,7 @@ namespace gpstk
                      GPSTK_THROW(e);
                   }
 
-                  if(debug)
+                  if (debug)
                      cout << "hL " << int(headerLength)
                           << " ID " << messageID
                           << " mL " << messageLength
@@ -440,19 +440,19 @@ namespace gpstk
                            //<< " rxver " << rxSWVersion
                           << endl;
 
-                  if(     recnum ==  43) rectype = RANGE;
-                  else if(recnum == 140) rectype = RANGECMP;
-                  else if(recnum ==  41) rectype = RAWEPHEM;
+                  if (     recnum ==  43) rectype = RANGE;
+                  else if (recnum == 140) rectype = RANGECMP;
+                  else if (recnum ==  41) rectype = RAWEPHEM;
                   else                   rectype = Unknown;
 
                   failure=0;
-                  if(rectype != Unknown)
+                  if (rectype != Unknown)
                   {
 
                         // ---------------------------------------
                         // read the data message, but don't overwrite the header
                         // first check against buffer overflow
-                     if(datasize > 65536 || datasize < 0)
+                     if (datasize > 65536 || datasize < 0)
                      {
                            //FFStreamError fe("Read error - buffer overflow");
                            //GPSTK_THROW(fe);
@@ -461,26 +461,26 @@ namespace gpstk
                      else
                      {
                         strm.read((char *)&(buffer[28]),datasize);
-                        if(strm.bad())
+                        if (strm.bad())
                         {
                            FFStreamError fe("Read error");
                            GPSTK_THROW(fe);
                         }
-                        if(strm.eof())
+                        if (strm.eof())
                         {
                            datasize = 0;         // mark a bad record
-                           if(debug) cout << "Reached EOF" << endl;
+                           if (debug) cout << "Reached EOF" << endl;
                            break;
                         }
-                        if(debug) cout << "Successfully read message" << endl;
+                        if (debug) cout << "Successfully read message" << endl;
 
                            // ---------------------------------------
                            // validate with 32-bit CRC
                            // cf. Ref OEM4 manual pg 21.
 
                            // get the checksum at the end
-                        unsigned int checksum =
-                           intelToHost(strm.getData<unsigned int>());
+                        uint32_t checksum;
+                        strm.getData(checksum);
 
                            // calculate the checksum of the
                            // header(even sync)+data
@@ -492,7 +492,7 @@ namespace gpstk
                            ultemp2 = j;
                            for(k=8; k>0; k--)
                            {
-                              if(ultemp2 & 1)
+                              if (ultemp2 & 1)
                                  ultemp2 = (ultemp2 >> 1) ^ 0xEDB88320L;
                               else
                                  ultemp2 >>= 1;
@@ -500,9 +500,9 @@ namespace gpstk
                            check = ultemp1 ^ ultemp2;
                         }
 
-                        if(check == checksum)
+                        if (check == checksum)
                         {
-                           if(debug) cout << "checksum ok" << endl;
+                           if (debug) cout << "checksum ok" << endl;
                            break;
                         }
                         else failure = 2;
@@ -513,9 +513,9 @@ namespace gpstk
                      // failure - either type unknown, buffer overflow
                      // or failed checksum
                   cout << "Failure - ";
-                  if(failure == 0) cout << "type unknown";
-                  else if(failure == 1) cout << "buffer overflow";
-                  else if(failure == 2) cout << "failed checksum";
+                  if (failure == 0) cout << "type unknown";
+                  else if (failure == 1) cout << "buffer overflow";
+                  else if (failure == 2) cout << "failed checksum";
                   cout << " for recnum " << recnum
                        << " with headersize " << headersize
                        << " and message size " << datasize << endl;
@@ -529,7 +529,7 @@ namespace gpstk
                {
                      // skip these bytes
                      // print only if sync is not underway
-                  if(debug && !(*p1==0xAA && *p2==0x44) && !(*p2==0xAA) )
+                  if (debug && !(*p1==0xAA && *p2==0x44) && !(*p2==0xAA) )
                      cout << "Skip a byte " << hex << uppercase << setfill('0')
                           << setw(2) << int(*p0) << setfill(' ') << endl;
                }
@@ -542,7 +542,7 @@ namespace gpstk
             GPSTK_THROW(e);
          }
 
-         if(!isValid())
+         if (!isValid())
          {
             FFStreamError e("Read an invalid Novatel record");
             GPSTK_THROW(e);
@@ -551,17 +551,17 @@ namespace gpstk
       }
       catch(Exception e)
       {
-         if(debug)
+         if (debug)
             cout << "reallyGetRecord caught GPSTK exception " << e << endl;
       }
       catch(std::exception e)
       {
-         if(debug)
+         if (debug)
             cout << "reallyGetRecord caught std exception " << e.what() << endl;
       }
       catch(...)
       {
-         if(debug)
+         if (debug)
             cout << "reallyGetRecord caught an unknown exception" << endl;
       }
 
@@ -572,7 +572,7 @@ namespace gpstk
    NovatelData::operator RinexNavData()
       throw(Exception)
    {
-      if(!isValid() || !isNav())
+      if (!isValid() || !isNav())
       {
          Exception e("Invalid or non-Nav record");
          GPSTK_THROW(e);
@@ -582,60 +582,59 @@ namespace gpstk
       long templ;
       EngEphemeris eeph;
 
-      if(rectype == RAWEPHEM)
+      if (rectype == RAWEPHEM)
       {
             // OEM4
 
             // parse header
             // Ref OEM4 Manual pg 16
-         unsigned char headerLength;
-         std::memmove(&headerLength,  &(buffer[3]), 1); intelToHost(headerLength);
-         short messageID;
-         std::memmove(&messageID,     &(buffer[4]), 2); intelToHost(messageID);
-         char messageType;
-         std::memmove(&messageType,   &(buffer[6]), 1); intelToHost(messageType);
-         char portAddress;
-         std::memmove(&portAddress,   &(buffer[7]), 1); intelToHost(portAddress);
-         short messageLength;
-         std::memmove(&messageLength, &(buffer[8]), 2); intelToHost(messageLength);
-         short sequence;
-         std::memmove(&sequence,     &(buffer[10]), 2); intelToHost(sequence);
-         char idleTime;
-         std::memmove(&idleTime,     &(buffer[12]), 1); intelToHost(idleTime);
-         char timeStatus;
-         std::memmove(&timeStatus,   &(buffer[13]), 1); intelToHost(timeStatus);
-         short week;
-         std::memmove(&week,         &(buffer[14]), 2); intelToHost(week);
-         long msecOfWeek;
-         std::memmove(&msecOfWeek,   &(buffer[16]), 4); intelToHost(msecOfWeek);
-         long rxStatus;
-         std::memmove(&rxStatus,     &(buffer[20]), 4); intelToHost(rxStatus);
-         short reserved;
-         std::memmove(&reserved,     &(buffer[24]), 2); intelToHost(reserved);
-         short rxSWVersion;
-         std::memmove(&rxSWVersion,  &(buffer[26]), 2); intelToHost(rxSWVersion);
+         uint8_t headerLength;
+         uint16_t messageID;
+            // document says this is a char rather than unsigned but
+            // it's bit flags so making it signed makes no sense.
+         uint8_t messageType;
+         uint8_t portAddress;
+         uint16_t messageLength;
+         uint16_t sequence;
+         uint8_t idleTime;
+         uint8_t timeStatus;
+         uint16_t week;
+         uint32_t msecOfWeek;
+         uint32_t rxStatus;
+         uint16_t reserved;
+         uint16_t rxSWVersion;
+            // Ref OEM4 Manual pg 206
+         uint32_t prn, gpsSOW;
+         short track=1;
+         
+         headerLength = buffer[3];
+         itohs(buffer, messageID, 4);
+         messageType = buffer[6];
+         portAddress = buffer[7];
+         itohs(buffer, messageLength, 8);
+         itohs(buffer, sequence, 10);
+         idleTime = buffer[12];
+         timeStatus = buffer[13];
+         itohs(buffer, week, 14);
+         itohl(buffer, msecOfWeek, 16);
+         itohl(buffer, rxStatus, 20);
+         itohs(buffer, reserved, 24);
+         itohs(buffer, rxSWVersion, 26);
 
             // parse data
-            // Ref OEM4 Manual pg 206
-         short prn,track=1;
-         long gpsSOW;
 
             // get PRN and timetag
-         std::memmove(&templ, &(buffer[28]), 4);
-         intelToHost(templ);
-         prn = short(templ);
-         std::memmove(&gpsWeek, &(buffer[32]), 4);// long gpsWeek is member data
-         intelToHost(gpsWeek);
-         std::memmove(&gpsSOW, &(buffer[36]), 4);
-         intelToHost(gpsSOW);
+         itohl(buffer, prn, 28);
+         itohl(buffer, gpsWeek, 32);
+         itohl(buffer, gpsSOW, 36);
 
             // convert the 3 subframes and create EngEphemeris
-         long subframe[10];
+         uint32_t subframe[10];
          for(j=0; j<3; j++)
          {
             k = 40 + j*30;
 
-            if(debug)
+            if (debug)
             {
                cout << "Subframe " << setfill('0') << j+1;
                for(i=0; i<30; i++)
@@ -653,39 +652,40 @@ namespace gpstk
                               (buffer[k+2] << 6));
                k += 3;
             }
-            if(!eeph.addSubframe(subframe,gpsWeek,prn,track))
+            if (!eeph.addSubframe(subframe,gpsWeek,prn,track))
             {
-               if(debug) cout << "Failed to convert RAWEPH subframe " << j+1
-                              << ", prn " << prn << " at time " << gpsWeek
-                              << " " << gpsSOW << endl;
+               if (debug)
+               {
+                  cout << "Failed to convert RAWEPH subframe " << j+1
+                       << ", prn " << prn << " at time " << gpsWeek
+                       << " " << gpsSOW << endl;
+               }
             }
          }
       }  // end RAWEPH record
-
-      else if(rectype == REPB)
+      else if (rectype == REPB)
       {
             // OEM2
-         long prn;
+         uint32_t prn;
          short track=1;
 
             // get PRN
-         std::memmove(&prn,&(buffer[12]), 4);
-         intelToHost(prn);
+         itohl(buffer, prn, 12);
 
             // be sure week is defined
-         if(gpsWeek == -1)
+         if (gpsWeek == -1)
          {
             SystemTime sysTime;
             gpsWeek = long(static_cast<GPSWeekSecond>(sysTime).week);
          }
 
             // convert the 3 subframes and create EngEphemeris
-         long subframe[10];
+         uint32_t subframe[10];
          for(j=0; j<3; j++)
          {
             k = 16 + j*30;
 
-            if(debug)
+            if (debug)
             {
                cout << "Subframe " << setfill('0') << j+1;
                for(i=0; i<30; i++)
@@ -703,9 +703,9 @@ namespace gpstk
                               (buffer[k+2] << 6));
                k += 3;
             }
-            if(!eeph.addSubframe(subframe,gpsWeek,short(prn),track))
+            if (!eeph.addSubframe(subframe,gpsWeek,short(prn),track))
             {
-               if(debug) cout << "Failed to convert REPB subframe " << j+1
+               if (debug) cout << "Failed to convert REPB subframe " << j+1
                               << ", prn " << prn << endl;
             }
          }
@@ -724,34 +724,34 @@ namespace gpstk
    NovatelData::operator RinexObsData()
       throw(Exception)
    {
-      if(!isValid() || !isObs())
+      if (!isValid() || !isObs())
       {
          Exception e("Invalid or non-Obs record");
          GPSTK_THROW(e);
       }
 
       int i,j;
-      int16_t temps;
-      int32_t nobs; // number of observation records (may be 2/PRN: L1 and L2)
+      uint16_t temps;
+      uint16_t nobs; // number of observation records (may be 2/PRN: L1 and L2)
       SatID sat;
       RinexObsData rod; // this will be returned
       RinexDatum rd;
       RinexObsData::RinexSatMap::iterator satit;
       RinexObsData::RinexObsTypeMap::iterator obsit;
 
-      if(     rectype == RGEB)
+      if (     rectype == RGEB)
       {
             // OEM2
 
 
       }  // end RGEB record
 
-      else if(rectype == RGEC)
+      else if (rectype == RGEC)
       {
             // OEM2
             // Ref OEM2 Manual pg 97
 
-         if(debug)
+         if (debug)
          {
             cout << "Header " << setfill('0') << hex << uppercase;
             for(i=0; i<24; i++) cout << " " << setw(2) << int(buffer[i]);
@@ -759,16 +759,13 @@ namespace gpstk
          }
 
             // number of observation records to follow
-         std::memmove(&temps, &(buffer[12]), 2);
-         intelToHost(temps);
-         nobs = int32_t(temps);
+         itohs(buffer, nobs, 12);
 
             // GPS week (long gpsWeek is member data)
-         std::memmove(&temps, &(buffer[14]), 2);
-         intelToHost(temps);
+         itohs(buffer, temps, 14);
 
             // resolve the week number ambiguity
-         if(gpsWeek == -1)
+         if (gpsWeek == -1)
          {
             SystemTime sysTime;
             gpsWeek = long(static_cast<GPSWeekSecond>(sysTime).week);
@@ -776,13 +773,12 @@ namespace gpstk
          gpsWeek = long(temps) + 1024*(gpsWeek/1024);
 
             // seconds of week * 100
-         int32_t gpsSOW;
-         std::memmove(&gpsSOW, &(buffer[16]), 4);
-         intelToHost(gpsSOW);
+         uint32_t gpsSOW;
+         itohl(buffer, gpsSOW, 16);
 
             // receiver status
-         int32_t rxStatus;
-         std::memmove(&rxStatus, &(buffer[20]), 4);
+         uint32_t rxStatus;
+         itohl(buffer, rxStatus, 20);
 
             // put timetag into rod
          if (debug)
@@ -795,72 +791,62 @@ namespace gpstk
             // loop over observation records
          for(i=0; i<nobs; i++)
          {
-            uint32_t data[5];
-            for(j=0; j<5; j++)
-               std::memmove(&data[j], &(buffer[24+i*20+j*4]), 4);
+               // base offset for this record
+            unsigned base = 24+i*20;
+            uint8_t prn = buffer[base] & 0x3f;
+            uint8_t cno = (((buffer[base] & 0xC0) >> 3) |
+                           (buffer[base+1] & 0x70));
+            uint32_t encLockTime =
+               (((static_cast<uint32_t>(buffer[base+1]) & 0xF8) << 13) |
+                (static_cast<uint32_t>(buffer[base+2]) << 8) |
+                static_cast<uint32_t>(buffer[base+3]));
+            int32_t encADR;
+            int32_t encDoppler;
+            int64_t encPR; // actually 36 bits
+            uint8_t encSdPh;
+            uint8_t encSdPr;
+            uint32_t trackStatus;
 
-            int prn         =     int(data[0] & 0x0000003FL);
+            itohsl(buffer, encADR, base+4);
+            itohsl(buffer, encDoppler, base+8);
+               // encoded doppler is the 28 MSB of encDoppler, so
+               // shift the signed quantity which will leave the sign
+               // bit set correctly.
+            encDoppler >>= 4;
+            itohsll(buffer, encPR, base+11);
+               // shift encPR around so we have the 36 bits stored
+               // properly in a signed 64-bit value
+            encPR <<= 4; // make the MSB of the pseudorange the MSB of encPR
+            encPR >>= 28; // move the signed quantity into the 36 LSB
+            encSdPh = buffer[base+16] >> 4;
+            encSdPr = buffer[base+16] & 0x0f;
+            itohl(buffer, trackStatus, base+16);
+               // mask the most-significant byte which contains the sigma ADR/PR
+            trackStatus &= 0x00ffffff;
 
-            double SNR      = double((data[0] & 0x000007C0L) >>  6);
+            double SNR      = static_cast<double>(cno) + 20;
+            double locktime = static_cast<double>(encLockTime) / 32.;
+            double Ph       = static_cast<double>(encADR) / 256.;
+            double Doppler  = static_cast<double>(encDoppler) / 256.;
+            double Pr       = static_cast<double>(encPR) / 128.;
+            double SdPh     = (static_cast<double>(encSdPh)+1.)/512.;
+            double SdPr     = (static_cast<double>(encSdPr)+1.)/16.;
 
-            double locktime = double((data[0] & 0xFFFFF800L) >> 11);
-
-            double Ph;
-            if(data[1] & 0x80000000L)     // 2s complement
-               Ph =  double((data[1] ^ 0x7FFFFFFFL) + 1);
-            else
-               Ph =  double(data[1]);
-
-            double Doppler  = double((data[2] & 0xFFFFFFF0L) >> 4);
-            if(data[2] & 0x80000000L)     // 2s complement
-               Doppler = -double((((data[2] & 0xFFFFFFF0L) ^ 0xFFFFFFF0L) >> 4)+1);
-
-               //                                               this is 0c++/4.3.2/tr1/exp_integral.tcc:xFFFFFFFF + 1
-            double Pr       =  double(data[2] & 0x0000000FL) * 4294967296.
-               + double(data[3]);
-               // could the pseudorange ever be negative?
-            if(data[2] & 0x00000008L)     // 2s complement
-               Pr = - double((data[2] & 0x0000000FL) ^ 0x0000000FL) * 4294967296.
-                  - double((data[3]                ^ 0xFFFFFFFFL)  + 1);
-
-            double SdPh     =     int(data[4] & 0x0000000FL);
-
-            double SdPr     = double((data[4] & 0x000000F0L) >>  4);
-
-            long TrackStatus =  long((data[4] & 0xFFFFFF00L) >>  8);
                // the rest are reserved
 
-               // swap bytes
-            intelToHost(prn);
-            intelToHost(SNR);
-            intelToHost(locktime);
-            intelToHost(Ph);
-            intelToHost(Doppler);
-            intelToHost(Pr);
-            intelToHost(SdPr);
-            intelToHost(SdPh);
-
-               // convert to physical units
-            SNR += 20.;             // dB-Hz, but 51 means >=51, and 20 means <=20.
-            locktime /= 32.;        // sec
-            Doppler /= 256.;        // Hz
-            Pr /= 128.;             // m
-            Ph /= 256.;             // cycles
-            SdPr = (SdPr + 1.)/16.; // m
-            SdPh = (SdPh + 1)/512.; // cycles
-
-               // break out the TrackStatus
+               // break out the trackStatus
                // cf. Table 5-6, pg 95 of OEM2 manual
-               //const int TrackState   = int( TrackStatus & 0x0000000FL);
-               //const int Channel      = int((TrackStatus & 0x000001F0L) >>  4);
-            bool PhaseLock   = bool(TrackStatus & 0x00000200L);
-               //const bool ParityKnown = bool(TrackStatus & 0x00000400L);
-            bool CodeLock    = bool(TrackStatus & 0x00000800L);
-            int Frequency    = int((TrackStatus & 0x00100000L) >> 20); // 0:L1 1:L2
+               //const int TrackState   = int( trackStatus & 0x0000000FL);
+               //const int Channel      = int((trackStatus & 0x000001F0L) >>  4);
+            bool PhaseLock   = bool(trackStatus & 0x00000200L);
+               //const bool ParityKnown = bool(trackStatus & 0x00000400L);
+            bool CodeLock    = bool(trackStatus & 0x00000800L);
+            int Frequency    = int((trackStatus & 0x00100000L) >> 20); // 0:L1 1:L2
                // CodeType is 0: CA 1: P 2: Pcodeless
-            int CodeType   = int((TrackStatus & 0x00600000L) >> 21);
+            int CodeType   = int((trackStatus & 0x00600000L) >> 21);
 
-            if(!PhaseLock || !CodeLock) continue;
+            if (!PhaseLock || !CodeLock)
+               continue;
 
                // correct the phase for rollovers
                // ref. OEM2 manual pg 97
@@ -868,12 +854,12 @@ namespace gpstk
             Ph += long(ADRrolls + (ADRrolls > 0 ? 0.5 : -0.5)) * PhaseRollover;
 
                //apparently the Novatel convert utility ignores this too
-               //ignore if(!ParityKnown) Ph = 0.0;
+               //ignore if (!ParityKnown) Ph = 0.0;
 
                // fill RinexObsData rod
             sat = SatID(prn,SatID::systemGPS);
             satit = rod.obs.find(sat);          // find the sat
-            if(satit == rod.obs.end())
+            if (satit == rod.obs.end())
             {
                   // not there - add this sat
                RinexObsData::RinexObsTypeMap rotm;
@@ -884,14 +870,14 @@ namespace gpstk
 
                // for convenience, reference the obs data map
             RinexObsData::RinexObsTypeMap& obs = satit->second;
-            if(Frequency == 0)
+            if (Frequency == 0)
             {
                   // frequency = L1
                rd.ssi = rd.lli = 0; rd.data = -Ph;
                obs[RinexObsHeader::L1] = rd;                         // L1
 
                rd.ssi = rd.lli = 0; rd.data = Pr;
-               if(CodeType == 0) obs[RinexObsHeader::C1] = rd;       // C1
+               if (CodeType == 0) obs[RinexObsHeader::C1] = rd;       // C1
                else              obs[RinexObsHeader::P1] = rd;       // P1
 
                rd.ssi = rd.lli = 0; rd.data = -Doppler;
@@ -957,7 +943,7 @@ namespace gpstk
          rod.epochFlag = 0;
          rod.clockOffset = 0.0;     // don't have it ?
 
-         if(     rectype == RANGE)
+         if (     rectype == RANGE)
          {
                // Ref OEM4 Manual pg 198-201
 
@@ -969,7 +955,7 @@ namespace gpstk
             for(i=0; i<nobs; i++)
             {
                uint16_t prn,reserved;
-               uint32_t TrackStatus;
+               uint32_t trackStatus;
                float PrStd,PhStd,Doppler,SNR,locktime;
                double Pr,Ph;
 
@@ -991,26 +977,26 @@ namespace gpstk
                intelToHost(SNR);
                std::memmove(&locktime,    &(buffer[68+i*44]), 4);
                intelToHost(locktime);
-               std::memmove(&TrackStatus, &(buffer[72+i*44]), 4);
-               intelToHost(TrackStatus);
+               std::memmove(&trackStatus, &(buffer[72+i*44]), 4);
+               intelToHost(trackStatus);
 
-                  // break out the TrackStatus
+                  // break out the trackStatus
                   // cf. Table 56, pg 199 of OEM4 manual
-                  //const int TrackState = int( TrackStatus & 0x0000001FL);
-                  //const int Channel    = int((TrackStatus & 0x000003E0L) >>  5);
-               bool PhaseLock = bool(TrackStatus & 0x00000400L);
-               bool CodeLock  = bool(TrackStatus & 0x00001000L);
-               int Frequency  = int((TrackStatus & 0x00600000L) >> 21); // 0:L1 1:L2
+                  //const int TrackState = int( trackStatus & 0x0000001FL);
+                  //const int Channel    = int((trackStatus & 0x000003E0L) >>  5);
+               bool PhaseLock = bool(trackStatus & 0x00000400L);
+               bool CodeLock  = bool(trackStatus & 0x00001000L);
+               int Frequency  = int((trackStatus & 0x00600000L) >> 21); // 0:L1 1:L2
                   // CodeType is 0CA 1P 2Pcodeless
-               int CodeType   = int((TrackStatus & 0x03800000L) >> 23);
-                  //const bool HalfCycle = bool(TrackStatus & 0x10000000L);
+               int CodeType   = int((trackStatus & 0x03800000L) >> 23);
+                  //const bool HalfCycle = bool(trackStatus & 0x10000000L);
 
-               if(!PhaseLock || !CodeLock) continue;        // data is not reliable
+               if (!PhaseLock || !CodeLock) continue;        // data is not reliable
 
                   // fill RinexObsData rod
                sat = SatID(prn,SatID::systemGPS);
                satit = rod.obs.find(sat);          // find the sat
-               if(satit == rod.obs.end())
+               if (satit == rod.obs.end())
                {
                      // not there - add this sat
                   RinexObsData::RinexObsTypeMap rotm;
@@ -1021,14 +1007,14 @@ namespace gpstk
 
                   // for convenience, reference the obs data map inside rod
                RinexObsData::RinexObsTypeMap& obs = satit->second;
-               if(Frequency == 0)
+               if (Frequency == 0)
                {
                      // frequency = L1
                   rd.ssi = rd.lli = 0; rd.data = -Ph;
                   obs[RinexObsHeader::L1] = rd;                      // L1
 
                   rd.ssi = rd.lli = 0; rd.data = Pr;
-                  if(CodeType == 0) obs[RinexObsHeader::C1] = rd;    // C1
+                  if (CodeType == 0) obs[RinexObsHeader::C1] = rd;    // C1
                   else              obs[RinexObsHeader::P1] = rd;    // P1
 
                   rd.ssi = rd.lli = 0; rd.data = Doppler;
@@ -1056,7 +1042,7 @@ namespace gpstk
 
          }  // end RANGE record
 
-         else if(rectype == RANGECMP)
+         else if (rectype == RANGECMP)
          {
                // Ref OEM4 Manual pg 202-203
 
@@ -1071,15 +1057,15 @@ namespace gpstk
                for(j=0; j<6; j++)
                   std::memmove(&data[j], &(buffer[32+i*24+j*4]), 4);
 
-               long TrackStatus =        data[0];
+               long trackStatus =        data[0];
                   // this is what is in the manual - its wrong
                   //double Doppler =   double(data[1] & 0x0FFFFFFFL);
                   // this is not documented in the manual...
                   //double Doppler =   double(data[1] & 0x000FFFFFL);
-                  //if(data[1] & 0x0FF00000L == 0x0FF00000L) Doppler = -Doppler;
+                  //if (data[1] & 0x0FF00000L == 0x0FF00000L) Doppler = -Doppler;
                   // try this - cf the OEM2 manual and implementation above
                double Doppler  = double((data[1] & 0x0FFFFFFFL));
-               if(data[1] & 0x08000000L)     // 2s complement
+               if (data[1] & 0x08000000L)     // 2s complement
                   Doppler = -double(((data[1] & 0x0FFFFFFFL) ^ 0x0FFFFFFFL)+1);
                double Pr =       double((data[1] & 0xF0000000L) >> 28)
                   + double(data[2]) * 16.;
@@ -1136,18 +1122,18 @@ namespace gpstk
                SNR += 20.;             // dB-Hz
                   // NB SNR 51 means >=51, and 20 means <=20.
 
-                  // break out the TrackStatus
+                  // break out the trackStatus
                   // cf. Table 56, pg 199 of OEM4 manual
-                  //const int TrackState = int( TrackStatus & 0x0000001FL);
-                  //const int Channel    = int((TrackStatus & 0x000003E0L) >>  5);
-               bool PhaseLock = bool(TrackStatus & 0x00000400L);
-               bool CodeLock  = bool(TrackStatus & 0x00001000L);
-               int Frequency  = int((TrackStatus & 0x00600000L) >> 21); // 0:L1 1:L2
+                  //const int TrackState = int( trackStatus & 0x0000001FL);
+                  //const int Channel    = int((trackStatus & 0x000003E0L) >>  5);
+               bool PhaseLock = bool(trackStatus & 0x00000400L);
+               bool CodeLock  = bool(trackStatus & 0x00001000L);
+               int Frequency  = int((trackStatus & 0x00600000L) >> 21); // 0:L1 1:L2
                   // CodeType is 0CA 1P 2Pcodeless
-               int CodeType   = int((TrackStatus & 0x03800000L) >> 23);
-                  //const bool HalfCycle = bool(TrackStatus & 0x10000000L);
+               int CodeType   = int((trackStatus & 0x03800000L) >> 23);
+                  //const bool HalfCycle = bool(trackStatus & 0x10000000L);
 
-               if(!PhaseLock || !CodeLock)
+               if (!PhaseLock || !CodeLock)
                   continue; // data is not reliable
 
                   // correct the phase for rollovers
@@ -1164,7 +1150,7 @@ namespace gpstk
                   // fill RinexObsData rod
                sat = SatID(prn,SatID::systemGPS);
                satit = rod.obs.find(sat);          // find the sat
-               if(satit == rod.obs.end())
+               if (satit == rod.obs.end())
                {
                      // not there - add this sat
                   RinexObsData::RinexObsTypeMap rotm;
@@ -1175,15 +1161,15 @@ namespace gpstk
 
                   // for convenience, reference the obs data map inside rod
                RinexObsData::RinexObsTypeMap& obs = satit->second;
-               if(Frequency == 0)
+               if (Frequency == 0)
                {
                      // frequency = L1
                   rd.ssi = rd.lli = 0; rd.data = -Ph;
                   obs[RinexObsHeader::L1] = rd;                      // L1
 
                   rd.ssi = rd.lli = 0; rd.data = Pr;
-                  if(CodeType == 0) obs[RinexObsHeader::C1] = rd;    // C1
-                  else              obs[RinexObsHeader::P1] = rd;    // P1
+                  if (CodeType == 0) obs[RinexObsHeader::C1] = rd;   // C1
+                  else               obs[RinexObsHeader::P1] = rd;   // P1
 
                   rd.ssi = rd.lli = 0; rd.data = Doppler;
                   obs[RinexObsHeader::D1] = rd;                      // D1
