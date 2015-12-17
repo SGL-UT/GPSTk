@@ -178,7 +178,7 @@ namespace gpstk
    inline void FFBinaryStream :: getData(int8_t& v)
       throw(FFStreamError, EndOfFile)
    {
-      char *buf = static_cast<char*>(&v);
+      char *buf = reinterpret_cast<char*>(&v);
       getData(buf, sizeof(v));
    }
 
@@ -241,7 +241,7 @@ namespace gpstk
    inline void FFBinaryStream :: writeData(int8_t v)
       throw(FFStreamError)
    {
-      char *buf = static_cast<char*>(&v);
+      char *buf = reinterpret_cast<char*>(&v);
       writeData(buf, sizeof(v));
    }
 

@@ -99,23 +99,23 @@ namespace gpstk
          // Why so damn many functions when we used to use templates?
          // Because of optimization, mostly.
 
-      inline void itohs  (void* p, uint16_t& v, unsigned pos = 0);
-      inline void itohl  (void* p, uint32_t& v, unsigned pos = 0);
-      inline void itohll (void* p, uint64_t& v, unsigned pos = 0);
-      inline void itohss (void* p, int16_t& v,  unsigned pos = 0);
-      inline void itohsl (void* p, int32_t& v,  unsigned pos = 0);
-      inline void itohsll(void* p, int64_t& v,  unsigned pos = 0);
-      inline void itohf  (void* p, float& v,    unsigned pos = 0);
-      inline void itohd  (void* p, double& v,   unsigned pos = 0);
+      inline void itohs  (const void* p, uint16_t& v, unsigned pos = 0);
+      inline void itohl  (const void* p, uint32_t& v, unsigned pos = 0);
+      inline void itohll (const void* p, uint64_t& v, unsigned pos = 0);
+      inline void itohss (const void* p, int16_t& v,  unsigned pos = 0);
+      inline void itohsl (const void* p, int32_t& v,  unsigned pos = 0);
+      inline void itohsll(const void* p, int64_t& v,  unsigned pos = 0);
+      inline void itohf  (const void* p, float& v,    unsigned pos = 0);
+      inline void itohd  (const void* p, double& v,   unsigned pos = 0);
       
-      inline void ntohs  (void* p, uint16_t& v, unsigned pos = 0);
-      inline void ntohl  (void* p, uint32_t& v, unsigned pos = 0);
-      inline void ntohll (void* p, uint64_t& v, unsigned pos = 0);
-      inline void ntohss (void* p, int16_t& v,  unsigned pos = 0);
-      inline void ntohsl (void* p, int32_t& v,  unsigned pos = 0);
-      inline void ntohsll(void* p, int64_t& v,  unsigned pos = 0);
-      inline void ntohf  (void* p, float& v,    unsigned pos = 0);
-      inline void ntohd  (void* p, double& v,   unsigned pos = 0);
+      inline void ntohs  (const void* p, uint16_t& v, unsigned pos = 0);
+      inline void ntohl  (const void* p, uint32_t& v, unsigned pos = 0);
+      inline void ntohll (const void* p, uint64_t& v, unsigned pos = 0);
+      inline void ntohss (const void* p, int16_t& v,  unsigned pos = 0);
+      inline void ntohsl (const void* p, int32_t& v,  unsigned pos = 0);
+      inline void ntohsll(const void* p, int64_t& v,  unsigned pos = 0);
+      inline void ntohf  (const void* p, float& v,    unsigned pos = 0);
+      inline void ntohd  (const void* p, double& v,   unsigned pos = 0);
 
          // going FROM host should have the buffer being the target and
          // the typed value being the source.
@@ -185,6 +185,14 @@ namespace gpstk
           */
       template<class T>
       inline std::string encodeVar( const T& v );
+
+         /** 
+          * Add the network ordered binary representation of a var to the
+          * the given string.
+          * @param v the object of type T to convert to a string.
+          */
+      template<class T>
+      inline void encodeVar( const T& v, std::string& str, size_t pos=0 );
 
          /** 
           * Add the little-endian binary representation of a var to the
@@ -355,6 +363,17 @@ namespace gpstk
 
 
       template<class T>
+      inline void encodeVar( const T& v, std::string& str, size_t pos )
+      {
+         str.replace(pos, sizeof(T), reinterpret_cast<const char*>(&v),
+                     sizeof(T));
+#if BYTE_ORDER == LITTLE_ENDIAN
+         std::reverse(str.begin()+pos, str.begin()+pos+sizeof(T));
+#endif
+      }
+
+
+      template<class T>
       inline std::string encodeVarLE( const T& v )
       {
          std::string rv((const char*)&v, sizeof(v));
@@ -496,10 +515,10 @@ namespace gpstk
           * The implementation of integer byte swapping, for example,
           * cannot be used for floating point types. */
 
-      inline void itohs(void* p, uint16_t& v, unsigned pos)
+      inline void itohs(const void* p, uint16_t& v, unsigned pos)
       {
-         uint8_t *cp = static_cast<uint8_t*>(p) + pos;
-         uint16_t *tp = reinterpret_cast<uint16_t*>(cp);
+         const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
+         const uint16_t *tp = reinterpret_cast<const uint16_t*>(cp);
 #if BYTE_ORDER == LITTLE_ENDIAN
          v = *tp;
 #else
@@ -509,10 +528,10 @@ namespace gpstk
       }
 
 
-      inline void itohl(void* p, uint32_t& v, unsigned pos)
+      inline void itohl(const void* p, uint32_t& v, unsigned pos)
       {
-         uint8_t *cp = static_cast<uint8_t*>(p) + pos;
-         uint32_t *tp = reinterpret_cast<uint32_t*>(cp);
+         const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
+         const uint32_t *tp = reinterpret_cast<const uint32_t*>(cp);
 #if BYTE_ORDER == LITTLE_ENDIAN
          v = *tp;
 #else
@@ -524,10 +543,10 @@ namespace gpstk
       }
 
 
-      inline void itohll(void* p, uint64_t& v, unsigned pos)
+      inline void itohll(const void* p, uint64_t& v, unsigned pos)
       {
-         uint8_t *cp = static_cast<uint8_t*>(p) + pos;
-         uint64_t *tp = reinterpret_cast<uint64_t*>(cp);
+         const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
+         const uint64_t *tp = reinterpret_cast<const uint64_t*>(cp);
 #if BYTE_ORDER == LITTLE_ENDIAN
          v = *tp;
 #else
@@ -543,10 +562,10 @@ namespace gpstk
       }
 
 
-      inline void itohss(void* p, int16_t& v, unsigned pos)
+      inline void itohss(const void* p, int16_t& v, unsigned pos)
       {
-         uint8_t *cp = static_cast<uint8_t*>(p) + pos;
-         int16_t *tp = reinterpret_cast<int16_t*>(cp);
+         const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
+         const int16_t *tp = reinterpret_cast<const int16_t*>(cp);
 #if BYTE_ORDER == LITTLE_ENDIAN
          v = *tp;
 #else
@@ -557,10 +576,10 @@ namespace gpstk
       }
       
       
-      inline void itohsl(void* p, int32_t& v, unsigned pos)
+      inline void itohsl(const void* p, int32_t& v, unsigned pos)
       {
-         uint8_t *cp = static_cast<uint8_t*>(p) + pos;
-         int32_t *tp = reinterpret_cast<int32_t*>(cp);
+         const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
+         const int32_t *tp = reinterpret_cast<const int32_t*>(cp);
 #if BYTE_ORDER == LITTLE_ENDIAN
          v = *tp;
 #else
@@ -573,10 +592,10 @@ namespace gpstk
       }
 
 
-      inline void itohsll(void* p, int64_t& v, unsigned pos)
+      inline void itohsll(const void* p, int64_t& v, unsigned pos)
       {
-         uint8_t *cp = static_cast<uint8_t*>(p) + pos;
-         int64_t *tp = reinterpret_cast<int64_t*>(cp);
+         const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
+         const int64_t *tp = reinterpret_cast<const int64_t*>(cp);
 #if BYTE_ORDER == LITTLE_ENDIAN
          v = *tp;
 #else
@@ -593,10 +612,10 @@ namespace gpstk
       }
 
 
-      inline void itohf(void* p, float& v, unsigned pos)
+      inline void itohf(const void* p, float& v, unsigned pos)
       {
-         uint8_t *cp = (uint8_t*)p + pos;
-         uint8_t *vp = (uint8_t*)&v;
+         const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
+         uint8_t *vp = reinterpret_cast<uint8_t*>(&v);
 #if BYTE_ORDER == LITTLE_ENDIAN
          std::memcpy(vp, cp, sizeof(float));
 #else
@@ -608,10 +627,10 @@ namespace gpstk
       }
 
 
-      inline void itohd(void* p, double& v, unsigned pos)
+      inline void itohd(const void* p, double& v, unsigned pos)
       {
-         uint8_t *cp = (uint8_t*)p + pos;
-         uint8_t *vp = (uint8_t*)&v;
+         const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
+         uint8_t *vp = reinterpret_cast<uint8_t*>(&v);
 #if BYTE_ORDER == LITTLE_ENDIAN
          std::memcpy(vp, cp, sizeof(double));
 #else
@@ -628,10 +647,10 @@ namespace gpstk
 
          // network to host conversions
 
-      inline void ntohs(void* p, uint16_t& v, unsigned pos)
+      inline void ntohs(const void* p, uint16_t& v, unsigned pos)
       {
-         uint8_t *cp = static_cast<uint8_t*>(p) + pos;
-         uint16_t *tp = reinterpret_cast<uint16_t*>(cp);
+         const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
+         const uint16_t *tp = reinterpret_cast<const uint16_t*>(cp);
 #if BYTE_ORDER == BIG_ENDIAN
          v = *tp;
 #else
@@ -641,10 +660,10 @@ namespace gpstk
       }
 
 
-      inline void ntohl(void* p, uint32_t& v, unsigned pos)
+      inline void ntohl(const void* p, uint32_t& v, unsigned pos)
       {
-         uint8_t *cp = static_cast<uint8_t*>(p) + pos;
-         uint32_t *tp = reinterpret_cast<uint32_t*>(cp);
+         const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
+         const uint32_t *tp = reinterpret_cast<const uint32_t*>(cp);
 #if BYTE_ORDER == BIG_ENDIAN
          v = *tp;
 #else
@@ -656,10 +675,10 @@ namespace gpstk
       }
 
 
-      inline void ntohll(void* p, uint64_t& v, unsigned pos)
+      inline void ntohll(const void* p, uint64_t& v, unsigned pos)
       {
-         uint8_t *cp = static_cast<uint8_t*>(p) + pos;
-         uint64_t *tp = reinterpret_cast<uint64_t*>(cp);
+         const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
+         const uint64_t *tp = reinterpret_cast<const uint64_t*>(cp);
 #if BYTE_ORDER == BIG_ENDIAN
          v = *tp;
 #else
@@ -675,10 +694,10 @@ namespace gpstk
       }
 
 
-      inline void ntohss(void* p, int16_t& v, unsigned pos)
+      inline void ntohss(const void* p, int16_t& v, unsigned pos)
       {
-         uint8_t *cp = static_cast<uint8_t*>(p) + pos;
-         int16_t *tp = reinterpret_cast<int16_t*>(cp);
+         const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
+         const int16_t *tp = reinterpret_cast<const int16_t*>(cp);
 #if BYTE_ORDER == BIG_ENDIAN
          v = *tp;
 #else
@@ -689,10 +708,10 @@ namespace gpstk
       }
       
       
-      inline void ntohsl(void* p, int32_t& v, unsigned pos)
+      inline void ntohsl(const void* p, int32_t& v, unsigned pos)
       {
-         uint8_t *cp = static_cast<uint8_t*>(p) + pos;
-         int32_t *tp = reinterpret_cast<int32_t*>(cp);
+         const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
+         const int32_t *tp = reinterpret_cast<const int32_t*>(cp);
 #if BYTE_ORDER == BIG_ENDIAN
          v = *tp;
 #else
@@ -705,10 +724,10 @@ namespace gpstk
       }
 
 
-      inline void ntohsll(void* p, int64_t& v, unsigned pos)
+      inline void ntohsll(const void* p, int64_t& v, unsigned pos)
       {
-         uint8_t *cp = static_cast<uint8_t*>(p) + pos;
-         int64_t *tp = reinterpret_cast<int64_t*>(cp);
+         const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
+         const int64_t *tp = reinterpret_cast<const int64_t*>(cp);
 #if BYTE_ORDER == BIG_ENDIAN
          v = *tp;
 #else
@@ -725,10 +744,10 @@ namespace gpstk
       }
 
 
-      inline void ntohf(void* p, float& v, unsigned pos)
+      inline void ntohf(const void* p, float& v, unsigned pos)
       {
-         uint8_t *cp = (uint8_t*)p + pos;
-         uint8_t *vp = (uint8_t*)&v;
+         const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
+         uint8_t *vp = reinterpret_cast<uint8_t*>(&v);
 #if BYTE_ORDER == BIG_ENDIAN
          std::memcpy(vp, cp, sizeof(float));
 #else
@@ -740,10 +759,10 @@ namespace gpstk
       }
 
 
-      inline void ntohd(void* p, double& v, unsigned pos)
+      inline void ntohd(const void* p, double& v, unsigned pos)
       {
-         uint8_t *cp = (uint8_t*)p + pos;
-         uint8_t *vp = (uint8_t*)&v;
+         const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
+         uint8_t *vp = reinterpret_cast<uint8_t*>(&v);
 #if BYTE_ORDER == BIG_ENDIAN
          std::memcpy(vp, cp, sizeof(double));
 #else
@@ -859,8 +878,8 @@ namespace gpstk
 
       inline void htoif(void* p, float v, unsigned pos)
       {
-         uint8_t *cp = (uint8_t*)p + pos;
-         uint8_t *vp = (uint8_t*)&v;
+         uint8_t *cp = static_cast<uint8_t*>(p) + pos;
+         uint8_t *vp = reinterpret_cast<uint8_t*>(&v);
 #if BYTE_ORDER == LITTLE_ENDIAN
          std::memcpy(cp, vp, sizeof(float));
 #else
@@ -874,8 +893,8 @@ namespace gpstk
 
       inline void htoid(void* p, double v, unsigned pos)
       {
-         uint8_t *cp = (uint8_t*)p + pos;
-         uint8_t *vp = (uint8_t*)&v;
+         uint8_t *cp = static_cast<uint8_t*>(p) + pos;
+         uint8_t *vp = reinterpret_cast<uint8_t*>(&v);
 #if BYTE_ORDER == LITTLE_ENDIAN
          std::memcpy(cp, vp, sizeof(double));
 #else
