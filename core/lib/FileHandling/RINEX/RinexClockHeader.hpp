@@ -163,7 +163,7 @@ namespace gpstk
       std::string fileType;                  
          /// Name of program creating current file
       std::string fileProgram;
-         /// Name of agancy creating current file
+         /// Name of agency creating current file
       std::string fileAgency;
          /// Date of file creation, no specified format
       std::string date;
