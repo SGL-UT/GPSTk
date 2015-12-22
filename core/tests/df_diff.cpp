@@ -58,7 +58,9 @@ public:
          "Differences two input files while allowing small differences"
          "in floating point values."),
         epsilon(1e-5),
-        linesToSkip(0)
+        linesToSkip(0),
+        lastlineValue(0),
+        totalLines(0)
    {};
 
    // While this is in C11, we don't want to work under C03
@@ -80,18 +82,37 @@ public:
          input2Option('2', "input2", "Second file to take the input from.", true),
          lineSkipOption('l', "lines", "Number of lines to skip at beginning of file."),
          epsilonOption('e', "epsilon", "Percent allowable difference in floating point values."),
-         outputOption('o', "output", "A file to receive the output. The default is stdout.");
+         outputOption('o', "output", "A file to receive the output. The default is stdout."),
+         lastLineOption('z', "last", "ignore the last X lines of the file");
 
       if (!BasicFramework::initialize(argc,argv))
          return false;
-
-
+      
       input1Fn = input1Option.getValue()[0];
       input2Fn = input2Option.getValue()[0];
 
-      input1.open(input1Fn.c_str(), ios::in);
-      input2.open(input2Fn.c_str(), ios::in);
+      input1.open(input1Fn.c_str(), istringstream::in);
+      input2.open(input2Fn.c_str(), istringstream::in);
+           
       
+      // Determine total number of lines in input file 1
+      do
+      {
+         char buffer[1024];
+         input1.getline(buffer, sizeof(buffer));
+         totalLines++;
+      } while(input1);
+
+      // Determine how many lines to ignore at the end of the file
+      if (lastLineOption.getCount())
+         lastlineValue = gpstk::StringUtils::asInt(lastLineOption.getValue()[0]);
+
+      totalLines = totalLines - lastlineValue;
+
+      // clear and reset the buffer for input file 1
+      input1.clear();
+      input1.seekg(0,ios::beg);
+
       if (outputOption.getCount())
          outputFn = outputOption.getValue()[0];
 
@@ -119,7 +140,7 @@ public:
 
       if (lineSkipOption.getCount())
          linesToSkip = gpstk::StringUtils::asInt(lineSkipOption.getValue()[0]);
-      
+     
       if (debugLevel)
          output << "First file " << input1Fn << endl
                 << "Second file " << input2Fn << endl
@@ -138,11 +159,16 @@ protected:
    {
       try
       {
+
+         long lineCount = 0;
+         string l1, l2, s1, s2;
+
          for (int i=0; i<linesToSkip; i++)
          {
             char buffer[1024];
             input1.getline(buffer, sizeof(buffer));
             input2.getline(buffer, sizeof(buffer));
+            lineCount++;
             if (bool(input1) != bool(input2))
             {
                exitCode += 1;
@@ -151,44 +177,50 @@ protected:
             if (debugLevel>1)
                cout << "Skip" << endl;
          }
-      
+
          do
          {
-            string s1, s2;
-            input1 >> s1;
-            input2 >> s2;
-         
-            if (bool(input1) != bool(input2))
-               exitCode += 1;
-         
-            if (s1 != s2)
+            getline(input1, l1);
+            getline(input2, l2);
+            istringstream ss1(l1);
+            istringstream ss2(l2);
+
+            while ((ss1 >> s1) && (ss2 >> s2))
             {
-               if (verboseLevel)
-                  output << s1 << " .. " << s2;
-               
-               bool df1,df2;
-               double d1 = stringToDouble(s1, df1);
-               double d2 = stringToDouble(s2, df2);
-               if (df1 && df2)
+         
+               if (bool(input1) != bool(input2))
+                  exitCode += 1;
+            
+               if (s1 != s2)
                {
-                  double diff = d1-d2;
-                  double err = d2;
-                  if (d1 != 0)
-                     err = diff/d1;
-               
-                  if (abs(err) > epsilon)
+                  if (verboseLevel)
+                     output << s1 << " .. " << s2;
+                  
+                  bool df1,df2;
+                  double d1 = stringToDouble(s1, df1);
+                  double d2 = stringToDouble(s2, df2);
+                  if (df1 && df2)
+                  {
+                     double diff = d1-d2;
+                     double err = d2;
+                     if (d1 != 0)
+                        err = diff/d1;
+                  
+                     if (abs(err) > epsilon)
+                        exitCode += 1;
+                     
+                     if (verboseLevel)
+                        output << " err: " << err;
+                  }
+                  else
                      exitCode += 1;
                   
                   if (verboseLevel)
-                     output << " err: " << err;
+                     output << endl;
                }
-               else
-                  exitCode += 1;
-               
-               if (verboseLevel)
-                  output << endl;
             }
-         } while (input1 && input2);
+            lineCount++;
+         } while (input1 && input2 && (lineCount < totalLines));
       }
       catch (std::exception& e)
       {
@@ -198,6 +230,7 @@ protected:
 
       if (verboseLevel)
          output << "Total differences: " << exitCode << endl;
+
    }
 
    virtual void shutDown()
@@ -209,6 +242,8 @@ protected:
    double epsilon;
 public:
    long linesToSkip;
+   long totalLines;
+   int lastlineValue;
 };
 
 
