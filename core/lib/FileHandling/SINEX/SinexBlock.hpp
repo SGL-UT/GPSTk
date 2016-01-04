@@ -145,7 +145,7 @@ namespace Sinex
                   try
                   {
                      dataVec.push_back(
-                        T(line.insert( (unsigned)0, (unsigned)1, c),
+                        T(line.insert( (size_t)0, (size_t)1, c),
                           lineNum) );
                   }
                   catch (Exception& exc)

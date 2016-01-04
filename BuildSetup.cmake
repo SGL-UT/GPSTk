@@ -21,6 +21,7 @@ if( ${CMAKE_SYSTEM_NAME} MATCHES "SunOS" )
     # add -DCMAKE_CXX_FLAGS=-std=c++03 or =-std=c++11 on the CMAKE invocation
     set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -mt -shared" )
 elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
+    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" )
     set( CMAKE_SHARED_LIBRARY_SUFFIX .dylib )
     set( CMAKE_INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib" )
     set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -shared" )

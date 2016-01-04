@@ -50,9 +50,9 @@
 
 namespace gpstk
 {
-   /** @addtogroup Binex */
+      /** @addtogroup Binex */
 
-   //@{
+      //@{
 
       /**
        * This class stores, reads, and writes BINEX records.
@@ -65,12 +65,12 @@ namespace gpstk
    {
    public:
 
-      // Establish the endianness of the native platform
-   #if BYTE_ORDER == LITTLE_ENDIAN
+         // Establish the endianness of the native platform
+#if BYTE_ORDER == LITTLE_ENDIAN
       static const bool nativeLittleEndian = true;
-   #else
+#else
       static const bool nativeLittleEndian = false;
-   #endif
+#endif
 
       typedef uint32_t  RecordID;  ///< Record ID type
       typedef uint8_t   SyncByte;  ///< Synchronization byte (record flags)
@@ -223,7 +223,7 @@ namespace gpstk
          decode(const std::string& inBuffer,
                 size_t             offset       = 0,
                 bool               littleEndian = false)
-             throw(FFStreamError);
+            throw(FFStreamError);
 
             /**
              * Converts the UBNXI to a series of bytes placed in outBuffer.
@@ -641,18 +641,6 @@ namespace gpstk
       };
 
          /**
-          * Returns the capacity of the record message buffer (which is
-          * separate from the length of the data in the buffer).
-          *
-          * @return Record message capacity in bytes
-          */
-      inline size_t
-      getMessageCapacity() const
-      {
-         return msg.capacity();
-      };
-
-         /**
           * Returns a pointer to the raw message data.  Note that the format
           * of the data is dependent upon the record flags at the time the
           * data was added to the message.
@@ -678,7 +666,7 @@ namespace gpstk
       updateMessageData(
          size_t&      offset,
          const UBNXI& data)
-            throw(FFStreamError, InvalidParameter);
+         throw(FFStreamError, InvalidParameter);
 
          /**
           * Updates the message buffer with the specified MGFZI.  The location
@@ -695,7 +683,7 @@ namespace gpstk
       updateMessageData(
          size_t&      offset,
          const MGFZI& data)
-            throw(FFStreamError, InvalidParameter);
+         throw(FFStreamError, InvalidParameter);
 
          /**
           * Updates the message buffer with the specified raw data.  The
@@ -714,7 +702,7 @@ namespace gpstk
          size_t&            offset,
          const std::string& data,
          size_t             size)
-            throw(FFStreamError, InvalidParameter);
+         throw(FFStreamError, InvalidParameter);
 
          /**
           * Updates the message buffer with the specified raw data.  The
@@ -733,7 +721,7 @@ namespace gpstk
          size_t&     offset,
          const char  *data,
          size_t      size)
-            throw(FFStreamError, InvalidParameter);
+         throw(FFStreamError, InvalidParameter);
 
          /**
           * Updates the message buffer with the specified data.  The location
@@ -755,7 +743,7 @@ namespace gpstk
          size_t&      offset,
          const T&     data,
          size_t       size)
-            throw(FFStreamError, InvalidParameter)
+         throw(FFStreamError, InvalidParameter)
       {
          if (size > sizeof(T) )
          {
@@ -765,15 +753,12 @@ namespace gpstk
             GPSTK_THROW(ip);
          }
          bool   littleEndian  = ( (syncByte & eBigEndian) == 0) ? true : false;
-         if (littleEndian == nativeLittleEndian)
+         msg.replace(offset, size, reinterpret_cast<const char*>(&data), size);
+         if (littleEndian != nativeLittleEndian)
          {
-            msg.replace(offset, size, reinterpret_cast<const char*>(&data), size);
-         }
-         else
-         {
-            T tmpData(data);
-            BinUtils::twiddle(tmpData);
-            msg.replace(offset, size, reinterpret_cast<const char*>(&tmpData), size);
+               // host endian-ness does not match file endian-ness, so
+               // reverse the bytes
+            std::reverse(msg.begin()+offset, msg.begin()+offset+size);
          }
          offset += size;
          return *this;
@@ -794,7 +779,7 @@ namespace gpstk
       extractMessageData(
          size_t& offset,
          UBNXI&  data)
-            throw(FFStreamError, InvalidParameter);
+         throw(FFStreamError, InvalidParameter);
 
          /**
           * Extracts a MGFZI from the message buffer.  The location within the
@@ -810,7 +795,7 @@ namespace gpstk
       extractMessageData(
          size_t& offset,
          MGFZI&  data)
-            throw(FFStreamError, InvalidParameter);
+         throw(FFStreamError, InvalidParameter);
 
          /**
           * Extracts raw data from the message buffer.  The location within the
@@ -830,7 +815,7 @@ namespace gpstk
          size_t&      offset,
          std::string& data,
          size_t       size) const
-            throw(InvalidParameter);
+         throw(InvalidParameter);
 
          /**
           * Extracts data from the message buffer.  The location within the
@@ -852,7 +837,7 @@ namespace gpstk
          size_t&      offset,
          T&           data,
          size_t       size) const
-            throw(FFStreamError, InvalidParameter)
+         throw(FFStreamError, InvalidParameter)
       {
          if (size > sizeof(T) )
          {
@@ -869,11 +854,10 @@ namespace gpstk
             GPSTK_THROW(ip);
          }
          bool littleEndian  = ( (syncByte & eBigEndian) == 0) ? true : false;
-         msg.copy(reinterpret_cast<char*>(&data), size, offset);
-         if (littleEndian != nativeLittleEndian)
-         {
-            BinUtils::twiddle(data);
-         }
+         if (littleEndian)
+            data = BinUtils::decodeVarLE<T>(msg, offset);
+         else
+            data = BinUtils::decodeVar<T>(msg, offset);
          offset += size;
 
       } // BinexData::extractMessageData()
@@ -1002,7 +986,7 @@ namespace gpstk
 
    };  // class BinexData
 
-   //@}
+      //@}
 
 } // namespace gpstk
 

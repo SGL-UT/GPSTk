@@ -411,7 +411,7 @@ namespace gpstk
    {
       if ( (m.rows() != m.cols()) || (m.cols() < 1) )
       {
-         MatrixException e("invalid matrix dimensions for ident()");
+         MatrixException e("invalid matrix dimensions for m");
          GPSTK_THROW(e);
       }
 
@@ -930,7 +930,28 @@ namespace gpstk
       return M;
    }
 
-/// Multiplies all the elements of m by d.
+   /**
+    * find the maximum magnitude in a matrix 
+    */
+   template <class T, class BaseClass>
+   inline T maxabs(const ConstMatrixBase<T, BaseClass>& a)
+      throw ()
+   {
+      T m=0;
+      for(int i = 0; i < a.rows(); i++)
+      {
+         for(int j = 0; j < a.cols(); j++)
+         {
+            T mag = std::abs(a(i,j));
+            if (mag > m)
+               m = mag;
+         }
+      }
+      return m;
+   }
+
+
+   /// Multiplies all the elements of m by d.
    template <class T, class BaseClass>
    inline Matrix<T> operator* (const ConstMatrixBase<T, BaseClass>& m, const T d)
    {

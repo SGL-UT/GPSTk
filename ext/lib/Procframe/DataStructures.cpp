@@ -2927,7 +2927,7 @@ in matrix and number of types do not match") );
    std::istream& operator>>( std::istream& i, gnssRinex& f )
    {
 
-      if( RinexObsStream::IsRinexObsStream(i) )    // Rinex2
+      if( RinexObsStream::isRinexObsStream(i) )    // Rinex2
       {
          try
          {
@@ -2959,7 +2959,7 @@ in matrix and number of types do not match") );
             return i;
          }
       }
-      if( Rinex3ObsStream::IsRinex3ObsStream(i) )     // Rinex3
+      if( Rinex3ObsStream::isRinex3ObsStream(i) )     // Rinex3
       {
          Rinex3ObsStream& strm = dynamic_cast<Rinex3ObsStream&>(i);
 

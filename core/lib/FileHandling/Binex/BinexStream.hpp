@@ -36,7 +36,7 @@
 
 /**
  * @file BinexStream.hpp
- * File stream for RINEX meteorological files
+ * File stream for BINEX files
  */
 
 #ifndef GPSTK_BINEXSTREAM_HPP
@@ -46,8 +46,8 @@
 
 namespace gpstk
 {
-   /** @addtogroup Binex */
-   //@{
+      /// @ingroup formattedfile
+      //@{
 
       /**
        * This class performs file i/o on a BINEX file for the 
@@ -74,15 +74,17 @@ namespace gpstk
                   std::ios::openmode mode=std::ios::in | std::ios::binary)
             : FFBinaryStream(fn, mode) {};
 
-         /// Opens a file named \a fn using ios::openmode \a mode.
-      virtual void
-      open(const char* fn, std::ios::openmode mode)
-      { 
-         FFBinaryStream::open(fn, mode); 
-      }
+   protected:
+         /** @warning This is used by FFBinaryStream's getData and
+          * writeData methods to determine how to write binary encoded
+          * data.  BINEX can be either big-endian or little-endian so
+          * this isn't really useful.  As such, DO NOT USE writeData
+          * or getData in the implementation of BinexData. */
+      virtual bool isStreamLittleEndian() const throw()
+      { return true; }
    };
 
-   //@}
+      //@}
 
 } // namespace gpstk
 

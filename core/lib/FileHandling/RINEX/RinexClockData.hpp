@@ -15,132 +15,111 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
-//  Copyright 2004, The University of Texas at Austin
+//
+//  Copyright 2015, The University of Texas at Austin
 //
 //============================================================================
 
 //============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+// This software developed by Applied Research Laboratories at the
+// University of Texas at Austin, under contract to an agency or
+// agencies within the U.S.  Department of Defense. The
+// U.S. Government retains all rights to use, duplicate, distribute,
+// disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+// Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
 
 /**
  * @file RinexClockData.hpp
- * Encapsulate RinexClock file data, including I/O
+ * Encapsulate RINEX clock file data, including I/O
  */
 
-#ifndef GPSTK_RINEX_CLOCK_DATA_INCLUDE
-#define GPSTK_RINEX_CLOCK_DATA_INCLUDE
+#ifndef GPSTK_RINEXCLOCKDATA_HPP
+#define GPSTK_RINEXCLOCKDATA_HPP
 
-#include "RinexSatID.hpp"
+#include <string>
+#include <vector>
 #include "RinexClockBase.hpp"
-#include "CommonTime.hpp"
-#include <iomanip>
+#include "CivilTime.hpp"
 
 namespace gpstk
 {
-   /** @addtogroup ephemstore */
-   //@{
-
+      /** @addtogroup RinexClock */
+      //@{
+   
       /**
-       * This class encapsulates data for satellite clocks as found in RINEX Clock
-       * format files, and is used in conjuction with class RinexClockStream,
-       * which handles the I/O, and RinexClockHeader, which holds information
-       * from the RinexClock file header.
+       * This class models a RINEX Clock Data Record.
        *
-       * @code
-       * RinexClockStream ss("igs14080.clk_30s");
-       * RinexClockHeader sh;
-       * RinexClockData sd;
-       *
-       * ss >> sh;
-       *
-       * while (ss >> sd) {
-       *    // Interesting stuff...
-       * }    
-       *
-       * RinexClockStream ssout("myfile.clk_30s", ios::out);
-       * ssout << sh;
-       * for(...) {
-       *    // perhaps modify sd
-       *    ssout << sd
-       * }
-       * @endcode
-       *
-       * @sa gpstk::RinexClockHeader and gpstk::RinexClockStream for more information.
-       */
+       * @sa gpstk::RinexClockStream and gpstk::RinexClockHeader.
+       */   
    class RinexClockData : public RinexClockBase
    {
    public:
-         /// Constructor.
-      RinexClockData() { clear(); }
-     
+      
+
+         /// Constructor
+      RinexClockData(): epochTime(CommonTime::BEGINNING_OF_TIME),
+                        dvCount(0), clockData(6,0) {}
+      
          /// Destructor
       virtual ~RinexClockData() {}
-     
-         // The next four lines is our common interface
-         /// RinexClockData is "data" so this function always returns true.
-      virtual bool isData() const {return true;}
 
-         /// Debug output function.
-      virtual void dump(std::ostream& s=std::cout) const throw();
+         /// clock data type 
+         /// (AR, AS, CR, DR, MS)
+      RinexClkType type;
+      
+         /// receiver or satellite name
+         /// IGS 4 char receiver designation or 
+         /// 3 char satellite designation (Gnn for GPS) (Rnn for GLONASS) 
+      std::string name;
+      
+         /// Epoch in GPS time
+      CivilTime epochTime;
+      
+         /// number of data values
+      short dvCount;
+      
+         /// clock data
+         /// [0] Clock bias (seconds).
+         /// [1] Clock bias sigma [optional] (seconds).
+         /// [2] Clock rate [optional] (dimensionless).
+         /// [3] Clock rate sigma [optional] (dimensionless).
+         /// [4] Clock acceleration [optional] (per second).
+         /// [5] Clock acceleration sigma [optional] (per second).
+      std::vector<double> clockData;
 
-         ///@name data members
-         //@{
-      std::string datatype;   ///< Data type : AR, AS, etc
-      RinexSatID sat;         ///< Satellite ID        (if AS)
-      std::string site;       ///< Site label (4-char) (if AR)
-      CommonTime time;        ///< Time of epoch for this record
-      double bias;            ///< Clock bias in seconds
-      double sig_bias;        ///< Clock bias sigma in seconds
-      double drift;           ///< Clock drift in sec/sec
-      double sig_drift;       ///< Clock drift sigma in sec/sec
-      double accel;           ///< Clock acceleration in 1/sec
-      double sig_accel;       ///< Clock acceleration sigma in 1/sec
-         //@}
+         /// RinexClockData is a "data", so this function always returns 
+         /// true.
+      virtual bool isData() const { return true; }
+      
+         /// Debug output function. 
+      virtual void dump(std::ostream& s) const;
       
    protected:
-
-      void clear(void) throw()
-      {
-         datatype = std::string();
-         sat = RinexSatID(-1,RinexSatID::systemGPS);
-         time = CommonTime::BEGINNING_OF_TIME;
-         bias = sig_bias = drift = sig_drift = accel = sig_accel = 0.0;
-      }
-
-         /// Writes the formatted record to the FFStream \a s.
-         /// @warning This function is currently unimplemented
-      virtual void reallyPutRecord(FFStream& s) const 
+         /// Writes a correctly formatted record from this data to stream
+      virtual void reallyPutRecord(FFStream& s) const
          throw(std::exception, FFStreamError,
-               gpstk::StringUtils::StringException);
-
-         /**
-          * This function reads a record from the given FFStream.
-          * If an error is encountered in retrieving the record, the 
-          * stream is reset to its original position and its fail-bit is set.
-          * @throws StringException when a StringUtils function fails
-          * @throws FFStreamError when exceptions(failbit) is set and
-          *  a read or formatting error occurs.  This also resets the
-          *  stream to its pre-read position.
-          */
-      virtual void reallyGetRecord(FFStream& s) 
+               StringUtils::StringException);
+      
+         
+         /// This functions obtains a RINEX Clock record from the given stream
+      virtual void reallyGetRecord(FFStream& s)
          throw(std::exception, FFStreamError,
-               gpstk::StringUtils::StringException);
-   };
+               StringUtils::StringException);
+      
+   }; // class RinexClockData
+   
+      //@}
+   
+} // namespace gpstk
 
-   //@}
+#endif  //  GPSTK_RINEXCLOCKDATA_HPP
 
-}  // namespace
+      
 
-#endif // GPSTK_RINEX_CLOCK_DATA_INCLUDE

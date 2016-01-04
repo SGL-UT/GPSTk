@@ -159,7 +159,6 @@ namespace gpstk
       ///  data in \a info, false if not.
       bool setFromInfo( const IdToValue& info )
       {
-         using namespace gpstk::StringUtils;
 
          for( IdToValue::const_iterator i = info.begin(); i != info.end(); i++ )
          {
@@ -167,19 +166,19 @@ namespace gpstk
             switch ( i->first )
             {
                case 'T':
-                  setEpoch( asInt( i->second ) );
+                  setEpoch( gpstk::StringUtils::asInt( i->second ) );
                   break;
                case 'L':
-                  week = asInt( i->second );
+                  week = gpstk::StringUtils::asInt( i->second );
                   break;
                case 'l':
-                  setModWeek( asInt( i->second ) );
+                  setModWeek( gpstk::StringUtils::asInt( i->second ) );
                   break;
                case 'w':
-                  sow = static_cast<double>(asInt(i->second))*SEC_PER_DAY;
+                  sow = static_cast<double>(gpstk::StringUtils::asInt(i->second))*SEC_PER_DAY;
                   break;
                case 'g':
-                  sow = asDouble( i->second );
+                  sow = gpstk::StringUtils::asDouble( i->second );
                   break;
                case 'P':
                   timeSystem.fromString(i->second);

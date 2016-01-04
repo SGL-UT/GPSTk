@@ -60,7 +60,7 @@
 #include "PositionSatStore.hpp"
 
 #include "SP3Header.hpp"
-#include "RinexClockHeader.hpp"
+#include "Rinex3ClockHeader.hpp"
 
 namespace gpstk
 {
@@ -93,7 +93,7 @@ namespace gpstk
       FileStore<SP3Header> SP3Files;
 
       /// FileStore for the (optional) RINEX clock input files
-      FileStore<RinexClockHeader> clkFiles;
+      FileStore<Rinex3ClockHeader> clkFiles;
 
       /// flag indicating whether the clock store contains data from SP3 (true,
       /// the default) or Rinex clock (false) files

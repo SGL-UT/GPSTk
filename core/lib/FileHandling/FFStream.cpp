@@ -43,27 +43,101 @@
 
 namespace gpstk
 {
-
-      /*
-       * Overrides fstream:open so derived classes can make appropriate
-       * internal changes (line count, header info, etc).
-       */
-   void FFStream::open( const char* fn, std::ios::openmode mode )
+   FFStream ::
+   FFStream()
+         : recordNumber(0)
    {
+   }
+
+
+   FFStream ::
+   ~FFStream()
+   {
+   }
+
+
+   FFStream ::
+   FFStream( const char* fn,
+             std::ios::openmode mode )
+         : recordNumber(0),
+           filename(fn)
+   {
+         // Note that this will call FFStream::open, not the child
+         // class.  Virtual function pointer tables aren't populated
+         // until the end of the constructor so the child class'
+         // open() method won't be known at this point.
+         // https://isocpp.org/wiki/faq/strange-inheritance#calling-virtuals-from-ctors
+         // As such, child classes should implement their own init()
+         // methods to do any additional processing that is normally
+         // done in open() and call that in the constructor as well as
+         // their own open() methods.
+         // see open() comments for more.
+      open(fn, mode);
+   }
+
+
+   FFStream ::
+   FFStream( const std::string& fn,
+             std::ios::openmode mode )
+         : recordNumber(0),
+           filename(fn)
+   {
+      open(fn, mode);
+   }
+
+
+   void FFStream ::
+   open( const std::string& fn,
+         std::ios::openmode mode )
+   {
+      open( fn.c_str(), mode );
+   }
+
+
+   void FFStream ::
+   open( const char* fn, std::ios::openmode mode )
+   {
+         // Child classes should never do anything more in open() than
+         // call a class-specific init function and the parent open()
+         // method.  In this case we are calling init() first because
+         // it closes the stream if it's already open, which obviously
+         // shouldn't be done AFTER the new stream is open.  Child
+         // classes typically will want to do their initialization
+         // AFTER the parent.
+      init(fn, mode);
       std::fstream::open(fn, mode);
-
-      filename = std::string(fn);
-      recordNumber = 0;
-      clear();
-
    }  // End of method 'FFStream::open()'
 
 
-
-      // A function to help debug FFStreams
-   void FFStream::dumpState(std::ostream& s) const
+   void FFStream ::
+   init( const char* fn, std::ios::openmode mode )
    {
+      close();
+      clear();
+      filename = std::string(fn);
+      recordNumber = 0;
+   }  // End of method 'FFStream::open()'
 
+
+   bool FFStream ::
+   isFFStream(std::istream& i)
+   {
+      try
+      { 
+         (void)dynamic_cast<FFStream&>(i);
+      }
+      catch(...)
+      {
+         return false;
+      }
+
+      return true;
+   }
+
+
+   void FFStream ::
+   dumpState(std::ostream& s) const
+   {
       s << "filename:" << filename
         << ", recordNumber:" << recordNumber;
       s << ", exceptions:";
@@ -80,18 +154,19 @@ namespace gpstk
       if (rdstate() & std::ios::eofbit)  s << "eof ";
       if (rdstate() == 0)  s << "none";
       s << std::endl;
-
    }  // End of method 'FFStream::dumpState()'
 
 
-
-      // the crazy double try block is so that no gpstk::Exception throws
-      // get masked, allowing all exception information (line numbers, text,
-      // etc) to be retained.
    void FFStream::tryFFStreamGet(FFData& rec)
       throw(FFStreamError, gpstk::StringUtils::StringException)
    {
-
+         // JMK 2015/12/07 - some implementations of streams will
+         // raise exceptions in tellg if eofbit is set but not
+         // failbit.  This attempts to work around this situation and
+         // make FFStream work more like one would expect, i.e. don't
+         // fail until the failbit is set.
+      if (rdstate() == std::ios::eofbit)
+         clear(); // clear ONLY if eofbit is the only state flag set
          // Mark where we start in case there is an error.
       long initialPosition = tellg();
       unsigned long initialRecordNumber = recordNumber;
@@ -106,10 +181,10 @@ namespace gpstk
          }
          catch (EndOfFile& e)
          {
-            // EOF - do nothing - eof causes fail() to be set which
-            // is handled by std::fstream
+               // EOF - do nothing - eof causes fail() to be set which
+               // is handled by std::fstream
             e.addText("In record " +
-               gpstk::StringUtils::asString(recordNumber));
+                      gpstk::StringUtils::asString(recordNumber));
             e.addText("In file " + filename);
             e.addLocation(FILE_LOCATION);
             mostRecentException = e;
@@ -119,7 +194,7 @@ namespace gpstk
             mostRecentException = FFStreamError("std::exception thrown: " +
                                                 std::string(e.what()));
             mostRecentException.addText("In record " +
-                  gpstk::StringUtils::asString(recordNumber));
+                                        gpstk::StringUtils::asString(recordNumber));
             mostRecentException.addText("In file " + filename);
             mostRecentException.addLocation(FILE_LOCATION);
             clear();
@@ -203,7 +278,8 @@ namespace gpstk
       // the crazy double try block is so that no gpstk::Exception throws 
       // get masked, allowing all exception information (line numbers, text,
       // etc) to be retained.
-   void FFStream::tryFFStreamPut(const FFData& rec)
+   void FFStream ::
+   tryFFStreamPut(const FFData& rec)
       throw(FFStreamError, gpstk::StringUtils::StringException)
    {
          // Mark where we start in case there is an error.

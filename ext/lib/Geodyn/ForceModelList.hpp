@@ -110,7 +110,7 @@ namespace gpstk
    protected:
 
          /// List of forces
-      list<ForceModel*> forceList;
+      std::list<ForceModel*> forceList;
 
       std::set<ForceModel::ForceModelType> setFMT;
 

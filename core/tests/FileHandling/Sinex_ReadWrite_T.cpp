@@ -2,13 +2,13 @@
 #include "SinexData.hpp"
 
 
-/**
- * @file sinex_test.cpp
- * Tests gptk::SinexStream, gpstk::SinexData, gpstk::SinexHeader
- * by reading in a SINEX file and then writing it back out.
- * Sample input files can be found in the data directory.
- * The output file is named "sinex_test.out"
- */
+   /**
+    * @file sinex_test.cpp
+    * Tests gptk::SinexStream, gpstk::SinexData, gpstk::SinexHeader
+    * by reading in a SINEX file and then writing it back out.
+    * Sample input files can be found in the data directory.
+    * The output file is named "sinex_test.out"
+    */
 
 using namespace std;
 using namespace gpstk;

@@ -201,7 +201,7 @@ namespace gpstk
          n = in_n;
          min = in_min;
          max = in_max;
-         var = in_var;
+         var = in_var * T(n-1)/T(n);
          ave = in_ave;
          weighted = wtd;
          W = norm;
@@ -317,8 +317,18 @@ namespace gpstk
             ymin = ymax = Y;
             scalex = scaley = T(1);
          }
-         if(scalex==T(1) && X!=T()) scalex=ABS(X);
-         if(scaley==T(1) && Y!=T()) scaley=ABS(Y);
+         if(scalex==T(1) && X!=T()) {
+            scalex=ABS(X);
+            sumx /= scalex;
+            sumx2 /= (scalex*scalex);
+            sumxy /= scalex;
+         }
+         if(scaley==T(1) && Y!=T()) {
+            scaley=ABS(Y);
+            sumy /= scalex;
+            sumy2 /= (scalex*scalex);
+            sumxy /= scalex;
+         }
          sumx += X/scalex;
          sumy += Y/scaley;
          sumx2 += (X/scalex)*(X/scalex);

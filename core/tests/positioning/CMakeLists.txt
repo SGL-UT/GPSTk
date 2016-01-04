@@ -1,5 +1,35 @@
 ###############################################################################
-# TEST RinEdit
+# TEST PRSolve
+###############################################################################
+
+ # test with minimum required inputs - RINEX obs, SP3 Ephemeris, Solution Descriptor
+ set( ARGS1 --obs\ ${GPSTK_TEST_DATA_DIR}/arlm200b.15o\ --eph\ ${GPSTK_TEST_DATA_DIR}/test_input_sp3_nav_ephemerisData.sp3\ --sol\ GPS:12:WC\ )
+ add_test(NAME PRSolve_Required
+         COMMAND ${CMAKE_COMMAND} 
+         -DTEST_PROG=$<TARGET_FILE:PRSolve>
+         -DDIFF_PROG=$<TARGET_FILE:df_diff>
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}/../../core/tests/positioning
+         -DTESTBASE=PRSolve_Required
+         -DARGS=${ARGS1}          
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/testsuccdiff_PRSolve.cmake) 
+
+ 
+ # test with minimum required inputs, RINEX output - RINEX obs, SP3 Ephemeris, Solution Descriptor
+ # set( ARGS2 --obs\ ${GPSTK_TEST_DATA_DIR}/arlm200b.15o\ --eph\ ${GPSTK_TEST_DATA_DIR}/test_input_sp3_nav_ephemerisData.sp3\ --sol\ GPS:12:WC\ --output\ rinexout.exp\ )
+ # add_test(NAME PRSolve_Rinexout
+ #        COMMAND ${CMAKE_COMMAND} 
+ #        -DTEST_PROG=$<TARGET_FILE:PRSolve>
+ #        -DDIFF_PROG=$<TARGET_FILE:df_diff>
+ #        -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+ #        -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}/../../core/tests/positioning
+ #        -DTESTBASE=PRSolve_Rinexout
+ #        -DARGS=${ARGS2}          
+ #        -P ${CMAKE_CURRENT_SOURCE_DIR}/testsuccdiff_PRSolve2.cmake)    
+  
+
+###############################################################################
+# TEST poscvt
 ###############################################################################
 
 # check that -h option is valid

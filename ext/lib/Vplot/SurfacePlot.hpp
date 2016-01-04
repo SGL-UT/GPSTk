@@ -63,96 +63,99 @@
 #include "AxisStyle.hpp"
 #include "Plot.hpp"
 
-using namespace std;
-using namespace vdraw;
 
 namespace vplot
 {
-  /**
-   * This class helps to create a simple Surface Plot.
-   */
-  class SurfacePlot : public Plot
-  {
-    public:
-
       /**
-       * Constructor.
-       * @param iwidth Width of color map
-       * @param iheight Height of the color map
-       * @param p Palette for the elements in this surface map
+       * This class helps to create a simple Surface Plot.
        */
-      SurfacePlot(int iwidth, int iheight, const Palette& p);
+   class SurfacePlot : public Plot
+   {
+   public:
 
-      /// Destructor
+         /**
+          * Constructor.
+          * @param iwidth Width of color map
+          * @param iheight Height of the color map
+          * @param p Palette for the elements in this surface map
+          */
+      SurfacePlot(int iwidth, int iheight, const vdraw::Palette& p);
+
+         /// Destructor
       ~SurfacePlot();
 
-      /*
-       * Public methods
-       */
-      /// Set the label for the color axis
-      inline void setColorLabel(const char* str) { colorlabel = std::string(str); }
+         /*
+          * Public methods
+          */
+         /// Set the label for the color axis
+      inline void setColorLabel(const char* str)
+      { colorlabel = std::string(str); }
 
-      /// Draw the Plot to this frame, with the key on the dir side
-      void draw(Frame *frame, int dir);
+         /// Draw the Plot to this frame, with the key on the dir side
+      void draw(vdraw::Frame *frame, int dir);
 
-      /// Draw the Plot to this frame
-      void drawPlot(Frame* frame);
+         /// Draw the Plot to this frame
+      void drawPlot(vdraw::Frame* frame);
 
-      /** 
-       * Draw the Palette key to this frame. dir is the direction from negative
-       * to positive for the key.  You probably want to supply a tall, skinny
-       * frame for North or South directions and a short and wide frame for East 
-       * and West directions. 
-       */
-      void drawKey(Frame *frame); //, int dir);
+         /** 
+          * Draw the Palette key to this frame. dir is the direction
+          * from negative to positive for the key.  You probably want
+          * to supply a tall, skinny frame for North or South
+          * directions and a short and wide frame for East and West
+          * directions.
+          */
+      void drawKey(vdraw::Frame *frame); //, int dir);
 
-      /// Set the color at row,col to the color at d on the palette.
+         /// Set the color at row,col to the color at d on the palette.
       inline void set(int row, int col, double d)
       {
-        icm.setColor(row,col,d);
+         icm.setColor(row,col,d);
       }
 
-      /// Get the index for a row and column 
+         /// Get the index for a row and column 
       inline double get(int row, int col)
       {
-        return icm.getIndex(row,col);
+         return icm.getIndex(row,col);
       }
 
-      /// Set up oversampling 
-      inline void oversample(int scale) { oversample(scale,scale); }
+         /// Set up oversampling 
+      inline void oversample(int scale)
+      { oversample(scale,scale); }
 
-      /// Set up oversampling
-      inline void oversample(int rscale, int cscale) { osr = rscale; osc = cscale; }
+         /// Set up oversampling
+      inline void oversample(int rscale, int cscale)
+      { osr = rscale; osc = cscale; }
 
-      /// Use boxes when rendering the surface 
-      inline void useBoxes(bool b=true) { boxes = b; }
+         /// Use boxes when rendering the surface 
+      inline void useBoxes(bool b=true)
+      { boxes = b; }
 
-      /* 
-       * Settings / options
-       */
+         /* 
+          * Settings / options
+          */
       
-      /// Style for the right axis
+         /// Style for the right axis
       AxisStyle axis_color;
 
-    protected:
+   protected:
 
-    private:
-      /// Color axis label
+   private:
+         /// Color axis label
       std::string colorlabel;
 
-      /// Overscale rows 
+         /// Overscale rows 
       int osr;
 
-      /// Overscale columns
+         /// Overscale columns
       int osc;
 
-      /// Use boxes instead of a compressed image
+         /// Use boxes instead of a compressed image
       bool boxes;
 
-      /// ColorMap
-      InterpolatedColorMap icm;
+         /// ColorMap
+      vdraw::InterpolatedColorMap icm;
 
-  };
+   };
 
 }
 

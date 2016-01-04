@@ -437,7 +437,7 @@ int main(int argc, char **argv)
 
       // compute robust stats --------------------------------------------------
       double median,mad,mest,Q1,Q3,KS;
-      if(xdata.size() > 0) QSort(&data[0],&xdata[0],data.size());
+      if(xdata.size() > 0) QSort(&data[0],&xdata[0],xdata.size());
       else                 QSort(&data[0],data.size());
       Robust::Quartiles(&data[0],data.size(),Q1,Q3);
       // outlier limit (high) 2.5Q3-1.5Q1

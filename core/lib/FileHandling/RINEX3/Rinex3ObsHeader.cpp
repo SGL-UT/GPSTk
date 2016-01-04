@@ -93,6 +93,7 @@ namespace gpstk
 
 
    Rinex3ObsHeader::Rinex3ObsHeader()
+         : PisY(false)
    {
       clear();
    }
@@ -150,7 +151,9 @@ namespace gpstk
       obsTypeList.clear();
       valid  = 0;
       validEoH = false;
-      PisY = false;
+         // Only do this in the constructor so the desired handling of
+         // "P" code in RINEX 2 stays the same.
+         //PisY = false;
       sysPhaseShiftObsID = RinexObsID();
       satSysTemp.clear();
       satSysPrev.clear();
@@ -1287,7 +1290,8 @@ namespace gpstk
 
             // 0/blank numObs means factor applies to all obs types
             // in appropriate obsTypeList
-         if(numObs == 0) numObs = mapObsTypes[satSysTemp].size();
+         if(numObs == 0)
+            numObs = mapObsTypes[satSysTemp].size();
 
          ScaleFacMap tempSfacMap = sysSfacMap[satSysTemp];
          for(i = startPosition;
@@ -1510,10 +1514,11 @@ namespace gpstk
          // If already read, just return.
       if(strm.headerRead == true) return;
 
-         // Since we're reading a new header, we need to reinitialize all our list
-         // structures. All the other objects should be ok.  This also applies if we
-         // threw an exception the first time we read the header and are now re-reading
-         // it.  Some of these could be full and we need to empty them.
+         // Since we're reading a new header, we need to reinitialize
+         // all our list structures. All the other objects should be
+         // ok.  This also applies if we threw an exception the first
+         // time we read the header and are now re-reading it.  Some
+         // of these could be full and we need to empty them.
       clear();
 
       string line;
@@ -1550,9 +1555,10 @@ namespace gpstk
 
       } // end while(not end of header)
 
-         // if RINEX 2, define mapObsTypes from R2ObsTypes and system(s)
-         // this may have to be corrected later using wavelengthFactor
-         // also define mapSysR2toR3ObsID in case version 2 is written out later
+         // if RINEX 2, define mapObsTypes from R2ObsTypes and
+         // system(s) this may have to be corrected later using
+         // wavelengthFactor also define mapSysR2toR3ObsID in case
+         // version 2 is written out later
       if(version < 3)
       {
             // try to determine systems included in the file
@@ -1582,7 +1588,8 @@ namespace gpstk
             syss.push_back("E");
          }
 
-            // given systems and list of R2ObsTypes, compute mapObsTypes and mapSysR2toR3ObsID
+            // given systems and list of R2ObsTypes, compute
+            // mapObsTypes and mapSysR2toR3ObsID
          mapSysR2toR3ObsID.clear();
          for(size_t i=0; i<syss.size(); i++)
          {
@@ -1605,7 +1612,8 @@ namespace gpstk
                GPSTK_RETHROW(fse); 
             }
 
-               // TD if GPS and have wavelengthFactors, add more ObsIDs with tc=N
+               // TD if GPS and have wavelengthFactors, add more
+               // ObsIDs with tc=N
 
             mapObsTypes[syss[i]] = obsids;
          }

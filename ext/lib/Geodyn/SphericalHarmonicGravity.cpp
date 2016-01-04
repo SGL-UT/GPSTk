@@ -54,18 +54,18 @@ namespace gpstk
        * @param m Desired order.
        */
    SphericalHarmonicGravity::SphericalHarmonicGravity(int n, int m)
-      : desiredDegree(n),
-        desiredOrder(m),
-        correctSolidTide(false),
-        correctPoleTide(false),
-        correctOceanTide(false)
+         : desiredDegree(n),
+           desiredOrder(m),
+           correctSolidTide(false),
+           correctPoleTide(false),
+           correctOceanTide(false)
    {
       const int size = desiredDegree;
 
       V.resize( size + 3, size + 3, 0.0);
       W.resize( size + 3, size + 3, 0.0);
 
-      //Sn0.resize(gmData.maxDegree, 0.0);
+         //Sn0.resize(gmData.maxDegree, 0.0);
 
    }
 
@@ -75,38 +75,38 @@ namespace gpstk
        */
    void SphericalHarmonicGravity::computeVW(Vector<double> r, Matrix<double> E)
    {   
-      // dimension should be checked here
-      // I'll do it latter...
+         // dimension should be checked here
+         // I'll do it latter...
       if((r.size()!=3) || (E.rows()!=3) || (E.cols()!=3))
       {
          Exception e("Wrong input for computeVW");
          GPSTK_THROW(e);
       }
 
-      // Rotate from ECI to ECEF
+         // Rotate from ECI to ECEF
       Vector<double> r_bf = E * r; 
 
       const double R_ref = gmData.refDistance;
 
-      // Auxiliary quantities
+         // Auxiliary quantities
       double r_sqr =  dot(r_bf, r_bf);
       double rho   =  R_ref * R_ref / r_sqr;
 
-      // Normalized coordinates
+         // Normalized coordinates
       double x0 = R_ref * r_bf(0) / r_sqr;          
       double y0 = R_ref * r_bf(1) / r_sqr;   
       double z0 = R_ref * r_bf(2) / r_sqr;
 
 
-      //
-      // Evaluate harmonic functions 
-      //   V_nm = (R_ref/r)^(n+1) * P_nm(sin(phi)) * cos(m*lambda)
-      // and 
-      //   W_nm = (R_ref/r)^(n+1) * P_nm(sin(phi)) * sin(m*lambda)
-      // up to degree and order n_max+1
-      //
+         //
+         // Evaluate harmonic functions 
+         //   V_nm = (R_ref/r)^(n+1) * P_nm(sin(phi)) * cos(m*lambda)
+         // and 
+         //   W_nm = (R_ref/r)^(n+1) * P_nm(sin(phi)) * sin(m*lambda)
+         // up to degree and order n_max+1
+         //
 
-      // Calculate zonal terms V(n,0); set W(n,0)=0.0
+         // Calculate zonal terms V(n,0); set W(n,0)=0.0
       V[0][0] = R_ref / std::sqrt(r_sqr);
       W[0][0] = 0.0;
 
@@ -119,10 +119,10 @@ namespace gpstk
          W[n][0] = 0.0;
       }
 
-      // Calculate tesseral and sectorial terms
+         // Calculate tesseral and sectorial terms
       for (int m = 1; m <= (desiredOrder+2); m++) 
       {
-         // Calculate V(m,m) .. V(n_max+1,m)
+            // Calculate V(m,m) .. V(n_max+1,m)
 
          V[m][m] = (2 * m - 1) * ( x0 * V[m-1][m-1] - y0 * W[m-1][m-1] );
          W[m][m] = (2 * m - 1) * ( x0 * W[m-1][m-1] + y0 * V[m-1][m-1] );
@@ -151,18 +151,18 @@ namespace gpstk
        */
    Vector<double> SphericalHarmonicGravity::gravity(Vector<double> r, Matrix<double> E)
    {
-      // dimension should be checked here
-      // I'll do it latter...
+         // dimension should be checked here
+         // I'll do it latter...
       if((r.size()!=3) || (E.rows()!=3) || (E.cols()!=3))
       {
          Exception e("Wrong input for computeVW");
          GPSTK_THROW(e);
       }
 
-      Matrix<double> CS = gmData.unnormalizedCS;
+      Matrix<double> cs = gmData.unnormalizedCS;
 
    
-      // Calculate accelerations ax,ay,az
+         // Calculate accelerations ax,ay,az
       double ax(0.0), ay(0.0), az(0.0);
 
       for (int m = 0; m <= desiredOrder; m++)
@@ -171,7 +171,7 @@ namespace gpstk
          {
             if (m==0) 
             {
-               double C = CS[n][0];               // = C_n,0
+               double C = cs[n][0];               // = C_n,0
 
                ax -=       C * V[n+1][1];
                ay -=       C * W[n+1][1];
@@ -179,8 +179,8 @@ namespace gpstk
             }
             else 
             {
-               double C = CS[n][m];   // = C_n,m
-               double S = CS[m-1][n]; // = S_n,m
+               double C = cs[n][m];   // = C_n,m
+               double S = cs[m-1][n]; // = S_n,m
                double Fac = 0.5 * (n-m+1) * (n-m+2);
                
                ax += 0.5*(-C*V[n+1][m+1] - S*W[n+1][m+1]) + Fac*(C*V[n+1][m-1] + S*W[n+1][m-1]);
@@ -192,7 +192,7 @@ namespace gpstk
 
       }  // End of 'for (int m = 0; m <= (desiredOrder+1); m++)'
 
-      // Body-fixed acceleration
+         // Body-fixed acceleration
       Vector<double> a_bf(3,0.0);
       a_bf(0) = ax;
       a_bf(1) = ay;
@@ -200,7 +200,7 @@ namespace gpstk
 
       a_bf = a_bf * ( gmData.GM / (gmData.refDistance * gmData.refDistance) );
 
-      // Inertial acceleration
+         // Inertial acceleration
       Matrix<double> Etrans = transpose(E);
       Vector<double> out = Etrans * a_bf;            // this line may be wrong  matrix * vector
 
@@ -216,15 +216,15 @@ namespace gpstk
        */
    Matrix<double> SphericalHarmonicGravity::gravityGradient(gpstk::Vector<double> r, gpstk::Matrix<double> E)
    {
-      // dimension should be checked here
-      // I'll do it latter...
+         // dimension should be checked here
+         // I'll do it latter...
       if((r.size()!=3) || (E.rows()!=3) || (E.cols()!=3))
       {
          Exception e("Wrong input for gravityGradient");
          GPSTK_THROW(e);
       }
 
-      Matrix<double> CS = gmData.unnormalizedCS;
+      Matrix<double> cs = gmData.unnormalizedCS;
 
    
       double xx = 0.0;     
@@ -242,15 +242,15 @@ namespace gpstk
          {
             double Fac = (n-m+2)*(n-m+1);
             
-            double C = CS[n][m];
-            double S = (m==0) ? 0.0 : CS[m-1][n];   // yan changed
-            //S = (m==0)?Sn0(n):CS[m-1][n];   // yan changed
+            double C = cs[n][m];
+            double S = (m==0) ? 0.0 : cs[m-1][n];   // yan changed
+               //S = (m==0)?Sn0(n):cs[m-1][n];   // yan changed
 
             zz += Fac*(C*V[n+2][m] + S*W[n+2][m]);
 
             if (m==0) 
             {
-               C = CS[n][0];   // = C_n,0
+               C = cs[n][0];   // = C_n,0
 
                Fac = (n+2)*(n+1);
                xx += 0.5 * (C*V[n+2][2] - Fac*C*V[n+2][0]);
@@ -262,8 +262,8 @@ namespace gpstk
             }
             if (m > 0)
             {
-               C = CS[n][m];
-               S = CS[m-1][n];
+               C = cs[n][m];
+               S = cs[m-1][n];
                
                double f1 = 0.5*(n-m+1);
                double f2 = (n-m+3)*(n-m+2)*f1;
@@ -304,7 +304,7 @@ namespace gpstk
       const double R_ref = gmData.refDistance;
       out = out * (gmData.GM / (R_ref * R_ref * R_ref));
 
-      // Rotate to ECI
+         // Rotate to ECI
       Matrix<double> Etrans = transpose(E);
       out = Etrans*(out*E);
 
@@ -325,51 +325,53 @@ namespace gpstk
 
       Matrix<double> C2T = ReferenceFrames::J2kToECEFMatrix(utc);
 
-      /*
-      // debuging
-      -0.96093274494562253,0.27678089792921495,0.00077086494829907383
-      -0.27678077751454710,-0.96093305341706370,0.00026086203590256260
-      0.00081295123707397028,3.7310272463024317e-005,0.99999966885906000
+         /*
+            // debuging
+            -0.96093274494562253,0.27678089792921495,0.00077086494829907383
+            -0.27678077751454710,-0.96093305341706370,0.00026086203590256260
+            0.00081295123707397028,3.7310272463024317e-005,0.99999966885906000
       
-      C2T(0,0) = -0.96093274494562253;
-      C2T(0,1) = 0.27678089792921495;
-      C2T(0,2) = 0.00077086494829907383;
+            C2T(0,0) = -0.96093274494562253;
+            C2T(0,1) = 0.27678089792921495;
+            C2T(0,2) = 0.00077086494829907383;
 
-      C2T(1,0) = -0.27678077751454710;
-      C2T(1,1) = -0.96093305341706370;
-      C2T(1,2) = 0.00026086203590256260;
+            C2T(1,0) = -0.27678077751454710;
+            C2T(1,1) = -0.96093305341706370;
+            C2T(1,2) = 0.00026086203590256260;
 
-      C2T(2,0) = 0.00081295123707397028;
-      C2T(2,1) = 3.7310272463024317e-005;
-      C2T(2,2) = 0.99999966885906000;*/
+            C2T(2,0) = 0.00081295123707397028;
+            C2T(2,1) = 3.7310272463024317e-005;
+            C2T(2,2) = 0.99999966885906000;*/
       
-      // corrcet earth tides
+         // corrcet earth tides
       correctCSTides(utc, correctSolidTide, correctOceanTide, correctPoleTide);
 
-      // Evaluate harmonic functions
+         // Evaluate harmonic functions
       computeVW(sc.R(), C2T);         // update VM
 
-      // a
+         // a
       a = gravity(sc.R(), C2T);
       
-      // da_dr
+         // da_dr
       da_dr = gravityGradient(sc.R(), C2T);
       
-      //da_dv
+         //da_dv
       da_dv.resize(3,3,0.0);
       
-      //da_dp
+         //da_dp
       
    }
 
-   // Correct tides to coefficients 
+      // Correct tides to coefficients 
    void SphericalHarmonicGravity::correctCSTides(UTCTime t,bool solidFlag,bool oceanFlag,bool poleFlag)
    {
-      // copy CS
-      Matrix<double> CS = gmData.unnormalizedCS;
-      Vector<double> Sn0(CS.rows(),0.0);
+         // lower-case because 1) upper case is ugly and 2) name
+         // collisions with macros.
+         // copy CS
+      Matrix<double> cs = gmData.unnormalizedCS;
+      Vector<double> Sn0(cs.rows(),0.0);
 
-      // 
+         // 
       double mjd = static_cast<Epoch>(t).MJD();
       double leapYears = (mjd-gmData.refMJD)/365.25;
 
@@ -377,91 +379,91 @@ namespace gpstk
       double detC21 = normFactor(2,1)*leapYears*gmData.dotC21;
       double detS21 = normFactor(2,1)*leapYears*gmData.dotS21;
 
-      CS(2,0) += detC20;
-      CS(2,1) += detC21;
-      CS(0,2) += detS21;
+      cs(2,0) += detC20;
+      cs(2,1) += detC21;
+      cs(0,2) += detS21;
       
-      // correct solid tide
+         // correct solid tide
       if(solidFlag)
       {
-         // C20 C21 C22 C30 C31 C32 C33 C40 C41 C42
+            // C20 C21 C22 C30 C31 C32 C33 C40 C41 C42
          double dc[10] = {0.0};
          double ds[10] = {0.0};
          solidTide.getSolidTide(t.mjdUTC(),dc,ds);
 
-         // c
-         CS(2,0) += normFactor(2,0)*dc[0];
-         CS(2,1) += normFactor(2,1)*dc[1];
-         CS(2,2) += normFactor(2,2)*dc[2];
-         CS(3,0) += normFactor(3,0)*dc[3];
-         CS(3,1) += normFactor(3,1)*dc[4];
-         CS(3,2) += normFactor(3,2)*dc[5];
-         CS(3,3) += normFactor(3,3)*dc[6];
-         CS(4,0) += normFactor(4,0)*dc[7];
-         CS(4,1) += normFactor(4,1)*dc[8];
-         CS(4,2) += normFactor(4,2)*dc[9];
-         /// s
+            // c
+         cs(2,0) += normFactor(2,0)*dc[0];
+         cs(2,1) += normFactor(2,1)*dc[1];
+         cs(2,2) += normFactor(2,2)*dc[2];
+         cs(3,0) += normFactor(3,0)*dc[3];
+         cs(3,1) += normFactor(3,1)*dc[4];
+         cs(3,2) += normFactor(3,2)*dc[5];
+         cs(3,3) += normFactor(3,3)*dc[6];
+         cs(4,0) += normFactor(4,0)*dc[7];
+         cs(4,1) += normFactor(4,1)*dc[8];
+         cs(4,2) += normFactor(4,2)*dc[9];
+            /// s
          Sn0(2)  += normFactor(2,0)*ds[0];   // s20
-         CS(0,2) += normFactor(2,1)*ds[1];
-         CS(1,2) += normFactor(2,2)*ds[2];
+         cs(0,2) += normFactor(2,1)*ds[1];
+         cs(1,2) += normFactor(2,2)*ds[2];
          Sn0(3)  += normFactor(3,0)*ds[3];   // s30
-         CS(0,3) += normFactor(3,1)*ds[4];
-         CS(1,3) += normFactor(3,2)*ds[5];
-         CS(2,3) += normFactor(3,3)*ds[6];   
+         cs(0,3) += normFactor(3,1)*ds[4];
+         cs(1,3) += normFactor(3,2)*ds[5];
+         cs(2,3) += normFactor(3,3)*ds[6];   
          Sn0(4)  += normFactor(4,0)*ds[7];   // s40
-         CS(0,4) += normFactor(4,1)*ds[8];
-         CS(1,4) += normFactor(4,2)*ds[9];
+         cs(0,4) += normFactor(4,1)*ds[8];
+         cs(1,4) += normFactor(4,2)*ds[9];
 
       }
       
-      // correct ocean tide
+         // correct ocean tide
       if(oceanFlag)
       {
-         // C20 C21 C22 C30 C31 C32 C33 C40 C41 C42 C43 C44
+            // C20 C21 C22 C30 C31 C32 C33 C40 C41 C42 C43 C44
          double dc[12] = {0.0};
          double ds[12] = {0.0};
          oceanTide.getOceanTide(t.mjdUTC(),dc,ds);
          
-         // c
-         CS(2,0) += normFactor(2,0)*dc[0];
-         CS(2,1) += normFactor(2,1)*dc[1];
-         CS(2,2) += normFactor(2,2)*dc[2];
-         CS(3,0) += normFactor(3,0)*dc[3];
-         CS(3,1) += normFactor(3,1)*dc[4];
-         CS(3,2) += normFactor(3,2)*dc[5];
-         CS(3,3) += normFactor(3,3)*dc[6];
-         CS(4,0) += normFactor(4,0)*dc[7];
-         CS(4,1) += normFactor(4,1)*dc[8];
-         CS(4,2) += normFactor(4,2)*dc[9];
-         CS(4,3) += normFactor(4,3)*dc[10];
-         CS(4,4) += normFactor(4,4)*dc[11];
+            // c
+         cs(2,0) += normFactor(2,0)*dc[0];
+         cs(2,1) += normFactor(2,1)*dc[1];
+         cs(2,2) += normFactor(2,2)*dc[2];
+         cs(3,0) += normFactor(3,0)*dc[3];
+         cs(3,1) += normFactor(3,1)*dc[4];
+         cs(3,2) += normFactor(3,2)*dc[5];
+         cs(3,3) += normFactor(3,3)*dc[6];
+         cs(4,0) += normFactor(4,0)*dc[7];
+         cs(4,1) += normFactor(4,1)*dc[8];
+         cs(4,2) += normFactor(4,2)*dc[9];
+         cs(4,3) += normFactor(4,3)*dc[10];
+         cs(4,4) += normFactor(4,4)*dc[11];
 
 
-         /// s
+            /// s
          Sn0(2)  += normFactor(2,0)*ds[0];   // s20
-         CS(0,2) += normFactor(2,1)*ds[1];
-         CS(1,2) += normFactor(2,2)*ds[2];
+         cs(0,2) += normFactor(2,1)*ds[1];
+         cs(1,2) += normFactor(2,2)*ds[2];
          Sn0(3)  += normFactor(3,0)*ds[3];   // s30
-         CS(0,3) += normFactor(3,1)*ds[4];
-         CS(1,3) += normFactor(3,2)*ds[5];
-         CS(2,3) += normFactor(3,3)*ds[6];
+         cs(0,3) += normFactor(3,1)*ds[4];
+         cs(1,3) += normFactor(3,2)*ds[5];
+         cs(2,3) += normFactor(3,3)*ds[6];
          Sn0(4)  += normFactor(4,0)*ds[7];   // s40
-         CS(1,4) += normFactor(4,1)*ds[8];
-         CS(2,4) += normFactor(4,2)*ds[9];
-         CS(3,4) += normFactor(4,1)*ds[10];
-         CS(4,4) += normFactor(4,2)*ds[11];
+         cs(1,4) += normFactor(4,1)*ds[8];
+         cs(2,4) += normFactor(4,2)*ds[9];
+         cs(3,4) += normFactor(4,1)*ds[10];
+         cs(4,4) += normFactor(4,2)*ds[11];
 
       }
       
-      // correct pole tide
+         // correct pole tide
       if(poleFlag)
       {
          double dC21=0.0;
          double dS21=0.0;
          poleTide.getPoleTide(t.mjdUTC(),dC21,dS21);
 
-         CS(2,1) += normFactor(2,1)*dC21;
-         CS(0,2) += normFactor(2,1)*dS21;
+         cs(2,1) += normFactor(2,1)*dC21;
+         cs(0,2) += normFactor(2,1)*dS21;
       }
 
    }  // End of method 'SphericalHarmonicGravity::correctCSTides()'
@@ -469,7 +471,7 @@ namespace gpstk
 
    double SphericalHarmonicGravity::normFactor(int n, int m) 
    {
-      // The input should be n >= m >= 0
+         // The input should be n >= m >= 0
 
       double fac(1.0);
       for(int i = (n-m+1); i <= (n+m); i++)
@@ -481,8 +483,8 @@ namespace gpstk
 
       double num = (2.0 * n + 1.0) * (2.0 - delta);
 
-      // We should make sure fac!=0, but it won't happen on the case,
-      // so we just skip handling it
+         // We should make sure fac!=0, but it won't happen on the case,
+         // so we just skip handling it
       double out = std::sqrt(num/fac);                  
       
       return out;
@@ -503,13 +505,13 @@ namespace gpstk
 
       computeVW(r, E);         // update VM
 
-      // a
+         // a
       Vector<double> a = gravity(r, E);
 
       Matrix<double> da_dr = gravityGradient(r, E);
 
-      cout<<setprecision(12)<<a<<endl;
-      cout<<da_dr<<endl;
+      std::cout << std::setprecision(12) << a << std::endl;
+      std::cout << da_dr << std::endl;
 
    }  // End of method 'SphericalHarmonicGravity::test()'
 

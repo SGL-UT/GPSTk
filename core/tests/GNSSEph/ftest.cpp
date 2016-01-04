@@ -1,4 +1,4 @@
-//============================================================================
+   //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -15,7 +15,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -23,13 +23,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -45,23 +45,25 @@
 
 int main (int argc, char* argv[])
 {
-        
-	// informs test-listener about testresults
-	CPPUNIT_NS :: TestResult testresult;
 
-	// register listener for collecting the test-results
-	CPPUNIT_NS :: TestResultCollector collectedresults;
-	testresult.addListener (&collectedresults);
+      // informs test-listener about testresults
+   CPPUNIT_NS :: TestResult testresult;
 
-	// insert test-suite at test-runner by registry
-	CPPUNIT_NS :: TestRunner testrunner;
-	testrunner.addTest (CPPUNIT_NS :: TestFactoryRegistry :: getRegistry ().makeTest ());
-	testrunner.run (testresult);
+      // register listener for collecting the test-results
+   CPPUNIT_NS :: TestResultCollector collectedresults;
+   testresult.addListener (&collectedresults);
 
-	// output results in compiler-format
-	CPPUNIT_NS :: CompilerOutputter compileroutputter (&collectedresults, std::cerr);
-	compileroutputter.write ();
+      // insert test-suite at test-runner by registry
+   CPPUNIT_NS :: TestRunner testrunner;
+   testrunner.addTest (CPPUNIT_NS :: TestFactoryRegistry ::
+                       getRegistry ().makeTest ());
+   testrunner.run (testresult);
 
-	// return 0 if tests were successful
-	return collectedresults.wasSuccessful () ? 0 : 1;
+      // output results in compiler-format
+   CPPUNIT_NS :: CompilerOutputter compileroutputter (&collectedresults,
+         std::cerr);
+   compileroutputter.write ();
+
+      // return 0 if tests were successful
+   return collectedresults.wasSuccessful () ? 0 : 1;
 }

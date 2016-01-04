@@ -666,25 +666,28 @@ namespace gpstk
          // Julian centuries since J2000
       tt=(MJD(t).mjd-51544.5)/36525.0;
 
+         // lower-case because 1) upper case is ugly and 2) name
+         // collisions with macros.
+
          // Fricke equinox correction
-      double EPJ(2000.0+tt*100.0);
-      double EQCOR(DS2R*(0.035+0.00085*(EPJ-B1950)));
+      double epj(2000.0+tt*100.0);
+      double eqcor(DS2R*(0.035+0.00085*(epj-B1950)));
 
          // Mean obliquity (IAU 1976)
-      double EPS(DAS2R*(84381.448 + (-46.8150 + 
+      double eps(DAS2R*(84381.448 + (-46.8150 + 
                         (-0.00059+0.001813*tt)*tt)*tt));
 
          // Change to equatorial system, mean of date, FK5 system
-      double SINEPS(std::sin(EPS));
-      double COSEPS(std::cos(EPS));
-      double ES(EQCOR*SINEPS);
-      double EC(EQCOR*COSEPS);
+      double sineps(std::sin(eps));
+      double coseps(std::cos(eps));
+      double es(eqcor*sineps);
+      double ec(eqcor*coseps);
 
       Triple res;
 
-      res.theArray[0] = (X-EC*Y+ES*Z)*AU_CONST;
-      res.theArray[1] = (EQCOR*X+Y*COSEPS-Z*SINEPS)*AU_CONST;
-      res.theArray[2] = (Y*SINEPS+Z*COSEPS)*AU_CONST;
+      res.theArray[0] = (X-ec*Y+es*Z)*AU_CONST;
+      res.theArray[1] = (eqcor*X+Y*coseps-Z*sineps)*AU_CONST;
+      res.theArray[2] = (Y*sineps+Z*coseps)*AU_CONST;
 
 
       return res;

@@ -84,8 +84,7 @@ namespace gpstk
       template<class T> std::ostream& operator<<(std::ostream& ostr,
          const std::set<T>& x)
       {
-         using namespace std;
-         for (typename set<T>::const_iterator i = x.begin(); i!=x.end(); i++)
+         for (typename std::set<T>::const_iterator i = x.begin(); i!=x.end(); i++)
             ostr << *i << " ";
          return ostr;
          // return copy(x.begin(), x.end(), std::ostream_iterator<T>(ostr));
@@ -94,8 +93,7 @@ namespace gpstk
       template<class T> std::ostream& operator<<(std::ostream& ostr,
          const std::vector<T>& x)
       {
-         using namespace std;
-         for (typename vector<T>::const_iterator i = x.begin(); i!=x.end(); i++)
+         for (typename std::vector<T>::const_iterator i = x.begin(); i!=x.end(); i++)
             ostr << *i << " ";
          return ostr;
          // return copy(x.begin(), x.end(), std::ostream_iterator<T>(ostr));
@@ -103,12 +101,11 @@ namespace gpstk
 
       template<class T> std::set<T> unique(const std::valarray<T> & rhs)
       {
-         using namespace std;
          size_t i;
 
-         valarray<T> newArray;
+         std::valarray<T> newArray;
 
-         set<T> newSet;
+         std::set<T> newSet;
 
          for (i=0; i<rhs.size(); i++)
          {

@@ -15,7 +15,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -23,13 +23,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -49,7 +49,10 @@ class BinexReadWrite_T
 public:
 
       // constructor
-   BinexReadWrite_T(int v = 0) : verboseLevel(v) { init(); };
+   BinexReadWrite_T(int v = 0) : verboseLevel(v)
+   {
+      init();
+   };
 
       // destructor
    virtual ~BinexReadWrite_T() {};
@@ -74,7 +77,7 @@ private:
       UbnxiType = 'U',
       MgfziType = 'M'
    };
-   
+
    struct TestData
    {
       TestDataType  dtype;
@@ -100,16 +103,16 @@ private:
    bool createRecs();
 
       /**
-       * 
+       *
        */
    void dumpBuffer(const unsigned char* buffer, size_t size);
 
    TestDataList  numList;
 
    TestDataListList  testData;
-  
-   RecordList  testRecords;   
-   
+
+   RecordList  testRecords;
+
 }; // class BinexReadWrite_T
 
 
@@ -120,14 +123,14 @@ private:
 void BinexReadWrite_T :: init( void )
 {
 
-    TestUtil  testUtil;
-    string  dataFilePath = testUtil.getDataPath();
+   TestUtil  testUtil;
+   string  dataFilePath = testUtil.getDataPath();
 
-    //---------------------------------------- 
-    // Full file paths
-    //---------------------------------------- 
-    string  inputFile = dataFilePath + gpstk::getFileSep()
-                      + "test_input_binex_readwrite.txt";
+      //----------------------------------------
+      // Full file paths
+      //----------------------------------------
+   string  inputFile = dataFilePath + gpstk::getFileSep()
+                       + "test_input_binex_readwrite.txt";
 
    if (verboseLevel > 0)
    {
@@ -152,11 +155,21 @@ bool BinexReadWrite_T :: charToType(char c, TestDataType& t)
 {
    switch (c)
    {
-      case CharType:   t = CharType;   break;
-      case ShortType:  t = ShortType;  break;
-      case LongType:   t = LongType;   break;
-      case UbnxiType:  t = UbnxiType;  break;
-      case MgfziType:  t = MgfziType;  break;
+      case CharType:
+         t = CharType;
+         break;
+      case ShortType:
+         t = ShortType;
+         break;
+      case LongType:
+         t = LongType;
+         break;
+      case UbnxiType:
+         t = UbnxiType;
+         break;
+      case MgfziType:
+         t = MgfziType;
+         break;
 
       default:
          return false;
@@ -172,7 +185,7 @@ bool BinexReadWrite_T :: readNums(const string& filename)
 
    if (!ifs.good())
       return false;
-   
+
    while (ifs.good())
    {
       string  line;
@@ -182,7 +195,7 @@ bool BinexReadWrite_T :: readNums(const string& filename)
       string::size_type  hashPos = line.find('#');
       if (hashPos != string::npos)
       {
-         line.erase(hashPos);         
+         line.erase(hashPos);
       }
          // ignore empty lines
       string::size_type  nonWhitePos = line.find_first_not_of(" \t");
@@ -220,7 +233,7 @@ bool BinexReadWrite_T :: createRecs()
       BinexData     record(1);
       TestDataList  recordData;
       size_t        offset = 0;
-      
+
          // create multiple records with 9 fields each
       short  dataNum = 0;
       for ( ; (dataNum < 9) && (tdIter != numList.end()); ++dataNum, ++tdIter)
@@ -232,31 +245,31 @@ bool BinexReadWrite_T :: createRecs()
                char  c = tdIter->value;
                record.updateMessageData(offset, c, sizeof(c) );
                break;
-            }   
+            }
             case ShortType:
             {
                short  s = tdIter->value;
                record.updateMessageData(offset, s, sizeof(s) );
                break;
-            }  
+            }
             case LongType:
             {
                long  l = tdIter->value;
                record.updateMessageData(offset, l, sizeof(l) );
                break;
-            }   
+            }
             case UbnxiType:
             {
                BinexData::UBNXI  u(tdIter->value);
                record.updateMessageData(offset, u);
                break;
-            }   
+            }
             case MgfziType:
             {
                BinexData::MGFZI  m(tdIter->value);
                record.updateMessageData(offset, m);
                break;
-            }   
+            }
             default:
                   // Internal error
                cout << "  Internal error during record creation" << std::endl;
@@ -264,7 +277,7 @@ bool BinexReadWrite_T :: createRecs()
          }
          recordData.push_back(*tdIter);
       }
-      testData.push_back(recordData);      
+      testData.push_back(recordData);
       testRecords.push_back(record);
    }
    return true;
@@ -304,11 +317,11 @@ int BinexReadWrite_T :: doForwardTests()
       }
    }
    outStream.close();
-   
+
    BinexStream  inStream(tempFileName.c_str(),
                          std::ios::in | std::ios::binary);
    inStream.exceptions(ios_base::failbit);
-   
+
    tester.assert( inStream.good(), "error creating input stream", __LINE__ );
 
    recordIter = testRecords.begin();
@@ -316,7 +329,8 @@ int BinexReadWrite_T :: doForwardTests()
    {
       if (recordIter == testRecords.end() )
       {
-         tester.assert( false, "stored records exhausted before file records", __LINE__ );
+         tester.assert( false, "stored records exhausted before file records",
+                        __LINE__ );
          break;
       }
       BinexData record;
@@ -349,11 +363,11 @@ int BinexReadWrite_T :: doForwardTests()
          tester.assert( false, "unknown exception reading record", __LINE__ );
       }
 
-      recordIter++;      
+      recordIter++;
    }
    inStream.close();
 
-   return tester.countFails();  
+   return tester.countFails();
 }
 
 
@@ -361,16 +375,16 @@ int BinexReadWrite_T :: doReverseTests()
 {
    TestUtil  tester( "BinexData", "Read/Write (Rev)", __FILE__, __LINE__ );
 
-   // @todo
+      // @todo
 
    return tester.countFails();
 }
 
 
-/** Run the program.
- *
- * @return Total error count for all tests
- */
+   /** Run the program.
+    *
+    * @return Total error count for all tests
+    */
 int main(int argc, char *argv[])
 {
    int  errorTotal = 0;
@@ -379,8 +393,8 @@ int main(int argc, char *argv[])
 
    errorTotal += testClass.doForwardTests();
 
-   //errorTotal += testClass.doReverseTests();
+      //errorTotal += testClass.doReverseTests();
 
    return( errorTotal );
-   
+
 } // main()

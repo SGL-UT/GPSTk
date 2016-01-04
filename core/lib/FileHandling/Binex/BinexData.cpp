@@ -1516,11 +1516,8 @@ namespace gpstk
          } // Regular CRC
 
             // Copy the CRC into the output
-         if (!nativeLittleEndian)
-         {
-            BinUtils::twiddle(crcTmp);
-         }
-         crc.assign( (const char*)&crcTmp, crcLen);
+         crc.resize(sizeof(crcTmp));
+         BinUtils::encodeVarLE(crcTmp, crc);
 
       } // (crcLen < 1048576)
 

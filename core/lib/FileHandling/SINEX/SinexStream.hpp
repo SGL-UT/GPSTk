@@ -1,12 +1,10 @@
-#pragma ident "$Id: //depot/msn/main/code/shared/gpstk/SinexStream.hpp#3 $"
-
 /**
  * @file SinexStream.hpp
  * File stream for Sinex format files
  */
 
-#ifndef GPSTK_SINEXSTREAM_HPP
-#define GPSTK_SINEXSTREAM_HPP
+#ifndef SINEXSTREAM_HPP
+#define SINEXSTREAM_HPP
 
 //lgpl-license START
 //lgpl-license END
@@ -18,33 +16,35 @@
 
 namespace gpstk
 {
-namespace Sinex
-{
-      /**
-       * This class provides access to Sinex files.
-       *
-       * @sa gpstk::SinexHeader and gpstk::SinexData for more information.
-       * @sa sinex_test.cpp for an example.
-       */
-   class Stream : public FFTextStream
+   namespace Sinex
    {
-   public:
-      Stream() {};
-
-         /** Constructor
-          * Opens file \a fn using ios::openmode \a mode.
-          */
-      Stream(const char* fn, std::ios::openmode mode=std::ios::in)
-            : FFTextStream(fn, mode) {};
-
          /**
-          * Destructor
+          * This class provides access to Sinex files.
+          *
+          * @sa gpstk::SinexHeader and gpstk::SinexData for more information.
+          * @sa sinex_test.cpp for an example.
           */
-      virtual ~Stream() {};
+      class Stream : public FFTextStream
+      {
+      public:
+         Stream()
+         {}
 
-   };
+            /** Constructor
+             * Opens file \a fn using ios::openmode \a mode.
+             */
+         Stream(const char* fn, std::ios::openmode mode=std::ios::in)
+               : FFTextStream(fn, mode)
+         {}
 
-}  // namespace Sinex
+            /**
+             * Destructor
+             */
+         virtual ~Stream()
+         {}
+      };
+
+   }  // namespace Sinex
 
 }  // namespace gpstk
 

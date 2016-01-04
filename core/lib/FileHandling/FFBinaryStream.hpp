@@ -43,11 +43,12 @@
 #define GPSTK_FFBINARYSTREAM_HPP
 
 #include "FFStream.hpp"
+#include "BinUtils.hpp"
 
 namespace gpstk
 {
-   /** @defgroup formattedfile Formatted file I/O */
-   //@{
+      /// @ingroup formattedfile
+      //@{
  
       /**
        * This is an FFStream that is required to be binary.  It also includes
@@ -57,109 +58,222 @@ namespace gpstk
    class FFBinaryStream : public FFStream
    {
    public:
-         /// destructor
-      virtual ~FFBinaryStream() {};
-      
          /// Default constructor
-      FFBinaryStream() {}
+      FFBinaryStream();
 
+         /// destructor
+      virtual ~FFBinaryStream();
+      
          /**
           * Constructor - opens the stream in binary mode if not set.
-          * @param fn file name.
-          * @param mode file open mode (std::ios)
+          * @param[in] fn file name.
+          * @param[in] mode file open mode
           */
       FFBinaryStream(const char* fn, 
-                     std::ios::openmode mode=std::ios::in|std::ios::binary)
-         : FFStream(fn, mode|std::ios::binary) {}
+                     std::ios::openmode mode=std::ios::in|std::ios::binary);
 
          /// Overrides open to ensure binary mode opens
-      virtual void open(const char* fn, std::ios::openmode mode)
-         { FFStream::open(fn, mode|std::ios::binary); }
+      virtual void open(const char* fn, std::ios::openmode mode);
 
          /**
-          * Reads a T-object directly from the stream
-          * in binary form.
+          * Reads typed data directly from the stream in binary form.
           * @throw FFStreamError when the size of the data read
-          * from this stream doesn't match the size of a T-object.
-          * @return a T-object
+          *   from this stream doesn't match the size of a T-object.
+          * @return the decoded data
           */
-      template <class T> T getData() throw(FFStreamError, EndOfFile)
-      {
-         T data;
-         getData((char*)&data, sizeof(T));
-         return data;
-      } // end of getData(FFStream& strm)
+      inline void getData(uint8_t& v) throw(FFStreamError, EndOfFile);
+      inline void getData(uint16_t& v) throw(FFStreamError, EndOfFile);
+      inline void getData(uint32_t& v) throw(FFStreamError, EndOfFile);
+      inline void getData(uint64_t& v) throw(FFStreamError, EndOfFile);
+      inline void getData(int8_t& v) throw(FFStreamError, EndOfFile);
+      inline void getData(int16_t& v) throw(FFStreamError, EndOfFile);
+      inline void getData(int32_t& v) throw(FFStreamError, EndOfFile);
+      inline void getData(int64_t& v) throw(FFStreamError, EndOfFile);
+      inline void getData(float& v) throw(FFStreamError, EndOfFile);
+      inline void getData(double& v) throw(FFStreamError, EndOfFile);
 
-      void getData(char* buff, size_t length) throw(FFStreamError, EndOfFile)
-      {
-         try
-         {
-            read(buff, length);
-         }
-         catch(std::exception& exc)
-         {
-            if (gcount() != (std::streamsize)length && eof())
-            {
-               EndOfFile err("EOF encountered");
-               GPSTK_THROW(err);
-            }
-            else
-            {
-               FFStreamError err(exc.what());
-               std::cout << err << std::endl;
-               GPSTK_THROW(err);
-            }
-         }
-         catch(...)
-         {
-            FFStreamError err("Unknown exception");
-            GPSTK_THROW(err);
-         }
-      } // end of getData(char*, size_t))
+         /** Read raw data into a buffer.
+          * @param[out] buff the buffer to store the stream data
+          *   into. Must be pre-allocated to at least length bytes.
+          * @param[in] length the number of bytes to read from the stream. */
+      void getData(char* buff, size_t length)
+         throw(FFStreamError, EndOfFile);
 
          /**
-          * Writes a T-object directly from the stream
-          * in binary form.
-          * @param data the data to be written.
+          * Writes a T-object directly from the stream in binary form.
+          * @param[in] data the data to be written.
           * @throw FFStreamError when the size of the data written
-          * to this stream doesn't match the size of a T-object.
+          *   to this stream doesn't match the size of a T-object.
           * @return a T-object
           */
-      template <class T> void writeData(const T& data)
-         throw(FFStreamError)
-      {
-         //T temp = data;
-          writeData((char*)&data, sizeof(T));
-         return;
-      } // end of writeData(FFStream& strm, const T& data)
+      inline void writeData(uint8_t v) throw(FFStreamError);
+      inline void writeData(uint16_t v) throw(FFStreamError);
+      inline void writeData(uint32_t v) throw(FFStreamError);
+      inline void writeData(uint64_t v) throw(FFStreamError);
+      inline void writeData(int8_t v) throw(FFStreamError);
+      inline void writeData(int16_t v) throw(FFStreamError);
+      inline void writeData(int32_t v) throw(FFStreamError);
+      inline void writeData(int64_t v) throw(FFStreamError);
+      inline void writeData(float v) throw(FFStreamError);
+      inline void writeData(double v) throw(FFStreamError);
 
       void writeData(const char* buff, size_t length)
-         throw(FFStreamError)
-      {
-         try
-         {
-            write(buff, length);
-         }
-         catch(std::exception& exc)
-         {
-            FFStreamError err(exc.what());
-            GPSTK_THROW(err);
-         }
-         catch(...)
-         {
-            FFStreamError err("Unknown exception");
-            GPSTK_THROW(err);
-         }
-      
-         if (fail() || bad())
-         {
-            FFStreamError err("Error writing data");
-            GPSTK_THROW(err);
-         }
-         return;
-      } // end of writeData(const char*, size_t)
+         throw(FFStreamError);
+
+         /** Child classes must defined this method to determine how
+          * decodeData and encodeData behave with respect to byte
+          * ordering. This defines the byte ordering of the file
+          * format. */
+      virtual bool isStreamLittleEndian() const throw() = 0;
 
    };
-   //@}
+      //@}
+
+
+// Macro because all the getData functions are basically the same.
+// Use a character buffer because typed data can have bad side effects
+// causing data corruption.
+#define FFBIN_GET_DATA(ITOH_FN,NTOH_FN)         \
+   char buf[sizeof(v)];                         \
+   getData(buf, sizeof(v));                     \
+   if (isStreamLittleEndian())                  \
+      BinUtils::ITOH_FN(buf, v);                \
+   else                                         \
+      BinUtils::NTOH_FN(buf, v);
+
+#define FFBIN_WRITE_DATA(HTOI_FN,HTON_FN)       \
+   char buf[sizeof(v)];                         \
+   if (isStreamLittleEndian())                  \
+      BinUtils::HTOI_FN(buf, v);                \
+   else                                         \
+      BinUtils::HTON_FN(buf, v);                \
+   writeData(buf, sizeof(v));
+
+
+   inline void FFBinaryStream :: getData(uint8_t& v)
+      throw(FFStreamError, EndOfFile)
+   {
+      char *buf = reinterpret_cast<char*>(&v);
+      getData(buf, sizeof(v));
+   }
+
+   inline void FFBinaryStream :: getData(uint16_t& v)
+      throw(FFStreamError, EndOfFile)
+   {
+      FFBIN_GET_DATA(itohs,ntohs);
+   }
+
+   inline void FFBinaryStream :: getData(uint32_t& v)
+      throw(FFStreamError, EndOfFile)
+   {
+      FFBIN_GET_DATA(itohl,ntohl);
+   }
+
+   inline void FFBinaryStream :: getData(uint64_t& v)
+      throw(FFStreamError, EndOfFile)
+   {
+      FFBIN_GET_DATA(itohll,ntohll);
+   }
+
+   inline void FFBinaryStream :: getData(int8_t& v)
+      throw(FFStreamError, EndOfFile)
+   {
+      char *buf = reinterpret_cast<char*>(&v);
+      getData(buf, sizeof(v));
+   }
+
+   inline void FFBinaryStream :: getData(int16_t& v)
+      throw(FFStreamError, EndOfFile)
+   {
+      FFBIN_GET_DATA(itohss,ntohss);
+   }
+
+   inline void FFBinaryStream :: getData(int32_t& v)
+      throw(FFStreamError, EndOfFile)
+   {
+      FFBIN_GET_DATA(itohsl,ntohsl);
+   }
+
+   inline void FFBinaryStream :: getData(int64_t& v)
+      throw(FFStreamError, EndOfFile)
+   {
+      FFBIN_GET_DATA(itohsll,ntohsll);
+   }
+
+   inline void FFBinaryStream :: getData(float& v)
+      throw(FFStreamError, EndOfFile)
+   {
+      FFBIN_GET_DATA(itohf,ntohf);
+   }
+
+   inline void FFBinaryStream :: getData(double& v)
+      throw(FFStreamError, EndOfFile)
+   {
+      FFBIN_GET_DATA(itohd,ntohd);
+   }
+
+
+   inline void FFBinaryStream :: writeData(uint8_t v)
+      throw(FFStreamError)
+   {
+      char *buf = reinterpret_cast<char*>(&v);
+      writeData(buf, sizeof(v));
+   }
+
+   inline void FFBinaryStream :: writeData(uint16_t v)
+      throw(FFStreamError)
+   {
+      FFBIN_WRITE_DATA(htois,htons);
+   }
+
+   inline void FFBinaryStream :: writeData(uint32_t v)
+      throw(FFStreamError)
+   {
+      FFBIN_WRITE_DATA(htoil,htonl);
+   }
+
+   inline void FFBinaryStream :: writeData(uint64_t v)
+      throw(FFStreamError)
+   {
+      FFBIN_WRITE_DATA(htoill,htonll);
+   }
+
+   inline void FFBinaryStream :: writeData(int8_t v)
+      throw(FFStreamError)
+   {
+      char *buf = reinterpret_cast<char*>(&v);
+      writeData(buf, sizeof(v));
+   }
+
+   inline void FFBinaryStream :: writeData(int16_t v)
+      throw(FFStreamError)
+   {
+      FFBIN_WRITE_DATA(htoiss,htonss);
+   }
+
+   inline void FFBinaryStream :: writeData(int32_t v)
+      throw(FFStreamError)
+   {
+      FFBIN_WRITE_DATA(htoisl,htonsl);
+   }
+
+   inline void FFBinaryStream :: writeData(int64_t v)
+      throw(FFStreamError)
+   {
+      FFBIN_WRITE_DATA(htoisll,htonsll);
+   }
+
+   inline void FFBinaryStream :: writeData(float v)
+      throw(FFStreamError)
+   {
+      FFBIN_WRITE_DATA(htoif,htonf);
+   }
+
+   inline void FFBinaryStream :: writeData(double v)
+      throw(FFStreamError)
+   {
+      FFBIN_WRITE_DATA(htoid,htond);
+   }
+
 }
 #endif

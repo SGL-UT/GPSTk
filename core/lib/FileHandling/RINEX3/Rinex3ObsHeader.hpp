@@ -74,6 +74,7 @@
  * | PGM / RUN BY / DATE  | req | req | RunBy             | fileProgram       |
  * |                    ^ |   ^ |   ^ |                 ^ | fileAgency        |
  * |                    ^ |   ^ |   ^ |                 ^ | date              |
+ * |                    ^ |   ^ |   ^ |                 ^ | preserveDate      |
  * | COMMENT              | opt | opt | Comment           | commentList       |
  * | MARKER NAME          | req | req | MarkerName        | markerName        |
  * | MARKER NUMBER        | opt | opt | MarkerNumber      | markerNumber      |

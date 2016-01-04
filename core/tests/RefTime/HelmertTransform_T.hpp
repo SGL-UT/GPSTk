@@ -46,7 +46,6 @@
 #include "Triple.hpp"
 #include "Vector.hpp"
 
-using namespace std;
 
 class HelmertTransform_T : public CPPUNIT_NS :: TestFixture
 {

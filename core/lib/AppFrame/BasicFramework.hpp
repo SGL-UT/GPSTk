@@ -96,6 +96,9 @@ namespace gpstk
           * command-line options.  Not guaranteed to be unique to this
           * condition. */
       static const int OPTION_ERROR = 2;
+         /** Exit code used when an input file does not exist or is
+          * not accessible. */
+      static const int EXIST_ERROR = 2;
 
          /** Constructor for BasicFramework.
           *

@@ -12,9 +12,6 @@
 //     get methods defined in the gpstk namespace.
 //------------------------------------------------------------
 
-#define BUILD_PROJECT_SOURCE_DIR "@PROJECT_SOURCE_DIR@"
-#define BUILD_PROJECT_BINARY_DIR "@PROJECT_BINARY_DIR@"
-
 #include <string>
 
 namespace gpstk
