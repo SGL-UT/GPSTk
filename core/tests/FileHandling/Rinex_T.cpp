@@ -63,9 +63,9 @@ private:
    RinexNavData rnd;
 
    static const short weeknum;
-   static const long  subframe1[10];
-   static const long  subframe2[10];
-   static const long  subframe3[10];
+   static const uint32_t  subframe1[10];
+   static const uint32_t  subframe2[10];
+   static const uint32_t  subframe3[10];
 };
 
 //------------------------------------------------------------
@@ -76,15 +76,15 @@ private:
 const short Rinex_T::weeknum   = 1638;
 
 // Test data from 06/02/2011
-const long Rinex_T::subframe1[10] = { 0x22C2663D, 0x1F0E29B8, 0x2664002B, 0x09FCC1B6, 0x0F60EB8A,
-                                      0x1299CE93, 0x29CD3DB6, 0x0597BB0F, 0x00000B68, 0x17B28E5C
-                                    };
-const long Rinex_T::subframe2[10] = { 0x22C2663D, 0x1F0E4A28, 0x05809675, 0x0EBD8AF1, 0x00089344,
-                                      0x008081F8, 0x1330CC2C, 0x0461E855, 0x034F8045, 0x17BB1E68
-                                    };
-const long Rinex_T::subframe3[10] = { 0x22C2663D, 0x1F0E6BA0, 0x3FE129CD, 0x26E31837, 0x0006C96A,
-                                      0x35A74DFC, 0x065C8B0F, 0x1E4F400A, 0x3FE8966D, 0x05860C44
-                                    };
+const uint32_t Rinex_T::subframe1[10] =
+{ 0x22C2663D, 0x1F0E29B8, 0x2664002B, 0x09FCC1B6, 0x0F60EB8A,
+  0x1299CE93, 0x29CD3DB6, 0x0597BB0F, 0x00000B68, 0x17B28E5C };
+const uint32_t Rinex_T::subframe2[10] =
+{ 0x22C2663D, 0x1F0E4A28, 0x05809675, 0x0EBD8AF1, 0x00089344,
+  0x008081F8, 0x1330CC2C, 0x0461E855, 0x034F8045, 0x17BB1E68 };
+const uint32_t Rinex_T::subframe3[10] =
+{ 0x22C2663D, 0x1F0E6BA0, 0x3FE129CD, 0x26E31837, 0x0006C96A,
+  0x35A74DFC, 0x065C8B0F, 0x1E4F400A, 0x3FE8966D, 0x05860C44 };
 
 //------------------------------------------------------------
 // Rinext_T::init()

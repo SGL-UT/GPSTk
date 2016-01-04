@@ -96,12 +96,12 @@ namespace gpstk
    *  time (not the epoch times).
    */
 
-   bool EngEphemeris::addSubframe(const long subframe[10], const int gpsWeek,
+   bool EngEphemeris::addSubframe(const uint32_t subframe[10], const int gpsWeek,
                                   const short PRN, const short track)
       throw( InvalidParameter )
    {
          // Determine the subframe number
-      unsigned long SFword2 = (unsigned long) subframe[1];
+      uint32_t SFword2 = (uint32_t) subframe[1];
       SFword2 &= 0x00000700;      // Strip all but three bit subframe ID
       SFword2 >>= 8;              // Right shift to move to lsbs;
       short sfID = static_cast<short>( SFword2 );
@@ -130,13 +130,13 @@ namespace gpstk
       return(result);
    }
 
-   bool EngEphemeris::addSubframeNoParity(const long subframe[10],
+   bool EngEphemeris::addSubframeNoParity(const uint32_t subframe[10],
                                           const int  gpsWeek,
                                           const short PRN,
                                           const short track)
       throw( InvalidParameter )
    {
-      long paddedSF[10];
+      uint32_t paddedSF[10];
       short PRNArg;
       short trackArg;
 
@@ -152,7 +152,7 @@ namespace gpstk
    }
 
    bool EngEphemeris::addIncompleteSF1Thru3(
-      const long sf1[8], const long sf2[8], const long sf3[8],
+      const uint32_t sf1[8], const uint32_t sf2[8], const uint32_t sf3[8],
       const long sf1TransmitSOW, const int gpsWeek,
       const short PRN, const short track)
    {
@@ -160,9 +160,9 @@ namespace gpstk
          // While we're at it, we'll fake the A-S bit such that it
          // appears A-S is ON, even though we warn the user NOT to trust
          // returns from the getASAlert() method.
-      const long sf1Lead[2] = { 0x00000000, 0x00000900 };
-      const long sf2Lead[2] = { 0x00000000, 0x00000A00 };
-      const long sf3Lead[2] = { 0x00000000, 0x00000B00 };
+      const uint32_t sf1Lead[2] = { 0x00000000, 0x00000900 };
+      const uint32_t sf2Lead[2] = { 0x00000000, 0x00000A00 };
+      const uint32_t sf3Lead[2] = { 0x00000000, 0x00000B00 };
 
          // Handover word times represent the time of the leading edge of the
          // NEXvt subframe.  Therefore, HOW should always correspond to

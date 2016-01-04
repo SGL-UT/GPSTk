@@ -73,6 +73,15 @@ namespace gpstk
       BinexStream(const char* fn,
                   std::ios::openmode mode=std::ios::in | std::ios::binary)
             : FFBinaryStream(fn, mode) {};
+
+   protected:
+         /** @warning This is used by FFBinaryStream's getData and
+          * writeData methods to determine how to write binary encoded
+          * data.  BINEX can be either big-endian or little-endian so
+          * this isn't really useful.  As such, DO NOT USE writeData
+          * or getData in the implementation of BinexData. */
+      virtual bool isStreamLittleEndian() const throw()
+      { return true; }
    };
 
       //@}

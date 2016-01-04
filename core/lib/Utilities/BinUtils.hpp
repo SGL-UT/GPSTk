@@ -69,6 +69,8 @@
 #endif
 #endif
 
+/** @defgroup binutilsgroup Binary Data Manipulation Tools */
+
 namespace gpstk
 {
       /**
@@ -79,97 +81,62 @@ namespace gpstk
        */
    namespace BinUtils
    {
-         /** @defgroup binutilsgroup Binary Data Manipulation Tools */
+         /// @addtogroup binutilsgroup
          //@{
 
          /**
-          * Reverse bytes.
-          * This function will reverse the bytes in any type, though it
-          * is typically meant to be used in atomic types like int and
-          * double.
-          * @param p object whose bytes are to be reversed.
-          */
-      template <class T>
-      inline void twiddle(T& p)
-         throw()
-      {
-         unsigned char *front = (unsigned char*)&p;
-         unsigned char *end = front + sizeof(p) - 1;
-         unsigned char temp;
-
-         while (front<end)
-         {
-            temp = *front;
-            *front = *end;
-            *end = temp;
-            front++;
-            end--;
-         }
-      }
-
-         /**
           * Converts Intel little-endian to host byte order, const version.
-          * @param p the object whose bytes are to be modified.
-          * @return a new object which is in Intel byte ordering.
+          * @param[in] p a pointer to the buffer containing the
+          *   little-endian value of type T.
+          * @param[out] v the typed value in host byte order.
+          * @param[in] pos an optional offset (bytes) into p to decode from.
+          * @throw AssertionFailure if sizeof(T) is not even.
           */
-      template <class T>
-      inline T intelToHost(const T& p)
-         throw()
-      {
-         T temp(p);
-#if BYTE_ORDER == BIG_ENDIAN
-         twiddle(temp);
-#endif
-         return temp;
-      }
 
-         /** 
-          * Converts host byte order to Intel little-endian, const version
-          * @param p the object whose bytes are to be modified
-          * @return a new object which is in host byte ordering.
-          */
-      template <class T>
-      inline T hostToIntel(const T& p)
-         throw()
-      {
-         T temp(p);
-#if BYTE_ORDER == BIG_ENDIAN
-         twiddle(temp);
-#endif
-         return temp;
-      }      
+         // going to host should have the buffer being the source and
+         // the typed value being the target.
+
+         // Why so damn many functions when we used to use templates?
+         // Because of optimization, mostly.
+
+      inline void itohs  (const void* p, uint16_t& v, unsigned pos = 0);
+      inline void itohl  (const void* p, uint32_t& v, unsigned pos = 0);
+      inline void itohll (const void* p, uint64_t& v, unsigned pos = 0);
+      inline void itohss (const void* p, int16_t& v,  unsigned pos = 0);
+      inline void itohsl (const void* p, int32_t& v,  unsigned pos = 0);
+      inline void itohsll(const void* p, int64_t& v,  unsigned pos = 0);
+      inline void itohf  (const void* p, float& v,    unsigned pos = 0);
+      inline void itohd  (const void* p, double& v,   unsigned pos = 0);
       
-         /**
-          * Converts host byte order to network order, const version.
-          * @param p the object whose bytes are to be modified.
-          * @return a new object which is in network byte order.
-          */
-      template <class T>
-      inline T netToHost(const T& p)
-         throw()
-      {
-         T temp(p);
-#if BYTE_ORDER == LITTLE_ENDIAN
-         twiddle(temp);
-#endif
-         return temp;
-      }
+      inline void ntohs  (const void* p, uint16_t& v, unsigned pos = 0);
+      inline void ntohl  (const void* p, uint32_t& v, unsigned pos = 0);
+      inline void ntohll (const void* p, uint64_t& v, unsigned pos = 0);
+      inline void ntohss (const void* p, int16_t& v,  unsigned pos = 0);
+      inline void ntohsl (const void* p, int32_t& v,  unsigned pos = 0);
+      inline void ntohsll(const void* p, int64_t& v,  unsigned pos = 0);
+      inline void ntohf  (const void* p, float& v,    unsigned pos = 0);
+      inline void ntohd  (const void* p, double& v,   unsigned pos = 0);
 
-         /**
-          * Converts network byte order to host order, const version.
-          * @param p the object whose bytes are to be modified.
-          * @return a new object which is in host byte order.
-          */
-      template <class T>
-      inline T hostToNet(const T& p)
-         throw()
-      {
-         T temp(p);
-#if BYTE_ORDER == LITTLE_ENDIAN
-         twiddle(temp);
-#endif
-         return temp;
-      }
+         // going FROM host should have the buffer being the target and
+         // the typed value being the source.
+
+      inline void htois  (void* p, uint16_t v,  unsigned pos = 0);
+      inline void htoil  (void* p, uint32_t v,  unsigned pos = 0);
+      inline void htoill (void* p, uint64_t v,  unsigned pos = 0);
+      inline void htoiss (void* p, int16_t v,   unsigned pos = 0);
+      inline void htoisl (void* p, int32_t v,   unsigned pos = 0);
+      inline void htoisll(void* p, int64_t v,   unsigned pos = 0);
+      inline void htoif  (void* p, float v,     unsigned pos = 0);
+      inline void htoid  (void* p, double v,    unsigned pos = 0);
+      
+      inline void htons  (void* p, uint16_t v,  unsigned pos = 0);
+      inline void htonl  (void* p, uint32_t v,  unsigned pos = 0);
+      inline void htonll (void* p, uint64_t v,  unsigned pos = 0);
+      inline void htonss (void* p, int16_t v,   unsigned pos = 0);
+      inline void htonsl (void* p, int32_t v,   unsigned pos = 0);
+      inline void htonsll(void* p, int64_t v,   unsigned pos = 0);
+      inline void htonf  (void* p, float v,     unsigned pos = 0);
+      inline void htond  (void* p, double v,    unsigned pos = 0);
 
          /**
           * Decode the item specified from the string and convert it
@@ -180,18 +147,18 @@ namespace gpstk
           */
       template <class T>
       inline T decodeVar( const std::string& str,
-                          std::string::size_type pos )
-      {
-         T rv;
-#if BYTE_ORDER == LITTLE_ENDIAN
-         std::string scopy(str, pos, sizeof(T));
-         std::reverse(scopy.begin(), scopy.end());
-         std::memcpy(&rv, scopy.c_str(), sizeof(T));
-#else
-         std::memcpy(&rv, &str[pos], sizeof(T));
-#endif
-         return rv;
-      }
+                          std::string::size_type pos );
+
+         /**
+          * Decode the item specified from the string and convert it
+          * from little-endian byte order to host byte order.
+          * @param str the string from which to obtain data.
+          * @param pos offset into the string from which to pull the data.
+          * @warn This function does not check for appropriate string length.
+          */
+      template <class T>
+      inline T decodeVarLE( const std::string& str,
+                            std::string::size_type pos );
 
          /**
           * Decode and remove the item specified from the head of the string
@@ -200,12 +167,16 @@ namespace gpstk
           * @warn This function does not check for appropriate string length.
           */
       template <class T>
-      inline T decodeVar( std::string& str )
-      {
-         T t = gpstk::BinUtils::decodeVar<T>(str, 0);
-         str.erase( 0, sizeof(T) );
-         return t;
-      }
+      inline T decodeVar( std::string& str );
+
+         /**
+          * Decode and remove the item specified from the head of the string
+          * and convert it from little-endian byte order to host byte order.
+          * @param str the string from which to obtain data.
+          * @warn This function does not check for appropriate string length.
+          */
+      template <class T>
+      inline T decodeVarLE( std::string& str );
 
          /** 
           * Add the network ordered binary representation of a var to the
@@ -213,41 +184,45 @@ namespace gpstk
           * @param v the object of type T to convert to a string.
           */
       template<class T>
-      inline std::string encodeVar( const T& v )
-      {
-         std::string rv((const char*)&v, sizeof(v));
-#if BYTE_ORDER == LITTLE_ENDIAN
-         std::reverse(rv.begin(), rv.end());
-#endif
-         return rv;
-      }
-      
+      inline std::string encodeVar( const T& v );
+
+         /** 
+          * Add the network ordered binary representation of a var to the
+          * the given string.
+          * @param v the object of type T to convert to a string.
+          */
+      template<class T>
+      inline void encodeVar( const T& v, std::string& str, size_t pos=0 );
+
+         /** 
+          * Add the little-endian binary representation of a var to the
+          * the given string.
+          * @param v the object of type T to convert to a string.
+          */
+      template<class T>
+      inline std::string encodeVarLE( const T& v );
+
+         /** 
+          * Add the little-endian binary representation of a var to the
+          * the given string.
+          * @param v the object of type T to convert to a string.
+          */
+      template<class T>
+      inline void encodeVarLE( const T& v, std::string& str, size_t pos=0 );
+
          /// This is thrown when there is an error processing a CRC
          /// @ingroup exceptiongroup
       NEW_EXCEPTION_CLASS(CRCException, Exception);
 
          /// Reflects the lower \a bitnum bits of \a crc
       inline unsigned long reflect (unsigned long crc, 
-                                    int bitnum)
-      {
-         unsigned long i, j = 1, crcout = 0;
-
-         for (i = (unsigned long)1 << (bitnum - 1); i; i >>= 1)
-         {
-            if (crc & i)
-            {
-               crcout |= j;
-            }
-            j <<= 1;
-         }
-         return (crcout);
-      }
+                                    int bitnum);
 
          /// Encapsulate parameters for CRC computation
       class CRCParam
       {
       public:
-         /// Constructor
+            /// Constructor
          CRCParam(int o, 
                   unsigned long p, 
                   unsigned long i, 
@@ -273,42 +248,185 @@ namespace gpstk
       extern const CRCParam CRC32;
       extern const CRCParam CRC24Q;
 
-
          /**
           * Compute CRC (suitable for polynomial orders from 1 to 32).
           * Does bit-by-bit computation (brute-force, no look-up
-          * tables).  Default parameters are for CRC16.
-          * \p
-          * The following table lists parameters for common CRC
-          * algorithms (order is decimal, the other parameters are
-          * hex):
-          * \li CRC-CCITT order=16 polynom=1021 initial=ffff final=0 direct=true refin=false refout=false
-          * \li CRC-16 order=16 polynom=8005 initial=0 final=0 direct=true refin=true refout=true
-          * \li CRC-32 order=32 polynom=4c11db7 initial=ffffffff final=ffffffff direct=true refin=true refout=true
-          * @param data data to process CRC on.
-          * @param len length of data to process (in bytes).
-          * @param params see documentation of CRCParam:w
+          * tables).
+          * @param[in] data data to process CRC on.
+          * @param[in] len length of data to process (in bytes).
+          * @param[in] params see documentation of CRCParam:w
           * @return the CRC value
           */
          // This code "stolen" from Sven Reifegerste (zorci@gmx.de).
          // Found at http://rcswww.urz.tu-dresden.de/~sr21/crctester.c
          // from link at http://rcswww.urz.tu-dresden.de/~sr21/crc.html
-      inline unsigned long computeCRC(const unsigned char *data,
-                                      unsigned long len,
-                                      const CRCParam& params)
+      inline uint32_t computeCRC(const unsigned char *data,
+                                 unsigned long len,
+                                 const CRCParam& params);
+
+         /**
+          * Calculate an Exclusive-OR Checksum on the string /a str.
+          * @return the calculated checksum.
+          * @throws gpstk::InvalidParameter if there is a partial word at 
+          *  the end of /a str.
+          */
+      template<class X>
+      X xorChecksum(const std::string& str)
+         throw(gpstk::InvalidParameter);
+
+         //@}
+
+         /**
+          * Count the set bits in an 32-bit unsigned integer.
+          * Originated due to need in EngNav::checkParity
+          */
+      static inline unsigned short countBits(uint32_t v)
       {
-         unsigned long i, j, c, bit;
-         unsigned long crc = params.initial;
+            // Stolen from http://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetParallel
+         uint32_t c; // store the total here
+         static const int S[] = {1, 2, 4, 8, 16}; // Magic Binary Numbers
+         static const uint32_t B[] = {0x55555555, 0x33333333, 0x0F0F0F0F,
+                                      0x00FF00FF, 0x0000FFFF};
+
+            // ...and if we were to turn this into a loop, it would
+            // totally defeat the purpose.  The point here is to be
+            // FAST.
+         c = v;
+         c = ((c >> S[0]) & B[0]) + (c & B[0]);
+         c = ((c >> S[1]) & B[1]) + (c & B[1]);
+         c = ((c >> S[2]) & B[2]) + (c & B[2]);
+         c = ((c >> S[3]) & B[3]) + (c & B[3]);
+         c = ((c >> S[4]) & B[4]) + (c & B[4]);
+
+         return c;
+      }
+
+
+
+      template <class T>
+      inline T decodeVar( const std::string& str,
+                          std::string::size_type pos )
+      {
+         T rv;
+#if BYTE_ORDER == LITTLE_ENDIAN
+         std::string scopy(str, pos, sizeof(T));
+         std::reverse(scopy.begin(), scopy.end());
+         std::memcpy(&rv, scopy.c_str(), sizeof(T));
+#else
+         std::memcpy(&rv, &str[pos], sizeof(T));
+#endif
+         return rv;
+      }
+
+
+
+      template <class T>
+      inline T decodeVarLE( const std::string& str,
+                            std::string::size_type pos )
+      {
+         T rv;
+#if BYTE_ORDER == BIG_ENDIAN
+         std::string scopy(str, pos, sizeof(T));
+         std::reverse(scopy.begin(), scopy.end());
+         std::memcpy(&rv, scopy.c_str(), sizeof(T));
+#else
+         std::memcpy(&rv, &str[pos], sizeof(T));
+#endif
+         return rv;
+      }
+
+      template <class T>
+      inline T decodeVar( std::string& str )
+      {
+         T t = gpstk::BinUtils::decodeVar<T>(str, 0);
+         str.erase( 0, sizeof(T) );
+         return t;
+      }
+
+      template <class T>
+      inline T decodeVarLE( std::string& str )
+      {
+         T t = gpstk::BinUtils::decodeVarLE<T>(str, 0);
+         str.erase( 0, sizeof(T) );
+         return t;
+      }
+
+      template<class T>
+      inline std::string encodeVar( const T& v )
+      {
+         std::string rv((const char*)&v, sizeof(v));
+#if BYTE_ORDER == LITTLE_ENDIAN
+         std::reverse(rv.begin(), rv.end());
+#endif
+         return rv;
+      }
+
+
+      template<class T>
+      inline void encodeVar( const T& v, std::string& str, size_t pos )
+      {
+         str.replace(pos, sizeof(T), reinterpret_cast<const char*>(&v),
+                     sizeof(T));
+#if BYTE_ORDER == LITTLE_ENDIAN
+         std::reverse(str.begin()+pos, str.begin()+pos+sizeof(T));
+#endif
+      }
+
+
+      template<class T>
+      inline std::string encodeVarLE( const T& v )
+      {
+         std::string rv((const char*)&v, sizeof(v));
+#if BYTE_ORDER == BIG_ENDIAN
+         std::reverse(rv.begin(), rv.end());
+#endif
+         return rv;
+      }
+
+
+      template<class T>
+      inline void encodeVarLE( const T& v, std::string& str, size_t pos )
+      {
+         str.replace(pos, sizeof(T), reinterpret_cast<const char*>(&v),
+                     sizeof(T));
+#if BYTE_ORDER == BIG_ENDIAN
+         std::reverse(str.begin()+pos, str.begin()+pos+sizeof(T));
+#endif
+      }
+
+
+      inline unsigned long reflect (unsigned long crc, 
+                                    int bitnum)
+      {
+         unsigned long i, j = 1, crcout = 0;
+
+         for (i = (unsigned long)1 << (bitnum - 1); i; i >>= 1)
+         {
+            if (crc & i)
+            {
+               crcout |= j;
+            }
+            j <<= 1;
+         }
+         return (crcout);
+      }
+
+      inline uint32_t computeCRC(const unsigned char *data,
+                                 unsigned long len,
+                                 const CRCParam& params)
+      {
+         uint32_t i, j, c, bit;
+         uint32_t crc = params.initial;
 
             // at first, compute constant bit masks for whole CRC and
             // CRC high bit
-         unsigned long crcmask = 
-            ((((unsigned long)1 << (params.order - 1)) - 1) << 1) | 1;
-         unsigned long crchighbit = (unsigned long)1 << (params.order - 1);
+         uint32_t crcmask = 
+            ((((uint32_t)1 << (params.order - 1)) - 1) << 1) | 1;
+         uint32_t crchighbit = (uint32_t)1 << (params.order - 1);
 
          if (crc && params.direct)
          {
-            for (i = 0; i < (unsigned long)params.order; i++)
+            for (i = 0; i < (uint32_t)params.order; i++)
             {
                bit = crc & 1;
                if (bit)
@@ -326,7 +444,7 @@ namespace gpstk
 
          for (i = 0; i < len; i++)
          {
-            c = (unsigned long) * data++;
+            c = (uint32_t) * data++;
             if (params.refin)
             {
                c = reflect(c, 8);
@@ -347,7 +465,7 @@ namespace gpstk
             }
          }
 
-         for (i = 0; i < (unsigned long)params.order; i++)
+         for (i = 0; i < (uint32_t)params.order; i++)
          {
             bit = crc & crchighbit;
             crc <<= 1;
@@ -367,12 +485,6 @@ namespace gpstk
          return crc;
       }
 
-         /**
-          * Calculate an Exclusive-OR Checksum on the string /a str.
-          * @return the calculated checksum.
-          * @throws gpstk::InvalidParameter if there is a partial word at 
-          *  the end of /a str.
-          */
       template<class X>
       X xorChecksum(const std::string& str)
          throw(gpstk::InvalidParameter)
@@ -396,32 +508,539 @@ namespace gpstk
          
          return xc;
       }
-         //@}
 
-         /**
-          * Count the set bits in an 32-bit unsigned integer.
-          * Originated due to need in EngNav::checkParity
-          */
-      static inline unsigned short countBits(uint32_t v)
+
+         /** @note the implementation of the byte swapping routines
+          * here has been chosen for both performance and correctness.
+          * The implementation of integer byte swapping, for example,
+          * cannot be used for floating point types. */
+
+      inline void itohs(const void* p, uint16_t& v, unsigned pos)
       {
-            // Stolen from http://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetParallel
-         uint32_t c; // store the total here
-         static const int S[] = {1, 2, 4, 8, 16}; // Magic Binary Numbers
-         static const uint32_t B[] = {0x55555555, 0x33333333, 0x0F0F0F0F, 0x00FF00FF,
-                                      0x0000FFFF};
-
-            // ...and if we were to turn this into a loop, it would
-            // totally defeat the purpose.  The point here is to be
-            // FAST.
-         c = v;
-         c = ((c >> S[0]) & B[0]) + (c & B[0]);
-         c = ((c >> S[1]) & B[1]) + (c & B[1]);
-         c = ((c >> S[2]) & B[2]) + (c & B[2]);
-         c = ((c >> S[3]) & B[3]) + (c & B[3]);
-         c = ((c >> S[4]) & B[4]) + (c & B[4]);
-
-         return c;
+         const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
+         const uint16_t *tp = reinterpret_cast<const uint16_t*>(cp);
+#if BYTE_ORDER == LITTLE_ENDIAN
+         v = *tp;
+#else
+         v = (((*tp & 0x00ff) << 8) |
+              ((*tp & 0xff00) >> 8));
+#endif
       }
+
+
+      inline void itohl(const void* p, uint32_t& v, unsigned pos)
+      {
+         const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
+         const uint32_t *tp = reinterpret_cast<const uint32_t*>(cp);
+#if BYTE_ORDER == LITTLE_ENDIAN
+         v = *tp;
+#else
+         v = (((*tp & 0x000000ff) << 24) |
+              ((*tp & 0x0000ff00) << 8) |
+              ((*tp & 0x00ff0000) >> 8) |
+              ((*tp & 0xff000000) >> 24));
+#endif
+      }
+
+
+      inline void itohll(const void* p, uint64_t& v, unsigned pos)
+      {
+         const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
+         const uint64_t *tp = reinterpret_cast<const uint64_t*>(cp);
+#if BYTE_ORDER == LITTLE_ENDIAN
+         v = *tp;
+#else
+         v = (((*tp & 0x00000000000000ffULL) << 56) |
+              ((*tp & 0x000000000000ff00ULL) << 40) |
+              ((*tp & 0x0000000000ff0000ULL) << 24) |
+              ((*tp & 0x00000000ff000000ULL) << 8) |
+              ((*tp & 0x000000ff00000000ULL) >> 8) |
+              ((*tp & 0x0000ff0000000000ULL) >> 24) |
+              ((*tp & 0x00ff000000000000ULL) >> 40) |
+              ((*tp & 0xff00000000000000ULL) >> 56));
+#endif
+      }
+
+
+      inline void itohss(const void* p, int16_t& v, unsigned pos)
+      {
+         const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
+         const int16_t *tp = reinterpret_cast<const int16_t*>(cp);
+#if BYTE_ORDER == LITTLE_ENDIAN
+         v = *tp;
+#else
+            // mask after shift so sign extension doesn't break stuff
+         v = (((*tp & 0x00ff) << 8) |
+            ((*tp >> 8) & 0x00ff));
+#endif
+      }
+      
+      
+      inline void itohsl(const void* p, int32_t& v, unsigned pos)
+      {
+         const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
+         const int32_t *tp = reinterpret_cast<const int32_t*>(cp);
+#if BYTE_ORDER == LITTLE_ENDIAN
+         v = *tp;
+#else
+            // mask after shift so sign extension doesn't break stuff
+         v = (((*tp & 0x000000ff) << 24) |
+              ((*tp & 0x0000ff00) << 8) |
+              ((*tp & 0x00ff0000) >> 8) |
+              ((*tp >> 24) & 0x000000ff));
+#endif
+      }
+
+
+      inline void itohsll(const void* p, int64_t& v, unsigned pos)
+      {
+         const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
+         const int64_t *tp = reinterpret_cast<const int64_t*>(cp);
+#if BYTE_ORDER == LITTLE_ENDIAN
+         v = *tp;
+#else
+            // mask after shift so sign extension doesn't break stuff
+         v = (((*tp & 0x00000000000000ffULL) << 56) |
+              ((*tp & 0x000000000000ff00ULL) << 40) |
+              ((*tp & 0x0000000000ff0000ULL) << 24) |
+              ((*tp & 0x00000000ff000000ULL) << 8) |
+              ((*tp & 0x000000ff00000000ULL) >> 8) |
+              ((*tp & 0x0000ff0000000000ULL) >> 24) |
+              ((*tp & 0x00ff000000000000ULL) >> 40) |
+              ((*tp >> 56) & 0x00000000000000ffULL));
+#endif
+      }
+
+
+      inline void itohf(const void* p, float& v, unsigned pos)
+      {
+         const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
+         uint8_t *vp = reinterpret_cast<uint8_t*>(&v);
+#if BYTE_ORDER == LITTLE_ENDIAN
+         std::memcpy(vp, cp, sizeof(float));
+#else
+         vp[0] = cp[3];
+         vp[1] = cp[2];
+         vp[2] = cp[1];
+         vp[3] = cp[0];
+#endif
+      }
+
+
+      inline void itohd(const void* p, double& v, unsigned pos)
+      {
+         const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
+         uint8_t *vp = reinterpret_cast<uint8_t*>(&v);
+#if BYTE_ORDER == LITTLE_ENDIAN
+         std::memcpy(vp, cp, sizeof(double));
+#else
+         vp[0] = cp[7];
+         vp[1] = cp[6];
+         vp[2] = cp[5];
+         vp[3] = cp[4];
+         vp[4] = cp[3];
+         vp[5] = cp[2];
+         vp[6] = cp[1];
+         vp[7] = cp[0];
+#endif
+      }
+
+         // network to host conversions
+
+      inline void ntohs(const void* p, uint16_t& v, unsigned pos)
+      {
+         const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
+         const uint16_t *tp = reinterpret_cast<const uint16_t*>(cp);
+#if BYTE_ORDER == BIG_ENDIAN
+         v = *tp;
+#else
+         v = (((*tp & 0x00ff) << 8) |
+            ((*tp & 0xff00) >> 8));
+#endif
+      }
+
+
+      inline void ntohl(const void* p, uint32_t& v, unsigned pos)
+      {
+         const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
+         const uint32_t *tp = reinterpret_cast<const uint32_t*>(cp);
+#if BYTE_ORDER == BIG_ENDIAN
+         v = *tp;
+#else
+         v = (((*tp & 0x000000ff) << 24) |
+            ((*tp & 0x0000ff00) << 8) |
+            ((*tp & 0x00ff0000) >> 8) |
+            ((*tp & 0xff000000) >> 24));
+#endif
+      }
+
+
+      inline void ntohll(const void* p, uint64_t& v, unsigned pos)
+      {
+         const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
+         const uint64_t *tp = reinterpret_cast<const uint64_t*>(cp);
+#if BYTE_ORDER == BIG_ENDIAN
+         v = *tp;
+#else
+         v = (((*tp & 0x00000000000000ffULL) << 56) |
+            ((*tp & 0x000000000000ff00ULL) << 40) |
+            ((*tp & 0x0000000000ff0000ULL) << 24) |
+            ((*tp & 0x00000000ff000000ULL) << 8) |
+            ((*tp & 0x000000ff00000000ULL) >> 8) |
+            ((*tp & 0x0000ff0000000000ULL) >> 24) |
+            ((*tp & 0x00ff000000000000ULL) >> 40) |
+            ((*tp & 0xff00000000000000ULL) >> 56));
+#endif
+      }
+
+
+      inline void ntohss(const void* p, int16_t& v, unsigned pos)
+      {
+         const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
+         const int16_t *tp = reinterpret_cast<const int16_t*>(cp);
+#if BYTE_ORDER == BIG_ENDIAN
+         v = *tp;
+#else
+            // mask after shift so sign extension doesn't break stuff
+         v = (((*tp & 0x00ff) << 8) |
+            ((*tp >> 8) & 0x00ff));
+#endif
+      }
+      
+      
+      inline void ntohsl(const void* p, int32_t& v, unsigned pos)
+      {
+         const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
+         const int32_t *tp = reinterpret_cast<const int32_t*>(cp);
+#if BYTE_ORDER == BIG_ENDIAN
+         v = *tp;
+#else
+            // mask after shift so sign extension doesn't break stuff
+         v = (((*tp & 0x000000ff) << 24) |
+            ((*tp & 0x0000ff00) << 8) |
+            ((*tp & 0x00ff0000) >> 8) |
+            ((*tp >> 24) & 0x000000ff));
+#endif
+      }
+
+
+      inline void ntohsll(const void* p, int64_t& v, unsigned pos)
+      {
+         const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
+         const int64_t *tp = reinterpret_cast<const int64_t*>(cp);
+#if BYTE_ORDER == BIG_ENDIAN
+         v = *tp;
+#else
+            // mask after shift so sign extension doesn't break stuff
+         v = (((*tp & 0x00000000000000ffULL) << 56) |
+            ((*tp & 0x000000000000ff00ULL) << 40) |
+            ((*tp & 0x0000000000ff0000ULL) << 24) |
+            ((*tp & 0x00000000ff000000ULL) << 8) |
+            ((*tp & 0x000000ff00000000ULL) >> 8) |
+            ((*tp & 0x0000ff0000000000ULL) >> 24) |
+            ((*tp & 0x00ff000000000000ULL) >> 40) |
+            ((*tp >> 56) & 0x00000000000000ffULL));
+#endif
+      }
+
+
+      inline void ntohf(const void* p, float& v, unsigned pos)
+      {
+         const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
+         uint8_t *vp = reinterpret_cast<uint8_t*>(&v);
+#if BYTE_ORDER == BIG_ENDIAN
+         std::memcpy(vp, cp, sizeof(float));
+#else
+         vp[0] = cp[3];
+         vp[1] = cp[2];
+         vp[2] = cp[1];
+         vp[3] = cp[0];
+#endif
+      }
+
+
+      inline void ntohd(const void* p, double& v, unsigned pos)
+      {
+         const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
+         uint8_t *vp = reinterpret_cast<uint8_t*>(&v);
+#if BYTE_ORDER == BIG_ENDIAN
+         std::memcpy(vp, cp, sizeof(double));
+#else
+         vp[0] = cp[7];
+         vp[1] = cp[6];
+         vp[2] = cp[5];
+         vp[3] = cp[4];
+         vp[4] = cp[3];
+         vp[5] = cp[2];
+         vp[6] = cp[1];
+         vp[7] = cp[0];
+#endif
+      }
+
+         // host to intel conversions
+
+      inline void htois(void* p, uint16_t v, unsigned pos)
+      {
+         uint8_t *cp = static_cast<uint8_t*>(p) + pos;
+         uint16_t *tp = reinterpret_cast<uint16_t*>(cp);
+#if BYTE_ORDER == LITTLE_ENDIAN
+         *tp = v;
+#else
+         *tp = (((v & 0x00ff) << 8) |
+            ((v & 0xff00) >> 8));
+#endif
+      }
+
+
+      inline void htoil(void* p, uint32_t v, unsigned pos)
+      {
+         uint8_t *cp = static_cast<uint8_t*>(p) + pos;
+         uint32_t *tp = reinterpret_cast<uint32_t*>(cp);
+#if BYTE_ORDER == LITTLE_ENDIAN
+         *tp = v;
+#else
+         *tp = (((v & 0x000000ff) << 24) |
+            ((v & 0x0000ff00) << 8) |
+            ((v & 0x00ff0000) >> 8) |
+            ((v & 0xff000000) >> 24));
+#endif
+      }
+
+
+      inline void htoill(void* p, uint64_t v, unsigned pos)
+      {
+         uint8_t *cp = static_cast<uint8_t*>(p) + pos;
+         uint64_t *tp = reinterpret_cast<uint64_t*>(cp);
+#if BYTE_ORDER == LITTLE_ENDIAN
+         *tp = v;
+#else
+         *tp = (((v & 0x00000000000000ffULL) << 56) |
+                ((v & 0x000000000000ff00ULL) << 40) |
+                ((v & 0x0000000000ff0000ULL) << 24) |
+                ((v & 0x00000000ff000000ULL) << 8) |
+                ((v & 0x000000ff00000000ULL) >> 8) |
+                ((v & 0x0000ff0000000000ULL) >> 24) |
+                ((v & 0x00ff000000000000ULL) >> 40) |
+                ((v & 0xff00000000000000ULL) >> 56));
+#endif
+      }
+
+
+      inline void htoiss(void* p, int16_t v, unsigned pos)
+      {
+         uint8_t *cp = static_cast<uint8_t*>(p) + pos;
+         int16_t *tp = reinterpret_cast<int16_t*>(cp);
+#if BYTE_ORDER == LITTLE_ENDIAN
+         *tp = v;
+#else
+            // mask after shift so sign extension doesn't break stuff
+         *tp = (((v & 0x00ff) << 8) |
+                ((v >> 8) & 0x00ff));
+#endif
+      }
+      
+      
+      inline void htoisl(void* p, int32_t v, unsigned pos)
+      {
+         uint8_t *cp = static_cast<uint8_t*>(p) + pos;
+         int32_t *tp = reinterpret_cast<int32_t*>(cp);
+#if BYTE_ORDER == LITTLE_ENDIAN
+         *tp = v;
+#else
+            // mask after shift so sign extension doesn't break stuff
+         *tp = (((v & 0x000000ff) << 24) |
+                ((v & 0x0000ff00) << 8) |
+                ((v & 0x00ff0000) >> 8) |
+                ((v >> 24) & 0x000000ff));
+#endif
+      }
+
+
+      inline void htoisll(void* p, int64_t v, unsigned pos)
+      {
+         uint8_t *cp = static_cast<uint8_t*>(p) + pos;
+         int64_t *tp = reinterpret_cast<int64_t*>(cp);
+#if BYTE_ORDER == LITTLE_ENDIAN
+         *tp = v;
+#else
+            // mask after shift so sign extension doesn't break stuff
+         *tp = (((v & 0x00000000000000ffULL) << 56) |
+                ((v & 0x000000000000ff00ULL) << 40) |
+                ((v & 0x0000000000ff0000ULL) << 24) |
+                ((v & 0x00000000ff000000ULL) << 8) |
+                ((v & 0x000000ff00000000ULL) >> 8) |
+                ((v & 0x0000ff0000000000ULL) >> 24) |
+                ((v & 0x00ff000000000000ULL) >> 40) |
+                ((v >> 56) & 0x00000000000000ffULL));
+#endif
+      }
+
+
+      inline void htoif(void* p, float v, unsigned pos)
+      {
+         uint8_t *cp = static_cast<uint8_t*>(p) + pos;
+         uint8_t *vp = reinterpret_cast<uint8_t*>(&v);
+#if BYTE_ORDER == LITTLE_ENDIAN
+         std::memcpy(cp, vp, sizeof(float));
+#else
+         cp[0] = vp[3];
+         cp[1] = vp[2];
+         cp[2] = vp[1];
+         cp[3] = vp[0];
+#endif
+      }
+
+
+      inline void htoid(void* p, double v, unsigned pos)
+      {
+         uint8_t *cp = static_cast<uint8_t*>(p) + pos;
+         uint8_t *vp = reinterpret_cast<uint8_t*>(&v);
+#if BYTE_ORDER == LITTLE_ENDIAN
+         std::memcpy(cp, vp, sizeof(double));
+#else
+         cp[0] = vp[7];
+         cp[1] = vp[6];
+         cp[2] = vp[5];
+         cp[3] = vp[4];
+         cp[4] = vp[3];
+         cp[5] = vp[2];
+         cp[6] = vp[1];
+         cp[7] = vp[0];
+#endif
+      }
+
+         // host to network conversions
+
+      inline void htons(void* p, uint16_t v, unsigned pos)
+      {
+         uint8_t *cp = static_cast<uint8_t*>(p) + pos;
+         uint16_t *tp = reinterpret_cast<uint16_t*>(cp);
+#if BYTE_ORDER == BIG_ENDIAN
+         *tp = v;
+#else
+         *tp = (((v & 0x00ff) << 8) |
+            ((v & 0xff00) >> 8));
+#endif
+      }
+
+
+      inline void htonl(void* p, uint32_t v, unsigned pos)
+      {
+         uint8_t *cp = static_cast<uint8_t*>(p) + pos;
+         uint32_t *tp = reinterpret_cast<uint32_t*>(cp);
+#if BYTE_ORDER == BIG_ENDIAN
+         *tp = v;
+#else
+         *tp = (((v & 0x000000ff) << 24) |
+            ((v & 0x0000ff00) << 8) |
+            ((v & 0x00ff0000) >> 8) |
+            ((v & 0xff000000) >> 24));
+#endif
+      }
+
+
+      inline void htonll(void* p, uint64_t v, unsigned pos)
+      {
+         uint8_t *cp = static_cast<uint8_t*>(p) + pos;
+         uint64_t *tp = reinterpret_cast<uint64_t*>(cp);
+#if BYTE_ORDER == BIG_ENDIAN
+         *tp = v;
+#else
+         *tp = (((v & 0x00000000000000ffULL) << 56) |
+                ((v & 0x000000000000ff00ULL) << 40) |
+                ((v & 0x0000000000ff0000ULL) << 24) |
+                ((v & 0x00000000ff000000ULL) << 8) |
+                ((v & 0x000000ff00000000ULL) >> 8) |
+                ((v & 0x0000ff0000000000ULL) >> 24) |
+                ((v & 0x00ff000000000000ULL) >> 40) |
+                ((v & 0xff00000000000000ULL) >> 56));
+#endif
+      }
+
+
+      inline void htonss(void* p, int16_t v, unsigned pos)
+      {
+         uint8_t *cp = static_cast<uint8_t*>(p) + pos;
+         int16_t *tp = reinterpret_cast<int16_t*>(cp);
+#if BYTE_ORDER == BIG_ENDIAN
+         *tp = v;
+#else
+            // mask after shift so sign extension doesn't break stuff
+         *tp = (((v & 0x00ff) << 8) |
+                ((v >> 8) & 0x00ff));
+#endif
+      }
+      
+      
+      inline void htonsl(void* p, int32_t v, unsigned pos)
+      {
+         uint8_t *cp = static_cast<uint8_t*>(p) + pos;
+         int32_t *tp = reinterpret_cast<int32_t*>(cp);
+#if BYTE_ORDER == BIG_ENDIAN
+         *tp = v;
+#else
+            // mask after shift so sign extension doesn't break stuff
+         *tp = (((v & 0x000000ff) << 24) |
+                ((v & 0x0000ff00) << 8) |
+                ((v & 0x00ff0000) >> 8) |
+                ((v >> 24) & 0x000000ff));
+#endif
+      }
+
+
+      inline void htonsll(void* p, int64_t v, unsigned pos)
+      {
+         uint8_t *cp = static_cast<uint8_t*>(p) + pos;
+         int64_t *tp = reinterpret_cast<int64_t*>(cp);
+#if BYTE_ORDER == BIG_ENDIAN
+         *tp = v;
+#else
+            // mask after shift so sign extension doesn't break stuff
+         *tp = (((v & 0x00000000000000ffULL) << 56) |
+                ((v & 0x000000000000ff00ULL) << 40) |
+                ((v & 0x0000000000ff0000ULL) << 24) |
+                ((v & 0x00000000ff000000ULL) << 8) |
+                ((v & 0x000000ff00000000ULL) >> 8) |
+                ((v & 0x0000ff0000000000ULL) >> 24) |
+                ((v & 0x00ff000000000000ULL) >> 40) |
+                ((v >> 56) & 0x00000000000000ffULL));
+#endif
+      }
+
+
+      inline void htonf(void* p, float v, unsigned pos)
+      {
+         uint8_t *cp = static_cast<uint8_t*>(p) + pos;
+         uint8_t *vp = reinterpret_cast<uint8_t*>(&v);
+#if BYTE_ORDER == BIG_ENDIAN
+         std::memcpy(cp, vp, sizeof(float));
+#else
+         cp[0] = vp[3];
+         cp[1] = vp[2];
+         cp[2] = vp[1];
+         cp[3] = vp[0];
+#endif
+      }
+
+
+      inline void htond(void* p, double v, unsigned pos)
+      {
+         uint8_t *cp = static_cast<uint8_t*>(p) + pos;
+         uint8_t *vp = reinterpret_cast<uint8_t*>(&v);
+#if BYTE_ORDER == BIG_ENDIAN
+         std::memcpy(cp, vp, sizeof(double));
+#else
+         cp[0] = vp[7];
+         cp[1] = vp[6];
+         cp[2] = vp[5];
+         cp[3] = vp[4];
+         cp[4] = vp[3];
+         cp[5] = vp[2];
+         cp[6] = vp[1];
+         cp[7] = vp[0];
+#endif
+      }
+
    } // end namespace BinUtils
 } // end namespace gpstk
 

@@ -92,7 +92,7 @@ namespace gpstk
           * @return true if successful.
           * @throw InvalidParameter if subframe is valid but not subframe 1-3.
           */
-      bool addSubframe(const long  subframe[10],
+      bool addSubframe(const uint32_t subframe[10],
                        const int   gpsWeek,
                        const short PRN,
                        const short track)
@@ -112,7 +112,7 @@ namespace gpstk
           * @return true if successful.
           * @throw InvalidParameter if subframe is valid but not subframe 1-3.
           */
-      bool addSubframeNoParity(const long  subframe[10],
+      bool addSubframeNoParity(const uint32_t subframe[10],
                                const int   gpsWeek,
                                const short PRN,
                                const short track)
@@ -142,9 +142,9 @@ namespace gpstk
           * @param track tracker number (typically receiver channel number).
           * @return true if successful.
           */
-      bool addIncompleteSF1Thru3(const long  sf1[8],
-                                 const long  sf2[8],
-                                 const long  sf3[8], 
+      bool addIncompleteSF1Thru3(const uint32_t  sf1[8],
+                                 const uint32_t  sf2[8],
+                                 const uint32_t  sf3[8], 
                                  const long  sf1TransmitSOW,
                                  const int   gpsWeek,
                                  const short PRN,
@@ -562,7 +562,7 @@ namespace gpstk
       bool unifiedConvert( const int gpsWeek, 
                            const short PRN, 
                            const short track);
-      long subframeStore[3][10];
+      uint32_t subframeStore[3][10];
       // True if initialized with FIC data
       bool isFIC;
       
