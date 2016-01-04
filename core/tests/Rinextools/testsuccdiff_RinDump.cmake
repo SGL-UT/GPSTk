@@ -30,7 +30,7 @@ message(STATUS "running ${DIFF_PROG}")
 execute_process(COMMAND ${DIFF_PROG}
     -1 ${SOURCEDIR}/${TESTBASE}.exp
     -2 ${TARGETDIR}/${TESTBASE}.out
-    -l 1
+    -l 6
     -v
     -z 2
     RESULT_VARIABLE DIFFERENCE)
