@@ -57,7 +57,7 @@ namespace gpstk
       /** @defgroup FileHandling Formatted File I/O
        *
        * This module includes the data types used for File I/O of
-       * structured data formats, e.g. RINEX.
+       * structured data formats, for example, RINEX.
        */
 
       /// This gets thrown if a valid EOF occurs on formattedGetLine.
