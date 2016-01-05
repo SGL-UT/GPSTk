@@ -62,7 +62,7 @@ namespace gpstk
    NEW_EXCEPTION_CLASS(InvalidAntex, gpstk::Exception);
 
 
-      /** @addtogroup formattedfile */
+      /// @ingroup formattedfile 
       //@{
 
       /** This is a class to read and parse antenna data in Antex file format.

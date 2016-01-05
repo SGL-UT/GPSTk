@@ -52,8 +52,8 @@
 
 namespace gpstk
 {
-   /** @addtogroup Rinex3Obs */
-   //@{
+      /// @ingroup FileHandling
+      //@{
 
       /// This compares all elements of the Rinex3ObsData with less than
       /// (only for those fields which the two obs data share).
@@ -67,93 +67,93 @@ namespace gpstk
       Rinex3ObsDataOperatorLessThanFull
       ///(const std::set<Rinex3ObsHeader::Rinex3ObsType>& rohset)
       (const std::vector<ObsID>& rohset)
-         : obsSet(rohset)
+            : obsSet(rohset)
       {}
 
       bool operator()(const Rinex3ObsData& l, const Rinex3ObsData& r) const
+      {
+            // compare the times, offsets, then only those elements
+            // that are common to both.  this ignores the flags
+            // that are set to 0
+         if (l.time < r.time)
+            return true;
+         else if (l.time == r.time)
          {
-               // compare the times, offsets, then only those elements
-               // that are common to both.  this ignores the flags
-               // that are set to 0
-            if (l.time < r.time)
+            if (l.epochFlag < r.epochFlag)
                return true;
-            else if (l.time == r.time)
+            else if (l.epochFlag == r.epochFlag)
             {
-               if (l.epochFlag < r.epochFlag)
+               if (l.clockOffset < r.clockOffset)
                   return true;
-               else if (l.epochFlag == r.epochFlag)
-               {
-                  if (l.clockOffset < r.clockOffset)
-                     return true;
-                  else if (l.clockOffset > r.clockOffset)
-                     return false;
-               }
-               else
+               else if (l.clockOffset > r.clockOffset)
                   return false;
             }
             else
                return false;
+         }
+         else
+            return false;
 
-               // for the obs, first check that they're the same size
-               // i.e. - contain the same number of PRNs
-            if (l.obs.size() < r.obs.size())
-               return true;
+            // for the obs, first check that they're the same size
+            // i.e. - contain the same number of PRNs
+         if (l.obs.size() < r.obs.size())
+            return true;
 
-            if (l.obs.size() > r.obs.size())
+         if (l.obs.size() > r.obs.size())
+            return false;
+
+            // then check that each PRN has the same data for each of the
+            // shared fields
+         Rinex3ObsData::DataMap::const_iterator lItr = l.obs.begin(), rItr;
+
+         SatID sat;
+
+         while (lItr != l.obs.end())
+         {
+            sat = (*lItr).first;
+            rItr = r.obs.find(sat);
+            if (rItr == r.obs.end())
                return false;
 
-               // then check that each PRN has the same data for each of the
-               // shared fields
-            Rinex3ObsData::DataMap::const_iterator lItr = l.obs.begin(), rItr;
-
-            SatID sat;
-
-            while (lItr != l.obs.end())
-            {
-               sat = (*lItr).first;
-               rItr = r.obs.find(sat);
-               if (rItr == r.obs.end())
-                  return false;
-
                ///Rinex3ObsData::Rinex3ObsTypeMap lObs = (*lItr).second,
-               std::vector<RinexDatum> lObs = lItr->second,
-                                                      rObs = rItr->second;
+            std::vector<RinexDatum> lObs = lItr->second,
+               rObs = rItr->second;
 
                ///std::set<ObsID>::const_iterator obsItr =
                ///   obsSet.begin();
 
                ///while (obsItr != obsSet.end())
-               for(int i = 0; i < obsSet.size(); ++i)
-               {
-                  RinexDatum lData, rData;
+            for(int i = 0; i < obsSet.size(); ++i)
+            {
+               RinexDatum lData, rData;
                   ///lData = lObs[*obsItr];
-                  lData = lObs[i];
+               lData = lObs[i];
                   ///rData = rObs[*obsItr];
-                  rData = rObs[i];
+               rData = rObs[i];
 
-                  if (lData.data < rData.data)
+               if (lData.data < rData.data)
+                  return true;
+
+               if ( lData.lli != 0 && rData.lli != 0 )
+                  if (lData.lli < rData.lli)
                      return true;
 
-                  if ( lData.lli != 0 && rData.lli != 0 )
-                     if (lData.lli < rData.lli)
-                        return true;
-
-                  if ( lData.ssi != 0 && rData.ssi != 0 )
-                     if (lData.ssi < rData.ssi)
-                        return true;
+               if ( lData.ssi != 0 && rData.ssi != 0 )
+                  if (lData.ssi < rData.ssi)
+                     return true;
 
                   ///obsItr++;
-               }
-
-               lItr++;
             }
 
-               // the data is either == or > at this point
-            return false;
+            lItr++;
          }
 
+            // the data is either == or > at this point
+         return false;
+      }
+
    private:
-      ///std::set<Rinex3ObsHeader::Rinex3ObsType> obsSet;
+         ///std::set<Rinex3ObsHeader::Rinex3ObsType> obsSet;
       std::vector<ObsID> obsSet;
    };
 
@@ -164,11 +164,11 @@ namespace gpstk
    {
    public:
       bool operator()(const Rinex3ObsData& l, const Rinex3ObsData& r) const
-         {
-            if (l.time < r.time)
-               return true;
-            return false;
-         }
+      {
+         if (l.time < r.time)
+            return true;
+         return false;
+      }
    };
 
       /// This simply compares the times of the two records
@@ -178,11 +178,11 @@ namespace gpstk
    {
    public:
       bool operator()(const Rinex3ObsData& l, const Rinex3ObsData& r) const
-         {
-            if (l.time == r.time)
-               return true;
-            return false;
-         }
+      {
+         if (l.time == r.time)
+            return true;
+         return false;
+      }
    };
 
       /// Combines Rinex3ObsHeaders into a single header, combining comments
@@ -197,61 +197,61 @@ namespace gpstk
    {
    public:
       Rinex3ObsHeaderTouchHeaderMerge()
-         : firstHeader(true)
+            : firstHeader(true)
       {}
 
       bool operator()(const Rinex3ObsHeader& l)
+      {
+         if (firstHeader)
          {
-            if (firstHeader)
-            {
-               theHeader = l;
-               firstHeader = false;
-            }
-            else
-            {
-               std::vector<ObsID> thisObsSet, tempObsSet;
-               std::set<std::string> commentSet;
-               obsSet.clear();
-
-                  // insert the comments to the set
-                  // and let the set take care of uniqueness
-               copy(theHeader.commentList.begin(),
-                    theHeader.commentList.end(),
-                    inserter(commentSet, commentSet.begin()));
-               copy(l.commentList.begin(),
-                    l.commentList.end(),
-                    inserter(commentSet, commentSet.begin()));
-                  // then copy the comments back into theHeader
-               theHeader.commentList.clear();
-               copy(commentSet.begin(), commentSet.end(),
-                    inserter(theHeader.commentList,
-                             theHeader.commentList.begin()));
-
-                  // find the set intersection of the obs types
-               copy(theHeader.obsTypeList.begin(),
-                    theHeader.obsTypeList.end(),
-                    inserter(thisObsSet, thisObsSet.begin()));
-               copy(l.obsTypeList.begin(),
-                    l.obsTypeList.end(),
-                    inserter(tempObsSet, tempObsSet.begin()));
-               set_intersection(thisObsSet.begin(), thisObsSet.end(),
-                                tempObsSet.begin(), tempObsSet.end(),
-                                inserter(obsSet, obsSet.begin()));
-                  // then copy the obsTypes back into theHeader
-               theHeader.obsTypeList.clear();
-               copy(obsSet.begin(), obsSet.end(),
-                    inserter(theHeader.obsTypeList,
-                             theHeader.obsTypeList.begin()));
-            }
-            return true;
+            theHeader = l;
+            firstHeader = false;
          }
+         else
+         {
+            std::vector<ObsID> thisObsSet, tempObsSet;
+            std::set<std::string> commentSet;
+            obsSet.clear();
+
+               // insert the comments to the set
+               // and let the set take care of uniqueness
+            copy(theHeader.commentList.begin(),
+                 theHeader.commentList.end(),
+                 inserter(commentSet, commentSet.begin()));
+            copy(l.commentList.begin(),
+                 l.commentList.end(),
+                 inserter(commentSet, commentSet.begin()));
+               // then copy the comments back into theHeader
+            theHeader.commentList.clear();
+            copy(commentSet.begin(), commentSet.end(),
+                 inserter(theHeader.commentList,
+                          theHeader.commentList.begin()));
+
+               // find the set intersection of the obs types
+            copy(theHeader.obsTypeList.begin(),
+                 theHeader.obsTypeList.end(),
+                 inserter(thisObsSet, thisObsSet.begin()));
+            copy(l.obsTypeList.begin(),
+                 l.obsTypeList.end(),
+                 inserter(tempObsSet, tempObsSet.begin()));
+            set_intersection(thisObsSet.begin(), thisObsSet.end(),
+                             tempObsSet.begin(), tempObsSet.end(),
+                             inserter(obsSet, obsSet.begin()));
+               // then copy the obsTypes back into theHeader
+            theHeader.obsTypeList.clear();
+            copy(obsSet.begin(), obsSet.end(),
+                 inserter(theHeader.obsTypeList,
+                          theHeader.obsTypeList.begin()));
+         }
+         return true;
+      }
 
       bool firstHeader;
       Rinex3ObsHeader theHeader;
       std::vector<ObsID> obsSet;
    };
 
-   //@}
+      //@}
 
 } // namespace gpstk
 

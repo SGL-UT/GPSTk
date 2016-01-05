@@ -52,8 +52,7 @@ namespace gpstk
    public:
 
          /**
-          * @defgroup caltbo CivilTime Basic Operations
-          * Default and Copy Constructors, Assignment Operator and Destructor.
+          * @name CivilTime Basic Operations
           */
          //@{
          /**
@@ -172,7 +171,7 @@ namespace gpstk
       static int monthLong(const std::string& monStr);
 
          /**
-          * @defgroup ctco CivilTime Comparison Operators
+          * @name CivilTime Comparison Operators
           * All comparison operators have a parameter "right" which corresponds
           *  to the CivilTime object to the right of the symbol.
           * All comparison operators are const and return true on success

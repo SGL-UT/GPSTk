@@ -52,8 +52,7 @@ namespace gpstk
    {
    public:
          /**
-          * @defgroup utbo ANSITime Basic Operations
-          * Default and Copy Constructors, Assignment Operator and Destructor.
+          * @name ANSITime Basic Operations
           */
          //@{
 
@@ -150,7 +149,7 @@ namespace gpstk
       virtual void reset() ;
 
          /**
-          * @defgroup utco ANSITime Comparison Operators
+          * @name ANSITime Comparison Operators
           * All comparison operators have a parameter "right" which corresponds
           *  to the ANSITime object to the right of the symbol.
           * All comparison operators are const and return true on success

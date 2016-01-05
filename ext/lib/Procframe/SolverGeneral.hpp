@@ -55,8 +55,8 @@
 namespace gpstk
 {
 
-      /** @addtogroup GPSsolutions */
-      /// @ingroup math
+      /// @ingroup GPSsolutions
+      //@{
 
       /// Handy type definition
    typedef std::map<Variable, double> VariableDataMap;

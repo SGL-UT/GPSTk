@@ -55,7 +55,7 @@ namespace gpstk
     NEW_EXCEPTION_CLASS(InvalidWeights, gpstk::Exception);
 
 
-    /** @addtogroup GPSsolutions */
+    /// @ingroup GPSsolutions 
     //@{
 
     /**

@@ -54,8 +54,7 @@ namespace gpstk
       static const unsigned int bits19 = 0x7FFFF;
 
          /**
-          * @defgroup gwzbo GPSWeekZcount Basic Operations
-          * Default and Copy Constructors, Assignment Operator and Destructor.
+          * @name GPSWeekZcount Basic Operations
           */
          //@{
          /**
@@ -148,13 +147,13 @@ namespace gpstk
 
       virtual bool isValid() const
       {
-	      return ( GPSWeek::isValid() && zcount < ZCOUNT_PER_WEEK );
+         return ( GPSWeek::isValid() && zcount < ZCOUNT_PER_WEEK );
       }
 
       inline virtual void reset()
       {
-	      GPSWeek::reset();
-	      zcount = 0;
+         GPSWeek::reset();
+         zcount = 0;
       }
 
          /// @name Special Zcount-related Methods.
@@ -182,14 +181,14 @@ namespace gpstk
       }
 
          /**
-          * @defgroup gwzco GPSWeekZcount Comparison Operators
+          * @name GPSWeekZcount Comparison Operators
           * All comparison operators have a parameter "right" which corresponds
           *  to the GPSWeekZcount object to the right of the symbol.
           * All comparison operators are const and return true on success
           *  and false on failure.
           */
          //@{
-     //
+         //
       inline bool operator==( const GPSWeekZcount& right ) const
       {
          return ( GPSWeek::operator==(right) && zcount == right.zcount );
@@ -197,39 +196,39 @@ namespace gpstk
 
       inline bool operator!=( const GPSWeekZcount& right ) const
       {
-   	   return ( !operator==( right ) );
+         return ( !operator==( right ) );
       }
 
       inline bool operator<( const GPSWeekZcount& right ) const
       {
-   	   if( GPSWeek::operator<(right) )
-   	   {
-   	      return true;
-   	   }
-   	   if( GPSWeek::operator>(right) )
-   	   {
-   	      return false;
-   	   }
-   	   if( zcount < right.zcount )
-   	   {
-   	      return true;
-   	   }
-   	   return false;
+         if( GPSWeek::operator<(right) )
+         {
+            return true;
+         }
+         if( GPSWeek::operator>(right) )
+         {
+            return false;
+         }
+         if( zcount < right.zcount )
+         {
+            return true;
+         }
+         return false;
       }
 
       inline bool operator>( const GPSWeekZcount& right ) const
       {
-   	   return ( !operator<=( right ) );
+         return ( !operator<=( right ) );
       }
 
       inline bool operator<=( const GPSWeekZcount& right ) const
       {
-   	   return ( operator<( right ) || operator==( right ) );
+         return ( operator<( right ) || operator==( right ) );
       }
 
       inline bool operator>=( const GPSWeekZcount& right ) const
       {
-   	   return ( !operator<( right ) );
+         return ( !operator<( right ) );
       }
          //@}
 

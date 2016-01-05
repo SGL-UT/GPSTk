@@ -57,7 +57,7 @@
 
 namespace gpstk
 {
-   /** @addtogroup Antex */
+   /// @ingroup Antex 
    //@{
 
       /// Antex antenna data record: PCOs and PCVs for one antenna.

@@ -47,61 +47,61 @@
 
 namespace vdraw
 {
-  /** \addtogroup BasicVectorGraphics */ 
-  //@{
+      /// ingroup BasicVectorGraphics
+      //@{
 
-  /**
-   * This class will simply maintain state about text and line styles, fill
-   * colors, and markers.  Encapsulated for use with a stack of states.
-   */
+      /**
+       * This class will simply maintain state about text and line styles, fill
+       * colors, and markers.  Encapsulated for use with a stack of states.
+       */
 
-  class VGState 
-  {
-    public:
+   class VGState 
+   {
+   public:
 
-      /// The default StrokeStyle (if one is set)
+         /// The default StrokeStyle (if one is set)
       StrokeStyle strokeStyle;
-      /// The default Marker (if one is set)
+         /// The default Marker (if one is set)
       Marker marker;
-      /// The default TextStyle (if one is set)
+         /// The default TextStyle (if one is set)
       TextStyle textStyle;
-      /// The default fill Color (if one is set)
+         /// The default fill Color (if one is set)
       Color fillColor;
 
-      /// Whether or not to use the default StrokeStyle
+         /// Whether or not to use the default StrokeStyle
       bool useSS;
-      /// Whether or not to use the default Marker
+         /// Whether or not to use the default Marker
       bool useM;
-      /// Whether or not to use the default TextStyle
+         /// Whether or not to use the default TextStyle
       bool useTS;
-      /// Whether or not to use the default fill Color      
+         /// Whether or not to use the default fill Color      
       bool useFC;
 
-      /// Make sure the defaults are with nothing set.
+         /// Make sure the defaults are with nothing set.
       VGState()
       {
-        useSS = useM = useTS = useFC = false;
+         useSS = useM = useTS = useFC = false;
       }
 
-      /// Remove the default StrokeStyle
+         /// Remove the default StrokeStyle
       inline void setSS()                      { useSS=false; }
-      /// Set the default StrokeStyle
+         /// Set the default StrokeStyle
       inline void setSS(const StrokeStyle &ss) { useSS=true; strokeStyle=ss; }
-      /// Remove the default Marker
+         /// Remove the default Marker
       inline void setM()                       { useM=false; }
-      /// Set the default Marker
+         /// Set the default Marker
       inline void setM(const Marker &m)        { useM=true; marker=m; }
-      /// Remove the default TextStyle
+         /// Remove the default TextStyle
       inline void setTS()                      { useTS=false; }
-      /// Set the default TextStyle
+         /// Set the default TextStyle
       inline void setTS(const TextStyle &ts)   { useTS=true; textStyle=ts; }
-      /// Remove the default fill Color
+         /// Remove the default fill Color
       inline void setFC()                      { useFC=false; }
-      /// Set the default fill Color
+         /// Set the default fill Color
       inline void setFC(const Color &fc)       { useFC=true; fillColor=fc; }
-  }; // class VGState
+   }; // class VGState
 
-  //@} group BasicVectorGraphics
+      //@}
 
 } // namespace vdraw
 

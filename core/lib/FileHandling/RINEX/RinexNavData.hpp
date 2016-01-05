@@ -53,8 +53,8 @@
 
 namespace gpstk
 {
-   /** @addtogroup RinexNav */
-   //@{
+      /// @ingroup FileHandling
+      //@{
 
       /** 
        * This class models a RINEX NAV record.
@@ -72,7 +72,7 @@ namespace gpstk
           */
       RinexNavData(void)
             : time(gpstk::CommonTime::BEGINNING_OF_TIME), PRNID(-1), fitint(4)
-         {}
+      {}
 
          /// Initializes the nav data with an EngEphemeris
       RinexNavData(const EngEphemeris& ee);
@@ -102,8 +102,8 @@ namespace gpstk
           */
       operator EngEphemeris() const throw();
 
-      /// Convert this RinexNavData to a GPSEphemeris object.
-      /// for backward compatibility only - use Rinex3NavData
+         /// Convert this RinexNavData to a GPSEphemeris object.
+         /// for backward compatibility only - use Rinex3NavData
       operator GPSEphemeris() const;
 
          /**
@@ -112,7 +112,7 @@ namespace gpstk
           */
       std::list<double> toList() const;
 
-         /** @name Epochdata
+         /** @name Epoch data
           */
          //@{
       CommonTime time;        ///< Time according to the record.
@@ -129,7 +129,7 @@ namespace gpstk
       double IODE;         ///< Index of data-eph 
          //@}
 
-         /** @name ClockInformation 
+         /** @name Clock Information 
           */
          //@{
       double   Toc;           ///< Clock epoch (sec of week) (found in epoch line of Rinex navigation files)
@@ -139,7 +139,7 @@ namespace gpstk
       double   Tgd;           ///< Group delay differential (sec) 
          //@}
 
-         /** @name HarmonicPerturbations
+         /** @name Harmonic Perturbations
           */
          //@{
       double   Cuc;           ///< Cosine latitude (rad) 
@@ -150,7 +150,7 @@ namespace gpstk
       double   Cis;           ///< Sine inclination (rad) 
          //@}
 
-         /**  @name MajorEphemerisParameters
+         /**  @name Major Ephemeris Parameters
           */
          //@{
       double   Toe;           ///< Ephemeris epoch (sec of week)
@@ -173,10 +173,6 @@ namespace gpstk
          /// Parses string \a currentLine to obtain PRN id and epoch.
       void getPRNEpoch(const std::string& currentLine)
          throw(gpstk::StringUtils::StringException, FFStreamError);
-         /** @name OrbitParameters
-          * Obtain orbit parameters from strint \a currentLine.
-          */
-         //@{
          /// Reads line 1 of the Nav Data record
       void getBroadcastOrbit1(const std::string& currentLine)
          throw(gpstk::StringUtils::StringException, FFStreamError);
@@ -198,15 +194,10 @@ namespace gpstk
          /// Reads line 7 of the Nav Data record
       void getBroadcastOrbit7(const std::string& currentLine)
          throw(gpstk::StringUtils::StringException, FFStreamError);
-         //@}
 
          /// generates a line to be output to a file for the PRN/epoch line
       std::string putPRNEpoch(void) const
          throw(gpstk::StringUtils::StringException);
-         /** @name OrbitParameters
-          * Generate orbit parameter lines from data to be output to a file
-          */
-         //@{
          /// Writes line 7 of the Nav Data record
       std::string putBroadcastOrbit1(void) const
          throw(gpstk::StringUtils::StringException);
@@ -230,7 +221,6 @@ namespace gpstk
          /// to write fit interval
       std::string putBroadcastOrbit7(const double ver) const
          throw(gpstk::StringUtils::StringException);
-         //@}
 
    protected:
          /// Outputs the record to the FFStream \a s.
@@ -252,7 +242,7 @@ namespace gpstk
                gpstk::StringUtils::StringException);
    };  // class RinexNavData
 
-   //@}
+      //@}
 
 } // namespace
 

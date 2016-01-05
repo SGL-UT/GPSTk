@@ -55,7 +55,7 @@
 
 namespace gpstk
 {
-      /** @addtogroup ephemcalc */
+      /// @ingroup ephemcalc 
       //@{
 
       /** Relation of different Time Systems and Reference System
