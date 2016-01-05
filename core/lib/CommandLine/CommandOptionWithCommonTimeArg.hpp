@@ -47,16 +47,16 @@
 
 namespace gpstk
 {
-      /** @addtogroup commandoptiongroup */
+      /// @ingroup CommandLine
       //@{
 
-      /** @ingroup timegroup
-       * @brief Command-line option class for processing time strings.
-       * This class is allows the programmer to add command-line
-       * options to an application that can parse strings containing
+      /** Command-line option class for processing time strings.  This
+       * class is allows the programmer to add command-line options to
+       * an application that can parse strings containing
        * representations of time. The programmer must specify the
-       * format to be accepted.  Refer to each TimeTag class' getDefaultFormat() for
-       * details on the formatting specifications. */
+       * format to be accepted.  Refer to each TimeTag class'
+       * getDefaultFormat() for details on the formatting
+       * specifications. */
    class CommandOptionWithCommonTimeArg : public gpstk::CommandOptionWithAnyArg
    {
    public:
