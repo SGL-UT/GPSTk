@@ -52,19 +52,24 @@
 
 namespace gpstk
 {
+      /// @todo determine if this really belongs with the RINEX files
+
+      /// @ingroup FileHandling
+      //@{
+
    class RinexSatID : public SatID
    {
 
    public:
 
-      /// Empty constructor; creates an invalid object (Unknown, ID = -1).
+         /// Empty constructor; creates an invalid object (Unknown, ID = -1).
 
       RinexSatID()
-         throw()
+      throw()
       { id = -1; system = systemUnknown; }
 
 
-      /// Explicit constructor, no defaults, RINEX systems only.
+         /// Explicit constructor, no defaults, RINEX systems only.
 
       RinexSatID(int p, const SatelliteSystem& s)
          throw()
@@ -81,7 +86,7 @@ namespace gpstk
             case systemBeiDou:
             case systemMixed:
                break;
-            // Invalidate anything non-RINEX.
+                  // Invalidate anything non-RINEX.
             default:
                system = systemUnknown;
                id = -1;
@@ -89,7 +94,7 @@ namespace gpstk
       }
 
 
-      /// Constructor from a string.
+         /// Constructor from a string.
 
       RinexSatID(const std::string& str)
          throw(Exception)
@@ -99,33 +104,33 @@ namespace gpstk
       }
 
 
-      /// Cast a SatID to a RinexSatID.
+         /// Cast a SatID to a RinexSatID.
 
       RinexSatID(const SatID& sat)
          throw()
       { *this = RinexSatID(sat.id,sat.system); }
 
 
-      /// Set the fill character used in output and
-      /// return the current fill character.
+         /// Set the fill character used in output and
+         /// return the current fill character.
 
       char setfill(char c)
          throw()
       { char csave = fillchar; fillchar = c; return csave; }
 
 
-      /// Get the fill character used in output.
+         /// Get the fill character used in output.
 
       char getfill() const
          throw()
       { return fillchar; }
 
 
-      // operator=, copy constructor and destructor built by compiler
+         // operator=, copy constructor and destructor built by compiler
 
 
-      /// Return the single-character system descriptor.
-      /// @note return only RINEX types, for non-RINEX systems return '?'
+         /// Return the single-character system descriptor.
+         /// @note return only RINEX types, for non-RINEX systems return '?'
 
       char systemChar() const
          throw()
@@ -144,8 +149,8 @@ namespace gpstk
       };
 
 
-      /// Return the system name as a string.
-      /// @note Return only RINEX types or 'Unknown'.
+         /// Return the system name as a string.
+         /// @note Return only RINEX types or 'Unknown'.
       std::string systemString() const
          throw()
       {
@@ -162,8 +167,8 @@ namespace gpstk
          }
       };
 
-      /// Return the system name as a string of length 3.
-      /// @note Return only RINEX types or 'Unknown'.
+         /// Return the system name as a string of length 3.
+         /// @note Return only RINEX types or 'Unknown'.
       std::string systemString3() const
          throw()
       {
@@ -181,8 +186,8 @@ namespace gpstk
       };
 
 
-      /// Set the RinexSatID from a string (1 character plus 2-digit integer).
-      /// @note GPS is default system (no or unknown system char)
+         /// Set the RinexSatID from a string (1 character plus 2-digit integer).
+         /// @note GPS is default system (no or unknown system char)
 
       void fromString(const std::string& s)
          throw(Exception)
@@ -197,7 +202,7 @@ namespace gpstk
          iss >> c;                     // read one character (non-whitespace)
          switch(c)
          {
-                                       // no leading system character
+               // no leading system character
             case '0': case '1': case '2': case '3': case '4':
             case '5': case '6': case '7': case '8': case '9':
                iss.putback(c);
@@ -237,7 +242,7 @@ namespace gpstk
       }
 
 
-      /// Convert the RinexSatID to string (1 character plus 2-digit integer).
+         /// Convert the RinexSatID to string (1 character plus 2-digit integer).
 
       std::string toString() const
          throw()
@@ -255,13 +260,15 @@ namespace gpstk
 
    }; // class RinexSatID
 
-   /// Stream output for RinexSatID.
+      /// Stream output for RinexSatID.
 
    inline std::ostream& operator<<(std::ostream& s, const RinexSatID& sat)
    {
       s << sat.toString();
       return s;
    }
+
+      //@}
 
 } // namespace gpstk
 
