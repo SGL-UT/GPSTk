@@ -48,9 +48,7 @@
 
 namespace gpstk
 {
-
-      /** @addgroup appframegroup */
-       
+      /// @ingroup AppFrame
       //@{
 
       /**
@@ -90,20 +88,20 @@ namespace gpstk
    }; // End of class 'MainAdapter'
 
 
-   /// A typical way to use this class follows:
-   /// 
-   /// @code
-   /// class PhDRTK: public BasicFramework;
-   /// 
-   /// GPSTK_START_MAIN(PhDRTK);
-   /// @endcode
+      /// A typical way to use this class follows:
+      /// 
+      /// @code
+      /// class PhDRTK: public BasicFramework;
+      /// 
+      /// GPSTK_START_MAIN(PhDRTK);
+      /// @endcode
    
-#define GPSTK_START_MAIN(T)         \
-   int main(int argc, char* argv[]) \
-   {                                \
-      MainAdapter<T> M;             \
-      return M.run(argc,argv);      \
-   }                                \
+#define GPSTK_START_MAIN(T)                     \
+   int main(int argc, char* argv[])             \
+   {                                            \
+      MainAdapter<T> M;                         \
+      return M.run(argc,argv);                  \
+   }                                            \
 
       // @}
 
