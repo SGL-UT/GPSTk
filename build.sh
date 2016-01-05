@@ -182,8 +182,9 @@ if ((verbose>3)); then
     exit
 fi
 
-cd "$build_root"
-
+# Doxygen should be run in the top level directory so it picks up
+# formatting files
+cd "$repo"
 if [ $build_docs ]; then
     log "Pre-build documentation processing ..."
     # Dynamically configure the Doxyfile with the source and destination paths
@@ -192,7 +193,8 @@ if [ $build_docs ]; then
         sources+=" $repo/ext/lib"
     fi
     log "Generating Doxygen files from C/C++ source ..."
-    sed -e "s#gpstk_sources#$sources#g" -e "s#gpstk_doc_dir#$build_root/doc#g" $repo/Doxyfile | doxygen - >"$build_root"/Doxygen.log
+    sed -e "s#^INPUT *=.*#INPUT = $sources#" -e "s#gpstk_sources#$sources#g" -e "s#gpstk_doc_dir#$build_root/doc#g" $repo/Doxyfile >$repo/doxyfoo
+    sed -e "s#^INPUT *=.*#INPUT = $sources#" -e "s#gpstk_sources#$sources#g" -e "s#gpstk_doc_dir#$build_root/doc#g" $repo/Doxyfile | doxygen - >"$build_root"/Doxygen.log
     tar -czf gpstk_doc_cpp.tgz -C doc/html .
     
     if [[ -z $exclude_python && $build_ext ]] ; then
@@ -200,6 +202,8 @@ if [ $build_docs ]; then
         ${python_exe} $repo/swig/docstring_generator.py "$build_root"/doc "$build_root"/swig/doc >"$build_root"/swig_doc.log
     fi
 fi
+
+cd "$build_root"
 
 # setup the cmake command
 args=$@
