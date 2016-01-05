@@ -51,7 +51,7 @@
 
 namespace gpstk
 {
-      /** @addtogroup RinexMet */
+      /// @ingroup FileHandling
       //@{
 
 
@@ -190,10 +190,6 @@ namespace gpstk
                    bool incl = false);
 
 
-         /** @name HeaderValues
-          */
-         //@{
-
       double version; ///< RINEX Version
 
       std::string fileType;                      ///< The type of file it is.
@@ -214,13 +210,8 @@ namespace gpstk
       std::vector<sensorType> sensorTypeList;    ///< A list of sensors used in the file
       std::vector<sensorPosType> sensorPosList;  ///< A list of sensor positions used in the file
 
-         //@}
-
       static const int maxObsPerLine;       ///< Holds the max records per line
 
-         /** @name FormattingStrings
-          */
-         //@{
       static const std::string stringVersion;       ///< "RINEX VERSION / TYPE"
       static const std::string stringRunBy;         ///< "PGM / RUN BY / DATE"
       static const std::string stringComment;       ///< "COMMENT"
@@ -230,7 +221,6 @@ namespace gpstk
       static const std::string stringSensorType;    ///< "SENSOR MOD/TYPE/ACC"
       static const std::string stringSensorPos;     ///< "SENSOR POS XYZ/H"
       static const std::string stringEoH;           ///< "END OF HEADER"
-         //@}
 
 #ifndef SWIG // nested structs not supported by SWIG
          /// Struct for holding information about a sensor 
@@ -283,7 +273,6 @@ namespace gpstk
                gpstk::StringUtils::StringException);
 
    }; // class RinexMetHeader
-
 
       //@}
 

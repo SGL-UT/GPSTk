@@ -126,8 +126,8 @@
 namespace gpstk
 {
 
-      /** @addtogroup Rinex3Obs */
-      ///@{
+      /// @ingroup FileHandling
+      //@{
 
       /**
        * This class models the header for a RINEX 3 Observation File.
@@ -148,8 +148,7 @@ namespace gpstk
           * default values */
       void clear();
 
-         /** @name Rinex3ObsHeaderFormatStrings
-          * RINEX observation file header formatting strings */
+         /// @name RINEX observation file header formatting strings
          ///@{
       static const std::string hsVersion;           ///< RINEX VERSION / TYPE
       static const std::string hsRunBy;             ///< PGM / RUN BY / DATE
@@ -259,10 +258,6 @@ namespace gpstk
       };
 #endif
 
-         /**@name RinexObsTypedefs
-          * typedefs for the many data structures used by Rinex3ObsHeader. */
-         ///@{
-
          /// Commonly used vector of strings
       typedef std::vector<std::string> StringVec;
          /// Simple vector of ints
@@ -302,7 +297,6 @@ namespace gpstk
          /// Vector of wavelength factors
       typedef std::vector<ExtraWaveFact> FactorVector;
 #endif
-         ///@}
 
          /** Storage for R2 <-> R3 conversion of obstypes during
           * reallyGet/Put Vector of strings containing ver 2 obs types
@@ -315,10 +309,6 @@ namespace gpstk
       VersionObsMap mapSysR2toR3ObsID;
 
 
-
-         /**@name Rinex3ObsHeaderValues
-          * RINEX OBS header field storage. */
-         ///@{
       double version;                  ///< RINEX 3 version/type
       std::string fileType;            ///< RINEX 3 file type
          /// file sys char: RinexSatID system OR Mixed
@@ -378,16 +368,11 @@ namespace gpstk
       int leapSeconds;                 ///< LEAP SECONDS
       short numSVs;                    ///< # OF SATELLITES
       PRNNumObsMap numObsForSat;       ///< PRN / # OF OBS
-         ///@}
 
 
          /// number & types of observations R2 only
          ///@bug  this is being used but is not actually being filled
       RinexObsVec obsTypeList;
-
-         /** @name Rinex3ObsHeaderStateVars
-          * Public state variables relating to the RINEX OBS header. */
-         ///@{
 
          /// bits set when header rec.s present & valid
       unsigned long valid;
@@ -395,8 +380,6 @@ namespace gpstk
       bool validEoH;
          /// Map P to Y code observations in RINEX 2 files
       bool PisY;
-
-         ///@}
 
          /// Destructor
       virtual ~Rinex3ObsHeader()
@@ -492,12 +475,12 @@ namespace gpstk
                gpstk::StringUtils::StringException);
 
 
-      /// Helper methods
-      /// The conversion between RINEX v2.11 to RINEX v3 observation
-      /// type is fraught with system-specific idiosyncracies.   These 
-      /// methods read the list of v2.11 obs types stored in R2ObsTypes
-      /// and attempt to build a corresponding list of v3 observation
-      /// types where appropriate.
+         /// Helper methods
+         /// The conversion between RINEX v2.11 to RINEX v3 observation
+         /// type is fraught with system-specific idiosyncracies.   These 
+         /// methods read the list of v2.11 obs types stored in R2ObsTypes
+         /// and attempt to build a corresponding list of v3 observation
+         /// types where appropriate.
       std::vector<RinexObsID> mapR2ObsToR3Obs_G() throw(FFStreamError);
       std::vector<RinexObsID> mapR2ObsToR3Obs_R() throw(FFStreamError);
       std::vector<RinexObsID> mapR2ObsToR3Obs_E() throw(FFStreamError);
@@ -516,10 +499,6 @@ namespace gpstk
           * It looks at \a line to obtain the needed information. */
       CivilTime parseTime(const std::string& line) const;
 
-         ///@name StateVars
-         /// Private state variables used only for processing/reading headers.
-         ///@{
-
          /// save ObsID for cont. "PHASE SHIFT" R3.01
       RinexObsID sysPhaseShiftObsID;
          /// save the syschar while reading ScaleFactor
@@ -535,11 +514,9 @@ namespace gpstk
          /// Scale factor holding data for continuation lines.
       int factor, factorPrev;
 
-         ///@}
-
    }; // end class Rinex3ObsHeader
 
-      ///@}
+      //@}
 
 } // namespace
 

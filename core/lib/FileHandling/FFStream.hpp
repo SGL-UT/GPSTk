@@ -54,7 +54,7 @@
 
 namespace gpstk
 {
-      /** @defgroup formattedfile Formatted File I/O.
+      /** @defgroup FileHandling Formatted File I/O
        *
        * This module includes the data types used for File I/O of
        * structured data formats, e.g. RINEX.
@@ -64,7 +64,7 @@ namespace gpstk
       /// @ingroup exceptionclass
    NEW_EXCEPTION_CLASS(EndOfFile, gpstk::FFStreamError);
 
-      /// @ingroup formattedfile
+      /// @ingroup FileHandling
       //@{
 
       /**
@@ -170,8 +170,6 @@ namespace gpstk
          /// Check if the input stream is the kind of RinexObsStream
       static bool isFFStream(std::istream& i);
 
-         ///@name Data members
-         ///@{
          /// This stores the most recently thrown exception.
       FFStreamError mostRecentException;
 
@@ -180,9 +178,6 @@ namespace gpstk
 
          /// file name
       std::string filename;
-
-         //@}
-
 
          /// FFData is a friend so it can access the try* functions.
       friend class FFData;

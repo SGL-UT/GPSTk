@@ -49,7 +49,7 @@
 
 namespace gpstk
 {
-   /** @addtogroup ephemstore */
+   /// @ingroup ephemstore 
    //@{
    class YumaAlmanacStore : public FileStore<YumaHeader>, 
                             public GPSAlmanacStore

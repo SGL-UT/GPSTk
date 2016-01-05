@@ -48,7 +48,7 @@
 
 namespace gpstk
 {
-      /** @addtogroup GeoDynamics */
+      /// @ingroup GeoDynamics 
       //@{
 
       /** Class to handle earth planet, it'll be taken as the central

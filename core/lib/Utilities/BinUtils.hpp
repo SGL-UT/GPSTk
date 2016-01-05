@@ -79,7 +79,7 @@ namespace gpstk
        */
    namespace BinUtils
    {
-         /// @addtogroup binutilsgroup
+         /// @ingroup binutilsgroup
          //@{
 
          /**

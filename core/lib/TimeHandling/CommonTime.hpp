@@ -59,18 +59,19 @@ namespace gpstk
        *   msod       0    86400000
        *   fsod       0    0.001
        *
-       * The above is somewhat difficult to grasp at first, but the reason for
-       * keeping the fractional part of time in units of seconds is due to the
-       * fact that the time formats usually break at seconds and partial seconds
-       * not at milliseconds and partial milliseconds.  By keeping the value in
-       * seconds, we save ourselves additional work and loss of precision
-       * through conversion of fractional seconds to fractional milliseconds.
+       * The above is somewhat difficult to grasp at first, but the
+       * reason for keeping the fractional part of time in units of
+       * seconds is due to the fact that the time formats usually
+       * break at seconds and partial seconds not at milliseconds and
+       * partial milliseconds.  By keeping the value in seconds, we
+       * save ourselves additional work and loss of precision through
+       * conversion of fractional seconds to fractional milliseconds.
        */
    class CommonTime
    {
-     public:
+   public:
          /**
-          * @defgroup ctc CommonTime Constants
+          * @name CommonTime Constants
           */
          //@{
 
@@ -91,8 +92,7 @@ namespace gpstk
          //@}
 
          /**
-          * @defgroup ctbo CommonTime Basic Operations
-          * Default and Copy Constructors, Assignment Operator and Destructor.
+          * @name CommonTime Basic Operations
           */
          //@{
 
@@ -124,7 +124,7 @@ namespace gpstk
          //@}
 
          /**
-          * @defgroup ctam CommonTime Accessor Methods
+          * @name CommonTime Accessor Methods
           */
          //@{
          /**
@@ -247,7 +247,7 @@ namespace gpstk
          //@}
 
          /**
-          * @defgroup ctao CommonTime Arithmetic Operations
+          * @name CommonTime Arithmetic Operations
           */
          //@{
          /**
@@ -325,7 +325,7 @@ namespace gpstk
          //@}
 
          /**
-          * @defgroup ctco CommonTime Comparison Operators
+          * @name CommonTime Comparison Operators
           * All comparison operators have a parameter "right" which corresponds
           *  to the CommonTime object to the right of the symbol.
           * All comparison operators are const and return true on success

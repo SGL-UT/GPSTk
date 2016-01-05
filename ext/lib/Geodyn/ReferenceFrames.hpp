@@ -51,7 +51,7 @@
 
 namespace gpstk
 {
-      /** @addtogroup GeoDynamics */
+      /// @ingroup GeoDynamics 
       //@{
 
       /** Class to do Reference frame transformation.
