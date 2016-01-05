@@ -59,8 +59,8 @@
 
 namespace gpstk
 {
-   /** @addtogroup filedirgroup */
-   //@{
+      /// @ingroup FileDirProc
+      //@{
 
       /**
        * These functions and macros help process files and directories.
@@ -99,9 +99,9 @@ namespace gpstk
 #else
       inline int makeDir(const std::string& path, unsigned mode)
       {
-        //  #ifdef __sun
-        //      mkdirp(path.c_str(), mode);
-        //  #else
+            //  #ifdef __sun
+            //      mkdirp(path.c_str(), mode);
+            //  #else
          std::string::size_type i = 0;
 
          while ((i = path.find('/',i+1)) != std::string::npos)
@@ -114,7 +114,7 @@ namespace gpstk
 
          }
          mkdir(path.c_str(), mode);
-         // #endif
+            // #endif
          return 0;
       }
      
@@ -140,8 +140,8 @@ namespace gpstk
       inline bool fileAccessCheck(const char* fname, 
                                   std::ios::openmode mode=std::ios::in)
       {
-        std::fstream test(fname, mode);
-        return !test.fail();
+         std::fstream test(fname, mode);
+         return !test.fail();
       }
 
       inline bool fileAccessCheck(const std::string& fname, 
@@ -153,7 +153,7 @@ namespace gpstk
 
    } // namespace FileUtils
 
-   //@}
+      //@}
 
 } // namespace
 
