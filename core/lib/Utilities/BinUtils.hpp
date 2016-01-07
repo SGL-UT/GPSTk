@@ -99,44 +99,44 @@ namespace gpstk
          // Why so damn many functions when we used to use templates?
          // Because of optimization, mostly.
 
-      inline void itohs  (const void* p, uint16_t& v, unsigned pos = 0);
-      inline void itohl  (const void* p, uint32_t& v, unsigned pos = 0);
-      inline void itohll (const void* p, uint64_t& v, unsigned pos = 0);
-      inline void itohss (const void* p, int16_t& v,  unsigned pos = 0);
-      inline void itohsl (const void* p, int32_t& v,  unsigned pos = 0);
-      inline void itohsll(const void* p, int64_t& v,  unsigned pos = 0);
-      inline void itohf  (const void* p, float& v,    unsigned pos = 0);
-      inline void itohd  (const void* p, double& v,   unsigned pos = 0);
+      inline void buitohs  (const void* p, uint16_t& v, unsigned pos = 0);
+      inline void buitohl  (const void* p, uint32_t& v, unsigned pos = 0);
+      inline void buitohll (const void* p, uint64_t& v, unsigned pos = 0);
+      inline void buitohss (const void* p, int16_t& v,  unsigned pos = 0);
+      inline void buitohsl (const void* p, int32_t& v,  unsigned pos = 0);
+      inline void buitohsll(const void* p, int64_t& v,  unsigned pos = 0);
+      inline void buitohf  (const void* p, float& v,    unsigned pos = 0);
+      inline void buitohd  (const void* p, double& v,   unsigned pos = 0);
       
-      inline void ntohs  (const void* p, uint16_t& v, unsigned pos = 0);
-      inline void ntohl  (const void* p, uint32_t& v, unsigned pos = 0);
-      inline void ntohll (const void* p, uint64_t& v, unsigned pos = 0);
-      inline void ntohss (const void* p, int16_t& v,  unsigned pos = 0);
-      inline void ntohsl (const void* p, int32_t& v,  unsigned pos = 0);
-      inline void ntohsll(const void* p, int64_t& v,  unsigned pos = 0);
-      inline void ntohf  (const void* p, float& v,    unsigned pos = 0);
-      inline void ntohd  (const void* p, double& v,   unsigned pos = 0);
+      inline void buntohs  (const void* p, uint16_t& v, unsigned pos = 0);
+      inline void buntohl  (const void* p, uint32_t& v, unsigned pos = 0);
+      inline void buntohll (const void* p, uint64_t& v, unsigned pos = 0);
+      inline void buntohss (const void* p, int16_t& v,  unsigned pos = 0);
+      inline void buntohsl (const void* p, int32_t& v,  unsigned pos = 0);
+      inline void buntohsll(const void* p, int64_t& v,  unsigned pos = 0);
+      inline void buntohf  (const void* p, float& v,    unsigned pos = 0);
+      inline void buntohd  (const void* p, double& v,   unsigned pos = 0);
 
          // going FROM host should have the buffer being the target and
          // the typed value being the source.
 
-      inline void htois  (void* p, uint16_t v,  unsigned pos = 0);
-      inline void htoil  (void* p, uint32_t v,  unsigned pos = 0);
-      inline void htoill (void* p, uint64_t v,  unsigned pos = 0);
-      inline void htoiss (void* p, int16_t v,   unsigned pos = 0);
-      inline void htoisl (void* p, int32_t v,   unsigned pos = 0);
-      inline void htoisll(void* p, int64_t v,   unsigned pos = 0);
-      inline void htoif  (void* p, float v,     unsigned pos = 0);
-      inline void htoid  (void* p, double v,    unsigned pos = 0);
+      inline void buhtois  (void* p, uint16_t v,  unsigned pos = 0);
+      inline void buhtoil  (void* p, uint32_t v,  unsigned pos = 0);
+      inline void buhtoill (void* p, uint64_t v,  unsigned pos = 0);
+      inline void buhtoiss (void* p, int16_t v,   unsigned pos = 0);
+      inline void buhtoisl (void* p, int32_t v,   unsigned pos = 0);
+      inline void buhtoisll(void* p, int64_t v,   unsigned pos = 0);
+      inline void buhtoif  (void* p, float v,     unsigned pos = 0);
+      inline void buhtoid  (void* p, double v,    unsigned pos = 0);
       
-      inline void htons  (void* p, uint16_t v,  unsigned pos = 0);
-      inline void htonl  (void* p, uint32_t v,  unsigned pos = 0);
-      inline void htonll (void* p, uint64_t v,  unsigned pos = 0);
-      inline void htonss (void* p, int16_t v,   unsigned pos = 0);
-      inline void htonsl (void* p, int32_t v,   unsigned pos = 0);
-      inline void htonsll(void* p, int64_t v,   unsigned pos = 0);
-      inline void htonf  (void* p, float v,     unsigned pos = 0);
-      inline void htond  (void* p, double v,    unsigned pos = 0);
+      inline void buhtons  (void* p, uint16_t v,  unsigned pos = 0);
+      inline void buhtonl  (void* p, uint32_t v,  unsigned pos = 0);
+      inline void buhtonll (void* p, uint64_t v,  unsigned pos = 0);
+      inline void buhtonss (void* p, int16_t v,   unsigned pos = 0);
+      inline void buhtonsl (void* p, int32_t v,   unsigned pos = 0);
+      inline void buhtonsll(void* p, int64_t v,   unsigned pos = 0);
+      inline void buhtonf  (void* p, float v,     unsigned pos = 0);
+      inline void buhtond  (void* p, double v,    unsigned pos = 0);
 
          /**
           * Decode the item specified from the string and convert it
@@ -515,7 +515,7 @@ namespace gpstk
           * The implementation of integer byte swapping, for example,
           * cannot be used for floating point types. */
 
-      inline void itohs(const void* p, uint16_t& v, unsigned pos)
+      inline void buitohs(const void* p, uint16_t& v, unsigned pos)
       {
          const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
          const uint16_t *tp = reinterpret_cast<const uint16_t*>(cp);
@@ -528,7 +528,7 @@ namespace gpstk
       }
 
 
-      inline void itohl(const void* p, uint32_t& v, unsigned pos)
+      inline void buitohl(const void* p, uint32_t& v, unsigned pos)
       {
          const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
          const uint32_t *tp = reinterpret_cast<const uint32_t*>(cp);
@@ -543,7 +543,7 @@ namespace gpstk
       }
 
 
-      inline void itohll(const void* p, uint64_t& v, unsigned pos)
+      inline void buitohll(const void* p, uint64_t& v, unsigned pos)
       {
          const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
          const uint64_t *tp = reinterpret_cast<const uint64_t*>(cp);
@@ -562,7 +562,7 @@ namespace gpstk
       }
 
 
-      inline void itohss(const void* p, int16_t& v, unsigned pos)
+      inline void buitohss(const void* p, int16_t& v, unsigned pos)
       {
          const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
          const int16_t *tp = reinterpret_cast<const int16_t*>(cp);
@@ -576,7 +576,7 @@ namespace gpstk
       }
       
       
-      inline void itohsl(const void* p, int32_t& v, unsigned pos)
+      inline void buitohsl(const void* p, int32_t& v, unsigned pos)
       {
          const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
          const int32_t *tp = reinterpret_cast<const int32_t*>(cp);
@@ -592,7 +592,7 @@ namespace gpstk
       }
 
 
-      inline void itohsll(const void* p, int64_t& v, unsigned pos)
+      inline void buitohsll(const void* p, int64_t& v, unsigned pos)
       {
          const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
          const int64_t *tp = reinterpret_cast<const int64_t*>(cp);
@@ -612,7 +612,7 @@ namespace gpstk
       }
 
 
-      inline void itohf(const void* p, float& v, unsigned pos)
+      inline void buitohf(const void* p, float& v, unsigned pos)
       {
          const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
          uint8_t *vp = reinterpret_cast<uint8_t*>(&v);
@@ -627,7 +627,7 @@ namespace gpstk
       }
 
 
-      inline void itohd(const void* p, double& v, unsigned pos)
+      inline void buitohd(const void* p, double& v, unsigned pos)
       {
          const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
          uint8_t *vp = reinterpret_cast<uint8_t*>(&v);
@@ -647,7 +647,7 @@ namespace gpstk
 
          // network to host conversions
 
-      inline void ntohs(const void* p, uint16_t& v, unsigned pos)
+      inline void buntohs(const void* p, uint16_t& v, unsigned pos)
       {
          const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
          const uint16_t *tp = reinterpret_cast<const uint16_t*>(cp);
@@ -660,7 +660,7 @@ namespace gpstk
       }
 
 
-      inline void ntohl(const void* p, uint32_t& v, unsigned pos)
+      inline void buntohl(const void* p, uint32_t& v, unsigned pos)
       {
          const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
          const uint32_t *tp = reinterpret_cast<const uint32_t*>(cp);
@@ -675,7 +675,7 @@ namespace gpstk
       }
 
 
-      inline void ntohll(const void* p, uint64_t& v, unsigned pos)
+      inline void buntohll(const void* p, uint64_t& v, unsigned pos)
       {
          const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
          const uint64_t *tp = reinterpret_cast<const uint64_t*>(cp);
@@ -694,7 +694,7 @@ namespace gpstk
       }
 
 
-      inline void ntohss(const void* p, int16_t& v, unsigned pos)
+      inline void buntohss(const void* p, int16_t& v, unsigned pos)
       {
          const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
          const int16_t *tp = reinterpret_cast<const int16_t*>(cp);
@@ -708,7 +708,7 @@ namespace gpstk
       }
       
       
-      inline void ntohsl(const void* p, int32_t& v, unsigned pos)
+      inline void buntohsl(const void* p, int32_t& v, unsigned pos)
       {
          const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
          const int32_t *tp = reinterpret_cast<const int32_t*>(cp);
@@ -724,7 +724,7 @@ namespace gpstk
       }
 
 
-      inline void ntohsll(const void* p, int64_t& v, unsigned pos)
+      inline void buntohsll(const void* p, int64_t& v, unsigned pos)
       {
          const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
          const int64_t *tp = reinterpret_cast<const int64_t*>(cp);
@@ -744,7 +744,7 @@ namespace gpstk
       }
 
 
-      inline void ntohf(const void* p, float& v, unsigned pos)
+      inline void buntohf(const void* p, float& v, unsigned pos)
       {
          const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
          uint8_t *vp = reinterpret_cast<uint8_t*>(&v);
@@ -759,7 +759,7 @@ namespace gpstk
       }
 
 
-      inline void ntohd(const void* p, double& v, unsigned pos)
+      inline void buntohd(const void* p, double& v, unsigned pos)
       {
          const uint8_t *cp = static_cast<const uint8_t*>(p) + pos;
          uint8_t *vp = reinterpret_cast<uint8_t*>(&v);
@@ -779,7 +779,7 @@ namespace gpstk
 
          // host to intel conversions
 
-      inline void htois(void* p, uint16_t v, unsigned pos)
+      inline void buhtois(void* p, uint16_t v, unsigned pos)
       {
          uint8_t *cp = static_cast<uint8_t*>(p) + pos;
          uint16_t *tp = reinterpret_cast<uint16_t*>(cp);
@@ -792,7 +792,7 @@ namespace gpstk
       }
 
 
-      inline void htoil(void* p, uint32_t v, unsigned pos)
+      inline void buhtoil(void* p, uint32_t v, unsigned pos)
       {
          uint8_t *cp = static_cast<uint8_t*>(p) + pos;
          uint32_t *tp = reinterpret_cast<uint32_t*>(cp);
@@ -807,7 +807,7 @@ namespace gpstk
       }
 
 
-      inline void htoill(void* p, uint64_t v, unsigned pos)
+      inline void buhtoill(void* p, uint64_t v, unsigned pos)
       {
          uint8_t *cp = static_cast<uint8_t*>(p) + pos;
          uint64_t *tp = reinterpret_cast<uint64_t*>(cp);
@@ -826,7 +826,7 @@ namespace gpstk
       }
 
 
-      inline void htoiss(void* p, int16_t v, unsigned pos)
+      inline void buhtoiss(void* p, int16_t v, unsigned pos)
       {
          uint8_t *cp = static_cast<uint8_t*>(p) + pos;
          int16_t *tp = reinterpret_cast<int16_t*>(cp);
@@ -840,7 +840,7 @@ namespace gpstk
       }
       
       
-      inline void htoisl(void* p, int32_t v, unsigned pos)
+      inline void buhtoisl(void* p, int32_t v, unsigned pos)
       {
          uint8_t *cp = static_cast<uint8_t*>(p) + pos;
          int32_t *tp = reinterpret_cast<int32_t*>(cp);
@@ -856,7 +856,7 @@ namespace gpstk
       }
 
 
-      inline void htoisll(void* p, int64_t v, unsigned pos)
+      inline void buhtoisll(void* p, int64_t v, unsigned pos)
       {
          uint8_t *cp = static_cast<uint8_t*>(p) + pos;
          int64_t *tp = reinterpret_cast<int64_t*>(cp);
@@ -876,7 +876,7 @@ namespace gpstk
       }
 
 
-      inline void htoif(void* p, float v, unsigned pos)
+      inline void buhtoif(void* p, float v, unsigned pos)
       {
          uint8_t *cp = static_cast<uint8_t*>(p) + pos;
          uint8_t *vp = reinterpret_cast<uint8_t*>(&v);
@@ -891,7 +891,7 @@ namespace gpstk
       }
 
 
-      inline void htoid(void* p, double v, unsigned pos)
+      inline void buhtoid(void* p, double v, unsigned pos)
       {
          uint8_t *cp = static_cast<uint8_t*>(p) + pos;
          uint8_t *vp = reinterpret_cast<uint8_t*>(&v);
@@ -911,7 +911,7 @@ namespace gpstk
 
          // host to network conversions
 
-      inline void htons(void* p, uint16_t v, unsigned pos)
+      inline void buhtons(void* p, uint16_t v, unsigned pos)
       {
          uint8_t *cp = static_cast<uint8_t*>(p) + pos;
          uint16_t *tp = reinterpret_cast<uint16_t*>(cp);
@@ -924,7 +924,7 @@ namespace gpstk
       }
 
 
-      inline void htonl(void* p, uint32_t v, unsigned pos)
+      inline void buhtonl(void* p, uint32_t v, unsigned pos)
       {
          uint8_t *cp = static_cast<uint8_t*>(p) + pos;
          uint32_t *tp = reinterpret_cast<uint32_t*>(cp);
@@ -939,7 +939,7 @@ namespace gpstk
       }
 
 
-      inline void htonll(void* p, uint64_t v, unsigned pos)
+      inline void buhtonll(void* p, uint64_t v, unsigned pos)
       {
          uint8_t *cp = static_cast<uint8_t*>(p) + pos;
          uint64_t *tp = reinterpret_cast<uint64_t*>(cp);
@@ -958,7 +958,7 @@ namespace gpstk
       }
 
 
-      inline void htonss(void* p, int16_t v, unsigned pos)
+      inline void buhtonss(void* p, int16_t v, unsigned pos)
       {
          uint8_t *cp = static_cast<uint8_t*>(p) + pos;
          int16_t *tp = reinterpret_cast<int16_t*>(cp);
@@ -972,7 +972,7 @@ namespace gpstk
       }
       
       
-      inline void htonsl(void* p, int32_t v, unsigned pos)
+      inline void buhtonsl(void* p, int32_t v, unsigned pos)
       {
          uint8_t *cp = static_cast<uint8_t*>(p) + pos;
          int32_t *tp = reinterpret_cast<int32_t*>(cp);
@@ -988,7 +988,7 @@ namespace gpstk
       }
 
 
-      inline void htonsll(void* p, int64_t v, unsigned pos)
+      inline void buhtonsll(void* p, int64_t v, unsigned pos)
       {
          uint8_t *cp = static_cast<uint8_t*>(p) + pos;
          int64_t *tp = reinterpret_cast<int64_t*>(cp);
@@ -1008,7 +1008,7 @@ namespace gpstk
       }
 
 
-      inline void htonf(void* p, float v, unsigned pos)
+      inline void buhtonf(void* p, float v, unsigned pos)
       {
          uint8_t *cp = static_cast<uint8_t*>(p) + pos;
          uint8_t *vp = reinterpret_cast<uint8_t*>(&v);
@@ -1023,7 +1023,7 @@ namespace gpstk
       }
 
 
-      inline void htond(void* p, double v, unsigned pos)
+      inline void buhtond(void* p, double v, unsigned pos)
       {
          uint8_t *cp = static_cast<uint8_t*>(p) + pos;
          uint8_t *vp = reinterpret_cast<uint8_t*>(&v);
