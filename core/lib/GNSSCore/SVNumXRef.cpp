@@ -461,10 +461,9 @@ SVNumXRef::SVNumXRef( )
          //Grabs the values to then insert into PtoN
       int navNum = values.first;
       int prnNum = values.second.getPRNNum();
-      CommonTime beginningTime = values.second.getBeginTime();
-      CommonTime endingTime = values.second.getEndTime();
-         //Insert to tree
-      PtoNMap.insert( std::pair<const int, XRefNode>( prnNum, XRefNode( navNum, beginningTime, endingTime )));
+      TimeRange valid = values.second.getTimeRange();
+		//Insert to tree
+      PtoNMap.insert( std::pair<const int, XRefNode>( prnNum, XRefNode( navNum, valid )));
    }
 
 }
@@ -701,17 +700,23 @@ int SVNumXRef::dump(std::ostream& out, bool checkOverlap) const
 
 //-------------- Methods for XRefNode -----------------
 XRefNode::XRefNode( const int NumArg,
+							 const gpstk::TimeRange tr )
+{	
+	Num = NumArg;
+	valid = tr;
+}
+								
+XRefNode::XRefNode( const int NumArg,
                              const gpstk::CommonTime begDT,
                              const gpstk::CommonTime endDT )
 {
    Num = NumArg;
-   begValid = begDT;
-   endValid = endDT;
+   valid = TimeRange( begDT, endDT );
 }
 
 bool XRefNode::isApplicable( gpstk::CommonTime dt ) const
 {
-   if (dt>=begValid && dt<=endValid) return(true);
+   if (valid.inRange(dt)) return(true);
    return(false);
 }
 
@@ -727,15 +732,15 @@ std::string XRefNode::toString() const
    sout += "   "+numOut;
    //sout += "   "+string(begValid begDt);
    if( Num < 10 ){//used to create correct spacing
-      sout += "      "+printTime(begValid, tform/*"%02m/%02d/%04Y"*/);
+      sout += "      "+printTime(valid.getStart(), tform/*"%02m/%02d/%04Y"*/);
    }else{
-      sout += "     "+printTime(begValid, tform/*"%02m/%02d/%04Y"*/);
+      sout += "     "+printTime(valid.getStart(), tform/*"%02m/%02d/%04Y"*/);
    }
-   std::string endTime = printTime(endValid, tform/*"%02m/%02d/%04Y"*/);
+   std::string endTime = printTime(valid.getEnd(), tform/*"%02m/%02d/%04Y"*/);
    if(endTime == "01/01/4713"){//used to detect end of time
       sout += "   End Of Time";
    }else{
-      sout += "   "+printTime(endValid, tform/*"%02m/%02d/%04Y"*/);
+      sout += "   "+printTime(valid.getEnd(), tform/*"%02m/%02d/%04Y"*/);
    }
    return sout;
 }

@@ -163,5 +163,6 @@ inline gpstk::CommonTime XRefNode::getBeginTime() const { return( valid.getStart
 inline gpstk::CommonTime XRefNode::getEndTime() const { return( valid.getEnd() ); }
 inline gpstk::TimeRange XRefNode::getTimeRange() const { return( valid ); }
 
+
 }
 #endif
