@@ -451,6 +451,7 @@ SVNumXRef::SVNumXRef( )
    NtoPMap.insert( std::pair<const int, XRefNode>( 73, XRefNode(  10,
                                        CivilTime( 2015,  10,   31, 16,  23,  0.0, TimeSystem::GPS),
                                        CommonTime::END_OF_TIME  )));
+                                         
                                        
       //Iterate through the data to produce the PtoNMap
    multimap<int,XRefNode>::const_iterator itate;
@@ -748,7 +749,7 @@ std::string XRefNode::toString() const
 // Returns true if there are no overlaps, and false otherwise 		  
 bool SVNumXRef::isConsistent() const
 {
-	bool retVal = true;
+   bool retVal = true;
    // Defining iterators
    multimap<int, XRefNode>::const_iterator cit1;
    multimap<int, XRefNode>::const_iterator cit2;
@@ -759,31 +760,34 @@ bool SVNumXRef::isConsistent() const
       cit2++;  // cit2 always starts the nested loop one higher than cit1
       for (; cit2 != NtoPMap.end(); cit2++)
       {
-	 int key1 = cit1->first;		// keys represent the SVN numbers
-	 int key2 = cit2->first;
-         const XRefNode xr1 = cit1->second;	// these const xr variables represent the XRefNode so we can access the begin and end times
-	 const XRefNode xr2 = cit2->second;	// of each SVN/PRN pair
-	 int val1 = xr1.getPRNNum();		// vals represent the PRN numbers
-	 int val2 = xr2.getPRNNum();
-	 if ((key1 == key2) || (val1 == val2))	// checks initial condition for an overlap; if neither are true, there is no overlap
-	 {
-	    const TimeRange& tr1 = xr1.getTimeRange();
-	    const TimeRange& tr2 = xr2.getTimeRange();
-	    if (tr1.overlaps(tr2))
-	    {
-			retVal = false;
-			cout << "Overlap between SV"
-				 << setw(2) << key1 << "/PRN"
-				 << setw(2) << val1 << "at"
-				 << tr1.printf() << endl;
-			cout << "            and"
-				 << setw(2) << key2 << "/PRN"
-				 << setw(2) << val2 << "at"
-				 << tr2.printf() << endl;
-	 }
-      }
-   }
+		int key1 = cit1->first;		// keys represent the SVN numbers
+		int key2 = cit2->first;
+        const XRefNode xr1 = cit1->second;	// these const xr variables represent the XRefNode so we can access the begin and end times
+		const XRefNode xr2 = cit2->second;	// of each SVN/PRN pair
+		int val1 = xr1.getPRNNum();		// vals represent the PRN numbers
+		int val2 = xr2.getPRNNum();
+	 
+		 if ((key1 == key2) || (val1 == val2))	// checks initial condition for an overlap; if neither are true, there is no overlap
+		 {
+		    const TimeRange& tr1 = xr1.getTimeRange();
+		    const TimeRange& tr2 = xr2.getTimeRange();
+		    if (tr1.overlaps(tr2))
+		    {
+				retVal = false;
+				std::cout << "Overlap between SV"
+					 << setw(2) << key1 << "/PRN"
+					 << setw(2) << val1 << "at"
+					 << tr1.printf() << endl;
+				std::cout << "            and"
+					 << setw(2) << key2 << "/PRN"
+					 << setw(2) << val2 << "at"
+					 << tr2.printf() << endl;
+			}
+	      }
+    
+	  }
+	}
    return retVal;					// if we reach this point, we know there are no overlaps
 }   
-}
+
    

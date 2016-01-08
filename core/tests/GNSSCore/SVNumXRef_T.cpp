@@ -10,19 +10,28 @@
 #include <iostream>
 #include <cmath>
 
+#include "CivilTime.hpp"
 #include "SVNumXRef.hpp"
 
 #include "TestUtil.hpp"
+
+using namespace gpstk;
 
 int main()
 {
    TUDEF("SVNumXRef", "");
    
-   gpstk::SVNumXRef svNumXRef;
+   SVNumXRef svNumXRef;
    
    testFramework.changeSourceMethod("svNumXRef isConsistent");
    TUASSERTE(bool, true, svNumXRef.isConsistent());
-  
+   
+   testFramework.changeSourceMethod("svNumXRef NAVSTARIDAvailable");
+   TUASSERTE(bool, true, svNumXRef.NAVSTARIDAvailable(8, 
+                          CivilTime(2015, 10, 1, 0, 0, 0.0, TimeSystem::GPS)));
+   TUASSERTE(bool, false, svNumXRef.NAVSTARIDAvailable(8, 
+                          CivilTime(2015, 7, 14, 0, 0, 0.0, TimeSystem::GPS)));
+                         
    std::cout << "Total Failures for " << __FILE__ << ": " << testFramework.countFails() << std::endl;
    
    return testFramework.countFails();
