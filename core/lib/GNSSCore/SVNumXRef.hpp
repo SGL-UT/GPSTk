@@ -149,7 +149,6 @@ class SVNumXRef
       bool NAVSTARIDActive( const int NAVSTARID, const gpstk::CommonTime dt = SystemTime() ) const;
       int dump(std::ostream& out=std::cout, bool checkOverlap=false) const;
       bool isConsistent() const;
-      bool overlap( const XRefNode& xr1, const XRefNode& xr2) const;
 
    protected:
       std::multimap<int,XRefNode> NtoPMap;

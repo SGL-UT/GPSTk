@@ -748,6 +748,7 @@ std::string XRefNode::toString() const
 // Returns true if there are no overlaps, and false otherwise 		  
 bool SVNumXRef::isConsistent() const
 {
+	bool retVal = true;
    // Defining iterators
    multimap<int, XRefNode>::const_iterator cit1;
    multimap<int, XRefNode>::const_iterator cit2;
@@ -766,29 +767,23 @@ bool SVNumXRef::isConsistent() const
 	 int val2 = xr2.getPRNNum();
 	 if ((key1 == key2) || (val1 == val2))	// checks initial condition for an overlap; if neither are true, there is no overlap
 	 {
-	    cout << "key 1 & 2: " << key1 << ", " << key2 << endl
-		 << "val 1 & 2: " << val1 << ", " << val2 << endl
-		 << "xr1:" << xr1.toString() << endl
-		 << "xr2:" << xr2.toString() << endl;
-	  
-	    if (overlap(xr1, xr2)) 		// if overlap() returns true, return false and exit
-	       return false;
+	    const TimeRange& tr1 = xr1.getTimeRange();
+	    const TimeRange& tr2 = xr2.getTimeRange();
+	    if (tr1.overlaps(tr2))
+	    {
+			retVal = false;
+			cout << "Overlap between SV"
+				 << setw(2) << key1 << "/PRN"
+				 << setw(2) << val1 << "at"
+				 << tr1.printf() << endl;
+			cout << "            and"
+				 << setw(2) << key2 << "/PRN"
+				 << setw(2) << val2 << "at"
+				 << tr2.printf() << endl;
 	 }
       }
    }
-   return true;					// if we reach this point, we know there are no overlaps
+   return retVal;					// if we reach this point, we know there are no overlaps
 }   
-
-// Returns true if there is an overlap, returns false otherwise
-bool SVNumXRef::overlap (const XRefNode& xr1, const XRefNode& xr2) const
-{
-   //if ((xr1.getBeginTime() > xr2.getEndTime()) || (xr1.getEndTime() < xr2.getBeginTime()))
-   if ((xr1.getBeginTime() < xr2.getEndTime()) && (xr1.getEndTime() > xr2.getBeginTime()))
-   {
-      cout << xr1.getBeginTime() << xr1.getEndTime() << endl 
-      << xr2.getBeginTime() << xr2.getEndTime() << endl;
-      return true;
-   }
-   return false;
 }
    
