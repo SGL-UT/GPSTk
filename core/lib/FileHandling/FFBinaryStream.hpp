@@ -160,19 +160,19 @@ namespace gpstk
    inline void FFBinaryStream :: getData(uint16_t& v)
       throw(FFStreamError, EndOfFile)
    {
-      FFBIN_GET_DATA(itohs,ntohs);
+      FFBIN_GET_DATA(buitohs,buntohs);
    }
 
    inline void FFBinaryStream :: getData(uint32_t& v)
       throw(FFStreamError, EndOfFile)
    {
-      FFBIN_GET_DATA(itohl,ntohl);
+      FFBIN_GET_DATA(buitohl,buntohl);
    }
 
    inline void FFBinaryStream :: getData(uint64_t& v)
       throw(FFStreamError, EndOfFile)
    {
-      FFBIN_GET_DATA(itohll,ntohll);
+      FFBIN_GET_DATA(buitohll,buntohll);
    }
 
    inline void FFBinaryStream :: getData(int8_t& v)
@@ -185,31 +185,31 @@ namespace gpstk
    inline void FFBinaryStream :: getData(int16_t& v)
       throw(FFStreamError, EndOfFile)
    {
-      FFBIN_GET_DATA(itohss,ntohss);
+      FFBIN_GET_DATA(buitohss,buntohss);
    }
 
    inline void FFBinaryStream :: getData(int32_t& v)
       throw(FFStreamError, EndOfFile)
    {
-      FFBIN_GET_DATA(itohsl,ntohsl);
+      FFBIN_GET_DATA(buitohsl,buntohsl);
    }
 
    inline void FFBinaryStream :: getData(int64_t& v)
       throw(FFStreamError, EndOfFile)
    {
-      FFBIN_GET_DATA(itohsll,ntohsll);
+      FFBIN_GET_DATA(buitohsll,buntohsll);
    }
 
    inline void FFBinaryStream :: getData(float& v)
       throw(FFStreamError, EndOfFile)
    {
-      FFBIN_GET_DATA(itohf,ntohf);
+      FFBIN_GET_DATA(buitohf,buntohf);
    }
 
    inline void FFBinaryStream :: getData(double& v)
       throw(FFStreamError, EndOfFile)
    {
-      FFBIN_GET_DATA(itohd,ntohd);
+      FFBIN_GET_DATA(buitohd,buntohd);
    }
 
 
@@ -223,19 +223,19 @@ namespace gpstk
    inline void FFBinaryStream :: writeData(uint16_t v)
       throw(FFStreamError)
    {
-      FFBIN_WRITE_DATA(htois,htons);
+      FFBIN_WRITE_DATA(buhtois,buhtons);
    }
 
    inline void FFBinaryStream :: writeData(uint32_t v)
       throw(FFStreamError)
    {
-      FFBIN_WRITE_DATA(htoil,htonl);
+      FFBIN_WRITE_DATA(buhtoil,buhtonl);
    }
 
    inline void FFBinaryStream :: writeData(uint64_t v)
       throw(FFStreamError)
    {
-      FFBIN_WRITE_DATA(htoill,htonll);
+      FFBIN_WRITE_DATA(buhtoill,buhtonll);
    }
 
    inline void FFBinaryStream :: writeData(int8_t v)
@@ -248,31 +248,31 @@ namespace gpstk
    inline void FFBinaryStream :: writeData(int16_t v)
       throw(FFStreamError)
    {
-      FFBIN_WRITE_DATA(htoiss,htonss);
+      FFBIN_WRITE_DATA(buhtoiss,buhtonss);
    }
 
    inline void FFBinaryStream :: writeData(int32_t v)
       throw(FFStreamError)
    {
-      FFBIN_WRITE_DATA(htoisl,htonsl);
+      FFBIN_WRITE_DATA(buhtoisl,buhtonsl);
    }
 
    inline void FFBinaryStream :: writeData(int64_t v)
       throw(FFStreamError)
    {
-      FFBIN_WRITE_DATA(htoisll,htonsll);
+      FFBIN_WRITE_DATA(buhtoisll,buhtonsll);
    }
 
    inline void FFBinaryStream :: writeData(float v)
       throw(FFStreamError)
    {
-      FFBIN_WRITE_DATA(htoif,htonf);
+      FFBIN_WRITE_DATA(buhtoif,buhtonf);
    }
 
    inline void FFBinaryStream :: writeData(double v)
       throw(FFStreamError)
    {
-      FFBIN_WRITE_DATA(htoid,htond);
+      FFBIN_WRITE_DATA(buhtoid,buhtond);
    }
 
 }
