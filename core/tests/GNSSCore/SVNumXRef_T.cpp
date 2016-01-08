@@ -7,20 +7,23 @@
 *  PRN-SVN relationships and 0 otherwise.
 *
 *********************************************************************/
-#include <stdio.h>
+#include <iostream>
+#include <cmath>
+
 #include "SVNumXRef.hpp"
 
-using namespace std;
-using namespace gpstk;
+#include "TestUtil.hpp"
 
-int main( int argc, char * argv[] )
+int main()
 {
-   cout << "Entering SVNumXRef_T" << endl;
-   int testVal;
-   SVNumXRef svNumXRef;
-   testVal = svNumXRef.isConsistent();
-   if (testVal == 1)
-      testVal = 0;
+   TUDEF("SVNumXRef", "");
+   
+   gpstk::SVNumXRef svNumXRef;
+   
+   testFramework.changeSourceMethod("svNumXRef isConsistent");
+   TUASSERTE(bool, true, svNumXRef.isConsistent());
   
-   return(testVal);
+   std::cout << "Total Failures for " << __FILE__ << ": " << testFramework.countFails() << std::endl;
+   
+   return testFramework.countFails();
 }
