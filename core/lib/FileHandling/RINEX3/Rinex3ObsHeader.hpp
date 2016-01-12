@@ -55,79 +55,83 @@
 #include "RinexSatID.hpp"
 #include "RinexObsID.hpp"
 
-/** @page rinobshead RINEX OBS header implementation
- *
- * For each header line type, the following are listed in the table below:
- *   1. The label
- *   2. Its usage in RINEX 2
- *   3. Its usage in RINEX 3
- *   4. The name for validity checking and header variable storage (see below)
- *   5. Variables (data members) storing the header information
- *
- * | Header Field         | v2  | v3  | Name              | Variables         |
- * | :------------------- | :-- | :-- | :---------------- | :---------------- |
- * | RINEX VERSION / TYPE | req | req | Version           | version           |
- * |                    ^ |   ^ |   ^ |                 ^ | fileType          |
- * |                    ^ |   ^ |   ^ |                 ^ | fileSys           |
- * |                    ^ |   ^ |   ^ |                 ^ | fileSysSat        |
- * |                    ^ |   ^ |   ^ |                 ^ | preserveVerType   |
- * | PGM / RUN BY / DATE  | req | req | RunBy             | fileProgram       |
- * |                    ^ |   ^ |   ^ |                 ^ | fileAgency        |
- * |                    ^ |   ^ |   ^ |                 ^ | date              |
- * |                    ^ |   ^ |   ^ |                 ^ | preserveDate      |
- * | COMMENT              | opt | opt | Comment           | commentList       |
- * | MARKER NAME          | req | req | MarkerName        | markerName        |
- * | MARKER NUMBER        | opt | opt | MarkerNumber      | markerNumber      |
- * | MARKER TYPE          |  -  | req | MarkerType        | markerType        |
- * | OBSERVER / AGENCY    | req | req | Observer          | observer          |
- * |                    ^ |   ^ |   ^ |                 ^ | agency            |
- * | REC # / TYPE / VERS  | req | req | Receiver          | recNo             |
- * |                    ^ |   ^ |   ^ |                 ^ | recType           |
- * |                    ^ |   ^ |   ^ |                 ^ | recVers           |
- * | ANT # / TYPE         | req | req | AntennaType       | antNo             |
- * |                    ^ |   ^ |   ^ |                 ^ | antType           |
- * | APPROX POSITION XYZ  | req | req | AntennaPosition   | antennaPosition   |
- * | ANTENNA: DELTA H/E/N | req | req | AntennaDeltaHEN   | antennaDeltaHEN   |
- * | ANTENNA: DELTA X/Y/Z |  -  | opt | AntennaDeltaXYZ   | antennaDeltaXYZ   |
- * | ANTENNA: PHASECENTER |  -  | opt | AntennaPhaseCtr   | antennaSatSys     |
- * |                    ^ |   ^ |   ^ |                 ^ | antennaObsCode    |
- * |                    ^ |   ^ |   ^ |                 ^ | antennaPhaseCtr   |
- * | ANTENNA: B.SIGHT XYZ |  -  | opt | AntennaBsightXYZ  | antennaBsightXYZ  |
- * | ANTENNA: ZERODIR AZI |  -  | opt | AntennaZeroDirAzi | antennaZeroDirAzi |
- * | ANTENNA: ZERODIR XYZ |  -  | opt | AntennaZeroDirXYZ | antennaZeroDirXYZ |
- * | CENTER OF MASS: XYZ  |  -  | opt | CenterOfMass      | centerOfMass      |
- * | # / TYPES OF OBSERV  | req |  -  | NumObs            | |
- * | SYS / # / OBS TYPES  |  -  | req | SystemNumObs      | mapObsTypes       |
- * | WAVELENGTH FACT L1/2 | opt |  -  | WaveFact          | wavelengthFactor  |
- * |                    ^ |   ^ |   ^ |                 ^ | extraWaveFactList |
- * | SIGNAL STRENGTH UNIT |  -  | opt | SigStrengthUnit   | sigStrengthUnit   |
- * | INTERVAL             | opt | opt | Interval          | interval          |
- * | TIME OF FIRST OBS    | req | req | FirstTime         | firstObs          |
- * | TIME OF LAST OBS     | opt | opt | LastTime          | lastObs           |
- * | RCV CLOCK OFFS APPL  | opt | opt | ReceiverOffset    | receiverOffset    |
- * | SYS / DCBS APPLIED   |  -  | opt | SystemDCBSapplied | infoDCBS          |
- * | SYS / PCVS APPLIED   |  -  | opt | SystemPCVSapplied | infoPCVS          |
- * | SYS / SCALE FACTOR   |  -  | opt | SystemScaleFac    | sysSfacMap        |
- * | SYS / PHASE SHIFT    |  -  | req | SystemPhaseShift  | sysPhaseShift     |
- * | GLONASS SLOT / FRQ # |  -  | req | GlonassSlotFreqNo | glonassFreqNo     |
- * | GLONASS COD/PHS/BIS  |  -  | req | GlonassCodPhsBias | glonassCodPhsBias |
- * | LEAP SECONDS         | opt | opt | LeapSeconds       | leapSeconds       |
- * | # OF SATELLITES      | opt | opt | NumSats           | numSVs            |
- * | PRN / # OF OBS       | opt | opt | PrnObs            | numObsForSat      |
- * | END OF HEADER        | req | req | EoH (header only) | -                 |
- *
- * The "Name" column in the above table is used for both validity
- * flags and header strings.  For the header strings, prepend "hs",
- * e.g. "hsVersion" will give you the header field label.  For
- * validity flags, prepend valid, e.g. "validVersion" would indicate
- * the presence of the "RINEX VERSION / TYPE" header record.
- */
 
 namespace gpstk
 {
 
       /// @ingroup FileHandling
       //@{
+
+      /** @page rinobshead RINEX OBS header implementation
+       *
+       * For each header line type, the following are listed in the
+       * table below:
+       *   1. The label
+       *   2. Its usage in RINEX 2
+       *   3. Its usage in RINEX 3
+       *   4. The name for validity checking and header variable
+       *      storage (see below)
+       *   5. Variables (data members) storing the header information
+       *
+       * | Header Field         | v2  | v3  | Name              | Variables         |
+       * | :------------------- | :-- | :-- | :---------------- | :---------------- |
+       * | RINEX VERSION / TYPE | req | req | Version           | version           |
+       * |                    ^ |   ^ |   ^ |                 ^ | fileType          |
+       * |                    ^ |   ^ |   ^ |                 ^ | fileSys           |
+       * |                    ^ |   ^ |   ^ |                 ^ | fileSysSat        |
+       * |                    ^ |   ^ |   ^ |                 ^ | preserveVerType   |
+       * | PGM / RUN BY / DATE  | req | req | RunBy             | fileProgram       |
+       * |                    ^ |   ^ |   ^ |                 ^ | fileAgency        |
+       * |                    ^ |   ^ |   ^ |                 ^ | date              |
+       * |                    ^ |   ^ |   ^ |                 ^ | preserveDate      |
+       * | COMMENT              | opt | opt | Comment           | commentList       |
+       * | MARKER NAME          | req | req | MarkerName        | markerName        |
+       * | MARKER NUMBER        | opt | opt | MarkerNumber      | markerNumber      |
+       * | MARKER TYPE          |  -  | req | MarkerType        | markerType        |
+       * | OBSERVER / AGENCY    | req | req | Observer          | observer          |
+       * |                    ^ |   ^ |   ^ |                 ^ | agency            |
+       * | REC # / TYPE / VERS  | req | req | Receiver          | recNo             |
+       * |                    ^ |   ^ |   ^ |                 ^ | recType           |
+       * |                    ^ |   ^ |   ^ |                 ^ | recVers           |
+       * | ANT # / TYPE         | req | req | AntennaType       | antNo             |
+       * |                    ^ |   ^ |   ^ |                 ^ | antType           |
+       * | APPROX POSITION XYZ  | req | req | AntennaPosition   | antennaPosition   |
+       * | ANTENNA: DELTA H/E/N | req | req | AntennaDeltaHEN   | antennaDeltaHEN   |
+       * | ANTENNA: DELTA X/Y/Z |  -  | opt | AntennaDeltaXYZ   | antennaDeltaXYZ   |
+       * | ANTENNA: PHASECENTER |  -  | opt | AntennaPhaseCtr   | antennaSatSys     |
+       * |                    ^ |   ^ |   ^ |                 ^ | antennaObsCode    |
+       * |                    ^ |   ^ |   ^ |                 ^ | antennaPhaseCtr   |
+       * | ANTENNA: B.SIGHT XYZ |  -  | opt | AntennaBsightXYZ  | antennaBsightXYZ  |
+       * | ANTENNA: ZERODIR AZI |  -  | opt | AntennaZeroDirAzi | antennaZeroDirAzi |
+       * | ANTENNA: ZERODIR XYZ |  -  | opt | AntennaZeroDirXYZ | antennaZeroDirXYZ |
+       * | CENTER OF MASS: XYZ  |  -  | opt | CenterOfMass      | centerOfMass      |
+       * | # / TYPES OF OBSERV  | req |  -  | NumObs            | |
+       * | SYS / # / OBS TYPES  |  -  | req | SystemNumObs      | mapObsTypes       |
+       * | WAVELENGTH FACT L1/2 | opt |  -  | WaveFact          | wavelengthFactor  |
+       * |                    ^ |   ^ |   ^ |                 ^ | extraWaveFactList |
+       * | SIGNAL STRENGTH UNIT |  -  | opt | SigStrengthUnit   | sigStrengthUnit   |
+       * | INTERVAL             | opt | opt | Interval          | interval          |
+       * | TIME OF FIRST OBS    | req | req | FirstTime         | firstObs          |
+       * | TIME OF LAST OBS     | opt | opt | LastTime          | lastObs           |
+       * | RCV CLOCK OFFS APPL  | opt | opt | ReceiverOffset    | receiverOffset    |
+       * | SYS / DCBS APPLIED   |  -  | opt | SystemDCBSapplied | infoDCBS          |
+       * | SYS / PCVS APPLIED   |  -  | opt | SystemPCVSapplied | infoPCVS          |
+       * | SYS / SCALE FACTOR   |  -  | opt | SystemScaleFac    | sysSfacMap        |
+       * | SYS / PHASE SHIFT    |  -  | req | SystemPhaseShift  | sysPhaseShift     |
+       * | GLONASS SLOT / FRQ # |  -  | req | GlonassSlotFreqNo | glonassFreqNo     |
+       * | GLONASS COD/PHS/BIS  |  -  | req | GlonassCodPhsBias | glonassCodPhsBias |
+       * | LEAP SECONDS         | opt | opt | LeapSeconds       | leapSeconds       |
+       * | # OF SATELLITES      | opt | opt | NumSats           | numSVs            |
+       * | PRN / # OF OBS       | opt | opt | PrnObs            | numObsForSat      |
+       * | END OF HEADER        | req | req | EoH (header only) | -                 |
+       *
+       * The "Name" column in the above table is used for both
+       * validity flags and header strings.  For the header strings,
+       * prepend "hs", e.g. "hsVersion" will give you the header field
+       * label.  For validity flags, prepend valid,
+       * e.g. "validVersion" would indicate the presence of the "RINEX
+       * VERSION / TYPE" header record.
+       */
 
       /**
        * This class models the header for a RINEX 3 Observation File.

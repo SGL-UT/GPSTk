@@ -78,71 +78,116 @@ namespace gpstk
        *
        * These functions and macros are to be used for manipulating
        * binary data.
+       *
+       * @note the implementation of the byte swapping routines here
+       *   has been chosen for both performance and correctness.  The
+       *   implementation of integer byte swapping, for example,
+       *   cannot be used for floating point types.
        */
    namespace BinUtils
    {
          /// @ingroup binutilsgroup
          //@{
 
-         /**
-          * Converts Intel little-endian to host byte order, const version.
-          * @param[in] p a pointer to the buffer containing the
-          *   little-endian value of type T.
-          * @param[out] v the typed value in host byte order.
-          * @param[in] pos an optional offset (bytes) into p to decode from.
-          * @throw AssertionFailure if sizeof(T) is not even.
-          */
-
-         // going to host should have the buffer being the source and
-         // the typed value being the target.
-
          // Why so damn many functions when we used to use templates?
-         // Because of optimization, mostly.
+         // Because of optimization, but mostly due to issues of correctness.
 
+         /** Converts Intel little-endian to host byte order.
+          * @param[in] p a pointer to the buffer containing the
+          *   little-endian value.
+          * @param[out] v the value in host byte order.
+          * @param[in] pos an optional offset (bytes) into p to decode from.
+          */
       inline void buitohs  (const void* p, uint16_t& v, unsigned pos = 0);
+         /// @copydoc gpstk::BinUtils::buitohs
       inline void buitohl  (const void* p, uint32_t& v, unsigned pos = 0);
+         /// @copydoc gpstk::BinUtils::buitohs
       inline void buitohll (const void* p, uint64_t& v, unsigned pos = 0);
+         /// @copydoc gpstk::BinUtils::buitohs
       inline void buitohss (const void* p, int16_t& v,  unsigned pos = 0);
+         /// @copydoc gpstk::BinUtils::buitohs
       inline void buitohsl (const void* p, int32_t& v,  unsigned pos = 0);
+         /// @copydoc gpstk::BinUtils::buitohs
       inline void buitohsll(const void* p, int64_t& v,  unsigned pos = 0);
+         /// @copydoc gpstk::BinUtils::buitohs
       inline void buitohf  (const void* p, float& v,    unsigned pos = 0);
+         /// @copydoc gpstk::BinUtils::buitohs
       inline void buitohd  (const void* p, double& v,   unsigned pos = 0);
       
+         /** Converts Network (big-endian) to host byte order.
+          * @param[in] p a pointer to the buffer containing the
+          *   big-endian value.
+          * @param[out] v the value in host byte order.
+          * @param[in] pos an optional offset (bytes) into p to decode from.
+          */
       inline void buntohs  (const void* p, uint16_t& v, unsigned pos = 0);
+         /// @copydoc gpstk::BinUtils::buntohs
       inline void buntohl  (const void* p, uint32_t& v, unsigned pos = 0);
+         /// @copydoc gpstk::BinUtils::buntohs
       inline void buntohll (const void* p, uint64_t& v, unsigned pos = 0);
+         /// @copydoc gpstk::BinUtils::buntohs
       inline void buntohss (const void* p, int16_t& v,  unsigned pos = 0);
+         /// @copydoc gpstk::BinUtils::buntohs
       inline void buntohsl (const void* p, int32_t& v,  unsigned pos = 0);
+         /// @copydoc gpstk::BinUtils::buntohs
       inline void buntohsll(const void* p, int64_t& v,  unsigned pos = 0);
+         /// @copydoc gpstk::BinUtils::buntohs
       inline void buntohf  (const void* p, float& v,    unsigned pos = 0);
+         /// @copydoc gpstk::BinUtils::buntohs
       inline void buntohd  (const void* p, double& v,   unsigned pos = 0);
 
-         // going FROM host should have the buffer being the target and
-         // the typed value being the source.
 
+         /** Converts host byte order to Intel little-endian.
+          * @param[in,out] p a pointer to the buffer where the converted
+          *   value will be stored.
+          * @param[in] v the value in host byte order.
+          * @param[in] pos an optional offset (bytes) into p to store
+          *   the encoded value.
+          */
       inline void buhtois  (void* p, uint16_t v,  unsigned pos = 0);
+         /// @copydoc gpstk::BinUtils::buhtois
       inline void buhtoil  (void* p, uint32_t v,  unsigned pos = 0);
+         /// @copydoc gpstk::BinUtils::buhtois
       inline void buhtoill (void* p, uint64_t v,  unsigned pos = 0);
+         /// @copydoc gpstk::BinUtils::buhtois
       inline void buhtoiss (void* p, int16_t v,   unsigned pos = 0);
+         /// @copydoc gpstk::BinUtils::buhtois
       inline void buhtoisl (void* p, int32_t v,   unsigned pos = 0);
+         /// @copydoc gpstk::BinUtils::buhtois
       inline void buhtoisll(void* p, int64_t v,   unsigned pos = 0);
+         /// @copydoc gpstk::BinUtils::buhtois
       inline void buhtoif  (void* p, float v,     unsigned pos = 0);
+         /// @copydoc gpstk::BinUtils::buhtois
       inline void buhtoid  (void* p, double v,    unsigned pos = 0);
       
+         /** Converts host byte order to Network byte order (big-endian).
+          * @param[in,out] p a pointer to the buffer where the converted
+          *   value will be stored.
+          * @param[in] v the value in host byte order.
+          * @param[in] pos an optional offset (bytes) into p to store
+          *   the encoded value.
+          */
       inline void buhtons  (void* p, uint16_t v,  unsigned pos = 0);
+         /// @copydoc gpstk::BinUtils::buhtons
       inline void buhtonl  (void* p, uint32_t v,  unsigned pos = 0);
+         /// @copydoc gpstk::BinUtils::buhtons
       inline void buhtonll (void* p, uint64_t v,  unsigned pos = 0);
+         /// @copydoc gpstk::BinUtils::buhtons
       inline void buhtonss (void* p, int16_t v,   unsigned pos = 0);
+         /// @copydoc gpstk::BinUtils::buhtons
       inline void buhtonsl (void* p, int32_t v,   unsigned pos = 0);
+         /// @copydoc gpstk::BinUtils::buhtons
       inline void buhtonsll(void* p, int64_t v,   unsigned pos = 0);
+         /// @copydoc gpstk::BinUtils::buhtons
       inline void buhtonf  (void* p, float v,     unsigned pos = 0);
+         /// @copydoc gpstk::BinUtils::buhtons
       inline void buhtond  (void* p, double v,    unsigned pos = 0);
 
          /**
           * Decode the item specified from the string and convert it
           * from network byte order to host byte order.
-          * @param str the string from which to obtain data.
-          * @param pos offset into the string from which to pull the data.
+          * @param[in] str the string from which to obtain data.
+          * @param[in] pos offset into the string from which to pull the data.
           * @warn This function does not check for appropriate string length.
           */
       template <class T>
@@ -152,8 +197,8 @@ namespace gpstk
          /**
           * Decode the item specified from the string and convert it
           * from little-endian byte order to host byte order.
-          * @param str the string from which to obtain data.
-          * @param pos offset into the string from which to pull the data.
+          * @param[in] str the string from which to obtain data.
+          * @param[in] pos offset into the string from which to pull the data.
           * @warn This function does not check for appropriate string length.
           */
       template <class T>
@@ -163,7 +208,7 @@ namespace gpstk
          /**
           * Decode and remove the item specified from the head of the string
           * and convert it from network byte order to host byte order.
-          * @param str the string from which to obtain data.
+          * @param[in,out] str the string from which to obtain data.
           * @warn This function does not check for appropriate string length.
           */
       template <class T>
@@ -172,7 +217,7 @@ namespace gpstk
          /**
           * Decode and remove the item specified from the head of the string
           * and convert it from little-endian byte order to host byte order.
-          * @param str the string from which to obtain data.
+          * @param[in,out] str the string from which to obtain data.
           * @warn This function does not check for appropriate string length.
           */
       template <class T>
@@ -181,7 +226,7 @@ namespace gpstk
          /** 
           * Add the network ordered binary representation of a var to the
           * the given string.
-          * @param v the object of type T to convert to a string.
+          * @param[in] v the object of type T to convert to a string.
           */
       template<class T>
       inline std::string encodeVar( const T& v );
@@ -189,7 +234,11 @@ namespace gpstk
          /** 
           * Add the network ordered binary representation of a var to the
           * the given string.
-          * @param v the object of type T to convert to a string.
+          * @param[in] v the object of type T to convert to a string.
+          * @param[in,out] str the string where the encoded data
+          *   will be stored.
+          * @param[in] pos the position in str where the encoded
+          *   variable will be stored.
           */
       template<class T>
       inline void encodeVar( const T& v, std::string& str, size_t pos=0 );
@@ -197,7 +246,7 @@ namespace gpstk
          /** 
           * Add the little-endian binary representation of a var to the
           * the given string.
-          * @param v the object of type T to convert to a string.
+          * @param[in] v the object of type T to convert to a string.
           */
       template<class T>
       inline std::string encodeVarLE( const T& v );
@@ -205,7 +254,11 @@ namespace gpstk
          /** 
           * Add the little-endian binary representation of a var to the
           * the given string.
-          * @param v the object of type T to convert to a string.
+          * @param[in] v the object of type T to convert to a string.
+          * @param[in,out] str the string where the encoded data
+          *   will be stored.
+          * @param[in] pos the position in str where the encoded
+          *   variable will be stored.
           */
       template<class T>
       inline void encodeVarLE( const T& v, std::string& str, size_t pos=0 );
@@ -213,6 +266,12 @@ namespace gpstk
          /// This is thrown when there is an error processing a CRC
          /// @ingroup exceptiongroup
       NEW_EXCEPTION_CLASS(CRCException, Exception);
+
+         /**
+          * Count the set bits in an 32-bit unsigned integer.
+          * Originated due to need in EngNav::checkParity
+          */
+      inline unsigned short countBits(uint32_t v);
 
          /// Reflects the lower \a bitnum bits of \a crc
       inline unsigned long reflect (unsigned long crc, 
@@ -222,20 +281,20 @@ namespace gpstk
       class CRCParam
       {
       public:
-            /// Constructor
-         CRCParam(int o, 
-                  unsigned long p, 
-                  unsigned long i, 
-                  unsigned long f,
-                  bool d, 
-                  bool ri, 
-                  bool ro)
-               : order(o), polynom(p), initial(i), final(f), direct(d),
-                 refin(ri), refout(ro)
-         {}
+            /** Constructor.
+             * @param[in] o polynomial order w/o leading '1' bit.
+             * @param[in] p CRC polynomial without the leading '1' bit.
+             * @param[in] i initial CRC initial value.
+             * @param[in] f final final XOR value.
+             * @param[in] d kind of algorithm, true = no augmented zero bits.
+             * @param[in] ri reflect the data bytes before processing.
+             * @param[in] ro reflect the CRC result before final XOR.
+             */
+         CRCParam(int o, unsigned long p, unsigned long i, unsigned long f,
+                  bool d, bool ri, bool ro);
 
-         int order;              ///< CRC polynomial order (without leading '1' bit).
-         unsigned long polynom;  ///< CRC polynomial without the leading '1' bit.
+         int order;              ///< CRC polynomial order w/o leading '1' bit.
+         unsigned long polynom;  ///< CRC polynomial w/o the leading '1' bit.
          unsigned long initial;  ///< initial CRC initial value.
          unsigned long final;    ///< final final XOR value.
          bool direct;            ///< kind of algorithm, true = no augmented zero bits.
@@ -243,9 +302,13 @@ namespace gpstk
          bool refout;            ///< reflect the CRC result before final XOR.
       };
 
+         /// CCITT CRC parameters
       extern const CRCParam CRCCCITT;
+         /// CRC-16 parameters
       extern const CRCParam CRC16;
+         /// CRC-32 parameters
       extern const CRCParam CRC32;
+         /// CRC-24Q parameters
       extern const CRCParam CRC24Q;
 
          /**
@@ -257,9 +320,6 @@ namespace gpstk
           * @param[in] params see documentation of CRCParam:w
           * @return the CRC value
           */
-         // This code "stolen" from Sven Reifegerste (zorci@gmx.de).
-         // Found at http://rcswww.urz.tu-dresden.de/~sr21/crctester.c
-         // from link at http://rcswww.urz.tu-dresden.de/~sr21/crc.html
       inline uint32_t computeCRC(const unsigned char *data,
                                  unsigned long len,
                                  const CRCParam& params);
@@ -276,11 +336,7 @@ namespace gpstk
 
          //@}
 
-         /**
-          * Count the set bits in an 32-bit unsigned integer.
-          * Originated due to need in EngNav::checkParity
-          */
-      static inline unsigned short countBits(uint32_t v)
+      inline unsigned short countBits(uint32_t v)
       {
             // Stolen from http://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetParallel
          uint32_t c; // store the total here
@@ -411,6 +467,10 @@ namespace gpstk
          return (crcout);
       }
 
+
+         // This code "stolen" from Sven Reifegerste (zorci@gmx.de).
+         // Found at http://rcswww.urz.tu-dresden.de/~sr21/crctester.c
+         // from link at http://rcswww.urz.tu-dresden.de/~sr21/crc.html
       inline uint32_t computeCRC(const unsigned char *data,
                                  unsigned long len,
                                  const CRCParam& params)
@@ -509,11 +569,6 @@ namespace gpstk
          return xc;
       }
 
-
-         /** @note the implementation of the byte swapping routines
-          * here has been chosen for both performance and correctness.
-          * The implementation of integer byte swapping, for example,
-          * cannot be used for floating point types. */
 
       inline void buitohs(const void* p, uint16_t& v, unsigned pos)
       {
