@@ -98,7 +98,22 @@ namespace gpstk
             throw(std::exception, FFStreamError);
          virtual void decodeBIN(std::string& str)
             throw(std::exception, FFStreamError);
-         float snr(float chipRate) const throw();
+            /** Translate the ireg value to an SNR in dB*Hz.
+             * @param[in] chipRate The chipping rate of the code.
+             * @param[in] mag The magnitude of the carrier estimate.
+             * @note The magnitude of the carrier estimate is a factor
+             *   specified by Ashtech.  Currently this algorithm is
+             *   designed for the Ashtech Z-12 receiver and will not
+             *   yield correct results for other Ashtech receivers.
+             *   The default setting in the Z-12 receiver is 2 bit
+             *   quantization, for which the magnitude of the carrier
+             *   estimate is 4.14.  For Z-12 receivers using 1-bit
+             *   quantization, the magnitude is 2.18.  Other Ashtech
+             *   receivers can only provide a 1-bit sample, however
+             *   the magnitude for those receivers is not 2.18.
+             * @return the SNR in dB*Hz.
+             */
+         float snr(float chipRate, float magnitude = 4.14) const throw();
          void dump(std::ostream& out) const;
       };
          
