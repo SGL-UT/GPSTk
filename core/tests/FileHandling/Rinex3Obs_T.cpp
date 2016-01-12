@@ -46,6 +46,7 @@
 #include <iostream>
 #include <string>
 
+using namespace std;
 using namespace gpstk;
 
 //============================================================
@@ -80,46 +81,46 @@ public:
 
 private:
 
-   std::string dataFilePath;
-   std::string tempFilePath;
-   std::string file_sep;
+   string dataFilePath;
+   string tempFilePath;
+   string file_sep;
 
-   std::string dataRinexObsFile;
-   std::string dataIncompleteHeader;
-   std::string dataInvalidLineLength;
-   std::string dataInvalidNumPRNWaveFact;
-   std::string dataNotObs;
-   std::string dataSystemGeosync;
-   std::string dataSystemGlonass;
-   std::string dataSystemMixed;
-   std::string dataSystemTransit;
-   std::string dataUnSupVersion ;
-   std::string dataRinexContData;
+   string dataRinexObsFile;
+   string dataIncompleteHeader;
+   string dataInvalidLineLength;
+   string dataInvalidNumPRNWaveFact;
+   string dataNotObs;
+   string dataSystemGeosync;
+   string dataSystemGlonass;
+   string dataSystemMixed;
+   string dataSystemTransit;
+   string dataUnSupVersion ;
+   string dataRinexContData;
 
-   std::string dataBadEpochLine;
-   std::string dataBadEpochFlag;
-   std::string dataBadLineSize;
-   std::string dataInvalidTimeFormat;
+   string dataBadEpochLine;
+   string dataBadEpochFlag;
+   string dataBadLineSize;
+   string dataInvalidTimeFormat;
 
-   std::string dataFilterTest1;
-   std::string dataFilterTest2;
-   std::string dataFilterTest3;
-   std::string dataFilterTest4;
+   string dataFilterTest1;
+   string dataFilterTest2;
+   string dataFilterTest3;
+   string dataFilterTest4;
 
-   std::string dataTestOutput;
-   std::string dataTestOutput2;
-   std::string dataTestOutput3;
-   std::string dataTestOutput4;
-   std::string dataTestOutputObsDump;
-   std::string dataTestOutputDataException;
-   std::string dataTestFilterOutput;
+   string dataTestOutput;
+   string dataTestOutput2;
+   string dataTestOutput3;
+   string dataTestOutput4;
+   string dataTestOutputObsDump;
+   string dataTestOutputDataException;
+   string dataTestFilterOutput;
 
-   std::string dataInputRinex3ObsFile;
-   std::string dataInputRinex2ObsFile;
-   std::string dataOutputRinex3ObsFile;
-   std::string dataOutputRinex2ObsFile;
+   string dataInputRinex3ObsFile;
+   string dataInputRinex2ObsFile;
+   string dataOutputRinex3ObsFile;
+   string dataOutputRinex2ObsFile;
 
-   std::string testMesg;
+   string testMesg;
 };
 
 //============================================================
@@ -129,7 +130,7 @@ private:
 void Rinex3Obs_T :: init( void )
 {
 
-   std::cout<<"Running tests for Rinex version 2.0"<<std::endl;
+   cout << "Running tests for Rinex version 2.x" << endl;
 
    TestUtil test0;
    dataFilePath = test0.getDataPath();
@@ -205,7 +206,7 @@ void Rinex3Obs_T :: init( void )
 void Rinex3Obs_T :: toRinex3(void)
 {
 
-   std::cout<<"Running tests for Rinex version 3.0"<<std::endl;
+   cout<<"Running tests for Rinex version 3.0"<<endl;
 
       //----------------------------------------
       // Full file paths
@@ -302,11 +303,11 @@ void Rinex3Obs_T :: toConversionTest( void )
     */
 int Rinex3Obs_T :: headerExceptionTest( void )
 {
-   TUDEF( "Rinex3ObsStream", "dump" );
+   TUDEF( "Rinex3ObsStream", "headerExceptionTest" );
 
-   std::string msg_test_desc  = "Rinex3ObsStream, headerExceptionTest";
-   std::string msg_false_pass = ", threw the wrong number of exceptions.";
-   std::string msg_fail       = ", threw an unexpected exception.";
+   string msg_test_desc  = "Rinex3ObsStream, headerExceptionTest";
+   string msg_false_pass = ", threw the wrong number of exceptions.";
+   string msg_fail       = ", threw an unexpected exception.";
 
    try
    {
@@ -323,9 +324,9 @@ int Rinex3Obs_T :: headerExceptionTest( void )
       gpstk::Rinex3ObsStream unsupv( dataUnSupVersion );
       gpstk::Rinex3ObsStream contdata( dataRinexContData );
 
-      gpstk::Rinex3ObsStream out( dataTestOutput, std::ios::out );
-      gpstk::Rinex3ObsStream out2( dataTestOutput3, std::ios::out );
-      gpstk::Rinex3ObsStream dump( dataTestOutputObsDump, std::ios::out );
+      gpstk::Rinex3ObsStream out( dataTestOutput, ios::out );
+      gpstk::Rinex3ObsStream out2( dataTestOutput3, ios::out );
+      gpstk::Rinex3ObsStream dump( dataTestOutputObsDump, ios::out );
 
       gpstk::Rinex3ObsHeader rinex3ObsHeader;
       gpstk::Rinex3ObsHeader ihh;
@@ -354,7 +355,7 @@ int Rinex3Obs_T :: headerExceptionTest( void )
       unsupv >> unsupvh;
       contdata >> contdatah; // not in v3 test
 
-      out.exceptions( std::fstream::failbit );
+      out.exceptions( fstream::failbit );
          // write good and bad headers, checking for exceptions
       try
       {
@@ -492,26 +493,26 @@ int Rinex3Obs_T :: hardCodeTest( void )
 
    bool files_equal = false;
    double CompareVersion;
-   std::string CompareFileProgram;
-   std::string CompareFileAgency;
-   std::string CompareDate;
+   string CompareFileProgram;
+   string CompareFileAgency;
+   string CompareDate;
 
       // Previous comments indicated that these Rinex methods
       // are not expected to match in the top two lines of the file
    int num_lines_skip = 2;
 
-   TestUtil test2( "Rinex3ObsStream", "dump", __FILE__, __LINE__ );
+   TestUtil test2( "Rinex3ObsStream", "hardCodeTest", __FILE__, __LINE__ );
 
-   std::string msg_test_desc   =
+   string msg_test_desc   =
       "Rinex3ObsStream, read write test, comparing input file and output file";
-   std::string msg_fail_equal  = ", input and output do not match.";
-   std::string msg_fail_except = ", threw an unexpected exception.";
+   string msg_fail_equal  = ", input and output do not match.";
+   string msg_fail_except = ", threw an unexpected exception.";
 
    try
    {
       gpstk::Rinex3ObsStream rinex3ObsFile( dataRinexObsFile );
-      gpstk::Rinex3ObsStream out( dataTestOutput2, std::ios::out );
-      gpstk::Rinex3ObsStream dump( dataTestOutputObsDump, std::ios::out );
+      gpstk::Rinex3ObsStream out( dataTestOutput2, ios::out );
+      gpstk::Rinex3ObsStream dump( dataTestOutputObsDump, ios::out );
       gpstk::Rinex3ObsHeader rinex3ObsHeader;
       gpstk::Rinex3ObsData rinex3ObsData;
 
@@ -521,23 +522,23 @@ int Rinex3Obs_T :: hardCodeTest( void )
       while( rinex3ObsFile >> rinex3ObsData )
       {
          out << rinex3ObsData;
-            // std::cout<<out.header.version<<std::endl; stream has header info passed to it
+            // cout<<out.header.version<<endl; stream has header info passed to it
       }
 
       if (rinex3ObsHeader.version == 2.1)
       {
          CompareVersion = 2.10;
-         CompareFileProgram = (std::string)"row";
-         CompareFileAgency = (std::string)"Dataflow Processing";
-         CompareDate = (std::string)"04/11/2006 23:59:18";
+         CompareFileProgram = (string)"row";
+         CompareFileAgency = (string)"Dataflow Processing";
+         CompareDate = (string)"04/11/2006 23:59:18";
       }
 
       else if (rinex3ObsHeader.version == 3.02)
       {
          CompareVersion = 3.02;
-         CompareFileProgram = (std::string)"cnvtToRINEX 2.25.0";
-         CompareFileAgency = (std::string)"convertToRINEX OPR";
-         CompareDate = (std::string)"23-Jan-15 22:34 UTC";
+         CompareFileProgram = (string)"cnvtToRINEX 2.25.0";
+         CompareFileAgency = (string)"convertToRINEX OPR";
+         CompareDate = (string)"23-Jan-15 22:34 UTC";
       }
 
       test2.assert( rinex3ObsHeader.version == CompareVersion,
@@ -571,13 +572,13 @@ int Rinex3Obs_T :: hardCodeTest( void )
 int Rinex3Obs_T :: dataExceptionsTest( void )
 {
 
-   TestUtil test3( "Rinex3ObsStream", "dump", __FILE__, __LINE__ );
+   TestUtil test3( "Rinex3ObsStream", "dataExceptionsTest", __FILE__, __LINE__ );
 
-   std::string msg_test_desc   =
+   string msg_test_desc   =
       "Rinex3ObsStream, test various gpstk exception throws, including BadEpochLine and BadEpochFlag";
-   std::string msg_fail_throw  =
+   string msg_fail_throw  =
       ", not all gpstk exceptions were thrown as expected.";
-   std::string msg_fail_except = ", threw an unexpected exception.";
+   string msg_fail_except = ", threw an unexpected exception.";
 
    try
    {
@@ -585,7 +586,7 @@ int Rinex3Obs_T :: dataExceptionsTest( void )
       gpstk::Rinex3ObsStream BadEpochFlag( dataBadEpochFlag );
       gpstk::Rinex3ObsStream BadLineSize( dataBadLineSize );
       gpstk::Rinex3ObsStream InvalidTimeFormat( dataInvalidTimeFormat );
-      gpstk::Rinex3ObsStream out( dataTestOutputDataException, std::ios::out );
+      gpstk::Rinex3ObsStream out( dataTestOutputDataException, ios::out );
       gpstk::Rinex3ObsData BadEpochLined;
       gpstk::Rinex3ObsData BadEpochFlagd;
       gpstk::Rinex3ObsData BadLineSized;
@@ -624,91 +625,76 @@ int Rinex3Obs_T :: dataExceptionsTest( void )
 //------------------------------------------------------------
 int Rinex3Obs_T :: filterOperatorsTest( void )
 {
-
-   TestUtil test4( "Rinex3ObsStream", "open", __FILE__, __LINE__ );
-
-   std::string msg_test_desc = "";
-
+   TUDEF( "Rinex3Obs", "filterOperatorsTest");
    try
    {
-      gpstk::Rinex3ObsStream FilterStream1( dataFilterTest1 );
-      FilterStream1.open( dataFilterTest1, std::ios::in );
+      cout << "Writing " << dataTestFilterOutput << endl;
+      fstream out( dataTestFilterOutput.c_str(), ios::out );
+   
+      out << "Reading dataFilterTest1:" << endl;
+      gpstk::Rinex3ObsStream s1(dataFilterTest1);
+      gpstk::Rinex3ObsHeader h1;
+      gpstk::Rinex3ObsData d1;
+      s1 >> h1;
+      h1.dump(out);
+      while( s1 >> d1)
+         d1.dump(out);
+      out << "Read " << s1.recordNumber << " records." << endl;
+      
+      out << "Reading dataFilterTest2:" << endl;
+      gpstk::Rinex3ObsStream s2(dataFilterTest2);   
+      gpstk::Rinex3ObsHeader h2;
+      gpstk::Rinex3ObsData d2;
+      s2 >> h2;
+      h2.dump(out);
+      while( s2 >> d2)
+         d2.dump(out);
+      out << "Read " << s2.recordNumber << " records." << endl;
 
-      gpstk::Rinex3ObsStream FilterStream2( dataFilterTest2  );
-      gpstk::Rinex3ObsStream FilterStream3( dataFilterTest3  );
-      gpstk::Rinex3ObsStream FilterStream4( dataFilterTest4  );
-      gpstk::Rinex3ObsStream out( dataTestFilterOutput, std::ios::out );
-
-      gpstk::Rinex3ObsHeader FilterHeader1;
-      gpstk::Rinex3ObsHeader FilterHeader2;
-      gpstk::Rinex3ObsHeader FilterHeader3;
-      gpstk::Rinex3ObsHeader FilterHeader4;
-
-      gpstk::Rinex3ObsData FilterData1;
-      gpstk::Rinex3ObsData FilterData2;
-      gpstk::Rinex3ObsData FilterData3;
-      gpstk::Rinex3ObsData FilterData4;
-
-
-      FilterStream1 >> FilterHeader1;
-      FilterStream2 >> FilterHeader2;
-      FilterStream3 >> FilterHeader3;
-      FilterStream4 >> FilterHeader4;
-
-      while( FilterStream1 >> FilterData1)
-      {
-      }
-      while( FilterStream2 >> FilterData2)
-      {
-      }
-      while( FilterStream3 >> FilterData3)
-      {
-      }
-      while( FilterStream4 >> FilterData4)
-      {
-      }
-
+      // These files are simply read in here. Probably assuming an exception would be thrown if there is an error.
+      // that's not what
+      /// @todo: make these tests test something
+      gpstk::Rinex3ObsStream s3( dataFilterTest3  );
+      gpstk::Rinex3ObsHeader h3;
+      gpstk::Rinex3ObsData d3;
+      s3 >> h3;
+      while( s3 >> d3);
+      
+      gpstk::Rinex3ObsStream s4( dataFilterTest4  );
+      gpstk::Rinex3ObsHeader h4;
+      gpstk::Rinex3ObsData d4;
+      s4 >> h4;
+      while( s4 >> d4);
+      
       gpstk::Rinex3ObsHeaderTouchHeaderMerge merged;
-      merged( FilterHeader1 );
-      merged( FilterHeader2 );
+      merged( h1 );
+      merged( h2 );
 
       gpstk::Rinex3ObsDataOperatorLessThanFull( merged.obsSet );
-      out << merged.theHeader;
+      out << "Merged Header:" << endl;
+      merged.theHeader.dump(out);
 
       gpstk::Rinex3ObsDataOperatorEqualsSimple EqualsSimple;
-      msg_test_desc =
-         "Rinex3ObsDataOperatorEqualsSimple( FilterData1, FilterData1 ), should evaluate as true";
-      test4.assert( EqualsSimple( FilterData1, FilterData1 ), msg_test_desc,
-                    __LINE__ );
-
+      TUCSM("Rinex3ObsDataOperatorEqualsSimple");
+      TUASSERTE(bool, true, EqualsSimple( d1, d1 ));
+      
       gpstk::Rinex3ObsDataOperatorLessThanSimple LessThanSimple;
-      msg_test_desc =
-         "Rinex3ObsDataOperatorLessThanSimple( FilterData1, FilterData1 ) should evaluated as false";
-      test4.assert( !LessThanSimple( FilterData1, FilterData1 ), msg_test_desc,
-                    __LINE__ );
+      TUCSM("Rinex3ObsDataOperatorLessThanSimple");
+      TUASSERTE(bool, false, LessThanSimple( d1, d1 ));
 
       gpstk::Rinex3ObsDataOperatorLessThanFull LessThanFull( merged.obsSet );
-      msg_test_desc =
-         "Rinex3ObsDataOperator LessThanFull( FilterData1, FilterData1 ) should evaluate as false ";
-      test4.assert( !LessThanFull( FilterData1, FilterData1 ) , msg_test_desc,
-                    __LINE__ );
-
-      msg_test_desc =
-         " Rinex3ObsDataOperator LessThanFull( FilterData1, FilterData2 ) should evaluate as false ";
-      test4.assert( !LessThanFull( FilterData1, FilterData2 ) , msg_test_desc,
-                    __LINE__ );
-
+      TUCSM("Rinex3ObsDataOperatorLessThanFull");
+      TUASSERTE(bool, false, LessThanFull( d1, d1 ));
+      TUASSERTE(bool, false, LessThanFull( d1, d2 ));
    }
-   catch(...)
+   catch (gpstk::Exception& e)
    {
-      msg_test_desc =
-         "One or more of the tests for Rinex3ObsDataOperator LessThanFull threw an exception when it should not have";
-      test4.assert( false, msg_test_desc, __LINE__ );
+      cout << e << endl;
+      testFramework.assert( false , "caught exception", __LINE__ );
    }
-
-   return( test4.countFails() );
-
+   return testFramework.countFails();     
 }
+
 
 //------------------------------------------------------------
 // Tests if a input Rinex 3 file can be output as a version 2 file
@@ -716,11 +702,10 @@ int Rinex3Obs_T :: filterOperatorsTest( void )
 
 int Rinex3Obs_T :: version3ToVersion2Test( void )
 {
-   TestUtil testFramework("Rinex3Obs", "Convert v.3 to v.2", __FILE__, __LINE__ );
+   TUDEF("Rinex3Obs", "version3ToVersion2Test");
 
    gpstk::Rinex3ObsStream inputStream(dataInputRinex3ObsFile.c_str());
-   gpstk::Rinex3ObsStream outputStream(dataOutputRinex2ObsFile.c_str(),
-                                       std::ios::out);
+   gpstk::Rinex3ObsStream outputStream(dataOutputRinex2ObsFile.c_str(), ios::out);
    gpstk::Rinex3ObsHeader ObsHeader;
    gpstk::Rinex3ObsData ObsData;
 
@@ -750,11 +735,11 @@ int Rinex3Obs_T :: version3ToVersion2Test( void )
 
 int Rinex3Obs_T :: version2ToVersion3Test( void )
 {
-   TestUtil testFramework("Rinex3Obs", "Convert v.2 to v.3", __FILE__, __LINE__ );
+   TestUtil testFramework("Rinex3Obs", "version2ToVersion3Test", __FILE__, __LINE__ );
 
    gpstk::Rinex3ObsStream inputStream(dataInputRinex2ObsFile.c_str());
    gpstk::Rinex3ObsStream outputStream(dataOutputRinex3ObsFile.c_str(),
-                                       std::ios::out);
+                                       ios::out);
    gpstk::Rinex3ObsHeader ObsHeader;
    gpstk::Rinex3ObsData ObsData;
 
@@ -782,12 +767,12 @@ int Rinex3Obs_T :: version2ToVersion3Test( void )
 
 int Rinex3Obs_T::roundTripTest( void )
 {
-   TUDEF("Rinex3ObsHeader/Data", "operator<<");
+   TUDEF("Rinex3Obs", "roundTripTest");
 
    try
    {
       gpstk::Rinex3ObsStream infile( dataRinexObsFile );
-      gpstk::Rinex3ObsStream outfile( dataTestOutput4, std::ios::out );
+      gpstk::Rinex3ObsStream outfile( dataTestOutput4, ios::out );
       gpstk::Rinex3ObsHeader roh;
       gpstk::Rinex3ObsData rod;
 
@@ -801,7 +786,7 @@ int Rinex3Obs_T::roundTripTest( void )
       }
       infile.close();
       outfile.close();
-      std::string failMsg = "input and output do not match: " +
+      string failMsg = "input and output do not match: " +
          dataRinexObsFile + " " + dataTestOutput4;
       testFramework.assert_files_equal(
          __LINE__, dataRinexObsFile, dataTestOutput4,
@@ -814,10 +799,6 @@ int Rinex3Obs_T::roundTripTest( void )
 
    return testFramework.countFails();
 }
-
-//============================================================
-// Run all the test methods defined above
-//============================================================
 
 int main()
 {
@@ -833,22 +814,14 @@ int main()
       //Change to test v.3
    testClass.toRinex3();
 
-
    errorTotal += testClass.headerExceptionTest();
    errorTotal += testClass.hardCodeTest();
    errorTotal += testClass.dataExceptionsTest();
    errorTotal += testClass.filterOperatorsTest();
-
-   testClass.toConversionTest();
-
-      // Don't run a "test" that is just set up to fail because the
-      // function hasn't been implemented.
-      //errorTotal += testClass.version3ToVersion2Test();
-      //errorTotal += testClass.version2ToVersion3Test();
+//   errorTotal += testClass.toConversionTest();
    errorTotal += testClass.roundTripTest();
 
-   std::cout << "Total Failures for " << __FILE__ << ": " << errorTotal
-             << std::endl;
+   cout << "Total Failures for " << __FILE__ << ": " << errorTotal << endl;
 
    return( errorTotal );
 }

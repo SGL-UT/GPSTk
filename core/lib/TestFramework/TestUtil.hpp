@@ -50,6 +50,8 @@
 
 // Define a TestUtil object named testFramework
 #define TUDEF(CLASS,METHOD) TestUtil testFramework(CLASS, METHOD, __FILE__, __LINE__)
+// Macro to make test code look nice...
+#define TUCSM(METHOD) testFramework.changeSourceMethod(METHOD)
 // Basic macro for doing equality tests.  Expects a TestUtil instance
 // named testFramework.
 #define TUASSERTE(TYPE,EXP,GOT) testFramework.assert_equals<TYPE>(EXP,GOT,__LINE__)
