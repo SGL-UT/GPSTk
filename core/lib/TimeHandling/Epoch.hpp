@@ -60,7 +60,7 @@
 
 namespace gpstk
 {
-      /** @defgroup TimeHandling GPStk Time Group */
+      /** @defgroup TimeHandling Time Representation */
       //@{
 
       /**
