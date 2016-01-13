@@ -32,6 +32,7 @@ examples:
    $ build.sh        # Just build software
    $ sudo build.sh -s -b /tmp/qwe    # Build and install core to $system_install_prefix
    $ build.sh -tue     # Build, test and install core, external, and python bindings to $gpstk
+   $ build.sh -vt  -- -DCMAKE_BUILD_TYPE=debug  # build for running debugger
 
 OPTIONS:
 
