@@ -49,7 +49,7 @@
 
 namespace gpstk
 {
-      /** @addtogroup GPSsolutions */
+      /// @ingroup GPSsolutions
       //@{
 
       /**
