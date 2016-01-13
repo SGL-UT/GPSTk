@@ -141,13 +141,13 @@ class SVNumXRef
       ~SVNumXRef() {}
       BlockType getBlockType( const int NAVSTARID ) const;
       std::string getBlockTypeString( const int NAVSTARID ) const;
-      int getNAVSTAR( const int PRNID, const gpstk::CommonTime dt = SystemTime() ) const;
-      int getPRNID( const int NAVSTARID, const gpstk::CommonTime dt = SystemTime() ) const;
-      bool PRNIDAvailable( const int NAVSTARID, const gpstk::CommonTime dt = SystemTime() ) const;
-      bool NAVSTARIDAvailable( const int PRNID, const gpstk::CommonTime dt = SystemTime() ) const;
+      int getNAVSTAR( const int PRNID, const gpstk::CommonTime dt ) const;
+      int getPRNID( const int NAVSTARID, const gpstk::CommonTime dt ) const;
+      bool PRNIDAvailable( const int NAVSTARID, const gpstk::CommonTime dt ) const;
+      bool NAVSTARIDAvailable( const int PRNID, const gpstk::CommonTime dt ) const;
       bool BlockTypeAvailable( const int NAVSTARID ) const;
-      bool NAVSTARIDActive( const int NAVSTARID, const gpstk::CommonTime dt = SystemTime() ) const;
-      int dump(std::ostream& out=std::cout, bool checkOverlap=false) const;
+      bool NAVSTARIDActive( const int NAVSTARID, const gpstk::CommonTime dt ) const;
+      void dump(std::ostream& out=std::cout) const;
       bool isConsistent() const;
 
    protected:

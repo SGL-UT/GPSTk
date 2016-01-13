@@ -499,12 +499,7 @@ bool SVNumXRef::NAVSTARIDAvailable( const int PRNID, const gpstk::CommonTime dt 
 
 bool SVNumXRef::NAVSTARIDActive( const int NAVSTARID, const gpstk::CommonTime dt ) const
 {
-   for (SVNumXRefListCI ci=PtoNMap.begin(); ci != PtoNMap.end(); ++ci )
-   {
-      if (ci->second.getNAVSTARNum()==NAVSTARID &&
-          ci->second.isApplicable( dt )         ) return( true );
-   }
-   return( false ); 
+   return PRNIDAvailable( NAVSTARID, dt ); 
 }
 
 SVNumXRef::BlockType SVNumXRef::getBlockType( const int NAVSTARID ) const
@@ -521,7 +516,6 @@ SVNumXRef::BlockType SVNumXRef::getBlockType( const int NAVSTARID ) const
    std::string sout = textOut;
    NoNAVSTARNumberFound noFound( sout );
    GPSTK_THROW(noFound); 
-   throw( noFound );
 }
 
 std::string SVNumXRef::getBlockTypeString( const int NAVSTARID ) const
@@ -530,7 +524,8 @@ std::string SVNumXRef::getBlockTypeString( const int NAVSTARID ) const
    i = NtoBMap.find( NAVSTARID );
    if (i!=NtoBMap.end())
    {
-     switch( getBlockType( NAVSTARID ) )
+	 BlockType bt = i->second;
+     switch( bt )
      {
        case I: return("Block I"); break;
        case II: return("Block II"); break;
@@ -539,7 +534,6 @@ std::string SVNumXRef::getBlockTypeString( const int NAVSTARID ) const
        case IIR_M: return("Block IIR_M"); break;
        case IIF: return("Block IIF"); break;
      }
-
    }
    return("unknown");
 }
@@ -547,10 +541,6 @@ std::string SVNumXRef::getBlockTypeString( const int NAVSTARID ) const
 int SVNumXRef::getPRNID( const int NAVSTARID, const gpstk::CommonTime dt ) const
 {
    NAVNumXRefPair p = NtoPMap.equal_range( NAVSTARID );
-      // If there is only one PRNID for this SVN number return it to maintain
-      // compatability with previous versions
-   if( p.first == (--p.second) ) return ( p.first->second.getPRNNum() );
-   ++p.second;
    for (NAVNumXRefCI ci=p.first; ci != p.second; ++ci )
    {
       if (ci->second.isApplicable( dt )) return( ci->second.getPRNNum() );
@@ -564,14 +554,11 @@ int SVNumXRef::getPRNID( const int NAVSTARID, const gpstk::CommonTime dt ) const
    std::string sout = textOut;
    NoNAVSTARNumberFound noFound( sout );
    GPSTK_THROW(noFound); 
-   throw( noFound );
 }
 
 bool SVNumXRef::PRNIDAvailable( const int NAVSTARID, const gpstk::CommonTime dt ) const
 {
    NAVNumXRefPair p = NtoPMap.equal_range( NAVSTARID );
-   if( p.first == (--p.second) ) return ( true );
-   ++p.second;
    for (NAVNumXRefCI ci=p.first; ci != p.second; ++ci )
    {
       if (ci->second.isApplicable( dt )) return( true );
@@ -590,58 +577,23 @@ bool SVNumXRef::BlockTypeAvailable(  const int NAVSTARID ) const
 //----------Dumps out a List of and ALSO checks for Overlaps is overlap is set to true
 //----------Navstar #s---PRN---start time---end time---
 //----------PRN---Navstar #s---start time---end time---
-int SVNumXRef::dump(std::ostream& out, bool checkOverlap) const
+void SVNumXRef::dump(std::ostream& out) const
 {
       //iterate through the data
    multimap<int,XRefNode>::const_iterator it;
    bool pastCurrent = false;
       //header
-   cout << "NAVASTAR #'s    PRN         t1           t2" << endl;
+   std::string start_end_h = "                              START"
+							   "                          END\n";
+   std::string svn_h = "    SVN      PRN    MM/DD/YYYY DOY HH:MM:SS"
+									   "       MM/DD/YYYY DOY HH:MM:SS\n";
+   out << start_end_h << svn_h;
       //Iterates through Navstar by PRN
    for (it=NtoPMap.begin(); it != NtoPMap.end(); it++)
    {
       std::pair<const int, gpstk::XRefNode> mm = *it;
       out << "     " << setw(2) << mm.first 
           << "       " << mm.second.toString() << endl;
-         //Checks for overlap of time from NtoP against PtoN
-      if( checkOverlap )
-      {
-         multimap<int,XRefNode>::const_iterator navIt;
-            //compares Navstar map to the prn map
-         for (navIt = PtoNMap.begin(); navIt != PtoNMap.end(); navIt++)
-         {
-            std::pair<const int, gpstk::XRefNode> navP = *navIt;
-            int navNum = navP.second.getNAVSTARNum();
-               //if this navstar equals that navstar and the prns arent the same
-            if((mm.first == navNum) && (mm.second.getPRNNum() != navP.first))
-            {
-                  //if this beginTime is less than that endTime AND this endTime is greater than that beginTime
-               if((mm.second.getBeginTime() < navP.second.getEndTime()) && (mm.second.getEndTime() > navP.second.getBeginTime()))
-               {
-                  out << "OVERLAP \n" << "Nav    " << mm.first << "  PRN  " << mm.second.toString() << endl;
-                  out << "PRN    " << navP.first << "  Nav  " << navP.second.toString() << endl;
-                  out << "WITH" << endl;
-               }
-            }
-               //if BOTH the Nav# and the PRN# equals then you either are looking at the same entry or an overlap
-            if((mm.first == navNum) && (mm.second.getPRNNum() == navP.first))
-            {
-                  //if this beginTime is less than that endTime AND this endTime is greater than that beginTime AND you have already found the same entry
-               if((mm.second.getBeginTime() < navP.second.getEndTime()) && (mm.second.getEndTime() > navP.second.getBeginTime()) && pastCurrent)
-               {
-                  out << "OVERLAP \n" << "Nav    " << mm.first << "  PRN  " << mm.second.toString() << endl;
-                  out << "PRN    " << navP.first << "  Nav  " << navP.second.toString() << endl;
-                  out << "WITH" << endl;
-               }
-                  //if the times are all the same and you have not yet seen the same entry then you set pastCurrent to true
-               if((mm.second.getBeginTime() == navP.second.getBeginTime()) && (mm.second.getEndTime() == navP.second.getEndTime()) && !pastCurrent)
-               {
-                  pastCurrent = true;
-               }
-            }
-         }
-      }
-      pastCurrent = false;
    }
    out << "\n\n" << endl;
       //iterate through the data
@@ -649,54 +601,16 @@ int SVNumXRef::dump(std::ostream& out, bool checkOverlap) const
       //resest pastCurrent
    pastCurrent = false;
       //header
-   out << "    PRN    NAVASTAR #'s     t1           t2" << endl;
+   std::string prn_h = "   PRN       SVN    MM/DD/YYYY DOY HH:MM:SS"
+									   "       MM/DD/YYYY DOY HH:MM:SS\n";
+   out << start_end_h << prn_h;
       //Iterates through PRN by Navstar
    for (iter = PtoNMap.begin(); iter != PtoNMap.end(); iter++)
    {
       std::pair<const int, gpstk::XRefNode> pp = *iter;
       out << "    " << setw(2) << pp.first 
           << "        " << pp.second.toString() <<endl;
-         //Checks for overlap of time from PtoN against NtoP
-      if( checkOverlap )
-      {
-         multimap<int,XRefNode>::const_iterator prnIt;
-            //compares prn map to the Navstar map
-         for (prnIt = NtoPMap.begin(); prnIt != NtoPMap.end(); prnIt++)
-         {
-            std::pair<const int, gpstk::XRefNode> prnN = *prnIt;
-            int prnNum = prnN.second.getPRNNum();
-               //if this prn equals that prn and the navstar arent the same
-            if((pp.first == prnNum) && (pp.second.getNAVSTARNum() != prnN.first))
-            {
-                  //if this beginTime is less than that endTime AND this endTime is greater than that beginTime
-               if(pp.second.getBeginTime() < prnN.second.getEndTime() && pp.second.getEndTime() > prnN.second.getBeginTime())
-               {
-                  out << "OVERLAP \n" << "PRN    " << pp.first << "  Nav  " << pp.second.toString() << endl;
-                  out << "Nav    " << prnN.first << "  PRN  " << prnN.second.toString() << endl;
-                  out << "WITH" << endl;
-               }
-            }
-               //if BOTH the Nav# and the PRN# equals then you either are looking at the same entry or an overlap
-            if((pp.first == prnNum) && (pp.second.getPRNNum() == prnN.first))
-            {
-                  //if this beginTime is less than that endTime AND this endTime is greater than that beginTime AND you have already found the same entry
-               if(pp.second.getBeginTime() < prnN.second.getEndTime() && pp.second.getEndTime() > prnN.second.getBeginTime() && pastCurrent)
-               {
-                  out << "OVERLAP \n" << "Nav    " << pp.first << "  PRN  " << pp.second.toString() << endl;
-                  out << "PRN    " << prnN.first << "  Nav  " << prnN.second.toString() << endl;
-                  out << "WITH" << endl;
-               }
-                  //if the times are all the same and you have not yet seen the same entry then you set pastCurrent to true
-               if(pp.second.getBeginTime() == prnN.second.getBeginTime() && pp.second.getEndTime() == prnN.second.getEndTime() && !pastCurrent)
-               {
-                  pastCurrent = true;
-               }
-            }
-         }
-      }
-      pastCurrent = false;
    }
-   return(2);
 }
 
 //-------------- Methods for XRefNode -----------------
@@ -724,26 +638,18 @@ bool XRefNode::isApplicable( gpstk::CommonTime dt ) const
 std::string XRefNode::toString() const
 {
    std::string sout;
-   std::string tform = "%02m/%02d/9.4Y %03j %02H:%02M:%05.2f";
+   std::string tform = "%02m/%02d/%4Y %03j %02H:%02M:%05.2f";
    //create stringstream to convert Num to a string to concatinate to sout
    std::stringstream ss;
-   ss << Num;
-   std::string numOut;
-   ss >> numOut;
-   sout += "   "+numOut;
-   //sout += "   "+string(begValid begDt);
-   if( Num < 10 ){//used to create correct spacing
-      sout += "      "+printTime(valid.getStart(), tform/*"%02m/%02d/%04Y"*/);
-   }else{
-      sout += "     "+printTime(valid.getStart(), tform/*"%02m/%02d/%04Y"*/);
-   }
-   std::string endTime = printTime(valid.getEnd(), tform/*"%02m/%02d/%04Y"*/);
-   if(endTime == "01/01/4713"){//used to detect end of time
-      sout += "   End Of Time";
-   }else{
-      sout += "   "+printTime(valid.getEnd(), tform/*"%02m/%02d/%04Y"*/);
-   }
-   return sout;
+   ss << setfill('0') << setw(2) << Num;
+   ss << "    " << printTime( valid.getStart(), tform );
+   ss << "    ";
+   if( valid.getEnd() == CommonTime::END_OF_TIME)
+	 ss << "End of Time";
+   else
+	 ss << printTime( valid.getEnd(), tform );
+	
+   return ss.str();
 }
 
 // Returns true if there are no overlaps, and false otherwise 		  
