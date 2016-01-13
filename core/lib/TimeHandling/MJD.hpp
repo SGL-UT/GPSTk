@@ -42,6 +42,9 @@
 
 namespace gpstk
 {
+      /// @ingroup TimeHandling
+      //@{
+
       /**
        * This class encapsulates the "Modified Julian Date" time
        * representation.
@@ -162,6 +165,8 @@ namespace gpstk
 
       long double mjd;
    };
+
+      //@}
 
 } // namespace
 

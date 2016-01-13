@@ -43,6 +43,9 @@
 
 namespace gpstk
 {
+      /// @ingroup TimeHandling
+      //@{
+
       /**
        * This class encapsulates the "Full GPS Week and GPS Z-count" time
        * representation.
@@ -234,6 +237,8 @@ namespace gpstk
 
       unsigned int zcount;
    };
+
+      //@}
 
 } // namespace
 

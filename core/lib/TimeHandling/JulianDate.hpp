@@ -41,6 +41,9 @@
 
 namespace gpstk
 {
+      /// @ingroup TimeHandling
+      //@{
+
       /**
        * This class encapsulates the "Julian Date" time representation.
        */
@@ -159,6 +162,8 @@ namespace gpstk
 
       long double jd;
    };
+
+      //@}
 
 } // namespace
 

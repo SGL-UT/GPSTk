@@ -50,7 +50,7 @@
 
 namespace gpstk
 {
-      /** @addtogroup timegroup */
+      /// @ingroup TimeHandling
       //@{
 
       /**
