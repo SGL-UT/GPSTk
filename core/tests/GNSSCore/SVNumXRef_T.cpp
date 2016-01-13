@@ -64,8 +64,8 @@ int main()
                           CivilTime(2015, 7, 14, 0, 0, 0.0, TimeSystem::GPS)));
    
    
-   /*testFramework.changeSourceMethod("svNumXRef getBlockType");
-   TUASSERTE(SVNumXRef::BlockType, SVNumXRef::BlockType::IIF,
+   testFramework.changeSourceMethod("svNumXRef getBlockType");
+   TUASSERTE(SVNumXRef::BlockType, SVNumXRef::IIF,
 								    svNumXRef.getBlockType(72));
    try
    {
@@ -75,7 +75,7 @@ int main()
    catch( NoNAVSTARNumberFound )
    {
 	   TUPASS("");
-   }*/
+   }
 								    
                           
    //Tests string output for corresponding block type or unknown if not found                      
