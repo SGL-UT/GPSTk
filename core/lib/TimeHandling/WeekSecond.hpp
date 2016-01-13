@@ -34,8 +34,8 @@
 //
 //=============================================================================
 
-/// @file WeekSecond.hpp  Implement full week, mod week and seconds-of-week time
-/// representation.
+/// @file WeekSecond.hpp Implement full week, mod week and
+/// seconds-of-week time representation.
 
 #ifndef GPSTK_WEEKSECOND_HPP
 #define GPSTK_WEEKSECOND_HPP
@@ -46,6 +46,9 @@
 
 namespace gpstk
 {
+      /// @ingroup TimeHandling
+      //@{
+
       /// This class encapsulates the "Full Week and Seconds-of-week"
       /// time representation.
    class WeekSecond : public Week
@@ -145,6 +148,8 @@ namespace gpstk
 
       double sow;
    };
+
+      //@}
 
 }
 

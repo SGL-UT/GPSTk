@@ -43,6 +43,9 @@
 
 namespace gpstk
 {
+      /// @ingroup TimeHandling
+      //@{
+
       /**
        * This is the common time format that all time formats convert to when
        * converting between themselves.  This allows the decoupling of
@@ -378,6 +381,8 @@ namespace gpstk
    }; // end class CommonTime
 
    std::ostream& operator<<(std::ostream& o, const CommonTime& ct);
+
+      //@}
 
 } // namespace
 

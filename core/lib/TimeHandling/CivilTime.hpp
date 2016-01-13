@@ -42,6 +42,9 @@
 
 namespace gpstk
 {
+      /// @ingroup TimeHandling
+      //@{
+
       /**
        * This class encapsulates the representation of time consisting of
        * year, month, day (of month), hour (of day), minute (of hour), and
@@ -205,6 +208,8 @@ namespace gpstk
        */
    std::ostream& operator<<( std::ostream& s,
                              const gpstk::CivilTime& cit );
+
+      //@}
 
 } // namespace
 

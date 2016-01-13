@@ -45,6 +45,9 @@
 
 namespace gpstk
 {
+      /// @ingroup TimeHandling
+      //@{
+
       /**
        * This class encapsulates the "year, day-of-year, and seconds-of-day"
        * time format.
@@ -190,6 +193,8 @@ namespace gpstk
        */
    std::ostream& operator<<( std::ostream& s,
                              const gpstk::YDSTime& yt );
+
+      //@}
 
 } // namespace
 

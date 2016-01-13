@@ -44,6 +44,9 @@
 
 namespace gpstk
 {
+      /// @ingroup TimeHandling
+      //@{
+
       /**
        * This class encapsulates the "ANSITime (seconds since Unix epoch)" time
        * representation.
@@ -60,9 +63,9 @@ namespace gpstk
           * Default Constructor.
           * All elements are initialized to zero.
           */
-     ANSITime( time_t t = 0,
-               const TimeSystem& ts = TimeSystem::Unknown )
-        : time(t)
+      ANSITime( time_t t = 0,
+                const TimeSystem& ts = TimeSystem::Unknown )
+            : time(t)
       { timeSystem = ts; }
 
          /**
@@ -70,7 +73,7 @@ namespace gpstk
           * @param right a reference to the ANSITime object to copy
           */
       ANSITime( const ANSITime& right )
-        : time( right.time )
+            : time( right.time )
       { timeSystem = right.timeSystem; }
 
          /**
@@ -106,7 +109,7 @@ namespace gpstk
 
          /// Virtual Destructor.
       virtual ~ANSITime()
-         throw()
+      throw()
       {}
          //@}
 
@@ -166,6 +169,8 @@ namespace gpstk
 
       time_t time;
    };
+
+      //@}
 
 } // namespace
 

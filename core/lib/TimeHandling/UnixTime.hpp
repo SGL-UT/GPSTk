@@ -56,6 +56,9 @@ struct timeval {
 
 namespace gpstk
 {
+      /// @ingroup TimeHandling
+      //@{
+
       /**
        * This class encapsulates the "Unix Timeval" time representation.
        */
@@ -186,6 +189,8 @@ namespace gpstk
 
       struct timeval tv;
    };
+
+      //@}
 
 } // namespace
 
