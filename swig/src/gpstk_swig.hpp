@@ -58,7 +58,6 @@
 #include "gpstkplatform.h"
 #include "FFStreamError.hpp"
 #include "FileStore.hpp"
-#include "BinUtils.hpp"
 #include "FFData.hpp"
 #include "EngNav.hpp"
 #include "YumaBase.hpp"
@@ -92,14 +91,10 @@
 
 // RINEX format:
 #include "RinexSatID.hpp"
-#include "RinexClockBase.hpp"
 #include "RinexObsBase.hpp"
 #include "RinexObsHeader.hpp"
 #include "RinexObsData.hpp"
 #include "RinexObsID.hpp"
-#include "RinexClockHeader.hpp"
-#include "RinexClockData.hpp"
-#include "RinexClockStream.hpp"
 #include "RinexObsStream.hpp"
 #include "RinexNavBase.hpp"
 #include "RinexNavHeader.hpp"
