@@ -52,7 +52,6 @@ abspath()
         fi
     else
         # It doesn't exist...
-        echo "path:" $1 ${1:0:1} >&2
         if [[ ${1:0:1} == "/" ]]; then
             printf "$1"
         elif [[ ${1:0:2} == "./" ]]; then
