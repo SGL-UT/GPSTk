@@ -1,7 +1,7 @@
 #ifndef NAVFILTERMGR_HPP
 #define NAVFILTERMGR_HPP
 
-#include <set>
+#include <list>
 #include <NavFilter.hpp>
 
 namespace gpstk
@@ -9,7 +9,7 @@ namespace gpstk
    class NavFilterMgr
    {
    public:
-      typedef std::set<NavFilter*,NavFilterSort> FilterSet;
+      typedef std::list<NavFilter*> FilterList;
 
       NavFilterMgr();
 
@@ -17,7 +17,7 @@ namespace gpstk
       NavFilter::NavMsgList validate(NavFilterKey* msgBits);
 
    private:
-      FilterSet filters;
+      FilterList filters;
    };
 }
 

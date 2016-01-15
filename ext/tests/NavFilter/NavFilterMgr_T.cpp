@@ -19,6 +19,9 @@ unsigned long expLNavParity = 1265;
 unsigned long expLNavEmpty = 225;
 // This number has not been vetted by other means
 unsigned long expLNavTLMHOW = 613;
+// This number represents the union of subframes stripped by parity,
+// empty and TLM/HOW checks.
+unsigned long expLNavCombined = 1488;
 
 class NavFilterMgr_T
 {
@@ -39,6 +42,8 @@ public:
    unsigned testLNavEmpty();
       /// Test the TLM and HOW filter
    unsigned testLNavTLMHOW();
+      /// Test the combination of parity, empty and TLM/HOW filters
+   unsigned testLNavCombined();
 
    string inputFile;
       /// one for each record in the input file
@@ -235,6 +240,10 @@ testLNavParity()
       }
          */
       rejectCount += filtParity.rejected.size();
+/*
+      if (!filtParity.rejected.empty())
+         cerr << "filter " << i << " parity" << endl;
+*/
    }
    TUASSERTE(unsigned long, expLNavParity, rejectCount);
 
@@ -258,6 +267,10 @@ testLNavEmpty()
    {
       gpstk::NavFilter::NavMsgList l = mgr.validate(&data[i]);
       rejectCount += filtEmpty.rejected.size();
+/*
+      if (!filtEmpty.rejected.empty())
+         cerr << "filter " << i << " empty" << endl;
+*/
    }
    TUASSERTE(unsigned long, expLNavEmpty, rejectCount);
    LNavFilterData fd;
@@ -296,8 +309,52 @@ testLNavTLMHOW()
          */
       gpstk::NavFilter::NavMsgList l = mgr.validate(&data[i]);
       rejectCount += filtTLMHOW.rejected.size();
+/*
+      if (!filtTLMHOW.rejected.empty())
+         cerr << "filter " << i << " tlm/how" << endl;
+*/
    }
    TUASSERTE(unsigned long, expLNavTLMHOW, rejectCount);
+
+   return testFramework.countFails();
+}
+
+
+unsigned NavFilterMgr_T ::
+testLNavCombined()
+{
+   TUDEF("NavFilterMgr", "validate");
+
+   NavFilterMgr mgr;
+   unsigned long rejectCount = 0;
+   LNavParityFilter filtParity;
+   LNavEmptyFilter filtEmpty;
+   LNavTLMHOWFilter filtTLMHOW;
+
+   mgr.addFilter(&filtParity);
+   mgr.addFilter(&filtEmpty);
+   mgr.addFilter(&filtTLMHOW);
+
+   for (unsigned i = 0; i < dataIdx; i++)
+   {
+/*
+      cerr << "checking " << i << endl;
+      if (i == 2196)
+      {
+         for (unsigned sfword = 0; sfword < 10; sfword++)
+            cerr << " " << hex << setw(8) << data[i].sf[sfword] << dec;
+         cerr << endl;
+      }
+*/
+      gpstk::NavFilter::NavMsgList l = mgr.validate(&data[i]);
+         // if l is empty, the subframe was rejected.. 
+      rejectCount += l.empty();
+/*
+      if (l.empty())
+         cerr << "filter " << i << " combined" << endl;
+*/
+   }
+   TUASSERTE(unsigned long, expLNavCombined, rejectCount);
 
    return testFramework.countFails();
 }
@@ -315,6 +372,7 @@ int main()
    errorTotal += testClass.testLNavParity();
    errorTotal += testClass.testLNavEmpty();
    errorTotal += testClass.testLNavTLMHOW();
+   errorTotal += testClass.testLNavCombined();
 
    cout << "Total Failures for " << __FILE__ << ": " << errorTotal << endl;
 
