@@ -14,7 +14,7 @@ function log
 
 function run
 {
-    log "========================================"
+    log "============================================================"
     log "$@"
     if [ $verbose ]; then
         "$@" 2>&1 | tee -a $LOG
@@ -23,10 +23,11 @@ function run
     fi
     rc=${PIPESTATUS[0]}
     if [[ $rc != 0 ]]; then
-        log "Error, rc=$rc"
-        if [[ $exit_on_fail == 1 ]]; then
-            exit
-        fi
+        log 
+        log "Error $rc :-("
+        log "See $build_root/Testing/Temporary/LastTest.log for detailed test log"
+        log "See $LOG for detailed build log"
+        exit $rc
     fi
     return $rc
 }
@@ -51,7 +52,6 @@ abspath()
         fi
     else
         # It doesn't exist...
-        echo "path:" $1 ${1:0:1} >&2
         if [[ ${1:0:1} == "/" ]]; then
             printf "$1"
         elif [[ ${1:0:2} == "./" ]]; then
@@ -105,13 +105,14 @@ system_python_install="/usr/local"
 user_python_install="~/.local"
 
 git_hash=`cd $repo; git rev-parse HEAD`
-git_branch=`cd $repo; git name-rev --name-only $git_hash`
-git_branch=${git_branch%^0}
 git_tag=`cd $repo; git name-rev --tags --name-only $git_hash`
 git_tag=${git_tag%^0}
+git_branch=`cd $repo;git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/' | sed -e 's/(detached from \(.*\))/\1/'`
 
 if [ "$git_tag" != "undefined" ]; then
     build_root=$repo/build-$hostname-$git_tag
-else
+elif [ -n "$git_branch" ]; then
     build_root=$repo/build-$hostname-$git_branch
+else
+    build_root=$repo/build-$hostname-${git_hash:0:7}
 fi
