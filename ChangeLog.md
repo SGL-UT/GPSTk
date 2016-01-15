@@ -1,3 +1,281 @@
+
+      #################################################
+
+Version 2.8   Friday, January 15, 2016
+
+   General modifications
+   ---------------------
+   - Significant progress resolving failed tests on Linux, Solaris, Redhat, and OSX
+   - New and updated unit tests for Core code base
+   - Additional test programs and scripts for application testing
+   - Some applications migrated from Ext to Core
+   - Application testing for Core applications
+   - Fixes to eliminate data corruption during encode/decode
+   - Build script updates
+   - CDash Scripts removed from repository
+   - Updated in-source documentation
+   - Code and old test clean-up
+   - This release includes new/modified source code comments for improved readability.
+   - Various Bug and Compile Warning Fixes
+
+   Modifications by Author
+   ---------------------
+Anthony Hughes (6):
+      Added unit tests for all CommandOption classes - all but 3 are passing.
+      Merge branch 'master' into issue_107_commandoption_tests
+      Improved parameter checking in addOption(); check results from whichOne().
+      Tweaked regular expression for source code that is ignored during packaging.
+      Fixed file modes - removed executable flag (755 -> 644).
+      Tried to remove undefined behaviors in printable(); fixed a corner case.
+
+Audric Terry (1):
+      Minor update to SVNumXRef.cpp to include the recent launching of SV73/PRN10.
+
+Brian Tolman (2):
+      increase array length in incomplete gamma; chi squared now good to 12000 dof
+      bugs in TwoSampleStats and rstats
+
+Bryan Parsons (10):
+      VS 2015 compiler flags added, VS 2011 compiler flags removed from root CMakeLists.txt.
+      Bug fixes to build and test build errors for VS2015 support.
+      Merge branch 'master' into ID1_VS2015_Support
+      Merge branch 'ID1_VS2015_Support' into 'master'
+      Updated Comments in BuildSetup.cmake. Test push for CDash Continuous builds.
+      Added <cmath> to Rinex3NavHeader for fabs (absolute value) function support.
+      Migrated timeconvert and poscvt from /ext to /core.  Migrated testfailexp.cmake, testhelp.cmake, and testsuccexp.cmake from /ext to /core.
+      Migrated RinDump, PRSolve to core with initial tests.  Migrated Rinex3EphemerisStore, Namelist, GloEphemerisStore, and PRSolution to core, tests still need to be added.
+      Added preliminary .ctest script for RinDump test comparison utilizing df_diff.  Added data for PRSolve tests.
+      Added new .cmake test files for PRSolve and RinDump.  New testsuccdiff.cmake that utilizes df_diff program for comparison.  Updated df_diff to incorporate omitting eof lines.
+
+Jon C. Little (38):
+      Updating documentation and adding how to test apps.
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      trying to get the C++ to render correctly.
+      Wordsmithing testing docs.
+      Killing DOS EOLs
+      Fixing some compile warnings under clang
+      Merge branch 'issue_208_unit_test_fixes' of repositories.arlut.utexas.edu:sgl/gpstk into issue_208_unit_test_fixes
+      Fixing path expanstion to use custom install paths
+      Merge remote-tracking branch 'refs/remotes/origin/issue_208_unit_test_fixes' into issue_208_unit_test_fixes
+      Merge branch 'master' into issue_208_unit_test_fixes
+      Stopping reading on eof and not just throwing an exception
+      Fixing a scope issue that was casuing a warning under clang
+      Making the df_test an install target
+      Refactoring and fixing the Householder tests
+      Merge branch 'issue_208_unit_test_fixes' of repositories.arlut.utexas.edu:sgl/gpstk into issue_208_unit_test_fixes
+      Fixing lots of warnings under clang
+      Merge branch 'issue_208_unit_test_fixes' of repositories.arlut.utexas.edu:sgl/gpstk into issue_208_unit_test_fixes
+      Cholesky tests now working
+      Now a working SVD test!
+      Now a working SVD test!
+      Merge branch 'issue_208_unit_test_fixes' of repositories.arlut.utexas.edu:sgl/gpstk into issue_208_unit_test_fixes
+      Fixed a bug in the Load function.
+      Refactored a little bit of TestUtils and rewrote Stats_T
+      Removing dependancy on TestUtil from SVD_T.cpp
+      Merge remote-tracking branch 'origin/master' into issue_208_unit_test_fixes
+      Now working after BT fixed the underlying class.
+      Changing order of operations to cause a segfault.
+      Adding back in test for capacity
+      Fixing test for capacity
+      Removing debug output
+      Allowing rinex2 files with extra spaces at the end of the lines past 80 characters
+      Partial rewrite of Rine3Obs_T to teset better.
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Fixed and incorret index into consts array
+      Added better debugging under clang/OS X
+      Fixing bug in SP3 data lookup.
+      Removing execute bit on new files
+
+Jon Little (33):
+      Merge branch 'issue_204' into 'master'
+      Merge branch 'issue_155' into 'master'
+      Build directory should not be borked when on a tag or off a branch
+      Forgot to remove a debugging code
+      Merge branch 'issue_205' into 'master'
+      Merge branch 'issue_33' into 'master'
+      Merge branch 'issue_14' into 'master'
+      Adding in namespaces specifiers to make gcc happy.
+      Merge branch 'issue_34' into 'master'
+      Still working on formatting
+      This discusses more than library testing now...
+      Merge branch 'issue_215' into 'master'
+      Fixing a namespace specifier to make swig happy
+      Merge remote-tracking branch 'origin/issue_208_unit_test_fixes' into issue_208_unit_test_fixes
+      Merge branch 'master' into issue_208_unit_test_fixes
+      Merge branch 'issue_208_unit_test_fixes' into 'master'
+      App to help difference data files
+      Merge branch 'issue_208_unit_test_fixes' of repositories.arlut.utexas.edu:sgl/gpstk into issue_208_unit_test_fixes
+      was using the wrong abs
+      Removed throwing of exceptions on errors in reading
+      Adding some needed includes
+      Adding types to Matrix_SVD_T
+      Forgot a program...
+      Merge branch 'issue_208_unit_test_fixes' of repositories.arlut.utexas.edu:sgl/gpstk into issue_208_unit_test_fixes
+      Fixed bug in SVD tests.
+      Removing a file used to help debug SVD tests. All tests are in Matrix_SVD_T
+      Forgot to remove building of SVD_T from CMakeLists on previous commit
+      Removing non-sensical accessor and assoicated test
+      Removing old test files
+      Rewriting test to use new macros.
+      removing old files and attrs
+      removing old files and attrs
+      Merge branch 'issue_224' into 'master'
+
+Joseph Voss (3):
+      Setting CommonTime objects from RinexNavData to have a default time system of GP
+      Uncommenting the fix to issue 155
+      Minor fix the the Matrix SVD test
+
+anthony (1):
+      Merge branch 'issue_107_commandoption_tests' into 'master'
+
+johnk (130):
+      commented out switch causing build.sh to ignore test results
+      removed unused overloaded initialize method
+      Modify setFromInfo y token to match POSIX
+      Reformatted to remove tab characters.     Fixed copy-pasta issues.     Fixed test that used setInternal with seconds instead of milliseconds.
+      Fix incorrect formatting in printError.     Fix test that was erroneously using the wrong format spec.     Reformat the GPSWeekSecond_T to remove tabs.
+      Distinguish between month abbreviation and full name when scanning.     Add translation method for month names and abbreviations.     Allow a 29-bit zcount to be specified with a full week.     Fix some memory leaks.     Fix 2-digit year support.     Fix issue where additional specs (e.g. time system) were being ignored.     Reformat TimeString_T.cpp.
+      Reformatting
+      Process %y in POSIX-compatible fashion
+      Fixed test expectations for inSameTimeBlock
+      Throw exception for front/back on empty data vector
+      Merge branch 'issue_49' into 'master'
+      Merge remote-tracking branch 'origin/master' into issue_208_unit_test_fixes
+      Rewrite FileSpec::sortList to work as intended.     Make TimeTag verify that the entire format string has been properly parsed.     Comment out (with @todo) tests for unimplemented FileSpec features.     Added additional tests using GPSWeekZcount in lieu of SOW capability (precision).
+      Make sure a test that is expected to fail has a reasonable chance of failing
+      Throw an exception when setFilter is called with an empty filter.     Rewrite FileHunter::find which was relying on DayTime behavior of throwing exceptions for incomplete time specs.     Throw an exception when FileHunter is constructed with empty file spec.     Fix FileHunter_T to not fail if a test directory already exists.     Correct expected exception class in FileHunter_T tests.     Correct issues with FileHunter_T tests not matching file specs and file names.
+      Comment out unimplemented preciseRho test
+      Fix what looks to have been a copypasta error (copying from meters2cyclesTest to cycles2metersTest)
+      Change CRC24Q definition so that the final XOR value is 24-bits.     Change the documentation for computeCRC to make it clear len is in bytes.     Replace the existing CRC tests with a reasonable set.
+      EngAlmanac_T seems to have been incorrect as to what a correct value for WNLSF was (see @todo)
+      removed some debug output
+      Move TFASSERT macro into TestUtil.hpp
+      Make sure the text used for comparison is of the same format before and after
+      Reformat for readability
+      Changed one test to use data comparison rather than dumped strings
+      Add supported version checking when reading RINEX MET headers.     Fix dump method to use supplied ostream instead of cout.     Correct names of test input files.     Turn on stream exceptions where expected.
+      Fix issues with header formatting and testing thereof.
+      Reformat/untabify for readability.
+      Use macros in a few places
+      Fix attempts to use EOF as genuine data in tests
+      Fix attempts to use EOF as genuine data in tests
+      Merge remote-tracking branch 'origin/master' into issue_208_unit_test_fixes
+      Try to make rmwdiff look like it did before CommonTime
+      Add a definition for the data path for testing
+      First cut set of tests for rmwdiff app
+      Add a couple more tests for rmwdiff
+      Add tests for timeconvert and tweak it so the output matches version 1.6
+      Add tests for rnwdiff.     Add stable methods for text representation of RINEX MET and NAV.
+      Initialize Triple values to zero
+      Add a compare function for Rinex3ObsHeader to check for differences between headers.     Change RinEdit to exit with 0 on success rather than number of files, which looks like an error.     Started a tool for comparing RINEX headers.     Started a RinEdit test.
+      Add exit codes to distinguish between help and option errors
+      Merge branch 'issue_216' into 'master'
+      Merge remote-tracking branch 'origin/master' into issue_208_unit_test_fixes
+      Change rinheaddiff to use updated exit code stuff
+      Modify r*wdiff to use frameworks exit codes.     Fix up the RinEdit tests.     Add rowdiff tests.
+      Add RINEX 3 obs tests for rinheaddiff
+      add rinheaddiff tests for RINEX 2 OBS
+      Merge remote-tracking branch 'origin/issue_208_Brent' into issue_208_unit_test_fixes
+      Fixed cmake syntax issues causing tests to incorrectly pass
+      Merge remote-tracking branch 'origin/master' into issue_208_unit_test_fixes
+      add tests for poscvt
+      Merge branch 'issue_208_unit_test_fixes' of repositories.arlut.utexas.edu:sgl/gpstk into issue_208_unit_test_fixes
+      tiniest of beginings for mpsolve testing
+      Add support for RINEX nav and met to rinheaddiff.     Add tests for RINEX merge tools.
+      Untabify
+      Split RinexDatum into its own files instead of having the exact same     class appear in both RinexObsData and Rinex3ObsData.     Put parsing and encoding code into RinexDatum and take it out of Rinex3ObsData.     Include the ability to preserve headers across read/write.     Preserve spaces in data across read/write.     Add a round-trip test in Rinex3Obs_T.
+      Bunch of changes to try to make Rinex3ObsHeader code more readable.     Make sure all data members get initialized in constructor and clear().     Add documentation of all the header fields and what-not.     Minor changes to test input, reordering header lines to match output.
+      Merge remote-tracking branch 'origin/master' into issue_208_unit_test_fixes
+      Merge remote-tracking branch 'remotes/origin/issue_212' into issue_208_unit_test_fixes
+      Add comments that explain what headerExceptionTest is actually doing, and do it.     Comment out "tests" of unimplemented features.
+      Comment out testing of unimplemented version conversion feature
+      Update Rinex3ObsHeader documentation.     Comment out most of the Rinex3Clock_T tests as Rinex3Clock* is largely unimplemented.
+      Add RinexClock* tests and clean up some of the other rinex tests
+      Replace unimplemented RINEX3 clock with partially implemented from RINEX directory
+      Migrate project RINEX clock implementation into the gpstk
+      Migrate project RINEX clock implementation into the gpstk
+      Minor fixes to RINEX clock handling and new tests
+      Remove invalid tests
+      Make test macro names consistent.     Comment out unimplemented AlmOrbit_T::svXvtTest and update tests to use macros.
+      Change Rinex3ObsHeader to not reset PisY flag.     Add ability to do file compares in TestUtil with regex ignore.     Make RinSum testable.     Add RinSum test for --ycode option.
+      Merge branch 'issue_208_unit_test_fixes' of repositories.arlut.utexas.edu:sgl/gpstk into issue_208_unit_test_fixes
+      add calgps tests
+      Create tests for bc2sp3
+      Specify input files without option and update tests
+      Process exceptions thrown by CommandOptionParser in BasicFramework.     Add two more space-embedded arguments to testsuccexp.cmake.
+      Use shorter variable names
+      Merge branch 'issue_208_unit_test_fixes' of repositories.arlut.utexas.edu:sgl/gpstk into issue_208_unit_test_fixes
+      remove deprecated config macros
+      clean up TestUtil
+      Clean up TestUtil and TimeRange_T
+      Add binary file comparison to TestUtil
+      Add missing test file that broken FFStream obscured
+      Add file error exit codes
+      Use init methods in streams to avoid issues with virtual methods in constructors.     Also a fair bit of beautification.
+      Update core stream classes to avoid virtualization issues
+      Reformatting and fixing inappropriate use of doxygen @defgroup
+      Never ever put using statements in include files
+      Fix namespace issues that show up on linux but not solaris
+      Kludge because g++ raises exceptions in tellg() when eofbit is set.  Also fix some related test issues.
+      Clear output stream status bits between tests
+      remove tests of twiddle using floating point types, and add a long long test
+      Make sure seconds-of-day are printed out in fixed notation
+      Don't attempt to write to a closed stream
+      Rename variables that are conflicting with precompiler macros
+      namespace scoping issue for gcc on solaris
+      Test that breaks encodeVar under solaris
+      Resolve type ambiguity
+      Portable type casting
+      Reimplement encodeVar/decodeVar to avoid data corruption when using floating point types
+      Make Matrix tests compile under solaris
+      Exception class tests
+      Fix decodeVar bug
+      Replace dodgy byte swapping functions in BinUtils with less dodgy ones
+      Reformatting
+      Reformatting
+      Reformatting
+      Add little-endian decode methods.  Remove twiddle tests.
+      Update BINEX support to use new BinUtils functions
+      Change subframe word type from environment-dependent 'long' to consistent 'uint32_t'
+      Mild reformatting, and add implementation for parent abstract method
+      Incomplete updates to Novatel support using new BinUtils
+      Remove old Novatel code
+      Add some missing functions for binary encode/decode
+      Fix some bugs in BinUtils and write tests that exercise both BinUtils and FFBinaryStream
+      Merge remote-tracking branch 'origin/issue_208_unit_test_fixes' into issue_224
+      Change a couple static_cast to reinterpret to make gcc shut up.  Use const where appropriate in endian translations.
+      Merge remote-tracking branch 'origin/issue_208_unit_test_fixes' into issue_224
+      Fix a typo
+      Merge remote-tracking branch 'origin/issue_208_unit_test_fixes' into issue_224
+      Ignore RinDump output that includes file names
+      Merge remote-tracking branch 'origin/issue_208_unit_test_fixes' into issue_224
+      Merge branch 'issue_224' into 'master'
+      Merge remote-tracking branch 'origin/master' into issue_221
+      Change minor release to 8
+      Rename BinUtils functions to avoid problems with compilers/systems that use compiler macros to define byte swapping functions
+      Test everything that's in BinUtils
+      Allow for different quantization when translating ireg to SNR
+      Merge remote-tracking branch 'origin/master' into issue_226
+      Merge remote-tracking branch 'origin/master' into issue_221
+      Merge branch 'issue_221' into 'master'
+      Merge branch 'issue_226' into 'master'
+
+renfrob (11):
+      Changes to OrbElemStore to allow multiple orbit/clock with same epoch time
+      Updates to Rinex v2.11 to v3 obs type mappings
+      Extending RinSum to provide option to assuming P means Y
+      Adding Galileo and SBAS obs type conversions
+      Changes to address issue 215
+      Fixing TimeRange test and merge conflicst
+      Changes to allow branch to build on Linux
+      Updated truth files to support RinexEphemerisStore_T
+      Changes to make RinexEphemerisStore_T work correctly.
+      More cleaning of RinexEphemerisStore_T
+      Fixing weekrollover test issue in RinexNavData
+
+
       #################################################
 
 Version 2.7   Friday, October 16, 2015
