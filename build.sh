@@ -140,36 +140,43 @@ if [ ! -d "$build_root" ]; then
     mkdir -p "$build_root"
 fi
 
+if [ -f "$LOG" ]; then
+    cp --force --backup=numbered $LOG $LOG
+    rm $LOG
+fi
+
 if [ $clean ]; then
     rm -rf "$build_root"/*
     log "Cleaned out $build_root ..."
 fi
 
-log "============================================================"
-log "GPSTk build config ..."
-log "repo            = $repo"
-log "build_root      = $build_root"
-log "install         = $(ptof $install)"
-log "install_prefix  = $install_prefix"
-log "build_ext       = $(ptof $build_ext)"
-log "exclude_python  = $(ptof $exclude_python)"
-log "python_install  = $python_install"
-log "python_exe      = $python_exe"
-log "build_docs      = $(ptof $build_docs)"
-log "build_packages  = $(ptof $build_packages)"
-log "test_switch     = $(ptof $test_switch)"
-log "clean           = $(ptof $clean)"
-log "verbose         = $(ptof $verbose)"
-log "num_threads     = $num_threads"
-log "cmake args      = $@"
-log "time            =" `date`
-log "hostname        =" $hostname
-log "uname           =" `uname -a`
-log "git branch      =" $git_branch
-log "git tag         =" $git_tag
-log "git hash        =" $git_hash
-log "logfile         =" $LOG
-log
+if ((verbose>0)); then
+    log "============================================================"
+    log "GPSTk build config ..."
+    log "repo            = $repo"
+    log "build_root      = $build_root"
+    log "install         = $(ptof $install)"
+    log "install_prefix  = $install_prefix"
+    log "build_ext       = $(ptof $build_ext)"
+    log "exclude_python  = $(ptof $exclude_python)"
+    log "python_install  = $python_install"
+    log "python_exe      = $python_exe"
+    log "build_docs      = $(ptof $build_docs)"
+    log "build_packages  = $(ptof $build_packages)"
+    log "test_switch     = $(ptof $test_switch)"
+    log "clean           = $(ptof $clean)"
+    log "verbose         = $(ptof $verbose)"
+    log "num_threads     = $num_threads"
+    log "cmake args      = $@"
+    log "time            =" `date`
+    log "hostname        =" $hostname
+    log "uname           =" `uname -a`
+    log "git branch      =" $git_branch
+    log "git tag         =" $git_tag
+    log "git hash        =" $git_hash
+    log "logfile         =" $LOG
+    log
+fi
 
 if ((verbose>3)); then
     exit
@@ -209,19 +216,12 @@ args+=${verbose:+" -DDEBUG_SWITCH=ON"}
 args+=${test_switch:+" -DTEST_SWITCH=ON"}
 args+=${build_docs:+" --graphviz=$build_root/doc/graphviz/gpstk_graphviz.dot"}
 
-exit_on_fail=1
-
 run cmake $args $repo
 
 run make all -j $num_threads
 
-#Commented out so that the script doesn't install a build that fails
-#to pass self-tests.  If you really don't care about self-tests, then
-#don't run them.
-#exit_on_fail=0
 if [ $test_switch ]; then
     run ctest -v -j $num_threads
-    log "See $build_root/Testing/Temporary/LastTest.log for detailed results"
 fi
 
 if [ $install ]; then
@@ -253,6 +253,9 @@ if [ $build_packages ]; then
     fi
 fi
 
+log
+log "See $build_root/Testing/Temporary/LastTest.log for detailed test log"
+log "See $LOG for detailed build log"
 log
 log "GPSTk build done. :-)"
 log `date`
