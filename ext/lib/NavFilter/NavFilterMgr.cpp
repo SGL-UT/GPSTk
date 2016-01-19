@@ -28,8 +28,6 @@ namespace gpstk
          (*i)->rejected.clear();
          newrv.clear();
          (*i)->validate(rv, newrv);
-         std::cerr << "NavFilterMgr::validate called " << typeid(*(*i)).name()
-                   << std::endl;
          rv = newrv;
       }
       return rv;
