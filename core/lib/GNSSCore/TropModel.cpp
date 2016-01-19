@@ -57,7 +57,7 @@ namespace gpstk
       // setWeather(T,P,H) before making this call.
       // @param elevation Elevation of satellite as seen at receiver, in degrees
    double TropModel::correction(double elevation) const
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       if(!valid)
          GPSTK_THROW(InvalidTropModel("Invalid model"));
@@ -82,7 +82,7 @@ namespace gpstk
    double TropModel::correction(const Position& RX,
                                 const Position& SV,
                                 const CommonTime& tt)
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       if(!valid)
          GPSTK_THROW(InvalidTropModel("Invalid model"));
@@ -242,7 +242,7 @@ namespace gpstk
 
       // Compute and return the zenith delay for dry component of the troposphere
    double SimpleTropModel::dry_zenith_delay(void) const
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       if(!valid)
          GPSTK_THROW(InvalidTropModel("Invalid model"));
@@ -252,7 +252,7 @@ namespace gpstk
 
       // Compute and return the zenith delay for wet component of the troposphere
    double SimpleTropModel::wet_zenith_delay(void) const
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       if(!valid)
          GPSTK_THROW(InvalidTropModel("Invalid model"));
@@ -265,7 +265,7 @@ namespace gpstk
       // @param elevation is the Elevation of satellite as seen at receiver,
       //                  in degrees
    double SimpleTropModel::dry_mapping_function(double elevation) const
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       if(!valid)
          GPSTK_THROW(InvalidTropModel("Invalid model"));
@@ -282,7 +282,7 @@ namespace gpstk
       // @param elevation is the Elevation of satellite as seen at receiver,
       //                  in degrees
    double SimpleTropModel::wet_mapping_function(double elevation) const
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       if(!valid)
          GPSTK_THROW(InvalidTropModel("Invalid model"));
@@ -340,7 +340,7 @@ namespace gpstk
    } // end GGTropModel::GGTropModel()
 
    double GGTropModel::dry_zenith_delay(void) const
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       if(!valid)
          GPSTK_THROW(InvalidTropModel("Invalid model"));
@@ -349,7 +349,7 @@ namespace gpstk
    }  // end GGTropModel::dry_zenith_delay()
 
    double GGTropModel::wet_zenith_delay(void) const
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       if(!valid)
          GPSTK_THROW(InvalidTropModel("Invalid model"));
@@ -358,7 +358,7 @@ namespace gpstk
    }  // end GGTropModel::wet_zenith_delay()
 
    double GGTropModel::dry_mapping_function(double elevation) const
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       if(!valid)
          GPSTK_THROW(InvalidTropModel("Invalid model"));
@@ -395,7 +395,7 @@ namespace gpstk
 
       // compute wet component of the mapping function
    double GGTropModel::wet_mapping_function(double elevation) const
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       if(!valid)
          GPSTK_THROW(InvalidTropModel("Invalid model"));
@@ -517,7 +517,7 @@ namespace gpstk
 
       // re-define this to get the throws
    double GGHeightTropModel::correction(double elevation) const
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       if(!valid)
       {
@@ -547,7 +547,7 @@ namespace gpstk
    double GGHeightTropModel::correction(const Position& RX,
                                         const Position& SV,
                                         const CommonTime& tt)
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       if(!valid)
       {
@@ -579,7 +579,7 @@ namespace gpstk
    double GGHeightTropModel::correction(const Xvt& RX,
                                         const Xvt& SV,
                                         const CommonTime& tt)
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       Position R(RX),S(SV);
       return GGHeightTropModel::correction(R,S,tt);
@@ -587,7 +587,7 @@ namespace gpstk
 
       // Compute and return the zenith delay for dry component of the troposphere
    double GGHeightTropModel::dry_zenith_delay(void) const
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       if(!valid) {
          if(!validWeather)
@@ -615,7 +615,7 @@ namespace gpstk
 
       // Compute and return the zenith delay for wet component of the troposphere
    double GGHeightTropModel::wet_zenith_delay(void) const
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       if(!valid) {
          if(!validWeather)
@@ -649,7 +649,7 @@ namespace gpstk
       // @param elevation Elevation of satellite as seen at receiver,
       //                  in degrees
    double GGHeightTropModel::dry_mapping_function(double elevation) const
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       if(!valid) {
          if(!validWeather)
@@ -703,7 +703,7 @@ namespace gpstk
       // @param elevation Elevation of satellite as seen at receiver,
       //                  in degrees
    double GGHeightTropModel::wet_mapping_function(double elevation) const
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       if(!valid) {
          if(!validWeather)
@@ -1005,7 +1005,7 @@ namespace gpstk
 
       // re-define this to get the throws
    double NBTropModel::correction(double elevation) const
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       if(!valid) {
          if(!validWeather)
@@ -1036,7 +1036,7 @@ namespace gpstk
    double NBTropModel::correction(const Position& RX,
                                   const Position& SV,
                                   const CommonTime& tt)
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       if(!valid) {
          if(!validWeather)
@@ -1073,7 +1073,7 @@ namespace gpstk
    double NBTropModel::correction(const Xvt& RX,
                                   const Xvt& SV,
                                   const CommonTime& tt)
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       Position R(RX),S(SV);
       return NBTropModel::correction(R,S,tt);
@@ -1081,7 +1081,7 @@ namespace gpstk
 
       // Compute and return the zenith delay for dry component of the troposphere
    double NBTropModel::dry_zenith_delay(void) const
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       if(!valid) {
          if(!validWeather)
@@ -1109,7 +1109,7 @@ namespace gpstk
 
       // Compute and return the zenith delay for wet component of the troposphere
    double NBTropModel::wet_zenith_delay(void) const
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       if(!valid) {
          if(!validWeather)
@@ -1141,7 +1141,7 @@ namespace gpstk
       // @param elevation Elevation of satellite as seen at receiver,
       //                  in degrees
    double NBTropModel::dry_mapping_function(double elevation) const
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       if(!valid) {
          if(!validWeather)
@@ -1178,7 +1178,7 @@ namespace gpstk
       // @param elevation Elevation of satellite as seen at receiver,
       //                  in degrees
    double NBTropModel::wet_mapping_function(double elevation) const
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       if(!valid) {
          if(!validWeather)
@@ -1248,7 +1248,7 @@ namespace gpstk
       // configure the model to estimate the weather from the internal model,
       // using lat and doy
    void NBTropModel::setWeather()
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       interpolateWeather = true;
       if(!validRxLatitude)
@@ -1414,7 +1414,7 @@ namespace gpstk
 
       // re-define this to get the throws correct
    double SaasTropModel::correction(double elevation) const
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       if(!valid) {
          if(!validWeather) GPSTK_THROW(
@@ -1454,7 +1454,7 @@ namespace gpstk
    double SaasTropModel::correction(const Position& RX,
                                     const Position& SV,
                                     const CommonTime& tt)
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       SaasTropModel::setReceiverHeight(RX.getHeight());
       SaasTropModel::setReceiverLatitude(RX.getGeodeticLatitude());
@@ -1485,7 +1485,7 @@ namespace gpstk
    double SaasTropModel::correction(const Xvt& RX,
                                     const Xvt& SV,
                                     const CommonTime& tt)
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       Position R(RX),S(SV);
       return SaasTropModel::correction(R,S,tt);
@@ -1493,7 +1493,7 @@ namespace gpstk
 
       // Compute and return the zenith delay for dry component of the troposphere
    double SaasTropModel::dry_zenith_delay(void) const
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       if(!valid) {
          if(!validWeather) GPSTK_THROW(
@@ -1521,7 +1521,7 @@ namespace gpstk
 
       // Compute and return the zenith delay for wet component of the troposphere
    double SaasTropModel::wet_zenith_delay(void) const
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       if(!valid) {
          if(!validWeather) GPSTK_THROW(
@@ -1547,7 +1547,7 @@ namespace gpstk
       // Compute and return the mapping function for dry component of the troposphere
       // @param elevation Elevation of satellite as seen at receiver, in degrees
    double SaasTropModel::dry_mapping_function(double elevation) const
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       if(!valid) {
          if(!validWeather) GPSTK_THROW(
@@ -1609,7 +1609,7 @@ namespace gpstk
       // Compute and return the mapping function for wet component of the troposphere
       // @param elevation Elevation of satellite as seen at receiver, in degrees.
    double SaasTropModel::wet_mapping_function(double elevation) const
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       if(!valid) {
          if(!validWeather) GPSTK_THROW(
@@ -1777,7 +1777,7 @@ namespace gpstk
        *                   degrees
        */
    double GCATTropModel::correction(double elevation) const
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       if(!valid) throw InvalidTropModel("Invalid model");
 
@@ -1799,7 +1799,7 @@ namespace gpstk
        */
    double GCATTropModel::correction( const Position& RX,
                                      const Position& SV )
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
 
       try
@@ -1845,7 +1845,7 @@ namespace gpstk
    double GCATTropModel::correction( const Xvt& RX,
                                      const Xvt& SV,
                                      const CommonTime& tt )
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
 
       Position R(RX),S(SV);
@@ -1858,7 +1858,7 @@ namespace gpstk
        * troposphere.
        */
    double GCATTropModel::dry_zenith_delay(void) const
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       if(!valid) throw InvalidTropModel("Invalid model");
 
@@ -1873,7 +1873,7 @@ namespace gpstk
        *                   in degrees
        */
    double GCATTropModel::mapping_function(double elevation) const
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       if(!valid) throw InvalidTropModel("Invalid model");
 
@@ -1989,7 +1989,7 @@ namespace gpstk
       // @param elevation Elevation of satellite as seen at receiver, in
       // degrees
    double MOPSTropModel::correction(double elevation) const
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       if(!valid)
       {
@@ -2024,7 +2024,7 @@ namespace gpstk
       // @param SV  Satellite position
    double MOPSTropModel::correction( const Position& RX,
                                      const Position& SV )
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       try
       {
@@ -2065,7 +2065,7 @@ namespace gpstk
    double MOPSTropModel::correction( const Position& RX,
                                      const Position& SV,
                                      const CommonTime& tt )
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       setDayOfYear(tt);
 
@@ -2085,7 +2085,7 @@ namespace gpstk
    double MOPSTropModel::correction( const Position& RX,
                                      const Position& SV,
                                      const int& doy )
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       setDayOfYear(doy);
 
@@ -2103,7 +2103,7 @@ namespace gpstk
       // This function is deprecated; use the Position version
    double MOPSTropModel::correction( const Xvt& RX,
                                      const Xvt& SV )
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       Position R(RX),S(SV);
 
@@ -2124,7 +2124,7 @@ namespace gpstk
    double MOPSTropModel::correction( const Xvt& RX,
                                      const Xvt& SV,
                                      const CommonTime& tt )
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       setDayOfYear(tt);
       Position R(RX),S(SV);
@@ -2147,7 +2147,7 @@ namespace gpstk
    double MOPSTropModel::correction( const Xvt& RX,
                                      const Xvt& SV,
                                      const int& doy )
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       setDayOfYear(doy);
       Position R(RX),S(SV);
@@ -2159,7 +2159,7 @@ namespace gpstk
       // Compute and return the zenith delay for the dry component of the
       // troposphere
    double MOPSTropModel::dry_zenith_delay(void) const
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
 
       if(!valid) throw InvalidTropModel("Invalid model");
@@ -2187,7 +2187,7 @@ namespace gpstk
       // Compute and return the zenith delay for the wet component of the
       // troposphere
    double MOPSTropModel::wet_zenith_delay(void) const
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
 
       if(!valid) throw InvalidTropModel("Invalid model");
@@ -2217,7 +2217,7 @@ namespace gpstk
       // latitude and day of year (DOY). It is called automatically when
       // setting those parameters.
    void MOPSTropModel::setWeather()
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
 
       if(!validLat)
@@ -2363,7 +2363,7 @@ namespace gpstk
       // @param elevation  Elevation of satellite as seen at receiver,
       //                   in degrees
    double MOPSTropModel::MOPSsigma2(double elevation)
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
 
       double map_f;
@@ -2389,7 +2389,7 @@ namespace gpstk
 
       // The MOPS tropospheric model needs to compute several extra parameters
    void MOPSTropModel::prepareParameters(void)
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
 
       if(!valid) throw InvalidTropModel("Invalid model");
@@ -2613,7 +2613,7 @@ namespace gpstk
       // @param elevation Elevation of satellite as seen at receiver,
       // in degrees
    double NeillTropModel::correction(double elevation) const
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
 
       if(!valid)
@@ -2669,7 +2669,7 @@ namespace gpstk
        */
    double NeillTropModel::correction( const Position& RX,
                                       const Position& SV )
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
 
       try
@@ -2718,7 +2718,7 @@ namespace gpstk
    double NeillTropModel::correction( const Position& RX,
                                       const Position& SV,
                                       const CommonTime& tt )
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
 
       setDayOfYear(tt);
@@ -2743,7 +2743,7 @@ namespace gpstk
    double NeillTropModel::correction( const Position& RX,
                                       const Position& SV,
                                       const int& doy )
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
 
       setDayOfYear(doy);
@@ -2764,7 +2764,7 @@ namespace gpstk
       // This function is deprecated; use the Position version
    double NeillTropModel::correction( const Xvt& RX,
                                       const Xvt& SV )
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       Position R(RX),S(SV);
 
@@ -2787,7 +2787,7 @@ namespace gpstk
    double NeillTropModel::correction( const Xvt& RX,
                                       const Xvt& SV,
                                       const CommonTime& tt )
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       setDayOfYear(tt);
       Position R(RX),S(SV);
@@ -2811,7 +2811,7 @@ namespace gpstk
    double NeillTropModel::correction( const Xvt& RX,
                                       const Xvt& SV,
                                       const int& doy )
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       setDayOfYear(doy);
       Position R(RX),S(SV);
@@ -2824,7 +2824,7 @@ namespace gpstk
       // Compute and return the zenith delay for the dry component of
       // the troposphere.
    double NeillTropModel::dry_zenith_delay(void) const
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
 
       if( !valid )
@@ -2846,7 +2846,7 @@ namespace gpstk
       // @param elevation Elevation of satellite as seen at receiver, in
       //                  degrees
    double NeillTropModel::dry_mapping_function(double elevation) const
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       if(!valid)
       {
@@ -2935,7 +2935,7 @@ namespace gpstk
       // @param elevation Elevation of satellite as seen at receiver,
       //                  in degrees.
    double NeillTropModel::wet_mapping_function(double elevation) const
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
       if(!valid)
       {
@@ -2999,7 +2999,7 @@ namespace gpstk
       // latitude and day of year (DOY). It is called automatically when
       // setting those parameters.
    void NeillTropModel::setWeather()
-      throw(TropModel::InvalidTropModel)
+      throw(InvalidTropModel)
    {
 
       if(!validLat)
