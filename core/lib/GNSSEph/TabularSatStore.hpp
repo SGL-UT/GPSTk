@@ -222,8 +222,12 @@ namespace gpstk
 
          // lower_bound points to the first element with key >= ttag
          it1 = it2 = dtable.lower_bound(ttag);
-         //LOG(INFO) << "Lower bound is " << printTime(it1->first,"%F/%g")
-         //<< " and begin() is " << printTime(dtable.begin()->first,"%F/%g");
+         if (it1 == dtable.end())
+         {
+            InvalidRequest e("No data in time range for satellite "
+                             + gpstk::StringUtils::asString(sat) + printTime(ttag,fmt));
+            GPSTK_THROW(e);
+         }
 
          // ttag is <= first time in table
          if(it1 == dtable.begin()) {

@@ -8,20 +8,23 @@ namespace gpstk {
 // This macro is used to help the C++ exceptions be translated to the python
 // wraps of the exception class - this is not automatically done by SWIG!
 %define CATCHER(NAME)
-   catch(const gpstk:: NAME &e) {
+   catch(const gpstk:: NAME &e)
+   {
       SWIG_Python_Raise(
-                        SWIG_NewPointerObj(new gpstk:: NAME (static_cast<const gpstk:: NAME &>(e)),
-                                           SWIGTYPE_p_gpstk__##NAME,
-                                           SWIG_POINTER_OWN),
-                        "NAME",
-                        SWIGTYPE_p_gpstk__##NAME);
+         SWIG_NewPointerObj(new gpstk:: NAME (static_cast<const gpstk:: NAME &>(e)),
+                            SWIGTYPE_p_gpstk__##NAME,
+                            SWIG_POINTER_OWN),
+         "NAME",
+         SWIGTYPE_p_gpstk__##NAME);
       SWIG_fail;
    }
 %enddef
 
 
-%exception { //Define exception handler
-   try {
+%exception
+{
+   try
+   {
       $action //Exception special variable 
    }
    // Explicitly handled exceptions:
@@ -43,22 +46,26 @@ namespace gpstk {
    CATCHER(EndOfFile)
    CATCHER(FFStreamError)
 
+
    // Other gpstk exceptions:
-   catch (const gpstk::Exception &e) {
+   catch (const gpstk::Exception &e)
+   {
       std::string s("GPSTk exception\n"), s2(e.what());
       s = s + s2;
       SWIG_exception(SWIG_RuntimeError, s.c_str());
    }
 
    // STL exceptions:
-   catch (const std::exception &e) {
+   catch (const std::exception &e)
+   {
       std::string s("STL exception\n"), s2(e.what());
       s = s + s2;
       SWIG_exception(SWIG_RuntimeError, s.c_str());
    }
-
+   
    // any other exception:
-   catch (...) {
+   catch (...)
+   {
       SWIG_exception(SWIG_RuntimeError, "unknown exception");
    }
 }

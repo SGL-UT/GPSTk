@@ -696,7 +696,7 @@ public:
            0x35, 0x39, 0x32, 0x34, 0x20, 0x32, 0x20, 0x35,
            0x32, 0x36, 0x34, 0x30, 0x2E, 0x33, 0x33, 0x38,
            0x38, 0x33, 0x36, 0x33, 0x34, 0x32, 0x35, 0x39,
-           0x32, 0x35, 0x39, 0x33, 0x20, 0x32, 0x20, 0x38,
+           0x32, 0x35, 0x39, 0x33, 0x20, 0x7F, 0x20, 0x38,
            0x35, 0x34, 0x31, 0x32, 0x20, 0x31, 0x20, 0x31,
            0x20, 0x30, 0x20, 0x31, 0x20, 0x31, 0x20, 0x34,
            0x20, 0x32, 0x20, 0x34, 0x20, 0x30, 0x20, 0x30,
@@ -717,9 +717,9 @@ public:
            0x63, 0x34, 0x36, 0x36, 0x63, 0x31, 0x20, 0x62,
            0x64, 0x30, 0x63, 0x36, 0x64, 0x63, 0x20, 0x33,
            0x39, 0x31, 0x62, 0x33, 0x37, 0x38, 0x33, 0x20,
-           0x33, 0x65, 0x30, 0x34, 0x30, 0x63, 0x66, '\205' };
+           0x33, 0x65, 0x30, 0x34, 0x30, 0x63, 0x66, (char)0x85 };
 
-      //Correct format for hexDumpData, with Unix-Debain output of the 0x00, 0x10, and 0x85 hex values (first, second, and last values)
+      //Correct format for hexDumpData, with Unix-Debain output of the 0x00, 0x10, 0x7F, and 0x85 hex values (first, second, and last values)
       //A NEW METHOD OF CREATING THIS OUTPUT FOR THOSE UNIQUE CHARACTERS SHOULD BE MADE. AS IT IS NOW, THIS TEST WILL FAIL FOR OTHER
       //OPERATING SYSTEMS OR COMPILERS.
       correctHexDumpStream << "0000: 00 10 30 33 30 31 30 35  3a 65 70 68 20 3a 30 3a    ..030105:eph :0:" << endl 
@@ -727,7 +727,7 @@ public:
                            << "0020: 37 37 37 38 41 20 52 61  6e 64 6f 6d 20 4d 65 73    7778A Random Mes" << endl
                            << "0030: 73 61 67 65 32 35 39 32  35 39 32 34 20 32 20 35    sage25925924 2 5" << endl
                            << "0040: 32 36 34 30 2e 33 33 38  38 33 36 33 34 32 35 39    2640.33883634259" << endl
-                           << "0050: 32 35 39 33 20 32 20 38  35 34 31 32 20 31 20 31    2593 2 85412 1 1" << endl
+                           << "0050: 32 35 39 33 20 7f 20 38  35 34 31 32 20 31 20 31    2593 . 85412 1 1" << endl
                            << "0060: 20 30 20 31 20 31 20 34  20 32 20 34 20 30 20 30     0 1 1 4 2 4 0 0" << endl
                            << "0070: 20 33 20 31 31 39 39 20  32 32 63 30 61 66 30 33     3 1199 22c0af03" << endl
                            << "0080: 20 31 37 37 30 32 39 65  34 20 61 66 34 30 30 31     177029e4 af4001" << endl
@@ -739,7 +739,7 @@ public:
                            << "00e0: 63 34 36 36 63 31 20 62  64 30 63 36 64 63 20 33    c466c1 bd0c6dc 3" << endl
                            << "00f0: 39 31 62 33 37 38 33 20  33 65 30 34 30 63 66 85    91b3783 3e040cf." << endl;
 
-      //Correct format for the configured hexDumpData, with Unix-Debain output of the 0x00, 0x10, and 0x85 hex values (first, second, and last values)
+      //Correct format for the configured hexDumpData, with Unix-Debain output of the 0x00, 0x10, 0x7F, and 0x85 hex values (first, second, and last values)
       //A NEW METHOD OF CREATING THIS OUTPUT FOR THOSE UNIQUE CHARACTERS SHOULD BE MADE. AS IT IS NOW, THIS TEST WILL FAIL FOR OTHER
       //OPERATING SYSTEMS OR COMPILERS.
       correctConfigHexDumpStream << "      00000000:  0010 3033 3031 3035 3A65 7068 203A 303A '..030105:eph :0:'\n" 
@@ -747,7 +747,7 @@ public:
                                  << "      00000020:  3737 3738 4120 5261 6E64 6F6D 204D 6573 '7778A Random Mes'\n" 
                                  << "      00000030:  7361 6765 3235 3932 3539 3234 2032 2035 'sage25925924 2 5'\n" 
                                  << "      00000040:  3236 3430 2E33 3338 3833 3633 3432 3539 '2640.33883634259'\n" 
-                                 << "      00000050:  3235 3933 2032 2038 3534 3132 2031 2031 '2593 2 85412 1 1'\n" 
+                                 << "      00000050:  3235 3933 207F 2038 3534 3132 2031 2031 '2593 . 85412 1 1'\n" 
                                  << "      00000060:  2030 2031 2031 2034 2032 2034 2030 2030 ' 0 1 1 4 2 4 0 0'\n" 
                                  << "      00000070:  2033 2031 3139 3920 3232 6330 6166 3033 ' 3 1199 22c0af03'\n" 
                                  << "      00000080:  2031 3737 3032 3965 3420 6166 3430 3031 ' 177029e4 af4001'\n" 
@@ -761,6 +761,7 @@ public:
 
       //Build the hexDumpString and output it to stringstream
       string hexDumpString(hexDumpArray, sizeof(hexDumpArray));
+
       hexDumpData(hexDumpStream, hexDumpString);
 
       failMesg = "Verify that hexDumpData works";
@@ -774,11 +775,11 @@ public:
       failMesg = "Verify that configuring the hexDumpData works";
       testFramework.assert(configHexDumpStream.str() == correctConfigHexDumpStream.str(), failMesg, __LINE__);
 
-      //Correct format for the printable, with Unix-Debain output of the 0x00, 0x10, and 0x85 hex values (first, second, and last values)
+      //Correct format for the printable, with Unix-Debain output of the 0x00, 0x10, 0x7F, and 0x85 hex values (first, second, and last values)
       //A NEW METHOD OF CREATING THIS OUTPUT FOR THOSE UNIQUE CHARACTERS SHOULD BE MADE. AS IT IS NOW, THIS TEST WILL FAIL FOR OTHER
       //OPERATING SYSTEMS OR COMPILERS.
       correctPrintableMessage << "^@^P030105:eph :0:52640.33340277777778A Random Message25925924"
-                              << " 2 52640.338836342592593 2 85412 1 1 0 1 1 4 2 4 0 0 3 1199 22c0af03"
+                              << " 2 52640.338836342592593 ^? 85412 1 1 0 1 1 4 2 4 0 0 3 1199 22c0af03"
                               << " 177029e4 af4001f e61b58a 55f3750 4cca887 115d7cfc 3ad2048a cea"
                               << " 362c48 1199 22c0af03 17704a74 3ac466c1 bd0c6dc 391b3783 3e040cf<85>";
 

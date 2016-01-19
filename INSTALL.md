@@ -10,7 +10,6 @@ Contents:
 * UNIX-like Environment: Automated Build and Install
 * UNIX-like Environment: Manual Build and Install
 * UNIX-like Environment: Python Bindings Build and Install
-* OSX and XCode: Building and Installing with CMake
 * Windows and Microsoft Visual Studio: Building with CMake
 * Linking Against the GPSTk Library
 
@@ -198,14 +197,6 @@ Typical user installs with python bindings and documentation will look like this
 
     $ ./build.sh -eud
 
-
-OSX and XCode: Building and Installing with CMake:
---------------------------------------------------
-
-Step-by-step procedure with pictures on building, installing, and testing the GPSTk under Xcode can be 
-found at gpstk.org:
-
-    http://www.gpstk.org/bin/view/Documentation/BuildingGPSTkUnderOSX
 
 
 Windows and Microsoft Visual Studio: Building with CMake:

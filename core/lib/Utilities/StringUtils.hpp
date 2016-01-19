@@ -1252,8 +1252,9 @@ namespace gpstk
 
       /**
        * Change a string into printable characters.  Control
-       * characters (0-26) are changed to ^@, ^A, etc.  Other
-       * non-printable characters are changed to hex sequences
+       * characters 0, 1, ... 31 are changed to ^@, ^A, ... ^_ ;
+       * control character 127 is changed to ^? (as per Caret-notation).
+       * Other non-printable characters are changed to hex sequences
        * enclosed in <>.
        * @param aStr the string to make printable.
        */
@@ -2736,22 +2737,28 @@ namespace gpstk
       {
          try
          {
-            std::string rv(aStr);
+            std::string rv;
+            size_t len = aStr.length();
+            rv.reserve(len);
 
-            for (int i = 0; i < (int)rv.length(); i++)
+            for (int i = 0; i < len; i++)
             {
-               char c = rv[i];
-               if (!isprint(c))
+               char c = aStr[i];
+               if (c > 31 && c < 127)  // Handle printable ASCII characters
                {
-                  if (iscntrl(c))
+                  rv.append(1,c);
+               }
+               else
+               {
+                  if (c < 0 || c > 127)  // Handle non-ASCII characters
                   {
-                     rv.replace(i,1,2,'^');
-                     rv.replace(i+1,1,1, 64+(c));
+                     rv.append("<" + c2x(aStr.substr(i,1)) + ">");
                   }
-                  else
+                  else  // Handle control characters
                   {
-                     std::string mess(c2x(rv.substr(i,1)));
-                     rv.replace(i,1,"<"+mess+">");
+                     char ctrl = (int)c ^ 0x40;  // Flip the 7th bit
+                     rv.append(1,'^');
+                     rv.append(1,ctrl);
                   }
                }
             }

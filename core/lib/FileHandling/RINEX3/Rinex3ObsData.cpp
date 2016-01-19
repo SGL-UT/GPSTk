@@ -367,6 +367,7 @@ namespace gpstk
       string line;
       while(line.empty())        // ignore blank lines in place of epoch lines
          strm.formattedGetLine(line, true);
+      StringUtils::stripTrailing(line);
 
       if(line.size()>80 || line[0] != ' ' || line[3] != ' ' || line[6] != ' ')
       {
@@ -483,6 +484,7 @@ namespace gpstk
             if(!(isv % 13))
             {                   // get a new continuation line
                strm.formattedGetLine(line);
+               StringUtils::stripTrailing(line);
                isv = 1;
                if(line.size() > 80)
                {
@@ -520,6 +522,7 @@ namespace gpstk
                if(! (line_ndx % 5))
                {              // get a new line
                   strm.formattedGetLine(line);
+                  StringUtils::stripTrailing(line);
                   line.resize(80, ' ');            // pad just in case
                   line_ndx = 0;
                   if(line.size() > 80)
@@ -599,6 +602,7 @@ namespace gpstk
 
          // read the first (epoch) line
       strm.formattedGetLine(line, true);
+      StringUtils::stripTrailing(line, " ");
 
          // Check and parse the epoch line -----------------------------------
          // Check for epoch marker ('>') and following space.
@@ -633,6 +637,7 @@ namespace gpstk
          for(int isv = 0; isv < numSVs; isv++)
          {
             strm.formattedGetLine(line);
+            StringUtils::stripTrailing(line, " ");
 
                // get the SV ID
             try
