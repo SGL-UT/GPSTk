@@ -7,6 +7,7 @@ add_subdirectory (multipath)
 add_subdirectory (Rinextools)
 add_subdirectory (time)
 
+
 #add_subdirectory (ANSITime)
 #add_subdirectory (BinUtils)
 #add_subdirectory (CivilTime)
@@ -35,3 +36,5 @@ add_subdirectory (time)
 #add_subdirectory (Yuma)
 
 
+# python bindings testings
+add_subdirectory (swig)
