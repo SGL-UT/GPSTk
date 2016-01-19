@@ -5,11 +5,14 @@
 
 namespace gpstk
 {
-      /** NavFilterKey defines a class that is used by NavFilter and
-       * child classes to both identify the source of a navigation
-       * message as well as the message itself.  The navigation
-       * messages are defined as child classes of NavFilterKey such
-       * that the message-format specific data is defined.
+      /// @ingroup NavFilter
+      //@{
+
+      /** Defines a class that is used by NavFilter and child classes
+       * to both identify the source of a navigation message as well
+       * as the message itself.  The navigation messages are defined
+       * as child classes of NavFilterKey such that the message-format
+       * specific data is defined.
        *
        * To put it another way, this is the base class and the child
        * classes define the data storage for the nav message. */
@@ -30,6 +33,9 @@ namespace gpstk
          // make this a polymorphic type so dynamic_cast works
       virtual void dummy() {}
    };
+
+      //@}
+
 }
 
 #endif // NAVFILTERKEY_HPP

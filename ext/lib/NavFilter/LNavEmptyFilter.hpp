@@ -5,6 +5,9 @@
 
 namespace gpstk
 {
+      /// @ingroup NavFilter
+      //@{
+
       /** Filter GPS nav subframes with empty contents (either all
        * zeroes, or the standard IS-GPS-200 blank almanac subframe bit
        * pattern). */
@@ -18,6 +21,9 @@ namespace gpstk
       virtual unsigned waitLength() const
       { return 1; }
    };
+
+      //@}
+
 }
 
 #endif // LNAVEMPTYFILTER_HPP

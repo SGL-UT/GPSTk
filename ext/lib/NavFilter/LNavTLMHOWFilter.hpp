@@ -5,6 +5,9 @@
 
 namespace gpstk
 {
+      /// @ingroup NavFilter
+      //@{
+
       /** Filter GPS nav subframes with
        * 1 a bad preamble
        * 2 an invalid TOW count
@@ -21,6 +24,9 @@ namespace gpstk
       virtual unsigned waitLength() const
       { return 1; }
    };
+
+      //@}
+
 }
 
 #endif // LNAVTLMHOWFILTER_HPP

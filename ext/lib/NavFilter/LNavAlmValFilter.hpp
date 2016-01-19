@@ -6,7 +6,11 @@
 
 namespace gpstk
 {
-      /// Filter GPS subframes 4 and 5 based on expected value ranges
+      /// @ingroup NavFilter
+      //@{
+
+      /** Filter GPS subframes 4 and 5 based on expected value ranges.
+       */
    class LNavAlmValFilter : public NavFilter
    {
    public:
@@ -22,6 +26,9 @@ namespace gpstk
          /// Specific value range checks
       static bool checkAlmValRange(LNavFilterData* fd);
    };
+
+      //@}
+
 }
 
 #endif // LNAVALMVALFILTER_HPP
