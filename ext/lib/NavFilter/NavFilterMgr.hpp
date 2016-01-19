@@ -25,6 +25,27 @@ namespace gpstk
        * instantiated and added to the manager using
        * NavFilterMgr::addFilter().  Data is processed and returned
        * using NavFilterMgr::validate().
+       *
+       * Data is added to the NavFilterMgr using child classes of
+       * NavFilterKey.  These child classes will have data members
+       * pointing to pre-existing storage of the navigation messages
+       * themselves.  Using pointers to pre-existing storage allows
+       * the algorithm to operate quickly where it would otherwise
+       * have to make copies of blocks of memory.  Most filters will
+       * not change the contents of the navigation message data, but
+       * that is not guaranteed and in fact some filters are intended
+       * to do just that (e.g. LNavCookFilter).
+       *
+       * @section GPSLNAV GPS Legacy Nav Filters
+       * | Class                 | Filter Depth | Modifies Msg |
+       * | :-------------------- | -----------: | :----------- |
+       * | LNavFilterData        |          n/a | no           |
+       * | LNavAlmValFilter      |            1 | no           |
+       * | LNavCookFilter        |            1 | yes          |
+       * | LNavCrossSourceFilter |            2 | no           |
+       * | LNavEmptyFilter       |            1 | no           |
+       * | LNavParityFilter      |            1 | no           |
+       * | LNavTLMHOWFilter      |            1 | no           |
        */
 
       /// @ingroup NavFilter

@@ -14,6 +14,7 @@ namespace gpstk
    class LNavFilterData : public NavFilterKey
    {
    public:
+         /// Set data fields to reasonable defaults, i.e. sf to NULL.
       LNavFilterData();
          /** Must be set before use in a filter.  The data is expected
           * to be an array of 10 uint32_t values where each array
@@ -22,7 +23,10 @@ namespace gpstk
           * of word 1 is in the LSB of sf[0].
           *
           * This is stored as a pointer rather than array so that data
-          * need not be moved in order to perform the filtering. */
+          * need not be moved in order to perform the filtering.
+          *
+          * @note The data contents pointed to by sf may be modified
+          *   by some filters. */
       uint32_t *sf;
    };
 
