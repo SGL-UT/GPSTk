@@ -149,6 +149,7 @@ using namespace gpstk;
 %ignore gpstk::RefVectorBaseHelper::zeroize();
 %include "VectorBase.hpp"
 %include "Vector.i"
+%include "DataStatus.hpp"
 
 
 // =============================================================

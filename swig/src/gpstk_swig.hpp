@@ -49,6 +49,7 @@
 #include "VectorBase.hpp"
 #include "Vector.hpp"
 #include "Antenna.hpp"
+#include "DataStatus.hpp"
 
 // more specific almanac/ephemeris files:
 #include "AstronomicalFunctions.hpp"
