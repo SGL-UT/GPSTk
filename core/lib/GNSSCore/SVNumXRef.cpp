@@ -18,15 +18,23 @@
 // //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//===========================================================================
 /*  SVNumXRefMap.cpp
 *
 *   Applied Research Laboratories, The University of Texas at Austin
 *
 */
-   // Language Headers
-
-   // Library Headers
-   // Project Headers
 #include "SVNumXRef.hpp"
 #include "CivilTime.hpp"
 #include "TimeString.hpp"
@@ -118,7 +126,7 @@ SVNumXRef::SVNumXRef( )
       // Set up NAVSTAR -> PRN ID relationship
       // NAVSTAR ID first, PRN ID second
    NtoPMap.insert( std::pair<const int, XRefNode>(  1, XRefNode(  4, 
-                                       CivilTime( 1978,  2, 22,  0,  0,  0.0, TimeSystem::GPS),
+								  CivilTime( 1978,  2, 22,  0,  0,  0.0, TimeSystem::GPS),
                                        CivilTime( 1985,  7, 17, 17, 30,  0.0, TimeSystem::GPS))));
    NtoPMap.insert( std::pair<const int, XRefNode>(  2, XRefNode(  7, 
                                        CivilTime( 1978,  6, 13,  0,  0,  0.0, TimeSystem::GPS),
@@ -474,7 +482,7 @@ int SVNumXRef::getNAVSTAR( const int PRNID, const gpstk::CommonTime dt ) const
    SVNumXRefPair p = PtoNMap.equal_range( PRNID );
    for (SVNumXRefListCI ci=p.first; ci != p.second; ++ci )
    {
-      if (ci->second.isApplicable( dt )) return( ci->second.getNAVSTARNum() );
+      if (ci->second.isApplicable( dt )) return ci->second.getNAVSTARNum();
    }
    
       // We didn't find a NAVSTAR # for this PRN ID and date, so throw an 
@@ -485,6 +493,7 @@ int SVNumXRef::getNAVSTAR( const int PRNID, const gpstk::CommonTime dt ) const
    std::string sout = textOut;
    NoNAVSTARNumberFound noFound( sout );
    GPSTK_THROW(noFound); 
+   return 0;
 }
 
 bool SVNumXRef::NAVSTARIDAvailable( const int PRNID, const gpstk::CommonTime dt ) const
@@ -492,14 +501,14 @@ bool SVNumXRef::NAVSTARIDAvailable( const int PRNID, const gpstk::CommonTime dt 
    SVNumXRefPair p = PtoNMap.equal_range( PRNID );
    for (SVNumXRefListCI ci=p.first; ci != p.second; ++ci )
    {
-      if (ci->second.isApplicable( dt )) return( true );
+      if (ci->second.isApplicable( dt )) return true;
    }
-   return( false ); 
+   return false; 
 }
 
 bool SVNumXRef::NAVSTARIDActive( const int NAVSTARID, const gpstk::CommonTime dt ) const
 {
-   return PRNIDAvailable( NAVSTARID, dt ); 
+  return PRNIDAvailable ( NAVSTARID, dt) ; 
 }
 
 SVNumXRef::BlockType SVNumXRef::getBlockType( const int NAVSTARID ) const
@@ -516,6 +525,7 @@ SVNumXRef::BlockType SVNumXRef::getBlockType( const int NAVSTARID ) const
    std::string sout = textOut;
    NoNAVSTARNumberFound noFound( sout );
    GPSTK_THROW(noFound); 
+   return SVNumXRef::BlockType();
 }
 
 std::string SVNumXRef::getBlockTypeString( const int NAVSTARID ) const
@@ -535,7 +545,7 @@ std::string SVNumXRef::getBlockTypeString( const int NAVSTARID ) const
        case IIF: return("Block IIF"); break;
      }
    }
-   return("unknown");
+   return "unknown";
 }
 
 int SVNumXRef::getPRNID( const int NAVSTARID, const gpstk::CommonTime dt ) const
@@ -543,7 +553,7 @@ int SVNumXRef::getPRNID( const int NAVSTARID, const gpstk::CommonTime dt ) const
    NAVNumXRefPair p = NtoPMap.equal_range( NAVSTARID );
    for (NAVNumXRefCI ci=p.first; ci != p.second; ++ci )
    {
-      if (ci->second.isApplicable( dt )) return( ci->second.getPRNNum() );
+      if (ci->second.isApplicable( dt )) return ci->second.getPRNNum();
    }
 
       // We didn't find a PRN ID for this NAVSTAR # and date, so throw an 
@@ -553,7 +563,8 @@ int SVNumXRef::getPRNID( const int NAVSTARID, const gpstk::CommonTime dt ) const
             NAVSTARID,printTime(dt,"%02m/%02d/%04Y").c_str() ); 
    std::string sout = textOut;
    NoNAVSTARNumberFound noFound( sout );
-   GPSTK_THROW(noFound); 
+   GPSTK_THROW(noFound);
+   return 0;
 }
 
 bool SVNumXRef::PRNIDAvailable( const int NAVSTARID, const gpstk::CommonTime dt ) const
@@ -561,17 +572,17 @@ bool SVNumXRef::PRNIDAvailable( const int NAVSTARID, const gpstk::CommonTime dt 
    NAVNumXRefPair p = NtoPMap.equal_range( NAVSTARID );
    for (NAVNumXRefCI ci=p.first; ci != p.second; ++ci )
    {
-      if (ci->second.isApplicable( dt )) return( true );
+      if (ci->second.isApplicable( dt )) return true;
    }
-   return( false ); 
+   return false; 
 }
 
 bool SVNumXRef::BlockTypeAvailable(  const int NAVSTARID ) const
 {
    map<int,BlockType>::const_iterator i;
    i = NtoBMap.find(  NAVSTARID );   
-   if (i!=NtoBMap.end()) return(true);
-   return(false);
+   if (i!=NtoBMap.end()) return true;
+   return false;
 }
 
 //----------Dumps out a List of and ALSO checks for Overlaps is overlap is set to true
@@ -595,7 +606,7 @@ void SVNumXRef::dump(std::ostream& out) const
       out << "     " << setw(2) << mm.first 
           << "       " << mm.second.toString() << endl;
    }
-   out << "\n\n" << endl;
+   out << "\n\n\n";
       //iterate through the data
    multimap<int,XRefNode>::const_iterator iter;
       //resest pastCurrent
@@ -615,7 +626,7 @@ void SVNumXRef::dump(std::ostream& out) const
 
 //-------------- Methods for XRefNode -----------------
 XRefNode::XRefNode( const int NumArg,
-							 const gpstk::TimeRange tr )
+			     const gpstk::TimeRange tr )
 {	
 	Num = NumArg;
 	valid = tr;
@@ -631,8 +642,8 @@ XRefNode::XRefNode( const int NumArg,
 
 bool XRefNode::isApplicable( gpstk::CommonTime dt ) const
 {
-   if (valid.inRange(dt)) return(true);
-   return(false);
+   if (valid.inRange(dt)) return true;
+   return false;
 }
 
 std::string XRefNode::toString() const
@@ -662,37 +673,37 @@ bool SVNumXRef::isConsistent() const
    // loops through the multimap
    for (cit1 = NtoPMap.begin(); cit1 != NtoPMap.end(); cit1++)
    {
-      cit2 = cit1;
-      cit2++;  // cit2 always starts the nested loop one higher than cit1
-      for (; cit2 != NtoPMap.end(); cit2++)
-      {
-		int key1 = cit1->first;		// keys represent the SVN numbers
-		int key2 = cit2->first;
-        const XRefNode xr1 = cit1->second;	// these const xr variables represent the XRefNode so we can access the begin and end times
-		const XRefNode xr2 = cit2->second;	// of each SVN/PRN pair
-		int val1 = xr1.getPRNNum();		// vals represent the PRN numbers
-		int val2 = xr2.getPRNNum();
+     cit2 = cit1;
+     cit2++;  // cit2 always starts the nested loop one higher than cit1
+     for (; cit2 != NtoPMap.end(); cit2++)
+       {
+	 int key1 = cit1->first;		// keys represent the SVN numbers
+	 int key2 = cit2->first;
+	 const XRefNode xr1 = cit1->second;	// these const xr variables represent the XRefNode so we can access the begin and end times
+	 const XRefNode xr2 = cit2->second;	// of each SVN/PRN pair
+	 int val1 = xr1.getPRNNum();		// vals represent the PRN numbers
+	 int val2 = xr2.getPRNNum();
 	 
-		 if ((key1 == key2) || (val1 == val2))	// checks initial condition for an overlap; if neither are true, there is no overlap
-		 {
-		    const TimeRange& tr1 = xr1.getTimeRange();
-		    const TimeRange& tr2 = xr2.getTimeRange();
-		    if (tr1.overlaps(tr2))
-		    {
-				retVal = false;
-				std::cout << "Overlap between SV"
-					 << setw(2) << key1 << "/PRN"
-					 << setw(2) << val1 << "at"
-					 << tr1.printf() << endl;
-				std::cout << "            and"
-					 << setw(2) << key2 << "/PRN"
-					 << setw(2) << val2 << "at"
-					 << tr2.printf() << endl;
-			}
-	      }
+	 if ((key1 == key2) || (val1 == val2))	// checks initial condition for an overlap; if neither are true, there is no overlap
+	   {
+	     const TimeRange& tr1 = xr1.getTimeRange();
+	     const TimeRange& tr2 = xr2.getTimeRange();
+	     if (tr1.overlaps(tr2))
+	       {
+		 retVal = false;
+		 std::cout << "Overlap between SV"
+			   << setw(2) << key1 << "/PRN"
+			   << setw(2) << val1 << "at"
+			   << tr1.printf() << endl;
+		 std::cout << "            and"
+			   << setw(2) << key2 << "/PRN"
+			   << setw(2) << val2 << "at"
+			   << tr2.printf() << endl;
+	       }
+	   }
     
-	  }
-	}
+       }
+   }
    return retVal;					// if we reach this point, we know there are no overlaps
 }   
 

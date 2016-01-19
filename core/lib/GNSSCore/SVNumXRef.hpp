@@ -18,7 +18,18 @@
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
-
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//============================================================================
 /*   SVNumXRef.hpp
 *
 *   Applied Research Laboratories, The University of Texas at Austin
@@ -78,64 +89,61 @@
 #ifndef SVNUMXREF_HPP
 #define SVNUMXREF_HPP
 
-   // Language Headers
 #include <map>
 #include <utility>
 
-   // Library Headers
 #include "CommonTime.hpp"
 #include "SystemTime.hpp"
 #include "gps_constants.hpp"
 #include "Exception.hpp"
 #include "TimeRange.hpp"
 
-   // Project Headers
 
 namespace gpstk
 {
 
-NEW_EXCEPTION_CLASS( NoPRNNumberFound, gpstk::Exception);
-NEW_EXCEPTION_CLASS( NoNAVSTARNumberFound, gpstk::Exception);
+  NEW_EXCEPTION_CLASS( NoPRNNumberFound, gpstk::Exception);
+  NEW_EXCEPTION_CLASS( NoNAVSTARNumberFound, gpstk::Exception);
 
 
-class XRefNode
-{
-   public:
-	  XRefNode( const int NumArg,
-					 const gpstk::TimeRange tr );
-      XRefNode( const int NumArg,
+  class XRefNode
+  {
+     public:
+       XRefNode( const int NumArg,
+		     const gpstk::TimeRange tr );
+       XRefNode( const int NumArg,
                      const gpstk::CommonTime begDT,
                      const gpstk::CommonTime endDT );
-      int getNAVSTARNum() const;
-      int getPRNNum() const;
-      gpstk::CommonTime getBeginTime() const;
-      gpstk::CommonTime getEndTime() const;
-      gpstk::TimeRange getTimeRange() const;
-      bool isApplicable( gpstk::CommonTime dt ) const;
-      std::string toString() const;
+       int getNAVSTARNum() const;
+       int getPRNNum() const;
+       gpstk::CommonTime getBeginTime() const;
+       gpstk::CommonTime getEndTime() const;
+       gpstk::TimeRange getTimeRange() const;
+       bool isApplicable( gpstk::CommonTime dt ) const;
+       std::string toString() const;
 
-   protected:
-      int Num;
-      gpstk::TimeRange valid;
-};
+     protected:
+        int Num;
+        gpstk::TimeRange valid;
+  };
 
-typedef std::multimap<int, XRefNode>::const_iterator SVNumXRefListCI;
-typedef std::pair<SVNumXRefListCI,SVNumXRefListCI> SVNumXRefPair;
-typedef std::multimap<int, XRefNode>::const_iterator NAVNumXRefCI;
-typedef std::pair<NAVNumXRefCI,NAVNumXRefCI> NAVNumXRefPair;
+    typedef std::multimap<int, XRefNode>::const_iterator SVNumXRefListCI;
+    typedef std::pair<SVNumXRefListCI,SVNumXRefListCI> SVNumXRefPair;
+    typedef std::multimap<int, XRefNode>::const_iterator NAVNumXRefCI;
+    typedef std::pair<NAVNumXRefCI,NAVNumXRefCI> NAVNumXRefPair;
 
-class SVNumXRef
-{
-   public:
+  class SVNumXRef
+  {
+     public:
 
       enum BlockType
       {
-      I,
-      II,
-      IIA,
-      IIR,
-      IIR_M,
-      IIF
+	I,
+	II,
+	IIA,
+	IIR,
+	IIR_M,
+	IIF
       };
       SVNumXRef( );
       ~SVNumXRef() {}
@@ -150,18 +158,18 @@ class SVNumXRef
       void dump(std::ostream& out=std::cout) const;
       bool isConsistent() const;
 
-   protected:
-      std::multimap<int,XRefNode> NtoPMap;
-      std::multimap<int,XRefNode> PtoNMap;
-      std::map<int,BlockType> NtoBMap;
-};
+      protected:
+         std::multimap<int,XRefNode> NtoPMap;
+         std::multimap<int,XRefNode> PtoNMap;
+         std::map<int,BlockType> NtoBMap;
+  };
 
-inline int XRefNode::getNAVSTARNum() const { return(Num); }
-inline int XRefNode::getPRNNum() const { return(Num); }
-inline gpstk::CommonTime XRefNode::getBeginTime() const { return( valid.getStart() ); }
-inline gpstk::CommonTime XRefNode::getEndTime() const { return( valid.getEnd() ); }
-inline gpstk::TimeRange XRefNode::getTimeRange() const { return( valid ); }
+    inline int XRefNode::getNAVSTARNum() const { return(Num); }
+    inline int XRefNode::getPRNNum() const { return(Num); }
+    inline gpstk::CommonTime XRefNode::getBeginTime() const { return( valid.getStart() ); }
+    inline gpstk::CommonTime XRefNode::getEndTime() const { return( valid.getEnd() ); }
+    inline gpstk::TimeRange XRefNode::getTimeRange() const { return( valid ); }
 
 
-}
+  }
 #endif
