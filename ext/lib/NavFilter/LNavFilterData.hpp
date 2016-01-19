@@ -6,7 +6,11 @@
 
 namespace gpstk
 {
-      /// Class for filtering GPS legacy nav (id 2) data
+      /// @ingroup NavFilter
+      //@{
+
+      /** Class for filtering GPS legacy nav (id 2) data.
+       */
    class LNavFilterData : public NavFilterKey
    {
    public:
@@ -21,6 +25,9 @@ namespace gpstk
           * need not be moved in order to perform the filtering. */
       uint32_t *sf;
    };
+
+      //@}
+
 }
 
 #endif // LNAVFILTERDATA_HPP

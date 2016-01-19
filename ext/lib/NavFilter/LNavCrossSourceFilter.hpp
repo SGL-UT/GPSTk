@@ -5,6 +5,9 @@
 
 namespace gpstk
 {
+      /// @ingroup NavFilter
+      //@{
+
       /** Filter GPS subframes using a voting algorithm across a
        * single epoch.  This may be used for a single receiver where
        * multiple codes can be compared against each other, or across
@@ -22,6 +25,9 @@ namespace gpstk
    protected:
       
    };
+
+      //@}
+
 }
 
 #endif // LNAVCROSSOURCEFILTER_HPP
