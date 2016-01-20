@@ -9,10 +9,10 @@ namespace gpstk
       //@{
 
       /** Filter GPS nav subframes with
-       * 1 a bad preamble
-       * 2 an invalid TOW count
-       * 3 an invalid subframe ID, or
-       * 4 non-zero parity bits in the HOW bits 29-30.
+       * 1. a bad preamble
+       * 2. an invalid TOW count
+       * 3. an invalid subframe ID, or
+       * 4. non-zero parity bits in the HOW bits 29-30.
        * Input data is assumed to be upright. */
    class LNavTLMHOWFilter : public NavFilter
    {
