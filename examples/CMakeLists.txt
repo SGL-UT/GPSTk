@@ -54,3 +54,5 @@ target_link_libraries(example18 gpstk)
 
 
 
+add_executable(navfilterex navfilterex.cpp)
+target_link_libraries(navfilterex gpstk)

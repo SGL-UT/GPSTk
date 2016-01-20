@@ -36,6 +36,8 @@ namespace gpstk
        * that is not guaranteed and in fact some filters are intended
        * to do just that (e.g. LNavCookFilter).
        *
+       * @see navfilterex.cpp for an example use.
+       *
        * @section GPSLNAV GPS Legacy Nav Filters
        * | Class                 | Filter Depth | Modifies Msg |
        * | :-------------------- | -----------: | :----------- |
@@ -50,6 +52,10 @@ namespace gpstk
 
       /// @ingroup NavFilter
       //@{
+
+      /** @example navfilterex.cpp
+       * Example of how to use NavFilterMgr on GPS LNAV data.
+       */
 
       /** Provides the top-level filtering for navigation messages.  A
        * single instance of this class should be created for each
