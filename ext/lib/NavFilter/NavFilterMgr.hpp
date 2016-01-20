@@ -95,6 +95,13 @@ namespace gpstk
           *   configured filters. */
       NavFilter::NavMsgList validate(NavFilterKey* msgBits);
 
+         /** Flush the stored data for all known filters.  This method
+          * should be called by the user after all data has been added
+          * to the filter manager via validate().
+          * @return The remaining messages successfully passing the
+          *   filters. */
+      virtual NavFilter::NavMsgList finalize();
+
    private:
          /// The collection of navigation message filters to apply.
       FilterList filters;

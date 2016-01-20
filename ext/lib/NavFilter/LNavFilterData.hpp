@@ -30,7 +30,32 @@ namespace gpstk
       uint32_t *sf;
    };
 
+
+      /// Sort LNavFilterData pointers by navigation message bits
+   struct LNavMsgSort
+      : std::binary_function<LNavFilterData*,LNavFilterData*,bool>
+   {
+      inline bool operator()(const LNavFilterData*const& l,
+                             const LNavFilterData*const& r)
+         const;
+   };
+
       //@}
+
+
+   bool LNavMsgSort ::
+   operator()(const LNavFilterData*const& l, const LNavFilterData*const& r)
+      const
+   {
+      for (unsigned sfword = 0; sfword < 10; sfword++)
+      {
+         if (l->sf[sfword] < r->sf[sfword])
+            return true;
+         if (l->sf[sfword] > r->sf[sfword])
+            return false;
+      }
+      return false;
+   }
 
 }
 

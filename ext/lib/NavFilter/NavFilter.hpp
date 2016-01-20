@@ -27,7 +27,7 @@ namespace gpstk
           * calls may be required to accumulate sufficient data to
           * give meaningful results.  This behavior is
           * filter-specific.
-          * @param[in,out] msgBitsIn A list of NavFilterData* objects
+          * @param[in,out] msgBitsIn A list of NavFilterKey* objects
           *   containing navigation messages.
           * @param[out] msgBitsOut The messages successfully passing
           *   the filter.  The data from msgBitsIn will not appear
@@ -36,22 +36,13 @@ namespace gpstk
           *   of data. */
       virtual void validate(NavMsgList& msgBitsIn, NavMsgList& msgBitsOut) = 0;
 
-         /** Returns the number of epochs worth of data (it
-          * is assumed the navigation data being compared is of a
-          * constant cadence) that the child class must accumulate
-          * before a determination of validity can be made.
-          *
-          * A return value of 1 means that the filter will immediately
-          * return valid messages.  2 means that two successive epochs
-          * must be accumulated before returning any valid data, and
-          * so on. */
-      virtual unsigned waitLength() const = 0;
-
-      bool operator==(const NavFilter& r) const throw()
-      { return waitLength() == r.waitLength(); }
-
-      bool operator<(const NavFilter& r) const throw()
-      { return waitLength() < r.waitLength(); }
+         /** Flush the filter's stored data, if any.  This method is
+          * called by NavFilterMgr::finalize() which is in turn called
+          * by the user.  This method allows any lingering data stored
+          * internally by filters to be output.
+          * @param[out] msgBitsOut The messages successfully passing
+          *   the filter. */
+      virtual void finalize(NavMsgList& msgBitsOut) = 0;
 
          /// Add a validated nav msg to the output list.
       inline void accept(NavFilterKey* data, NavMsgList& msgBitsOut)
@@ -71,14 +62,6 @@ namespace gpstk
           *   you will need to manage the rejected list yourself to
           *   avoid it growing unbounded. */
       NavMsgList rejected;
-   };
-
-
-      /// Sort NavFilter pointers by contents rather than pointer value.
-   struct NavFilterSort : std::binary_function<NavFilter*,NavFilter*,bool>
-   {
-      bool operator()(const NavFilter*const& l, const NavFilter*const& r) const
-      { return l->operator<(*r); }
    };
 
       //@}

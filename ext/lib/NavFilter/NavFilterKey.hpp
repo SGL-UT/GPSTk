@@ -23,10 +23,11 @@ namespace gpstk
       NavFilterKey();
       std::string stationID;       ///< site/station identifier for data source
       std::string rxID;            ///< receiver identifier for data source
-      unsigned long prn;           ///< identifier of broadcasting satellite 
+      uint32_t prn;                ///< identifier of broadcasting satellite 
       ObsID::CarrierBand carrier;  ///< carrier band of navigation message
       ObsID::TrackingCode code;    ///< ranging code of navigation message
-         /// @todo add nav code?
+         // Nav code is not necessary as each filter is unique to a
+         // given navigation message structure.
 
       bool operator<(const NavFilterKey& right) const;
    protected:
