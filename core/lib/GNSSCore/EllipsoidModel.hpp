@@ -44,7 +44,7 @@
 
 namespace gpstk
 {
-      /** @addtogroup geodeticgroup */
+      /// @ingroup Geodetic
       //@{
 
       /**
@@ -85,12 +85,12 @@ namespace gpstk
          /// @return Speed of light in km/s
       virtual double c_km() const throw() = 0;
 
-      /// Destructor.
+         /// Destructor.
       virtual ~EllipsoidModel() throw() {};
 
    }; // class EllipsoidModel
 
-   //@}
+      //@}
 
 } // namespace
 

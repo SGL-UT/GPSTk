@@ -46,7 +46,7 @@
 
 namespace gpstk
 {
-      /** @addtogroup filedirgroup */
+      /// @ingroup FileDirProc
       //@{
 
       /// The only exception that class FileHunter throws.

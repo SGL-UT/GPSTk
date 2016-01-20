@@ -60,7 +60,7 @@
 
 namespace gpstk {
 
-   /** @addtogroup rinexutils */
+   /// @ingroup rinexutils 
    //@{
 
    /// class GDCconfiguration encapsulates the configuration for input to the

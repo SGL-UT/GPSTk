@@ -52,16 +52,17 @@
 
 namespace gpstk
 {
-   /** @addtogroup SP3ephem */
-   //@{
+      /// @ingroup FileHandling
+      //@{
 
-      /// This class models the header for a SP3 file.
-      ///
-      /// @note A valid header MUST be read before data can be read from an SP3 file
-      /// because the header contains the file version or format. The version in
-      /// this Header is used by SP3Stream to determine the format of output SP3Data.
-      ///
-      /// @sa gpstk::SP3Stream and gpstk::SP3Data for more information.
+      /** This class models the header for a SP3 file.
+       *
+       * @note A valid header MUST be read before data can be read
+       * from an SP3 file because the header contains the file version
+       * or format. The version in this Header is used by SP3Stream to
+       * determine the format of output SP3Data.
+       *
+       * @sa gpstk::SP3Stream and gpstk::SP3Data for more information. */
    class SP3Header : public SP3Base
    {
    public:
@@ -80,7 +81,7 @@ namespace gpstk
       SP3Header() : version(undefined), numberOfEpochs(0),
                     system(1, SP3SatID::systemGPS), timeSystem(TimeSystem::Any),
                     basePV(0.0), baseClk(0.0)
-                    {}
+      {}
 
          /// destructor
       virtual ~SP3Header() {}
@@ -147,13 +148,9 @@ namespace gpstk
          /// Dump contents to an ostream
       virtual void dump(std::ostream& s=std::cout) const throw();
 
-
-         ///@name data members
-         //@{
-
-         /// The SP3 version (file format) is initially undefined, but it will be
-         /// assigned by reallyGetRecord() while reading, and may be reassigned
-         /// by the user before writing.
+         /** The SP3 version (file format) is initially undefined, but
+          * it will be assigned by reallyGetRecord() while reading,
+          * and may be reassigned by the user before writing.*/
       Version version;           ///< SP3 Version or file format
       bool containsVelocity;     ///< If true, file contains velocities
       CommonTime time;           ///< Time of first Epoch in file
@@ -164,17 +161,15 @@ namespace gpstk
       std::string orbitType;     ///< Type of Orbit Estimate
       std::string agency;        ///< Agency generating the Orbit
 
-      // the following are specific to version 'c'
+         // the following are specific to version 'c'
       SP3SatID system;        ///< system of satellites in file, e.g. G for GPS
       TimeSystem timeSystem;  ///< Time system used
       double basePV;          ///< Base used in Pos or Vel (mm or 10**-4mm/sec)
       double baseClk;         ///< Base used in Clk or rate (psec or 10**-4psec/sec)
-      /// Map<SP3SatID,accuracy flag> (all SVs in file)
+         /// Map<SP3SatID,accuracy flag> (all SVs in file)
       std::map<SP3SatID, short> satList;
-      /// vector of 4 comment lines
+         /// vector of 4 comment lines
       std::vector<std::string> comments;
-
-         //@}
 
       friend class SP3Data;
 
@@ -198,7 +193,7 @@ namespace gpstk
 
    }; // end class SP3Header
 
-   //@}
+      //@}
 
 }  // namespace
 

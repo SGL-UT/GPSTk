@@ -51,7 +51,7 @@
 
 namespace gpstk
 {
-      /** @addtogroup commandoptiongroup Command-Line Options */
+      /// @ingroup CommandLine
       //@{
 
       /** 

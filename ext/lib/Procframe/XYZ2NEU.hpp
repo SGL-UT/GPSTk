@@ -54,7 +54,7 @@
 namespace gpstk
 {
 
-      /** @addtogroup GPSsolutions */
+      /// @ingroup GPSsolutions 
       //@{
 
       /** This class changes the reference base from an Earth-Centered,

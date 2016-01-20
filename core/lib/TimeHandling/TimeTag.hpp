@@ -44,6 +44,9 @@
 
 namespace gpstk
 {
+      /// @ingroup TimeHandling
+      //@{
+
       /** This class is an abstract base class inherited by all the classes
        * that provide a specific time representation.
        * These time representations must ensure or provide a way for the
@@ -167,6 +170,8 @@ namespace gpstk
 
       TimeSystem timeSystem; // time system (representation) of the data
    };
+
+      //@}
 
 } // namespace
 

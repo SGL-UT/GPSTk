@@ -34,10 +34,10 @@
 //
 //=============================================================================
 
-/// @file BDSEphemeris.hpp Encapsulates the BeiDou broadcast ephemeris and clock.
-/// Inherits OrbitEph, which does most of the work; this class adds health and
-/// accuracy information, fit interval, ionospheric correction terms and data
-/// flags.
+/** @file BDSEphemeris.hpp Encapsulates the BeiDou broadcast ephemeris
+ * and clock.  Inherits OrbitEph, which does most of the work; this
+ * class adds health and accuracy information, fit interval,
+ * ionospheric correction terms and data flags. */
 
 #ifndef GPSTK_BDSORBITEPH_HPP
 #define GPSTK_BDSORBITEPH_HPP
@@ -49,10 +49,13 @@
 
 namespace gpstk
 {
+      /// @ingroup GNSSEph
+      //@{
+
    class BDSEphemeris : public OrbitEph
    {
    public:
-	   /// Default constuctor
+         /// Default constuctor
       BDSEphemeris(void) : fitDuration(4)
       {
          beginValid.setTimeSystem(TimeSystem::BDT);
@@ -62,61 +65,62 @@ namespace gpstk
          transmitTime.setTimeSystem(TimeSystem::BDT);
       }
 
-      /// Destructor
+         /// Destructor
       virtual ~BDSEphemeris(void) {}
 
-      /// Create a copy of this object and return a pointer to it. This function
-      /// overrides that in the base class.
+         /** Create a copy of this object and return a pointer to
+          * it. This function overrides that in the base class. */
       virtual BDSEphemeris* clone(void) const
-         { return new BDSEphemeris(*this); }
+      { return new BDSEphemeris(*this); }
 
-      /// Returns true if the time, ct, is within the period of validity of
-      /// this OrbitEph object.
-      /// @throw Invalid Request if the required data has not been stored.
+         /** Returns true if the time, ct, is within the period of validity of
+          * this OrbitEph object.
+          * @throw Invalid Request if the required data has not been stored. */
       virtual bool isValid(const CommonTime& ct) const;
 
-      /// Return a string that will identify the derived class
+         /// Return a string that will identify the derived class
       virtual std::string getName(void) const
-         { return std::string("BDSEphemeris"); }
+      { return std::string("BDSEphemeris"); }
 
-      /// This function returns the health status of the SV.
+         /// This function returns the health status of the SV.
       virtual bool isHealthy(void) const;
 
-      /// Compute the accuracy in meters from the accuracy flag (URA).
+         /// Compute the accuracy in meters from the accuracy flag (URA).
       double getAccuracy(void) const
-         { return accuracy; }
+      { return accuracy; }
 
-      /// adjustBeginningValidity determines the beginValid and endValid times.
-      /// @throw Invalid Request if the required data has not been stored.
+         /** adjustBeginningValidity determines the beginValid and
+          * endValid times.
+          * @throw Invalid Request if the required data has not been stored. */
       virtual void adjustValidity(void);
 
-      /// Compute satellite position at the given time.
-      /// This is overriden from OrbitEph due to fact that BDS
-      /// includes GEO orbits.  The BDS ICD contains a slightly 
-      /// modified algorithm for deriving positions for these satellites.
-      /// @throw Invalid Request if the required data has not been stored.
+         /** Compute satellite position at the given time.
+          * This is overriden from OrbitEph due to fact that BDS
+          * includes GEO orbits.  The BDS ICD contains a slightly 
+          * modified algorithm for deriving positions for these satellites.
+          * @throw Invalid Request if the required data has not been stored. */
       Xvt svXvt(const CommonTime& t) const;
       
-      /// Dump the orbit, etc information to the given output stream.
-      /// @throw Invalid Request if the required data has not been stored.
+         /** Dump the orbit, etc information to the given output stream.
+          * @throw Invalid Request if the required data has not been stored. */
       virtual void dumpBody(std::ostream& os = std::cout) const;
       virtual void dumpTerse(std::ostream& os=std::cout) const;
 
-   // member data
-      CommonTime transmitTime;   ///< Time of transmission
-      long HOWtime;              ///< Time (seconds-of-week) of handover word (txmit)
-      short IODE;                ///< Index of data - ephemeris
-      short IODC;                ///< Index of data - clock
-      short health;              ///< Satellite health
-      double accuracy;           ///< Accuracy in meters
-      double Tgd13;              ///< Ionospheric B1/B3 data correction (seconds)
-      double Tgd23;              ///< Ionospheric B2/B3 data correction (seconds)
+         // member data
+      CommonTime transmitTime; ///< Time of transmission
+      long HOWtime;            ///< Time (seconds-of-week) of handover word (txmit)
+      short IODE;              ///< Index of data - ephemeris
+      short IODC;              ///< Index of data - clock
+      short health;            ///< Satellite health
+      double accuracy;         ///< Accuracy in meters
+      double Tgd13;            ///< Ionospheric B1/B3 data correction (seconds)
+      double Tgd23;            ///< Ionospheric B2/B3 data correction (seconds)
 
-      short fitDuration;         ///< not in BCE - set to a default
+      short fitDuration;       ///< not in BCE - set to a default
 
    }; // end class BDSEphemeris
 
-   //@}
+      //@}
    
 } // end namespace
 

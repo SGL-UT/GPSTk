@@ -46,21 +46,21 @@
 
 namespace gpstk
 {
-   /** @defgroup RinexMet RINEX meteorological files */
-   //@{
+      /// @ingroup FileHandling
+      //@{
 
-  /**
-   * This class serves no purpose other than to make readable diagrams.
-   */
+      /**
+       * This class serves no purpose other than to make readable diagrams.
+       */
    class RinexMetBase : public FFData
    {
    public:
 
-      /// Destructor
+         /// Destructor
       virtual ~RinexMetBase() {}
    };
 
-   //@}
+      //@}
 
 }
 
