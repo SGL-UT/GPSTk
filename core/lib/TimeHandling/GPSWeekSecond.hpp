@@ -44,6 +44,9 @@
 
 namespace gpstk
 {
+      /// @ingroup TimeHandling
+      //@{
+
       /// This class handles GPS Week and Seconds-of-week. It inherits
       /// WeekSecond
       /// The GPS week is specified by 10-bit ModWeek, rollover at
@@ -227,6 +230,8 @@ namespace gpstk
       }
 
    }; // end class GPSWeekSecond
+
+      //@}
 
 } // namespace
 

@@ -51,12 +51,15 @@
 
 namespace gpstk
 {
+      /// @ingroup ClockModel
+      //@{
+
    class ORDEpoch
    {
    public:
-      ORDEpoch() : wonky(false) {};
+      ORDEpoch() : wonky(false) {}
 
-      /// defines a store for each SV's ord, indexed by prn
+         /// defines a store for each SV's ord, indexed by prn
       typedef std::map<SatID, ObsRngDev> ORDMap;
 
       ORDEpoch& removeORD(const SatID& svid) throw()
@@ -105,7 +108,9 @@ namespace gpstk
    
    };
 
-   // this is a store of ORDs over time
+      // this is a store of ORDs over time
    typedef std::map<gpstk::CommonTime, gpstk::ORDEpoch> ORDEpochMap;
+
+      //@}
 }
 #endif

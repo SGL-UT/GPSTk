@@ -45,7 +45,7 @@
 
 namespace gpstk
 {
-/** @addtogroup code    */
+/// @ingroup code    
 //@{
       /** P(Y)-code Buffer class.
        *  Applied Research Laboratories, The University of Texas at Austin

@@ -48,23 +48,24 @@
 namespace gpstk
 {
 
-   /** @defgroup VectorGroup Vector and Matrix mathematics */
-   //@{
+      /// @ingroup MathGroup
+      //@{
  
-// forward declarations
+      // forward declarations
    template <class T> class MatrixRowSlice;
    template <class T> class ConstMatrixRowSlice;
    template <class T> class MatrixColSlice;
    template <class T> class ConstMatrixColSlice;
 
 
-/**
- * An implementation of a matrix class using Vector<T> as its internal basis.
- * This class is STL compliant with the iterator proceeding in row major order.
- * Operators +=, -=, *= and /= are implemented in RefMatrixBase.
- * 
- * @sa matvectest.cpp for examples
- */
+      /**
+       * An implementation of a matrix class using Vector<T> as its
+       * internal basis.  This class is STL compliant with the
+       * iterator proceeding in row major order.  Operators +=, -=, *=
+       * and /= are implemented in RefMatrixBase.
+       * 
+       * @sa matvectest.cpp for examples
+       */
    template <class T>
    class Matrix : public RefMatrixBase<T, Matrix<T> >
    {
@@ -91,46 +92,46 @@ namespace gpstk
          /// copies out the contents of vec to initialize the matrix
       template <class BaseClass>
       Matrix(size_t rows, size_t cols, const ConstVectorBase<T, BaseClass>& vec)
-         : v(rows*cols), r(rows), c(cols), s(rows * cols)
+            : v(rows*cols), r(rows), c(cols), s(rows * cols)
       { this->assignFrom(vec); }
 
          /// constructor for a ConstMatrixBase object
       template <class BaseClass>
       Matrix(const ConstMatrixBase<T, BaseClass>& mat) 
             : v(mat.size()), r(mat.rows()), c(mat.cols()), s(mat.size())
-         {
-            size_t i,j;
-            for(i = 0; i < r; i++)
-               for(j = 0; j < c; j++)
-                  (*this)(i,j) = mat(i, j);
-         }
+      {
+         size_t i,j;
+         for(i = 0; i < r; i++)
+            for(j = 0; j < c; j++)
+               (*this)(i,j) = mat(i, j);
+      }
 
          /// submatrix constructor
       template <class BaseClass>
       Matrix(const ConstMatrixBase<T, BaseClass>& mat, size_t topRow, 
-          size_t topCol, size_t numRows, size_t numCols) 
+             size_t topCol, size_t numRows, size_t numCols) 
             : v((size_t)0), r(0), c(0), s(0)
+      {
+            // sanity checks...
+         if ( (topCol > mat.cols()) || 
+              (topRow > mat.rows()) ||
+              ((topRow + numRows) > mat.rows()) ||
+              ((topCol + numCols) > mat.cols()) )
          {
-               // sanity checks...
-            if ( (topCol > mat.cols()) || 
-                 (topRow > mat.rows()) ||
-                 ((topRow + numRows) > mat.rows()) ||
-                 ((topCol + numCols) > mat.cols()) )
-            {
-               MatrixException e("Invalid dimensions or size for Matrix(MatrixBase)");
-               GPSTK_THROW(e);
-            }
-         
-               // seems ok - make the valarray and copy column by column
-            r = numRows;
-            c = numCols;
-            s = r * c;
-            v.resize(r * c);
-            size_t i, j;
-            for(i = 0; i < r; i++)
-               for(j = 0; j < c; j++)
-                  (*this)(i,j) = mat(topRow + i, topCol + j);
+            MatrixException e("Invalid dimensions or size for Matrix(MatrixBase)");
+            GPSTK_THROW(e);
          }
+         
+            // seems ok - make the valarray and copy column by column
+         r = numRows;
+         c = numCols;
+         s = r * c;
+         v.resize(r * c);
+         size_t i, j;
+         for(i = 0; i < r; i++)
+            for(j = 0; j < c; j++)
+               (*this)(i,j) = mat(topRow + i, topCol + j);
+      }
 
          /// STL begin
       iterator begin() { return v.begin(); }
@@ -175,54 +176,54 @@ namespace gpstk
 
          /// Non-const matrix operator(row,col)
       inline T& operator() (size_t rowNum, size_t colNum)
-         { return v(rowNum + colNum * r); }
+      { return v(rowNum + colNum * r); }
          /// Const matrix operator(row,col)
       inline T operator() (size_t rowNum, size_t colNum) const
-         { return v(rowNum + colNum * r); }
+      { return v(rowNum + colNum * r); }
          /// operator[] that returns a row slice
       inline MatrixRowSlice<T> operator[] (size_t row)
-         { return rowRef(row); }
+      { return rowRef(row); }
          /// const operator[] that returns a const row slice
       inline ConstMatrixRowSlice<T> operator[] (size_t rowNum) const 
-         { return row(rowNum);}
+      { return row(rowNum);}
 
          /// Resizes the matrix to rows*cols.
          /// @warning YOUR DATA MAY NOT BE RETAINED!!!
       inline Matrix& resize(size_t rows, size_t cols);
 
       inline Matrix& resize(size_t rows, size_t cols, 
-                         const T initialValue);
+                            const T initialValue);
 
          /**
           * Assigns this matrix to a T* in column major order.
           * @warning be careful that array is as large as the matrix is!
           */
       inline Matrix& operator=(const T* array)
-         { return this->assignFrom(array); }
+      { return this->assignFrom(array); }
          /// Assigns the contents of this matrix to those in array in column
          /// major order.
       inline Matrix& operator=(const std::valarray<T> array)
-         { return this->assignFrom(array); }
+      { return this->assignFrom(array); }
          /// Assigns all elements of the matrix to \c t.
       inline Matrix& operator=(const T t)
-         { return this->assignFrom(t); }
+      { return this->assignFrom(t); }
          /// Copies the other matrix.
       inline Matrix& operator=(const Matrix& mat)
-         { v = mat.v; r = mat.r; c = mat.c; s = mat.s; return *this; }
+      { v = mat.v; r = mat.r; c = mat.c; s = mat.s; return *this; }
          /// Copies from any matrix.
       template <class BaseClass>
       inline Matrix& operator=(const ConstMatrixBase<T, BaseClass>& mat)
-         { 
-            v.resize(mat.size()); 
-            r=mat.rows(); 
-            c=mat.cols(); 
-            s=mat.size();
-            return this->assignFrom(mat);
-         }
+      { 
+         v.resize(mat.size()); 
+         r=mat.rows(); 
+         c=mat.cols(); 
+         s=mat.size();
+         return this->assignFrom(mat);
+      }
          /// Copies from any vector.
       template <class BaseClass>
       inline Matrix& operator=(const ConstVectorBase<T, BaseClass>& mat)
-         { return this->assignFrom(mat); }
+      { return this->assignFrom(mat); }
 
    private:
          /// the matrix stored in column major order
@@ -232,64 +233,64 @@ namespace gpstk
          s;  ///< the overall size
    };
 
-/**
- * An assignable slice of a matrix.
- */
+      /**
+       * An assignable slice of a matrix.
+       */
    template <class T>
    class MatrixSlice : public RefMatrixSliceBase<T, MatrixSlice<T> >
    {
    public:
          /// default constructor
       MatrixSlice() : m(NULL), rSlice(std::slice(0,0,0)), 
-         cSlice(std::slice(0,0,0)), s(0)
-         {}
+                      cSlice(std::slice(0,0,0)), s(0)
+      {}
 
          /// Makes a slice of the whole matrix.
       MatrixSlice(Matrix<T>& mat)
             : m(&mat), rSlice(std::slice(0, mat.rows(), 1)),
               cSlice(std::slice(0,mat.cols(), 1)), s(mat.size())
-         {
-            this->matSliceCheck(mat.rows(), mat.cols());
-         }
+      {
+         this->matSliceCheck(mat.rows(), mat.cols());
+      }
 
          /// Makes a partial slice of a matrix.
       MatrixSlice(Matrix<T>& mat, const std::slice& rowSlice,
-               const std::slice& colSlice)
+                  const std::slice& colSlice)
             : m(&mat), rSlice(rowSlice), cSlice(colSlice),
               s(rSlice.size() * cSlice.size())
-         {
-            this->matSliceCheck(mat.rows(), mat.cols());
-         }
+      {
+         this->matSliceCheck(mat.rows(), mat.cols());
+      }
 
          /// Submatrix slice.
       MatrixSlice(Matrix<T>& mat, size_t topRow, size_t topCol, 
-               size_t numRows, size_t numCols)
+                  size_t numRows, size_t numCols)
             : m(&mat), rSlice(std::slice(topRow, numRows, 1)),
               cSlice(std::slice(topCol, numCols, 1)),
               s(rSlice.size() * cSlice.size())
-         {
-            this->matSliceCheck(mat.rows(), mat.cols());
-         }
+      {
+         this->matSliceCheck(mat.rows(), mat.cols());
+      }
       
          /// Copies from x to (*this).
       template <class V>
       MatrixSlice& operator=(const ConstMatrixBase<T, V>& x)
-         { return this->assignFrom(x); }
+      { return this->assignFrom(x); }
 
          /// Copies from x to (*this).
       template <class V>
       MatrixSlice& operator=(const ConstVectorBase<T, V>& x)
-         { return this->assignFrom(x); }
+      { return this->assignFrom(x); }
 
          /// Copies from x to (*this).
       MatrixSlice& operator=(const std::valarray<T>& x)
-         { return this->assignFrom(x); }
+      { return this->assignFrom(x); }
          /// Copies from x to (*this).
       MatrixSlice& operator=(const T x)
-         { return this->assignFrom(x); }
+      { return this->assignFrom(x); }
          /// Copies from x to (*this).
       MatrixSlice& operator=(const T* x)
-         { return this->assignFrom(x); }
+      { return this->assignFrom(x); }
 
          /// returns the size of this slice
       size_t size() const { return s; }
@@ -299,12 +300,12 @@ namespace gpstk
       size_t rows() const { return rowSize(); }
          /// returns the (i,j) element of the slice.
       T& operator() (size_t i, size_t j)
-         { return (*m)(i * rowStride() + rowStart(), 
-                       j * colStride() + colStart()); }
+      { return (*m)(i * rowStride() + rowStart(), 
+                    j * colStride() + colStart()); }
          /// returns the (i,j) element of the slice, const version.
       T operator() (size_t i, size_t j) const
-         { return (*m)(i * rowStride() + rowStart(), 
-                       j * colStride() + colStart()); }
+      { return (*m)(i * rowStride() + rowStart(), 
+                    j * colStride() + colStart()); }
 
 
          /// returns the number of rows in this slice
@@ -328,44 +329,44 @@ namespace gpstk
       size_t s; ///< the overall size
    };
 
-/**
- * An unmodifiable matrix slice.
- */
+      /**
+       * An unmodifiable matrix slice.
+       */
    template <class T>
    class ConstMatrixSlice : public ConstMatrixSliceBase<T, ConstMatrixSlice<T> >
    {
    public:
          /// default constructor
       ConstMatrixSlice(void) : m(NULL), rSlice(std::slice(0,0,0)), 
-         cSlice(std::slice(0,0,0)), s(0)
-         {}
+                               cSlice(std::slice(0,0,0)), s(0)
+      {}
 
          /// makes a const slice of the whole matrix
       ConstMatrixSlice(const Matrix<T>& mat)
             : m(&mat), rSlice(std::slice(0, mat.rows(), 1)),
               cSlice(std::slice(0,mat.cols(), 1)), s(mat.size())
-         {
-            this->matSliceCheck(mat.rows(), mat.cols());
-         }
+      {
+         this->matSliceCheck(mat.rows(), mat.cols());
+      }
 
          /// makes a slice given std::slices for rows and columns
       ConstMatrixSlice(const Matrix<T>& mat, const std::slice& rowSlice,
-               const std::slice& colSlice)
+                       const std::slice& colSlice)
             : m(&mat), rSlice(rowSlice), cSlice(colSlice),
               s(rSlice.size() * cSlice.size())
-         {
-            this->matSliceCheck(mat.rows(), mat.cols());
-         }
+      {
+         this->matSliceCheck(mat.rows(), mat.cols());
+      }
 
          /// submatrix slice
       ConstMatrixSlice(const Matrix<T>& mat, size_t topRow, size_t topCol, 
-               size_t numRows, size_t numCols)
+                       size_t numRows, size_t numCols)
             : m(&mat), rSlice(std::slice(topRow, numRows, 1)),
               cSlice(std::slice(topCol, numCols, 1)),
               s(rSlice.size() * cSlice.size())
-         {
-            this->matSliceCheck(mat.rows(), mat.cols());
-         }
+      {
+         this->matSliceCheck(mat.rows(), mat.cols());
+      }
 
          /// the size of the slice
       size_t size() const { return s; }
@@ -375,8 +376,8 @@ namespace gpstk
       size_t rows() const { return rowSize(); }
          /// the (i,j) element of the slice, const.
       T operator() (size_t i, size_t j) const 
-         { return (*m)(i * rowStride() + rowStart(), 
-                       j * colStride() + colStart()); }
+      { return (*m)(i * rowStride() + rowStart(), 
+                    j * colStride() + colStart()); }
 
          /// returns the number of rows in this slice
       size_t rowSize() const { return rSlice.size(); }
@@ -398,9 +399,9 @@ namespace gpstk
       size_t s; ///< the size of the slice
    };
 
-/**
- * an assignable single column slice of a matrix
- */
+      /**
+       * an assignable single column slice of a matrix
+       */
    template <class T>
    class MatrixColSlice : public RefMatrixSliceBase<T, MatrixColSlice<T> >
    {
@@ -410,56 +411,56 @@ namespace gpstk
          /// makes a slice of the column \c col from matrix \c mat.
       MatrixColSlice(Matrix<T>& mat, size_t col)
             : m(&mat), c(col), rSlice(std::slice(0,mat.rows(),1))
-         { 
-            this->matSliceCheck(mat.rows(), mat.cols()); 
-         }
+      { 
+         this->matSliceCheck(mat.rows(), mat.cols()); 
+      }
          /// makes a slice of the column from the matrix using \c s to
          /// further slice the column.
       MatrixColSlice(Matrix<T>& mat, size_t col, const std::slice& s)
             : m(&mat), c(col), rSlice(s)
-         { 
-               // decide if the input is reasonable
-            this->matSliceCheck(mat.rows(), mat.cols());
-         }
+      { 
+            // decide if the input is reasonable
+         this->matSliceCheck(mat.rows(), mat.cols());
+      }
 
          /// assigns this column to x
       template <class V>
       MatrixColSlice& operator=(const ConstMatrixBase<T, V>& x)
-         { return this->assignFrom(x); }
+      { return this->assignFrom(x); }
 
          /// assigns this column to x
       template <class V>
       MatrixColSlice& operator=(const ConstVectorBase<T, V>& x)
-         { return this->assignFrom(x); }
+      { return this->assignFrom(x); }
          /// assigns this column to x
       MatrixColSlice& operator=(const std::valarray<T>& x)
-         { return this->assignFrom(x); }
+      { return this->assignFrom(x); }
          /// assigns this column to x
       MatrixColSlice& operator=(const T x)
-         { return this->assignFrom(x); }
+      { return this->assignFrom(x); }
          /// assigns this column to x
       MatrixColSlice& operator=(const T* x)
-         { return this->assignFrom(x); }
+      { return this->assignFrom(x); }
 
          /// returns the i'th element of the column, non-const
       T& operator[] (size_t i) 
-         { return (*m)(rowStart() + i * rowStride(), c); }
+      { return (*m)(rowStart() + i * rowStride(), c); }
          /// returns the i'th element of the column, non-const
       T& operator() (size_t i) 
-         { return (*m)(rowStart() + i * rowStride(), c); }
+      { return (*m)(rowStart() + i * rowStride(), c); }
          /// returns the i'th element of the column, const
       T operator[] (size_t i) const
-         { return (*m)(rowStart() + i * rowStride(), c); }
+      { return (*m)(rowStart() + i * rowStride(), c); }
          /// returns the i'th element of the column, const
       T operator() (size_t i) const
-         { return (*m)(rowStart() + i * rowStride(), c); }
+      { return (*m)(rowStart() + i * rowStride(), c); }
 
          /// returns the (i,j) element, non-const
       T& operator() (size_t i, size_t j) 
-         { return (*m)(rowStart() + i * rowStride(), j + c); }
+      { return (*m)(rowStart() + i * rowStride(), j + c); }
          /// returns the (i,j) element, non-const
       T operator() (size_t i, size_t j) const
-         { return (*m)(rowStart() + i * rowStride(), j + c); }
+      { return (*m)(rowStart() + i * rowStride(), j + c); }
 
          /// returns the number of rows in the slice
       size_t rows() const {return size();}
@@ -491,9 +492,9 @@ namespace gpstk
 
    };
 
-/**
- * a constant slice of a single column from a matrix.
- */
+      /**
+       * a constant slice of a single column from a matrix.
+       */
    template <class T>
    class ConstMatrixColSlice : public ConstMatrixSliceBase<T, ConstMatrixColSlice<T> >
    {
@@ -501,33 +502,33 @@ namespace gpstk
          /// default constructor
       ConstMatrixColSlice() 
             : m(NULL), c(0), rSlice(std::slice(0,0,0)) 
-         {}
+      {}
 
          /// constructor taking a slice of column \c col from the matrix.
       ConstMatrixColSlice(const Matrix<T>& mat, size_t col)
             : m(&mat), c(col), rSlice(std::slice(0,mat.rows(),1))
-         { this->matSliceCheck(mat.rows(), mat.cols()); }
+      { this->matSliceCheck(mat.rows(), mat.cols()); }
 
          /// constructor taking a slice of column \c col from the matrix,
          /// slicing the column by \c s.
       ConstMatrixColSlice(const Matrix<T>& mat, size_t col, 
-                       const std::slice& s)
+                          const std::slice& s)
             : m(&mat), c(col), rSlice(s)
-         { 
-               // decide if the input is reasonable
-            this->matSliceCheck(mat.rows(), mat.cols());
-         }
+      { 
+            // decide if the input is reasonable
+         this->matSliceCheck(mat.rows(), mat.cols());
+      }
 
          /// returns the i'th element of the column slice
       T operator[] (size_t i) const
-         { return (*m)(rowStart() + i * rowStride(), c); }
+      { return (*m)(rowStart() + i * rowStride(), c); }
          /// returns the i'th element of the column slice
       T operator() (size_t i) const
-         { return (*m)(rowStart() + i * rowStride(), c); }
+      { return (*m)(rowStart() + i * rowStride(), c); }
 
          /// returns the (i,j) element of the column slice
       T operator() (size_t i, size_t j) const
-         { return (*m)(rowStart() + i * rowStride(), j + c); }
+      { return (*m)(rowStart() + i * rowStride(), j + c); }
 
          /// returns the size of the slice in rows
       size_t rows() const {return rowSize();}
@@ -557,9 +558,9 @@ namespace gpstk
       std::slice rSlice;
    };
 
-/**
- * an assignable single row slice of a matrix
- */
+      /**
+       * an assignable single row slice of a matrix
+       */
    template <class T>
    class MatrixRowSlice : public RefMatrixSliceBase<T, MatrixRowSlice<T> >
    {
@@ -567,57 +568,57 @@ namespace gpstk
          /// default constructor
       MatrixRowSlice() 
             : m(NULL), r(0), cSlice(std::slice(0,0,0)) 
-         {}
+      {}
          /// makes a slice of row \c row from the matrix.
       MatrixRowSlice(Matrix<T>& mat, size_t row)
             : m(&mat), r(row), cSlice(std::slice(0,mat.cols(),1))
-         { this->matSliceCheck(mat.rows(), mat.cols()); }
+      { this->matSliceCheck(mat.rows(), mat.cols()); }
 
          /// makes a slice of row \c row from the matrix, slicing it by \c s.
       MatrixRowSlice(Matrix<T>& mat, size_t row, 
-                  const std::slice& s)
+                     const std::slice& s)
             : m(&mat), r(row), cSlice(s)
-         { 
-               // decide if the input is reasonable
-            this->matSliceCheck(mat.rows(), mat.cols());
-         }   
+      { 
+            // decide if the input is reasonable
+         this->matSliceCheck(mat.rows(), mat.cols());
+      }   
 
          /// assigns this row to x.
       template <class V>
       MatrixRowSlice& operator=(const ConstMatrixBase<T, V>& x)
-         { return this->assignFrom(x); }
+      { return this->assignFrom(x); }
          /// assigns this row to x.
       template <class V>
       MatrixRowSlice& operator=(const ConstVectorBase<T, V>& x)
-         { return this->assignFrom(x); }
+      { return this->assignFrom(x); }
          /// assigns this row to x.
       MatrixRowSlice& operator=(const std::valarray<T>& x)
-         { return this->assignFrom(x); }
+      { return this->assignFrom(x); }
          /// assigns this row to x.
       MatrixRowSlice& operator=(const T x)
-         { return this->assignFrom(x); }
+      { return this->assignFrom(x); }
          /// assigns this row to x.
       MatrixRowSlice& operator=(const T* x)
-         { return this->assignFrom(x); }
+      { return this->assignFrom(x); }
 
          /// returns the j'th element of the slice, non-const
       T& operator[] (size_t j)
-         { return (*m)(r, colStart() + j * colStride()); }
+      { return (*m)(r, colStart() + j * colStride()); }
          /// returns the j'th element of the slice, non-const
       T& operator() (size_t j)
-         { return (*m)(r, colStart() + j * colStride()); }
+      { return (*m)(r, colStart() + j * colStride()); }
          /// returns the j'th element of the slice, const
       T operator[] (size_t j) const
-         { return (*m)(r, colStart() + j * colStride()); }
+      { return (*m)(r, colStart() + j * colStride()); }
          /// returns the j'th element of the slice, const
       T operator() (size_t j) const
-         { return (*m)(r, colStart() + j * colStride()); }
+      { return (*m)(r, colStart() + j * colStride()); }
          /// returns the (i,j) element of the slice, non-const
       T& operator() (size_t i, size_t j) 
-         { return (*m)(i + r, colStart() + j * colStride()); }
+      { return (*m)(i + r, colStart() + j * colStride()); }
          /// returns the (i,j) element of the slice, const
       T operator() (size_t i, size_t j) const
-         { return (*m)(i + r, colStart() + j * colStride()); }
+      { return (*m)(i + r, colStart() + j * colStride()); }
 
          /// returns the number of rows in the row slice
       size_t rows() const {return 1;}
@@ -648,9 +649,9 @@ namespace gpstk
       std::slice cSlice;
    };
 
-/**
- * an unmodifiable row slice of a matrix.
- */
+      /**
+       * an unmodifiable row slice of a matrix.
+       */
    template <class T>
    class ConstMatrixRowSlice : public ConstMatrixSliceBase<T, ConstMatrixRowSlice<T> >
    {
@@ -658,31 +659,31 @@ namespace gpstk
          /// default constructor
       ConstMatrixRowSlice() 
             : m(NULL), r(0), cSlice(std::slice(0,0,0)) 
-         {}
+      {}
          /// makes a const row slice from the matrix
       ConstMatrixRowSlice(const Matrix<T>& mat, size_t row)
             : m(&mat), r(row), cSlice(std::slice(0,mat.cols(),1))
-         { this->matSliceCheck(mat.rows(), mat.cols()); }
+      { this->matSliceCheck(mat.rows(), mat.cols()); }
 
          /// makes a const row slice from the matrix, slicing that row by \c s.
       ConstMatrixRowSlice(const Matrix<T>& mat, size_t row, 
-                       const std::slice& s)
+                          const std::slice& s)
             : m(&mat), r(row), cSlice(s)
-         { 
-               // decide if the input is reasonable
-            this->matSliceCheck(mat.rows(), mat.cols());
-         }   
+      { 
+            // decide if the input is reasonable
+         this->matSliceCheck(mat.rows(), mat.cols());
+      }   
 
          /// returns the i'th element of the slice
       T operator[] (size_t i) const
-         { return (*m)(r, colStart() + i * colStride()); }
+      { return (*m)(r, colStart() + i * colStride()); }
          /// returns the i'th element of the slice
       T operator() (size_t i) const
-         { return (*m)(r, colStart() + i * colStride()); }
+      { return (*m)(r, colStart() + i * colStride()); }
 
          /// returns the (i,j) element of the slice
       T operator() (size_t i, size_t j) const
-         { return (*m)(i + r, colStart() + j * colStride()); }
+      { return (*m)(i + r, colStart() + j * colStride()); }
 
          /// returns the number of rows in the slice
       size_t rows() const {return 1;}
@@ -712,7 +713,7 @@ namespace gpstk
       std::slice cSlice;
    };
 
-   //@}
+      //@}
 
 }  // namespace
 

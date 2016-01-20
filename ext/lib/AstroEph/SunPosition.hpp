@@ -57,7 +57,7 @@
 namespace gpstk
 {
 
-      /** @addtogroup ephemcalc */
+      /// @ingroup ephemcalc 
       //@{
 
       /** This class computes the approximate position of the Sun at the

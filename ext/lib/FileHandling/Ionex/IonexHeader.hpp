@@ -54,7 +54,7 @@ namespace gpstk
 {
 
 
-      /** @addtogroup IonosphereMaps */
+      /// @ingroup IonosphereMaps 
       //@{
 
 

@@ -40,12 +40,21 @@
  */
 
 /**
-*   This is one of four classes designed to contain GPS navigation message data.  The classes are
-*      EngEphemeris -  Legacy GPS navigation message data from subframes 1,2,3 ( L1 C/A, L1 P(Y), L2 P(Y) )
-*      CNAVEphemeris - GPS Civil navigation message data from Message Type 10/11 (L2C and L5)
-*      CNAVClock - GPS Civil navigation message data from the "clock" portion of Message Types 30-37 (L2C and L5)
-*      CNAV2EphClock - GPS Civil navigation message from subframe 2 of the L1C message
-*/
+ *   This is one of four classes designed to contain GPS navigation
+ *   message data.  The classes are
+ *
+ *      EngEphemeris - Legacy GPS navigation message data from
+ *      subframes 1,2,3 ( L1 C/A, L1 P(Y), L2 P(Y) )
+ *
+ *      CNAVEphemeris - GPS Civil navigation message data from Message
+ *      Type 10/11 (L2C and L5)
+ *
+ *      CNAVClock - GPS Civil navigation message data from the "clock"
+ *      portion of Message Types 30-37 (L2C and L5)
+ *
+ *      CNAV2EphClock - GPS Civil navigation message from subframe 2
+ *      of the L1C message
+ */
 
 #ifndef GPSTK_EngEphemeris_HPP
 #define GPSTK_EngEphemeris_HPP
@@ -63,8 +72,8 @@
 
 namespace gpstk
 {
-   /** @addtogroup ephemcalc */
-   //@{
+      /// @ingroup GNSSEph
+      //@{
 
       /**
        * Ephemeris information for a single satellite.  This class
@@ -77,7 +86,7 @@ namespace gpstk
    public:
          /// Default constructor
       EngEphemeris()
-         throw();
+      throw();
 
          /// Destructor
       virtual ~EngEphemeris() {}
@@ -240,8 +249,8 @@ namespace gpstk
       CommonTime getEphemerisEpoch() const
          throw( gpstk::InvalidRequest );
 
-         /// EXvtracts the epoch time (time of clock) from this ephemeris, correcting
-         /// for half weeks and HOW time
+         /// Extracts the epoch time (time of clock) from this
+         /// ephemeris, correcting for half weeks and HOW time
       CommonTime getEpochTime() const
          throw( gpstk::InvalidRequest );
 
@@ -452,9 +461,9 @@ namespace gpstk
          /** This function returns the value of the ephemeris key that
           * is used to sort the ephemerides when they are stored in
           * the bcetable. */
-	  //NB Determine if this function is needed, as it is never used
-	  //double getEphkey() const //NB Determine if this function is needed, as it is never used
-      //   throw( gpstk::InvalidRequest );
+         /** @todo Determine if this function is needed, as it is never used */
+         //double getEphkey() const
+         //   throw( gpstk::InvalidRequest );
 
          /** This function returnst the value of the Time of Transmit.
           * Basically just the earliest of the HOWs. */
@@ -517,34 +526,43 @@ namespace gpstk
           * @return a reference to the modified EngEphemeris object
           */
 
-      EngEphemeris& loadData( const std::string satSysArg, unsigned short tlm[3], const long how[3], const short asalert[3],
+      EngEphemeris& loadData( const std::string satSysArg,
+                              unsigned short tlm[3], const long how[3],
+                              const short asalert[3],
                               const short Tracker, const short prn, 
-                              const short fullweek, const short cflags, const short acc, 
-                              const short svhealth, const short iodc, const short l2pdata,
-                              const long Aodo, const double tgd, const double toc,
-                              const double Af2, const double Af1, const double Af0,
-                              const short iode, const double crs, const double Dn,
-                              const double m0, const double cuc, const double Ecc,
-                              const double cus, const double ahalf, const double toe,
-                              const short fitInt, const double cic, const double Omega0,
-                              const double cis, const double I0, const double crc,
-                              const double W, const double OmegaDot, const double IDot )
-         throw();
+                              const short fullweek, const short cflags,
+                              const short acc, const short svhealth,
+                              const short iodc, const short l2pdata,
+                              const long Aodo, const double tgd,
+                              const double toc, const double Af2,
+                              const double Af1, const double Af0,
+                              const short iode, const double crs,
+                              const double Dn, const double m0,
+                              const double cuc, const double Ecc,
+                              const double cus, const double ahalf,
+                              const double toe, const short fitInt,
+                              const double cic, const double Omega0,
+                              const double cis, const double I0,
+                              const double crc, const double W,
+                              const double OmegaDot, const double IDot )
+      throw();
 
-      EngEphemeris& setSF1( unsigned tlm, double how, short asalert, short fullweek,
-                            short cflags, short acc, short svhealth, short iodc,
+      EngEphemeris& setSF1( unsigned tlm, double how, short asalert,
+                            short fullweek, short cflags, short acc,
+                            short svhealth, short iodc,
                             short l2pdata, double tgd, double toc, double Af2,
                             double Af1, double Af0, short Tracker, short prn )
          throw();
 
-      EngEphemeris& setSF2( unsigned tlm, double how, short asalert, short iode,
-                            double crs, double Dn, double m0, double cuc, double Ecc,
-                            double cus, double ahalf, double toe, short fitInt )
+      EngEphemeris& setSF2( unsigned tlm, double how, short asalert,
+                            short iode, double crs, double Dn, double m0,
+                            double cuc, double Ecc, double cus, double ahalf,
+                            double toe, short fitInt )
          throw( InvalidRequest );
 
-      EngEphemeris& setSF3( unsigned tlm, double how, short asalert, double cic,
-                            double Omega0, double cis, double I0, double crc,
-                            double W, double OmegaDot, double IDot )
+      EngEphemeris& setSF3( unsigned tlm, double how, short asalert,
+                            double cic, double Omega0, double cis, double I0,
+                            double crc, double W, double OmegaDot, double IDot)
          throw( InvalidRequest );
    
          /// Output the contents of this ephemeris to the given stream.
@@ -563,27 +581,30 @@ namespace gpstk
                            const short PRN, 
                            const short track);
       uint32_t subframeStore[3][10];
-      // True if initialized with FIC data
+         // True if initialized with FIC data
       bool isFIC;
       
-         /// Ephemeris overhead information
+         /// @name Ephemeris overhead information
          //@{
       unsigned short tlm_message[3];
       std::string satSys;  /**< GNSS (satellite system) */
       short PRNID;         /**< SV PRN ID */
       short tracker;       /**< Tracker number */
       long HOWtime[3];     /**< Time of subframe 1-3 (sec of week) */
-      short ASalert[3];    /**< A-S and "alert" flags for each subframe. 2 bit quantity with A-S flag the high
-                                 order bit and the alert flag low order bit */
-      short weeknum;       /**< GPS full week number that corresponds to the HOWtime of SF1 */
+      short ASalert[3];    /**< A-S and "alert" flags for each
+                            * subframe. 2 bit quantity with A-S flag
+                            * the high order bit and the alert flag
+                            * low order bit */
+      short weeknum;       /**< GPS full week number that corresponds
+                            * to the HOWtime of SF1 */
       short codeflags;     /**< L2 codes */
       short health;        /**< SV health */
       short L2Pdata;       /**< L2 P data flag */
-      short IODC;         /**< Index of data-clock  */
-      short IODE;         /**< Index of data-eph    */
-      long  AODO;         /**< Age of Data Offset for NMCT */
+      short IODC;          /**< Index of data-clock  */
+      short IODE;          /**< Index of data-eph    */
+      long  AODO;          /**< Age of Data Offset for NMCT */
       short  fitint;       /**< Fit interval flag */
-      double  Tgd;          /**< L1 and L2 correction term */
+      double  Tgd;         /**< L1 and L2 correction term */
          //@}
 
          // The following is an odd, special case.
@@ -597,21 +618,17 @@ namespace gpstk
                            // and setSF2( ) uses it. 
 
          /// Clock information
-         //@{
       BrcClockCorrection bcClock;
-         //@}
 
          /// Orbit parameters
-         //@{
       BrcKeplerOrbit orbit;
-         //@}
 
       friend std::ostream& operator<<(std::ostream& s, 
                                       const EngEphemeris& eph);
 
    }; // class EngEphemeris
 
-   //@}
+      //@}
 
 } // namespace
 

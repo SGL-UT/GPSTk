@@ -41,6 +41,9 @@
 
 namespace gpstk
 {
+      /// @ingroup TimeHandling
+      //@{
+
       /** This class is an abstract base class inherited by other
        * GPS-time-related classes. It is abstract because it does not fulfill
        * the abstract methods imposed by the TimeTag class.
@@ -264,6 +267,8 @@ namespace gpstk
 
       int week;
    };
+
+      //@}
 
 } // namespace
 

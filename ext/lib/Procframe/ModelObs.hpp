@@ -51,7 +51,7 @@
 namespace gpstk
 {
 
-      /** @addtogroup GPSsolutions */
+      /// @ingroup GPSsolutions
       //@{
 
       /** This class compute modeled (corrected) observations from satellites
@@ -284,13 +284,13 @@ namespace gpstk
          /** Method to set an a priori position of receiver using
           *  Bancroft's method.
           *
-         * @param time      CommonTime object for this epoch
-         * @param data      A satTypeValueMap data structure holding the data
-         *
-         * @return
-         *  0 if OK
-         *  -1 if problems arose
-         */
+          * @param time      CommonTime object for this epoch
+          * @param data      A satTypeValueMap data structure holding the data
+          *
+          * @return
+          *  0 if OK
+          *  -1 if problems arose
+          */
       virtual int Prepare( const CommonTime& time,
                            const satTypeValueMap& data );
 

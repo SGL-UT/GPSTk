@@ -49,8 +49,8 @@
 
 namespace gpstk
 {
-   /** @addtogroup filedirgroup */
-   //@{
+      /// @ingroup FileDirProc
+      //@{
 
       /**
        * This class is a wrapper for FileHunter and FileFilter, allowing you
@@ -73,26 +73,26 @@ namespace gpstk
    public:
          /// Default constructor
       FileFilterFrame(const gpstk::CommonTime& start = 
-                         gpstk::CommonTime::BEGINNING_OF_TIME,
+                      gpstk::CommonTime::BEGINNING_OF_TIME,
                       const gpstk::CommonTime& end = 
-                         gpstk::CommonTime::END_OF_TIME)
+                      gpstk::CommonTime::END_OF_TIME)
          throw(gpstk::Exception);
 
          /// Takes a list of files to open in lieu of day times
       FileFilterFrame(const std::vector<std::string>& fileList,
                       const gpstk::CommonTime& start = 
-                         gpstk::CommonTime::BEGINNING_OF_TIME,
+                      gpstk::CommonTime::BEGINNING_OF_TIME,
                       const gpstk::CommonTime& end = 
-                         gpstk::CommonTime::END_OF_TIME)
+                      gpstk::CommonTime::END_OF_TIME)
          throw(gpstk::Exception);
 
          /// Takes a file name for a single file filter.
          /// This can throw an exception when there's a file error.
       FileFilterFrame(const std::string& filename, 
                       const gpstk::CommonTime& start = 
-                         gpstk::CommonTime::BEGINNING_OF_TIME,
+                      gpstk::CommonTime::BEGINNING_OF_TIME,
                       const gpstk::CommonTime& end = 
-                         gpstk::CommonTime::END_OF_TIME)
+                      gpstk::CommonTime::END_OF_TIME)
          throw(gpstk::Exception);
 
          /// Uses the FileSpec to retrieve files.  Use filter like you would
@@ -100,9 +100,9 @@ namespace gpstk
          /// This can throw an exception when there's a file error.
       FileFilterFrame(const FileSpec& spec, 
                       const gpstk::CommonTime& start = 
-                         gpstk::CommonTime::BEGINNING_OF_TIME,
+                      gpstk::CommonTime::BEGINNING_OF_TIME,
                       const gpstk::CommonTime& end = 
-                         gpstk::CommonTime::END_OF_TIME,
+                      gpstk::CommonTime::END_OF_TIME,
                       const std::vector<FileHunter::FilterPair>& filter = 
                       std::vector<FileHunter::FilterPair>())
          throw(gpstk::Exception);
@@ -113,29 +113,29 @@ namespace gpstk
       FileFilterFrame& 
       newSource(const FileSpec& filespec, 
                 const gpstk::CommonTime& start = 
-                   gpstk::CommonTime::BEGINNING_OF_TIME,
+                gpstk::CommonTime::BEGINNING_OF_TIME,
                 const gpstk::CommonTime& end = 
-                   gpstk::CommonTime::END_OF_TIME,
+                gpstk::CommonTime::END_OF_TIME,
                 const std::vector<FileHunter::FilterPair>& filter = 
-                   std::vector<FileHunter::FilterPair>())
+                std::vector<FileHunter::FilterPair>())
          throw(gpstk::Exception);
 
          /// Reads in the file and adds the data to the filter.
       FileFilterFrame& 
       newSource(const std::string& filename, 
                 const gpstk::CommonTime& start = 
-                   gpstk::CommonTime::BEGINNING_OF_TIME,
+                gpstk::CommonTime::BEGINNING_OF_TIME,
                 const gpstk::CommonTime& end = 
-                   gpstk::CommonTime::END_OF_TIME)
+                gpstk::CommonTime::END_OF_TIME)
          throw(gpstk::Exception);
 
          /// Takes a list of files to open in lieu of day times
       FileFilterFrame&
       newSource(const std::vector<std::string>& fileList,
                 const gpstk::CommonTime& start = 
-                   gpstk::CommonTime::BEGINNING_OF_TIME,
+                gpstk::CommonTime::BEGINNING_OF_TIME,
                 const gpstk::CommonTime& end = 
-                   gpstk::CommonTime::END_OF_TIME)
+                gpstk::CommonTime::END_OF_TIME)
          throw(gpstk::Exception);
 
       virtual ~FileFilterFrame() {}
@@ -181,13 +181,13 @@ namespace gpstk
 
    };
 
-   //@}
+      //@}
 
    template <class FileStream, class FileData>
    FileFilterFrame<FileStream,FileData> :: 
    FileFilterFrame(const gpstk::CommonTime& start,
                    const gpstk::CommonTime& end)
-      throw(gpstk::Exception)
+         throw(gpstk::Exception)
          : startTime(start), endTime(end)
    {}
 
@@ -196,7 +196,7 @@ namespace gpstk
    FileFilterFrame(const std::vector<std::string>& fileList,
                    const gpstk::CommonTime& start,
                    const gpstk::CommonTime& end)
-      throw(gpstk::Exception)
+         throw(gpstk::Exception)
          : startTime(start), endTime(end)
    {
       typename std::vector<std::string>::const_iterator itr;
@@ -212,7 +212,7 @@ namespace gpstk
    FileFilterFrame(const std::string& filename, 
                    const gpstk::CommonTime& start,
                    const gpstk::CommonTime& end)
-      throw(gpstk::Exception)
+         throw(gpstk::Exception)
          : fs(filename), startTime(start), endTime(end)
    {
       init();
@@ -224,7 +224,7 @@ namespace gpstk
                    const gpstk::CommonTime& start,
                    const gpstk::CommonTime& end,
                    const std::vector<FileHunter::FilterPair>& filter)
-      throw(gpstk::Exception)
+         throw(gpstk::Exception)
          : fs(spec), startTime(start), endTime(end)
    {
       init(filter);

@@ -46,6 +46,9 @@
 
 namespace gpstk
 {
+      /// @ingroup FileHandling
+      //@{
+
       /// Storage for single RINEX OBS data measurements
    class RinexDatum
    {
@@ -75,6 +78,9 @@ namespace gpstk
       short ssi;      ///< See the RINEX Spec. for an explanation.
       bool ssiBlank;  ///< True if the ssi is blank in the file
    };
+
+      //@}
+
 } // namespace gpstk
 
 #endif // RINEXDATUM_HPP

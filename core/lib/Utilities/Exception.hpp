@@ -69,9 +69,9 @@ namespace gpstk
    public:
          /**
           * Constructor for location information.
-          * @param filename name of source file where exception occurred.
-          * @param funcName name of function where exception occurred.
-          * @param lineNum line of source file where exception occurred.
+          * @param[in] filename name of source file where exception occurred.
+          * @param[in] funcName name of function where exception occurred.
+          * @param[in] lineNum line of source file where exception occurred.
           */
       ExceptionLocation(const std::string& filename = std::string(),
                         const std::string& funcName = std::string(),
@@ -97,7 +97,8 @@ namespace gpstk
 
          /**
           * Debug output function.
-          * @param s stream to output debugging information for this class to.
+          * @param[in,out] s stream to which debugging information for
+          *   this class will be output.
           */
       void dump(std::ostream& s) const;
 
@@ -109,8 +110,8 @@ namespace gpstk
           * This is intended just to dump all the data in the
           * ::ExceptionLocation to the indicated stream.  \warning Warning: It
           * will _not_ preserve the state of the stream.
-          * @param s stream to send ::ExceptionLocation information to.
-          * @param e ::ExceptionLocation to "dump".
+          * @param[in,out] s stream to send ::ExceptionLocation information to.
+          * @param[in] e ::ExceptionLocation to "dump".
           * @return a reference to the stream \c s.
           */
       friend std::ostream& operator<<( std::ostream& s,
@@ -163,10 +164,10 @@ namespace gpstk
 
          /**
           * Full constructor for exception.
-          * @param errorText text message detailing exception.
-          * @param errorId error code related to exception e.g. MQ result
-          * code.
-          * @param severity severity of error.
+          * @param[in] errorText text message detailing exception.
+          * @param[in] errorId error code related to exception e.g. MQ
+          *   result code.
+          * @param[in] severity severity of error.
           */
       Exception(const std::string& errorText,
                 const unsigned long& errorId = 0,
@@ -175,10 +176,10 @@ namespace gpstk
 
          /**
           * Full constructor for exception.
-          * @param errorText text message detailing exception.
-          * @param errorId error code related to exception e.g. MQ result
-          * code.
-          * @param severity severity of error.
+          * @param[in] errorText text message detailing exception.
+          * @param[in] errorId error code related to exception e.g. MQ
+          *   result code.
+          * @param[in] severity severity of error.
           */
       Exception(const char* errorText,
                 const unsigned long& errorId = 0,
@@ -211,7 +212,7 @@ namespace gpstk
 
          /**
           * Sets the error ID to the specified value.
-          * @param errId The identifier you want to associate with
+          * @param[in] errId The identifier you want to associate with
           * this error.
           */
       Exception& setErrorId(const unsigned long& errId)
@@ -223,7 +224,7 @@ namespace gpstk
           * thrown or rethrown. An array of ExceptionLocation objects
           * is stored in the exception object.
           *
-          * @param location An IExceptionLocation object containing
+          * @param[in] location An IExceptionLocation object containing
           * the following:
           * \li          Function name
           * \li          File name
@@ -233,7 +234,7 @@ namespace gpstk
 
          /**
           * Returns the ExceptionLocation object at the specified index.
-          * @param index If the index is not valid, a 0
+          * @param[in] index If the index is not valid, a 0
           * pointer is returned. (well, not really since someone
           * changed all this bah)
           */
@@ -253,7 +254,7 @@ namespace gpstk
 
          /**
           * Sets the severity of the exception.
-          * @param sever Use the enumeration Severity to specify
+          * @param[in] sever Use the enumeration Severity to specify
           * the severity of the exception.
           */
       Exception& setSeverity(const Severity& sever)
@@ -262,7 +263,7 @@ namespace gpstk
          /**
           * Appends the specified text to the text string on the top
           * of the exception text stack.
-          * @param errorText The text you want to append.
+          * @param[in] errorText The text you want to append.
           */
       Exception& addText(const std::string& errorText);
 
@@ -270,7 +271,7 @@ namespace gpstk
           * Returns an exception text string from the exception text
           * stack.
           *
-          * @param index The default index is 0, which is the
+          * @param[in] index The default index is 0, which is the
           * top of the stack. If you specify an index which is not
           * valid, a 0 pointer is returned.
           */
@@ -285,7 +286,8 @@ namespace gpstk
 
          /**
           * Debug output function.
-          * @param s stream to output debugging information for this class to.
+          * @param[in] s stream to output debugging information for
+          *   this class to.
           */
       void dump(std::ostream& s) const;
 
@@ -297,8 +299,8 @@ namespace gpstk
           * This is intended just to dump all the data in the ::Exception to
           * the indicated stream.  \warning Warning:  It will _not_ preserve
           * the state of the stream.
-          * @param s stream to send ::Exception information to.
-          * @param e ::Exception to "dump".
+          * @param[in,out] s stream to send ::Exception information to.
+          * @param[in] e ::Exception to "dump".
           * @return a reference to the stream \c s.  */
       friend std::ostream& operator<<( std::ostream& s,
                                        const Exception& e );
@@ -393,9 +395,9 @@ public: \
    child(const gpstk::Exception& a) : parent(a) {}; \
       /** \
        * Common use constructor. \
-       * @param a text description of exception condition. \
-       * @param b error code (default none) \
-       * @param c severity of exception (default unrecoverable) \
+       * @param[in] a text description of exception condition. \
+       * @param[in] b error code (default none) \
+       * @param[in] c severity of exception (default unrecoverable) \
        */ \
    child(const std::string& a, unsigned long b = 0,\
          gpstk::Exception::Severity c = gpstk::Exception::unrecoverable) \
@@ -403,9 +405,9 @@ public: \
    {};\
       /** \
        * Common use constructor. \
-       * @param a text description of exception condition. \
-       * @param b error code (default none) \
-       * @param c severity of exception (default unrecoverable) \
+       * @param[in] a text description of exception condition. \
+       * @param[in] b error code (default none) \
+       * @param[in] c severity of exception (default unrecoverable) \
        */ \
    child(const char* a, unsigned long b = 0,\
    gpstk::Exception::Severity c = gpstk::Exception::unrecoverable) \

@@ -52,7 +52,7 @@
 namespace gpstk
 {
 
-      /** @addtogroup ephemcalc */
+      /// @ingroup GNSSEph
       //@{
 
       /**
@@ -66,7 +66,7 @@ namespace gpstk
 
          /// Default constructor
       GloEphemeris()
-         : valid(false), step(1.0)
+            : valid(false), step(1.0)
       {};
 
 
@@ -229,7 +229,7 @@ namespace gpstk
       short PRNID;         ///< SV PRN ID
       CommonTime ephTime;  ///< Epoch for this ephemeris
       Triple a;            ///< SV acceleration (x,y,z), Earth-fixed [meters]
-      long MFtime;        ///< Message frame time [sec of UTC week]
+      long MFtime;         ///< Message frame time [sec of UTC week]
       short health;        ///< SV health
       short freqNum;       ///< Frequency (channel) number (-7..+12)
       double ageOfInfo;    ///< Age of oper. information [days]
@@ -261,9 +261,9 @@ namespace gpstk
       friend std::ostream& operator<<( std::ostream& s,
                                        const GloEphemeris& glo );
 
-      //@}
+   };  // End of class 'GloEphemeris'
 
-  };  // End of class 'GloEphemeris'
+      //@}
 
 }  // End of namespace gpstk
 

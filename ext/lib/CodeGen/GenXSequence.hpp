@@ -45,7 +45,7 @@
 
 namespace gpstk
 {
-/** @addtogroup code  */
+/// @ingroup code  
 //@{
    
       // Derived from X2A maximum length (see xconst.hpp) 

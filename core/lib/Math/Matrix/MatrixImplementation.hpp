@@ -45,8 +45,8 @@
 namespace gpstk
 {
 
- /** @addtogroup VectorGroup */
-   //@{
+      /// @ingroup MathGroup
+      //@{
 
    template <class T>
    Matrix<T>::Matrix()
@@ -61,7 +61,7 @@ namespace gpstk
 
    template <class T>
    Matrix<T>::Matrix(size_t rows, size_t cols,
-                  T initialValue)
+                     T initialValue)
          : v(rows * cols, initialValue), r(rows), c(cols), s(rows * cols)
    {}
 
@@ -83,7 +83,7 @@ namespace gpstk
    MatrixRowSlice<T> Matrix<T>::rowRef(size_t rowNum, size_t colNum)
    {
       return MatrixRowSlice<T>(*this, rowNum, 
-                            std::slice(colNum, cols()-colNum, 1));
+                               std::slice(colNum, cols()-colNum, 1));
    }
 
    template <class T>
@@ -98,7 +98,7 @@ namespace gpstk
       const
    {
       return ConstMatrixRowSlice<T>(*this, rowNum, 
-                                 std::slice(colNum, cols()-colNum, 1));
+                                    std::slice(colNum, cols()-colNum, 1));
    }
 
    template <class T>
@@ -111,22 +111,22 @@ namespace gpstk
    MatrixColSlice<T> Matrix<T>::colRef(size_t colNum, size_t rowNum)
    {
       return MatrixColSlice<T>(*this, colNum, 
-                            std::slice(rowNum, rows() - rowNum, 1));
+                               std::slice(rowNum, rows() - rowNum, 1));
    }
 
    template <class T>
    ConstMatrixColSlice<T> Matrix<T>::col(size_t colNum, 
-                                   const std::slice& s) const
+                                         const std::slice& s) const
    {
       return ConstMatrixColSlice<T>(*this, colNum, s);
    }
 
    template <class T>
    ConstMatrixColSlice<T> Matrix<T>::col(size_t colNum, 
-                                   size_t rowNum) const
+                                         size_t rowNum) const
    {
       return ConstMatrixColSlice<T>(*this, colNum,
-                                 std::slice(colNum * r + rowNum, r - rowNum, 1));
+                                    std::slice(colNum * r + rowNum, r - rowNum, 1));
    }
 
    template <class T>
@@ -141,7 +141,7 @@ namespace gpstk
 
    template <class T>
    Matrix<T>& Matrix<T>::resize(size_t rows, size_t cols,
-                          const T initialValue)
+                                const T initialValue)
    {
       v.resize(rows * cols, initialValue);
       c = cols;
@@ -150,7 +150,7 @@ namespace gpstk
       return *this;
    }
 
-   //@}
+      //@}
 
 }  // namespace
 

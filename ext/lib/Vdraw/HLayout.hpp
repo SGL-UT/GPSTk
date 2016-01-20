@@ -47,29 +47,30 @@
 
 namespace vdraw
 {
-  /** \addtogroup BasicVectorGraphics */ 
-  //@{
-
-  /**
-   * Assists in arranging frames in a horizontal stack.
-   */
-  class HLayout : public Layout
-  {
-
-    public:
+      /// @ingroup BasicVectorGraphics
+      //@{
 
       /**
-       * Constructor. 
-       * @param frame Frame to create layout within
-       * @param nframes Number of evenly stacked horizontal frames to make
-       */   
+       * Assists in arranging frames in a horizontal stack.
+       */
+   class HLayout : public Layout
+   {
+
+   public:
+
+         /**
+          * Constructor. 
+          * @param frame Frame to create layout within
+          * @param nframes Number of evenly stacked horizontal frames to make
+          */   
       HLayout(const Frame& frame, int nframes);
 
-      /**
-       * Constructor. 
-       * @param frame Frame to split into two
-       * @param fraction Fraction (>0, <1) of the horizontal space for the first frame.
-       */
+         /**
+          * Constructor. 
+          * @param frame Frame to split into two
+          * @param fraction Fraction (>0, <1) of the horizontal space
+          *   for the first frame.
+          */
       HLayout(const Frame& frame, double fraction);
 
       virtual int getFrameCount(void)
@@ -78,13 +79,13 @@ namespace vdraw
       virtual Frame getFrame(int fnum)
       {return targetList[fnum];}
 
-    protected:
+   protected:
 
-      /// List containing the frames created in this layout.      
+         /// List containing the frames created in this layout.      
       std::vector<Frame> targetList;
-  };
+   };
 
-  //@}
+      //@}
 
 } // namespace vdraw
 

@@ -54,11 +54,14 @@
 
 namespace gpstk
 {
+      /// @ingroup ClockModel
+      //@{
+
    class LinearClockModel : public ObsClockModel
    {
    public:
       LinearClockModel(double sigma = 2, double elmask = 0, SvMode mode = ALWAYS)
-         :ObsClockModel(sigma, elmask, mode) {reset();};
+            :ObsClockModel(sigma, elmask, mode) {reset();};
 
       virtual double getOffset(const gpstk::CommonTime& t) const 
          throw()
@@ -72,10 +75,10 @@ namespace gpstk
       virtual bool isOffsetValid(const gpstk::CommonTime& t) const throw()
       {return t >= startTime && t <= endTime && clockModel.N() > 1;};
 
-      /// Add in the given ord to the clock model
+         /// Add in the given ord to the clock model
       virtual void addEpoch(const ORDEpoch& oe) throw(gpstk::InvalidValue);
 
-      /// Reset the accumulated statistics on the clock
+         /// Reset the accumulated statistics on the clock
       void reset() throw();
 
       void dump(std::ostream& s, short detail=1) const throw();
@@ -84,21 +87,23 @@ namespace gpstk
       { r.dump(s, 0); return s; };
       
    private:
-      // x is time y is clock offset
+         // x is time y is clock offset
       gpstk::TwoSampleStats<double> clockModel;
 
       gpstk::CommonTime startTime, endTime, baseTime;
 
       unsigned long tossCount;
    
-      // This is were we store what SVs were used to compute the individual
-      // clock observations
+         // This is were we store what SVs were used to compute the individual
+         // clock observations
       std::map<gpstk::CommonTime, SvStatusMap> prnStatus;
 
-      // This is a store of the clock observations that were added into the
-      // clockModel object
+         // This is a store of the clock observations that were added into the
+         // clockModel object
       std::multimap<double,double> clockObs;
    };
-   
+
+      //@}
+
 }
 #endif

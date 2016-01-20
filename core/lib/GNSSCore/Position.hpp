@@ -36,11 +36,12 @@
 
 /**
  * @file Position.hpp
- * class gpstk::Position encapsulates 3-D positions, including geographic positions,
- *    expressed as geodetic (with respect to an ellipsoid), geocentric or
- *    Earth-centered, Earth-fixed (cartesian) coordinates, as well as ordinary
- *    positions defined by spherical or cartesian coordinates. Position inherits
- *    from class Triple.
+ * class gpstk::Position encapsulates 3-D positions, including
+ *    geographic positions, expressed as geodetic (with respect to an
+ *    ellipsoid), geocentric or Earth-centered, Earth-fixed
+ *    (cartesian) coordinates, as well as ordinary positions defined
+ *    by spherical or cartesian coordinates. Position inherits from
+ *    class Triple.
  */
 
 #ifndef GPSTK_POSITION_HPP
@@ -55,7 +56,7 @@
 
 namespace gpstk
 {
-      /** @addtogroup geodeticgroup */
+      /// @ingroup Geodetic
       //@{
 
       // forward declarations

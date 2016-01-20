@@ -49,7 +49,12 @@
 
 namespace gpstk
 {
-      /** @defgroup commandoptiongroup Command-Line Options */
+      /** @defgroup CommandLine Command-Line Option Processing
+       * Provides classes for parsing application command-line options.
+       * @sa AppFrame module
+       */
+
+      /// @ingroup CommandLine
       //@{
 
       // forward declaration
@@ -147,12 +152,12 @@ namespace gpstk
                     const std::string& desc,
                     const bool req = false,
                     CommandOptionVec& optVectorList =  
-                       defaultCommandOptionList);
+                    defaultCommandOptionList);
 
          /// Sets the maximum number of times this should appear on the 
          /// command line.
       CommandOption& setMaxCount(const unsigned long l)
-         {maxCount = l; return *this;}
+      {maxCount = l; return *this;}
 
          /// Returns a string with the flags for this CommandOption.
          /// (i.e.  "-f | --foo")
@@ -259,7 +264,7 @@ namespace gpstk
                      const std::string& loOpt, 
                      const std::string& desc)
             : CommandOption(of, ot, shOpt, loOpt, desc, true)
-         {}
+      {}
 
          /// Destructor
       virtual ~RequiredOption() {}
@@ -281,7 +286,7 @@ namespace gpstk
                          const std::string& desc,
                          const bool required = false)
             : CommandOption(noArgument, stdType, shOpt, loOpt, desc, required)
-         {}
+      {}
          
          /// Destructor
       virtual ~CommandOptionNoArg() {}
@@ -306,7 +311,7 @@ namespace gpstk
                            const std::string& desc,
                            const bool required = false)
             : CommandOption(hasArgument, ot, shOpt, loOpt, desc, required)
-         {}
+      {}
 
          /// Destructor
       virtual ~CommandOptionWithArg() {}
@@ -328,7 +333,7 @@ namespace gpstk
                               const std::string& desc,
                               const bool required = false)
             : CommandOptionWithArg(stdType, shOpt, loOpt, desc, required)
-         {}
+      {}
 
          /// Destructor
       virtual ~CommandOptionWithAnyArg() {}
@@ -351,7 +356,7 @@ namespace gpstk
                                  const std::string& desc,
                                  const bool required = false)
             : CommandOptionWithArg(stdType, shOpt, loOpt, desc, required)
-         {}
+      {}
 
          /// Destructor
       virtual ~CommandOptionWithStringArg() {}
@@ -380,7 +385,7 @@ namespace gpstk
                                  const std::string& desc,
                                  const bool required = false)
             : CommandOptionWithArg(stdType, shOpt, loOpt, desc, required)
-         {}
+      {}
 
          /// Destructor
       virtual ~CommandOptionWithNumberArg() {}
@@ -405,11 +410,11 @@ namespace gpstk
    public:
          /// Constructor
       CommandOptionWithDecimalArg(const char shOpt, 
-                                 const std::string& loOpt, 
-                                 const std::string& desc,
-                                 const bool required = false)
+                                  const std::string& loOpt, 
+                                  const std::string& desc,
+                                  const bool required = false)
             : CommandOptionWithArg(stdType, shOpt, loOpt, desc, required)
-         {}
+      {}
 
          /// Destructor
       virtual ~CommandOptionWithDecimalArg() {}

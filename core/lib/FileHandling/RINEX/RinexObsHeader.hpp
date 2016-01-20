@@ -56,10 +56,8 @@
 
 namespace gpstk
 {
-   /** @addtogroup RinexObs */
-   //@{
-
-
+      /// @ingroup FileHandling
+      //@{
 
       /// RINEX Observation Types
    struct RinexObsType
@@ -69,9 +67,9 @@ namespace gpstk
       std::string units;         ///< 10- char units (optional) e.g. "meters"
       unsigned int depend;
       RinexObsType() : type(std::string("UN")),description(std::string("Unknown or Invalid")),
-         units(std::string("")),depend(0) {}
+                       units(std::string("")),depend(0) {}
       RinexObsType(std::string t, std::string d, std::string u, unsigned int dep=0) :
-         type(t),description(d),units(u),depend(dep) {}
+            type(t),description(d),units(u),depend(dep) {}
       static const unsigned int C1depend;
       static const unsigned int L1depend;
       static const unsigned int L2depend;
@@ -82,18 +80,19 @@ namespace gpstk
    };
 
 
-// Guards are here since an identical struct is used in RinexObsHeader and Rinex3NavHeader
-   #ifndef GPSTK_EXTRAWAVEFACT
-   #define GPSTK_EXTRAWAVEFACT
-   /// RINEX 2 extra "WAVELENGTH FACT" lines
+// Guards are here since an identical struct is used in RinexObsHeader
+// and Rinex3NavHeader
+#ifndef GPSTK_EXTRAWAVEFACT
+#define GPSTK_EXTRAWAVEFACT
+      /// RINEX 2 extra "WAVELENGTH FACT" lines
    struct ExtraWaveFact
    {
-      /// List of Sats with this wavelength factor
+         /// List of Sats with this wavelength factor
       std::vector<SatID> satList;
-      /// vector of wavelength factor values
+         /// vector of wavelength factor values
       short wavelengthFactor[2];
    };
-   #endif  // GPSTK_EXTRAWAVEFACT
+#endif  // GPSTK_EXTRAWAVEFACT
 
 
       /**
@@ -108,7 +107,7 @@ namespace gpstk
          /// A Simple Constructor.
 //      RinexObsHeader() : version(), valid()
       RinexObsHeader()
-         {}
+      {}
 
          /// Clear (empty out) header
       inline void clear()
@@ -124,10 +123,7 @@ namespace gpstk
          lastPRN.id = -1;
       }
 
-         /**
-          * @name RinexObsHeaderFormatStrings
-          * RINEX Observation Header Formatting Strings
-          */
+         /// @name RINEX Observation Header Formatting Strings
          //@{
       static const std::string versionString;         ///< "RINEX VERSION / TYPE"
       static const std::string runByString;           ///< "PGM / RUN BY / DATE"
@@ -184,8 +180,7 @@ namespace gpstk
          allValid211 = 0x080002BEB
       };
 
-         /** @name Standard RINEX observation types
-          */
+         /// @name Standard RINEX observation types
          //@{
       static const RinexObsType UN;
       static const RinexObsType L1;
@@ -204,7 +199,7 @@ namespace gpstk
       static const RinexObsType L5;
       static const RinexObsType D5;
       static const RinexObsType S5;
-      // Galileo only
+         // Galileo only
       static const RinexObsType C6;
       static const RinexObsType L6;
       static const RinexObsType D6;
@@ -224,12 +219,9 @@ namespace gpstk
       static std::vector<RinexObsType> RegisteredRinexObsTypes;
 
 
-         /** @name RinexObsHeaderValues
-          */
-         //@{
       double version;                        ///< RINEX VERSION & TYPE
       std::string fileType;                  ///< RINEX FILETYPE (Observation Navigation etc)
-      //std::string system_str;              ///< The string (for file i/o) giving the RINEX system
+         //std::string system_str;              ///< The string (for file i/o) giving the RINEX system
       RinexSatID system;                     ///< The RINEX satellite system
       std::string fileProgram,               ///< The program used to generate this file
          fileAgency,                         ///< Who ran the program.
@@ -261,7 +253,6 @@ namespace gpstk
       unsigned long valid; ///< Bits set when individual header members are present and valid
       int numObs; ///< used to save the number of obs on # / TYPES continuation lines.
       RinexSatID lastPRN; ///< used to save the current PRN while reading PRN/OBS continuation lines.
-         //@}
 
          /// Destructor
       virtual ~RinexObsHeader() {}
@@ -347,20 +338,20 @@ namespace gpstk
 
       /// operator == for RinexObsType
    inline bool operator==(const RinexObsType& x,
-      const RinexObsType& y) { return (x.type == y.type); }
+                          const RinexObsType& y) { return (x.type == y.type); }
 
       /// operator < for RinexObsType
    inline bool operator<(const RinexObsType& x,
-      const RinexObsType& y) { return (x.type < y.type); }
+                         const RinexObsType& y) { return (x.type < y.type); }
 
       /// operator << for RinexObsType
    inline std::ostream& operator<<(std::ostream& s,
                                    const RinexObsType rot)
-      {
-         return s << "Type=" << rot.type
-            << ", Description=" << rot.description
-            << ", Units=" << rot.units;
-      }
+   {
+      return s << "Type=" << rot.type
+               << ", Description=" << rot.description
+               << ", Units=" << rot.units;
+   }
 
       /// Function to allow user to define a new RINEX observation type
    int RegisterExtendedRinexObsType(std::string t,
@@ -374,7 +365,7 @@ namespace gpstk
       /// Pretty print a list of registered extended Rinex observation types
    void DisplayExtendedRinexObsTypes(std::ostream& s);
 
-   //@}
+      //@}
 
 } // namespace
 
