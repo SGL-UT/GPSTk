@@ -23,6 +23,59 @@ unsigned long expLNavTLMHOW = 613;
 // empty and TLM/HOW checks.
 unsigned long expLNavCombined = 1488;
 
+// define some classes for exercising NavFilterMgr
+class BunkFilterData : public NavFilterKey
+{
+public:
+   BunkFilterData()
+         : data(NULL)
+   {}
+   uint32_t *data; // point to a single uint32_t
+};
+// filter by bit pattern
+class BunkFilter1 : public NavFilter
+{
+public:
+   BunkFilter1() {}
+   virtual void validate(NavMsgList& msgBitsIn, NavMsgList& msgBitsOut)
+   {
+      NavMsgList::iterator nmli;
+      for (nmli = msgBitsIn.begin(); nmli != msgBitsIn.end(); nmli++)
+      {
+            // copy data with an arbitrary bit pattern
+         BunkFilterData *fd = dynamic_cast<BunkFilterData*>(*nmli);
+         if ((*(fd->data) & 0xff) == 0x000000d1)
+            msgBitsOut.push_back(*nmli);
+      }
+   }
+   virtual void finalize(NavMsgList& msgBitsOut)
+   {}
+};
+// filter with cache
+class BunkFilter2 : public NavFilter
+{
+public:
+   BunkFilter2() {}
+   virtual void validate(NavMsgList& msgBitsIn, NavMsgList& msgBitsOut)
+   {
+      NavMsgList::iterator nmli;
+      std::copy(msgBitsIn.begin(), msgBitsIn.end(), cache.end());
+      cerr << "msgBitsIn size: " << msgBitsIn.size()
+           << "  cache size: " << cache.size() << endl;
+      while (cache.size() > 4)
+      {
+         msgBitsOut.push_back(cache.front());
+         cache.pop_front();
+      }
+   }
+   virtual void finalize(NavMsgList& msgBitsOut)
+   {
+      std::copy(cache.begin(), cache.end(), msgBitsOut.end());
+      cache.clear();
+   }
+   NavMsgList cache;
+};
+
 class NavFilterMgr_T
 {
 public:
@@ -45,23 +98,37 @@ public:
       /// Test the combination of parity, empty and TLM/HOW filters
    unsigned testLNavCombined();
 
-   string inputFile;
-      /// one for each record in the input file
-   vector<LNavFilterData> data;
-      /// ten for each record in the input file
-   vector<uint32_t> subframes;
+      /// test a simple bit pattern filter
+   unsigned testBunk1();
+      /// test a filter with behavior like multiple input epochs
+   unsigned testBunk2();
 
-   unsigned long dataIdx;
+   string inputFileLNAV;
+   string inputFileBunk;
+   string refFileBunk1, refFileBunk2;
+   string outputFileBunk1, outputFileBunk2;
+      /// one for each record in the input file
+   vector<LNavFilterData> dataLNAV;
+      /// ten for each record in the input file
+   vector<uint32_t> subframesLNAV;
+      /// "subframes" for the "bunk" test classes
+   vector<uint32_t> subframesBunk;
+   vector<BunkFilterData> dataBunk;
+
+   unsigned long dataIdxLNAV, dataIdxBunk;
 };
 
 
 NavFilterMgr_T ::
 NavFilterMgr_T()
-      : dataIdx(0)
+      : dataIdxLNAV(0),
+        dataIdxBunk(0)
 {
       // about how much a day's worth of data is
-   data.resize(40000);
-   subframes.resize(400000);
+   dataLNAV.resize(40000);
+   subframesLNAV.resize(400000);
+   dataBunk.resize(40000);
+   subframesBunk.resize(400000, 0xdabbad00);
    init();
 }
 
@@ -72,23 +139,28 @@ init()
    TUDEF("NavFilterMgr", "initialize");
    string fs = getFileSep();
    string dp(testFramework.getDataPath() + fs);
-   string tf(testFramework.getDataPath() + fs);
+   string tf(testFramework.getTempPath() + fs);
 
-   inputFile = dp + "test_input_NavFilterMgr.txt";
+   inputFileLNAV   = dp + "test_input_NavFilterMgr.txt";
+   inputFileBunk   = dp + "test_input_NavFilterMgr_bunk.txt";
+   refFileBunk1    = dp + "test_output_NavFilterMgr_bunk1.txt";
+   refFileBunk2    = dp + "test_output_NavFilterMgr_bunk2.txt";
+   outputFileBunk1 = tf + "test_output_NavFilterMgr_bunk1.txt";
+   outputFileBunk2 = tf + "test_output_NavFilterMgr_bunk2.txt";
 }
 
 
 unsigned NavFilterMgr_T ::
 loadData()
 {
-   ifstream inf(inputFile.c_str());
+   ifstream inf(inputFileLNAV.c_str());
    string line, timeString, wordStr;
    CommonTime recTime;
    unsigned long subframeIdx = 0;
 
    if (!inf)
    {
-      cerr << "Could not load input file \"" << inputFile << "\"" << endl;
+      cerr << "Could not load input file \"" << inputFileLNAV << "\"" << endl;
       return 1;
    }
    while (inf)
@@ -102,19 +174,19 @@ loadData()
       scanTime(recTime, timeString, "%4Y %3j %02H:%02M:%04.1f");
 
          // check to make sure we don't run off the end of our vector
-      if (dataIdx >= data.size())
+      if (dataIdxLNAV >= dataLNAV.size())
       {
-         data.resize(data.size() + 1000);
-         subframes.resize(subframes.size() + 10000);
+         dataLNAV.resize(dataLNAV.size() + 1000);
+         subframesLNAV.resize(subframesLNAV.size() + 10000);
       }
 
       LNavFilterData tmp;
          // point at what will be the first word when loaded
-      tmp.sf = &subframes[subframeIdx];
+      tmp.sf = &subframesLNAV[subframeIdx];
       for (unsigned strWord = 6; strWord <= 15; strWord++)
       {
          wordStr = gpstk::StringUtils::word(line, strWord, ',');
-         subframes[subframeIdx++] = gpstk::StringUtils::x2uint(wordStr);
+         subframesLNAV[subframeIdx++] = gpstk::StringUtils::x2uint(wordStr);
       }
       tmp.prn = gpstk::StringUtils::asUnsigned(
          gpstk::StringUtils::word(line, 2, ','));
@@ -126,9 +198,40 @@ loadData()
       tmp.code = (ObsID::TrackingCode)gpstk::StringUtils::asInt(
          gpstk::StringUtils::word(line, 4, ','));
 
-      data[dataIdx++] = tmp;
+      dataLNAV[dataIdxLNAV++] = tmp;
    }
-   cout << "Using " << dataIdx << " subframes" << endl;
+   inf.close();
+   cout << "Using " << dataIdxLNAV << " LNAV subframes" << endl;
+
+      // load "bunk" data
+   BunkFilterData bunkKey;
+   subframeIdx = 0;
+   inf.open(inputFileBunk.c_str());
+   if (!inf)
+   {
+      cerr << "Could not load input file \"" << inputFileBunk << "\"" << endl;
+      return 1;
+   }
+   while (inf)
+   {
+      getline(inf, line);
+      if (line[0] == '#')
+         continue; // comment line
+      if (line.length() == 0)
+         continue; // blank line
+      for (unsigned strWord = 1; strWord <= 4; strWord++)
+      {
+         wordStr = gpstk::StringUtils::word(line, strWord, ' ');
+         bunkKey.data = &subframesBunk[subframeIdx];
+         subframesBunk[subframeIdx++] = gpstk::StringUtils::x2uint(wordStr);
+            // we don't really care waht the prn, carrier or code are
+            // for this test
+         dataBunk[dataIdxBunk++] = bunkKey;
+      }
+   }
+   inf.close();
+   cout << "Using " << dataIdxBunk << " \"Bunk\" subframes" << endl;
+
    return 0;
 }
 
@@ -141,14 +244,14 @@ noFilterTest()
    NavFilterMgr mgr;
    unsigned long count = 0;
 
-   for (unsigned i = 0; i < dataIdx; i++)
+   for (unsigned i = 0; i < dataIdxLNAV; i++)
    {
-      gpstk::NavFilter::NavMsgList l = mgr.validate(&data[i]);
+      gpstk::NavFilter::NavMsgList l = mgr.validate(&dataLNAV[i]);
          // We could do an assert for each record but that would be
          // stupid. Just compare the final counts.
       count += l.size();
    }
-   TUASSERTE(unsigned long, dataIdx, count);
+   TUASSERTE(unsigned long, dataIdxLNAV, count);
 
    return testFramework.countFails();
 }
@@ -167,23 +270,23 @@ testLNavCook()
 
    mgr.addFilter(&filtCook);
 
-   for (unsigned i = 0; i < dataIdx; i++)
+   for (unsigned i = 0; i < dataIdxLNAV; i++)
    {
 /*
       cout << "------------------" << endl
            << "   idx: " << i << endl;
       cout << "   before:";
       for (unsigned sfword = 0; sfword < 10; sfword++)
-         cout << " " << hex << setw(8) << data[i].sf[sfword] << dec;
+         cout << " " << hex << setw(8) << dataLNAV[i].sf[sfword] << dec;
       cout << endl;
 */
-      gpstk::NavFilter::NavMsgList l = mgr.validate(&data[i]);
+      gpstk::NavFilter::NavMsgList l = mgr.validate(&dataLNAV[i]);
          // We could do an assert for each record but that would be
          // stupid. Just compare the final counts.
 /*
       cout << "   after: ";
       for (unsigned sfword = 0; sfword < 10; sfword++)
-         cout << " " << hex << setw(8) << data[i].sf[sfword] << dec;
+         cout << " " << hex << setw(8) << dataLNAV[i].sf[sfword] << dec;
       cout << endl;
 */
       count += l.size();
@@ -197,7 +300,7 @@ testLNavCook()
          }
 */
    }
-   TUASSERTE(unsigned long, dataIdx, count);
+   TUASSERTE(unsigned long, dataIdxLNAV, count);
 
    return testFramework.countFails();
 }
@@ -214,9 +317,9 @@ testLNavParity()
 
    mgr.addFilter(&filtParity);
 
-   for (unsigned i = 0; i < dataIdx; i++)
+   for (unsigned i = 0; i < dataIdxLNAV; i++)
    {
-      gpstk::NavFilter::NavMsgList l = mgr.validate(&data[i]);
+      gpstk::NavFilter::NavMsgList l = mgr.validate(&dataLNAV[i]);
       gpstk::NavFilter::NavMsgList::const_iterator nmli;
          /*
       if (!filtParity.rejected.empty())
@@ -263,9 +366,9 @@ testLNavEmpty()
 
    mgr.addFilter(&filtEmpty);
 
-   for (unsigned i = 0; i < dataIdx; i++)
+   for (unsigned i = 0; i < dataIdxLNAV; i++)
    {
-      gpstk::NavFilter::NavMsgList l = mgr.validate(&data[i]);
+      gpstk::NavFilter::NavMsgList l = mgr.validate(&dataLNAV[i]);
       rejectCount += filtEmpty.rejected.size();
 /*
       if (!filtEmpty.rejected.empty())
@@ -294,20 +397,20 @@ testLNavTLMHOW()
 
    mgr.addFilter(&filtTLMHOW);
 
-   for (unsigned i = 0; i < dataIdx; i++)
+   for (unsigned i = 0; i < dataIdxLNAV; i++)
    {
          /*
-      uint32_t sfid = ((data[i].sf[1] >> 8) & 0x07);
-      if ((data[i].sf[0] & 0x3fc00000) != 0x22c00000)
-         cout << (i+1) << " invalid preamble " << hex << (data[i].sf[0] & 0x3fc00000) << dec << endl;
-      else if ((data[i].sf[1] & 0x03) != 0)
-         cout << (i+1) << " invalid parity bits " << hex << (data[i].sf[1] & 0x03) << dec << endl;
-      else if (((data[i].sf[1] >> 13) & 0x1ffff) >= 100800)
-         cout << (i+1) << " invalid TOW count " << hex << ((data[i].sf[1] >> 13) & 0x1ffff) << dec << endl;
+      uint32_t sfid = ((dataLNAV[i].sf[1] >> 8) & 0x07);
+      if ((dataLNAV[i].sf[0] & 0x3fc00000) != 0x22c00000)
+         cout << (i+1) << " invalid preamble " << hex << (dataLNAV[i].sf[0] & 0x3fc00000) << dec << endl;
+      else if ((dataLNAV[i].sf[1] & 0x03) != 0)
+         cout << (i+1) << " invalid parity bits " << hex << (dataLNAV[i].sf[1] & 0x03) << dec << endl;
+      else if (((dataLNAV[i].sf[1] >> 13) & 0x1ffff) >= 100800)
+         cout << (i+1) << " invalid TOW count " << hex << ((dataLNAV[i].sf[1] >> 13) & 0x1ffff) << dec << endl;
       else if ((sfid < 1) || (sfid > 5))
          cout << (i+1) << " invalid SF ID " << sfid << endl;
          */
-      gpstk::NavFilter::NavMsgList l = mgr.validate(&data[i]);
+      gpstk::NavFilter::NavMsgList l = mgr.validate(&dataLNAV[i]);
       rejectCount += filtTLMHOW.rejected.size();
 /*
       if (!filtTLMHOW.rejected.empty())
@@ -335,18 +438,18 @@ testLNavCombined()
    mgr.addFilter(&filtEmpty);
    mgr.addFilter(&filtTLMHOW);
 
-   for (unsigned i = 0; i < dataIdx; i++)
+   for (unsigned i = 0; i < dataIdxLNAV; i++)
    {
 /*
       cerr << "checking " << i << endl;
       if (i == 2196)
       {
          for (unsigned sfword = 0; sfword < 10; sfword++)
-            cerr << " " << hex << setw(8) << data[i].sf[sfword] << dec;
+            cerr << " " << hex << setw(8) << dataLNAV[i].sf[sfword] << dec;
          cerr << endl;
       }
 */
-      gpstk::NavFilter::NavMsgList l = mgr.validate(&data[i]);
+      gpstk::NavFilter::NavMsgList l = mgr.validate(&dataLNAV[i]);
          // if l is empty, the subframe was rejected.. 
       rejectCount += l.empty();
 /*
@@ -355,6 +458,112 @@ testLNavCombined()
 */
    }
    TUASSERTE(unsigned long, expLNavCombined, rejectCount);
+
+   return testFramework.countFails();
+}
+
+
+unsigned NavFilterMgr_T ::
+testBunk1()
+{
+   TUDEF("NavFilterMgr", "validate");
+
+   ofstream outs(outputFileBunk1.c_str());
+   NavFilterMgr mgr;
+   BunkFilter1 filt1;
+   gpstk::NavFilter::NavMsgList l;
+   gpstk::NavFilter::NavMsgList::const_iterator nmli;
+
+   if (!outs)
+   {
+      TUFAIL("Could not open \"" + outputFileBunk1 + "\" for output");
+      return testFramework.countFails();
+   }
+
+   mgr.addFilter(&filt1);
+   for (unsigned i = 0; i < dataIdxBunk; i++)
+   {
+      l = mgr.validate(&dataBunk[i]);
+      for (nmli = l.begin(); nmli != l.end(); nmli++)
+      {
+         BunkFilterData *fd = dynamic_cast<BunkFilterData*>(*nmli);
+         outs << hex << setw(8) << setfill('0') << *(fd->data) << setfill(' ')
+              << dec << endl;
+      }
+   }
+   l = mgr.finalize();
+   for (nmli = l.begin(); nmli != l.end(); nmli++)
+   {
+      BunkFilterData *fd = dynamic_cast<BunkFilterData*>(*nmli);
+      outs << hex << setw(8) << setfill('0') << *(fd->data) << setfill(' ')
+           << dec << endl;
+   }
+   outs.close();
+   testFramework.assert_files_equal(__LINE__, refFileBunk1, outputFileBunk1,
+                                    "Files differ");
+
+   return testFramework.countFails();
+}
+
+
+unsigned NavFilterMgr_T ::
+testBunk2()
+{
+      // the filter uses cached data because we're more interested in
+      // testing finalize here.
+   TUDEF("NavFilterMgr", "finalize");
+
+   ofstream outs(outputFileBunk2.c_str());
+   NavFilterMgr mgr;
+   BunkFilter2 filt2;
+   gpstk::NavFilter::NavMsgList l;
+   gpstk::NavFilter::NavMsgList::const_iterator nmli;
+
+   if (!outs)
+   {
+      TUFAIL("Could not open \"" + outputFileBunk2 + "\" for output");
+      return testFramework.countFails();
+   }
+
+   mgr.addFilter(&filt2);
+   for (unsigned i = 0; i < dataIdxBunk; i++)
+   {
+      l = mgr.validate(&dataBunk[i]);
+         // don't do 20000 asserts, please...
+/*
+      if ((i < 3) && (l.size() != 0))
+      {
+         TUFAIL("Filter expected to return no data before 4 messages input");
+      }
+      else if ((i >= 3) && (l.size() != 1))
+      {
+         TUFAIL("Filter expected to return 1 message after 4 messages input");
+      }
+*/
+      if (i < 3)
+         TUASSERTE(size_t,0,l.size());
+      else
+         TUASSERTE(size_t,1,l.size());
+
+      for (nmli = l.begin(); nmli != l.end(); nmli++)
+      {
+         BunkFilterData *fd = dynamic_cast<BunkFilterData*>(*nmli);
+         outs << hex << setw(8) << setfill('0') << *(fd->data) << setfill(' ')
+              << dec << endl;
+      }
+   }
+   l = mgr.finalize();
+      // cache of size 4 so finalize should return the last three messages
+   TUASSERTE(size_t,3,l.size());
+   for (nmli = l.begin(); nmli != l.end(); nmli++)
+   {
+      BunkFilterData *fd = dynamic_cast<BunkFilterData*>(*nmli);
+      outs << hex << setw(8) << setfill('0') << *(fd->data) << setfill(' ')
+           << dec << endl;
+   }
+   outs.close();
+   testFramework.assert_files_equal(__LINE__, refFileBunk2, outputFileBunk2,
+                                    "Files differ");
 
    return testFramework.countFails();
 }
@@ -373,6 +582,8 @@ int main()
    errorTotal += testClass.testLNavEmpty();
    errorTotal += testClass.testLNavTLMHOW();
    errorTotal += testClass.testLNavCombined();
+   errorTotal += testClass.testBunk1();
+   errorTotal += testClass.testBunk2();
 
    cout << "Total Failures for " << __FILE__ << ": " << errorTotal << endl;
 
