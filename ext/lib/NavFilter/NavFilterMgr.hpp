@@ -36,9 +36,7 @@ namespace gpstk
        * that is not guaranteed and in fact some filters are intended
        * to do just that (e.g. LNavCookFilter).
        *
-       * @see navfilterex.cpp for an example use.
-       * @see navfilterex-pseudo.cpp for a non-functional minimalistic
-       *   pseudo-code example.
+       * @see NavFilterMgr for a list of examples.
        *
        * @section GPSLNAV GPS Legacy Nav Filters
        * | Class                 | Filter Depth | Modifies Msg |
