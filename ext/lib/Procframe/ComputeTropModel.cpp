@@ -117,7 +117,7 @@ namespace gpstk
                   }
 
                }
-               catch(TropModel::InvalidTropModel& e)
+               catch(InvalidTropModel& e)
                {
                      // If some problem appears, then schedule this
                      // satellite for removal

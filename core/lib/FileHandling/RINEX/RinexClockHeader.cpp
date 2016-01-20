@@ -42,6 +42,7 @@
 
 #include <list>
 #include <string>
+#include <cstdlib>
 #include "RinexClockHeader.hpp"
 #include "RinexClockStream.hpp"
 #include "StringUtils.hpp"
@@ -49,6 +50,11 @@
 #include "FFStream.hpp"
 #include "FFStreamError.hpp"
 
+#ifdef _WIN32
+#if (_MSC_VER == 1700)
+#define strtoll _strtoi64
+#endif
+#endif
 
 using namespace std;
 

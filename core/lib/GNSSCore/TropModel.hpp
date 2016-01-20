@@ -88,13 +88,14 @@ namespace gpstk
        * or zenith_delay() or mapping_function() routine is called for
        * an invalid TropModel.
        */
+   NEW_EXCEPTION_CLASS(InvalidTropModel, gpstk::Exception);
+   
    class TropModel
    {
    public:
          /// Thrown when attempting to use a model for which all necessary
          /// parameters have not been specified.
          /// @ingroup exceptiongroup
-      NEW_EXCEPTION_CLASS(InvalidTropModel, gpstk::Exception);
 
          /// Destructor
       virtual ~TropModel() {}
@@ -1408,7 +1409,7 @@ namespace gpstk
           *                   in degrees
           */
       double MOPSsigma2(double elevation)
-         throw(TropModel::InvalidTropModel);
+         throw(InvalidTropModel);
 
 
    private:
@@ -1427,7 +1428,7 @@ namespace gpstk
 
          // The MOPS tropospheric model needs to compute several extra
          // parameters
-      virtual void prepareParameters(void) throw(TropModel::InvalidTropModel);
+      virtual void prepareParameters(void) throw(InvalidTropModel);
 
 
          // The MOPS tropospheric model uses several predefined data tables
