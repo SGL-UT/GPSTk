@@ -1,12 +1,9 @@
 # Editor backup files:
 *~
 .*.swp
-build*/
 
-# Build output
-*.o
-*.a
-*.so
+# build directories
+build*/
 
 # OS/X File system droppings
 *.DS_Store
