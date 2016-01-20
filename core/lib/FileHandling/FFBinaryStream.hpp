@@ -81,23 +81,23 @@ namespace gpstk
           *   from this stream doesn't match the size of a T-object.
           * @return the decoded data
           */
-      inline void getData(uint8_t& v) throw(FFStreamError, EndOfFile);
-      inline void getData(uint16_t& v) throw(FFStreamError, EndOfFile);
-      inline void getData(uint32_t& v) throw(FFStreamError, EndOfFile);
-      inline void getData(uint64_t& v) throw(FFStreamError, EndOfFile);
-      inline void getData(int8_t& v) throw(FFStreamError, EndOfFile);
-      inline void getData(int16_t& v) throw(FFStreamError, EndOfFile);
-      inline void getData(int32_t& v) throw(FFStreamError, EndOfFile);
-      inline void getData(int64_t& v) throw(FFStreamError, EndOfFile);
-      inline void getData(float& v) throw(FFStreamError, EndOfFile);
-      inline void getData(double& v) throw(FFStreamError, EndOfFile);
+      inline void getData(uint8_t& v) throw(EndOfFile, FFStreamError);
+      inline void getData(uint16_t& v) throw(EndOfFile, FFStreamError);
+      inline void getData(uint32_t& v) throw(EndOfFile, FFStreamError);
+      inline void getData(uint64_t& v) throw(EndOfFile, FFStreamError);
+      inline void getData(int8_t& v) throw(EndOfFile, FFStreamError);
+      inline void getData(int16_t& v) throw(EndOfFile, FFStreamError);
+      inline void getData(int32_t& v) throw(EndOfFile, FFStreamError);
+      inline void getData(int64_t& v) throw(EndOfFile, FFStreamError);
+      inline void getData(float& v) throw(EndOfFile, FFStreamError);
+      inline void getData(double& v) throw(EndOfFile, FFStreamError);
 
          /** Read raw data into a buffer.
           * @param[out] buff the buffer to store the stream data
           *   into. Must be pre-allocated to at least length bytes.
           * @param[in] length the number of bytes to read from the stream. */
       void getData(char* buff, size_t length)
-         throw(FFStreamError, EndOfFile);
+         throw(EndOfFile, FFStreamError);
 
          /**
           * Writes a T-object directly from the stream in binary form.
@@ -151,63 +151,63 @@ namespace gpstk
 
 
    inline void FFBinaryStream :: getData(uint8_t& v)
-      throw(FFStreamError, EndOfFile)
+      throw(EndOfFile, FFStreamError)
    {
       char *buf = reinterpret_cast<char*>(&v);
       getData(buf, sizeof(v));
    }
 
    inline void FFBinaryStream :: getData(uint16_t& v)
-      throw(FFStreamError, EndOfFile)
+      throw(EndOfFile, FFStreamError)
    {
       FFBIN_GET_DATA(buitohs,buntohs);
    }
 
    inline void FFBinaryStream :: getData(uint32_t& v)
-      throw(FFStreamError, EndOfFile)
+      throw(EndOfFile, FFStreamError)
    {
       FFBIN_GET_DATA(buitohl,buntohl);
    }
 
    inline void FFBinaryStream :: getData(uint64_t& v)
-      throw(FFStreamError, EndOfFile)
+      throw(EndOfFile, FFStreamError)
    {
       FFBIN_GET_DATA(buitohll,buntohll);
    }
 
    inline void FFBinaryStream :: getData(int8_t& v)
-      throw(FFStreamError, EndOfFile)
+      throw(EndOfFile, FFStreamError)
    {
       char *buf = reinterpret_cast<char*>(&v);
       getData(buf, sizeof(v));
    }
 
    inline void FFBinaryStream :: getData(int16_t& v)
-      throw(FFStreamError, EndOfFile)
+      throw(EndOfFile, FFStreamError)
    {
       FFBIN_GET_DATA(buitohss,buntohss);
    }
 
    inline void FFBinaryStream :: getData(int32_t& v)
-      throw(FFStreamError, EndOfFile)
+      throw(EndOfFile, FFStreamError)
    {
       FFBIN_GET_DATA(buitohsl,buntohsl);
    }
 
    inline void FFBinaryStream :: getData(int64_t& v)
-      throw(FFStreamError, EndOfFile)
+      throw(EndOfFile, FFStreamError)
    {
       FFBIN_GET_DATA(buitohsll,buntohsll);
    }
 
    inline void FFBinaryStream :: getData(float& v)
-      throw(FFStreamError, EndOfFile)
+      throw(EndOfFile, FFStreamError)
    {
       FFBIN_GET_DATA(buitohf,buntohf);
    }
 
    inline void FFBinaryStream :: getData(double& v)
-      throw(FFStreamError, EndOfFile)
+      throw(EndOfFile, FFStreamError)
    {
       FFBIN_GET_DATA(buitohd,buntohd);
    }

@@ -330,7 +330,8 @@ public:
       string frs=getFreq();
       string codes=getCodes();
 
-      for(i=0; i<frs.size(); i++) {       // loop over frequencies
+      for(i=0; i<frs.size(); i++) // loop over frequencies
+      {
          // add place holders now
          consts.push_back(1.0);
          vector<string> vs;
@@ -338,19 +339,25 @@ public:
          vector<int> vi;
          indexes.push_back(vi);
 
-         for(j=0; j<codes.size(); j++) {  // loop over codes
+         for(j=0; j<codes.size(); j++)
+         {  // loop over codes
             // the desired ObsID
             string obsid = string("C") + string(1,frs[i]) + string(1,codes[j]);
 
             // now loop over available RinexObsTypes : map<1-char sys, string RObsID>
             map<string,vector<RinexObsID> >::const_iterator it;
-            for(it=mapObsTypes.begin(); it != mapObsTypes.end(); ++it) {
-               if(it->first != sys1) continue;                 // wrong system
-
+            for(it=mapObsTypes.begin(); it != mapObsTypes.end(); ++it)
+            {
+               // wrong GNSS system
+               if(it->first != sys1)
+                  continue;
+               
                // loop over obs types
                const vector<RinexObsID>& vecROID(it->second);
-               for(k=0; k<vecROID.size(); k++) {
-                  if(vecROID[k].asString() == obsid) {         // found it
+               for(k=0; k<vecROID.size(); k++)
+               {
+                  if(vecROID[k].asString() == obsid)
+                  {
                      obsids[i].push_back(obsid);
                      indexes[i].push_back(k);
                   }
@@ -410,7 +417,7 @@ public:
       if(RawPR[0]==0.0 || (frs.size()>1 && RawPR[1]==0.0)) return false;
 
       // iono delay
-      if(consts.size() > 1) RI = consts[2]*(RawPR[0] - RawPR[1]);
+      if(consts.size() > 1) RI = consts[1]*(RawPR[0] - RawPR[1]);
 
       return true;
    }  // end ComputeData()
@@ -1567,7 +1574,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 int routine(void) throw(Exception)
 {
 try {
-   (void)Configuration::Instance();
+   Configuration& C(Configuration::Instance());
 
    return 0;
 }
@@ -2237,18 +2244,21 @@ bool SolutionObject::ChooseObsIDs(map<string,vector<RinexObsID> >& mapObsTypes)
    throw()
 {
    size_t i;
-   vector<string> obstypes;
 
-   (void)Configuration::Instance();
+   Configuration& C(Configuration::Instance());
 
    isValid = true;
-
-   for(i=0; i<vecSolData.size(); i++) {
-      if(!vecSolData[i].ChooseObsIDs(mapObsTypes)) {
+   
+   for (i=0; i<vecSolData.size(); i++)
+   {
+      SolutionData& sd(vecSolData[i]);
+      bool coi = sd.ChooseObsIDs(mapObsTypes);
+      if (!coi)
+      {
          isValid = false;
          return false;
       }
-      //LOG(INFO) << " Chooser: " << vecSolData[i].asString();
+      LOG(DEBUG) << " Chooser: " << vecSolData[i].asString();
    }
 
    return isValid;
@@ -2261,7 +2271,7 @@ string SolutionObject::dump(int level, string msg1, string msg2) throw()
    size_t i;
    ostringstream oss;
 
-   (void)Configuration::Instance();
+   Configuration& C(Configuration::Instance());
 
    oss << msg1 << " " << Descriptor << (msg2.empty() ? "" : " "+msg2);
 

@@ -45,6 +45,7 @@
 
 #include <string>
 #include <list>
+#include "gpstkplatform.h"
 #include "RinexClockBase.hpp"
 #include "SatID.hpp"
 #include "FFStream.hpp"
