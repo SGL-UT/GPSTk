@@ -11,7 +11,8 @@ namespace gpstk
 
       /** "Cook" GPS legacy nav messages by turning words upright.
        * Data in LNavFilterData::sf are modified.
-       */
+       *
+       * @attention Processing depth = 1 epoch. */
    class LNavCookFilter : public NavFilter
    {
    public:
@@ -26,9 +27,10 @@ namespace gpstk
           *   contents of msgBitsIn will be immediately seen in
           *   msgBitsOut. */
       virtual void validate(NavMsgList& msgBitsIn, NavMsgList& msgBitsOut);
-         /// No aggregation of data is required, filter is immediate.
-      virtual unsigned waitLength() const
-      { return 1; }
+
+         /// Filter stores no data, therefore this does nothing.
+      virtual void finalize(NavMsgList& msgBitsOut)
+      {}
 
          /// Turn an LNAV subframe data upright.
       static void cookSubframe(LNavFilterData* fd);

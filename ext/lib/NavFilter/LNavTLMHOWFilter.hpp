@@ -19,10 +19,17 @@ namespace gpstk
    public:
       LNavTLMHOWFilter();
 
+         /** Check the TLM and HOW of GPS legacy nav messages
+          * (i.e. data fields common to all subframes).
+          * @param[in,out] msgBitsIn A list of LNavFilterData* objects
+          *   containing GPS legacy navigation messages (id 2).
+          * @param[out] msgBitsOut The messages successfully passing
+          *   the filter. */
       virtual void validate(NavMsgList& msgBitsIn, NavMsgList& msgBitsOut);
-         /// Immediate validation
-      virtual unsigned waitLength() const
-      { return 1; }
+
+         /// Filter stores no data, therefore this does nothing.
+      virtual void finalize(NavMsgList& msgBitsOut)
+      {}
    };
 
       //@}

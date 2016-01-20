@@ -10,7 +10,8 @@ namespace gpstk
       //@{
 
       /** Filter GPS subframes 4 and 5 based on expected value ranges.
-       */
+       *
+       * @attention Processing depth = 1 epoch. */
    class LNavAlmValFilter : public NavFilter
    {
    public:
@@ -18,11 +19,17 @@ namespace gpstk
 
          /** For subframes 4 and 5, check the ranges of message data
           * fields.  For anything else, feed it back into
-          * msgBitsOut. */
+          * msgBitsOut.
+          * @param[in,out] msgBitsIn A list of LNavFilterData* objects
+          *   containing GPS legacy navigation messages (id 2).
+          * @param[out] msgBitsOut The messages successfully passing
+          *   the filter. */
       virtual void validate(NavMsgList& msgBitsIn, NavMsgList& msgBitsOut);
-         /// Validation is immediate
-      virtual unsigned waitLength() const
-      { return 1; }
+
+         /// Filter stores no data, therefore this does nothing.
+      virtual void finalize(NavMsgList& msgBitsOut)
+      {}
+
          /// Specific value range checks
       static bool checkAlmValRange(LNavFilterData* fd);
    };
