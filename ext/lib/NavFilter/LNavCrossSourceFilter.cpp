@@ -72,7 +72,8 @@ namespace gpstk
          {
                // we have a valid vote winner, so copy the subframes to output
             smi = nmi->second.find(winner);
-            std::copy(smi->second.begin(),smi->second.end(),msgBitsOut.end());
+            std::copy(smi->second.begin(), smi->second.end(),
+                      std::back_insert_iterator<NavMsgList>(msgBitsOut));
          }
       }
    }
