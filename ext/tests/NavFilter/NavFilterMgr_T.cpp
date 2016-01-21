@@ -59,9 +59,8 @@ public:
    virtual void validate(NavMsgList& msgBitsIn, NavMsgList& msgBitsOut)
    {
       NavMsgList::iterator nmli;
-      std::copy(msgBitsIn.begin(), msgBitsIn.end(), cache.end());
-      cerr << "msgBitsIn size: " << msgBitsIn.size()
-           << "  cache size: " << cache.size() << endl;
+      std::copy(msgBitsIn.begin(), msgBitsIn.end(),
+                std::back_insert_iterator<NavMsgList>(cache));
       while (cache.size() > 4)
       {
          msgBitsOut.push_back(cache.front());
@@ -70,7 +69,8 @@ public:
    }
    virtual void finalize(NavMsgList& msgBitsOut)
    {
-      std::copy(cache.begin(), cache.end(), msgBitsOut.end());
+      std::copy(cache.begin(), cache.end(),
+                std::back_insert_iterator<NavMsgList>(msgBitsOut));
       cache.clear();
    }
    NavMsgList cache;
@@ -526,10 +526,11 @@ testBunk2()
    }
 
    mgr.addFilter(&filt2);
+      // count of wrong filter results before and after reaching the cache size
+   unsigned wrongEarly = 0, wrongLate = 0;
    for (unsigned i = 0; i < dataIdxBunk; i++)
    {
       l = mgr.validate(&dataBunk[i]);
-         // don't do 20000 asserts, please...
 /*
       if ((i < 3) && (l.size() != 0))
       {
@@ -540,10 +541,16 @@ testBunk2()
          TUFAIL("Filter expected to return 1 message after 4 messages input");
       }
 */
-      if (i < 3)
-         TUASSERTE(size_t,0,l.size());
+      if (i <= 3)
+      {
+         if (l.size() != 0)
+            wrongEarly++;
+      }
       else
-         TUASSERTE(size_t,1,l.size());
+      {
+         if (l.size() != 1)
+            wrongLate++;
+      }
 
       for (nmli = l.begin(); nmli != l.end(); nmli++)
       {
@@ -552,9 +559,15 @@ testBunk2()
               << dec << endl;
       }
    }
+      // just do all the assertions at once
+   testFramework.changeSourceMethod("validate");
+   TUASSERTE(unsigned,0,wrongEarly);
+   TUASSERTE(unsigned,0,wrongLate);
+
    l = mgr.finalize();
-      // cache of size 4 so finalize should return the last three messages
-   TUASSERTE(size_t,3,l.size());
+      // cache of size 4 so finalize should return the last four messages
+   testFramework.changeSourceMethod("finalize");
+   TUASSERTE(size_t,4,l.size());
    for (nmli = l.begin(); nmli != l.end(); nmli++)
    {
       BunkFilterData *fd = dynamic_cast<BunkFilterData*>(*nmli);

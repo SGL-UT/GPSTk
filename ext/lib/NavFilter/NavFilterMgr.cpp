@@ -68,7 +68,8 @@ namespace gpstk
                // filters, add it to the final return value.
             if (!rv1.empty())
             {
-               std::copy(rv1.begin(), rv1.end(), rv.end());
+               std::copy(rv1.begin(), rv1.end(),
+                         std::back_insert_iterator<NavFilter::NavMsgList>(rv));
             }
          }
       }
