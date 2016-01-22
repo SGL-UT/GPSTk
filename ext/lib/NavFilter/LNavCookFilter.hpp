@@ -21,6 +21,7 @@ namespace gpstk
          /** Turn words in a GPS LNAV message upright.  This results
           * in the expected 0x8b preamble in the TLM and subsequent
           * bits as expected per the IS-GPS-200.
+          * @pre LNavFilterData::sf is set
           * @param[in,out] msgBitsIn a list of LNavFilterData* objects
           *   containing GPS LNAV data.
           * @param[out] msgBitsOut the "cooked" subframes.  All

@@ -2,6 +2,7 @@
 #define NAVFILTERMGR_HPP
 
 #include <list>
+#include <set>
 #include <NavFilter.hpp>
 
 namespace gpstk
@@ -38,7 +39,40 @@ namespace gpstk
        *
        * @see NavFilterMgr for a list of examples.
        *
+       * @section NavFilterStore Storing NavFilterKey Data
+       *
+       * For performance reasons, the filter data is passed around
+       * using pointers rather than copying the messages themselves.
+       * The down side to this approach is that the user is
+       * subsequently required to manage the memory used to store the
+       * data being filtered.  There are a number of ways to do this,
+       * including:
+       *
+       *   1. Keeping the data in a container of the application's
+       *      data structure of choice, then discarding the data when
+       *      appropriate.  This approach is most appropriate when
+       *      using filters of depth 1.
+       *   2. Creating new NavFilterKey classes that inherit from the
+       *      filter data classes appropriate to the nav messages
+       *      being process (e.g. LNavFilterData).  The data in the
+       *      application's data structure of choice could be stored
+       *      as a new field in this child class or inheriting from
+       *      both the NavFilter and data structure.  This has the
+       *      additional advantage that the application's data can be
+       *      created dynamically on the heap and freed as the data is
+       *      either rejected or accepted.  This approach is most
+       *      useful when using filters of depth 2 and larger.
+       *
+       * @see NavFilterMgr for a list of examples.
+       *
        * @section GPSLNAV GPS Legacy Nav Filters
+       *
+       * Filters in this group use the data class LNavFilterData,
+       * which contains a pointer to an array of 10 uint32_t values in
+       * host byte order.  Each of the 10 values contains one subframe
+       * word each, with the 30 bits of the word in the 30 LSBs of the
+       * 32-bit value.
+       *
        * | Class                 | Filter Depth | Modifies Msg |
        * | :-------------------- | -----------: | :----------- |
        * | LNavFilterData        |          n/a | no           |
@@ -62,6 +96,17 @@ namespace gpstk
        * NavFilterMgr on GPS LNAV data.
        */
 
+      /** @example navfilterex-pseudo-container.cpp
+       * Pseudo-code example of using a container of application data
+       * structures for storing the navigation messages processed by
+       * the filter.
+       */
+
+      /** @example navfilterex-pseudo-inherit.cpp
+       * Pseudo-code example of using inheritance for the filter data
+       * for storing the navigation messages processed by the filter.
+       */
+
       /** Provides the top-level filtering for navigation messages.  A
        * single instance of this class should be created for each
        * navigation message structure to be processed.  Desired
@@ -74,6 +119,8 @@ namespace gpstk
    public:
          /// A list of navigation data filters.
       typedef std::list<NavFilter*> FilterList;
+         /// A set of unique filter pointers.
+      typedef std::set<NavFilter*> FilterSet;
 
          /// Do-nothing default constructor.
       NavFilterMgr();
@@ -81,7 +128,13 @@ namespace gpstk
          /** Add a desired navigation message data filter to the list.
           * Filters are expected to be for the same type of navigation
           * message data, but this is not enforced.
-          * @param[in] filt The filter to be added. */
+          * @param[in] filt The filter to be added.
+          *
+          * @warning Do not add the exact same filter object more than
+          *   once.  Multiple instances of the same filter class may
+          *   be added, but if the same instance is added more than
+          *   once, memory allocated for rejected subframes will
+          *   likely be leaked. */
       void addFilter(NavFilter* filt);
 
          /** Validate a single navigation message.
@@ -101,6 +154,14 @@ namespace gpstk
           * @return The remaining messages successfully passing the
           *   filters. */
       virtual NavFilter::NavMsgList finalize();
+
+         /** This set contains any filters with rejected data after a
+          * validate() or finalize() call.  The set will be cleared at
+          * the beginning of the validate() or finalize() call so that
+          * only filters with rejected data from the most recent call
+          * will be present in the set.  The rejected data itself can
+          * be accessed via the NavFilter::rejected data member. */
+      FilterSet rejected;
 
    private:
          /// The collection of navigation message filters to apply.

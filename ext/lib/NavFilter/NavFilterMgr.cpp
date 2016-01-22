@@ -20,6 +20,7 @@ namespace gpstk
    {
       NavFilter::NavMsgList rv, newrv;
       rv.push_back(msgBits);
+      rejected.clear();
       for (FilterList::iterator i = filters.begin(); i != filters.end(); i++)
       {
          if (rv.empty())
@@ -27,6 +28,8 @@ namespace gpstk
          (*i)->rejected.clear();
          newrv.clear();
          (*i)->validate(rv, newrv);
+         if (!(*i)->rejected.empty())
+            rejected.insert(*i);
          rv = newrv;
       }
       return rv;
@@ -40,6 +43,7 @@ namespace gpstk
       NavFilter::NavMsgList rv, rv1, rv2;
          // current and next filter
       FilterList::iterator fliCur, fliNxt;
+      rejected.clear();
          // touch ALL filters
       for (fliCur = filters.begin(); fliCur != filters.end(); fliCur++)
       {

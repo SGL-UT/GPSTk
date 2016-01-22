@@ -19,6 +19,7 @@ namespace gpstk
       LNavEmptyFilter();
 
          /** Filter subframes in msgBitsIn that are empty.
+          * @pre LNavFilterData::sf is set
           * @param[in,out] msgBitsIn A list of LNavFilterData* objects
           *   containing GPS legacy navigation messages (id 2).
           * @param[out] msgBitsOut The messages successfully passing
