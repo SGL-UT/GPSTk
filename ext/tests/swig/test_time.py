@@ -10,7 +10,11 @@ class TestSystemTime(unittest.TestCase):
         print systime
 
 class TestCommonTime(unittest.TestCase):
+    """CommonTime tests"""
     def test_CommonTime(self):
+        """CommonTime constructor tests"""
+        t=gpstk.CommonTime(1980, 1, 6, 0, 0, 0)
+
         systime = gpstk.SystemTime()
         comtime = systime.toCommonTime()
 
