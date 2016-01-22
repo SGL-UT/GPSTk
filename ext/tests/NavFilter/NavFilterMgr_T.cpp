@@ -5,6 +5,7 @@
 #include "LNavCookFilter.hpp"
 #include "LNavEmptyFilter.hpp"
 #include "LNavTLMHOWFilter.hpp"
+#include "LNavEphMaker.hpp"
 #include "CommonTime.hpp"
 #include "TimeString.hpp"
 
@@ -22,6 +23,10 @@ unsigned long expLNavTLMHOW = 613;
 // This number represents the union of subframes stripped by parity,
 // empty and TLM/HOW checks.
 unsigned long expLNavCombined = 1488;
+// This number was vetted by getting a rough count of ephemerides in
+// the source file (which was 5526, which is in the same ball park).
+// /usr/bin/tail +109 test_input_NavFilterMgr.txt | head -27513 | grep ':[03]0.0, ' | wc -l
+unsigned long expLNavEphs = 5210;
 
 // define some classes for exercising NavFilterMgr
 class BunkFilterData : public NavFilterKey
@@ -95,6 +100,8 @@ public:
    unsigned testLNavEmpty();
       /// Test the TLM and HOW filter
    unsigned testLNavTLMHOW();
+      /// Test the ephemeris maker
+   unsigned testLNavEphMaker();
       /// Test the combination of parity, empty and TLM/HOW filters
    unsigned testLNavCombined();
 
@@ -423,6 +430,29 @@ testLNavTLMHOW()
 }
 
 
+// make sure the eph maker produces the expected number of complete ephemerides
+unsigned NavFilterMgr_T ::
+testLNavEphMaker()
+{
+   TUDEF("LNavTLMHOWFilter", "validate");
+
+   NavFilterMgr mgr;
+   unsigned long ephCount = 0;
+   LNavEphMaker filtEph;
+
+   mgr.addFilter(&filtEph);
+
+   for (unsigned i = 0; i < dataIdxLNAV; i++)
+   {
+      gpstk::NavFilter::NavMsgList l = mgr.validate(&dataLNAV[i]);
+      ephCount += filtEph.completeEphs.size();
+   }
+   TUASSERTE(unsigned long, expLNavEphs, ephCount);
+
+   return testFramework.countFails();
+}
+
+
 unsigned NavFilterMgr_T ::
 testLNavCombined()
 {
@@ -594,6 +624,7 @@ int main()
    errorTotal += testClass.testLNavParity();
    errorTotal += testClass.testLNavEmpty();
    errorTotal += testClass.testLNavTLMHOW();
+   errorTotal += testClass.testLNavEphMaker();
    errorTotal += testClass.testLNavCombined();
    errorTotal += testClass.testBunk1();
    errorTotal += testClass.testBunk2();
