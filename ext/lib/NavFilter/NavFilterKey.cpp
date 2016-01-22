@@ -12,6 +12,7 @@ namespace gpstk
    }
 
 
+/* don't use this...
    bool NavFilterKey ::
    operator<(const NavFilterKey& right) const
    {
@@ -25,4 +26,5 @@ namespace gpstk
          //if (code > right.code) 
       return false;
    }
+*/
 }

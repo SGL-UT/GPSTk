@@ -45,11 +45,16 @@ namespace gpstk
       virtual void finalize(NavMsgList& msgBitsOut) = 0;
 
          /// Add a validated nav msg to the output list.
-      inline void accept(NavFilterKey* data, NavMsgList& msgBitsOut)
-      { msgBitsOut.push_back(data); }
+      inline void accept(NavFilterKey* data, NavMsgList& msgBitsOut);
+
+         /// Add a list of validated nav msg to the output list.
+      inline void accept(const NavMsgList& valid, NavMsgList& msgBitsOut);
 
          /// Add an invalid nav message to the reject list.
-      void reject(NavFilterKey* data);
+      inline void reject(NavFilterKey* data);
+
+         /// Add a list of invalid nav messages to the reject list.
+      inline void reject(const NavMsgList& invalid);
 
          /** Rejected nav messages go here.  If using NavFilterMgr,
           * this list will be cleared prior to the validate message
@@ -65,6 +70,32 @@ namespace gpstk
    };
 
       //@}
+
+   void NavFilter ::
+   accept(NavFilterKey* data, NavMsgList& msgBitsOut)
+   {
+      msgBitsOut.push_back(data);
+   }
+
+   void NavFilter ::
+   accept(const NavMsgList& valid, NavMsgList& msgBitsOut)
+   {
+      std::copy(valid.begin(), valid.end(),
+                std::back_insert_iterator<NavMsgList>(msgBitsOut));
+   }
+
+   void NavFilter ::
+   reject(NavFilterKey* data)
+   {
+      rejected.push_back(data);
+   }
+
+   void NavFilter ::
+   reject(const NavMsgList& invalid)
+   {
+      std::copy(invalid.begin(), invalid.end(),
+                std::back_insert_iterator<NavMsgList>(rejected));
+   }
 
 } // namepace gpstk
 

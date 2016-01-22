@@ -22,6 +22,11 @@ namespace gpstk
       LNavCrossSourceFilter();
 
          /** Add LNAV messages to the voting collection (groupedNav).
+          * @pre NavFilterKey::timeStamp is set to either the HOW time
+          *   of the subframe, or the time of transmission of the
+          *   subframe.
+          * @pre NavFilterKey::prn is set
+          * @pre LNavFilterData::sf is set
           * @param[in,out] msgBitsIn A list of LNavFilterData* objects
           *   containing GPS legacy navigation messages (id 2).
           * @param[out] msgBitsOut The messages successfully passing
@@ -43,8 +48,8 @@ namespace gpstk
 
          /// Nav subframes grouped by prn and unique nav bits
       NavMap groupedNav;
-         /// Most recent TOW count
-      uint32_t currentTOW;
+         /// Most recent time
+      gpstk::CommonTime currentTime;
 
 
          /** Filter by vote.

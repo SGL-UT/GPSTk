@@ -20,6 +20,7 @@ namespace gpstk
          /** For subframes 4 and 5, check the ranges of message data
           * fields.  For anything else, feed it back into
           * msgBitsOut.
+          * @pre LNavFilterData::sf is set
           * @param[in,out] msgBitsIn A list of LNavFilterData* objects
           *   containing GPS legacy navigation messages (id 2).
           * @param[out] msgBitsOut The messages successfully passing

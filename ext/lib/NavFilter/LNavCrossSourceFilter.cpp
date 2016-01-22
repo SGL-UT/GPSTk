@@ -4,7 +4,6 @@ namespace gpstk
 {
    LNavCrossSourceFilter ::
    LNavCrossSourceFilter()
-         : currentTOW(-1)
    {
    }
 
@@ -18,13 +17,12 @@ namespace gpstk
       for (nmli = msgBitsIn.begin(); nmli != msgBitsIn.end(); nmli++)
       {
          LNavFilterData *fd = dynamic_cast<LNavFilterData*>(*nmli);
-         uint32_t tow = fd->sf[1] >> 13;
-         if (tow != currentTOW)
+         if (fd->timeStamp != currentTime)
          {
-               // different TOW, so check out what we have
+               // different time, so check out what we have
             examineSubframes(msgBitsOut);
             groupedNav.clear();
-            currentTOW = tow;
+            currentTime = fd->timeStamp;
          }
             // add the subframe to our collection
          groupedNav[fd->prn][fd].push_back(*nmli);
@@ -36,7 +34,7 @@ namespace gpstk
    {
       examineSubframes(msgBitsOut);
       groupedNav.clear();
-      currentTOW = -1;
+      currentTime.reset();
    }
 
    void LNavCrossSourceFilter ::
@@ -67,13 +65,17 @@ namespace gpstk
             }
          }
          if (msgCount < 3)
-            continue; // not enough messages to have a useful vote
-         if (winner)
+            winner = NULL; // not enough messages to have a useful vote
+
+            // If winner is NULL, i.e. there is no winner, all
+            // messages will be rejected below.  Otherwise only the
+            // winners will be accepted.
+         for (smi = nmi->second.begin(); smi != nmi->second.end(); smi++)
          {
-               // we have a valid vote winner, so copy the subframes to output
-            smi = nmi->second.find(winner);
-            std::copy(smi->second.begin(), smi->second.end(),
-                      std::back_insert_iterator<NavMsgList>(msgBitsOut));
+            if (smi->first == winner)
+               accept(smi->second, msgBitsOut);
+            else
+               reject(smi->second);
          }
       }
    }
