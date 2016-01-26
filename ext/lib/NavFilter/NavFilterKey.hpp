@@ -3,6 +3,7 @@
 
 #include <ObsID.hpp>
 #include <CommonTime.hpp>
+#include <gpstkplatform.h>
 
 namespace gpstk
 {
