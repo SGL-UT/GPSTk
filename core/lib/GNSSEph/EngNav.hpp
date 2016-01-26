@@ -146,6 +146,15 @@ namespace gpstk
          return word2 * 6;
       }
 
+         /// Get the TOW count from the provided HOW
+      static inline unsigned long getTOW(uint32_t word2)
+      {
+            // It is assumed that the upper 2 bits of word2 are
+            // appropriately zero.  If that's not the case, you have
+            // other problems.
+         return (word2 >> 13);
+      }
+
          /// Get the subframe ID from the provided HOW
       static inline short getSFID(uint32_t word2)
       {
