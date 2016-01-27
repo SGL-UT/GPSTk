@@ -2,6 +2,8 @@
 *~
 .*.swp
 
+*.pyc
+
 # build directories
 build*/
 

@@ -73,7 +73,7 @@ abspath()
 case `uname` in
     Linux)
         last_core_index=`cat /proc/cpuinfo | grep "processor" | awk '{print $3}' | tail -1`
-        num_cores=`nproc`
+        ((num_cores=last_core_index+1))
         hostname=$(hostname -s)
         ;;
     Darwin)
@@ -88,7 +88,9 @@ case `uname` in
         num_cores=1
 esac
 
-if ((num_cores<16)); then
+if ((num_cores<2)); then
+    num_threads=1
+elif ((num_cores<16)); then
     num_threads=$((num_cores/2))
 else
     num_threads=$((num_cores*3/4))
