@@ -81,7 +81,7 @@ case `uname` in
         hostname=$(hostname -s)
         ;;
     SunOS)
-        num_cores=`kstat cpu_info | grep instance | wc -l`
+        num_cores=`psrinfo | wc -l`
         hostname=$(uname -n)
         ;;
     *)
