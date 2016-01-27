@@ -4,6 +4,7 @@
 add_subdirectory (difftools)
 add_subdirectory (mergetools)
 add_subdirectory (multipath)
+add_subdirectory (NavFilter)
 add_subdirectory (Rinextools)
 add_subdirectory (time)
 

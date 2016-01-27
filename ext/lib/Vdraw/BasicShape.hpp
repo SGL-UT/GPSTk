@@ -43,56 +43,57 @@
 
 namespace vdraw
 {
-   /** \addtogroup BasicVectorGraphics */ 
-   //@{
+      /// @ingroup BasicVectorGraphics
+      //@{
 
-   /**
-    * This is an interface for basic shapes to group them together.  These include
-    * circles, rectangles, lines, and polygons.  All of these objects can contain
-    * a StrokeStyle.
-    */
+      /**
+       * This is an interface for basic shapes to group them together.
+       * These include circles, rectangles, lines, and polygons.  All
+       * of these objects can contain a StrokeStyle.
+       */
 
-   class BasicShape {
+   class BasicShape
+   {
  
    public:
 
-      /**
-       * Constructors and Destructor
-       */
+         /**
+          * Constructors and Destructor
+          */
 
-      /**
-       * Default constructor.
-       */
+         /**
+          * Default constructor.
+          */
       BasicShape(void)
-         : hasLineStyle(false)
+            : hasLineStyle(false)
       {}
 
-      /**
-       * Constructor.  Defines a basic shape by a StrokeStyle.
-       * @param istyle appearance of the stroke
-       */
+         /**
+          * Constructor.  Defines a basic shape by a StrokeStyle.
+          * @param istyle appearance of the stroke
+          */
       BasicShape(const StrokeStyle& istyle)
-         : lineStyle(istyle), hasLineStyle(true)
+            : lineStyle(istyle), hasLineStyle(true)
       {}
 
-      /// Accessor. Does this basic shape have a preferred appearance?
+         /// Accessor. Does this basic shape have a preferred appearance?
       inline bool hasOwnStrokeStyle(void) const { return hasLineStyle; }
 
-      /// Accessor. What is the style associated with this basic shape
+         /// Accessor. What is the style associated with this basic shape
       inline StrokeStyle getStrokeStyle(void) const { return lineStyle; }
       
-      /// Mutator. Set the stroke style
+         /// Mutator. Set the stroke style
       inline void setStrokeStyle(const StrokeStyle& istyle) { lineStyle=istyle;hasLineStyle=true; }  
 
-      /// Mutator. Remove the stroke style...use default
+         /// Mutator. Remove the stroke style...use default
       inline void removeStrokeStyle(void) { hasLineStyle=false; }
 
    protected:
 
-      /// Default line style
+         /// Default line style
       StrokeStyle lineStyle;
 
-      /// A lineStyle has been set?
+         /// A lineStyle has been set?
       bool hasLineStyle;
 
    private:
@@ -100,7 +101,7 @@ namespace vdraw
 
    }; // class BasicShape
 
-   //@} group BasicVectorGraphics
+      //@}
 
 } // namespace vdraw
 

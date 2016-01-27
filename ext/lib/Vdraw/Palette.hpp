@@ -45,88 +45,88 @@
 
 namespace vdraw
 {
-  /** \addtogroup BasicVectorGraphics */ 
-  //@{
+      /// @ingroup BasicVectorGraphics
+      //@{
 
-  /**
-   * This class defines a simple interpolated palette of colors.  Each entry in
-   * the pallete is a color at a certain position.  Indexes into this palette
-   * can be anywhere within its range and the corresponding color will be
-   * interpolated.
-   */
-
-  class Palette
-  {
-    public:
       /**
-       * Constructor.
-       * @param base Color to put at the extremes of the palette
-       * @param imin Minimum value of the palette's indicies
-       * @param imax Maximum value of the palette's indicies
+       * This class defines a simple interpolated palette of colors.
+       * Each entry in the pallete is a color at a certain position.
+       * Indexes into this palette can be anywhere within its range
+       * and the corresponding color will be interpolated.
        */
+
+   class Palette
+   {
+   public:
+         /**
+          * Constructor.
+          * @param base Color to put at the extremes of the palette
+          * @param imin Minimum value of the palette's indicies
+          * @param imax Maximum value of the palette's indicies
+          */
       Palette(const Color &base=Color::BLACK, double imin=0.0, double imax=1.0);
 
-      /// Copy Constructor.
+         /// Copy Constructor.
       Palette(const Palette &p);
 
-      /// Copy Operator.
+         /// Copy Operator.
       Palette& operator=(Palette p);
 
-      /// Destructor
+         /// Destructor
       ~Palette()
       {
       }
 
-      /// Set the range 
-      /// Note: Does not change indicies already in the palette
+         /// Set the range 
+         /// Note: Does not change indicies already in the palette
       void setRange(double imin, double imax)
       {
-        if(imax<imin) 
-        { 
-          min = imax; 
-          width=imin-imax; 
-        }
-        else
-        {
-          min = imin;
-          width = imax-imin;
-        }
+         if(imax<imin) 
+         { 
+            min = imax; 
+            width=imin-imax; 
+         }
+         else
+         {
+            min = imin;
+            width = imax-imin;
+         }
       }
 
-      /// Set the color a val to c
+         /// Set the color a val to c
       void setColor(double val, const Color &c);
 
-      /// Get the color at val
+         /// Get the color at val
       Color getColor(double val) const;
 
-      /// Get the minimum
+         /// Get the minimum
       inline double getMin() const { return min; }
 
-      /// Get the maximum
+         /// Get the maximum
       inline double getMax() const { return min+width; }
 
-      /// Get number of entries
+         /// Get number of entries
       inline int getNumColors() const { return (int)palette.size(); }
 
-    protected:
-      /// Minimum
+   protected:
+         /// Minimum
       double min;
       
-      /// Width of the palette (such that: max = min+width)
+         /// Width of the palette (such that: max = min+width)
       double width;
 
-      /// The (index,color) pairs of the palette
+         /// The (index,color) pairs of the palette
       std::list<std::pair<double,Color> > palette;
 
-      /// Clamp the value between the minimum and maximum
+         /// Clamp the value between the minimum and maximum
       inline void clamp(double &val) const
       {
-        if(val<min)         val=getMin();
-        if(val>(min+width)) val=getMax();
+         if(val<min)         val=getMin();
+         if(val>(min+width)) val=getMax();
       }
-  }; // class Palette
+   }; // class Palette
 
-  //@}
+      //@}
   
 } // namespace vdraw
 

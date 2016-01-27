@@ -47,8 +47,8 @@
 
 namespace gpstk
 {
-   /** @addtogroup RinexNav */
-   //@{
+      /// @ingroup FileHandling
+      //@{
 
       /**
        * This class models the RINEX NAV header for a RINEX NAV file.
@@ -97,9 +97,6 @@ namespace gpstk
          allValid211 = 0x080000003
       };
 
-         /** @name HeaderValues
-          */
-         //@{
       double version;           ///< RINEX Version
 
       std::string fileType;            
@@ -114,11 +111,7 @@ namespace gpstk
       long UTCRefTime;
       long UTCRefWeek;
       long leapSeconds;
-         //@}
 
-         /** @name FormattingStd::Strings
-          */
-         //@{
       static const std::string versionString; //"RINEX VERSION / TYPE"
       static const std::string runByString; //"PGM / RUN BY / DATE"
       static const std::string commentString; // "COMMENT"
@@ -127,7 +120,6 @@ namespace gpstk
       static const std::string deltaUTCString; //"DELTA-UTC: A0,A1,T,W"
       static const std::string leapSecondsString; //"LEAP SECONDS"
       static const std::string endOfHeader;  //"END OF HEADER"
-         //@}
 
    protected:
          /// Writes a correctly formatted record from this data to stream \a s.
@@ -149,7 +141,7 @@ namespace gpstk
                gpstk::StringUtils::StringException);
    }; // class RinexNavHeader
 
-   //@}
+      //@}
 
 } // namespace
 

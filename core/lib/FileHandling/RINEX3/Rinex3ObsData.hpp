@@ -55,7 +55,7 @@
 namespace gpstk
 {
 
-      /** @addtogroup Rinex3Obs */
+      /// @ingroup FileHandling
       //@{
 
       /// This class models a RINEX Observation Data Record.

@@ -56,7 +56,7 @@
 #include "Xvt.hpp"
 namespace gpstk
 {
-   /** @addtogroup ephemcalc */
+   /// @ingroup ephemcalc 
    //@{
 
       /**
