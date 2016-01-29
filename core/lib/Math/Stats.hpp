@@ -560,30 +560,31 @@ namespace gpstk
    template <class T>
    inline T median(const std::vector<T>& v)
    {
-      if(v.size()==0) return T();
-      if(v.size()==1) return v[0];
-      if(v.size()==2) return (v[0]+v[1])/T(2);
-         // insert sort
-      int j;
-      size_t i;
-      T x;
+      if(v.size()==0)
+         return T(0);
+      
       std::vector<T> w(v);
-      for(i=0; i<v.size(); i++) {
-         x = w[i] = v[i];
-         j = i-1;
-         while(j>=0 && x<w[j]) {
-            w[j+1] = w[j];
-            j--;
-         }
-         w[j+1] = x;
-      }
-      if(v.size() % 2)
-         x=w[(v.size()+1)/2-1];
-      else
-         x=(w[v.size()/2-1]+w[v.size()/2])/T(2);
+      sort(w.begin(), w.end());
+      if (v.size() % 2)
+         return w[(v.size()+1)/2-1];
+      return (w[v.size()/2-1]+w[v.size()/2])/T(2);
+   }  // end median(std::vector<>)
 
-      return x;
-   }  // end median(Vector)
+
+      /// median absolute deviation
+   template <class T>
+   inline T mad(const std::vector<T>& v)
+   {
+      if (v.size() < 2)
+         return 0;
+      
+      double med = gpstk::median(v);
+      std::vector<T> w(v);
+      for(size_t i=0; i < w.size(); i++)
+         w[i] = std::abs(w[i]- med);
+
+      return gpstk::median(w);
+   }
 
       //@}
 
