@@ -10,9 +10,6 @@ namespace gpstk
    void LNavCrossSourceFilter ::
    validate(NavMsgList& msgBitsIn, NavMsgList& msgBitsOut)
    {
-         /** @todo figure out the best way to handle the situation
-          * where the HOW is corrupt and as such the time stamp is
-          * likely also wrong. */
       NavMsgList::const_iterator nmli;
       for (nmli = msgBitsIn.begin(); nmli != msgBitsIn.end(); nmli++)
       {
