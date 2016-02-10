@@ -71,6 +71,7 @@ OPTIONS:
                         Default=$python_exe
 
    -t                   Build and run tests.
+   -T                   Build and run tests but don't stop on test failures.
 
    -p                   Build supported packages (source, binary, deb,  ...)
 
@@ -85,7 +86,7 @@ EOF
 }
 
 
-while getopts "hb:cdepi:j:xP:sutv" OPTION; do
+while getopts "hb:cdepi:j:xP:sutTv" OPTION; do
     case $OPTION in
         h) usage
            exit 0
@@ -120,6 +121,8 @@ while getopts "hb:cdepi:j:xP:sutv" OPTION; do
            ;;
         t) test_switch=1
            ;;
+        T) test_switch=-1
+           ;;
         v) verbose+=1
            ;;
         *) echo "Invalid option: -$OPTARG" >&2
@@ -141,7 +144,6 @@ if [ ! -d "$build_root" ]; then
 fi
 
 if [ -f "$LOG" ]; then
-    cp --force --backup=numbered $LOG $LOG
     rm $LOG
 fi
 
@@ -171,9 +173,7 @@ if ((verbose>0)); then
     log "time            =" `date`
     log "hostname        =" $hostname
     log "uname           =" `uname -a`
-    log "git branch      =" $git_branch
-    log "git tag         =" $git_tag
-    log "git hash        =" $git_hash
+    log "git id          =" $(get_repo_state $repo)
     log "logfile         =" $LOG
     log
 fi
@@ -217,6 +217,7 @@ fi
 args+=${install_prefix:+" -DCMAKE_INSTALL_PREFIX=$install_prefix"}
 args+=${build_ext:+" -DBUILD_EXT=ON"}
 args+=${verbose:+" -DDEBUG_SWITCH=ON"}
+args+=${verbose:-" -Wno-dev"}
 args+=${test_switch:+" -DTEST_SWITCH=ON"}
 args+=${build_docs:+" --graphviz=$build_root/doc/graphviz/gpstk_graphviz.dot"}
 
@@ -225,7 +226,12 @@ run cmake $args $repo
 run make all -j $num_threads
 
 if [ $test_switch ]; then
+    if ((test_switch < 0)); then
+        ignore_failures=1
+    fi
     run ctest -v -j $num_threads
+    test_status=$?
+    unset ignore_failures
 fi
 
 if [ $install ]; then
@@ -258,6 +264,11 @@ if [ $build_packages ]; then
 fi
 
 log
+if [ $test_status == 0 ]; then
+    log "All tests passed!"
+else
+    log $test_status " test failures."
+fi
 log "See $build_root/Testing/Temporary/LastTest.log for detailed test log"
 log "See $LOG for detailed build log"
 log

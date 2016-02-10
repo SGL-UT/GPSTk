@@ -70,7 +70,7 @@ namespace gpstk
                      const T* vec)
          : v(rows * cols), r(rows), c(cols), s(rows * cols)
    {
-      assignFrom(vec);
+      this->assignFrom(vec);
    }
 
    template <class T>
