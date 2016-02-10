@@ -48,10 +48,10 @@
 namespace gpstk
 {
 
- /** @addtogroup VectorGroup */
-   //@{
+      /// @ingroup MathGroup
+      //@{
  
-/// Output operator for ConstMatrixBase classes
+      /// Output operator for ConstMatrixBase classes
    template <class T, class E>
    std::ostream& operator<<(std::ostream& s, const ConstMatrixBase<T, E>& a) 
    {
@@ -70,9 +70,9 @@ namespace gpstk
       return s;
    }
 
-/**
- * Turns the square RefMatrixBase matrix into an identity matrix
- */
+      /**
+       * Turns the square RefMatrixBase matrix into an identity matrix
+       */
    template <class T, class BaseClass>
    BaseClass& ident(RefMatrixBase<T, BaseClass>& m)
       throw (MatrixException)
@@ -90,9 +90,9 @@ namespace gpstk
       return me;
    }
 
-/**
- * Returns the trace of the matrix
- */
+      /**
+       * Returns the trace of the matrix
+       */
    template <class T, class BaseClass>
    inline T trace(const ConstMatrixBase<T, BaseClass>& m)
       throw (MatrixException)
@@ -109,9 +109,9 @@ namespace gpstk
       return answer;
    }
 
-/**
- * returns the frobenius norm or RSS of the matrix
- */
+      /**
+       * returns the frobenius norm or RSS of the matrix
+       */
    template <class T, class BaseClass>
    inline T normF(const ConstMatrixBase<T, BaseClass>& m)
    {
@@ -123,9 +123,9 @@ namespace gpstk
       return SQRT(sum);
    }
 
-/**
- * returns the column sum norm of the matrix
- */
+      /**
+       * returns the column sum norm of the matrix
+       */
    template <class T, class BaseClass>
    inline T normCol(const ConstMatrixBase<T, BaseClass>& m)
    {
@@ -142,10 +142,10 @@ namespace gpstk
       return sum;
    }
 
-/**
- * Uses the sum of minor determinates to calculate the whole det. 
- * Slow for large matricies, but it works.
- */
+      /**
+       * Uses the sum of minor determinates to calculate the whole det. 
+       * Slow for large matricies, but it works.
+       */
    template <class T, class BaseClass>
    inline T slowDet(const ConstMatrixBase<T, BaseClass>& l)
    {
@@ -174,7 +174,7 @@ namespace gpstk
       }
    }
 
-   //@}
+      //@}
  
 }  // namespace
 

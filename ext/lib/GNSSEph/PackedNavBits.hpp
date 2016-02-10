@@ -54,7 +54,7 @@
 
 namespace gpstk
 {
-   /** @addtogroup ephemcalc */
+   /// @ingroup ephemcalc 
    //@{
 
    class PackedNavBits

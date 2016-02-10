@@ -54,7 +54,7 @@ namespace gpstk
       /// @ingroup exceptiongroup
    NEW_EXCEPTION_CLASS(ProcessingException, gpstk::Exception);
 
-    /** @addtogroup GPSsolutions */
+    /// @ingroup GPSsolutions 
     //@{
 
 

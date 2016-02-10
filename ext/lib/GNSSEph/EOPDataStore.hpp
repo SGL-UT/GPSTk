@@ -47,7 +47,7 @@
 
 namespace gpstk
 {
-      /** @addtogroup Precise Orbit Determination */
+      /// @ingroup Precise Orbit Determination 
       //@{
 
       /**

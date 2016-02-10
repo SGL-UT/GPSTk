@@ -101,7 +101,7 @@ struct Par // Parameters to pass to Pthread function.
    bool solvePos;
 };
 
-void *Cfunction(void*); // C-style function to be called with pthreads
+extern "C" void *Cfunction(void*); // C-style function to be called with pthreads
 
 pthread_mutex_t mutexVec = PTHREAD_MUTEX_INITIALIZER;
 int dataPoints[32]; // variables needed by position algorithm

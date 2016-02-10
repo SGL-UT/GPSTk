@@ -49,14 +49,15 @@
 
 namespace gpstk
 {
-   /** @addtogroup ephemstore */
-   //@{
+      /// @ingroup FileHandling
+      //@{
 
       /**
-       * This class encapsulates data for satellite clocks as found in RINEX Clock
-       * format files, and is used in conjuction with class Rinex3ClockStream,
-       * which handles the I/O, and Rinex3ClockHeader, which holds information
-       * from the Rinex3Clock file header.
+       * This class encapsulates data for satellite clocks as found in
+       * RINEX Clock format files, and is used in conjuction with
+       * class Rinex3ClockStream, which handles the I/O, and
+       * Rinex3ClockHeader, which holds information from the
+       * Rinex3Clock file header.
        *
        * @code
        * Rinex3ClockStream ss("igs14080.clk_30s");
@@ -77,7 +78,8 @@ namespace gpstk
        * }
        * @endcode
        *
-       * @sa gpstk::Rinex3ClockHeader and gpstk::Rinex3ClockStream for more information.
+       * @sa gpstk::Rinex3ClockHeader and gpstk::Rinex3ClockStream for
+       * more information.
        */
    class Rinex3ClockData : public Rinex3ClockBase
    {
@@ -95,8 +97,6 @@ namespace gpstk
          /// Debug output function.
       virtual void dump(std::ostream& s=std::cout) const throw();
 
-         ///@name data members
-         //@{
       std::string datatype;   ///< Data type : AR, AS, etc
       RinexSatID sat;         ///< Satellite ID        (if AS)
       std::string site;       ///< Site label (4-char) (if AR)
@@ -107,7 +107,6 @@ namespace gpstk
       double sig_drift;       ///< Clock drift sigma in sec/sec
       double accel;           ///< Clock acceleration in 1/sec
       double sig_accel;       ///< Clock acceleration sigma in 1/sec
-         //@}
       
    protected:
 
@@ -139,7 +138,7 @@ namespace gpstk
                gpstk::StringUtils::StringException);
    };
 
-   //@}
+      //@}
 
 }  // namespace
 

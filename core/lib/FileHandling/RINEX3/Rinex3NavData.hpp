@@ -59,8 +59,8 @@
 
 namespace gpstk
 {
-   /** @addtogroup Rinex3Nav */
-   //@{
+      /// @ingroup FileHandling
+      //@{
 
       /**
        * This class models a RINEX 3 Nav record.
@@ -77,7 +77,7 @@ namespace gpstk
           *          USING!!!.
           */
       Rinex3NavData(void)
-        : time(CommonTime::BEGINNING_OF_TIME), PRNID(-1), fitint(4)
+            : time(CommonTime::BEGINNING_OF_TIME), PRNID(-1), fitint(4)
       {}
 
          /// Initializes the nav data with a GloEphemeris
@@ -149,8 +149,8 @@ namespace gpstk
       }
 
 
-      /** @name EpochDataGeneral */
-      //@{
+         /** @name General Data */
+         //@{
       CommonTime time;     ///< Time according to the sat/epoch record (TOC)
       std::string satSys;  ///< Satellite system of Epoch: G,R,E,S,C
       short PRNID;         ///< SV PRN ID
@@ -161,61 +161,61 @@ namespace gpstk
                            /// >to ToE, not GLO)
       double accuracy;     ///< SV accuracy (m)
       short health;        ///< SV health
-      //@}
+         //@}
 
-      /** @name EpochDataGPS */
-      //@{
+         /** @name GPS Data */
+         //@{
       short   codeflgs;    ///< L2 codes
       short   L2Pdata;     ///< L2 P data flag 
       double  IODC;        ///< Index of data-clock
       double  IODE;        ///< Index of data-eph
-      //@}
+         //@}
 
-      /** @name EpochDataGLO */
-      //@{
+         /** @name GLO Data */
+         //@{
       double  TauN;        ///< SV clock bias (sec)
       double  GammaN;      ///< SV relative frequency bias
       double  MFTraw;      ///< Message frame time (sec of UTC week) <double>
       long    MFtime;      ///< Message frame time (sec of UTC week) <long>
       short   freqNum;     ///< Frequency number (-7..+12)
       double  ageOfInfo;   ///< Age of oper. information (days)
-      //@}
+         //@}
 
-      /** @name EpochDataGAL */
-      //@{
+         /** @name GAL Data */
+         //@{
       short   datasources; ///< Data sources
       double  IODnav;      ///< Index of data-eph
-      //@}
+         //@}
 
-      /** @name EpochDataGEO */
-      //@{
+         /** @name GEO Data */
+         //@{
       double  accCode;     ///< Accuracy code (URA, meters)
       double  IODN;        ///< Issue of data navigation, DO229,
                            ///< 8 first bits after Message type if MT9
-      //@}
+         //@}
 
-      /** @name ClockInformation */
-      //@{
+         /** @name Clock Information */
+         //@{
       double  Toc;         ///< Time of clock (sec of week)
       double  af0;         ///< SV clock error (sec)
       double  af1;         ///< SV clock drift (sec/sec)
       double  af2;         ///< SV clock drift rate (sec/sec**2)
       double  Tgd;         ///< Group delay diff. (sec) (GPS, BDS:B1/B3 GAL:E5a/E1)
       double  Tgd2;        ///< Group delay differential (sec) (BDS:B2/B3 GAL:E5b/E1)
-      //@}
+         //@}
 
-      /** @name HarmonicPerturbations */
-      //@{
+         /** @name Harmonic Perturbations */
+         //@{
       double  Cuc;         ///< Cosine latitude (rad)
       double  Cus;         ///< Sine latitude (rad)
       double  Crc;         ///< Cosine radius (m)
       double  Crs;         ///< Sine radius (m)
       double  Cic;         ///< Cosine inclination (rad)
       double  Cis;         ///< Sine inclination (rad)
-      //@}
+         //@}
 
-      /** @name MajorEphemerisParameters */
-      //@{
+         /** @name Major Ephemeris Parameters */
+         //@{
       double  Toe;         ///< Ephemeris epoch (sec of week)
       double  M0;          ///< Mean anomaly (rad)
       double  dn;          ///< Correction to mean motion (rad/sec)
@@ -227,14 +227,14 @@ namespace gpstk
       double  OMEGAdot;    ///< Rate of Rt ascension (rad/sec)
       double  idot;        ///< Rate of inclination angle (rad/sec)
       double  fitint;      ///< Fit interval
-      //@}
+         //@}
 
-      /** @name TabularEphemerisParameters */
-      //@{
+         /** @name Tabular Ephemeris Parameters */
+         //@{
       double  px, py, pz;  ///< SV position
       double  vx, vy, vz;  ///< SV velocity
       double  ax, ay, az;  ///< SV acceleration
-      //@}
+         //@}
 
 
    private:
@@ -246,17 +246,13 @@ namespace gpstk
          throw(StringUtils::StringException, FFStreamError);
 
 
-         /** @name OrbitParameters
-          * Obtain orbit parameters from strint \a currentLine.
-          */
-         //@{
          /**  Read and parse the nth record after the epoch record
-          *   @param int n record number (1-7), for nth record after the epoch line
+          *   @param int n record number (1-7), for nth record after
+          *     the epoch line
           *   @param Rinex3NavStream strm stream to read from
           */
       void getRecord(const int& n, Rinex3NavStream& strm)
          throw(StringUtils::StringException, FFStreamError);
-         //@}
 
          /** Generates the PRN/epoch line and outputs it to strm
           *  @param strm RINEX Nav stream
@@ -265,9 +261,6 @@ namespace gpstk
          throw(StringUtils::StringException);
 
 
-         /// @name OrbitParameters
-         /// Generate orbit parameter lines from data to be output to a file
-         //@{
          /** Construct and write the nth record after the epoch record
           *  @param int n                 Record number (1-7), for nth record
           *                               after the epoch line.
@@ -275,9 +268,9 @@ namespace gpstk
           */
       void putRecord(const int& n, Rinex3NavStream& strm) const
          throw(StringUtils::StringException, FFStreamError);
-         //@}
 
-         /// Helper routine for constructors of this from OrbitEph-based Ephemerides
+         /** Helper routine for constructors of this from
+          * OrbitEph-based Ephemerides */
       void loadFrom(const OrbitEph *oeptr);
 
          /// Helper routine for casts from this to OrbitEph-based Ephemerides
@@ -304,7 +297,7 @@ namespace gpstk
 
    }; // End of class 'Rinex3NavData'
 
-   //@}
+      //@}
 
 }  // End of namespace gpstk
 

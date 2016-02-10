@@ -50,7 +50,7 @@
 namespace gpstk
 {
 
-      /** @addtogroup GPSsolutions */
+      /// @ingroup GPSsolutions
       //@{
 
 
@@ -61,7 +61,7 @@ namespace gpstk
        *
        * A typical way to use this class follows:
        *
-     * @code
+       * @code
        *      // Rinex data stream
        *   RinexObsStream rin("ebre0300.02o");
        *

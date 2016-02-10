@@ -50,7 +50,7 @@
 #include "TimeSystem.hpp"
 namespace gpstk
 {
-      /** @addtogroup GeoDynamics */
+      /// @ingroup GeoDynamics 
       //@{
       
       /** Class to convert UTC Time to all other different time systems.

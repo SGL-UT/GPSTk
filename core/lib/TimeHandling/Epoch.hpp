@@ -60,7 +60,7 @@
 
 namespace gpstk
 {
-      /** @defgroup timegroup GPStk Time Group */
+      /** @defgroup TimeHandling Time Representation */
       //@{
 
       /**
@@ -715,8 +715,6 @@ namespace gpstk
          //@}
    };   // end class Epoch
 
-      /// @name Output Operator
-      //@{
       /**
        * Stream output for Epoch objects.  Typically used for debugging.
        * @param s stream to append formatted Epoch to.
@@ -725,7 +723,6 @@ namespace gpstk
        */
    std::ostream& operator<<( std::ostream& s,
                              const Epoch& t );
-      //@}
       //@}
 
 

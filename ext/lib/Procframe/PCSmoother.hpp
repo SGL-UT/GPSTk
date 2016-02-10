@@ -50,7 +50,7 @@
 namespace gpstk
 {
 
-      /** @addtogroup DataStructures */
+      /// @ingroup DataStructures
       //@{
 
 
@@ -118,8 +118,8 @@ namespace gpstk
          /// Default constructor, setting default parameters and PC and LC
          /// as observables.
       PCSmoother() : codeType(TypeID::PC), phaseType(TypeID::LC),
-         resultType(TypeID::PC), maxWindowSize(100), csFlag1(TypeID::CSL1),
-         csFlag2(TypeID::CSL2)
+                     resultType(TypeID::PC), maxWindowSize(100), csFlag1(TypeID::CSL1),
+                     csFlag2(TypeID::CSL2)
       { };
 
 
@@ -130,8 +130,8 @@ namespace gpstk
           */
       PCSmoother( const int& mwSize,
                   const TypeID& resultT = TypeID::PC )
-         : codeType(TypeID::PC), phaseType(TypeID::LC), resultType(resultT),
-           maxWindowSize(mwSize), csFlag1(TypeID::CSL1), csFlag2(TypeID::CSL2)
+            : codeType(TypeID::PC), phaseType(TypeID::LC), resultType(resultT),
+              maxWindowSize(mwSize), csFlag1(TypeID::CSL1), csFlag2(TypeID::CSL2)
       { };
 
 
@@ -203,7 +203,7 @@ namespace gpstk
       virtual ~PCSmoother() {};
 
 
-    private:
+   private:
 
 
          /// Type of code observation to be used.

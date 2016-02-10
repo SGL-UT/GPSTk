@@ -41,6 +41,9 @@
 
 namespace gpstk
 {
+      /// @ingroup TimeHandling
+      //@{
+
       /**
        * This class encapsulates the "Julian Date" time representation.
        */
@@ -48,8 +51,7 @@ namespace gpstk
    {
    public:
          /**
-          * @defgroup jdbo JulianDate Basic Operations
-          * Default and Copy Constructors, Assignment Operator and Destructor.
+          * @name JulianDate Basic Operations
           */
          //@{
          /**
@@ -143,7 +145,7 @@ namespace gpstk
       virtual void reset();
 
          /**
-          * @defgroup jdco JulianDate Comparison Operators
+          * @name JulianDate Comparison Operators
           * All comparison operators have a parameter "right" which corresponds
           *  to the JulianDate object to the right of the symbol.
           * All comparison operators are const and return true on success
@@ -160,6 +162,8 @@ namespace gpstk
 
       long double jd;
    };
+
+      //@}
 
 } // namespace
 

@@ -42,15 +42,18 @@
 
 namespace gpstk
 {
+      /// @ingroup TimeHandling
+      //@{
+
       /**
-       * This class encapsulates the "Modified Julian Date" time representation.
+       * This class encapsulates the "Modified Julian Date" time
+       * representation.
        */
    class MJD : public TimeTag
    {
    public:
          /**
-          * @defgroup mjdbo MJD Basic Operations
-          * Default and Copy Constructors, Assignment Operator and Destructor.
+          * @name MJD Basic Operations
           */
          //@{
          /**
@@ -145,7 +148,7 @@ namespace gpstk
       virtual void reset();
 
          /**
-          * @defgroup mjdco MJD Comparison Operators
+          * @name MJD Comparison Operators
           * All comparison operators have a parameter "right" which corresponds
           *  to the MJD object to the right of the symbol.
           * All comparison operators are const and return true on success
@@ -162,6 +165,8 @@ namespace gpstk
 
       long double mjd;
    };
+
+      //@}
 
 } // namespace
 

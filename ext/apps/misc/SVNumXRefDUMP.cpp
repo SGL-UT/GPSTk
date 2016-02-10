@@ -11,10 +11,10 @@ using namespace gpstk;
 
 int main( int argc, char * argv[] )
 {
-   cout << "Entering xSVNumXRef" << endl;
+   cout << "Entering SVNumXRefDUMP" << endl;
 
    SVNumXRef svNumXRef;
-   svNumXRef.dump(cout, true);
+   svNumXRef.dump(cout);
   
    return(0);
 }

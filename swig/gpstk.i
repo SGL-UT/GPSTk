@@ -38,7 +38,6 @@ using namespace gpstk;
 %include "STLTemplates.i"
 %include "STLHelpers.i"
 
-
 %include "exception.i"
 %rename(__str__) gpstk::Exception::what() const;
 %include "Exception.hpp"
@@ -150,6 +149,7 @@ using namespace gpstk;
 %ignore gpstk::RefVectorBaseHelper::zeroize();
 %include "VectorBase.hpp"
 %include "Vector.i"
+%include "DataStatus.hpp"
 
 
 // =============================================================
@@ -172,10 +172,11 @@ using namespace gpstk;
 %include "gpstkplatform.h"
 %include "FFStreamError.hpp"
 %include "FileStore.hpp"
-%include "BinUtils.hpp"
 %include "FFData.hpp"
 %include "EngNav.hpp"
 %include "YumaBase.hpp"
+// This is to silence warning about not knowing about the fstream base class
+namespace std { class fstream {}; }
 %include "FFStream.hpp"
 %include "FFTextStream.hpp"
 %include "AlmOrbit.hpp"
@@ -183,6 +184,7 @@ using namespace gpstk;
 %ignore gpstk::EngAlmanac::getUTC;
 %include "EngAlmanac.hpp"
 
+%include "OrbElemBase.hpp"
 %include "OrbElem.hpp"
 %include "OrbElemStore.hpp"
 %include "AlmOrbit.hpp"
@@ -220,17 +222,12 @@ using namespace gpstk;
 
 // RINEX format:
 %include "RinexSatID.hpp"
-%include "RinexClockBase.hpp"
 // RINEX obs:
 %include "RinexObsBase.hpp"
 %include "RinexObsHeader.hpp"
 %include "RinexObsData.hpp"
 %include "RinexObsID.hpp"
 %include "RinexObsStream.hpp"
-// RINEX clock:
-%include "RinexClockHeader.hpp"
-%include "RinexClockData.hpp"
-%include "RinexClockStream.hpp"
 // RINEX nav:
 %include "RinexNavBase.hpp"
 %include "RinexNavHeader.hpp"

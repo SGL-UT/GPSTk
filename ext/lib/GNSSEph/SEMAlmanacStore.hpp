@@ -48,7 +48,7 @@
 
 namespace gpstk
 {
-   /** @addtogroup ephemstore */
+   /// @ingroup ephemstore 
    //@{
 
    class SEMAlmanacStore : public FileStore<SEMHeader>, 

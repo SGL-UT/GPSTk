@@ -52,14 +52,19 @@
 
 namespace gpstk
 {
+      /// @todo determine if this really belongs with the SP3 files
+
+      /// @ingroup FileHandling
+      //@{
+
    class SP3SatID : public SatID
    {
    public:
 
-      /// empty constructor, creates an invalid object
+         /// empty constructor, creates an invalid object
       SP3SatID() throw() { id=-1; system=systemGPS; }
 
-      /// explicit constructor, no defaults, SP3 systems only
+         /// explicit constructor, no defaults, SP3 systems only
       SP3SatID(int p, SatelliteSystem s) throw()
       {
          id = p; system = s;
@@ -68,48 +73,48 @@ namespace gpstk
             case systemGlonass:
             case systemGalileo:
             case systemLEO: break;
-            // invalidate anything non-SP3
+                  // invalidate anything non-SP3
             default:
                system = systemUnknown;
                id = -1;
          }
       }
 
-      /// constructor from string
+         /// constructor from string
       SP3SatID(const std::string& str) throw(Exception)
       {
          try { fromString(str); }
          catch(Exception& e) { GPSTK_RETHROW(e); }
       }
 
-      /// cast SatID to SP3SatID
+         /// cast SatID to SP3SatID
       SP3SatID(const SatID& sat) throw()
       { *this = SP3SatID(sat.id,sat.system); }
 
-      /// set the fill character used in output
-      /// return the current fill character
+         /// set the fill character used in output
+         /// return the current fill character
       char setfill(char c) throw()
       { char csave=fillchar; fillchar=c; return csave; }
 
-      /// get the fill character used in output
+         /// get the fill character used in output
       char getfill() throw()
       { return fillchar; }
 
-      // operator=, copy constructor and destructor built by compiler
+         // operator=, copy constructor and destructor built by compiler
 
-      /// operator == for SP3SatID
+         /// operator == for SP3SatID
       bool operator==(const SP3SatID& right) const
       {
          return ((system == right.system) && (id == right.id));
       }
 
-      /// operator != for SP3SatID
+         /// operator != for SP3SatID
       bool operator!=(const SP3SatID& right) const
       {
          return !(operator==(right));
       }
 
-      /// operator < (less than) for SP3SatID : order by system, then number
+         /// operator < (less than) for SP3SatID : order by system, then number
       bool operator<(const SP3SatID& right) const
       {
          if(system==right.system)
@@ -117,27 +122,27 @@ namespace gpstk
          return (system < right.system);
       }
 
-      /// operator > (greater than) for SP3SatID
+         /// operator > (greater than) for SP3SatID
       bool operator>(const SP3SatID& right) const
       {
          return (!operator<(right) && !operator==(right));
       }
 
-      /// operator >= (greater than or equal) for SP3SatID
+         /// operator >= (greater than or equal) for SP3SatID
       bool operator>=(const SP3SatID& right) const
       {
          return (!operator<(right));
       }
 
-      /// operator <= (less than or equal) for SP3SatID
+         /// operator <= (less than or equal) for SP3SatID
       bool operator<=(const SP3SatID& right) const
       {
          return (!operator>(right));
       }
 
-      /// return a character based on the system
-      /// return the single-character system descriptor
-      /// @note return only SP3 types, for non-SP3 systems return '?'
+         /// return a character based on the system
+         /// return the single-character system descriptor
+         /// @note return only SP3 types, for non-SP3 systems return '?'
       char systemChar() const throw()
       {
          switch (system) {
@@ -146,7 +151,7 @@ namespace gpstk
             case systemGlonass: return 'R';
             case systemLEO:     return 'L';
             case systemMixed:   return 'M';
-            // non-SP3
+                  // non-SP3
             default: return '?';
          }
       };
@@ -163,8 +168,8 @@ namespace gpstk
          }
       };
 
-      /// read from string
-      /// @note GPS is default system (no or unknown system char)
+         /// read from string
+         /// @note GPS is default system (no or unknown system char)
       void fromString(const std::string s) throw(Exception)
       {
          char c;
@@ -177,7 +182,7 @@ namespace gpstk
          iss >> c;                     // read one character (non-whitespace)
          switch(c)
          {
-                                       // no leading system character
+               // no leading system character
             case '0': case '1': case '2': case '3': case '4':
             case '5': case '6': case '7': case '8': case '9':
                iss.putback(c);
@@ -207,14 +212,14 @@ namespace gpstk
          if(id <= 0) id = -1;
       }
 
-      /// convert to string
+         /// convert to string
       std::string toString() const throw()
       {
          std::ostringstream oss;
          oss.fill(fillchar);
          oss << systemChar()
              << std::setw(2) << id;
-          return oss.str();
+         return oss.str();
       }
 
    private:
@@ -223,12 +228,14 @@ namespace gpstk
 
    }; // class SP3SatID
 
-   /// stream output for SP3SatID
+      /// stream output for SP3SatID
    inline std::ostream& operator<<(std::ostream& s, const SP3SatID& sat)
    {
       s << sat.toString();
       return s;
    }
+
+      //@}
 
 } // namespace gpstk
 

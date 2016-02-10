@@ -52,7 +52,7 @@
 
 namespace gpstk
 {
-      /** @addtogroup GPSsolutions */
+      /// @ingroup GPSsolutions
       //@{
 
       /** This class compute modeled pseudoranges from satellites to a
