@@ -88,8 +88,10 @@ case `uname` in
         num_cores=1
 esac
 
-if ((num_cores<16)); then
-    num_threads=$((num_cores/2))
+if ((num_cores<8)); then
+    num_threads=$num_cores
+elif ((num_cores<16)); then
+    num_threads=$((num_cores - 2))
 else
     num_threads=$((num_cores*3/4))
 fi
@@ -103,6 +105,22 @@ python_exe=`which python2.7`
 
 system_python_install="/usr/local"
 user_python_install="~/.local"
+
+function hashit
+{
+    case `uname` in
+        Linux)
+            echo $1 | shasum
+            ;;
+        Darwin)
+            echo $1 | shasum 
+            ;;
+        SunOS)
+            echo $1 | shasum
+            ;;
+    esac
+}
+
 
 function get_repo_state
 {
@@ -120,4 +138,4 @@ function get_repo_state
     fi
 }
 
-build_root=$repo/build-$hostname-$(get_repo_state $repo)
+build_root=$repo/build/$hostname-$(get_repo_state $repo)
