@@ -511,53 +511,48 @@ public:
    {
       TUDEF("BinUtils", "xorChecksum");
 
-//=============================================================================
-//
-// Below try/catch block doesn't catch gpstk::Exception.
-// gpstk::InvalidParameter seems to terminate program regardless if I
-// catch it or not
-/*
-  try {gpstk::BinUtils::xorChecksum<int>("Hello");testFramework.failTest("The word 'Hello' should of an improper length for an int xor checksum");}
-  catch(gpstk::Exception e) {testFramework.passTest();}
-  catch(...) {testFramework.failTest();}
-*/
-//
-//
-// ALSO, all tests below depend on constant lengths of the data types
-// to parse the string correctly. Is there another way around this?
-//
-//=============================================================================
+      try
+      {
+         gpstk::BinUtils::xorChecksum("Hello", 2);
+         TUFAIL("xorChecksum should have failed on uneven input string");
+      }
+      catch(gpstk::InvalidParameter e)
+      {
+         TUPASS("xorChecksum");
+      }
+      catch(...)
+      {
+         TUFAIL("xorChecksum threw the wrong exception type");
+      }
 
-      std::string failMesg;
+      std::string cksum;
 
-      char xc = gpstk::BinUtils::xorChecksum<char>("7");
-      TUASSERTE(char,'7',xc);
+      cksum = gpstk::BinUtils::xorChecksum("7", 1);
+      TUASSERTE(std::string,std::string("7"),cksum);
 
-      char xc1 = gpstk::BinUtils::xorChecksum<char>("Bc");
-      TUASSERTE(char,'!',xc1);
+      cksum = gpstk::BinUtils::xorChecksum("Bc", 1);
+      TUASSERTE(std::string,std::string("!"),cksum);
 
-      char xc2 = gpstk::BinUtils::xorChecksum<char>("P/Q");
-      TUASSERTE(char,'.',xc2);
+      cksum = gpstk::BinUtils::xorChecksum("P/Q", 1);
+      TUASSERTE(std::string,std::string("."),cksum);
 
-         // Reverses the order of bits in xorChecksum. Is this desired?
+      cksum = gpstk::BinUtils::xorChecksum("mn", 2);
+      TUASSERTE(std::string,std::string("mn"),cksum);
 
-      int16_t xc3 = gpstk::BinUtils::xorChecksum<int16_t>("mn");
-      TUASSERTE(int16_t,0x6e6d,xc3);
+      cksum = gpstk::BinUtils::xorChecksum("59WZ", 2);
+      TUASSERTE(std::string,std::string("bc"),cksum);
 
-      int16_t xc4 = gpstk::BinUtils::xorChecksum<int16_t>("59WZ");
-      TUASSERTE(int16_t,0x6362,xc4);
+      cksum = gpstk::BinUtils::xorChecksum("am+*09", 2);
+      TUASSERTE(std::string,std::string("z~"),cksum);
 
-      int16_t xc5 = gpstk::BinUtils::xorChecksum<int16_t>("am+*09");
-      TUASSERTE(int16_t,0x7e7a,xc5);
+      cksum = gpstk::BinUtils::xorChecksum("97Bg", 4);
+      TUASSERTE(std::string,std::string("97Bg"),cksum);
 
-      int32_t xc6 = gpstk::BinUtils::xorChecksum<int32_t>("97Bg");
-      TUASSERTE(int32_t,0x67423739,xc6);
+      cksum = gpstk::BinUtils::xorChecksum("ABCD!#$%", 4);
+      TUASSERTE(std::string,std::string("`aga"),cksum);
 
-      int32_t xc7 = gpstk::BinUtils::xorChecksum<int32_t>("ABCD!#$%");
-      TUASSERTE(int32_t,0x61676160,xc7);
-
-      int32_t xc8 = gpstk::BinUtils::xorChecksum<int32_t>("+a0.ehZ64xYN");
-      TUASSERTE(int32_t,0x5633717A,xc8);
+      cksum = gpstk::BinUtils::xorChecksum("+a0.ehZ64xYN", 4);
+      TUASSERTE(std::string,std::string("zq3V"),cksum);
 
       return testFramework.countFails();
 
