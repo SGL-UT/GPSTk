@@ -45,6 +45,7 @@
 
 #include <string>
 #include <list>
+#include "gpstkplatform.h"
 #include "RinexClockBase.hpp"
 #include "SatID.hpp"
 #include "FFStream.hpp"
@@ -53,7 +54,7 @@
 
 namespace gpstk
 {
-      /** @addtogroup RinexClock */
+      /// @ingroup FileHandling
       //@{
    class RinexClockHeader : public RinexClockBase
    {
@@ -66,10 +67,7 @@ namespace gpstk
          /// Destructor
       virtual ~RinexClockHeader() {}
       
-         /**
-          * @name RinexClockHeaderFormatStrings
-          * RINEX Clock Header Formatting Strings
-          */
+         /// @name RINEX Clock Header Formatting Strings
          //@{
       static const std::string versionString;        ///< "RINEX VERSION / TYPE"
       static const std::string runByString;          ///< "PGM / RUN BY / DATE"
@@ -154,9 +152,6 @@ namespace gpstk
          int64_t posZ;
       };
 
-         /** @name RinexClockHeaderValues
-          */
-         //@{
          /// Format version (2.00)
       double version;
          /// File type ("C" for Clock Data)
@@ -208,9 +203,9 @@ namespace gpstk
       std::list<SatID> prnList;           
          /// Bits set when individual header members are present and valid
       unsigned long valid;                
-         //@}
 
-         /// RinexClockHeader is a "header" so this function always returns true
+         /** RinexClockHeader is a "header" so this function always
+          * returns true */
       virtual bool isHeader(void) const {return true;}
     
          /// A debug function that outputs the header to \a s.
@@ -251,6 +246,8 @@ namespace gpstk
          throw(FFStreamError);
     
    }; // RinexClockHeader
+
+      //@}
   
 }  // namespace
 

@@ -49,7 +49,7 @@
 namespace gpstk
 {
 
-      /** @addtogroup math */
+      /// @ingroup math 
       //@{
 
       /** This class implements the t-Student distribution.

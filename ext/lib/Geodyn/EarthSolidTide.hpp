@@ -45,7 +45,7 @@
 
 namespace gpstk
 {
-      /** @addtogroup GeoDynamics */
+      /// @ingroup GeoDynamics 
       //@{
 
       /**Class to do Earth Solid Tide correction

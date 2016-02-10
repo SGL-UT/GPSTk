@@ -53,36 +53,36 @@
 
 namespace gpstk
 {
-   /** @addtogroup ephemstore */
-   //@{
+      /// @ingroup GNSSEph
+      //@{
 
    class RinexEphemerisStore : public GPSEphemerisStore,
                                public FileStore<RinexNavHeader>
    {
    public:
       RinexEphemerisStore()
-         throw()
+      throw()
       { GPSEphemerisStore(); }
 
-      /// destructor
+         /// destructor
       virtual ~RinexEphemerisStore() {}
       
-      /** Dump the store to cout.
-       * @param detail determines how much detail to include in the output
-       *   0 list of filenames with their start, stop times.
-       *   1 list of filenames with their start, stop times,
-       *     other header information and prns/accuracy.
-       *   2 above, plus dump all the PVT data (use judiciously).
-       */
+         /** Dump the store to cout.
+          * @param detail determines how much detail to include in the output
+          *   0 list of filenames with their start, stop times.
+          *   1 list of filenames with their start, stop times,
+          *     other header information and prns/accuracy.
+          *   2 above, plus dump all the PVT data (use judiciously).
+          */
       void dump(std::ostream& s=std::cout, short detail=0)
          const throw();
 
-      /// load the given Rinex file
+         /// load the given Rinex file
       void loadFile(const std::string& filename) 
          throw(FileMissingException);
    };
 
-   //@}
+      //@}
 
 }  // namespace
 
