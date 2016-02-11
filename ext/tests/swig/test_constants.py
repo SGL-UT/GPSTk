@@ -1,6 +1,6 @@
 #!/usr/env python
 
-from test_utils import data_dir,output_dir
+from test_utils import args, run_unit_tests
 import unittest
 import gpstk
 
@@ -19,4 +19,4 @@ class TestConstants(unittest.TestCase):
             print gpstk.foo.bar
 
 if __name__ == '__main__':
-    unittest.main()
+    run_unit_tests(TestConstants)

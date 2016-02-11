@@ -1,13 +1,17 @@
 #!/usr/env python
 
-from test_utils import data_dir,output_dir
+from test_utils import args, run_unit_tests
 import unittest
+import time
 import gpstk
 
 class TestSystemTime(unittest.TestCase):
     def test_SystemTime(self):
-        systime = gpstk.SystemTime()
-        print systime
+        t0 = gpstk.SystemTime()
+        time.sleep(0.5)
+        t1 = gpstk.SystemTime()
+        print t1
+        print gpstk.CommonTime(t1)-gpstk.CommonTime(t0)
 
 class TestCommonTime(unittest.TestCase):
     """CommonTime tests"""
@@ -19,5 +23,7 @@ class TestCommonTime(unittest.TestCase):
         systime = gpstk.SystemTime()
         comtime = systime.toCommonTime()
 
+        print systime - comtime
+
 if __name__ == '__main__':
-    unittest.main()
+    run_unit_tests(TestSystemTime)
