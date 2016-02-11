@@ -19,4 +19,4 @@ class TestConstants(unittest.TestCase):
             print gpstk.foo.bar
 
 if __name__ == '__main__':
-    run_unit_tests(TestConstants)
+    run_unit_tests()

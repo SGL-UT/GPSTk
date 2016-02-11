@@ -4,6 +4,7 @@ from test_utils import args, run_unit_tests
 import unittest
 import gpstk
 
+
 class TestRinex3(unittest.TestCase):
     """Tests for the gpstk::Rinex3Obs file i/o"""
 
@@ -34,4 +35,4 @@ class TestRinex3(unittest.TestCase):
         # should really difference the files here
 
 if __name__ == '__main__':
-    run_unit_tests(TestRinex3)
+    run_unit_tests()
