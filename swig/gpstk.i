@@ -60,6 +60,10 @@ using namespace gpstk;
 %include "TimeTag.hpp"
 %include "TimeConstants.hpp"
 
+ // Long doubles are used in several interfaces but
+ // swig really doesn't handle them
+%apply double { long double };
+
 %ignore gpstk::CommonTime::get;  // takes non-const values as parameters for output
 %include "CommonTime.hpp"
 %include "Week.hpp"
@@ -89,7 +93,6 @@ using namespace gpstk;
 %feature("notabstract") QZSWeekSecond;
 %include "QZSWeekSecond.hpp"
 %feature("notabstract") MJD;
-%apply double { long double };  // swig does not really handle long doubles
 %include "MJD.hpp"
 %feature("notabstract") YDSTime;
 %include "YDSTime.hpp"
