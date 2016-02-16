@@ -15,7 +15,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -23,13 +23,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -77,7 +77,7 @@ namespace gpstk
        * while (ss >> sd)
        * {
        *    // Interesting stuff...
-       * }    
+       * }
        *
        * SP3Stream ssout("myfile.sp3", ios::out);
        * sh.setVersion(SP3Header::SP3c);
@@ -98,12 +98,12 @@ namespace gpstk
       SP3Data() : RecType(' '), time(CommonTime::BEGINNING_OF_TIME),
                   clockEventFlag(false), clockPredFlag(false),
                   orbitManeuverFlag(false), orbitPredFlag(false),
-                  correlationFlag(false)
+                  correlationFlag(false), eventFlag(false)
       {}
-     
+
          /// Destructor
       virtual ~SP3Data() {}
-     
+
          // The next four lines is our common interface
          /// SP3Data is "data" so this function always returns true.
       virtual bool isData() const {return true;}
@@ -121,7 +121,7 @@ namespace gpstk
       double clk;      ///< The clock bias or drift for P|V (microsec|1).
 
          /// the rest of the member are for version c only
-      int sig[4];      ///< Four-vector of integer exponents for estimated sigma 
+      int sig[4];      ///< Four-vector of integer exponents for estimated sigma
                        ///< of position,clock or velocity,clock rate; sigma = base**n
                        ///< units are mm,psec or 10^-4 mm/sec,psec/sec); base in head.
                        ///< n is >= 0, and n = -1 means unknown (blank in file)
@@ -132,28 +132,29 @@ namespace gpstk
          /// data for optional P|V Correlation record
       bool correlationFlag;   ///< If true, on input: a correlation record was read;
                               ///< on output: stream should output correlation.
+      bool eventFlag;    ///< event flag specific to SP3ae, 'E' in file
       unsigned sdev[4];  ///< std dev of 3 positions (XYZ,mm) and clock (psec)
                          ///< or velocities(10^-4 mm/sec) and clock rate (10^-4 ps/s)
       int correlation[6];///< elements of correlation matrix: xy,xz,xc,yz,yc,zc
-      
+
    protected:
 
          /// Writes the formatted record to the FFStream \a s.
          /// @warning This function is currently unimplemented
-      virtual void reallyPutRecord(FFStream& s) const 
+      virtual void reallyPutRecord(FFStream& s) const
          throw(std::exception, FFStreamError,
                gpstk::StringUtils::StringException);
 
          /**
           * This function reads a record from the given FFStream.
-          * If an error is encountered in retrieving the record, the 
+          * If an error is encountered in retrieving the record, the
           * stream is reset to its original position and its fail-bit is set.
           * @throws StringException when a StringUtils function fails
           * @throws FFStreamError when exceptions(failbit) is set and
           *  a read or formatting error occurs.  This also resets the
           *  stream to its pre-read position.
           */
-      virtual void reallyGetRecord(FFStream& s) 
+      virtual void reallyGetRecord(FFStream& s)
          throw(std::exception, FFStreamError,
                gpstk::StringUtils::StringException);
    };

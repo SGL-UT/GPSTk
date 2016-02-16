@@ -48,9 +48,9 @@ add_executable(Rinex3Clock_T Rinex3Clock_T.cpp)
 target_link_libraries(Rinex3Clock_T gpstk)
 add_test(FileHandling_Rinex3Clock Rinex3Clock_T)
 
-# add_executable(SP3_T SP3_T.cpp)
-# target_link_libraries(SP3_T gpstk)
-# add_test(FileHandling_SP3 SP3_T)
+add_executable(SP3_T SP3_T.cpp)
+target_link_libraries(SP3_T gpstk)
+add_test(FileHandling_SP3 SP3_T)
 
 add_executable(FFBinaryStream_T FFBinaryStream_T.cpp)
 target_link_libraries(FFBinaryStream_T gpstk)
