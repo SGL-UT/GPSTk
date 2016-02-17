@@ -15,7 +15,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -23,13 +23,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -48,6 +48,7 @@
 
 #include "gpstkplatform.h"
 #include "BinUtils.hpp"
+#include "GPSWeekSecond.hpp"
 
 namespace gpstk
 {
@@ -112,7 +113,7 @@ namespace gpstk
                                 uint32_t psfword,
                                 bool nib,
                                 bool knownUpright = true);
-            
+
          /**
           * Perform a parity check on a navigation message subframe.
           * @return true if the parity check is successful.
@@ -124,7 +125,7 @@ namespace gpstk
          /// This is the old routine only left around for compatibility
       static bool subframeParity(const long input[10]);
 
-      
+
          /// Following two used by checkParity
          /// Get bit 30 from the given subframe word
       static inline uint32_t getd30(uint32_t sfword)
@@ -163,20 +164,20 @@ namespace gpstk
          return word2 ;
       }
 
-      
+
          /**
           * Given 10 words of a navigation message subframe (as
           * defined in ICD-GPS-200), convert to the "appropriate" 60
           * FIC floating point values.
           * @param input array of ten 30-bit words (stored in the 30
           * least-significant bits of each long.
-          * @param gpsWeek full (>10 bits) GPS week number associated 
+          * @param gpsWeek full (>10 bits) GPS week number associated
           * with almanac reference time.
           * @param output 60 FIC floating point values as defined in
           * the documentation for FIC blocks 9 and 62.
           * @return true if successful.
           */
-      static bool subframeConvert(const long input[10], 
+      static bool subframeConvert(const long input[10],
                                   int gpsWeek,
                                   double output[60])
          throw();
@@ -187,17 +188,17 @@ namespace gpstk
           * FIC floating point values.
           * @param input array of ten 30-bit words (stored in the 30
           * least-significant bits of each long.
-          * @param gpsWeek full (>10 bits) GPS week number associated 
+          * @param gpsWeek full (>10 bits) GPS week number associated
           * with almanac reference time.
           * @param output 60 FIC floating point values as defined in
           * the documentation for FIC blocks 9 and 62.
           * @return true if successful.
           */
-      static bool subframeConvert(const uint32_t input[10], 
+      static bool subframeConvert(const uint32_t input[10],
                                   short gpsWeek,
                                   double output[60])
          throw();
-         
+
          /** Convert the week number in \c out from 8-bit to full
           * using the full week number \c gpsWeek.
           * @param gpsWeek source full week number.
@@ -227,10 +228,10 @@ namespace gpstk
           * assuming incompleteGPSWeek is within half the 8/10 bit
           * distance from fullGPSWeek.
           */
-      static short convertXBit( short fullGPSWeek, 
+      static short convertXBit( short fullGPSWeek,
                                 short incompleteGPSWeek,
                                 BitConvertType type);
-         
+
          /**
           * Given a navigation message subframe, return the
           * pattern number to be used in converting the
@@ -307,7 +308,47 @@ namespace gpstk
           * Emit human-readable instance data to the specified stream.
           * @param s stream to which data will be written
           */
-      static void dump(std::ostream& s = std::cout);      
+      static void dump(std::ostream& s = std::cout);
+
+         /**
+          * Get the NMCT validity time from subframe 2.  Refer to
+          * IS-GPS-200 section 2.3.3.4.4.  This function is
+          * specifically for subframe 2 so that as much of the
+          * validity time can be computed from that data.  To get the
+          * complete validity time, subframe 4 page 13 is required.
+          *
+          * @note The tnmct produced by this function will be
+          * incorrect at week roll-over until corrected using
+          * getNMCTValidityTime.
+          *
+          * @param[in] sf2 The 10 words of subframe 2.
+          * @param[out] aodo Age of data offset in seconds.
+          * @param[out] tnmct The NMCT validity time in seconds of week.
+          * @param[out] toe Time of ephemeris in seconds of week.
+          * @param[out] offset An offset computed from toe.
+          * @return true if the AODO is something other than 27900,
+          *   which indicates that the NMCT is invalid.
+          * @throw InvalidParameter if sf2 is not subframe 2.
+          */
+      static bool getNMCTValidity(const uint32_t sf2[10],
+                                  uint32_t &aodo,
+                                  int32_t  &tnmct,
+                                  uint32_t &toe,
+                                  int32_t  &offset)
+         throw(InvalidParameter);
+
+         /** Compute a true NMCT validity time using data from
+          * subframes 2 and 4.
+          * @param[in] tot The time of transmission of subframe 4 page 13.
+          * @param[in] toe The epoch time for the associated subframe
+          *   2 (see tnmct).
+          * @param[in] tnmct The (partial) validity time computed
+          *   using getNMCTValidity with subframe 2 from the same 30s
+          *   frame as subframe 4 page 13.
+          */
+      static GPSWeekSecond getNMCTValidityTime(const GPSWeekSecond& tot,
+                                               uint32_t toe,
+                                               int32_t tnmct);
 
    private:
 
@@ -329,7 +370,7 @@ namespace gpstk
           * @param p pointer to structure defining conversion to be
           * performed.
           */
-      static void convertQuant(const uint32_t input[10], 
+      static void convertQuant(const uint32_t input[10],
                                double output[60],
                                DecodeQuant *p)
          throw();
