@@ -109,8 +109,9 @@ public:
    gpstk::Vector<double> B1, B2, B3;
 
    //Functions in Matrix_Initialization_T.cpp
-   int InitializeConstantsTest(void);
-   int InitializeVectorsTest(void);
+   int initializeConstantsTest(void);
+   int initializeVectorsTest(void);
+   int initializeArrayTest(void);
 
    //Functions in Matrix_Sizing_T.cpp
    int sizeTest(void);

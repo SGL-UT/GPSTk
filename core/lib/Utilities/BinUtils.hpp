@@ -323,13 +323,16 @@ namespace gpstk
                                  const CRCParam& params);
 
          /**
-          * Calculate an Exclusive-OR Checksum on the string /a str.
-          * @return the calculated checksum.
+          * Calculate an Exclusive-OR Checksum on the string \a str.
+          * @param[in] str The encoded data for which the checksum is
+          *   to be computed.  The size of this string must be
+          *   evenly divisible by wordSize.
+          * @param[in] wordSize The size of the checksum in bytes.
+          * @return the calculated checksum in the same byte order as \a str.
           * @throws gpstk::InvalidParameter if there is a partial word at 
-          *  the end of /a str.
+          *  the end of \a str.
           */
-      template<class X>
-      X xorChecksum(const std::string& str)
+      inline std::string xorChecksum(const std::string& str, unsigned wordSize)
          throw(gpstk::InvalidParameter);
 
          //@}
@@ -543,28 +546,27 @@ namespace gpstk
          return crc;
       }
 
-      template<class X>
-      X xorChecksum(const std::string& str)
+      std::string xorChecksum(const std::string& str, unsigned wordSize)
          throw(gpstk::InvalidParameter)
       {
-         short wordSize = sizeof(X);
-         short strSize = str.size();
+         size_t strSize = str.size();
+         std::string rv(wordSize, 0);
          
-         if(strSize % wordSize != 0)
+         if (strSize % wordSize != 0)
          {
-            gpstk::Exception ip("Incomplete word in string.");
+            gpstk::InvalidParameter ip("Incomplete word in string.");
             GPSTK_THROW(ip);
          }
          
-         X temp, xc = 0;
-         
-         for(short i = 0; (i + wordSize - 1) < strSize; i += wordSize)
+         for (size_t i = 0; (i + wordSize - 1) < strSize; i += wordSize)
          {
-            memcpy(&temp, &str[i], wordSize);
-            xc ^= temp;
+            for (size_t j = 0; j < wordSize; j++)
+            {
+               rv[j] ^= str[i+j];
+            }
          }
          
-         return xc;
+         return rv;
       }
 
 

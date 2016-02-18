@@ -15,7 +15,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -23,13 +23,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -57,7 +57,7 @@ namespace gpstk
       throw(exception, FFStreamError, StringException)
    {
       SP3Stream& strm = dynamic_cast<SP3Stream&>(ffs);
-      
+
       string line;
       strm.formattedGetLine(line);
       if(debug) std::cout << "SP3 Header Line 1 " << line << std::endl;
@@ -102,7 +102,7 @@ namespace gpstk
          FFStreamError e("Unknown label in line 1: " + line.substr(0,2));
          GPSTK_THROW(e);
       }
-      
+
       strm.formattedGetLine(line);
       if(debug) std::cout << "SP3 Header Line 2 " << line << std::endl;
       if (line[0]=='#' && line[1]=='#')                           // line 2
@@ -140,7 +140,7 @@ namespace gpstk
             {
                if (readSVs < numSVs)
                {
-                  try { 
+                  try {
                      sat = SP3SatID(line.substr(index,3));
                   }
                   catch (Exception& e) {
@@ -160,7 +160,7 @@ namespace gpstk
             GPSTK_THROW(e);
          }
       }
-      
+
       readSVs = 0;
 
          // read in the accuracy.
@@ -189,7 +189,7 @@ namespace gpstk
 
       strm.formattedGetLine(line);
       if(debug) std::cout << "SP3 Header Line 13 " << line << std::endl;
-      if (version == SP3c) {
+      if (version == SP3b || version == SP3c) {
          if(line[0]=='%' && line[1]=='c')                         // line 13
          {
             // file system
@@ -232,7 +232,7 @@ namespace gpstk
          strm.formattedGetLine(line);
          if(debug) std::cout << "SP3 Header Line " << i << " " << line << std::endl;
       }
-      
+
          // read in 4 comment lines
       comments.clear();
       for(i = 19; i <= 22; i++)                                   // lines 19-22
@@ -260,8 +260,9 @@ namespace gpstk
       long j;
       string line;
       SP3SatID SVid;
-      bool isVerA = (version == SP3a);
-      bool isVerC = (version == SP3c);
+      bool isVerA  = (version == SP3a);
+      bool isVerB  = (version == SP3b);
+      bool isVerC  = (version == SP3c);
 
       // line 1
       CivilTime civTime(time);
@@ -303,7 +304,7 @@ namespace gpstk
             if(it != satList.end()) {
                if(i < 8) {                   // lines 3-7 - sat id
                   if(!isVerA) {
-                     // a satellite in version c -> let j be -1 to mark it
+                     // a satellite in version b or c -> let j be -1 to mark it
                      SVid = it->first;
                      j = -1;
                   }
@@ -337,6 +338,22 @@ namespace gpstk
       if(!isVerA) {
          ft[0] = system.systemChar();
          ft[1] = ' ';
+      }
+      if(isVerB) {
+         TimeSystem::Systems tsys = timeSystem.getTimeSystem();
+         if(tsys != TimeSystem::GPS && tsys != TimeSystem::UTC) {
+            FFStreamError ffse("Time system must be GPS or UTC");
+            GPSTK_THROW(ffse);
+         }
+      }
+      if(isVerC) {
+         TimeSystem::Systems tsys = timeSystem.getTimeSystem();
+         if(   tsys != TimeSystem::GPS && tsys != TimeSystem::UTC
+            && tsys != TimeSystem::GAL && tsys != TimeSystem::GLO
+            && tsys != TimeSystem::TAI ) {
+            FFStreamError ffse("Time system must be GPS, GAL, GLO, TAI, or UTC");
+            GPSTK_THROW(ffse);
+         }
       }
       strm << "%c " << ft << " cc"
            << " " << (isVerA ? "ccc" : timeSystemString())
@@ -379,6 +396,7 @@ namespace gpstk
    catch(std::exception& e) { Exception g(e.what()); GPSTK_THROW(g); }
    }
 
+
    void SP3Header::dump(ostream& s) const throw()
    {
       s << "SP3 Header: version " << versionString() << " containing ";
@@ -402,7 +420,7 @@ namespace gpstk
          s << " Base for Clk/Rate =" << setw(12) << setprecision(9)
            << baseClk << endl;
       }
-      
+
       s << " List of satellite PRN/accuracy (" << satList.size() << " total) :\n";
       int i=0;
       std::map<SP3SatID,short>::const_iterator it=satList.begin();

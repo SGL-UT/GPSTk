@@ -66,7 +66,7 @@ namespace gpstk
           */
       GPSWeekZcount( int w = 0,
                      int z = 0,
-                     TimeSystem ts = TimeSystem::Unknown )
+                     TimeSystem ts = TimeSystem::GPS )
             : GPSWeek( w ), zcount( z )
       { timeSystem = ts; }
 

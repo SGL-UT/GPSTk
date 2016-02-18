@@ -217,6 +217,7 @@ fi
 args+=${install_prefix:+" -DCMAKE_INSTALL_PREFIX=$install_prefix"}
 args+=${build_ext:+" -DBUILD_EXT=ON"}
 args+=${verbose:+" -DDEBUG_SWITCH=ON"}
+args+=${verbose:-" -Wno-dev"}
 args+=${test_switch:+" -DTEST_SWITCH=ON"}
 args+=${build_docs:+" --graphviz=$build_root/doc/graphviz/gpstk_graphviz.dot"}
 
@@ -229,6 +230,7 @@ if [ $test_switch ]; then
         ignore_failures=1
     fi
     run ctest -v -j $num_threads
+    test_status=$?
     unset ignore_failures
 fi
 
@@ -262,6 +264,11 @@ if [ $build_packages ]; then
 fi
 
 log
+if [ $test_status == 0 ]; then
+    log "All tests passed!"
+else
+    log $test_status " test failures."
+fi
 log "See $build_root/Testing/Temporary/LastTest.log for detailed test log"
 log "See $LOG for detailed build log"
 log
