@@ -312,43 +312,25 @@ namespace gpstk
 
          /**
           * Get the NMCT validity time from subframe 2.  Refer to
-          * IS-GPS-200 section 2.3.3.4.4.  This function is
-          * specifically for subframe 2 so that as much of the
-          * validity time can be computed from that data.  To get the
-          * complete validity time, subframe 4 page 13 is required.
-          *
-          * @note The tnmct produced by this function will be
-          * incorrect at week roll-over until corrected using
-          * getNMCTValidityTime.
+          * IS-GPS-200 section 2.3.3.4.4.
           *
           * @param[in] sf2 The 10 words of subframe 2.
+          * @param[in] howWeek the GPS full week for the HOW time in sf2.
           * @param[out] aodo Age of data offset in seconds.
-          * @param[out] tnmct The NMCT validity time in seconds of week.
-          * @param[out] toe Time of ephemeris in seconds of week.
-          * @param[out] offset An offset computed from toe.
+          * @param[out] tnmct The NMCT validity time.
+          * @param[out] toe Time of ephemeris.
           * @return true if the AODO is something other than 27900,
-          *   which indicates that the NMCT is invalid.
+          *   which indicates that the NMCT is invalid (i.e. a return
+          *   value of false means that the other output data is
+          *   invalid as is the NMCT itself).
           * @throw InvalidParameter if sf2 is not subframe 2.
           */
       static bool getNMCTValidity(const uint32_t sf2[10],
-                                  uint32_t &aodo,
-                                  int32_t  &tnmct,
-                                  uint32_t &toe,
-                                  int32_t  &offset)
+                                  unsigned   howWeek,
+                                  uint32_t   &aodo,
+                                  CommonTime &tnmct,
+                                  CommonTime &toe)
          throw(InvalidParameter);
-
-         /** Compute a true NMCT validity time using data from
-          * subframes 2 and 4.
-          * @param[in] tot The time of transmission of subframe 4 page 13.
-          * @param[in] toe The epoch time for the associated subframe
-          *   2 (see tnmct).
-          * @param[in] tnmct The (partial) validity time computed
-          *   using getNMCTValidity with subframe 2 from the same 30s
-          *   frame as subframe 4 page 13.
-          */
-      static GPSWeekSecond getNMCTValidityTime(const GPSWeekSecond& tot,
-                                               uint32_t toe,
-                                               int32_t tnmct);
 
    private:
 

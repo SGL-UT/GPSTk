@@ -850,12 +850,13 @@ namespace gpstk
 
 
    bool EngNav :: getNMCTValidity(const uint32_t sf2[10],
-                                  uint32_t &aodo,
-                                  int32_t  &tnmct,
-                                  uint32_t &toe,
-                                  int32_t  &offset)
+                                  unsigned   howWeek,
+                                  uint32_t   &aodo,
+                                  CommonTime &tnmct,
+                                  CommonTime &toe)
       throw(InvalidParameter)
    {
+      uint32_t toeSOW, offset;
       short sfid = getSFID(sf2[1]);
       if (sfid != 2)
       {
@@ -863,43 +864,28 @@ namespace gpstk
                               " data");
          GPSTK_THROW(exc);
       }
+         // no math functions in anything but common time, so extra
+         // conversions, yay.
+      GPSWeekSecond tot(howWeek, getHOWTime(sf2[1])), toeWS;
+      CommonTime totCT(tot);
+      totCT -= 6; // move from TOW to actual transmit time
+      tot = totCT; // convert back to seconds of week
       aodo   = ((sf2[9] >>  8) & 0x001f) * 900;
-      toe    = ((sf2[9] >> 14) & 0xffff) << 4;
-      offset = toe % 7200;
+      toeSOW = ((sf2[9] >> 14) & 0xffff) << 4;
+         // correct the toe week at week roll-over if necessary
+      if ((tot.sow - toeSOW) > HALFWEEK)
+         toeWS = GPSWeekSecond(tot.week+1, toeSOW);
+      else if ((tot.sow - toeSOW) < -HALFWEEK)
+         toeWS = GPSWeekSecond(tot.week-1, toeSOW);
+      else
+         toeWS = GPSWeekSecond(tot.week, toeSOW);
+      toe = toeWS;
+      offset = toeSOW % 7200;
       if (offset == 0)
          tnmct = toe - aodo;
       else
          tnmct = toe - offset + 7200 - aodo;
       return aodo != 27900;
-   }
-
-
-   GPSWeekSecond EngNav :: getNMCTValidityTime(const GPSWeekSecond& tot,
-                                               uint32_t toe,
-                                               int32_t tnmct)
-   {
-      int refwk = tot.week;
-      if ((toe - tot.sow) > HALFWEEK)
-      {
-         refwk++;
-      }
-      else if ((toe - tot.sow) < -HALFWEEK)
-      {
-         refwk--;
-      }
-         // tnmct is a relative value, adjust accordingly.
-      int tnmctwk = refwk;
-      if (tnmct < 0)
-      {
-         tnmct += gpstk::FULLWEEK;
-         tnmctwk--;
-      }
-      else if (tnmct >= gpstk::FULLWEEK)
-      {
-         tnmct -= gpstk::FULLWEEK;
-         tnmctwk++;
-      }
-      return GPSWeekSecond(tnmctwk, tnmct);
    }
 
 
