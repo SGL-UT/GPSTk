@@ -381,7 +381,7 @@ public:
       unsigned lineNo = 0;
       unsigned howWeek;
       uint32_t aodoExp, aodoGot;
-      gpstk::CommonTime tnmctExp, tnmctGot, toeExp, toeGot;
+      gpstk::CommonTime tnmctExp, tnmctGot, toeExp, toeGot, totGot;
       bool gotData = false; // make sure something was processed
          // tmp values for reading from file
       unsigned tmpU;
@@ -413,7 +413,7 @@ public:
          {
             testFramework.assert(
                !gpstk::EngNav::getNMCTValidity(
-                  sf2, howWeek, aodoGot, tnmctGot, toeGot),
+                  sf2, howWeek, aodoGot, tnmctGot, toeGot, totGot),
                "Unexpected return value", __LINE__);
             TUASSERTE(uint32_t, aodoExp, aodoGot);
             TUASSERTE(gpstk::CommonTime, toeExp, toeGot);
@@ -422,7 +422,7 @@ public:
          {
             testFramework.assert(
                gpstk::EngNav::getNMCTValidity(
-                  sf2, howWeek, aodoGot, tnmctGot, toeGot),
+                  sf2, howWeek, aodoGot, tnmctGot, toeGot, totGot),
                "Unexpected return value", __LINE__);
             TUASSERTE(uint32_t, aodoExp, aodoGot);
             TUASSERTE(gpstk::CommonTime, tnmctExp, tnmctGot);
