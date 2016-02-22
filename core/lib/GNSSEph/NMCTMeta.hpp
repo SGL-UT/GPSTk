@@ -43,6 +43,7 @@
 #ifndef NMCTMETA_HPP
 #define NMCTMETA_HPP
 
+#include <stdint.h>
 #include <CommonTime.hpp>
 
 namespace gpstk
