@@ -853,7 +853,8 @@ namespace gpstk
                                   unsigned   howWeek,
                                   uint32_t   &aodo,
                                   CommonTime &tnmct,
-                                  CommonTime &toe)
+                                  CommonTime &toe,
+                                  CommonTime &tot)
       throw(InvalidParameter)
    {
       uint32_t toeSOW, offset;
@@ -866,19 +867,19 @@ namespace gpstk
       }
          // no math functions in anything but common time, so extra
          // conversions, yay.
-      GPSWeekSecond tot(howWeek, getHOWTime(sf2[1])), toeWS;
-      CommonTime totCT(tot);
-      totCT -= 6; // move from TOW to actual transmit time
-      tot = totCT; // convert back to seconds of week
+      GPSWeekSecond totWS(howWeek, getHOWTime(sf2[1])), toeWS;
+      tot = totWS;
+      tot -= 6; // move from TOW to actual transmit time
+      totWS = tot; // convert back to seconds of week
       aodo   = ((sf2[9] >>  8) & 0x001f) * 900;
       toeSOW = ((sf2[9] >> 14) & 0xffff) << 4;
          // correct the toe week at week roll-over if necessary
-      if ((tot.sow - toeSOW) > HALFWEEK)
-         toeWS = GPSWeekSecond(tot.week+1, toeSOW);
-      else if ((tot.sow - toeSOW) < -HALFWEEK)
-         toeWS = GPSWeekSecond(tot.week-1, toeSOW);
+      if ((totWS.sow - toeSOW) > HALFWEEK)
+         toeWS = GPSWeekSecond(totWS.week+1, toeSOW);
+      else if ((totWS.sow - toeSOW) < -HALFWEEK)
+         toeWS = GPSWeekSecond(totWS.week-1, toeSOW);
       else
-         toeWS = GPSWeekSecond(tot.week, toeSOW);
+         toeWS = GPSWeekSecond(totWS.week, toeSOW);
       toe = toeWS;
       offset = toeSOW % 7200;
       if (offset == 0)
