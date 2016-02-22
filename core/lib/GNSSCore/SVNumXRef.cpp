@@ -117,6 +117,7 @@ SVNumXRef::SVNumXRef( )
    NtoBMap.insert( make_pair( 67,IIF ));
    NtoBMap.insert( make_pair( 68,IIF ));
    NtoBMap.insert( make_pair( 69,IIF ));
+   NtoBMap.insert( make_pair( 70,IIF ));
    NtoBMap.insert( make_pair( 71,IIF ));
    NtoBMap.insert( make_pair( 72,IIF ));
    NtoBMap.insert( make_pair( 73,IIF ));
@@ -190,9 +191,10 @@ SVNumXRef::SVNumXRef( )
    NtoPMap.insert( std::pair<const int, XRefNode>( 23, XRefNode( 23, 
                                        CivilTime( 1990, 11, 26,  0,  0,  0.0, TimeSystem::GPS),
                                        CivilTime( 2004,  2, 13, 22,  0,  0.0, TimeSystem::GPS))));
+   // NANU #2016008 (end) - SVN 23 Decommissioned
    NtoPMap.insert( std::pair<const int, XRefNode>( 23, XRefNode( 32, 
                                        CivilTime( 2006, 12,  1,  0,  0,  0.0, TimeSystem::GPS),
-                                       CommonTime::END_OF_TIME  )));
+                                       CivilTime( 2016,  1,  25, 0,  0,  0.0, TimeSystem::GPS))));
    NtoPMap.insert( std::pair<const int, XRefNode>( 24, XRefNode( 24, 
                                        CivilTime( 1991,  7,  4,  0,  0,  0.0, TimeSystem::GPS),
                                        CivilTime( 2011,  9, 30, 23, 59, 59.9, TimeSystem::GPS))));
@@ -252,9 +254,11 @@ SVNumXRef::SVNumXRef( )
    NtoPMap.insert( std::pair<const int, XRefNode>( 33, XRefNode(  3, 
                                        CivilTime( 1996,  3, 28,  0,  0,  0.0, TimeSystem::GPS),
                                        CivilTime( 2014,  8, 18 ,  23,  59,  59.9, TimeSystem::GPS))));
+   // NANU 2015091 (end)
    NtoPMap.insert( std::pair<const int, XRefNode>( 34, XRefNode(  4, 
                                        CivilTime( 1993, 10, 26,  0,  0,  0.0, TimeSystem::GPS),
-                                       CommonTime::END_OF_TIME  )));
+                                       CivilTime( 2015, 11, 2,  22,  0,  0.0, TimeSystem::GPS))));
+                                       
    NtoPMap.insert( std::pair<const int, XRefNode>( 35, XRefNode(  5, 
                                        CivilTime( 1993,  8, 30,  0,  0,  0.0, TimeSystem::GPS),
                                        CivilTime( 2009,  3, 26, 20, 31,  0.0, TimeSystem::GPS))));
@@ -379,8 +383,11 @@ SVNumXRef::SVNumXRef( )
    //  NANU 2015032 (start)
    NtoPMap.insert( std::pair<const int, XRefNode>( 49, XRefNode(  8, 
                                        CivilTime( 2015,  4,  30,  0,  0,  0.0, TimeSystem::GPS),
-                                       CivilTime( 2015,  7,   1, 16,  0,  0.0, TimeSystem::GPS))));                                       
-                                       
+                                       CivilTime( 2015,  7,   1, 16,  0,  0.0, TimeSystem::GPS))));   
+   // NANU 2016009 (general/start)
+   NtoPMap.insert( std::pair<const int, XRefNode>( 49, XRefNode(  4, 
+                                       CivilTime( 2016,  2, 4,  0,  0,  0.0, TimeSystem::GPS),
+                                       CommonTime::END_OF_TIME  )));
    NtoPMap.insert( std::pair<const int, XRefNode>( 50, XRefNode(  5, 
                                        CivilTime( 2009,  8, 27,  0,  0,  0.0, TimeSystem::GPS),
                                        CommonTime::END_OF_TIME  )));
@@ -446,6 +453,10 @@ SVNumXRef::SVNumXRef( )
                                        
    NtoPMap.insert( std::pair<const int, XRefNode>( 69, XRefNode(  3,
                                        CivilTime( 2014,  10,  29,  0,  0,  0.0, TimeSystem::GPS),
+                                       CommonTime::END_OF_TIME  )));
+   // NANU 2016011 LAUNCH
+   NtoPMap.insert( std::pair<const int, XRefNode>( 70, XRefNode(  32,
+                                       CivilTime( 2016,  2,  5,  13,  30,  0.0, TimeSystem::GPS),
                                        CommonTime::END_OF_TIME  )));
    //NANU  2015019 LAUNCH                   
    NtoPMap.insert( std::pair<const int, XRefNode>( 71, XRefNode(  26,
@@ -705,6 +716,4 @@ bool SVNumXRef::isConsistent() const
        }
    }
    return retVal;					// if we reach this point, we know there are no overlaps
-}   
-
-   
+}      
