@@ -1,6 +1,42 @@
 /// @file millisecHandler.cpp  Detect and fix millisecond clock adjusts in data,
 ///   including pseudoranges, phases and time tags.
 
+//============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 3.0 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
+//  
+//  Copyright 2004, The University of Texas at Austin
+//
+//============================================================================
+
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//=============================================================================
+
 #include <vector>
 #include <map>
 #include <algorithm>
@@ -402,10 +438,6 @@ namespace gpstk {
             oss << "msAdjust "
                << printTime(currttag,"%04Y/%02m/%02d %02H:%02M:%06.3f = %4F %14.7g")
                << " dt=" << int(del+0.5) << " " << nadj << " ms " << types;
-            // debug?
-            //for(i=0; i<N; i++)
-            //   if(iave[i] != 0)
-            //      oss << fixed << setprecision(2) << " " << ave[i] << "/" << npt[i];
             oss << conmsg;
             
             if(consist) {                       // found a valid adjust
