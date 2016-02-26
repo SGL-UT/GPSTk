@@ -225,6 +225,7 @@ run cmake $args $repo
 
 run make all -j $num_threads
 
+test_status=0
 if [ $test_switch ]; then
     if ((test_switch < 0)); then
         ignore_failures=1
