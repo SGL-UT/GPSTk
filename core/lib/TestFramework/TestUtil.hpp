@@ -66,6 +66,8 @@
 #define TUFAIL(MSG) testFramework.assert(false, MSG, __LINE__)
 // Pass the test with a (unprinted) message.
 #define TUPASS(MSG) testFramework.assert(true, MSG, __LINE__)
+// Usual return from a test function
+#define TURETURN() return testFramework.countFails()
 
 
 /// @return a string with the name of the type

@@ -849,4 +849,45 @@ namespace gpstk
    }
 
 
+   bool EngNav :: getNMCTValidity(const uint32_t sf2[10],
+                                  unsigned   howWeek,
+                                  uint32_t   &aodo,
+                                  CommonTime &tnmct,
+                                  CommonTime &toe,
+                                  CommonTime &tot)
+      throw(InvalidParameter)
+   {
+      uint32_t toeSOW, offset;
+      short sfid = getSFID(sf2[1]);
+      if (sfid != 2)
+      {
+         InvalidParameter exc("getNMCTValidity called using non-subframe 2"
+                              " data");
+         GPSTK_THROW(exc);
+      }
+         // no math functions in anything but common time, so extra
+         // conversions, yay.
+      GPSWeekSecond totWS(howWeek, getHOWTime(sf2[1])), toeWS;
+      tot = totWS;
+      tot -= 6; // move from TOW to actual transmit time
+      totWS = tot; // convert back to seconds of week
+      aodo   = ((sf2[9] >>  8) & 0x001f) * 900;
+      toeSOW = ((sf2[9] >> 14) & 0xffff) << 4;
+         // correct the toe week at week roll-over if necessary
+      if ((totWS.sow - toeSOW) > HALFWEEK)
+         toeWS = GPSWeekSecond(totWS.week+1, toeSOW);
+      else if ((totWS.sow - toeSOW) < -HALFWEEK)
+         toeWS = GPSWeekSecond(totWS.week-1, toeSOW);
+      else
+         toeWS = GPSWeekSecond(totWS.week, toeSOW);
+      toe = toeWS;
+      offset = toeSOW % 7200;
+      if (offset == 0)
+         tnmct = toe - aodo;
+      else
+         tnmct = toe - offset + 7200 - aodo;
+      return aodo != 27900;
+   }
+
+
 } // namespace

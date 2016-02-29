@@ -264,10 +264,14 @@ if [ $build_packages ]; then
 fi
 
 log
-if [ $test_status == 0 ]; then
-    log "All tests passed!"
+if [ $test_switch ]; then 
+    if [ $test_status == 0 ]; then
+        log "All tests passed!"
+    else
+        log $test_status " test failures."
+    fi
 else
-    log $test_status " test failures."
+    log "Tests not run."
 fi
 log "See $build_root/Testing/Temporary/LastTest.log for detailed test log"
 log "See $LOG for detailed build log"
