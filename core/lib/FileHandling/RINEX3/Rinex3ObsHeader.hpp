@@ -406,9 +406,16 @@ namespace gpstk
           *
           * @param[in] type String representing the observation type.
           */
-      virtual int getObsIndex(const std::string& type ) const
+      virtual std::size_t getObsIndex(const std::string& type ) const
          throw(InvalidRequest);
 
+         /** This method returns the numerical index of a given observation
+          *
+          * @param[in] sys   GNSS system character for the obs
+          * @param[in] obsID RinexObsID of the observation
+          */
+      virtual std::size_t getObsIndex(const std::string& sys, const RinexObsID& obsID ) const
+         throw(InvalidRequest);
 
          /** Parse a single header record, and modify valid
           * accordingly.  Used by reallyGetRecord for both
