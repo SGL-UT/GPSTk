@@ -3,7 +3,7 @@
 # A program to help app testing
 add_executable(df_diff df_diff.cpp)
 target_link_libraries(df_diff gpstk)
-install (TARGETS df_diff DESTINATION "${CMAKE_INSTALL_BINDIR}")
+install (TARGETS df_diff DESTINATION "${CMAKE_INSTALL_BINDIR}" COMPONENT ${APPLICATIONS_COMPONENT} )
 
 add_test(NAME df_diff_1
     COMMAND ${CMAKE_COMMAND}

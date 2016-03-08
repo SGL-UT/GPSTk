@@ -2,4 +2,4 @@
 
 add_executable(RinDump RinDump.cpp)
 target_link_libraries(RinDump gpstk)
-install (TARGETS RinDump DESTINATION "${CMAKE_INSTALL_BINDIR}")
+install (TARGETS RinDump DESTINATION "${CMAKE_INSTALL_BINDIR}" COMPONENT ${APPLICATIONS_COMPONENT} )

@@ -2,6 +2,6 @@
 
 add_executable(timeconvert timeconvert.cpp)
 target_link_libraries(timeconvert gpstk)
-install (TARGETS timeconvert DESTINATION "${CMAKE_INSTALL_BINDIR}")
+install (TARGETS timeconvert DESTINATION "${CMAKE_INSTALL_BINDIR}" COMPONENT ${APPLICATIONS_COMPONENT} )
 
 

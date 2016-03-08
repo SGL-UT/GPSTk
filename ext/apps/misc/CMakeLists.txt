@@ -2,4 +2,4 @@
 
 add_executable(xSVNumXRef  xSVNumXRef.cpp)
 target_link_libraries(xSVNumXRef gpstk)
-install (TARGETS xSVNumXRef DESTINATION "${CMAKE_INSTALL_BINDIR}")
+install (TARGETS xSVNumXRef DESTINATION "${CMAKE_INSTALL_BINDIR}" COMPONENT ${APPLICATIONS_COMPONENT}) 
