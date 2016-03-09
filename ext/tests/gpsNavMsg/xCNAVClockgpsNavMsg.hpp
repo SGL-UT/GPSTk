@@ -43,7 +43,6 @@
 #include "EngEphemeris.hpp"
 #include "GPSWeekSecond.hpp"
 
-using namespace std;
 
 class xCNAVClockgpsNavMsg: public CPPUNIT_NS :: TestFixture
 {

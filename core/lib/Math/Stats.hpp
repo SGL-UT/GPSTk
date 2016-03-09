@@ -48,24 +48,26 @@
 
 namespace gpstk
 {
-   /** @addtogroup math */
-   //@{
+      /// @ingroup MathGroup
+      //@{
  
-   /// Conventional statistics for one sample.  Constructor does the same as
-   /// Reset(); use this when starting a new series of input samples.
-   /// Results are available at any time by calling N(), Minimum(), Maximum(),
-   /// Average(), Variance() and StdDev().
-   /// NB. Variance is normalized with 1/(N-1) and StdDev is sqrt(Variance).
-   /// NB. This class may not give exactly correct results with non-floating types,
-   ///     (for which it is not intended).
+      /** Conventional statistics for one sample.  Constructor does
+       * the same as Reset(); use this when starting a new series of
+       * input samples.  Results are available at any time by calling
+       * N(), Minimum(), Maximum(), Average(), Variance() and
+       * StdDev().
+       * @note Variance is normalized with 1/(N-1) and StdDev is
+       *   sqrt(Variance).
+       * @note This class may not give exactly correct results with
+       *   non-floating types, (for which it is not intended). */
    template <class T>
    class Stats
    {
    public:
-      /// constructor
+         /// constructor
       explicit Stats() { n=0; weighted=false; }
 
-      /// constructor given a vector of data
+         /// constructor given a vector of data
       Stats(Vector<T>& X, Vector<T>& W)
       {
          n = 0;
@@ -73,46 +75,47 @@ namespace gpstk
          Add(X,W);
       }
 
-      /// reset, i.e. ignore earlier data and restart sampling
+         /// reset, i.e. ignore earlier data and restart sampling
       inline void Reset(void) { n=0; weighted=false; W=T(); }
 
-      /// access the sample size
+         /// access the sample size
       inline unsigned int N(void) const { return n; }
 
-      /// return minimum value
+         /// return minimum value
       inline T Minimum(void) const { if(n) return min; else return T(); }
 
-      /// return maximum value
+         /// return maximum value
       inline T Maximum(void) const { if(n) return max; else return T(); }
 
-      /// return computed average
+         /// return computed average
       inline T Average(void) const
       {
          if(n == 0) return T();
          return ave;
       }
 
-      /// return computed variance
+         /// return computed variance
       inline T Variance(void) const
       {
          if(n <= 1) return T();
          return (T(n)*var/T(n-1));
       }
 
-      /// return computed standard deviation
+         /// return computed standard deviation
       inline T StdDev(void) const
       {
          if(n <= 1) return T();
          return SQRT( Variance() );
       }
 
-      /// return the normalization constant = sum weights
+         /// return the normalization constant = sum weights
       inline T Normalization(void) const { return W; }
 
-      /// return weight flag
+         /// return weight flag
       inline bool Weighted(void) const { return weighted; }
 
-      /// add a single sample to the computation of statistics, with optional weight
+         /** add a single sample to the computation of statistics,
+          * with optional weight */
       void Add(const T& x, const T& wt_in=T())
       {
          T wt(ABS(wt_in));
@@ -128,8 +131,10 @@ namespace gpstk
             if(x > max) max=x;
          }
 
-         if(weighted) {
-            if(W+wt > T(1.e-10))     // if W+wt=0, nothing yet has had non-zero weight
+         if(weighted)
+         {
+               // if W+wt=0, nothing yet has had non-zero weight
+            if(W+wt > T(1.e-10))
                ave += (x-ave)*(wt/(W+wt));
             if(n > 0 && W > 1.e-10)
                var = (W/(W+wt))*var + (x-ave)*(x-ave)*(wt/W);
@@ -144,8 +149,8 @@ namespace gpstk
          n++;
       }
 
-      /// add a Vector<T> of samples to the computation of statistics,
-      /// with optional weights
+         /** add a Vector<T> of samples to the computation of statistics,
+          * with optional weights */
       inline void Add(Vector<T>& X, Vector<T> w = Vector<T>())
       {
          if(w.size() > 0 && w.size() < X.size()) {
@@ -160,8 +165,8 @@ namespace gpstk
             for(i=0; i<X.size(); i++) Add(X(i));
       }
 
-      /// remove a sample from the computation of statistics (can't do min and max).
-      /// TD test this...
+         /** Remove a sample from the computation of statistics (can't
+          * do min and max). */
       void Subtract(const T x, const T wt_in=T())
       {
          if(n == 0) return;
@@ -187,29 +192,30 @@ namespace gpstk
          n--;
       }
 
-      /// remove a Vector<T> of samples to the computation of statistics
+         /// remove a Vector<T> of samples to the computation of statistics
       inline void Subtract(Vector<T>& X)
       {
          for(size_t i=0; i<X.size(); i++) Subtract(X(i));
       }
 
-      /// define private members directly; useful in continuing with an object
-      /// that was earlier saved (e.g. to a file).
+         /** Define private members directly; useful in continuing
+          * with an object that was earlier saved (e.g. to a file). */
       void Load(unsigned int in_n, T in_min, T in_max, T in_ave, T in_var,
-                  bool wtd=false, T norm=1.0)
+                bool wtd=false, T norm=1.0)
       {
          n = in_n;
          min = in_min;
          max = in_max;
-         var = in_var;
+         var = in_var * T(n-1)/T(n);
          ave = in_ave;
          weighted = wtd;
          W = norm;
       }
       
-      /// combine two Stats (assumed taken from the same or equivalent samples);
-      /// both must be either weighted or unweighted.
-      /// NB. Beware using this with very small sample size.
+         /** combine two Stats (assumed taken from the same or
+          * equivalent samples); both must be either weighted or
+          * unweighted.
+          * @note Beware using this with very small sample size. */
       Stats<T>& operator+=(const Stats<T>& S)
       {
          if(S.n == 0) return *this;
@@ -229,7 +235,7 @@ namespace gpstk
                newvar = W*var + S.W*S.var + W*ave*ave + S.W*S.ave*S.ave;
                W += S.W;
                ave = newave/W;
-               //var = (newvar-W*ave*ave)/W;
+                  //var = (newvar-W*ave*ave)/W;
                var = newvar/W -ave*ave;
             }
          }
@@ -237,7 +243,7 @@ namespace gpstk
             newave = T(n)*ave + T(S.n)*S.ave;
             newvar = T(n)*var + T(S.n)*S.var + T(n)*ave*ave + T(S.n)*S.ave*S.ave;
             ave = newave/T(n+S.n);
-            //var = (newvar-T(n+S.n)*ave*ave)/T(n+S.n);
+               //var = (newvar-T(n+S.n)*ave*ave)/T(n+S.n);
             var = newvar/T(n+S.n) - ave*ave;
          }
          n += S.n;
@@ -246,33 +252,34 @@ namespace gpstk
 
       }  // end Stats operator+=
 
-      /// dump the data stored in the class
+         /// dump the data stored in the class
 
    private:
-      /// Number of samples added to the statistics so far
+         /// Number of samples added to the statistics so far
       unsigned int n;
 
-      /// Minimum value
+         /// Minimum value
       T min;
 
-      /// Maximum value
+         /// Maximum value
       T max;
 
-      /// Average value
+         /// Average value
       T ave;
 
-      /// Variance (square of the standard deviation)
+         /// Variance (square of the standard deviation)
       T var;
 
-      /// Normalization constant = sum weights
+         /// Normalization constant = sum weights
       T W;
 
-      /// Flag weighted input; ALL input must be consistently weighted or not weighted
+         /** Flag weighted input; ALL input must be consistently
+          * weighted or not weighted */
       bool weighted;
 
    }; // end class Stats
 
-   /// Output operator for Stats class
+      /// Output operator for Stats class
    template <class T>
    std::ostream& operator<<(std::ostream& s, const Stats<T>& ST) 
    {
@@ -287,28 +294,30 @@ namespace gpstk
       return s;
    }
 
-   /// Conventional statistics for two samples.  Constructor does the same as
-   /// Reset(); use this when starting a new series of input samples.
-   /// Results are available at any time by calling N(), Minimum(), Maximum(),
-   /// Average(), Variance() and StdDev().
-   /// NB. Variance is normalized with 1/(N-1) and StdDev is sqrt(Variance).
-   /// NB. This class may not give exactly correct results with non-floating types,
-   ///     (for which it is not intended).
+      /** Conventional statistics for two samples.  Constructor does
+       * the same as Reset(); use this when starting a new series of
+       * input samples.  Results are available at any time by calling
+       * N(), Minimum(), Maximum(), Average(), Variance() and
+       * StdDev().
+       * @note Variance is normalized with 1/(N-1) and StdDev is
+       *   sqrt(Variance).
+       * @note This class may not give exactly correct results with
+       *   non-floating types, (for which it is not intended). */
    template <class T>
    class TwoSampleStats
    {
    public:
-      /// constructor
+         /// constructor
       TwoSampleStats() { n=0; }
 
-      /// constructor given two Vector of data
+         /// constructor given two Vector of data
       TwoSampleStats(Vector<T>& X, Vector<T>& Y)
       {
          n = 0;
          Add(X,Y);
       }
 
-      /// Add data to the statistics
+         /// Add data to the statistics
       void Add(const T& X, const T& Y)
       {
          if(n == 0) {
@@ -317,8 +326,18 @@ namespace gpstk
             ymin = ymax = Y;
             scalex = scaley = T(1);
          }
-         if(scalex==T(1) && X!=T()) scalex=ABS(X);
-         if(scaley==T(1) && Y!=T()) scaley=ABS(Y);
+         if(scalex==T(1) && X!=T()) {
+            scalex=ABS(X);
+            sumx /= scalex;
+            sumx2 /= (scalex*scalex);
+            sumxy /= scalex;
+         }
+         if(scaley==T(1) && Y!=T()) {
+            scaley=ABS(Y);
+            sumy /= scalex;
+            sumy2 /= (scalex*scalex);
+            sumxy /= scalex;
+         }
          sumx += X/scalex;
          sumy += Y/scaley;
          sumx2 += (X/scalex)*(X/scalex);
@@ -331,7 +350,7 @@ namespace gpstk
          n++;
       }
 
-      /// Add two Vectors of data to the statistics
+         /// Add two Vectors of data to the statistics
       void Add(const Vector<T>& X, const Vector<T>& Y)
       {
          size_t m = (X.size() < Y.size() ? X.size() : Y.size());
@@ -364,49 +383,49 @@ namespace gpstk
          for(size_t i=0; i<m; i++) Subtract(X(i),Y(i));
       }
 
-      /// reset, i.e. ignore earlier data and restart sampling
+         /// reset, i.e. ignore earlier data and restart sampling
       inline void Reset(void) { n=0; }
 
-      /// return the sample size
+         /// return the sample size
       inline unsigned int N(void) const { return n; }
-      /// return minimum X value
+         /// return minimum X value
       inline T MinimumX(void) const { if(n) return xmin; else return T(); }
-      /// return maximum X value
+         /// return maximum X value
       inline T MaximumX(void) const { if(n) return xmax; else return T(); }
-      /// return minimum Y value
+         /// return minimum Y value
       inline T MinimumY(void) const { if(n) return ymin; else return T(); }
-      /// return maximum Y value
+         /// return maximum Y value
       inline T MaximumY(void) const { if(n) return ymax; else return T(); }
 
-      /// return computed X average
+         /// return computed X average
       inline T AverageX(void) const
-         { if(n>0) return (scalex*sumx/T(n)); else return T(); }
+      { if(n>0) return (scalex*sumx/T(n)); else return T(); }
 
-      /// return computed Y average
+         /// return computed Y average
       inline T AverageY(void) const
-         { if(n>0) return (scaley*sumy/T(n)); else return T(); }
+      { if(n>0) return (scaley*sumy/T(n)); else return T(); }
 
-      /// return computed X variance
+         /// return computed X variance
       inline T VarianceX(void) const
       {
          if(n>1) return scalex*scalex*(sumx2-sumx*sumx/T(n))/T(n-1);
          else return T();
       }
 
-      /// return computed Y variance
+         /// return computed Y variance
       inline T VarianceY(void) const
       {
          if(n>1) return scaley*scaley*(sumy2-sumy*sumy/T(n))/T(n-1);
          else return T();
       }
 
-      /// return computed X standard deviation
+         /// return computed X standard deviation
       inline T StdDevX(void) const { return SQRT( VarianceX() ); }
 
-      /// return computed Y standard deviation
+         /// return computed Y standard deviation
       inline T StdDevY(void) const { return SQRT( VarianceY() ); }
 
-      /// return slope of best-fit line Y=slope*X + intercept
+         /// return slope of best-fit line Y=slope*X + intercept
       inline T Slope(void) const
       {
          if(n>0)
@@ -415,7 +434,7 @@ namespace gpstk
             return T();
       }
 
-      /// return intercept of best-fit line Y=slope*X + intercept
+         /// return intercept of best-fit line Y=slope*X + intercept
       inline T Intercept(void) const
       {
          if(n>0)
@@ -424,7 +443,7 @@ namespace gpstk
             return T();
       }
 
-      /// return uncertainty in slope
+         /// return uncertainty in slope
       inline T SigmaSlope(void) const
       {
          if(n>2)
@@ -433,32 +452,32 @@ namespace gpstk
             return T();
       }
 
-      /// return correlation
+         /// return correlation
       inline T Correlation(void) const
       {
          if(n>1)
          {
             return ( scalex * scaley * (sumxy-sumx*sumy/T(n))
-               / (StdDevX()*StdDevY()*T(n-1)) );
+                     / (StdDevX()*StdDevY()*T(n-1)) );
          }
          else
             return T();
       }
 
-      /// return conditional uncertainty = uncertainty y given x
+         /// return conditional uncertainty = uncertainty y given x
       inline T SigmaYX(void) const
       {
          if(n>2)
          {
             return (StdDevY() * SQRT(T(n-1)/T(n-2))
-                  * SQRT(T(1)-Correlation()*Correlation()) );
+                    * SQRT(T(1)-Correlation()*Correlation()) );
          }
          else return T();
       }
 
-      /// combine two TwoSampleStats (assumed to be taken from the same or
-      /// equivalent samples)
-      /// NB. Beware using this with very small sample size.
+         /** combine two TwoSampleStats (assumed to be taken from the same or
+          * equivalent samples)
+          * @note Beware using this with very small sample size. */
       TwoSampleStats<T>& operator+=(TwoSampleStats<T>& S)
       {
          if(n + S.n == 0) return *this;
@@ -476,14 +495,14 @@ namespace gpstk
       }  // end TwoSampleStats operator+=
 
    private:
-      /// Number of samples added to the statistics so far
+         /// Number of samples added to the statistics so far
       unsigned int n;
       T xmin, xmax, ymin, ymax, scalex, scaley;
       T sumx, sumy, sumx2, sumy2, sumxy;
 
    }; // end class TwoSampleStats
 
-   /// Output operator for TwoSampleStats class
+      /// Output operator for TwoSampleStats class
    template <class T>
    std::ostream& operator<<(std::ostream& s, const TwoSampleStats<T>& TSS) 
    {
@@ -509,14 +528,14 @@ namespace gpstk
       return s;
    }
 
-   /// Compute the median of a gpstk::Vector
+      /// Compute the median of a gpstk::Vector
    template <class T>
    inline T median(const Vector<T>& v)
    {
       if(v.size()==0) return T();
       if(v.size()==1) return v(0);
       if(v.size()==2) return (v(0)+v(1))/T(2);
-      // insert sort
+         // insert sort
       int i,j;
       T x;
       Vector<T> w(v);
@@ -537,36 +556,37 @@ namespace gpstk
       return x;
    }  // end median(Vector)
 
-   /// Compute the median of a std::vector
+      /// Compute the median of a std::vector
    template <class T>
    inline T median(const std::vector<T>& v)
    {
-      if(v.size()==0) return T();
-      if(v.size()==1) return v[0];
-      if(v.size()==2) return (v[0]+v[1])/T(2);
-      // insert sort
-      int j;
-      size_t i;
-      T x;
+      if(v.size()==0)
+         return T(0);
+      
       std::vector<T> w(v);
-      for(i=0; i<v.size(); i++) {
-         x = w[i] = v[i];
-         j = i-1;
-         while(j>=0 && x<w[j]) {
-            w[j+1] = w[j];
-            j--;
-         }
-         w[j+1] = x;
-      }
-      if(v.size() % 2)
-         x=w[(v.size()+1)/2-1];
-      else
-         x=(w[v.size()/2-1]+w[v.size()/2])/T(2);
+      sort(w.begin(), w.end());
+      if (v.size() % 2)
+         return w[(v.size()+1)/2-1];
+      return (w[v.size()/2-1]+w[v.size()/2])/T(2);
+   }  // end median(std::vector<>)
 
-      return x;
-   }  // end median(Vector)
 
-   //@}
+      /// median absolute deviation
+   template <class T>
+   inline T mad(const std::vector<T>& v)
+   {
+      if (v.size() < 2)
+         return 0;
+      
+      double med = gpstk::median(v);
+      std::vector<T> w(v);
+      for(size_t i=0; i < w.size(); i++)
+         w[i] = std::abs(w[i]- med);
+
+      return gpstk::median(w);
+   }
+
+      //@}
 
 }  // namespace
 

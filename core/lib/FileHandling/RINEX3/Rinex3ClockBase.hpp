@@ -36,35 +36,29 @@
 
 /**
  * @file Rinex3ClockBase.hpp
- * Base class for RINEX3 clock data file 
+ * Base class for Rinex3Clock file data
  */
 
-#ifndef GPSTK_RINEX3CLOCKBASE_HPP
-#define GPSTK_RINEX3CLOCKBASE_HPP
+#ifndef RINEX3CLOCKBASE_HPP
+#define RINEX3CLOCKBASE_HPP
 
-// GPSTk
 #include "FFData.hpp"
 
 namespace gpstk
 {
+      /// @ingroup FileHandling
+      //@{
 
-   /** @defgroup Rinex3Clock RINEX3 clock files */
-   //@{
-
-     /** This level isn't serving any purpose other than to make
-      * the class diagram look nice...
-      */
+      /// This class is here to make readable inheritance diagrams.
    class Rinex3ClockBase : public FFData
    {
    public:
-
          /// Destructor per the coding standards
       virtual ~Rinex3ClockBase() {}
-
-   }; // End of class 'Rinex3ClockBase'
+   };
 
       //@}
 
-}  // End of namespace gpstk
+}  // namespace
 
-#endif   // GPSTK_RINEX3CLOCKBASE_HPP
+#endif   // RINEX3CLOCKBASE_HPP

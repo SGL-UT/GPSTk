@@ -46,7 +46,7 @@
 
 namespace vdraw
 {
-  /** \addtogroup BasicVectorGraphics */ 
+  /// @ingroup BasicVectorGraphics  
   //@{
 
   /**
@@ -73,7 +73,6 @@ namespace vdraw
         double height=VGImage::US_LETTER_HEIGHT_PTS,
         VGImage::ORIGIN_LOCATION iloc=VGImage::LOWER_LEFT) throw (VDrawException)
     {
-      using namespace std;
       size_t i = fname.find_last_of('.');
       if ((string::npos != i) && (i != fname.length()-1))
       {

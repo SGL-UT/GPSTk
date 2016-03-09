@@ -48,8 +48,7 @@
 
 namespace gpstk
 {
-
-      /** @addtogroup appframegroup */
+      /// @ingroup AppFrame
       //@{
 
       /**
@@ -68,22 +67,23 @@ namespace gpstk
    class InOutFramework : public LoopedFramework
    {
    public:
+         /// Exit code used when the output file can't be opened
+      static const int OUTPUT_ERROR = 1;
 
-
-      /** Constructor for InOutFramework.
-       *
-       * @param applName   name of the program (argv[0]).
-       * @param applDesc   text description of program's function
-       *                   (used by CommandOption help).
-       */
+         /** Constructor for InOutFramework.
+          *
+          * @param applName   name of the program (argv[0]).
+          * @param applDesc   text description of program's function
+          *                   (used by CommandOption help).
+          */
       InOutFramework( const std::string& applName,
                       const std::string& applDesc )
-         throw()
-         : LoopedFramework(applName, applDesc)
+            throw()
+            : LoopedFramework(applName, applDesc)
       {};
 
 
-      /// Destructor
+         /// Destructor
       virtual ~InOutFramework() {};
 
 
@@ -123,6 +123,7 @@ namespace gpstk
          if (!input)
          {
             std::cerr << "Could not open: " << inputFn << std::endl;
+            exitCode = gpstk::BasicFramework::EXIST_ERROR;
             return false;
          }
 
@@ -144,11 +145,12 @@ namespace gpstk
          if (!output)
          {
             std::cerr << "Could not open: " << outputFn << std::endl;
+            exitCode = OUTPUT_ERROR;
             return false;
          }
 
          if (debugLevel)
-            std::cout << "Sending output to " << outputFn << std::endl
+            std::cerr << "Sending output to " << outputFn << std::endl
                       << "Reading input from " << inputFn << std::endl;
 
          return true;
@@ -165,7 +167,7 @@ namespace gpstk
    private:
 
 
-      // Do not allow the use of the default constructor.
+         // Do not allow the use of the default constructor.
       InOutFramework();
 
 

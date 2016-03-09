@@ -48,8 +48,8 @@ namespace gpstk
 
    ForceModelList::ForceModelList()
    {
-      //setFMT.insert(ForceModel::Cd);
-      //setFMT.insert(ForceModel::Cr);
+         //setFMT.insert(ForceModel::Cd);
+         //setFMT.insert(ForceModel::Cr);
       setFMT.clear();
       clear();
    }
@@ -68,29 +68,29 @@ namespace gpstk
       da_dcr.resize(3,1,0.0);
       
       for(std::list<ForceModel*>::iterator it = forceList.begin();
-         it != forceList.end();
-         ++it)
+          it != forceList.end();
+          ++it)
       {
          (*it)->doCompute(utc,bref,sc);
 
          a      += (*it)->getAccel();
          da_dr   += (*it)->partialR();
          da_dv   += (*it)->partialV();
-         //da_dp   += (*it)->partialP();
+            //da_dp   += (*it)->partialP();
 
-         //cout<<(*it)->modelName()<<endl;
+            //cout<<(*it)->modelName()<<endl;
          
          da_dcd   += (*it)->partialCd();
          da_dcr   += (*it)->partialCr();
          
       }
       
-      // declare a counter
+         // declare a counter
       int i = 0;  
 
       for(std::set<ForceModel::ForceModelType>::iterator it = setFMT.begin();
-         it!=setFMT.end();
-         it++)
+          it!=setFMT.end();
+          it++)
       {
          if((*it)==ForceModel::Cd)
          {
@@ -113,43 +113,43 @@ namespace gpstk
          i++;
       }  
 
-      /* Transition Matrix (6+np)*(6+np)
-           |                          |
-           | dr_dr0   dr_dv0   dr_dp0  |
-           |                          |
-      phi= | dv_dr0   dv_dv0   dv_dp0  |
-           |                          |
-           | 0         0          I      |
-           |                          |
-      */
+         /* Transition Matrix (6+np)*(6+np)
+            |                          |
+            | dr_dr0   dr_dv0   dr_dp0  |
+            |                          |
+            phi= | dv_dr0   dv_dv0   dv_dp0  |
+            |                          |
+            | 0         0          I      |
+            |                          |
+         */
       Matrix<double> phi = sc.getTransitionMatrix();
 
-      /* A Matrix (6+np)*(6+np)
-          |                       |
-          | 0         I      0      |
-          |                       |
-      A = | da_dr      da_dv   da_dp  |
-          |                       |
-          | 0         0      0      |
-          |                       |
-      */
+         /* A Matrix (6+np)*(6+np)
+            |                       |
+            | 0         I      0      |
+            |                       |
+            A = | da_dr      da_dv   da_dp  |
+            |                       |
+            | 0         0      0      |
+            |                       |
+         */
       Matrix<double> A = getAMatrix();
       
-      /* dphi Matrix
-             |                          |
-             | dv_dr0   dv_dv0   dv_dp0 |
-             |                          |
-      dphi = | da_dr0   da_dv0   da_dp0 |
-             |                          |
-             | 0         0         0    |
-             |                          |
+         /* dphi Matrix
+            |                          |
+            | dv_dr0   dv_dv0   dv_dp0 |
+            |                          |
+            dphi = | da_dr0   da_dv0   da_dp0 |
+            |                          |
+            | 0         0         0    |
+            |                          |
 
-      da_dr0 = da_dr*dr_dr0 + da_dv*dv_dr0
+            da_dr0 = da_dr*dr_dr0 + da_dv*dv_dr0
 
-      da_dv0 = da_dr*dr_dv0 + da_dv*dv_dv0
+            da_dv0 = da_dr*dr_dv0 + da_dv*dv_dv0
 
-      da_dp0 = da_dr*dr_dp0 + da_dv*dv_dp0 + da_dp0;
-      */
+            da_dp0 = da_dr*dr_dp0 + da_dv*dv_dp0 + da_dp0;
+         */
       Matrix<double> dphi = A * phi;
 
 
@@ -188,16 +188,16 @@ namespace gpstk
 
    void ForceModelList::printForceModel(std::ostream& s)
    {
-      // a counter
+         // a counter
       int i(1);
 
-      for(list<ForceModel*>::iterator it = forceList.begin();
-         it != forceList.end();
-         ++it)
+      for(std::list<ForceModel*>::iterator it = forceList.begin();
+          it != forceList.end();
+          ++it)
       {
-         s << setw(3) << i << " "
-           << (*it)->forceIndex()<<" "
-           << (*it)->modelName()<<endl;
+         s << std::setw(3) << i << " "
+           << (*it)->forceIndex() << " "
+           << (*it)->modelName() << std::endl;
 
          i++;
       }
@@ -208,8 +208,8 @@ namespace gpstk
    {
       setFMT.clear();
       for(std::set<ForceModel::ForceModelType>::iterator it = fmt.begin();
-         it != fmt.end();
-         ++it)
+          it != fmt.end();
+          ++it)
       {
          setFMT.insert(*it);
       }

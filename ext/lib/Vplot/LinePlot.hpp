@@ -58,114 +58,117 @@
 #include "Plot.hpp"
 #include "SeriesList.hpp"
 
-using namespace std;
-using namespace vdraw;
 
 namespace vplot
 {
-  /**
-   * This class draws a basic line plot to a frame.  
-   *
-   * \FIXME This is retrofitted from an older implementation and needs to be made
-   * up to date with the style of these plotting classes (with more
-   * configurability)
-   */
-  class LinePlot : public Plot
-  {
-    public:
       /**
-       * Constructor.
+       * This class draws a basic line plot to a frame.  
+       *
+       * @todo This is retrofitted from an older implementation and
+       * needs to be made up to date with the style of these plotting
+       * classes (with more configurability)
        */
+   class LinePlot : public Plot
+   {
+   public:
+         /**
+          * Constructor.
+          */
       LinePlot(unsigned int iidx=0) : Plot()
       {
-        init(iidx);
+         init(iidx);
       }
 
-      /// Destructor
+         /// Destructor
       ~LinePlot()
       {
       }
 
-      /// Initialize the StrokeStyle
+         /// Initialize the StrokeStyle
       void init(unsigned int issidx);
 
-      /// Get the next StrokeStyle from the generated set      
-      StrokeStyle pickNextSS(void);
+         /// Get the next StrokeStyle from the generated set      
+      vdraw::StrokeStyle pickNextSS(void);
 
-      /// Get the idx-th StrokeStyle from the generated set
-      StrokeStyle pickNextSS(int idx);
+         /// Get the idx-th StrokeStyle from the generated set
+      vdraw::StrokeStyle pickNextSS(int idx);
 
-      /// Add a series with this label
-      inline void addSeries(string label, vector<pair<double,double> >& series)
+         /// Add a series with this label
+      inline void addSeries(std::string label,
+                            std::vector<std::pair<double,double> >& series)
       {
-        addSeries(label,series,pickNextSS());
+         addSeries(label,series,pickNextSS());
       }
 
-      /// Add a series with this label and this StrokeStyle      
-      inline void addSeries(string label, vector<pair<double,double> >& series, StrokeStyle ss)
+         /// Add a series with this label and this StrokeStyle      
+      inline void addSeries(std::string label,
+                            std::vector<std::pair<double,double> >& series,
+                            vdraw::StrokeStyle ss)
       {
-        sl.addSeries(label,series,ss);
+         sl.addSeries(label,series,ss);
       }
 
-      /// Draw the Plot to this frame, with the key on the dir side
-      inline void draw(Frame& frame, int dir)
+         /// Draw the Plot to this frame, with the key on the dir side
+      inline void draw(vdraw::Frame& frame, int dir)
       {
-        draw(&frame,dir);
+         draw(&frame,dir);
       }
 
-      /// Draw the Plot to this frame, with the key on the dir side
-      void draw(Frame *frame, int dir);
+         /// Draw the Plot to this frame, with the key on the dir side
+      void draw(vdraw::Frame *frame, int dir);
 
-      /// Draw the Plot to this frame
-      inline void drawPlot(Frame& frame)
+         /// Draw the Plot to this frame
+      inline void drawPlot(vdraw::Frame& frame)
       {
-        drawPlot(&frame);
+         drawPlot(&frame);
       }
 
-      /// Draw the Plot to this frame
-      void drawPlot(Frame* frame);
+         /// Draw the Plot to this frame
+      void drawPlot(vdraw::Frame* frame);
 
-      /** 
-       * Draw the Palette key to this frame. dir is the direction from negative
-       * to positive for the key.  You probably want to supply a tall, skinny
-       * frame for North or South directions and a short and wide frame for East 
-       * and West directions. 
-       */
-      inline void drawKey(Frame& frame, unsigned int columns = 1)
+         /** 
+          * Draw the Palette key to this frame. dir is the direction
+          * from negative to positive for the key.  You probably want
+          * to supply a tall, skinny frame for North or South
+          * directions and a short and wide frame for East and West
+          * directions.
+          */
+      inline void drawKey(vdraw::Frame& frame, unsigned int columns = 1)
       {
-        drawKey(&frame,columns);
+         drawKey(&frame,columns);
       }
 
-      /** 
-       * Draw the Palette key to this frame. dir is the direction from negative
-       * to positive for the key.  You probably want to supply a tall, skinny
-       * frame for North or South directions and a short and wide frame for East 
-       * and West directions. 
-       */
-      inline void drawKey(Frame* frame, unsigned int columns = 1)
+         /** 
+          * Draw the Palette key to this frame. dir is the direction
+          * from negative to positive for the key.  You probably want
+          * to supply a tall, skinny frame for North or South
+          * directions and a short and wide frame for East and West
+          * directions.
+          */
+      inline void drawKey(vdraw::Frame* frame, unsigned int columns = 1)
       {
-        drawLegend(frame,&sl, columns);
+         drawLegend(frame,&sl, columns);
       }
 
-    protected:
+   protected:
 
 
-    private:
+   private:
 
-      /// List of series
+         /// List of series
       SeriesList sl;
 
-      /// StrokeStyle index and initializer
+         /// StrokeStyle index and initializer
       unsigned int ssidx;
       unsigned int issidx;
 
-      /// Vector of colors
-      std::vector<Color> cvec;
+         /// Vector of colors
+      std::vector<vdraw::Color> cvec;
 
-      /// Vector of dashed line types
-      std::vector<StrokeStyle::dashLengthList> dvec;
+         /// Vector of dashed line types
+      std::vector<vdraw::StrokeStyle::dashLengthList> dvec;
 
-  };
+   };
 
 }
 

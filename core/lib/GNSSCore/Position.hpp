@@ -36,11 +36,12 @@
 
 /**
  * @file Position.hpp
- * class gpstk::Position encapsulates 3-D positions, including geographic positions,
- *    expressed as geodetic (with respect to an ellipsoid), geocentric or
- *    Earth-centered, Earth-fixed (cartesian) coordinates, as well as ordinary
- *    positions defined by spherical or cartesian coordinates. Position inherits
- *    from class Triple.
+ * class gpstk::Position encapsulates 3-D positions, including
+ *    geographic positions, expressed as geodetic (with respect to an
+ *    ellipsoid), geocentric or Earth-centered, Earth-fixed
+ *    (cartesian) coordinates, as well as ordinary positions defined
+ *    by spherical or cartesian coordinates. Position inherits from
+ *    class Triple.
  */
 
 #ifndef GPSTK_POSITION_HPP
@@ -55,7 +56,7 @@
 
 namespace gpstk
 {
-      /** @addtogroup geodeticgroup */
+      /// @ingroup Geodetic
       //@{
 
       // forward declarations
@@ -63,72 +64,83 @@ namespace gpstk
    double range(const Position& A, const Position& B) throw(GeometryException);
    
       /**
-       * A position representation class for common 3D geographic position formats,
-       * including geodetic (geodetic latitude, longitude, and height above the ellipsoid)
-       * geocentric (geocentric latitude, longitude, and radius from Earth's center),
-       * cartesian (Earth-centered, Earth-fixed) and spherical (theta,phi,radius).
+       * A position representation class for common 3D geographic
+       * position formats, including geodetic (geodetic latitude,
+       * longitude, and height above the ellipsoid) geocentric
+       * (geocentric latitude, longitude, and radius from Earth's
+       * center), cartesian (Earth-centered, Earth-fixed) and
+       * spherical (theta,phi,radius).
        *
-       * Internally, the representation of Position consists of three coordinate
-       * values (double), two doubles from a ellipsoid model (see below, storing these
-       * doubles is preferred over adding EllipsoidModel to calling arguments everywhere),
-       * a flag of type 'enum CoordinateSystem' giving the coordinate system, and a
-       * tolerance for use in comparing Positions. Class Position inherits from class
-       * Triple, which is how the coordinate values are stored (Triple actually uses
-       * std::valarray<double> of length 3). It is important to note that
-       * Triple:: routines are properly used by Positions ONLY in the Cartesian
-       * coordinate system.
+       * Internally, the representation of Position consists of three
+       * coordinate values (double), two doubles from a ellipsoid
+       * model (see below, storing these doubles is preferred over
+       * adding EllipsoidModel to calling arguments everywhere), a
+       * flag of type 'enum CoordinateSystem' giving the coordinate
+       * system, and a tolerance for use in comparing Positions. Class
+       * Position inherits from class Triple, which is how the
+       * coordinate values are stored (Triple actually uses
+       * std::valarray<double> of length 3). It is important to note
+       * that Triple:: routines are properly used by Positions ONLY in
+       * the Cartesian coordinate system.
        *
        * Only geodetic coordinates depend on a ellipsoid, and then
-       * only on the semi-major axis of the Earth and the square of its
-       * eccentricity. Input of this ellipsoid information (usually a pointer to a
-       * EllipsoidModel) is required by functions involving constructors of, or
-       * transformation to or from, Geodetic coordinates. However since a default
-       * is supplied (WGS84), the user need never deal with geiods unless desired.
-       * In fact, if the geodetic coordinate system is avoided, the Position class
-       * can be interpreted simply as 3D vectors in any context, particularly since
-       * the class inherits from Triple, which includes many vector manipulation
-       * routines (although the Triple:: routines assume Cartesian coordinates).
-       * Even the requirement that lengths (radius, height and the cartesian
-       * coordinates) have units of meters is required only if geodetic coordinates
-       * are used (because the semi-major axis in EllipsoidModel is in meters);
-       * without using Geodetic one could apply the class using any units for
+       * only on the semi-major axis of the Earth and the square of
+       * its eccentricity. Input of this ellipsoid information
+       * (usually a pointer to a EllipsoidModel) is required by
+       * functions involving constructors of, or transformation to or
+       * from, Geodetic coordinates. However since a default is
+       * supplied (WGS84), the user need never deal with geiods unless
+       * desired.  In fact, if the geodetic coordinate system is
+       * avoided, the Position class can be interpreted simply as 3D
+       * vectors in any context, particularly since the class inherits
+       * from Triple, which includes many vector manipulation routines
+       * (although the Triple:: routines assume Cartesian
+       * coordinates).  Even the requirement that lengths (radius,
+       * height and the cartesian coordinates) have units of meters is
+       * required only if geodetic coordinates are used (because the
+       * semi-major axis in EllipsoidModel is in meters); without
+       * using Geodetic one could apply the class using any units for
        * length as long as setTolerance() is called appropriately.
        *
-       * Position relies on a series of fundamental routines to transform from
-       * one coordinate system to another, these include, for example
-       * void Position::convertGeodeticToCartesian(const Triple& llh, Triple& xyz,
-       *    const double A, const double eccSq);
-       * void Position::convertSphericalToCartesian(const Triple& tpr, Triple& xyz);
-       * These functions use Triple in the calling arguments.
+       * Position relies on a series of fundamental routines to
+       * transform from one coordinate system to another, these
+       * include, for example void
+       * Position::convertGeodeticToCartesian(const Triple& llh,
+       * Triple& xyz, const double A, const double eccSq); void
+       * Position::convertSphericalToCartesian(const Triple& tpr,
+       * Triple& xyz); These functions use Triple in the calling
+       * arguments.
        *
-       * Position will throw exceptions (gpstk::GeometryException) on bad input
-       * (e.g. negative radius or latitude > 90 degrees); otherwise the class
-       * attempts to handle all points, even the pole and the origin, consistently
-       * and without throwing exceptions.
-       * At or very near the poles, the transformation routines will set
-       * latitude = +/-90 degrees, which is theta = 0 or 180, and (arbitrarily)
-       * longitude = 0. At or very near the origin, the transformation routines
-       * will set latitude = 0, which is theta = 90, and (arbitrarily) longitude = 0;
+       * Position will throw exceptions (gpstk::GeometryException) on
+       * bad input (e.g. negative radius or latitude > 90 degrees);
+       * otherwise the class attempts to handle all points, even the
+       * pole and the origin, consistently and without throwing
+       * exceptions.  At or very near the poles, the transformation
+       * routines will set latitude = +/-90 degrees, which is theta =
+       * 0 or 180, and (arbitrarily) longitude = 0. At or very near
+       * the origin, the transformation routines will set latitude =
+       * 0, which is theta = 90, and (arbitrarily) longitude = 0;
        * radius will be set to zero and geodetic height will be set to
-       * -radius(Earth) (= -6378137.0 in WGS84). The tolerance used in testing
-       * 'at or near the pole or origin' is radius < POSITION_TOLERANCE/5.
-       * Note that this implies that a Position that is very near the origin may
-       * be SET to the exact origin by the transformation routines, and that
-       * thereby information about direction (e.g. latitude and longitude)
-       * may be LOST. The user is warned to be very careful when working
-       * near either the pole or the origin.
+       * -radius(Earth) (= -6378137.0 in WGS84). The tolerance used in
+       * testing 'at or near the pole or origin' is radius <
+       * POSITION_TOLERANCE/5.  Note that this implies that a Position
+       * that is very near the origin may be SET to the exact origin
+       * by the transformation routines, and that thereby information
+       * about direction (e.g. latitude and longitude) may be
+       * LOST. The user is warned to be very careful when working near
+       * either the pole or the origin.
        *
-       * Position includes setToString() and printf() functions similar to those
-       * in gpstk::CommonTime; this allows flexible and powerful I/O of Position to
-       * strings and streams.
+       * Position includes setToString() and printf() functions
+       * similar to those in gpstk::CommonTime; this allows flexible
+       * and powerful I/O of Position to strings and streams.
        *
        * @sa positiontest.cpp for examples.
        */
    class Position : public Triple
    {
    public:
-      // ----------- Part  1: coordinate systems --------------------------------
-      //
+         // ----------- Part  1: coordinate systems ---------------------------
+         //
          /// The coordinate systems supported by Position
       enum CoordinateSystem
       {
@@ -143,8 +155,8 @@ namespace gpstk
       std::string getSystemName()
          throw();
 
-      // ----------- Part  2: member functions: tolerance -----------------------
-      //
+         // ----------- Part  2: member functions: tolerance ------------------
+         //
          /// One millimeter tolerance.
       static const double ONE_MM_TOLERANCE;
          /// One centimeter tolerance.
@@ -157,14 +169,15 @@ namespace gpstk
 
          /// Changes the POSITION_TOLERANCE for all Position objects
       static double setPositionTolerance(const double tol)
-         { POSITION_TOLERANCE = tol;  return POSITION_TOLERANCE; }
+      { POSITION_TOLERANCE = tol;  return POSITION_TOLERANCE; }
 
          /// Returns the current POSITION_TOLERANCE.
       static double getPositionTolerance()
-         { return POSITION_TOLERANCE; }
+      { return POSITION_TOLERANCE; }
    
          /**
-          * Sets the tolerance for output and comparisons, for this object only.
+          * Sets the tolerance for output and comparisons, for this
+          * object only.
           * See the constants in this file (e.g. ONE_MM_TOLERANCE)
           * for some easy to use tolerance values.
           * @param tol Tolerance in meters to be used by comparison operators.
@@ -173,19 +186,20 @@ namespace gpstk
       Position& setTolerance(const double tol)
          throw();
 
-      // ----------- Part  3: member functions: constructors --------------------
-      //
+         // ----------- Part  3: member functions: constructors ---------------
+         //
          /**
           * Default constructor.
           * Initializes to zero, Unknown coordinates
           */
       Position()
-         throw();
+      throw();
 
          /**
-          * Explicit constructor. Coordinate system may be specified on input,
-          * but defaults to Cartesian. Pointer to EllipsoidModel may be specified,
-          * but default is NULL (in which case WGS84 values will be used).
+          * Explicit constructor. Coordinate system may be specified
+          * on input, but defaults to Cartesian. Pointer to
+          * EllipsoidModel may be specified, but default is NULL (in
+          * which case WGS84 values will be used).
           * @param a first coordinate [ X(m), or latitude (degrees N) ]
           * @param b second coordinate [ Y(m), or longitude (degrees E) ]
           * @param c third coordinate [ Z, height above ellipsoid or radius, in m ]
@@ -202,9 +216,10 @@ namespace gpstk
          throw(GeometryException);
 
          /**
-          * Explicit constructor. Coordinate system may be specified on input,
-          * but defaults to Cartesian. Pointer to EllipsoidModel may be specified,
-          * but default is NULL (in which case WGS84 values will be used).
+          * Explicit constructor. Coordinate system may be specified
+          * on input, but defaults to Cartesian. Pointer to
+          * EllipsoidModel may be specified, but default is NULL (in
+          * which case WGS84 values will be used).
           * @param ABC double array[3] coordinate values
           * @param s CoordinateSystem
           * @param ell pointer to EllipsoidModel
@@ -217,9 +232,10 @@ namespace gpstk
          throw(GeometryException);
 
          /**
-          * Explicit constructor. Coordinate system may be specified on input,
-          * but defaults to Cartesian. Pointer to EllipsoidModel may be specified,
-          * but default is NULL (in which case WGS84 values will be used).
+          * Explicit constructor. Coordinate system may be specified
+          * on input, but defaults to Cartesian. Pointer to
+          * EllipsoidModel may be specified, but default is NULL (in
+          * which case WGS84 values will be used).
           * @param ABC coordinate values
           * @param s CoordinateSystem
           * @param ell pointer to EllipsoidModel
@@ -241,11 +257,11 @@ namespace gpstk
 
          /// Destructor.
       ~Position()
-         throw()
-         {}
+      throw()
+      {}
 
-      // ----------- Part  4: member functions: arithmetic ----------------------
-      //
+         // ----------- Part  4: member functions: arithmetic -----------------
+         //
          /** Subtract a Position from this Position. Perform the subtraction in
           * Cartesian coordinates, but return this Position to the system it
           * had originally.
@@ -265,13 +281,14 @@ namespace gpstk
          throw();
 
          /**
-          * Difference two Positions, returning result as a Position in Cartesian
-          * coordinates, the only system in which a position difference makes sense.
+          * Difference two Positions, returning result as a Position
+          * in Cartesian coordinates, the only system in which a
+          * position difference makes sense.
           * @param right Position to subtract from this one.
           * @return difference as Position.
           */
       friend Position operator-(const Position& left,
-                                      const Position& right)
+                                const Position& right)
          throw();
 
          /**
@@ -281,7 +298,7 @@ namespace gpstk
           * @return The new Position.
           */
       friend Position operator+(const Position& left,
-                                      const Position& right)
+                                const Position& right)
          throw();
 
          /** Multiply a Position by a double scalar on the left.
@@ -291,11 +308,11 @@ namespace gpstk
           */
       friend Position operator*(const double& scale,
                                 const Position& right)
-         {
-            Position tmp(right);
-            tmp.theArray *= scale;
-            return tmp;
-         }
+      {
+         Position tmp(right);
+         tmp.theArray *= scale;
+         return tmp;
+      }
 
          /** Multiply a Position by a double scalar on the right.
           * @param left Position to be multiplied by the scalar
@@ -304,9 +321,9 @@ namespace gpstk
           */
       friend Position operator*(const Position& left,
                                 const double& scale)
-         {
-            return operator*(scale, left);
-         }
+      {
+         return operator*(scale, left);
+      }
 
          /** Multiply a Position by an integer scalar on the left.
           * @param right Position to be multiplied by the scalar
@@ -315,9 +332,9 @@ namespace gpstk
           */
       friend Position operator*(const int& scale,
                                 const Position& right)
-         {
-            return operator*(double(scale), right);
-         }
+      {
+         return operator*(double(scale), right);
+      }
 
          /** Multiply a Position by an integer scalar on the right.
           * @param left Position to be multiplied by the scalar
@@ -326,32 +343,33 @@ namespace gpstk
           */
       friend Position operator*(const Position& left,
                                 const int& scale)
-         {
-            return operator*(double(scale), left);
-         }
+      {
+         return operator*(double(scale), left);
+      }
 
-      // ----------- Part  5: member functions: comparisons ---------------------
-      //
-         /// Equality operator. Return true if range between this Position and
-         /// the input Position is less than tolerance. Return false if ellipsoid
-         /// values differ.
-         /// @param right Position to be compared to this Position
+         // ----------- Part  5: member functions: comparisons ----------------
+         //
+         /** Equality operator. Return true if range between this
+          * Position and the input Position is less than
+          * tolerance. Return false if ellipsoid values differ.
+          * @param right Position to be compared to this Position */
       bool operator==(const Position &right) const
          throw();
 
-         /// Inequality operator. Return true if range between this Position and
-         /// the input Position is greater than tolerance. Return true if ellipsoid
-         /// values differ.
-         /// @param right Position to be compared to this Position
+         /** Inequality operator. Return true if range between this
+          * Position and the input Position is greater than
+          * tolerance. Return true if ellipsoid values differ.
+          * @param right Position to be compared to this Position */
       bool operator!=(const Position &right) const
          throw();
 
-      // ----------- Part  6: member functions: coordinate transformations ------
-      //
+         // ----------- Part  6: member functions: coordinate transformations -
+         //
          /**
-          * Transform coordinate system. Does nothing if sys already matches the
-          * current value of member CoordinateSystem 'system'.
-          * @param sys CoordinateSystem into which this Position is transformed.
+          * Transform coordinate system. Does nothing if sys already
+          * matches the current value of member CoordinateSystem
+          * 'system'.
+          * @param sys CoordinateSystem into which this Position is transformed
           */
       Position transformTo(CoordinateSystem sys)
          throw();
@@ -381,10 +399,11 @@ namespace gpstk
       { transformTo(Cartesian); return *this; }
 
 
-      // ----------- Part  7: member functions: get -----------------------------
-      // 
-      // These routines retrieve coordinate values in all coordinate systems.
-      //
+         // ----------- Part  7: member functions: get ------------------------
+         // 
+         // These routines retrieve coordinate values in all
+         // coordinate systems.
+         //
 
          /// return coordinate ReferenceFrame
       const ReferenceFrame& getReferenceFrame() const
@@ -478,7 +497,8 @@ namespace gpstk
          throw()
       { return Z(); }
 
-         /// return spherical coordinate angle theta (deg) (90 - geocentric latitude)
+         /** @return spherical coordinate angle theta (deg) (90 -
+          * geocentric latitude) */
       double getTheta() const
          throw()
       { return theta(); }
@@ -493,8 +513,8 @@ namespace gpstk
          throw()
       { return radius(); }
 
-      // ----------- Part  8: member functions: set -----------------------------
-      //
+         // ----------- Part  8: member functions: set ------------------------
+         //
          /**
           * Set the ReferenceFrame that this position is in.
           * @param frame The ReferenceFrame to set to.
@@ -511,7 +531,8 @@ namespace gpstk
          throw(GeometryException);
 
          /**
-          * Set the Position given geodetic coordinates; system is set to Geodetic.
+          * Set the Position given geodetic coordinates; system is set
+          * to Geodetic.
           * @param lat geodetic latitude in degrees North
           * @param lon geodetic longitude in degrees East
           * @param ht height above the ellipsoid in meters
@@ -525,7 +546,8 @@ namespace gpstk
          throw(GeometryException);
 
          /**
-          * Set the Position given geocentric coordinates; system is set to Geocentric
+          * Set the Position given geocentric coordinates; system is
+          * set to Geocentric
           * @param lat geocentric latitude in degrees North
           * @param lon geocentric longitude in degrees East
           * @param rad radius from the Earth's center in meters
@@ -538,7 +560,8 @@ namespace gpstk
          throw(GeometryException);
 
          /**
-          * Set the Position given spherical coordinates; system is set to Spherical
+          * Set the Position given spherical coordinates; system is
+          * set to Spherical
           * @param theta angle from the Z-axis (degrees)
           * @param phi angle from the X-axis in the XY plane (degrees)
           * @param rad radius from the center in meters
@@ -551,7 +574,8 @@ namespace gpstk
          throw(GeometryException);
 
          /**
-          * Set the Position given ECEF coordinates; system is set to Cartesian.
+          * Set the Position given ECEF coordinates; system is set to
+          * Cartesian.
           * @param X ECEF X coordinate in meters.
           * @param Y ECEF Y coordinate in meters.
           * @param Z ECEF Z coordinate in meters.
@@ -573,7 +597,8 @@ namespace gpstk
       { return setECEF(XYZ[0],XYZ[1],XYZ[2]); }
 
          /**
-          * Set the Position given ECEF coordinates; system is set to Cartesian.
+          * Set the Position given ECEF coordinates; system is set to
+          * Cartesian.
           * @param XYZ ECEF X,Y,Z coordinates in meters.
           * @return a reference to this object.
           */
@@ -581,8 +606,8 @@ namespace gpstk
          throw()
       { return setECEF(XYZ[0],XYZ[1],XYZ[2]); }
 
-      // ----------- Part 9: member functions: setToString, printf -------------
-      //
+         // ----------- Part 9: member functions: setToString, printf ---------
+         //
          /**
           * setToString, similar to scanf, this function takes a string and a
           * format describing string in order to define Position
@@ -685,8 +710,8 @@ namespace gpstk
       std::string asString() const
          throw(StringUtils::StringException);
 
-      // ----------- Part 10: functions: fundamental conversions ---------------
-      // 
+         // ----------- Part 10: functions: fundamental conversions -----------
+         // 
          /** Fundamental conversion from spherical to cartesian coordinates.
           * @param trp (input): theta, phi (degrees), radius
           * @param xyz (output): X,Y,Z in units of radius
@@ -707,9 +732,10 @@ namespace gpstk
          throw();
 
 
-         /** Fundamental routine to convert ECEF (cartesian) to geodetic coordinates,
-          * (Ellipsoid specified by semi-major axis and eccentricity squared).
-          * The zero vector is converted to (90,0,-R(earth)).
+         /** Fundamental routine to convert ECEF (cartesian) to
+          * geodetic coordinates, (Ellipsoid specified by semi-major
+          * axis and eccentricity squared).  The zero vector is
+          * converted to (90,0,-R(earth)).
           * @param xyz (input): X,Y,Z in meters
           * @param llh (output): geodetic lat(deg N), lon(deg E),
           *                             height above ellipsoid (meters)
@@ -723,8 +749,9 @@ namespace gpstk
                                              const double eccSq)
          throw();
 
-         /** Fundamental routine to convert geodetic to ECEF (cartesian) coordinates,
-          * (Ellipsoid specified by semi-major axis and eccentricity squared).
+         /** Fundamental routine to convert geodetic to ECEF
+          * (cartesian) coordinates, (Ellipsoid specified by
+          * semi-major axis and eccentricity squared).
           * @param llh (input): geodetic lat(deg N), lon(deg E),
           *                             height above ellipsoid (meters)
           * @param A (input) Earth semi-major axis
@@ -784,44 +811,45 @@ namespace gpstk
                                               const double eccSq)
          throw();
 
-      // ----------- Part 11: operator<< and other useful functions -------------
-      //
+         // ----------- Part 11: operator<< and other useful functions --------
+         //
          /**
-         * Stream output for Position objects.
-         * @param s stream to append formatted Position to.
-         * @param t Position to append to stream \c s.
-         * @return reference to \c s.
-         */
+          * Stream output for Position objects.
+          * @param s stream to append formatted Position to.
+          * @param t Position to append to stream \c s.
+          * @return reference to \c s.
+          */
       friend std::ostream& operator<<(std::ostream& s,
                                       const Position& p);
 
          /**
-         * Compute the range in meters between two Positions.
-         * Input Positions are not modified.
-         * @param A,B Positions between which to find the range
-         * @return the range (in meters)
-         * @throw GeometryException if ellipsoid values differ.
-         *        or if transformTo(Cartesian) fails
-         */
+          * Compute the range in meters between two Positions.
+          * Input Positions are not modified.
+          * @param A,B Positions between which to find the range
+          * @return the range (in meters)
+          * @throw GeometryException if ellipsoid values differ.
+          *        or if transformTo(Cartesian) fails
+          */
       friend double range(const Position& A,
                           const Position& B)
          throw(GeometryException);
 
          /**
-         * Compute the radius of the ellipsoidal Earth, given the geodetic latitude.
-         * @param geolat geodetic latitude in degrees
-         * @return the Earth radius (in meters)
-         */
+          * Compute the radius of the ellipsoidal Earth, given the
+          * geodetic latitude.
+          * @param geolat geodetic latitude in degrees
+          * @return the Earth radius (in meters)
+          */
       static double radiusEarth(const double geolat,
                                 const double A,
                                 const double eccSq)
          throw();
 
          /**
-         * A member function that calls the non-member radiusEarth() for
-         * this Position.
-         * @return the Earth radius (in meters)
-         */
+          * A member function that calls the non-member radiusEarth() for
+          * this Position.
+          * @return the Earth radius (in meters)
+          */
       double radiusEarth() const
          throw()
       {
@@ -831,84 +859,86 @@ namespace gpstk
       }
 
          /**
-         * A member function that computes the elevation of the input
-         * (Target) position as seen from this Position.
-         * @param Target the Position which is observed to have the
-         *        computed elevation, as seen from this Position.
-         * @return the elevation in degrees
-         */
+          * A member function that computes the elevation of the input
+          * (Target) position as seen from this Position.
+          * @param Target the Position which is observed to have the
+          *        computed elevation, as seen from this Position.
+          * @return the elevation in degrees
+          */
       double elevation(const Position& Target) const
          throw(GeometryException);
 
          /**
-         * A member function that computes the elevation of the input
-         * (Target) position as seen from this Position, using a Geodetic
-         * (ellipsoidal) system.
-         * @param Target the Position which is observed to have the
-         *        computed elevation, as seen from this Position.
-         * @return the elevation in degrees
-         */
+          * A member function that computes the elevation of the input
+          * (Target) position as seen from this Position, using a Geodetic
+          * (ellipsoidal) system.
+          * @param Target the Position which is observed to have the
+          *        computed elevation, as seen from this Position.
+          * @return the elevation in degrees
+          */
       double elevationGeodetic(const Position& Target) const
          throw(GeometryException);
 
          /**
-         * A member function that computes the azimuth of the input
-         * (Target) position as seen from this Position.
-         * @param Target the Position which is observed to have the
-         *        computed azimuth, as seen from this Position.
-         * @return the azimuth in degrees
-         */
+          * A member function that computes the azimuth of the input
+          * (Target) position as seen from this Position.
+          * @param Target the Position which is observed to have the
+          *        computed azimuth, as seen from this Position.
+          * @return the azimuth in degrees
+          */
       double azimuth(const Position& Target) const
          throw(GeometryException);
 
          /**
-         * A member function that computes the azimuth of the input
-         * (Target) position as seen from this Position, using a Geodetic
-         * (ellipsoidal) system.
-         * @param Target the Position which is observed to have the
-         *        computed azimuth, as seen from this Position.
-         * @return the azimuth in degrees
-         */
+          * A member function that computes the azimuth of the input
+          * (Target) position as seen from this Position, using a Geodetic
+          * (ellipsoidal) system.
+          * @param Target the Position which is observed to have the
+          *        computed azimuth, as seen from this Position.
+          * @return the azimuth in degrees
+          */
       double azimuthGeodetic(const Position& Target) const
          throw(GeometryException);
 
          /**
-         * A member function that computes the position at which a signal, which
-         * is received at this Position and there is observed at the (input)
-         * azimuth and elevation angles, crosses a model ionosphere that is
-         * taken to be a thin shell at constant (input) height.
-         * This function will not transform this Position, and it will return
-         * a Position in the same system; the algorithm itself is done in the
-         * geocentric coordinate system.
-         * @param elev elevation angle in degrees of the signal at reception
-         * @param azim azimuth angle in degrees of the signal at reception
-         * @param ionoht height of the ionosphere, in meters
-         * @return Position IPP the position of the ionospheric pierce point,
-         *     in the same coordinate system as *this; *this is not modified.
-         */
+          * A member function that computes the position at which a
+          * signal, which is received at this Position and there is
+          * observed at the (input) azimuth and elevation angles,
+          * crosses a model ionosphere that is taken to be a thin
+          * shell at constant (input) height.
+          *
+          * This function will not transform this Position, and it
+          * will return a Position in the same system; the algorithm
+          * itself is done in the geocentric coordinate system.
+          * @param elev elevation angle in degrees of the signal at reception
+          * @param azim azimuth angle in degrees of the signal at reception
+          * @param ionoht height of the ionosphere, in meters
+          * @return Position IPP the position of the ionospheric pierce point,
+          *     in the same coordinate system as *this; *this is not modified.
+          */
       Position getIonosphericPiercePoint(const double elev,
                                          const double azim,
                                          const double ionoht) const
          throw();
 
          /**
-         * A member function that computes the radius of curvature of the 
-         * meridian (Rm) corresponding to this Position.
-         * @return radius of curvature of the meridian (in meters)
-         */
+          * A member function that computes the radius of curvature of the 
+          * meridian (Rm) corresponding to this Position.
+          * @return radius of curvature of the meridian (in meters)
+          */
       double getCurvMeridian() const
          throw();
 
          /**
-         * A member function that computes the radius of curvature in the 
-         * prime vertical (Rn) corresponding to this Position.
-         * @return radius of curvature in the prime vertical (in meters)
-         */
+          * A member function that computes the radius of curvature in the 
+          * prime vertical (Rn) corresponding to this Position.
+          * @return radius of curvature in the prime vertical (in meters)
+          */
       double getCurvPrimeVertical() const
          throw();
 
-      // ----------- Part 12: private functions and member data -----------------
-      //
+         // ----------- Part 12: private functions and member data ------------
+         //
    private:
 
          /** Initialization function, used by the constructors.
@@ -920,25 +950,25 @@ namespace gpstk
           * @throw GeometryException on invalid input.
           */
       void initialize(const double a,
-                     const double b,
-                     const double c,
-                     CoordinateSystem s = Cartesian,
-                     EllipsoidModel *ell = NULL,
-                     ReferenceFrame frame = ReferenceFrame::Unknown)
+                      const double b,
+                      const double c,
+                      CoordinateSystem s = Cartesian,
+                      EllipsoidModel *ell = NULL,
+                      ReferenceFrame frame = ReferenceFrame::Unknown)
          throw(GeometryException);
 
          /* Values of the coordinates, defined for each system as follows;
-         *    Cartesian  : X,Y,Z in meters
-         *    Geocentric : Latitude(degrees N), Longitude(degrees E),
-         *                    Radius (meters)
-         *    Geodetic   : Latitude(degrees N), Longitude(degrees E),
-         *                    Height above ellipsoid (meters)
-         *    Spherical  : theta (degrees) - angle from the z axis
-         *                 phi (degrees) - angle in xy plane from x axis toward
-         *                                     y axis (same as longitude)
-         *                 radius (meters?) - distance from origin
-         */
-      // use std::valarray<double> theArray;  -- inherit from Triple
+          *    Cartesian  : X,Y,Z in meters
+          *    Geocentric : Latitude(degrees N), Longitude(degrees E),
+          *                    Radius (meters)
+          *    Geodetic   : Latitude(degrees N), Longitude(degrees E),
+          *                    Height above ellipsoid (meters)
+          *    Spherical  : theta (degrees) - angle from the z axis
+          *                 phi (degrees) - angle in xy plane from x axis
+          *                    toward y axis (same as longitude)
+          *                 radius (meters?) - distance from origin
+          */
+         // use std::valarray<double> theArray;  -- inherit from Triple
 
          /// semi-major axis of Earth (meters)
       double AEarth;
@@ -956,7 +986,7 @@ namespace gpstk
 
    };   // end class Position
 
-   //@}
+      //@}
 
 }  // namespace gpstk
 

@@ -52,15 +52,20 @@
 #include "FFData.hpp"
 #include "StringUtils.hpp"
 
-
 namespace gpstk
 {
-   /** @addtogroup formattedfile */
-   //@{
+      /** @defgroup FileHandling Formatted File I/O
+       *
+       * This module includes the data types used for File I/O of
+       * structured data formats, for example, RINEX.
+       */
 
       /// This gets thrown if a valid EOF occurs on formattedGetLine.
       /// @ingroup exceptionclass
    NEW_EXCEPTION_CLASS(EndOfFile, gpstk::FFStreamError);
+
+      /// @ingroup FileHandling
+      //@{
 
       /**
        * Formatted File Stream (FFStream).
@@ -116,56 +121,40 @@ namespace gpstk
    class FFStream : public std::fstream
    {
    public:
+         /// Default constructor, initialize internal data
+      FFStream();
 
-         /// Virtual destructor
-      virtual ~FFStream(void) {};
-
-
-         /**
-          * Default constructor
-          */
-      FFStream()
-            : recordNumber(0) {};
-
+         /// Virtual destructor, close the stream etc.
+      virtual ~FFStream();
 
          /** Common constructor.
           *
-          * @param fn file name.
-          * @param mode file open mode (std::ios)
+          * @param[in] fn file name.
+          * @param[in] mode file open mode (std::ios)
           */
-      FFStream( const char* fn, std::ios::openmode mode=std::ios::in )
-         : std::fstream(fn, mode), recordNumber(0), filename(fn)
-      { clear(); }
-
+      FFStream( const char* fn, std::ios::openmode mode=std::ios::in );
 
          /** Common constructor.
           *
-          * @param fn file name.
-          * @param mode file open mode (std::ios)
+          * @param[in] fn file name.
+          * @param[in] mode file open mode (std::ios)
           */
-      FFStream( const std::string& fn, std::ios::openmode mode=std::ios::in )
-         : std::fstream(fn.c_str(), mode), recordNumber(0), filename(fn)
-      { clear(); };
-
+      FFStream( const std::string& fn, std::ios::openmode mode=std::ios::in );
 
          /**
-          * Overrides fstream:open so derived classes can make appropriate
+          * Overrides fstream::open so derived classes can make appropriate
           * internal changes (line count, header info, etc).
           */
       virtual void open( const char* fn, std::ios::openmode mode );
 
-
          /**
           * Overrides fstream:open so derived classes can make appropriate
           * internal changes (line count, header info, etc).
           */
-      virtual void open( const std::string& fn, std::ios::openmode mode )
-      { open( fn.c_str(), mode ); };
-
+      virtual void open( const std::string& fn, std::ios::openmode mode );
 
          /// A function to help debug FFStreams
       void dumpState(std::ostream& s = std::cout) const;
-
 
          /**
           * Throws \a mostRecentException only if the stream is enabled
@@ -176,47 +165,19 @@ namespace gpstk
           * @endcode
           * where \a ffstreamobject is the name of your stream object.
           */
-      inline void conditionalThrow(void) throw(FFStreamError)
-      {
-
-         if (exceptions() & std::fstream::failbit)
-         {
-            GPSTK_THROW(mostRecentException);
-         }
-
-      };
+      inline void conditionalThrow(void) throw(FFStreamError);
 
          /// Check if the input stream is the kind of RinexObsStream
-      static bool IsFFStream(std::istream& i)
-      {
-         try
-         { 
-            (void)dynamic_cast<FFStream&>(i);
-         }
-         catch(...)
-         {
-            return false;
-         }
+      static bool isFFStream(std::istream& i);
 
-         return true;
-      }
-
-
-         ///@name Data members
-         ///@{
          /// This stores the most recently thrown exception.
       FFStreamError mostRecentException;
-
 
          /// keeps track of the number of records read
       unsigned int recordNumber;
 
-
          /// file name
       std::string filename;
-
-         //@}
-
 
          /// FFData is a friend so it can access the try* functions.
       friend class FFData;
@@ -236,10 +197,23 @@ namespace gpstk
       virtual void tryFFStreamPut(const FFData& rec)
          throw(FFStreamError, gpstk::StringUtils::StringException);
 
+   private:
+         /// Initialize internal data structures according to file name & mode
+      void init(const char* fn, std::ios::openmode mode);
 
    }; // End of class 'FFStream'
 
       //@}
+
+
+   void FFStream ::
+   conditionalThrow(void) throw(FFStreamError)
+   {
+      if (exceptions() & std::fstream::failbit)
+      {
+         GPSTK_THROW(mostRecentException);
+      }
+   }
 
 }  // End of namespace gpstk
 #endif   // GPSTK_FFSTREAM_HPP

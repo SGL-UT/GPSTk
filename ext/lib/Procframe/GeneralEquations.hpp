@@ -53,7 +53,6 @@
 
 namespace gpstk
 {
-   using namespace std;
 
 
 
@@ -225,7 +224,7 @@ namespace gpstk
       { pSatClockStoModel = pModel; return (*this); };
 
 
-      //
+         //
       virtual bool getEstimatePosition(void) const
       { return estimatePosition; };
 
@@ -254,7 +253,7 @@ namespace gpstk
       { return sourceSatDataMap; }
 
 
-      void dumpSourceSatData( ostream& s,
+      void dumpSourceSatData( std::ostream& s,
                               SourceSatDataMap dataMap );
 
 
@@ -355,7 +354,7 @@ namespace gpstk
          /// Pointer to stochastic model for phase biases WL2
       StochasticModel* pBiasStoModelWL2;
 
-      /// Pointer to stochastic model for phase biases WL3
+         /// Pointer to stochastic model for phase biases WL3
       StochasticModel* pBiasStoModelWL3;
 
          /// Object holding the useful satellite data for pick up reference sat.
@@ -402,7 +401,7 @@ namespace gpstk
       Variable trop(TypeID::wetMap,pTropStoModel,true,false,0.25);
       Variable amb(TypeID::BLC,pBiasStoModelLC,true,true,4e14,1.0,true);
 
-      //((PhaseAmbiguityModel*)pBiasStoModelLC)->setWatchSatArc(false);
+         //((PhaseAmbiguityModel*)pBiasStoModelLC)->setWatchSatArc(false);
 
       Variable prefitPC(TypeID::prefitC);
       Variable prefitLC(TypeID::prefitL);
@@ -416,7 +415,7 @@ namespace gpstk
 
       equPCRover.header.equationSource = source;
 
-      // Rover phase equation description
+         // Rover phase equation description
       Equation equLCRover( prefitLC );
       equLCRover.addVariable(dx);
       equLCRover.addVariable(dy);
@@ -428,7 +427,7 @@ namespace gpstk
       equLCRover.setWeight(10000.0);     // 100.0 * 100.0
       equLCRover.header.equationSource = source;
 
-      // Setup equation system
+         // Setup equation system
       EquationSystem system;
       system.addEquation(equPCRover);
       system.addEquation(equLCRover);

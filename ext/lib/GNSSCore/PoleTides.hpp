@@ -56,7 +56,7 @@
 namespace gpstk
 {
 
-      /** @addtogroup GPSsolutions */
+      /// @ingroup GPSsolutions 
       //@{
 
       /** This class computes the effect of pole tides, or more properly

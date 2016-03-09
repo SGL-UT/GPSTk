@@ -47,87 +47,54 @@
 
 namespace gpstk
 {
-   /// @addtogroup SP3
-   //@{
+      /// @ingroup FileHandling
+      //@{
 
-       /// This class performs file I/O on an SP3 file for the SP3Header
-       /// and SP3Data classes.
-       /// Note that the file format (a, b or c) is stored in the SP3Header (only).
-       /// On input it is set by SP3Header::reallyGetRecord() by the file content;
-       /// for output it may be set (SP3Header::setVersion()) before streaming.
+      /** This class performs file I/O on an SP3 file for the SP3Header
+       * and SP3Data classes.
+       * @note the file format (a, b or c) is stored in the SP3Header
+       *   (only).  On input it is set by SP3Header::reallyGetRecord()
+       *   by the file content; for output it may be set
+       *   (SP3Header::setVersion()) before streaming. */
    class SP3Stream : public FFTextStream
    {
    public:
          /// Default constructor
-      SP3Stream() 
-         : wroteEOF(false),
-           writingMode(false),
-           lastLine(std::string())
-         {}
+      SP3Stream();
       
-         /// Common constructor: open (default: to read)
-         /// @param filename the name of the ASCII SP3 format file to be opened
-         /// @param mode the ios::openmode to be used
+         /** Common constructor: open (default: to read)
+          * @param[in] filename the name of the ASCII SP3 format file
+          *   to be opened
+          * @param[in] mode the ios::openmode to be used */
       SP3Stream(const char* filename,
-                std::ios::openmode mode=std::ios::in)
-            : FFTextStream(filename, mode)
-            { open(filename, mode); }
+                std::ios::openmode mode=std::ios::in);
 
          /// destructor; override to force 'close'
-      virtual ~SP3Stream()
-      {
-         if(writingMode && !wroteEOF) close();
-      }
+      virtual ~SP3Stream();
 
          /// override close() to write EOF line
-      virtual void close(void) throw(Exception)
-      {
-         try {
-            // if writing, add the final line
-            if(writingMode && !wroteEOF) {
-               (*this) << "EOF\n"; 
-               wroteEOF = true;
-            }
-            FFTextStream::close();
-         }
-         catch(std::exception& e) {
-            Exception ge(e.what());
-            GPSTK_THROW(ge);
-         }
-      }
+      virtual void close(void) throw(Exception);
 
-         /// override open() to reset the header
-         /// @param filename the name of the ASCII SP3 format file to be opened
-         /// @param mode the ios::openmode to be used
-      virtual void open(const char* filename, std::ios::openmode mode)
-      {
-         FFTextStream::open(filename, mode);
-         header = SP3Header();
-         warnings.clear();
+         /** override open() to reset the header
+          * @param[in] filename the name of the ASCII SP3 format file
+          *   to be opened
+          * @param[in] mode the ios::openmode to be used */
+      virtual void open(const char* filename, std::ios::openmode mode);
 
-         // for close() later
-         wroteEOF = writingMode = false;
-         if( (mode & std::ios::out) && !(mode & std::ios::in) )
-            writingMode = true;
-
-         // this is necessary in order for SP3Data::reallyGetRecord() to
-         // process the last line in the file when there is no EOF record...why?
-         if(mode & std::ios::in) exceptions(std::ifstream::failbit);
-      }
-
-         ///@name data members
-         //@{
       SP3Header header;     ///< SP3Header for this file
       bool wroteEOF;        ///< True if the final 'EOF' has been read.
       bool writingMode;     ///< True if the stream is open in 'out', not 'in', mode
       CommonTime currentEpoch;   ///< Time from last epoch record read
       std::string lastLine;      ///< Last line read, perhaps not yet processed
       std::vector<std::string> warnings; ///< warnings produced by reallyGetRecord()s
-         //@}
+
+   private:
+         /// Initialize internal data structures according to file mode
+      void init(std::ios::openmode);
 
    }; // class SP3Stream
    
-   //@}
+      //@}
    
 } // namespace gpstk
 

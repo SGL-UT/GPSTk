@@ -51,7 +51,7 @@
 
 namespace gpstk
 {
-      /** @addtogroup GeoDynamics */
+      /// @ingroup GeoDynamics 
       //@{
 
       /**
@@ -283,22 +283,22 @@ namespace gpstk
       Matrix<double> da_dv = fm.partialV();
       Matrix<double> da_dp = fm.partialP();
 
-      s<<"a ["<<a.size()<<"]\n{\n"
-         <<a<<endl<<"}\n\n";
+      s << "a [" << a.size() << "]\n{\n"
+          << a << std::endl << "}\n\n";
 
-      s<<"da/dr ["<<da_dr.rows()<<","<<da_dr.cols()<<"]\n{\n"
-         <<da_dr<<endl<<"}\n\n";
+      s << "da/dr [" << da_dr.rows() << "," << da_dr.cols() << "]\n{\n"
+          << da_dr << std::endl << "}\n\n";
 
-      s<<"da/dv ["<<da_dv.rows()<<","<<da_dv.cols()<<"]\n{\n"
-         <<da_dv<<endl<<"}\n\n";
+      s << "da/dv [" << da_dv.rows() << "," << da_dv.cols() << "]\n{\n"
+          << da_dv << std::endl << "}\n\n";
 
-      s<<"da/dp ["<<da_dp.rows()<<","<<da_dp.cols()<<"]\n{\n"
-         <<da_dp<<endl<<"}\n\n";
+      s << "da/dp [" << da_dp.rows() << "," << da_dp.cols() << "]\n{\n"
+          << da_dp << std::endl << "}\n\n";
 
       Matrix<double> A = fm.getAMatrix();
 
-      s<<"A = ["<<A.rows()<<","<<A.cols()<<"]\n{\n"
-         <<A<<endl<<"}\n\n";
+      s << "A = [" << A.rows() << "," << A.cols() << "]\n{\n"
+          << A << std::endl << "}\n\n";
 
       return s;
 

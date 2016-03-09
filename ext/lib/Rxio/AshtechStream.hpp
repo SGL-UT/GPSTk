@@ -89,6 +89,10 @@ namespace gpstk
             return t - static_cast<std::streampos>(rawData.length());
       }
 
+         /// Ashtech data is always big endian
+      virtual bool isStreamLittleEndian() const throw()
+      { return false; }
+
    }; // class AshtechStream
 } // namespace gpstk
 

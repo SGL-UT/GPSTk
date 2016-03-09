@@ -17,9 +17,9 @@
 
 # Generate the merged file
 
-message(STATUS "running ${TEST_PROG} -i ${SOURCEDIR}/${INFILE1} -i ${SOURCEDIR}/${INFILE2} -o ${TARGETDIR}/${TESTBASE}.out")
+message(STATUS "running ${TEST_PROG} -o ${TARGETDIR}/${TESTBASE}.out ${SOURCEDIR}/${INFILE1} ${SOURCEDIR}/${INFILE2}")
 
-execute_process(COMMAND ${TEST_PROG} -i ${SOURCEDIR}/${INFILE1} -i ${SOURCEDIR}/${INFILE2} -o ${TARGETDIR}/${TESTBASE}.out
+execute_process(COMMAND ${TEST_PROG} -o ${TARGETDIR}/${TESTBASE}.out ${SOURCEDIR}/${INFILE1} ${SOURCEDIR}/${INFILE2}
                 OUTPUT_QUIET
                 RESULT_VARIABLE HAD_ERROR)
 if(HAD_ERROR)

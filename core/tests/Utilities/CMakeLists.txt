@@ -4,6 +4,10 @@ add_executable(BinUtils_T BinUtils_T.cpp)
 target_link_libraries(BinUtils_T gpstk)
 add_test(Utilities_BinUtils BinUtils_T)
 
+add_executable(Exception_T Exception_T.cpp)
+target_link_libraries(Exception_T gpstk)
+add_test(Utilities_Exception Exception_T)
+
 add_executable(StringUtils_T StringUtils_T.cpp)
 target_link_libraries(StringUtils_T gpstk)
 add_test(Utilities_StringUtils StringUtils_T)

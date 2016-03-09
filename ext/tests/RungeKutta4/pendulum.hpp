@@ -25,8 +25,6 @@
 #include <math.h>
 #include "RungeKutta4.hpp"
 
-using namespace gpstk;
-using namespace std;
 
 //A pendulum is of the equation d^2x/dt^2 + (g/L)*sin(x) = 0
 

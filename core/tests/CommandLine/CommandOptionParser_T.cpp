@@ -1624,6 +1624,15 @@ int CommandOptionParser_T::testOptionPresence()
 
    defaultCommandOptionList.clear();
 
+#ifdef BROKENTEST
+
+      /** JMK 2015/11/17 : These tests are based on an incorrect
+       * understanding of the purpose behind GroupOr and GroupAnd.
+       * Neither of these meta-options imply any sort of requirements,
+       * they are just ways to do boolean logic on groups of options,
+       * to be subsequently used in options that *do* have
+       * requirements. */
+
    try  // Parse with a satisfied CommandOptionGroupOr
    {
       CommandOptionWithAnyArg  cmdOptF('F', "foo", "Foo", false);
@@ -1756,6 +1765,7 @@ int CommandOptionParser_T::testOptionPresence()
    }
 
    defaultCommandOptionList.clear();
+#endif
 
    return tester.countFails();
 }

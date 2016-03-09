@@ -50,11 +50,12 @@
 namespace gpstk
 {
 
-      /** @addtogroup math */
-      /** @{ */
+      /// @ingroup MathGroup
+      //@{
  
-      /** Conventional statistics for two samples.  Constructor does the same as
-       * clear(); use this when starting a new series of input samples.
+      /** Conventional statistics for two samples.  Constructor does
+       * the same as clear(); use this when starting a new series of
+       * input samples.
        */
    template <class T>
    class BivarStats
@@ -117,21 +118,21 @@ namespace gpstk
 
       T correlation(void) const;
 
-      /// return conditional uncertainty = uncertainty y given x
+         /// return conditional uncertainty = uncertainty y given x
       T sigmaYX(void) const;
 
-      /// compute intercept + x * slope
+         /// compute intercept + x * slope
       T eval(const T& x) const {return intercept() + x * slope();};
 
-      /// Combine two BivarStats (assumed to be taken from the same or
-      /// equivalent samples).
+         /// Combine two BivarStats (assumed to be taken from the same or
+         /// equivalent samples).
       BivarStats<T>& operator+=(BivarStats<T>& S);
 
       Stats<T> estimateDeviation(const std::vector< std::pair<T, T> >& d) const;
 
    private:
 
-      /// Number of samples added to the statistics so far.
+         /// Number of samples added to the statistics so far.
       size_t ns;
 
       T xMin, xMax, yMin, yMax;
@@ -140,7 +141,9 @@ namespace gpstk
       T sumX, sumY, sumX2, sumY2, sumXY;
    }; // end class BivarStats
 
-   /// Output operator for BivarStats class
+      //@}
+
+      /// Output operator for BivarStats class
    template <class T>
    std::ostream& operator<<(std::ostream& s, const BivarStats<T>& BVS) 
    {
@@ -190,7 +193,7 @@ namespace gpstk
 
    template<class T>
    BivarStats<T>::BivarStats(const Vector<T>& x, const Vector<T>& y, bool s)
-      :ns(0), scaled(s)
+         :ns(0), scaled(s)
    {
       add(x,y);
    }
@@ -321,7 +324,7 @@ namespace gpstk
          subtract(x(i), y(i));
    }
 
-   /// This assumes that the accessors will check for n>0, which they do.
+      /// This assumes that the accessors will check for n>0, which they do.
    template<class T>
    void BivarStats<T>::clear(void) { ns=0; }
 
@@ -409,8 +412,8 @@ namespace gpstk
       else return T();
    }
 
-   /// combine two BivarStats (assumed to be taken from the same or
-   /// equivalent samples)
+      /// combine two BivarStats (assumed to be taken from the same or
+      /// equivalent samples)
    template<class T>
    BivarStats<T>& BivarStats<T>::operator+=(BivarStats<T>& S)
    {
@@ -428,7 +431,7 @@ namespace gpstk
       ns += S.ns;
       return *this;
    }
-      /** @} */ // end of  @addtogroup math
+      ///@}
 
    template<class T>
    Stats<T> BivarStats<T>::estimateDeviation(const std::vector< std::pair<T, T> >& d) const

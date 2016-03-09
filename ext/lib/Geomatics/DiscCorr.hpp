@@ -34,19 +34,18 @@
 //
 //=============================================================================
 
-/**
- * @file DiscCorr.hpp
- * GPS phase discontinuity correction. Given a SatPass object
- * containing dual-frequency pseudorange and phase for an entire satellite pass,
- * and a configuration object (as defined herein), detect discontinuities in
- * the phase and, if possible, estimate their size.
- * Output is in the form of Rinex editing commands (see class RinexEditor).
- */
+/// @file DiscCorr.hpp
+/// GPS phase discontinuity correction. Given a SatPass object
+/// containing dual-frequency pseudorange and phase for an entire satellite pass,
+/// and a configuration object (as defined herein), detect discontinuities in
+/// the phase and, if possible, estimate their size.
+/// Output is in the form of Rinex editing commands (see class RinexEditor).
 
 #ifndef GPSTK_DISCONTINUITY_CORRECTOR_INCLUDE
 #define GPSTK_DISCONTINUITY_CORRECTOR_INCLUDE
 
-#include "GSatID.hpp"
+#include "Epoch.hpp"
+#include "RinexSatID.hpp"
 #include "RinexObsHeader.hpp"
 #include "SatPass.hpp"
 #include "Exception.hpp"
@@ -82,7 +81,19 @@ namespace gpstk {
       void setParameter(std::string label, double value) throw(gpstk::Exception);
 
          /// Get the parameter in the configuration corresponding to label
-      double getParameter(std::string label) throw() { return CFG[label]; }
+      double getParameter(std::string label) throw()
+      {
+         if(CFG.find(label) == CFG.end()) return 0.0;    // TD throw?
+         return CFG[label];
+      }
+
+         /// Get the description of a parameter
+      std::string getDescription(std::string label) throw()
+      {
+         if(CFGdescription.find(label) == CFGdescription.end())
+            return std::string("Invalid label");
+         return CFGdescription[label];
+      }
 
          /// Tell GDCconfiguration to which stream to send debugging output.
       void setDebugStream(std::ostream& os) { p_oflog = &os; }
@@ -109,7 +120,7 @@ namespace gpstk {
 
       void initialize(void);
 
-      static std::string GDCVersion;
+      static const std::string GDCVersion;
 
    }; // end class GDCconfiguration
 
@@ -126,6 +137,8 @@ namespace gpstk {
          nGFslipGross = nWLslipGross = 0;
          nGFslipSmall = nWLslipSmall = 0;
          WLsig = GFsig = 0.0;
+         sat = "";
+         GLOn = -99;
 
          std::string::size_type pos;
          std::string word,line;
@@ -148,7 +161,8 @@ namespace gpstk {
             lines.push_back(word);
          }
 
-         for(size_t i=0; i<lines.size(); i++) {
+         ptsdeleted = ptsgood = 0;
+         for(int i=0; i<lines.size(); i++) {
             line = lines[i];
             if(line.empty()) continue;
             // split line into words
@@ -172,10 +186,19 @@ namespace gpstk {
 
             line = lines[i];
             //std::cout << line << std::endl;
-            if(line.find("insufficient data",0) != std::string::npos)
+            if(line.find("WL sigma in cycles",0) != std::string::npos)
                passN = strtol(words[1].c_str(),0,10);
-            if(line.find("list of Segments",0) != std::string::npos)
+            else if(line.find("insufficient data",0) != std::string::npos)
                passN = strtol(words[1].c_str(),0,10);
+            else if(line.find("list of Segments",0) != std::string::npos)
+               passN = strtol(words[1].c_str(),0,10);
+            if(line.find("bias(wl)",0) != std::string::npos) {
+               sat = words[2];
+               word = words[5];
+               pos = word.find_first_of("/");
+               if(pos > 0) word = words[5].substr(0,pos);
+               ptsgood += strtol(word.c_str(),0,10);
+            }
             if(line.find("WL slip gross",0) != std::string::npos)
                nWLslipGross = strtol(words[3].c_str(),0,10);
             if(line.find("WL slip small",0) != std::string::npos)
@@ -188,40 +211,58 @@ namespace gpstk {
                GFsig = strtod(words[3].c_str(),0);
             if(line.find("WL sigma in cycles",0) != std::string::npos)
                WLsig = strtod(words[3].c_str(),0);
+            if(line.find("points deleted",0) != std::string::npos)
+               ptsdeleted += strtol(words[3].c_str(),0,10);
+            if(line.find("GLONASS frequency channel",0) != std::string::npos)
+               GLOn = strtod(words[3].c_str(),0);
          }
+
          nWLslips = nWLslipGross + nWLslipSmall;
          nGFslips = nGFslipGross + nGFslipSmall;
+
       }  // end constructor/parser
 
-      int passN,nGFslips,nWLslips,nGFslipGross,nGFslipSmall,nWLslipGross,nWLslipSmall;
+      int passN,GLOn;
+      int nGFslips,nWLslips,nGFslipGross,nGFslipSmall,nWLslipGross,nWLslipSmall;
+      int ptsdeleted,ptsgood;
       double WLsig,GFsig;
+      std::string sat;
+
    }; // end class GDCreturn
 
-   /** GPSTK Discontinuity Corrector. Find, and fix if possible, discontinuities
-   * in the GPS carrier phase data, given dual-frequency pseudorange and phase
-   * data for an entire satellite pass. Input is the SatPass object holding the
-   * data, and a GDCconfiguration object giving the parameter values for
-   * the corrector. Output is in the form of a list of strings - editing commands
-   * - that can be parsed and applied using the GPSTK Rinex Editor (see Prgm
-   * EditRinex and the RinexEditor class). Also, the L1 and L2 arrays in the input
-   * SatPass are corrected. The routine will mark bad points in the input data
-   * using the SatPass flag.
-   * @param SP       SatPass object containing the input data.
-   * @param config   GDCconfiguration object.
-   * @param EditCmds vector<string> (output) containing RinexEditor commands.
-   * @param retMsg   string summary of results: see output 'GDC' and parseGDCReturn()
-   * @return 0 for success, otherwise return an Error code;
-   * codes are defined as follows.
-   * const int BadInput = -5      input data does not have the required obs types
-   * const int NoData = -4        insufficient input data, or all data is bad
-   * const int FatalProblem = -3  DT is not set, or memory problem
-   * const int Singularity = -1   polynomial fit fails
-   * const int ReturnOK = 0       normal return
-   */
+   /// GPSTK Discontinuity Corrector. Find, and fix if possible, discontinuities
+   /// in the GPS or GLONASS carrier phase data, given dual-frequency pseudorange and
+   /// phase data for an entire satellite pass.
+   /// Input is the SatPass object holding the data, and a GDCconfiguration object
+   /// giving the parameter values for the corrector.
+   /// Output is in the form of a list of strings - editing commands - that can be
+   /// parsed and applied using the GPSTK Rinex Editor (see Prgm EditRinex and the
+   /// RinexEditor class). Also, the L1 and L2 arrays in the input SatPass are
+   /// corrected. The routine will mark bad points in the input data using
+   /// the SatPass flag.
+   /// Glonass satellites require a frequency channel integer; the caller may pass
+   /// this in, or let the GDC compute it from the data - if it fails it returns -6.
+   ///
+   /// @param SP       SatPass object containing the input data.
+   /// @param config   GDCconfiguration object.
+   /// @param EditCmds vector<string> (output) containing RinexEditor commands.
+   /// @param retMsg   string summary of results: see 'GDC' in output, class GDCreturn
+   ///      if retMsg is not empty on call, replace 'GDC' with retMsg.
+   /// @param GLOn     GLONASS frequency channel (-7<=n<7), -99 means UNKNOWN
+   /// @return 0 for success, otherwise return an Error code;
+   ///
+   /// codes are defined as follows.
+   /// const int GLOfail = -6       failed to find the Glonass frequency channel
+   /// const int BadInput = -5      input data does not have the required obs types
+   /// const int NoData = -4        insufficient input data, or all data is bad
+   /// const int FatalProblem = -3  DT is not set, or memory problem
+   /// const int Singularity = -1   polynomial fit fails
+   /// const int ReturnOK = 0       normal return
    int DiscontinuityCorrector(SatPass& SP,
                               GDCconfiguration& config,
                               std::vector<std::string>& EditCmds,
-                              std::string& retMsg)
+                              std::string& retMsg,
+                              int GLOn=-99)
       throw(Exception);
 
    //@}

@@ -34,7 +34,8 @@
 //
 //=============================================================================
 
-/// @file BDSWeekSecond.hpp  Define BDS week and seconds-of-week; inherits WeekSecond
+/// @file BDSWeekSecond.hpp Define BDS week and seconds-of-week;
+/// inherits WeekSecond
 
 #ifndef GPSTK_BDSWEEKSECOND_HPP
 #define GPSTK_BDSWEEKSECOND_HPP
@@ -43,68 +44,72 @@
 
 namespace gpstk
 {
-   /// This class handles the week and seconds-of-week of the BDS TimeTag classes.
-   /// The BDS week is specified by
-   /// 13-bit ModWeek, rollover at 8192, bitmask 0x1FFF and epoch BDS_EPOCH_MJD
+      /// @ingroup TimeHandling
+      //@{
+
+      /** This class handles the week and seconds-of-week of the BDS
+       * TimeTag classes.  The BDS week is specified by
+       * 13-bit ModWeek, rollover at 8192, bitmask 0x1FFF and
+       * epoch BDS_EPOCH_MJD */
    class BDSWeekSecond : public WeekSecond
    {
    public:
 
-      /// Constructor.
+         /// Constructor.
       BDSWeekSecond(unsigned int w = 0,
-                       double s = 0.,
-                       TimeSystem ts = TimeSystem::BDT)
-         : WeekSecond(w,s)
+                    double s = 0.,
+                    TimeSystem ts = TimeSystem::BDT)
+            : WeekSecond(w,s)
       { timeSystem = ts; }
 
-      /// Constructor from CommonTime
+         /// Constructor from CommonTime
       BDSWeekSecond( const CommonTime& right )
       {
          convertFromCommonTime( right );
       }
 
-      /// Destructor.
+         /// Destructor.
       ~BDSWeekSecond() throw() {}
 
-      // the rest define the week rollover and starting time
+         // the rest define the week rollover and starting time
 
-      /// Return the number of bits in the bitmask used to get the ModWeek from the
-      /// full week.
+         /** Return the number of bits in the bitmask used to get the
+          * ModWeek from the full week. */
       int Nbits(void) const
       {
          static const int n=13;
          return n;
       }
 
-      /// Return the bitmask used to get the ModWeek from the full week.
+         /// Return the bitmask used to get the ModWeek from the full week.
       int bitmask(void) const
       {
          static const int bm=0x1FFF;
          return bm;
       }
 
-      /// Return the Modified Julian Date (MJD) of epoch for this system.
+         /// Return the Modified Julian Date (MJD) of epoch for this system.
       long MJDEpoch(void) const
       {
          static const long e=BDS_EPOCH_MJD;
          return e;
       }
 
-      /// Return a string containing the characters that this class
-      /// understands when printing times.
+         /// Return a string containing the characters that this class
+         /// understands when printing times.
       virtual std::string getPrintChars() const
       {
          return "RDewgP";
       }
 
-      /// Return a string containing the default format to use in printing.
+         /// Return a string containing the default format to use in printing.
       virtual std::string getDefaultFormat() const
       {
          return "%D %g %P";
       }
 
-      /// This function formats this time to a string.  The exceptions
-      /// thrown would only be due to problems parsing the fmt string.
+         /// This function formats this time to a string.  The exceptions
+         /// thrown would only be due to problems parsing the fmt string.
       virtual std::string printf(const std::string& fmt) const
       {
          try {
@@ -129,8 +134,8 @@ namespace gpstk
          { GPSTK_RETHROW(e); }
       }
 
-      /// This function works similarly to printf.  Instead of filling
-      /// the format with data, it fills with error messages.
+         /// This function works similarly to printf.  Instead of filling
+         /// the format with data, it fills with error messages.
       virtual std::string printError(const std::string& fmt) const
       {
          try {
@@ -155,13 +160,13 @@ namespace gpstk
          { GPSTK_RETHROW(e); }
       }
 
-      /// Set this object using the information provided in \a info.
-      /// @param info the IdToValue object to which this object shall be set.
-      /// @return true if this object was successfully set using the
-      ///  data in \a info, false if not.
+         /** Set this object using the information provided in \a info.
+          * @param[in] info the IdToValue object to which this object
+          *   shall be set.
+          * @return true if this object was successfully set using the
+          *   data in \a info, false if not. */
       bool setFromInfo( const IdToValue& info )
       {
-         using namespace gpstk::StringUtils;
 
          for( IdToValue::const_iterator i = info.begin(); i != info.end(); i++ )
          {
@@ -169,19 +174,19 @@ namespace gpstk
             switch ( i->first )
             {
                case 'R':
-                  setEpoch( asInt( i->second ) );
+                  setEpoch( gpstk::StringUtils::asInt( i->second ) );
                   break;
                case 'D':
-                  week = asInt( i->second );
+                  week = gpstk::StringUtils::asInt( i->second );
                   break;
                case 'e':
-                  setModWeek( asInt( i->second ) );
+                  setModWeek( gpstk::StringUtils::asInt( i->second ) );
                   break;
                case 'w':
-                  sow = static_cast<double>(asInt(i->second))*SEC_PER_DAY;
+                  sow = static_cast<double>(gpstk::StringUtils::asInt(i->second))*SEC_PER_DAY;
                   break;
                case 'g':
-                  sow = asDouble( i->second );
+                  sow = gpstk::StringUtils::asDouble( i->second );
                   break;
                case 'P':
                   timeSystem.fromString(i->second);
@@ -197,6 +202,8 @@ namespace gpstk
       }
 
    }; // end class BDSWeekSecond
+
+      //@}
 
 } // namespace
 

@@ -49,61 +49,62 @@
 
 namespace vdraw
 {
-   /** \addtogroup BasicVectorGraphics */ 
-   //@{
+      /// @ingroup BasicVectorGraphics
+      //@{
 
-   /**
-    * This class defines a simple line between a set of points. The line can
-    * have a user defined appearance, specified using a StrokeStyle. 
-    */
+      /**
+       * This class defines a simple line between a set of points. The line can
+       * have a user defined appearance, specified using a StrokeStyle. 
+       */
    class Polygon : public Path, public Fillable {
 
    public:
  
-      /**
-       * Constructor. Creates a polygon from given set of points. No fill color nor
-       * line style has been specified.
-       * @param iPath List of vertices
-       */
+         /**
+          * Constructor. Creates a polygon from given set of
+          * points. No fill color nor line style has been specified.
+          * @param iPath List of vertices
+          */
       Polygon(const Path& iPath) 
             : Path(iPath), Fillable()
-         {}
+      {}
 
-      /**
-       * Constructor. Creates a polygon from given set of points, and 
-       * specifies the appearance of the polygon edges.
-       * No fill color is specified.
-       * @param iPath List of vertices
-       * @param istyle appearance of the edges
-       */
+         /**
+          * Constructor. Creates a polygon from given set of points, and 
+          * specifies the appearance of the polygon edges.
+          * No fill color is specified.
+          * @param iPath List of vertices
+          * @param istyle appearance of the edges
+          */
       Polygon(const Path& iPath, 
               const StrokeStyle& istyle) 
             : Path(iPath), Fillable(istyle)
-         {}
+      {}
 
-      /**
-       * Constructor. Creates a polygon from given set of points, and specifies the
-       * appearance of the polygon edges and the fill color.
-       * @param iPath List of vertices
-       * @param istyle appearance of the edges
-       * @param iFillColor color inside the polygon
-       */
+         /**
+          * Constructor. Creates a polygon from given set of points,
+          * and specifies the appearance of the polygon edges and the
+          * fill color.
+          * @param iPath List of vertices
+          * @param istyle appearance of the edges
+          * @param iFillColor color inside the polygon
+          */
       Polygon(const Path& iPath, 
               const StrokeStyle& istyle,
               const Color& iFillColor) 
             : Path(iPath), Fillable(istyle,iFillColor)
-         {}
+      {}
 
-      /**
-       * Constructor. Creates a polygon from given set of points, and specifies the
-       * appearance of the fill color.
-       * @param iPath List of vertices
-       * @param iFillColor color inside the polygon
-       */
+         /**
+          * Constructor. Creates a polygon from given set of points,
+          * and specifies the appearance of the fill color.
+          * @param iPath List of vertices
+          * @param iFillColor color inside the polygon
+          */
       Polygon(const Path& iPath, 
               const Color& iFillColor) 
             : Path(iPath), Fillable(iFillColor)
-         {}
+      {}
 
 
    protected:
@@ -112,7 +113,7 @@ namespace vdraw
       
    }; // class Polygon
 
-   //@}
+      //@}
 
 } // namespace vdraw
 

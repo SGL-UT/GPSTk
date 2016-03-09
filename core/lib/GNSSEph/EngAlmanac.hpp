@@ -15,7 +15,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -23,13 +23,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -56,8 +56,9 @@ namespace gpstk
    NEW_EXCEPTION_CLASS(SVNotPresentException, gpstk::InvalidRequest);
 
 
-   /** @addtogroup ephemcalc */
-   //@{
+      /// @ingroup GNSSEph
+      //@{
+
       /**
        * Almanac information for the GPS constellation.  This class
        * encapsulates the almanac navigation message (subframes 4 & 5)
@@ -87,6 +88,17 @@ namespace gpstk
           * @throw InvalidParameter if subframe is valid but not subframe 4-5.
           */
       bool addSubframe(const long subframe[10], const int gpsWeek)
+         throw(gpstk::InvalidParameter);
+
+         /**
+          * Store a subframe in this object.
+          * @param subframe ten word navigation subframe stored in the
+          * 30 least-significant bits of each array index.
+          * @param gpsWeek full GPS week number.
+          * @return true if successful.
+          * @throw InvalidParameter if subframe is valid but not subframe 4-5.
+          */
+      bool addSubframe(const uint32_t subframe[10], const short gpsWeek)
          throw(gpstk::InvalidParameter);
 
          /** This function returns true if data is available for a given
@@ -269,7 +281,7 @@ namespace gpstk
          /// \deprecated use the SatID version
       Xvt svXvt(short prn, const CommonTime& t) const
          throw(SVNotPresentException)
-         { SatID sat(prn,SatID::systemGPS); return svXvt(sat,t); }
+      { SatID sat(prn,SatID::systemGPS); return svXvt(sat,t); }
 
       void dump(std::ostream& s = std::cout, bool checkFlag=true) const;
 
@@ -282,35 +294,32 @@ namespace gpstk
       void checkSVHere(SatID sat) const throw(SVNotPresentException);
 
 
-         /** ionosphere parameters */
+         /** @name Ionosphere Parameters */
          //@{
       double alpha[4];
       double beta[4];
          //@}
 
-         /** UTC Parameters */
+         /** @name UTC Parameters */
          //@{
-      double A0;                   /**< Bias term of difference polynomial */
-      double A1;                   /**< Drift term of difference polynomial */
-      double dt_ls;                /**< time increment due to leap seconds */
-      double dt_lsf;               /**< scheduled future time increment due to
-                                      leap seconds */
-      long t_ot;                   /**< reference time */
-      long t_oa;                   /**< Toa from page id 51 (subframe 5,
-                                      pg 25) */
-      int wn_t;                    /**< reference week of current leap
-                                      second */
-      int wn_lsf;                  /**< week number of last/next leap
-                                      second */
-      short wn_a;                  /**< The 8 bit GPS week of the Almanac from SF5, PG 25 */
-      short alm_wk;                /**< wn_a plus the upper bits from
-                                      a full week number. */
-      unsigned char dn;            /**< reference day # of future leap
-                                      second */
-      SVBitsMap health;            /**< satellite health array */
-      std::string special_msg;     /**< Special message from GPS */
+      double A0;               ///< Bias term of difference polynomial
+      double A1;               ///< Drift term of difference polynomial
+      double dt_ls;            ///< time increment due to leap seconds
+      double dt_lsf;           /**< scheduled future time increment due to
+                                * leap seconds */
+      long t_ot;               ///< reference time
+      long t_oa;               ///< Toa from page id 51 (subframe 5, pg 25)
+      int wn_t;                ///< reference week of current leap second
+      int wn_lsf;              ///< week number of last/next leap second
+      short wn_a;              /**< The 8 bit GPS week of the Almanac
+                                * from SF5, PG 25 */
+      short alm_wk;            /**< wn_a plus the upper bits from a full week
+                                * number. */
+      unsigned char dn;        ///< reference day # of future leap second
+      SVBitsMap health;        ///< satellite health array
+      std::string special_msg; ///< Special message from GPS
 
-      SVBitsMap SV_config;         /**< 4 bit anti-spoofing/SV config sats. */
+      SVBitsMap SV_config;     ///< 4 bit anti-spoofing/SV config sats.
          //@}
 
       AlmOrbits almPRN;
@@ -325,7 +334,8 @@ namespace gpstk
 
 
    std::ostream& operator<<(std::ostream& s, const EngAlmanac& alm);
-   //@}
+
+      //@}
 
 } // namespace
 

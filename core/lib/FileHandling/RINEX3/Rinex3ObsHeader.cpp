@@ -93,6 +93,7 @@ namespace gpstk
 
 
    Rinex3ObsHeader::Rinex3ObsHeader()
+         : PisY(false)
    {
       clear();
    }
@@ -150,7 +151,9 @@ namespace gpstk
       obsTypeList.clear();
       valid  = 0;
       validEoH = false;
-      PisY = false;
+         // Only do this in the constructor so the desired handling of
+         // "P" code in RINEX 2 stays the same.
+         //PisY = false;
       sysPhaseShiftObsID = RinexObsID();
       satSysTemp.clear();
       satSysPrev.clear();
@@ -1287,7 +1290,8 @@ namespace gpstk
 
             // 0/blank numObs means factor applies to all obs types
             // in appropriate obsTypeList
-         if(numObs == 0) numObs = mapObsTypes[satSysTemp].size();
+         if(numObs == 0)
+            numObs = mapObsTypes[satSysTemp].size();
 
          ScaleFacMap tempSfacMap = sysSfacMap[satSysTemp];
          for(i = startPosition;
@@ -1510,10 +1514,11 @@ namespace gpstk
          // If already read, just return.
       if(strm.headerRead == true) return;
 
-         // Since we're reading a new header, we need to reinitialize all our list
-         // structures. All the other objects should be ok.  This also applies if we
-         // threw an exception the first time we read the header and are now re-reading
-         // it.  Some of these could be full and we need to empty them.
+         // Since we're reading a new header, we need to reinitialize
+         // all our list structures. All the other objects should be
+         // ok.  This also applies if we threw an exception the first
+         // time we read the header and are now re-reading it.  Some
+         // of these could be full and we need to empty them.
       clear();
 
       string line;
@@ -1550,9 +1555,10 @@ namespace gpstk
 
       } // end while(not end of header)
 
-         // if RINEX 2, define mapObsTypes from R2ObsTypes and system(s)
-         // this may have to be corrected later using wavelengthFactor
-         // also define mapSysR2toR3ObsID in case version 2 is written out later
+         // if RINEX 2, define mapObsTypes from R2ObsTypes and
+         // system(s) this may have to be corrected later using
+         // wavelengthFactor also define mapSysR2toR3ObsID in case
+         // version 2 is written out later
       if(version < 3)
       {
             // try to determine systems included in the file
@@ -1582,7 +1588,8 @@ namespace gpstk
             syss.push_back("E");
          }
 
-            // given systems and list of R2ObsTypes, compute mapObsTypes and mapSysR2toR3ObsID
+            // given systems and list of R2ObsTypes, compute
+            // mapObsTypes and mapSysR2toR3ObsID
          mapSysR2toR3ObsID.clear();
          for(size_t i=0; i<syss.size(); i++)
          {
@@ -1605,7 +1612,8 @@ namespace gpstk
                GPSTK_RETHROW(fse); 
             }
 
-               // TD if GPS and have wavelengthFactors, add more ObsIDs with tc=N
+               // TD if GPS and have wavelengthFactors, add more
+               // ObsIDs with tc=N
 
             mapObsTypes[syss[i]] = obsids;
          }
@@ -2371,10 +2379,10 @@ namespace gpstk
        *
        * @param type String representing the observation type.
        */
-   int Rinex3ObsHeader::getObsIndex( const std::string& type ) const
+   size_t Rinex3ObsHeader::getObsIndex( const string& type ) const
       throw(InvalidRequest)
    {
-      std::string newType(type);
+      string newType(type);
 
          // 'old-style' type: Let's change it to 'new style'.
       if( newType.size() == 2 )
@@ -2410,44 +2418,39 @@ namespace gpstk
       }
 
          // Extract the GNSS from the newType
-      string sysStr( newType, 0, 1 );
+      string sys( newType, 0, 1 );
+      return getObsIndex(sys, RinexObsID(newType));
+   }
+
+   
+   size_t Rinex3ObsHeader::getObsIndex(const string& sys,
+                                       const RinexObsID& obsID ) const
+      throw(InvalidRequest)
+   {
+         /// typedef std::vector<RinexObsID> RinexObsVec;
+         /// typedef std::map<std::string, RinexObsVec> RinexObsMap;
+         /// RinexObsMap mapObsTypes;         ///< SYS / # / OBS TYPES
+
+         // find the GNSS in the map
+      RinexObsMap::const_iterator it = mapObsTypes.find(sys);
+
+      if (it == mapObsTypes.end())
+      {
+         InvalidRequest ir("GNSS system " + sys + " not stored.");
+         GPSTK_THROW(ir);
+      }
+
+      const RinexObsVec& rov = it->second;
+      for (size_t i=0; i<rov.size(); i++)
+      {
+         if (rov[i] == obsID)
+            return i;
+      }
       
-         // Create a RinexObsID object from current newType
-      RinexObsID robs(newType);
-
-         // We need to look for the GNSS in the map
-      map<std::string,vector<RinexObsID> >::const_iterator it;
-      it = mapObsTypes.find(sysStr);
-
-         // Check if GNSS was found
-      if( it == mapObsTypes.end() )
-      {
-         InvalidRequest ir(sysStr + " is not a valid GNSS!.");
-         GPSTK_THROW(ir);
-      }
-
-         // Extract a copy of the vector of observations types
-      vector<RinexObsID> vecObs(it->second);
-
-      size_t index(0);
-      bool found(false);
-      while( !found && index < vecObs.size() )
-      {
-         found = ( vecObs[index] == robs );
-         index++;
-      }
-      --index;
-
-         // This observation type is not stored
-      if( !found )
-      {
-         InvalidRequest ir(newType + " RinexObsID is not stored!.");
-         GPSTK_THROW(ir);
-      }
-
-      return index;
-
-   }  // End of method 'Rinex3ObsHeader::getObsIndex()'
+      InvalidRequest ir(obsID.asString() + " is not stored in system " + sys + ".");
+      GPSTK_THROW(ir);
+      return 0;
+   }
 
 
    bool Rinex3ObsHeader::compare(const Rinex3ObsHeader& right,

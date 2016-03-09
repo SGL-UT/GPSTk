@@ -15,7 +15,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -23,13 +23,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -50,7 +50,10 @@ class BinexTypes_T
 public:
 
       // constructor
-   BinexTypes_T() : verboseLevel(0) { init(); };
+   BinexTypes_T() : verboseLevel(0)
+   {
+      init();
+   };
 
       // destructor
    virtual ~BinexTypes_T() { };
@@ -101,21 +104,21 @@ private:
 void BinexTypes_T :: init( void )
 {
 
-    TestUtil  test0;
-    string  dataFilePath = test0.getDataPath();
-    string  tempFilePath = test0.getTempPath();
+   TestUtil  test0;
+   string  dataFilePath = test0.getDataPath();
+   string  tempFilePath = test0.getTempPath();
 
-    //---------------------------------------- 
-    // Full file paths
-    //---------------------------------------- 
-    inputUbnxiNums = dataFilePath + gpstk::getFileSep()
-                   + "test_input_binex_types_Ubnxi.txt";
+      //----------------------------------------
+      // Full file paths
+      //----------------------------------------
+   inputUbnxiNums = dataFilePath + gpstk::getFileSep()
+                    + "test_input_binex_types_Ubnxi.txt";
 
-    inputMgfziNums = dataFilePath + gpstk::getFileSep()
-                   + "test_input_binex_types_Mgfzi.txt";
+   inputMgfziNums = dataFilePath + gpstk::getFileSep()
+                    + "test_input_binex_types_Mgfzi.txt";
 
-    readNums(inputUbnxiNums, ubnxiNumList);
-    readNums(inputMgfziNums, mgfziNumList);
+   readNums(inputUbnxiNums, ubnxiNumList);
+   readNums(inputMgfziNums, mgfziNumList);
 }
 
 
@@ -127,7 +130,7 @@ bool BinexTypes_T :: readNums(const string& filename,
 
    if (!ifs.good())
       return false;
-   
+
    while (ifs.good())
    {
       string  line;
@@ -137,7 +140,7 @@ bool BinexTypes_T :: readNums(const string& filename,
       string::size_type  hashPos = line.find('#');
       if (hashPos != string::npos)
       {
-         line.erase(hashPos);         
+         line.erase(hashPos);
       }
          // ignore empty lines
       string::size_type  nonWhitePos = line.find_first_not_of(" \t");
@@ -176,9 +179,9 @@ int BinexTypes_T :: doUbnxiInitializationTests()
           << " ; Actual Value = " << actualValue
           << " ; Expected Size = " << 1
           << " ; Actual Size = " << actualSize;
-       
+
       tester.assert( (  (0 == actualValue)
-                     && (1 == actualSize) ),
+                        && (1 == actualSize) ),
                      oss.str(), __LINE__ );
    }
    catch (Exception& e)
@@ -193,22 +196,22 @@ int BinexTypes_T :: doUbnxiInitializationTests()
    for ( ; numIter != ubnxiNumList.end(); ++numIter)
    {
       try
-      {        
+      {
             // validate value and size of each number
-          BinexData::UBNXI  u(numIter->value);
+         BinexData::UBNXI  u(numIter->value);
 
-          unsigned long  actualValue = (unsigned long)u;
-          size_t         actualSize  = u.getSize();
+         unsigned long  actualValue = (unsigned long)u;
+         size_t         actualSize  = u.getSize();
 
-          ostringstream  oss;
-          oss << "Expected Value = " << numIter->value
-              << " ; Actual Value = " << actualValue
-              << " ; Expected Size = " << numIter->size
-              << " ; Actual Size = " << actualSize;
-           
-          tester.assert( (  (numIter->value == actualValue)
-                         && (numIter->size  == actualSize) ),
-                         oss.str(), __LINE__ );
+         ostringstream  oss;
+         oss << "Expected Value = " << numIter->value
+             << " ; Actual Value = " << actualValue
+             << " ; Expected Size = " << numIter->size
+             << " ; Actual Size = " << actualSize;
+
+         tester.assert( (  (numIter->value == actualValue)
+                           && (numIter->size  == actualSize) ),
+                        oss.str(), __LINE__ );
       }
       catch (Exception& e)
       {
@@ -253,9 +256,9 @@ int BinexTypes_T :: doUbnxiEncodeDecodeTests()
                 << " ; Expected Size = " << numIter->size
                 << " ; Actual Size = " << actualSize
                 << " ; Endian = " << (isLittleEndian ? "little" : "BIG");
-             
+
             tester.assert( (  (numIter->value == actualValue)
-                           && (numIter->size  == actualSize) ),
+                              && (numIter->size  == actualSize) ),
                            oss.str(), __LINE__ );
          }
          catch (Exception& e)
@@ -263,7 +266,7 @@ int BinexTypes_T :: doUbnxiEncodeDecodeTests()
                // was this an expected exception?
             ostringstream  oss;
             oss << "unexpected exception encoding/decoding UBNXI" << e;
-            tester.assert( (numIter->size <= 0), oss.str(), __LINE__ );            
+            tester.assert( (numIter->size <= 0), oss.str(), __LINE__ );
          }
       }
    }
@@ -290,9 +293,9 @@ int BinexTypes_T :: doMgfziInitializationTests()
           << " ; Actual Value = " << actualValue
           << " ; Expected Size = " << 1
           << " ; Actual Size = " << actualSize;
-         
+
       tester.assert( (  (0 == actualValue)
-                     && (1 == actualSize) ),
+                        && (1 == actualSize) ),
                      oss.str(), __LINE__ );
    }
    catch (Exception& e)
@@ -309,20 +312,20 @@ int BinexTypes_T :: doMgfziInitializationTests()
       try
       {
             // validate value and size of each number
-          BinexData::MGFZI  m(numIter->value);
+         BinexData::MGFZI  m(numIter->value);
 
-          long long  actualValue = (long long)m;
-          size_t     actualSize  = m.getSize();
+         long long  actualValue = (long long)m;
+         size_t     actualSize  = m.getSize();
 
-          ostringstream  oss;
-          oss << "Expected Value = " << numIter->value
-              << " ; Actual Value = " << actualValue
-              << " ; Expected Size = " << numIter->size
-              << " ; Actual Size = " << actualSize;
-             
-          tester.assert( (  (numIter->value == actualValue)
-                         && (numIter->size  == actualSize) ),
-                         oss.str(), __LINE__ );
+         ostringstream  oss;
+         oss << "Expected Value = " << numIter->value
+             << " ; Actual Value = " << actualValue
+             << " ; Expected Size = " << numIter->size
+             << " ; Actual Size = " << actualSize;
+
+         tester.assert( (  (numIter->value == actualValue)
+                           && (numIter->size  == actualSize) ),
+                        oss.str(), __LINE__ );
       }
       catch (Exception& e)
       {
@@ -367,9 +370,9 @@ int BinexTypes_T :: doMgfziEncodeDecodeTests()
                 << " ; Expected Size = " << numIter->size
                 << " ; Actual Size = " << actualSize
                 << " ; Endian = " << (isLittleEndian ? "little" : "BIG");
-             
+
             tester.assert( (  (numIter->value == actualValue)
-                           && (numIter->size  == actualSize) ),
+                              && (numIter->size  == actualSize) ),
                            oss.str(), __LINE__ );
          }
          catch (Exception& e)
@@ -377,7 +380,7 @@ int BinexTypes_T :: doMgfziEncodeDecodeTests()
                // was this an expected exception?
             ostringstream  oss;
             oss << "unexpected exception encoding/decoding initialized MGFZI" << e;
-            tester.assert( (numIter->size <= 0) , oss.str(), __LINE__ );            
+            tester.assert( (numIter->size <= 0) , oss.str(), __LINE__ );
          }
       }
    }
@@ -398,10 +401,10 @@ void BinexTypes_T :: dumpBuffer(const unsigned char* buffer, size_t size)
 }
 
 
-/** Run the program.
- *
- * @return Total error count for all tests
- */
+   /** Run the program.
+    *
+    * @return Total error count for all tests
+    */
 int main(int argc, char *argv[])
 {
    int  errorTotal = 0;
@@ -416,8 +419,9 @@ int main(int argc, char *argv[])
 
    errorTotal += testClass.doMgfziEncodeDecodeTests();
 
-   std::cout << "Total Failures for " << __FILE__ << ": " << errorTotal << std::endl;
+   std::cout << "Total Failures for " << __FILE__ << ": " << errorTotal <<
+             std::endl;
 
    return( errorTotal );
-   
+
 } // main()

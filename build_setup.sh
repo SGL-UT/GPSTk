@@ -14,7 +14,7 @@ function log
 
 function run
 {
-    log "========================================"
+    log "============================================================"
     log "$@"
     if [ $verbose ]; then
         "$@" 2>&1 | tee -a $LOG
@@ -22,11 +22,12 @@ function run
         "$@" 2>&1 >> $LOG
     fi
     rc=${PIPESTATUS[0]}
-    if [[ $rc != 0 ]]; then
-        log "Error, rc=$rc"
-        if [[ $exit_on_fail == 1 ]]; then
-            exit
-        fi
+    if [[ $rc != 0 && -z $ignore_failures ]]; then
+        log 
+        log "Error $rc :-("
+        log "See $build_root/Testing/Temporary/LastTest.log for detailed test log"
+        log "See $LOG for detailed build log"
+        exit $rc
     fi
     return $rc
 }
@@ -38,19 +39,33 @@ function ptof {
     fi
 }
 
+
 abspath()
 {
-    cd "$(dirname "$1")"
-    printf "%s/%s\n" "$(pwd)" "$(basename "$1")"
-    cd "$OLDPWD"
+    if [ -d "$1" ]; then
+        (cd "$1"; pwd)
+    elif [ -f "$1" ]; then
+        if [[ $1 == */* ]]; then
+            echo "$(cd "${1%/*}"; pwd)/${1##*/}"
+        else
+            echo "$(pwd)/$1"
+        fi
+    else
+        # It doesn't exist...
+        if [[ ${1:0:1} == "/" ]]; then
+            printf "$1"
+        elif [[ ${1:0:2} == "./" ]]; then
+            printf "$(pwd)/"${1:2}
+        elif [[ ${1:0:2} == "~/" ]]; then
+            printf "$(HOME)/"${1:2}
+        elif [[ ${1:0:3} == "../" ]]; then
+            printf "$(cd ..;pwd)/"${1:3}
+        else
+            printf $(pwd)/${1}
+        fi
+    fi
 }
 
-absdir()
-{
-    cd $1
-    pwd
-    cd $OLDPATH
-}
 
 #----------------------------------------
 # Determine number of cores for compiling.
@@ -58,7 +73,7 @@ absdir()
 case `uname` in
     Linux)
         last_core_index=`cat /proc/cpuinfo | grep "processor" | awk '{print $3}' | tail -1`
-        num_cores=`nproc`
+        ((num_cores=last_core_index+1))
         hostname=$(hostname -s)
         ;;
     Darwin)
@@ -66,20 +81,22 @@ case `uname` in
         hostname=$(hostname -s)
         ;;
     SunOS)
-        num_cores=`kstat cpu_info | grep instance | wc -l`
+        num_cores=`psrinfo | wc -l`
         hostname=$(uname -n)
         ;;
     *)
         num_cores=1
 esac
 
-if ((num_cores<16)); then
-    num_threads=$((num_cores/2))
+if ((num_cores<8)); then
+    num_threads=$num_cores
+elif ((num_cores<16)); then
+    num_threads=$((num_cores - 2))
 else
     num_threads=$((num_cores*3/4))
 fi
 
-repo=$(absdir $(dirname $0))
+repo=$(abspath $(dirname $0))
 
 user_install_prefix=$HOME/.local
 system_install_prefix=/usr/local
@@ -89,14 +106,36 @@ python_exe=`which python2.7`
 system_python_install="/usr/local"
 user_python_install="~/.local"
 
-git_hash=`cd $repo; git rev-parse HEAD`
-git_branch=`cd $repo; git name-rev --name-only $git_hash`
-git_branch=${git_branch%^0}
-git_tag=`cd $repo; git name-rev --tags --name-only $git_hash`
-git_tag=${git_tag%^0}
+function hashit
+{
+    case `uname` in
+        Linux)
+            echo $1 | shasum
+            ;;
+        Darwin)
+            echo $1 | shasum 
+            ;;
+        SunOS)
+            echo $1 | shasum
+            ;;
+    esac
+}
 
-if [ "$git_tag" != "undefined" ]; then
-    build_root=$repo/build-$hostname-$git_tag
-else
-    build_root=$repo/build-$hostname-$git_branch
-fi
+
+function get_repo_state
+{
+    git_hash=`cd $1; git rev-parse HEAD`
+    git_tag=`cd $1; git name-rev --tags --name-only $git_hash`
+    git_tag=${git_tag%^0}
+    git_branch=`cd $1;git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/' | sed -e 's/(detached from \(.*\))/\1/'`
+    
+    if [ "$git_tag" != "undefined" ]; then
+        printf $git_tag
+    elif [ -n "$git_branch" ]; then
+        printf $git_branch
+    else
+        printf ${git_hash:0:7}
+    fi
+}
+
+build_root=$repo/build/$hostname-$(get_repo_state $repo)

@@ -39,8 +39,8 @@
  * File stream for Rinex observation file data
  */
 
-#ifndef GPSTK_RINEXOBSSTREAM_HPP
-#define GPSTK_RINEXOBSSTREAM_HPP
+#ifndef RINEXOBSSTREAM_HPP
+#define RINEXOBSSTREAM_HPP
 
 #include <vector>
 #include <list>
@@ -53,7 +53,7 @@
 namespace gpstk
 {
 
-      /** @addtogroup RinexObs */
+      /// @ingroup FileHandling
       //@{
 
       /**
@@ -65,83 +65,55 @@ namespace gpstk
    class RinexObsStream : public FFTextStream
    {
    public:
-
-
          /// Default constructor
-      RinexObsStream()
-         : headerRead(false) {};
-
+      RinexObsStream();
 
          /** Common constructor.
           *
-          * @param fn the RINEX file to open
-          * @param mode how to open \a fn.
+          * @param[in] fn the RINEX file to open
+          * @param[in] mode how to open \a fn.
           */
       RinexObsStream( const char* fn,
-                      std::ios::openmode mode=std::ios::in )
-         : FFTextStream(fn, mode), headerRead(false) {};
-
+                      std::ios::openmode mode=std::ios::in );
 
          /** Common constructor.
           *
-          * @param fn the RINEX file to open
-          * @param mode how to open \a fn.
+          * @param[in] fn the RINEX file to open
+          * @param[in] mode how to open \a fn.
           */
       RinexObsStream( const std::string fn,
-                      std::ios::openmode mode=std::ios::in )
-         : FFTextStream(fn.c_str(), mode), headerRead(false) {};
-
+                      std::ios::openmode mode=std::ios::in );
 
          /// Destructor
-      virtual ~RinexObsStream() {};
-
+      virtual ~RinexObsStream();
 
          /** Overrides open to reset the header
           *
-          * @param fn the RINEX file to open
-          * @param mode how to open \a fn.
+          * @param[in] fn the RINEX file to open
+          * @param[in] mode how to open \a fn.
           */
       virtual void open( const char* fn,
-                         std::ios::openmode mode )
-      {
-         FFTextStream::open(fn, mode);
-         headerRead = false;
-         header = RinexObsHeader();
-      };
-
+                         std::ios::openmode mode );
 
          /** Overrides open to reset the header
           *
-          * @param fn the RINEX file to open
-          * @param mode how to open \a fn.
+          * @param[in] fn the RINEX file to open
+          * @param[in] mode how to open \a fn.
           */
       virtual void open( const std::string& fn,
-                         std::ios::openmode mode )
-      { open(fn.c_str(), mode); };
-
+                         std::ios::openmode mode );
 
          /// Whether or not the RinexObsHeader has been read
       bool headerRead;
-
 
          /// The header for this file.
       RinexObsHeader header;
 
          /// Check if the input stream is the kind of RinexObsStream
-      static bool IsRinexObsStream(std::istream& i)
-      {
-         try
-         { 
-            (void)dynamic_cast<RinexObsStream&>(i);
-         }
-         catch(...)
-         {
-            return false;
-         }
+      static bool isRinexObsStream(std::istream& i);
 
-         return true;
-      }
-
+   private:
+      void init();
    }; // End of class 'RinexObsStream'
 
       //@}

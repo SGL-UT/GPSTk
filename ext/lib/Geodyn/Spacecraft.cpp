@@ -63,7 +63,7 @@ namespace gpstk
 
    void Spacecraft::resetState()
    {
-      // resize
+         // resize
       r.resize(3,0.0);
       v.resize(3,0.0);
       p.resize(0,0.0);
@@ -76,7 +76,7 @@ namespace gpstk
       dv_dv0.resize(9,0.0);      // I
       dv_dp0.resize(0,0.0);      // 0
 
-      // set eye elements to 1
+         // set eye elements to 1
       dr_dr0(0) = 1.0;
       dr_dr0(4) = 1.0;
       dr_dr0(8) = 1.0;
@@ -88,7 +88,7 @@ namespace gpstk
 
    void Spacecraft::initStateVector(Vector<double> rv, Vector<double> dp)
    {
-      // first the size of input vector should be checked
+         // first the size of input vector should be checked
       if(rv.size()!=6)
       {
          Exception e("Error in Spacecraft::initStateVector(): the size of rv should be 6.");
@@ -97,20 +97,20 @@ namespace gpstk
 
       resetState();
       
-      // set position
+         // set position
       r(0) = rv(0);
       r(1) = rv(1);
       r(2) = rv(2);
 
-      // set velocity
+         // set velocity
       v(0) = rv(3);
       v(1) = rv(4);
       v(2) = rv(5);
       
-      // set force model parameters
+         // set force model parameters
       p = dp;
 
-      // set dr_dp0 and dv_dp0
+         // set dr_dp0 and dv_dp0
       const int np = p.size();
 
       dr_dp0.resize(3*np,0.0);
@@ -121,21 +121,21 @@ namespace gpstk
       // Get Transition Matrix
    Matrix<double> Spacecraft::getTransitionMatrix()
    {
-      /* Transition Matrix
-          |                          |
-          | dr_dr0   dr_dv0   dr_dp0 |
-          |                          |
-      phi=| dv_dr0   dv_dv0   dv_dp0 |
-          |                          |
-          | 0         0           I    |
-          |                          |
-      */
+         /* Transition Matrix
+            |                          |
+            | dr_dr0   dr_dv0   dr_dp0 |
+            |                          |
+            phi=| dv_dr0   dv_dv0   dv_dp0 |
+            |                          |
+            | 0         0           I    |
+            |                          |
+         */
       
       const int np=p.size();
 
       Matrix<double> phiMatrix(np+6,np+6,0.0);
       
-      /// dr/dr0
+         /// dr/dr0
       phiMatrix(0,0)=dr_dr0(0);
       phiMatrix(0,1)=dr_dr0(1);
       phiMatrix(0,2)=dr_dr0(2);
@@ -145,7 +145,7 @@ namespace gpstk
       phiMatrix(2,0)=dr_dr0(6);
       phiMatrix(2,1)=dr_dr0(7);
       phiMatrix(2,2)=dr_dr0(8);
-      /// dr/dv0
+         /// dr/dv0
       phiMatrix(0,3)=dr_dv0(0);
       phiMatrix(0,4)=dr_dv0(1);
       phiMatrix(0,5)=dr_dv0(2);
@@ -155,7 +155,7 @@ namespace gpstk
       phiMatrix(2,3)=dr_dv0(6);
       phiMatrix(2,4)=dr_dv0(7);
       phiMatrix(2,5)=dr_dv0(8);
-      /// dv/dr0
+         /// dv/dr0
       phiMatrix(3,0)=dv_dr0(0);
       phiMatrix(3,1)=dv_dr0(1);
       phiMatrix(3,2)=dv_dr0(2);
@@ -165,7 +165,7 @@ namespace gpstk
       phiMatrix(5,0)=dv_dr0(6);
       phiMatrix(5,1)=dv_dr0(7);
       phiMatrix(5,2)=dv_dr0(8);
-      /// dv/dv0
+         /// dv/dv0
       phiMatrix(3,3)=dv_dv0(0);
       phiMatrix(3,4)=dv_dv0(1);
       phiMatrix(3,5)=dv_dv0(2);
@@ -176,7 +176,7 @@ namespace gpstk
       phiMatrix(5,4)=dv_dv0(7);
       phiMatrix(5,5)=dv_dv0(8);
 
-      /// dr/dp0
+         /// dr/dp0
       for(int i=0;i<np;i++)
       {
          phiMatrix(0,i+6) = dr_dp0(i+0*np);
@@ -199,24 +199,24 @@ namespace gpstk
 
    void Spacecraft::setTransitionMatrix(Matrix<double> phiMatrix)
    {
-      /* Transition Matrix
-          |                          |
-          | dr_dr0   dr_dv0   dr_dp0 |
-          |                          |
-      phi=| dv_dr0   dv_dv0   dv_dp0 |
-          |                          |
-          | 0         0          I     |
-          |                          |
-      */
+         /* Transition Matrix
+            |                          |
+            | dr_dr0   dr_dv0   dr_dp0 |
+            |                          |
+            phi=| dv_dr0   dv_dv0   dv_dp0 |
+            |                          |
+            | 0         0          I     |
+            |                          |
+         */
 
       const int np = phiMatrix.rows()-6;
 
-      // resize the vectors
+         // resize the vectors
       p.resize(np,0.0);
       dr_dp0.resize(3*np,0.0);
       dv_dp0.resize(3*np,0.0);
 
-      // dr/dr0
+         // dr/dr0
       dr_dr0(0) = phiMatrix(0,0);
       dr_dr0(1) = phiMatrix(0,1);
       dr_dr0(2) = phiMatrix(0,2);
@@ -226,7 +226,7 @@ namespace gpstk
       dr_dr0(6) = phiMatrix(2,0);
       dr_dr0(7) = phiMatrix(2,1);
       dr_dr0(8) = phiMatrix(2,2);
-      // dr/dv0
+         // dr/dv0
       dr_dv0(0) = phiMatrix(0,3);
       dr_dv0(1) = phiMatrix(0,4);
       dr_dv0(2) = phiMatrix(0,5);
@@ -236,7 +236,7 @@ namespace gpstk
       dr_dv0(6) = phiMatrix(2,3);
       dr_dv0(7) = phiMatrix(2,4);
       dr_dv0(8) = phiMatrix(2,5);
-      // dv/dr0
+         // dv/dr0
       dv_dr0(0) = phiMatrix(3,0);
       dv_dr0(1) = phiMatrix(3,1);
       dv_dr0(2) = phiMatrix(3,2);
@@ -246,7 +246,7 @@ namespace gpstk
       dv_dr0(6) = phiMatrix(5,0);
       dv_dr0(7) = phiMatrix(5,1);
       dv_dr0(8) = phiMatrix(5,2);
-      // dv/dv0
+         // dv/dv0
       dv_dv0(0) = phiMatrix(3,3);
       dv_dv0(1) = phiMatrix(3,4);
       dv_dv0(2) = phiMatrix(3,5);
@@ -257,7 +257,7 @@ namespace gpstk
       dv_dv0(7) = phiMatrix(5,4);
       dv_dv0(8) = phiMatrix(5,5);
 
-      // dr/dp0
+         // dr/dp0
       for(int i=0;i<np;i++)
       {
          dr_dp0(i+0*np) = phiMatrix(0,i+6);
@@ -272,20 +272,20 @@ namespace gpstk
    }  // End of method 'Spacecraft::setTransitionMatrix()'
 
 
-   // get State Transition Matrix 6*6
+      // get State Transition Matrix 6*6
    Matrix<double> Spacecraft::getStateTransitionMatrix()
    {
-      /* Transition Matrix
-          |                  |
-          | dr_dr0   dr_dv0  |
-      phi=|                  |
-          | dv_dr0   dv_dv0  |
-          |                  |
-      */
+         /* Transition Matrix
+            |                  |
+            | dr_dr0   dr_dv0  |
+            phi=|                  |
+            | dv_dr0   dv_dv0  |
+            |                  |
+         */
 
       Matrix<double> phiMatrix(6,6,0.0);
 
-      /// dr/dr0
+         /// dr/dr0
       phiMatrix(0,0)=dr_dr0(0);
       phiMatrix(0,1)=dr_dr0(1);
       phiMatrix(0,2)=dr_dr0(2);
@@ -295,7 +295,7 @@ namespace gpstk
       phiMatrix(2,0)=dr_dr0(6);
       phiMatrix(2,1)=dr_dr0(7);
       phiMatrix(2,2)=dr_dr0(8);
-      /// dr/dv0
+         /// dr/dv0
       phiMatrix(0,3)=dr_dv0(0);
       phiMatrix(0,4)=dr_dv0(1);
       phiMatrix(0,5)=dr_dv0(2);
@@ -305,7 +305,7 @@ namespace gpstk
       phiMatrix(2,3)=dr_dv0(6);
       phiMatrix(2,4)=dr_dv0(7);
       phiMatrix(2,5)=dr_dv0(8);
-      /// dv/dr0
+         /// dv/dr0
       phiMatrix(3,0)=dv_dr0(0);
       phiMatrix(3,1)=dv_dr0(1);
       phiMatrix(3,2)=dv_dr0(2);
@@ -315,7 +315,7 @@ namespace gpstk
       phiMatrix(5,0)=dv_dr0(6);
       phiMatrix(5,1)=dv_dr0(7);
       phiMatrix(5,2)=dv_dr0(8);
-      /// dv/dv0
+         /// dv/dv0
       phiMatrix(3,3)=dv_dv0(0);
       phiMatrix(3,4)=dv_dv0(1);
       phiMatrix(3,5)=dv_dv0(2);
@@ -330,16 +330,16 @@ namespace gpstk
 
    }  // End of method 'Spacecraft::getStateTransitionMatrix()'
 
-   // get Sensitivity Matrix 6*np
+      // get Sensitivity Matrix 6*np
    Matrix<double> Spacecraft::getSensitivityMatrix()
    {
-      /* Transition Matrix
-          |        |
-          | dr_dp0 |
-      s = |        |
-          | dv_dp0 |
-          |        |
-      */
+         /* Transition Matrix
+            |        |
+            | dr_dp0 |
+            s = |        |
+            | dv_dp0 |
+            |        |
+         */
       const int np=p.size();
 
       Matrix<double> sMatrix(6,np,0.0);
@@ -396,7 +396,7 @@ namespace gpstk
       const int dim = y.size();
       const int np = (dim-42)/6;
       
-      // resize the vectors
+         // resize the vectors
       p.resize(np,0.0);
       dr_dp0.resize(3*np,0.0);
       dv_dp0.resize(3*np,0.0);
@@ -427,35 +427,35 @@ namespace gpstk
 
    void Spacecraft::test()
    {
-      cout<<"testing Spacecraft"<<endl;
+      std::cout << "testing Spacecraft" << std::endl;
       
-      /*
-      r.resize(3,8.0);
-      v.resize(3,8.0);
-      p.resize(2,0.0);
+         /*
+           r.resize(3,8.0);
+           v.resize(3,8.0);
+           p.resize(2,0.0);
 
-      dr_dr0.resize(9,0.0);      // I
-      dr_dv0.resize(9,0.0);      // 0
-      dr_dp0.resize(6,3.0);      // 0
+           dr_dr0.resize(9,0.0);      // I
+           dr_dv0.resize(9,0.0);      // 0
+           dr_dp0.resize(6,3.0);      // 0
 
-      dv_dr0.resize(9,0.0);      // 0
-      dv_dv0.resize(9,0.0);      // I
-      dv_dp0.resize(6,4.0);      // 0
+           dv_dr0.resize(9,0.0);      // 0
+           dv_dv0.resize(9,0.0);      // I
+           dv_dp0.resize(6,4.0);      // 0
 
-      // set eye elements to 1
-      dr_dr0(0) = 1.0;
-      dr_dr0(4) = 1.0;
-      dr_dr0(8) = 1.0;
+              // set eye elements to 1
+              dr_dr0(0) = 1.0;
+              dr_dr0(4) = 1.0;
+              dr_dr0(8) = 1.0;
 
-      dv_dv0(0) = 1.0;
-      dv_dv0(4) = 1.0;
-      dv_dv0(8) = 1.0;
+              dv_dv0(0) = 1.0;
+              dv_dv0(4) = 1.0;
+              dv_dv0(8) = 1.0;
       
    
-      writeToFile("default.sc");
+              writeToFile("default.sc");
 
-      // it work well
-      */
+                 // it work well
+                 */
 
    }   // End of method 'Spacecraft::test()'
 
@@ -464,10 +464,10 @@ namespace gpstk
       // @param s stream to append formatted CommonTime to.
       // @param t Spacecraft to append to stream \c s.
       // @return reference to \c s.
-   ostream& operator<<( ostream& s, 
-                        const gpstk::Spacecraft& sc )
+   std::ostream& operator<<( std::ostream& s, 
+                             const gpstk::Spacecraft& sc )
    {
-      // s << endl;
+         // s << endl;
 
       return s;
 

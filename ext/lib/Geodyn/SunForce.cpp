@@ -51,7 +51,7 @@ namespace gpstk
 {
       // Default constructor
    SunForce::SunForce()
-      : mu(ASConstant::GM_Sun)
+         : mu(ASConstant::GM_Sun)
    { }
    
    
@@ -63,11 +63,11 @@ namespace gpstk
        */
    void SunForce::doCompute(UTCTime utc, EarthBody& rb, Spacecraft& sc)
    {
-      /* Oliver P69 and P248
-       * a = GM*( (s-r)/norm(s-r)^3 - s/norm(s)^3 )
-       *
-       * da/dr = -GM*( I/norm(r-s)^3 - 3(r-s)transpose(r-s)/norm(r-s)^5)
-       */
+         /* Oliver P69 and P248
+          * a = GM*( (s-r)/norm(s-r)^3 - s/norm(s)^3 )
+          *
+          * da/dr = -GM*( I/norm(r-s)^3 - 3(r-s)transpose(r-s)/norm(r-s)^5)
+          */
 
       Vector<double> r_sun = ReferenceFrames::getJ2kPosition(utc.asTDB(), SolarSystem::Sun);
 
@@ -87,7 +87,7 @@ namespace gpstk
       Vector<double> sum = temp1 + temp2;
       a = sum * (-mu);
 
-      // da_dr
+         // da_dr
       da_dr.resize(3,3,0.0);
       double muod3 = mu / dcubed;
       double jk = 3.0 * muod3/dmag/dmag; 
@@ -108,17 +108,17 @@ namespace gpstk
       da_dr(2,1) = da_dr(1,2);
       da_dr(2,2) = jk * zz * zz - muod3;
 
-      // da_dv
+         // da_dv
       da_dv.resize(3,3,0.0);
 
-      //da_dp
+         //da_dp
       
    }  // End of method 'SunForce::doCompute()'
 
 
    void SunForce::test()
    {
-      //IERS::loadSTKFile("InputData\\EOP-v1.1.txt");
+         //IERS::loadSTKFile("InputData\\EOP-v1.1.txt");
       ReferenceFrames::setJPLEphFile("InputData\\DE405\\jplde405");
 
       CivilTime time(2000,1,1,0,0,0.0);
@@ -126,7 +126,7 @@ namespace gpstk
 
       Vector<double> posSun =  ReferenceFrames::getJ2kPosition(time,SolarSystem::Sun);
 
-      cout << posSun << endl;
+      std::cout << posSun << std::endl;
    }
 
 }  // End of namespace 'gpstk'

@@ -48,17 +48,17 @@
 
 namespace gpstk
 {
- /** @addtogroup VectorGroup */
-   //@{
+      /// @ingroup MathGroup
+      //@{
  
-/** 
- * Returns the top to bottom concatenation of Matrices l and r only if they have the
- * same number of columns.
- */
+      /** 
+       * Returns the top to bottom concatenation of Matrices l and r
+       * only if they have the same number of columns.
+       */
    template <class T, class BaseClass1, class BaseClass2>
    inline Matrix<T> operator&&(const ConstMatrixBase<T, BaseClass1>& l, 
-                            const ConstMatrixBase<T, BaseClass2>& r) 
-   throw(MatrixException)
+                               const ConstMatrixBase<T, BaseClass2>& r) 
+      throw(MatrixException)
    {
       if (l.cols() != r.cols())
       {
@@ -81,14 +81,14 @@ namespace gpstk
       return toReturn;
    }
 
-/** 
- * Returns the top to bottom concatenation of Matrix t and Vector b
- * only if they have the same number of columns.
- */
+      /** 
+       * Returns the top to bottom concatenation of Matrix t and Vector b
+       * only if they have the same number of columns.
+       */
    template <class T, class BaseClass1, class BaseClass2>
    inline Matrix<T> operator&&(const ConstMatrixBase<T, BaseClass1>& t, 
-                            const ConstVectorBase<T, BaseClass2>& b) 
-   throw(MatrixException)
+                               const ConstVectorBase<T, BaseClass2>& b) 
+      throw(MatrixException)
    {
       if (t.cols() != b.size())
       {
@@ -110,14 +110,14 @@ namespace gpstk
       return toReturn;
    }
 
-/** 
- * Returns the top to bottom concatenation of Vector t and Matrix b
- * only if they have the same number of columns.
- */
+      /** 
+       * Returns the top to bottom concatenation of Vector t and Matrix b
+       * only if they have the same number of columns.
+       */
    template <class T, class BaseClass1, class BaseClass2>
    inline Matrix<T> operator&&(const ConstVectorBase<T, BaseClass1>& t, 
-                            const ConstMatrixBase<T, BaseClass2>& b) 
-   throw(MatrixException)
+                               const ConstMatrixBase<T, BaseClass2>& b) 
+      throw(MatrixException)
    {
       if (t.size() != b.cols())
       {
@@ -139,13 +139,13 @@ namespace gpstk
       return toReturn;
    }
 
-/** 
- * Returns the left to right concatenation of l and r only if they have the
- * same number of rows.
- */
+      /** 
+       * Returns the left to right concatenation of l and r only if
+       * they have the same number of rows.
+       */
    template <class T, class BaseClass1, class BaseClass2>
    inline Matrix<T> operator||(const ConstMatrixBase<T, BaseClass1>& l,
-                            const ConstMatrixBase<T, BaseClass2>& r)  
+                               const ConstMatrixBase<T, BaseClass2>& r)  
       throw(MatrixException)
    {
       if (l.rows() != r.rows())
@@ -169,13 +169,13 @@ namespace gpstk
       return toReturn;
    }
 
-/** 
- * Returns the left to right concatenation of Matrix l and Vector r
- * only if they have the same number of rows.
- */
+      /** 
+       * Returns the left to right concatenation of Matrix l and Vector r
+       * only if they have the same number of rows.
+       */
    template <class T, class BaseClass1, class BaseClass2>
    inline Matrix<T> operator||(const ConstMatrixBase<T, BaseClass1>& l,
-                            const ConstVectorBase<T, BaseClass2>& r)
+                               const ConstVectorBase<T, BaseClass2>& r)
       throw(MatrixException)
    {
       if (l.rows() != r.size())
@@ -198,13 +198,13 @@ namespace gpstk
       return toReturn;
    }
 
-/** 
- * Returns the left to right concatenation of Vector l and Matrix r
- * only if they have the same number of rows.
- */
+      /** 
+       * Returns the left to right concatenation of Vector l and Matrix r
+       * only if they have the same number of rows.
+       */
    template <class T, class BaseClass1, class BaseClass2>
    inline Matrix<T> operator||(const ConstVectorBase<T, BaseClass1>& l,
-                            const ConstMatrixBase<T, BaseClass2>& r)
+                               const ConstMatrixBase<T, BaseClass2>& r)
       throw(MatrixException)
    {
       if (l.size() != r.rows())
@@ -227,13 +227,13 @@ namespace gpstk
       return toReturn;
    }
 
-   /** 
- * Returns the left to right concatenation of Vector l and Vector r
- * only if they have the same number of rows.
- */
+      /** 
+       * Returns the left to right concatenation of Vector l and Vector r
+       * only if they have the same number of rows.
+       */
    template <class T, class BaseClass1, class BaseClass2>
    inline Matrix<T> operator||(const ConstVectorBase<T, BaseClass1>& l,
-                            const ConstVectorBase<T, BaseClass2>& r)
+                               const ConstVectorBase<T, BaseClass2>& r)
       throw(MatrixException)
    {
       if (l.size() != r.size())
@@ -247,20 +247,21 @@ namespace gpstk
 
       for (rows = 0; rows < r.size(); rows++)
       {
-        toReturn(rows, 0) = l(rows);
-        toReturn(rows, 1) = r(rows);
+         toReturn(rows, 0) = l(rows);
+         toReturn(rows, 1) = r(rows);
       }
 
       return toReturn;
    }
 
-/** 
- * Returns the minor matrix of l at element (row, col).  A minor matrix is the
- * same matrix as \c l but with row \c row and col \c col removed.
- */
+      /** 
+       * Returns the minor matrix of l at element (row, col).  A minor
+       * matrix is the same matrix as \c l but with row \c row and col
+       * \c col removed.
+       */
    template <class T, class BaseClass>
    inline Matrix<T> minorMatrix(const ConstMatrixBase<T, BaseClass>& l,
-                          size_t row, size_t col) 
+                                size_t row, size_t col) 
       throw(MatrixException)
    {
       if ((row >= l.rows()) || (col >= l.cols()))
@@ -320,9 +321,9 @@ namespace gpstk
       }
    }
 
-/**
- * Returns a matrix that is \c m transposed.
- */
+      /**
+       * Returns a matrix that is \c m transposed.
+       */
    template <class T, class BaseClass>
    inline Matrix<T> transpose(const ConstMatrixBase<T, BaseClass>& m)
    {
@@ -334,9 +335,9 @@ namespace gpstk
       return temp;
    }
  
-/**
- * Uses an LU Decomposition to calculate the determinate of m.
- */
+      /**
+       * Uses an LU Decomposition to calculate the determinate of m.
+       */
    template <class T, class BaseClass>
    inline T det(const ConstMatrixBase<T, BaseClass>& m) 
       throw(MatrixException)
@@ -354,16 +355,16 @@ namespace gpstk
       }
    }
 
-/**
- * returns the condition number of the matrix
- */
+      /**
+       * returns the condition number of the matrix
+       */
    template <class T, class BaseClass>
    inline T condNum(const ConstMatrixBase<T, BaseClass>& m, T& bigNum, T& smallNum) 
       throw ()
    {
       SVD<T> svd;
       svd(m);
-      // SVD will not always sort singular values in descending order
+         // SVD will not always sort singular values in descending order
       svd.sort(true);
       bigNum = svd.S(0);
       smallNum = svd.S(svd.S.size()-1);
@@ -372,9 +373,10 @@ namespace gpstk
       return bigNum/smallNum;
    }
 
-/**
- * returns the condition number of the matrix, doesnt require bigNum or smallNum..
- */
+      /**
+       * returns the condition number of the matrix, doesnt require
+       * bigNum or smallNum..
+       */
    template <class T, class BaseClass>
    inline T condNum(const ConstMatrixBase<T, BaseClass>& m) 
       throw ()
@@ -383,9 +385,9 @@ namespace gpstk
       return condNum(m, bigNum, smallNum);
    }
 
-/**
- * Returns a new \c dim * \c dim matrix that's an identity matrix.
- */
+      /**
+       * Returns a new \c dim * \c dim matrix that's an identity matrix.
+       */
    template <class T>
    inline Matrix<T> ident(size_t dim)
       throw(MatrixException)
@@ -402,16 +404,16 @@ namespace gpstk
       return toReturn;
    }
 
-/**
- * Returns the diagonal matrix  of \c m .
- */
+      /**
+       * Returns the diagonal matrix  of \c m .
+       */
    template <class T, class BaseClass>
    inline Matrix<T> diag(const ConstMatrixBase<T, BaseClass>& m)
       throw(MatrixException)
    {
       if ( (m.rows() != m.cols()) || (m.cols() < 1) )
       {
-         MatrixException e("invalid matrix dimensions for ident()");
+         MatrixException e("invalid matrix dimensions for m");
          GPSTK_THROW(e);
       }
 
@@ -424,9 +426,9 @@ namespace gpstk
       return temp;
    }
 
-/**
- * Block diagonal concatenation of matrix input.
- */
+      /**
+       * Block diagonal concatenation of matrix input.
+       */
    template <class T, class BaseClass>
    inline Matrix<T> blkdiag(const ConstMatrixBase<T, BaseClass>& m1,
                             const ConstMatrixBase<T, BaseClass>& m2)
@@ -477,10 +479,11 @@ namespace gpstk
    { return blkdiag( blkdiag(m1,m2,m3), m4 ); }
 
 
-/**
- * Return a rotation matrix [dimensioned 3x3, inverse() = transpose()]
- * for the rotation through \c angle radians about \c axis number (= 1, 2 or 3).
- */
+      /**
+       * Return a rotation matrix [dimensioned 3x3, inverse() =
+       * transpose()] for the rotation through \c angle radians about
+       * \c axis number (= 1, 2 or 3).
+       */
    template <class T>
    inline Matrix<T> rotation(T angle, int axis)
       throw(MatrixException)
@@ -501,10 +504,10 @@ namespace gpstk
       return toReturn;
    }
 
-/**
- * Inverts the matrix M by Gaussian elimination. Throws on non-square
- * and singular matricies.
- */
+      /**
+       * Inverts the matrix M by Gaussian elimination. Throws on non-square
+       * and singular matricies.
+       */
    template <class T, class BaseClass>
    inline Matrix<T> inverse(const ConstMatrixBase<T, BaseClass>& m)
       throw (MatrixException)
@@ -573,10 +576,10 @@ namespace gpstk
 
    }  // end inverse
 
-/**
- * Inverts the matrix M by LU decomposition. Throws on non-square
- * and singular matricies.
- */
+      /**
+       * Inverts the matrix M by LU decomposition. Throws on non-square
+       * and singular matricies.
+       */
    template <class T, class BaseClass>
    inline Matrix<T> inverseLUD(const ConstMatrixBase<T, BaseClass>& m)
       throw (MatrixException)
@@ -601,10 +604,11 @@ namespace gpstk
 
    }  // end inverseLUD
 
-/**
- * Inverts the matrix M by LU decomposition, and returns determinant as well
- * Throws on non-square and singular matricies.
- */
+      /**
+       * Inverts the matrix M by LU decomposition, and returns
+       * determinant as well Throws on non-square and singular
+       * matricies.
+       */
    template <class T, class BaseClass>
    inline Matrix<T> inverseLUD(const ConstMatrixBase<T, BaseClass>& m, T& determ)
       throw (MatrixException)
@@ -619,10 +623,10 @@ namespace gpstk
       Vector<T> V(N);
       LUDecomp<T> LU;
       LU(m);
-      // compute determinant
+         // compute determinant
       determ = T(LU.parity);
       for(i = 0; i < m.rows(); i++) determ *= LU.LU(i,i);
-      // compute inverse
+         // compute inverse
       for(j=0; j<N; j++) {    // loop over columns
          V = T(0);
          V(j) = T(1);
@@ -633,13 +637,13 @@ namespace gpstk
 
    }  // end inverseLUD
 
-/**
- * Inverts the square matrix M by SVD, editing the singular values
- * using tolerance tol. Throws only on input of the zero matrix.
- */
+      /**
+       * Inverts the square matrix M by SVD, editing the singular values
+       * using tolerance tol. Throws only on input of the zero matrix.
+       */
    template <class T, class BaseClass>
    inline Matrix<T> inverseSVD(const ConstMatrixBase<T, BaseClass>& m,
-         const T tol=T(1.e-8)) throw (MatrixException)
+                               const T tol=T(1.e-8)) throw (MatrixException)
    {
       if ((m.rows() != m.cols()) || (m.cols() == 0)) {
          MatrixException e("inverseSVD() requires non-trivial square matrix");
@@ -650,15 +654,15 @@ namespace gpstk
       Matrix<T> inv(m);
       SVD<T> svd;
       svd(m);
-      // SVD will not always sort singular values in descending order
+         // SVD will not always sort singular values in descending order
       svd.sort(true);
       if(svd.S(0) == T(0)) {
          MatrixException e("Input is the zero matrix");
          GPSTK_THROW(e);
       }
-      // edit singular values TD input tolerance, output edited SVs
+         // edit singular values TD input tolerance, output edited SVs
       for(i=1; i<N; i++) if(svd.S(i) < tol*svd.S(0)) svd.S(i)=T(0);
-      // back substitution
+         // back substitution
       Vector<T> V(N);
       for(j=0; j<N; j++) {    //loop over columns
          V = T(0);
@@ -670,14 +674,14 @@ namespace gpstk
 
    }  // end inverseSVD
 
-/**
- * Invert the square matrix M by SVD, editing the singular values with tolerance tol,
- * and return the largest and smallest singular values (before any editing).
- * Throws only on input of the zero matrix.
- */
+      /**
+       * Invert the square matrix M by SVD, editing the singular values with tolerance tol,
+       * and return the largest and smallest singular values (before any editing).
+       * Throws only on input of the zero matrix.
+       */
    template <class T, class BaseClass>
    inline Matrix<T> inverseSVD(const ConstMatrixBase<T, BaseClass>& m,
-      T& bigNum, T& smallNum, const T tol=T(1.e-8)) throw (MatrixException)
+                               T& bigNum, T& smallNum, const T tol=T(1.e-8)) throw (MatrixException)
    {
       if ((m.rows() != m.cols()) || (m.cols() == 0)) {
          MatrixException e("inverseSVD() requires non-trivial square matrix");
@@ -688,21 +692,21 @@ namespace gpstk
       Matrix<T> inv(m);
       SVD<T> svd;
       svd(m);
-      // SVD will not always sort singular values in descending order
+         // SVD will not always sort singular values in descending order
       svd.sort(true);
       if(svd.S(0) == T(0)) {
          MatrixException e("Input is the zero matrix");
          GPSTK_THROW(e);
       }
 
-      // compute condition number = bigNum/smallNum
+         // compute condition number = bigNum/smallNum
       bigNum = svd.S(0);
       smallNum = svd.S(svd.S.size()-1);
 
-      // edit singular values using input tolerance, output edited SVs
+         // edit singular values using input tolerance, output edited SVs
       for(i=1; i<N; i++) if(svd.S(i) < tol*svd.S(0)) svd.S(i)=T(0);
 
-      // back substitution
+         // back substitution
       Vector<T> V(N);
       for(j=0; j<N; j++) {    //loop over columns
          V = T(0);
@@ -714,14 +718,14 @@ namespace gpstk
 
    }  // end inverseSVD
 
-/**
- * Invert the square matrix M by SVD, editing the singular values
- * using tolerance tol, and return the singular values
- * (before any editing). Throws only on input of the zero matrix.
- */
+      /**
+       * Invert the square matrix M by SVD, editing the singular values
+       * using tolerance tol, and return the singular values
+       * (before any editing). Throws only on input of the zero matrix.
+       */
    template <class T, class BaseClass>
    inline Matrix<T> inverseSVD(const ConstMatrixBase<T, BaseClass>& m,
-      Vector<T>& sv, const T tol=T(1.e-8)) throw (MatrixException)
+                               Vector<T>& sv, const T tol=T(1.e-8)) throw (MatrixException)
    {
       if ((m.rows() != m.cols()) || (m.cols() == 0)) {
          MatrixException e("inverseSVD() requires non-trivial square matrix");
@@ -732,21 +736,21 @@ namespace gpstk
       Matrix<T> inv(m);
       SVD<T> svd;
       svd(m);
-      // SVD will not always sort singular values in descending order
+         // SVD will not always sort singular values in descending order
       svd.sort(true);
       if(svd.S(0) == T(0)) {
          MatrixException e("Input is the zero matrix");
          GPSTK_THROW(e);
       }
 
-      // save the singular values
+         // save the singular values
       sv = Vector<T>(N);
       for(i=0; i<N; i++) sv(i) = svd.S(i);
 
-      // edit singular values using input tolerance, output edited SVs
+         // edit singular values using input tolerance, output edited SVs
       for(i=1; i<N; i++) if(svd.S(i) < tol*svd.S(0)) svd.S(i)=T(0);
 
-      // back substitution
+         // back substitution
       Vector<T> V(N);
       for(j=0; j<N; j++) {    //loop over columns
          V = T(0);
@@ -758,46 +762,47 @@ namespace gpstk
 
    }  // end inverseSVD
 
-   /**
-    * Inverts the square symmetric positive definite matrix M using Cholesky-Crout
-    * algorithm. Very fast and useful when M comes from using a Least Mean-Square 
-    * (LMS) or Weighted Least Mean-Square (WLMS) method.
-    */
+      /**
+       * Inverts the square symmetric positive definite matrix M using
+       * Cholesky-Crout algorithm. Very fast and useful when M comes
+       * from using a Least Mean-Square (LMS) or Weighted Least
+       * Mean-Square (WLMS) method.
+       */
    template <class T, class BaseClass>
    inline Matrix<T> inverseChol(const ConstMatrixBase<T, BaseClass>& m)
-       throw (MatrixException)
+      throw (MatrixException)
    {
-       int N = m.rows(), i, j, k;
-       double sum;
-       Matrix<T> LI(N,N, 0.0);      // Here we will first store L^-1, and later m^-1
+      int N = m.rows(), i, j, k;
+      double sum;
+      Matrix<T> LI(N,N, 0.0);      // Here we will first store L^-1, and later m^-1
 
-       // Let's call CholeskyCrout class to decompose matrix "m" in L*LT
-       gpstk::CholeskyCrout<double> CC;
-       CC(m);
+         // Let's call CholeskyCrout class to decompose matrix "m" in L*LT
+      gpstk::CholeskyCrout<double> CC;
+      CC(m);
 
-       // Let's find the inverse of L (the LI from above)
-       for(i=0; i<N; i++) {
-           LI(i,i) = 1.0 / CC.L(i,i);
-           for(j=0; j<i; j++) {
-               sum = 0.0;
-               for(k=i; k>=0; k-- ) sum += CC.L(i,k)*LI(k,j);
-               LI(i,j) = -sum*LI(i,i);
-           }
-       }
+         // Let's find the inverse of L (the LI from above)
+      for(i=0; i<N; i++) {
+         LI(i,i) = 1.0 / CC.L(i,i);
+         for(j=0; j<i; j++) {
+            sum = 0.0;
+            for(k=i; k>=0; k-- ) sum += CC.L(i,k)*LI(k,j);
+            LI(i,j) = -sum*LI(i,i);
+         }
+      }
 
-       // Now, let's remember that m^-1 = transpose(LI)*LI
-       LI = transpose(LI) * LI;
-       return LI;
+         // Now, let's remember that m^-1 = transpose(LI)*LI
+      LI = transpose(LI) * LI;
+      return LI;
 
    }  // end inverseChol
 
 
-/**
- *  Matrix * Matrix : row by column multiplication of two matricies.
- */
+      /**
+       *  Matrix * Matrix : row by column multiplication of two matricies.
+       */
    template <class T, class BaseClass1, class BaseClass2>
    inline Matrix<T> operator* (const ConstMatrixBase<T, BaseClass1>& l, 
-                            const ConstMatrixBase<T, BaseClass2>& r)
+                               const ConstMatrixBase<T, BaseClass2>& r)
       throw (MatrixException)
    {
       if (l.cols() != r.rows())
@@ -816,12 +821,12 @@ namespace gpstk
       return toReturn;
    }
 
-/**
- * Matrix times vector multiplication, returning a vector.
- */
+      /**
+       * Matrix times vector multiplication, returning a vector.
+       */
    template <class T, class BaseClass1, class BaseClass2>
    inline Vector<T> operator* (const ConstMatrixBase<T, BaseClass1>& m, 
-                            const ConstVectorBase<T, BaseClass2>& v)
+                               const ConstVectorBase<T, BaseClass2>& v)
       throw (MatrixException)
    {
       if (v.size() != m.cols())
@@ -840,12 +845,12 @@ namespace gpstk
       }
       return toReturn;
    }
-/**
- * Vector times matrix multiplication, returning a vector.
- */
+      /**
+       * Vector times matrix multiplication, returning a vector.
+       */
    template <class T, class BaseClass1, class BaseClass2>
    inline Vector<T> operator* (const ConstVectorBase<T, BaseClass1>& v, 
-                            const ConstMatrixBase<T, BaseClass2>& m)
+                               const ConstMatrixBase<T, BaseClass2>& m)
       throw (gpstk::MatrixException)
    {
       if (v.size() != m.rows())
@@ -865,12 +870,12 @@ namespace gpstk
       return toReturn;
    }
 
-/**
- * Compute sum of two matricies.
- */
+      /**
+       * Compute sum of two matricies.
+       */
    template <class T, class BaseClass1, class BaseClass2>
    inline Matrix<T> operator+ (const ConstMatrixBase<T, BaseClass1>& l,
-                            const ConstMatrixBase<T, BaseClass2>& r)
+                               const ConstMatrixBase<T, BaseClass2>& r)
       throw (MatrixException)
    {
       if (l.cols() != r.cols() || l.rows() != r.rows())
@@ -888,12 +893,12 @@ namespace gpstk
       return toReturn;
    }
 
-/**
- * Compute difference of two matricies.
- */
+      /**
+       * Compute difference of two matricies.
+       */
    template <class T, class BaseClass1, class BaseClass2>
    inline Matrix<T> operator- (const ConstMatrixBase<T, BaseClass1>& l,
-                            const ConstMatrixBase<T, BaseClass2>& r)
+                               const ConstMatrixBase<T, BaseClass2>& r)
       throw (MatrixException)
    {
       if (l.cols() != r.cols() || l.rows() != r.rows())
@@ -911,12 +916,12 @@ namespace gpstk
       return toReturn;
    }
 
-/**
- * Compute the outer product of two vectors.
- */
+      /**
+       * Compute the outer product of two vectors.
+       */
    template <class T, class BaseClass>
    inline Matrix<T> outer(const ConstVectorBase<T, BaseClass>& v,
-                        const ConstVectorBase<T, BaseClass>& w)
+                          const ConstVectorBase<T, BaseClass>& w)
       throw (MatrixException)
    {
       if(v.size()*w.size() == 0) {
@@ -930,7 +935,28 @@ namespace gpstk
       return M;
    }
 
-/// Multiplies all the elements of m by d.
+      /**
+       * find the maximum magnitude in a matrix 
+       */
+   template <class T, class BaseClass>
+   inline T maxabs(const ConstMatrixBase<T, BaseClass>& a)
+      throw ()
+   {
+      T m=0;
+      for(int i = 0; i < a.rows(); i++)
+      {
+         for(int j = 0; j < a.cols(); j++)
+         {
+            T mag = std::abs(a(i,j));
+            if (mag > m)
+               m = mag;
+         }
+      }
+      return m;
+   }
+
+
+      /// Multiplies all the elements of m by d.
    template <class T, class BaseClass>
    inline Matrix<T> operator* (const ConstMatrixBase<T, BaseClass>& m, const T d)
    {
@@ -938,7 +964,7 @@ namespace gpstk
       return temp *= d;
    }
 
-/// Multiplies all the elements of m by d.
+      /// Multiplies all the elements of m by d.
    template <class T, class BaseClass>
    inline Matrix<T> operator* (const T d, const ConstMatrixBase<T, BaseClass>& m)
    {
@@ -946,7 +972,7 @@ namespace gpstk
       return temp *= d;
    }
 
-/// Divides all the elements of m by d.
+      /// Divides all the elements of m by d.
    template <class T, class BaseClass>
    inline Matrix<T> operator/ (const ConstMatrixBase<T, BaseClass>& m, const T d)
    {
@@ -954,7 +980,7 @@ namespace gpstk
       return temp /= d;
    }
 
-/// Divides all the elements of m by d.
+      /// Divides all the elements of m by d.
    template <class T, class BaseClass>
    inline Matrix<T> operator/ (const T d, const ConstMatrixBase<T, BaseClass>& m)
    {
@@ -962,7 +988,7 @@ namespace gpstk
       return temp /= d;
    }
 
-/// Adds all the elements of m by d.
+      /// Adds all the elements of m by d.
    template <class T, class BaseClass>
    inline Matrix<T> operator+ (const ConstMatrixBase<T, BaseClass>& m, const T d)
    {
@@ -970,7 +996,7 @@ namespace gpstk
       return temp += d;
    }
 
-/// Adds all the elements of m by d.
+      /// Adds all the elements of m by d.
    template <class T, class BaseClass>
    inline Matrix<T> operator+ (const T d, const ConstMatrixBase<T, BaseClass>& m)
    {
@@ -978,7 +1004,7 @@ namespace gpstk
       return temp += d;
    }
 
-/// Subtracts all the elements of m by d.
+      /// Subtracts all the elements of m by d.
    template <class T, class BaseClass>
    inline Matrix<T> operator- (const ConstMatrixBase<T, BaseClass>& m, const T d)
    {
@@ -986,7 +1012,7 @@ namespace gpstk
       return temp -= d;
    }
 
-/// Subtracts all the elements of m by d.
+      /// Subtracts all the elements of m by d.
    template <class T, class BaseClass>
    inline Matrix<T> operator- (const T d, const ConstMatrixBase<T, BaseClass>& m)
    {
@@ -994,7 +1020,7 @@ namespace gpstk
       return temp -= d;
    }
 
-   //@}
+      //@}
  
 }  // namespace
 

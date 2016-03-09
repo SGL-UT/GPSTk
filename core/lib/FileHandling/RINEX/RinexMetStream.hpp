@@ -39,68 +39,61 @@
  * File stream for RINEX 2 & 3 Met files.
  */
 
-#ifndef GPSTK_RINEXMETSTREAM_HPP
-#define GPSTK_RINEXMETSTREAM_HPP
+#ifndef RINEXMETSTREAM_HPP
+#define RINEXMETSTREAM_HPP
 
 #include "FFTextStream.hpp"
 #include "RinexMetHeader.hpp"
 
 namespace gpstk
 {
-  /** @addtogroup RinexMet */
-  //@{
+      /// @ingroup FileHandling
+      //@{
 
-  /**
-   * This class performs file i/o on a RINEX MET file for the
-   * RinexMetHeader and RinexMetData classes.
-   *
-   * @sa rinex_met_read_write.cpp for an example.
-   * @sa rinex_met_test.cpp for an example.
-   * @sa RinexMetData.
-   * @sa RinexMetHeader for information on writing RINEX met files.
-   *
-   * @warning When writing RinexMetData, the internal
-   * RinexMetStream::headerData must have the correct observation
-   * types set for what you want to write out.  If you don't set any,
-   * no data will be written. See RinexMetHeader for more information
-   * on this.
-   */
-  class RinexMetStream : public FFTextStream
-  {
+      /**
+       * This class performs file i/o on a RINEX MET file for the
+       * RinexMetHeader and RinexMetData classes.
+       *
+       * @sa rinex_met_read_write.cpp for an example.
+       * @sa rinex_met_test.cpp for an example.
+       * @sa RinexMetData.
+       * @sa RinexMetHeader for information on writing RINEX met files.
+       *
+       * @warning When writing RinexMetData, the internal
+       * RinexMetStream::headerData must have the correct observation
+       * types set for what you want to write out.  If you don't set any,
+       * no data will be written. See RinexMetHeader for more information
+       * on this.
+       */
+   class RinexMetStream : public FFTextStream
+   {
 
-  public:
+   public:
+         /// default constructor
+      RinexMetStream();
 
-    /// default constructor
-    RinexMetStream()
-      : headerRead(false)
-    {}
+         /** Constructor 
+          * Opens a file named \a fn using ios::openmode \a mode.
+          */
+      RinexMetStream(const char* fn, std::ios::openmode mode=std::ios::in);
 
-    /** Constructor 
-     * Opens a file named \a fn using ios::openmode \a mode.
-     */
-    RinexMetStream(const char* fn, std::ios::openmode mode=std::ios::in)
-      : FFTextStream(fn, mode), headerRead(false) {};
+         /// Destructor
+      virtual ~RinexMetStream();
 
-    /// Destructor
-    virtual ~RinexMetStream() {}
+         /// overrides open to reset the header
+      virtual void open(const char* fn, std::ios::openmode mode);
 
-    /// overrides open to reset the header
-    virtual void open(const char* fn, std::ios::openmode mode)
-    {
-      FFTextStream::open(fn, mode);
-      headerRead = false; 
-      header = RinexMetHeader();
-    }
+         /// RINEX met header for this file.
+      RinexMetHeader header;
 
-    /// RINEX met header for this file.
-    RinexMetHeader header;
+         /// Flag showing whether or not the header has been read.
+      bool headerRead;
 
-    /// Flag showing whether or not the header has been read.
-    bool headerRead;
+   private:
+      void init();
+   };
 
-  };
-
-  //@}
+      //@}
 
 }
 

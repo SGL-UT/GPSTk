@@ -107,7 +107,7 @@ public:
       Compare.v = vel;
 
       failMesg = "Was the relativity correction computation correct?";
-      testFramework.assert(abs(Compare.computeRelativityCorrection() - relcorr) < eps, failMesg, __LINE__);
+      testFramework.assert(std::abs(Compare.computeRelativityCorrection() - relcorr) < eps, failMesg, __LINE__);
 
       pos[0] = -1234567000;
       pos[1] = 887654;
@@ -120,7 +120,7 @@ public:
       Compare.v = vel;
 
       failMesg = "Was the relativity correction computation correct?";
-      testFramework.assert(abs(Compare.computeRelativityCorrection() - relcorr) < eps, failMesg, __LINE__);
+      testFramework.assert(std::abs(Compare.computeRelativityCorrection() - relcorr) < eps, failMesg, __LINE__);
 
       pos[0] = 0;
       pos[1] = 0;
@@ -133,7 +133,7 @@ public:
       Compare.v = vel;
 
       failMesg = "Was the relativity correction computation correct?";
-      testFramework.assert(abs(Compare.computeRelativityCorrection()) < eps, failMesg, __LINE__);
+      testFramework.assert(std::abs(Compare.computeRelativityCorrection()) < eps, failMesg, __LINE__);
 
       return testFramework.countFails();
    }

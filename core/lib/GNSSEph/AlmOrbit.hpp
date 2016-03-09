@@ -49,8 +49,8 @@
 
 namespace gpstk
 {
-   /** @defgroup ephemcalc Ephemeris calculations */
-   //@{
+      /// @ingroup GNSSEph
+      //@{
 
       /** Encapsulation of almanac SV orbital parameters (page 5,
        * subframes 1-24). */
@@ -133,7 +133,7 @@ namespace gpstk
    inline long   AlmOrbit::getxmit_time() const {return(xmit_time);}
    inline short  AlmOrbit::getToaWeek() const {return(week);}
 
-   //@}
+      //@}
 
 } // namespace
 

@@ -15,182 +15,214 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
-//  Copyright 2004, The University of Texas at Austin
+//
+//  Copyright 2015, The University of Texas at Austin
 //
 //============================================================================
 
 //============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+// This software developed by Applied Research Laboratories at the
+// University of Texas at Austin, under contract to an agency or
+// agencies within the U.S.  Department of Defense. The
+// U.S. Government retains all rights to use, duplicate, distribute,
+// disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+// Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
 
-/// @file RinexClockData.cpp
-/// Encapsulate RinexClock file data, including I/O
+/**
+ * @file RinexClockData.cpp
+ * Encapsulate RINEX clock file data, including I/O
+ */
 
-#include "RinexClockStream.hpp"
-#include "RinexClockHeader.hpp"
+#include <string>
 #include "RinexClockData.hpp"
+#include "RinexClockHeader.hpp"
+#include "RinexClockStream.hpp"
 #include "StringUtils.hpp"
-#include "TimeString.hpp"
-#include "CivilTime.hpp"
+#include "FFStream.hpp"
+#include "FFStreamError.hpp"
 
-using namespace gpstk::StringUtils;
 using namespace std;
 
 namespace gpstk
 {
-   void RinexClockData::reallyPutRecord(FFStream& ffs) const 
-      throw(exception, FFStreamError, StringException)
+   using namespace StringUtils;
+
+   void RinexClockData::dump(ostream& s) const
    {
-      // cast the stream to be an RinexClockStream
-      RinexClockStream& strm = dynamic_cast<RinexClockStream&>(ffs);
-
-      string line;
-
-      line = datatype;
-      line += string(1,' ');
-
-      if(datatype == string("AR")) {
-         line += rightJustify(site,4);
+      s << "Type: " << type.type << " " 
+        << "Name: " << name << " "
+        << "Epoch Time: " << writeTime(epochTime) << " "
+        << "#of Data Values: " << dvCount;
+      
+      for (int i = 0; i < dvCount; i++)
+      {
+         if (i%4 == 0)
+         {
+            s << endl 
+              << "   ";
+         }
+         
+         s << asString(clockData[i], 12)
+           << "  ";
       }
-      else if(datatype == string("AS")) {
-         line += string(1,sat.systemChar());
-         line += rightJustify(asString(sat.id),2);
-         if(line[4] == ' ') line[4] = '0';
-         line += string(1,' ');
-      }
-      else {
-         FFStreamError e("Unknown data type: " + datatype);
+      
+   }  // dump
+
+   
+   void RinexClockData::reallyPutRecord(FFStream& s) const
+      throw(std::exception, FFStreamError,
+            StringUtils::StringException)
+   {      
+      if ( type != AR &&
+           type != AS &&
+           type != CR &&
+           type != DR &&
+           type != MS )
+      {
+            // invalid type - throw
+         FFStreamError e("Invalid type: " + type.type);
          GPSTK_THROW(e);
       }
-      line += string(1,' ');
 
-      line += printTime(time,"%4Y %02m %02d %02H %02M %9.6f");
-
-      // must count the data to output
-      int n(2);
-      if(drift != 0.0) n=3;
-      if(sig_drift != 0.0) n=4;
-      if(accel != 0.0) n=5;
-      if(sig_accel != 0.0) n=6;
-      line += rightJustify(asString(n),3);
-      line += string(3,' ');
-
-      line += doubleToScientific(bias, 19, 12, 2);
-      line += string(1,' ');
-      line += doubleToScientific(sig_bias, 19, 12, 2);
-
-      strm << line << endl;
-      strm.lineNumber++;
-
-      // continuation line
-      if(n > 2) {
-         line = doubleToScientific(drift, 19, 12, 2);
-         line += string(1,' ');
-         if(n > 3) {
-            line += doubleToScientific(sig_drift, 19, 12, 2);
-            line += string(1,' ');
-         }
-         if(n > 4) {
-            line += doubleToScientific(accel, 19, 12, 2);
-            line += string(1,' ');
-         }
-         if(n > 5) {
-            line += doubleToScientific(sig_accel, 19, 12, 2);
-            line += string(1,' ');
-         }
-         strm << line << endl;
-         strm.lineNumber++;
+      if ( dvCount < 1 || dvCount > 6 )
+      {
+            // invalid dvCount - throw
+         FFStreamError e("Invalid number of data values: " + asString(dvCount));
+         GPSTK_THROW(e);
       }
 
-   }  // end reallyPutRecord()
+      s << leftJustify(type.type, 2) << string(1, ' ')
+        << leftJustify(name, 4) << string(1, ' ')
+        << writeTime(epochTime) 
+        << rightJustify(asString(dvCount), 3) << string(3, ' ')
+        << rightJustify(doub2for(clockData[0], 18, 2, false), 19) 
+        << string(1, ' ');
+      
+      if (dvCount >= 2)
+      {
+         s << rightJustify(doub2for(clockData[1], 18, 2, false), 19)
+           << endl;
+      }
+      else // dvCount == 1
+      {
+         s << endl;
+      }
+      
+      if (dvCount > 2)
+      {
+         for (int i = 2; i < dvCount; i++)
+         {
+            s << rightJustify(doub2for(clockData[i], 18, 2, false), 19);
+
+            if ( i < 5 )
+            {
+               s << string(1, ' ');
+            }
+         }
+         s << endl;
+      }
+      
+   }  // reallyPutRecord
+
 
    void RinexClockData::reallyGetRecord(FFStream& ffs)
-      throw(exception, FFStreamError, StringException)
+      throw(std::exception, FFStreamError,
+            StringUtils::StringException)
    {
-      // cast the stream to be an RinexClockStream
       RinexClockStream& strm = dynamic_cast<RinexClockStream&>(ffs);
 
-      clear();
-
+         // If the header hasn't been read, read it...
+      if(!strm.headerRead)
+      {
+         strm >> strm.header;
+      }
+    
+         // Clear out this object
+      RinexClockHeader& hdr = strm.header;
+      
+      RinexClockData rcd;
+      *this=rcd;
+      
       string line;
-      strm.formattedGetLine(line,true);      // true means 'expect possible EOF'
-      stripTrailing(line);
-      if(line.length() < 59) {
-         FFStreamError e("Short line : " + line);
+      
+      strm.formattedGetLine(line, true);
+      
+      if (line.size() < 59 || line.size() > 80 )
+      {
+            // invalid record size - throw
+         FFStreamError e("Invalid record length: " + asString(line.size()));
          GPSTK_THROW(e);
       }
 
-      //cout << "Data Line: /" << line << "/" << endl;
-      datatype = line.substr(0,2);
-      site = line.substr(3,4);
-      if(datatype == string("AS")) {
-         strip(site);
-         int prn(asInt(site.substr(1,2)));
-         if(site[0] == 'G') sat = RinexSatID(prn,RinexSatID::systemGPS);
-         else if(site[0] == 'R') sat = RinexSatID(prn,RinexSatID::systemGlonass);
-         else {
-            FFStreamError e("Invalid sat : /" + site + "/");
-            GPSTK_THROW(e);
-         }
-         site = string();
+      if ( line[2]  != ' ' || line[7]  != ' ' ||
+           line[37] != ' ' || line[38] != ' ' )
+      {
+            // invalid record - throw
+         FFStreamError e("Invalid clock record.");
+         GPSTK_THROW(e);
       }
 
-      time = CivilTime(asInt(line.substr( 8,4)),
-                     asInt(line.substr(12,3)),
-                     asInt(line.substr(15,3)),
-                     asInt(line.substr(18,3)),
-                     asInt(line.substr(21,3)),
-                     asDouble(line.substr(24,10)),
-                     TimeSystem::Any);
-
-      int n(asInt(line.substr(34,3)));
-      bias = asDouble(line.substr(40,19));
-      if(n > 1 && line.length() >= 59) sig_bias = asDouble(line.substr(60,19));
-
-      if(n > 2) {
-         strm.formattedGetLine(line,true);
-         stripTrailing(line);
-         if(int(line.length()) < (n-2)*20-1) {
-            FFStreamError e("Short line : " + line);
-            GPSTK_THROW(e);
-         }
-         drift =     asDouble(line.substr( 0,19));
-         if(n > 3) sig_drift = asDouble(line.substr(20,19));
-         if(n > 4) accel     = asDouble(line.substr(40,19));
-         if(n > 5) sig_accel = asDouble(line.substr(60,19));
+      string ts = upperCase(line.substr(0,2));
+      if      (ts == "AR") type = AR;
+      else if (ts == "AS") type = AS;
+      else if (ts == "CR") type = CR;
+      else if (ts == "DR") type = DR;
+      else if (ts == "MS") type = MS;
+      else
+      {
+            // invalid type - throw
+         FFStreamError e("Invalid clock type: " + type.type);
+         GPSTK_THROW(e);
       }
 
-   }   // end reallyGetRecord()
+      name = line.substr(3,4);
 
-   void RinexClockData::dump(ostream& s) const throw()
-   {
-      // dump record type, sat id / site, current epoch, and data
-      s << " " << datatype;
-      if(datatype == string("AR")) s << " " << site;
-      else s << " " << sat.toString();
-      s << " " << printTime(time,"%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g %P");
-      s << scientific << setprecision(12)
-         << " " << setw(19) << bias
-         << " " << setw(19) << sig_bias;
-      if(drift != 0.0) s << " " << setw(19) << drift; else s << " 0.0";
-      if(sig_drift != 0.0) s << " " << setw(19) << sig_drift; else s << " 0.0";
-      if(accel != 0.0) s << " " << setw(19) << accel; else s << " 0.0";
-      if(sig_accel != 0.0) s << " " << setw(19) << sig_accel; else s << " 0.0";
-      s << endl;
+      epochTime = parseTime(line.substr(8,26));
 
-   }  // end dump()
+      dvCount = asInt(line.substr(34,3));
+      if ( dvCount < 1 || dvCount > 6 )
+      {
+            // invalid dvCount - throw
+         FFStreamError e("Invalid number of data values: " + asString(dvCount));
+         GPSTK_THROW(e);
+      }
 
-} // namespace
+      clockData[0] = asDouble(line.substr(40,19));
+      
+      if (dvCount >= 2)
+      {
+         clockData[1] = asDouble(line.substr(60,19));
+      }
 
-//------------------------------------------------------------------------------------
+      if (dvCount > 2)
+      { 
+            // get continuation line
+         strm.formattedGetLine(line, true);
+
+         if (line.size() < 19 || line.size() > 80)
+         {
+               // invalid continuation line size - throw
+            FFStreamError e("Invalid continuation line length: " + 
+                            asString(line.size()));
+            GPSTK_THROW(e);
+         }
+         
+         for (int i = 2; i < dvCount; i++)
+         {
+            clockData[i] = asDouble(line.substr( (i-2)*20, 19 ));
+         }
+      }
+
+   }  // reallyGetRecord
+
+
+}  // namespace
+
+

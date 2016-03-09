@@ -46,12 +46,12 @@
 
 namespace gpstk
 {
-   /** @defgroup RinexNav RINEX navigation files */
-   //@{
+      /// @ingroup FileHandling
+      //@{
 
-  /**
-   * This class serves no purpose other than to make readable diagrams.
-   */
+      /**
+       * This class serves no purpose other than to make readable diagrams.
+       */
    class RinexNavBase : public FFData
    {
    public:
@@ -59,7 +59,7 @@ namespace gpstk
       virtual ~RinexNavBase() {}
    };
 
-   //@}
+      //@}
 
 }
 

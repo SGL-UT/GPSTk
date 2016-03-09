@@ -48,19 +48,19 @@
 
 namespace gpstk
 {
- /** @addtogroup VectorGroup */
-   //@{
+      /// @ingroup MathGroup
+      //@{
 
-// forward declaration
+      // forward declaration
    template <class T> class VectorSlice;
 
-/**
- * This class pretty much duplicates std::valarray<T> except it's fully
- * STL container compliant.  Remember that operators +=, -=, *= and /=
- * are provided by RefVectorBase.
- * 
- * @sa matvectest.cpp for examples
- */
+      /**
+       * This class pretty much duplicates std::valarray<T> except it's fully
+       * STL container compliant.  Remember that operators +=, -=, *= and /=
+       * are provided by RefVectorBase.
+       * 
+       * @sa matvectest.cpp for examples
+       */
    template <class T>
    class Vector : public RefVectorBase<T, Vector<T> >
    {
@@ -77,10 +77,12 @@ namespace gpstk
       typedef const T* const_iterator;
 
          /// Default constructor
-      Vector() : v(NULL), s(0) {}
+      Vector() : v(NULL), s(0)
+      {}
          /// Constructor given an initial size.
-      Vector(size_t siz) : s(siz)
-            //: v(new T[siz]), s(siz)
+      Vector(size_t siz) : v(NULL), s(siz)
+      {
+         if (siz>0)
          {
             v = new T[siz];
             if(!v) {
@@ -88,11 +90,14 @@ namespace gpstk
                GPSTK_THROW(e);
             }
          }
+      }
          /**
-          * Constructor given an initial size and default value for all elements.
+          * Constructor given an initial size and default value for
+          * all elements.
           */
-      Vector(size_t siz, const T defaultValue) : s(siz)
-            //: v(new T[siz]), s(siz)
+      Vector(size_t siz, const T defaultValue) : v(NULL), s(siz)
+      {
+         if (siz>0)
          {
             v = new T[siz];
             if(!v) {
@@ -101,12 +106,14 @@ namespace gpstk
             }
             this->assignFrom(defaultValue);
          }
+      }
          /**
           * Copy constructor from a ConstVectorBase type.
           */
       template <class E>
-      Vector(const ConstVectorBase<T, E>& r) : s(r.size())
-            //: v(new T[r.size()]), s(r.size())
+      Vector(const ConstVectorBase<T, E>& r) : v(NULL), s(r.size())
+      {
+         if (r.size()>0)
          {
             v = new T[r.size()];
             if(!v) {
@@ -115,11 +122,13 @@ namespace gpstk
             }
             this->assignFrom(r);
          }
+      }
          /**
           * Copy constructor.
           */
-      Vector(const Vector& r) : s(r.s)
-            //: v(new T[r.s]), s(r.s)
+      Vector(const Vector& r) : v(NULL), s(r.s)
+      {
+         if (r.s>0)
          {
             v = new T[r.s];
             if(!v) {
@@ -128,11 +137,13 @@ namespace gpstk
             }
             this->assignFrom(r);
          }
+      }
          /**
           * Valarray constructor
           */
-      Vector(const std::valarray<T>& r) : s(r.size())
-            //: v(new T[r.size()]), s(r.size())
+      Vector(const std::valarray<T>& r) : v(NULL), s(r.size())
+      {
+         if (r.size())
          {
             v = new T[r.size()];
             if(!v) {
@@ -141,21 +152,23 @@ namespace gpstk
             }
             this->assignFrom(r);
          }
+      }
 
          /// subvector constructor
       template <class E>
       Vector(const ConstVectorBase<T, E>& vec,
              size_t top,
-             size_t num) : v(NULL),s(0)
+             size_t num) : v(NULL), s(0)
+      {
+            // sanity checks...
+         if ( top >= vec.size() || 
+              top + num > vec.size())
          {
-               // sanity checks...
-            if ( top >= vec.size() || 
-                 top + num > vec.size())
-            {
-               VectorException e("Invalid dimensions or size for Vector(VectorBase)");
-               GPSTK_THROW(e);
-            }
-         
+            VectorException e("Invalid dimensions or size for Vector(VectorBase)");
+            GPSTK_THROW(e);
+         }
+         if (num>0)
+         {
             v = new T[num];
             if(!v) {
                VectorException e("Vector(subvector) failed to allocate");
@@ -166,10 +179,13 @@ namespace gpstk
                v[i] = vec(top+i);
             s = num;
          }
+      }
    
          /// Destructor
       ~Vector()
-         { if (v) delete [] v; }
+      {
+         if (v) delete [] v;
+      }
 
          /// STL iterator begin
       iterator begin() { return v; }
@@ -192,148 +208,147 @@ namespace gpstk
 
          /// Non-const operator []
       T& operator[] (size_t i) 
-         { return v[i]; }
+      { return v[i]; }
          /// Const operator []
       T operator[] (size_t i) const
-         { return v[i]; }
+      { return v[i]; }
          /// Non-const operator ()
       T& operator() (size_t i) 
-         { return v[i]; }
+      { return v[i]; }
          /// Const operator ()
       T operator() (size_t i) const
-         { return v[i]; }
+      { return v[i]; }
 
          /// Like valarray, lets you do vec[slice] to get a VectorSlice.
       VectorSlice<T> operator[] (const std::slice& sli)
-         { return VectorSlice<T>(*this, sli); }
+      { return VectorSlice<T>(*this, sli); }
 
          /// *this will be resized if it isn't as large as x.
       Vector& operator=(const Vector& x)
-         { resize(x.s); return this->assignFrom(x); }
+      { resize(x.s); return this->assignFrom(x); }
 
          /// *this will be resized if it isn't as large as x.
       template <class E>
       Vector& operator=(const ConstVectorBase<T, E>& x)
-         { resize(x.size()); return this->assignFrom(x); }
+      { resize(x.size()); return this->assignFrom(x); }
 
          /// *this will be resized if it isn't as large as x.
       Vector& operator=(const std::valarray<T>& x)
-         { resize(x.size()); return this->assignFrom(x); }
+      { resize(x.size()); return this->assignFrom(x); }
          /// Only (*this).size() elements will be assigned.
       Vector& operator=(const T x)
-         { return this->assignFrom(x); }
+      { return this->assignFrom(x); }
          /// Only (*this).size() elements will be assigned.
       Vector& operator=(const T* x)
-         { return this->assignFrom(x); }
+      { return this->assignFrom(x); }
 
-      /// *this will be cleared and resized as necessary
+         /// *this will be cleared and resized as necessary
       inline Vector& operator=(const std::vector<T>& x)
       {
-          size_t i;
-          size_t vs = x.size();
-          (*this).resize(vs);
+         size_t i;
+         size_t vs = x.size();
+         (*this).resize(vs);
 
-          for (i = 0; i < vs; i++) 
-              (*this)[i] = x[i];
+         for (i = 0; i < vs; i++) 
+            (*this)[i] = x[i];
 
-          return (*this); 
+         return (*this); 
       }
 
          /// Resizes the vector.  if index > size, the vector will be
          /// erased and the contents destroyed.
       Vector& resize(const size_t index)
-         { 
-            if (index > s)
-            {
-               if (v)
-                  delete [] v;
-               v = new T[index];
-               if(!v) {
-                  VectorException e("Vector.resize(size_t) failed to allocate");
-                  GPSTK_THROW(e);
-               }
+      { 
+         if (index > s)
+         {
+            if (v)
+               delete [] v;
+            v = new T[index];
+            if(!v) {
+               VectorException e("Vector.resize(size_t) failed to allocate");
+               GPSTK_THROW(e);
             }
-            s = index;
-            return *this;
          }
+         s = index;
+         return *this;
+      }
 
          /// resize with new default value
       Vector& resize(const size_t index, const T defaultValue)
-         {
-            resize(index);
-            size_t i;
-            for(i = 0; i < s; i++)
-               v[i] = defaultValue;
-            return *this;
-         }
-
-        // convert the gpstk vector to std vector
-      std::vector<T> toStdVector()
       {
-          std::vector<T> v;
-          for(size_t i = 0; i < s; i++)
-              v.push_back(v[i] );
-          return v;
+         resize(index);
+         for(size_t i = 0; i < s; i++)
+            v[i] = defaultValue;
+         return *this;
       }
 
-   inline Vector& operator<<(const Vector& b)
-   {
-       size_t i;
-       size_t vs = this->size();
-       size_t bs = b.size();
-       size_t rows = vs + bs;
-       Vector<T> toReturn(rows);
+         // convert the gpstk vector to std vector
+      std::vector<T> toStdVector()
+      {
+         std::vector<T> v;
+         for(size_t i = 0; i < s; i++)
+            v.push_back(v[i] );
+         return v;
+      }
 
-       for (i = 0; i < vs; i++)
-           toReturn[i] = (*this)[i];
+      inline Vector& operator<<(const Vector& b)
+      {
+         size_t i;
+         size_t vs = this->size();
+         size_t bs = b.size();
+         size_t rows = vs + bs;
+         Vector<T> toReturn(rows);
 
-       for (i = 0; i < bs; i++)
-           toReturn[i+vs] = b[i];
-
-       (*this) = toReturn;
-
-       return (*this);
-   }
-
-   /// Returns the concatenation of this Vector and a scalar of type T
-   inline Vector& operator<<(const T &b) 
-   {
-       return (*this) << Vector(1,b);
-   }
-
-    /// Returns the concatenation of this Vector and Vector b
-    inline Vector operator&&(const Vector &b) 
-    {
-        size_t i;
-        size_t vs = this->size();
-        size_t bs = b.size();
-        size_t rows = vs + bs;
-        Vector<T> toReturn(rows);
-
-        for (i = 0; i < vs; i++)
+         for (i = 0; i < vs; i++)
             toReturn[i] = (*this)[i];
 
-        for (i = 0; i < bs; i++)
+         for (i = 0; i < bs; i++)
             toReturn[i+vs] = b[i];
 
-        return toReturn;
-    }
+         (*this) = toReturn;
 
-    /// Returns the concatenation of this Vector and a scalar of type T
-    inline Vector operator&&(const T &b) 
-    {
-        size_t i;
-        size_t vs = this->size();
-        size_t rows = vs + 1;
-        Vector<T> toReturn(rows);
+         return (*this);
+      }
 
-        for (i = 0; i < vs; i++)
+         /// Returns the concatenation of this Vector and a scalar of type T
+      inline Vector& operator<<(const T &b) 
+      {
+         return (*this) << Vector(1,b);
+      }
+
+         /// Returns the concatenation of this Vector and Vector b
+      inline Vector operator&&(const Vector &b) 
+      {
+         size_t i;
+         size_t vs = this->size();
+         size_t bs = b.size();
+         size_t rows = vs + bs;
+         Vector<T> toReturn(rows);
+
+         for (i = 0; i < vs; i++)
             toReturn[i] = (*this)[i];
 
-        toReturn[rows - 1] = b;
+         for (i = 0; i < bs; i++)
+            toReturn[i+vs] = b[i];
 
-        return toReturn;
-    }
+         return toReturn;
+      }
+
+         /// Returns the concatenation of this Vector and a scalar of type T
+      inline Vector operator&&(const T &b) 
+      {
+         size_t i;
+         size_t vs = this->size();
+         size_t rows = vs + 1;
+         Vector<T> toReturn(rows);
+
+         for (i = 0; i < vs; i++)
+            toReturn[i] = (*this)[i];
+
+         toReturn[rows - 1] = b;
+
+         return toReturn;
+      }
 
    private:
 
@@ -341,26 +356,26 @@ namespace gpstk
          // if RANGECHECK isn't defined.  remember that
          // range checking affects EVERY operation
       inline bool rangeCheck(const size_t index) const
-         {
+      {
 #ifdef RANGECHECK
-            return (index < s);
+         return (index < s);
 #else
-            return true;
+         return true;
 #endif
-         }
+      }
    
          /// The vector
       T* v;
          /// The size of the vector.
       size_t s;
    };
-   // end class Vector<T>
+      // end class Vector<T>
 
-/**
- * A slice of Vector<T> that can be modified.  
- * @warning Remember that (VectorSlice = VectorSlice) will
- * assign elements to the VectorSlice, not copy the VectorSlice internal data!
- */
+      /**
+       * A slice of Vector<T> that can be modified.  
+       * @warning Remember that (VectorSlice = VectorSlice) will
+       * assign elements to the VectorSlice, not copy the VectorSlice internal data!
+       */
    template <class T>
    class VectorSlice : public RefVectorSliceBase<T, VectorSlice<T> >
    {
@@ -368,47 +383,47 @@ namespace gpstk
          /// Default constructor
       VectorSlice()
             : v(NULL), s(std::slice(0,0,0))
-         { }
+      {}
 
          /// Makes a slice of the whole vector
       VectorSlice(Vector<T>& vv)
             : v(&vv), s(std::slice(0,vv.size(),1))
-         { }
+      {}
             
          /// Makes a slice of the vector with the given std::slice.
       VectorSlice(Vector<T>& vv, const std::slice& ss)
             : v(&vv), s(ss)
-         { vecSliceCheck(vv.size()); }
+      { vecSliceCheck(vv.size()); }
 
          /// Assign the elements of this slice from another vector.
       template <class V>
       VectorSlice& operator=(const ConstVectorBase<T, V>& x)
-         { return this->assignFrom(x); }
+      { return this->assignFrom(x); }
 
          /// Assign the elements of this slice from a valarray.
       VectorSlice& operator=(const std::valarray<T>& x)
-         { return this->assignFrom(x); }
+      { return this->assignFrom(x); }
 
          /// Assign all the elements of this slice to x.
       VectorSlice& operator=(const T x)
-         { return this->assignFrom(x); }
+      { return this->assignFrom(x); }
 
          /// Assign (*this).size() elements from x to (*this).
       VectorSlice& operator=(const T* x)
-         { return this->assignFrom(x); }
+      { return this->assignFrom(x); }
 
          /// Returns the modifiable i'th element of the slice.
       T& operator[] (size_t i) 
-         { return (*v)[start() + i * stride()]; }
+      { return (*v)[start() + i * stride()]; }
          /// Returns the const i'th element of the slice.
       T operator[] (size_t i) const
-         { return (*v)[start() + i * stride()]; }
+      { return (*v)[start() + i * stride()]; }
          /// Returns the modifiable i'th element of the slice.
       T& operator() (size_t i) 
-         { return (*v)[start() + i * stride()]; }
+      { return (*v)[start() + i * stride()]; }
          /// Returns the const i'th element of the slice.
       T operator() (size_t i) const
-         { return (*v)[start() + i * stride()]; }
+      { return (*v)[start() + i * stride()]; }
 
          /// returns the number of elements in the slice
       inline size_t size() const { return s.size(); }
@@ -424,9 +439,9 @@ namespace gpstk
       std::slice s;
    };
 
-/**
- * A Vector<T> slice that doesn't allow modification. 
- */
+      /**
+       * A Vector<T> slice that doesn't allow modification. 
+       */
    template <class T>
    class ConstVectorSlice : public ConstVectorSliceBase<T, ConstVectorSlice<T> >
    {
@@ -434,24 +449,24 @@ namespace gpstk
          /// default constructor
       ConstVectorSlice()
             : v(NULL), s(std::slice(0,0,0))
-         { }
+      { }
 
          /// Makes a slice of the whole vector
       ConstVectorSlice(const Vector<T>& vv)
             : v(&vv), s(std::slice(0,vv.size(),1))
-         { }
+      { }
             
          /// Uses the given slice and vector.
       ConstVectorSlice(const Vector<T>& vv, const std::slice& ss)
             : v(&vv), s(ss)
-         { vecSliceCheck(vv.size()); }
+      { vecSliceCheck(vv.size()); }
 
          /// Returns a const version of the i'th slice element.
       T operator[] (size_t i) const
-         { return (*v)[start() + i * stride()]; }
+      { return (*v)[start() + i * stride()]; }
          /// Returns a const version of the i'th slice element.
       T operator() (size_t i) const
-         { return (*v)[start() + i * stride()]; }
+      { return (*v)[start() + i * stride()]; }
 
          /// returns the number of elements in the slice
       inline size_t size() const { return s.size(); }
@@ -468,7 +483,7 @@ namespace gpstk
       std::slice s;
    };
 
-   //@}
+      //@}
 
 }  // namespace
 

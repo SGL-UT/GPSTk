@@ -47,7 +47,6 @@
 #include "Triple.hpp"
 #include "Vector.hpp"
 
-using namespace std;
 
 class xHelmertTransform : public CPPUNIT_NS :: TestFixture
 {

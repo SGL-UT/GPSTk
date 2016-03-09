@@ -138,7 +138,7 @@ void RMWDiff::process()
             {
                YDSTime recTime(firstitr->time);
                cout << setw(3) << recTime.doy << ' ' 
-                    << setw(10) << setprecision(0)
+                    << setw(10) << setprecision(0) << fixed
                     << recTime.sod << ' ' 
                     << ff1.frontHeader().markerName << ' '
                     << ff2.frontHeader().markerName << ' ';

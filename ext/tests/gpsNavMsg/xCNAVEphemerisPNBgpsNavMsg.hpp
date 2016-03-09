@@ -41,7 +41,6 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include "CNAVEphemeris.hpp"
 
-using namespace std;
 
 class xCNAVEphemerisPNBgpsNavMsg: public CPPUNIT_NS :: TestFixture
 {

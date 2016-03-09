@@ -50,9 +50,8 @@
 
 namespace gpstk
 {
-   using namespace StringUtils;
 
-      /** @addtogroup GeoDynamics */
+      /// @ingroup GeoDynamics 
       //@{
 
 

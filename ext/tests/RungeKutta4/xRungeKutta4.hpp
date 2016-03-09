@@ -41,7 +41,6 @@
 #include <cppunit/extensions/HelperMacros.h>
 
 
-using namespace std;
 
  
 class xRungeKutta4: public CPPUNIT_NS :: TestFixture

@@ -48,7 +48,7 @@
 namespace gpstk
 {
 
-      /** @defgroup appframegroup Framework for Applications
+      /** @defgroup AppFrame Framework for Applications
        *
        * The application frameworks provide a set of classes that
        * perform the basic functions of applications within the GPS
@@ -71,6 +71,7 @@ namespace gpstk
        * do.
        */
 
+      /// @ingroup AppFrame
       //@{
 
       /**
@@ -96,6 +97,9 @@ namespace gpstk
           * command-line options.  Not guaranteed to be unique to this
           * condition. */
       static const int OPTION_ERROR = 2;
+         /** Exit code used when an input file does not exist or is
+          * not accessible. */
+      static const int EXIST_ERROR = 2;
 
          /** Constructor for BasicFramework.
           *

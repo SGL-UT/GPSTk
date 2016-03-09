@@ -57,7 +57,7 @@
 namespace gpstk
 {
 
-      /** @addtogroup DataStructures */
+      /// @ingroup DataStructures 
       //@{
 
       /** This class encapsulates the data related to GNSS antennas according

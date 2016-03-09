@@ -1,0 +1,54 @@
++++++++++++++ RinSum summary of Rinex obs file arlm200a.15o +++++++++++++
+---------------------------------- REQUIRED ----------------------------------
+Rinex Version  2.11,  File type Observation,  System G (GPS).
+Prgm: hgextrobs,  Run: 11/04/2015 21:00:01,  By: John Knutson
+Marker type: .
+Observer : Monitor Station,  Agency: NGA
+Rec#: 1,  Type: ITT MSN SAASM,  Vers: 3.2.11
+Antenna # : 1,  Type : ITT 3750323-1
+Position      (XYZ,m) : (-740289.9180, -5457071.7340, 3207245.5420).
+Antenna Delta (HEN,m) : (0.0000, 0.0000, 0.0000).
+GPS Observation types (10):
+ Type #01 (L1Y) L1 GPSY phase
+ Type #02 (L2Y) L2 GPSY phase
+ Type #03 (C1C) L1 GPSC/A pseudorange
+ Type #04 (C2X) L2 GPSC2L+M pseudorange
+ Type #05 (C1Y) L1 GPSY pseudorange
+ Type #06 (C2Y) L2 GPSY pseudorange
+ Type #07 (D1Y) L1 GPSY doppler
+ Type #08 (D2Y) L2 GPSY doppler
+ Type #09 (S1Y) L1 GPSY snr
+ Type #10 (S2Y) L2 GPSY snr
+Time of first obs 2015/07/19 00:00:00.000 GPS
+(This header is VALID)
+---------------------------------- OPTIONAL ----------------------------------
+Marker number : 85408
+Signal Strenth Unit = 
+Interval =  30.000
+Wavelength factor L1: 1 L2: 1
+-------------------------------- END OF HEADER --------------------------------
+
+Reading the observation data...
+Computed interval 30.00 seconds.
+Computed first epoch: 2015/07/19 00:00:00 = 1854 0      0.000 GPS
+Computed last  epoch: 2015/07/19 00:59:30 = 1854 0   3570.000 GPS
+Computed time span: 0h 59m 30s = 3570 seconds.
+Computed file size: 206751 bytes.
+There were 120 epochs (100.00% of 120 possible epochs in this timespan) and 0 inline header blocks.
+
+      Summary of data available in this file: (Spans are based on times and interval)
+System G = GPS:
+ Sat\OT: L1Y    L2Y    C1C    C2X    C1Y    C2Y    D1Y    D2Y    S1Y    S2Y   Span             Begin time - End time
+ G02     120    120    120      0    120    120    120    120    120    120    120  2015/07/19 00:00:00 - 2015/07/19 00:59:30
+ G05     120    120    120    120    120    120    120    120    120    120    120  2015/07/19 00:00:00 - 2015/07/19 00:59:30
+ G06      96     96     96     66     96     96     96     96     96     96    120  2015/07/19 00:00:00 - 2015/07/19 00:59:30
+ G10     120    120    120      0    120    120    120    120    120    120    120  2015/07/19 00:00:00 - 2015/07/19 00:59:30
+ G12     120    120    120    120    120    120    120    120    120    120    120  2015/07/19 00:00:00 - 2015/07/19 00:59:30
+ G13     116    116    116      0    116    116    116    116    116    116    116  2015/07/19 00:02:00 - 2015/07/19 00:59:30
+ G15      92     92     92     66     92     92     92     92     92     92     94  2015/07/19 00:13:00 - 2015/07/19 00:59:30
+ G20     120    120    120      0    120    120    120    120    120    120    120  2015/07/19 00:00:00 - 2015/07/19 00:59:30
+ G21      78     78     78      0     78     78     78     78     78     78     81  2015/07/19 00:19:30 - 2015/07/19 00:59:30
+ G25     120    120    120    120    120    120    120    120    120    120    120  2015/07/19 00:00:00 - 2015/07/19 00:59:30
+ G29     120    120    120    120    120    120    120    120    120    120    120  2015/07/19 00:00:00 - 2015/07/19 00:59:30
+TOTAL   1222   1222   1222    612   1222   1222   1222   1222   1222   1222
+
