@@ -719,6 +719,8 @@ namespace gpstk
 
    bool PackedNavBits::operator==(const PackedNavBits& right) const
    {
+         // NOTE: Defaults for match are that all metadata 
+         // and all bits must match. 
       return match(right);
    }
 
@@ -727,8 +729,8 @@ namespace gpstk
                  const short endBit,
                  const unsigned flagBits) const
    {
-      if (!matchMetaData(right,mmALL)) return false;
-      if (!matchBits(right,0,-1)) return false;
+      if (!matchMetaData(right,flagBits)) return false;
+      if (!matchBits(right,startBit,endBit)) return false;
       return true;
    }
 
