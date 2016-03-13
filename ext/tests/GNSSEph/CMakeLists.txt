@@ -1,0 +1,4 @@
+add_executable(PackedNavBits_T PackedNavBits_T.cpp)
+target_link_libraries(PackedNavBits_T gpstk)
+add_test(GNSSEph_PackedNavBits PackedNavBits_T)
+

@@ -684,6 +684,7 @@ namespace gpstk
       int rollover = numPerLine;
       
       int numBitInWord = 0;
+      int bit_count    = 0; 
       int word_count   = 0;
       uint32_t word    = 0;
       for(size_t i = 0; i < bits.size(); ++i)
@@ -699,9 +700,11 @@ namespace gpstk
             numBitInWord = 0;
             word_count++;
             
-            //Print "numPerLine" words per line 
+            //Print "numPerLine" words per line,
+            //but ONLY if there are more bits left to put on the next line.
             if (word_count>0 && 
-                word_count % rollover == 0) s << endl;        
+                word_count % rollover == 0 &&
+                (i+1) < bits.size()) s << endl;        
          }
       }
          // Need to check if there is a partial word in the buffer
@@ -714,19 +717,56 @@ namespace gpstk
       return(bits.size()); 
    }
 
+   bool PackedNavBits::operator==(const PackedNavBits& right) const
+   {
+      return match(right);
+   }
+
+   bool PackedNavBits::match(const PackedNavBits& right, 
+                 const short startBit, 
+                 const short endBit,
+                 const unsigned flagBits) const
+   {
+      if (!matchMetaData(right,mmALL)) return false;
+      if (!matchBits(right,0,-1)) return false;
+      return true;
+   }
+
+   bool PackedNavBits::matchMetaData(const PackedNavBits& right,
+                                     const unsigned flagBits) const
+   {
+         // If not the same time, return false;
+         // Given BDS is at 0.1 s, it was necessary to implement
+         // an epsilon test to avoid problems. 
+      if (flagBits & mmTIME)
+      {
+         double diffSec = right.transmitTime-transmitTime;
+         diffSec = fabs(diffSec); 
+         if (diffSec>0.001) return false;
+      }
+
+         // If not the same satellite, return false. 
+      if ((flagBits & mmSAT) && satSys!=right.satSys) return false;
+
+         // If not the same observation types (carrier, code) return false.
+      if ((flagBits & mmOBS) && obsID!=right.obsID) return false;
+
+         // If not the same receiver return false.
+      if ((flagBits & mmRX) && rxID.compare(right.rxID)!=0) return false;
+
+      return true;
+   }
+
    bool PackedNavBits::matchBits(const PackedNavBits& right, 
-                                 short startBit, short endBit, bool checkOverhead ) const
+                                 const short startBitA, 
+                                 const short endBitA) const
    {
          // If the two objects don't have the same number of bits,
          // don't even try to compare them. 
       if (bits.size()!=right.bits.size()) return false; 
 
-         // If not the same satellite, return false. 
-      if (checkOverhead && satSys!=right.satSys) return false;
-
-         // If not the same observation types (carrier, code) return false.
-      if (checkOverhead && obsID!=right.obsID) return false;
-
+      short startBit = startBitA;
+      short endBit = endBitA; 
          // Check for nonsense arguments
       if (endBit==-1 ||
           endBit>=int(bits.size())) endBit = bits.size()-1;
