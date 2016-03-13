@@ -375,7 +375,8 @@ realDataTest()
    pnb.addDoubleSemiCircles(rOMEGAdot, n_rOMEGAdot, s_rOMEGAdot);
    pnb.addUnsignedLong(riode, n_riode, s_riode);
    pnb.addDoubleSemiCircles(ridot, n_ridot, s_ridot); 
- 
+   pnb.trimsize();
+
    int startbit = 0;
    double dtest;
    unsigned long ultest;
@@ -593,18 +594,22 @@ equalityTest()
    withBits.addUnsignedLong(u_i1, u_n1, u_s1);
    withBits.addUnsignedLong(u_i2, u_n2, u_s2);
    withBits.addUnsignedLong(u_i3, u_n3, u_s3);
+   withBits.trimsize();
 
    withSameBits.addUnsignedLong(u_i1, u_n1, u_s1);
    withSameBits.addUnsignedLong(u_i2, u_n2, u_s2);
    withSameBits.addUnsignedLong(u_i3, u_n3, u_s3);
+   withSameBits.trimsize();
 
    withShortBits.addUnsignedLong(u_i1, u_n1, u_s1);
    withShortBits.addUnsignedLong(u_i2, u_n2, u_s2);
+   withShortBits.trimsize();
 
    withLongBits.addUnsignedLong(u_i1, u_n1, u_s1);
    withLongBits.addUnsignedLong(u_i2, u_n2, u_s2);
    withLongBits.addUnsignedLong(u_i3, u_n3, u_s3);
    withLongBits.addUnsignedLong(u_i4, u_n4, u_s4);
+   withLongBits.trimsize();
 
       // Basic "test for complete match"
    TUASSERTE(bool, true,withBits.matchBits(withSameBits));
@@ -615,8 +620,12 @@ equalityTest()
       // NOTE: The second argument is the ending BIT NUMBER
       // NOT the number of bits.   
    TUASSERTE(bool, true,withBits.matchBits( withSameBits,0,23));
-   TUASSERTE(bool, true,withBits.matchBits(withShortBits,0,23));
-   TUASSERTE(bool, true,withBits.matchBits( withLongBits,0,23));
+
+      // It is CORRECT that these two fail. Even though the
+      // bits match, the overall length of the bits sets 
+      // does NOT match.
+   TUASSERTE(bool,false,withBits.matchBits(withShortBits,0,23));
+   TUASSERTE(bool,false,withBits.matchBits( withLongBits,0,23));
 
       // Same bits as withBits, but in different order.  
       // Therefore, same length, but different contents.
@@ -628,6 +637,7 @@ equalityTest()
    diffOrder.addUnsignedLong(u_i2, u_n2, u_s2);  // 8 bits  (0- 7)
    diffOrder.addUnsignedLong(u_i1, u_n1, u_s1);  // 16 bits (8-23)
    diffOrder.addUnsignedLong(u_i3, u_n3, u_s3);
+   diffOrder.trimsize();
    TUASSERTE(bool,false,withBits.matchBits(diffOrder));
    TUASSERTE(bool, true,withBits.matchBits(diffOrder,24,31));
 
@@ -637,11 +647,13 @@ equalityTest()
    sameAsWithBits.addUnsignedLong(u_i1, u_n1, u_s1);
    sameAsWithBits.addUnsignedLong(u_i2, u_n2, u_s2);
    sameAsWithBits.addUnsignedLong(u_i3, u_n3, u_s3);
+   sameAsWithBits.trimsize();
 
    PackedNavBits diffMetaWithBits(satID2,obsID2,rxID2,ctPlus);
    diffMetaWithBits.addUnsignedLong(u_i1, u_n1, u_s1);
    diffMetaWithBits.addUnsignedLong(u_i2, u_n2, u_s2);
    diffMetaWithBits.addUnsignedLong(u_i3, u_n3, u_s3);
+   diffMetaWithBits.trimsize();
 
       // Same SatID and ObsID, but different Rx and XmitTime
       // and with same bits 24-31 but different bits 0-23.
@@ -649,6 +661,7 @@ equalityTest()
    diffMetaWithBits2.addUnsignedLong(u_i2, u_n2, u_s2);
    diffMetaWithBits2.addUnsignedLong(u_i1, u_n1, u_s1);
    diffMetaWithBits2.addUnsignedLong(u_i3, u_n3, u_s3);
+   diffMetaWithBits2.trimsize();
 
    TUASSERTE(bool,  true,withBits.match(sameAsWithBits));
    TUASSERTE(bool, false,withBits.match(diffMetaWithBits));
