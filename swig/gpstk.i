@@ -309,6 +309,10 @@ namespace std { class fstream {}; }
 %include "PoleTides.hpp"
 %include "SolidTides.hpp"
 
+// Geomatics:
+%include "Geomatics.i"
+%include "SunEarthSatGeometry.hpp"
+
 // Encapsulation of many the __str__, __getitem__, etc. functions to avoid clutter.
 // When the only change to a class is adding a simple wrapper, add to pythonfunctions
 // instead of creating another small file.
