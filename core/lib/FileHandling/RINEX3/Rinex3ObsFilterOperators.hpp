@@ -133,14 +133,20 @@ namespace gpstk
 
                if (lData.data < rData.data)
                   return true;
+               if (lData.data > rData.data)
+                  return true;
 
                if ( lData.lli != 0 && rData.lli != 0 )
+               {
                   if (lData.lli < rData.lli)
                      return true;
+               }
 
                if ( lData.ssi != 0 && rData.ssi != 0 )
+               {
                   if (lData.ssi < rData.ssi)
                      return true;
+               }
 
                   ///obsItr++;
             }

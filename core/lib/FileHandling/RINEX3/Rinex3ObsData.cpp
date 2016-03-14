@@ -214,6 +214,14 @@ namespace gpstk
    }  // End of function 'reallyPutRecordVer2()'
 
 
+   Rinex3ObsData::Rinex3ObsData()
+         : time(gpstk::CommonTime::BEGINNING_OF_TIME),
+           epochFlag(-1),
+           numSVs(-1),
+           clockOffset(0.L)
+   {}
+
+
    RinexDatum Rinex3ObsData::getObs(const RinexSatID& svID, size_t index ) const
       throw(InvalidRequest)
    {

@@ -22,10 +22,11 @@
 
 //============================================================================
 //
-// This software developed by Applied Research Laboratories at the University of
-// Texas at Austin, under contract to an agency or agencies within the U.S.
-// Department of Defense. The U.S. Government retains all rights to use,
-// duplicate, distribute, disclose, or release this software.
+// This software developed by Applied Research Laboratories at the
+// University of Texas at Austin, under contract to an agency or
+// agencies within the U.S.  Department of Defense. The
+// U.S. Government retains all rights to use, duplicate, distribute,
+// disclose, or release this software.
 //
 // Pursuant to DoD Directive 523024
 //
