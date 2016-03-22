@@ -83,9 +83,9 @@ private:
    int throwType();
 
       /// Throw an exception for testMacros
-   void throwSomething(TestUtil& testFramework);
+   void throwSomething(gpstk::TestUtil& testFramework);
       /// Throw an exception for testMacros
-   void rethrowSomething(TestUtil& testFramework);
+   void rethrowSomething(gpstk::TestUtil& testFramework);
 
    int cowLine1, cowLine2;
 };
@@ -152,10 +152,10 @@ testErrorSeverity()
       TUASSERTE(size_t, 2, exc.getLocationCount());
       if (exc.getLocationCount() == 2)
       {
-         TestUtil test2("ExceptionLocation", "", __FILE__, __LINE__);
+         gpstk::TestUtil test2("ExceptionLocation", "", __FILE__, __LINE__);
          gpstk::ExceptionLocation loc1 = exc.getLocation();
          gpstk::ExceptionLocation loc2 = exc.getLocation(1);
-            // can't change class in TestUtil, oh well
+            // can't change class in gpstk::TestUtil, oh well
          testFramework.changeSourceMethod("getLineNumber");
          TUASSERTE(unsigned long, loc1Line, loc1.getLineNumber());
          TUASSERTE(unsigned long, loc2Line, loc2.getLineNumber());
@@ -303,7 +303,7 @@ throwType()
 
 
 void Exception_T ::
-throwSomething(TestUtil& testFramework)
+throwSomething(gpstk::TestUtil& testFramework)
 {
    gpstk::InvalidRequest exc("cow");
    cowLine1 = __LINE__; GPSTK_THROW(exc);
@@ -311,7 +311,7 @@ throwSomething(TestUtil& testFramework)
 
 
 void Exception_T ::
-rethrowSomething(TestUtil& testFramework)
+rethrowSomething(gpstk::TestUtil& testFramework)
 {
    try
    {

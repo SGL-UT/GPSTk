@@ -105,8 +105,8 @@ void BinexTypes_T :: init( void )
 {
 
    TestUtil  test0;
-   string  dataFilePath = test0.getDataPath();
-   string  tempFilePath = test0.getTempPath();
+   string  dataFilePath = gpstk::getPathData();
+   string  tempFilePath = gpstk::getPathTestTemp();
 
       //----------------------------------------
       // Full file paths

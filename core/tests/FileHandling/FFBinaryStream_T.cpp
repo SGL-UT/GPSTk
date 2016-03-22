@@ -103,8 +103,8 @@ init()
 {
 
    TestUtil testUtil;
-   string dp = testUtil.getDataPath() + gpstk::getFileSep();
-   string op = testUtil.getTempPath() + gpstk::getFileSep();
+   string dp = gpstk::getPathData() + gpstk::getFileSep();
+   string op = gpstk::getPathTestTemp() + gpstk::getFileSep();
 
       //----------------------------------------
       // Full file paths
