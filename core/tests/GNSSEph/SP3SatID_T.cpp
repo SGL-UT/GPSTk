@@ -1,4 +1,4 @@
-   //============================================================================
+//============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -51,7 +51,7 @@ public:
 //==========================================================================================================================
    int initializationTest(void)
    {
-      TestUtil testFramework("SP3SatID", "Constructor", __FILE__, __LINE__);
+      gpstk::TestUtil testFramework("SP3SatID", "Constructor", __FILE__, __LINE__);
 
 
          //---------------------------------------------------------------------
@@ -119,7 +119,7 @@ public:
 //==========================================================================================================================
    int operatorTest(void) //including <<
    {
-      TestUtil testFramework( "SatID", "OperatorEquivalence", __FILE__, __LINE__);
+      gpstk::TestUtil testFramework( "SatID", "OperatorEquivalence", __FILE__, __LINE__);
 
 
       gpstk::SP3SatID Compare    (5, gpstk::SatID::SatelliteSystem(2) );
@@ -329,18 +329,18 @@ public:
 //==========================================================================================================================
    int fromStringTest(void)
    {
-      TestUtil testFramework("SP3SatID", "fromString", __FILE__, __LINE__);
+      gpstk::TestUtil testFramework("SP3SatID", "fromString", __FILE__, __LINE__);
 
       std::string inputStringArray[5] = {"7", "07", "30", "E10", "E100"};
       int         expectedID[5]       = {  7,    7,   30,    10,    100};
       gpstk::SatID::SatelliteSystem expectedSatSysArray[5] =
-      {
-         gpstk::SatID::SatelliteSystem(1),
-         gpstk::SatID::SatelliteSystem(1),
-         gpstk::SatID::SatelliteSystem(1),
-         gpstk::SatID::SatelliteSystem(2),
-         gpstk::SatID::SatelliteSystem(2)
-      };
+         {
+            gpstk::SatID::SatelliteSystem(1),
+            gpstk::SatID::SatelliteSystem(1),
+            gpstk::SatID::SatelliteSystem(1),
+            gpstk::SatID::SatelliteSystem(2),
+            gpstk::SatID::SatelliteSystem(2)
+         };
       gpstk::SP3SatID Compare;
 
 
@@ -375,7 +375,7 @@ public:
 //==========================================================================================================================
    int toStringTest(void)
    {
-      TestUtil testFramework("SP3SatID", "toString", __FILE__, __LINE__);
+      gpstk::TestUtil testFramework("SP3SatID", "toString", __FILE__, __LINE__);
 
 
       gpstk::SP3SatID Compare1(5, gpstk::SatID::SatelliteSystem(1));

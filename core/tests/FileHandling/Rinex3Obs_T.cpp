@@ -133,8 +133,8 @@ void Rinex3Obs_T :: init( void )
    cout << "Running tests for Rinex version 2.x" << endl;
 
    TestUtil test0;
-   dataFilePath = test0.getDataPath();
-   tempFilePath = test0.getTempPath();
+   dataFilePath = gpstk::getPathData();
+   tempFilePath = gpstk::getPathTestTemp();
 
       //----------------------------------------
       // Full file paths

@@ -39,7 +39,7 @@ public:
 //=============================================================================
    int  initializationTest(void)
    {
-      TestUtil testFramework( "GPSZcount", "ConstructorExplicit2Inputs", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "GPSZcount", "ConstructorExplicit2Inputs", __FILE__, __LINE__ );
 
          //--------------------------------------------------------------------
          // Were the values set to expectation using the explicit
@@ -182,7 +182,7 @@ public:
 //=============================================================================
    int  addWeeksTest(void)
    {
-      TestUtil testFramework( "GPSZcount", "addWeeks", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "GPSZcount", "addWeeks", __FILE__, __LINE__ );
 
          //--------------------------------------------------------------------
          // Were the values set to expectation using the addWeeks?
@@ -217,7 +217,7 @@ public:
 //=============================================================================
    int  addZcountsTest(void)
    {
-      TestUtil testFramework( "GPSZcount", "addZcounts", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "GPSZcount", "addZcounts", __FILE__, __LINE__ );
          //--------------------------------------------------------------------
          // Were the values set to expectation using the addZcounts?
          //--------------------------------------------------------------------
@@ -263,7 +263,7 @@ public:
 //=============================================================================
    int  incrementTest(void)
    {
-      TestUtil testFramework( "GPSZcount", "OperatorIncrement", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "GPSZcount", "OperatorIncrement", __FILE__, __LINE__ );
 
          // Increment the zcount
       gpstk::GPSZcount arbitraryObject(10, 35);
@@ -293,7 +293,7 @@ public:
 //=============================================================================
    int  decrementTest(void)
    {
-      TestUtil testFramework( "GPSZcount", "OperatorDecrement", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "GPSZcount", "OperatorDecrement", __FILE__, __LINE__ );
 
          // Decrement the zcount
       gpstk::GPSZcount arbitraryObject(10, 35);
@@ -324,7 +324,7 @@ public:
 //=============================================================================
    int  additionTest(void)
    {
-      TestUtil testFramework( "GPSZcount", "OperatorAddition", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "GPSZcount", "OperatorAddition", __FILE__, __LINE__ );
          // Add to the zcount
       gpstk::GPSZcount justAddition(10, 35);
       gpstk::GPSZcount additionAssign(15, 1000);
@@ -356,7 +356,7 @@ public:
 //=============================================================================
    int  subtractionTest(void)
    {
-      TestUtil testFramework( "GPSZcount", "OperatorSubtraction", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "GPSZcount", "OperatorSubtraction", __FILE__, __LINE__ );
          // Subtract from the zcount
       gpstk::GPSZcount justSubtraction(10, 35);
       gpstk::GPSZcount subtractionAssign(15, 1000);
@@ -390,7 +390,7 @@ public:
 //=============================================================================
    int  differenceTest(void)
    {
-      TestUtil testFramework( "GPSZcount", "OperatorDifference", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "GPSZcount", "OperatorDifference", __FILE__, __LINE__ );
 
          // Find the zcount difference between the two objects
       double diffLessThan, diffMoreThan, diffSame;
@@ -418,7 +418,7 @@ public:
 //=============================================================================
    int  remainderTest(void)
    {
-      TestUtil testFramework( "GPSZcount", "OperatorRemainder", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "GPSZcount", "OperatorRemainder", __FILE__, __LINE__ );
 
          // Find the zcount remainder between the object and some test values
       long remaiderWeek, remainderValue;
@@ -441,7 +441,7 @@ public:
 //=============================================================================
    int  comparisonTest(void)
    {
-      TestUtil testFramework( "GPSZcount", "OperatorEquivalence", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "GPSZcount", "OperatorEquivalence", __FILE__, __LINE__ );
 
       gpstk::GPSZcount Compare(10, 25);
       gpstk::GPSZcount LessThanWeek(9,25);
@@ -517,7 +517,7 @@ public:
 //=============================================================================
    int  stringTest(void)
    {
-      TestUtil testFramework( "GPSZcount", "OperatorString", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "GPSZcount", "OperatorString", __FILE__, __LINE__ );
 
       std::string expectedResult = "1234w56789z";
       gpstk::GPSZcount object(1234, 56789);
@@ -534,7 +534,7 @@ public:
 //=============================================================================
    int  dumpTest(void)
    {
-      TestUtil testFramework( "GPSZcount", "dump", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "GPSZcount", "dump", __FILE__, __LINE__ );
 
       std::stringstream obtainedOutputStreamLevel0;
       std::stringstream obtainedOutputStreamLevel1;
@@ -563,7 +563,7 @@ public:
 //=============================================================================
    int inSameTimeBlockTest(void)
    {
-      TestUtil testFramework( "GPSZcount", "inSameTimeBlock", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "GPSZcount", "inSameTimeBlock", __FILE__, __LINE__ );
 
       gpstk::GPSZcount compare(10,0);
       gpstk::GPSZcount oneWeekMinus1(10,403199);

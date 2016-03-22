@@ -117,8 +117,8 @@ void RinexNav_T :: init( void )
 {
 
    TestUtil test0;
-   std::string dataFilePath = test0.getDataPath();
-   std::string tempFilePath = test0.getTempPath();
+   std::string dataFilePath = gpstk::getPathData();
+   std::string tempFilePath = gpstk::getPathTestTemp();
 
       //----------------------------------------
       // Full file paths

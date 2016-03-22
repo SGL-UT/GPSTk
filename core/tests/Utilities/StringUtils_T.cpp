@@ -60,7 +60,7 @@ public:
    ========================================================================================================================= */
    int justificationTest( void )
    {
-      TestUtil testFramework( "StringUtils", "Justify", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "StringUtils", "Justify", __FILE__, __LINE__ );
       std::string failMesg;
 
       string baseString= "1234567890"; //base string to manipulate
@@ -104,7 +104,7 @@ public:
    ========================================================================================================================= */
    int stripLeadingTest( void )
    {
-      TestUtil testFramework( "StringUtils", "stripLeading", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "StringUtils", "stripLeading", __FILE__, __LINE__ );
       std::string failMesg;
 
       string baseString= "---1234567890---";  //base string to manipulate
@@ -156,7 +156,7 @@ public:
    ========================================================================================================================= */
    int stripTrailingTest( void )
    {
-      TestUtil testFramework( "StringUtils", "stripTrailing", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "StringUtils", "stripTrailing", __FILE__, __LINE__ );
       std::string failMesg;
 
       string baseString= "---1234567890---"; //base string to manipulate
@@ -208,7 +208,7 @@ public:
    ========================================================================================================================= */
    int stripTest( void )
    {
-      TestUtil testFramework( "StringUtils", "strip", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "StringUtils", "strip", __FILE__, __LINE__ );
       std::string failMesg;
 
       string baseString= "---1234567890---"; //base string to manipulate
@@ -260,7 +260,7 @@ public:
    ========================================================================================================================= */
    int translateTest( void )
    {
-      TestUtil testFramework( "StringUtils", "strip", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "StringUtils", "strip", __FILE__, __LINE__ );
       std::string failMesg;
 
       string baseString = "Hello World! I am the Translation test String!";      //Original String to replace characters on
@@ -296,7 +296,7 @@ public:
    ========================================================================================================================= */
    int stringToNumberTest( void )
    {
-      TestUtil testFramework( "StringUtils", "asInt", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "StringUtils", "asInt", __FILE__, __LINE__ );
       std::string failMesg;
 
       string baseString = "12345.67890";                                    //String to convert to a number
@@ -338,7 +338,7 @@ public:
    ========================================================================================================================= */
    int numberToStringTest( void )
    {
-      TestUtil testFramework( "StringUtils", "asString", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "StringUtils", "asString", __FILE__, __LINE__ );
       std::string failMesg;
 
       string convertedString;                     //Storage for converted number
@@ -376,7 +376,7 @@ public:
    ========================================================================================================================= */
    int hexConversionTest( void )
    {
-      TestUtil testFramework( "StringUtils", "x2d", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "StringUtils", "x2d", __FILE__, __LINE__ );
       std::string failMesg;
 
       string initialHexString = "0x100 foo";           //Example string with hex values in it
@@ -406,7 +406,7 @@ public:
    ========================================================================================================================= */
    int stringReplaceTest( void )
    {
-      TestUtil testFramework( "StringUtils", "replaceAll", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "StringUtils", "replaceAll", __FILE__, __LINE__ );
       std::string failMesg;
 
       string baseString = "010101000111010";
@@ -441,7 +441,7 @@ public:
    ========================================================================================================================= */
    int wordTest( void )
    {
-      TestUtil testFramework( "StringUtils", "firstWord", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "StringUtils", "firstWord", __FILE__, __LINE__ );
       std::string failMesg;
 
 
@@ -505,7 +505,7 @@ public:
    ========================================================================================================================= */
    int regularExpressionsTest( void )
    {
-      TestUtil testFramework( "StringUtils", "isLike", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "StringUtils", "isLike", __FILE__, __LINE__ );
       std::string failMesg;
 
       string originalString = "      The  Quick    Brown  Fox     Jumps  Over    The  Lazy    Dog.    "; //String to be searched
@@ -542,7 +542,7 @@ public:
    ========================================================================================================================= */
    int prettyPrintTest( void )
    {
-      TestUtil testFramework( "StringUtils", "prettyPrint", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "StringUtils", "prettyPrint", __FILE__, __LINE__ );
       std::string failMesg;
       string originalString("This is a very long sentence that will get cut up into lines with a maximum length of 40 characters, each line indented by a few spaces.");
       string prettyPrintThis = originalString;
@@ -562,7 +562,7 @@ public:
    ========================================================================================================================= */
    int splitWithQuotesTest( void )
    {
-      TestUtil testFramework( "StringUtils", "splitWithQuotes", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "StringUtils", "splitWithQuotes", __FILE__, __LINE__ );
       std::string failMesg;
 
       // no quotes
@@ -674,7 +674,7 @@ public:
    ========================================================================================================================= */
    int hexToAsciiTest( void )
    {
-      TestUtil testFramework( "StringUtils", "hexDumpData", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "StringUtils", "hexDumpData", __FILE__, __LINE__ );
       std::string failMesg;
 
 
@@ -799,7 +799,7 @@ public:
    ========================================================================================================================= */
    int hexDumpDataTest( void )
    {
-      TestUtil testFramework( "StringUtils", "hexDumpData", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "StringUtils", "hexDumpData", __FILE__, __LINE__ );
       std::string failMesg;
 
 
