@@ -223,7 +223,7 @@ namespace gpstk
                   rom[sys] = Rinex3ObsHeader::RinexObsVec();
                for (j = rov.begin(); j != rov.end(); j++)
                {
-                  k = find(rom[sys].begin(), rom[sys].end(), *j);
+                  k = std::find(rom[sys].begin(), rom[sys].end(), *j);
                   if (k == rom[sys].end())
                   {
                      std::cout << "Adding " << *j << std::endl;
