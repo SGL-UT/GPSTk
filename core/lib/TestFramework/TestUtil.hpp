@@ -704,6 +704,9 @@ namespace gpstk
       if( !checkStream.eof() )
       {
          filesEqual = false;
+         if (verbosity>1)
+            std::cout << "refLine:" << refLine << std::endl
+                      << "checkLine:" << checkLine << std::endl;
          return( filesEqual );
       }
       else

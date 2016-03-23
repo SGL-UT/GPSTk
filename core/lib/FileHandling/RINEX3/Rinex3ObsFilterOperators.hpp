@@ -57,6 +57,11 @@ namespace gpstk
 
       /// This compares all elements of the Rinex3ObsData with less than
       /// (only for those fields which the two obs data share).
+      /// See code for details on how the comparison works for datasets
+      /// that aren't exactly matchted.
+      /// It appears this code was written to give a strict ordering
+      /// to Rinex3ObsData objects, not to really imply any meaning about
+      /// the data.
    struct Rinex3ObsDataOperatorLessThanFull :
       public std::binary_function<Rinex3ObsData, Rinex3ObsData, bool>
    {
@@ -64,11 +69,7 @@ namespace gpstk
          /// The set is a set of Rinex3ObsType that the two files have in
          /// common.  This is easily generated with the set_intersection
          /// STL function.  See difftools/rowdiff.cpp for an example.
-      Rinex3ObsDataOperatorLessThanFull
-      ///(const std::set<Rinex3ObsHeader::Rinex3ObsType>& rohset)
-      (const std::vector<ObsID>& rohset)
-            : obsSet(rohset)
-      {}
+      Rinex3ObsDataOperatorLessThanFull() {};
 
       bool operator()(const Rinex3ObsData& l, const Rinex3ObsData& r) const
       {
@@ -103,64 +104,44 @@ namespace gpstk
             return false;
 
             // then check that each PRN has the same data for each of the
-            // shared fields
-         Rinex3ObsData::DataMap::const_iterator lItr = l.obs.begin(), rItr;
-
-         SatID sat;
-
-         while (lItr != l.obs.end())
+            // fields
+         Rinex3ObsData::DataMap::const_iterator lItr;
+         for (lItr = l.obs.begin(); lItr != l.obs.end(); lItr++)
          {
-            sat = (*lItr).first;
-            rItr = r.obs.find(sat);
+            SatID sat = lItr->first;
+            Rinex3ObsData::DataMap::const_iterator rItr = r.obs.find(sat);
             if (rItr == r.obs.end())
+            {
+               std::cout << "not found" << std::endl;
                return false;
-
-               ///Rinex3ObsData::Rinex3ObsTypeMap lObs = (*lItr).second,
+            }
+            
             std::vector<RinexDatum> lObs = lItr->second,
                rObs = rItr->second;
-
-               ///std::set<ObsID>::const_iterator obsItr =
-               ///   obsSet.begin();
-
-               ///while (obsItr != obsSet.end())
-            for(int i = 0; i < obsSet.size(); ++i)
+            
+            for(int i = 0; i < lObs.size(); ++i)
             {
                RinexDatum lData, rData;
-                  ///lData = lObs[*obsItr];
                lData = lObs[i];
-                  ///rData = rObs[*obsItr];
                rData = rObs[i];
 
                if (lData.data < rData.data)
                   return true;
-               if (lData.data > rData.data)
-                  return true;
 
                if ( lData.lli != 0 && rData.lli != 0 )
-               {
                   if (lData.lli < rData.lli)
                      return true;
-               }
 
                if ( lData.ssi != 0 && rData.ssi != 0 )
-               {
                   if (lData.ssi < rData.ssi)
                      return true;
-               }
-
-                  ///obsItr++;
             }
-
-            lItr++;
          }
 
             // the data is either == or > at this point
+         
          return false;
       }
-
-   private:
-         ///std::set<Rinex3ObsHeader::Rinex3ObsType> obsSet;
-      std::vector<ObsID> obsSet;
    };
 
       /// This is a much faster less than operator for Rinex3ObsData,
@@ -203,7 +184,7 @@ namespace gpstk
    {
    public:
       Rinex3ObsHeaderTouchHeaderMerge()
-            : firstHeader(true)
+         : firstHeader(true)
       {}
 
       bool operator()(const Rinex3ObsHeader& l)
@@ -215,9 +196,7 @@ namespace gpstk
          }
          else
          {
-            std::vector<ObsID> thisObsSet, tempObsSet;
             std::set<std::string> commentSet;
-            obsSet.clear();
 
                // insert the comments to the set
                // and let the set take care of uniqueness
@@ -233,28 +212,31 @@ namespace gpstk
                  inserter(theHeader.commentList,
                           theHeader.commentList.begin()));
 
-               // find the set intersection of the obs types
-            copy(theHeader.obsTypeList.begin(),
-                 theHeader.obsTypeList.end(),
-                 inserter(thisObsSet, thisObsSet.begin()));
-            copy(l.obsTypeList.begin(),
-                 l.obsTypeList.end(),
-                 inserter(tempObsSet, tempObsSet.begin()));
-            set_intersection(thisObsSet.begin(), thisObsSet.end(),
-                             tempObsSet.begin(), tempObsSet.end(),
-                             inserter(obsSet, obsSet.begin()));
-               // then copy the obsTypes back into theHeader
-            theHeader.obsTypeList.clear();
-            copy(obsSet.begin(), obsSet.end(),
-                 inserter(theHeader.obsTypeList,
-                          theHeader.obsTypeList.begin()));
+            Rinex3ObsHeader::RinexObsMap::const_iterator i;
+            Rinex3ObsHeader::RinexObsVec::const_iterator j, k;
+            Rinex3ObsHeader::RinexObsMap& rom = theHeader.mapObsTypes;
+            for( i = l.mapObsTypes.begin(); i != l.mapObsTypes.end(); i++)
+            {
+               const std::string& sys = i->first;
+               const Rinex3ObsHeader::RinexObsVec& rov = i->second;
+               if (rom.count(sys) ==0)
+                  rom[sys] = Rinex3ObsHeader::RinexObsVec();
+               for (j = rov.begin(); j != rov.end(); j++)
+               {
+                  k = find(rom[sys].begin(), rom[sys].end(), *j);
+                  if (k == rom[sys].end())
+                  {
+                     std::cout << "Adding " << *j << std::endl;
+                     rom[sys].push_back(*j);
+                  }
+               }
+            }
          }
          return true;
       }
 
       bool firstHeader;
       Rinex3ObsHeader theHeader;
-      std::vector<ObsID> obsSet;
    };
 
       //@}

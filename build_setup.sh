@@ -96,7 +96,7 @@ else
     num_threads=$((num_cores*3/4))
 fi
 
-repo=$(abspath $(dirname $0))
+repo=$(abspath $(dirname '$0'))
 
 user_install_prefix=$HOME/.local
 system_install_prefix=/usr/local
