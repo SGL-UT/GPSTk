@@ -200,17 +200,17 @@ namespace gpstk
 
                // insert the comments to the set
                // and let the set take care of uniqueness
-            copy(theHeader.commentList.begin(),
-                 theHeader.commentList.end(),
-                 inserter(commentSet, commentSet.begin()));
-            copy(l.commentList.begin(),
-                 l.commentList.end(),
-                 inserter(commentSet, commentSet.begin()));
+            std::copy(theHeader.commentList.begin(),
+                      theHeader.commentList.end(),
+                      std::inserter(commentSet, commentSet.begin()));
+            std::copy(l.commentList.begin(),
+                      l.commentList.end(),
+                      std::inserter(commentSet, commentSet.begin()));
                // then copy the comments back into theHeader
             theHeader.commentList.clear();
-            copy(commentSet.begin(), commentSet.end(),
-                 inserter(theHeader.commentList,
-                          theHeader.commentList.begin()));
+            std::copy(commentSet.begin(), commentSet.end(),
+                      std::inserter(theHeader.commentList,
+                                    theHeader.commentList.begin()));
 
             Rinex3ObsHeader::RinexObsMap::const_iterator i;
             Rinex3ObsHeader::RinexObsVec::const_iterator j, k;
