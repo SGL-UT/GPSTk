@@ -41,4 +41,4 @@ def run_unit_tests():
     isuite = unittest.TestLoader().discover(dir, pattern=script)
 
     rc = runner.run(isuite)
-    sys.exit(len(rc.errors))
+    sys.exit(len(rc.failures))

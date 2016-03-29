@@ -12,7 +12,7 @@ class TestSystemTime(unittest.TestCase):
         time.sleep(0.5)
         t1 = SystemTime()
         dt = t1.toCommonTime() - t0.toCommonTime()
-        self.assertAlmostEqual(dt, 0.5, places=2)
+        self.assertAlmostEqual(dt, 0.5, places=1)
 
 class TestTimeTags(unittest.TestCase):
     def test_CivilTime(self):
