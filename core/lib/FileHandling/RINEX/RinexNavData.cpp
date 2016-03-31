@@ -174,7 +174,7 @@ namespace gpstk
         << " IODE: " << setw(4) << int(IODE)            // IODE should be int
         << " HOWtime: " << setw(6) << HOWtime           // HOW should be double
         << endl;
-        //<< ios::hex << IODE << " HOWtime: " << HOWtime << endl; ?? IODE is double
+         //<< ios::hex << IODE << " HOWtime: " << HOWtime << endl; ?? IODE is double
    }
 
    RinexNavData::operator EngEphemeris() const throw()
@@ -198,22 +198,22 @@ namespace gpstk
       return ee;
    }
 
-   // Convert this RinexNavData to a GPSEphemeris object.
-   // for backward compatibility only - use Rinex3NavData
+      // Convert this RinexNavData to a GPSEphemeris object.
+      // for backward compatibility only - use Rinex3NavData
    RinexNavData::operator GPSEphemeris() const
    {
       GPSEphemeris gpse;
       try {
-         // Overhead
+            // Overhead
          gpse.satID = SatID(PRNID, SatID::systemGPS);
          gpse.ctToe = time;
 
-         // clock model
+            // clock model
          gpse.af0 = af0;
          gpse.af1 = af1;
          gpse.af2 = af2;
    
-         // Major orbit parameters
+            // Major orbit parameters
          gpse.M0 = M0;
          gpse.dn = dn;
          gpse.ecc = ecc;
@@ -223,11 +223,11 @@ namespace gpstk
          gpse.w = w;
          gpse.OMEGAdot = OMEGAdot;
          gpse.idot = idot;
-         // modern nav msg
+            // modern nav msg
          gpse.dndot = 0.;
          gpse.Adot = 0.;
    
-         // Harmonic perturbations
+            // Harmonic perturbations
          gpse.Cuc = Cuc;
          gpse.Cus = Cus;
          gpse.Crc = Crc;
@@ -246,8 +246,8 @@ namespace gpstk
          short adjWeeknum = weeknum;
          long lToc = (long) Toc;
          if ((HOWtime%SEC_PER_DAY)==0 && 
-            ((lToc)%SEC_PER_DAY)==0 &&
-              HOWtime == lToc) 
+             ((lToc)%SEC_PER_DAY)==0 &&
+             HOWtime == lToc) 
          {
             adjHOWtime = HOWtime - 30;  
             if (adjHOWtime<0)
@@ -256,20 +256,20 @@ namespace gpstk
                adjWeeknum--;     
             }
          }
-         // end special case adjustment (except for use of adjHOWtime below)
+            // end special case adjustment (except for use of adjHOWtime below)
 
-         // get the epochs right
+            // get the epochs right
          CommonTime ct = time;
-         //unsigned int year = static_cast<CivilTime>(ct).year;
+            //unsigned int year = static_cast<CivilTime>(ct).year;
 
-         // Get week for clock, to build Toc
+            // Get week for clock, to build Toc
          double dt = Toc - HOWtime;
          int week = weeknum;
          if(dt < -HALFWEEK) week++; else if(dt > HALFWEEK) week--;
          gpse.ctToc = GPSWeekSecond(week, Toc, TimeSystem::GPS);
          gpse.ctToc.setTimeSystem(TimeSystem::GPS);
 
-         // now load the GPS-specific parts
+            // now load the GPS-specific parts
          gpse.IODC = IODC;
          gpse.IODE = IODE;
          gpse.health = health;
@@ -284,7 +284,7 @@ namespace gpstk
          gpse.codeflags = codeflgs;
          gpse.L2Pdata = L2Pdata;
 
-         // NB IODC must be set first...
+            // NB IODC must be set first...
          gpse.fitint = fitint;
          gpse.setFitIntervalFlag(int(fitint));  // calls adjustValidity();
       }
@@ -434,8 +434,8 @@ namespace gpstk
    string RinexNavData::putBroadcastOrbit5(void) const
       throw(StringException)
    {
-         // Internally (RinexNavData and EngEphemeris), weeknum is the week of HOW
-         // In Rinex *files*, weeknum is the week of TOE
+         // Internally (RinexNavData and EngEphemeris), weeknum is the
+         // week of HOW In Rinex *files*, weeknum is the week of TOE
       double wk=double(weeknum);
       if(HOWtime - Toe > HALFWEEK)
          wk++;
@@ -512,7 +512,8 @@ namespace gpstk
             yr += 100;
          yr += 1900;
 
-         // Real Rinex has epochs 'yy mm dd hr 59 60.0' surprisingly often....
+            // Real Rinex has epochs 'yy mm dd hr 59 60.0'
+            // surprisingly often....
          double ds=0;
          if(sec >= 60.) { ds=sec; sec=0.0; }
          time = CivilTime(yr,mo,day,hr,min,sec,gpstk::TimeSystem::GPS).convertToCommonTime();
@@ -662,16 +663,17 @@ namespace gpstk
 
          HOWtime = (long) HOW_sec;
 
-         // In Rinex *files*, weeknum is the week of TOE
-         // Internally (RinexNavData and EngEphemeris), weeknum is the week of HOW
+            // In Rinex *files*, weeknum is the week of TOE Internally
+            // (RinexNavData and EngEphemeris), weeknum is the week of
+            // HOW
          if(HOWtime - Toe > HALFWEEK)
             weeknum--;
          else if(HOWtime - Toe < -(HALFWEEK))
             weeknum++;
 
-         // Some Rinex files have HOW < 0
+            // Some Rinex files have HOW < 0
          while(HOWtime < 0) {
-	   HOWtime += (long) FULLWEEK;
+            HOWtime += (long) FULLWEEK;
             weeknum--;
          }
 
