@@ -234,7 +234,11 @@ public:
       TestUtil testFramework( "GPSWeekSecond", "isValid", __FILE__, __LINE__ );
 		
 
-      GPSWeekSecond Compare(1300,13500.,TimeSystem(2)); //Initialize an object
+      GPSWeekSecond Compare(0,10.0,TimeSystem(2)); //Initialize an object
+      CommonTime Truth;
+      long Truth_Day, Truth_SOD;
+      double Truth_FSOD;
+      Truth.set(244244, 43210,0.0,TimeSystem(2));
 
          //--------------------------------------------------------------------
          //Is the time after the BEGINNING_OF_TIME?
@@ -247,9 +251,19 @@ public:
       testFramework.assert(Compare.isValid(), "Time provided found to be unable to convert to/from CommonTime", __LINE__);
 		
 
-      CommonTime Test = Compare.convertToCommonTime(); //Convert to
-
+      CommonTime Test = Compare.convertToCommonTime(); //Convert to CommonTime
+      long Test_Day, Test_SOD;
+      double Test_FSOD;
+      Test.get(Test_Day, Test_SOD, Test_FSOD);
+      Truth.get(Truth_Day, Truth_SOD, Truth_FSOD);
+      std::string failMessageDay = "Conversion to CommonTime does not match truth. Coverted Day = " + NumberToString(Test_Day) + ", Truth Day = " + NumberToString(Truth_Day);
+      std::string failMessageSOD = "Conversion to CommonTime does not match truth. Coverted SOD = " + NumberToString(Test_SOD) + ", Truth SOD = " + NumberToString(Truth_SOD);
+      std::string failMessageFSOD = "Conversion to CommonTime does not match truth. Coverted FSOD = " + NumberToString(Test_FSOD) + ", Truth FSOD = " + NumberToString(Truth_FSOD);
+      testFramework.assert(Test_Day == Truth_Day, failMessageDay.c_str(), __LINE__);
+      testFramework.assert(Test_SOD == Truth_SOD, failMessageSOD.c_str(), __LINE__);
+      testFramework.assert(Test_FSOD == Truth_FSOD, failMessageFSOD.c_str(), __LINE__);
       GPSWeekSecond Test2;
+
       Test2.convertFromCommonTime(Test); //Convert From
 
       testFramework.changeSourceMethod("CommonTimeConversion");
