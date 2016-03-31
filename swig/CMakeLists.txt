@@ -10,12 +10,12 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
 find_package( SWIG )
 
 if( NOT SWIG_FOUND )
-    message( FATAL_ERROR "SWIG: System install of swig not found. Cannot build swig bindings." )
+    message( WARNING "SWIG: System install of swig not found. Cannot build swig bindings." )
     return()
 endif()
 
 if( NOT SWIG_EXECUTABLE )
-    message( FATAL_ERROR "SWIG: System install of swig not found. Cannot build swig bindings." )
+    message( WARNING "SWIG: System install of swig not found. Cannot build swig bindings." )
     return()
 endif()
 
@@ -46,12 +46,12 @@ endif()
 if( DEBUG_SWITCH )
     message( STATUS "SWIG_EXECUTABLE          = ${SWIG_EXECUTABLE}" )
     message( STATUS "SWIG_USE_FILE            = ${SWIG_USE_FILE}" )
-    message( STATUS "CMAKE_CURRENT_LIST_DIR   = ${CMAKE_CURRENT_LIST_DIR}" )    # e.g., $HOME/git/gpstk/swig
-    message( STATUS "CMAKE_CURRENT_LIST_FILE  = ${CMAKE_CURRENT_LIST_FILE}" )   # e.g., $HOME/git/gpstk/swig/CMakeLists.txt
-    message( STATUS "CMAKE_SOURCE_DIR         = ${CMAKE_SOURCE_DIR}" )          # e.g., $HOME/git/gpstk
-    message( STATUS "CMAKE_CURRENT_SOURCE_DIR = ${CMAKE_CURRENT_SOURCE_DIR}" )  # e.g., $HOME/git/gpstk/swig
-    message( STATUS "CMAKE_CURRENT_BINARY_DIR = ${CMAKE_CURRENT_BINARY_DIR}" )  # e.g., $HOME/git/gpstk/build/swig
-    message( STATUS "PYTHON_INSTALL_PREFIX    = ${PYTHON_INSTALL_PREFIX}" )     # e.g., $HOME/.local
+    message( STATUS "CMAKE_CURRENT_LIST_DIR   = ${CMAKE_CURRENT_LIST_DIR}" )    # e.g., .../gpstk/swig
+    message( STATUS "CMAKE_CURRENT_LIST_FILE  = ${CMAKE_CURRENT_LIST_FILE}" )   # e.g., .../gpstk/swig/CMakeLists.txt
+    message( STATUS "CMAKE_SOURCE_DIR         = ${CMAKE_SOURCE_DIR}" )          # e.g., .../gpstk
+    message( STATUS "CMAKE_CURRENT_SOURCE_DIR = ${CMAKE_CURRENT_SOURCE_DIR}" )  # e.g., .../gpstk/swig
+    message( STATUS "CMAKE_CURRENT_BINARY_DIR = ${CMAKE_CURRENT_BINARY_DIR}" )  # e.g., .../gpstk/build/swig
+    message( STATUS "PYTHON_INSTALL_PREFIX    = ${PYTHON_INSTALL_PREFIX}" )     # e.g., .../.local
     message( STATUS "SWIG_DOC_DIR             = ${SWIG_DOC_DIR}")
 endif()
 
