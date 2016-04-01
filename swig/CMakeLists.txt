@@ -36,6 +36,15 @@ set( CMAKE_SWIG_FLAGS "-w362,383,384,389,503" )
 
 set( CMAKE_CXX_FLAGS "-std=c++11" )
 
+
+if( ${CMAKE_SYSTEM_NAME} MATCHES "SunOS" )
+elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
+    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w" )
+elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" )
+elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
+endif()
+
+
 set_source_files_properties( gpstk.i PROPERTIES CPLUSPLUS ON ) # why not also set properties for all other files.i ?!?!
 
 if( NOT PYTHON_INSTALL_PREFIX )
