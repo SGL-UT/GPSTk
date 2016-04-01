@@ -3,12 +3,12 @@
 #----------------------------------------
 
 cmake_minimum_required( VERSION 2.8.4  )
+message( STATUS "PYTHON_INCLUDE_DIR        = ${PYTHON_INCLUDE_DIR}" )
 
 include_directories( ${PYTHON_INCLUDE_DIRS} )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
 
 find_package( SWIG )
-
 if( NOT SWIG_FOUND )
     message( WARNING "SWIG: System install of swig not found. Cannot build swig bindings." )
     return()
