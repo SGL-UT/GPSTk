@@ -36,8 +36,89 @@
 
 #include "EngEphemeris.hpp"
 #include "TestUtil.hpp"
+#include "GPSWeekZcount.hpp"
 #include <iostream>
 #include <sstream>
+using namespace gpstk;
+
+#ifdef _MSC_VER
+#define LDEXP(x,y) ldexp(x,y)
+#else
+#define LDEXP(x,y) std::ldexp(x,y)
+#endif
+
+
+/** Ephemeris subframe words at the end of a week.  Useful for a
+ * week-rollover test of toe and toc as well as other things.
+ * Sorry about the decimal, it came that way out of HDF5. 
+ * @note this data has been modified so that toe != toc, to facilitate
+ * verifying that the appropriate quantity is used where
+ * appropriate. */
+const uint32_t ephEOW[] = 
+{  583228942, 824945128,  904134685,  184026330,  459310087,
+    16899638, 845363969, 0x0f647980,    4193148, 1073290676,
+   583228942, 824953464,  260012308,  225364840,  787693093,
+  1065730353, 298759921,   46377054,   57870868,       8172,
+   583228942, 824962032, 1072401983,  485782594,      84477,
+   301605863, 145566781,  506082625, 1072230894,  259901040 };
+/* original data as broadcast
+{  583228942, 824945128,  904134685,  184026330,  459310087,
+    16899638, 845363969,  255852580,    4193148, 1073290676,
+   583228942, 824953464,  260012308,  225364840,  787693093,
+  1065730353, 298759921,   46377054,   57870868,       8172,
+   583228942, 824962032, 1072401983,  485782594,      84477,
+   301605863, 145566781,  506082625, 1072230894,  259901040 };
+*/
+const unsigned ephEOWwk  = 1886;
+const unsigned ephEOWToeWk = 1887;
+const unsigned ephEOWprn = 14;
+// the rest of these values were broken out by hand
+const CommonTime ephEOWhowTime1 = GPSWeekZcount(ephEOWwk, 402804);
+const CommonTime ephEOWhowTime2 = GPSWeekZcount(ephEOWwk, 402808);
+const CommonTime ephEOWhowTime3 = GPSWeekZcount(ephEOWwk, 402812);
+const long ephEOWhowSec1 = 604206;
+const long ephEOWhowSec2 = 604212; 
+const long ephEOWhowSec3 = 604218;
+const CommonTime ephEOWxmitTime1 = ephEOWhowTime1 - 6;
+const CommonTime ephEOWxmitTime2 = ephEOWhowTime2 - 6;
+const CommonTime ephEOWxmitTime3 = ephEOWhowTime3 - 6;
+const double ephEOWxmitTimeSec1 = GPSWeekSecond(ephEOWxmitTime1).sow;
+const double ephEOWtocSec = 597600;
+const long   ephEOWtocZ   = 398400;
+const CommonTime ephEOWtoc = GPSWeekZcount(ephEOWwk, ephEOWtocZ);
+// as-broadcast
+//const CommonTime ephEOWtoc = GPSWeekZcount(ephEOWwk+1, 0);
+const double ephEOWaf0      = LDEXP(double( int32_t(0xfffff91d)), -31);
+const double ephEOWaf1      = LDEXP(double( int16_t(0xffed)),     -43);
+const double ephEOWaf2      = 0.;
+const double ephEOWiode     = 61.;
+const double ephEOWCrs      = LDEXP(double( int16_t(0xfde4)),      -5);
+const double ephEOWdn       = LDEXP(double( int16_t(0x35bb)),     -43) * PI;
+const double ephEOWM0       = LDEXP(double( int32_t(0x2dbbccf8)), -31) * PI;
+const double ephEOWCuc      = LDEXP(double( int16_t(0xfe17)),     -29);
+const double ephEOWecc      = LDEXP(double(uint32_t(0x04473adb)), -33);
+const double ephEOWCus      = LDEXP(double( int16_t(0x0b0e)),     -29);
+const double ephEOWAhalf    = LDEXP(double(uint32_t(0xa10dcc28)), -19);
+const double ephEOWToe      = 0.; //LDEXP(double(uint16_t()),4);
+const CommonTime ephEOWtoe = GPSWeekSecond(ephEOWToeWk, ephEOWToe);
+const double ephEOWCic      = LDEXP(double( int16_t(0xffae)),     -29);
+const double ephEOWOMEGA0   = LDEXP(double( int32_t(0x3873d1d1)), -31) * PI;
+const double ephEOWCis      = LDEXP(double( int16_t(0x0005)),     -29);
+const double ephEOWi0       = LDEXP(double( int32_t(0x2747e88f)), -31) * PI;
+const double ephEOWCrc      = LDEXP(double( int16_t(0x22b4)),      -5);
+const double ephEOWw        = LDEXP(double( int32_t(0xb078a8d5)), -31) * PI;
+const double ephEOWOMEGAdot = LDEXP(double( int32_t(0xffffa3c7)), -43) * PI;
+const double ephEOWidot     = LDEXP(double( int16_t(0xfdc6)),     -43) * PI;
+const double ephEOWTgd      = LDEXP(double(  int8_t(0xec)),       -31);
+const short  ephEOWcodeflgs = 1;
+const short  ephEOWl2pData  = 0;
+const short  ephEOWhealth   = 0;
+const double ephEOWiodc     = 0x03d;
+// URA index = 0, worst case 2.4m 20.3.3.3.1.3
+const double ephEOWacc      = 2.4;
+// fit interval *flag*
+const double ephEOWfitint   = 0;
+
 
 class EngEphemeris_T
 {
@@ -683,6 +764,7 @@ IODE (91)      IDOT*2^43 (.307155651409E-9*2^43/pi) parity comp
       TURETURN();
    }
 
+
    unsigned addIncompleteTest(void)
    {
       TUDEF("EngEphemeris", "addIncomplete");
@@ -710,7 +792,47 @@ IODE (91)      IDOT*2^43 (.307155651409E-9*2^43/pi) parity comp
       TURETURN();
    }
 
-   unsigned dumpTest(void);
+
+   unsigned endOfWeekTest()
+   {
+      TUDEF("EngEphemeris", "addSubframe");
+      EngEphemeris eeph;
+      TUASSERT(eeph.addSubframe(&ephEOW[ 0], ephEOWwk, ephEOWprn, 1));
+      TUASSERT(eeph.addSubframe(&ephEOW[10], ephEOWwk, ephEOWprn, 1));
+      TUASSERT(eeph.addSubframe(&ephEOW[20], ephEOWwk, ephEOWprn, 1));
+
+      TUASSERTE(short, ephEOWprn, eeph.PRNID);
+      TUASSERTE(CommonTime, ephEOWtoc, eeph.getEpochTime());
+      TUASSERTFE(ephEOWaf0, eeph.bcClock.getAf0());
+      TUASSERTFE(ephEOWaf1, eeph.bcClock.getAf1());
+      TUASSERTFE(ephEOWaf2, eeph.bcClock.getAf2());
+      TUASSERTFE(ephEOWiode, eeph.IODE);
+      TUASSERTFE(ephEOWCrs, eeph.orbit.getCrs());
+      TUASSERTFE(ephEOWdn, eeph.orbit.getDn());
+      TUASSERTFE(ephEOWM0, eeph.orbit.getM0());
+      TUASSERTFE(ephEOWCuc, eeph.orbit.getCuc());
+      TUASSERTFE(ephEOWecc, eeph.orbit.getEcc());
+      TUASSERTFE(ephEOWCus, eeph.orbit.getCus());
+      TUASSERTFE(ephEOWAhalf, eeph.orbit.getAhalf());
+      TUASSERTFE(ephEOWtoe, eeph.getEphemerisEpoch());
+      TUASSERTFE(ephEOWCic, eeph.orbit.getCic());
+      TUASSERTFE(ephEOWOMEGA0, eeph.orbit.getOmega0());
+      TUASSERTFE(ephEOWCis, eeph.orbit.getCis());
+      TUASSERTFE(ephEOWi0, eeph.orbit.getI0());
+      TUASSERTFE(ephEOWCrc, eeph.orbit.getCrc());
+      TUASSERTFE(ephEOWw, eeph.orbit.getW());
+      TUASSERTFE(ephEOWOMEGAdot, eeph.orbit.getOmegaDot());
+      TUASSERTFE(ephEOWidot, eeph.orbit.getIDot());
+      TUASSERTE(short, ephEOWcodeflgs, eeph.codeflags);
+      TUASSERTE(short, ephEOWl2pData, eeph.L2Pdata);
+      TUASSERTFE(ephEOWacc, eeph.getAccuracy());
+      TUASSERTE(short, ephEOWhealth, eeph.health);
+      TUASSERTFE(ephEOWTgd, eeph.Tgd);
+      TUASSERTFE(ephEOWiodc, eeph.IODC);
+      TUASSERTFE(ephEOWfitint, eeph.fitint);
+
+      TURETURN();
+   }
 
    std::string testMesg;
 
@@ -744,6 +866,7 @@ int main() //Main function to initialize and run all tests above
    errorTotal += testClass.addSubframeTest();
    errorTotal += testClass.loadDataTest();
    errorTotal += testClass.addIncompleteTest();
+   errorTotal += testClass.endOfWeekTest();
 
    cout << "Total Failures for " << __FILE__ << ": " << errorTotal << endl;
 
