@@ -101,7 +101,7 @@ repo=$(abspath $(dirname '$0'))
 user_install_prefix=$HOME/.local
 system_install_prefix=/usr/local
 
-python_exe=`which python2.7`
+python_exe=`which python`
 
 system_python_install="/usr/local"
 user_python_install="~/.local"

@@ -26,12 +26,11 @@ from distutils.core import setup
 # File lists
 #----------------------------------------
 
-# starting location of example files
-example_file_list = [ "examples/example1.py",
-                      "examples/example2.py",
-                      "examples/example3.py",
-                      "examples/example4.py",
-                      "examples/example5.py"]
+scripts_list = [
+    "apps/gpstk_timeconvert.py",
+    "apps/sem_plot.py",
+    "apps/position_difference.py",
+    ]
 
 # For package distribution channels
 classifiers_list = ['License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)',
@@ -75,9 +74,9 @@ setup( name              = "gpstk",
        long_description  = open('README.md').read(),
        keywords          = ('GNSS', 'GPS', 'RINEX'),
        classifiers       = classifiers_list,
-       packages          = ['gpstk', 'gpstk.test', 'gpstk.data'],
-       package_data      = { 'gpstk': ['data/*.txt', '_gpstk.so'],},
-       scripts           = example_file_list,
+       packages          = ['gpstk'],
+       package_data      = { 'gpstk': ['_gpstk.so'],},
+       scripts           = scripts_list,
        )
 
 #----------------------------------------

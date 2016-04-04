@@ -37,6 +37,7 @@
 #include "GPSWeekSecond.hpp"
 #include "TimeTag.hpp"
 #include "TestUtil.hpp"
+#include "StringUtils.hpp"
 #include <iostream>
 #include <fstream>
 #include <cmath>
@@ -256,9 +257,9 @@ public:
       double Test_FSOD;
       Test.get(Test_Day, Test_SOD, Test_FSOD);
       Truth.get(Truth_Day, Truth_SOD, Truth_FSOD);
-      std::string failMessageDay = "Conversion to CommonTime does not match truth. Coverted Day = " + NumberToString(Test_Day) + ", Truth Day = " + NumberToString(Truth_Day);
-      std::string failMessageSOD = "Conversion to CommonTime does not match truth. Coverted SOD = " + NumberToString(Test_SOD) + ", Truth SOD = " + NumberToString(Truth_SOD);
-      std::string failMessageFSOD = "Conversion to CommonTime does not match truth. Coverted FSOD = " + NumberToString(Test_FSOD) + ", Truth FSOD = " + NumberToString(Truth_FSOD);
+      std::string failMessageDay = "Conversion to CommonTime does not match truth. Coverted Day = " + StringUtils::asString(Test_Day) + ", Truth Day = " + StringUtils::asString(Truth_Day);
+      std::string failMessageSOD = "Conversion to CommonTime does not match truth. Coverted SOD = " + StringUtils::asString(Test_SOD) + ", Truth SOD = " + StringUtils::asString(Truth_SOD);
+      std::string failMessageFSOD = "Conversion to CommonTime does not match truth. Coverted FSOD = " + StringUtils::asString(Test_FSOD) + ", Truth FSOD = " + StringUtils::asString(Truth_FSOD);
       testFramework.assert(Test_Day == Truth_Day, failMessageDay.c_str(), __LINE__);
       testFramework.assert(Test_SOD == Truth_SOD, failMessageSOD.c_str(), __LINE__);
       testFramework.assert(Test_FSOD == Truth_FSOD, failMessageFSOD.c_str(), __LINE__);

@@ -73,17 +73,6 @@
 // Usual return from a test function
 #define TURETURN() return testFramework.countFails()
 
-
-
-template <typename T>
-std::string NumberToString(T pNumber)
-{
- std::ostringstream oOStrStream;
- oOStrStream << pNumber;
- return oOStrStream.str();
-}
-
-
 namespace gpstk
 {
       /// @return a string with the name of the type
