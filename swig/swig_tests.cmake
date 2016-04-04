@@ -34,10 +34,10 @@ add_test(NAME swig_test_misc
   COMMAND ${PYTHON_EXECUTABLE} test_misc.py
   WORKING_DIRECTORY ${td}
   )
-set_property(TEST swig_test_misc PROPERTY LABELS swig ObsID)
+set_property(TEST swig_test_misc PROPERTY LABELS swig ObsID SatID)
 
-add_test(NAME swig_test_store
-  COMMAND ${PYTHON_EXECUTABLE} test_store.py
-  WORKING_DIRECTORY ${td}
-  )
-set_property(TEST swig_test_store PROPERTY LABELS swig ObsID)
+#add_test(NAME swig_test_store
+#  COMMAND ${PYTHON_EXECUTABLE} test_store.py
+#  WORKING_DIRECTORY ${td}
+#  )
+#set_property(TEST swig_test_store PROPERTY LABELS swig )

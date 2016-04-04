@@ -7,6 +7,7 @@ from gpstk.test_utils import args,run_unit_tests
 import time
 from gpstk import CommonTime,SystemTime,CivilTime,BDSWeekSecond,GPSWeekSecond,GPSWeekZcount,TimeSystem
 from gpstk import JulianDate, MJD, UnixTime, YDSTime
+import gpstk
 
 class TestSystemTime(unittest.TestCase):
     def test_SystemTime(self):

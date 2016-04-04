@@ -6,8 +6,6 @@ from gpstk.test_utils import args,run_unit_tests
 import gpstk
 
 
-
-
 class ReferenceFrame_test(unittest.TestCase):
     def test_unknown(self):
         r = gpstk.ReferenceFrame()
@@ -40,8 +38,6 @@ class SatID_test(unittest.TestCase):
 
         c = gpstk.SatID(4)  # optional arg should be SatID.systemGPS
         self.assertEqual('GPS 4', str(c))
-
-
 
 
 class Triple_test(unittest.TestCase):
@@ -164,52 +160,6 @@ class ObsID_test(unittest.TestCase):
     def test(self):
         o1 = gpstk.ObsID(gpstk.ObsID.otRange, gpstk.ObsID.cbAny, gpstk.ObsID.tcA)
         self.assertEqual('AnyBand GALA pseudorange', str(o1))
-
-
-class Vector_test(unittest.TestCase):
-    def test_standard_double(self):
-        v = gpstk.vector(5, 3.0)  # 3 3 3 3 3
-        self.assertEqual(5, len(v))
-        self.assertAlmostEqual(3.0, v[0])
-        self.assertAlmostEqual(3.0, v[1])
-        self.assertAlmostEqual(3.0, v[2])
-        self.assertAlmostEqual(3.0, v[3])
-        self.assertAlmostEqual(3.0, v[4])
-
-    def test_concatenate(self):
-        u = gpstk.vector(1, 2.5)
-        v = gpstk.vector(1, 3.5)
-        u.concatenate(v)
-        self.assertAlmostEqual(2.5, u[0])
-        self.assertAlmostEqual(3.5, u[1])
-        self.assertAlmostEqual(3.5, v[0])  # v should be unchanged
-
-    def test_string(self):
-        v = gpstk.vector(5, 3.0)
-        self.assertEqual('3, 3, 3, 3, 3', str(v))
-
-    def test_from_stdvector_double(self):
-        tmp = gpstk.vector_double(5)
-        tmp[0] = 1.23
-        tmp[1] = 2.34
-        tmp[2] = 3.45
-        tmp[3] = 4.56
-        tmp[4] = 5.67
-        v = gpstk.vector(tmp)
-        self.assertAlmostEqual(1.23, v[0])
-        self.assertAlmostEqual(2.34, v[1])
-        self.assertAlmostEqual(3.45, v[2])
-        self.assertAlmostEqual(4.56, v[3])
-        self.assertAlmostEqual(5.67, v[4])
-
-    def test_iter(self):
-        v = gpstk.vector(3, 2.5)
-        # also tests access by index ability
-        i = 0
-        for x in v:
-            self.assertAlmostEqual(v[i], x)
-            self.assertAlmostEqual(v[i], 2.5)
-            i += 1
 
 
 class std_template_test(unittest.TestCase):
@@ -385,10 +335,10 @@ class Positioning_test(unittest.TestCase):
         t = gpstk.CivilTime(2000).toCommonTime()
         # object way:
         pos = gpstk.SunPosition().getPosition(t)
-        self.assertAlmostEqual(-136909966557.84612 , pos[0])
+        self.assertAlmostEqual(-136909966557.8461 , pos[0], places=3)
         # functional way:
         pos = gpstk.sunPosition(t)
-        self.assertAlmostEqual(-136909966557.84612 , pos[0])
+        self.assertAlmostEqual(-136909966557.8461 , pos[0], places=3)
 
 
 class Tides_test(unittest.TestCase):
