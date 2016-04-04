@@ -44,6 +44,8 @@
 #include "StringUtils.hpp"
 #include "Exception.hpp"
 #include "RinexEphemerisStore.hpp"
+#include "GPSWeekZcount.hpp"
+#include "TimeString.hpp"
 
 #include "build_config.h"
 
@@ -52,6 +54,84 @@
 #include <iostream>
 
 using namespace gpstk;
+
+#ifdef _MSC_VER
+#define LDEXP(x,y) ldexp(x,y)
+#else
+#define LDEXP(x,y) std::ldexp(x,y)
+#endif
+
+
+/** Ephemeris subframe words at the end of a week.  Useful for a
+ * week-rollover test of toe and toc as well as other things.
+ * Sorry about the decimal, it came that way out of HDF5. 
+ * @note this data has been modified so that toe != toc, to facilitate
+ * verifying that the appropriate quantity is used where
+ * appropriate. */
+const uint32_t ephEOW[] = 
+{  583228942, 824945128,  904134685,  184026330,  459310087,
+    16899638, 845363969, 0x0f647980,    4193148, 1073290676,
+   583228942, 824953464,  260012308,  225364840,  787693093,
+  1065730353, 298759921,   46377054,   57870868,       8172,
+   583228942, 824962032, 1072401983,  485782594,      84477,
+   301605863, 145566781,  506082625, 1072230894,  259901040 };
+/* original data as broadcast
+{  583228942, 824945128,  904134685,  184026330,  459310087,
+    16899638, 845363969,  255852580,    4193148, 1073290676,
+   583228942, 824953464,  260012308,  225364840,  787693093,
+  1065730353, 298759921,   46377054,   57870868,       8172,
+   583228942, 824962032, 1072401983,  485782594,      84477,
+   301605863, 145566781,  506082625, 1072230894,  259901040 };
+*/
+const unsigned ephEOWwk  = 1886;
+const unsigned ephEOWToeWk = 1887;
+const unsigned ephEOWprn = 14;
+// the rest of these values were broken out by hand
+const CommonTime ephEOWhowTime1 = GPSWeekZcount(ephEOWwk, 402804);
+const CommonTime ephEOWhowTime2 = GPSWeekZcount(ephEOWwk, 402808);
+const CommonTime ephEOWhowTime3 = GPSWeekZcount(ephEOWwk, 402812);
+const long ephEOWhowSec1 = 604206;
+const long ephEOWhowSec2 = 604212; 
+const long ephEOWhowSec3 = 604218;
+const CommonTime ephEOWxmitTime1 = ephEOWhowTime1 - 6;
+const CommonTime ephEOWxmitTime2 = ephEOWhowTime2 - 6;
+const CommonTime ephEOWxmitTime3 = ephEOWhowTime3 - 6;
+const double ephEOWxmitTimeSec1 = GPSWeekSecond(ephEOWxmitTime1).sow;
+const double ephEOWtocSec = 597600;
+const long   ephEOWtocZ   = 398400;
+const CommonTime ephEOWtoc = GPSWeekZcount(ephEOWwk, ephEOWtocZ);
+// as-broadcast
+//const CommonTime ephEOWtoc = GPSWeekZcount(ephEOWwk+1, 0);
+const double ephEOWaf0      = LDEXP(double( int32_t(0xfffff91d)), -31);
+const double ephEOWaf1      = LDEXP(double( int16_t(0xffed)),     -43);
+const double ephEOWaf2      = 0.;
+const double ephEOWiode     = 61.;
+const double ephEOWCrs      = LDEXP(double( int16_t(0xfde4)),      -5);
+const double ephEOWdn       = LDEXP(double( int16_t(0x35bb)),     -43) * PI;
+const double ephEOWM0       = LDEXP(double( int32_t(0x2dbbccf8)), -31) * PI;
+const double ephEOWCuc      = LDEXP(double( int16_t(0xfe17)),     -29);
+const double ephEOWecc      = LDEXP(double(uint32_t(0x04473adb)), -33);
+const double ephEOWCus      = LDEXP(double( int16_t(0x0b0e)),     -29);
+const double ephEOWAhalf    = LDEXP(double(uint32_t(0xa10dcc28)), -19);
+const double ephEOWToe      = 0.; //LDEXP(double(uint16_t()),4);
+const double ephEOWCic      = LDEXP(double( int16_t(0xffae)),     -29);
+const double ephEOWOMEGA0   = LDEXP(double( int32_t(0x3873d1d1)), -31) * PI;
+const double ephEOWCis      = LDEXP(double( int16_t(0x0005)),     -29);
+const double ephEOWi0       = LDEXP(double( int32_t(0x2747e88f)), -31) * PI;
+const double ephEOWCrc      = LDEXP(double( int16_t(0x22b4)),      -5);
+const double ephEOWw        = LDEXP(double( int32_t(0xb078a8d5)), -31) * PI;
+const double ephEOWOMEGAdot = LDEXP(double( int32_t(0xffffa3c7)), -43) * PI;
+const double ephEOWidot     = LDEXP(double( int16_t(0xfdc6)),     -43) * PI;
+const double ephEOWTgd      = LDEXP(double(  int8_t(0xec)),       -31);
+const short  ephEOWcodeflgs = 1;
+const short  ephEOWl2pData  = 0;
+const short  ephEOWhealth   = 0;
+const double ephEOWiodc     = 0x03d;
+// URA index = 0, worst case 2.4m 20.3.3.3.1.3
+const double ephEOWacc      = 2.4;
+// fit interval in *hours*
+const double ephEOWfitint   = 4;
+
 
 //=============================================================================
 // Class declarations
@@ -88,6 +168,7 @@ private:
    std::string outputTestOutput;
    std::string outputTestOutput2;
    std::string outputTestOutput3;
+   std::string outputTestOutput4;
    std::string outputRinexDump;
 
    std::string inputInvalidLineLength;
@@ -101,6 +182,7 @@ private:
    std::string inputFilterStream1;
    std::string inputFilterStream2;
    std::string inputFilterStream3;
+   std::string inputTestOutput4;
    std::string outputFilterOutput;
 
    std::string outputRinexStore;
@@ -132,6 +214,8 @@ void RinexNav_T :: init()
    outputTestOutput         = tp+"test_output_rinex_nav_TestOutput.99n";
    outputTestOutput2        = tp+"test_output_rinex_nav_TestOutput2.99n";
    outputTestOutput3        = tp+"test_output_rinex_nav_TestOutput3.99n";
+   outputTestOutput4        = tp+"test_output_rinex_nav_TestOutput4.16n";
+   inputTestOutput4         = dp+"test_input_rinex_nav_TestOutput4.16n";
    outputRinexDump          = tp+"test_output_rinex_nav_RinexDump";
    inputInvalidLineLength   = dp+"test_input_rinex_nav_InvalidLineLength.99n";
    inputNotaNavFile         = dp+"test_input_rinex_nav_NotaNavFile.99n";
@@ -169,57 +253,57 @@ unsigned RinexNav_T :: hardCodeTest()
 
    try
    {
-      gpstk::RinexNavStream RinexNavStream(inputRinexNavExample.c_str());
+      gpstk::RinexNavStream inp(inputRinexNavExample.c_str());
       gpstk::RinexNavStream out(outputTestOutput.c_str(), std::ios::out);
       gpstk::RinexNavStream dmp(outputRinexDump.c_str(), std::ios::out);
-      gpstk::RinexNavHeader RinexNavHeader;
-      gpstk::RinexNavData RinexNavData;
+      gpstk::RinexNavHeader header;
+      gpstk::RinexNavData data;
 
-      RinexNavStream >> RinexNavHeader;
-      out << RinexNavHeader;
+      inp >> header;
+      out << header;
 
-      while(RinexNavStream >> RinexNavData)
+      while(inp >> data)
       {
-         out << RinexNavData;
+         out << data;
       }
 
-      TUASSERTFE(2.1, RinexNavHeader.version);
-      TUASSERTE(std::string, "XXRINEXN V3", RinexNavHeader.fileProgram);
-      TUASSERTE(std::string, "AIUB", RinexNavHeader.fileAgency);
-      TUASSERTE(std::string, "09/02/1999 19:22:36", RinexNavHeader.date);
+      TUASSERTFE(2.1, header.version);
+      TUASSERTE(std::string, "XXRINEXN V3", header.fileProgram);
+      TUASSERTE(std::string, "AIUB", header.fileAgency);
+      TUASSERTE(std::string, "09/02/1999 19:22:36", header.date);
       std::vector<std::string>::const_iterator itr1 =
-         RinexNavHeader.commentList.begin();
+         header.commentList.begin();
       TUASSERTE(std::string, "THIS IS ONE COMMENT", *itr1);
       TUCMPFILE(inputRinexNavExample, outputTestOutput, 2);
 
          //------------------------------------------------------------
-      gpstk::RinexNavStream RinexNavStream2(outputTestOutput.c_str());
+      gpstk::RinexNavStream inp2(outputTestOutput.c_str());
       gpstk::RinexNavStream out2(outputTestOutput2.c_str(), std::ios::out);
-      gpstk::RinexNavHeader RinexNavHeader2;
-      gpstk::RinexNavData RinexNavData2;
+      gpstk::RinexNavHeader header2;
+      gpstk::RinexNavData data2;
 
-      RinexNavStream2 >> RinexNavHeader2;
-      out2 << RinexNavHeader2;
+      inp2 >> header2;
+      out2 << header2;
 
-      while (RinexNavStream2 >> RinexNavData2)
+      while (inp2 >> data2)
       {
-         out2 << RinexNavData2;
+         out2 << data2;
       }
 
-      gpstk::RinexNavStream RinexNavStream3(outputTestOutput2.c_str());
+      gpstk::RinexNavStream inp3(outputTestOutput2.c_str());
       gpstk::RinexNavStream out3(outputTestOutput3.c_str() , std::ios::out);
-      gpstk::RinexNavHeader RinexNavHeader3;
-      gpstk::RinexNavData RinexNavData3;
+      gpstk::RinexNavHeader header3;
+      gpstk::RinexNavData data3;
 
-      RinexNavStream3 >> RinexNavHeader3;
-      out3 << RinexNavHeader3;
+      inp3 >> header3;
+      out3 << header3;
 
-      while (RinexNavStream3 >> RinexNavData3)
+      while (inp3 >> data3)
       {
-         out3 << RinexNavData3;
+         out3 << data3;
       }
-      RinexNavHeader.dump(dmp);
-      RinexNavData.dump(dmp);
+      header.dump(dmp);
+      data.dump(dmp);
 
       TUCMPFILE(inputRinexNavExample, outputTestOutput3, 2);
    }
@@ -485,7 +569,98 @@ unsigned RinexNav_T :: filterOperatorsTest()
 unsigned RinexNav_T ::
 castTest()
 {
-   TUDEF("RinexNavData", "cast");
+   TUDEF("RinexNavData", "RinexNavData(EngEphemeris)");
+
+   EngEphemeris eeph;
+   TUASSERT(eeph.addSubframe(&ephEOW[ 0], ephEOWwk, ephEOWprn, 1));
+   TUASSERT(eeph.addSubframe(&ephEOW[10], ephEOWwk, ephEOWprn, 1));
+   TUASSERT(eeph.addSubframe(&ephEOW[20], ephEOWwk, ephEOWprn, 1));
+
+   RinexNavData rnd(eeph);
+      // epoch
+   TUASSERTE(short, ephEOWprn, rnd.PRNID);
+   TUASSERTE(CommonTime, ephEOWtoc, rnd.time);
+   TUASSERTFE(ephEOWaf0, rnd.af0);
+   TUASSERTFE(ephEOWaf1, rnd.af1);
+   TUASSERTFE(ephEOWaf2, rnd.af2);
+      // 1
+   TUASSERTFE(ephEOWiode, rnd.IODE);
+   TUASSERTFE(ephEOWCrs, rnd.Crs);
+   TUASSERTFE(ephEOWdn, rnd.dn);
+   TUASSERTFE(ephEOWM0, rnd.M0);
+      // 2
+   TUASSERTFE(ephEOWCuc, rnd.Cuc);
+   TUASSERTFE(ephEOWecc, rnd.ecc);
+   TUASSERTFE(ephEOWCus, rnd.Cus);
+   TUASSERTFE(ephEOWAhalf, rnd.Ahalf);
+      // 3
+   TUASSERTFE(ephEOWToe, rnd.Toe);
+   TUASSERTFE(ephEOWCic, rnd.Cic);
+   TUASSERTFE(ephEOWOMEGA0, rnd.OMEGA0);
+   TUASSERTFE(ephEOWCis, rnd.Cis);
+      // 4
+   TUASSERTFE(ephEOWi0, rnd.i0);
+   TUASSERTFE(ephEOWCrc, rnd.Crc);
+   TUASSERTFE(ephEOWw, rnd.w);
+   TUASSERTFE(ephEOWOMEGAdot, rnd.OMEGAdot);
+      // 5
+   TUASSERTFE(ephEOWidot, rnd.idot);
+   TUASSERTE(short, ephEOWcodeflgs, rnd.codeflgs);
+   TUASSERTE(short, ephEOWToeWk, rnd.toeWeek);
+   TUASSERTE(short, ephEOWl2pData, rnd.L2Pdata);
+      // 6
+   TUASSERTFE(ephEOWacc, rnd.accuracy);
+   TUASSERTE(short, ephEOWhealth, rnd.health);
+   TUASSERTFE(ephEOWTgd, rnd.Tgd);
+   TUASSERTFE(ephEOWiodc, rnd.IODC);
+      // 7
+      // not available... yay.
+      //TUASSERTFE(ephEOWxmitTimeSec1, 
+   TUASSERTFE(ephEOWfitint, rnd.fitint);
+
+   gpstk::RinexNavStream out(outputTestOutput4.c_str(), std::ios::out);
+   out << rnd;
+   out.close();
+   TUCMPFILE(inputTestOutput4, outputTestOutput4, 0);
+
+/*
+   using namespace std;
+   using gpstk::StringUtils::doub2for;
+   ofstream out(outputTestOutput4.c_str(), std::ios::out);
+   out << setw(2) << ephEOWprn
+       << " " << gpstk::printTime(ephEOWtoc, "%2y %2m %2d %2H %2M%5.1f ")
+       << doub2for(ephEOWaf0, 18, 2) << " "
+       << doub2for(ephEOWaf1, 18, 2) << " "
+       << doub2for(ephEOWaf2, 18, 2) << endl
+       << "    " << doub2for(ephEOWiode, 18, 2)
+       << " " << doub2for(ephEOWCrs, 18, 2)
+       << " " << doub2for(ephEOWdn, 18, 2)
+       << " " << doub2for(ephEOWM0, 18, 2) << endl
+       << "    " << doub2for(ephEOWCuc, 18, 2)
+       << " " << doub2for(ephEOWecc, 18, 2)
+       << " " << doub2for(ephEOWCus, 18, 2)
+       << " " << doub2for(ephEOWAhalf, 18, 2) << endl
+       << "    " << doub2for(ephEOWToe, 18, 2)
+       << " " << doub2for(ephEOWCic, 18, 2)
+       << " " << doub2for(ephEOWOMEGA0, 18, 2)
+       << " " << doub2for(ephEOWCis, 18, 2) << endl
+       << "    " << doub2for(ephEOWi0, 18, 2)
+       << " " << doub2for(ephEOWCrc, 18, 2)
+       << " " << doub2for(ephEOWw, 18, 2)
+       << " " << doub2for(ephEOWOMEGAdot, 18, 2) << endl
+       << "    " << doub2for(ephEOWidot, 18, 2)
+       << " " << doub2for(ephEOWcodeflgs, 18, 2)
+       << " " << doub2for(ephEOWToeWk, 18, 2)
+       << " " << doub2for(ephEOWl2pData, 18, 2) << endl
+       << "    " << doub2for(ephEOWacc, 18, 2)
+       << " " << doub2for(ephEOWhealth, 18, 2)
+       << " " << doub2for(ephEOWTgd, 18, 2)
+       << " " << doub2for(ephEOWiodc, 18, 2) << endl
+       << "    " << doub2for(ephEOWxmitTimeSec1, 18, 2)
+       << " " << doub2for(ephEOWfitint, 18, 2) << endl;
+   out.close();
+*/
+
    TURETURN();
 }
 
@@ -503,6 +678,7 @@ int main()
    errorTotal += testClass.hardCodeTest();
    errorTotal += testClass.streamReadWriteTest();
    errorTotal += testClass.filterOperatorsTest();
+   errorTotal += testClass.castTest();
 
    cout << "Total Failures for " << __FILE__ << ": " << errorTotal << endl;
 

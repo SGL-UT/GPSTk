@@ -1162,8 +1162,10 @@ namespace gpstk
 
       double timeDiff = toe - HOWtime[1];
       short toeWeek = weeknum;
-      if (timeDiff < -HALFWEEK) toeWeek++;
-      else if (timeDiff > HALFWEEK) toeWeek--;
+      if (timeDiff < -HALFWEEK)
+         toeWeek++;
+      else if (timeDiff > HALFWEEK)
+         toeWeek--;
 
          // The observation ID has a type of navigation, but the
          // carrier and code types are undefined.  They could be
