@@ -4,6 +4,7 @@
 
 cmake_minimum_required( VERSION 2.8.4  )
 include( make_copy_targets.cmake )
+
 include( PythonSetup.cmake )
 
 find_package( SWIG REQUIRED )
@@ -101,13 +102,7 @@ make_copy_targets(module_files ${CMAKE_CURRENT_SOURCE_DIR} ${MODULE_PATH})
 
 # Do the same for the boilerplate files
 set(meta_files "" )
-list(APPEND meta_files AUTHORS.md )
-list(APPEND meta_files COPYING.md )
-list(APPEND meta_files COPYING.LESSER.md )
-list(APPEND meta_files ChangeLog.md )
-list(APPEND meta_files INSTALL.md )
-list(APPEND meta_files NEWS.md )
-list(APPEND meta_files README.md )
+list(APPEND meta_files AUTHORS.md COPYING.md COPYING.LESSER.md ChangeLog.md INSTALL.md NEWS.md README.md )
 make_copy_targets(meta_files ${CMAKE_SOURCE_DIR} ${MODULE_PATH})
 
 
