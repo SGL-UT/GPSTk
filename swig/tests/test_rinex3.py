@@ -1,7 +1,8 @@
 #!/usr/env python
 
-from test_utils import args, run_unit_tests
-import unittest
+import unittest, sys, os
+sys.path.insert(0, os.path.abspath(".."))
+from gpstk.test_utils import args,run_unit_tests
 import gpstk
 
 

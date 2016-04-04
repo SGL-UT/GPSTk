@@ -1,7 +1,9 @@
 #!/usr/env python
 
-from test_utils import args, run_unit_tests
-import unittest
+import unittest, sys, os
+sys.path.insert(0, os.path.abspath(".."))
+from gpstk.test_utils import args,run_unit_tests
+
 import time
 from gpstk import CommonTime,SystemTime,CivilTime,BDSWeekSecond,GPSWeekSecond,GPSWeekZcount,TimeSystem
 from gpstk import JulianDate, MJD, UnixTime, YDSTime
@@ -78,6 +80,68 @@ class TestTimeTags(unittest.TestCase):
         t0 = YDSTime(1980, 6, 0.0)
         t1 = CivilTime(t0.toCommonTime())
         self.assertEqual(str(t1), "01/06/1980 00:00:00 UNK")
+
+class CommonTime_Tests(unittest.TestCase):
+    def test(self):
+        a = gpstk.CommonTime()
+        a.addDays(1234)
+        b = gpstk.CommonTime(a)
+        b.addSeconds(123.4)
+        c = b - a
+        self.assertAlmostEqual(1234.0, a.getDays())
+        self.assertEqual('0001234 00000000 0.000000000000000 UNK', str(a))
+        self.assertAlmostEqual(1234.0014282407408, b.getDays())
+        self.assertEqual('0001234 00123400 0.000000000000000 UNK', str(b))
+        self.assertAlmostEqual(123.4, c)
+
+    def test_exception(self):
+        # subtracting 2 CommonTimes throws an InvalidRequest
+        a = gpstk.CommonTime(gpstk.TimeSystem('GPS'))
+        b = gpstk.CommonTime(gpstk.TimeSystem('GLO'))
+        self.assertRaises(gpstk.InvalidRequest, a.__sub__, b)
+
+    def test_times_gen(self):
+        start = gpstk.CommonTime()
+        start.addSeconds(100.0)
+        end = gpstk.CommonTime()
+        end.addSeconds(900.0)
+        times = gpstk.times(start, end, seconds=200.0)
+        self.assertEqual(100.0, times.next().getSecondOfDay())
+        self.assertEqual(300.0, times.next().getSecondOfDay())
+        self.assertEqual(500.0, times.next().getSecondOfDay())
+        self.assertEqual(700.0, times.next().getSecondOfDay())
+        self.assertEqual(900.0, times.next().getSecondOfDay())
+        self.assertRaises(StopIteration, times.next)
+
+    def test_times_list(self):
+        start = gpstk.CommonTime()
+        start.addSeconds(100.0)
+        end = gpstk.CommonTime()
+        end.addSeconds(900.0)
+        times = list(gpstk.times(start, end, seconds=200.0))
+        self.assertEqual(100.0, times[0].getSecondOfDay())
+        self.assertEqual(300.0, times[1].getSecondOfDay())
+        self.assertEqual(500.0, times[2].getSecondOfDay())
+        self.assertEqual(700.0, times[3].getSecondOfDay())
+        self.assertEqual(900.0, times[4].getSecondOfDay())
+
+        times = list(gpstk.times(start, end))
+        self.assertEqual(2, len(times))
+        self.assertEqual(times[0], start)
+        self.assertEqual(times[1], end)
+
+
+class ScanTimes(unittest.TestCase):
+    def test_scanTime(self):
+        def test(instr, fmt, expected='', raises=None):
+            if raises is not None:
+                self.assertRaises(raises, gpstk.scanTime, instr, fmt)
+            else:
+                self.assertEqual(expected, str(gpstk.scanTime(instr, fmt)))
+
+        # ANSI
+        test('10000', '%K', '2440588 10000000 0.000000000000000 UNK')
+        test('100000000', '%x', raises=gpstk.InvalidRequest)  # bad format
 
 if __name__ == '__main__':
     run_unit_tests()
