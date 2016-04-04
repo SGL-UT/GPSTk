@@ -77,7 +77,6 @@ set( MODULE_PATH ${CMAKE_CURRENT_BINARY_DIR}/module )
 set( CMAKE_SWIG_OUTDIR ${MODULE_PATH}/${SWIG_MODULE} )
 
 
-
 #----------------------------------------
 # Add custom commands to the _gpstk.so build target
 #----------------------------------------
@@ -91,17 +90,16 @@ set( CMAKE_SWIG_OUTDIR ${MODULE_PATH}/${SWIG_MODULE} )
 add_custom_command( TARGET "_${SWIG_MODULE}" POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "_${SWIG_MODULE}.so" ${CMAKE_SWIG_OUTDIR} )
 add_custom_command( TARGET "_${SWIG_MODULE}" POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${SWIG_MODULE}.py" ${CMAKE_SWIG_OUTDIR} )
 
-# Find all files in the gpstk and examples directory and set up dependancies to
+# Find all files in the gpstk, apps, and tests directories and set up dependancies to
 # copy them to the python module directory
-file(GLOB_RECURSE module_files  RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/gpstk"    "${CMAKE_CURRENT_SOURCE_DIR}/gpstk/*.py")
-make_copy_targets(module_files ${CMAKE_CURRENT_SOURCE_DIR}/gpstk ${CMAKE_SWIG_OUTDIR})
+file(GLOB_RECURSE module_files RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
+  "${CMAKE_CURRENT_SOURCE_DIR}/gpstk/*.py"
+  "${CMAKE_CURRENT_SOURCE_DIR}/apps/*.py"
+  "${CMAKE_CURRENT_SOURCE_DIR}/tests/*.py"
+  )
+make_copy_targets(module_files ${CMAKE_CURRENT_SOURCE_DIR} ${MODULE_PATH})
 
-file(GLOB_RECURSE apps_files RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/apps" "${CMAKE_CURRENT_SOURCE_DIR}/apps/*.py")
-make_copy_targets(apps_files ${CMAKE_CURRENT_SOURCE_DIR}/apps ${MODULE_PATH}/apps)
-
-file(GLOB_RECURSE test_files RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/tests" "${CMAKE_CURRENT_SOURCE_DIR}/tests/*.py")
-make_copy_targets(test_files ${CMAKE_CURRENT_SOURCE_DIR}/tests ${MODULE_PATH}/tests)
-
+# Do the same for the boilerplate files
 set(meta_files "" )
 list(APPEND meta_files AUTHORS.md )
 list(APPEND meta_files COPYING.md )
