@@ -42,7 +42,7 @@ using namespace gpstk;
 %rename(__str__) gpstk::Exception::what() const;
 %include "Exception.hpp"
 %include "FFStreamError.hpp"
-%include "Exception.i"
+%include "GPSTkException.i"
 
 
 // =============================================================
