@@ -65,7 +65,7 @@
 // testFramework.
 #define TUASSERTFEPS(EXP,GOT,EPS) testFramework.assert_equals(EXP,GOT,__LINE__,"", EPS)
 // Macro for doing comparisons of test files
-#define TUCMPFILE(F1,F2,SKIP) testFramework.assert_files_equal(__LINE__, F1, F2, #F1" does not match "#F2, SKIP)
+#define TUCMPFILE(F1,F2,SKIP) testFramework.assert_files_equal(__LINE__, F1, F2, "File mismatch: "+F1+" "+F2, SKIP)
 // Fail the test with a message.
 #define TUFAIL(MSG) testFramework.assert(false, MSG, __LINE__)
 // Pass the test with a (unprinted) message.
