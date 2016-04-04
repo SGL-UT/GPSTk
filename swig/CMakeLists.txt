@@ -96,8 +96,8 @@ add_custom_command( TARGET "_${SWIG_MODULE}" POST_BUILD COMMAND ${CMAKE_COMMAND}
 file(GLOB_RECURSE module_files  RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/gpstk"    "${CMAKE_CURRENT_SOURCE_DIR}/gpstk/*.py")
 make_copy_targets(module_files ${CMAKE_CURRENT_SOURCE_DIR}/gpstk ${CMAKE_SWIG_OUTDIR})
 
-file(GLOB_RECURSE example_files RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/examples" "${CMAKE_CURRENT_SOURCE_DIR}/examples/*.py")
-make_copy_targets(example_files ${CMAKE_CURRENT_SOURCE_DIR}/examples ${MODULE_PATH}/examples)
+file(GLOB_RECURSE apps_files RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/apps" "${CMAKE_CURRENT_SOURCE_DIR}/apps/*.py")
+make_copy_targets(apps_files ${CMAKE_CURRENT_SOURCE_DIR}/apps ${MODULE_PATH}/apps)
 
 file(GLOB_RECURSE test_files RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/tests" "${CMAKE_CURRENT_SOURCE_DIR}/tests/*.py")
 make_copy_targets(test_files ${CMAKE_CURRENT_SOURCE_DIR}/tests ${MODULE_PATH}/tests)
