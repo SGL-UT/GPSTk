@@ -1,0 +1,47 @@
+gpstk_debian:
+  tags:
+    - debian
+  script:
+    - ./build.sh -evxt
+
+  gpstk_debian_swig:
+  tags:
+    - debian
+  script:
+    - ./build.sh -evt
+
+gpstk_solaris:
+  tags:
+    - solaris
+  script:
+    - ./build.sh -evxt
+
+gpstk_redhat:
+  tags:
+    - redhat
+  script:
+    - ./build.sh -evxt -- -DC03_SWITCH=ON
+
+gpstk_redhat_swig:
+  tags:
+    - redhat
+  script:
+    - ./build.sh -evt -- -DC03_SWITCH=ON
+
+gpstk_osx:
+  tags:
+    - osx
+  script:
+    - ./build.sh -evxt
+
+gpstk_osx:
+  tags:
+    - osx
+  script:
+    - ./build.sh -evt
+
+gpstk_windows:
+  tags:
+    - windows
+  script:
+    - ./build.sh -evxt
