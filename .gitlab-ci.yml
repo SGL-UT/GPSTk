@@ -4,7 +4,7 @@ gpstk_debian:
   script:
     - ./build.sh -evxt
 
-  gpstk_debian_swig:
+gpstk_debian_swig:
   tags:
     - debian
   script:
