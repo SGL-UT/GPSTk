@@ -34,7 +34,7 @@ gpstk_osx:
   script:
     - ./build.sh -evxt
 
-gpstk_osx:
+gpstk_osx_swig:
   tags:
     - osx
   script:
