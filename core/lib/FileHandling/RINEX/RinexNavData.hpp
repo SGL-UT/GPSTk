@@ -197,8 +197,8 @@ namespace gpstk
          /** @name Epoch data
           */
          //@{
-      CommonTime time;        ///< Time according to the record.
-      short PRNID;            ///< SV PRN ID .
+      CommonTime time;        ///< Clock reference time (toc).
+      short PRNID;            ///< SV PRN ID.
       long sf1XmitTime;       ///< Transmit time (seconds of week) of SF 1.
          // Toe is kept in separate fields rather than in a
          // GPSWeekSecond due partially to history but mostly due to
