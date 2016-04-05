@@ -55,6 +55,17 @@ namespace gpstk
    using namespace gpstk::StringUtils;
    using namespace std;
 
+   RinexNavData::RinexNavData()
+         : time(gpstk::CommonTime::BEGINNING_OF_TIME), PRNID(-1),
+           sf1XmitTime(0), toeWeek(0), codeflgs(0), accuracy(0),
+           health(0), L2Pdata(0), IODC(0), IODE(0), af0(0), af1(0), af2(0),
+           Tgd(0), Cuc(0), Cus(0), Crc(0), Crs(0), Cic(0), Cis(0), Toe(0),
+           M0(0), dn(0), ecc(0), Ahalf(0), OMEGA0(0), i0(0), w(0), OMEGAdot(0),
+           idot(0), fitint(4)
+   {
+      time.setTimeSystem(gpstk::TimeSystem::GPS);
+   }
+
    RinexNavData::RinexNavData(const EngEphemeris& ee)
    {
       time = ee.getEpochTime();
@@ -609,6 +620,9 @@ namespace gpstk
 
          HOW_sec = gpstk::StringUtils::for2doub(currentLine.substr(3,19));
             // leave it alone so round-trips are possible
+            // (even though we're storing a double as a long, which
+            //could lead to failures in round-trip testing, though if
+            //that happens your transmit time is messed).
             //setXmitTime(HOW_sec);
          sf1XmitTime = HOW_sec;
          fitint = gpstk::StringUtils::for2doub(currentLine.substr(22,19));
@@ -628,35 +642,28 @@ namespace gpstk
          // sf1XmitTime may not actually be a proper subframe 1
          // transmit time.  It may be a HOW time or something like
          // that.
-      unsigned long properXmit = fixSF1xmitSOW(sf1XmitTime);
-      if (properXmit < 0)
+      if (sf1XmitTime < 0)
       {
             // If the transmit time is negative, assume that it
             // corresponds to the Toe week, according to the footnote
             // attached to Table A4 in the 2.11 standard.
-         rv = GPSWeekSecond(toeWeek-1, properXmit+FULLWEEK);
+         long properXmit = fixSF1xmitSOW(sf1XmitTime+FULLWEEK);
+         rv = GPSWeekSecond(toeWeek-1, properXmit, TimeSystem::GPS);
       }
       else
       {
             // If the transmit time is >= 0, make sure that we have
             // the right week using a trusty old half-week test.
+         long properXmit = fixSF1xmitSOW(sf1XmitTime);
          double diff = Toe - properXmit;
          if (diff < -HALFWEEK)
-            rv = GPSWeekSecond(toeWeek-1, properXmit);
+            rv = GPSWeekSecond(toeWeek-1, properXmit, TimeSystem::GPS);
          else if (diff > HALFWEEK)
-            rv = GPSWeekSecond(toeWeek+1, properXmit);
+            rv = GPSWeekSecond(toeWeek+1, properXmit, TimeSystem::GPS);
          else
-            rv = GPSWeekSecond(toeWeek, properXmit);
+            rv = GPSWeekSecond(toeWeek, properXmit, TimeSystem::GPS);
       }
       return rv;
-   }
-
-
-   RinexNavData& RinexNavData::setXmitTime(unsigned long sow)
-   {
-         // round the time down to the nearest subframe 1 transmit time
-      sf1XmitTime = sow - (sow % 30);
-      return *this;
    }
 
 
@@ -675,9 +682,20 @@ namespace gpstk
             // the right week using a trusty old half-week test.
          double diff = Toe - sf1XmitTime;
          if (diff < -HALFWEEK)
+         {
             toeWeek = fullweek+1;
+               // adjust  transmit time to be relative to the week.
+               // week is in broadcast orbit 5
+               // transmission time is in broadcast orbit 7
+               //   see footnote in RINEX 2.11 document
+            sf1XmitTime -= FULLWEEK;
+         }
          else if (diff > HALFWEEK)
+         {
             toeWeek = fullweek-1;
+               // see comments above
+            sf1XmitTime += FULLWEEK;
+         }
          else
             toeWeek = fullweek;
       }

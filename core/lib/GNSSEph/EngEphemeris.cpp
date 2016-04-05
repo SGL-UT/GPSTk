@@ -292,9 +292,7 @@ namespace gpstk
          tocWeek--;
 
          // Toe is now in CommonTime, and needs to be passed to
-         // BrcKeplerOrbit as a CommonTime variable.  URAoc and URAoe
-         // in legacy nav message are equal. Only CNAV and CNAV2 are
-         // they different
+         // BrcKeplerOrbit as a CommonTime variable.
       CommonTime ToeCT = GPSWeekSecond(toeWeek, Toe, TimeSystem::GPS);
       CommonTime TocCT = GPSWeekSecond(tocWeek, Toc, TimeSystem::GPS);
 

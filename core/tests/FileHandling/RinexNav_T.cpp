@@ -158,6 +158,10 @@ public:
    unsigned streamReadWriteTest();
    unsigned filterOperatorsTest();
    unsigned castTest();
+      /** Test consistency in reading data with transmit times that
+       * follow the guidance in the Table A4 footnote regarding
+       * transmission times and those that don't. */
+   unsigned xmitReadTest();
 
 private:
 
@@ -178,6 +182,8 @@ private:
    std::string inputUnsupportedRinex;
    std::string inputBadHeader;
    std::string outputTestOutputHeader;
+   std::string inputXmitTime;
+   std::string outputXmitTime;
 
    std::string inputFilterStream1;
    std::string inputFilterStream2;
@@ -229,6 +235,8 @@ void RinexNav_T :: init()
    inputFilterStream3       = dp+"test_input_rinex_nav_FilterTest3.99n";
    outputFilterOutput       = tp+"test_output_rinex_nav_FilterOutput.txt";
    outputRinexStore         = tp+"test_output_rinex_nav_RinexStore.txt";
+   inputXmitTime            = dp+"test_input_rinex_nav_TestInput1.16n";
+   outputXmitTime           = tp+"test_output_rinex_nav_TestInput1.16n";
 }
 
 //=============================================================================
@@ -664,6 +672,40 @@ castTest()
    TURETURN();
 }
 
+
+unsigned RinexNav_T ::
+xmitReadTest()
+{
+   TUDEF("RinexNavData", "reallyGetRecord");
+   RinexNavStream ins(inputXmitTime.c_str(), std::ios::in);
+   RinexNavData positive, negative;
+   RinexNavHeader header;
+   CommonTime expXmit = GPSWeekSecond(1886, 604200, gpstk::TimeSystem::GPS);
+   TUASSERT(ins);
+   ins >> header;
+   TUASSERT(ins);
+      // negative transmit time requires adjustment of the seconds of
+      // week to get the transmit time right
+   ins >> negative;
+      // positive transmit time requires adjustment of the week to get
+      // the transmit time right
+   TUASSERT(ins);
+   ins >> positive;
+   TUASSERT(ins);
+   ins.close();
+   TUASSERTE(CommonTime, expXmit, negative.getXmitTime());
+   TUASSERTE(CommonTime, expXmit, positive.getXmitTime());
+      // write the data back out and make sure nothing has changed
+   RinexNavStream outs(outputXmitTime.c_str(), std::ios::out);
+   TUASSERT(outs);
+   outs << header << negative << positive;
+   TUASSERT(outs);
+   outs.close();
+   TUCMPFILE(inputXmitTime, outputXmitTime, 2);
+   TURETURN();
+}
+
+
 //============================================================
 // Run all the test methods defined above
 //============================================================
@@ -679,6 +721,7 @@ int main()
    errorTotal += testClass.streamReadWriteTest();
    errorTotal += testClass.filterOperatorsTest();
    errorTotal += testClass.castTest();
+   errorTotal += testClass.xmitReadTest();
 
    cout << "Total Failures for " << __FILE__ << ": " << errorTotal << endl;
 

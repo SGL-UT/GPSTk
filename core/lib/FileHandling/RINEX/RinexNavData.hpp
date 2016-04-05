@@ -70,9 +70,7 @@ namespace gpstk
           * @warning CHECK THE PRNID TO SEE IF THIS DATA IS
           *  VALID BEFORE USING!!
           */
-      RinexNavData(void)
-            : time(gpstk::CommonTime::BEGINNING_OF_TIME), PRNID(-1), fitint(4)
-      {}
+      RinexNavData();
 
          /// Initializes the nav data with an EngEphemeris
       RinexNavData(const EngEphemeris& ee);
@@ -82,7 +80,7 @@ namespace gpstk
 
          // The next four lines is our common interface
          /// RinexNavData is "data" so this function always returns true.
-      virtual bool isData(void) const {return true;}
+      virtual bool isData() const {return true;}
 
          /**
           * Returns a string representation of the data in this record.
@@ -108,7 +106,7 @@ namespace gpstk
 
          /** Round a given seconds of week down to the nearest
           * possible subframe 1 transmit time. */
-      static unsigned long fixSF1xmitSOW(unsigned long sow)
+      static long fixSF1xmitSOW(unsigned long sow)
       { return sow - (sow % 30); }
 
          /**
@@ -137,7 +135,7 @@ namespace gpstk
           * Get the ephemeris reference time as a GPSWeekSecond object.
           */
       GPSWeekSecond getToeWS() const
-      { return GPSWeekSecond(toeWeek, Toe); }
+      { return GPSWeekSecond(toeWeek, Toe, TimeSystem::GPS); }
 
          /**
           * Get the transmit time of subframe 1 as a CommonTime object.
@@ -159,7 +157,11 @@ namespace gpstk
           * specified value is a seconds of week that would already
           * correspond to a sf1 transmit time, it is unaltered.
           */
-      RinexNavData& setXmitTime(unsigned long sow);
+      RinexNavData& setXmitTime(unsigned long sow)
+      {
+         sf1XmitTime = fixSF1xmitSOW(sow);
+         return *this;
+      }
 
          /**
           * Set the transmit week.  Internally, sets the Toe week
@@ -197,7 +199,7 @@ namespace gpstk
          //@{
       CommonTime time;        ///< Time according to the record.
       short PRNID;            ///< SV PRN ID .
-      long sf1XmitTime;       ///< Transmit time (seconds of week) of subrame 1.
+      long sf1XmitTime;       ///< Transmit time (seconds of week) of SF 1.
          // Toe is kept in separate fields rather than in a
          // GPSWeekSecond due partially to history but mostly due to
          // the fact that the two fields are in separate "broadcast
@@ -277,25 +279,25 @@ namespace gpstk
          throw(gpstk::StringUtils::StringException, FFStreamError);
 
          /// generates a line to be output to a file for the PRN/epoch line
-      std::string putPRNEpoch(void) const
+      std::string putPRNEpoch() const
          throw(gpstk::StringUtils::StringException);
          /// Writes line 7 of the Nav Data record
-      std::string putBroadcastOrbit1(void) const
+      std::string putBroadcastOrbit1() const
          throw(gpstk::StringUtils::StringException);
          /// Writes line 7 of the Nav Data record
-      std::string putBroadcastOrbit2(void) const
+      std::string putBroadcastOrbit2() const
          throw(gpstk::StringUtils::StringException);
          /// Writes line 7 of the Nav Data record
-      std::string putBroadcastOrbit3(void) const
+      std::string putBroadcastOrbit3() const
          throw(gpstk::StringUtils::StringException);
          /// Writes line 7 of the Nav Data record
-      std::string putBroadcastOrbit4(void) const
+      std::string putBroadcastOrbit4() const
          throw(gpstk::StringUtils::StringException);
          /// Writes line 7 of the Nav Data record
-      std::string putBroadcastOrbit5(void) const
+      std::string putBroadcastOrbit5() const
          throw(gpstk::StringUtils::StringException);
          /// Writes line 7 of the Nav Data record
-      std::string putBroadcastOrbit6(void) const
+      std::string putBroadcastOrbit6() const
          throw(gpstk::StringUtils::StringException);
          /// Writes line 7 of the Nav Data record
          /// @warning Pass in version to decide wheter or not
