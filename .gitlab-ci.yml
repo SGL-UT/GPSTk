@@ -90,7 +90,7 @@ test_osx:
   script:
     - ctest
   dependencies:
-  - build_osx
+  - :build_osx
 
 build_osx_swig:
   stage: build
@@ -109,7 +109,7 @@ test_osx_swig:
   script:
     - ctest
   dependencies:
-  - build_osx_swig
+  - :build_osx_swig
 
 build_windows:
   stage: build
@@ -128,4 +128,4 @@ test_windows:
   script:
     - ctest
   dependencies:
-  - build_windows
+  - :build_windows
