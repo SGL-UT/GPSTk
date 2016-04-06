@@ -1,6 +1,7 @@
 #ifndef NAVFILTER_HPP
 #define NAVFILTER_HPP
 
+#include <iterator>
 #include <stdint.h>
 #include <list>
 #include <ObsID.hpp>
