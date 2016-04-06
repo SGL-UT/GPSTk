@@ -5,5 +5,3 @@
 # Populate gpstk namespace
 #----------
 from gpstk import *
-import test
-import data

@@ -217,10 +217,9 @@ fi
 args+=${install_prefix:+" -DCMAKE_INSTALL_PREFIX=$install_prefix"}
 args+=${build_ext:+" -DBUILD_EXT=ON"}
 args+=${verbose:+" -DDEBUG_SWITCH=ON"}
-args+=${verbose:-" -Wno-dev"}
 args+=${test_switch:+" -DTEST_SWITCH=ON"}
 args+=${build_docs:+" --graphviz=$build_root/doc/graphviz/gpstk_graphviz.dot"}
-
+[ -z "$verbose" ] && args+=" -Wno-dev"
 run cmake $args $repo
 
 run make all -j $num_threads
