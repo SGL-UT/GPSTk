@@ -232,19 +232,18 @@ esac
 
 
 if [ $test_switch ]; then
+  if ((test_switch < 0)); then
+      ignore_failures=1
+  fi
   case `uname` in
-        MINGW32_NT-6.1)    
-            log "running windows test suite"
-            run cmake --build . --target RUN_TESTS --config Release
-            ;;
-        *)
-            if ((test_switch < 0)); then
-                ignore_failures=1
-            fi
-            run ctest -v -j $num_threads
-            test_status=$?
-            unset ignore_failures
+      MINGW32_NT-6.1)    
+          run cmake --build . --target RUN_TESTS --config Release
+          ;;
+      *)
+          run ctest -v -j $num_threads
+          test_status=$?
   esac              
+  unset ignore_failures
 fi
 
 if [ $install ]; then
