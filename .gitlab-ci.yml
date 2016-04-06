@@ -79,6 +79,9 @@ build_osx:
     - osx
   script:
     - ./build.sh -evx
+  artifacts:
+    paths:
+    - binaries/
 
 test_osx:
   stage: test
@@ -86,6 +89,8 @@ test_osx:
     - osx
   script:
     - ctest
+  dependencies:
+  - build_osx
 
 build_osx_swig:
   stage: build
@@ -93,6 +98,9 @@ build_osx_swig:
     - osx
   script:
     - ./build.sh -ev
+  artifacts:
+    paths:
+    - binaries/
 
 test_osx_swig:
   stage: test
@@ -100,6 +108,8 @@ test_osx_swig:
     - osx
   script:
     - ctest
+  dependencies:
+  - build_osx_swig
 
 build_windows:
   stage: build
@@ -107,6 +117,9 @@ build_windows:
     - windows
   script:
     - build.sh -evx
+  artifacts:
+    paths:
+    - binaries/
 
 test_windows:
   stage: test
@@ -114,3 +127,5 @@ test_windows:
     - windows
   script:
     - ctest
+  dependencies:
+  - build_windows
