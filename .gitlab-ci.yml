@@ -1,72 +1,72 @@
-build_debian:
-  type: build
-  tags:
-    - debian
-  script:
-    - ./build.sh -evx
+#build_debian:
+#  type: build
+#  tags:
+#    - debian
+#  script:
+#    - ./build.sh -evx
 
-build_debian_swig:
-  type: build
-  tags:
-    - debian
-  script:
-    - ./build.sh -ev
+#build_debian_swig:
+#  type: build
+#  tags:
+#    - debian
+#  script:
+#    - ./build.sh -ev
 
-test_debian:
-  type: test
-  tags:
-    - debian
-  script:
-    - ./build.sh -evxt
+#test_debian:
+#  type: test
+#  tags:
+#    - debian
+#  script:
+#    - ./build.sh -evxt
 
-test_debian_swig:
-  type: test
-  tags:
-    - debian
-  script:
-    - ./build.sh -evt
+#test_debian_swig:
+#  type: test
+#  tags:
+#    - debian
+#  script:
+#    - ./build.sh -evt
 
-build_solaris:
-  type: build
-  tags:
-    - solaris
-  script:
-    - ./build.sh -evx
+#build_solaris:
+#  type: build
+#  tags:
+#    - solaris
+#  script:
+#    - ./build.sh -evx
 
-test_solaris:
-  type: test
-  tags:
-    - solaris
-  script:
-    - ./build.sh -evxt
+#test_solaris:
+#  type: test
+#  tags:
+#    - solaris
+#  script:
+#    - ./build.sh -evxt
 
-build_redhat:
-  type: build
-  tags:
-    - redhat
-  script:
-    - ./build.sh -evx -- -DC03_SWITCH=ON
+#build_redhat:
+#  type: build
+#  tags:
+#    - redhat
+#  script:
+#    - ./build.sh -evx -- -DC03_SWITCH=ON
 
-build_redhat_swig:
-  type: build
-  tags:
-    - redhat
-  script:
-    - ./build.sh -ev -- -DC03_SWITCH=ON
+#build_redhat_swig:
+#  type: build
+#  tags:
+#    - redhat
+#  script:
+#    - ./build.sh -ev -- -DC03_SWITCH=ON
 
-test_redhat:
-  type: test
-  tags:
-    - redhat
-  script:
-    - ./build.sh -evxt -- -DC03_SWITCH=ON
+#test_redhat:
+#  type: test
+#  tags:
+#    - redhat
+#  script:
+#    - ./build.sh -evxt -- -DC03_SWITCH=ON
 
-test_redhat_swig:
-  type: test
-  tags:
-    - redhat
-  script:
-    - ./build.sh -evt -- -DC03_SWITCH=ON
+#test_redhat_swig:
+#  type: test
+#  tags:
+#    - redhat
+#  script:
+#    - ./build.sh -evt -- -DC03_SWITCH=ON
 
 build_osx:
   type: build
