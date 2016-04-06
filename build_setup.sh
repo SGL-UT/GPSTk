@@ -84,6 +84,9 @@ case `uname` in
         num_cores=`psrinfo | wc -l`
         hostname=$(uname -n)
         ;;
+    MINGW32_NT-6.1)
+        hostname=$(uname -n)
+        ;;     
     *)
         num_cores=1
 esac
