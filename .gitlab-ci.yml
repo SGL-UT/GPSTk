@@ -1,46 +1,110 @@
-gpstk_debian:
+build_debian:
+  type: build
+  tags:
+    - debian
+  script:
+    - ./build.sh -evx
+
+build_debian_swig:
+  type: build
+  tags:
+    - debian
+  script:
+    - ./build.sh -ev
+
+test_debian:
+  type: test
   tags:
     - debian
   script:
     - ./build.sh -evxt
 
-gpstk_debian_swig:
+test_debian_swig:
+  type: test
   tags:
     - debian
   script:
     - ./build.sh -evt
 
-gpstk_solaris:
+build_solaris:
+  type: build
+  tags:
+    - solaris
+  script:
+    - ./build.sh -evx
+
+test_solaris:
+  type: test
   tags:
     - solaris
   script:
     - ./build.sh -evxt
 
-gpstk_redhat:
+build_redhat:
+  type: build
+  tags:
+    - redhat
+  script:
+    - ./build.sh -evx -- -DC03_SWITCH=ON
+
+build_redhat_swig:
+  type: build
+  tags:
+    - redhat
+  script:
+    - ./build.sh -ev -- -DC03_SWITCH=ON
+
+test_redhat:
+  type: test
   tags:
     - redhat
   script:
     - ./build.sh -evxt -- -DC03_SWITCH=ON
 
-gpstk_redhat_swig:
+test_redhat_swig:
+  type: test
   tags:
     - redhat
   script:
     - ./build.sh -evt -- -DC03_SWITCH=ON
 
-gpstk_osx:
+build_osx:
+  type: build
+  tags:
+    - osx
+  script:
+    - ./build.sh -evx
+
+build_osx_swig:
+  type: build
+  tags:
+    - osx
+  script:
+    - ./build.sh -ev
+
+test_osx:
+  type: test
   tags:
     - osx
   script:
     - ./build.sh -evxt
 
-gpstk_osx_swig:
+test_osx_swig:
+  type: test
   tags:
     - osx
   script:
     - ./build.sh -evt
 
-gpstk_windows:
+build_windows:
+  type: build
+  tags:
+    - windows
+  script:
+    - build.sh -evx
+
+test_windows:
+  type: test
   tags:
     - windows
   script:
