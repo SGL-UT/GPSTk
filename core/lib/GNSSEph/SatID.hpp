@@ -57,7 +57,9 @@ namespace gpstk
       //@{
 
       /// Satellite identifier consisting of a satellite number (PRN, etc.)
-      /// and a satellite system
+      /// and a satellite system. For GLONASS (systemGlonass), the identifier
+      /// is the slot number as per section 3.5 of the RINEX 3 spec.
+      /// For SBAS (systemGeosync), the id is the PRN-100.
    class SatID
    {
    public:
