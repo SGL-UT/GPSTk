@@ -44,4 +44,4 @@ gpstk_windows:
   tags:
     - windows
   script:
-    - ./build.sh -evxt
+    - build.sh -evxt
