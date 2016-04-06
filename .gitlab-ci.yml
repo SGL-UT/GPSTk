@@ -1,111 +1,116 @@
+stages:
+- build
+- test
+- deploy
+
 #build_debian:
-#  type: build
+#  stage: build
 #  tags:
 #    - debian
 #  script:
 #    - ./build.sh -evx
 
 #build_debian_swig:
-#  type: build
+#  stage: build
 #  tags:
 #    - debian
 #  script:
 #    - ./build.sh -ev
 
 #test_debian:
-#  type: test
+#  stage: test
 #  tags:
 #    - debian
 #  script:
 #    - ./build.sh -evxt
 
 #test_debian_swig:
-#  type: test
+#  stage: test
 #  tags:
 #    - debian
 #  script:
 #    - ./build.sh -evt
 
 #build_solaris:
-#  type: build
+#  stage: build
 #  tags:
 #    - solaris
 #  script:
 #    - ./build.sh -evx
 
 #test_solaris:
-#  type: test
+#  stage: test
 #  tags:
 #    - solaris
 #  script:
 #    - ./build.sh -evxt
 
 #build_redhat:
-#  type: build
+#  stage: build
 #  tags:
 #    - redhat
 #  script:
 #    - ./build.sh -evx -- -DC03_SWITCH=ON
 
 #build_redhat_swig:
-#  type: build
+#  stage: build
 #  tags:
 #    - redhat
 #  script:
 #    - ./build.sh -ev -- -DC03_SWITCH=ON
 
 #test_redhat:
-#  type: test
+#  stage: test
 #  tags:
 #    - redhat
 #  script:
 #    - ./build.sh -evxt -- -DC03_SWITCH=ON
 
 #test_redhat_swig:
-#  type: test
+#  stage: test
 #  tags:
 #    - redhat
 #  script:
 #    - ./build.sh -evt -- -DC03_SWITCH=ON
 
 build_osx:
-  type: build
+  stage: build
   tags:
     - osx
   script:
     - ./build.sh -evx
 
+test_osx:
+  stage: test
+  tags:
+    - osx
+  script:
+    - ctest
+
 build_osx_swig:
-  type: build
+  stage: build
   tags:
     - osx
   script:
     - ./build.sh -ev
 
-test_osx:
-  type: test
-  tags:
-    - osx
-  script:
-    - ./build.sh -evxt
-
 test_osx_swig:
-  type: test
+  stage: test
   tags:
     - osx
   script:
-    - ./build.sh -evt
+    - ctest
 
 build_windows:
-  type: build
+  stage: build
   tags:
     - windows
   script:
     - build.sh -evx
 
 test_windows:
-  type: test
+  stage: test
   tags:
     - windows
   script:
-    - build.sh -evxt
+    - ctest
