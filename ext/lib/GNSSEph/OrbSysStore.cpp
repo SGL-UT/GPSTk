@@ -63,7 +63,7 @@ namespace gpstk
 
 //------------------------------------------------------------------------------
    bool OrbSysStore::addMessage(const OrbDataSys* p)
-         throw(InvalidParameter,Exception)
+         throw(InvalidRequest,Exception)
    {
       if (debugLevel) cout << "Entering addMessage(OrbDataSys*)" << endl;
    
@@ -101,7 +101,7 @@ namespace gpstk
             {
                if (ct > ptest->beginValid) return false;
                addItem = true; 
-               //deleteMessage(ptest);               
+               deleteMessage(sidr,navtype,UID,ct);               
             }            
          }
       }
@@ -130,7 +130,7 @@ namespace gpstk
       // will likely involve PackedNavBits, we'll provide a means of 
       // creating and storing a message based on a PackedNavBits.
    bool OrbSysStore::addMessage(const PackedNavBits& pnb)
-         throw(InvalidParameter,Exception)
+         throw(InvalidRequest,Exception)
    {
       if (debugLevel) cout << "Entering addMessage(PackedNavBits&)" << endl;
       
@@ -218,7 +218,7 @@ namespace gpstk
             GPSTK_RETHROW(ir);
          }
       }
-      return true;
+      return retVal;
    }
 
 //--------------------------------------------------------------------------

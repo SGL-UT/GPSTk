@@ -117,7 +117,7 @@ createAndDump()
 
       // All the navigation message data will be placed here. 
    OrbSysStore oss;
-   oss.debugLevel = 0; 
+   oss.setDebugLevel(debugLevel); 
 
    bool passed = true;
    unsigned long addSuccess = 0; 

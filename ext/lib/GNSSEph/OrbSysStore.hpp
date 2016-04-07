@@ -76,10 +76,10 @@ namespace gpstk
       {}
 
       virtual bool addMessage(const OrbDataSys* eph)
-         throw(InvalidParameter,Exception);
+         throw(InvalidRequest,Exception);
 
       virtual bool addMessage(const PackedNavBits& pnb)
-         throw(InvalidParameter,Exception);
+         throw(InvalidRequest,Exception);
 
       virtual void deleteMessage(const SatID& sat, 
                              const unsigned long navtype,
@@ -166,7 +166,10 @@ namespace gpstk
       /// @return list of SatID objects
       std::list<gpstk::SatID> getSatIDList() const;
 
-      unsigned debugLevel;
+      unsigned int setDebugLevel(const unsigned int newLevel)
+         { debugLevel = newLevel; return debugLevel; }
+
+      unsigned int debugLevel;
 
       /// The map is an hierarchical structure that is ranked by
       /// satellite, then navigation mesage type, then message UID 
