@@ -461,7 +461,6 @@ namespace gpstk
 
 //-----------------------------------------------------------------------------
    unsigned OrbSysStore::size() const
-      throw()
    {
       unsigned counter = 0;
 
@@ -486,13 +485,37 @@ namespace gpstk
 
 //-----------------------------------------------------------------------------
    bool OrbSysStore::isPresent(const SatID& id) const 
-      throw()
    {
       SAT_NM_UID_MSG_MAP::const_iterator cit1;
       cit1 = msgMap.find(id);
       if (cit1==msgMap.end()) return false;
       return true;
    }
+
+//-----------------------------------------------------------------------------
+   CommonTime OrbSysStore::getInitialTime() const
+         throw(gpstk::InvalidRequest)
+   {
+      if (size()==0) 
+      {
+         InvalidRequest ir("No data loaded.");
+         GPSTK_THROW(ir); 
+      }
+      return initialTime; 
+   }
+
+//-----------------------------------------------------------------------------
+   CommonTime OrbSysStore::getFinalTime() const
+         throw(gpstk::InvalidRequest)
+   { 
+      if (size()==0) 
+      {
+         InvalidRequest ir("No data loaded.");
+         GPSTK_THROW(ir); 
+      }
+      return finalTime; 
+   }
+
   
 //-----------------------------------------------------------------------------
 /*

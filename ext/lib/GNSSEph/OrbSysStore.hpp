@@ -56,9 +56,6 @@
 
 namespace gpstk
 {
-   /// @ingroup ephemstore 
-   //@{
-
    class OrbSysStore 
    {
    public:
@@ -115,23 +112,20 @@ namespace gpstk
       /// @return The initial time
       /// @throw InvalidRequest This is thrown if the object has no data.
       virtual CommonTime getInitialTime() const
-         throw()
-         { return initialTime; }
+         throw(gpstk::InvalidRequest);
 
       /// Determine the latest time for which this object can successfully 
       /// determine the Xvt for any object.
       /// @return The final time
       /// @throw InvalidRequest This is thrown if the object has no data.
       virtual CommonTime getFinalTime() const
-         throw()
-         { return finalTime; }
+         throw(gpstk::InvalidRequest);
 
       /// Return the number of messages stored in this store. 
-      virtual unsigned size() const
-         throw(); 
+      virtual unsigned size() const; 
 
       /// Return true if the given SatID is present in the store
-      virtual bool isPresent(const SatID& id) const throw();
+      virtual bool isPresent(const SatID& id) const;
 
       /// Classes to set/access the store TimeSystem information.
       TimeSystem getTimeSystem() const { return timeSysForStore; }

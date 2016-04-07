@@ -38,6 +38,7 @@
 *
 *********************************************************************/
 #include <iostream>
+#include <fstream>
 
 #include "CivilTime.hpp"
 #include "Exception.hpp"
@@ -48,7 +49,7 @@
 #include "TimeString.hpp"
 #include "TimeSystem.hpp"
 
-//#include "sgltk_build_config.h"
+#include "build_config.h"
 #include "TestUtil.hpp"
 
 using namespace std;
@@ -66,8 +67,6 @@ public:
    void setUpCNAV();
    void setUpBDS();
    void setUpGLO();
-   //bool equal(const PackedNavBits& pnb1,
-   //           const PackedNavBits& pnb2 );
    gpstk::PackedNavBits getPnbLNav(const gpstk::ObsID& oidr,
                                    const std::string& str)
              throw(gpstk::InvalidParameter);
@@ -80,6 +79,10 @@ public:
    unsigned long navType;     // To be replaced with NavID
    list<PackedNavBits> dataList;
    string typeDesc;
+   CommonTime initialCT;
+   CommonTime finalCT;
+
+   ofstream out; 
 
       // For testing the test
    int debugLevel;   
@@ -97,6 +100,20 @@ createAndDump()
 {
    string currMethod = typeDesc + " create/store OrbDataSys objects";
    TUDEF("OrbDataSys",currMethod);
+
+      // Open an output stream specific to this navigation message type
+   std::string fs = getFileSep(); 
+   std::string tf(getPathTestTemp()+fs);
+   std::string tempFile = tf + "test_output_OrbDatSys_T_" +
+                         typeDesc+".txt";
+   out.open(tempFile.c_str(),std::ios::out);
+   if (!out)
+   {
+      stringstream ss;
+      ss << "Could not open file " << tempFile << " for output.";
+      TUFAIL(ss.str());
+      TURETURN();
+   }
 
       // All the navigation message data will be placed here. 
    OrbSysStore oss;
@@ -133,7 +150,68 @@ createAndDump()
    }
    if (passed) TUPASS("Successfully loaded data to store.");
 
-      // Test the find( ) method. 
+//--- Test the isPresent( ) method --------------------------------
+   currMethod = typeDesc + " OrbSysStore.isPresent() "; 
+   TUCSM(currMethod);
+   SatID sidT1(1,SatID::systemGPS);
+   if (oss.isPresent(sidT1)) 
+      TUPASS("");
+   else
+      TUFAIL("Failed to find PRN 1 in store"); 
+   
+   SatID sidT2(33,SatID::systemGPS);
+   if (oss.isPresent(sidT2))
+      TUFAIL("Reported PRN 33 as present (which is not true)");
+   else 
+      TUPASS("");
+      
+//--- Test the getXXXTime( ) methods -------------------------
+   currMethod = typeDesc + " OrbSysStore.getXxxxTime() "; 
+   TUCSM(currMethod);
+   try
+   {
+      const CommonTime& initialTestT = oss.getInitialTime();
+      if (initialTestT==initialCT) TUPASS("");
+      else
+      {
+         stringstream ss;
+         ss << "Incorrect initial time.  Expected "
+            << printTime(initialCT,"%02m/%02d/%4Y %02H:%02M:%02S %P")
+            << " found "
+            << printTime(initialTestT,"%02m/%02d/%4Y %02H:%02M:%02S %P");
+         TUFAIL(ss.str());
+      }
+   }
+   catch (InvalidRequest ir)
+   {
+     stringstream ss;
+     ss << "Unexpected exception." << ir;
+     TUFAIL(ss.str());
+   }
+
+   try
+   {
+      const CommonTime& finalTestT = oss.getFinalTime();
+      if (finalTestT==finalCT) TUPASS("");
+      else
+      {
+         stringstream ss;
+         ss << "Incorrect final time.  Expected "
+            << printTime(finalCT,"%02m/%02d/%4Y %02H:%02M:%02S %P")
+            << " found "
+            << printTime(finalTestT,"%02m/%02d/%4Y %02H:%02M:%02S %P");
+         InvalidRequest ir(ss.str());
+         TUFAIL(ss.str());
+      }
+   }
+   catch (InvalidRequest ir)
+   {
+     stringstream ss;
+     ss << "Unexpected exception." << ir;
+     TUFAIL(ss.str());
+   }
+
+//--- Test the find( ) method --------------------------------
    currMethod = typeDesc + " OrbSysStore.find() "; 
    TUCSM(currMethod);
    SatID sidTest(1,SatID::systemGPS);
@@ -242,18 +320,16 @@ createAndDump()
       TUFAIL(ss.str());
    }
 
-         
-
       // Dump the store
    currMethod = typeDesc + " OrbSysStore.dump()";
    TUCSM(currMethod);
-   oss.dump();
+   oss.dump(out);
 
       // Dump terse (one-line) summaries
-   oss.dump(cout,1);
+   oss.dump(out,1);
 
       // Dump all contents
-   oss.dump(cout,2);
+   oss.dump(out,2);
 
       // Clear the store
    currMethod = typeDesc + " OrbSysStore.clear()";
@@ -265,6 +341,8 @@ createAndDump()
       TUFAIL("Failed to entirely clear OrbSysStore.");
    }
    else TUPASS("");
+
+   out.close();
 
    TURETURN();
 }
@@ -283,6 +361,8 @@ setUpLNAV()
       // Define state variables for creating a LNAV store
    navType = 1;
    typeDesc = "GPS_LNAV";
+   initialCT = CivilTime(2015,12,31,00,11,18,TimeSystem::GPS);
+   finalCT   = CivilTime(2015,12,31,18,43,48,TimeSystem::GPS);
 
       // Literals for LNAV test data 
    const unsigned short LNavExCount = 12;
@@ -494,30 +574,6 @@ setUpGLO()
          GPSTK_THROW(ip);
       }  
    }
-
-
-/*
-   // This really should be provided in gpstk::PackedNavBits
-bool OrbDataSys_T::
-equal(const PackedNavBits& pnb1,
-      const PackedNavBits& pnb2 )
-{
-   const SatID& s1 = pnb1.getsatSys();
-   const SatID& s2 = pnb1.getsatSys();
-   if (s1!=s2) return false;
-
-   const ObsID& o1 = pnb1.getobsID();
-   const ObsID& o2 = pnb2.getobsID();
-   if (o1!=o2) return false;
-
-   const CommonTime& t1 = pnb1.getTransmitTime();
-   const CommonTime& t2 = pnb2.getTransmitTime();
-   if (t1!=t2) return false;
-
-   return (pnb1.matchBits(pnb2));
-}
-*/
-
 
 int main()
 {
