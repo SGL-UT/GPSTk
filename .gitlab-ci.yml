@@ -1,3 +1,5 @@
+#.yml file for Gitlab-CI support
+
 stages:
 - build
 - test
