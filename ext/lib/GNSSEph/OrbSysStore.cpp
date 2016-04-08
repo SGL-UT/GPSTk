@@ -606,10 +606,10 @@ namespace gpstk
       cit4 = mapr.begin();
       const CommonTime& ctr = cit4->first;
 
+      string tform = "%02m/%02d/%4Y %02H:%02M:%02S";
       if (debugLevel)
       {
-         string tform = "%02m/%02d/%4Y %02H:%02M:%02S";
-         cout << "   t: " << printTime(t,tform) << endl;
+         cout << "   t: " << printTime(t,tform) << ", " << sat << endl;
          cout << " ctr: " << printTime(ctr,tform) << endl;
       }
       
@@ -648,24 +648,36 @@ namespace gpstk
       }
 
          // If not at the end, retreat one item. 
-      if (debugLevel) cout << "Retreating one entry" << endl; 
-      prior = upper--;               // guaranteed to succeed due to earlier test
+      if (debugLevel)
+      {
+	 cout << "Time associated with pointer upper: " << printTime(upper->first,tform) << endl;
+         cout << "Retreating one entry" << endl; 
+      }
+      prior = upper;
+      prior--;         // guaranteed to succeed due to earlier test
       const CommonTime& priorCT = prior->first;
 
          // As long as the time of the prior object is less than time t, 
          // the object associated with prior is the one we want.
+      if (debugLevel)
+      {
+         cout << "priorCT : " << printTime(priorCT,tform) << endl;
+      }
       if (priorCT<t) return prior->second; 
 
-      if (debugLevel) cout << "Retreating a second time" << endl;
          // If priorCT==t, then we need to back up one more
+      if (debugLevel) cout << "Attempting to retreating a second time" << endl;
       if (prior==mapr.begin())
       {
+	 if (debugLevel) cout << "...failed to retreat.  Already at beginning" << endl;
          stringstream ss;
          ss << "Requested time is earlier than any message of requested type."; 
          InvalidRequest ir(ss.str());
          GPSTK_THROW(ir);
       }
       prior--;
+      if (debugLevel) cout << "Returning object with xmit time: "
+	                   << printTime(prior->first,tform) << endl;
       return prior->second;
    }
          
