@@ -3,13 +3,6 @@ stages:
 - test
 - deploy
 
-build_opti022:
-  stage: build
-  tags:
-    - opti022
-  script:
-    - ./build.sh -evx
-
 build_debian:
   stage: build
   tags:
@@ -35,7 +28,7 @@ test_debian:
     - ./build.sh -evxt
   dependencies:
   - :build_debian
-  
+
 #test_debian_swig:
 #  stage: test
 #  tags:
