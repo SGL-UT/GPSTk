@@ -230,11 +230,18 @@ namespace gpstk
    double OrbSysGpsL_56::getUtcOffset(const CommonTime& ct) const
    {
        double retVal;
-       retVal = (double) dtLS + A0 + A1 * (ct - ctEpoch);
+       retVal = (double) dtLS + getUtcOffsetModLeapSec(ct);
        return retVal;
    } // end of getUtcOffset()
 
-   
+   double OrbSysGpsL_56::getUtcOffsetModLeapSec(const CommonTime& ct) const
+   {
+       double retVal;
+       retVal = A0 + A1 * (ct - ctEpoch);
+       return retVal;
+   } // end of getUtcOffset()
+
+
    void OrbSysGpsL_56::dumpUtcTerse(std::ostream& s, const std::string tform) const
          throw(InvalidRequest)
    {

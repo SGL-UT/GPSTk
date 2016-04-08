@@ -102,6 +102,7 @@ namespace gpstk
           * if provided parameters are OK to use.  
           */
       virtual double getUtcOffset(const CommonTime& ct) const;
+      virtual double getUtcOffsetModLeapSec(const CommonTime& ct) const;
 
       virtual void dumpUtcTerse(std::ostream& s = std::cout, 
               const std::string tform="%02m/%02d/%04Y %02H:%02M:%02S") const
