@@ -7,38 +7,33 @@ cache:
   paths:
   - build/
 
-#build_debian:
-#  stage: build
-#  tags:
-#    - debian
-#  script:
-#    - ./build.sh -evx
-#  artifacts:
-#    paths:
-#    - build/
+build_debian:
+  stage: build
+  tags:
+    - debian
+  script:
+    - ./build.sh -evx
 
-#build_debian_swig:
-#  stage: build
-#  tags:
-#    - debian
-#  script:
-#    - ./build.sh -ev
+build_debian_swig:
+  stage: build
+  tags:
+    - debian
+  script:
+    - ./build.sh -ev
 
-#test_debian:
-#  stage: test
-#  tags:
-#    - debian
-#  script:
-#    - ./build.sh -evxt
-#  dependencies:
-#  - :build_debian
+test_debian:
+  stage: test
+  tags:
+    - debian
+  script:
+    - ./build.sh -evxt
 
-#test_debian_swig:
-#  stage: test
-#  tags:
-#    - debian
-#  script:
-#    - ./build.sh -evt
+test_debian_swig:
+  stage: test
+  tags:
+    - debian
+  script:
+    - ./build.sh -evt
 
 #build_solaris:
 #  stage: build
@@ -60,9 +55,6 @@ cache:
 #    - redhat
 #  script:
 #    - ./build.sh -evx -- -DC03_SWITCH=ON
-#  artifacts:
-#    paths:
-#    - build/
 
 #build_redhat_swig:
 #  stage: build
@@ -77,8 +69,6 @@ cache:
 #    - redhat
 #  script:
 #    - ./build.sh -evxt -- -DC03_SWITCH=ON
-#  dependencies:
-#  - :build_redhat
 
 #test_redhat_swig:
 #  stage: test
@@ -87,43 +77,33 @@ cache:
 #  script:
 #   - ./build.sh -evt -- -DC03_SWITCH=ON
 
-#build_osx:
-#  stage: build
-#  tags:
-#    - osx
-#  script:
-#    - ./build.sh -evx
-#  artifacts:
-#    paths:
-#    - build/
+build_osx:
+  stage: build
+  tags:
+    - osx
+  script:
+    - ./build.sh -evx
 
-#test_osx:
-#  stage: test
-#  tags:
-#    - osx
-#  script:
-#    - ctest
-#  dependencies:
-#  - :build_osx
+test_osx:
+  stage: test
+  tags:
+    - osx
+  script:
+    - ctest
 
-#build_osx_swig:
-#  stage: build
-#  tags:
-#    - osx
-#  script:
-#    - ./build.sh -ev
-#  artifacts:
-#    paths:
-#    - build/
+build_osx_swig:
+  stage: build
+  tags:
+    - osx
+  script:
+    - ./build.sh -ev
 
-#test_osx_swig:
-#  stage: test
-#  tags:
-#    - osx
-#  script:
-#    - ctest
-#  dependencies:
-#  - :build_osx_swig
+test_osx_swig:
+  stage: test
+  tags:
+    - osx
+  script:
+    - ctest
 
 build_windows:
   stage: build
@@ -131,9 +111,6 @@ build_windows:
     - windows
   script:
     - build.sh -evx
-  artifacts:
-    paths:
-    - build/
 
 test_windows:
   stage: test
@@ -141,5 +118,3 @@ test_windows:
     - windows
   script:
     - ctest
-  dependencies:
-  - :build_windows
