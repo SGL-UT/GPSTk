@@ -3,12 +3,22 @@ stages:
 - test
 - deploy
 
-#build_debian:
-#  stage: build
-#  tags:
-#    - debian
-#  script:
-#    - ./build.sh -evx
+build_opti022:
+  stage: build
+  tags:
+    - opti022
+  script:
+    - ./build.sh -evx
+
+build_debian:
+  stage: build
+  tags:
+    - debian
+  script:
+    - ./build.sh -evx
+  artifacts:
+    paths:
+    - build/
 
 #build_debian_swig:
 #  stage: build
@@ -17,13 +27,15 @@ stages:
 #  script:
 #    - ./build.sh -ev
 
-#test_debian:
-#  stage: test
-#  tags:
-#    - debian
-#  script:
-#    - ./build.sh -evxt
-
+test_debian:
+  stage: test
+  tags:
+    - debian
+  script:
+    - ./build.sh -evxt
+  dependencies:
+  - :build_debian
+  
 #test_debian_swig:
 #  stage: test
 #  tags:
@@ -45,12 +57,15 @@ stages:
 #  script:
 #    - ./build.sh -evxt
 
-#build_redhat:
-#  stage: build
-#  tags:
-#    - redhat
-#  script:
-#    - ./build.sh -evx -- -DC03_SWITCH=ON
+build_redhat:
+  stage: build
+  tags:
+    - redhat
+  script:
+    - ./build.sh -evx -- -DC03_SWITCH=ON
+  artifacts:
+    paths:
+    - build/
 
 #build_redhat_swig:
 #  stage: build
@@ -65,13 +80,15 @@ stages:
 #    - redhat
 #  script:
 #    - ./build.sh -evxt -- -DC03_SWITCH=ON
+#  dependencies:
+#  - :build_redhat
 
 #test_redhat_swig:
 #  stage: test
 #  tags:
 #    - redhat
 #  script:
-#    - ./build.sh -evt -- -DC03_SWITCH=ON
+#   - ./build.sh -evt -- -DC03_SWITCH=ON
 
 build_osx:
   stage: build
@@ -81,7 +98,7 @@ build_osx:
     - ./build.sh -evx
   artifacts:
     paths:
-    - binaries/
+    - build/
 
 test_osx:
   stage: test
@@ -100,7 +117,7 @@ build_osx_swig:
     - ./build.sh -ev
   artifacts:
     paths:
-    - binaries/
+    - build/
 
 test_osx_swig:
   stage: test
@@ -119,7 +136,7 @@ build_windows:
     - build.sh -evx
   artifacts:
     paths:
-    - binaries/
+    - build/
 
 test_windows:
   stage: test
