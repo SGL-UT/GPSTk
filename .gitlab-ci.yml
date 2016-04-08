@@ -50,15 +50,15 @@ test_debian:
 #  script:
 #    - ./build.sh -evxt
 
-build_redhat:
-  stage: build
-  tags:
-    - redhat
-  script:
-    - ./build.sh -evx -- -DC03_SWITCH=ON
-  artifacts:
-    paths:
-    - build/
+#build_redhat:
+#  stage: build
+#  tags:
+#    - redhat
+#  script:
+#    - ./build.sh -evx -- -DC03_SWITCH=ON
+#  artifacts:
+#    paths:
+#    - build/
 
 #build_redhat_swig:
 #  stage: build
