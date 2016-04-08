@@ -3,6 +3,10 @@ stages:
 - test
 - deploy
 
+cache:
+  paths:
+  - build/
+
 build_debian:
   stage: build
   tags:
