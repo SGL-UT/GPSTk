@@ -34,13 +34,13 @@
 //
 //=============================================================================
 /**
- * @file OrbSysGpsL_56.hpp
- * Designed to support loading GPS LNAV Iono/UTC data
- * Subframe 4, Page 18
+ * @file OrbSysGpsL_63.hpp
+ * Designed to support loading GPS LNAV SV Config and Health data
+ * Subframe 4, Page 25, SV ID 63
  */
 
-#ifndef SGLTK_ORBSYSGPSL_56_HPP
-#define SGLTK_ORBSYSGPSL_56_HPP
+#ifndef SGLTK_ORBSYSGPSL_63_HPP
+#define SGLTK_ORBSYSGPSL_63_HPP
 
 
 #include <string>
@@ -51,23 +51,22 @@
 
 namespace gpstk
 {
-   class OrbSysGpsL_56 : public OrbSysGpsL
+   class OrbSysGpsL_63 : public OrbSysGpsL
    {
    public:
-      static const double SIX_HOURS;
    
          /// Default constructor
-      OrbSysGpsL_56();
+      OrbSysGpsL_63();
   
         /// Constructor for creating directly from a PackedNavBits object
-      OrbSysGpsL_56(const PackedNavBits& msg)
+      OrbSysGpsL_63(const PackedNavBits& msg)
          throw( gpstk::InvalidParameter);
       
          /// Destructor
-      virtual ~OrbSysGpsL_56() {}
+      virtual ~OrbSysGpsL_63() {}
 
          /// Clone method
-      virtual OrbSysGpsL_56* clone() const;
+      virtual OrbSysGpsL_63* clone() const;
         
          /**
           * Store the contents of Subframe 4, Page 18 in this object.
@@ -81,69 +80,36 @@ namespace gpstk
 
       virtual std::string getName() const
       {
-         return "UTC/I";
+         return "Confg";
       }
 
       virtual std::string getNameLong() const
       {
-         return "GPS LNAV Iono/UTC Parameters";
+         return "GPS LNAV SV Config";
       }
-
-        /**
-         * Determine if UTC values are valid based on limitations
-         * expressed in IS-GPS-200 20.3.3.5.2.4 and Karl Kovach's
-         * interpretation of same following UTC Offset Error
-         * anomaly of Jan 25-26, 2016
-         */
-      virtual bool isUtcValid(const CommonTime& ct,
-                              const bool initialXMit=false) const;
-
-         /**
-          * Compute GPS-UTC offset as per IS-GPS-200 20.3.3.5.2.4.
-          * NOTE: See preceding method, isUtcValid( ) to determine
-          * if provided parameters are OK to use.  
-          */
-      virtual double getUtcOffset(const CommonTime& ct) const;
-      virtual double getUtcOffsetModLeapSec(const CommonTime& ct) const;
-
-      virtual void dumpUtcTerse(std::ostream& s = std::cout, 
-              const std::string tform="%02m/%02d/%04Y %02H:%02M:%02S") const
-         throw( InvalidRequest );
 
          /** Output the contents of this orbit data to the given stream.
           * @throw Invalid Request if the required data has not been stored.
           */
       virtual void dumpTerse(std::ostream& s = std::cout) const
-         throw( InvalidRequest )
-      { dumpUtcTerse(s); }
-
-      //virtual void dumpHeader(std::ostream& s = std::cout) const
-      //   throw( InvalidRequest ) = 0;
+         throw( InvalidRequest );
 
       virtual void dumpBody(std::ostream& s = std::cout) const
          throw( InvalidRequest );
 
-      //virtual void dumpFooter(std::ostream& s = std::cout) const
-      //   throw( InvalidRequest ) = 0;
+         // SV Config
+         // See IS-GPS-200 Fig 20-1 Sheet 9 and 
+         // Section 
+      unsigned short config[33];  // Index 1-32 are used for PRN 1-32
 
-         // Iono parameters
-      double alpha[4];
-      double beta[4];
+         // SV Health
+      unsigned short health[9];  // Index 1-8 are used for PRN 24-32
 
-         // UTC Parameters
-      double A0;
-      double A1; 
-      gpstk::CommonTime ctEpoch; 
-
-      short dtLS;
-      short dtLSF;
-      unsigned short WN_LSF;
-      unsigned short DN;
-
-      unsigned short WN_LSF_full;    // derived
-      gpstk::CommonTime ctLSF;       // derived
+         // Index of bit location in the message (for loadData())
+      static const unsigned short cBits[];
+      static const unsigned short hBits[];
       
-   }; // end class OrbSysGpsL_56
+   }; // end class OrbSysGpsL_63
 
 } // end namespace gpstk
 

@@ -50,7 +50,9 @@
   // Probably need to move the conversion to a separate
   // class.  Otherwise, we are going to spawn a really long
   // list of concrete descendent classes.
+#include "OrbSysGpsL_51.hpp"
 #include "OrbSysGpsL_56.hpp"
+#include "OrbSysGpsL_63.hpp"
 #include "CivilTime.hpp"
 #include "TimeString.hpp"
 
@@ -159,6 +161,12 @@ namespace gpstk
                      // Do nothing until the appropriate OrbSysGPSL_xx 
                      // classes are written.
                   case 51:
+                  {
+                     OrbSysGpsL_51* pnew = new OrbSysGpsL_51(pnb);
+                     p = dynamic_cast<OrbDataSys*>(pnew);
+                     break;
+                  }
+
                   case 52:
                   case 53:
                   case 54:
@@ -173,6 +181,13 @@ namespace gpstk
                      p = dynamic_cast<OrbDataSys*>(pnew);
                      break;
                   }
+               
+                  case 63:
+                  {
+                     OrbSysGpsL_63* pnew = new OrbSysGpsL_63(pnb);
+                     p = dynamic_cast<OrbDataSys*>(pnew);
+                     break;
+                  }
 
                   default:
                   {
@@ -181,11 +196,11 @@ namespace gpstk
                }
             }
                // Conversion attempt failed.
-            catch(InvalidRequest ir)
+            catch(InvalidParameter ir)
             {
                if (debugLevel)
                {
-                  cout << "Conversion attempt failed.  Caught an InvalidRequest" << endl;
+                  cout << "Conversion attempt failed.  Caught an InvalidParameter" << endl;
                   cout << ir << endl;
                }
                GPSTK_RETHROW(ir);

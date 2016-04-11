@@ -49,6 +49,7 @@ using namespace gpstk;
 
 namespace gpstk
 {
+   const double OrbSysGpsL_56::SIX_HOURS = 6.0 * 3600.0; 
 
    OrbSysGpsL_56::OrbSysGpsL_56()
       :OrbSysGpsL(),
@@ -225,21 +226,43 @@ namespace gpstk
       return true;
    } // end of isUtcValid()
 
-      // 20.3.3.5.2.4 establishes three cases. Before, just prior, 
-      // and just after a leap second.
+      // 20.3.3.5.2.4 establishes three cases. Before, near the event, 
+      // and after a leap second.  Unfortunately, in the middle case,
+      // the interface specification is complicated by the fact it
+      // is working in SOW and there is a need to account for
+      // week rollovers. 
    double OrbSysGpsL_56::getUtcOffset(const CommonTime& ct) const
    {
-       double retVal;
-       retVal = (double) dtLS + getUtcOffsetModLeapSec(ct);
-       return retVal;
+      double retVal;
+
+         // delta t-sub-UTC is the same in all cases.
+      double dtUTC = getUtcOffsetModLeapSec(ct);
+
+         // compute offset between user's time and 
+         // leap second time of effectivity. 
+      double diff = ctLSF - ct; 
+      double diffAbs = fabs(diff);
+
+         // Case a: WN-sub-LSF/DN is not in the past.
+         // That is to say, it is >= the current time. 
+      if (diff>=0)
+      {
+         retVal = (double) dtLS + dtUTC; 
+      }
+      else
+      {
+         retVal = (double) dtLSF + dtUTC;
+      }
+
+      return retVal;
    } // end of getUtcOffset()
 
    double OrbSysGpsL_56::getUtcOffsetModLeapSec(const CommonTime& ct) const
    {
-       double retVal;
-       retVal = A0 + A1 * (ct - ctEpoch);
-       return retVal;
-   } // end of getUtcOffset()
+      double retVal;
+      retVal = A0 + A1 * (ct - ctEpoch);
+      return retVal;
+   } // end of getUtcOffsetModLeapSec()
 
 
    void OrbSysGpsL_56::dumpUtcTerse(std::ostream& s, const std::string tform) const
@@ -257,7 +280,7 @@ namespace gpstk
 
       s << "  56";      // UID
       s << " " << printTime(beginValid,tform) << "  ";
-      s << "Ep: " << printTime(ctEpoch,tform) << " "; 
+      s << "tot: " << printTime(ctEpoch,tform) << " "; 
 
       s.setf(ios::scientific, ios::floatfield);
       s.setf(ios::right, ios::adjustfield);
@@ -306,6 +329,8 @@ namespace gpstk
         << endl
         << "Parameter              Value" << endl;
 
+      string tform="  %02m/%02d/%04Y %02H:%02M:%02S";
+      s << "t-sub-ot    " << printTime(ctEpoch,tform) << endl; 
       s << "A0          " << setw(16) << A0 << " sec" << endl;
       s << "A1          " << setw(16) << A1 << " sec/sec" << endl;
 
