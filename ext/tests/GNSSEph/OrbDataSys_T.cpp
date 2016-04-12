@@ -45,6 +45,7 @@
 #include "GPSWeekSecond.hpp"
 #include "OrbDataSys.hpp"
 #include "OrbSysStore.hpp"
+#include "OrbSysStoreGpsL.hpp"
 #include "SystemTime.hpp"
 #include "TimeString.hpp"
 #include "TimeSystem.hpp"
@@ -116,7 +117,7 @@ createAndDump()
    }
 
       // All the navigation message data will be placed here. 
-   OrbSysStore oss;
+   OrbSysStoreGpsL oss;
    oss.setDebugLevel(debugLevel); 
 
    bool passed = true;
