@@ -176,6 +176,13 @@ namespace gpstk
          return;
       }
 
+      if (detail==3)
+      {
+         dumpTerseTimeOrder(s);
+         return;
+      }
+
+
          // If detail==0 (or at least !=1 and !=2) generate a summary
          // table of the contents of the store.
       s << "**********************************************************" << endl;
@@ -204,7 +211,7 @@ namespace gpstk
       typedef map<unsigned short, unsigned long> SUB_MAP;
       
          // For each NavID, build a map<CommonTime, map<SatID.id, UID>>
-         // for all the unique message received.   HEAVEN HELP the user who
+         // for all the unique messages received.   HEAVEN HELP the user who
          // calls dump( ) for a storeAll map. 
          // Then unspool the multimap to the output stream 
       for (cit=navSet.begin();cit!=navSet.end();cit++)
@@ -311,6 +318,88 @@ namespace gpstk
          }
       }
    } // end OrbSysStore::dumpTerse
+
+//-----------------------------------------------------------------------------
+   void OrbSysStore::dumpTerseTimeOrder(std::ostream& s)
+         const throw()
+   {
+      s << "**********************************************************" << endl;
+      s << " One-line summary of non-orbit constellation overhead data" << endl;
+      s << "       Sat  ID mm/dd/yyyy HH:MM:SS  Data" << endl;
+      SAT_NM_UID_MSG_MAP::const_iterator cit1;
+      NM_UID_MSG_MAP::const_iterator cit2;
+      UID_MSG_MAP::const_iterator cit3;
+      MSG_MAP::const_iterator cit4; 
+
+         // Create a list of the NavIDs found in this set of maps.
+      set<unsigned long> navSet;
+      set<unsigned long>::const_iterator cit;
+      for (cit1=msgMap.begin();cit1!=msgMap.end();cit1++)
+      {
+         const NM_UID_MSG_MAP& NMmapr = cit1->second;
+         for (cit2=NMmapr.begin();cit2!=NMmapr.end();cit2++)
+         {
+            unsigned long navType = cit2->first;
+            if (cit!=navSet.find(navType)) navSet.insert(navType);
+         }
+      }      
+
+      list<SatID> satIDList = getSatIDList();
+      list<SatID>::const_iterator csat; 
+      typedef map<unsigned short, unsigned long> SUB_MAP;
+      
+         // For each NavID, build a map<CommonTime, map<SatID.id, UID>>
+         // for all the unique messages received.   HEAVEN HELP the user who
+         // calls dump( ) for a storeAll map. 
+         // Then unspool the multimap to the output stream 
+      for (cit=navSet.begin();cit!=navSet.end();cit++)
+      {
+         bool foundAtLeastOneEntry = false;
+         unsigned long navTypeTarget = *cit; 
+         multimap<CommonTime, const OrbDataSys*> tempMap;
+         for (cit1=msgMap.begin();cit1!=msgMap.end();cit1++)
+         {
+            const SatID& sidr = cit1->first;
+            const NM_UID_MSG_MAP& NMmapr = cit1->second;
+            for (cit2=NMmapr.begin();cit2!=NMmapr.end();cit2++)
+            {
+               unsigned long navType = cit2->first;
+
+                  // If this is not the type of nav we are interested in
+                  // skip it. 
+               if (navType!=navTypeTarget) continue;
+
+                  // Otherwise, iterate over the submaps
+               const UID_MSG_MAP& UIDmapr = cit2->second;
+               for (cit3=UIDmapr.begin();cit3!=UIDmapr.end();cit3++)
+               {
+                  const unsigned long UID = cit3->first;
+                  const MSG_MAP& mapr = cit3->second;
+                  for (cit4=mapr.begin();cit4!=mapr.end();cit4++)
+                  {
+                     const CommonTime& ctr = cit4->first;
+                     const OrbDataSys* op = cit4->second;
+                     multimap<CommonTime, const OrbDataSys*>::value_type inp(ctr,op);
+                     tempMap.insert(inp); 
+                     foundAtLeastOneEntry = true;
+                  }
+               }
+            }
+         } 
+
+            // Only output the table if there is at least one entry
+         if (!foundAtLeastOneEntry) continue;
+
+         multimap<CommonTime,const OrbDataSys*>::const_iterator t1;
+         for (t1=tempMap.begin();t1!=tempMap.end();t1++)
+         {
+            const CommonTime& ctr = t1->first;
+            const OrbDataSys* op = t1->second;
+            op->dumpTerse(s);
+            s << endl;
+         }
+      }
+   } // end OrbSysStore::dumpTerseTimeOrdered
 
 //-----------------------------------------------------------------------------
    void OrbSysStore::dumpContents(std::ostream& s,

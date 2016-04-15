@@ -332,6 +332,9 @@ createAndDump()
       // Dump all contents
    oss.dump(out,2);
 
+      // Dump terese in time order
+   oss.dump(out,3);
+
       // Clear the store
    currMethod = typeDesc + " OrbSysStore.clear()";
    TUCSM(currMethod);

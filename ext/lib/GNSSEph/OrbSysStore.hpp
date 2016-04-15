@@ -96,6 +96,9 @@ namespace gpstk
       virtual void dumpTerse(std::ostream& s = std::cout)
          const throw();
 
+      virtual void dumpTerseTimeOrder(std::ostream& s = std::cout)
+         const throw();
+
       virtual void dumpContents(std::ostream& s = std::cout,
                                 const gpstk::SatID& sidr =
                                       gpstk::SatID(0,gpstk::SatID::systemUnknown),
