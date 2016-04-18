@@ -84,6 +84,9 @@ case `uname` in
         num_cores=`psrinfo | wc -l`
         hostname=$(uname -n)
         ;;
+    MINGW32_NT-6.1)
+        hostname=$(uname -n)
+        ;;     
     *)
         num_cores=1
 esac
@@ -96,12 +99,12 @@ else
     num_threads=$((num_cores*3/4))
 fi
 
-repo=$(abspath $(dirname '$0'))
+repo=$(abspath $(dirname "$0"))
 
 user_install_prefix=$HOME/.local
 system_install_prefix=/usr/local
 
-python_exe=`which python2.7`
+python_exe=`which python`
 
 system_python_install="/usr/local"
 user_python_install="~/.local"

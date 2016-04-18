@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
-import gpstk
-import unittest
+import unittest, sys, os
+sys.path.insert(0, os.path.abspath(".."))
+from gpstk.test_utils import args,run_unit_tests
+
 
 class EllipsoidTests(unittest.TestCase):
     def test_WGS84(self):
@@ -184,8 +186,6 @@ class RinexMetTest(unittest.TestCase):
         self.assertAlmostEqual(998.3, d[gpstk.RinexMetHeader.PR])
         self.assertAlmostEqual(30.8, d[gpstk.RinexMetHeader.TD])
 
-def main():
-    unittest.main()
 
 if __name__ == '__main__':
-    main()
+    run_unit_tests()

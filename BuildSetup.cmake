@@ -146,6 +146,7 @@ elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" )
     endif()
 elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
     set( CPACK_GENERATOR "NSIS;ZIP" )
+    set( CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}/LICENSE.md")
 endif()
 
 set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "GPSTk libraries and applications for GNSS processing.") 

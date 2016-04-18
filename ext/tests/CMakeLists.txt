@@ -7,8 +7,3 @@ add_subdirectory (mergetools)
 add_subdirectory (multipath)
 add_subdirectory (Rinextools)
 add_subdirectory (time)
-
-# python bindings testings
-if (BUILD_PYTHON)
-    add_subdirectory (swig)
-endif()
