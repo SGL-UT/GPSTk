@@ -2,7 +2,7 @@
 # gpstk/swig/make_copy_targets.cmake
 #----------------------------------------
 
-cmake_minimum_required( VERSION 2.8.10  )
+cmake_minimum_required( VERSION 2.8.9  )
 
 function(make_copy_targets file_list source_dir dest_dir)
     foreach(fn ${${file_list}})
