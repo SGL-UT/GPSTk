@@ -51,6 +51,7 @@
 #include "Exception.hpp"
 #include "OrbDataSys.hpp"
 #include "PackedNavBits.hpp"
+#include "NavID.hpp"
 #include "SatID.hpp"
 #include "TimeSystem.hpp"
 
@@ -82,7 +83,7 @@ namespace gpstk
      //    throw(InvalidRequest,Exception);
 
       virtual void deleteMessage(const SatID& sat, 
-                             const unsigned long navtype,
+                             const NavID& navtype,
                              const unsigned long UID, 
                              const CommonTime& t);
 
@@ -102,7 +103,8 @@ namespace gpstk
       virtual void dumpContents(std::ostream& s = std::cout,
                                 const gpstk::SatID& sidr =
                                       gpstk::SatID(0,gpstk::SatID::systemUnknown),
-                                const unsigned long navtype = 0,
+                                const gpstk::NavID& navtype =
+                                      gpstk::NavID(gpstk::NavID::ntUnknown),
                                 const unsigned long UID = 0)
          const throw();
 
@@ -148,7 +150,7 @@ namespace gpstk
       ///   - if the time is prior to the earliest time in the store
       ///   - if there are no message with the specified UID in the store
       const OrbDataSys* find(const SatID& sat, 
-                             const unsigned long navtype,
+                             const NavID& navtype,
                              const unsigned long UID, 
                              const CommonTime& t) const
          throw(InvalidRequest);
@@ -160,7 +162,7 @@ namespace gpstk
       ///   - the satellite isn't in the store
       ///   - if the time is prior to the earliest time in the store
       std::list<const OrbDataSys*> findSystemData(const SatID& sat,
-                                                  const unsigned long navtype, 
+                                                  const NavID& navtype, 
                                                   const CommonTime& t) const
          throw(InvalidRequest);
 
@@ -179,6 +181,7 @@ namespace gpstk
       /// and finally by transmit time.
       ///
       ///                      key,    value,    MAP
+      ///  -----------------------   --------    ----
       ///            transmit time,  message,    MSG_MAP
       ///        unique message ID,              UID_MSG_MAP
       ///  navigation message type,              NAV_UID_MSG_MAP
@@ -186,7 +189,7 @@ namespace gpstk
       ///
       typedef std::map<gpstk::CommonTime, gpstk::OrbDataSys*> MSG_MAP;
       typedef std::map<uint16_t, MSG_MAP> UID_MSG_MAP;
-      typedef std::map<uint16_t, UID_MSG_MAP> NM_UID_MSG_MAP;
+      typedef std::map<gpstk::NavID, UID_MSG_MAP> NM_UID_MSG_MAP;
       typedef std::map<gpstk::SatID,NM_UID_MSG_MAP> SAT_NM_UID_MSG_MAP; 
 
       protected:

@@ -77,7 +77,6 @@ public:
 
       // Methods above exist to set up the following
       // members
-   unsigned long navType;     // To be replaced with NavID
    list<PackedNavBits> dataList;
    string typeDesc;
    CommonTime initialCT;
@@ -216,14 +215,14 @@ createAndDump()
    currMethod = typeDesc + " OrbSysStore.find() "; 
    TUCSM(currMethod);
    SatID sidTest(1,SatID::systemGPS);
-   unsigned long navtype = 1; // NavID
+   NavID nidTest(NavID::ntGPSLNAV);
    unsigned long UID = 56;
 
       // TOO EARLY
    CommonTime testTime = CivilTime(2015,12,31,00,00,00,TimeSystem::GPS); 
    try
    {
-      const OrbDataSys* p = oss.find(sidTest,navtype,UID,testTime); 
+      const OrbDataSys* p = oss.find(sidTest,nidTest,UID,testTime); 
       stringstream ss;
       ss << "Failed to throw exception for time prior to all data";
       TUFAIL(ss.str());
@@ -237,7 +236,7 @@ createAndDump()
    testTime = CivilTime(2015,12,31,00,11,18,TimeSystem::GPS); 
    try
    {
-      const OrbDataSys* p = oss.find(sidTest,navtype,UID,testTime); 
+      const OrbDataSys* p = oss.find(sidTest,nidTest,UID,testTime); 
       stringstream ss;
       ss << "Failed to throw exception for time prior to all data";
       TUFAIL(ss.str());
@@ -252,7 +251,7 @@ createAndDump()
    testTime = CivilTime(2015,12,31,02,00,00,TimeSystem::GPS);
    try
    {
-      const OrbDataSys* p = oss.find(sidTest,navtype,UID,testTime); 
+      const OrbDataSys* p = oss.find(sidTest,nidTest,UID,testTime); 
       if (p->beginValid==expTime) TUPASS("");
       else
       {
@@ -276,7 +275,7 @@ createAndDump()
    testTime = CivilTime(2015,12,31,12,28,48,TimeSystem::GPS);
    try
    {
-      const OrbDataSys* p = oss.find(sidTest,navtype,UID,testTime); 
+      const OrbDataSys* p = oss.find(sidTest,nidTest,UID,testTime); 
       if (p->beginValid==expTime) TUPASS("");
       else
       {
@@ -301,7 +300,7 @@ createAndDump()
    testTime = CivilTime(2015,12,31,14,00,00,TimeSystem::GPS);
    try
    {
-      const OrbDataSys* p = oss.find(sidTest,navtype,UID,testTime); 
+      const OrbDataSys* p = oss.find(sidTest,nidTest,UID,testTime); 
       if (p->beginValid==expTime) TUPASS("");
       else
       {
@@ -363,7 +362,6 @@ setUpLNAV()
    init();
 
       // Define state variables for creating a LNAV store
-   navType = 1;
    typeDesc = "GPS_LNAV";
    initialCT = CivilTime(2015,12,31,00,02,18,TimeSystem::GPS);
    finalCT   = CivilTime(2015,12,31,18,43,48,TimeSystem::GPS);

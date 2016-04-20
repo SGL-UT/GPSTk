@@ -85,6 +85,7 @@ namespace gpstk
          /// explicit constructor, no defaults
       NavID( const SatID& sidr, const ObsID& oidr );
 
+      NavID( const NavType nt) { navType = nt; }
 
       NavID( const std::string& s );
 

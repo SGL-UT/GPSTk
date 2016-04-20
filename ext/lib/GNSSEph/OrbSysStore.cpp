@@ -66,8 +66,8 @@ namespace gpstk
       const CommonTime& ct = p->beginValid;
       const unsigned long UID = p->UID;
       const ObsID& oidr = p->obsID;
-      unsigned long navtype = 1;       // Temporary expedient
       const SatID& sidr = p->satID;
+      NavID navtype = NavID(sidr,oidr);
 
          // See if there is already a message in the store that 
          // matches this one.  If not, it needs to be added.
@@ -125,7 +125,7 @@ namespace gpstk
 //  Locate the item in the map matching the provided
 //  parameters and delete it
    void OrbSysStore::deleteMessage(const SatID& sat, 
-                             const unsigned long navtype,
+                             const NavID& navtype,
                              const unsigned long UID, 
                              const CommonTime& t)
    {
@@ -190,8 +190,8 @@ namespace gpstk
       s << endl;
       
          // Create a list of the NavIDs found in this set of maps.
-      set<unsigned long> navSet;
-      set<unsigned long>::const_iterator cit;
+      set<NavID> navSet;
+      set<NavID>::const_iterator cit;
       SAT_NM_UID_MSG_MAP::const_iterator cit1;
       NM_UID_MSG_MAP::const_iterator cit2;
       UID_MSG_MAP::const_iterator cit3;
@@ -201,8 +201,9 @@ namespace gpstk
          const NM_UID_MSG_MAP& NMmapr = cit1->second;
          for (cit2=NMmapr.begin();cit2!=NMmapr.end();cit2++)
          {
-            unsigned long navType = cit2->first;
-            if (cit!=navSet.find(navType)) navSet.insert(navType);
+            const NavID& navType = cit2->first;
+            cit = navSet.find(navType);
+            if (cit==navSet.end()) navSet.insert(navType);
          }
       }      
 
@@ -217,7 +218,7 @@ namespace gpstk
       for (cit=navSet.begin();cit!=navSet.end();cit++)
       {
          bool foundAtLeastOneEntry = false;
-         unsigned long navTypeTarget = *cit; 
+         const NavID& navTypeTarget = *cit; 
          map<CommonTime, SUB_MAP> tempMap;
          for (cit1=msgMap.begin();cit1!=msgMap.end();cit1++)
          {
@@ -225,7 +226,7 @@ namespace gpstk
             const NM_UID_MSG_MAP& NMmapr = cit1->second;
             for (cit2=NMmapr.begin();cit2!=NMmapr.end();cit2++)
             {
-               unsigned long navType = cit2->first;
+               const NavID& navType = cit2->first;
 
                   // If this is not the type of nav we are interested in
                   // skip it. 
@@ -332,15 +333,16 @@ namespace gpstk
       MSG_MAP::const_iterator cit4; 
 
          // Create a list of the NavIDs found in this set of maps.
-      set<unsigned long> navSet;
-      set<unsigned long>::const_iterator cit;
+      set<NavID> navSet;
+      set<NavID>::const_iterator cit;
       for (cit1=msgMap.begin();cit1!=msgMap.end();cit1++)
       {
          const NM_UID_MSG_MAP& NMmapr = cit1->second;
          for (cit2=NMmapr.begin();cit2!=NMmapr.end();cit2++)
          {
-            unsigned long navType = cit2->first;
-            if (cit!=navSet.find(navType)) navSet.insert(navType);
+            const NavID& navType = cit2->first;
+            cit = navSet.find(navType);
+            if (cit==navSet.end()) navSet.insert(navType);
          }
       }      
 
@@ -355,7 +357,7 @@ namespace gpstk
       for (cit=navSet.begin();cit!=navSet.end();cit++)
       {
          bool foundAtLeastOneEntry = false;
-         unsigned long navTypeTarget = *cit; 
+         const NavID& navTypeTarget = *cit; 
          multimap<CommonTime, const OrbDataSys*> tempMap;
          for (cit1=msgMap.begin();cit1!=msgMap.end();cit1++)
          {
@@ -363,7 +365,7 @@ namespace gpstk
             const NM_UID_MSG_MAP& NMmapr = cit1->second;
             for (cit2=NMmapr.begin();cit2!=NMmapr.end();cit2++)
             {
-               unsigned long navType = cit2->first;
+               const NavID& navType = cit2->first;
 
                   // If this is not the type of nav we are interested in
                   // skip it. 
@@ -404,7 +406,7 @@ namespace gpstk
 //-----------------------------------------------------------------------------
    void OrbSysStore::dumpContents(std::ostream& s,
                                 const gpstk::SatID& sidr,
-                                const unsigned long navtype,
+                                const gpstk::NavID& navtype,
                                 const unsigned long UID)
          const throw()
    {
@@ -412,7 +414,7 @@ namespace gpstk
       bool allNM = false;
       bool allUID = false;
       if (sidr.id==0) allSats = true;
-      if (navtype==0) allNM = true;
+      if (navtype.navType==NavID::ntUnknown) allNM = true;
       if (UID==0) allUID = true;
 
       SAT_NM_UID_MSG_MAP::const_iterator cit1;
@@ -427,7 +429,7 @@ namespace gpstk
          const NM_UID_MSG_MAP& NMmapr = cit1->second;
          for (cit2=NMmapr.begin();cit2!=NMmapr.end();cit2++)
          {
-            const unsigned long nmCurr = cit2->first;
+            const NavID& nmCurr = cit2->first;
             if (!allNM && nmCurr!=navtype) continue;
             
             const UID_MSG_MAP& UIDmapr = cit2->second;
@@ -536,7 +538,7 @@ namespace gpstk
 */
    const OrbDataSys* OrbSysStore::
    find(const SatID& sat, 
-        const unsigned long navtype,   // Transition to NavID when available
+        const NavID& navtype,   // Transition to NavID when available
         const unsigned long UID, 
         const CommonTime& t) const
       throw(InvalidRequest)
@@ -639,7 +641,7 @@ namespace gpstk
          // If not at the end, retreat one item. 
       if (debugLevel)
       {
-	 cout << "Time associated with pointer upper: " << printTime(upper->first,tform) << endl;
+	      cout << "Time associated with pointer upper: " << printTime(upper->first,tform) << endl;
          cout << "Retreating one entry" << endl; 
       }
       prior = upper;
@@ -673,7 +675,7 @@ namespace gpstk
 //-----------------------------------------------------------------------------
    std::list<const OrbDataSys*> OrbSysStore::
    findSystemData(const SatID& sat,
-                  const unsigned long navtype,   // Transition to NavID when available
+                  const NavID& navtype,   // Transition to NavID when available
                   const CommonTime& t) const
       throw(InvalidRequest)
    {
