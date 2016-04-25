@@ -301,8 +301,13 @@ namespace std { class fstream {}; }
 %ignore gpstk::Expression::print(std::ostream& ostr) const;
 %include "Expression.hpp"
 
-// FIC format:
 %include "FFBinaryStream.hpp"
+%include "AshtechStream.hpp"
+%include "AshtechData.hpp"
+%include "AshtechALB.hpp"
+%include "AshtechEPB.hpp"
+%include "AshtechMBEN.hpp"
+%include "AshtechPBEN.hpp"
 
 %include "MoonPosition.hpp"
 %include "SunPosition.hpp"

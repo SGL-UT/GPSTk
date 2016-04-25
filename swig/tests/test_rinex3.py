@@ -1,4 +1,4 @@
-#!/usr/env python
+#!/usr/bin/env python
 
 import unittest, sys, os
 sys.path.insert(0, os.path.abspath(".."))
@@ -12,7 +12,7 @@ class TestRinex3(unittest.TestCase):
     def test_readRinex3Obs(self):
         """Test reading entire rinex obs file and spot check the data"""
         header, data = gpstk.readRinex3Obs( args.input_dir+"/arlm200a.15o", strict=True)
-
+        
         # Find the earliest and latest observations
         # function for how to compare Rinex3ObsData objects for min/max functions:
         timeFunction = lambda self: self.time

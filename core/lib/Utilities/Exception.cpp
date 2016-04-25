@@ -106,7 +106,7 @@ namespace gpstk
    Exception& Exception::addLocation(
       const ExceptionLocation& location)
    {
-      locations.push_back(location);
+      //locations.push_back(location);
       return *this;
    }
 
@@ -130,7 +130,7 @@ namespace gpstk
 
    Exception& Exception::addText(const string& errorText)
    {
-      text.push_back(errorText);
+      //text.push_back(errorText);
       return *this;
    }
 

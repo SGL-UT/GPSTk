@@ -178,14 +178,13 @@ namespace gpstk
          string line;
          strm.formattedGetLine(line);
          stripTrailing(line);
-   
          if(line.length() == 0) continue;
          else if(line.length() < 60 || line.length() > 80) 
          {
             FFStreamError e("Invalid line length");
             GPSTK_THROW(e);
          }
-   
+
          string thisLabel(line, 60, 20);
 
             // following is huge if else else ... endif for each record type
