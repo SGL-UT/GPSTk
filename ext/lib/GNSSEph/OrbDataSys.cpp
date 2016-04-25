@@ -72,7 +72,8 @@ namespace gpstk
    std::ostream& operator<<(std::ostream& s,
                             const OrbDataSys& eph)
    {
-      eph.dump(s); 
+      eph.dump(s);
+      return s; 
    }
 
 } // namespace
