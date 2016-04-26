@@ -585,11 +585,46 @@ namespace gpstk
       bits_used += numBits;
    }
 
+   //--------------------------------------------------------------------------
+   // Used in NavFilter implementations.   This method ASSUMES the meta-date
+   // matches have already been done.  It is simply comparing contents of the
+   // bit array bit-for-bit and returning "less than" if it finds an occasion
+   // in which left has a '0' whereas right has a '1'.
+   //
+   // NOTE: This is one of the cases in which the PackedNavBits implementation 
+   // is probably not the fastest.  Since we are scanning a bit array rather 
+   // than testing a series of unsigned ints.
+   bool PackedNavBits::operator<(const PackedNavBits& right) const
+   {
+         // If the two objects don't have the same number of bits,
+         // don't perform the bit compare.  NOTE:  This should not
+         // happen.  In the context of NavFilter, data SHOULD be
+         // from the same system, therefore, the same length should 
+         // always be true.
+      if (bits.size()!=right.bits.size())
+      {
+         if (bits.size()<right.bits.size()) return true;
+         return false;
+      }
+
+      for (int i=0;i<bits.size();i++)
+      {
+         if (bits[i]<right.bits[i])
+         {
+            return true;
+         }
+      }
+      return false;
+   }
+
+
+   //--------------------------------------------------------------------------
    void PackedNavBits::trimsize()
    {
       bits.resize(bits_used);
    }
 
+   //--------------------------------------------------------------------------
    int64_t PackedNavBits::SignExtend( const int startBit, const int numBits) const
    {
       union

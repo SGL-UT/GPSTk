@@ -672,7 +672,26 @@ equalityTest()
    TUCSM("operator==");
    TUASSERTE(bool,  true,withBits==sameAsWithBits);
    TUASSERTE(bool, false,withBits==diffMetaWithBits2);
-   return testFramework.countFails();
+
+   TUCSM("operator<");
+   PackedNavBits rightTest(satID,obsID,rxID2,ct); 
+   PackedNavBits leftSmall(satID,obsID,rxID2,ct);
+   PackedNavBits leftLarge(satID,obsID,rxID2,ct);
+   PackedNavBits leftEqual(satID,obsID,rxID2,ct);
+   PackedNavBits longer(satID,obsID,rxID2,ct);
+   rightTest.rawBitInput("035 0xFFFFFF0F 0xE0000000");
+   leftEqual.rawBitInput("035 0xFFFFFF0F 0xE0000000");
+   leftSmall.rawBitInput("035 0xFFFFFE0F 0xE0000000");
+   leftLarge.rawBitInput("035 0xFFFFFFFF 0xE0000000");
+   longer.rawBitInput(   "064 0x00000000 0x00000000");
+   TUASSERTE(bool,  true, leftSmall<rightTest);
+   TUASSERTE(bool, false, leftEqual<rightTest);
+   TUASSERTE(bool, false, leftLarge<rightTest);
+   TUASSERTE(bool,  true, leftSmall<longer);
+   TUASSERTE(bool, false, longer<leftSmall);
+
+
+   TURETURN();
 }
 
 int main()

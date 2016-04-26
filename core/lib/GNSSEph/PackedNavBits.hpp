@@ -321,6 +321,16 @@ namespace gpstk
                      const bool checkOverhead) const;
           */
 
+         /** 
+          * The less than operator is defined in order to support use
+          *   with the NavFilter classes.  The idea is to provide a
+          *   "sort" for bits contained in the class.  Matching strings
+          *   will fail both  a < b and b < a; however, in the process
+          *   all matching strings can be sorted into sets and the 
+          *   "winner" determined. 
+          */
+      bool operator<(const PackedNavBits& right) const; 
+
          /* Resize the vector holding the packed data. */
       void trimsize();
 
