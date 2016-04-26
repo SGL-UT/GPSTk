@@ -5,18 +5,7 @@ stages:
 - test
 - deploy
 
-cache:
-  paths:
-  - build/
-
 build_debian:
-  stage: build
-  tags:
-    - debian
-  script:
-    - ./build.sh -evx
-
-build_debian_swig:
   stage: build
   tags:
     - debian
@@ -28,13 +17,6 @@ test_debian:
   tags:
     - debian
   script:
-    - ./build.sh -evxt
-
-test_debian_swig:
-  stage: test
-  tags:
-    - debian
-  script:
     - ./build.sh -evt
 
 build_solaris:
@@ -42,70 +24,42 @@ build_solaris:
   tags:
     - solaris
   script:
-    - ./build.sh -evx
+    - ./build.sh -ev
 
 test_solaris:
   stage: test
   tags:
     - solaris
   script:
-    - ./build.sh -evxt
+    - ./build.sh -evt
 
 build_redhat:
   stage: build
   tags:
     - redhat
   script:
-    - ./build.sh -evx -- -DC03_SWITCH=ON
-
-build_redhat_swig:
-  stage: build
-  tags:
-    - redhat
-  script:
-    - ./build.sh -ev -- -DC03_SWITCH=ON
+    - ./build.sh -ev
 
 test_redhat:
   stage: test
   tags:
     - redhat
   script:
-    - ./build.sh -evxt -- -DC03_SWITCH=ON
-
-test_redhat_swig:
-  stage: test
-  tags:
-    - redhat
-  script:
-   - ./build.sh -evt -- -DC03_SWITCH=ON
+    - ./build.sh -evt
 
 build_osx:
   stage: build
   tags:
     - osx
   script:
-    - ./build.sh -evx
+    - ./build.sh -ev
 
 test_osx:
   stage: test
   tags:
     - osx
   script:
-    - ctest
-
-build_osx_swig:
-  stage: build
-  tags:
-    - osx
-  script:
-    - ./build.sh -ev
-
-test_osx_swig:
-  stage: test
-  tags:
-    - osx
-  script:
-    - ctest
+    - ./build.sh -evt
 
 build_windows:
   stage: build
@@ -119,4 +73,4 @@ test_windows:
   tags:
     - windows
   script:
-    - ctest
+    - build.sh -evxt
