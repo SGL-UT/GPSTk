@@ -244,7 +244,7 @@ namespace gpstk
       unsigned getTLMMessage(short subframe) const 
          throw( gpstk::InvalidRequest );
 
-         /// EXvtracts the epoch time from this ephemeris, correcting
+         /// Extracts the epoch time from this ephemeris, correcting
          /// for half weeks and HOW time
       CommonTime getEphemerisEpoch() const
          throw( gpstk::InvalidRequest );
@@ -254,7 +254,7 @@ namespace gpstk
       CommonTime getEpochTime() const
          throw( gpstk::InvalidRequest );
 
-         /// EXvtracts the transmit time from the ephemeris using the Tot
+         /// Extracts the transmit time from the ephemeris using the Tot
       CommonTime getTransmitTime() const
          throw();
 

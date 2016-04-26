@@ -52,6 +52,8 @@
 #define TUDEF(CLASS,METHOD) gpstk::TestUtil testFramework(CLASS, METHOD, __FILE__, __LINE__)
 // Macro to make test code look nice...
 #define TUCSM(METHOD) testFramework.changeSourceMethod(METHOD)
+// Macro to be short form of TestUtil::assert()
+#define TUASSERT(EXPR) testFramework.assert(EXPR, "Assertion failure: "#EXPR, __LINE__)
 // Basic macro for doing equality tests.  Expects a TestUtil instance
 // named testFramework.
 #define TUASSERTE(TYPE,EXP,GOT) testFramework.assert_equals<TYPE>(EXP,GOT,__LINE__)
@@ -62,6 +64,8 @@
 // specified epsilon.  Expects a TestUtil instance named
 // testFramework.
 #define TUASSERTFEPS(EXP,GOT,EPS) testFramework.assert_equals(EXP,GOT,__LINE__,"", EPS)
+// Macro for doing comparisons of test files
+#define TUCMPFILE(F1,F2,SKIP) testFramework.assert_files_equal(__LINE__, F1, F2, "File mismatch: "+F1+" "+F2, SKIP)
 // Fail the test with a message.
 #define TUFAIL(MSG) testFramework.assert(false, MSG, __LINE__)
 // Pass the test with a (unprinted) message.
@@ -91,15 +95,13 @@ namespace gpstk
       //          for use with test classes and test methods in GPSTk.
       // Example: Source usage for a test method with 4 sub-tests:
       //
-      //     TestUtil myTest( "SomeClass", "SomeMethod", "myTestFile", __LINE__ );
+      //     TUDEF("SomeClass", "SomeMethod");
       //
-      //     myTest.assert( 1==2 );
-      //     myTest.assert( 1==1 );
-      //     myTest.changeSourceMethod("SomeOtherMethod");
-      //
-      // Output: stdout from above myTest.print() calls would be:
-      //
-      //     TestOutput, SomeClass, SomeMethod, myTestFile, 13, 1, 1
+      //     TUASSERTE(unsigned, 1, 2);
+      //        which is equivalent to
+      //     testFramework.assert( 1==2 );
+      //     TUASSERTE(unsigned, 1, 1);
+      //     testFramework.changeSourceMethod("SomeOtherMethod");
       //
       //============================================================
    class TestUtil
@@ -127,7 +129,8 @@ namespace gpstk
          /** Takes a boolean expression, passes or fails the test,
           * depending on whether the assertion is true or false, and then
           * prints the result.
-          * @param[in] testExpression Boolean value that is expected to be true.
+          * @param[in] testExpression Boolean value that is expected
+          *   to be true.
           * @param[in] testMsg A message to be printed on failure.
           * @param[in] lineNumber The line of source in the test file
           *   where this assert is being performed, typically __LINE__.
