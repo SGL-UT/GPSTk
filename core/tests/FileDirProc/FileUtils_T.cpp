@@ -89,7 +89,7 @@ void FileUtils_T :: init()
 {
     TestUtil  tester;
 
-    tempFilePath = tester.getTempPath();
+    tempFilePath = gpstk::getPathTestTemp();
 
     testPrefix = "test_output_fileutils_";
 }

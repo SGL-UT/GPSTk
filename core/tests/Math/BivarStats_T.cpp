@@ -14,7 +14,7 @@ class BivarStats_T
 		// Then add another stat on top with weight. I will use the average to check
 		// that data was added and that the data added was correct.
 		{
-			TestUtil testFramework("BivarStats","Add()",__FILE__,__LINE__);
+                   gpstk::TestUtil testFramework("BivarStats","Add()",__FILE__,__LINE__);
 			std::string failMesg;
 
 			gpstk::BivarStats<double> test;
@@ -33,7 +33,7 @@ class BivarStats_T
 		int AverageXTest()
 		// Verify the X average calculation.
 		{
-			TestUtil testFramework("BivarStats","AverageX()",__FILE__,__LINE__);
+			gpstk::TestUtil testFramework("BivarStats","AverageX()",__FILE__,__LINE__);
 			std::string failMesg;
 
 			gpstk::BivarStats<double> test;
@@ -52,7 +52,7 @@ class BivarStats_T
 		int AverageYTest()
 		// Verify the Y average calculation.
 		{
-			TestUtil testFramework("BivarStats","AverageY()",__FILE__,__LINE__);
+			gpstk::TestUtil testFramework("BivarStats","AverageY()",__FILE__,__LINE__);
 			std::string failMesg;
 
 			gpstk::BivarStats<double> test;
@@ -71,7 +71,7 @@ class BivarStats_T
 		int MaxXTest()
 		// Verify the X maximum calculation.
 		{
-			TestUtil testFramework("BivarStats","MaximumX()",__FILE__,__LINE__);
+			gpstk::TestUtil testFramework("BivarStats","MaximumX()",__FILE__,__LINE__);
 			std::string failMesg;
 
 			gpstk::BivarStats<double> test;
@@ -90,7 +90,7 @@ class BivarStats_T
 		int MaxYTest()
 		// Verify the Y maximum calculation.
 		{
-			TestUtil testFramework("BivarStats","MaximumY()",__FILE__,__LINE__);
+			gpstk::TestUtil testFramework("BivarStats","MaximumY()",__FILE__,__LINE__);
 			std::string failMesg;
 
 			gpstk::BivarStats<double> test;
@@ -109,7 +109,7 @@ class BivarStats_T
 		int MinXTest()
 		// Verify the X minimum calculation.
 		{
-			TestUtil testFramework("BivarStats","MinimumX()",__FILE__,__LINE__);
+			gpstk::TestUtil testFramework("BivarStats","MinimumX()",__FILE__,__LINE__);
 			std::string failMesg;
 
 			gpstk::BivarStats<double> test;
@@ -128,7 +128,7 @@ class BivarStats_T
 		int MinYTest()
 		// Verify the Y minimum calculation.
 		{
-			TestUtil testFramework("BivarStats","MinimumY()",__FILE__,__LINE__);
+			gpstk::TestUtil testFramework("BivarStats","MinimumY()",__FILE__,__LINE__);
 			std::string failMesg;
 
 			gpstk::BivarStats<double> test;
@@ -147,7 +147,7 @@ class BivarStats_T
 		int VarianceXTest()
 		// Verify the X variance calculation.
 		{
-			TestUtil testFramework("BivarStats","VarianceX()",__FILE__,__LINE__);
+			gpstk::TestUtil testFramework("BivarStats","VarianceX()",__FILE__,__LINE__);
 			std::string failMesg;
 
 			gpstk::BivarStats<double> test;
@@ -166,7 +166,7 @@ class BivarStats_T
 		int VarianceYTest()
 		// Verify the Y variance calculation.
 		{
-			TestUtil testFramework("BivarStats","VarianceY()",__FILE__,__LINE__);
+			gpstk::TestUtil testFramework("BivarStats","VarianceY()",__FILE__,__LINE__);
 			std::string failMesg;
 
 			gpstk::BivarStats<double> test;
@@ -185,7 +185,7 @@ class BivarStats_T
 		int StdDevXTest()
 		// Verify the X Standard Deviation calculation.
 		{
-			TestUtil testFramework("BivarStats","StdDevX()",__FILE__,__LINE__);
+			gpstk::TestUtil testFramework("BivarStats","StdDevX()",__FILE__,__LINE__);
 			std::string failMesg;
 
 			gpstk::BivarStats<double> test;
@@ -203,7 +203,7 @@ class BivarStats_T
 		int StdDevYTest()
 		// Verify the Y Standard Deviation calculation.
 		{
-			TestUtil testFramework("BivarStats","StdDevY()",__FILE__,__LINE__);
+			gpstk::TestUtil testFramework("BivarStats","StdDevY()",__FILE__,__LINE__);
 			std::string failMesg;
 
 			gpstk::BivarStats<double> test;
@@ -222,7 +222,7 @@ class BivarStats_T
 		int SlopeTest()
 		// Verify the Slope calculation.
 		{
-			TestUtil testFramework("BivarStats","Slope()",__FILE__,__LINE__);
+			gpstk::TestUtil testFramework("BivarStats","Slope()",__FILE__,__LINE__);
 			std::string failMesg;
 
 			gpstk::BivarStats<double> test;
@@ -241,7 +241,7 @@ class BivarStats_T
 		int InterceptTest()
 		// Verify the Intercept calculation.
 		{
-			TestUtil testFramework("BivarStats","Intercept()",__FILE__,__LINE__);
+			gpstk::TestUtil testFramework("BivarStats","Intercept()",__FILE__,__LINE__);
 			std::string failMesg;
 
 			gpstk::BivarStats<double> test;
@@ -260,7 +260,7 @@ class BivarStats_T
 		int SlopeUncertaintyTest()
 		// Verify the Slope Uncertainty calculation.
 		{
-			TestUtil testFramework("BivarStats","SlopeUncertainty()",__FILE__,__LINE__);
+			gpstk::TestUtil testFramework("BivarStats","SlopeUncertainty()",__FILE__,__LINE__);
 			std::string failMesg;
 
 			gpstk::BivarStats<double> test;
@@ -279,7 +279,7 @@ class BivarStats_T
 		int ConditionalUncertaintyTest()
 		// Verify the Conditional Uncertainty calculation.
 		{
-			TestUtil testFramework("BivarStats","ConditionalUncertaintyTest()",__FILE__,__LINE__);
+			gpstk::TestUtil testFramework("BivarStats","ConditionalUncertaintyTest()",__FILE__,__LINE__);
 			std::string failMesg;
 
 			gpstk::BivarStats<double> test;
@@ -298,7 +298,7 @@ class BivarStats_T
 		int CorrelationTest()
 		// Verify the Correlation calculation.
 		{
-			TestUtil testFramework("BivarStats","Correlation()",__FILE__,__LINE__);
+			gpstk::TestUtil testFramework("BivarStats","Correlation()",__FILE__,__LINE__);
 			std::string failMesg;
 
 			gpstk::BivarStats<double> test;

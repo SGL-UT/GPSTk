@@ -217,21 +217,33 @@ fi
 args+=${install_prefix:+" -DCMAKE_INSTALL_PREFIX=$install_prefix"}
 args+=${build_ext:+" -DBUILD_EXT=ON"}
 args+=${verbose:+" -DDEBUG_SWITCH=ON"}
-args+=${verbose:-" -Wno-dev"}
 args+=${test_switch:+" -DTEST_SWITCH=ON"}
 args+=${build_docs:+" --graphviz=$build_root/doc/graphviz/gpstk_graphviz.dot"}
 
-run cmake $args $repo
+case `uname` in
+    MINGW32_NT-6.1)
+        run cmake $args -G "Visual Studio 14 2015 Win64" $repo
+        run cmake --build . --config Release
+        ;;
+    *)
+        run cmake $args $repo 
+        run make all -j $num_threads
+esac
 
-run make all -j $num_threads
 
 if [ $test_switch ]; then
-    if ((test_switch < 0)); then
-        ignore_failures=1
-    fi
-    run ctest -v -j $num_threads
-    test_status=$?
-    unset ignore_failures
+  if ((test_switch < 0)); then
+      ignore_failures=1
+  fi
+  case `uname` in
+      MINGW32_NT-6.1)    
+          run cmake --build . --target RUN_TESTS --config Release
+          ;;
+      *)
+          run ctest -v -j $num_threads
+          test_status=$?
+  esac              
+  unset ignore_failures
 fi
 
 if [ $install ]; then
@@ -254,9 +266,14 @@ if [ $build_docs ]; then
 fi
 
 if [ $build_packages ]; then
-    run make package
-    run make package_source
-    
+    case `uname` in
+        MINGW32_NT-6.1)
+            run cpack -C Release
+            ;;
+        *)
+            run make package
+            run make package_source
+    esac   
     if [[ -z $exclude_python && $build_ext ]] ; then
         cd "$build_root"/swig/install_package
         ${python_exe} setup.py sdist --formats=zip,gztar

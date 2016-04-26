@@ -183,19 +183,20 @@ namespace gpstk
       double sod;
    };
 
-      // -----------YDSTime operator<< -----------
-      //
-      /**
-       * Stream output for YDSTime objects.  Typically used for debugging.
-       * @param s stream to append formatted YDSTime to.
-       * @param yt YDSTime to append to stream \c s.
-       * @return reference to \c s.
-       */
-   std::ostream& operator<<( std::ostream& s,
-                             const gpstk::YDSTime& yt );
 
       //@}
 
 } // namespace
+
+   // -----------YDSTime operator<< -----------
+   //
+   /**
+    * Stream output for YDSTime objects.  Typically used for debugging.
+    * @param s stream to append formatted YDSTime to.
+    * @param yt YDSTime to append to stream \c s.
+    * @return reference to \c s.
+    */
+std::ostream& operator<<( std::ostream& s,
+                          const gpstk::YDSTime& yt );
 
 #endif // GPSTK_YDSTIME_HPP

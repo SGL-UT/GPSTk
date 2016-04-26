@@ -92,8 +92,8 @@ void RinexClock_T ::
 init()
 {
    TestUtil test0;
-   std::string iPath = test0.getDataPath() + getFileSep();
-   std::string oPath = test0.getTempPath() + getFileSep();
+   std::string iPath = gpstk::getPathData() + getFileSep();
+   std::string oPath = gpstk::getPathTestTemp() + getFileSep();
 
    dataRinexClockFile     = iPath +
       "test_input_rinex2_clock_RinexClockExample.96c";

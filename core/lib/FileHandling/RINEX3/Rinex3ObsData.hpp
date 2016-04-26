@@ -66,8 +66,7 @@ namespace gpstk
    public:
 
          /// Constructor.
-      Rinex3ObsData() : time(gpstk::CommonTime::BEGINNING_OF_TIME)
-         {}
+      Rinex3ObsData();
 
          /// Destructor
       virtual ~Rinex3ObsData() {}

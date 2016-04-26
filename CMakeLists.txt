@@ -19,10 +19,6 @@ set( GPSTK_TEST_DATA_DIR ${PROJECT_SOURCE_DIR}/data )
 # Test output directory
 set( GPSTK_TEST_OUTPUT_DIR ${PROJECT_BINARY_DIR}/Testing/Temporary )
 
-#============================================================
-# Set up
-#============================================================
-
 # This sets up variables contining GNU standard installation locations.
 include( GNUInstallDirs )
 
@@ -32,9 +28,6 @@ set( CMAKE_INSTALL_LIBDIR lib )
 # Set a filename for collecting exported targets.
 set( EXPORT_TARGETS_FILENAME "GPSTKTargets" )
 
-#----------------------------------------
-# Option Switches
-#----------------------------------------
 
 option( DEBUG_SWITCH "HELP: DEBUG_SWITCH: Default = OFF, print some CMake variable values to stdout." OFF )
 option( DEBUG_VERBOSE "HELP: DEBUG_VERBOSE: Default = OFF, print all CMake variable values." OFF )
@@ -47,10 +40,6 @@ if( BUILD_PYTHON AND !BUILD_EXT )
     message( WARNING "Setting BUILD_EXT = TRUE" )
     set( BUILD_EXT TRUE )
 endif()
-
-#----------------------------------------
-# Pull in Build Config
-#----------------------------------------
 
 include( BuildSetup.cmake )
 
@@ -147,7 +136,6 @@ install( FILES ${GPSTK_INC_FILES} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}" )
 
 if( TEST_SWITCH )
   enable_testing()
-#  include( CTest )
 endif( )
 
 #----------------------------------------
@@ -160,7 +148,6 @@ if( BUILD_EXT )
    add_subdirectory( ext )
    add_subdirectory( examples )
    if( BUILD_PYTHON )
-       include( PythonSetup.cmake )
        add_subdirectory( swig )
    endif()
 endif()

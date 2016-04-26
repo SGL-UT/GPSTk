@@ -131,8 +131,8 @@ void Rinex3Nav_T :: init( void )
 {
 
    TestUtil test0;
-   dataFilePath = test0.getDataPath();
-   tempFilePath = test0.getTempPath();
+   dataFilePath = gpstk::getPathData();
+   tempFilePath = gpstk::getPathTestTemp();
 
       //----------------------------------------
       // Full file paths

@@ -197,20 +197,19 @@ namespace gpstk
       double second;
 
    };
-
-      // -----------CivilTime operator<< -----------
-      //
-      /**
-       * Stream output for CivilTime objects.  Typically used for debugging.
-       * @param s stream to append formatted CivilTime to.
-       * @param cit CivilTime to append to stream \c s.
-       * @return reference to \c s.
-       */
-   std::ostream& operator<<( std::ostream& s,
-                             const gpstk::CivilTime& cit );
-
       //@}
 
 } // namespace
+
+   // -----------CivilTime operator<< -----------
+   //
+   /**
+    * Stream output for CivilTime objects.  Typically used for debugging.
+    * @param s stream to append formatted CivilTime to.
+    * @param cit CivilTime to append to stream \c s.
+    * @return reference to \c s.
+    */
+std::ostream& operator<<( std::ostream& s,
+                          const gpstk::CivilTime& cit );
 
 #endif // GPSTK_CIVILTIME_HPP

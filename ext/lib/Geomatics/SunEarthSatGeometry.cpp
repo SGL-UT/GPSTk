@@ -357,6 +357,45 @@ Matrix<double> SatelliteAttitude(const CommonTime& tt, const Position& SV,
 }
 
 // -----------------------------------------------------------------------------------
+// Compute orbit-normal attitude
+Matrix<double> OrbitNormalAttitude(const Position& P, const Position& V)
+   throw(Exception)
+{
+   try {
+      int i;
+      double svrange, angmom;
+      Position X,Y,Z;
+      Matrix<double> R(3,3);
+
+      // Z points from satellite to Earth center - along the antenna boresight
+      svrange = P.mag();
+      Z = P*(-1.0/svrange); // reverse and normalize Z
+      Z.transformTo(Position::Cartesian);
+
+      // Y points opposite the angular momentum vector
+      Y = P.cross(V);
+      angmom = Y.mag();
+      Y = Y*(-1.0/angmom); // reverse and normalize Y
+      Y.transformTo(Position::Cartesian);
+
+      // X completes the right-handed system
+      X = Y.cross(Z);
+
+      // fill the matrix and return it
+      for(i=0; i<3; i++) {
+         R(0,i) = X[i];
+         R(1,i) = Y[i];
+         R(2,i) = Z[i];
+      }
+
+      return R;
+   }
+   catch(Exception& e) { GPSTK_RETHROW(e); }
+   catch(std::exception& e) {Exception E("std except: "+string(e.what())); GPSTK_THROW(E);}
+   catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+}
+
+// -----------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
 // Compute the azimuth and nadir angle, in the satellite body frame,
 // of receiver Position RX as seen at the satellite Position SV. The nadir angle
