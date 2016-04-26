@@ -153,12 +153,12 @@ namespace gpstk
       try
       {
          std::getline(*this, line);
-         //std::cout << "line.size():" << line.size() << std::endl;
-         //if (line.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890_ .-+") != std::string::npos)
-         // {
-         //   FFStreamError err("Non text data encountered");
-         //   GPSTK_THROW(err);
-         // }
+         for (int i=0; i<line.length(); i++)
+            if (!isprint(line[i]))
+               {
+                  FFStreamError err("Non-text data in file.");
+                  GPSTK_THROW(err);
+               }
             
          lineNumber++;
          if(fail() && !eof())
@@ -166,7 +166,6 @@ namespace gpstk
             FFStreamError err("Line too long");
             GPSTK_THROW(err);
          }
-         gpstk::StringUtils::stripTrailing(line, '\r');
             // catch EOF when stream exceptions are disabled
          if ((line.size() == 0) && eof())
          {
