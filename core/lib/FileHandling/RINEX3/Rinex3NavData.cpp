@@ -61,8 +61,8 @@ namespace gpstk
       satSys = "G";
       PRNID = rnd.PRNID;
       sat = RinexSatID(PRNID,SatID::systemGPS);
-      HOWtime = rnd.HOWtime;
-      weeknum = rnd.weeknum;
+      HOWtime = rnd.getHOWWS().sow;
+      weeknum = rnd.getHOWWS().week;
       accuracy = rnd.accuracy;
       health = rnd.health;
 
@@ -73,7 +73,7 @@ namespace gpstk
       IODE = rnd.IODE;
 
       // clock
-      Toc = rnd.Toc;
+      Toc = rnd.getTocWS().sow;
       af0 = rnd.af0;
       af1 = rnd.af1;
       af2 = rnd.af2;

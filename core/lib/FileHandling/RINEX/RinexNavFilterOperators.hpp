@@ -65,13 +65,9 @@ namespace gpstk
       bool operator()(const gpstk::RinexNavData& l,
                       const gpstk::RinexNavData& r) const
       {
-         gpstk::GPSWeekSecond lXmitTime(l.weeknum, (double)l.HOWtime);
-         gpstk::GPSWeekSecond rXmitTime(r.weeknum, (double)r.HOWtime);
-
-
-         if (lXmitTime < rXmitTime)
+         if (l.getXmitTime() < r.getXmitTime())
             return true;
-         else if (lXmitTime == rXmitTime)
+         else if (l.getXmitTime() == r.getXmitTime())
          {
                // compare the times and all data members
             if (l.time < r.time)
@@ -149,10 +145,7 @@ namespace gpstk
       bool operator()(const gpstk::RinexNavData& l,
                       const gpstk::RinexNavData& r) const
       {
-         gpstk::GPSWeekSecond lXmitTime(l.weeknum, (double)l.HOWtime);
-         gpstk::GPSWeekSecond rXmitTime(r.weeknum, (double)r.HOWtime);
-
-         if (lXmitTime < rXmitTime)
+         if (l.getXmitTime() < r.getXmitTime())
             return true;
          return false;
       }
