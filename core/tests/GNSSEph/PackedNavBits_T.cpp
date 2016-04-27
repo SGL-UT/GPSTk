@@ -690,7 +690,6 @@ equalityTest()
    TUASSERTE(bool,  true, leftSmall<longer);
    TUASSERTE(bool, false, longer<leftSmall);
 
-
    TURETURN();
 }
 
