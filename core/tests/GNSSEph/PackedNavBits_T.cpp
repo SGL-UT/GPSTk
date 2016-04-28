@@ -173,23 +173,23 @@ abstractTest()
    double d_i1 = 0.490005493;
    int d_n1    = 16;
    int d_s1    = -16;
-   double d_e1 = pow(2,d_s1);   // value of lsb
+   double d_e1 = pow(2.0,d_s1);   // value of lsb
 
    double d_i2 = -0.5;
    int d_n2    = 16;
    int d_s2    = -16;
-   double d_e2 = pow(2,d_s2);   // value of lsb
+   double d_e2 = pow(2.0,d_s2);   // value of lsb
 
    double d_i3 = 0;
    int d_n3    = 16;
    int d_s3    = -16;
-   double d_e3 = pow(2,d_s3);   // value of lsb
+   double d_e3 = pow(2.0,d_s3);   // value of lsb
 
    // Test Unsigned Doubles
    double d_i4 = 32000.0;
    int d_n4    = 16;
    int d_s4    = 0;
-   double d_e4 = pow(2,d_s4);   // value of lsb
+   double d_e4 = pow(2.0,d_s4);   // value of lsb
 
    pnb.addSignedDouble(d_i1, d_n1, d_s1);
    pnb.addSignedDouble(d_i2, d_n2, d_s2);
@@ -212,15 +212,15 @@ abstractTest()
 
    // Test Semi-Circles
    TUCSM("addSemiCircles");
-   double sd_i1 = PI-2*pow(2,-31);
+   double sd_i1 = PI-2*pow(2.0,-31);
    int sd_n1    = 32;
    int sd_s1    = -31;
-   double sd_e1 = pow(2,sd_s1) * 3.0;   // value of lsb in semi-circles
+   double sd_e1 = pow(2.0,sd_s1) * 3.0;   // value of lsb in semi-circles
 
    double sd_i2 = -PI;
    int sd_n2    = 32;
    int sd_s2    = -31;
-   double sd_e2 = pow(2,sd_s1) * 3.0;   // value of lsb
+   double sd_e2 = pow(2.0,sd_s1) * 3.0;   // value of lsb
 
    pnb.addDoubleSemiCircles(sd_i1, sd_n1, sd_s1);
    pnb.addDoubleSemiCircles(sd_i2, sd_n2, sd_s2); 
@@ -384,7 +384,7 @@ realDataTest()
    double eps;     // value of lsb
 
    dtest = pnb.asSignedDouble(startbit, n_rTgd, s_rTgd);
-   eps = pow(2,s_rTgd);
+   eps = pow(2.0,s_rTgd);
    TUASSERTFEPS(dtest,rTgd,eps);
 
    startbit += n_rTgd;
@@ -393,22 +393,22 @@ realDataTest()
 
    startbit += n_riodc;
    dtest = pnb.asUnsignedDouble(startbit, n_rToc, s_rToc);
-   eps = pow(2,s_rToc);
+   eps = pow(2.0,s_rToc);
    TUASSERTFEPS(dtest,rToc,eps);
 
    startbit += n_rToc;
    dtest = pnb.asSignedDouble(startbit, n_raf2, s_raf2);
-   eps = pow(2,s_raf2);
+   eps = pow(2.0,s_raf2);
    TUASSERTFEPS(dtest,raf2,eps);
 
    startbit += n_raf2;
    dtest = pnb.asSignedDouble(startbit, n_raf1, s_raf1);
-   eps = pow(2,s_raf1);
+   eps = pow(2.0,s_raf1);
    TUASSERTFEPS(dtest,raf1,eps);
 
    startbit += n_raf1;
    dtest = pnb.asSignedDouble(startbit, n_raf0, s_raf0);
-   eps = pow(2,s_raf0);
+   eps = pow(2.0,s_raf0);
    TUASSERTFEPS(dtest,raf0,eps);
 
    startbit += n_raf0;
@@ -417,42 +417,42 @@ realDataTest()
 
    startbit += n_riode;
    dtest = pnb.asSignedDouble(startbit, n_rCrs, s_rCrs);
-   eps = pow(2,s_rCrs);
+   eps = pow(2.0,s_rCrs);
    TUASSERTFEPS(dtest,rCrs,eps);
 
    startbit += n_rCrs;
    dtest = pnb.asDoubleSemiCircles(startbit, n_rdn, s_rdn);
-   eps = pow(2,s_rdn) * 3.0;
+   eps = pow(2.0,s_rdn) * 3.0;
    TUASSERTFEPS(dtest,rdn,eps);
 
    startbit += n_rdn;
    dtest = pnb.asDoubleSemiCircles(startbit, n_rM0, s_rM0);
-   eps = pow(2,s_rM0) * 3.0;
+   eps = pow(2.0,s_rM0) * 3.0;
    TUASSERTFEPS(dtest,rM0,eps);
 
    startbit += n_rM0;
    dtest = pnb.asSignedDouble(startbit, n_rCuc, s_rCuc);
-   eps = pow(2,s_rCuc);
+   eps = pow(2.0,s_rCuc);
    TUASSERTFEPS(dtest,rCuc,eps);
 
    startbit += n_rCuc;
    dtest = pnb.asUnsignedDouble(startbit, n_recc, s_recc);
-   eps = pow(2,s_recc);
+   eps = pow(2.0,s_recc);
    TUASSERTFEPS(dtest,recc,eps);
 
    startbit += n_recc;
    dtest = pnb.asSignedDouble(startbit, n_rCus, s_rCus);
-   eps = pow(2,s_rCus);
+   eps = pow(2.0,s_rCus);
    TUASSERTFEPS(dtest,rCus,eps);
 
    startbit += n_rCus;
    dtest = pnb.asUnsignedDouble(startbit, n_rAhalf, s_rAhalf);
-   eps = pow(2,s_rAhalf);
+   eps = pow(2.0,s_rAhalf);
    TUASSERTFEPS(dtest,rAhalf,eps);
 
    startbit += n_rAhalf;
    dtest = pnb.asUnsignedDouble(startbit, n_rToe, s_rToe);
-   eps = pow(2,s_rToe);
+   eps = pow(2.0,s_rToe);
    TUASSERTFEPS(dtest,rToe,eps);
 
    startbit += n_rToe;
@@ -465,47 +465,47 @@ realDataTest()
 
    startbit += n_raodo;
    dtest = pnb.asSignedDouble(startbit, n_rCic, s_rCic);
-   eps = pow(2,s_rCic);
+   eps = pow(2.0,s_rCic);
    TUASSERTFEPS(dtest,rCic,eps);
 
    startbit += n_rCic;
    dtest = pnb.asDoubleSemiCircles(startbit, n_rOMEGA0, s_rOMEGA0);
-   eps = pow(2,s_rOMEGA0) * 3.0;
+   eps = pow(2.0,s_rOMEGA0) * 3.0;
    TUASSERTFEPS(dtest,rOMEGA0,eps);
 
    startbit += n_rOMEGA0;
    dtest = pnb.asSignedDouble(startbit, n_rCis, s_rCis);
-   eps = pow(2,s_rCis);
+   eps = pow(2.0,s_rCis);
    TUASSERTFEPS(dtest,rCis,eps);
 
    startbit += n_rCis;
    dtest = pnb.asDoubleSemiCircles(startbit, n_ri0, s_ri0);
-   eps = pow(2,s_ri0) * 3.0;
+   eps = pow(2.0,s_ri0) * 3.0;
    TUASSERTFEPS(dtest,ri0,eps);
 
    startbit += n_ri0;
    dtest = pnb.asSignedDouble(startbit, n_rCrc, s_rCrc);
-   eps = pow(2,s_rCrc);
+   eps = pow(2.0,s_rCrc);
    TUASSERTFEPS(dtest,rCrc,eps);
 
    startbit += n_rCrc;
    dtest = pnb.asDoubleSemiCircles(startbit, n_rw, s_rw);
-   eps = pow(2,s_rw) * 3.0;
+   eps = pow(2.0,s_rw) * 3.0;
    TUASSERTFEPS(dtest,rw,eps);
 
    startbit += n_rw;
    dtest = pnb.asDoubleSemiCircles(startbit, n_rOMEGAdot, s_rOMEGAdot);
-   eps = pow(2,s_rOMEGAdot) * 3.0;
+   eps = pow(2.0,s_rOMEGAdot) * 3.0;
    TUASSERTFEPS(dtest,rOMEGAdot,eps);
 
    startbit += n_rOMEGAdot;
    dtest = pnb.asUnsignedLong(startbit, n_riode, s_riode);
-   eps = pow(2,s_riode);
+   eps = pow(2.0,s_riode);
    TUASSERTFEPS(dtest,riode,eps);
 
    startbit += n_riode;
    dtest = pnb.asDoubleSemiCircles(startbit, n_ridot, s_ridot);
-   eps = pow(2,s_ridot) * 3.0;
+   eps = pow(2.0,s_ridot) * 3.0;
    TUASSERTFEPS(dtest,ridot,eps);
 
    return testFramework.countFails();
