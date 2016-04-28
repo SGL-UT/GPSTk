@@ -24,14 +24,14 @@ build_solaris:
   tags:
     - solaris
   script:
-    - ./build.sh -ev
+    - ./build.sh -evx
 
 test_solaris:
   stage: test
   tags:
     - solaris
   script:
-    - ./build.sh -evt
+    - ./build.sh -evxt
 
 build_redhat:
   stage: build
