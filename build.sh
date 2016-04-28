@@ -76,12 +76,6 @@ OPTIONS:
    -p                   Build supported packages (source, binary, deb,  ...)
 
    -v                   Include debugging output.
-
-Notes:
-   Remember to add user and non-standard locations to your environment. Eg:
-     $ export LD_LIBRARY_PATH=/tmp/test/gpstk/lib:\$LD_LIBRARY_PATH
-     $ export PYTHONPATH=/tmp/test/lib/python2.7/site-packages:\$PYTHONPATH
-
 EOF
 }
 
