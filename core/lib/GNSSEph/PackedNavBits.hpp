@@ -246,6 +246,32 @@ namespace gpstk
 		     	     const char delimiter = ' ',
                const short numBitsPerWord=32 ) const;
 
+         /* 
+          * The equality operator insists that ALL the metadata
+          * and the complete bit patterns must match.   
+          * However, there are frequently occaisions when only 
+          * a subset of the metadata need be checked, and sometimes
+          * only certain set of bits.  Therefore, operator==( ) is
+          * supplemented by matchBits( ) and matchMetaData( )
+          */
+      bool operator==(const PackedNavBits& right) const;
+
+         /*
+          * There are frequently cases in which we want to know
+          * if a pair of PackedNavBits objects are from the same
+          * SV, but we might want to allow for different receivers
+          * and/or different ObsIDs.  Therefore, matchMetaData( )
+          * allows specification of the particular metadata items
+          * that are to be checked using a bit-flag system.
+          */ 
+      static const unsigned int mmTIME = 0x0001;  // Check transmitTime
+      static const unsigned int mmSAT  = 0x0002;  // Check SatID
+      static const unsigned int mmOBS  = 0x0004;  // Check ObsID
+      static const unsigned int mmRX   = 0x0008;  // Check Receiver ID
+      static const unsigned int mmALL  = 0xFFFF;  // Check ALL metadata
+      static const unsigned int mmNONE = 0x0000;  // NO metadata checks
+      bool matchMetaData(const PackedNavBits& right,
+                         const unsigned flagBits=mmALL) const;
          /*
           * Return true if all bits between start and end are identical
           * between this object and right.  Default is to compare all
@@ -255,8 +281,56 @@ namespace gpstk
           * nav messages while avoiding the time tags.
           */
       bool matchBits(const PackedNavBits& right, 
-                     short startBit=0, short endBit=-1, bool checkOverhead=true) const;
-      
+                     const short startBit=0, 
+                     const short endBit=-1) const;
+
+          /*
+           *  This is the most flexible of the matching methods.
+           *  A default of match(right) will yield the same 
+           *  result as operator==( ).
+           *  However, the arguments provide the means to 
+           *  specifically check bits sequences and/or
+           *  selectively check the metadata. 
+           */
+      bool match(const PackedNavBits& right, 
+                 const short startBit=0, 
+                 const short endBit=-1,
+                 const unsigned flagBits=mmALL) const;
+          /*
+          * This version was the original equality checker.  As
+          * first implemented, it checks ONLY SAT and OBS for
+          * equality.  Therefore, it is maintained with that
+          * default functionality.  That is to say, when 
+          * checkOverhead==true, the result is the same as a call
+          * to matchBits(right,startBit,endBit, (mmSAT|mmOBS)).
+          *
+          * For clarity, it is suggested that new code use
+          *  operator==(),
+          *  matchMetaData(), and/or 
+          *  matchBits( ) using explicit flags. 
+          *
+          * This version was REMOVED because of ambiguity
+          * in the signature. 
+          *
+          * The checkOverhead option allows the user to ignore
+          * the associated metadata.  E.g. ObsID, SatID. 
+          *
+      bool matchBits(const PackedNavBits& right, 
+                     const short startBit=0, 
+                     const short endBit=-1, 
+                     const bool checkOverhead) const;
+          */
+
+         /** 
+          * The less than operator is defined in order to support use
+          *   with the NavFilter classes.  The idea is to provide a
+          *   "sort" for bits contained in the class.  Matching strings
+          *   will fail both  a < b and b < a; however, in the process
+          *   all matching strings can be sorted into sets and the 
+          *   "winner" determined. 
+          */
+      bool operator<(const PackedNavBits& right) const; 
+
          /* Resize the vector holding the packed data. */
       void trimsize();
 
