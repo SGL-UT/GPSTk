@@ -25,13 +25,10 @@ set( CMAKE_SWIG_FLAGS "-w362,383,384,389,503" )
 # Compiler flags that are used only
 # in the compiling of the swig bindings
 #----------------------------------------
-set( CMAKE_CXX_FLAGS "-std=c++11" )
+set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11" )
 if( ${CMAKE_SYSTEM_NAME} MATCHES "SunOS" )
 elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w" )
-    if ( ${CMAKE_BUILD_TYPE} MATCHES "debug" )
-        set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address" )
-    endif()
 elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" )
 elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
 endif()

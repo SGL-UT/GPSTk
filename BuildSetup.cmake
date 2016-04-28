@@ -21,19 +21,28 @@ if( ${CMAKE_SYSTEM_NAME} MATCHES "SunOS" )
     # add -DCMAKE_CXX_FLAGS=-std=c++03 or =-std=c++11 on the CMAKE invocation
     set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -mt -shared" )
 elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
-    if ( ${CMAKE_BUILD_TYPE} MATCHES "debug" )
-        set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address" )
-    endif()
     set( CMAKE_SHARED_LIBRARY_SUFFIX .dylib )
     set( CMAKE_INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib" )
     set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -shared" )
 elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" )
-    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2" )
+    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" )
     set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -shared" )
 elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
 
 else()
     message( ERROR "CMAKE_SYSTEM_NAME = ${CMAKE_SYSTEM_NAME}, not supported. Currently supported: Linux, Darwin, SunOS, Windows" )
+endif()
+
+#----------------------------------------
+# When doing a debug build, enable the
+# address sanitizer. This has a 2x slowdown
+# but is adept at catching various memory problems.
+#----------------------------------------
+if( (${CMAKE_BUILD_TYPE} MATCHES "debug"))
+    if (${CMAKE_CXX_COMPILER} MATCHES "clang" OR ((${CMAKE_CXX_COMPILER_VERSION} VERSION_GREATER "4.9.0" ) AND CMAKE_COMPILER_IS_GNUCXX))
+        message(STATUS "Enabling address sanitizer for debug build")
+        set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -fsanitize=address -fno-omit-frame-pointer" )
+    endif()
 endif()
 
 #----------------------------------------
