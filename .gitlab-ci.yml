@@ -38,28 +38,28 @@ build_redhat:
   tags:
     - redhat
   script:
-    - ./build.sh -ev
+    - ./build.sh -ev -b ./build-gpstk-redhat
 
 test_redhat:
   stage: test
   tags:
     - redhat
   script:
-    - ./build.sh -evt
+    - ./build.sh -evt -b ./test-gpstk-redhat
 
 build_osx:
   stage: build
   tags:
     - osx
   script:
-    - ./build.sh -ev
+    - ./build.sh -ev -b ./build-gpstk-osx
 
 test_osx:
   stage: test
   tags:
     - osx
   script:
-    - ./build.sh -evt
+    - ./build.sh -evt -b ./test-gpstk-osx
 
 build_windows:
   stage: build
