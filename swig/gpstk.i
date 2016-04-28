@@ -42,7 +42,7 @@ using namespace gpstk;
 %rename(__str__) gpstk::Exception::what() const;
 %include "Exception.hpp"
 %include "FFStreamError.hpp"
-%include "Exception.i"
+%include "GPSTkException.i"
 
 
 // =============================================================
@@ -308,6 +308,10 @@ namespace std { class fstream {}; }
 %include "SunPosition.hpp"
 %include "PoleTides.hpp"
 %include "SolidTides.hpp"
+
+// Geomatics:
+%include "Geomatics.i"
+%include "SunEarthSatGeometry.hpp"
 
 // Encapsulation of many the __str__, __getitem__, etc. functions to avoid clutter.
 // When the only change to a class is adding a simple wrapper, add to pythonfunctions

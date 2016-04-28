@@ -34,16 +34,14 @@
 //
 //=============================================================================
 
-/**
- * @file DiscCorr.cpp
- * GPS phase discontinuity correction. Given a SatPass object
- * containing dual-frequency pseudorange and phase for an entire satellite pass,
- * and a configuration object (as defined herein), detect discontinuities in
- * the phase and, if possible, estimate their size.
- * Output is in the form of Rinex editing commands (see class RinexEditor).
- */
+/// @file DiscCorr.cpp GPS phase discontinuity correction. Given a SatPass object
+/// containing dual-frequency pseudorange and phase for an entire satellite pass,
+/// and a configuration object (as defined herein), detect discontinuities in
+/// the phase and, if possible, estimate their size.
+/// Output is in the form of Rinex editing commands (see class RinexEditor).
 
 //------------------------------------------------------------------------------------
+// system
 #include <string>
 #include <iostream>
 #include <sstream>
@@ -51,15 +49,13 @@
 #include <deque>
 #include <list>
 #include <algorithm>
-
+// gpstk
 #include "StringUtils.hpp"
 #include "Stats.hpp"
 #include "PolyFit.hpp"
-#include "GNSSconstants.hpp"    // PI,C_MPS,OSC_FREQ_GPS,L1_MULT,L2_MULT
+#include "GNSSconstants.hpp"    // PI,C_MPS,OSC_FREQ_GPS,L1_MULT_GPS,L2_MULT_GPS
 #include "RobustStats.hpp"
-#include "SystemTime.hpp"
-#include "CivilTime.hpp"
-
+// geomatics
 #include "DiscCorr.hpp"
 
 using namespace std;
@@ -70,7 +66,7 @@ using namespace StringUtils;
 // class GDCconfiguration
 //------------------------------------------------------------------------------------
 // class GDCconfiguration: string giving version of gpstk Discontinuity Corrector
-string GDCconfiguration::GDCVersion = string("5.3 7/14/2008");
+const string GDCconfiguration::GDCVersion = string("6.3 12/15/2015");
 
 // class GDCconfiguration: member functions
 //------------------------------------------------------------------------------------
@@ -98,7 +94,9 @@ try {
    setParameter(label, asDouble(value));
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) {
+   Exception E("std except: "+string(e.what())); GPSTK_THROW(E);
+}
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -118,7 +116,9 @@ try {
    }
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) {
+   Exception E("std except: "+string(e.what())); GPSTK_THROW(E);
+}
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -131,14 +131,14 @@ void GDCconfiguration::DisplayParameterUsage(ostream& os, bool advanced)
 try {
    os << "GPSTk Discontinuity Corrector (GDC) v." << GDCVersion
       << " configuration:"
-      //<< "  [ pass setParameter() a string '<label><sep><value>';"
+      //<< "\n  [ pass setParameter() a string '<label><sep><value>';"
       //<< " <sep> is one of ,=: ]"
       << endl;
 
    map<string,double>::const_iterator it;
    for(it=CFG.begin(); it != CFG.end(); it++) {
       if(CFGdescription[it->first][0] == '*')      // advanced options
-         continue;
+         continue;  
       ostringstream stst;
       stst << it->first                            // label
          << "=" << it->second;                     // value
@@ -147,10 +147,10 @@ try {
          << endl;
    }
    if(advanced) {
-      os << "   Advanced options:" << endl;
+   os << "   Advanced options:\n";
    for(it=CFG.begin(); it != CFG.end(); it++) {
       if(CFGdescription[it->first][0] != '*')      // ordinary options
-         continue;
+         continue;  
       ostringstream stst;
       stst << it->first                            // label
          << "=" << it->second;                     // value
@@ -161,7 +161,9 @@ try {
    }
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) {
+   Exception E("std except: "+string(e.what())); GPSTK_THROW(E);
+}
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -174,10 +176,14 @@ void GDCconfiguration::initialize(void)
 try {
    p_oflog = &cout;
 
+   // bookkeeping
+   setcfg(ResetUnique, 0, "if non-zero, reset the unique number to zero");
+
    // use cfg(DT) NOT dt -  dt is part of SatPass...
    setcfg(DT, -1, "nominal timestep of data (seconds) [required - no default!]");
-   setcfg(Debug, 0, "level of diagnostic output to log, from none(0) to extreme(7)");
-   setcfg(useCA, 0, "use C/A code pseudorange (C1) ()");
+   setcfg(Debug, 0, "level of diagnostic output to log, from 0(none) to 7(extreme)");
+   setcfg(useCA1, 0, "use L1 C/A code pseudorange (C1) ()");
+   setcfg(useCA2, 0, "use L2 C/A code pseudorange (C2) ()");
    setcfg(MaxGap, 180, "maximum allowed time gap within a segment (seconds)");
    setcfg(MinPts, 13, "minimum number of good points in phase segment ()");
    setcfg(WLSigma, 1.5, "expected WL sigma (WL cycle) [NB = ~0.83*p-range noise(m)]");
@@ -185,18 +191,17 @@ try {
       "expected maximum variation in GF phase in time DT (meters)");
    // output
    setcfg(OutputGPSTime, 0,
-      "if 0: Y,M,D,H,M,S  else: W,SoW (GPS) in editing commands");
+      "if 0, output Y,M,D,H,M,S else: W,SoW in edit cmds (log uses SatPass fmt)");
    setcfg(OutputDeletes, 1,
       "if non-zero, include delete commands in the output cmd list");
 
    // -------------------------------------------------------------------------
-   // advanced options - ordinary user will most likely NOT change
+   // advanced options - marked with * - ordinary user will most likely NOT change
    setcfg(RawBiasLimit, 100, "* change in raw R-Ph that triggers bias reset (m)");
    // WL editing
    setcfg(WLNSigmaDelete, 2, "* delete segments with sig(WL) > this * WLSigma ()");
-   // 040809 increased 10->20: ~colored variation was so large test >~ limit
-   // 050109 change 20->10+50/dt; implement in preprocess()
-   setcfg(WLWindowWidth, 50, "* sliding window width for WL slip detection = 10+this/dt) (points)");
+   setcfg(WLWindowWidth, 50,
+      "* sliding window width for WL slip detection = 10+this/dt) (points)");
    setcfg(WLNWindows, 2.5,
       "* minimum segment size for WL small slip search (WLWindowWidth)");
    setcfg(WLobviousLimit, 3,
@@ -209,11 +214,9 @@ try {
    // WL small slips
    setcfg(WLSlipEdge, 3,
       "* minimum separating WL slips and end of segment, else edit (pts)");
-   //050109 .67->1.0
-   setcfg(WLSlipSize, 1.0, "* minimum WL slip size (WL wavelengths)");
+   setcfg(WLSlipSize, 0.9, "* minimum WL slip size (WL wavelengths)");
    setcfg(WLSlipExcess, 0.1,
       "* minimum amount WL slip must exceed noise (WL wavelengths)");
-   //050109 1.2->2.5
    setcfg(WLSlipSeparation, 2.5, "* minimum excess/noise ratio of WL slip ()");
    // GF small slips
    setcfg(GFSlipWidth, 5,
@@ -224,7 +227,7 @@ try {
       "* minimum delta(GF) that produces an obvious slip (GFVariation)");
    setcfg(GFSlipOutlier, 5, "* minimum GF outlier magnitude/noise ratio ()");
    setcfg(GFSlipSize, 0.8, "* minimum GF slip size (5.4cm wavelengths)");
-   setcfg(GFSlipStepToNoise, 2, "* maximum GF slip step/noise ratio ()");
+   setcfg(GFSlipStepToNoise, 0.1, "* maximum GF slip step/noise ratio ()");
    setcfg(GFSlipToStep, 3, "* minimum GF slip magnitude/step ratio ()");
    setcfg(GFSlipToNoise, 3, "* minimum GF slip magnitude/noise ratio ()");
    // GF fix
@@ -233,10 +236,14 @@ try {
    setcfg(GFFixDegree, 3, "* degree of polynomial used to fix GF slips ()");
    setcfg(GFFixMaxRMS, 100,
       "* limit on RMS fit residuals to fix GF slips, else delete (5.4cm)");
+   setcfg(GFSkipSmall, 1,
+      "* if non-zero, skip small GF slips unless there is a WL slip");
 
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) {
+   Exception E("std except: "+string(e.what())); GPSTK_THROW(E);
+}
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -249,9 +256,9 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 class Segment {
 public:
       // member data
-   size_t nbeg,nend;       // array indexes of the first and last good points
+   unsigned int nbeg,nend; // array indexes of the first and last good points
                            // always maintain these so they point to good data
-   int npts;               // number of good points in this Segment
+   unsigned int npts;      // number of good points in this Segment
    int nseg;               // segment number - used for data dumps only
    double bias1;           // bias subtracted from WLbias for WLStats - only
    Stats<double> WLStats;  // includes N,min,max,ave,sig
@@ -273,6 +280,7 @@ public:
       WLStats = s.WLStats; PF = s.PF; RMSROF = s.RMSROF; WLsweep = s.WLsweep;
       return *this;
    }
+
 }; // end class Segment
 
 //------------------------------------------------------------------------------------
@@ -301,7 +309,7 @@ public:
    static const unsigned short GFDETECT;
    static const unsigned short GFFIX;
 
-   explicit GDCPass(const SatPass& sp, const GDCconfiguration& gdc);
+   explicit GDCPass(SatPass& sp, const GDCconfiguration& gdc);
 
    //~GDCPass(void) { };
 
@@ -370,7 +378,7 @@ public:
       throw(Exception);
 
    /// fit a polynomial to the GF range, and replace P2 (-gfr) with the residual
-   /// gfp+fit(gfr); divide both P1(gfp) and P2(residual) by wl21 to convert to cycles
+   /// gfp+fit(gfr); divide both P1(gfp) and P2(residual) by wlgf to convert to cycles
    /// also place the residual gfp+gfr(cycles) in L1
    int prepareGFdata(void) throw(Exception);
 
@@ -420,7 +428,7 @@ public:
    /// called by GFslipFix()
    long EstimateGFslipFix(list<Segment>::iterator& left,
                           list<Segment>::iterator& right,
-                          int nb, int ne, long n1)
+                          unsigned int nb, unsigned int ne, long n1)
       throw(Exception);
 
    /// final check on consistency of WL slip fixes with GF slip detection
@@ -481,7 +489,7 @@ private:
    Stats<double> GFPassStats;
 
    /// polynomial fit to the geometry-free range for the whole pass
-   PolyFit<double> GFPassFit;
+   //07202010 not used PolyFit<double> GFPassFit;
 
    /// keep count of various results: slips, deletions, etc.; print to log in finish()
    map<string,int> learn;
@@ -489,89 +497,44 @@ private:
 }; // end class GDCPass
 
 //------------------------------------------------------------------------------------
-// local data
-//------------------------------------------------------------------------------------
-// these are used only to associate a unique number in the log file with each pass
-int GDCUnique=0;     // unique number for each call
-int GDCUniqueFix;    // unique for each (WL,GF) fix
-
-// conveniences only...
-#define log *(p_oflog)
+// conveniences...
 #define cfg(a) cfg_func(#a)
-// gcc doesn't like const enum...
-enum obstypeenum {  L1=0, L2=1, P1=2, P2=3, A1=4, A2=5 };   // P1 will <=> C1 or P1
-vector<string> DCobstypes;       // above are indexes into both data and this vector
-
-// constants used in linear combinations
-const double CFF=C_MPS/OSC_FREQ_GPS;
-const double F1=L1_MULT_GPS;   // 154.0;
-const double F2=L2_MULT_GPS;   // 120.0;
-   // wavelengths
-const double wl1=CFF/F1;                        // 19.0cm
-const double wl2=CFF/F2;                        // 24.4cm
-const double wlwl=CFF/(F1-F2);                  // 86.2cm, the widelane wavelength
-const double wl21=CFF*(1.0/F2 - 1.0/F1);        // 5.4cm, the 'GF' wavelength
-   // for widelane R & Ph
-const double wl1r=F1/(F1+F2);
-const double wl2r=F2/(F1+F2);
-const double wl1p=wl1*F1/(F1-F2);
-const double wl2p=-wl2*F2/(F1-F2);
-   // for geometry-free R and Ph
-//const double gf1r=-1;
-//const double gf2r=1;
-const double gf1p=wl1;
-const double gf2p=-wl2;
+#define log *(p_oflog)
+static const int L1 = 0;
+static const int L2 = 1;
+static const int P1 = 2;
+static const int P2 = 3;
+static const int A1 = 4;
+static const int A2 = 5;
+vector<string> DCobstypes; // indexes into both data and this vector are L1,L2,etc...
 
 //------------------------------------------------------------------------------------
 // Return values (used by all routines within this module):
-const int BadInput=-5;
-const int NoData=-4;
-const int FatalProblem=-3;
-//const int PrematureEnd=-2;
-const int Singular=-1;
-const int ReturnOK=0;
-// NoData:
-//    preprocess
-//    fixAllSlips       segment list is empty
-// FatalProblem:
-//    preprocess        DT is not set
-//    firstDifferences  A1.size is wrong
-// Singular:
-//    prepareGFdata     polynomial fit to GF range failed
-//    no - delete segment instead GFphaseResiduals  polynomial fit to GF range failed
-//
-// -----------------------------------------------------------------------------------
-// Roadmap:
-// DiscontinuityCorrector(SatPass& svp,GDCconfiguration& gdc,vector<string>& editCmds)
-//                             Dump   Arrays with units (on output)
-//                             tag    L1              L2              P1              P2              A1              A2
-// preprocess()                BEF    L1(c)           L2(c)           P1(m)           P2(m)           P-L1(m)         P-L2(m)
-// linearCombinations()        LCD    gfp+gfr         gfp             wlbias          -gfr
-// detectWLslips()
-//    detectObviousSlips(WL)
-//       firstDifferences(WL)  DWL                                                                     dP1=dWLb        0
-//    WLcomputeStats
-//    WLsigmaStrip                                                                                    wlbias          0
-//    WLstatSweep             (WLS is stats)                                                          test            limit
-//                                                                                                    =dave(fut-past) =sqrt(sum var)
-//    detectWLsmallSlips       WLD
-// fixAllSlips("WL")
-//    fixOneSlip("WL")
-//       WLslipFix             WLF
-// prepareGFdata()                    gfp+gfr(resid)  gfp(wl21)                       -gfr(wl21)
-// detectGFslips()
-//    detectObviousSlips(GF)
-//       firstDifferences(GF)  DGF                                                                     d(gfp+gfr res)   d(gfp)
-//    GFphaseResiduals                                                                                1stdiff(gfp-(fit gfr))
-//    detectGFsmallSlips       GFD
-// WLconsistencyCheck()
-// fixAllSlips("GF")
-//    fixOneSlip("GF")
-//       GFslipFix             GFF
-// finish (fix slips, recomp)  AFT    L1(c)           L2(c)           P1(m)           P2(m)           P-L1(m)         P-L2(m)
-//
+static const int GLOfailed=-6;
+static const int BadInput=-5;
+static const int NoData=-4;
+static const int FatalProblem=-3;
+static const int PrematureEnd=-2;      // NB never used
+static const int Singular=-1;
+static const int ReturnOK=0;
+
 //------------------------------------------------------------------------------------
-// Constants used to mark slips, etc. using the SatPass flag:
+// these are used only to associate a unique number in the log file with each pass
+static int GDCUnique=0;     // unique number for each call
+static int GDCUniqueFix;    // unique for each (WL,GF) fix
+static string GDCtag="GDC"; // begin each line of return message
+
+//------------------------------------------------------------------------------------
+// wavelength and other frequency-dependent quantities, determined early in DC()
+// constants used in linear combinations
+int GLOn;
+double wl1,wl2,wlwl,wlgf;        // wavelengths: L1,L2,widelane,narrowlane
+double wl1r,wl2r,wl1p,wl2p;      // coefficients in widelane linear combinations
+double gf1r,gf2r,gf1p,gf2p;      // coefficients in geometry-free linear combinations
+
+//------------------------------------------------------------------------------------
+// Flags - constants used to mark slips, etc. using the SatPass flag:
+//------------------------------------------------------------------------------------
 // These are from SatPass.cpp
 //const unsigned short SatPass::BAD = 0; // used by caller and DC to mark bad data
 //const unsigned short SatPass::OK  = 1; // good data, no discontinuity
@@ -607,44 +570,59 @@ const unsigned short GDCPass::FIX      =  24;  // = WLFIX | GFFIX
 int gpstk::DiscontinuityCorrector(SatPass& svp,
                                   GDCconfiguration& gdc,
                                   vector<string>& editCmds,
-                                  string& retMessage)
+                                  string& retMessage,
+                                  int GLOn_in)
    throw(Exception)
 {
 try {
-   int j,iret;
+   unsigned int i,j;
+   int iret;
+
+   if(gdc.getParameter("ResetUnique") != 0)
+      { GDCUnique=0; gdc.setParameter("ResetUnique=0"); }
    GDCUnique++;
 
+   //if(!retMessage.empty()) { GDCtag = retMessage; }
+   retMessage = "";
+
    // --------------------------------------------------------------------------------
-   // require obstypes L1,L2,C1/P1,P2, and add two auxiliary arrays
+   // require obstypes L1,L2,C1/P1,C2/P2, and add two auxiliary arrays
    DCobstypes.clear();
    DCobstypes.push_back("L1");
    DCobstypes.push_back("L2");
-   DCobstypes.push_back((int(gdc.getParameter("useCA"))) == 0 ? "P1" : "C1");
-   DCobstypes.push_back("P2");
+   DCobstypes.push_back((int(gdc.getParameter("useCA1"))) == 0 ? "P1" : "C1");
+   DCobstypes.push_back((int(gdc.getParameter("useCA2"))) == 0 ? "P2" : "C2");
    DCobstypes.push_back("A1");
    DCobstypes.push_back("A2");
 
    // --------------------------------------------------------------------------------
    // test input for (a) some data and (b) the required obs types L1,L2,C1/P1,P2
    vector<double> newdata(6);
+   string found;
    try {
-      newdata[L1] = svp.data(0,DCobstypes[L1]);
-      newdata[L2] = svp.data(0,DCobstypes[L2]);
-      newdata[P1] = svp.data(0,DCobstypes[P1]);
-      newdata[P2] = svp.data(0,DCobstypes[P2]);
+      newdata[L1] = svp.data(0,DCobstypes[L1]); found += " " + DCobstypes[L1];
+      newdata[L2] = svp.data(0,DCobstypes[L2]); found += " " + DCobstypes[L2];
+      newdata[P1] = svp.data(0,DCobstypes[P1]); found += " " + DCobstypes[P1];
+      newdata[P2] = svp.data(0,DCobstypes[P2]); found += " " + DCobstypes[P2];
    }
    catch (Exception& e) { // if obs type is not found in input
+      ostringstream oss;
+      oss << "   Missing required obs types. Require";
+      for(i=0; i<4; i++) oss << " " << DCobstypes[i];
+      oss << "; found only" << found;
+      retMessage = oss.str();
       return BadInput;
    }
 
    // --------------------------------------------------------------------------------
    // create a SatPass using DCobstypes, and fill from input
-   SatPass nsvp(svp.getSat(), svp.getDT(), DCobstypes);
+   RinexSatID sat(svp.getSat());
+   SatPass nsvp(sat, svp.getDT(), DCobstypes);
 
    // fill the new SatPass with the input data
    nsvp.status() = svp.status();
    vector<unsigned short> lli(6),ssi(6);
-   for(size_t i=0; i<svp.size(); i++) {
+   for(i=0; i<static_cast<int>(svp.size()); i++) {
       for(j=0; j<6; j++) {
          newdata[j] = j < 4 ? svp.data(i,DCobstypes[j]) : 0.0;
          lli[j] = j < 4 ? svp.LLI(i,DCobstypes[j]) : 0;
@@ -657,6 +635,82 @@ try {
    // --------------------------------------------------------------------------------
    // create a GDCPass from the input SatPass (modified) and GDC configuration
    GDCPass gp(nsvp,gdc);
+
+   // --------------------------------------------------------------------------------
+   // if the satellite is Glonass, compute the frequency channel, if necessary,
+   // and define wavelengths and other constants for this satellite
+   GLOn = GLOn_in;
+   if(sat.system == SatID::systemGlonass) {
+
+      // only compute it if it is out of range
+      if(GLOn < -7 || GLOn > 7) {
+         string msg;
+         // call SatPass::getGLOchannel() to get channel from data
+         GLOn = 0;
+         if(gp.getGLOchannel(GLOn,msg)) {
+            //log << "Computed GLONASS frequency channel = " << GLOn
+            //   << "\n   (" << msg << ")" << endl;
+         }
+         else {
+            ostringstream oss;
+            oss << GDCtag << " " << setw(3) << GDCUnique << " " << sat
+               << " " << printTime(svp.getFirstTime(),svp.outFormat)
+               << " is returning with error code: failed to find GLONASS frequency\n"
+               << msg << endl;
+            retMessage = oss.str();
+            return GLOfailed;
+         }
+      }
+
+      // GLO Frequency(Hz) L1 is 1602.0e6 + n*562.5e3 Hz = 9 * (178 + n*0.0625) MHz
+      //                   L2    1246.0e6 + n*437.5e3 Hz = 7 * (178 + n*0.0625) MHz
+      // Note that L1/L2 is always 9/7 for freq, 7/9 for wavelength
+      static const double GLOfreq0L1=1602.0e6;
+      static const double GLOdfreqL1= 562.5e3;
+      static const double GLOfreq0L2=1246.0e6;
+      static const double GLOdfreqL2= 437.5e3;
+      static const double F1oF2 = 9.0/7.0;
+      static const double F2oF1 = 7.0/9.0;
+
+      wl1 = C_MPS/(GLOfreq0L1 + GLOn*GLOdfreqL1);
+      wl2 = C_MPS/(GLOfreq0L2 + GLOn*GLOdfreqL2);
+      wlwl = 1.0 / (1.0/wl1 - 1.0/wl2);
+      wlgf = wl2 - wl1;
+
+      wl1r = 1.0/(1.0+F2oF1);
+      wl2r = 1.0/(1.0+F1oF2);
+      wl1p = wl1/(1.0-F2oF1);
+      wl2p = wl2/(1.0-F1oF2);
+
+      gf1r = -1.0;
+      gf2r = 1.0;
+      gf1p = wl1;
+      gf2p = -wl2;
+   }
+   else {                                                   // GPS satellite
+      static const double CFF=C_MPS/OSC_FREQ_GPS;
+      static const double wl1_GPS = CFF/L1_MULT_GPS;            // 19.0cm
+      static const double wl2_GPS = CFF/L2_MULT_GPS;            // 24.4cm
+      static const double wlwl_GPS = CFF/(L1_MULT_GPS-L2_MULT_GPS); // 86.2cm
+      static const double wlgf_GPS = wl2_GPS - wl1_GPS;     //  5.4cm
+      static const double F1oF2 = L1_MULT_GPS/L2_MULT_GPS;          // 77/60
+      static const double F2oF1 = L2_MULT_GPS/L1_MULT_GPS;          // 60/77
+
+      wl1 = wl1_GPS;
+      wl2 = wl2_GPS;
+      wlwl = wlwl_GPS;
+      wlgf = wlgf_GPS;
+
+      wl1r = 1.0/(1.0+F2oF1);
+      wl2r = 1.0/(1.0+F1oF2);
+      wl1p = wl1/(1.0-F2oF1);
+      wl2p = wl2/(1.0-F1oF2);
+
+      gf1r = -1.0;
+      gf2r = 1.0;
+      gf1p = wl1;
+      gf2p = -wl2;
+   }
 
    // --------------------------------------------------------------------------------
    // implement the DC algorithm using the GDCPass
@@ -690,7 +744,9 @@ try {
    return iret;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) {
+   Exception E("std except: "+string(e.what())); GPSTK_THROW(E);
+}
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -698,26 +754,26 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 //------------------------------------------------------------------------------------
 // class GDCPass member functions
 //------------------------------------------------------------------------------------
-GDCPass::GDCPass(const SatPass& sp, const GDCconfiguration& gdc)
+GDCPass::GDCPass(SatPass& sp, const GDCconfiguration& gdc)
       : SatPass(sp.getSat(), sp.getDT(), sp.getObsTypes())
 {
-   size_t j;
+   int i,j;
    Status = sp.status();
    dt = sp.getDT();
    sat = sp.getSat();
    vector<string> ot = sp.getObsTypes();
-   for(size_t i=0; i<ot.size(); i++) {
+   for(i=0; i<static_cast<int>(ot.size()); i++) {
       labelForIndex[i] = ot[i];
       indexForLabel[labelForIndex[i]] = i;
    }
 
    vector<double> vdata;
    vector<unsigned short> lli,ssi;
-   for(size_t i=0; i<sp.size(); i++) {
+   for(i=0; i<static_cast<int>(sp.size()); i++) {
       vdata.clear();
       lli.clear();
       ssi.clear();
-      for(j=0; j<ot.size(); j++) {
+      for(j=0; j<static_cast<int>(ot.size()); j++) {
          vdata.push_back(sp.data(i,ot[j]));
          lli.push_back(sp.LLI(i,ot[j]));
          ssi.push_back(sp.SSI(i,ot[j]));
@@ -734,16 +790,18 @@ GDCPass::GDCPass(const SatPass& sp, const GDCconfiguration& gdc)
 int GDCPass::preprocess(void) throw(Exception)
 {
 try {
-   int ilast,Ngood;
-   size_t i;
+   int ilast;
+   unsigned int i,Ngood;
    double biasL1,biasL2,dbias;
    list<Segment>::iterator it;
 
    if(cfg(Debug) >= 2) {
-      log << "======== Beg GPSTK Discontinuity Corrector " << GDCUnique
-          << " ================================================" << endl;
+      Epoch CurrentTime;
+      //CurrentTime.setLocalTime();
+      log << "\n======== Beg GPSTK Discontinuity Corrector " << GDCUnique
+         << " ================================================\n";
       log << "GPSTK Discontinuity Corrector Ver. " << GDCVersion << " Run "
-          << CivilTime(SystemTime()) << endl;
+         << CurrentTime << endl;
    }
 
       // check input
@@ -754,7 +812,6 @@ try {
 
    // 050109 some parameters should depend on DT
    CFG["WLWindowWidth"] = 10 + int(0.5+CFG["WLWindowWidth"]/CFG["DT"]);
-   //log << "WLWindowWidth is now " << cfg(WLWindowWidth) << endl;
 
       // create the first segment
    SegList.clear();
@@ -767,7 +824,7 @@ try {
 
       // loop over points in the pass
       // editing obviously bad data and adding segments where necessary
-   for(ilast=-1, i=0; i<size(); i++) {
+   for(ilast=-1,i=0; i<static_cast<int>(size()); i++) {
 
       // ignore data the caller has marked BAD
       if(!(spdvector[i].flag & OK)) continue;
@@ -787,7 +844,7 @@ try {
       //   learn["points deleted: obvious outlier"]++;
       //   if(cfg(Debug) > 6)
       //      log << "Obvious outlier " << GDCUnique << " " << sat
-      //         << " at " << i << " " << time(i).printf(outFormat) << endl;
+      //         << " at " << i << " " << printTime(time(i),outFormat) << endl;
       //   continue;
       //}
 
@@ -845,7 +902,7 @@ try {
       }  // end loop over points in the segment
 
          // delete small segments
-      if(it->npts < int(cfg(MinPts)))
+      if(it->npts < static_cast<unsigned int>(cfg(MinPts)))
          deleteSegment(it,"insufficient data in segment");
       else
          Ngood++;
@@ -857,7 +914,9 @@ try {
    return ReturnOK;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) {
+   Exception E("std except: "+string(e.what())); GPSTK_THROW(E);
+}
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -866,7 +925,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 int GDCPass::linearCombinations(void) throw(Exception)
 {
 try {
-   size_t i;
+   unsigned int i;
    double wlr,wlp,wlbias,gfr,gfp;
    list<Segment>::iterator it;
 
@@ -910,7 +969,9 @@ try {
    return ReturnOK;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) {
+   Exception E("std except: "+string(e.what())); GPSTK_THROW(E);
+}
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -935,7 +996,7 @@ try {
       if(it->npts > 0) WLsigmaStrip(it);
 
       // print this before deleting segments with large sigma
-      if(cfg(Debug) >= 1 && it->npts >= int(cfg(MinPts)))
+      if(cfg(Debug) >= 1 && it->npts >= static_cast<unsigned int>(cfg(MinPts)))
          log << "WLSIG " << GDCUnique << " " << sat
             << " " << it->nseg
             << " " << printTime(time(it->nbeg),outFormat)
@@ -971,7 +1032,7 @@ try {
 
    // delete all segments that are too small
    for(it=SegList.begin(); it != SegList.end(); it++) {
-      if(it->npts < int(cfg(MinPts)))
+      if(it->npts < static_cast<unsigned int>(cfg(MinPts)))
          deleteSegment(it,"insufficient data in segment");
    }
 
@@ -980,7 +1041,9 @@ try {
    return ReturnOK;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) {
+   Exception E("std except: "+string(e.what())); GPSTK_THROW(E);
+}
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -991,11 +1054,12 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 int GDCPass::detectObviousSlips(string which) throw(Exception)
 {
 try {
-      // TD determine from range noise // ~ 2*range noise/wl2
-   const double WLobviousNwlLimit=cfg(WLobviousLimit)*cfg(WLSigma);
-   const double GFobviousNwlLimit=cfg(GFobviousLimit)*cfg(GFVariation)/wl21;
-   bool outlier;
-   int j,iret,ibad=0,igood,nok;
+   // TD determine from range noise // ~ 2*range noise/wl2
+   const double WLobviousNWLLimit=cfg(WLobviousLimit)*cfg(WLSigma);
+   const double GFobviousNWLLimit=cfg(GFobviousLimit)*cfg(GFVariation)/wlgf;
+   bool outlier,nogood;
+   unsigned int i,j,ibad,igood,nok;
+   int iret;
    double limit,wlbias;
    list<Segment>::iterator it;
 
@@ -1007,12 +1071,12 @@ try {
 
    // scan the first differences, eliminate outliers and
    // break into segments where there are WL slips.
-   limit = (which == string("WL") ? WLobviousNwlLimit : GFobviousNwlLimit);
+   limit = (which == string("WL") ? WLobviousNWLLimit : GFobviousNWLLimit);
    it = SegList.begin();
    nok = 0;
-   igood = -1;
+   nogood = true;
    outlier = false;
-   for(size_t i=0; i<size(); i++) {
+   for(i=0; i<static_cast<int>(size()); i++) {
       if(i < it->nbeg) {
          outlier = false;
          continue;
@@ -1027,7 +1091,7 @@ try {
          it->npts = nok;
          // update nbeg and nend
          while(it->nbeg < it->nend
-            && it->nbeg < size()
+            && it->nbeg < static_cast<int>(size())
             && !(spdvector[it->nbeg].flag & OK) ) it->nbeg++;
          while(it->nend > it->nbeg
             && it->nend > 0
@@ -1042,14 +1106,14 @@ try {
          continue;
       nok++;                                   // nok = # good points in segment
 
-      if(igood == -1) igood = i;               // igood is index of last good point
+      if(nogood) { igood = i; nogood=false; }  // igood is index of last good point
 
       if(fabs(spdvector[i].data[A1]) > limit) {// found an outlier (1st diff, cycles)
          outlier = true;
          ibad = i;                             // ibad is index of last bad point
       }
       else if(outlier) {                       // this point good, but not past one(s)
-         for(j=igood+1; j<ibad; j++) {
+         for(unsigned int j=igood+1; j<ibad; j++) {
             if(spdvector[j].flag & OK)
                nok--;
             if(spdvector[j].flag & DETECT)
@@ -1082,7 +1146,7 @@ try {
          outlier = false;
          igood = ibad;
       }
-      else
+      else 
          igood = i;
    }
    it->npts = nok;
@@ -1090,7 +1154,9 @@ try {
    return ReturnOK;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) {
+   Exception E("std except: "+string(e.what())); GPSTK_THROW(E);
+}
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -1103,9 +1169,9 @@ int GDCPass::firstDifferences(string which) throw(Exception)
 try {
    //if(A1.size() != size()) return FatalProblem;
 
-   int iprev=-1;
+   int i,iprev=-1;
 
-   for(size_t i=0; i<size(); i++) {
+   for(i=0; i<static_cast<int>(size()); i++) {
       // ignore bad data
       if(!(spdvector[i].flag & OK)) {
          spdvector[i].data[A1] = spdvector[i].data[A2] = 0.0;
@@ -1118,8 +1184,7 @@ try {
             spdvector[i].data[A1] = 0.0;
          else
             spdvector[i].data[A1] =
-               (spdvector[i].data[P1] - spdvector[iprev].data[P1]) /
-                  (spdvector[i].ndt-spdvector[iprev].ndt);
+               (spdvector[i].data[P1] - spdvector[iprev].data[P1]);
       }
       else if(which == string("GF")) {
          if(iprev == -1)            // first difference not defined at first point
@@ -1128,13 +1193,9 @@ try {
             // compute first difference of L1 = raw residual GFP-GFR
             spdvector[i].data[A1] =
                (spdvector[i].data[L1] - spdvector[iprev].data[L1]);
-                  // 040809 should this be divided by delta N?
-                  // / (spdvector[i].ndt-spdvector[iprev].ndt);
             // compute first difference of L2 = GFP
             spdvector[i].data[A2] =
                (spdvector[i].data[L2] - spdvector[iprev].data[L2]);
-                  // 040809 should this be divided by delta N?
-                  // / (spdvector[i].ndt-spdvector[iprev].ndt);
          }
       }
 
@@ -1145,7 +1206,9 @@ try {
    return ReturnOK;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) {
+   Exception E("std except: "+string(e.what())); GPSTK_THROW(E);
+}
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -1160,18 +1223,20 @@ try {
    it->npts = 0;
 
    // loop over data, adding to Stats, and counting good points
-   for(size_t i=it->nbeg; i<=it->nend; i++) {
+   for(unsigned int i=it->nbeg; i<=it->nend; i++) {
       if(!(spdvector[i].flag & OK)) continue;
       it->WLStats.Add(spdvector[i].data[P1] - it->bias1);
       it->npts++;
    }
 
    // eliminate segments with too few points
-   if(it->npts < int(cfg(MinPts)))
+   if(it->npts < static_cast<unsigned int>(cfg(MinPts)))
       deleteSegment(it,"insufficient data in segment");
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) {
+   Exception E("std except: "+string(e.what())); GPSTK_THROW(E);
+}
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -1184,7 +1249,7 @@ try {
    bool outlier,haveslip;
    unsigned short slip;
    int slipindex;
-   size_t i, j;
+   unsigned int i,j,k;
    double wlbias,nsigma,ave;
 
    // use robust stats on small segments, for big ones stick with conventional
@@ -1193,7 +1258,6 @@ try {
       // 'change the arrays' A1 and A2; they will be overwritten by WLstatSweep
       // but then dumped as DSCWLF...
       // use temp vectors so they can be passed to Robust::MAD and Robust::MEstimate
-      int k;
       double median,mad;
       vector<double> vecA1,vecA2;      // use these temp, for Robust:: calls
 
@@ -1223,8 +1287,6 @@ try {
 
          wlbias = spdvector[i].data[P1] - it->bias1;
 
-         // TD ? use weights at all? they remove a lot of points
-         // TD add absolute limit?
          if(fabs(wlbias-ave) > nsigma ||
                spdvector[j].data[A2] < cfg(WLRobustWeightLimit))
             outlier = true;
@@ -1237,9 +1299,6 @@ try {
                haveslip = true;
                slipindex = i;        // mark
                slip = spdvector[i].flag; // save to put on first good point
-               //log << "Warning - marking a slip point BAD in WL sigma strip "
-               //   << GDCUnique << " " << sat
-               //   << " " << time(i).printf(outFormat) << " " << i << endl;
             }
             spdvector[i].flag = BAD;
             learn["points deleted: WL sigma stripping"]++;
@@ -1290,9 +1349,6 @@ try {
                haveslip = true;
                slipindex = i;        // mark
                slip = spdvector[i].flag; // save to put on first good point
-               //log << "Warning - marking a slip point BAD in WL sigma strip "
-               //   << GDCUnique << " " << sat
-               //   << " " << time(i).printf(outFormat) << " " << i << endl;
             }
             spdvector[i].flag = BAD;
             learn["points deleted: WL sigma stripping"]++;
@@ -1310,12 +1366,10 @@ try {
    // change nbeg, but don't change the bias
    if(haveslip) {
       it->nbeg = slipindex;
-      //wlbias = spdvector[slipindex].data[P1];
-      //it->bias1 = long(wlbias+(wlbias > 0 ? 0.5 : -0.5));
    }
 
    // again
-   if(it->npts < int(cfg(MinPts)))
+   if(it->npts < static_cast<unsigned int>(cfg(MinPts)))
       deleteSegment(it,"WL sigma stripping");
    else {
       // update nbeg and nend // TD add limit 0 size()
@@ -1325,7 +1379,9 @@ try {
 
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) {
+   Exception E("std except: "+string(e.what())); GPSTK_THROW(E);
+}
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -1336,11 +1392,10 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 int GDCPass::WLstatSweep(list<Segment>::iterator& it, int width) throw(Exception)
 {
 try {
-   size_t iminus,i,iplus, uwidth;
+   unsigned int iminus,i,iplus,uwidth(width);
    double wlbias,test,limit;
    Stats<double> pastStats, futureStats;
 
-   uwidth = width;
    // ignore empty segments
    if(it->npts == 0) return ReturnOK;
    it->WLsweep = true;
@@ -1355,7 +1410,7 @@ try {
    // start with the window 'squashed' to one point - the first one
    iminus = i = iplus = it->nbeg;
 
-   // fill up the future window to size 'uwidth' (unsigned 'width'), but don't go beyond the segment
+   // fill up the future window to size 'width', but don't go beyond the segment
    while(futureStats.N() < uwidth && iplus <= it->nend) {
       if(spdvector[iplus].flag & OK) {                // add only good data
          futureStats.Add(spdvector[iplus].data[P1] - it->bias1);
@@ -1408,19 +1463,21 @@ try {
          iplus++;
       }
       // ... and move iminus up by one good point
-      while(pastStats.N() > uwidth && iminus <= it->nend) {// <= nend not really nec.
+      while(static_cast<int>(pastStats.N()) > uwidth && iminus <= it->nend) {
          if(spdvector[iminus].flag & OK) {
             pastStats.Subtract(spdvector[iminus].data[P1] - it->bias1);
          }
          iminus++;
       }
-
+   
    }  // end loop over i=all points in segment
 
    return  ReturnOK;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) {
+   Exception E("std except: "+string(e.what())); GPSTK_THROW(E);
+}
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -1431,7 +1488,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 int GDCPass::detectWLsmallSlips(void) throw(Exception)
 {
 try {
-   int k,nok;
+   unsigned int k,nok;
    double wlbias;
    list<Segment>::iterator it;
 
@@ -1444,9 +1501,9 @@ try {
    it->WLStats.Reset();
 
    // loop over the data arrays - all segments
-   size_t i = it->nbeg;
+   unsigned int i = it->nbeg;
    nok = 0;
-   int halfwidth = int(cfg(WLSlipEdge));
+   unsigned int halfwidth = static_cast<unsigned int>(cfg(WLSlipEdge));
    while(i < size())
    {
       // must skip segments for which WLstatSweep was not called
@@ -1475,7 +1532,7 @@ try {
          if(nok < halfwidth || (it->npts - nok) < halfwidth ) {
             // failed test 3 - near ends of segment
             // consider chopping off this end of segment - large limit?
-            // TD must do something here ...
+            // TD must do something here ... 
             if(cfg(Debug) >= 6) log << "too near end " << GDCUnique
                << " " << i << " " << nok << " " << it->npts-nok
                << " " << printTime(time(i),outFormat)
@@ -1487,7 +1544,7 @@ try {
             // TD what if nok < MinPts? -- cf detectGFsmallSlips
             k = it->npts;
             it->npts = nok;
-            //log << "create new segment at i = " << i << " " << nok << "pts" << endl;
+            //log << "create new segment at i = " << i << " " << nok << "pts\n";
             it = createSegment(it,i,"WL slip small");
 
             // mark it
@@ -1514,7 +1571,9 @@ try {
    return ReturnOK;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) {
+   Exception E("std except: "+string(e.what())); GPSTK_THROW(E);
+}
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -1523,109 +1582,123 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // A1 = test = fabs(futureStats.Average()-pastStats.Average()) ~ step in ave WL
 // A2 = limit = sqrt(futureStats.Variance()+pastStats.Variance()) ~ noise in WL
 // ALL CONDITIONs needed for a slip to be detected:
-// 1. test must be > ~0.67(WLSlipSize) * WLwl
-// 2. test-limit must be > (WLSlipExcess) ie test
-// 3. slip must be far (>1/2 window) from either end
+// 1. test must be > WLSlipSize (cycles)
+// 2. test-limit must be > (WLSlipExcess)       // TD keep this?
+// 3. slip must be far (>1/2 window) from either end - handled in detectWLsmallSlips
 // 4. test must be at a local maximum within ~ window width
-// 5. limit must be at a local minimum (")
-// 6. (test-limit)/limit > 1.2(WLSlipSeparation)
+// 5. limit must be at a local minimum within ~ window width
+// 6. (test-limit)/limit > (WLSlipSeparation = 2.5)         // this is critical test
 // large limit (esp near end of a pass) means too much noise
 bool GDCPass::foundWLsmallSlip(list<Segment>::iterator& it, int i)
    throw(Exception)
 {
 try {
-   const int minMaxWidth=int(cfg(WLSlipEdge)); // test 4,5, = ~~1/2 WLWindowWidth
-   int j,pass4,pass5,Pass;
-   size_t jp, jm;
-
-   // A1 = test = fabs(futureStats.Average() - pastStats.Average());
+   const unsigned int minMaxWidth=int(cfg(WLSlipEdge));
+   unsigned int j,jp,jm,pass4,pass5,Pass;
+   // A1 = step = fabs(futureStats.Average() - pastStats.Average());
    // A2 = limit = ::sqrt(futureStats.Variance() + pastStats.Variance());
    // all units WL cycles
-   double test = spdvector[i].data[A1];
+   double step = spdvector[i].data[A1];
    double lim = spdvector[i].data[A2];
 
    // 050109 if Debug=6, print only possible slips, if 7 print all
-   bool isSlip=false;
+   bool isSlip=false, halfCycle=false;
    ostringstream oss;
-   for(;;) {
 
-      // Debug print - NB '>' is always pass, '<=' is fail....
-      if(cfg(Debug) >= 6) oss << "WLslip " << GDCUnique
-         << " " << sat << " " << setw(2) << it->nseg
-         << " " << setw(3) << i
-         << " " << printTime(time(i),outFormat)
-         //<< " " << it->npts << "pt"
-         << fixed << setprecision(2)
-         << " test=" << test << " lim=" << lim
-         << " (1)" << spdvector[i].data[A1]
-         << (spdvector[i].data[A1] > cfg(WLSlipSize) ? ">" : "<=")
-         << cfg(WLSlipSize)
-         << " (2)" << spdvector[i].data[A1]-spdvector[i].data[A2]
-         << (spdvector[i].data[A1]-spdvector[i].data[A2]>cfg(WLSlipExcess)?">":"<=")
-         << cfg(WLSlipExcess); // no endl
+   // Debug print - NB '>' is always pass, '<=' is fail....
+   if(cfg(Debug) >= 6) oss << "WLslip " << GDCUnique
+      << " " << sat << " " << setw(2) << it->nseg
+      << " " << setw(3) << i
+      << " " << printTime(time(i),outFormat)
+      //<< " " << it->npts << "pt"
+      << fixed << setprecision(2)
+      << " step=" << step << " lim=" << lim
+      << " (1)" << spdvector[i].data[A1]
+      << (spdvector[i].data[A1] > cfg(WLSlipSize) ? ">" : "<=")
+      << cfg(WLSlipSize)
+      << " (2)" << spdvector[i].data[A1]-spdvector[i].data[A2]
+      << (spdvector[i].data[A1]-spdvector[i].data[A2]>cfg(WLSlipExcess)?">":"<=")
+      << cfg(WLSlipExcess); // no endl
 
-      // CONDITION 1  ||  CONDITION 2
-      if(test <= cfg(WLSlipSize) || test-lim <= cfg(WLSlipExcess)) break;
+   Pass = 0;         // 111312 count all tests passed
 
-      // CONDITIONs 4 and 5
-      //         x
-      //        x x
-      //       x   x
-      //      x     x
-      //     x       x
-      //    x         x
-      // ------------------------
-      //      jp=012345
-      // do for WLSlipEdge pts on each side of point; best score is pass=2*WLSlipEdge
-      double slope=(test-lim)/(8.0*minMaxWidth);
-      j = pass4 = pass5 = Pass = 0;
-      jp = jm = i;
-      do {
-         // find next good point in future
-         do { jp++; } while(jp < it->nend && !(spdvector[jp].flag & OK));
-         if(jp >= it->nend) break;
-            // CONDITION 4: test(A1) is a local maximum
-         if(spdvector[i].data[A1]-spdvector[jp].data[A1] > j*slope) pass4++;
-            // CONDITION 5: limit(A2) is a local minimum
-         if(spdvector[i].data[A2]-spdvector[jp].data[A2] < -j*slope) pass5++;
+   // CONDITION 1
+   if(step > cfg(WLSlipSize)) Pass++;
+   else if(step > 0.45) halfCycle = true;
+   // CONDITION 2 should be step-lim <= fraction of lim ~~ disc > frac * sigma (6!)
+   if(step-lim > cfg(WLSlipExcess)) Pass++;
 
-         // find next good point in past
-         do { jm--; } while(jm > it->nbeg && !(spdvector[jm].flag & OK));
-         if(jm <= it->nbeg) break;
-            // CONDITION 4: test(A1) is a local maximum
-         if(spdvector[i].data[A1]-spdvector[jm].data[A1] > j*slope) pass4++;
-            // CONDITION 5: limit(A2) is a local minimum
-         if(spdvector[i].data[A2]-spdvector[jm].data[A2] < -j*slope) pass5++;
+   // CONDITION 6 - 111312 put 6 here, its more important
+   double ratio=(step-lim)/lim;
+   if(cfg(Debug) >= 6) oss << " (6)" << ratio
+      << (ratio > cfg(WLSlipSeparation) ? ">" : "<=") << cfg(WLSlipSeparation);
+   if(ratio > cfg(WLSlipSeparation) ) Pass++;
 
-      } while(++j < minMaxWidth);
+   // CONDITIONs 4 and 5
+   //         x
+   //        x x
+   //       x   x
+   //      x     x
+   //     x       x
+   //    x         x
+   // ------------------------
+   //      jp=012345     jp==0 is i, the current point
+   // do for minMaxWidth pts on each side of point; best score is pass=2*minMaxWidth
+   // why is minMaxWidth used here?
+   double slope=(step-lim)/(8.0*minMaxWidth);
+   j = pass4 = pass5 = 0;
+   jp = jm = i;
+   do {
+      // find next good point in future
+      do { jp++; } while(jp < it->nend && !(spdvector[jp].flag & OK));
+      if(jp >= it->nend) break;
+         // CONDITION 4: test(A1) is a local maximum
+      if(spdvector[i].data[A1]-spdvector[jp].data[A1] > j*slope) pass4++;
+         // CONDITION 5: limit(A2) is a local minimum
+      if(spdvector[i].data[A2]-spdvector[jp].data[A2] < -(j*slope)) pass5++;
 
-      // perfect = 2*minMaxWidth; allow 1 miss..
-      if(pass4 >= 2*minMaxWidth-1) Pass++;
-      if(cfg(Debug) >= 6) oss << " (4)" << pass4
-         << (pass4 >= 2*minMaxWidth-1 ? ">" : "<=") << 2*minMaxWidth-2;
-      if(pass5 >= 2*minMaxWidth-1) Pass++;
-      if(cfg(Debug) >= 6) oss << " (5)" << pass5
-         << (pass5 >= 2*minMaxWidth-1 ? ">" : "<=") << 2*minMaxWidth-2;
+      // find next good point in past
+      do { jm--; } while(jm > it->nbeg && !(spdvector[jm].flag & OK));
+      if(jm <= it->nbeg) break;
+         // CONDITION 4: test(A1) is a local maximum
+      if(spdvector[i].data[A1]-spdvector[jm].data[A1] > j*slope) pass4++;
+         // CONDITION 5: limit(A2) is a local minimum
+      if(spdvector[i].data[A2]-spdvector[jm].data[A2] < -(j*slope)) pass5++;
 
-      // CONDITION 7
-      double ratio=(test-lim)/lim;
-      if(cfg(Debug) >= 6) oss << " (6)" << ratio
-         << (ratio > cfg(WLSlipSeparation) ? ">" : "<=") << cfg(WLSlipSeparation);
-      if(ratio > cfg(WLSlipSeparation) ) Pass++;
+   } while(++j < minMaxWidth);
 
-      if(Pass == 3) {
-         if(cfg(Debug) >= 6) oss << " possible WL slip";
-         isSlip = true;
-      }
+   // perfect = 2*minMaxWidth; allow 1 miss..
+   if(pass4 >= 2*minMaxWidth-1) Pass++;
+   if(cfg(Debug) >= 6) oss << " (4)" << pass4
+      << (pass4 >= 2*minMaxWidth-1 ? ">" : "<=") << 2*minMaxWidth-2;
+   if(pass5 >= 2*minMaxWidth-1) Pass++;
+   if(cfg(Debug) >= 6) oss << " (5)" << pass5
+      << (pass5 >= 2*minMaxWidth-1 ? ">" : "<=") << 2*minMaxWidth-2;
 
-      break;
-   }  // end for(;;)
+   if(Pass == 5) {
+      if(cfg(Debug) >= 6) oss << " possible WL slip";
+      isSlip = true;
+   }
+
+   // half-cycles - warning only - TD detect in GF, and fix
+   j = 1;
+   if(!halfCycle) {                          // look for half-cycle-slip > 1
+      j = 2*step - int(2*step+(step > 0.0 ? 0.5 : -0.5));
+      slope = ::fabs(2*step-int(2*step));    // slope is a dummy here
+      if(j%2 || slope < 3*lim) halfCycle=true;
+   }
+   if(Pass >= 4 && halfCycle && j != 0) log << "WLslip " << GDCUnique
+      << " " << sat << " " << setw(2) << it->nseg << " " << setw(3) << i
+      << " " << printTime(time(i),outFormat)
+      << " Warning - possible half-cycle slip of " << j << " WL half-cycles\n";
 
    if(cfg(Debug) >= 6) log << oss.str() << endl;
    return isSlip;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) {
+   Exception E("std except: "+string(e.what())); GPSTK_THROW(E);
+}
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -1638,14 +1711,13 @@ int GDCPass::fixAllSlips(string which) throw(Exception)
 try {
    // find the largest segment and start there, always combine the largest with its
    // largest neighbor
-   int nmax,ifirst;
-   size_t i;
+   unsigned int i,nmax;
    list<Segment>::iterator it, kt;
 
    // loop over all segments, erasing empty ones
    it = SegList.begin();
    while(it != SegList.end()) {
-      if(it->npts == 0)
+      if(it->npts <= 0)
          it = SegList.erase(it);
       else
          it++;
@@ -1679,22 +1751,17 @@ try {
          if(!(spdvector[i].flag & OK)) continue;
          WLPassStats.Add(spdvector[i].data[P1] - kt->bias1);
       }
-      // NB Now you have a measure of range noise for the whole pass :
-      // sigma(WLbias) ~ sigma(WLrange) = 0.71*sigma(range), so
-      // range noise = WLPassStats.StdDev() * wlwl / 0.71;  // meters
-      // 0.71 / wlwl = 0.83
-
-      // TD mark the first slip 'fixed' - unmark it - or something
    }
    // change the biases - reset the GFP bias so that it matches the GFR
    else {                                                         // GF
       //dumpSegments("GFFbefRebias",2,true); //temp
-      for(ifirst=-1,i=kt->nbeg; i <= kt->nend; i++) {
+      bool first(true);
+      for(i=kt->nbeg; i <= kt->nend; i++) {
          if(!(spdvector[i].flag & OK)) continue;
-         if(ifirst == -1) {
-            ifirst = i;
-            kt->bias2 = spdvector[ifirst].data[L2] + spdvector[ifirst].data[P2];
-            kt->bias1 = spdvector[ifirst].data[P1];
+         if(first) {
+            first = false;
+            kt->bias2 = spdvector[i].data[L2] + spdvector[i].data[P2];
+            kt->bias1 = spdvector[i].data[P1];
          }
          // change the data - recompute GFR-GFP so it has one consistent bias
          spdvector[i].data[L1] = spdvector[i].data[L2] + spdvector[i].data[P2];
@@ -1706,7 +1773,9 @@ try {
    return ReturnOK;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) {
+   Exception E("std except: "+string(e.what())); GPSTK_THROW(E);
+}
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -1718,7 +1787,7 @@ void GDCPass::fixOneSlip(list<Segment>::iterator& kt, string which) throw(Except
 try {
    if(kt->npts == 0) { kt++; return; }
 
-   list<Segment>::iterator left,right,it;
+   list<Segment>::iterator left,right;
 
    // kt points to the biggest segment
    // define left and right to be the two segments on each side of the slip to be
@@ -1736,7 +1805,7 @@ try {
 
    // no segment left of kt and no segment right of kt - nothing to do
    if(left == SegList.end() && right == SegList.end()) {
-      kt++;
+      kt = SegList.end();
       return;
    }
 
@@ -1769,7 +1838,9 @@ try {
    return;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) {
+   Exception E("std except: "+string(e.what())); GPSTK_THROW(E);
+}
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -1780,7 +1851,7 @@ void GDCPass::WLslipFix(list<Segment>::iterator& left,
 throw(Exception)
 {
 try {
-   size_t i;
+   unsigned int i;
 
    GDCUniqueFix++;
 
@@ -1796,7 +1867,7 @@ try {
    //if(::sqrt(left->WLStats.Variance() + right->WLStats.Variance())
    //   / (left->WLStats.N() + right->WLStats.N()) < cfg(WLFixSigma)) {
    //   log << "Cannot fix WL slip (noisy) at " << right->nbeg
-   //      << " " << time(right->nbeg).printf(outFormat)
+   //      << " " << printTime(time(right->nbeg),outFormat)
    //      << endl;
    //   break;
    //}
@@ -1817,11 +1888,9 @@ try {
    // now do the fixing - change the data in the right segment to match left's
    for(i=right->nbeg; i<=right->nend; i++) {
       //if(!(spdvector[i].flag & OK)) continue;
+      // 'change the data'
       spdvector[i].data[P1] -= nwl;                                 // WLbias
       spdvector[i].data[L2] -= nwl * wl2;                           // GFP
-      // add to WLStats
-      //if(!(spdvector[i].flag & OK)) continue;
-      //left->WLStats.Add(spdvector[i].data[P1] - left->bias1);
    }
 
    // fix the slips beyond the 'right' segment.
@@ -1834,7 +1903,6 @@ try {
       // can build up and produce errors.
       it->bias1 -= dwl;
       for(i=it->nbeg; i<=it->nend; i++) {
-         //if(!(spdvector[i].flag & OK)) continue;                 // TD don't?
          spdvector[i].data[P1] -= nwl;                                 // WLbias
          spdvector[i].data[L2] -= nwl * wl2;                           // GFP
       }
@@ -1852,7 +1920,9 @@ try {
    return;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) {
+   Exception E("std except: "+string(e.what())); GPSTK_THROW(E);
+}
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -1864,21 +1934,18 @@ void GDCPass::GFslipFix(list<Segment>::iterator& left,
 {
 try {
       // use this number of data points on each side of slip
-   const size_t Npts=int(cfg(GFFixNpts));
-   int nl,nr,ilast;
-   size_t nb, ne;
+   const unsigned int Npts=static_cast<unsigned int>(cfg(GFFixNpts));
+   unsigned int i,nb,ne,nl,nr;
+   int ilast;
    long n1,nadj;              // slip magnitude (cycles)
    double dn1,dnGFR;
    Stats<double> Lstats,Rstats;
 
    GDCUniqueFix++;
 
-//temp
-//log << "GFslipFix " << GDCUniqueFix << " biases L: " << left->bias2
-//    << " R: " << right->bias2 << endl;
    // find Npts points on each side of slip
    nb = left->nend;
-   size_t i = 1;
+   i = 1;
    nl = 0;
    ilast = -1;                               // ilast is last good point before slip
    while(nb > left->nbeg && i < Npts) {
@@ -1886,7 +1953,7 @@ try {
          if(ilast == -1) ilast = nb;
          i++; nl++;
          Lstats.Add(spdvector[nb].data[L1] - left->bias2);
-//log << "LDATA " << nb << " " << spdvector[nb].data[L1]-left->bias2 << endl;
+         //log << "LDATA " << nb << " " << spdvector[nb].data[L1]-left->bias2 << endl;
       }
       nb--;
    }
@@ -1897,7 +1964,7 @@ try {
       if(spdvector[ne].flag & OK) {
          i++; nr++;
          Rstats.Add(spdvector[ne].data[L1] - right->bias2);
-//log << "RDATA " << ne << " " << spdvector[ne].data[L1]-right->bias2 << endl;
+         //log << "RDATA " << ne << " " << spdvector[ne].data[L1]-right->bias2 <<endl;
       }
       ne++;
    }
@@ -1911,11 +1978,7 @@ try {
    // larger rof -> smaller npts and larger degree
    dn1 = spdvector[right->nbeg].data[L2] - right->bias2
          - (spdvector[ilast].data[L2] - left->bias2);
-   // this screws up most fixes
-   //dn1 = Rstats.Average() - right->bias2 - (Lstats.Average() - left->bias2);
    n1 = long(dn1 + (dn1 > 0 ? 0.5 : -0.5));
-
-   // TD worry about too small pieces - nr or nl too small
 
    // estimate the slip using polynomial fits - this prints GFE data
    nadj = EstimateGFslipFix(left,right,nb,ne,n1);
@@ -1926,7 +1989,6 @@ try {
    // difference should be consistent with R/Lstats.StdDev
    // if not, replace nadj with b. - dn1
    dnGFR = Rstats.Average() - Lstats.Average();
-// temp add factor 10.*
    if(fabs(n1+nadj-dnGFR) > 10.*(Rstats.StdDev()+Lstats.StdDev())) {
       if(cfg(Debug) >= 6)
          log << "GFRadjust " << GDCUnique << " " << sat << " " << GDCUniqueFix
@@ -1958,7 +2020,7 @@ try {
       << " tests " << n1+nadj-dnGFR << " " << Rstats.StdDev()+Lstats.StdDev()
       << endl;
    }
-
+   
    // full slip, including biases
    dn1 += right->bias2 - left->bias2;
    n1 = long(dn1 + (dn1 > 0 ? 0.5 : -0.5));
@@ -1966,14 +2028,12 @@ try {
 
    // now do the fixing : 'change the data' within right segment
    // and through the end of the pass, to fix the slip
-   for(i=right->nbeg; i<size(); i++) {
-      //if(!(spdvector[i].flag & OK)) continue;                 // TD? don't?
-      //spdvector[i].data[P1] -= nwl;                           // no change to WLbias
+   for(i=right->nbeg; i<static_cast<int>(size()); i++) {
       spdvector[i].data[L2] -= n1;                              // GFP
       spdvector[i].data[L1] -= n1;                              // GFR+GFP
    }
 
-   // 'change the bias'  for all segments in the future (although right to be deleted)
+   // 'change the bias' for all segments in the future (although right to be deleted)
    list<Segment>::iterator kt;
    for(kt=right; kt != SegList.end(); kt++)
       kt->bias2 -= n1;
@@ -1981,7 +2041,7 @@ try {
    // Add to slip list, but if one exists with same time tag, use it instead
    list<Slip>::iterator jt;
    for(jt=SlipList.begin(); jt != SlipList.end(); jt++)
-      if(jt->index == (int)right->nbeg) break;
+      if(jt->index == right->nbeg) break;
 
    if(jt == SlipList.end()) {
       Slip newSlip(right->nbeg);
@@ -2000,7 +2060,9 @@ try {
    return;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) {
+   Exception E("std except: "+string(e.what())); GPSTK_THROW(E);
+}
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -2009,18 +2071,17 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // estimate GF slip using polynomial fit to data around it
 long GDCPass::EstimateGFslipFix(list<Segment>::iterator& left,
                                list<Segment>::iterator& right,
-                               int nb, int ne, long n1)
+                               unsigned int nb, unsigned int ne, long n1)
 throw(Exception)
 {
 try {
    bool quit;
-   int in[3];
-   size_t i, k;
+   unsigned int i,k,in[3];
    double rof,rmsrof[3];
    PolyFit<double> PF[3];
 
    // start at zero and limit |nadj| to ...TD
-   long nadj = 0;
+   long nadj(0);
 
    // use a little indirect indexing array to avoid having to copy PolyFit objects....
    for(k=0; k<3; k++) {
@@ -2035,7 +2096,7 @@ try {
          if(PF[in[k]].N() > 0) continue;
 
          // add all the data
-         for(i=nb; i<=size_t(ne); i++) {
+         for(i=nb; i<=ne; i++) {
             if(!(spdvector[i].flag & OK)) continue;
             PF[in[k]].Add(
                // data
@@ -2051,7 +2112,7 @@ try {
 
          // compute RMS residual of fit
          rmsrof[in[k]] = 0.0;
-         for(i=nb; i<=size_t(ne); i++) {
+         for(i=nb; i<=ne; i++) {
             if(!(spdvector[i].flag & OK)) continue;
             rof =    // data minus fit
                spdvector[i].data[L2]
@@ -2064,19 +2125,13 @@ try {
       }  // end loop over fits
 
       // the value of this is questionable, b/c with active ionosphere the real
-      // GFP is NOT smooth
+      // GFP is NOT smooth 
       for(quit=false,k=0; k<3; k++) if(rmsrof[in[k]] > cfg(GFFixMaxRMS)) {
          log << "Warning - large RMS ROF in GF slip fix at in,k = "
-             << in[k] << " " << k << " " << rmsrof[in[k]] << " abort." << endl;
+            << in[k] << " " << k << " " << rmsrof[in[k]] << " abort.\n";
          quit = true;
       }
       if(quit) break;
-
-      //if(cfg(Debug) >= 6) {
-      //   log << "Fix GF slip RMSROF : adj: " << nadj;
-      //   for(i=0; i<3; i++) log << " " << rmsrof[in[i]];
-      //   // below log << endl;
-      //}
 
       // three cases: (TD - exceptions?) :
       // rmsrof: 0 > 1 < 2   good
@@ -2119,46 +2174,43 @@ try {
    }  // end while loop
 
    // dump the raw data with all the fits
-   if(cfg(Debug) >= 4) for(i=nb; i<=size_t(ne); i++) {
-      if(!(spdvector[i].flag & OK)) continue;
-      log << "GFE " << GDCUnique << " " << sat
-         << " " << GDCUniqueFix
-         << " " << printTime(time(i),outFormat)
-         << " " << setw(2) << spdvector[i].flag << fixed << setprecision(3);
-      for(k=0; k<3; k++) log << " " << spdvector[i].data[L2]
-            - (i < right->nbeg ? left->bias2-n1-(nadj+k-1) : right->bias2)
-         << " " << PF[in[k]].Evaluate(spdvector[i].ndt - spdvector[nb].ndt);
-      log << " " << setw(3) << spdvector[i].ndt << endl;
+   if(cfg(Debug) >= 4) {
+      log << "EstimateGFslipFix dump " << endl;
+      for(i=nb; i<=ne; i++) {
+         if(!(spdvector[i].flag & OK)) continue;
+         log << "GFE " << GDCUnique << " " << sat
+            << " " << GDCUniqueFix
+            << " " << printTime(time(i),outFormat)
+            << " " << setw(2) << spdvector[i].flag << fixed << setprecision(3);
+         for(k=0; k<3; k++) log << " " << spdvector[i].data[L2]
+               - (i < right->nbeg ? left->bias2-n1-(nadj+k-1) : right->bias2)
+            << " " << PF[in[k]].Evaluate(spdvector[i].ndt - spdvector[nb].ndt);
+         log << " " << setw(3) << spdvector[i].ndt << endl;
+      }
    }
 
    return nadj;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) {
+   Exception E("std except: "+string(e.what())); GPSTK_THROW(E);
+}
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
-// fit a polynomial to the GF range, and change the units of -gfr(P2) and gfp(L2)
-// to cycles of wl21 (=5.4cm)
+// 07202010 not used fit a polynomial to the GF range,
+// change the units of -gfr(P2) and gfp(L2) to cycles of wlgf (=5.4cm)
 int GDCPass::prepareGFdata(void) throw(Exception)
 {
 try {
    bool first;
    int i,nbeg,nend;
-   unsigned ndeg;
 
    // decide on the degree of fit
    nbeg = SegList.begin()->nbeg;
    nend = SegList.begin()->nend;
-   ndeg = 2 + int(0.5 + (nend-nbeg+1)*cfg(DT)/3000.0);
-   if(ndeg > 6) ndeg = 6;
-   //if(ndeg > int(cfg(GFPolyMaxDegree))) ndeg = int(cfg(GFPolyMaxDegree));
-   if(ndeg < 2) ndeg = 2;
-
-   // global fit to the gfr
-   GFPassFit.Reset(ndeg);
 
    for(first=true,i=nbeg; i <= nend; i++) {
       if(!(spdvector[i].flag & OK)) continue;
@@ -2166,40 +2218,26 @@ try {
       // 'change the bias' (initial bias only) in the GFP by changing units, also
       // slip fixing in the WL may have changed the values of GFP
       if(first) {
-//temp uncomment next 3 lines then comment again
-         //if(fabs(spdvector[i].data[L2] - SegList.begin()->bias2) > 10.*wl21) {
-         //   SegList.begin()->bias2 = spdvector[i].data[L2];
-         //}
-         SegList.begin()->bias2 /= wl21;
+         SegList.begin()->bias2 /= wlgf;
          first = false;
       }
 
       // 'change the arrays'
       // change units on the GFP and the GFR
-      spdvector[i].data[P2] /= wl21;                    // -gfr (cycles of wl21)
-      spdvector[i].data[L2] /= wl21;                    // gfp (cycles of wl21)
-
-      // compute polynomial fit
-      GFPassFit.Add(spdvector[i].data[P2],spdvector[i].ndt);
+      spdvector[i].data[P2] /= wlgf;                    // -gfr (cycles of wlgf)
+      spdvector[i].data[L2] /= wlgf;                    // gfp (cycles of wlgf)
 
       // 'change the data'
-      // save in L1                          // gfp+gfr residual (cycles of wl21)
-      // ?? spdvector[i].data[L1] =
-      //    spdvector[i].data[L2] - spdvector[i].data[P2] - SegList.begin()->bias2;
-// temp add -bias2  then remove it again
+      // save in L1                          // gfp+gfr residual (cycles of wlgf)
       spdvector[i].data[L1] = spdvector[i].data[L2] - spdvector[i].data[P2];
-                                 // - SegList.begin()->bias2;
-   }
-
-   if(GFPassFit.isSingular()) {
-      log << "Polynomial fit to GF range is singular! .. abort." << endl;
-      return Singular;
    }
 
    return ReturnOK;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) {
+   Exception E("std except: "+string(e.what())); GPSTK_THROW(E);
+}
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -2209,39 +2247,27 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 int GDCPass::detectGFslips(void) throw(Exception)
 {
 try {
+   unsigned int i;
    int iret;
-   size_t i;
-   //temp double bias;
    list<Segment>::iterator it;
 
    // places first difference of GF in A1 - 'change the arrays' A1
    if( (iret = detectObviousSlips("GF"))) return iret;
 
    GFPassStats.Reset();
-   //temp bias = 0.0;
    for(it=SegList.begin(); it != SegList.end(); it++) {
-      // use bias for debiasing below
-      // TD what if this segment deleted?
-      //temp if(it == SegList.begin()) bias += it->bias2;
-
       // compute stats on dGF/dt
       for(i=it->nbeg; i <= it->nend; i++) {
          if(!(spdvector[i].flag & OK)) continue;
 
          // compute first-diff stats in meters
          // skip the first point in a segment - it is an obvious GF slip
-         if(i > it->nbeg) GFPassStats.Add(spdvector[i].data[A1]*wl21);
-
-         // if a gross GF slip was found, must remove bias in L1=GF(R-P)
-         // in all subsequent segments ; 'change the data' L1
-         //temp if(it != SegList.begin()) spdvector[i].data[L1] += bias - it->bias2;
+         if(i > it->nbeg) GFPassStats.Add(spdvector[i].data[A1]*wlgf);
 
       }  // end loop over data in segment it
 
-      // TD delete segments if sigma too high?
-
       // check number of good points
-      if(it->npts < int(cfg(MinPts))) {
+      if(it->npts < static_cast<unsigned int>(cfg(MinPts))) {
          deleteSegment(it,"insufficient data in segment");
          continue;
       }
@@ -2250,7 +2276,6 @@ try {
       // compute (1stD of) fit residual GFP-fit(GFR) -> A1 - 'change the arrays' A1
       // delete segment if polynomial is singular - probably due to too little data
       if( (iret = GFphaseResiduals(it))) {
-         //return iret;
          deleteSegment(it,"polynomial fit to GF residual failed");
          continue;
       }
@@ -2261,7 +2286,7 @@ try {
    // L1 = GFP+GFR in cycles, by prepareGFdata()
    // L2 = GFP in cycles, by prepareGFdata()
    // P1 = wlbias
-   // P2 = GFR in cycles, by prepareGFdata()
+   // P2 = -GFR in cycles, by prepareGFdata() 
    // A1 = GFP-(local fit) OR its 1stD, by GFphaseResiduals()
    //      (was 1stD of GFP+GFR (in L1), by firstDifferences())
    // A2 = 1stD of GFP (in L2), by firstDifferences()
@@ -2269,7 +2294,7 @@ try {
 
    // delete all segments that are too small
    for(it=SegList.begin(); it != SegList.end(); it++) {
-      if(it->npts < int(cfg(MinPts)))
+      if(it->npts < static_cast<unsigned int>(cfg(MinPts)))
          deleteSegment(it,"insufficient data in segment");
    }
 
@@ -2278,7 +2303,9 @@ try {
    return ReturnOK;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) {
+   Exception E("std except: "+string(e.what())); GPSTK_THROW(E);
+}
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -2288,8 +2315,8 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 int GDCPass::GFphaseResiduals(list<Segment>::iterator& it) throw(Exception)
 {
 try {
-   int ndeg = 0, nprev = 0;
-   size_t i;
+   unsigned int i;
+   int ndeg,nprev;
    double fit,rbias,prev,tmp;
    Stats<double> rofStats;
 
@@ -2318,12 +2345,10 @@ try {
    for(i=it->nbeg; i <= it->nend; i++) {
       // skip bad data
       if(!(spdvector[i].flag & OK)) continue;
-
-      // TD? Use whole pass for small segments?
-      //fit = GFPassFit.Evaluate(spdvector[i].ndt);  // use fit to gfr for whole pass
+      
       fit = it->PF.Evaluate(spdvector[i].ndt);
 
-      // all (fit, resid, gfr and gfp) are in cycles of wl21 (5.4cm)
+      // all (fit, resid, gfr and gfp) are in cycles of wlgf (5.4cm)
 
       // compute gfp-(fit to gfr), store in A1 - 'change the arrays' A1 and A2
       // OR let's try first difference of residual of fit
@@ -2346,27 +2371,15 @@ try {
          prev = tmp;          // store residual for next point
          nprev = spdvector[i].ndt;
       }
-
-      // store fit in A2
-      //spdvector[i].data[A2] = fit;                   // fit to gfr (cycles of wl21)
-      // store raw residual GFP-GFR (cycles of wl21) in A2
-      //spdvector[i].data[A2]
-      //    = spdvector[i].data[L2] - it->bias2 - spdvector[i].data[P2];
+      
    }
-
-   // TD? need this? use this?
-   //log << "GFDsum " << GDCUnique << " " << sat << " " << it->nseg << " " << ndeg
-   //   << " " << it->nbeg << " " << it->npts << " " << it->nend
-   //   << " " << rofStats.N() << fixed << setprecision(3)
-   //   << " " << rofStats.Minimum()
-   //   << " " << rofStats.Maximum()
-   //   << " " << rofStats.Average()
-   //   << " " << rofStats.StdDev() << endl;
 
    return ReturnOK;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) {
+   Exception E("std except: "+string(e.what())); GPSTK_THROW(E);
+}
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -2376,9 +2389,8 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 int GDCPass::detectGFsmallSlips(void) throw(Exception)
 {
 try {
-   const int width=int(cfg(GFSlipWidth));
-   int i,j,inew,ifirst,nok;
-   size_t iplus;
+   const unsigned int width=static_cast<unsigned int>(cfg(GFSlipWidth));
+   int i,j,iplus,inew,ifirst,nok;
    list<Segment>::iterator it;
    Stats<double> pastStats,futureStats;
 
@@ -2402,14 +2414,19 @@ try {
       nok = 0;                          // recount
 
       // loop over points in the segment
-      for(iplus=it->nbeg; iplus<=it->nend+width; iplus++) {
-
+      for(iplus=static_cast<int>(it->nbeg);
+         iplus<=static_cast<int>(it->nend+width);
+            iplus++)
+      {
          // ignore bad points
-         if(iplus <= it->nend && !(spdvector[iplus].flag & OK)) continue;
+         if(iplus <= static_cast<int>(it->nend) && !(spdvector[iplus].flag & OK))
+            continue;
          if(ifirst == -1) ifirst = iplus;
 
          // pop the new i from the future
-         if((int)futureIndex.size() == width || iplus > it->nend) {
+         if(static_cast<int>(futureIndex.size()) == width
+                  || iplus > static_cast<int>(it->nend))
+         {
             inew = futureIndex.front();
             futureIndex.pop_front();
             futureStats.Subtract(spdvector[inew].data[A1]);
@@ -2417,7 +2434,7 @@ try {
          }
 
          // put iplus into the future deque
-         if(iplus <= it->nend) {
+         if(iplus <= static_cast<int>(it->nend)) {
             futureIndex.push_back(iplus);
             futureStats.Add(spdvector[iplus].data[A1]);
          }
@@ -2438,7 +2455,7 @@ try {
             if(spdvector[i].flag & DETECT) {
                //log << "Warning - marking a slip point BAD in GF detect small "
                //   << GDCUnique << " " << sat
-               //   << " " << time(i).printf(outFormat) << " " << i << endl;
+               //   << " " << printTime(time(i),outFormat) << " " << i << endl;
                spdvector[inew].flag = spdvector[i].flag;
                it->nbeg = inew;
             }
@@ -2450,7 +2467,7 @@ try {
          }
 
          // pop last from past
-         if((int)pastIndex.size() == width) {
+         if(static_cast<int>(pastIndex.size()) == width) {
             j = pastIndex.front();
             pastIndex.pop_front();
             pastStats.Subtract(spdvector[j].data[A1]);
@@ -2476,8 +2493,6 @@ try {
 
             // mark it
             spdvector[i].flag |= GFDETECT;
-
-            // TD print the "possible GF slip" and timetag here - see WLS
          }
 
       }  // end loop over points in the pass
@@ -2488,17 +2503,20 @@ try {
    return ReturnOK;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) {
+   Exception E("std except: "+string(e.what())); GPSTK_THROW(E);
+}
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-bool GDCPass::foundGFoutlier(int i, int inew,
+bool GDCPass::foundGFoutlier(int i, int inew, 
    Stats<double>& pastSt, Stats<double>& futureSt)
    throw(Exception)
 {
 try {
    if(i < 0 || inew < 0) return false;
+   bool ok;
    double pmag = spdvector[i].data[A1]; // -pastSt.Average();
    double fmag = spdvector[inew].data[A1]; // -futureSt.Average();
    double var = ::sqrt(pastSt.Variance() + futureSt.Variance());
@@ -2509,6 +2527,7 @@ try {
       << " " << printTime(time(inew),outFormat)
       << fixed << setprecision(3)
       << " p,fave=" << fabs(pmag) << "," << fabs(fmag)
+      << " var=" << var
       << " snr=" << fabs(pmag)/var <<","<< fabs(fmag)/var;
 
    bool isOut=true;
@@ -2518,9 +2537,6 @@ try {
       if(pmag * fmag >= 0) isOut=false;
       if(cfg(Debug) >= 6) oss << " (1)" << (isOut?"ok":"no");
       if(!isOut) break;
-
-      //if(fabs(pmag+fmag) > 0.15*fabs(pmag-fmag))         // approx equal magnitude
-         //{ if(cfg(Debug) >= 6) oss << endl; return false; }
 
       // 2. magnitudes must be large compared to noise
       double noise=cfg(GFSlipOutlier)*var;
@@ -2539,7 +2555,9 @@ try {
    return isOut;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) {
+   Exception E("std except: "+string(e.what())); GPSTK_THROW(E);
+}
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -2553,7 +2571,8 @@ bool GDCPass::foundGFsmallSlip(int i,int nseg,int iend,int ibeg,
 {
 try {
    if(i < 0) return false;
-   int j, k;
+
+   int j,k;
    double mag,pmag,fmag,pvar,fvar;
 
    pmag = fmag = pvar = fvar = 0.0;
@@ -2604,10 +2623,11 @@ try {
    const double STN=cfg(GFSlipStepToNoise); // step (past->future) to noise ratio
    const double MTS=cfg(GFSlipToStep);      // magnitude to step ratio
    const double MTN=cfg(GFSlipToNoise);     // magnitude to noise ratio
-   const size_t Edge=int(cfg(GFSlipEdge));     // number of points before edge
-   const double RangeCheckLimit = 2*cfg(WLSigma)/(0.83*wl21);
-                                                // 2 * range noise in units of wl21
+   const int Edge=int(cfg(GFSlipEdge));     // number of points before edge
+   const double RangeCheckLimit = 2*cfg(WLSigma)/(0.83*wlgf);
+                                            // 2 * range noise in units of wlgf
    const double snr=fabs(pmag-fmag)/::sqrt(pvar+fvar);
+                                            // slip to noise ratio
 
    // 050109 if Debug=6, print only possible slips, if 7 print all
    bool isSlip=true;
@@ -2621,11 +2641,11 @@ try {
          << " " << printTime(time(i),outFormat) << fixed << setprecision(3)
          << " mag=" << mag << " snr=" << snr;      // no endl
 
-      // 0. if WL slip here - ...?
-
+      // 0. if WL slip here - ...? 
+   
       // 1. slip must be non-trivial
       if(fabs(mag) <= minMag) isSlip=false;
-      if(cfg(Debug) >= 6) oss << " (1)" << fabs(mag) << (isSlip?">":"<=") << minMag;
+      if(cfg(Debug) >= 6) oss << " (1)|" << mag << (isSlip?"|>":"|<=") << minMag;
       if(!isSlip) break;
 
       // 2. change in average is larger than noise
@@ -2646,39 +2666,36 @@ try {
       if(!isSlip) break;
 
       // 5. if very close to edge, declare it an outlier
-      if(pastSt.N() < Edge || futureSt.N() < Edge+1) isSlip=false;
+      if(static_cast<int>(pastSt.N()) < Edge
+         || static_cast<int>(futureSt.N()) < Edge+1) isSlip=false;
       if(cfg(Debug) >= 6) oss << " (5)" << pastSt.N() << "," << futureSt.N()
          << (isSlip?">":"<") << Edge;
       if(!isSlip) break;
-
-      // 5.5 TD? if slip is within a few epochs of WL slip - skip it
 
       // 6. large slips (compared to range noise): check the GFR-GFP for consistency
       if(fabs(mag) > RangeCheckLimit) {
          double magGFR,mtnGFR;
          Stats<double> pGFRmPh,fGFRmPh;
-         for(size_t jj=0; jj<pastIn.size(); jj++) {
-            if(pastIn[jj] > -1) pGFRmPh.Add(spdvector[pastIn[jj]].data[L1]);
-            if(futureIn[jj] > -1) fGFRmPh.Add(spdvector[futureIn[jj]].data[L1]);
+         for(j=0; j<static_cast<int>(pastIn.size()); j++) {
+            if(pastIn[j] > -1) pGFRmPh.Add(spdvector[pastIn[j]].data[L1]);
+            if(futureIn[j] > -1) fGFRmPh.Add(spdvector[futureIn[j]].data[L1]);
          }
-         magGFR = spdvector[i].data[L1] - (pGFRmPh.Average()+fGFRmPh.Average())/2.0;
+         magGFR = fGFRmPh.Average() - pGFRmPh.Average();
          mtnGFR = fabs(magGFR)/::sqrt(pGFRmPh.Variance()+fGFRmPh.Variance());
-
+         
          if(cfg(Debug) >= 6)
             oss << "; GFR-GFP has mag: " << magGFR
                << ", |dmag|: " << fabs(mag-magGFR)
                << " and mag/noise " << mtnGFR;
 
-         // TD test - mag must ~= magGFR if magGFR/noiseGFR >> 1
-         // test - metz 54,56,57,58
          if(fabs(mag-magGFR) > fabs(magGFR)) isSlip=false;
          if(cfg(Debug) >= 6) oss << " (6a)" << fabs(mag-magGFR)
-            << (isSlip?"<=":">") << fabs(magGFR);
+            << (isSlip ? "<=" : ">") << fabs(magGFR);
          if(!isSlip) break;
 
          if(mtnGFR < 3) isSlip=false;
          if(cfg(Debug) >= 6) oss << " (6b)"
-            << mtnGFR << "><3:can" << (isSlip?"":"not") << "_see_in_GFR";
+            << mtnGFR << "><3:can" << (isSlip ? "" : "not") << "_see_in_GFR";
          if(!isSlip) break;
       }
 
@@ -2706,16 +2723,24 @@ try {
                << ",maxima=" << fdStats.Minimum() << "," << fdStats.Maximum();
       }
 
+      // 8. if switch is on and there is no WL slip here - skip
+      if(cfg(GFSkipSmall) && !(spdvector[i].flag & WLDETECT)) {
+         if(cfg(Debug) >= 6) oss << " (8)skipGFsmall";
+         isSlip = false;
+      }
+   
       break;
    }  // end for(;;)
 
-   if(isSlip) oss << " possible GF slip";
+   if(isSlip) oss << " possible GF slip"; else oss << " not a GF slip";
    if(cfg(Debug) >= 6) log << oss.str() << endl;
 
    return isSlip;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) {
+   Exception E("std except: "+string(e.what())); GPSTK_THROW(E);
+}
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -2725,11 +2750,12 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 int GDCPass::WLconsistencyCheck(void) throw(Exception)
 {
 try {
-   const size_t N=2*int(cfg(WLWindowWidth));
-   double mag,absmag,factor=wl2/wl21;
+   int i,k;
+   const int N=2*int(cfg(WLWindowWidth));
+   double mag,absmag,factor=wl2/wlgf;
 
    // loop over the data and look for points with GFDETECT but not WLDETECT or WLFIX
-   for(size_t i=0; i<size(); i++) {
+   for(i=0; i<static_cast<int>(size()); i++) {
 
       if(!(spdvector[i].flag & OK)) continue;        // bad
       if(!(spdvector[i].flag & DETECT)) continue;    // no slips
@@ -2737,19 +2763,19 @@ try {
 
       // GF only slip - compute WL stats on both sides
       Stats<double> futureStats,pastStats;
-      size_t k = i;
+      k = i;
       // fill future
-      while(k < size() && futureStats.N() < N) {
+      while(k < static_cast<int>(size()) && static_cast<int>(futureStats.N()) < N) {
          if(spdvector[k].flag & OK)                  // data is good
             futureStats.Add(spdvector[k].data[P1]);        // wlbias
          k++;
       }
       // fill past
-      int j = i-1;
-      while(j >= 0 && pastStats.N() < N) {
-         if(spdvector[j].flag & OK)                  // data is good
-            pastStats.Add(spdvector[j].data[P1]);          // wlbias
-         j--;
+      k = i-1;
+      while(k >= 0 && static_cast<int>(pastStats.N()) < N) {
+         if(spdvector[k].flag & OK)                  // data is good
+            pastStats.Add(spdvector[k].data[P1]);          // wlbias
+         k--;
       }
 
       // is there a WL slip here?
@@ -2759,7 +2785,7 @@ try {
       mag = futureStats.Average()-pastStats.Average();
       absmag = fabs(mag);
 
-      if(absmag > cfg(WLSlipSize) &&      // 0.75 &&
+      if(absmag > cfg(WLSlipSize) &&
          absmag > pastStats.StdDev() &&
          absmag > futureStats.StdDev()) {
 
@@ -2769,12 +2795,13 @@ try {
          if(nwl == 0) continue;
 
          // now do the fixing - change the data to the future of the slip
-         for(k=i; k<size(); k++) {
+         for(k=i; k<static_cast<int>(size()); k++) {
             //if(!(spdvector[i].flag & OK)) continue;
+            // 'change the data'
             spdvector[k].data[P1] -= nwl;                                 // WLbias
             spdvector[k].data[L2] -= nwl * factor;                        // GFP
          }
-
+         
          // Add to slip list
          Slip newSlip(i);
          newSlip.NWL = nwl;
@@ -2804,7 +2831,9 @@ try {
    return ReturnOK;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) {
+   Exception E("std except: "+string(e.what())); GPSTK_THROW(E);
+}
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -2819,8 +2848,7 @@ string GDCPass::finish(int iret, SatPass& svp, vector<string>& editCmds)
 {
 try {
    bool ok;
-   int ifirst,ilast,npts;
-   size_t i;
+   int i,ifirst,ilast,npts;
    long N1,N2,prevN1,prevN2;
    double slipL1,slipL2,WLbias,GFbias;
    //SatPassData spd;
@@ -2842,12 +2870,12 @@ try {
    WLbias = GFbias = slipL1 = slipL2 = 0.0;
    prevN1 = prevN2 = 0L;
    jt = SlipList.begin();
-   for(i=0; i<size(); i++) {
+   for(i=0; i<static_cast<int>(size()); i++) {
 
       // is this point bad?
-      if(!(spdvector[i].flag & OK)) {       // data is bad
+      if(!(spdvector[i].flag & OK)) {  // data is bad
          ok = false;
-         if(i == size() - 1) {    // but this is the last point
+         if(i == static_cast<int>(size()) - 1) {         // but this is the last point 
             i++;
             ok = true;
          }
@@ -2902,15 +2930,15 @@ try {
       }
 
       // keep track of net slip fix
-      if(jt != SlipList.end() && (int)i == jt->index) {          // there is a slip here
+      if(jt != SlipList.end() && i == jt->index) {          // there is a slip here
          // fix the slip by changing the bias added to phase
          N1 = jt->N1;
          N2 = jt->N1 - jt->NWL;
          slipL1 += double(N1);
          slipL2 += double(N2);
 
-         // generate edit commands
-         {
+         // generate edit commands for slips
+         if(N1-prevN1 != 0) {
             ostringstream stst;
             stst << "-BD+" << sat << ",L1,";
             if(cfg(OutputGPSTime))
@@ -2922,7 +2950,7 @@ try {
             //stst << " # WL: " << jt->NWL << " N1: " << jt->N1; //temp
             editCmds.push_back(stst.str());
          }
-         {
+         if(N2-prevN2 != 0) {
             ostringstream stst;
             stst << "-BD+" << sat << ",L2,";
             if(cfg(OutputGPSTime))
@@ -2939,7 +2967,7 @@ try {
          jt++;
       }
 
-      if(i >= size()) break;
+      if(i >= static_cast<int>(size())) break;
 
       // 'change the data' for the last time
       spdvector[i].data[L1] = svp.data(i,DCobstypes[L1]) - slipL1;
@@ -2956,10 +2984,10 @@ try {
          // wide lane phase (m)
       double wlp = wl1p * spdvector[i].data[L1] + wl2p * spdvector[i].data[L2];
          // geo-free range (m)
-      //double gfr = gf1r * spdvector[i].data[P1] + gf2r * spdvector[i].data[P2];
+      double gfr = gf1r * spdvector[i].data[P1] + gf2r * spdvector[i].data[P2];
          // geo-free phase (m)
       double gfp = gf1p * spdvector[i].data[L1] + gf2p * spdvector[i].data[L2];
-      if((int)i == ifirst) {
+      if(i == ifirst) {
          WLbias = (wlp-wlr)/wlwl;
          GFbias = gfp;
       }
@@ -2973,20 +3001,20 @@ try {
    if(SegList.begin() != SegList.end()) {
       SegList.begin()->bias1 = SegList.begin()->bias2 = 0;     // not necessary..
       SegList.begin()->nbeg = 0;
-      SegList.begin()->nend = size()-1;
+      SegList.begin()->nend = static_cast<int>(size())-1;
       SegList.begin()->npts = npts;
    }
    // dump the corrected data
    if(cfg(Debug) >= 2) dumpSegments("AFT",2,true);
 
    // dump the edit commands to log
-   for(i=0; i<editCmds.size(); i++)
+   for(i=0; i<static_cast<int>(editCmds.size()); i++)
       if(cfg(Debug) >= 2)
          log << "EditCmd: " << GDCUnique << " " << editCmds[i] << endl;
 
    // ---------------------------------------------------------
    // copy corrected data into original SatPass, without disturbing other obs types
-   for(i=0; i<size(); i++) {
+   for(i=0; i<static_cast<int>(size()); i++) {
       svp.data(i,DCobstypes[L1]) = spdvector[i].data[L1];
       svp.data(i,DCobstypes[L2]) = spdvector[i].data[L2];
       svp.data(i,DCobstypes[P1]) = spdvector[i].data[P1];
@@ -3001,9 +3029,8 @@ try {
       //const unsigned short GDCPass::DETECT   =   6;  // = WLDETECT | GFDETECT
       //const unsigned short GDCPass::FIX      =  24;  // = WLFIX | GFFIX
       if(spdvector[i].flag & OK) {
-//??     if(((spdvector[i].flag & DETECT)!=0 && (spdvector[i].flag & FIX)==0)
          if(((spdvector[i].flag & DETECT)==0 && (spdvector[i].flag & FIX)!=0)
-            || (int)i == ifirst)
+            || i == ifirst)
             spdvector[i].flag = LL3 + OK;
          else
             spdvector[i].flag = OK;
@@ -3017,13 +3044,48 @@ try {
    }
 
    // ---------------------------------------------------------
-   // print stuff at the end
-   if(cfg(Debug) >= 1) retMessage = dumpSegments("GDC",1);  // dump also prints it
-
+   // make up string to return
+   ilast = -1;                               // last good point
    ostringstream oss;
+   for(list<Segment>::iterator it=SegList.begin(); it != SegList.end(); it++) {
+      i = (it->nend - it->nbeg + 1);         // total number of points
+      oss << GDCtag << " " << GDCUnique << " " << sat
+         << " #" << setw(2) << it->nseg << ": "
+         << setw(4) << it->npts << "/" << setw(4) << i << " pts, # "
+         << setw(4) << it->nbeg << "-" << setw(4) << it->nend
+         << " (" << printTime(time(it->nbeg),outFormat)
+         << " - " << printTime(time(it->nend),outFormat)
+         << ")";
+      if(it->npts > 0) {
+         oss << fixed << setprecision(3)
+            << " bias(wl)=" << setw(13) << it->bias1 //biaswl
+            << " bias(gf)=" << setw(13) << it->bias2; //biasgf;
+         if(ilast > -1) {
+            ifirst = static_cast<int>(it->nbeg);
+            while(ifirst <= static_cast<int>(it->nend)
+                  && !(spdvector[ifirst].flag & OK)) ifirst++;
+            i = spdvector[ifirst].ndt - spdvector[ilast].ndt;
+            oss << " gap_segs " << setprecision(1) << setw(5)
+               << cfg(DT)*i << " s = " << i << " pts.";
+         }
+         ilast = static_cast<int>(it->nend);
+         while(ilast >= static_cast<int>(it->nbeg) && !(spdvector[ilast].flag & OK))
+            ilast--;
+      }
+      oss << endl;
+   }
+
+   // print the channel number (GLO) and wavelengths in cm
+   oss << GDCtag << " " << GDCUnique << " " << sat << fixed << setprecision(2)
+      << " DT " << fixed << setprecision(2) << cfg(DT)
+      << " wavelengths " << wl1*100.0 << " " << wl2*100.0
+      << " " << wlwl*100.0 << " " << wlgf*100.0;
+   if(sat.system == SatID::systemGlonass) oss << " GLOn " << GLOn;
+   oss << endl;
+
    // print WL & GF stats for whole pass
-   if(cfg(Debug) > 0 && WLPassStats.N() > 2) {
-      oss << "GDC " << GDCUnique << " " << sat
+   if(WLPassStats.N() > 2) {
+      oss << GDCtag << " " << GDCUnique << " " << sat
          << " " << fixed << setprecision(3) << WLPassStats.StdDev()
          << " WL sigma in cycles"
          << " N=" << WLPassStats.N()
@@ -3035,8 +3097,8 @@ try {
       oss << endl;
    }
 
-   if(cfg(Debug) > 0 && GFPassStats.N() > 2) {
-      oss << "GDC " << GDCUnique << " " << sat
+   if(GFPassStats.N() > 2) {
+      oss << GDCtag << " " << GDCUnique << " " << sat
          << " " << fixed << setprecision(3) << GFPassStats.StdDev()
          << " sigma GF variation in meters per DT"
          << " N=" << GFPassStats.N()
@@ -3044,7 +3106,7 @@ try {
          << " Max=" << GFPassStats.Maximum()
          << " Ave=" << GFPassStats.Average()
          << endl;
-      oss << "GDC " << GDCUnique << " " << sat
+      oss << GDCtag << " " << GDCUnique << " " << sat
          << " " << fixed << setprecision(3)
          << (fabs(GFPassStats.Minimum()) > fabs(GFPassStats.Maximum()) ?
             fabs(GFPassStats.Minimum()) : fabs(GFPassStats.Maximum()))
@@ -3056,43 +3118,46 @@ try {
    }
 
    // print 'learn' summary
-   if(cfg(Debug) > 0) {
-      map<string,int>::const_iterator kt;
-      for(kt=learn.begin(); kt != learn.end(); kt++)
-         oss << "GDC " << GDCUnique << " " << sat
-            << " " << setw(3) << kt->second << " " << kt->first << endl;
+   map<string,int>::const_iterator kt;
+   for(kt=learn.begin(); kt != learn.end(); kt++)
+      oss << GDCtag << " " << GDCUnique << " " << sat
+         << " " << setw(3) << kt->second << " " << kt->first << endl;
+   //if(sat.system == SatID::systemGlonass)
+   //   oss << GDCtag << " " << GDCUnique << " " << sat
+   //      << "  " << GLOn << string(" GLONASS frequency channel") << endl;
 
-      int n = int((lastTime-firstTime)/cfg(DT)) + 1;
-      double percent = 100.0*double(ngood)/n;
-      if(cfg(Debug) > 0) oss << "GDC# " << setw(2) << GDCUnique << ", SAT " << sat
-         << ", Pts: " << setw(4) << n << " total " << setw(4) << ngood
-         << " good " << fixed << setprecision(1) << setw(5) << percent << "%"
-         << ", start " << printTime(firstTime,outFormat)
-         << endl;
-   }
+   int n = int((lastTime-firstTime)/cfg(DT)) + 1;
+   double percent = 100.0*double(ngood)/n;
+   if(cfg(Debug) > 0) oss << GDCtag << "# " << setw(3) << GDCUnique << ", SAT " << sat
+      << ", Pts: " << setw(4) << n << " total " << setw(4) << ngood
+      << " good " << fixed << setprecision(1) << setw(5) << percent << "%"
+      << ", start " << printTime(firstTime,outFormat)
+      << endl;
 
    if(iret) {
-      oss << "GDC " << setw(3) << GDCUnique << " " << sat
+      oss << GDCtag << " " << setw(3) << GDCUnique << " " << sat
          << " " << printTime(firstTime,outFormat)
          << " is returning with error code: "
          << (iret == NoData ? "insufficient data" :
-            (iret == Singular ? "singularity" :
-            (iret == FatalProblem ? "fatal problem" : "unknown problem")
-            //(iret == PrematureEnd ? "premature end" : "unknown problem")
-            ))
+            (iret == BadInput ? "required obs types L1,L2,P1/C1,P2 not found" :
+            (iret == Singular ? "singularity in polynomial fit" :
+            (iret == FatalProblem ? "time interval DT was not set" :
+            (iret == PrematureEnd ? "premature end" : "unknown problem")))))
          << endl;
    }
 
-   retMessage += oss.str();
-   if(oss.str().size() > 0) log << oss.str();
+   retMessage = oss.str();
 
    if(cfg(Debug) >= 2) log << "======== End GPSTK Discontinuity Corrector "
-                           << GDCUnique << " ================================================" << endl;
+      << GDCUnique << " ================================================\n";
 
+   stripTrailing(retMessage,'\n');
    return retMessage;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) {
+   Exception E("std except: "+string(e.what())); GPSTK_THROW(E);
+}
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -3116,6 +3181,14 @@ try {
    while(s.nend > s.nbeg && !(spdvector[s.nend].flag & OK)) s.nend--;
    while(sit->nend > sit->nbeg && !(spdvector[sit->nend].flag & OK)) sit->nend--;
 
+   // recompute npts // TD is this done somewhere else?
+   unsigned int i;
+   s.npts = sit->npts = 0;
+   for(i=s.nbeg; i<=s.nend; i++)
+      if(spdvector[i].flag & OK) s.npts++;
+   for(i=sit->nbeg; i<=sit->nend; i++)
+      if(spdvector[i].flag & OK) sit->npts++;
+
    // get the segment number right
    s.nseg++;
    list<Segment>::iterator skt=sit;
@@ -3128,13 +3201,15 @@ try {
          << " " << s.nbeg << " - " << s.nend
          << " biases " << fixed << setprecision(3) << s.bias1 << " " << s.bias2
          << endl;
-
+ 
    learn["breaks found: " + msg]++;
 
    return SegList.insert(++sit,s); // insert puts s before ++sit
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) {
+   Exception E("std except: "+string(e.what())); GPSTK_THROW(E);
+}
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -3147,7 +3222,8 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 string GDCPass::dumpSegments(string label, int level, bool extra) throw(Exception)
 {
 try {
-   long i, ifirst, ilast;
+   unsigned int i,ifirst;
+   int ilast;
    list<Segment>::iterator it;
    string msg;
    ostringstream oss;
@@ -3162,12 +3238,6 @@ try {
       // one line per segment
    ilast = -1;                               // last good point
    for(it=SegList.begin(); it != SegList.end(); it++) {
-      //if(it->npts > 0) {
-      //   biaswl = spdvector[it->nbeg].data[P1];
-      //   biasgf = spdvector[it->nbeg].data[L2];
-      //}
-      //else biaswl = biasgf = 0.0;
-
       i = (it->nend - it->nbeg + 1);         // total number of points
 
       oss << label << " " << GDCUnique << " " << sat
@@ -3184,30 +3254,26 @@ try {
             << " bias(gf)=" << setw(13) << it->bias2; //biasgf;
          if(ilast > -1) {
             ifirst = it->nbeg;
-            while(ifirst <= (long)it->nend
-                  && !(spdvector[ifirst].flag & OK)) ifirst++;
+            while(ifirst <= it->nend && !(spdvector[ifirst].flag & OK)) ifirst++;
             i = spdvector[ifirst].ndt - spdvector[ilast].ndt;
             oss << " Gap " << setprecision(1) << setw(5)
                << cfg(DT)*i << " s = " << i << " pts.";
          }
          ilast = it->nend;
-         while(ilast >= (long)it->nbeg 
-               && !(spdvector[ilast].flag & OK)) ilast--;
+         while(ilast >= static_cast<int>(it->nbeg) && !(spdvector[ilast].flag & OK))
+            ilast--;
       }
 
       oss << endl;
    }
 
-   msg = oss.str();
-   log << msg;
-   if(level < 2) return msg;
+   if(level < 2) { msg = oss.str(); log << msg; return msg; }
 
       // dump the data
    for(it=SegList.begin(); it != SegList.end(); it++) {
-      for(i=it->nbeg; i<=(long)it->nend; i++) {
-         //if(!(spdvector[i].flag & OK)) continue;  //dfplot ignores bad data
+      for(i=it->nbeg; i<=it->nend; i++) {
 
-         log << "DSC" << label << " " << GDCUnique << " " << sat << " " << it->nseg
+         oss << "DSC" << label << " " << GDCUnique << " " << sat << " " << it->nseg
             << " " << printTime(time(i),outFormat)
             << " " << setw(3) << spdvector[i].flag
             << fixed << setprecision(3)
@@ -3215,20 +3281,25 @@ try {
             << " " << setw(13) << spdvector[i].data[L2] - it->bias2 //biasgf
             << " " << setw(13) << spdvector[i].data[P1] - it->bias1 //biaswl
             << " " << setw(13) << spdvector[i].data[P2];
-         if(extra) log
+         if(extra) oss
             << " " << setw(13) << spdvector[i].data[A1]
             << " " << setw(13) << spdvector[i].data[A2];
-         log << " " << setw(4) << i;          // TD? make this spdvector[i].ndt?
-         if(i == (long)it->nbeg) log
+         oss << " " << setw(4) << i;
+         if(i == it->nbeg) oss
             << " " << setw(13) << it->bias1 //biaswl
             << " " << setw(13) << it->bias2; //biasgf;
-         log << endl;
+         oss << endl;
       }
    }
+
+   msg = oss.str();
+   log << msg;
    return msg;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) {
+   Exception E("std except: "+string(e.what())); GPSTK_THROW(E);
+}
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -3236,7 +3307,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 void GDCPass::deleteSegment(list<Segment>::iterator& it, string msg) throw(Exception)
 {
 try {
-   size_t i;
+   unsigned int i;
 
    if(cfg(Debug) >= 6) log << "Delete segment "
       << GDCUnique << " " << sat << " " << it->nseg
@@ -3256,7 +3327,9 @@ try {
    learn["segments deleted: " + msg]++;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) {
+   Exception E("std except: "+string(e.what())); GPSTK_THROW(E);
+}
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 

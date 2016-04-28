@@ -108,7 +108,7 @@ void FileHunter_T :: init()
 {
    TestUtil  tester;
 
-   tempFilePath = tester.getTempPath() + getFileSep() + "test_output_filehunter";
+   tempFilePath = gpstk::getPathTestTemp() + getFileSep() + "test_output_filehunter";
 
       // create directories and files for the find() tests
    newDir(tempFilePath);

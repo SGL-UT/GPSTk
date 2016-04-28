@@ -373,7 +373,7 @@ public:
       using gpstk::StringUtils::asDouble;
       TUDEF("EngNav", "getNMCTValidity");
          // Here's the input file to look at for the actual test data
-      string infilename = testFramework.getDataPath() +
+      string infilename = gpstk::getPathData() +
          gpstk::getFileSep() + "test_getNMCTValidity.txt";
       ifstream infile(infilename.c_str());
       string line;

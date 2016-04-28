@@ -287,7 +287,7 @@ public:
             // Check findEphemeris output with pre-determined standard
             //-------------------------------------------------------
          GPSEphemeris eph(gpsEphStore.findEphemeris(sid1,ComTime));
-         GPSWeekSecond xmitTime(1360, 208806.);
+         GPSWeekSecond xmitTime(1360, 208800.);
          CommonTime xmitTimeCT(xmitTime);
          GPSWeekSecond toe(1360, 215984.);
          CommonTime toeCT(toe);
@@ -1559,8 +1559,8 @@ public:
    {
 
       TestUtil test0;
-      std::string dataFilePath = test0.getDataPath();
-      std::string tempFilePath = test0.getTempPath();
+      std::string dataFilePath = gpstk::getPathData();
+      std::string tempFilePath = gpstk::getPathTestTemp();
       std::string file_sep = "/";
 
       inputRinexNavData             = dataFilePath + file_sep +

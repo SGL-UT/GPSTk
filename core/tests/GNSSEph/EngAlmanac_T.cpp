@@ -1,4 +1,4 @@
-   //============================================================================
+//============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -58,7 +58,7 @@ public:
 
    int addSubframeTest(void)
    {
-      TestUtil testFramework("EngAlmanac", "addSubframe", __FILE__, __LINE__);
+      gpstk::TestUtil testFramework("EngAlmanac", "addSubframe", __FILE__, __LINE__);
 
 
          //Subframe and week number mod 1024
@@ -182,7 +182,7 @@ public:
          */
       const long subframe551[10] = {0x22c000e4, 0x00000598, 0x2CD38CC0, 0x00000000, 0x00000FC0,
                                     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x11111110
-                                   };
+      };
       testMesg = "Adding subframe 5 page 25 failed";
       testFramework.assert(alm.addSubframe(subframe551, 819), testMesg, __LINE__);
 
@@ -217,7 +217,7 @@ public:
          */
       const long subframe447[10] = {0x22c000e4, 0x0000042c, 0x2FE66640, 0x26666640, 0x26666640,
                                     0x26666640, 0x26666640, 0x26667000, 0x00000000, 0x00000F00
-                                   };
+      };
       testMesg = "Adding subframe 4 page 25 failed";
       testFramework.assert(alm.addSubframe(subframe447, 819), testMesg, __LINE__);
 
@@ -283,7 +283,7 @@ public:
          */
       const long subframe456[10] = {0x22c000e4, 0x0000042c, 0x2e37ab40, 0x2fbbf780, 0x2b703780,
                                     0x2eb76ac0, 0x32ac2c00, 0x2d5b9680, 0x037f8140, 0x267fff00
-                                   };
+      };
       testMesg = "Adding subframe 4 page 18 failed";
       testFramework.assert(alm.addSubframe(subframe456, 819), testMesg, __LINE__);
 
@@ -294,7 +294,7 @@ public:
    int getTest(void)
    {
       int x, failCount;
-      TestUtil testFramework("EngAlmanac", "getTest", __FILE__, __LINE__);
+      gpstk::TestUtil testFramework("EngAlmanac", "getTest", __FILE__, __LINE__);
 
          //GPSTK documentation should really say what units these return as
          // For loop which tests all the data values for the almanac. Commented out, too many tests
@@ -352,7 +352,7 @@ public:
          if ( i >= 7) x = i + 2;
          else x = i + 1;
          if (!(std::abs(alm.getIOffset(gpstk::SatID(x,
-                                       gpstk::SatID::systemGPS)) - (aData.oi[i] - .3*M_PI)) < eps))
+                                                    gpstk::SatID::systemGPS)) - (aData.oi[i] - .3*M_PI)) < eps))
             failCount++;
       }
       testMesg = "getIOffset returned the wrong value";
@@ -365,7 +365,7 @@ public:
          if ( i >= 7) x = i + 2;
          else x = i + 1;
          if (!(std::abs(alm.getOmegadot(gpstk::SatID(x,
-                                        gpstk::SatID::systemGPS)) - aData.rora[i])*1E8 < eps))
+                                                     gpstk::SatID::systemGPS)) - aData.rora[i])*1E8 < eps))
             failCount++;
       }
       testMesg = "getOmegadot returned the wrong value";
@@ -414,7 +414,7 @@ public:
          if ( i >= 7) x = i + 2;
          else x = i + 1;
          if (!(std::abs(alm.getAhalf(gpstk::SatID(x,
-                                     gpstk::SatID::systemGPS)) - aData.sqrta[i])*1E-4 < eps))
+                                                  gpstk::SatID::systemGPS)) - aData.sqrta[i])*1E-4 < eps))
             failCount++;
       }
       testMesg = "getAhalf returned the wrong value";
@@ -440,7 +440,7 @@ public:
          if ( i >= 7) x = i + 2;
          else x = i + 1;
          if (!(std::abs(alm.getOmega0(gpstk::SatID(x,
-                                      gpstk::SatID::systemGPS)) - aData.raaw[i])*1E-1 < eps))
+                                                   gpstk::SatID::systemGPS)) - aData.raaw[i])*1E-1 < eps))
             failCount++;
       }
       testMesg = "getOmega0 returned the wrong value";

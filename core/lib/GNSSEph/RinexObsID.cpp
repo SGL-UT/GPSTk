@@ -162,6 +162,8 @@ namespace gpstk
       char cb(strID[1]);
       char tc(strID[2]);
       std::string codes(ObsID::validRinexTrackingCodes[sys][cb]);
+      if(ot == ' ' || ot == '-')
+         return false;
       if(codes.find(std::string(1,tc)) == std::string::npos)
          return false;
       if(sys == 'G' && ot == 'C' && tc == 'N')           // the one exception
