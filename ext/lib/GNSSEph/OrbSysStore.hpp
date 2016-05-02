@@ -166,6 +166,19 @@ namespace gpstk
                                                   const CommonTime& t) const
          throw(InvalidRequest);
 
+      /// Given a satellite, a message type and a system-specific 
+      /// message unique ID (UID),
+      /// return a list of the messages in the store and fit the
+      /// description.
+      /// Throws InvalidRequest if
+      ///   - the satellite isn't in the store
+      //    - the NavID isn't in the store
+      ///   - if there are no message with the specified UID in the store
+      std::list<const OrbDataSys*> findList(const SatID& sat, 
+                                            const NavID& navtype,
+                                            const unsigned long UID) const
+         throw(InvalidRequest);
+
       /// Return a list of SatID object representing the satellites that
       /// are contained in the store.
       /// @return list of SatID objects
