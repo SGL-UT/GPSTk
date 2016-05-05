@@ -15,7 +15,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -23,13 +23,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -529,11 +529,23 @@ namespace gpstk
    }
 
    CommonTime EngEphemeris::getTransmitTime() const
-      throw()
+      throw( InvalidRequest )
    {
       CommonTime toReturn;
-      toReturn = GPSWeekSecond(getFullWeek(), static_cast<double>(getTot()),
-                               TimeSystem::GPS);
+      try
+      {
+         toReturn = GPSWeekSecond(getFullWeek(), static_cast<double>(getTot()),
+                                  TimeSystem::GPS);
+      }
+      catch (InvalidRequest& ire)
+      {
+         GPSTK_RETHROW(ire);
+      }
+      catch (Exception& exc)
+      {
+         InvalidRequest ire(exc);
+         GPSTK_THROW(ire);
+      }
       return toReturn;
    }
 
@@ -1023,7 +1035,7 @@ namespace gpstk
       const short fitInt, const double cic, const double Omega0,
       const double cis, const double I0, const double crc,
       const double W, const double OmegaDot, const double IDot )
-   throw()
+   throw( InvalidRequest )
    {
       PRNID = prn;
       tracker = Tracker;
@@ -1052,42 +1064,49 @@ namespace gpstk
          // carrier and code types are undefined.  They could be
          // L1/L2 C/A, P, Y,.....
       ObsID obsID(ObsID::otNavMsg, ObsID::cbUndefined, ObsID::tcUndefined);
-
-      CommonTime toeCT = GPSWeekSecond(weeknum, toe, TimeSystem::GPS);
-      CommonTime tocCT = GPSWeekSecond(weeknum, toc, TimeSystem::GPS);
-
-      double A = ahalf*ahalf;
-      double dndot = 0.0;
-      double Adot = 0.0;
-      short fitHours = getLegacyFitInterval(IODC, fitint);
-      long beginFitSOW = toe - (fitHours/2)*3600;
-      long endFitSOW = toe + (fitHours/2)*3600;
-      short beginFitWk = weeknum;
-      short endFitWk = weeknum;
-      if (beginFitSOW < 0)
+      try
       {
-         beginFitSOW += FULLWEEK;
-         beginFitWk--;
+         CommonTime toeCT = GPSWeekSecond(weeknum, toe, TimeSystem::GPS);
+         CommonTime tocCT = GPSWeekSecond(weeknum, toc, TimeSystem::GPS);
+
+         double A = ahalf*ahalf;
+         double dndot = 0.0;
+         double Adot = 0.0;
+         short fitHours = getLegacyFitInterval(IODC, fitint);
+         long beginFitSOW = toe - (fitHours/2)*3600;
+         long endFitSOW = toe + (fitHours/2)*3600;
+         short beginFitWk = weeknum;
+         short endFitWk = weeknum;
+         if (beginFitSOW < 0)
+         {
+            beginFitSOW += FULLWEEK;
+            beginFitWk--;
+         }
+         CommonTime beginFit = GPSWeekSecond(beginFitWk, beginFitSOW,
+                                             TimeSystem::GPS);
+         if (endFitSOW >= FULLWEEK)
+         {
+            endFitSOW += FULLWEEK;
+            endFitWk++;
+         }
+         CommonTime endFit = GPSWeekSecond(endFitWk, endFitSOW, TimeSystem::GPS);
+
+         orbit.loadData(satSys, obsID, PRNID, beginFit, endFit, toeCT,
+                        accFlag, health, cuc, cus, crc, crs, cic, cis, m0, Dn,
+                        dndot, Ecc, A, ahalf, Adot, Omega0, I0, W, OmegaDot,
+                        IDot);
+
+         bcClock.loadData( satSys, obsID, PRNID, tocCT,
+                           accFlag, health, Af0, Af1, Af2);
+         haveSubframe[0] = true;
+         haveSubframe[1] = true;
+         haveSubframe[2] = true;
       }
-      CommonTime beginFit = GPSWeekSecond(beginFitWk, beginFitSOW,
-                                          TimeSystem::GPS);
-      if (endFitSOW >= FULLWEEK)
+      catch (Exception& exc)
       {
-         endFitSOW += FULLWEEK;
-         endFitWk++;
+         InvalidRequest ire(exc);
+         GPSTK_THROW(ire);
       }
-      CommonTime endFit = GPSWeekSecond(endFitWk, endFitSOW, TimeSystem::GPS);
-
-      orbit.loadData(satSys, obsID, PRNID, beginFit, endFit, toeCT,
-                     accFlag, health, cuc, cus, crc, crs, cic, cis, m0, Dn,
-                     dndot, Ecc, A, ahalf, Adot, Omega0, I0, W, OmegaDot,
-                     IDot);
-
-      bcClock.loadData( satSys, obsID, PRNID, tocCT,
-                        accFlag, health, Af0, Af1, Af2);
-      haveSubframe[0] = true;
-      haveSubframe[1] = true;
-      haveSubframe[2] = true;
       return *this;
    }
 
@@ -1097,7 +1116,7 @@ namespace gpstk
                                        short l2pdata, double tgd, double toc,
                                        double Af2, double Af1, double Af0,
                                        short Tracker, short prn )
-      throw()
+      throw( InvalidRequest )
    {
       tlm_message[0] = tlm;
       HOWtime[0] = static_cast<long>( how );
@@ -1120,20 +1139,28 @@ namespace gpstk
          tocWeek++;
       else if (timeDiff > HALFWEEK)
          tocWeek--;
+      try
+      {
+         CommonTime tocCT = GPSWeekSecond(tocWeek, toc, TimeSystem::GPS);
 
-      CommonTime tocCT = GPSWeekSecond(tocWeek, toc, TimeSystem::GPS);
+            // The system is assumed (legacy navigation message is from GPS)
+         satSys = "G";
 
-         // The system is assumed (legacy navigation message is from GPS)
-      satSys = "G";
+            // The observation ID has a type of navigation, but the
+            // carrier and code types are undefined.  They could be
+            // L1/L2 C/A, P, Y,.....
+         ObsID obsID(ObsID::otNavMsg, ObsID::cbUndefined, ObsID::tcUndefined);
 
-         // The observation ID has a type of navigation, but the
-         // carrier and code types are undefined.  They could be
-         // L1/L2 C/A, P, Y,.....
-      ObsID obsID(ObsID::otNavMsg, ObsID::cbUndefined, ObsID::tcUndefined);
-
-      bcClock.loadData( satSys, obsID, PRNID, tocCT,
-                        accFlagTmp, healthy, Af0, Af1, Af2);
-      haveSubframe[0] = true;
+         bcClock.loadData( satSys, obsID, PRNID, tocCT,
+                           accFlagTmp, healthy, Af0, Af1, Af2);
+         haveSubframe[0] = true;
+      }
+      catch (Exception& exc)
+      {
+         haveSubframe[0] = false;
+         InvalidRequest ire(exc);
+         GPSTK_THROW(ire);
+      }
       return *this;
    }
 
@@ -1184,33 +1211,41 @@ namespace gpstk
       double A = ahalf*ahalf;     // TEMP fix BWT
       double dndot = 0.0;
       double Adot = 0.0;
-
-      short fitHours = getLegacyFitInterval(IODC, fitint);
-      long beginFitSOW = toe - (fitHours/2)*3600.0;
-      long endFitSOW = toe + (fitHours/2)*3600.0;
-      short beginFitWk = weeknum;
-      short endFitWk = weeknum;
-      if (beginFitSOW < 0)
+      try
       {
-         beginFitSOW += FULLWEEK;
-         beginFitWk--;
+         short fitHours = getLegacyFitInterval(IODC, fitint);
+         long beginFitSOW = toe - (fitHours/2)*3600.0;
+         long endFitSOW = toe + (fitHours/2)*3600.0;
+         short beginFitWk = weeknum;
+         short endFitWk = weeknum;
+         if (beginFitSOW < 0)
+         {
+            beginFitSOW += FULLWEEK;
+            beginFitWk--;
+         }
+         CommonTime beginFit = GPSWeekSecond(beginFitWk, beginFitSOW,
+                                             TimeSystem::GPS);
+         if (endFitSOW >= FULLWEEK)
+         {
+            endFitSOW += FULLWEEK;
+            endFitWk++;
+         }
+         CommonTime endFit = GPSWeekSecond(endFitWk, endFitSOW, TimeSystem::GPS);
+
+         CommonTime toeCT = GPSWeekSecond(toeWeek, toe, TimeSystem::GPS);
+
+         orbit.loadData(satSys, obsID, PRNID, beginFit, endFit, toeCT,
+                        accFlag, healthy, cuc, cus, crc, crs, cic, cis, m0, Dn,
+                        dndot, Ecc, A, ahalf, Adot, Omega0, I0, W, OmegaDot,
+                        IDot);
+         haveSubframe[1] = true;
       }
-      CommonTime beginFit = GPSWeekSecond(beginFitWk, beginFitSOW,
-                                          TimeSystem::GPS);
-      if (endFitSOW >= FULLWEEK)
+      catch (Exception& exc)
       {
-         endFitSOW += FULLWEEK;
-         endFitWk++;
+         haveSubframe[1] = false;
+         InvalidRequest ire(exc);
+         GPSTK_THROW(ire);
       }
-      CommonTime endFit = GPSWeekSecond(endFitWk, endFitSOW, TimeSystem::GPS);
-
-      CommonTime toeCT = GPSWeekSecond(toeWeek, toe, TimeSystem::GPS);
-
-      orbit.loadData(satSys, obsID, PRNID, beginFit, endFit, toeCT,
-                     accFlag, healthy, cuc, cus, crc, crs, cic, cis, m0, Dn,
-                     dndot, Ecc, A, ahalf, Adot, Omega0, I0, W, OmegaDot,
-                     IDot);
-      haveSubframe[1] = true;
       return *this;
    }
 
@@ -1275,7 +1310,7 @@ namespace gpstk
          beginFit = orbit.getBeginningOfFitInterval();
          endFit = orbit.getEndOfFitInterval();
       }
-      catch(InvalidRequest)
+      catch (Exception)
       {
             //Should not get to this point because of the
             //if(!haveSubFrame[1]) check above.
@@ -1283,15 +1318,21 @@ namespace gpstk
          haveSubframe[2] = false;
          return *this;
       }
+      try
+      {
+         CommonTime toeCT = GPSWeekSecond(toeWeek, toe, TimeSystem::GPS);
 
-      CommonTime toeCT = GPSWeekSecond(toeWeek, toe, TimeSystem::GPS);
+         orbit.loadData( satSys, obsID, PRNID, beginFit, endFit, toeCT,
+                         accFlag, healthy, cuc, cus, crc, crs, cic, cis, m0, Dn,
+                         dndot, Ecc, A, ahalf, Adot, Omega0, I0, W, OmegaDot,
+                         IDot);
 
-      orbit.loadData( satSys, obsID, PRNID, beginFit, endFit, toeCT,
-                      accFlag, healthy, cuc, cus, crc, crs, cic, cis, m0, Dn,
-                      dndot, Ecc, A, ahalf, Adot, Omega0, I0, W, OmegaDot,
-                      IDot);
-
-      haveSubframe[2] = true;
+         haveSubframe[2] = true;
+      }
+      catch (Exception& exc)
+      {
+         haveSubframe[2] = false;
+      }
       return *this;
    }
 

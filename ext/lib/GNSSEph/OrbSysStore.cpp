@@ -732,6 +732,60 @@ namespace gpstk
    }
 
 //-----------------------------------------------------------------------------
+   std::list<const OrbDataSys*> OrbSysStore::findList(const SatID& sat, 
+                                                      const NavID& navtype,
+                                                      const unsigned long UID) const
+         throw(InvalidRequest)
+   {
+      SAT_NM_UID_MSG_MAP::const_iterator cit1;
+      NM_UID_MSG_MAP::const_iterator cit2;
+      UID_MSG_MAP::const_iterator cit3;
+      MSG_MAP::const_iterator cit4;
+
+         // First step is to establish if there are any messages
+         // in the store matching the request satellite, nav message 
+         // type and unique ID. If any of these fail, InvalidRequest
+         // is thrown.
+      stringstream failString;
+      cit1 = msgMap.find(sat);
+      if (cit1==msgMap.end())
+      {
+         failString << "Satellite " << sat << " not found in message store.";
+         InvalidRequest ir(failString.str());
+         GPSTK_THROW(ir);
+      }
+
+      const NM_UID_MSG_MAP& NMmapr = cit1->second;
+      cit2 = NMmapr.find(navtype);
+      if (cit2==NMmapr.end())
+      {
+         failString << "Nav message type " << navtype << " not found in message store.";
+         InvalidRequest ir(failString.str());
+         GPSTK_THROW(ir);
+      }
+
+      const UID_MSG_MAP& UIDmapr = cit2->second;
+      cit3 = UIDmapr.find(UID);
+      if (cit3==UIDmapr.end())
+      {
+         failString << "Uniuqe message type " << UID << " not found in message store.";
+         InvalidRequest ir(failString.str());
+         GPSTK_THROW(ir);
+      }
+
+         // Iterate over the time-ordered message map and copy all the messages 
+         // into the list to be returned.
+      list<const OrbDataSys*> retList;
+      const MSG_MAP& mapr = cit3->second;
+      for (cit4=mapr.begin();cit4!=mapr.end();cit4++)
+      {
+         const OrbDataSys* cp = cit4->second;
+         retList.push_back(cp); 
+      }
+      return retList;    
+   }
+
+//-----------------------------------------------------------------------------
 // Remove all data from this collection.
    void OrbSysStore::clear()
          throw()

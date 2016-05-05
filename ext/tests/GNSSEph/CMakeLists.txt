@@ -1,4 +1,3 @@
-# ext/tests/GNSSEph/CMakeLists.txt
 
 add_executable(OrbDataSys_T OrbDataSys_T.cpp)
 target_link_libraries(OrbDataSys_T gpstk)

@@ -24,13 +24,25 @@ set( CMAKE_SWIG_FLAGS "-w362,383,384,389,503 -builtin" )
 #----------------------------------------
 # Compiler flags that are used only
 # in the compiling of the swig bindings
+# @todo: see if -std=c++11 can be removed from all builds
 #----------------------------------------
-set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11" )
 if( ${CMAKE_SYSTEM_NAME} MATCHES "SunOS" )
+    set( CMAKE_CXX_FLAGS "-std=c++11" )
 elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
-    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w" )
+    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w -std=c++11" )
 elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" )
+    execute_process(COMMAND "/usr/bin/lsb_release" "-is"
+                    TIMEOUT 4
+                    OUTPUT_VARIABLE LINUX_DISTRO
+                    ERROR_QUIET
+                    OUTPUT_STRIP_TRAILING_WHITESPACE)
+    if (${LINUX_DISTRO} MATCHES "RedHatEnterpriseServer")
+        message( STATUS "Linux Red Hat machine, Ignoring -std=c++11 flag")
+    else()
+        set( CMAKE_CXX_FLAGS "-std=c++11" )
+    endif()
 elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
+    set( CMAKE_CXX_FLAGS "-std=c++11" )
 endif()
 
 
