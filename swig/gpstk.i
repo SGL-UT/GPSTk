@@ -21,6 +21,8 @@ using namespace gpstk;
 %include "std_set.i"
 %include "std_multimap.i"
 
+ // Several clases have specifc .i files that
+ // may override this
 %rename(__str__) *::asString() const;
 
 // Ignores on things we can't wrap
@@ -225,11 +227,13 @@ namespace std { class fstream {}; }
 
 // RINEX format:
 %include "RinexSatID.hpp"
+%include "RinexObsID.hpp"
+%include "RinexSatID.i"
+%include "RinexObsID.i"
 // RINEX obs:
 %include "RinexObsBase.hpp"
 %include "RinexObsHeader.hpp"
 %include "RinexObsData.hpp"
-%include "RinexObsID.hpp"
 %include "RinexObsStream.hpp"
 // RINEX nav:
 %include "RinexNavBase.hpp"

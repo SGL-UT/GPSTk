@@ -19,7 +19,7 @@ include( ${SWIG_USE_FILE} )
 #     389: operator[] ignored
 #     503: can't wrap 'identifer' unless renamed to a valid identifier (e.g. operator<<)
 
-set( CMAKE_SWIG_FLAGS "-w362,383,384,389,503" )
+set( CMAKE_SWIG_FLAGS "-w362,383,384,389,503 -builtin" )
 
 #----------------------------------------
 # Compiler flags that are used only
