@@ -40,7 +40,6 @@
 #include <iostream>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <unistd.h>
 #include <errno.h>
 
 using namespace std;
@@ -51,10 +50,10 @@ class FileHunter_T
 public: 
 
       // constructor
-	FileHunter_T() { init(); }
+   FileHunter_T() { init(); }
 
       // destructor
-	~FileHunter_T() { cleanup(); }
+   ~FileHunter_T() { cleanup(); }
 
       // initialize tests, throws on failure
    void init();
