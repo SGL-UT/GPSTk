@@ -49,13 +49,14 @@
 namespace gpstk
 {
 
-   // Note that the regular operators don't have to be defined because of the 
-   // conversion operator. This allows 
-   //   ValidType<int> p=1;
-   //   p+=1;
-   // to use the regular int operators.
-   // Also note that the exception is declaired outside of the template class
-   // so there will only be one exception for all instantiations
+      // Note that the regular operators don't have to be defined
+      // because of the conversion operator. This allows
+      //   ValidType<int> p=1;
+      //   p+=1;
+      // to use the regular int operators.
+      // Also note that the exception is declaired outside of the
+      // template class so there will only be one exception for all
+      // instantiations
 
    NEW_EXCEPTION_CLASS(InvalidValue, gpstk::Exception);
 
@@ -63,31 +64,31 @@ namespace gpstk
    class ValidType
    {
    public:
-      ValidType(const T& v):value(v),valid(true){};
-      ValidType():value(0),valid(false){};
+      ValidType(const T& v):value(v),valid(true){}
+      ValidType():value(0),valid(false){}
       
-      ValidType& operator=(const T& v) throw() {
-         this->valid = true; this->value = v; return *this; };
+      ValidType& operator=(const T& v) throw()
+      { this->valid = true; this->value = v; return *this; }
       
-      ValidType& operator+=(const T& r) throw(){value+=r; return *this;};
-      ValidType& operator-=(const T& r) throw(){value-=r; return *this;};
+      ValidType& operator+=(const T& r) throw(){value+=r; return *this;}
+      ValidType& operator-=(const T& r) throw(){value-=r; return *this;}
 
-      // A conversion operator, will throw an exception if the object
-      // is marked invalid
-      operator T() const throw(InvalidValue) {
+         // A conversion operator, will throw an exception if the object
+         // is marked invalid
+      operator T() const throw(InvalidValue)
+      {
          if (!this->is_valid()) throw InvalidValue();
          return value;
-      };
+      }
       
-      bool operator==(const ValidType& r) {
-         return this->valid && r.valid && this->value == r.value;
-      };
+      bool operator==(const ValidType& r) const
+      { return this->valid && r.valid && this->value == r.value; }
 
-      bool is_valid() const { return valid;};
-      T get_value() const { return value;};
+      bool is_valid() const { return valid; }
+      T get_value() const { return value; }
 
       void set_valid(const bool& v) throw()
-      { valid=v;}
+      { valid=v; }
 
    private:
       T value;
@@ -106,9 +107,9 @@ namespace gpstk
    typedef ValidType<unsigned long> vulong;
 
 
-   // Yes, Virgina, this is the ugliest declaration that I have ever created...
-   template <class T> std::ostream& operator<<(
-      std::ostream& s, const ValidType<T>& r) throw() {
+   template <class T>
+   std::ostream& operator<<(std::ostream& s, const ValidType<T>& r) throw()
+   {
       if (r.is_valid())
          s << r.get_value();
       else
