@@ -15,7 +15,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -23,13 +23,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -67,7 +67,7 @@ namespace gpstk
       satSys = "";
 
       PRNID = tracker = ASalert[0] = ASalert[1] = ASalert[2] = weeknum =
-	   codeflags = health = L2Pdata = 0;
+         codeflags = health = L2Pdata = 0;
 
       HOWtime[0] = HOWtime[1] = HOWtime[2] = 0;
 
@@ -84,20 +84,21 @@ namespace gpstk
       }
    }
 
-   /**
-   *  Historically, EngEphemeris allowed calling programs to add data
-   *  one subframe at a time.  This functionality does not exist in
-   *  KeplerOrbit and BroadcastClockCorrection.  Therefore, EngEphemeris
-   *  must handle the subframe collection overhead before calling
-   *  BrcKeplerOrbit.loadData() and BrcClockCorrection.loadData().
-   *
-   *  Note: Historically, the gpsWeek in the calling parameters to
-   *  addSubframe is the full week number associated with the TRANSMIT
-   *  time (not the epoch times).
-   */
+      /**
+       *  Historically, EngEphemeris allowed calling programs to add data
+       *  one subframe at a time.  This functionality does not exist in
+       *  KeplerOrbit and BroadcastClockCorrection.  Therefore, EngEphemeris
+       *  must handle the subframe collection overhead before calling
+       *  BrcKeplerOrbit.loadData() and BrcClockCorrection.loadData().
+       *
+       *  Note: Historically, the gpsWeek in the calling parameters to
+       *  addSubframe is the full week number associated with the TRANSMIT
+       *  time (not the epoch times).
+       */
 
-   bool EngEphemeris::addSubframe(const uint32_t subframe[10], const int gpsWeek,
-                                  const short PRN, const short track)
+   bool EngEphemeris::addSubframe(const uint32_t subframe[10],
+                                  const int gpsWeek, const short PRN,
+                                  const short track)
       throw( InvalidParameter )
    {
          // Determine the subframe number
@@ -120,7 +121,8 @@ namespace gpstk
 
          // Determine if all subframes are available.  If so,
          // load the data. Otherwise return and try again later.
-      bool result = true;  // default return OK in cases where no cracking occurs
+         // default return OK in cases where no cracking occurs
+      bool result = true;
       if (haveSubframe[0] &&
           haveSubframe[1] &&
           haveSubframe[2])
@@ -169,10 +171,10 @@ namespace gpstk
          //   :06/:36 for SF 1
          //   :12/:42 for SF 2
          //   :18/:48 for SF 3
-         // This method hasn't a clue about the accuracy of the SOW input by the
-         // user, but it WILL enforce this relationship.
-      //long frameCount = sf1TransmitSOW / 30;
-      //long SF1HOWTime = (frameCount * 30) + 6;
+         // This method hasn't a clue about the accuracy of the SOW
+         // input by the user, but it WILL enforce this relationship.
+         //long frameCount = sf1TransmitSOW / 30;
+         //long SF1HOWTime = (frameCount * 30) + 6;
 
          // Convert subframe 1 parameters
       subframeStore[0][0] = sf1Lead[0];
@@ -200,10 +202,10 @@ namespace gpstk
    }
 
       /**
-      * Each of the addSubframe( ) methods eventually calls unifiedConvert( )
-      * in order to crack the raw subframe data into engineering units and
-      * load the orbit and clock objects.
-      */
+       * Each of the addSubframe( ) methods eventually calls unifiedConvert( )
+       * in order to crack the raw subframe data into engineering units and
+       * load the orbit and clock objects.
+       */
    bool EngEphemeris::unifiedConvert( const int gpsWeek,
                                       const short PRN,
                                       const short track)
@@ -278,27 +280,35 @@ namespace gpstk
       double A = Ahalf * Ahalf;
 
       double timeDiff = Toe - HOWtime[1];
-      short epochWeek = weeknum;
-      if (timeDiff < -HALFWEEK) epochWeek++;
-      else if (timeDiff > HALFWEEK) epochWeek--;
+      short toeWeek = weeknum, tocWeek = weeknum;
+      if (timeDiff < -HALFWEEK)
+         toeWeek++;
+      else if (timeDiff > HALFWEEK)
+         toeWeek--;
+      timeDiff = Toc - HOWtime[1];
+      if (timeDiff < -HALFWEEK)
+         tocWeek++;
+      else if (timeDiff > HALFWEEK)
+         tocWeek--;
 
-         // Toe is now in CommonTime, and needs to be passed to BrcKeplerOrbit as a CommonTime variable.
-         // URAoc and URAoe in legacy nav message are equal. Only CNAV and CNAV2 are they different
-      CommonTime ToeCT = GPSWeekSecond(epochWeek, Toe, TimeSystem::GPS);
-      CommonTime TocCT = GPSWeekSecond(epochWeek, Toc, TimeSystem::GPS);
+         // Toe is now in CommonTime, and needs to be passed to
+         // BrcKeplerOrbit as a CommonTime variable.
+      CommonTime ToeCT = GPSWeekSecond(toeWeek, Toe, TimeSystem::GPS);
+      CommonTime TocCT = GPSWeekSecond(tocWeek, Toc, TimeSystem::GPS);
 
-      //short fiti = static_cast<short>(ficked[14]);
+         //short fiti = static_cast<short>(ficked[14]);
       short fitHours = getLegacyFitInterval(IODC, fitint);
       long beginFitSOW = Toe - (fitHours/2)*3600;
       long endFitSOW = Toe + (fitHours/2)*3600;
-      short beginFitWk = epochWeek;
-      short endFitWk = epochWeek;
+      short beginFitWk = toeWeek;
+      short endFitWk = toeWeek;
       if (beginFitSOW < 0)
       {
          beginFitSOW += FULLWEEK;
          beginFitWk--;
       }
-      CommonTime beginFit = GPSWeekSecond(beginFitWk, beginFitSOW, TimeSystem::GPS);
+      CommonTime beginFit = GPSWeekSecond(beginFitWk, beginFitSOW,
+                                          TimeSystem::GPS);
 
       if (endFitSOW >= FULLWEEK)
       {
@@ -309,12 +319,13 @@ namespace gpstk
 
       orbit.loadData(satSys, obsID, PRN, beginFit, endFit, ToeCT,
                      accFlag, healthy, Cuc, Cus, Crc, Crs, Cic, Cis, M0,
-                     dn, dnDot, ecc, A, Ahalf, Adot, OMEGA0, i0, w, OMEGAdot, idot);
+                     dn, dnDot, ecc, A, Ahalf, Adot, OMEGA0, i0, w, OMEGAdot,
+                     idot);
 
       bcClock.loadData( satSys, obsID, PRNID, TocCT,
                         accFlag, healthy, af0, af1, af2);
 
-	  return true;
+      return true;
    }
 
    bool EngEphemeris :: isValid() const
@@ -377,9 +388,9 @@ namespace gpstk
    }
 
       /**
-      * This is for Block II/IIA
-      * Need update for Block IIR and IIF
-      */
+       * This is for Block II/IIA
+       * Need update for Block IIR and IIF
+       */
    short EngEphemeris :: getFitInterval(short iodc, short fiti)
       throw(InvalidRequest)
    {
@@ -391,7 +402,7 @@ namespace gpstk
       }
 
       if ((((fiti == 0) &&
-           (iodc & 0xFF) < 240) || (iodc & 0xFF) > 255 ))
+            (iodc & 0xFF) < 240) || (iodc & 0xFF) > 255 ))
       {
             /* fit interval of 4 hours */
          return 4;
@@ -413,7 +424,7 @@ namespace gpstk
                /* fit interval of 14 hours */
             return 14;
          }
-         // Revised in IS-GPS-200 Revision D for Block IIR/IIR-M/IIF
+            // Revised in IS-GPS-200 Revision D for Block IIR/IIR-M/IIF
          else if((iodc >= 497 && iodc <=503) || (iodc >= 1021 && iodc <= 1023))
          {
                /* fit interval of 26 hours */
@@ -429,13 +440,14 @@ namespace gpstk
                /* fit interval of 74 hours */
             return 74;
          }
-         /* NOTE:
-          * The following represents old fit intervals for Block II (not IIA)
-          * and is present only in old versions of the ICD-GPS-200 Rev. C.
-          * Please do not remove them as there are still people that may
-          * want to process old Block II data and none of the IODC intervals
-          * overlap (so far) so there is no need to remove them.
-          */
+            /* NOTE:
+             * The following represents old fit intervals for Block II
+             * (not IIA) and is present only in old versions of the
+             * ICD-GPS-200 Rev. C.  Please do not remove them as there
+             * are still people that may want to process old Block II
+             * data and none of the IODC intervals overlap (so far) so
+             * there is no need to remove them.
+             */
          else if(iodc >= 757 && iodc <= 763)
          {
                /* fit interval of 98 hours */
@@ -517,10 +529,23 @@ namespace gpstk
    }
 
    CommonTime EngEphemeris::getTransmitTime() const
-      throw()
+      throw( InvalidRequest )
    {
       CommonTime toReturn;
-      toReturn = GPSWeekSecond(getFullWeek(), static_cast<double>(getTot()), TimeSystem::GPS);
+      try
+      {
+         toReturn = GPSWeekSecond(getFullWeek(), static_cast<double>(getTot()),
+                                  TimeSystem::GPS);
+      }
+      catch (InvalidRequest& ire)
+      {
+         GPSTK_RETHROW(ire);
+      }
+      catch (Exception& exc)
+      {
+         InvalidRequest ire(exc);
+         GPSTK_THROW(ire);
+      }
       return toReturn;
    }
 
@@ -552,7 +577,8 @@ namespace gpstk
    {
       if(!bcClock.hasData())
       {
-         InvalidRequest exc("getClock(): Required Clock Correction data not stored.");
+         InvalidRequest exc("getClock(): Required Clock Correction data not"
+                            " stored.");
          GPSTK_THROW(exc);
       }
       return (bcClock);
@@ -979,14 +1005,15 @@ namespace gpstk
          GPSTK_THROW(exc);
       }
 
-      // MSVC
+         // MSVC
 #ifdef _MSC_VER
-      long foo = static_cast<long>( getHOWTime(1) < getHOWTime(2) ) ? getHOWTime(1) : getHOWTime(2);
+      long foo = static_cast<long>( getHOWTime(1) < getHOWTime(2) )
+         ? getHOWTime(1) : getHOWTime(2);
       foo = ( foo < getHOWTime(3) ) ? foo : getHOWTime(3) ;
 #else
       long foo =
          static_cast<long>( std::min( getHOWTime(1),
-                            std::min( getHOWTime(2), getHOWTime(3) ) ) );
+                                      std::min(getHOWTime(2), getHOWTime(3))));
 #endif
          // The ephemeris comes on 30 second boundaries, so...
       foo/=30;
@@ -994,20 +1021,21 @@ namespace gpstk
       return foo;
    }
 
-   EngEphemeris& EngEphemeris::loadData( const std::string satSysArg, unsigned short tlm[3],
-                                         const long how[3], const short asalert[3],
-                                         const short Tracker, const short prn,
-                                         const short fullweek, const short cflags, const short acc,
-                                         const short svhealth, const short iodc, const short l2pdata,
-                                         const long aodo, const double tgd, const double toc,
-                                         const double Af2, const double Af1, const double Af0,
-                                         const short iode, const double crs, const double Dn,
-                                         const double m0, const double cuc, const double Ecc,
-                                         const double cus, const double ahalf, const double toe,
-                                         const short fitInt, const double cic, const double Omega0,
-                                         const double cis, const double I0, const double crc,
-                                         const double W, const double OmegaDot, const double IDot )
-      throw()
+   EngEphemeris& EngEphemeris::loadData(
+      const std::string satSysArg, unsigned short tlm[3],
+      const long how[3], const short asalert[3],
+      const short Tracker, const short prn,
+      const short fullweek, const short cflags, const short acc,
+      const short svhealth, const short iodc, const short l2pdata,
+      const long aodo, const double tgd, const double toc,
+      const double Af2, const double Af1, const double Af0,
+      const short iode, const double crs, const double Dn,
+      const double m0, const double cuc, const double Ecc,
+      const double cus, const double ahalf, const double toe,
+      const short fitInt, const double cic, const double Omega0,
+      const double cis, const double I0, const double crc,
+      const double W, const double OmegaDot, const double IDot )
+   throw( InvalidRequest )
    {
       PRNID = prn;
       tracker = Tracker;
@@ -1020,7 +1048,7 @@ namespace gpstk
       weeknum   = fullweek;
       codeflags = cflags;
       short accFlag = acc;
-      //double accuracy = gpstk::ura2accuracy(accFlag);
+         //double accuracy = gpstk::ura2accuracy(accFlag);
       health    = svhealth;
       L2Pdata   = l2pdata;
       IODC      = iodc;
@@ -1036,52 +1064,60 @@ namespace gpstk
          // carrier and code types are undefined.  They could be
          // L1/L2 C/A, P, Y,.....
       ObsID obsID(ObsID::otNavMsg, ObsID::cbUndefined, ObsID::tcUndefined);
-
-      CommonTime toeCT = GPSWeekSecond(weeknum, toe, TimeSystem::GPS);
-      CommonTime tocCT = GPSWeekSecond(weeknum, toc, TimeSystem::GPS);
-
-      double A = ahalf*ahalf;
-      double dndot = 0.0;
-      double Adot = 0.0;
-      short fitHours = getLegacyFitInterval(IODC, fitint);
-      long beginFitSOW = toe - (fitHours/2)*3600;
-      long endFitSOW = toe + (fitHours/2)*3600;
-      short beginFitWk = weeknum;
-      short endFitWk = weeknum;
-      if (beginFitSOW < 0)
+      try
       {
-         beginFitSOW += FULLWEEK;
-         beginFitWk--;
+         CommonTime toeCT = GPSWeekSecond(weeknum, toe, TimeSystem::GPS);
+         CommonTime tocCT = GPSWeekSecond(weeknum, toc, TimeSystem::GPS);
+
+         double A = ahalf*ahalf;
+         double dndot = 0.0;
+         double Adot = 0.0;
+         short fitHours = getLegacyFitInterval(IODC, fitint);
+         long beginFitSOW = toe - (fitHours/2)*3600;
+         long endFitSOW = toe + (fitHours/2)*3600;
+         short beginFitWk = weeknum;
+         short endFitWk = weeknum;
+         if (beginFitSOW < 0)
+         {
+            beginFitSOW += FULLWEEK;
+            beginFitWk--;
+         }
+         CommonTime beginFit = GPSWeekSecond(beginFitWk, beginFitSOW,
+                                             TimeSystem::GPS);
+         if (endFitSOW >= FULLWEEK)
+         {
+            endFitSOW += FULLWEEK;
+            endFitWk++;
+         }
+         CommonTime endFit = GPSWeekSecond(endFitWk, endFitSOW, TimeSystem::GPS);
+
+         orbit.loadData(satSys, obsID, PRNID, beginFit, endFit, toeCT,
+                        accFlag, health, cuc, cus, crc, crs, cic, cis, m0, Dn,
+                        dndot, Ecc, A, ahalf, Adot, Omega0, I0, W, OmegaDot,
+                        IDot);
+
+         bcClock.loadData( satSys, obsID, PRNID, tocCT,
+                           accFlag, health, Af0, Af1, Af2);
+         haveSubframe[0] = true;
+         haveSubframe[1] = true;
+         haveSubframe[2] = true;
       }
-      CommonTime beginFit = GPSWeekSecond(beginFitWk, beginFitSOW, TimeSystem::GPS);
-      if (endFitSOW >= FULLWEEK)
+      catch (Exception& exc)
       {
-         endFitSOW += FULLWEEK;
-         endFitWk++;
+         InvalidRequest ire(exc);
+         GPSTK_THROW(ire);
       }
-      CommonTime endFit = GPSWeekSecond(endFitWk, endFitSOW, TimeSystem::GPS);
-
-      orbit.loadData(satSys, obsID, PRNID, beginFit, endFit, toeCT,
-                     accFlag, health, cuc, cus, crc, crs, cic, cis, m0, Dn,
-                     dndot, Ecc, A, ahalf, Adot, Omega0, I0, W, OmegaDot, IDot);
-
-      bcClock.loadData( satSys, obsID, PRNID, tocCT,
-                        accFlag, health, Af0, Af1, Af2);
-      haveSubframe[0] = true;
-      haveSubframe[1] = true;
-      haveSubframe[2] = true;
       return *this;
    }
 
    EngEphemeris& EngEphemeris::setSF1( unsigned tlm, double how, short asalert,
                                        short fullweek, short cflags, short acc,
-                                       short svhealth, short iodc, short l2pdata,
-                                       double tgd, double toc, double Af2,
-                                       double Af1, double Af0, short Tracker,
-                                       short prn )
-      throw()
+                                       short svhealth, short iodc,
+                                       short l2pdata, double tgd, double toc,
+                                       double Af2, double Af1, double Af0,
+                                       short Tracker, short prn )
+      throw( InvalidRequest )
    {
-
       tlm_message[0] = tlm;
       HOWtime[0] = static_cast<long>( how );
       ASalert[0] = asalert;
@@ -1098,23 +1134,33 @@ namespace gpstk
       if (health == 0) healthy = true;
 
       double timeDiff = toc - HOWtime[0];
-      short epochWeek = fullweek;
-      if (timeDiff < -HALFWEEK) epochWeek++;
-      else if (timeDiff > HALFWEEK) epochWeek--;
+      short tocWeek = fullweek;
+      if (timeDiff < -HALFWEEK)
+         tocWeek++;
+      else if (timeDiff > HALFWEEK)
+         tocWeek--;
+      try
+      {
+         CommonTime tocCT = GPSWeekSecond(tocWeek, toc, TimeSystem::GPS);
 
-      CommonTime tocCT = GPSWeekSecond(epochWeek, toc, TimeSystem::GPS);
+            // The system is assumed (legacy navigation message is from GPS)
+         satSys = "G";
 
-         // The system is assumed (legacy navigation message is from GPS)
-      satSys = "G";
+            // The observation ID has a type of navigation, but the
+            // carrier and code types are undefined.  They could be
+            // L1/L2 C/A, P, Y,.....
+         ObsID obsID(ObsID::otNavMsg, ObsID::cbUndefined, ObsID::tcUndefined);
 
-         // The observation ID has a type of navigation, but the
-         // carrier and code types are undefined.  They could be
-         // L1/L2 C/A, P, Y,.....
-      ObsID obsID(ObsID::otNavMsg, ObsID::cbUndefined, ObsID::tcUndefined);
-
-      bcClock.loadData( satSys, obsID, PRNID, tocCT,
-                        accFlagTmp, healthy, Af0, Af1, Af2);
-      haveSubframe[0] = true;
+         bcClock.loadData( satSys, obsID, PRNID, tocCT,
+                           accFlagTmp, healthy, Af0, Af1, Af2);
+         haveSubframe[0] = true;
+      }
+      catch (Exception& exc)
+      {
+         haveSubframe[0] = false;
+         InvalidRequest ire(exc);
+         GPSTK_THROW(ire);
+      }
       return *this;
    }
 
@@ -1140,9 +1186,11 @@ namespace gpstk
       if (health == 0) healthy = true;
 
       double timeDiff = toe - HOWtime[1];
-      short epochWeek = weeknum;
-      if (timeDiff < -HALFWEEK) epochWeek++;
-      else if (timeDiff > HALFWEEK) epochWeek--;
+      short toeWeek = weeknum;
+      if (timeDiff < -HALFWEEK)
+         toeWeek++;
+      else if (timeDiff > HALFWEEK)
+         toeWeek--;
 
          // The observation ID has a type of navigation, but the
          // carrier and code types are undefined.  They could be
@@ -1150,7 +1198,7 @@ namespace gpstk
       ObsID obsID(ObsID::otNavMsg, ObsID::cbUndefined, ObsID::tcUndefined);
 
       short accFlag = accFlagTmp;   // accFlagTmp set in setSF1( )
-      //local variables in SF3 that are needed to load SF2
+         //local variables in SF3 that are needed to load SF2
       double crc = 0.0;
       double cis = 0.0;
       double cic = 0.0;
@@ -1159,35 +1207,45 @@ namespace gpstk
       double W = 0.0;
       double OmegaDot = 0.0;
       double IDot = 0.0;
-      //also need locals for modernized nav quantaties not in SF2 or SF3
+         //also need locals for modernized nav quantaties not in SF2 or SF3
       double A = ahalf*ahalf;     // TEMP fix BWT
       double dndot = 0.0;
       double Adot = 0.0;
-
-      short fitHours = getLegacyFitInterval(IODC, fitint);
-      long beginFitSOW = toe - (fitHours/2)*3600.0;
-      long endFitSOW = toe + (fitHours/2)*3600.0;
-      short beginFitWk = weeknum;
-      short endFitWk = weeknum;
-      if (beginFitSOW < 0)
+      try
       {
-         beginFitSOW += FULLWEEK;
-         beginFitWk--;
+         short fitHours = getLegacyFitInterval(IODC, fitint);
+         long beginFitSOW = toe - (fitHours/2)*3600.0;
+         long endFitSOW = toe + (fitHours/2)*3600.0;
+         short beginFitWk = weeknum;
+         short endFitWk = weeknum;
+         if (beginFitSOW < 0)
+         {
+            beginFitSOW += FULLWEEK;
+            beginFitWk--;
+         }
+         CommonTime beginFit = GPSWeekSecond(beginFitWk, beginFitSOW,
+                                             TimeSystem::GPS);
+         if (endFitSOW >= FULLWEEK)
+         {
+            endFitSOW += FULLWEEK;
+            endFitWk++;
+         }
+         CommonTime endFit = GPSWeekSecond(endFitWk, endFitSOW, TimeSystem::GPS);
+
+         CommonTime toeCT = GPSWeekSecond(toeWeek, toe, TimeSystem::GPS);
+
+         orbit.loadData(satSys, obsID, PRNID, beginFit, endFit, toeCT,
+                        accFlag, healthy, cuc, cus, crc, crs, cic, cis, m0, Dn,
+                        dndot, Ecc, A, ahalf, Adot, Omega0, I0, W, OmegaDot,
+                        IDot);
+         haveSubframe[1] = true;
       }
-      CommonTime beginFit = GPSWeekSecond(beginFitWk, beginFitSOW, TimeSystem::GPS);
-      if (endFitSOW >= FULLWEEK)
+      catch (Exception& exc)
       {
-         endFitSOW += FULLWEEK;
-         endFitWk++;
+         haveSubframe[1] = false;
+         InvalidRequest ire(exc);
+         GPSTK_THROW(ire);
       }
-      CommonTime endFit = GPSWeekSecond(endFitWk, endFitSOW, TimeSystem::GPS);
-
-      CommonTime toeCT = GPSWeekSecond(epochWeek, toe, TimeSystem::GPS);
-
-      orbit.loadData(satSys, obsID, PRNID, beginFit, endFit, toeCT,
-                     accFlag, healthy, cuc, cus, crc, crs, cic, cis, m0, Dn,
-                     dndot, Ecc, A, ahalf, Adot, Omega0, I0, W, OmegaDot, IDot);
-      haveSubframe[1] = true;
       return *this;
    }
 
@@ -1210,9 +1268,11 @@ namespace gpstk
       if (health == 0) healthy = true;
 
       double timeDiff = orbit.getToe() - HOWtime[2];
-      short epochWeek = weeknum;
-      if (timeDiff < -HALFWEEK) epochWeek++;
-      else if (timeDiff > HALFWEEK) epochWeek--;
+      short toeWeek = weeknum;
+      if (timeDiff < -HALFWEEK)
+         toeWeek++;
+      else if (timeDiff > HALFWEEK)
+         toeWeek--;
 
          // The observation ID has a type of navigation, but the
          // carrier and code types are undefined.  They could be
@@ -1250,28 +1310,36 @@ namespace gpstk
          beginFit = orbit.getBeginningOfFitInterval();
          endFit = orbit.getEndOfFitInterval();
       }
-      catch(InvalidRequest)
+      catch (Exception)
       {
-         //Should not get to this point because of the if(!haveSubFrame[1]) check above.
+            //Should not get to this point because of the
+            //if(!haveSubFrame[1]) check above.
          haveSubframe[1] = false;
          haveSubframe[2] = false;
          return *this;
       }
+      try
+      {
+         CommonTime toeCT = GPSWeekSecond(toeWeek, toe, TimeSystem::GPS);
 
-      CommonTime toeCT = GPSWeekSecond(epochWeek, toe, TimeSystem::GPS);
+         orbit.loadData( satSys, obsID, PRNID, beginFit, endFit, toeCT,
+                         accFlag, healthy, cuc, cus, crc, crs, cic, cis, m0, Dn,
+                         dndot, Ecc, A, ahalf, Adot, Omega0, I0, W, OmegaDot,
+                         IDot);
 
-      orbit.loadData( satSys, obsID, PRNID, beginFit, endFit, toeCT,
-                      accFlag, healthy, cuc, cus, crc, crs, cic, cis, m0, Dn,
-                      dndot, Ecc, A, ahalf, Adot, Omega0, I0, W, OmegaDot, IDot);
-
-      haveSubframe[2] = true;
+         haveSubframe[2] = true;
+      }
+      catch (Exception& exc)
+      {
+         haveSubframe[2] = false;
+      }
       return *this;
    }
 
-  void EngEphemeris::setFIC(const bool arg)
-  {
-	isFIC = arg;
-  }
+   void EngEphemeris::setFIC(const bool arg)
+   {
+      isFIC = arg;
+   }
 
    static void timeDisplay( ostream & os, const CommonTime& t )
    {
@@ -1330,12 +1398,12 @@ namespace gpstk
          << ":" << setw(2) << sec
          << setfill(' ');
    }
-    void EngEphemeris :: dumpTerse(ostream& s) const
+   void EngEphemeris :: dumpTerse(ostream& s) const
       throw(InvalidRequest )
    {
 
-       // Check if the subframes have been loaded before attempting
-       // to dump them.
+         // Check if the subframes have been loaded before attempting
+         // to dump them.
       if (!haveSubframe[0] || !haveSubframe[1] || !haveSubframe[2])
       {
          InvalidRequest exc("Need to load subframes 1,2 and 3");
@@ -1367,7 +1435,7 @@ namespace gpstk
       s << endl;
       s.flags(oldFlags);
 
-    } // end of SF123::dumpTerse()
+   } // end of SF123::dumpTerse()
 
 
 
@@ -1376,8 +1444,8 @@ namespace gpstk
    {
 
 
-       // Check if the subframes have been loaded before attempting
-       // to dump them.
+         // Check if the subframes have been loaded before attempting
+         // to dump them.
       if (!haveSubframe[0] || !haveSubframe[1] || !haveSubframe[2])
       {
          InvalidRequest exc("Need to load subframes 1,2 and 3");
@@ -1395,14 +1463,14 @@ namespace gpstk
       s << "****************************************************************"
         << "************" << endl
         << "Broadcast Ephemeris (Engineering Units)";
-	if(isFIC)
-	{
-		s << " -FIC" << endl;
-	}
-	else
-	{
-		s << " -RINEX" << endl;
-	}
+      if(isFIC)
+      {
+         s << " -FIC" << endl;
+      }
+      else
+      {
+         s << " -RINEX" << endl;
+      }
       s << endl;
       s << "PRN : " << setw(2) << PRNID << endl;
       s << endl;
@@ -1418,74 +1486,74 @@ namespace gpstk
       timeDisplay(s, orbit.getOrbitEpoch());
       s << endl;
 /*
-#if 0
-         // FIX when moved from sf123, the tot got zapped.. because in
-         // order for EngEphemeris to be able to use such a thing, it
-         // needs to be pulled out of as-broadcast bits somehow.
-      s << "Transmit time:" << setw(4) << weeknum << ", sow=" << Tot.GPSsecond() << endl
-        << "Fit interval flag :  " << setw(2) << fitint
-        << " (" << fitintlen << " hours)" << endl;
-#elsif 0
-      s << "Transmit time:" << setw(4) << weeknum << endl
-        << "Fit interval flag :  " << setw(2) << fitint
-        << " (" << getFitInt() << " hours)" << endl;
-#endif
-         // nuts to the above, let's just make it look like navdump output
-*/
+  #if 0
+     // FIX when moved from sf123, the tot got zapped.. because in
+        // order for EngEphemeris to be able to use such a thing, it
+           // needs to be pulled out of as-broadcast bits somehow.
+           s << "Transmit time:" << setw(4) << weeknum << ", sow=" << Tot.GPSsecond() << endl
+           << "Fit interval flag :  " << setw(2) << fitint
+           << " (" << fitintlen << " hours)" << endl;
+           #elsif 0
+           s << "Transmit time:" << setw(4) << weeknum << endl
+           << "Fit interval flag :  " << setw(2) << fitint
+           << " (" << getFitInt() << " hours)" << endl;
+           #endif
+              // nuts to the above, let's just make it look like navdump output
+              */
       s << "Transmit Time:";
-	timeDisplay(s, getTransmitTime());
+      timeDisplay(s, getTransmitTime());
       s << endl;
       s << "Fit interval flag :  " << fitint << endl;
       if(isFIC)
       {
      	 s << endl
-      	  << "          SUBFRAME OVERHEAD"
-      	  << endl
-      	  << endl
-      	  << "               SOW    DOW:HH:MM:SS     IOD    ALERT   A-S\n";
+           << "          SUBFRAME OVERHEAD"
+           << endl
+           << endl
+           << "               SOW    DOW:HH:MM:SS     IOD    ALERT   A-S\n";
      	 for (int i=0;i<3;i++)
      	 {
-        	 s << "SF" << setw(1) << (i+1)
-          	 << " HOW:   " << setw(7) << HOWtime[i]
-          	 << "  ";
+            s << "SF" << setw(1) << (i+1)
+              << " HOW:   " << setw(7) << HOWtime[i]
+              << "  ";
 
-       	 	 shortcut( s, HOWtime[i]);
-        	 if (i==0)
-        	    s << "   ";
-        	 else
-        	    s << "    ";
+            shortcut( s, HOWtime[i]);
+            if (i==0)
+               s << "   ";
+            else
+               s << "    ";
 
-       		  s << "0x" << setfill('0') << hex;
+            s << "0x" << setfill('0') << hex;
 
-        	 if (i==0)
-           		 s << setw(3) << IODC;
-        	 else
-        	    s << setw(2) << IODE;
+            if (i==0)
+               s << setw(3) << IODC;
+            else
+               s << setw(2) << IODE;
 
-       		  s << dec << "      " << setfill(' ');
+            s << dec << "      " << setfill(' ');
 
-        	 if (ASalert[i] & 0x0002)    // "Alert" bit handling
-        	    s << "1     ";
-        	 else
-        	    s << "0     ";
+            if (ASalert[i] & 0x0002)    // "Alert" bit handling
+               s << "1     ";
+            else
+               s << "0     ";
 
-       		  if (ASalert[i] & 0x0001)     // A-S flag handling
-        	    s << " on";
-        	 else
-        	    s << "off";
-        	 s << endl;
-       }
-     }
-     else
-     {
-        s << endl;
-	s << "IODC: 0x"
-	  << setfill('0') << hex;
-	s << setw(3) << IODC << endl;
-	s << "IODE:  0x"
-	  << setfill('0') << hex;
-	s << setw(2) << IODE << endl;
-    }
+            if (ASalert[i] & 0x0001)     // A-S flag handling
+               s << " on";
+            else
+               s << "off";
+            s << endl;
+         }
+      }
+      else
+      {
+         s << endl;
+         s << "IODC: 0x"
+           << setfill('0') << hex;
+         s << setw(3) << IODC << endl;
+         s << "IODE:  0x"
+           << setfill('0') << hex;
+         s << setw(2) << IODE << endl;
+      }
       s.setf(ios::scientific, ios::floatfield);
       s.precision(8);
       s.fill(' ');
@@ -1557,11 +1625,11 @@ namespace gpstk
       }
       if(isFIC)
       {
-      	s << "  L2 P Nav data:          ";
-     	if (L2Pdata!=0)
-        	s << "off";
-      	else
-         	s << "on";
+         s << "  L2 P Nav data:          ";
+         if (L2Pdata!=0)
+            s << "off";
+         else
+            s << "on";
       }
 
       s << endl;
@@ -1571,15 +1639,15 @@ namespace gpstk
 
    ostream& operator<<(ostream& s, const EngEphemeris& eph)
    {
-     try
-{
-      eph.dump(s);
-}
-     catch(gpstk::Exception& ex)
-{
-     ex.addLocation(FILE_LOCATION);
-     GPSTK_RETHROW(ex);
-}
+      try
+      {
+         eph.dump(s);
+      }
+      catch(gpstk::Exception& ex)
+      {
+         ex.addLocation(FILE_LOCATION);
+         GPSTK_RETHROW(ex);
+      }
       return s;
 
    } // end of operator<<

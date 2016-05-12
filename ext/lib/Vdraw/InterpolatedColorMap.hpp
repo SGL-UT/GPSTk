@@ -44,96 +44,97 @@
 
 namespace vdraw
 {
-  /** \addtogroup BasicVectorGraphics */ 
-  //@{
+      /// @ingroup BasicVectorGraphics
+      //@{
 
-  /**
-   * This class represents a 2d pixel map of colors.  Each color is represented
-   * by an index into the given palette.
-   */
-  class InterpolatedColorMap
-  {
-    public:
       /**
-       * Default constructor.
+       * This class represents a 2d pixel map of colors.  Each color
+       * is represented by an index into the given palette.
        */
+   class InterpolatedColorMap
+   {
+   public:
+         /**
+          * Default constructor.
+          */
       InterpolatedColorMap()
       {
-        cols=rows=0;
-        c=0;
+         cols=rows=0;
+         c=0;
       }
 
-      /**
-       * Constructor.
-       * @param icols Width of the map
-       * @param irows Height of the map
-       * @param pp Palette to use 
-       * @param base Base color for the map to be initialized to
-       */
-      InterpolatedColorMap(int icols, int irows, const Palette &pp, double base=0.0);
+         /**
+          * Constructor.
+          * @param icols Width of the map
+          * @param irows Height of the map
+          * @param pp Palette to use 
+          * @param base Base color for the map to be initialized to
+          */
+      InterpolatedColorMap(int icols, int irows, const Palette &pp,
+                           double base=0.0);
 
-      /// Copy constructor.
+         /// Copy constructor.
       InterpolatedColorMap(const InterpolatedColorMap &o);
 
-      /// Destructor
+         /// Destructor
       ~InterpolatedColorMap() { reset(); }
 
-      /**
-       * Copy operator.  
-       *
-       * This is in replacement for operators like:
-       * - InterpolatedColorMap& operator=(const InterpolatedColorMap& o);
-       * 
-       * As this is what happens:
-       * \code
-       * InterpolatedColorMap ic(...);  
-       * ...; //init ic
-       * InterpolatedColorMap c;
-       * c = ic; // c.operator=(ic);
-       * InterpolatedColorMap c2 = ic // c2(ic);
-       * \endcode
-       */
+         /**
+          * Copy operator.  
+          *
+          * This is in replacement for operators like:
+          * - InterpolatedColorMap& operator=(const InterpolatedColorMap& o);
+          * 
+          * As this is what happens:
+          * \code
+          * InterpolatedColorMap ic(...);  
+          * ...; //init ic
+          * InterpolatedColorMap c;
+          * c = ic; // c.operator=(ic);
+          * InterpolatedColorMap c2 = ic // c2(ic);
+          * \endcode
+          */
       InterpolatedColorMap& operator=(InterpolatedColorMap o);
 
-      /// Set the color at a row and column
+         /// Set the color at a row and column
       inline void setColor(int row, int col, double f) { c[row][col]=f; }
 
-      /// Get the color at a row and column
+         /// Get the color at a row and column
       inline Color get(int row, int col) const { return p.getColor(getIndex(row,col)); }
 
-      /// Get the color index at a row and column
+         /// Get the color index at a row and column
       inline double getIndex(int row, int col) const  { return c[row][col]; }
 
-      /// Get the cols of the map
+         /// Get the cols of the map
       inline int getCols() const { return cols; }
 
-      /// Get the rows of the map
+         /// Get the rows of the map
       inline int getRows() const { return rows; }
 
-      /// Get Palette
+         /// Get Palette
       inline const Palette getPalette() const { return p; }
 
-    protected:
-      /// Initialization helper
+   protected:
+         /// Initialization helper
       void init(int icols, int irows);
 
-      /// Reset helper
+         /// Reset helper
       void reset();
 
-      /// Width of the map
+         /// Width of the map
       int cols;
 
-      /// Height of the map
+         /// Height of the map
       int rows;
 
-      /// The color palette
+         /// The color palette
       Palette p;
 
-      /// Index array
+         /// Index array
       double **c;
-  }; // class InterpolatedColorMap
+   }; // class InterpolatedColorMap
 
-  //@}
+      //@}
 
 } // namespace vdraw
 

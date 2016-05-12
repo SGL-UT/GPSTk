@@ -15,7 +15,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -23,13 +23,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -52,16 +52,17 @@
 
 namespace gpstk
 {
-   /** @addtogroup SP3ephem */
-   //@{
+      /// @ingroup FileHandling
+      //@{
 
-      /// This class models the header for a SP3 file.
-      ///
-      /// @note A valid header MUST be read before data can be read from an SP3 file
-      /// because the header contains the file version or format. The version in
-      /// this Header is used by SP3Stream to determine the format of output SP3Data.
-      ///
-      /// @sa gpstk::SP3Stream and gpstk::SP3Data for more information.
+      /** This class models the header for a SP3 file.
+       *
+       * @note A valid header MUST be read before data can be read
+       * from an SP3 file because the header contains the file version
+       * or format. The version in this Header is used by SP3Stream to
+       * determine the format of output SP3Data.
+       *
+       * @sa gpstk::SP3Stream and gpstk::SP3Data for more information. */
    class SP3Header : public SP3Base
    {
    public:
@@ -79,8 +80,8 @@ namespace gpstk
          /// constructor
       SP3Header() : version(undefined), numberOfEpochs(0),
                     system(1, SP3SatID::systemGPS), timeSystem(TimeSystem::Any),
-                    basePV(0.0), baseClk(0.0)
-                    {}
+                    basePV(0.0), baseClk(0.0), allowSP3aEvents(false)
+      {}
 
          /// destructor
       virtual ~SP3Header() {}
@@ -93,8 +94,16 @@ namespace gpstk
          /// @return a character version of the current Version
       char versionChar(void) const throw()
       {
+         return versionChar(version);
+      }
+
+         /// access the version or file format as a character
+         /// @param ver SP3 version
+         /// @return a character version of the current Version
+      static char versionChar(Version ver) throw()
+      {
          char ch;
-         switch(version) {
+         switch(ver) {
             case SP3a:
                ch = 'a'; break;
             case SP3b:
@@ -111,8 +120,16 @@ namespace gpstk
          /// @return a string version of the current Version
       std::string versionString(void) const throw()
       {
+         return versionString(version);
+      }
+
+         /// access the version or file format as a string
+         /// @param ver SP3 version
+         /// @return a string version of the current Version
+      static std::string versionString(Version ver) throw()
+      {
          std::string str;
-         switch(version) {
+         switch(ver) {
             case SP3a:
                str = std::string("SP3a"); break;
             case SP3b:
@@ -143,19 +160,16 @@ namespace gpstk
          // The next four lines is our common interface
          /// SP3Header is a "header" so this function always returns true.
       virtual bool isHeader() const { return true; }
-     
+
          /// Dump contents to an ostream
       virtual void dump(std::ostream& s=std::cout) const throw();
 
-
-         ///@name data members
-         //@{
-
-         /// The SP3 version (file format) is initially undefined, but it will be
-         /// assigned by reallyGetRecord() while reading, and may be reassigned
-         /// by the user before writing.
+         /** The SP3 version (file format) is initially undefined, but
+          * it will be assigned by reallyGetRecord() while reading,
+          * and may be reassigned by the user before writing.*/
       Version version;           ///< SP3 Version or file format
       bool containsVelocity;     ///< If true, file contains velocities
+      bool allowSP3aEvents;      ///< If true, file may contain NGA SP3a events
       CommonTime time;           ///< Time of first Epoch in file
       double epochInterval;      ///< Duration of Epoch in seconds
       int numberOfEpochs;        ///< Number of epochs in this file
@@ -164,24 +178,22 @@ namespace gpstk
       std::string orbitType;     ///< Type of Orbit Estimate
       std::string agency;        ///< Agency generating the Orbit
 
-      // the following are specific to version 'c'
+         // the following are specific to version 'c'
       SP3SatID system;        ///< system of satellites in file, e.g. G for GPS
       TimeSystem timeSystem;  ///< Time system used
       double basePV;          ///< Base used in Pos or Vel (mm or 10**-4mm/sec)
       double baseClk;         ///< Base used in Clk or rate (psec or 10**-4psec/sec)
-      /// Map<SP3SatID,accuracy flag> (all SVs in file)
+         /// Map<SP3SatID,accuracy flag> (all SVs in file)
       std::map<SP3SatID, short> satList;
-      /// vector of 4 comment lines
+         /// vector of 4 comment lines
       std::vector<std::string> comments;
-
-         //@}
 
       friend class SP3Data;
 
    protected:
          /// Writes the record formatted to the FFStream \a s.
          /// @throws StringException when a StringUtils function fails
-      virtual void reallyPutRecord(FFStream& s) const 
+      virtual void reallyPutRecord(FFStream& s) const
          throw(std::exception, FFStreamError,
                StringUtils::StringException);
 
@@ -192,13 +204,13 @@ namespace gpstk
          /// @throws FFStreamError when exceptions(failbit) is set and
          ///  a read or formatting error occurs.  This also resets the
          ///  stream to its pre-read position.
-      virtual void reallyGetRecord(FFStream& s) 
+      virtual void reallyGetRecord(FFStream& s)
          throw(std::exception, FFStreamError,
                StringUtils::StringException);
 
    }; // end class SP3Header
 
-   //@}
+      //@}
 
 }  // namespace
 

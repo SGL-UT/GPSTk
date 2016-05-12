@@ -49,16 +49,21 @@
 
 namespace gpstk
 {
-   // forward declarations
+      // forward declarations
    class SatID;
 //   std::istream& operator<<(std::istream& s, SatID& p);
 
-   /// Satellite identifier consisting of a satellite number (PRN, etc.)
-   /// and a satellite system
+      /// @ingroup GNSSEph
+      //@{
+
+      /// Satellite identifier consisting of a satellite number (PRN, etc.)
+      /// and a satellite system. For GLONASS (systemGlonass), the identifier
+      /// is the slot number as per section 3.5 of the RINEX 3 spec.
+      /// For SBAS (systemGeosync), the id is the PRN-100.
    class SatID
    {
    public:
-      /// Supported satellite systems
+         /// Supported satellite systems
       enum SatelliteSystem
       {
          systemGPS = 1,
@@ -74,17 +79,17 @@ namespace gpstk
          systemUnknown
       };
 
-      /// empty constructor, creates an invalid object
+         /// empty constructor, creates an invalid object
       SatID() { id=-1; system=systemGPS; }
 
-      /// explicit constructor, no defaults
-      /// @note if s is given a default value here,
-      /// some compilers will silently cast int to SatID.
+         /// explicit constructor, no defaults
+         /// @note if s is given a default value here,
+         /// some compilers will silently cast int to SatID.
       SatID(int p, const SatelliteSystem& s) { id=p; system=s; }
 
-      // operator=, copy constructor and destructor built by compiler
+         // operator=, copy constructor and destructor built by compiler
 
-      /// Convenience method used by dump().
+         /// Convenience method used by dump().
       static std::string convertSatelliteSystemToString(const SatelliteSystem& s)
       {
          switch(s)
@@ -110,15 +115,15 @@ namespace gpstk
          s << convertSatelliteSystemToString(system) << " " << id;
       }
 
-      /// operator == for SatID
+         /// operator == for SatID
       bool operator==(const SatID& right) const
       { return ((system == right.system) && (id == right.id)); }
 
-      /// operator != for SatID
+         /// operator != for SatID
       bool operator!=(const SatID& right) const
       { return !(operator==(right)); }
 
-      /// operator < for SatID : order by system, then number
+         /// operator < for SatID : order by system, then number
       bool operator<(const SatID& right) const
       {
          if (system==right.system)
@@ -126,32 +131,32 @@ namespace gpstk
          return (system<right.system);
       }
 
-      /// operator > for SatID
+         /// operator > for SatID
       bool operator>(const SatID& right) const
       {  return (!operator<(right) && !operator==(right)); }
 
-      /// operator <= for SatID
+         /// operator <= for SatID
       bool operator<=(const SatID& right) const
       { return (operator<(right) || operator==(right)); }
 
-      /// operator >= for SatID
+         /// operator >= for SatID
       bool operator>=(const SatID& right) const
       { return !(operator<(right)); }
 
-      /// return true if this is a valid SatID
-      /// @note assumes all id's are positive and less than 100;
-      ///     plus GPS id's are less than or equal to MAX_PRN (32).
-      /// @note this is not used internally in the gpstk library
+         /// return true if this is a valid SatID
+         /// @note assumes all id's are positive and less than 100;
+         ///     plus GPS id's are less than or equal to MAX_PRN (32).
+         /// @note this is not used internally in the gpstk library
       bool isValid() const
       {
          switch(system)
          {
             case systemGPS: return (id > 0 && id <= MAX_PRN);
-            //case systemGalileo:
-            //case systemGlonass:
-            //case systemGeosync:
-            //case systemLEO:
-            //case systemTransit:
+                  //case systemGalileo:
+                  //case systemGlonass:
+                  //case systemGeosync:
+                  //case systemLEO:
+                  //case systemTransit:
             default: return (id > 0 && id < 100);
          }
       }
@@ -161,21 +166,24 @@ namespace gpstk
 
    }; // class SatID
 
+      /// stream output for SatID
+   inline std::ostream& operator<<(std::ostream& s, const SatID& p)
+   {
+      p.dump(s);
+      return s;
+   }
+
+      //@}
+
    namespace StringUtils
    {
+         /// @ingroup StringUtils
       inline std::string asString(const SatID& p)
       {
          std::ostringstream oss;
          p.dump(oss);
          return oss.str();
       }
-   }
-
-      /// stream output for SatID
-   inline std::ostream& operator<<(std::ostream& s, const SatID& p)
-   {
-      p.dump(s);
-      return s;
    }
 
 } // namespace gpstk

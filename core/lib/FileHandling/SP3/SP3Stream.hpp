@@ -47,7 +47,7 @@
 
 namespace gpstk
 {
-      /// @addtogroup SP3
+      /// @ingroup FileHandling
       //@{
 
       /** This class performs file I/O on an SP3 file for the SP3Header
@@ -81,15 +81,12 @@ namespace gpstk
           * @param[in] mode the ios::openmode to be used */
       virtual void open(const char* filename, std::ios::openmode mode);
 
-         ///@name data members
-         //@{
       SP3Header header;     ///< SP3Header for this file
       bool wroteEOF;        ///< True if the final 'EOF' has been read.
       bool writingMode;     ///< True if the stream is open in 'out', not 'in', mode
       CommonTime currentEpoch;   ///< Time from last epoch record read
       std::string lastLine;      ///< Last line read, perhaps not yet processed
       std::vector<std::string> warnings; ///< warnings produced by reallyGetRecord()s
-         //@}
 
    private:
          /// Initialize internal data structures according to file mode

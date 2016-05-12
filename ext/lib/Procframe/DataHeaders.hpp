@@ -55,7 +55,7 @@
 namespace gpstk
 {
 
-      /** @addtogroup DataStructures */
+      /// @ingroup DataStructures 
 
       //@{
 

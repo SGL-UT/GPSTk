@@ -52,7 +52,7 @@
 namespace gpstk
 {
 
-      /** @addtogroup GPSsolutions */
+      /// @ingroup GPSsolutions 
       //@{
 
 
@@ -364,7 +364,7 @@ namespace gpstk
                                    const double& lli2 );
 
 
-  }; // End of class 'LICSDetector2'
+   }; // End of class 'LICSDetector2'
 
       //@}
 

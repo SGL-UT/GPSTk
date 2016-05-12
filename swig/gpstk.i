@@ -42,7 +42,7 @@ using namespace gpstk;
 %rename(__str__) gpstk::Exception::what() const;
 %include "Exception.hpp"
 %include "FFStreamError.hpp"
-%include "Exception.i"
+%include "GPSTkException.i"
 
 
 // =============================================================
@@ -59,6 +59,10 @@ using namespace gpstk;
 
 %include "TimeTag.hpp"
 %include "TimeConstants.hpp"
+
+ // Long doubles are used in several interfaces but
+ // swig really doesn't handle them
+%apply double { long double };
 
 %ignore gpstk::CommonTime::get;  // takes non-const values as parameters for output
 %include "CommonTime.hpp"
@@ -89,7 +93,6 @@ using namespace gpstk;
 %feature("notabstract") QZSWeekSecond;
 %include "QZSWeekSecond.hpp"
 %feature("notabstract") MJD;
-%apply double { long double };  // swig does not really handle long doubles
 %include "MJD.hpp"
 %feature("notabstract") YDSTime;
 %include "YDSTime.hpp"
@@ -305,6 +308,10 @@ namespace std { class fstream {}; }
 %include "SunPosition.hpp"
 %include "PoleTides.hpp"
 %include "SolidTides.hpp"
+
+// Geomatics:
+%include "Geomatics.i"
+%include "SunEarthSatGeometry.hpp"
 
 // Encapsulation of many the __str__, __getitem__, etc. functions to avoid clutter.
 // When the only change to a class is adding a simple wrapper, add to pythonfunctions

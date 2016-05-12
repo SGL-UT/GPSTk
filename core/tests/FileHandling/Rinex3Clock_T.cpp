@@ -78,9 +78,9 @@ private:
 // Initialize data file names
 void Rinex3Clock_T::init(void)
 {
-   TestUtil testFramework;
-   dataFilePath = testFramework.getDataPath();
-   tempFilePath = testFramework.getTempPath();
+   gpstk::TestUtil testFramework;
+   dataFilePath = gpstk::getPathData();
+   tempFilePath = gpstk::getPathTestTemp();
 
    std::cout<<"Running tests for Rinex v.2 files"<<std::endl;
 

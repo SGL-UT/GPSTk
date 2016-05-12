@@ -47,8 +47,8 @@
 
 namespace gpstk
 {
-       /** @addtogroup geodeticgroup */
-       //@{
+      /// @ingroup Geodetic
+      //@{
 
       /**
        * This class represents the ellipsoidal model defined in
@@ -92,7 +92,7 @@ namespace gpstk
 
    }; // class GPSEllipsoid
 
-   //@}
+      //@}
 
 } // namespace
 

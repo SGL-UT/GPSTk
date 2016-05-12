@@ -49,10 +49,13 @@
 
 namespace gpstk
 {
+      /// @ingroup GNSSEph
+      //@{
+
    class QZSEphemeris : public OrbitEph
    {
    public:
-	   /// Default constuctor
+         /// Default constuctor
       QZSEphemeris(void)
       {
          beginValid.setTimeSystem(TimeSystem::QZS);
@@ -62,53 +65,54 @@ namespace gpstk
          transmitTime.setTimeSystem(TimeSystem::QZS);
       }
 
-      /// Destructor
+         /// Destructor
       virtual ~QZSEphemeris(void) {}
 
-      /// Create a copy of this object and return a pointer to it. This function
-      /// overrides that in the base class.
+         /// Create a copy of this object and return a pointer to
+         /// it. This function overrides that in the base class.
       virtual QZSEphemeris* clone(void) const
-         { return new QZSEphemeris(*this); }
+      { return new QZSEphemeris(*this); }
 
-      /// Returns true if the time, ct, is within the period of validity of
-      /// this OrbitEph object.
-      /// @throw Invalid Request if the required data has not been stored.
+         /// Returns true if the time, ct, is within the period of validity of
+         /// this OrbitEph object.
+         /// @throw Invalid Request if the required data has not been stored.
       virtual bool isValid(const CommonTime& ct) const;
 
-      /// Return a string that will identify the derived class
+         /// Return a string that will identify the derived class
       virtual std::string getName(void) const
-         { return std::string("QZSEphemeris"); }
+      { return std::string("QZSEphemeris"); }
 
-      /// This function returns the health status of the SV.
+         /// This function returns the health status of the SV.
       virtual bool isHealthy(void) const;
 
-      /// Determine the health by signal, where
-      ///    which = 5 4 3 2 1 as signal = L1C/A L2C L5 L1C LEX.
-      /// Cf IS-QZSS 5.2.2.2.3 and Table 5.1.2-1 pg 50
+         /// Determine the health by signal, where
+         ///    which = 5 4 3 2 1 as signal = L1C/A L2C L5 L1C LEX.
+         /// Cf IS-QZSS 5.2.2.2.3 and Table 5.1.2-1 pg 50
       bool isHealthy(const int which) const;
 
-      /// Compute the accuracy in meters from the accuracy flag (URA).
+         /// Compute the accuracy in meters from the accuracy flag (URA).
       double getAccuracy(void) const
-         { return accuracy; }
+      { return accuracy; }
 
-      /// adjustBeginningValidity determines the beginValid and endValid times.
-      /// @throw Invalid Request if the required data has not been stored.
+         /// adjustBeginningValidity determines the beginValid and
+         /// endValid times.
+         /// @throw Invalid Request if the required data has not been stored.
       virtual void adjustValidity(void);
       
-      /// Dump the orbit, etc information to the given output stream.
-      /// @throw Invalid Request if the required data has not been stored.
+         /// Dump the orbit, etc information to the given output stream.
+         /// @throw Invalid Request if the required data has not been stored.
       virtual void dumpBody(std::ostream& os = std::cout) const;
 
-      /// Compute the fit duration in hours, and adjust the times of validity, given
-      /// the fit interval flag.
-      /// @param fitint fit interval flag
+         /// Compute the fit duration in hours, and adjust the times
+         /// of validity, given the fit interval flag.
+         /// @param fitint fit interval flag
       void setFitIntervalFlag(const short fitint)
       {
          fitDuration = getFitInterval(fitint);
          adjustValidity();
       }
 
-   // member data
+         // member data
       CommonTime transmitTime;   ///< Time of transmission
       long HOWtime;              ///< Time (seconds-of-week) of handover word (txmit)
       short IODE;                ///< Index of data - ephemeris
@@ -123,16 +127,16 @@ namespace gpstk
       short fitint;              ///< for RINEX
 
    private:
-      /// Get the fit interval in hours from the fit interval flag
+         /// Get the fit interval in hours from the fit interval flag
       static short getFitInterval(const short fitIntFlag)
-         {
-            if(fitIntFlag == 0) return 2;
-            else return 4; // actually >4 hours
-         }
+      {
+         if(fitIntFlag == 0) return 2;
+         else return 4; // actually >4 hours
+      }
 
    }; // end class QZSEphemeris
 
-   //@}
+      //@}
    
 } // end namespace
 

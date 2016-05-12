@@ -71,6 +71,7 @@ OPTIONS:
                         Default=$python_exe
 
    -t                   Build and run tests.
+   -T                   Build and run tests but don't stop on test failures.
 
    -p                   Build supported packages (source, binary, deb,  ...)
 
@@ -85,7 +86,7 @@ EOF
 }
 
 
-while getopts "hb:cdepi:j:xP:sutv" OPTION; do
+while getopts "hb:cdepi:j:xP:sutTv" OPTION; do
     case $OPTION in
         h) usage
            exit 0
@@ -120,6 +121,8 @@ while getopts "hb:cdepi:j:xP:sutv" OPTION; do
            ;;
         t) test_switch=1
            ;;
+        T) test_switch=-1
+           ;;
         v) verbose+=1
            ;;
         *) echo "Invalid option: -$OPTARG" >&2
@@ -141,7 +144,6 @@ if [ ! -d "$build_root" ]; then
 fi
 
 if [ -f "$LOG" ]; then
-    cp --force --backup=numbered $LOG $LOG
     rm $LOG
 fi
 
@@ -171,9 +173,7 @@ if ((verbose>0)); then
     log "time            =" `date`
     log "hostname        =" $hostname
     log "uname           =" `uname -a`
-    log "git branch      =" $git_branch
-    log "git tag         =" $git_tag
-    log "git hash        =" $git_hash
+    log "git id          =" $(get_repo_state $repo)
     log "logfile         =" $LOG
     log
 fi
@@ -182,8 +182,9 @@ if ((verbose>3)); then
     exit
 fi
 
-cd "$build_root"
-
+# Doxygen should be run in the top level directory so it picks up
+# formatting files
+cd "$repo"
 if [ $build_docs ]; then
     log "Pre-build documentation processing ..."
     # Dynamically configure the Doxyfile with the source and destination paths
@@ -192,7 +193,8 @@ if [ $build_docs ]; then
         sources+=" $repo/ext/lib"
     fi
     log "Generating Doxygen files from C/C++ source ..."
-    sed -e "s#gpstk_sources#$sources#g" -e "s#gpstk_doc_dir#$build_root/doc#g" $repo/Doxyfile | doxygen - >"$build_root"/Doxygen.log
+    sed -e "s#^INPUT *=.*#INPUT = $sources#" -e "s#gpstk_sources#$sources#g" -e "s#gpstk_doc_dir#$build_root/doc#g" $repo/Doxyfile >$repo/doxyfoo
+    sed -e "s#^INPUT *=.*#INPUT = $sources#" -e "s#gpstk_sources#$sources#g" -e "s#gpstk_doc_dir#$build_root/doc#g" $repo/Doxyfile | doxygen - >"$build_root"/Doxygen.log
     tar -czf gpstk_doc_cpp.tgz -C doc/html .
     
     if [[ -z $exclude_python && $build_ext ]] ; then
@@ -200,6 +202,8 @@ if [ $build_docs ]; then
         ${python_exe} $repo/swig/docstring_generator.py "$build_root"/doc "$build_root"/swig/doc >"$build_root"/swig_doc.log
     fi
 fi
+
+cd "$build_root"
 
 # setup the cmake command
 args=$@
@@ -216,12 +220,30 @@ args+=${verbose:+" -DDEBUG_SWITCH=ON"}
 args+=${test_switch:+" -DTEST_SWITCH=ON"}
 args+=${build_docs:+" --graphviz=$build_root/doc/graphviz/gpstk_graphviz.dot"}
 
-run cmake $args $repo
+case `uname` in
+    MINGW32_NT-6.1)
+        run cmake $args -G "Visual Studio 14 2015 Win64" $repo
+        run cmake --build . --config Release
+        ;;
+    *)
+        run cmake $args $repo 
+        run make all -j $num_threads
+esac
 
-run make all -j $num_threads
 
 if [ $test_switch ]; then
-    run ctest -v -j $num_threads
+  if ((test_switch < 0)); then
+      ignore_failures=1
+  fi
+  case `uname` in
+      MINGW32_NT-6.1)    
+          run cmake --build . --target RUN_TESTS --config Release
+          ;;
+      *)
+          run ctest -v -j $num_threads
+          test_status=$?
+  esac              
+  unset ignore_failures
 fi
 
 if [ $install ]; then
@@ -244,9 +266,14 @@ if [ $build_docs ]; then
 fi
 
 if [ $build_packages ]; then
-    run make package
-    run make package_source
-    
+    case `uname` in
+        MINGW32_NT-6.1)
+            run cpack -C Release
+            ;;
+        *)
+            run make package
+            run make package_source
+    esac   
     if [[ -z $exclude_python && $build_ext ]] ; then
         cd "$build_root"/swig/install_package
         ${python_exe} setup.py sdist --formats=zip,gztar
@@ -254,6 +281,15 @@ if [ $build_packages ]; then
 fi
 
 log
+if [ $test_switch ]; then 
+    if [ $test_status == 0 ]; then
+        log "All tests passed!"
+    else
+        log $test_status " test failures."
+    fi
+else
+    log "Tests not run."
+fi
 log "See $build_root/Testing/Temporary/LastTest.log for detailed test log"
 log "See $LOG for detailed build log"
 log

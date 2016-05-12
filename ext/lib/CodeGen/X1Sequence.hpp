@@ -45,7 +45,7 @@
 
 namespace gpstk
 {
-/** @addtogroup code   */
+/// @ingroup code   
 //@{
       /**
         *     GPS X1 Sequencer.

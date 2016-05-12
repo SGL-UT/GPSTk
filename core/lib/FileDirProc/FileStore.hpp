@@ -47,41 +47,42 @@
 
 namespace gpstk
 {
-   /** @addtogroup filedirgroup */
-   //@{
-      /**
-       * This is an abstract class (loadFile is pure virtual) used to add a list of
-       * files and the interface to read files into a datastore.
-       * This is intended to support arbitrary file names, not a list of similiar
-       * file names. See the FileHunter framework for support of that type of file.
-       */
+      /// @ingroup FileDirProc
+      //@{
 
+      /**
+       * This is an abstract class (loadFile is pure virtual) used to
+       * add a list of files and the interface to read files into a
+       * datastore.  This is intended to support arbitrary file names,
+       * not a list of similiar file names. See the FileHunter
+       * framework for support of that type of file.
+       */
    template <class HeaderType> class FileStore
    {
    private:
 
-      /// A store of all headers loaded, indexed by file name
+         /// A store of all headers loaded, indexed by file name
       std::map<std::string, HeaderType> headerMap;
 
    public:
 
-      /// Constructor.
+         /// Constructor.
       FileStore() throw() {};
 
-      /// destructor
+         /// destructor
       ~FileStore() {};
       
-      /// Get a list of all the file names in the store, as a vector<string>
+         /// Get a list of all the file names in the store, as a vector<string>
       std::vector<std::string> getFileNames() const
       {
          std::vector<std::string> names;
          typename std::map<std::string, HeaderType>::const_iterator fit;
          for(fit=headerMap.begin(); fit != headerMap.end(); fit++)
-         names.push_back(fit->first);
+            names.push_back(fit->first);
          return names;
       }
       
-      /// Add a filename, with its header, to the store
+         /// Add a filename, with its header, to the store
       void addFile(const std::string& fn, HeaderType& header)
          throw(InvalidRequest)
       {
@@ -93,8 +94,9 @@ namespace gpstk
          headerMap.insert(make_pair(fn,header));
       }
 
-      /// Access the header for a given filename
-      const HeaderType& getHeader(const std::string& fn) const throw(InvalidRequest)
+         /// Access the header for a given filename
+      const HeaderType& getHeader(const std::string& fn) const
+         throw(InvalidRequest)
       {
          typename std::map<std::string, HeaderType>::const_iterator iter_fn = headerMap.find(fn);
          if( iter_fn == headerMap.end())
@@ -103,11 +105,12 @@ namespace gpstk
             GPSTK_THROW(e);
          }
          return iter_fn->second;
-         // changed from headerMap[fn] since that is a non-const member of std::map
-         // and therefore could modify headerMap, making this function not be side-effect free
+            // changed from headerMap[fn] since that is a non-const
+            // member of std::map and therefore could modify
+            // headerMap, making this function not be side-effect free
       }
 
-      /// dump a list of file names
+         /// dump a list of file names
       void dump(std::ostream& os = std::cout, short detail = 0)
          const throw()
       {
@@ -125,22 +128,22 @@ namespace gpstk
          os << "End dump of FileStore\n";
       }
 
-      /// Clear the contents of the (filename, header) map 
+         /// Clear the contents of the (filename, header) map 
       void clear()
          throw()
       {
-        headerMap.clear();
+         headerMap.clear();
       }
 
 
-      /// Return the size of the (filename,header) map
+         /// Return the size of the (filename,header) map
       unsigned size() const throw() { return headerMap.size(); }
 
       unsigned nfiles() const throw() { return size(); }
 
    }; // end class FileStore
 
-   //@}
+      //@}
 
 }  // namespace
 

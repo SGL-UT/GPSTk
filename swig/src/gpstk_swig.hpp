@@ -167,4 +167,7 @@
 #include "PoleTides.hpp"
 #include "SolidTides.hpp"
 
+// Geomatics:
+#include "SunEarthSatGeometry.hpp"
+
 #endif

@@ -6,12 +6,11 @@ Contents:
 
 * Introduction
 * Dependencies
-* UNIX-like Environment: Preparation
 * UNIX-like Environment: Automated Build and Install
 * UNIX-like Environment: Manual Build and Install
-* UNIX-like Environment: Python Bindings Build and Install
 * Windows and Microsoft Visual Studio: Building with CMake
 * Linking Against the GPSTk Library
+* Notes on the python bindings
 
 Introduction:
 -------------
@@ -35,21 +34,22 @@ This project uses CMake for all of its configuration, build, install & testing t
    
     http://www.cmake.org/
 
-This project uses SWIG for generation of python bindings for the C++ library.
-   
+This project uses SWIG for generation of python bindings for the C++
+library. Currently (March 2016) there seems to be problems with using swig 3.x to
+build the bindings. 2.0.12 is the newest this has been successfull.
     http://www.swig.org/
 
 This project (optionally) uses doxygen to dynamically generate API documentation.
    
     http://www.doxygen.org/
 
-This project (optionally) uses Sphinx for some documentation generation
+This project (optionally) uses Sphinx for generating the python bindings documentation.
    
     http://sphinx-doc.org/
 
 
-UNIX-like Environment: Preparation:
------------------------------------
+UNIX-like Environment: Automatic build and install
+-------------------------------------------
 
 This section describes build and installation under the following environments:
 
@@ -70,44 +70,9 @@ The following procedure will build and install the GPSTk.
       called $gpstk_root:
 
          $ cd $gpstk_root
-
-
-UNIX-like Environment: Automated Build, Install, and Package:
--------------------------------------------------------------
-
-If you prefer automation, run the GPSTk script. See the script help for details 
-on those parameters:
-
-    $ cd $gpstk_root
-
-    $ ./build.sh -h
-
-Note that the script will NOT update your shell environment, so you
-will need to export the library install path if you install to a 
-non-standard path. The build script will test your paths to and warn
-you if your installs cannot be found.
-
-Typical builds (no install) will look like this:
-
-    $ ./build.sh -e
-
-Typical user installs will look like this:
-
-    $ export LD_LIBRARY_PATH=$HOME/.local/gpstk/lib:$LD_LIBRARY_PATH
-
-    $ ./build.sh -eu
-
-Typical test and install will look like this:
-
-    $ export LD_LIBRARY_PATH=/tmp/test/lib:$LD_LIBRARY_PATH
-
-    $ ./build.sh -et -i /tmp/test
-
-Typical install and binary tarball package (in build folder) will look like this:
-
-    $ export LD_LIBRARY_PATH=/tmp/test/lib:$LD_LIBRARY_PATH
-
-    $ ./build.sh -ep -i /tmp/test
+         
+    5. Execute the build script to build and install to the user's ~/.local dir
+        $ ./build.sh -eu
 
 
 UNIX-like Environment: Manual Build, Install, and Package:
@@ -171,31 +136,6 @@ commands instead of build.sh:
          $ make package
 
 
-UNIX-like Environment: Python Bindings Build and Install:
----------------------------------------------------------
-
-As the build.sh script builds the Python Bindings by default:
-
-    $ cd $gpstk_root
-
-    $ ./build.sh -h
-
-Note that the script will NOT update your shell environment, so you
-will need to export the library install path if you install to a 
-non-standard path. The build script will test your paths to and warn
-you if your installs cannot be found.
-
-Typical system installs with python bindings will look like this:
-
-    $ ./build.sh -e
-
-Typical user installs with python bindings will look like this:
-
-    $ ./build.sh -eu
-
-Typical user installs with python bindings and documentation will look like this:
-
-    $ ./build.sh -eud
 
 
 
@@ -224,4 +164,16 @@ would look like this:
     COMMAND_STRING="$COMPILER -I$GPSTK_INSTALL/include -L$GPSTK_INSTALL/lib -lgpstk -o $OUTPUT $INPUT"
     echo "$COMMAND_STRING"
     eval $COMMAND_STRING
+
+Notes on the python bindings
+-------------------------
+Under common Linux distributions (Debian, Ubunu, CentOS, RedHat), the
+python bindings just build, install, and work (TM).
+
+Under other OSs, things are a little more fussy.
+
+As of March 2016 on OX X 10.11 (El Capitan), ```build.sh -u``` will
+install the python bindings to ~/.local/lib/python2.7...
+It doesn't appear that the python provided with OS X will
+automatically load from this path.
 

@@ -53,109 +53,102 @@
 
 namespace gpstk
 {
-   /** @addtogroup RinexNav */
-   //@{
+      /// @ingroup FileHandling
+      //@{
 
       /// This compares all elements of the RinexNavData with less than.
    struct RinexNavDataOperatorLessThanFull : 
       public std::binary_function<gpstk::RinexNavData, 
-         gpstk::RinexNavData, bool>
+                                  gpstk::RinexNavData, bool>
    {
    public:
       bool operator()(const gpstk::RinexNavData& l,
                       const gpstk::RinexNavData& r) const
+      {
+         if (l.getXmitTime() < r.getXmitTime())
+            return true;
+         else if (l.getXmitTime() == r.getXmitTime())
          {
-            gpstk::GPSWeekSecond lXmitTime(l.weeknum, (double)l.HOWtime);
-            gpstk::GPSWeekSecond rXmitTime(r.weeknum, (double)r.HOWtime);
-
-
-            if (lXmitTime < rXmitTime)
+               // compare the times and all data members
+            if (l.time < r.time)
                return true;
-            else if (lXmitTime == rXmitTime)
+            else if (l.time == r.time)
             {
-                  // compare the times and all data members
-               if (l.time < r.time)
-                  return true;
-               else if (l.time == r.time)
+               std::list<double>
+                  llist = l.toList(),
+                  rlist = r.toList();
+                  
+               std::list<double>::iterator 
+                  litr = llist.begin(), 
+                  ritr = rlist.begin();
+                  
+               while (litr != llist.end())
                {
-                  std::list<double>
-                     llist = l.toList(),
-                     rlist = r.toList();
-                  
-                  std::list<double>::iterator 
-                     litr = llist.begin(), 
-                     ritr = rlist.begin();
-                  
-                  while (litr != llist.end())
+                  if (*litr < *ritr)
+                     return true;
+                  else if (*litr > *ritr)
+                     return false;
+                  else
                   {
-                     if (*litr < *ritr)
-                        return true;
-                     else if (*litr > *ritr)
-                        return false;
-                     else
-                     {
-                        litr++;
-                        ritr++;
-                     }
+                     litr++;
+                     ritr++;
                   }
                }
-            } // if (lXmitTime == rXmitTime)
+            }
+         } // if (lXmitTime == rXmitTime)
 
-            return false;
-         }
+         return false;
+      }
    };
 
       /// This compares all elements of the RinexNavData with equals
    struct RinexNavDataOperatorEqualsFull : 
       public std::binary_function<gpstk::RinexNavData, 
-         gpstk::RinexNavData, bool>
+                                  gpstk::RinexNavData, bool>
    {
    public:
       bool operator()(const gpstk::RinexNavData& l,
                       const gpstk::RinexNavData& r) const
+      {
+            // compare the times and all data members
+         if (l.time != r.time)
+            return false;
+         else // if (l.time == r.time)
          {
-               // compare the times and all data members
-            if (l.time != r.time)
-               return false;
-            else // if (l.time == r.time)
+            std::list<double>
+               llist = l.toList(),
+               rlist = r.toList();
+
+            std::list<double>::iterator 
+               litr = llist.begin(), 
+               ritr = rlist.begin();
+
+            while (litr != llist.end())
             {
-               std::list<double>
-                  llist = l.toList(),
-                  rlist = r.toList();
-
-               std::list<double>::iterator 
-                  litr = llist.begin(), 
-                  ritr = rlist.begin();
-
-               while (litr != llist.end())
-               {
-                  if (*litr != *ritr)
-                     return false;
-                  litr++;
-                  ritr++;
-               }
+               if (*litr != *ritr)
+                  return false;
+               litr++;
+               ritr++;
             }
-
-            return true;
          }
+
+         return true;
+      }
    };
 
       /// Only compares time.  Suitable for sorting a RinexNav file.
    struct RinexNavDataOperatorLessThanSimple : 
       public std::binary_function<gpstk::RinexNavData, 
-         gpstk::RinexNavData, bool>
+                                  gpstk::RinexNavData, bool>
    {
    public:
       bool operator()(const gpstk::RinexNavData& l,
                       const gpstk::RinexNavData& r) const
-         {
-            gpstk::GPSWeekSecond lXmitTime(l.weeknum, (double)l.HOWtime);
-            gpstk::GPSWeekSecond rXmitTime(r.weeknum, (double)r.HOWtime);
-
-            if (lXmitTime < rXmitTime)
-               return true;
-            return false;
-         }
+      {
+         if (l.getXmitTime() < r.getXmitTime())
+            return true;
+         return false;
+      }
    };
 
       /// Combines RinexNavHeaders into a single header, combining comments
@@ -170,35 +163,35 @@ namespace gpstk
    public:
       RinexNavHeaderTouchHeaderMerge()
             : firstHeader(true)
-         {}
+      {}
 
       bool operator()(const gpstk::RinexNavHeader& l)
+      {
+         if (firstHeader)
          {
-            if (firstHeader)
-            {
-               theHeader = l;
-               firstHeader = false;
-            }
-            else
-            {
-               std::set<std::string> commentSet;
-
-                  // insert the comments to the set
-                  // and let the set take care of uniqueness
-               copy(theHeader.commentList.begin(),
-                    theHeader.commentList.end(),
-                    inserter(commentSet, commentSet.begin()));
-               copy(l.commentList.begin(),
-                    l.commentList.end(),
-                    inserter(commentSet, commentSet.begin()));
-                  // then copy the comments back into theHeader
-               theHeader.commentList.clear();
-               copy(commentSet.begin(), commentSet.end(),
-                    inserter(theHeader.commentList,
-                             theHeader.commentList.begin()));
-            }
-            return true;
+            theHeader = l;
+            firstHeader = false;
          }
+         else
+         {
+            std::set<std::string> commentSet;
+
+               // insert the comments to the set
+               // and let the set take care of uniqueness
+            copy(theHeader.commentList.begin(),
+                 theHeader.commentList.end(),
+                 inserter(commentSet, commentSet.begin()));
+            copy(l.commentList.begin(),
+                 l.commentList.end(),
+                 inserter(commentSet, commentSet.begin()));
+               // then copy the comments back into theHeader
+            theHeader.commentList.clear();
+            copy(commentSet.begin(), commentSet.end(),
+                 inserter(theHeader.commentList,
+                          theHeader.commentList.begin()));
+         }
+         return true;
+      }
 
       bool firstHeader;
       gpstk::RinexNavHeader theHeader;
@@ -210,20 +203,20 @@ namespace gpstk
    {
    public:
       RinexNavDataFilterPRN(const std::list<long>& lst )
-         :prnList(lst)
-         {}
+            :prnList(lst)
+      {}
          /// This should return true when the data are to be erased
       bool operator()(const gpstk::RinexNavData& l) const
-         {
-            long testValue = (long) l.PRNID;
-            return find(prnList.begin(), prnList.end(), testValue )
-                                                       == prnList.end(); 
-         }
+      {
+         long testValue = (long) l.PRNID;
+         return find(prnList.begin(), prnList.end(), testValue )
+            == prnList.end(); 
+      }
    private:
       std::list<long> prnList;
    };
 
-   //@}
+      //@}
 
 }
 

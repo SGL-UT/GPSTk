@@ -55,7 +55,7 @@
 namespace gpstk
 {
 
-      /** @addtogroup Rinex3Obs */
+      /// @ingroup FileHandling
       //@{
 
       /// This class models a RINEX Observation Data Record.
@@ -66,8 +66,7 @@ namespace gpstk
    public:
 
          /// Constructor.
-      Rinex3ObsData() : time(gpstk::CommonTime::BEGINNING_OF_TIME)
-         {}
+      Rinex3ObsData();
 
          /// Destructor
       virtual ~Rinex3ObsData() {}
@@ -113,7 +112,7 @@ namespace gpstk
           *                obtained from corresponding RINEX Observation Header
           *                using method 'Rinex3ObsHeader::getObsIndex()'.
           */
-      virtual RinexDatum getObs( const SatID& sat, int index ) const
+      virtual RinexDatum getObs( const RinexSatID& svID, size_t index ) const
          throw(InvalidRequest);
 
 
@@ -121,13 +120,36 @@ namespace gpstk
           *
           * @param sat  Satellite whose observation we want to fetch.
           * @param type String representing the observation type.
-          * @param hdr  RINEX Observation Header for current RINEX file.
+          * @param hdr  Rinex3ObsHeader for current RINEX file.
           */
-      virtual RinexDatum getObs( const SatID& sat,
-                                 std::string type,
+      virtual RinexDatum getObs( const RinexSatID& svID,
+                                 const std::string& obsID,
                                  const Rinex3ObsHeader& hdr ) const
          throw(InvalidRequest);
 
+         /** This method returns the RinexDatum of a given observation
+          *
+          * @param svID  RinexSatID of satellite
+          * @param obsID RinexObsID  of the observation type.
+          * @param hdr   Rinex3ObsHeader for current RINEX file.
+          */
+      virtual RinexDatum getObs( const RinexSatID& svID,
+                                 const RinexObsID& obsID,
+                                 const Rinex3ObsHeader& hdr ) const
+         throw(InvalidRequest);
+
+         /** This sets the RinexDatum for a given observation
+          *
+          * @param data  RinexDatum of obs
+          * @param svID  RinexSatID of satellite
+          * @param obsID RinexObsID  of the observation type.
+          * @param hdr   Rinex3ObsHeader for current RINEX file.
+          */
+      virtual void setObs( const RinexDatum& data,
+                           const RinexSatID& svID,
+                           const RinexObsID& obsID,
+                           const Rinex3ObsHeader& hdr )
+         throw(InvalidRequest);
 
          /// A Debug output function.
          /// Dumps the time of observations and the IDs of the Sats

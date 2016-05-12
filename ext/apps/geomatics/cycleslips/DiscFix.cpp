@@ -34,45 +34,30 @@
 //
 //=============================================================================
 
-//---------------------------------------------------------------------------------
-// DiscFix.cpp:
-// Read a RINEX observation file containing dual frequency pseudorange and phase,
-// separate the data into satellite passes, then find and estimate discontinuities
-// in the phase (using the GPSTk Discontinuity Corrector (GDC) of DiscCorr.hpp).
-// The corrected data can be written out to another RINEX file, plus there is the
-// option to smooth the pseudorange and/or debias the phase (SatPass::smooth()).
-//
-// This program is useful as a way to process RINEX data by satellite pass.
-// It reads an entire RINEX obs file, breaks it into satellite passes (SatPass)
-// and processes it (ProcessSatPass()), then writes it out from SatPass data.
-// It was designed so that all the input data gets into one SatPass and is altered
-// only by the routine(s) called in ProcessSatPass(). Thus, by modifying just that
-// one routine, this program could be used to do something else to the satellite
-// passes. Note that there is a choice of when to write out the data:
-// either as soon as possible, or only at the end (cf. bool WriteASAP).
-//---------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------
+// DiscFix.cpp Read a RINEX observation file containing dual frequency
+//    pseudorange and phase, separate the data into satellite passes, and then
+//    find and estimate discontinuities in the phase (using the GPSTk Discontinuity
+//    Corrector (GDC) in DiscCorr.hpp).
+//    The corrected data can be written out to another RINEX file, plus there is the
+//    option to smooth the pseudorange and/or debias the phase (SatPass::smooth()).
+//------------------------------------------------------------------------------------
 
-/**
- * @file DiscFix.cpp
- * Correct phase discontinuities (cycle slips) in dual-frequency data from a RINEX
- * observation file; optionally smooth the pseudoranges and/or debias the phases.
- */
+/// @file DiscFix.cpp
+/// Correct phase discontinuities (cycle slips) in dual frequency data in a RINEX
+/// observation file, plus optionally smooth the pseudoranges and/or debias the phases
 
-#include "SatPass.hpp"
-#include "DiscCorr.hpp"
-
+// system
 #include <ctime>
 #include <cstring>
-#include <time.h>
 #include <string>
 #include <vector>
 #include <iostream>
 #include <fstream>
 #include <algorithm>
-
-#include "TimeString.hpp"
-#include "DiscCorr.hpp"
+// gpstk
 #include "MathBase.hpp"
+#include "RinexSatID.hpp"
 #include "RinexObsBase.hpp"
 #include "RinexObsData.hpp"
 #include "RinexObsHeader.hpp"
@@ -80,39 +65,49 @@
 #include "CommonTime.hpp"
 #include "CivilTime.hpp"
 #include "GPSWeekSecond.hpp"
-#include "SystemTime.hpp"
-#include "SatPass.hpp"
-#include "StringUtils.hpp"
+#include "Epoch.hpp"
 #include "TimeString.hpp"
+#include "StringUtils.hpp"
+// geomatics
+#include "logstream.hpp"
+#include "stl_helpers.hpp"
+#include "expandtilde.hpp"
+#include "CommandLine.hpp"
+#include "SatPass.hpp"
+#include "DiscCorr.hpp"
 
 using namespace std;
 using namespace gpstk;
 using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------
 // prgm data
+static const string DiscFixVersion = string("6.3 2/4/16");
+static const string PrgmName("DiscFix");
+// a convenience
+static const string L1("L1"),L2("L2"),P1("P1"),P2("P2"),C1("C1"),C2("C2");
 
-string PrgmVers("5.0 8/20/07");
-string PrgmName("DiscFix");
-
+// all input and global data
 typedef struct configuration {
       // input
-   string Directory;
-   vector<string> InputObsName;
+   string inputPath;
+   vector<string> obsfiles;
       // data flow
-   double ith;
-   CommonTime begTime, endTime;
+   double decimate;
+   Epoch begTime, endTime;
    double MaxGap;
    //int MinPts;
       // processing
-   double dt;
-   bool UseCA,ForceCA;
-   vector<GSatID> ExSV;
-   GSatID SVonly;
+   double dt0,dt;          // data interval in input file, and final (decimated) dt
+   bool noCA1,noCA2,useCA1,forceCA1,useCA2,forceCA2,doGLO;
+   vector<RinexSatID> exSat;
+   RinexSatID SVonly;
       // output files
    string LogFile,OutFile;
    ofstream oflog,ofout;
    string format;
+   int round;
       // output
    string OutRinexObs;
    string HDPrgm;         // header of output RINEX file
@@ -122,180 +117,266 @@ typedef struct configuration {
    string HDMarker;
    string HDNumber;
    int NrecOut;
-   CommonTime FirstEpoch,LastEpoch;
+   Epoch FirstEpoch,LastEpoch;
    bool smoothPR,smoothPH,smooth;
-   bool WriteASAP;  // If true, write to RINEX only after ALL data has been processed.
-   //bool CAOut;
-   //bool DopOut;
-   bool verbose;
+   int debug;
+   bool verbose,DChelp;
+   vector<string> DCcmds;        // all the --DC... on the cmd line
       // estimate dt from data
    double estdt[9];
    int ndt[9];
+   // input and/or compute GLONASS frequency channel for each GLO satellite
+   map<RinexSatID,int> GLOfreqChannel;
+
+   // summary of cmd line input
+   string cmdlineSum;
+
+   string Title,Date;
+   Epoch PrgmEpoch;
+   RinexObsStream irfstr; //, orfstr;   // input and output RINEX files
+   RinexObsHeader rhead;
+   int inP1,inP2,inL1,inL2;            // indexes in rhead of C1/P1, P2, L1 and L2
+   string P1C1,P2C2;                   // either P1 or C1
+
+   // Data for an entire pass is stored in SatPass object
+   // This vector contains all the SatPass's defined so far
+   // The parallel vector holds an iterator for use in writing out the data
+   vector<SatPass> SPList;
+
+   // list of observation types to be included in each SatPass
+   vector<string> obstypes;
+
+   // this is a map relating a satellite to the index in SVPList of the current pass
+   vector<unsigned int> SPIndexList;
+   map<RinexSatID,int> SatToCurrentIndexMap;
+
+   GDCconfiguration GDConfig;       // the discontinuity corrector configuration
 } DFConfig;
 
-//------------------------------------------------------------------------------------
-// data input from command line
-
-DFConfig config;                 // for DiscFix
-GDCconfiguration GDConfig;       // the discontinuity corrector configuration
-
-// data used in program
-
-clock_t totaltime;
-string Title;
-CommonTime CurrEpoch, PrgmEpoch;
-
-RinexObsStream irfstr, orfstr;      // input and output RINEX files
-RinexObsHeader rhead;
-int inC1,inP1,inP2,inL1,inL2;      // indexes in rhead of C1, C1/P1, P2, L1 and L2
-bool UsingCA;
-
-// Data for an entire pass is stored in SatPass object:
-// This contains all the SatPasses defined so far.
-// The parallel vector holds an iterator for use in writing out the data.
-vector<SatPass> SPList;
-// convenience
-static const string L1="L1",L2="L2",P1="P1",P2="P2",C1="C1";
-// list of observation types to be included in each SatPass
-vector<string> obstypes;
-// this is a map relating a satellite to the index in SVPList of the current pass
-vector<unsigned int> SPIndexList;
-map<GSatID,int> SatToCurrentIndexMap;
-
-// Limits, etc.
-
-//static const double dtTol = 0.25; // 1/4 sec tolerance used in epoch processing
+// declare (one only) global configuration object
+DFConfig cfg;
 
 //------------------------------------------------------------------------------------
-// Prototypes
+//------------------------------------------------------------------------------------
+// prototypes
+int GetCommandLine(int argc, char **argv) throw(Exception);
+void DumpConfiguration(void) throw(Exception);
+int Initialize(void) throw(Exception);
+int ShallowCheck(void) throw(Exception);  // called by Initialize()
+int WriteToRINEX(void) throw(Exception);
+void PrintSPList(ostream&, string, vector<SatPass>&);
 
-int ReadFile(int nfile)
-   throw(Exception);
-
-int ProcessOneEntireEpoch(RinexObsData& ro)
-   throw(Exception);
-
-int ProcessOneSatOneEpoch(GSatID, CommonTime, unsigned short&, vector<double>&,
-                          vector<unsigned short>&, vector<unsigned short>&)
-   throw(Exception);
-
-void ProcessSatPass(int index)
-   throw(Exception);
-
-int AfterReadingFiles(void)
-   throw(Exception);
-
-void WriteToRINEXfile(void)
-   throw(Exception);
-
-void WriteRINEXheader(void)
-   throw(Exception);
-
-void WriteRINEXdata(CommonTime& WriteEpoch, const CommonTime targetTime)
-   throw(Exception);
-
-void PrintSPList(ostream&, string, vector<SatPass>&, bool printTime);
-
-int GetCommandLine(int argc, char **argv)
-   throw(Exception);
-
-void PreProcessArgs(const char *arg, vector<string>& Args)
-   throw(Exception);
-
-
+//------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
 int main(int argc, char **argv)
 {
    try {
-      totaltime = clock();
-      int iret;
+      clock_t totaltime = clock();
+      int i,nread,npass,iret;
+      Epoch ttag;
+      string msg;
+      vector<string> EditCmds;
 
-         // Title and description
-      //cout << "Name " << string(argv[0]) << endl;
-      Title = PrgmName + ", part of the GPS ToolKit, Ver " + PrgmVers + ", Run ";
-      PrgmEpoch = SystemTime();
-      Title += printTime(PrgmEpoch,"%04Y/%02m/%02d %02H:%02M:%02S");
-      cout << Title;
+      // Title and description
+      cfg.Title = PrgmName+", part of the GPS ToolKit, Ver "+DiscFixVersion+", Run ";
+      cfg.PrgmEpoch.setLocalTime();
+      cfg.Date = printTime(cfg.PrgmEpoch,"%04Y/%02m/%02d %02H:%02M:%02S");
+      cfg.Title += cfg.Date;
+      cout << cfg.Title << endl;
 
-         // set fill char in GSatID
-      config.SVonly.setfill('0');
-      config.FirstEpoch = CommonTime::BEGINNING_OF_TIME;
-      config.LastEpoch = CommonTime::BEGINNING_OF_TIME;
-      CurrEpoch = CommonTime::BEGINNING_OF_TIME;
+      for(;;) {                           // a convenience
+         // -------------------------------- get command line
+         iret = GetCommandLine(argc, argv);
+         if(iret) break;
 
-         // get command line
-      iret = GetCommandLine(argc, argv);
-      if(iret) return iret;
+         // -------------------------------- initialize
+         iret = Initialize();
+         if(iret) break;
 
-         // configure SatPass
-      {
-         obstypes.push_back(L1);    // DiscFix requires these 4 observables only
-         obstypes.push_back(L2);
-         obstypes.push_back(UsingCA ? C1 : P1);
-         obstypes.push_back(P2);
-
-         SatPass dummy(config.SVonly,config.dt);
-         dummy.setMaxGap(config.MaxGap);
-         dummy.setOutputFormat(config.format);
-      }
-
-         // open output files
-         // output for editing commands - write to this in ProcessSatPass()
-      config.ofout.open(config.OutFile.c_str());
-      if(!config.oflog.is_open()) {
-         config.oflog << "Error: " << PrgmName << " failed to open output file "
-            << config.OutFile << endl;
-      }
-      else
-         cout << PrgmName << " is writing to output file " << config.OutFile << endl;
-
-         // RINEX output
-      orfstr.open(config.OutRinexObs.c_str(), ios::out);
-      if(!config.OutRinexObs.empty()) {
-         if(!orfstr.is_open()) {
-            config.oflog << "Failed to open output file " << config.OutRinexObs
-                         << ". Abort." << endl;
-            cout << "Failed to open output file " << config.OutRinexObs
-                 << ". Abort." << endl;
-            irfstr.close();
-            return 1;
+         // -------------------------------- read in the data
+         try {
+            nread = SatPassFromRinexFiles(cfg.obsfiles, cfg.obstypes, cfg.dt0,
+                              cfg.SPList, cfg.exSat, true, cfg.begTime, cfg.endTime);
+            LOG(VERBOSE) << "Successfully read " << nread << " RINEX obs files.";
          }
-         else cout << PrgmName << " is writing to RINEX file "
-            << config.OutRinexObs << endl;
-         orfstr.exceptions(ios::failbit);
+         catch(Exception &e) {         // time tags out of order or a read error
+            string what(e.what());
+            string::size_type pos(what.find("Time tags out of order", 0));
+            if(pos != string::npos) {
+               pos = what.find("\n");
+               if(pos != string::npos) what.erase(pos);
+               LOG(ERROR) << "Error - " << what;
+            }
+            else { GPSTK_RETHROW(e); }
+         }
+
+         if(nread != cfg.obsfiles.size()) {
+            iret = -7;
+            break;
+         }
+         if(cfg.SPList.size() <= 0) {
+            LOG(ERROR) << "Error - no data found.";
+            iret = -8;
+            break;
+         }
+
+         // -------------------------------- exclude satellites
+         for(npass=0; npass<cfg.SPList.size(); npass++) {
+            RinexSatID sat(cfg.SPList[npass].getSat());
+
+            if(cfg.SVonly.id != -1 && sat != cfg.SVonly) {
+               cfg.SPList[npass].status() = -1;
+               LOG(VERBOSE) << "Exclude pass #" << setw(2) << npass+1 << " (" << sat
+                  << ") as only one satellite is to be processed.";
+            }
+            // done in SatPassFromRinex()
+            //else if(vectorindex(cfg.exSat,sat) != -1) {
+            //   cfg.SPList[npass].status() = -1;
+            //   LOG(VERBOSE) << "Exclude pass #" << setw(2) << npass+1 << " (" << sat
+            //      << ") as satellite is excluded explicitly.";
+            //}
+            //else if((!cfg.doGLO && sat.system != SatID::systemGPS) ||
+            //        ( cfg.doGLO && sat.system != SatID::systemGPS
+            //                    && sat.system != SatID::systemGlonass))
+            //{
+            //   cfg.SPList[npass].status() = -1;
+            //   LOG(VERBOSE) << "Exclude pass #" << setw(2) << npass+1 << " (" << sat
+            //      << ") as satellite system is excluded.";
+            //}
+            else if(cfg.SPList[npass].size()==0 || cfg.SPList[npass].getNgood()==0) {
+               cfg.SPList[npass].status() = -1;
+               LOG(VERBOSE) << "Exclude pass #" << setw(2) << npass+1 << " (" << sat
+                  << ") as it is empty.";
+            }
+            //else if(cfg.SPList[npass].getNgood() < minpass) {
+            //   cfg.SPList[npass].status() = -1;
+            //   LOG(VERBOSE) << "Exclude pass #" << setw(2) << npass+1 << " (" << sat
+            //      << ") as it is too small (" << cfg.SPList[npass].getNgood()
+            //      << " < " << minpass << ").";
+            //}
+
+         }  // end for() over all passes
+
+         // remove the invalid ones
+         vector<SatPass>::iterator it(cfg.SPList.begin());
+         while(it != cfg.SPList.end()) {
+            if(it->status() == -1)
+               it = cfg.SPList.erase(it);       // remove it; it points to next pass
+            else
+               ++it;                            // go to next pass
+         }
+
+         // is there anything left?
+         if(cfg.SPList.size() <= 0) {
+            LOG(ERROR) << "Error - no data found.";
+            iret = -9;
+            break;
+         }
+
+         // -------------------------------- decimate
+         // set the data interval, and decimate if the user input is N*raw interval
+         if(cfg.decimate < 0.0) {
+            LOG(INFO) << PrgmName << ": decimation timestep must be positive";
+            iret = -2;
+            break;
+         }
+         else if(cfg.decimate == 0.0) {
+            cfg.dt = cfg.dt0;                         // just go with raw interval
+         }
+         else if(fmod(cfg.decimate,cfg.dt0) < 0.01) { // decimate
+            int N(0.5+cfg.decimate/cfg.dt0);
+            ttag = cfg.SPList[0].getFirstTime();
+            int n(ttag.GPSsow()/cfg.decimate);
+            //ttag.setGPSfullweek(ttag.GPSfullweek(), n*cfg.decimate);
+            GPSWeekSecond gpst(ttag.GPSweek(), n*cfg.decimate);
+            ttag = static_cast<Epoch>(gpst);
+            for(npass=0; npass<cfg.SPList.size(); npass++)
+               cfg.SPList[npass].decimate(N, ttag);
+            cfg.dt = cfg.decimate;
+         }
+         else {                                       // can't decimate
+            LOG(ERROR) << "Error - cannot decimate; input time step ("
+               << asString(cfg.decimate,2)
+               << ") is not an even multiple of the data rate ("
+               << asString(cfg.dt0,2) << ")";
+            iret = -10;
+            break;
+         }
+
+         cfg.GDConfig.setParameter(string("DT:")+asString(cfg.dt,2));
+         cfg.GDConfig.setParameter(string("MaxGap:")+asString(cfg.MaxGap,2));
+         LOG(INFO) << "\nHere is the current GPSTk DC configuration:";
+         cfg.GDConfig.DisplayParameterUsage(LOGstrm,(cfg.DChelp && cfg.verbose));
+         LOG(INFO) << "";
+
+         // -------------------------------- call the GDC, output results and smooth
+         for(npass=0; npass<cfg.SPList.size(); npass++) {
+
+            LOG(INFO) << "Proc " << setw(2) << npass+1 << " " << cfg.SPList[npass];
+            //cfg.SPList[npass].dump(*pLOGstrm,"RAW");      // temp
+
+            msg = "";
+            iret=DiscontinuityCorrector(cfg.SPList[npass],cfg.GDConfig,EditCmds,msg);
+            if(iret != 0) {
+               cfg.SPList[npass].status() = -1;         // failed
+               LOG(ERROR) << "GDC failed (" << iret << " "
+                  << (iret==-1 ? "Singularity":
+                     (iret==-3 ? "DT not set, or memory":
+                     (iret==-4 ? "No data":"Bad input")))
+                  << ") for pass "
+                  << npass+1 << " :\n" << msg;
+               continue;
+            }
+            //if(cfg.verbose && LOGlevel < ConfigureLOG::Level("VERBOSE"))
+            LOG(INFO) << msg;
+
+            ttag = cfg.SPList[npass].getFirstGoodTime();
+            if(ttag < cfg.FirstEpoch) cfg.FirstEpoch = ttag;
+            ttag = cfg.SPList[npass].getLastTime();
+            if(ttag > cfg.LastEpoch) cfg.LastEpoch = ttag;
+
+            // output editing commands
+            for(i=0; i<EditCmds.size(); i++)
+               cfg.ofout << EditCmds[i] << " # pass " << npass+1 << endl;
+            EditCmds.clear();
+
+            // smooth pseudorange and debias phase
+            if(cfg.smooth) {
+               cfg.SPList[npass].smooth(cfg.smoothPR, cfg.smoothPH, msg);
+               LOG(INFO) << msg;
+            }
+
+         }  // end for() loop over passes
+
+         // -------------------------------- write to RINEX
+         iret = WriteToRINEX();
+         if(iret) break;
+
+         // -------------------------------- print a summary
+         PrintSPList(LOGstrm,"Fine",cfg.SPList);
+
+         break;
       }
 
-         // loop over input files
-      for(size_t nfile=0; nfile<config.InputObsName.size(); nfile++) {
-         iret = ReadFile(nfile);
-         if(iret < 0) break;
-      }   // end loop over input files
-
-      iret = AfterReadingFiles();  // All the action happens here.
-
-
-         // clean up
-      orfstr.close();
-      config.ofout.close();
-      SatToCurrentIndexMap.clear();
-      SPList.clear();
-      SPIndexList.clear();
-
+      // timing
       totaltime = clock()-totaltime;
-      config.oflog << PrgmName << " timing: " << fixed << setprecision(3)
-                   << double(totaltime)/double(CLOCKS_PER_SEC) << " seconds." << endl;
+      LOG(INFO) << PrgmName << " timing: " << fixed << setprecision(3)
+         << double(totaltime)/double(CLOCKS_PER_SEC) << " seconds.\n";
       cout << PrgmName << " timing: " << fixed << setprecision(3)
-           << double(totaltime)/double(CLOCKS_PER_SEC) << " seconds." << endl;
+         << double(totaltime)/double(CLOCKS_PER_SEC) << " seconds.\n";
 
-      config.oflog.close();
+      // clean up
+      cfg.ofout.close();
+      cfg.oflog.close();
 
       return iret;
    }
    catch(Exception& e) {
-      config.oflog << e;
+      cfg.oflog << e.what();
+      cout << e.what();
    }
    catch (...) {
-      config.oflog << PrgmName << ": Unknown error.  Abort." << endl;
+      cfg.oflog << PrgmName << ": Unknown error.  Abort." << endl;
       cout << PrgmName << ": Unknown error.  Abort." << endl;
    }
 
@@ -304,683 +385,392 @@ int main(int argc, char **argv)
 }   // end main()
 
 //------------------------------------------------------------------------------------
-// open the file, read header and check for data; then loop over the epochs
-// Return 0 ok, <0 fatal error, >0 non-fatal error (ie skip this file)
-// 0 ok, 1 couldn't open file, 2 file doesn't have required data
-int ReadFile(int nfile) throw(Exception)
+int Initialize(void) throw(Exception)
 {
-   try {
-      string name;
-         // open input file
-      name = config.InputObsName[nfile];
-      if(!config.Directory.empty() && config.Directory != string("."))
-         name = config.Directory + string("/") + name;
+try {
+   int i;
 
-      irfstr.open(name.c_str(),ios::in);
-      if(! irfstr.is_open()) {
-         config.oflog << "Failed to open input file " << name << ". Abort." << endl;
-         cout << "Failed to open input file " << name << ". Abort." << endl;
-         return 1;
-      }
-      else if(config.verbose)
-         config.oflog << "Opened input file " << name << endl;
-      irfstr.exceptions(ios::failbit);
-
-         // read the header
-      irfstr >> rhead;
-      if(config.verbose) {
-         config.oflog << "Here is the input header for file " << name << endl;
-         rhead.dump(config.oflog);
-         config.oflog << endl;
-      }
-
-         // check that file contains C1/P1,P2,L1,L2
-      inC1 = inP1 = inP2 = inL1 = inL2 = -1;
-      for(size_t j=0; j<rhead.obsTypeList.size(); j++) {
-         if(rhead.obsTypeList[j] == RinexObsHeader::convertObsType("C1")) inC1=j;
-         if(rhead.obsTypeList[j] == RinexObsHeader::convertObsType("L1")) inL1=j;
-         if(rhead.obsTypeList[j] == RinexObsHeader::convertObsType("L2")) inL2=j;
-         if(rhead.obsTypeList[j] == RinexObsHeader::convertObsType("P1")) inP1=j;
-         if(rhead.obsTypeList[j] == RinexObsHeader::convertObsType("P2")) inP2=j;
-      }
-      config.oflog << "Indexes are:"
-         << " C1=" << inC1
-         << " L1=" << inL1
-         << " L2=" << inL2
-         << " P1=" << inP1
-         << " P2=" << inP2
-         << endl;
-
-      if((inC1 == -1 && config.ForceCA) ||           // no C1, but user wants C1
-         (inP1 == -1 && inC1 == -1) ||               // no C1 and no P1
-          inP2 == -1 || inL1 == -1 || inL2 == -1)
-      {
-         config.oflog << "Error: file " << name << " does not contain";
-         if(inC1 == -1) config.oflog
-           << " C1 (--forceCA was" << (config.ForceCA ? "" : " not") << " found)";
-         if(inL1 == -1) config.oflog << " L1";
-         if(inL2 == -1) config.oflog << " L2";
-         if(inP1 == -1) config.oflog << " P1";
-         if(inP2 == -1) config.oflog << " P2";
-         config.oflog << " .. abort." << endl;
-         irfstr.clear();
-         irfstr.close();
-         return 2;
-      }
-      else if(inP1==-1 || config.ForceCA) {
-         inP1 = inC1;
-      }
-
-      if(inP1 == inC1) UsingCA = true; else UsingCA = false;
-
-         // loop over epochs in the file
-      int iret;
-      RinexObsData rodata;
-      while(1) {
-         irfstr >> rodata;
-         if(irfstr.eof()) break;
-         if(irfstr.bad()) {
-            config.oflog << "input RINEX stream is bad" << endl;
-            break;
-         }
-         iret = ProcessOneEntireEpoch(rodata);  // Processes each epoch as it's read.
-                                               // I.e., not split out by sat ID.
-         if(iret < -1) break;
-         if(iret == -1) { iret=0; break; }  // end of file
-      }
-
-      irfstr.clear();
-      irfstr.close();
-
-      return iret;
+   // open the log file
+   cfg.oflog.open(cfg.LogFile.c_str(),ios::out);
+   if(!cfg.oflog.is_open()) {
+      cerr << PrgmName << " failed to open log file " << cfg.LogFile << ".\n";
+      return -3;
    }
-   catch(Exception& e) { GPSTK_RETHROW(e); }
-   catch(std::exception& e)
-      { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
-   catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+
+   // last write to screen
+   LOG(INFO) << PrgmName << " is writing to log file " << cfg.LogFile;
+
+   // attach LOG to the log file
+   pLOGstrm = &cfg.oflog;
+   ConfigureLOG::ReportLevels() = false;
+   ConfigureLOG::ReportTimeTags() = false;
+
+   // set the DC commands now (setParameter may write to log file)
+   for(i=0; i<cfg.DCcmds.size(); i++) {
+      cfg.GDConfig.setParameter(cfg.DCcmds[i]);
+      if(cfg.DCcmds[i].substr(0,9) == string("--DCDebug")) {
+         string msg("DEBUG");
+         msg += asString(cfg.DCcmds[i].substr(10));
+         LOGlevel = ConfigureLOG::Level(msg);
+      }
+      else if(cfg.DCcmds[i].substr(0,4) == string("--DC DT=<dt>")) {
+         LOG(WARNING) << "Warning - Input of the timestep with --DCDT is ignored.";
+      }
+   }
+
+   if(cfg.verbose && LOGlevel < ConfigureLOG::Level("VERBOSE"))
+      LOGlevel = ConfigureLOG::Level("VERBOSE");
+
+   LOG(INFO) << cfg.Title;
+   //LOG(INFO) << "LOG level is at " << ConfigureLOG::ToString(LOGlevel);
+
+   // open input obs files, read header and some of the data
+   i = ShallowCheck();
+   if(i) return i;
+
+   // allow GDC to output to log file
+   cfg.GDConfig.setDebugStream(cfg.oflog);
+   if(cfg.P1C1 == C1) cfg.GDConfig.setParameter("useCA1:1");   // Shallow sets P1C1
+   if(cfg.P2C2 == C2) cfg.GDConfig.setParameter("useCA2:1");   // Shallow sets P2C2
+
+   cfg.SVonly.setfill('0');                     // set fill char in RinexSatID
+
+   // catch input trap
+   if(!cfg.doGLO && cfg.SVonly.system == SatID::systemGlonass) {
+      LOG(VERBOSE) << "SVonly is GLONASS - turn on processing of GLONASS";
+      cfg.doGLO = true;
+   }
+
+   // write to log file
+   DumpConfiguration();
+
+   cfg.FirstEpoch = CommonTime::END_OF_TIME;
+   cfg.LastEpoch = CommonTime::BEGINNING_OF_TIME;
+   // configure SatPass
+   {
+      cfg.obstypes.push_back(L1);    // DiscFix requires these 4 observables only
+      cfg.obstypes.push_back(L2);
+      cfg.obstypes.push_back(cfg.P1C1);
+      cfg.obstypes.push_back(P2);
+
+      SatPass dummy(cfg.SVonly,cfg.dt0);
+      dummy.setMaxGap(cfg.MaxGap);
+      dummy.setOutputFormat(cfg.format,cfg.round);
+   }
+
+   // open output file
+   // output for editing commands - write to this in ProcessSatPass()
+   cfg.ofout.open(cfg.OutFile.c_str());
+   if(!cfg.oflog.is_open()) {
+      cfg.oflog << "Error: " << PrgmName << " failed to open output file "
+         << cfg.OutFile << endl;
+      return -5;
+   }
+   else
+      LOG(INFO) << PrgmName << " is writing to output file " << cfg.OutFile;
+
+   return 0;
+}
+catch(Exception& e) { GPSTK_RETHROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-// Return : (return < -1 means fatal error)
-//       -2 time tags were out of order - fatal
-//       -1 end of file (or past end time limit),
-//        0 ok,
-//        1 skip this epoch : before begin time
-//        2 skip this epoch : comment block,
-//        3 skip this epoch : decimated
-int ProcessOneEntireEpoch(RinexObsData& roe) throw(Exception)
+// open the input files, read the headers and some of the data. Determine dt0 & C1/P1.
+int ShallowCheck(void) throw(Exception)
 {
-   try {
-      bool ok;
-      int j,k,iret;
-      size_t i;
-      string datastr;
-      GSatID sat;
-      unsigned short flag;
-      vector<double> data;
-      vector<unsigned short> lli,ssi;
-      RinexObsData::RinexObsTypeMap otmap;
-      RinexObsData::RinexSatMap::iterator it;
-      RinexObsData::RinexObsTypeMap::const_iterator jt;
+try {
+   bool inputValid(true);
+   int i,j;
+   string msg;
+   vector<bool> fileValid;
+   vector<int> fileHasP1C1,fileHasP2C2;
+   vector<long> filesize;
+   vector<double> fileDT;
+   vector<Epoch> fileFirst;
 
-         // stay within time limits
-      if(roe.time < config.begTime) return 1;
-      if(roe.time > config.endTime) return -1;
+   // open obs files and read few epochs; test validity and determine content
+   for(i=0; i<cfg.obsfiles.size(); i++) {
+      fileValid.push_back(false);
+      fileHasP1C1.push_back(0);           // 0: don't know, 1 C1, 2 P1, 3 both
+      fileHasP2C2.push_back(0);           // 0: don't know, 1 C2, 2 P2, 3 both
+      filesize.push_back(long(0));
+      fileDT.push_back(-1.0);
+      fileFirst.push_back(CommonTime::BEGINNING_OF_TIME);
 
-         // ignore comment blocks ...
-      if(roe.epochFlag != 0 && roe.epochFlag != 1) return 2;
-
-         // decimate data
-         // if begTime is still undefined, set it to begin of week
-      if(config.ith > 0.0) {
-         if (fabs(config.begTime - CommonTime::BEGINNING_OF_TIME) < 1.e-8)
-         {
-            config.begTime =GPSWeekSecond(roe.time);
-            GPSWeekSecond tempTime1(roe.time);
-            GPSWeekSecond tempTime2(tempTime1.week,0.0);
-            config.begTime = tempTime2.convertToCommonTime();
-         }
-
-         double dt=fabs(roe.time - config.begTime);
-         dt -= config.ith*long(0.5+dt/config.ith);
-         if(fabs(dt) > 0.25) return 3;            // TD set tolerance? clock bias?
+      // open obs files
+      RinexObsStream rstrm;
+      rstrm.open(cfg.obsfiles[i].c_str(),ios_base::in);
+      if(!rstrm.is_open()) {
+         LOG(ERROR) << "  Error - Observation file " << cfg.obsfiles[i]
+             << " could not be opened.";
+         inputValid = false;
       }
+      else {
+         LOG(DEBUG) << "Opened file " << cfg.obsfiles[i] << flush;
+         rstrm.exceptions(ios_base::failbit);
 
-         // save current time
-      CurrEpoch = roe.time;
+         // get file size
+         long begin = rstrm.tellg();
+         rstrm.seekg(0,ios::end);
+         long end = rstrm.tellg();
+         rstrm.seekg(0,ios::beg);
+         filesize[i] = end-begin;
 
-         // loop over sat=it->first, ObsTypeMap=it->second
-      for(it=roe.obs.begin(); it != roe.obs.end(); ++it) {
+         // read header
+         bool rinexok=true;
+         //RinexObsHeader head;
+         try { rstrm >> cfg.rhead; }
+         catch(Exception& e) { rinexok = false; }
+         catch(exception& e) { rinexok = false; }
 
-            // Is this satellite excluded ?
-         sat = it->first;
-         if (sat.system != SatID::systemGPS &&
-             sat.system != SatID::systemGlonass) continue;; // ignore non-GPS satellites
-         for(k=-1,i=0; i<config.ExSV.size(); i++)     // ignore input sat (--exSat)
-            if(config.ExSV[i] == sat) { k = i; break; }
-         if(k > -1) continue;
-
-            // if only one satellite is included, skip all the rest
-         if(config.SVonly.id != -1 && !(sat == config.SVonly)) continue;
-
-            // pull out the data and the SSI and LLI (indicators)
-         data = vector<double>(4,0.0);
-         lli = vector<unsigned short>(4,0);
-         ssi = vector<unsigned short>(4,0);
-         otmap = it->second;
-         if( (jt = otmap.find(rhead.obsTypeList[inP1])) != otmap.end()) {
-            data[2] = jt->second.data;
-            lli[2] = jt->second.lli;
-            ssi[2] = jt->second.ssi;
+         // is header valid?
+         LOG(DEBUG) << "Read header for " << cfg.obsfiles[i];
+         if(rinexok && !cfg.rhead.isValid()) { rinexok = false; }
+         if(!rinexok) {
+            LOG(ERROR) << "  Error - Observation file " << cfg.obsfiles[i]
+                << " does not contain valid RINEX observations.";
+            inputValid = false;
          }
-         if( (jt = otmap.find(rhead.obsTypeList[inP2])) != otmap.end()) {
-            data[3] = jt->second.data;
-            lli[3] = jt->second.lli;
-            ssi[3] = jt->second.ssi;
-         }
-         if ( (jt = otmap.find(rhead.obsTypeList[inL1])) != otmap.end())
-         {
-            //spd.L1 = jt->second.data;
-            //str[4] = (asString(jt->second.lli))[0];
-            //str[5] = (asString(jt->second.ssi))[0];
-            data[0] = jt->second.data;
-            lli[0] = jt->second.lli;
-            ssi[0] = jt->second.ssi;
-         }
-         if ( (jt = otmap.find(rhead.obsTypeList[inL2])) != otmap.end())
-         {
-            //spd.L2 = jt->second.data;
-            //str[6] = (asString(jt->second.lli))[0];
-            //str[7] = (asString(jt->second.ssi))[0];
-            data[1] = jt->second.data;
-            lli[1] = jt->second.lli;
-            ssi[1] = jt->second.ssi;
-         }
-         //spd.indicators = asUnsigned(str);
+         // look for L1,L2,C1/P1,P2 observations, and antenna height
+         else {
+            unsigned int found=0;
+            for(j=0; j<cfg.rhead.obsTypeList.size(); j++) {
+               if(cfg.rhead.obsTypeList[j] == RinexObsHeader::L1) found +=32;
+               if(cfg.rhead.obsTypeList[j] == RinexObsHeader::L2) found +=16;  // 48
+               if(cfg.rhead.obsTypeList[j] == RinexObsHeader::P1) found += 8;  // 56
+               if(cfg.rhead.obsTypeList[j] == RinexObsHeader::P2) found += 4;  // 60
+               if(cfg.rhead.obsTypeList[j] == RinexObsHeader::C1) found += 2;  // 62
+               if(cfg.rhead.obsTypeList[j] == RinexObsHeader::C2) found += 1;  // 63
+            }
+            if(found & 8) fileHasP1C1[i] += 2;     // has P1
+            if(found & 2) fileHasP1C1[i] += 1;     // has C1
+            if(found & 4) fileHasP2C2[i] += 2;     // has P2
+            if(found & 1) fileHasP2C2[i] += 1;     // has C2
+            if(!(found & 32)) LOG(ERROR) << "  Error - Observation file "
+                  << cfg.obsfiles[i] << " has no L1 data.";
+            if(!(found & 16)) LOG(ERROR) << "  Error - Observation file "
+                  << cfg.obsfiles[i] << " has no L2 data.";
+            if(fileHasP1C1[i] == 0) LOG(ERROR) << "  Error - Observation file "
+                  << cfg.obsfiles[i] << " has no P1 or C1 data.";
+            if(fileHasP2C2[i] == 0) LOG(ERROR) << "  Error - Observation file "
+                  << cfg.obsfiles[i] << " has no P2 or C2 data.";
 
-            // is it good?
-         ok = true;
-         //don't do this! if(spd.P1 < 1000.0 || spd.P2 < 1000.0) ok = false;
-         if(fabs(data[0]) <= 0.001 || fabs(data[1]) <= 0.001 ||
-            fabs(data[2]) <= 0.001 || fabs(data[3]) <= 0.001) ok = false;
-         flag = (ok ? SatPass::OK : SatPass::BAD);
+            if(!(found & 48) || fileHasP1C1[i]*fileHasP2C2[i] == 0) {
+               inputValid = false;
+            }
+            else {
+               fileFirst[i] = cfg.rhead.firstObs;
 
-            // process this sat
-         iret = ProcessOneSatOneEpoch(sat, CurrEpoch, flag, data, lli, ssi);
-         if(iret == -2) {
-            config.oflog << "Error: time tags are out of order. Abort." << endl;
-            return -2;
-         }
-
-      }  // end loop over sats
-
-         // update LastEpoch and estimate of config.dt
-      if(config.LastEpoch > CommonTime::BEGINNING_OF_TIME) {
-         double dt = CurrEpoch-config.LastEpoch;
-         for(i=0; i<9; i++) {
-            if(config.ndt[i] <=0 ) { config.estdt[i]=dt; config.ndt[i]=1; break; }
-            if(fabs(dt-config.estdt[i]) < 0.0001) { config.ndt[i]++; break; }
-            if(i == 8) {
-               k = 0;
-               int nl=config.ndt[k];
-               for(j=1; j<9; j++) if(config.ndt[j] <= nl) {
-                  k = j;
-                  nl = config.ndt[j];
+               // read a few obs to determine data interval
+               const int N=10;      // how many epochs to read?
+               begin = rstrm.tellg();
+               int jj,kk,nleast,nepochs=0,ndt[9]={-1,-1,-1, -1,-1,-1, -1,-1,-1};
+               double dt,bestdt[9];
+               Epoch first=CommonTime::END_OF_TIME,prev=CommonTime::END_OF_TIME;
+               RinexObsData robs;
+               while(1) {
+                  try { rstrm >> robs; }
+                  catch(Exception& e) { break; }   // simply quit if meet failure
+                  if(!rstrm) break;                // or EOF
+                  dt = robs.time - prev;
+                  if(dt > 0.0) {
+                     for(j=0; j<9; j++) {
+                        if(ndt[j] <= 0) { bestdt[j]=dt; ndt[j]=1; break; }
+                        if(fabs(dt-bestdt[j]) < 0.002) { ndt[j]++; break; }
+                        if(j == 8) {
+                           kk=0; nleast=ndt[kk];
+                           for(jj=1; jj<9; jj++) if(ndt[jj] <= nleast) {
+                              kk=jj; nleast=ndt[jj];
+                           }
+                           ndt[kk]=1; bestdt[kk]=dt;
+                        }
+                     }
+                  }
+                  if(++nepochs >= N) break;
+                  prev = robs.time;
+                  if(first == CommonTime::END_OF_TIME) first = robs.time;
                }
-               config.ndt[k] = 1;
-               config.estdt[k] = dt;
+
+               // save the results
+               for(jj=1,kk=0; jj<9; jj++) if(ndt[jj]>ndt[kk]) kk=jj;
+               // round to nearest 0.1 second
+               fileDT[i] = double(0.1*int(0.5+bestdt[kk]/0.1));
+               fileValid[i] = true;
+
+               // dump the results
+               LOG(VERBOSE) << " RINEX observation file " << cfg.obsfiles[i]
+                  << " starts at "
+                  << printTime(first,"%04Y/%02m/%02d %02H:%02M:%02S = %F %10.3g");
+               LOG(VERBOSE) << " RINEX observation file " << cfg.obsfiles[i]
+                  << " has data interval " << asString(fileDT[i],2) << " sec,"
+                  << " size " << filesize[i] << " bytes, and types"
+                  << (found & 16 ?  " L1":"")
+                  << (found & 8 ?  " L2":"")
+                  << (found & 2 ?  " P1":"")
+                  << (found & 4 ?  " P2":"")
+                  << (found & 1 ?  " C1":"");
             }
          }
+         rstrm.clear();
+         rstrm.close();
+      }  // end reading file
+
+      LOG(DEBUG) << "End reading file " << cfg.obsfiles[i] << flush;
+      
+   }  // end loop over cfg.obsfiles
+   cfg.dt0 = fileDT[0];
+
+   LOG(VERBOSE)
+      << "The data interval in input file is " << fixed << setprecision(2) << cfg.dt0;
+
+   // test that obs files agree on data interval, and look for C1/P1
+   bool P1missing(false), C1missing(false);
+   bool P2missing(false), C2missing(false);
+   for(j=0; j<cfg.obsfiles.size(); j++) {
+      if(fabs(cfg.dt0 - fileDT[j]) > 0.001) {
+         msg = string("  Error - RINEX Obs files data intervals differ: ")
+             + StringUtils::asString(fileDT[j],2) + string(" != ")
+             + StringUtils::asString(cfg.dt0,2);
+         LOG(ERROR) << msg;
+         inputValid = false;
       }
-      config.LastEpoch = CurrEpoch;
-
-         // check times looking for passes that ought to be processed
-      for(i=0; i<SPList.size(); i++) {
-         if(SPList[i].status() > 1)
-            continue;                          // already processed
-         if(SPList[i].includesTime(CurrEpoch))
-            continue;                          // don't process yet
-
-         ProcessSatPass(i);                    // ok, process this pass
-         if(!orfstr) SPList[i].status() = 99;    // status == 99 means 'written out'
-      }
-
-      // try writing more data to output RINEX file
-      if(config.WriteASAP) {
-         WriteToRINEXfile();
-         // gut passes that have 99
-         //for(i=0; i<SPList.size(); i++) {
-         //   if(SPList[i].status() != 99) continue;
-         //   SPList[i].resize(0);
-         //}
-      }
-
-      return 0;
+      if(!(fileHasP1C1[j] & 1)) C1missing = true;
+      if(!(fileHasP1C1[j] & 2)) P1missing = true;
+      if(!(fileHasP2C2[j] & 1)) C2missing = true;
+      if(!(fileHasP2C2[j] & 2)) P2missing = true;
    }
-   catch(Exception& e) { GPSTK_RETHROW(e); }
-   catch(std::exception& e)
-      { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
-   catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+
+   // handle C1 vs P1
+   if(C1missing && cfg.forceCA1) {
+      msg = string("  Error - Found '--forceCA1', but these files have no C1 data:");
+      for(j=0; j<cfg.obsfiles.size(); j++)
+         if(!(fileHasP1C1[j] & 1)) msg += string("\n    ") + cfg.obsfiles[j];
+      LOG(ERROR) << msg;
+      inputValid = false;
+   }
+   // NB 'else' and order of if()'s matter in the next stmt
+   else if(P1missing && (!cfg.useCA1 || C1missing)) {
+      if(C1missing) {
+         msg = string("  Error - Not all obs files have either P1 or C1 data.");
+      }
+      else {
+         msg = string("  Error - '--useCA1' not found, ")
+             + string("yet these obs files have no P1 data:");
+         for(j=0; j<cfg.obsfiles.size(); j++)
+            if(!(fileHasP1C1[j] & 2)) msg += string("\n    ") + cfg.obsfiles[j];
+      }
+      LOG(ERROR) << msg;
+      inputValid = false;
+   }
+   else {
+      if(P1missing || cfg.forceCA1) cfg.P1C1 = C1;
+      else                          cfg.P1C1 = P1;
+      //LOG(VERBOSE) << "Choose to use " << cfg.P1C1 << " for L1 pseudorange";
+   }
+   // handle C2 vs P2
+   if(C2missing && cfg.forceCA2) {
+      msg = string("  Error - Found '--forceCA2', but these files have no C2 data:");
+      for(j=0; j<cfg.obsfiles.size(); j++)
+         if(!(fileHasP2C2[j] & 1)) msg += string("\n    ") + cfg.obsfiles[j];
+      LOG(ERROR) << msg;
+      inputValid = false;
+   }
+   // NB 'else' and order of if()'s matter in the next stmt
+   else if(P2missing && (!cfg.useCA2 || C2missing)) {
+      if(C2missing) {
+         msg = string("  Error - Not all obs files have either P2 or C2 data.");
+      }
+      else {
+         msg = string("  Error - '--useCA2' not found, ")
+             + string("yet these obs files have no P2 data:");
+         for(j=0; j<cfg.obsfiles.size(); j++)
+            if(!(fileHasP2C2[j] & 2)) msg += string("\n    ") + cfg.obsfiles[j];
+      }
+      LOG(ERROR) << msg;
+      inputValid = false;
+   }
+   else {
+      if(P2missing || cfg.forceCA2) cfg.P2C2 = C2;
+      else                          cfg.P2C2 = P2;
+      //LOG(VERBOSE) << "Choose to use " << cfg.P2C2 << " for L2 pseudorange";
+   }
+
+   if(inputValid) return 0;
+   return -6;
+}
+catch(Exception& e) { GPSTK_RETHROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-// return -2 if time tags are out of order,
-//         0 normal = data was added
-int ProcessOneSatOneEpoch(GSatID sat, CommonTime tt, unsigned short& flag,
-      vector<double>& data, vector<unsigned short>& lli, vector<unsigned short>& ssi)
-   throw(Exception)
+int WriteToRINEX(void) throw(Exception)
 {
-   try {
-      int index,iret;
-      map<GSatID,int>::const_iterator kt;
+try {
+   if(cfg.OutRinexObs.empty()) return 0;
+   LOG(VERBOSE) << "Write the output RINEX file " << cfg.OutRinexObs;
 
-         // find the current SatPass for this sat
-      kt = SatToCurrentIndexMap.find(sat);
+   // copy user input into the last input header
+   RinexObsHeader rheadout(cfg.rhead);   
 
-         // if there is not one, create one
-      if(kt == SatToCurrentIndexMap.end()) {
-         SatPass newSP(sat,config.dt,obstypes);
-         SPList.push_back(newSP);
-         SPIndexList.push_back(99999);                  // keep parallel
-         SatToCurrentIndexMap[sat] = SPList.size()-1;
-         kt = SatToCurrentIndexMap.find(sat);
-      }
+   // change the obs type list to include only P1(C1) P2 L1 L2
+   rheadout.obsTypeList.clear();
 
-         // update the first epoch
-      if(config.FirstEpoch == CommonTime::BEGINNING_OF_TIME)
-         config.FirstEpoch = CurrEpoch;
+   rheadout.obsTypeList.push_back(RinexObsHeader::L1);
+   rheadout.obsTypeList.push_back(RinexObsHeader::L2);
+   if(cfg.P1C1 == C1)
+      rheadout.obsTypeList.push_back(RinexObsHeader::C1);
+   else
+      rheadout.obsTypeList.push_back(RinexObsHeader::P1);
+   rheadout.obsTypeList.push_back(RinexObsHeader::P2);
 
-         // get the index of this SatPass in the SPList vector
-         // and add the data to that SatPass
-      index = kt->second;
-      SPList[index].status() = 1;                // status == 1 means 'fill'
-      iret = SPList[index].addData(tt, obstypes, data, lli, ssi, flag);
-      if(iret == -2) return -2;                 // time tags are out of order
-      if(iret >= 0) return 0;                   // data was added successfully
-      // If the above passed, iret == -1 implied: gap in data.
-      // (See SatPass for gap criteria.)
+   // fill records in output header
+   rheadout.fileProgram = PrgmName + string(" v.") + DiscFixVersion.substr(0,4)
+                                 + string(",") + cfg.GDConfig.Version().substr(0,4);
+   if(!cfg.HDRunby.empty()) rheadout.fileAgency = cfg.HDRunby;
+   if(!cfg.HDObs.empty()) rheadout.observer = cfg.HDObs;
+   if(!cfg.HDAgency.empty()) rheadout.agency = cfg.HDAgency;
+   if(!cfg.HDMarker.empty()) rheadout.markerName = cfg.HDMarker;
+   if(!cfg.HDNumber.empty()) rheadout.markerNumber = cfg.HDNumber;
+   rheadout.version = 2.1;
+   rheadout.valid |= RinexObsHeader::versionValid;
+   rheadout.firstObs = cfg.FirstEpoch;
+   rheadout.valid |= RinexObsHeader::firstTimeValid;
+   rheadout.interval = cfg.dt;
+   rheadout.valid |= RinexObsHeader::intervalValid;
+   rheadout.lastObs = cfg.LastEpoch;
+   rheadout.valid |= RinexObsHeader::lastTimeValid;
+   if(cfg.smoothPR)
+      rheadout.commentList.push_back(string("Ranges smoothed by ") + PrgmName
+         + string(" v.") + DiscFixVersion.substr(0,4) + string(" ") + cfg.Date);
+   if(cfg.smoothPH)
+      rheadout.commentList.push_back(string("Phases debiased by ") + PrgmName
+         + string(" v.") + DiscFixVersion.substr(0,4) + string(" ") + cfg.Date);
+   if(cfg.smoothPR || cfg.smoothPH)
+      rheadout.valid |= RinexObsHeader::commentValid;
+      // invalidate the table
+   if(rheadout.valid & RinexObsHeader::numSatsValid)
+      rheadout.valid ^= RinexObsHeader::numSatsValid;
+   if(rheadout.valid & RinexObsHeader::prnObsValid)
+      rheadout.valid ^= RinexObsHeader::prnObsValid;
 
+   int iret = SatPassToRinexFile(cfg.OutRinexObs,rheadout,cfg.SPList);
+   if(iret) return -4;
 
-
-         // --- need to create a new pass ---
-
-         // first process the old one
-      ProcessSatPass(index);
-      if(!orfstr)                         // not writing to RINEX
-         SPList[index].status() = 99;       // status == 99 means 'written out'
-      else if(config.WriteASAP)
-         WriteToRINEXfile();              // try writing out
-
-         // create a new SatPass for this sat
-      SatPass newSP(sat,config.dt,obstypes);
-         // add it to the list
-      SPList.push_back(newSP);
-      SPIndexList.push_back(99999);                  // keep parallel
-         // get the new index
-      index = SPList.size()-1;
-         // and add it to the map
-      SatToCurrentIndexMap[sat] = index;
-         // add the data
-      SPList[index].status() = 1;              // status == 1 means 'fill'
-      SPList[index].addData(tt, obstypes, data, lli, ssi, flag);
-
-      return 0;
-
-   }
-   catch(Exception& e) { GPSTK_RETHROW(e); }
-   catch(std::exception& e)
-      { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
-   catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+   return 0;
+}
+catch(Exception& e) { GPSTK_RETHROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-// Process the pass (call DC); if there is an output file, try writing to it.
-void ProcessSatPass(int in) throw(Exception)
+void PrintSPList(ostream& os, string msg, vector<SatPass>& v)
 {
-   try {
-      config.oflog << "Proc " << SPList[in]
-         << " at " << printTime(CurrEpoch,config.format) << endl;
-      //SPList[in].dump(config.oflog,"RAW");      // temp
-
-      // remove this SatPass from the SatToCurrentIndexMap map
-      SatToCurrentIndexMap.erase(SPList[in].getSat());
-
-      // If GLONASS, get the G1 & G2 wavelengths for this sat.
-      // Instantiate a GloFreqIndex object with the SatPass. - GloFreIndex moved to SGLTk, is this still relevant?
-      // That causes it to calculate the indexes right away, quietly.
-
-      if ((SPList[in].getSat()).systemChar() == 'R' )
-      {
-      }
-
-
-      // --------- call DC on this pass -------------------
-      string msg;
-      vector<string> EditCmds;
-      int iret = DiscontinuityCorrector(SPList[in], GDConfig, EditCmds, msg);
-      if(iret != 0) {
-         SPList[in].status() = 100;         // status == 100 means 'failed'
-         config.oflog << "GDC failed for SatPass " << in << " : "
-            << (iret == -1 ? "Polynomial fit to GF data was singular" :
-               (iret == -2 ? "Premature end" :     // never used
-               (iret == -3 ? "Time interval DT not set" :
-               (iret == -4 ? "No data found" :
-               (iret == -5 ? "Required obs types (L1,L2,P1/C1,P2) not found" :
-                             "Unknown"))))) << endl;
-         return;
-      }
-      SPList[in].status() = 2;              // status == 2 means 'processed'.
-
-      // --------- output editing commands ----------------
-      for(size_t i=0; i<EditCmds.size(); i++)
-         config.ofout << EditCmds[i] << endl;
-
-      // --------- smooth pseudorange and debias phase ----
-      if(config.smooth) {
-         string msg;
-         SPList[in].smooth(config.smoothPR,config.smoothPH,msg);
-         config.oflog << msg << endl;
-         SPList[in].status() = 3;           // status == 3 means 'smoothed'.
-      }
-
-      // status ==   0 means 'new'
-      // status ==   1 means 'still being filled', so status MUST be set to >1 here
-      // status ==   2 means 'processed'
-      // status ==   3 means 'smoothed'
-      // status ==  98 means 'writing out'
-      // status ==  99 means 'written out'
-      // status == 100 means 'failed'
-   }
-   catch(Exception& e) { GPSTK_RETHROW(e); }
-   catch(std::exception& e)
-      { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
-   catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
-}
-
-//------------------------------------------------------------------------------------
-int AfterReadingFiles(void) throw(Exception)
-{
-   try {
-      config.oflog << "After reading files" << endl;
-
-      // compute the estimated data interval and write it out
-      for(int i=1; i<9; i++) if(config.ndt[i] > config.ndt[0]) {
-         int j = config.ndt[i];            double est = config.estdt[i];
-         config.ndt[i] = config.ndt[0];    config.estdt[i] = config.estdt[0];
-         config.ndt[0] = j;                config.estdt[0] = est;
-      }
-      if(config.verbose)
-         config.oflog << "Data interval estimated from the data is "
-            << config.estdt[0] << " seconds." << endl;
-
-      // process all the passes that have not been processed yet
-      for(size_t i=0; i<SPList.size(); i++) {
-         if(SPList[i].status() <= 1) {
-            ProcessSatPass(i);
-            if(!orfstr)                         // not writing out to RINEX
-               SPList[i].status() = 99;         // status == 99 means 'written out'
-         }
-      }
-
-      // write out all the (processed) data that has not already been written
-      WriteToRINEXfile();
-
-      // print a summary
-      PrintSPList(config.oflog,"Fine",SPList,false);
-
-      return 0;
-   }
-   catch(Exception& e) { GPSTK_RETHROW(e); }
-   catch(std::exception& e)
-      { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
-   catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
-}
-
-//------------------------------------------------------------------------------------
-// this will only write out passes for which ProcessSatPass() has been called. It
-// could be called anytime, particularly after each call to ProcessSatPass.
-void WriteToRINEXfile(void) throw(Exception)
-{
-   if(!orfstr) return;
-   try {
-      size_t in;
-      CommonTime targetTime=CommonTime::END_OF_TIME;
-      static CommonTime WriteEpoch(CommonTime::BEGINNING_OF_TIME);
-
-      // find all passes that have been newly processed (status > 1 but < 98)
-      // mark these passes 'being written out' and initialize the iterator
-      for(in=0; in<SPList.size(); in++) {
-         if(SPList[in].status() > 1 && SPList[in].status() < 98) {
-            SPList[in].status() = 98;       // status == 98 means 'being written out'
-            SPIndexList[in] = 0;          // initialize iteration over the data array
-         }
-      }
-
-      // find the earliest FirstTime of 'non-processed' (status==1) passes
-      for(in=0; in<SPList.size(); in++) {
-         if(SPList[in].status() == 1 && SPList[in].getFirstTime() < targetTime)
-            targetTime = SPList[in].getFirstTime();
-      }
-      // targetTime will == END_OF_TIME, when all passes have been processed
-
-      if(targetTime < CommonTime::END_OF_TIME
-         && WriteEpoch == CommonTime::BEGINNING_OF_TIME) {
-         WriteRINEXheader();
-         WriteEpoch = config.FirstEpoch;
-      }
-
-      // nothing to do
-      if(targetTime <= WriteEpoch)
-         return;
-
-      WriteRINEXdata(WriteEpoch,targetTime);
-   }
-   catch(Exception& e) { GPSTK_RETHROW(e); }
-   catch(std::exception& e)
-      { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
-   catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
-}
-
-//------------------------------------------------------------------------------------
-void WriteRINEXheader(void) throw(Exception)
-{
-   try {
-      RinexObsHeader rheadout;
-
-      config.oflog << "Write the output header at "
-         << printTime(CurrEpoch,config.format) << endl;
-
-         // copy input
-      rheadout = rhead;
-
-         // change the obs type list to include only P1(C1) P2 L1 L2
-      rheadout.obsTypeList.clear();
-
-      rheadout.obsTypeList.push_back(RinexObsHeader::L1);
-      rheadout.obsTypeList.push_back(RinexObsHeader::L2);
-      if(UsingCA)
-         rheadout.obsTypeList.push_back(RinexObsHeader::C1);
-      else
-         rheadout.obsTypeList.push_back(RinexObsHeader::P1);
-      rheadout.obsTypeList.push_back(RinexObsHeader::P2);
-
-         // fill records in output header
-      rheadout.date = printTime(PrgmEpoch,"%04Y/%02m/%02d %02H:%02M:%02S");
-      rheadout.fileProgram = PrgmName + string(" v.") + PrgmVers.substr(0,4)
-         + string(",") + GDConfig.Version().substr(0,4);
-      if(!config.HDRunby.empty()) rheadout.fileAgency = config.HDRunby;
-      if(!config.HDObs.empty()) rheadout.observer = config.HDObs;
-      if(!config.HDAgency.empty()) rheadout.agency = config.HDAgency;
-      if(!config.HDMarker.empty()) rheadout.markerName = config.HDMarker;
-      if(!config.HDNumber.empty()) rheadout.markerNumber = config.HDNumber;
-      rheadout.version = 2.1; rheadout.valid |= RinexObsHeader::versionValid;
-      rheadout.firstObs = config.FirstEpoch; rheadout.valid
-         |= RinexObsHeader::firstTimeValid;
-      rheadout.interval = config.dt; rheadout.valid |= RinexObsHeader::intervalValid;
-      if(!config.WriteASAP) {
-         rheadout.interval = config.estdt[0];
-         rheadout.valid |= RinexObsHeader::intervalValid;
-         rheadout.lastObs = config.LastEpoch;
-         rheadout.valid |= RinexObsHeader::lastTimeValid;
-      }
-      if(config.smoothPR)
-         rheadout.commentList.push_back(string("Ranges smoothed by ") +
-            PrgmName + string(" v.") + PrgmVers.substr(0,4) + string(" ") +
-            rheadout.date);
-      if(config.smoothPH)
-         rheadout.commentList.push_back(string("Phases debiased by ") +
-            PrgmName + string(" v.") + PrgmVers.substr(0,4) + string(" ") +
-            rheadout.date);
-      if(config.smoothPR || config.smoothPH)
-         rheadout.valid |= RinexObsHeader::commentValid;
-         // invalidate the table
-      if(rheadout.valid & RinexObsHeader::numSatsValid)
-         rheadout.valid ^= RinexObsHeader::numSatsValid;
-      if(rheadout.valid & RinexObsHeader::prnObsValid)
-         rheadout.valid ^= RinexObsHeader::prnObsValid;
-
-      orfstr << rheadout;
-   }
-   catch(Exception& e) { GPSTK_RETHROW(e); }
-   catch(std::exception& e)
-      { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
-   catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
-}
-
-//------------------------------------------------------------------------------------
-void WriteRINEXdata(CommonTime& WriteEpoch, const CommonTime targetTime) throw(Exception)
-{
-   try {
-      bool first;
-      size_t in;
-      int n;
-      unsigned short flag;
-      //string str;
-      GSatID sat;
-      RinexObsData roe;
-
-      // loop over epochs, up to just before targetTime
-      do {
-            // find the next WriteEpoch = earliest iterator time among the status==98
-         first = true;
-         for(in=0; in<SPList.size(); in++) {
-            if(SPList[in].status() != 98)   // status == 98 means 'being written out'
-               continue;
-
-            n = SPIndexList[in];   // current iterator index
-            if(first || SPList[in].time(n) < WriteEpoch) {
-               WriteEpoch = SPList[in].time(n);
-               first = false;
-            }
-         }
-         if(first) break;
-
-            // quit if reached the target
-         if(WriteEpoch >= targetTime) break;
-            // prepare the RINEX obs data
-         roe.epochFlag = 0;
-         roe.time = WriteEpoch;
-         roe.clockOffset = 0.0;  // TD save from input?
-         roe.numSvs = 0;         // will be incremented below
-         roe.obs.clear();
-
-            // output all data at this WriteEpoch
-         for(in=0; in<SPList.size(); in++) {
-            if(SPList[in].status() != 98) continue;
-
-            sat = SPList[in].getSat();
-            n = SPIndexList[in];   // current iterator index
-
-            if(fabs(SPList[in].time(n) - WriteEpoch) < 0.00001) {
-                  // get the data for this epoch
-					flag = SPList[in].getFlag(SPIndexList[in]);
-					if(flag != SatPass::BAD) {                // data is good
-                     // add sat to RinexObs
-                  RinexObsData::RinexObsTypeMap rotm;
-                  roe.obs[sat] = rotm;
-                  roe.numSvs++;
-
-               	// build the RINEX data object
-               	RinexDatum rd;
-
-               	rd.lli = SPList[in].LLI(SPIndexList[in],P1);
-               	rd.ssi = SPList[in].SSI(SPIndexList[in],P1);
-               	rd.data = SPList[in].data(SPIndexList[in],P1);
-               	if(UsingCA)
-                  	roe.obs[sat][RinexObsHeader::C1] = rd;
-               	else
-                  	roe.obs[sat][RinexObsHeader::P1] = rd;
-
-               	rd.lli = SPList[in].LLI(SPIndexList[in],P2);
-               	rd.ssi = SPList[in].SSI(SPIndexList[in],P2);
-               	rd.data = SPList[in].data(SPIndexList[in],P2);
-               	roe.obs[sat][RinexObsHeader::P2] = rd;
-
-               	//rd.lli = asInt(asString<char>(str[4]));
-                  // TD ought to set the low bit
-						rd.lli = (flag & SatPass::LL1) != 0 ? 1 : 0;
-               	rd.ssi = SPList[in].SSI(SPIndexList[in],L1);
-               	rd.data = SPList[in].data(SPIndexList[in],L1);
-               	roe.obs[sat][RinexObsHeader::L1] = rd;
-
-               	//rd.lli = asInt(asString<char>(str[6]));
-						rd.lli = (flag & SatPass::LL2) != 0 ? 1 : 0;
-               	rd.ssi = SPList[in].SSI(SPIndexList[in],L2);
-               	rd.data = SPList[in].data(SPIndexList[in],L2);
-               	roe.obs[sat][RinexObsHeader::L2] = rd;
-
-  /*             	config.oflog << "Out "
-               	   << printTime(WriteEpoch,config.format)
-               	   << " " << printTime(roe.time,config.format)
-               	   << " " << sat
-               	   << " " << flag
-               	   << " " << setw(3) << SPList[in].getCount(SPIndexList[in])
-               	   << fixed << setprecision(3)
-               	   << " " << setw(13) << SPList[in].data(SPIndexList[in],P1)
-               	   << " " << setw(13) << SPList[in].data(SPIndexList[in],P2)
-               	   << " " << setw(13) << SPList[in].data(SPIndexList[in],L1)
-               	   << " " << setw(13) << SPList[in].data(SPIndexList[in],L2)
-               	   << endl; */
-					}
-			
-
-                  // go to next point
-               SPIndexList[in]++;
-
-                  // end of data?
-               if(SPIndexList[in] >= SPList[in].size())
-                  SPList[in].status() = 99;        // status == 99 means 'written out'
-            }
-         }
-
-         // actually write to RINEX
-         if(roe.numSvs > 0) {
-            config.SVonly.setfill(' ');         // just for the hell of it
-            orfstr << roe;
-            config.SVonly.setfill('0');
-         }
-
-      } while(1);  // end while loop over all epochs up to targetTime
-
-   }
-   catch(Exception& e) { GPSTK_RETHROW(e); }
-   catch(std::exception& e)
-      { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
-   catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
-}
-
-//------------------------------------------------------------------------------------
-void PrintSPList(ostream& os, string msg, vector<SatPass>& v, bool doPrintTime)
-{
-   int j,gap;
-   size_t i;
-   GSatID sat;
-   map<GSatID,int> lastSP;
-   map<GSatID,int>::const_iterator kt;
+   int i,j,gap;
+   RinexSatID sat;
+   map<RinexSatID,int> lastSP;
+   map<RinexSatID,int>::const_iterator kt;
 
    os << "#" << leftJustify(msg,4)
              << "  N gap  tot sat   ok  s      start time        end time   dt"
-      << " observation types" << endl;
+             << " observation types\n";
 
    for(i=0; i<v.size(); i++) {
       os << msg;
@@ -996,635 +786,351 @@ void PrintSPList(ostream& os, string msg, vector<SatPass>& v, bool doPrintTime)
       lastSP[sat] = i;
          // n,gap,sat,length,ngood,firstTime,lastTime
       os << " " << setw(2) << i+1 << " " << setw(4) << gap << " " << v[i];
-      if(doPrintTime)
-         os << " at " << printTime(CurrEpoch, "%04Y/%02m/%02d %02H:%02M:%6.3f");
       os << endl;
    }
 }
 
 //------------------------------------------------------------------------------------
-#include "CommandOption.hpp"
-#include "CommandOptionParser.hpp"
+//------------------------------------------------------------------------------------
 int GetCommandLine(int argc, char **argv) throw(Exception)
 {
-   try {
-   bool help=false,DChelp=false,DChelpall=false;
-   int j;
+try {
    size_t i;
       // defaults
-   config.WriteASAP = true;   // this is not in the input...
-   config.verbose = false;
-   config.ith = 0.0;
-   config.begTime = CommonTime::BEGINNING_OF_TIME;
-   config.endTime = CommonTime::END_OF_TIME;
-   config.MaxGap = 600.0;
-   //config.MinPts = 10;
+   cfg.debug = -1;
+   cfg.DChelp = false;
+   cfg.verbose = false;
+   cfg.decimate = 0.0;
+   cfg.begTime = Epoch(CommonTime::BEGINNING_OF_TIME);
+   cfg.endTime = Epoch(CommonTime::END_OF_TIME);
+   cfg.MaxGap = 600.0;
 
-   config.LogFile = string("df.log");
-   config.OutFile = string("df.out");
-   config.format = string("%4F %10.3g");
+   cfg.LogFile = string("df.log");
+   cfg.OutFile = string("df.out");
+   cfg.format = string("%4F %10.3g");
+   cfg.round = 3;
 
-   // leave UseCA true; user overrides by setting ForceCA
-   config.UseCA = true;       // meaning use P1 unless it is absent, then C1
-   config.ForceCA = false;    // if true, use C1 even if P1 also present
+   cfg.noCA1 = false;      // if false, use CA code on L1 (C1) if P1 absent
+   cfg.useCA1 = true;
+   cfg.forceCA1 = false;   // if true, use CA code on L1 even if P1 is present
+   cfg.noCA2 = false;      // if false, use CA code on L2 (C2) if P2 absent
+   cfg.useCA2 = true;
+   cfg.forceCA2 = false;   // if true, use CA code on L2 even if P2 is present
+   cfg.doGLO = false;      // if true, process GLONASS sats
 
-   config.dt = -1.0;
+   cfg.dt = -1.0;
+   
+   cfg.HDPrgm = PrgmName + string(" v.") + DiscFixVersion.substr(0,4);
+   cfg.HDRunby = string("ARL:UT/SGL/GPSTk");
 
-   config.HDPrgm = PrgmName + string(" v.") + PrgmVers.substr(0,4);
-   config.HDRunby = string("ARL:UT/SGL/GPSTk");
+   cfg.smoothPR = false;
+   cfg.smoothPH = false;
+   cfg.smooth = false;
 
-   config.smoothPR = false;
-   config.smoothPH = false;
-   config.smooth = false;
-   //config.CAOut = false;
-   //config.DopOut = false;
+   for(i=0; i<9; i++) cfg.ndt[i]=-1;
 
-   for(i=0; i<9; i++) config.ndt[i]=-1;
+   cfg.inputPath = string(".");
 
-   config.Directory = string(".");
+   // -------------------------------------------------------
+   // create list of command line options, and fill it
+   // put required options first - they will get listed first anyway
+   CommandLine opts;
+   string cmdlineUsage, cmdlineErrors;
+   vector<string> cmdlineUnrecognized;
 
-      // -------------------------------------------------
-      // required options
-   RequiredOption dashi(CommandOption::hasArgument, CommandOption::stdType,
-      0,"inputfile",
-      " --inputfile <file>  Input (RINEX obs) file - more than one may be given");
-
-   RequiredOption dashDT(CommandOption::hasArgument, CommandOption::stdType,
-      0,"dt"," --dt <dt>           Time spacing (sec) of the data.  "
-      "[NB this defines DT\n                       in the GDC, hence "
-      + PrgmName + " ignores --DCDT=<dt> ]");
-   dashDT.setMaxCount(1);
-
-      // optional options
-      // this only so it will show up in help page...
-   CommandOption dashf(CommandOption::hasArgument, CommandOption::stdType,
-      'f',""," [-f|--file] <file>  file containing more options");
-
-   CommandOption dashd(CommandOption::hasArgument, CommandOption::stdType,
-      0,"inputdir"," --inputdir <dir>    Directory of input file(s)");
-   dashd.setMaxCount(1);
-
-   // time
-   CommandOption dashbt(CommandOption::hasArgument, CommandOption::stdType,
-      0,"beginTime", "# Time limits:"
-      " args are of the form GPSweek,sow OR YYYY,MM,DD,HH,Min,Sec\n"
-      " --beginTime <arg>   Start time of processing (BOF)");
-   dashbt.setMaxCount(1);
-
-   CommandOption dashet(CommandOption::hasArgument, CommandOption::stdType,
-      0,"endTime", " --endTime <arg>     End time of processing (EOF)");
-   dashet.setMaxCount(1);
-
-   CommandOption dashith(CommandOption::hasArgument, CommandOption::stdType,
-      0,"decimate","# Data configuration\n"
-      " --decimate <dt>     Decimate data to time interval (sec) dt");
-   dashith.setMaxCount(1);
-
-   CommandOptionNoArg dashCA(0,"forceCA", " --forceCA           "
-      "Use C/A code range, NOT P code (default: only if P absent)");
-   dashCA.setMaxCount(1);
-
-   CommandOption dashGap(CommandOption::hasArgument, CommandOption::stdType,
-      0,"gap"," --gap <t>           Minimum data gap (sec) separating "
-      "satellite passes (" + asString(int(config.MaxGap)) + ")");
-   dashGap.setMaxCount(1);
-
-   //CommandOption dashPts(CommandOption::hasArgument, CommandOption::stdType,
-      //0,"Points"," --Points <n>        Minimum number of points needed to "
-      //"process a pass");
-   //dashPts.setMaxCount(1);
-
-   CommandOption dashSV(CommandOption::hasArgument, CommandOption::stdType,
-      0,"onlySat"," --onlySat <sat>     Process only satellite <sat> "
-      "(a GPS SatID, e.g. G21)");
-   dashSV.setMaxCount(1);
-
-   CommandOption dashXsat(CommandOption::hasArgument, CommandOption::stdType,
-      0,"exSat"," --exSat <sat>       Exclude satellite(s) [e.g. --exSat G22]");
-
-   CommandOptionNoArg dashSmoothPR(0,"smoothPR",
-   "# Smoothing: [NB smoothed " "pseudorange and debiased phase are not identical.]\n"
-   " --smoothPR          Smooth pseudorange and output in place of raw pseudorange");
-   dashSmoothPR.setMaxCount(1);
-
-   CommandOptionNoArg dashSmoothPH(0,"smoothPH",
-      " --smoothPH          Debias phase and output in place of raw phase");
-   dashSmoothPH.setMaxCount(1);
-
-   // last smooth option - tack on a 'vapor-option'
-   CommandOptionNoArg dashSmooth(0,"smooth",
-   " --smooth            Same as (--smoothPR AND --smoothPH)\n"
-   "# Discontinuity Corrector (DC) configuration:\n"
-   " --DClabel=value     Set Discontinuity Corrector parameter 'label' to 'value'\n"
-   "                       [e.g. --DCWLSigma=1.5 or --DCDebug:7 " "or --DCMinPts,6]\n"
-   " --DChelp            Print a list of GDC parameters and their defaults, then quit"
-   );
-   dashSmooth.setMaxCount(1);
-
-   CommandOption dashLog(CommandOption::hasArgument, CommandOption::stdType,
-      0,"logOut","# Output:\n --logOut <file>     Output log file name ("
-      + config.LogFile + ")");
-   //dashLog.setMaxCount(1);
-
-   CommandOption dashOut(CommandOption::hasArgument, CommandOption::stdType,
-      0,"cmdOut"," --cmdOut <file>     Output file name (for editing commands) ("
-      + config.OutFile + ")");
-   dashOut.setMaxCount(1);
-
-   CommandOption dashFormat(CommandOption::hasArgument, CommandOption::stdType,
-      0,"format"," --format \"<format>\" Output time format (cf. gpstk::"
-      "CommonTime) (" + config.format + ")");
-   dashFormat.setMaxCount(1);
-
-   CommandOption dashRfile(CommandOption::hasArgument, CommandOption::stdType,
-      0,"RinexFile","# RINEX output:\n"
-      " --RinexFile <file>  RINEX (obs) file name for output of corrected data");
-   //dashRfile.setMaxCount(1);
-
-   CommandOption dashRrun(CommandOption::hasArgument, CommandOption::stdType,
-      0,"RunBy"," --RunBy <string>    RINEX header 'RUN BY' string for output");
-   dashRrun.setMaxCount(1);
-
-   CommandOption dashRobs(CommandOption::hasArgument, CommandOption::stdType,
-      0,"Observer"," --Observer <string> RINEX header 'OBSERVER' string for output");
-   dashRobs.setMaxCount(1);
-
-   CommandOption dashRag(CommandOption::hasArgument, CommandOption::stdType,
-      0,"Agency"," --Agency <string>   RINEX header 'AGENCY' string for output");
-   dashRag.setMaxCount(1);
-
-   CommandOption dashRmark(CommandOption::hasArgument, CommandOption::stdType,
-      0,"Marker"," --Marker <string>   RINEX header 'MARKER' string for output");
-   dashRmark.setMaxCount(1);
-
-   CommandOption dashRnumb(CommandOption::hasArgument, CommandOption::stdType,
-      0,"Number"," --Number <string>   RINEX header 'NUMBER' string for output");
-   dashRnumb.setMaxCount(1);
-
-   // TD? pass-through 'other' data found in input RINEX file - requires buffering?
-   //CommandOptionNoArg dashCAOut(0,"CAOut",
-   //   " --CAOut             Output C/A code in RINEX");
-   //dashCAOut.setMaxCount(1);
-
-   //CommandOptionNoArg dashDOut(0,"DOut",
-   //   " --DOut              Output Doppler in RINEX");
-   //dashDOut.setMaxCount(1);
-
-   CommandOptionNoArg dashh('h', "help",
-      "# Help:\n"
-      " [-h|--help]         print this syntax page and quit."
-      "\n --DChelp            Print a list of GDC parameters and "
-      "their defaults, and quit");
-   dashh.setMaxCount(1);
-
-   CommandOptionNoArg dashVerb(0,"verbose",
-      " --verbose           print extended output to the log file");
-   dashVerb.setMaxCount(1);
-
-   // ... other options
-   CommandOptionRest Rest("");
-
-   CommandOptionParser Par("Prgm " + PrgmName +
-   " reads a RINEX observation data file containing GPS dual-frequency\n"
-   "   pseudorange and carrier phase measurements, divides the data into 'satellite\n"
-   "   passes', and finds and fixes discontinuities in the phases for each pass.\n"
-   "   Output is a list of editing commands for use with program RinexEdit.\n"
+   // build the options list == syntax page
+   string PrgmDesc = "Prgm " + PrgmName +
+   " reads a RINEX observation data file containing GPS or GLO dual frequency\n"
+   "   pseudorange and carrier phase measurements, divides the data into\n"
+   "   'satellite passes', and finds and fixes discontinuities in the phases for\n"
+   "   each pass. Output is a list of editing commands for use with RinexEdit.\n"
    "   " + PrgmName
    + " will (optionally) write the corrected pseudorange and phase data\n"
    "   to a new RINEX observation file. Other options will also smooth the\n"
-   "   pseudorange and/or debias the corrected phase.\n"
-   "   "+PrgmName+" calls the GPSTk Discontinuity Corrector (GDC vers "
-   + GDConfig.Version() + ").\n");
+   "   pseudorange and/or debias the corrected phase.\n\n"
+   "   " + PrgmName + " calls the GPSTk Discontinuity Corrector (GDC vers "
+   + cfg.GDConfig.Version() + ").\n" +
+   "   GDC options (--DC below, and see --DChelp) are passed to GDC,\n"
+   "     except --DCDT is ignored; it is computed from the data.";
 
-      // -------------------------------------------------
-      // allow user to put all options in a file
-      // could also scan for debug here
-   vector<string> Args;
-   for(j=1; j<argc; j++) PreProcessArgs(argv[j],Args);
+   // temp variables for input
+   bool help=false;
+   const string defaultstartStr("[Beginning of dataset]");
+   const string defaultstopStr("[End of dataset]");
+   string startStr(defaultstartStr);
+   string stopStr(defaultstopStr);
+   vector<string> GLOfreqStrs;
 
-   if(Args.size()==0) Args.push_back(string("-h"));
+   // required
+   opts.Add(0,"obs","file", true, true, &cfg.obsfiles,"\n# File I/O:", 
+      "Input RINEX obs file - may be repeated");
 
-      // strip out the DCcmds
-   vector<string> DCcmds;
-   vector<string>::iterator it=Args.begin();
-   while(it != Args.end()) {
-      if(it->substr(0,4) == string("--DC")) {
-         if(*it == "--DChelp") DChelp=true;
-         else if(*it == "--DChelpall" || *it == "--DCall") DChelp=DChelpall=true;
-         else DCcmds.push_back(*it);
-         it = Args.erase(it);
-      }
-      else it++;
+   // optional
+   // opts.Add(char, opt, arg, repeat?, required?, &target, pre-descript, descript.);
+   string dummy("");         // dummy for --file
+   opts.Add('f', "file", "name", true, false, &dummy, "",
+            "Name of file containing more options [#-EOL = comment]");
+   opts.Add(0, "obspath", "path", false, false, &cfg.inputPath, "",
+            "Path for input RINEX obs file(s)");
+
+   opts.Add(0, "start", "time", false, false, &startStr,
+            "\n# Times (time = \"GPSweek,SOW\" OR \"YYYY,Mon,D,H,Min,S)\":",
+            "Start processing the input data at this time");
+   opts.Add(0, "stop", "time", false, false, &stopStr, "",
+            "Stop processing the input data at this time");
+
+   opts.Add(0, "decimate", "dt", false, false, &cfg.decimate, "# Data config:",
+            "Decimate data to time interval (sec) dt");
+   opts.Add(0, "gap", "t", false, false, &cfg.MaxGap, "",
+            "Minimum gap (sec) between passes [same as --DCMaxGap] ("
+               + asString(int(cfg.MaxGap)) + ")");
+   opts.Add(0, "noCA1", "", false, false, &cfg.noCA1, "",
+            "Fail if L1 P-code is missing, even if L1 CA-code is present");
+   opts.Add(0, "noCA2", "", false, false, &cfg.noCA2, "",
+            "Fail if L2 P-code is missing, even if L2 CA-code is present");
+   opts.Add(0, "forceCA1", "", false, false, &cfg.forceCA1, "",
+            "Use C/A L1 range, even if L1 P-code is present");
+   opts.Add(0, "forceCA2", "", false, false, &cfg.forceCA2, "",
+            "Use C/A L2 range, even if L2 P-code is present");
+   opts.Add(0, "onlySat", "sat", false, false, &cfg.SVonly, "",
+            "Process only satellite <sat> (a SatID, e.g. G21 or R17)");
+   opts.Add(0, "exSat", "sat", true, false, &cfg.exSat, "",
+            "Exclude satellite(s) [e.g. --exSat G22,R]");
+   opts.Add(0, "doGLO", "", false, false, &cfg.doGLO, "",
+            "Process GLONASS satellites as well as GPS");
+   opts.Add(0, "GLOfreq", "sat:n", true, false, &GLOfreqStrs, "",
+            "GLO channel #s for each sat [e.g. R17:-4]");
+
+   opts.Add(0, "smoothPR", "", false, false, &cfg.smoothPR,
+   "# Smoothing: [NB smoothed pseudorange and debiased phase are not identical.]",
+            "Smooth pseudorange and output in place of raw pseudorange");
+   opts.Add(0, "smoothPH", "", false, false, &cfg.smoothPH, "",
+            "Debias phase and output in place of raw phase");
+   opts.Add(0, "smooth", "", false, false, &cfg.smooth, "",
+            "Same as (--smoothPR AND --smoothPH)");
+
+   opts.Add(0, "DC", "param=value", true, false, &cfg.DCcmds,
+            "# Discontinuity Corrector (DC) - cycle slip fixer - configuration:",
+            "Set DC parameter <param> to <value>");
+   opts.Add(0, "DChelp", "", false, false, &cfg.DChelp, "",
+            "Print list of DC parameters (all if -v) and their defaults, then quit");
+
+   opts.Add(0, "log", "file", false, false, &cfg.LogFile, "# Output:",
+            "Output log file name (" + cfg.LogFile + ")");
+   opts.Add(0, "cmd", "file", false, false, &cfg.OutFile, "",
+            "Output file name (for editing commands) (" + cfg.OutFile + ")");
+   opts.Add(0, "format", "fmt", false, false, &cfg.format, "",
+            "Output time format (cf. gpstk::" "Epoch) (" + cfg.format + ")");
+   opts.Add(0, "round", "n", false, false, &cfg.round, "",
+            "Round output time format (--format) to n digits");
+
+   opts.Add(0, "RinexFile", "file", false, false, &cfg.OutRinexObs, "# RINEX output:",
+            "RINEX (obs) file name for output of corrected data");
+   opts.Add(0, "Prgm", "str", false, false, &cfg.HDPrgm, "",
+            "RINEX header 'PROGRAM' string for output");
+   opts.Add(0, "RunBy", "str", false, false, &cfg.HDRunby, "",
+            "RINEX header 'RUNBY' string for output");
+   opts.Add(0, "Observer", "str", false, false, &cfg.HDObs, "",
+            "RINEX header 'OBSERVER' string for output");
+   opts.Add(0, "Agency", "str", false, false, &cfg.HDAgency, "",
+            "RINEX header 'AGENCY' string for output");
+   opts.Add(0, "Marker", "str", false, false, &cfg.HDMarker, "",
+            "RINEX header 'MARKER' string for output");
+   opts.Add(0, "Number", "str", false, false, &cfg.HDNumber, "",
+            "RINEX header 'NUMBER' string for output");
+
+   opts.Add(0, "verbose", "", false, false, &cfg.verbose, "# Help:",
+            "print extended output information");
+   opts.Add(0, "debug", "", false, false, &cfg.debug, "",
+            "print debug output at level 0 [debug<n> for level n=1-7]");
+   opts.Add(0, "help", "", false, false, &help, "",
+            "print this and quit");
+
+   // declare it and parse it; write all errors to string GD.cmdlineErrors
+   int iret = opts.ProcessCommandLine(argc, argv, PrgmDesc,
+                         cmdlineUsage, cmdlineErrors, cmdlineUnrecognized);
+   if(iret == -2) {
+      LOG(ERROR) << " Error - command line failed (memory)";
+      return iret;
    }
 
-      // pass the rest
-   argc = Args.size()+1;
-   char **CArgs=new char*[argc];
-   if(!CArgs) { cout << "Failed to allocate CArgs" << endl; return -1; }
-   CArgs[0] = argv[0];
-   for(j=1; j<argc; j++) {
-      CArgs[j] = new char[Args[j-1].size()+1];
-      if(!CArgs[j]) { cout << "Failed to allocate CArgs[j]" << endl; return -1; }
-      strcpy(CArgs[j],Args[j-1].c_str());
-   }
-   Par.parseOptions(argc, CArgs);
-   delete[] CArgs;
-
-   // -------------------------------------------------
-
-   if(dashh.getCount() > 0) help = true;
-   if(Par.hasErrors()) {
-      if(!help && !DChelp) {
-         cout << "Errors found in command line input:" << endl;
-         Par.dumpErrors(cout);
-         cout << "...end of Errors.  For help run with option --help"
-              << endl << endl;
-      }
-      help = true;
-   }
-
-   // -------------------------------------------------
-   // get values found on command line
-
+   // ---------------------------------------------------
+   // do extra parsing -- append errors to GD.cmdlineErrors
+   RinexSatID sat;
    string msg;
-   vector<string> field;
-   vector<string> values;
+   vector<string> fields;
+   ostringstream oss;
 
-      // f never appears because we intercept it above
-   //if(dashf.getCount()) { cout << "Option f "; dashf.dumpValue(cout); }
+   // unrecognized arguments are an error
+   if(cmdlineUnrecognized.size() > 0) {
+      oss << "Error - unrecognized arguments:\n";
+      for(i=0; i<cmdlineUnrecognized.size(); i++)
+         oss << cmdlineUnrecognized[i] << "\n";
+      oss << "End of unrecognized arguments\n";
+   }
 
-      // do help first
-   if(dashh.getCount()) help=true;
+   // if no GLO, add to exSat
+   if(!cfg.doGLO && cfg.SVonly.system != SatID::systemGlonass) {
+      sat.fromString("R");
+      if(vectorindex(cfg.exSat,sat) == -1) cfg.exSat.push_back(sat);
+   }
 
-      // now get the rest of the options
-   if(dashVerb.getCount()) config.verbose=true;
-   if(dashi.getCount()) {
-      values = dashi.getValue();
-      if(help) cout << "Input RINEX obs files are:" << endl;
-      for(i=0; i<values.size(); i++) {
-         config.InputObsName.push_back(values[i]);
-         if(help) cout << "   " << values[i] << endl;
+   // parse GLO freq
+   for(i=0; i<GLOfreqStrs.size(); i++) {
+      fields = StringUtils::split(GLOfreqStrs[i],':');
+      if(fields.size() != 2) {
+         oss << "Error - invalid GLO sat:chan pair in --GLOfreq input: "
+            << GLOfreqStrs[i] << endl;
       }
-   }
-   if(dashd.getCount()) {
-      values = dashd.getValue();
-      config.Directory = values[0];
-      if(help) cout << "Input Directory is " << config.Directory << endl;
-   }
-   if(dashith.getCount()) {
-      values = dashith.getValue();
-      config.ith = asDouble(values[0]);
-      if(help) cout << "Decimate value is " << config.ith << endl;
-   }
-
-   // TD put try {} around setToString and catch invalid formats...
-   if(dashbt.getCount()) {
-      values = dashbt.getValue();
-      msg = values[0];
-      field.clear();
-      while(msg.size() > 0)
-         field.push_back(stripFirstWord(msg,','));
-      if(field.size() == 2) {
-         config.begTime = GPSWeekSecond(asInt(field[0]),asDouble(field[1]));
-	}
-      else if(field.size() == 6)
-         config.begTime = CivilTime(asInt(field[0]), asInt(field[1]), asInt(field[2]),
-                                    asInt(field[3]), asInt(field[4]), asInt(field[5]));
       else {
-         cout << "Error: invalid --beginTime input: " << values[0] << endl;
-      }
-      if(help) cout << " Input: begin time " << values[0] << " = "
-         << printTime(config.begTime,"%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g") << endl;
-   }
-   if(dashet.getCount()) {
-      values = dashet.getValue();
-      msg = values[0];
-      field.clear();
-      while(msg.size() > 0)
-         field.push_back(stripFirstWord(msg,','));
-      if(field.size() == 2) {
-         config.endTime = GPSWeekSecond(asInt(field[0]),asDouble(field[1]));
-      }
-
-      else if(field.size() == 6) {
-         config.endTime = CivilTime(asInt(field[0]),asInt(field[1]),asInt(field[2]),
-                                    asInt(field[3]),asInt(field[4]),asDouble(field[5]));
-	}
-      else {
-         cout << "Error: invalid --endTime input: " << values[0] << endl;
-      }
-      if(help) cout << " Input: end time " << values[0] << " = "
-         << printTime(config.endTime,"%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g") << endl;
-   }
-
-   if(dashCA.getCount()) {
-      config.ForceCA = true;
-      if(help) cout << "Input: Set the 'Use C/A code range' flag" << endl;
-   }
-   if(dashDT.getCount()) {
-      values = dashDT.getValue();
-      config.dt = asDouble(values[0]);
-      if(help) cout << "dt is set to " << config.dt << " seconds." << endl;
-   }
-   if(dashGap.getCount()) {
-      values = dashGap.getValue();
-      config.MaxGap = asDouble(values[0]);
-      if(help) cout << "Max gap is " << config.MaxGap << " seconds which is "
-         << int(config.MaxGap/config.dt) << " points." << endl;
-   }
-   //if(dashPts.getCount()) {
-      //values = dashPts.getValue();
-      //config.MinPts = asInt(values[0]);
-      //if(help) cout << "Minimum points is " << config.MinPts << endl;
-   //}
-   if(dashXsat.getCount()) {
-      values = dashXsat.getValue();
-      for(i=0; i<values.size(); i++) {
-         GSatID p(values[i]);
-         if(help) cout << "Exclude satellite " << p << endl;
-         config.ExSV.push_back(p);
+         sat.fromString(fields[0]);
+         cfg.GLOfreqChannel.insert(
+            map<RinexSatID,int>::value_type(sat,asInt(fields[1])));
       }
    }
-   if(dashSV.getCount()) {
-      values = dashSV.getValue();
-      GSatID p(values[0]);
-      config.SVonly = p;
-      if(help) cout << "Process only satellite : " << p << endl;
-   }
-   if(dashFormat.getCount()) {
-      values = dashFormat.getValue();
-      config.format = values[0];
-      if(help) cout << "Output times with format: " << config.format << endl;
-   }
-   if(dashOut.getCount()) {
-      values = dashOut.getValue();
-      config.OutFile = values[0];
-      if(help) cout << "Command output file is " << config.OutFile << endl;
-   }
-   if(dashRfile.getCount()) {
-      values = dashRfile.getValue();
-      // pick the last one entered
-      config.OutRinexObs = values[values.size()-1];
-      if(help) cout << "Output RINEX file name is "
-         << config.OutRinexObs << endl;
-   }
-   if(dashRrun.getCount()) {
-      values = dashRrun.getValue();
-      config.HDRunby = values[0];
-      if(help) cout << "Output RINEX 'RUN BY' is " << config.HDRunby << endl;
-   }
-   if(dashRobs.getCount()) {
-      values = dashRobs.getValue();
-      config.HDObs = values[0];
-      if(help) cout << "Output RINEX 'OBSERVER' is " << config.HDObs << endl;
-   }
-   if(dashRag.getCount()) {
-      values = dashRag.getValue();
-      config.HDAgency = values[0];
-      if(help) cout << "Output RINEX 'AGENCY' is " << config.HDAgency << endl;
-   }
-   if(dashRmark.getCount()) {
-      values = dashRmark.getValue();
-      config.HDMarker = values[0];
-      if(help) cout << "Output RINEX 'MARKER' is " << config.HDMarker << endl;
-   }
-   if(dashRnumb.getCount()) {
-      values = dashRnumb.getValue();
-      config.HDNumber = values[0];
-      if(help) cout << "Output RINEX 'NUMBER' is " << config.HDNumber << endl;
-   }
-   if(dashSmooth.getCount()) {
-      config.smoothPH = config.smoothPR = true;
-      if(help) cout << "'smooth both' option is on" << endl;
-   }
-   if(dashSmoothPR.getCount()) {
-      config.smoothPR = true;
-      if(help) cout << "smooth the pseudorange" << endl;
-   }
-   if(dashSmoothPH.getCount()) {
-      config.smoothPH = true;
-      if(help) cout << "debias the phase" << endl;
-   }
-   //if(dashCAOut.getCount()) {
-   //   config.CAOut = true;
-   //   if(help) cout << "Output the C/A code to RINEX" << endl;
-   //}
-   //if(dashDOut.getCount()) {
-   //   config.DopOut = true;
-   //   if(help) cout << "Output the doppler to RINEX" << endl;
-   //}
 
-   if(Rest.getCount() && help) {
-      cout << "Remaining options:" << endl;
-      values = Rest.getValue();
-      for (i=0; i<values.size(); i++) cout << values[i] << endl;
-   }
-   //if(config.verbose && help) {
-   //   cout << "Tokens on command line (" << Args.size() << ") are:"
-   //      << endl;
-   //   for(j=0; j<Args.size(); j++) cout << Args[j] << endl;
-   //}
+   // start and stop times
+   for(i=0; i<2; i++) {
+      string msg = (i==0 ? startStr : stopStr);
+      if(msg == (i==0 ? defaultstartStr : defaultstopStr)) continue;
 
-   //if(config.verbose) { // if GDCorrector::Debug is not set higher, set to 2
-      //GDCorrector.SetParameter(string("Debug=2"));
-   //}
-
-      // if help, print usage and quit
-   if(help || DChelp) {
-      if(help) Par.displayUsage(cout,false);
-      if(DChelp) {
-         GDConfig.DisplayParameterUsage(cout,DChelpall);
-         cout << "For " << PrgmName
-              << ", GDC commands are of the form --DC<GDCcmd>,"
-              << " e.g. --DCWLSigma=1.5" << endl;
+      int n(StringUtils::numWords(msg,','));
+      if(n != 2 && n != 6) {
+         oss << "Error - invalid argument in --" << (i==0 ? "start" : "stop")
+            << " " << (i==0 ? startStr : stopStr) << endl;
+         continue;
       }
+
+      string fmtGPS("%F,%g"),fmtCAL("%Y,%m,%d,%H,%M,%S");
+      try {
+         (i==0 ? cfg.begTime:cfg.endTime).scanf(msg,(n==2 ? fmtGPS:fmtCAL));
+      }
+      catch(Exception& e) {
+         oss << "Error - invalid time in --" << (i==0 ? "start" : "stop")
+            << " " << (i==0 ? startStr : stopStr) << endl;
+      }
+   }
+
+   if(cfg.noCA1) cfg.useCA1 = false;
+   if(cfg.noCA2) cfg.useCA2 = false;
+
+   // append errors
+   cmdlineErrors += oss.str();
+   stripTrailing(cmdlineErrors,'\n');
+
+   // --------------------------------------------------------------------
+   // dump a summary of the command line configuration
+   oss.str("");         // clear it
+   oss << "------ Summary of " << PrgmName
+      << " command line configuration --------" << endl;
+   opts.DumpConfiguration(oss);
+      // perhaps dump the 'extra parsing' things
+   oss << "------ End configuration summary --------" << endl;
+   cfg.cmdlineSum = oss.str();
+
+   // --------------------------------------------------------------------
+   // return
+   if(opts.hasHelp() || cfg.DChelp || cfg.debug>-1) {
+      stripTrailing(cmdlineUsage,'\n');
+      LOG(INFO) << cmdlineUsage;
+      if(cfg.DChelp) cfg.GDConfig.DisplayParameterUsage(LOGstrm,cfg.verbose);
+      if(cfg.debug>-1 && !cfg.cmdlineSum.empty()) LOG(DEBUG) << cfg.cmdlineSum;
       return 1;
    }
-
-      // get the log file name
-   if(dashLog.getCount()) {
-      values = dashLog.getValue();
-      // pick the last one entered
-      config.LogFile = values[values.size()-1];
-      //if(help) cout << "Log file is " << config.LogFile << endl;
-   }
-      // open the log file
-   config.oflog.open(config.LogFile.c_str(),ios::out);
-   if(!config.oflog.is_open()) {
-      cout << PrgmName << " failed to open log file "
-           << config.LogFile << ". Abort." << endl;
+   if(opts.hasErrors()) {
+      LOG(ERROR) << cmdlineErrors << endl;
       return -1;
    }
-   else {
-      cout << PrgmName << " is writing to log file " << config.LogFile << endl;
-         // output first stuff to log file
-      config.oflog << Title;
-         // allow GDC to output to log file
-      GDConfig.setDebugStream(config.oflog);
+   if(!cmdlineErrors.empty()) {     // unrecognized or extra parsing produced an error
+      LOG(ERROR) << cmdlineErrors;
+      return -2;
    }
-
-   if(config.dt <= 0.0) {
-      config.oflog << PrgmName << ": dt must be positive" << endl;
-      return -1;
-   }
-
-   if(!config.smooth) config.smooth = (config.smoothPR || config.smoothPH);
-
-      // set the commands now (setParameter may write to log file)
-   for(i=0; i<DCcmds.size(); i++)
-      GDConfig.setParameter(DCcmds[i]);
-      // also, use the dt in SatPass to define the dt in GDC
-      // NB this means --DCDT on the DiscFix command line is ignored!
-   GDConfig.setParameter("DT",config.dt);
-
-      // print config to log, first DF
-   config.oflog << "\nHere is the " << PrgmName << " configuration:" << endl;
-   config.oflog << " Input RINEX obs files are:" << endl;
-   for(i=0; i<config.InputObsName.size(); i++) {
-      config.oflog << "   " << config.InputObsName[i] << endl;
-   }
-   config.oflog << " Input Directory is " << config.Directory << endl;
-   config.oflog << " Ithing time interval is " << config.ith << endl;
-   if(config.begTime > CommonTime::BEGINNING_OF_TIME)
-   config.oflog << " Begin time is "
-      << printTime(config.begTime,"%04Y/%02m/%02d %02H:%02M:%.3f")
-      << " = " << printTime(config.begTime,"%04F/%10.3g") << endl;
-   if(config.endTime < CommonTime::END_OF_TIME)
-      config.oflog << " End time is "
-         << printTime(config.endTime,"%04Y/%02m/%02d %02H:%02M:%.3f")
-         << " = " << printTime(config.endTime,"%04F/%10.3g") << endl;
-   if(config.UseCA) config.oflog << " 'Use the C/A pseudorange' flag is set" << endl;
-   else config.oflog << " Do not use C/A code range (C1) unless P1 is absent" << endl;
-   config.oflog << " dt is set to " << config.dt << " seconds." << endl;
-   config.oflog << " Max gap is " << config.MaxGap << " seconds which is "
-      << int(config.MaxGap/config.dt) << " points." << endl;
-   //config.oflog << " Minimum points is " << config.MinPts << endl;
-   if(config.ExSV.size()) {
-      config.oflog << " Exclude satellites";
-      for(i=0; i<config.ExSV.size(); i++) {
-         if(config.ExSV[i].id == -1) config.oflog << " (all "
-            << config.ExSV[i].systemString() << ")" << endl;
-         else config.oflog << " " << config.ExSV[i];
-      }
-      config.oflog << endl;
-   }
-   if(config.SVonly.id > 0)
-      config.oflog << " Process only satellite : " << config.SVonly << endl;
-   config.oflog << " Log file is " << config.LogFile << endl;
-   config.oflog << " Out file is " << config.OutFile << endl;
-   config.oflog << " Output times in this format " << config.format << endl;
-   if(!config.OutRinexObs.empty())
-      config.oflog << " Output RINEX file name is " << config.OutRinexObs << endl;
-   if(!config.HDRunby.empty())
-      config.oflog << " Output RINEX 'RUN BY' is " << config.HDRunby << endl;
-   if(!config.HDObs.empty())
-      config.oflog << " Output RINEX 'OBSERVER' is " << config.HDObs << endl;
-   if(!config.HDAgency.empty())
-      config.oflog << " Output RINEX 'AGENCY' is " << config.HDAgency << endl;
-   if(!config.HDMarker.empty())
-      config.oflog << " Output RINEX 'MARKER' is " << config.HDMarker << endl;
-   if(!config.HDNumber.empty())
-      config.oflog << " Output RINEX 'NUMBER' is " << config.HDNumber << endl;
-   if(config.smoothPR) config.oflog << " 'Smoothed range' option is on" << endl;
-   if(config.smoothPH) config.oflog << " 'Smoothed phase' option is on" << endl;
-   if(!config.smooth) config.oflog << " No smoothing." << endl;
-   //if(config.CAOut) config.oflog << " 'C/A output' option is on" << endl;
-   //if(config.DopOut) config.oflog << " 'Doppler output' option is on" << endl;
-
-      // print config to log, second GDC
-   config.oflog << "Here is the GPSTk DC configuration:" << endl;
-   GDConfig.DisplayParameterUsage(config.oflog,DChelpall);
-   config.oflog << endl;
-
    return 0;
 
-   } // end try
-   catch(Exception& e) { GPSTK_RETHROW(e); }
-   catch(std::exception& e)
-      { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
-   catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+} // end try
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-void PreProcessArgs(const char *arg, vector<string>& Args) throw(Exception)
+void DumpConfiguration(void) throw(Exception)
 {
-   try {
-      static bool found_cfg_file=false;
-
-      if(string(arg) == string()) return;
-
-      if(found_cfg_file || (arg[0]=='-' && arg[1]=='f')) {
-         string filename(arg);
-         if(!found_cfg_file) filename.erase(0,2); else found_cfg_file = false;
-         ifstream infile(filename.c_str());
-         if(!infile) {
-            cout << "Error: could not open options file " << filename << endl;
-            return;
-         }
-
-         bool again_cfg_file=false;
-         string buffer,word;
-         while(1) {
-            getline(infile,buffer);
-            stripTrailing(buffer,'\r');
-
-            while(!buffer.empty()) {
-               word = firstWord(buffer);
-               if(again_cfg_file) {
-                  word = "-f" + word;
-                  again_cfg_file = false;
-                  PreProcessArgs(word.c_str(),Args);
-               }
-               else if(word[0] == '#') {         // skip this line
-                  buffer.clear();
-               }
-               else if(word == "--file" || word == "-f")
-                  again_cfg_file = true;
-               else if(word[0] == '"') {
-                  word = stripFirstWord(buffer,'"');
-                  buffer = "dummy " + buffer;
-                  PreProcessArgs(word.c_str(),Args);
-               }
-               else
-                  PreProcessArgs(word.c_str(),Args);
-
-               word = stripFirstWord(buffer);   // this simply removes it from buffer
-            }
-            // break on EOF here b/c there can be a line w/o LF at EOF
-            if(infile.eof() || !infile.good()) break;
-         }
-      }
-      else if(string(arg) == "--file" || string(arg) == "-f")
-         found_cfg_file = true;
-      // -v or --verbose
-      else if((arg[0]=='-' && arg[1]=='v') || string(arg)==string("--verbose")) {
-         config.verbose = true;
-      }
-      // old versions of args -- deprecated
-      else if(string(arg)==string("--directory")) { Args.push_back("--inputdir"); }
-      else if(string(arg)==string("--EpochBeg")) { Args.push_back("--beginTime"); }
-      else if(string(arg)==string("--EpochEnd")) { Args.push_back("--endTime"); }
-      else if(string(arg)==string("--GPSBeg")) { Args.push_back("--beginTime"); }
-      else if(string(arg)==string("--GPSEnd")) { Args.push_back("--endTime"); }
-      else if(string(arg)==string("--CA")) { Args.push_back("--forceCA"); }
-      else if(string(arg)==string("--useCA")) { Args.push_back("--forceCA"); }
-      else if(string(arg)==string("--DT")) { Args.push_back("--dt"); }
-      else if(string(arg)==string("--Gap")) { Args.push_back("--gap"); }
-      else if(string(arg)==string("--Smooth")) { Args.push_back("--smooth"); }
-      else if(string(arg)==string("--SmoothPR")) { Args.push_back("--smoothPR"); }
-      else if(string(arg)==string("--SmoothPH")) { Args.push_back("--smoothPH"); }
-      else if(string(arg)==string("--XPRN")) { Args.push_back("--exSat"); }
-      else if(string(arg)==string("--SVonly")) { Args.push_back("--onlySat"); }
-      else if(string(arg)==string("--Log")) { Args.push_back("--logOut"); }
-      else if(string(arg)==string("--Out")) { Args.push_back("--cmdOut"); }
-      // else its a regular command
-      else Args.push_back(arg);
-      //if(debug) cout << "arg " << string(arg) << endl;
+try {
+   int i,j;
+      // print config to log, first DF
+   LOG(INFO) << "\nHere is the " << PrgmName << " configuration:";
+   LOG(INFO) << " Input RINEX obs files are:";
+   for(i=0; i<cfg.obsfiles.size(); i++) {
+      LOG(INFO) << "   " << cfg.obsfiles[i];
    }
-   catch(Exception& e) { GPSTK_RETHROW(e); }
-   catch(std::exception& e)
-      { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
-   catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+   LOG(INFO) << " Input path for obs files is " << cfg.inputPath;
+   if(cfg.decimate > 0.0)
+      LOG(INFO) << " Decimate to time interval " << cfg.decimate;
+   if(cfg.begTime > Epoch(CommonTime::BEGINNING_OF_TIME))
+   LOG(INFO) << " Begin time is "
+      << printTime(cfg.begTime,"%04Y/%02m/%02d %02H:%02M:%.3f")
+      << " = " << printTime(cfg.begTime,"%04F/%10.3g");
+   if(cfg.endTime < Epoch(CommonTime::END_OF_TIME))
+      LOG(INFO) << " End time is "
+         << printTime(cfg.endTime,"%04Y/%02m/%02d %02H:%02M:%.3f")
+         << " = " << printTime(cfg.endTime,"%04F/%10.3g");
+   if(cfg.useCA1) LOG(INFO) << " Use the L1 C/A pseudorange if P-code is not found";
+   else LOG(INFO) << " Do not use L1 C/A code range (C1)";
+   if(cfg.useCA2) LOG(INFO) << " Use the L2 C/A pseudorange if P-code is not found";
+   else LOG(INFO) << " Do not use L2 C/A code range (C2)";
+   if(cfg.forceCA1) LOG(INFO) <<" Use the L1 C/A pseudorange even if P-code is found";
+   if(cfg.forceCA2) LOG(INFO) <<" Use the L2 C/A pseudorange even if P-code is found";
+   if(cfg.dt0 > 0) LOG(INFO) << " dt is input as " << cfg.dt0 << " seconds.";
+   LOG(INFO) << " Max gap is " << cfg.MaxGap << " seconds";
+   if(cfg.exSat.size()) {
+      LOGstrm << " Exclude satellites";
+      for(i=0; i<cfg.exSat.size(); i++) {
+         if(cfg.exSat[i].id == -1)
+            LOGstrm << " (all " << cfg.exSat[i].systemString() << ")";
+         else
+            LOGstrm << " " << cfg.exSat[i];
+      }
+      LOGstrm << endl;
+   }
+   if(cfg.SVonly.id > 0)
+      LOG(INFO) << " Process only satellite : " << cfg.SVonly;
+   LOG(INFO) << (cfg.doGLO ? " P":" Do not p") << "rocess GLONASS satellites";
+   if(cfg.GLOfreqChannel.size() > 0) {
+      j = 0;
+      LOGstrm << " GLO frequency channels:";
+      map<RinexSatID,int>::const_iterator it(cfg.GLOfreqChannel.begin());
+      while(it != cfg.GLOfreqChannel.end()) {
+         LOGstrm << (j==0 ? " ":",") << it->first << ":" << it->second;
+         ++j; ++it;
+         if((j % 9)==0) { j=0; LOGstrm << endl << "                        "; }
+      }
+      LOGstrm << endl;
+   }
+   LOG(INFO) << " Log file is " << cfg.LogFile;
+   LOG(INFO) << " Out file is " << cfg.OutFile;
+   LOG(INFO) << " Output times in this format '" << cfg.format << "', rounding to "
+      << cfg.round << " digits.";
+   if(!cfg.OutRinexObs.empty())
+      LOG(INFO) << " Output RINEX file name is " << cfg.OutRinexObs;
+   if(!cfg.HDRunby.empty())
+      LOG(INFO) << " Output RINEX 'RUN BY' is " << cfg.HDRunby;
+   if(!cfg.HDObs.empty())
+      LOG(INFO) << " Output RINEX 'OBSERVER' is " << cfg.HDObs;
+   if(!cfg.HDAgency.empty())
+      LOG(INFO) << " Output RINEX 'AGENCY' is " << cfg.HDAgency;
+   if(!cfg.HDMarker.empty())
+      LOG(INFO) << " Output RINEX 'MARKER' is " << cfg.HDMarker;
+   if(!cfg.HDNumber.empty())
+      LOG(INFO) << " Output RINEX 'NUMBER' is " << cfg.HDNumber;
+   if(cfg.smoothPR) LOG(INFO) << " 'Smoothed range' option is on\n";
+   if(cfg.smoothPH) LOG(INFO) << " 'Smoothed phase' option is on\n";
+   if(!cfg.smooth) LOG(INFO) << " No smoothing.\n";
+
+} // end try
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------

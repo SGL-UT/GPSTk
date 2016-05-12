@@ -61,7 +61,7 @@ using namespace std;
 namespace gpstk
 {
    using namespace StringUtils;
-   
+
    const string RinexClockHeader::versionString     =  "RINEX VERSION / TYPE";
    const string RinexClockHeader::runByString       =  "PGM / RUN BY / DATE";
    const string RinexClockHeader::commentString     =  "COMMENT";
@@ -85,33 +85,33 @@ namespace gpstk
       {
          return false;
       }
-      
+
       list<RinexClkType>::const_iterator itr;
       for (itr = dataTypeList.begin(); itr != dataTypeList.end(); itr++)
       {
-         if (*itr == AR) 
+         if (*itr == AR)
          {
-            if ( !(valid & allValidAR) ) 
+            if ( !(valid & allValidAR) )
                return false;
          }
-         else if (*itr == AS) 
+         else if (*itr == AS)
          {
-            if ( !(valid & allValidAS) ) 
+            if ( !(valid & allValidAS) )
                return false;
          }
-         else if (*itr == CR) 
+         else if (*itr == CR)
          {
-            if ( !(valid & allValidCR) ) 
+            if ( !(valid & allValidCR) )
                return false;
          }
          else if (*itr == DR)
          {
-            if ( !(valid & allValidDR) ) 
+            if ( !(valid & allValidDR) )
                return false;
          }
          else if (*itr == MS)
          {
-            if ( !(valid & allValidMS) ) 
+            if ( !(valid & allValidMS) )
                return false;
          }
          else  // unknown type
@@ -147,22 +147,22 @@ namespace gpstk
       prnList.clear();
       valid = 0;
    }
-   
+
 
    void RinexClockHeader::dump(ostream& s) const
    {
       s << "---------------------- REQUIRED ---------------------" << endl;
       s << "Rinex Version: " << fixed << setw(4) << setprecision(2) << version
         << ", File type: " << fileType << endl;
-      s << "Program: " << fileProgram 
+      s << "Program: " << fileProgram
         << ", Agency: " << fileAgency
         << ", Date: " << date << endl;
-      
+
       s << "Clock data types: ";
       bool ar, as, cr, dr, ms;
       ar = as = cr = dr = ms = false;
       list<RinexClkType>::const_iterator dataTypeListItr;
-      for(dataTypeListItr = dataTypeList.begin(); 
+      for(dataTypeListItr = dataTypeList.begin();
           dataTypeListItr != dataTypeList.end(); dataTypeListItr++)
       {
          s << leftJustify(dataTypeListItr->type, 2) <<  " ";
@@ -173,53 +173,53 @@ namespace gpstk
          else if (*dataTypeListItr == MS) ms = true;
       }
       s << endl;
-      
+
       if ( cr || dr || (valid & stationNameValid) )
       {
-         s << "Station/Reciever: " << stationName 
+         s << "Station/Reciever: " << stationName
            << " " << stationNumber << endl;
       }
-      
+
       if ( cr || (valid & calibrationClkValid) )
       {
          s << "Station Clock Ref: " << stationClkRef << endl;
       }
-      
+
       if ( ar || as || ms || (valid & acNameValid) )
       {
-         s << "Analysis Center: " << ac 
+         s << "Analysis Center: " << ac
            << " " << acName << endl;
       }
-      
+
       if ( ar || as || (valid & numRefClkValid) )
       {
          list<RefClkRecord>::const_iterator refClkListItr;
-         for (refClkListItr = refClkList.begin(); 
+         for (refClkListItr = refClkList.begin();
               refClkListItr != refClkList.end(); refClkListItr++)
          {
-            s << "Clock References from: " << refClkListItr->startEpoch 
-              << ", to: " << refClkListItr->stopEpoch 
+            s << "Clock References from: " << refClkListItr->startEpoch
+              << ", to: " << refClkListItr->stopEpoch
               << ", count: " << refClkListItr->numClkRef
               << endl;
             list<RefClk>::const_iterator clocksItr;
-            for (clocksItr = refClkListItr->clocks.begin(); 
+            for (clocksItr = refClkListItr->clocks.begin();
                  clocksItr != refClkListItr->clocks.end(); clocksItr++)
             {
-               s << "     " << "name: " << clocksItr->name 
+               s << "     " << "name: " << clocksItr->name
                  << ", number: " << clocksItr->number
                  << ", constraint: " << clocksItr->clkConstraint
                  << endl;
             }
          }
       }
-      
+
       if ( ar || as || (valid & numStationsValid) )
       {
-         s << "# of Solution Stations: " << numSta 
+         s << "# of Solution Stations: " << numSta
            << ", TRF: " << trf
            << endl;
       }
-      
+
       if ( ar || as || (valid & solnStaNameValid) )
       {
          list<SolnSta>::const_iterator solnStaListItr;
@@ -227,7 +227,7 @@ namespace gpstk
               solnStaListItr != solnStaList.end(); solnStaListItr++)
          {
             s << "Soln. station/reciever name: " << solnStaListItr->name
-              << ", number: " << solnStaListItr->number 
+              << ", number: " << solnStaListItr->number
               << endl
               << "  pos: x:" << rightJustify(asString(solnStaListItr->posX), 11)
               << " y:" << rightJustify(asString(solnStaListItr->posY), 11)
@@ -235,17 +235,17 @@ namespace gpstk
               << endl;
          }
       }
-      
+
       if ( as || (valid & numSatsValid) )
       {
          s << "Soln. PRN count: " << numSats << endl;
       }
-      
+
       if ( as || (valid & prnListValid) )
       {
          s << "  ";
          list<SatID>::const_iterator prnListItr;
-         for (prnListItr = prnList.begin(); 
+         for (prnListItr = prnList.begin();
               prnListItr != prnList.end(); prnListItr++)
          {
             s << " ";
@@ -261,7 +261,7 @@ namespace gpstk
          }
          s << endl;
       }
-                                 
+
       s << "---------------------- OPTIONAL* --------------------" << endl;
       s << "*If data type is AS or AR some comments are required." << endl;
 
@@ -280,7 +280,7 @@ namespace gpstk
       {
          s << "Leap Seconds: " << leapSeconds << endl;
       }
-                                 
+
       s << "-------------------- END OF HEADER ------------------" << endl;
 
    }  // dump
@@ -290,9 +290,9 @@ namespace gpstk
       throw(std::exception, FFStreamError, StringException)
    {
       RinexClockStream& strm = dynamic_cast<RinexClockStream&>(ffs);
-      
+
       strm.header = *this;
-      
+
       if ( !isValid() )
       {
          FFStreamError err("Incomplete or invalid header.");
@@ -300,9 +300,9 @@ namespace gpstk
                      "of the available data.");
          GPSTK_THROW(err);
       }
-      
+
       string line;
-      
+
       if (valid & versionValid)
       {
          line = rightJustify(asString(version,2), 9);
@@ -343,7 +343,7 @@ namespace gpstk
       if ( valid & dataTypesValid )
       {
          line = rightJustify(asString<int>(numType), 6);
-         
+
          list<RinexClkType>::const_iterator itr;
          for (itr = dataTypeList.begin(); itr != dataTypeList.end(); itr++)
          {
@@ -394,9 +394,9 @@ namespace gpstk
             line += numRefClkString;
             strm << line << endl;
             strm.lineNumber++;
-            
+
             list<RefClk>::const_iterator clkItr;
-            for(clkItr = recItr->clocks.begin(); 
+            for(clkItr = recItr->clocks.begin();
                 clkItr != recItr->clocks.end(); clkItr++)
             {
                line = leftJustify(clkItr->name, 4);
@@ -461,28 +461,28 @@ namespace gpstk
          for (itr = prnList.begin(); itr != prnList.end(); itr++)
          {
             prnCount++;
-               
+
             string sat;
             if (itr->system == SatID::systemGPS)
                sat = "G";
             else if (itr->system == SatID::systemGlonass)
                sat = "R";
-            else  
-               sat = " "; 
+            else
+               sat = " ";
             sat += rightJustify(asString<int>(itr->id), 2, '0');
-            
+
             line += sat;
             line += string(1, ' ');
-            
+
             if ( (prnCount % 15) == 0 )
             {
                line += prnListString;
                strm << line << endl;
                strm.lineNumber++;
                line = "";
-            }   
+            }
          }
-         
+
          if ( (prnCount % 15) != 0 )
          {
             line += string(( (15-(prnCount % 15)) * 4), ' ');
@@ -491,13 +491,12 @@ namespace gpstk
             strm.lineNumber++;
          }
       }
-      if ( valid & endValid )
-      {
-         line = string(60, ' ');
-         line += endOfHeader;
-         strm << line << endl;
-         strm.lineNumber++;
-      }
+
+      line = string(60, ' ');
+      line += endOfHeader;
+      strm << line << endl;
+      strm.lineNumber++;
+
    }  // reallyPutRecord
 
 
@@ -507,21 +506,21 @@ namespace gpstk
             StringUtils::StringException)
    {
       RinexClockStream& strm = dynamic_cast<RinexClockStream&>(ffs);
-      
+
          // if already read, just return
       if (strm.headerRead == true)
          return;
-      
+
          // Reading a new header, clear any preexisting data.
       clear();
 
       string line;
-      
+
       while ( !(valid & endValid) )
       {
          strm.formattedGetLine(line);
          StringUtils::stripTrailing(line);
-         
+
          if ( line.length() == 0 )
          {
             FFStreamError ffse("No data read!");
@@ -532,7 +531,7 @@ namespace gpstk
             FFStreamError ffse("Invalid line length");
             GPSTK_THROW(ffse);
          }
-         
+
          try
          {
             ParseHeaderRecord(line);
@@ -540,13 +539,13 @@ namespace gpstk
          catch(FFStreamError& ffse)
          {
             GPSTK_RETHROW(ffse);
-         }  
+         }
       }
-      
+
          // If we get here, we should have reached the end of header line
       strm.header = *this;
       strm.headerRead = true;
-      
+
    }  // reallyGetRecord
 
 
@@ -555,12 +554,12 @@ namespace gpstk
       throw(FFStreamError)
    {
       string label(line, 60, 20);
-      
+
          // RINEX VERSION / TYPE
       if (label == versionString)
       {
          version = asDouble(line.substr(0,9));
-         
+
          fileType = strip(line.substr(20, 40));
          if ( fileType[0] != 'C' && fileType[0] != 'c' )
          {
@@ -568,7 +567,7 @@ namespace gpstk
             FFStreamError e("Incorrect file type: " + fileType);
             GPSTK_THROW(e);
          }
-         
+
          valid |= versionValid;
 
       }
@@ -578,26 +577,26 @@ namespace gpstk
          fileProgram =  strip(line.substr( 0, 20));
          fileAgency  =  strip(line.substr(20, 20));
          date        =  strip(line.substr(40, 20));
-         
+
          valid |= runByValid;
-         
+
       }
          // COMMENT
       else if (label == commentString)
       {
          string s = line.substr(0, 60);
          commentList.push_back(s);
-         
+
          valid |= commentValid;
-         
+
       }
          // LEAP SECONDS
       else if (label == leapSecondsString)
-      {  
+      {
          leapSeconds = asInt(line.substr(0,6));
-         
+
          valid |= leapSecondsValid;
-         
+
       }
          // # / TYPES OF DATA
       else if (label == dataTypesString)
@@ -606,7 +605,7 @@ namespace gpstk
          if ( numType < 0 || numType > 5 )
          {
                // invalid number of data types - throw
-            FFStreamError e("Invalid number of data types: " + 
+            FFStreamError e("Invalid number of data types: " +
                             asString(numType));
             GPSTK_THROW(e);
          }
@@ -625,35 +624,35 @@ namespace gpstk
                GPSTK_THROW(e);
             }
          }
-         
+
          valid |= dataTypesValid;
-         
+
       }
          // STATION NAME / NUM
       else if (label == stationNameString)
       {
          stationName = line.substr(0,4);
          stationNumber = strip(line.substr(4,20));
-         
+
          valid |= stationNameValid;
-         
+
       }
          // STATION CLK REF
       else if (label == calibrationClkString)
       {
          stationClkRef = strip( line.substr(0,60) );
-         
+
          valid |= calibrationClkValid;
-         
+
       }
          // ANALYSIS CENTER
       else if (label == acNameString)
       {
          ac = line.substr(0, 3);
          acName = strip(line.substr(5,55));
-         
+
          valid |= acNameValid;
-         
+
       }
          // # OF CLK REF
       else if (label == numRefClkString)
@@ -669,7 +668,7 @@ namespace gpstk
                if ( record.startEpoch > record.stopEpoch )
                {  // invalid start/stop epochs - throw
                   FFStreamError e("Invalid Start/Stop Epoch start: " +
-                                  line.substr(7,26) + ", stop: " + 
+                                  line.substr(7,26) + ", stop: " +
                                   line.substr(34,26));
                   GPSTK_THROW(e);
                }
@@ -677,7 +676,7 @@ namespace gpstk
             else
             {  // startEpoch w/o stopEpoch - throw
                FFStreamError e("Invalid Start/Stop Epoch start: " +
-                               line.substr(7,26) + ", stop: " + 
+                               line.substr(7,26) + ", stop: " +
                                line.substr(34,26));
                GPSTK_THROW(e);
             }
@@ -688,7 +687,7 @@ namespace gpstk
             if ( asInt(line.substr(34,26)) )
             {  // stop epoch w/o start epoch
                FFStreamError e("Invalid Start/Stop Epoch start: " +
-                               line.substr(7,26) + ", stop: " + 
+                               line.substr(7,26) + ", stop: " +
                                line.substr(34,26));
                GPSTK_THROW(e);
             }
@@ -699,9 +698,9 @@ namespace gpstk
          }
             // add the ref clk record to the list
          refClkList.push_back(record);
-         
+
          valid |= numRefClkValid;
-         
+
       }
          /// ANALYSIS CLK REF
       else if (label == analysisClkRefString)
@@ -712,7 +711,7 @@ namespace gpstk
                             "\"# OF CLK REF\" record.");
             GPSTK_THROW(e);
          }
-            
+
             // get the previous reference clock record
          std::list<RefClkRecord>::iterator itr = refClkList.end();
          --itr;
@@ -723,22 +722,22 @@ namespace gpstk
                             "\"# of CLK REF\": " + asString(itr->numClkRef));
             GPSTK_THROW(e);
          }
-            
+
          RefClk refclk;
          refclk.name = line.substr(0,4);
          refclk.number = strip(line.substr(5,20));
          refclk.clkConstraint = asDouble(line.substr(40,19));
          itr->clocks.push_back(refclk);
-         
+
       }
          /// # OF SOLN STA / TRF
       else if (label == numStationsString)
-      {  
+      {
          numSta = asInt( line.substr(0,6) );
          trf = strip(line.substr(10,50));
-         
+
          valid |= numStationsValid;
-         
+
       }
          /// SOLN STA NAME / NUM
       else if (label == solnStaNameString)
@@ -752,34 +751,34 @@ namespace gpstk
          solnSta.posZ = strtoll(strip(line.substr(49,11)).c_str(), 0, 10);
 
          solnStaList.push_back(solnSta);
-         
+
          valid |= solnStaNameValid;
-         
+
       }
          // # OF SOLN SATS
       else if (label == numSatsString)
       {
          numSats = asInt(line.substr(0,6));
-         
+
          valid |= numSatsValid;
-         
+
       }
          // PRN LIST
       else if (label == prnListString)
       {
          string s = line.substr(0,60);
          string word = stripFirstWord(s);
-         
+
          while ( !word.empty() )
          {
             if ( word[0] == 'G' || word[0] == 'g' )
             {
-               prnList.push_back(SatID(asInt(word.substr(1,2)), 
+               prnList.push_back(SatID(asInt(word.substr(1,2)),
                                        SatID::systemGPS));
             }
             else if ( word[0] == 'R' || word[0] == 'r' )
             {
-               prnList.push_back(SatID(asInt(word.substr(1,2)), 
+               prnList.push_back(SatID(asInt(word.substr(1,2)),
                                        SatID::systemGlonass));
             }
             else
@@ -787,26 +786,26 @@ namespace gpstk
                FFStreamError e("Invalid PRN: " + word);
                GPSTK_THROW(e);
             }
-            
+
             word = stripFirstWord(s);
          }
-         
+
          valid |= prnListValid;
-         
+
       }
          // END OF HEADER
       else if (label == endOfHeader)
       {
          valid |= endValid;
-         
+
       }
       else
       {  // invalid label - throw
          FFStreamError e("Invalid label: " + label);
-         GPSTK_THROW(e);  
+         GPSTK_THROW(e);
       }
-      
+
    }   // ParseHeaderRecord
-   
+
 
 }  // namespace

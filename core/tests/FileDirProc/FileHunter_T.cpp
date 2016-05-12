@@ -40,7 +40,6 @@
 #include <iostream>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <unistd.h>
 #include <errno.h>
 
 using namespace std;
@@ -51,10 +50,10 @@ class FileHunter_T
 public: 
 
       // constructor
-	FileHunter_T() { init(); }
+   FileHunter_T() { init(); }
 
       // destructor
-	~FileHunter_T() { cleanup(); }
+   ~FileHunter_T() { cleanup(); }
 
       // initialize tests, throws on failure
    void init();
@@ -108,7 +107,7 @@ void FileHunter_T :: init()
 {
    TestUtil  tester;
 
-   tempFilePath = tester.getTempPath() + getFileSep() + "test_output_filehunter";
+   tempFilePath = gpstk::getPathTestTemp() + getFileSep() + "test_output_filehunter";
 
       // create directories and files for the find() tests
    newDir(tempFilePath);

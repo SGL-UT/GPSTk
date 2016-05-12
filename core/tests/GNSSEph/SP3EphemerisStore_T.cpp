@@ -65,8 +65,8 @@ public:
    void init( void )
    {
       TestUtil test0;
-      std::string dataFilePath = test0.getDataPath();
-      std::string tempFilePath = test0.getTempPath();
+      std::string dataFilePath = gpstk::getPathData();
+      std::string tempFilePath = gpstk::getPathTestTemp();
       std::string file_sep = "/";
 
       inputSP3Data             =  dataFilePath + file_sep +

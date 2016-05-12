@@ -60,19 +60,19 @@ namespace gpstk
    class ObsID;
    namespace StringUtils
    {
-      /// convert this object to a string representation
+         /// convert this object to a string representation
       std::string asString(const ObsID& id);
    }
 
 
-   /// stream output for ObsID
+      /// stream output for ObsID
    std::ostream& operator<<(std::ostream& s, const ObsID& p);
 
 
    class ObsID
    {
    public:
-      /// The type of observation.
+         /// The type of observation.
       enum ObservationType
       {
          otUnknown,
@@ -92,7 +92,7 @@ namespace gpstk
       };
 
 
-      /// The frequency band this obs was collected from.
+         /// The frequency band this obs was collected from.
       enum CarrierBand
       {
          cbUnknown,
@@ -116,14 +116,16 @@ namespace gpstk
       };
 
 
-      /// The code used to collect the observation. Each of these should uniquely
-      /// identify a code that was correlated against to track the signal. While the
-      /// notation generally follows section 5.1 of RINEX 3, due to ambiguities in
-      /// that specification some extensions are made. Note that as concrete
-      /// specifications for the codes are released, this list may need to be
-      /// adjusted. Specifically, this lists assumes that the same I & Q codes will be
-      /// used on all three of the Galileo carriers. If that is not true, more
-      /// identifiers need to be allocated
+         /** The code used to collect the observation. Each of these
+          * should uniquely identify a code that was correlated
+          * against to track the signal. While the notation generally
+          * follows section 5.1 of RINEX 3, due to ambiguities in that
+          * specification some extensions are made. Note that as
+          * concrete specifications for the codes are released, this
+          * list may need to be adjusted. Specifically, this lists
+          * assumes that the same I & Q codes will be used on all
+          * three of the Galileo carriers. If that is not true, more
+          * identifiers need to be allocated */
       enum TrackingCode
       {
          tcUnknown,
@@ -191,54 +193,62 @@ namespace gpstk
          tcLast     ///< Used to verify that all items are described at compile time
       };
 
-      /// empty constructor, creates a wildcard object.
+         /// empty constructor, creates a wildcard object.
       ObsID()
-         : type(otUnknown), band(cbUnknown), code(tcUnknown) {};
+            : type(otUnknown), band(cbUnknown), code(tcUnknown) {};
 
-      /// Explicit constructor
+         /// Explicit constructor
       ObsID(ObservationType ot, CarrierBand cb, TrackingCode tc)
-         : type(ot), band(cb), code(tc) {};
+            : type(ot), band(cb), code(tc) {};
 
-      /// This string contains the system characters for all RINEX systems.
+         /// This string contains the system characters for all RINEX systems.
       static std::string validRinexSystems;
 
-      /// These maps transform between 1-char and 3-char system descriptors,
-      /// e.g. map1to3sys["G"] = "GPS" and map3to1sys["GPS"] = "G"
+         /// These maps transform between 1-char and 3-char system descriptors,
+         /// e.g. map1to3sys["G"] = "GPS" and map3to1sys["GPS"] = "G"
       static std::map<std::string, std::string> map1to3sys;
       static std::map<std::string, std::string> map3to1sys;
 
-      /// This string contains the (1-digit) frequency code for all RINEX systems.
+         /** This string contains the (1-digit) frequency code for all
+          * RINEX systems. */
       static std::string validRinexFrequencies;
 
-      /// This map[sys][freq] = valid codes gives valid tracking codes for RINEX
-      /// observations given the system and frequency;
-      /// eg. validRinexTrackingCodes['G']['1']="CSLXPWYMN* "
-      /// The only exception is there is no pseudorange (C) on GPS L1/L2 N (codeless)
-      /// NB These tracking code characters are ORDERED, basically 'best' to 'worst'
+         /** This map[sys][freq] = valid codes gives valid tracking
+          * codes for RINEX observations given the system and
+          * frequency;
+          * eg. validRinexTrackingCodes['G']['1']="CSLXPWYMN* " The
+          * only exception is there is no pseudorange (C) on GPS L1/L2
+          * N (codeless)
+          * @note These tracking code characters are ORDERED,
+          * basically 'best' to 'worst' */
       static std::map<char, std::map<char, std::string> > validRinexTrackingCodes;
 
-      /// Constructor from a string (Rinex 3 style descriptor). If this string is 3 
-      /// characters long, the system is assumed to be GPS. If this string is 4
-      /// characters long, the first character is the system designator as
-      /// described in the Rinex 3 specification. If the Rinex 3 style descriptor
-      /// isn't currently defined, a new one is silently automatically created
-      /// with a blank description for the new characters.
+         /** Constructor from a string (Rinex 3 style descriptor). If
+          * this string is 3 characters long, the system is assumed to
+          * be GPS. If this string is 4 characters long, the first
+          * character is the system designator as described in the
+          * Rinex 3 specification. If the Rinex 3 style descriptor
+          * isn't currently defined, a new one is silently
+          * automatically created with a blank description for the new
+          * characters. */
       explicit ObsID(const std::string& id) throw(InvalidParameter);
 
-      /// Constructor from c-style string; see c'tor from a string.
+         /// Constructor from c-style string; see c'tor from a string.
       explicit ObsID(const char* id) throw(InvalidParameter)
-         { *this=ObsID(std::string(id));}
+      { *this=ObsID(std::string(id));}
 
-      /// Equality requires all fields to be the same
+         /// Equality requires all fields to be the same
       virtual bool operator==(const ObsID& right) const;
 
-      /// This ordering is somewhat arbitrary but is required to be able
-      /// to use an ObsID as an index to a std::map. If an application needs
-      /// some other ordering, inherit and override this function. One 'feature'
-      /// that has been added is that an Any code/carrier/type will match
-      /// any other code/carrier/type in the equality operator. The intent is to
-      /// support performing an operation like "tell me if this is a pseudorange 
-      /// that was collected on L1 from *any* code".
+         /** This ordering is somewhat arbitrary but is required to be
+          * able to use an ObsID as an index to a std::map. If an
+          * application needs some other ordering, inherit and
+          * override this function. One 'feature' that has been added
+          * is that an Any code/carrier/type will match any other
+          * code/carrier/type in the equality operator. The intent is
+          * to support performing an operation like "tell me if this
+          * is a pseudorange that was collected on L1 from *any*
+          * code". */
       virtual bool operator<(const ObsID& right) const;
 
       bool operator!=(const ObsID& right) const
@@ -253,31 +263,34 @@ namespace gpstk
       bool operator>=(const ObsID& right) const
       { return !(operator<(right)); };
 
-      /// Convenience output method
+         /// Convenience output method
       virtual std::ostream& dump(std::ostream& s) const;
 
-      /// Destructor
+         /// Destructor
       virtual ~ObsID() {};
 
-      // Extend the standard identifiers with a new Rinex 3 style identifier. If
-      // the specified id is already defined, an exception is thrown and the
-      // existing definitions are not touched. If not then each character of the
-      // specification is examined and the new ones are created. The returned
-      // ObsID can then be examined for the assigned values.
+         /** Extend the standard identifiers with a new Rinex 3 style
+          * identifier. If the specified id is already defined, an
+          * exception is thrown and the existing definitions are not
+          * touched. If not then each character of the specification
+          * is examined and the new ones are created. The returned
+          * ObsID can then be examined for the assigned values. */
       static ObsID newID(const std::string& id,
-                         const std::string& desc="") throw(InvalidParameter);
+                         const std::string& desc="")
+         throw(InvalidParameter);
 
-      // Note that these are the only data members of objects of this class.
+         // Note that these are the only data members of objects of this class.
       ObservationType  type;
       CarrierBand      band;
       TrackingCode     code;
 
-      /// These strings are for forming a somewhat verbose description
+         /// These strings are for forming a somewhat verbose description
       static std::map< TrackingCode,    std::string > tcDesc;
       static std::map< CarrierBand,     std::string > cbDesc;
       static std::map< ObservationType, std::string > otDesc;
 
-      /// These strings are used to translate this object to and from a string id
+         /** These strings are used to translate this object to and
+          * from a string id */
       static std::map< char, ObservationType> char2ot;
       static std::map< char, CarrierBand> char2cb;
       static std::map< char, TrackingCode> char2tc;

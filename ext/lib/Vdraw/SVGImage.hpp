@@ -47,61 +47,61 @@
 
 namespace vdraw
 {
-   /** \addtogroup BasicVectorGraphics */ 
-   //@{
+      /// @ingroup BasicVectorGraphics
+      //@{
 
-   /**
-    * This class generates graphics in Scalable Vector Graphics format.
-    * Much of the code is based on examples and explanations from
-    * the text "SVG Essentials" by J. David Eisenberg, published by
-    * O'Reilly.
-    */
+      /**
+       * This class generates graphics in Scalable Vector Graphics format.
+       * Much of the code is based on examples and explanations from
+       * the text "SVG Essentials" by J. David Eisenberg, published by
+       * O'Reilly.
+       */
    class SVGImage : public VGImage
    {
    public:
 
-     /**
-      * Constructors and Destructor
-      */
+         /**
+          * Constructors and Destructor
+          */
 
-     /**
-      * Create an SVG output stream attached to an existing stream.
-      * @param stream Stream to insert SVG graphic elements
-      * @param width  Width of the SVG canvas in points
-      * @param height Height of the SVG canvas in points
-      * @param iloc Location of the origin the drawer will use
-      */
+         /**
+          * Create an SVG output stream attached to an existing stream.
+          * @param stream Stream to insert SVG graphic elements
+          * @param width  Width of the SVG canvas in points
+          * @param height Height of the SVG canvas in points
+          * @param iloc Location of the origin the drawer will use
+          */
       SVGImage(std::ostream& stream, double width=US_LETTER_WIDTH_PTS, 
-                double height=US_LETTER_HEIGHT_PTS, 
-                ORIGIN_LOCATION iloc=LOWER_LEFT);
+               double height=US_LETTER_HEIGHT_PTS, 
+               ORIGIN_LOCATION iloc=LOWER_LEFT);
 
-     /**
-      * Create an SVG output file given the file name
-      * @param fname  Name of the output file to be created
-      * @param width  Width of the SVG canvas in points
-      * @param height Height of the SVG canvas in points
-      * @param iloc Location of the origin the drawer will use
-      */
+         /**
+          * Create an SVG output file given the file name
+          * @param fname  Name of the output file to be created
+          * @param width  Width of the SVG canvas in points
+          * @param height Height of the SVG canvas in points
+          * @param iloc Location of the origin the drawer will use
+          */
       SVGImage(const char* fname, double width=US_LETTER_WIDTH_PTS, 
-                double height=US_LETTER_HEIGHT_PTS, 
-                ORIGIN_LOCATION iloc=LOWER_LEFT);
+               double height=US_LETTER_HEIGHT_PTS, 
+               ORIGIN_LOCATION iloc=LOWER_LEFT);
 
-      /// Destructor.
+         /// Destructor.
       ~SVGImage(void);
  
 
-      /**
-       * Accessor Methods
-       */
+         /**
+          * Accessor Methods
+          */
 
-      /**
-       * Operations
-       */
+         /**
+          * Operations
+          */
       
       void setMarker( const Marker& newMarker ) 
       {
-        VGImage::setMarker(newMarker);
-        defineMarker(newMarker);
+         VGImage::setMarker(newMarker);
+         defineMarker(newMarker);
       }
 
       void comment(const Comment& comment);
@@ -124,98 +124,100 @@ namespace vdraw
 
       void view (void) throw (VDrawException);
 
-      /// Used to define default programs to open this type of file for a
-      /// preview.
+         /// Used to define default programs to open this type of file for a
+         /// preview.
       ViewerManager viewerManager;
 
    protected:
-     /**
-      * Data members
-      */
+         /**
+          * Data members
+          */
 
-      /// Remember the output file name
+         /// Remember the output file name
       std::string filename;
 
-      /// When writing to a file, this is used to set ostr.
+         /// When writing to a file, this is used to set ostr.
       std::ofstream myfstream;
 
-      /// The stream to write to.
+         /// The stream to write to.
       std::ostream& ostr;
 
-      //using VGImage::StyleType;
-      //using VGImage::getCorrectStrokeStyle;
-      //using VGImage::getCorrectMarker;
-      //using VGImage::getCorrectTextStyle;
-      //using VGImage::getCorrectFillColor;
+         //using VGImage::StyleType;
+         //using VGImage::getCorrectStrokeStyle;
+         //using VGImage::getCorrectMarker;
+         //using VGImage::getCorrectTextStyle;
+         //using VGImage::getCorrectFillColor;
 
    private:
 
-      /**
-       * Datamembers
-       */
+         /**
+          * Datamembers
+          */
 
-      // Most drawing elements are in the same group a simple list.
-      // This element is used to align them or indent them consistently.
+         // Most drawing elements are in the same group a simple list.
+         // This element is used to align them or indent them consistently.
       std::string tab;
 
-      // This determines if a marker of some sort has been defined yet.
+         // This determines if a marker of some sort has been defined yet.
       bool markerDefined;
 
-      // This contains the last defined marker.
+         // This contains the last defined marker.
       Marker lastMarker;
 
-      /**
-       * Operations
-       */
+         /**
+          * Operations
+          */
    
-      /// This outputs a consistent SVG header.
+         /// This outputs a consistent SVG header.
       void outputHeader(void);
 
-      /// Close up the markers and grouping
+         /// Close up the markers and grouping
       virtual void outputFooter(void);
 
-      /**
-       * Make an SVG style property from a strokestyle
-       * @param ss Stroke Style to convert to a string
-       * @return An SVG formatted string describing that strokestyle
-       */
+         /**
+          * Make an SVG style property from a strokestyle
+          * @param ss Stroke Style to convert to a string
+          * @return An SVG formatted string describing that strokestyle
+          */
       std::string convertStrokeStyle (const StrokeStyle& ss) const;
 
-      /**
-       * Generates the fill tag for a Fillable object.
-       * @param fc Fill Color to use if necessary
-       * @param tfc StyleType specification for choosing ret value
-       * @return An SVG formatted string describing the fill color
-       */
+         /**
+          * Generates the fill tag for a Fillable object.
+          * @param fc Fill Color to use if necessary
+          * @param tfc StyleType specification for choosing ret value
+          * @return An SVG formatted string describing the fill color
+          */
       std::string fill (Color& fc, StyleType tfc) const;
 
-      /**
-       * Generates the stroke description.
-       * @param ss StrokeStyle to use if necessary
-       * @param tss StyleType specification for choosing ret value
-       * @param noneclear If tss == NONE then make stroke clear
-       * @return An SVG formatted string describing the stroke
-       */
-      std::string strokeDesc (StrokeStyle& ss, StyleType tss, bool noneclear=false) const;
+         /**
+          * Generates the stroke description.
+          * @param ss StrokeStyle to use if necessary
+          * @param tss StyleType specification for choosing ret value
+          * @param noneclear If tss == NONE then make stroke clear
+          * @return An SVG formatted string describing the stroke
+          */
+      std::string strokeDesc (StrokeStyle& ss, StyleType tss,
+                              bool noneclear=false)
+         const;
 
-      /**
-       * Make an SVG style property from a fillColor
-       * @param color Color to fill
-       * @return An SVG formatted string describing the input fill color
-       */
+         /**
+          * Make an SVG style property from a fillColor
+          * @param color Color to fill
+          * @return An SVG formatted string describing the input fill color
+          */
       std::string convertFillColor (const Color& color) const;
 
-      /**
-       * Make a SVG specification of a marker.
-       */
+         /**
+          * Make a SVG specification of a marker.
+          */
       void defineMarker(const Marker& mark, int dfltnum=0);
 
-      /// Takes the elements of a Path and writes them to an output stream.
+         /// Takes the elements of a Path and writes them to an output stream.
       void outputPoints(const Path& path, std::ostream& ostr); 
 
    }; // class SVGImage
 
-   //@} group BasicVectorGraphics
+      //@}
 
 } // namespace GPSTK
 

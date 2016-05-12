@@ -45,6 +45,14 @@ namespace gpstk
 {
    namespace BinUtils
    {
+      CRCParam :: CRCParam(int o, unsigned long p, unsigned long i,
+                           unsigned long f, bool d, bool ri, bool ro)
+            : order(o), polynom(p), initial(i), final(f), direct(d),
+              refin(ri), refout(ro)
+      {
+      }
+
+
       const CRCParam CRCCCITT(16, 0x1021, 0xffff, 0, true, false, false);
       const CRCParam CRC16(16, 0x8005, 0, 0, true, true, true);
       const CRCParam CRC32(32, 0x4c11db7, 0xffffffff, 0xffffffff, true, true, true);

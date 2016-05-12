@@ -53,7 +53,7 @@
 namespace gpstk
 {
 
-      /// @ingroup formattedfile
+      /// @ingroup FileHandling
       //@{
 
       /**

@@ -48,8 +48,8 @@ namespace gpstk
 {
       /// FFStreamError is an exception for when the file read doesn't
       /// match the specs for that file type.
+      /// @ingroup FileHandling
       /// @ingroup exceptionclass
-      /// @ingroup formattedfile
    NEW_EXCEPTION_CLASS(FFStreamError, gpstk::Exception);
 }
 

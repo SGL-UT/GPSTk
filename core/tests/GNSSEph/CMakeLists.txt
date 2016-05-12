@@ -20,6 +20,15 @@ add_executable(EphemerisRange_T EphemerisRange_T.cpp)
 target_link_libraries(EphemerisRange_T gpstk)
 add_test(GNSSEph_EphemerisRange EphemerisRange_T)
 
+add_executable(NavID_T NavID_T.cpp)
+target_link_libraries(NavID_T gpstk)
+add_test(GNSSEph_NavID NavID_T)
+
+add_executable(PackedNavBits_T PackedNavBits_T.cpp)
+target_link_libraries(PackedNavBits_T gpstk)
+add_test(GNSSEph_PackedNavBits PackedNavBits_T)
+set_property(TEST GNSSEph_PackedNavBits PROPERTY LABELS GNSSEph PackedNavBits)
+
 add_executable(RinexEphemerisStore_T RinexEphemerisStore_T.cpp)
 target_link_libraries(RinexEphemerisStore_T gpstk)
 add_test(GNSSEph_RinexEphemerisStore RinexEphemerisStore_T)

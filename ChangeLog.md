@@ -1,3 +1,50 @@
+      #################################################
+
+Version 2.8.1   Wednesday, January 27, 2016
+
+   General modifications
+   ---------------------
+   - Patch for MS VC bug fix and code cleanup
+
+   Modifications by Author
+   ---------------------
+
+Brian Tolman (3):
+      move function definitions into a cpp file
+      fix for MS VC 11 2012
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+
+Bryan Parsons (1):
+      GPSTk v2.8.1 Patch
+
+Jessica Rosenquest (12):
+      Updated SVNumXRef to reflect change from CommonTime to TimeRange.
+      update CommonTime to TimeRange
+      Initial working version of test program.
+      Updated isConsistent() test to incorporate TimeRange.
+      Added test for NAVSTARIDAvailable.
+      killing xSVNumXRef.cpp
+      New Program SVNumXRefDUMP
+      deleting previous overlap test, adding tests for all functions in SVNumXRef.cpp
+      complete test program for SVNumXRef
+      Modified whitespace, removed redundant output, and added Copyright/ARL statements.
+      Fixing Jon's nuisance errors
+      Merge branch 'master' into my_br_issue
+
+Jon Little (9):
+      Making swig not complain about nested/unknown classes
+      Now builds swig w/o any warnings
+      Better error reporting
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Removing some debug output
+      Merge branch 'master' into jessie_build
+      Added couple files to work get to compile w/o errors
+      Merge branch 'master' into jessie_build
+      Merge branch 'my_br_issue' into 'master'
+
+rosenquest (1):
+      Merge branch 'jessie_build' into 'master'
+
 
       #################################################
 

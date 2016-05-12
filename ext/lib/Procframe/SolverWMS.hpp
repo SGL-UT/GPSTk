@@ -49,9 +49,7 @@
 namespace gpstk
 {
 
-      /** @addtogroup GPSsolutions */
-      /// @ingroup math
-
+      /// @ingroup GPSsolutions
       //@{
 
       /** This class computes the Weighted Least Mean Squares Solution of

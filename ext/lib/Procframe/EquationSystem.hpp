@@ -59,7 +59,7 @@ namespace gpstk
    NEW_EXCEPTION_CLASS(InvalidEquationSystem, gpstk::Exception);
 
 
-      /** @addtogroup DataStructures */
+      /// @ingroup DataStructures 
       //@{
 
 

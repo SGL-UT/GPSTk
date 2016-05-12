@@ -88,7 +88,7 @@ struct Par // Parameters to pass to Pthread function.
    bool v;
 };
 
-void *Cfunction(void*); // C-style function to be called with pthreads
+extern "C" void *Cfunction(void*); // C-style function to be called with pthreads
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------

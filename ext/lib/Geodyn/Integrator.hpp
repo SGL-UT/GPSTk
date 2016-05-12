@@ -52,7 +52,7 @@
 
 namespace gpstk
 {
-      /** @addtogroup GeoDynamics */
+      /// @ingroup GeoDynamics 
       //@{
 
       /** This is an abstract base class for objects solving
