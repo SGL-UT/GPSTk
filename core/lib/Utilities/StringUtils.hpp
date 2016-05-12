@@ -1327,6 +1327,17 @@ namespace gpstk
                                                       bool trimWhitespace = true,
                                                       bool ignoreEmpty = true);
 
+      /// Split a string on the given delimiter, respecting fields enclosed by
+      /// a pair of double quotes. Quotes are removed in output, and optionally
+      /// also leading and trailing whitespace.
+      /// @param  aStr           the string to be split
+      /// @param  delimiter      character delimiter (not ")
+      /// @param  trimWhitespace will trim the token string, default is true
+      /// @param  ignoreEmpty    will ignore the empty tokens, default is true
+      inline std::vector<std::string> splitWithDoubleQuotes(const std::string& aStr,
+                                                      const char delimiter = ' ',
+                                                      bool trimWhitespace = true,
+                                                      bool ignoreEmpty = true);
    } // namespace StringUtils
 
 } // namespace gpstk
@@ -2404,6 +2415,59 @@ namespace gpstk
             // if first character is a quote, set current delimiter to it
             if(aStr.compare(begPos,1,"\"") == 0) currentDelimiter = '"';
             if(aStr.compare(begPos,1,"\'") == 0) currentDelimiter = '\'';
+
+            // find next delimiter
+            endPos = aStr.find_first_of(currentDelimiter,
+                                 begPos + (currentDelimiter == delimiter ? 0 : 1));
+
+            // if this token is quoted, make sure to capture the trailing quote
+            // if(delimiter is a quote and second quote is found) include it
+            if(currentDelimiter != delimiter && std::string::npos != endPos) endPos++;
+
+            // length of new field
+            tokenLength = endPos - begPos;
+            // copy out the field
+            std::string token = aStr.substr(begPos, tokenLength);
+
+            // if quoted, remove the quotes
+            if(currentDelimiter != delimiter)
+               token = gpstk::StringUtils::strip(token,currentDelimiter);
+
+            // remove whitespace at beginning and end
+            if(trimWhitespace) token = gpstk::StringUtils::strip(token);
+
+            // save it
+            if(!token.empty() || !ignoreEmpty) toReturn.push_back(token);
+
+            // find the next token, and go back to delimiter
+            begPos = endPos;
+            if(begPos != std::string::npos) begPos++;
+            endPos = begPos;
+         }
+
+         return toReturn;
+      }
+
+      inline std::vector<std::string> splitWithDoubleQuotes(const std::string& aStr,
+                                                      const char delimiter,
+                                                      bool trimWhitespace,
+                                                      bool ignoreEmpty)
+      {
+         std::vector<std::string> toReturn;
+         std::string::size_type begPos = 0;
+         std::string::size_type endPos = 0;
+         std::string::size_type tokenLength;
+         char currentDelimiter;
+
+         if(delimiter == '"')
+            GPSTK_THROW(StringException("Delimiter must not be quote"));
+
+         while(endPos != std::string::npos && endPos <= aStr.length())
+         {
+            currentDelimiter = delimiter;
+
+            // if first character is a quote, set current delimiter to it
+            if(aStr.compare(begPos,1,"\"") == 0) currentDelimiter = '"';
 
             // find next delimiter
             endPos = aStr.find_first_of(currentDelimiter,
