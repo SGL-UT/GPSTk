@@ -667,7 +667,7 @@ public:
       ========================================================================================================================= */
       int splitWithDoubleQuotesTest( void )
       {
-         TestUtil testFramework( "StringUtils", "splitWithDoubleQuotes", __FILE__, __LINE__ );
+         gpstk::TestUtil testFramework( "StringUtils", "splitWithDoubleQuotes", __FILE__, __LINE__ );
          std::string failMesg;
 
          // no quotes
