@@ -41,6 +41,9 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <errno.h>
+#ifdef linux
+#include <unistd.h>
+#endif
 
 using namespace std;
 using namespace gpstk;
