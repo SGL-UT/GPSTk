@@ -41,8 +41,14 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <errno.h>
-#ifdef linux
+
+// headers for directory searching interface
+#ifndef _WIN32
 #include <unistd.h>
+#else
+#include <direct.h>
+#include <io.h>
+#define PATH_MAX _MAX_PATH
 #endif
 
 using namespace std;
@@ -222,7 +228,11 @@ void FileHunter_T :: cleanup()
    vector<string>::reverse_iterator  fileIter = filesToRemove.rbegin();
    for ( ; fileIter != filesToRemove.rend(); ++fileIter)
    {
+      #ifdef WIN32
+      _unlink(fileIter->c_str() );
+      #else
       unlink(fileIter->c_str() );
+      #endif
    }
       // remove directories
    vector<string>::reverse_iterator  dirIter = dirsToRemove.rbegin();
