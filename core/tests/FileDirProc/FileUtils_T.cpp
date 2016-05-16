@@ -37,10 +37,12 @@
 #include "TestUtil.hpp"
 #include "FileUtils.hpp"
 #include <iostream>
-#include <unistd.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#ifdef linux
+#include <unistd.h>
+#endif
 
 using namespace std;
 using namespace gpstk;

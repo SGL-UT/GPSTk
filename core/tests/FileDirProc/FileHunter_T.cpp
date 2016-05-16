@@ -41,6 +41,9 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <errno.h>
+#ifdef linux
+#include <unistd.h>
+#endif
 
 using namespace std;
 using namespace gpstk;
@@ -145,6 +148,16 @@ void FileHunter_T :: init()
 //---------------------------------------------------------------------------
 void FileHunter_T :: newDir(const string& path)
 {
+   #ifdef WIN32
+   if (_mkdir(path.c_str()) != 0)
+   {
+      if (errno != EEXIST)
+      {
+         string  exc("failed to create test directory: " + path);
+         throw(exc);
+      }
+   }
+   #else
    if (mkdir(path.c_str(), 0755) != 0)
    {
       if (errno != EEXIST)
@@ -153,6 +166,9 @@ void FileHunter_T :: newDir(const string& path)
          throw(exc);
       }
    }
+   #endif
+
+
    dirsToRemove.push_back(path);
 }
 
@@ -212,7 +228,11 @@ void FileHunter_T :: cleanup()
    vector<string>::reverse_iterator  dirIter = dirsToRemove.rbegin();
    for ( ; dirIter != dirsToRemove.rend(); ++dirIter)
    {
+      #ifdef WIN32
+      _rmdir(dirIter->c_str() );
+      #else
       rmdir(dirIter->c_str() );
+      #endif
    }
 }
 
