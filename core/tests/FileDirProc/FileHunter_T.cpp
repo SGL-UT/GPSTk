@@ -42,6 +42,15 @@
 #include <sys/types.h>
 #include <errno.h>
 
+// headers for directory searching interface
+#ifndef _WIN32
+#include <unistd.h>
+#else
+#include <direct.h>
+#include <io.h>
+#define PATH_MAX _MAX_PATH
+#endif
+
 using namespace std;
 using namespace gpstk;
 
@@ -145,6 +154,16 @@ void FileHunter_T :: init()
 //---------------------------------------------------------------------------
 void FileHunter_T :: newDir(const string& path)
 {
+   #ifdef WIN32
+   if (_mkdir(path.c_str()) != 0)
+   {
+      if (errno != EEXIST)
+      {
+         string  exc("failed to create test directory: " + path);
+         throw(exc);
+      }
+   }
+   #else
    if (mkdir(path.c_str(), 0755) != 0)
    {
       if (errno != EEXIST)
@@ -153,6 +172,9 @@ void FileHunter_T :: newDir(const string& path)
          throw(exc);
       }
    }
+   #endif
+
+
    dirsToRemove.push_back(path);
 }
 
@@ -206,13 +228,21 @@ void FileHunter_T :: cleanup()
    vector<string>::reverse_iterator  fileIter = filesToRemove.rbegin();
    for ( ; fileIter != filesToRemove.rend(); ++fileIter)
    {
+      #ifdef WIN32
+      _unlink(fileIter->c_str() );
+      #else
       unlink(fileIter->c_str() );
+      #endif
    }
       // remove directories
    vector<string>::reverse_iterator  dirIter = dirsToRemove.rbegin();
    for ( ; dirIter != dirsToRemove.rend(); ++dirIter)
    {
+      #ifdef WIN32
+      _rmdir(dirIter->c_str() );
+      #else
       rmdir(dirIter->c_str() );
+      #endif
    }
 }
 
