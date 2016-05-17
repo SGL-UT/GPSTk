@@ -640,6 +640,80 @@ namespace gpstk
       }
    } 
 
+      /**
+       *  Bit wise copy from another PackecNavBits.
+       *  None of the meta-data (transmit time, SatID, ObsID)
+       *  will be changed. 
+       *  If the current size of this PackedNavBits is less
+       *  than endBit, the array will be resized.
+       */
+   void PackedNavBits::copyBits(const PackedNavBits& from, 
+                                const short startBit, 
+                                const short endBit)
+                                throw(InvalidParameter)
+   {
+      if (bits_used != from.bits_used)
+      {
+         stringstream ss;
+         ss << "PackedNavBits::copyBits( ) may only be called on two";
+         ss << " objects with the same number of packed bits.";
+         InvalidParameter ip(ss.str());
+         GPSTK_THROW(ip); 
+      }
+
+      short finalBit = endBit;
+      if (finalBit==-1) finalBit = bits_used - 1;
+
+      for (short i=startBit; i<=finalBit; i++)
+      {
+         bits[i] = from.bits[i];
+      }
+   }
+
+
+   //--------------------------------------------------------------------------
+   // Not typically used in production.  See comments in header. 
+   void PackedNavBits::insertUnsignedLong(const unsigned long value,
+                           const int startBit,
+                           const int numBits,
+                           const int scale)
+                           throw(InvalidParameter)
+   {
+      if ((startBit+numBits)>bits_used)
+      {
+         stringstream ss;
+         ss << "insertUnsignedLong called with startBit+numBits > bits_used.";
+         InvalidParameter ip(ss.str());
+         GPSTK_THROW(ip);
+      }
+
+      uint64_t out = (uint64_t) value;
+      out /= scale;
+
+      uint64_t test = pow(static_cast<double>(2),numBits) - 1; 
+      if ( out > test )
+      {
+         InvalidParameter exc("Scaled value too large for specifed bit length");
+         GPSTK_THROW(exc);
+      }
+
+      size_t ndx = startBit;
+      uint64_t mask = 0x0000000000000001L; 
+
+      mask <<= (numBits-1);
+      for (int i=0; i<numBits; i++)
+      {
+         bits[ndx] = false;
+         if (out & mask)
+         {
+            bits[ndx] = true;
+         }
+         mask >>= 1;
+         ndx++;
+      }
+   }
+
+
    //--------------------------------------------------------------------------
    // Method allows one to "back up" and re-add bits w/o resizing
    // the bits array.

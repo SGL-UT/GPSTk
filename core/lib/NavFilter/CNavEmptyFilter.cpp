@@ -73,6 +73,15 @@ namespace gpstk
               (word[6]==0) &&
               (word[7]==0) ) ||
 
+            ( (word[0]==0x55555555) &&
+              (word[1]==0x55555555) &&
+              (word[2]==0x55555555) &&
+              (word[3]==0x55555555) &&
+              (word[4]==0x55555555) &&
+              (word[5]==0x55555555) &&
+              (word[6]==0x55555555) &&
+              (word[7]==0x00001555) ) ||
+
             ( (word[0]==0xAAAAAAAA) &&
               (word[1]==0xAAAAAAAA) &&
               (word[2]==0xAAAAAAAA) &&

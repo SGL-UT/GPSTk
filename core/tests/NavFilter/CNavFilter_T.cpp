@@ -51,57 +51,11 @@
 using namespace std;
 using namespace gpstk;
 
-/*
-// filter by bit pattern
-class BunkFilter1 : public NavFilter
-{
-public:
-   BunkFilter1() {}
-   virtual void validate(NavMsgList& msgBitsIn, NavMsgList& msgBitsOut)
-   {
-      NavMsgList::iterator nmli;
-      for (nmli = msgBitsIn.begin(); nmli != msgBitsIn.end(); nmli++)
-      {
-            // copy data with an arbitrary bit pattern
-         if ((*(fd->data) & 0xff) == 0x000000d1)
-            msgBitsOut.push_back(*nmli);
-      }
-   }
-   virtual void finalize(NavMsgList& msgBitsOut)
-   {}
-};
-// filter with cache
-class BunkFilter2 : public NavFilter
-{
-public:
-   BunkFilter2() {}
-   virtual void validate(NavMsgList& msgBitsIn, NavMsgList& msgBitsOut)
-   {
-      NavMsgList::iterator nmli;
-      std::copy(msgBitsIn.begin(), msgBitsIn.end(),
-                std::back_insert_iterator<NavMsgList>(cache));
-      while (cache.size() > 4)
-      {
-         msgBitsOut.push_back(cache.front());
-         cache.pop_front();
-      }
-   }
-   virtual void finalize(NavMsgList& msgBitsOut)
-   {
-      std::copy(cache.begin(), cache.end(),
-                std::back_insert_iterator<NavMsgList>(msgBitsOut));
-      cache.clear();
-   }
-   NavMsgList cache;
-};
-*/
 
 class CNavFilter_T
 {
 public:
    CNavFilter_T();
-
-   void init();
 
    unsigned loadData();
 
@@ -118,30 +72,23 @@ public:
       /// Test the combination of parity, empty and TOW filters
    unsigned testCNavCombined();
 
+      // This is a list of the PackedNavBit messages that are created from the
+      // static strings contained in the loadData( ) method.
    list<PackedNavBits*> messageList;
-   list<CNavFilterData> cNavList;  
 
+      // This is a parallel list of CNavFilterData objects created from 
+      // the PackedNavBit objects.   These are all believed to be valid. 
+   list<CNavFilterData> cNavList;  
 };
 
+//-------------------------------------------------------------------
 CNavFilter_T ::
 CNavFilter_T()
 {
-   init();
+   // In the case of this test.  This method doesn't have to do anything.
 }
 
-void CNavFilter_T ::
-init()
-{
-   TUDEF("CNavFilter", "initialize");
-   string fs = getFileSep();
-   string dp(gpstk::getPathData() + fs);
-   string tf(gpstk::getPathTestTemp() + fs);
-
-//   inputFileLNAV   = dp + "test_input_CNavFilter.txt";
-//   outputFile = tf + "test_output_NavFilter.txt";
-}
-
-
+//-------------------------------------------------------------------
 unsigned CNavFilter_T ::
 loadData()
 {
@@ -180,7 +127,14 @@ loadData()
    ObsID oidCNAV(ObsID::otNavMsg, ObsID::cbL2, ObsID::tcC2LM); 
    for (int i1=0; i1<MSG_COUNT_CNAV; i1++)
    {
-      vector<string> words = StringUtils::split(sv63_CNAV[i1],',');
+      vector<string> words;
+      for (int i2=0; i2<2; i2++)
+      {
+      words.clear();
+      if (i2==0) 
+         words = StringUtils::split(sv63_CNAV[i1],',');
+       else
+         words = StringUtils::split(sv50_CNAV[i1],',');
 
       int gpsWeek = StringUtils::asInt(words[3]);
       double sow = StringUtils::asInt(words[4]);
@@ -219,12 +173,13 @@ loadData()
 
       CNavFilterData cnavFilt(pnb);
       cNavList.push_back(cnavFilt);     
-   }
+      }   // end i2
+   }      // end i1
 
    return 0;
 }
 
-
+//-------------------------------------------------------------------
 unsigned CNavFilter_T ::
 noFilterTest()
 {
@@ -244,11 +199,10 @@ noFilterTest()
    }
    int expected = cNavList.size();
    TUASSERTE(unsigned long, expected, count);
-
    TURETURN();
 }
 
-
+//-------------------------------------------------------------------
 // this should be executed before any other filter tests are used as
 // it will upright all the data in memory.
 unsigned CNavFilter_T ::
@@ -274,10 +228,30 @@ testCNavCook()
    int expected = cNavList.size();
    TUASSERTE(unsigned long, expected, count);
 
+      // The preceding simply proves that valid data passes
+      // through the filter.   It doesn't verify that inverted
+      // data is set upright.   To address that, take a valid
+      // message, invert it, cook it, then see that the result
+      // is correct.
+   count = 0; 
+   for (it=cNavList.begin(); it!=cNavList.end(); it++)
+   {
+      CNavFilterData& fd = *it;
+      PackedNavBits* pnbInvert = fd.pnb->clone();
+      pnbInvert->invert();
+      CNavFilterData fdInvert(pnbInvert);
+      gpstk::NavFilter::NavMsgList l = mgr.validate(&fdInvert);
+
+      if (fd.pnb->match(*(fdInvert.pnb)))
+      {
+         count++;
+      }
+   }
+   TUASSERTE(unsigned long, expected, count);
    TURETURN();
 }
 
-
+//-------------------------------------------------------------------
 unsigned CNavFilter_T ::
 testCNavParity()
 {
@@ -290,6 +264,7 @@ testCNavParity()
 
    mgr.addFilter(&filtParity);
 
+      // Test with valid data
    list<CNavFilterData>::iterator it; 
    for (it=cNavList.begin(); it!=cNavList.end(); it++)
    {
@@ -304,10 +279,25 @@ testCNavParity()
    TUASSERTE(unsigned long, expected, acceptCount);
    TUASSERTE(unsigned long, 0, rejectCount);
 
+      // Clone a valid message, modify the CRC, and 
+      // verify that the filter rejects the data.
+   acceptCount = 0;
+   rejectCount = 0; 
+   list<PackedNavBits*>::iterator it2 = messageList.begin();
+   PackedNavBits* p = *it2; 
+   PackedNavBits* pnb = p->clone();
+   unsigned long zeroes = 0x00000000;
+   pnb->insertUnsignedLong(zeroes,276,24); 
+   CNavFilterData fd(pnb);
+   gpstk::NavFilter::NavMsgList l = mgr.validate(&fd);
+   acceptCount = l.size();
+   rejectCount = filtParity.rejected.size();
+   TUASSERTE(unsigned long, 0, acceptCount);
+   TUASSERTE(unsigned long, 1, rejectCount);
    TURETURN();
 }
 
-
+//-------------------------------------------------------------------
 unsigned CNavFilter_T ::
 testCNavEmpty()
 {
@@ -397,12 +387,34 @@ testCNavEmpty()
    acceptCount += l.size();
    rejectCount += filtEmpty.rejected.size();
 
+      // Now build a 0/1 message (since the IS isn't totally 
+      // specific on whether its 1/0 or 0/1)
+   unsigned long alt01 = 0x55555555; 
+   int startBit = 39 - 1;              // Bit 39 (1 based) == Bit 38 (0 based) 
+   int nBitsPerWord = 32;
+   int endBit = 277;
+   int lastPossibleStartBit = endBit - nBitsPerWord; 
+   PackedNavBits* pnb01Msg = p->clone();      
+   while (startBit < lastPossibleStartBit)
+   {
+      pnb01Msg->insertUnsignedLong(alt01,startBit,32); 
+      startBit += 32; 
+   }
+   int lastNBits = endBit - startBit;
+   alt01 >>= (32 - lastNBits); 
+   pnb01Msg->insertUnsignedLong(alt01,startBit,lastNBits); 
+
+   CNavFilterData fd01Msg(pnb01Msg);
+   l = mgr.validate(&fd01Msg);
+   acceptCount += l.size();
+   rejectCount += filtEmpty.rejected.size(); 
+
    TUASSERTE(unsigned long, 0, acceptCount);
-   TUASSERTE(unsigned long, 2, rejectCount);
+   TUASSERTE(unsigned long, 3, rejectCount);
    TURETURN();
 }
 
-
+//-------------------------------------------------------------------
 unsigned CNavFilter_T ::
 testCNavTOW()
 {
@@ -419,33 +431,67 @@ testCNavTOW()
    for (it=cNavList.begin(); it!=cNavList.end(); it++)
    {
       CNavFilterData& fd = *it;
-         /*
-      uint32_t sfid = ((dataLNAV[i].sf[1] >> 8) & 0x07);
-      if ((dataLNAV[i].sf[0] & 0x3fc00000) != 0x22c00000)
-         cout << (i+1) << " invalid preamble " << hex << (dataLNAV[i].sf[0] & 0x3fc00000) << dec << endl;
-      else if ((dataLNAV[i].sf[1] & 0x03) != 0)
-         cout << (i+1) << " invalid parity bits " << hex << (dataLNAV[i].sf[1] & 0x03) << dec << endl;
-      else if (((dataLNAV[i].sf[1] >> 13) & 0x1ffff) >= 100800)
-         cout << (i+1) << " invalid TOW count " << hex << ((dataLNAV[i].sf[1] >> 13) & 0x1ffff) << dec << endl;
-      else if ((sfid < 1) || (sfid > 5))
-         cout << (i+1) << " invalid SF ID " << sfid << endl;
-         */
       gpstk::NavFilter::NavMsgList l = mgr.validate(&fd);
       rejectCount += filtTOW.rejected.size();
       acceptCount += l.size();
-/*
-      if (!filtTLMHOW.rejected.empty())
-         cerr << "filter " << i << " tlm/how" << endl;
-*/
    }
    int expected = cNavList.size();
    TUASSERTE(unsigned long, expected, acceptCount);
    TUASSERTE(unsigned long, 0,  rejectCount);
 
+   // --- NOW GENERATE SOME INVALID MESSAGES AND VERIFY THAT 
+   // --- THEY ARE REJECTED
+      // Modify a message to have an invalid TOW count.
+   acceptCount = 0;
+   rejectCount = 0; 
+   CNavFilterData fd;
+   list<PackedNavBits*>::iterator it2 = messageList.begin();
+   PackedNavBits* p = *it2; 
+
+      // Message with invalid too large) TOW
+   PackedNavBits* pnbBadTOWMsg = p->clone();
+   unsigned long badTOW = 604800; 
+   pnbBadTOWMsg->insertUnsignedLong(badTOW, 20, 17, 6);
+
+      // Message with invalid preamble
+   PackedNavBits* pnbBadPreamble = p->clone();
+   unsigned long badPre = 0;
+   pnbBadPreamble->insertUnsignedLong(badPre, 0, 8);
+
+   acceptCount = 0; 
+   rejectCount = 0; 
+   CNavFilterData fdBadTOW(pnbBadTOWMsg);
+   gpstk::NavFilter::NavMsgList l = mgr.validate(&fdBadTOW);
+   rejectCount += filtTOW.rejected.size();
+   acceptCount += l.size();
+   
+   CNavFilterData fdBadPreamble(pnbBadPreamble);
+   l = mgr.validate(&fdBadPreamble);
+   rejectCount += filtTOW.rejected.size();
+   acceptCount += l.size();
+
+      // Bad Message Type tests
+      // Test the invalid MT immediately above/below the valid ranges.
+   unsigned long badMT[] = { 9, 16, 29, 38}; 
+   int badMTCount = 4; 
+   PackedNavBits* pnbBadMT = p->clone();
+   for (int i=0; i<badMTCount; i++)
+   {
+      pnbBadMT->insertUnsignedLong(badMT[i], 14, 6);
+      CNavFilterData fdBadMT(pnbBadMT);
+      l = mgr.validate(&fdBadMT);
+      rejectCount += filtTOW.rejected.size();
+      acceptCount += l.size();
+   }
+
+   unsigned long expReject = 2 + badMTCount; 
+   TUASSERTE(unsigned long, 0, acceptCount);
+   TUASSERTE(unsigned long, expReject,  rejectCount);
+
    TURETURN();
 }
 
-
+//-------------------------------------------------------------------
 unsigned CNavFilter_T ::
 testCNavCombined()
 {
@@ -465,30 +511,16 @@ testCNavCombined()
    for (it=cNavList.begin(); it!=cNavList.end(); it++)
    {
       CNavFilterData& fd = *it;
-/*
-      cerr << "checking " << i << endl;
-      if (i == 2196)
-      {
-         for (unsigned sfword = 0; sfword < 10; sfword++)
-            cerr << " " << hex << setw(8) << dataLNAV[i].sf[sfword] << dec;
-         cerr << endl;
-      }
-*/
       gpstk::NavFilter::NavMsgList l = mgr.validate(&fd);
          // if l is empty, the subframe was rejected.. 
       rejectCount += l.empty();
-/*
-      if (l.empty())
-         cerr << "filter " << i << " combined" << endl;
-*/
    }
    int expected = cNavList.size();
    TUASSERTE(unsigned long, 0, rejectCount);
-
    TURETURN();
 }
 
-
+//-------------------------------------------------------------------
 int main()
 {
    unsigned errorTotal = 0;
