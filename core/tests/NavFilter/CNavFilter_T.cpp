@@ -37,9 +37,10 @@
 #include "TestUtil.hpp"
 #include "NavFilterMgr.hpp"
 #include "CNavFilterData.hpp"
-#include "CNavParityFilter.hpp"
 #include "CNavCookFilter.hpp"
+#include "CNavCrossSourceFilter.hpp"
 #include "CNavEmptyFilter.hpp"
+#include "CNavParityFilter.hpp"
 #include "CNavTOWFilter.hpp"
 #include "CommonTime.hpp"
 #include "GPSWeekSecond.hpp"
@@ -71,6 +72,8 @@ public:
    unsigned testCNavTOW();
       /// Test the combination of parity, empty and TOW filters
    unsigned testCNavCombined();
+      /// Test the combination of cook,parity, empty, TOW, and cross-source filters
+   unsigned testCNavCrossSource();
 
       // This is a list of the PackedNavBit messages that are created from the
       // static strings contained in the loadData( ) method.
@@ -495,7 +498,7 @@ testCNavTOW()
 unsigned CNavFilter_T ::
 testCNavCombined()
 {
-   TUDEF("CNavFilter", "validate");
+   TUDEF("CNavFilter-Combined", "validate");
 
    NavFilterMgr mgr;
    unsigned long rejectCount = 0;
@@ -521,6 +524,138 @@ testCNavCombined()
 }
 
 //-------------------------------------------------------------------
+unsigned CNavFilter_T ::
+testCNavCrossSource()
+{
+   TUDEF("CNavCrossSource", "validate");
+
+   NavFilterMgr mgr;
+   unsigned long acceptCount = 0; 
+   unsigned long rejectCount = 0;
+   CNavCookFilter filtCook;
+   CNavParityFilter filtParity;
+   CNavEmptyFilter filtEmpty;
+   CNavTOWFilter filtTOW;
+   CNavCrossSourceFilter filtXSource;
+
+  //mgr.addFilter(&filtCook);
+   mgr.addFilter(&filtParity);
+   mgr.addFilter(&filtEmpty);
+   mgr.addFilter(&filtTOW);
+   mgr.addFilter(&filtXSource);
+
+      // This is a bit different than the earlier tests.   The list will
+      // be empty until the epoch changes, then (if successful) it
+      // will contain a list of the accepted messages. 
+
+      // For the first test, simply submit each message TWICE, thus
+      // simulating the same message being received from different
+      // sources. 
+   unsigned short cnt = 0; 
+   gpstk::NavFilter::NavMsgList l;
+   NavFilterMgr::FilterSet::const_iterator fsi;
+   NavFilter::NavMsgList::const_iterator nmli;
+   list<CNavFilterData>::iterator it; 
+   for (it=cNavList.begin(); it!=cNavList.end(); it++)
+   {
+      CNavFilterData& fd = *it;
+      for (int n=0; n<2; n++)
+      {
+         l = mgr.validate(&fd);
+
+            // At change of epoch, l.size() will be noo-zero
+         acceptCount += l.size();
+
+            // Count any rejects
+         for (fsi=mgr.rejected.begin(); fsi!=mgr.rejected.end(); fsi++)
+         {
+            for (nmli=(*fsi)->rejected.begin();
+                 nmli!=(*fsi)->rejected.end();nmli++)  
+            {  
+               CNavFilterData* fd = dynamic_cast<CNavFilterData*>(*nmli);
+               rejectCount++;
+               //delete fd; 
+            }
+         }
+         cnt++; 
+      }
+   }
+   l = mgr.finalize();
+   acceptCount += l.size();
+   for (fsi=mgr.rejected.begin(); fsi!=mgr.rejected.end(); fsi++)
+   {
+      for (nmli=(*fsi)->rejected.begin();
+           nmli!=(*fsi)->rejected.end();nmli++)  
+      {       
+         CNavFilterData* fd = dynamic_cast<CNavFilterData*>(*nmli);
+         rejectCount++;
+         //delete fd; 
+      }
+   }
+
+      // Mulitply because we submitted each message twice. 
+   int expected = cNavList.size() * 2;
+   TUASSERTE(unsigned long, expected, acceptCount);
+   TUASSERTE(unsigned long, 0, rejectCount);
+
+      // For the second test, submit each message TWICE, 
+      // then create a clone, zero-out the CRC, and submit 
+      // the message a third time.   The third message should
+      // be rejected, but there should still be two accepted messages.
+   unsigned long zeroes = 0x00000000;
+   acceptCount = 0;
+   rejectCount = 0; 
+   for (it=cNavList.begin(); it!=cNavList.end(); it++)
+   {
+      CNavFilterData& fd = *it;
+      for (int n=0; n<3; n++)
+      {
+            // Zero out the CRC
+         if (n==2)
+         {
+            fd.pnb->insertUnsignedLong(zeroes, 276, 24); 
+         }
+
+         l = mgr.validate(&fd);
+         
+            // At change of epoch, l.size() will be noo-zero
+         acceptCount += l.size();
+
+            // Count any rejects
+         for (fsi=mgr.rejected.begin(); fsi!=mgr.rejected.end(); fsi++)
+         {
+            for (nmli=(*fsi)->rejected.begin();
+                 nmli!=(*fsi)->rejected.end();nmli++)  
+            {  
+               CNavFilterData* fd = dynamic_cast<CNavFilterData*>(*nmli);
+               rejectCount++;
+               //delete fd; 
+            }
+         }
+         cnt++; 
+      }
+   }
+   l = mgr.finalize();      
+   acceptCount += l.size();
+   for (fsi=mgr.rejected.begin(); fsi!=mgr.rejected.end(); fsi++)
+   {
+      for (nmli=(*fsi)->rejected.begin();
+           nmli!=(*fsi)->rejected.end();nmli++)  
+      {       
+         CNavFilterData* fd = dynamic_cast<CNavFilterData*>(*nmli);
+         rejectCount++;
+         //delete fd; 
+      }
+   }
+
+      // Mulitply because we submitted each message twice. 
+   unsigned long expReject = cNavList.size();
+   TUASSERTE(unsigned long, expected, acceptCount);
+   TUASSERTE(unsigned long, expReject, rejectCount);
+   TURETURN();
+}
+
+//-------------------------------------------------------------------
 int main()
 {
    unsigned errorTotal = 0;
@@ -534,6 +669,7 @@ int main()
    errorTotal += testClass.testCNavEmpty();
    errorTotal += testClass.testCNavTOW();
    errorTotal += testClass.testCNavCombined();
+   errorTotal += testClass.testCNavCrossSource();
 
    cout << "Total Failures for " << __FILE__ << ": " << errorTotal << endl;
 
