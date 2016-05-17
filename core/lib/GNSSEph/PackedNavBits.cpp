@@ -419,6 +419,11 @@ namespace gpstk
       return (drad*PI);
    }      
 
+   bool PackedNavBits::asBool( const unsigned bitNum) const
+   {
+      return bits[bitNum]; 
+   }
+
 
          /***    PACKING FUNCTIONS *********************************/
    void PackedNavBits::addUnsignedLong( const unsigned long value, 
@@ -617,6 +622,31 @@ namespace gpstk
       return false;
    }
 
+   void PackedNavBits::invert( )
+   {
+         // Each bit is either 1 or 0.
+         // Starting with 1 and subtracting the 
+         // current value will yield the inverse
+         //   
+         //  Input    Equation     Result
+         //    1       1 - 1          0
+         //    0       1 - 0          1
+         //
+         // This accomplishes the purpose without incurring
+         // the cost of a conditional statement.
+      for (int i=0;i<bits.size();i++)
+      {
+         bits[i] = 1 - bits[i];
+      }
+   } 
+
+   //--------------------------------------------------------------------------
+   // Method allows one to "back up" and re-add bits w/o resizing
+   // the bits array.
+   void PackedNavBits::reset_num_bits(const int new_bits_used)
+   {
+      bits_used = new_bits_used;       
+   }
 
    //--------------------------------------------------------------------------
    void PackedNavBits::trimsize()

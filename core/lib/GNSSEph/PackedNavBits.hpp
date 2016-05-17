@@ -191,6 +191,8 @@ namespace gpstk
                                   const unsigned len,
                                   const int power2) const;      
 
+      bool asBool( const unsigned bitNum) const;
+
          /***    PACKING FUNCTIONS *********************************/
          /* Pack an unsigned long integer */
       void addUnsignedLong( const unsigned long value, 
@@ -330,6 +332,16 @@ namespace gpstk
           *   "winner" determined. 
           */
       bool operator<(const PackedNavBits& right) const; 
+
+         /**
+          *  Bitwise invert contents of this object.
+          */
+      void invert( ); 
+
+         /**
+          *  Reset number of bits
+          */
+      void reset_num_bits(const int new_bits_used=0);
 
          /* Resize the vector holding the packed data. */
       void trimsize();

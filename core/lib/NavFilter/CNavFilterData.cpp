@@ -36,6 +36,7 @@
 /*
 * CNavFilterData.cpp
 */
+#include <iostream>
 #include "CNavFilterData.hpp"
 
 using namespace gpstk;
@@ -52,10 +53,12 @@ CNavFilterData::CNavFilterData(gpstk::PackedNavBits* pnbArg):
 
 void CNavFilterData::loadData(PackedNavBits* pnbArg)
 {
-   timeStamp = pnb->getTransmitTime();
-   rxID = pnb->getRxID();
-   prn = pnb->getsatSys().id;
-   carrier = pnb->getobsID().band;
-   code    = pnb->getobsID().code;
+   timeStamp = pnbArg->getTransmitTime();
+   rxID = pnbArg->getRxID();
+   stationID = "unk";
+   prn = pnbArg->getsatSys().id;
+   carrier = pnbArg->getobsID().band;
+   code    = pnbArg->getobsID().code;
+
    pnb = pnbArg;
 }
