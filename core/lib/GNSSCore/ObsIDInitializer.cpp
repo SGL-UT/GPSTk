@@ -57,6 +57,8 @@ namespace gpstk {
       ObsID::otDesc[ObsID::otLLI]       = "lli";           //Rinex  
       ObsID::otDesc[ObsID::otTrackLen]  = "tlen";          //Rinex  
       ObsID::otDesc[ObsID::otNavMsg]    = "navmsg";        //Rinex
+      ObsID::otDesc[ObsID::otRngStdDev] = "rngSigma";
+      ObsID::otDesc[ObsID::otPhsStdDev] = "phsSigma";
       ObsID::otDesc[ObsID::otUndefined] = "undefined";     //Rinex -
 
       ObsID::cbDesc[ObsID::cbUnknown]   = "UnknownBand";   //Rinex (sp)

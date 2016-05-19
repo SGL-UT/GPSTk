@@ -261,9 +261,14 @@ testStream(const std::string& outfn, const std::string& reffn,
       // getData tests make sure that the data read back in from the
       // file matches what was written out in the first place.
    
+   
    StreamType testStrmIn(outfn.c_str(), ios::in);
 
+   #ifdef WIN32
+   testFramework.assert(bool(testStrmIn), "Couldn't open " + outfn + " for input", __LINE__);
+   #else
    testFramework.assert(testStrmIn, "Couldn't open " + outfn + " for input", __LINE__);
+   #endif
 
       // check file size
    testStrmIn.seekg(0, testStrmIn.end);

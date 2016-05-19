@@ -685,25 +685,49 @@ xmitReadTest()
    RinexNavData positive, negative;
    RinexNavHeader header;
    CommonTime expXmit = GPSWeekSecond(1886, 604200, gpstk::TimeSystem::GPS);
+   #ifdef WIN32
+   TUASSERT(bool(ins));
+   #else
    TUASSERT(ins);
+   #endif
    ins >> header;
+   #ifdef WIN32
+   TUASSERT(bool(ins));
+   #else
    TUASSERT(ins);
+   #endif
       // negative transmit time requires adjustment of the seconds of
       // week to get the transmit time right
    ins >> negative;
       // positive transmit time requires adjustment of the week to get
       // the transmit time right
+   #ifdef WIN32
+   TUASSERT(bool(ins));
+   #else
    TUASSERT(ins);
+   #endif
    ins >> positive;
+   #ifdef WIN32
+   TUASSERT(bool(ins));
+   #else
    TUASSERT(ins);
+   #endif
    ins.close();
    TUASSERTE(CommonTime, expXmit, negative.getXmitTime());
    TUASSERTE(CommonTime, expXmit, positive.getXmitTime());
       // write the data back out and make sure nothing has changed
    RinexNavStream outs(outputXmitTime.c_str(), std::ios::out);
+   #ifdef WIN32
+   TUASSERT(bool(outs));
+   #else
    TUASSERT(outs);
+   #endif
    outs << header << negative << positive;
+   #ifdef WIN32
+   TUASSERT(bool(outs));
+   #else
    TUASSERT(outs);
+   #endif
    outs.close();
    TUCMPFILE(inputXmitTime, outputXmitTime, 2);
    TURETURN();

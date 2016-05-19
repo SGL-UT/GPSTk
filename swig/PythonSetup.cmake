@@ -32,14 +32,14 @@ include( CustomPythonSetup.cmake
          RESULT_VARIABLE PYTHON_CUSTOM_CONFIG )
 
 #------------------------------------------------------------
-# If a user-speccified python configuration is not found, let CMake try to find the system python
+# If a user-specified python configuration is not found, let CMake try to find the system python
 #------------------------------------------------------------
 if( ${PYTHON_CUSTOM_CONFIG} MATCHES "NOTFOUND" )
   find_package( PythonInterp )
   
   # It looks like the find for PythonLibs gets the 'first' Python.h it can find,
   # which does not necessiarly match what the executable found by PythonInterp
-  # will be copacetic with. So, we set CMAKE_INCLUDE_PATH to what is retured
+  # will be copacetic with. So, we set CMAKE_INCLUDE_PATH to what is returned
   # by the found python-config
   execute_process( COMMAND "${PYTHON_EXECUTABLE}-config" "--includes" OUTPUT_VARIABLE PYTHON_INCLUDES)
   string(REGEX MATCH "^-I(.*) " _python_include ${PYTHON_INCLUDES})

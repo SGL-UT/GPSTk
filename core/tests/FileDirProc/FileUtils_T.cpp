@@ -37,10 +37,20 @@
 #include "TestUtil.hpp"
 #include "FileUtils.hpp"
 #include <iostream>
-#include <unistd.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+
+// headers for directory searching interface
+#ifndef _WIN32
 #include <unistd.h>
+#else
+#include <direct.h>
+#include <io.h>
+// Copied from linux libc sys/stat.h to keep code cross-platform:
+#ifndef S_ISDIR
+#define S_ISDIR(mode)  (((mode) & S_IFMT) == S_IFDIR)
+#endif
+#endif
 
 using namespace std;
 using namespace gpstk;
@@ -102,15 +112,27 @@ void FileUtils_T :: cleanup()
    vector<string>::reverse_iterator  fileIter = filesToRemove.rbegin();
    for ( ; fileIter != filesToRemove.rend(); ++fileIter)
    {
-      chmod(fileIter->c_str(), 0644);
-      unlink(fileIter->c_str() );
+         #ifdef WIN32
+         _chmod(fileIter->c_str(), _S_IWRITE );
+         _unlink(fileIter->c_str() );
+
+         #else
+         chmod(fileIter->c_str(), 0644);
+         unlink(fileIter->c_str() );
+         #endif
+
    }
       // remove directories
    vector<string>::reverse_iterator  dirIter = dirsToRemove.rbegin();
    for ( ; dirIter != dirsToRemove.rend(); ++dirIter)
    {
-      chmod(dirIter->c_str(), 0755);
-      rmdir(dirIter->c_str() );
+         #ifdef WIN32
+         _chmod(dirIter->c_str(), _S_IWRITE );
+         _rmdir(dirIter->c_str() );
+         #else
+         chmod(dirIter->c_str(), 0755);
+         rmdir(dirIter->c_str() );
+         #endif
    }
 }
 
@@ -260,6 +282,19 @@ int FileUtils_T :: testFileAccessCheck()
       {
          ofs.flush();
          ofs.close();
+         #ifdef WIN32
+         if (0 != _chmod(filename.c_str(), _S_IREAD ))
+         {
+            tester.assert ( false, "test setup error (chmod)", __LINE__ );
+         }
+         else
+         {
+            filesToRemove.push_back(filename);
+            tester.assert( FileUtils::fileAccessCheck(filename),            "read access failed",         __LINE__ );
+            tester.assert( FileUtils::fileAccessCheck(filename, ios::in),   "mode test failed",           __LINE__ );
+            tester.assert( !FileUtils::fileAccessCheck(filename, ios::out), "expected mode test failure", __LINE__ );
+         }
+         #else
          if (0 != chmod(filename.c_str(), 0444) )
          {
             tester.assert ( false, "test setup error (chmod)", __LINE__ );
@@ -271,6 +306,8 @@ int FileUtils_T :: testFileAccessCheck()
             tester.assert( FileUtils::fileAccessCheck(filename, ios::in),   "mode test failed",           __LINE__ );
             tester.assert( !FileUtils::fileAccessCheck(filename, ios::out), "expected mode test failure", __LINE__ );
          }
+         #endif
+
       }
    }
    catch (...)
@@ -290,6 +327,20 @@ int FileUtils_T :: testFileAccessCheck()
       {
          ofs.flush();
          ofs.close();
+         #ifdef WIN32
+         if (0 != _chmod(filename.c_str(), _S_IWRITE ))
+
+         {
+            tester.assert ( false, "test setup error (chmod)", __LINE__ );
+         }
+         else            
+         {
+            filesToRemove.push_back(filename);
+            tester.assert( FileUtils::fileAccessCheck(filename),           "write access failed", __LINE__ );
+            tester.assert( FileUtils::fileAccessCheck(filename, ios::in),  "mode test failed",    __LINE__ );
+            tester.assert( FileUtils::fileAccessCheck(filename, ios::out), "mode test failed",    __LINE__ );
+         }
+         #else
          if (0 != chmod(filename.c_str(), 0666) )
          {
             tester.assert ( false, "test setup error (chmod)", __LINE__ );
@@ -301,6 +352,7 @@ int FileUtils_T :: testFileAccessCheck()
             tester.assert( FileUtils::fileAccessCheck(filename, ios::in),  "mode test failed",    __LINE__ );
             tester.assert( FileUtils::fileAccessCheck(filename, ios::out), "mode test failed",    __LINE__ );
          }
+         #endif
       }
    }
    catch (...)
