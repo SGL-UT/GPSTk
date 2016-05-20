@@ -39,6 +39,10 @@ namespace gpstk
           *   messages are stored here on return. */
       virtual void finalize(NavMsgList& msgBitsOut);
 
+         /** Debug method to unspool contents in a manner appropriate
+          *  for inspection.   */
+      virtual void dump(std::ostream& s) const;
+
    protected:
          /// Map from subframe data to source list
       typedef std::map<CNavFilterData*, NavMsgList, CNavMsgSort> MessageMap;

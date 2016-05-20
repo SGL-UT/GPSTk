@@ -594,7 +594,8 @@ namespace gpstk
    // Used in NavFilter implementations.   This method ASSUMES the meta-date
    // matches have already been done.  It is simply comparing contents of the
    // bit array bit-for-bit and returning "less than" if it finds an occasion
-   // in which left has a '0' whereas right has a '1'.
+   // in which left has a FALSE whereas right has a TRUE starting at the 
+   // lowest index and scanning to the maximum index.
    //
    // NOTE: This is one of the cases in which the PackedNavBits implementation 
    // is probably not the fastest.  Since we are scanning a bit array rather 
@@ -614,7 +615,8 @@ namespace gpstk
 
       for (int i=0;i<bits.size();i++)
       {
-         if (bits[i]<right.bits[i])
+         if (bits[i]==false && right.bits[i]==true)
+         //if (bits[i]<right.bits[i])
          {
             return true;
          }

@@ -36,6 +36,7 @@
 #ifndef CNAVFILTERDATA_HPP
 #define CNAVFILTERDATA_HPP
 
+#include <iostream>    //D
 #include <stdint.h>
 #include "NavFilterKey.hpp"
 #include "PackedNavBits.hpp"
@@ -52,6 +53,8 @@ namespace gpstk
 
          // The actual message data is stored in a PackedNavBits object
       PackedNavBits* pnb;
+
+      virtual void dump(std::ostream& s) const;      
    };
 
       // Sort CNavFilterData objects by navigation message bits
@@ -66,9 +69,11 @@ namespace gpstk
    operator() (const CNavFilterData* l,
                const CNavFilterData* r) const
    {
-      return l->pnb < r->pnb;
+      return *(l->pnb) < *(r->pnb);
    }
 
+      // Write to output stream
+   std::ostream& operator<<(std::ostream& s, const CNavFilterData& nfd); 
 }
 
 #endif

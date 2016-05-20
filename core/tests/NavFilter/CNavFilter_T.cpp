@@ -532,6 +532,7 @@ testCNavCrossSource()
    NavFilterMgr mgr;
    unsigned long acceptCount = 0; 
    unsigned long rejectCount = 0;
+   unsigned long expReject = 0;
    CNavCookFilter filtCook;
    CNavParityFilter filtParity;
    CNavEmptyFilter filtEmpty;
@@ -556,6 +557,15 @@ testCNavCrossSource()
    NavFilterMgr::FilterSet::const_iterator fsi;
    NavFilter::NavMsgList::const_iterator nmli;
    list<CNavFilterData>::iterator it; 
+
+      // DEBUG: Dump of list of the CNavList pointers for comparison
+   //cout << " Here are the CNavList pointer values: " << endl;
+   //for (it=cNavList.begin(); it!=cNavList.end(); it++)
+   //{
+   //   CNavFilterData& fd = *it;
+   //   cout << " ptr: " << &fd << endl;
+   //}
+
    for (it=cNavList.begin(); it!=cNavList.end(); it++)
    {
       CNavFilterData& fd = *it;
@@ -574,6 +584,9 @@ testCNavCrossSource()
             {  
                CNavFilterData* fd = dynamic_cast<CNavFilterData*>(*nmli);
                rejectCount++;
+               // Should NOT be any rejected data in this test.   Even if there IS,
+               // we do not want to delete the data as the deletion will "orphan"
+               // a pointer in CNavList that is going to be reused.
                //delete fd; 
             }
          }
@@ -598,11 +611,18 @@ testCNavCrossSource()
    TUASSERTE(unsigned long, expected, acceptCount);
    TUASSERTE(unsigned long, 0, rejectCount);
 
-      // For the second test, submit each message TWICE, 
-      // then create a clone, zero-out the CRC, and submit 
-      // the message a third time.   The third message should
-      // be rejected, but there should still be two accepted messages.
-   unsigned long zeroes = 0x00000000;
+      // DEBUG TEST - To Understand filter operation
+   //cout << "Dump of filtXSource after all is finalized" << endl;
+   //filtXSource.dump(std::cout); 
+
+      // For the third test, submit each message TWICE, 
+      // then create a clone with 
+      //   1. a different station ID,  
+      //   2. a different receiver ID,
+      //   3. a different, but still relevant, tracking code.
+      //      (e.g L2CM and L2CML)
+      // All three messages should be accepted. 
+   cnt = 0; 
    acceptCount = 0;
    rejectCount = 0; 
    for (it=cNavList.begin(); it!=cNavList.end(); it++)
@@ -610,10 +630,18 @@ testCNavCrossSource()
       CNavFilterData& fd = *it;
       for (int n=0; n<3; n++)
       {
-            // Zero out the CRC
+            // Zero out the CRC.   NOTE:  In doing so, 
+            // we are modifying the input data.   If we want to add any 
+            // tests below that re-use these data, we'll need to modify thiat
+            // to create a clone (and delete it when rejected).
          if (n==2)
          {
-            fd.pnb->insertUnsignedLong(zeroes, 276, 24); 
+            fd.stationID = "unk2";
+            fd.rxID = "unk2";
+            fd.code = ObsID::tcC2M;
+            fd.pnb->setRxID("unk2");
+            ObsID oid2(ObsID::otNavMsg, ObsID::cbL2, ObsID::tcC2M); 
+            fd.pnb->setObsID(oid2);
          }
 
          l = mgr.validate(&fd);
@@ -629,6 +657,8 @@ testCNavCrossSource()
             {  
                CNavFilterData* fd = dynamic_cast<CNavFilterData*>(*nmli);
                rejectCount++;
+               // If we later create "flawed clones" of the original data,
+               // we would delete them here. 
                //delete fd; 
             }
          }
@@ -648,10 +678,81 @@ testCNavCrossSource()
       }
    }
 
-      // Mulitply because we submitted each message twice. 
-   unsigned long expReject = cNavList.size();
+      // DEBUG TEST - To Understand filter operation
+   //cout << "Dump of filtXSource after all is finalized" << endl;
+   //filtXSource.dump(std::cout); 
+
+      // Mulitply because we submitted each message three times. 
+   expected = cNavList.size() * 3; 
+   expReject = 0;
    TUASSERTE(unsigned long, expected, acceptCount);
    TUASSERTE(unsigned long, expReject, rejectCount);
+
+      // For the third test, submit each message TWICE, 
+      // then create a clone, zero-out the CRC, and submit 
+      // the message a third time.   The third message should
+      // be rejected, but there should still be two accepted messages.
+      //
+      // NOTE: 
+   unsigned long zeroes = 0x00000000;
+   cnt = 0; 
+   acceptCount = 0;
+   rejectCount = 0; 
+   for (it=cNavList.begin(); it!=cNavList.end(); it++)
+   {
+      CNavFilterData& fd = *it;
+      for (int n=0; n<3; n++)
+      {
+            // Zero out the CRC.   NOTE:  In doing so, 
+            // we are modifying the input data.   If we want to add any 
+            // tests below that re-use these data, we'll need to modify thiat
+            // to create a clone (and delete it when rejected).
+         if (n==2)
+         {
+            fd.pnb->insertUnsignedLong(zeroes, 276, 24); 
+         }
+         
+         l = mgr.validate(&fd);
+         
+            // At change of epoch, l.size() will be noo-zero
+         acceptCount += l.size();
+
+            // Count any rejects
+         for (fsi=mgr.rejected.begin(); fsi!=mgr.rejected.end(); fsi++)
+         {
+            for (nmli=(*fsi)->rejected.begin();
+                 nmli!=(*fsi)->rejected.end();nmli++)  
+            {  
+               CNavFilterData* fdp = dynamic_cast<CNavFilterData*>(*nmli);
+               rejectCount++;
+
+               // Avoid this step because we don't want to delete the
+               // objects on cNavList, even though we're modifying them. 
+               //delete fdp; 
+            }
+         }
+         cnt++; 
+      }
+   }
+   l = mgr.finalize();      
+   acceptCount += l.size();
+   for (fsi=mgr.rejected.begin(); fsi!=mgr.rejected.end(); fsi++)
+   {
+      for (nmli=(*fsi)->rejected.begin();
+           nmli!=(*fsi)->rejected.end();nmli++)  
+      {       
+         CNavFilterData* fd = dynamic_cast<CNavFilterData*>(*nmli);
+         rejectCount++;
+         //delete fd; 
+      }
+   }
+
+      // Mulitply because we (successfully) submitted each message twice. 
+   expected = cNavList.size() * 2; 
+   expReject = cNavList.size();
+   TUASSERTE(unsigned long, expected, acceptCount);
+   TUASSERTE(unsigned long, expReject, rejectCount);
+
    TURETURN();
 }
 

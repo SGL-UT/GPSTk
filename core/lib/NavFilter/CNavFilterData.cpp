@@ -39,26 +39,44 @@
 #include <iostream>
 #include "CNavFilterData.hpp"
 
-using namespace gpstk;
-
-CNavFilterData::CNavFilterData():
-    NavFilterKey()
-    {}
-
-CNavFilterData::CNavFilterData(gpstk::PackedNavBits* pnbArg):
-   NavFilterKey()
+namespace gpstk
 {
-   loadData(pnbArg);
-}
+   CNavFilterData::CNavFilterData():
+       NavFilterKey()
+       {}
 
-void CNavFilterData::loadData(PackedNavBits* pnbArg)
-{
-   timeStamp = pnbArg->getTransmitTime();
-   rxID = pnbArg->getRxID();
-   stationID = "unk";
-   prn = pnbArg->getsatSys().id;
-   carrier = pnbArg->getobsID().band;
-   code    = pnbArg->getobsID().code;
+   CNavFilterData::CNavFilterData(gpstk::PackedNavBits* pnbArg):
+      NavFilterKey()
+   {
+      loadData(pnbArg);
+   }
 
-   pnb = pnbArg;
+   void CNavFilterData::loadData(PackedNavBits* pnbArg)
+   {
+      timeStamp = pnbArg->getTransmitTime();
+      rxID = pnbArg->getRxID();
+      stationID = "unk";
+      prn = pnbArg->getsatSys().id;
+      carrier = pnbArg->getobsID().band;
+      code    = pnbArg->getobsID().code;
+
+      pnb = pnbArg;
+   }
+
+   void CNavFilterData::
+   dump(std::ostream& s) const
+   {
+         // This outputs the "common" information
+      NavFilterKey::dump(s); 
+
+         // Dump bits as 32 bit words
+      pnb->outputPackedBits(s,10);
+   }
+
+   std::ostream& operator<<(std::ostream& s, const CNavFilterData& nfd)
+   {
+      nfd.dump(s);
+      return s; 
+   }
+
 }

@@ -76,4 +76,33 @@ namespace gpstk
          }
       }
    }
+
+   void CNavCrossSourceFilter::
+   dump(std::ostream& s) const
+   {
+      s << "#--------------------------------" << std::endl;
+      s << "  Dump of CNavCrossSourceFilter::NavMap" << std::endl; 
+      NavMap::const_iterator cit;
+      for (cit=groupedNav.begin(); cit!=groupedNav.end(); cit++)
+      {
+         s << "PRN " << std::setw(2) << (unsigned short) cit->first << std::endl;
+
+         const MessageMap& mm = cit->second;
+         MessageMap::const_iterator cit2;
+         for (cit2=mm.begin(); cit2!=mm.end(); cit2++)
+         {
+            const CNavFilterData* cfdp = cit2->first;
+            const NavMsgList& nml = cit2->second;
+
+            s << "  Key  ptr: " << cfdp << ": " << *cfdp << std::endl;
+            NavMsgList::const_iterator cit3;
+            for (cit3=nml.begin(); cit3!=nml.end(); cit3++)
+            {
+               const NavFilterKey* nfkp = *cit3;
+               s << "       ptr: " << nfkp << ": " << *nfkp  << std::endl; 
+            }
+         }
+      }
+   }
+
 }
