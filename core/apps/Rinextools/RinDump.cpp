@@ -1747,7 +1747,7 @@ try {
                   vector<string> resets;     // check for reset of bias on any lc
                   for(i=0; i<C.Combos.size(); i++) {
                      C.Combos[i].Compute(sat, Rhead, vrdata);  // member value
-                     if(C.Combos[i].removeBias(sat))
+                     if(C.Combos[i].value && C.Combos[i].removeBias(sat))
                         resets.push_back(C.Combos[i].label);
                      oss << " " << setw(width) << C.Combos[i].value;
                      if(C.Combos[i].value != 0.0) ok=true;
@@ -2302,7 +2302,8 @@ double LinCom::Compute(const RinexSatID sat, Rinex3ObsHeader& Rhead,
          data = vrdata[j].data;
          if(data == 0.0) {
             LOG(DEBUG2) << msg << " obs >" << oi << "< data is zero";
-            continue;                                    // data is missing
+            value = 0.0; return value;
+            //continue;                                    // data is missing
          }
 
          obsid = oi;
