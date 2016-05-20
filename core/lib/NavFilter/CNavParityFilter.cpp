@@ -33,7 +33,6 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
-#include <iostream> 
 #include "CNavParityFilter.hpp"
 #include "CNavFilterData.hpp"
 

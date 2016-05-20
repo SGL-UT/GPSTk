@@ -36,7 +36,6 @@
 /*
 * CNavFilterData.cpp
 */
-#include <iostream>
 #include "CNavFilterData.hpp"
 
 namespace gpstk
@@ -78,5 +77,4 @@ namespace gpstk
       nfd.dump(s);
       return s; 
    }
-
 }
