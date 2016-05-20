@@ -1,5 +1,313 @@
       #################################################
 
+Version 2.9   Friday, May 20, 2016
+
+   General modifications
+   ---------------------
+
+   - Significant progress resolving failed tests on Windows and Redhat
+   - CPack update - RPM Packages and NSIS Windows installers added to package suite using build.sh
+   - Added required files for Gitlab-CI builds
+   - Updates to SWIG bindings, fully compiles on OSX
+   - Addes initial set of Python/SWIG tests
+   - Major Doxygen cleanup and overhaul
+   - Cleanup of old code and documentation
+   - This release includes new/modified source code comments for improved readability.
+   - Various Bug and Compile Warning Fixes
+
+   Modifications by Author
+   ---------------------
+   
+Andrew Joplin (2):
+      SunEarthSatGeometry: Added OrbitNormalAttitude function
+      Added swig bindings for SunEarthSatGeometry
+
+Anthony Hughes (4):
+      Make output of END OF HEADER mandatory in reallyPutRecord.
+      Handle NGA-specific event extension to SP3a during output; fixed SP3b SV ID format; added basic unit tests.
+      Added a more correct and efficient addSubframe() variant that accepts the subframe as an array of uint32_t, thus avoiding several array copies.
+      Fixed exception specifications for several methods that could throw despite throw().
+
+Audric Terry (1):
+      Several PRN/SVN updates to SVNumXRef.cpp
+
+Brian Tolman (1):
+      Update discontinuity corrector for GLONASS and improve algorithm
+
+Bryan Parsons (67):
+      Added Linux distro detection. RPM packages now build for Red Hat Linux distro.  NSIS support added for Windows installation.
+      Erase garbage introduced when fixing merge conflicts.
+      Merge Remote Master into Local Master. Updated v2.8.1 with new commit to update CMakeLists.txt file
+      Merge branch 'issue_209' into 'master'
+      Merge branch 'master' into cpack_rpm_nsis
+      Merge branch 'SunEarthSatGeometry' into 'master'
+      Merge branch 'cpack_rpm_nsis' into 'master'
+      Adding warning flag back to silence SunOS warnings.
+      Merge branch 'swig_tests' into 'master'
+      Updating build_setup.sh to fix bug with SGLTk jbuild.sh
+      Added root .gitlab-ci.yml file for gitlab ci integration with gitlab2
+      Fixed formatting for .gitlab-ci.yml
+      Initial addition of build code for command line Windows build by build.sh
+      Updated build.sh to settle merge conflicts.
+      Updated error in .gitlab-ci.yml script
+      Updated gitlab-ci script to adjust for Windows cmd prompt command.
+      Added tweaks to Windows build.sh command line support.
+      Merge branch 'master' into build_windows
+      Merge branch 'build_windows' into 'master'
+      Merging Master into current gitlab-ci branch
+      Updated gitlab-ci file for additional builds, added type: category as well.
+      Commented out current platforms with no active runners.
+      Updated .yml file to test staging.
+      Adjusted .yml script for artifacts and dependencies.
+      more tweaks to .yml file for proper syntax, after validating using CI Lint tool.
+      Updating Artifact paths and Testing Debian and Opti022 runners.
+      Removing opti022 code, testing debian build on Opti022.
+      Commented out redhat runner code for now.
+      Added cache option to .yml file.
+      Testing cache function on windows only.
+      Removed all dependency variables, testing ssh executor using imac osx coordinator.
+      Tweak to code, testing new osx coordinator system level runners.
+      Comments to .yml file
+      Added all supported GPSTk platforms to .yml for testing with sudo osx coordinator and ssh scripts.
+      Added deploy label to .yml file.
+      Merge branch 'issue_250_NavID' into 'master'
+      Adding CPACK License parameter for NSIS Windows installer build.
+      Merge branch 'issue_249' into 'master'
+      Merge branch 'master' into gitlab-ci
+      Cleaned up and Updated .gitlab-ci.ym for testing on live gitlab-ci server.
+      Updated SWIG CMakeLists.txt to ignore -std=c++ for Redhat Linux platforms.
+      Merge branch 'gitlab-ci' into 'master'
+      Fixed Overloading ambiguity error on Solaris, change pow(int,int) to pow(float,int)
+      Merge branch 'issue_238' into 'master'
+      Turning off SWIG bindings for Solaris Gitlab-CI Runner build.
+      Merge branch 'master' into svnum_updates
+      Merge branch 'svnum_updates' into 'master'
+      Merge branch 'issue_236' into 'master'
+      Explicit build folder for Gitlab-Ci redhat and osx builds
+      Merge branch 'issue_249' into 'master'
+      Updating Changelog and NEWS files with missing information.
+      Updates to tests to reduce errors in Windows GPSTk build. Submitted by John Knudson.
+      Merge branch 'windows_fix' into 'master'
+      Merge branch 'splitWithDoubleQuotes' into 'master'
+      Merge branch 'issue_251' into 'master'
+      Added ifdef for Linux for unistd.h support after merging in Windows bug fixes.
+      Commented out GPSWeekSecond tests dueto the delay of merging issue_248 branch.
+      Updates for FileHunter and FileUtils tests for fixing Win32 bugs.  Spelling mistakes fixed in swig/PythonSetup.cmake.
+      Merge branch 'GPSTk_RC29' into 'master'
+      Merge branch '253-add-initialization-to-engephemeris-aodo' into 'master'
+      Fixed various Windows build issues.  Added various #ifdef's to designate appropriate libraries between Windows and Linux.
+      Merge branch 'windows_fixes' into 'master'
+      Merge branch 'comment_fix_BAR' into 'master'
+      Merge branch 'jcl01' into 'master'
+      Silencing OSX Warnings.
+      RinDump and RinEdit bug fixes, submitted by Brian Tolman.  2-3 important bugs fixed with 1-line fixes.
+      Merge branch 'Rinex_Fixes_Tolman' into 'master'
+
+Frederick Doe (1):
+      Added initialization of AODO to EngEphemeris
+
+Jessica Rosenquest (5):
+      Modified
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Added include for compiling on debian.
+      Merge branch 'master' into navfilter
+      Added NavID.hpp, NavID.cpp, and NavID_T.cpp.
+
+Jon C. Little (16):
+      Removing files that should have not been part of the source tree. Part 1
+      Removing files that should have not been part of the source tree. Part 2
+      Merge branch 'master' into issue_209_python_ctest
+      Hacked Rinex3ObsHeaderTouchHeaderMerge to do something on Rinex3Obs and made the tests pass
+      Reworking swig builds
+      Fixing bug where the wrong python libraries were bein found
+      Moving python config to the swig dir
+      Finally compiling on OSX
+      Finally compiling the swig bindings on OSX
+      Merge branch 'swig_tests' of repositories.arlut.utexas.edu:sgl/gpstk into swig_tests
+      Big refactoring of the swig python module.     Its almost what it should be now.
+      Fixing some test failures.
+      Got rid of installing the example python programs and added installing a couple python apps
+      Simplifying specifying the files to populate the module with
+      Making test_utils work for sgltk
+      Merge branch 'master' into swig_tests
+
+Jon Little (34):
+      Initial commit of adding swig bindings to ctest
+      Now has first cut at the first python/swig tests
+      Now with a code that parallels the C++ tests
+      Fixed the working dir so we don't polute the source dir
+      Refactored tests to use python unittest module
+      trying to settle on a test file naming scheme
+      Now with some doc strings
+      adding testing of time classes
+      Fixed a bug where build.sh won't work on all linux platforms
+      Merge branch 'master' into issue_209
+      Fixed a build bug on OS X
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Moved all the build dirs to a single subdirectory.
+      Merge branch 'master' into file_cleanup
+      Merge branch 'issue_233' into 'master'
+      Nicer reporting of test failures at the end of the run
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Merge branch 'file_cleanup' into 'master'
+      Merge branch 'master' into issue_209
+      Refactored to use argparse to communicate input dir, output dir, and other stuff to the python tests
+      Now verifies that the swig module is loaded from the requested location
+      Settig the appropriate time system on GPSWeekZcount
+      Now supports writing a rinex obs file from scratch
+      Fixed bug when tests are not run.
+      Fixed another bug when tests are not run.
+      Merge branch 'master' into issue_68_novatel
+      Merge branch 'issue_68_novatel' into 'master'
+      Moving TestUtil into the gpstk namespace...
+      Merge branch '237-TestUtil' into 'master'
+      test_utils was not telling cmake it was failing ...
+      Better comments about satellite id
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Adding .gitattributes to normalize line endings
+      Introduce end-of-line normalization
+
+Nick Fitzsimmons (2):
+      New Test Case to Display GPSWeekSecond Conversion Bug
+      Update to TestUtil
+
+Steve Johnson (3):
+      Add StringUtils::splitWithDoubleQuotes(...)
+      Merge branch 'master' into splitWithDoubleQuotes
+      Fix redhat, solaris, osx broken builds
+
+anthony (1):
+      Merge branch 'issue_232_sp3_nga' into 'master'
+
+johnk (103):
+      Doxygen overhaul part 1
+      Doxygen overhaul part 2
+      Allow indpendent execution of doxygen (i.e. outside of build.sh) and tweak formatting
+      Doxygen overhaul part 3
+      Doxygen overhaul part 4
+      Doxygen overhaul part 5
+      Doxygen overhaul part 6
+      Doxygen overhaul part 7
+      Merge remote-tracking branch 'origin/master' into issue_207
+      Merge remote-tracking branch 'origin/master' into issue_207
+      Doxygen overhaul part 8
+      Doxygen overhaul part 9
+      Change Doxygen time group label
+      Doxygen overhaul part 10
+      First pass at a modular nav data filter
+      Fix some bugs that arise from using combined nav filters
+      Remove debug output
+      Correct a comment
+      Doxygen stuff
+      more doxygen
+      Add NavFilterMgr example
+      Add a minimalistic pseudo-code example
+      Fix doxygen formatting issue
+      Merge remote-tracking branch 'origin/master' into navfilter
+      Merge remote-tracking branch 'origin/master' into issue_207
+      Doxygen-ify comments and some code reformatting
+      Fix up example
+      Turn off most graphs by default
+      Remove waitLength(), add finalize(), implement LNavCrossSourceFilter
+      First cut at testing multi-epoch filters and finalize()
+      Merge branch 'issue_207' into 'master'
+      Merge remote-tracking branch 'origin/master' into navfilter
+      Fix NavFilterMgr::finalize which was failing to copy data out
+      Add preconditions documentation to LNAV filters.     Add time stamp to NavFilterKey and use it in LNavCrossSourceFilter.     Properly accept and reject messages in LNavCrossSourceFilter.     Add ability to accept/reject nav messages in bulk.     Properly handle rejects in NavFilterMgr::finalize.     Much more documentation and additional examples.
+      Add an ephemeris aggregating filter and test it
+      Merge branch 'navfilter' into 'master'
+      Fix includes for cross-platform usability
+      Merge branch 'navfilter' into 'master'
+      Doxygen overhaul part 1
+      Doxygen overhaul part 2
+      Allow indpendent execution of doxygen (i.e. outside of build.sh) and tweak formatting
+      Doxygen overhaul part 3
+      Doxygen overhaul part 4
+      Doxygen overhaul part 5
+      Doxygen overhaul part 6
+      Doxygen overhaul part 7
+      Doxygen overhaul part 8
+      Doxygen overhaul part 9
+      Change Doxygen time group label
+      Doxygen overhaul part 10
+      First pass at a modular nav data filter
+      Fix some bugs that arise from using combined nav filters
+      Remove debug output
+      Correct a comment
+      Doxygen stuff
+      more doxygen
+      Add NavFilterMgr example
+      Add a minimalistic pseudo-code example
+      Fix doxygen formatting issue
+      Doxygen-ify comments and some code reformatting
+      Fix up example
+      Turn off most graphs by default
+      Remove waitLength(), add finalize(), implement LNavCrossSourceFilter
+      First cut at testing multi-epoch filters and finalize()
+      Fix NavFilterMgr::finalize which was failing to copy data out
+      Add preconditions documentation to LNAV filters.     Add time stamp to NavFilterKey and use it in LNavCrossSourceFilter.     Properly accept and reject messages in LNavCrossSourceFilter.     Add ability to accept/reject nav messages in bulk.     Properly handle rejects in NavFilterMgr::finalize.     Much more documentation and additional examples.
+      Add an ephemeris aggregating filter and test it
+      Fix includes for cross-platform usability
+      Use psrinfo instead of kstat to get core count in solaris
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      add a newline to the end of TabularSatStore.hpp
+      add extern "C" to callback functions to eliminate warning messages
+      Remove resolved @todo item/comment
+      Fix template name resolution issue
+      Merge branch 'issue_230' into 'master'
+      Changed xorChecksum to not use host word types
+      clarify return value comment
+      Merge remote-tracking branch 'origin/master' into issue_233
+      Add some NMCT validity time methods to EngNav
+      Modify NMCT functions per conversations with Brent and add tests
+      Merge remote-tracking branch 'origin/master' into navfilter
+      Export time of transmission in getNMCTValidity and add a wrapper class for all this time data
+      Merge branch 'navfilter' into 'master'
+      Generally it's a good idea to initialize data members of a class in its constructor
+      Add namespace scope the lack of which was breaking solaris builds
+      Why does only solaris studio require namespace for find? Why do none of the compilers require namespace for copy() and inserter()?
+      Move navfilter code into core
+      Merge branch 'navfilter' into 'master'
+      clean up RinexNav and add more test macros
+      Try to make the code readable
+      Reformat EngEphemeris and fix to handle toc != toe
+      Change TUCMPFILE macro so the filenames can be easily copypasted into a diff command line
+      Try to make RinexNavData times match the spec
+      Merge remote-tracking branch 'origin/master' into issue_247
+      Initialize *all* data members of RinexNavData.     Test and fix support for negative transmission times.
+      format/comment
+      more optimal implementation of checkParity
+      Merge branch 'issue_247' into 'master'
+      reformat
+      make operator==() constant
+      Add range/phase std dev obs types
+      Add fixes for obs ID mapping and ValidType::operator==
+      Merge remote-tracking branch 'origin/master' into issue_251
+
+renfrob (19):
+      Initial commit for issue_238 changes
+      Finishing up PackedNavBits_T.cpp
+      Tweaking test cases
+      Initial commit for new OrbData class tree and OrbSysStore
+      OrbSysStore sufficient to support UTC Offset analysis
+      Tweaking debug support
+      Improvements to find()
+      Adding UTC offset modulo leap second
+      Adding more GPS almanac capability
+      Refactor OrbSysStore to better support multi-GNSS
+      Adding an additional dump method
+      øMerge branch 'master' into issue_249
+      Integrating NavID into OrbSysStore
+      Adding missing return
+      Merging master into branch.  Moving PackedNavBits from ext to core
+      Adding operator< to PackedNavBits
+      Removing obsolete tests
+      Add new findList() method
+      Fixed incorrect comment
+
+
+      #################################################
+
 Version 2.8.1   Wednesday, January 27, 2016
 
    General modifications

@@ -20,15 +20,9 @@ Contact Information
    ----------------------------
    http://sgl.arlut.utexas.edu
 
-   GPSTk on Sourceforge
+   GPSTk on Github
    ----------------------------
-   http://sourceforge.net/projects/gpstk/
-
-   Mailing Lists                         Subscribe/Unsubscribe/Archive URL
-   ------------------------------------  -------------------------------------
-   gpstk-devel@lists.sourceforge.net     http://lists.sourceforge.net/lists/listinfo/gpstk-devel
-   gpstk-announce@lists.sourceforge.net  http://lists.sourceforge.net/lists/listinfo/gpstk-announce
-   gpstk-admin@lists.sourceforge.net     http://lists.sourceforge.net/lists/listinfo/gpstk-admin
+   https://github.com/SGL-UT/GPSTk
   
    Email
    ----------------------------
