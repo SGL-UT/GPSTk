@@ -1075,10 +1075,22 @@ try {
       LOG(INFO) << " End time is "
          << printTime(cfg.endTime,"%04Y/%02m/%02d %02H:%02M:%.3f")
          << " = " << printTime(cfg.endTime,"%04F/%10.3g");
-   if(cfg.useCA1) LOG(INFO) << " Use the L1 C/A pseudorange if P-code is not found";
-   else LOG(INFO) << " Do not use L1 C/A code range (C1)";
-   if(cfg.useCA2) LOG(INFO) << " Use the L2 C/A pseudorange if P-code is not found";
-   else LOG(INFO) << " Do not use L2 C/A code range (C2)";
+   if(cfg.useCA1) 
+      {
+         LOG(INFO) << " Use the L1 C/A pseudorange if P-code is not found";
+      }
+   else 
+      {
+         LOG(INFO) << " Do not use L1 C/A code range (C1)";
+      }
+   if(cfg.useCA2) 
+      {
+         LOG(INFO) << " Use the L2 C/A pseudorange if P-code is not found";
+      }
+   else 
+      {
+         LOG(INFO) << " Do not use L2 C/A code range (C2)";
+      }
    if(cfg.forceCA1) LOG(INFO) <<" Use the L1 C/A pseudorange even if P-code is found";
    if(cfg.forceCA2) LOG(INFO) <<" Use the L2 C/A pseudorange even if P-code is found";
    if(cfg.dt0 > 0) LOG(INFO) << " dt is input as " << cfg.dt0 << " seconds.";
