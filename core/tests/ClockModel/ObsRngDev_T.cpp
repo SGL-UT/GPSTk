@@ -87,8 +87,6 @@ public:
 
       std::string path = gpstk::getPathData() + "/test_input_rinex_nav_ephemerisData.031";
       ephemStore.loadFile(path);
-      buff = new char[10000];
-
    };
    
    ~ObsRngDev_T() {}
@@ -493,8 +491,8 @@ public:
       {
          gpstk::CorrectedEphemerisRange cer;
          double rho = cer.ComputeAtTransmitTime(ordVecGamma[i].obstime, prange[i], receiverPos, ordVecGamma[i].svid, ephemStore);
-         TUASSERTFEPS(prange[i] - rho - ordVecGamma[i].trop - ordVecGamma[i].iono, ordVecGamma[i].ord, 1e-6);
-         TUASSERTFEPS(ordVecGamma[i].rho, rho, 1e-6);
+         TUASSERTFEPS(prange[i] - rho - ordVecGamma[i].trop - ordVecGamma[i].iono, ordVecGamma[i].ord, 1e-4);
+         TUASSERTFEPS(ordVecGamma[i].rho, rho, 1e-4);
          TUASSERTE(int, ordVecGamma[i].azimuth, cer.azimuth);
          TUASSERTE(int, ordVecGamma[i].elevation, cer.elevation);
       }
@@ -511,8 +509,8 @@ public:
       {
          gpstk::CorrectedEphemerisRange cer;
          double rho = cer.ComputeAtTransmitTime(ordVecTropGamma[i].obstime, prange[i], receiverPos, ordVecTropGamma[i].svid, ephemStore);
-         TUASSERTFEPS(prange[i] - rho - ordVecTropGamma[i].trop - ordVecTropGamma[i].iono, ordVecTropGamma[i].ord, 1e-6);
-         TUASSERTFEPS(ordVecTropGamma[i].rho, rho, 1e-6);
+         TUASSERTFEPS(prange[i] - rho - ordVecTropGamma[i].trop - ordVecTropGamma[i].iono, ordVecTropGamma[i].ord, 1e-4);
+         TUASSERTFEPS(ordVecTropGamma[i].rho, rho, 1e-4);
          TUASSERTE(int, ordVecTropGamma[i].azimuth, cer.azimuth);
          TUASSERTE(int, ordVecTropGamma[i].elevation, cer.elevation);
       }
