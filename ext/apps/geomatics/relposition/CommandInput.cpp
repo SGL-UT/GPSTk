@@ -57,6 +57,13 @@
 #include "DDBase.hpp"
 // DDBase.hpp includes CommandInput.hpp
 
+#include "SimpleTropModel.hpp"
+#include "SaasTropModel.hpp"
+#include "NBTropModel.hpp"
+#include "GGTropModel.hpp"
+#include "GGHeightTropModel.hpp"
+#include "NeillTropModel.hpp"
+
 //------------------------------------------------------------------------------------
 using namespace std;
 using namespace gpstk;

@@ -58,7 +58,7 @@
 #include "GPSEphemerisStore.hpp"
 
    // Class to model the tropospheric delays
-#include "TropModel.hpp"
+#include "MOPSTropModel.hpp"
 
    // Classes to model ans store ionospheric delays
 #include "IonoModel.hpp"
