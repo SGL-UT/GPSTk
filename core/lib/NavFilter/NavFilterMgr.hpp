@@ -82,6 +82,21 @@ namespace gpstk
        * | LNavEmptyFilter       |            1 | no           |
        * | LNavParityFilter      |            1 | no           |
        * | LNavTLMHOWFilter      |            1 | no           |
+       *
+       * @section GPSCNAV GPS Civil Nav Filters
+       *
+       * Filters in this group use the data class CNavFilterData,
+       * which contains a pointer to gpstk::PackedNavBits object
+       * that contains the message data.
+       *
+       * | Class                 | Filter Depth | Modifies Msg |
+       * | :-------------------- | -----------: | :----------- |
+       * | CNavFilterData        |          n/a | no           |
+       * | CNavCookFilter        |            1 | yes          |
+       * | CNavCrossSourceFilter |            2 | no           |
+       * | CNavEmptyFilter       |            1 | no           |
+       * | CNavParityFilter      |            1 | no           |
+       * | LNavTWFilter          |            1 | no           |
        */
 
       /// @ingroup NavFilter
