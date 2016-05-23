@@ -33,36 +33,42 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
-#include "LNavFilterData.hpp"
+#ifndef CNAVEMPTYFILTER_HPP
+#define CNAVEMPTYFILTER_HPP
+
+#include <NavFilter.hpp>
 
 namespace gpstk
 {
-   LNavFilterData ::
-   LNavFilterData()
-         : sf(NULL)
+      /// @ingroup NavFilter
+      //@{
+
+      /** Filter GPS CNAV subframes with empty contents.  In
+       *  this case "empty" means bits 38-276 are all zero
+       *  or bits 38-276 are alternating 1/0.  See IS-GPS-200
+       *  Section 30.3.3.
+       *
+       * @attention Processing depth = 1 epoch. */
+   class CNavEmptyFilter : public NavFilter
    {
-   }
+   public:
+      CNavEmptyFilter();
 
-   void LNavFilterData::
-   dump(std::ostream& s) const
-   {
-         // This outputs the "common" information
-      NavFilterKey::dump(s); 
+         /** Filter subframes in msgBitsIn that are empty.
+          * @pre CNavFilterData::sf is set
+          * @param[in,out] msgBitsIn A list of CNavFilterData* objects
+          *   containing GPS legacy navigation messages (id 2).
+          * @param[out] msgBitsOut The messages successfully passing
+          *   the filter. */
+      virtual void validate(NavMsgList& msgBitsIn, NavMsgList& msgBitsOut);
 
-         // Add the 10 word subframe dump
-      s << std::hex << std::setfill('0');
-      for (unsigned j=0;j<10;j++)
-      {
-         s << "0x" << std::setw(8) << sf[j] << " ";
-      }
-      s << std::dec << std::setfill(' ') << " ";
-   }
+         /// Filter stores no data, therefore this does nothing.
+      virtual void finalize(NavMsgList& msgBitsOut)
+      {}
+   };
 
-   std::ostream& operator<<(std::ostream& s, const LNavFilterData& nfd)
-   {
-      nfd.dump(s);
-      return s; 
-   }
-
+      //@}
 
 }
+
+#endif // CNAVEMPTYFILTER_HPP

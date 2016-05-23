@@ -191,6 +191,8 @@ namespace gpstk
                                   const unsigned len,
                                   const int power2) const;      
 
+      bool asBool( const unsigned bitNum) const;
+
          /***    PACKING FUNCTIONS *********************************/
          /* Pack an unsigned long integer */
       void addUnsignedLong( const unsigned long value, 
@@ -330,6 +332,51 @@ namespace gpstk
           *   "winner" determined. 
           */
       bool operator<(const PackedNavBits& right) const; 
+
+         /**
+          *  Bitwise invert contents of this object.
+          */
+      void invert( ); 
+
+         /**
+          *  Bit wise copy from another PackecNavBits.
+          *  None of the meta-data (transmit time, SatID, ObsID)
+          *  will be changed. 
+          *  This method is intended for use between two
+          *  PackedNavBits objecst that are ALREADY the
+          *  same size (in bits).   It will throw an
+          *  InvalidParameter exception if called using two
+          *  objects that are NOT the same size. 
+          *  Yes, we could define a copy that would account
+          *  for the difference, but the pre-existing model
+          *  for PNB is that the bits_used variable records
+          *  the # of bits used as items are added to the end
+          *  of the bit array.   I didn't want copyBits( )
+          *  to confuse that model by modifying bits_used.
+          */
+      void copyBits(const PackedNavBits& from, 
+                    const short startBit=0, 
+                    const short endBit=-1)
+                    throw(InvalidParameter);
+
+         /**
+          * This method is not typically used in production; however it
+          * is used in test support.  It assumes the PNB object is already
+          * created and is already sized to hold at least (startBit+numBits) 
+          * bits.  If this is not true, an exception is thrown. 
+          * It overwrites the data that is already present with
+          * the provided value / scale.  If value / scale is too large to
+          * fit in numBits, then an exception is thrown. 
+          */
+      void insertUnsignedLong(const unsigned long value,
+                              const int startBit,
+                              const int numBits,
+                              const int scale=1 )
+                              throw(InvalidParameter);
+         /**
+          *  Reset number of bits
+          */
+      void reset_num_bits(const int new_bits_used=0);
 
          /* Resize the vector holding the packed data. */
       void trimsize();

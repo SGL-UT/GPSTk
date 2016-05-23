@@ -33,36 +33,39 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
-#include "LNavFilterData.hpp"
+#include "CNavTOWFilter.hpp"
+#include "CNavFilterData.hpp"
 
 namespace gpstk
 {
-   LNavFilterData ::
-   LNavFilterData()
-         : sf(NULL)
+   CNavTOWFilter::
+   CNavTOWFilter()
    {
    }
 
-   void LNavFilterData::
-   dump(std::ostream& s) const
+   void CNavTOWFilter ::
+   validate(NavMsgList& msgBitsIn, NavMsgList& msgBitsOut)
    {
-         // This outputs the "common" information
-      NavFilterKey::dump(s); 
-
-         // Add the 10 word subframe dump
-      s << std::hex << std::setfill('0');
-      for (unsigned j=0;j<10;j++)
+      NavMsgList::const_iterator i;
+      for (i = msgBitsIn.begin(); i != msgBitsIn.end(); i++)
       {
-         s << "0x" << std::setw(8) << sf[j] << " ";
+         CNavFilterData *fd = dynamic_cast<CNavFilterData*>(*i);
+         uint32_t preamble = (uint32_t) fd->pnb->asUnsignedLong(0,8,1);
+         uint32_t msgType  = (uint32_t) fd->pnb->asUnsignedLong(14,6,1);
+         uint32_t TOWCount = (uint32_t) fd->pnb->asUnsignedLong(20,17,1);
+
+         bool valid =
+               // check TLM preamble
+            ( preamble == 0x0000008b &&
+               // < 604800 sow or < 100800 TOW counts
+              TOWCount < 100800 &&
+               // subframe ID
+             ( (msgType >= 10 && msgType <= 15 ) || 
+               (msgType >= 30 && msgType <= 37 ) ) );
+         if (valid)
+            accept(fd, msgBitsOut);
+         else
+            reject(fd);
       }
-      s << std::dec << std::setfill(' ') << " ";
    }
-
-   std::ostream& operator<<(std::ostream& s, const LNavFilterData& nfd)
-   {
-      nfd.dump(s);
-      return s; 
-   }
-
-
 }

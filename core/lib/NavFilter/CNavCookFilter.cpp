@@ -33,36 +33,33 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
-#include "LNavFilterData.hpp"
+
+#include "CNavCookFilter.hpp"
 
 namespace gpstk
 {
-   LNavFilterData ::
-   LNavFilterData()
-         : sf(NULL)
+   CNavCookFilter ::
+   CNavCookFilter()
    {
    }
 
-   void LNavFilterData::
-   dump(std::ostream& s) const
-   {
-         // This outputs the "common" information
-      NavFilterKey::dump(s); 
 
-         // Add the 10 word subframe dump
-      s << std::hex << std::setfill('0');
-      for (unsigned j=0;j<10;j++)
+   void CNavCookFilter ::
+   validate(NavMsgList& msgBitsIn, NavMsgList& msgBitsOut)
+   {
+      NavMsgList::iterator i;
+      for (i = msgBitsIn.begin(); i != msgBitsIn.end(); i++)
       {
-         s << "0x" << std::setw(8) << sf[j] << " ";
+         CNavFilterData *fd = dynamic_cast<CNavFilterData*>(*i);
+         cookSubframe(fd);
+         msgBitsOut.push_back(fd);
       }
-      s << std::dec << std::setfill(' ') << " ";
    }
 
-   std::ostream& operator<<(std::ostream& s, const LNavFilterData& nfd)
+   void CNavCookFilter ::
+   cookSubframe(CNavFilterData* fd)
    {
-      nfd.dump(s);
-      return s; 
+      unsigned word = fd->pnb->asUnsignedLong(0,8,1.0);
+      if (word!=0x8b) fd->pnb->invert();
    }
-
-
 }

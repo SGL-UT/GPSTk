@@ -33,36 +33,47 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
-#include "LNavFilterData.hpp"
+
+#ifndef CNAVCOOKFILTER_HPP
+#define CNAVCOOKFILTER_HPP
+
+#include <NavFilter.hpp>
+#include <CNavFilterData.hpp>
 
 namespace gpstk
 {
-   LNavFilterData ::
-   LNavFilterData()
-         : sf(NULL)
+      /// @ingroup NavFilter
+      //@{
+
+      /** "Cook" GPS civil nav messages by turning words upright.
+       * Data in CNavFilterData::sf are modified.
+       *
+       * @attention Processing depth = 1 epoch. */
+   class CNavCookFilter : public NavFilter
    {
-   }
+   public:
+      CNavCookFilter();
 
-   void LNavFilterData::
-   dump(std::ostream& s) const
-   {
-         // This outputs the "common" information
-      NavFilterKey::dump(s); 
+         /** Turn words in a GPS CNAV message upright.  This results
+          * in the expected 0x8b preamble in the TLM and subsequent
+          * bits as expected per the IS-GPS-200 Section 30.
+          * @pre CNavFilterData::sf is set
+          * @param[in,out] msgBitsIn a list of CNavFilterData* objects
+          *   containing GPS CNAV data.
+          * @param[out] msgBitsOut the "cooked" subframes.  All
+          *   contents of msgBitsIn will be immediately seen in
+          *   msgBitsOut. */
+      virtual void validate(NavMsgList& msgBitsIn, NavMsgList& msgBitsOut);
 
-         // Add the 10 word subframe dump
-      s << std::hex << std::setfill('0');
-      for (unsigned j=0;j<10;j++)
-      {
-         s << "0x" << std::setw(8) << sf[j] << " ";
-      }
-      s << std::dec << std::setfill(' ') << " ";
-   }
+         /// Filter stores no data, therefore this does nothing.
+      virtual void finalize(NavMsgList& msgBitsOut)
+      {}
 
-   std::ostream& operator<<(std::ostream& s, const LNavFilterData& nfd)
-   {
-      nfd.dump(s);
-      return s; 
-   }
+         /// Turn an CNAV subframe data upright.
+      static void cookSubframe(CNavFilterData* fd);
+   };
 
-
+      //@}
 }
+
+#endif // LNAVCOOKFILTER_HPP

@@ -33,36 +33,46 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
-#include "LNavFilterData.hpp"
+#ifndef CNAVFILTERDATA_HPP
+#define CNAVFILTERDATA_HPP
+
+#include <stdint.h>
+#include "NavFilterKey.hpp"
+#include "PackedNavBits.hpp"
 
 namespace gpstk
 {
-   LNavFilterData ::
-   LNavFilterData()
-         : sf(NULL)
+   class CNavFilterData : public NavFilterKey
    {
+   public:
+      CNavFilterData();
+      CNavFilterData(PackedNavBits* pnb);
+
+      void loadData(PackedNavBits* pnb); 
+
+         // The actual message data is stored in a PackedNavBits object
+      PackedNavBits* pnb;
+
+      virtual void dump(std::ostream& s) const;      
+   };
+
+      // Sort CNavFilterData objects by navigation message bits
+   struct CNavMsgSort
+      : std::binary_function<CNavFilterData, CNavFilterData, bool>
+   {
+      inline bool operator() (const CNavFilterData* l,
+                              const CNavFilterData* r) const;
+   };
+
+   bool CNavMsgSort::
+   operator() (const CNavFilterData* l,
+               const CNavFilterData* r) const
+   {
+      return *(l->pnb) < *(r->pnb);
    }
 
-   void LNavFilterData::
-   dump(std::ostream& s) const
-   {
-         // This outputs the "common" information
-      NavFilterKey::dump(s); 
-
-         // Add the 10 word subframe dump
-      s << std::hex << std::setfill('0');
-      for (unsigned j=0;j<10;j++)
-      {
-         s << "0x" << std::setw(8) << sf[j] << " ";
-      }
-      s << std::dec << std::setfill(' ') << " ";
-   }
-
-   std::ostream& operator<<(std::ostream& s, const LNavFilterData& nfd)
-   {
-      nfd.dump(s);
-      return s; 
-   }
-
-
+      // Write to output stream
+   std::ostream& operator<<(std::ostream& s, const CNavFilterData& nfd); 
 }
+
+#endif

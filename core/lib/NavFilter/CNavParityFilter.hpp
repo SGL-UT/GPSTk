@@ -33,36 +33,41 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
-#include "LNavFilterData.hpp"
+
+#ifndef CNAVPARITYFILTER_HPP
+#define CNAVPARITYFILTER_HPP
+
+#include <NavFilter.hpp>
 
 namespace gpstk
 {
-   LNavFilterData ::
-   LNavFilterData()
-         : sf(NULL)
+      /// @ingroup NavFilter
+      //@{
+
+      /** Filter GPS civil nav messages that fail parity checks.
+       * Nav message bits are assumed to be upright.
+       *
+       * @attention Processing depth = 1 epoch. */
+   class CNavParityFilter : public NavFilter
    {
-   }
+   public:
+      CNavParityFilter();
 
-   void LNavFilterData::
-   dump(std::ostream& s) const
-   {
-         // This outputs the "common" information
-      NavFilterKey::dump(s); 
+         /** Check the parity of the nav subframes (per IS-GPS-200).
+          * @pre CNavFilterData::sf is set
+          * @param[in,out] msgBitsIn A list of CNavFilterData* objects
+          *   containing GPS legacy navigation messages (id 2).
+          * @param[out] msgBitsOut The messages successfully passing
+          *   the filter. */
+      virtual void validate(NavMsgList& msgBitsIn, NavMsgList& msgBitsOut);
 
-         // Add the 10 word subframe dump
-      s << std::hex << std::setfill('0');
-      for (unsigned j=0;j<10;j++)
-      {
-         s << "0x" << std::setw(8) << sf[j] << " ";
-      }
-      s << std::dec << std::setfill(' ') << " ";
-   }
+         /// Filter stores no data, therefore this does nothing.
+      virtual void finalize(NavMsgList& msgBitsOut)
+      {}
+   };
 
-   std::ostream& operator<<(std::ostream& s, const LNavFilterData& nfd)
-   {
-      nfd.dump(s);
-      return s; 
-   }
-
+      //@}
 
 }
+
+#endif // CNAVPARITYFILTER_HPP
