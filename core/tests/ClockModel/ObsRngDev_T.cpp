@@ -41,6 +41,7 @@
 #include "RinexEphemerisStore.hpp"
 
 #include "EphemerisRange.hpp"
+#include "SimpleTropModel.hpp"
 
 //=====================================================================================
 // Test Structure

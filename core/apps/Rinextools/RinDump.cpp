@@ -82,7 +82,12 @@
 //#include "GPSEphemerisStore.hpp"
 //#include "GloEphemerisStore.hpp"
 
-#include "TropModel.hpp"
+#include "SimpleTropModel.hpp"
+#include "SaasTropModel.hpp"
+#include "NBTropModel.hpp"
+#include "GGTropModel.hpp"
+#include "GGHeightTropModel.hpp"
+#include "NeillTropModel.hpp"
 #include "EphemerisRange.hpp"
 #include "Position.hpp"
 

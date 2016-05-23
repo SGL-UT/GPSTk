@@ -87,7 +87,12 @@
 #include "Rinex3EphemerisStore.hpp"
 
 #include "Position.hpp"
-#include "TropModel.hpp"
+#include "SimpleTropModel.hpp"
+#include "SaasTropModel.hpp"
+#include "NBTropModel.hpp"
+#include "GGTropModel.hpp"
+#include "GGHeightTropModel.hpp"
+#include "NeillTropModel.hpp"
 #include "EphemerisRange.hpp"
 #include "RinexUtilities.hpp"
 
