@@ -24,8 +24,9 @@ elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
     set( CMAKE_SHARED_LIBRARY_SUFFIX .dylib )
     set( CMAKE_INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib" )
     set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -shared" )
+    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2" )
 elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" )
-    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" )
+    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2" )
     set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -shared" )
 elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
 else()
@@ -38,9 +39,10 @@ endif()
 # but is adept at catching various memory problems.
 #----------------------------------------
 if( (${CMAKE_BUILD_TYPE} MATCHES "debug"))
-    if (${CMAKE_CXX_COMPILER} MATCHES "clang" OR ((${CMAKE_CXX_COMPILER_VERSION} VERSION_GREATER "4.9.0" ) AND CMAKE_COMPILER_IS_GNUCXX))
+    if (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang"
+        OR ((${CMAKE_CXX_COMPILER_VERSION} VERSION_GREATER "4.9.0" ) AND CMAKE_COMPILER_IS_GNUCXX))
         message(STATUS "Enabling address sanitizer for debug build")
-        set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -fsanitize=address -fno-omit-frame-pointer" )
+        set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer" )
     endif()
 endif()
 
