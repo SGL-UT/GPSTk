@@ -77,6 +77,17 @@ namespace gpstk
       isFIC = true;
 
       fitint = 0;
+      
+      /*
+       *  AODO is initialized to 27900 to indicate that the offset
+       *  data should not be relied upon.
+       *  The satellite transmits a 5-bit unsigned integer that is
+       *  then multiplied by 900 to get the ago of the offset data
+       *  in seconds
+       *  31 * 900 = 27900, hence setting AODO to 27900 is setting
+       *  the age to the maximum value
+       */
+      AODO = 27900;
 
       for (int j = 0; j<3; j++)
       {

@@ -419,6 +419,11 @@ namespace gpstk
       return (drad*PI);
    }      
 
+   bool PackedNavBits::asBool( const unsigned bitNum) const
+   {
+      return bits[bitNum]; 
+   }
+
 
          /***    PACKING FUNCTIONS *********************************/
    void PackedNavBits::addUnsignedLong( const unsigned long value, 
@@ -589,7 +594,8 @@ namespace gpstk
    // Used in NavFilter implementations.   This method ASSUMES the meta-date
    // matches have already been done.  It is simply comparing contents of the
    // bit array bit-for-bit and returning "less than" if it finds an occasion
-   // in which left has a '0' whereas right has a '1'.
+   // in which left has a FALSE whereas right has a TRUE starting at the 
+   // lowest index and scanning to the maximum index.
    //
    // NOTE: This is one of the cases in which the PackedNavBits implementation 
    // is probably not the fastest.  Since we are scanning a bit array rather 
@@ -609,7 +615,8 @@ namespace gpstk
 
       for (int i=0;i<bits.size();i++)
       {
-         if (bits[i]<right.bits[i])
+         if (bits[i]==false && right.bits[i]==true)
+         //if (bits[i]<right.bits[i])
          {
             return true;
          }
@@ -617,6 +624,105 @@ namespace gpstk
       return false;
    }
 
+   void PackedNavBits::invert( )
+   {
+         // Each bit is either 1 or 0.
+         // Starting with 1 and subtracting the 
+         // current value will yield the inverse
+         //   
+         //  Input    Equation     Result
+         //    1       1 - 1          0
+         //    0       1 - 0          1
+         //
+         // This accomplishes the purpose without incurring
+         // the cost of a conditional statement.
+      for (int i=0;i<bits.size();i++)
+      {
+         bits[i] = 1 - bits[i];
+      }
+   } 
+
+      /**
+       *  Bit wise copy from another PackecNavBits.
+       *  None of the meta-data (transmit time, SatID, ObsID)
+       *  will be changed. 
+       *  If the current size of this PackedNavBits is less
+       *  than endBit, the array will be resized.
+       */
+   void PackedNavBits::copyBits(const PackedNavBits& from, 
+                                const short startBit, 
+                                const short endBit)
+                                throw(InvalidParameter)
+   {
+      if (bits_used != from.bits_used)
+      {
+         stringstream ss;
+         ss << "PackedNavBits::copyBits( ) may only be called on two";
+         ss << " objects with the same number of packed bits.";
+         InvalidParameter ip(ss.str());
+         GPSTK_THROW(ip); 
+      }
+
+      short finalBit = endBit;
+      if (finalBit==-1) finalBit = bits_used - 1;
+
+      for (short i=startBit; i<=finalBit; i++)
+      {
+         bits[i] = from.bits[i];
+      }
+   }
+
+
+   //--------------------------------------------------------------------------
+   // Not typically used in production.  See comments in header. 
+   void PackedNavBits::insertUnsignedLong(const unsigned long value,
+                           const int startBit,
+                           const int numBits,
+                           const int scale)
+                           throw(InvalidParameter)
+   {
+      if ((startBit+numBits)>bits_used)
+      {
+         stringstream ss;
+         ss << "insertUnsignedLong called with startBit+numBits > bits_used.";
+         InvalidParameter ip(ss.str());
+         GPSTK_THROW(ip);
+      }
+
+      uint64_t out = (uint64_t) value;
+      out /= scale;
+
+      uint64_t test = pow(static_cast<double>(2),numBits) - 1; 
+      if ( out > test )
+      {
+         InvalidParameter exc("Scaled value too large for specifed bit length");
+         GPSTK_THROW(exc);
+      }
+
+      size_t ndx = startBit;
+      uint64_t mask = 0x0000000000000001L; 
+
+      mask <<= (numBits-1);
+      for (int i=0; i<numBits; i++)
+      {
+         bits[ndx] = false;
+         if (out & mask)
+         {
+            bits[ndx] = true;
+         }
+         mask >>= 1;
+         ndx++;
+      }
+   }
+
+
+   //--------------------------------------------------------------------------
+   // Method allows one to "back up" and re-add bits w/o resizing
+   // the bits array.
+   void PackedNavBits::reset_num_bits(const int new_bits_used)
+   {
+      bits_used = new_bits_used;       
+   }
 
    //--------------------------------------------------------------------------
    void PackedNavBits::trimsize()

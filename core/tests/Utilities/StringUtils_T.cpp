@@ -660,6 +660,112 @@ public:
       return testFramework.countFails();
    }
 
+   /* =========================================================================================================================
+      Test for the splitWithDoubleQuotes method
+
+      splitWithDoubleQuotes will split a string into a std::vector<std::string> respecting double quoted strings
+      ========================================================================================================================= */
+      int splitWithDoubleQuotesTest( void )
+      {
+         gpstk::TestUtil testFramework( "StringUtils", "splitWithDoubleQuotes", __FILE__, __LINE__ );
+         std::string failMesg;
+
+         // no quotes
+         std::string originalString("String with no quotes");
+         std::vector<std::string> expectedResult;
+         expectedResult.push_back("String");
+         expectedResult.push_back("with");
+         expectedResult.push_back("no");
+         expectedResult.push_back("quotes");
+         std::vector<std::string> observedResult = splitWithDoubleQuotes(originalString);
+
+         failMesg = "splitWithDoubleQuotes fails with no quotes";
+         testFramework.assert(expectedResult == observedResult, failMesg, __LINE__);
+
+         // empty string
+         originalString = "";
+         expectedResult.clear();
+         observedResult = splitWithDoubleQuotes(originalString);
+
+         failMesg = "splitWithDoubleQuotes fails with empty string";
+         testFramework.assert(expectedResult == observedResult, failMesg, __LINE__);
+
+         // only whitespace
+         originalString = " ";
+         expectedResult.clear();
+         expectedResult.push_back("");
+         expectedResult.push_back("");
+         observedResult = splitWithDoubleQuotes(originalString,' ',false,false);
+
+         failMesg = "splitWithDoubleQuotes fails with just whitespace";
+         testFramework.assert(expectedResult == observedResult, failMesg, __LINE__);
+
+         // double quotes
+         originalString = std::string("String with \"double quoted values\"");
+         expectedResult.clear();
+         expectedResult.push_back("String");
+         expectedResult.push_back("with");
+         expectedResult.push_back("double quoted values");
+         observedResult = splitWithDoubleQuotes(originalString);
+
+         failMesg = "splitWithDoubleQuotes fails with double quotes";
+         testFramework.assert(expectedResult == observedResult, failMesg, __LINE__);
+
+         // single quotes
+         originalString= std::string("String with \'single quoted values\'");
+         expectedResult.clear();
+         expectedResult.push_back("String");
+         expectedResult.push_back("with");
+         expectedResult.push_back("\'single");
+         expectedResult.push_back("quoted");
+         expectedResult.push_back("values\'");
+         observedResult = splitWithDoubleQuotes(originalString);
+
+         failMesg = "splitWithDoubleQuotes fails with single quotes";
+         testFramework.assert(expectedResult == observedResult, failMesg, __LINE__);
+
+         // leading quote
+         originalString= std::string("\"First words\" quoted");
+         expectedResult.clear();
+         expectedResult.push_back("First words");
+         expectedResult.push_back("quoted");
+         observedResult = splitWithDoubleQuotes(originalString);
+
+         failMesg = "splitWithDoubleQuotes fails with leading quote";
+         testFramework.assert(expectedResult == observedResult, failMesg, __LINE__);
+
+         // back to back quotes
+         originalString= std::string("\"Back to\" \"back quotes\"");
+         expectedResult.clear();
+         expectedResult.push_back("Back to");
+         expectedResult.push_back("back quotes");
+         observedResult = splitWithDoubleQuotes(originalString);
+
+         failMesg = "splitWithDoubleQuotes failed with leading quote";
+         testFramework.assert(expectedResult == observedResult, failMesg, __LINE__);
+
+         // empty, non-whitespace fields
+         originalString =
+            std::string("Zan.35(KB04-KB01), +90  7  7.73619,,,,-1.52405,no,,,");
+         expectedResult.clear();
+         expectedResult.push_back("Zan.35(KB04-KB01)");
+         expectedResult.push_back("+90  7  7.73619");
+         expectedResult.push_back("");
+         expectedResult.push_back("");
+         expectedResult.push_back("");
+         expectedResult.push_back("-1.52405");
+         expectedResult.push_back("no");
+         expectedResult.push_back("");
+         expectedResult.push_back("");
+         expectedResult.push_back("");
+         observedResult = splitWithDoubleQuotes(originalString,',',true,false);
+
+         failMesg = "splitWithDoubleQuotes fails with empty non-white fields";
+         testFramework.assert(expectedResult == observedResult, failMesg, __LINE__);
+
+
+         return testFramework.countFails();
+      }
 
 /* =========================================================================================================================
    Test for the hexDump methods
@@ -950,6 +1056,9 @@ int main() //Main function to initialize and run all tests above
    errorCounter += check;
 
    check = testClass.splitWithQuotesTest();
+   errorCounter += check;
+
+   check = testClass.splitWithDoubleQuotesTest();
    errorCounter += check;
 
    check = testClass.hexDumpDataTest();

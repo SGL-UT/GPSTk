@@ -52,7 +52,7 @@
 #include "RinexObsHeader.hpp"
 #include "Position.hpp"
 #include "SimpleIURAWeight.hpp"
-#include "TropModel.hpp"
+#include "MOPSTropModel.hpp"
 #include "GNSSconstants.hpp"
 #include "GNSSconstants.hpp"                   // DEG_TO_RAD
 #include <cmath>
