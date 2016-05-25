@@ -145,7 +145,25 @@ namespace gpstk
          InvalidRequest exc("Required data not stored.");
          GPSTK_THROW(exc);
       }
-      
+
+      string ssys = SatID::convertSatelliteSystemToString(satID.system); 
+      s << setw(7) << ssys;
+      s << " " << setw(2) << satID.id;
+
+      string tform="%02m/%02d/%04Y %02H:%02M:%02S";
+      s << "  52";
+      s << " " << printTime(beginValid,tform) << "  ";      
+
+      s << "NMCT ";       
+         //Correlate availIndicator with NMCT table in IS-GPS-200
+      string value;
+      switch(availIndicator) {
+         case 0 : value = "0 - Unencrypted";   break;
+         case 1 : value = "1 - Encrypted";     break;
+         case 2 : value = "2 - Not Available"; break;
+         case 3 : value = "3 - Reserved";      break; 
+         } 
+         s << value;
    }
          
    void OrbSysGpsL_52::dumpBody(ostream& s) const

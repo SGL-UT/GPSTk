@@ -196,7 +196,7 @@ namespace gpstk
       }
 
 
-         // If detail==0 (or at least !=1 and !=2) generate a summary
+         // If detail==0 (or at least !=1 and !=2 and !=3) generate a summary
          // table of the contents of the store.
       s << "**********************************************************" << endl;
       s << " Summary Table of OrbSysStore" << endl;
@@ -537,8 +537,8 @@ namespace gpstk
 *   Test  
 *   Case    Result
 *   ----    ------
-*      1    Invalid Requrest (too early)
-*      2    Invalid Requrest (too early)
+*      1    Invalid Request (too early)
+*      2    Invalid Request (too early)
 *      3    T1
 *      4    T1
 *      5    T2
