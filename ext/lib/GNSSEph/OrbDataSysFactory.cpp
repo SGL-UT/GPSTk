@@ -41,6 +41,7 @@
 
 // GPS LNAV OrbDataSys derived classes
 #include "OrbSysGpsL_51.hpp"
+#include "OrbSysGpsL_52.hpp"
 #include "OrbSysGpsL_55.hpp"
 #include "OrbSysGpsL_56.hpp"
 #include "OrbSysGpsL_63.hpp"
@@ -130,6 +131,7 @@ namespace gpstk
 
             case 52:
             {
+               retVal = new OrbSysGpsL_52(pnb);
                break;
             }
 

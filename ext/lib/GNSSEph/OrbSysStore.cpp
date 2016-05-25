@@ -43,18 +43,31 @@
 #include <iomanip>
 #include <set>
 
-#include "StringUtils.hpp"
-#include "OrbSysStore.hpp"
-
 #include "CivilTime.hpp"
+#include "OrbDataSysFactory.hpp"
+#include "OrbSysStore.hpp"
+#include "StringUtils.hpp"
 #include "TimeString.hpp"
 
 using namespace std;
 using gpstk::StringUtils::asString;
 
-
 namespace gpstk
 {
+
+//------------------------------------------------------------------------------
+// Convenience method.  Since most navigation message handling
+// will likely involve PackedNavBits, we'll provide a means of 
+// creating and storing a message based on a PackedNavBits.
+   bool OrbSysStore::addMessage(const PackedNavBits& pnb)
+         throw(InvalidRequest,Exception)
+   {
+      if (debugLevel) cout << "Entering addMessage(PackedNavBits&)" << endl;
+
+      OrbDataSys* p = OrbDataSysFactory::convert(pnb);
+      if (p==0) return false;
+      return addMessage(p);
+   }
 
 //------------------------------------------------------------------------------
    bool OrbSysStore::addMessage(const OrbDataSys* p)

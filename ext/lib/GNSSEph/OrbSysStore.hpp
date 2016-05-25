@@ -76,6 +76,9 @@ namespace gpstk
       virtual ~OrbSysStore()
       {}
 
+      virtual bool addMessage(const PackedNavBits& pnb)
+         throw(InvalidRequest,Exception);
+
       virtual bool addMessage(const OrbDataSys* eph)
          throw(InvalidRequest,Exception);
 

@@ -45,7 +45,6 @@
 #include "GPSWeekSecond.hpp"
 #include "OrbDataSys.hpp"
 #include "OrbSysStore.hpp"
-#include "OrbSysStoreGpsL.hpp"
 #include "SystemTime.hpp"
 #include "TimeString.hpp"
 #include "TimeSystem.hpp"
@@ -56,10 +55,10 @@
 using namespace std;
 using namespace gpstk;
 
-class OrbDataSys_T
+class OrbSysStore_T
 {
 public:
-   OrbDataSys_T();
+   OrbSysStore_T();
 
    void init();
 
@@ -88,14 +87,14 @@ public:
    int debugLevel;   
 };
 
-OrbDataSys_T::
-OrbDataSys_T()
+OrbSysStore_T::
+OrbSysStore_T()
 {
    debugLevel = 0; 
    init();
 }
 
-unsigned OrbDataSys_T::
+unsigned OrbSysStore_T::
 createAndDump()
 {
    string currMethod = typeDesc + " create/store OrbDataSys objects";
@@ -116,7 +115,7 @@ createAndDump()
    }
 
       // All the navigation message data will be placed here. 
-   OrbSysStoreGpsL oss;
+   OrbSysStore oss;
    oss.setDebugLevel(debugLevel); 
 
    bool passed = true;
@@ -350,20 +349,20 @@ createAndDump()
    TURETURN();
 }
 
-void OrbDataSys_T::
+void OrbSysStore_T::
 init()
 {
    dataList.clear();
 } 
 
-void OrbDataSys_T::
+void OrbSysStore_T::
 setUpLNAV()
 {
    init();
 
       // Define state variables for creating a LNAV store
    typeDesc = "GPS_LNAV";
-   initialCT = CivilTime(2015,12,31,00,02,18,TimeSystem::GPS);
+   initialCT = CivilTime(2015,12,31,00,00,18,TimeSystem::GPS);
    finalCT   = CivilTime(2015,12,31,18,43,48,TimeSystem::GPS);
 
       // Literals for LNAV test data 
@@ -403,7 +402,7 @@ setUpLNAV()
    return;
 }
 
-void OrbDataSys_T::
+void OrbSysStore_T::
 setUpCNAV()
 {
    init();
@@ -438,22 +437,21 @@ setUpCNAV()
    return;
 }
 
-void OrbDataSys_T::
+void OrbSysStore_T::
 setUpBDS()
 {
 
 }
 
-void OrbDataSys_T::
+void OrbSysStore_T::
 setUpGLO()
 {
 
 }
 
-
    //---------------------------------------------------------------
    gpstk::PackedNavBits
-   OrbDataSys_T::
+   OrbSysStore_T::
    getPnbLNav(const gpstk::ObsID& oidr, const std::string& str)
                           throw(gpstk::InvalidParameter)
    {      
@@ -517,7 +515,7 @@ setUpGLO()
    
    //-------------------------------------------------
    gpstk::PackedNavBits 
-   OrbDataSys_T::
+   OrbSysStore_T::
    getPnbCNav(const gpstk::ObsID& oidr, const std::string& str)
              throw(gpstk::InvalidParameter)
    {
@@ -586,7 +584,7 @@ int main()
 {
   unsigned errorTotal = 0;
   
-  OrbDataSys_T testClass;
+  OrbSysStore_T testClass;
 
   testClass.setUpLNAV();
   errorTotal += testClass.createAndDump();
