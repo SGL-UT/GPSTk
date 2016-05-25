@@ -592,8 +592,8 @@ namespace gpstk
       short tracker;       /**< Tracker number */
       long HOWtime[3];     /**< Time of subframe 1-3 (sec of week) */
       short ASalert[3];    /**< A-S and "alert" flags for each
-                            * subframe. 2 bit quantity with A-S flag
-                            * the high order bit and the alert flag
+                            * subframe. 2 bit quantity with alert flag
+                            * the high order bit and the A-S flag
                             * low order bit */
       short weeknum;       /**< GPS full week number that corresponds
                             * to the HOWtime of SF1 */

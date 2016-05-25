@@ -58,8 +58,8 @@
 #include "RinexMetHeader.hpp"
 #include "RinexMetStream.hpp"
 
-   // Class for handling tropospheric models
-#include "TropModel.hpp"
+   // Class for handling tropospheric model
+#include "GGTropModel.hpp"
 
    // Class for storing "broadcast-type" ephemerides
 #include "GPSEphemerisStore.hpp"

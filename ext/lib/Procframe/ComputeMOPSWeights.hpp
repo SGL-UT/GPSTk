@@ -52,7 +52,7 @@
 #include "SP3EphemerisStore.hpp"
 #include "GPSEphemerisStore.hpp"
 #include "ComputeIURAWeights.hpp"
-#include "TropModel.hpp"
+#include "MOPSTropModel.hpp"
 #include "GNSSconstants.hpp"             // DEG_TO_RAD
 
 
