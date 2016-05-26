@@ -54,13 +54,15 @@ namespace gpstk
    OrbSysGpsL_52::OrbSysGpsL_52()
       :OrbSysGpsL(),
        availIndicator(2),
-       erd(max_erd)
+       erd(max_erd),
+       erdAvail(max_erd)
    {}
 
    OrbSysGpsL_52::OrbSysGpsL_52(const PackedNavBits& msg)
       throw( InvalidParameter):
       OrbSysGpsL(),
-      erd(max_erd)
+      erd(max_erd),
+      erdAvail(max_erd)
 
    {
       loadData(msg);
@@ -85,6 +87,7 @@ namespace gpstk
       for (int i=0; i<max_erd; i++)
       {
          if (erd[i] != p->erd[i]) return false;
+         if (erdAvail[i] != p->erdAvail[i]) return false;
       }
        
       return true;      
@@ -112,6 +115,8 @@ namespace gpstk
       int offset     = 1;
       int ndx        = 0;
       double scale   = 0.3;
+      double unscaled = 0.0; 
+      unsigned long erdAsBits;
       unsigned int start2[2];
       unsigned int num2[]     = {2,4};
       int parityLen  = 6;
@@ -120,7 +125,8 @@ namespace gpstk
       {
          if (offset<3)
          {
-            erd[ndx]  = msg.asSignedDouble(startBit, numBits, scale);
+            erdAsBits = msg.asUnsignedLong(startBit, numBits, 1); 
+            unscaled  = msg.asSignedDouble(startBit, numBits, 0.0);
             startBit += numBits;
             offset++;
          }
@@ -128,11 +134,26 @@ namespace gpstk
          {
             start2[0] = startBit;
             start2[1] = startBit + num2[0] + parityLen;
-            erd[ndx]  = msg.asSignedDouble(start2, num2, 2, scale);
+
+               // The lsb of this quantity is NOT a power of 2, but
+               // a linear scale factor. 
+            erdAsBits = msg.asUnsignedLong(start2, num2, 2, 1); 
+            unscaled  = msg.asSignedDouble(start2, num2, 2, 0.0);
             startBit  = startBit + numBits + parityLen;
             offset    = 0;
          }
-      ndx++;
+
+         if (erdAsBits==0x20)
+         {
+            erdAvail[ndx] = false;
+            erd[ndx] = 0.0;
+         }
+         else
+         {
+            erdAvail[ndx] = true;
+            erd[ndx]  = unscaled * scale;
+         }
+         ndx++;
       }
       dataLoadedFlag = true;
    }
@@ -199,8 +220,11 @@ namespace gpstk
       {
          for (size_t i=0; i<max_erd; i++)
          {
-               s << "ERD[" << setw(2) << i << "]         " << setw(8) 
-                           << erd[i] << " meters" << endl;
+               s << "ERD[" << setw(2) << i << "]         " 
+                 << setw(12) << erd[i] << " meters";
+               if (erdAvail[i]) s << "   valid";
+                  else          s << " INVALID";
+               s << endl;
          }
       }
       else
@@ -242,6 +266,13 @@ namespace gpstk
          InvalidRequest exc("NMCT only valid for PRN 1-31.");
          GPSTK_THROW(exc);
       }
+      if (!erdAvail[ndx])
+      {
+         stringstream ss;
+         ss << "No valid erd for " << sidr; 
+         InvalidRequest exc(ss.str());
+         GPSTK_THROW(exc);
+      }   
        
       return erd[ndx];
    }

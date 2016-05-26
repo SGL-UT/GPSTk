@@ -109,6 +109,7 @@ namespace gpstk
       
       unsigned short availIndicator;
       std::vector<double> erd;
+      std::vector<bool>   erdAvail;
       
    }; // end class OrbSysGpsL_52
 
