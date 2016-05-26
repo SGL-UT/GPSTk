@@ -55,10 +55,10 @@
 using namespace std;
 using namespace gpstk;
 
-class OrbDataSys_T
+class OrbSysStore_T
 {
 public:
-   OrbDataSys_T();
+   OrbSysStore_T();
 
    void init();
 
@@ -87,23 +87,23 @@ public:
    int debugLevel;   
 };
 
-OrbDataSys_T::
-OrbDataSys_T()
+OrbSysStore_T::
+OrbSysStore_T()
 {
    debugLevel = 0; 
    init();
 }
 
-unsigned OrbDataSys_T::
+unsigned OrbSysStore_T::
 createAndDump()
 {
    string currMethod = typeDesc + " create/store OrbDataSys objects";
-   TUDEF("OrbDataSys",currMethod);
+   TUDEF("OrbSysStore",currMethod);
 
       // Open an output stream specific to this navigation message type
    std::string fs = getFileSep(); 
    std::string tf(getPathTestTemp()+fs);
-   std::string tempFile = tf + "test_output_OrbDataSys_T_" +
+   std::string tempFile = tf + "test_output_OrbSysStore_T_" +
                          typeDesc+".out";
    out.open(tempFile.c_str(),std::ios::out);
    if (!out)
@@ -118,6 +118,8 @@ createAndDump()
    OrbSysStore oss;
    oss.setDebugLevel(debugLevel); 
 
+   bool passed = true;
+   unsigned long addSuccess = 0; 
    list<PackedNavBits>::const_iterator cit;
    for (cit=dataList.begin();cit!=dataList.end();cit++)
    {
@@ -125,27 +127,201 @@ createAndDump()
       {
          const PackedNavBits& pnbr = *cit;
          bool retval = oss.addMessage(pnbr);
-         /*
-         unsigned long sf = pnbr.asUnsignedLong(49,3,1);
-         unsigned long svid = 0;
-         if (sf>3) svid = pnbr.asUnsignedLong(62,6,1);
-         if (debugLevel) cout << "    succeeded...."
-                              << pnbr.getsatSys() << ", "
-                              << " sf, SV ID: " << sf << ", " << svid << endl;
-         */
+         if (retval) addSuccess++;
       }
       catch(gpstk::InvalidRequest ir)
       {
-         // do nothing
-         // The failure will be reflected in the 
-         // fact that the output will be missing expected data
+         passed = false;
+         std::stringstream ss;
+         ss << "Load of OrbSysStore failed." << std::endl;
+         ss << ir; 
+         TUFAIL(ss.str());
       }
    }
+   unsigned long count = oss.size();
+   if (count!=addSuccess)
+   {
+      stringstream ss;
+      ss << "Size of ObsSysStore incorrect after loading.  Expected " 
+         << addSuccess << " actual size " << count;
+      TUFAIL(ss.str());
+      passed = false; 
+   }
+   if (passed) TUPASS("Successfully loaded data to store.");
 
-      // Verify number of entries in the store. 
-   out << "# of OrbSysStore entries: " << oss.size() << endl; 
+//--- Test the isPresent( ) method --------------------------------
+   currMethod = typeDesc + " OrbSysStore.isPresent() "; 
+   TUCSM(currMethod);
+   SatID sidT1(1,SatID::systemGPS);
+   if (oss.isPresent(sidT1)) 
+      TUPASS("");
+   else
+      TUFAIL("Failed to find PRN 1 in store"); 
+   
+   SatID sidT2(33,SatID::systemGPS);
+   if (oss.isPresent(sidT2))
+      TUFAIL("Reported PRN 33 as present (which is not true)");
+   else 
+      TUPASS("");
+      
+//--- Test the getXXXTime( ) methods -------------------------
+   currMethod = typeDesc + " OrbSysStore.getXxxxTime() "; 
+   TUCSM(currMethod);
+   try
+   {
+      const CommonTime& initialTestT = oss.getInitialTime();
+      if (initialTestT==initialCT) TUPASS("");
+      else
+      {
+         stringstream ss;
+         ss << "Incorrect initial time.  Expected "
+            << printTime(initialCT,"%02m/%02d/%4Y %02H:%02M:%02S %P")
+            << " found "
+            << printTime(initialTestT,"%02m/%02d/%4Y %02H:%02M:%02S %P");
+         TUFAIL(ss.str());
+      }
+   }
+   catch (InvalidRequest ir)
+   {
+     stringstream ss;
+     ss << "Unexpected exception." << ir;
+     TUFAIL(ss.str());
+   }
+
+   try
+   {
+      const CommonTime& finalTestT = oss.getFinalTime();
+      if (finalTestT==finalCT) TUPASS("");
+      else
+      {
+         stringstream ss;
+         ss << "Incorrect final time.  Expected "
+            << printTime(finalCT,"%02m/%02d/%4Y %02H:%02M:%02S %P")
+            << " found "
+            << printTime(finalTestT,"%02m/%02d/%4Y %02H:%02M:%02S %P");
+         InvalidRequest ir(ss.str());
+         TUFAIL(ss.str());
+      }
+   }
+   catch (InvalidRequest ir)
+   {
+     stringstream ss;
+     ss << "Unexpected exception." << ir;
+     TUFAIL(ss.str());
+   }
+
+//--- Test the find( ) method --------------------------------
+   currMethod = typeDesc + " OrbSysStore.find() "; 
+   TUCSM(currMethod);
+   SatID sidTest(1,SatID::systemGPS);
+   NavID nidTest(NavID::ntGPSLNAV);
+   unsigned long UID = 56;
+
+      // TOO EARLY
+   CommonTime testTime = CivilTime(2015,12,31,00,00,00,TimeSystem::GPS); 
+   try
+   {
+      const OrbDataSys* p = oss.find(sidTest,nidTest,UID,testTime); 
+      stringstream ss;
+      ss << "Failed to throw exception for time prior to all data";
+      TUFAIL(ss.str());
+   }
+   catch (InvalidRequest)
+   {
+      TUPASS("");
+   }
+
+      // Right on time (which is still too early)
+   testTime = CivilTime(2015,12,31,00,11,18,TimeSystem::GPS); 
+   try
+   {
+      const OrbDataSys* p = oss.find(sidTest,nidTest,UID,testTime); 
+      stringstream ss;
+      ss << "Failed to throw exception for time prior to all data";
+      TUFAIL(ss.str());
+   }
+   catch (InvalidRequest)
+   {
+      TUPASS("");
+   }
+
+      // Should return object with xMit of 00:11:31
+   CommonTime expTime = testTime;
+   testTime = CivilTime(2015,12,31,02,00,00,TimeSystem::GPS);
+   try
+   {
+      const OrbDataSys* p = oss.find(sidTest,nidTest,UID,testTime); 
+      if (p->beginValid==expTime) TUPASS("");
+      else
+      {
+         stringstream ss;
+         ss << "Wrong object found.  Expected xmit time "
+            << printTime(expTime,"%02H:%02M:%02S")
+            << " found time " 
+            << printTime(p->beginValid,"%02H:%02M:%02S"); 
+         TUFAIL(ss.str());
+      }
+   }
+   catch (InvalidRequest ir)
+   {
+      stringstream ss;
+      ss << "Unexpected exception" << endl;
+      ss << ir << endl;
+      TUFAIL(ss.str());
+   }
+   
+      // Should return object with xMit of 00:11:31
+   testTime = CivilTime(2015,12,31,12,28,48,TimeSystem::GPS);
+   try
+   {
+      const OrbDataSys* p = oss.find(sidTest,nidTest,UID,testTime); 
+      if (p->beginValid==expTime) TUPASS("");
+      else
+      {
+         stringstream ss;
+         ss << "Wrong object found.  Expected xmit time "
+            << printTime(expTime,"%02H:%02M:%02S")
+            << " found time " 
+            << printTime(p->beginValid,"%02H:%02M:%02S"); 
+         TUFAIL(ss.str());
+      }
+   }
+   catch (InvalidRequest ir)
+   {
+      stringstream ss;
+      ss << "Unexpected exception" << endl;
+      ss << ir << endl;
+      TUFAIL(ss.str());
+   }
+
+      // Should return object with xMit of 12:28:48
+   expTime =  CivilTime(2015,12,31,12,28,48,TimeSystem::GPS);
+   testTime = CivilTime(2015,12,31,14,00,00,TimeSystem::GPS);
+   try
+   {
+      const OrbDataSys* p = oss.find(sidTest,nidTest,UID,testTime); 
+      if (p->beginValid==expTime) TUPASS("");
+      else
+      {
+         stringstream ss;
+         ss << "Wrong object found.  Expected xmit time "
+            << printTime(expTime,"%02H:%02M:%02S")
+            << " found time " 
+            << printTime(p->beginValid,"%02H:%02M:%02S"); 
+         TUFAIL(ss.str());
+      }
+   }
+   catch (InvalidRequest ir)
+   {
+      stringstream ss;
+      ss << "Unexpected exception" << endl;
+      ss << ir << endl;
+      TUFAIL(ss.str());
+   }
 
       // Dump the store
+   currMethod = typeDesc + " OrbSysStore.dump()";
+   TUCSM(currMethod);
    oss.dump(out);
 
       // Dump terse (one-line) summaries
@@ -154,23 +330,32 @@ createAndDump()
       // Dump all contents
    oss.dump(out,2);
 
-      // Dump terse in time order
+      // Dump terese in time order
    oss.dump(out,3);
 
-      // Clean up
+      // Clear the store
+   currMethod = typeDesc + " OrbSysStore.clear()";
+   TUCSM(currMethod);
+
    oss.clear();
+   if (oss.size()!=0)
+   {
+      TUFAIL("Failed to entirely clear OrbSysStore.");
+   }
+   else TUPASS("");
+
    out.close();
 
-   return 0; 
+   TURETURN();
 }
 
-void OrbDataSys_T::
+void OrbSysStore_T::
 init()
 {
    dataList.clear();
 } 
 
-void OrbDataSys_T::
+void OrbSysStore_T::
 setUpLNAV()
 {
    init();
@@ -181,7 +366,7 @@ setUpLNAV()
    finalCT   = CivilTime(2015,12,31,18,43,48,TimeSystem::GPS);
 
       // Literals for LNAV test data 
-   const unsigned short LNavExCount = 18;
+   const unsigned short LNavExCount = 17;
    const std::string LNavEx[] =
    {
       "365,12/31/2015,00:00:00,1877,345600,1,63,100, 0x22C3550A, 0x1C2029AC, 0x35540023, 0x0EA56C31, 0x16E4B88E, 0x37CECD3F, 0x171242FF, 0x09D588A2, 0x0000023F, 0x00429930",
@@ -195,16 +380,11 @@ setUpLNAV()
       "365,12/31/2015,12:28:54,1877,390534,1,63,518, 0x22C3550A, 0x1FC84D34, 0x14A1B582, 0x243D154A, 0x3F4DC023, 0x28432F8B, 0x0F198ACA, 0x2C6EA741, 0x2EC76168, 0x0F400C54",
       "365,12/31/2015,00:02:18,1877,345738,1,63,425, 0x22C3550A, 0x1C230C58, 0x1FEE6CC4, 0x2AEAEEC0, 0x26A66A75, 0x2A666666, 0x26EEEE53, 0x2AEA4013, 0x0000003F, 0x0000006C",
       "365,12/31/2015,00:02:24,1877,345744,1,63,525, 0x22C3550A, 0x1C232DD0, 0x1CDED544, 0x00000FDE, 0x00000029, 0x00000016, 0x00000029, 0x00000016, 0x00000029, 0x000000E0",
-      "365,12/31/2015,00:10:48,1877,346248,1,63,417, 0x22C3550A, 0x1C2DACF0, 0x1DD11675, 0x12959676, 0x1693080D, 0x1689D262, 0x11968C6F, 0x15D0CD3B, 0x15164E8E, 0x0D1640B4",
       "365,12/31/2015,00:11:18,1877,346278,2,61,418, 0x22C3550A, 0x1C2E4CC4, 0x1E037FFB, 0x3FC08E66, 0x3C7FC45D, 0x0000014E, 0x00000029, 0x005ED55B, 0x044EC0FD, 0x04400054",
       "365,12/31/2015,18:43:48,1877,413028,2,61,418, 0x22C3550A, 0x219CECF0, 0x1E037FFB, 0x3FC08E66, 0x3C7FC45D, 0x3FFFFE7B, 0x3FFFFFFC, 0x3F641555, 0x044EC0D4, 0x044000B4",
       "365,12/31/2015,00:11:18,1877,346278,3,69,418, 0x22C3550A, 0x1C2E4CC4, 0x1E037FFB, 0x3FC08E66, 0x3C7FC45D, 0x3FFFFF23, 0x3FFFFFFC, 0x3F9ED57B, 0x044EC0FD, 0x04400054",
       "365,12/31/2015,00:08:48,1877,346128,1,63,413, 0x22C3550A, 0x1C2B2C1C, 0x1D163D8D, 0x0374F72B, 0x0B190095, 0x08F95CEE, 0x0B5F0864, 0x24F97F6B, 0x2B9382F3, 0x2B0D72A8",
-      // Following record hand-edited in order to indicate unencrypted in the availability indicator.
-      // Also modified to indicate an INVALID ERD (ndx 5), a max + (011111 base 2) (ndx 3), and
-      // max negative (100001) (ndx 4).
-    //"365,12/31/2015,12:26:18,1877,390378,1,63,413, 0x22C3550A, 0x1FC50CF0, 0x1D1FE70B, 0x31715EBB, 0x1B9122BA, 0x0329194A, 0x18EC680E, 0x074229DF, 0x08E88416, 0x2A2445A4",
-      "365,12/31/2015,12:26:18,1877,390378,1,63,413, 0x22C3550A, 0x1FC50CF0, 0x1D0FE70B, 0x31F860BB, 0x1B9122BA, 0x0329194A, 0x18EC680E, 0x074229DF, 0x08E88416, 0x2A2445A4",
+      "365,12/31/2015,12:26:18,1877,390378,1,63,413, 0x22C3550A, 0x1FC50CF0, 0x1D1FE70B, 0x31715EBB, 0x1B9122BA, 0x0329194A, 0x18EC680E, 0x074229DF, 0x08E88416, 0x2A2445A4",
       "365,12/31/2015,00:08:48,1877,346128,2,61,413, 0x22C3550A, 0x1C2B2C1C, 0x1D1F18D0, 0x17B5F2ED, 0x3CE0889C, 0x1B176553, 0x129C8100, 0x32321ECF, 0x092F8292, 0x018C79A0"
    };
 
@@ -222,7 +402,7 @@ setUpLNAV()
    return;
 }
 
-void OrbDataSys_T::
+void OrbSysStore_T::
 setUpCNAV()
 {
    init();
@@ -257,13 +437,13 @@ setUpCNAV()
    return;
 }
 
-void OrbDataSys_T::
+void OrbSysStore_T::
 setUpBDS()
 {
 
 }
 
-void OrbDataSys_T::
+void OrbSysStore_T::
 setUpGLO()
 {
 
@@ -271,7 +451,7 @@ setUpGLO()
 
    //---------------------------------------------------------------
    gpstk::PackedNavBits
-   OrbDataSys_T::
+   OrbSysStore_T::
    getPnbLNav(const gpstk::ObsID& oidr, const std::string& str)
                           throw(gpstk::InvalidParameter)
    {      
@@ -335,7 +515,7 @@ setUpGLO()
    
    //-------------------------------------------------
    gpstk::PackedNavBits 
-   OrbDataSys_T::
+   OrbSysStore_T::
    getPnbCNav(const gpstk::ObsID& oidr, const std::string& str)
              throw(gpstk::InvalidParameter)
    {
@@ -404,7 +584,7 @@ int main()
 {
   unsigned errorTotal = 0;
   
-  OrbDataSys_T testClass;
+  OrbSysStore_T testClass;
 
   testClass.setUpLNAV();
   errorTotal += testClass.createAndDump();
