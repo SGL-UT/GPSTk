@@ -125,12 +125,12 @@ int main()
    
    stringstream l2;
    l2 << testIDCNAVL2;
-   if ( l2.str() == "GPS_L2_CNAV" ) TUPASS( "" );
+   if ( l2.str() == "GPS_CNAV_L2" ) TUPASS( "" );
    else TUFAIL( "String does not match GPS_L2_CNAV." );
    
    stringstream l5;
    l5 << testIDCNAVL5;
-   if ( l5.str() == "GPS_L5_CNAV" ) TUPASS( "" );
+   if ( l5.str() == "GPS_CNAV_L5" ) TUPASS( "" );
    else TUFAIL( "String does not match GPS_L5_CNAV." );
    
    stringstream mn;
