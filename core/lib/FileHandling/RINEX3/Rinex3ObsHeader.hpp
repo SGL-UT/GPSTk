@@ -238,8 +238,8 @@ namespace gpstk
 
             // NB 19Jun2013 MGEX data does not include GLONASS SLOT
             // and GLONASS COD/PHS/BIS records
-         allValid301            = 0x041205AB, ///< RINEX 3.01
-         allValid302            = 0x041205AB  ///< RINEX 3.02
+         allValid301            = 0x001205CB, ///< RINEX 3.01
+         allValid302            = 0x001205CB  ///< RINEX 3.02
       };
    
 #ifndef SWIG // nested structs/classes not supported by SWIG

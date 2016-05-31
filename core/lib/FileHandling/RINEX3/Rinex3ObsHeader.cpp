@@ -1314,7 +1314,9 @@ namespace gpstk
 
          valid |= validSystemScaleFac;
       }
-      else if(label == hsSystemPhaseShift) ///< "SYS / PHASE SHIFT"    R3.01
+      // R3.01: "SYS / PHASE SHIFTS"
+      // R3.02: "SYS / PHASE SHIFT" (why?!)
+      else if(label == hsSystemPhaseShift || label == hsSystemPhaseShift + "S")
       {
          RinexSatID sat;
             // system
@@ -1713,13 +1715,14 @@ namespace gpstk
             strm.timesystem = TimeSystem::BDT;
             firstObs.setTimeSystem(TimeSystem::BDT);
          }
-         else if(fileSysSat.system == SatID::systemMixed)
-         {
-            FFStreamError e("TimeSystem in MIXED files must be given by first obs");
-            GPSTK_THROW(e);
+         else if(fileSysSat.system == SatID::systemMixed) {
+            // Though it violates the standard,
+            // assume that file creator knew what he was doing,
+            // and use TimeSystem::GPS by default
+            strm.timesystem = TimeSystem::GPS;
+            firstObs.setTimeSystem(TimeSystem::GPS);
          }
-         else
-         {
+         else {
             FFStreamError e("Unknown file system type");
             GPSTK_THROW(e);
          }
@@ -2386,6 +2389,17 @@ namespace gpstk
 
          // 'old-style' type: Let's change it to 'new style'.
       if( newType.size() == 2 )
+      if (version < 3.0)
+      {
+         // Use mappings instead to find reassigned observation types
+         if (mapSysR2toR3ObsID.count("G") == 0 || mapSysR2toR3ObsID.at("G").count(newType) == 0)
+         {
+            InvalidRequest exc("Missing observation type.");
+            GPSTK_THROW(exc);
+         }
+         newType = mapSysR2toR3ObsID.at("G").at(newType).asString();
+      }
+      else
       {
          if( newType == "C1" ) newType = "C1C";
          else if( newType == "P1" ) newType = "C1P";
