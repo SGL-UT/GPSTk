@@ -1,5 +1,6 @@
 # apps/CMakeLists.txt
 
+add_subdirectory(difftools)
 add_subdirectory(mergetools)
 add_subdirectory(positioning)
 add_subdirectory(Rinextools)
