@@ -42,6 +42,7 @@
 #include <iomanip>
 
 #include "StringUtils.hpp"
+#include "OrbAlmFactory.hpp"
 #include "OrbAlmStore.hpp"
 #include "MathBase.hpp"
 #include "CivilTime.hpp"
@@ -52,6 +53,10 @@ using gpstk::StringUtils::asString;
 
 namespace gpstk
 {
+   const unsigned short OrbAlmStore::ADD_NEITHER = 0x00;
+   const unsigned short OrbAlmStore::ADD_BOTH    = 0x03;
+   const unsigned short OrbAlmStore::ADD_XMIT    = 0x01;
+   const unsigned short OrbAlmStore::ADD_SUBJ    = 0x02; 
 
 //--------------------------------------------------------------------------
 
@@ -61,7 +66,7 @@ namespace gpstk
       try
       {
          // test for GPS satellite system in sat?
-         const OrbAlm* alm = findOrbAlm(subjID,t);
+         const OrbAlm* alm = find(subjID,t);
 
          // If the orbital elements are unhealthy, refuse to 
          // calculate an SV position and throw.
@@ -106,7 +111,7 @@ namespace gpstk
       try
       {
          // test for GPS satellite system in sat?
-         const OrbAlm* alm = findOrbAlm(subjID, t);
+         const OrbAlm* alm = find(subjID, t);
          
          retVal = alm->isHealthy();
       }
@@ -129,7 +134,7 @@ namespace gpstk
 //------------------------------------------------------------------------------------
 
 //
-//  Dtaill 0 = Only cout of objects per satellite 
+//  Detail 0 = Only cout of objects per satellite 
 //  Detail 1 = terse mode (one line)
 //  Datial 2 = full dump of each object. 
 void OrbAlmStore::dumpSubjAlm( std::ostream& s, short detail ) const
@@ -143,9 +148,9 @@ void OrbAlmStore::dumpSubjAlm( std::ostream& s, short detail ) const
       if (detail==0)
       {
          s << " Span is " << (initialTime == CommonTime::END_OF_TIME
-                                      ? "End_time" : printTime(initialTime,fmt))
+                                      ? "Beginning_of_time" : printTime(initialTime,fmt))
            << " to " << (finalTime == CommonTime::BEGINNING_OF_TIME
-                                      ? "Begin_time" : printTime(finalTime,fmt))
+                                      ? "End_of_time" : printTime(finalTime,fmt))
            << " with " << size() << " entries."
            << std::endl;
       } // end if-block
@@ -162,9 +167,9 @@ void OrbAlmStore::dumpSubjAlm( std::ostream& s, short detail ) const
             {
                const OrbAlm* oe = ei->second;
                s << "PRN " << setw(2) << it->first
-                 << " TOE " << printTime(oe->ctToe,fmt)
-                 << " KEY " << printTime(ei->first,fmt);
-               s << " begVal: " << printTime(oe->beginValid,fmt);
+                 << " Toa " << printTime(oe->ctToe,fmt)
+                 << " begValid: " << printTime(oe->beginValid,fmt)
+                 << " endValid: " << printTime(oe->endValid,fmt);
                 
                s << std::endl;
             } //end inner for-loop */
@@ -176,7 +181,7 @@ void OrbAlmStore::dumpSubjAlm( std::ostream& s, short detail ) const
       } //end else-block
 
          // In this case the output is
-         // key, beginValid,  Toe,   endValid
+         // key, beginValid,  Toa,   endValid
       else if (detail==2)
       {
          for (it = subjectAlmMap.begin(); it != subjectAlmMap.end(); it++)
@@ -233,9 +238,9 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail ) const
   if (detail==0)
   {
      s << " Span is " << (initialTime == CommonTime::END_OF_TIME
-                                      ? "End_time" : printTime(initialTime,fmt))
+                                      ? "Beginning_of_time" : printTime(initialTime,fmt))
        << " to " << (finalTime == CommonTime::BEGINNING_OF_TIME
-                                      ? "Begin_time" : printTime(finalTime,fmt))
+                                      ? "End_of_time" : printTime(finalTime,fmt))
        << " with " << size(2) << " entries."
        << std::endl;
   } // end if-block
@@ -317,6 +322,32 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail ) const
 }
 
 //------------------------------------------------------------------------------------
+      /// Convenience method.  Since 
+   unsigned short OrbAlmStore::addMessage(const PackedNavBits& pnb)
+      throw(InvalidParameter,Exception)
+   {
+      unsigned short retVal = ADD_NEITHER; 
+      try
+      {
+         OrbAlm* p = orbAlmFactory.convert(pnb); 
+         if (p)
+         {
+            retVal = addOrbAlm(p);
+          }
+      }
+      catch(InvalidParameter ip)
+      {
+         GPSTK_RETHROW(ip);
+      }
+      catch(Exception exc)
+      {
+         GPSTK_RETHROW(exc);
+      }
+      return retVal;
+  }
+
+
+//------------------------------------------------------------------------------------
 // Keeps only one OrbAlm for a given satellite and epoch time.
 // It should keep the one with the earliest transmit time.
 //
@@ -327,12 +358,11 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail ) const
 // It is assumed that the provided OrbAlm already contains the 
 // SatID of the subject satellite. 
 //------------------------------------------------------------------------------------ 
-   bool OrbAlmStore::addOrbAlm( const OrbAlm* alm, 
-                                  const SatID& xmitID, 
-                                  const SatID& subjID,
-                                  const bool isXmitHealthy )
+   unsigned short OrbAlmStore::addOrbAlm( const OrbAlm* alm, 
+                                const bool isXmitHealthy )
       throw(InvalidParameter,Exception)
    {
+      unsigned short retVal = ADD_NEITHER; 
       bool test1 = false;
       bool test2 = false; 
       try
@@ -340,28 +370,33 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail ) const
             // First work on the subject almanac map.
          if (isXmitHealthy)
          {
-            OrbAlmMap& oem = subjectAlmMap[subjID];
+            OrbAlmMap& oem = subjectAlmMap[alm->subjectSV];
             test1 = addOrbAlmToOrbAlmMap(alm,oem);
          } 
 
             // Then work on the xmitAlmMap
-         UniqueAlmMap& uam = xmitAlmMap[xmitID];
-         OrbAlmMap& oemX = uam[subjID];
+         UniqueAlmMap& uam = xmitAlmMap[alm->satID];
+         OrbAlmMap& oemX = uam[alm->subjectSV];
          test2 = addOrbAlmToOrbAlmMap(alm,oemX); 
       }
       catch(Exception& e)
       {
          GPSTK_RETHROW(e)
       }
-      if (test1 || test2) return true;
-      return false; 
+      if (test1 || test2)
+      {
+         updateInitialFinal(alm); 
+         if (test1) retVal |= ADD_SUBJ;
+         if (test2) retVal |= ADD_XMIT;
+      }
+      return retVal; 
    }
 
       // This is a protected method.  In this case, the appropriate
       // OrbAlmMap has already been selected by satllite.  Now the
       // question is where to add this element into that map.  
    bool OrbAlmStore::addOrbAlmToOrbAlmMap( const OrbAlm* alm, 
-                                                    OrbAlmMap& oem)
+                                           OrbAlmMap& oem)
          throw(InvalidParameter,Exception)
    {
    try
@@ -576,6 +611,10 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail ) const
       {
          const OrbAlmMap& oem = i->second;
          counter = oem.size();
+
+         const SatID& sidr = i->first;
+         cout << " sat: " << sidr << endl;
+         cout << " counter : " << counter << endl;
       }
       return counter;
    }
@@ -612,11 +651,13 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail ) const
 //-----------------------------------------------------------------------------
 
    const OrbAlm*
-   OrbAlmStore::findOrbAlm(const SatID& subjID, const CommonTime& t) const
+   OrbAlmStore::find(const SatID& subjID, 
+                     const CommonTime& t,
+                     const bool useEffectivity) const
       throw( InvalidRequest )
    {
           // Check to see that there exists a map of orbital elements
-     // relevant to this SV.
+          // relevant to this SV.
       SubjectAlmMap::const_iterator prn_i = subjectAlmMap.find(subjID);
       if (prn_i == subjectAlmMap.end())
       {
@@ -627,19 +668,13 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail ) const
          // Define reference to the relevant map of orbital elements
       const OrbAlmMap& em = prn_i->second;
       OrbAlmMap::const_iterator cit; 
+      const OrbAlm* candidate = 0; 
 
-         // If there is only one element, that's the one we are going to return.
-      if (em.size()==1)
-      {
-         cit = em.begin();
-         return cit->second; 
-      }
-
-         // For the moment, I'm implementing a dirt-stupid linear search
+         // For the moment, this is implemented as a dirt-stupid linear search
          // from the beginning of the map.  If we ever want to process
          // weeks-and-weeks of almanac data at once, we will want to 
          // reconsider this. 
-      OrbAlmMap::const_iterator previt; 
+      OrbAlmMap::const_iterator previt = em.end(); 
       bool first = true; 
       for (cit=em.begin();cit!=em.end();cit++)
       {
@@ -649,32 +684,56 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail ) const
                // If the very first item in the map has a transmit time
                // later than the time of interest, then the best we can 
                // do is return that item.
-            if (testp->beginValid >= t) return cit->second; 
-
-               // Otherwise, store this pointer as a POSSIBLE candidate, 
-               // and move on the next item. 
-            previt = cit;
+            if (testp->beginValid >= t) 
+            {
+               candidate = cit->second; 
+               break;
+            }
             first = false;
          }
          else
          {
-            if (testp->beginValid >= t) return previt->second;
-            previt = cit; 
+            if (testp->beginValid >= t)
+            {
+               candidate = previt->second;
+               break;
+            } 
          }
+
+            // Store this pointer as a POSSIBLE candidate, 
+            // and move on the next item. 
+         previt = cit; 
       }
+
          // We reached the end of the map without finding a transmit
          // time beyond the time of interest.  Return the last item
          // in the map. 
-      return previt->second; 
+      if (candidate==0) candidate = previt->second;
+
+         // If effectivity is of interest, verify that effectivity is met
+         // for this candidate
+      if (useEffectivity)
+      {
+         bool inRange = (candidate->beginValid < t) &&
+                        (t <= candidate->endValid );
+         if (!inRange)
+         {
+            InvalidRequest e("No orbital elements for satellite " + asString(subjID));
+            GPSTK_THROW(e);
+         }
+      }
+
+      return candidate; 
    } 
  
       // Question: Do we really need/want this method?  If so, there's
       // somewhat of a conflict for "best design" between the need for 
       // a decent lookup algorithm and the need for an appropriate 
       // orderly dump. 
-   const OrbAlm* OrbAlmStore::findOrbAlm( const SatID& xmitID, 
-                                                 const SatID& subjID, 
-                                                 const CommonTime& t )
+   const OrbAlm* OrbAlmStore::find( const SatID& xmitID, 
+                                    const SatID& subjID, 
+                                    const CommonTime& t,
+                                    const bool useEffectvity)
          const throw( InvalidRequest )
    {
       OrbAlm* oeb = 0;

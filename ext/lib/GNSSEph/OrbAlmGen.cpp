@@ -55,9 +55,13 @@
 #include "TimeSystem.hpp"
 #include "YDSTime.hpp"
 
+using namespace std;
+
 namespace gpstk
 {
-   using namespace std;
+   const unsigned long OrbAlmGen::ALMANAC_PERIOD_LNAV = 720;     // 12.5 minutes for GPS LNAV
+   const unsigned long OrbAlmGen::FRAME_PERIOD_LNAV   =  30;     //  30 seconds for GPS LNAV
+
    OrbAlmGen::OrbAlmGen()
       : OrbAlm(),
         AHalf(0.0), A(0.0), af0(0.0), af1(0.0),
@@ -556,7 +560,7 @@ namespace gpstk
       if ( (subframe!=4 && subframe!=5))
       {
          stringstream ss;
-         ss << "Expected GPS LNAV subframe 4.  Found subframe " << subframe;
+         ss << "Expected GPS LNAV subframe 4/5.  Found subframe " << subframe;
          InvalidParameter ip(ss.str());
          GPSTK_THROW(ip); 
       }
@@ -574,6 +578,20 @@ namespace gpstk
 
          // Set the subjectSV (found in OrbAlm.hpp)
       subjectSV = SatID(SVID, SatID::systemGPS);
+
+         // Test for default nav data.  It's probably NOT default, so we want this test to 
+         // terminate and move on quickly if that's the case. 
+      if (subjectSV.id==0)
+      {
+         unsigned long  sow = (unsigned long) static_cast<GPSWeekSecond>(msg.getTransmitTime()).sow;
+         unsigned long offsetInCycle = sow % ALMANAC_PERIOD_LNAV;
+         int pageInCycle = (offsetInCycle / FRAME_PERIOD_LNAV) + 1; 
+         stringstream ss;
+         ss << "Found dummy almanac data from " << satID << " for subframe " << subframe
+            << " page " << pageInCycle; 
+         InvalidParameter ip(ss.str());
+         GPSTK_THROW(ip); 
+      }
 
          // Crack the bits into engineering units. 
       ecc = msg.asSignedDouble(68, 16, -21);
@@ -605,7 +623,7 @@ namespace gpstk
       unsigned short wk = WNa_full;
       if (toa!=t_oa)
       {
-         double diff = toa - t_oa;
+         double diff =  (double) toa - (double) t_oa;
          if (diff < -HALFWEEK) wk++;
          if (diff >  HALFWEEK) wk--;
       }
@@ -616,8 +634,9 @@ namespace gpstk
       beginValid = msg.getTransmitTime();
       beginValid.setTimeSystem(TimeSystem::GPS);
 
-         // Determine endValid.   This is set to "end of time" 
-      endValid   = CommonTime::END_OF_TIME;
+         // Determine endValid.   Based on IS-GPS-200 Table 20-XIII this is set to
+         // toa - 70 hours + 144 hours = toa + 74 hours = toa + 266400.
+      endValid   = ctToe + 266400.0;
       endValid.setTimeSystem(TimeSystem::GPS);
    }
 

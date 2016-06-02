@@ -64,6 +64,7 @@
 
 #include "OrbAlm.hpp"
 #include "Exception.hpp"
+#include "OrbAlmFactory.hpp"
 #include "SatID.hpp"
 #include "CommonTime.hpp"
 #include "XvtStore.hpp"
@@ -179,6 +180,11 @@ namespace gpstk
       virtual bool isHealthy( const SatID& subjID, const CommonTime& t ) const
          throw( InvalidRequest );
 
+      /// Convenience method.  Since navigation message data frequently
+      /// is stored in PackedNavBits objects, provide a means to go
+      /// directly from PNB into the map.  
+      virtual unsigned short addMessage(const PackedNavBits& pnb)
+         throw(InvalidParameter,Exception);
 
       /// Add an OrbAlm object to this collection. 
       /// Note: There are actually TWO collections.  A collection per-SV and a 
@@ -187,13 +193,10 @@ namespace gpstk
       /// loader in order that almanac data from unhealthy
       /// SVs is not accepted into the aggregation. 
       /// @param alm the OrbAlm (OrbAlm) to add
-      /// @param xmitID the ID of the transmitting SV
-      /// @param subjID the ID of the subject SV
       /// @param isXmitHealthy health status of the transmitting SV,
       /// @return true if OrbAlm was added, false otherwise
-      virtual bool addOrbAlm( const OrbAlm* alm, 
-                       const SatID& xmitID, const SatID& subjID,
-                       const bool isXmitHealthy )
+      virtual unsigned short addOrbAlm( const OrbAlm* alm,
+                              const bool isXmitHealthy=true )
          throw(InvalidParameter,Exception);
 
       /// Remove all data from this collection.
@@ -238,12 +241,14 @@ namespace gpstk
       /// @param t time with which to search for OrbAlm
       /// @return a reference to the desired OrbAlm
       /// @throw InvalidRequest object thrown when no OrbAlm is found
-      const OrbAlm* findOrbAlm( const SatID& subjID, const CommonTime& t )
+      const OrbAlm* find( const SatID& subjID, const CommonTime& t, 
+                          const bool useEffectivity = true)
          const throw( InvalidRequest );
 
          // Determine best almanac for SV subjID collected from SV xmitID. 
-      const OrbAlm* findOrbAlm( const SatID& xmitID, 
-                                      const SatID& subjID, const CommonTime& t )
+      const OrbAlm* find( const SatID& xmitID, 
+                          const SatID& subjID, const CommonTime& t,
+                          const bool useEffectivity = true)
          const throw( InvalidRequest );
 
       /// This is intended to store sets of unique almanac data. 
@@ -268,6 +273,20 @@ namespace gpstk
       /// for analysis.  If the map needs to be modified, see other methods.
       const OrbAlmMap& getOrbAlmMap( const SatID& subjID ) const
          throw( InvalidRequest );
+
+      void setDebugLevel(const int newLevel) 
+      {
+         debugLevel = newLevel; 
+         orbAlmFactory.debugLevel = newLevel;
+      }
+
+      int debugLevel;
+
+         // Variables for returning whether an almanac was added to one or both collections.
+      static const unsigned short ADD_NEITHER; 
+      static const unsigned short ADD_BOTH;
+      static const unsigned short ADD_XMIT;
+      static const unsigned short ADD_SUBJ;
 
       protected:
       bool addOrbAlmToOrbAlmMap( const OrbAlm* alm, 
@@ -303,6 +322,10 @@ namespace gpstk
 
       CommonTime initialTime; //< Time of the first OrbAlm
       CommonTime finalTime;   //< Time of the last OrbAlm
+
+         // This contains state information regadrding the 
+         // WNa/Toa for GPS LNAV and BeiDou.
+      OrbAlmFactory orbAlmFactory;
 
       // Here are a couple of methods to simplify the .cpp
       void updateInitialFinal(const OrbAlm* alm)

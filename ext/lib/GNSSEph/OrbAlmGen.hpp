@@ -171,6 +171,9 @@ namespace gpstk
       unsigned short health;
 
    protected:
+      static const unsigned long ALMANAC_PERIOD_LNAV;
+      static const unsigned long FRAME_PERIOD_LNAV;
+
       void loadDataGpsLNAV(const gpstk::PackedNavBits& msg,
                     const unsigned short WNa_full,
                     const unsigned long  t_oa)
