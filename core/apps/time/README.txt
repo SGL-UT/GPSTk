@@ -10,20 +10,23 @@ Optional arguments:
   -d, --debug                       Increase debug level
   -v, --verbose                     Increase verbosity
   -h, --help                        Print help usage
-  -c, --calendar=TIME               "Month(numeric) DayOfMonth Year"
-  -r, --rinex=TIME                  "Month(numeric) DayOfMonth Year Hour:Minute:Second"
+  -A, --ansi=TIME                   "ANSI-second"
+  -c, --civil=TIME             	    "Month(numeric) DayOfMonth Year Hour:Minute:Second"
   -R, --rinex-file=TIME             "Year(2-digit) Month(numeric) DayOfMonth Hour Minute Second"
-  -y, --doy=TIME                    "Year DayOfYear SecondsOfDay"
+  -o, --ews=TIME                    "GPSEpoch 10bitGPSWeek SecondOfWeek"
+  -f, --ws=TIME                     "FullGPSWeek SecondsOfWeek"
+  -w, --wz=TIME                     "FullGPSweek ZCounts"
+      --z29=TIME                    "29bitZCount"
+  -Z  --z32=TIME                    "32bitZCount"
+  -j  --julian=TIME                 "JulianDate"
   -m, --mjd=TIME                    "ModifiedJulianDate"
-  -o, --shortweekandsow=TIME        "10bitGPSweek SecondsOfWeek Year"
-  -z, --shortweekandzcounts=TIME    "10bitGPSweek ZCounts Year"
-  -f, --fullweekandsow=TIME         "FullGPSweek SecondsOfWeek"
-  -w, --fullweekandzcounts=TIME     "FullGPSweek ZCounts"
   -u, --unixtime=TIME               "UnixSeconds UnixMicroseconds"
-  -Z, --fullZcounts=TIME            "fullZcounts"
-  -F, --format=ARG                   Time format to use on output
-  -a, --add-offset=NUM               add NUM seconds to specified time
-  -s, --sub-offset=NUM               subtract NUM seconds from specified time
+  -y, --doy=TIME                    "Year DayOfYear SecondsOfDay"
+      --input-format=ARG            Time format to use on input
+      --input-time=TIME             Time to be parsed by "input-format" options
+  -F, --format=ARG                  Time format to use on output
+  -a, --add-offset=NUM              add NUM seconds to specified time
+  -s, --sub-offset=NUM              subtract NUM seconds from specified time
 
 Examples:
 c:\time> timcvt -y "2004 9 9"
