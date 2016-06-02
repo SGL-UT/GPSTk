@@ -392,6 +392,7 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail ) const
       return retVal; 
    }
 
+   //-----------------------------------------------------------------------------
       // This is a protected method.  In this case, the appropriate
       // OrbAlmMap has already been selected by satllite.  Now the
       // question is where to add this element into that map.  
@@ -479,8 +480,7 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail ) const
    return true;
    }
     
-//-----------------------------------------------------------------------------
-
+   //-----------------------------------------------------------------------------
    void OrbAlmStore::edit(const CommonTime& tmin, const CommonTime& tmax)
       throw()
    {
@@ -535,9 +535,10 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail ) const
       finalTime   = tmax;
    }
 
-  void OrbAlmStore::clear()
+   //-----------------------------------------------------------------------------
+   void OrbAlmStore::clear()
          throw()
-  {
+   {
         // First clear the subject almanac map
      SubjectAlmMap::iterator it;
      for (it=subjectAlmMap.begin();it!=subjectAlmMap.end();it++)
@@ -576,8 +577,7 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail ) const
   }
 
 
-//-----------------------------------------------------------------------------
-
+   //-----------------------------------------------------------------------------
    unsigned OrbAlmStore::size(unsigned short choice) const
          throw()
    {
@@ -602,6 +602,8 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail ) const
       }
       return counter;      
    }
+
+   //-----------------------------------------------------------------------------
    unsigned OrbAlmStore::sizeSubjAlm(const SatID& subjID) const
          throw()
    {
@@ -619,6 +621,7 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail ) const
       return counter;
    }
 
+   //-----------------------------------------------------------------------------
    unsigned OrbAlmStore::sizeXmitAlm(const SatID& xmitID) const
          throw()
    {
@@ -636,7 +639,6 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail ) const
       return counter;
    } 
 
-//-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
 // Goal is to find the set of orbital elements that would have been
@@ -649,24 +651,12 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail ) const
 // epoch time, that search is not a simple find.   HOWEVER, we want to 
 // keep the map in time-order by epoch time due to other concerns. 
 //-----------------------------------------------------------------------------
-
    const OrbAlm*
-   OrbAlmStore::find(const SatID& subjID, 
+   OrbAlmStore::find(const OrbAlmMap& em, 
                      const CommonTime& t,
                      const bool useEffectivity) const
       throw( InvalidRequest )
    {
-          // Check to see that there exists a map of orbital elements
-          // relevant to this SV.
-      SubjectAlmMap::const_iterator prn_i = subjectAlmMap.find(subjID);
-      if (prn_i == subjectAlmMap.end())
-      {
-         InvalidRequest e("No orbital elements for satellite " + asString(subjID));
-         GPSTK_THROW(e);
-      }
-
-         // Define reference to the relevant map of orbital elements
-      const OrbAlmMap& em = prn_i->second;
       OrbAlmMap::const_iterator cit; 
       const OrbAlm* candidate = 0; 
 
@@ -718,30 +708,43 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail ) const
                         (t <= candidate->endValid );
          if (!inRange)
          {
-            InvalidRequest e("No orbital elements for satellite " + asString(subjID));
+            InvalidRequest e("No orbital elements for requested satellite ");
             GPSTK_THROW(e);
          }
       }
 
       return candidate; 
    } 
- 
-      // Question: Do we really need/want this method?  If so, there's
-      // somewhat of a conflict for "best design" between the need for 
-      // a decent lookup algorithm and the need for an appropriate 
-      // orderly dump. 
-   const OrbAlm* OrbAlmStore::find( const SatID& xmitID, 
-                                    const SatID& subjID, 
+
+//-----------------------------------------------------------------------------
+   const OrbAlm* OrbAlmStore::find( const SatID& subjID, 
                                     const CommonTime& t,
-                                    const bool useEffectvity)
+                                    const bool useEffectivity, 
+                                    const SatID& xmitID )
          const throw( InvalidRequest )
    {
-      OrbAlm* oeb = 0;
+      const OrbAlm* oeb = 0;
+      try
+      {
+         if (xmitID==invalidSatID)
+         {
+            const OrbAlmMap& oam = getOrbAlmMap(subjID);
+            oeb = find(oam,t,useEffectivity); 
+         }
+         else
+         {
+            const OrbAlmMap& oam = getOrbAlmMap(xmitID,subjID);
+            oeb = find(oam,t,useEffectivity); 
+         }
+      }
+      catch (InvalidRequest ir)
+      {
+         GPSTK_RETHROW(ir);
+      }
       return oeb; 
    }
          
 //-----------------------------------------------------------------------------
-
    const OrbAlmStore::OrbAlmMap&
    OrbAlmStore::getOrbAlmMap( const SatID& subjID ) const
       throw( InvalidRequest )
@@ -760,5 +763,51 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail ) const
       }
       return(prn_i->second);
    }
+
+//-----------------------------------------------------------------------------
+   const OrbAlmStore::OrbAlmMap&
+   OrbAlmStore::getOrbAlmMap(const SatID& xmitID, 
+                             const SatID& subjID) const
+      throw( InvalidRequest )
+   {
+      if (!validSatSystem(subjID))
+      {
+         InvalidRequest e("Incorrect satellite system requested.");
+         GPSTK_THROW(e);
+      }
+
+      XmitAlmMap::const_iterator xmit_i = xmitAlmMap.find(xmitID);
+      if (xmit_i == xmitAlmMap.end())
+      {
+         InvalidRequest ir("No OrbAlm from xmit satellite " + asString(xmitID));
+         GPSTK_THROW(ir);
+      }
+
+      const UniqueAlmMap& uam = xmit_i->second;
+      UniqueAlmMap::const_iterator prn_i = uam.find(subjID);
+      if (prn_i == uam.end())
+      {
+         stringstream ss;
+         ss << "No OrbAlm for subject satellite " << asString(subjID)
+            << " from satellite " << asString(xmitID); 
+         InvalidRequest ir(ss.str());
+         GPSTK_THROW(ir);
+      }
+      return(prn_i->second);
+   }
+
+   /*
+      typedef std::map<SatID, OrbAlmMap> SubjectAlmMap;
+
+      // The map where unique almanacs across all transmitting SVs
+      // are stored. 
+      SubjectAlmMap subjectAlmMap;
+
+      // The map where unique almanacs collected from a given satellite are stored.
+      // The SatID is the identification of the TRANSMITTING satellite.
+      typedef std::map<SatID, OrbAlmMap> UniqueAlmMap;
+      typedef std::map<SatID, UniqueAlmMap> XmitAlmMap;
+      XmitAlmMap xmitAlmMap;
+   */
    
 } // namespace

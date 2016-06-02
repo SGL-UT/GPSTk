@@ -226,31 +226,6 @@ namespace gpstk
       virtual void dumpXmitAlm( std::ostream& s = std::cout, short detail = 0 ) const
          throw();
 
-      /*
-       *  Explanation of find( ) function for OrbAlmStore
-       *  
-       *  The findOrbAlm( ) funtion
-       *  does the best possible job of emulating the choice
-       *  that would be made by a real-time user
-       *
-       *  It is strongly suggested that the user load ALL 
-       *  available set of orbital elements into the store, 
-       *  regardless of health status.  
-       */
-      /// @param sat SatID of satellite of interest
-      /// @param t time with which to search for OrbAlm
-      /// @return a reference to the desired OrbAlm
-      /// @throw InvalidRequest object thrown when no OrbAlm is found
-      const OrbAlm* find( const SatID& subjID, const CommonTime& t, 
-                          const bool useEffectivity = true)
-         const throw( InvalidRequest );
-
-         // Determine best almanac for SV subjID collected from SV xmitID. 
-      const OrbAlm* find( const SatID& xmitID, 
-                          const SatID& subjID, const CommonTime& t,
-                          const bool useEffectivity = true)
-         const throw( InvalidRequest );
-
       /// This is intended to store sets of unique almanac data. 
       /// The key is the epoch time.
       /// This map is used in two very different ways within this class.
@@ -267,11 +242,39 @@ namespace gpstk
       /// each unique data set will be stored. 
       typedef std::multimap<CommonTime, OrbAlm*> OrbAlmMap;
 
+      /*
+       *  Explanation of find( ) function for OrbAlmStore
+       *  
+       *  The find( ) funtion
+       *  does the best possible job of emulating the choice
+       *  that would be made by a real-time user
+       *
+       *  It is strongly suggested that the user load ALL 
+       *  available set of orbital elements into the store, 
+       *  regardless of health status.  
+       */
+         // Determine best almanac for SV subjID collected from SV xmitID. 
+         // If xmitID == SatID (an invalid value), search the subject
+         // almanac map instead of a transmit-SV-specific map.  That is to 
+         // say, use the simpler versino of find()..
+      const OrbAlm* find( const SatID& subjID, 
+                          const CommonTime& t,
+                          const bool useEffectivity = true,
+                          const SatID& xmitID = SatID() )
+         const throw( InvalidRequest );
+
       /// Returns a map of the almemerides available for the specified
       /// satellite.  Note that the return is specifically chosen as a
       /// const reference.  The intent is to provide "read only" access
       /// for analysis.  If the map needs to be modified, see other methods.
+      ///
+      /// This version works from the "subject SV map"
       const OrbAlmMap& getOrbAlmMap( const SatID& subjID ) const
+         throw( InvalidRequest );
+      ///
+      /// This version works from the "xmit SV map of subject SV maps"
+      const OrbAlmMap&getOrbAlmMap(const SatID& xmitID, 
+                                   const SatID& subjID) const
          throw( InvalidRequest );
 
       void setDebugLevel(const int newLevel) 
@@ -288,10 +291,22 @@ namespace gpstk
       static const unsigned short ADD_XMIT;
       static const unsigned short ADD_SUBJ;
 
+      //---------------------------------------------------------------------------
       protected:
       bool addOrbAlmToOrbAlmMap( const OrbAlm* alm, 
                                          OrbAlmMap& oem)
          throw(gpstk::InvalidParameter, gpstk::Exception);
+
+      /// See the public find( ) methods for external access.  This version
+      /// is used internally once the correct OrbAlmMap has been identifited.
+      ///    @param em an OrbAlmMap containing OrbAlm* for the satellite of interest
+      ///    @param t time with which to search for OrbAlm
+      ///    @return a pointer to the desired OrbAlm
+      ///    @throw InvalidRequest object thrown when no OrbAlm is found
+      const OrbAlm* find(const OrbAlmMap& em, 
+                     const CommonTime& t,
+                     const bool useEffectivity) const
+      throw( InvalidRequest );
 
       /// Returns a string that will be used as a header for
       /// tables that print out OrbAlm::dumpTerse() 
@@ -326,6 +341,10 @@ namespace gpstk
          // This contains state information regadrding the 
          // WNa/Toa for GPS LNAV and BeiDou.
       OrbAlmFactory orbAlmFactory;
+
+         // Default constructor yields a specific invalid object. 
+         // We'll use that to detect a default argument in find( ) method.
+      SatID invalidSatID; 
 
       // Here are a couple of methods to simplify the .cpp
       void updateInitialFinal(const OrbAlm* alm)

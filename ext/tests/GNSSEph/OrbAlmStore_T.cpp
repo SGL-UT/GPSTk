@@ -67,39 +67,54 @@ public:
       CommonTime testTime;
       bool considerEff;
       CommonTime expBV;       // beginValid time for expected return
+      SatID xmitID;
 
       PassFailData(): 
          expectPass(false), 
          testTime(CommonTime::END_OF_TIME), 
          considerEff(false), 
-         expBV(CommonTime::END_OF_TIME)
+         expBV(CommonTime::END_OF_TIME),
+         xmitID(SatID())
          { }
 
          // Expect to pass, so include expected return.
-      PassFailData(const CommonTime& testT, const bool eff, const CommonTime& exp):
+      PassFailData(const CommonTime& testT, const bool eff, const CommonTime& exp, const SatID& sidr=SatID()):
          expectPass(true),
          testTime(testT),
          considerEff(eff),
-         expBV(exp)
+         expBV(exp),
+         xmitID(sidr)
          { }
 
          // Expect to fail, so do NOT include expected return.
-      PassFailData(const CommonTime& testT, const bool eff):
+      PassFailData(const CommonTime& testT, const bool eff, const SatID& sidr=SatID()):
          expectPass(false),
          testTime(testT),
          considerEff(eff),
-         expBV(CommonTime::END_OF_TIME)
+         expBV(CommonTime::END_OF_TIME),
+         xmitID(sidr)
          { }
 
    } PassFailData;
-
-
 
    OrbAlmStore_T();
 
    void init();
 
    unsigned createAndDump();
+   void testFind(const PassFailData& pfd, 
+                 const SatID& sidr,
+                       OrbAlmStore& oas,
+                       TestUtil& testFramework);
+   void testFindExpectingPass(const PassFailData& pfd, 
+                              const SatID& sidr,
+                                    OrbAlmStore& oas,
+                                    TestUtil& testFramework);
+   void testFindExpectingFail(const PassFailData& pfd,
+                              const SatID& sidr,
+                                    OrbAlmStore& oas,
+                                    TestUtil& testFramework);
+
    void setUpLNAV();
    void setUpCNAV();
    void setUpBDS();
@@ -122,6 +137,9 @@ public:
 
       // For testing the test
    int debugLevel;   
+
+      // List of PassFailData objects that contain definitions for sepcific find( ) tests.
+   list<PassFailData> pfList;
 };
 
 OrbAlmStore_T::
@@ -288,145 +306,81 @@ createAndDump()
      TUFAIL(ss.str());
    }
 
-//--- Test the find( ) method --------------------------------
+   //--- Test the find( ) method --------------------------------
    currMethod = typeDesc + " OrbAlmStore.find() "; 
    TUCSM(currMethod);
    SatID sidTest(1,SatID::systemGPS);
-   NavID nidTest(NavID::ntGPSLNAV);
-   unsigned long UID = 56;
 
-   CommonTime begValFirstAlmPRN1 = CivilTime(2015,12,31,00,02,54,TimeSystem::GPS);
-   CommonTime begValSecondAlmPRN1 = CivilTime(2015,12,31,12,20,24,TimeSystem::GPS);
-
-      // TOO EARLY and effectivty check is in force 
-   CommonTime testTime = CivilTime(2015,12,31,00,00,00,TimeSystem::GPS); 
-   try
+   list<PassFailData>::const_iterator citp;
+   for (citp=pfList.begin();citp!=pfList.end();citp++)
    {
-      const OrbAlm* p = oas.find(sidTest,testTime); 
-      stringstream ss;
-      ss << "Failed to throw exception for time prior to all data";
-      TUFAIL(ss.str());
-   }
-   catch (InvalidRequest)
-   {
-      TUPASS("");
+      const PassFailData& pfd = *citp;
+      testFind(pfd,sidTest,oas,testFramework);
    }
 
-      // Right on time (which is still too early)
-   testTime = CivilTime(2015,12,31,00,02,54,TimeSystem::GPS); 
-   try
-   {
-      const OrbAlm* p = oas.find(sidTest,testTime); 
-      stringstream ss;
-      ss << "Failed to throw exception for time prior to all data";
-      TUFAIL(ss.str());
-   }
-   catch (InvalidRequest)
-   {
-      TUPASS("");
-   }
+   //--- Dump the store ----------------------
+   currMethod = typeDesc + " OrbAlmStore.dump()";
+   TUCSM(currMethod);
+   oas.dump(out);
 
-      // Should return object with xMit of 00:02:54
-   testTime = CivilTime(2015,12,31,00,03,00,TimeSystem::GPS);
-   try
-   {
-      const OrbAlm* p = oas.find(sidTest,testTime); 
-      if (p->beginValid==begValFirstAlmPRN1) TUPASS("");
-      else
-      {
-         stringstream ss;
-         ss << "Wrong object found.  Expected xmit time "
-            << printTime(begValFirstAlmPRN1,"%02H:%02M:%02S")
-            << " found time " 
-            << printTime(p->beginValid,"%02H:%02M:%02S"); 
-         TUFAIL(ss.str());
-      }
-   }
-   catch (InvalidRequest ir)
-   {
-      stringstream ss;
-      ss << "Unexpected exception" << endl;
-      ss << ir << endl;
-      TUFAIL(ss.str());
-   }
-   
-      // Should return object with xMit of 00:02:54
-   testTime = CivilTime(2015,12,31,12,20,24,TimeSystem::GPS);
-   try
-   {
-      const OrbAlm* p = oas.find(sidTest,testTime); 
-      if (p->beginValid==begValFirstAlmPRN1) TUPASS("");
-      else
-      {
-         stringstream ss;
-         ss << "Wrong object found.  Expected xmit time "
-            << printTime(begValFirstAlmPRN1,"%02H:%02M:%02S")
-            << " found time " 
-            << printTime(p->beginValid,"%02H:%02M:%02S"); 
-         TUFAIL(ss.str());
-      }
-   }
-   catch (InvalidRequest ir)
-   {
-      stringstream ss;
-      ss << "Unexpected exception" << endl;
-      ss << ir << endl;
-      TUFAIL(ss.str());
-   }
+      // Dump terse (one-line) summaries
+   oas.dump(out,1);
 
-      // Should return object with xMit of 12:20:24
-   testTime = CivilTime(2015,12,31,14,00,00,TimeSystem::GPS);
-   try
-   {
-      const OrbAlm* p = oas.find(sidTest,testTime); 
-      if (p->beginValid==begValSecondAlmPRN1) TUPASS("");
-      else
-      {
-         stringstream ss;
-         ss << "Wrong object found.  Expected xmit time "
-            << printTime(begValSecondAlmPRN1,"%02H:%02M:%02S")
-            << " found time " 
-            << printTime(p->beginValid,"%02H:%02M:%02S"); 
-         TUFAIL(ss.str());
-      }
-   }
-   catch (InvalidRequest ir)
-   {
-      stringstream ss;
-      ss << "Unexpected exception" << endl;
-      ss << ir << endl;
-      TUFAIL(ss.str());
-   }
+      // Dump all contents
+   oas.dump(out,2);
 
-      // TOO LATE and effectivty check is in force 
-   testTime = CivilTime(2016,1,31,00,00,00,TimeSystem::GPS); 
-   try
-   {
-      const OrbAlm* p = oas.find(sidTest,testTime); 
-      stringstream ss;
-      ss << "Failed to throw exception for time after all endValid times";
-      TUFAIL(ss.str());
-   }
-   catch (InvalidRequest)
-   {
-      TUPASS("");
-   }
+      // Dump terse in time order
+   oas.dump(out,3);
 
-      // TOO EARLY, but effectivity test is off so the first item should be returned.
-   bool useEffectivity = false;
-   testTime = CivilTime(2015,12,31,00,00,00,TimeSystem::GPS); 
+   //--- Clear the store ----------------------
+   currMethod = typeDesc + " OrbAlmStore.clear()";
+   TUCSM(currMethod);
+
+   oas.clear();
+   if (oas.size()!=0)
+   {
+      TUFAIL("Failed to entirely clear OrbAlmStore.");
+   }
+   else TUPASS("");
+
+   out.close();
+
+   TURETURN();
+}
+
+//---------------------------------------------------------------------------------
+void OrbAlmStore_T::
+testFind(const PassFailData& pfd, 
+         const SatID& sidr,
+               OrbAlmStore& oas,
+               TestUtil& testFramework)
+{
+   if (pfd.expectPass) 
+      testFindExpectingPass(pfd,sidr,oas,testFramework);
+   else 
+      testFindExpectingFail(pfd,sidr,oas,testFramework);
+}
+
+//---------------------------------------------------------------------------------
+// Test OrbAlmStore.find( ) with a set of arguments that are expected to pass
+void OrbAlmStore_T::
+testFindExpectingPass(const PassFailData& pfd, 
+                            const SatID& sidr,
+                            OrbAlmStore& oas,
+                            TestUtil& testFramework)
+{
    try
    {
-      const OrbAlm* p = oas.find(sidTest,testTime,useEffectivity); 
+      const OrbAlm* p = oas.find(sidr, pfd.testTime, pfd.considerEff); 
       if (p)
       {
-         if (p->beginValid==begValFirstAlmPRN1) 
+         if (p->beginValid==pfd.expBV) 
             TUPASS("");
          else
          {
             stringstream ss;
             ss << "Wrong object found.  Expected xmit time "
-               << printTime(begValFirstAlmPRN1,"%02H:%02M:%02S")
+               << printTime(pfd.expBV,"%02H:%02M:%02S")
                << " found time " 
                << printTime(p->beginValid,"%02H:%02M:%02S"); 
             TUFAIL(ss.str());
@@ -446,78 +400,39 @@ createAndDump()
       ss << ir << endl;
       TUFAIL(ss.str());
    }
-
-      // TOO LATE, but effectivity test is off so the first item should be returned.
-   testTime = CivilTime(2016, 1,31,00,00,00,TimeSystem::GPS);   // Well beyond time of validity
-   try
-   {
-      const OrbAlm* p = oas.find(sidTest,testTime,useEffectivity); 
-      if (p)
-      {
-         if  (p->beginValid==begValSecondAlmPRN1) 
-            TUPASS("");
-         else
-         {
-            stringstream ss;
-            ss << "Wrong object found.  Expected xmit time "
-               << printTime(begValSecondAlmPRN1,"%02H:%02M:%02S")
-               << " found time " 
-               << printTime(p->beginValid,"%02H:%02M:%02S"); 
-            TUFAIL(ss.str());
-         }
-      }
-      else
-      {
-         stringstream ss;
-         ss << "Returned without a valid pointer.";
-         TUFAIL(ss.str()); 
-      }
-   }
-   catch (InvalidRequest ir)
-   {
-      stringstream ss;
-      ss << "Unexpected exception" << endl;
-      ss << ir << endl;
-      TUFAIL(ss.str());
-   }
-
-
-      // Dump the store
-   currMethod = typeDesc + " OrbAlmStore.dump()";
-   TUCSM(currMethod);
-   oas.dump(out);
-
-      // Dump terse (one-line) summaries
-   oas.dump(out,1);
-
-      // Dump all contents
-   oas.dump(out,2);
-
-      // Dump terese in time order
-   oas.dump(out,3);
-
-      // Clear the store
-   currMethod = typeDesc + " OrbAlmStore.clear()";
-   TUCSM(currMethod);
-
-   oas.clear();
-   if (oas.size()!=0)
-   {
-      TUFAIL("Failed to entirely clear OrbAlmStore.");
-   }
-   else TUPASS("");
-
-   out.close();
-
-   TURETURN();
+   return; 
 }
 
+//---------------------------------------------------------------------------------
+// Test OrbAlmStore.find( ) with a set of arguments that are expected to fail
+void OrbAlmStore_T::
+testFindExpectingFail(const PassFailData& pfd, 
+                      const SatID& sidr,
+                            OrbAlmStore& oas,
+                            TestUtil& testFramework)
+{
+   try
+   {
+      const OrbAlm* p = oas.find(sidr,pfd.testTime,pfd.considerEff); 
+      stringstream ss;
+      ss << "Failed to throw exception for time after all endValid times";
+      TUFAIL(ss.str());
+   }
+   catch (InvalidRequest)
+   {
+      TUPASS("");
+   }
+   return;
+}
+
+//---------------------------------------------------------------------------------
 void OrbAlmStore_T::
 init()
 {
    dataList.clear();
 } 
 
+//---------------------------------------------------------------------------------
 void OrbAlmStore_T::
 setUpLNAV()
 {
@@ -595,9 +510,97 @@ setUpLNAV()
       msg = getPnbLNav(currObsID,LNavEx[i]);
       dataList.push_back(msg);
    }
+
+   /*
+    *  Define several test of find( ) for Sat ID GPS 1
+    *     Expect   Test             Consider          Expected Return
+    *       Pass   Time             Effectivity       BeginValid         Test
+    *  1.  False   12/31 00:00:00    T            n/a                    Too early
+    *  2.  False   12/31 00:02:54    T            n/a                    Too early by 1 s
+    *  3.   True   12/31 00:02:55    T            12/31 00:02:54         Ealiest possible
+    *  4.   True   12/31 12:20:24    T            12/31 00:02:54         1s prior to cutover
+    *  5.   True   12/31 12:20:25    T            12/31 12:20:25         1s after cutover
+    *  6.  False    1/31/16 00:00    T            n/a                    Too late
+    *  7.   True   12/31 00:00:00    F            12/31 00:02:54         Early, but no eff test
+    *  8.   True    1/31/16 00:00    F            12/31 12:29:25         Late, but no eff. test
+    */
+   pfList.clear();
+   CommonTime begValFirstAlmPRN1 = CivilTime(2015,12,31,00,02,54,TimeSystem::GPS);
+   CommonTime begValSecondAlmPRN1 = CivilTime(2015,12,31,12,20,24,TimeSystem::GPS);
+   CommonTime testTime = CivilTime(2015,12,31,00,00,00,TimeSystem::GPS); 
+
+   PassFailData pfd(testTime,true);   // 1
+   pfList.push_back(pfd);
+
+   testTime = CivilTime(2015,12,31,00,02,54,TimeSystem::GPS);  // 2
+   pfd = PassFailData(testTime,true); 
+   pfList.push_back(pfd); 
+
+   testTime = CivilTime(2015,12,31,00,02,55,TimeSystem::GPS);  // 3
+   pfd = PassFailData(testTime,true,begValFirstAlmPRN1); 
+   pfList.push_back(pfd);
+
+   testTime = CivilTime(2015,12,31,12,20,24,TimeSystem::GPS);  // 4
+   pfd = PassFailData(testTime,true,begValFirstAlmPRN1); 
+   pfList.push_back(pfd);
+   
+   testTime = CivilTime(2015,12,31,12,20,25,TimeSystem::GPS);  // 5
+   pfd = PassFailData(testTime,true,begValSecondAlmPRN1); 
+   pfList.push_back(pfd);
+
+   testTime = CivilTime(2016, 1,31,00,00,00,TimeSystem::GPS);  // 6
+   pfd = PassFailData(testTime,true); 
+   pfList.push_back(pfd); 
+
+   testTime = CivilTime(2015,12,31,00,00,00,TimeSystem::GPS);  // 7
+   pfd = PassFailData(testTime,false,begValFirstAlmPRN1); 
+   pfList.push_back(pfd);
+
+   testTime = CivilTime(2016, 1,31,00,00,00,TimeSystem::GPS);  // 8
+   pfd = PassFailData(testTime,false,begValSecondAlmPRN1); 
+   pfList.push_back(pfd);
+
+   // Now search among the almanacs collected from a specific SV.
+   // 
+   //     Expect   Test             Consider          Expected Return
+   //       Pass   Time             Effectivity       BeginValid         Test
+   //  1.  False   12/31 00:00:00    T            n/a                    Too early
+   //  2.   True   12/31 00:02:55    T            12/31 00:02:54         Ealiest possible
+   //  3.  False    1/31/16 00:00    T            n/a                    Too late
+   //  4.   True   12/31 00:00:00    F            12/31 00:02:54         Early, but no eff test
+   //  5.   True    1/31/16 00:00    F            12/31 12:29:25         Late, but no eff. test
+   //  6.  False   12/31 00:02:55    T            12/31 00:02:54         As 2, but using a SatID not in the maps
+   SatID xmitID(2,SatID::systemGPS);
+
+   testTime = CivilTime(2015,12,31,00,00,00,TimeSystem::GPS);  // 1
+   pfd = PassFailData(testTime,true,xmitID); 
+   pfList.push_back(pfd); 
+
+   testTime = CivilTime(2015,12,31,00,02,55,TimeSystem::GPS);  // 2
+   pfd = PassFailData(testTime,true,begValFirstAlmPRN1,xmitID); 
+   pfList.push_back(pfd);
+
+   testTime = CivilTime(2016, 1,31,00,00,00,TimeSystem::GPS);  // 3
+   pfd = PassFailData(testTime,true,xmitID); 
+   pfList.push_back(pfd); 
+
+   testTime = CivilTime(2015,12,31,00,00,00,TimeSystem::GPS);  // 4
+   pfd = PassFailData(testTime,false,begValFirstAlmPRN1,xmitID); 
+   pfList.push_back(pfd);
+
+   testTime = CivilTime(2016, 1,31,00,00,00,TimeSystem::GPS);  // 5
+   pfd = PassFailData(testTime,false,begValSecondAlmPRN1,xmitID); 
+   pfList.push_back(pfd);
+
+   testTime = CivilTime(2015,12,31,00,02,55,TimeSystem::GPS);  // 6
+   SatID xmitID_32,SatID::systemGPS);
+   pfd = PassFailData(testTime,true,begValFirstAlmPRN1,xmitID_32);
+   pfList.push_back(pfd);
+
    return;
 }
 
+//---------------------------------------------------------------------------------
 void OrbAlmStore_T::
 setUpCNAV()
 {
@@ -633,12 +636,14 @@ setUpCNAV()
    return;
 }
 
+//---------------------------------------------------------------------------------
 void OrbAlmStore_T::
 setUpBDS()
 {
 
 }
 
+//---------------------------------------------------------------------------------
 void OrbAlmStore_T::
 setUpGLO()
 {
@@ -797,5 +802,4 @@ int main()
   cout << "Total Failures for " << __FILE__ << ": " << errorTotal << endl;
   return errorTotal; // Return the total number of errors
 }
-
 
