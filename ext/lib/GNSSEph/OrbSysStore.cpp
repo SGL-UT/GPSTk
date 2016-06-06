@@ -308,7 +308,7 @@ namespace gpstk
    {
       s << "**********************************************************" << endl;
       s << " One-line summary of non-orbit constellation overhead data" << endl;
-      s << "       Sat  ID mm/dd/yyyy HH:MM:SS  Data" << endl;
+      s << "       Sat  ID mm/dd/yyyy DOY HH:MM:SS  Data" << endl;
       SAT_NM_UID_MSG_MAP::const_iterator cit1;
       NM_UID_MSG_MAP::const_iterator cit2;
       UID_MSG_MAP::const_iterator cit3;
@@ -339,7 +339,7 @@ namespace gpstk
    {
       s << "**********************************************************" << endl;
       s << " One-line summary of non-orbit constellation overhead data" << endl;
-      s << "       Sat  ID mm/dd/yyyy HH:MM:SS  Data" << endl;
+      s << "       Sat  ID mm/dd/yyyy DOY HH:MM:SS  Data" << endl;
       SAT_NM_UID_MSG_MAP::const_iterator cit1;
       NM_UID_MSG_MAP::const_iterator cit2;
       UID_MSG_MAP::const_iterator cit3;

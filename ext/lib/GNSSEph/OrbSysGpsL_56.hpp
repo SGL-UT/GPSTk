@@ -107,7 +107,7 @@ namespace gpstk
       virtual double getUtcOffsetModLeapSec(const CommonTime& ct) const;
 
       virtual void dumpUtcTerse(std::ostream& s = std::cout, 
-              const std::string tform="%02m/%02d/%04Y %02H:%02M:%02S") const
+              const std::string tform="%02m/%02d/%04Y %03j %02H:%02M:%02S") const
          throw( InvalidRequest );
 
          /** Output the contents of this orbit data to the given stream.
