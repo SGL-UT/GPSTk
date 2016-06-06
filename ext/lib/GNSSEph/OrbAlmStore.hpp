@@ -310,16 +310,8 @@ namespace gpstk
 
       /// Returns a string that will be used as a header for
       /// tables that print out OrbAlm::dumpTerse() 
-      /// one-line summaries.  Since the definition of dumpTerse() 
-      /// is specific to each satellite system, it is anticipated
-      /// that this will be supplied by system-specific descendents
-      /// of OrbAlmStore.  Therefore, this base version pretty much
-      /// is a reminder that the getTerseHeader( ) needs to be written. 
-      virtual std::string getTerseHeader() const
-      {
-         std::string ret("Dummy header for dumpTerse() method."); 
-         return ret; 
-      } 
+      /// one-line summaries. 
+      virtual std::string getTerseHeader() const;
       
       /// This is intended to hold all unique almanacs for each SV
       /// sorted by the subject satellites ID. 

@@ -599,7 +599,7 @@ namespace gpstk
       deltai = msg.asDoubleSemiCircles(98, 16, -19);
       OMEGAdot = msg.asDoubleSemiCircles(120, 16, -38);
       health = (unsigned short) msg.asUnsignedLong(136, 8, 1);
-      AHalf = msg.asSignedDouble(150, 24, -11);
+      AHalf = msg.asUnsignedDouble(150, 24, -11);
       OMEGA0 = msg.asDoubleSemiCircles(180, 24, -23);
       w = msg.asDoubleSemiCircles(210, 24, -23);
       M0 = msg.asDoubleSemiCircles(240, 24, -23);

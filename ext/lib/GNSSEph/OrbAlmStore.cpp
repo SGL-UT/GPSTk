@@ -151,7 +151,7 @@ void OrbAlmStore::dumpSubjAlm( std::ostream& s, short detail ) const
                                       ? "Beginning_of_time" : printTime(initialTime,fmt))
            << " to " << (finalTime == CommonTime::BEGINNING_OF_TIME
                                       ? "End_of_time" : printTime(finalTime,fmt))
-           << " with " << size() << " entries."
+           << " with " << size(1) << " entries."
            << std::endl;
       } // end if-block
       else if (detail==1)
@@ -407,19 +407,6 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail ) const
          // Get the epoch time of the object
       const CommonTime& et = alm->ctToe;
 
-/*
-         // Search for epoch time in current keys.
-         // There may be one or more candidates.
-      OrbAlmMap::iterator it = oem.find(et);
-
-         // If almanac for this epoch time doesn't already exist, 
-         // we can simply load it. 
-      if (it==oem.end())
-      {
-         oem[et] = alm->clone();
-         return true;
-      }
-*/
          // Find the set of items with this epoch time already in table.
          // Several things to be checked for each candidate.
          //   1. Do the data contents match?  If so, we want to retain
@@ -442,36 +429,6 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail ) const
          // If the new almanac does not match any existing almanac, 
          // it will be added to the map.
       oem.insert(OrbAlmMap::value_type(et,alm->clone())); 
-
-/*
-      const OrbAlm* oe = it->second;
-      if (!alm->isSameData(oe))
-      {
-           stringstream os;
-           os << "Found matching epoch times, but different data. Satellite ";
-           os << alm->satID.id;
-           os << ", epoch time ";
-           os <<  printTime(alm->ctToe,ts) << endl;
-           os << "Currently in the Store:" << endl;
-           oe->dump(os);
-           os << endl; 
-           os << "Object to be added:" << endl;
-           alm->dump(os);
-           os << endl;
-           InvalidParameter exc( os.str() );
-           GPSTK_THROW(exc); 
-      }
-
-         // The "new" item has a later transmit time the item already in the map.
-         // Thereore, discard the new item and keep the one in the map.  
-      if (oe->beginValid <= alm->beginValid) return false;
-
-         // We need to erase the current item and insert the new item.
-      oem.erase(it);
-      oem[et] = alm->clone();
-      updateInitialFinal(alm);
-      return true;
-*/
    }
    catch(Exception& e)
    {
@@ -796,18 +753,13 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail ) const
       return(prn_i->second);
    }
 
-   /*
-      typedef std::map<SatID, OrbAlmMap> SubjectAlmMap;
+   std::string OrbAlmStore::getTerseHeader() const
+   {
+      stringstream ss;
+      ss << "                   Transmit Time " << endl;
+      ss << "   Sys PRN     mm/dd/yyyy DOY HH:MM:SS ";
+      return ss.str(); 
+   } 
 
-      // The map where unique almanacs across all transmitting SVs
-      // are stored. 
-      SubjectAlmMap subjectAlmMap;
-
-      // The map where unique almanacs collected from a given satellite are stored.
-      // The SatID is the identification of the TRANSMITTING satellite.
-      typedef std::map<SatID, OrbAlmMap> UniqueAlmMap;
-      typedef std::map<SatID, UniqueAlmMap> XmitAlmMap;
-      XmitAlmMap xmitAlmMap;
-   */
    
 } // namespace

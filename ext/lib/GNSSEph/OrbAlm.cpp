@@ -53,9 +53,9 @@ namespace gpstk
         << " ORB/CLK ALMANAC PARAMETERS FOR " << subjectSV
         << std::endl;
 
-      std::string tform("%02m/%02d/%Y %03j %02H:%02M:%02S  %7.0s  %P"); 
+      std::string tform("%02m/%02d/%Y %03j %02H:%02M:%02S  %7.0s  %4F %6.0g  %P"); 
       s << std::endl
-        << "              MM/DD/YYYY DOY HH:MM:SS      SOD\n";
+        << "              MM/DD/YYYY DOY HH:MM:SS      SOD  WWWW    SOW\n";
       s << "Transmit   :  "
         << printTime(beginValid,tform) << std::endl;
       s << "Orbit Epoch:  "

@@ -63,6 +63,7 @@ class OrbAlmStore_T
 public:
    typedef struct PassFailData
    {
+      SatID subjID;
       bool expectPass;
       CommonTime testTime;
       bool considerEff;
@@ -70,6 +71,7 @@ public:
       SatID xmitID;
 
       PassFailData(): 
+         subjID(SatID()),
          expectPass(false), 
          testTime(CommonTime::END_OF_TIME), 
          considerEff(false), 
@@ -78,7 +80,9 @@ public:
          { }
 
          // Expect to pass, so include expected return.
-      PassFailData(const CommonTime& testT, const bool eff, const CommonTime& exp, const SatID& sidr=SatID()):
+      PassFailData(const SatID& subj, const CommonTime& testT, const bool eff, 
+                   const CommonTime& exp, const SatID& sidr=SatID()):
+         subjID(subj),
          expectPass(true),
          testTime(testT),
          considerEff(eff),
@@ -87,7 +91,8 @@ public:
          { }
 
          // Expect to fail, so do NOT include expected return.
-      PassFailData(const CommonTime& testT, const bool eff, const SatID& sidr=SatID()):
+      PassFailData(const SatID& subj, const CommonTime& testT, const bool eff, const SatID& sidr=SatID()):
+         subjID(subj),
          expectPass(false),
          testTime(testT),
          considerEff(eff),
@@ -103,15 +108,12 @@ public:
 
    unsigned createAndDump();
    void testFind(const PassFailData& pfd, 
-                 const SatID& sidr,
                        OrbAlmStore& oas,
                        TestUtil& testFramework);
    void testFindExpectingPass(const PassFailData& pfd, 
-                              const SatID& sidr,
                                     OrbAlmStore& oas,
                                     TestUtil& testFramework);
    void testFindExpectingFail(const PassFailData& pfd,
-                              const SatID& sidr,
                                     OrbAlmStore& oas,
                                     TestUtil& testFramework);
 
@@ -126,12 +128,26 @@ public:
                                    const std::string& str)
              throw(gpstk::InvalidParameter);
 
-      // Methods above exist to set up the following
+      // The setUpXXX() methods above exist to set up the following
       // members
-   list<PackedNavBits> dataList;
+   list<PackedNavBits> dataList; 
    string typeDesc;
    CommonTime initialCT;
    CommonTime finalCT;
+
+      // There are three size( ) values to be tested.
+      //   sizeTotal - The total number of almanac objects expected, both in the
+      //               subject SV store and the transmit store.
+      //   sizeSubj - The number of almanac objects expected in the subject
+      //               almanac table.
+      //   sizeXmit - The number of almanac object expected in the transmit
+      //                almanac table. 
+      // It is not enough to simply count the number of object read in as some
+      // will be redundant and not stored. 
+      // 
+   unsigned int sizeTotal;
+   unsigned int sizeSubj;
+   unsigned int sizeXmit;
 
    ofstream out; 
 
@@ -204,11 +220,11 @@ createAndDump()
       }
    }
    unsigned count = oas.size();
-   if (count!=addSuccess)
+   if (count!=sizeTotal)
    {
       stringstream ss;
       ss << "Size of ObsSysStore incorrect after loading.  Expected " 
-         << addSuccess << " actual size " << count;
+         << sizeTotal << " actual size " << count;
       TUFAIL(ss.str());
       passed = false; 
    }
@@ -218,11 +234,11 @@ createAndDump()
    }
 
    unsigned countSubj = oas.size(1);
-   if (countSubj!=addSubj)
+   if (countSubj!=sizeSubj)
    {
       stringstream ss;
       ss << "Size of ObsSysStore(subject SVs) incorrect after loading.  Expected " 
-         << addSubj << " actual size " << countSubj;
+         << sizeSubj << " actual size " << countSubj;
       TUFAIL(ss.str());
       passed = false; 
    }
@@ -232,11 +248,11 @@ createAndDump()
    }
 
    unsigned countXmit = oas.size(2);
-   if (countXmit!=addXmit)
+   if (countXmit!=sizeXmit)
    {
       stringstream ss;
       ss << "Size of ObsSysStore(xmit SVs) incorrect after loading.  Expected " 
-         << addXmit << " actual size " << countXmit;
+         << sizeXmit << " actual size " << countXmit;
       TUFAIL(ss.str());
       passed = false; 
    }
@@ -309,13 +325,12 @@ createAndDump()
    //--- Test the find( ) method --------------------------------
    currMethod = typeDesc + " OrbAlmStore.find() "; 
    TUCSM(currMethod);
-   SatID sidTest(1,SatID::systemGPS);
 
    list<PassFailData>::const_iterator citp;
    for (citp=pfList.begin();citp!=pfList.end();citp++)
    {
       const PassFailData& pfd = *citp;
-      testFind(pfd,sidTest,oas,testFramework);
+      testFind(pfd,oas,testFramework);
    }
 
    //--- Dump the store ----------------------
@@ -351,27 +366,25 @@ createAndDump()
 //---------------------------------------------------------------------------------
 void OrbAlmStore_T::
 testFind(const PassFailData& pfd, 
-         const SatID& sidr,
                OrbAlmStore& oas,
                TestUtil& testFramework)
 {
    if (pfd.expectPass) 
-      testFindExpectingPass(pfd,sidr,oas,testFramework);
+      testFindExpectingPass(pfd,oas,testFramework);
    else 
-      testFindExpectingFail(pfd,sidr,oas,testFramework);
+      testFindExpectingFail(pfd,oas,testFramework);
 }
 
 //---------------------------------------------------------------------------------
 // Test OrbAlmStore.find( ) with a set of arguments that are expected to pass
 void OrbAlmStore_T::
 testFindExpectingPass(const PassFailData& pfd, 
-                            const SatID& sidr,
                             OrbAlmStore& oas,
                             TestUtil& testFramework)
 {
    try
    {
-      const OrbAlm* p = oas.find(sidr, pfd.testTime, pfd.considerEff); 
+      const OrbAlm* p = oas.find(pfd.subjID, pfd.testTime, pfd.considerEff); 
       if (p)
       {
          if (p->beginValid==pfd.expBV) 
@@ -407,13 +420,12 @@ testFindExpectingPass(const PassFailData& pfd,
 // Test OrbAlmStore.find( ) with a set of arguments that are expected to fail
 void OrbAlmStore_T::
 testFindExpectingFail(const PassFailData& pfd, 
-                      const SatID& sidr,
                             OrbAlmStore& oas,
                             TestUtil& testFramework)
 {
    try
    {
-      const OrbAlm* p = oas.find(sidr,pfd.testTime,pfd.considerEff); 
+      const OrbAlm* p = oas.find(pfd.subjID,pfd.testTime,pfd.considerEff); 
       stringstream ss;
       ss << "Failed to throw exception for time after all endValid times";
       TUFAIL(ss.str());
@@ -444,7 +456,7 @@ setUpLNAV()
    finalCT   = CivilTime(2016, 1, 5,21,50,24,TimeSystem::GPS);
 
       // Literals for LNAV test data 
-   const unsigned short LNavExCount = 50;
+   const unsigned short LNavExCount = 53;
    const std::string LNavEx[] =
    {
       "365,12/31/2015,00:00:00,1877,345600,1,63,100, 0x22C3550A, 0x1C2029AC, 0x35540023, 0x0EA56C31, 0x16E4B88E, 0x37CECD3F, 0x171242FF, 0x09D588A2, 0x0000023F, 0x00429930",
@@ -472,6 +484,19 @@ setUpLNAV()
       "365,12/31/2015,12:28:48,1877,390528,1,63,418, 0x22C3550A, 0x1FC82C44, 0x1E037FFB, 0x3FC08E66, 0x3C7FC45D, 0x0000014E, 0x00000029, 0x00641562, 0x044EC0EB, 0x044000D8",
       "365,12/31/2015,12:28:54,1877,390534,1,63,518, 0x22C3550A, 0x1FC84D34, 0x14A1B582, 0x243D154A, 0x3F4DC023, 0x28432F8B, 0x0F198ACA, 0x2C6EA741, 0x2EC76168, 0x0F400C54",
       "365,12/31/2015,00:02:18,1877,345738,1,63,425, 0x22C3550A, 0x1C230C58, 0x1FEE6CC4, 0x2AEAEEC0, 0x26A66A75, 0x2A666666, 0x26EEEE53, 0x2AEA4013, 0x0000003F, 0x0000006C",
+           //
+           // Next two records are designed to verify that the EARLIEST transmit time is being retained.
+           // The first is hand-edited to show a later transmit time, but the same data as the original.
+           // The original record (transmitted at 00:04:54) is then provided as the second record.   It should
+           // be used in place of the first record.
+      "365,12/31/2015,00:54:54,1877,348894,1,63,505, 0x22C3550A, 0x1C64CD08, 0x114964A0, 0x1EC0910D, 0x3F52803B, 0x28434E0D, 0x0F4A2471, 0x04F2B1F2, 0x274ABF25, 0x3AC009BC",
+      "365,12/31/2015,00:04:54,1877,345894,1,63,505, 0x22C3550A, 0x1C264D08, 0x114964A0, 0x1EC0910D, 0x3F52803B, 0x28434E0D, 0x0F4A2471, 0x04F2B1F2, 0x274ABF25, 0x3AC009BC",
+           //
+           // Next record is designed to verify that a later re-transmission found in the loaded data will
+           // NOT overwrite an earlier transmission of the same record already stored in the store.   The record
+           // has been hand-modified to have a LATER transmit time than the PRN 5 almanac already stored.
+      "365,12/31/2015,01:44:54,1877,351894,1,63,505, 0x22C3550A, 0x1CA34D08, 0x114964A0, 0x1EC0910D, 0x3F52803B, 0x28434E0D, 0x0F4A2471, 0x04F2B1F2, 0x274ABF25, 0x3AC009BC",
+           //        
       "365,12/31/2015,00:02:24,1877,345744,1,63,525, 0x22C3550A, 0x1C232DD0, 0x1CDED544, 0x00000FDE, 0x00000029, 0x00000016, 0x00000029, 0x00000016, 0x00000029, 0x000000E0",
       "365,12/31/2015,12:19:54,1877,389994,1,63,525, 0x22C3550A, 0x1FBD0DB0, 0x1CE4157D, 0x00000FC8, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000",
       "365,12/31/2015,12:20:24,1877,390024,1,63,501, 0x22C3550A, 0x1FBDAD2C, 0x104A1BA6, 0x24037521, 0x3F52803B, 0x284333DF, 0x04C7ADAD, 0x04F16DE7, 0x08E35CE8, 0x004001F0",
@@ -511,6 +536,14 @@ setUpLNAV()
       dataList.push_back(msg);
    }
 
+      // Have to hand-derive these.   From the total list of messages above,
+      //   Count only the messages that contain almanacs.
+      //   Remove the default almanacs
+      //   Remove the redundant almanacs 
+   sizeSubj  = 15; 
+   sizeXmit  = 23;
+   sizeTotal = sizeSubj + sizeXmit; 
+
    /*
     *  Define several test of find( ) for Sat ID GPS 1
     *     Expect   Test             Consider          Expected Return
@@ -525,39 +558,40 @@ setUpLNAV()
     *  8.   True    1/31/16 00:00    F            12/31 12:29:25         Late, but no eff. test
     */
    pfList.clear();
+   SatID sidTest(1,SatID::systemGPS);
    CommonTime begValFirstAlmPRN1 = CivilTime(2015,12,31,00,02,54,TimeSystem::GPS);
    CommonTime begValSecondAlmPRN1 = CivilTime(2015,12,31,12,20,24,TimeSystem::GPS);
    CommonTime testTime = CivilTime(2015,12,31,00,00,00,TimeSystem::GPS); 
 
-   PassFailData pfd(testTime,true);   // 1
+   PassFailData pfd(sidTest,testTime,true);   // 1
    pfList.push_back(pfd);
 
    testTime = CivilTime(2015,12,31,00,02,54,TimeSystem::GPS);  // 2
-   pfd = PassFailData(testTime,true); 
+   pfd = PassFailData(sidTest, testTime,true); 
    pfList.push_back(pfd); 
 
    testTime = CivilTime(2015,12,31,00,02,55,TimeSystem::GPS);  // 3
-   pfd = PassFailData(testTime,true,begValFirstAlmPRN1); 
+   pfd = PassFailData(sidTest, testTime,true,begValFirstAlmPRN1); 
    pfList.push_back(pfd);
 
    testTime = CivilTime(2015,12,31,12,20,24,TimeSystem::GPS);  // 4
-   pfd = PassFailData(testTime,true,begValFirstAlmPRN1); 
+   pfd = PassFailData(sidTest, testTime,true,begValFirstAlmPRN1); 
    pfList.push_back(pfd);
    
    testTime = CivilTime(2015,12,31,12,20,25,TimeSystem::GPS);  // 5
-   pfd = PassFailData(testTime,true,begValSecondAlmPRN1); 
+   pfd = PassFailData(sidTest, testTime,true,begValSecondAlmPRN1); 
    pfList.push_back(pfd);
 
    testTime = CivilTime(2016, 1,31,00,00,00,TimeSystem::GPS);  // 6
-   pfd = PassFailData(testTime,true); 
+   pfd = PassFailData(sidTest, testTime,true); 
    pfList.push_back(pfd); 
 
    testTime = CivilTime(2015,12,31,00,00,00,TimeSystem::GPS);  // 7
-   pfd = PassFailData(testTime,false,begValFirstAlmPRN1); 
+   pfd = PassFailData(sidTest, testTime,false,begValFirstAlmPRN1); 
    pfList.push_back(pfd);
 
    testTime = CivilTime(2016, 1,31,00,00,00,TimeSystem::GPS);  // 8
-   pfd = PassFailData(testTime,false,begValSecondAlmPRN1); 
+   pfd = PassFailData(sidTest, testTime,false,begValSecondAlmPRN1); 
    pfList.push_back(pfd);
 
    // Now search among the almanacs collected from a specific SV.
@@ -573,28 +607,38 @@ setUpLNAV()
    SatID xmitID(2,SatID::systemGPS);
 
    testTime = CivilTime(2015,12,31,00,00,00,TimeSystem::GPS);  // 1
-   pfd = PassFailData(testTime,true,xmitID); 
+   pfd = PassFailData(sidTest, testTime,true,xmitID); 
    pfList.push_back(pfd); 
 
    testTime = CivilTime(2015,12,31,00,02,55,TimeSystem::GPS);  // 2
-   pfd = PassFailData(testTime,true,begValFirstAlmPRN1,xmitID); 
+   pfd = PassFailData(sidTest, testTime,true,begValFirstAlmPRN1,xmitID); 
    pfList.push_back(pfd);
 
    testTime = CivilTime(2016, 1,31,00,00,00,TimeSystem::GPS);  // 3
-   pfd = PassFailData(testTime,true,xmitID); 
+   pfd = PassFailData(sidTest, testTime,true,xmitID); 
    pfList.push_back(pfd); 
 
    testTime = CivilTime(2015,12,31,00,00,00,TimeSystem::GPS);  // 4
-   pfd = PassFailData(testTime,false,begValFirstAlmPRN1,xmitID); 
+   pfd = PassFailData(sidTest, testTime,false,begValFirstAlmPRN1,xmitID); 
    pfList.push_back(pfd);
 
    testTime = CivilTime(2016, 1,31,00,00,00,TimeSystem::GPS);  // 5
-   pfd = PassFailData(testTime,false,begValSecondAlmPRN1,xmitID); 
+   pfd = PassFailData(sidTest, testTime,false,begValSecondAlmPRN1,xmitID); 
    pfList.push_back(pfd);
 
    testTime = CivilTime(2015,12,31,00,02,55,TimeSystem::GPS);  // 6
-   SatID xmitID_32,SatID::systemGPS);
-   pfd = PassFailData(testTime,true,begValFirstAlmPRN1,xmitID_32);
+   SatID xmitID_32(32,SatID::systemGPS);
+   pfd = PassFailData(sidTest, testTime,true,begValFirstAlmPRN1,xmitID_32);
+   pfList.push_back(pfd);
+
+   // PRN 5 is a special case.   There are three messages FROM PRN 1
+   // that contain almanac data for PRN 5 (Subframe 5, page 5).  They
+   // contain the smae data, but different transmit times.  We want 
+   // to verify that the correct almanac message was retained.
+   SatID subjID_5(5,SatID::systemGPS);
+   testTime = CivilTime(2015,12,31,01,00,00,TimeSystem::GPS);
+   CommonTime begValidPRN5 = CivilTime(2015,12,31,00,04,54,TimeSystem::GPS);
+   pfd = PassFailData(subjID_5,testTime,true,begValidPRN5);
    pfList.push_back(pfd);
 
    return;
