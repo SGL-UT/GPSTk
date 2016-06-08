@@ -157,7 +157,8 @@ namespace gpstk
       }
       double dtc,elaptc;
       elaptc = t - ctToe;
-      dtc = af0 + elaptc * ( af1 + elaptc );
+      dtc = af0 + elaptc * af1;
+
       return dtc;      
    }
 
