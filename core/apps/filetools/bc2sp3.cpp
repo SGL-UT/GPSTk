@@ -270,8 +270,7 @@ int main(int argc, char *argv[])
          // this is a pain....
       sp3header.numberOfEpochs = 0;
       tt = begTime;
-
-      while(tt < endTime)
+      while(tt <= endTime)
       {
          bool foundSome = false;
          for(i=1; i<33; i++)              // for each PRN ...
@@ -331,7 +330,7 @@ int main(int argc, char *argv[])
 
       tt = begTime;
       tt.setTimeSystem(TimeSystem::Any);
-      while(tt < endTime)
+      while(tt <= endTime)
       {
          bool epochOut=false;
 
