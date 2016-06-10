@@ -46,8 +46,8 @@ namespace gpstk
 {
       const std::string NavID::NavTypeStrings[] = {
          "GPS_LNAV",
-         "GPS_L2_CNAV",
-         "GPS_L5_CNAV",
+         "GPS_CNAV_L2",
+         "GPS_CNAV_L5",
          "GPS_MNAV",
          "Beidou_D1",
          "Beidou_D2",

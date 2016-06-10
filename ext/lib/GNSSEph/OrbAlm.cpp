@@ -33,38 +33,33 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
-
-/**
- * @file OrbSysStoreGpsL.hpp
- * Extends OrbSysStore by adding a system-specific addMessage method.
- */
- 
-#ifndef GPSTK_ORBSYSSTOREGPSL_HPP
-#define GPSTK_ORBSYSSTOREGPSL_HPP
-
-#include "OrbSysStore.hpp"
+#include "OrbAlm.hpp"
 
 namespace gpstk
-{
-   class OrbSysStoreGpsL : public OrbSysStore 
+{   
+   OrbAlm::OrbAlm(): OrbElemBase()
+   { }
+
+   void OrbAlm::dumpHeader(std::ostream& s) const
+         throw( gpstk::InvalidRequest )
    {
-   public:
-      
-      OrbSysStoreGpsL(const bool storeAllArg=false)
-         throw()
-        :OrbSysStore()
+     if (!dataLoaded())
       {
+         InvalidRequest exc("Required data not stored.");
+         GPSTK_THROW(exc);
       }
 
-      virtual ~OrbSysStoreGpsL()
-      {}
+      s << "**************************************************************" << std::endl
+        << " ORB/CLK ALMANAC PARAMETERS FOR " << subjectSV
+        << std::endl;
 
-      virtual bool addMessage(const PackedNavBits& pnb)
-         throw(InvalidRequest,Exception);
-   }; // end class
-
-   //@}
-
-} // namespace
-
-#endif
+      std::string tform("%02m/%02d/%Y %03j %02H:%02M:%02S  %7.0s  %4F %6.0g  %P"); 
+      s << std::endl
+        << "              MM/DD/YYYY DOY HH:MM:SS      SOD  WWWW    SOW\n";
+      s << "Transmit   :  "
+        << printTime(beginValid,tform) << std::endl;
+      s << "Orbit Epoch:  "
+        << printTime(ctToe,tform) << std::endl;
+      s << std::endl; 
+   }
+}

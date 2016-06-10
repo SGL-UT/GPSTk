@@ -34,7 +34,7 @@
 //============================================================================
  /*********************************************************************
 *
-*  Test program for gpstk/ext/lib/GNSSEph/OrbDataSys* and /OrbSysStore*
+*  Test program for gpstk/ext/lib/GNSSEph/OrbAlm*
 *
 *********************************************************************/
 #include <iostream>
@@ -43,11 +43,13 @@
 #include "CivilTime.hpp"
 #include "Exception.hpp"
 #include "GPSWeekSecond.hpp"
-#include "OrbDataSys.hpp"
-#include "OrbSysStore.hpp"
+#include "OrbAlm.hpp"
+#include "OrbAlmGen.hpp"
+#include "OrbAlmStore.hpp"
 #include "SystemTime.hpp"
 #include "TimeString.hpp"
 #include "TimeSystem.hpp"
+#include "Xvt.hpp"
 
 #include "build_config.h"
 #include "TestUtil.hpp"
@@ -55,10 +57,29 @@
 using namespace std;
 using namespace gpstk;
 
-class OrbDataSys_T
+class OrbAlm_T
 {
 public:
-   OrbDataSys_T();
+
+   typedef struct PassFailData
+   {
+      SatID subjID;
+      CommonTime testTime;
+      Xvt truthXvt;
+
+      PassFailData(): 
+         subjID(SatID()),
+         testTime(CommonTime::END_OF_TIME)
+         { }
+
+      PassFailData(const SatID& subj, const CommonTime& testT, const Xvt& xvt):
+         subjID(subj),
+         testTime(testT),
+         truthXvt(xvt)
+         { }
+   } PassFailData;
+
+   OrbAlm_T();
 
    void init();
 
@@ -78,8 +99,9 @@ public:
       // members
    list<PackedNavBits> dataList;
    string typeDesc;
-   CommonTime initialCT;
-   CommonTime finalCT;
+
+      // List of PassFailData objects that contain definitions for sepcific find( ) tests.
+   list<PassFailData> pfList;
 
    ofstream out; 
 
@@ -87,14 +109,14 @@ public:
    int debugLevel;   
 };
 
-OrbDataSys_T::
-OrbDataSys_T()
+OrbAlm_T::
+OrbAlm_T()
 {
    debugLevel = 0; 
    init();
 }
 
-unsigned OrbDataSys_T::
+unsigned OrbAlm_T::
 createAndDump()
 {
    string currMethod = typeDesc + " create/store OrbDataSys objects";
@@ -103,7 +125,7 @@ createAndDump()
       // Open an output stream specific to this navigation message type
    std::string fs = getFileSep(); 
    std::string tf(getPathTestTemp()+fs);
-   std::string tempFile = tf + "test_output_OrbDataSys_T_" +
+   std::string tempFile = tf + "test_output_OrbAlm_T_" +
                          typeDesc+".out";
    out.open(tempFile.c_str(),std::ios::out);
    if (!out)
@@ -115,8 +137,8 @@ createAndDump()
    }
 
       // All the navigation message data will be placed here. 
-   OrbSysStore oss;
-   oss.setDebugLevel(debugLevel); 
+   OrbAlmStore oas;
+   oas.setDebugLevel(debugLevel); 
 
    list<PackedNavBits>::const_iterator cit;
    for (cit=dataList.begin();cit!=dataList.end();cit++)
@@ -124,88 +146,94 @@ createAndDump()
       try
       {
          const PackedNavBits& pnbr = *cit;
-         bool retval = oss.addMessage(pnbr);
-         /*
-         unsigned long sf = pnbr.asUnsignedLong(49,3,1);
-         unsigned long svid = 0;
-         if (sf>3) svid = pnbr.asUnsignedLong(62,6,1);
-         if (debugLevel) cout << "    succeeded...."
-                              << pnbr.getsatSys() << ", "
-                              << " sf, SV ID: " << sf << ", " << svid << endl;
-         */
+         unsigned short retval = oas.addMessage(pnbr);
       }
-      catch(gpstk::InvalidRequest ir)
+      catch(gpstk::InvalidParameter ir)
       {
-         // do nothing
-         // The failure will be reflected in the 
-         // fact that the output will be missing expected data
+            // Do nothing except move to next message. 
       }
    }
 
-      // Verify number of entries in the store. 
-   out << "# of OrbSysStore entries: " << oss.size() << endl; 
+   out << " Alm-SP3 Comparions for " << typeDesc << endl;
+   out << "         Xmit               Differences" << endl;
+   out << "       Sat  mm/dd/yy HH:MM:SS  Position RSS (m)  Velocity RSS (m/s)"
+       << "  Clock Bias (nsec)  Clock Drift (nsec/sec)" << endl;
+   string tform = "%02m/%02d/%02y %02H:%02M:%02S"; 
 
-      // Dump the store
-   oss.dump(out);
+      // For each SatID on the list, retrieve the appropriate OrbAlm messages and
+      // check them against the provided truth data. 
+   list<PassFailData>::const_iterator cit2;
+   for (cit2=pfList.begin();cit2!=pfList.end();cit2++)
+   {
+      const PassFailData& pfd = *cit2;
+      const Xvt& truth = pfd.truthXvt; 
+      const OrbAlmStore::OrbAlmMap& almMap = oas.getOrbAlmMap(pfd.subjID);
+      OrbAlmStore::OrbAlmMap::const_iterator calm;
+      for (calm=almMap.begin();calm!=almMap.end();calm++)
+      {
+         OrbAlm* alm = calm->second;
+         Xvt test = alm->svXvt(pfd.testTime);
+         Triple xDiff = test.x - truth.x;
+         Triple vDiff = test.v - truth.v;
+         double clockDiff = test.clkbias - truth.clkbias;
+         double driftDiff = test.clkdrift - truth.clkdrift; 
 
-      // Dump terse (one-line) summaries
-   oss.dump(out,1);
+         double xMag = xDiff.mag();
+         double vMag = vDiff.mag();
 
-      // Dump all contents
-   oss.dump(out,2);
-
-      // Dump terse in time order
-   oss.dump(out,3);
+         char temp[150];
+         sprintf(temp," %15.3lf  %18.3lf  %17.3lf  %22.3lf",
+                        xMag, vMag, clockDiff * 1.0e9, driftDiff * 1.0e9);
+         string temps(temp);
+         int begLen = 8;
+         if (pfd.subjID.id>9) begLen = 7;
+         out << setw(begLen) << pfd.subjID << "  " << printTime(alm->beginValid,tform) << "  "
+             << temps << endl; 
+      }
+   }
 
       // Clean up
-   oss.clear();
+   oas.clear();
    out.close();
 
    return 0; 
 }
 
-void OrbDataSys_T::
+void OrbAlm_T::
 init()
 {
    dataList.clear();
 } 
 
-void OrbDataSys_T::
+//--------------------------------------------------------------------
+// IS-GPS-200 makes two statements regarding accuradcy of the almanac
+// data.
+//  1.20.3.3.5.2.1 - There is a table that indicates the the almanac ephemeris URE (1 simga) 
+//                   should be 900 m.   There follows list of exceptions and caveats that
+//                   includes Normal Operations, Eclipse season, and SV thrust events.
+//  2. 20.3.3.5.2.3 - states that "it is expected that the almanac time parameters will
+//                    provide a stistical URE component of less than 135 meters, one signma".
+void OrbAlm_T::
 setUpLNAV()
 {
    init();
 
       // Define state variables for creating a LNAV store
    typeDesc = "GPS_LNAV";
-   initialCT = CivilTime(2015,12,31,00,00,18,TimeSystem::GPS);
-   finalCT   = CivilTime(2015,12,31,18,43,48,TimeSystem::GPS);
 
       // Literals for LNAV test data 
-   const unsigned short LNavExCount = 18;
+   const unsigned short LNavExCount = 9;
    const std::string LNavEx[] =
    {
-      "365,12/31/2015,00:00:00,1877,345600,1,63,100, 0x22C3550A, 0x1C2029AC, 0x35540023, 0x0EA56C31, 0x16E4B88E, 0x37CECD3F, 0x171242FF, 0x09D588A2, 0x0000023F, 0x00429930",
-      "365,12/31/2015,00:00:06,1877,345606,1,63,200, 0x22C3550A, 0x1C204A3C, 0x09FDB732, 0x0BC06889, 0x3C5827D1, 0x3E08808B, 0x21A678CF, 0x0472285B, 0x0350F3B4, 0x15889F94",
-      "365,12/31/2015,00:00:12,1877,345612,1,63,300, 0x22C3550A, 0x1C206BB4, 0x3FFAC4D5, 0x0CAD96FA, 0x3FFA09D3, 0x10F0C405, 0x06D1C4E4, 0x31C1B694, 0x3FEA6E36, 0x09FFA5F4",
-      "365,12/31/2015,00:00:18,1877,345618,1,63,421, 0x22C3550A, 0x1C208C44, 0x1E7181C9, 0x1C2E68A2, 0x0F4507DA, 0x247093F0, 0x26C720E5, 0x07E00109, 0x0196E4A3, 0x1D588110",
-      "365,12/31/2015,00:00:24,1877,345624,1,63,521, 0x22C3550A, 0x1C20ADCC, 0x156ED525, 0x1EFEDF83, 0x3F4DC035, 0x2843463D, 0x047D1075, 0x2D2F1B44, 0x3814F871, 0x2FBFF920",
-      "365,12/31/2015,00:11:18,1877,346278,1,63,418, 0x22C3550A, 0x1C2E4CC4, 0x1E037FFB, 0x3FC08E66, 0x3C7FC45D, 0x3FFFFF23, 0x3FFFFFFC, 0x3F9ED57B, 0x044EC0FD, 0x04400054",
-      "365,12/31/2015,00:11:24,1877,346284,1,63,518, 0x22C3550A, 0x1C2E6D4C, 0x14A1B3B8, 0x1EFD15DB, 0x3F4E4029, 0x2843301D, 0x0F1B6C25, 0x2C6E2942, 0x2EFBFAA5, 0x0F400B20",
-      "365,12/31/2015,12:28:48,1877,390528,1,63,418, 0x22C3550A, 0x1FC82C44, 0x1E037FFB, 0x3FC08E66, 0x3C7FC45D, 0x0000014E, 0x00000029, 0x00641562, 0x044EC0EB, 0x044000D8",
-      "365,12/31/2015,12:28:54,1877,390534,1,63,518, 0x22C3550A, 0x1FC84D34, 0x14A1B582, 0x243D154A, 0x3F4DC023, 0x28432F8B, 0x0F198ACA, 0x2C6EA741, 0x2EC76168, 0x0F400C54",
       "365,12/31/2015,00:02:18,1877,345738,1,63,425, 0x22C3550A, 0x1C230C58, 0x1FEE6CC4, 0x2AEAEEC0, 0x26A66A75, 0x2A666666, 0x26EEEE53, 0x2AEA4013, 0x0000003F, 0x0000006C",
       "365,12/31/2015,00:02:24,1877,345744,1,63,525, 0x22C3550A, 0x1C232DD0, 0x1CDED544, 0x00000FDE, 0x00000029, 0x00000016, 0x00000029, 0x00000016, 0x00000029, 0x000000E0",
-      "365,12/31/2015,00:10:48,1877,346248,1,63,417, 0x22C3550A, 0x1C2DACF0, 0x1DD11675, 0x12959676, 0x1693080D, 0x1689D262, 0x11968C6F, 0x15D0CD3B, 0x15164E8E, 0x0D1640B4",
-      "365,12/31/2015,00:11:18,1877,346278,2,61,418, 0x22C3550A, 0x1C2E4CC4, 0x1E037FFB, 0x3FC08E66, 0x3C7FC45D, 0x0000014E, 0x00000029, 0x005ED55B, 0x044EC0FD, 0x04400054",
-      "365,12/31/2015,18:43:48,1877,413028,2,61,418, 0x22C3550A, 0x219CECF0, 0x1E037FFB, 0x3FC08E66, 0x3C7FC45D, 0x3FFFFE7B, 0x3FFFFFFC, 0x3F641555, 0x044EC0D4, 0x044000B4",
-      "365,12/31/2015,00:11:18,1877,346278,3,69,418, 0x22C3550A, 0x1C2E4CC4, 0x1E037FFB, 0x3FC08E66, 0x3C7FC45D, 0x3FFFFF23, 0x3FFFFFFC, 0x3F9ED57B, 0x044EC0FD, 0x04400054",
-      "365,12/31/2015,00:08:48,1877,346128,1,63,413, 0x22C3550A, 0x1C2B2C1C, 0x1D163D8D, 0x0374F72B, 0x0B190095, 0x08F95CEE, 0x0B5F0864, 0x24F97F6B, 0x2B9382F3, 0x2B0D72A8",
-      // Following record hand-edited in order to indicate unencrypted in the availability indicator.
-      // Also modified to indicate an INVALID ERD (ndx 5), a max + (011111 base 2) (ndx 3), and
-      // max negative (100001) (ndx 4).
-    //"365,12/31/2015,12:26:18,1877,390378,1,63,413, 0x22C3550A, 0x1FC50CF0, 0x1D1FE70B, 0x31715EBB, 0x1B9122BA, 0x0329194A, 0x18EC680E, 0x074229DF, 0x08E88416, 0x2A2445A4",
-      "365,12/31/2015,12:26:18,1877,390378,1,63,413, 0x22C3550A, 0x1FC50CF0, 0x1D0FE70B, 0x31F860BB, 0x1B9122BA, 0x0329194A, 0x18EC680E, 0x074229DF, 0x08E88416, 0x2A2445A4",
-      "365,12/31/2015,00:08:48,1877,346128,2,61,413, 0x22C3550A, 0x1C2B2C1C, 0x1D1F18D0, 0x17B5F2ED, 0x3CE0889C, 0x1B176553, 0x129C8100, 0x32321ECF, 0x092F8292, 0x018C79A0"
+      "365,12/31/2015,00:02:54,1877,345774,1,63,501, 0x22C3550A, 0x1C23CDB4, 0x104A1B03, 0x1EC3752A, 0x3F52C00A, 0x284334F8, 0x04C97D73, 0x04F1B747, 0x0917642F, 0x004000C4",
+      "365,12/31/2015,00:03:18,1877,345798,1,63,402, 0x22C3550A, 0x1C244CC8, 0x164A03ED, 0x1EC5DBEA, 0x3F56803C, 0x28431268, 0x2F65B770, 0x0716C3D8, 0x37EDFFB5, 0x3CFFF7D4",
+      "365,12/31/2015,00:03:24,1877,345804,1,63,502, 0x22C3550A, 0x1C246D40, 0x109F1A3A, 0x1EFFFE0A, 0x3F4E0031, 0x2843466E, 0x045B1909, 0x29A9E68A, 0x0E9523D3, 0x13800480",
+      "365,12/31/2015,12:19:54,1877,389994,1,63,525, 0x22C3550A, 0x1FBD0DB0, 0x1CE4157D, 0x00000FC8, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000",
+      "365,12/31/2015,12:20:24,1877,390024,1,63,501, 0x22C3550A, 0x1FBDAD2C, 0x104A1BA6, 0x24037521, 0x3F52803B, 0x284333DF, 0x04C7ADAD, 0x04F16DE7, 0x08E35CE8, 0x004001F0",
+      "365,12/31/2015,12:20:48,1877,390048,1,63,402, 0x22C3550A, 0x1FBE2C68, 0x164A0792, 0x2405DB9B, 0x3F560035, 0x28431195, 0x2F63F00F, 0x07172429, 0x37BA98FC, 0x3CFFF734",
+      "365,12/31/2015,12:20:54,1877,390054,1,63,502, 0x22C3550A, 0x1FBE4D18, 0x109F1D58, 0x243FFE3E, 0x3F4DC023, 0x284345AC, 0x04593A83, 0x29AAEDF7, 0x0E5F25B7, 0x13800480"
    };
 
       // Convert the LNAV strings to PNB
@@ -219,10 +247,64 @@ setUpLNAV()
       msg = getPnbLNav(currObsID,LNavEx[i]);
       dataList.push_back(msg);
    }
+
+   SatID sid(1,SatID::systemGPS); 
+
+      // 12/31/2015 12:00 == Week 1877, DOW 4, SOD 43200
+   /*
+    *  Excerpt from apc18774
+    *  2015 12 31 12  0  0.00000000
+    P  1  21660.911135  14060.970775  -6739.268021      7.973244                    
+    V  1  -8691.174513   -995.106026 -30138.831453      0.009383                    
+    P  2  -1441.679351 -16790.824227  21014.933039    598.668560                    
+    V  2  24392.452591   8269.357517   8018.651385      0.004558                    
+    P 25 -14870.571034  -8788.484129  20126.874993    -91.725396                    
+    V 25  -2637.830466 -25557.191698 -12868.533309     -0.062373                    
+    *
+    *  In SP3
+    *     Position is in km
+    *     Clock is in microseconds
+    *     Velocity is in dm/s
+    *     Clock rate is 10**-4 microseconds/sec
+    */
+   double usecToSec = 1.0e-6;
+   double rateChgToSec = usecToSec * 1.0e-2; 
+   CommonTime truthTime = CivilTime(2015,12,31,12,00,00,TimeSystem::GPS);
+   Xvt truthXvt; 
+   truthXvt.x = Triple(  21660.911135, 14060.970775,  -6739.268021);
+   truthXvt.v = Triple(  -8691.174513,  -995.106026, -30138.831453);
+   truthXvt.x = 1000.0 * truthXvt.x;    // Convert from km to m
+   truthXvt.v =    0.1 * truthXvt.v; 
+   truthXvt.clkbias =  7.973244 * usecToSec;
+   truthXvt.clkdrift = 0.009383 * rateChgToSec;
+   truthXvt.relcorr = 0.0; 
+   PassFailData pfd(sid,truthTime,truthXvt);
+   pfList.push_back(pfd);
+
+   sid = SatID(2,SatID::systemGPS); 
+   truthXvt.x = Triple( -1441.679351, -16790.824227,  21014.933039);
+   truthXvt.v = Triple( 24392.452591,   8269.357517,   8018.651385);
+   truthXvt.x = 1000.0 * truthXvt.x;    // Convert from km to m
+   truthXvt.v =    0.1 * truthXvt.v; 
+   truthXvt.clkbias = 598.668560 * usecToSec;
+   truthXvt.clkdrift =  0.004558 * rateChgToSec;
+   pfd = PassFailData(sid,truthTime,truthXvt);
+   pfList.push_back(pfd);
+
+   sid = SatID(25,SatID::systemGPS); 
+   truthXvt.x = Triple( -14870.571034,  -8788.484129,  20126.874993);
+   truthXvt.v = Triple(  -2637.830466, -25557.191698, -12868.533309);
+   truthXvt.x = 1000.0 * truthXvt.x;    // Convert from km to m
+   truthXvt.v =    0.1 * truthXvt.v; 
+   truthXvt.clkbias =  -91.725396 * usecToSec;
+   truthXvt.clkdrift =  -0.062373 * rateChgToSec;
+   pfd = PassFailData(sid,truthTime,truthXvt);
+   pfList.push_back(pfd);
+
    return;
 }
 
-void OrbDataSys_T::
+void OrbAlm_T::
 setUpCNAV()
 {
    init();
@@ -257,13 +339,13 @@ setUpCNAV()
    return;
 }
 
-void OrbDataSys_T::
+void OrbAlm_T::
 setUpBDS()
 {
 
 }
 
-void OrbDataSys_T::
+void OrbAlm_T::
 setUpGLO()
 {
 
@@ -271,7 +353,7 @@ setUpGLO()
 
    //---------------------------------------------------------------
    gpstk::PackedNavBits
-   OrbDataSys_T::
+   OrbAlm_T::
    getPnbLNav(const gpstk::ObsID& oidr, const std::string& str)
                           throw(gpstk::InvalidParameter)
    {      
@@ -335,7 +417,7 @@ setUpGLO()
    
    //-------------------------------------------------
    gpstk::PackedNavBits 
-   OrbDataSys_T::
+   OrbAlm_T::
    getPnbCNav(const gpstk::ObsID& oidr, const std::string& str)
              throw(gpstk::InvalidParameter)
    {
@@ -404,7 +486,7 @@ int main()
 {
   unsigned errorTotal = 0;
   
-  OrbDataSys_T testClass;
+  OrbAlm_T testClass;
 
   testClass.setUpLNAV();
   errorTotal += testClass.createAndDump();
