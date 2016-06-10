@@ -13,12 +13,6 @@ execute_process(COMMAND ${TEST_PROG} --in ${SOURCEDIR}/${FILE1} --in ${SOURCEDIR
                 OUTPUT_FILE ${TARGETDIR}/${TESTBASE}.out 
                 RESULT_VARIABLE HAD_ERROR)
 
-#message(STATUS "running ${TEST_PROG} --in ${SOURCEDIR}/${FILE1} --in ${SOURCEDIR}/${FILE2} --out ${TARGETDIR}/${TESTBASE}.out --outputC -tb ${STARTEPOCH} -te ${ENDEPOCH}")
-
-#execute_process(COMMAND ${TEST_PROG} --in ${SOURCEDIR}/${FILE1} --in ${SOURCEDIR}/${FILE2} --outputC --tb ${STARTEPOCH} --te ${ENDEPOCH} --out ${TARGETDIR}/${TESTBASE}.out
-#                OUTPUT_FILE ${TARGETDIR}/${TESTBASE}.out 
-#                RESULT_VARIABLE HAD_ERROR)
-
 # files are expected to be different
 if(HAD_ERROR)
     message(FATAL_ERROR "Test failed")

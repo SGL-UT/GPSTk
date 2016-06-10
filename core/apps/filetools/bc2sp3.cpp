@@ -172,7 +172,10 @@ int main(int argc, char *argv[])
                return 0;
             }
             else if(arg == string("--verbose"))
+            {
                verbose = true;
+               cout << "verbose now set to true." << endl;
+            }
             else
             {
                cerr << "Unknown option: " << arg << endl;
@@ -326,7 +329,7 @@ int main(int argc, char *argv[])
                cout << "Warning - only 4 comments are allowed in SP3 header.\n";
                break;
             }
-            sp3header.comments.push_back(comments[i]);
+            sp3header.comments.push_back(comments[k]);
          }
       }
 
