@@ -1,3 +1,6 @@
+set( SD ${GPSTK_TEST_DATA_DIR} )
+set( TD ${GPSTK_TEST_OUTPUT_DIR} )
+
 ###############################################################################
 # TEST rmwcheck
 ###############################################################################
@@ -133,7 +136,7 @@ add_test(NAME rowcheck_Valid
          -DSOURCEDIR=${SD}
          -DTARGETDIR=${TD}
          -DNODIFF=1
-         -DARGS=${SD}/arlm200a.15n
+         -DARGS=${SD}/arlm200a.15o
          -DGPSTK_BINDIR=${GPSTK_BINDIR}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
 
@@ -144,7 +147,7 @@ add_test(NAME rowcheck_Invalid_1
          -DSOURCEDIR=${SD}
          -DTARGETDIR=${TD}
          -DNODIFF=1
-         -DARGS=${SD}/arlm200a.15o
+         -DARGS=${SD}/arlm200a.15m
          -DGPSTK_BINDIR=${GPSTK_BINDIR}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
 

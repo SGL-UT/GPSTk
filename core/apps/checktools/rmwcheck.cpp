@@ -51,11 +51,11 @@ int main(int argc, char* argv[])
          cf(argv[0], "Rinex Met");
       
       if (!cf.initialize(argc, argv))
-         return 0;
+         return cf.exitCode;
       if (!cf.run())
-         return 1;
+         return cf.exitCode;
       
-      return 0;   
+      return cf.exitCode;   
    }
    catch(gpstk::Exception& e)
    {
@@ -69,5 +69,5 @@ int main(int argc, char* argv[])
    {
       cout << "unknown error" << endl;
    }
-   return 1;
+   return BasicFramework::EXCEPTION_ERROR;;
 }
