@@ -72,6 +72,7 @@ int main(int argc, char *argv[])
       "  --out <file>  Name the output file <file> (sp3.out)\n"
       "  --tb <time>   Output beginning epoch; <time> = week,sec-of-week (earliest in input)\n"
       "  --te <time>   Output ending epoch; <time> = week,sec-of-week (latest in input)\n"
+      "  --cs <sec>     Cadence of epochs in seconds (300s)\n"
       "  --outputC     Output version c (no correlation) (otherwise a)\n"
       "  --msg \"...\"   Add ... as a comment to the output header (repeatable)\n"
       "  --verbose     Output to screen: dump headers, data, etc\n"
@@ -100,6 +101,7 @@ int main(int argc, char *argv[])
       GPSEphemerisStore BCEph;
       SP3Header sp3header;
       SP3Data sp3data;
+      double cadence = 300.0;        // Cadence of epochs.  Default to 5 minutes.
 
       for(i=1; i<argc; i++)
       {
@@ -149,6 +151,13 @@ int main(int argc, char *argv[])
                   cout << " End time   "
                        << printTime(endTime,"%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g")
                        << endl;
+            }
+            else if(arg == string("--cs"))
+            {
+               arg = string(argv[++i]);
+               cadence = StringUtils::asDouble(arg);
+               if (verbose)
+                  cout << " Cadence    " << cadence << "s " << endl;
             }
             else if(arg == string("--msg"))
             {
@@ -250,7 +259,7 @@ int main(int argc, char *argv[])
          //sp3header.pvFlag = 'V';
       sp3header.containsVelocity = true;
       sp3header.time = CommonTime::END_OF_TIME;
-      sp3header.epochInterval = 900.0;          // hardcoded here only
+      sp3header.epochInterval = cadence; 
       sp3header.dataUsed = "BCE";
       sp3header.coordSystem = "WGS84";
       sp3header.orbitType = "   ";
@@ -359,9 +368,7 @@ int main(int argc, char *argv[])
             sp3data.RecType = 'P';
             for(j=0; j<3; j++)
                sp3data.x[j] = xvt.x[j]/1000.0;       // km
-               // must remove the relativity correction from Xvt::clkbias
-               // see EngEphemeris::svXvt() - also convert to microsec
-            sp3data.clk = (xvt.clkdrift - ee.svRelativity(tt)) * 1000000.0;
+            sp3data.clk = xvt.clkbias * 1.0e6;    // microseconds
 
                //if(version_out == 'c') for(j=0; j<4; j++) sp3data.sig[j]=...
             iode = ee.IODE;
@@ -382,8 +389,8 @@ int main(int argc, char *argv[])
                // Velocity
             sp3data.RecType = 'V';
             for(j=0; j<3; j++)
-               sp3data.x[j] = xvt.v[j]/10.0;         // dm/s
-            sp3data.clk = xvt.clkdrift;                                // s/s
+               sp3data.x[j] = xvt.v[j] * 10.0;         // dm/s
+            sp3data.clk = xvt.clkdrift * 1.0e10;                  // 10**-4 us/s
                //if(version_out == 'c') for(j=0; j<4; j++) sp3data.sig[j]=...
 
             outstrm << sp3data;
