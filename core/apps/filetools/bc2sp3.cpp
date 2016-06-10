@@ -174,7 +174,10 @@ int main(int argc, char *argv[])
             else if(arg == string("--verbose"))
                verbose = true;
             else
-               cout << "Ignore unknown option: " << arg << endl;
+            {
+               cerr << "Unknown option: " << arg << endl;
+               return 1;
+            }
          }
          else
          {
@@ -191,6 +194,21 @@ int main(int argc, char *argv[])
          return 1;
       }
 
+      bool existPass = true;
+      for (nfile=0; nfile<inputFiles.size(); nfile++)
+      {
+         RinexNavStream rns(inputFiles[nfile].c_str());
+         if (!rns)
+         {
+            cerr << "File " << inputFiles[nfile] << " cannot be opened for input." << endl;
+            existPass =false;
+         }
+      }
+      if (!existPass)
+      {
+         return 1;
+      }
+
          // open the output SP3 file
       SP3Stream outstrm(fileout.c_str(),ios::out);
       outstrm.exceptions(ifstream::failbit);
@@ -201,11 +219,6 @@ int main(int argc, char *argv[])
          RinexNavData rnd;
 
          RinexNavStream rns(inputFiles[nfile].c_str());
-         if(!rns)
-         {
-            cout << "Could not open input file " << inputFiles[nfile] << endl;
-            continue;
-         }
          rns.exceptions(ifstream::failbit);
 
          if(verbose) cout << "Reading file " << inputFiles[nfile] << endl;

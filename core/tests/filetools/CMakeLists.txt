@@ -1,0 +1,59 @@
+set( SD ${GPSTK_TEST_DATA_DIR} )
+set( TD ${GPSTK_TEST_OUTPUT_DIR} )
+
+# Notes:
+#
+# The tests labeled:
+# check differences where one file is invalid
+# Are not very good.  The exit code of the program is the same if
+# there are differences or if one file is of an invalid format.
+#
+# Currently untested:
+#   * Time span specification on r*wdiff command lines
+
+###############################################################################
+# TEST bc2sp3
+###############################################################################
+
+# check that -h option is valid
+add_test(NAME bc2sp3_CmdOpt_1
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:bc2sp3>
+         -DSOURCEDIR=${SD}
+         -DTARGETDIR=${TD}
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/testhelp_bc.cmake)
+
+# check that bc2sp3 fails with missing files
+add_test(NAME bc2sp3_CmdOpt_2
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:bc2sp3>
+         -DSOURCEDIR=${SD}
+         -DTARGETDIR=${TD}
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/testmissing.cmake)
+
+# check the output against prepared "truth"
+set(ARGS_1 "--outputC --tb 1825,518400 --te 1825,604500")
+add_test(NAME bc2sp3_Same_1
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:bc2sp3>
+         -DFILE1=nga002.15n
+         -DFILE2=nga003.15n
+         -DTESTBASE=bc2sp3_Same_1
+         -DSOURCEDIR=${SD}
+         -DTARGETDIR=${TD}
+         -DARGS=${ARGS_1}
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/testsame.cmake)
+
+# check the output against prepared "truth"
+set(ARGS_2 "--tb 1825,518400 --te 1825,604500")
+add_test(NAME bc2sp3_Same_2
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:bc2sp3>
+         -DFILE1=nga002.15n
+         -DFILE2=nga003.15n
+         -DTESTBASE=bc2sp3_Same_2
+         -DSOURCEDIR=${SD}
+         -DTARGETDIR=${TD}
+         -DARGS=${ARGS_2}
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/testsame.cmake)
+
