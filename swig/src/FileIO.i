@@ -184,4 +184,40 @@ STREAM_HELPER(Yuma)
     }
 %}
 
+/* Since the ashtech stream/data is slightly different,
+   it is extended separately
+*/
+%extend gpstk::AshtechStream { 
 
+   // methods for the stream itself:
+   static gpstk::AshtechStream* inAshtechStream(const std::string fileName) {
+      AshtechStream *s = new AshtechStream (fileName.c_str());
+      return s;
+   }
+
+   static gpstk::AshtechStream* outAshtechStream(const std::string fileName) {
+      AshtechStream *s = new AshtechStream (fileName.c_str(), std::ios::out|std::ios::trunc);
+      return s;
+   }
+
+   static void _remove(gpstk::AshtechStream *ptr) {
+      delete ptr;
+   }
+
+   // reader functions:
+   gpstk::AshtechData readHeader() {
+      gpstk::AshtechData head;
+      (*($self)) >> head;
+      return head;
+   }
+
+   gpstk::AshtechData readData() {
+      gpstk::AshtechData data;
+      if( (*($self)) >> data ) {
+         return data;
+      } else {
+         gpstk::EndOfFile e("AshtechStream reached an EOF.");
+         GPSTK_THROW(e);
+      }
+   }
+ }

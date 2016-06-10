@@ -61,7 +61,7 @@ namespace gpstk
    class AshtechData : public FFData, public CRCDataStatus
    {
    public:
-       AshtechData() throw() : ascii(false), checksum(0) {}
+      AshtechData() throw() : ascii(false), checksum(0) {}
       // Returns whether or not this AshtechData is valid.
       bool isValid() const {return good();}
 

@@ -199,7 +199,7 @@ namespace gpstk
          // of the observation section. This is frequent in Rinex2 files that
          // are 'spliced' every hour.
       bool isValidEpochLine(false);
-      while( !isValidEpochLine )
+      while( !isValidEpochLine && !strm.eof())
       {
             // Get line
          strm.formattedGetLine(line, true);

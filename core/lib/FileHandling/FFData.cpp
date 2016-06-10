@@ -56,37 +56,17 @@ namespace gpstk
       s.tryFFStreamGet(*this); 
    }
    
-   std::ostream& operator<<(std::ostream& o, const FFData& f)
+   std::ostream& operator<<(FFStream& o, const FFData& f)
          throw(FFStreamError, gpstk::StringUtils::StringException)
    {
-      FFStream* ffs = dynamic_cast<FFStream*>(&o);
-      if (ffs)
-      {
-         f.putRecord(*ffs);
-         return o;
-      }
-      else
-      {
-         FFStreamError e("operator<< stream argument must be an FFStream");
-         GPSTK_THROW(e);
-      }
-
+      f.putRecord(o);
+      return o;
    }
 
-   std::istream& operator>>(std::istream& i, FFData& f)
+   std::istream& operator>>(FFStream& i, FFData& f)
          throw(FFStreamError, gpstk::StringUtils::StringException)
    {
-      FFStream* ffs = dynamic_cast<FFStream*>(&i);
-      if (ffs)
-      {
-         f.getRecord(*ffs);
-         return i;
-      }
-      else
-      {
-         FFStreamError e("operator<< stream argument must be an FFStream");
-         GPSTK_THROW(e);
-      }
-
+      f.getRecord(i);
+      return i;
    }
 }

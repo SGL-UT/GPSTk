@@ -159,7 +159,14 @@
 #include "ExtractData.hpp"
 #include "Expression.hpp"
 
+// Ashtech serial data
 #include "FFBinaryStream.hpp"
+#include "AshtechStream.hpp"
+#include "AshtechData.hpp"
+#include "AshtechALB.hpp"
+#include "AshtechEPB.hpp"
+#include "AshtechMBEN.hpp"
+#include "AshtechPBEN.hpp"
 
 // Positioning/Tides
 #include "MoonPosition.hpp"
