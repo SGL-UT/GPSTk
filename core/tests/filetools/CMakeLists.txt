@@ -47,3 +47,16 @@ add_test(NAME bc2sp3_Same_2
          -DARGS=${ARGS_2}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testsame.cmake)
 
+# check the output against prepared "truth" - SP3a case, 900s cadence
+set(ARGS_2 "--tb 1825,518400 --te 1825,603900 --cs 900" )
+add_test(NAME bc2sp3_Same_3
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:bc2sp3>
+         -DFILE1=nga002.15n
+         -DFILE2=nga003.15n
+         -DTESTBASE=bc2sp3_Same_3
+         -DSOURCEDIR=${SD}
+         -DTARGETDIR=${TD}
+         -DARGS=${ARGS_2}
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/testsame.cmake)
+
