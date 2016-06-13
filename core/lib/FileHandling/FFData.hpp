@@ -135,9 +135,8 @@ namespace gpstk
           * @param o the stream to write to
           * @param f the data to write
           * @return a reference to \c o
-          * @warning The ostream provided MUST be an FFStream.
           */
-      friend std::ostream& operator<<(std::ostream& o, const FFData& f)
+      friend std::ostream& operator<<(FFStream& o, const FFData& f)
          throw(FFStreamError, gpstk::StringUtils::StringException);
 
          /**
@@ -156,9 +155,8 @@ namespace gpstk
           * @return a reference to \c i.
           * This function provides compatibility with the istream_iterator
           * class.
-          * @warning The istream provided MUST be an FFStream.
           */
-      friend std::istream& operator>>(std::istream& i, FFData& f)
+      friend std::istream& operator>>(FFStream& i, FFData& f)
          throw(FFStreamError, gpstk::StringUtils::StringException);
 
       friend class FFStream;
