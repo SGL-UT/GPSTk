@@ -141,7 +141,7 @@ void OrbAlmStore::dumpSubjAlm( std::ostream& s, short detail ) const
          throw()
 {
       SubjectAlmMap::const_iterator it;
-      static const string fmt("%04Y/%02m/%02d %02H:%02M:%02S %P");
+      static const string fmt("%02m/%02d/%04Y %02H:%02M:%02S %P");
 
       s << endl;
       s << "Dump of OrbAlmStore by satellite that is the SUBJECT of each almanac:\n";
@@ -232,7 +232,7 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail ) const
    XmitAlmMap::const_iterator   it;
    UniqueAlmMap::const_iterator it2;
    OrbAlmMap::const_iterator   it3; 
-   static const string fmt("%04Y/%02m/%02d %02H:%02M:%02S %P");
+   static const string fmt("%02m/%02d/%4Y %02H:%02M:%02S %P");
 
   s << "Dump of OrbAlmStore by transmitting satellite:\n";
   if (detail==0)
@@ -700,7 +700,80 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail ) const
       }
       return oeb; 
    }
-         
+
+//-----------------------------------------------------------------------------
+   CommonTime OrbAlmStore::deriveLastXmit(const OrbAlm* oap)
+      const throw( InvalidRequest )
+   {
+      bool foundAtLeastOne = false; 
+      const SatID& subjID = oap->subjectSV;
+      const CommonTime& epochT = oap->ctToe;
+      CommonTime retVal = CommonTime::BEGINNING_OF_TIME; 
+      XmitAlmMap::const_iterator cit1;
+      for (cit1=xmitAlmMap.begin();cit1!=xmitAlmMap.end();cit1++)
+      {
+         const UniqueAlmMap& mUAM = cit1->second;
+         UniqueAlmMap::const_iterator cit2 = mUAM.find(subjID);
+         if (cit2!=mUAM.end())
+         {
+            const OrbAlmMap& mOAM = cit2->second;
+
+               // We're allowing for the possibility that there may be
+               // different data sets with the same epoch time (sigh).
+               // Therefore, we have to do an exhaustive search using 
+               // isSameData( ) to verify that we have the correct
+               // item.
+            OrbAlmMap::const_iterator cit3;
+            for (cit3=mOAM.begin();cit3!=mOAM.end();cit3++)
+            {
+               const OrbAlm* testp = cit3->second;
+               if (testp->isSameData(oap))
+               {
+                  foundAtLeastOne = true;
+                  OrbAlmMap::const_iterator nextIT = cit3; 
+                  nextIT++;
+                  if (nextIT!=mOAM.end())
+                  {
+                     const OrbAlm* nextp = nextIT->second;
+                     if (nextp->beginValid>retVal)
+                     {
+                        retVal = nextp->beginValid;
+                     }
+                  }
+                     // If this transmitting SV transmitted the
+                     // subject almanac in question and it was
+                     // not replaced by the time the store ends,
+                     // then we'll assign a return value of 
+                     // END_OF_TIME indicating that at least
+                     // one SV was still broadcasting the almanac
+                     // page of interest at the end of the span
+                     // of time covered by the store. 
+                  else
+                  {
+                     retVal = CommonTime::END_OF_TIME; 
+                  }  
+               }
+            }
+         }
+      }
+      if (!foundAtLeastOne)
+      {
+         stringstream ss;
+         ss << "Could not derive last Xmit for almanac with subject SV "
+            << subjID << " as no data for that SV is in the store.";
+         InvalidRequest ir(ss.str());
+         GPSTK_THROW(ir); 
+      }
+      return retVal; 
+   }
+
+/*
+      typedef std::multimap<CommonTime, OrbAlm*> OrbAlmMap;
+      typedef std::map<SatID, OrbAlmMap> UniqueAlmMap;
+      typedef std::map<SatID, UniqueAlmMap> XmitAlmMap;
+      XmitAlmMap xmitAlmMap;
+*/
+
 //-----------------------------------------------------------------------------
    const OrbAlmStore::OrbAlmMap&
    OrbAlmStore::getOrbAlmMap( const SatID& subjID ) const

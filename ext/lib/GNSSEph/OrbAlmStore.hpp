@@ -263,6 +263,22 @@ namespace gpstk
                           const SatID& xmitID = SatID() )
          const throw( InvalidRequest );
 
+      /*
+       *  Given an OrbAlm pointer, find the OrbAlm in the subject
+       *  map.  Then, using the xmit map, derive the probable last
+       *  time that particular almanac was broadcast by any SV.
+       *  Notes:
+       *   - This assumes the OrbAlmStore was loaded in such a 
+       *     manner that the earliest transmission of each
+       *     unique almanac for each SV is present
+       *   - If oap doesn't correspond to any item in the
+       *     store, throw an exception.
+       *   - If oap is the final item in the store for any
+       *     SV, return CommonTime::END_OF_TIME.
+       */
+      CommonTime deriveLastXmit(const OrbAlm* oap) const
+         throw( InvalidRequest ); 
+
       /// Returns a map of the almemerides available for the specified
       /// satellite.  Note that the return is specifically chosen as a
       /// const reference.  The intent is to provide "read only" access
