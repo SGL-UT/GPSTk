@@ -48,21 +48,11 @@ endif()
 
 set_source_files_properties( gpstk.i PROPERTIES CPLUSPLUS ON )
 
-if( NOT PYTHON_INSTALL_PREFIX )
-    message( STATUS "PYTHON_INSTALL_PREFIX: Install prefix for python package was not set by user." )
-    set( PYTHON_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}" )
-    message( STATUS "PYTHON_INSTALL_PREFIX: Using CMAKE_INSTALL_PREFIX as the default, so that PYTHON_INSTALL_PREFIX = ${PYTHON_INSTALL_PREFIX}" )
-endif()
-
 if( DEBUG_SWITCH )
     message( STATUS "SWIG_EXECUTABLE          = ${SWIG_EXECUTABLE}" )
     message( STATUS "SWIG_USE_FILE            = ${SWIG_USE_FILE}" )
-    message( STATUS "CMAKE_CURRENT_LIST_DIR   = ${CMAKE_CURRENT_LIST_DIR}" )
-    message( STATUS "CMAKE_CURRENT_LIST_FILE  = ${CMAKE_CURRENT_LIST_FILE}" )
-    message( STATUS "CMAKE_SOURCE_DIR         = ${CMAKE_SOURCE_DIR}" )
-    message( STATUS "CMAKE_CURRENT_SOURCE_DIR = ${CMAKE_CURRENT_SOURCE_DIR}" )
-    message( STATUS "CMAKE_CURRENT_BINARY_DIR = ${CMAKE_CURRENT_BINARY_DIR}" )
     message( STATUS "SWIG_DOC_DIR             = ${SWIG_DOC_DIR}")
+    message( STATUS "PYTHON_INSTALL_PREFIX    = ${PYTHON_INSTALL_PREFIX}")
 endif()
 
 #----------------------------------------

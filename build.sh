@@ -98,6 +98,7 @@ while getopts "hb:cdepi:j:xP:sutTv" OPTION; do
            ;;
         i) install=1
            install_prefix=$(abspath ${OPTARG})
+           python_install=$install_prefix
            ;;
         j) num_threads=$OPTARG
            ;;
