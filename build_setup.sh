@@ -107,7 +107,7 @@ system_install_prefix=/usr/local
 python_exe=`which python`
 
 system_python_install="/usr/local"
-user_python_install="~/.local"
+user_python_install="$HOME/.local"
 
 function hashit
 {
