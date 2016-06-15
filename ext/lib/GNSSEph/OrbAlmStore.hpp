@@ -221,10 +221,17 @@ namespace gpstk
       virtual unsigned sizeXmitAlm(const SatID& xmitID) const
          throw(); 
 
-      virtual void dumpSubjAlm( std::ostream& s = std::cout, short detail = 0 ) const
-         throw();
-      virtual void dumpXmitAlm( std::ostream& s = std::cout, short detail = 0 ) const
-         throw();
+      virtual void dumpSubjAlm( std::ostream& s = std::cout, 
+                                short detail = 0, 
+                                const SatID& subjID=SatID() ) const
+         throw(InvalidRequest);
+      virtual void dumpXmitAlm( std::ostream& s = std::cout, 
+                                short detail = 0,
+                                const SatID& subjID=SatID() ) const
+         throw(InvalidRequest);
+
+
+
 
       /// This is intended to store sets of unique almanac data. 
       /// The key is the epoch time.
