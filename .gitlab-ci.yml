@@ -74,3 +74,17 @@ test_windows:
     - windows
   script:
     - build.sh -evxt
+
+build_core:
+  stage: build
+  tags:
+    - core
+  script:
+    - ./build.sh -v
+
+test_core:
+  stage: test
+  tags:
+    - core
+  script:
+    - ./build.sh -vt

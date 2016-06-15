@@ -72,6 +72,7 @@ int main(int argc, char *argv[])
       "  --out <file>  Name the output file <file> (sp3.out)\n"
       "  --tb <time>   Output beginning epoch; <time> = week,sec-of-week (earliest in input)\n"
       "  --te <time>   Output ending epoch; <time> = week,sec-of-week (latest in input)\n"
+      "  --cs <sec>     Cadence of epochs in seconds (300s)\n"
       "  --outputC     Output version c (no correlation) (otherwise a)\n"
       "  --msg \"...\"   Add ... as a comment to the output header (repeatable)\n"
       "  --verbose     Output to screen: dump headers, data, etc\n"
@@ -100,6 +101,7 @@ int main(int argc, char *argv[])
       GPSEphemerisStore BCEph;
       SP3Header sp3header;
       SP3Data sp3data;
+      double cadence = 300.0;        // Cadence of epochs.  Default to 5 minutes.
 
       for(i=1; i<argc; i++)
       {
@@ -150,6 +152,13 @@ int main(int argc, char *argv[])
                        << printTime(endTime,"%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g")
                        << endl;
             }
+            else if(arg == string("--cs"))
+            {
+               arg = string(argv[++i]);
+               cadence = StringUtils::asDouble(arg);
+               if (verbose)
+                  cout << " Cadence    " << cadence << "s " << endl;
+            }
             else if(arg == string("--msg"))
             {
                comments.push_back(string(argv[++i]));
@@ -163,9 +172,15 @@ int main(int argc, char *argv[])
                return 0;
             }
             else if(arg == string("--verbose"))
+            {
                verbose = true;
+               cout << "verbose now set to true." << endl;
+            }
             else
-               cout << "Ignore unknown option: " << arg << endl;
+            {
+               cerr << "Unknown option: " << arg << endl;
+               return 1;
+            }
          }
          else
          {
@@ -182,6 +197,21 @@ int main(int argc, char *argv[])
          return 1;
       }
 
+      bool existPass = true;
+      for (nfile=0; nfile<inputFiles.size(); nfile++)
+      {
+         RinexNavStream rns(inputFiles[nfile].c_str());
+         if (!rns)
+         {
+            cerr << "File " << inputFiles[nfile] << " cannot be opened for input." << endl;
+            existPass =false;
+         }
+      }
+      if (!existPass)
+      {
+         return 1;
+      }
+
          // open the output SP3 file
       SP3Stream outstrm(fileout.c_str(),ios::out);
       outstrm.exceptions(ifstream::failbit);
@@ -192,11 +222,6 @@ int main(int argc, char *argv[])
          RinexNavData rnd;
 
          RinexNavStream rns(inputFiles[nfile].c_str());
-         if(!rns)
-         {
-            cout << "Could not open input file " << inputFiles[nfile] << endl;
-            continue;
-         }
          rns.exceptions(ifstream::failbit);
 
          if(verbose) cout << "Reading file " << inputFiles[nfile] << endl;
@@ -250,7 +275,7 @@ int main(int argc, char *argv[])
          //sp3header.pvFlag = 'V';
       sp3header.containsVelocity = true;
       sp3header.time = CommonTime::END_OF_TIME;
-      sp3header.epochInterval = 900.0;          // hardcoded here only
+      sp3header.epochInterval = cadence; 
       sp3header.dataUsed = "BCE";
       sp3header.coordSystem = "WGS84";
       sp3header.orbitType = "   ";
@@ -261,8 +286,7 @@ int main(int argc, char *argv[])
          // this is a pain....
       sp3header.numberOfEpochs = 0;
       tt = begTime;
-
-      while(tt < endTime)
+      while(tt <= endTime)
       {
          bool foundSome = false;
          for(i=1; i<33; i++)              // for each PRN ...
@@ -305,7 +329,7 @@ int main(int argc, char *argv[])
                cout << "Warning - only 4 comments are allowed in SP3 header.\n";
                break;
             }
-            sp3header.comments.push_back(comments[i]);
+            sp3header.comments.push_back(comments[k]);
          }
       }
 
@@ -322,7 +346,7 @@ int main(int argc, char *argv[])
 
       tt = begTime;
       tt.setTimeSystem(TimeSystem::Any);
-      while(tt < endTime)
+      while(tt <= endTime)
       {
          bool epochOut=false;
 
@@ -359,9 +383,7 @@ int main(int argc, char *argv[])
             sp3data.RecType = 'P';
             for(j=0; j<3; j++)
                sp3data.x[j] = xvt.x[j]/1000.0;       // km
-               // must remove the relativity correction from Xvt::clkbias
-               // see EngEphemeris::svXvt() - also convert to microsec
-            sp3data.clk = (xvt.clkdrift - ee.svRelativity(tt)) * 1000000.0;
+            sp3data.clk = xvt.clkbias * 1.0e6;    // microseconds
 
                //if(version_out == 'c') for(j=0; j<4; j++) sp3data.sig[j]=...
             iode = ee.IODE;
@@ -382,8 +404,8 @@ int main(int argc, char *argv[])
                // Velocity
             sp3data.RecType = 'V';
             for(j=0; j<3; j++)
-               sp3data.x[j] = xvt.v[j]/10.0;         // dm/s
-            sp3data.clk = xvt.clkdrift;                                // s/s
+               sp3data.x[j] = xvt.v[j] * 10.0;         // dm/s
+            sp3data.clk = xvt.clkdrift * 1.0e10;                  // 10**-4 us/s
                //if(version_out == 'c') for(j=0; j<4; j++) sp3data.sig[j]=...
 
             outstrm << sp3data;
