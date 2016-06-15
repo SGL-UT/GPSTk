@@ -1,3 +1,6 @@
+set( SD ${GPSTK_TEST_DATA_DIR} )
+set( TD ${GPSTK_TEST_OUTPUT_DIR} )
+
 ###############################################################################
 # TEST PRSolve
 ###############################################################################
@@ -16,17 +19,124 @@
 
  
  # test with minimum required inputs, RINEX output - RINEX obs, SP3 Ephemeris, Solution Descriptor
- # set( ARGS2 --obs\ ${GPSTK_TEST_DATA_DIR}/arlm200b.15o\ --eph\ ${GPSTK_TEST_DATA_DIR}/test_input_sp3_nav_ephemerisData.sp3\ --sol\ GPS:12:WC\ --output\ rinexout.exp\ )
- # add_test(NAME PRSolve_Rinexout
- #        COMMAND ${CMAKE_COMMAND} 
- #        -DTEST_PROG=$<TARGET_FILE:PRSolve>
- #        -DDIFF_PROG=$<TARGET_FILE:df_diff>
- #        -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
- #        -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}/../../core/tests/positioning
- #        -DTESTBASE=PRSolve_Rinexout
- #        -DARGS=${ARGS2}          
- #        -P ${CMAKE_CURRENT_SOURCE_DIR}/testsuccdiff_PRSolve2.cmake)    
+  set( ARGS2 --obs\ ${GPSTK_TEST_DATA_DIR}/arlm200b.15o\ --eph\ ${GPSTK_TEST_DATA_DIR}/test_input_sp3_nav_ephemerisData.sp3\ --sol\ GPS:12:WC\ --out\ rinexout.exp\ )
+  add_test(NAME PRSolve_Rinexout
+         COMMAND ${CMAKE_COMMAND} 
+         -DTEST_PROG=$<TARGET_FILE:PRSolve>
+         -DDIFF_PROG=$<TARGET_FILE:df_diff>
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}/../../core/tests/positioning
+         -DTESTBASE=PRSolve_Rinexout
+         -DARGS=${ARGS2}          
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/testsuccdiff_PRSolve2.cmake)    
+
+# Test that an output Rinex obs file is valid
+add_test(NAME PRSolve_ValidOutput
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:PRSolve>
+         -DARGS=--obs\ ${SD}/arlm200b.15o\ --eph\ ${SD}/test_input_sp3_nav_ephemerisData.sp3\ --sol\ GPS:12:WC\ --out\ ${TD}/PRSolve_ValidOutput.exp
+         -DTESTBASE=PRSolve_ValidOutput
+         -DTARGETDIR=${TD}
+         -DGPSTK_BINDIR=${PROJECT_BINARY_DIR}/core/apps/checktools/
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testValidOutput_RObs.cmake)
+
+# Check that a missing Config file results in failure
+add_test(NAME PRSolve_MissingInputCfg
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:PRSolve>
+         -DARGS=--file\ ${SD}/notAFile.txt
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
   
+# Check that a missing Obs file results in failure
+add_test(NAME PRSolve_MissingInputObs
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:PRSolve>
+         -DARGS=--obs\ ${SD}/notAFile.txt\ --eph\ ${SD}/test_input_sp3_nav_ephemerisData.sp3\ --sol\ GPS:12:WC
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
+
+# Check that a missing Eph file results in failure
+add_test(NAME PRSolve_MissingInputEph
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:PRSolve>
+         -DARGS=--obs\ ${SD}/arlm200b.15o\ --eph\ ${SD}/notAFile.txt\ --sol\ GPS:12:WC
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
+
+# Check that a missing Nav file results in failure
+add_test(NAME PRSolve_MissingInputNav
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:PRSolve>
+         -DARGS=--obs\ ${SD}/arlm200b.15o\ --nav\ ${SD}/notAFile.txt\ --sol\ GPS:12:WC
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
+
+# Check that a missing Clk file results in failure
+add_test(NAME PRSolve_MissingInputClk
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:PRSolve>
+         -DARGS=--obs\ ${SD}/arlm200b.15o\ --eph\ ${SD}/test_input_sp3_nav_ephemerisData.sp3\ --clk\ ${SD}/notAFile.txt\ --sol\ GPS:12:WC
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
+
+# Check that a missing Met file results in failure
+add_test(NAME PRSolve_MissingInputMet
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:PRSolve>
+         -DARGS=--obs\ ${SD}/arlm200b.15o\ --eph\ ${SD}/test_input_sp3_nav_ephemerisData.sp3\ --met\ ${SD}/notAFile.txt\ --sol\ GPS:12:WC
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
+
+# Check that a missing DCB file results in failure
+add_test(NAME PRSolve_MissingInputDCB
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:PRSolve>
+         -DARGS=--obs\ ${SD}/arlm200b.15o\ --eph\ ${SD}/test_input_sp3_nav_ephemerisData.sp3\ --dcb\ ${SD}/notAFile.txt\ --sol\ GPS:12:WC
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
+
+# Check that an invalid Config file results in failure
+add_test(NAME PRSolve_InvalidInputCfg
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:PRSolve>
+         -DARGS=--file\ ${SD}/timeconvert_2015_200_99.exp
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
+  
+# Check that an invalid Obs file results in failure
+add_test(NAME PRSolve_InvalidInputObs
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:PRSolve>
+         -DARGS=--obs\ ${SD}/timeconvert_2015_200_99.exp\ --eph\ ${SD}/test_input_sp3_nav_ephemerisData.sp3\ --sol\ GPS:12:WC
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
+
+# Check that an invalid Eph file results in failure
+add_test(NAME PRSolve_InvalidInputEph
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:PRSolve>
+         -DARGS=--obs\ ${SD}/arlm200b.15o\ --eph\ ${SD}/timeconvert_2015_200_99.exp\ --sol\ GPS:12:WC
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
+
+# Check that an invalid Nav file results in failure
+add_test(NAME PRSolve_InvalidInputNav
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:PRSolve>
+         -DARGS=--obs\ ${SD}/arlm200b.15o\ --nav\ ${SD}/timeconvert_2015_200_99.exp\ --sol\ GPS:12:WC
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
+
+# Check that an invalid Clk file results in failure
+add_test(NAME PRSolve_InvalidInputClk
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:PRSolve>
+         -DARGS=--obs\ ${SD}/arlm200b.15o\ --eph\ ${SD}/test_input_sp3_nav_ephemerisData.sp3\ --clk\ ${SD}/timeconvert_2015_200_99.exp\ --sol\ GPS:12:WC
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
+
+# Check that an invalid Met file results in failure
+add_test(NAME PRSolve_InvalidInputMet
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:PRSolve>
+         -DARGS=--obs\ ${SD}/arlm200b.15o\ --eph\ ${SD}/test_input_sp3_nav_ephemerisData.sp3\ --met\ ${SD}/timeconvert_2015_200_99.exp\ --sol\ GPS:12:WC
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
+
+# Check that an invalid DCB file results in failure
+add_test(NAME PRSolve_InvalidInputDCB
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:PRSolve>
+         -DARGS=--obs\ ${SD}/arlm200b.15o\ --eph\ ${SD}/test_input_sp3_nav_ephemerisData.sp3\ --dcb\ ${SD}/timeconvert_2015_200_99.exp\ --sol\ GPS:12:WC
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
 
 ###############################################################################
 # TEST poscvt

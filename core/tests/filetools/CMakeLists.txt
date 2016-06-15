@@ -21,6 +21,13 @@ add_test(NAME bc2sp3_CmdOpt_2
          -DTARGETDIR=${TD}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testmissing.cmake)
 
+# check that bc2sp3 fails with invalid input
+add_test(NAME bc2sp3_InvalidInput
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:bc2sp3>
+         -DARGS=--in\ ${SD}/timeconvert_2015_200_0.exp\ --out\ ${TD}/bc2sp3_InvalidInput.out
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
+
 # check the output against prepared "truth" - SP3c case
 set(ARGS_1 "--outputC --tb 1825,518400 --te 1825,604500")
 add_test(NAME bc2sp3_Same_1
