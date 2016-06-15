@@ -284,7 +284,17 @@ namespace gpstk
        *     SV, return CommonTime::END_OF_TIME.
        */
       CommonTime deriveLastXmit(const OrbAlm* oap) const
-         throw( InvalidRequest ); 
+         throw(InvalidRequest); 
+
+      /*
+       *  Given an OrbAlm pointer, return a list of the SVs that
+       *  transmitted an almanac data set corresponding to the
+       *  data in this set.
+       */
+      std::list<SatID> xmitBySVs(const OrbAlm* oap) const
+         throw(InvalidRequest); 
+
+
 
       /// Returns a map of the almemerides available for the specified
       /// satellite.  Note that the return is specifically chosen as a

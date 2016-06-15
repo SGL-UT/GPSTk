@@ -40,6 +40,7 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <list>
 
 #include "StringUtils.hpp"
 #include "OrbAlmFactory.hpp"
@@ -778,12 +779,40 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjI
       return retVal; 
    }
 
-/*
-      typedef std::multimap<CommonTime, OrbAlm*> OrbAlmMap;
-      typedef std::map<SatID, OrbAlmMap> UniqueAlmMap;
-      typedef std::map<SatID, UniqueAlmMap> XmitAlmMap;
-      XmitAlmMap xmitAlmMap;
-*/
+//-----------------------------------------------------------------------------
+   list<SatID> OrbAlmStore::xmitBySVs(const OrbAlm* oap) const
+         throw(InvalidRequest)
+   {
+      list<SatID> retList; 
+
+      XmitAlmMap::const_iterator cit1;
+      for (cit1=xmitAlmMap.begin();cit1!=xmitAlmMap.end();cit1++)
+      {
+         const SatID& subjID = oap->subjectSV;
+         const UniqueAlmMap& mUAM = cit1->second;
+         UniqueAlmMap::const_iterator cit2 = mUAM.find(subjID);
+         if (cit2!=mUAM.end())
+         {
+            const OrbAlmMap& mOAM = cit2->second;
+
+               // We're allowing for the possibility that there may be
+               // different data sets with the same epoch time (sigh).
+               // Therefore, we have to do an exhaustive search using 
+               // isSameData( ) to verify that we have the correct
+               // item.
+            OrbAlmMap::const_iterator cit3;
+            for (cit3=mOAM.begin();cit3!=mOAM.end();cit3++)
+            {
+               const OrbAlm* testp = cit3->second;
+               if (testp->isSameData(oap))
+               {
+                  retList.push_back(testp->satID);
+               }
+            }
+         }
+      }
+      return retList;
+   }
 
 //-----------------------------------------------------------------------------
    const OrbAlmStore::OrbAlmMap&
