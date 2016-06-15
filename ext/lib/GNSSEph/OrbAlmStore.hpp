@@ -247,6 +247,12 @@ namespace gpstk
       /// same epoch time but slightly different contents.   Therefore, 
       /// they will all be stored, but only one copy (the earliest) of
       /// each unique data set will be stored. 
+      ///
+      /// NOTE: key is toa (not beginValid).  This was originally due to fact
+      /// we thought toa might be unique.  In the event, the code to add an
+      /// almanac check isSameData( ) to determine uniqueness.   Therefore,
+      /// it MIGHT be possible to reduce this to a set or list, but we will
+      /// leave that for another time. 
       typedef std::multimap<CommonTime, OrbAlm*> OrbAlmMap;
 
       /*
