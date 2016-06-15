@@ -30,7 +30,7 @@ set( TIMECONVERT_CMDOPT_CIVIL "-c 7 19 2015 00:01:39" )
 add_test(NAME timeconvert_CmdOpt_Civil
          COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:timeconvert>
-         -DPROG_OPTS=${TIMECONVERT_CMDOPT_ANSI}
+         -DPROG_OPTS=${TIMECONVERT_CMDOPT_CIVIL}
          -DTESTNAME=timeconvert_CmdOpt_Civil
          -DTESTBASE=timeconvert_2015_200_99
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
@@ -42,7 +42,7 @@ set( TIMECONVERT_CMDOPT_RINEX "-R 15  7 19  0  1 39" )
 add_test(NAME timeconvert_CmdOpt_Rinex
          COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:timeconvert>
-         -DPROG_OPTS=${TIMECONVERT_CMDOPT_ANSI}
+         -DPROG_OPTS=${TIMECONVERT_CMDOPT_RINEX}
          -DTESTNAME=timeconvert_CmdOpt_Rinex
          -DTESTBASE=timeconvert_2015_200_99
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
@@ -54,7 +54,7 @@ set( TIMECONVERT_CMDOPT_GPSEWS "-o 1 830 99" )
 add_test(NAME timeconvert_CmdOpt_GPSews
          COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:timeconvert>
-         -DPROG_OPTS=${TIMECONVERT_CMDOPT_ANSI}
+         -DPROG_OPTS=${TIMECONVERT_CMDOPT_GPSEWS}
          -DTESTNAME=timeconvert_CmdOpt_GPSews
          -DTESTBASE=timeconvert_2015_200_99
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
@@ -66,7 +66,7 @@ set( TIMECONVERT_CMDOPT_GPSWS "-f 1854 99" )
 add_test(NAME timeconvert_CmdOpt_GPSws
          COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:timeconvert>
-         -DPROG_OPTS=${TIMECONVERT_CMDOPT_ANSI}
+         -DPROG_OPTS=${TIMECONVERT_CMDOPT_GPSWS}
          -DTESTNAME=timeconvert_CmdOpt_GPSws
          -DTESTBASE=timeconvert_2015_200_99
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
@@ -78,7 +78,7 @@ set( TIMECONVERT_CMDOPT_GPSWZ "-w 1854 66" )
 add_test(NAME timeconvert_CmdOpt_GPSwz
          COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:timeconvert>
-         -DPROG_OPTS=${TIMECONVERT_CMDOPT_ANSI}
+         -DPROG_OPTS=${TIMECONVERT_CMDOPT_GPSWZ}
          -DTESTNAME=timeconvert_CmdOpt_GPSwz
          -DTESTBASE=timeconvert_2015_200_99
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
@@ -90,19 +90,31 @@ set( TIMECONVERT_CMDOPT_GPSFULLZ "-Z 972030018" )
 add_test(NAME timeconvert_CmdOpt_GPSfullz
          COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:timeconvert>
-         -DPROG_OPTS=${TIMECONVERT_CMDOPT_ANSI}
+         -DPROG_OPTS=${TIMECONVERT_CMDOPT_GPSFULLZ}
          -DTESTNAME=timeconvert_CmdOpt_GPSfullz
          -DTESTBASE=timeconvert_2015_200_99
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testopts.cmake)
 
+# check GPS 29-bit zcount
+set( TIMECONVERT_CMDOPT_GPSZCOUNT29 "--z29 1 435159106" )
+add_test(NAME timeconvert_CmdOpt_GPSzcount29
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:timeconvert>
+         -DPROG_OPTS=${TIMECONVERT_CMDOPT_GPSZCOUNT29}
+         -DTESTNAME=timeconvert_CmdOpt_GPSzcount29
+         -DTESTBASE=timeconvert_2015_200_99
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/testopts.cmake)
+
 # check Julian date
-set( TIMECONVERT_CMDOPT_JULIAN "-j 2457222.501146" )
+set( TIMECONVERT_CMDOPT_JULIAN "-j 2457222.50114583333" )
 add_test(NAME timeconvert_CmdOpt_Julian
          COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:timeconvert>
-         -DPROG_OPTS=${TIMECONVERT_CMDOPT_ANSI}
+         -DPROG_OPTS=${TIMECONVERT_CMDOPT_JULIAN}
          -DTESTNAME=timeconvert_CmdOpt_Julian
          -DTESTBASE=timeconvert_2015_200_99
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
@@ -110,11 +122,11 @@ add_test(NAME timeconvert_CmdOpt_Julian
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testopts.cmake)
 
 # check MJD
-set( TIMECONVERT_CMDOPT_MJD "-m 57222.001145833" )
+set( TIMECONVERT_CMDOPT_MJD "-m 57222.00114583333" )
 add_test(NAME timeconvert_CmdOpt_MJD
          COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:timeconvert>
-         -DPROG_OPTS=${TIMECONVERT_CMDOPT_ANSI}
+         -DPROG_OPTS=${TIMECONVERT_CMDOPT_MJD}
          -DTESTNAME=timeconvert_CmdOpt_MJD
          -DTESTBASE=timeconvert_2015_200_99
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
@@ -126,7 +138,7 @@ set( TIMECONVERT_CMDOPT_UNIX "-u 1437264099 0" )
 add_test(NAME timeconvert_CmdOpt_Unix
          COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:timeconvert>
-         -DPROG_OPTS=${TIMECONVERT_CMDOPT_ANSI}
+         -DPROG_OPTS=${TIMECONVERT_CMDOPT_UNIX}
          -DTESTNAME=timeconvert_CmdOpt_Unix
          -DTESTBASE=timeconvert_2015_200_99
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
@@ -138,7 +150,7 @@ set( TIMECONVERT_CMDOPT_YDS "-y 2015 200 99" )
 add_test(NAME timeconvert_CmdOpt_YDS
          COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:timeconvert>
-         -DPROG_OPTS=${TIMECONVERT_CMDOPT_ANSI}
+         -DPROG_OPTS=${TIMECONVERT_CMDOPT_YDS}
          -DTESTNAME=timeconvert_CmdOpt_YDS
          -DTESTBASE=timeconvert_2015_200_99
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
