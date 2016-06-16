@@ -39,6 +39,15 @@ namespace gpstk
           *   messages are stored here on return. */
       virtual void finalize(NavMsgList& msgBitsOut);
 
+      virtual void setMinIdentical(const unsigned value)
+      { minIdentical = value;}
+
+      virtual unsigned short getMinIdentical () const
+      { return minIdentical;}
+
+      // Minimum # of identical messages needed
+      unsigned short minIdentical;
+
          /** Debug method to unspool contents in a manner appropriate
           *  for inspection.   */
       virtual void dump(std::ostream& s) const;
