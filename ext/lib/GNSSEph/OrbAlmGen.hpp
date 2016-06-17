@@ -135,6 +135,8 @@ namespace gpstk
 
       virtual bool isSameData(const OrbElemBase* right) const;      
 
+      virtual std::string listDifferences(const OrbElemBase* right) const;      
+
       virtual void dumpBody(std::ostream& s = std::cout) const
          throw( gpstk::InvalidRequest );
 

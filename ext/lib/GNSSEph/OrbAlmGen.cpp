@@ -483,6 +483,41 @@ namespace gpstk
       return false;       
    }            
 
+   //-----------------------------------------------------------------
+   // Following method is untested.  Just as it was written to support
+   // debug of a problem, the problem was resolved. 
+   std::string OrbAlmGen::listDifferences(const OrbElemBase* right) const
+   {
+      string retVal;
+
+         // If the right pointer doesn't point to an OrbAlmGen, then 
+         // they can't be the same data. 
+      if (const OrbAlmGen* rp = dynamic_cast<const OrbAlmGen*>(right)) 
+      {       
+            // Compare the contents of the basic OrbElemBase data members
+            // and return a list of differences.
+         if (dataLoadedFlag != right->dataLoadedFlag) retVal += " dataLoaded";
+         NavID nid(satID,obsID);
+         NavID rightNid(right->satID, right->obsID);
+         if (nid.navType    != rightNid.navType)      retVal += " navType"; 
+         if (ctToe          != right->ctToe)          retVal += " ctToe";
+         if (healthy        != right->healthy)        retVal += " healthy";
+         if (subjectSV  != rp->subjectSV)  retVal += " subjectSV"; 
+         if (AHalf      != rp->AHalf)      retVal += " AHalf";
+         if (af1        != rp->af1)        retVal += " af1";
+         if (af0        != rp->af0)        retVal += " af0";
+         if (OMEGA0     != rp->OMEGA0)     retVal += " OMEGA0"; 
+         if (ecc        != rp->ecc)        retVal += " ecc";
+         if (deltai     != rp->deltai)     retVal += " deltai";
+         if (OMEGAdot   != rp->OMEGAdot)   retVal += " OMEGADot";
+         if (w          != rp->w)          retVal += " w";
+         if (M0         != rp->M0)         retVal += " M0";
+         if (health     != rp->health)     retVal += " health";
+      }
+      return retVal;       
+   }
+
+
    void OrbAlmGen::dumpBody(ostream& s) const
       throw(InvalidRequest)
    {
@@ -491,7 +526,7 @@ namespace gpstk
       s.setf(ios::scientific, ios::floatfield);
       s.setf(ios::right, ios::adjustfield);
       s.setf(ios::uppercase);
-      s.precision(6);
+      s.precision(8);
       s.fill(' ');
 
       s << "AHalf       " << setw(16) << AHalf     << " m**0.5" << endl;
