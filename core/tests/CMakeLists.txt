@@ -22,11 +22,11 @@ add_test(NAME df_diff_2
 if (TEST_SWITCH)
     # library testing
     add_subdirectory( ClockModel )
-    add_subdirectory( TimeHandling )  
+    add_subdirectory( TimeHandling )
     add_subdirectory( FileDirProc )
     add_subdirectory( Math )
     add_subdirectory( GNSSCore )
-    add_subdirectory( FileHandling ) 
+    add_subdirectory( FileHandling )
     add_subdirectory( Utilities )
     add_subdirectory( GNSSEph )
     add_subdirectory( RefTime )
@@ -35,10 +35,11 @@ if (TEST_SWITCH)
 
 
     # application testing
-    add_subdirectory (difftools)
-    add_subdirectory (filetools)
+    add_subdirectory( difftools )
+    add_subdirectory( filetools )
+    add_subdirectory( geomatics )
     add_subdirectory( time )
-    add_subdirectory (positioning )
+    add_subdirectory( positioning )
     add_subdirectory( Rinextools )
     add_subdirectory( mergetools )
     add_subdirectory( multipath )
