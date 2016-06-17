@@ -355,9 +355,9 @@ namespace gpstk
          // Compute velocity of rotation coordinates
       dek = amm * Ak / R;            
       dlk = SQRT(Ak) * q * sqrtgm / (R*R);  
-      div = tdrinc; 
+      div = 0.0; 
       /*
-      *  Harmonic perturbations set to zero in almanac
+      *  idot and Harmonic perturbations set to zero in almanac
       div = tdrinc - 2.0e0 * dlk *
          ( Cic  * s2al - Cis * c2al );
       */
@@ -670,7 +670,7 @@ namespace gpstk
       }
 
          // Crack the bits into engineering units. 
-      ecc = msg.asSignedDouble(68, 16, -21);
+      ecc = msg.asUnsignedDouble(68, 16, -21);
       toa = msg.asUnsignedLong(90, 8, 4096);
       deltai = msg.asDoubleSemiCircles(98, 16, -19);
       OMEGAdot = msg.asDoubleSemiCircles(120, 16, -38);
@@ -741,7 +741,7 @@ namespace gpstk
       unsigned short wna = (unsigned short) msg.asUnsignedLong(127,13,1);
       toa = msg.asUnsignedLong(140, 8, 4096);
       health = (unsigned short) msg.asUnsignedLong(154, 3, 1);
-      ecc = msg.asSignedDouble(157, 11, -16);
+      ecc = msg.asUnsignedDouble(157, 11, -16);
       deltai = msg.asDoubleSemiCircles(168, 11, -14);
       OMEGAdot = msg.asDoubleSemiCircles(179, 11, -33);
       AHalf = msg.asSignedDouble(190, 17, -4);
@@ -821,7 +821,7 @@ namespace gpstk
          const unsigned numBits1[]   = { 22,   2};
          OMEGA0  = msg.asDoubleSemiCircles(startBits1, numBits1, 2, -23);
 
-         ecc     = msg.asSignedDouble(152, 17, -21);
+         ecc     = msg.asUnsignedDouble(152, 17, -21);
 
          const unsigned startBits2[] = {169, 180};
          const unsigned numBits2[]   = {  3,  13};
