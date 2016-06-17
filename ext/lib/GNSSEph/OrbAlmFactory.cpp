@@ -48,7 +48,7 @@ using namespace std;
 
 namespace gpstk
 {
-   OrbAlmFactory::OrbAlmFactory():toaSetLNAV(false) 
+   OrbAlmFactory::OrbAlmFactory()
       {};
    
    OrbAlm* OrbAlmFactory::
@@ -65,7 +65,11 @@ namespace gpstk
       {
       switch (navID.navType)
       {
-         case NavID::ntGPSLNAV: {retVal = GPSLNAV(pnb); break;}
+         case NavID::ntGPSLNAV: 
+         {
+            retVal = GPSLNAV(pnb); 
+            break;
+         }
 
          case NavID::ntGPSCNAVL5: 
          case NavID::ntGPSCNAVL2:
@@ -111,19 +115,6 @@ namespace gpstk
    {
       OrbAlm* retVal = 0;
 
-         // If toa hasn't be set, use the transmit time of 
-         // the current message as a rough starting point.  
-         // OrbAlmGen will assume that the toa of the
-         // almanac is within a half-week of that time. 
-         // This should happen with the first message.
-         // That gives OrbAlmGen something to work with
-         // until the first SV ID 51 comes along. 
-      if (!toaSetLNAV)
-      {
-         mostRecentToaLNAV = pnb.getTransmitTime();
-         toaSetLNAV = true; 
-      }
-
          // Determine the subframe and SV ID
       unsigned long sfNum = pnb.asUnsignedLong(49, 3, 1);
       if (sfNum!=4 && sfNum!=5) return retVal;
@@ -140,9 +131,9 @@ namespace gpstk
          short WNa = (short) pnb.asUnsignedLong(76, 8, 1);
          unsigned long lToa = pnb.asUnsignedLong(68, 8, 4096);
          double Toa = (double) lToa; 
-         short fullWN = static_cast<GPSWeekSecond>(mostRecentToaLNAV).week;
+         short fullWN = static_cast<GPSWeekSecond>(pnb.getTransmitTime()).week;
          short fullWNa = EngNav::convertXBit(fullWN,WNa,EngNav::BITS8);
-         mostRecentToaLNAV = GPSWeekSecond(fullWNa,Toa); 
+         OrbAlmGen::loadWeekNumber(fullWNa,Toa); 
       }
 
          // Determine whether the PNB object is an appropriate
@@ -152,9 +143,7 @@ namespace gpstk
       {
          try
          {
-            short fullWNa = static_cast<GPSWeekSecond>(mostRecentToaLNAV).week;
-            double toa = static_cast<GPSWeekSecond>(mostRecentToaLNAV).sow; 
-            retVal = new OrbAlmGen(pnb,fullWNa,toa);
+            retVal = new OrbAlmGen(pnb);
          }
             // Conversion attempt failed.
          catch(InvalidParameter ir)

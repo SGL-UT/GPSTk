@@ -62,6 +62,10 @@ namespace gpstk
    const unsigned long OrbAlmGen::ALMANAC_PERIOD_LNAV = 720;     // 12.5 minutes for GPS LNAV
    const unsigned long OrbAlmGen::FRAME_PERIOD_LNAV   =  30;     //  30 seconds for GPS LNAV
 
+   bool OrbAlmGen::WN_set = false; 
+   unsigned int OrbAlmGen::WNa_full;
+   double OrbAlmGen::t_oa;
+
    OrbAlmGen::OrbAlmGen()
       : OrbAlm(),
         AHalf(0.0), A(0.0), af0(0.0), af1(0.0),
@@ -70,16 +74,14 @@ namespace gpstk
    {}
 
    OrbAlmGen::OrbAlmGen( const PackedNavBits& pnb,
-                    const unsigned short WNa,
-                    const unsigned long  t_oa,
-                    const unsigned short hArg )
+                         const unsigned short hArg )
       throw( InvalidParameter )
       : OrbAlm(),
         AHalf(0.0), A(0.0), af0(0.0), af1(0.0),
         OMEGA0(0.0), ecc(0.0), deltai(0.0), OMEGAdot(0.0),
         w(0.0), M0(0.0), health(0)
    {
-      loadData( pnb, WNa, t_oa, hArg );
+      loadData( pnb, hArg );
    }
 
      /// Clone method
@@ -89,8 +91,6 @@ namespace gpstk
    }
 
    void OrbAlmGen::loadData( const PackedNavBits& pnb,
-                    const unsigned short WNa_full,
-                    const unsigned long  t_oa,
                     const unsigned short hArg)
       throw( InvalidParameter )
    {
@@ -104,21 +104,21 @@ namespace gpstk
       {
          case NavID::ntGPSLNAV:
          {
-            loadDataGpsLNAV(pnb,WNa_full,t_oa);
+            loadDataGpsLNAV(pnb);
             break;
          }
 
          case NavID::ntGPSCNAVL2:
          case NavID::ntGPSCNAVL5: 
          {
-            loadDataGpsCNAV(pnb,WNa_full,t_oa);
+            loadDataGpsCNAV(pnb);
             break;
          }
 
          case NavID::ntBeiDou_D1:
          case NavID::ntBeiDou_D2:
          {
-            loadDataBDS(pnb,WNa_full,t_oa,hArg);
+            loadDataBDS(pnb,hArg);
             break;
          }
 
@@ -139,6 +139,43 @@ namespace gpstk
          // After all this is done, declare that data has been loaded
          // into this object (so it may be used).
       dataLoadedFlag = true;
+   }
+
+   //------------------------------------------------------------
+   //  When the calling program receives the following pages, 
+   //  this should be called to update the almanac time parameters.   
+   //    LNAV SF4/Pg 25  
+   //    BDS D1 SF5/Pg 8
+   //    BDS D2 SF5/Pg 36
+   //  This "maintenance" is not required for GPS CNAV
+   void OrbAlmGen::loadWeekNumber(const unsigned int WNa, const double toa)
+   {
+      WNa_full = WNa;
+      t_oa = toa;
+      WN_set = true;   
+   }
+
+      // Alternate entry point for situation in which the WNa/toa
+      // are already available as a CommonTime
+   void OrbAlmGen::loadWeekNumber(const CommonTime& ct)
+   {
+      unsigned int week = static_cast<GPSWeekSecond>(ct).week;
+      double sow = static_cast<GPSWeekSecond>(ct).sow;
+      loadWeekNumber(week,sow);
+   }
+
+   //------------------------------------------------------------
+   //  If the first almanac data page is received prior to the
+   //  first definition of the WNa and Toa, estimate the 
+   //  WNa_full based on the transmit time of the message.
+   //  This assumes that the almanac WNa/toa is "in the future"
+   //  from the current time by at least a day. 
+   void OrbAlmGen::estimateWeekNumber(const CommonTime& currTime)
+   {
+      CommonTime adjustedTime = currTime + SEC_PER_DAY;
+      unsigned int WN_est = static_cast<GPSWeekSecond>(adjustedTime).week;
+      double toa_est = static_cast<GPSWeekSecond>(adjustedTime).sow;
+      loadWeekNumber(WN_est, toa_est);
    }
 
    //------------------------------------------------------------
@@ -550,9 +587,7 @@ namespace gpstk
 
    } // end of dump()
 
-   void OrbAlmGen::loadDataGpsLNAV(const gpstk::PackedNavBits& msg,
-                    const unsigned short WNa_full,
-                    const unsigned long  t_oa)
+   void OrbAlmGen::loadDataGpsLNAV(const gpstk::PackedNavBits& msg)
                throw(gpstk::InvalidParameter)   
    {
       unsigned short subframe = (unsigned short) msg.asUnsignedLong(49, 3, 1);
@@ -573,6 +608,11 @@ namespace gpstk
          InvalidParameter ip(ss.str());
          GPSTK_THROW(ip); 
       }
+
+         // If the almanac time parameters are not yet set, estimate 
+         // them based on the current transmit time. 
+      if (!WN_set)
+         estimateWeekNumber(msg.getTransmitTime());
 
          // Store the transmitting SV
       satID = msg.getsatSys();
@@ -622,6 +662,7 @@ namespace gpstk
          // equal to the WNa, t_oa provided, or within a 
          // week of that time. 
       unsigned short wk = WNa_full;
+
       if (toa!=t_oa)
       {
          double diff =  (double) toa - (double) t_oa;
@@ -641,9 +682,7 @@ namespace gpstk
       endValid.setTimeSystem(TimeSystem::GPS);
    }
 
-   void OrbAlmGen::loadDataGpsCNAV(const gpstk::PackedNavBits& msg,
-                    const unsigned short WNa_full,
-                    const unsigned long  t_oa)
+   void OrbAlmGen::loadDataGpsCNAV(const gpstk::PackedNavBits& msg)
                throw(gpstk::InvalidParameter)
    {
       unsigned short msgType = (unsigned short) msg.asUnsignedLong(14, 6, 1);
@@ -706,8 +745,6 @@ namespace gpstk
    }
       
    void OrbAlmGen::loadDataBDS(const gpstk::PackedNavBits& msg,
-                    const unsigned short WNa_full,
-                    const unsigned long  t_oa,
                     const unsigned short hArg)
                throw(gpstk::InvalidParameter)
    {
@@ -728,6 +765,11 @@ namespace gpstk
       if (!isDT1 && subframe==5 && page>=95 && page<=100) valid = true;
       if (valid)
       {
+            // If the almanac time parameters are not yet set, estimate 
+            // them based on the current transmit time. 
+         if (!WN_set)
+            estimateWeekNumber(msg.getTransmitTime());
+
          obsID    = msg.getobsID();
          satID    = msg.getsatSys();
  
