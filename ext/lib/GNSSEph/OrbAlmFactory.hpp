@@ -81,16 +81,6 @@ namespace gpstk
 
       int debugLevel;
 
-      // For almanac handling, we need to know something about  
-      // current time (at least for GPS LNAV and BDS).  Therefore,
-      // when an appropriate message comes by, update the CommonTime 
-      // that tracks the most toa.   When we first read a message, we
-      // will initialize the mostRecentToa to the transmit time of
-      // that message, which will typically at least get the week number
-      // in the correct range. 
-      CommonTime mostRecentToaLNAV;
-      bool toaSetLNAV; 
-
    }; // end class OrbAlmFactory
 }
 #endif // SGLTK_OrbAlmFactory_HPP
