@@ -61,6 +61,37 @@ using namespace gpstk;
 class OrbAlmStore_T
 {
 public:
+
+      // Following structure is used by both the tests for the find( )
+      // method and the deriveLastXmit( ) method.
+      //
+      // For find( ), the names of the members are pretty self-explantory
+      //  subjID - The satellite of interest for the find( )
+      //  expectPass - True if the find( ) is expected to return with 
+      //               a response (as opposed to throwing an exception)
+      //  testTime - The time of interest for the find( )
+      //  considerEff - Take the almanac period of effectivity into
+      //             account.
+      //  expBV - The beginValid time that the return should have. 
+      //          This is only relevant if expectPass==true.
+      //  xmitID - In the case of the find( ) method for a particular
+      //          transmitting SV, this is the transmitting satellite
+      //          of interest.  If left as invalid the simpler find( )
+      //          that looks among unique almanacs for all transmitting
+      //          SVs is used.
+      //
+      // For deriveLastXmit( ), the definitions vary as follows:
+      //  subjID - The satellite of interest.
+      //  expectPass - True if the deriveLastXmit( ) is expected to return with 
+      //               a response (as opposed to throwing an exception)
+      //  testTime - The time of interest for the find( ).  The 
+      //             subjID and the testTime are used in order to 
+      //             determine the particular almanac for which the
+      //             last transmit time is to be derived.
+      //  considerEff - Alway true for these tests.
+      //  expBV - The lastXmitTime that should be returned. 
+      //          This is only relevant if expectPass==true.
+      //  xmitID - Unused.
    typedef struct PassFailData
    {
       SatID subjID;
@@ -116,6 +147,15 @@ public:
    void testFindExpectingFail(const PassFailData& pfd,
                                     OrbAlmStore& oas,
                                     TestUtil& testFramework);
+   void testLastXmit(const PassFailData& pfd, 
+                       OrbAlmStore& oas,
+                       TestUtil& testFramework);
+   void testLastXmitExpectingPass(const PassFailData& pfd, 
+                                    OrbAlmStore& oas,
+                                    TestUtil& testFramework);
+   void testLastXmitExpectingFail(const PassFailData& pfd,
+                                    OrbAlmStore& oas,
+                                    TestUtil& testFramework);
 
    void setUpLNAV();
    void setUpCNAV();
@@ -156,6 +196,10 @@ public:
 
       // List of PassFailData objects that contain definitions for sepcific find( ) tests.
    list<PassFailData> pfList;
+
+      // List of PassFailData object that contain definition for specific 
+      // deriveLastXmit( ) tests.
+   list<PassFailData> lastXmitList;
 };
 
 OrbAlmStore_T::
@@ -333,6 +377,16 @@ createAndDump()
       testFind(pfd,oas,testFramework);
    }
 
+   //--- Test the deriveLastXmit( ) method --------------------------------
+   currMethod = typeDesc + " OrbAlmStore.deriveLastXmit() "; 
+   TUCSM(currMethod);
+
+   for (citp=lastXmitList.begin();citp!=lastXmitList.end();citp++)
+   {
+      const PassFailData& pfd = *citp;
+      testLastXmit(pfd,oas,testFramework);
+   }
+
    //--- Dump the store ----------------------
    currMethod = typeDesc + " OrbAlmStore.dump()";
    TUCSM(currMethod);
@@ -439,6 +493,88 @@ testFindExpectingFail(const PassFailData& pfd,
 
 //---------------------------------------------------------------------------------
 void OrbAlmStore_T::
+testLastXmit(const PassFailData& pfd, 
+               OrbAlmStore& oas,
+               TestUtil& testFramework)
+{
+   if (pfd.expectPass) 
+      testLastXmitExpectingPass(pfd,oas,testFramework);
+   else 
+      testLastXmitExpectingFail(pfd,oas,testFramework);
+}
+
+//---------------------------------------------------------------------------------
+// Test OrbAlmStore.deriveLastXmit( ) with a set of arguments that are expected to pass
+void OrbAlmStore_T::
+testLastXmitExpectingPass(const PassFailData& pfd, 
+                                OrbAlmStore& oas,
+                                TestUtil& testFramework)
+{
+   try
+   {
+         // First find the subject SV almanac
+      const OrbAlm* p = oas.find(pfd.subjID, pfd.testTime); 
+      if (p)
+      {
+         const CommonTime ct = oas.deriveLastXmit(p);
+         if (ct==pfd.expBV) 
+            TUPASS("");
+         else
+         {
+            stringstream ss;
+            ss << "Expected lastXmit time "
+               << printTime(pfd.expBV,"%02m/%02d/%4Y %02H:%02M:%02S")
+               << " found time " 
+               << printTime(ct,"%02m/%02d/%4Y %02H:%02M:%02S"); 
+            TUFAIL(ss.str());
+         }
+      }
+      else
+      {
+         stringstream ss;
+         ss << "Returned without a valid pointer.";
+         TUFAIL(ss.str());         
+      }
+   }
+   catch (InvalidRequest ir)
+   {
+      stringstream ss;
+      ss << "Unexpected exception" << endl;
+      ss << ir << endl;
+      TUFAIL(ss.str());
+   }
+   return; 
+}
+
+//---------------------------------------------------------------------------------
+// Test OrbAlmStore.deriveLastXmit( ) with a set of arguments that are expected to fail
+void OrbAlmStore_T::
+testLastXmitExpectingFail(const PassFailData& pfd, 
+                                OrbAlmStore& oas,
+                                TestUtil& testFramework)
+{
+   try
+   {
+         // Could fail on find( ) call.  If there's no object for
+         // this subject SV, then can't find one. 
+      const OrbAlm* p = oas.find(pfd.subjID,pfd.testTime);
+
+         // IF an object is found, we SHOULD be able to 
+         // find the lastXmit time.
+      const CommonTime ct = oas.deriveLastXmit(p); 
+      stringstream ss;
+      ss << "Failed to throw expected exception for deriveLastXmit( ) test";
+      TUFAIL(ss.str());
+   }
+   catch (InvalidRequest)
+   {
+      TUPASS("");
+   }
+   return;
+}
+
+//---------------------------------------------------------------------------------
+void OrbAlmStore_T::
 init()
 {
    dataList.clear();
@@ -519,6 +655,7 @@ setUpLNAV()
       "365,12/31/2015,00:04:18,1877,345858,2,61,404, 0x22C3550A, 0x1C258CB4, 0x16C601E8, 0x1EC47843, 0x3F528012, 0x284353B2, 0x3A04AC17, 0x025C17C2, 0x1F2AA62A, 0x01800C94",
       "365,12/31/2015,00:04:24,1877,345864,2,61,504, 0x22C3550A, 0x1C25AD3C, 0x102AAAAC, 0x2AAAAABC, 0x2AAAAABC, 0x2AAAAABC, 0x2AAAAABC, 0x2AAAAABC, 0x2AAAAABC, 0x2AAAAABC",
       "365,12/31/2015,00:11:18,1877,346278,3,69,418, 0x22C3550A, 0x1C2E4CC4, 0x1E037FFB, 0x3FC08E66, 0x3C7FC45D, 0x3FFFFF23, 0x3FFFFFFC, 0x3F9ED57B, 0x044EC0FD, 0x04400054",
+      "365,12/31/2015,18:35:24,1877,412524,2,61,501, 0x22C3550A, 0x21926DD0, 0x104A1BA6, 0x24037521, 0x3F52803B, 0x284333DF, 0x04C7ADAD, 0x04F16DE7, 0x08E35CE8, 0x004001F0",
       "365,12/31/2015,00:08:48,1877,346128,1,63,413, 0x22C3550A, 0x1C2B2C1C, 0x1D163D8D, 0x0374F72B, 0x0B190095, 0x08F95CEE, 0x0B5F0864, 0x24F97F6B, 0x2B9382F3, 0x2B0D72A8",
       "365,12/31/2015,12:26:18,1877,390378,1,63,413, 0x22C3550A, 0x1FC50CF0, 0x1D1FE70B, 0x31715EBB, 0x1B9122BA, 0x0329194A, 0x18EC680E, 0x074229DF, 0x08E88416, 0x2A2445A4",
       "365,12/31/2015,00:08:48,1877,346128,2,61,413, 0x22C3550A, 0x1C2B2C1C, 0x1D1F18D0, 0x17B5F2ED, 0x3CE0889C, 0x1B176553, 0x129C8100, 0x32321ECF, 0x092F8292, 0x018C79A0"
@@ -541,7 +678,7 @@ setUpLNAV()
       //   Remove the default almanacs
       //   Remove the redundant almanacs 
    sizeSubj  = 15; 
-   sizeXmit  = 23;
+   sizeXmit  = 24;
    sizeTotal = sizeSubj + sizeXmit; 
 
    /*
@@ -640,6 +777,31 @@ setUpLNAV()
    CommonTime begValidPRN5 = CivilTime(2015,12,31,00,04,54,TimeSystem::GPS);
    pfd = PassFailData(subjID_5,testTime,true,begValidPRN5);
    pfList.push_back(pfd);
+
+   // Set up tests for deriveLastXmit( ).
+   // 
+   //     Expect  Subj   Test             Consider   Expected Return
+   //       Pass    SV   Time             Eff.       lastXMit         Test
+   //  1.   True     1   12/31 00:03:00   T          12/31 18:35:24   PRN 1 stopped at 12:20:24
+   //                                                                 however PRN stopped at 18:35:24
+   //                                                                 The fact the TWO almanacs were
+   //                                                                 available for six hours is 
+   //                                                                 exactly what we want to know
+   //  2.   True     1   12/31 13:00:00   T          END_OF_TIME      
+   //  x.  False    32   12/31 13:00:00   T          NONE             Subject SV not present
+   SatID subjID_1(1,SatID::systemGPS);
+   testTime = CivilTime(2015,12,31,00,03,00,TimeSystem::GPS);
+   CommonTime lastXmit = CivilTime(2015,12,31,18,35,24,TimeSystem::GPS);
+   pfd = PassFailData(subjID_1,testTime,true,lastXmit);
+   lastXmitList.push_back(pfd); 
+
+   testTime = CivilTime(2015,12,31,13,00,00,TimeSystem::GPS);
+   lastXmit = CommonTime::END_OF_TIME;
+   pfd = PassFailData(subjID_1,testTime,true,lastXmit);
+   lastXmitList.push_back(pfd); 
+
+   pfd = PassFailData(xmitID_32,testTime,false);
+   lastXmitList.push_back(pfd);
 
    return;
 }
