@@ -3,7 +3,7 @@
 namespace gpstk
 {
    CNavCrossSourceFilter ::
-   CNavCrossSourceFilter()
+   CNavCrossSourceFilter() : minIdentical(2)
    {
    }
 
@@ -55,13 +55,13 @@ namespace gpstk
             size_t msgs = smi->second.size();
             msgCount += msgs;
                // minimum # of useful votes
-            if ((msgs > voteCount) && (msgs >= 2))
+            if ((msgs > voteCount) && (msgs >= minIdentical))
             {
                voteCount = msgs;
                winner = smi->first;
             }
          }
-         if (msgCount < 2)
+         if (msgCount < minIdentical)
             winner = NULL; // not enough messages to have a useful vote
 
             // If winner is NULL, i.e. there is no winner, all
