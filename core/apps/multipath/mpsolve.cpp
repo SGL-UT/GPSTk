@@ -114,11 +114,11 @@ int main(int argc, char *argv[])
       mpOption.setMaxCount(1);
 
       CommandOptionWithAnyArg
-	uzOption('u',
-		 "upper",
-		 "Set the upper limit on elevations assumed to have a zero mean multipath. Units degrees. Default is " +  asString(upperZeroMeanElevation,1)+ " degrees",
-		 false);
-      uzOption.setMaxCount(1);
+         uzOption('u',
+         "upper",
+         "Set the upper limit on elevations assumed to have a zero mean multipath. Units degrees. Default is " +  asString(upperZeroMeanElevation,1)+ " degrees",
+         false);
+         uzOption.setMaxCount(1);
 
       CommandOptionWithAnyArg fileOption('f',"file",
          "Creates a list of input files meeting a range of date criteria. The day of year and year for the beginning and ending range must be entered. Input is beginning day of year and year, and then ending day of year and year. Ex.: -f 001,2009,007,2010",false);
@@ -185,7 +185,7 @@ int main(int argc, char *argv[])
 
       if (uzOption.getCount()>0)
       {
-	 upperZeroMeanElevation	= asDouble(uzOption.getValue()[0]);
+         upperZeroMeanElevation   = asDouble(uzOption.getValue()[0]);
       }
 
       vector<string> obsList;
@@ -198,8 +198,10 @@ int main(int argc, char *argv[])
          string endingDay;
          string endingYear;
 
-         // The fileOption should have a max count of 1 so this loop is unneccesary maybe even dangerous.
-         // You still want to use this logic. You don't need the STringUtils namespace anymore as I put that at the top.
+         // The fileOption should have a max count of 1 so this loop is
+         // unneccesary maybe even dangerous.
+         // You still want to use this logic. You don't need the STringUtils
+         // namespace anymore as I put that at the top.
          for (size_t k=0 ; k<fileOption.getValue().size() ; k++)
          {
             string temp = fileOption.getValue()[k];
@@ -239,12 +241,12 @@ int main(int argc, char *argv[])
                   navList.insert(navList.end(),navListNew.begin(), navListNew.end());
                }
             }
-	 }
+         }
       }
 
       if ((verbose) && !numeric)
       {
-	cout << endl << "Using this combination for multipath: " <<mp_formula<<endl;
+         cout << endl << "Using this combination for multipath: " <<mp_formula<<endl;
       }
 
       if (!fileoption)
@@ -254,7 +256,7 @@ int main(int argc, char *argv[])
       }
       double fileCounter = 0;
 
-                                 // while processing files
+      // while processing files
       while (fileCounter<obsList.size())
       {
          if (complete)
@@ -266,6 +268,7 @@ int main(int argc, char *argv[])
          {
             if (verbose)
                cout << endl << "Processing obs file " << obsList[fileCounter] << endl;
+
             oa.load(obsList[fileCounter],navList[fileCounter]);
             fileCounter++;
          }
@@ -277,7 +280,7 @@ int main(int argc, char *argv[])
             cout << "Editing points with loss of lock indication and pass with short lengths." << endl;
          }
 
-                                 // lli stands for: loss of lock indication
+         // lli stands for: loss of lock indication
          std::valarray<bool> removePts = oa.lli;
          if (lengthOption.getCount()>0)
          {
@@ -294,8 +297,7 @@ int main(int argc, char *argv[])
          }
 
          oa.edit(removePts);
-      allpasses = unique(oa.pass); // TODO: ObsArray should maintain its own pass list.
-
+         allpasses = unique(oa.pass);  // TODO: ObsArray should maintain its own pass list.
 
          // Now only long passes remain.
          // Next use robust stats to remove cycle slips
@@ -308,14 +310,14 @@ int main(int argc, char *argv[])
          // Adjust remaining passes to the median.
          if ((!numeric)&& (verbose))
          {
-	   cout << "Computing the median of each pass and adjusting the pass by that value." << endl;
-	 }
+            cout << "Computing the median of each pass and adjusting the pass by that value." << endl;
+         }
 
          for (set<long>::iterator i=allpasses.begin() ;
-	      i!=allpasses.end() ; i++)
+         i!=allpasses.end() ; i++)
          {
- 	    // Storage for robust statistics
-	    double median, mad;
+            // Storage for robust statistics
+            double median, mad;
 
             valarray<bool> thisPass = (oa.pass==*i);
             valarray<double> s = oa.observation[thisPass];
@@ -332,15 +334,16 @@ int main(int argc, char *argv[])
          valarray<double> allmp(oa.observation);
          QSort(&allmp[0], allmp.size());
          allMad = Robust::MedianAbsoluteDeviation(&allmp[0],
-						  allmp.size(),allMedian);
+                    allmp.size(),allMedian);
          if ((!numeric)&& (verbose))
          {
-	   cout << "Median Absolute Deviation (MAD) for all retained points is " << allMad << " meters." << endl;
-	 }
+            cout << "Median Absolute Deviation (MAD) for all retained points is "
+                 << allMad << " meters." << endl;
+         }
 
          double mMAD = 5.0;
          removePts = removePts || (oa.observation > allMedian+mMAD*allMad)
-	   || (oa.observation < allMedian-mMAD*allMad);
+                     || (oa.observation < allMedian-mMAD*allMad);
 
          oa.edit(removePts);
 
@@ -351,7 +354,7 @@ int main(int argc, char *argv[])
          {
             cout << "Edited " << (originalLength-editedLength) << " points (";
             cout << setprecision(2)
-               << 100.*(originalLength-editedLength)/originalLength;
+                 << 100.*(originalLength-editedLength)/originalLength;
             cout << "%)." << endl;
          }
 
@@ -360,7 +363,7 @@ int main(int argc, char *argv[])
             cout << "Removing mean of each pass." << endl;
          }
 
-                                 // Removes mean of each individual pass
+         // Removes mean of each individual pass
          for (set<long>::iterator iPass=allpasses.begin() ; iPass!=allpasses.end() ; iPass++)
          {
             valarray<bool> passMask = (oa.pass==*iPass);
@@ -373,7 +376,7 @@ int main(int argc, char *argv[])
 
          // Use the Dual Frequency Method to remove biases between passes.
          if (dualfrequencymethod)
-         {                       //  deginning dfm
+         {
             removeBiases(oa,verbose);
          }
 
@@ -390,7 +393,7 @@ int main(int argc, char *argv[])
             {
             cout <<"Using this combination for multipath: " <<mp_formula<<endl;
                cout << "Data collection interval is " << setprecision(3)
-                  << oa.interval << " seconds";
+                    << oa.interval << " seconds";
                if (oa.intervalInferred)
                {
                   cout << ", inferred from data";
@@ -476,7 +479,7 @@ int main(int argc, char *argv[])
             writeStats(cout, sbs, stDevStats, meanStats, numeric, !byAzimuth);
          }
 
-      }                          // end while processing files
+      }  // end while processing files
 
       if ( (verbose) && (!numeric))
       {
@@ -583,13 +586,15 @@ void writeStats(std::ostream& ostr, const SparseBinnedStats<double>& mstats,
 
 int findIntersection(valarray<double>& elevLow, valarray<double>& azimLow, valarray<double>& obsLow, valarray<double>& elevHigh, valarray<double>& azimHigh, valarray<double>& obsHigh, long& idx_i, long& idx_j, double& eint, double& aint, long& intindex)
 {
-   // Segmentation fault will occur if findIntersection attempts to find an intersection with a pass of size equal to one since a minimum of two points are required to find an intersection
+   // Segmentation fault will occur if findIntersection attempts to find
+   // an intersection with a pass of size equal to one since a minimum
+   // of two points are required to find an intersection
    if (elevLow.size()<=1 || elevHigh.size()<=1)
    {
       return(0);
    }
 
-   //Variable initialization
+   // Variable initialization
    valarray<double> e1slice(2),
       a1slice(2),
       o1slice(2),
@@ -601,7 +606,8 @@ int findIntersection(valarray<double>& elevLow, valarray<double>& azimLow, valar
    long startLow=0,
       startHigh=0;
 
-                                 // This loop and the one below allow each elevation and azimuth angle for passLow to be compared to each elevation and azimuth angle for passHigh
+   // This loop and the one below allow each elevation and azimuth angle for
+   // passLow to be compared to each elevation and azimuth angle for passHigh
    while (startLow<long((elevLow.size()-1)))
    {
       e1slice = elevLow[slice(startLow,2,1)];
@@ -630,7 +636,8 @@ int findIntersection(valarray<double>& elevLow, valarray<double>& azimLow, valar
 
       startHigh = 0;
 
-                                 // This loop and the one below allow each elevation and azimuth angle for passLow to be compared to each elevation and azimuth angle for passHigh
+      // This loop and the one below allow each elevation and azimuth angle for
+      // passLow to be compared to each elevation and azimuth angle for passHigh
       while (startHigh<double((elevHigh.size()-1)))
       {
          e2slice = elevHigh[slice(startHigh,2,1)];
@@ -657,7 +664,7 @@ int findIntersection(valarray<double>& elevLow, valarray<double>& azimLow, valar
             a2slice[0]=a2slice[0]+360;
          }
 
-                                 // Ensures division by zero does not occur (although extremely unlikely)
+         // Ensures division by zero does not occur (although extremely unlikely)
          if ( (e1slice[0]-e1slice[1])*(a2slice[1]-a2slice[0])-(a1slice[0]-a1slice[1])*(e2slice[1]-e2slice[0]) != 0 )
          {
             // Calculate inverse of two-by-two matrix and ratios.
@@ -674,44 +681,49 @@ int findIntersection(valarray<double>& elevLow, valarray<double>& azimLow, valar
                aint = a1slice[0] + ratio[0] * ( a1slice[1] - a1slice[0] );
                idx_i=startLow;
                idx_j=startHigh;
-               return(1);        // If intersection is found, return the integer 1
+               return(1);  // If intersection is found, return the integer 1
             }
          }
 
          startHigh = startHigh + 1;
-      }                          // end of while (startHigh<(elevHigh.size()-1))
+
+      }  // end of while (startHigh<(elevHigh.size()-1))
 
       startLow = startLow + 1;
-   }                             // end of while (startLow<(elevLow.size()-1))
+   }  // end of while (startLow<(elevLow.size()-1))
+
    return(0);
-}                                // end of findIntersection
+}  // end of findIntersection
 
 
 void removeBiases(ObsArray& oa, bool verbose)
 {
    size_t editedLength = oa.getNumSatEpochs();
-   // Variable initialization
    long idx_i, idx_j, isize, jsize;
    double eint, aint;
 
    int stride = 4;
    long intindex = 0;
 
-                                 // Creates a unique list of passes
+   // Creates a unique list of passes
    set<long> passList = unique(oa.pass);
 
-                                 // Creates an iterator to step through the list of passes
+   // Creates an iterator to step through the list of passes
    set<long>::iterator i_itr = passList.begin();
 
-                                 // Creates a vector with length equal to the number of passes
+   // Creates a vector with length equal to the number of passes
    valarray<int> boolean(passList.size());
 
    for (size_t i=0 ; i<passList.size() ; i++)
    {
-      boolean[i]=0;              // Sets values in the vector boolean to 0, which indicates an intersection hasn't been found for the particular passes (we haven't searched for intersections yet, so we should assume they do not occur!)
+      // Sets values in the vector boolean to 0, which indicates an intersection
+      // hasn't been found for the particular passes (we haven't searched for
+      // intersections yet, so we should assume they do not occur!)
+      boolean[i]=0;
    }
 
-   // The size of H and y is equal to the maximum number of intersections possible for the number of passes
+   // The size of H and y is equal to the maximum number of intersections
+   // possible for the number of passes
    Matrix<int> H((passList.size()-1)*(passList.size())/2,passList.size());
 
    Vector<double> y((passList.size()-1)*(passList.size())/2);
@@ -719,17 +731,17 @@ void removeBiases(ObsArray& oa, bool verbose)
    // Sets values of H equal to 0
    for (size_t m=0 ; m<((passList.size()-1)*(passList.size())/2) ; m++)
    {
-                                 //
       for (size_t n=0 ; n<passList.size() ; n++)
       {
          H[m][n]=0;
       }
    }
 
-                                 // Sets lower pass
+   // Sets lower pass
    for (size_t i=0 ; i<(passList.size()-1) ; i++, i_itr++)
    {
-                                 // Creates an index of relevant values for current lower pass in regards to the vectors found in ObsArray
+      // Creates an index of relevant values for current lower pass
+      // in regards to the vectors found in ObsArray
       valarray<bool> i_idx = (oa.pass == *i_itr);
 
       // Creates vectors of data for current lower pass
@@ -737,23 +749,24 @@ void removeBiases(ObsArray& oa, bool verbose)
          iaz=oa.azimuth[i_idx],
          iobs=oa.observation[i_idx];
 
-                                 // Sets the iterator for the higher pass equal to the iterator for the lower pass
+      // Sets the iterator for the higher pass equal to the iterator
+      // for the lower pass
       set<long>::iterator j_itr = i_itr;
-      j_itr++;                   // Adds one to the iterator for the higher pass
+      j_itr++;  // Adds one to the iterator for the higher pass
 
-      isize=(iel.size()/stride); // Based on the stride, tells us how many values to expect in our slice
+      // Based on the stride, tells us how many values to expect in our slice
+      isize=(iel.size()/stride);
 
-                                 // 0 used to be start
-      valarray<double> ielsub=iel[slice(0,isize,stride)],
-                                 // 0 used to be start
-         iazsub=iaz[slice(0,isize,stride)],
-                                 // 0 used to be start
-         iobssub=iobs[slice(0,isize,stride)];
 
-                                 // Sets higher pass
+      valarray<double> ielsub=iel[slice(0,isize,stride)],  // 0 used to be start
+         iazsub=iaz[slice(0,isize,stride)],               // 0 used to be start
+         iobssub=iobs[slice(0,isize,stride)];            // 0 used to be start
+
+      // Sets higher pass
       for (size_t j=i+1; j<passList.size(); j++, j_itr++ )
       {
-                                 // Creates index of relevant values for current higher pass in regards to the vectors found in ObsArray
+         // Creates index of relevant values for current higher pass
+         // in regards to the vectors found in ObsArray
          valarray<bool>   j_idx = (oa.pass == *j_itr);
 
          // Creates vectors of data for current higher pass
@@ -763,29 +776,27 @@ void removeBiases(ObsArray& oa, bool verbose)
 
          jsize=(jel.size()/stride);
 
-                                 // 0 used to be start
-         valarray<double> jelsub=jel[slice(0,jsize,stride)],
-                                 // 0 used to be start
-            jazsub=jaz[slice(0,jsize,stride)],
-                                 // 0 used to be start
-            jobssub=jobs[slice(0,jsize,stride)];
+         valarray<double> jelsub=jel[slice(0,jsize,stride)],  // 0 used to be start
+            jazsub=jaz[slice(0,jsize,stride)],               // 0 used to be start
+            jobssub=jobs[slice(0,jsize,stride)];            // 0 used to be start
 
-                                 // If an intersection is found, enter
+         // If an intersection is found, enter
          if (findIntersection(ielsub, iazsub, iobssub, jelsub, jazsub, jobssub, idx_i, idx_j, eint, aint, intindex)==1)
          {
-                                 // Reassign the elevation angles for the current lower pass
+                  // Reassign the elevation angles for the current lower pass
             valarray<double> ielsub=iel[slice(idx_i*stride,stride+1,1)],
-                                 // Reassign the azimuth angles for the current lower pass
+                  // Reassign the azimuth angles for the current lower pass
                iazsub=iaz[slice(idx_i*stride,stride+1,1)],
-                                 // Reassign the observations for the current lower pass
+                  // Reassign the observations for the current lower pass
                iobssub=iobs[slice(idx_i*stride,stride+1,1)],
-                                 // Reassign the elevation angles for the current higher pass
+                  // Reassign the elevation angles for the current higher pass
                jelsub=jel[slice(idx_j*stride,stride+1,1)],
-                                 // Reassign the azimuth angles for the current higher pass
+                  // Reassign the azimuth angles for the current higher pass
                jazsub=jaz[slice(idx_j*stride,stride+1,1)],
-                                 // Reassign the observations for the current higher pass
+                  // Reassign the observations for the current higher pass
                jobssub=jobs[slice(idx_j*stride,stride+1,1)];
-                                 // If an intersection is found again, enter
+
+            // If an intersection is found again, enter
             if (findIntersection(ielsub, iazsub, iobssub, jelsub, jazsub, jobssub, idx_i, idx_j, eint, aint, intindex)==1)
             {
                if (abs(iobssub[idx_i]-jobssub[idx_j])<5)
@@ -797,12 +808,14 @@ void removeBiases(ObsArray& oa, bool verbose)
                   y[intindex]=iobssub[idx_i]-jobssub[idx_j];
                   intindex++;
                }
-            }                    // found again
-         }                       // found first time
-      }                          // inner search
-   }                             // outer search
+            }  // found again
+         }  // found first time
+      }  // inner search
+   }  // outer search
 
-   if (intindex==0) // If no intersections were found, the function must be exited. Otherwise, a segmentation fault will occur.
+   // If no intersections were found, the function must be exited.
+   // Otherwise, a segmentation fault will occur.
+   if (intindex==0)
    {
       if (verbose)
       {
@@ -866,16 +879,17 @@ void removeBiases(ObsArray& oa, bool verbose)
 
    //cout << xhat << endl;
 
-                                 // Creates an iterator to step through the list of passes
+   // Creates an iterator to step through the list of passes
    set<long>::iterator k_itr=passList.begin();
 
    int xhat_itr=0;
 
    // The following two 'for' loops are used to step through the passes.
-                                 // Sets lower pass
+   // Sets lower pass
    for (size_t k=0 ; k<(passList.size()) ; k++, k_itr++)
    {
-                                 // Creates an index of relevant values for current lower pass in regards to the vectors found in ObsArray
+      // Creates an index of relevant values for current lower pass
+      // in regards to the vectors found in ObsArray
       valarray<bool> k_idx = (oa.pass == *k_itr);
 
       // Creates vectors of data for current lower pass
