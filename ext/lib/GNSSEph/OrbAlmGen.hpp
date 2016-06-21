@@ -62,8 +62,6 @@ namespace gpstk
       OrbAlmGen();
 
       OrbAlmGen( const PackedNavBits& pnb,
-                    const unsigned short WNa,
-                    const unsigned long  t_oa,
                     const unsigned short hArg = 0 )
          throw( InvalidParameter );
 
@@ -80,10 +78,18 @@ namespace gpstk
            *  this is the only source of health information
            *  for BDS.    */ 
       void loadData(const gpstk::PackedNavBits& msg,
-                    const unsigned short WNa,
-                    const unsigned long  t_oa,
                     const unsigned short hArg = 0)
          throw(gpstk::InvalidParameter);
+
+       //------------------------------------------------------------
+      //  When the calling program receives the following pages, 
+      //  this should be called to update the almanac time parameters.   
+      //    LNAV SF4/Pg 25  
+      //    BDS D1 SF5/Pg 8
+      //    BDS D2 SF5/Pg 36
+      //  This "maintenance" is not required for GPS CNAV
+      static void loadWeekNumber(const CommonTime& ct);
+      static void loadWeekNumber(const unsigned int WNa, const double toa);
 
       virtual std::string getName() const
       {
@@ -128,6 +134,8 @@ namespace gpstk
                      throw(gpstk::InvalidRequest);
 
       virtual bool isSameData(const OrbElemBase* right) const;      
+
+      virtual std::string listDifferences(const OrbElemBase* right) const;      
 
       virtual void dumpBody(std::ostream& s = std::cout) const
          throw( gpstk::InvalidRequest );
@@ -174,19 +182,28 @@ namespace gpstk
       static const unsigned long ALMANAC_PERIOD_LNAV;
       static const unsigned long FRAME_PERIOD_LNAV;
 
-      void loadDataGpsLNAV(const gpstk::PackedNavBits& msg,
-                    const unsigned short WNa_full,
-                    const unsigned long  t_oa)
+         // The following variables record the most recently seen
+         // WNa/toa from either GPS LNAV SF5/p25 or the BDS equivalent.
+         // Since there is no guarantee that this information will appear
+         // BEFORE the first almanac data page, there is also provision
+         // for estimating these values from the first available data. 
+      static bool WN_set; 
+      static unsigned int WNa_full;
+      static double t_oa;
+
+      void loadDataGpsLNAV(const gpstk::PackedNavBits& msg)
                 throw(gpstk::InvalidParameter);
-      void loadDataGpsCNAV(const gpstk::PackedNavBits& msg,
-                    const unsigned short WNa_full,
-                    const unsigned long  t_oa)
+      void loadDataGpsCNAV(const gpstk::PackedNavBits& msg)
                 throw(gpstk::InvalidParameter);
       void loadDataBDS(const gpstk::PackedNavBits& msg,
-                    const unsigned short WNa_full,
-                    const unsigned long  t_oa,
                     const unsigned short hArg = 0)
                 throw(gpstk::InvalidParameter);
+
+         // Used internally during startup if WNa has not been received
+         // prior to first almanac data page.         
+      void estimateWeekNumber(const CommonTime& currTime);
+
+
          // Only used for BDS
       unsigned short translateToSubjectPRN(const bool isD1,
                                            const unsigned short subframe,

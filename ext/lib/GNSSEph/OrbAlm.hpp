@@ -95,6 +95,8 @@ namespace gpstk
       {
          return "SV Almanac Orbit";
       }
+
+      virtual bool isSameData(const OrbElemBase* right) const = 0;      
       
       virtual void dumpHeader(std::ostream& s = std::cout) const
          throw( gpstk::InvalidRequest );

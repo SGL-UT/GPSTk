@@ -221,10 +221,17 @@ namespace gpstk
       virtual unsigned sizeXmitAlm(const SatID& xmitID) const
          throw(); 
 
-      virtual void dumpSubjAlm( std::ostream& s = std::cout, short detail = 0 ) const
-         throw();
-      virtual void dumpXmitAlm( std::ostream& s = std::cout, short detail = 0 ) const
-         throw();
+      virtual void dumpSubjAlm( std::ostream& s = std::cout, 
+                                short detail = 0, 
+                                const SatID& subjID=SatID() ) const
+         throw(InvalidRequest);
+      virtual void dumpXmitAlm( std::ostream& s = std::cout, 
+                                short detail = 0,
+                                const SatID& subjID=SatID() ) const
+         throw(InvalidRequest);
+
+
+
 
       /// This is intended to store sets of unique almanac data. 
       /// The key is the epoch time.
@@ -240,6 +247,12 @@ namespace gpstk
       /// same epoch time but slightly different contents.   Therefore, 
       /// they will all be stored, but only one copy (the earliest) of
       /// each unique data set will be stored. 
+      ///
+      /// NOTE: key is toa (not beginValid).  This was originally due to fact
+      /// we thought toa might be unique.  In the event, the code to add an
+      /// almanac check isSameData( ) to determine uniqueness.   Therefore,
+      /// it MIGHT be possible to reduce this to a set or list, but we will
+      /// leave that for another time. 
       typedef std::multimap<CommonTime, OrbAlm*> OrbAlmMap;
 
       /*
@@ -262,6 +275,32 @@ namespace gpstk
                           const bool useEffectivity = true,
                           const SatID& xmitID = SatID() )
          const throw( InvalidRequest );
+
+      /*
+       *  Given an OrbAlm pointer, find the OrbAlm in the subject
+       *  map.  Then, using the xmit map, derive the probable last
+       *  time that particular almanac was broadcast by any SV.
+       *  Notes:
+       *   - This assumes the OrbAlmStore was loaded in such a 
+       *     manner that the earliest transmission of each
+       *     unique almanac for each SV is present
+       *   - If oap doesn't correspond to any item in the
+       *     store, throw an exception.
+       *   - If oap is the final item in the store for any
+       *     SV, return CommonTime::END_OF_TIME.
+       */
+      CommonTime deriveLastXmit(const OrbAlm* oap) const
+         throw(InvalidRequest); 
+
+      /*
+       *  Given an OrbAlm pointer, return a list of the SVs that
+       *  transmitted an almanac data set corresponding to the
+       *  data in this set.
+       */
+      std::list<SatID> xmitBySVs(const OrbAlm* oap) const
+         throw(InvalidRequest); 
+
+
 
       /// Returns a map of the almemerides available for the specified
       /// satellite.  Note that the return is specifically chosen as a
