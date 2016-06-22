@@ -14,3 +14,7 @@ execute_process(COMMAND ${TEST_PROG} ${ARG_LIST}
 if(HAD_ERROR EQUAL 0)
     message(FATAL_ERROR "Test failed")
 endif()
+
+if (HAD_ERROR STREQUAL "Segmentation fault")
+    message(FATAL_ERROR "Test had a seg fault")
+endif()
