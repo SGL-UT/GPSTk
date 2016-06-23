@@ -8,7 +8,7 @@ add_test(NAME calgps_Postscript
          -DTEST_PROG=$<TARGET_FILE:calgps_svg>
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
-         -DTESTBASE=calgps_svg_Postscript
+         -DTESTBASE=calgps_Postscript
          -DOWNOUTPUT=1
          -DARGS=-Y\ 2015\ -p\ ${GPSTK_TEST_OUTPUT_DIR}/calgps_Postscript.out
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../../../core/tests/testsuccexp.cmake)
@@ -19,7 +19,7 @@ add_test(NAME calgps_Postscript_Quiet
          -DTEST_PROG=$<TARGET_FILE:calgps_svg>
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
-         -DTESTBASE=calgps_svg_Postscript_Quiet
+         -DTESTBASE=calgps_Postscript_Quiet
          -DOWNOUTPUT=1
          -DARGS=-n\ -Y\ 2015\ -p\ ${GPSTK_TEST_OUTPUT_DIR}/calgps_Postscript_Quiet.out
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../../../core/tests/testsuccexp.cmake)
@@ -30,7 +30,7 @@ add_test(NAME calgps_EPS
          -DTEST_PROG=$<TARGET_FILE:calgps_svg>
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
-         -DTESTBASE=calgps_svg_EPS
+         -DTESTBASE=calgps_EPS
          -DOWNOUTPUT=1
          -DARGS=-Y\ 2015\ -e\ ${GPSTK_TEST_OUTPUT_DIR}/calgps_EPS.out
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../../../core/tests/testsuccexp.cmake)
@@ -41,7 +41,7 @@ add_test(NAME calgps_SVG
          -DTEST_PROG=$<TARGET_FILE:calgps_svg>
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
-         -DTESTBASE=calgps_svg_SVG
+         -DTESTBASE=calgps_SVG
          -DOWNOUTPUT=1
          -DARGS=-Y\ 2015\ -s\ ${GPSTK_TEST_OUTPUT_DIR}/calgps_SVG.out
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../../../core/tests/testsuccexp.cmake)
