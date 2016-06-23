@@ -657,12 +657,13 @@ namespace gpstk
             // process continuation lines
          else
          {
-            for (int i = obsTypeList.size();
-                 (i < numObs) && ( (i % maxObsPerLine) < maxObsPerLine); i++)
+            for (int j=0, i=obsTypeList.size();
+                 (i < numObs) && (j < maxObsPerLine); i++)
             {
                int position = (i % maxObsPerLine) * 6 + 6 + 4;
                RinexObsType rt = convertObsType(line.substr(position,2));
                obsTypeList.push_back(rt);
+               j++;
             }
          }
       }
