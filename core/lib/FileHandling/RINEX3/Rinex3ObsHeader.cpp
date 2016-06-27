@@ -824,14 +824,13 @@ namespace gpstk
       } // if(version >= 3.01 && (valid & validSystemPhaseShift))
       if(version >= 3.01 && (valid & validGlonassSlotFreqNo))
       {
-            //map<RinexSatID,int> glonassFreqNo;
          size_t n(0),nsat(glonassFreqNo.size());
-         line = rightJustify(asString(nsat),3) + string(" ");
-         map<RinexSatID,int>::const_iterator it,kt;
+         line = rightJustify(asString(nsat),3) + " ";
+         GLOFreqNumMap::const_iterator it,kt;
          for(it = glonassFreqNo.begin(); it != glonassFreqNo.end(); ++it)
          {
             line += it->first.toString();
-            line += rightJustify(asString(it->second),3);
+            line += rightJustify(asString(it->second),3) + " ";
             if(++n == 8 || ++(kt=it) == glonassFreqNo.end())
             {
                   // write it
@@ -848,16 +847,18 @@ namespace gpstk
       }
       if(version >= 3.02 && (valid & validGlonassCodPhsBias))
       {
-         map<RinexObsID,double>::const_iterator it;
+         line.clear();
+         GLOCodPhsBias::const_iterator it;
          const string labs[4]={"C1C","C1P","C2C","C2P"};
          for(int i=0; i<4; i++)
          {
             RinexObsID obsid(RinexObsID("R"+labs[i]));
             it = glonassCodPhsBias.find(obsid);
             double bias = (it == glonassCodPhsBias.end() ? it->second : 0.0);
-            line += " " + labs[i] + rightJustify(asString(bias,3),8);
+            line += " " + labs[i] + " " + rightJustify(asString(bias,3),8);
          }
-         line += "        " + hsGlonassCodPhsBias;
+         line += string(60-line.length(), ' ');
+         line += hsGlonassCodPhsBias;
          strm << line << endl;
          strm.lineNumber++;
       }
