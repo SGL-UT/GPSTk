@@ -77,4 +77,8 @@ namespace gpstk
       nfd.dump(s);
       return s; 
    }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> master
