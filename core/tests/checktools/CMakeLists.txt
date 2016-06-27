@@ -48,15 +48,15 @@ add_test(NAME rmwcheck_Invalid_2
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
 
 # check a file that does not exist
-add_test(NAME rmwcheck_Missing
-         COMMAND ${CMAKE_COMMAND}
-         -DTEST_PROG=$<TARGET_FILE:rmwcheck>
-         -DSOURCEDIR=${SD}
-         -DTARGETDIR=${TD}
-         -DNODIFF=1
-         -DARGS=${SD}/notAFile.txt
-         -DGPSTK_BINDIR=${GPSTK_BINDIR}
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
+#add_test(NAME rmwcheck_Missing
+#         COMMAND ${CMAKE_COMMAND}
+#         -DTEST_PROG=$<TARGET_FILE:rmwcheck>
+#         -DSOURCEDIR=${SD}
+#         -DTARGETDIR=${TD}
+#         -DNODIFF=1
+#         -DARGS=${SD}/notAFile.txt
+#         -DGPSTK_BINDIR=${GPSTK_BINDIR}
+#         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
 
 
 ###############################################################################
@@ -106,15 +106,15 @@ add_test(NAME rnwcheck_Invalid_2
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
 
 # check a file that does not exist
-add_test(NAME rnwcheck_Missing
-         COMMAND ${CMAKE_COMMAND}
-         -DTEST_PROG=$<TARGET_FILE:rnwcheck>
-         -DSOURCEDIR=${SD}
-         -DTARGETDIR=${TD}
-         -DNODIFF=1
-         -DARGS=${SD}/notAFile.txt
-         -DGPSTK_BINDIR=${GPSTK_BINDIR}
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
+#add_test(NAME rnwcheck_Missing
+#         COMMAND ${CMAKE_COMMAND}
+#         -DTEST_PROG=$<TARGET_FILE:rnwcheck>
+#         -DSOURCEDIR=${SD}
+#         -DTARGETDIR=${TD}
+#         -DNODIFF=1
+#         -DARGS=${SD}/notAFile.txt
+#         -DGPSTK_BINDIR=${GPSTK_BINDIR}
+#         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
 
 ###############################################################################
 # TEST rowcheck
@@ -163,12 +163,12 @@ add_test(NAME rowcheck_Invalid_2
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
 
 # check a file that does not exist
-add_test(NAME rowcheck_Missing
-         COMMAND ${CMAKE_COMMAND}
-         -DTEST_PROG=$<TARGET_FILE:rowcheck>
-         -DSOURCEDIR=${SD}
-         -DTARGETDIR=${TD}
-         -DNODIFF=1
-         -DARGS=${SD}/notAFile.txt
-         -DGPSTK_BINDIR=${GPSTK_BINDIR}
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
+#add_test(NAME rowcheck_Missing
+#         COMMAND ${CMAKE_COMMAND}
+#         -DTEST_PROG=$<TARGET_FILE:rowcheck>
+#         -DSOURCEDIR=${SD}
+#         -DTARGETDIR=${TD}
+#         -DNODIFF=1
+#         -DARGS=${SD}/notAFile.txt
+#         -DGPSTK_BINDIR=${GPSTK_BINDIR}
+#         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)

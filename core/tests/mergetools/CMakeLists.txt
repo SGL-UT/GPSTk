@@ -24,8 +24,7 @@ add_test(NAME mergeRinMet_1
          -DINFILE2=arlm200b.15m
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinmerge.cmake)
 
-# Test that the output is a valid Rinex Met file. Will use the output
-# generated in the above test.
+# Test that the output is a valid Rinex Met file.
 add_test(NAME mergeRinMet_ValidOutput
          COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:mergeRinMet>
@@ -48,17 +47,17 @@ add_test(NAME mergeRinMet_2
          -DINFILE2=mergeRinMet_2.exp
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinmerge.cmake)
 
-add_test(NAME mergeRinMet_InvalidInput
-         COMMAND ${CMAKE_COMMAND}
-         -DTEST_PROG=$<TARGET_FILE:mergeRinMet>
-         -DARGS=-o\ ${TD}/mergeRinMet_InvalidInput.out\ ${SD}/timeconvert_2015_200_0.exp\ ${SD}/arlm200b.15m
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
+#add_test(NAME mergeRinMet_InvalidInput
+#         COMMAND ${CMAKE_COMMAND}
+#         -DTEST_PROG=$<TARGET_FILE:mergeRinMet>
+#         -DARGS=-o\ ${TD}/mergeRinMet_InvalidInput.out\ ${SD}/timeconvert_2015_200_0.exp\ ${SD}/arlm200b.15m
+#         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
 
-add_test(NAME mergeRinMet_MissingInput
-         COMMAND ${CMAKE_COMMAND}
-         -DTEST_PROG=$<TARGET_FILE:mergeRinMet>
-         -DARGS=-o\ ${TD}/mergeRinMet_MissingInput.out\ ${SD}/notAFile.txt\ ${SD}/arlm200b.15m
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
+#add_test(NAME mergeRinMet_MissingInput
+#         COMMAND ${CMAKE_COMMAND}
+#         -DTEST_PROG=$<TARGET_FILE:mergeRinMet>
+#         -DARGS=-o\ ${TD}/mergeRinMet_MissingInput.out\ ${SD}/notAFile.txt\ ${SD}/arlm200b.15m
+#         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
 ###############################################################################
 # TEST mergeRinNav
 ###############################################################################
@@ -83,8 +82,7 @@ add_test(NAME mergeRinNav_1
          -DINFILE2=arlm200b.15n
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinmerge.cmake)
 
-# Test that the output is a valid Rinex Nav file. Will use the output
-# generated in the above test.
+# Test that the output is a valid Rinex Nav file. 
 add_test(NAME mergeRinNav_ValidOutput
          COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:mergeRinNav>
@@ -107,17 +105,17 @@ add_test(NAME mergeRinNav_2
          -DINFILE2=mergeRinNav_2.exp
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinmerge.cmake)
 
-add_test(NAME mergeRinNav_InvalidInput
-         COMMAND ${CMAKE_COMMAND}
-         -DTEST_PROG=$<TARGET_FILE:mergeRinNav>
-         -DARGS=-o\ ${TD}/mergeRinNav_InvalidInput.out\ ${SD}/timeconvert_2015_200_0.exp\ ${SD}/arlm200b.15n
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
+#add_test(NAME mergeRinNav_InvalidInput
+#         COMMAND ${CMAKE_COMMAND}
+#         -DTEST_PROG=$<TARGET_FILE:mergeRinNav>
+#         -DARGS=-o\ ${TD}/mergeRinNav_InvalidInput.out\ ${SD}/timeconvert_2015_200_0.exp\ ${SD}/arlm200b.15n
+#         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
 
-add_test(NAME mergeRinNav_MissingInput
-         COMMAND ${CMAKE_COMMAND}
-         -DTEST_PROG=$<TARGET_FILE:mergeRinNav>
-         -DARGS=-o\ ${TD}/mergeRinNav_MissingInput.out\ ${SD}/notAFile.txt\ ${SD}/arlm200b.15n
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
+#add_test(NAME mergeRinNav_MissingInput
+#         COMMAND ${CMAKE_COMMAND}
+#         -DTEST_PROG=$<TARGET_FILE:mergeRinNav>
+#         -DARGS=-o\ ${TD}/mergeRinNav_MissingInput.out\ ${SD}/notAFile.txt\ ${SD}/arlm200b.15n
+#         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
 ###############################################################################
 # TEST mergeRinObs
 ###############################################################################
@@ -142,8 +140,7 @@ add_test(NAME mergeRinObs_1
          -DINFILE2=arlm200b.15o
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinmerge.cmake)
 
-# Test that the output is a valid Rinex Obs file. Will use the output
-# generated in the above test.
+# Test that the output is a valid Rinex Obs file. 
 add_test(NAME mergeRinObs_ValidOutput
          COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:mergeRinObs>
@@ -166,14 +163,14 @@ add_test(NAME mergeRinObs_2
          -DINFILE2=mergeRinObs_2.exp
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinmerge.cmake)
 
-add_test(NAME mergeRinObs_InvalidInput
-         COMMAND ${CMAKE_COMMAND}
-         -DTEST_PROG=$<TARGET_FILE:mergeRinObs>
-         -DARGS=-o\ ${TD}/mergeRinObs_InvalidInput.out\ ${SD}/timeconvert_2015_200_0.exp\ ${SD}/arlm200b.15o
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
+#add_test(NAME mergeRinObs_InvalidInput
+#         COMMAND ${CMAKE_COMMAND}
+#         -DTEST_PROG=$<TARGET_FILE:mergeRinObs>
+#         -DARGS=-o\ ${TD}/mergeRinObs_InvalidInput.out\ ${SD}/timeconvert_2015_200_0.exp\ ${SD}/arlm200b.15o
+#         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
 
-add_test(NAME mergeRinObs_MissingInput
-         COMMAND ${CMAKE_COMMAND}
-         -DTEST_PROG=$<TARGET_FILE:mergeRinObs>
-         -DARGS=-o\ ${TD}/mergeRinObs_MissingInput.out\ ${SD}/notAFile.txt\ ${SD}/arlm200b.15o
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
+#add_test(NAME mergeRinObs_MissingInput
+#         COMMAND ${CMAKE_COMMAND}
+#         -DTEST_PROG=$<TARGET_FILE:mergeRinObs>
+#         -DARGS=-o\ ${TD}/mergeRinObs_MissingInput.out\ ${SD}/notAFile.txt\ ${SD}/arlm200b.15o
+#         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
