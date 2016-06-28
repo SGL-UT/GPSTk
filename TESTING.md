@@ -47,6 +47,7 @@ How to write application tests
 1. Add the test to the CMakeLists.txt file in the same dir.
 1. Add any required source data to gpstk/data
 1. Add any required reference output data to gpstk/data (make the file name have something to do with the application that is being tested)
+1. Ensure any output files that are created are given unique names. CTest will run the tests in parallel creating a race condition if applications have the same named output.
 
 How to write class unit tests
 -----------------------------
