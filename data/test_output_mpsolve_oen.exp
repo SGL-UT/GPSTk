@@ -1,0 +1,6 @@
+# Bins of elevation -- columns are min, max, standard deviation 
+  0  90 0.555
+ 10  30 0.771
+ 20  40 0.473
+ 40  90 0.272
+ 10  90 0.508

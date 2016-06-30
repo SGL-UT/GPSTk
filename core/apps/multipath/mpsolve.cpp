@@ -83,66 +83,89 @@ int main(int argc, char *argv[])
    {
       // Default difference that isolates multipath
       std::string mp_formula="P1-wl1*L1+2/(1-gamma)*(wl1*L1-wl2*L2)";
-      // Default minimum length for a pass for use solution
+
+      // Default minimum length in seconds for a pass for use solution
       double minPassLength = 300;
+
+      // Degrees
       double angInterval = 15;
+
+      // Degrees
       double upperZeroMeanElevation = 15;
 
-      CommandOptionNoArg helpOption('h',"help","Display argument list",false);
-      CommandOptionNoArg verboseOption('v',"verbose",
-         "Verbose display of processing status",false);
-      CommandOptionNoArg rawOption('r',"raw",
-         "Output raw combinations not statistics",false);
-      CommandOptionNoArg numericOption('n',"numeric",
-         "Format the output for numerical packages",false);
-      CommandOptionNoArg azimuthOption('a',"azimuth",
-         "Compute statistics binned by azimuth instead of elevation",false);
-      CommandOptionNoArg dualFrequencyMethodOption('d',"dfm",
-         "Performs dual-frequency method",false);
-      CommandOptionNoArg completeOption('c',"complete",
-         "Consider multiple inputs as single input",false);
+      CommandOptionNoArg helpOption('h',"help",
+         "Display argument list", false);
 
-      CommandOptionWithAnyArg obsFileOption('o',"obs","RINEX observation file",true);
+      CommandOptionNoArg verboseOption('v',"verbose",
+         "Verbose display of processing status", false);
+
+      CommandOptionNoArg rawOption('r',"raw",
+         "Output raw combinations not statistics", false);
+
+      CommandOptionNoArg numericOption('n',"numeric",
+         "Format the output for numerical packages", false);
+
+      CommandOptionNoArg azimuthOption('a',"azimuth",
+         "Compute statistics binned by azimuth instead of elevation", false);
+
+      CommandOptionNoArg dualFrequencyMethodOption('d',"dfm",
+         "Performs dual-frequency method", false);
+
+      CommandOptionNoArg completeOption('c',"complete",
+         "Consider multiple inputs as single input", false);
+
+      CommandOptionWithAnyArg obsFileOption('o',"obs",
+         "RINEX observation file", true);
+
       CommandOptionWithAnyArg navFileOption('e',"nav",
-         "RINEX navigation (ephemeris) file",true);
+         "RINEX navigation (ephemeris) file", true);
+
       CommandOptionWithAnyArg binOption('b',"bin",
-         "Defines a bin. Eliminates the default bins. Repeated use of this option defines additional bins. Value is min,max. Ex.: -b 10,90",false);
+         "Defines a bin. Eliminates the default bins. Repeated use of this "
+         "option defines additional bins. Value is min,max. Ex.: -b 10,90", false);
 
       CommandOptionWithAnyArg mpOption('m',"multipath",
          "Dual frequency multipath combination to use. Default is " +
-         mp_formula,false);
+         mp_formula, false);
       mpOption.setMaxCount(1);
 
-      CommandOptionWithAnyArg
-         uzOption('u',
-         "upper",
-         "Set the upper limit on elevations assumed to have a zero mean multipath. Units degrees. Default is " +  asString(upperZeroMeanElevation,1)+ " degrees",
-         false);
-         uzOption.setMaxCount(1);
+      CommandOptionWithAnyArg uzOption('u',"upper",
+         "Set the upper limit on elevations assumed to have a zero mean "
+         "multipath. Units degrees. Default is " +
+         asString(upperZeroMeanElevation,1) + " degrees", false);
+      uzOption.setMaxCount(1);
 
       CommandOptionWithAnyArg fileOption('f',"file",
-         "Creates a list of input files meeting a range of date criteria. The day of year and year for the beginning and ending range must be entered. Input is beginning day of year and year, and then ending day of year and year. Ex.: -f 001,2009,007,2010",false);
+         "Creates a list of input files meeting a range of date criteria. The "
+         "day of year and year for the beginning and ending range must be "
+         "entered. Input is beginning day of year and year, and then ending "
+         "day of year and year. Ex.: -f 001,2009,007,2010", false);
+      fileOption.setMaxCount(1);
 
-      CommandOptionWithNumberArg
-         lengthOption('l',"length",string("Minimum length in seconds for an ")+
+      CommandOptionWithNumberArg lengthOption('l',"length",
+         string("Minimum length in seconds for an ")+
          string("overhead pass to be used. Default value is ") +
          StringUtils::asString(minPassLength, 1) +
          string(" seconds."), false);
       lengthOption.setMaxCount(1);
 
-      CommandOptionWithNumberArg
-         angWidthOption('w',"width",string("Width of angular bins to use. ")+
-         string("If used, defines regular, nonoverlapping bins of ") +
+      CommandOptionWithNumberArg angWidthOption('w',"width",
+         string("Width of angular bins to use in positive, integral degrees. ") +
+         string("If present, defines regular, nonoverlapping bins of ") +
          string("azimuth and/or elevation. Default value is ") +
-         StringUtils::asString(angInterval, 2) +
+         StringUtils::asString((int)angInterval) +
          string(" degrees."), false);
       angWidthOption.setMaxCount(1);
 
-      CommandOptionParser cop("GPSTk Multipath Environment Evaluator. Computes statistical model of a dual frequency multipath combination. The model is a function of azimuth and/or elevation. By default the model presented is second order statistics (std. deviation), sorted into bins of elevation.");
+      CommandOptionParser cop("GPSTk Multipath Environment Evaluator. Computes "
+         "statistical model of a dual frequency multipath combination. The "
+         "model is a function of azimuth and/or elevation. By default the "
+         "model presented is second order statistics (std. deviation), "
+         "sorted into bins of elevation.");
 
       cop.parseOptions(argc, argv);
 
-      if(helpOption.getCount())
+      if (helpOption.getCount())
       {
          cop.displayUsage(cout);
          return 0;
@@ -155,6 +178,36 @@ int main(int argc, char *argv[])
          return 1;
       }
 
+      if (uzOption.getCount()>0)
+      {
+         upperZeroMeanElevation = StringUtils::asDouble(uzOption.getValue()[0]);
+         if ((upperZeroMeanElevation < 0.0) || (upperZeroMeanElevation > 90.0))
+         {
+            cerr << "Invalid upper limit value: " << upperZeroMeanElevation << endl;
+            return 1;
+         }
+      }
+
+      if (lengthOption.getCount()>0)
+      {
+         minPassLength = StringUtils::asDouble(lengthOption.getValue()[0]);
+         if (minPassLength < 0.0)
+         {
+            cerr << "Invalid length value: " << (int)minPassLength << endl;
+            return 1;
+         }
+      }
+
+      if (angWidthOption.getCount()>0)
+      {
+         angInterval = StringUtils::asDouble(angWidthOption.getValue()[0]);
+         if (angInterval < 1.0)
+         {
+            cerr << "Invalid width value: " << (int)angInterval << endl;
+            return 1;
+         }
+      }
+
       CommonTime now = SystemTime();
 
       bool verbose=(verboseOption.getCount()>0);
@@ -165,10 +218,11 @@ int main(int argc, char *argv[])
 
       if (!numeric)
       {
-         cout << "Multipath Environment Evaluation Tool, a GPSTk utility" << endl << endl;
+         cout << "Multipath Environment Evaluation Tool, a GPSTk utility"
+              << endl << endl;
       }
 
-      if ( (verbose) && (!numeric))
+      if ((verbose) && (!numeric))
       {
          cout << "Loading obs file(s): " << obsFileOption.getValue() << endl;
          cout << "Loading nav file(s): " << navFileOption.getValue() << endl;
@@ -179,14 +233,14 @@ int main(int argc, char *argv[])
       if (mpOption.getCount()>0)
       {
          mp_formula = mpOption.getValue()[0];
+         if (mp_formula.size() == 0)
+         {
+            cerr << "Invalid multipath equation" << endl;
+            return 1;
+         }
       }
 
       oa.add(mp_formula);
-
-      if (uzOption.getCount()>0)
-      {
-         upperZeroMeanElevation   = asDouble(uzOption.getValue()[0]);
-      }
 
       vector<string> obsList;
       vector<string> navList;
@@ -204,21 +258,56 @@ int main(int argc, char *argv[])
          // namespace anymore as I put that at the top.
          for (size_t k=0 ; k<fileOption.getValue().size() ; k++)
          {
+            bool fileOptValueOK = false;
             string temp = fileOption.getValue()[k];
-            beginningDay = StringUtils::word(temp,0,',');
-            beginningYear = StringUtils::word(temp,1,',');
-            endingDay = StringUtils::word(temp,2,',');
-            endingYear = StringUtils::word(temp,3,',');
+            string::size_type comma1 = temp.find(',');
+            if ((comma1 != string::npos) && (comma1 < temp.size()-1))
+            {
+               beginningDay = temp.substr(0,comma1);
+               string::size_type comma2 = temp.find(',', comma1+1);
+               if ((comma2 != string::npos) && (comma2 < temp.size()-1))
+               {
+                  beginningYear = temp.substr(comma1+1, comma2);
+                  string::size_type comma3 = temp.find(',', comma2+1);
+                  if ((comma3 != string::npos) && (comma3 < temp.size()-1))
+                  {
+                     endingDay = temp.substr(comma2+1, comma3);
+                     endingYear = temp.substr(comma3+1);
+                     fileOptValueOK = true;
+                  }
+               }
+            }
+            if (!fileOptValueOK)
+            {
+               cerr << "Invalid file option syntax" << endl;
+               return 1;
+            }
 
             int beginDOY = StringUtils::asInt(beginningDay);
             int beginY = StringUtils::asInt(beginningYear);
             int endDOY = StringUtils::asInt(endingDay);
             int endY = StringUtils::asInt(endingYear);
+            if (  (beginDOY < 1) || (beginDOY > 365)
+               || (endDOY < 1) || (endDOY > 365))
+            {
+               cerr << "Invalid file option day-of-year" << endl;
+               return 1;
+            }
+            if (  (beginY < 1980) || (endY < 1980))
+            {
+               cerr << "Invalid file option year" << endl;
+               return 1;
+            }
 
             CommonTime firstDay = CommonTime::BEGINNING_OF_TIME;
             CommonTime lastDay = CommonTime::END_OF_TIME;
             firstDay=YDSTime(beginY, beginDOY);
             lastDay=YDSTime(endY, endDOY);
+            if (firstDay > lastDay)
+            {
+               cerr << "First file time is greater than last file time" << endl;
+               return 1;
+            }
 
             // The program won't run without an obsFileOption , don't need to check
             if (obsFileOption.getCount()>0)
@@ -259,18 +348,26 @@ int main(int argc, char *argv[])
       // while processing files
       while (fileCounter<obsList.size())
       {
-         if (complete)
+         try
          {
-            oa.load(obsList,navList);
-            fileCounter=obsList.size();
-         }
-         else
-         {
-            if (verbose)
-               cout << endl << "Processing obs file " << obsList[fileCounter] << endl;
+            if (complete)
+            {
+               oa.load(obsList,navList);
+               fileCounter=obsList.size();
+            }
+            else
+            {
+               if (verbose)
+                  cout << endl << "Processing obs file " << obsList[fileCounter] << endl;
 
-            oa.load(obsList[fileCounter],navList[fileCounter]);
-            fileCounter++;
+               oa.load(obsList[fileCounter],navList[fileCounter]);
+               fileCounter++;
+            }
+         }
+         catch (gpstk::Exception& exc)
+         {
+            cerr << exc << endl;
+            return 1;
          }
 
          size_t originalLength = oa.getNumSatEpochs();
@@ -282,10 +379,6 @@ int main(int argc, char *argv[])
 
          // lli stands for: loss of lock indication
          std::valarray<bool> removePts = oa.lli;
-         if (lengthOption.getCount()>0)
-         {
-            minPassLength =  StringUtils::asDouble(lengthOption.getValue()[0]);
-         }
 
          set<long> allpasses = unique(oa.pass);
          for (set<long>::iterator i=allpasses.begin() ; i!=allpasses.end() ; i++)
@@ -313,9 +406,34 @@ int main(int argc, char *argv[])
             cout << "Computing the median of each pass and adjusting the pass by that value." << endl;
          }
 
-         for (set<long>::iterator i=allpasses.begin() ;
-         i!=allpasses.end() ; i++)
+         for (set<long>::iterator i=allpasses.begin(); i!=allpasses.end(); i++)
          {
+            valarray<bool> thisPass = (oa.pass==*i);
+            valarray<double> s = oa.observation[thisPass];
+            if (s.size()>1)
+            {
+               double median, mad;
+
+               QSort(&s[0],s.size());
+               try
+               {
+                  mad = Robust::MedianAbsoluteDeviation(&s[0],s.size(),median);
+               }
+               catch (gpstk::Exception& exc)
+               {
+                  cerr << exc << endl;
+                  return 1;
+               }
+
+               valarray<double> mpVals = oa.observation[thisPass];
+               mpVals -= median;
+               oa.observation[thisPass]=mpVals;
+            }
+            else if (s.size()>0)
+            {
+               oa.observation[thisPass]=0.0;
+            }
+            /*
             // Storage for robust statistics
             double median, mad;
 
@@ -327,14 +445,31 @@ int main(int argc, char *argv[])
             valarray<double> mpVals = oa.observation[thisPass];
             mpVals -= median;
             oa.observation[thisPass]=mpVals;
+            */
          }
 
          // Now recompute the MAD
          double allMedian, allMad;
          valarray<double> allmp(oa.observation);
-         QSort(&allmp[0], allmp.size());
-         allMad = Robust::MedianAbsoluteDeviation(&allmp[0],
-                    allmp.size(),allMedian);
+         if (allmp.size()>1)
+         {
+            QSort(&allmp[0], allmp.size());
+            try
+            {
+               allMad = Robust::MedianAbsoluteDeviation(&allmp[0],
+                          allmp.size(),allMedian);
+            }
+            catch (gpstk::Exception& exc)
+            {
+              cerr << exc << endl;
+              return 1;
+            }
+         }
+         else if(allmp.size()>0)
+         {
+            allMedian = allmp[0];
+            allMad = 0.0;
+         }
          if ((!numeric)&& (verbose))
          {
             cout << "Median Absolute Deviation (MAD) for all retained points is "
@@ -415,10 +550,6 @@ int main(int argc, char *argv[])
          else
          {
             bool byAzimuth = (azimuthOption.getCount()>0);
-            if (angWidthOption.getCount()>0)
-            {
-               angInterval =  StringUtils::asDouble(angWidthOption.getValue()[0]);
-            }
             bool regularIntervals = (byAzimuth || (angWidthOption.getCount()>0));
 
             SparseBinnedStats<double> sbs;
@@ -455,10 +586,22 @@ int main(int argc, char *argv[])
                for (size_t k=0; k<binOption.getValue().size(); k++)
                {
                   string temp = binOption.getValue()[k];
-                  string lowerWord = StringUtils::word(temp,0,',');
-                  string upperWord = StringUtils::word(temp,1,',');
-                  sbs.addBin(StringUtils::asDouble(lowerWord),
-                     StringUtils::asDouble(upperWord));
+                  string::size_type comma = temp.find(',');
+                  if (((comma+1) >= temp.size()) || (comma == string::npos))
+                  {
+                     cerr << "Invalid bin syntax" << endl;
+                     return 1;
+                  }
+                  string lowerWord = temp.substr(0, comma);
+                  string upperWord = temp.substr(comma+1, string::npos);
+                  double lower = StringUtils::asDouble(lowerWord);
+                  double upper = StringUtils::asDouble(upperWord);
+                  if (lower > upper)
+                  {
+                     cerr << "Lower bin boundary exceeds upper bin boundary" << endl;
+                     return 1;
+                  }
+                  sbs.addBin(lower, upper);
                }
             }
 
@@ -481,7 +624,7 @@ int main(int argc, char *argv[])
 
       }  // end while processing files
 
-      if ( (verbose) && (!numeric))
+      if ((verbose) && (!numeric))
       {
          CommonTime then = SystemTime();
          cout << "Processing complete in " << then - now << " seconds." << endl;
@@ -494,7 +637,6 @@ int main(int argc, char *argv[])
    }
 
    return 0;
-
 }
 
 
@@ -553,7 +695,7 @@ void writeStats(std::ostream& ostr, const SparseBinnedStats<double>& mstats,
    std::string angDesc = "elevation";
    if (!elevation) angDesc = "azimuth";
 
-   if(!numeric)
+   if (!numeric)
    {
       ostr << endl;
 
