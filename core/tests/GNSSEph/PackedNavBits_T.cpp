@@ -708,10 +708,57 @@ equalityTest()
    //    copyBits()
    //    insertUnsignedBits()
    // 
-unsigned PackedNavBits_T ::
+unsigned PackedNavBits_T::
 ancillaryMethods()
 {
    TUDEF("PackedNavBits", "ancillary methods");
+
+      // -------------------------------------------------------------
+      // First test the invert() method.
+      // Create a sample PackedNavBits.
+      // At this point, the "packed bits" section of 
+      // this object is empty.  We are focused on testing
+      // the metadata handling. 
+   SatID satID(1, SatID::systemGPS);
+   ObsID obsID( ObsID::otNavMsg, ObsID::cbL2, ObsID::tcC2LM );
+   NavID navID(satID,obsID);
+   std::string rxID = "rx1";
+   CommonTime ct = CivilTime( 2011, 6, 2, 12, 14, 44.0, TimeSystem::GPS );
+   PackedNavBits copyUpright(satID,obsID,navID,rxID,ct);
+
+      // Next add some bits with a fixed pattern. 
+      // Make a copy with a given bit pattern,....
+   unsigned long uword = 0xAAAAAAAA;
+   try
+   {
+      copyUpright.addUnsignedLong(uword,32,1);
+      copyUpright.addUnsignedLong(uword,32,1);
+   }
+   catch (InvalidParameter ip)
+   {
+      cout << "Caught an exception" << endl;
+      cout << ip << endl;
+   }
+   copyUpright.trimsize();
+
+      // Make copy with the inverse bit pattern
+   PackedNavBits copyInverse(satID,obsID,navID,rxID,ct);
+   unsigned long uwordInverse = (~uword) & 0xFFFFFFFF;
+   try
+   {
+      copyInverse.addUnsignedLong(uwordInverse,32,1);
+      copyInverse.addUnsignedLong(uwordInverse,32,1);
+   }
+   catch (InvalidParameter ip)
+   {
+      cout << "Caught an exception" << endl;
+      cout << ip << endl;
+   }
+   copyInverse.trimsize();
+
+      // Invert the upright and see that the 
+   copyUpright.invert(); 
+   TUASSERTE(bool,true,copyUpright.matchBits(copyInverse)); 
 
    TURETURN();
 }

@@ -606,6 +606,7 @@ namespace gpstk
       size_t ndx = bits_used;
       uint64_t mask = 0x0000000000000001L;
       mask <<= (numBits-1);
+
       for (int i=0; i<numBits; ++i)
       {
          bits[ndx] = false;
