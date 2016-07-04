@@ -789,8 +789,35 @@ ancillaryMethods()
 
    TUASSERTE(bool,true,expected.matchBits(allOnes));
 
+      // -------------------------------------------------------------
+      // Now test insertUnsignedLong( )
+      // Create a PNB with 96 0's
+   PackedNavBits insertTest(satID,obsID,navID,rxID,ct);
+   insertTest.addUnsignedLong(uwordZeros,32,1);
+   insertTest.addUnsignedLong(uwordZeros,32,1);
+   insertTest.addUnsignedLong(uwordZeros,32,1);
+   insertTest.trimsize();
 
+   unsigned long fakeSOW = 604800 - 6; 
+   unsigned long tenOnes = 0x000003FF;
 
+      // Insert an unscaled set of 10 1's into bits 20-29 
+   insertTest.insertUnsignedLong(tenOnes,20,10,1);
+
+      // Insert a 17 bit SOW of 604794 scaled by 6 
+      // starting at bit 0
+   insertTest.insertUnsignedLong(fakeSOW,0,17,6);
+
+      // Build an expected PNB
+   PackedNavBits insertExpected(satID,obsID,navID,rxID,ct);
+   insertExpected.addUnsignedLong(fakeSOW,17,6); 
+   insertExpected.addUnsignedLong(uwordZeros,3,1);
+   insertExpected.addUnsignedLong(tenOnes,10,1);
+   insertExpected.addUnsignedLong(uwordZeros,32,1);
+   insertExpected.addUnsignedLong(uwordZeros,32,1);
+   insertExpected.addUnsignedLong(uwordZeros, 2,1);
+   insertExpected.trimsize();
+   TUASSERTE(bool,true,insertExpected.matchBits(insertTest));
 
    TURETURN();
 }
