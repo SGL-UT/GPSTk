@@ -756,9 +756,41 @@ ancillaryMethods()
    }
    copyInverse.trimsize();
 
-      // Invert the upright and see that the 
+      // Invert the upright and see that the results 
+      // matches expectations
    copyUpright.invert(); 
    TUASSERTE(bool,true,copyUpright.matchBits(copyInverse)); 
+
+      // -------------------------------------------------------------
+      // Now test copyBits()
+      // Create a PNB with 64 1's and a PNB with 64 0's
+   PackedNavBits allOnes(satID,obsID,navID,rxID,ct);
+   unsigned long uwordOnes = 0xFFFFFFFF;
+   allOnes.addUnsignedLong(uwordOnes,32,1);
+   allOnes.addUnsignedLong(uwordOnes,32,1);
+   allOnes.trimsize();
+
+   PackedNavBits allZeros(satID,obsID,navID,rxID,ct);
+   unsigned long uwordZeros = 0x00000000;
+   allZeros.addUnsignedLong(uwordZeros,32,1);
+   allZeros.addUnsignedLong(uwordZeros,32,1);
+   allZeros.trimsize();
+
+      // Copy first and last 16 bits from allZeros to all ones
+   allOnes.copyBits(allZeros,0,15); 
+   allOnes.copyBits(allZeros,48,63);
+
+   PackedNavBits expected(satID,obsID,navID,rxID,ct);
+   unsigned long uword1 = 0x0000FFFF;
+   unsigned long uword2 = 0xFFFF0000;
+   expected.addUnsignedLong(uword1,32,1);
+   expected.addUnsignedLong(uword2,32,1);
+   expected.trimsize();
+
+   TUASSERTE(bool,true,expected.matchBits(allOnes));
+
+
+
 
    TURETURN();
 }
