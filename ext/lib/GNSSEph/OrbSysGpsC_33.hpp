@@ -41,19 +41,19 @@
  * that data. 
  */
 
-#ifndef SGLTK_ORBSYSGPSL_56_HPP
-#define SGLTK_ORBSYSGPSL_56_HPP
+#ifndef SGLTK_ORBSYSGPSC_33_HPP
+#define SGLTK_ORBSYSGPSC_33_HPP
 
 
 #include <string>
 #include <iostream>
 #include <math.h>
 
-#include "OrbSysGpsL.hpp"
+#include "OrbSysGpsC.hpp"
 
 namespace gpstk
 {
-   class OrbSysGpsC_33 : public OrbSysGpsL
+   class OrbSysGpsC_33 : public OrbSysGpsC
    {
    public:
       static const double SIX_HOURS;

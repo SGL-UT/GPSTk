@@ -52,7 +52,7 @@ namespace gpstk
    const double OrbSysGpsC_33::SIX_HOURS = 6.0 * 3600.0; 
 
    OrbSysGpsC_33::OrbSysGpsC_33()
-      :OrbSysGpsL(),
+      :OrbSysGpsC(),
        A0(0.0),
        A1(0.0),
        A2(0.0),
@@ -65,7 +65,7 @@ namespace gpstk
 
    OrbSysGpsC_33::OrbSysGpsC_33(const PackedNavBits& msg)
       throw( InvalidParameter):
-      OrbSysGpsL()
+      OrbSysGpsC()
    {
       loadData(msg);
    }
@@ -82,7 +82,7 @@ namespace gpstk
       if (p==0) return false; 
 
          // Establish if it refers to the same SV and UID. 
-      if (!OrbSysGpsL::isSameData(right)) return false;
+      if (!OrbSysGpsC::isSameData(right)) return false;
        
          // Finally, examine the contents
       if (ctEpoch != p->ctEpoch) return false;

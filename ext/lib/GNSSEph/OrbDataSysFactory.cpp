@@ -47,12 +47,16 @@
 #include "OrbSysGpsL_63.hpp"
 #include "OrbSysGpsL_Reserved.hpp"
 
+// GPS CNAV OrbDataSys derived classes
+#include "OrbSysGpsC_33.hpp"
+
 using namespace std;
 
 namespace gpstk
 {
    int OrbDataSysFactory::debugLevel;
    
+   //----------------------------------------------------------------
    OrbDataSys* OrbDataSysFactory::
    convert(const gpstk::PackedNavBits& pnb)
       throw(InvalidParameter)
@@ -106,7 +110,7 @@ namespace gpstk
       return retVal;
    }
 
-
+   //----------------------------------------------------------------
    OrbDataSys* OrbDataSysFactory::
    GPSLNAV(const gpstk::PackedNavBits& pnb)
       throw(InvalidParameter)
@@ -193,14 +197,48 @@ namespace gpstk
       return retVal; 
    }
 
+   //----------------------------------------------------------------
    OrbDataSys* OrbDataSysFactory::
    GPSCNAV(const gpstk::PackedNavBits& pnb)
       throw(InvalidParameter)
    {
       OrbDataSys* retVal = 0;
+
+         // Determine whether the PNB object is an appropriate
+         // OrbDataSys candidate.   That is to say, it has 
+         // a MT in the range of SV ID 14-15, 30, 32-36.
+         // NOTE: During the pre-operational test period, only a limited
+         // set are implemented. 
+      unsigned long uid = pnb.asUnsignedLong(14,6,1);
+      try
+      {
+         switch (uid)
+         {
+            case 33:
+            {
+               retVal = new OrbSysGpsC_33(pnb);
+               break;
+            }
+            {
+               // Do nothing
+               break;
+            }
+         }         // end switch
+      }
+         // Conversion attempt failed.
+      catch(InvalidParameter ir)
+      {
+         if (debugLevel)
+         {
+            cout << "Conversion attempt failed.  Caught an InvalidParameter" << endl;
+            cout << ir << endl;
+         }
+         GPSTK_RETHROW(ir); 
+      }
       return retVal; 
    }
 
+   //----------------------------------------------------------------
    OrbDataSys* OrbDataSysFactory::
    BeiDou_D1(const gpstk::PackedNavBits& pnb)
       throw(InvalidParameter)
@@ -209,6 +247,7 @@ namespace gpstk
       return retVal; 
    }
 
+   //----------------------------------------------------------------
    OrbDataSys* OrbDataSysFactory::
    BeiDou_D2(const gpstk::PackedNavBits& pnb)
       throw(InvalidParameter)
@@ -217,6 +256,7 @@ namespace gpstk
       return retVal; 
    }
 
+   //----------------------------------------------------------------
    OrbDataSys* OrbDataSysFactory::
    GloCivilF(const gpstk::PackedNavBits& pnb)
       throw(InvalidParameter)
