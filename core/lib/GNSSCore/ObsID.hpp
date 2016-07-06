@@ -89,6 +89,7 @@ namespace gpstk
          otNavMsg,    ///< Navigation Message data
          otRngStdDev, ///< pseudorange standard deviation, in meters
          otPhsStdDev, ///< phase standard deviation, in meters
+         otFreqIndx,  ///< GLONASS frequency offset index [-6..7]
          otUndefined, ///< Undefined
          otLast       ///< Used to verify that all items are described at compile time
       };

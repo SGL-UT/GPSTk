@@ -85,7 +85,7 @@ namespace gpstk
        * |                    ^ |   ^ |   ^ |                 ^ | date              |
        * |                    ^ |   ^ |   ^ |                 ^ | preserveDate      |
        * | COMMENT              | opt | opt | Comment           | commentList       |
-       * | MARKER NAME          | req | req | MarkerName        | markerName        |
+       * | MARKER NAME          | req | opt | MarkerName        | markerName        |
        * | MARKER NUMBER        | opt | opt | MarkerNumber      | markerNumber      |
        * | MARKER TYPE          |  -  | req | MarkerType        | markerType        |
        * | OBSERVER / AGENCY    | req | req | Observer          | observer          |
@@ -105,8 +105,8 @@ namespace gpstk
        * | ANTENNA: ZERODIR AZI |  -  | opt | AntennaZeroDirAzi | antennaZeroDirAzi |
        * | ANTENNA: ZERODIR XYZ |  -  | opt | AntennaZeroDirXYZ | antennaZeroDirXYZ |
        * | CENTER OF MASS: XYZ  |  -  | opt | CenterOfMass      | centerOfMass      |
-       * | # / TYPES OF OBSERV  | req |  -  | NumObs            | |
-       * | SYS / # / OBS TYPES  |  -  | req | SystemNumObs      | mapObsTypes       |
+       * | # / TYPES OF OBSERV  | req | n/a | NumObs            |                   |
+       * | SYS / # / OBS TYPES  | n/a | req | SystemNumObs      | mapObsTypes       |
        * | WAVELENGTH FACT L1/2 | opt |  -  | WaveFact          | wavelengthFactor  |
        * |                    ^ |   ^ |   ^ |                 ^ | extraWaveFactList |
        * | SIGNAL STRENGTH UNIT |  -  | opt | SigStrengthUnit   | sigStrengthUnit   |
@@ -238,8 +238,9 @@ namespace gpstk
 
             // NB 19Jun2013 MGEX data does not include GLONASS SLOT
             // and GLONASS COD/PHS/BIS records
-         allValid301            = 0x041205AB, ///< RINEX 3.01
-         allValid302            = 0x041205AB  ///< RINEX 3.02
+            // marker type is only required if the type is not GEODETIC or NON_GEODETIC
+         allValid301            = 0x0412058B, ///< RINEX 3.01
+         allValid302            = 0x0412058B  ///< RINEX 3.02
       };
    
 #ifndef SWIG // nested structs/classes not supported by SWIG

@@ -202,6 +202,7 @@ namespace gpstk
          // Used internally during startup if WNa has not been received
          // prior to first almanac data page.         
       void estimateWeekNumber(const CommonTime& currTime);
+      void estimateWeekNumberBDS(const CommonTime& currTime);
 
 
          // Only used for BDS
