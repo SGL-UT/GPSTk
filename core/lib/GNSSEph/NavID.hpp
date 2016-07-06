@@ -83,6 +83,14 @@ namespace gpstk
       NavID() { navType=ntUnknown; }
 
          /// explicit constructor, no defaults
+         /// WARNING: This constructor has proven insufficient
+         /// for BeiDou.  The BDS ICD requires that PRN 1-5 
+         /// use format D2 and PRN 6-30 use format D1.  That
+         /// appears to not be followed in all cases.   Therefore
+         /// users need to differentiate D1/D2 outside NavID 
+         /// and use the explicit constructor
+         ///      NavID( NavID::nt<xxxxx> )
+         /// to instatiate a BeiDou-related NavID. 
       NavID( const SatID& sidr, const ObsID& oidr );
 
       NavID( const NavType nt) { navType = nt; }
