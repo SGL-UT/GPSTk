@@ -10,14 +10,14 @@ Usage:
 
 Short Arg.| Long Arg.| Description
 
-    –in Read the input file (repeatable).
-    –out Name the output file. Default is sp3.out.
-    –tb Output beginning epoch; <time> = week, sec-of-week (earliest in input).
-    –te Output ending epoch; <time> = week, sec-of-week (latest in input).
-    –outputC Output version c (no correlation) (otherwise a).
-    -msg Add message as a comment to the output header (repeatable).
-    –verbose Output to screen: dump headers, data, etc.
-    –help Print this message and quit.
+    –in       Read the input file (repeatable).
+    –out      Name the output file. Default is sp3.out.
+    –tb       Output beginning epoch; <time> = week, sec-of-week (earliest in input).
+    –te       Output ending epoch; <time> = week, sec-of-week (latest in input).
+    –outputC  Output version c (no correlation) (otherwise a).
+    -msg      Add message as a comment to the output header (repeatable).
+    –verbose  Output to screen: dump headers, data, etc.
+    –help     Print this message and quit.
 
 Examples:
 ---------

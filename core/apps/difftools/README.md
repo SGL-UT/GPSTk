@@ -10,12 +10,12 @@ Usage:
 
 Short Arg.| Long Arg.| Description
 
-    -d      –debug                Increase debug level.
-    -v      –verbose              Increase verbosity.
-    -h      –help                 Print help usage.
-    -l      –quit-on-first-error  Quit on the first error encountered.
-    -t      –time=TIME            Start of time range to compare (Default = BOT.)
-    -e      –end-time=TIME        End of time range to compare (Default = EOT.)
+    -d    –debug                Increase debug level.
+    -v    –verbose              Increase verbosity.
+    -h    –help                 Print help usage.
+    -l    –quit-on-first-error  Quit on the first error encountered.
+    -t    –time=TIME            Start of time range to compare (Default = BOT.)
+    -e    –end-time=TIME        End of time range to compare (Default = EOT.)
 
 *rmwdiff usage: rmwdiff [options] <RINEX Met file> <RINEX Met file>*
 
