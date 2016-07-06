@@ -49,7 +49,6 @@ Examples:
           Sat G25 C1: 24578217.445/0/7 D1: -3164.811/0/7 D2: -2466.069/0/7 L1: -3829204.504/0/7
           L2: -2958619.116/0/7 P1: 24578217.563/0/7 P2: 24578226.318/0/7
           Sat G27 C1: 23262592.158/0/7 D1: 2951.056/0/8 D2: 2299.519/0/8 L1: -9166691.680/0/8
-          3.15. RMWDIFF RNWDIFF ROWDIFF 43
           L2: -7120447.504/0/8 P1: 23262592.029/0/8 P2: 23262598.552/0/8
           Sat G28 C1: 21283503.220/0/8 D1: -585.103/0/8 D2: -455.924/0/8 L1: -17698942.286/0/8
           L2: -13775959.458/0/8 P1: 21283503.017/0/8 P2: 21283507.983/0/8
@@ -94,7 +93,6 @@ Examples:
           < 2451545 00900000 0.000000000000000 Any
           PR 860.1
           TD 17.2
-          44
           HR 95.8
           < 2451545 01800000 0.000000000000000 Any
           PR 859.9
@@ -104,6 +102,9 @@ Examples:
           PR 859.6
           TD 17.1
           HR 96.2
-          3.15.4 Notes
-          Only the first error in each file is reported. The entire file is always checked regardless of time
-          options.
+
+Notes:
+------
+
+Only the first error in each file is reported. The entire file is always checked regardless of time
+options.
