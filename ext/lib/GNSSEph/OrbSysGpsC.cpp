@@ -33,48 +33,60 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
-/*
-* CNavFilterData.cpp
-*/
-#include "CNavFilterData.hpp"
+/**
+ * @file OrbSysGpsC.cpp
+ */
+
+#include "OrbSysGpsC.hpp"
+#include "GPSWeekSecond.hpp"
+#include "TimeString.hpp"
+
+using namespace std;
+using namespace gpstk;
 
 namespace gpstk
 {
-   CNavFilterData::CNavFilterData():
-       NavFilterKey()
-       {}
+   OrbSysGpsC::OrbSysGpsC():
+      OrbDataSys()
+   { }
 
-   CNavFilterData::CNavFilterData(gpstk::PackedNavBits* pnbArg):
-      NavFilterKey()
+   bool OrbSysGpsC::isSameData(const OrbData* right) const
    {
-      loadData(pnbArg);
+         // First, test whether the test object is actually a OrbSysGpsC object.
+      const OrbSysGpsC* p = dynamic_cast<const OrbSysGpsC*>(right);
+      if (p==0) return false; 
+
+      if (!OrbDataSys::isSameData(right))  return false; 
+      return true;
    }
 
-   void CNavFilterData::loadData(PackedNavBits* pnbArg)
+   std::list<std::string> OrbSysGpsC::compare(const OrbSysGpsC* right) const
    {
-      timeStamp = pnbArg->getTransmitTime();
-      rxID = pnbArg->getRxID();
-      stationID = "unk";
-      prn = pnbArg->getsatSys().id;
-      carrier = pnbArg->getobsID().band;
-      code    = pnbArg->getobsID().code;
-
-      pnb = pnbArg;
+      std::list<std::string> retList = OrbDataSys::compare(right);
+      return retList;
    }
 
-   void CNavFilterData::
-   dump(std::ostream& s) const
+   void OrbSysGpsC::dumpHeader(std::ostream& s) const
+         throw( InvalidRequest )
    {
-         // This outputs the "common" information
-      NavFilterKey::dump(s); 
-
-         // Dump bits as 32 bit words
-      pnb->outputPackedBits(s,10);
+      s << "*********************************************************" << endl;
+      s << " GPS CNAV System-level navigation message data.  UID: " << UID << endl;
+      s << " Transmitting SV : " << satID << endl;
+      s << " Transmit Time   : " 
+        << printTime(beginValid,"%02m/%02d/%4Y DOY %03j %02H:%02M:%02S  %F %6.0g")
+        << endl;
    }
 
-   std::ostream& operator<<(std::ostream& s, const CNavFilterData& nfd)
+   void OrbSysGpsC::setUID(const PackedNavBits& pnb)
    {
-      nfd.dump(s);
-      return s; 
+      UID = pnb.asUnsignedLong(14,6,1);
+   }  
+
+      // Of the system-level data, only Data ID 51 is in subframe 5.
+      // All the others are in subframe 4
+   unsigned short OrbSysGpsC::getMT() const
+   {
+      return UID;
    }
-}
+
+} // namespace

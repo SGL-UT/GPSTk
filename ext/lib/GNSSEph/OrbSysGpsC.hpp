@@ -33,48 +33,49 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
-/*
-* CNavFilterData.cpp
-*/
-#include "CNavFilterData.hpp"
+
+/**
+ * @file OrbSysGpsC.hpp
+ *  This class encapsulates the "least common denominator"
+ *  for system-level navigation message data for GPS CNAV.
+ */
+
+#ifndef GPSTK_ORBSYSGPSC_HPP
+#define GPSTK_ORBSYSGPSC_HPP
+
+#include <string>
+
+#include "OrbDataSys.hpp"
+#include "PackedNavBits.hpp"
 
 namespace gpstk
 {
-   CNavFilterData::CNavFilterData():
-       NavFilterKey()
-       {}
-
-   CNavFilterData::CNavFilterData(gpstk::PackedNavBits* pnbArg):
-      NavFilterKey()
+   class OrbSysGpsC : public OrbDataSys
    {
-      loadData(pnbArg);
-   }
+   public:
+        /// Constructors
+	      /// Default constuctor
+      OrbSysGpsC();
 
-   void CNavFilterData::loadData(PackedNavBits* pnbArg)
-   {
-      timeStamp = pnbArg->getTransmitTime();
-      rxID = pnbArg->getRxID();
-      stationID = "unk";
-      prn = pnbArg->getsatSys().id;
-      carrier = pnbArg->getobsID().band;
-      code    = pnbArg->getobsID().code;
+         /// Destructor
+      virtual ~OrbSysGpsC() {}
 
-      pnb = pnbArg;
-   }
+      virtual bool isSameData(const OrbData* right) const;
 
-   void CNavFilterData::
-   dump(std::ostream& s) const
-   {
-         // This outputs the "common" information
-      NavFilterKey::dump(s); 
+      virtual std::list<std::string> compare(const OrbSysGpsC* right) const;
 
-         // Dump bits as 32 bit words
-      pnb->outputPackedBits(s,10);
-   }
+      virtual void dumpHeader(std::ostream& s = std::cout) const
+         throw( InvalidRequest );
 
-   std::ostream& operator<<(std::ostream& s, const CNavFilterData& nfd)
-   {
-      nfd.dump(s);
-      return s; 
-   }
-}
+      void setUID(const PackedNavBits& msg);  
+
+         /// For GPS data, the UID (stored in OrbDataSys) is the Message Type.
+      unsigned short getMT() const;
+
+         /// Members
+         /// NONE
+   }; // end class OrbSysGpsC
+
+} // end namespace
+
+#endif // GPSTK_ORBSYSGPSC_HPP
