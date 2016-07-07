@@ -48,39 +48,39 @@ at each time tag; there is no filtering or other connection between solutions at
 Usage aka Syntax Page:
 ----------------------
 
-> PRSolve [options]
-      In the log file, results at each time tag appear in lines with the format:
-        "TAG descriptor LABEL week sec.of.week CONTENT (code) [N]V"
-      where TAG denotes the type of solution or solution residuals:
-        RPF RAIM ECEF XYZ solution
-        RPR RAIM ECEF XYZ solution residuals [only if --ref given]
-        RNE RAIM North-East-Up solution residuals [only if --ref given]
-        SPS Simple ECEF XYZ solution [only if --SPSout given]
-        SPR Simple ECEF XYZ solution residuals [only if both SPS & ref given]
-        SNE Simple North-East-Up solution residuals [only if SPS & ref given]
-      and LABEL followed by CONTENT is:
-        NAV X Y Z SYS clock_bias [SYS clock_bias ...]
-        POS X Y Z
-        CLK SYS clock_bias [SYS clock_bias ...]
-        RMS Nrej Ngood RMS TDOP PDOP GDOP Slope niter conv SAT [SAT ...]
-        DAT Ngood Nsats <SAT>:<freq><code> ... (list of sats with freq+code found)
-      and where
-        X Y Z = position solution, or solution residuals, depending on TAG;
-        RNE and SNE yield North-East-Up residuals, at --ref position
-        SYS = system or GNSS, e.g. GPS GLO GAL ... (identifies system of clock bias)
-        Nsats = number of satellites in the RINEX file at this time
-        Ngood = number of satellites used in the solution algorithm
-        Nrej = number of satellites rejected by the RAIM algorithm
-        RMS = RMS residual of fit (meters)
-        Slope = RAIM 'slope' value
-        xDOP = Dilution of precision (T=time, P=position, G=geometric=T+P)
-        niter = number of iterations performed by the solution algorithm
-        conv = final convergence value (delta RMS position) of the solution algorithm
-        SAT = satellite identifier (e.g. G10, R07); minus sign means rejected
-        CODE = return value from solution algorithm (with words if --verbose)
-        [N]V = V for valid solution, NV for not valid (don't use!)
+    > PRSolve [options]
+        In the log file, results at each time tag appear in lines with the format:
+          "TAG descriptor LABEL week sec.of.week CONTENT (code) [N]V"
+        where TAG denotes the type of solution or solution residuals:
+          RPF RAIM ECEF XYZ solution
+          RPR RAIM ECEF XYZ solution residuals [only if --ref given]
+          RNE RAIM North-East-Up solution residuals [only if --ref given]
+          SPS Simple ECEF XYZ solution [only if --SPSout given]
+          SPR Simple ECEF XYZ solution residuals [only if both SPS & ref given]
+          SNE Simple North-East-Up solution residuals [only if SPS & ref given]
+        and LABEL followed by CONTENT is:
+          NAV X Y Z SYS clock_bias [SYS clock_bias ...]
+          POS X Y Z
+          CLK SYS clock_bias [SYS clock_bias ...]
+          RMS Nrej Ngood RMS TDOP PDOP GDOP Slope niter conv SAT [SAT ...]
+          DAT Ngood Nsats <SAT>:<freq><code> ... (list of sats with freq+code found)
+        and where
+          X Y Z = position solution, or solution residuals, depending on TAG;
+          RNE and SNE yield North-East-Up residuals, at --ref position
+          SYS = system or GNSS, e.g. GPS GLO GAL ... (identifies system of clock bias)
+          Nsats = number of satellites in the RINEX file at this time
+          Ngood = number of satellites used in the solution algorithm
+          Nrej = number of satellites rejected by the RAIM algorithm
+          RMS = RMS residual of fit (meters)
+          Slope = RAIM 'slope' value
+          xDOP = Dilution of precision (T=time, P=position, G=geometric=T+P)
+          niter = number of iterations performed by the solution algorithm
+          conv = final convergence value (delta RMS position) of the solution algorithm
+          SAT = satellite identifier (e.g. G10, R07); minus sign means rejected
+          CODE = return value from solution algorithm (with words if --verbose)
+          [N]V = V for valid solution, NV for not valid (don't use!)
       
-      Default values appear in () after options below.
+        Default values appear in () after options below.
     
       # Input via configuration file:
         --file <fn> Name of file with more options [#->EOL = comment] [repeat] ()
@@ -158,6 +158,7 @@ The minimum required input consists of a RINEX observation file (--obs) and corr
 will override the clock information in the ephemeris input. 
 
 The path of the input files may be specified separately from the file name; that is, the following lines of input
+    
     --eph /home/user/eph/igs15505.sp3 --eph /home/user/eph/igs15506.sp3
     --eph igs15505.sp3 --eph igs15506.sp3 --ephpath /home/user/eph
     --eph igs15505.sp3,igs15506.sp3 --ephpath /home/user/eph
@@ -194,8 +195,10 @@ automatically.)*
 
 Multiple solution descriptors are given by multiple --sol options (--sol is repeatable), or as a single argument, separated 
 by commas. For example, input of either 
+    
     --sol GPS:12:PYXWC+GLO:12:PC --sol GPS:15:WXLC
 or
+    
     --sol GPS:12:PYXWC+GLO:12:PC,GPS:15:WXLC
 will cause PRSolve to compute two solutions, the first being a combination of GPS and GLONASS data, using an ionosphere-
 free combinations of L1 and L2, with tracking codes P,Y,X,W, or C for GPS, and codes P or C for GLONASS. The second 
@@ -203,46 +206,46 @@ solution produced by PRSolve will be GPS-only, L1/L5 ionosphere-free combination
 W,X,L or C (in that order) are found in the data. *(Note that the actual code chosen at each epoch is given in the DAT 
 output line; see below.)* 
 
->./PRSolve --SOLhelp
-    PRSolve, part of the GPS Toolkit, Ver 5.0 8/1/13, Run 2013/08/15 11:29:04
-    === Help for Solution Descriptors, option --sol <S:F:C> ===
-    The --sol option is repeatable, so all --sol solutions, if valid,
-    will be computed and output in one run of the program.
+    >./PRSolve --SOLhelp
+      PRSolve, part of the GPS Toolkit, Ver 5.0 8/1/13, Run 2013/08/15 11:29:04
+      === Help for Solution Descriptors, option --sol <S:F:C> ===
+      The --sol option is repeatable, so all --sol solutions, if valid,
+      will be computed and output in one run of the program.
     
-    Solution descriptors are of the form S:F:C where
-      S is a system, one of: GPS GLO GAL GEO BDS QZS
-      F is a frequency, one of: 1 2 3 5 6 7 8
-      C is an ordered set of one or more tracking codes, for example WPC
-      These must be consistent - not all F and C apply to all systems.
+      Solution descriptors are of the form S:F:C where
+        S is a system, one of: GPS GLO GAL GEO BDS QZS
+        F is a frequency, one of: 1 2 3 5 6 7 8
+        C is an ordered set of one or more tracking codes, for example WPC
+        These must be consistent - not all F and C apply to all systems.
     
-    The S:F:C are the RINEX codes used to identify pseudorange observations.
-      Valid PR tracking codes for systems and frequencies:
-      freq| GPS | GLO | GAL | GEO | BDS | QZS
-      1 | PYWLMIQSXC | PC | ABCIQXZ | C | --- | CSLXZ
-      2 | PYWLMIQSXCD | PC | --- | --- | IQX | SLX
-      3 | --- | IQX | --- | --- | --- | ---
-      5 | IQX | --- | IQX | IQX | --- | IQX
-      6 | --- | --- | ABCIQXZ | --- | IQX | SLX
-      7 | --- | --- | IQX | --- | IQX | ---
-      8 | --- | --- | IQX | --- | --- | ---
-
-    Example solution descriptors are GPS:1:P GLO:3:I BDS:7:Q
-      These are single-frequency solutions, that is the GPS:1:P solution will use GPS L1 P-code 
-      pseudorange data to find a solution.
-    Dual frequency solutions are allowed; they combine data of different frequencies to eliminate 
-    the ionospheric delay, for example
-        GPS:12:PC is the usual L1/L2-ionosphere-corrected GPS solution.
-    Triple frequency solutions are not supported.
+      The S:F:C are the RINEX codes used to identify pseudorange observations.
+        Valid PR tracking codes for systems and frequencies:
+        freq| GPS | GLO | GAL | GEO | BDS | QZS
+        1 | PYWLMIQSXC | PC | ABCIQXZ | C | --- | CSLXZ
+        2 | PYWLMIQSXCD | PC | --- | --- | IQX | SLX
+        3 | --- | IQX | --- | --- | --- | ---
+        5 | IQX | --- | IQX | IQX | --- | IQX
+        6 | --- | --- | ABCIQXZ | --- | IQX | SLX
+        7 | --- | --- | IQX | --- | IQX | ---
+        8 | --- | --- | IQX | --- | --- | ---
+  
+      Example solution descriptors are GPS:1:P GLO:3:I BDS:7:Q
+        These are single-frequency solutions, that is the GPS:1:P solution will use GPS L1 P-code 
+        pseudorange data to find a solution.
+      Dual frequency solutions are allowed; they combine data of different frequencies to eliminate 
+      the ionospheric delay, for example
+          GPS:12:PC is the usual L1/L2-ionosphere-corrected GPS solution.
+      Triple frequency solutions are not supported.
     
-    More that one tracking code may be provided, for example GPS:12:PC
-      This tells PRSolve to prefer P, but if it is not available, use C.
+      More that one tracking code may be provided, for example GPS:12:PC
+        This tells PRSolve to prefer P, but if it is not available, use C.
     
-    Finally, combined solutions may be specified, in which different data types, even from 
-    different systems, are used together.
-    The component descriptors are combined using a '+'. For example
-        GPS:12:PC+GLO:12:PC
-    describes a dual frequency solution that uses both GPS and GLO
-    L1/L2 P-code (or C/A) data in a single solution algorithm.
+      Finally, combined solutions may be specified, in which different data types, even from 
+      different systems, are used together.
+      The component descriptors are combined using a '+'. For example
+          GPS:12:PC+GLO:12:PC
+      describes a dual frequency solution that uses both GPS and GLO
+      L1/L2 P-code (or C/A) data in a single solution algorithm.
 
 Configuring the Algorithm:
 -------------------------- 
@@ -252,6 +255,7 @@ The user is able to configure this algorithm using command line input as follows
 Solution Algorithm). The defaults for these options are carefully chosen based on a lot of experience, and should be 
 changed only with great care.
 The option --wt causes the pseudorange measurements to be weighted based on their elevation angle; the weight is defined as
+
     wt = 1 (elev >= 30 degrees)
     wt = [sin(elev)/sin(30)]^2 (elev < 30 deg)
 Of course elevations below zero are excluded. This option is quite expensive in terms of computation
@@ -288,6 +292,7 @@ are used.
 The argument of the --Trop option is a string of 4 fields separated by commas: a key giving the model name, and three numbers 
 for the temperature (degrees C), pressure (millibars) and relative humidity (%). The default for this option is 'NewB,20.0,1013.0,
 50.0'. The accepted keys with the corresponding model are (also see syntax page)
+
     Zero This is a “dummy” model that always returns a zero correction; used for testing
     Black A simple Black model
     Saas The Saastamoinen model
@@ -308,6 +313,7 @@ least a good guess. The reference position is not used in the computation and do
 does allow PRSolve to compute residuals (the difference between the solution position and this reference position), and to rotate 
 the solution residuals into local topocentric (North-East-Up) coordinates (see RPR and RNE output records, below). The argument 
 for --ref is just the position coordinates separated by commas; thus for example
+    
     --ref -740311.8581,-5457066.4731,3207249.3343
 is acceptable; this assumes the coordinates are Earth-centered, Earth-fixed Cartesian (ECEF XYZ) with units meters. The --ref 
 argument must specify a complete geodetic position.
@@ -315,6 +321,7 @@ argument must specify a complete geodetic position.
 Other coordinates and/or units may be used, by supplying a format description, after a colon (:), along with the corresponding 
 coordinates (--ref <data:format>, see the syntax page); the meanings of the format descriptors come from class Position in the GPS 
 Toolkit; they are as follows. Note that the default format is “%x,%y,%z”.
+    
     %x Position::X() (meters)                          ECEF X coordinate meters
     %y Position::Y() (meters)                          ECEF Y coordinate meters
     %z Position::Z() (meters)                          ECEF Z coordinate meters
@@ -337,9 +344,11 @@ Toolkit; they are as follows. Note that the default format is “%x,%y,%z”.
     %P Position::phi() (radians)                       Spherical coord phi rad
     %r Position::radius() meters                       Spherical coord radius m
     %R Position::radius()/1000 kilometers              Spherical coord radius km
+
 (On Windows, '%' is a special character on the command line; make it an ordinary character by entering it twice, e.g. “%%x,%%y,%%z”.)
 
 Thus, other possibilities for the --ref argument above would be
+    
     --ref -740311.8581,-5457066.4731,3207249.3343:%x,%y,%z # the default format
     --ref 30.216754900,97.726379400,6372918.624:%a,%w,%r # geocentric LL(W)H
     --ref 30.384393671,262.273620600,218.412:%A,%l,%h # geodetic LL(E)H
@@ -352,6 +361,7 @@ PRSolve accepts some options that edit the data in various ways. PRSolve will ig
 that are outside time limits given by --start and --stop, each followed by a time. The time argument may be given as "week,seconds-of-week" 
 or as "year,month,day,hour,minute,seconds", or as another form given by a format included after a colon (:) in the argument. The format 
 descriptors are taken from class Epoch in the GPS Toolkit; the defaults are '%F,%g' and '%Y,%m,%d,%H,%M,%S'. Here are some examples.
+    
     --stop 2009,9,23,18,1,2 --start 1550,280800
     --start 1550,299999.000 --stop 2009,9,23,12,0,1
     --start 1550,280800.:%F,%g --stop 55098.23487024:%Q
@@ -362,8 +372,10 @@ however the  data before the colon must fit into the format after the colon. Aga
 Observation file has an interval  of 30 seconds but you want to compute solutions only every 5 minutes (300 seconds), the input 
 '--decimate 300' would cause PRSolve to do that. Note  that the start time of the decimation is determined by the --start option, or 
 if that is not available, then seconds-of-week that are even multiples of dt are used. In other words, 
+    
     --decimate 300 
-    alone produces results at seconds-of-week 0, 300, 600, ... 345000, 345300, 345600, ... 604500 (as they exist in the data); but if you had
+alone produces results at seconds-of-week 0, 300, 600, ... 345000, 345300, 345600, ... 604500 (as they exist in the data); but if you had
+    
     --decimate 300 --start 1550,345030.0
 then PRSolve would produce solutions at seconds-of-week 30, 330, ..., 345030, 345330, 345630, ... (as they exist in the data).
 
@@ -375,6 +387,7 @@ solution is very poor then the masking may consequently be inappropriate, but th
 
 Individual satellites may be excluded from the data stream using the option --exSat. The argument of this option is a RINEX-style satellite 
 identifier; for example
+    
     --exSat R9 --exSat G01 # option is repeatable
     --exSat R9,G01,G17 # comma-separated list works
     --exSat R # exclude entire system R (GLONASS)
@@ -389,6 +402,7 @@ An Observed Range Deviations (ORD) is simply the difference of the measured pseu
 solution. PRSolve will compute ORDs and write them to a file named in the argument of the option --ORDs if such an option is input. This 
 requires that a reference position (--ref) be given. The format of the output file is as follows (there were three solutions computed, hence 
 three sets of ORDs).
+    
     ORD sat week sec-of-wk elev iono ORD1 ORD2 ORD Solution_descriptor
     ORD G01 1550 259200.000 18.795 8.022 8.928 14.118 0.906 GPS:12:WC
     ORD G02 1550 259200.000 71.229 4.297 9.568 12.348 5.271 GPS:12:WC
@@ -425,6 +439,7 @@ The option --out <filename> causes PRSolve to write an output RINEX (ver. 3.02) 
 input file except for small changes in the header and the addition of auxiliary header information, at each time tag, in the form of 
 comments that contain the PRSolve navigation solution(s). That is, the output RINEX file will include, at each epoch, a block like the 
 following.
+    
     > 2009 09 23 00 02 0.0000000 4 9
         XYZ -740312.118 -5457067.840 3207248.661 GPS:12:WC COMMENT
         CLK GPS -19598.442 GPS:12:WC COMMENT
@@ -449,12 +464,12 @@ PRSolve produces a large amount of output to a log file (--log with default prs.
 with a line beginning with “Warning” or (if the problem is critical) “Error”; *whenever PRSolve does not give good results, the log file 
 should be searched for these two words.* 
 
-Otherwise, there are three types of output
-   1) a dump of the input configuration and input file content, at the top of the file
-   2) solutions and diagnostic information at each time tag
-   3) statistics and a weighted average solution at the bottom of the file
+Otherwise, there are three types of output  
+*   1) a dump of the input configuration and input file content, at the top of the file  
+*   2) solutions and diagnostic information at each time tag  
+*   3) statistics and a weighted average solution at the bottom of the file  
 The log file ends with a line starting with "PRSolve timing:" and including both the processing (CPU) time used and the "wall clock"
- timing; the weighted average and timing information are also printed on the screen.
+timing; the weighted average and timing information are also printed on the screen.
 
 The configuration is dumped to the log file in a format similar to the syntax page; this tells you exactly what PRSolve found the 
 input to be. This is followed by various summaries and dumps of thecontent of the input files. The verbose option (--verbose) causes more of 
@@ -470,18 +485,22 @@ Output per time tag:
 
 Each solution descriptor yields several lines of output, each with a different label, at each time tag in the input RINEX observation 
 file. The lines are of the following form (this output is described on the syntax page; the comments below are meant to augment that 
-description).
-> TAG descriptor LABEL week sec-of-week CONTENT (code) [N]V
+description).  
+  
+  TAG descriptor LABEL week sec-of-week CONTENT (code) [N]V  
+  
 At minimum you will get output for TAG RPF and LABELs DAT, NAV and RMS. Tag "RPF" means the RAIM final solution, which is the solution 
 produced by the least squares algorithm. The NAV content consists of the position, in Earth-centered, Earth-fixed Cartesian coordinates 
 (ECEF XYZ), and clock biases, with units meters. [Note that the frame (ITRF, WGS84, etc.) of the solution is determined by the frame of 
 the input satellite ephemeris (--eph or –nav).]
 
 For example (the line is necessarily wrapped here, even though it is a single line in the log file):
+    
     RPF GPS:12:WC NAV 1550 259300.000 -740311.906314 -5457065.109818 3207248.819548 GPS -19600.074 (0 ok) V
 This is a GPS ionosphere-free L1/L2 solution with (X,Y,Z = -740311.906314, -5457065., 3207248.819548) meters and a GPS clock bias of 
 -19600.074 meters. There were no problems with this solution "(0 ok)" and it is valid "V". The clock bias is preceded by the system to 
 which it applies; if more than onesystem (GNSS) was used in the solution, then there will be more than one clock bias; for example
+    
     RPF GPS:12:WC+GLO:12:PC NAV 1550 259300.000 -740312.591550 -5457064.512332 3207247.908676 GPS -19600.297 GLO -19650.258 (0 ok) V
 This is a combined GPS and GLONASS solution similar to the previous one. [The solution for two clock biases here is equivalent to solving 
 for the GPS-GLONASS system time offset, which must be done whenever GPS and GLONASS data is mixed.]
@@ -491,6 +510,7 @@ see below). CLK records output only the clock solution(s) [they may not appear i
 
 The record labeled DAT indicates which satellites were present in the data, which were used, and which RINEX tracking code applies to 
 the pseudorange that was actually used in the algorithm. Thus 
+    
     RPF GPS:12:WC DAT 1550 259300.000 11 11 G01:1W2W G02:1W2W G04:1W2W G05:1W2W G09:1W2W G10:1W2W G12:1W2W G17:1W2W G24:1W2W G27:1W2W G30:1W2W
 shows that 11 satellites had sufficient data, and that there are 11 satellites present; on frequency L1 code W was used (1W) and on L2 
 it was also W (2W). If, say, GPS satellite PRN 17 had been present but code W was not available on L1 while code C was, then you would 
@@ -499,6 +519,7 @@ of the solution (-G17 means G17 was not used; 2- means there were no acceptable 
 
 The output labeled with RMS contains a lot of information about the operation of the solution algorithm; a labeled example is provided 
 here (again wrapping is necessary but a bother here):
+    
     RPF descriptor week sec.of.week n N RMSresid TDOP PDOP GDOP slope niter conv sats ('-' means rejected) ... (code) Valid
     RPF GPS:12:WC RMS 1550 259300.000 1 10 1.839 0.68 2.57 3.25 5.6 4 8.69e-10 G01 G02 G04 G05 G09 G10 G12 -G17 G24 G27 G30 (0 ok) V
 Note that satellite G17 was rejected; 'n' is the number of rejected satellites (1) and 'N' is the number
@@ -516,6 +537,7 @@ how the algorithm finished; the "return code" of the RAIM algorithm appears in p
 words giving its meaning. Finally each record ends with either "V" or "NV", indicating the solution is Valid or Not Valid. Records that end 
 in NV should be ignored, as the solution algorithm failed in some way; they are included in the output file for diagnostic purposes. 
 The return codes and their meanings are as follows.
+    
     -4 PRSolve failed to find ANY ephemeris
     -3 PRSolve failed to find enough satellites with data
     -2 PRSolve failed because the problem is singular
@@ -561,6 +583,7 @@ The GLONASS broadcast ephemeris is produced in the GLONASS system, namely PZ90 c
 a *GLONASS-only* solution by simply transforming the data time from GPS time to GLONASS time before using the ephemeris. Note that the resulting 
 solution is in PZ90 (because the ephemeris is), not ITRF. Recall that the definition of time systems (see e.g. Hofmann, Wellenhof, et.al.) yields 
 the following.
+    
     TAI = GPS + 19sec
     GPS = UTC + leapSeconds
     GLO = UTC - tauC
@@ -593,7 +616,8 @@ Plots of these results are included in the PRSplot.pl documentation.
 The following is an example command line for running PRSolve, along with some of the output (file prs.log). The operating system here is Linux; 
 that explains the continuation lines (\) and the symbol (~). Note that there is --eph and --clk input for both GPS (igs*.sp3 and igs*.clk_30s) and
 GLONASS (igl*.sp3 and esa*.clk).
-    PRSolve --verbose \
+    
+    >./PRSolve --verbose \
       --obspath ~/Data/obs/Javad/R301 --obs ARL82660.09o \
       --ephpath ~/Data/eph/igs/ \
       --eph igs15502.sp3,igs15503.sp3,igs15504.sp3 \
@@ -604,7 +628,8 @@ GLONASS (igl*.sp3 and esa*.clk).
       --ref -740311.8581,-5457066.4731,3207249.3343:%x,%y,%z \
       --sol GPS:12:WC,GLO:12:PC,GPS:12:WC+GLO:12:PC
 Exactly the same run would result if we created a file prs.cfg, as follows, and then ran the command
-    PRSolve --file prs.cfg
+    
+    >././PRSolve --file prs.cfg
         # file prs.cfg, configuration file for test run of PRSolve
         --verbose
         --obspath ~/Data/obs/Javad/R301 --obs ARL82660.09o
@@ -623,6 +648,7 @@ mixed-system solution (GPS:12:WC+GLO:12:PC). All the solution-specific results i
 
 Excerpts from the resulting log file prs.log follow. Note that at the bottom of the output there is an epoch in which ALL the data is 
 missing; this is because the Javad receiver seems to like to write blank lines at the bottom of the RINEX observation file...PRSolve handles it.
+    
     Solutions to be computed for this file:
     SOLN GPS:12:WC [0](G12WC) GPS [c=2.546 o=C1W,C1C] [c=-1.546 o=C2W]
     SOLN GLO:12:PC [0](R12PC) GLO [c=2.531 o=C1P,C1C] [c=-1.531 o=C2P,C2C]
@@ -763,10 +789,12 @@ IGS MGEX web page, specifically files brdm2000.13p and gmsd2000.13o. The data in
 the data times in the observation (13o) file are in GPS time. Thus PRSolve must make a transformation from GPS time to GLONASS time 
 before it calls the ephemeris routines to get the satellite positions; PRSolve handles this automatically.
 The command line for this run is:
-  ./PRSolve –-verbose --obs examples/gmsd2000.13o --nav examples/brdm2000.13p \
-    --sol GPS:12:PWC --sol GLO:12:PC --sol GPS:12:PWC+GLO:12:PC \
-    --ref -3607666.0807,4147869.1195,3223718.2887
+  
+    >./PRSolve –-verbose --obs examples/gmsd2000.13o --nav examples/brdm2000.13p \
+      --sol GPS:12:PWC --sol GLO:12:PC --sol GPS:12:PWC+GLO:12:PC \
+      --ref -3607666.0807,4147869.1195,3223718.2887
 A sample of the output follows (also see the PRSplot documentation below for plots of these results).
+    
     Time system for RINEX file examples/gmsd2000.13o is GPS
     Solutions to be computed for this file:
     SOLN GPS:12:PWC [0](G12PWC) GPS [c=2.546 o=C1C] [c=-1.546 o=C2W]
@@ -947,6 +975,7 @@ message. You can specify the PRSolve log file to use with the option --file <log
 enter PRSplot --help; the output produced by this is also found below).
 
 Options (default):
+    
     # Input data
       --file <f> input PRSolve log file <f> [-f] (prs.log)
       --desc <d> use solution descriptor [defaults to first in PRSolve file][-d] ()
@@ -1010,6 +1039,7 @@ written by PRSolve at the bottom of the log file for this descriptor. It also co
 solution was marked bad. This information is printed before the plot(s) are generated.
 
 Thus if, after running PRSolve (with no --log option), you simply run PRSplot you get output like this.
+    
     Valid descriptors:
       -d 0 OR --desc GPS:12:PWC
       -d 1 OR --desc GLO:12:PC
@@ -1037,22 +1067,23 @@ the solution descriptor and the PRSolve log file name. The plots are of time ser
 except the scatter plots, which show the position residuals as X versus Y (or East versus North) and Y versus Z (or East versus Up) 
 onsquare plots. 
 Here are examples; they were generated by commands such as
+    
     PRSplot –-desc GPS:12:WC+GLO:12:PC --tag RNE --pos --png pos.png
 These results were generated in the first example described in the PRSolve documentation. Note that because this is a mixed 
 system problem (GPS+GLO) there are two clock solutions.
 
-![Alt text](../doc/PRSplot1.png)
-![Alt text](../doc/PRSplot2.png)
-![Alt text](../doc/PRSplot3.png)
-![Alt text](../doc/PRSplot4.png)
-![Alt text](../doc/PRSplot5_1.png) ![Alt text](../doc/PRSplot5_2.png)
+![Alt text](doc/PRSplot1.png)
+![Alt text](doc/PRSplot2.png)
+![Alt text](doc/PRSplot3.png)
+![Alt text](doc/PRSplot4.png)
+![Alt text](doc/PRSplot5_1.png) ![Alt text](doc/PRSplot5_2.png)
 
 Note that while the scatter plots are approximately square, the horizontal and vertical scales are not necessarily the same.
 
 The following are plots of the GLONASS-only solution of Example 2 in the PRSolve documentation.
 
-![Alt text](../doc/PRSplot6.png)
-![Alt text](../doc/PRSplot7.png)
+![Alt text](doc/PRSplot6.png)
+![Alt text](doc/PRSplot7.png)
 
 Data options:
 -------------
@@ -1106,5 +1137,6 @@ executable (wgnuplot.exe). The PRSplot script, if you give it a --geometry optio
 wgnuplot.ini.bak, and rewrites it with the chosen geometry. If this does not work it may be because PRSplot cannot 
 find the right directory; you should define an environment variable GNUPLOT to contain the path to the gnuplot directory. 
 For example at the command line run
+    
     export GNUPLOT=C:\gnuplot\bin
 using the correct path, before you run PRSplot.
