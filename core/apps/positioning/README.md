@@ -45,8 +45,8 @@ satellites contained in RINEX (version 2 or 3.02) format observation files. A Re
 or RAIM algorithm is included in the processing but may optionally be omitted. The solution is independently computed 
 at each time tag; there is no filtering or other connection between solutions at different times.
 
-Usage aka Syntax Page:
-----------------------
+Usage:
+------
 
     > PRSolve [options]
         In the log file, results at each time tag appear in lines with the format:
