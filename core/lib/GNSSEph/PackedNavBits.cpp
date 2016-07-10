@@ -91,11 +91,30 @@ namespace gpstk
       xMitCoerced = false;
    }
 
+   PackedNavBits::PackedNavBits(const SatID& satSysArg, 
+                                const ObsID& obsIDArg,
+                                const NavID& navIDArg,
+                                const std::string rxString,
+                                const CommonTime& transmitTimeArg)
+                                : bits(900),
+                                  bits_used(0),
+                                  rxID(""),
+                                  xMitCoerced(false)
+   {
+      satSys = satSysArg;
+      obsID = obsIDArg;
+      navID = navIDArg;
+      rxID = rxString;
+      transmitTime = transmitTimeArg;
+      xMitCoerced = false;
+   }
+
       // Copy constructor
    PackedNavBits::PackedNavBits(const PackedNavBits& right)
    {
       satSys = right.satSys; 
       obsID  = right.obsID;
+      navID  = right.navID; 
       rxID   = right.rxID;
       transmitTime = right.transmitTime;
       bits_used = right.bits_used;
@@ -141,6 +160,12 @@ namespace gpstk
       return;
    }
    
+   void PackedNavBits::setNavID(const NavID& navIDArg)
+   {
+      navID = navIDArg;
+      return;
+   }
+
    void PackedNavBits::setRxID(const std::string rxString)
    {
       rxID = rxString; 
@@ -168,7 +193,12 @@ namespace gpstk
    {
       return(satSys);
    }
-   
+  
+   NavID PackedNavBits::getNavID() const
+   {
+      return(navID);
+   } 
+
    std::string PackedNavBits::getRxID() const
    {
       return(rxID); 
@@ -576,6 +606,7 @@ namespace gpstk
       size_t ndx = bits_used;
       uint64_t mask = 0x0000000000000001L;
       mask <<= (numBits-1);
+
       for (int i=0; i<numBits; ++i)
       {
          bits[ndx] = false;
@@ -646,8 +677,6 @@ namespace gpstk
        *  Bit wise copy from another PackecNavBits.
        *  None of the meta-data (transmit time, SatID, ObsID)
        *  will be changed. 
-       *  If the current size of this PackedNavBits is less
-       *  than endBit, the array will be resized.
        */
    void PackedNavBits::copyBits(const PackedNavBits& from, 
                                 const short startBit, 
@@ -768,10 +797,11 @@ namespace gpstk
         << "************" << endl
         << "Packed Nav Bits" << endl
         << endl
-        << "SatID: " << setw(4) << getsatSys() << endl
+        << "SatID: " << getsatSys() << endl
         << endl
         << "Carrier: " << ObsID::cbDesc[obsID.band] << "      "
-        << "Code: " << ObsID::tcDesc[obsID.code] << endl;
+        << "Code: " << ObsID::tcDesc[obsID.code] 
+        << "NavID: " << navID << endl;
       if (rxID.size()>0) 
          s << " RxID: " << rxID << endl;
       s << endl
@@ -897,6 +927,8 @@ namespace gpstk
          // If not the same receiver return false.
       if ((flagBits & mmRX) && rxID.compare(right.rxID)!=0) return false;
 
+      if ((flagBits & mmNAV) && navID.navType!=(right.navID.navType)) return false;
+
       return true;
    }
 
@@ -930,7 +962,6 @@ namespace gpstk
       throw(InvalidParameter)
    {
          // Debug
-      //cout << " ENTERING rawBitInput( )-------------------------------------------------" << endl;
          //  Find first non-white space string.   
          //  Should translate as a decimal value.
          //  If so, assume this is the number of bits that follow, but do not 
