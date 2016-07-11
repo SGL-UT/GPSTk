@@ -1,5 +1,5 @@
-Installation of the GPSTk library and applications
---------------------------------------------------
+INSTALL
+-------
 
 Contents:
 ---------

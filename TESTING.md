@@ -1,5 +1,5 @@
-Testing of the GPSTk
---------------------
+TESTING
+-------
 
 Introduction
 ------------

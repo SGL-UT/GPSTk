@@ -1,5 +1,5 @@
 DOCUMENTATION
--------
+-------------
 
 Contents:
 ---------
