@@ -147,14 +147,14 @@ add_test(NAME RinEdit_Header
 #         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
 
 # Take a valid Rinex file, do nothing, and ensure the printout is still RINEX
-#add_test(NAME RinEdit_ValidOutput
-#         COMMAND ${CMAKE_COMMAND}
-#         -DTEST_PROG=$<TARGET_FILE:RinEdit>
-#         -DARGS=--IF\ ${GPSTK_TEST_DATA_DIR}/arlm200a.15o\ --OF\ ${GPSTK_TEST_OUTPUT_DIR}/RinEdit_ValidOutput.out
-#         -DTESTBASE=RinEdit_ValidOutput
-#         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
-#         -DGPSTK_BINDIR=${PROJECT_BINARY_DIR}/core/apps/checktools/
-#         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testValidOutput_RObs.cmake)
+add_test(NAME RinEdit_ValidOutput
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:RinEdit>
+         -DARGS=--IF\ ${GPSTK_TEST_DATA_DIR}/arlm200a.15o\ --OF\ ${GPSTK_TEST_OUTPUT_DIR}/RinEdit_ValidOutput.out
+         -DTESTBASE=RinEdit_ValidOutput
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DCHECK_TOOL=$<TARGET_FILE:rowcheck>
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testValidOutput.cmake)
 ###############################################################################
 # TEST RinSum
 ###############################################################################
