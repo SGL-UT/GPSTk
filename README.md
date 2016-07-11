@@ -177,6 +177,8 @@ See the TESTING.txt for details.
 Help & Docs:
 ------------
 
+See the DOCUMENTATION.txt for details.
+
 Additional documentation and resources can be found at http://www.gpstk.org/, 
 including:
 
