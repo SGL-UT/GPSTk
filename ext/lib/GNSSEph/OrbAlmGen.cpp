@@ -842,6 +842,7 @@ namespace gpstk
  
          unsigned short prn = translateToSubjectPRN(isDT1, subframe, page); 
          subjectSV = SatID(prn,SatID::systemBeiDou);
+
          const unsigned startBits0[] = {50, 60};
          const unsigned numBits0[]   = { 2, 22};
          AHalf   = msg.asSignedDouble(startBits0, numBits0, 2, -11);
@@ -889,6 +890,9 @@ namespace gpstk
             // Assume the toa found in this almanac is either 
             // equal to the WNa, t_oa provided, or within a 
             // week of that time. 
+            // Furthermore, the toa must be no more than
+            // a day in the past
+            // wrt the tranmit time.
          unsigned short wk = WNa_full;
 
          if (toa!=t_oa)
@@ -898,6 +902,8 @@ namespace gpstk
             if (diff >  HALFWEEK) wk--;
          }
          ctToe = BDSWeekSecond(wk,toa,TimeSystem::BDT);
+         double diff = ctToe - msg.getTransmitTime();
+         if (diff < -SEC_PER_DAY) ctToe += FULLWEEK;
 
             // There is no stated fit interval or period of validity
             // for almanac data.  However, it is generally safe to

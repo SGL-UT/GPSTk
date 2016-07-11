@@ -48,6 +48,7 @@
 #include <string>
 
 #include "ObsID.hpp"
+#include "NavID.hpp"
 #include "SatID.hpp"
 #include "CommonTime.hpp"
 #include "Exception.hpp"
@@ -74,6 +75,13 @@ namespace gpstk
                     const std::string rxString,
                     const CommonTime& transmitTimeArg);
 
+      /// explicit constructor
+      PackedNavBits(const SatID& satSysArg, 
+                    const ObsID& obsIDArg,
+                    const NavID& navIDArg,
+                    const std::string rxString,
+                    const CommonTime& transmitTimeArg);
+
       PackedNavBits(const PackedNavBits& right);             // Copy constructor
       //PackedNavBits& operator=(const PackedNavBits& right); // Copy assignment
 
@@ -81,6 +89,7 @@ namespace gpstk
 
       void setSatID(const SatID& satSysArg);
       void setObsID(const ObsID& obsIDArg);
+      void setNavID(const NavID& navIDArg);
       void setRxID(const std::string rxString); 
       void setTime(const CommonTime& transmitTimeArg);
       void clearBits();
@@ -90,6 +99,9 @@ namespace gpstk
 
          /* Returns Observation type, Carrier, and Tracking Code */
       ObsID getobsID() const;
+
+         /* Return navigation message ID */ 
+      NavID getNavID() const; 
 
          /* Returns string defining the receiver that collected the data. 
             NOTE: This was a late addition to PackedNavBits and may not  
@@ -270,6 +282,7 @@ namespace gpstk
       static const unsigned int mmSAT  = 0x0002;  // Check SatID
       static const unsigned int mmOBS  = 0x0004;  // Check ObsID
       static const unsigned int mmRX   = 0x0008;  // Check Receiver ID
+      static const unsigned int mmNAV  = 0x0010;  // Check NavID
       static const unsigned int mmALL  = 0xFFFF;  // Check ALL metadata
       static const unsigned int mmNONE = 0x0000;  // NO metadata checks
       bool matchMetaData(const PackedNavBits& right,
@@ -403,6 +416,7 @@ namespace gpstk
    private:
       SatID satSys;            /**< System ID (based on RINEX defintions */
       ObsID obsID;             /**< Defines carrier and code tracked */
+      NavID navID;             /**< Defines the navigation message tracked */ 
       std::string rxID;        /**< Defines the receiver that collected the data */
       CommonTime transmitTime; /**< Time nav message is transmitted */
       std::vector<bool> bits;  /**< Holds the packed data */
