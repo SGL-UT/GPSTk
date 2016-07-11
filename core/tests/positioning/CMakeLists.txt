@@ -36,8 +36,8 @@ add_test(NAME PRSolve_ValidOutput
          -DARGS=--obs\ ${SD}/arlm200b.15o\ --eph\ ${SD}/test_input_sp3_nav_ephemerisData.sp3\ --sol\ GPS:12:WC\ --out\ ${TD}/PRSolve_ValidOutput.exp --log\ ${TD}/PRSolve_ValidOutput.log
          -DTESTBASE=PRSolve_ValidOutput
          -DTARGETDIR=${TD}
-         -DGPSTK_BINDIR=${PROJECT_BINARY_DIR}/core/apps/checktools/
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testValidOutput_RObs.cmake)
+         -DCHECK_TOOL=$<TARGET_FILE:rowcheck>
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testValidOutput.cmake)
 
 # Check that a missing Config file results in failure
 #add_test(NAME PRSolve_MissingInputCfg

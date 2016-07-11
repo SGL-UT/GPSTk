@@ -31,8 +31,8 @@ add_test(NAME mergeRinMet_ValidOutput
          -DARGS=-o\ ${TD}/mergeRinMet_ValidOutput.out\ ${SD}/arlm200a.15m\ ${SD}/arlm200b.15m
          -DTESTBASE=mergeRinMet_ValidOutput
          -DTARGETDIR=${TD}
-         -DGPSTK_BINDIR=${PROJECT_BINARY_DIR}/core/apps/checktools/
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testValidOutput_RMet.cmake)
+         -DCHECK_TOOL=$<TARGET_FILE:rmwcheck>
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testValidOutput.cmake)
 
 # Merge the same file twice. Should get the same file back.
 add_test(NAME mergeRinMet_2
@@ -89,8 +89,8 @@ add_test(NAME mergeRinNav_ValidOutput
          -DARGS=-o\ ${TD}/mergeRinNav_ValidOutput.out\ ${SD}/arlm200a.15n\ ${SD}/arlm200b.15n
          -DTESTBASE=mergeRinNav_ValidOutput
          -DTARGETDIR=${TD}
-         -DGPSTK_BINDIR=${PROJECT_BINARY_DIR}/core/apps/checktools/
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testValidOutput_RNav.cmake)
+         -DCHECK_TOOL=$<TARGET_FILE:rnwcheck>
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testValidOutput.cmake)
 
 # Merge the same file twice. Should get the same file back.
 add_test(NAME mergeRinNav_2
@@ -147,8 +147,8 @@ add_test(NAME mergeRinObs_ValidOutput
          -DARGS=-o\ ${TD}/mergeRinObs_ValidOutput.out\ ${SD}/arlm200a.15o\ ${SD}/arlm200b.15o
          -DTESTBASE=mergeRinObs_ValidOutput
          -DTARGETDIR=${TD}
-         -DGPSTK_BINDIR=${PROJECT_BINARY_DIR}/core/apps/checktools/
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testValidOutput_RObs.cmake)
+         -DCHECK_TOOL=$<TARGET_FILE:rowcheck>
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testValidOutput.cmake)
 
 # Merge the same file twice. Should get the same file back.
 add_test(NAME mergeRinObs_2

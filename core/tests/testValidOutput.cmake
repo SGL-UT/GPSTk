@@ -1,6 +1,5 @@
-# test ValidOutput RINEX Obs
+# test that output matches expected format
 
-# message(STATUS "${GPSTK_BINDIR}")
 IF(DEFINED ARGS)
    string(REPLACE " " ";" ARG_LIST ${ARGS})
 ENDIF(DEFINED ARGS)
@@ -13,10 +12,10 @@ if(HAD_ERROR)
 endif()
 
 # print the command for debugging purposes
-message(STATUS "running ${GPSTK_BINDIR}/rowcheck ${TARGETDIR}/${TESTBASE}.out")
+message(STATUS "running ${CHECK_TOOL} ${TARGETDIR}/${TESTBASE}.out")
 
-execute_process(COMMAND ${GPSTK_BINDIR}/rowcheck ${TARGETDIR}/${TESTBASE}.out
+execute_process(COMMAND ${CHECK_TOOL} ${TARGETDIR}/${TESTBASE}.out
                 RESULT_VARIABLE HAD_ERROR)
 if(HAD_ERROR)
-    message(FATAL_ERROR "Output was not Rinex Obs, exit code: ${HAD_ERROR}")
+    message(FATAL_ERROR "Output was not of the expected format, exit code: ${HAD_ERROR}")
 endif()
