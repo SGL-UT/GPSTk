@@ -84,9 +84,6 @@ namespace gpstk
       virtual bool addMessage(const OrbDataSys* eph)
          throw(InvalidRequest,Exception);
 
-     // virtual bool addMessage(const PackedNavBits& pnb)
-     //    throw(InvalidRequest,Exception);
-
       virtual void deleteMessage(const SatID& sat, 
                              const NavID& navtype,
                              const unsigned long UID, 
@@ -177,12 +174,26 @@ namespace gpstk
       /// description.
       /// Throws InvalidRequest if
       ///   - the satellite isn't in the store
-      //    - the NavID isn't in the store
+      ///   - the NavID isn't in the store
       ///   - if there are no message with the specified UID in the store
       std::list<const OrbDataSys*> findList(const SatID& sat, 
                                             const NavID& navtype,
                                             const unsigned long UID) const
          throw(InvalidRequest);
+      
+      /// Given a satellite, a system-specific message unique ID (UID), and a 
+      /// time, return pointers to the two messages in the time series that 
+      /// bound the given time. The lower bound is the first element and the 
+      /// upper bound the second. If the input time is bounded by the beginning 
+      /// or end of the time series, the return pair simply contains one 
+      /// element that is equal to NULL. If the specified time series does not 
+      /// exist or contains no elements, both elements of the pair are returned 
+      /// equal to NULL. Unlike other find* functions in this class, this 
+      /// function does not intentionally throw any exceptions.
+      std::pair<const OrbDataSys*, const OrbDataSys*> findBounds(const SatID& sat,
+                                                                 const NavID& navtype,
+                                                                 const unsigned long UID,
+                                                                 const CommonTime& t) const;
 
       /// Return a list of SatID object representing the satellites that
       /// are contained in the store.
@@ -245,6 +256,11 @@ namespace gpstk
         if (ods->beginValid>finalTime)               
           finalTime = ods->beginValid;
       }
+      
+      // This is a convenience method to insert items into the msgMap data
+      // structure. Users should not touch this function, and should work
+      // through addMessage(...) instead.
+      void insertToMsgMap(const OrbDataSys* ods);
 
    }; // end class
 
