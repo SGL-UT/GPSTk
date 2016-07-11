@@ -6,7 +6,8 @@ Contents:
 
 * Doxygen API Documentation - Automated Build
 * Doxygen API Documentation - Manual Build
-* LaTex User's Reference Manual
+* LaTex User's Reference Manual PDF
+* Application Folder Documentation
 
 
 Doxygen API Documentation - Automated Build:
@@ -20,12 +21,13 @@ Doxygen API Documentation - Automated Build:
         
         $ ./build.sh -d 
    
-   2b. Execute the build script to build the Complete (Core/Ext) Doxygen API Documentation & Improved Python Docstrings
+   2b. Execute the build script to build the Complete (Core/Ext) Doxygen API Documentation & 
+       Improved Python Docstrings
         
         $ ./build.sh -de
 
 
-Doxygen API Documentation & Improved Python Docstrings - Manual Build:
+Doxygen API Documentation - Manual Build:
 ----------------------------------------------------------------------
 
    1. Navigate to the root directory of the extract GPSTk file tree:
@@ -36,9 +38,10 @@ Doxygen API Documentation & Improved Python Docstrings - Manual Build:
 
 
 LaTex User's Reference Manual PDF:
-------------------------------
+----------------------------------
 
-To generate a PDF version of the GPSTk User's Guide, the source files must be compiled using a combination of perltex and latex. 
+To generate a PDF version of the GPSTk User's Guide, the source files must be compiled using a 
+combination of perltex and latex. 
 
    1. Navigate to the root directory of the extract GPSTk file tree, herein called $gpstk_root:
 
@@ -55,3 +58,13 @@ To generate a PDF version of the GPSTk User's Guide, the source files must be co
    4. Clean the usersguide directory of any files from compilation:
 
          $ make clean
+
+
+Application Folder Documentation:
+---------------------------------
+
+Documentation for individual applications can also be found in the source folders for all /core 
+applications.  Each /core/app folder contains a README markdown file meant for easy reference of 
+application functions and options without the need to generate the LaTex User's Reference Manual PDF.  
+The markdown has been designed for easy readability using a web browser or through a web service
+such as Gitlab, which will auto render any README.md file found in a source folder.
