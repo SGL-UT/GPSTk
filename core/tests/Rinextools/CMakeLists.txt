@@ -1,3 +1,4 @@
+set( TD ${GPSTK_TEST_OUTPUT_DIR} )
 ###############################################################################
 # TEST RinDump
 ###############################################################################
@@ -146,15 +147,17 @@ add_test(NAME RinEdit_Header
 #         -DARGS=--file\ ${SD}/timeconvert_2015_200_99.exp
 #         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
 
-# Take a valid Rinex file, do nothing, and ensure the printout is still RINEX
+# Test that the output of RinEdit_Header is a valid Rinex Obs file.
 add_test(NAME RinEdit_ValidOutput
          COMMAND ${CMAKE_COMMAND}
-         -DTEST_PROG=$<TARGET_FILE:RinEdit>
-         -DARGS=--IF\ ${GPSTK_TEST_DATA_DIR}/arlm200a.15o\ --OF\ ${GPSTK_TEST_OUTPUT_DIR}/RinEdit_ValidOutput.out
+         -DTEST_PROG=$<TARGET_FILE:rowcheck>
+         -DARGS=${TD}/RinEdit_Header.out
          -DTESTBASE=RinEdit_ValidOutput
-         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
-         -DCHECK_TOOL=$<TARGET_FILE:rowcheck>
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testValidOutput.cmake)
+         -DTARGETDIR=${TD}
+         -DNODIFF=1
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+set_tests_properties(RinEdit_ValidOutput PROPERTIES DEPENDS RinEdit_Header)
+
 ###############################################################################
 # TEST RinSum
 ###############################################################################

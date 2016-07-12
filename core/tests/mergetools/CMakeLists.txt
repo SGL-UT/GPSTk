@@ -25,14 +25,26 @@ add_test(NAME mergeRinMet_1
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinmerge.cmake)
 
 # Test that the output is a valid Rinex Met file.
+#add_test(NAME mergeRinMet_ValidOutput
+#         COMMAND ${CMAKE_COMMAND}
+#         -DTEST_PROG=$<TARGET_FILE:mergeRinMet>
+#         -DARGS=-o\ ${TD}/mergeRinMet_ValidOutput.out\ ${SD}/arlm200a.15m\ ${SD}/arlm200b.15m
+#         -DTESTBASE=mergeRinMet_ValidOutput
+#         -DTARGETDIR=${TD}
+#         -DCHECK_TOOL=$<TARGET_FILE:rmwcheck>
+#         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testValidOutput.cmake)
+
+
+# Test that the output of mergeRinMet_1 a valid Rinex Met file.
 add_test(NAME mergeRinMet_ValidOutput
          COMMAND ${CMAKE_COMMAND}
-         -DTEST_PROG=$<TARGET_FILE:mergeRinMet>
-         -DARGS=-o\ ${TD}/mergeRinMet_ValidOutput.out\ ${SD}/arlm200a.15m\ ${SD}/arlm200b.15m
+         -DTEST_PROG=$<TARGET_FILE:rmwcheck>
+         -DARGS=${TD}/mergeRinMet_1.out
          -DTESTBASE=mergeRinMet_ValidOutput
          -DTARGETDIR=${TD}
-         -DCHECK_TOOL=$<TARGET_FILE:rmwcheck>
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testValidOutput.cmake)
+         -DNODIFF=1
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+set_tests_properties(mergeRinMet_ValidOutput PROPERTIES DEPENDS mergeRinMet_1)
 
 # Merge the same file twice. Should get the same file back.
 add_test(NAME mergeRinMet_2
@@ -82,15 +94,17 @@ add_test(NAME mergeRinNav_1
          -DINFILE2=arlm200b.15n
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinmerge.cmake)
 
-# Test that the output is a valid Rinex Nav file. 
+# Test that the output of mergeRinNav_1 a valid Rinex Nav file.
 add_test(NAME mergeRinNav_ValidOutput
          COMMAND ${CMAKE_COMMAND}
-         -DTEST_PROG=$<TARGET_FILE:mergeRinNav>
-         -DARGS=-o\ ${TD}/mergeRinNav_ValidOutput.out\ ${SD}/arlm200a.15n\ ${SD}/arlm200b.15n
+         -DTEST_PROG=$<TARGET_FILE:rnwcheck>
+         -DARGS=${TD}/mergeRinNav_1.out
          -DTESTBASE=mergeRinNav_ValidOutput
          -DTARGETDIR=${TD}
-         -DCHECK_TOOL=$<TARGET_FILE:rnwcheck>
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testValidOutput.cmake)
+         -DNODIFF=1
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+set_tests_properties(mergeRinNav_ValidOutput PROPERTIES DEPENDS mergeRinNav_1)
+
 
 # Merge the same file twice. Should get the same file back.
 add_test(NAME mergeRinNav_2
@@ -140,15 +154,16 @@ add_test(NAME mergeRinObs_1
          -DINFILE2=arlm200b.15o
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinmerge.cmake)
 
-# Test that the output is a valid Rinex Obs file. 
+# Test that the output of mergeRinObs_1 a valid Rinex Obs file.
 add_test(NAME mergeRinObs_ValidOutput
          COMMAND ${CMAKE_COMMAND}
-         -DTEST_PROG=$<TARGET_FILE:mergeRinObs>
-         -DARGS=-o\ ${TD}/mergeRinObs_ValidOutput.out\ ${SD}/arlm200a.15o\ ${SD}/arlm200b.15o
+         -DTEST_PROG=$<TARGET_FILE:rowcheck>
+         -DARGS=${TD}/mergeRinObs_1.out
          -DTESTBASE=mergeRinObs_ValidOutput
          -DTARGETDIR=${TD}
-         -DCHECK_TOOL=$<TARGET_FILE:rowcheck>
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testValidOutput.cmake)
+         -DNODIFF=1
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+set_tests_properties(mergeRinObs_ValidOutput PROPERTIES DEPENDS mergeRinObs_1)
 
 # Merge the same file twice. Should get the same file back.
 add_test(NAME mergeRinObs_2
