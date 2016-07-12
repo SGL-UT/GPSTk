@@ -24,18 +24,7 @@ add_test(NAME mergeRinMet_1
          -DINFILE2=arlm200b.15m
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinmerge.cmake)
 
-# Test that the output is a valid Rinex Met file.
-#add_test(NAME mergeRinMet_ValidOutput
-#         COMMAND ${CMAKE_COMMAND}
-#         -DTEST_PROG=$<TARGET_FILE:mergeRinMet>
-#         -DARGS=-o\ ${TD}/mergeRinMet_ValidOutput.out\ ${SD}/arlm200a.15m\ ${SD}/arlm200b.15m
-#         -DTESTBASE=mergeRinMet_ValidOutput
-#         -DTARGETDIR=${TD}
-#         -DCHECK_TOOL=$<TARGET_FILE:rmwcheck>
-#         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testValidOutput.cmake)
-
-
-# Test that the output of mergeRinMet_1 a valid Rinex Met file.
+# Test that the output of mergeRinMet_1 is a valid Rinex Met file.
 add_test(NAME mergeRinMet_ValidOutput
          COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:rmwcheck>
@@ -94,7 +83,7 @@ add_test(NAME mergeRinNav_1
          -DINFILE2=arlm200b.15n
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinmerge.cmake)
 
-# Test that the output of mergeRinNav_1 a valid Rinex Nav file.
+# Test that the output of mergeRinNav_1 is a valid Rinex Nav file.
 add_test(NAME mergeRinNav_ValidOutput
          COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:rnwcheck>
@@ -154,7 +143,7 @@ add_test(NAME mergeRinObs_1
          -DINFILE2=arlm200b.15o
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinmerge.cmake)
 
-# Test that the output of mergeRinObs_1 a valid Rinex Obs file.
+# Test that the output of mergeRinObs_1 is a valid Rinex Obs file.
 add_test(NAME mergeRinObs_ValidOutput
          COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:rowcheck>
