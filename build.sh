@@ -190,7 +190,7 @@ if [ $build_docs ]; then
     log "Generating Doxygen files from C/C++ source ..."
     sed -e "s#^INPUT *=.*#INPUT = $sources#" -e "s#gpstk_sources#$sources#g" -e "s#gpstk_doc_dir#$build_root/doc#g" $repo/Doxyfile >$repo/doxyfoo
     sed -e "s#^INPUT *=.*#INPUT = $sources#" -e "s#gpstk_sources#$sources#g" -e "s#gpstk_doc_dir#$build_root/doc#g" $repo/Doxyfile | doxygen - >"$build_root"/Doxygen.log
-    tar -czf gpstk_doc_cpp.tgz -C doc/html .
+    tar -czf gpstk_doc_cpp.tgz -C "$build_root"/doc/html .
     
     if [[ -z $exclude_python && $build_ext ]] ; then
         log "Generating swig/python doc files from Doxygen output ..."
