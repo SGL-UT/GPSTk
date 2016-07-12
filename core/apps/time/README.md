@@ -90,6 +90,7 @@ Examples:
 ---------
 
 Convert RINEX file time.
+
     > timeconvert -R "05 06 1985 13:50:02"
         Month/Day/Year H:M:S 11/06/2010 13:00:00
         Modified Julian Date 55506.541666667
