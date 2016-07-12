@@ -3,6 +3,9 @@ NEWS
 
 GPS Toolkit News
 ------------------------------------------------------------------------------
+   July 12, 2016 . . . .  Release Candidate for Version 2.9.1 is frozen in the 
+                          repository 
+
    May 20, 2016  . . . .  Release Candidate for Version 2.9 is frozen in the 
                           repository 
 

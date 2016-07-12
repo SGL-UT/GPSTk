@@ -1,5 +1,178 @@
       #################################################
 
+Version 2.9.1   Tuesday, July 12, 2016
+
+   General modifications
+   ---------------------
+   - Documentation across the GPSTk have been revamped
+     - LaTex User's Reference Manual PDF has been updated
+        - Old applications and LaTex files removed
+        - Migrated documentation for applications in SGLTk
+        - Various information updated
+     - Documentation.md added for how-tos on building GPSTk documentation
+     - Application documentation added to each app directory, in markdown for easy reading and auto-rendering on Gitlab
+   - Additional Application and Unit tests
+   - This release includes new/modified source code comments for improved readability.
+   - Various Bug and Compile Warning Fixes
+
+   Modifications by Author
+   ---------------------
+
+Audric Terry (2):
+      Adding minIdentical messages class member along with accessor functions
+      Merge branch 'master' into issue_252_CNAV_Filter
+
+Bryan Parsons (50):
+      Merge branch 'issue_252_CNAV_Filter' into 'master'
+      Update AUTHORS.md
+      Merge branch 'issue_254' into 'master'
+      Merge branch 'issue_249' into 'master'
+      Merge branch 'issue_250_NavID' into 'master'
+      calgps application and application tests have migrated from /ext to /core
+      Migrated all mergetools applications (mergeRinMet, mergeRinNav, mergeRinObs) and application tests from /ext to /core
+      RinEdit and RinSum applications with application tests have been migrated from /ext to /core
+      Migrated all difftools (rmwdiff, rnwdiff, rowdiff, rinheaddiff) applications and application tests from /ext to /core.  This commit closes JIRA issues GPSTK-61 and GPSTk-160.
+      Merge branch 'doc_mod' into 'master'
+      Merge branch 'ext_core_migration' into 'master'
+      Adding newline to end of CNavFilterData.hpp to quiet Solaris warnings.
+      Merge branch 'issue_249' into 'master'
+      Merge branch 'issue_249' into 'master'
+      Merge branch 'abc_test' into 'master'
+      Migrated calgps back to /ext, as library dependencies proved too numerous and must be tested properly prior to full migration of app and library code (vdraw in this case).  Also, added core-only build test to gitlab-ci builds to catch any reverse dependencies between core and ext.
+      Migrate calgps tests from core to ext
+      Merge branch 'ext_core_migration' into 'master'
+      Merge branch 'issue_256_bc2sp3' into 'master'
+      Merge branch 'issue_257' into 'master'
+      Merge branch 'issue_257' into 'master'
+      Merge branch 'issue_249' into 'master'
+      Merge branch 'issue_252_CNAV_Filter' into 'master'
+      RINEX bug fix submitted by Brian Tolman.  Code originally assumed only one continuation line.
+      Merge branch 'tolman_fix' into 'master'
+      Calgps application successfully split.  Original Calgps with svg,postscript, and EPS support left in /ext/apps/timeand renamed to calgps_svg.  New calgps with no vdraw library support added to /core/apps/time as calgps.  Primary tests have been migrated to /core test suite, while eps, postscript, and svg tests were left in /ext.
+      Syncing 'master' into ext_core_migration prior to Merge Request
+      Reverted /ext calgps test names back to original.
+      Merge branch 'ext_core_migration' into 'master'
+      Merge branch 'rinex_bug' into 'master'
+      Updating Doxyfile for latest version of GPSTk.
+      Latex Users Manual cleanup, removed old and migrated documentation to SGLTk.
+      Cleaned up User's Manual, updating dates, names, tables, and other relevant data.
+      Changed README.txt to README.md.
+      Added in folder README.txt for difftools application directory.  Developer documentation for Gitlab server and easy reference without the need to build the Latex manual.
+      Merge branch 'issue_263_PNB_NavID' into 'master'
+      Merge branch 'issue_249' into 'master'
+      Git enforcing line endings to LF on commit.
+      Sync branch 'master' into doc_overhaul
+      Update diff-tools README.md
+      Added filetools - bc2sp3 documentation into apps/filetools folder.  Tweaked some markdown in difftools README
+      Application documentation for poscvt and PRSolve have been added to core/apps/positioning folder.  PRSolve documentation was migrated from pdf.
+      Update apps/positioning README.md for better readability
+      Moved PRSolve.pdf into /doc subdirectory in apps/positioning.
+      Updated Rinextools, positioning, and time app folders with README.md files for app descriptions.
+      DOCUMENTATION.md file added to root GPSTk folder for instructions on how to build Doxygen API documentations and LaTex Users Manual.
+      Updated info in DOCUMENTATION.md file.
+      Some formatting cleanup for documentation.
+      Migrated some SGLTk app documentation to SGLTk from GPSTk documentation.
+      Updated README.txt to README.md for proper markdown rendering for /core/apps/time folder.
+
+Conor Lindahl (3):
+      Making sure I can commit
+      Removed tester file
+      Edited README.md for timeconvert to match with help
+
+Jessica Rosenquest (3):
+      Created OrbSysGpsL_52 and renamed OrbDataSys_T.cpp as OrbSysStore_T.cpp.
+      Merge branch 'master' into issue_249
+      Merge branch 'issue_249' of repositories.arlut.utexas.edu:sgl/gpstk into issue_249
+
+Jon C. Little (13):
+      Robustifiying input
+      Commenting out ineffective tests
+      Backing out a change that shoudn't be required
+      dangling semicolon
+      Merging in master to abc_test
+      Merge branch 'master' into abc_test
+      Fixing xmitReadTest
+      Refactoring code so one class per file.     Refactored exception throwing so location information would be preserved.     Fixed some uninitialized variables.
+      Merge branch 'issue_254' into abc_test
+      Making -O2 default on builds
+      Merge branch 'master' into abc_test
+      Merge branch 'master' into abc_test
+      Using tilde for home dir expansion wasn't always working.
+
+Jon Little (17):
+      Making build work on hrtr
+      Added sanitize for the python bindings
+      Misc changes to fix parsing of bogus data in input files.
+      Using the address sanitizer in debug builds under gcc
+      supports just dumping config
+      Fixing the __str__ and __repr__ funcions for some classes.
+      Merging in changes from master
+      Stream output operator doesn't seem to stack.
+      Refactored test to use the test utilities macros
+      Tweaking the tolerances.
+      Providing a better way for the GPSTk build to communicate where the python bindings are located.
+      Fixing output of the phase shift header records in rinex v3
+      Adding a new obs type, freqIndex, for recording the GLONAS frequency offset index
+      Line ending removal
+      Removing DOS line endings
+      Merge branch 'master' into rinex_bug
+      removing missed merge flags
+
+renfrob (50):
+      First valid compile of initial CNav filters
+      Initial implementation of CNav simple filters
+      Merge branch 'master' into issue_252_CNAV_Filter
+      Adding reject cases and doubling the amount of data
+      Finishing initial implementation of CNavFilters
+      Various changes to get initial CNav Filter sucess
+      Adding debug print methods
+      Removing debug include
+      Merge branch 'master' into issue_252_CNAV_Filter
+      Adding SV ID 53, 54, 55, 57-62
+      Merge branch 'master' into issue_249
+      Adding a general means to create OrbDataSys objects
+      Remving OrbSysStoreGpsL in facor of OrbDataSysFactory
+      Clean-up terse mode output
+      Adding test for OrbDataSys classes
+      Changing string IDs for CNAV_L2 and CNAV_L5
+      Tweaking output format for dumpTerse
+      Adding OrbAlm, OrbAlmGen, and a store for OrbAlm classes
+      Adding a test for OrbAlmStore
+      Improving tests, adding tests, improvements to OrbAlmStore.find()
+      Complete version of OrbAlmStore_T
+      Merge branch 'master' into issue_249
+      Adding test for OrbAlm classes
+      Merge branch 'master' into issue_249
+      Fixing units in bc2sp3
+      Moving bc2sp3 from ext to core
+      Fixing end time calculation
+      Adding test cases for bc2sp3
+      Removing unused files
+      Add test for --msg and fixing error in same
+      Adding a 900s test for bc2sp3
+      Adding deriveLastXmit to OrbAlmStore
+      Merge branch 'master' into issue_256_bc2sp3
+      Additional tweaks for OrbAlmStore
+      Adding ability to retrieve list of SVs tranmitting a specific almanac
+      Fixing comments
+      Improving handling of almanac time
+      Adding precision to text output
+      Fixing error in almanac cracker
+      Merge branch 'master' into issue_249
+      Adding comments on BDS limitations
+      Adding NavID to PackedNavBits as part of issue_263
+      Adding test for PackedNavBits::invert()
+      Adding test for copyBits
+      Adding test for insertUnsignedLong
+      Fix CRLF problems
+      Adding CNAV MT33
+      Incorporting OrbSysGpsC_33 into OrbDataSysFactory
+      Adding MT30 to CNAV system data
+      Once again fixing a CRLF problem
+
+
+      #################################################
+
 Version 2.9   Friday, May 20, 2016
 
    General modifications
