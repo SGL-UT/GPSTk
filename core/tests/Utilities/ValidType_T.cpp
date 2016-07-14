@@ -8,7 +8,7 @@
 using namespace gpstk;
 class ValidType_T
 {
-public: 
+public:
    ValidType_T(){ eps = 1E-15;}// Default Constructor, set the precision value
    ~ValidType_T() {} // Default Desructor
 
@@ -23,12 +23,12 @@ public:
       TUASSERT(!vfloat0.is_valid());
 
       //Is the invalid Valid object's value 0?
-      TUASSERTFE(0.0, vfloat0.get_value());
+      TUASSERTFE(0.0f, vfloat0.get_value());
 
       ValidType<float> vfloat (5);
 
       //Does the get_value method return the correct value?
-      TUASSERTFE(5.0, vfloat.get_value());
+      TUASSERTFE(5.0f, vfloat.get_value());
 
       //Is the valid Valid object set as valid?
       TUASSERT(vfloat.is_valid());
@@ -74,7 +74,7 @@ public:
       TUASSERT(vfloat.get_value() == 10.);
 
       //Did the += operator change the object's valid bool?
-      TUASSERT(vfloat.is_valid());		
+      TUASSERT(vfloat.is_valid());
 
       TUCSM(" -= Operator");
 
