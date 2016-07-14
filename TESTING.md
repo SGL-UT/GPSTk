@@ -183,87 +183,88 @@ This is the program where the individual unit tests are stored. The file is brok
 #include <sstream>
 #include <cmath>
 
+using namespace gpstk;
 class ValidType_T
 {
 public: 
-   ValidType_T(){ eps = 1E-12;}// Default Constructor, set the precision value
+   ValidType_T(){ eps = 1E-15;}// Default Constructor, set the precision value
    ~ValidType_T() {} // Default Desructor
 
    int methodTest(void)
    {
-      TestUtil testFramework( "ValidType", "Various Methods", __FILE__, __LINE__ );
+      TUDEF( "ValidType", "isValid");
       std::string failMesg;
 
-      gpstk::ValidType<float> vfloat0;
+      ValidType<float> vfloat0;
 
-      failMesg = "Is the invalid Valid object set as valid?";
-      testFramework.assert(!vfloat0.is_valid(), failMesg, __LINE__);
+      //Is the invalid Valid object set as valid?
+      TUASSERT(!vfloat0.is_valid());
 
-      failMesg = "Is the invalid Valid object's value 0?";
-      testFramework.assert(std::abs(vfloat0.get_value()) < eps, failMesg, __LINE__);
+      //Is the invalid Valid object's value 0?
+      TUASSERTFE(0.0, vfloat0.get_value());
 
-      gpstk::ValidType<float> vfloat (5);
+      ValidType<float> vfloat (5);
 
-      failMesg = "Does the get_value method return the correct value?";
-      testFramework.assert(vfloat.get_value() == 5, failMesg, __LINE__);
+      //Does the get_value method return the correct value?
+      TUASSERTFE(5.0, vfloat.get_value());
 
-      failMesg = "Is the valid Valid object set as valid?";
-      testFramework.assert(vfloat.is_valid(), failMesg, __LINE__);
+      //Is the valid Valid object set as valid?
+      TUASSERT(vfloat.is_valid());
 
       vfloat.set_valid(false);
 
-      failMesg = "Was the valid Valid object correctly set to invalid?";
-      testFramework.assert(!vfloat.is_valid(), failMesg, __LINE__);
+      //Was the valid Valid object correctly set to invalid?
+      TUASSERT(!vfloat.is_valid());
 
-      return testFramework.countFails();
+      TURETURN();
    }
 
    int operatorTest(void)
    {
-      TestUtil testFramework( "ValidType", "== Operator", __FILE__, __LINE__ );
+      TUDEF( "ValidType", " == Operator");
       std::string failMesg;
 
-      gpstk::ValidType<float> Compare1 (6.);
-      gpstk::ValidType<float> Compare2 (6.);
-      gpstk::ValidType<float> Compare3 (8.);
-      gpstk::ValidType<int> Compare4 (6);
-      gpstk::ValidType<float> vfloat;
+      ValidType<float> Compare1 (6.);
+      ValidType<float> Compare2 (6.);
+      ValidType<float> Compare3 (8.);
+      ValidType<int> Compare4 (6);
+      ValidType<float> vfloat;
 
-      failMesg = "Are two equvalent objects equal?";
-      testFramework.assert(Compare1 == Compare2, failMesg, __LINE__);
+      //Are two equvalent objects equal?
+      TUASSERT(Compare1 == Compare2);
 
-      failMesg = "Are two non-equvalent objects equal?";
-      testFramework.assert(Compare1 != Compare3, failMesg, __LINE__);
+      //Are two non-equvalent objects equal?
+      TUASSERT(Compare1 != Compare3);
 
       vfloat = 7.;
 
-      testFramework.changeSourceMethod("= Operator");
-      failMesg = "Did the = operator store the value correctly?";
-      testFramework.assert(vfloat.get_value() == 7., failMesg, __LINE__);
+      TUCSM(" = Operator");
+      //Did the = operator store the value correctly?
+      TUASSERT(vfloat.get_value() == 7.);
 
-      failMesg = "Did the = operator set the object as valid?";
-      testFramework.assert(vfloat.is_valid(), failMesg, __LINE__);
+      //Did the = operator set the object as valid?
+      TUASSERT(vfloat.is_valid());
 
-      testFramework.changeSourceMethod("+= Operator");
+      TUCSM(" += Operator");
 
       vfloat += 3.;
-      failMesg = "Did the += operator store the value correctly?";
-      testFramework.assert(vfloat.get_value() == 10., failMesg, __LINE__);
+      //Did the += operator store the value correctly?
+      TUASSERT(vfloat.get_value() == 10.);
 
-      failMesg = "Did the += operator change the object's valid bool?";
-      testFramework.assert(vfloat.is_valid(), failMesg, __LINE__);		
+      //Did the += operator change the object's valid bool?
+      TUASSERT(vfloat.is_valid());		
 
-      testFramework.changeSourceMethod("-= Operator");
+      TUCSM(" -= Operator");
 
       vfloat -= 5.;
 
-      failMesg = "Did the -= operator store the value correctly?";
-      testFramework.assert(vfloat.get_value() == 5., failMesg, __LINE__);
+      //Did the -= operator store the value correctly?
+      TUASSERT(vfloat.get_value() == 5.);
 
-      failMesg = "Did the -= operator change the object's valid bool?";
-      testFramework.assert(vfloat.is_valid(), failMesg, __LINE__);
+      //Did the -= operator change the object's valid bool?
+      TUASSERT(vfloat.is_valid());
 
-      testFramework.changeSourceMethod("<< Operator");
+      TUCSM(" << Operator");
 
       vfloat = 11;
 
@@ -276,8 +277,8 @@ public:
 
       stringCompare = "11";
 
-      failMesg = "Did the << operator ouput valid object correctly?";
-      testFramework.assert(stringCompare == stringOutput, failMesg, __LINE__);
+      //Did the << operator ouput valid object correctly?
+      TUASSERT(stringCompare == stringOutput);
 
       streamOutput.str("");	// Resetting stream
       vfloat.set_valid(false);
@@ -287,10 +288,10 @@ public:
 
       stringCompare = "Unknown";
 
-      failMesg = " Did the << operator output invalid object correctly?";
-      testFramework.assert(stringCompare == stringOutput, failMesg, __LINE__);
+      // Did the << operator output invalid object correctly?
+      TUASSERT(stringCompare == stringOutput);
 
-      return testFramework.countFails();
+      TURETURN();
    }
 
 private:
@@ -299,17 +300,76 @@ private:
 
 int main() //Main function to initialize and run all tests above
 {
-	int check = 0, errorCounter = 0;
+	int errorTotal = 0;
 	ValidType_T testClass;
 
-	check = testClass.methodTest();
-	errorCounter += check;
+	errorTotal += testClass.methodTest();
+	errorTotal += testClass.operatorTest();
 
-	check = testClass.operatorTest();
-	errorCounter += check;
+	std::cout << "Total Failures for " << __FILE__ << ": " << errorTotal << std::endl;
 
-	std::cout << "Total Failures for " << __FILE__ << ": " << errorCounter << std::endl;
-
-	return errorCounter; //Return the total number of errors
+	return errorTotal; //Return the total number of errors
 }
+```
+
+Looking at the Results
+----------------------
+
+The results are stored in the build directory's Testing/Temporary/LastTest.log file. Here are the snippets of that file in relation
+to the two examples.
+
+##### Application Test Results
+```
+...
+187/205 Testing: rmwcheck_Invalid_1
+187/205 Test: rmwcheck_Invalid_1
+Command: "/usr/bin/cmake" "-DTEST_PROG=/home/nfitz/git/appUnitTesting/gpstk/build/hpub5-moreAppUnitTests/core/apps/checktools/rmwcheck" "-DSOURCEDIR=/home/nfitz/git/appUnitTesting/gpstk/data" "-DTARGETDIR=/home/nfitz/git/appUnitTesting/gpstk/build/hpub5-moreAppUnitTests/Testing/Temporary" "-DNODIFF=1" "-DARGS=/home/nfitz/git/appUnitTesting/gpstk/data/arlm200a.15n" "-DGPSTK_BINDIR=" "-P" "/home/nfitz/git/appUnitTesting/gpstk/core/tests/checktools/../testfailexp.cmake"
+Directory: /home/nfitz/git/appUnitTesting/gpstk/build/hpub5-moreAppUnitTests/core/tests/checktools
+"rmwcheck_Invalid_1" start time: Jul 14 10:32 CDT
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.04 sec
+----------------------------------------------------------
+Test Passed.
+"rmwcheck_Invalid_1" end time: Jul 14 10:32 CDT
+"rmwcheck_Invalid_1" time elapsed: 00:00:00
+----------------------------------------------------------
+...
+```
+
+##### Unit Test Results
+```
+...
+70/205 Testing: Utilities_ValidType
+70/205 Test: Utilities_ValidType
+Command: "/home/nfitz/git/appUnitTesting/gpstk/build/hpub5-moreAppUnitTests/core/tests/Utilities/ValidType_T"
+Directory: /home/nfitz/git/appUnitTesting/gpstk/build/hpub5-moreAppUnitTests/core/tests/Utilities
+"Utilities_ValidType" start time: Jul 14 10:32 CDT
+Output:
+----------------------------------------------------------
+GPSTkTest, Class=ValidType, Method=isValid, testFile=ValidType_T.cpp, testLine=23, subtest=1, failBit=0
+GPSTkTest, Class=ValidType, Method=isValid, testFile=ValidType_T.cpp, testLine=26, subtest=2, failBit=0
+GPSTkTest, Class=ValidType, Method=isValid, testFile=ValidType_T.cpp, testLine=31, subtest=3, failBit=0
+GPSTkTest, Class=ValidType, Method=isValid, testFile=ValidType_T.cpp, testLine=34, subtest=4, failBit=0
+GPSTkTest, Class=ValidType, Method=isValid, testFile=ValidType_T.cpp, testLine=39, subtest=5, failBit=0
+GPSTkTest, Class=ValidType, Method=== Operator, testFile=ValidType_T.cpp, testLine=56, subtest=1, failBit=0
+GPSTkTest, Class=ValidType, Method=== Operator, testFile=ValidType_T.cpp, testLine=59, subtest=2, failBit=0
+GPSTkTest, Class=ValidType, Method== Operator, testFile=ValidType_T.cpp, testLine=65, subtest=3, failBit=0
+GPSTkTest, Class=ValidType, Method== Operator, testFile=ValidType_T.cpp, testLine=68, subtest=4, failBit=0
+GPSTkTest, Class=ValidType, Method=+= Operator, testFile=ValidType_T.cpp, testLine=74, subtest=5, failBit=0
+GPSTkTest, Class=ValidType, Method=+= Operator, testFile=ValidType_T.cpp, testLine=77, subtest=6, failBit=0
+GPSTkTest, Class=ValidType, Method=-= Operator, testFile=ValidType_T.cpp, testLine=84, subtest=7, failBit=0
+GPSTkTest, Class=ValidType, Method=-= Operator, testFile=ValidType_T.cpp, testLine=87, subtest=8, failBit=0
+GPSTkTest, Class=ValidType, Method=<< Operator, testFile=ValidType_T.cpp, testLine=103, subtest=9, failBit=0
+GPSTkTest, Class=ValidType, Method=<< Operator, testFile=ValidType_T.cpp, testLine=114, subtest=10, failBit=0
+Total Failures for /home/nfitz/git/appUnitTesting/gpstk/core/tests/Utilities/ValidType_T.cpp: 0
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"Utilities_ValidType" end time: Jul 14 10:32 CDT
+"Utilities_ValidType" time elapsed: 00:00:00
+----------------------------------------------------------
+...
 ```
