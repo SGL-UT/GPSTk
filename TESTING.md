@@ -15,9 +15,20 @@ in mind:
 
 All testing is performed using cmake/ctest. This allows the testing to function on all supported platforms.
 
-The goal is to have some level of testing performed on all classes and applications in the GPSTk core. It is
-encouraged that tests be written for all developed code whether it be in the core or ext. In general an 'entrance
-criteria' for code to be included in the core is that it is tested and stable.
+The goal is to have some level of testing performed on all classes and applications in the GPSTk core. 
+In fact, some testing is a requirement for the classes and applications to be in core. However, it is
+encouraged that tests be written for all developed code whether it be in the core or ext. 
+
+In general, content in core is tested and stable. This stability has two sides. First the content
+in core will be stable in the sense that the features currently expressed are functioning according 
+to the tests' expectations. In addition, content in core will also be stable in the sense that any 
+changes to the interfaces with the content need to be agreed upon by the community. Therefore, the 
+extent of testing required is highly dependent on the needs of those who wish the content to be in core.
+Most importantly is that the testing cover whatever functionality is vital to the production of whatever 
+software uses the toolkit. In this way the content is ensured to be functioning and can be used by
+other software with the confidence that the interfaces will not be shifting in each release of the toolkit. 
+
+
 
 
 How to execute unit tests
