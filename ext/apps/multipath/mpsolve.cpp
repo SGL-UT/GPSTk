@@ -15,7 +15,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -23,13 +23,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -65,110 +65,138 @@
 #include "Fillable.hpp"
 #include "FileHunter.hpp"
 #include "FileSpec.hpp"
-//
 
 // Special to this application
 #include "SparseBinnedStats.hpp"
 #include "DenseBinnedStats.hpp"
 
 void dumpRaw(std::ostream& ostr, const gpstk::ObsArray& oa, bool numeric);
-void writeStats(std::ostream& ostr, 
-                const gpstk::SparseBinnedStats<double>& sbs, 
+void writeStats(std::ostream& ostr,
+                const gpstk::SparseBinnedStats<double>& sbs,
                 bool numeric, bool elevation=true);
 
 using namespace std;
 using namespace gpstk;
 using namespace ValarrayUtils;
 using namespace StringUtils;
-
-// I added these
 using namespace vdraw;
 using namespace vplot;
-//
 
-void plotAzElSurf(const DenseBinnedStats<double>& mstats,
-double minAz, double maxAz, int azBinSize,
-double minEl, double maxEl, int elBinSize,
-bool view=false);
+void plotAzElSurf(
+      const DenseBinnedStats<double>& mstats,
+      double minAz, double maxAz, int azBinSize,
+      double minEl, double maxEl, int elBinSize,
+      bool view=false);
+
 void dumpRaw(ostream& ostr, const ObsArray& oa, bool numeric);
-void writeStats(ostream& ostr, const SparseBinnedStats<double>& sbs, valarray<double>& stDevStats, valarray<double>& meanStats, bool numeric, bool elevation=true, bool plot=true);
-int findIntersection(valarray<double>& elevLow, valarray<double>& azimLow, valarray<double>& obsLow, valarray<double>& elevHigh, valarray<double>& azimHigh, valarray<double>& obsHigh, long& idx_i, long& idx_j, double& eint, double& aint, long& intindex);
+
+void writeStats(
+      ostream& ostr,
+      const SparseBinnedStats<double>& sbs,
+      valarray<double>& stDevStats, valarray<double>& meanStats,
+      bool numeric, bool elevation=true, bool plot=true);
+
+int findIntersection(
+      valarray<double>& elevLow,  valarray<double>& azimLow,  valarray<double>& obsLow,
+      valarray<double>& elevHigh, valarray<double>& azimHigh, valarray<double>& obsHigh,
+      long& idx_i, long& idx_j, double& eint, double& aint, long& intindex);
+
 void removeBiases(ObsArray& oa, bool verbose);
 
 int main(int argc, char *argv[])
 {
-
    try
    {
       // Default difference that isolates multipath
       std::string mp_formula="P1-wl1*L1+2/(1-gamma)*(wl1*L1-wl2*L2)";
+
       // Default minimum length for a pass for use solution
       double minPassLength = 300;
-      double angInterval = 15;
-      double upperZeroMeanElevation = 15; 
-      
 
-      CommandOptionNoArg helpOption('h',"help","Display argument list",false);
+      // Degrees per bin
+      double angInterval = 15;
+
+      // Degrees
+      double upperZeroMeanElevation = 15;
+
+      CommandOptionNoArg helpOption('h',"help",
+         "Display argument list",false);
+
       CommandOptionNoArg verboseOption('v',"verbose",
          "Verbose display of processing status",false);
+
       CommandOptionNoArg rawOption('r',"raw",
          "Output raw combinations not statistics",false);
+
       CommandOptionNoArg numericOption('n',"numeric",
          "Format the output for numerical packages",false);
+
       CommandOptionNoArg azimuthOption('a',"azimuth",
          "Compute statistics binned by azimuth instead of elevation",false);
+
       CommandOptionNoArg dualFrequencyMethodOption('d',"dfm",
          "Performs dual-frequency method",false);
+
       CommandOptionNoArg completeOption('c',"complete",
          "Consider multiple inputs as single input",false);
 
-      CommandOptionWithAnyArg obsFileOption('o',"obs","RINEX observation file",true);
+      CommandOptionWithAnyArg obsFileOption('o',"obs",
+         "RINEX observation file",true);
+
       CommandOptionWithAnyArg navFileOption('e',"nav",
          "RINEX navigation (ephemeris) file",true);
+
       CommandOptionWithAnyArg binOption('b',"bin",
-         "Defines a bin. Eliminates the default bins. Repeated use of this option defines additional bins. Value is min,max. Ex.: -b 10,90",false);
+         "Defines a bin. Eliminates the default bins. Repeated use of this "
+         "option defines additional bins. Value is min,max. Ex.: -b 10,90",false);
 
       CommandOptionWithAnyArg mpOption('m',"multipath",
          "Dual frequency multipath combination to use. Default is " +
          mp_formula,false);
+
       mpOption.setMaxCount(1);
 
-      CommandOptionWithAnyArg
-	uzOption('u',
-		 "upper",
-		 "Set the upper limit on elevations assumed to have a zero mean multipath. Units degrees. Default is " +  asString(upperZeroMeanElevation,1)+ " degrees",
-		 false);
+      CommandOptionWithAnyArg	uzOption('u',"upper",
+         "Set the upper limit on elevations assumed to have a zero mean "
+         "multipath. Units degrees. Default is " +
+         asString(upperZeroMeanElevation,1) + " degrees", false);
       uzOption.setMaxCount(1);
 
       CommandOptionWithAnyArg plotOption('p',"plot",
-         "Creates a surface plot with azimuth and elevation bins. The number of azimuth bins and elevation bins must be entered. Value is number of azimuth bins and number of elevation bins. Ex.: -p 36,6",false);
+         "Creates a surface plot with azimuth and elevation bins. The number "
+         "of azimuth bins and elevation bins must be entered. Value is number "
+         "of azimuth bins and number of elevation bins. Ex.: -p 36,6",false);
 
       CommandOptionWithAnyArg fileOption('f',"file",
-         "Creates a list of input files meeting a range of date criteria. The day of year and year for the beginning and ending range must be entered. Input is beginning day of year and year, and then ending day of year and year. Ex.: -f 001,2009,007,2010",false);
+         "Creates a list of input files meeting a range of date criteria. "
+         "The day of year and year for the beginning and ending range must "
+         "be entered. Input is beginning day of year and year, and then "
+         "ending day of year and year. Ex.: -f 001,2009,007,2010",false);
+      fileOption.setMaxCount(1);
 
-      CommandOptionWithNumberArg
-         lengthOption('l',"length",string("Minimum length in seconds for an ")+
-         string("overhead pass to be used. Default value is ") +
-         StringUtils::asString(minPassLength, 1) +
-         string(" seconds."), false);
+      CommandOptionWithNumberArg lengthOption('l',"length",
+         "Minimum length in seconds for an overhead pass to be used. Default "
+         "value is " + StringUtils::asString(minPassLength, 1) + " seconds.",false);
       lengthOption.setMaxCount(1);
 
-      CommandOptionWithNumberArg
-         angWidthOption('w',"width",string("Width of angular bins to use. ")+
-         string("If used, defines regular, nonoverlapping bins of ") +
-         string("azimuth and/or elevation. Default value is ") +
-         StringUtils::asString(angInterval, 2) +
-         string(" degrees."), false);
+      CommandOptionWithNumberArg angWidthOption('w',"width",
+         "Width of angular bins to use. If used, defines regular, nonoverlapping "
+         "bins of azimuth and/or elevation. Default value is " +
+         StringUtils::asString((int)angInterval) + " degrees.",false);
       angWidthOption.setMaxCount(1);
 
       CommandOptionNoArg viewOption(0,"view",
          "Launch viewer to see the plot (only valid with plot option).",false);
 
-      CommandOptionParser cop("GPSTk Multipath Environment Evaluator. Computes statistical model of a dual frequency multipath combination. The model is a function of azimuth and/or elevation. By default the model presented is second order statistics (std. deviation), sorted into bins of elevation.");
+      CommandOptionParser cop("GPSTk Multipath Environment Evaluator. Computes "
+         "statistical model of a dual frequency multipath combination. The "
+         "model is a function of azimuth and/or elevation. By default the "
+         "model presented is second order statistics (std. deviation), "
+         "sorted into bins of elevation.");
 
       cop.parseOptions(argc, argv);
 
-      if(helpOption.getCount())
+      if (helpOption.getCount())
       {
          cop.displayUsage(cout);
          return 0;
@@ -181,6 +209,36 @@ int main(int argc, char *argv[])
          return 1;
       }
 
+      if (uzOption.getCount()>0)
+      {
+         upperZeroMeanElevation = StringUtils::asDouble(uzOption.getValue()[0]);
+         if ((upperZeroMeanElevation < 0.0) || (upperZeroMeanElevation > 90.0))
+         {
+            cerr << "Invalid upper limit value: " << upperZeroMeanElevation << endl;
+            return 1;
+         }
+      }
+
+      if (lengthOption.getCount()>0)
+      {
+         minPassLength = StringUtils::asDouble(lengthOption.getValue()[0]);
+         if (minPassLength < 0.0)
+         {
+            cerr << "Invalid length value: " << (int)minPassLength << endl;
+            return 1;
+         }
+      }
+
+      if (angWidthOption.getCount()>0)
+      {
+         angInterval = StringUtils::asDouble(angWidthOption.getValue()[0]);
+         if (angInterval < 1.0)
+         {
+            cerr << "Invalid width value: " << (int)angInterval << endl;
+            return 1;
+         }
+      }
+
       CommonTime now = SystemTime();
 
       bool verbose=(verboseOption.getCount()>0);
@@ -191,7 +249,8 @@ int main(int argc, char *argv[])
 
       if (!numeric)
       {
-         cout << "Multipath Environment Evaluation Tool, a GPSTk utility" << endl << endl;
+         cout << "Multipath Environment Evaluation Tool, a GPSTk utility"
+              << endl << endl;
       }
 
       if ( (verbose) && (!numeric))
@@ -205,14 +264,14 @@ int main(int argc, char *argv[])
       if (mpOption.getCount()>0)
       {
          mp_formula = mpOption.getValue()[0];
+         if (mp_formula.size() == 0)
+         {
+            cerr << "Invalid multipath equation" << endl;
+            return 1;
+         }
       }
 
       oa.add(mp_formula);
-
-      if (uzOption.getCount()>0)
-      {
-	 upperZeroMeanElevation	= asDouble(uzOption.getValue()[0]);
-      }
 
       vector<string> obsList;
       vector<string> navList;
@@ -224,53 +283,84 @@ int main(int argc, char *argv[])
          string endingDay;
          string endingYear;
 
-         // The fileOption should have a max count of 1 so this loop is unneccesary maybe even dangerous.
-         // You still want to use this logic. You don't need the STringUtils namespace anymore as I put that at the top.
-         for (size_t k=0 ; k<fileOption.getValue().size() ; k++)
+         bool fileOptValueOK = false;
+         string temp = fileOption.getValue()[0];
+         string::size_type comma1 = temp.find(',');
+         if ((comma1 != string::npos) && (comma1 < temp.size()-1))
          {
-            string temp = fileOption.getValue()[k];
-            beginningDay = StringUtils::word(temp,0,',');
-            beginningYear = StringUtils::word(temp,1,',');
-            endingDay = StringUtils::word(temp,2,',');
-            endingYear = StringUtils::word(temp,3,',');
-        
-            int beginDOY = StringUtils::asInt(beginningDay);
-            int beginY = StringUtils::asInt(beginningYear);
-            int endDOY = StringUtils::asInt(endingDay);
-            int endY = StringUtils::asInt(endingYear);
-
-            CommonTime firstDay = CommonTime::BEGINNING_OF_TIME;
-            CommonTime lastDay = CommonTime::END_OF_TIME;
-            firstDay=YDSTime(beginY, beginDOY);
-            lastDay=YDSTime(endY, endDOY);
-
-            // The program won't run without an obsFileOption , don't need to check
-            if (obsFileOption.getCount()>0)
+            beginningDay = temp.substr(0,comma1);
+            string::size_type comma2 = temp.find(',', comma1+1);
+            if ((comma2 != string::npos) && (comma2 < temp.size()-1))
             {
-               for (size_t i=0 ; i<obsFileOption.getCount() ; i++)
+               beginningYear = temp.substr(comma1+1, comma2);
+               string::size_type comma3 = temp.find(',', comma2+1);
+               if ((comma3 != string::npos) && (comma3 < temp.size()-1))
                {
-                  FileHunter fhobs(obsFileOption.getValue()[i]);
-                  vector<string> obsListNew = fhobs.find(firstDay, lastDay, FileSpec::ascending);
-                  obsList.insert(obsList.end(), obsListNew.begin(), obsListNew.end());
-
+                  endingDay = temp.substr(comma2+1, comma3);
+                  endingYear = temp.substr(comma3+1);
+                  fileOptValueOK = true;
                }
             }
+         }
+         if (!fileOptValueOK)
+         {
+            cerr << "Invalid file option syntax" << endl;
+            return 1;
+         }
 
-            if (navFileOption.getCount()>0)
+         int beginDOY = StringUtils::asInt(beginningDay);
+         int beginY = StringUtils::asInt(beginningYear);
+         int endDOY = StringUtils::asInt(endingDay);
+         int endY = StringUtils::asInt(endingYear);
+         if (  (beginDOY < 1) || (beginDOY > 365)
+            || (endDOY < 1) || (endDOY > 365))
+         {
+            cerr << "Invalid file option day-of-year" << endl;
+            return 1;
+         }
+         if (  (beginY < 1980) || (endY < 1980))
+         {
+            cerr << "Invalid file option year" << endl;
+            return 1;
+         }
+
+         CommonTime firstDay = CommonTime::BEGINNING_OF_TIME;
+         CommonTime lastDay = CommonTime::END_OF_TIME;
+         firstDay=YDSTime(beginY, beginDOY);
+         lastDay=YDSTime(endY, endDOY);
+         if (firstDay > lastDay)
+         {
+            cerr << "First file time is greater than last file time" << endl;
+            return 1;
+         }
+
+         // The program won't run without an obsFileOption , don't need to check
+         if (obsFileOption.getCount()>0)
+         {
+            for (size_t i=0 ; i<obsFileOption.getCount() ; i++)
             {
-               for (size_t i=0 ; i<navFileOption.getCount() ; i++)
-               {
-                  FileHunter fhnav(navFileOption.getValue()[i]);
-                  vector<string> navListNew = fhnav.find(firstDay, lastDay, FileSpec::ascending);
-                  navList.insert(navList.end(),navListNew.begin(), navListNew.end());
-               }
-            }
-	 }
-      }
+               FileHunter fhobs(obsFileOption.getValue()[i]);
+               vector<string> obsListNew = fhobs.find(firstDay, lastDay, FileSpec::ascending);
+               obsList.insert(obsList.end(), obsListNew.begin(), obsListNew.end());
 
-      if ((verbose) && !numeric)
+            }
+         }
+
+         if (navFileOption.getCount()>0)
+         {
+            for (size_t i=0 ; i<navFileOption.getCount() ; i++)
+            {
+               FileHunter fhnav(navFileOption.getValue()[i]);
+               vector<string> navListNew = fhnav.find(firstDay, lastDay, FileSpec::ascending);
+               navList.insert(navList.end(),navListNew.begin(), navListNew.end());
+            }
+         }
+      }  // if (fileOption)
+
+      if (verbose && !numeric)
       {
-	cout << endl << "Using this combination for multipath: " <<mp_formula<<endl;
+         cout << endl << "Using this combination for multipath: "
+              << mp_formula<<endl;
       }
 
       if (!fileoption)
@@ -280,48 +370,54 @@ int main(int argc, char *argv[])
       }
       double fileCounter = 0;
 
-                                 // while processing files
-      while (fileCounter<obsList.size())
+      // while processing files
+      while (fileCounter < obsList.size())
       {
-         if (complete)
+         try
          {
-            oa.load(obsList,navList);
-            fileCounter=obsList.size();
+            if (complete)
+            {
+               oa.load(obsList,navList);
+               fileCounter=obsList.size();
+            }
+            else
+            {
+               if (verbose)
+                  cout << endl << "Processing obs file "
+                       << obsList[fileCounter] << endl;
+
+               oa.load(obsList[fileCounter],navList[fileCounter]);
+               fileCounter++;
+            }
          }
-         else
+         catch (gpstk::Exception& exc)
          {
-            if (verbose)
-               cout << endl << "Processing obs file " << obsList[fileCounter] << endl;
-            oa.load(obsList[fileCounter],navList[fileCounter]);
-            fileCounter++;
+            cerr << exc << endl;
+            return 1;
          }
 
          size_t originalLength = oa.getNumSatEpochs();
 
-         if ((!numeric)&& (verbose))
+         if (!numeric && verbose)
          {
-            cout << "Editing points with loss of lock indication and pass with short lengths." << endl;
+            cout << "Editing points with loss of lock indication and pass "
+                 << "with short lengths." << endl;
          }
 
-                                 // lli stands for: loss of lock indication
+         // lli stands for: loss of lock indication
          std::valarray<bool> removePts = oa.lli;
-         if (lengthOption.getCount()>0)
-         {
-            minPassLength =  StringUtils::asDouble(lengthOption.getValue()[0]);
-         }
 
          set<long> allpasses = unique(oa.pass);
          for (set<long>::iterator i=allpasses.begin() ; i!=allpasses.end() ; i++)
          {
-            if (oa.getPassLength(*i)<minPassLength)
+            if (oa.getPassLength(*i) < minPassLength)
             {
                removePts = removePts || (oa.pass==*i);
             }
          }
 
          oa.edit(removePts);
-      allpasses = unique(oa.pass); // TODO: ObsArray should maintain its own pass list.
-
+         allpasses = unique(oa.pass);  // TODO: ObsArray should maintain its own pass list.
 
          // Now only long passes remain.
          // Next use robust stats to remove cycle slips
@@ -332,41 +428,72 @@ int main(int argc, char *argv[])
          allpasses = unique(oa.pass);
 
          // Adjust remaining passes to the median.
-         if ((!numeric)&& (verbose))
+         if (!numeric && verbose)
          {
-	   cout << "Computing the median of each pass and adjusting the pass by that value." << endl;
-	 }
-         
-         for (set<long>::iterator i=allpasses.begin() ; 
-	      i!=allpasses.end() ; i++)
+            cout << "Computing the median of each pass and adjusting "
+                 << "the pass by that value." << endl;
+         }
+
+         for (set<long>::iterator i=allpasses.begin(); i!=allpasses.end(); i++)
          {
- 	    // Storage for robust statistics
-	    double median, mad; 
-            
             valarray<bool> thisPass = (oa.pass==*i);
             valarray<double> s = oa.observation[thisPass];
-            QSort(&s[0],s.size());
-            mad = Robust::MedianAbsoluteDeviation(&s[0],s.size(),median);
-            
-            valarray<double> mpVals = oa.observation[thisPass];
-            mpVals -= median;
-            oa.observation[thisPass]=mpVals;
+            if (s.size()>1)
+            {
+               double median, mad;
+
+               QSort(&s[0],s.size());
+               try
+               {
+                  mad = Robust::MedianAbsoluteDeviation(&s[0],s.size(),median);
+               }
+               catch (gpstk::Exception& exc)
+               {
+                  cerr << exc << endl;
+                  return 1;
+               }
+
+               valarray<double> mpVals = oa.observation[thisPass];
+               mpVals -= median;
+               oa.observation[thisPass]=mpVals;
+            }
+            else if (s.size()>0)
+            {
+               oa.observation[thisPass]=0.0;
+            }
          }
 
          // Now recompute the MAD
          double allMedian, allMad;
          valarray<double> allmp(oa.observation);
-         QSort(&allmp[0], allmp.size());
-         allMad = Robust::MedianAbsoluteDeviation(&allmp[0],
-						  allmp.size(),allMedian);
-         if ((!numeric)&& (verbose))
+         if (allmp.size()>1)
          {
-	   cout << "Median Absolute Deviation (MAD) for all retained points is " << allMad << " meters." << endl;
-	 }
-	 
+            QSort(&allmp[0], allmp.size());
+            try
+            {
+               allMad = Robust::MedianAbsoluteDeviation(&allmp[0],
+                           allmp.size(),allMedian);
+            }
+            catch (gpstk::Exception& exc)
+            {
+               cerr << exc << endl;
+               return 1;
+            }
+         }
+         else if(allmp.size()>0)
+         {
+            allMedian = allmp[0];
+            allMad = 0.0;
+         }
+         if (!numeric && verbose)
+         {
+            cout << "Median Absolute Deviation (MAD) for all retained points is "
+                 << allMad << " meters." << endl;
+         }
+
          double mMAD = 5.0;
          removePts = removePts || (oa.observation > allMedian+mMAD*allMad)
-	   || (oa.observation < allMedian-mMAD*allMad);
+                     || (oa.observation < allMedian-mMAD*allMad);
 
          oa.edit(removePts);
 
@@ -386,7 +513,7 @@ int main(int argc, char *argv[])
             cout << "Removing mean of each pass." << endl;
          }
 
-                                 // Removes mean of each individual pass
+         // Removes mean of each individual pass
          for (set<long>::iterator iPass=allpasses.begin() ; iPass!=allpasses.end() ; iPass++)
          {
             valarray<bool> passMask = (oa.pass==*iPass);
@@ -399,7 +526,7 @@ int main(int argc, char *argv[])
 
          // Use the Dual Frequency Method to remove biases between passes.
          if (dualfrequencymethod)
-         {                       //  deginning dfm
+         {
             removeBiases(oa,verbose);
          }
 
@@ -414,9 +541,9 @@ int main(int argc, char *argv[])
          {
             if (verbose)
             {
-            cout <<"Using this combination for multipath: " <<mp_formula<<endl;
+               cout <<"Using this combination for multipath: " <<mp_formula<<endl;
                cout << "Data collection interval is " << setprecision(3)
-                  << oa.interval << " seconds";
+                    << oa.interval << " seconds";
                if (oa.intervalInferred)
                {
                   cout << ", inferred from data";
@@ -437,7 +564,6 @@ int main(int argc, char *argv[])
          }
          else if (plotOption.getCount()>0)
          {
-            using namespace StringUtils;
             static string temp=plotOption.getValue()[0];
             static int numAzimBin = static_cast<int>(asDouble(word(temp,0,',')));
             static int numElevBin = static_cast<int>(asDouble(word(temp,1,',')));
@@ -458,12 +584,7 @@ int main(int argc, char *argv[])
          }
          else
          {
-            bool byPlot = (plotOption.getCount()>0);
             bool byAzimuth = (azimuthOption.getCount()>0);
-            if (angWidthOption.getCount()>0)
-            {
-               angInterval =  StringUtils::asDouble(angWidthOption.getValue()[0]);
-            }
             bool regularIntervals = (byAzimuth || (angWidthOption.getCount()>0));
 
             SparseBinnedStats<double> sbs;
@@ -500,10 +621,22 @@ int main(int argc, char *argv[])
                for (size_t k=0; k<binOption.getValue().size(); k++)
                {
                   string temp = binOption.getValue()[k];
-                  string lowerWord = StringUtils::word(temp,0,',');
-                  string upperWord = StringUtils::word(temp,1,',');
-                  sbs.addBin(StringUtils::asDouble(lowerWord),
-                     StringUtils::asDouble(upperWord));
+                  string::size_type comma = temp.find(',');
+                  if (((comma+1) >= temp.size()) || (comma == string::npos))
+                  {
+                     cerr << "Invalid bin syntax" << endl;
+                     return 1;
+                  }
+                  string lowerWord = temp.substr(0, comma);
+                  string upperWord = temp.substr(comma+1, string::npos);
+                  double lower = StringUtils::asDouble(lowerWord);
+                  double upper = StringUtils::asDouble(upperWord);
+                  if (lower > upper)
+                  {
+                     cerr << "Lower bin boundary exceeds upper bin boundary" << endl;
+                     return 1;
+                  }
+                  sbs.addBin(lower, upper);
                }
             }
 
@@ -521,12 +654,12 @@ int main(int argc, char *argv[])
             }
             valarray<double> stDevStats(sbs.stats.size());
             valarray<double> meanStats(sbs.stats.size());
-            writeStats(cout, sbs, stDevStats, meanStats, numeric, !byAzimuth, byPlot);
+            writeStats(cout, sbs, stDevStats, meanStats, numeric, !byAzimuth, false);
          }
 
-      }                          // end while processing files
+      }  // end while processing files
 
-      if ( (verbose) && (!numeric))
+      if (verbose && !numeric)
       {
          CommonTime then = SystemTime();
          cout << "Processing complete in " << then - now << " seconds." << endl;
@@ -539,7 +672,6 @@ int main(int argc, char *argv[])
    }
 
    return 0;
-
 }
 
 
@@ -591,14 +723,14 @@ void dumpRaw(std::ostream& ostr, const ObsArray& oa, bool numeric)
 }
 
 
-void writeStats(std::ostream& ostr, const SparseBinnedStats<double>& mstats, valarray<double>& stDevStats, valarray<double>& meanStats,
-bool numeric, bool elevation, bool plot)
+void writeStats(std::ostream& ostr, const SparseBinnedStats<double>& mstats,
+   valarray<double>& stDevStats, valarray<double>& meanStats,
+   bool numeric, bool elevation, bool plot)
 {
-   // Beginning of code I added
    if (plot)
    {
       std::string angDesc = "azimuth and elevation";
-      // Worry about output code later.
+
       for (size_t i=0; i<mstats.stats.size(); i++)
       {
          stDevStats[i] = mstats.stats[i].StdDev();
@@ -607,8 +739,6 @@ bool numeric, bool elevation, bool plot)
    }
    else
    {
-      //End of code I added (do not forget to remove a bracket below if this code is removed)
-
       std::string angDesc = "elevation";
       if (!elevation) angDesc = "azimuth";
 
@@ -632,7 +762,8 @@ bool numeric, bool elevation, bool plot)
       }
       else
       {
-         ostr << "# Bins of " << angDesc << " -- columns are min, max, standard deviation " << endl;
+         ostr << "# Bins of " << angDesc
+              << " -- columns are min, max, standard deviation " << endl;
          for (size_t i=0; i<mstats.stats.size(); i++)
          {
             ostr << setw(3) << mstats.bins[i].lowerBound << " ";
@@ -640,19 +771,24 @@ bool numeric, bool elevation, bool plot)
             ostr << setprecision(3) << mstats.stats[i].StdDev() << endl;
          }
       }
-   }                             // This is the bracket that is associated with the code I added in writeStats
+   }
 }
 
 
-int findIntersection(valarray<double>& elevLow, valarray<double>& azimLow, valarray<double>& obsLow, valarray<double>& elevHigh, valarray<double>& azimHigh, valarray<double>& obsHigh, long& idx_i, long& idx_j, double& eint, double& aint, long& intindex)
+int findIntersection(
+   valarray<double>& elevLow,  valarray<double>& azimLow,  valarray<double>& obsLow,
+   valarray<double>& elevHigh, valarray<double>& azimHigh, valarray<double>& obsHigh,
+   long& idx_i, long& idx_j, double& eint, double& aint, long& intindex)
 {
-   // Segmentation fault will occur if findIntersection attempts to find an intersection with a pass of size equal to one since a minimum of two points are required to find an intersection
+   // Segmentation fault will occur if findIntersection attempts to find
+   // an intersection with a pass of size equal to one since a minimum
+   //of two points are required to find an intersection
    if (elevLow.size()<=1 || elevHigh.size()<=1)
    {
-      return(0);
+      return 0;
    }
 
-   //Variable initialization
+   // Variable initialization
    valarray<double> e1slice(2),
       a1slice(2),
       o1slice(2),
@@ -661,10 +797,11 @@ int findIntersection(valarray<double>& elevLow, valarray<double>& azimLow, valar
       o2slice(2),
       ratio(2);
    double inv[2][2];
-   long startLow=0,
-      startHigh=0;
+   long startLow=0;
+   long startHigh=0;
 
-                                 // This loop and the one below allow each elevation and azimuth angle for passLow to be compared to each elevation and azimuth angle for passHigh
+   // This loop and the one below allow each elevation and azimuth angle for
+   //passLow to be compared to each elevation and azimuth angle for passHigh
    while (startLow<long((elevLow.size()-1)))
    {
       e1slice = elevLow[slice(startLow,2,1)];
@@ -693,7 +830,8 @@ int findIntersection(valarray<double>& elevLow, valarray<double>& azimLow, valar
 
       startHigh = 0;
 
-                                 // This loop and the one below allow each elevation and azimuth angle for passLow to be compared to each elevation and azimuth angle for passHigh
+      // This loop and the one below allow each elevation and azimuth angle for
+      // passLow to be compared to each elevation and azimuth angle for passHigh
       while (startHigh<double((elevHigh.size()-1)))
       {
          e2slice = elevHigh[slice(startHigh,2,1)];
@@ -720,7 +858,7 @@ int findIntersection(valarray<double>& elevLow, valarray<double>& azimLow, valar
             a2slice[0]=a2slice[0]+360;
          }
 
-                                 // Ensures division by zero does not occur (although extremely unlikely)
+         // Ensures division by zero does not occur (although extremely unlikely)
          if ( (e1slice[0]-e1slice[1])*(a2slice[1]-a2slice[0])-(a1slice[0]-a1slice[1])*(e2slice[1]-e2slice[0]) != 0 )
          {
             // Calculate inverse of two-by-two matrix and ratios.
@@ -737,25 +875,27 @@ int findIntersection(valarray<double>& elevLow, valarray<double>& azimLow, valar
                aint = a1slice[0] + ratio[0] * ( a1slice[1] - a1slice[0] );
                idx_i=startLow;
                idx_j=startHigh;
-               return(1);        // If intersection is found, return the integer 1
+               return 1;  // If intersection is found, return the integer 1
             }
          }
 
          startHigh = startHigh + 1;
-      }                          // end of while (startHigh<(elevHigh.size()-1))
+
+      }  // end of while (startHigh<(elevHigh.size()-1))
 
       startLow = startLow + 1;
-   }                             // end of while (startLow<(elevLow.size()-1))
-   return(0);
-}                                // end of findIntersection
+
+   }  // end of while (startLow<(elevLow.size()-1))
+   return 0;
+}  // end of findIntersection
 
 
-void plotAzElSurf(const DenseBinnedStats<double>& mstats,
-double minAz, double maxAz, int azBinSize,
-double minEl, double maxEl, int elBinSize,
-bool launchViewer)
+void plotAzElSurf(
+   const DenseBinnedStats<double>& mstats,
+   double minAz, double maxAz, int azBinSize,
+   double minEl, double maxEl, int elBinSize,
+   bool launchViewer)
 {
-
                                  // Output file
    SVGImage vgwindow( "multipathSurfacePlot.svg",
       8.5*2*PTS_PER_INCH,        // Upper right x
@@ -817,28 +957,31 @@ bool launchViewer)
 void removeBiases(ObsArray& oa, bool verbose)
 {
    size_t editedLength = oa.getNumSatEpochs();
-   // Variable initialization
    long idx_i, idx_j, isize, jsize;
    double eint, aint;
 
    int stride = 4;
    long intindex = 0;
 
-                                 // Creates a unique list of passes
+   // Creates a unique list of passes
    set<long> passList = unique(oa.pass);
 
-                                 // Creates an iterator to step through the list of passes
+   // Creates an iterator to step through the list of passes
    set<long>::iterator i_itr = passList.begin();
 
-                                 // Creates a vector with length equal to the number of passes
+   // Creates a vector with length equal to the number of passes
    valarray<int> boolean(passList.size());
 
    for (size_t i=0 ; i<passList.size() ; i++)
    {
-      boolean[i]=0;              // Sets values in the vector boolean to 0, which indicates an intersection hasn't been found for the particular passes (we haven't searched for intersections yet, so we should assume they do not occur!)
+      // Sets values in the vector boolean to 0, which indicates an intersection
+      // hasn't been found for the particular passes (we haven't searched for
+      // intersections yet, so we should assume they do not occur!)
+      boolean[i]=0;
    }
 
-   // The size of H and y is equal to the maximum number of intersections possible for the number of passes
+   // The size of H and y is equal to the maximum number of intersections
+   // possible for the number of passes
    Matrix<int> H((passList.size()-1)*(passList.size())/2,passList.size());
 
    Vector<double> y((passList.size()-1)*(passList.size())/2);
@@ -846,17 +989,17 @@ void removeBiases(ObsArray& oa, bool verbose)
    // Sets values of H equal to 0
    for (size_t m=0 ; m<((passList.size()-1)*(passList.size())/2) ; m++)
    {
-                                 //
       for (size_t n=0 ; n<passList.size() ; n++)
       {
          H[m][n]=0;
       }
    }
 
-                                 // Sets lower pass
+   // Sets lower pass
    for (size_t i=0 ; i<(passList.size()-1) ; i++, i_itr++)
    {
-                                 // Creates an index of relevant values for current lower pass in regards to the vectors found in ObsArray
+      // Creates an index of relevant values for current lower pass
+      // in regards to the vectors found in ObsArray
       valarray<bool> i_idx = (oa.pass == *i_itr);
 
       // Creates vectors of data for current lower pass
@@ -864,23 +1007,23 @@ void removeBiases(ObsArray& oa, bool verbose)
          iaz=oa.azimuth[i_idx],
          iobs=oa.observation[i_idx];
 
-                                 // Sets the iterator for the higher pass equal to the iterator for the lower pass
+      // Sets the iterator for the higher pass equal to the iterator
+      // for the lower pass
       set<long>::iterator j_itr = i_itr;
-      j_itr++;                   // Adds one to the iterator for the higher pass
+      j_itr++;  // Adds one to the iterator for the higher pass
 
-      isize=(iel.size()/stride); // Based on the stride, tells us how many values to expect in our slice
+      // Based on the stride, tells us how many values to expect in our slice
+      isize=(iel.size()/stride);
 
-                                 // 0 used to be start
-      valarray<double> ielsub=iel[slice(0,isize,stride)],
-                                 // 0 used to be start
-         iazsub=iaz[slice(0,isize,stride)],
-                                 // 0 used to be start
-         iobssub=iobs[slice(0,isize,stride)];
+      valarray<double> ielsub=iel[slice(0,isize,stride)],  // 0 used to be start
+         iazsub=iaz[slice(0,isize,stride)],               // 0 used to be start
+         iobssub=iobs[slice(0,isize,stride)];            // 0 used to be start
 
-                                 // Sets higher pass
+      // Sets higher pass
       for (size_t j=i+1; j<passList.size(); j++, j_itr++ )
       {
-                                 // Creates index of relevant values for current higher pass in regards to the vectors found in ObsArray
+         // Creates index of relevant values for current higher pass
+         // in regards to the vectors found in ObsArray
          valarray<bool>   j_idx = (oa.pass == *j_itr);
 
          // Creates vectors of data for current higher pass
@@ -890,29 +1033,28 @@ void removeBiases(ObsArray& oa, bool verbose)
 
          jsize=(jel.size()/stride);
 
-                                 // 0 used to be start
-         valarray<double> jelsub=jel[slice(0,jsize,stride)],
-                                 // 0 used to be start
-            jazsub=jaz[slice(0,jsize,stride)],
-                                 // 0 used to be start
-            jobssub=jobs[slice(0,jsize,stride)];
 
-                                 // If an intersection is found, enter
+         valarray<double> jelsub=jel[slice(0,jsize,stride)],  // 0 used to be start
+            jazsub=jaz[slice(0,jsize,stride)],               // 0 used to be start
+            jobssub=jobs[slice(0,jsize,stride)];            // 0 used to be start
+
+         // If an intersection is found, enter
          if (findIntersection(ielsub, iazsub, iobssub, jelsub, jazsub, jobssub, idx_i, idx_j, eint, aint, intindex)==1)
          {
-                                 // Reassign the elevation angles for the current lower pass
+                  // Reassign the elevation angles for the current lower pass
             valarray<double> ielsub=iel[slice(idx_i*stride,stride+1,1)],
-                                 // Reassign the azimuth angles for the current lower pass
+                  // Reassign the azimuth angles for the current lower pass
                iazsub=iaz[slice(idx_i*stride,stride+1,1)],
-                                 // Reassign the observations for the current lower pass
+                  // Reassign the observations for the current lower pass
                iobssub=iobs[slice(idx_i*stride,stride+1,1)],
-                                 // Reassign the elevation angles for the current higher pass
+                  // Reassign the elevation angles for the current higher pass
                jelsub=jel[slice(idx_j*stride,stride+1,1)],
-                                 // Reassign the azimuth angles for the current higher pass
+                  // Reassign the azimuth angles for the current higher pass
                jazsub=jaz[slice(idx_j*stride,stride+1,1)],
-                                 // Reassign the observations for the current higher pass
+                  // Reassign the observations for the current higher pass
                jobssub=jobs[slice(idx_j*stride,stride+1,1)];
-                                 // If an intersection is found again, enter
+
+            // If an intersection is found again, enter
             if (findIntersection(ielsub, iazsub, iobssub, jelsub, jazsub, jobssub, idx_i, idx_j, eint, aint, intindex)==1)
             {
                if (abs(iobssub[idx_i]-jobssub[idx_j])<5)
@@ -924,16 +1066,19 @@ void removeBiases(ObsArray& oa, bool verbose)
                   y[intindex]=iobssub[idx_i]-jobssub[idx_j];
                   intindex++;
                }
-            }                    // found again
-         }                       // found first time
-      }                          // inner search
-   }                             // outer search
+            }  // found again
+         }  // found first time
+      }  // inner search
+   }  // outer search
 
-   if (intindex==0) // If no intersections were found, the function must be exited. Otherwise, a segmentation fault will occur.
+   // If no intersections were found, the function must be exited.
+   // Otherwise, a segmentation fault will occur.
+   if (intindex==0)
    {
       if (verbose)
       {
-         cout << "This particular file contained no pass intersections; therefore, the DFM was unable to be performed." << endl;
+         cout << "This particular file contained no pass intersections; "
+              << "therefore, the DFM was unable to be performed." << endl;
       }
       return;
    }
@@ -993,16 +1138,17 @@ void removeBiases(ObsArray& oa, bool verbose)
 
    //cout << xhat << endl;
 
-                                 // Creates an iterator to step through the list of passes
+   // Creates an iterator to step through the list of passes
    set<long>::iterator k_itr=passList.begin();
 
    int xhat_itr=0;
 
    // The following two 'for' loops are used to step through the passes.
-                                 // Sets lower pass
+   // Sets lower pass
    for (size_t k=0 ; k<(passList.size()) ; k++, k_itr++)
    {
-                                 // Creates an index of relevant values for current lower pass in regards to the vectors found in ObsArray
+      // Creates an index of relevant values for current lower pass
+      // in regards to the vectors found in ObsArray
       valarray<bool> k_idx = (oa.pass == *k_itr);
 
       // Creates vectors of data for current lower pass
