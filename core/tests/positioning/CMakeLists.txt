@@ -5,29 +5,41 @@ set( TD ${GPSTK_TEST_OUTPUT_DIR} )
 # TEST PRSolve
 ###############################################################################
 
- # test with minimum required inputs - RINEX obs, SP3 Ephemeris, Solution Descriptor
- set( ARGS1 --obs\ ${GPSTK_TEST_DATA_DIR}/arlm200b.15o\ --eph\ ${GPSTK_TEST_DATA_DIR}/test_input_sp3_nav_ephemerisData.sp3\ --sol\ GPS:12:WC\ --log\ ${TD}/PRSolve_Required.log )
- add_test(NAME PRSolve_Required
-         COMMAND ${CMAKE_COMMAND} 
+# test with minimum required inputs - RINEX obs, SP3 Ephemeris, Solution Descriptor
+set( ARGS1 --obs\ ${GPSTK_TEST_DATA_DIR}/arlm200b.15o\ --eph\ ${GPSTK_TEST_DATA_DIR}/test_input_sp3_nav_ephemerisData.sp3\ --sol\ GPS:12:WC\ --log\ ${TD}/PRSolve_Required.log )
+add_test(NAME PRSolve_Required
+         COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:PRSolve>
          -DDIFF_PROG=$<TARGET_FILE:df_diff>
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -DTESTBASE=PRSolve_Required
-         -DARGS=${ARGS1}          
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/testsuccdiff_PRSolve.cmake) 
- 
- # test with minimum required inputs, RINEX output - RINEX obs, SP3 Ephemeris, Solution Descriptor
-  set( ARGS2 --obs\ ${GPSTK_TEST_DATA_DIR}/arlm200b.15o\ --eph\ ${GPSTK_TEST_DATA_DIR}/test_input_sp3_nav_ephemerisData.sp3\ --sol\ GPS:12:WC\ --out\ PRSolve_Rinexout.out\ --log\ ${TD}/PRSolve_Rinexout.log)
-  add_test(NAME PRSolve_Rinexout
-         COMMAND ${CMAKE_COMMAND} 
+         -DARGS=${ARGS1}
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/testsuccdiff_PRSolve.cmake)
+
+# test with minimum required inputs, RINEX output - RINEX obs, SP3 Ephemeris, Solution Descriptor, missing ephemerides
+set( ARGS2 --obs\ ${GPSTK_TEST_DATA_DIR}/arlm200b.15o\ --eph\ ${GPSTK_TEST_DATA_DIR}/test_input_sp3_nav_ephemerisData.sp3\ --sol\ GPS:12:WC\ --out\ PRSolve_Rinexout.out\ --log\ ${TD}/PRSolve_Rinexout.log)
+add_test(NAME PRSolve_Rinexout_EphMissing
+         COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:PRSolve>
          -DDIFF_PROG=$<TARGET_FILE:df_diff>
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
-         -DTESTBASE=PRSolve_Rinexout
-         -DARGS=${ARGS2}          
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/testsuccdiff_PRSolve2.cmake)    
+         -DTESTBASE=PRSolve_Rinexout_EphMissing
+         -DARGS=${ARGS2}
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/testsuccdiff_PRSolve2.cmake)
+
+# test with minimum required inputs, RINEX output - RINEX obs, SP3 Ephemeris, Solution Descriptor, adequate ephemerides
+set( ARGS2 --obs\ ${GPSTK_TEST_DATA_DIR}/arlm200b.15o\ --eph\ ${GPSTK_TEST_DATA_DIR}/test_input_sp3_nav_2015_200.sp3\ --sol\ GPS:12:WC\ --out\ ${TD}/PRSolve_Rinexout.out\ --log\ ${TD}/PRSolve_Rinexout.log)
+add_test(NAME PRSolve_Rinexout
+        COMMAND ${CMAKE_COMMAND}
+        -DTEST_PROG=$<TARGET_FILE:PRSolve>
+        -DDIFF_PROG=$<TARGET_FILE:df_diff>
+        -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+        -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+        -DTESTBASE=PRSolve_Rinexout
+        -DARGS=${ARGS2}
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/testsuccdiff_PRSolve2.cmake)
 
 # Test that the output of PRSolve_Rinexout is a valid Rinex Obs file.
 add_test(NAME PRSolve_ValidOutput
@@ -46,7 +58,7 @@ set_tests_properties(PRSolve_ValidOutput PROPERTIES DEPENDS PRSolve_Rinexout)
 #         -DTEST_PROG=$<TARGET_FILE:PRSolve>
 #         -DARGS=--file\ ${SD}/notAFile.txt
 #         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
-  
+
 # Check that a missing Obs file results in failure
 #add_test(NAME PRSolve_MissingInputObs
 #         COMMAND ${CMAKE_COMMAND}
@@ -95,7 +107,7 @@ set_tests_properties(PRSolve_ValidOutput PROPERTIES DEPENDS PRSolve_Rinexout)
 #         -DTEST_PROG=$<TARGET_FILE:PRSolve>
 #         -DARGS=--file\ ${SD}/timeconvert_2015_200_99.exp
 #         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
-  
+
 # Check that an invalid Obs file results in failure
 #add_test(NAME PRSolve_InvalidInputObs
 #         COMMAND ${CMAKE_COMMAND}
