@@ -456,7 +456,7 @@ double invNormalCDF(double prob, const double& mu, const double& sig)
          //<< " fabs(a-alpha)-eps " << ::fabs(alpha-a)-eps;
          if(::fabs(alpha-a) < eps) break;
          if(a > alpha) { X1 = X; } else { X0 = X; }
-         if(++niter > 100) GPSTK_THROW(Exception("Failed to converge"));
+         if(++niter > 1000) GPSTK_THROW(Exception("Failed to converge"));
       }
 
       return (swap ? 2.0*mu-X : X);
@@ -567,7 +567,7 @@ double invChisqCDF(double alpha, int n) throw(Exception)
          //<< " fabs(a-alpha)-eps " << ::fabs(alpha-a)-eps;
          if(::fabs(alpha-a) < eps) break;
          if(a > alpha) { X1 = X; } else { X0 = X; }
-         if(++niter > 100) GPSTK_THROW(Exception("Failed to converge"));
+         if(++niter > 1000) GPSTK_THROW(Exception("Failed to converge"));
       }
 
       return X;
@@ -686,7 +686,7 @@ double invStudentsCDF(double prob, int n) throw(Exception)
          //<< " fabs(a-alpha)-eps " << ::fabs(alpha-a)-eps;
          if(::fabs(alpha-a) < eps) break;
          if(a > alpha) { t1 = t; } else { t0 = t; }
-         if(++niter > 100) GPSTK_THROW(Exception("Failed to converge"));
+         if(++niter > 1000) GPSTK_THROW(Exception("Failed to converge"));
       }
 
       return (swap ? -t : t);
@@ -813,7 +813,7 @@ double invFDistCDF(double prob, int n1, int n2) throw(Exception)
          if(::fabs(alpha-a) < eps) break;
          if(a > alpha) { F1 = F; } else { F0 = F; }
          n++;
-         if(n > 100) GPSTK_THROW(Exception("Failed to converge"));
+         if(n > 1000) GPSTK_THROW(Exception("Failed to converge"));
       }
 
       return (swap ? 1.0/F : F);
