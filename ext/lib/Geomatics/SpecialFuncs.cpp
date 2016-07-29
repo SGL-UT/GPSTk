@@ -155,7 +155,7 @@ double seriesIncompGamma(const double& a, const double& x) throw(Exception)
       if(x < 0) GPSTK_THROW(Exception("Negative first argument"));
       if(a <= 0) GPSTK_THROW(Exception("Non-positive second argument"));
 
-      static const int imax(600);
+      static const int imax(1000);
       static const double eps(10*std::numeric_limits<double>().epsilon());
 
       double lngamma(lnGamma(a));
@@ -188,7 +188,7 @@ double contfracIncompGamma(const double& a, const double& x) throw(Exception)
       if(x < 0) GPSTK_THROW(Exception("Negative first argument"));
       if(a <= 0) GPSTK_THROW(Exception("Non-positive second argument"));
 
-      static const int imax(600);
+      static const int imax(1000);
       static const double eps(10*std::numeric_limits<double>().epsilon());
       static const double fpmin(10*std::numeric_limits<double>().min());
 
@@ -286,7 +286,7 @@ double compErrorFunc(const double& x) throw(Exception)
 // Routine used internally for Incomplete beta function I_x(a,b)
 double cfIBeta(const double& x, const double& a, const double& b) throw(Exception)
 {
-   static const int imax(100);
+   static const int imax(1000);
    static const double eps(10*std::numeric_limits<double>().epsilon());
    static const double fpmin(10*std::numeric_limits<double>().min());
    const double qab(a+b);
