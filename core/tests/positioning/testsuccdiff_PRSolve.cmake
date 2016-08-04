@@ -27,7 +27,7 @@ message(STATUS "running ${DIFF_PROG}")
 
 execute_process(COMMAND ${DIFF_PROG}
     -1 ${SOURCEDIR}/${TESTBASE}.exp
-    -2 ${TARGETDIR}/prs.log
+    -2 ${TARGETDIR}/${TESTBASE}.log
     -l 52
     -v
     -z 2

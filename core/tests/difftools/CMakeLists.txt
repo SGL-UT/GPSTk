@@ -24,12 +24,12 @@ add_test(NAME rmwdiff_CmdOpt_1
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testhelp.cmake)
 
 # check that rmwdiff fails with missing files
-add_test(NAME rmwdiff_CmdOpt_2
-         COMMAND ${CMAKE_COMMAND}
-         -DTEST_PROG=$<TARGET_FILE:rmwdiff>
-         -DSOURCEDIR=${SD}
-         -DTARGETDIR=${TD}
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/testmissing.cmake)
+#add_test(NAME rmwdiff_CmdOpt_2
+#         COMMAND ${CMAKE_COMMAND}
+#         -DTEST_PROG=$<TARGET_FILE:rmwdiff>
+#         -DSOURCEDIR=${SD}
+#         -DTARGETDIR=${TD}
+#         -P ${CMAKE_CURRENT_SOURCE_DIR}/testmissing.cmake)
 
 # check differences where there is no overlap in time
 add_test(NAME rmwdiff_Diff_1
@@ -65,15 +65,15 @@ add_test(NAME rmwdiff_Diff_3
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testdiff.cmake)
 
 # check differences where one file is invalid
-add_test(NAME rmwdiff_Diff_4
-         COMMAND ${CMAKE_COMMAND}
-         -DTEST_PROG=$<TARGET_FILE:rmwdiff>
-         -DFILE1=arlm200a.15o
-         -DFILE2=arlm200z.15m
-         -DTESTBASE=rmwdiff4
-         -DSOURCEDIR=${SD}
-         -DTARGETDIR=${TD}
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/testfail.cmake)
+#add_test(NAME rmwdiff_Diff_4
+#         COMMAND ${CMAKE_COMMAND}
+#         -DTEST_PROG=$<TARGET_FILE:rmwdiff>
+#         -DFILE1=arlm200a.15o
+#         -DFILE2=arlm200z.15m
+#         -DTESTBASE=rmwdiff4
+#         -DSOURCEDIR=${SD}
+#         -DTARGETDIR=${TD}
+#         -P ${CMAKE_CURRENT_SOURCE_DIR}/testfail.cmake)
 
 # check differences where the set of observables is different
 add_test(NAME rmwdiff_Diff_5
@@ -100,12 +100,12 @@ add_test(NAME rnwdiff_CmdOpt_1
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testhelp.cmake)
 
 # check that rnwdiff fails with missing files
-add_test(NAME rnwdiff_CmdOpt_2
-         COMMAND ${CMAKE_COMMAND}
-         -DTEST_PROG=$<TARGET_FILE:rnwdiff>
-         -DSOURCEDIR=${SD}
-         -DTARGETDIR=${TD}
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/testmissing.cmake)
+#add_test(NAME rnwdiff_CmdOpt_2
+#         COMMAND ${CMAKE_COMMAND}
+#         -DTEST_PROG=$<TARGET_FILE:rnwdiff>
+#         -DSOURCEDIR=${SD}
+#         -DTARGETDIR=${TD}
+#         -P ${CMAKE_CURRENT_SOURCE_DIR}/testmissing.cmake)
 
 # check differences where there is no overlap in time
 add_test(NAME rnwdiff_Diff_1
@@ -141,15 +141,15 @@ add_test(NAME rnwdiff_Diff_3
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testdiff.cmake)
 
 # check differences where one file is invalid
-add_test(NAME rnwdiff_Diff_4
-         COMMAND ${CMAKE_COMMAND}
-         -DTEST_PROG=$<TARGET_FILE:rnwdiff>
-         -DFILE1=arlm200a.15o
-         -DFILE2=arlm200z.15n
-         -DTESTBASE=rnwdiff4
-         -DSOURCEDIR=${SD}
-         -DTARGETDIR=${TD}
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/testfail.cmake)
+#add_test(NAME rnwdiff_Diff_4
+#         COMMAND ${CMAKE_COMMAND}
+#         -DTEST_PROG=$<TARGET_FILE:rnwdiff>
+#         -DFILE1=arlm200a.15o
+#         -DFILE2=arlm200z.15n
+#         -DTESTBASE=rnwdiff4
+#         -DSOURCEDIR=${SD}
+#         -DTARGETDIR=${TD}
+#         -P ${CMAKE_CURRENT_SOURCE_DIR}/testfail.cmake)
 
 
 ###############################################################################
@@ -165,12 +165,12 @@ add_test(NAME rowdiff_CmdOpt_1
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testhelp.cmake)
 
 # check that rowdiff fails with missing files
-add_test(NAME rowdiff_CmdOpt_2
-         COMMAND ${CMAKE_COMMAND}
-         -DTEST_PROG=$<TARGET_FILE:rowdiff>
-         -DSOURCEDIR=${SD}
-         -DTARGETDIR=${TD}
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/testmissing.cmake)
+#add_test(NAME rowdiff_CmdOpt_2
+#         COMMAND ${CMAKE_COMMAND}
+#         -DTEST_PROG=$<TARGET_FILE:rowdiff>
+#         -DSOURCEDIR=${SD}
+#         -DTARGETDIR=${TD}
+#         -P ${CMAKE_CURRENT_SOURCE_DIR}/testmissing.cmake)
 
 # check differences where there is no overlap in time
 add_test(NAME rowdiff_Diff_1
@@ -206,15 +206,15 @@ add_test(NAME rowdiff_Diff_3
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testdiff.cmake)
 
 # check differences where one file is invalid
-add_test(NAME rowdiff_Diff_4
-         COMMAND ${CMAKE_COMMAND}
-         -DTEST_PROG=$<TARGET_FILE:rowdiff>
-         -DFILE1=arlm200a.15n
-         -DFILE2=arlm200z.15o
-         -DTESTBASE=rowdiff4
-         -DSOURCEDIR=${SD}
-         -DTARGETDIR=${TD}
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/testfail.cmake)
+#add_test(NAME rowdiff_Diff_4
+#         COMMAND ${CMAKE_COMMAND}
+#         -DTEST_PROG=$<TARGET_FILE:rowdiff>
+#         -DFILE1=arlm200a.15n
+#         -DFILE2=arlm200z.15o
+#         -DTESTBASE=rowdiff4
+#         -DSOURCEDIR=${SD}
+#         -DTARGETDIR=${TD}
+#         -P ${CMAKE_CURRENT_SOURCE_DIR}/testfail.cmake)
 
 
 ###############################################################################

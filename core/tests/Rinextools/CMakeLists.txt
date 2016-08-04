@@ -1,3 +1,4 @@
+set( TD ${GPSTK_TEST_OUTPUT_DIR} )
 ###############################################################################
 # TEST RinDump
 ###############################################################################
@@ -34,6 +35,74 @@ add_test(NAME RinDump_Single_C1C
          -DARGS=${ARGS2}   	    
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testsuccdiff_RinDump.cmake)
 
+# Test Sat with C1C data with RINEX 2 file
+set( ARGS2 ${GPSTK_TEST_DATA_DIR}/arlm200a.15o\ G23\ C1C\ )
+add_test(NAME RinDump_Rinex2Input
+         COMMAND ${CMAKE_COMMAND} 
+         -DTEST_PROG=$<TARGET_FILE:RinDump>
+         -DDIFF_PROG=$<TARGET_FILE:df_diff>
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTBASE=RinDump_Rinex2Input
+         -DARGS=${ARGS2}   	    
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/testsuccdiff_RinDump.cmake)
+
+# Check that a missing Rinex obs file results in failure
+#add_test(NAME RinDump_MissingInputRObs
+#         COMMAND ${CMAKE_COMMAND}
+#         -DTEST_PROG=$<TARGET_FILE:RinDump>
+#         -DARGS=--obs\ ${GPSTK_TEST_DATA_DIR}/notAFile.txt\ --sat\ G05\ --dat\ C1C
+#         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
+
+# Check that a missing Rinex nav file results in failure
+#add_test(NAME RinDump_MissingInputRNav
+#         COMMAND ${CMAKE_COMMAND}
+#         -DTEST_PROG=$<TARGET_FILE:RinDump>
+#         -DARGS=--obs\ ${GPSTK_TEST_DATA_DIR}/arlm200a.15o\ --sat\ G05\ --dat\ C1C\ --nav\ ${GPSTK_TEST_DATA_DIR}/notAFile.txt
+#         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
+
+# Check that a missing SP3 file results in failure
+#add_test(NAME RinDump_MissingInputSP3
+#         COMMAND ${CMAKE_COMMAND}
+#         -DTEST_PROG=$<TARGET_FILE:RinDump>
+#         -DARGS=--obs\ ${GPSTK_TEST_DATA_DIR}/arlm200a.15o\ --sat\ G05\ --dat\ C1C\ --eph\ ${GPSTK_TEST_DATA_DIR}/notAFile.txt
+#         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
+
+# Check that an invalid Rinex obs file results in failure
+#add_test(NAME RinDump_InvalidInputRObs
+#         COMMAND ${CMAKE_COMMAND}
+#         -DTEST_PROG=$<TARGET_FILE:RinDump>
+#         -DARGS=--obs\ ${GPSTK_TEST_DATA_DIR}/timeconvert_2015_200_99.exp\ --sat\ G05\ --dat\ C1C
+#         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
+
+# Check that an invalid Rinex nav file results in failure
+#add_test(NAME RinDump_InvalidInputRNav
+#         COMMAND ${CMAKE_COMMAND}
+#         -DTEST_PROG=$<TARGET_FILE:RinDump>
+#         -DARGS=--obs\ ${GPSTK_TEST_DATA_DIR}/arlm200a.15o\ --sat\ G05\ --dat\ C1C\ --nav\ ${GPSTK_TEST_DATA_DIR}/timeconvert_2015_200_99.exp
+#         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
+
+# Check that an invalid SP3 file results in failure
+#add_test(NAME RinDump_InvalidInputSP3
+#         COMMAND ${CMAKE_COMMAND}
+#         -DTEST_PROG=$<TARGET_FILE:RinDump>
+#         -DARGS=--obs\ ${GPSTK_TEST_DATA_DIR}/arlm200a.15o\ --sat\ G05\ --dat\ C1C\ --eph\ ${GPSTK_TEST_DATA_DIR}/timeconvert_2015_200_99.exp
+#         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
+
+# Check that a missing Config file results in failure
+#add_test(NAME RinDump_MissingInputCfg
+#         COMMAND ${CMAKE_COMMAND}
+#         -DTEST_PROG=$<TARGET_FILE:RinDump>
+#         -DARGS=--file\ ${SD}/notAFile.txt
+#         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
+
+# Check that an invalid Config file results in failure
+#add_test(NAME RinDump_InvalidInputCfg
+#         COMMAND ${CMAKE_COMMAND}
+#         -DTEST_PROG=$<TARGET_FILE:RinDump>
+#         -DARGS=--file\ ${SD}/timeconvert_2015_200_99.exp
+#         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
+
 ###############################################################################
 # TEST RinEdit
 ###############################################################################
@@ -50,6 +119,44 @@ add_test(NAME RinEdit_Header
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinheader.cmake)
 
+# Check that a missing Config file results in failure
+#add_test(NAME RinEdit_MissingInputCfg
+#         COMMAND ${CMAKE_COMMAND}
+#         -DTEST_PROG=$<TARGET_FILE:RinEdit>
+#         -DARGS=--file\ ${SD}/notAFile.txt
+#         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
+
+# Check that a missing input file results in failure
+#add_test(NAME RinEdit_MissingInput
+#         COMMAND ${CMAKE_COMMAND}
+#         -DTEST_PROG=$<TARGET_FILE:RinEdit>
+#         -DARGS=--IF\ ${GPSTK_TEST_DATA_DIR}/notAFile.txt\ --OF ${GPSTK_TEST_OUTPUT_DIR}/RinEdit_MissingInput.out
+#         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
+
+# Check that an invalid input file results in failure
+#add_test(NAME RinEdit_InvalidInput
+#         COMMAND ${CMAKE_COMMAND}
+#         -DTEST_PROG=$<TARGET_FILE:RinEdit>
+#         -DARGS=--IF\ ${GPSTK_TEST_DATA_DIR}/timeconvert_2015_200_99.exp\ --OF ${GPSTK_TEST_OUTPUT_DIR}/RinEdit_InvalidInput.out
+#         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
+
+# Check that an invalid Config file results in failure
+#add_test(NAME RinEdit_InvalidInputCfg
+#         COMMAND ${CMAKE_COMMAND}
+#         -DTEST_PROG=$<TARGET_FILE:RinEdit>
+#         -DARGS=--file\ ${SD}/timeconvert_2015_200_99.exp
+#         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
+
+# Test that the output of RinEdit_Header is a valid Rinex Obs file.
+add_test(NAME RinEdit_ValidOutput
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:rowcheck>
+         -DARGS=${TD}/RinEdit_Header.out
+         -DTESTBASE=RinEdit_ValidOutput
+         -DTARGETDIR=${TD}
+         -DNODIFF=1
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+set_tests_properties(RinEdit_ValidOutput PROPERTIES DEPENDS RinEdit_Header)
 
 ###############################################################################
 # TEST RinSum
@@ -66,5 +173,31 @@ add_test(NAME RinSum_ycode
          -DOPTS=--ycode
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinsum.cmake)
 
+# Check that a missing input file results in failure
+#add_test(NAME RinSum_MissingInput
+#         COMMAND ${CMAKE_COMMAND}
+#         -DTEST_PROG=$<TARGET_FILE:RinSum>
+#         -DARGS=--obs\ ${GPSTK_TEST_DATA_DIR}/notAFile.txt
+#         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
 
+# Check that an invalid input file results in failure
+#add_test(NAME RinSum_InvalidInput
+#         COMMAND ${CMAKE_COMMAND}
+#         -DTEST_PROG=$<TARGET_FILE:RinSum>
+#         -DARGS=--obs\ ${GPSTK_TEST_DATA_DIR}/timeconvert_2015_200_99.exp
+#         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
+
+# Check that a missing Config file results in failure
+#add_test(NAME RinSum_MissingInputCfg
+#         COMMAND ${CMAKE_COMMAND}
+#         -DTEST_PROG=$<TARGET_FILE:RinSum>
+#         -DARGS=--file\ ${SD}/notAFile.txt
+#         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
+
+# Check that an invalid Config file results in failure
+#add_test(NAME RinSum_InvalidInputCfg
+#         COMMAND ${CMAKE_COMMAND}
+#         -DTEST_PROG=$<TARGET_FILE:RinSum>
+#         -DARGS=--file\ ${SD}/timeconvert_2015_200_99.exp
+#         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
 

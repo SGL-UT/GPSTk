@@ -1,5 +1,5 @@
-GPSTk Python Bindings
----------------------
+PYTHON
+------
 
 Contents:
 ---------

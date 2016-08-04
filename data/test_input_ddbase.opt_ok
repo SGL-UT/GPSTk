@@ -1,0 +1,12 @@
+--ObsFile test_input_ddbase_85412_old_045.15o,Old
+--ObsFile test_input_ddbase_85412_new_045.15o,New
+--NavFile test_input_ddbase_85412_new_044to045.15n
+--DT 1.5
+--BeginTime 2015,02,13,15,00,00
+--EndTime 2015,02,16,05,30,00
+--EOPFile test_input_ddbase.eop
+--PosXYZ 5066232.0573,2719227.2280,-2754392.4600,Old
+--Fix Old
+--PosPRS New
+--BaseOut New-Old
+

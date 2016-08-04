@@ -1,3 +1,6 @@
+AUTHORS
+-------
+
 GPS Toolkit Authorship 
 ------------------------------------------------------------------------------
     The GPSTk is sponsored by the Space and Geophysics Laboratory, within the

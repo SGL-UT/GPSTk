@@ -1,0 +1,9 @@
+# RinDump, part of the GPS Toolkit, Ver 2.3 8/26/15, Run 2016/06/15 14:29:11
+# Allow systems GPS GLO
+# Input file(s) data/arlm200a.15o
+# Satellites G23
+# Data C1C
+# RinDump output for file data/arlm200a.15o
+# Header ObsIDs GPS (10): L1C L2W C1C C2X C1W C2W D1C D2W S1C S2W
+# wk secs-of-wk sat      C1C     
+# RinDump timing: processing 0.160 sec, wallclock: 1 sec.

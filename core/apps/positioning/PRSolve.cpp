@@ -15,7 +15,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -23,13 +23,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -356,7 +356,7 @@ public:
                // wrong GNSS system
                if(it->first != sys1)
                   continue;
-               
+
                // loop over obs types
                const vector<RinexObsID>& vecROID(it->second);
                for(k=0; k<vecROID.size(); k++)
@@ -598,7 +598,7 @@ try {
    C.Title = C.PrgmName + ", part of the GPS Toolkit, Ver " + Version
       + ", Run " + printTime(wallclkbeg,C.calfmt);
    //cout << C.Title << endl;
-   
+
    for(;;) {
       // get information from the command line
       // iret -2 -3 -4
@@ -742,7 +742,7 @@ try {
                isValid = false;
                continue;
             }
-         
+
             strm.exceptions(ios_base::failbit);
             strm >> header;
          }
@@ -774,7 +774,7 @@ try {
                << e.getText(0) << endl;
             isValid = false;
          }
-         
+
       }
    }
 
@@ -1048,7 +1048,7 @@ try {
 
             word = stripFirstWord(line);  // get sat
             if(word.empty()) continue;
-            
+
             try { sat.fromString(word); }
             catch(Exception& e) { continue; }
             if(sat.system == SatID::systemUnknown || sat.id == -1) continue;
@@ -1233,7 +1233,7 @@ try {
       Rinex3ObsHeader Rhead, Rheadout;
       Rinex3ObsData Rdata;
       string filename(C.InputObsFiles[nfile]);
-      
+
       if (C.PisY)
       {
          LOG(DEBUG) << "Converting P/W code data to Y code";
@@ -1289,7 +1289,7 @@ try {
          }
          break;
       }
-      
+
       // do on first epoch only
       if(firstepoch) {
          // if writing to output RINEX, open and write header ---------
@@ -1518,6 +1518,11 @@ try {
             ostringstream oss;
             // loop over valid descriptors
             for(k=0,i=0; i<C.SolObjs.size(); ++i) if(C.SolObjs[i].isValid) {
+               if(!C.SolObjs[i].prs.isValid())
+               {
+                  LOG(ERROR) << "Invalid soution!";
+                  break;
+               }
                oss.str("");
                oss << "XYZ" << fixed << setprecision(3)
                   << " " << setw(12) << C.SolObjs[i].prs.Solution(0)
@@ -1637,7 +1642,7 @@ void Configuration::SolDescHelp(void)
    string codes;
    string space("   ");
    size_t i,j, k;
-   
+
    // first find the length of the longest codes entry for each system
    map<char,int> syslen;
    for(i=0; i<systs.size(); i++) {
@@ -2253,7 +2258,7 @@ bool SolutionObject::ChooseObsIDs(map<string,vector<RinexObsID> >& mapObsTypes)
    Configuration& C(Configuration::Instance());
 
    isValid = true;
-   
+
    for (i=0; i<vecSolData.size(); i++)
    {
       SolutionData& sd(vecSolData[i]);
@@ -2578,7 +2583,7 @@ void SolutionObject::FinalOutput(void) throw(Exception)
 {
    try {
       Configuration& C(Configuration::Instance());
-   
+
       if(prs.memory.getN() <= 0) {
          LOG(INFO) << " No data!";
          return;

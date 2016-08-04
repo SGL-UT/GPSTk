@@ -159,9 +159,23 @@ namespace gpstk
       // are already available as a CommonTime
    void OrbAlmGen::loadWeekNumber(const CommonTime& ct)
    {
-      unsigned int week = static_cast<GPSWeekSecond>(ct).week;
-      double sow = static_cast<GPSWeekSecond>(ct).sow;
-      loadWeekNumber(week,sow);
+      unsigned int week = 0;
+      double sow = 0.0; 
+      bool successfullySet = false;
+      if (ct.getTimeSystem()==TimeSystem::GPS)
+      {
+         week = static_cast<GPSWeekSecond>(ct).week;
+         sow = static_cast<GPSWeekSecond>(ct).sow;
+         successfullySet = true;
+      }
+      else if (ct.getTimeSystem()==TimeSystem::BDT)
+      {
+         unsigned int week = static_cast<BDSWeekSecond>(ct).week;
+         double sow = static_cast<BDSWeekSecond>(ct).sow;
+         successfullySet = true;
+      }
+      if (successfullySet)
+         loadWeekNumber(week,sow);
    }
 
    //------------------------------------------------------------
@@ -177,6 +191,24 @@ namespace gpstk
       double toa_est = static_cast<GPSWeekSecond>(adjustedTime).sow;
       loadWeekNumber(WN_est, toa_est);
    }
+
+   //------------------------------------------------------------
+   //  If the first almanac data page is received prior to the
+   //  first definition of the WNa and Toa, estimate the 
+   //  WNa_full based on the transmit time of the message.
+   //  This assumes that the almanac WNa/toa is "in the future"
+   //  from the current time by at least a day. 
+   //  Needed a BDS-specific version in order to address the
+   //  fact that the currTime is coming from the HRTR transmit
+   //  time.  Therfore, it is going to be in GPS Time. 
+   void OrbAlmGen::estimateWeekNumberBDS(const CommonTime& currTime)
+   {
+      CommonTime adjustedTime = currTime + SEC_PER_DAY;
+      unsigned int WN_est = static_cast<BDSWeekSecond>(adjustedTime).week;
+      double toa_est = static_cast<BDSWeekSecond>(adjustedTime).sow;
+      loadWeekNumber(WN_est, toa_est);
+   }
+
 
    //------------------------------------------------------------
    //  NOTE: The following block of sv?????? methods are very
@@ -803,7 +835,7 @@ namespace gpstk
             // If the almanac time parameters are not yet set, estimate 
             // them based on the current transmit time. 
          if (!WN_set)
-            estimateWeekNumber(msg.getTransmitTime());
+            estimateWeekNumberBDS(msg.getTransmitTime());
 
          obsID    = msg.getobsID();
          satID    = msg.getsatSys();
@@ -842,7 +874,7 @@ namespace gpstk
          const unsigned numBits4[]   = {  6,  18};
          w       = msg.asDoubleSemiCircles(startBits4, numBits4, 2, -23);         
 
-        const unsigned startBits5[] = {258, 270};
+         const unsigned startBits5[] = {258, 270};
          const unsigned numBits5[]   = {  4,  20};
          M0      = msg.asDoubleSemiCircles(startBits5, numBits5, 2, -23);         
 
@@ -853,59 +885,34 @@ namespace gpstk
          healthy = false;
          if ((health & 0x102)==0) healthy = true;
 
-            //
-            // 
-         if (t_oa != toa)
+            // Determine fully qualified toa.
+            // Assume the toa found in this almanac is either 
+            // equal to the WNa, t_oa provided, or within a 
+            // week of that time. 
+         unsigned short wk = WNa_full;
+
+         if (toa!=t_oa)
          {
-            stringstream ss;
-            //msg.dump(ss);
-            ss << endl;
-            ss << "t_oa of almanac page does not match most recent t_oa ";
-            ss << "from D1 Sf 5 Pg 8 or D2 Sf5 Pg 36" << endl;
-            ss << "Transmit PRN: " << satID << ", subject PRN: " << subjectSV << endl;
-            ss << "Subframe " << subframe << ", Page " << page << endl;
-            ss << "Tx time: " << printTime(msg.getTransmitTime(),"%02H:%02M:%05.2f") << endl;
-            ss << "toa of page      : " << toa << " sec" << endl;
-            ss << "toa, WNa provided: " << t_oa << " sec, " << WNa_full << " week" << endl; 
-            ss << "Data will not be converted.";
-            InvalidParameter ip(ss.str());
-            GPSTK_THROW(ip); 
+            double diff =  (double) toa - (double) t_oa;
+            if (diff < -HALFWEEK) wk++;
+            if (diff >  HALFWEEK) wk--;
          }
-         //cout << "OrbElemBdsAlm.loadData().  t_oa==toa" << endl;
-         ctToe = BDSWeekSecond(WNa_full,toa,TimeSystem::BDT);
+         ctToe = BDSWeekSecond(wk,toa,TimeSystem::BDT);
 
             // There is no stated fit interval or period of validity
             // for almanac data.  However, it is generally safe to
             // assume that the data should not be used before
             // the transmit time. 
-         beginValid = msg.getTransmitTime();
-         beginValid.setTimeSystem(TimeSystem::BDT);
+         unsigned int begWeek = static_cast<BDSWeekSecond>(msg.getTransmitTime()).week;
+         double begSOW = static_cast<BDSWeekSecond>(msg.getTransmitTime()).sow;
+         beginValid = BDSWeekSecond(begWeek, begSOW, TimeSystem::BDT);
 
          endValid   = CommonTime::END_OF_TIME;
          endValid.setTimeSystem(TimeSystem::BDT);
 
-            // debug
-         /*
-         string tform("%02m/%02d/%4Y %02H:%02M:%05.2f SOW %g");
-         cout << "WNa_full, toa, ctToe, ctXmit :" << WNa_full 
-              << ", " << toa 
-              << ", " << printTime(ctToe,tform)
-              << ", " << printTime(ctXmit,tform) << endl;
-         */
       }
       else 
       {
-         /*
-            // Debug
-         string tform("%02m/%02d/%4Y %02H:%02M:%05.2f SOW %g");
-         cout << "Expected BDS almanac. isDT1 " << isDT1 
-              << ", subframe " << subframe
-              << ", page " << page 
-              << ", xmit " << printTime(msg.getTransmitTime(),tform)
-              << ", by PRN " << msg.getsatSys() 
-              << endl;
-            // end debug 
-         */ 
          stringstream ss;
          ss << "Expected BDS alamanc.";
          InvalidParameter exc(ss.str());

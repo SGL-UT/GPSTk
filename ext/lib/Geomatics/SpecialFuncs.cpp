@@ -155,7 +155,7 @@ double seriesIncompGamma(const double& a, const double& x) throw(Exception)
       if(x < 0) GPSTK_THROW(Exception("Negative first argument"));
       if(a <= 0) GPSTK_THROW(Exception("Non-positive second argument"));
 
-      static const int imax(600);
+      static const int imax(1000);
       static const double eps(10*std::numeric_limits<double>().epsilon());
 
       double lngamma(lnGamma(a));
@@ -188,7 +188,7 @@ double contfracIncompGamma(const double& a, const double& x) throw(Exception)
       if(x < 0) GPSTK_THROW(Exception("Negative first argument"));
       if(a <= 0) GPSTK_THROW(Exception("Non-positive second argument"));
 
-      static const int imax(600);
+      static const int imax(1000);
       static const double eps(10*std::numeric_limits<double>().epsilon());
       static const double fpmin(10*std::numeric_limits<double>().min());
 
@@ -286,7 +286,7 @@ double compErrorFunc(const double& x) throw(Exception)
 // Routine used internally for Incomplete beta function I_x(a,b)
 double cfIBeta(const double& x, const double& a, const double& b) throw(Exception)
 {
-   static const int imax(100);
+   static const int imax(1000);
    static const double eps(10*std::numeric_limits<double>().epsilon());
    static const double fpmin(10*std::numeric_limits<double>().min());
    const double qab(a+b);
@@ -456,7 +456,7 @@ double invNormalCDF(double prob, const double& mu, const double& sig)
          //<< " fabs(a-alpha)-eps " << ::fabs(alpha-a)-eps;
          if(::fabs(alpha-a) < eps) break;
          if(a > alpha) { X1 = X; } else { X0 = X; }
-         if(++niter > 100) GPSTK_THROW(Exception("Failed to converge"));
+         if(++niter > 1000) GPSTK_THROW(Exception("Failed to converge"));
       }
 
       return (swap ? 2.0*mu-X : X);
@@ -567,7 +567,7 @@ double invChisqCDF(double alpha, int n) throw(Exception)
          //<< " fabs(a-alpha)-eps " << ::fabs(alpha-a)-eps;
          if(::fabs(alpha-a) < eps) break;
          if(a > alpha) { X1 = X; } else { X0 = X; }
-         if(++niter > 100) GPSTK_THROW(Exception("Failed to converge"));
+         if(++niter > 1000) GPSTK_THROW(Exception("Failed to converge"));
       }
 
       return X;
@@ -686,7 +686,7 @@ double invStudentsCDF(double prob, int n) throw(Exception)
          //<< " fabs(a-alpha)-eps " << ::fabs(alpha-a)-eps;
          if(::fabs(alpha-a) < eps) break;
          if(a > alpha) { t1 = t; } else { t0 = t; }
-         if(++niter > 100) GPSTK_THROW(Exception("Failed to converge"));
+         if(++niter > 1000) GPSTK_THROW(Exception("Failed to converge"));
       }
 
       return (swap ? -t : t);
@@ -813,7 +813,7 @@ double invFDistCDF(double prob, int n1, int n2) throw(Exception)
          if(::fabs(alpha-a) < eps) break;
          if(a > alpha) { F1 = F; } else { F0 = F; }
          n++;
-         if(n > 100) GPSTK_THROW(Exception("Failed to converge"));
+         if(n > 1000) GPSTK_THROW(Exception("Failed to converge"));
       }
 
       return (swap ? 1.0/F : F);
