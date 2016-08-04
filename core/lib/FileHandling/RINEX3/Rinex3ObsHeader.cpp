@@ -1098,37 +1098,16 @@ namespace gpstk
             GPSTK_THROW(e);
          }
 
-         int pos;
-         const int maxObsPerLine = 9;
-         vector<string> newTypeList;
-
             // process the first line
          if(!(valid & validNumObs))
          {
             numObs = asInt(line.substr(0,6));
-
-            for(i = 0; (i < numObs) && (i < maxObsPerLine); i++)
-            {
-               pos = i * 6 + 6 + 4;
-               string ot(line.substr(pos,2));
-               newTypeList.push_back(ot);
-            }
-            R2ObsTypes = newTypeList;              // erases what was already there
             valid |= validNumObs;
          }
-            // process continuation lines
-         else
-         {
-            newTypeList = R2ObsTypes;
-            for(i = newTypeList.size();
-                (i < numObs) && ((i % maxObsPerLine) < maxObsPerLine); i++)
-            {
-               pos = (i % maxObsPerLine) * 6 + 6 + 4;
-               string ot(line.substr(pos,2));
-               newTypeList.push_back(ot);
-            }
-            R2ObsTypes = newTypeList;
-         }
+         
+         const int maxObsPerLine = 9;
+         for(i = 0; (R2ObsTypes.size() < numObs) && (i < maxObsPerLine); i++)
+            R2ObsTypes.push_back(line.substr(i * 6 + 10, 2));
       }
       else if(label == hsSystemNumObs)
       {
@@ -1138,50 +1117,27 @@ namespace gpstk
             GPSTK_THROW(e);
          }
 
-         static const int maxObsPerLine = 13;
-
-         satSysTemp = strip(line.substr(0,1));
-         numObs     = asInt(line.substr(3,3));
-
+         string satSys = strip(line.substr(0,1));
+         if (satSys != "")
+         {
+            numObs = asInt(line.substr(3,3));
+            valid |= validSystemNumObs;
+            satSysPrev = satSys;
+         }
+         else
+            satSys = satSysPrev;
+         
          try
          {
-            if(satSysTemp == "" ) // it's a continuation line; use previous info.
-            {
-               satSysTemp = satSysPrev;
-               numObs = numObsPrev;
-               vector<RinexObsID> newTypeList = mapObsTypes.find(satSysTemp)->second;
-               for(i = newTypeList.size();
-                   (i < numObs) && ((i % maxObsPerLine) < maxObsPerLine); i++)
-               {
-                  int position = 4*(i % maxObsPerLine) + 6 + 1;
-                  RinexObsID rt(satSysTemp+line.substr(position,3));
-                  newTypeList.push_back(rt);
-               }
-               mapObsTypes[satSysTemp] = newTypeList;
-            }
-            else                    // it's a new line, use info. read in
-            {
-               vector<RinexObsID> newTypeList;
-               for(i = 0; (i < numObs) && (i < maxObsPerLine); i++)
-               {
-                  int position = 4*i + 6 + 1;
-                  RinexObsID rt(satSysTemp+line.substr(position,3));
-                  newTypeList.push_back(rt);
-               }
-               mapObsTypes[satSysTemp] = newTypeList;
-            }
+            const int maxObsPerLine = 13;
+            for (int i=0; i < maxObsPerLine && mapObsTypes[satSys].size() < numObs; i++)
+               mapObsTypes[satSys].push_back(RinexObsID(satSys+line.substr(4 * i + 7, 3)));
          }
          catch(InvalidParameter& ip)
          {
             FFStreamError fse("InvalidParameter: "+ip.what());
             GPSTK_THROW(fse);
          }
-
-            // save values in case next line is a continuation line
-         satSysPrev = satSysTemp;
-         numObsPrev = numObs;
-
-         valid |= validSystemNumObs;
       }
       else if(label == hsWaveFact)         // R2 only
       {
@@ -1599,7 +1555,7 @@ namespace gpstk
             
             try 
             {
-               if       (s=="G") 
+               if      (s=="G")
                   obsids = mapR2ObsToR3Obs_G(); 
                else if (s=="R") 
                   obsids = mapR2ObsToR3Obs_R();
@@ -1807,11 +1763,6 @@ namespace gpstk
             code2P = "W";
          }
       }
-/*
-  string code2 = "W";
-  if (PisY && hasL2P) code2 = "Y";
-  else if (hasL2C) code2 = "X";
-*/
       string syss("G");
       for(size_t j=0; j<R2ObsTypes.size(); ++j)
       {
