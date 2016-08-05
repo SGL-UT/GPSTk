@@ -371,11 +371,13 @@ int initialize(string& errors) throw(Exception)
    catch(Exception& e) { GPSTK_RETHROW(e); }
 }  // end initialize()
 
+
 //------------------------------------------------------------------------------
 // Return 0 ok, >0 number of files successfully read, <0 fatal error
 int processFiles(void) throw(Exception)
 {
-   try {
+   try
+   {
       Configuration& C(Configuration::Instance());
       C.beginTime.setTimeSystem(TimeSystem::GPS);
       C.endTime.setTimeSystem(TimeSystem::GPS);
@@ -385,7 +387,11 @@ int processFiles(void) throw(Exception)
       RinexSatID sat;
       ostringstream oss;
 
-      for(nfiles=0,nfile=0; nfile<C.messIF.size(); nfile++) {
+      if (C.debug > -1)
+         Rinex3ObsHeader::debug = 1;
+
+      for(nfiles=0,nfile=0; nfile<C.messIF.size(); nfile++)
+      {
          Rinex3ObsStream istrm;
          Rinex3ObsHeader Rhead,RHout;  // use one header for input and output
          Rinex3ObsData Rdata,RDout;
@@ -396,7 +402,8 @@ int processFiles(void) throw(Exception)
 
             // open the file ------------------------------------------------
          istrm.open(filename.c_str(),ios::in);
-         if(!istrm.is_open()) {
+         if(!istrm.is_open())
+         {
             LOG(WARNING) << "Warning : could not open file " << filename;
             iret = 1;
             continue;
@@ -407,8 +414,12 @@ int processFiles(void) throw(Exception)
 
             // read the header ----------------------------------------------
          LOG(INFO) << "Reading header...";
-         try { istrm >> Rhead; }
-         catch(Exception& e) {
+         try
+         {
+            istrm >> Rhead;
+         }
+         catch(Exception& e)
+         {
             LOG(WARNING) << "Warning : Failed to read header: " << e.what()
                          << "\n Header dump follows.";
             Rhead.dump(LOGstrm);
@@ -416,24 +427,27 @@ int processFiles(void) throw(Exception)
             iret = 2;
             continue;
          }
-         if(C.debug > -1) {
+         if(C.debug > -1)
+         {
             LOG(DEBUG) << "Input header for RINEX file " << filename;
             Rhead.dump(LOGstrm);
          }
          // dump the obs types
          map<string,vector<RinexObsID> >::const_iterator kt;
-         for(kt = Rhead.mapObsTypes.begin(); kt != Rhead.mapObsTypes.end(); kt++) {
+         for (kt = Rhead.mapObsTypes.begin(); kt != Rhead.mapObsTypes.end(); kt++)
+         {
             sat.fromString(kt->first);
             oss.str("");
-            oss << "# Header ObsIDs " << sat.systemString3() //<< " " << kt->first
+            oss << "# Header ObsIDs " << sat.systemString3()
                << " (" << kt->second.size() << "):";
-            for(i=0; i<kt->second.size(); i++) oss << " " << kt->second[i].asString();
+            for(i=0; i<kt->second.size(); i++)
+               oss << " " << kt->second[i].asString();
             LOG(INFO) << oss.str();
          }
 
             // we have to set the time system of all the timetags using ttag from file
          vector<EditCmd>::iterator jt;
-         for(jt=C.vecCmds.begin(); jt != C.vecCmds.end(); ++jt)
+         for (jt=C.vecCmds.begin(); jt != C.vecCmds.end(); ++jt)
             jt->ttag.setTimeSystem(Rhead.firstObs.getTimeSystem());
 
             // -----------------------------------------------------------------
@@ -442,77 +456,99 @@ int processFiles(void) throw(Exception)
          map<string, map<int,int> > mapSysObsIDTranslate;
 
          RHout = Rhead;
-         vector<EditCmd>::iterator it(C.vecCmds.begin());
-         while(it != C.vecCmds.end()) {
+         vector<EditCmd>::iterator it;
+         for (it = C.vecCmds.begin(); it != C.vecCmds.end(); it++)
+         {
+            LOG(DEBUG) << "Killing " << it->asString() << " " << it->sat;
+            
                // DO delete obs without sign
-            if(it->type == EditCmd::doCT) { // no DO+ DO- so far && it->sign == 0)
+            if (it->type == EditCmd::doCT)
+            {
                   // if the system is defined, delete only for that system
                string sys(asString(it->sat.systemChar()));
 
                   // loop over systems (short-circuit if sys is defined)
-               map<string, vector<RinexObsID> >::iterator jt;
-               for(jt=RHout.mapObsTypes.begin(); jt != RHout.mapObsTypes.end(); ++jt)
+               Rinex3ObsHeader::RinexObsMap::iterator jt;
+               for (jt=RHout.mapObsTypes.begin(); jt != RHout.mapObsTypes.end(); ++jt)
                {
-                  if(sys != string("?") && sys != jt->first)
+                  if (sys != string("?") && sys != jt->first)
                      continue;
-                     // must put system on it, default is GPS
                   RinexObsID obsid(jt->first + it->obs.asString());
-
-                     // find the OT in the header map, and delete it
-                  vector<RinexObsID>::iterator kt;
+                  
+                     // find the OT in the output header map, and delete it
+                  Rinex3ObsHeader::RinexObsVec::iterator kt;
                   kt = find(jt->second.begin(), jt->second.end(), obsid);
-                  if(kt == jt->second.end())                      // ObsID not found
-                     continue;      // TD warning?
-
-                     // delete it
-                     //RHout.mapObsTypes[jt->first].erase(kt);
+                  if(kt == jt->second.end())
+                     continue;
+                  
+                  RHout.mapObsTypes[jt->first].erase(kt);
                   jt->second.erase(kt);
+                     // flag the obs types have changed so the translations need to as well
                   mungeData = true;
                }
             }
 
                // DS delete sat without sign and without time
-            else if(it->type == EditCmd::dsCT && it->sign == 0
+            else if (it->type == EditCmd::dsCT && it->sign >= 0
                     && it->ttag == CommonTime::BEGINNING_OF_TIME)
             {
-               map<RinexSatID, vector<int> >::iterator jt;
-               jt = RHout.numObsForSat.find(it->sat);
-                  // if its there, delete it
-               if(jt != RHout.numObsForSat.end()) RHout.numObsForSat.erase(jt);
+               if (it->sat.id == -1)
+               {
+                     // Delete all satellites with this system
+                  Rinex3ObsHeader::PRNNumObsMap::iterator i,j;
+                  for (i = RHout.numObsForSat.begin(); i != RHout.numObsForSat.end();)
+                  {
+                     j = i++;
+                     if (j->first.system == it->sat.system)
+                        RHout.numObsForSat.erase(j);
+                  }
+                  if (it->sat.system == SatID::systemGlonass)
+                     RHout.glonassFreqNo.clear();
 
-               map<RinexSatID, int>::iterator kt;
-               kt = RHout.glonassFreqNo.find(it->sat);
-                  // if its there, delete it
-               if(kt != RHout.glonassFreqNo.end()) RHout.glonassFreqNo.erase(kt);
-
-                  // TD do for sysPhaseShift, ...?
+                     // Remove obs types for that system
+                  string sys(asString(it->sat.systemChar()));
+                  RHout.mapObsTypes.erase(sys);
+               }
+               else
+               {
+                     // Just delete a single satellite if its there
+                  Rinex3ObsHeader::PRNNumObsMap::iterator jt = RHout.numObsForSat.find(it->sat);
+                  if (jt != RHout.numObsForSat.end())
+                     RHout.numObsForSat.erase(jt);
+                  
+                  Rinex3ObsHeader::GLOFreqNumMap::iterator kt = RHout.glonassFreqNo.find(it->sat);
+                  if (kt != RHout.glonassFreqNo.end())
+                     RHout.glonassFreqNo.erase(kt);
+               }
             }
-
-            ++it;                          // go to the next command
-
          }  // end loop over edit commands
 
             // if mapObsTypes has changed, must make a map of indexes for translation
             // mapSysObsIDTranslate[sys][input index] = output index
-         if(mungeData) {
+         if (mungeData)
+         {
             map<string, vector<RinexObsID> >::iterator jt;
-            for(jt = Rhead.mapObsTypes.begin(); jt != Rhead.mapObsTypes.end(); ++jt) {
+            for(jt = Rhead.mapObsTypes.begin(); jt != Rhead.mapObsTypes.end(); ++jt)
+            {
                string sys(jt->first);
                   // TD what if entire sys is deleted? RHout[sys] does not exist
                vector<RinexObsID>::iterator kt;
-               for(i=0; i < jt->second.size(); i++) {
+               for(i=0; i < jt->second.size(); i++)
+               {
                   kt = find(RHout.mapObsTypes[sys].begin(),
                             RHout.mapObsTypes[sys].end(), jt->second[i]);
                   mapSysObsIDTranslate[sys][i]
                      = (kt == RHout.mapObsTypes[sys].end()
-                        ?  -1                                        // not found
+                        ?  -1                                     // not found
                         : (kt - RHout.mapObsTypes[sys].begin())); // output index
                }
             }
 
                // dump it
-            if(C.debug > -1) {
-               for(jt = Rhead.mapObsTypes.begin(); jt != Rhead.mapObsTypes.end(); ++jt) {
+            if(C.debug > -1)
+            {
+               for(jt = Rhead.mapObsTypes.begin(); jt != Rhead.mapObsTypes.end(); ++jt)
+               {
                   string sys(jt->first);
                   oss.str("");
                   oss << "Translation map for sys " << sys;
@@ -522,18 +558,34 @@ int processFiles(void) throw(Exception)
                }
             }
          }
+         
 
-            // must use the header defined in input and stored in output stream.
-         if(C.outver2)
+         if (C.outver2)
+         {
+            if (C.debug > -1)
+            {
+               LOG(DEBUG) << "Header pre prepareVer2Write";
+               RHout.dump(LOGstrm);
+            }
             RHout.prepareVer2Write();
+         }
+         
             // NB. header will be written by executeEditCmd
             // -----------------------------------------------------------------
+         
+         if (C.debug > -1)
+         {
+            LOG(DEBUG) << "Output header";
+            RHout.dump(LOGstrm);
+         }
 
             // loop over epochs ---------------------------------------------
          LOG(INFO) << "Reading observations...";
-         while(1) {
+         while(1)
+         {
             try { istrm >> Rdata; }
-            catch(Exception& e) {
+            catch(Exception& e)
+            {
                LOG(WARNING) << " Warning : Failed to read obs data (Exception "
                             << e.getText(0) << "); dump follows.";
                Rdata.dump(LOGstrm,Rhead);
@@ -690,11 +742,13 @@ int processOneEpoch(Rinex3ObsHeader& Rhead, Rinex3ObsHeader& RHout,
       
             // apply current commands, deleting obsolete ones
          it = C.currCmds.begin();
-         while(it != C.currCmds.end()) {
+         while(it != C.currCmds.end())
+         {
             LOG(DEBUG) << "Execute current cmd " << it->asString();
                // execute command; delete obsolete commands
             iret = executeEditCmd(it, RHout, RDout);
-            if(iret < 0) return iret;
+            if(iret < 0)
+               return iret;
 
             if(iret == 0)
                it = C.currCmds.erase(it);              // erase vector element
@@ -711,6 +765,7 @@ int processOneEpoch(Rinex3ObsHeader& Rhead, Rinex3ObsHeader& RHout,
    catch(Exception& e) { GPSTK_RETHROW(e); }
 }  // end processOneEpoch()
 
+
 //------------------------------------------------------------------------------
 // return >0 to put/keep the command on the 'current' queue
 // return <0 for fatal error
@@ -726,20 +781,24 @@ int executeEditCmd(const vector<EditCmd>::iterator& it, Rinex3ObsHeader& Rhead,
    Rinex3ObsData::DataMap::const_iterator kt;
    vector<RinexObsID>::iterator jt;
 
-   try {
-      if(it->type == EditCmd::invalidCT) {
+   try
+   {
+      if(it->type == EditCmd::invalidCT)
+      {
          LOG(DEBUG) << " Invalid command " << it->asString();
          return 0;
       }
 
          // OF output file --------------------------------------------------------
-      else if(it->type == EditCmd::ofCT) {
+      else if(it->type == EditCmd::ofCT)
+      {
             // close the old file
          if(C.ostrm.is_open()) { C.ostrm.close(); C.ostrm.clear(); }
 
             // open the new file
          C.ostrm.open(it->field.c_str(),ios::out);
-         if(!C.ostrm.is_open()) {
+         if(!C.ostrm.is_open())
+         {
             LOG(ERROR) << "Error : could not open output file " << it->field;
             return -1;
          }
@@ -749,7 +808,8 @@ int executeEditCmd(const vector<EditCmd>::iterator& it, Rinex3ObsHeader& Rhead,
                    << printTime(Rdata.time,C.longfmt);
 
             // if this is the first file, apply the header commands
-         if(it->ttag == CommonTime::BEGINNING_OF_TIME) {
+         if(it->ttag == CommonTime::BEGINNING_OF_TIME)
+         {
             Rhead.fileProgram = C.prgmName;
             if(!C.messHDp.empty()) Rhead.fileProgram = C.messHDp;
             if(!C.messHDr.empty()) Rhead.fileAgency = C.messHDr;
@@ -759,7 +819,8 @@ int executeEditCmd(const vector<EditCmd>::iterator& it, Rinex3ObsHeader& Rhead,
             if(!C.messHDk.empty()) Rhead.recType = C.messHDk;
             if(!C.messHDl.empty()) Rhead.recVers = C.messHDl;            
             if(!C.messHDs.empty()) Rhead.antNo = C.messHDs;
-            if(!C.messHDx.empty()) {
+            if(!C.messHDx.empty())
+            {
                flds = split(C.messHDx,',');
                   // TD check n==3,doubles in initialize
                for(i=0; i<3; i++) Rhead.antennaPosition[i] = asDouble(flds[i]);
@@ -770,16 +831,20 @@ int executeEditCmd(const vector<EditCmd>::iterator& it, Rinex3ObsHeader& Rhead,
                Rhead.markerNumber = C.messHDn;
                Rhead.valid |= Rinex3ObsHeader::validMarkerNumber;
             }
-            if(!C.messHDt.empty()) Rhead.antType = C.messHDt;
-            if(!C.messHDh.empty()) {
+            if(!C.messHDt.empty())
+               Rhead.antType = C.messHDt;
+            if(!C.messHDh.empty())
+            {
                flds = split(C.messHDh,',');   // TD check n==3,doubles in initialize
                for(i=0; i<3; i++) Rhead.antennaDeltaHEN[i] = asDouble(flds[i]);
             }
-            if(C.messHDdc) {
+            if(C.messHDdc)
+            {
                Rhead.commentList.clear();
                Rhead.valid ^= Rinex3ObsHeader::validComment;
             }
-            if(C.messHDc.size() > 0) {
+            if(C.messHDc.size() > 0)
+            {
                for(i=0; i<C.messHDc.size(); i++)
                   Rhead.commentList.push_back(C.messHDc[i]);
                Rhead.valid |= Rinex3ObsHeader::validComment;
@@ -795,8 +860,10 @@ int executeEditCmd(const vector<EditCmd>::iterator& it, Rinex3ObsHeader& Rhead,
       }
 
          // DA delete all ---------------------------------------------------------------
-      else if(it->type == EditCmd::daCT) {
-         switch(it->sign) {
+      else if(it->type == EditCmd::daCT)
+      {
+         switch(it->sign)
+         {
             case 1: case 0:
                Rdata.numSVs = 0;                   // clear this data, keep the cmd
                Rdata.obs.clear();
@@ -814,24 +881,29 @@ int executeEditCmd(const vector<EditCmd>::iterator& it, Rinex3ObsHeader& Rhead,
          return 0;
 
          // DS delete satellite ---------------------------------------------------------
-      else if(it->type == EditCmd::dsCT) {
-         if(it->sign == -1) return 0;                 // delete the (-) command
+      else if(it->type == EditCmd::dsCT)
+      {
+         if(it->sign == -1)
+            return 0;                 // delete the (-) command
             // find the SV
          LOG(DEBUG) << " Delete sat " << it->asString();
-         if(it->sat.id > 0) {
+         if(it->sat.id > 0)
+         {
             kt = Rdata.obs.find(it->sat);
             if(kt != Rdata.obs.end())                // found the SV
                sats.push_back(kt->first);
             else
                LOG(DEBUG) << " Execute: sat " << it->sat << " not found in data";
          }
-         else {
+         else
+         {
             sats.clear();
             for(kt=Rdata.obs.begin(); kt!=Rdata.obs.end(); ++kt)
                if(kt->first.system == it->sat.system)
                   sats.push_back(kt->first);
          }
-         for(j=0; j<sats.size(); j++) {
+         for(j=0; j<sats.size(); j++)
+         {
             Rdata.obs.erase(sats[j]);                 // remove it erase map
             Rdata.numSVs--;                           // don't count it
          }
@@ -840,7 +912,8 @@ int executeEditCmd(const vector<EditCmd>::iterator& it, Rinex3ObsHeader& Rhead,
 
          // -----------------------------------------------------------------------------
          // the rest require that we find satellite and obsid in Rdata.obs
-      else {
+      else
+      {
          if(it->sign == -1) return 0;                 // delete the (-) command
 
          sys = asString(it->sat.systemChar());        // find the system
@@ -848,7 +921,7 @@ int executeEditCmd(const vector<EditCmd>::iterator& it, Rinex3ObsHeader& Rhead,
             // find the OT in the header map, and get index into vector
          jt = find(Rhead.mapObsTypes[sys].begin(),
                    Rhead.mapObsTypes[sys].end(), it->obs);
-         if(jt == Rhead.mapObsTypes[sys].end()) {     // ObsID not found
+         if (jt == Rhead.mapObsTypes[sys].end()) {     // ObsID not found
                // TD message? user error: ask to delete one that's not there
             LOG(DEBUG) << " Execute: obstype " << it->obs << " not found in header";
             return 0;                                 // delete the cmd
@@ -857,22 +930,28 @@ int executeEditCmd(const vector<EditCmd>::iterator& it, Rinex3ObsHeader& Rhead,
          i = (jt - Rhead.mapObsTypes[sys].begin());   // index into vector
 
             // find the sat
-         if(it->sat.id > 0) {
-            if(Rdata.obs.find(it->sat)==Rdata.obs.end()) { // sat not found
+         if(it->sat.id > 0)
+         {
+            if(Rdata.obs.find(it->sat)==Rdata.obs.end())
+            { // sat not found
                LOG(DEBUG) << " Execute: sat " << it->sat << " not found in data";
             }
             else
                sats.push_back(it->sat);
          }
-         else {
-            for(kt=Rdata.obs.begin(); kt!=Rdata.obs.end(); ++kt) {
+         else
+         {
+            for(kt=Rdata.obs.begin(); kt!=Rdata.obs.end(); ++kt)
+            {
                if(kt->first.system == it->sat.system)
                   sats.push_back(kt->first);
             }
          }
 
-         for(j=0; j<sats.size(); j++) {
-            switch(it->type) {
+         for(j=0; j<sats.size(); j++)
+         {
+            switch(it->type)
+            {
                   // DD delete data -----------------------------------------------------
                case EditCmd::ddCT:
                   Rdata.obs[sats[j]][i].data = 0.0;
@@ -911,13 +990,15 @@ int executeEditCmd(const vector<EditCmd>::iterator& it, Rinex3ObsHeader& Rhead,
             }
          }
 
-         if(it->sign == 0) return 0;                  // delete the one-time command
+         if(it->sign == 0)
+            return 0;                  // delete the one-time command
       }
 
       return 1;
    }
    catch(Exception& e) { GPSTK_RETHROW(e); }
 }  // end executeEditCmd()
+
 
 //------------------------------------------------------------------------------
 int Configuration::processUserInput(int argc, char **argv) throw()
