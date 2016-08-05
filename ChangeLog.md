@@ -1,5 +1,88 @@
       #################################################
 
+Version 2.9.2   Friday, August 5, 2016
+
+   General modifications
+   ---------------------
+   - Additional Unit and Application Tests
+   - Application Migration from ext to core
+   - Updated TESTING.md file
+      - Updated information about Unit Test Framework
+      - Information for writing Unit and Application Tests
+   - This release includes new/modified source code comments for improved readability.
+   - Various Bug and Compile Warning Fixes
+
+   Modifications by Author
+   ---------------------
+
+Anthony Hughes (3):
+      Added some minimal tests for DDBase as a starting point.
+      Excluded 'build' and 'ref' directories during source package build; removed execute bit from many files; properly completed move of mpsolve back into ext.
+      Removed the examples directory from the source package due to its immense size.
+
+Bryan Parsons (7):
+      Removed novaRinex from User's Reference Manual, after Caleb reported the error.
+      Merge branch 'more_doc_changes' into 'master'
+      Merge branch 'specialfuncs_max_iteration' into 'master'
+      Merge branch 'moreAppUnitTests' into 'master'
+      Merge branch 'specialfuncs_max_iteration' into 'master'
+      Merge branch 'issue_265' into 'master'
+      Merge branch 'issue_266' into 'master'
+
+Frederick Doe (2):
+      Fixed bug in timeconvert in which the first input for --z29 inputs was ignored. No matter which value was given, timeconvert output the time for that zcount in the first GPS epoch.     Also fixed bug in the CTest test for timeconvert --z29
+      Merge branch 'moreAppUnitTests' of repositories.arlut.utexas.edu:sgl/gpstk into moreAppUnitTests
+
+Jae-Ho Song (2):
+      Increased the maximum number of iterations for invChisqCDF from 100 to 1000. Additionally, this has been done for invNormalCDF, invStudentsCDF for consistency
+      Also increased the maximum number of iterations for contfracIncompGamma, cfIBeta, seriesIncompGamma
+
+Nick Fitzsimmons (22):
+      Moved RINEX Checktools to Core
+      Actually Added Tests
+      Added Additional Merge Application Testing
+      Changes to timeconvert Tests
+      Added Additional Input/Output Checking for the RINEX Tools
+      Merge remote-tracking branch 'origin/master' into moreAppUnitTests
+      Added Input/Output Checking for PRSolve and bc2sp3
+      Merge remote-tracking branch 'origin/master' into moreAppUnitTests
+      Merge branch 'moreAppUnitTests' of https://repositories.arlut.utexas.edu/sgl/gpstk into moreAppUnitTests
+      Added Seg Fault Checking to testfailexp.cmake
+      Merge remote-tracking branch 'origin/master' into moreAppUnitTests
+      Removed Improper Use Tests for Apps and Modified PRSolve Tests
+      Updated TESTING Documentation
+      Consolidated Valid Output Checks
+      Re-enabled the RinEdit_ValidOutput Test
+      Amended the ValidOutput Tests Again
+      Fixed a couple of comments
+      Updated TESTING.md
+      Updated TESTING.md
+      Updated TESTING.md Another Time
+      Removal of Help Tests for DDBase and DiscFix
+      Added More Precision to timeconvert Tests and Fixed a CMake File
+
+anthony (12):
+      Moved ext/apps/multipath to core/apps/multipath and removed graphics dependencies. Retained a copy of mpsolve.cpp in the old location renamed to mpsolve_svg.cpp. Added a new unit test for mpsolve.
+      Moved DDBase and DiscFix apps from ext to core ; added initial, minimal unit tests for each.
+      Fixed many tab/space, whitespace, comment, and line length issues.
+      Merge branch 'moreAppUnitTests' of repositories.arlut.utexas.edu:sgl/gpstk into moreAppUnitTests
+      Merge branch 'moreAppUnitTests' of repositories.arlut.utexas.edu:sgl/gpstk into moreAppUnitTests
+      Implemented unit tests for mpsolve.
+      Moving mpsolve and its tests back to ext; applying mpsolve fixes
+      Move DDBase and DiscFix back to ext along with their tests
+      Fixed overloading ambiguity when calling TUASSERTFE
+      Added check for invalid PR solution; added SP3 ephemeris test input for the proper time window; added a new test with the new SP3 input data; retained old test with invalid SP3 input data.
+      Reenable geomatics/cycleslips, geomatics/relposition, and multipath app builds and tests
+      Silenced errors on some platforms by removing redundant file closes and clears from the observation file reader.
+
+macosta (2):
+      Treat super saturated humidity as 100% and throw exceptions if humidity is above 105.
+      Merge remote-tracking branch 'origin/master' into issue_266
+
+
+
+      #################################################
+
 Version 2.9.1   Tuesday, July 12, 2016
 
    General modifications
