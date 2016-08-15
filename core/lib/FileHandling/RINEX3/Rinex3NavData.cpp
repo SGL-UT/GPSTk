@@ -352,7 +352,7 @@ namespace gpstk
          if(satSys == "S" || satSys == "R") return;
 
          // GPS GAL QZSS BDS have 7 records, get 4-7
-         if(satSys == "G" || satSys == "E" || satSys == "J" || satSys == "C")
+         if(satSys == "G" || satSys == "E" || satSys == "J" || satSys == "C" || satSys == "I")
             for(int i=4; i<=7; i++) getRecord(i, strm);
       }
       catch(std::exception& e) {
