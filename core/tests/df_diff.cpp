@@ -93,7 +93,20 @@ public:
 
       input1.open(input1Fn.c_str(), istringstream::in);
       input2.open(input2Fn.c_str(), istringstream::in);
-           
+
+      if (!input1)
+      {
+         cerr << "Could not open: " << input1Fn << endl;
+         exitCode=1;
+         return false;
+      }
+      
+      if (!input1)
+      {
+         cerr << "Could not open: " << input2Fn << endl;
+         exitCode=1;
+         return false;
+      }
       
          // Determine total number of lines in input file 1
       string line;
