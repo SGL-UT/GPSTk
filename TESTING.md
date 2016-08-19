@@ -1,5 +1,5 @@
-TESTING
--------
+Testing of the GPSTk
+--------------------
 
 Introduction
 ------------
@@ -85,8 +85,8 @@ How to Write Application Tests
 1. When possible, utilize one of the shared .cmake files in gpstk/core/tests/ in order to perform tests. The shared .cmake files include the following functionality:
    * testhelp.cmake - Runs the application with various forms of help options to ensure they all work.
    * testfailexp.cmake - Runs the application with given options and expects that the application should exit with a code other than 0, but not segmentation fault.
-   * testsuccexp.cmake - Runs the application with given options and expects that the application should exit with a code 0. It can also compare whole files.
-   * testsuccdiff.cmake - Runs the application with given options and then diffs the output of the application with a stored expected output.
+   * testsuccexp.cmake - Runs the application with provided arguments and check the return code.  It can also compare files generated against a refernce file.
+   * testsuccdiff.cmake - Depriccated; use testsuccexp.cmake.
 1. If the tested application use case does not fit into one of the above scripts, feel free to create a new one. Be sure to include why a new one was needed in the comments of the script.
    * Store the cmake script in the core/tests/dir where dir corresponds to the core/apps/dir where the program source resides. Name the file after the test that is being run. 
 1. Add any required source or reference data to the appropriate data directory. See Testing Data section for more detail.
@@ -100,15 +100,19 @@ Tips for Writing Application Tests
 
 Testing Data
 ------------
-Any input data should be placed in the gpstk/data/inputs/ directory and follow this naming convention:
-   * File name should describe the key content of the data. For example, a v2.11 Rinex Obs file from day 360 of 2015 could be called robs.v2\_11.doy360.yr2015. 
-   * A file taken from a production system may keep its original name if the file is unchanged. 
-   * Any inputs generated from existing input files should have the modification description appended to it. Using the example Rinex obs file as a base, a new input with only the first half of that day's data could be called robs.v2\_11.doy360.yr2015.firsthalfday.
+Any input data should be placed in the gpstk/data/inputs/ directory (or a subdirectory therin).
+   * Files names should follow standard naming conventions for the source file. Use the original source name whenever possible.
+   * Document the source of the data in a README.md file in the directory with the data. Include any modifications made to the original file.
+   * Files that are modified from the original may have their names extended to describe the modifications.
+   * Keep the size of the files small (10s kB). 
 
 Any expected result data should be placed in the gpstk/data/expected/ directory and follow this naming convention:
    * File name be the test's name and end with a .exp. For example, expected output for a test called Foo\_bar should be named Foo\_bar.exp.
 
-Also, any further sub-organization of the testing data is left to the developer's discretion, but make sure that the name of the grouped content is clear. For example, if testing an app called foo required one of each of the Rinex filetypes for a single day, all of the data could be grouped into a directory named for the day.
+Also, any further sub-organization of the testing data is left to the developer's discretion, but
+make sure that the name of the grouped content is clear. For example, if testing an app called foo
+required one of each of the Rinex filetypes for a single day, all of the data could be grouped into
+a directory named for the day.
 
 
 
