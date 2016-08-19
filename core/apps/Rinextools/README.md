@@ -129,8 +129,8 @@ Examples:
 # Combine two files
 `$ RinEdit --IF acor1480.08o --IF areq015o.10o --OF out.12o --verbose`
 
-# Delete all galileo and GPS L5 observations
-`$ RinEdit --IF acor1480.08o --IF areq015o.10o --OF out.12o -DS E --DO GL5X --DO GC5X --DO GD5X --DO GS5X`
+# Delete all galileo and GPS L5 observations from a v2.11 file and write a v2.11 file
+`$ RinEdit --IF acor1480.08o --IF areq015o.10o --OF out.12o --ver2 -DS E --DO GL5X --DO GC5X --DO GD5X --DO GS5X`
 
 
 
