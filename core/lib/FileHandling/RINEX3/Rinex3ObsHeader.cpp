@@ -1272,8 +1272,9 @@ namespace gpstk
 
          valid |= validSystemScaleFac;
       }
-      else if(label == hsSystemPhaseShift) ///< "SYS / PHASE SHIFT"    R3.01
+      else if(label == hsSystemPhaseShift || label == hsSystemPhaseShift+"S") ///< "SYS / PHASE SHIFT"    R3.01
       {
+            // The above +"S" is that some files pluralize this...
          RinexSatID sat;
             // system
          satSysTemp = strip(line.substr(0,1));
