@@ -15,7 +15,9 @@ wget -q -O - ftp://cddis.gsfc.nasa.gov/gnss/data/highrate/2016/170/16d/01/faa117
 #Rinex 2.11
 wget -q -O - ftp://cddis.gsfc.nasa.gov/pub/gps/data/highrate/2016/170/16d/01/nklg170b00.16d.Z  | zcat | CRX2RNX - | head -n 527 >nklg170b00.16o
 
+# SP3
 wget -q -O - ftp://cddis.gsfc.nasa.gov/gnss/products/1901/igs19016.sp3.Z | zcat | head -n 319 > igs19016.sp3
+
 ```
 
 

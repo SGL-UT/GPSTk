@@ -80,6 +80,9 @@ function(test_app_with_file test_name app_name labels args diff_args)
 endfunction()
 
 
+# This function automates some of the setup of testing an application that generates
+# output to standard output  and differences that against a reference file
+# See Rinextools RinSum for examples of how to use it.
 function(test_app_with_stdout test_name app_name labels args diff_args)
     add_test(NAME ${test_name}
         COMMAND ${CMAKE_COMMAND}

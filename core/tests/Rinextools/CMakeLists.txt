@@ -66,6 +66,18 @@ test_app_with_file(
     -l2 # diff_args
     )
 
+# Test that the output of RinEdit_Header is a valid Rinex Obs file.
+add_test(NAME RinEdit_ValidOutput
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:rowcheck>
+         -DARGS=${GPSTK_TEST_OUTPUT_DIR}/RinEdit_Header.out
+         -DTESTBASE=RinEdit_ValidOutput
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DNODIFF=1
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+set_tests_properties(RinEdit_ValidOutput PROPERTIES DEPENDS RinEdit_Header)
+set_property(TEST RinEdit_ValidOutput PROPERTY LABELS Rinex2)
+
 # Convert 3->2 and keep as much data as possible
 test_app_with_file(
     RinEdit_302to211Mixed # test name
@@ -81,18 +93,32 @@ test_app_with_file(
     "Rinex2 Rinex3"
     --ID\ ${GPSTK_TEST_DATA_DIR}/inputs/igs\ --IF\ FAA100PYF_R_20161700100_15M_01S_MO\ --ver2\ --OD\ ${GPSTK_TEST_OUTPUT_DIR}\ --OF\ RinEdit_302to211GPS.out\ --file\ ${GPSTK_TEST_DATA_DIR}/inputs/RinEdit_GPS_only
     -l2)
-    
-# Test that the output of RinEdit_Header is a valid Rinex Obs file.
-add_test(NAME RinEdit_ValidOutput
-         COMMAND ${CMAKE_COMMAND}
-         -DTEST_PROG=$<TARGET_FILE:rowcheck>
-         -DARGS=${GPSTK_TEST_OUTPUT_DIR}/RinEdit_Header.out
-         -DTESTBASE=RinEdit_ValidOutput
-         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
-         -DNODIFF=1
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
-set_tests_properties(RinEdit_ValidOutput PROPERTIES DEPENDS RinEdit_Header)
-set_property(TEST RinEdit_ValidOutput PROPERTY LABELS Rinex2)
+
+# Edit out the last part of a Rinex3 file
+test_app_with_file(
+    RinEdit_302split1
+    RinEdit
+    "Rinex3"
+    --IF\ ${GPSTK_TEST_DATA_DIR}/inputs/igs/FAA100PYF_R_20161700100_15M_01S_MO\ --OF\ ${GPSTK_TEST_OUTPUT_DIR}/RinEdit_302split1.out\ --TE\ 2016,6,18,1,0,2
+    -l2)
+
+# Edit out the first part of a Rinex3 file
+test_app_with_file(
+    RinEdit_302split2
+    RinEdit
+    "Rinex3"
+    --IF\ ${GPSTK_TEST_DATA_DIR}/inputs/igs/FAA100PYF_R_20161700100_15M_01S_MO\ --OF\ ${GPSTK_TEST_OUTPUT_DIR}/RinEdit_302split2.out\ --TB\ 2016,6,18,1,0,3
+    -l2)
+
+# Combine the previous two files together
+test_app_with_file(
+    RinEdit_302merge
+    RinEdit
+    "Rinex3"
+    --ID\ ${GPSTK_TEST_OUTPUT_DIR}\ --IF\ RinEdit_302split1.out\ --IF\ RinEdit_302split2.out\ --OF\ ${GPSTK_TEST_OUTPUT_DIR}/RinEdit_302merge.out
+    -l2)
+set_tests_properties(RinEdit_302merge PROPERTIES DEPENDS RinEdit_302split1)
+set_tests_properties(RinEdit_302merge PROPERTIES DEPENDS RinEdit_302split2)
 
 
 ###############################################################################
@@ -109,7 +135,19 @@ test_app_with_stdout(RinSum_obspath_v211 RinSum Rinex2
     --obspath\ ${GPSTK_TEST_DATA_DIR}/inputs/igs\ --obs\ faa1170b00.16o
     "-l2 -v")
 
-# Check RinSum with Rinex v3.02 input
+# Check RinSum with  Rinex v2.11 file with more obs
+test_app_with_stdout(RinSum_v211_nklg RinSum Rinex2
+    --obs\ ${GPSTK_TEST_DATA_DIR}/inputs/igs/nklg170b00.16o
+    "-l2 -v")
+
+# Check RinSum with obspath Rinex v3.02 input
 test_app_with_stdout(RinSum_obspath_v302 RinSum Rinex3
     --obspath\ ${GPSTK_TEST_DATA_DIR}/inputs/igs\ --obs\ FAA100PYF_R_20161700100_15M_01S_MO
     "-l2 -v")
+
+# Check RinSum with obspath Rinex v3.03 input
+# Uncomment this when Nathanial's changes make it in
+#test_app_with_stdout(RinSum_v303_ucal RinSum Rinex3
+#    --obs\ ${GPSTK_TEST_DATA_DIR}/inputs/igs/UCAL00CAN_S_20161700100_15M_01S_MO
+#    "-l2 -v")
+
