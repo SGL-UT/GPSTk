@@ -19,20 +19,6 @@ add_test(NAME PRSolve_Required
     -DOWNOUTPUT=1
     -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
 
-# test with minimum required inputs, RINEX output - RINEX obs, SP3 Ephemeris, Solution Descriptor, missing ephemerides
-set( ARGS2 --obs\ ${GPSTK_TEST_DATA_DIR}/arlm200b.15o\ --eph\ ${GPSTK_TEST_DATA_DIR}/test_input_sp3_nav_ephemerisData.sp3\ --sol\ GPS:12:WC\ --out\ PRSolve_Rinexout_EphMissing.out\ --log\ ${TD}/PRSolve_Rinexout_EphMissing.log)
-add_test(NAME PRSolve_Rinexout_EphMissing
-    COMMAND ${CMAKE_COMMAND}
-    -DTEST_PROG=$<TARGET_FILE:PRSolve>
-    -DDIFF_PROG=$<TARGET_FILE:df_diff>
-    -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
-    -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
-    -DTESTBASE=PRSolve_Rinexout_EphMissing
-    -DARGS=${ARGS2}
-    -DDIFF_ARGS=-l52\ -z1
-    -DOWNOUTPUT=1
-    -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
-
 # test with minimum required inputs, RINEX output - RINEX obs, SP3 Ephemeris, Solution Descriptor, adequate ephemerides
 set( ARGS2 --obs\ ${GPSTK_TEST_DATA_DIR}/arlm200b.15o\ --eph\ ${GPSTK_TEST_DATA_DIR}/test_input_sp3_nav_2015_200.sp3\ --sol\ GPS:12:WC\ --out\ ${TD}/PRSolve_Rinexout.out\ --log\ ${TD}/PRSolve_Rinexout.log)
 add_test(NAME PRSolve_Rinexout

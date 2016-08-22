@@ -1,6 +1,5 @@
 # core/tests/Rinextools
 
-set( TD ${GPSTK_TEST_OUTPUT_DIR} )
 ###############################################################################
 # TEST RinDump
 ###############################################################################
@@ -25,6 +24,7 @@ add_test(NAME RinDump_Default_C1C
          -DARGS=${ARGS1}
          -DDIFF_ARGS=-l6\ -z2
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+set_property(TEST RinDump_Default_C1C PROPERTY LABELS Rinex3)
 
 # Test single satellite with C1C data
 set( ARGS2 ${GPSTK_TEST_DATA_DIR}/test_input_rinex3_obs_RinexObsFile.15o\ G05\ C1C\ )
@@ -38,6 +38,7 @@ add_test(NAME RinDump_Single_C1C
          -DARGS=${ARGS2}
          -DDIFF_ARGS=-l6\ -z2
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+set_property(TEST RinDump_Single_C1C PROPERTY LABELS Rinex3)
 
 # Test Sat with C1C data with RINEX 2 file
 set( ARGS2 ${GPSTK_TEST_DATA_DIR}/arlm200a.15o\ G23\ C1C\ )
@@ -51,35 +52,47 @@ add_test(NAME RinDump_Rinex2Input
          -DARGS=${ARGS2}
          -DDIFF_ARGS=-l6\ -z2
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+set_property(TEST RinDump_Rinex2Input PROPERTY LABELS Rinex2)
 
 
 ###############################################################################
 # TEST RinEdit
 ###############################################################################
+test_app_with_file(
+    RinEdit_Header #test_name
+    RinEdit # application name
+    Rinex2  # Lables for reporting
+    --IF\ ${GPSTK_TEST_DATA_DIR}/arlm200a.15o\ --OF\ ${GPSTK_TEST_OUTPUT_DIR}/RinEdit_Header.out\ --HDr\ RIGTC\ --HDx\ 3979316.4389,1050312.2534,4857066.9036\ --HDn\ 11502M002\ --HDm\ GOPE\ --HDa\ RIGTC\ GO\ PECNY
+    -l2 # diff_args
+    )
 
-# Header change test
-add_test(NAME RinEdit_Header
-    COMMAND ${CMAKE_COMMAND}
-    -DTEST_PROG=$<TARGET_FILE:RinEdit>
-    -DTESTBASE=RinEdit_Header
-    -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
-    -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
-    -DARGS=--IF\ ${GPSTK_TEST_DATA_DIR}/arlm200a.15o\ --OF\ ${TD}/RinEdit_Header.out\ --HDr\ RIGTC\ --HDx\ 3979316.4389,1050312.2534,4857066.9036\ --HDn\ 11502M002\ --HDm\ GOPE\ --HDa\ RIGTC\ GO\ PECNY
-    -DOWNOUTPUT=1
-    -DDIFF_PROG=$<TARGET_FILE:df_diff>
-    -DDIFF_ARGS=-l2
-    -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+# Convert 3->2 and keep as much data as possible
+test_app_with_file(
+    RinEdit_302to211Mixed # test name
+    RinEdit # app name
+    "Rinex2 Rinex3" # labels
+    --ID\ ${GPSTK_TEST_DATA_DIR}/inputs/igs\ --IF\ FAA100PYF_R_20161700100_15M_01S_MO\ --ver2\ --OD\ ${GPSTK_TEST_OUTPUT_DIR}\ --OF\ RinEdit_302to211Mixed.out
+    -l2)
 
+# Convert 3->2 and make a GPS only file, uses an input file to configure the editing
+test_app_with_file(
+    RinEdit_302to211GPS
+    RinEdit
+    "Rinex2 Rinex3"
+    --ID\ ${GPSTK_TEST_DATA_DIR}/inputs/igs\ --IF\ FAA100PYF_R_20161700100_15M_01S_MO\ --ver2\ --OD\ ${GPSTK_TEST_OUTPUT_DIR}\ --OF\ RinEdit_302to211GPS.out\ --file\ ${GPSTK_TEST_DATA_DIR}/inputs/RinEdit_GPS_only
+    -l2)
+    
 # Test that the output of RinEdit_Header is a valid Rinex Obs file.
 add_test(NAME RinEdit_ValidOutput
          COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:rowcheck>
-         -DARGS=${TD}/RinEdit_Header.out
+         -DARGS=${GPSTK_TEST_OUTPUT_DIR}/RinEdit_Header.out
          -DTESTBASE=RinEdit_ValidOutput
-         -DTARGETDIR=${TD}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -DNODIFF=1
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
 set_tests_properties(RinEdit_ValidOutput PROPERTIES DEPENDS RinEdit_Header)
+set_property(TEST RinEdit_ValidOutput PROPERTY LABELS Rinex2)
 
 
 ###############################################################################
@@ -87,24 +100,16 @@ set_tests_properties(RinEdit_ValidOutput PROPERTIES DEPENDS RinEdit_Header)
 ###############################################################################
 
 # Check RinSum output with --ycode option
-add_test(NAME RinSum_ycode
-    COMMAND ${CMAKE_COMMAND}
-    -DTEST_PROG=$<TARGET_FILE:RinSum>
-    -DTESTBASE=RinSum_ycode
-    -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
-    -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
-    -DARGS=--ycode\ --obs\ ${GPSTK_TEST_DATA_DIR}/arlm200a.15o\ --quiet
-    -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+test_app_with_stdout(RinSum_ycode RinSum Rinex2
+    --ycode\ --obs\ ${GPSTK_TEST_DATA_DIR}/arlm200a.15o\ --quiet
+    "")
 
 # Check RinSum with obspath and Rinex v2.11 file
-add_test(NAME RinSum_obspath_v211
-    COMMAND ${CMAKE_COMMAND}
-    -DTEST_PROG=$<TARGET_FILE:RinSum>
-    -DDIFF_PROG=$<TARGET_FILE:df_diff>
-    -DTESTBASE=RinSum_obspath_v211
-    -DARGS=--obspath\ ${GPSTK_TEST_DATA_DIR}/inputs/igs\ --obs\ faa1170b00.16o
-    -DDIFF_ARGS=-l\ 2\ -v
-    -DTARGETDIR=${TD}
-    -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}/outputs
-    -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake
-    )
+test_app_with_stdout(RinSum_obspath_v211 RinSum Rinex2
+    --obspath\ ${GPSTK_TEST_DATA_DIR}/inputs/igs\ --obs\ faa1170b00.16o
+    "-l2 -v")
+
+# Check RinSum with Rinex v3.02 input
+test_app_with_stdout(RinSum_obspath_v302 RinSum Rinex3
+    --obspath\ ${GPSTK_TEST_DATA_DIR}/inputs/igs\ --obs\ FAA100PYF_R_20161700100_15M_01S_MO
+    "-l2 -v")

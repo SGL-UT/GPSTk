@@ -298,7 +298,7 @@ namespace gpstk {
       ObsID::validRinexTrackingCodes['S']['5'] = "IQX* ";
 
       //NB 24Jun2013 MGEX data uses 2!
-      //ObsID::validRinexTrackingCodes['C']['1'] = "IQX* ";
+      ObsID::validRinexTrackingCodes['C']['1'] = "IQX* ";
       ObsID::validRinexTrackingCodes['C']['2'] = "IQX* ";
       ObsID::validRinexTrackingCodes['C']['6'] = "IQX* ";
       ObsID::validRinexTrackingCodes['C']['7'] = "IQX* ";
