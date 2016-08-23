@@ -48,6 +48,8 @@
 #else
 #include <direct.h>
 #include <io.h>
+#include <windows.h>
+#include <string>
 #define PATH_MAX _MAX_PATH
 #endif
 
@@ -148,6 +150,9 @@ void FileHunter_T :: init()
    newFile(tempFilePath + "2003" + getFileSep() + "2003_234.data");
    newFile(tempFilePath + "2004" + getFileSep() + "2004_123.data");
    newFile(tempFilePath + "2004" + getFileSep() + "2004_234.data");
+
+
+
 }
 
 
@@ -155,23 +160,23 @@ void FileHunter_T :: init()
 void FileHunter_T :: newDir(const string& path)
 {
    #ifdef WIN32
-   if (_mkdir(path.c_str()) != 0)
-   {
-      if (errno != EEXIST)
+      if (_mkdir(path.c_str()) != 0)
       {
-         string  exc("failed to create test directory: " + path);
-         throw(exc);
+         if (errno != EEXIST)
+         {
+            string  exc("failed to create test directory: " + path);
+            throw(exc);
+         }
       }
-   }
    #else
-   if (mkdir(path.c_str(), 0755) != 0)
-   {
-      if (errno != EEXIST)
+      if (mkdir(path.c_str(), 0755) != 0)
       {
-         string  exc("failed to create test directory: " + path);
-         throw(exc);
+         if (errno != EEXIST)
+         {
+            string  exc("failed to create test directory: " + path);
+            throw(exc);
+         }
       }
-   }
    #endif
 
 
@@ -182,16 +187,20 @@ void FileHunter_T :: newDir(const string& path)
 //---------------------------------------------------------------------------
 void FileHunter_T :: newFile(const string& path)
 {
-   ofstream  ofs(path.c_str(), ios::out);
-   if (!ofs)
-   {
-      string  exc("failed to create test file: " + path);
-      throw(exc);
-   }
-   else
-   {
-      filesToRemove.push_back(path);
-   }
+   
+   #ifdef WIN32
+      CreateFile(path.c_str(), GENERIC_READ, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+   #else
+      ofstream  ofs(path.c_str(), ios::out);
+      if (!ofs)
+      {
+         string  exc("failed to create test file: " + path);
+         throw(exc);
+      }
+   #endif
+
+   filesToRemove.push_back(path);
+
 }
 
 
