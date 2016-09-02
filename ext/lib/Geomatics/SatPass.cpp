@@ -581,7 +581,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 
 // -------------------------- get and set routines ----------------------------
 // NB may be used as rvalue or lvalue
-double& SatPass::data(unsigned int i, string type) throw(Exception)
+double& SatPass::data(unsigned int i, const string &type) throw(Exception)
 {
    if(i >= spdvector.size()) {
       Exception e("Invalid index in data() " + asString(i));

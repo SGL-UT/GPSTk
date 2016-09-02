@@ -2813,7 +2813,7 @@ namespace gpstk
             size_t len = aStr.length();
             rv.reserve(len);
 
-            for (int i = 0; i < len; i++)
+            for (size_t i = 0; i < len; i++)
             {
                char c = aStr[i];
                if (c > 31 && c < 127)  // Handle printable ASCII characters

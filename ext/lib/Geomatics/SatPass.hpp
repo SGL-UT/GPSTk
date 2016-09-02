@@ -103,7 +103,7 @@ protected:
             data.resize(right.data.size());
             lli.resize(right.lli.size());
             ssi.resize(right.ssi.size());
-            int i;
+            unsigned i;
             for(i=0; i<right.data.size(); i++) data[i] = right.data[i];
             for(i=0; i<right.lli.size(); i++) lli[i] = right.lli[i];
             for(i=0; i<right.ssi.size(); i++) ssi[i] = right.ssi[i];
@@ -289,7 +289,7 @@ public:
    /// @param  i    index of the data of interest
    /// @param  type observation type (e.g. "L1") of the data of interest
    /// @return the data of the given type at the given index
-   double& data(unsigned int i, std::string type) throw(Exception);
+   double& data(unsigned int i, const std::string &type) throw(Exception);
 
    /// Access the time offset from the nominal time (i.e. timetag) at one index
    /// (epoch), as either l-value or r-value
@@ -340,7 +340,7 @@ public:
    /// @return the vector of strings giving RINEX obs types
    std::vector<std::string> getObsTypes(void) throw() {
       std::vector<std::string> v;
-      for(int i=0; i<labelForIndex.size(); i++) v.push_back(labelForIndex[i]);
+      for(unsigned i=0; i<labelForIndex.size(); i++) v.push_back(labelForIndex[i]);
       return v;
    }
 
@@ -357,7 +357,7 @@ public:
 
    /// @return the earliest time of good data in this SatPass data
    Epoch getFirstGoodTime(void) const throw() {
-      for(int j=0; j<spdvector.size(); j++) if(spdvector[j].flag & OK) {
+      for(unsigned j=0; j<spdvector.size(); j++) if(spdvector[j].flag & OK) {
          return time(j);
       }
       return CommonTime::END_OF_TIME;
@@ -426,7 +426,7 @@ public:
    /// Access the obstypes (as strings)
    std::vector<std::string> getObstypes(void) {
       std::vector<std::string> ots;
-      for(int i=0; i<labelForIndex.size(); i++)
+      for(unsigned i=0; i<labelForIndex.size(); i++)
          ots.push_back(labelForIndex[i]);
       return ots;
    }
@@ -447,8 +447,8 @@ public:
    {
       int count = countForTime(tt);
       if(count < 0) return -1;
-      for(int i=0; i<spdvector.size(); i++)
-         if(count == spdvector[i].ndt) return i;
+      for(unsigned i=0; i<spdvector.size(); i++)
+         if(count == (int)spdvector[i].ndt) return i;
       return -1;
    }
 
@@ -622,7 +622,7 @@ public:
          << " to " << printTime(getLastTime(),fmt)
          << " obs:";
       std::vector<std::string> ots = getObstypes();
-      for(int i=0; i<ots.size(); i++) os << " " << ots[i];
+      for(unsigned i=0; i<ots.size(); i++) os << " " << ots[i];
       return os.str();
    }
    /// Dump all the data in the pass, one line per timetag.
