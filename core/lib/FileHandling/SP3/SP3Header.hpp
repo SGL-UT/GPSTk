@@ -78,9 +78,10 @@ namespace gpstk
       };
 
          /// constructor
-      SP3Header() : version(undefined), numberOfEpochs(0),
+      SP3Header() : version(undefined),
+                    allowSP3aEvents(false), numberOfEpochs(0),
                     system(1, SP3SatID::systemGPS), timeSystem(TimeSystem::Any),
-                    basePV(0.0), baseClk(0.0), allowSP3aEvents(false)
+                    basePV(0.0), baseClk(0.0)
       {}
 
          /// destructor

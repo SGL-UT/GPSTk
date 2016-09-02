@@ -245,8 +245,8 @@ public:
    /// @return n>=0 if data was added successfully, n is the index of the new data
    ///        -1 if a gap is found (no data is added),
    ///        -2 if time tag is out of order (no data is added)
-   int addData(const Epoch tt, std::vector<std::string>& obstypes,
-                                  std::vector<double>& data) throw(Exception);
+   int addData(const Epoch tt, const std::vector<std::string>& obstypes,
+                               const std::vector<double>& data) throw(Exception);
 
    /// Add vector of data, identified by obstypes (same as used in c'tor) at tt,
    /// Flag, lli and ssi are set using input (parallel to data).
@@ -285,11 +285,17 @@ public:
    /// Access the status; l-value may be assigned SP.status() = 1;
    int& status(void) throw() { return Status; }
 
+   /// Access the (constant) data for one obs type at one index
+   /// @param  i    index of the data of interest
+   /// @param  type observation type (e.g. "L1") of the data of interest
+   /// @return the data of the given type at the given index
+   double data(unsigned int i, const std::string& type) const throw(Exception);
+
    /// Access the data for one obs type at one index, as either l-value or r-value
    /// @param  i    index of the data of interest
    /// @param  type observation type (e.g. "L1") of the data of interest
    /// @return the data of the given type at the given index
-   double& data(unsigned int i, const std::string &type) throw(Exception);
+   double& data(unsigned int i, const std::string& type) throw(Exception);
 
    /// Access the time offset from the nominal time (i.e. timetag) at one index
    /// (epoch), as either l-value or r-value
@@ -301,13 +307,13 @@ public:
    /// @param  i    index of the data of interest
    /// @param  type observation type (e.g. "L1") of the data of interest
    /// @return the LLI of the given type at the given index
-   unsigned short& LLI(unsigned int i, std::string type) throw(Exception);
+   unsigned short& LLI(unsigned int i, const std::string& type) throw(Exception);
 
    /// Access the ssi for one obs type at one index, as either l-value or r-value
    /// @param  i    index of the data of interest
    /// @param  type observation type (e.g. "L1") of the data of interest
    /// @return the SSI of the given type at the given index
-   unsigned short& SSI(unsigned int i, std::string type) throw(Exception);
+   unsigned short& SSI(unsigned int i, const std::string& type) throw(Exception);
 
    // -------------------------------- set only --------------------------------
    /// change the maximum time gap (in seconds) allowed within any SatPass
@@ -338,16 +344,19 @@ public:
 
    /// get the list of obstypes
    /// @return the vector of strings giving RINEX obs types
-   std::vector<std::string> getObsTypes(void) throw() {
+   std::vector<std::string> getObsTypes(void) const throw() {
       std::vector<std::string> v;
-      for(unsigned i=0; i<labelForIndex.size(); i++) v.push_back(labelForIndex[i]);
+      std::map<unsigned int, std::string>::const_iterator li;
+      for (li=labelForIndex.begin(); li!=labelForIndex.end(); ++li) {
+            v.push_back(li->second);
+      }
       return v;
    }
 
    /// get the flag at one index
    /// @param  i    index of the data of interest
    /// @return the flag for the given index
-   unsigned short getFlag(unsigned int i) throw(Exception);
+   unsigned short getFlag(unsigned int i) const throw(Exception);
 
    /// @return the earliest time (full, including toffset) in this SatPass data
    Epoch getFirstTime(void) const throw();
@@ -398,23 +407,24 @@ public:
    /// @param  type1 observation type (e.g. "P1") of the data of interest
    /// @param  type2 observation type (e.g. "C1") of the data of interest
    /// @return the data of the given type at the given index
-   double data(unsigned int i, std::string type1, std::string type2) throw(Exception);
+   double data(unsigned int i, const std::string& type1,
+               const std::string& type2) const throw(Exception);
 
    /// Access the LLI for either of two obs type at one index, as r-value only
    /// @param  i     index of the data of interest
    /// @param  type1 observation type (e.g. "P1") of the data of interest
    /// @param  type2 observation type (e.g. "C1") of the data of interest
    /// @return the LLI of the given type at the given index
-   unsigned short LLI(unsigned int i, std::string type1, std::string type2)
-      throw(Exception);
+   unsigned short LLI(unsigned int i, const std::string& type1,
+                      const std::string& type2) const throw(Exception);
 
    /// Access the ssi for either of two obs type at one index, as r-value only
    /// @param  i     index of the data of interest
    /// @param  type1 observation type (e.g. "P2") of the data of interest
    /// @param  type2 observation type (e.g. "C2") of the data of interest
    /// @return the SSI of the given type at the given index
-   unsigned short SSI(unsigned int i, std::string type1, std::string type2)
-      throw(Exception);
+   unsigned short SSI(unsigned int i, const std::string& type1,
+                      const std::string& type2) const throw(Exception);
 
    /// Test whether the object has obstype type
    /// @return true if this obstype was passed to the c'tor (i.e. is in indexForLabel)
