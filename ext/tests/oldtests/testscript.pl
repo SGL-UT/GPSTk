@@ -1,5 +1,4 @@
 #!/usr/bin/perl
-# $Id$
 
 #            Ryan Mire ARL SGL 
 #                June 2005 

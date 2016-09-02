@@ -12,3 +12,14 @@ build*/
 
 # Sublime Test temp files
 ._*
+
+# Build-system artefacts
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CPackConfig.cmake
+CPackSourceConfig.cmake
+generated/
+GPSTKConfig.cmake
+GPSTKConfigVersion.cmake
+Makefile

@@ -1,6 +1,4 @@
 #!/usr/bin/perl -w
-# $Id$
-#
 #
 # This script eliminates the set of dummy files and directories created
 # by genFileSpecTestDirs. The dummy files/directories are used while

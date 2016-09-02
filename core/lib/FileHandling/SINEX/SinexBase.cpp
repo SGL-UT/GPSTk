@@ -1,5 +1,3 @@
-#pragma ident "$Id: //depot/msn/main/code/shared/gpstk/SinexBase.cpp#6 $"
-
 /**
  * @file SinexBase.cpp
  * Base constants, types, and functions for SINEX files

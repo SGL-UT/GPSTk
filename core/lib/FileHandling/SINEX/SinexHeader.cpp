@@ -1,5 +1,3 @@
-#pragma ident "$Id: //depot/msn/main/code/shared/gpstk/SinexHeader.cpp#4 $"
-
 /**
  * @file SinexHeader.cpp
  * Encapsulate header of SINEX file data, including I/O

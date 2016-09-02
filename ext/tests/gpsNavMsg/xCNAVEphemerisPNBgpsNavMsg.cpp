@@ -35,7 +35,6 @@
 //=============================================================================
 
 /*********************************************************************
-*  $Id:$
 *
 *  Test program from August 2011. Written to test the CNAVEphemeris
 *  and PackedNavBits modules as they were being developed. First, nav

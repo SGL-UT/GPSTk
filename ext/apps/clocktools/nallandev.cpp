@@ -1,4 +1,3 @@
-#pragma ident "$Id$"
 /**********************************************
 / GPSTk: Clock Tools
 / nallandev.cpp
