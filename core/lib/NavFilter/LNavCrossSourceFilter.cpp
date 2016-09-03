@@ -42,8 +42,6 @@ namespace gpstk
          // loop over each PRN/SV
       for (nmi = groupedNav.begin(); nmi != groupedNav.end(); nmi++)
       {
-            // count of unique messages
-         size_t uniqueBits = nmi->second.size();
             // count of total messages
          size_t msgCount = 0;
             // store the vote winner here

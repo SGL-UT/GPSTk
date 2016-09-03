@@ -603,7 +603,6 @@ void SVNumXRef::dump(std::ostream& out) const
 {
       //iterate through the data
    multimap<int,XRefNode>::const_iterator it;
-   bool pastCurrent = false;
       //header
    std::string start_end_h = "                              START"
 							   "                          END\n";
@@ -620,8 +619,6 @@ void SVNumXRef::dump(std::ostream& out) const
    out << "\n\n\n";
       //iterate through the data
    multimap<int,XRefNode>::const_iterator iter;
-      //resest pastCurrent
-   pastCurrent = false;
       //header
    std::string prn_h = "   PRN       SVN    MM/DD/YYYY DOY HH:MM:SS"
 									   "       MM/DD/YYYY DOY HH:MM:SS\n";

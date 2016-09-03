@@ -716,7 +716,7 @@ namespace gpstk
          std::list<RefClkRecord>::iterator itr = refClkList.end();
          --itr;
 
-         if ( itr->numClkRef <= itr->clocks.size() )
+         if ( itr->numClkRef <= (int)itr->clocks.size() )
          {  // Excessive # of clock references - throw
             FFStreamError e("\"ANALYSIS CLK REF\" entry exceeds "
                             "\"# of CLK REF\": " + asString(itr->numClkRef));

@@ -115,7 +115,7 @@ namespace Sinex
          /// Check for valid field dividers
       if (divs != NULL)
       {
-         int  pos;
+         size_t pos;
          for (size_t i = 0; (pos = divs[i]) >= 0; ++i)
          {
             if ( (pos >= sz) || (line[pos] != FIELD_DIV) )

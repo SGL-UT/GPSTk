@@ -61,7 +61,7 @@ namespace gpstk
       
    public:
          /// A Simple Constructor.
-      RinexClockHeader() : valid(0), version(2.00)
+      RinexClockHeader() : version(2.00), valid(0)
       {}
       
          /// Destructor

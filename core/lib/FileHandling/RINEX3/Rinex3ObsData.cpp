@@ -477,7 +477,8 @@ namespace gpstk
       if(rod.epochFlag==0 || rod.epochFlag==1 || rod.epochFlag==6)
       {
             // first read the SatIDs off the epoch line
-         int isv, ndx, line_ndx;
+         unsigned isv, line_ndx;
+         int ndx;
          string satsys;
          RinexSatID sat;
          vector<RinexSatID> satIndex(rod.numSVs);
