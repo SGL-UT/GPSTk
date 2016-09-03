@@ -141,6 +141,7 @@ void FileUtils_T :: cleanup()
 int FileUtils_T :: testMakeDir()
 {
    TestUtil  tester( "FileUtils", "makeDir", __FILE__, __LINE__ );
+   const mode_t oldUmask = umask(0);
 
    // @note - These tests are kinda odd because makeDir always returns 0
    //         regardless of success or failure.
@@ -241,6 +242,7 @@ int FileUtils_T :: testMakeDir()
       tester.assert( false, "unexpected exception", __LINE__ );
    }
 
+   umask(oldUmask);
    return tester.countFails();
 }
 
