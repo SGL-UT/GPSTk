@@ -474,8 +474,8 @@ namespace gpstk
 
          // Now we will take care of satellite-indexed variables inside each
          // specific "Equation" in "currentEquationsList"
-      size_t eqListSize( currentEquationsList.size() );
-      for( int i = 0; i < eqListSize; ++i )
+      const size_t eqListSize( currentEquationsList.size() );
+      for( size_t i = 0; i < eqListSize; ++i )
       {
 
             // Get a copy of first equation on 'currentEquationsList'

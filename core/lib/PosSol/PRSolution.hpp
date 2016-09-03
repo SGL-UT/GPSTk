@@ -463,7 +463,7 @@ namespace gpstk
       double Convergence;
 
       /// the number of good satellites used in the final computation
-      int Nsvs;
+      unsigned Nsvs;
 
       /// if true, the solution was constructed from a mixed dataset, including
       /// both GPS and Glonass satellites. This means the Solution vector will have

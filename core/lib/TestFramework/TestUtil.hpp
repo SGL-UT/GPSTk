@@ -682,7 +682,7 @@ namespace gpstk
                // Use a flag because break/continue in C++ doesn't
                // allow you to skip multiple levels.
             bool ignore = false;
-            for (int i = 0; i < ignoreRegex.size(); i++)
+            for (size_t i = 0; i < ignoreRegex.size(); i++)
             {
                if (gpstk::StringUtils::isLike(refLine, ignoreRegex[i]))
                {

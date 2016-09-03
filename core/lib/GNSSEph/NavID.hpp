@@ -105,7 +105,8 @@ namespace gpstk
             case ntGloCivilF:    {retVal = NavTypeStrings[6];     break;}
             case ntGloCivilC:    {retVal = NavTypeStrings[7];     break;}
             case ntGalOS:        {retVal = NavTypeStrings[8];     break;}
-            default: ntUnknown:  {retVal = NavTypeStrings[9];     break;}
+            case ntUnknown:       // fall through...
+            default:             {retVal = NavTypeStrings[9];     break;}
          };
          //return retVal in case switch isn't reached
         return retVal;

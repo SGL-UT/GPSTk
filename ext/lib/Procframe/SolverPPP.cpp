@@ -383,7 +383,7 @@ covariance matrix.");
 
          Vector<double> prefitC(gData.getVectorOfTypeID(defaultEqDef.header));
          Vector<double> prefitL(gData.getVectorOfTypeID(TypeID::prefitL));
-         for( int i=0; i<numCurrentSV; i++ )
+         for( size_t i=0; i<numCurrentSV; i++ )
          {
             measVector( i                ) = prefitC(i);
             measVector( numCurrentSV + i ) = prefitL(i);
@@ -405,7 +405,7 @@ covariance matrix.");
             Vector<double>
                weightsVector(gData.getVectorOfTypeID(TypeID::weight));
 
-            for( int i=0; i<numCurrentSV; i++ )
+            for( size_t i=0; i<numCurrentSV; i++ )
             {
 
                rMatrix( i               , i         ) = weightsVector(i);
@@ -419,7 +419,7 @@ covariance matrix.");
          {
 
                // If weights don't match, assign generic weights
-            for( int i=0; i<numCurrentSV; i++ )
+            for( size_t i=0; i<numCurrentSV; i++ )
             {
                rMatrix( i               , i         ) = 1.0;
 
@@ -440,7 +440,7 @@ covariance matrix.");
          Matrix<double> dMatrix(gData.body.getMatrixOfTypes(defaultEqDef.body));
 
             // Let's fill 'hMatrix'
-         for( int i=0; i<numCurrentSV; i++ )
+         for( size_t i=0; i<numCurrentSV; i++ )
          {
 
                // First, fill the coefficients related to tropo, coord and clock
@@ -698,7 +698,7 @@ covariance matrix.");
             // Now we have to add the new values to the data structure
          Vector<double> postfitCode(numCurrentSV,0.0);
          Vector<double> postfitPhase(numCurrentSV,0.0);
-         for( int i=0; i<numCurrentSV; i++ )
+         for( size_t i=0; i<numCurrentSV; i++ )
          {
             postfitCode(i)  = postfitResiduals( i                );
             postfitPhase(i) = postfitResiduals( i + numCurrentSV );

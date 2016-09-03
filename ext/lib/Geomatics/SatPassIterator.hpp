@@ -98,7 +98,7 @@ public:
    /// @return the earliest time of good data in this SatPass list
    Epoch getFirstGoodTime(void) const throw() {
       Epoch ttag = LastTime;
-      for(int i=0; i<SPList.size(); i++)
+      for(size_t i=0; i<SPList.size(); i++)
          if(SPList[i].getFirstGoodTime() < ttag)
             ttag = SPList[i].getFirstGoodTime();
       return ttag;
@@ -107,7 +107,7 @@ public:
    /// @return the latest time of good data in this SatPass list
    Epoch getLastGoodTime(void) const throw() {
       Epoch ttag = FirstTime;
-      for(int i=0; i<SPList.size(); i++)
+      for(size_t i=0; i<SPList.size(); i++)
          if(SPList[i].getLastGoodTime() > ttag)
             ttag = SPList[i].getLastGoodTime();
       return ttag;
