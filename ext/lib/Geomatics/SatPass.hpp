@@ -100,13 +100,10 @@ protected:
             flag = right.flag;
             ndt = right.ndt;
             toffset = right.toffset;
-            data.resize(right.data.size());
-            lli.resize(right.lli.size());
-            ssi.resize(right.ssi.size());
-            unsigned i;
-            for(i=0; i<right.data.size(); i++) data[i] = right.data[i];
-            for(i=0; i<right.lli.size(); i++) lli[i] = right.lli[i];
-            for(i=0; i<right.ssi.size(); i++) ssi[i] = right.ssi[i];
+
+            data = right.data;
+            lli = right.lli;
+            ssi = right.ssi;
          }
 
          return *this;
@@ -126,8 +123,21 @@ protected:
    RinexSatID sat;
 
    /// STL map relating strings identifying obs types with indexes in SatPassData
-   std::map<std::string,unsigned int> indexForLabel;
-   std::map<unsigned int,std::string> labelForIndex;
+   typedef std::map<std::string, unsigned> LabelToIndexMap;
+   typedef std::map<unsigned, std::string> IndexToLabelMap;
+   LabelToIndexMap indexForLabel;
+   IndexToLabelMap labelForIndex;
+
+   inline unsigned findValidLabel(const std::string& type) const throw(Exception) {
+     const LabelToIndexMap::const_iterator it = indexForLabel.find(type);
+
+     if (it == indexForLabel.end()) {
+       Exception e("Invalid obs type " + type);
+       GPSTK_THROW(e);
+     }
+
+     return it->second;
+   }
 
       // above determined at construction; the rest determined by input data
 
@@ -153,7 +163,8 @@ protected:
    int push_back(const Epoch tt, SatPassData& spd) throw();
 
    /// get a complete SatPassData at count i
-   struct SatPassData getData(unsigned int i) const throw(Exception);
+   const SatPassData& getData(unsigned int i) const throw(Exception);
+   SatPassData& getData(unsigned int i) throw(Exception);
 
 public:
    // ------------------ friends --------------------------------------

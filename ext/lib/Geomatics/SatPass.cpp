@@ -183,7 +183,7 @@ int SatPass::addData(const RinexObsData& robs) throw()
 
    RinexObsData::RinexSatMap::const_iterator it;
    RinexObsData::RinexObsTypeMap::const_iterator jt;
-   map<string,unsigned int>::const_iterator kt;
+   LabelToIndexMap::const_iterator kt;
    SatPassData spd(indexForLabel.size());
 
    // loop over satellites
@@ -258,7 +258,7 @@ try {
 
    // make sure L1, L2, C1/P1, P2 are present
    bool useC1=false;
-   map<string, unsigned int>::const_iterator it;
+   LabelToIndexMap::const_iterator it;
    if(indexForLabel.find("L1") == indexForLabel.end() ||
       indexForLabel.find("L2") == indexForLabel.end() ||
       (indexForLabel.find("C1") == indexForLabel.end() &&
@@ -580,70 +580,30 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 }
 
 // -------------------------- get and set routines ----------------------------
-// NB may be used as rvalue or lvalue
 double SatPass::data(unsigned int i, const string& type) const throw(Exception)
 {
-   if(i >= spdvector.size()) {
-      Exception e("Invalid index in data() " + asString(i));
-      GPSTK_THROW(e);
-   }
-   map<string, unsigned int>::const_iterator it;
-   if((it = indexForLabel.find(type)) == indexForLabel.end()) {
-      Exception e("Invalid obs type in data() " + type);
-      GPSTK_THROW(e);
-   }
-   return spdvector[i].data[it->second];
+  return getData(i).data[findValidLabel(type)];
 }
 
+// NB may be used as rvalue or lvalue
 double& SatPass::data(unsigned int i, const string& type) throw(Exception)
 {
-   if(i >= spdvector.size()) {
-      Exception e("Invalid index in data() " + asString(i));
-      GPSTK_THROW(e);
-   }
-   map<string, unsigned int>::const_iterator it;
-   if((it = indexForLabel.find(type)) == indexForLabel.end()) {
-      Exception e("Invalid obs type in data() " + type);
-      GPSTK_THROW(e);
-   }
-   return spdvector[i].data[it->second];
+  return getData(i).data[findValidLabel(type)];
 }
 
 double& SatPass::timeoffset(unsigned int i) throw(Exception)
 {
-   if(i >= spdvector.size()) {
-      Exception e("Invalid index in timeoffset() " + asString(i));
-      GPSTK_THROW(e);
-   }
-   return spdvector[i].toffset;
+  return getData(i).toffset;
 }
 
 unsigned short& SatPass::LLI(unsigned int i, const string& type) throw(Exception)
 {
-   if(i >= spdvector.size()) {
-      Exception e("Invalid index in LLI() " + asString(i));
-      GPSTK_THROW(e);
-   }
-   map<string, unsigned int>::const_iterator it;
-   if((it = indexForLabel.find(type)) == indexForLabel.end()) {
-      Exception e("Invalid obs type in LLI() " + type);
-      GPSTK_THROW(e);
-   }
-   return spdvector[i].lli[it->second];
+  return getData(i).lli[findValidLabel(type)];
 }
 
 unsigned short& SatPass::SSI(unsigned int i, const string& type) throw(Exception)
 {
-   if(i >= spdvector.size()) {
-      Exception e("Invalid index in SSI() " + asString(i));
-      GPSTK_THROW(e);
-   }
-   map<string, unsigned int>::const_iterator it;
-   if((it = indexForLabel.find(type)) == indexForLabel.end()) {
-      Exception e("Invalid obs type in SSI() " + type);
-      GPSTK_THROW(e);
-   }
-   return spdvector[i].ssi[it->second];
+  return getData(i).ssi[findValidLabel(type)];
 }
 
 // ---------------------------------- set routines ----------------------------
@@ -690,15 +650,13 @@ Epoch SatPass::getLastTime(void) const throw() { return time(spdvector.size()-1)
 double SatPass::data(unsigned int i, const string& type1,
                      const string& type2) const throw(Exception)
 {
-   if(i >= spdvector.size()) {
-      Exception e("Invalid index in data() " + asString(i));
-      GPSTK_THROW(e);
-   }
-   map<string, unsigned int>::const_iterator it;
+   const SatPassData& spd_i = getData(i);
+   LabelToIndexMap::const_iterator it;
+
    if((it = indexForLabel.find(type1)) != indexForLabel.end())
-      return spdvector[i].data[it->second];
+      return spd_i.data[it->second];
    else if((it = indexForLabel.find(type2)) != indexForLabel.end())
-      return spdvector[i].data[it->second];
+      return spd_i.data[it->second];
    else {
       Exception e("Invalid obs types in data() " + type1 + " " + type2);
       GPSTK_THROW(e);
@@ -708,15 +666,13 @@ double SatPass::data(unsigned int i, const string& type1,
 unsigned short SatPass::LLI(unsigned int i, const string& type1,
                             const string& type2) const throw(Exception)
 {
-   if(i >= spdvector.size()) {
-      Exception e("Invalid index in LLI() " + asString(i));
-      GPSTK_THROW(e);
-   }
-   map<string, unsigned int>::const_iterator it;
+   const SatPassData& spd_i = getData(i);
+   LabelToIndexMap::const_iterator it;
+
    if((it = indexForLabel.find(type1)) != indexForLabel.end())
-      return spdvector[i].lli[it->second];
+      return spd_i.lli[it->second];
    else if((it = indexForLabel.find(type2)) != indexForLabel.end())
-      return spdvector[i].lli[it->second];
+      return spd_i.lli[it->second];
    else {
       Exception e("Invalid obs types in LLI() " + type1 + " " + type2);
       GPSTK_THROW(e);
@@ -726,15 +682,13 @@ unsigned short SatPass::LLI(unsigned int i, const string& type1,
 unsigned short SatPass::SSI(unsigned int i, const string& type1,
                             const string& type2) const throw(Exception)
 {
-   if(i >= spdvector.size()) {
-      Exception e("Invalid index in SSI() " + asString(i));
-      GPSTK_THROW(e);
-   }
-   map<string, unsigned int>::const_iterator it;
+   const SatPassData& spd_i = getData(i);
+   LabelToIndexMap::const_iterator it;
+
    if((it = indexForLabel.find(type1)) == indexForLabel.end())
-      return spdvector[i].ssi[it->second];
+      return spd_i.ssi[it->second];
    else if((it = indexForLabel.find(type2)) == indexForLabel.end())
-      return spdvector[i].ssi[it->second];
+      return spd_i.ssi[it->second];
    else {
       Exception e("Invalid obs types in SSI() " + type1 + " " + type2);
       GPSTK_THROW(e);
@@ -745,12 +699,10 @@ unsigned short SatPass::SSI(unsigned int i, const string& type1,
 // return the time corresponding to the given index in the data array
 Epoch SatPass::time(unsigned int i) const throw(Exception)
 {
-   if(i >= spdvector.size()) {
-      Exception e("Invalid index in time() " + asString(i));
-      GPSTK_THROW(e);
-   }
+   const SatPassData& spd_i = getData(i);
+
    // computing toff first is necessary to avoid a rare bug in Epoch..
-   double toff = spdvector[i].ndt * dt + spdvector[i].toffset;
+   const double toff = spd_i.ndt * dt + spd_i.toffset;
    return (firstTime + toff);
 }
 
@@ -771,7 +723,7 @@ bool SatPass::includesTime(const Epoch& tt) const throw()
 // return true if successful.
 bool SatPass::split(int N, SatPass &newSP) {
 try {
-   int i,j,n,oldgood,ilast;
+   int j,n,oldgood,ilast;
    Epoch tt;
 
    newSP = SatPass(sat, dt);                       // create new SatPass
@@ -781,7 +733,7 @@ try {
 
    oldgood = ngood;
    ngood = ilast = 0;
-   for(i=0; i<spdvector.size(); i++) {             // loop over all data
+   for(size_t i=0; i<spdvector.size(); i++) {             // loop over all data
       n = spdvector[i].ndt;
       tt = time(i);
       if(n < N) {                                     // keep in this SatPass
@@ -931,8 +883,19 @@ int SatPass::push_back(const Epoch tt, SatPassData& spd) throw()
    return (spdvector.size()-1);
 }
 
-// get one element of the data array of this SatPass (private)
-struct SatPass::SatPassData SatPass::getData(unsigned int i) const
+// get one (r-value) element of the data array of this SatPass (private)
+const SatPass::SatPassData& SatPass::getData(unsigned int i) const
+   throw(Exception)
+{
+   if(i >= spdvector.size()) {         // TD ?? keep this - its private
+      Exception e("invalid in getData() " + asString(i));
+      GPSTK_THROW(e);
+   }
+   return spdvector[i];
+}
+
+// get one (l-value) element of the data array of this SatPass (private)
+SatPass::SatPassData& SatPass::getData(unsigned int i)
    throw(Exception)
 {
    if(i >= spdvector.size()) {         // TD ?? keep this - its private
