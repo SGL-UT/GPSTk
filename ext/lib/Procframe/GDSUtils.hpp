@@ -389,8 +389,6 @@ namespace gpstk
       ofstream ofs(file.c_str(),ios::binary);
 
       gnssDataMapBin gdsMapBin(gdsMap,ofs);
-
-      return;
    }
 
       /// Load the data of gnssDataMap object from a binary file

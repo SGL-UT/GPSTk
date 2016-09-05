@@ -383,7 +383,7 @@ namespace gpstk
 
 
          /// Number of measurements
-      int numMeas;
+      size_t numMeas;
 
 
          /// Pointer to stochastic model for dx (or dLat) coordinate

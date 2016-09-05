@@ -204,6 +204,5 @@ namespace gpstk
    void GenXSequence::setLengthOfSequence( int los )
    {
       lengthOfSequence = los;
-      return;
    }
 }     //    end of namespace

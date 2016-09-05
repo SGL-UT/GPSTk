@@ -1440,8 +1440,6 @@ namespace gpstk
          // Load header of Antex File
       loadHeader();
 
-      return;
-
    }  // End of method 'AntexReader::open()'
 
 
@@ -1468,8 +1466,6 @@ namespace gpstk
 
          // Load header of Antex File
       loadHeader();
-
-      return;
 
    }  // End of method 'AntexReader::open()'
 

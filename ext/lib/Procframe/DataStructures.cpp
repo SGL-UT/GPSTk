@@ -1794,8 +1794,6 @@ in matrix and number of types do not match") );
 
       }
 
-      return;
-
    }  // End of method 'gnssDataMap::pop_front()'
 
 
@@ -1866,8 +1864,6 @@ in matrix and number of types do not match") );
 
       }
 
-      return;
-
    }  // End of method 'gnssDataMap::pop_front_epoch()'
 
 
@@ -1912,8 +1908,6 @@ in matrix and number of types do not match") );
          (*this).erase( --pos );
 
       }
-
-      return;
 
    }  // End of method 'gnssDataMap::pop_back()'
 
@@ -1984,8 +1978,6 @@ in matrix and number of types do not match") );
          }
 
       }
-
-      return;
 
    }  // End of method 'gnssDataMap::pop_back_epoch()'
 

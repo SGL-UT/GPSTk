@@ -159,9 +159,6 @@ namespace gpstk
       // Open data stream
       FFTextStream::open(fn, std::ios::in);
       loadData();
-
-      return;
-
    }  // End of method 'DCBDataReader::open()'
 
 
@@ -177,8 +174,6 @@ namespace gpstk
       // Open data stream
       FFTextStream::open(fn.c_str(), std::ios::in);
       loadData();
-
-      return;
    }  // End of method 'DCBDataReader::open()'
 
       // return P1-P2 or P1-C1 depend what you have loaded

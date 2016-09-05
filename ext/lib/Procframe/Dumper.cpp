@@ -221,8 +221,6 @@ namespace gpstk
 
       }  // End of 'for( typeValueMap::const_iterator itObs = ... )'
 
-      return;
-
    }  // End of method 'Dumper::printTypeID()'
 
 

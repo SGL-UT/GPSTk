@@ -178,8 +178,6 @@ namespace gpstk
          // Open data stream
       FFTextStream::open(fn, std::ios::in);
       loadData();
-
-      return;
    }  // End of method 'BLQDataReader::open()'
 
 

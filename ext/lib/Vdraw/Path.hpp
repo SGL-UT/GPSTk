@@ -184,7 +184,6 @@ namespace vdraw
       { 
         originX = X; 
         originY = Y; 
-        return; 
       }
 
       /**
@@ -196,7 +195,6 @@ namespace vdraw
       { 
         X = originX; 
         Y = originY; 
-        return; 
       }
 
       /**

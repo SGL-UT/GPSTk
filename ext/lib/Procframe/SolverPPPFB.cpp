@@ -504,8 +504,6 @@ namespace gpstk
          // Remove satellites with missing data
       gData.removeSatID(satRejectedSet);
 
-      return;
-
    }  // End of method 'SolverPPPFB::checkLimits()'
 
 

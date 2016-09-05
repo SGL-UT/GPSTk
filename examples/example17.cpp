@@ -1059,9 +1059,6 @@ void example17::process()
       // The rest of the processing will be in method 'example17::shutDown()'
 
    cerr << "End of Preprocessing" << endl;
-
-   return;
-
 }  // End of 'example17::process()'
 
 

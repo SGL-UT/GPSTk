@@ -77,9 +77,6 @@ namespace gpstk
       setPreviousTime(currentTime);
 
       setCurrentTime(gData.header.epoch);
-
-      return;
-
    }  // End of method 'RandomWalkModel::Prepare()'
 
 
@@ -99,9 +96,6 @@ namespace gpstk
       setPreviousTime(currentTime);
 
       setCurrentTime(gData.header.epoch);
-
-      return;
-
    }  // End of method 'RandomWalkModel::Prepare()'
 
 
@@ -205,8 +199,6 @@ namespace gpstk
          setCS(true);
       }
 
-      return;
-
    } // End of method 'PhaseAmbiguityModel::checkCS()'
 
 
@@ -266,9 +258,6 @@ namespace gpstk
 
          // Fourth, prepare for next iteration updating previous epoch
       setPreviousTime(source, tmData[source].currentTime);
-
-      return;
-
    }  // End of method 'TropoRandomWalkModel::Prepare()'
 
 
@@ -296,8 +285,6 @@ namespace gpstk
          // Fourth, prepare for next iteration updating previous epoch
       setPreviousTime(source, tmData[source].currentTime);
 
-      return;
-
    }  // End of method 'TropoRandomWalkModel::Prepare()'
 
 
@@ -319,8 +306,6 @@ namespace gpstk
       variance = tmData[ source ].qprime
                  * std::abs( tmData[ source ].currentTime
                            - tmData[ source ].previousTime );
-
-      return;
 
    }  // End of method 'TropoRandomWalkModel::computeQ()'
 

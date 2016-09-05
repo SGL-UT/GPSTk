@@ -264,10 +264,6 @@ namespace gpstk
 
          // Insert the corresponding SourceID's in "currentSourceSet"
       currentSourceSet = gdsMap.getSourceIDSet();
-
-         // Let's return
-      return;
-
    }  // End of method 'EquationSystem::prepareCurrentSourceSat()'
 
 
@@ -586,9 +582,6 @@ namespace gpstk
          ++i;
       }
 
-
-      return;
-
    }  // End of method 'EquationSystem::getPhiQ()'
 
 
@@ -617,9 +610,6 @@ namespace gpstk
 
          // Then, finally get prefit residuals into appropriate gpstk::Vector
       measVector = tempPrefit;
-
-      return;
-
    }  // End of method 'EquationSystem::getPrefit()'
 
 
@@ -798,9 +788,6 @@ namespace gpstk
          ++row;
 
       }  // End of 'std::list<Equation>::const_iterator itRow = ...'
-
-
-      return;
 
    }  // End of method 'EquationSystem::getGeometryWeights()'
 

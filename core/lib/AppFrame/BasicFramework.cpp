@@ -54,9 +54,9 @@ namespace gpstk
    BasicFramework :: BasicFramework( const string& applName,
                                      const string& applDesc )
       throw()
-         : debugLevel(0),
+         : exitCode(0),
+           debugLevel(0),
            verboseLevel(0),
-           exitCode(0),
            argv0(applName),
            appDesc(applDesc),
            debugOption('d', "debug", "Increase debug level"),

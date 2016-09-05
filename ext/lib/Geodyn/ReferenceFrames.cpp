@@ -300,9 +300,6 @@ namespace gpstk
       POM = Ry(-xp) * Rx(-yp);
       
       // All Matrix are ready now
-
-      return;
-      
    }  // End of method 'ReferenceFrames::J2kToECEFMatrix()'
 
 

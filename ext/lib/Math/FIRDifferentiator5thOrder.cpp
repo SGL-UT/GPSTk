@@ -99,10 +99,6 @@ namespace gpstk
 
          // Filter state is invalid
       valid = false;
-
-         // Return
-      return;
-
    }  // End of constructor 'FIRDifferentiator5thOrder::Reset()'
 
 
@@ -143,9 +139,7 @@ namespace gpstk
       k4 = k1*(300.0);
       k5 = k1*(1050.0);
 
-         // Filter parameters are set. Let's return
-      return;
-
+         // Filter parameters are set.
    }  // End of method 'FIRDifferentiator5thOrder::Init()'
 
 

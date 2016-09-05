@@ -197,9 +197,6 @@ namespace gpstk
 
       a = 0.3989422804014327 / sigma;
       b = -0.5 / (sigma*sigma);
-
-      return;
-
    }  // End of method 'GaussianDistribution::recompute()'
 
 

@@ -410,9 +410,6 @@ void example5::process()
       }
 
    }  // End of 'while( rObsFile >> rData )'
-
-   return;
-
 }  // End of 'example5::process()'
 
 

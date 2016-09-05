@@ -185,29 +185,14 @@ namespace gpstk
 
          // Load data
       loadData();
-
-      return;
-
    }  // End of method 'SatDataReader::open()'
 
 
       // Method to open AND load satellite data file.
    void SatDataReader::open(const string& fn)
    {
-
-         // We need to be sure current data stream is closed
-      (*this).close();
-
-         // Open data stream
-      FFTextStream::open(fn.c_str(), std::ios::in);
-
-         // Load data
-      loadData();
-
-      return;
-
-   }  // End of method 'SatDataReader::open()'
-
+      SatDataReader::open(fn.c_str());
+   }
 
 
       /* Method to get the block type of a given SV at a given epoch.

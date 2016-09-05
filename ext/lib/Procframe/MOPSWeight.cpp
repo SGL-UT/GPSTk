@@ -220,7 +220,7 @@ compute weights.");
       throw(InvalidWeights)
    {
 
-      size_t N( Satellites.size() );
+      int N( Satellites.size() );
 
       double sigma2rx;    // Receiver noise sigma^2 in meters^2
 
@@ -308,9 +308,6 @@ compute weights.");
                                     // satellites or not
       availableSV = sIura.availableSV;
       rejectedSV = sIura.rejectedSV;
-
-      return;
-
     } // End of method 'MOPSWeight::Compute()'
 
 
