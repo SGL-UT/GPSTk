@@ -112,7 +112,12 @@ namespace gpstk
    void FFStream ::
    init( const char* fn, std::ios::openmode mode )
    {
-      close();
+      //close will fail if the stream is not currently open
+      //This will throw an exception is the fstream is set to
+      //throw exceptions on failures (exceptions(ifstream::failbit))
+      if(is_open())
+         close();
+      
       clear();
       filename = std::string(fn);
       recordNumber = 0;
