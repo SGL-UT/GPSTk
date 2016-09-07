@@ -146,7 +146,7 @@ int FileUtils_T :: testMakeDir()
    //         regardless of success or failure.
 
    string  dir;
-   
+   cout << "-----------------" << endl;
    try   // empty path
    {
       tester.assert( (0 == FileUtils::makeDir(dir, 0755) ), "empty (return)", __LINE__ );
@@ -162,11 +162,13 @@ int FileUtils_T :: testMakeDir()
    {
       struct stat  statbuf;
       dir = tempFilePath + getFileSep() + testPrefix + "dir2";
-      dirsToRemove.push_back(dir);
       tester.assert( (0 == FileUtils::makeDir(dir, 0755) ), "absolute (return)", __LINE__ );
       tester.assert( (0 == stat(dir.c_str(), &statbuf) ),   "absolute (exists)", __LINE__ );
       tester.assert( S_ISDIR(statbuf.st_mode),              "absolute (dir)",    __LINE__ );
-      tester.assert( ( (statbuf.st_mode & 0777) == 0755),   "absolute (mode)",   __LINE__ );
+      #ifndef WIN32 
+         tester.assert( ( (statbuf.st_mode & 0777) == 0755),   "absolute (mode)",   __LINE__ );
+      #endif
+
    }
    catch (...)
    {
@@ -196,7 +198,9 @@ int FileUtils_T :: testMakeDir()
       tester.assert( (0 == FileUtils::makeDir(dir, 0755) ), "existing (return)", __LINE__ );
       tester.assert( (0 == stat(dir.c_str(), &statbuf) ),   "existing (exists)", __LINE__ );
       tester.assert( S_ISDIR(statbuf.st_mode),              "existing (dir)",    __LINE__ );
-      tester.assert( ( (statbuf.st_mode & 0777) == 0755),   "existing (mode)",   __LINE__ );
+      #ifndef WIN32 
+         tester.assert( ( (statbuf.st_mode & 0777) == 0755),   "existing (mode)",   __LINE__ );
+      #endif
    }
    catch (...)
    {
@@ -211,7 +215,9 @@ int FileUtils_T :: testMakeDir()
       tester.assert( (0 == FileUtils::makeDir(dir, 0755) ), "trailing (return)", __LINE__ );
       tester.assert( (0 == stat(dir.c_str(), &statbuf) ),   "trailing (exists)", __LINE__ );
       tester.assert( S_ISDIR(statbuf.st_mode),              "trailing (dir)",    __LINE__ );
-      tester.assert( ( (statbuf.st_mode & 0777) == 0755),   "trailing (mode)",   __LINE__ );
+      #ifndef WIN32 
+         tester.assert( ( (statbuf.st_mode & 0777) == 0755),   "trailing (mode)",   __LINE__ );
+      #endif
    }
    catch (...)
    {
@@ -234,7 +240,9 @@ int FileUtils_T :: testMakeDir()
       tester.assert( (0 == FileUtils::makeDir(dir, 0755) ), "recursion (return)", __LINE__ );
       tester.assert( (0 == stat(dir.c_str(), &statbuf) ),   "recursion (exists)", __LINE__ );
       tester.assert( S_ISDIR(statbuf.st_mode),              "recursion (dir)",    __LINE__ );
-      tester.assert( ( (statbuf.st_mode & 0777) == 0755),   "recursion (mode)",   __LINE__ );
+      #ifndef WIN32 
+         tester.assert( ( (statbuf.st_mode & 0777) == 0755),   "recursion (mode)",   __LINE__ );
+      #endif
    }
    catch (...)
    {
