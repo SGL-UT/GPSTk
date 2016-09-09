@@ -175,7 +175,11 @@ namespace gpstk
       const SatID sat,
       const XvtStore<SatID>& eph)
    {
-      try {
+      try
+      {
+         Position trx(rx);
+         trx.asECEF();
+
          svPosVel = eph.getXvt(sat, tt_nom);
 
          // compute rotation angle in the time of signal transit
@@ -194,8 +198,8 @@ namespace gpstk
          svPosVel.x[1] = svPosVel.x[1] + svPosVel.x[0] * rotation_angle;
          svPosVel.x[2] = svPosVel.x[2];
 
-         rawrange =rx.slantRange(svPosVel.x);
-         updateCER(rx);
+         rawrange = trx.slantRange(svPosVel.x);
+         updateCER(trx);
 
          return rawrange - svclkbias - relativity;
       }
