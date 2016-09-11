@@ -54,6 +54,13 @@ add_test(NAME RinDump_Rinex2Input
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
 set_property(TEST RinDump_Rinex2Input PROPERTY LABELS Rinex2)
 
+test_app_with_stdout(
+    RinDump_211Mixed
+    RinDump
+    Rinex2
+    ${GPSTK_TEST_DATA_DIR}/inputs/igs/faa1170b00.16o\ GCIC\ RC1C\ EC1B\ SC5X
+    "-l6 -z1")
+
 
 ###############################################################################
 # TEST RinEdit

@@ -17,7 +17,6 @@ wget -q -O - ftp://cddis.gsfc.nasa.gov/pub/gps/data/highrate/2016/170/16d/01/nkl
 
 # SP3
 wget -q -O - ftp://cddis.gsfc.nasa.gov/gnss/products/1901/igs19016.sp3.Z | zcat | head -n 319 > igs19016.sp3
-
 ```
 
 
