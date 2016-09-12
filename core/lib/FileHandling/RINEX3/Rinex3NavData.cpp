@@ -15,7 +15,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -23,13 +23,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -484,19 +484,19 @@ namespace gpstk
       // the accuracy flag.  We'll give it zero and pass the accuracy
       // separately via the setAccuracy() method.
 
-      ee.tlm_message[0] = 0;           
+      ee.tlm_message[0] = 0;
       ee.tlm_message[1] = 0;
       ee.tlm_message[2] = 0;
-      ee.HOWtime[0] = HOWtime;  // RINEX does not actually specify 
+      ee.HOWtime[0] = HOWtime;  // RINEX does not actually specify
       ee.HOWtime[1] = HOWtime;  // how the transmit time is derived.  Therefore,
-      ee.HOWtime[2] = HOWtime;  // These values may be misleading.  
+      ee.HOWtime[2] = HOWtime;  // These values may be misleading.
       ee.ASalert[0] = 1;               //AS and alert flags set to 1 (default)
       ee.ASalert[1] = 1;
       ee.ASalert[2] = 1;
 
       ee.weeknum    = weeknum;
       ee.codeflags  = codeflgs;
-      ee.health     = health;  
+      ee.health     = health;
       ee.IODC       = short(IODC);
       ee.L2Pdata    = L2Pdata;
       ee.Tgd        = Tgd;
@@ -523,10 +523,10 @@ namespace gpstk
       ee.bcClock.loadData( satSys, obsID, PRNID, tocCT,
                         accFlag, healthy, af0, af1, af2);
 
-      ee.IODE    = short(IODE);      
+      ee.IODE    = short(IODE);
       ee.fitint  = (fitint > 4) ? 1 : 0;
       //double toe = Toe; //?????
-      
+
       //Needed for modernized nav quatities
       double A = Ahalf * Ahalf;
       double dndot = 0.0;
@@ -554,8 +554,8 @@ namespace gpstk
       CommonTime toeCT = GPSWeekSecond(epochWeek, Toe, TimeSystem::GPS);
 
       ee.orbit.loadData( satSys, obsID, PRNID, beginFit, endFit, toeCT,
-                      accFlag, healthy, Cuc, Cus, Crc, Crs, Cic, Cis, 
-                      M0, dn, dndot, ecc, A, Ahalf, Adot, OMEGA0, i0, 
+                      accFlag, healthy, Cuc, Cus, Crc, Crs, Cic, Cis,
+                      M0, dn, dndot, ecc, A, Ahalf, Adot, OMEGA0, i0,
                       w, OMEGAdot, idot);
 
       ee.haveSubframe[0] = true;    // need to be true to perform certain EngEphemeris functions
@@ -589,7 +589,7 @@ namespace gpstk
          oeptr->af0 = af0;
          oeptr->af1 = af1;
          oeptr->af2 = af2;
-   
+
          // Major orbit parameters
          oeptr->M0 = M0;
          oeptr->dn = dn;
@@ -603,7 +603,7 @@ namespace gpstk
          // modern nav msg
          oeptr->dndot = 0.;
          oeptr->Adot = 0.;
-   
+
          // Harmonic perturbations
          oeptr->Cuc = Cuc;
          oeptr->Cus = Cus;
@@ -611,7 +611,7 @@ namespace gpstk
          oeptr->Crs = Crs;
          oeptr->Cic = Cic;
          oeptr->Cis = Cis;
-   
+
          oeptr->dataLoadedFlag = true;
       }
       catch(Exception& e) { GPSTK_RETHROW(e); }
@@ -635,21 +635,21 @@ namespace gpstk
 
          // Special case to address common problem in IGS aggregate brdc
          // files.   In some cases (typ. beginning of week) the last
-         // SF 1/2/3 for the previous day is being output with a HOWtime of 
+         // SF 1/2/3 for the previous day is being output with a HOWtime of
          // zero.  This leaves it in conflict with the first SF 1/2/3 of
          // the new day (which typically has a HOW of zero)
       long adjHOWtime = HOWtime;
       short adjWeeknum = weeknum;
       long lToc = (long) Toc;
-      if ((HOWtime%SEC_PER_DAY)==0 && 
+      if ((HOWtime%SEC_PER_DAY)==0 &&
          ((lToc)%SEC_PER_DAY)==0 &&
-           HOWtime == lToc) 
+           HOWtime == lToc)
       {
-         adjHOWtime = HOWtime - 30;  
+         adjHOWtime = HOWtime - 30;
          if (adjHOWtime<0)
          {
-            adjHOWtime += FULLWEEK;  
-            adjWeeknum--;     
+            adjHOWtime += FULLWEEK;
+            adjWeeknum--;
          }
       }
          // end special case adjustment (except for use of adjHOWtime below)
@@ -674,7 +674,7 @@ namespace gpstk
 
       gpse.HOWtime = HOWtime;
       week = static_cast<GPSWeekSecond>(gpse.ctToe).getWeek();
-      
+
       gpse.transmitTime = GPSWeekSecond(adjWeeknum, static_cast<double>(adjHOWtime),
          TimeSystem::GPS);
 
@@ -953,7 +953,15 @@ namespace gpstk
       if(satSys == "R" || satSys == "S") {
          line += doubleToScientific(TauN,19,12,2);
          line += doubleToScientific(GammaN,19,12,2);
-         line += doubleToScientific((double)MFtime,19,12,2);
+
+         if(satSys == "R" && strm.header.version < 3) {
+            long fixedMFtime = MFtime;
+
+            fixedMFtime -= int(Toc/86400) * 86400;
+            line += doubleToScientific((double)fixedMFtime,19,12,2);
+         } else {
+            line += doubleToScientific((double)MFtime,19,12,2);
+         }
       }
       else if(satSys == "G" || satSys == "E" || satSys == "J" || satSys == "C") {
          line += doubleToScientific(af0,19,12,2);
@@ -1345,13 +1353,13 @@ namespace gpstk
             else {
                fitint  =        StringUtils::for2doub(line.substr(n,19)); n+=19;
             }
-   
+
             // Some RINEX files have HOW < 0.
             while(HOWtime < 0) {
                HOWtime += (long)FULLWEEK;
                weeknum--;
             }
-   
+
             // In RINEX *files*, weeknum is the week of TOE.
             // Internally (Rinex3NavData), weeknum is week of HOW
             if(HOWtime - Toe > HALFWEEK)
