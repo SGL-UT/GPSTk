@@ -60,7 +60,7 @@
 
 namespace gpstk
 {
-      /** @addtogroup GPSsolutions */
+      /// @ingroup GPSsolutions
       //@{
 
       /** This class compute modeled pseudoranges from satellites to
@@ -133,8 +133,8 @@ namespace gpstk
 
          /// Implicit constructor
       ModeledReferencePR()
-         : useTGD(true), pDefaultIonoModel(NULL), pDefaultTropoModel(NULL),
-           defaultObservable(TypeID::C1), pDefaultEphemeris(NULL)
+            : useTGD(true), pDefaultIonoModel(NULL), pDefaultTropoModel(NULL),
+              defaultObservable(TypeID::C1), pDefaultEphemeris(NULL)
       { init(); };
 
 
@@ -159,16 +159,16 @@ namespace gpstk
                           Position::CoordinateSystem s = Position::Cartesian,
                           EllipsoidModel *ell = NULL,
                           ReferenceFrame frame = ReferenceFrame::Unknown )
-         : useTGD(true), pDefaultIonoModel(NULL), pDefaultTropoModel(NULL),
-           defaultObservable(TypeID::C1), pDefaultEphemeris(NULL)
+            : useTGD(true), pDefaultIonoModel(NULL), pDefaultTropoModel(NULL),
+              defaultObservable(TypeID::C1), pDefaultEphemeris(NULL)
       { init(); setInitialRxPosition(aRx, bRx, cRx, s, ell, frame); };
 
 
          /// Explicit constructor, taking as input a Position object
          /// containing reference station coordinates.
       ModeledReferencePR(const Position& RxCoordinates)
-         : useTGD(true), pDefaultIonoModel(NULL), pDefaultTropoModel(NULL),
-           defaultObservable(TypeID::C1), pDefaultEphemeris(NULL)
+            : useTGD(true), pDefaultIonoModel(NULL), pDefaultTropoModel(NULL),
+              defaultObservable(TypeID::C1), pDefaultEphemeris(NULL)
       { init(); setInitialRxPosition(RxCoordinates); };
 
 
@@ -437,7 +437,7 @@ namespace gpstk
           * @param dIonoModel    Ionospheric model to be used by default.
           */
       virtual ModeledReferencePR& setDefaultIonoModel(
-                                                IonoModelStore& dIonoModel )
+         IonoModelStore& dIonoModel )
       { pDefaultIonoModel = &dIonoModel; return (*this); };
 
 
@@ -469,7 +469,7 @@ namespace gpstk
           * @param eBiases    Vector with the default extra biases
           */
       virtual ModeledReferencePR& setDefaultExtraBiases(
-                                                   Vector<double>& eBiases )
+         Vector<double>& eBiases )
       { extraBiases = eBiases; return (*this); };
 
 
@@ -535,9 +535,9 @@ namespace gpstk
       virtual int setInitialRxPosition( const double& aRx,
                                         const double& bRx,
                                         const double& cRx,
-                           Position::CoordinateSystem s=Position::Cartesian,
+                                        Position::CoordinateSystem s=Position::Cartesian,
                                         EllipsoidModel *ell = NULL,
-                           ReferenceFrame frame = ReferenceFrame::Unknown );
+                                        ReferenceFrame frame = ReferenceFrame::Unknown );
 
 
          /// Method to set the initial (a priori) position of receiver.
@@ -559,7 +559,7 @@ namespace gpstk
                                          Position rxGeo,
                                          double elevation,
                                          double azimuth,
-                                   IonoModel::Frequency freq = IonoModel::L1 );
+                                         IonoModel::Frequency freq = IonoModel::L1 );
 
 
          /// Method to get TGD corrections.

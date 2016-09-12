@@ -45,7 +45,7 @@
 
 namespace gpstk
 {
-   /** @addtogroup ephemcalc */
+   /// @ingroup ephemcalc 
    //@{
 
       /// The maximum number of active satellites in the Compass

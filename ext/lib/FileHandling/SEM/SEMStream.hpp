@@ -48,7 +48,7 @@
 
 namespace gpstk
 {
-   /** @addtogroup SEM */
+   /// @ingroup SEM 
    //@{
 
       /**

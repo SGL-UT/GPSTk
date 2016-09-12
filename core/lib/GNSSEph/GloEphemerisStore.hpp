@@ -52,10 +52,7 @@
 
 namespace gpstk
 {
-
-      /** @addtogroup ephemstore */
-      /** @addtogroup ephemcalc */
-
+      /// @ingroup GNSSEph
       //@{
 
       // First, let's declare some useful type definitions
@@ -73,9 +70,9 @@ namespace gpstk
 
          /// Default constructor
       GloEphemerisStore()
-         : initialTime(CommonTime::END_OF_TIME),
-           finalTime(CommonTime::BEGINNING_OF_TIME),
-           step(1.0), checkHealthFlag(false)
+            : initialTime(CommonTime::END_OF_TIME),
+              finalTime(CommonTime::BEGINNING_OF_TIME),
+              step(1.0), checkHealthFlag(false)
       { };
 
          /** Common constructor
@@ -85,9 +82,9 @@ namespace gpstk
           */
       GloEphemerisStore( double rkStep,
                          double checkHealth )
-         : initialTime(CommonTime::END_OF_TIME),
-           finalTime(CommonTime::BEGINNING_OF_TIME),
-           step(rkStep), checkHealthFlag(checkHealth)
+            : initialTime(CommonTime::END_OF_TIME),
+              finalTime(CommonTime::BEGINNING_OF_TIME),
+              step(rkStep), checkHealthFlag(checkHealth)
       { };
 
          /// Destructor
@@ -138,15 +135,17 @@ namespace gpstk
          /** A debugging function that outputs in human readable form,
           *  all data stored in this object.
           * 
-          * @param[in] s      The stream to receive the output; defaults to cout
+          * @param[in] s The stream to receive the output; defaults to cout
           * @param[in] detail The level of detail to provide
           *
-          * @warning GLONASS position, velocity and acceleration information are
-          * given in km, km/s and km/(s*s), respectively.
+          * @warning GLONASS position, velocity and acceleration
+          * information are given in km, km/s and km/(s*s),
+          * respectively.
           */
       virtual void dump(std::ostream& s = std::cout, short detail = 0) const;
 
-         /** Edit the dataset, removing data outside the indicated time interval
+         /** Edit the dataset, removing data outside the indicated
+          * time interval
           * 
           * @param[in] tmin   Defines the beginning of the time interval
           * @param[in] tmax   Defines the end of the time interval
@@ -156,10 +155,11 @@ namespace gpstk
 
          /// Clear the dataset, meaning remove all data
       virtual void clear(void)
-      { pe.clear();
-        initialTime = CommonTime::END_OF_TIME;
-        finalTime = CommonTime::BEGINNING_OF_TIME;
-        return;
+      {
+         pe.clear();
+         initialTime = CommonTime::END_OF_TIME;
+         finalTime = CommonTime::BEGINNING_OF_TIME;
+         return;
       };
 
          /// Return time system (NB assumed always to be GLONASS)
@@ -184,10 +184,10 @@ namespace gpstk
           */
       virtual CommonTime getFinalTime() const;
 
-      /// Compute initial time for the given satellite
+         /// Compute initial time for the given satellite
       CommonTime getInitialTime(const SatID& sat) const;
 
-      /// Compute final time for the given satellite
+         /// Compute final time for the given satellite
       CommonTime getFinalTime(const SatID& sat) const;
 
          /// Return true if velocity data is present in the store. GLONASS
@@ -245,8 +245,8 @@ namespace gpstk
                                              const CommonTime& t ) const
       { return findEphemeris(sat, t); };
 
-      /// Add all ephemerides to an existing list<GloEphemeris>.
-      /// @return the number of ephemerides added.
+         /// Add all ephemerides to an existing list<GloEphemeris>.
+         /// @return the number of ephemerides added.
       int addToList( std::list<GloEphemeris>& v ) const;
 
    private:
@@ -268,6 +268,8 @@ namespace gpstk
       bool checkHealthFlag;
 
    };  // End of class 'GloEphemerisStore'
+
+      //@}
 
 }  // End of namespace gpstk
 

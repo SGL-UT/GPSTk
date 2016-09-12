@@ -47,48 +47,50 @@
 
 namespace vdraw
 {
-   /** \addtogroup BasicVectorGraphics */ 
-   //@{
+      /// @ingroup BasicVectorGraphics
+      //@{
 
-   /**
-    * This class generates vector graphics conformant with Postscript Level 2.
-    * Such graphics can be sent directly to a printer.
-    */
-   class PSImage : public PSImageBase {
+      /**
+       * This class generates vector graphics conformant with
+       * Postscript Level 2.  Such graphics can be sent directly to a
+       * printer.
+       */
+   class PSImage : public PSImageBase
+   {
 
    public:
 
-     /**
-      * Create a Postscript output stream attached to an existing stream.
-      * @param stream Stream to insert Postscript graphic elements
-      * @param width  Width of the Postscript canvas in points
-      * @param height Height of the Postscript canvas in points
-      * @param iloc Location of the origin the drawer will use.
-      */
+         /**
+          * Create a Postscript output stream attached to an existing stream.
+          * @param stream Stream to insert Postscript graphic elements
+          * @param width  Width of the Postscript canvas in points
+          * @param height Height of the Postscript canvas in points
+          * @param iloc Location of the origin the drawer will use.
+          */
       PSImage(std::ostream& stream, 
-                       double width=US_LETTER_WIDTH_PTS,
-                       double height=US_LETTER_HEIGHT_PTS,
-                       ORIGIN_LOCATION iloc=LOWER_LEFT);
+              double width=US_LETTER_WIDTH_PTS,
+              double height=US_LETTER_HEIGHT_PTS,
+              ORIGIN_LOCATION iloc=LOWER_LEFT);
 
-     /**
-      * Create a Postscript output stream attached to an existing stream.
-      * @param fname  Name of the output file to be created
-      * @param width  Width of the Postscript canvas in points
-      * @param height Height of the Postscript canvas in points
-      * @param iloc Location of the origin the drawer will use.
-      */
+         /**
+          * Create a Postscript output stream attached to an existing stream.
+          * @param fname  Name of the output file to be created
+          * @param width  Width of the Postscript canvas in points
+          * @param height Height of the Postscript canvas in points
+          * @param iloc Location of the origin the drawer will use.
+          */
       PSImage(const char* fname, double width=US_LETTER_WIDTH_PTS, 
-		       double height=US_LETTER_HEIGHT_PTS,
-                       ORIGIN_LOCATION iloc=LOWER_LEFT);
+              double height=US_LETTER_HEIGHT_PTS,
+              ORIGIN_LOCATION iloc=LOWER_LEFT);
 
 
-      /// Destructor.
+         /// Destructor.
       ~PSImage(void);
 
-      /// Launch a viewer.
+         /// Launch a viewer.
       void view (void) throw (VDrawException);
 
-      /// This member manages how viewer(s) are launched. 
+         /// This member manages how viewer(s) are launched. 
       ViewerManager viewerManager;
 
    protected:
@@ -102,7 +104,7 @@ namespace vdraw
 
    }; // class PSImage
 
-   //@} group BasicVectorGraphics
+      //@}
 
 } // namespace vdraw
 

@@ -55,7 +55,7 @@
 namespace gpstk
 {
 
-      /** @addtogroup GPSsolutions */
+      /// @ingroup GPSsolutions 
       //@{
 
       /** This is a class to compute the main values related to a given

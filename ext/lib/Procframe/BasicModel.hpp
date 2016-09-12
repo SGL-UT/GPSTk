@@ -54,7 +54,7 @@
 
 namespace gpstk
 {
-      /** @addtogroup GPSsolutions */
+      /// @ingroup GPSsolutions 
       //@{
 
       /** This is a class to compute the basic parts of a GNSS model, like

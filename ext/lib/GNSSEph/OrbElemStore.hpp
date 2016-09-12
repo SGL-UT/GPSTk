@@ -60,7 +60,7 @@
 
 namespace gpstk
 {
-   /** @addtogroup ephemstore */
+   /// @ingroup ephemstore 
    //@{
 
    /// Base class for storing and accessing an objects position, 

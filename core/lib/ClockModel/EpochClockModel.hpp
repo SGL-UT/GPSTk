@@ -52,6 +52,9 @@
 
 namespace gpstk
 {
+      /// @ingroup ClockModel
+      //@{
+
    class EpochClockModel : public ObsClockModel
    {
    public:
@@ -60,7 +63,7 @@ namespace gpstk
       EpochClockModel(double sigma = 2,
                       double elmask = 0, 
                       SvMode mode = ALWAYS)
-         : ObsClockModel(sigma, elmask, mode), valid(false), clkc(0){}
+            : ObsClockModel(sigma, elmask, mode), valid(false), clkc(0){}
 #pragma clang diagnostic pop
       virtual double getOffset(const gpstk::CommonTime& t) const
          throw(gpstk::InvalidArgumentException) 
@@ -85,8 +88,8 @@ namespace gpstk
       };
 
 
-      // An unchecked accessor for programs that don't need the generic
-      // interface
+         // An unchecked accessor for programs that don't need the generic
+         // interface
       double getOffset() const
          throw() {return clkc;};
 
@@ -106,5 +109,8 @@ namespace gpstk
       double clkc;           ///< clock bias value (same units as residuals)
       bool valid;            ///< flag indicating clock bias statistical validity
    };
+
+      //@}
+
 }
 #endif

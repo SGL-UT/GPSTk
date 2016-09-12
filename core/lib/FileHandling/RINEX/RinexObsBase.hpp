@@ -46,12 +46,12 @@
 
 namespace gpstk
 {
-   /** @defgroup RinexObs RINEX observation files */
-   //@{
+      /// @ingroup FileHandling
+      //@{
 
-  /** This level isn't serving any purpose other than to make
-   * the class diagram look nice...
-   */
+      /** This level isn't serving any purpose other than to make
+       * the class diagram look nice...
+       */
    class RinexObsBase : public FFData
    {
    public:
@@ -59,7 +59,7 @@ namespace gpstk
       virtual ~RinexObsBase() {}
    };
 
-   //@}
+      //@}
 
 }  // namespace
 

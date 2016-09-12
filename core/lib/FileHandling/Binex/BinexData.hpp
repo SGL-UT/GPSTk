@@ -50,8 +50,7 @@
 
 namespace gpstk
 {
-      /** @addtogroup Binex */
-
+      /// @ingroup FileHandling
       //@{
 
       /**
@@ -90,9 +89,6 @@ namespace gpstk
          eBigEndian       = 0x20,
          eEnhancedCRC     = 0x08
       };
-
-         /// BINEX data types
-         //@{
 
          /**
           * An unsigned integer stored using 1, 2, 3, or 4 bytes to represent
@@ -480,9 +476,6 @@ namespace gpstk
          long long value;
          size_t    size;
       };
-
-         //@}
-
 
          /**
           * Default constructor
@@ -974,13 +967,9 @@ namespace gpstk
                     size_t       offset = 0,
                     size_t       n      = std::string::npos);
 
-         /** @name Attributes
-          */
-         //@{
       SyncByte     syncByte;  ///< Flags for endianness, CRC, etc.
       RecordID     recID;     ///< Record ID
       std::string  msg;       ///< Record message (opaque)
-         //@}
 
    private:
 

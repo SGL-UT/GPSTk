@@ -46,10 +46,10 @@
 
 namespace gpstk
 {
-   /** @defgroup SP3ephem SP3 format file I/O */
-   //@{
+      /// @ingroup FileHandling
+      //@{
 
-   /// This class is here to make readable inheritance diagrams.
+      /// This class is here to make readable inheritance diagrams.
    class SP3Base : public FFData
    {
    public:
@@ -57,7 +57,7 @@ namespace gpstk
       virtual ~SP3Base() {}
    };
 
-   //@}
+      //@}
 
 }  // namespace
 

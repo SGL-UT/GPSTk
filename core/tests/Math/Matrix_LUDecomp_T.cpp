@@ -131,7 +131,7 @@ void LUDecompInitializer(void)
 
 int Matrix_T::LUinitializationTest(void)
 {
-	TestUtil testFramework("Matrix LU","LU initialize", __FILE__, __LINE__);
+	gpstk::TestUtil testFramework("Matrix LU","LU initialize", __FILE__, __LINE__);
 
 	LUA1(A1); LUA2(A2); LUA3(A3);
 	failMesg = "Able to perform LU decomposition on non-square matrix";
@@ -143,7 +143,7 @@ int Matrix_T::LUinitializationTest(void)
 
 int Matrix_T::LUdeterminantTest(void)
 {
-	TestUtil testFramework("Matrix LU","LU Determinant", __FILE__, __LINE__);
+	gpstk::TestUtil testFramework("Matrix LU","LU Determinant", __FILE__, __LINE__);
 
 	failMesg = "The LU decomposition's determinant is not equivalent to the determinant of the data matrix";
 	testFramework.assert(std::abs(LUA1.det() - gpstk::det(A1)) < eps, failMesg, __LINE__);
@@ -155,7 +155,7 @@ int Matrix_T::LUdeterminantTest(void)
 
 int Matrix_T::LUATest(void)
 {
-	TestUtil testFramework("Matrix LU","P * (L * U) = A", __FILE__, __LINE__);
+	gpstk::TestUtil testFramework("Matrix LU","P * (L * U) = A", __FILE__, __LINE__);
 
 	std::cout<<U1<<"\n\n"<<A1<<std::endl;
 
@@ -190,7 +190,7 @@ int Matrix_T::LUATest(void)
 
 int Matrix_T::LUbackSubTest(void)
 {
-	TestUtil testFramework("Matrix LU","LU Determinant", __FILE__, __LINE__);
+	gpstk::TestUtil testFramework("Matrix LU","LU Determinant", __FILE__, __LINE__);
 
   	//backSub overwrites input vectors
   	LUA1.backSub(B1);

@@ -49,7 +49,7 @@
 
 namespace gpstk
 {
-      /** @addtogroup DataStructures */
+      /// @ingroup DataStructures 
       //@{
 
       /** This class convert C1 observable to P1 observable with add (P1-C1)

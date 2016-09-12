@@ -52,7 +52,7 @@
 
 namespace gpstk
 {
-   /** @addtogroup FFStream */
+   /// @ingroup FFStream 
    //@{
 
    template <class BaseStream>

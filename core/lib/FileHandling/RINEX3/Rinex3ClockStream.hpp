@@ -49,7 +49,7 @@
 
 namespace gpstk
 {
-      /// @ingroup formattedfile
+      /// @ingroup FileHandling
       //@{
 
       /** This class performs file I/O on an RINEX Clock format file

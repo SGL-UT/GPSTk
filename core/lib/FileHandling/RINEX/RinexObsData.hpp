@@ -54,8 +54,8 @@
 
 namespace gpstk
 {
-   /** @addtogroup RinexObs */
-   //@{
+      /// @ingroup FileHandling
+      //@{
 
       /**
        * This class models a RINEX Observation Data Record.
@@ -73,17 +73,17 @@ namespace gpstk
       typedef std::map<gpstk::SatID, RinexObsTypeMap> RinexSatMap;
 
       gpstk::CommonTime time;    ///< the time corresponding to the observations
-        /** Epoch flag has the following values
-         * 0 ok
-         * 1 power failure since previous epoch
-         * 2 start moving antenna
-         * 3 new site occupation (end moving antenna)
-         *   at least MARKER NAME header record follows
-         * 4 header records follow
-         * 5 external event
-         * 6 cycle slip record - same format as observation, but slips not data,
-         *   and LLI and SSI are blank
-         */
+         /** Epoch flag has the following values
+          * 0 ok
+          * 1 power failure since previous epoch
+          * 2 start moving antenna
+          * 3 new site occupation (end moving antenna)
+          *   at least MARKER NAME header record follows
+          * 4 header records follow
+          * 5 external event
+          * 6 cycle slip record - same format as observation, but slips not data,
+          *   and LLI and SSI are blank
+          */
       short epochFlag;
          /** number of satellites in this observation, except when epochFlag = 2-5,
           * then the number of auxiliary header records to follow.
@@ -159,7 +159,7 @@ namespace gpstk
          throw(FFStreamError);
    }; // class RinexObsData
 
-   //@}
+      //@}
 
 } // namespace
 

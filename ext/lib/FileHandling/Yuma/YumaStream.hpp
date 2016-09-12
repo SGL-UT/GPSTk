@@ -48,7 +48,7 @@
 
 namespace gpstk
 {
-   /** @addtogroup Yuma */
+   /// @ingroup Yuma 
    //@{
 
       /**

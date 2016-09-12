@@ -48,7 +48,7 @@
 namespace gpstk
 {
 
-      /** @addtogroup IonosphereMaps */
+      /// @ingroup IonosphereMaps 
       //@{
 
       /** This class provides access to IONEX files.

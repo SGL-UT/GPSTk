@@ -48,7 +48,7 @@
 namespace gpstk
 {
 
-      /** @defgroup appframegroup Framework for Applications
+      /** @defgroup AppFrame Framework for Applications
        *
        * The application frameworks provide a set of classes that
        * perform the basic functions of applications within the GPS
@@ -71,6 +71,7 @@ namespace gpstk
        * do.
        */
 
+      /// @ingroup AppFrame
       //@{
 
       /**

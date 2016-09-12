@@ -49,7 +49,7 @@
 
 namespace vdraw
 {
-   /** \addtogroup BasicVectorGraphics */ 
+   /// @ingroup BasicVectorGraphics  
    //@{
 
    /**

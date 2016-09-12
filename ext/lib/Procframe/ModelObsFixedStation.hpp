@@ -56,7 +56,7 @@
 namespace gpstk
 {
 
-      /** @addtogroup GPSsolutions */
+      /// @ingroup GPSsolutions 
       //@{
 
       /** This class computes modeled (corrected) observations from a

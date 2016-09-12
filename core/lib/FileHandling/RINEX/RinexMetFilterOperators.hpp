@@ -51,186 +51,186 @@
 
 namespace gpstk
 {
-  /** @addtogroup RinexMet */
-  //@{
+      /// @ingroup FileHandling
+      //@{
 
-  typedef std::unary_function<RinexMetHeader, bool> RinexMetDataUnaryOperator;
-  typedef std::binary_function<RinexMetData, RinexMetData, bool> RinexMetDataBinaryOperator;
+   typedef std::unary_function<RinexMetHeader, bool> RinexMetDataUnaryOperator;
+   typedef std::binary_function<RinexMetData, RinexMetData, bool> RinexMetDataBinaryOperator;
 
-  /// This compares all elements of the RinexMetData with less than
-  /// (only for those fields which the two obs data share).
-  struct RinexMetDataOperatorLessThanFull : public RinexMetDataBinaryOperator
-  {
-  public:
+      /// This compares all elements of the RinexMetData with less than
+      /// (only for those fields which the two obs data share).
+   struct RinexMetDataOperatorLessThanFull : public RinexMetDataBinaryOperator
+   {
+   public:
 
-    /// The set is a set of RinexMetType that the two files have in 
-    /// common.  This is easily generated with the set_intersection
-    /// STL function.  See difftools/rmwdiff.cpp for an example.
-    RinexMetDataOperatorLessThanFull
-    (const std::set<RinexMetHeader::RinexMetType>& rmhset)
-      : obsSet(rmhset)
-    {}
+         /// The set is a set of RinexMetType that the two files have in 
+         /// common.  This is easily generated with the set_intersection
+         /// STL function.  See difftools/rmwdiff.cpp for an example.
+      RinexMetDataOperatorLessThanFull
+      (const std::set<RinexMetHeader::RinexMetType>& rmhset)
+            : obsSet(rmhset)
+      {}
 
-    bool operator()(const RinexMetData& l, const RinexMetData& r) const
-    {
-      // Compare the times, offsets, then only those elements
-      // common to both.  This ignores the flags set to 0.
-
-      if (l.time < r.time)
-        return true;
-      else if (l.time != r.time)
-        return false;
-
-      // Then check that each observation has the same data
-      // for each item in the set of common observations.
-
-      RinexMetData::RinexMetMap::const_iterator 
-        lItr, rItr;
-      std::set<RinexMetHeader::RinexMetType>::const_iterator
-        obsItr = obsSet.begin();
-
-      while (obsItr != obsSet.end())
+      bool operator()(const RinexMetData& l, const RinexMetData& r) const
       {
-        rItr = r.data.find(*obsItr);
-        if (rItr == r.data.end())
-          return false;
+            // Compare the times, offsets, then only those elements
+            // common to both.  This ignores the flags set to 0.
 
-        lItr = l.data.find(*obsItr);
-        if (lItr == l.data.end())
-          return false;
+         if (l.time < r.time)
+            return true;
+         else if (l.time != r.time)
+            return false;
 
-        if ((*lItr).second < (*rItr).second)
-          return true;
-        if ((*lItr).second > (*rItr).second)
-          return false;
+            // Then check that each observation has the same data
+            // for each item in the set of common observations.
 
-        obsItr++;
+         RinexMetData::RinexMetMap::const_iterator 
+            lItr, rItr;
+         std::set<RinexMetHeader::RinexMetType>::const_iterator
+            obsItr = obsSet.begin();
+
+         while (obsItr != obsSet.end())
+         {
+            rItr = r.data.find(*obsItr);
+            if (rItr == r.data.end())
+               return false;
+
+            lItr = l.data.find(*obsItr);
+            if (lItr == l.data.end())
+               return false;
+
+            if ((*lItr).second < (*rItr).second)
+               return true;
+            if ((*lItr).second > (*rItr).second)
+               return false;
+
+            obsItr++;
+         }
+
+            // the data is either == or > at this point
+         return false;
       }
 
-      // the data is either == or > at this point
-      return false;
-    }
+   private:
+      std::set<RinexMetHeader::RinexMetType> obsSet;
+   };
 
-  private:
-    std::set<RinexMetHeader::RinexMetType> obsSet;
-  };
+      /// Compares only times.
+   struct RinexMetDataOperatorLessThanSimple : public RinexMetDataBinaryOperator
+   {
+   public:
 
-  /// Compares only times.
-  struct RinexMetDataOperatorLessThanSimple : public RinexMetDataBinaryOperator
-  {
-  public:
-
-    bool operator()(const RinexMetData& l, const RinexMetData& r) const
-    {
-      if (l.time < r.time)
-        return true;
-      return false;
-    }
-  };
-
-  /// Compares only times.
-  struct RinexMetDataOperatorEqualsSimple : public RinexMetDataBinaryOperator
-  {
-  public:
-
-    bool operator()(const RinexMetData& l, const RinexMetData& r) const
-    {
-      if (l.time == r.time)
-        return true;
-      return false;
-    }
-  };
-
-  /// Combines RinexMetHeaders into a single header, combining comments and
-  /// adding the appropriate RinexMetTypes.  This assumes that all the headers
-  /// come from the same station for setting the other header fields.  After
-  /// running touch() on a list of RinexMetHeader, the internal theHeader will
-  /// be the merged header data for those files and obsSet will be the set of
-  /// RinexMetTypes that will be printed to the file.
-  struct RinexMetHeaderTouchHeaderMerge : public RinexMetDataUnaryOperator
-  {
-  public:
-
-    RinexMetHeaderTouchHeaderMerge()
-      : firstHeader(true)
-    {}
-
-    bool operator()(const RinexMetHeader& l)
-    {
-      if (firstHeader)
+      bool operator()(const RinexMetData& l, const RinexMetData& r) const
       {
-        theHeader = l;
-        firstHeader = false;
+         if (l.time < r.time)
+            return true;
+         return false;
       }
-      else
+   };
+
+      /// Compares only times.
+   struct RinexMetDataOperatorEqualsSimple : public RinexMetDataBinaryOperator
+   {
+   public:
+
+      bool operator()(const RinexMetData& l, const RinexMetData& r) const
       {
-        std::set<RinexMetHeader::RinexMetType> thisMetSet, 
-          tempMetSet;
-        std::set<std::string> commentSet;
-        obsSet.clear();
-
-        // insert the comments to the set and let the set take care of uniqueness
-        copy(theHeader.commentList.begin(),
-             theHeader.commentList.end(),
-             inserter(commentSet, commentSet.begin()));
-        copy(l.commentList.begin(),
-             l.commentList.end(),
-             inserter(commentSet, commentSet.begin()));
-        // then copy the comments back into theHeader
-        theHeader.commentList.clear();
-        copy(commentSet.begin(), commentSet.end(),
-             inserter(theHeader.commentList,
-                      theHeader.commentList.begin()));
-
-        // find the set intersection of the obs types
-        copy(theHeader.obsTypeList.begin(),
-             theHeader.obsTypeList.end(),
-             inserter(thisMetSet, thisMetSet.begin()));
-        copy(l.obsTypeList.begin(),
-             l.obsTypeList.end(),
-             inserter(tempMetSet, tempMetSet.begin()));
-        set_intersection(thisMetSet.begin(), thisMetSet.end(),
-                         tempMetSet.begin(), tempMetSet.end(),
-                         inserter(obsSet, obsSet.begin()));
-        // then copy the obsTypes back into theHeader
-        theHeader.obsTypeList.clear();
-        copy(obsSet.begin(), obsSet.end(),
-             inserter(theHeader.obsTypeList, 
-                      theHeader.obsTypeList.begin()));
+         if (l.time == r.time)
+            return true;
+         return false;
       }
-      return true;
-    }
+   };
 
-    bool firstHeader;
-    RinexMetHeader theHeader;
-    std::set<RinexMetHeader::RinexMetType> obsSet;
-  };
+      /// Combines RinexMetHeaders into a single header, combining comments and
+      /// adding the appropriate RinexMetTypes.  This assumes that all the headers
+      /// come from the same station for setting the other header fields.  After
+      /// running touch() on a list of RinexMetHeader, the internal theHeader will
+      /// be the merged header data for those files and obsSet will be the set of
+      /// RinexMetTypes that will be printed to the file.
+   struct RinexMetHeaderTouchHeaderMerge : public RinexMetDataUnaryOperator
+   {
+   public:
 
-  /// This filter will return true for any data not within the specified time range.
-  struct RinexMetDataFilterTime : public RinexMetDataUnaryOperator
-  {
+      RinexMetHeaderTouchHeaderMerge()
+            : firstHeader(true)
+      {}
 
-  public:
+      bool operator()(const RinexMetHeader& l)
+      {
+         if (firstHeader)
+         {
+            theHeader = l;
+            firstHeader = false;
+         }
+         else
+         {
+            std::set<RinexMetHeader::RinexMetType> thisMetSet, 
+               tempMetSet;
+            std::set<std::string> commentSet;
+            obsSet.clear();
 
-    RinexMetDataFilterTime(const CommonTime& startTime,
-                           const CommonTime& endTime   )
-      : start(startTime), end(endTime)
-    {}
+               // insert the comments to the set and let the set take care of uniqueness
+            copy(theHeader.commentList.begin(),
+                 theHeader.commentList.end(),
+                 inserter(commentSet, commentSet.begin()));
+            copy(l.commentList.begin(),
+                 l.commentList.end(),
+                 inserter(commentSet, commentSet.begin()));
+               // then copy the comments back into theHeader
+            theHeader.commentList.clear();
+            copy(commentSet.begin(), commentSet.end(),
+                 inserter(theHeader.commentList,
+                          theHeader.commentList.begin()));
 
-    bool operator() (const RinexMetData& l) const
-    {
-      if ( l.time < start || l.time >= end )
-        return true;
-      return false;
-    }
+               // find the set intersection of the obs types
+            copy(theHeader.obsTypeList.begin(),
+                 theHeader.obsTypeList.end(),
+                 inserter(thisMetSet, thisMetSet.begin()));
+            copy(l.obsTypeList.begin(),
+                 l.obsTypeList.end(),
+                 inserter(tempMetSet, tempMetSet.begin()));
+            set_intersection(thisMetSet.begin(), thisMetSet.end(),
+                             tempMetSet.begin(), tempMetSet.end(),
+                             inserter(obsSet, obsSet.begin()));
+               // then copy the obsTypes back into theHeader
+            theHeader.obsTypeList.clear();
+            copy(obsSet.begin(), obsSet.end(),
+                 inserter(theHeader.obsTypeList, 
+                          theHeader.obsTypeList.begin()));
+         }
+         return true;
+      }
 
-  private:
+      bool firstHeader;
+      RinexMetHeader theHeader;
+      std::set<RinexMetHeader::RinexMetType> obsSet;
+   };
 
-    CommonTime start, end;
+      /// This filter will return true for any data not within the specified time range.
+   struct RinexMetDataFilterTime : public RinexMetDataUnaryOperator
+   {
 
-  };
+   public:
 
-  //@}
+      RinexMetDataFilterTime(const CommonTime& startTime,
+                             const CommonTime& endTime   )
+            : start(startTime), end(endTime)
+      {}
+
+      bool operator() (const RinexMetData& l) const
+      {
+         if ( l.time < start || l.time >= end )
+            return true;
+         return false;
+      }
+
+   private:
+
+      CommonTime start, end;
+
+   };
+
+      //@}
 
 } // namespace gpstk
 

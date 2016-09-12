@@ -138,6 +138,22 @@ namespace gpstk
    Matrix<double> SatelliteAttitude(const CommonTime& tt, const Position& SV, double& sf)
       throw(Exception);
 
+   /// Compute the satellite attitude, given the satellite position P and velocity V,
+   /// assuming an orbit-normal attitude.
+   /// Return a 3x3 Matrix which contains, as rows, the unit (ECEF) vectors X,Y,Z
+   /// in the body frame of the satellite, namely
+   ///    Z = along the boresight (i.e. towards Earth center),
+   ///    Y = perpendicular to orbital plane, pointing opposite the angular momentum vector
+   ///    X = along-track (same direction as velocity vector for circular orbit)
+   /// Thus this rotation matrix R transforms an ECEF XYZ vector into the body frame
+   /// of the satellite, so R * (ECEF XYZ vector) = components in body frame.
+   /// Also, R.transpose() * (sat. body. frame vector) = ECEF XYZ components.
+   /// @param Position P           Satellite position
+   /// @param Position V           Satellite velocity
+   /// @return Matrix<double>(3,3) Rotation matrix from XYZ to Satellite body frame.
+   Matrix<double> OrbitNormalAttitude(const Position& P, const Position& V)
+      throw(Exception);
+
    /// Compute the azimuth and nadir angle, in the satellite body frame,
    /// of receiver Position RX as seen at the satellite Position SV. The nadir angle
    /// is measured from the Z axis, which points to Earth center, and azimuth is

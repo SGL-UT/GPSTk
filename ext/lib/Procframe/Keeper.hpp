@@ -50,7 +50,7 @@
 namespace gpstk
 {
 
-      /** @addtogroup DataStructures */
+      /// @ingroup DataStructures 
       //@{
 
 
@@ -96,7 +96,7 @@ namespace gpstk
           * @param keepSet       TypeIDSet of data values to be kept.
           */
       Keeper( const TypeIDSet& keepSet )
-         : keepTypeSet(keepSet)
+            : keepTypeSet(keepSet)
       { };
 
 

@@ -49,15 +49,20 @@
 
 namespace gpstk
 {
-   /** @defgroup math Mathematical algorithms */
-   //@{
+      /** @defgroup MathGroup Mathematical algorithms */
 
-   /// This is a straightforward version of Lagrange Interpolation.
-   /// Y must have size at least as large as X, and X.size() must be >= 2;
-   /// x should lie within the range of X.
+
+      /// @ingroup MathGroup
+      //@{
+
+      /// This is a straightforward version of Lagrange Interpolation.
+      /// Y must have size at least as large as X, and X.size() must be >= 2;
+      /// x should lie within the range of X.
    template <class T>
-   T SimpleLagrangeInterpolation(const std::vector<T>& X, const std::vector<T>& Y,
-      const T x) throw(Exception)
+   T SimpleLagrangeInterpolation(const std::vector<T>& X,
+                                 const std::vector<T>& Y,
+                                 const T x)
+      throw(Exception)
    {
       if(Y.size() < X.size()) {
          GPSTK_THROW(Exception("Input vectors must be of same size"));
@@ -69,23 +74,23 @@ namespace gpstk
 
          T Li(1);
          for(j=0; j<X.size(); j++)
-             if(i!=j)  Li *= (x-X[j])/(X[i]-X[j]);
+            if(i!=j)  Li *= (x-X[j])/(X[i]-X[j]);
 
          Yx += Li*Y[i];
       }
       return Yx;
    }  // end T LagrangeInterpolation(const vector, const vector, const T)
 
-   /// Lagrange interpolation on data (X[i],Y[i]), i=0,N-1 to compute Y(x).
-   /// Also return an estimate of the estimation error in 'err'.
-   /// This routine assumes that N=X.size() is even and that x is centered on the
-   /// interval, that is X[N/2-1] <= x <= X[N/2].
-   /// NB This routine will work for N as small as 4, however tests with satellite
-   /// ephemerides have shown that N=4 yields m-level errors, N=6 cm-level,
-   /// N=8 ~0.1mm level and N=10 ~numerical noise errors; best to use N>=8.
+      /// Lagrange interpolation on data (X[i],Y[i]), i=0,N-1 to compute Y(x).
+      /// Also return an estimate of the estimation error in 'err'.
+      /// This routine assumes that N=X.size() is even and that x is centered on the
+      /// interval, that is X[N/2-1] <= x <= X[N/2].
+      /// @note This routine will work for N as small as 4, however tests with satellite
+      /// ephemerides have shown that N=4 yields m-level errors, N=6 cm-level,
+      /// N=8 ~0.1mm level and N=10 ~numerical noise errors; best to use N>=8.
    template <class T>
    T LagrangeInterpolation(const std::vector<T>& X, const std::vector<T>& Y,
-      const T& x, T& err) throw(Exception)
+                           const T& x, T& err) throw(Exception)
    {
       if(Y.size() < X.size() || X.size() < 4) {
          GPSTK_THROW(Exception("Input vectors must be of same length, at least 4"));
@@ -117,28 +122,28 @@ namespace gpstk
       return y;
    }  // end T LagrangeInterpolation(vector, vector, const T, T&)
 
-   // The following is a
-   // Straightforward implementation of Lagrange polynomial and its derivative
-   // { all sums are over index=0,N-1; Xi is short for X[i]; Lp is dL/dx;
-   //   y(x) is the function being approximated. }
-   // y(x) = SUM[Li(x)*Yi]
-   // Li(x) = PROD(j!=i)[x-Xj] / PROD(j!=i)[Xi-Xj]
-   // dy(x)/dx = SUM[Lpi(x)*Yi]
-   // Lpi(x) = SUM(k!=i){PROD(j!=i,j!=k)[x-Xj]} / PROD(j!=i)[Xi-Xj]
-   // Define Pi = PROD(j!=i)[x-Xj], Di = PROD(j!=i)[Xi-Xj],
-   // Qij = PROD(k!=i,k!=j)[x-Xk] and Si = SUM(j!=i)Qij.
-   // then Li(x) = Pi/Di, and Lpi(x) = Si/Di.
-   // Qij is symmetric, there are only N(N+1)/2 - N of them, so store them
-   // in a vector of length N(N+1)/2, where Qij==Q[i+j*(j+1)/2] (ignore i=j).
+      // The following is a
+      // Straightforward implementation of Lagrange polynomial and its derivative
+      // { all sums are over index=0,N-1; Xi is short for X[i]; Lp is dL/dx;
+      //   y(x) is the function being approximated. }
+      // y(x) = SUM[Li(x)*Yi]
+      // Li(x) = PROD(j!=i)[x-Xj] / PROD(j!=i)[Xi-Xj]
+      // dy(x)/dx = SUM[Lpi(x)*Yi]
+      // Lpi(x) = SUM(k!=i){PROD(j!=i,j!=k)[x-Xj]} / PROD(j!=i)[Xi-Xj]
+      // Define Pi = PROD(j!=i)[x-Xj], Di = PROD(j!=i)[Xi-Xj],
+      // Qij = PROD(k!=i,k!=j)[x-Xk] and Si = SUM(j!=i)Qij.
+      // then Li(x) = Pi/Di, and Lpi(x) = Si/Di.
+      // Qij is symmetric, there are only N(N+1)/2 - N of them, so store them
+      // in a vector of length N(N+1)/2, where Qij==Q[i+j*(j+1)/2] (ignore i=j).
 
-   /// Perform Lagrange interpolation on the data (X[i],Y[i]), i=1,N (N=X.size()),
-   /// returning the value of Y(x) and dY(x)/dX.
-   /// Assumes that x is between X[k-1] and X[k], where k=N/2 and N > 2;
-   /// Warning: for use with the precise (SP3) ephemeris only when velocity is not
-   /// available; estimates of velocity, and especially clock drift, not as accurate.
+      /// Perform Lagrange interpolation on the data (X[i],Y[i]), i=1,N (N=X.size()),
+      /// returning the value of Y(x) and dY(x)/dX.
+      /// Assumes that x is between X[k-1] and X[k], where k=N/2 and N > 2;
+      /// Warning: for use with the precise (SP3) ephemeris only when velocity is not
+      /// available; estimates of velocity, and especially clock drift, not as accurate.
    template <class T>
    void LagrangeInterpolation(const std::vector<T>& X, const std::vector<T>& Y,
-      const T& x, T& y, T& dydx) throw(Exception)
+                              const T& x, T& y, T& dydx) throw(Exception)
    {
       if(Y.size() < X.size() || X.size() < 4) {
          GPSTK_THROW(Exception("Input vectors must be of same length, at least 4"));
@@ -166,9 +171,9 @@ namespace gpstk
          y += Y[i]*(P[i]/D[i]);
          T S(0);
          for(k=0; k<N; k++) if(i != k) {
-            if(k<i) S += Q[k+(i*(i+1))/2]/D[i];
-            else    S += Q[i+(k*(k+1))/2]/D[i];
-         }
+               if(k<i) S += Q[k+(i*(i+1))/2]/D[i];
+               else    S += Q[i+(k*(k+1))/2]/D[i];
+            }
          dydx += Y[i]*S;
       }
    }  // end void LagrangeInterpolation(vector, vector, const T, T&, T&)
@@ -227,7 +232,7 @@ namespace gpstk
 
 #define tswap(x,y) { T tmp; tmp = x; x = y; y = tmp; }
 
-   /// Perform the root sum square of aa, bb and cc
+      /// Perform the root sum square of aa, bb and cc
    template <class T>
    T RSS (T aa, T bb, T cc)
    {
@@ -238,19 +243,19 @@ namespace gpstk
       return a * SQRT(1 + (b/a)*(b/a) + (c/a)*(c/a));
    }
 
-   /// Perform the root sum square of aa, bb
+      /// Perform the root sum square of aa, bb
    template <class T>
    T RSS (T aa, T bb)
    {
       return RSS(aa,bb,T(0));
    }
 
-   /// Perform the root sum square of aa, bb, cc and dd
+      /// Perform the root sum square of aa, bb, cc and dd
    template <class T>
    T RSS (T aa, T bb, T cc, T dd)
    {
       T a(ABS(aa)), b(ABS(bb)), c(ABS(cc)), d(ABS(dd));
-      // For numerical reason, let's just put the biggest in "a" (we are not sorting)
+         // For numerical reason, let's just put the biggest in "a" (we are not sorting)
       if(a < b) tswap(a,b);
       if(a < c) tswap(a,c);
       if(a < d) tswap(a,d);
@@ -265,7 +270,7 @@ namespace gpstk
       return double(std::floor(x+0.5));
    }
 
-   //@}
+      //@}
 
 }  // namespace gpstk
 

@@ -86,14 +86,19 @@ namespace gpstk
       L2Pdata          = rinNav.L2Pdata;
       Tgd              = rinNav.Tgd;
 
-      HOWtime        = rinNav.HOWtime;
+      HOWtime        = rinNav.getHOWWS().sow;
       fitDuration    = rinNav.fitint;
 
-      short fullXmitWeekNum    = rinNav.weeknum;
+         // really the HOW week
+      short fullXmitWeekNum    = rinNav.getHOWWS().week;
 
          // Fill in the variables in the OrbElem parent
 	 // - - - First the simple copies - - -
-      double Toc     = rinNav.Toc;       // OrbElem only stores fully qualified times
+         // OrbElem only stores fully qualified times, but this was
+         // hacked in as part of updating RinexNavData to handle times
+         // according to the spec.
+         /// @todo update this code to use the newer accessors of RinexNavData
+      double Toc     = rinNav.getTocWS().sow;
                                          // see notes below.
       af0            = rinNav.af0;
       af1            = rinNav.af1;

@@ -31,6 +31,7 @@ if (TEST_SWITCH)
     add_subdirectory( GNSSEph )
     add_subdirectory( RefTime )
     add_subdirectory( CommandLine )
+    add_subdirectory (NavFilter)
     
     # application testing
     add_subdirectory( time )

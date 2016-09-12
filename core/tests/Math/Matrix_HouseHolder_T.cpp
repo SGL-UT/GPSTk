@@ -38,7 +38,7 @@
 #include "Vector.hpp"
 #include "TestUtil.hpp"
 
-void hhtest(size_t r, size_t c, double a[], double hh_ref[], TestUtil& testFramework)
+void hhtest(size_t r, size_t c, double a[], double hh_ref[], gpstk::TestUtil& testFramework)
 {
    gpstk::Matrix<double> A(r,c), HH_ref(r,c);
    A = a;
@@ -103,7 +103,7 @@ void hhtest(size_t r, size_t c, double a[], double hh_ref[], TestUtil& testFrame
 int main()
 {
    int errorCounter = 0;
-   TestUtil testFramework("Matrix Householder", "--", __FILE__, __LINE__);
+   gpstk::TestUtil testFramework("Matrix Householder", "--", __FILE__, __LINE__);
 
    // all of the reference values were computed using WolframAlpha to compute
    // the R value from a QR factorization

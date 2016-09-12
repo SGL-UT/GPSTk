@@ -354,7 +354,7 @@ namespace gpstk
 
 
 %extend gpstk::Vector {
-   gpstk::Vector(std::vector<double> input) {
+   gpstk::Vector<double> gpstk::Vector(std::vector<double> input) {
       const int n = input.size();
       std::valarray<double> tmp(n);
       for (int i = 0; i < n; i++) {

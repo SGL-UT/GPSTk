@@ -46,14 +46,14 @@
 
 namespace gpstk
 {
-    /** @addtogroup geodeticgroup */
-    //@{
+      /// @ingroup Geodetic
+      //@{
 
    class PZ90Ellipsoid : public EllipsoidModel
    {
    public:
 
-   		///Defined in table 3.2 of ICD-2008 (v5.1)
+         ///Defined in table 3.2 of ICD-2008 (v5.1)
          /// @return semi-major axis of Earth in meters.
       virtual double a() const throw()
       { return 6378136.0; }
@@ -125,7 +125,7 @@ namespace gpstk
 
    }; // End of class 'PZ90Ellipsoid'
 
-   //@}
+      //@}
 
 }  // End of namespace gpstk
 

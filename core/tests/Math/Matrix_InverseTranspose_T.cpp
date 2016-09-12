@@ -38,7 +38,7 @@
 
 int Matrix_T::inverseTest(void)
 {
-	TestUtil testFramework("Matrix", "Inverse", __FILE__, __LINE__);
+	gpstk::TestUtil testFramework("Matrix", "Inverse", __FILE__, __LINE__);
 
 	gpstk::Matrix<double> A1inv(2,2),A2inv(3,3),A3inv(4,4),A4inv(3,4);
 	gpstk::Matrix<double> CompareA1inv(2,2),CompareA2inv(3,3),CompareA3inv(4,4),CompareA4inv(3,4);
@@ -88,7 +88,7 @@ int Matrix_T::inverseTest(void)
 
 int Matrix_T::transposeTest(void)
 {
-	TestUtil testFramework("Matrix", "Transpose", __FILE__, __LINE__);
+	gpstk::TestUtil testFramework("Matrix", "Transpose", __FILE__, __LINE__);
 
 	gpstk::Matrix<double> A1T(2,2),A2T(3,3),A3T(4,4),A4T(4,5);
 	gpstk::Matrix<double> CompareA1T(2,2),CompareA2T(3,3),CompareA3T(4,4),CompareA4T(5,4);
@@ -148,7 +148,7 @@ int Matrix_T::transposeTest(void)
 
 int Matrix_T::solutionTest(void)
 {
-	TestUtil testFramework("Matrix", "Solution", __FILE__, __LINE__);
+	gpstk::TestUtil testFramework("Matrix", "Solution", __FILE__, __LINE__);
 
 //Solution via Ainv*B, DEPENDENT ON INVERSE FUNCTION
 //Is there another way to solve the system? Need to find A4sol still
@@ -199,7 +199,7 @@ int Matrix_T::solutionTest(void)
 
 int Matrix_T::determinantTest(void)
 {
-	TestUtil testFramework("Matrix", "Determinant", __FILE__, __LINE__);
+	gpstk::TestUtil testFramework("Matrix", "Determinant", __FILE__, __LINE__);
 
   	double CompareDetA1 = 1.0;
   	double CompareDetA2 = 3.0;

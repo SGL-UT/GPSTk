@@ -52,25 +52,31 @@
 
 namespace gpstk
 {
-   // All the observations collected from a single SV at a single epoch
+      /// @ingroup ClockModel
+      //@{
+
+      /// All the observations collected from a single SV at a single epoch
    struct SvObsEpoch : public std::map<ObsID, double>
    {
       gpstk::SatID svid;
       vfloat azimuth, elevation;
    };
 
-   /// All the observations collected from a single receiver at a single epoch
+      /** All the observations collected from a single receiver at a
+       * single epoch */
    struct ObsEpoch : public std::map<SatID, SvObsEpoch>
    {
       gpstk::CommonTime time;
       vdouble rxClock;
    };
 
-   /// A time history of the observations collected from a single receiver.
+      /// A time history of the observations collected from a single receiver.
    typedef std::map<CommonTime, ObsEpoch> ObsEpochMap;
 
    std::ostream& operator<<(std::ostream& s, const SvObsEpoch& obs) throw();
    std::ostream& operator<<(std::ostream& s, const ObsEpoch& oe) throw();
+
+      //@}
 
 } // namespace 
 

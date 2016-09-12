@@ -62,7 +62,7 @@
 namespace gpstk
 {
 
-      /** @addtogroup GPSsolutions */
+      /// @ingroup GPSsolutions
       //@{
 
       /** Class to assign weights to satellites based on the Appendix J

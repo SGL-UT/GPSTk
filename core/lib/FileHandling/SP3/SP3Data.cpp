@@ -15,7 +15,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -23,13 +23,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -62,8 +62,8 @@ namespace gpstk
       int status = 0;
 
       // version to be written out is determined by written header (stored in strm)
-      //bool isVerA = (strm.header.getVersion() == SP3Header::SP3a);
-      bool isVerC = (strm.header.getVersion() == SP3Header::SP3c);
+      bool isVerA  = (strm.header.getVersion() == SP3Header::SP3a);
+      bool isVerC  = (strm.header.getVersion() == SP3Header::SP3c);
 
       // correlation flag will be set if there is an EP/EV record
       correlationFlag = false;
@@ -116,7 +116,7 @@ namespace gpstk
             catch(EndOfFile& err) {
                break; // normal exit; the stream will now be at eof()
             }
-         
+
             // the GetLine succeeded, so this is an error
             FFStreamError err("EOF text found, followed by: " + strm.lastLine);
             GPSTK_THROW(err);
@@ -152,7 +152,7 @@ namespace gpstk
             if(strm.lastLine.size() <= 26) { // some igs files cut seconds short 30)
                FFStreamError err("Invalid line length "
                                 + asString(strm.lastLine.size()));
-               GPSTK_THROW(err);                  
+               GPSTK_THROW(err);
             }
 
             // parse the epoch line
@@ -170,7 +170,7 @@ namespace gpstk
             catch (gpstk::Exception& e) {
                FFStreamError fe("Invalid time in:" + strm.lastLine);
                GPSTK_THROW(fe);
-            }          
+            }
             time = strm.currentEpoch = static_cast<CommonTime>(t);
          }
 
@@ -205,6 +205,16 @@ namespace gpstk
             x[1] = asDouble(strm.lastLine.substr(18,14));
             x[2] = asDouble(strm.lastLine.substr(32,14));
             clk = asDouble(strm.lastLine.substr(46,14));             // Clock
+
+            // handle NGA extension to SP3a - the event flag
+            eventFlag = false;
+            if (isVerA && (RecType == 'P')
+               && (strm.lastLine.size() >= 75)
+               && (strm.lastLine[74] == 'E'))
+            {
+               eventFlag = true;
+               strm.header.allowSP3aEvents = true;
+            }
 
             // the rest is version c only
             if(isVerC) {
@@ -291,7 +301,7 @@ namespace gpstk
                //cout << "Here is the buffer:\n" << strm.lastLine << endl;
                if(what == string("text 0:Unexpected EOF")) {
                   unexpectedEOF = true;
-   
+
                   // there could still be unprocessed data in the buffer:
                   if(strm.lastLine.size() < 3) status = 3;  // nothing there, quit
                   else                         status = 0;  // go back and process it
@@ -310,7 +320,7 @@ namespace gpstk
 
    }   // end reallyGetRecord()
 
-   void SP3Data::reallyPutRecord(FFStream& ffs) const 
+   void SP3Data::reallyPutRecord(FFStream& ffs) const
       throw(exception, FFStreamError, StringException)
    {
       string line;
@@ -333,7 +343,7 @@ namespace gpstk
       // output Position and Clock OR Velocity and Clock Rate Record
       else {
          line = RecType;                                    // P or V
-         if(isVerA) {
+         if (isVerA) {
             if(sat.system != SatID::systemGPS) {
                FFStreamError fse("Cannot output non-GPS to SP3a");
                GPSTK_THROW(fse);
@@ -348,12 +358,20 @@ namespace gpstk
          line += rightJustify(asString(x[2],6),14);
          line += rightJustify(asString(clk,6),14);          // Clock
 
+         // handle NGA extension to SP3a
+         if(isVerA && strm.header.allowSP3aEvents
+            && (RecType == 'P') && eventFlag)
+         {
+            line += string(14,' ');
+            line += 'E';
+         }
+
          if(isVerC) {
             line += rightJustify(asString(sig[0]),3);       // sigma XYZ
             line += rightJustify(asString(sig[1]),3);
             line += rightJustify(asString(sig[2]),3);
             line += rightJustify(asString(sig[3]),4);       // sigma Clock
-            
+
             if(RecType == 'P') {                            // flags or blanks
                line += string(" ");
                line += (clockEventFlag ? string("E") : string(" "));

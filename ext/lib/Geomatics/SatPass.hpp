@@ -34,23 +34,24 @@
 //
 //=============================================================================
 
-/**
- * @file SatPass.hpp
- * Data for one complete satellite pass overhead.
- */
+/// @file SatPass.hpp
+/// Data for one complete satellite pass.
 
 #ifndef GPSTK_SATELLITE_PASS_INCLUDE
 #define GPSTK_SATELLITE_PASS_INCLUDE
 
+#include <string>
 #include <vector>
 #include <map>
+#include <ostream>
 
-#include "CommonTime.hpp"
-#include "GSatID.hpp"
+#include "Epoch.hpp"
+#include "RinexSatID.hpp"
+#include "GNSSconstants.hpp"
 #include "RinexObsHeader.hpp"
 #include "RinexObsData.hpp"
+#include "RinexUtilities.hpp"
 #include "Exception.hpp"
-#include "TimeString.hpp"
 
 namespace gpstk {
 
@@ -62,17 +63,159 @@ namespace gpstk {
 /// of observation types must be the same, otherwise a nasty segmentation fault
 /// can occur when building the STL container.
 class SatPass {
+protected:
+   // --------------- SatPassData data structure for internal use only ----------
+   //
+   struct SatPassData {
+      // member data ----------------------------------
+      /// a flag (cf. SatPass::BAD, etc.) that is set to OK at creation
+      /// then reset by other processing.
+      unsigned short flag;
+      /// time 'count' : time of data = FirstTime + ndt * dt + offset
+      unsigned int ndt;
+      /// offset of time from integer number * dt since FirstTime.
+      double toffset;
+      /// data for one epoch of RINEX data
+      std::vector<double> data;
+      /// loss-of-lock and signal-strength indicators (from RINEX) for data
+      /// parallel to data vector
+      std::vector<unsigned short> lli,ssi;
+
+      // private member functions ---------------------
+
+      /// constructor
+      /// @param n the number of data types to be stored, default 4
+      SatPassData(unsigned short n=4) : flag(SatPass::OK), ndt(0), toffset(0.0)
+      {
+         data = std::vector<double>(n,0.0);
+         lli = std::vector<unsigned short>(n,0);
+         ssi = std::vector<unsigned short>(n,0);
+      }
+
+      // d'tor, copy c'tor and operator= are built by compiler,
+      // but operator= will not work correctly, b/c a deep copy is needed.
+      SatPassData& operator=(const SatPassData& right) throw()
+      {
+         if(&right != this) {
+            flag = right.flag;
+            ndt = right.ndt;
+            toffset = right.toffset;
+            data.resize(right.data.size());
+            lli.resize(right.lli.size());
+            ssi.resize(right.ssi.size());
+            int i;
+            for(i=0; i<right.data.size(); i++) data[i] = right.data[i];
+            for(i=0; i<right.lli.size(); i++) lli[i] = right.lli[i];
+            for(i=0; i<right.ssi.size(); i++) ssi[i] = right.ssi[i];
+         }
+
+         return *this;
+      }
+   }; // end struct SatPassData
+
+   // --------------- private member data -----------------------------
+   /// Status flag for use exclusively by the caller. It is set to 0
+   /// by the constructors, but otherwise ignored by class SatPass and
+   /// class SatPassIterator.
+   int Status;
+
+   /// Nominal time spacing of the data; determined on input or by decimate()
+   double dt;
+
+   /// Satellite identifier for this data.
+   RinexSatID sat;
+
+   /// STL map relating strings identifying obs types with indexes in SatPassData
+   std::map<std::string,unsigned int> indexForLabel;
+   std::map<unsigned int,std::string> labelForIndex;
+
+      // above determined at construction; the rest determined by input data
+
+   /// nominally, timetags of the first and last data points; in fact firstTime is
+   /// used with toffset to give the full time, so these are actually times - toffset
+   Epoch firstTime,lastTime;
+
+   /// number of timetags with good data in the data arrays.
+   unsigned int ngood;
+
+   /// ALL data in the pass, stored in SatPassData objects, in time order
+   std::vector<SatPassData> spdvector;
+
+   // --------------- private member functions ------------------------
+
+   /// called by constructors to initialize - see doc for them.
+   void init(RinexSatID sat, double dt, std::vector<std::string> obstypes) throw();
+
+   /// add a complete SatPassData at time tt
+   /// @return n>=0 if data was added successfully, n is the index of the new data
+   ///            -1 if a gap is found (no data is added),
+   ///            -2 if time tag is out of order (no data is added)
+   int push_back(const Epoch tt, SatPassData& spd) throw();
+
+   /// get a complete SatPassData at count i
+   struct SatPassData getData(unsigned int i) const throw(Exception);
+
 public:
+   // ------------------ friends --------------------------------------
+   /// class gdc is used to detect and correct cycleslips
+   friend class gdc;
+
+   /// class SatPassIterator allows the caller to access all the data in a list
+   /// of SatPass objects in time order.
+   friend class SatPassIterator;
+
+   // friends in SatPassUtilities.hpp
+   /// Sort a vector<SatPass> on time, using the firstTime member.
+   friend void sort(std::vector<SatPass>& SPList) throw();
+
+   /// Read a set of RINEX observation files, filling a vector of SatPass objects.
+   /// Create the SatPass objects using the input list of observation types
+   /// and timestep. If there are no obs types given (vector obstypes has size 0),
+   /// then use the obs types in the header of the first file read. The files
+   /// are sorted on their begin time before processing, and the resulting list
+   /// of SatPass objects is in time order. Data before the begin time, and after
+   /// the end time, is ignored. The list of SatPass objects need not be empty on
+   /// input; however if not empty, then the list must be consistent with the
+   /// input timestep and obs type list, and it will be sorted to be in time order.
+   /// If a file cannot be opened, or it is not RINEX observation, simply skip it.
+   /// @param filenames vector of input RINEX observation file names
+   /// @param obstypes  vector of observation types to include in SatPass (may
+   ///                   be empty: include all)
+   /// @param dt        data interval of existing SPList and input files
+   /// @param SPList    vector of SatPass objects to fill, need not be empty, but
+   ///                   if not empty, must have consistent obs types and dt.
+   /// @param lenient   if true (default), be lenient in reading the RINEX format
+   /// @param beginTime reject data before this time (BEGINNING_OF_TIME)
+   /// @param endTime   reject data after this time (END_OF TIME)
+   /// @return -1 if the filenames list is empty, otherwise return the number of
+   ///                files successfully read (may be less than the number input).
+   /// @throw gpstk Exceptions if there are exceptions while reading, if the data
+   ///              in the file is out of time order.
+   /// @deprecated in favor of RinexObsFilesLoader version
+   friend int SatPassFromRinexFiles(std::vector<std::string>& filenames,
+                                    std::vector<std::string>& obstypes,
+                                    double dt,
+                                    std::vector<SatPass>& SPList,
+                                    std::vector<RinexSatID> exSats,
+                                    bool lenient,
+                                    Epoch beginTime,
+                                    Epoch endTime) throw(Exception);
+
+   /// Iterate over the input vector of SatPass objects (sorted to be in time
+   /// order) and write them, with the given header, to a RINEX observation file
+   /// of the given filename.
+   /// @return -1 if the file could not be opened, otherwise return 0.
+   friend int SatPassToRinexFile(std::string filename,
+                                 RinexObsHeader& header,
+                                 std::vector<SatPass>& SPList) throw(Exception);
+
    // ------------------ configuration --------------------------------
-
-   // public member functions -----------------------------------------
-
    /// Constructor for the given sat; default obs types are L1, L2, P1, P2,
    /// in that order; dt is the nominal time spacing of the data.
    /// NB. dt MUST be correct.
    /// @param sat the satellite from which this data comes
    /// @param dt  the nominal time spacing (seconds) of the data
-   SatPass(const GSatID& sat, double dt) throw();
+   SatPass(RinexSatID sat, double dt) throw();
 
    /// Constructor from a list of strings <=> RINEX obs types to be read
    /// NB. The number of obstypes determines the size of the SatPass object;
@@ -84,8 +227,7 @@ public:
    /// @param dt  the nominal time spacing (seconds) of the data
    /// @param obstypes  a vector of strings, each string being a 2-character
    ///                  RINEX observation type, e.g. "L1", "P2", to be stored.
-   SatPass(const GSatID& sat, double dt,
-           const std::vector<std::string>& obstypes) throw();
+   SatPass(RinexSatID sat, double dt, std::vector<std::string> obstypes) throw();
 
    // d'tor, copy c'tor are built by compiler; so is operator= but don't use it!
    SatPass& operator=(const SatPass& right) throw();
@@ -103,9 +245,8 @@ public:
    /// @return n>=0 if data was added successfully, n is the index of the new data
    ///        -1 if a gap is found (no data is added),
    ///        -2 if time tag is out of order (no data is added)
-   int addData(const CommonTime& tt,
-               const std::vector<std::string>& obstypes,
-               const std::vector<double>& data) throw(Exception);
+   int addData(const Epoch tt, std::vector<std::string>& obstypes,
+                                  std::vector<double>& data) throw(Exception);
 
    /// Add vector of data, identified by obstypes (same as used in c'tor) at tt,
    /// Flag, lli and ssi are set using input (parallel to data).
@@ -119,12 +260,11 @@ public:
    /// @return n>=0 if data was added successfully, n is the index of the new data
    ///        -1 if a gap is found (no data is added),
    ///        -2 if time tag is out of order (no data is added)
-   int addData(const CommonTime& tt,
-               const std::vector<std::string>& obstypes,
-               const std::vector<double>& data,
-               const std::vector<unsigned short>& lli,
-               const std::vector<unsigned short>& ssi,
-               unsigned short flag=SatPass::OK)
+   int addData(const Epoch tt, const std::vector<std::string>& obstypes,
+                                 const std::vector<double>& data,
+                                 const std::vector<unsigned short>& lli,
+                                 const std::vector<unsigned short>& ssi,
+                                 const unsigned short flag=SatPass::OK)
       throw(Exception);
 
    /// Add data as found in RinexObsData. No action if this->sat is not found.
@@ -137,28 +277,7 @@ public:
    ///        -3 if the satellite was not found in the RinexObsData (no data added)
    int addData(const RinexObsData& robs) throw();
 
-   /// Smooth pseudorange and debias phase.
-   /// This routine can be called only if dual frequency range and phase data
-   /// (P1,P2,L1,L2) have been stored, and should be called only after all
-   /// cycleslips have been removed.
-   /// @param  smoothPR  if true, replace the pseudorange (P1 and P2) with smoothed
-   ///                   ranges.
-   /// @param  smoothPH  if true, replace the phase (L1 and L2) with debiased
-   ///                   phase.
-   /// @param  msg       a string containing a single-line statistical summary of
-   ///                   the smoothing results, and the estimated phase biases.
-   ///  This string consists of the following 18 fields separated by whitespace.
-   ///  1) "SMT", 2) satellite id (e.g. G07), 3) start GPS week, 4) start GPS
-   ///  seconds of week, 5) end GPS week, 6) end GPS seconds of week,
-   ///  (7-11 are for the L1 bias data in units of meters)
-   ///  7) number, 8) average, 9) std deviation, 10) minimum, and 11) maximum,
-   ///  (12-16 are for the L2 bias data in units of meters)
-   ///  12) number, 13) average, 14) std deviation, 15) minimum, and 16) maximum,
-   ///  17) the L1 bias in cycles, 18) the L2 bias in cycles.
-   void smooth(bool smoothPR, bool smoothPH, std::string& msg) throw(Exception);
-
    // -------------------------- get and set routines --------------------------
-
    // can change ssi, lli, data, but not times,sat,dt,ngood,count
    // get and set flag so you can update ngood
    // lvalue for the data or SSI/LLI arrays of this SatPass at index i
@@ -166,39 +285,31 @@ public:
    /// Access the status; l-value may be assigned SP.status() = 1;
    int& status(void) throw() { return Status; }
 
-   /// Access the status as const r-value
-   int status(void) const throw() { return Status; }
-
    /// Access the data for one obs type at one index, as either l-value or r-value
    /// @param  i    index of the data of interest
    /// @param  type observation type (e.g. "L1") of the data of interest
    /// @return the data of the given type at the given index
-   double& data(unsigned int i, const std::string& type) throw(Exception);
-   double data(unsigned int i, const std::string& type) const throw(Exception);
+   double& data(unsigned int i, std::string type) throw(Exception);
 
    /// Access the time offset from the nominal time (i.e. timetag) at one index
    /// (epoch), as either l-value or r-value
    /// @param  i    index of the data of interest
    /// @return the time offset from nominal at the given index
    double& timeoffset(unsigned int i) throw(Exception);
-   double timeoffset(unsigned int i) const throw(Exception);
 
    /// Access the LLI for one obs type at one index, as either l-value or r-value
    /// @param  i    index of the data of interest
    /// @param  type observation type (e.g. "L1") of the data of interest
    /// @return the LLI of the given type at the given index
-   unsigned short& LLI(unsigned int i, const std::string& type) throw(Exception);
-   unsigned short LLI(unsigned int i, const std::string& type) const throw(Exception);
+   unsigned short& LLI(unsigned int i, std::string type) throw(Exception);
 
    /// Access the ssi for one obs type at one index, as either l-value or r-value
    /// @param  i    index of the data of interest
    /// @param  type observation type (e.g. "L1") of the data of interest
    /// @return the SSI of the given type at the given index
-   unsigned short& SSI(unsigned int i, const std::string& type) throw(Exception);
-   unsigned short SSI(unsigned int i, const std::string& type) const throw(Exception);
+   unsigned short& SSI(unsigned int i, std::string type) throw(Exception);
 
-   // -------------------------------- set routines ----------------------------
-
+   // -------------------------------- set only --------------------------------
    /// change the maximum time gap (in seconds) allowed within any SatPass
    /// @param gap  The maximum time gap (in seconds) allowed within any SatPass
    /// @return the input value.
@@ -206,61 +317,54 @@ public:
 
    /// set timetag output format
    /// @param fmt  The format of time tags in the output
-   ///             (cf. gpstk CommonTime::printf() for syntax)
-   void setOutputFormat(std::string fmt) { outFormat = fmt; };
+   ///             (cf. gpstk Epoch::printTime() for syntax)
+   void setOutputFormat(std::string fmt, int round=3)
+      { outFormat = fmt; outRound=round; }
+
+   /// get the timetag output format
+   /// @return The format of time tags in the output
+   ///         (cf. gpstk Epoch::printTime() for syntax)
+   std::string getOutputFormat(void) { return outFormat; }
 
    /// set the flag at one index to flag - use the SatPass constants OK, etc.
    /// @param  i    index of the data of interest
    /// @param  flag flag (e.g. SatPass::BAD).
    void setFlag(unsigned int i, unsigned short flag) throw(Exception);
 
-   // -------------------------------- get routines ----------------------------
-
+   // -------------------------------- get only --------------------------------
    /// get the max. gap limit size (seconds); for all SatPass objects
    /// @return the current value of maximum gap (sec)
    double getMaxGap(void) const throw() { return maxGap; }
 
    /// get the list of obstypes
    /// @return the vector of strings giving RINEX obs types
-   std::vector<std::string> getObsTypes(void) const throw() {
-      std::vector<std::string> v(labelForIndex.size());
-      std::map<unsigned, std::string>::const_iterator it;
-      for (it=labelForIndex.begin(); it!=labelForIndex.end(); ++it)
-      {
-         v[it->first] = it->second;
-      }
+   std::vector<std::string> getObsTypes(void) throw() {
+      std::vector<std::string> v;
+      for(int i=0; i<labelForIndex.size(); i++) v.push_back(labelForIndex[i]);
       return v;
    }
 
    /// get the flag at one index
    /// @param  i    index of the data of interest
    /// @return the flag for the given index
-   unsigned short getFlag(unsigned int i) const throw(Exception);
+   unsigned short getFlag(unsigned int i) throw(Exception);
 
-   /// @return the earliest time in this SatPass data
-   CommonTime getFirstTime(void) const throw() { return firstTime; }
-
-   /// Reset the first and last times for the pass. This should be necessary only
-   /// when the timeoffset's have been altered...use with caution.
-   /// @param  tt   new first time
-   //void resetFirstTime(CommonTime& tt) throw()
-   //   { firstTime = tt; }
-   //void resetLastTime(CommonTime& tt) throw()
-   //   { lastTime = tt; }
-
-   /// @return the latest time in this SatPass data
-   CommonTime getLastTime(void) const throw() { return lastTime; }
+   /// @return the earliest time (full, including toffset) in this SatPass data
+   Epoch getFirstTime(void) const throw();
+   
+   /// @return the latest time (full, including toffset) in this SatPass data
+   Epoch getLastTime(void) const throw();
 
    /// @return the earliest time of good data in this SatPass data
-   CommonTime getFirstGoodTime(void) const throw() {
-      for(size_t j=0; j<spdvector.size(); j++) if(spdvector[j].flag & OK) {
+   Epoch getFirstGoodTime(void) const throw() {
+      for(int j=0; j<spdvector.size(); j++) if(spdvector[j].flag & OK) {
          return time(j);
       }
       return CommonTime::END_OF_TIME;
    }
 
    /// @return the latest time of good data in this SatPass data
-   CommonTime getLastGoodTime(void) const throw() {
+   Epoch getLastGoodTime(void) const throw() {
       for(int j=spdvector.size()-1; j>=0; j--) if(spdvector[j].flag & OK) {
          return time(j);
       }
@@ -269,7 +373,7 @@ public:
 
    /// get the satellite of this SatPass
    /// @return the satellite of this SatPass data
-   const GSatID& getSat(void) const throw() { return sat; }
+   RinexSatID getSat(void) const throw() { return sat; }
 
    /// get the time interval of this SatPass
    /// @return the nominal time step (seconds) in this data
@@ -289,21 +393,115 @@ public:
    /// between the first time tag and the current time tag.
    unsigned int getCount(unsigned int i) const throw(Exception);
 
-   // -------------------------------- utils ---------------------------------
+   /// Access the data for either of two obs type at one index, as r-value only
+   /// @param  i     index of the data of interest
+   /// @param  type1 observation type (e.g. "P1") of the data of interest
+   /// @param  type2 observation type (e.g. "C1") of the data of interest
+   /// @return the data of the given type at the given index
+   double data(unsigned int i, std::string type1, std::string type2) throw(Exception);
 
+   /// Access the LLI for either of two obs type at one index, as r-value only
+   /// @param  i     index of the data of interest
+   /// @param  type1 observation type (e.g. "P1") of the data of interest
+   /// @param  type2 observation type (e.g. "C1") of the data of interest
+   /// @return the LLI of the given type at the given index
+   unsigned short LLI(unsigned int i, std::string type1, std::string type2)
+      throw(Exception);
+
+   /// Access the ssi for either of two obs type at one index, as r-value only
+   /// @param  i     index of the data of interest
+   /// @param  type1 observation type (e.g. "P2") of the data of interest
+   /// @param  type2 observation type (e.g. "C2") of the data of interest
+   /// @return the SSI of the given type at the given index
+   unsigned short SSI(unsigned int i, std::string type1, std::string type2)
+      throw(Exception);
+
+   /// Test whether the object has obstype type
+   /// @return true if this obstype was passed to the c'tor (i.e. is in indexForLabel)
+   inline bool hasType(std::string type) throw()
+   {
+      return (indexForLabel.find(type) != indexForLabel.end());
+   }
+
+   /// Access the obstypes (as strings)
+   std::vector<std::string> getObstypes(void) {
+      std::vector<std::string> ots;
+      for(int i=0; i<labelForIndex.size(); i++)
+         ots.push_back(labelForIndex[i]);
+      return ots;
+   }
+
+   // -------------------------------- utils ---------------------------------
    /// clear the data (but not the obs types) from the arrays
    void clear(void) throw() { spdvector.clear(); }
 
    /// compute the timetag associated with index i in the data array
    /// @param  i   index of the data of interest
    /// @return the time tag at the given index.
-   CommonTime time(unsigned int i) const throw(Exception);
+   Epoch time(unsigned int i) const throw(Exception);
 
+   /// compute the index to which the input time tt is closest;
+   /// @param tt the time tag of interest
+   /// @return -1 if not within the time limits of the SatPass, else index of tt
+   int index(const Epoch& tt) const throw(Exception)
+   {
+      int count = countForTime(tt);
+      if(count < 0) return -1;
+      for(int i=0; i<spdvector.size(); i++)
+         if(count == spdvector[i].ndt) return i;
+      return -1;
+   }
+
+   /// substitute obstype labels - used e.g. to ignore C1/P1 differences
+   /// Replace all instances of OT with subs[OT], if subst[OT] exists.
+   /// the input map must NOT have circularities: e.g. <C1,P1>, <P1,Q1>
+   void renameObstypes(std::map<std::string, std::string>& subst)
+      throw(Exception)
+   {
+      unsigned int i;
+      std::map<std::string, std::string>::const_iterator it = subst.begin();
+      std::map<unsigned int,std::string>::iterator jt;
+      while(it != subst.end()) {
+         if(indexForLabel.find(it->first) == indexForLabel.end()) continue;
+
+         i = indexForLabel[it->first];
+         indexForLabel.insert(
+            std::map<std::string,unsigned int>::value_type(it->second,i));
+         indexForLabel.erase(it->first);
+
+         for(jt=labelForIndex.begin(); jt!=labelForIndex.end(); ++jt) {
+            if(jt->second != it->first) continue;
+            i = jt->first;        
+            labelForIndex.erase(i);
+            labelForIndex.insert(
+               std::map<unsigned int,std::string>::value_type(i,it->second));
+         }
+
+         ++it;
+      }
+   }
+
+   // sorting ----------------------------------------------------------
+   /// 'less than' is required for sort() and map<SatPass,...>.find(SatPass)
+   bool operator<(const SatPass& right) const
+   {
+      if(firstTime == right.firstTime)
+         return (sat < right.sat);
+      return firstTime < right.firstTime;
+   }
+
+   // edit -------------------------------------------------------------
    /// return true if the given timetag is or could be part of this pass
    /// @param tt        the time tag of interest
    /// @return true if the given time tag lies within the time interval covered
    /// by this object.
-   bool includesTime(const CommonTime& tt) const throw();
+   bool includesTime(const Epoch& tt) const throw();
+
+   /// Truncate all data at and after the given time.
+   /// return -1 if ttag is at or before the start of this pass,
+   /// return +1 if ttag is at or after the end of this pass,
+   /// else return 0
+   int trimAfter(const Epoch ttag) throw(Exception);
 
    /// create a new SatPass from the given one, starting at count N.
    /// modify this SatPass to end just before N.
@@ -316,23 +514,123 @@ public:
    /// This routine decimates the data, reduces the arrays, and may change the
    /// start and stop times and ngood; time offsets are not changed.
    /// @param N       New time spacing is N(>1) times the current time spacing
-   /// @param refTime Reference CommonTime for the decimation, default is to use first
+   /// @param refTime Reference Epoch for the decimation, default is to use first
    ///                  in pass
-   void decimate(const int N, CommonTime refTime=CommonTime::BEGINNING_OF_TIME)
+   void decimate(const int N, Epoch refTime=CommonTime::BEGINNING_OF_TIME)
       throw(Exception);
 
+   // compare ----------------------------------------------------------
+   /// Determine if there is overlap between data in this SatPass and another,
+   /// that is the time limits overlap. If pointers are defined, return:
+   /// pdelt: the time in seconds of the overlap,
+   /// pttb: begin time of the overlap
+   /// ptte: end time of the overlap
+   bool hasOverlap(const SatPass& that, double *pdelt=NULL,
+                   Epoch *pttb=NULL, Epoch *ptte=NULL) throw()
+   {
+      if(lastTime <= that.firstTime)                           // iiiiii  aaaaaaa
+         return false;
+      if(that.lastTime <= firstTime)                           // aaaaaa  iiiiiii
+         return false;
+      if(that.firstTime >= firstTime) {                        // iiiiiiii
+         if(lastTime <= that.lastTime) {                       //     aaaaaaaaaa
+            if(pdelt) *pdelt = lastTime - that.firstTime;
+            if(pttb) *pttb = that.firstTime;
+            if(ptte) *ptte = lastTime;
+         }
+         else {                                                // iiiiiiiiiiii
+            if(pdelt) *pdelt = that.lastTime - that.firstTime; //    aaaaa
+            if(pttb) *pttb = that.firstTime;
+            if(ptte) *ptte = that.lastTime;
+         }
+         return true;
+      }
+      else {  // if(firstTime > that.firstTime)                //    iiii
+         if(that.lastTime >= lastTime) {                       // aaaaaaaaa
+            if(pdelt) *pdelt = lastTime - firstTime;
+            if(pttb) *pttb = firstTime;
+            if(ptte) *ptte = lastTime;
+         }
+         else {                                                //    iiiiiiiiii
+            if(pdelt) *pdelt = that.lastTime - firstTime;      // aaaaaaaaa
+            if(pttb) *pttb = firstTime;
+            if(ptte) *ptte = that.lastTime;
+         }
+         return true;
+      }
+      return true;      // never reached
+   }
+
+   /// Determine if there is common-view between this SatPass and another, that is
+   /// if the satellites match and the time limits overlap. Return the time in
+   /// seconds of the overlap.
+   bool hasCommonView(const SatPass& that, double *pdelt=NULL,
+                                    Epoch *pttb=NULL, Epoch *ptte=NULL) throw()
+   {
+      if(sat != that.sat) return false;
+      return hasOverlap(that, pdelt, pttb, ptte);
+   }
+
+   // analysis - also see SatPassUtilities -----------------------------
+   /// compute the GLO channel
+   /// start at n, then set n before returning; return false if failure
+   /// challenge is at low elevation, L1 is slightly better than L2, but need both
+   /// return true if successful, false if failed; also return string msg, which is
+   /// FINAL sat n wk sow(beg) wk sow(end) npt stddev slope sl/std stddev(slope) [??]
+   /// NB if "??" appears at end of msg, results questionable (stddev(slope) is high)
+   bool getGLOchannel(int& n, std::string& msg) throw(Exception);
+
+   /// Smooth pseudorange and debias phase, by computing the best estimate of the
+   /// range-minus-phase over the whole pass, and subtracting this bias from the raw
+   /// phase. NB. remove an INTEGER (cycles) to get "debiased phase" but a REAL (m)
+   /// to get "smoothed pseudorange"; thus smoothed pseudorange != debiased phase.
+   /// This routine can be called ONLY if dual frequency range and phase data
+   /// (C/P1,C/P2,L1,L2) have been stored, and should be called ONLY after ALL
+   /// cycleslips have been removed.
+   /// @param  smoothPR  if true, replace the pseudorange (P1 and P2) with smoothed
+   ///                   ranges (= phase + REAL estimate of range-minus-phase in m).
+   /// @param  smoothPH  if true, replace the phase (L1 and L2) with debiased phase
+   ///                   (= phase + INTEGER estimate of range-minus-phase in cycles).
+   /// @param  msg       a string containing a single-line statistical summary of
+   ///                   the smoothing results, and the estimated phase biases.
+   /// @param  wl1       wavelength of L1 for this data
+   /// @param  wl2       wavelength of L2 for this data
+   ///  This string consists of the following 18 fields separated by whitespace.
+   ///  1) "SMT", 2) satellite id (e.g. G07), 3) start GPS week, 4) start GPS
+   ///  seconds of week, 5) end GPS week, 6) end GPS seconds of week,
+   ///  (7-11 are for the L1 bias data in units of meters)
+   ///  7) number, 8) average, 9) std deviation, 10) minimum, and 11) maximum,
+   ///  (12-16 are for the L2 bias data in units of meters)
+   ///  12) number, 13) average, 14) std deviation, 15) minimum, and 16) maximum,
+   ///  17) the L1 bias in cycles, 18) the L2 bias in cycles.
+   void smooth(const bool smoothPR, const bool smoothPH, std::string& msg,
+            const double& wl1=L1_WAVELENGTH_GPS, const double& wl2=L2_WAVELENGTH_GPS)
+      throw(Exception);
+
+   // output -----------------------------------------------------------
+   /// Dump one line summary of the pass; do not put linefeed at end
+   /// @param msg  put message msg1 at beginning of line
+   /// @param fmt  use time format
+   /// @return string containing summary, without LF at end.
+   std::string toString(std::string msg="",
+      std::string fmt="%04Y/%02m/%02d %02H:%02M:%06.3f = %04F %w %10.3g") throw()
+   {
+      std::ostringstream os;
+      os << msg << " " << sat << " N " << std::setw(4) << size()
+         << " good " << std::setw(4) << ngood
+         << " times " << printTime(getFirstTime(),fmt)
+         << " to " << printTime(getLastTime(),fmt)
+         << " obs:";
+      std::vector<std::string> ots = getObstypes();
+      for(int i=0; i<ots.size(); i++) os << " " << ots[i];
+      return os.str();
+   }
    /// Dump all the data in the pass, one line per timetag.
    /// @param os    output stream
    /// @param msg1  put message msg1 at beginning of each line,
    /// @param msg2  put msg2 at the end of the first (#comment) line.
    void dump(std::ostream& os, std::string msg1, std::string msg2=std::string())
       throw();
-
-   /// 'less than' is required for sort() and map<SatPass,...>.find(SatPass)
-   bool operator<(const SatPass& right) const
-      { return firstTime < right.firstTime; }
-
-   // other ---------------------------------------------------------
 
    /// Write a one-line summary of the object, consisting of total points,
    /// satellite, number of good points, status, start time, end time,
@@ -341,8 +639,7 @@ public:
    /// @param sp  SatPass object to output
    friend std::ostream& operator<<(std::ostream& os, SatPass& sp);
 
-   // public member data -----------------------------------------------
-
+// public member data -----------------------------------------------
    /// flag indicating bad data
    static const unsigned short BAD;
 
@@ -366,300 +663,21 @@ public:
    /// size of maximum time gap, in seconds, allowed within SatPass data.
    static double maxGap;
 
-   /// format string, as defined in class CommonTime, for output of times
+   /// format string, as defined in class Epoch, for output of times
    /// used by smooth (debug), dump and operator<<
+   static int outRound;
    static std::string outFormat;
+   static std::string longfmt;
 
 protected:
-   /// compute the count associated with the time tt; return -1 if not within
-   /// the time limits of the SatPass
+   /// compute the count associated with the time tt
    /// @param tt the time tag of interest
-   int countForTime(const CommonTime& tt) const throw(Exception)
-      { return int((tt-firstTime)/dt + 0.5); }
-
-   // --------------- SatPassData data structure for internal use only ----------
-   //
-   struct SatPassData {
-
-      // ---------------------- member data ----------------------------------
-
-      /// a flag (cf. SatPass::BAD, etc.) that is set to OK at creation
-      /// then reset by other processing.
-      unsigned short flag;
-      /// time 'count' : time of data = FirstTime + ndt * dt + offset
-      unsigned int ndt;
-      /// offset of time from integer number * dt since FirstTime.
-      double toffset;
-      /// data for one epoch of RINEX data
-      std::vector<double> data;
-      /// loss-of-lock and signal-strength indicators (from RINEX) for data
-      /// parallel to data vector
-      std::vector<unsigned short> lli,ssi;
-
-      // ---------------------- private member functions ---------------------
-
-      /// constructor
-      /// @param n the number of data types to be stored, default 4
-      SatPassData(unsigned short n=4) : flag(SatPass::OK), ndt(0), toffset(0.0)
-      {
-         data = std::vector<double>(n,0.0);
-         lli = std::vector<unsigned short>(n,0);
-         ssi = std::vector<unsigned short>(n,0);
-      }
-
-      // d'tor, copy c'tor and operator= are built by compiler,
-      // but operator= will not work correctly, b/c a deep copy is needed.
-      SatPassData& operator=(const SatPassData& right) throw()
-      {
-         if(&right != this) {
-            flag = right.flag;
-            ndt = right.ndt;
-            toffset = right.toffset;
-            data.resize(right.data.size());
-            lli.resize(right.lli.size());
-            ssi.resize(right.ssi.size());
-            size_t i;
-            for(i=0; i<right.data.size(); i++) data[i] = right.data[i];
-            for(i=0; i<right.lli.size(); i++) lli[i] = right.lli[i];
-            for(i=0; i<right.ssi.size(); i++) ssi[i] = right.ssi[i];
-         }
-
-         return *this;
-      }
-
-   }; // end struct SatPassData
-
-   // --------------- private member data -----------------------------
-   /// Status flag for use exclusively by the caller. It is set to 0
-   /// by the constructors, but otherwise ignored by class SatPass and
-   /// class SatPassIterator.
-   int Status;
-
-   /// Nominal time spacing of the data; determined on input or by decimate()
-   double dt;
-
-   /// Satellite identifier for this data.
-   GSatID sat;
-
-   /// STL map relating strings identifying obs types with indexes in SatPassData
-   std::map<std::string,unsigned int> indexForLabel;
-   std::map<unsigned int,std::string> labelForIndex;
-
-      // above determined at construction; the rest determined by input data
-
-   /// timetags of the first and last data points.
-   CommonTime firstTime,lastTime;
-
-   /// number of timetags with good data in the data arrays.
-   unsigned int ngood;
-
-   /// ALL data in the pass, stored in SatPassData objects, in time order
-   std::vector<SatPassData> spdvector;
-
-   // --------------- private member functions ------------------------
-
-   /// called by constructors to initialize - see doc for them.
-   void init(const GSatID& sat, double dt,
-             const std::vector<std::string>& obstypes) throw();
-
-   /// add a complete SatPassData at time tt
-   /// @return n>=0 if data was added successfully, n is the index of the new data
-   ///            -1 if a gap is found (no data is added),
-   ///            -2 if time tag is out of order (no data is added)
-   int push_back(const CommonTime tt, SatPassData& spd) throw();
-
-
-   /// Check that supplied index is within valid range of data samples
-   inline void validateDataIndex(unsigned int i,
-                                 const std::string& method) const
-                                 throw(Exception)
+   int countForTime(const Epoch& tt) const throw(Exception)
    {
-      if (i >= spdvector.size()) {
-         Exception e("Invalid index in " + method
-                        + " " + StringUtils::asString(i));
-         GPSTK_THROW(e);
-      }
+      return int((tt-firstTime)/dt + 0.5);
    }
-
-   /// Convert supplied observation type into index, checking validity
-   inline unsigned findDataObsIndex(const std::string& type,
-                                    const std::string& method) const
-                                    throw(Exception)
-   {
-      const std::map<std::string, unsigned int>::const_iterator it
-                                       = indexForLabel.find(type);
-      if (it == indexForLabel.end()) {
-         Exception e("Invalid obs type in " + method + " " + type);
-         GPSTK_THROW(e);
-      }
-      return it->second;
-   }
-
-   /// get a complete SatPassData at count i
-   struct SatPassData getData(unsigned int i) const throw(Exception);
-
-   // --------------- friend functions --------------------------------
-
-   /// Sort a vector<SatPass> on time, using the firstTime member.
-   friend void sort(std::vector<SatPass>& SPList) throw();
-
-   /// Read a set of RINEX observation files, filling a vector of SatPass objects.
-   /// Create the SatPass objects using the input list of observation types
-   /// and timestep. If there are no obs types given (vector obstypes has size 0),
-   /// then use the obs types in the header of the first file read. The files
-   /// are sorted on their begin time before processing, and the resulting list
-   /// of SatPass objects is in time order. Data before the begin time, and after
-   /// the end time, is ignored. The list of SatPass objects need not be empty on
-   /// input; however if not empty, then the list must be consistent with the
-   /// input timestep and obs type list, and it will be sorted to be in time order.
-   /// If a file cannot be opened, or it is not RINEX observations, simply skip it.
-   /// @param filenames vector of input RINEX observation file names
-   /// @param obstypes  vector of observation types to include in SatPass (may
-   ///                   be empty: include all)
-   /// @param dt        data interval of existing SPList and input files
-   /// @param SPList    vector of SatPass objects to fill, need not be empty, but
-   ///                   if not empty, must have consistent obs types and dt.
-   /// @param beginTime reject data before this time (BEGINNING_OF_TIME)
-   /// @param endTime   reject data after this time (END_OF TIME)
-   /// @return -1 if the filenames list is empty, otherwise return the number of
-   /// files successfully read (may be less than the number input).
-   /// @throw gpstk Exceptions if there are exceptions while reading, or if the
-   ///   data in the file is out of time order
-   friend int SatPassFromRinexFiles(std::vector<std::string>& filenames,
-                                    std::vector<std::string>& obstypes,
-                                    double dt,
-                                    std::vector<SatPass>& SPList,
-               gpstk::CommonTime beginTime,
-               gpstk::CommonTime endTime)
-      throw(Exception);
-
-   /// Iterate over the input vector of SatPass objects (sorted to be in time
-   /// order) and write them, with the given header, to a RINEX observation file
-   /// of the given filename.
-   /// @return -1 if the file could not be opened, otherwise return 0.
-   friend int SatPassToRinexFile(std::string filename,
-                                 RinexObsHeader& header,
-                                 std::vector<SatPass>& SPList)
-      throw(Exception);
-
-   /// class SatPassIterator allows the caller to access all the data in a list
-   /// of SatPass objects in time order.
-   friend class SatPassIterator;
 
 }; // end class SatPass
-
-
-/// Iterate over a list (vector) of SatPass using this class. NB. this class ignores
-/// passes that have Status less than zero, but does not change any Status.
-class SatPassIterator {
-public:
-   /// Explicit (only) constructor. Check the list for consistency (else throw)
-   /// and find common time step and obs types, as well as first and last times.
-   /// Ignore passes with Status less than zero.
-   /// After building a vector<SatPass> (in time order), declare an iterator
-   /// using this constructor, then call member function next(RinexObsData&) to
-   /// access the data in time order, until it returns non-zero.
-   /// @param splist   Vector of (consistent) SatPass objects
-   /// @return 1 for success, 0 at the end of the dataset.
-   /// @throw if input list is empty, or
-   ///        if elements in the list have differing data interval or obs types, or
-   ///        if any observation type is not registered (cf. RinexUtilities.hpp)
-   explicit SatPassIterator(std::vector<SatPass>& splist) throw(Exception);
-
-   /// Access (all of) the data for the next epoch. As long as this function
-   /// returns non-zero, there is more data to be accessed.
-   /// Ignore passes with Status less than zero.
-   /// @param indexMap  map<unsigned int, unsigned int> defined so that all the
-   ///                  data in the current iteration is found at
-   ///                  SatPassList[i].data(j) where indexMap[i] = j.
-   /// @return 1 for success, 0 at the end of the dataset.
-   /// @throw if time tags are out of order.
-   int next(std::map<unsigned int, unsigned int>& indexMap) throw(Exception);
-
-   /// Access (all of) the data for the next epoch. As long as this function
-   /// returns non-zero, there is more data to be accessed.
-   /// Ignore passes with Status less than zero.
-   /// NB. If SatPass obs types are not registered (cf. RinexUtilities.hpp), then
-   /// data will NOT be added to RinexObsData.
-   /// @param robs  RinexObsData in which data is returned.
-   /// @return 1 for success, 0 at the end of the dataset.
-   /// @throw if time tags are out of order
-   int next(RinexObsData& robs) throw(Exception);
-
-   /// Restart the iteration, i.e. return to the initial time
-   void reset(void) throw();
-
-   /// Get the first (earliest) time found in the SatPass list.
-   CommonTime getFirstTime(void) throw() { return FirstTime; }
-
-   /// Get the last (latest) time found in the SatPass list.
-   CommonTime getLastTime(void) throw() { return LastTime; }
-
-   /// @return the earliest time of good data in this SatPass list
-   CommonTime getFirstGoodTime(void) const throw() {
-      CommonTime ttag = LastTime;
-      for(size_t i=0; i<SPList.size(); i++)
-         if(SPList[i].getFirstGoodTime() < ttag)
-            ttag = SPList[i].getFirstGoodTime();
-      return ttag;
-   }
-
-   /// @return the latest time of good data in this SatPass list
-   CommonTime getLastGoodTime(void) const throw() {
-      CommonTime ttag = FirstTime;
-      for(size_t i=0; i<SPList.size(); i++)
-         if(SPList[i].getLastGoodTime() > ttag)
-            ttag = SPList[i].getLastGoodTime();
-      return ttag;
-   }
-
-   /// Get the time interval, which is common to all the SatPass in the list.
-   double getDT(void) throw() { return DT; }
-
-   /// get a map of pairs of indexes for the current epoch. call this after calling
-   /// next() to get pairs (i,j) where the data returned by next() is the same as
-   /// SatPassList[i].data(j,<obstype>), for each i in the map, and j=map[i].
-   std::map<unsigned int,unsigned int> getIndexes(void) throw()
-      { return nextIndexMap; }
-
-private:
-   SatPassIterator(const SatPassIterator&);              // DO NOT implement
-   SatPassIterator& operator=(const SatPassIterator&);   // DO NOT implement
-
-   /// count of the current epoch, = 0,1,...
-   int currentN;                    // current time = FirstTime + currentN*DT
-
-   /// time step (seconds) found in all objects in the list (constructor throws
-   /// if they are not identical).
-   double DT;
-
-   /// first (earliest) start time of the passes in the list, and
-   /// last (latest) end time of the passes in the list.
-   CommonTime FirstTime,LastTime;
-
-   /// index of the current object in the list for this satellite
-   std::map<GSatID,int> listIndex;
-
-   /// index of the data vector (spdvector) of the current object in the list
-   /// for this satellite
-   std::map<GSatID,int> dataIndex;
-
-   /// offset in count of the current object in the list for this satellite
-   std::map<GSatID,int> countOffset;
-
-   /// vector parallel to SPList used to mark current use by iteration;
-   /// value is "-1,0,1" as SPList[i] is "yet to be used, in use, done".
-   /// This has nothing to do with SatPass::Status()
-   std::vector<int> indexStatus;
-
-   /// reference to the vector of passes being processed
-   std::vector<SatPass>& SPList;
-
-   /// map of indexes i,j, created by next(), such that data returned by next() is
-   /// found at SatPassList[i].spdvector[j] where map[i]=j.
-   std::map<unsigned int,unsigned int> nextIndexMap;
-
-}; // end class SatPassIterator
 
 /// Stream output for SatPass.
 /// @param os output stream to write to

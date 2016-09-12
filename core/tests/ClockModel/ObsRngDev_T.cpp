@@ -98,7 +98,7 @@ class ObsRngDev_T
 
 	int BasicConstructorTest(void)
 	{
-		TestUtil testFramework("ObsRngDev", "BasicConstructor", __FILE__, __LINE__);
+           gpstk::TestUtil testFramework("ObsRngDev", "BasicConstructor", __FILE__, __LINE__);
 
 		//same prn for different ranges & different time
 		testMesg = "Generation of ORDs with the basic constructor failed";
@@ -145,7 +145,7 @@ class ObsRngDev_T
 
 	int IonosphericConstructorTest(void)
 	{
-		TestUtil testFramework("ObsRngDev", "IonosphericConstructor", __FILE__, __LINE__);
+           gpstk::TestUtil testFramework("ObsRngDev", "IonosphericConstructor", __FILE__, __LINE__);
 
 		gpstk::IonoModelStore ims = ionoModelStoreGen(cTimeVec);
 		gpstk::IonoModel::Frequency L1 = gpstk::IonoModel::L1;
@@ -195,7 +195,7 @@ class ObsRngDev_T
 
 	int TroposphericConstructorTest(void)
 	{
-		TestUtil testFramework("ObsRngDev", "TroposphericConstructor", __FILE__, __LINE__);
+           gpstk::TestUtil testFramework("ObsRngDev", "TroposphericConstructor", __FILE__, __LINE__);
 
 		gpstk::SimpleTropModel stm(18.8889, 1021.2176, 77.7777); // Celsius, mmBar, %humidity		
 		testMesg = "Generation of ORDS with the Tropospheric constructor failed";
@@ -245,7 +245,7 @@ class ObsRngDev_T
 
 	int IonosphericTroposphericConstructorTest(void)
 	{
-		TestUtil testFramework("ObsRngDev", "IonosphericTroposphericConstructor", __FILE__, __LINE__);
+           gpstk::TestUtil testFramework("ObsRngDev", "IonosphericTroposphericConstructor", __FILE__, __LINE__);
 
 		gpstk::SimpleTropModel stm(18.8889, 1021.2176, 77.7777);
 		gpstk::IonoModelStore ims = ionoModelStoreGen(cTimeVec);
@@ -296,7 +296,7 @@ class ObsRngDev_T
 
 	int GammaConstructorTest(void)
 	{
-		TestUtil testFramework("ObsRngDev", "GammaConstructor", __FILE__, __LINE__);
+		gpstk::TestUtil testFramework("ObsRngDev", "GammaConstructor", __FILE__, __LINE__);
 
 		testMesg = "Generation of ORDs with Gamma constructor failed";
 		try
@@ -344,7 +344,7 @@ class ObsRngDev_T
 
 	int GammaTroposphericConstructorTest(void)
 	{
-		TestUtil testFramework("ObsRngDev", "GammaTroposphericConstructor", __FILE__, __LINE__);
+		gpstk::TestUtil testFramework("ObsRngDev", "GammaTroposphericConstructor", __FILE__, __LINE__);
 
 		gpstk::SimpleTropModel stm(18.8889, 1021.2176, 77.7777);
 		testMesg = "Generation of ORDs with Gamma and Tropospheric constructor failed";
@@ -397,7 +397,7 @@ class ObsRngDev_T
 
 	int getFunctionsTest(void)
 	{
-		TestUtil testFramework("ObsRngDev", "Get Methods", __FILE__, __LINE__);
+		gpstk::TestUtil testFramework("ObsRngDev", "Get Methods", __FILE__, __LINE__);
 		std::string testMesg;
 		int failCount;
 
@@ -512,7 +512,7 @@ class ObsRngDev_T
 		//need to test computeOrdRx, computeOrdTx, and computeTrop
 		//none of the math is actually done in this class, is entirely reliant on calls to other files.
 		//Therefore, how test? Calculation at it's core in Xvt::preciseRho
-		TestUtil testFramework("ObsRngDev", "BasicCalculation", __FILE__, __LINE__);
+           gpstk::TestUtil testFramework("ObsRngDev", "BasicCalculation", __FILE__, __LINE__);
 
 		gpstk::CorrectedEphemerisRange cer;
 		double rho;
@@ -561,7 +561,7 @@ class ObsRngDev_T
 
 	int IonosphericCalculationTest(void)
 	{
-		TestUtil testFramework("ObsRngDev", "IonosphericCalculation", __FILE__, __LINE__);
+           gpstk::TestUtil testFramework("ObsRngDev", "IonosphericCalculation", __FILE__, __LINE__);
 
 		gpstk::CorrectedEphemerisRange cer;
 		double rho;
@@ -610,7 +610,7 @@ class ObsRngDev_T
 
 	int TroposphericCalculationTest(void)
 	{
-		TestUtil testFramework("ObsRngDev", "TroposphericCalculation", __FILE__, __LINE__);
+		gpstk::TestUtil testFramework("ObsRngDev", "TroposphericCalculation", __FILE__, __LINE__);
 
 		gpstk::CorrectedEphemerisRange cer;
 		double rho;
@@ -659,7 +659,7 @@ class ObsRngDev_T
 
 	int IonosphericTroposphericCalculationTest(void)
 	{
-		TestUtil testFramework("ObsRngDev", "IonosphericTroposphericCalculation", __FILE__, __LINE__);
+		gpstk::TestUtil testFramework("ObsRngDev", "IonosphericTroposphericCalculation", __FILE__, __LINE__);
 
 		gpstk::CorrectedEphemerisRange cer;
 		double rho;
@@ -708,7 +708,7 @@ class ObsRngDev_T
 
 	int GammaCalculationTest(void)
 	{
-		TestUtil testFramework("ObsRngDev", "GammaCalculation", __FILE__, __LINE__);
+		gpstk::TestUtil testFramework("ObsRngDev", "GammaCalculation", __FILE__, __LINE__);
 
 		gpstk::CorrectedEphemerisRange cer;
 		double rho;
@@ -758,7 +758,7 @@ class ObsRngDev_T
 
 	int TroposphericGammaCalculationTest(void)
 	{
-		TestUtil testFramework("ObsRngDev", "TroposphericGammaCalculation", __FILE__, __LINE__);
+		gpstk::TestUtil testFramework("ObsRngDev", "TroposphericGammaCalculation", __FILE__, __LINE__);
 
 		gpstk::CorrectedEphemerisRange cer;
 		double rho;
@@ -771,7 +771,7 @@ class ObsRngDev_T
 		{
 			testMesg = "ORDs never generated, impossible to do calculation test";
 			for (int i=0; i<=4; i++)
-				testFramework.assert(false, testMesg, __LINE__);
+                           testFramework.assert(false, testMesg, __LINE__);
 		}
 
 		for (int i=0; i < ordVecTropGamma.size(); i++)

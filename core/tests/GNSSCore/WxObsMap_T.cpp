@@ -53,7 +53,7 @@ public:
 
    int observationsTest(void)
    {
-      TestUtil testFramework("WxObsMap", "Default Constructor", __FILE__, __LINE__);
+      gpstk::TestUtil testFramework("WxObsMap", "Default Constructor", __FILE__, __LINE__);
       std::string failMesg;
 
       gpstk::WxObservation Compare;
@@ -137,7 +137,7 @@ public:
 
    int WxObsDataTest(void)
    {
-      TestUtil testFramework("WxObsMap", "Default Constructor", __FILE__, __LINE__);
+      gpstk::TestUtil testFramework("WxObsMap", "Default Constructor", __FILE__, __LINE__);
       std::string failMesg;
 
       gpstk::WxObsData Compare;
@@ -160,7 +160,7 @@ public:
                                                         100+i, (50+i)*0.001, (80+i)*0.001));
       }
 
-      //scale time counter back to access a stored observation
+         //scale time counter back to access a stored observation
       cTime.set((double)1008);
 
       failMesg = "Was the WxObservation object stored in the map?";
@@ -172,20 +172,20 @@ public:
       gpstk::WxObservation obs1 = Compare.getMostRecent(cTime);	
       gpstk::WxObservation obs2(cTime, 108, 0.058f, 0.088f);
 
-      //std::cout<<obs2<<std::endl<<obs1<<std::endl;
+         //std::cout<<obs2<<std::endl<<obs1<<std::endl;
 		
-      //std::cout<<Compare.obs[cTime]<<std::endl;
+         //std::cout<<Compare.obs[cTime]<<std::endl;
 
 
       failMesg = "Did the getMostRecent method function correctly?";
 
-      //should be able to do obs1 == obs2, but b/c theres no == operator...
+         //should be able to do obs1 == obs2, but b/c theres no == operator...
       testFramework.assert(obs2.t == obs1.t && 
                            obs2.temperature == obs1.temperature &&
                            obs2.pressure == obs1.pressure &&
                            obs2.humidity == obs1.humidity, failMesg, __LINE__);
 
-      //verifying objects exist before deleting them
+         //verifying objects exist before deleting them
       cTime.set((double) 1001);
       failMesg = "Is the WxObservation object stored?	";
       testFramework.assert(Compare.obs.count(cTime), failMesg, __LINE__);
@@ -194,7 +194,7 @@ public:
       testFramework.assert(Compare.obs.count(cTime), failMesg, __LINE__);
 
       cTime.set((double) 1003);
-      //should erase 1001 and 1002 entries
+         //should erase 1001 and 1002 entries
       Compare.flush(cTime);
 
       cTime.set((double) 1001);
@@ -210,7 +210,7 @@ public:
       try{ Compare.getWxObservation(cTime, 0, false); testFramework.assert(false, failMesg, __LINE__); }
       catch (gpstk::Exception e) { testFramework.assert(true, failMesg, __LINE__); }
 
-      //return right object for explicit case
+         //return right object for explicit case
       cTime.set((double)1003);
       gpstk::WxObservation obs3 = Compare.getWxObservation(cTime, 0, false);
       gpstk::WxObservation obs4(cTime, 103, 0.053f, 0.083f);
@@ -221,7 +221,7 @@ public:
                            obs3.pressure == obs4.pressure &&
                            obs3.humidity == obs4.humidity, failMesg, __LINE__);
 
-      //return right object within range when theres only one
+         //return right object within range when theres only one
       cTime.set((double)1009);
       gpstk::WxObservation obs6(cTime, 109, 0.059f, 0.089f);
       cTime.set((double)1010);		
@@ -233,7 +233,7 @@ public:
                            obs5.pressure == obs6.pressure &&
                            obs5.humidity == obs6.humidity, failMesg, __LINE__);
 
-      //return right object within range when theres multiple
+         //return right object within range when theres multiple
       cTime.set((double)1006);
       gpstk::WxObservation obs8(cTime, 106, 0.056f, 0.086f);	
       gpstk::WxObservation obs7 = Compare.getWxObservation(cTime, 86401, false);
@@ -244,11 +244,11 @@ public:
                            obs7.pressure == obs8.pressure &&
                            obs7.humidity == obs8.humidity, failMesg, __LINE__);
 
-      //Linear Interpolation
+         //Linear Interpolation
       cTime.set((long)1007, (double)43200);
-      //should have two values in range, where counter is 7 and 8
+         //should have two values in range, where counter is 7 and 8
       gpstk::WxObservation obs9 = Compare.getWxObservation(cTime, 43200, true);
-      //create object with what the interpolated values should be at the given time
+         //create object with what the interpolated values should be at the given time
       gpstk::WxObservation obs10(cTime, 107.5f, 0.0575f, 0.0875f);
 
       failMesg = "Did the getWxObservation perform linear interpolation succesfully?";

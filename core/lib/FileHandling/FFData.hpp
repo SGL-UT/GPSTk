@@ -50,8 +50,8 @@
 
 namespace gpstk
 {
-   /** @addtogroup formattedfile */
-   //@{
+      /// @ingroup FileHandling
+      //@{
 
       /// Forward declaration of FFStream class and friend functions
    class FFStream;
@@ -175,7 +175,7 @@ namespace gpstk
                gpstk::FFStreamError) = 0;
    }; // class
 
-   //@}
+      //@}
 
 } // namespace
 

@@ -48,7 +48,7 @@
 namespace gpstk
 {
 
-      /** @addtogroup GeoDynamics */
+      /// @ingroup GeoDynamics 
       //@{
 
       /** This class computes the NRLMSISE atmosphere model.

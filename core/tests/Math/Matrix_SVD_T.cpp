@@ -45,7 +45,7 @@ using namespace std;
 template<typename T>
 void SVDTest(size_t r, size_t c,
                   T xA[], T xB[], T xBSref[],
-                  TestUtil& testFramework)
+                  gpstk::TestUtil& testFramework)
 {
    ostringstream oss;
    oss << r << "x" << c;
@@ -77,7 +77,7 @@ void SVDTest(size_t r, size_t c,
 template<typename T>
 unsigned multipass()
 {
-   TestUtil testFramework("Matrix SVD<"+typeString<T>()+">", "--", __FILE__, __LINE__);
+   gpstk::TestUtil testFramework("Matrix SVD<"+gpstk::typeString<T>()+">", "--", __FILE__, __LINE__);
    T a22[] = {2,1,1,2};
    T b2[] = {1,2};
    T bs2[] = {0,1};

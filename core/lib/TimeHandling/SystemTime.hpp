@@ -42,6 +42,9 @@
 
 namespace gpstk
 {
+      /// @ingroup TimeHandling
+      //@{
+
       /**
        * This class reads the current system time and stores it in
        * a UnixTime.
@@ -51,7 +54,7 @@ namespace gpstk
    {
    public:
          /**
-          * @defgroup stbo SystemTime Basic Operations
+          * @name SystemTime Basic Operations
           */
          //@{
 
@@ -85,6 +88,8 @@ namespace gpstk
           */
       SystemTime& update();
    };
+
+      //@}
 
 }
 

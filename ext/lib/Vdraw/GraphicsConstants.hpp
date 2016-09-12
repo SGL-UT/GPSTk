@@ -42,49 +42,49 @@
 
 namespace vdraw
 {
-  /** \addtogroup BasicVectorGraphics */ 
-  //@{
+      /// @ingroup BasicVectorGraphics
+      //@{
 
-  /// The value of pie to 24 decimal places
-  extern const double PI;
-  /// pi / 2
-  extern const double HALF_PI;
-  /// pi * 2
-  extern const double TWO_PI;
-  /// pi / 180
-  extern const double DEGREES_TO_RADIANS; 
-  /// 180 / pi
-  extern const double RADIANS_TO_DEGREES;
+      /// The value of pie to 24 decimal places
+   extern const double PI;
+      /// pi / 2
+   extern const double HALF_PI;
+      /// pi * 2
+   extern const double TWO_PI;
+      /// pi / 180
+   extern const double DEGREES_TO_RADIANS; 
+      /// 180 / pi
+   extern const double RADIANS_TO_DEGREES;
 
-  /// Units conversion from points to inches
-  extern const double PTS_PER_INCH;
+      /// Units conversion from points to inches
+   extern const double PTS_PER_INCH;
 
-  /// Units conversion from points to centimeters
-  extern const double PTS_PER_CM;
+      /// Units conversion from points to centimeters
+   extern const double PTS_PER_CM;
 
-  /// U.S. Customary page size width given in points
-  extern const double US_LETTER_WIDTH_PTS;
-  /// U.S. Customary page size height given in points
-  extern const double US_LETTER_HEIGHT_PTS;
+      /// U.S. Customary page size width given in points
+   extern const double US_LETTER_WIDTH_PTS;
+      /// U.S. Customary page size height given in points
+   extern const double US_LETTER_HEIGHT_PTS;
 
-  // For the rest of the world... there's ISO 216-series sizes
-  /// A3 page size width given in points
-  extern const double A3_WIDTH_PTS;
-  /// A3 page size height given in points
-  extern const double A3_HEIGHT_PTS;
+      // For the rest of the world... there's ISO 216-series sizes
+      /// A3 page size width given in points
+   extern const double A3_WIDTH_PTS;
+      /// A3 page size height given in points
+   extern const double A3_HEIGHT_PTS;
 
-  // A4 and US customary letter are of comparable size
-  /// A4 page size width given in points
-  extern const double A4_WIDTH_PTS;
-  /// A4 page size height given in points 
-  extern const double A4_HEIGHT_PTS;
+      // A4 and US customary letter are of comparable size
+      /// A4 page size width given in points
+   extern const double A4_WIDTH_PTS;
+      /// A4 page size height given in points 
+   extern const double A4_HEIGHT_PTS;
 
-  /// A5 page size width given in points
-  extern const double A5_WIDTH_PTS;
-  /// A5 page size height given in points
-  extern const double A5_HEIGHT_PTS;
+      /// A5 page size width given in points
+   extern const double A5_WIDTH_PTS;
+      /// A5 page size height given in points
+   extern const double A5_HEIGHT_PTS;
 
-  //@}
+      //@}
 
 } // namespace vdraw
 

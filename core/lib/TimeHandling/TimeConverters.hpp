@@ -41,6 +41,9 @@
 
 namespace gpstk
 {
+      /// @ingroup TimeHandling
+      //@{
+
       /** Fundamental routine to convert from "Julian day" (= JD + 0.5)
        *  to calendar day.
        * @param jd long integer "Julian day" = JD+0.5
@@ -96,6 +99,8 @@ namespace gpstk
    double convertTimeToSOD( int hh,
                             int mm,
                             double sec ) ;
+
+      //@}
 
 } // namespace
 

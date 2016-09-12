@@ -50,8 +50,9 @@
 
 namespace gpstk
 { 
-      /** @defgroup RinexClock RINEX clock files */
+      /// @ingroup FileHandling
       //@{
+
    class RinexClockBase : public FFData
    {
    public:  

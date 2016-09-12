@@ -47,9 +47,9 @@ using namespace std;
 template<class T>
 size_t statsTest()
 {
-   std::string typeName = typeString<T>();
+   std::string typeName = gpstk::typeString<T>();
    T precision = 10*std::numeric_limits<T>::epsilon();
-   TestUtil testFramework( "Stats<"+typeName+">", "--", __FILE__, __LINE__ );
+   gpstk::TestUtil testFramework( "Stats<"+typeName+">", "--", __FILE__, __LINE__ );
 
    gpstk::TwoSampleStats<T> tso;
 

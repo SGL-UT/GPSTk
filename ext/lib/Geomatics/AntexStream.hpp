@@ -51,7 +51,7 @@
 
 namespace gpstk
 {
-   /** @addtogroup Antex */
+   /// @ingroup Antex 
    //@{
 
       /// This class reads an Antex files.

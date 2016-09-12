@@ -44,6 +44,9 @@
 
 namespace gpstk
 {
+      /// @ingroup TimeHandling
+      //@{
+
       /**
        * The TimeTag classes are the "interface" for CommonTime, so
        * when printing a CommonTime object, each of the TimeTag printf()
@@ -174,6 +177,9 @@ namespace gpstk
    void mixedScanTime( CommonTime& t,
                        const std::string& str,
                        const std::string& fmt );
+
+      //@}
+
 } // namespace
 
 #endif // GPSTK_TIMESTRING_HPP

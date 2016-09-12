@@ -47,11 +47,10 @@
 
 namespace gpstk
 {
-      /** @addtogroup commandoptiongroup */
+      /// @ingroup CommandLine
       //@{
 
-      /** @ingroup timegroup
-       * @brief Command-line option class for processing time strings.
+      /** Command-line option class for processing time strings.
        * This class is allows the programmer to add command-line
        * options to an application that can parse strings containing
        * representations of time. The programmer must specify the
@@ -108,8 +107,7 @@ namespace gpstk
    }; // class CommandOptionWithTimeArg
 
 
-      /** @ingroup timegroup
-       * This class is similar to CommandOptionWithTimeArg, but
+      /** This class is similar to CommandOptionWithTimeArg, but
        * accepts several different time formats simultaneously.
        * The user can use any of the following time formats with this
        * option:

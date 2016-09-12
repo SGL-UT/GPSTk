@@ -46,7 +46,7 @@ class Vector_T
    /* Tests the initialization of Vector objects */
    int initializationTest(void)
    {
-      TestUtil testFramework("Vector","initializationTest",__FILE__,__LINE__);
+      gpstk::TestUtil testFramework("Vector","initializationTest",__FILE__,__LINE__);
       std::string failMesg;
 
       int badCount=0;
@@ -122,7 +122,7 @@ class Vector_T
    /* Tests addition and subtraction between vector objects */
    int operatorTest(void)
    {
-      TestUtil testFramework( "Vector", "== Operator", __FILE__, __LINE__);
+      gpstk::TestUtil testFramework( "Vector", "== Operator", __FILE__, __LINE__);
       std::string failMesg;
 
       gpstk::Vector<double> v1(3,1.0);

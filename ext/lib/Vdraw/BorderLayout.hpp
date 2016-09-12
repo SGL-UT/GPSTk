@@ -47,44 +47,44 @@
 
 namespace vdraw
 {
-  /** \addtogroup BasicVectorGraphics */ 
-  //@{
-
-  /**
-   * Assists in arranging a new frame within a given one, with a margin.
-   */
-  class BorderLayout : public Layout
-  {
-
-    public:
+      /// @ingroup BasicVectorGraphics
+      //@{
 
       /**
-       * Constructor. 
-       * @param frame Outer frame.
-       * @param marginSize Length in points between inner and outer frames
-       */   
+       * Assists in arranging a new frame within a given one, with a margin.
+       */
+   class BorderLayout : public Layout
+   {
+
+   public:
+
+         /**
+          * Constructor. 
+          * @param frame Outer frame.
+          * @param marginSize Length in points between inner and outer frames
+          */   
       BorderLayout(const Frame& frame, double marginSize );
 
-      /**
-       * Constructor. 
-       * @param frame Outer frame.
-       * @param xMarginSize Border size between left and right parts of inner and outer frames
-       * @param yMarginSize Border size between upper and lower parts of inner and outer frames
-       */   
+         /**
+          * Constructor. 
+          * @param frame Outer frame.
+          * @param xMarginSize Border size between left and right parts of inner and outer frames
+          * @param yMarginSize Border size between upper and lower parts of inner and outer frames
+          */   
       BorderLayout(const Frame& frame, 
-          double xMarginSize, double yMarginSize );
+                   double xMarginSize, double yMarginSize );
 
-      /**
-       * Constructor. 
-       * @param frame Outer frame.
-       * @param leftMargin Border size between left  parts of inner and outer frames
-       * @param topMargin Border size between upper parts of inner and outer frames
-       * @param rightMargin Border size between right parts of inner and outer frames
-       * @param bottomMargin Border size between bottom parts of inner and outer frames
-       */   
+         /**
+          * Constructor. 
+          * @param frame Outer frame.
+          * @param leftMargin Border size between left  parts of inner and outer frames
+          * @param topMargin Border size between upper parts of inner and outer frames
+          * @param rightMargin Border size between right parts of inner and outer frames
+          * @param bottomMargin Border size between bottom parts of inner and outer frames
+          */   
       BorderLayout(const Frame& frame, 
-          double leftMargin, double topMargin,
-          double rightMargin, double bottomMargin);
+                   double leftMargin, double topMargin,
+                   double rightMargin, double bottomMargin);
 
       virtual int getFrameCount(void)
       {return (1);}
@@ -92,13 +92,13 @@ namespace vdraw
       virtual Frame getFrame(int fnum)
       {return targetList[0];}
 
-    protected:
+   protected:
 
-      /// List containing the frames created in this layout.
+         /// List containing the frames created in this layout.
       std::vector<Frame> targetList;
-  };
+   };
 
-  //@}
+      //@}
 
 } // namespace vdraw
 

@@ -51,7 +51,7 @@
 namespace gpstk
 {
 
-      /** @addtogroup GPSsolutions */
+      /// @ingroup GPSsolutions
       //@{
 
 
@@ -83,7 +83,7 @@ namespace gpstk
        */
    class ProblemSatFilter : public ProcessingClass
    {
-      public:
+   public:
 
          /// Default constructor.
       ProblemSatFilter() 
@@ -134,7 +134,7 @@ namespace gpstk
       { satDataMap.clear(); }
 
       
-      /// Destructor
+         /// Destructor
       virtual ~ProblemSatFilter() {};
 
    protected:
@@ -151,8 +151,8 @@ namespace gpstk
          CommonTime endEpoch;
 
          SatData():spiltFlag(0),problemFlag(0),actionFlag(0),
-            startEpoch(CommonTime::BEGINNING_OF_TIME),
-            endEpoch(CommonTime::BEGINNING_OF_TIME)
+                   startEpoch(CommonTime::BEGINNING_OF_TIME),
+                   endEpoch(CommonTime::BEGINNING_OF_TIME)
          {}
       };
 

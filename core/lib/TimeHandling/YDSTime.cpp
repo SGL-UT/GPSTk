@@ -273,19 +273,12 @@ namespace gpstk
       return ( !operator<( right ) );
    }
 
-      // ----------- YDSTime operator<< --------------
-      //
-      // Stream output for YDSTime objects.  Typically used for debugging.
-      // @param s stream to append formatted YDSTime to.
-      // @param t YDSTime to append to stream \c s.
-      // @return reference to \c s.
-
-   std::ostream& operator<<( std::ostream& s,
-                             const YDSTime& yt )
-   {
-      s << yt.printf("%04Y/%03j %s %P");
-      return s;
-   }
-
-
 } // namespace
+
+std::ostream& operator<<( std::ostream& s,
+                          const gpstk::YDSTime& yt )
+{
+   s << yt.printf("%04Y/%03j %s %P");
+   return s;
+}
+

@@ -832,7 +832,7 @@ ModeledReferencePR object." );
             tropoCorr = 0.0;
          }
       }
-      catch(TropModel::InvalidTropModel& e)
+      catch(InvalidTropModel& e)
       {
          tropoCorr = 0.0;
       }

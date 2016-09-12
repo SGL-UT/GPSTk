@@ -49,9 +49,7 @@
 namespace gpstk
 {
 
-      /** @addtogroup GPSsolutions */
-      /// @ingroup math
-
+      /// @ingroup GPSsolutions
       //@{
 
       /** This class computes the Precise Point Positioning (PPP) solution
@@ -484,8 +482,8 @@ namespace gpstk
       { qMatrix = pMatrix; return (*this); };
 
 
-          /** Set the positioning mode, kinematic or static.
-           */
+         /** Set the positioning mode, kinematic or static.
+          */
       virtual SolverPPP& setKinematic( bool kinematicMode = true,
                                        double sigmaX = 100.0,
                                        double sigmaY = 100.0,
@@ -640,7 +638,7 @@ namespace gpstk
 
 
       virtual SolverPPP& setDefaultEqDefinition(
-                                       const gnssEquationDefinition& eqDef )
+         const gnssEquationDefinition& eqDef )
       { return (*this); };
 
 

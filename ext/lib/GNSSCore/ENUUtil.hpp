@@ -47,7 +47,7 @@
 
 namespace gpstk
 {
-    /** @addtogroup geodeticgroup */
+    /// @ingroup geodeticgroup 
     //@{
 
       /// A utility for converting from Cartesian in XZY to East-North-Up (ENU)  

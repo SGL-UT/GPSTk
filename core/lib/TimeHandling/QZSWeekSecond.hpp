@@ -43,67 +43,72 @@
 
 namespace gpstk
 {
-   /// This class handles the week and seconds-of-week of the QZS TimeTag classes.
-   /// The QZS week is specified by (GPS without the rollover)
-   /// 16-bit ModWeek, rollover at 65535, bitmask 0xFFFF and epoch QZS_EPOCH_MJD
+      /// @ingroup TimeHandling
+      //@{
+
+      /** This class handles the week and seconds-of-week of the QZS
+       * TimeTag classes.  The QZS week is specified by (GPS without
+       * the rollover)
+       * 16-bit ModWeek, rollover at 65535, bitmask 0xFFFF and
+       * epoch QZS_EPOCH_MJD */
    class QZSWeekSecond : public WeekSecond
    {
    public:
 
-      /// Constructor.
+         /// Constructor.
       QZSWeekSecond(unsigned int w = 0,
-                       double s = 0.,
-                       TimeSystem ts = TimeSystem::QZS)
-         : WeekSecond(w,s)
+                    double s = 0.,
+                    TimeSystem ts = TimeSystem::QZS)
+            : WeekSecond(w,s)
       { timeSystem = ts; }
 
-      /// Constructor from CommonTime
+         /// Constructor from CommonTime
       QZSWeekSecond( const CommonTime& right )
       {
          convertFromCommonTime( right );
       }
 
-      /// Destructor.
+         /// Destructor.
       ~QZSWeekSecond() {}
 
       
-      /// Return the number of bits in the bitmask used to get the ModWeek from the
-      /// full week.
+         /// Return the number of bits in the bitmask used to get the ModWeek from the
+         /// full week.
       int Nbits(void) const
       {
          static const int n=16;
          return n;
       }
 
-      /// Return the bitmask used to get the ModWeek from the full week.
+         /// Return the bitmask used to get the ModWeek from the full week.
       int bitmask(void) const
       {
          static const int bm=0xFFFF;
          return bm;
       }
 
-      /// Return the Modified Julian Date (MJD) of epoch for this system.
+         /// Return the Modified Julian Date (MJD) of epoch for this system.
       long MJDEpoch(void) const
       {
          static const long e=QZS_EPOCH_MJD;
          return e;
       }
 
-      /// Return a string containing the characters that this class
-      /// understands when printing times.
+         /// Return a string containing the characters that this class
+         /// understands when printing times.
       virtual std::string getPrintChars() const
       {
          return "VIiwgP";
       }
 
-      /// Return a string containing the default format to use in printing.
+         /// Return a string containing the default format to use in printing.
       virtual std::string getDefaultFormat() const
       {
          return "%I %g %P";
       }
 
-      /// This function formats this time to a string.  The exceptions
-      /// thrown would only be due to problems parsing the fmt string.
+         /// This function formats this time to a string.  The exceptions
+         /// thrown would only be due to problems parsing the fmt string.
       virtual std::string printf(const std::string& fmt) const
       {
          try {
@@ -128,8 +133,8 @@ namespace gpstk
          { GPSTK_RETHROW(e); }
       }
 
-      /// This function works similarly to printf.  Instead of filling
-      /// the format with data, it fills with error messages.
+         /// This function works similarly to printf.  Instead of filling
+         /// the format with data, it fills with error messages.
       virtual std::string printError(const std::string& fmt) const
       {
          try {
@@ -154,10 +159,10 @@ namespace gpstk
          { GPSTK_RETHROW(e); }
       }
 
-      /// Set this object using the information provided in \a info.
-      /// @param info the IdToValue object to which this object shall be set.
-      /// @return true if this object was successfully set using the
-      ///  data in \a info, false if not.
+         /// Set this object using the information provided in \a info.
+         /// @param info the IdToValue object to which this object shall be set.
+         /// @return true if this object was successfully set using the
+         ///  data in \a info, false if not.
       bool setFromInfo( const IdToValue& info )
       {
 
@@ -195,6 +200,8 @@ namespace gpstk
       }
 
    }; // end class QZSWeekSecond
+
+      //@}
 
 } // namespace
 

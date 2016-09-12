@@ -58,7 +58,7 @@
 namespace gpstk
 {
 
-      /** @addtogroup GeoDynamics */
+      /// @ingroup GeoDynamics 
       //@{
 
   

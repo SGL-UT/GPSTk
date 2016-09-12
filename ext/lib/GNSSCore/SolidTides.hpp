@@ -58,7 +58,7 @@
 
 namespace gpstk
 {
-      /** @addtogroup GPSsolutions */
+      /// @ingroup GPSsolutions 
       //@{
 
       /** This class computes the effect of solid Earth tides at a given

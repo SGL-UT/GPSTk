@@ -46,7 +46,7 @@
 
 namespace gpstk
 {
-/** @addtogroup code   */
+/// @ingroup code   
 //@{
       
       /*

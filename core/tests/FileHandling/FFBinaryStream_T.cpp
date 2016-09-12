@@ -103,8 +103,8 @@ init()
 {
 
    TestUtil testUtil;
-   string dp = testUtil.getDataPath() + gpstk::getFileSep();
-   string op = testUtil.getTempPath() + gpstk::getFileSep();
+   string dp = gpstk::getPathData() + gpstk::getFileSep();
+   string op = gpstk::getPathTestTemp() + gpstk::getFileSep();
 
       //----------------------------------------
       // Full file paths
@@ -141,7 +141,7 @@ testStream(const std::string& outfn, const std::string& reffn,
                                          0x7ff3 };
    static const uint32_t uint32Arr[] = { 0, 2147483647, 4294967295, 6456568 };
    static const uint64_t uint64Arr[] = { 0, 9223372036854775807,
-                                         18446744073709551615, 2904954569522 };
+                                         18446744073709551615lu, 2904954569522 };
 
    static const int8_t int8Arr[] = { 0, 127, -127, -1 };
    static const int16_t int16Arr[] = { 0, -1, -32767, 32767, 98, -1553 };
@@ -261,9 +261,14 @@ testStream(const std::string& outfn, const std::string& reffn,
       // getData tests make sure that the data read back in from the
       // file matches what was written out in the first place.
    
+   
    StreamType testStrmIn(outfn.c_str(), ios::in);
 
+   #ifdef WIN32
+   testFramework.assert(bool(testStrmIn), "Couldn't open " + outfn + " for input", __LINE__);
+   #else
    testFramework.assert(testStrmIn, "Couldn't open " + outfn + " for input", __LINE__);
+   #endif
 
       // check file size
    testStrmIn.seekg(0, testStrmIn.end);

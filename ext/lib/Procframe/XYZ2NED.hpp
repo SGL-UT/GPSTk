@@ -54,7 +54,7 @@
 namespace gpstk
 {
 
-      /** @addtogroup GPSsolutions */
+      /// @ingroup GPSsolutions
       //@{
 
       /** This class changes the reference base from an Earth-Centered,
@@ -136,7 +136,7 @@ namespace gpstk
 
          /// Default constructor.
       XYZ2NED()
-         : refLat(0.0), refLon(0.0)
+            : refLat(0.0), refLon(0.0)
       { init(); };
 
 

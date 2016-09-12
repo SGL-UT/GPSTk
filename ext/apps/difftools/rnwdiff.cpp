@@ -115,7 +115,7 @@ void RNWDiff::process()
                // different times.
             if ((firstitr->time == seconditr->time) &&
                 (firstitr->PRNID == seconditr->PRNID) &&
-                (firstitr->HOWtime == seconditr->HOWtime) )
+                (firstitr->sf1XmitTime == seconditr->sf1XmitTime) )
             {
                YDSTime recTime(firstitr->time);
                cout << fixed << setw(3) << recTime.doy << ' ' 
@@ -143,13 +143,13 @@ void RNWDiff::process()
                     << (firstitr->OMEGAdot - seconditr->OMEGAdot) << ' '
                     << (firstitr->idot     - seconditr->idot) << ' '
                     << (firstitr->codeflgs - seconditr->codeflgs) << ' '
-                    << (firstitr->weeknum  - seconditr->weeknum) << ' '
+                    << (firstitr->toeWeek  - seconditr->toeWeek) << ' '
                     << (firstitr->L2Pdata  - seconditr->L2Pdata) << ' '
                     << (firstitr->accuracy - seconditr->accuracy) << ' '
                     << (firstitr->health   - seconditr->health) << ' '
                     << (firstitr->Tgd      - seconditr->Tgd) << ' '
                     << (firstitr->IODC     - seconditr->IODC) << ' '
-                    << (firstitr->HOWtime  - seconditr->HOWtime) << ' '
+                    << (firstitr->sf1XmitTime - seconditr->sf1XmitTime) << ' '
                     << (firstitr->fitint   - seconditr->fitint)
                     << endl;
 

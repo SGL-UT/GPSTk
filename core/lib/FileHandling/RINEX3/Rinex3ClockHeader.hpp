@@ -51,8 +51,8 @@
 
 namespace gpstk
 {
-   /** @addtogroup Rinex3Clock */
-   //@{
+      /// @ingroup FileHandling
+      //@{
 
       /// This class models the header for a RINEX Clock file.
       /// @sa gpstk::Rinex3ClockStream and gpstk::Rinex3ClockData for more information.
@@ -63,14 +63,11 @@ namespace gpstk
 
          /// constructor
       Rinex3ClockHeader() : version(3.0), leapSeconds(0), timeSystem(TimeSystem::Any),
-                    pcvsSystem(1, RinexSatID::systemGPS),
-                    numSolnStations(0), numSolnSatellites(0)
-                    {}
+                            pcvsSystem(1, RinexSatID::systemGPS),
+                            numSolnStations(0), numSolnSatellites(0)
+      {}
 
-         /**
-          * @name Rinex3ClockHeaderFormatStrings
-          * RINEX Clock Header Formatting Strings
-          */
+         /// @name RINEX Clock Header Formatting Strings
          //@{
       static const std::string versionString;         ///< "RINEX VERSION / TYPE"
       static const std::string runByString;           ///< "PGM / RUN BY / DATE"
@@ -120,8 +117,8 @@ namespace gpstk
          prnListValid        = 0x020000, ///< "PRN LIST"
          endOfHeaderValid    = 0x040000, ///< "END OF HEADER"
 
-       //allRequiredValid    = 0x07F9A3, ///< this mask if for all required fields
-       //allRequiredValid    = 0x07F903, ///< this mask if for all required fields
+            //allRequiredValid    = 0x07F9A3, ///< this mask if for all required fields
+            //allRequiredValid    = 0x07F903, ///< this mask if for all required fields
          allRequiredValid    = 0x07C903, ///< this mask if for all required fields
          allValid            = 0x07FFFF  ///< all the bits
       };
@@ -133,21 +130,21 @@ namespace gpstk
          /// Rinex3ClockHeader is a "header" so this function always returns true.
       virtual bool isHeader() const { return true; }
      
-      /// Dump information about the header to an ostream.
-      /// @param[in] os ostream to receive the output; defaults to std::cout
-      /// @param[in] detail integer level of detail to provide; allowed values are
-      ///    0: all the header string except stations and satellites, but their num.
-      ///    1: above plus all the stations and satellites
-      ///    2: above plus all invalid header strings (dumpValid)
+         /** Dump information about the header to an ostream.
+          * @param[in] os ostream to receive the output; defaults to std::cout
+          * @param[in] detail integer level of detail to provide;
+          *   allowed values are:
+          *    0: all the header string except stations and satellites, but
+          *       their num.
+          *    1: above plus all the stations and satellites
+          *    2: above plus all invalid header strings (dumpValid) */
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Woverloaded-virtual"
-       virtual void dump(std::ostream& s=std::cout, short detail = 0) const throw();
+      virtual void dump(std::ostream& s=std::cout, short detail = 0) const throw();
 #pragma clang diagnostic pop
+
          /// Dump validity bits -> header strings
       void dumpValid(std::ostream& s=std::cout) const throw();
-
-         ///@name data members
-         //@{
 
       double version;                        ///< Rinex3Clock Version or file format
       std::string program;                   ///< Program name
@@ -165,7 +162,7 @@ namespace gpstk
 
       int numSolnStations;                   ///< Number of stations in the solution
       std::map<std::string,std::string> stationID; ///< 4-char name, station id
-      // NB these coordinates are often more than 32 bits -- cannot store as number!
+         // NB these coordinates are often more than 32 bits -- cannot store as number!
       std::map<std::string,std::string> stationX;  ///< name, station X coord in mm
       std::map<std::string,std::string> stationY;  ///< name, station Y coord in mm
       std::map<std::string,std::string> stationZ;  ///< name, station Z coord in mm
@@ -177,11 +174,10 @@ namespace gpstk
 
       unsigned long valid;                    ///< valid bits for this header
 
-         //@}
-
    protected:
          /// clear out the member data
-      void clear(void) {
+      void clear(void)
+      {
          version = 3.0;
          program = std::string();
          runby = std::string();
@@ -211,20 +207,21 @@ namespace gpstk
          throw(std::exception, FFStreamError,
                StringUtils::StringException);
 
-         /// This function retrieves the Rinex3Clock header from the given FFStream.
-         /// If an error is encountered in the retrieval of the header, the
-         /// stream is reset to its original position and its fail-bit is set.
-         /// @throws StringException when a StringUtils function fails
-         /// @throws FFStreamError when exceptions(failbit) is set and
-         ///  a read or formatting error occurs.  This also resets the
-         ///  stream to its pre-read position.
+         /** This function retrieves the Rinex3Clock header from the
+          * given FFStream.  If an error is encountered in the
+          * retrieval of the header, the stream is reset to its
+          * original position and its fail-bit is set.
+          * @throws StringException when a StringUtils function fails
+          * @throws FFStreamError when exceptions(failbit) is set and
+          *  a read or formatting error occurs.  This also resets the
+          *  stream to its pre-read position. */
       virtual void reallyGetRecord(FFStream& s) 
          throw(std::exception, FFStreamError,
                StringUtils::StringException);
 
    }; // end class Rinex3ClockHeader
 
-   //@}
+      //@}
 
 }  // namespace
 

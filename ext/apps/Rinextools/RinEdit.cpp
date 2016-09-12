@@ -420,8 +420,18 @@ int processFiles(void) throw(Exception)
             LOG(DEBUG) << "Input header for RINEX file " << filename;
             Rhead.dump(LOGstrm);
          }
+         // dump the obs types
+         map<string,vector<RinexObsID> >::const_iterator kt;
+         for(kt = Rhead.mapObsTypes.begin(); kt != Rhead.mapObsTypes.end(); kt++) {
+            sat.fromString(kt->first);
+            oss.str("");
+            oss << "# Header ObsIDs " << sat.systemString3() //<< " " << kt->first
+               << " (" << kt->second.size() << "):";
+            for(i=0; i<kt->second.size(); i++) oss << " " << kt->second[i].asString();
+            LOG(INFO) << oss.str();
+         }
 
-            // we have to set the time system of all the timetags using ttag from file !!
+            // we have to set the time system of all the timetags using ttag from file
          vector<EditCmd>::iterator jt;
          for(jt=C.vecCmds.begin(); jt != C.vecCmds.end(); ++jt)
             jt->ttag.setTimeSystem(Rhead.firstObs.getTimeSystem());
@@ -651,8 +661,8 @@ int processOneEpoch(Rinex3ObsHeader& Rhead, Rinex3ObsHeader& RHout,
             // for cmds with ttag <= now either execute and delete, or move to current
          it = C.vecCmds.begin();
          while(it != C.vecCmds.end()) {
-            LOG(DEBUG) << "Process vec cmd " << it->asString();
             if(it->ttag <= now || ::fabs(it->ttag - now) < C.timetol) {
+               LOG(DEBUG) << "Execute vec cmd " << it->asString();
                   // delete one-time cmds, move others to curr and delete
                iret = executeEditCmd(it, RHout, RDout);
                if(iret < 0) return iret;              // fatal error
@@ -660,15 +670,14 @@ int processOneEpoch(Rinex3ObsHeader& Rhead, Rinex3ObsHeader& RHout,
                   // keep this command on the current list
                if(iret > 0) toCurr.push_back(*it); // C.currCmds.push_back(*it);
 
-                  // if this is a '-' cmd to be deleted, find matching '+' and delete it
+                  // if this is a '-' cmd to be deleted, find matching '+' and delete
                   // note fixEditCmdList() forced every - to have a corresponding +
                if(iret == 0 && it->sign == -1) {
                   for(jt = C.currCmds.begin(); jt != C.currCmds.end(); ++jt)
                      if(jt->type==it->type && jt->sat==it->sat && jt->obs==it->obs)
                         break;
-                  if(jt == C.currCmds.end())
-                     GPSTK_THROW(Exception(string(
-                                              "Execute failed to find + cmd matching ") + it->asString()));
+                  if(jt == C.currCmds.end()) GPSTK_THROW(Exception(
+                    string("Execute failed to find + cmd matching ")+it->asString()));
                   C.currCmds.erase(jt);
                }
 
@@ -883,8 +892,9 @@ int executeEditCmd(const vector<EditCmd>::iterator& it, Rinex3ObsHeader& Rhead,
                   Rdata.obs[sats[j]][i].lli = it->idata;
                   break;
                      // BD bias data -------------------------------------------------------
-               case EditCmd::bdCT:
-                  Rdata.obs[sats[j]][i].data += it->data;
+               case EditCmd::bdCT:     // do not bias
+                  if(Rdata.obs[sats[j]][i].data != 0.0 || C.messBZ)
+                     Rdata.obs[sats[j]][i].data += it->data;
                   break;
                      // BS bias SSI --------------------------------------------------------
                case EditCmd::bsCT:
@@ -1462,9 +1472,10 @@ void fixEditCmdList(void) throw()
                   if(jt->sign == 1) havePair=true;    // its a match
                   else if(jt->sign == -1) {           // this is an error
                      LOG(ERROR) << it->asString("Error: repeat '-'");
+                     //LOG(ERROR) << jt->asString("Error: ref here  ");
                      it->type = EditCmd::invalidCT;
-                     break;
                   }
+                  break;
                }
                if(jt == C.vecCmds.begin()) break;
                --jt;

@@ -2,7 +2,6 @@ SubDir TOP gpsNavMsg ;
 TestMain gpsNavMsg/xCNAV2gpsNavMsg.tst : gpsNavMsg/xgpsNavMsgM.cpp gpsNavMsg/xCNAV2gpsNavMsg.cpp ;
 TestMain gpsNavMsg/xCNAVEphemerisgpsNavMsg.tst : gpsNavMsg/xgpsNavMsgM.cpp gpsNavMsg/xCNAVEphemerisgpsNavMsg.cpp ;
 TestMain gpsNavMsg/xCNAVClockgpsNavMsg.tst : gpsNavMsg/xgpsNavMsgM.cpp gpsNavMsg/xCNAVClockgpsNavMsg.cpp ;
-TestMain gpsNavMsg/xPackedNavBitsgpsNavMsg.tst : gpsNavMsg/xgpsNavMsgM.cpp gpsNavMsg/xPackedNavBitsgpsNavMsg.cpp ;
 TestMain gpsNavMsg/xCNAVEphemerisPNBgpsNavMsg.tst : gpsNavMsg/xgpsNavMsgM.cpp gpsNavMsg/xCNAVEphemerisPNBgpsNavMsg.cpp ;
 TestMain gpsNavMsg/xCNAVClockPNBgpsNavMsg.tst : gpsNavMsg/xgpsNavMsgM.cpp gpsNavMsg/xCNAVClockPNBgpsNavMsg.cpp ;
 TestMain gpsNavMsg/xCNAV2PNBgpsNavMsg.tst : gpsNavMsg/xgpsNavMsgM.cpp gpsNavMsg/xCNAV2PNBgpsNavMsg.cpp ;

@@ -1,4 +1,4 @@
-   //============================================================================
+//============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -52,7 +52,7 @@ public:
 //==========================================================================================================================
    int initializationTest(void)
    {
-      TestUtil testFramework( "SatID", "Constructor", __FILE__, __LINE__);
+      gpstk::TestUtil testFramework( "SatID", "Constructor", __FILE__, __LINE__);
 
       gpstk::SatID Compare1(5, gpstk::SatID::SatelliteSystem (1));
       testFramework.assert(Compare1.id == 5,
@@ -83,7 +83,7 @@ public:
 //==========================================================================================================================
    int dumpTest(void)
    {
-      TestUtil testFramework( "SatID", "dump(std::stream)", __FILE__, __LINE__);
+      gpstk::TestUtil testFramework( "SatID", "dump(std::stream)", __FILE__, __LINE__);
 
 
          //---------------------------------------------------------------------
@@ -139,7 +139,7 @@ public:
 //==========================================================================================================================
    int asStringTest(void)
    {
-      TestUtil testFramework( "SatID", "asStringTest", __FILE__, __LINE__);
+      gpstk::TestUtil testFramework( "SatID", "asStringTest", __FILE__, __LINE__);
 
 
       std::string compareString1,compareString2,compareString3;
@@ -179,7 +179,7 @@ public:
 //==========================================================================================================================
    int operatorTest(void)
    {
-      TestUtil testFramework( "SatID", "OperatorEquivalence", __FILE__, __LINE__);
+      gpstk::TestUtil testFramework( "SatID", "OperatorEquivalence", __FILE__, __LINE__);
 
 
       gpstk::SatID Compare    (5, gpstk::SatID::SatelliteSystem(2) );
@@ -390,7 +390,7 @@ public:
 //==========================================================================================================================
    int isValidTest(void)
    {
-      TestUtil testFramework( "SatID", "isValid()", __FILE__, __LINE__);
+      gpstk::TestUtil testFramework( "SatID", "isValid()", __FILE__, __LINE__);
 
 
       gpstk::SatID Compare1(5  , gpstk::SatID::SatelliteSystem(1) );

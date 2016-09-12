@@ -44,13 +44,14 @@
 
 #include "ObsID.hpp"
 
-namespace gpstk {
+namespace gpstk
+{
 
-  class ObsIDInitializer
-      {
-      public:
-         ObsIDInitializer();
-      };
+   class ObsIDInitializer
+   {
+   public:
+      ObsIDInitializer();
+   };
 }
 
 #endif   // OBSIDINIT_HPP

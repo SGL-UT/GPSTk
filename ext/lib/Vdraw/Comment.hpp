@@ -44,33 +44,33 @@
 
 namespace vdraw
 {
-   /** \addtogroup BasicVectorGraphics */ 
-   //@{
+      /// @ingroup BasicVectorGraphics
+      //@{
 
-   /**
-    * This class defines a simple comment.  These can be useful
-    * for developers to make comments in the output file for 
-    * any extra information that might need to be included.
-    */
+      /**
+       * This class defines a simple comment.  These can be useful
+       * for developers to make comments in the output file for 
+       * any extra information that might need to be included.
+       */
    class Comment {
 
    public:
 
-      /// Created string
+         /// Created string
       std::string str;
 
-     /**
-      * Constructor. Defines the comment using printf style
-      * @param format format string
-      * @param ... other optional arguments
-      */
+         /**
+          * Constructor. Defines the comment using printf style
+          * @param format format string
+          * @param ... other optional arguments
+          */
       Comment(const char *format,...);
 
-     /**
-      * Constructor. Defines the comment using printf style
-      * @param format format string
-      * @param ap va_list of other optional arguments
-      */
+         /**
+          * Constructor. Defines the comment using printf style
+          * @param format format string
+          * @param ap va_list of other optional arguments
+          */
       Comment(const char *format, va_list ap);
 
 
@@ -78,14 +78,14 @@ namespace vdraw
 
    private:
 
-   void comment_init(const char * format, va_list ap);
+      void comment_init(const char * format, va_list ap);
 
-   int my_vsnprintf(char * str, size_t size, const char* format, va_list ap);
+      int my_vsnprintf(char * str, size_t size, const char* format, va_list ap);
 
             
    }; // class Comment
 
-   //@}
+      //@}
 
 } // namespace vdraw
 

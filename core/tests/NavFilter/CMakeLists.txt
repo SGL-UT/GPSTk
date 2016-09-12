@@ -1,0 +1,4 @@
+add_executable(NavFilterMgr_T NavFilterMgr_T.cpp)
+target_link_libraries(NavFilterMgr_T gpstk)
+add_test(NavFilter_NavFilterMgr NavFilterMgr_T)
+

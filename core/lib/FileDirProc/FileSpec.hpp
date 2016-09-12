@@ -56,7 +56,7 @@ const char slash = '/';
 
 namespace gpstk
 {
-      /** @addtogroup filedirgroup */
+      /// @ingroup FileDirProc
       //@{
 
       /// This exception is thrown when there is a problem with

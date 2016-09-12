@@ -124,7 +124,7 @@ void BinexReadWrite_T :: init( void )
 {
 
    TestUtil  testUtil;
-   string  dataFilePath = testUtil.getDataPath();
+   string  dataFilePath = gpstk::getPathData();
 
       //----------------------------------------
       // Full file paths
@@ -288,7 +288,7 @@ int BinexReadWrite_T :: doForwardTests()
 {
    TestUtil  tester( "BinexData", "Read/Write (Fwd)", __FILE__, __LINE__ );
 
-   string  tempFilePath = tester.getTempPath();
+   string  tempFilePath = gpstk::getPathTestTemp();
    string  tempFileName = tempFilePath + gpstk::getFileSep() +
                           "test_output_binex_readwrite.binex";
    BinexStream  outStream(tempFileName.c_str(),

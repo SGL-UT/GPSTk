@@ -49,8 +49,8 @@
 
 namespace gpstk
 {
-   /** @addtogroup Binex */
-   //@{
+      /// @ingroup FileHandling
+      //@{
 
    typedef std::binary_function<BinexData, BinexData, bool> BinexDataBinaryOperator;
 
@@ -62,12 +62,12 @@ namespace gpstk
    public:
       bool operator()(const BinexData& l,
                       const BinexData& r) const
-         {
-            return (l == r);
-         }
+      {
+         return (l == r);
+      }
    };
 
-   //@}
+      //@}
 
 }
 

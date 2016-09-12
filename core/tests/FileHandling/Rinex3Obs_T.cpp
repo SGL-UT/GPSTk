@@ -22,10 +22,11 @@
 
 //============================================================================
 //
-// This software developed by Applied Research Laboratories at the University of
-// Texas at Austin, under contract to an agency or agencies within the U.S.
-// Department of Defense. The U.S. Government retains all rights to use,
-// duplicate, distribute, disclose, or release this software.
+// This software developed by Applied Research Laboratories at the
+// University of Texas at Austin, under contract to an agency or
+// agencies within the U.S.  Department of Defense. The
+// U.S. Government retains all rights to use, duplicate, distribute,
+// disclose, or release this software.
 //
 // Pursuant to DoD Directive 523024
 //
@@ -133,8 +134,8 @@ void Rinex3Obs_T :: init( void )
    cout << "Running tests for Rinex version 2.x" << endl;
 
    TestUtil test0;
-   dataFilePath = test0.getDataPath();
-   tempFilePath = test0.getTempPath();
+   dataFilePath = gpstk::getPathData();
+   tempFilePath = gpstk::getPathTestTemp();
 
       //----------------------------------------
       // Full file paths
@@ -206,7 +207,7 @@ void Rinex3Obs_T :: init( void )
 void Rinex3Obs_T :: toRinex3(void)
 {
 
-   cout<<"Running tests for Rinex version 3.0"<<endl;
+   cout << "Running tests for Rinex version 3.x" << endl;
 
       //----------------------------------------
       // Full file paths
@@ -621,71 +622,47 @@ int Rinex3Obs_T :: dataExceptionsTest( void )
 
 //------------------------------------------------------------
 // This is the test for several of the members within Rinex3ObsFilterOperators
-// including merge, LessThanSimple, EqualsSimple, and LessThanFull.
+// including merge, LessThanSimple, EqualsSimple
 //------------------------------------------------------------
 int Rinex3Obs_T :: filterOperatorsTest( void )
 {
    TUDEF( "Rinex3Obs", "filterOperatorsTest");
    try
    {
-      cout << "Writing " << dataTestFilterOutput << endl;
       fstream out( dataTestFilterOutput.c_str(), ios::out );
    
-      out << "Reading dataFilterTest1:" << endl;
       gpstk::Rinex3ObsStream s1(dataFilterTest1);
       gpstk::Rinex3ObsHeader h1;
       gpstk::Rinex3ObsData d1;
       s1 >> h1;
-      h1.dump(out);
       while( s1 >> d1)
          d1.dump(out);
-      out << "Read " << s1.recordNumber << " records." << endl;
-      
+   
       out << "Reading dataFilterTest2:" << endl;
       gpstk::Rinex3ObsStream s2(dataFilterTest2);   
       gpstk::Rinex3ObsHeader h2;
       gpstk::Rinex3ObsData d2;
       s2 >> h2;
-      h2.dump(out);
       while( s2 >> d2)
          d2.dump(out);
-      out << "Read " << s2.recordNumber << " records." << endl;
 
-      // These files are simply read in here. Probably assuming an exception would be thrown if there is an error.
-      // that's not what
-      /// @todo: make these tests test something
-      gpstk::Rinex3ObsStream s3( dataFilterTest3  );
-      gpstk::Rinex3ObsHeader h3;
-      gpstk::Rinex3ObsData d3;
-      s3 >> h3;
-      while( s3 >> d3);
+      gpstk::Rinex3ObsDataOperatorEqualsSimple EqualsSimple;
+      testFramework.changeSourceMethod("Rinex3ObsDataOperatorEqualsSimple");
+      testFramework.assert( EqualsSimple( d1, d1 ), "", __LINE__);
       
-      gpstk::Rinex3ObsStream s4( dataFilterTest4  );
-      gpstk::Rinex3ObsHeader h4;
-      gpstk::Rinex3ObsData d4;
-      s4 >> h4;
-      while( s4 >> d4);
-      
+      gpstk::Rinex3ObsDataOperatorLessThanSimple LessThanSimple;
+      testFramework.changeSourceMethod("Rinex3ObsDataOperatorLessThanSimple");
+      testFramework.assert( !LessThanSimple( d1, d1 ), "", __LINE__ );
+
       gpstk::Rinex3ObsHeaderTouchHeaderMerge merged;
       merged( h1 );
       merged( h2 );
-
-      gpstk::Rinex3ObsDataOperatorLessThanFull( merged.obsSet );
       out << "Merged Header:" << endl;
       merged.theHeader.dump(out);
-
-      gpstk::Rinex3ObsDataOperatorEqualsSimple EqualsSimple;
-      TUCSM("Rinex3ObsDataOperatorEqualsSimple");
-      TUASSERTE(bool, true, EqualsSimple( d1, d1 ));
-      
-      gpstk::Rinex3ObsDataOperatorLessThanSimple LessThanSimple;
-      TUCSM("Rinex3ObsDataOperatorLessThanSimple");
-      TUASSERTE(bool, false, LessThanSimple( d1, d1 ));
-
-      gpstk::Rinex3ObsDataOperatorLessThanFull LessThanFull( merged.obsSet );
-      TUCSM("Rinex3ObsDataOperatorLessThanFull");
-      TUASSERTE(bool, false, LessThanFull( d1, d1 ));
-      TUASSERTE(bool, false, LessThanFull( d1, d2 ));
+      gpstk::Rinex3ObsDataOperatorLessThanFull LessThanFull;
+      testFramework.changeSourceMethod("Rinex3ObsDataOperatorLessThanFull");
+      testFramework.assert( !LessThanFull( d1, d1 ) , "",  __LINE__ );
+      testFramework.assert( !LessThanFull( d1, d2 ) , "", __LINE__ );
    }
    catch (gpstk::Exception& e)
    {
@@ -818,7 +795,8 @@ int main()
    errorTotal += testClass.hardCodeTest();
    errorTotal += testClass.dataExceptionsTest();
    errorTotal += testClass.filterOperatorsTest();
-//   errorTotal += testClass.toConversionTest();
+
+   testClass.toConversionTest();
    errorTotal += testClass.roundTripTest();
 
    cout << "Total Failures for " << __FILE__ << ": " << errorTotal << endl;

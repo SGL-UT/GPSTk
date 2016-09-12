@@ -31,7 +31,6 @@ elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" )
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2" )
     set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -shared" )
 elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
-
 else()
     message( ERROR "CMAKE_SYSTEM_NAME = ${CMAKE_SYSTEM_NAME}, not supported. Currently supported: Linux, Darwin, SunOS, Windows" )
 endif()
@@ -114,7 +113,7 @@ if( DEBUG_VERBOSE )
         message( STATUS "---- ${_variableName} = ${${_variableName}}" )
     endforeach()
 endif()
-		
+        
 #----------------------------------------
 # Get CMake vars into C++
 #----------------------------------------
@@ -131,7 +130,8 @@ elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
 elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" )
     set( CPACK_GENERATOR "RPM;DEB;TGZ" )
 elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
-    set( CPACK_GENERATOR "ZIP" )
+    set( CPACK_GENERATOR "NSIS;ZIP" )
+    set( CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}/LICENSE.md")
 endif()
 
 #----------------------------------------

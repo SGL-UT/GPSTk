@@ -39,7 +39,7 @@
 /* Test to check the sizing functions */
 int Matrix_T::sizeTest (void)
 {
-	TestUtil testFramework("Matrix","Size",__FILE__,__LINE__);
+	gpstk::TestUtil testFramework("Matrix","Size",__FILE__,__LINE__);
 	std::string failMesg;
 
 	gpstk::Vector<int> v1 = gpstk::Vector<int>(16);

@@ -64,8 +64,8 @@
 
 namespace gpstk
 {
-   /** @addtogroup ephemcalc */
-   //@{
+      /// @ingroup GNSSEph
+      //@{
 
       /**
        * Orbit information for a single satellite.  This class
@@ -79,16 +79,16 @@ namespace gpstk
    {
    public:
          /// Constructors
-	      /// Default constuctor
+         /// Default constuctor
       BrcKeplerOrbit( ) throw();
 
-      /**
-       * All constructors and loadData methods assume weeknumArg
-       * is the full GPS week number associated with the epoch
-       * time.
-       */
+         /**
+          * All constructors and loadData methods assume weeknumArg
+          * is the full GPS week number associated with the epoch
+          * time.
+          */
 
-	      /// General purpose constructor
+         /// General purpose constructor
       BrcKeplerOrbit( const std::string satSysArg, const ObsID obsIDArg, 
                       const short PRNIDArg, const CommonTime beginFitArg, 
                       const CommonTime endFitArg, const CommonTime ToeArg, 
@@ -98,9 +98,9 @@ namespace gpstk
                       const double CrsArg, const double CicArg, 
                       const double CisArg, const double M0Arg, 
                       const double dnArg, const double dndotArg,
-		                const double eccArg, const double AArg, 
+                      const double eccArg, const double AArg, 
                       const double AhalfArg, const double AdotArg,
-		                const double OMEGA0Arg, const double i0Arg, 
+                      const double OMEGA0Arg, const double i0Arg, 
                       const double wArg, const double OMEGAdotARg, 
                       const double idotArg );
 
@@ -108,26 +108,26 @@ namespace gpstk
       BrcKeplerOrbit( const ObsID obsIDArg,  
                       const short PRNID,
                       const short fullweeknum,
-		                const long subframe1[10],
-		                const long subframe2[10],
-		                const long subframe3[10] );
+                      const long subframe1[10],
+                      const long subframe2[10],
+                      const long subframe3[10] );
 
-         /// Add other constructors for other navigation message formats here....
+         // Add other constructors for other navigation message formats here...
 
          /// Destructor
       virtual ~BrcKeplerOrbit() {}
 
          /// General purpose means to load data into object
-
       void loadData(const std::string satSysArg, const ObsID obsIDArg,
                     const short PRNIDArg, const CommonTime beginFitArg,
                     const CommonTime endFitArg, const CommonTime ToeArg,
-                    const short URAoeArg, const bool healthyArg, const double CucArg,
+                    const short URAoeArg, const bool healthyArg,
+                    const double CucArg,
                     const double CusArg, const double CrcArg,
                     const double CrsArg, const double CicArg,
                     const double CisArg, const double M0Arg,
                     const double dnArg, const double dndotArg,
-		              const double eccArg, const double AArg,
+                    const double eccArg, const double AArg,
                     const double AhalfArg, const double AdotArg,
                     const double OMEGA0Arg, const double i0Arg,
                     const double wArg, const double OMEGAdotARg,
@@ -137,14 +137,14 @@ namespace gpstk
       void loadData( const ObsID obsIDArg, 
                      const short PRNID, 
                      const short fullweeknum,
-		               const long subframe1[10],
-		               const long subframe2[10],
-		               const long subframe3[10] )
-		   throw( InvalidParameter );
+                     const long subframe1[10],
+                     const long subframe2[10],
+                     const long subframe3[10] )
+         throw( InvalidParameter );
 
          /** 
-          * Returns the epoch time (time of ephemeris) from this ephemeris, correcting
-          * for half weeks and HOW time. */
+          * Returns the epoch time (time of ephemeris) from this
+          * ephemeris, correcting for half weeks and HOW time. */
       CommonTime getOrbitEpoch() const throw(InvalidRequest);
 
          /** Returns the time at the beginning of the fit interval. */
@@ -153,16 +153,16 @@ namespace gpstk
          /** Returns the time at the end of the fit interval. */
       CommonTime getEndOfFitInterval() const throw(InvalidRequest);
 
-	      /** Return true if orbit data has been loaded */
+         /** Return true if orbit data has been loaded */
       bool hasData( ) const;
 
          /** Return satellite system ID */
-      //NB Determine if this function is needed, as it is never used
-	  //std::string getSatSystem() const throw(gpstk::InvalidRequest);
+         //@note Determine if this function is needed, as it is never used
+         //std::string getSatSystem() const throw(gpstk::InvalidRequest);
 
          /** Return signal type associated with this orbit */
-      //NB Determine if this function is needed, as it is never used
-	  //std::string getSignal() const throw(gpstk::InvalidRequest);
+         //@note Determine if this function is needed, as it is never used
+         //std::string getSignal() const throw(gpstk::InvalidRequest);
 
          /** This function returns the PRN ID of the SV. */
       short getPRNID() const throw(gpstk::InvalidRequest);
@@ -174,7 +174,8 @@ namespace gpstk
       bool isHealthy() const throw(gpstk::InvalidRequest);
 
          /** Return true if fit interval is valid . */
-      bool withinFitInterval(const CommonTime) const throw(gpstk::InvalidRequest);
+      bool withinFitInterval(const CommonTime) const
+         throw(gpstk::InvalidRequest);
 
          /** This function return the GPS week number for the
           * orbit.  this is the full GPS week (ie > 10 bits). */
@@ -182,7 +183,7 @@ namespace gpstk
       
          /** This function returns the value of the SV accuracy (m)
           * computed from the accuracy information contained in the
-	       * nav message */
+          * nav message */
       double getAccuracy() const throw(gpstk::InvalidRequest);
 
       void setAccuracy(const double& acc) throw(gpstk::InvalidRequest);
@@ -225,8 +226,8 @@ namespace gpstk
           * mean motion in radians/second. */
       double getDn() const throw(gpstk::InvalidRequest);
 
-          /** This function returns the value of the rate correction to the
-           * mean motion in radians/second**2. */
+         /** This function returns the value of the rate correction to the
+          * mean motion in radians/second**2. */
       double getDnDot() const throw(gpstk::InvalidRequest);
       
          /** This function returns the value of the eccentricity. */
@@ -240,8 +241,8 @@ namespace gpstk
           * square root of the semi-major axis in meters**.5. */
       double getAhalf() const throw(gpstk::InvalidRequest);
 
-          /** This function returns the value of the rate of the
-           * semi-major axis in meters/sec. */
+         /** This function returns the value of the rate of the
+          * semi-major axis in meters/sec. */
       double getAdot() const throw(gpstk::InvalidRequest);
    
          /** This function returns the value of the right ascension of
@@ -273,13 +274,14 @@ namespace gpstk
          /** Compute satellite relativity correction (sec) at the given time
           * @throw InvalidRequest if a required subframe has not been stored.
           */
-      double svRelativity(const CommonTime& t) const throw( gpstk::InvalidRequest );
+      double svRelativity(const CommonTime& t) const
+         throw( gpstk::InvalidRequest );
       
          /** Output the contents of this orbit data to the given stream. */
       void dump(std::ostream& s = std::cout) const throw();
 
    protected:
-         /// Overhead information
+         /// @name Overhead information
          //@{
       bool    dataLoaded;     /**< True if data is present, False otherwise */
       std::string satSys;     /**< Satellite system ID (as per Rinex) */
@@ -288,9 +290,9 @@ namespace gpstk
       CommonTime Toe;         /**< Orbit epoch */
       short   URAoe;          /**< SV accuracy Index */
       bool    healthy;        /**< SV health (healthy=true, other=false */
-              //@}
+         //@}
 
-	 /// Harmonic perturbations
+	 /// @name Harmonic perturbations
          //@{
       double   Cuc;           /**< Cosine latitude (rad) */
       double   Cus;           /**< Sine latitude (rad) */
@@ -300,7 +302,7 @@ namespace gpstk
       double   Cis;           /**< Sine inclination (rad) */
          //@}
 
-         /// Major orbit parameters
+         /// @name Major orbit parameters
          //@{
       double   M0;            /**< Mean anomaly (rad) */
       double   dn;            /**< Correction to mean motion (rad/sec) */
@@ -316,7 +318,7 @@ namespace gpstk
       double   idot;          /**< Rate of inclination angle (rad/sec) */
          //@}
 
-         /// Fit Interval Definition
+         /// @name Fit Interval Definition
          //@{
       CommonTime beginFit;    /**< Time at beginning of fit interval */
       CommonTime endFit;      /**< Time at end of fit interval */
@@ -327,7 +329,7 @@ namespace gpstk
 
    }; // class BrcKeplerOrbit
 
-   //@}
+      //@}
 
 } // namespace
 

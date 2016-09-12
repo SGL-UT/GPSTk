@@ -46,8 +46,7 @@
 
 namespace gpstk
 {
-
-      /** @addtogroup formattedfile */
+      /// @ingroup FileHandling
       //@{
 
       /**

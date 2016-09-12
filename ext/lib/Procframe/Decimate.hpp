@@ -56,7 +56,7 @@ namespace gpstk
     NEW_EXCEPTION_CLASS(DecimateEpoch, gpstk::Exception);
 
 
-      /** @addtogroup DataStructures */
+      /// @ingroup DataStructures 
       //@{
 
 

@@ -56,6 +56,9 @@ struct timeval {
 
 namespace gpstk
 {
+      /// @ingroup TimeHandling
+      //@{
+
       /**
        * This class encapsulates the "Unix Timeval" time representation.
        */
@@ -63,7 +66,7 @@ namespace gpstk
    {
    public:
          /**
-          * @defgroup utbo UnixTime Basic Operations
+          * @name UnixTime Basic Operations
           * Default and Copy Constructors, Assignment Operator and Destructor.
           */
          //@{
@@ -169,7 +172,7 @@ namespace gpstk
       virtual void reset();
 
          /**
-          * @defgroup utco UnixTime Comparison Operators
+          * @name UnixTime Comparison Operators
           * All comparison operators have a parameter "right" which corresponds
           *  to the UnixTime object to the right of the symbol.
           * All comparison operators are const and return true on success
@@ -186,6 +189,8 @@ namespace gpstk
 
       struct timeval tv;
    };
+
+      //@}
 
 } // namespace
 

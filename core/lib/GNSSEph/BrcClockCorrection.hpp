@@ -56,8 +56,8 @@
 
 namespace gpstk
 {
-   /** @addtogroup ephemcalc */
-   //@{
+      /// @ingroup GNSSEph
+      //@{
 
       /**
        * Clock correction information for a single satellite.  This class
@@ -87,7 +87,7 @@ namespace gpstk
       BrcClockCorrection( const ObsID obsIDArg, const short PRNID,
                           const short fullweeknum, const long subframe1[10] );
 
-      	 /// Add other constructors for other navigation message formats here....
+      	 // Add other constructors for other navigation message formats here...
 
          /// Destructor
       virtual ~BrcClockCorrection() {}
@@ -99,8 +99,8 @@ namespace gpstk
       bool hasData() const;
 
          /**
-          * Returns the epoch time (time of clock) from this ephemeris, correcting
-          * for half weeks and HOW time. */
+          * Returns the epoch time (time of clock) from this
+          * ephemeris, correcting for half weeks and HOW time. */
       CommonTime getEpochTime() const throw(gpstk::InvalidRequest);
 
          /** This function returns the PRN ID of the SV. */
@@ -112,13 +112,14 @@ namespace gpstk
          /**
           * This function returns the value of the SV accuracy (m)
           * computed from the accuracy flag in the nav message. */
-      double getAccuracy(const CommonTime& t) const throw(gpstk::InvalidRequest);
+      double getAccuracy(const CommonTime& t) const
+         throw(gpstk::InvalidRequest);
 
       short getURAoc(const short& ndx) const throw(gpstk::InvalidRequest);
 
          /** Returns SV health status. */
-      //NB Determine if this function is needed, as it is never used
-	  //bool isHealthy() const throw(gpstk::InvalidRequest);
+         //NB Determine if this function is needed, as it is never used
+         //bool isHealthy() const throw(gpstk::InvalidRequest);
 
          /**
           * This function return the GPS week number for the
@@ -146,17 +147,20 @@ namespace gpstk
          /** Compute the satellite clock bias (sec) at the given time
           * @throw InvalidRequest if a required subframe has not been stored.
           */
-      double svClockBias(const CommonTime& t) const throw(gpstk::InvalidRequest);
+      double svClockBias(const CommonTime& t) const
+         throw(gpstk::InvalidRequest);
 
          /** Compute the satellite clock bias (meters) at the given time
           * @throw InvalidRequest if a required subframe has not been stored.
           */
-      double svClockBiasM(const CommonTime& t) const throw(gpstk::InvalidRequest);
+      double svClockBiasM(const CommonTime& t) const
+         throw(gpstk::InvalidRequest);
 
          /** Compute the satellite clock drift (sec/sec) at the given time
           * @throw InvalidRequest if a required subframe has not been stored.
           */
-      double svClockDrift(const CommonTime& t) const throw(gpstk::InvalidRequest);
+      double svClockDrift(const CommonTime& t) const
+         throw(gpstk::InvalidRequest);
 
          /** General purpose means to load data into object. */
       void loadData( const std::string satSysArg, const ObsID obsIDArg,
@@ -173,7 +177,7 @@ namespace gpstk
                     const double af0Arg, const double af1Arg,
                     const double af2Arg );
 
-	      /** Load data based on the GPS Legacy message. */
+         /** Load data based on the GPS Legacy message. */
       void loadData( const ObsID obsIDArg, const short PRNID,
                      const short fullweeknum, const long subframe1[10] )
          throw(InvalidParameter);
@@ -182,7 +186,7 @@ namespace gpstk
       void dump(std::ostream& s = std::cout) const;
 
    protected:
-         /// Overhead information
+         /// @name Overhead information
          //@{
       bool dataLoaded;	     /**< True if data is present, false otherwise */
       std::string  satSys;   /**< Rinex satellite system ID */
@@ -197,7 +201,7 @@ namespace gpstk
 
          //@}
 
-         /// Clock information
+         /// @name Clock information
          //@{
       double af0;           /**< SV clock error (sec) */
       double af1;           /**< SV clock drift (sec/sec) */
@@ -209,7 +213,7 @@ namespace gpstk
 
    }; // class BrcClockCorrection
 
-   //@}
+      //@}
 
 } // namespace
 

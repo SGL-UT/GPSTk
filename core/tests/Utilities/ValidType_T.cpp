@@ -13,7 +13,7 @@ public:
 
    int methodTest(void)
    {
-      TestUtil testFramework( "ValidType", "Various Methods", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "ValidType", "Various Methods", __FILE__, __LINE__ );
       std::string failMesg;
 
       gpstk::ValidType<float> vfloat0;
@@ -42,7 +42,7 @@ public:
 
    int operatorTest(void)
    {
-      TestUtil testFramework( "ValidType", "== Operator", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "ValidType", "== Operator", __FILE__, __LINE__ );
       std::string failMesg;
 
       gpstk::ValidType<float> Compare1 (6.);

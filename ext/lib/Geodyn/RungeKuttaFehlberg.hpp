@@ -50,7 +50,7 @@
 namespace gpstk
 {
 
-      /** @addtogroup GeoDynamics */
+      /// @ingroup GeoDynamics 
       //@{
 
       /** This class do integrations with Runge Kutta Fehlberg algorithm.

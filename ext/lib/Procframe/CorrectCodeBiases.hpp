@@ -50,7 +50,7 @@
 namespace gpstk
 {
 
-      /** @addtogroup DataStructures */
+      /// @ingroup DataStructures 
       //@{
 
       /** This class corrects observables from differential code

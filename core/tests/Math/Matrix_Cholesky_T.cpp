@@ -44,7 +44,7 @@ using namespace std;
 
 void choleskyTest(size_t r, size_t c,
                   double xA[], double xB[], double xBSref[],
-                  TestUtil& testFramework, const std::string& str)
+                  gpstk::TestUtil& testFramework, const std::string& str)
 {
    testFramework.changeSourceMethod(str);
    double eps=5*DBL_EPSILON;
@@ -66,7 +66,7 @@ void choleskyTest(size_t r, size_t c,
 
 void choleskyCroutTest(size_t r, size_t c,
                   double xA[], double xB[], double xBSref[],
-                  TestUtil& testFramework, const std::string& str)
+                  gpstk::TestUtil& testFramework, const std::string& str)
 {
    testFramework.changeSourceMethod(str);
    double eps=5*DBL_EPSILON;
@@ -100,12 +100,12 @@ int main()
    double b4[4] = {5,1,-2,6};
    double bs4[4] ={5,5,4,5}; 
    
-   TestUtil testFramework("Matrix Cholesky", "--", __FILE__, __LINE__);
+   gpstk::TestUtil testFramework("Matrix Cholesky", "--", __FILE__, __LINE__);
    choleskyTest(2, 2, a22, b2, bs2, testFramework, "2x2");
    choleskyTest(3, 3, a33, b3, bs3, testFramework, "3x3");
    choleskyTest(4, 4, a44, b4, bs4, testFramework, "4x4");
 
-   TestUtil testFramework2("Matrix CholeskyCrout", "--", __FILE__, __LINE__);
+   gpstk::TestUtil testFramework2("Matrix CholeskyCrout", "--", __FILE__, __LINE__);
    choleskyCroutTest(2, 2, a22, b2, bs2, testFramework2, "2x2");
    choleskyCroutTest(3, 3, a33, b3, bs3, testFramework2, "3x3");
    choleskyCroutTest(4, 4, a44, b4, bs4, testFramework2, "4x4");

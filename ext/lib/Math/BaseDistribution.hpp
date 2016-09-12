@@ -51,7 +51,7 @@
 namespace gpstk
 {
 
-      /** @addtogroup math */
+      /// @ingroup math 
       //@{
 
       /// This is a base class for statistical distributions.

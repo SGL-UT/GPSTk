@@ -57,7 +57,7 @@ namespace gpstk
    NEW_EXCEPTION_CLASS(InvalidSolver, gpstk::Exception);
 
 
-      /** @addtogroup GPSsolutions */
+      /// @ingroup GPSsolutions 
       /// @ingroup math
       //@{
 

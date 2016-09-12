@@ -39,7 +39,7 @@
 /* Test the add/subtract and set operators */
 int Matrix_T::operatorTest (void)
 {
-	TestUtil testFramework("Matrix","Operators",__FILE__,__LINE__);
+	gpstk::TestUtil testFramework("Matrix","Operators",__FILE__,__LINE__);
    	std::string failMesg;
    	int badCount = 0;
 

@@ -58,10 +58,10 @@
 namespace gpstk
 {
 
- /** @addtogroup VectorGroup */
- //@{
+      /// @ingroup MathGroup
+      //@{
  
-/** Output operator for ConstVectorBase objects */
+      /** Output operator for ConstVectorBase objects */
    template <class T, class E>
    std::ostream& operator<<(std::ostream& s, const ConstVectorBase<T, E>& a) 
    {
@@ -76,7 +76,7 @@ namespace gpstk
       return s;
    }
 
-/** Returns the sum of the elements of the vector */
+      /** Returns the sum of the elements of the vector */
    template <class T, class BaseClass>
    inline T sum(const ConstVectorBase<T, BaseClass>& l)
    { 
@@ -87,9 +87,10 @@ namespace gpstk
       return total;
    }
 
-/** Return the element with smallest absolute value in the vector */
+      /** Return the element with smallest absolute value in the vector */
    template <class T, class BaseClass>
-   inline T minabs(const ConstVectorBase<T, BaseClass>& l) throw (VectorException)
+   inline T minabs(const ConstVectorBase<T, BaseClass>& l)
+      throw (VectorException)
    { 
       if (l.size() == 0)
       {
@@ -104,7 +105,7 @@ namespace gpstk
       return min;
    }
 
-/** Returns the smallest element of the vector */
+      /** Returns the smallest element of the vector */
    template <class T, class BaseClass>
    inline T min(const ConstVectorBase<T, BaseClass>& l) throw (VectorException)
    { 
@@ -121,7 +122,7 @@ namespace gpstk
       return min;
    }
 
-/** Return the element with largest absolute value in the vector */
+      /** Return the element with largest absolute value in the vector */
    template <class T, class BaseClass>
    inline T maxabs(const ConstVectorBase<T, BaseClass>& l)
    {
@@ -138,7 +139,7 @@ namespace gpstk
       return max;
    }
 
-/** Returns the largest element of the vector */
+      /** Returns the largest element of the vector */
    template <class T, class BaseClass>
    inline T max(const ConstVectorBase<T, BaseClass>& l)
    {
@@ -155,10 +156,10 @@ namespace gpstk
       return max;
    }
 
-/** returns the dot product of the two vectors */
+      /** returns the dot product of the two vectors */
    template <class T, class BaseClass, class BaseClass2> 
    inline T dot(const ConstVectorBase<T, BaseClass>& l, 
-         const ConstVectorBase<T, BaseClass2>& r) 
+                const ConstVectorBase<T, BaseClass2>& r) 
    {
       T sum(0);
       size_t i,n=(l.size() > r.size() ? r.size() : l.size());
@@ -169,7 +170,7 @@ namespace gpstk
       return sum;
    } 
 
-/** returns the dot product of a vector and a scalar */
+      /** returns the dot product of a vector and a scalar */
    template <class T, class BaseClass> 
    inline T dot(const ConstVectorBase<T, BaseClass>& l, const T r) 
    {
@@ -182,7 +183,7 @@ namespace gpstk
       return sum;
    }
 
-/** returns the dot product of a scalar and a vector */
+      /** returns the dot product of a scalar and a vector */
    template <class T, class BaseClass> 
    inline T dot(const T l, const ConstVectorBase<T, BaseClass>& r) 
    {
@@ -195,7 +196,7 @@ namespace gpstk
       return sum;
    }
 
-/** returns the norm of the vector */
+      /** returns the norm of the vector */
    template <class T, class BaseClass> 
    inline T norm(const ConstVectorBase<T, BaseClass>& v) 
    {
@@ -213,10 +214,10 @@ namespace gpstk
       return mag;
    } 
 
-/** return the Minkowski product of two vectors of length 4. */
+      /** return the Minkowski product of two vectors of length 4. */
    template <class T, class BaseClass, class BaseClass2> 
    inline T Minkowski(const ConstVectorBase<T, BaseClass>& v, 
-         const ConstVectorBase<T, BaseClass2>& w) 
+                      const ConstVectorBase<T, BaseClass2>& w) 
    {
       if (v.size()<4 || w.size()<4)
       {
@@ -226,10 +227,10 @@ namespace gpstk
       return (v(0)*w(0)+v(1)*w(1)+v(2)*w(2)-v(3)*w(3));
    }
 
-/** finds the cosine between the two vectors */
+      /** finds the cosine between the two vectors */
    template <class T, class BaseClass1, class BaseClass2>
    inline T cosVec(const ConstVectorBase<T, BaseClass1>& a,
-                const ConstVectorBase<T, BaseClass2>& b)
+                   const ConstVectorBase<T, BaseClass2>& b)
    {
       T na=norm(a), nb=norm(b), c(0);
       size_t i,n=(b.size() > a.size() ? a.size() : b.size());
@@ -241,50 +242,50 @@ namespace gpstk
 // element in the vector but returns one 'true' or 'false'
 // for the whole comparison.  note this only compares
 // the smaller of the size of the two vectors
-#define VecShortwireComparisonOperator(func, op) \
-/** Performs op on each element of l and r, returning false if any fail */ \
-template <class T, class BaseClass, class BaseClass2>  \
-inline bool func(const ConstVectorBase<T, BaseClass>& l,  \
-       const ConstVectorBase<T, BaseClass2>& r)  \
-{  \
-   size_t len = (l.size() < r.size()) ? l.size() : r.size(); \
-   size_t i; \
-   for(i = 0; i < len; i++) \
-      if ( !(l[i] op r[i]) ) \
-         return false; \
-   return true; \
-}  \
-/** Performs op on each element of l to r, returning false if any fail */ \
-template <class T, class BaseClass>  \
-inline bool func(const ConstVectorBase<T, BaseClass>& l, const T r)  \
-{ \
-   size_t len = l.size(); \
-   size_t i; \
-   for(i = 0; i < len; i++) \
-      if ( !(l[i] op r) ) \
-         return false; \
-   return true; \
-} \
-/** Performs op on each element of r to l, returning false if any fail */ \
-template <class T, class BaseClass>  \
-inline bool func(const T l, const ConstVectorBase<T, BaseClass>& r)  \
-{  \
-   size_t len = r.size(); \
-   size_t i; \
-   for(i = 0; i < len; i++) \
-      if ( !(l op r[i]) ) \
-         return false; \
-   return true; \
-}
+#define VecShortwireComparisonOperator(func, op)                        \
+   /** Performs op on each element of l and r, returning false if any fail */ \
+   template <class T, class BaseClass, class BaseClass2>                \
+   inline bool func(const ConstVectorBase<T, BaseClass>& l,             \
+                    const ConstVectorBase<T, BaseClass2>& r)            \
+   {                                                                    \
+      size_t len = (l.size() < r.size()) ? l.size() : r.size();         \
+      size_t i;                                                         \
+      for(i = 0; i < len; i++)                                          \
+         if ( !(l[i] op r[i]) )                                         \
+            return false;                                               \
+      return true;                                                      \
+   }                                                                    \
+   /** Performs op on each element of l to r, returning false if any fail */ \
+   template <class T, class BaseClass>                                  \
+   inline bool func(const ConstVectorBase<T, BaseClass>& l, const T r)  \
+   {                                                                    \
+      size_t len = l.size();                                            \
+      size_t i;                                                         \
+      for(i = 0; i < len; i++)                                          \
+         if ( !(l[i] op r) )                                            \
+            return false;                                               \
+      return true;                                                      \
+   }                                                                    \
+   /** Performs op on each element of r to l, returning false if any fail */ \
+   template <class T, class BaseClass>                                  \
+   inline bool func(const T l, const ConstVectorBase<T, BaseClass>& r)  \
+   {                                                                    \
+      size_t len = r.size();                                            \
+      size_t i;                                                         \
+      for(i = 0; i < len; i++)                                          \
+         if ( !(l op r[i]) )                                            \
+            return false;                                               \
+      return true;                                                      \
+   }
 
-VecShortwireComparisonOperator(eq, ==)
+   VecShortwireComparisonOperator(eq, ==)
    VecShortwireComparisonOperator(ne, !=)
    VecShortwireComparisonOperator(lt, <)
    VecShortwireComparisonOperator(gt, >)
    VecShortwireComparisonOperator(ge, >=)
    VecShortwireComparisonOperator(le, <=)
 
- //@}
+   //@}
 
 }  // namespace gpstk
  

@@ -47,11 +47,10 @@
 
 namespace gpstk
 {
-      /** @addtogroup commandoptiongroup */
+      /// @ingroup CommandLine
       //@{
    
-      /** @ingroup positiongroup
-       * @brief Command-line option class for processing position strings.
+      /** Command-line option class for processing position strings.
        * This class allows the programmer to add command-line options
        * to an application that can parse strings containing representations
        * of position.  The programmer must specify the format to be 

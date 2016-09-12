@@ -49,12 +49,14 @@
 
 namespace gpstk
 {
-    /** @addtogroup geodeticgroup */
-    //@{
+      /// @todo determine if this file should be moved into GNSSCore
 
       /// Thrown when a gpstk::Triple operation can't be completed.
       /// @ingroup exceptiongroup
    NEW_EXCEPTION_CLASS(GeometryException, gpstk::Exception);
+
+      /// @ingroup GNSSCore
+      //@{
 
       /**
        * Three-dimensional vectors.  This class provides mathematical
@@ -185,7 +187,7 @@ namespace gpstk
           * @return the reference to the requested element.
           */
       double& operator[](const size_t index)
-         { return theArray[index]; }
+      { return theArray[index]; }
 
          /**
           * Return the value of the element at /a index.
@@ -193,14 +195,14 @@ namespace gpstk
           * @return the value of the element at /a index.
           */
       double operator[](const size_t index) const
-         { return theArray[index]; }
+      { return theArray[index]; }
 
      
          /**
           * Equality Operator.
           * @param right the Triple to test equality against
           * @return true if left is equal to right
-        */
+          */
       bool operator== (const Triple& right) const ;
      
 
@@ -228,7 +230,7 @@ namespace gpstk
 
          /// Return the size of this object.
       size_t size(void) const
-         { return theArray.size(); }
+      { return theArray.size(); }
 
          /**
           * Output operator for dvec
@@ -242,7 +244,7 @@ namespace gpstk
 
    }; // class Triple
 
-   //@}
+      //@}
 
 } // namespace gpstk
 

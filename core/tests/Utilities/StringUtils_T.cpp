@@ -60,7 +60,7 @@ public:
    ========================================================================================================================= */
    int justificationTest( void )
    {
-      TestUtil testFramework( "StringUtils", "Justify", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "StringUtils", "Justify", __FILE__, __LINE__ );
       std::string failMesg;
 
       string baseString= "1234567890"; //base string to manipulate
@@ -104,7 +104,7 @@ public:
    ========================================================================================================================= */
    int stripLeadingTest( void )
    {
-      TestUtil testFramework( "StringUtils", "stripLeading", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "StringUtils", "stripLeading", __FILE__, __LINE__ );
       std::string failMesg;
 
       string baseString= "---1234567890---";  //base string to manipulate
@@ -156,7 +156,7 @@ public:
    ========================================================================================================================= */
    int stripTrailingTest( void )
    {
-      TestUtil testFramework( "StringUtils", "stripTrailing", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "StringUtils", "stripTrailing", __FILE__, __LINE__ );
       std::string failMesg;
 
       string baseString= "---1234567890---"; //base string to manipulate
@@ -208,7 +208,7 @@ public:
    ========================================================================================================================= */
    int stripTest( void )
    {
-      TestUtil testFramework( "StringUtils", "strip", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "StringUtils", "strip", __FILE__, __LINE__ );
       std::string failMesg;
 
       string baseString= "---1234567890---"; //base string to manipulate
@@ -260,7 +260,7 @@ public:
    ========================================================================================================================= */
    int translateTest( void )
    {
-      TestUtil testFramework( "StringUtils", "strip", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "StringUtils", "strip", __FILE__, __LINE__ );
       std::string failMesg;
 
       string baseString = "Hello World! I am the Translation test String!";      //Original String to replace characters on
@@ -296,7 +296,7 @@ public:
    ========================================================================================================================= */
    int stringToNumberTest( void )
    {
-      TestUtil testFramework( "StringUtils", "asInt", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "StringUtils", "asInt", __FILE__, __LINE__ );
       std::string failMesg;
 
       string baseString = "12345.67890";                                    //String to convert to a number
@@ -338,7 +338,7 @@ public:
    ========================================================================================================================= */
    int numberToStringTest( void )
    {
-      TestUtil testFramework( "StringUtils", "asString", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "StringUtils", "asString", __FILE__, __LINE__ );
       std::string failMesg;
 
       string convertedString;                     //Storage for converted number
@@ -376,7 +376,7 @@ public:
    ========================================================================================================================= */
    int hexConversionTest( void )
    {
-      TestUtil testFramework( "StringUtils", "x2d", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "StringUtils", "x2d", __FILE__, __LINE__ );
       std::string failMesg;
 
       string initialHexString = "0x100 foo";           //Example string with hex values in it
@@ -406,7 +406,7 @@ public:
    ========================================================================================================================= */
    int stringReplaceTest( void )
    {
-      TestUtil testFramework( "StringUtils", "replaceAll", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "StringUtils", "replaceAll", __FILE__, __LINE__ );
       std::string failMesg;
 
       string baseString = "010101000111010";
@@ -441,7 +441,7 @@ public:
    ========================================================================================================================= */
    int wordTest( void )
    {
-      TestUtil testFramework( "StringUtils", "firstWord", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "StringUtils", "firstWord", __FILE__, __LINE__ );
       std::string failMesg;
 
 
@@ -505,7 +505,7 @@ public:
    ========================================================================================================================= */
    int regularExpressionsTest( void )
    {
-      TestUtil testFramework( "StringUtils", "isLike", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "StringUtils", "isLike", __FILE__, __LINE__ );
       std::string failMesg;
 
       string originalString = "      The  Quick    Brown  Fox     Jumps  Over    The  Lazy    Dog.    "; //String to be searched
@@ -542,7 +542,7 @@ public:
    ========================================================================================================================= */
    int prettyPrintTest( void )
    {
-      TestUtil testFramework( "StringUtils", "prettyPrint", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "StringUtils", "prettyPrint", __FILE__, __LINE__ );
       std::string failMesg;
       string originalString("This is a very long sentence that will get cut up into lines with a maximum length of 40 characters, each line indented by a few spaces.");
       string prettyPrintThis = originalString;
@@ -562,7 +562,7 @@ public:
    ========================================================================================================================= */
    int splitWithQuotesTest( void )
    {
-      TestUtil testFramework( "StringUtils", "splitWithQuotes", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "StringUtils", "splitWithQuotes", __FILE__, __LINE__ );
       std::string failMesg;
 
       // no quotes
@@ -660,6 +660,112 @@ public:
       return testFramework.countFails();
    }
 
+   /* =========================================================================================================================
+      Test for the splitWithDoubleQuotes method
+
+      splitWithDoubleQuotes will split a string into a std::vector<std::string> respecting double quoted strings
+      ========================================================================================================================= */
+      int splitWithDoubleQuotesTest( void )
+      {
+         gpstk::TestUtil testFramework( "StringUtils", "splitWithDoubleQuotes", __FILE__, __LINE__ );
+         std::string failMesg;
+
+         // no quotes
+         std::string originalString("String with no quotes");
+         std::vector<std::string> expectedResult;
+         expectedResult.push_back("String");
+         expectedResult.push_back("with");
+         expectedResult.push_back("no");
+         expectedResult.push_back("quotes");
+         std::vector<std::string> observedResult = splitWithDoubleQuotes(originalString);
+
+         failMesg = "splitWithDoubleQuotes fails with no quotes";
+         testFramework.assert(expectedResult == observedResult, failMesg, __LINE__);
+
+         // empty string
+         originalString = "";
+         expectedResult.clear();
+         observedResult = splitWithDoubleQuotes(originalString);
+
+         failMesg = "splitWithDoubleQuotes fails with empty string";
+         testFramework.assert(expectedResult == observedResult, failMesg, __LINE__);
+
+         // only whitespace
+         originalString = " ";
+         expectedResult.clear();
+         expectedResult.push_back("");
+         expectedResult.push_back("");
+         observedResult = splitWithDoubleQuotes(originalString,' ',false,false);
+
+         failMesg = "splitWithDoubleQuotes fails with just whitespace";
+         testFramework.assert(expectedResult == observedResult, failMesg, __LINE__);
+
+         // double quotes
+         originalString = std::string("String with \"double quoted values\"");
+         expectedResult.clear();
+         expectedResult.push_back("String");
+         expectedResult.push_back("with");
+         expectedResult.push_back("double quoted values");
+         observedResult = splitWithDoubleQuotes(originalString);
+
+         failMesg = "splitWithDoubleQuotes fails with double quotes";
+         testFramework.assert(expectedResult == observedResult, failMesg, __LINE__);
+
+         // single quotes
+         originalString= std::string("String with \'single quoted values\'");
+         expectedResult.clear();
+         expectedResult.push_back("String");
+         expectedResult.push_back("with");
+         expectedResult.push_back("\'single");
+         expectedResult.push_back("quoted");
+         expectedResult.push_back("values\'");
+         observedResult = splitWithDoubleQuotes(originalString);
+
+         failMesg = "splitWithDoubleQuotes fails with single quotes";
+         testFramework.assert(expectedResult == observedResult, failMesg, __LINE__);
+
+         // leading quote
+         originalString= std::string("\"First words\" quoted");
+         expectedResult.clear();
+         expectedResult.push_back("First words");
+         expectedResult.push_back("quoted");
+         observedResult = splitWithDoubleQuotes(originalString);
+
+         failMesg = "splitWithDoubleQuotes fails with leading quote";
+         testFramework.assert(expectedResult == observedResult, failMesg, __LINE__);
+
+         // back to back quotes
+         originalString= std::string("\"Back to\" \"back quotes\"");
+         expectedResult.clear();
+         expectedResult.push_back("Back to");
+         expectedResult.push_back("back quotes");
+         observedResult = splitWithDoubleQuotes(originalString);
+
+         failMesg = "splitWithDoubleQuotes failed with leading quote";
+         testFramework.assert(expectedResult == observedResult, failMesg, __LINE__);
+
+         // empty, non-whitespace fields
+         originalString =
+            std::string("Zan.35(KB04-KB01), +90  7  7.73619,,,,-1.52405,no,,,");
+         expectedResult.clear();
+         expectedResult.push_back("Zan.35(KB04-KB01)");
+         expectedResult.push_back("+90  7  7.73619");
+         expectedResult.push_back("");
+         expectedResult.push_back("");
+         expectedResult.push_back("");
+         expectedResult.push_back("-1.52405");
+         expectedResult.push_back("no");
+         expectedResult.push_back("");
+         expectedResult.push_back("");
+         expectedResult.push_back("");
+         observedResult = splitWithDoubleQuotes(originalString,',',true,false);
+
+         failMesg = "splitWithDoubleQuotes fails with empty non-white fields";
+         testFramework.assert(expectedResult == observedResult, failMesg, __LINE__);
+
+
+         return testFramework.countFails();
+      }
 
 /* =========================================================================================================================
    Test for the hexDump methods
@@ -674,7 +780,7 @@ public:
    ========================================================================================================================= */
    int hexToAsciiTest( void )
    {
-      TestUtil testFramework( "StringUtils", "hexDumpData", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "StringUtils", "hexDumpData", __FILE__, __LINE__ );
       std::string failMesg;
 
 
@@ -799,7 +905,7 @@ public:
    ========================================================================================================================= */
    int hexDumpDataTest( void )
    {
-      TestUtil testFramework( "StringUtils", "hexDumpData", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "StringUtils", "hexDumpData", __FILE__, __LINE__ );
       std::string failMesg;
 
 
@@ -950,6 +1056,9 @@ int main() //Main function to initialize and run all tests above
    errorCounter += check;
 
    check = testClass.splitWithQuotesTest();
+   errorCounter += check;
+
+   check = testClass.splitWithDoubleQuotesTest();
    errorCounter += check;
 
    check = testClass.hexDumpDataTest();

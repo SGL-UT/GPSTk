@@ -214,77 +214,78 @@ namespace gpstk
    }  // End of function 'reallyPutRecordVer2()'
 
 
-      /* This method returns the RinexDatum of a given observation
-       *
-       * @param sat     Satellite whose observation we want to fetch.
-       * @param index   Index representing the observation type. It is
-       *                obtained from corresponding RINEX Observation Header
-       *                using method 'Rinex3ObsHeader::getObsIndex()'.
-       */
-   RinexDatum Rinex3ObsData::getObs( const SatID& sat, int index ) const
+   Rinex3ObsData::Rinex3ObsData()
+         : time(gpstk::CommonTime::BEGINNING_OF_TIME),
+           epochFlag(-1),
+           numSVs(-1),
+           clockOffset(0.L)
+   {}
+
+
+   RinexDatum Rinex3ObsData::getObs(const RinexSatID& svID, size_t index ) const
       throw(InvalidRequest)
    {
-
-      RinexSatID rsat(sat);
-
-         // Look for the satellite in 'DataMap'
-      Rinex3ObsData::DataMap::const_iterator it;
-      it = obs.find(rsat);
-
-         // Check if satellite was found
-      if( it == obs.end() )
+      DataMap::const_iterator i = obs.find(svID);
+      if (i == obs.end())
       {
-         InvalidRequest ir( rsat.toString() + " is not available.");
+         InvalidRequest ir( svID.toString() + " is not available.");
          GPSTK_THROW(ir);
       }
+      if (index >= i->second.size())
+      {
+         InvalidRequest ir( svID.toString() + " index " + StringUtils::asString(index) + " is not available.");
+         GPSTK_THROW(ir);
+      }
+      
+      return i->second[index];
+   }
 
-         // Extract a copy of the data vector
-      vector<RinexDatum> vecData(it->second);
 
-         // Return the corresponding data
-      return vecData[index];
-
-   }  // End of method 'Rinex3ObsData::getObs()'
-
-
-      /* This method returns the RinexDatum of a given observation
-       *
-       * @param sat  Satellite whose observation we want to fetch.
-       * @param type String representing the observation type.
-       * @param hdr  RINEX Observation Header for current RINEX file.
-       */
-   RinexDatum Rinex3ObsData::getObs( const SatID& sat, std::string type,
-                                     const Rinex3ObsHeader& hdr ) const
+   RinexDatum Rinex3ObsData::getObs(const RinexSatID& svID,
+                                    const std::string& type,
+                                    const Rinex3ObsHeader& hdr ) const
       throw(InvalidRequest)
    {
-
-         // We will need the system 'char' of the satellite
-      RinexSatID rsat(sat);
-
+      string obsID;
          // Add GNSS code if needed
       if( type.size() == 3 )
-      {
-         char sysCode = rsat.systemChar();
-         type = sysCode + type;
-      }
+         obsID = svID.systemChar() + type;
+      else
+         obsID = type;
 
-         // Get the index corresponding to this observation type
-      int index( hdr.getObsIndex(type) );
-
-         // Return the corresponding data
-      return getObs(sat, index);
-
-   }  // End of method 'Rinex3ObsData::getValue( const SatID sat,...'
+      return getObs(svID, hdr.getObsIndex(obsID));
+   }
 
 
+   RinexDatum Rinex3ObsData::getObs(const RinexSatID& svID,
+                                    const RinexObsID& obsID,
+                                    const Rinex3ObsHeader& hdr ) const
+      throw(InvalidRequest)
+   {
+      string sys(1,svID.systemChar());
+      return getObs(svID, hdr.getObsIndex(sys, obsID));
+   }
+
+   
+   void Rinex3ObsData::setObs(const RinexDatum& data,
+                              const RinexSatID& svID,
+                              const RinexObsID& obsID,
+                              const Rinex3ObsHeader& hdr )
+         throw(InvalidRequest)
+   {
+      size_t index = hdr.getObsIndex(string(1,svID.systemChar()), obsID);
+      if (obs[svID].size() <= index)
+         obs[svID].resize(index+1);
+      obs[svID][index] = data;
+   }
+
+   
    void Rinex3ObsData::reallyPutRecord(FFStream& ffs) const
       throw(std::exception, FFStreamError, StringException)
    {
          // is there anything to write?
       if( (epochFlag == 0 || epochFlag == 1 || epochFlag == 6)
           && (numSVs==0 || obs.empty())) return;
-//    if( (epochFlag >= 2 && epochFlag <= 5) &&
-//         auxHeader.numberHeaderRecordsToBeWritten() == 0 ) return;
 
       Rinex3ObsStream& strm = dynamic_cast<Rinex3ObsStream&>(ffs);
 
@@ -358,6 +359,7 @@ namespace gpstk
 
    }   // end Rinex3ObsData::reallyPutRecord
 
+   
    void reallyGetRecordVer2(Rinex3ObsStream& strm, Rinex3ObsData& rod)
       throw(Exception)
    {
@@ -860,4 +862,4 @@ namespace gpstk
 
    }
 
-} // namespace
+}

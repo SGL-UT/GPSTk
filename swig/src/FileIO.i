@@ -126,7 +126,6 @@ def write ## FORMATNAME(fileName, header, data):
 STREAM_HELPER(Rinex3Clock)
 STREAM_HELPER(Rinex3Nav)
 STREAM_HELPER(Rinex3Obs)
-STREAM_HELPER(RinexClock)
 STREAM_HELPER(RinexMet)
 STREAM_HELPER(RinexNav)
 STREAM_HELPER(RinexObs)

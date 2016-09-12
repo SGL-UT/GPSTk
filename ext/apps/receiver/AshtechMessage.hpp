@@ -52,7 +52,7 @@
 
 namespace gpstk
 {
-   /** @addtogroup AshtechReceiver */
+   /// @ingroup AshtechReceiver 
    //@{
 
    /// Read Ashtech binary and ASCII messages and parse into Rinex. 

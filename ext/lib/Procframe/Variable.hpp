@@ -51,7 +51,7 @@
 namespace gpstk
 {
 
-      /** @addtogroup DataStructures */
+      /// @ingroup DataStructures
       //@{
 
 
@@ -144,12 +144,12 @@ namespace gpstk
       { isSatIndexed = satIndexed; return (*this); };
 
 
-      	/// Get if this variable is Type-indexed.
-	  bool getTypeIndexed() const
-	  { return isTypeIndexed; };
+         /// Get if this variable is Type-indexed.
+      bool getTypeIndexed() const
+      { return isTypeIndexed; };
 
 
-	     /** Set if this variable is Type-indexed.
+         /** Set if this variable is Type-indexed.
           *
           * @param typeIndexed       Whether this variable is Type-indexed
           *                         or not. By default, it is.
@@ -371,7 +371,7 @@ namespace gpstk
    }; // End of class 'Variable'
 
 
-   /// Handy type definition
+      /// Handy type definition
 
    typedef std::set<Variable> VariableSet;
 

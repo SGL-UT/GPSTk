@@ -44,53 +44,54 @@
 
 namespace vdraw
 {
-  /** \addtogroup BasicVectorGraphics */ 
-  //@{
-
-  /**
-   * Exception class unique to this library
-   */
-  class VDrawException: std::exception {
-
-    public:
+      /// @ingroup BasicVectorGraphics
+      //@{
 
       /**
-       * Constructor.  Uses default message.
+       * Exception class unique to this library
        */
+   class VDrawException: std::exception
+   {
+
+   public:
+
+         /**
+          * Constructor.  Uses default message.
+          */
       VDrawException() 
-        : myExplanation("Unspecified exception has occured")
+            : myExplanation("Unspecified exception has occured")
       {}
 
-      /**
-       * Constructor.  Programmer-defined exception string.
-       */
+         /**
+          * Constructor.  Programmer-defined exception string.
+          */
       VDrawException(const std::string& explanation) 
-        : myExplanation(explanation)
+            : myExplanation(explanation)
       {}
 
-      /**
-       * Destructor.
-       */
+         /**
+          * Destructor.
+          */
       ~VDrawException() throw()
       {}
 
-      /**
-       * Accessor to exception string.
-       * @return The exception explanation string.
-       */
+         /**
+          * Accessor to exception string.
+          * @return The exception explanation string.
+          */
       virtual const char* what() const throw()
       {
-        return myExplanation.c_str();
+         return myExplanation.c_str();
       }
 
-    private:
+   private:
 
-      // The explanation
+         // The explanation
       std::string myExplanation;
 
-  }; // class VDrawException
+   }; // class VDrawException
 
-  //@}
+      //@}
 
 } // namespace vdraw
 

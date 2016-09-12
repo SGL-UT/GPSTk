@@ -34,14 +34,17 @@
 //
 //=============================================================================
 
-/// @file TimeConstants.hpp  Define constants related to time, both in general and
-///    for the different GNSS.
+/// @file TimeConstants.hpp Define constants related to time, both in
+///    general and for the different GNSS.
 
 #ifndef GPSTK_TIMECONSTANTS_HPP
 #define GPSTK_TIMECONSTANTS_HPP
 
 namespace gpstk
 {
+      /// @ingroup TimeHandling
+      //@{
+
       /// Add this offset to convert Modified Julian Date to Julian Date.
    const double MJD_TO_JD = 2400000.5;
       /// 'Julian day' offset from MJD
@@ -111,6 +114,8 @@ namespace gpstk
    const long BDS_EPOCH_MJD = 53736L;
       /// Weeks per BDS Epoch
    const long BDS_WEEK_PER_EPOCH = 8192L;
+
+      //@}
 
 } // namespace
 

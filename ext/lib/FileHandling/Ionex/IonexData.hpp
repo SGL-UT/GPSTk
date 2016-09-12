@@ -56,7 +56,7 @@
 namespace gpstk
 {
 
-      /** @addtogroup IonosphereMaps */
+      /// @ingroup IonosphereMaps 
       //@{
 
       /** This class models a IONEX Data Record.

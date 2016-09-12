@@ -42,6 +42,9 @@
 
 namespace gpstk
 {
+      /// @ingroup TimeHandling
+      //@{
+
       /**
        * This class encapsulates the representation of time consisting of
        * year, month, day (of month), hour (of day), minute (of hour), and
@@ -52,8 +55,7 @@ namespace gpstk
    public:
 
          /**
-          * @defgroup caltbo CivilTime Basic Operations
-          * Default and Copy Constructors, Assignment Operator and Destructor.
+          * @name CivilTime Basic Operations
           */
          //@{
          /**
@@ -172,7 +174,7 @@ namespace gpstk
       static int monthLong(const std::string& monStr);
 
          /**
-          * @defgroup ctco CivilTime Comparison Operators
+          * @name CivilTime Comparison Operators
           * All comparison operators have a parameter "right" which corresponds
           *  to the CivilTime object to the right of the symbol.
           * All comparison operators are const and return true on success
@@ -195,18 +197,19 @@ namespace gpstk
       double second;
 
    };
-
-      // -----------CivilTime operator<< -----------
-      //
-      /**
-       * Stream output for CivilTime objects.  Typically used for debugging.
-       * @param s stream to append formatted CivilTime to.
-       * @param cit CivilTime to append to stream \c s.
-       * @return reference to \c s.
-       */
-   std::ostream& operator<<( std::ostream& s,
-                             const gpstk::CivilTime& cit );
+      //@}
 
 } // namespace
+
+   // -----------CivilTime operator<< -----------
+   //
+   /**
+    * Stream output for CivilTime objects.  Typically used for debugging.
+    * @param s stream to append formatted CivilTime to.
+    * @param cit CivilTime to append to stream \c s.
+    * @return reference to \c s.
+    */
+std::ostream& operator<<( std::ostream& s,
+                          const gpstk::CivilTime& cit );
 
 #endif // GPSTK_CIVILTIME_HPP

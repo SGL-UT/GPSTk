@@ -52,7 +52,7 @@
 
 namespace gpstk
 {
-      /** @addtogroup formattedfile */
+      /// @ingroup formattedfile 
       //@{
 
       /** This is a class to read and parse satellite data from

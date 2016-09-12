@@ -50,7 +50,7 @@ public:
 //==========================================================================================================================
    int constructorTest(void)
    {
-      TestUtil testFramework( "PolyFit", "Constructor", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "PolyFit", "Constructor", __FILE__, __LINE__ );
       try
       {
          //---------------------------------------------------------------------
@@ -94,7 +94,7 @@ public:
 //==========================================================================================================================
    int AddTest()
    {
-      TestUtil testFramework( "PolyFit", "Add", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "PolyFit", "Add", __FILE__, __LINE__ );
       std::string failMesg;
 
       int n = 4;
@@ -165,7 +165,7 @@ public:
 //==========================================================================================================================
    int resetTest(void)
    {
-      TestUtil testFramework( "PolyFit", "Reset", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "PolyFit", "Reset", __FILE__, __LINE__ );
       bool covMatDiffBool = true;
       bool solnDiffBool = true;	
 		
@@ -250,7 +250,7 @@ public:
 //==========================================================================================================================
    int SolutionTest3rdOrderResult()
    {
-      TestUtil testFramework( "PolyFit", "Solution", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "PolyFit", "Solution", __FILE__, __LINE__ );
       std::string failMesg;
 
       int n = 4; //Highest order in polynomial fit + 1 (constant term)
@@ -292,7 +292,7 @@ public:
 //==========================================================================================================================
    int SolutionTest2ndOrderResult()
    {
-      TestUtil testFramework( "PolyFit", "Solution", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "PolyFit", "Solution", __FILE__, __LINE__ );
       std::string failMesg;
 
       int n = 4;
@@ -333,7 +333,7 @@ public:
 //==========================================================================================================================
    int SolutionTest1stOrderResult()
    {
-      TestUtil testFramework( "PolyFit", "Solution", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "PolyFit", "Solution", __FILE__, __LINE__ );
       std::string failMesg;
 
       int n = 4;
@@ -374,7 +374,7 @@ public:
 //==========================================================================================================================
    int SolutionTest0thOrderResult()
    {
-      TestUtil testFramework( "PolyFit", "Solution", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "PolyFit", "Solution", __FILE__, __LINE__ );
       std::string failMesg;
 
       int n = 4;
@@ -414,7 +414,7 @@ public:
 //==========================================================================================================================
    int SolutionTest()
    {
-      TestUtil testFramework( "PolyFit", "Solution", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "PolyFit", "Solution", __FILE__, __LINE__ );
       std::string failMesg;
 
       int n = 4;
@@ -455,7 +455,7 @@ public:
 //==========================================================================================================================
    int SolutionFailTest()
    {
-      TestUtil testFramework( "PolyFit", "Solution", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "PolyFit", "Solution", __FILE__, __LINE__ );
       std::string failMesg;
 
       int n = 4;
@@ -485,7 +485,7 @@ public:
 //==========================================================================================================================
    int EvaluateVectorTest()
    {
-      TestUtil testFramework( "PolyFit", "Evaluate", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "PolyFit", "Evaluate", __FILE__, __LINE__ );
       std::string failMesg;
 
       int n = 4;
@@ -527,7 +527,7 @@ public:
 //==========================================================================================================================
    int EvaluateTest()
    {
-      TestUtil testFramework( "PolyFit", "Evaluate", __FILE__, __LINE__ );
+      gpstk::TestUtil testFramework( "PolyFit", "Evaluate", __FILE__, __LINE__ );
       std::string failMesg;
 
       int n = 4;

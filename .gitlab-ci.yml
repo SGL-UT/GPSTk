@@ -1,0 +1,76 @@
+#.yml file for Gitlab-CI support
+
+stages:
+- build
+- test
+- deploy
+
+build_debian:
+  stage: build
+  tags:
+    - debian
+  script:
+    - ./build.sh -ev
+
+test_debian:
+  stage: test
+  tags:
+    - debian
+  script:
+    - ./build.sh -evt
+
+build_solaris:
+  stage: build
+  tags:
+    - solaris
+  script:
+    - ./build.sh -evx
+
+test_solaris:
+  stage: test
+  tags:
+    - solaris
+  script:
+    - ./build.sh -evxt
+
+build_redhat:
+  stage: build
+  tags:
+    - redhat
+  script:
+    - ./build.sh -ev -b ./build-gpstk-redhat
+
+test_redhat:
+  stage: test
+  tags:
+    - redhat
+  script:
+    - ./build.sh -evt -b ./test-gpstk-redhat
+
+build_osx:
+  stage: build
+  tags:
+    - osx
+  script:
+    - ./build.sh -ev -b ./build-gpstk-osx
+
+test_osx:
+  stage: test
+  tags:
+    - osx
+  script:
+    - ./build.sh -evt -b ./test-gpstk-osx
+
+build_windows:
+  stage: build
+  tags:
+    - windows
+  script:
+    - build.sh -evx
+
+test_windows:
+  stage: test
+  tags:
+    - windows
+  script:
+    - build.sh -evxt

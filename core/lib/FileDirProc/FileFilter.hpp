@@ -51,7 +51,12 @@
 
 namespace gpstk
 {
-      /** @defgroup filedirgroup File and Directory Processing Utilities */
+      /** @defgroup FileDirProc File and Directory Processing Utilities
+       * Tools for locating and processing files in a directory
+       * structure using TimeHandling formatting and data
+       * filtering. */
+
+      /// @ingroup FileDirProc
       //@{
 
       /**
@@ -65,7 +70,6 @@ namespace gpstk
        * @warning The FFData class you're sorting MUST have a weak strict
        * ordering as defined in the FileFilterOperator.
        */
-
    template<class FileData>
    class FileFilter
    {

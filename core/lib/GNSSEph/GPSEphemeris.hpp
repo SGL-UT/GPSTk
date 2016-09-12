@@ -34,10 +34,10 @@
 //
 //=============================================================================
 
-/// @file GPSEphemeris.hpp Encapsulates the GPS legacy broadcast ephemeris and clock.
-/// Inherits OrbitEph, which does most of the work; this class adds health and
-/// accuracy information, fit interval, ionospheric correction terms and data
-/// flags.
+/** @file GPSEphemeris.hpp Encapsulates the GPS legacy broadcast
+ * ephemeris and clock.  Inherits OrbitEph, which does most of the
+ * work; this class adds health and accuracy information, fit
+ * interval, ionospheric correction terms and data flags. */
 
 #ifndef GPSTK_GPSORBITEPH_HPP
 #define GPSTK_GPSORBITEPH_HPP
@@ -50,10 +50,13 @@
 
 namespace gpstk
 {
+      /// @ingroup GNSSEph
+      //@{
+
    class GPSEphemeris : public OrbitEph
    {
    public:
-	   /// Default constuctor
+         /// Default constuctor
       GPSEphemeris(void)
       {
          beginValid.setTimeSystem(TimeSystem::GPS);
@@ -63,56 +66,59 @@ namespace gpstk
          transmitTime.setTimeSystem(TimeSystem::GPS);
       }
 
-      /// Destructor
+         /// Destructor
       virtual ~GPSEphemeris(void) {}
 
-      /// Create a copy of this object and return a pointer to it. This function
-      /// overrides that in the base class.
+         /** Create a copy of this object and return a pointer to
+          * it. This function overrides that in the base class. */
       virtual GPSEphemeris* clone(void) const
-         { return new GPSEphemeris(*this); }
+      { return new GPSEphemeris(*this); }
 
-      /// Returns true if the time, ct, is within the period of validity of
-      /// this OrbitEph object.
-      /// @throw Invalid Request if the required data has not been stored.
+         /** Returns true if the time, ct, is within the period of validity of
+          * this OrbitEph object.
+          * @throw Invalid Request if the required data has not been stored. */
       virtual bool isValid(const CommonTime& ct) const;
 
-      /// Return a string that will identify the derived class
+         /// Return a string that will identify the derived class
       virtual std::string getName(void) const
-         { return std::string("GPSEphemeris"); }
+      { return std::string("GPSEphemeris"); }
 
-      /// This function returns the health status of the SV.
+         /// This function returns the health status of the SV.
       virtual bool isHealthy(void) const;
 
-      /// Compute the accuracy in meters from the accuracy flag (URA).
+         /// Compute the accuracy in meters from the accuracy flag (URA).
       double getAccuracy(void) const
-         { return ura2accuracy(accuracyFlag); }
+      { return ura2accuracy(accuracyFlag); }
 
-      /// adjustBeginningValidity determines the beginValid and endValid times.
-      /// @throw Invalid Request if the required data has not been stored.
+         /** adjustBeginningValidity determines the beginValid and
+          * endValid times.
+          * @throw Invalid Request if the required data has not been stored. */
       virtual void adjustValidity(void);
       
-      /// Dump the overhead information as a string containing a single line.
-      /// @throw Invalid Request if the required data has not been stored.
+         /** Dump the overhead information as a string containing a
+          * single line.
+          * @throw Invalid Request if the required data has not been stored. */
       virtual std::string asString(void) const;
 
-      /// Dump the overhead information to the given output stream.
-      /// @throw Invalid Request if the required data has not been stored.
+         /** Dump the overhead information to the given output stream.
+          * @throw Invalid Request if the required data has not been stored. */
       virtual void dumpHeader(std::ostream& os = std::cout) const;
 
-      /// Dump the orbit, etc information to the given output stream.
-      /// @throw Invalid Request if the required data has not been stored.
+         /** Dump the orbit, etc information to the given output stream.
+          * @throw Invalid Request if the required data has not been stored. */
       virtual void dumpBody(std::ostream& os = std::cout) const;
 
-      /// Compute the fit duration in hours, and adjust the times of validity, given
-      /// the fit interval flag. NB IODC must be set before calling
-      /// @param fitint fit interval flag
+         /** Compute the fit duration in hours, and adjust the times
+          * of validity, given the fit interval flag.
+          * @pre IODC must be set
+          * @param fitint fit interval flag */
       void setFitIntervalFlag(const short fitintFlag)
       {
          fitDuration = getFitInterval(IODC, fitintFlag);
          adjustValidity();
       }
 
-   // member data
+         // member data
       CommonTime transmitTime;   ///< Time of transmission
       long HOWtime;              ///< Time (seconds-of-week) of handover word (txmit)
       short IODE;                ///< Index of data - ephemeris
@@ -127,12 +133,13 @@ namespace gpstk
       short fitDuration;         ///< duration of validity
       short fitint;              ///< for RINEX
 
-      /// Get the fit interval in hours from the fit interval flag and the IODC
+         /** Get the fit interval in hours from the fit interval flag
+          * and the IODC */
       static short getFitInterval(const short IODC, const short fitIntFlag);
      
    }; // end class GPSEphemeris
 
-   //@}
+      //@}
    
 } // end namespace
 

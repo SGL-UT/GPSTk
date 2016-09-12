@@ -48,7 +48,7 @@
 
 namespace gpstk
 {
-      /** @addtogroup GPSsolutions */
+      /// @ingroup GPSsolutions
       //@{
 
       /**
@@ -139,7 +139,7 @@ namespace gpstk
          /// inequality operator
       bool operator!=(const IonoModel& right) const throw();     
 
- private:
+   private:
 
       double alpha[4];
       double beta[4];

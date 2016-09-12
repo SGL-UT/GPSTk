@@ -47,37 +47,38 @@
 
 namespace vdraw
 {
-   /** \addtogroup BasicVectorGraphics */ 
-   //@{
+      /// @ingroup BasicVectorGraphics
+      //@{
 
-   /**
-    * This class provides a convenient and consistent mechanism by which
-    * to launch a graphics file viewer. 
-    */
-   class ViewerManager {
+      /**
+       * This class provides a convenient and consistent mechanism by which
+       * to launch a graphics file viewer. 
+       */
+   class ViewerManager
+   {
 
    public:
  
-      /**
-       * Constructor. Requires an environment variable to be named
-       * that, if defined during runtime, is used to launch a viewer.
-       */
+         /**
+          * Constructor. Requires an environment variable to be named
+          * that, if defined during runtime, is used to launch a viewer.
+          */
       ViewerManager(const std::string& envVar);
 
-      /**
-       * Allows client code to register a viewer by name. Multiple viewers
-       * can be registered. If a viewer is already registered it will not
-       * be registered twice.
-       */
-     void registerViewer(const std::string& vname);
+         /**
+          * Allows client code to register a viewer by name. Multiple viewers
+          * can be registered. If a viewer is already registered it will not
+          * be registered twice.
+          */
+      void registerViewer(const std::string& vname);
 
-      /**
-       * Launches a viewer for the given filename. First it tries
-       * the viewer named by the environment variable (see c'tor).
-       * then it tries the "registered" list of viewers. Returns
-       * true if a viewer was launched.
-       */
-     bool view(const std::string& fileName) throw (VDrawException);
+         /**
+          * Launches a viewer for the given filename. First it tries
+          * the viewer named by the environment variable (see c'tor).
+          * then it tries the "registered" list of viewers. Returns
+          * true if a viewer was launched.
+          */
+      bool view(const std::string& fileName) throw (VDrawException);
     
    protected:
 
@@ -87,7 +88,7 @@ namespace vdraw
 
    }; // class ViewerManager
 
-   //@}
+      //@}
 
 } // namespace vdraw
 

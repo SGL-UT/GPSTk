@@ -48,7 +48,7 @@
 
 namespace gpstk
 {
-      /** @addtogroup GeoDynamics */
+      /// @ingroup GeoDynamics 
       //@{
 
       /** This class calculate Relativity Effect to earth satellite.

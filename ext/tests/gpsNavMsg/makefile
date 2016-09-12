@@ -35,12 +35,6 @@ CNAVClock: CNAVClock.cpp CNAVClock.hpp
 xCNAVClock: xCNAVClock.cpp CNAVClock EngEphemeris BrcClockCorrection PackedNavBits
 	gcc $(CCARGS) xCNAVClock.cpp CNAVClock.o EngEphemeris.o BrcClockCorrection.o PackedNavBits.o $(LLARGS) -o xCNAVClock
 
-PackedNavBits: PackedNavBits.cpp PackedNavBits.hpp
-	gcc -c $(CCARGS) PackedNavBits.cpp
-
-xPackedNavBits: xPackedNavBits.cpp 
-	gcc $(CCARGS) xPackedNavBits.cpp $(LLARGS) -o xPackedNavBits
-
 xReadICETestData: xReadICETestData.cpp
 	gcc $(CCARGS) xReadICETestData.cpp $(LLARGS) -o xReadICETestData
  	

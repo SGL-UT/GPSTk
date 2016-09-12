@@ -57,7 +57,7 @@ namespace gpstk
    NEW_EXCEPTION_CLASS(SynchronizeException, gpstk::Exception);
 
 
-      /** @addtogroup DataStructures */
+      /// @ingroup DataStructures 
       //@{
 
 

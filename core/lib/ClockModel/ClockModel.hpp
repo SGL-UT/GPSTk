@@ -54,6 +54,9 @@
 
 namespace gpstk
 {
+      /// @ingroup ClockModel
+      //@{
+
    class ClockModel
    {
    public:
@@ -64,5 +67,8 @@ namespace gpstk
       virtual bool isOffsetValid(const gpstk::CommonTime& t) const = 0;
 
    };
+
+      //@}
+
 }
 #endif

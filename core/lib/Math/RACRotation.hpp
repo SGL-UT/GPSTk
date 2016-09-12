@@ -47,6 +47,9 @@
 
 namespace gpstk
 {
+      /// @ingroup MathGroup
+      //@{
+
    class RACRotation : public gpstk::Matrix<double>
    {
       public:
@@ -65,5 +68,7 @@ namespace gpstk
          void compute( const gpstk::Triple& SVPositionVector,
                        const gpstk::Triple& SVVelocityVector);
    };
+
+      //@}
 }   
 #endif      

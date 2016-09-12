@@ -50,8 +50,8 @@
 
 namespace gpstk
 {
-   /** @addtogroup filedirgroup */
-   //@{
+      /// @ingroup FileDirProc
+      //@{
 
       /// specifying internal enums and classes of a template class can be 
       /// problematic, so these are declared outside RTFileFrame
@@ -90,74 +90,74 @@ namespace gpstk
          /// default constructor
       RTFileFrameIterator() 
             : rtff(NULL)
-         {}
+      {}
 
          /// copy constructor
       RTFileFrameIterator(const RTFileFrameIterator& right)
             : rtff(right.rtff)
-         {}
+      {}
 
          /// destructor
       virtual ~RTFileFrameIterator() {}
 
          /// assignment operator
       RTFileFrameIterator& operator=(const RTFileFrameIterator& r)
-         { 
-            rtff = r.rtff; 
-            return *this; 
-         }
+      { 
+         rtff = r.rtff; 
+         return *this; 
+      }
 
          /// prefix increment of internal iterator
       RTFileFrameIterator operator++()
-         {
-            rtff->getRecord();
-            return *this;
-         }
+      {
+         rtff->getRecord();
+         return *this;
+      }
 
          /// postfix increment of internal iterator
       RTFileFrameIterator operator++(int)
-         {
-            RTFileFrameIterator<FileStream, FileData> temp = *this;
-            read();
-            return temp;
-         }
+      {
+         RTFileFrameIterator<FileStream, FileData> temp = *this;
+         read();
+         return temp;
+      }
 
          /// dereference object for current object
       const FileData& operator*() const
-         {
-            return rtff->lastData;
-         }
+      {
+         return rtff->lastData;
+      }
 
          /// dereference pointer for current object
       const FileData* operator->() const
-         {
-            return &(rtff->lastData);
-         }
+      {
+         return &(rtff->lastData);
+      }
       
          /// equality operator
       bool operator==(const RTFileFrameIterator& right) const
+      {
+         if (rtff == right.rtff)
          {
-            if (rtff == right.rtff)
-            {
-               if (rtff == NULL)
-                  return true;
+            if (rtff == NULL)
+               return true;
                
-               if ((rtff->isOK == right.rtff->isOK) ||
-                   (!rtff->isOK && (right.rtff->fileStream == rtff->fileStream)))
-                  return true;
-               return false;
-            }
-            else if ((rtff == NULL) && (right.rtff))
-               return !right.rtff->isOK;
-            else if ((right.rtff == NULL) && (rtff))
-               return !rtff->isOK;
-            else
-               return false;
+            if ((rtff->isOK == right.rtff->isOK) ||
+                (!rtff->isOK && (right.rtff->fileStream == rtff->fileStream)))
+               return true;
+            return false;
          }
+         else if ((rtff == NULL) && (right.rtff))
+            return !right.rtff->isOK;
+         else if ((right.rtff == NULL) && (rtff))
+            return !rtff->isOK;
+         else
+            return false;
+      }
 
          /// inequality operator
       bool operator!=(const RTFileFrameIterator& right) const
-         { return !(*this == right);}
+      { return !(*this == right);}
 
          /// give RTFileFrame access to the 
       friend class RTFileFrame<FileStream, FileData>;
@@ -165,13 +165,13 @@ namespace gpstk
    protected:
          /// gets the next record
       void read() 
-         { rtff->getRecord(); }
+      { rtff->getRecord(); }
 
    private:
          /// constructor for use by gpstk::RTFileFrame<FileStream, FileData>.
       RTFileFrameIterator(gpstk::RTFileFrame<FileStream, FileData>& r)
             : rtff(&r)
-         { rtff->getRecord(); }
+      { rtff->getRecord(); }
 
          /// gives access to the RTFileFrame being used
       gpstk::RTFileFrame<FileStream, FileData>* rtff;
@@ -340,7 +340,7 @@ namespace gpstk
       bool isOK;
    };
 
-   //@}
+      //@}
 
    template <class FileStream, class FileData>
    RTFileFrame<FileStream, FileData>::
@@ -349,9 +349,9 @@ namespace gpstk
                                      const gpstk::CommonTime& ending, 
                                      const RTFileFrameHelper::FileReadingMode frm,
                                      const RTFileFrameHelper::GetRecordMode grm)
-      throw(gpstk::Exception)
-         : fileStream(NULL), fs(fnFormat), startTime(beginning), 
-           currentTime(beginning), endTime(ending), readMode(frm), getMode(grm)
+   throw(gpstk::Exception)
+      : fileStream(NULL), fs(fnFormat), startTime(beginning), 
+      currentTime(beginning), endTime(ending), readMode(frm), getMode(grm)
    {
          // zero out seconds
       startTime = MJD(floor(MJD(startTime).mjd));
@@ -377,11 +377,11 @@ namespace gpstk
    RTFileFrame<FileStream, FileData> :: 
    setFileReadingMode(const RTFileFrameHelper::FileReadingMode f)
    { 
-     readMode = f; 
-     return *this; 
+      readMode = f; 
+      return *this; 
    }
 
-         /// Allows changing of the GetRecordMode
+      /// Allows changing of the GetRecordMode
    template <class FileStream, class FileData>
    RTFileFrame<FileStream, FileData>& 
    RTFileFrame<FileStream, FileData> :: 

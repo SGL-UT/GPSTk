@@ -48,8 +48,7 @@
 
 namespace gpstk
 {
-
-      /** @addtogroup appframegroup */
+      /// @ingroup AppFrame
       //@{
 
       /**
@@ -71,20 +70,20 @@ namespace gpstk
          /// Exit code used when the output file can't be opened
       static const int OUTPUT_ERROR = 1;
 
-      /** Constructor for InOutFramework.
-       *
-       * @param applName   name of the program (argv[0]).
-       * @param applDesc   text description of program's function
-       *                   (used by CommandOption help).
-       */
+         /** Constructor for InOutFramework.
+          *
+          * @param applName   name of the program (argv[0]).
+          * @param applDesc   text description of program's function
+          *                   (used by CommandOption help).
+          */
       InOutFramework( const std::string& applName,
                       const std::string& applDesc )
-         throw()
-         : LoopedFramework(applName, applDesc)
+            throw()
+            : LoopedFramework(applName, applDesc)
       {};
 
 
-      /// Destructor
+         /// Destructor
       virtual ~InOutFramework() {};
 
 
@@ -168,7 +167,7 @@ namespace gpstk
    private:
 
 
-      // Do not allow the use of the default constructor.
+         // Do not allow the use of the default constructor.
       InOutFramework();
 
 

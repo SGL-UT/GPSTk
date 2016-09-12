@@ -46,10 +46,10 @@
 
 namespace gpstk
 {
-   /** @defgroup Rinex3Clock RINEX Clock format file I/O */
-   //@{
+      /// @ingroup FileHandling
+      //@{
 
-   /// This class is here to make readable inheritance diagrams.
+      /// This class is here to make readable inheritance diagrams.
    class Rinex3ClockBase : public FFData
    {
    public:
@@ -57,7 +57,7 @@ namespace gpstk
       virtual ~Rinex3ClockBase() {}
    };
 
-   //@}
+      //@}
 
 }  // namespace
 

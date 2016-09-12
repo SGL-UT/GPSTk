@@ -47,7 +47,7 @@
 
 namespace gpstk
 {
-    /** @addtogroup geodeticgroup */
+    /// @ingroup geodeticgroup 
     //@{
 
       /// An Earth-Centered, Earth-Fixed position/velocity/clock representation

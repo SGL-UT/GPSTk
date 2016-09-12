@@ -46,26 +46,27 @@
 
 namespace gpstk
 {
-   /** @addtogroup math */
-   //@{
+      /// @ingroup MathGroup
+      //@{
 
-/**
- * Compute a polynomial fit of the form sum[X(i)*t**i] = d, that is solve for
- * coefficients X given a set of data pairs (t,d). The dimension of X is n, the
- * degree of the polynomial.
- * @code
- * unsigned int i,n=4;
- * double dat[17]={...}, times[17]={...};
- * PolyFit<double> PF(n);
- * for(i=0; i<17; i++)
- *    PF.Add(dat[i],times[i]);
- * 
- * cout << "Solution vector: " << PF.Solution() << endl;
- * cout << "Covariance matrix: " << PF.Covariance() << endl;
- * for(i=0; i<17; i++)
- *    cout << times[i] << " " << dat[i] << " " << PF.Evaluate(times[i]) << endl;
- * @endcode
- */
+      /**
+       * Compute a polynomial fit of the form sum[X(i)*t**i] = d, that
+       * is solve for coefficients X given a set of data pairs
+       * (t,d). The dimension of X is n, the degree of the polynomial.
+       *
+       * @code
+       * unsigned int i,n=4;
+       * double dat[17]={...}, times[17]={...};
+       * PolyFit<double> PF(n);
+       * for(i=0; i<17; i++)
+       *    PF.Add(dat[i],times[i]);
+       * 
+       * cout << "Solution vector: " << PF.Solution() << endl;
+       * cout << "Covariance matrix: " << PF.Covariance() << endl;
+       * for(i=0; i<17; i++)
+       *    cout << times[i] << " " << dat[i] << " " << PF.Evaluate(times[i]) << endl;
+       * @endcode
+       */
    template <class T>
    class PolyFit
    {
@@ -81,8 +82,9 @@ namespace gpstk
          Cov.resize(n_,n_);
       }
 
-         /** Reset the estimation, i.e. restart with new data, with new dimension.
-          * Default dimension is 0, meaning do not change dimension.
+         /** Reset the estimation, i.e. restart with new data, with
+          * new dimension.  Default dimension is 0, meaning do not
+          * change dimension.
           */
       void Reset(unsigned int n=0)
       {
@@ -105,9 +107,9 @@ namespace gpstk
          /// Add a single (optional: weighted) datum to the estimation.
       void Add(T d, T t, T w=T(1))
       {
-         //             n_-1
-         // Equation is sum[t^i * X(i)] = d     OR    P * X = d
-         //             i=0                          1xn_ n_  1
+            //             n_-1
+            // Equation is sum[t^i * X(i)] = d     OR    P * X = d
+            //             i=0                          1xn_ n_  1
          Vector<T> P(n_);
          T tt=T(1);
          for(size_t i=0; i<n_; i++) { P(i)=tt; tt *= t; }
@@ -168,7 +170,8 @@ namespace gpstk
          Inverted = false;
       }
 
-         /// Evaluate the polynomial at the given time; singular problems return zero.
+         /** Evaluate the polynomial at the given time; singular
+          * problems return zero. */
       T Evaluate(T t)
       {
          if(n_ <= 0) { Singular=true; return T(0); }
@@ -249,7 +252,7 @@ namespace gpstk
 
    }; // end class PolyFit
 
-   //@}
+      //@}
 
 }  // namespace gpstk
 

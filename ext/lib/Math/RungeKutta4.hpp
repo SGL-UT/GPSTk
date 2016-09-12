@@ -50,7 +50,7 @@
 namespace gpstk
 {
 
-      /** @addtogroup math */
+      /// @ingroup math 
       //@{
 
       /** The RungeKutta4 class provides a collection of integration routines

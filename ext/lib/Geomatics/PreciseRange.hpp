@@ -60,7 +60,7 @@
 //------------------------------------------------------------------------------------
 namespace gpstk
 {
-   /** @addtogroup ephemcalc */
+   /// @ingroup ephemcalc 
    //@{
 
    /// class PreciseRange. Compute the corrected range from receiver

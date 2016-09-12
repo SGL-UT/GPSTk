@@ -49,34 +49,35 @@
 
 namespace gpstk
 {
-   /** @addtogroup ephemcalc */
-   //@{
+      /// @ingroup GNSSEph
+      //@{
 
-   /** class CorrectedEphemerisRange. Compute the corrected range from receiver
-    * at position Rx, to the GPS satellite given by SatID sat, as well as azimuth,
-    * elevation, etc., given a nominal timetag (either received or transmitted
-    * time) and an XvtStore.
-    */
+      /** Compute the corrected range from receiver at position Rx, to
+       * the GPS satellite given by SatID sat, as well as azimuth,
+       * elevation, etc., given a nominal timetag (either received or
+       * transmitted time) and an XvtStore.
+       */
    class CorrectedEphemerisRange
    {
    public:
          /// Default constructor.
       CorrectedEphemerisRange() {}
 
-      /// Compute the corrected range at RECEIVE time, from receiver at
-      /// position Rx, to the GPS satellite given by SatID sat, as well as all
-      /// the CER quantities, given the nominal receive time tr_nom and
-      /// an XvtStore.
+         /// Compute the corrected range at RECEIVE time, from
+         /// receiver at position Rx, to the GPS satellite given by
+         /// SatID sat, as well as all the CER quantities, given the
+         /// nominal receive time tr_nom and an XvtStore.
       double ComputeAtReceiveTime(
          const CommonTime& tr_nom,
          const Position& Rx,
          const SatID sat,
          const XvtStore<SatID>& Eph);
 
-      /// Compute the corrected range at TRANSMIT time, from receiver at
-      /// position Rx, to the GPS satellite given by SatID sat, as well as all
-      /// the CER quantities, given the nominal receive time tr_nom, the measured
-      /// pseudorange, and an XvtStore.
+         /// Compute the corrected range at TRANSMIT time, from
+         /// receiver at position Rx, to the GPS satellite given by
+         /// SatID sat, as well as all the CER quantities, given the
+         /// nominal receive time tr_nom, the measured pseudorange,
+         /// and an XvtStore.
       double ComputeAtTransmitTime(
          const CommonTime& tr_nom,
          const double& pr,
@@ -84,24 +85,26 @@ namespace gpstk
          const SatID sat,
          const XvtStore<SatID>& Eph);
 
-      /// Compute the corrected range at TRANSMIT time, from receiver at
-      /// position Rx, to the GPS satellite given by SatID sat, as well as all
-      /// the CER quantities, given the nominal receive time tr_nom and
-      /// an XvtStore.
-      /// This doesn't use a pseudorange to initialize the time-of-flight
-      /// computation; however note that this could be problematic since the
-      /// measured pseudorange includes the Rx clock bias while this does not;
-      /// prefer the version with measured pseudorange input.
+         /// Compute the corrected range at TRANSMIT time, from
+         /// receiver at position Rx, to the GPS satellite given by
+         /// SatID sat, as well as all the CER quantities, given the
+         /// nominal receive time tr_nom and an XvtStore.
+         /// This doesn't use a pseudorange to initialize the
+         /// time-of-flight computation; however note that this could
+         /// be problematic since the measured pseudorange includes
+         /// the Rx clock bias while this does not; prefer the version
+         /// with measured pseudorange input.
       double ComputeAtTransmitTime(
          const CommonTime& tr_nom,
          const Position& Rx,
          const SatID sat,
          const XvtStore<SatID>& Eph);
 
-      /// Compute the corrected range at TRANSMIT time, from receiver at
-      /// position Rx, to the GPS satellite given by SatID sat, as well as all
-      /// the CER quantities, given the nominal transmit time tt_nom and
-      /// an XvtStore. This is used for data smoothed to transmit time.
+         /// Compute the corrected range at TRANSMIT time, from
+         /// receiver at position Rx, to the GPS satellite given by
+         /// SatID sat, as well as all the CER quantities, given the
+         /// nominal transmit time tt_nom and an XvtStore. This is
+         /// used for data smoothed to transmit time.
       double ComputeAtTransmitSvTime(
          const CommonTime& tt_nom,
          const double& pr,
@@ -109,41 +112,46 @@ namespace gpstk
          const SatID sat,
          const XvtStore<SatID>& Eph);
 
-      /// The computed raw (geometric) range in meters.
+         /// The computed raw (geometric) range in meters.
       double rawrange;
-      /// The satellite clock bias in meters.
+         /// The satellite clock bias in meters.
       double svclkbias;
-      /// The satellite clock drift in m/s.
+         /// The satellite clock drift in m/s.
       double svclkdrift;
-      /// The relativity correction in meters.
+         /// The relativity correction in meters.
       double relativity;
-      /// The satellite elevation (spheroidal), as seen at the receiver, in degrees.
+         /// The satellite elevation (spheroidal), as seen at the
+         /// receiver, in degrees.
       double elevation;
-      /// The satellite azimuth (spheroidal), as seen at the receiver, in degrees.
+         /// The satellite azimuth (spheroidal), as seen at the
+         /// receiver, in degrees.
       double azimuth;
-      /// The satellite elevation (geodetic), as seen at the receiver, in degrees.
+         /// The satellite elevation (geodetic), as seen at the
+         /// receiver, in degrees.
       double elevationGeodetic;
-      /// The satellite azimuth (geodetic), as seen at the receiver, in degrees.
+         /// The satellite azimuth (geodetic), as seen at the
+         /// receiver, in degrees.
       double azimuthGeodetic;
-      /// The computed transmit time of the signal.
+         /// The computed transmit time of the signal.
       CommonTime transmit;
-      /// The direction cosines of the satellite, as seen at the receiver (XYZ).
+         /// The direction cosines of the satellite, as seen at the
+         /// receiver (XYZ).
       Triple cosines;
-      /// The satellite position (m) and velocity (m/s) in ECEF coordinates.
+         /// The satellite position (m) and velocity (m/s) in ECEF coordinates.
       Xvt svPosVel;
 
    private:
-      // These are just helper functions to keep from repeating code
+         // These are just helper functions to keep from repeating code
       void updateCER(const Position& Rx);
       void rotateEarth(const Position& Rx);
 
    }; // end class CorrectedEphemerisRange
 
-   /// Compute relativity correction (sec.s) from the satellite position and velocity
+      /// Compute relativity correction (sec.s) from the satellite
+      /// position and velocity
    double RelativityCorrection(const Xvt& svPosVel);
 
-
-   //@}
+      //@}
 
 }  // namespace gpstk
 

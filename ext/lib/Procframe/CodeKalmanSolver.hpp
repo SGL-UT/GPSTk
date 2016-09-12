@@ -51,7 +51,7 @@
 namespace gpstk
 {
 
-      /** @addtogroup GPSsolutions */
+      /// @ingroup GPSsolutions 
       /// @ingroup math
 
       //@{

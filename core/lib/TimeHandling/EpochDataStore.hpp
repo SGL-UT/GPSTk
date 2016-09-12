@@ -36,9 +36,9 @@
 //=============================================================================
 
 /**
-* @file EpochDataStore.hpp
-* Class to handle interpolatable time serial data 
-*/
+ * @file EpochDataStore.hpp
+ * Class to handle interpolatable time serial data 
+ */
 
 #ifndef GPSTK_EPOCHDATASTORE_HPP
 #define GPSTK_EPOCHDATASTORE_HPP
@@ -53,7 +53,7 @@
 namespace gpstk
 {
    
-      /** @addtogroup General Data Tool */
+      /// @ingroup TimeHandling
       //@{
 
       /** Class to handle interpolatable time serial data 

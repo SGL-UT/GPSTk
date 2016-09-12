@@ -51,7 +51,7 @@
 
 namespace gpstk
 {
-      /** @addtogroup RinexMet */
+      /// @ingroup FileHandling
       //@{
 
       /**
@@ -65,7 +65,6 @@ namespace gpstk
        * @sa RinexMetStream.
        * @sa RinexMetHeader for information on writing RINEX 2 & 3 Met files.
        */
-
    class RinexMetData : public RinexMetBase
    {
 
@@ -98,12 +97,8 @@ namespace gpstk
          /// mapping the observation type to its value.
       typedef std::map<RinexMetHeader::RinexMetType, double> RinexMetMap;
 
-         /** @name Rinex weather data
-          */
-         //@{
       CommonTime time;   ///< The time this data was recorded, in GPS time system.
       RinexMetMap data;  ///< The data itself in map form.
-         //@}
 
          /// The maximum number of obs per line before you need a new line
       static const int maxObsPerLine;

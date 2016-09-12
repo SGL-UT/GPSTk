@@ -34,8 +34,8 @@
 //
 //=============================================================================
 
-/// @file WeekSecond.hpp  Implement full week, mod week and seconds-of-week time
-/// representation.
+/// @file WeekSecond.hpp Implement full week, mod week and
+/// seconds-of-week time representation.
 
 #ifndef GPSTK_WEEKSECOND_HPP
 #define GPSTK_WEEKSECOND_HPP
@@ -46,14 +46,17 @@
 
 namespace gpstk
 {
-   /// This class encapsulates the "Full Week and Seconds-of-week"
-   /// time representation.
+      /// @ingroup TimeHandling
+      //@{
+
+      /// This class encapsulates the "Full Week and Seconds-of-week"
+      /// time representation.
    class WeekSecond : public Week
    {
    public:
 
          /**
-          * @defgroup wsbo WeekSecond Basic Operations
+          * @name WeekSecond Basic Operations
           * Default and Copy Constructors, Assignment Operator and Destructor.
           */
          //@{
@@ -129,11 +132,11 @@ namespace gpstk
 
       inline double getSOW() const { return sow; }
 
-      /// @defgroup wsco WeekSecond Comparison Operators
-      /// All comparison operators have a parameter "right" which corresponds
-      /// to the WeekSecond object to the right of the symbol.
-      /// All comparison operators are const and return true on success
-      /// and false on failure.
+         /** @name WeekSecond Comparison Operators
+         * All comparison operators have a parameter "right" which corresponds
+         * to the WeekSecond object to the right of the symbol.
+         * All comparison operators are const and return true on success
+         * and false on failure. */
          //@{
       bool operator==( const WeekSecond& right ) const;
       bool operator!=( const WeekSecond& right ) const;
@@ -145,6 +148,8 @@ namespace gpstk
 
       double sow;
    };
+
+      //@}
 
 }
 

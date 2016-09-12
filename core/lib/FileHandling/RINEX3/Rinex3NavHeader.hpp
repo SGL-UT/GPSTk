@@ -55,7 +55,7 @@
 namespace gpstk
 {
 
-      /** @addtogroup Rinex3Nav */
+      /// @ingroup FileHandling
       //@{
 
       /// Ionospheric Corrections
@@ -166,9 +166,6 @@ namespace gpstk
 
 
 
-         /** @name HeaderValues */
-         //@{
-
       double version;                ///< RINEX Version
       std::string fileType;          ///< File type "N...."
       std::string fileSys;           ///< File system string
@@ -186,12 +183,6 @@ namespace gpstk
       long leapWeek;                 ///< Week number of ref time
       long leapDay;                  ///< Day of week of ref time
 
-         //@}
-
-
-         /** @name HeaderStrings */
-         //@{
-
       static const std::string stringVersion;      // "RINEX VERSION / TYPE"
       static const std::string stringRunBy;        // "PGM / RUN BY / DATE"
       static const std::string stringComment;      // "COMMENT"
@@ -205,8 +196,6 @@ namespace gpstk
       static const std::string stringIonAlpha;     // "ION ALPHA"            // R2.11
       static const std::string stringIonBeta;      // "ION BETA"             // R2.11
       static const std::string stringEoH;          // "END OF HEADER"
-
-         //@}
 
 
    protected:
