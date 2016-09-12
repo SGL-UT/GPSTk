@@ -15,14 +15,15 @@ Example:
 
 """
 
-from gpstk import C_MPS, GAMMA_GPS, L1_FREQ_GPS
-import argparse  # an incredibly useful module for command line processing
-import gpstk
-
 # We recommend only using
 #     'import gpstk',
 # but if you need constants fairly often, then importing them specifically at once
 # may be easier than referring to them by gpstk.L1_FREQ_GPS.
+from gpstk import C_MPS, GAMMA_GPS, L1_FREQ_GPS
+import gpstk
+
+import argparse
+
 
 
 def main():

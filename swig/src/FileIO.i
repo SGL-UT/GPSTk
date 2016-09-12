@@ -16,25 +16,30 @@
 //
 
 %define STREAM_HELPER(FORMATNAME)
-%extend gpstk:: ## FORMATNAME ## Stream { 
+%extend gpstk:: ## FORMATNAME ## Stream
+{ 
 
    // methods for the stream itself:
-   static gpstk:: ## FORMATNAME ## Stream* in ## FORMATNAME ## Stream(const std::string fileName) {
+   static gpstk:: ## FORMATNAME ## Stream* in ## FORMATNAME ## Stream(const std::string fileName)
+   {
       FORMATNAME ## Stream * s = new FORMATNAME ## Stream (fileName.c_str());
       return s;
    }
 
-   static gpstk:: ## FORMATNAME ## Stream* out ## FORMATNAME ## Stream(const std::string fileName) {
+   static gpstk:: ## FORMATNAME ## Stream* out ## FORMATNAME ## Stream(const std::string fileName)
+   {
       FORMATNAME ## Stream * s = new FORMATNAME ## Stream (fileName.c_str(), std::ios::out|std::ios::trunc);
       return s;
    }
 
-   static void _remove(gpstk:: ## FORMATNAME ## Stream * ptr) {
+   static void _remove(gpstk:: ## FORMATNAME ## Stream * ptr)
+   {
       delete ptr;
    }
 
    // reader functions:
-   gpstk:: ## FORMATNAME ## Header readHeader() {
+   gpstk:: ## FORMATNAME ## Header readHeader()
+   {
       gpstk:: ##FORMATNAME ## Header head;
       (*($self)) >> head;
       return head;
@@ -44,23 +49,22 @@
    {
       gpstk:: ## FORMATNAME ##Data data;
       *($self) >> data;
+
       if( *($self) )
-      {
          return data;
-      }
-      else
-      {
-         gpstk::EndOfFile e("## FORMATNAME ## Stream reached an EOF.");
-         GPSTK_THROW(e);
-      }
+      
+      gpstk::EndOfFile e("## FORMATNAME ## Stream reached an EOF.");
+      GPSTK_THROW(e);
    }
 
    // write functions:
-   void writeHeader(const gpstk:: ## FORMATNAME ## Header & head) {
+   void writeHeader(const gpstk:: ## FORMATNAME ## Header & head)
+   {
       (*($self)) << head;
    }
 
-   void writeData(const gpstk:: ## FORMATNAME ## Data & data) {
+   void writeData(const gpstk:: ## FORMATNAME ## Data & data)
+   {
       (*($self)) << data;
    }
 
