@@ -15,7 +15,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -23,13 +23,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -67,7 +67,7 @@ namespace gpstk
    class OrbitEphStore : public XvtStore<SatID>
    {
    public:
-      
+
          /** Default empty constructor. Derived classes may want to
           * override this constructor in order to set the store's time
           * system. If the store will be used only for satellites of a
@@ -75,7 +75,7 @@ namespace gpstk
           * that system; TimeSystem::Any is used here to allow store
           * to hold satellites with differing time systems. */
       OrbitEphStore()
-            : initialTime(CommonTime::END_OF_TIME), 
+            : initialTime(CommonTime::END_OF_TIME),
               finalTime(CommonTime::BEGINNING_OF_TIME),
               strictMethod(true), onlyHealthy(false)
       {
@@ -122,24 +122,11 @@ namespace gpstk
           * time interval
           * @param[in] tmin defines the beginning of the time interval
           * @param[in] tmax defines the end of the time interval */
-      virtual void edit(const CommonTime& tmin, 
+      virtual void edit(const CommonTime& tmin,
                         const CommonTime& tmax = CommonTime::END_OF_TIME);
 
          /// Clear the dataset, meaning remove all data
-      virtual void clear(void)
-      {
-         for(SatTableMap::iterator ui=satTables.begin(); ui!=satTables.end(); ui++) {
-            TimeOrbitEphTable& toet = ui->second;
-            toet.clear();
-         } 
-
-         satTables.clear();
-
-         initialTime = CommonTime::END_OF_TIME;
-         initialTime.setTimeSystem(timeSystem);
-         finalTime = CommonTime::BEGINNING_OF_TIME;
-         finalTime.setTimeSystem(timeSystem);
-      }
+      virtual void clear(void);
 
          /** Return the earliest time in the store.
           * @return The store initial time */
@@ -400,7 +387,7 @@ namespace gpstk
          if(beg < initialTime) initialTime = beg;
          if(end > finalTime) finalTime = end;
       }
-      
+
    }; // end class OrbitEphStore
 
       //@}

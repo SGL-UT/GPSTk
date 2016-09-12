@@ -15,7 +15,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -23,13 +23,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -315,6 +315,25 @@ namespace gpstk
 
       initialTime = tmin;
       finalTime   = tmax;
+   }
+
+   //---------------------------------------------------------------------------------
+   void OrbitEphStore::clear(void)
+   {
+      for(SatTableMap::iterator ui=satTables.begin(); ui!=satTables.end(); ui++) {
+         TimeOrbitEphTable& toet = ui->second;
+         for(TimeOrbitEphTable::iterator toeti = toet.begin(); toeti != toet.end(); toeti++) {
+            delete toeti->second;
+         }
+         toet.clear();
+      }
+
+      satTables.clear();
+
+      initialTime = CommonTime::END_OF_TIME;
+      initialTime.setTimeSystem(timeSystem);
+      finalTime = CommonTime::BEGINNING_OF_TIME;
+      finalTime.setTimeSystem(timeSystem);
    }
 
    //---------------------------------------------------------------------------------
