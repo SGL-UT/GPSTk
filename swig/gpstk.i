@@ -7,7 +7,6 @@
 using namespace gpstk;
 %}
 
-
 // =============================================================
 //  Section 1: C++ template containers & typedefs
 // =============================================================
@@ -256,11 +255,11 @@ namespace std { class fstream {}; }
 %include "Rinex3NavData.hpp"
 %include "OrbElemRinex.hpp"
 // RINEX 3 clock/obs:
+%include "RinexDatum.hpp"
 %include "Rinex3ClockBase.hpp"
 %include "Rinex3ObsBase.hpp"
 %include "Rinex3ObsHeader.hpp"
 %include "Rinex3ObsData.hpp"
-%include "RinexDatum.hpp"
 %include "Rinex3ObsStream.hpp"
 %include "Rinex3ClockHeader.hpp"
 %include "Rinex3ClockData.hpp"
