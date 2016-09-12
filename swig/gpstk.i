@@ -336,6 +336,10 @@ namespace std { class fstream {}; }
 %include "pythonfunctions.i"
 %include "FileIO.i"
 
+// Note that the path functions really don't make sense outside of the build
+// environment 
+%include "build_config.h"
+
 %pythoncode %{
         # clean-up the dir listing by removing *_swigregister.
         import gpstk

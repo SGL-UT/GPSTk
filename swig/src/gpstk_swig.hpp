@@ -185,4 +185,7 @@
 // Geomatics:
 #include "SunEarthSatGeometry.hpp"
 
+// So the python examples can find the test data
+#include "build_config.h"
+
 #endif

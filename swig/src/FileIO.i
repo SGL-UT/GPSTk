@@ -40,12 +40,17 @@
       return head;
    }
 
-   gpstk:: ## FORMATNAME ## Data readData() {
+   gpstk:: ## FORMATNAME ## Data readData()
+   {
       gpstk:: ## FORMATNAME ##Data data;
-      if( (*($self)) >> data ) {
+      *($self) >> data;
+      if( *($self) )
+      {
          return data;
-      } else {
-         gpstk::EndOfFile e(" FORMATNAME ## Stream reached an EOF.");
+      }
+      else
+      {
+         gpstk::EndOfFile e("## FORMATNAME ## Stream reached an EOF.");
          GPSTK_THROW(e);
       }
    }
