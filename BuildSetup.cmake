@@ -166,7 +166,7 @@ elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
     set( CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}/LICENSE.md")
 endif()
 
-set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "Libraries and applications for GPSTk. A GNSS processing toolkit.") 
+set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "Libraries and applications for the GNSS processing GPSTk toolkit. \n This package provides users with the Libraries and applications \n for the GNSS processing GPSTk toolkit.") 
 set( CPACK_PACKAGE_VENDOR "ARL:UT SGL" )
 set( CPACK_PACKAGE_CONTACT "Bryan Parsons" )
 set( CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.md" )
