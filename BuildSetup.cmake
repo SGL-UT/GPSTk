@@ -168,7 +168,7 @@ endif()
 
 set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "Libraries and applications for the GNSS processing GPSTk toolkit. \n This package provides users with the Libraries and applications \n for the GNSS processing GPSTk toolkit.") 
 set( CPACK_PACKAGE_VENDOR "ARL:UT SGL" )
-set( CPACK_PACKAGE_CONTACT "Bryan Parsons" )
+set( CPACK_PACKAGE_CONTACT "Bryan Parsons <bparsons@arlut.utexas.edu>" )
 set( CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.md" )
 set( CPACK_PACKAGE_VERSION_MAJOR "${GPSTK_VERSION_MAJOR}" )
 set( CPACK_PACKAGE_VERSION_MINOR "${GPSTK_VERSION_MINOR}" )
