@@ -84,6 +84,13 @@ if( "${isSystemDir}" STREQUAL "-1" )
    set( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}:$ORIGIN/../lib" )
 endif( "${isSystemDir}" STREQUAL "-1" )
 
+# Remove hardening-no-relro warnings.
+if( (${CMAKE_SYSTEM_NAME} MATCHES "Linux") )
+   set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-z,relro -Wl,-z,now ${CMAKE_SHARED_LINKER_FLAGS}")
+   set(CMAKE_EXE_LINKER_FLAGS "-Wl,-z,relro -Wl,-z,now ${CMAKE_EXE_LINKER_FLAGS}")
+   set(CMAKE_MODULE_LINKER_FLAGS "-Wl,-z,relro -Wl,-z,now ${CMAKE_MODULE_LINKER_FLAGS}")
+endif()
+
 
 #----------------------------------------
 if( DEBUG_SWITCH AND NOT DEBUG_VERBOSE )
