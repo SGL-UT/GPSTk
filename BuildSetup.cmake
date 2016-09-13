@@ -184,4 +184,7 @@ set( CPACK_DEBIAN_PACKAGE_SECTION "science" )
 set( CPACK_SOURCE_IGNORE_FILES "build/" "build-.*/" "examples/" "ref/" ".*/[.].*" )
 set( CPACK_SOURCE_GENERATOR "TGZ")
 
+# Prevents unstripped-binary-or-object Lintian errors.
+SET(CPACK_STRIP_FILES "1")
+
 include( CPack )
