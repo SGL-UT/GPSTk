@@ -92,6 +92,7 @@
 
 // RINEX format:
 #include "RinexSatID.hpp"
+#include "RinexDatum.hpp"
 #include "RinexObsBase.hpp"
 #include "RinexObsHeader.hpp"
 #include "RinexObsData.hpp"
@@ -184,5 +185,8 @@
 
 // Geomatics:
 #include "SunEarthSatGeometry.hpp"
+
+// So the python examples can find the test data
+#include "build_config.h"
 
 #endif

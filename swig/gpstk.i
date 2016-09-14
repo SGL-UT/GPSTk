@@ -7,7 +7,6 @@
 using namespace gpstk;
 %}
 
-
 // =============================================================
 //  Section 1: C++ template containers & typedefs
 // =============================================================
@@ -256,11 +255,11 @@ namespace std { class fstream {}; }
 %include "Rinex3NavData.hpp"
 %include "OrbElemRinex.hpp"
 // RINEX 3 clock/obs:
+%include "RinexDatum.hpp"
 %include "Rinex3ClockBase.hpp"
 %include "Rinex3ObsBase.hpp"
 %include "Rinex3ObsHeader.hpp"
 %include "Rinex3ObsData.hpp"
-%include "RinexDatum.hpp"
 %include "Rinex3ObsStream.hpp"
 %include "Rinex3ClockHeader.hpp"
 %include "Rinex3ClockData.hpp"
@@ -335,6 +334,10 @@ namespace std { class fstream {}; }
 // instead of creating another small file.
 %include "pythonfunctions.i"
 %include "FileIO.i"
+
+// Note that the path functions really don't make sense outside of the build
+// environment 
+%include "build_config.h"
 
 %pythoncode %{
         # clean-up the dir listing by removing *_swigregister.

@@ -1,24 +1,20 @@
 #!/usr/bin/env python
 
 """
-A GPSTk example with some simple time classes and functions.
+A GPSTk example of reading a RINEX obs file.
 
-This is a semi-port of the older C++ example2.cpp. The original
-only imported and rewrote the same file. But that would be
-completely trivial for python.
-
+This is a semi-port of the older C++ example2.cpp.
 Usage:
   python example2.py
 
 """
 
-
 import gpstk
 
 
 def main():
-    # Read in the rinex data
-    header, data = gpstk.readRinex3Obs( gpstk.data.full_path('rinex2obs_data.txt'), strict=True)
+    rfn = gpstk.getPathData() + '/test_input_rinex2_obs_RinexObsFile.06o'
+    header, data = gpstk.readRinex3Obs(rfn, strict=True)
 
     # Let's pretend we want to change something in the header
     # (otherwise this would be a two-line example!)
@@ -35,7 +31,6 @@ def main():
 
     # Now let's write it all back to a different file
     gpstk.writeRinex3Obs( 'rinex3obs_data.txt.new', header, data)
-
 
 if __name__ == '__main__':
     main()
