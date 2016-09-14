@@ -4,9 +4,8 @@ _namefixes = {'str': 'string', 'float' : 'double'}
 %}
 
 
-/////////////////////////////////////////////////////
-//            std::map <-> dict conversions
-/////////////////////////////////////////////////////
+
+// std::map <-> dict conversions
 %pythoncode %{
 def dictToMap(dict, outtype=''):
     """Translates a python dict type to a std::map backed type.
@@ -29,7 +28,7 @@ def dictToMap(dict, outtype=''):
     t_key = first_key.__class__.__name__
     t_value = dict[first_key].__class__.__name__
 
-    # some python names don't map to the vector wrap names perfectly, so they get fixed:
+    # some python names dont map to the vector wrap names perfectly, so they get fixed:
     if t_key in _namefixes:
         t_key = _namefixes[t_key]
     if t_value in _namefixes:
@@ -59,7 +58,6 @@ def dictToMap(dict, outtype=''):
 
 def mapToDict(map):
     """Translates a std::map backed type (from gpstk.cpp) to a python dict.
-
     Note that this recopies the contents of the map and is a linear time operation.
     """
     dict = {}
@@ -69,9 +67,8 @@ def mapToDict(map):
 %}
 
 
-/////////////////////////////////////////////////////
-//         std::vector <-> list conversions
-/////////////////////////////////////////////////////
+// std::vector <-> list conversions
+
 %pythoncode %{
 def seqToVector(seq, outtype=''):
     """Translates a python iterable type to a std::vector backed type.

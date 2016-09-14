@@ -1,90 +1,41 @@
 #!/usr/bin/env python
 
 """
-A GPSTk example featuring reading of RINEX obs and nav files
-and using the PRPRSolution2 class to compute a receiver position
-
-Usage:
-  python example4.py <RINEX3 Obs file> <RINEX3 Nav file> [-m <RINEX Met file>]'
-
-Example:
-  python example4.py rinex3obs_data.txt rinex3nav_data.txt -m rinexmet_data.txt
-
+An example reading a RINEX obs, nav and met file and using
+PRSolution2 to computer a receiver position and compare
+this to the position in the obs header.
 """
-
-import argparse
 import gpstk
 import sys
 
-rfn = gpstk.getPathData() + '/test_input_rinex2_obs_RinexObsFile.06o'
+obsfn = gpstk.getPathData() + '/arlm200z.15o'
+navfn = gpstk.getPathData() + '/arlm200z.15n'
+metfn = gpstk.getPathData() + '/arlm200z.15m'
 
-parser = argparse.ArgumentParser()
-parser.add_argument('rinex3obs_filename')
-parser.add_argument('rinex3nav_filename')
-parser.add_argument('-m', '--rinexmet_filename')
-args = parser.parse_args()
+navHeader, navData = gpstk.readRinex3Nav(navfn)
+ephStore = gpstk.gpstk.Rinex3EphemerisStore()
+for navDataObj in navData:
+    ephStore.addEphemeris(navDataObj)
 
-# Declaration of objects for storing ephemerides and handling RAIM
-bcestore = gpstk.GPSEphemerisStore()
+tropModel = gpstk.GGTropModel()
+metHeader, metData = gpstk.readRinexMet(metfn)
+
+obsHeader, obsData = gpstk.readRinex3Obs(obsfn)
+
+indexP1 = obsHeader.getObsIndex('C1W')
+indexP2 = obsHeader.getObsIndex('C2W')
 raimSolver = gpstk.PRSolution2()
 
-# Object for void-type tropospheric model (in case no meteorological
-# RINEX is available)
-noTropModel = gpstk.ZeroTropModel()
-
-# Object for GG-type tropospheric model (Goad and Goodman, 1974)
-#  Default constructor => default values for model
-ggTropModel = gpstk.GGTropModel()
-
-# Pointer to one of the two available tropospheric models. It points
-# to the void model by default
-tropModel = noTropModel
-
-
-navHeader, navData = gpstk.readRinex3Nav(args.rinex3nav_filename)
-for navDataObj in navData:
-    ephem = navDataObj.toEngEphemeris()
-    bcestore.addEphemeris(ephem)
-
-# Setting the criteria for looking up ephemeris:
-bcestore.SearchNear()
-
-if args.rinexmet_filename is not None:
-    metHeader, metData = gpstk.readRinexMet(args.rinexmet_filename)
-    tropModel = ggTropModel
-
-obsHeader, obsData = gpstk.readRinex3Obs(args.rinex3obs_filename)
-
-# The following lines fetch the corresponding indexes for some
-# observation types we are interested in. Given that old-style
-# observation types are used, GPS is assumed.
-try:
-    indexP1 = obsHeader.getObsIndex('C1P')
-except:
-    print 'The observation files has no L1 C/A pseudoranges.'
-    sys.exit()
-
-try:
-    indexP2 = obsHeader.getObsIndex('C2W')
-except:
-    print 'The observation files has no L2 codeless pseudoranges.'
-    indexP2 = -1
-
 for obsObj in obsData:
-    # Find a weather point. Only if a meteorological RINEX file
-    # was provided, the meteorological data linked list "rml" is
-    # neither empty or at its end, and the time of meteorological
-    # records are below observation data epoch.
-    if args.rinexmet_filename is not None:
-        for metObj in metData:
-            if metObj.time >= obsObj.time:
-                break
-            else:
-                metDataDict = metObj.getData()
-                temp = metDataDict[gpstk.RinexMetHeader.TD]
-                pressure = metDataDict[gpstk.RinexMetHeader.PR]
-                humidity = metDataDict[gpstk.RinexMetHeader.HR]
-                ggTropModel.setWeather(temp, pressure, humidity)
+    for metObj in metData:
+        if metObj.time >= obsObj.time:
+            break
+        else:
+            metDataDict = metObj.getData()
+            temp = metDataDict[gpstk.RinexMetHeader.TD]
+            pressure = metDataDict[gpstk.RinexMetHeader.PR]
+            humidity = metDataDict[gpstk.RinexMetHeader.HR]
+            tropModel.setWeather(temp, pressure, humidity)
 
     if obsObj.epochFlag == 0 or obsObj.epochFlag == 1:
         # Note that we use lists here, but we will need types backed
@@ -155,9 +106,9 @@ for obsObj in obsData:
         # 2nd argument, but the list is of RinexSatID, which is a subclass of SatID.
         # Since C++ containers are NOT covariant, it is neccessary to change the
         # output to a vector or SatID's rather thta a vector of RinexSatID's.
-        satVector = gpstk.cpp.seqToVector(prnList, outtype='vector_SatID')
-        rangeVector = gpstk.cpp.seqToVector(rangeList)
-        raimSolver.RAIMCompute(time, satVector, rangeVector, bcestore, tropModel)
+        satVector = gpstk.seqToVector(prnList, outtype='vector_SatID')
+        rangeVector = gpstk.seqToVector(rangeList)
+        raimSolver.RAIMCompute(time, satVector, rangeVector, ephStore, tropModel)
 
         # Note: Given that the default constructor sets public
         # attribute "Algebraic" to FALSE, a linearized least squares
@@ -171,5 +122,6 @@ for obsObj in obsData:
             # Vector "Solution" holds the coordinates, expressed in
             # meters in an Earth Centered, Earth Fixed (ECEF) reference
             # frame. The order is x, y, z  (as all ECEF objects)
-            x, y, z = raimSolver.Solution[0],  raimSolver.Solution[1], raimSolver.Solution[2]
-            print "%12.5f %12.5f %12.5f" % (x, y, z)
+            pos = gpstk.Triple(raimSolver.Solution[0],  raimSolver.Solution[1], raimSolver.Solution[2])
+            err = obsHeader.antennaPosition - pos
+            print err
