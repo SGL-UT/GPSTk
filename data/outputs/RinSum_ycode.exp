@@ -19,8 +19,6 @@ GPS Observation types (10):
  Type #08 (D2Y) L2 GPSY doppler
  Type #09 (S1Y) L1 GPSY snr
  Type #10 (S2Y) L2 GPSY snr
-R2ObsTypes: L1 L2 C1 C2 P1 P2 D1 D2 S1 S2 
-mapSysR2toR3ObsID[G] C1:C1C C2:C2X D1:D1Y D2:D2Y L1:L1Y L2:L2Y P1:C1Y P2:C2Y S1:S1Y S2:S2Y 
 Time of first obs 2015/07/19 00:00:00.000 GPS
 (This header is VALID)
 ---------------------------------- OPTIONAL ----------------------------------

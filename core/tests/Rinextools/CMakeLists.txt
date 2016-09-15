@@ -157,4 +157,3 @@ test_app_with_stdout(RinSum_obspath_v302 RinSum Rinex3
 #test_app_with_stdout(RinSum_v303_ucal RinSum Rinex3
 #    --obs\ ${GPSTK_TEST_DATA_DIR}/inputs/igs/UCAL00CAN_S_20161700100_15M_01S_MO
 #    "-l2 -v")
-

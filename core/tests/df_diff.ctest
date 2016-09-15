@@ -1,0 +1,37 @@
+# Tests for the df_test program
+
+execute_process(COMMAND
+    ${TEST_PROG}
+    -1 ${SOURCEDIR}/arlm200b.15o
+    -2 ${SOURCEDIR}/df_diff.in
+    -v
+    RESULT_VARIABLE RC)
+
+if(NOT RC EQUAL 2)
+    message(FATAL_ERROR "Test failed.")
+endif()
+
+execute_process(COMMAND
+    ${TEST_PROG}
+    -1 ${SOURCEDIR}/arlm200b.15o
+    -2 ${SOURCEDIR}/df_diff.in
+    -l 2
+    -v
+    RESULT_VARIABLE RC)
+
+if(NOT RC EQUAL 1)
+    message(FATAL_ERROR "Test failed.")
+endif()
+
+execute_process(COMMAND
+    ${TEST_PROG}
+    -1 ${SOURCEDIR}/arlm200b.15o
+    -2 ${SOURCEDIR}/df_diff.in
+    -l 2
+    -e 1e-4
+    -v
+    RESULT_VARIABLE RC)
+
+if(NOT RC EQUAL 0)
+    message(FATAL_ERROR "Test failed.")
+endif()

@@ -84,6 +84,13 @@ if( "${isSystemDir}" STREQUAL "-1" )
    set( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}:$ORIGIN/../lib" )
 endif( "${isSystemDir}" STREQUAL "-1" )
 
+# Remove hardening-no-relro warnings.
+if( (${CMAKE_SYSTEM_NAME} MATCHES "Linux") )
+   set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-z,relro -Wl,-z,now ${CMAKE_SHARED_LINKER_FLAGS}")
+   set(CMAKE_EXE_LINKER_FLAGS "-Wl,-z,relro -Wl,-z,now ${CMAKE_EXE_LINKER_FLAGS}")
+   set(CMAKE_MODULE_LINKER_FLAGS "-Wl,-z,relro -Wl,-z,now ${CMAKE_MODULE_LINKER_FLAGS}")
+endif()
+
 
 #----------------------------------------
 if( DEBUG_SWITCH AND NOT DEBUG_VERBOSE )
@@ -159,9 +166,9 @@ elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
     set( CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}/LICENSE.md")
 endif()
 
-set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "GPSTk libraries and applications for GNSS processing.") 
+set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "Libraries and applications for the GNSS processing GPSTk toolkit. \n This package provides users with the Libraries and applications \n for the GNSS processing GPSTk toolkit.") 
 set( CPACK_PACKAGE_VENDOR "ARL:UT SGL" )
-set( CPACK_PACKAGE_CONTACT "Bryan Parsons" )
+set( CPACK_PACKAGE_CONTACT "Bryan Parsons <bparsons@arlut.utexas.edu>" )
 set( CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.md" )
 set( CPACK_PACKAGE_VERSION_MAJOR "${GPSTK_VERSION_MAJOR}" )
 set( CPACK_PACKAGE_VERSION_MINOR "${GPSTK_VERSION_MINOR}" )
@@ -174,7 +181,10 @@ set( CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.13)" )
 set( CPACK_DEBIAN_SECTION "stable" )
 set( CPACK_DEBIAN_PACKAGE_SECTION "science" )
 
-set( CPACK_SOURCE_IGNORE_FILES "${PROJECT_BINARY_DIR}" "/build-.*/" ".*/[.].*" )
+set( CPACK_SOURCE_IGNORE_FILES "build/" "build-.*/" "examples/" "ref/" ".*/[.].*" )
 set( CPACK_SOURCE_GENERATOR "TGZ")
+
+# Prevents unstripped-binary-or-object Lintian errors.
+SET(CPACK_STRIP_FILES "1")
 
 include( CPack )

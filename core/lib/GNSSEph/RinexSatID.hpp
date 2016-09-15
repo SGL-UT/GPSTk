@@ -229,6 +229,9 @@ namespace gpstk
             case 'J': case 'j':
                system = SatID::systemQZSS;
                break;
+            case 'I': case 'i':
+               system = SatID::systemUnknown;
+               break;
             case 'C': case 'c':
                system = SatID::systemBeiDou;
                break;

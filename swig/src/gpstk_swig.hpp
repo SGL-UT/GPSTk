@@ -92,6 +92,7 @@
 
 // RINEX format:
 #include "RinexSatID.hpp"
+#include "RinexDatum.hpp"
 #include "RinexObsBase.hpp"
 #include "RinexObsHeader.hpp"
 #include "RinexObsData.hpp"
@@ -154,6 +155,14 @@
 #include "ObsEpochMap.hpp"
 #include "WxObsMap.hpp"
 #include "TropModel.hpp"
+#include "GCATTropModel.hpp"
+#include "GGHeightTropModel.hpp"
+#include "GGTropModel.hpp"
+#include "MOPSTropModel.hpp"
+#include "NBTropModel.hpp"
+#include "NeillTropModel.hpp"
+#include "SaasTropModel.hpp"
+#include "SimpleTropModel.hpp"
 #include "CheckPRData.hpp"
 #include "PRSolution2.hpp"
 #include "ExtractData.hpp"
@@ -176,5 +185,8 @@
 
 // Geomatics:
 #include "SunEarthSatGeometry.hpp"
+
+// So the python examples can find the test data
+#include "build_config.h"
 
 #endif
