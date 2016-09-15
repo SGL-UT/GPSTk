@@ -1,5 +1,76 @@
       #################################################
 
+Version 2.9.3   Thursday, September 15, 2016
+
+   General modifications
+   ---------------------
+   - Updated user documentation
+   - Progress towards making codebase Lintian clean for Debian packages
+   - Swig Examples fixed
+   - Jan 2017 leap second added to table
+   - This release includes new/modified source code comments for improved readability.
+   - Various Bug and Compile Warning Fixes
+
+   Modifications by Author
+   ---------------------
+
+Alex Kovacs (5):
+      gpstk/BuildSetup.cmake hardening-no-relro warnings.
+      gpstk/BuildSetup.cmake unstripped binaries
+      gpstk/BuildSetup.cmake starts-with-package-name
+      gpstk/BuildSetup.cmake extended description
+      gpstk/BuildSetup.cmake maintainer address
+
+Anthony Hughes (1):
+      Fixed memory leak during clear(); moved the implementation out of the header file.
+
+Bryan Parsons (9):
+      Merge branch 'IRNSS_Shim' into 'master'
+      Merge branch 'tropModelFix' into 'master'
+      Merge branch '268-bdt-conversion-in-timesystem-pp' into 'master'
+      Migrated svvis documentation to SGLTk.
+      Merge branch 'usermanual_update' into 'master'
+      Merge branch 'issue_269_OrbitEphStore' into 'master'
+      Merge branch 'issue_270' into 'master'
+      Merge branch 'alex-lintian-fixes' into 'master'
+      Merge branch 'swig_examples' into 'master'
+
+Jon C. Little (10):
+      Fixed reading of obs files with continuation lines in their obs types
+      Now will fully delete obs and satellites, including from the header
+      Fixed test for additional Rinex3ObsHeader dump output
+      Full test suite now working again on Debian & Solaris
+      Pulled Nick's testing doc changes
+      Moved a couple more tests to use testsuccexp.cmake
+      Moved a couple more tests to use testsuccexp.cmake
+      Merge branch 'RinEdit_Galileo' of repositories.arlut.utexas.edu:sgl/gpstk into RinEdit_Galileo
+      Making data paths available to swig
+      Fixing paths for test files
+
+Jon Little (6):
+      Fixing missing DataMap wrapping
+      Another one working
+      Making example4 wok
+      Refactored to work better and not require user input
+      swig example4 works again
+      swig example5 works again
+
+Kevin Kraatz (1):
+      Issue 270: Fix usage of Position in ORD classes
+
+Nathaniel Hill (1):
+      Minimal 4 line change to avoid RinDump aborting when files contain IRNSS data
+
+Richard Ji-Cathriner (1):
+      fixed conversions to/from BDT, added Jan 2017 leap second to table, cleaned up magic numbers
+
+bsorrells (1):
+      Added missing Trop Models to swig files
+
+
+
+      #################################################
+
 Version 2.9.2   Friday, August 5, 2016
 
    General modifications
