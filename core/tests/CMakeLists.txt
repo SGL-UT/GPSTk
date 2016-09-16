@@ -12,12 +12,53 @@ add_test(NAME df_diff_1
     -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
     -P ${CMAKE_CURRENT_SOURCE_DIR}/testhelp.cmake)
 
+# df_diff.in and arlm200b.15o differ in several ways
+# a text difference in line 2 and 4 floating point
+# differences of about 4e-11, 5e-7, 2e-5, and 4e-11
+
+# the default should catch the 2e-5 and the text diff for 2 errors
 add_test(NAME df_diff_2
     COMMAND ${CMAKE_COMMAND}
     -DTEST_PROG=$<TARGET_FILE:df_diff>
-    -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+    -DTESTBASE=df_diff_2
+    -DARGS=-1\ ${GPSTK_TEST_DATA_DIR}/arlm200b.15o\ -2\ ${GPSTK_TEST_DATA_DIR}/df_diff.in
     -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
-    -P ${CMAKE_CURRENT_SOURCE_DIR}/df_diff.ctest)
+    -DEXP_RC=2
+    -DNODIFF=1
+    -P ${CMAKE_CURRENT_SOURCE_DIR}/testsuccexp.cmake)
+
+# ignore lines 1&2 and there should only be 1 error
+add_test(NAME df_diff_3
+    COMMAND ${CMAKE_COMMAND}
+    -DTEST_PROG=$<TARGET_FILE:df_diff>
+    -DTESTBASE=df_diff_3
+    -DARGS=-1\ ${GPSTK_TEST_DATA_DIR}/arlm200b.15o\ -2\ ${GPSTK_TEST_DATA_DIR}/df_diff.in\ -l\ 2
+    -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+    -DEXP_RC=1
+    -DNODIFF=1
+    -P ${CMAKE_CURRENT_SOURCE_DIR}/testsuccexp.cmake)
+
+# ignore lines 1&2 and set eps to 1e-4 and there should be 0
+add_test(NAME df_diff_4
+    COMMAND ${CMAKE_COMMAND}
+    -DTEST_PROG=$<TARGET_FILE:df_diff>
+    -DTESTBASE=df_diff_3
+    -DARGS=-1\ ${GPSTK_TEST_DATA_DIR}/arlm200b.15o\ -2\ ${GPSTK_TEST_DATA_DIR}/df_diff.in\ -l\ 2\ -e\ 1e-4
+    -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+    -DEXP_RC=0
+    -DNODIFF=1
+    -P ${CMAKE_CURRENT_SOURCE_DIR}/testsuccexp.cmake)
+
+# ignore lines 1&2, and the last 2617, set eps to 1e-14 and there should be 2
+add_test(NAME df_diff_5
+    COMMAND ${CMAKE_COMMAND}
+    -DTEST_PROG=$<TARGET_FILE:df_diff>
+    -DTESTBASE=df_diff_5
+    -DARGS=-1\ ${GPSTK_TEST_DATA_DIR}/arlm200b.15o\ -2\ ${GPSTK_TEST_DATA_DIR}/df_diff.in\ -l\ 2\ -e\ 1e-14\ -z\ 2617
+    -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+    -DEXP_RC=2
+    -DNODIFF=1
+    -P ${CMAKE_CURRENT_SOURCE_DIR}/testsuccexp.cmake)
 
 
 # This function automates some of the setup of testing an application that generates

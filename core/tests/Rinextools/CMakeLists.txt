@@ -58,7 +58,7 @@ test_app_with_stdout(
     RinDump_211Mixed
     RinDump
     Rinex2
-    ${GPSTK_TEST_DATA_DIR}/inputs/igs/faa1170b00.16o\ GCIC\ RC1C\ EC1B\ SC5X
+    ${GPSTK_TEST_DATA_DIR}/inputs/igs/faa1170b00.16o\ GC1C\ RC1C\ EC1B\ SC5X
     "-l6 -z1")
 
 

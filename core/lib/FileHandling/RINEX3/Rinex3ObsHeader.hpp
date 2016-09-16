@@ -386,6 +386,9 @@ namespace gpstk
          /// Map P to Y code observations in RINEX 2 files
       bool PisY;
 
+         /// Used to help debug this class
+      static int debug;
+
          /// Destructor
       virtual ~Rinex3ObsHeader()
       {}
