@@ -84,6 +84,8 @@ public:
    int version2ToVersion3Test( void );
    int version3ToVersion2Test( void );
 
+   int inverseConversionTest( void );
+
 private:
 
    std::string dataFilePath;
@@ -713,6 +715,39 @@ int Rinex3Nav_T :: version2ToVersion3Test(void)
    return testFramework.countFails();
 }
 
+//------------------------------------------------------------
+// Tests if Rinex3NavData <-> GPSEphemeris conversion is correct
+//------------------------------------------------------------
+
+
+int Rinex3Nav_T :: inverseConversionTest(void)
+{
+   TestUtil testFramework("Rinex3Nav", "Rinex3NavData <-> GPSEphemeris conversion", __FILE__, __LINE__ );
+
+   gpstk::GPSEphemeris gpse;
+
+   // basic necessary fill
+   gpse.ctToc = GPSWeekSecond(123, 1239180.123, TimeSystem::GPS);
+   gpse.ctToc.setTimeSystem(TimeSystem::GPS);
+   gpse.ctToe = GPSWeekSecond(1231, 1239180.123, TimeSystem::GPS);
+   gpse.ctToc.setTimeSystem(TimeSystem::GPS);
+   gpse.transmitTime = GPSWeekSecond(123, 1239180.123, TimeSystem::GPS);
+   gpse.transmitTime.setTimeSystem(TimeSystem::GPS);
+   gpse.HOWtime = 10;
+   // basic necessary fill
+
+   gpse.Cic = 10;
+   gpse.accuracy = 123.123;
+
+   gpstk::Rinex3NavData rnd(gpse);
+   gpstk::GPSEphemeris gpseConverted = static_cast<GPSEphemeris>(rnd);
+
+   testFramework.assert_equals(gpse.Cic, gpseConverted.Cic, __LINE__);
+   testFramework.assert_equals(gpse.accuracy, gpseConverted.accuracy, __LINE__);
+
+   return testFramework.countFails();
+}
+
 
 //============================================================
 // Run all the test methods defined above
@@ -739,6 +774,8 @@ int main()
    errorTotal += testClass.hardCodeTest();
    errorTotal += testClass.streamReadWriteTest();
    errorTotal += testClass.filterOperatorsTest();
+
+   errorTotal += testClass.inverseConversionTest();
 
       // Unimplemented features
       //testClass.toConversionTest();
