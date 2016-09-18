@@ -15,7 +15,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -23,13 +23,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -85,6 +85,13 @@ namespace gpstk
       open(fn, mode);
    }
 
+   FFStream ::
+   FFStream( std::basic_iostream<char>& anotherStream )
+         : recordNumber(0)
+   {
+     std::basic_iostream<char>::init(anotherStream.rdbuf());
+     clear();
+   }
 
    void FFStream ::
    open( const std::string& fn,
@@ -105,7 +112,9 @@ namespace gpstk
          // classes typically will want to do their initialization
          // AFTER the parent.
       init(fn, mode);
-      std::fstream::open(fn, mode);
+      fileStream.open(fn, mode);
+      std::basic_iostream<char>::init(fileStream.rdbuf());
+      std::basic_iostream<char>::setstate(fileStream.rdstate());
    }  // End of method 'FFStream::open()'
 
 
@@ -123,7 +132,7 @@ namespace gpstk
    isFFStream(std::istream& i)
    {
       try
-      { 
+      {
          (void)dynamic_cast<FFStream&>(i);
       }
       catch(...)
@@ -275,7 +284,7 @@ namespace gpstk
 
 
 
-      // the crazy double try block is so that no gpstk::Exception throws 
+      // the crazy double try block is so that no gpstk::Exception throws
       // get masked, allowing all exception information (line numbers, text,
       // etc) to be retained.
    void FFStream ::
@@ -309,7 +318,7 @@ namespace gpstk
             setstate(std::ios::failbit);
             conditionalThrow();
          }
-         catch (gpstk::StringUtils::StringException& e)  
+         catch (gpstk::StringUtils::StringException& e)
          {
             e.addText("In record " +
                       gpstk::StringUtils::asString(recordNumber));
@@ -320,7 +329,7 @@ namespace gpstk
             recordNumber = initialRecordNumber;
             setstate(std::ios::failbit);
             conditionalThrow();
-         } 
+         }
             // catches some errors we can encounter
          catch (FFStreamError& e)
          {
@@ -378,5 +387,16 @@ namespace gpstk
    }  // End of method 'FFStream::tryFFStreamPut()'
 
 
+   void FFStream::close()
+   {
+     if (fileStream && fileStream.is_open())
+       fileStream.close();
+   }
 
+   bool FFStream::is_open()
+   {
+     if(fileStream)
+       return fileStream.is_open();
+     return true;
+   }
 }  // End of namespace gpstk
