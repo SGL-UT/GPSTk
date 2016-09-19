@@ -2,4 +2,4 @@
 
 add_executable(calgps calgps.cpp)
 target_link_libraries(calgps gpstk)
-install (TARGETS calgps DESTINATION "${CMAKE_INSTALL_BINDIR}")
+install (TARGETS calgps DESTINATION "${CMAKE_INSTALL_BINDIR}" COMPONENT ${APPLICATIONS_COMPONENT}) 

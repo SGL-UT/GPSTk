@@ -3,5 +3,5 @@
 
 add_executable(mpsolve mpsolve.cpp ObsArray.cpp)
 target_link_libraries(mpsolve gpstk)
-install (TARGETS mpsolve DESTINATION "${CMAKE_INSTALL_BINDIR}")
+install (TARGETS mpsolve DESTINATION "${CMAKE_INSTALL_BINDIR}" COMPONENT ${APPLICATIONS_COMPONENT}) 
 
