@@ -130,30 +130,42 @@ set_tests_properties(RinEdit_302merge PROPERTIES DEPENDS RinEdit_302split2)
 
 ###############################################################################
 # TEST RinSum
+# Run lots of different source files through RinSum to make sure the readers
+# can at least handle the various variations 
 ###############################################################################
-
-# Check RinSum output with --ycode option
-test_app_with_stdout(RinSum_ycode RinSum Rinex2
-    --ycode\ --obs\ ${GPSTK_TEST_DATA_DIR}/arlm200a.15o\ --quiet
-    "")
 
 # Check RinSum with obspath and Rinex v2.11 file
 test_app_with_stdout(RinSum_obspath_v211 RinSum Rinex2
     --obspath\ ${GPSTK_TEST_DATA_DIR}/inputs/igs\ --obs\ faa1170b00.16o
     "-l2 -v")
 
-# Check RinSum with  Rinex v2.11 file with more obs
+# Check RinSum & Rinex v2.10 file
+test_app_with_stdout(RinSum_v210_osn3 RinSum Rinex2
+    --obs\ ${GPSTK_TEST_DATA_DIR}/inputs/igs/osn31700.16o\ --ycode
+    "-l2 -v")
+
+# Check RinSum & Rinex v2.11 file
+test_app_with_stdout(RinSum_v211_cags RinSum Rinex2
+    --obs\ ${GPSTK_TEST_DATA_DIR}/inputs/igs/cags1700.16o
+    "-l2 -v")
+
+# Check RinSum & Rinex v2.11 file
+test_app_with_stdout(RinSum_v211_kerg RinSum Rinex2
+    --obs\ ${GPSTK_TEST_DATA_DIR}/inputs/igs/kerg1700.16o
+    "-l2 -v")
+
+# Check RinSum with Rinex v2.11 file with more obs types
 test_app_with_stdout(RinSum_v211_nklg RinSum Rinex2
     --obs\ ${GPSTK_TEST_DATA_DIR}/inputs/igs/nklg170b00.16o
     "-l2 -v")
 
-# Check RinSum with obspath Rinex v3.02 input
-test_app_with_stdout(RinSum_obspath_v302 RinSum Rinex3
-    --obspath\ ${GPSTK_TEST_DATA_DIR}/inputs/igs\ --obs\ FAA100PYF_R_20161700100_15M_01S_MO
+# Check RinSum Rinex v3.02 input
+test_app_with_stdout(RinSum_v302_FAA1 RinSum Rinex3
+    --obs\ ${GPSTK_TEST_DATA_DIR}/inputs/igs/FAA100PYF_R_20161700100_15M_01S_MO
     "-l2 -v")
 
-# Check RinSum with obspath Rinex v3.03 input
+# Check RinSum with Rinex v3.03 input
 # Uncomment this when Nathanial's changes make it in
-#test_app_with_stdout(RinSum_v303_ucal RinSum Rinex3
+#test_app_with_stdout(RinSum_v302_FAA1 RinSum Rinex3
 #    --obs\ ${GPSTK_TEST_DATA_DIR}/inputs/igs/UCAL00CAN_S_20161700100_15M_01S_MO
 #    "-l2 -v")
