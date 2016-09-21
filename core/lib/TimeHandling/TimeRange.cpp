@@ -134,6 +134,27 @@ namespace gpstk
      return false;
    }
    
+   bool TimeRange::operator<(const TimeRange& right) const
+   {
+        // If both are inclusive, the simply return true
+        // if left start < right start.
+      if (includeStartTime==right.includeStartTime)
+      {
+         if (start<right.start) 
+            return true;
+         return false;
+      }     
+        // If right is NOT inclusive, that implies left
+        // IS inclusive.  In this case, return true if
+        // left is <= right
+     if (!includeStartTime)
+     {
+        if (start<=right.start)
+          return true; 
+     }
+     return false;
+   }
+
       // True if start/end of this object are both prior
       // to start of "right"
       // Note that the constructor verifies start<end. 
