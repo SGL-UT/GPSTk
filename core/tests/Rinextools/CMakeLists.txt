@@ -124,8 +124,7 @@ test_app_with_file(
     "Rinex3"
     --ID\ ${GPSTK_TEST_OUTPUT_DIR}\ --IF\ RinEdit_302split1.out\ --IF\ RinEdit_302split2.out\ --OF\ ${GPSTK_TEST_OUTPUT_DIR}/RinEdit_302merge.out
     -l2)
-set_tests_properties(RinEdit_302merge PROPERTIES DEPENDS RinEdit_302split1)
-set_tests_properties(RinEdit_302merge PROPERTIES DEPENDS RinEdit_302split2)
+set_tests_properties(RinEdit_302merge PROPERTIES DEPENDS "RinEdit_302split1;RinEdit_302split2")
 
 
 ###############################################################################
