@@ -61,6 +61,14 @@ namespace gpstk
          /// Equivalence means all members are identical.
       bool operator==(const TimeRange& right) const;
 
+         /**
+          * Included to enable use in maps/sets.  This
+          * operator returns true if the start time of
+          * left is less than start time of right, regardless
+          * of end time. 
+          */
+      bool operator<(const TimeRange& right) const;
+
          /** True if start/end of this object are both prior
           * to start of "right" */
       bool isPriorTo( const TimeRange& right ) const;
