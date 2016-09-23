@@ -810,12 +810,12 @@ public:
       TimeRange noInitialPoint    (startPoint,  endPoint,    false, true );
       TimeRange copiedTimeRange   (referenceTimeRange);
 
-      testFramework.assert(  referenceTimeRange < copiedTimeRange,
-                             "Less than operator returned false when the time ranges are copies"
+      testFramework.assert(  !(referenceTimeRange < copiedTimeRange),
+                             "Less than operator returned true when the time ranges are copies"
                              , __LINE__ );
 
-      testFramework.assert(  !(referenceTimeRange < laterStart),
-                             "Less than operator returned true when the left start < right start"
+      testFramework.assert(  referenceTimeRange < laterStart,
+                             "Less than operator returned false when the left start < right start"
                              , __LINE__ );
 
       testFramework.assert(  !(laterStart < referenceTimeRange),
@@ -826,6 +826,7 @@ public:
                              "Less than operator returned true when the left start inclusive == right start exclusive"
                              , __LINE__ );
 
+      return testFramework.countFails();
    }
 
 
