@@ -424,15 +424,17 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjI
          //   1. Do the data contents match?  If so, we want to retain
          //      the earlier of the two.
          //   2. If not, proceed to the next candidate.
-      pair<OrbAlmMap::iterator,OrbAlmMap::iterator> p = oem.equal_range(et);
-      for (OrbAlmMap::iterator it=p.first;it!=p.second;it++)
+      //pair<OrbAlmMap::iterator,OrbAlmMap::iterator> p = oem.equal_range(et);
+      //for (OrbAlmMap::iterator it=p.first;it!=p.second;it++)
+      OrbAlmMap::iterator it;
+      for (it=oem.begin();it!=oem.end();it++)
       {
          const OrbAlm* oe = it->second;
          if (alm->isSameData(oe))
          {
             if (oe->beginValid <= alm->beginValid) return false;
             oem.erase(it);
-            oem.insert(OrbAlmMap::value_type(et,alm->clone()));
+            oem.insert(OrbAlmMap::value_type(alm->beginValid,alm->clone()));
             updateInitialFinal(alm);
             return true;
          }
@@ -440,7 +442,7 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjI
 
          // If the new almanac does not match any existing almanac, 
          // it will be added to the map.
-      oem.insert(OrbAlmMap::value_type(et,alm->clone())); 
+      oem.insert(OrbAlmMap::value_type(alm->beginValid,alm->clone())); 
    }
    catch(Exception& e)
    {
