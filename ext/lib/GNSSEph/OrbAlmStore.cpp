@@ -610,6 +610,19 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjI
       return counter;
    } 
 
+   //-----------------------------------------------------------------------------
+   std::list<SatID> OrbAlmStore::listOfSubjectSV() const
+   {
+      std::list<SatID> retList;
+      SubjectAlmMap::const_iterator cit;
+      for (cit=subjectAlmMap.begin();cit!=subjectAlmMap.end();cit++)
+      {
+         SatID sid = cit->first;
+         retList.push_back(sid);
+      }
+      return retList; 
+   }
+
 
 //-----------------------------------------------------------------------------
 // Goal is to find the set of orbital elements that would have been
