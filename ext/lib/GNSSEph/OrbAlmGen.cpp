@@ -196,14 +196,16 @@ namespace gpstk
    //  If the first almanac data page is received prior to the
    //  first definition of the WNa and Toa, estimate the 
    //  WNa_full based on the transmit time of the message.
-   //  This assumes that the almanac WNa/toa is "in the future"
-   //  from the current time by at least a day. 
-   //  Needed a BDS-specific version in order to address the
+   //  This assumes that the almanac WNa/toa is within a 
+   //  half-day of the current time.  In fact, there ARE NOT
+   //  PROMISES on this matter in the BDS ICD and I'm basing
+   //  this on observed behavior.  
+   //  Also needed a BDS-specific version in order to address the
    //  fact that the currTime is coming from the HRTR transmit
    //  time.  Therfore, it is going to be in GPS Time. 
    void OrbAlmGen::estimateWeekNumberBDS(const CommonTime& currTime)
    {
-      CommonTime adjustedTime = currTime + SEC_PER_DAY;
+      CommonTime adjustedTime = currTime;
       unsigned int WN_est = static_cast<BDSWeekSecond>(adjustedTime).week;
       double toa_est = static_cast<BDSWeekSecond>(adjustedTime).sow;
       loadWeekNumber(WN_est, toa_est);
