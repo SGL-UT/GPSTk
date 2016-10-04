@@ -264,6 +264,23 @@ namespace gpstk
       return retVal;
    } // end of getUtcOffsetModLeapSec()
 
+   gpstk::TimeSystemCorrection OrbSysGpsL_56::getTSC() const
+         throw(InvalidRequest)
+   {
+      if (!dataLoadedFlag)
+      {
+         InvalidRequest exc("Required data not stored.");
+         GPSTK_THROW(exc);
+      }
+      TimeSystemCorrection tsc("GPUT");
+      tsc.A0 = A0;
+      tsc.A1 = A1;
+      tsc.refSOW = static_cast<GPSWeekSecond>(ctEpoch).sow;
+      tsc.refWeek = static_cast<GPSWeekSecond>(ctEpoch).week;
+      tsc.geoProvider = string ("    ");
+      tsc.geoUTCid = 2;
+      return tsc; 
+   }
 
    void OrbSysGpsL_56::dumpUtcTerse(std::ostream& s, const std::string tform) const
          throw(InvalidRequest)
