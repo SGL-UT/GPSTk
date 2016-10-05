@@ -159,7 +159,19 @@ namespace gpstk
                              const unsigned long UID, 
                              const CommonTime& t) const
          throw(InvalidRequest);
-         
+
+      /// Given a navigation message type, a system-specific message unique ID (UID),
+      /// and a time, return a pointer to the most recent new message 
+      /// of that type broadcast priot to the specified time.
+      /// Throws InvalidRequest if
+      ///   - the navigation message type isn't in the store
+      ///   - if the time is prior to the earliest time in the store
+      ///   - if there are no message with the specified UID in the store              
+      const OrbDataSys* find(const NavID& navtype,
+                             const unsigned long UID, 
+                             const CommonTime& t) const
+         throw(InvalidRequest);
+
       /// Given a satellite and a time, return list of pointer to the 
       /// messages that were being
       /// broadcast by the specified satellite at the specified time.
