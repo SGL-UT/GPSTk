@@ -289,6 +289,14 @@ namespace gpstk
          // Compute time since ephemeris & clock epochs
       elapte = t - ctToe;
 
+      /* debug 
+      string tstr("%D %w:%02H:%02M:%4.1f %8.2g");
+      cout << " t " << printTime(t,tstr)
+           << ", ctToe " << printTime(ctToe,tstr)
+           << ", adj " << printTime(adj,tstr)
+           << ", elapte " << elapte << endl;
+      */
+
       double sqrtgm = SQRT(ell.gm());
 
          // Compute A at time of interest
@@ -844,9 +852,12 @@ namespace gpstk
  
          unsigned short prn = translateToSubjectPRN(isDT1, subframe, page); 
          subjectSV = SatID(prn,SatID::systemBeiDou);
+         bool isSubjSV_DT1 = true;
+         if (prn<6) isSubjSV_DT1 = false;
+
          const unsigned startBits0[] = {50, 60};
          const unsigned numBits0[]   = { 2, 22};
-         AHalf   = msg.asSignedDouble(startBits0, numBits0, 2, -11);
+         AHalf   = msg.asUnsignedDouble(startBits0, numBits0, 2, -11);
          A       = AHalf * AHalf;
          af1     = msg.asSignedDouble( 90, 11, -38);
          af0     = msg.asSignedDouble(101, 11, -20);
@@ -861,10 +872,11 @@ namespace gpstk
          const unsigned numBits2[]   = {  3,  13};
          deltai  = msg.asDoubleSemiCircles(startBits2, numBits2, 2, -19);  
          i0 = 0.0;     // Default for GEO.
-         if (isDT1) 
+         if (isSubjSV_DT1) 
          {      
-            i0 = (0.3 + deltai) * PI; 
+            i0 = 0.3 * PI; 
          }
+         i0 = i0 + deltai;
 
          unsigned long toa = msg.asUnsignedLong(193, 8, 4096);
 
