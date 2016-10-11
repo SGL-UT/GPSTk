@@ -142,8 +142,6 @@ commands instead of build.sh:
 
 
 
-
-
 Windows and Microsoft Visual Studio: Building with CMake:
 ---------------------------------------------------------
 
