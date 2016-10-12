@@ -56,3 +56,7 @@ add_test(GNSSEph_SP3SatID SP3SatID_T)
 add_executable(XvtStore_T XvtStore_T.cpp)
 target_link_libraries(XvtStore_T gpstk)
 add_test(GNSSEph_XvtStore XvtStore_T)
+
+add_executable(GPSEphemerisStore_T GPSEphemerisStore_T.cpp)
+target_link_libraries(GPSEphemerisStore_T gpstk)
+add_test(GNSSEph_GPSEphemerisStore GPSEphemerisStore_T)
