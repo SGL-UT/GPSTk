@@ -106,7 +106,7 @@ public:
 
          eph2.IODE = eph2.IODC = 18;
          eph2.transmitTime   = gpstk::GPSWeekSecond(1917, 570630);
-         eph2.HOWtime        = 570636;
+         eph2.HOWtime        = 570606; //570636;
          eph2.health         = 0;
          eph2.accuracyFlag   = 0;
          eph2.accuracy       = 2.4;
@@ -143,7 +143,7 @@ public:
          eph2.Cis            = -2.27242708E-07;
          eph2.adjustValidity();
 
-         eph3.IODE = eph3.IODC = 18;
+         eph3.IODE = eph3.IODC = 20;
          eph3.transmitTime   = gpstk::GPSWeekSecond(1917, 576000);
          eph3.HOWtime        = 576006;
          eph3.health         = 0;
@@ -218,7 +218,7 @@ public:
                /*
             cout << setw(2) << epCount << " "
                  << gpstk::printTime(what, "%Y/%02m/%02d %02H:%02M:%02S")
-                 << " " << iodc << endl;
+                 << " " << iodc << " expect " << expected << endl;
                */
          }
       }
