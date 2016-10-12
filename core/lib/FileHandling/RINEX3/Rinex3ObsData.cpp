@@ -148,61 +148,23 @@ namespace gpstk
       }  // write out data
       else if( rod.epochFlag == 0 || rod.epochFlag == 1 || rod.epochFlag == 6 )
       {
-         size_t i;
          const int maxObsPerLine(5);
 
             // loop over satellites in R3 obs data
          for( itr = rod.obs.begin(); itr != rod.obs.end(); ++itr )
          {
-
-            RinexSatID sat(itr->first);               // current satellite
-            string sys(string(1,sat.systemChar()));   // system
-            itr = rod.obs.find(sat);           // get data vector to be written
             int obsWritten(0);
             line = string("");
-
-               // loop over R2 obstypes
-            for( i=0; i<strm.header.R2ObsTypes.size(); i++ )
-            {
-
-                  // get the R3 obs ID from the map
-               RinexObsID obsid;
-               obsid =
-                  strm.header.mapSysR2toR3ObsID[sys][strm.header.R2ObsTypes[i]];
-
-                  // now find index of that data from R3 header
-               const vector<RinexObsID>& vecData(strm.header.mapObsTypes[sys]);
-
-               vector<RinexObsID>::const_iterator jt;
-               jt = find(vecData.begin(), vecData.end(), obsid);
-
-                  // index into vecData
-               int ind(-1);
-
-               if( jt != vecData.end() )
-                  ind = jt-vecData.begin();
-
-                  // need a continuation line?
+            for(int i=0;i<itr->second.size();i++){
                if( obsWritten != 0 && (obsWritten % maxObsPerLine) == 0 )
                {
                   strm << line << endl;
                   strm.lineNumber++;
                   line = string("");
                }
-
-                  // write the line
-               if (ind == -1)
-               {
-                  RinexDatum empty;
-                  line += empty.asString();
-               }
-               else
-               {
-                  line += itr->second[ind].asString();
-               }
+               line += itr->second[i].asString();
                obsWritten++;
-
-            }  // End of 'for( i=0; i<strm.header.R2ObsTypes.size(); i++ )'
+            }
 
             strm << line << endl;
             strm.lineNumber++;

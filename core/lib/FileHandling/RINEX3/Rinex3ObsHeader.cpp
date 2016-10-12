@@ -302,6 +302,7 @@ namespace gpstk
       throw(FFStreamError, StringException)
    {
       Rinex3ObsStream& strm = dynamic_cast<Rinex3ObsStream&>(ffs);
+      map<string,std::vector<std::string> > R2SysObsMap;
       string line;
 
       if(valid & validVersion)
@@ -506,17 +507,26 @@ namespace gpstk
       }
       if(version < 3 && (valid & validNumObs))          // R2 only
       {
-            // write out RinexObsTypes
+
          const int maxObsPerLine = 9;
          int obsWritten = 0;
          line = ""; // make sure the line contents are reset.
 
-         for(size_t i=0; i<R2ObsTypes.size(); i++)
+         R2SysObsMap = makeR2Vec();
+         std::vector<string> tR2ObsTypes;
+         map<string,vector<string> >::iterator it;
+         for(it = R2SysObsMap.begin(); it != R2SysObsMap.end(); it++){
+            for(size_t i=0; i<it->second.size(); i++)
+            {
+               tR2ObsTypes.push_back(it->second[i]);
+            }
+         }
+         for(size_t i=0; i<tR2ObsTypes.size(); i++)
          {
             string val;
                // the first line needs to have the # of obs
             if(obsWritten == 0)
-               line  = rightJustify(asString(R2ObsTypes.size()), 6);
+               line  = rightJustify(asString(tR2ObsTypes.size()), 6);
                // if you hit 9, write out the line and start a new one
             else if((obsWritten % maxObsPerLine) == 0)
             {
@@ -525,7 +535,7 @@ namespace gpstk
                strm.lineNumber++;
                line  = string(6, ' ');
             }
-            val = R2ObsTypes[i];
+            val = tR2ObsTypes[i];
             line += rightJustify(val, 6);
             obsWritten++;
          }
@@ -898,14 +908,11 @@ namespace gpstk
                int j;
                size_t i;
                string sys(string(1,sat.systemChar()));
-               map<string, map<string, RinexObsID> >::const_iterator jt(mapSysR2toR3ObsID.find(sys));
-               const map<string, RinexObsID> mapVec(jt->second);
-               map<string, RinexObsID>::const_iterator kt;
-               for(i=0,j=0; i<R2ObsTypes.size(); i++)
+               map<string, vector<string> >::const_iterator jt(R2SysObsMap.find(sys));
+               const vector<string> mapVec(jt->second);
+               for(i=0,j=0; i<mapVec.size(); i++)
                {
-                  kt = mapVec.find(R2ObsTypes[i]);
-                  string obsid(kt->second.asString());
-                  if(obsid == string("   ")) vec.push_back(0.0);
+                  if(mapVec[i] == string("   ")) vec.push_back(0.0);
                   else                       vec.push_back(numObs[j++]);
                }
             }
@@ -2058,80 +2065,57 @@ namespace gpstk
    } // end writeTime
 
       // Compute map of obs types for use in writing version 2 header and data, call before writing
-   void Rinex3ObsHeader::prepareVer2Write(void) throw()
+   void Rinex3ObsHeader::prepareVer2Write(void)
    {
-      size_t i;
-
       version = 2.11;
       valid |= Rinex3ObsHeader::validWaveFact;
-         // TD unset R3-specific header members?
-
-         // define these two:
-         //std::vector<std::string> R2ObsTypes;
-         //map<string, map<string, RinexObsID> > mapSysR2toR3ObsID;
-      map<string, map<string, RinexObsID> >::iterator jt;
-
-         // if map is already defined, it was created during reallyGet(version 2)
-      if(mapSysR2toR3ObsID.size() == 0)
-      {
-            // make a list of R2 obstype strings, and a map R3ObsIDs <= R2 obstypes for each system
-         R2ObsTypes.clear();
-         map<string,vector<RinexObsID> >::const_iterator mit;
-         for(mit = mapObsTypes.begin(); mit != mapObsTypes.end(); mit++)
-         {
-               // mit->first is system char as a 1-char string
-            map<string, RinexObsID> mapR2toR3ObsID;
-
-               // loop over all ObsIDs for this system
-            for(i=0; i<mit->second.size(); i++)
-            {
-               string R2ot, lab(mit->second[i].asString());
-                  // the list of all tracking code characters for this sys, freq
-               string allCodes(ObsID::validRinexTrackingCodes[mit->first[0]][lab[1]]);
-
-               if(lab == string("C1C"))                      R2ot = string("C1");
-               else if(lab == string("C2X") && mit->first == "G") R2ot = string("C2");
-               else if(lab == string("C2C") && mit->first == "R") R2ot = string("C2");
-                  // R2 has C5 but not P5
-               else if(lab.substr(0,2) == "C5")                   R2ot = string("C5");
-               else if(lab[0] == 'C')        R2ot = string("P")+string(1,lab[1]);
-               else                          R2ot = lab.substr(0,2);
-
-                  // add to list, if not already there
-               vector<string>::iterator it;
-               it = find(R2ObsTypes.begin(),R2ObsTypes.end(),R2ot);
-               if(it == R2ObsTypes.end())
-               {
-                     // its not there - add it
-                  R2ObsTypes.push_back(R2ot);
-                  mapR2toR3ObsID[R2ot] = mit->second[i];
-               }
-               else
-               {
-                     // its already there - in list of R2 ots
-                  if(mapR2toR3ObsID.find(R2ot) == mapR2toR3ObsID.end())
-                  {
-                     mapR2toR3ObsID[R2ot] = mit->second[i];// must also add to sys map
-                  }
-                  else
-                  {
-                        // its already in sys map ...
-                        // .. but is the new tc 'better'?
-                     string::size_type posold,posnew;
-                     posold = allCodes.find((mapR2toR3ObsID[R2ot].asString())[2]);
-                     posnew = allCodes.find(lab[2]);
-                     if(posnew < posold)           // replace the R3ObsID in the map
-                        mapR2toR3ObsID[R2ot] = mit->second[i];
-                  }
-               }
-            }
-               // save for this system
-            mapSysR2toR3ObsID[mit->first] = mapR2toR3ObsID;
-         }
-      }  // end if mapSysR2toR3ObsID is defined already
-         // else version 2 was read and R2ObsTypes and mapSysR2toR3ObsID were filled in reallyGet
-
    }  // end prepareVer2Write()
+
+    std::map<string,std::vector<string> > Rinex3ObsHeader::makeR2Vec()const throw(FFStreamError){
+       std::map<string,std::vector<string> > sysObsMap;
+       map<string,vector<RinexObsID> >::const_iterator mit;
+       for(mit = mapObsTypes.begin(); mit != mapObsTypes.end(); mit++)
+       {
+          // mit->first must be system char as a 1-char string
+          string satString = mit->first;
+          if(satString!="G" && satString!="R" && satString!="E" && satString!="S" && satString!="T" &&
+             satString!="J" && satString!="C" && satString!="G"){
+             FFStreamError er("Invalid system char string in header.mapObsTypes: "+satString);
+             GPSTK_THROW(er);
+          }
+          size_t i;
+          std::vector<std::string> tR2ObsTypes;
+          // loop over all ObsIDs for this system
+          for(i=0; i<mit->second.size(); i++)
+          {
+             string R2ot, lab(mit->second[i].asString());
+             // the list of all tracking code characters for this sys, freq
+             string allCodes(ObsID::validRinexTrackingCodes[mit->first[0]][lab[1]]);
+
+             if(lab == string("C1C"))                      R2ot = string("C1");
+             else if(lab == string("C2X") && mit->first == "G") R2ot = string("C2");
+             else if(lab == string("C2C") && mit->first == "R") R2ot = string("C2");
+                // R2 has C5 but not P5
+             else if(lab.substr(0,2) == "C5")                   R2ot = string("C5");
+             else if(lab[0] == 'C')        R2ot = string("P")+string(1,lab[1]);
+             else                          R2ot = lab.substr(0,2);
+
+             // add to list, if not already there
+             vector<string>::iterator it;
+             it = find(tR2ObsTypes.begin(),tR2ObsTypes.end(),R2ot);
+             if(it == tR2ObsTypes.end())
+             {
+                // its not there - add it
+                tR2ObsTypes.push_back(R2ot);
+             }
+             else{
+                GPSTK_THROW(FFStreamError("Too many ObsIDs simplify to " + R2ot + " to create a valid R2 file"));
+             }
+          }
+          sysObsMap.insert(std::pair<string,std::vector<string> >(mit->first,tR2ObsTypes));
+       }
+       return sysObsMap;
+    }
 
    void Rinex3ObsHeader::dump(ostream& s) const
    {

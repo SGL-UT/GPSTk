@@ -448,7 +448,7 @@ namespace gpstk
 
          /** Compute map of obs types for use in writing version 2
           * header and data */
-      void prepareVer2Write(void) throw();
+      void prepareVer2Write(void);
 
          /** Compare this header with another.
           * @param[in] right the header to compare this with.
@@ -466,6 +466,7 @@ namespace gpstk
                    const StringVec& inclExclList,
                    bool incl = false);
 
+      std::map<std::string,std::vector<std::string> > makeR2Vec(void) const throw(FFStreamError);
 
    protected:
 
