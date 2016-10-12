@@ -410,14 +410,17 @@ namespace gpstk
    const OrbitEph* OrbitEphStore::findUserOrbitEph(const SatID& sat,
                                                    const CommonTime& t) const
    {
+      cerr << "I'm in OrbitEphStore::findUserOrbitEph" << endl;
          // Is this satellite found in the table?
       if(satTables.find(sat) == satTables.end())
       {
+         cerr << "OrbitEphStore::findUserOrbitEph 1" << endl;
          return NULL;
       }
 
          // Define reference to the relevant map of orbital elements
       const TimeOrbitEphTable& table = getTimeOrbitEphMap(sat);
+      cerr << "OrbitEphStore::findUserOrbitEph 2" << endl;
 
          // The map is ordered by beginning times of validity, which
          // is another way of saying "earliest transmit time".  A call
@@ -429,6 +432,7 @@ namespace gpstk
       if(it == table.end()) 
       {
             // not a direct match
+         cerr << "OrbitEphStore::findUserOrbitEph 3" << endl;
          it = table.lower_bound(t);
 
             // Tricky case here.  If the key is beyond the last key in
@@ -441,153 +445,165 @@ namespace gpstk
             // of the final element in the table against time t.
          if(it == table.end()) 
          {
+            cerr << "OrbitEphStore::findUserOrbitEph 4" << endl;
             TimeOrbitEphTable::const_reverse_iterator rit = table.rbegin();
             if(rit->second->isValid(t))         // Last element in map works
             {
+               cerr << "OrbitEphStore::findUserOrbitEph 5" << endl;
                return rit->second;
-
-                  // have nothing
-                  //string mess = "Time is beyond table for satellite " + asString(sat)
-                  //   + " for time " + printTime(t,fmt);
-                  //InvalidRequest e(mess);
-                  //GPSTK_THROW(e);
-               return NULL;
             }
-         }  // end if not a direct match
+            cerr << "OrbitEphStore::findUserOrbitEph 5.1" << endl;
 
-            // Found a direct match. should probably use the PRIOR set
-            // since it takes ~30 seconds from beginning of
-            // transmission to complete reception.  If lower_bound( )
-            // was called, it points to the element after the time t,
-            // So either way, it points ONE BEYOND the element we
-            // want.  The exception is if it is pointing to
-            // table.begin( ), then all of the elements in the map are
-            // too late.
-         if(it == table.begin()) 
-         {
-               //string mess = "Time is before table for satellite " + asString(sat)
-               //      + " for time " + printTime(t,fmt);
+               // have nothing
+               //string mess = "Time is beyond table for satellite " + asString(sat)
+               //   + " for time " + printTime(t,fmt);
                //InvalidRequest e(mess);
                //GPSTK_THROW(e);
             return NULL;
          }
+         cerr << "OrbitEphStore::findUserOrbitEph 6" << endl;
+      }  // end if not a direct match
+      cerr << "OrbitEphStore::findUserOrbitEph 7" << endl;
 
-            // The iterator should be a valid iterator and set one
-            // beyond the item of interest. However, there may be gaps
-            // in the middle of the map and cases where periods of
-            // effectivity do not overlap. That's OK, the key
-            // represents the EARLIEST time the elements should be
-            // used.  Therefore, we can decrement the counter and test
-            // to see if the element is valid.
-         it--;
-         if(!(it->second->isValid(t))) 
-         {
-               //// there is a "hole" in the middle of a map.
-               //string mess = "No orbital elements found for satellite " + asString(sat)
-               //   + " at time " + printTime(t,fmt);
-               //InvalidRequest e(mess);
-               //GPSTK_THROW(e);
-            return NULL;
-         }
-
-         return it->second;
-
-      }  // end OrbitEph* OrbitEphStore::findUserOrbitEph
-
-
-         //--------------------------------------------------------------------
-      const OrbitEph* OrbitEphStore::findNearOrbitEph(const SatID& sat,
-                                                      const CommonTime& t)
-         const
+         // Found a direct match. should probably use the PRIOR set
+         // since it takes ~30 seconds from beginning of
+         // transmission to complete reception.  If lower_bound( )
+         // was called, it points to the element after the time t,
+         // So either way, it points ONE BEYOND the element we
+         // want.  The exception is if it is pointing to
+         // table.begin( ), then all of the elements in the map are
+         // too late.
+      if(it == table.begin()) 
       {
-            // Check for any OrbitEph for this SV
-         if(satTables.find(sat) == satTables.end())
-            return NULL;
+         cerr << "OrbitEphStore::findUserOrbitEph 8" << endl;
+            //string mess = "Time is before table for satellite " + asString(sat)
+            //      + " for time " + printTime(t,fmt);
+            //InvalidRequest e(mess);
+            //GPSTK_THROW(e);
+         return NULL;
+      }
+      cerr << "OrbitEphStore::findUserOrbitEph 9" << endl;
 
-            // No OrbitEph in store for requested sat time
-            // Define reference to the relevant map of orbital elements
-         const TimeOrbitEphTable& table = getTimeOrbitEphMap(sat);
+         // The iterator should be a valid iterator and set one
+         // beyond the item of interest. However, there may be gaps
+         // in the middle of the map and cases where periods of
+         // effectivity do not overlap. That's OK, the key
+         // represents the EARLIEST time the elements should be
+         // used.  Therefore, we can decrement the counter and test
+         // to see if the element is valid.
+      it--;
+      if(!(it->second->isValid(t))) 
+      {
+         cerr << "OrbitEphStore::findUserOrbitEph 10" << endl;
+            //// there is a "hole" in the middle of a map.
+            //string mess = "No orbital elements found for satellite " + asString(sat)
+            //   + " at time " + printTime(t,fmt);
+            //InvalidRequest e(mess);
+            //GPSTK_THROW(e);
+         return NULL;
+      }
+      cerr << "OrbitEphStore::findUserOrbitEph 11" << endl;
 
-         TimeOrbitEphTable::const_iterator itNext = table.find(t);
-         if(itNext != table.end())               // exact match
-            return itNext->second;
+      return it->second;
 
-            // Three cases:
-            // 1. t is within a gap within the store
-            // 2. t is before all OrbitEph in the store
-            // 3. t is after all OrbitEph in the store
+   }  // end OrbitEph* OrbitEphStore::findUserOrbitEph
 
-            // lower_bound returns the first element with key >= t
-         itNext = table.lower_bound(t);
-         if(itNext == table.begin())             // Test for case 2
-            return itNext->second;
 
-            // Test for case 3
-         if(itNext == table.end()) 
-         {
-            TimeOrbitEphTable::const_reverse_iterator rit = table.rbegin();
-            return rit->second;
-         }
+      //--------------------------------------------------------------------
+   const OrbitEph* OrbitEphStore::findNearOrbitEph(const SatID& sat,
+                                                   const CommonTime& t)
+      const
+   {
+      cerr << "I'm in OrbitEphStore::findNearOrbitEph" << endl;
 
-            // case 1: it is not the beginning, so safe to decrement
-         CommonTime nextTOE = itNext->second->ctToe;
-         TimeOrbitEphTable::const_iterator itPrior = itNext;
-         itPrior--;
-         CommonTime lastTOE = itPrior->second->ctToe;
-         double diffToNext = nextTOE - t;
-         double diffFromLast = t - lastTOE;
-         if(diffToNext > diffFromLast)
-            return itPrior->second;
+         // Check for any OrbitEph for this SV
+      if(satTables.find(sat) == satTables.end())
+         return NULL;
 
+         // No OrbitEph in store for requested sat time
+         // Define reference to the relevant map of orbital elements
+      const TimeOrbitEphTable& table = getTimeOrbitEphMap(sat);
+
+      TimeOrbitEphTable::const_iterator itNext = table.find(t);
+      if(itNext != table.end())               // exact match
          return itNext->second;
-      }
 
-         //--------------------------------------------------------------------
+         // Three cases:
+         // 1. t is within a gap within the store
+         // 2. t is before all OrbitEph in the store
+         // 3. t is after all OrbitEph in the store
 
-         // Add all ephemerides to an existing list<OrbitEph>.  If
-         // SatID sat is given, limit selections to sat's satellite
-         // system, plus if sat's id is not -1, limit to sat's id as
-         // well.
-         // @return the number of ephemerides added.
-      int OrbitEphStore::addToList(list<OrbitEph*>& v, SatID sat) const
+         // lower_bound returns the first element with key >= t
+      itNext = table.lower_bound(t);
+      if(itNext == table.begin())             // Test for case 2
+         return itNext->second;
+
+         // Test for case 3
+      if(itNext == table.end()) 
       {
-         int n = 0;
-         SatTableMap::const_iterator it;
-         for (it = satTables.begin(); it != satTables.end(); it++)
-         {
-            if(sat.system != SatID::systemUnknown) 
-            {
-               if(it->first.system != sat.system)
-                  continue;
-               if(sat.id != -1 && it->first.id != sat.id)
-                  continue;
-            }
-
-            const TimeOrbitEphTable& em = it->second;
-            TimeOrbitEphTable::const_iterator ei;
-            for(ei = em.begin(); ei != em.end(); ei++) 
-            {
-               v.push_back(ei->second->clone());
-               n++;
-            }
-         }
-         return n;
+         TimeOrbitEphTable::const_reverse_iterator rit = table.rbegin();
+         return rit->second;
       }
 
-         //--------------------------------------------------------------------
-      const OrbitEphStore::TimeOrbitEphTable&
-         OrbitEphStore::getTimeOrbitEphMap(const SatID& sat) const
+         // case 1: it is not the beginning, so safe to decrement
+      CommonTime nextTOE = itNext->second->ctToe;
+      TimeOrbitEphTable::const_iterator itPrior = itNext;
+      itPrior--;
+      CommonTime lastTOE = itPrior->second->ctToe;
+      double diffToNext = nextTOE - t;
+      double diffFromLast = t - lastTOE;
+      if(diffToNext > diffFromLast)
+         return itPrior->second;
+
+      return itNext->second;
+   }
+
+      //--------------------------------------------------------------------
+
+      // Add all ephemerides to an existing list<OrbitEph>.  If
+      // SatID sat is given, limit selections to sat's satellite
+      // system, plus if sat's id is not -1, limit to sat's id as
+      // well.
+      // @return the number of ephemerides added.
+   int OrbitEphStore::addToList(list<OrbitEph*>& v, SatID sat) const
+   {
+      int n = 0;
+      SatTableMap::const_iterator it;
+      for (it = satTables.begin(); it != satTables.end(); it++)
       {
-         SatTableMap::const_iterator it = satTables.find(sat);
-         if(it == satTables.end()) 
+         if(sat.system != SatID::systemUnknown) 
          {
-            InvalidRequest e("No OrbitEph for satellite " + asString(sat));
-            GPSTK_THROW(e);
+            if(it->first.system != sat.system)
+               continue;
+            if(sat.id != -1 && it->first.id != sat.id)
+               continue;
          }
-         return it->second;
+
+         const TimeOrbitEphTable& em = it->second;
+         TimeOrbitEphTable::const_iterator ei;
+         for(ei = em.begin(); ei != em.end(); ei++) 
+         {
+            v.push_back(ei->second->clone());
+            n++;
+         }
       }
+      return n;
+   }
 
-         //--------------------------------------------------------------------
-      const string OrbitEphStore::fmt("%Y/%02m/%02d %02H:%02M:%02S %P");
+      //--------------------------------------------------------------------
+   const OrbitEphStore::TimeOrbitEphTable&
+   OrbitEphStore::getTimeOrbitEphMap(const SatID& sat) const
+   {
+      SatTableMap::const_iterator it = satTables.find(sat);
+      if(it == satTables.end()) 
+      {
+         InvalidRequest e("No OrbitEph for satellite " + asString(sat));
+         GPSTK_THROW(e);
+      }
+      return it->second;
+   }
 
-   } // namespace
+      //--------------------------------------------------------------------
+   const string OrbitEphStore::fmt("%Y/%02m/%02d %02H:%02M:%02S %P");
+
+} // namespace
