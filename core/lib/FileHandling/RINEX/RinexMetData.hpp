@@ -145,7 +145,8 @@ namespace gpstk
 
          /// Writes the CommonTime object into RINEX format. If it's a
          /// bad time, it will return blanks.
-      std::string writeTime(const CommonTime& dt) const
+         /// @param yrLen num digits of year to write
+      std::string writeTime(const CommonTime& dtd, int yrLen = 2) const
          throw(gpstk::StringUtils::StringException);
 
    };  // class RinexMetData

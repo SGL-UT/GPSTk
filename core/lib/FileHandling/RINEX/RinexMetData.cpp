@@ -61,7 +61,12 @@ namespace gpstk
       string line;
 
       // first the epoch line to 'line'
-      line  = writeTime(time);
+      if(strm.header.version == 3.02){
+         line = writeTime(time, 4);
+      }
+      else {
+         line = writeTime(time, 2);
+      }
 
       for (int i = 0;
            (i < int(strm.header.obsTypeList.size())) && (i < maxObsPerLine);
@@ -242,7 +247,7 @@ namespace gpstk
       }
    }
 
-   string RinexMetData::writeTime(const CommonTime& dt) const
+   string RinexMetData::writeTime(const CommonTime& dt, int yrLen) const
       throw(StringException)
    {
       if (dt == CommonTime::BEGINNING_OF_TIME)
@@ -252,7 +257,7 @@ namespace gpstk
 
       string line(" ");
       CivilTime civtime(dt);
-      line += rightJustify(asString<short>(civtime.year  ),2,'0');
+      line += rightJustify(asString<short>(civtime.year  ),yrLen,'0');
       line += " ";
       line += rightJustify(asString<short>(civtime.month ),2);
       line += " ";

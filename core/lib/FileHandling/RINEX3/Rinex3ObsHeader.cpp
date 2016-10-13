@@ -2078,8 +2078,9 @@ namespace gpstk
        {
           // mit->first must be system char as a 1-char string
           string satString = mit->first;
-          if(satString!="G" && satString!="R" && satString!="E" && satString!="S" && satString!="T" &&
-             satString!="J" && satString!="C" && satString!="G"){
+          if(satString!="G" && satString!="R" && satString!="E" &&
+             satString!="S" && satString!="T" && satString!="J" &&
+             satString!="C" && satString!="G"){
              FFStreamError er("Invalid system char string in header.mapObsTypes: "+satString);
              GPSTK_THROW(er);
           }
@@ -2109,7 +2110,9 @@ namespace gpstk
                 tR2ObsTypes.push_back(R2ot);
              }
              else{
-                GPSTK_THROW(FFStreamError("Too many ObsIDs simplify to " + R2ot + " to create a valid R2 file"));
+                FFStreamError err("Too many ObsIDs simplify to " +
+                                          R2ot + " to create a valid R2 file");
+                GPSTK_THROW(err);
              }
           }
           sysObsMap.insert(std::pair<string,std::vector<string> >(mit->first,tR2ObsTypes));
