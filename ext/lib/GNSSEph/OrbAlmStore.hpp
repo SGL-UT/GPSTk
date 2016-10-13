@@ -300,7 +300,10 @@ namespace gpstk
       std::list<SatID> xmitBySVs(const OrbAlm* oap) const
          throw(InvalidRequest); 
 
-
+      /*
+       * Return a list of all the subject SVs found in the set
+       */
+      std::list<SatID> listOfSubjectSV() const; 
 
       /// Returns a map of the almemerides available for the specified
       /// satellite.  Note that the return is specifically chosen as a

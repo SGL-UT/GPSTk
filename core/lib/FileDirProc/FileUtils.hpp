@@ -45,18 +45,21 @@
 // #ifdef __sun
 // #include <libgen.h>
 // #else
-#include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <iostream>
 // #endif
 
 #include <fstream>
 #include <string>
 #include "StringUtils.hpp"
 
-#ifdef _MSC_VER
+#ifdef WIN32
 #include <direct.h>
+#include <io.h>
 #endif
 
+using namespace std;
 namespace gpstk
 {
       /// @ingroup FileDirProc
@@ -77,23 +80,24 @@ namespace gpstk
           * @return always 0
           */
      
-#ifdef _MSC_VER
+#ifdef WIN32
       inline int makeDir(const std::string& path, unsigned mode)
       {
+        std::string temppath = path;
+        
+        //Clean up windows file path 
+        std::replace(temppath.begin(), temppath.end(), '\\', '/');
+        std::string::size_type i = 0;
 
-         std::string::size_type i = 0;
-
-         while ((i = path.find('/',i+1)) != std::string::npos)
+         while ((i = temppath.find('/',i+1)) != std::string::npos)
          {
-            std::string thispath(path.substr(0,i));
+            std::string thispath(temppath.substr(0,i));
             if (thispath[thispath.length() - 1] == '/')
                thispath.erase(thispath.length() - 1);
-
-            _mkdir(path.c_str());
-
+            _mkdir(thispath.c_str());
 
          }
-         _mkdir(path.c_str());
+         _mkdir(temppath.c_str());
          return 0;
       }
 #else
