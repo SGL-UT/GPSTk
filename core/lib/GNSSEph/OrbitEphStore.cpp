@@ -15,7 +15,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -23,13 +23,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -216,7 +216,7 @@ namespace gpstk
       try
       {
             // is the satellite found in the table? If not, create one
-         if(satTables.find(eph->satID) == satTables.end()) 
+         if(satTables.find(eph->satID) == satTables.end())
          {
             TimeOrbitEphTable newtable;
             satTables[eph->satID] = newtable;
@@ -225,7 +225,7 @@ namespace gpstk
          TimeOrbitEphTable& toet = satTables[eph->satID];
 
             // if map is empty, load object and return
-         if(toet.size() == 0) 
+         if(toet.size() == 0)
          {
             ret = eph->clone();
             toet[eph->beginValid] = ret;
@@ -237,15 +237,15 @@ namespace gpstk
             // If found candidate, should be same data
             // as already in table. Test this by comparing Toe values.
          TimeOrbitEphTable::iterator it = toet.find(eph->beginValid);
-         if(it != toet.end()) 
+         if(it != toet.end())
          {
                // is a duplicate found in the table?
-            if(it->second->ctToe == eph->ctToe) 
+            if(it->second->ctToe == eph->ctToe)
             {
                message = string("duplicate Toe");
                return ret;
             }
-            else 
+            else
             {
                   // Found matching beginValid but different Toe -
                   // This shouldn't happen
@@ -265,10 +265,10 @@ namespace gpstk
             // there is no match
          it = toet.lower_bound(eph->beginValid);
 
-         if(it==toet.begin()) 
+         if(it==toet.begin())
          {
                // candidate is before beginning of map
-            if(it->second->ctToe == eph->ctToe) 
+            if(it->second->ctToe == eph->ctToe)
             {
                toet.erase(it);
             }
@@ -278,12 +278,12 @@ namespace gpstk
             return ret;
          }
 
-         if(it==toet.end()) 
+         if(it==toet.end())
          {
                // candidate is after end of current map
                // get last item in map and check Toe
             TimeOrbitEphTable::reverse_iterator rit = toet.rbegin();
-            if(rit->second->ctToe != eph->ctToe) 
+            if(rit->second->ctToe != eph->ctToe)
             {
                ret = eph->clone();
                toet[eph->beginValid] = ret;
@@ -296,7 +296,7 @@ namespace gpstk
             // candidate is "In the middle"
             // Check if iterator points to late transmission of
             // same OrbitEph as candidate
-         if(it->second->ctToe == eph->ctToe) 
+         if(it->second->ctToe == eph->ctToe)
          {
             toet.erase(it);
             ret = eph->clone();
@@ -311,7 +311,7 @@ namespace gpstk
             //    (b.) Candidate OrbitEph is not in table
             // Already checked for it==toet.beginValid() earlier
          it--;
-         if(it->second->ctToe != eph->ctToe) 
+         if(it->second->ctToe != eph->ctToe)
          {
             ret = eph->clone();
             toet[eph->beginValid] = ret;
@@ -320,7 +320,7 @@ namespace gpstk
          else message = string("Late transmit copy");
          return ret;
       }
-      catch(Exception& e) 
+      catch(Exception& e)
       {
          GPSTK_RETHROW(e);
       }
@@ -377,9 +377,9 @@ namespace gpstk
    {
       unsigned n(0);
       SatTableMap::const_iterator it;
-      if(sat.id == -1) 
+      if(sat.id == -1)
       {
-         for(it = satTables.begin(); it != satTables.end(); ++it) 
+         for(it = satTables.begin(); it != satTables.end(); ++it)
          {
             if ((it->first.system != sat.system) &&
                 (sat.system != SatID::systemMixed))
@@ -389,7 +389,7 @@ namespace gpstk
             n += it->second.size();
          }
       }
-      else 
+      else
       {
          it = satTables.find(sat);
          if(it == satTables.end())
@@ -410,17 +410,14 @@ namespace gpstk
    const OrbitEph* OrbitEphStore::findUserOrbitEph(const SatID& sat,
                                                    const CommonTime& t) const
    {
-      cerr << "I'm in OrbitEphStore::findUserOrbitEph" << endl;
          // Is this satellite found in the table?
       if(satTables.find(sat) == satTables.end())
       {
-         cerr << "OrbitEphStore::findUserOrbitEph 1" << endl;
          return NULL;
       }
 
          // Define reference to the relevant map of orbital elements
       const TimeOrbitEphTable& table = getTimeOrbitEphMap(sat);
-      cerr << "OrbitEphStore::findUserOrbitEph 2" << endl;
 
          // The map is ordered by beginning times of validity, which
          // is another way of saying "earliest transmit time".  A call
@@ -429,10 +426,9 @@ namespace gpstk
          // match for any key.
 
       TimeOrbitEphTable::const_iterator it = table.find(t);
-      if(it == table.end()) 
+      if(it == table.end())
       {
             // not a direct match
-         cerr << "OrbitEphStore::findUserOrbitEph 3" << endl;
          it = table.lower_bound(t);
 
             // Tricky case here.  If the key is beyond the last key in
@@ -443,16 +439,13 @@ namespace gpstk
             // "stretches" far enough to cover time t. Therefore, if
             // it==table.end() we need to check the period of validity
             // of the final element in the table against time t.
-         if(it == table.end()) 
+         if(it == table.end())
          {
-            cerr << "OrbitEphStore::findUserOrbitEph 4" << endl;
             TimeOrbitEphTable::const_reverse_iterator rit = table.rbegin();
             if(rit->second->isValid(t))         // Last element in map works
             {
-               cerr << "OrbitEphStore::findUserOrbitEph 5" << endl;
                return rit->second;
             }
-            cerr << "OrbitEphStore::findUserOrbitEph 5.1" << endl;
 
                // have nothing
                //string mess = "Time is beyond table for satellite " + asString(sat)
@@ -461,9 +454,7 @@ namespace gpstk
                //GPSTK_THROW(e);
             return NULL;
          }
-         cerr << "OrbitEphStore::findUserOrbitEph 6" << endl;
       }  // end if not a direct match
-      cerr << "OrbitEphStore::findUserOrbitEph 7" << endl;
 
          // Found a direct match. should probably use the PRIOR set
          // since it takes ~30 seconds from beginning of
@@ -473,16 +464,16 @@ namespace gpstk
          // want.  The exception is if it is pointing to
          // table.begin( ), then all of the elements in the map are
          // too late.
-      if(it == table.begin()) 
+      if(it == table.begin())
       {
-         cerr << "OrbitEphStore::findUserOrbitEph 8" << endl;
+         if (it->second->isValid(t))
+            return it->second;
             //string mess = "Time is before table for satellite " + asString(sat)
             //      + " for time " + printTime(t,fmt);
             //InvalidRequest e(mess);
             //GPSTK_THROW(e);
          return NULL;
       }
-      cerr << "OrbitEphStore::findUserOrbitEph 9" << endl;
 
          // The iterator should be a valid iterator and set one
          // beyond the item of interest. However, there may be gaps
@@ -491,10 +482,13 @@ namespace gpstk
          // represents the EARLIEST time the elements should be
          // used.  Therefore, we can decrement the counter and test
          // to see if the element is valid.
-      it--;
-      if(!(it->second->isValid(t))) 
+      if (it->second->isValid(t))
       {
-         cerr << "OrbitEphStore::findUserOrbitEph 10" << endl;
+         return it->second;
+      }
+      it--;
+      if(!(it->second->isValid(t)))
+      {
             //// there is a "hole" in the middle of a map.
             //string mess = "No orbital elements found for satellite " + asString(sat)
             //   + " at time " + printTime(t,fmt);
@@ -502,7 +496,6 @@ namespace gpstk
             //GPSTK_THROW(e);
          return NULL;
       }
-      cerr << "OrbitEphStore::findUserOrbitEph 11" << endl;
 
       return it->second;
 
@@ -514,8 +507,6 @@ namespace gpstk
                                                    const CommonTime& t)
       const
    {
-      cerr << "I'm in OrbitEphStore::findNearOrbitEph" << endl;
-
          // Check for any OrbitEph for this SV
       if(satTables.find(sat) == satTables.end())
          return NULL;
@@ -539,7 +530,7 @@ namespace gpstk
          return itNext->second;
 
          // Test for case 3
-      if(itNext == table.end()) 
+      if(itNext == table.end())
       {
          TimeOrbitEphTable::const_reverse_iterator rit = table.rbegin();
          return rit->second;
@@ -571,7 +562,7 @@ namespace gpstk
       SatTableMap::const_iterator it;
       for (it = satTables.begin(); it != satTables.end(); it++)
       {
-         if(sat.system != SatID::systemUnknown) 
+         if(sat.system != SatID::systemUnknown)
          {
             if(it->first.system != sat.system)
                continue;
@@ -581,7 +572,7 @@ namespace gpstk
 
          const TimeOrbitEphTable& em = it->second;
          TimeOrbitEphTable::const_iterator ei;
-         for(ei = em.begin(); ei != em.end(); ei++) 
+         for(ei = em.begin(); ei != em.end(); ei++)
          {
             v.push_back(ei->second->clone());
             n++;
@@ -595,7 +586,7 @@ namespace gpstk
    OrbitEphStore::getTimeOrbitEphMap(const SatID& sat) const
    {
       SatTableMap::const_iterator it = satTables.find(sat);
-      if(it == satTables.end()) 
+      if(it == satTables.end())
       {
          InvalidRequest e("No OrbitEph for satellite " + asString(sat));
          GPSTK_THROW(e);
