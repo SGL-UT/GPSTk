@@ -832,45 +832,52 @@ namespace gpstk
             } // else
          } // for(it=sysPhaseShift.begin(); it!=sysPhaseShift.end(); ++it)
       } // if(version >= 3.01 && (valid & validSystemPhaseShift))
-      if(version >= 3.01 && (valid & validGlonassSlotFreqNo))
-      {
-         size_t n(0),nsat(glonassFreqNo.size());
-         line = rightJustify(asString(nsat),3) + " ";
-         GLOFreqNumMap::const_iterator it,kt;
-         for(it = glonassFreqNo.begin(); it != glonassFreqNo.end(); ++it)
-         {
-            line += it->first.toString();
-            line += rightJustify(asString(it->second),3) + " ";
-            if(++n == 8 || ++(kt=it) == glonassFreqNo.end())
-            {
+      if(version >= 3.01) {
+         if ((valid & validGlonassSlotFreqNo)) {
+            size_t n(0), nsat(glonassFreqNo.size());
+            line = rightJustify(asString(nsat), 3) + " ";
+            GLOFreqNumMap::const_iterator it, kt;
+            for (it = glonassFreqNo.begin(); it != glonassFreqNo.end(); ++it) {
+               line += it->first.toString();
+               line += rightJustify(asString(it->second), 3) + " ";
+               if (++n == 8 || ++(kt = it) == glonassFreqNo.end()) {
                   // write it
-               line += string(60-line.length(), ' ');
-               line += hsGlonassSlotFreqNo;
-               strm << line << endl;
-               strm.lineNumber++;
-               n = 0;
+                  line += string(60 - line.length(), ' ');
+                  line += hsGlonassSlotFreqNo;
+                  strm << line << endl;
+                  strm.lineNumber++;
+                  n = 0;
                   // are there more for a continuation line?
-               if(kt != glonassFreqNo.end())
-                  line = string(4,' ');
+                  if (kt != glonassFreqNo.end())
+                     line = string(4, ' ');
+               }
             }
          }
-      }
-      if(version >= 3.02 && (valid & validGlonassCodPhsBias))
-      {
-         line.clear();
-         GLOCodPhsBias::const_iterator it;
-         const string labs[4]={"C1C","C1P","C2C","C2P"};
-         for(int i=0; i<4; i++)
-         {
-            RinexObsID obsid(RinexObsID("R"+labs[i]));
-            it = glonassCodPhsBias.find(obsid);
-            double bias = (it == glonassCodPhsBias.end() ? it->second : 0.0);
-            line += " " + labs[i] + " " + rightJustify(asString(bias,3),8);
+         else if(mapObsTypes.find("R") != mapObsTypes.end()){
+            FFStreamError err("Glonass Slot Freq No required for files containing Glonass Observations ");
+            GPSTK_THROW(err);
          }
-         line += string(60-line.length(), ' ');
-         line += hsGlonassCodPhsBias;
-         strm << line << endl;
-         strm.lineNumber++;
+      }
+      if(version >= 3.02) {
+         if ((valid & validGlonassCodPhsBias)){
+            line.clear();
+            GLOCodPhsBias::const_iterator it;
+            const string labs[4] = {"C1C", "C1P", "C2C", "C2P"};
+            for (int i = 0; i < 4; i++) {
+               RinexObsID obsid(RinexObsID("R" + labs[i]));
+               it = glonassCodPhsBias.find(obsid);
+               double bias = (it == glonassCodPhsBias.end() ? it->second : 0.0);
+               line += " " + labs[i] + " " + rightJustify(asString(bias, 3), 8);
+            }
+            line += string(60 - line.length(), ' ');
+            line += hsGlonassCodPhsBias;
+            strm << line << endl;
+            strm.lineNumber++;
+         }
+         else if(mapObsTypes.find("R") != mapObsTypes.end()){
+            FFStreamError err("Glonass Code Phase Bias required for files containing Glonass Observations ");
+            GPSTK_THROW(err);
+         }
       }
       if(valid & validLeapSeconds)
       {

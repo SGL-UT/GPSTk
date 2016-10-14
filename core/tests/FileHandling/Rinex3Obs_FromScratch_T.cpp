@@ -12,9 +12,11 @@ class Rinex3Obs_FromScratch_T {
 
 public:
 
-      //Flags alter the flow to create conditions which should or shouldn't throw exceptions
-      //See below for usage
-   void Rinex3ObsFromScratch(string satString, string testID = "", bool includeConflict = false) {
+      // @param satString entered into header.mapObsTypes to test throw for bad satString
+      // @param testID a string to identify the test for output files and debugging
+      // @param includeConflict include two RinexObsIDs that convert to the same R2 Obs Type
+   void Rinex3ObsFromScratch(string satString, string testID = "",
+                             bool includeConflict = false, bool completeR = false) {
 
       Rinex3ObsHeader header;
       Rinex3ObsData data;
@@ -57,8 +59,12 @@ public:
       // for the SystemPhaseShift and not require the two glonass if there is no
       // glonass data in the source
       header.valid |= Rinex3ObsHeader::validSystemPhaseShift;
-      header.valid |= Rinex3ObsHeader::validGlonassSlotFreqNo;
-      header.valid |= Rinex3ObsHeader::validGlonassCodPhsBias;
+      if(completeR) {
+         header.glonassFreqNo = Rinex3ObsHeader::GLOFreqNumMap();
+         header.valid |= Rinex3ObsHeader::validGlonassSlotFreqNo;
+         header.glonassCodPhsBias = Rinex3ObsHeader::GLOCodPhsBias();
+         header.valid |= Rinex3ObsHeader::validGlonassCodPhsBias;
+      }
 
       data = Rinex3ObsData();
       data.epochFlag = 0;
@@ -213,6 +219,20 @@ public:
       }
       catch(...){
           testFramework.assert(false, "valid input threw exception", 206);
+      }
+      try{
+         Rinex3ObsFromScratch("R","Incomplete R");
+         testFramework.assert(false,"Glonass file should need GlonassSlotFreqNo and GlonassCodPhsBias",206);
+      }
+      catch(...){
+         testFramework.assert(true, "Glonass file failed for lacking necessary fields", 206);
+      }
+      try{
+         Rinex3ObsFromScratch("R","Complete R", false, true);
+         testFramework.assert(true,"Glonass file has GlonassSlotFreqNo and GlonassCodPhsBias",206);
+      }
+      catch(...){
+         testFramework.assert(false, "Glonass file failed despite having all necessary fields", 206);
       }
       try{
           Rinex3ObsFromScratch("G","Conflict", true);
