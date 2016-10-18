@@ -56,8 +56,7 @@ public:
       // As of Sep 2016, the following aren't working correctly so force
       // these to be set.
       // what should happen is that the Rinex3ObsHeader should fill in default values
-      // for the SystemPhaseShift and not require the two glonass if there is no
-      // glonass data in the source
+      // for the SystemPhaseShift
       header.valid |= Rinex3ObsHeader::validSystemPhaseShift;
       if(completeR) {
          header.glonassFreqNo = Rinex3ObsHeader::GLOFreqNumMap();

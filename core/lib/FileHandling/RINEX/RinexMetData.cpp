@@ -123,6 +123,10 @@ namespace gpstk
          strm >> strm.header;
 
       RinexMetHeader& hdr = strm.header;
+      int addYrLen=0;
+      if(hdr.version == 3.02){
+         addYrLen=2;
+      }
 
       string line;
       data.clear();
@@ -134,9 +138,9 @@ namespace gpstk
       else
          strm.formattedGetLine(line, true);
 
-      processFirstLine(line, hdr);
+      processFirstLine(line, hdr, addYrLen);
 
-      time = parseTime(line);
+      time = parseTime(line,addYrLen);
 
       while (data.size() < hdr.obsTypeList.size())
       {
@@ -155,7 +159,8 @@ namespace gpstk
    } 
 
    void RinexMetData::processFirstLine(const string& line,
-                                       const RinexMetHeader& hdr)
+                                       const RinexMetHeader& hdr,
+                                       int addYrLen)
       throw(FFStreamError)
    {
       try
@@ -164,7 +169,7 @@ namespace gpstk
               (i < maxObsPerLine) && (i < int(hdr.obsTypeList.size()));
               i++)
          {
-            int currPos = 7*i + 18;
+            int currPos = 7*i + 18+addYrLen;
             data[hdr.obsTypeList[i]] = asDouble(line.substr(currPos,7));
          }
       }
@@ -198,24 +203,25 @@ namespace gpstk
       }
    }
 
-   CommonTime RinexMetData::parseTime(const string& line) const
+   CommonTime RinexMetData::parseTime(const string& line, int addYrLen) const
       throw(FFStreamError)
    {
       try
       {
             // According to the RINEX spec, any 2 digit year 80 or greater
             // is a year in the 1900s (1980-1999), under 80 is 2000s.
+            // Rinex 3.02 uses 4 digit years
          const int YearRollover = 80;
 
             // check if the spaces are in the right place - an easy way to check
             // if there's corruption in the file
-         if ( line.size() < 18  ||
+         if ( line.size() < 18+addYrLen  ||
               (line[0]  != ' ') ||
-              (line[3]  != ' ') ||
-              (line[6]  != ' ') ||
-              (line[9]  != ' ') ||
-              (line[12] != ' ') ||
-              (line[15] != ' '))
+              (line[3+addYrLen]  != ' ') ||
+              (line[6+addYrLen]  != ' ') ||
+              (line[9+addYrLen]  != ' ') ||
+              (line[12+addYrLen] != ' ') ||
+              (line[15+addYrLen] != ' '))
          {
             FFStreamError e("Invalid time format");
             GPSTK_THROW(e);
@@ -224,18 +230,19 @@ namespace gpstk
          int year, month, day, hour, min;
          double sec;
 
-         year  = asInt(line.substr(1, 2));
-         month = asInt(line.substr(3, 3));
-         day   = asInt(line.substr(6, 3));
-         hour  = asInt(line.substr(9, 3));
-         min   = asInt(line.substr(12,3));
-         sec   = asInt(line.substr(15,3));
+         year  = asInt(line.substr(1, 2+addYrLen));
+         month = asInt(line.substr(3+addYrLen, 3));
+         day   = asInt(line.substr(6+addYrLen, 3));
+         hour  = asInt(line.substr(9+addYrLen, 3));
+         min   = asInt(line.substr(12+addYrLen,3));
+         sec   = asInt(line.substr(15+addYrLen,3));
 
-         if (year < YearRollover)
-         {
-            year += 100;
+         if(!addYrLen) {
+            if (year < YearRollover) {
+               year += 100;
+            }
+            year += 1900;
          }
-         year += 1900;
 
          CivilTime rv(year, month, day, hour, min, sec, TimeSystem::Any);
          return CommonTime(rv);

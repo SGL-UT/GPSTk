@@ -131,7 +131,8 @@ namespace gpstk
 
          /// Parses string \a line to get time and met data
       void processFirstLine(const std::string& line,
-                            const RinexMetHeader& hdr)
+                            const RinexMetHeader& hdr,
+                            int addYrLen)
          throw(FFStreamError);
 
          /// Parses string \a line to get data on continuation lines.
@@ -140,7 +141,7 @@ namespace gpstk
          throw(FFStreamError);
 
          /// Parses the time portion of a line into a CommonTime object.
-      CommonTime parseTime(const std::string& line) const
+      CommonTime parseTime(const std::string& line, int addYrLen) const
          throw(FFStreamError);
 
          /// Writes the CommonTime object into RINEX format. If it's a
