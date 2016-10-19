@@ -283,8 +283,8 @@ namespace gpstk
          {
             std::string verstr(strip(line.substr(0,20)));
             if ((verstr != "2.0") && (verstr != "2.1") && (verstr != "2.00") &&
-                (verstr != "2.10") && (verstr != "2.11") && (verstr != "3.0") &&
-                    (verstr!= "3.01") && (verstr!= "3.02"))
+               (verstr != "2.10") && (verstr != "2.11") && (verstr != "3.0") &&
+               (verstr != "3.01") && (verstr!= "3.02"))
             {
                FFStreamError e("Unknown or unsupported RINEX version " + 
                                asString(version));

@@ -446,8 +446,10 @@ namespace gpstk
          return ((valid & allValid) == allValid);
       }
 
-         /** Compute map of obs types for use in writing version 2
-          * header and data */
+         /** Set version = 2.11 and validWaveFact in valid.
+          * Previously used to compute map of obs types for use in
+          * writing version 2 header and data (Which now occurs in
+          * writeHeaderRecords) */
       void prepareVer2Write(void);
 
          /** Compare this header with another.
@@ -466,6 +468,8 @@ namespace gpstk
                    const StringVec& inclExclList,
                    bool incl = false);
 
+      /** Create a vector of R2-style obs type Strings for each GNSS
+       * @return the map <string(GNSS char), vector<string(R2ObsType)> > */
       std::map<std::string,std::vector<std::string> > makeR2Vec(void) const throw(FFStreamError);
 
    protected:

@@ -130,6 +130,7 @@ namespace gpstk
    private:
 
          /// Parses string \a line to get time and met data
+         /// @param addYrLen 0 for 2-digit year, 2 for 4-digit year (3.02)
       void processFirstLine(const std::string& line,
                             const RinexMetHeader& hdr,
                             int addYrLen)
@@ -141,6 +142,7 @@ namespace gpstk
          throw(FFStreamError);
 
          /// Parses the time portion of a line into a CommonTime object.
+         /// @param addYrLen 0 for 2-digit year, 2 for 4-digit year (3.02)
       CommonTime parseTime(const std::string& line, int addYrLen) const
          throw(FFStreamError);
 
