@@ -319,6 +319,60 @@ createAndDump()
       TUFAIL(ss.str());
    }
 
+      // Test find() for most recent GPS UTC information (418) 
+      // Should return object with xMit of 12:28:48
+   currMethod = typeDesc + " OrbSysStore.find() across all SVs";
+   TUCSM(currMethod);
+   expTime =  CivilTime(2015,12,31,18,43,48,TimeSystem::GPS);
+   testTime = CivilTime(2015,12,31,23,59,59,TimeSystem::GPS);
+   UID = 56; 
+   try
+   {
+      const OrbDataSys* p = oss.find(nidTest,UID,testTime); 
+      if (p->beginValid==expTime) TUPASS("");
+      else
+      {
+         stringstream ss;
+         ss << "Wrong object found.  Expected xmit time "
+            << printTime(expTime,"%02H:%02M:%02S")
+            << " found time " 
+            << printTime(p->beginValid,"%02H:%02M:%02S"); 
+         TUFAIL(ss.str());
+      }
+   }
+   catch (InvalidRequest ir)
+   {
+      stringstream ss;
+      ss << "Unexpected exception" << endl;
+      ss << ir << endl;
+      TUFAIL(ss.str());
+   }
+
+   expTime =  CivilTime(2015,12,31,12,28,48,TimeSystem::GPS);
+   testTime = CivilTime(2015,12,31,13,00,00,TimeSystem::GPS);
+   UID = 56; 
+   try
+   {
+      const OrbDataSys* p = oss.find(nidTest,UID,testTime); 
+      if (p->beginValid==expTime) TUPASS("");
+      else
+      {
+         stringstream ss;
+         ss << "Wrong object found.  Expected xmit time "
+            << printTime(expTime,"%02H:%02M:%02S")
+            << " found time " 
+            << printTime(p->beginValid,"%02H:%02M:%02S"); 
+         TUFAIL(ss.str());
+      }
+   }
+   catch (InvalidRequest ir)
+   {
+      stringstream ss;
+      ss << "Unexpected exception" << endl;
+      ss << ir << endl;
+      TUFAIL(ss.str());
+   }
+
       // Dump the store
    currMethod = typeDesc + " OrbSysStore.dump()";
    TUCSM(currMethod);

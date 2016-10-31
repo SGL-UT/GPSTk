@@ -787,6 +787,50 @@ public:
    }
 
 //=============================================================================
+// Test for the < Operator
+// Usage: leftRange < rightRange
+// If the start for the left TimeRange is less than start
+// for the right TimeRange return true. Otherwise false
+//=============================================================================
+   int lessThanOperatorTest ( void )
+   {
+      TUDEF( "TimeRange", "OperatorLessThan" );
+
+         //Reference TimeRange endpoints
+      CommonTime startPoint  = gpstk::CivilTime(2011, 1, 1, 0, 0,
+                               0.0 ).convertToCommonTime();
+      CommonTime endPoint    = gpstk::CivilTime(2011, 1,31,23,59,
+                               59.59).convertToCommonTime();
+      CommonTime anotherTime = gpstk::CivilTime(2011, 1,10, 0, 0,
+                               0.0 ).convertToCommonTime();
+
+         //Create various TimeRanges
+      TimeRange referenceTimeRange(startPoint,  endPoint,    true,  true );
+      TimeRange laterStart        (anotherTime, endPoint,    true,  true );
+      TimeRange noInitialPoint    (startPoint,  endPoint,    false, true );
+      TimeRange copiedTimeRange   (referenceTimeRange);
+
+      testFramework.assert(  !(referenceTimeRange < copiedTimeRange),
+                             "Less than operator returned true when the time ranges are copies"
+                             , __LINE__ );
+
+      testFramework.assert(  referenceTimeRange < laterStart,
+                             "Less than operator returned false when the left start < right start"
+                             , __LINE__ );
+
+      testFramework.assert(  !(laterStart < referenceTimeRange),
+                             "Less than operator returned true when the left start > right start"
+                             , __LINE__ );
+     
+      testFramework.assert(  referenceTimeRange < noInitialPoint,
+                             "Less than operator returned true when the left start inclusive == right start exclusive"
+                             , __LINE__ );
+
+      return testFramework.countFails();
+   }
+
+
+//=============================================================================
 // Test for the set method
 // Method changes the internal values of the TimeRange object
 // Test that the interior attributes have changed.
@@ -992,6 +1036,7 @@ int main() //Main function to initialize and run all tests above
    errorTotal += testClass.isSubsetOfTest();
    errorTotal += testClass.isAfterTest();
    errorTotal += testClass.equalsOperatorTest();
+   errorTotal += testClass.lessThanOperatorTest();
    errorTotal += testClass.setTest();
    errorTotal += testClass.printfTest();
    errorTotal += testClass.dumpTest();

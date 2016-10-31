@@ -686,6 +686,78 @@ namespace gpstk
    }
          
 //-----------------------------------------------------------------------------
+//  This instations of find() is different in that we want the most recently 
+//  seen unique data for a given UID across all SVs.  
+//   0.) Create an empty OrbDataSys* in which to store candidate pointer
+//   1.) For each SatId, for each NavID, pull up the list of messages
+//       correponding for the UID.
+//   2.) Scan the messages and compare the transmit time to the candidate.
+//       if no candidate, the message becomes the candidate.
+//       if message time < t and message time > candidate, message becomes candidate.
+// 
+   const OrbDataSys* 
+   OrbSysStore::find(const NavID& navtype,
+                     const unsigned long UID, 
+                     const CommonTime& t) const
+         throw(InvalidRequest)
+   {
+      const OrbDataSys* retVal = 0; 
+
+      SAT_NM_UID_MSG_MAP::const_iterator cit1;
+      NM_UID_MSG_MAP::const_iterator cit2;
+      UID_MSG_MAP::const_iterator cit3;
+      MSG_MAP::const_iterator cit4;
+
+      for (cit1=msgMap.begin();cit1!=msgMap.end();cit1++)
+      {
+         const NM_UID_MSG_MAP& NMmapr = cit1->second;
+         for (cit2=NMmapr.begin();cit2!=NMmapr.end();cit2++)
+         {
+            const UID_MSG_MAP& UIDmapr = cit2->second;
+            for (cit3=UIDmapr.begin();cit3!=UIDmapr.end();cit3++)
+            {
+               const unsigned long currUID = cit3->first;
+               if (currUID!=UID) continue;
+
+               const MSG_MAP& mapr = cit3->second;
+               for (cit4=mapr.begin();cit4!=mapr.end();cit4++)
+               {
+                  const CommonTime& ct = cit4->first;
+                  const OrbDataSys* odsp = cit4->second; 
+
+                     // If we are past the time of interest, 
+                     // then we don't need to store this message.
+                  if (ct>t) continue;
+                  if (retVal==0) 
+                  {
+                     retVal = odsp;
+                  }
+                  else
+                  {
+                     if (ct>retVal->beginValid)
+                     {
+                        retVal = odsp;
+                     }
+                  }
+               }
+            }
+         }
+      }
+
+      if (retVal==0)
+      {
+         stringstream failString;
+         failString << "No Unique message ID " << UID 
+                    << " prior to time " << printTime(t,"%02m/%02d/%4Y %02H:%02M:%02S")
+                    << " was found in message store.";
+         InvalidRequest ir(failString.str());
+         GPSTK_THROW(ir);
+      }
+
+      return retVal;
+   }
+
+//-----------------------------------------------------------------------------
    std::list<const OrbDataSys*> OrbSysStore::
    findSystemData(const SatID& sat,
                   const NavID& navtype,   // Transition to NavID when available

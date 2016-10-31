@@ -57,7 +57,10 @@ namespace gpstk
    bool GPSEphemeris::isValid(const CommonTime& ct) const
    {
       try {
-         if(ct >= beginValid && ct <= endValid) return true;
+         if(ct >= beginValid && ct <= endValid)
+         {
+            return true;
+         }
          return false;
       }
       catch(Exception& e) { GPSTK_RETHROW(e); }

@@ -348,10 +348,10 @@ namespace gpstk
       }
       if(isVerC) {
          TimeSystem::Systems tsys = timeSystem.getTimeSystem();
-         if(   tsys != TimeSystem::GPS && tsys != TimeSystem::UTC
-            && tsys != TimeSystem::GAL && tsys != TimeSystem::GLO
-            && tsys != TimeSystem::TAI ) {
-            FFStreamError ffse("Time system must be GPS, GAL, GLO, TAI, or UTC");
+         if(   tsys != TimeSystem::GPS && tsys != TimeSystem::GLO
+            && tsys != TimeSystem::GAL && tsys != TimeSystem::TAI
+            && tsys != TimeSystem::UTC && tsys != TimeSystem::QZS ) {
+            FFStreamError ffse("Time system must be GPS, GLO, GAL, TAI, UTC, or QZS");
             GPSTK_THROW(ffse);
          }
       }

@@ -418,6 +418,8 @@ namespace gpstk
       // The exception is if it is pointing to table.begin( ),
       // then all of the elements in the map are too late.
       if(it == table.begin()) {
+         if (it->second->isValid(t))
+            return it->second;
          //string mess = "Time is before table for satellite " + asString(sat)
          //      + " for time " + printTime(t,fmt);
          //InvalidRequest e(mess);
@@ -431,6 +433,10 @@ namespace gpstk
       // not overlap. That's OK, the key represents the EARLIEST
       // time the elements should be used.  Therefore, we can
       // decrement the counter and test to see if the element is valid.
+      if (it->second->isValid(t))
+      {
+         return it->second;
+      }
       it--;
       if(!(it->second->isValid(t))) {
          //// there is a "hole" in the middle of a map.
