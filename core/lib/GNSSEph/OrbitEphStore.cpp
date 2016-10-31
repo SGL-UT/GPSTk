@@ -386,6 +386,9 @@ namespace gpstk
       // to table.lower_bound(t) will return the element of the map
       // with a key "just beyond t" assuming the t is NOT a direct match for any key.
 
+      if (table.empty())
+         return NULL;
+
       TimeOrbitEphTable::const_iterator it = table.find(t);
       if(it == table.end()) {                   // not a direct match
          it = table.lower_bound(t);
@@ -464,6 +467,9 @@ namespace gpstk
       // No OrbitEph in store for requested sat time
       // Define reference to the relevant map of orbital elements
       const TimeOrbitEphTable& table = getTimeOrbitEphMap(sat);
+
+      if (table.empty())
+         return NULL;
 
       TimeOrbitEphTable::const_iterator itNext = table.find(t);
       if(itNext != table.end())               // exact match
