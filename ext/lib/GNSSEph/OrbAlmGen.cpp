@@ -842,6 +842,27 @@ namespace gpstk
       if (!isDT1 && subframe==5 && page>=95 && page<=100) valid = true;
       if (valid)
       {
+            // Almanacs for SVs that are unavailable will be all zeroes in
+            // bits 61-300.  Reject such messages out of hand. 
+         bool content = false;
+         int iword = 3; 
+         int nbit = 30;
+         while (!content && iword<=10)
+         {
+            int startBit = (iword-1) * nbit;
+            unsigned long uword = msg.asUnsignedLong(startBit,nbit,1);
+            if (uword!=0x00000000)
+               content = true; 
+            iword++;
+         }
+         if (!content)
+         {
+            stringstream ss;
+            ss << "Empty alamanc (all zero content).";
+            InvalidParameter exc(ss.str());
+            GPSTK_THROW(exc);    
+         }
+
             // If the almanac time parameters are not yet set, estimate 
             // them based on the current transmit time. 
          if (!WN_set)
