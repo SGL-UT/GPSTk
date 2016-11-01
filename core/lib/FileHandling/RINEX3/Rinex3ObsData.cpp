@@ -124,7 +124,7 @@ namespace gpstk
             itr++;
          }
 
-      }  // End of 'if( rod.epochFlag==0 || rod.epochFlag==1 || ...'
+      }
 
          // write the epoch line
       strm << line << endl;
@@ -155,7 +155,8 @@ namespace gpstk
          {
             int obsWritten(0);
             line = string("");
-            for(int i=0;i<itr->second.size();i++){
+            for(int i=0;i<itr->second.size();i++)
+            {
                if( obsWritten != 0 && (obsWritten % maxObsPerLine) == 0 )
                {
                   strm << line << endl;
@@ -169,11 +170,11 @@ namespace gpstk
             strm << line << endl;
             strm.lineNumber++;
 
-         }  // End of 'for( itr = rod.obs.begin(); itr != rod.obs.end();...'
+         }
 
-      }  // Ebf of 'else if( rod.epochFlag == 0 || rod.epochFlag == 1 || ...'
+      }
 
-   }  // End of function 'reallyPutRecordVer2()'
+   }
 
 
    Rinex3ObsData::Rinex3ObsData()

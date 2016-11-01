@@ -278,6 +278,8 @@ namespace gpstk
       typedef std::map<std::string, ScaleFacMap> SysScaleFacMap;
          /// Vector of obervables
       typedef std::vector<RinexObsID> RinexObsVec;
+      /// map of GNSS chars to their R2-formatted obs types
+      typedef std::map<std::string,std::vector<std::string> > R2ObsMap;
          /** Map system to observables
           * map <sys char, vec<ObsID> >;
           * NB defines data vec in ObsData */
@@ -468,9 +470,8 @@ namespace gpstk
                    const StringVec& inclExclList,
                    bool incl = false);
 
-      /** Create a vector of R2-style obs type Strings for each GNSS
-       * @return the map <string(GNSS char), vector<string(R2ObsType)> > */
-      std::map<std::string,std::vector<std::string> > makeR2Vec(void) const throw(FFStreamError);
+      /// Create a vector of R2-style obs type Strings for each GNSS
+      R2ObsMap makeR2Vec(void) const throw(FFStreamError);
 
    protected:
 

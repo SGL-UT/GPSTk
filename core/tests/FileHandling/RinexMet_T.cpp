@@ -89,6 +89,7 @@ public:
    int continuationTest();
    int dataExceptionsTest();
    int filterOperatorsTest();
+   int versionTest();
 
 private:
 
@@ -134,6 +135,7 @@ private:
    std::string inputFilterTest2;
    std::string inputFilterTest3;
    std::string inputFilterTest4;
+   std::string inputV302;
 
    std::string outputHardCode;
    std::string outputExtraOutput;
@@ -141,6 +143,8 @@ private:
    std::string outputDumps;
    std::string outputExceptions;
    std::string outputFilterTest;
+   std::string outputV302;
+   std::string outputV211;
 
    std::string failDescriptionString;
    std::stringstream failDescriptionStream;
@@ -189,6 +193,7 @@ void RinexMet_T :: init()
    inputFilterTest1  = dp + "test_input_rinex_met_Filter1.04m";
    inputFilterTest2  = dp + "test_input_rinex_met_Filter2.04m";
    inputFilterTest3  = dp + "test_input_rinex_met_Filter3.04m";
+   inputV302         = dp + "test_input_rinex_met_V302.04m";
 
    outputHardCode    = tp + "test_output_rinex_met_Output.txt";
    outputExtraOutput = tp + "test_output_rinex_met_ExtraOutput.txt";
@@ -196,6 +201,8 @@ void RinexMet_T :: init()
    outputDumps       = tp + "test_output_rinex_met_Dumps.txt";
    outputExceptions  = tp + "test_output_rinex_met_DataExceptions.txt";
    outputFilterTest  = tp + "test_output_rinex_met_Filter.txt";
+   outputV302        = tp + "test_output_rinex_met_V302.txt";
+   outputV211        = tp + "test_output_rinex_met_V211.txt";
 }
 
 
@@ -1429,6 +1436,59 @@ int RinexMet_T :: filterOperatorsTest()
    return testFramework.countFails();
 }
 
+
+//------------------------------------------------------------
+//
+// Test version 302 input and output
+//
+//------------------------------------------------------------
+// Helper function for versionTest(). Creates a new Rinex file @outFile
+// of version @outVersion using the header and data from @inFile.
+// return true if @outFile == @expFile
+bool makeAndCompare(string inFile, string outFile, string expFile, double outVersion)
+{
+   TUDEF( "RinexMetData", "versionTest" );
+   gpstk::RinexMetStream inStream( inFile.c_str() );
+   gpstk::RinexMetStream outStream( outFile.c_str(), std::ios::out );
+   gpstk::RinexMetHeader testHeader;
+
+   inStream.exceptions(ifstream::failbit);
+   outStream.exceptions(ofstream::failbit);
+
+   try
+   {
+      inStream >> testHeader;
+      testHeader.version = outVersion;
+
+      outStream << testHeader;
+
+      gpstk::RinexMetData testData;
+      while( inStream >> testData )
+      {
+         outStream << testData;
+      }
+   }
+   catch(Exception e)
+   {
+      return false;
+   }
+   return testFramework.fileEqualTest( expFile, outFile, 2);
+}
+
+int RinexMet_T :: versionTest()
+{
+   TUDEF( "RinexMetData", "versionTest" );
+
+      //input version 2.11, output version 3.02
+   TUASSERT(makeAndCompare(inputNormal, outputV302, inputV302, 3.02));
+      //input version 3.02, output version 3.02
+   TUASSERT(makeAndCompare(inputV302, outputV302, inputV302, 3.02));
+      //input version 3.02, output version 2.11
+   TUASSERT(makeAndCompare(inputV302, outputV211, inputNormal, 2.11));
+
+   TURETURN();
+}
+
 //============================================================
 // Run all the test methods defined above
 //============================================================
@@ -1445,6 +1505,7 @@ int main()
    errorTotal += testClass.convertObsTypeSTRTest();
    errorTotal += testClass.convertObsTypeHeaderTest();
    errorTotal += testClass.hardCodeTest();
+   errorTotal += testClass.versionTest();
    errorTotal += testClass.continuationTest();
    errorTotal += testClass.dataExceptionsTest();
    errorTotal += testClass.filterOperatorsTest();

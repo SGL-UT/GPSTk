@@ -302,7 +302,7 @@ namespace gpstk
       throw(FFStreamError, StringException)
    {
       Rinex3ObsStream& strm = dynamic_cast<Rinex3ObsStream&>(ffs);
-      map<string,std::vector<std::string> > R2SysObsMap;
+      R2ObsMap sysR2obsMap;
       string line;
 
       if(valid & validVersion)
@@ -512,10 +512,11 @@ namespace gpstk
          int obsWritten = 0;
          line = ""; // make sure the line contents are reset.
 
-         R2SysObsMap = makeR2Vec();
+         sysR2obsMap = makeR2Vec();
          std::vector<string> tR2ObsTypes;
          map<string,vector<string> >::iterator it;
-         for(it = R2SysObsMap.begin(); it != R2SysObsMap.end(); it++){
+         for(it = sysR2obsMap.begin(); it != sysR2obsMap.end(); it++)
+         {
             for(size_t i=0; i<it->second.size(); i++)
             {
                tR2ObsTypes.push_back(it->second[i]);
@@ -853,13 +854,15 @@ namespace gpstk
                }
             }
          }
-         else if(mapObsTypes.find("R") != mapObsTypes.end()){
+         else if(mapObsTypes.find("R") != mapObsTypes.end())
+         {
             FFStreamError err("Glonass Slot Freq No required for files containing Glonass Observations ");
             GPSTK_THROW(err);
          }
       }
       if(version >= 3.02) {
-         if ((valid & validGlonassCodPhsBias)){
+         if ((valid & validGlonassCodPhsBias))
+         {
             line.clear();
             GLOCodPhsBias::const_iterator it;
             const string labs[4] = {"C1C", "C1P", "C2C", "C2P"};
@@ -874,7 +877,8 @@ namespace gpstk
             strm << line << endl;
             strm.lineNumber++;
          }
-         else if(mapObsTypes.find("R") != mapObsTypes.end()){
+         else if(mapObsTypes.find("R") != mapObsTypes.end())
+         {
             FFStreamError err("Glonass Code Phase Bias required for files containing Glonass Observations ");
             GPSTK_THROW(err);
          }
@@ -915,7 +919,7 @@ namespace gpstk
                int j;
                size_t i;
                string sys(string(1,sat.systemChar()));
-               map<string, vector<string> >::const_iterator jt(R2SysObsMap.find(sys));
+               R2ObsMap::const_iterator jt(sysR2obsMap.find(sys));
                const vector<string> mapVec(jt->second);
                for(i=0,j=0; i<mapVec.size(); i++)
                {
@@ -1568,7 +1572,7 @@ namespace gpstk
             GPSTK_THROW(fse);
          }
 
-      } // end while(not end of header)
+      }
 
          // if RINEX 2, define mapObsTypes from R2ObsTypes and
          // system(s) this may have to be corrected later using
@@ -2078,7 +2082,8 @@ namespace gpstk
       valid |= Rinex3ObsHeader::validWaveFact;
    }  // end prepareVer2Write()
 
-    std::map<string,std::vector<string> > Rinex3ObsHeader::makeR2Vec()const throw(FFStreamError){
+    Rinex3ObsHeader::R2ObsMap Rinex3ObsHeader::makeR2Vec()const throw(FFStreamError)
+    {
        std::map<string,std::vector<string> > sysObsMap;
        map<string,vector<RinexObsID> >::const_iterator mit;
        for(mit = mapObsTypes.begin(); mit != mapObsTypes.end(); mit++)
@@ -2087,7 +2092,8 @@ namespace gpstk
           string satString = mit->first;
           if(satString!="G" && satString!="R" && satString!="E" &&
              satString!="S" && satString!="T" && satString!="J" &&
-             satString!="C" && satString!="G"){
+             satString!="C" && satString!="G")
+          {
              FFStreamError er("Invalid system char string in header.mapObsTypes: "+satString);
              GPSTK_THROW(er);
           }

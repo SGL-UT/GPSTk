@@ -61,12 +61,7 @@ namespace gpstk
       string line;
 
       // first the epoch line to 'line'
-      if(strm.header.version == 3.02){
-         line = writeTime(time, 4);
-      }
-      else {
-         line = writeTime(time, 2);
-      }
+      line = writeTime(time, strm.header.version);
 
       for (int i = 0;
            (i < int(strm.header.obsTypeList.size())) && (i < maxObsPerLine);
@@ -123,10 +118,6 @@ namespace gpstk
          strm >> strm.header;
 
       RinexMetHeader& hdr = strm.header;
-      int addYrLen=0;
-      if(hdr.version == 3.02){
-         addYrLen=2;
-      }
 
       string line;
       data.clear();
@@ -138,9 +129,9 @@ namespace gpstk
       else
          strm.formattedGetLine(line, true);
 
-      processFirstLine(line, hdr, addYrLen);
+      processFirstLine(line, hdr, hdr.version);
 
-      time = parseTime(line,addYrLen);
+      time = parseTime(line, hdr.version);
 
       while (data.size() < hdr.obsTypeList.size())
       {
@@ -160,16 +151,21 @@ namespace gpstk
 
    void RinexMetData::processFirstLine(const string& line,
                                        const RinexMetHeader& hdr,
-                                       int addYrLen)
+                                       double version)
       throw(FFStreamError)
    {
+      int yrLen = 18;
+      if(version >= 3.02)
+      {
+         yrLen = 20;
+      }
       try
       {
          for (int i = 0;
               (i < maxObsPerLine) && (i < int(hdr.obsTypeList.size()));
               i++)
          {
-            int currPos = 7*i + 18+addYrLen;
+            int currPos = 7*i + yrLen;
             data[hdr.obsTypeList[i]] = asDouble(line.substr(currPos,7));
          }
       }
@@ -203,9 +199,14 @@ namespace gpstk
       }
    }
 
-   CommonTime RinexMetData::parseTime(const string& line, int addYrLen) const
+   CommonTime RinexMetData::parseTime(const string& line, double version) const
       throw(FFStreamError)
    {
+      int addYrLen = 0;
+      if(version >=3.02)
+      {
+         addYrLen = 2;
+      }
       try
       {
             // According to the RINEX spec, any 2 digit year 80 or greater
@@ -237,8 +238,10 @@ namespace gpstk
          min   = asInt(line.substr(12+addYrLen,3));
          sec   = asInt(line.substr(15+addYrLen,3));
 
-         if(!addYrLen) {
-            if (year < YearRollover) {
+         if(!addYrLen)
+         {
+            if (year < YearRollover)
+            {
                year += 100;
             }
             year += 1900;
@@ -254,9 +257,15 @@ namespace gpstk
       }
    }
 
-   string RinexMetData::writeTime(const CommonTime& dt, int yrLen) const
+   string RinexMetData::writeTime(const CommonTime& dt, double version) const
       throw(StringException)
    {
+      int yrLen = 2;
+      if(version >= 3.02)
+      {
+         yrLen = 4;
+      }
+
       if (dt == CommonTime::BEGINNING_OF_TIME)
       {
          return string(26, ' ');

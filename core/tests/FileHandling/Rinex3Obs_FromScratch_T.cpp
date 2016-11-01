@@ -8,13 +8,18 @@
 using namespace gpstk;
 using namespace std;
 
+string tempFilePath = gpstk::getPathTestTemp();
+string dataFilePath = gpstk::getPathData();
+string file_sep = getFileSep();
+
 class Rinex3Obs_FromScratch_T {
 
 public:
-
-      // @param satString entered into header.mapObsTypes to test throw for bad satString
-      // @param testID a string to identify the test for output files and debugging
-      // @param includeConflict include two RinexObsIDs that convert to the same R2 Obs Type
+      /* Create two Rinex Obs files - versions 3.02, 2.11
+       * @param satString entered into header.mapObsTypes to test throw for bad satString
+       * @param testID a string to identify the relevant files
+       * @param includeConflict include two RinexObsIDs that convert to the same R2 Obs Type
+       * @param completeR include glonass freqNo and codPhsBias */
    void Rinex3ObsFromScratch(string satString, string testID = "",
                              bool includeConflict = false, bool completeR = false) {
 
@@ -53,10 +58,7 @@ public:
       header.valid |= Rinex3ObsHeader::validInterval;
       header.validEoH = true;
 
-      // As of Sep 2016, the following aren't working correctly so force
-      // these to be set.
-      // what should happen is that the Rinex3ObsHeader should fill in default values
-      // for the SystemPhaseShift
+
       header.valid |= Rinex3ObsHeader::validSystemPhaseShift;
       if(completeR) {
          header.glonassFreqNo = Rinex3ObsHeader::GLOFreqNumMap();
@@ -143,22 +145,18 @@ public:
       data.obs.insert(std::pair<RinexSatID, std::vector<RinexDatum> >(GPS3, datumVec1));
       data.obs.insert(std::pair<RinexSatID, std::vector<RinexDatum> >(GPS6, datumVec2));
 
-
-      string dataFilePath = gpstk::getPathData();
-      string file_sep = getFileSep();
-
       header.version = 3.02;
       header.valid |= Rinex3ObsHeader::validVersion;
-      Rinex3ObsStream *strm = new Rinex3ObsStream(dataFilePath+file_sep+"rinex3Test_v302_"+testID+".16o.exp",
+      Rinex3ObsStream *strm = new Rinex3ObsStream(tempFilePath + file_sep + "rinex3ObsTest_v302_" + testID + ".txt",
                                     std::ios::out | std::ios::trunc);
-//      strm->exceptions(std::basic_fstream::failbit);
+
       strm->exceptions(ifstream::failbit);
       *strm << header;
       *strm << data;
 
       header.version = 2.11;
       header.valid |= Rinex3ObsHeader::validVersion;
-      Rinex3ObsStream *strm2 = new Rinex3ObsStream(dataFilePath+file_sep+"rinex3Test_v211_"+testID+".16o.exp",
+      Rinex3ObsStream *strm2 = new Rinex3ObsStream(tempFilePath + file_sep + "rinex3ObsTest_v211_" + testID + ".txt",
                                      std::ios::out | std::ios::trunc);
       strm2->exceptions(ifstream::failbit);
       *strm2 << header;
@@ -167,98 +165,132 @@ public:
    }
 
     std::vector<RinexObsID> setupObsIDs(bool includeConflict){
-        std::vector<RinexObsID> newObsIds;
+       std::vector<RinexObsID> newObsIds;
 
+       RinexObsID obsID1; //L1
+       obsID1.band = ObsID::cbL1;
+       obsID1.code = ObsID::tcP;
+       obsID1.type = ObsID::otPhase;
+       newObsIds.push_back(obsID1);
 
-        RinexObsID obsID1; //L1
-        obsID1.band = ObsID::cbL1;
-        obsID1.code = ObsID::tcP;
-        obsID1.type = ObsID::otPhase;
-        newObsIds.push_back(obsID1);
+       RinexObsID obsID2; //P1
+       obsID2.band = ObsID::cbL1;
+       obsID2.code = ObsID::tcP;
+       obsID2.type = ObsID::otRange;
+       newObsIds.push_back(obsID2);
 
-        RinexObsID obsID2; //P1
-        obsID2.band = ObsID::cbL1;
-        obsID2.code = ObsID::tcP;
-        obsID2.type = ObsID::otRange;
-        newObsIds.push_back(obsID2);
+       RinexObsID obsID3; //C1
+       obsID3.band = ObsID::cbL1;
+       obsID3.code = ObsID::tcCA;
+       obsID3.type = ObsID::otRange;
+       newObsIds.push_back(obsID3);
 
-        RinexObsID obsID3; //C1
-        obsID3.band = ObsID::cbL1;
-        obsID3.code = ObsID::tcCA;
-        obsID3.type = ObsID::otRange;
-        newObsIds.push_back(obsID3);
+       RinexObsID obsID4; //L2
+       obsID4.band = ObsID::cbL2;
+       obsID4.code = ObsID::tcP;
+       obsID4.type = ObsID::otPhase;
+       newObsIds.push_back(obsID4);
 
-        RinexObsID obsID4; //L2
-        obsID4.band = ObsID::cbL2;
-        obsID4.code = ObsID::tcP;
-        obsID4.type = ObsID::otPhase;
-        newObsIds.push_back(obsID4);
+       RinexObsID obsID5;
+       if(includeConflict){ //Y1
+           obsID5.band = ObsID::cbL1;
+           obsID5.code = ObsID::tcY;;
+           obsID5.type = ObsID::otRange;
+       }
+       else { //P2
+           obsID5.band = ObsID::cbL2;
+           obsID5.code = ObsID::tcP;
+           obsID5.type = ObsID::otRange;
+       }
+       newObsIds.push_back(obsID5);
 
-        RinexObsID obsID5;
-        if(includeConflict){ //Y1
-            obsID5.band = ObsID::cbL1;
-            obsID5.code = ObsID::tcY;;
-            obsID5.type = ObsID::otRange;
-        }
-        else { //P2
-            obsID5.band = ObsID::cbL2;
-            obsID5.code = ObsID::tcP;
-            obsID5.type = ObsID::otRange;
-        }
-        newObsIds.push_back(obsID5);
+       return newObsIds;
+    }
 
-        return newObsIds;
+    bool compareOutExp(string testID)
+    {
+       TestUtil tester;
+       return
+       (
+         tester.fileEqualTest( dataFilePath + file_sep + "rinex3ObsTest_v302_" + testID + ".16o.exp",
+                                    tempFilePath + file_sep + "rinex3ObsTest_v302_" + testID + ".txt", 2)
+         &&
+         tester.fileEqualTest( dataFilePath + file_sep + "rinex3ObsTest_v211_" + testID + ".16o.exp",
+                                    tempFilePath + file_sep + "rinex3ObsTest_v211_" + testID + ".txt", 2)
+       );
     }
 
    int runFromScratch(void){
       TUDEF("Rinex3Obs", "Rinex3ObsFromScratch");
-      try{
-          Rinex3ObsFromScratch("G","ValidTest");
-          testFramework.assert(true,"valid input completed successfully",206);
+      string testID;
+         //Try to create varios Rinex Obs (2.11 and 3.02) files
+      try
+      {
+            //create a valid Rinex Obs file
+         testID = "ValidTest";
+         Rinex3ObsFromScratch("G",testID);
+         TUASSERT( compareOutExp(testID) );
       }
-      catch(...){
-          testFramework.assert(false, "valid input threw exception", 206);
+      catch(...)
+      {
+         TUFAIL( "valid input threw exception");
       }
-      try{
-         Rinex3ObsFromScratch("R","Incomplete R");
-         testFramework.assert(false,"Glonass file should need GlonassSlotFreqNo and GlonassCodPhsBias",206);
+      try
+      {
+            //create a glonass Rinex file
+         testID = "IncompleteR";
+         Rinex3ObsFromScratch("R", testID);
+         TUFAIL("Glonass file should need GlonassSlotFreqNo and GlonassCodPhsBias");
       }
-      catch(...){
-         testFramework.assert(true, "Glonass file failed for lacking necessary fields", 206);
+      catch(...)
+      {
+         TUPASS( "Glonass file failed for lacking necessary fields");
       }
-      try{
-         Rinex3ObsFromScratch("R","Complete R", false, true);
-         testFramework.assert(true,"Glonass file has GlonassSlotFreqNo and GlonassCodPhsBias",206);
+      try
+      {
+            //create a glonass Rinex file. Fill glonass-required fields
+         testID = "CompleteR";
+         Rinex3ObsFromScratch("R",testID, false, true);
+         TUASSERT( compareOutExp(testID) );
       }
-      catch(...){
-         testFramework.assert(false, "Glonass file failed despite having all necessary fields", 206);
+      catch(...)
+      {
+         TUFAIL( "Glonass file failed despite having all necessary fields");
       }
-      try{
-          Rinex3ObsFromScratch("G","Conflict", true);
-          testFramework.assert(false,"Conflicting R3->R2 conversions threw no error",213);
+      try
+      {
+            //create a Rinex file containing two unique RinexObsIDs that convert to the same R2Obs type
+         testID = "Conflict";
+         Rinex3ObsFromScratch("G",testID, true);
+         TUFAIL("Conflicting R3->R2 conversions threw no error");
       }
-      catch(...){
-          testFramework.assert(true, "Conflicting conversion threw", 213);
+      catch(...)
+      {
+         TUPASS( "Conflicting conversion threw");
       }
-      try{
-          Rinex3ObsFromScratch("GPS", "BadSys");
-          testFramework.assert(false, "no exception for invalid sys char string", 220);
+      try
+      {
+            //create a Rinex file with the invalid satString "GPS"
+         testID = "BadSys";
+         Rinex3ObsFromScratch("GPS", testID);
+         TUFAIL( "no exception for invalid sys char string");
       }
-      catch(...){
-          testFramework.assert(true,"exception thrown for invalid input",220);
+      catch(...)
+      {
+         TUPASS("exception thrown for invalid input");
       }
-      return testFramework.countFails();
+      TURETURN();
    }
 };
 
 int main()
 {
-    int errorTotal = 0;
-    Rinex3Obs_FromScratch_T testClass;
+   int errorTotal = 0;
+   Rinex3Obs_FromScratch_T testClass;
 
-    errorTotal += testClass.runFromScratch();
+   errorTotal += testClass.runFromScratch();
 
-    cout << "Total Failures for " << __FILE__ << ": " << errorTotal << endl;
+   cout << "Total Failures for " << __FILE__ << ": " << errorTotal << endl;
 
-    return( errorTotal );
+   return( errorTotal );
 }
