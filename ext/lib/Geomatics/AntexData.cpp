@@ -74,7 +74,7 @@ namespace gpstk
 
    // NB. this dimension must be updated with the list
    /// Number of types that are used for satellites
-   const int Nsattype=11;
+   const int Nsattype=14;
    string sattype[Nsattype] =
    { 
       string("BLOCK I"),         // 1
@@ -87,7 +87,10 @@ namespace gpstk
       string("BLOCK IIF"),       // 8
       string("GLONASS"),         // 9
       string("GLONASS-M"),       // 10
-      string("GLONASS-K")        // 11
+      string("GLONASS-K1"),      // 11
+      string("BEIDOU-2G"),       // 12
+      string("BEIDOU-2I"),       // 13
+      string("BEIDOU-2M")        // 14
    };
    /// vector of type strings that identify satellites; must be kept updated.
    const vector<string> AntexData::SatelliteTypes(sattype,sattype+Nsattype);
@@ -294,7 +297,8 @@ namespace gpstk
          s << " (Receiver)" << endl;
       else {
          if(PRN != -1 || SVN != -1) {
-           s << " (" << (type == string("GLONASS") ? "GLONASS" : "GPS");
+//           s << " (" << (type == string("GLONASS") ? "GLONASS" : "GPS");
+           s << " (" << type;
            if(PRN != -1) s << string(" PRN ") + asString(PRN);
            if(SVN != -1) s << string(" SVN ") + asString(SVN);
            s << ")";
