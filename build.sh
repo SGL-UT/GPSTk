@@ -173,6 +173,11 @@ if ((verbose>0)); then
     log
 fi
 
+if ((verbose>0)); then
+    log "env:"
+    set >> $LOG
+fi
+
 if ((verbose>3)); then
     exit
 fi
