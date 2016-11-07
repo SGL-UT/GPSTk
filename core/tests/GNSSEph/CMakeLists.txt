@@ -24,6 +24,10 @@ add_executable(NavID_T NavID_T.cpp)
 target_link_libraries(NavID_T gpstk)
 add_test(GNSSEph_NavID NavID_T)
 
+add_executable(OrbitEphStore_T OrbitEphStore_T.cpp)
+target_link_libraries(OrbitEphStore_T gpstk)
+add_test(GNSSEph_OrbitEphStore OrbitEphStore_T)
+
 add_executable(PackedNavBits_T PackedNavBits_T.cpp)
 target_link_libraries(PackedNavBits_T gpstk)
 add_test(GNSSEph_PackedNavBits PackedNavBits_T)
@@ -56,3 +60,7 @@ add_test(GNSSEph_SP3SatID SP3SatID_T)
 add_executable(XvtStore_T XvtStore_T.cpp)
 target_link_libraries(XvtStore_T gpstk)
 add_test(GNSSEph_XvtStore XvtStore_T)
+
+add_executable(GPSEphemerisStore_T GPSEphemerisStore_T.cpp)
+target_link_libraries(GPSEphemerisStore_T gpstk)
+add_test(GNSSEph_GPSEphemerisStore GPSEphemerisStore_T)

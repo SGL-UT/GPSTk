@@ -386,6 +386,9 @@ namespace gpstk
       // to table.lower_bound(t) will return the element of the map
       // with a key "just beyond t" assuming the t is NOT a direct match for any key.
 
+      if (table.empty())
+         return NULL;
+
       TimeOrbitEphTable::const_iterator it = table.find(t);
       if(it == table.end()) {                   // not a direct match
          it = table.lower_bound(t);
@@ -418,6 +421,8 @@ namespace gpstk
       // The exception is if it is pointing to table.begin( ),
       // then all of the elements in the map are too late.
       if(it == table.begin()) {
+         if (it->second->isValid(t))
+            return it->second;
          //string mess = "Time is before table for satellite " + asString(sat)
          //      + " for time " + printTime(t,fmt);
          //InvalidRequest e(mess);
@@ -431,6 +436,10 @@ namespace gpstk
       // not overlap. That's OK, the key represents the EARLIEST
       // time the elements should be used.  Therefore, we can
       // decrement the counter and test to see if the element is valid.
+      if (it->second->isValid(t))
+      {
+         return it->second;
+      }
       it--;
       if(!(it->second->isValid(t))) {
          //// there is a "hole" in the middle of a map.
@@ -458,6 +467,9 @@ namespace gpstk
       // No OrbitEph in store for requested sat time
       // Define reference to the relevant map of orbital elements
       const TimeOrbitEphTable& table = getTimeOrbitEphMap(sat);
+
+      if (table.empty())
+         return NULL;
 
       TimeOrbitEphTable::const_iterator itNext = table.find(t);
       if(itNext != table.end())               // exact match

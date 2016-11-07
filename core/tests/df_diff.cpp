@@ -63,7 +63,7 @@ public:
         totalLines(0)
    {};
 
-   // While this is in C11, we don't want to work under C03
+      // While this is in C11, we don't want to work under C03
    double stringToDouble(const string& s, bool& isDouble)
    {
       char *p;
@@ -93,23 +93,36 @@ public:
 
       input1.open(input1Fn.c_str(), istringstream::in);
       input2.open(input2Fn.c_str(), istringstream::in);
-           
-      
-      // Determine total number of lines in input file 1
-      do
-      {
-         char buffer[1024];
-         input1.getline(buffer, sizeof(buffer));
-         totalLines++;
-      } while(input1);
 
-      // Determine how many lines to ignore at the end of the file
+      if (!input1)
+      {
+         cerr << "Could not open: " << input1Fn << endl;
+         exitCode=1;
+         return false;
+      }
+      
+      if (!input1)
+      {
+         cerr << "Could not open: " << input2Fn << endl;
+         exitCode=1;
+         return false;
+      }
+      
+         // Determine total number of lines in input file 1
+      string line;
+      while (getline(input1, line))
+         totalLines++;
+
+      if (debugLevel)
+         cout << "File 1 has " << totalLines << " lines" << endl;
+
+         // Determine how many lines to ignore at the end of the file
       if (lastLineOption.getCount())
          lastlineValue = gpstk::StringUtils::asInt(lastLineOption.getValue()[0]);
 
       totalLines = totalLines - lastlineValue;
 
-      // clear and reset the buffer for input file 1
+         // clear and reset the buffer for input file 1
       input1.clear();
       input1.seekg(0,ios::beg);
 
@@ -146,7 +159,8 @@ public:
                 << "Second file " << input2Fn << endl
                 << "Output file " << outputFn << endl
                 << "Epsilon " << epsilon << endl
-                << "Skipping " << linesToSkip << " lines." << endl;
+                << "Skipping " << linesToSkip << " lines at beginning" << endl
+                << "Skipping " << lastlineValue << " lines at end" << endl;
       
       return true;
    }
@@ -159,43 +173,27 @@ protected:
    {
       try
       {
-
-         long lineCount = 0;
-         string l1, l2, s1, s2;
-
-         for (int i=0; i<linesToSkip; i++)
+         for (long lineNumber = 1; lineNumber < totalLines; lineNumber++)
          {
-            char buffer[1024];
-            input1.getline(buffer, sizeof(buffer));
-            input2.getline(buffer, sizeof(buffer));
-            lineCount++;
-            if (bool(input1) != bool(input2))
+            string line1, line2;
+            if (!getline(input1, line1) || !getline(input2, line2))
             {
-               exitCode += 1;
+               exitCode++;
                break;
             }
-            if (debugLevel>1)
-               cout << "Skip" << endl;
-         }
+            
+            if (lineNumber <= linesToSkip)
+               continue;
 
-         do
-         {
-            getline(input1, l1);
-            getline(input2, l2);
-            istringstream ss1(l1);
-            istringstream ss2(l2);
+            string s1, s2;
+            istringstream ss1(line1);
+            istringstream ss2(line2);
+            bool lineDiff = false;
 
             while ((ss1 >> s1) && (ss2 >> s2))
             {
-         
-               if (bool(input1) != bool(input2))
-                  exitCode += 1;
-            
                if (s1 != s2)
                {
-                  if (verboseLevel)
-                     output << s1 << " .. " << s2;
-                  
                   bool df1,df2;
                   double d1 = stringToDouble(s1, df1);
                   double d2 = stringToDouble(s2, df2);
@@ -207,20 +205,23 @@ protected:
                         err = diff/d1;
                   
                      if (abs(err) > epsilon)
+                     {
                         exitCode += 1;
-                     
-                     if (verboseLevel)
-                        output << " err: " << err;
+                        lineDiff = true;
+                     }
                   }
                   else
+                  {
                      exitCode += 1;
+                     lineDiff = true;
+                  }
                   
-                  if (verboseLevel)
-                     output << endl;
+                  if (verboseLevel && lineDiff)
+                     output << "f1, " << lineNumber << ":" << line1 << endl
+                            << "f2, " << lineNumber << ":" << line2 << endl;
                }
             }
-            lineCount++;
-         } while (input1 && input2 && (lineCount < totalLines));
+         }
       }
       catch (std::exception& e)
       {

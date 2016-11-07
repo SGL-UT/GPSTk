@@ -93,7 +93,7 @@ public:
                               "fromString constructor did not throw an exception for an improper string",
                               __LINE__);
       }
-      catch(gpstk::Exception e)
+      catch(gpstk::Exception& e)
       {
          testFramework.assert(true, "fromString threw the expected exception",
                               __LINE__);
@@ -331,22 +331,40 @@ public:
    {
       gpstk::TestUtil testFramework("SP3SatID", "fromString", __FILE__, __LINE__);
 
-      std::string inputStringArray[5] = {"7", "07", "30", "E10", "E100"};
-      int         expectedID[5]       = {  7,    7,   30,    10,    100};
-      gpstk::SatID::SatelliteSystem expectedSatSysArray[5] =
+      std::string inputStringArray[12] = {"7", "07", "30", "E10", "E100", "G08", "E08", "R08", "L08", "C08", "J08", "M08"};
+      int         expectedID[12]       = {  7,    7,   30,    10,    100,     8,     8,     8,     8,     8,     8,     8};
+      gpstk::SatID::SatelliteSystem expectedSatSysArray[12] =
          {
-            gpstk::SatID::SatelliteSystem(1),
-            gpstk::SatID::SatelliteSystem(1),
-            gpstk::SatID::SatelliteSystem(1),
-            gpstk::SatID::SatelliteSystem(2),
-            gpstk::SatID::SatelliteSystem(2)
+            gpstk::SatID::systemGPS,
+            gpstk::SatID::systemGPS,
+            gpstk::SatID::systemGPS,
+            gpstk::SatID::systemGalileo,
+            gpstk::SatID::systemGalileo,
+            gpstk::SatID::systemGPS,
+            gpstk::SatID::systemGalileo,
+            gpstk::SatID::systemGlonass,
+            gpstk::SatID::systemLEO,
+            gpstk::SatID::systemBeiDou,
+            gpstk::SatID::systemQZSS,
+            gpstk::SatID::systemMixed
          };
       gpstk::SP3SatID Compare;
 
 
-      for (int i = 0; i < 5; i++)
+      for (int i = 0; i < (sizeof(expectedID)/sizeof(expectedID[0])); i++)
       {
-         Compare.fromString(inputStringArray[i]);
+         try
+         {
+            Compare.fromString(inputStringArray[i]);
+         }
+         catch(gpstk::Exception& e)
+         {
+            std::stringstream s;
+            s << "Exception in fromString call on input: " << inputStringArray[i];
+            testFramework.assert(false,
+                                 s.str(),__LINE__);
+         }
+         
          testFramework.assert(Compare.id == expectedID[i],
                               "fromString did not set the correct ID", __LINE__);
          testFramework.assert(Compare.system == expectedSatSysArray[i],
@@ -360,7 +378,7 @@ public:
          testFramework.assert(false,
                               "fromString did not throw an exception for an improper string", __LINE__);
       }
-      catch(gpstk::Exception e)
+      catch(gpstk::Exception& e)
       {
          testFramework.assert(true, "fromString threw the expected exception",
                               __LINE__);
@@ -376,32 +394,189 @@ public:
    int toStringTest(void)
    {
       gpstk::TestUtil testFramework("SP3SatID", "toString", __FILE__, __LINE__);
-
-
-      gpstk::SP3SatID Compare1(5, gpstk::SatID::SatelliteSystem(1));
+      std::stringstream s;
       std::string outputString1, compareString1;
-      outputString1 = Compare1.toString();
-      compareString1 = "G05";
-      testFramework.assert(outputString1 == compareString1,
-                           "toString did not return the expected string", __LINE__);
-
-
-      gpstk::SP3SatID Compare2(20, gpstk::SatID::SatelliteSystem(2));
       std::string outputString2, compareString2;
-      outputString2 = Compare2.toString();
-      compareString2 = "E20";
-      testFramework.assert(outputString2 == compareString2,
-                           "toString did not return the expected string", __LINE__);
-
-
-      gpstk::SP3SatID Compare3(-5, gpstk::SatID::SatelliteSystem(1));
       std::string outputString3, compareString3;
-      outputString3 = Compare3.toString();
-      compareString3 = "G-5";
-      testFramework.assert(outputString3 == compareString3,
-                           "toString did not return the expected string", __LINE__);
+      std::string outputString4, compareString4;
+      std::string outputString5, compareString5;
+      std::string outputString6, compareString6;
+      std::string outputString7, compareString7;
+      std::string outputString8, compareString8;
+      std::string outputString9, compareString9;
+      
+      try
+      {
+         gpstk::SP3SatID Compare1(5, gpstk::SatID::systemGPS);
+         outputString1 = Compare1.toString();
+         compareString1 = "G05";
+         s.str("");
+         s  << "toString did not return the expected string, exp: "
+            << compareString1 << ", but got: " << outputString1;
+         testFramework.assert(outputString1 == compareString1,
+                              s.str(), __LINE__);
+      }
+      catch(gpstk::Exception& e)
+      {
+         s.str("Exception in toString call, expected output: ");
+         s << compareString1;
+         testFramework.assert(false,
+                              s.str(),__LINE__);
+      }
 
+      try
+      {
+         gpstk::SP3SatID Compare2(20, gpstk::SatID::systemGalileo);
+         outputString2 = Compare2.toString();
+         compareString2 = "E20";
+         s.str("");
+         s  << "toString did not return the expected string, exp: "
+            << compareString2 << ", but got: " << outputString2;
+         testFramework.assert(outputString2 == compareString2,
+                              s.str(), __LINE__);
+      }
+      catch(gpstk::Exception& e)
+      {
+         s.str("Exception in toString call, expected output: ");
+         s << compareString2;
+         testFramework.assert(false,
+                              s.str(),__LINE__);
+      }
 
+      try
+      {
+         gpstk::SP3SatID Compare3(-5, gpstk::SatID::systemGPS);
+         outputString3 = Compare3.toString();
+         compareString3 = "G-5";
+         s.str("");
+         s  << "toString did not return the expected string, exp: "
+            << compareString3 << ", but got: " << outputString3;
+         testFramework.assert(outputString3 == compareString3,
+                              s.str(), __LINE__);
+      }
+      catch(gpstk::Exception& e)
+      {
+         s.str("Exception in toString call, expected output: ");
+         s << compareString3;
+         testFramework.assert(false,
+                              s.str(),__LINE__);
+      }
+
+      try
+      {
+         gpstk::SP3SatID Compare4(1, gpstk::SatID::systemGlonass);
+         outputString4 = Compare4.toString();
+         compareString4 = "R01";
+         s.str("");
+         s  << "toString did not return the expected string, exp: "
+            << compareString4 << ", but got: " << outputString4;
+         testFramework.assert(outputString4 == compareString4,
+                              s.str(), __LINE__);
+      }
+      catch(gpstk::Exception& e)
+      {
+         s.str("Exception in toString call, expected output: ");
+         s << compareString4;
+         testFramework.assert(false,
+                              s.str(),__LINE__);
+      }
+
+      try
+      {
+         gpstk::SP3SatID Compare5(1, gpstk::SatID::systemLEO);
+         outputString5 = Compare5.toString();
+         compareString5 = "L01";
+         s.str("");
+         s  << "toString did not return the expected string, exp: "
+            << compareString5 << ", but got: " << outputString5;
+         testFramework.assert(outputString5 == compareString5,
+                              s.str(), __LINE__);
+      }
+      catch(gpstk::Exception& e)
+      {
+         s.str("Exception in toString call, expected output: ");
+         s << compareString5;
+         testFramework.assert(false,
+                              s.str(),__LINE__);
+      }
+
+      try
+      {
+         gpstk::SP3SatID Compare6(1, gpstk::SatID::systemBeiDou);
+         outputString6 = Compare6.toString();
+         compareString6 = "C01";
+         s.str("");
+         s  << "toString did not return the expected string, exp: "
+            << compareString6 << ", but got: " << outputString6;
+         testFramework.assert(outputString6 == compareString6,
+                              s.str(), __LINE__);
+      }
+      catch(gpstk::Exception& e)
+      {
+         s.str("Exception in toString call, expected output: ");
+         s << compareString6;
+         testFramework.assert(false,
+                              s.str(),__LINE__);
+      }
+
+      try
+      {
+         gpstk::SP3SatID Compare7(1, gpstk::SatID::systemQZSS);
+         outputString7 = Compare7.toString();
+         compareString7 = "J01";
+         s.str("");
+         s  << "toString did not return the expected string, exp: "
+            << compareString7 << ", but got: " << outputString7;
+         testFramework.assert(outputString7 == compareString7,
+                              s.str(), __LINE__);
+      }
+      catch(gpstk::Exception& e)
+      {
+         s.str("Exception in toString call, expected output: ");
+         s << compareString7;
+         testFramework.assert(false,
+                              s.str(),__LINE__);
+      }
+
+      try
+      {
+         gpstk::SP3SatID Compare8(1, gpstk::SatID::systemMixed);
+         outputString8 = Compare8.toString();
+         compareString8 = "M01";
+         s.str("");
+         s  << "toString did not return the expected string, exp: "
+            << compareString8 << ", but got: " << outputString8;
+         testFramework.assert(outputString8 == compareString8,
+                              s.str(), __LINE__);
+      }
+      catch(gpstk::Exception& e)
+      {
+         s.str("Exception in toString call, expected output: ");
+         s << compareString8;
+         testFramework.assert(false,
+                              s.str(),__LINE__);
+      }
+
+      // finally, test that bad system inputs cause '?' outputs from toString
+      try
+      {
+         gpstk::SP3SatID Compare9(1, gpstk::SatID::systemUnknown);
+         outputString9 = Compare9.toString();
+         compareString9 = "?-1";
+         s.str("");
+         s  << "toString did not return the expected string, exp: "
+            << compareString9 << ", but got: " << outputString9;
+         testFramework.assert(outputString9 == compareString9,
+                              s.str(), __LINE__);
+      }
+      catch(gpstk::Exception& e)
+      {
+         s.str("Exception in toString call, expected output: ");
+         s << compareString9;
+         testFramework.assert(false,
+                              s.str(),__LINE__);
+      }
+      
       return testFramework.countFails();
    }
 
