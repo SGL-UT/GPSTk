@@ -855,7 +855,10 @@ namespace gpstk
          {
             RinexObsID obsid(RinexObsID("R"+labs[i]));
             it = glonassCodPhsBias.find(obsid);
-            double bias = (it == glonassCodPhsBias.end() ? it->second : 0.0);
+            double bias = 0.0;
+            if (it != glonassCodPhsBias.end())
+                bias = it->second;
+            cout << labs[i] << "," << bias << endl;
             line += " " + labs[i] + " " + rightJustify(asString(bias,3),8);
          }
          line += string(60-line.length(), ' ');
