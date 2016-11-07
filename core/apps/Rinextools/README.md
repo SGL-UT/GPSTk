@@ -47,38 +47,92 @@ Examples:
 Rinextools - RinEdit
 ====================
 
-The application opens and reads RINEX observation files(s) (v2+), applies editing commands,
-and write out the modified RINEX data to RINEX v3 file(s).
+The application opens and reads RINEX observation files(s) (version 2.x or 3.x), applies editing commands,
+and write out the modified RINEX data to RINEX 2.11 or 3.x file(s).
 
 Usage:
 ------
 
-### Optional Arguments
-
-Short Arg.| Long Arg.| Description
-
-          –IF <f>     Input RINEX observation file names [repeat]
-          –ID <p>     Path of input RINEX observation file(s)
-          –OF <fn>    Output RINEX obs files [also see –OF <f,t> below]
-          –OD <p>     Path of output RINEX observation file(s)
-          –file <fn>  Name of file containing more options [#->EOL = comment]
-          –log <fn>   Output log file name
-          –ver2       Write out RINEX version 2
-          –verbose    Print extra output information
-          –debug      Print debug output at level 0 [debug<n> for level n=1-7]
-          –help       Print syntax and editing command page
-
+```
+RinEdit [options] [editing commands]
+  Options:
+# RINEX input and output files
+ --IF <fn>         Input RINEX observation file name [repeat] ()
+ --ID <p>          Path of input RINEX observation file(s) ()
+ --OF <fn>         Output RINEX obs files [also see --OF <f,t> below] [repeat] ()
+ --OD <p>          Path of output RINEX observation file(s) ()
+# Other file I/O
+ --file <fn>       Name of file containing more options [#->EOL = comment] [repeat] ()
+ --log <fn>        Output log file name ()
+ --ver2            Write out RINEX version 2 (don't)
+# Help
+ --verbose         Print extra output information (don't)
+ --debug           Print debug output at level 0 [debug<n> for level n=1-7] (-1)
+ --help            Print this syntax page, and quit (don't)
+# ------ Editing commands ------
+# RINEX header modifications (arguments with whitespace must be quoted)
+ --HDp <p>         Set header 'PROGRAM' field to <p> ()
+ --HDr <rb>        Set header 'RUN BY' field to <rb> ()
+ --HDo <obs>       Set header 'OBSERVER' field to <obs> ()
+ --HDa <a>         Set header 'AGENCY' field to <a> ()
+ --HDx <x,y,z>     Set header 'POSITION' field to <x,y,z> (ECEF, m) ()
+ --HDm <m>         Set header 'MARKER NAME' field to <m> ()
+ --HDn <n>         Set header 'MARKER NUMBER' field to <n> ()
+ --HDj <n>         Set header 'REC #' field to <n> ()
+ --HDk <t>         Set header 'REC TYPE' field to <t> ()
+ --HDl <v>         Set header 'REC VERS' field to <v> ()
+ --HDs <n>         Set header 'ANT #' field to <n> ()
+ --HDt <t>         Set header 'ANT TYPE' field to <t> ()
+ --HDh <h,e,n>     Set header 'ANTENNA OFFSET' field to <h,e,n> (Ht,East,North) ()
+ --HDc <c>         Add 'COMMENT' <c> to the output header [repeat] ()
+ --HDdc            Delete all comments [not --HDc] from input header (don't)
+ --HDda            Delete all auxiliary header data (don't)
+# Time related [t,f are strings, time t conforms to format f; cf. gpstk::Epoch.]
+# Default t(f) is 'week,sec-of-week'(%F,%g) OR 'y,m,d,h,m,s'(%Y,%m,%d,%H,%M,%S)
+ --OF <f,t>        At RINEX time <t>, close output file and open another named <f> ()
+ --TB <t[:f]>      Start time: Reject data before this time ([Beginning of dataset])
+ --TE <t[:f]>      Stop  time: Reject data after this time ([End of dataset])
+ --TT <dt>         Tolerance in comparing times, in seconds (0.00)
+ --TN <dt>         If dt>0, decimate data to times = TB + N*dt [sec, w/in tol] (0.00)
+# In the following <SV> is a RINEX satellite identifier, e.g. G17 R7 E22 R etc.
+#              and <OT> is a 3- or 4-char RINEX observation code e.g. C1C GL2X S2N
+# Delete cmds; for start(stop) cmds. stop(start) time defaults to end(begin) of data
+#     and 'deleting' data for a single OT means it is set to zero - as RINEX requires.
+ --DA <t>          Delete all data at a single time <t> [repeat] ()
+ --DA+ <t>         Delete all data beginning at time <t> [repeat] ()
+ --DA- <t>         Stop deleting at time <t> [repeat] ()
+ --DO <OT>         Delete RINEX obs type <OT> entirely (incl. header) [repeat] ()
+ --DS <SV>         Delete all data for satellite <SV> [SV may be char]
+ --DS <SV,t>       Delete all data for satellite <SV> at single time <t> [repeat] ()
+ --DS+ <SV,t>      Delete data for satellite <SV> beginning at time <t> [repeat] ()
+ --DS- <SV,t>      Stop deleting data for sat <SV> beginning at time <t> [repeat] ()
+ --DD <SV,OT,t>    Delete a single RINEX datum(SV,OT) at time <t> [repeat] ()
+ --DD+ <SV,OT,t>   Delete all RINEX data(SV,OT) starting at time <t> [repeat] ()
+ --DD- <SV,OT,t>   Stop deleting RINEX data(SV,OT) at time <t> [repeat] ()
+ --SD <SV,OT,t,d>  Set data(SV,OT) to value <d> at single time <t> [repeat] ()
+ --SS <SV,OT,t,s>  Set SSI(SV,OT) to value <s> at single time <t> [repeat] ()
+ --SL <SV,OT,t,l>  Set LLI(SV,OT) to value <l> at single time <t> [repeat] ()
+ --SL+ <SV,OT,t,l> Set all LLI(SV,OT) to value <l> starting at time <t> [repeat] ()
+ --SL- <SV,OT,t,l> Stop setting LLI(SV,OT) to value <l> at time <t> [repeat] ()
+# Bias cmds: (BD cmds apply only when data is non-zero, unless --BZ)
+ --BZ              Apply BD command even when data is zero (i.e. 'missing') (don't)
+ --BS <SV,OT,t,s>  Add the value <s> to SSI(SV,OT) at single time <t> [repeat] ()
+ --BL <SV,OT,t,l>  Add the value <l> to LLI(SV,OT) at single time <t> [repeat] ()
+ --BD <SV,OT,t,d>  Add the value <d> to data(SV,OT) at single time <t> [repeat] ()
+ --BD+ <SV,OT,t,d> Add the value <d> to data(SV,OT) beginning at time <t> [repeat] ()
+ --BD- <SV,OT,t,d> Stop adding the value <d> to data(SV,OT) at time <t> [repeat] ()
+```
+ 
 Examples:
 ---------
 
-    > RinEdit --IF acor1480.08o --IF areq015o.10o --OF out.12o --verbose
-        # RinEdit, part of the GPS Toolkit, Ver 1.0 8/1/11, Run 2012/07/09 12:17:20
-        Edit cmd: OF_Output_File 0 SV:?-1 OT: d:0.0000 i:0 t:BeginTime >out.12o<
-        Reading header...
-        Reading observations...
-        Opened output file out.12o at time 2008/05/27 00:00:00 = 1481 172800.000 GPS
-        Reading header...
-        Reading observations...
+# Combine two files
+`$ RinEdit --IF acor1480.08o --IF areq015o.10o --OF out.12o --verbose`
+
+# Delete all galileo and GPS L5 observations from a v2.11 file and write a v2.11 file
+`$ RinEdit --IF acor1480.08o --IF areq015o.10o --OF out.12o --ver2 -DS E --DO GL5X --DO GC5X --DO GD5X --DO GS5X`
+
+
 
 -----------------------------------------------------------------------------------------------------------------------
 
