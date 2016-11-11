@@ -444,12 +444,10 @@ int processFiles(void) throw(Exception)
                oss << " " << kt->second[i].asString();
             LOG(INFO) << oss.str();
          }
-
             // we have to set the time system of all the timetags using ttag from file
          vector<EditCmd>::iterator jt;
          for (jt=C.vecCmds.begin(); jt != C.vecCmds.end(); ++jt)
             jt->ttag.setTimeSystem(Rhead.firstObs.getTimeSystem());
-
             // -----------------------------------------------------------------
             // generate output header from input header and DO,DS commands
          bool mungeData(false);
@@ -474,15 +472,14 @@ int processFiles(void) throw(Exception)
                   if (sys != string("?") && sys != jt->first)
                      continue;
                   RinexObsID obsid(jt->first + it->obs.asString());
-                  
+
                      // find the OT in the output header map, and delete it
                   Rinex3ObsHeader::RinexObsVec::iterator kt;
                   kt = find(jt->second.begin(), jt->second.end(), obsid);
                   if(kt == jt->second.end())
                      continue;
-                  
+
                   RHout.mapObsTypes[jt->first].erase(kt);
-                  jt->second.erase(kt);
                      // flag the obs types have changed so the translations need to as well
                   mungeData = true;
                }
@@ -1430,10 +1427,8 @@ EditCmd::EditCmd(const string intypestr, const string inarg) throw(Exception)
          if(arg.size() == 4)                          // get sys
             sat.fromString(string(1,arg[0]));
             // else sat sys is unknown
-
          if(isValidRinexObsID(arg)) obs = RinexObsID(arg);
          else return;
-
          type = doCT;
       }
       else if(tag == "DS") {

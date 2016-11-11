@@ -349,7 +349,7 @@ namespace gpstk
    {
       if (!this->dataVec.empty())
       {
-         stream.exceptions(std::ios::failbit);      
+         stream.exceptions(std::ios::failbit);
       
          typename std::list<FileData>::const_iterator index;
          for(index = this->dataVec.begin(); index != this->dataVec.end(); index++)

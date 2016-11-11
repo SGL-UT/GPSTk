@@ -2078,6 +2078,7 @@ namespace gpstk
                 tR2ObsTypes.push_back(R2ot);
              }
              else{
+//                cerr << "duplicate " << R2ot << " from " << satString << lab << endl;
                 FFStreamError err("Too many ObsIDs simplify to " +
                                           R2ot + " to create a valid R2 file");
                 GPSTK_THROW(err);
@@ -2139,7 +2140,7 @@ namespace gpstk
       {
          s << "mapSysR2toR3ObsID[" << i->first << "] ";
          for (ObsIDMap::const_iterator j = i->second.begin(); j != i->second.end(); j++)
-            cout << j->first << ":" << j->second.asString() << " ";
+            s << j->first << ":" << j->second.asString() << " ";
          s << endl;
       }
       
