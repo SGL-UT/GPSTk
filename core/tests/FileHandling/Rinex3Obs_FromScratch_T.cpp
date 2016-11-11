@@ -147,16 +147,15 @@ public:
 
       header.version = 3.02;
       header.valid |= Rinex3ObsHeader::validVersion;
-      Rinex3ObsStream *strm = new Rinex3ObsStream(tempFilePath + file_sep + "rinex3ObsTest_v302_" + testID + ".txt",
+      Rinex3ObsStream *strm = new Rinex3ObsStream(tempFilePath + file_sep + "rinex3ObsTest_v302_" + testID + ".out",
                                     std::ios::out | std::ios::trunc);
 
       strm->exceptions(ifstream::failbit);
       *strm << header;
       *strm << data;
 
-      header.version = 2.11;
-      header.valid |= Rinex3ObsHeader::validVersion;
-      Rinex3ObsStream *strm2 = new Rinex3ObsStream(tempFilePath + file_sep + "rinex3ObsTest_v211_" + testID + ".txt",
+      header.prepareVer2Write();
+      Rinex3ObsStream *strm2 = new Rinex3ObsStream(tempFilePath + file_sep + "rinex3ObsTest_v211_" + testID + ".out",
                                      std::ios::out | std::ios::trunc);
       strm2->exceptions(ifstream::failbit);
       *strm2 << header;
@@ -212,11 +211,11 @@ public:
        TestUtil tester;
        return
        (
-         tester.fileEqualTest( dataFilePath + file_sep + "rinex3ObsTest_v302_" + testID + ".16o.exp",
-                                    tempFilePath + file_sep + "rinex3ObsTest_v302_" + testID + ".txt", 2)
+         tester.fileEqualTest( dataFilePath + file_sep + "rinex3ObsTest_v302_" + testID + ".exp",
+                                    tempFilePath + file_sep + "rinex3ObsTest_v302_" + testID + ".out", 2)
          &&
-         tester.fileEqualTest( dataFilePath + file_sep + "rinex3ObsTest_v211_" + testID + ".16o.exp",
-                                    tempFilePath + file_sep + "rinex3ObsTest_v211_" + testID + ".txt", 2)
+         tester.fileEqualTest( dataFilePath + file_sep + "rinex3ObsTest_v211_" + testID + ".exp",
+                                    tempFilePath + file_sep + "rinex3ObsTest_v211_" + testID + ".out", 2)
        );
     }
 
