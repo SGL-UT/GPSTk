@@ -55,7 +55,6 @@ namespace gpstk
                              const Rinex3ObsData& rod )
       throw(FFStreamError, StringException)
    {
-      cerr << "reallyPutRecordV2" << endl;
          // is there anything to write?
       if( (rod.epochFlag==0 || rod.epochFlag==1 || rod.epochFlag==6)
           && (rod.numSVs==0 || rod.obs.empty()) ) return;
@@ -281,7 +280,6 @@ namespace gpstk
    void Rinex3ObsData::reallyPutRecord(FFStream& ffs) const
       throw(std::exception, FFStreamError, StringException)
    {
-      cerr << "reallyPutRecord" << endl;
          // is there anything to write?
       if( (epochFlag == 0 || epochFlag == 1 || epochFlag == 6)
           && (numSVs==0 || obs.empty())){

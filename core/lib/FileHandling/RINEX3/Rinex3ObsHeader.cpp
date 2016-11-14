@@ -302,7 +302,6 @@ namespace gpstk
    void Rinex3ObsHeader::writeHeaderRecords(FFStream& ffs) const
       throw(FFStreamError, StringException)
    {
-      cerr << "writeHeaderRecords" << endl;
       Rinex3ObsStream& strm = dynamic_cast<Rinex3ObsStream&>(ffs);
       string line;
 
@@ -826,7 +825,8 @@ namespace gpstk
       } // if(version >= 3.01 && (valid & validSystemPhaseShift))
       if(version >= 3.01)
       {
-         if ((valid & validGlonassSlotFreqNo)) {
+         if ((valid & validGlonassSlotFreqNo))
+         {
             size_t n(0), nsat(glonassFreqNo.size());
             line = rightJustify(asString(nsat), 3) + " ";
             GLOFreqNumMap::const_iterator it, kt;
@@ -862,8 +862,10 @@ namespace gpstk
             for (int i = 0; i < 4; i++) {
                RinexObsID obsid(RinexObsID("R" + labs[i]));
                it = glonassCodPhsBias.find(obsid);
-               double bias = (it == glonassCodPhsBias.end() ? it->second : 0.0);
-               cerr << "outputting bias " << bias << endl;
+               double bias = 0.0;
+               if (it != glonassCodPhsBias.end())
+                  bias = it->second;
+               cout << labs[i] << "," << bias << endl;
                line += " " + labs[i] + " " + rightJustify(asString(bias, 3), 8);
             }
             line += string(60 - line.length(), ' ');
@@ -970,7 +972,6 @@ namespace gpstk
          strm << line << endl;
          strm.lineNumber++;
       }
-      cerr << "end writeHeaderRecords" << endl;
    } // end writeHeaderRecords
 
 
@@ -1391,7 +1392,6 @@ namespace gpstk
             if(str.empty()) continue;
             RinexObsID obsid("R"+str);
             double bias(asDouble(strip(line.substr(i*13+5,8))));
-            cerr << "setting CodPhsBias " << str << " to: " << bias << endl;
             glonassCodPhsBias[obsid] = bias;
          }
          valid |= validGlonassCodPhsBias;
@@ -2029,29 +2029,23 @@ namespace gpstk
       // Compute map of obs types for use in writing version 2 header and data, call before writing
    void Rinex3ObsHeader::prepareVer2Write(void)
    {
-      cerr << "prepareVer2Write" << endl;
       version = 2.11;
       valid |= Rinex3ObsHeader::validWaveFact;
          // TD unset R3-specific header members?
       
          // make a list of R2 obstype strings, and a map R3ObsIDs <= R2 obstypes for each system
-      cerr << "clearing R2ObsTypes" << endl;
       R2ObsTypes.clear();
-      cerr << "R2ObsTypes cleared" << endl;
       map<string,vector<RinexObsID> >::const_iterator mit;
       for (mit = mapObsTypes.begin(); mit != mapObsTypes.end(); mit++)
       {
-         cerr << "checking GNSS" << endl;
          string satString = mit->first;
          if(satString!="G" && satString!="R" && satString!="E" &&
             satString!="S" && satString!="T" && satString!="J" &&
             satString!="C" && satString!="G")
          {
-            cerr << "bad GNSS " << satString << endl;
             FFStreamError er("Invalid system char string in header.mapObsTypes: "+satString);
             GPSTK_THROW(er);
          }
-         cerr << "Done checking GNSS" << endl;
             // mit->first is system char as a 1-char string
          map<string, RinexObsID> mapR2toR3ObsID;
 
@@ -2083,7 +2077,6 @@ namespace gpstk
             }
             else
             {
-               cerr << "throwing error, catch me" << endl;
                FFStreamError err("Too many ObsIDs simplify to " +
                                  R2ot + " to create a valid R2 file");
                GPSTK_THROW(err);
@@ -2093,14 +2086,12 @@ namespace gpstk
             it = find(R2ObsTypes.begin(),R2ObsTypes.end(),R2ot);
             if (it == R2ObsTypes.end())
             {
-               cerr << "adding R2OT" << endl;
                   // its not there - add it
                R2ObsTypes.push_back(R2ot);
                mapR2toR3ObsID[R2ot] = mit->second[i];
             }
             else
             {
-               cerr << "R2OT already there" << endl;
                   // its already there - in list of R2 ots
                if (mapR2toR3ObsID.find(R2ot) == mapR2toR3ObsID.end())
                {
@@ -2116,13 +2107,11 @@ namespace gpstk
                   if(posnew < posold)           // replace the R3ObsID in the map
                      mapR2toR3ObsID[R2ot] = mit->second[i];
                }
-               cerr << "dealt with R2 already there" << endl;
             }
          }
             // save for this system
          mapSysR2toR3ObsID[mit->first] = mapR2toR3ObsID;
       }
-      cerr << "end prepareVer2Write" << endl;
    }  // end prepareVer2Write()
 
    void Rinex3ObsHeader::dump(ostream& s) const
