@@ -27,6 +27,12 @@ public:
       Rinex3ObsData data;
 
       header.fileProgram = "rinex3Test";
+      if(satString == "M")
+         header.fileSysSat.system = SatID::systemMixed;
+      else if(satString == "R")
+         header.fileSysSat.system = SatID::systemGlonass;
+      else
+         header.fileSysSat.system = SatID::systemGPS;
       std::ostringstream ostr;
       ostr << gpstk::CivilTime(TimeSystem::GPS);
       header.date = ostr.str();
@@ -60,7 +66,7 @@ public:
 
 
       header.valid |= Rinex3ObsHeader::validSystemPhaseShift;
-      if(completeR) {
+      if(completeR || satString == "M") {
          header.glonassFreqNo = Rinex3ObsHeader::GLOFreqNumMap();
          header.valid |= Rinex3ObsHeader::validGlonassSlotFreqNo;
          header.glonassCodPhsBias = Rinex3ObsHeader::GLOCodPhsBias();
@@ -124,7 +130,13 @@ public:
        datumP2_2.lli = 0;
        datumP2_2.ssi = 0;
 
-      header.mapObsTypes.insert(std::pair<std::string, std::vector<RinexObsID> >(satString, newObsIds));
+      if(satString == "M")
+      {
+         header.mapObsTypes.insert(std::pair<std::string, std::vector<RinexObsID> >("R", newObsIds));
+         header.mapObsTypes.insert(std::pair<std::string, std::vector<RinexObsID> >("G", newObsIds));
+      }
+      else
+         header.mapObsTypes.insert(std::pair<std::string, std::vector<RinexObsID> >(satString, newObsIds));
       header.valid |= Rinex3ObsHeader::validNumObs;
       header.valid |= Rinex3ObsHeader::validSystemNumObs;
 
@@ -140,10 +152,10 @@ public:
       datumVec2[3] = datumL2_2;
       datumVec1[4] = datumP2_1;
       datumVec2[4] = datumP2_2;
-      RinexSatID GPS3 = RinexSatID("03");
-      RinexSatID GPS6 = RinexSatID("06");
-      data.obs.insert(std::pair<RinexSatID, std::vector<RinexDatum> >(GPS3, datumVec1));
-      data.obs.insert(std::pair<RinexSatID, std::vector<RinexDatum> >(GPS6, datumVec2));
+      RinexSatID S3 = (satString == "G") ? RinexSatID("03") : RinexSatID("R03");
+      RinexSatID S6 = (satString == "G" || satString == "M") ? RinexSatID("06") : RinexSatID("R06");
+      data.obs.insert(std::pair<RinexSatID, std::vector<RinexDatum> >(S3, datumVec1));
+      data.obs.insert(std::pair<RinexSatID, std::vector<RinexDatum> >(S6, datumVec2));
 
       header.version = 3.02;
       header.valid |= Rinex3ObsHeader::validVersion;
@@ -229,6 +241,19 @@ public:
          testID = "ValidTest";
          Rinex3ObsFromScratch("G",testID);
          TUASSERT( compareOutExp(testID) );
+      }
+      catch(...)
+      {
+         TUFAIL( "valid input threw exception");
+      }
+      try
+      {
+         cerr << "starting mixed test" << endl;
+         //create a valid Rinex Obs file
+         testID = "MixedTest";
+         Rinex3ObsFromScratch("M",testID);
+         TUASSERT( compareOutExp(testID) );
+         cerr << "mixed test complete" << endl;
       }
       catch(...)
       {

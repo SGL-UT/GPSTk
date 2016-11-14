@@ -55,7 +55,7 @@ namespace gpstk
                              const Rinex3ObsData& rod )
       throw(FFStreamError, StringException)
    {
-
+      cerr << "reallyPutRecordV2" << endl;
          // is there anything to write?
       if( (rod.epochFlag==0 || rod.epochFlag==1 || rod.epochFlag==6)
           && (rod.numSVs==0 || rod.obs.empty()) ) return;
@@ -124,12 +124,11 @@ namespace gpstk
             itr++;
          }
 
-      }
+      }  // End of 'if( rod.epochFlag==0 || rod.epochFlag==1 || ...'
 
          // write the epoch line
       strm << line << endl;
       strm.lineNumber++;
-
          // write the auxiliary header records, if any
       if( rod.epochFlag >= 2 && rod.epochFlag <= 5 )
       {
@@ -148,33 +147,69 @@ namespace gpstk
       }  // write out data
       else if( rod.epochFlag == 0 || rod.epochFlag == 1 || rod.epochFlag == 6 )
       {
+         size_t i;
          const int maxObsPerLine(5);
 
             // loop over satellites in R3 obs data
          for( itr = rod.obs.begin(); itr != rod.obs.end(); ++itr )
          {
+
+            RinexSatID sat(itr->first);               // current satellite
+            string sys(string(1,sat.systemChar()));   // system
             int obsWritten(0);
             line = string("");
-            for(int i=0;i<itr->second.size();i++)
+
+               // loop over R2 obstypes
+            for( i=0; i<strm.header.R2ObsTypes.size(); i++ )
             {
+
+                  // get the R3 obs ID from the map
+               RinexObsID obsid;
+               obsid =
+                  strm.header.mapSysR2toR3ObsID[sys][strm.header.R2ObsTypes[i]];
+
+                  // now find index of that data from R3 header
+               const vector<RinexObsID>& vecData(strm.header.mapObsTypes[sys]);
+
+               vector<RinexObsID>::const_iterator jt;
+               jt = find(vecData.begin(), vecData.end(), obsid);
+
+                  // index into vecData
+               int ind(-1);
+
+               if( jt != vecData.end() )
+                  ind = jt-vecData.begin();
+
+                  // need a continuation line?
                if( obsWritten != 0 && (obsWritten % maxObsPerLine) == 0 )
                {
                   strm << line << endl;
                   strm.lineNumber++;
                   line = string("");
                }
-               line += itr->second[i].asString();
+
+                  // write the line
+               if (ind == -1)
+               {
+                  RinexDatum empty;
+                  line += empty.asString();
+               }
+               else
+               {
+                  line += itr->second[ind].asString();
+               }
                obsWritten++;
-            }
+
+            }  // End of 'for( i=0; i<strm.header.R2ObsTypes.size(); i++ )'
 
             strm << line << endl;
             strm.lineNumber++;
 
-         }
+         }  // End of 'for( itr = rod.obs.begin(); itr != rod.obs.end();...'
 
-      }
+      }  // Ebf of 'else if( rod.epochFlag == 0 || rod.epochFlag == 1 || ...'
 
-   }
+   }  // End of function 'reallyPutRecordVer2()'
 
 
    Rinex3ObsData::Rinex3ObsData()
@@ -246,9 +281,12 @@ namespace gpstk
    void Rinex3ObsData::reallyPutRecord(FFStream& ffs) const
       throw(std::exception, FFStreamError, StringException)
    {
+      cerr << "reallyPutRecord" << endl;
          // is there anything to write?
       if( (epochFlag == 0 || epochFlag == 1 || epochFlag == 6)
-          && (numSVs==0 || obs.empty())) return;
+          && (numSVs==0 || obs.empty())){
+         return;
+      }
 
       Rinex3ObsStream& strm = dynamic_cast<Rinex3ObsStream&>(ffs);
 

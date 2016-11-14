@@ -449,10 +449,8 @@ namespace gpstk
          return ((valid & allValid) == allValid);
       }
 
-         /** Set version = 2.11 and validWaveFact in valid.
-          * Previously used to compute map of obs types for use in
-          * writing version 2 header and data (Which now occurs in
-          * writeHeaderRecords) */
+         /** Compute map of obs types for use in writing version 2
+          * header and data */
       void prepareVer2Write(void);
 
          /** Compare this header with another.
