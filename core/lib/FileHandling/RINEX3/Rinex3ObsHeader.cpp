@@ -102,6 +102,8 @@ namespace gpstk
 
    void Rinex3ObsHeader::clear()
    {
+      R2ObsTypes.clear();
+      mapSysR2toR3ObsID.clear();
       version = 3.02;
       fileType = "O";          // observation data
       fileSys = "G";           // GPS only by default
@@ -507,6 +509,12 @@ namespace gpstk
       }
       if(version < 3 && (valid & validNumObs))          // R2 only
       {
+         if(R2ObsTypes.empty())
+         {
+            InvalidRequest er("Header contains no R2ObsTypes. "
+                                 "You must run prepareVer2Write before outputting an R2 file");
+            GPSTK_THROW(er);
+         }
             // write out RinexObsTypes
          const int maxObsPerLine = 9;
          int obsWritten = 0;
