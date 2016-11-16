@@ -20,8 +20,7 @@ public:
        * @param testID a string to identify the relevant files
        * @param includeConflict include two RinexObsIDs that convert to the same R2 Obs Type
        * @param completeR include glonass freqNo and codPhsBias */
-   void Rinex3ObsFromScratch(string satString, string testID = "",
-                             bool includeConflict = false, bool completeR = false) {
+   void Rinex3ObsFromScratch(string satString, string testID = "", bool completeR = false) {
 
       Rinex3ObsHeader header;
       Rinex3ObsData data;
@@ -79,7 +78,7 @@ public:
       data.clockOffset = 0;
       data.time = CommonTime().set(985354, 40530, 0.0, TimeSystem::GPS);
 
-       std::vector<RinexObsID> newObsIds = setupObsIDs(includeConflict);
+       std::vector<RinexObsID> newObsIds = setupObsIDs();
 
 
        RinexDatum datumL1_1;
@@ -175,7 +174,7 @@ public:
        delete strm, strm2;
    }
 
-    std::vector<RinexObsID> setupObsIDs(bool includeConflict){
+    std::vector<RinexObsID> setupObsIDs(){
        std::vector<RinexObsID> newObsIds;
 
        RinexObsID obsID1; //L1
@@ -203,16 +202,9 @@ public:
        newObsIds.push_back(obsID4);
 
        RinexObsID obsID5;
-       if(includeConflict){ //Y1
-           obsID5.band = ObsID::cbL1;
-           obsID5.code = ObsID::tcY;;
-           obsID5.type = ObsID::otRange;
-       }
-       else { //P2
-           obsID5.band = ObsID::cbL2;
-           obsID5.code = ObsID::tcP;
-           obsID5.type = ObsID::otRange;
-       }
+       obsID5.band = ObsID::cbL2;
+       obsID5.code = ObsID::tcP;
+       obsID5.type = ObsID::otRange;
        newObsIds.push_back(obsID5);
 
        return newObsIds;
@@ -274,23 +266,12 @@ public:
       {
             //create a glonass Rinex file. Fill glonass-required fields
          testID = "CompleteR";
-         Rinex3ObsFromScratch("R",testID, false, true);
+         Rinex3ObsFromScratch("R",testID, true);
          TUASSERT( compareOutExp(testID) );
       }
       catch(...)
       {
          TUFAIL( "Glonass file failed despite having all necessary fields");
-      }
-      try
-      {
-            //create a Rinex file containing two unique RinexObsIDs that convert to the same R2Obs type
-         testID = "Conflict";
-         Rinex3ObsFromScratch("G",testID, true);
-         TUFAIL("Conflicting R3->R2 conversions threw no error");
-      }
-      catch(...)
-      {
-         TUPASS( "Conflicting conversion threw");
       }
       try
       {

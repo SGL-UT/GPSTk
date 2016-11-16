@@ -377,6 +377,18 @@ namespace gpstk
             itr++;
          }
       }
+      if(!R2DisambiguityMap.empty())
+      {
+         DisAmbMap::const_iterator itr = R2DisambiguityMap.begin();
+         while (itr != R2DisambiguityMap.end())
+         {
+            line  = leftJustify(itr->first.substr(0,1) + " Obs Type " + itr->first.substr(1) + " originated from  " + itr->second, 60);
+            line += hsComment;
+            strm << line << endl;
+            strm.lineNumber++;
+            itr++;
+         }
+      }
       if(valid & validMarkerName)
       {
          line  = leftJustify(markerName, 60);
@@ -873,8 +885,6 @@ namespace gpstk
                double bias = 0.0;
                if (it != glonassCodPhsBias.end())
                   bias = it->second;
-               if(debug)
-                  cout << labs[i] << "," << bias << endl;
                line += " " + labs[i] + " " + rightJustify(asString(bias, 3), 8);
             }
             line += string(60 - line.length(), ' ');
@@ -2079,17 +2089,6 @@ namespace gpstk
                R2ot = string("P")+string(1,lab[1]);
             else
                R2ot = lab.substr(0,2);
-
-            if(find(uniqueCheck.begin(),uniqueCheck.end(),R2ot)==uniqueCheck.end())
-            {
-               uniqueCheck.push_back(R2ot);
-            }
-            else
-            {
-               FFStreamError err("Too many ObsIDs simplify to " +
-                                 R2ot + " to create a valid R2 file");
-               GPSTK_THROW(err);
-            }
                // add to list, if not already there
             vector<string>::iterator it;
             it = find(R2ObsTypes.begin(),R2ObsTypes.end(),R2ot);
@@ -2114,7 +2113,13 @@ namespace gpstk
                   posold = allCodes.find((mapR2toR3ObsID[R2ot].asString())[2]);
                   posnew = allCodes.find(lab[2]);
                   if(posnew < posold)           // replace the R3ObsID in the map
+                  {
                      mapR2toR3ObsID[R2ot] = mit->second[i];
+                  }
+                  if(R2DisambiguityMap.find(satString + R2ot) == R2DisambiguityMap.end())
+                     R2DisambiguityMap.insert(std::pair<string,string>(satString + R2ot,mapR2toR3ObsID[R2ot].asString()));
+                  else
+                     R2DisambiguityMap[satString + R2ot] = lab[2];
                }
             }
          }

@@ -90,7 +90,7 @@ test_app_with_file(
     RinEdit_302to211Mixed # test name
     RinEdit # app name
     "Rinex2 Rinex3" # labels
-    --ID\ ${GPSTK_TEST_DATA_DIR}/inputs/igs\ --IF\ FAA100PYF_R_20161700100_15M_01S_MO\ --ver2\ --OD\ ${GPSTK_TEST_OUTPUT_DIR}\ --OF\ RinEdit_302to211Mixed.out\ --file\ ${GPSTK_TEST_DATA_DIR}/inputs/RinEdit_GPS_mixed
+    --ID\ ${GPSTK_TEST_DATA_DIR}/inputs/igs\ --IF\ FAA100PYF_R_20161700100_15M_01S_MO\ --ver2\ --OD\ ${GPSTK_TEST_OUTPUT_DIR}\ --OF\ RinEdit_302to211Mixed.out
     -l2)
 
 # Convert 3->2 and make a GPS only file, uses an input file to configure the editing

@@ -478,8 +478,7 @@ int processFiles(void) throw(Exception)
                   kt = find(jt->second.begin(), jt->second.end(), obsid);
                   if(kt == jt->second.end())
                      continue;
-
-                  RHout.mapObsTypes[jt->first].erase(kt);
+                  jt->second.erase(kt);
                      // flag the obs types have changed so the translations need to as well
                   mungeData = true;
                }
