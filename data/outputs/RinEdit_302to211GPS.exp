@@ -1,5 +1,10 @@
      2.11           OBSERVATION DATA    MIXED               RINEX VERSION / TYPE
-RinEdit                                 20160822 175218 UTC PGM / RUN BY / DATE
+RinEdit                                 20161116 232203 UTC PGM / RUN BY / DATE
+G Obs Type D2 originated from  D2W                          COMMENT
+G Obs Type L2 originated from  L2W                          COMMENT
+G Obs Type P2 originated from  C2W                          COMMENT
+G Obs Type S1 originated from  S1W                          COMMENT
+G Obs Type S2 originated from  S2W                          COMMENT
 FAA1                                                        MARKER NAME
 92201M012                                                   MARKER NUMBER
 AUTOMATIC           ESA/ESOC                                OBSERVER / AGENCY

@@ -296,6 +296,8 @@ namespace gpstk
       typedef std::map<RinexSatID, int> GLOFreqNumMap;
          /// Map GLONASS SV observable to code phase bias
       typedef std::map<RinexObsID, double> GLOCodPhsBias;
+         /// Map SysChar + R2 Obs Type to Obs ID
+      typedef std::map<std::string,std::string> DisAmbMap;
 #ifndef SWIG
          /// Corrections (e.g. code bias) vector
       typedef std::vector<Rinex3CorrInfo> CorrVec;
@@ -312,6 +314,9 @@ namespace gpstk
          /** map between RINEX ver 3 ObsIDs and ver 2 obstypes for
           * each system: reallyPut */
       VersionObsMap mapSysR2toR3ObsID;
+
+         /** map Sys + R2ot to their ObsID origins*/
+      DisAmbMap R2DisambiguityMap;
 
 
       double version;                  ///< RINEX 3 version/type
@@ -451,7 +456,7 @@ namespace gpstk
 
          /** Compute map of obs types for use in writing version 2
           * header and data */
-      void prepareVer2Write(void) throw();
+      void prepareVer2Write(void);
 
          /** Compare this header with another.
           * @param[in] right the header to compare this with.
@@ -468,7 +473,6 @@ namespace gpstk
                    StringVec& diffs,
                    const StringVec& inclExclList,
                    bool incl = false);
-
 
    protected:
 

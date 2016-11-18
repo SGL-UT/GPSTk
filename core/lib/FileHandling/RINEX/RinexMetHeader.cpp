@@ -101,7 +101,7 @@ namespace gpstk
       if      (version == 2.0 ) allValid = allValid20;
       else if (version == 2.1 ) allValid = allValid21;
       else if (version == 2.11) allValid = allValid211;
-      else if (version == 3.0 ) allValid = allValid211; /// This is the R3.0 version standard.
+      else if (version >= 3.0 ) allValid = allValid211; /// This is the R3.0 version standard.
       else
       {
          FFStreamError err("Unknown RINEX version: " + asString(version,2));
@@ -283,7 +283,8 @@ namespace gpstk
          {
             std::string verstr(strip(line.substr(0,20)));
             if ((verstr != "2.0") && (verstr != "2.1") && (verstr != "2.00") &&
-                (verstr != "2.10") && (verstr != "2.11") && (verstr != "3.0"))
+               (verstr != "2.10") && (verstr != "2.11") && (verstr != "3.0") &&
+               (verstr != "3.01") && (verstr!= "3.02"))
             {
                FFStreamError e("Unknown or unsupported RINEX version " + 
                                asString(version));
@@ -416,7 +417,7 @@ namespace gpstk
       if      (version == 2.0 ) allValid = allValid20;
       else if (version == 2.1 ) allValid = allValid21;
       else if (version == 2.11) allValid = allValid21;
-      else if (version == 3.0 ) allValid = allValid21;
+      else if (version >= 3.0 ) allValid = allValid21;
       else
       {
          FFStreamError e("Unknown or unsupported RINEX version " + 

@@ -111,7 +111,7 @@ void RNWDiff::process()
          while ((!matched) && (seconditr != difflist.second.end()))
          {
                // this will match the exact same nav message in both
-               // files, not just the same ephemeris broadcasted at
+               // files, not just the same ephemeris broadcast at
                // different times.
             if ((firstitr->time == seconditr->time) &&
                 (firstitr->PRNID == seconditr->PRNID) &&

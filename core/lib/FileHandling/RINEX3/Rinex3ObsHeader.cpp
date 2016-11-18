@@ -102,6 +102,8 @@ namespace gpstk
 
    void Rinex3ObsHeader::clear()
    {
+      R2ObsTypes.clear();
+      mapSysR2toR3ObsID.clear();
       version = 3.02;
       fileType = "O";          // observation data
       fileSys = "G";           // GPS only by default
@@ -375,6 +377,18 @@ namespace gpstk
             itr++;
          }
       }
+      if(!R2DisambiguityMap.empty())
+      {
+         DisAmbMap::const_iterator itr = R2DisambiguityMap.begin();
+         while (itr != R2DisambiguityMap.end())
+         {
+            line  = leftJustify(itr->first.substr(0,1) + " Obs Type " + itr->first.substr(1) + " originated from  " + itr->second, 60);
+            line += hsComment;
+            strm << line << endl;
+            strm.lineNumber++;
+            itr++;
+         }
+      }
       if(valid & validMarkerName)
       {
          line  = leftJustify(markerName, 60);
@@ -507,6 +521,12 @@ namespace gpstk
       }
       if(version < 3 && (valid & validNumObs))          // R2 only
       {
+         if(R2ObsTypes.empty())
+         {
+            InvalidRequest er("Header contains no R2ObsTypes. "
+                                 "You must run prepareVer2Write before outputting an R2 file");
+            GPSTK_THROW(er);
+         }
             // write out RinexObsTypes
          const int maxObsPerLine = 9;
          int obsWritten = 0;
@@ -823,48 +843,60 @@ namespace gpstk
             } // else
          } // for(it=sysPhaseShift.begin(); it!=sysPhaseShift.end(); ++it)
       } // if(version >= 3.01 && (valid & validSystemPhaseShift))
-      if(version >= 3.01 && (valid & validGlonassSlotFreqNo))
+      if(version >= 3.01)
       {
-         size_t n(0),nsat(glonassFreqNo.size());
-         line = rightJustify(asString(nsat),3) + " ";
-         GLOFreqNumMap::const_iterator it,kt;
-         for(it = glonassFreqNo.begin(); it != glonassFreqNo.end(); ++it)
+         if ((valid & validGlonassSlotFreqNo))
          {
-            line += it->first.toString();
-            line += rightJustify(asString(it->second),3) + " ";
-            if(++n == 8 || ++(kt=it) == glonassFreqNo.end())
-            {
+            size_t n(0), nsat(glonassFreqNo.size());
+            line = rightJustify(asString(nsat), 3) + " ";
+            GLOFreqNumMap::const_iterator it, kt;
+            for (it = glonassFreqNo.begin(); it != glonassFreqNo.end(); ++it) {
+               line += it->first.toString();
+               line += rightJustify(asString(it->second), 3) + " ";
+               if (++n == 8 || ++(kt = it) == glonassFreqNo.end()) {
                   // write it
-               line += string(60-line.length(), ' ');
-               line += hsGlonassSlotFreqNo;
-               strm << line << endl;
-               strm.lineNumber++;
-               n = 0;
+                  line += string(60 - line.length(), ' ');
+                  line += hsGlonassSlotFreqNo;
+                  strm << line << endl;
+                  strm.lineNumber++;
+                  n = 0;
                   // are there more for a continuation line?
-               if(kt != glonassFreqNo.end())
-                  line = string(4,' ');
+                  if (kt != glonassFreqNo.end())
+                     line = string(4, ' ');
+               }
             }
          }
-      }
-      if(version >= 3.02 && (valid & validGlonassCodPhsBias))
-      {
-         line.clear();
-         GLOCodPhsBias::const_iterator it;
-         const string labs[4]={"C1C","C1P","C2C","C2P"};
-         for(int i=0; i<4; i++)
+         else if(mapObsTypes.find("R") != mapObsTypes.end())
          {
-            RinexObsID obsid(RinexObsID("R"+labs[i]));
-            it = glonassCodPhsBias.find(obsid);
-            double bias = 0.0;
-            if (it != glonassCodPhsBias.end())
-                bias = it->second;
-            cout << labs[i] << "," << bias << endl;
-            line += " " + labs[i] + " " + rightJustify(asString(bias,3),8);
+            FFStreamError err("Glonass Slot Freq No required for files containing Glonass Observations ");
+            GPSTK_THROW(err);
          }
-         line += string(60-line.length(), ' ');
-         line += hsGlonassCodPhsBias;
-         strm << line << endl;
-         strm.lineNumber++;
+      }
+      if(version >= 3.02)
+      {
+         if ((valid & validGlonassCodPhsBias))
+         {
+            line.clear();
+            GLOCodPhsBias::const_iterator it;
+            const string labs[4] = {"C1C", "C1P", "C2C", "C2P"};
+            for (int i = 0; i < 4; i++) {
+               RinexObsID obsid(RinexObsID("R" + labs[i]));
+               it = glonassCodPhsBias.find(obsid);
+               double bias = 0.0;
+               if (it != glonassCodPhsBias.end())
+                  bias = it->second;
+               line += " " + labs[i] + " " + rightJustify(asString(bias, 3), 8);
+            }
+            line += string(60 - line.length(), ' ');
+            line += hsGlonassCodPhsBias;
+            strm << line << endl;
+            strm.lineNumber++;
+         }
+         else if(mapObsTypes.find("R") != mapObsTypes.end())
+         {
+            FFStreamError err("Glonass Code Phase Bias required for files containing Glonass Observations ");
+            GPSTK_THROW(err);
+         }
       }
       if(valid & validLeapSeconds)
       {
@@ -2014,7 +2046,7 @@ namespace gpstk
    } // end writeTime
 
       // Compute map of obs types for use in writing version 2 header and data, call before writing
-   void Rinex3ObsHeader::prepareVer2Write(void) throw()
+   void Rinex3ObsHeader::prepareVer2Write(void)
    {
       version = 2.11;
       valid |= Rinex3ObsHeader::validWaveFact;
@@ -2025,9 +2057,18 @@ namespace gpstk
       map<string,vector<RinexObsID> >::const_iterator mit;
       for (mit = mapObsTypes.begin(); mit != mapObsTypes.end(); mit++)
       {
+         string satString = mit->first;
+         if(satString!="G" && satString!="R" && satString!="E" &&
+            satString!="S" && satString!="T" && satString!="J" &&
+            satString!="C" && satString!="G")
+         {
+            FFStreamError er("Invalid system char string in header.mapObsTypes: "+satString);
+            GPSTK_THROW(er);
+         }
             // mit->first is system char as a 1-char string
          map<string, RinexObsID> mapR2toR3ObsID;
 
+         vector<string> uniqueCheck;
             // loop over all ObsIDs for this system
          for(size_t i=0; i<mit->second.size(); i++)
          {
@@ -2048,7 +2089,6 @@ namespace gpstk
                R2ot = string("P")+string(1,lab[1]);
             else
                R2ot = lab.substr(0,2);
-
                // add to list, if not already there
             vector<string>::iterator it;
             it = find(R2ObsTypes.begin(),R2ObsTypes.end(),R2ot);
@@ -2073,7 +2113,13 @@ namespace gpstk
                   posold = allCodes.find((mapR2toR3ObsID[R2ot].asString())[2]);
                   posnew = allCodes.find(lab[2]);
                   if(posnew < posold)           // replace the R3ObsID in the map
+                  {
                      mapR2toR3ObsID[R2ot] = mit->second[i];
+                  }
+                  if(R2DisambiguityMap.find(satString + R2ot) == R2DisambiguityMap.end())
+                     R2DisambiguityMap.insert(std::pair<string,string>(satString + R2ot,mapR2toR3ObsID[R2ot].asString()));
+                  else
+                     R2DisambiguityMap[satString + R2ot] = lab[2];
                }
             }
          }
@@ -2133,7 +2179,7 @@ namespace gpstk
       {
          s << "mapSysR2toR3ObsID[" << i->first << "] ";
          for (ObsIDMap::const_iterator j = i->second.begin(); j != i->second.end(); j++)
-            cout << j->first << ":" << j->second.asString() << " ";
+            s << j->first << ":" << j->second.asString() << " ";
          s << endl;
       }
       

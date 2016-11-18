@@ -130,8 +130,10 @@ namespace gpstk
    private:
 
          /// Parses string \a line to get time and met data
+         /// @param version of Rinex file (3.02, 3.01, 2.11, ...)
       void processFirstLine(const std::string& line,
-                            const RinexMetHeader& hdr)
+                            const RinexMetHeader& hdr,
+                            double version)
          throw(FFStreamError);
 
          /// Parses string \a line to get data on continuation lines.
@@ -140,12 +142,14 @@ namespace gpstk
          throw(FFStreamError);
 
          /// Parses the time portion of a line into a CommonTime object.
-      CommonTime parseTime(const std::string& line) const
+         /// @param version of Rinex file (3.02, 3.01, 2.11, ...)
+      CommonTime parseTime(const std::string& line, double version) const
          throw(FFStreamError);
 
          /// Writes the CommonTime object into RINEX format. If it's a
          /// bad time, it will return blanks.
-      std::string writeTime(const CommonTime& dt) const
+         /// @param version Rinex version, default to 2.11 for backwards compatability
+      std::string writeTime(const CommonTime& dtd, double version = 2.11) const
          throw(gpstk::StringUtils::StringException);
 
    };  // class RinexMetData

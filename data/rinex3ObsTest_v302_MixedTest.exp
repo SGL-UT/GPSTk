@@ -1,0 +1,18 @@
+     3.02           OBSERVATION DATA    MIXED               RINEX VERSION / TYPE
+rinex3Test          From_Scratch_T_Mixed20161114 230307 UTC PGM / RUN BY / DATE
+NCCM1                                                       MARKER NAME
+85401                                                       MARKER NUMBER
+Monitor Station     NGA                                     OBSERVER / AGENCY
+1                   ITT MSN SAASM       3.2.13              REC # / TYPE / VERS
+1                   Topcon CR-G5                            ANT # / TYPE
+   -18000.2700 -4991850.1200  3957008.5000                  APPROX POSITION XYZ
+        0.0000        0.0000        0.0000                  ANTENNA: DELTA H/E/N
+G    5 L1P C1P C1C L2P C2P                                  SYS / # / OBS TYPES
+R    5 L1P C1P C1C L2P C2P                                  SYS / # / OBS TYPES
+    30.000                                                  INTERVAL
+  2016    10     2    11    15   30.0000000     GPS         TIME OF FIRST OBS
+ C1C    0.000 C1P    0.000 C2C    0.000 C2P    0.000        GLONASS COD/PHS/BIS
+                                                            END OF HEADER
+> 2016 10 02 11 15 30.0000000  0  2      
+G06         2.00000         4.00000         6.00000         8.00000        10.00000
+R03         1.00000         3.00000         5.00000         7.00000         9.00000
