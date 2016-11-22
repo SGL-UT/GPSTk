@@ -1,5 +1,106 @@
       #################################################
 
+Version 2.9.4   Tuesday, November 22, 2016
+
+   General modifications
+   ---------------------
+   - Numerous Windows fixes
+   - Updated Truth Data for tests
+   - Various fixes for test infrastructure and individual tests
+   - This release includes new/modified source code comments for improved readability.
+   - Various Bug and Compile Warning Fixes
+
+   Modifications by Author
+   ---------------------
+
+Bryan Parsons (15):
+      Merge branch 'issue_271' into 'master'
+      Merge branch 'issue_272' into 'master'
+      Merge branch '274-multi-gnss-support-in-sp3c-files' into 'master'
+      Merge branch 'issue_275_TSC_in_OrbSysGpsL_56' into 'master'
+      Fixed FileHunter_T file and dir creation under Windows.
+      FileHunter has been updated to work correctly on Windows.  All failed tests cleared.  Windows api can handle both Unix and Windows file paths now.  Removed old file path code.  Also removed all CYGWIN defs from Core library.
+      Fixed FileUtils test failures - Tweaks to FileUtils library code for handling mangled directory paths on Windows.  FileUtils_T test omissions for tests not compatible with Windows.
+      Merge branch 'issue_276_BDSEllipsoid' into 'master'
+      Merge branch 'master' into windows_tests
+      Merge branch 'windows_tests' into 'master'
+      Merge branch 'issue_276_BDSEllipsoid' into 'master'
+      Truth test data updated to handle new OrbitEphStore edge case fixes and subsequent output changes.
+      Merge branch 'issue_277' into 'master'
+      Merge branch 'issue_286' into 'master'
+      Merge branch '288-vector-obsid-is-not-swig-wrapped' into 'master'
+
+John H. Price (14):
+      Calling prepareVer2Write is no longer necessary for outputting Rinex2 files     Added checking and excepting for likely programmer/user mistakes:     -invalid system char string in Header.mapObsTypes     -overlapping R3->R2 Obs Type conversion
+      Added 4-digit year for Rinex 3.02 Met file support
+      Glonass-related required fields now required iff a Glonass satellite is included in the file
+      Fixed reallyGetRecord for 3.02's 4-digit year     Updated comments for Rinex3Obs_FromScratch_T
+      Updated comments, respaced code for readability
+      Refactored code for readability. Added version test to RinexMet_T
+      Added missing data for new Rinex Met and Obs tests
+      Fixed --DO removing extra obs in RinEdit, updated tests to avoid duplicate obs
+      fixed Rinex 2 GPS output
+      partial fix of multi-GNSS rinex file io, save to test master behavior
+      removed debug messages, fixed glonass cod/phs/bias bug in writeHeaderRecords
+      Added check for prepareVer2Write following its re-requirement to output R2 files
+      Found print statement in Rinex3ObsHeader writeHeaderRecords implementation, surrounded with if(debug)
+      added back auto-selection of 'best' ObsID for R2 Obs Types in prepareVer2Write. Doing so now adds a header comment to clarify the origin of the Obs Type
+
+Jon C. Little (18):
+      Making df_diff report when a file isn't found
+      Allowing a slight variation in the SYS / PHASE SHIFT header
+      Adding more Rinex v2 & v3 testing
+      Now tests splitting and merging of files with RinEdit
+      Added another RinDump test
+      Merge branch 'master' into RinEdit_Galileo
+      Fixing several files that got overwritten in the previous merge of     master in to RinEdit_Galileo
+      Added more test cases for various Rinex variants.     see data/inputs/igs/README.md for the files used
+      Fixed and incorrectly specified dependency in the ctest of RinEdit
+      Merge branch 'master' into RinEdit_Galileo
+      Documentation for test data. Oh my!
+      Merge branch 'master' into RinEdit_Galileo
+      Fixing return code to be non-zero when there are uncaught exceptions thrown during tests
+      Added logging of environment to the build log.
+      Changed finding the GLONASS bias since the initializer seemed to be optimized out on solaris
+      Changed verbosity level to dump the environment
+      Merge branch 'master' into RinEdit_Checker
+      mend
+
+Jon Little (4):
+      Merge branch 'issue_283_OrbAlmGen' into 'master'
+      Merge branch '287_python_test' into 'master'
+      Merge branch 'RinEdit_Galileo' into 'master'
+      Merge branch 'RinEdit_Checker' into 'master'
+
+Richard Ji-Cathriner (2):
+      added BDS and QZSS support to SP3c parsing
+      Add template for vector with ObsID contents
+
+johnk (9):
+      Demonstrate how GPSEphemerisStore selection fails
+      Finding two return statements in the same scope, one after the other, made me reformat this to figure out what's really going on
+      It wasn't that I'd deleted a close curly, it was that I'd added an open curly.  Oops
+      Change eph2 HOW time, eph3 IODC/IODE
+      Add handling of edge cases and remove debugging cruft
+      Merge branch 'master' into issue_277
+      Merge attempt 1
+      Redo changes for ephemeris selection, using master, sans reformatting
+      Make find methods return NULL on empty map
+
+renfrob (10):
+      Adding operator<() to TimeRange
+      Fixing test failures
+      Changed key for OrbAlmStore to beginValid
+      Adding method to retrieve list of subject SVs
+      Correcting time frame for estimateWeekNumberBDS
+      Adding TimeSystemCorr method
+      Adding OrbSysStore
+      Adding new ellipsoid
+      Fixed file name problem
+      Modify OrbAlmGen to recognize and reject placeholder almanacs
+
+      #################################################
+
 Version 2.9.3   Thursday, September 15, 2016
 
    General modifications

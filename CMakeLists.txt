@@ -11,7 +11,7 @@ cmake_minimum_required( VERSION 2.8.5 )
 project( GPSTK )
 set( GPSTK_VERSION_MAJOR "2" )
 set( GPSTK_VERSION_MINOR "9" )
-set( GPSTK_VERSION_PATCH "3" )
+set( GPSTK_VERSION_PATCH "4" )
 set( GPSTK_VERSION "${GPSTK_VERSION_MAJOR}.${GPSTK_VERSION_MINOR}.${GPSTK_VERSION_PATCH}" )
 
 # Test data file source directory
