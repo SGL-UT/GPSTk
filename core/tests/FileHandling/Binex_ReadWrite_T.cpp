@@ -305,7 +305,7 @@ int BinexReadWrite_T :: doForwardTests()
          std::streampos posBefore = outStream.tellp();
          (*recordIter).putRecord(outStream);
          std::streampos posAfter = outStream.tellp();
-         TUASSERTE(std::streampos, (*recordIter).getRecordSize(), (posAfter - posBefore));
+         TUASSERTE(long long, (*recordIter).getRecordSize(), (posAfter - posBefore));
       }
       catch (Exception& e)
       {
