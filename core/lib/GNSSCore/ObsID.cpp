@@ -207,6 +207,20 @@ namespace gpstk
             default: break;
             }
          }
+      }
+      else if (sys== 'I')  // IRNSS
+      {
+         if(band == cbL5)
+         {
+            switch (code)
+            {
+               case tcCA:   code = tcIA5; break;   // 'A'
+               case tcA:    code = tcIB5; break;   // 'B'
+               case tcB:    code = tcIC5; break;   // 'B'
+               case tcC2LM: code = tcIX5; break;   // 'X'
+            default: break;
+            }
+         }
       } // end of checking which GNSS system this obs is for
    }
 
