@@ -84,93 +84,130 @@ void BinexAttrs_T :: init( void )
 
 int BinexAttrs_T :: doIsDataTests()
 {
-   TestUtil  tester( "BinexData", "isData", __FILE__, __LINE__ );
+   TUDEF("BinexData", "isData");
 
    BinexData  rec;
-   tester.assert( rec.isData(), "BinexData should be 'data'", __LINE__ );
+   TUASSERT(rec.isData());
 
-   return tester.countFails();
+   TURETURN();
 }
 
 
 int BinexAttrs_T :: doRecordFlagsTests()
 {
-   TestUtil  tester( "BinexData", "recordflags", __FILE__, __LINE__ );
+   TUDEF("BinexData", "getRecordFlags");
 
    BinexData  rec;
-   tester.assert( (rec.getRecordFlags() == BinexData::DEFAULT_RECORD_FLAGS),
-                  "default flags expected", __LINE__ );
+   TUASSERTE(BinexData::SyncByte, BinexData::DEFAULT_RECORD_FLAGS, rec.getRecordFlags());
 
+   TUCSM("setRecordFlags");
    rec.setRecordFlags(0);
-   tester.assert( (rec.getRecordFlags() == 0),
-                  "no flags expected", __LINE__ );
+   TUASSERTE(BinexData::SyncByte, 0, rec.getRecordFlags());
 
    rec.setRecordFlags(0xFF);
-   tester.assert( (rec.getRecordFlags() == BinexData::VALID_RECORD_FLAGS),
-                  "valid flags expected", __LINE__ );
+   TUASSERTE(BinexData::SyncByte, BinexData::VALID_RECORD_FLAGS, rec.getRecordFlags());
 
-   return tester.countFails();
+   TURETURN();
 }
 
 
 int BinexAttrs_T :: doRecordIdTests()
 {
-   TestUtil  tester( "BinexData", "recordId", __FILE__, __LINE__ );
+   TUDEF("BinexData", "getRecordID");
 
    BinexData  recA;
-   tester.assert( (recA.getRecordID() == BinexData::INVALID_RECORD_ID),
-                  "invalid record id expected", __LINE__ );
+   TUASSERTE(BinexData::RecordID, BinexData::INVALID_RECORD_ID, recA.getRecordID());
 
    BinexData  recB(123);
-   tester.assert( (recB.getRecordID() == 123),
-                  "record id 123 expected", __LINE__ );
+   TUASSERTE(BinexData::RecordID, 123, recB.getRecordID());
 
+   TUCSM("setRecordID");
    recB.setRecordID(456);
-   tester.assert( (recB.getRecordID() == 456),
-                  "record id 456 expected", __LINE__ );
+   TUASSERTE(BinexData::RecordID, 456, recB.getRecordID());
 
-   return tester.countFails();
+   TURETURN();
 }
 
 
 int BinexAttrs_T :: doMessageLengthTests()
 {
-   TestUtil  tester( "BinexData", "messageLength", __FILE__, __LINE__ );
+   TUDEF("BinexData", "getMessageLength");
 
-   BinexData  rec;
-   tester.assert( (rec.getMessageLength() == 0),
-                  "expected length 0", __LINE__ );
+   BinexData  rec(1);  // a record id is required
+   TUASSERTE(size_t, 0, rec.getMessageLength());
+   TUCSM("getHeadLength");
+   TUASSERTE(size_t, 3, rec.getHeadLength());
+   TUCSM("getTailLength");
+   TUASSERTE(size_t, 1, rec.getTailLength());
+   TUCSM("getRecordSize");
+   TUASSERTE(size_t, 4, rec.getRecordSize());
 
-   BinexData::UBNXI  u;
+   std::string  s("1");
    size_t  offset = 0;
-   rec.updateMessageData(offset, u);
-   tester.assert( (rec.getMessageLength() > 0),
-                  "expected positive length", __LINE__ );
+   rec.updateMessageData(offset, s, s.size());
+   TUCSM("getMessageLength");
+   TUASSERTE(size_t, 1, rec.getMessageLength());
+   TUCSM("getHeadLength");
+   TUASSERTE(size_t, 3, rec.getHeadLength());
+   TUCSM("getTailLength");
+   TUASSERTE(size_t, 1, rec.getTailLength());
+   TUCSM("getRecordSize");
+   TUASSERTE(size_t, 5, rec.getRecordSize());
 
-   return tester.countFails();
+   s.assign(199, '2');
+   rec.updateMessageData(offset, s, s.size());
+   TUCSM("getMessageLength");
+   TUASSERTE(size_t, 200, rec.getMessageLength());
+   TUCSM("getHeadLength");
+   TUASSERTE(size_t, 4, rec.getHeadLength());
+   TUCSM("getTailLength");
+   TUASSERTE(size_t, 2, rec.getTailLength());
+   TUCSM("getRecordSize");
+   TUASSERTE(size_t, 206, rec.getRecordSize());
+
+   s.assign(17000, '3');
+   rec.updateMessageData(offset, s, s.size());
+   TUCSM("getMessageLength");
+   TUASSERTE(size_t, 17200, rec.getMessageLength());
+   TUCSM("getHeadLength");
+   TUASSERTE(size_t, 5, rec.getHeadLength());
+   TUCSM("getTailLength");
+   TUASSERTE(size_t, 4, rec.getTailLength());
+   TUCSM("getRecordSize");
+   TUASSERTE(size_t, 17209, rec.getRecordSize());
+
+   s.assign(2100800, '4');
+   rec.updateMessageData(offset, s, s.size());
+   TUCSM("getMessageLength");
+   TUASSERTE(size_t, 2118000, rec.getMessageLength());
+   TUCSM("getHeadLength");
+   TUASSERTE(size_t, 6, rec.getHeadLength());
+   TUCSM("getTailLength");
+   TUASSERTE(size_t, 16, rec.getTailLength());
+   TUCSM("getRecordSize");
+   TUASSERTE(size_t, 2118022, rec.getRecordSize());
+
+   TURETURN();
 }
 
 
 int BinexAttrs_T :: doMessageCapacityTests()
 {
-   TestUtil  tester( "BinexData", "messageCapacity", __FILE__, __LINE__ );
+   TUDEF("BinexData", "getMessageCapacity");
 
    BinexData  rec;
    BinexData::UBNXI  u;
    size_t  offset = 0;
    rec.updateMessageData(offset, u);
-   tester.assert( (rec.getMessageData().capacity() > 0),
-                  "non-zero capacity expected", __LINE__ );
+   TUASSERT(rec.getMessageData().capacity() >= 1);
 
+   TUCSM("ensureMessageCapacity");
    rec.ensureMessageCapacity(1024);
-   tester.assert( (rec.getMessageData().capacity() >= 1024),
-                  "expected capacity of at least 1024", __LINE__ );
-
+   TUASSERT(rec.getMessageData().capacity() >= 1024);
    rec.ensureMessageCapacity(2048);
-   tester.assert( (rec.getMessageData().capacity() >= 2048),
-                  "expected capacity of at least 2048", __LINE__ );
+   TUASSERT(rec.getMessageData().capacity() >= 2048);
 
-   return tester.countFails();
+   TURETURN();
 }
 
    /** Run the program.
