@@ -57,6 +57,7 @@ namespace gpstk
        string("GAL"),
        string("QZS"),
        string("BDT"),
+       string("IRN"),
        string("UTC"),
        string("TAI"),
        string("TT"),
@@ -253,7 +254,8 @@ namespace gpstk
       // TAI = UTC + getLeapSeconds()
       // TAI = TT - 32.184s
       if(inTS == GPS ||       // GPS -> TAI
-         inTS == GAL)         // GAL -> TAI
+         inTS == GAL ||       // GAL -> TAI
+         inTS == IRN )        // IRN -> TAI 
          dt = TAI_minus_GPSGAL_EPOCH;
       else if(inTS == UTC ||  // UTC -> TAI
               inTS == GLO)    // GLO -> TAI
@@ -277,7 +279,8 @@ namespace gpstk
       // UTC = TAI - getLeapSeconds()
       // TT = TAI + 32.184s
       if(outTS == GPS ||      // TAI -> GPS
-         outTS == GAL)        // TAI -> GAL
+         outTS == GAL ||      // TAI -> GAL
+         outTS == IRN )       // TAI -> IRN
          dt -= TAI_minus_GPSGAL_EPOCH;
       else if(outTS == UTC || // TAI -> UTC
               outTS == GLO)   // TAI -> GLO
