@@ -313,8 +313,8 @@ class JulianDate_T
 		TestUtil testFramework( "JulianDate", "printf", __FILE__, __LINE__ );
 
 
-  		JulianDate GPS1(1350000,TimeSystem(2));
-  		JulianDate UTC1(1350000,TimeSystem(7));
+  		JulianDate GPS1(1350000,TimeSystem::GPS);
+  		JulianDate UTC1(1350000,TimeSystem::UTC);
 
 		//---------------------------------------------------------------------
 		//Verify printed output matches expectation
