@@ -77,6 +77,7 @@ namespace gpstk {
       ObsID::cbDesc[ObsID::cbB1]        = "B1";            //Rinex 1
       ObsID::cbDesc[ObsID::cbB2]        = "B2";            //Rinex 7
       ObsID::cbDesc[ObsID::cbB3]        = "B3";            //Rinex 6
+      ObsID::cbDesc[ObsID::cbI9]        = "I9";            //Rinex 9
       ObsID::cbDesc[ObsID::cbL1L2]      = "comboL1L2";     //Rinex 3
       ObsID::cbDesc[ObsID::cbUndefined] = "undefined";     //Rinex -
 
