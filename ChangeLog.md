@@ -1,5 +1,36 @@
       #################################################
 
+Version 2.9.5   Friday, December 16, 2016
+
+   General modifications
+   ---------------------
+   - Fixed type of stream position test
+   - Updated Truth Data for tests
+   - Added unit tests to catch incorrect CRC length and other record length problems
+   - Updated unit tests with fancy macros
+   - Adding antenna phase center offset calculations
+   - Various Bug and Compile Warning Fixes
+
+   Modifications by Author
+   ---------------------
+
+Anthony Hughes (2):
+      Fixed incorrect CRC length; added unit tests to catch incorrect CRC length and other record length problems; updateded unit tests with fancy macros.
+      Fixed type of stream position test
+
+Bryan Parsons (4):
+      Update .gitlab-ci.yml to comment out Redhat runner, which is currently offline.
+      New line characters were producing errors when building RPMs.  Updated Description to fix this issue.  Reported by Anthony Hughes.
+      Merge branch 'issue_289_binex_crc' into 'master'
+      Merge branch 'issue_284_ANTEX' into 'master'
+      
+renfrob (1):
+      Adding antenna phase center offset calculations
+
+
+
+      #################################################
+
 Version 2.9.4   Tuesday, November 22, 2016
 
    General modifications
