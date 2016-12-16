@@ -11,3 +11,7 @@ add_test(RefTime_ReferenceFrame ReferenceFrame_T)
 add_executable(TimeSystem_T TimeSystem_T.cpp)
 target_link_libraries(TimeSystem_T gpstk)
 add_test(RefTime_TimeSystem TimeSystem_T)
+
+add_executable(TimeSystemCorr_T TimeSystemCorr_T.cpp)
+target_link_libraries(TimeSystemCorr_T gpstk)
+add_test(RefTime_TimeSystemCorr TimeSystemCorr_T)
