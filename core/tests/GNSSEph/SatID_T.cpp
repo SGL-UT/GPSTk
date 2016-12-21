@@ -104,7 +104,7 @@ public:
          //---------------------------------------------------------------------
          //Output for invalid UserDefined satellite and triple digit ID
          //---------------------------------------------------------------------
-      gpstk::SatID sat2(110, gpstk::SatID::SatelliteSystem (10));
+      gpstk::SatID sat2(110, gpstk::SatID::SatelliteSystem (11));
       std::string outputString2, compareString2;
       std::stringstream outputStream2;
 
@@ -156,7 +156,7 @@ public:
          //---------------------------------------------------------------------
          //Output for invalid UserDefined satellite and triple digit ID
          //---------------------------------------------------------------------
-      gpstk::SatID sat2(110, gpstk::SatID::SatelliteSystem (10));
+      gpstk::SatID sat2(110, gpstk::SatID::SatelliteSystem (11));
       compareString2 = "UserDefined 110";
       testFramework.assert(gpstk::StringUtils::asString(sat2) == compareString2,
                            "asString did not produce the expected result", __LINE__);
@@ -394,7 +394,7 @@ public:
 
 
       gpstk::SatID Compare1(5  , gpstk::SatID::SatelliteSystem(1) );
-      gpstk::SatID Compare2(1  , gpstk::SatID::SatelliteSystem(14));
+      gpstk::SatID Compare2(1  , gpstk::SatID::SatelliteSystem(15));
       gpstk::SatID Compare3(-1 , gpstk::SatID::SatelliteSystem(-1));
       gpstk::SatID Compare4(100, gpstk::SatID::SatelliteSystem(-1));
       gpstk::SatID Compare5(0  , gpstk::SatID::SatelliteSystem(1) );

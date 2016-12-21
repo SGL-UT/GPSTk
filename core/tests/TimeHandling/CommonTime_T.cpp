@@ -728,8 +728,8 @@ public:
    {
       TestUtil testFramework( "CommonTime", "printf", __FILE__, __LINE__ );
 
-      CommonTime GPS1; GPS1.set( 1234567, 24000, 0.2111, TimeSystem(2) );
-      CommonTime UTC1; UTC1.set( 1000,    200,   0.2,    TimeSystem(7) );
+      CommonTime GPS1; GPS1.set( 1234567, 24000, 0.2111, TimeSystem::GPS );
+      CommonTime UTC1; UTC1.set( 1000,    200,   0.2,    TimeSystem::UTC );
 
       testFramework.assert( GPS1.asString() == (std::string)"1234567 24000211 0.000100000000000 GPS",             "Verify printed output matches expectation",       __LINE__ );
       testFramework.assert( UTC1.asString() == (std::string)"0001000 00200200 0.000000000000000 UTC",              "Verify printed output matches expectation",      __LINE__ );

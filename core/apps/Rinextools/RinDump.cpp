@@ -832,6 +832,7 @@ void Configuration::SetDefaults(void) throw()
    mapSysCodes.insert(make_pair(string("GEO"),string("CIQX")));
    mapSysCodes.insert(make_pair(string("BDS"),string("IQX")));
    mapSysCodes.insert(make_pair(string("QZS"),string("CSLXZ")));
+   mapSysCodes.insert(make_pair(string("IRN"),string("ABCX")));
 
    map1to3Sys["G"] = "GPS";   map3to1Sys["GPS"] = "G";
    map1to3Sys["R"] = "GLO";   map3to1Sys["GLO"] = "R";
@@ -839,6 +840,7 @@ void Configuration::SetDefaults(void) throw()
    map1to3Sys["S"] = "GEO";   map3to1Sys["GEO"] = "S";
    map1to3Sys["C"] = "BDS";   map3to1Sys["BDS"] = "C";
    map1to3Sys["J"] = "QZS";   map3to1Sys["QZS"] = "J";
+   map1to3Sys["I"] = "IRN";   map3to1Sys["IRN"] = "I";
 
    string validSys(ObsID::validRinexSystems);
    for(size_t i=0; i<validSys.size(); i++) {

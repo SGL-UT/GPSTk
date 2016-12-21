@@ -115,6 +115,15 @@ namespace gpstk
       /// Weeks per BDS Epoch
    const long BDS_WEEK_PER_EPOCH = 8192L;
 
+   // IRN -------------------------------------------
+      /// 'Julian day' of IRN epoch (Aug 22, 1999).
+   const double IRN_EPOCH_JD = 2451412.5;
+      /// Modified Julian Date of BDS epoch (Aug 22, 1999).
+   const long IRN_EPOCH_MJD = 51412L;
+      /// Weeks per BDS Epoch
+   const long IRN_WEEK_PER_EPOCH = 1024L;
+
+
       //@}
 
 } // namespace
