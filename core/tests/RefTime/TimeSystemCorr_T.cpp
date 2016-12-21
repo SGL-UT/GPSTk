@@ -143,10 +143,46 @@ public:
       tscTest = buildObject("GAUT");
       timeOfInterest.setTimeSystem(gpstk::TimeSystem::GAL);
       corrVal = tscTest.Correction(timeOfInterest);
-      testFramework.assert( std::abs(corrVal-(-forwardResult)) < eps, testMesg, __LINE__);
+      testFramework.assert( std::abs(corrVal - forwardResult) < eps, testMesg, __LINE__);
       timeOfInterest.setTimeSystem(gpstk::TimeSystem::UTC);
       corrVal = tscTest.Correction(timeOfInterest);
+      testFramework.assert( std::abs(corrVal-(-forwardResult)) < eps, testMesg, __LINE__);
+
+      tscTest = buildObject("QZUT");
+      timeOfInterest.setTimeSystem(gpstk::TimeSystem::QZS);
+      corrVal = tscTest.Correction(timeOfInterest);
       testFramework.assert( std::abs(corrVal - forwardResult) < eps, testMesg, __LINE__);
+      timeOfInterest.setTimeSystem(gpstk::TimeSystem::UTC);
+      corrVal = tscTest.Correction(timeOfInterest);
+      testFramework.assert( std::abs(corrVal-(-forwardResult)) < eps, testMesg, __LINE__);
+
+      tscTest = buildObject("BDUT");
+      timeOfInterest.setTimeSystem(gpstk::TimeSystem::BDT);
+      corrVal = tscTest.Correction(timeOfInterest);
+      testFramework.assert( std::abs(corrVal - forwardResult) < eps, testMesg, __LINE__);
+      timeOfInterest.setTimeSystem(gpstk::TimeSystem::UTC);
+      corrVal = tscTest.Correction(timeOfInterest);
+      testFramework.assert( std::abs(corrVal-(-forwardResult)) < eps, testMesg, __LINE__);
+
+      tscTest = buildObject("IRUT");
+      timeOfInterest.setTimeSystem(gpstk::TimeSystem::IRN);
+      corrVal = tscTest.Correction(timeOfInterest);
+      testFramework.assert( std::abs(corrVal - forwardResult) < eps, testMesg, __LINE__);
+      timeOfInterest.setTimeSystem(gpstk::TimeSystem::UTC);
+      corrVal = tscTest.Correction(timeOfInterest);
+      testFramework.assert( std::abs(corrVal-(-forwardResult)) < eps, testMesg, __LINE__);
+
+         // GLONASS is a little different in that the A1 term is not used
+      A1 = 0;
+      forwardResult = A0 + A1 * deltaT; 
+      forwardResult = forwardResult * -1.0;    // This is a CORRECTION, not an error
+      tscTest = buildObject("GLUT");
+      timeOfInterest.setTimeSystem(gpstk::TimeSystem::GLO);
+      corrVal = tscTest.Correction(timeOfInterest);
+      testFramework.assert( std::abs(corrVal - forwardResult) < eps, testMesg, __LINE__);
+      timeOfInterest.setTimeSystem(gpstk::TimeSystem::UTC);
+      corrVal = tscTest.Correction(timeOfInterest);
+      testFramework.assert( std::abs(corrVal-(-forwardResult)) < eps, testMesg, __LINE__);
 
       return testFramework.countFails();
    }

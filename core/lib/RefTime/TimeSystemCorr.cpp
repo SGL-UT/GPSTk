@@ -319,9 +319,9 @@ namespace gpstk
             dt = ct - refTime;
 
             if(fromTS == TimeSystem::GAL)             // GAL => UTC
-               corr = A0+A1*dt;
-            else                                      // UTC => GAL
                corr = -A0-A1*dt;
+            else                                      // UTC => GAL
+               corr = A0+A1*dt;
 
             break;
 
@@ -336,9 +336,9 @@ namespace gpstk
             }
 
             if(fromTS == TimeSystem::GLO)             // GLO => UTC
-               corr = A0;
-            else                                      // UTC => GLO
                corr = -A0;
+            else                                      // UTC => GLO
+               corr = A0;
 
             break;
 
@@ -400,9 +400,9 @@ namespace gpstk
             dt = ct - refTime;
 
             if(fromTS == TimeSystem::QZS)             // QZS => UTC
-               corr = A0+A1*dt;
-            else                                      // UTC => QZS
                corr = -A0-A1*dt;
+            else                                      // UTC => QZS
+               corr =  A0+A1*dt;
 
             break;
 
@@ -419,9 +419,9 @@ namespace gpstk
             dt = ct - refTime;
 
             if(fromTS == TimeSystem::BDT)             // BDT => UTC
-               corr = A0+A1*dt;
-            else                                      // UTC => BDT
                corr = -A0-A1*dt;
+            else                                      // UTC => BDT
+               corr =  A0+A1*dt;
 
             break;
 

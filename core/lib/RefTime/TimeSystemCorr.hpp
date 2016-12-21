@@ -135,6 +135,17 @@ namespace gpstk
       double Correction(const CommonTime& ct) const;
 
          //// Member data
+         ///  NOTE: User is responsible for setting the following parameters
+         ///  after instantiation of a TimeSystemCorrection object and prior 
+         ///  to calling Correction( )
+         ///    refWeek - must be in GPS full weeks (regardless of what GNSS
+         ///              is being considered.)
+         ///    refSOW
+         ///    A0      - A0utc or A0gps for most system.  For GLONASS
+         ///              GLUT corection supply -1.0 * tau_sub_c.  
+         ///              This convention is selected in order to maintain
+         ///              consistency with the RINEX documentation in Table A5.
+         ///    A1 
       CorrType type;
       TimeSystem frTS,toTS;
       double A0, A1;
