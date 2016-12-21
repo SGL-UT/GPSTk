@@ -305,12 +305,13 @@ namespace gpstk
       s.precision(10);
       s.fill(' ');
 
-      s << " A0:" << setw(18) << A0 << " ";
-      s << " A1:" << setw(18) << A1 << " ";
+      s << " A0:" << setw(18) << A0 << "s, ";
+      s << " A1:" << setw(18) << A1 << "s/s, ";
 
       s.setf(ios::fixed, ios::floatfield);
       s.precision(0);
-      s << " dtLS:" << setw(4) << dtLS;
+      s << " dtLS:" << setw(4) << dtLS << "s, ";
+      s << " dtLS_LSF:" << setw(4) << dtLSF << "s "; 
    } // end of dumpTerse()
 
    void OrbSysGpsL_56::dumpBody(ostream& s) const
