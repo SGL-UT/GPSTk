@@ -182,7 +182,8 @@ namespace gpstk
       string tform="%02m/%02d/%04Y %03j %02H:%02M:%02S";
       s << "  55";
       s << " " << printTime(beginValid,tform) << "  ";
-      s << "'" << textMsg << "'"; 
+      //s << "'" << textMsg << "'"; 
+      s << " (Contents are no longer text. Awaiting new ICD)"; 
    } // end of dumpTerse()
 
    void OrbSysGpsL_55::dumpBody(ostream& s) const
@@ -195,7 +196,8 @@ namespace gpstk
       }
 
       s << " Text message:" << endl;
-      s << "'" << textMsg << "'" << endl;
+      //s << "'" << textMsg << "'" << endl;
+      s << " (Contents are no longer text. Awaiting new ICD)" << endl;
 
       s.setf(ios::uppercase);
       s.precision(0);
