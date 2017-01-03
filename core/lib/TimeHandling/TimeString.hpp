@@ -82,6 +82,9 @@ namespace gpstk
        *   - V     integer QZS Epoch
        *   - I     integer full QZS Week
        *   - i     integer mod QZS Week - same as I
+       *   - X     integer IRNSS Epoch
+       *   - O     integer IRNSS week
+       *   - o     integer mod INRSS Week 
        *
        * - WeekSecond (GPS/BDS/GAL/QZS):
        *   - w     integer GPS day-of-week

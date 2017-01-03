@@ -69,16 +69,6 @@ namespace gpstk
          static OrbDataSys* GPSCNAV(const gpstk::PackedNavBits& pnb)
                throw(gpstk::InvalidParameter);
 
-            // The following are stubs at this time.  The may be implemented in the future.
-            // They are declared virtual in case they need to be defined in a subclass 
-            // independent of the GPSTk. 
-         static OrbDataSys* BeiDou_D1(const gpstk::PackedNavBits& pnb)
-               throw(gpstk::InvalidParameter);
-         static OrbDataSys* BeiDou_D2(const gpstk::PackedNavBits& pnb)
-               throw(gpstk::InvalidParameter);
-         static OrbDataSys* GloCivilF(const gpstk::PackedNavBits& pnb)
-               throw(gpstk::InvalidParameter);
-
          static int debugLevel;
 
    }; // end class OrbDataSysFactory
