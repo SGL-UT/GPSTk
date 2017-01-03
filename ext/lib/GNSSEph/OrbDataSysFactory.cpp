@@ -81,25 +81,11 @@ namespace gpstk
             break;
          }
 
-         case NavID::ntBeiDou_D1:
-         { 
-            retVal = BeiDou_D1(pnb); 
-            break;
-         }
-
-         case NavID::ntBeiDou_D2:
-         {
-            retVal = BeiDou_D2(pnb); 
-            break;
-         }
-
-         case NavID::ntGloCivilF: 
-         {
-            retVal = GloCivilF(pnb);
-            break;
-         }
-
+         // Navigation message types other than GPS need to 
+         // return 0 (a null pointer).  Someone else could choose
+         // to implement a handler in an extension of this class. 
          default: 
+            retVal = 0;
             break;
       }
       }
@@ -244,32 +230,5 @@ namespace gpstk
       return retVal; 
    }
 
-   //----------------------------------------------------------------
-   OrbDataSys* OrbDataSysFactory::
-   BeiDou_D1(const gpstk::PackedNavBits& pnb)
-      throw(InvalidParameter)
-   {
-      OrbDataSys* retVal = 0;
-      return retVal; 
-   }
-
-   //----------------------------------------------------------------
-   OrbDataSys* OrbDataSysFactory::
-   BeiDou_D2(const gpstk::PackedNavBits& pnb)
-      throw(InvalidParameter)
-   {
-      OrbDataSys* retVal = 0;
-      return retVal; 
-   }
-
-   //----------------------------------------------------------------
-   OrbDataSys* OrbDataSysFactory::
-   GloCivilF(const gpstk::PackedNavBits& pnb)
-      throw(InvalidParameter)
-   {
-      OrbDataSys* retVal = 0;
-      return retVal; 
-   }
-   
 }
  
