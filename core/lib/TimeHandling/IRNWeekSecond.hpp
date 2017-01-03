@@ -99,13 +99,13 @@ namespace gpstk
          /// understands when printing times.
       virtual std::string getPrintChars() const
       {
-         return "EIiwgP";
+         return "XOowgP";
       }
 
          /// Return a string containing the default format to use in printing.
       virtual std::string getDefaultFormat() const
       {
-         return "%I %g %P";
+         return "%O %g %P";
       }
 
          /// This function formats this time to a string.  The exceptions
@@ -116,12 +116,12 @@ namespace gpstk
             using gpstk::StringUtils::formattedPrint;
 
             std::string rv = fmt;
-            rv = formattedPrint( rv, getFormatPrefixInt() + "E",
-                                 "Eu", getEpoch() );
-            rv = formattedPrint( rv, getFormatPrefixInt() + "I",
-                                 "Iu", week );
-            rv = formattedPrint( rv, getFormatPrefixInt() + "i",
-                                 "iu", getModWeek() );
+            rv = formattedPrint( rv, getFormatPrefixInt() + "X",
+                                 "Xu", getEpoch() );
+            rv = formattedPrint( rv, getFormatPrefixInt() + "O",
+                                 "Ou", week );
+            rv = formattedPrint( rv, getFormatPrefixInt() + "o",
+                                 "ou", getModWeek() );
             rv = formattedPrint( rv, getFormatPrefixInt() + "w",
                                  "wu", getDayOfWeek() );
             rv = formattedPrint( rv, getFormatPrefixFloat() + "g",
@@ -142,12 +142,12 @@ namespace gpstk
             using gpstk::StringUtils::formattedPrint;
             std::string rv = fmt;
 
-            rv = formattedPrint( rv, getFormatPrefixInt() + "E",
-                                 "Es", "BadIRNepoch");
-            rv = formattedPrint( rv, getFormatPrefixInt() + "I",
-                                 "Is", "BadIRNfweek");
-            rv = formattedPrint( rv, getFormatPrefixInt() + "i",
-                                 "is", "BadIRNmweek");
+            rv = formattedPrint( rv, getFormatPrefixInt() + "X",
+                                 "Xs", "BadIRNepoch");
+            rv = formattedPrint( rv, getFormatPrefixInt() + "O",
+                                 "Os", "BadIRNfweek");
+            rv = formattedPrint( rv, getFormatPrefixInt() + "o",
+                                 "os", "BadIRNmweek");
             rv = formattedPrint( rv, getFormatPrefixInt() + "w",
                                  "ws", "BadIRNdow");
             rv = formattedPrint( rv, getFormatPrefixFloat() + "g",
@@ -173,13 +173,13 @@ namespace gpstk
                // based on the character, we know what to do...
             switch ( i->first )
             {
-               case 'E':
+               case 'X':
                   setEpoch( gpstk::StringUtils::asInt( i->second ) );
                   break;
-               case 'I':
+               case 'O':
                   week = gpstk::StringUtils::asInt( i->second );
                   break;
-               case 'i':
+               case 'o':
                   setModWeek( gpstk::StringUtils::asInt( i->second ) );
                   break;
                case 'w':

@@ -99,7 +99,7 @@ public:
       IRNWeekSecond setFromInfo2;
       IRNWeekSecond setFromInfo3;
       TimeTag::IdToValue id;
-      id['I'] = "1300";
+      id['O'] = "1300";
       id['g'] = "13500";
       id['P'] = "IRN";
       IRNWeekSecond compare(1300,13500.,TimeSystem::IRN); //Initialize an object
@@ -109,7 +109,7 @@ public:
       TUASSERT(setFromInfo1.setFromInfo(id));
       TUASSERTE(IRNWeekSecond, compare, setFromInfo1);
 
-      id.erase('I');
+      id.erase('O');
       IRNWeekSecond compare2(0,13500.,TimeSystem::IRN);
          //--------------------------------------------------------------------
          //Does a proper setFromInfo work with missing data?
@@ -325,16 +325,16 @@ public:
          //--------------------------------------------------------------------
          //Verify printed output matches expectation
          //--------------------------------------------------------------------
-      TUASSERTE(string, "1300 13500.000000 IRN", IRN1.printf("%04I %05g %02P"));
-      TUASSERTE(string, "1300 13500.000000 UTC", UTC1.printf("%04I %05g %02P"));
+      TUASSERTE(string, "1300 13500.000000 IRN", IRN1.printf("%04O %05g %02P"));
+      TUASSERTE(string, "1300 13500.000000 UTC", UTC1.printf("%04O %05g %02P"));
 
       testFramework.changeSourceMethod("printError");
 
          //--------------------------------------------------------------------
          //Verify printed error message matches expectation
          //--------------------------------------------------------------------
-      TUASSERTE(string, "BadIRNepoch BadIRNmweek BadIRNdow BadIRNfweek BadIRNsow BadIRNsys", IRN1.printError("%E %i %w %04I %05g %02P"));
-      TUASSERTE(string, "BadIRNepoch BadIRNmweek BadIRNdow BadIRNfweek BadIRNsow BadIRNsys", UTC1.printError("%E %i %w %04I %05g %02P"));
+      TUASSERTE(string, "BadIRNepoch BadIRNmweek BadIRNdow BadIRNfweek BadIRNsow BadIRNsys", IRN1.printError("%X %o %w %04O %05g %02P"));
+      TUASSERTE(string, "BadIRNepoch BadIRNmweek BadIRNdow BadIRNfweek BadIRNsow BadIRNsys", UTC1.printError("%X %o %w %04O %05g %02P"));
 
       TURETURN();
    }
