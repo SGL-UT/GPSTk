@@ -1335,17 +1335,17 @@ namespace gpstk
                                                       bool trimWhitespace = true,
                                                       bool ignoreEmpty = true);
 
-      /// Split a string on the given delimiter, respecting fields enclosed by
-      /// a pair of double quotes. Quotes are removed in output, and optionally
-      /// also leading and trailing whitespace.
-      /// @param  aStr           the string to be split
-      /// @param  delimiter      character delimiter (not ")
-      /// @param  trimWhitespace will trim the token string, default is true
-      /// @param  ignoreEmpty    will ignore the empty tokens, default is true
+         /// Split a string on the given delimiter, respecting fields enclosed by
+         /// a pair of double quotes. Quotes are removed in output, and optionally
+         /// also leading and trailing whitespace.
+         /// @param  aStr           the string to be split
+         /// @param  delimiter      character delimiter (not ")
+         /// @param  trimWhitespace will trim the token string, default is true
+         /// @param  ignoreEmpty    will ignore the empty tokens, default is true
       inline std::vector<std::string> splitWithDoubleQuotes(const std::string& aStr,
-                                                      const char delimiter = ' ',
-                                                      bool trimWhitespace = true,
-                                                      bool ignoreEmpty = true);
+                                                            const char delimiter = ' ',
+                                                            bool trimWhitespace = true,
+                                                            bool ignoreEmpty = true);
    } // namespace StringUtils
 
 } // namespace gpstk
@@ -2021,49 +2021,49 @@ namespace gpstk
                                  const char anyChar)
          throw(StringException)
       {
-		  std::string thisPattern(aPattern);
-		  std::string thisStr(s);
+                  std::string thisPattern(aPattern);
+                  std::string thisStr(s);
 
-		  // check if something other than the regex standard
-		  // characters (*,+,.) is used for those variables
-		  if (zeroOrMore != '*')
-		  {
-			  replaceAll(thisPattern, "*", "\\*");
-			  replaceAll(thisPattern, std::string(1, zeroOrMore), "*");
-		  }
-		  if (oneOrMore != '+')
-		  {
-			  replaceAll(thisPattern, "+", "\\+");
-			  replaceAll(thisPattern, std::string(1, oneOrMore), "+");
-		  }
-		  if (anyChar != '.')
-		  {
-			  replaceAll(thisPattern, ".", "\\.");
-			  replaceAll(thisPattern, std::string(1, anyChar), ".");
-		  }
+                  // check if something other than the regex standard
+                  // characters (*,+,.) is used for those variables
+                  if (zeroOrMore != '*')
+                  {
+                          replaceAll(thisPattern, "*", "\\*");
+                          replaceAll(thisPattern, std::string(1, zeroOrMore), "*");
+                  }
+                  if (oneOrMore != '+')
+                  {
+                          replaceAll(thisPattern, "+", "\\+");
+                          replaceAll(thisPattern, std::string(1, oneOrMore), "+");
+                  }
+                  if (anyChar != '.')
+                  {
+                          replaceAll(thisPattern, ".", "\\.");
+                          replaceAll(thisPattern, std::string(1, anyChar), ".");
+                  }
 
 #if defined(_WIN32) && _MSC_VER >= 1700
-		  try
-		  {
-			  std::regex reg (thisPattern);
+                  try
+                  {
+                          std::regex reg (thisPattern);
 
-			  std::smatch sm;
-			  if(std::regex_search(thisStr,sm,reg,
-				  std::regex_constants::match_not_bol|
-				  std::regex_constants::match_not_eol))
-			  {
-				  return sm.str();
-			  }
-			  else
-			  {
-				  return std::string();
-			  }
-		  }
-		  catch(std::regex_error& e)
-		  {
-			  Exception E(std::string("std::regex_error: ") + e.what() );
-			  GPSTK_THROW(E);
-		  }
+                          std::smatch sm;
+                          if(std::regex_search(thisStr,sm,reg,
+                                  std::regex_constants::match_not_bol|
+                                  std::regex_constants::match_not_eol))
+                          {
+                                  return sm.str();
+                          }
+                          else
+                          {
+                                  return std::string();
+                          }
+                  }
+                  catch(std::regex_error& e)
+                  {
+                          Exception E(std::string("std::regex_error: ") + e.what() );
+                          GPSTK_THROW(E);
+                  }
 
 #else
 
@@ -2113,24 +2113,24 @@ namespace gpstk
 
         try
         {
-	        std::regex reg(pat);
+                std::regex reg(pat);
 
-	        std::smatch m;
-	        while (std::regex_search (rv,m,reg))
-	        {
-		        std::string mac = m.str();
-		        mac = StringUtils::replaceAll(mac, rep.substr(0,1), rep.substr(1));
+                std::smatch m;
+                while (std::regex_search (rv,m,reg))
+                {
+                        std::string mac = m.str();
+                        mac = StringUtils::replaceAll(mac, rep.substr(0,1), rep.substr(1));
 
-		        char buffer[1024];
-		        sprintf(buffer, mac.c_str(), to);
+                        char buffer[1024];
+                        sprintf(buffer, mac.c_str(), to);
 
-		        rv.replace(m.position(), m.length(), std::string(buffer));
-	        }
+                        rv.replace(m.position(), m.length(), std::string(buffer));
+                }
         }
         catch(std::regex_error& e)
         {
-	        Exception E(std::string("std::regex_error:")+e.what());
-	        GPSTK_THROW(E);
+                Exception E(std::string("std::regex_error:")+e.what());
+                GPSTK_THROW(E);
         }
 
         return rv;
