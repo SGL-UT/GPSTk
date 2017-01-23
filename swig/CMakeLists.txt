@@ -90,6 +90,9 @@ set( CMAKE_SWIG_OUTDIR ${MODULE_PATH}/${SWIG_MODULE} )
 #        testing shows that this ONLY works for the gpstk.py
 #        and does NOT work for the _gpstk.so
 #----------------------------------------
+add_custom_target(swig-make-directory ALL
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${MODULE_PATH}/gpstk)
+add_dependencies("_${SWIG_MODULE}" swig-make-directory)
 add_custom_command( TARGET "_${SWIG_MODULE}" POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "_${SWIG_MODULE}.so" ${CMAKE_SWIG_OUTDIR} )
 add_custom_command( TARGET "_${SWIG_MODULE}" POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${SWIG_MODULE}.py" ${CMAKE_SWIG_OUTDIR} )
 
