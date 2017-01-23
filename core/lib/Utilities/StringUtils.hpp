@@ -1369,6 +1369,7 @@ namespace gpstk
       inline void hexDumpData(std::ostream& s, const std::string& data,
                               const std::string& tag, HexDumpDataConfig cfg)
       {
+         std::ios_base::fmtflags savedFlags = s.flags();
          std::string ascii="";
          unsigned indent = tag.length();
          int col = 0;
@@ -1383,23 +1384,28 @@ namespace gpstk
          {
             s << "hexDumpData: cfg.bytesPerLine % cfg.groupBy != 0"
               << std::endl;
+            s.flags(savedFlags);
             return;
          }
          if (cfg.group2By && ((cfg.bytesPerLine % cfg.group2By) != 0))
          {
             s << "hexDumpData: cfg.bytesPerLine % cfg.group2By != 0"
               << std::endl;
+            s.flags(savedFlags);
             return;
          }
          if (cfg.groupBy && ((cfg.group2By % cfg.groupBy) != 0))
          {
             s << "hexDumpData: cfg.group2By % cfg.groupBy != 0"
               << std::endl;
+            s.flags(savedFlags);
             return;
          }
 
             // line format:
             // <tag><index>:<indexws><group1byte1>...<group1byte[groupBy]><groupws>...<group[group2By]byte1>...<group[group2By]byte[groupBy]><group2ws>....<byte[bytesPerLine]><textws><separator><text><separator>\n
+            // make sure our default formatting options are set
+         s << std::hex << std::right << std::noshowbase;
          linesize = indent;
          if (cfg.showIndex)
             linesize += cfg.idxDigits + 1 + cfg.indexWS;
@@ -1488,6 +1494,7 @@ namespace gpstk
                col += cfg.groupWS;
             }
          }
+         s.flags(savedFlags);
       }
 
          // Keep searching for aString at the start of s
