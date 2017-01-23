@@ -1335,17 +1335,17 @@ namespace gpstk
                                                       bool trimWhitespace = true,
                                                       bool ignoreEmpty = true);
 
-      /// Split a string on the given delimiter, respecting fields enclosed by
-      /// a pair of double quotes. Quotes are removed in output, and optionally
-      /// also leading and trailing whitespace.
-      /// @param  aStr           the string to be split
-      /// @param  delimiter      character delimiter (not ")
-      /// @param  trimWhitespace will trim the token string, default is true
-      /// @param  ignoreEmpty    will ignore the empty tokens, default is true
+         /// Split a string on the given delimiter, respecting fields enclosed by
+         /// a pair of double quotes. Quotes are removed in output, and optionally
+         /// also leading and trailing whitespace.
+         /// @param  aStr           the string to be split
+         /// @param  delimiter      character delimiter (not ")
+         /// @param  trimWhitespace will trim the token string, default is true
+         /// @param  ignoreEmpty    will ignore the empty tokens, default is true
       inline std::vector<std::string> splitWithDoubleQuotes(const std::string& aStr,
-                                                      const char delimiter = ' ',
-                                                      bool trimWhitespace = true,
-                                                      bool ignoreEmpty = true);
+                                                            const char delimiter = ' ',
+                                                            bool trimWhitespace = true,
+                                                            bool ignoreEmpty = true);
    } // namespace StringUtils
 
 } // namespace gpstk
@@ -1416,10 +1416,10 @@ namespace gpstk
             linesize += cfg.group2WS * w2;
             /*
               linesize doesn't include text stuff
-         if (cfg.showText)
-            linesize += cfg.textWS + cfg.bytesPerLine;
-         if (cfg.separator)
-            linesize += 2;
+              if (cfg.showText)
+              linesize += cfg.textWS + cfg.bytesPerLine;
+              if (cfg.separator)
+              linesize += 2;
             */
 
          for (int i=0; i<datasize; i++)
@@ -1493,8 +1493,8 @@ namespace gpstk
          // Keep searching for aString at the start of s
          // until num == 0 or aString is not found at the start of s
       inline std::string& stripLeading(std::string& s,
-                                  const std::string& aString,
-                                  std::string::size_type num)
+                                       const std::string& aString,
+                                       std::string::size_type num)
          throw(StringException)
       {
          try
@@ -1521,8 +1521,8 @@ namespace gpstk
          // keep searching for aString at the end of s
          // until aString isn't found there or num == 0
       inline std::string& stripTrailing(std::string& s,
-                                   const std::string& aString,
-                                   std::string::size_type num)
+                                        const std::string& aString,
+                                        std::string::size_type num)
          throw(StringException)
       {
          try
@@ -1551,8 +1551,8 @@ namespace gpstk
       }
 
       inline std::string& strip(std::string& s,
-                           const std::string& aString,
-                           std::string::size_type num)
+                                const std::string& aString,
+                                std::string::size_type num)
          throw(StringException)
       {
          stripLeading(s, aString, num);
@@ -1561,9 +1561,9 @@ namespace gpstk
       }
 
       inline std::string translate(const std::string& aString,
-                              const std::string& inputChars,
-                              const std::string& outputChars,
-                              const char pad)
+                                   const std::string& inputChars,
+                                   const std::string& outputChars,
+                                   const char pad)
       {
          std::string rv = aString;
          std::string::size_type aspos = 0;
@@ -1591,9 +1591,9 @@ namespace gpstk
       }
 
       inline std::string change(const std::string& aString,
-                           const std::string& inputString,
-                           const std::string& outputString,
-                           std::string::size_type startPos, unsigned numChanges)
+                                const std::string& inputString,
+                                const std::string& outputString,
+                                std::string::size_type startPos, unsigned numChanges)
       {
          std::string rv(aString);
          change(rv, inputString, outputString, startPos, numChanges);
@@ -1601,8 +1601,8 @@ namespace gpstk
       }
 
       inline std::string& change(std::string& aString, const std::string& inputString,
-                            const std::string& outputString,
-                            std::string::size_type startPos, unsigned numChanges)
+                                 const std::string& outputString,
+                                 std::string::size_type startPos, unsigned numChanges)
       {
          unsigned count = 0;
          std::string::size_type opos = startPos;
@@ -1626,8 +1626,8 @@ namespace gpstk
          // if the string is bigger than length, truncate it from the left.
          // otherwise, add pad characters to it's left.
       inline std::string& rightJustify(std::string& s,
-                                  const std::string::size_type length,
-                                  const char pad)
+                                       const std::string::size_type length,
+                                       const char pad)
          throw(StringException)
       {
          try
@@ -1652,8 +1652,8 @@ namespace gpstk
          // if the string is bigger than length, truncate it from the right.
          // otherwise, add pad characters to it's right.
       inline std::string& leftJustify(std::string& s,
-                                 const std::string::size_type length,
-                                 const char pad)
+                                      const std::string::size_type length,
+                                      const char pad)
          throw(StringException)
       {
          try
@@ -1678,8 +1678,8 @@ namespace gpstk
          // leftJustify if s is bigger than length.
          // otherwise, add pad to the left and right of s.
       inline std::string& center(std::string& s,
-             const std::string::size_type length,
-             const char pad)
+                                 const std::string::size_type length,
+                                 const char pad)
          throw(StringException)
       {
          try
@@ -1848,7 +1848,7 @@ namespace gpstk
       }
 
          /// @todo Need to find a way to combine this with x2d.
-          // hex to a long.
+         // hex to a long.
       inline unsigned int x2uint(const std::string& s)
          throw (StringException)
       {
@@ -1929,8 +1929,8 @@ namespace gpstk
       }
 
       inline std::string& replaceAll(std::string& s,
-                                const std::string& oldString,
-                                const std::string& newString)
+                                     const std::string& oldString,
+                                     const std::string& newString)
          throw(StringException)
       {
          try
@@ -2021,49 +2021,49 @@ namespace gpstk
                                  const char anyChar)
          throw(StringException)
       {
-		  std::string thisPattern(aPattern);
-		  std::string thisStr(s);
+         std::string thisPattern(aPattern);
+         std::string thisStr(s);
 
-		  // check if something other than the regex standard
-		  // characters (*,+,.) is used for those variables
-		  if (zeroOrMore != '*')
-		  {
-			  replaceAll(thisPattern, "*", "\\*");
-			  replaceAll(thisPattern, std::string(1, zeroOrMore), "*");
-		  }
-		  if (oneOrMore != '+')
-		  {
-			  replaceAll(thisPattern, "+", "\\+");
-			  replaceAll(thisPattern, std::string(1, oneOrMore), "+");
-		  }
-		  if (anyChar != '.')
-		  {
-			  replaceAll(thisPattern, ".", "\\.");
-			  replaceAll(thisPattern, std::string(1, anyChar), ".");
-		  }
+            // check if something other than the regex standard
+            // characters (*,+,.) is used for those variables
+         if (zeroOrMore != '*')
+         {
+            replaceAll(thisPattern, "*", "\\*");
+            replaceAll(thisPattern, std::string(1, zeroOrMore), "*");
+         }
+         if (oneOrMore != '+')
+         {
+            replaceAll(thisPattern, "+", "\\+");
+            replaceAll(thisPattern, std::string(1, oneOrMore), "+");
+         }
+         if (anyChar != '.')
+         {
+            replaceAll(thisPattern, ".", "\\.");
+            replaceAll(thisPattern, std::string(1, anyChar), ".");
+         }
 
 #if defined(_WIN32) && _MSC_VER >= 1700
-		  try
-		  {
-			  std::regex reg (thisPattern);
+         try
+         {
+            std::regex reg (thisPattern);
 
-			  std::smatch sm;
-			  if(std::regex_search(thisStr,sm,reg,
-				  std::regex_constants::match_not_bol|
-				  std::regex_constants::match_not_eol))
-			  {
-				  return sm.str();
-			  }
-			  else
-			  {
-				  return std::string();
-			  }
-		  }
-		  catch(std::regex_error& e)
-		  {
-			  Exception E(std::string("std::regex_error: ") + e.what() );
-			  GPSTK_THROW(E);
-		  }
+            std::smatch sm;
+            if(std::regex_search(thisStr,sm,reg,
+                                 std::regex_constants::match_not_bol|
+                                 std::regex_constants::match_not_eol))
+            {
+               return sm.str();
+            }
+            else
+            {
+               return std::string();
+            }
+         }
+         catch(std::regex_error& e)
+         {
+            Exception E(std::string("std::regex_error: ") + e.what() );
+            GPSTK_THROW(E);
+         }
 
 #else
 
@@ -2109,31 +2109,31 @@ namespace gpstk
       {
 #if defined(_WIN32) && _MSC_VER >= 1700
 
-          std::string rv(fmt);
+         std::string rv(fmt);
 
-        try
-        {
-	        std::regex reg(pat);
+         try
+         {
+            std::regex reg(pat);
 
-	        std::smatch m;
-	        while (std::regex_search (rv,m,reg))
-	        {
-		        std::string mac = m.str();
-		        mac = StringUtils::replaceAll(mac, rep.substr(0,1), rep.substr(1));
+            std::smatch m;
+            while (std::regex_search (rv,m,reg))
+            {
+               std::string mac = m.str();
+               mac = StringUtils::replaceAll(mac, rep.substr(0,1), rep.substr(1));
 
-		        char buffer[1024];
-		        sprintf(buffer, mac.c_str(), to);
+               char buffer[1024];
+               sprintf(buffer, mac.c_str(), to);
 
-		        rv.replace(m.position(), m.length(), std::string(buffer));
-	        }
-        }
-        catch(std::regex_error& e)
-        {
-	        Exception E(std::string("std::regex_error:")+e.what());
-	        GPSTK_THROW(E);
-        }
+               rv.replace(m.position(), m.length(), std::string(buffer));
+            }
+         }
+         catch(std::regex_error& e)
+         {
+            Exception E(std::string("std::regex_error:")+e.what());
+            GPSTK_THROW(E);
+         }
 
-        return rv;
+         return rv;
 #else
          regex_t re;
          const size_t bufferSize = 513;
@@ -2210,7 +2210,7 @@ namespace gpstk
       }
 
       inline std::string memToString(const void* p,
-                                const std::string::size_type size)
+                                     const std::string::size_type size)
       {
          unsigned char* q = (unsigned char*)p;
          std::string s(size,'\0');
@@ -2222,7 +2222,7 @@ namespace gpstk
       }
 
       inline std::string firstWord(const std::string& s,
-                              const char delimiter)
+                                   const char delimiter)
          throw(StringException)
       {
          try
@@ -2285,9 +2285,9 @@ namespace gpstk
       }
 
       inline std::string words(const std::string& s,
-                          const std::string::size_type firstWord,
-                          const std::string::size_type numWords,
-                          const char delimiter)
+                               const std::string::size_type firstWord,
+                               const std::string::size_type numWords,
+                               const char delimiter)
          throw(StringException)
       {
          try
@@ -2310,8 +2310,8 @@ namespace gpstk
                   // get first delimter after word wordNum
                pos = s.find(delimiter, pos);
                if (((int)numWords != -1)
-                  && ((int)wordNum == (int)(firstWord + (numWords-1))))
-                     break;
+                   && ((int)wordNum == (int)(firstWord + (numWords-1))))
+                  break;
                pos = s.find_first_not_of(delimiter, pos);
                wordNum++;
             }
@@ -2332,7 +2332,7 @@ namespace gpstk
       }
 
       inline std::string stripFirstWord(std::string& s,
-                                   const char delimiter)
+                                        const char delimiter)
          throw(StringException)
       {
          try
@@ -2420,34 +2420,34 @@ namespace gpstk
          {
             currentDelimiter = delimiter;
 
-            // if first character is a quote, set current delimiter to it
+               // if first character is a quote, set current delimiter to it
             if(aStr.compare(begPos,1,"\"") == 0) currentDelimiter = '"';
             if(aStr.compare(begPos,1,"\'") == 0) currentDelimiter = '\'';
 
-            // find next delimiter
+               // find next delimiter
             endPos = aStr.find_first_of(currentDelimiter,
-                                 begPos + (currentDelimiter == delimiter ? 0 : 1));
+                                        begPos + (currentDelimiter == delimiter ? 0 : 1));
 
-            // if this token is quoted, make sure to capture the trailing quote
-            // if(delimiter is a quote and second quote is found) include it
+               // if this token is quoted, make sure to capture the trailing quote
+               // if(delimiter is a quote and second quote is found) include it
             if(currentDelimiter != delimiter && std::string::npos != endPos) endPos++;
 
-            // length of new field
+               // length of new field
             tokenLength = endPos - begPos;
-            // copy out the field
+               // copy out the field
             std::string token = aStr.substr(begPos, tokenLength);
 
-            // if quoted, remove the quotes
+               // if quoted, remove the quotes
             if(currentDelimiter != delimiter)
                token = gpstk::StringUtils::strip(token,currentDelimiter);
 
-            // remove whitespace at beginning and end
+               // remove whitespace at beginning and end
             if(trimWhitespace) token = gpstk::StringUtils::strip(token);
 
-            // save it
+               // save it
             if(!token.empty() || !ignoreEmpty) toReturn.push_back(token);
 
-            // find the next token, and go back to delimiter
+               // find the next token, and go back to delimiter
             begPos = endPos;
             if(begPos != std::string::npos) begPos++;
             endPos = begPos;
@@ -2457,9 +2457,9 @@ namespace gpstk
       }
 
       inline std::vector<std::string> splitWithDoubleQuotes(const std::string& aStr,
-                                                      const char delimiter,
-                                                      bool trimWhitespace,
-                                                      bool ignoreEmpty)
+                                                            const char delimiter,
+                                                            bool trimWhitespace,
+                                                            bool ignoreEmpty)
       {
          std::vector<std::string> toReturn;
          std::string::size_type begPos = 0;
@@ -2474,33 +2474,33 @@ namespace gpstk
          {
             currentDelimiter = delimiter;
 
-            // if first character is a quote, set current delimiter to it
+               // if first character is a quote, set current delimiter to it
             if(aStr.compare(begPos,1,"\"") == 0) currentDelimiter = '"';
 
-            // find next delimiter
+               // find next delimiter
             endPos = aStr.find_first_of(currentDelimiter,
-                                 begPos + (currentDelimiter == delimiter ? 0 : 1));
+                                        begPos + (currentDelimiter == delimiter ? 0 : 1));
 
-            // if this token is quoted, make sure to capture the trailing quote
-            // if(delimiter is a quote and second quote is found) include it
+               // if this token is quoted, make sure to capture the trailing quote
+               // if(delimiter is a quote and second quote is found) include it
             if(currentDelimiter != delimiter && std::string::npos != endPos) endPos++;
 
-            // length of new field
+               // length of new field
             tokenLength = endPos - begPos;
-            // copy out the field
+               // copy out the field
             std::string token = aStr.substr(begPos, tokenLength);
 
-            // if quoted, remove the quotes
+               // if quoted, remove the quotes
             if(currentDelimiter != delimiter)
                token = gpstk::StringUtils::strip(token,currentDelimiter);
 
-            // remove whitespace at beginning and end
+               // remove whitespace at beginning and end
             if(trimWhitespace) token = gpstk::StringUtils::strip(token);
 
-            // save it
+               // save it
             if(!token.empty() || !ignoreEmpty) toReturn.push_back(token);
 
-            // find the next token, and go back to delimiter
+               // find the next token, and go back to delimiter
             begPos = endPos;
             if(begPos != std::string::npos) begPos++;
             endPos = begPos;
@@ -2510,9 +2510,9 @@ namespace gpstk
       }
 
       inline std::string& removeWords(std::string& s,
-                                 const std::string::size_type first,
-                                 const std::string::size_type wordsToReplace,
-                                 const char delimiter)
+                                      const std::string::size_type first,
+                                      const std::string::size_type wordsToReplace,
+                                      const char delimiter)
          throw(StringException)
       {
          try
@@ -2563,10 +2563,10 @@ namespace gpstk
       }
 
       inline std::string doub2sci(const double& d,
-                             const std::string::size_type length,
-                             const std::string::size_type expLen,
-                             const bool showSign,
-              const bool checkSwitch)
+                                  const std::string::size_type length,
+                                  const std::string::size_type expLen,
+                                  const bool showSign,
+                                  const bool checkSwitch)
       {
          std::string toReturn;
          short exponentLength = expLen;
@@ -2602,46 +2602,46 @@ namespace gpstk
                                             const std::string::size_type explen,
                                             bool showPlus)
       {
-         // get final exp length, precision and total length
+            // get final exp length, precision and total length
          std::string::size_type elen = (explen > 0 ? (explen < 3 ? explen : 3) : 1);
          std::string::size_type prec = (precision > 0 ? precision : 1);
          std::string::size_type leng = (length > 0 ? length : 1);
 
-         // i will be minimum length required with prec==1: force leng if necessary
+            // i will be minimum length required with prec==1: force leng if necessary
          size_t i = (int(leng) - int(elen) - 4);
          if(showPlus) i--;
          if(i > 0 && leng < i) leng = std::string::size_type(i);
 
-         // set up the stream for writing
+            // set up the stream for writing
          std::stringstream ss;
          ss << std::scientific << std::setprecision(prec);
          if(showPlus) ss << std::showpos;
 
-         // write d to a string with precision, sign and in scientific notation
+            // write d to a string with precision, sign and in scientific notation
          ss << d;
 
-         // now read that string
+            // now read that string
          std::string str1,str2;
          ss >> str1;
          std::string::size_type pos = str1.find_first_of("EDed");    // find exponent
          str2 = str1.substr(0,pos+2);        // str2 = +123.2345e+
          str1 = str1.substr(pos+2);          // str1 = exponent only
 
-         // make the exponent length elen
+            // make the exponent length elen
          str2 += StringUtils::rightJustify(
-                     StringUtils::asString(StringUtils::asInt(str1)),elen,'0');
+            StringUtils::asString(StringUtils::asInt(str1)),elen,'0');
 
-         // pad if necessary
+            // pad if necessary
          if(str2.length() < leng) str2 = StringUtils::rightJustify(str2,leng);
 
          return str2;
       }
 
       inline std::string& sci2for(std::string& aStr,
-                             const std::string::size_type startPos,
-                             const std::string::size_type length,
-                             const std::string::size_type expLen,
-              const bool checkSwitch)
+                                  const std::string::size_type startPos,
+                                  const std::string::size_type length,
+                                  const std::string::size_type expLen,
+                                  const bool checkSwitch)
          throw(StringException)
       {
          try
@@ -2650,9 +2650,9 @@ namespace gpstk
             int expAdd = 0;
             std::string exp;
             long iexp;
-         //If checkSwitch is false, always redo the exponential. Otherwise,
-         //set it to false.
-       bool redoexp=!checkSwitch;
+               //If checkSwitch is false, always redo the exponential. Otherwise,
+               //set it to false.
+            bool redoexp=!checkSwitch;
 
                // Check for decimal place within specified boundaries
             if ((idx == 0) || (idx >= (startPos + length - expLen - 1)))
@@ -2688,12 +2688,12 @@ namespace gpstk
                }
             }
                // Change the exponent character to D normally, or E of checkSwitch is false.
-       if (checkSwitch)
+            if (checkSwitch)
                aStr[idx] = 'D';
-       else
+            else
                aStr[idx] = 'E';
 
-          // Change the exponent itself
+               // Change the exponent itself
             if (redoexp)
             {
                exp = aStr.substr(idx + 1, std::string::npos);
@@ -2719,10 +2719,10 @@ namespace gpstk
                aStr.insert((std::string::size_type)0, 1, ' ');
             }
 
-          //If checkSwitch is false, add on one leading zero to the string
-       if (!checkSwitch)
-       {
-          aStr.insert((std::string::size_type)1, 1, '0');
+               //If checkSwitch is false, add on one leading zero to the string
+            if (!checkSwitch)
+            {
+               aStr.insert((std::string::size_type)1, 1, '0');
             }
 
 
@@ -2741,9 +2741,9 @@ namespace gpstk
 
 
       inline std::string doub2for(const double& d,
-                             const std::string::size_type length,
-                             const std::string::size_type expLen,
-              const bool checkSwitch)
+                                  const std::string::size_type length,
+                                  const std::string::size_type expLen,
+                                  const bool checkSwitch)
          throw(StringException)
       {
          try
