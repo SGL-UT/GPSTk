@@ -203,6 +203,7 @@ namespace gpstk
                }
                fileSys = strip(line.substr(40,20));   // not in ver 2
                setFileSystem(fileSys);
+               fileType = "N: GNSS NAV DATA";
             }
             else 
             {                                    // ver 2
@@ -218,12 +219,8 @@ namespace gpstk
                                   fileType);
                   GPSTK_THROW(e);
                }
-            }
-
-            if(version < 3)
                fileType = "N: GPS NAV DATA";
-            else
-               fileType = "N: GNSS NAV DATA";
+            }
             valid |= validVersion;
          }
          else if(thisLabel == stringRunBy)
