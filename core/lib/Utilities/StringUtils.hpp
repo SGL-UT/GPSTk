@@ -114,20 +114,24 @@ namespace gpstk
                : showIndex(true), hexIndex(true), upperHex(false),
                  idxDigits(4), indexWS(1), groupBy(1), groupWS(1),
                  group2By(8), group2WS(2), bytesPerLine(16), showText(true),
-                 separator(0), textWS(4)
+                 separator(0), textWS(4), showBaseData(false),
+                 showBaseIndex(false)
          {}
          HexDumpDataConfig(bool ashowIndex, bool ahexIndex, bool aupperHex,
                            unsigned aidxDigits, unsigned aindexWS,
                            unsigned agroupBy, unsigned agroupWS,
                            unsigned agroup2By, unsigned agroup2WS,
                            unsigned abytesPerLine, bool ashowText,
-                           char aseparator, unsigned atextWS)
-               : showIndex(ashowIndex), hexIndex(ahexIndex),
-                 upperHex(aupperHex), idxDigits(aidxDigits),
+                           char aseparator, unsigned atextWS,
+                           bool aShowBaseData = false,
+                           bool aShowBaseIndex = false)
+         : showIndex(ashowIndex), hexIndex(ahexIndex),
+            upperHex(aupperHex), idxDigits(aidxDigits),
             indexWS(aindexWS), groupBy(agroupBy), groupWS(agroupWS),
             group2By(agroup2By), group2WS(agroup2WS),
             bytesPerLine(abytesPerLine), showText(ashowText),
-            separator(aseparator), textWS(atextWS)
+            separator(aseparator), textWS(atextWS),
+            showBaseData(aShowBaseData), showBaseIndex(aShowBaseIndex)
          {}
          bool showIndex; ///< display index into string on each line.
          bool hexIndex; ///< if true, use hex index numbers (else decimal).
@@ -142,6 +146,8 @@ namespace gpstk
          bool showText; ///< if true, show text of message (unprintable characters become '.'.
          char separator; ///< character to offset text with (0 = none).
          unsigned textWS; ///< number of whitespace characters between hex and text.
+         bool showBaseData;  ///< Show number base indicator for data.
+         bool showBaseIndex; ///< Show number base indicator for indices.
       };
 
          /**
@@ -1408,11 +1414,22 @@ namespace gpstk
             // line format:
             // <tag><index>:<indexws><group1byte1>...<group1byte[groupBy]><groupws>...<group[group2By]byte1>...<group[group2By]byte[groupBy]><group2ws>....<byte[bytesPerLine]><textws><separator><text><separator>\n
             // make sure our default formatting options are set
-         s << std::hex << std::right << std::noshowbase << std::setw(0);
+         s << std::hex << std::internal << std::noshowbase << std::setw(0);
          linesize = indent;
          if (cfg.showIndex)
+         {
+               // number of characters used by index
             linesize += cfg.idxDigits + 1 + cfg.indexWS;
+            if (cfg.showBaseIndex)
+               linesize += 2; // "0x"
+         }
+            // 2 characters per byte for data
          linesize += cfg.bytesPerLine * 2;
+         if (cfg.showBaseData)
+         {
+               // 2 characters per byte for base/radix "0x"
+            linesize += cfg.bytesPerLine * 2;
+         }
          unsigned w2 = 0;
          unsigned w1 = 0;
          if (cfg.group2By)
@@ -1420,16 +1437,15 @@ namespace gpstk
          if (cfg.groupBy)
             w1 = (cfg.bytesPerLine / cfg.groupBy) - w2 - 1;
          if (cfg.groupBy > 0)
+         {
+               // characters of white space between level 1 grouped data
             linesize += cfg.groupWS * w1;
+         }
          if (cfg.group2By > 0)
+         {
+               // characters of white space between level 2 grouped data
             linesize += cfg.group2WS * w2;
-            /*
-              linesize doesn't include text stuff
-              if (cfg.showText)
-              linesize += cfg.textWS + cfg.bytesPerLine;
-              if (cfg.separator)
-              linesize += 2;
-            */
+         }
 
          for (int i=0; i<datasize; i++)
          {
@@ -1450,10 +1466,16 @@ namespace gpstk
                   else
                      s << std::dec;
                   s << std::setfill('0');
-                  s << std::setw(cfg.idxDigits) << i << ":" << indexws;
-                  s << std::dec << std::nouppercase;
+                  if (cfg.showBaseIndex)
+                     s << std::showbase;
+                  else
+                     s << std::noshowbase;
+                  s << std::setw(cfg.idxDigits) << i << ":" << indexws
+                    << std::noshowbase << std::dec << std::nouppercase;
+                  col += cfg.idxDigits + 1 + cfg.indexWS;
+                  if (cfg.showBaseIndex)
+                     col += 2; // "0x"
                }
-               col += cfg.idxDigits + 1 + cfg.indexWS;
             }
             unsigned char c=data[i];
             if (isprint(c))
@@ -1464,9 +1486,15 @@ namespace gpstk
                s << std::uppercase;
             else
                s << std::nouppercase;
+            if (cfg.showBaseData)
+               s << std::showbase;
+            else
+               s << std::noshowbase;
             s << std::hex << std::setw(2) << (int)c << std::dec
-              << std::nouppercase;
+              << std::nouppercase << std::noshowbase;
             col += 2;
+            if (cfg.showBaseData)
+               col += 2;
             if (((i % cfg.bytesPerLine) == (cfg.bytesPerLine-1)) ||
                 (i == (datasize-1)))
             {
@@ -1480,8 +1508,8 @@ namespace gpstk
                   s << ascii;
                   if (cfg.separator)
                      s << cfg.separator;
-                  s << std::endl;
                }
+               s << std::endl;
                   // this *should* be updated at the beginning of the loop
                   //col=indent+6;
                ascii.erase();

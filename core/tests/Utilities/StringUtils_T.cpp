@@ -37,6 +37,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <iterator>
 #include "StringUtils.hpp"
 #include "TestUtil.hpp"
 
@@ -89,7 +90,7 @@ const char hexDumpArray1[] =
   0x63, 0x34, 0x36, 0x36, 0x63, 0x31, 0x20, 0x62,
   0x64, 0x30, 0x63, 0x36, 0x64, 0x63, 0x20, 0x33,
   0x39, 0x31, 0x62, 0x33, 0x37, 0x38, 0x33, 0x20,
-  0x33, 0x65, 0x30, 0x34, 0x30, 0x63, 0x66, (char)0x85 };
+  0x33, 0x65, 0x30, 0x34, 0x30 };
 
 
       /** Array of hex values to output for hexDumpDataTest,
@@ -126,7 +127,7 @@ const char hexDumpArray2[] =
   0x63, 0x34, 0x36, 0x36, 0x63, 0x31, 0x20, 0x62,
   0x64, 0x30, 0x63, 0x36, 0x64, 0x63, 0x20, 0x33,
   0x39, 0x31, 0x62, 0x33, 0x37, 0x38, 0x33, 0x20,
-  0x33, 0x65, 0x30, 0x34, 0x30, 0x63, 0x66, 0x65 };
+  0x33, 0x65, 0x30, 0x34, 0x30 };
 
 
 /**
@@ -944,8 +945,8 @@ public:
          "StringUtils" +
          gpstk::getFileSep() +
          "hexDumpDataStreamFlagTest_";
-      correctHexDump = getFileContents(refPath + "hexDump.exp");
 
+      correctHexDump = getFileContents(refPath + "hexDump.exp");
          // set some stream flags that could mess up the output of hexDumpData
       hexDumpStream << std::left << setw(99) << setfill('Z') << boolalpha
                     << showbase << oct << scientific << showpos << uppercase;
@@ -955,6 +956,82 @@ public:
       hexDumpStream << "foo" << " " << true << " " << false << " " << 12 << " "
                     << -1.23e12 << " " << hex << 0xdeadbeef << dec << endl;
       TUASSERTE(std::string, correctHexDump, hexDumpStream.str());
+
+      TURETURN();
+   }
+
+
+      /**
+       * Test various output configurations for hexDumpData.
+       */
+   unsigned hexDumpDataConfigTest()
+   {
+      TUDEF("StringUtils", "hexDumpData");
+      stringstream hexDumpStream;
+      string correctHexDump;
+      string hexDumpString;
+
+         // Correct format for hexDumpData
+      string refPath = gpstk::getPathData() +
+         gpstk::getFileSep() +
+         "StringUtils" +
+         gpstk::getFileSep() +
+         "hexDumpDataConfigTest_";
+
+         // no index
+      HexDumpDataConfig cfg1(false, true, false, 4, 1, 1, 1, 8, 2, 16, true,
+                             0, 4);
+      correctHexDump = getFileContents(refPath + "hexDump_1.exp");
+         // Build the hexDumpString and output it to stringstream
+      hexDumpString = string(hexDumpArray2, sizeof(hexDumpArray2));
+      hexDumpData(hexDumpStream, hexDumpString, 0, cfg1);
+      TUASSERTE(std::string, correctHexDump, hexDumpStream.str());
+      cout << "cfg1:" << endl << hexDumpStream.str() << endl;
+      hexDumpStream.str("");
+
+         // no index, no ASCII
+      HexDumpDataConfig cfg2(false, true, false, 4, 1, 1, 1, 8, 2, 16, false,
+                             0, 4);
+      correctHexDump = getFileContents(refPath + "hexDump_2.exp");
+         // Build the hexDumpString and output it to stringstream
+      hexDumpString = string(hexDumpArray2, sizeof(hexDumpArray2));
+      hexDumpData(hexDumpStream, hexDumpString, 0, cfg2);
+      TUASSERTE(std::string, correctHexDump, hexDumpStream.str());
+      cout << "cfg2:" << endl << hexDumpStream.str() << endl;
+      hexDumpStream.str("");
+
+         // no index, no ASCII, no second-level grouping
+      HexDumpDataConfig cfg3(false, true, false, 4, 1, 1, 1, 0, 2, 16, false,
+                             0, 4);
+      correctHexDump = getFileContents(refPath + "hexDump_3.exp");
+         // Build the hexDumpString and output it to stringstream
+      hexDumpString = string(hexDumpArray2, sizeof(hexDumpArray2));
+      hexDumpData(hexDumpStream, hexDumpString, 0, cfg3);
+      TUASSERTE(std::string, correctHexDump, hexDumpStream.str());
+      cout << "cfg3:" << endl << hexDumpStream.str() << endl;
+      hexDumpStream.str("");
+
+         // no index, no ASCII, no second-level grouping, 8 bytes per line
+      HexDumpDataConfig cfg4(false, true, false, 4, 1, 1, 1, 0, 2, 8, false,
+                             0, 4);
+      correctHexDump = getFileContents(refPath + "hexDump_4.exp");
+         // Build the hexDumpString and output it to stringstream
+      hexDumpString = string(hexDumpArray2, sizeof(hexDumpArray2));
+      hexDumpData(hexDumpStream, hexDumpString, 0, cfg4);
+      TUASSERTE(std::string, correctHexDump, hexDumpStream.str());
+      cout << "cfg4:" << endl << hexDumpStream.str() << endl;
+      hexDumpStream.str("");
+
+         // above + data base
+      HexDumpDataConfig cfg5(false, true, false, 4, 1, 1, 1, 0, 2, 8, false,
+                             0, 4, true);
+      correctHexDump = getFileContents(refPath + "hexDump_5.exp");
+         // Build the hexDumpString and output it to stringstream
+      hexDumpString = string(hexDumpArray2, sizeof(hexDumpArray2));
+      hexDumpData(hexDumpStream, hexDumpString, 0, cfg5);
+      TUASSERTE(std::string, correctHexDump, hexDumpStream.str());
+      cout << "cfg5:" << endl << hexDumpStream.str() << endl;
+      hexDumpStream.str("");
 
       TURETURN();
    }
@@ -980,6 +1057,7 @@ int main() // Main function to initialize and run all tests above
    errorTotal += testClass.splitWithDoubleQuotesTest();
    errorTotal += testClass.hexDumpDataTest();
    errorTotal += testClass.hexDumpDataStreamFlagTest();
+   errorTotal += testClass.hexDumpDataConfigTest();
    errorTotal += testClass.hexToAsciiTest();
 
    std::cout << "Total Failures for " << __FILE__ << ": " << errorTotal
