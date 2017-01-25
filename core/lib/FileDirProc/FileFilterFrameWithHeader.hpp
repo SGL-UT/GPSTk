@@ -200,9 +200,10 @@ namespace gpstk
 
          typename std::list<FileData>::const_iterator dvIt = this->dataVec.begin();
          typename std::list<FileData>::const_iterator rdvIt = r.dataVec.begin();
-         while(dvIt != this->dataVec.end() && rdvIt != r.dataVec.end())
+         while(dvIt != this->dataVec.end())
          {
-            if (p(*dvIt, this->headerList.front(), *rdvIt, r.headerList.front())) //dv less than
+            if (rdvIt == r.dataVec.end() ||
+               p(*dvIt, this->headerList.front(), *rdvIt, r.headerList.front())) //dv less than
             {
                toReturn.push_back(*dvIt);
                dvIt++;
@@ -210,7 +211,6 @@ namespace gpstk
             else if (p(*rdvIt, r.headerList.front(),
                        *dvIt, this->headerList.front())) //rdv less than
             {
-               toReturn.push_back(*rdvIt);
                rdvIt++;
             }
             else //equal

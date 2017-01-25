@@ -1096,7 +1096,8 @@ namespace gpstk
          }
 
          else if(nline == 7) {
-            line += doubleToScientific(HOWtime - (HOWtime % 30),19,12,2);
+               //xmit time = HOW time - 6
+            line += doubleToScientific((HOWtime - 6),19,12,2);
             if(satSys == "G" || satSys == "J") {
                line += doubleToScientific(fitint,19,12,2);
             }
