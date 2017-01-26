@@ -1095,6 +1095,20 @@ public:
          //cout << "cfg10:" << endl << hexDumpStream.str() << endl;
       hexDumpStream.str("");
 
+         // testing fill
+      HexDumpDataConfig cfg11(false, false, false, 0, "", 1, ", ", 0, "", 8,
+                              false, (char)0, "", true, false, ",", "");
+      correctHexDump = getFileContents(refPath + "hexDump_11.exp");
+         // Build the hexDumpString and output it to stringstream
+      unsigned char allChars[256];
+      for (unsigned i = 0; i < 256; i++)
+         allChars[i] = i;
+      hexDumpString = string((char*)allChars, 256);
+      hexDumpData(hexDumpStream, hexDumpString, 0, cfg11);
+      TUASSERTE(std::string, correctHexDump, hexDumpStream.str());
+         //cout << "cfg11:" << endl << hexDumpStream.str() << endl;
+      hexDumpStream.str("");
+
       TURETURN();
    }
 };
