@@ -122,6 +122,12 @@ namespace gpstk
             break;
          }
 
+	 case NavID::ntIRNSS_SPS:
+         {
+            loadDataIRN(pnb);
+            break;
+         }
+	 
          default:
          {
             stringstream ss;
@@ -954,6 +960,14 @@ namespace gpstk
          GPSTK_THROW(exc);    
       } 
 
+   }
+
+   void OrbAlmGen::loadDataIRN(const gpstk::PackedNavBits& msg)
+               throw(gpstk::InvalidParameter)
+   {
+      // This is where we'll carck out this stuff
+
+      
    }
 
       // For BeiDou, the subject PRN of the almanac is dependent upon the page
