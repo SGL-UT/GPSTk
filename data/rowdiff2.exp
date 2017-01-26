@@ -1,3 +1,3 @@
-Comparing the following fields (other header data is ignored):
-C1 C2 D1 D2 L1 L2 P1 P2 S1 S2 
+Comparing the following fields:
+G:  L1C L2W C1C C2X C1W C2W D1C D2W S1C S2W
 For the observation types that were compared, no differences were found.

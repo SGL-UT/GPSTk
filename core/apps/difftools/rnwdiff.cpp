@@ -36,9 +36,9 @@
 
 #include "FileFilterFrameWithHeader.hpp"
 
-#include "RinexNavData.hpp"
-#include "RinexNavStream.hpp"
-#include "RinexNavFilterOperators.hpp"
+#include "Rinex3NavData.hpp"
+#include "Rinex3NavStream.hpp"
+#include "Rinex3NavFilterOperators.hpp"
 
 #include "DiffFrame.hpp"
 #include "YDSTime.hpp"
@@ -67,7 +67,7 @@ void RNWDiff::process()
 {
    try
    {
-      FileFilterFrameWithHeader<RinexNavStream, RinexNavData, RinexNavHeader>
+      FileFilterFrameWithHeader<Rinex3NavStream, Rinex3NavData, Rinex3NavHeader>
          ff1(inputFileOption.getValue()[0]),
          ff2(inputFileOption.getValue()[1]);
 
@@ -86,15 +86,15 @@ void RNWDiff::process()
          exitCode = EXIST_ERROR;
          return;
       }
+      ff1.sort(Rinex3NavDataOperatorLessThanFull());
+      ff2.sort(Rinex3NavDataOperatorLessThanFull());
       
-      ff1.sort(RinexNavDataOperatorLessThanFull());
-      ff2.sort(RinexNavDataOperatorLessThanFull());
-      
-      pair< list<RinexNavData>, list<RinexNavData> > difflist = 
-         ff1.diff(ff2, RinexNavDataOperatorLessThanFull());
+      pair< list<Rinex3NavData>, list<Rinex3NavData> > difflist =
+         ff1.diff(ff2, Rinex3NavDataOperatorLessThanFull());
       
       if (difflist.first.empty() && difflist.second.empty())
       {
+         cout << "no differences were found" << endl;
             // no differences
          exitCode = 0;
          return;
@@ -103,11 +103,11 @@ void RNWDiff::process()
          // differences found
       exitCode = DIFFS_CODE;
 
-      list<RinexNavData>::iterator firstitr = difflist.first.begin();
+      list<Rinex3NavData>::iterator firstitr = difflist.first.begin();
       while (firstitr != difflist.first.end())
       {
          bool matched = false;
-         list<RinexNavData>::iterator seconditr = difflist.second.begin();
+         list<Rinex3NavData>::iterator seconditr = difflist.second.begin();
          while ((!matched) && (seconditr != difflist.second.end()))
          {
                // this will match the exact same nav message in both
@@ -115,7 +115,7 @@ void RNWDiff::process()
                // different times.
             if ((firstitr->time == seconditr->time) &&
                 (firstitr->PRNID == seconditr->PRNID) &&
-                (firstitr->sf1XmitTime == seconditr->sf1XmitTime) )
+                (firstitr->HOWtime == seconditr->HOWtime) )
             {
                YDSTime recTime(firstitr->time);
                cout << fixed << setw(3) << recTime.doy << ' ' 
@@ -143,13 +143,13 @@ void RNWDiff::process()
                     << (firstitr->OMEGAdot - seconditr->OMEGAdot) << ' '
                     << (firstitr->idot     - seconditr->idot) << ' '
                     << (firstitr->codeflgs - seconditr->codeflgs) << ' '
-                    << (firstitr->toeWeek  - seconditr->toeWeek) << ' '
+                    << (firstitr->weeknum  - seconditr->weeknum) << ' '
                     << (firstitr->L2Pdata  - seconditr->L2Pdata) << ' '
                     << (firstitr->accuracy - seconditr->accuracy) << ' '
                     << (firstitr->health   - seconditr->health) << ' '
                     << (firstitr->Tgd      - seconditr->Tgd) << ' '
                     << (firstitr->IODC     - seconditr->IODC) << ' '
-                    << (firstitr->sf1XmitTime - seconditr->sf1XmitTime) << ' '
+                    << (firstitr->HOWtime - seconditr->HOWtime) << ' '
                     << (firstitr->fitint   - seconditr->fitint)
                     << endl;
 
@@ -165,10 +165,10 @@ void RNWDiff::process()
             firstitr++;
       }
 
-      list<RinexNavData>::iterator itr = difflist.first.begin();
+      list<Rinex3NavData>::iterator itr = difflist.first.begin();
       while (itr != difflist.first.end())
       {
-         cout << '<' << itr->stableText() << endl;
+         cout << '<' << itr->dumpString() << endl;
          itr++;
       }
 
@@ -177,7 +177,7 @@ void RNWDiff::process()
       itr = difflist.second.begin();
       while (itr != difflist.second.end())
       {
-         cout << '>' << itr->stableText() << endl;
+         cout << '>' << itr->dumpString() << endl;
          itr++;
       }
 
