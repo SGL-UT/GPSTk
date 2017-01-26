@@ -67,7 +67,7 @@
 namespace gpstk
 {
    class OrbElem : public OrbElemBase
-   {
+   { 
    public:
          /// Constructors
 	      /// Default constuctor
@@ -75,7 +75,7 @@ namespace gpstk
 
 
          /// Destructor
-      virtual ~OrbElem() {}
+      virtual ~OrbElem() { }
 
          /// Clone method.
 	 /// Return pointer to new copy of this type.
@@ -236,7 +236,6 @@ namespace gpstk
          //@{
       //CommonTime beginValid;    /**< Time at beginning of validity */
       //CommonTime endValid;      /**< Time at end of fit validity */
-
 
 
    }; // end class OrbElem
