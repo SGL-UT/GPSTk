@@ -986,7 +986,7 @@ public:
       hexDumpString = string(hexDumpArray2, sizeof(hexDumpArray2));
       hexDumpData(hexDumpStream, hexDumpString, 0, cfg1);
       TUASSERTE(std::string, correctHexDump, hexDumpStream.str());
-      cout << "cfg1:" << endl << hexDumpStream.str() << endl;
+         //cout << "cfg1:" << endl << hexDumpStream.str() << endl;
       hexDumpStream.str("");
 
          // no index, no ASCII
@@ -997,7 +997,7 @@ public:
       hexDumpString = string(hexDumpArray2, sizeof(hexDumpArray2));
       hexDumpData(hexDumpStream, hexDumpString, 0, cfg2);
       TUASSERTE(std::string, correctHexDump, hexDumpStream.str());
-      cout << "cfg2:" << endl << hexDumpStream.str() << endl;
+         //cout << "cfg2:" << endl << hexDumpStream.str() << endl;
       hexDumpStream.str("");
 
          // no index, no ASCII, no second-level grouping
@@ -1008,7 +1008,7 @@ public:
       hexDumpString = string(hexDumpArray2, sizeof(hexDumpArray2));
       hexDumpData(hexDumpStream, hexDumpString, 0, cfg3);
       TUASSERTE(std::string, correctHexDump, hexDumpStream.str());
-      cout << "cfg3:" << endl << hexDumpStream.str() << endl;
+         //cout << "cfg3:" << endl << hexDumpStream.str() << endl;
       hexDumpStream.str("");
 
          // no index, no ASCII, no second-level grouping, 8 bytes per line
@@ -1019,7 +1019,7 @@ public:
       hexDumpString = string(hexDumpArray2, sizeof(hexDumpArray2));
       hexDumpData(hexDumpStream, hexDumpString, 0, cfg4);
       TUASSERTE(std::string, correctHexDump, hexDumpStream.str());
-      cout << "cfg4:" << endl << hexDumpStream.str() << endl;
+         //cout << "cfg4:" << endl << hexDumpStream.str() << endl;
       hexDumpStream.str("");
 
          // above + data base
@@ -1030,7 +1030,69 @@ public:
       hexDumpString = string(hexDumpArray2, sizeof(hexDumpArray2));
       hexDumpData(hexDumpStream, hexDumpString, 0, cfg5);
       TUASSERTE(std::string, correctHexDump, hexDumpStream.str());
-      cout << "cfg5:" << endl << hexDumpStream.str() << endl;
+         //cout << "cfg5:" << endl << hexDumpStream.str() << endl;
+      hexDumpStream.str("");
+
+         // testing text separators
+      HexDumpDataConfig cfg6(true, true, false, 6, ":MEH", 1, "y", 8, "zz",
+                             16, true, 't', "FOO", true, true, "", "");
+      correctHexDump = getFileContents(refPath + "hexDump_6.exp");
+         // Build the hexDumpString and output it to stringstream
+      hexDumpString = string(hexDumpArray2, sizeof(hexDumpArray2));
+      hexDumpData(hexDumpStream, hexDumpString, 0, cfg6);
+      TUASSERTE(std::string, correctHexDump, hexDumpStream.str());
+         //cout << "cfg6:" << endl << hexDumpStream.str() << endl;
+      hexDumpStream.str("");
+
+         // and this is where I was going with the separator changes:
+         // a hexDumpData output that could be relatively easily copy
+         // pasted into C/C++ code.
+      HexDumpDataConfig cfg7(false, false, false, 4, "", 1, ", ", 0, "zz",
+                             8, false, 't', "FOO", true, true, ",", "");
+      correctHexDump = getFileContents(refPath + "hexDump_7.exp");
+         // Build the hexDumpString and output it to stringstream
+      hexDumpString = string(hexDumpArray2, sizeof(hexDumpArray2));
+      hexDumpData(hexDumpStream, hexDumpString, 0, cfg7);
+      TUASSERTE(std::string, correctHexDump, hexDumpStream.str());
+         //cout << "cfg7:" << endl << hexDumpStream.str() << endl;
+      hexDumpStream.str("");
+
+         // testing text separators and index bases w/ capitalization
+      HexDumpDataConfig cfg8(true, true, true, 6, ":MEH", 1, "y", 8, "zz",
+                             16, true, 't', "FOO", true, true, "meep",
+                             "shiftthissuckertotherightsome");
+      correctHexDump = getFileContents(refPath + "hexDump_8.exp");
+         // Build the hexDumpString and output it to stringstream
+      hexDumpString = string(hexDumpArray2, sizeof(hexDumpArray2));
+      hexDumpData(hexDumpStream, hexDumpString, 0, cfg8);
+      TUASSERTE(std::string, correctHexDump, hexDumpStream.str());
+         //cout << "cfg8:" << endl << hexDumpStream.str() << endl;
+      hexDumpStream.str("");
+
+         // testing text alignment with two-byte words
+      HexDumpDataConfig cfg9(true, true, true, 6, ".", 2, "!", 0, "",
+                             16, true, '`', "_", true, true, "meep",
+                             "shiftthissuckertotherightsome");
+      correctHexDump = getFileContents(refPath + "hexDump_9.exp");
+         // Build the hexDumpString and output it to stringstream
+      hexDumpString = string(hexDumpArray2, sizeof(hexDumpArray2));
+      hexDumpData(hexDumpStream, hexDumpString, 0, cfg9);
+      TUASSERTE(std::string, correctHexDump, hexDumpStream.str());
+         //cout << "cfg9:" << endl << hexDumpStream.str() << endl;
+      hexDumpStream.str("");
+
+         // testing where the final line is the same number of bytes
+         // as every other line.
+      HexDumpDataConfig cfg10(true, true, true, 6, ".", 2, "!", 0, "",
+                             16, true, '`', "_", true, true, "meep",
+                             "shiftthissuckertotherightsome");
+      correctHexDump = getFileContents(refPath + "hexDump_10.exp");
+         // Build the hexDumpString and output it to stringstream
+      unsigned truesize = sizeof(hexDumpArray2);
+      hexDumpString = string(hexDumpArray2, truesize - (truesize % 16));
+      hexDumpData(hexDumpStream, hexDumpString, 0, cfg10);
+      TUASSERTE(std::string, correctHexDump, hexDumpStream.str());
+         //cout << "cfg10:" << endl << hexDumpStream.str() << endl;
       hexDumpStream.str("");
 
       TURETURN();
