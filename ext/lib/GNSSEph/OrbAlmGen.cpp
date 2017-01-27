@@ -125,7 +125,7 @@ namespace gpstk
 
 	 case NavID::ntIRNSS_SPS:
          {
-            loadDataIRN(pnb);
+            loadDataIRN(pnb, hArg);
             break;
          }
 	 
@@ -963,7 +963,8 @@ namespace gpstk
 
    }
 
-   void OrbAlmGen::loadDataIRN(const gpstk::PackedNavBits& msg)
+   void OrbAlmGen::loadDataIRN(const gpstk::PackedNavBits& msg,
+			       const unsigned short hArg)
                throw(gpstk::InvalidParameter)
    {
       
@@ -987,7 +988,7 @@ namespace gpstk
          // Crack the bits into engineering units.
       unsigned short WNa = (unsigned short) msg.asUnsignedLong(36, 10, 1);   //<---Check on this
       toa                = msg.asUnsignedLong(62, 16, 16);
-      health             = 0;   //<---Check on this. No health is apparent in message type 7
+      health             = hArg;   //<---Check on this. No health is apparent in message type 7
       ecc                = msg.asUnsignedDouble(46, 16, -21); 
       OMEGAdot           = msg.asDoubleSemiCircles(102, 16, -38);
       AHalf              = msg.asUnsignedDouble(118, 24, -11);

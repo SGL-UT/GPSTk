@@ -199,7 +199,8 @@ namespace gpstk
       void loadDataBDS(const gpstk::PackedNavBits& msg,
                     const unsigned short hArg = 0)
                 throw(gpstk::InvalidParameter);
-      void loadDataIRN(const gpstk::PackedNavBits& msg)
+      void loadDataIRN(const gpstk::PackedNavBits& msg,
+		       const unsigned short hArg = 0)
                 throw(gpstk::InvalidParameter);
 
          // Used internally during startup if WNa has not been received
