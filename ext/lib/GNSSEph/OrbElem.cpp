@@ -40,6 +40,8 @@
 
 #include "OrbElem.hpp"
 #include "StringUtils.hpp"
+#include "CGCS2000Ellipsoid.hpp"
+#include "EllipsoidModel.hpp"
 #include "GPSEllipsoid.hpp"
 #include "YDSTime.hpp"
 #include "CivilTime.hpp"
@@ -59,7 +61,7 @@ namespace gpstk
       ctToc.setTimeSystem(TimeSystem::GPS);
       beginValid.setTimeSystem(TimeSystem::GPS);
       endValid.setTimeSystem(TimeSystem::GPS);
-   }
+   } 
 
     bool OrbElem::isValid(const CommonTime& ct) const
       throw(InvalidRequest)
@@ -220,12 +222,18 @@ namespace gpstk
       double ANLON,cosu,sinu,xip,yip,can,san,cinc,sinc;
       double xef,yef,zef,dek,dlk,div,domk,duv,drv;
       double dxp,dyp,vxef,vyef,vzef;
-      GPSEllipsoid ell;
+
+         // Several GNSSs use this algorithm.  In some cases the physical
+         // constants need to be different.
+      EllipsoidModel *ell;
+      if (satID.system==SatID::systemBeiDou)
+         ell = new CGCS2000Ellipsoid();
+       else
+         ell = new GPSEllipsoid();
 
          // Compute time since ephemeris & clock epochs
       elapte = t - ctToe;
-
-      double sqrtgm = SQRT(ell.gm());
+      double sqrtgm = SQRT(ell->gm());
 
          // Compute A at time of interest
       double Ak = A + Adot * elapte;
@@ -266,7 +274,7 @@ namespace gpstk
       sv.relcorr = svRelativity(t);
       sv.clkbias = svClockBias(t);
       sv.clkdrift = svClockDrift(t);
-      sv.frame = ReferenceFrame::WGS84;
+      sv.frame = ReferenceFrame::WGS84;   // This appear to be only a string for naming
 
          // Compute true anomaly
       q     = SQRT( 1.0e0 - lecc*lecc);
@@ -297,8 +305,8 @@ namespace gpstk
       AINC = i0 + tdrinc * elapte  +  di;
 
          //  Longitude of ascending node (ANLON)
-      ANLON = OMEGA0 + (OMEGAdot - ell.angVelocity()) *
-              elapte - ell.angVelocity() * ToeSOW;
+      ANLON = OMEGA0 + (OMEGAdot - ell->angVelocity()) *
+              elapte - ell->angVelocity() * ToeSOW;
 
          // In plane location
       cosu = ::cos( U );
@@ -327,7 +335,7 @@ namespace gpstk
       dlk = SQRT(Ak) * q * sqrtgm / (R*R);  
       div = tdrinc - 2.0e0 * dlk *
          ( Cic  * s2al - Cis * c2al );
-      domk = OMEGAdot - ell.angVelocity();
+      domk = OMEGAdot - ell->angVelocity();
       duv = dlk*(1.e0+ 2.e0 * (Cus*c2al - Cuc*s2al) );
       drv = Ak * lecc * dek * sinea - 2.e0 * dlk *
          ( Crc * s2al - Crs * c2al );
@@ -358,11 +366,19 @@ namespace gpstk
          InvalidRequest exc("Required data not stored.");
          GPSTK_THROW(exc);
       }
-      GPSEllipsoid ell;
+
+         // Several GNSSs use this algorithm.  In some cases the physical
+         // constants need to be different.
+      EllipsoidModel *ell;
+      if (satID.system==SatID::systemBeiDou)
+         ell = new CGCS2000Ellipsoid();
+       else
+         ell = new GPSEllipsoid();
+
       double twoPI  = 2.0e0 * PI;
-      double sqrtgm = SQRT(ell.gm());
+      double sqrtgm = SQRT(ell->gm());
       double elapte = t - ctToe;
-      
+
          // Compute A at time of interest
       double Ak = A + Adot * elapte;   
       

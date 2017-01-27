@@ -62,6 +62,7 @@ namespace gpstk {
          ITRF,       ///< ITRF, assumed to be the latest version
          PZ90,       ///< PZ90 (GLONASS)
          PZ90KGS,    ///< PZ90 the "original"
+         CGCS2000,   ///< CGCS200 (BDS)
          // count MUST BE LAST
          count        ///< the number of frames - not a frame
       };
