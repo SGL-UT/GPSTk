@@ -986,9 +986,9 @@ namespace gpstk
       subjectSV = SatID(SVID, SatID::systemIRNSS);
 
          // Crack the bits into engineering units.
-      unsigned short WNa = (unsigned short) msg.asUnsignedLong(36, 10, 1);   //<---Check on this
+      unsigned short WNa = (unsigned short) msg.asUnsignedLong(36, 10, 1);  
       toa                = msg.asUnsignedLong(62, 16, 16);
-      health             = hArg;   //<---Check on this. No health is apparent in message type 7
+      health             = hArg;   
       ecc                = msg.asUnsignedDouble(46, 16, -21); 
       OMEGAdot           = msg.asDoubleSemiCircles(102, 16, -38);
       AHalf              = msg.asUnsignedDouble(118, 24, -11);
@@ -1007,6 +1007,26 @@ namespace gpstk
          healthy = true; 
       }
 
+         // This is where we're extra careful about creating ctToe
+         // (based on cutover vs non-cutover)
+      const CommonTime& Xmit = msg.getTransmitTime();
+      short XmitWeek = static_cast<IRNWeekSecond>(Xmit).week; //<---Gives non-cutover week number
+      
+      short epochNum = XmitWeek / 1024;
+      WNa_full = WNa + (epochNum * 1024);
+
+      short diffWNa_full = WNa_full - XmitWeek;
+
+      if ( diffWNa_full < -512 )
+      {
+	 WNa_full += 1024;
+      }
+      if ( diffWNa_full > 512 )
+      {
+	 WNa_full -= 1024;
+      }
+
+         // Now create ctToe with WNa_full
       ctToe = IRNWeekSecond(WNa, toa, TimeSystem::IRN); 
 
          // Determine beginValid.  This is set to the transmit time of this page. 
