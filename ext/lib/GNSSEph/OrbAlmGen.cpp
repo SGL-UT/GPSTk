@@ -47,6 +47,7 @@
 #include "GNSSconstants.hpp"
 #include "GPSEllipsoid.hpp"
 #include "GPSWeekSecond.hpp"
+#include "IRNWeekSecond.hpp"
 #include "NavID.hpp"
 #include "StringUtils.hpp"
 #include "SVNumXRef.hpp"
@@ -965,8 +966,55 @@ namespace gpstk
    void OrbAlmGen::loadDataIRN(const gpstk::PackedNavBits& msg)
                throw(gpstk::InvalidParameter)
    {
-      // This is where we'll carck out this stuff
+      
+      unsigned short msgType  = (unsigned short) msg.asUnsignedLong(30, 6, 1);
+      unsigned short SVID     = (unsigned short) msg.asUnsignedLong(256, 6, 1);
 
+      if ( msgType != 7 )
+      {
+         stringstream ss;
+         ss << "Expected IRNSS message type 7.  Found message " << msgType;
+         InvalidParameter ip(ss.str());
+         GPSTK_THROW(ip); 
+      }
+
+         // Store the transmitting SV
+      satID = msg.getsatSys();
+
+         // Set the subjectSV (found in OrbAlm.hpp)
+      subjectSV = SatID(SVID, SatID::systemIRNSS);
+
+         // Crack the bits into engineering units.
+      unsigned short WNa = (unsigned short) msg.asUnsignedLong(36, 10, 1);   //<---Check on this
+      toa                = msg.asUnsignedLong(62, 16, 16);
+      health             = 0;   //<---Check on this. No health is apparent in message type 7
+      ecc                = msg.asUnsignedDouble(46, 16, -21); 
+      OMEGAdot           = msg.asDoubleSemiCircles(102, 16, -38);
+      AHalf              = msg.asUnsignedDouble(118, 24, -11);
+      A = AHalf * AHalf;
+      OMEGA0             = msg.asDoubleSemiCircles(142, 24, -23);
+      w                  = msg.asDoubleSemiCircles(166, 24, -23);
+      M0                 = msg.asDoubleSemiCircles(190, 24, -23);
+      af0                = msg.asSignedDouble(214, 11, -20);
+      af1                = msg.asSignedDouble(225, 11, -38);
+      i0                 = msg.asDoubleSemiCircles(78, 24, -23);
+
+      healthy = false;
+      const ObsID& oidr = msg.getobsID();
+      if ( oidr.band==ObsID::cbL5 && (health == 0) )
+      {
+         healthy = true; 
+      }
+
+      ctToe = IRNWeekSecond(WNa, toa, TimeSystem::IRN); 
+
+         // Determine beginValid.  This is set to the transmit time of this page. 
+      beginValid = msg.getTransmitTime();
+      beginValid.setTimeSystem(TimeSystem::IRN);
+
+         // Determine endValid.   This is set to "end of time" 
+      endValid   = CommonTime::END_OF_TIME;
+      endValid.setTimeSystem(TimeSystem::IRN);
       
    }
 
