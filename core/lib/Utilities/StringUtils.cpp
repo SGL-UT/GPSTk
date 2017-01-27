@@ -145,7 +145,7 @@ namespace gpstk
             }
                // print the byte value in hex
             s << (cfg.upperHex ? std::uppercase : std::nouppercase)
-              << std::setfill('0') << std::hex << std::setw(2) << (int)c
+              << std::hex << std::setw(2) << std::setfill('0') << (int)c
               << std::dec << std::nouppercase << std::noshowbase;
             col += 2;
             DEBUG_COL('B',2);
