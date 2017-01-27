@@ -1027,7 +1027,7 @@ namespace gpstk
       }
 
          // Now create ctToe with WNa_full
-      ctToe = IRNWeekSecond(WNa, toa, TimeSystem::IRN); 
+      ctToe = IRNWeekSecond(WNa_full, toa, TimeSystem::IRN); 
 
          // Determine beginValid.  This is set to the transmit time of this page. 
       beginValid = msg.getTransmitTime();
