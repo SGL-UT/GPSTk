@@ -1,5 +1,79 @@
       #################################################
 
+Version 2.9.6   Monday, January 30, 2017
+
+   General modifications
+   ---------------------
+   - CMake scripts fix for SWIG module directory building
+   - Test Cleanup
+   - Clean up the mess that was StringUtils_T.cpp
+   - Updated unit tests with fancy macros
+   - cleaned up NAV header label to match version spec
+   - Various Bug and Compile Warning Fixes
+
+   Modifications by Author
+   ---------------------
+
+Audric Terry (1):
+      Updating PRN 4 relationships from NANU 2016072 and 2017001
+
+Bryan Parsons (11):
+      Merge branch 'issue_290_IRNSS' into 'master'
+      Merge branch 'issue_292_deltaT_LSF' into 'master'
+      Merge branch 'issue_253_DataID_55' into 'master'
+      Merge branch 'issue_294_irnss_cleanup' into 'master'
+      Merge branch 'issue_296_svnumxref' into 'master'
+      Merge branch 'issue_295' into 'master'
+      Merge branch '297-tuassert-macros-should-catch-exceptions-and-fail' into 'master'
+      Merge branch '299-hexdumpdata-stream-issues' into 'master'
+      Merge branch 'Rinex3NavXmitTime' into 'master'
+      Merge branch 'issue_301' into 'master'
+      Merge branch '300-hexdumpdata-fixes' into 'master'
+
+John H. Price (4):
+      Fixed off by 6 bug in Rinex 3 Nav Xmit Time. Updated rowdiff and rnwdiff to compare Rinex 3 (can still compare Rinex 2)
+      Rinex3NavData.toList() added Toc twice and not Toe
+      cleaned up NAV header label to match version spec
+      changed xmitTime to HOWTime - 6 rather than HOWTime - (HOWTime % 30) to prevent unexpected diffs i.e. in round trips. improved rowdiff output. fixed diff not completing comparison in rowdiff
+
+Jon C. Little (1):
+      Fixed cmake scripts to build swig module directory prior to building the module
+
+johnk (13):
+      Make test assert macros catch exceptions and mark as fail
+      Kill tabs and all who use them
+      Kill tabs and all who use them
+      Merge remote-tracking branch 'origin/master' into 297-tuassert-macros-should-catch-exceptions-and-fail
+      Make sure stream flags are changed and restored as needed in hexDumpData
+      Clean up the mess that was StringUtils_T.cpp
+      More complete stream state saving/storation in hexDumpData
+      Don't optimize debug builds
+      hexDumpData:     Add the option to show radix on index and/or data.     Don't add index to col if it's not being printed.     Print a newline even if there's no ascii output.     Change the test data so it's not on even 8-byte boundaries to exercise fills.     Add tests for various configurations.
+      Move hexDumpData implementation out of StringUtils.hpp, enhance it a bunch and add a bunch of tests for it
+      data output was somehow dropping the fill character in some cases
+      0 fill hexDumpData
+      Merge remote-tracking branch 'origin/master' into 300-hexdumpdata-fixes
+
+renfrob (16):
+      Adding IRNSS signals to identifiers
+      Updating tests for IRN time
+      Adding new time class and associated test
+      Adding IRN time to TimeSystem
+      Updating tests to include IRNTime
+      Merge branch 'master' into issue_290_IRNSS
+      Fixing an oversight
+      Add IRN to the list of time system corrections
+      Adding test for RefTime/TimeSystemCorrection
+      Adding GLONASS<->UTC correction tests
+      Merge branch 'master' into issue_290_IRNSS
+      Adding deltaTLSF to Data ID 56 terse output
+      Modifying output for GPS LNAV Data ID 55
+      Cleaning/Correcting IRN time scanning/printing
+      Simplifying handling of non-GPS navigation message types
+      Changes for additional BeiDou support in the infrastructure classes
+
+      #################################################
+
 Version 2.9.5   Friday, December 16, 2016
 
    General modifications
