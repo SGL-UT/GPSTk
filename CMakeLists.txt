@@ -124,6 +124,13 @@ endif()
 # GPSTk shared-object library (e.g. libgpstk.so) build target
 add_library( gpstk ${STADYN} ${GPSTK_SRC_FILES} ${GPSTK_INC_FILES} )
 
+if (WIN32) #Windows Linker Options
+  if (MINGW)
+    target_link_libraries(gpstk regex)
+  endif()
+endif()
+
+
 # GPSTk library install target
 install( TARGETS gpstk DESTINATION "${CMAKE_INSTALL_LIBDIR}" EXPORT "${EXPORT_TARGETS_FILENAME}" )
 
