@@ -487,7 +487,15 @@ namespace gpstk
          line = leftJustify(fileProgram,20);
          line += leftJustify(fileAgency ,20);
          SystemTime sysTime;
-         string curDate = printTime(sysTime,"%04Y%02m%02d %02H%02M%02S UTC");
+         string curDate;
+         if(version < 3)
+         {
+            curDate = printTime(sysTime,"%02m/%02d/%04Y %02H:%02M:%02S");
+         }
+         else
+         {
+            curDate = printTime(sysTime,"%04Y%02m%02d %02H%02M%02S UTC");
+         }
          line += leftJustify(curDate, 20);
          line += leftJustify(stringRunBy,20);
          strm << stripTrailing(line) << endl;
