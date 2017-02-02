@@ -969,7 +969,9 @@ namespace gpstk
    {
       
       unsigned short msgType  = (unsigned short) msg.asUnsignedLong(30, 6, 1);
-      unsigned short SVID     = (unsigned short) msg.asUnsignedLong(256, 6, 1);
+
+         // This is the almanac SVID, not the transmitting SV
+      unsigned short SVID     = (unsigned short) msg.asUnsignedLong(236, 6, 1);
 
       if ( msgType != 7 )
       {
