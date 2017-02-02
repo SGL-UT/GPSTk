@@ -1014,7 +1014,7 @@ namespace gpstk
       const CommonTime& Xmit = msg.getTransmitTime();
       short XmitWeek = static_cast<IRNWeekSecond>(Xmit).week; //<---Gives non-cutover week number
       
-      short epochNum = XmitWeek / 1024;
+      short epochNum = XmitWeek / 1024;   
       WNa_full = WNa + (epochNum * 1024);
 
       short diffWNa_full = WNa_full - XmitWeek;
@@ -1029,11 +1029,23 @@ namespace gpstk
       }
 
          // Now create ctToe with WNa_full
-      ctToe = IRNWeekSecond(WNa_full, toa, TimeSystem::IRN); 
+      ctToe = IRNWeekSecond(WNa_full, toa, TimeSystem::IRN);
 
+      
          // Determine beginValid.  This is set to the transmit time of this page. 
       beginValid = msg.getTransmitTime();
       beginValid.setTimeSystem(TimeSystem::IRN);
+
+      /* debug
+      std::string tform("%02m/%02d/%Y %03j %02H:%02M:%02S  %7.0s  %4O %6.0g  %P"); 
+      cout << std::endl
+        << "              MM/DD/YYYY DOY HH:MM:SS      SOD  WWWW    SOW\n";
+      cout << "Transmit   :  "
+        << printTime(beginValid,tform) << std::endl;
+      cout << "Orbit Epoch:  "
+        << printTime(ctToe,tform) << std::endl;
+      cout << "-----------------------------" << std::endl;
+      */
 
          // Determine endValid.   This is set to "end of time" 
       endValid   = CommonTime::END_OF_TIME;
