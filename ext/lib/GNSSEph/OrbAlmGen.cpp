@@ -1036,16 +1036,6 @@ namespace gpstk
       beginValid = msg.getTransmitTime();
       beginValid.setTimeSystem(TimeSystem::IRN);
 
-      /* debug
-      std::string tform("%02m/%02d/%Y %03j %02H:%02M:%02S  %7.0s  %4O %6.0g  %P"); 
-      cout << std::endl
-        << "              MM/DD/YYYY DOY HH:MM:SS      SOD  WWWW    SOW\n";
-      cout << "Transmit   :  "
-        << printTime(beginValid,tform) << std::endl;
-      cout << "Orbit Epoch:  "
-        << printTime(ctToe,tform) << std::endl;
-      cout << "-----------------------------" << std::endl;
-      */
 
          // Determine endValid.   This is set to "end of time" 
       endValid   = CommonTime::END_OF_TIME;
