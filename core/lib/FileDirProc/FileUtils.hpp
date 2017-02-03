@@ -96,7 +96,28 @@ namespace gpstk
          _mkdir(path.c_str());
          return 0;
       }
-#else
+#elif defined(__MINGW32__) || defined(__MINGW64__)
+      inline int makeDir(const std::string& path, unsigned mode)
+      {
+            //  #ifdef __sun
+            //      mkdirp(path.c_str(), mode);
+            //  #else
+         std::string::size_type i = 0;
+
+         while ((i = path.find('/',i+1)) != std::string::npos)
+         {
+            std::string thispath(path.substr(0,i));
+            if (thispath[thispath.length() - 1] == '/')
+               thispath.erase(thispath.length() - 1);
+
+            mkdir(thispath.c_str());
+
+         }
+         mkdir(path.c_str());
+            // #endif
+         return 0;
+      }
+#else     
       inline int makeDir(const std::string& path, unsigned mode)
       {
             //  #ifdef __sun
