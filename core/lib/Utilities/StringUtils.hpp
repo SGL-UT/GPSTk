@@ -67,6 +67,7 @@
 #endif
 
 #include "Exception.hpp"
+#include "HexDumpDataConfig.hpp"
 
 namespace gpstk
 {
@@ -91,8 +92,8 @@ namespace gpstk
        */
    namespace StringUtils
    {
-         // All the functionality here is inlined since they are
-         // farily small functions.
+         // Most of the functionality here is inlined since they are
+         // fairly small functions.
 
          /// @ingroup stringutilsgroup
          //@{
@@ -106,47 +107,28 @@ namespace gpstk
          /// @ingroup exceptiongroup
       NEW_EXCEPTION_CLASS(StringException, Exception);
 
-         /// Class for configuring the appearance of hexDumpData() output
-      class HexDumpDataConfig
-      {
-      public:
-         HexDumpDataConfig()
-               : showIndex(true), hexIndex(true), upperHex(false),
-                 idxDigits(4), indexWS(1), groupBy(1), groupWS(1),
-                 group2By(8), group2WS(2), bytesPerLine(16), showText(true),
-                 separator(0), textWS(4)
-         {}
-         HexDumpDataConfig(bool ashowIndex, bool ahexIndex, bool aupperHex,
-                           unsigned aidxDigits, unsigned aindexWS,
-                           unsigned agroupBy, unsigned agroupWS,
-                           unsigned agroup2By, unsigned agroup2WS,
-                           unsigned abytesPerLine, bool ashowText,
-                           char aseparator, unsigned atextWS)
-               : showIndex(ashowIndex), hexIndex(ahexIndex),
-                 upperHex(aupperHex), idxDigits(aidxDigits),
-            indexWS(aindexWS), groupBy(agroupBy), groupWS(agroupWS),
-            group2By(agroup2By), group2WS(agroup2WS),
-            bytesPerLine(abytesPerLine), showText(ashowText),
-            separator(aseparator), textWS(atextWS)
-         {}
-         bool showIndex; ///< display index into string on each line.
-         bool hexIndex; ///< if true, use hex index numbers (else decimal).
-         bool upperHex; ///< if true, use upper-case hex digits.
-         unsigned idxDigits; ///< number of positions to use for index.
-         unsigned indexWS; ///< number of whitespace charaters between index and data.
-         unsigned groupBy; ///< number of bytes of data to show between spaces.
-         unsigned groupWS; ///< number of whitespace charaters between groups of hex data.
-         unsigned group2By; ///< number of groups to show per 2nd layer group (0=none, must be multiple of groupBy).
-         unsigned group2WS; ///< number of whitespace charaters between 2nd layer groups.
-         unsigned bytesPerLine; ///< number of bytes to display on a line of output (must be evenly divisible by both groupBy and group2By).
-         bool showText; ///< if true, show text of message (unprintable characters become '.'.
-         char separator; ///< character to offset text with (0 = none).
-         unsigned textWS; ///< number of whitespace characters between hex and text.
-      };
+         /**
+          * Perform a formatted hex-dump of the (potentially) binary
+          * data to the given stream.
+          *
+          * @note argument order reversed from earlier implementations
+          *   to avoid ambiguity of prototypes.
+          *
+          * @param[in] data data to hex-dump.
+          * @param[in,out] s stream to dump data to.
+          * @param[in] cfg formatting configuration.
+          */
+      void hexDumpData(const std::string& data,
+                       std::ostream& s,
+                       const HexDumpDataConfig& cfg = HexDumpDataConfig());
 
          /**
           * Perform a formatted hex-dump of the (potentially) binary
           * data to the given stream.
+          *
+          * @deprecated Set cfg.prefix and use the 3-parameter
+          *   function instead.
+          *
           * @param s stream to dump data to.
           * @param data data to hex-dump.
           * @param indent indents the string by that many spaces.
@@ -155,11 +137,15 @@ namespace gpstk
       inline void hexDumpData(std::ostream& s,
                               const std::string& data,
                               unsigned indent = 0,
-                              HexDumpDataConfig cfg = HexDumpDataConfig());
+                              const HexDumpDataConfig& cfg = HexDumpDataConfig());
 
          /**
           * Perform a formatted hex-dump of the (potentially) binary
           * data to the given stream.
+          *
+          * @deprecated Set cfg.prefix and use the 3-parameter
+          *   function instead.
+          *
           * @param s stream to dump data to.
           * @param data data to hex-dump.
           * @param tag string to put at the beginning of each line of output.
@@ -1360,141 +1346,18 @@ namespace gpstk
    namespace StringUtils
    {
       inline void hexDumpData(std::ostream& s, const std::string& data,
-                              unsigned indent, HexDumpDataConfig cfg)
+                              unsigned indent, const HexDumpDataConfig& cfg)
       {
          std::string instr(indent, ' ');
          hexDumpData(s, data, instr, cfg);
       }
 
       inline void hexDumpData(std::ostream& s, const std::string& data,
-                              const std::string& tag, HexDumpDataConfig cfg)
+                              const std::string& tag,
+                              HexDumpDataConfig cfg)
       {
-         std::ios_base::fmtflags savedFlags = s.flags();
-         std::string ascii="";
-         unsigned indent = tag.length();
-         int col = 0;
-         int datasize=data.size();
-         std::string groupws(cfg.groupWS, ' ');
-         std::string group2ws(cfg.group2WS, ' ');
-         std::string indexws(cfg.indexWS, ' ');
-         std::string textws(cfg.textWS, ' ');
-         unsigned linesize;
-
-         if (cfg.groupBy && ((cfg.bytesPerLine % cfg.groupBy) != 0))
-         {
-            s << "hexDumpData: cfg.bytesPerLine % cfg.groupBy != 0"
-              << std::endl;
-            s.flags(savedFlags);
-            return;
-         }
-         if (cfg.group2By && ((cfg.bytesPerLine % cfg.group2By) != 0))
-         {
-            s << "hexDumpData: cfg.bytesPerLine % cfg.group2By != 0"
-              << std::endl;
-            s.flags(savedFlags);
-            return;
-         }
-         if (cfg.groupBy && ((cfg.group2By % cfg.groupBy) != 0))
-         {
-            s << "hexDumpData: cfg.group2By % cfg.groupBy != 0"
-              << std::endl;
-            s.flags(savedFlags);
-            return;
-         }
-
-            // line format:
-            // <tag><index>:<indexws><group1byte1>...<group1byte[groupBy]><groupws>...<group[group2By]byte1>...<group[group2By]byte[groupBy]><group2ws>....<byte[bytesPerLine]><textws><separator><text><separator>\n
-            // make sure our default formatting options are set
-         s << std::hex << std::right << std::noshowbase;
-         linesize = indent;
-         if (cfg.showIndex)
-            linesize += cfg.idxDigits + 1 + cfg.indexWS;
-         linesize += cfg.bytesPerLine * 2;
-         unsigned w2 = 0;
-         unsigned w1 = 0;
-         if (cfg.group2By)
-            w2 = (cfg.bytesPerLine / cfg.group2By) - 1;
-         if (cfg.groupBy)
-            w1 = (cfg.bytesPerLine / cfg.groupBy) - w2 - 1;
-         if (cfg.groupBy > 0)
-            linesize += cfg.groupWS * w1;
-         if (cfg.group2By > 0)
-            linesize += cfg.group2WS * w2;
-            /*
-              linesize doesn't include text stuff
-              if (cfg.showText)
-              linesize += cfg.textWS + cfg.bytesPerLine;
-              if (cfg.separator)
-              linesize += 2;
-            */
-
-         for (int i=0; i<datasize; i++)
-         {
-            if (i%cfg.bytesPerLine==0)
-            {
-               s << tag;
-               col = indent;
-               if (cfg.showIndex)
-               {
-                  if (cfg.hexIndex)
-                  {
-                     s << std::hex;
-                     if (cfg.upperHex)
-                        s << std::uppercase;
-                     else
-                        s << std::nouppercase;
-                  }
-                  else
-                     s << std::dec;
-                  s << std::setfill('0');
-                  s << std::setw(cfg.idxDigits) << i << ":" << indexws;
-                  s << std::dec << std::nouppercase;
-               }
-               col += cfg.idxDigits + 1 + cfg.indexWS;
-            }
-            unsigned char c=data[i];
-            if (isprint(c))
-               ascii += c;
-            else
-               ascii += '.';
-            if (cfg.upperHex)
-               s << std::uppercase;
-            else
-               s << std::nouppercase;
-            s << std::hex << std::setw(2) << (int)c << std::dec
-              << std::nouppercase;
-            col += 2;
-            if (((i % cfg.bytesPerLine) == (cfg.bytesPerLine-1)) ||
-                (i == (datasize-1)))
-            {
-               if (cfg.showText)
-               {
-                  int extra = linesize-col;
-                  std::string space(extra, ' ');
-                  s << space << textws;
-                  if (cfg.separator)
-                     s << cfg.separator;
-                  s << ascii;
-                  if (cfg.separator)
-                     s << cfg.separator;
-                  s << std::endl;
-               }
-                  // this *should* be updated at the beginning of the loop
-                  //col=indent+6;
-               ascii.erase();
-            }
-            else if (cfg.group2By && ((i % cfg.group2By) == (cfg.group2By-1)))
-            {
-               s << group2ws;
-               col += cfg.group2WS;
-            }
-            else if (cfg.groupBy && ((i % cfg.groupBy) == (cfg.groupBy-1)))
-            {
-               s << groupws;
-               col += cfg.groupWS;
-            }
-         }
-         s.flags(savedFlags);
+         cfg.prefix = tag;
+         hexDumpData(data, s, cfg);
       }
 
          // Keep searching for aString at the start of s
