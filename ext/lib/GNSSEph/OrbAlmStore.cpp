@@ -155,8 +155,8 @@ void OrbAlmStore::dumpSubjAlm( std::ostream& s, short detail, const SatID& subjI
            return;
       } // end if-block
 
-         // If the user specified a particular SV, throw an error if there
-         // are no data for that PRN.
+         // If the user specified a particular SV, simply say so and 
+         // return.
       bool singleSV = false;
       if (subjID.id!=-1)
       {
@@ -164,10 +164,8 @@ void OrbAlmStore::dumpSubjAlm( std::ostream& s, short detail, const SatID& subjI
          it = subjectAlmMap.find(subjID);
          if (it==subjectAlmMap.end())
          {
-            stringstream ss;
-            ss << "No almanac data to dump for " << subjID; 
-            InvalidRequest ir(ss.str());
-            GPSTK_THROW(ir)
+            s << "No almanac data to dump for " << subjID << endl;
+            return; 
          }
       }
 
