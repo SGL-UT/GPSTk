@@ -123,7 +123,7 @@ namespace gpstk
             break;
          }
 
-	 case NavID::ntIRNSS_SPS:
+	      case NavID::ntIRNSS_SPS:
          {
             loadDataIRN(pnb, hArg);
             break;
@@ -967,19 +967,25 @@ namespace gpstk
 			       const unsigned short hArg)
                throw(gpstk::InvalidParameter)
    {
-      
-      unsigned short msgType  = (unsigned short) msg.asUnsignedLong(30, 6, 1);
 
-         // This is the almanac SVID, not the transmitting SV
-      unsigned short SVID     = (unsigned short) msg.asUnsignedLong(236, 6, 1);
+         // Ignore anything that is NOT an IRNSS almanac message
+      unsigned long subframeid = msg.asUnsignedLong(27, 2, 1);
 
-      if ( msgType != 7 )
+         // message ID is only valid for SF3 and SF4
+      unsigned long msgid = 0;
+      if (subframeid==2 || subframeid==3)
+         msgid = msg.asUnsignedLong(30,6,1);
+
+      if ( msgid != 7 )
       {
          stringstream ss;
-         ss << "Expected IRNSS message type 7.  Found message " << msgType;
+         ss << "Expected IRNSS message type 7.  Found message " << msgid;
          InvalidParameter ip(ss.str());
          GPSTK_THROW(ip); 
       }
+
+         // This is the SVID of the SUBJECT of the almanac, not the transmitting SV
+      unsigned short SVID     = (unsigned short) msg.asUnsignedLong(236, 6, 1);
 
          // Store the transmitting SV
       satID = msg.getsatSys();
