@@ -33,7 +33,6 @@ test_solaris:
   script:
     - ./build.sh -evxt
 
-Redhat Runner machine offline
 build_redhat:
   stage: build
   tags:
