@@ -262,6 +262,7 @@ void ROWDiff::process()
 
                   }
                }
+               cout << endl;
             }
             firstitr = difflist.first.erase(firstitr);
             seconditr = difflist.second.erase(seconditr);
