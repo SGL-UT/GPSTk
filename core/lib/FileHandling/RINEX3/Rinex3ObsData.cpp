@@ -789,17 +789,13 @@ namespace gpstk
       return line;
    }  // end writeTime
 
-   string Rinex3ObsData::timeString() const throw(StringException)
-   {
-      return writeTime(time);
-   }
 
    void Rinex3ObsData::dump(ostream& s) const
    {
       if(obs.empty())
          return;
 
-      s << "Dump of Rinex3ObsData - time: " << writeTime(time)
+      s << "Dump of Rinex3ObsData" << endl << " - time: " << writeTime(time)
         << " epochFlag: " << " " << epochFlag
         << " numSVs: " << numSVs
         << fixed << setprecision(9) << " clk offset: " << clockOffset << endl;

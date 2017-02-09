@@ -160,8 +160,6 @@ namespace gpstk
          /// Another dump, using information from the header
       void dump(std::ostream& s, Rinex3ObsHeader& head) const;
 
-      std::string timeString() const
-         throw( gpstk::StringUtils::StringException );
 
    protected:
 
