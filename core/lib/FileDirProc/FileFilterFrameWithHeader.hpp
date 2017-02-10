@@ -43,7 +43,6 @@
 #ifndef GPSTK_FILEFILTERFRAMEWITHHEADER_HPP
 #define GPSTK_FILEFILTERFRAMEWITHHEADER_HPP
 
-#include "Rinex3ObsData.hpp"
 #include "FileFilterFrame.hpp"
 
 namespace gpstk
@@ -191,37 +190,6 @@ namespace gpstk
                      const FileHeader& fh) const
          throw(gpstk::Exception);
 
-      /// Returns a list of the data in *this that isn't in r.
-      template <class BinaryPredicate>
-      std::list<FileData>
-      halfDiff(const FileFilterFrameWithHeader<FileStream,FileData,FileHeader>& r, BinaryPredicate p) const
-      {
-         std::list<FileData> toReturn;
-
-         typename std::list<FileData>::const_iterator dvIt = this->dataVec.begin();
-         typename std::list<FileData>::const_iterator rdvIt = r.dataVec.begin();
-         while(dvIt != this->dataVec.end())
-         {
-            if (rdvIt == r.dataVec.end() ||
-               p(*dvIt, this->headerList.front(), *rdvIt, r.headerList.front())) //dv less than
-            {
-               toReturn.push_back(*dvIt);
-               dvIt++;
-            }
-            else if (p(*rdvIt, r.headerList.front(),
-                       *dvIt, this->headerList.front())) //rdv less than
-            {
-               rdvIt++;
-            }
-            else //equal
-            {
-               dvIt++;
-               rdvIt++;
-            }
-         }
-         return toReturn;
-      }
-
          /** performs the operation op on the header list. */
       template <class Operation>
       FileFilterFrameWithHeader& touchHeader(Operation& op)
@@ -309,7 +277,6 @@ namespace gpstk
    {
          // make the directory (if needed)
       std::string::size_type pos = outputFile.rfind('/');
-
       if (pos != std::string::npos)
          gpstk::FileUtils::makeDir(outputFile.substr(0,pos).c_str(), 0755);
       
@@ -451,7 +418,7 @@ namespace gpstk
             headerList.push_back(header);
          }
       }
-   }
+   }  
 
 } // namespace gpstk
 
