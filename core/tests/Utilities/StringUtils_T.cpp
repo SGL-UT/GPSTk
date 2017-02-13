@@ -1109,6 +1109,20 @@ public:
          //cout << "cfg11:" << endl << hexDumpStream.str() << endl;
       hexDumpStream.str("");
 
+         // After updating hexDumpData to support a pre- and
+         // post-ascii pair of strings rather than a single character
+         // on either side. (e.g. for C-style comments)
+      HexDumpDataConfig cfg12(false, false, false, 0, "", 1, ", ", 0, "",
+                              8, true, "    /* ", " */", true, false, ",", "",
+                              "      ");
+      correctHexDump = getFileContents(refPath + "hexDump_12.exp");
+         // Build the hexDumpString and output it to stringstream
+      hexDumpString = string(hexDumpArray2, sizeof(hexDumpArray2));
+      hexDumpData(hexDumpString, hexDumpStream, cfg12);
+      TUASSERTE(std::string, correctHexDump, hexDumpStream.str());
+         //cout << "cfg12:" << endl << hexDumpStream.str() << endl;
+      hexDumpStream.str("");
+
       TURETURN();
    }
 };

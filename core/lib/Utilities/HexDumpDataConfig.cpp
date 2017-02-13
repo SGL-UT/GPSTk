@@ -50,7 +50,7 @@ namespace gpstk
             : showIndex(true), hexIndex(true), upperHex(false),
               idxDigits(4), indexSep(": "), groupBy(1), groupSep(" "),
               group2By(8), group2Sep("  "), bytesPerLine(16),
-              showText(true), separator(0), textSep("    "),
+              showText(true), preText("    "),
               showBaseData(false), showBaseIndex(false)
       {}
 
@@ -67,13 +67,17 @@ namespace gpstk
          upperHex(aupperHex), idxDigits(aidxDigits),
          groupBy(agroupBy), group2By(agroup2By),
          bytesPerLine(abytesPerLine), showText(ashowText),
-         separator(aseparator),
          showBaseData(aShowBaseData), showBaseIndex(aShowBaseIndex)
       {
          indexSep = ":" + std::string(aindexWS, ' ');
          groupSep = std::string(agroupWS, ' ');
          group2Sep = std::string(agroup2WS, ' ');
-         textSep = std::string(atextWS, ' ');
+         preText = std::string(atextWS, ' ');
+         if (aseparator != 0)
+         {
+            preText += aseparator;
+            postText = std::string(1, aseparator);
+         }
       }
 
 
@@ -91,10 +95,39 @@ namespace gpstk
          upperHex(aupperHex), idxDigits(aidxDigits),
          groupBy(agroupBy), group2By(agroup2By),
          bytesPerLine(abytesPerLine), showText(ashowText),
-         separator(aseparator), indexSep(aindexSep), groupSep(agroupSep),
-         group2Sep(agroup2Sep), textSep(atextSep),
+         indexSep(aindexSep), groupSep(agroupSep), group2Sep(agroup2Sep),
          showBaseData(aShowBaseData), showBaseIndex(aShowBaseIndex),
          dataEndSep(adataEndSep), dataFinal(adataFinal)
+      {
+         preText = atextSep;
+         if (aseparator != 0)
+         {
+            preText += aseparator;
+            postText = std::string(1, aseparator);
+         }
+      }
+
+
+      HexDumpDataConfig ::
+      HexDumpDataConfig(bool ashowIndex, bool ahexIndex, bool aupperHex,
+                        unsigned aidxDigits, const std::string& aindexSep,
+                        unsigned agroupBy, const std::string& agroupSep,
+                        unsigned agroup2By, const std::string& agroup2Sep,
+                        unsigned abytesPerLine, bool ashowText,
+                        const std::string& apreText,
+                        const std::string& apostText,
+                        bool aShowBaseData, bool aShowBaseIndex,
+                        const std::string& adataEndSep,
+                        const std::string& adataFinal,
+                        const std::string& aprefix)
+      : showIndex(ashowIndex), hexIndex(ahexIndex),
+         upperHex(aupperHex), idxDigits(aidxDigits),
+         groupBy(agroupBy), group2By(agroup2By),
+         bytesPerLine(abytesPerLine), showText(ashowText),
+         indexSep(aindexSep), groupSep(agroupSep), group2Sep(agroup2Sep),
+         preText(apreText), postText(apostText),
+         showBaseData(aShowBaseData), showBaseIndex(aShowBaseIndex),
+         dataEndSep(adataEndSep), dataFinal(adataFinal), prefix(aprefix)
       {
       }
 
