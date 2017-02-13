@@ -92,7 +92,7 @@ namespace gpstk
          }
 
             // line format:
-            // <prefix><index><indexSep><group1byte1>...<group1byte[groupBy]><groupSep>...<group[group2By]byte1>...<group[group2By]byte[groupBy]><group2Sep>....<byte[bytesPerLine]><dataEndSep/dataFinal><textSep><separator><text><separator>\n
+            // <prefix><index><indexSep><group1byte1>...<group1byte[groupBy]><groupSep>...<group[group2By]byte1>...<group[group2By]byte[groupBy]><group2Sep>....<byte[bytesPerLine]><dataEndSep/dataFinal><preText><separator><text><separator>\n
             // make sure our default formatting options are set
          s << std::hex << std::internal << std::noshowbase << std::setw(0);
 
@@ -174,21 +174,13 @@ namespace gpstk
                      // print the ASCII representation of the data
                   int extra = linesize-col;
                   std::string space(extra, ' ');
-                  s << space << cfg.textSep;
+                  s << space << cfg.preText;
                   DEBUG_COL('s', extra);
-                  DEBUG_COL('T', cfg.textSep.length());
-                  if (cfg.separator)
-                  {
-                     s << cfg.separator;
-                     DEBUG_COL('o', 1);
-                  }
+                  DEBUG_COL('T', cfg.preText.length());
                   s << ascii;
                   DEBUG_COL('A', ascii.length());
-                  if (cfg.separator)
-                  {
-                     s << cfg.separator;
-                     DEBUG_COL('o', 1);
-                  }
+                  s << cfg.postText;
+                  DEBUG_COL('t', cfg.postText.length());
                }
                s << std::endl;
                DEBUG_COL('\n', 1);
