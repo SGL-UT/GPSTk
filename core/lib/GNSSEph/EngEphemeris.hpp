@@ -91,6 +91,10 @@ namespace gpstk
          /// Destructor
       virtual ~EngEphemeris() {}
 
+      bool operator==(const EngEphemeris& right) const throw();
+      bool operator!=(const EngEphemeris& right) const throw()
+      { return !(operator==(right)); }
+
          /**
           * Store a subframe in this object.
           * @param subframe ten word navigation subframe stored in the

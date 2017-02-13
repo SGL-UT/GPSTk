@@ -170,7 +170,7 @@
    }                                            \
    catch (gpstk::Exception &exc)                \
    {                                            \
-      cerr << exc << endl;                      \
+      std::cerr << exc << std::endl;            \
       TUFAIL("Exception");                      \
    }                                            \
    catch (...)                                  \

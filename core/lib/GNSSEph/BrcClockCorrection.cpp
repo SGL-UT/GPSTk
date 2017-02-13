@@ -65,76 +65,116 @@ namespace gpstk
       af0 = af1 = af2 = 0.0;
    }
 
-   BrcClockCorrection::BrcClockCorrection(const std::string satSysArg, const ObsID obsIDArg,
-                                          const short PRNIDArg, const CommonTime TocArg,
-                                          const CommonTime TopArg, const short URAocArg,
-                                          const short URAoc1Arg, const short URAoc2Arg,
-                                          const bool healthyArg, const double af0Arg,
-                                          const double af1Arg, const double af2Arg )
+   BrcClockCorrection::BrcClockCorrection(const std::string satSysArg,
+                                          const ObsID obsIDArg,
+                                          const short PRNIDArg,
+                                          const CommonTime TocArg,
+                                          const CommonTime TopArg,
+                                          const short URAocArg,
+                                          const short URAoc1Arg,
+                                          const short URAoc2Arg,
+                                          const bool healthyArg,
+                                          const double af0Arg,
+                                          const double af1Arg,
+                                          const double af2Arg )
    {
-      loadData(satSysArg, obsIDArg, PRNIDArg, TocArg, TopArg, URAocArg, URAoc1Arg, URAoc2Arg,
-               healthyArg, af0Arg, af1Arg, af2Arg );
+      loadData(satSysArg, obsIDArg, PRNIDArg, TocArg, TopArg, URAocArg,
+               URAoc1Arg, URAoc2Arg, healthyArg, af0Arg, af1Arg, af2Arg );
    }
 
-		/// Legacy GPS Subframe 1-3
-   BrcClockCorrection::BrcClockCorrection(const ObsID obsIDArg, const short PRNID,
-                                          const short fullweeknum, const long subframe1[10] )
+      /// Legacy GPS Subframe 1-3
+   BrcClockCorrection::BrcClockCorrection(const ObsID obsIDArg,
+                                          const short PRNID,
+                                          const short fullweeknum,
+                                          const long subframe1[10] )
    {
       loadData(obsIDArg, PRNID,fullweeknum,subframe1 );
    }
 
-   void BrcClockCorrection::loadData(const std::string satSysArg, const ObsID obsIDArg,
-                                     const short PRNIDArg, const CommonTime TocArg,
-                                     const short URAocArg, const bool healthyArg,
-                                     const double af0Arg, const double af1Arg,
+
+   bool BrcClockCorrection::operator==(const BrcClockCorrection& right) const
+      throw()
+   {
+         // EngNav has no data
+      return ((dataLoaded == right.dataLoaded) &&
+              (satSys == right.satSys) &&
+              (obsID == right.obsID) &&
+              (PRNID == right.PRNID) &&
+              (Toc == right.Toc) &&
+              (Top == right.Top) &&
+              (URAoc == right.URAoc) &&
+              (URAoc1 == right.URAoc1) &&
+              (URAoc2 == right.URAoc2) &&
+              (healthy == right.healthy) &&
+              (af0 == right.af0) &&
+              (af1 == right.af1) &&
+              (af2 == right.af2));
+   }
+
+
+   void BrcClockCorrection::loadData(const std::string satSysArg,
+                                     const ObsID obsIDArg,
+                                     const short PRNIDArg,
+                                     const CommonTime TocArg,
+                                     const short URAocArg,
+                                     const bool healthyArg,
+                                     const double af0Arg,
+                                     const double af1Arg,
                                      const double af2Arg )
    {
       const CommonTime TopArg;
       const short URAoc1Arg = 0;
       const short URAoc2Arg = 0;
 
-      loadData(satSysArg, obsIDArg, PRNIDArg, TocArg, TopArg, URAocArg, URAoc1Arg, URAoc2Arg,
-               healthyArg, af0Arg, af1Arg, af2Arg );
+      loadData(satSysArg, obsIDArg, PRNIDArg, TocArg, TopArg, URAocArg,
+               URAoc1Arg, URAoc2Arg, healthyArg, af0Arg, af1Arg, af2Arg );
    }
 
-   void BrcClockCorrection::loadData(const std::string satSysArg, const ObsID obsIDArg,
-                                     const short PRNIDArg, const CommonTime TocArg,
-                                     const CommonTime TopArg, const short URAocArg,
-                                     const short URAoc1Arg, const short URAoc2Arg,
-                                     const bool healthyArg, const double af0Arg,
-                                     const double af1Arg, const double af2Arg )
+   void BrcClockCorrection::loadData(const std::string satSysArg,
+                                     const ObsID obsIDArg,
+                                     const short PRNIDArg,
+                                     const CommonTime TocArg,
+                                     const CommonTime TopArg,
+                                     const short URAocArg,
+                                     const short URAoc1Arg,
+                                     const short URAoc2Arg,
+                                     const bool healthyArg,
+                                     const double af0Arg,
+                                     const double af1Arg,
+                                     const double af2Arg )
    {
-	   satSys      = satSysArg;
-	   obsID       = obsIDArg;
-	   PRNID       = PRNIDArg;
-	   Toc         = TocArg;
+      satSys      = satSysArg;
+      obsID       = obsIDArg;
+      PRNID       = PRNIDArg;
+      Toc         = TocArg;
       Top         = TopArg;
       URAoc       = URAocArg;
       URAoc1      = URAoc1Arg;
       URAoc2      = URAoc2Arg;
-	   healthy     = healthyArg;
-	   af0         = af0Arg;
-	   af1         = af1Arg;
-	   af2         = af2Arg;
-	   dataLoaded  = true;
+      healthy     = healthyArg;
+      af0         = af0Arg;
+      af1         = af1Arg;
+      af2         = af2Arg;
+      dataLoaded  = true;
    }
 
    void BrcClockCorrection::loadData(const ObsID obsIDArg, const short PRNIDArg,
-                                     const short fullweeknum, const long subframe1[10] )
-	   throw(InvalidParameter)
+                                     const short fullweeknum,
+                                     const long subframe1[10] )
+      throw(InvalidParameter)
    {
       double ficked[60];
 
- 	      //Load overhead members
-  	   satSys = "G";
-	   obsID = obsIDArg;
+         //Load overhead members
+      satSys = "G";
+      obsID = obsIDArg;
       PRNID = PRNIDArg;
 
          //Convert Subframe 1
       if (!subframeConvert(subframe1, fullweeknum, ficked))
       {
          InvalidParameter exc("Subframe 1 not valid.");
-	      GPSTK_THROW(exc);
+         GPSTK_THROW(exc);
       }
       double Txmit  = ficked[2];     // Time of week from handover word
       short weeknum = static_cast<short>( ficked[5] );
@@ -146,10 +186,20 @@ namespace gpstk
       af0           = ficked[15];
 
       double diff = Txmit - TocSOW;
-      if (diff > HALFWEEK)          // NOTE: This USED to be in DayTime, but DayTime is going away.  Where is it now?
-         weeknum++;                 // Convert week # of transmission to week # of epoch time when Toc is forward across a week boundary
+         // NOTE: This USED to be in DayTime, but DayTime is going
+         // away.  Where is it now?
+      if (diff > HALFWEEK)
+      {
+            // Convert week # of transmission to week # of epoch time
+            // when Toc is forward across a week boundary
+         weeknum++;
+      }
       else if (diff < -HALFWEEK)
-         weeknum--;                 // Convert week # of transmission to week # of epoch time when Toc is back across a week boundary
+      {
+            // Convert week # of transmission to week # of epoch time
+            // when Toc is back across a week boundary
+         weeknum--;
+      }
 
       Toc = GPSWeekSecond( weeknum, TocSOW, TimeSystem::GPS );
       URAoc = accFlag;              //Store L1 C/A URA as URAoc
@@ -157,7 +207,7 @@ namespace gpstk
       URAoc2 = 0;
       healthy = false;
       if (health == 0)
-      healthy = true;
+         healthy = true;
       dataLoaded = true;
       return;
    }
@@ -243,12 +293,12 @@ namespace gpstk
          InvalidRequest exc("Required data not stored.");
          GPSTK_THROW(exc);
       }
-      //if (obsID.code == "tcCA" ) // L1 C/A
-         accuracy = ura2accuracy(URAoc);
-      //else
+         //if (obsID.code == "tcCA" ) // L1 C/A
+      accuracy = ura2accuracy(URAoc);
+         //else
 
-     // deleted because algorithms in -705 and -800 changed
-     //     accuracy = uraoc2CNAVaccuracy(URAoc, URAoc1, URAoc2, t, Top);
+         // deleted because algorithms in -705 and -800 changed
+         //     accuracy = uraoc2CNAVaccuracy(URAoc, URAoc1, URAoc2, t, Top);
       return accuracy;
    }
 

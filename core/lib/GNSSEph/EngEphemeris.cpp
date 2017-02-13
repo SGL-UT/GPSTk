@@ -95,6 +95,40 @@ namespace gpstk
       }
    }
 
+
+   bool EngEphemeris::operator==(const gpstk::EngEphemeris& right) const throw()
+   {
+         // ignored as not important for eng eph comparison
+         //haveSubframe
+         //subframeStore
+         //isFIC;
+         // EngNav has no data to compare
+      return ((tlm_message[0] == right.tlm_message[0]) &&
+              (tlm_message[1] == right.tlm_message[1]) &&
+              (tlm_message[2] == right.tlm_message[2]) &&
+              (satSys == right.satSys) &&
+              (PRNID == right.PRNID) &&
+              (tracker == right.tracker) &&
+              (HOWtime[0] == right.HOWtime[0]) &&
+              (HOWtime[1] == right.HOWtime[1]) &&
+              (HOWtime[2] == right.HOWtime[2]) &&
+              (ASalert[0] == right.ASalert[0]) &&
+              (ASalert[1] == right.ASalert[1]) &&
+              (ASalert[2] == right.ASalert[2]) &&
+              (weeknum == right.weeknum) &&
+              (codeflags == right.codeflags) &&
+              (health == right.health) &&
+              (L2Pdata == right.L2Pdata) &&
+              (IODC == right.IODC) &&
+              (IODE == right.IODE) &&
+              (AODO == right.AODO) &&
+              (fitint == right.fitint) &&
+              (Tgd == right.Tgd) &&
+              (bcClock == right.bcClock) &&
+              (orbit == right.orbit));
+   }
+
+
       /**
        *  Historically, EngEphemeris allowed calling programs to add data
        *  one subframe at a time.  This functionality does not exist in

@@ -54,6 +54,8 @@
 #include "GPSWeekSecond.hpp"
 #include "YDSTime.hpp"
 
+class BrcClockCorrection_T;
+
 namespace gpstk
 {
       /// @ingroup GNSSEph
@@ -91,6 +93,10 @@ namespace gpstk
 
          /// Destructor
       virtual ~BrcClockCorrection() {}
+
+      bool operator==(const BrcClockCorrection& right) const throw();
+      bool operator!=(const BrcClockCorrection& right) const throw()
+      { return !operator==(right); }
 
          /**
           * Query presence of data in this object.
@@ -208,6 +214,7 @@ namespace gpstk
       double af2;           /**< SV clock drift rate (sec/sec**2) */
          //@}
 
+      friend class ::BrcClockCorrection_T;
       friend std::ostream& operator<<(std::ostream& s,
                                       const BrcClockCorrection& eph);
 
