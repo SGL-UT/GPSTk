@@ -203,6 +203,7 @@ namespace gpstk
                }
                fileSys = strip(line.substr(40,20));   // not in ver 2
                setFileSystem(fileSys);
+               fileType = "N: GNSS NAV DATA";
             }
             else 
             {                                    // ver 2
@@ -218,12 +219,11 @@ namespace gpstk
                                   fileType);
                   GPSTK_THROW(e);
                }
+               fileType = "N: GPS NAV DATA";
             }
-
-            fileType = "NAVIGATION";
             valid |= validVersion;
          }
-         else if(thisLabel == stringRunBy) 
+         else if(thisLabel == stringRunBy)
          {
                // "PGM / RUN BY / DATE"
             fileProgram = strip(line.substr( 0,20));
@@ -232,13 +232,13 @@ namespace gpstk
             date = strip(line.substr(40,20));
             valid |= validRunBy;
          }
-         else if(thisLabel == stringComment) 
+         else if(thisLabel == stringComment)
          {
                // "COMMENT"
             commentList.push_back(strip(line.substr(0,60)));
             valid |= validComment;
          }
-         else if(thisLabel == stringIonAlpha) 
+         else if(thisLabel == stringIonAlpha)
          {
                // GPS alpha "ION ALPHA"  R2.11
             IonoCorr ic("GPSA");
@@ -248,7 +248,7 @@ namespace gpstk
             if(mapIonoCorr.find("GPSB") != mapIonoCorr.end())
                valid |= validIonoCorrGPS;
          }
-         else if(thisLabel == stringIonBeta) 
+         else if(thisLabel == stringIonBeta)
          {
                // GPS beta "ION BETA"  R2.11
             IonoCorr ic("GPSB");
@@ -258,13 +258,13 @@ namespace gpstk
             if(mapIonoCorr.find("GPSA") != mapIonoCorr.end())
                valid |= validIonoCorrGPS;
          }
-         else if(thisLabel == stringIonoCorr) 
+         else if(thisLabel == stringIonoCorr)
          {
                // "IONOSPHERIC CORR"
             IonoCorr ic;
-            try 
+            try
             { ic.fromString(strip(line.substr(0,4))); }
-            catch(Exception& e) 
+            catch(Exception& e)
             {
                FFStreamError fse(e.what());
                GPSTK_THROW(e);
@@ -272,16 +272,16 @@ namespace gpstk
             for(i=0; i < 4; i++)
                ic.param[i] = for2doub(line.substr(5 + 12*i, 12));
 
-            if(ic.type == IonoCorr::GAL) 
+            if(ic.type == IonoCorr::GAL)
             {
                valid |= validIonoCorrGal;
             }
-            else if(ic.type == IonoCorr::GPSA) 
+            else if(ic.type == IonoCorr::GPSA)
             {
                if(mapIonoCorr.find("GPSB") != mapIonoCorr.end())
                   valid |= validIonoCorrGPS;
             }
-            else if(ic.type == IonoCorr::GPSB) 
+            else if(ic.type == IonoCorr::GPSB)
             {
                if(mapIonoCorr.find("GPSA") != mapIonoCorr.end())
                   valid |= validIonoCorrGPS;
@@ -289,7 +289,7 @@ namespace gpstk
                //else
             mapIonoCorr[ic.asString()] = ic;
          }
-         else if(thisLabel == stringDeltaUTC) 
+         else if(thisLabel == stringDeltaUTC)
          {
                // "DELTA-UTC: A0,A1,T,W" R2.11 GPS
             TimeSystemCorrection tc("GPUT");
@@ -304,7 +304,7 @@ namespace gpstk
             valid |= validTimeSysCorr;
          }
             // R2.11 but Javad uses it in 3.01
-         else if(thisLabel == stringCorrSysTime) 
+         else if(thisLabel == stringCorrSysTime)
          {
                // "CORR TO SYSTEM TIME"  R2.10 GLO
             TimeSystemCorrection tc("GLUT");
@@ -326,7 +326,7 @@ namespace gpstk
             mapTimeCorr[tc.asString4()] = tc;
             valid |= validTimeSysCorr;
          }
-         else if(thisLabel == stringDUTC) 
+         else if(thisLabel == stringDUTC)
          {
                // "D-UTC A0,A1,T,W,S,U"  // R2.11 GEO
             TimeSystemCorrection tc("SBUT");
@@ -340,13 +340,13 @@ namespace gpstk
             mapTimeCorr[tc.asString4()] = tc;
             valid |= validTimeSysCorr;
          }
-         else if(thisLabel == stringTimeSysCorr) 
+         else if(thisLabel == stringTimeSysCorr)
          {
                // R3 only // "TIME SYSTEM CORR"
             TimeSystemCorrection tc;
-            try 
+            try
             { tc.fromString(strip(line.substr(0,4))); }
-            catch(Exception& e) 
+            catch(Exception& e)
             {
                FFStreamError fse(e.what());
                GPSTK_THROW(e);
@@ -366,7 +366,7 @@ namespace gpstk
                tc.type == TimeSystemCorrection::GPGA ||
                tc.type == TimeSystemCorrection::QZGP ||
                tc.type == TimeSystemCorrection::QZUT)
-            
+
             {
                GPSWeekSecond gws(tc.refWeek,tc.refSOW);
                CivilTime ct(gws);
@@ -375,7 +375,7 @@ namespace gpstk
                tc.refDay = ct.day;
             }
 
-            if(tc.type == TimeSystemCorrection::GAUT) 
+            if(tc.type == TimeSystemCorrection::GAUT)
             {
                GALWeekSecond gws(tc.refWeek,tc.refSOW);
                CivilTime ct(gws);
@@ -384,7 +384,7 @@ namespace gpstk
                tc.refDay = ct.day;
             }
 
-               //if(tc.type == TimeSystemCorrection::GLUT) 
+               //if(tc.type == TimeSystemCorrection::GLUT)
                // {
                //   tc.refYr =  1980;
                //   tc.refMon = 1;
@@ -396,7 +396,7 @@ namespace gpstk
             mapTimeCorr[tc.asString4()] = tc;
             valid |= validTimeSysCorr;
          }
-         else if(thisLabel == stringLeapSeconds) 
+         else if(thisLabel == stringLeapSeconds)
          {
                // "LEAP SECONDS"
             leapSeconds = asInt(line.substr(0,6));
@@ -405,70 +405,70 @@ namespace gpstk
             leapDay = asInt(line.substr(18,6));       // R3 only
             valid |= validLeapSeconds;
          }
-         else if(thisLabel == stringEoH) 
+         else if(thisLabel == stringEoH)
          {
                // "END OF HEADER"
             valid |= validEoH;
          }
-         else 
+         else
          {
             throw(FFStreamError("Unknown header label >" + thisLabel +
-                                "< at line " + 
+                                "< at line " +
                                 asString<size_t>(strm.lineNumber)));
          }
       }
-   
+
       unsigned long allValid;
       if(version >= 3.0)
          allValid = allValid3;
       else if(version >= 2 && version < 3)
          allValid = allValid2;
-      else 
+      else
       {
          FFStreamError e("Unknown or unsupported RINEX version "+
                          asString(version,2));
          GPSTK_THROW(e);
       }
-   
-      if((allValid & valid) != allValid) 
+
+      if((allValid & valid) != allValid)
       {
          FFStreamError e("Incomplete or invalid header");
          GPSTK_THROW(e);
       }
-   
+
       strm.header = *this;
       strm.headerRead = true;
-   
+
    } // end of reallyGetRecord
-   
+
       //-----------------------------------------------------------------------
-   void Rinex3NavHeader::reallyPutRecord(FFStream& ffs) const 
+   void Rinex3NavHeader::reallyPutRecord(FFStream& ffs) const
       throw(std::exception, FFStreamError, StringException)
    {
       Rinex3NavStream& strm = dynamic_cast<Rinex3NavStream&>(ffs);
-   
+
       strm.header = (*this);
-   
+
       int j;
       unsigned long allValid;
       if(version >= 3.0)
          allValid = allValid3;
       else if(version >= 2 && version < 3)
          allValid = allValid2;
-      else 
+      else
       {
          FFStreamError err("Unknown RINEX version: " + asString(version,4));
          GPSTK_THROW(err);
       }
-   
-      if((valid & allValid) != allValid) 
+
+      if((valid & allValid) != allValid)
       {
          FFStreamError err("Incomplete or invalid header.");
          GPSTK_THROW(err);
       }
-   
+
       string line;
-      if(valid & validVersion) 
+      if(valid & validVersion)
       {
             // "RINEX VERSION / TYPE"
          line = rightJustify(asString(version,2), 10);
@@ -480,8 +480,8 @@ namespace gpstk
          strm << stripTrailing(line) << endl;
          strm.lineNumber++;
       }
-   
-      if(valid & validRunBy) 
+
+      if(valid & validRunBy)
       {
             // "PGM / RUN BY / DATE"
          line = leftJustify(fileProgram,20);
@@ -501,13 +501,13 @@ namespace gpstk
          strm << stripTrailing(line) << endl;
          strm.lineNumber++;
       }
-   
-      if(valid & validComment) 
+
+      if(valid & validComment)
       {
             // "COMMENT"
          vector<string>::const_iterator itr = commentList.begin();
          while (itr != commentList.end())
-         
+
          {
             line = leftJustify((*itr), 60);
             line += leftJustify(stringComment,20);
@@ -516,14 +516,14 @@ namespace gpstk
             itr++;
          }
       }
-   
-      if(valid & validIonoCorrGPS) 
+
+      if(valid & validIonoCorrGPS)
       {
             // "IONOSPHERIC CORR"
          map<string,IonoCorr>::const_iterator it;
-         for(it=mapIonoCorr.begin(); it != mapIonoCorr.end(); ++it) 
+         for(it=mapIonoCorr.begin(); it != mapIonoCorr.end(); ++it)
          {
-            switch(it->second.type) 
+            switch(it->second.type)
             {
                case IonoCorr::GAL:
                   line = "GAL  ";
@@ -534,7 +534,7 @@ namespace gpstk
                   line += leftJustify(stringIonoCorr,20);
                   break;
                case IonoCorr::GPSA:
-                  if(version >= 3) 
+                  if(version >= 3)
                   {
                      line = "GPSA ";
                      for(j=0; j<4; j++)
@@ -542,7 +542,7 @@ namespace gpstk
                      line += string(7,' ');
                      line += leftJustify(stringIonoCorr,20);
                   }
-                  else 
+                  else
                   {
                         // "ION ALPHA" // R2.11
                      line = "  ";
@@ -553,7 +553,7 @@ namespace gpstk
                   }
                   break;
                case IonoCorr::GPSB:
-                  if(version >= 3) 
+                  if(version >= 3)
                   {
                      line = "GPSB ";
                      for(j=0; j<4; j++)
@@ -561,7 +561,7 @@ namespace gpstk
                      line += string(7,' ');
                      line += leftJustify(stringIonoCorr,20);
                   }
-                  else 
+                  else
                   {
                         // "ION BETA" // R2.11
                      line = "  ";
@@ -581,15 +581,15 @@ namespace gpstk
             strm.lineNumber++;
          }
       }
-   
-      if(valid & validTimeSysCorr) 
+
+      if(valid & validTimeSysCorr)
       {
             // "TIME SYSTEM CORR"
          map<string,TimeSystemCorrection>::const_iterator it;
-         for(it=mapTimeCorr.begin(); it != mapTimeCorr.end(); ++it) 
+         for(it=mapTimeCorr.begin(); it != mapTimeCorr.end(); ++it)
          {
             const TimeSystemCorrection& tc(it->second);
-            if(version >= 3) 
+            if(version >= 3)
             {
                line = tc.asString4() + " ";
                line += doubleToScientific(tc.A0,17,10,2);
@@ -602,7 +602,7 @@ namespace gpstk
                line += rightJustify(asString<long>(tc.refSOW),7);
                line += rightJustify(asString<long>(tc.refWeek),5);
 
-               if(tc.type == TimeSystemCorrection::SBUT) 
+               if(tc.type == TimeSystemCorrection::SBUT)
                {
                   line += rightJustify(tc.geoProvider,6);
                   line += " ";
@@ -615,9 +615,9 @@ namespace gpstk
 
                line += leftJustify(stringTimeSysCorr,20);
             }
-            else 
+            else
             {
-               if(tc.asString4() == "GPUT") 
+               if(tc.asString4() == "GPUT")
                {
                      // "DELTA-UTC: A0,A1,T,W" R2.11 GPS
                   line = "   ";
@@ -628,7 +628,7 @@ namespace gpstk
                   line += " ";
                   line += leftJustify(stringDeltaUTC,20);
                }
-               else if(tc.asString4() == "GLGP") 
+               else if(tc.asString4() == "GLGP")
                {
                      // "CORR TO SYSTEM TIME" R2.10 GLO
                   line = rightJustify(asString<long>(tc.refYr),6);
@@ -638,7 +638,7 @@ namespace gpstk
                   line += string(23,' ');
                   line += leftJustify(stringCorrSysTime,20);
                }
-               else if(tc.asString4() == "SBUT") 
+               else if(tc.asString4() == "SBUT")
                {
                      // "D-UTC A0,A1,T,W,S,U" R2.11 GEO
                   line = doubleToScientific(tc.A0,19,12,2);
@@ -657,12 +657,12 @@ namespace gpstk
             strm.lineNumber++;
          }
       }
-   
-      if(valid & validLeapSeconds) 
+
+      if(valid & validLeapSeconds)
       {
             // "LEAP SECONDS"
          line = rightJustify(asString(leapSeconds),6);
-         if(version >= 3) 
+         if(version >= 3)
          {                                    // ver 3
             line += rightJustify(asString(leapDelta),6);
             line += rightJustify(asString(leapWeek),6);
@@ -675,8 +675,8 @@ namespace gpstk
          strm << stripTrailing(line) << endl;
          strm.lineNumber++;
       }
-   
-      if(valid & validEoH) 
+
+      if(valid & validEoH)
       {
             // "END OF HEADER"
          line = string(60,' ');
@@ -684,22 +684,22 @@ namespace gpstk
          strm << stripTrailing(line) << endl;
          strm.lineNumber++;
       }
-   
+
    } // end of reallyPutRecord
 
       //-----------------------------------------------------------------------
 
    void Rinex3NavHeader::dump(ostream& s) const
    {
-   
+
       s << "---------------------------------- REQUIRED "
         << "----------------------------------\n";
-   
+
       s << "Rinex Version " << fixed << setw(5) << setprecision(2) << version
         << ",  File type " << fileType << ", System " << fileSys << ".\n";
       s << "Prgm: " << fileProgram << ",  Run: " << date << ",  By: "
         << fileAgency << endl;
-   
+
       s << "(This header is ";
       if(version >= 3 && (valid & allValid3) == allValid3)
          s << "VALID RINEX version 3";
@@ -707,28 +707,28 @@ namespace gpstk
          s << "VALID RINEX version 2";
       else s << "NOT VALID RINEX";
       s << ")." << endl;
-   
+
       if(!(valid & validVersion)) s << " Version is NOT valid\n";
       if(!(valid & validRunBy  )) s << " Run by is NOT valid\n";
       if(!(valid & validEoH    )) s << " End of Header is NOT valid\n";
-   
+
       s << "---------------------------------- OPTIONAL "
         << "----------------------------------\n";
-   
+
       for(map<string,TimeSystemCorrection>::const_iterator tcit
              = mapTimeCorr.begin(); tcit != mapTimeCorr.end(); ++tcit)
-      
+
       {
          tcit->second.dump(s);
          s << endl;
       }
 
       map<string,IonoCorr>::const_iterator icit;
-      for(icit=mapIonoCorr.begin(); icit != mapIonoCorr.end(); ++icit) 
+      for(icit=mapIonoCorr.begin(); icit != mapIonoCorr.end(); ++icit)
       {
          s << "Iono correction for " << icit->second.asString() << " : "
            << scientific << setprecision(4);
-         switch(icit->second.type) 
+         switch(icit->second.type)
          {
             case IonoCorr::GAL:
                s << "ai0 = " << icit->second.param[0]
@@ -756,7 +756,7 @@ namespace gpstk
          s << endl;
       }
 
-      if(valid & validLeapSeconds) 
+      if(valid & validLeapSeconds)
       {
          s << "Leap seconds: " << leapSeconds;
          if(leapDelta != 0)
@@ -765,14 +765,14 @@ namespace gpstk
          s << endl;
       }
       else s << " Leap seconds is NOT valid\n";
-   
-      if(commentList.size() > 0) 
+
+      if(commentList.size() > 0)
       {
          s << "Comments (" << commentList.size() << ") :\n";
          for(size_t i = 0; i < commentList.size(); i++)
             s << commentList[i] << endl;
       }
-   
+
       s << "-------------------------------- END OF HEADER "
         << "-------------------------------\n";
 
@@ -782,38 +782,38 @@ namespace gpstk
    void Rinex3NavHeader::setFileSystem(const std::string& str)
       throw(Exception)
    {
-      try 
+      try
       {
-         if(str[0] == 'M' || str[0] == 'm') 
+         if(str[0] == 'M' || str[0] == 'm')
          {
-            if(version < 3) 
+            if(version < 3)
             {
                Exception e("RINEX version 2 'Mixed' Nav files do not exist");
                GPSTK_THROW(e);
             }
-            fileType = "NAVIGATION";
+            fileType = "N: GNSS NAV DATA";
             fileSys = "MIXED";
             fileSysSat = SatID(-1, SatID::systemMixed);
          }
-         else 
+         else
          {
             RinexSatID sat(std::string(1,str[0]));
             fileSysSat = SatID(sat);
             fileSys = StringUtils::asString(sat.systemChar())
                + ": (" + sat.systemString3()+")";
-            if(version >= 3) 
+            if(version >= 3)
             {
-               fileType = "NAVIGATION";
+               fileType = "N: GNSS NAV DATA";
             }
-            else 
+            else
             {
                   // RINEX 2
                if(sat.system == SatID::systemGPS)
-                  fileType = "N (GPS Nav)";
+                  fileType = "N: GPS NAV DATA\"";
                else if(sat.system == SatID::systemGlonass)
-                  fileType = "G (GLO Nav)";
+                  fileType = "G: GLO NAV DATA)";
                else if(sat.system == SatID::systemGeosync)
-                  fileType = "H (GEO Nav)";
+                  fileType = "H: GEO NAV DATA";
                else 
                {
                   Exception e( std::string("RINEX version 2 ") +
