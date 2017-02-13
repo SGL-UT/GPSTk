@@ -36,9 +36,9 @@
 
 #include "FileFilterFrameWithHeader.hpp"
 
-#include "RinexObsData.hpp"
-#include "RinexObsStream.hpp"
-#include "RinexObsFilterOperators.hpp"
+#include "Rinex3ObsData.hpp"
+#include "Rinex3ObsStream.hpp"
+#include "Rinex3ObsFilterOperators.hpp"
 
 #include "DiffFrame.hpp"
 
@@ -65,7 +65,7 @@ protected:
 
 void ROWDiff::process()
 {
-   gpstk::FileFilterFrameWithHeader<RinexObsStream, RinexObsData, RinexObsHeader>
+   gpstk::FileFilterFrameWithHeader<Rinex3ObsStream, Rinex3ObsData, Rinex3ObsHeader>
       ff1(inputFileOption.getValue()[0]), ff2(inputFileOption.getValue()[1]);
 
    // no data?  FIX make this program faster.. if one file
@@ -85,58 +85,125 @@ void ROWDiff::process()
    }
 
    // determine whether the two input files have the same observation types
-   RinexObsHeader header1, header2;
-   RinexObsStream ros1(inputFileOption.getValue()[0]), ros2(inputFileOption.getValue()[1]);
+   Rinex3ObsHeader header1, header2;
+   Rinex3ObsStream ros1(inputFileOption.getValue()[0]), ros2(inputFileOption.getValue()[1]);
 
    ros1 >> header1;
    ros2 >> header2;
 
-   if (header1.obsTypeList.size() != header2.obsTypeList.size())
-   {
-      cout << "The two files have a different number of observation types." << endl;
-      cout << "The first file has ";
-      vector<RinexObsType> types1 = header1.obsTypeList;
-      vector<RinexObsType>::iterator i = types1.begin();
-      while (i != types1.end())
-      {
-         cout << gpstk::RinexObsHeader::convertObsType(*i) << ' ';
-         i++;
-      }
-      cout << endl;
-
-      cout << "The second file has ";
-      vector<RinexObsType> types2 = header2.obsTypeList;
-      vector<RinexObsType>::iterator j = types2.begin();
-      while (j != types2.end())
-      {
-         cout << gpstk::RinexObsHeader::convertObsType(*j) << ' ';
-         j++;
-      }
-      cout << endl;
-   }
-
    // find the obs data intersection
-   RinexObsHeaderTouchHeaderMerge merged;
 
-   merged(ff1.frontHeader());
-   merged(ff2.frontHeader());
-
-   cout << "Comparing the following fields (other header data is ignored):"
-        << endl;
-   set<RinexObsType> intersection = merged.obsSet;
-   set<RinexObsType>::iterator m = intersection.begin();
-   while (m != intersection.end())
+   if(header1.version != header2.version)
    {
-      cout << gpstk::RinexObsHeader::convertObsType(*m) << ' ';
-      m++;
+      cout << "File 1 and file 2 are not the same RINEX version" << endl;
+      // Reading a R2 file in translates/guesses its obsTypes into R3-style obsIDs,
+      // but translating the R3 obsIDs to R2 is more likely to match.
+      // So map R3 -> R2 then change the R2 header to match.
+      if (header1.version < 3 && header2.version >= 3)
+      {
+         header2.prepareVer2Write();
+         Rinex3ObsHeader::RinexObsVec r3ov;
+         Rinex3ObsHeader::StringVec::iterator r2it = header1.R2ObsTypes.begin();
+         while (r2it != header1.R2ObsTypes.end())
+         {
+            r3ov.push_back(header2.mapSysR2toR3ObsID["G"][*r2it]);
+            r2it++;
+         }
+         header1.mapObsTypes["G"] = r3ov;
+         ff1.frontHeader().mapObsTypes["G"] = r3ov;
+      }
+      else if (header2.version < 3 && header1.version >= 3)
+      {
+         header1.prepareVer2Write();
+         Rinex3ObsHeader::RinexObsVec r3ov;
+         Rinex3ObsHeader::StringVec::iterator r2it = header2.R2ObsTypes.begin();
+         while (r2it != header2.R2ObsTypes.end())
+         {
+            r3ov.push_back(header1.mapSysR2toR3ObsID["G"][*r2it]);
+            r2it++;
+         }
+         header2.mapObsTypes["G"] = r3ov;
+         ff2.frontHeader().mapObsTypes["G"] = r3ov;
+      }
    }
-   cout << endl;
 
-   ff1.sort(RinexObsDataOperatorLessThanFull(intersection));
-   ff2.sort(RinexObsDataOperatorLessThanFull(intersection));
+   // Find out what obs header 1 has that header 2 does/ doesn't have
+   // add those to intersectionRom/ diffRom respectively.
+   cout << "Comparing the following fields:" << endl;
+   Rinex3ObsHeader::RinexObsMap diffRom;
+   Rinex3ObsHeader::RinexObsMap intersectRom;
+   for (Rinex3ObsHeader::RinexObsMap::iterator mit = header1.mapObsTypes.begin();
+        mit != header1.mapObsTypes.end();
+        mit++)
+   {
+      string sysChar = mit->first;
+      cout << sysChar << ": ";
+      for(Rinex3ObsHeader::RinexObsVec::iterator ID1 = mit->second.begin();
+         ID1 != mit->second.end();
+         ID1++)
+      {
+         try
+         {
+            header2.getObsIndex(sysChar, *ID1);
+            intersectRom[sysChar].push_back(*ID1);
+            cout << " " << ID1->asString();
+         }
+         catch(...)
+         {
+            diffRom[sysChar].push_back(*ID1);
+         }
+      }
+      cout << endl;
+   }
 
-   pair< list<RinexObsData>, list<RinexObsData> > difflist =
-      ff1.diff(ff2, RinexObsDataOperatorLessThanFull(intersection));
+   // Find out what header 2 has that header 1 doesn't. Add them to diffRom
+   for (Rinex3ObsHeader::RinexObsMap::iterator mit = header2.mapObsTypes.begin();
+        mit != header2.mapObsTypes.end();
+        mit++)
+   {
+      string sysChar = mit->first;
+      for(Rinex3ObsHeader::RinexObsVec::iterator ID2 = mit->second.begin();
+          ID2 != mit->second.end();
+          ID2++)
+      {
+         try
+         {
+            header1.getObsIndex(sysChar, *ID2);
+         }
+         catch(...)
+         {
+            diffRom[sysChar].push_back(*ID2);
+         }
+      }
+   }
+
+   // Print out the differences between the obs in header1 and header2
+   if(!diffRom.empty())
+   {
+      cout << "Ignoring unshared obs:" << endl;
+      for (Rinex3ObsHeader::RinexObsMap::iterator mit = diffRom.begin();
+           mit != diffRom.end();
+           mit++)
+      {
+         string sysChar = mit->first;
+         cout << sysChar << ": ";
+         for (Rinex3ObsHeader::RinexObsVec::iterator ID = mit->second.begin();
+              ID != mit->second.end();
+              ID++)
+         {
+            cout << ID->asString() << " ";
+         }
+         cout << endl;
+      }
+   }
+
+   std::list<Rinex3ObsData> a =
+      ff1.halfDiff(ff2,Rinex3ObsDataOperatorLessThanFull(intersectRom));
+   std::list<Rinex3ObsData> b =
+      ff2.halfDiff(ff1, Rinex3ObsDataOperatorLessThanFull(intersectRom));
+
+   pair< list<Rinex3ObsData>, list<Rinex3ObsData> > difflist =
+      pair< list<Rinex3ObsData>, list<Rinex3ObsData> >( a, b);
 
    if (difflist.first.empty() && difflist.second.empty())
    {
@@ -151,18 +218,18 @@ void ROWDiff::process()
       // differences found
    exitCode = DIFFS_CODE;
 
-   list<RinexObsData>::iterator firstitr = difflist.first.begin();
+   list<Rinex3ObsData>::iterator firstitr = difflist.first.begin();
    if (verboseLevel)
       cout << "Differences of epochs in both files:" << endl;
    while (firstitr != difflist.first.end())
    {
       bool matched = false;
-      list<RinexObsData>::iterator seconditr = difflist.second.begin();
+      list<Rinex3ObsData>::iterator seconditr = difflist.second.begin();
       while ((!matched) && (seconditr != difflist.second.end()))
       {
          if (firstitr->time == seconditr->time)
          {
-            RinexObsData::RinexSatMap::iterator fpoi, spoi;
+            Rinex3ObsData::DataMap::iterator fpoi, spoi;
             for (fpoi = firstitr->obs.begin(); fpoi != firstitr->obs.end();
                  fpoi++)
             {
@@ -173,18 +240,27 @@ void ROWDiff::process()
                     << ff2.frontHeader().markerName << ' '
                     << setw(2) << fpoi->first << ' ';
                spoi = seconditr->obs.find(fpoi->first);
-               for (m = intersection.begin(); m != intersection.end(); m++)
+               Rinex3ObsHeader::RinexObsMap::iterator romIt;
+               for (romIt = intersectRom.begin(); romIt != intersectRom.end(); romIt++)
                {
-                  // no need to do a find, we're using the merged
-                  // set of obses which guarantees that we have the
-                  // obs in this record
-                  double diff = (fpoi->second[*m]).data;
-                  if (spoi != seconditr->obs.end())
-                     diff -= (spoi->second[*m]).data;
+                  Rinex3ObsHeader::RinexObsVec::iterator ID;
+                  for (ID = romIt->second.begin();
+                       ID != romIt->second.end();
+                       ID++)
+                  {
+                     // no need to do a find, we're using the merged
+                     // set of obses which guarantees that we have the
+                     // obs in this record
+                     size_t fidx = header1.getObsIndex(romIt->first,*ID);
+                     size_t sidx = header2.getObsIndex(romIt->first,*ID);
+                     double diff = (fpoi->second[fidx]).data;
+                     if (spoi != seconditr->obs.end())
+                        diff -= (spoi->second[sidx]).data;
 
-                  cout << setw(14) << setprecision(3) << fixed << diff << ' '
-                       << RinexObsHeader::convertObsType(*m) << ' ';
+                     cout << setw(14) << setprecision(3) << fixed << diff << ' '
+                     << ID->asString() << ' ';
 
+                  }
                }
                cout << endl;
             }
@@ -200,23 +276,95 @@ void ROWDiff::process()
          firstitr++;
    }
 
-   list<RinexObsData>::iterator itr = difflist.first.begin();
-
+   list<Rinex3ObsData>::iterator itr = difflist.first.begin();
    if (verboseLevel)
       cout << "Epochs only in first file:" << endl;
    while (itr != difflist.first.end())
    {
-      (*itr).dump(cout << '<');
+      if (itr->obs.empty())
+         return;
+
+      cout << "<Dump of RinexObsData - time: ";
+      cout << itr->timeString() << " epochFlag: "
+      << " " << itr->epochFlag << " numSvs: " << itr->numSVs
+      << fixed << setprecision(6)
+      << " clk offset: " << itr->clockOffset << endl;
+      if(itr->epochFlag == 0 || itr->epochFlag == 1)
+      {
+         Rinex3ObsHeader::RinexObsMap::const_iterator sysIt;
+         for (sysIt = header1.mapObsTypes.begin();
+              sysIt != header1.mapObsTypes.end(); sysIt++)
+         {
+            Rinex3ObsData::DataMap::iterator satIt;
+            for(satIt = itr->obs.begin(); satIt != itr->obs.end(); satIt++)
+            {
+               cout << "Sat " << setw(2) << satIt->first;
+               Rinex3ObsHeader::RinexObsVec::const_iterator obsIt;
+               for (obsIt = sysIt->second.begin();
+                    obsIt != sysIt->second.end(); obsIt++)
+               {
+                  RinexDatum datum = satIt->second[header1.getObsIndex(sysIt->first,*obsIt)];
+                  cout << " " << obsIt->asString() << ":" << fixed <<
+                  setprecision(3)
+                  << " " << setw(13) << datum.data
+                  << "/" << datum.lli << "/" << datum.ssi;
+               }
+               cout << endl;
+            }
+         }
+      }
+      else
+      {
+         cout << "aux. header info:\n";
+         itr->auxHeader.dump(cout);
+      }
       itr++;
    }
 
    cout << endl;
+
+   itr = difflist.second.begin();
    if (verboseLevel)
         cout << "Epochs only in second file:" << endl;
-   itr = difflist.second.begin();
    while (itr != difflist.second.end())
    {
-      (*itr).dump(cout << '>');
+      if (itr->obs.empty())
+         return;
+
+      cout << "<Dump of RinexObsData - time: ";
+      cout << itr->timeString() << " epochFlag: "
+      << " " << itr->epochFlag << " numSvs: " << itr->numSVs
+      << fixed << setprecision(6)
+      << " clk offset: " << itr->clockOffset << endl;
+      if(itr->epochFlag == 0 || itr->epochFlag == 1)
+      {
+         Rinex3ObsHeader::RinexObsMap::const_iterator sysIt;
+         for (sysIt = header2.mapObsTypes.begin();
+              sysIt != header2.mapObsTypes.end(); sysIt++)
+         {
+            Rinex3ObsData::DataMap::iterator satIt;
+            for(satIt = itr->obs.begin(); satIt != itr->obs.end(); satIt++)
+            {
+               cout << "Sat " << setw(2) << satIt->first;
+               Rinex3ObsHeader::RinexObsVec::const_iterator obsIt;
+               for (obsIt = sysIt->second.begin();
+                    obsIt != sysIt->second.end(); obsIt++)
+               {
+                  RinexDatum datum = satIt->second[header2.getObsIndex(sysIt->first,*obsIt)];
+                  cout << " " << obsIt->asString() << ":" << fixed <<
+                  setprecision(3)
+                  << " " << setw(13) << datum.data
+                  << "/" << datum.lli << "/" << datum.ssi;
+               }
+               cout << endl;
+            }
+         }
+      }
+      else
+      {
+         cout << "aux. header info:\n";
+         itr->auxHeader.dump(cout);
+      }
       itr++;
    }
 }

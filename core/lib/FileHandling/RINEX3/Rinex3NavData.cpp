@@ -882,7 +882,7 @@ namespace gpstk
       l.push_back(L2Pdata);
       l.push_back(IODC);
       l.push_back(IODE);
-      l.push_back(Toc);
+      l.push_back(Toe);
       l.push_back(af0);
       l.push_back(af1);
       l.push_back(af2);
@@ -1096,8 +1096,8 @@ namespace gpstk
          }
 
          else if(nline == 7) {
-            line += doubleToScientific(HOWtime,19,12,2);
-
+               //xmit time = HOW time - 6
+            line += doubleToScientific((HOWtime - 6),19,12,2);
             if(satSys == "G" || satSys == "J") {
                line += doubleToScientific(fitint,19,12,2);
             }
@@ -1338,7 +1338,7 @@ namespace gpstk
          }
 
          else if(nline == 7) {
-            HOWtime = long(StringUtils::for2doub(line.substr(n,19))); n+=19;
+            HOWtime = 6 + long(StringUtils::for2doub(line.substr(n,19))); n+=19;
             if(satSys == "C") {
                IODC    =        StringUtils::for2doub(line.substr(n,19)); n+=19;
             }
