@@ -319,7 +319,8 @@ namespace gpstk
       ObsID obsID(ObsID::otNavMsg, ObsID::cbUndefined, ObsID::tcUndefined);
 
       bool healthy = false;
-      if (health==0) healthy = true;
+      if (health==0)
+         healthy = true;
       double Adot = 0.0;
       double dnDot = 0.0;
       double A = Ahalf * Ahalf;
@@ -1067,7 +1068,7 @@ namespace gpstk
    }
 
    EngEphemeris& EngEphemeris::loadData(
-      const std::string satSysArg, unsigned short tlm[3],
+      const std::string satSysArg, const unsigned short tlm[3],
       const long how[3], const short asalert[3],
       const short Tracker, const short prn,
       const short fullweek, const short cflags, const short acc,
@@ -1134,15 +1135,16 @@ namespace gpstk
             endFitSOW += FULLWEEK;
             endFitWk++;
          }
-         CommonTime endFit = GPSWeekSecond(endFitWk, endFitSOW, TimeSystem::GPS);
+         CommonTime endFit = GPSWeekSecond(endFitWk, endFitSOW,
+                                           TimeSystem::GPS);
 
          orbit.loadData(satSys, obsID, PRNID, beginFit, endFit, toeCT,
-                        accFlag, health, cuc, cus, crc, crs, cic, cis, m0, Dn,
-                        dndot, Ecc, A, ahalf, Adot, Omega0, I0, W, OmegaDot,
-                        IDot);
+                        accFlag, (health == 0), cuc, cus, crc, crs, cic, cis,
+                        m0, Dn, dndot, Ecc, A, ahalf, Adot, Omega0, I0, W,
+                        OmegaDot, IDot);
 
          bcClock.loadData( satSys, obsID, PRNID, tocCT,
-                           accFlag, health, Af0, Af1, Af2);
+                           accFlag, (health == 0), Af0, Af1, Af2);
          haveSubframe[0] = true;
          haveSubframe[1] = true;
          haveSubframe[2] = true;
@@ -1228,7 +1230,8 @@ namespace gpstk
          GPSTK_THROW(exc);
       }
       bool healthy = false;
-      if (health == 0) healthy = true;
+      if (health == 0)
+         healthy = true;
 
       double timeDiff = toe - HOWtime[1];
       short toeWeek = weeknum;
@@ -1275,7 +1278,8 @@ namespace gpstk
             endFitSOW += FULLWEEK;
             endFitWk++;
          }
-         CommonTime endFit = GPSWeekSecond(endFitWk, endFitSOW, TimeSystem::GPS);
+         CommonTime endFit = GPSWeekSecond(endFitWk, endFitSOW,
+                                           TimeSystem::GPS);
 
          CommonTime toeCT = GPSWeekSecond(toeWeek, toe, TimeSystem::GPS);
 
@@ -1310,7 +1314,8 @@ namespace gpstk
          GPSTK_THROW(exc);
       }
       bool healthy = false;
-      if (health == 0) healthy = true;
+      if (health == 0)
+         healthy = true;
 
       double timeDiff = orbit.getToe() - HOWtime[2];
       short toeWeek = weeknum;
@@ -1367,10 +1372,10 @@ namespace gpstk
       {
          CommonTime toeCT = GPSWeekSecond(toeWeek, toe, TimeSystem::GPS);
 
-         orbit.loadData( satSys, obsID, PRNID, beginFit, endFit, toeCT,
-                         accFlag, healthy, cuc, cus, crc, crs, cic, cis, m0, Dn,
-                         dndot, Ecc, A, ahalf, Adot, Omega0, I0, W, OmegaDot,
-                         IDot);
+         orbit.loadData(satSys, obsID, PRNID, beginFit, endFit, toeCT,
+                        accFlag, healthy, cuc, cus, crc, crs, cic, cis, m0, Dn,
+                        dndot, Ecc, A, ahalf, Adot, Omega0, I0, W, OmegaDot,
+                        IDot);
 
          haveSubframe[2] = true;
       }
