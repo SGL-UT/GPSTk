@@ -61,6 +61,7 @@
 #include "CivilTime.hpp"
 #include "GPS_URA.hpp"
 
+class BrcKeplerOrbit_T;
 
 namespace gpstk
 {
@@ -116,6 +117,10 @@ namespace gpstk
 
          /// Destructor
       virtual ~BrcKeplerOrbit() {}
+
+      bool operator==(const BrcKeplerOrbit& right) const throw();
+      bool operator!=(const BrcKeplerOrbit& right) const throw()
+      { return !(operator==(right)); }
 
          /// General purpose means to load data into object
       void loadData(const std::string satSysArg, const ObsID obsIDArg,
@@ -324,6 +329,7 @@ namespace gpstk
       CommonTime endFit;      /**< Time at end of fit interval */
          //@}
 
+      friend class ::BrcKeplerOrbit_T;
       friend std::ostream& operator<<(std::ostream& s, 
                                       const BrcKeplerOrbit& eph);
 
