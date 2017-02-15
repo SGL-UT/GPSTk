@@ -186,6 +186,7 @@ void ROWDiff::process()
                        << RinexObsHeader::convertObsType(*m) << ' ';
 
                }
+               cout << endl;
             }
             firstitr = difflist.first.erase(firstitr);
             seconditr = difflist.second.erase(seconditr);
