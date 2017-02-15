@@ -69,31 +69,23 @@ namespace gpstk
          /// The set is a set of Rinex3ObsType that the two files have in
          /// common.  This is easily generated with the set_intersection
          /// STL function.  See difftools/rowdiff.cpp for an example.
-      Rinex3ObsDataOperatorLessThanFull(
-         Rinex3ObsHeader::RinexObsMap& unionMap) : rom(unionMap){};
+      Rinex3ObsDataOperatorLessThanFull() {};
 
-      bool operator()(const Rinex3ObsData& l, const Rinex3ObsHeader& lheader,
-                      const Rinex3ObsData& r, const Rinex3ObsHeader& rheader) const
+      bool operator()(const Rinex3ObsData& l, const Rinex3ObsData& r) const
       {
             // compare the times, offsets, then only those elements
             // that are common to both.  this ignores the flags
             // that are set to 0
          if (l.time < r.time)
-         {
             return true;
-         }
          else if (l.time == r.time)
          {
             if (l.epochFlag < r.epochFlag)
-            {
                return true;
-            }
             else if (l.epochFlag == r.epochFlag)
             {
                if (l.clockOffset < r.clockOffset)
-               {
                   return true;
-               }
                else if (l.clockOffset > r.clockOffset)
                   return false;
             }
@@ -106,9 +98,7 @@ namespace gpstk
             // for the obs, first check that they're the same size
             // i.e. - contain the same number of PRNs
          if (l.obs.size() < r.obs.size())
-         {
             return true;
-         }
 
          if (l.obs.size() > r.obs.size())
             return false;
@@ -122,40 +112,29 @@ namespace gpstk
             Rinex3ObsData::DataMap::const_iterator rItr = r.obs.find(sat);
             if (rItr == r.obs.end())
             {
+               std::cout << "not found" << std::endl;
                return false;
             }
             
             std::vector<RinexDatum> lObs = lItr->second,
                rObs = rItr->second;
-            Rinex3ObsHeader::RinexObsMap::const_iterator romItr;
-            for(romItr = rom.begin(); romItr != rom.end(); romItr++)
+            
+            for(int i = 0; i < lObs.size(); ++i)
             {
-               Rinex3ObsHeader::RinexObsVec::const_iterator rvItr;
-               for(rvItr = romItr->second.begin();
-                   rvItr != romItr->second.end();
-                   rvItr++)
-               {
-                  RinexDatum lData, rData;
-                  lData = lObs[lheader.getObsIndex(romItr->first,*rvItr)];
-                  rData = rObs[rheader.getObsIndex(romItr->first,*rvItr)];
+               RinexDatum lData, rData;
+               lData = lObs[i];
+               rData = rObs[i];
 
-                  if (lData.data < rData.data)
-                  {
-                     return true;
-                  }
+               if (lData.data < rData.data)
+                  return true;
 
-                  if (lData.lli != 0 && rData.lli != 0) if (lData.lli <
-                                                            rData.lli)
-                  {
+               if ( lData.lli != 0 && rData.lli != 0 )
+                  if (lData.lli < rData.lli)
                      return true;
-                  }
 
-                  if (lData.ssi != 0 && rData.ssi != 0) if (lData.ssi <
-                                                            rData.ssi)
-                  {
+               if ( lData.ssi != 0 && rData.ssi != 0 )
+                  if (lData.ssi < rData.ssi)
                      return true;
-                  }
-               }
             }
          }
 
@@ -163,7 +142,6 @@ namespace gpstk
          
          return false;
       }
-      Rinex3ObsHeader::RinexObsMap rom;
    };
 
       /// This is a much faster less than operator for Rinex3ObsData,
@@ -209,8 +187,6 @@ namespace gpstk
          : firstHeader(true)
       {}
 
-      /// note: The previous version of this method took the intersection, not
-      /// the union. This may be designed incorrectly due to ambiguous comment ^
       bool operator()(const Rinex3ObsHeader& l)
       {
          if (firstHeader)
