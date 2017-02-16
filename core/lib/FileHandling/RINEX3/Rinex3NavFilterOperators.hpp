@@ -50,6 +50,7 @@
 #include "Rinex3NavData.hpp"
 #include "Rinex3NavHeader.hpp"
 #include "GPSWeekSecond.hpp"
+#include <math.h>
 
 namespace gpstk
 {
@@ -61,6 +62,10 @@ namespace gpstk
       public std::binary_function<Rinex3NavData, Rinex3NavData, bool>
    {
    public:
+      void setPrecision(int e)
+      {
+         precision = e;
+      }
 
       bool operator()(const Rinex3NavData& l, const Rinex3NavData& r) const
       {
@@ -86,10 +91,9 @@ namespace gpstk
 
                while (litr != llist.end())
                {
-                  //epsilon to prevent double comparison error
-                  if ((*litr + std::abs(*litr * 0.0000000000001)) < *ritr )
+                  if ((*litr + std::abs(*litr * std::pow(10, -precision))) < *ritr )
                      return true;
-                  else if (*litr > (*ritr * std::abs(*ritr * 0.0000000000001)))
+                  else if (*litr > (*ritr + std::abs(*ritr * std::pow(10,-precision))))
                      return false;
                   else
                   {
@@ -101,6 +105,8 @@ namespace gpstk
          } // if (lXmitTime == rXmitTime)
          return false;
       }
+   private:
+      int precision;
    };
 
       /// This compares all elements of the Rinex3NavData with equals

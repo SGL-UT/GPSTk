@@ -34,6 +34,7 @@
 //
 //=============================================================================
 
+#include <RINEX3/Rinex3ObsFilterOperators.hpp>
 #include "FileFilterFrameWithHeader.hpp"
 
 #include "Rinex3NavData.hpp"
@@ -55,14 +56,36 @@ public:
    static const int DIFFS_CODE = 1;
    RNWDiff(char* arg0)
          : DiffFrame(arg0, 
-                     std::string("RINEX Nav"))
+                     std::string("RINEX Nav")),
+           precisionOption('p',"precision","Ignore diffs smaller than "
+              "(data * (10 ^ -n). Default = 13")
    {}
+   virtual bool initialize(int argc, char* argv[]) throw();
 
 protected:
    virtual void process();
+   gpstk::CommandOptionWithAnyArg precisionOption;
+
+private:
+   int precision;
 };
 
-
+bool RNWDiff::initialize(int argc, char* argv[]) throw()
+{
+   if (!DiffFrame::initialize(argc, argv))
+   {
+      return false;
+   }
+   if (precisionOption.getCount())
+   {
+      precision = atoi(precisionOption.getValue()[0].c_str());
+   }
+   else
+   {
+      precision = 13;
+   }
+   return true;
+}
 void RNWDiff::process()
 {
    try
@@ -86,11 +109,13 @@ void RNWDiff::process()
          exitCode = EXIST_ERROR;
          return;
       }
-      ff1.sort(Rinex3NavDataOperatorLessThanFull());
-      ff2.sort(Rinex3NavDataOperatorLessThanFull());
+      Rinex3NavDataOperatorLessThanFull op;
+      op.setPrecision(precision);
+      ff1.sort(op);
+      ff2.sort(op);
       
       pair< list<Rinex3NavData>, list<Rinex3NavData> > difflist =
-         ff1.diff(ff2, Rinex3NavDataOperatorLessThanFull());
+         ff1.diff(ff2, op);
       
       if (difflist.first.empty() && difflist.second.empty())
       {

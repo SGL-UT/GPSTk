@@ -45,6 +45,7 @@
 
 #include "Rinex3ObsData.hpp"
 #include "FileFilterFrame.hpp"
+#include <math.h>
 
 namespace gpstk
 {
@@ -198,7 +199,7 @@ namespace gpstk
                BinaryPredicate p,
                int precision) const
       {
-         double epsilon = 1 / (10^precision);
+         double epsilon = 1 / std::pow(10,precision);
          std::list<FileData> toReturn;
 
          typename std::list<FileData>::const_iterator dvIt = this->dataVec.begin();
