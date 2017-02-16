@@ -58,7 +58,7 @@ public:
          : DiffFrame(arg0, 
                      std::string("RINEX Nav")),
            precisionOption('p',"precision","Ignore diffs smaller than "
-              "(data * (10 ^ -n). Default = 13")
+              "(data * (10 ^ -ARG). Default = 13")
    {}
    virtual bool initialize(int argc, char* argv[]) throw();
 
