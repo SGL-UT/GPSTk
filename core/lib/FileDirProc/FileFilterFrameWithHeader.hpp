@@ -194,8 +194,11 @@ namespace gpstk
       /// Returns a list of the data in *this that isn't in r.
       template <class BinaryPredicate>
       std::list<FileData>
-      halfDiff(const FileFilterFrameWithHeader<FileStream,FileData,FileHeader>& r, BinaryPredicate p) const
+      halfDiff(const FileFilterFrameWithHeader<FileStream,FileData,FileHeader>& r,
+               BinaryPredicate p,
+               int precision) const
       {
+         double epsilon = 1 / (10^precision);
          std::list<FileData> toReturn;
 
          typename std::list<FileData>::const_iterator dvIt = this->dataVec.begin();
@@ -203,13 +206,16 @@ namespace gpstk
          while(dvIt != this->dataVec.end())
          {
             if (rdvIt == r.dataVec.end() ||
-               p(*dvIt, this->headerList.front(), *rdvIt, r.headerList.front())) //dv less than
+                p( *dvIt, this->headerList.front(),
+                   *rdvIt, r.headerList.front(),
+                   epsilon)) //dv less than
             {
                toReturn.push_back(*dvIt);
                dvIt++;
             }
             else if (p(*rdvIt, r.headerList.front(),
-                       *dvIt, this->headerList.front())) //rdv less than
+                       *dvIt, this->headerList.front(),
+                       epsilon)) //rdv less than
             {
                rdvIt++;
             }

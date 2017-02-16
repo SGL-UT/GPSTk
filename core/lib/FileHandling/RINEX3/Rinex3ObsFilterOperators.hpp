@@ -73,7 +73,8 @@ namespace gpstk
          Rinex3ObsHeader::RinexObsMap& unionMap) : rom(unionMap){};
 
       bool operator()(const Rinex3ObsData& l, const Rinex3ObsHeader& lheader,
-                      const Rinex3ObsData& r, const Rinex3ObsHeader& rheader) const
+                      const Rinex3ObsData& r, const Rinex3ObsHeader& rheader,
+                      double epsilon) const
       {
             // compare the times, offsets, then only those elements
             // that are common to both.  this ignores the flags
@@ -139,7 +140,7 @@ namespace gpstk
                   lData = lObs[lheader.getObsIndex(romItr->first,*rvItr)];
                   rData = rObs[rheader.getObsIndex(romItr->first,*rvItr)];
 
-                  if (lData.data < rData.data)
+                  if (lData.data + epsilon < rData.data)
                   {
                      return true;
                   }

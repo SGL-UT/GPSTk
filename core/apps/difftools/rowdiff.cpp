@@ -35,8 +35,6 @@
 //=============================================================================
 
 #include "FileFilterFrameWithHeader.hpp"
-
-#include "Rinex3ObsData.hpp"
 #include "Rinex3ObsStream.hpp"
 #include "Rinex3ObsFilterOperators.hpp"
 
@@ -54,14 +52,35 @@ public:
    static const int EXIST_ERROR = 2;
       /// Differences found in input files
    static const int DIFFS_CODE = 1;
-   ROWDiff(char* arg0)
-      : DiffFrame(arg0,
-                  std::string("RINEX Obs"))
+   ROWDiff(char* arg0) : DiffFrame(arg0, std::string("RINEX Obs")),
+   precisionOption('p',"precision","Limit data comparison to n decimal places. Default = 5")
    {}
+   virtual bool initialize(int argc, char* argv[]) throw();
 
 protected:
    virtual void process();
+   gpstk::CommandOptionWithAnyArg precisionOption;
+
+private:
+   int precision;
 };
+
+bool ROWDiff::initialize(int argc, char* argv[]) throw()
+{
+   if (!DiffFrame::initialize(argc, argv))
+   {
+      return false;
+   }
+   if (precisionOption.getCount())
+   {
+      precision = atoi(precisionOption.getValue()[0].c_str());
+   }
+   else
+   {
+      precision = 5;
+   }
+   return true;
+}
 
 void ROWDiff::process()
 {
@@ -85,6 +104,7 @@ void ROWDiff::process()
    }
 
    // determine whether the two input files have the same observation types
+
    Rinex3ObsHeader header1, header2;
    Rinex3ObsStream ros1(inputFileOption.getValue()[0]), ros2(inputFileOption.getValue()[1]);
 
@@ -127,7 +147,7 @@ void ROWDiff::process()
       }
    }
 
-   // Find out what obs header 1 has that header 2 does/ doesn't have
+   // Find out what obs IDs header 1 has that header 2 does/ doesn't have
    // add those to intersectionRom/ diffRom respectively.
    cout << "Comparing the following fields:" << endl;
    Rinex3ObsHeader::RinexObsMap diffRom;
@@ -156,7 +176,8 @@ void ROWDiff::process()
       cout << endl;
    }
 
-   // Find out what header 2 has that header 1 doesn't. Add them to diffRom
+   // Find out what obs IDs header 2 has that header 1 doesn't
+   // and add them to diffRom
    for (Rinex3ObsHeader::RinexObsMap::iterator mit = header2.mapObsTypes.begin();
         mit != header2.mapObsTypes.end();
         mit++)
@@ -177,7 +198,7 @@ void ROWDiff::process()
       }
    }
 
-   // Print out the differences between the obs in header1 and header2
+   // Print out the differences between the obs IDs in header1 and header2
    if(!diffRom.empty())
    {
       cout << "Ignoring unshared obs:" << endl;
@@ -198,9 +219,9 @@ void ROWDiff::process()
    }
 
    std::list<Rinex3ObsData> a =
-      ff1.halfDiff(ff2,Rinex3ObsDataOperatorLessThanFull(intersectRom));
+      ff1.halfDiff(ff2,Rinex3ObsDataOperatorLessThanFull(intersectRom), precision);
    std::list<Rinex3ObsData> b =
-      ff2.halfDiff(ff1, Rinex3ObsDataOperatorLessThanFull(intersectRom));
+      ff2.halfDiff(ff1, Rinex3ObsDataOperatorLessThanFull(intersectRom), precision);
 
    pair< list<Rinex3ObsData>, list<Rinex3ObsData> > difflist =
       pair< list<Rinex3ObsData>, list<Rinex3ObsData> >( a, b);
