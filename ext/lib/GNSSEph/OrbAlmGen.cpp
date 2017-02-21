@@ -47,6 +47,7 @@
 #include "GNSSconstants.hpp"
 #include "GPSEllipsoid.hpp"
 #include "GPSWeekSecond.hpp"
+#include "IRNWeekSecond.hpp"
 #include "NavID.hpp"
 #include "StringUtils.hpp"
 #include "SVNumXRef.hpp"
@@ -122,6 +123,12 @@ namespace gpstk
             break;
          }
 
+	      case NavID::ntIRNSS_SPS:
+         {
+            loadDataIRN(pnb, hArg);
+            break;
+         }
+	 
          default:
          {
             stringstream ss;
@@ -954,6 +961,92 @@ namespace gpstk
          GPSTK_THROW(exc);    
       } 
 
+   }
+
+   void OrbAlmGen::loadDataIRN(const gpstk::PackedNavBits& msg,
+			       const unsigned short hArg)
+               throw(gpstk::InvalidParameter)
+   {
+
+         // Ignore anything that is NOT an IRNSS almanac message
+      unsigned long subframeid = msg.asUnsignedLong(27, 2, 1);
+
+         // message ID is only valid for SF3 and SF4
+      unsigned long msgid = 0;
+      if (subframeid==2 || subframeid==3)
+         msgid = msg.asUnsignedLong(30,6,1);
+
+      if ( msgid != 7 )
+      {
+         stringstream ss;
+         ss << "Expected IRNSS message type 7.  Found message " << msgid;
+         InvalidParameter ip(ss.str());
+         GPSTK_THROW(ip); 
+      }
+
+         // This is the SVID of the SUBJECT of the almanac, not the transmitting SV
+      unsigned short SVID     = (unsigned short) msg.asUnsignedLong(236, 6, 1);
+
+         // Store the transmitting SV
+      satID = msg.getsatSys();
+
+         // Set the subjectSV (found in OrbAlm.hpp)
+      subjectSV = SatID(SVID, SatID::systemIRNSS);
+
+         // Crack the bits into engineering units.
+      unsigned short WNa = (unsigned short) msg.asUnsignedLong(36, 10, 1);  
+      toa                = msg.asUnsignedLong(62, 16, 16);
+      health             = hArg;   
+      ecc                = msg.asUnsignedDouble(46, 16, -21); 
+      OMEGAdot           = msg.asDoubleSemiCircles(102, 16, -38);
+      AHalf              = msg.asUnsignedDouble(118, 24, -11);
+      A = AHalf * AHalf;
+      OMEGA0             = msg.asDoubleSemiCircles(142, 24, -23);
+      w                  = msg.asDoubleSemiCircles(166, 24, -23);
+      M0                 = msg.asDoubleSemiCircles(190, 24, -23);
+      af0                = msg.asSignedDouble(214, 11, -20);
+      af1                = msg.asSignedDouble(225, 11, -38);
+      i0                 = msg.asDoubleSemiCircles(78, 24, -23);
+
+      healthy = false;
+      const ObsID& oidr = msg.getobsID();
+      if ( oidr.band==ObsID::cbL5 && (health == 0) )
+      {
+         healthy = true; 
+      }
+
+         // This is where we're extra careful about creating ctToe
+         // (based on cutover vs non-cutover)
+      const CommonTime& Xmit = msg.getTransmitTime();
+      short XmitWeek = static_cast<IRNWeekSecond>(Xmit).week; //<---Gives non-cutover week number
+      
+      short epochNum = XmitWeek / 1024;   
+      WNa_full = WNa + (epochNum * 1024);
+
+      short diffWNa_full = WNa_full - XmitWeek;
+
+      if ( diffWNa_full < -512 )
+      {
+	 WNa_full += 1024;
+      }
+      if ( diffWNa_full > 512 )
+      {
+	 WNa_full -= 1024;
+      }
+
+         // Now create ctToe with WNa_full
+      ctToe = IRNWeekSecond(WNa_full, toa, TimeSystem::IRN);
+
+      
+         // Determine beginValid.  This is set to the transmit time of this page. 
+      beginValid = msg.getTransmitTime();
+      beginValid.setTimeSystem(TimeSystem::IRN);
+
+
+         // Determine endValid.   This is set to "end of time" 
+      endValid   = CommonTime::END_OF_TIME;
+      endValid.setTimeSystem(TimeSystem::IRN);
+      
    }
 
       // For BeiDou, the subject PRN of the almanac is dependent upon the page
