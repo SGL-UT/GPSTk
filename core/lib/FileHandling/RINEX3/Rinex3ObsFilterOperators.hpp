@@ -112,7 +112,9 @@ namespace gpstk
          }
 
          if (l.obs.size() > r.obs.size())
+         {
             return false;
+         }
 
             // then check that each PRN has the same data for each of the
             // fields

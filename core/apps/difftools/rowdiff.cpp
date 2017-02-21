@@ -253,6 +253,8 @@ void ROWDiff::process()
          if (firstitr->time == seconditr->time)
          {
             Rinex3ObsData::DataMap::iterator fpoi, spoi;
+            Rinex3ObsData::DataMap secondMap = seconditr->obs;
+            // for every satellite in the first DataMap
             for (fpoi = firstitr->obs.begin(); fpoi != firstitr->obs.end();
                  fpoi++)
             {
@@ -262,8 +264,9 @@ void ROWDiff::process()
                     << ff1.frontHeader().markerName << ' '
                     << ff2.frontHeader().markerName << ' '
                     << setw(2) << fpoi->first << ' ';
-               spoi = seconditr->obs.find(fpoi->first);
+               spoi = secondMap.find(fpoi->first);
                Rinex3ObsHeader::RinexObsMap::iterator romIt;
+               // for each obs type
                for (romIt = intersectRom.begin(); romIt != intersectRom.end(); romIt++)
                {
                   Rinex3ObsHeader::RinexObsVec::iterator ID;
@@ -277,8 +280,47 @@ void ROWDiff::process()
                      size_t fidx = header1.getObsIndex(romIt->first,*ID);
                      size_t sidx = header2.getObsIndex(romIt->first,*ID);
                      double diff = (fpoi->second[fidx]).data;
-                     if (spoi != seconditr->obs.end())
+                     if (spoi != secondMap.end())
+                     {
                         diff -= (spoi->second[sidx]).data;
+                     }
+
+                     cout << setw(14) << setprecision(3) << fixed << diff << ' '
+                     << ID->asString() << ' ';
+
+                  }
+               }
+               if (spoi != secondMap.end())
+               {
+                  secondMap.erase(spoi);
+               }
+               cout << endl;
+            }
+            // were there satellites that were in only the second DataMap?
+            for (spoi = secondMap.begin(); spoi != secondMap.end();
+                 spoi++)
+            {
+               cout << setw(3) << (static_cast<YDSTime>(firstitr->time)) << ' '
+               << setw(10) << setprecision(0)
+               << static_cast<YDSTime>(firstitr->time) << ' '
+               << ff1.frontHeader().markerName << ' '
+               << ff2.frontHeader().markerName << ' '
+               << setw(2) << spoi->first << ' ';
+               fpoi = firstitr->obs.find(fpoi->first);
+               Rinex3ObsHeader::RinexObsMap::iterator romIt;
+               for (romIt = intersectRom.begin(); romIt != intersectRom.end(); romIt++)
+               {
+                  Rinex3ObsHeader::RinexObsVec::iterator ID;
+                  for (ID = romIt->second.begin();
+                       ID != romIt->second.end();
+                       ID++)
+                  {
+                     // no need to do a find, we're using the merged
+                     // set of obses which guarantees that we have the
+                     // obs in this record
+                     size_t fidx = header1.getObsIndex(romIt->first,*ID);
+                     size_t sidx = header2.getObsIndex(romIt->first,*ID);
+                     double diff = -(spoi->second[fidx]).data;
 
                      cout << setw(14) << setprecision(3) << fixed << diff << ' '
                      << ID->asString() << ' ';
