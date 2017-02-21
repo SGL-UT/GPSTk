@@ -4,6 +4,14 @@ add_executable(AlmOrbit_T AlmOrbit_T.cpp)
 target_link_libraries(AlmOrbit_T gpstk)
 add_test(GNSSEph_AlmOrbit AlmOrbit_T)
 
+add_executable(BrcKeplerOrbit_T BrcKeplerOrbit_T.cpp)
+target_link_libraries(BrcKeplerOrbit_T gpstk)
+add_test(GNSSEph_BrcKeplerOrbit BrcKeplerOrbit_T)
+
+add_executable(BrcClockCorrection_T BrcClockCorrection_T.cpp)
+target_link_libraries(BrcClockCorrection_T gpstk)
+add_test(GNSSEph_BrcClockCorrection BrcClockCorrection_T)
+
 add_executable(EngAlmanac_T EngAlmanac_T.cpp)
 target_link_libraries(EngAlmanac_T gpstk)
 add_test(GNSSEph_EngAlmanac EngAlmanac_T)

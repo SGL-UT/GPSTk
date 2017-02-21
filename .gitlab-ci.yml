@@ -33,20 +33,19 @@ test_solaris:
   script:
     - ./build.sh -evxt
 
-#Redhat Runner machine offline
-#build_redhat:
-#  stage: build
-#  tags:
-#    - redhat
-#  script:
-#   - ./build.sh -ev -b ./build-gpstk-redhat
+build_redhat:
+  stage: build
+  tags:
+    - redhat
+  script:
+   - ./build.sh -ev -b ./build-gpstk-redhat
 
-#test_redhat:
-#  stage: test
-#  tags:
-#    - redhat
-#  script:
-#    - ./build.sh -evt -b ./test-gpstk-redhat
+test_redhat:
+  stage: test
+  tags:
+    - redhat
+  script:
+    - ./build.sh -evt -b ./test-gpstk-redhat
 
 build_osx:
   stage: build

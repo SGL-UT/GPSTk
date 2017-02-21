@@ -86,10 +86,9 @@ namespace gpstk
 
                while (litr != llist.end())
                {
-                  //epsilon to prevent double comparison error
-                  if ((*litr + std::abs(*litr * 0.0000000000001)) < *ritr )
+                  if (*litr < *ritr)
                      return true;
-                  else if (*litr > (*ritr * std::abs(*ritr * 0.0000000000001)))
+                  else if (*litr > *ritr)
                      return false;
                   else
                   {
@@ -99,6 +98,7 @@ namespace gpstk
                }
             }
          } // if (lXmitTime == rXmitTime)
+
          return false;
       }
    };

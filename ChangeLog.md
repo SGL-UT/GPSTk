@@ -1,5 +1,58 @@
       #################################################
 
+Version 2.9.7   Monday, February 20, 2017
+
+   General modifications
+   ---------------------
+   - Turned on RHEL Runner commands, removed C++11 ignore flag for RHEL6.
+   - Test Cleanup
+   - Added ability to process Windows line endings (CR/LF)
+   - Add a macro for try/catch block wrapping in tests
+   - Various Bug and Compile Warning Fixes
+
+   Modifications by Author
+   ---------------------
+
+Bryan Parsons (19):
+      Turned on RHEL Runner commands, removed C++11 ignore flag for RHEL6.
+      Update .gitlab-ci.yml to fix YAML error.
+      Merge branch 'Redhat_Runner_Integration' into 'master'
+      Merge branch 'Rinex3Formatting' into 'master'
+      Revert "Merge branch 'Rinex3NavXmitTime' into 'master'"
+      Merge branch 'revert-f78d6ddf' into 'master'
+      Merge branch 'Rinex3NavXmitTime' into 'master'
+      Rinex3Formatting branch patch, omitted when reverting and remerging branches, reverts changes from merged Rinex3Formatting branch
+      Merge branch 'R3F_Patch' into 'master'
+      Merge branch 'issue_304' into 'master'
+      Merge branch '300-hexdumpdata-fixes' into 'master'
+      Merge branch '305-engephemeris-has-no-operator' into 'master'
+      Revert "Merge branch 'R3F_Patch' into 'master'"
+      Merge branch 'revert-da9de91e' into 'master'
+      Revert "Added newlines to rowdiff for clarity"
+      Merge branch 'revert-8ceddb36' into 'master'
+      Revert "Merge branch 'Rinex3Formatting' into 'master'"
+      Merge branch 'revert-5fd7a4b8' into 'master'
+      Update rowdiff.cpp
+
+John H. Price (2):
+      Added newlines to rowdiff for clarity (reverted per MSN request)
+      Rinex 2 date format matched to previous Rinex class output. rowdiff newline after epochs for readability. (reverted per MSN request)
+
+Jon C. Little (2):
+      Added ability to process Windows line endings (CR/LF)
+      Merge branch 'master' into issue_304
+
+johnk (5):
+      Add a macro for try/catch block wrapping in tests
+      Eliminate a warning under red hat/gcc
+      Replace single character ASCII separator in hex dumps with two arbitrary length strings
+      Add operator== for EngEphemeris, BrcKeplerOrbit and BrcClockCorrection and test
+      Make tlm argument to loadData methods const.
+
+
+
+      #################################################
+
 Version 2.9.6   Monday, January 30, 2017
 
    General modifications
