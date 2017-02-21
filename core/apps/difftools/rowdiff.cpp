@@ -53,7 +53,8 @@ public:
       /// Differences found in input files
    static const int DIFFS_CODE = 1;
    ROWDiff(char* arg0) : DiffFrame(arg0, std::string("RINEX Obs")),
-   precisionOption('p',"precision","Limit data comparison to n decimal places. Default = 5")
+   precisionOption('p',"precision","Limit data comparison to n decimal places. "
+                                   "Default = 5")
    {}
    virtual bool initialize(int argc, char* argv[]) throw();
 
@@ -63,6 +64,7 @@ protected:
 
 private:
    int precision;
+   static const int DEFAULT_PRECISION = 5;
 };
 
 bool ROWDiff::initialize(int argc, char* argv[]) throw()
@@ -77,7 +79,7 @@ bool ROWDiff::initialize(int argc, char* argv[]) throw()
    }
    else
    {
-      precision = 5;
+      precision = DEFAULT_PRECISION;
    }
    return true;
 }

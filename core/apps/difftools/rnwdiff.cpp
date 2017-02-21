@@ -57,7 +57,7 @@ public:
    RNWDiff(char* arg0)
          : DiffFrame(arg0, 
                      std::string("RINEX Nav")),
-           precisionOption('p',"precision","Ignore diffs smaller than "
+           precisionOption('p',"precision", "Ignore diffs smaller than "
               "(data * (10 ^ -ARG). Default = 13")
    {}
    virtual bool initialize(int argc, char* argv[]) throw();
@@ -68,6 +68,7 @@ protected:
 
 private:
    int precision;
+   static const int DEFAULT_PRECISION = 13;
 };
 
 bool RNWDiff::initialize(int argc, char* argv[]) throw()
@@ -82,7 +83,7 @@ bool RNWDiff::initialize(int argc, char* argv[]) throw()
    }
    else
    {
-      precision = 13;
+      precision = DEFAULT_PRECISION;
    }
    return true;
 }
@@ -110,10 +111,14 @@ void RNWDiff::process()
          return;
       }
       Rinex3NavDataOperatorLessThanFull op;
-      op.setPrecision(precision);
+         // Always sort by the default to mantain organization
+      op.setPrecision(DEFAULT_PRECISION);
       ff1.sort(op);
       ff2.sort(op);
-      
+
+      //set desired precision for diffs
+      op.setPrecision(precision);
+
       pair< list<Rinex3NavData>, list<Rinex3NavData> > difflist =
          ff1.diff(ff2, op);
       
