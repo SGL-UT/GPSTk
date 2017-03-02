@@ -152,13 +152,14 @@ void FileHunter_T :: init()
    newFile(tempFilePath + "2004" + getFileSep() + "2004_123.data");
    newFile(tempFilePath + "2004" + getFileSep() + "2004_234.data");
 
-   newFile(tempFilePath + "1284_6.data");
-   newFile(tempFilePath + "1284_7.data");
-   newFile(tempFilePath + "1285_1.data");
-   newFile(tempFilePath + "1285_2.data");
-   newFile(tempFilePath + "1285_3.data");
-   newFile(tempFilePath + "1285_4.data");
-   newFile(tempFilePath + "1285_5.data");
+   newDir(tempFilePath + "pe");
+   newFile(tempFilePath + "pe" + getFileSep() + "1284_6.sp3");
+   newFile(tempFilePath + "pe" + getFileSep() + "1284_7.sp3");
+   newFile(tempFilePath + "pe" + getFileSep() + "1285_1.sp3");
+   newFile(tempFilePath + "pe" + getFileSep() + "1285_2.sp3");
+   newFile(tempFilePath + "pe" + getFileSep() + "1285_3.sp3");
+   newFile(tempFilePath + "pe" + getFileSep() + "1285_4.sp3");
+   newFile(tempFilePath + "pe" + getFileSep() + "1285_5.sp3");
 }
 
 
@@ -848,7 +849,7 @@ int FileHunter_T :: testFind()
 
    try   // time filtering (GPS file spec time system)
    {
-      string  filename(tempFilePath + "%04F_%1w.data");
+      string  filename(tempFilePath + "pe" + getFileSep() + "%04F_%1w.sp3");
       FileHunter  hunter(filename);
       vector<string>  files;
       CommonTime  minTime;
