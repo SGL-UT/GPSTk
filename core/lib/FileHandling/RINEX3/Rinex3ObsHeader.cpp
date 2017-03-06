@@ -2056,7 +2056,10 @@ namespace gpstk
       // Compute map of obs types for use in writing version 2 header and data, call before writing
    void Rinex3ObsHeader::prepareVer2Write(void)
    {
-      version = 2.11;
+      if(version > 3)
+      {
+         version = 2.11;
+      }
       valid |= Rinex3ObsHeader::validWaveFact;
          // TD unset R3-specific header members?
       
