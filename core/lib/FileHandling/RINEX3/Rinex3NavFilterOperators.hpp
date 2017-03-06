@@ -91,9 +91,9 @@ namespace gpstk
 
                while (litr != llist.end())
                {
-                  if ((*litr + std::abs(*litr * std::pow(10, -precision))) < *ritr )
+                  if ((*litr + std::abs(*litr * std::pow((long double)10, -precision))) < *ritr )
                      return true;
-                  else if (*litr > (*ritr + std::abs(*ritr * std::pow(10,-precision))))
+                  else if (*litr > (*ritr + std::abs(*ritr * std::pow((long double)10,-precision))))
                      return false;
                   else
                   {

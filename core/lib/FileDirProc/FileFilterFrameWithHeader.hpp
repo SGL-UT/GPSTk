@@ -199,9 +199,7 @@ namespace gpstk
                BinaryPredicate p,
                int precision) const
       {
-            //Define 10 prior to pow to avoid ambiguous overloaded pow
-         long double ten = 10;
-         double epsilon = 1 / std::pow(ten,precision);
+         long double epsilon = 1 / std::pow((long double)10,precision);
          std::list<FileData> toReturn;
 
          typename std::list<FileData>::const_iterator dvIt = this->dataVec.begin();
