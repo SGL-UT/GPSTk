@@ -2065,12 +2065,12 @@ namespace gpstk
       map<string,vector<RinexObsID> >::const_iterator mit;
       for (mit = mapObsTypes.begin(); mit != mapObsTypes.end(); mit++)
       {
-         string satString = mit->first;
-         if(satString!="G" && satString!="R" && satString!="E" &&
-            satString!="S" && satString!="T" && satString!="J" &&
-            satString!="C" && satString!="G")
+         string sysString = mit->first;
+         if(sysString!="G" && sysString!="R" && sysString!="E" &&
+            sysString!="S" && sysString!="T" && sysString!="J" &&
+            sysString!="C" && sysString!="G")
          {
-            FFStreamError er("Invalid system char string in header.mapObsTypes: "+satString);
+            FFStreamError er("Invalid system char string in header.mapObsTypes: "+sysString);
             GPSTK_THROW(er);
          }
             // mit->first is system char as a 1-char string
@@ -2124,10 +2124,10 @@ namespace gpstk
                   {
                      mapR2toR3ObsID[R2ot] = mit->second[i];
                   }
-                  if(R2DisambiguityMap.find(satString + R2ot) == R2DisambiguityMap.end())
-                     R2DisambiguityMap.insert(std::pair<string,string>(satString + R2ot,mapR2toR3ObsID[R2ot].asString()));
+                  if(R2DisambiguityMap.find(sysString + R2ot) == R2DisambiguityMap.end())
+                     R2DisambiguityMap.insert(std::pair<string,string>(sysString + R2ot,mapR2toR3ObsID[R2ot].asString()));
                   else
-                     R2DisambiguityMap[satString + R2ot] = lab[2];
+                     R2DisambiguityMap[sysString + R2ot] = lab;
                }
             }
          }
