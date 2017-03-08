@@ -160,6 +160,24 @@
                            __LINE__);                                   \
    }
 
+// Macro for executing a statement inside a try/catch block with PASS/FAIL.
+// e.g. TUCATCH(object.methodShouldNotThrow());
+#define TUCATCH(STATEMENT)                      \
+   try                                          \
+   {                                            \
+      STATEMENT;                                \
+      TUPASS(#STATEMENT);                       \
+   }                                            \
+   catch (gpstk::Exception &exc)                \
+   {                                            \
+      std::cerr << exc << std::endl;            \
+      TUFAIL("Exception");                      \
+   }                                            \
+   catch (...)                                  \
+   {                                            \
+      TUFAIL("Exception");                      \
+   }
+
 
 // Fail the test with a message.
 #define TUFAIL(MSG) testFramework.assert(false, MSG, __LINE__)

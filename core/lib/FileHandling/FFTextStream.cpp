@@ -153,6 +153,9 @@ namespace gpstk
       try
       {
          std::getline(*this, line);
+            // Remove CR characters left over in the buffer from windows files
+         while (*line.rbegin() == '\r')
+            line.erase(line.end()-1);
          for (int i=0; i<line.length(); i++)
             if (!isprint(line[i]))
                {

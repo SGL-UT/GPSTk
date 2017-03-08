@@ -123,7 +123,7 @@ void FileHunter_T :: init()
       // create directories and files for the find() tests
    newDir(tempFilePath);
 
-   tempFilePath += getFileSep();  // ensure trailling slash
+   tempFilePath += getFileSep();  // ensure trailing slash
 
    newFile(tempFilePath + "sample.data");
    newFile(tempFilePath + "prn_08.data");
@@ -136,6 +136,7 @@ void FileHunter_T :: init()
    newFile(tempFilePath + "2001_234_08.data");
    newFile(tempFilePath + "2002_123_16.data");
    newFile(tempFilePath + "2002_234_16.data");
+
    newDir(tempFilePath + "2003");
    newDir(tempFilePath + "2004");
    newFile(tempFilePath + "2003" + getFileSep() + "123_08.data");
@@ -151,8 +152,14 @@ void FileHunter_T :: init()
    newFile(tempFilePath + "2004" + getFileSep() + "2004_123.data");
    newFile(tempFilePath + "2004" + getFileSep() + "2004_234.data");
 
-
-
+   newDir(tempFilePath + "pe");
+   newFile(tempFilePath + "pe" + getFileSep() + "1284_6.sp3");
+   newFile(tempFilePath + "pe" + getFileSep() + "1284_7.sp3");
+   newFile(tempFilePath + "pe" + getFileSep() + "1285_1.sp3");
+   newFile(tempFilePath + "pe" + getFileSep() + "1285_2.sp3");
+   newFile(tempFilePath + "pe" + getFileSep() + "1285_3.sp3");
+   newFile(tempFilePath + "pe" + getFileSep() + "1285_4.sp3");
+   newFile(tempFilePath + "pe" + getFileSep() + "1285_5.sp3");
 }
 
 
@@ -783,7 +790,7 @@ int FileHunter_T :: testFind()
       tester.assert( false, "unexpected exception", __LINE__ );
    }
 
-   try   // time filtering
+   try   // time filtering (unspecified file spec time system)
    {
       string  filename(tempFilePath + "%04Y"
                       + getFileSep() + "%03j_%02p.data");
@@ -833,6 +840,62 @@ int FileHunter_T :: testFind()
       tester.assert( (files.size() == 4),
                      "time filtering (middle)", __LINE__ );
       if (files.size() != 4) dump(files);  // @debug
+
+   }
+   catch (...)
+   {
+      tester.assert( false, "unexpected exception", __LINE__ );
+   }
+
+   try   // time filtering (GPS file spec time system)
+   {
+      string  filename(tempFilePath + "pe" + getFileSep() + "%04F_%1w.sp3");
+      FileHunter  hunter(filename);
+      vector<string>  files;
+      CommonTime  minTime;
+      CommonTime  maxTime;
+
+      minTime = YDSTime(2001, 1, 0, TimeSystem::Any);
+      maxTime = YDSTime(2002, 1, 0, TimeSystem::Any);
+      files = hunter.find(minTime, maxTime);
+      tester.assert( (files.size() == 0),
+                     "time filtering (all before)", __LINE__ );
+      if (files.size() != 0) dump(files);  // @debug
+
+      minTime = YDSTime(2006, 1, 0, TimeSystem::Any);
+      maxTime = YDSTime(2007, 1, 0, TimeSystem::Any);
+      files = hunter.find(minTime, maxTime);
+      tester.assert( (files.size() == 0),
+                     "time filtering (all above)", __LINE__ );
+      if (files.size() != 0) dump(files);  // @debug
+
+      minTime = YDSTime(2001, 1, 0, TimeSystem::Any);
+      maxTime = YDSTime(2007, 1, 0, TimeSystem::Any);
+      files = hunter.find(minTime, maxTime);
+      tester.assert( (files.size() == 7),
+                     "time filtering (all included)", __LINE__ );
+      if (files.size() != 7) dump(files);  // @debug
+
+      minTime = YDSTime(2004,   1, 0, TimeSystem::Any);
+      maxTime = YDSTime(2004, 238, 0, TimeSystem::Any);
+      files = hunter.find(minTime, maxTime);
+      tester.assert( (files.size() == 5),
+                     "time filtering (lower 3/4)", __LINE__ );
+      if (files.size() != 5) dump(files);  // @debug
+
+      minTime = YDSTime(2004, 236, 0, TimeSystem::Any);
+      maxTime = YDSTime(2004, 350, 0, TimeSystem::Any);
+      files = hunter.find(minTime, maxTime);
+      tester.assert( (files.size() == 5),
+                     "time filtering (upper 3/4)", __LINE__ );
+      if (files.size() != 5) dump(files);  // @debug
+
+      minTime = YDSTime(2004, 235, 0, TimeSystem::Any);
+      maxTime = YDSTime(2004, 239, 0, TimeSystem::Any);
+      files = hunter.find(minTime, maxTime);
+      tester.assert( (files.size() == 5),
+                     "time filtering (middle)", __LINE__ );
+      if (files.size() != 5) dump(files);  // @debug
 
    }
    catch (...)

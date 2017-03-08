@@ -1338,7 +1338,7 @@ namespace gpstk
          }
 
          else if(nline == 7) {
-            HOWtime = 6 + long(StringUtils::for2doub(line.substr(n,19))); n+=19;
+            HOWtime = long(StringUtils::for2doub(line.substr(n,19))) + 6; n+=19;
             if(satSys == "C") {
                IODC    =        StringUtils::for2doub(line.substr(n,19)); n+=19;
             }

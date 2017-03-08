@@ -83,6 +83,20 @@ namespace gpstk
                            bool aShowBaseData, bool aShowBaseIndex,
                            const std::string& adataEndSep,
                            const std::string& adataFinal);
+            /** Set fields using explicit strings for the separators.
+             * @see data member documentation for an explanation of arguments.
+             */
+         HexDumpDataConfig(bool ashowIndex, bool ahexIndex, bool aupperHex,
+                           unsigned aidxDigits, const std::string& aindexSep,
+                           unsigned agroupBy, const std::string& agroupSep,
+                           unsigned agroup2By, const std::string& agroup2Sep,
+                           unsigned abytesPerLine, bool ashowText,
+                           const std::string& apreText,
+                           const std::string& apostText,
+                           bool aShowBaseData, bool aShowBaseIndex,
+                           const std::string& adataEndSep,
+                           const std::string& adataFinal,
+                           const std::string& aprefix);
             /** Return the number of bytes on a line of hexDumpData
              * output without the ASCII representation length.  This
              * is used to line up the ASCII dump.
@@ -113,8 +127,8 @@ namespace gpstk
          std::string prefix;    ///< text to put at the start of each line.
          std::string dataEndSep;///< text to put after last data on a line.
          std::string dataFinal; ///< text to put after last of data.
-         char separator;        ///< character to offset text with (0 = none).
-         std::string textSep;   ///< text put between hex and ASCII.
+         std::string preText;   ///< text put between hex and ASCII.
+         std::string postText;  ///< text to put after ASCII.
          bool showBaseData;     ///< Show number base indicator for data.
          bool showBaseIndex;    ///< Show number base indicator for indices.
             /** If true, show text of message (unprintable characters

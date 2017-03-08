@@ -185,6 +185,7 @@ namespace gpstk
                                 static_cast<CivilTime>(start).minute, 0.0);
             break;
       }
+      exStart.setTimeSystem(start.getTimeSystem());
       
       vector<string> toReturn;
          // Seed the return vector with an empty string which will be
@@ -254,14 +255,22 @@ namespace gpstk
       }
          // filter by time
       vector<string> filtered;
-      FileSpec fullSpec(fileSpecStr);
-      for (unsigned i = 0; i < toReturn.size(); i++)
+      try
       {
-         CommonTime fileTime = fullSpec.extractCommonTime(toReturn[i]);
-         if ((fileTime >= exStart) && (fileTime <= end))
+         FileSpec fullSpec(fileSpecStr);
+         for (unsigned i = 0; i < toReturn.size(); i++)
          {
-            filtered.push_back(toReturn[i]);
+            CommonTime fileTime = fullSpec.extractCommonTime(toReturn[i]);
+            if ((fileTime >= exStart) && (fileTime <= end))
+            {
+               filtered.push_back(toReturn[i]);
+            }
          }
+      }
+      catch(gpstk::Exception& exc)
+      {
+         FileHunterException nexc(exc);
+         GPSTK_THROW(nexc);
       }
       return filtered;
    }

@@ -263,7 +263,9 @@ namespace gpstk
                // "IONOSPHERIC CORR"
             IonoCorr ic;
             try
-            { ic.fromString(strip(line.substr(0,4))); }
+            {
+               ic.fromString(strip(line.substr(0,4)));
+            }
             catch(Exception& e)
             {
                FFStreamError fse(e.what());
@@ -345,7 +347,9 @@ namespace gpstk
                // R3 only // "TIME SYSTEM CORR"
             TimeSystemCorrection tc;
             try
-            { tc.fromString(strip(line.substr(0,4))); }
+            {
+               tc.fromString(strip(line.substr(0,4)));
+            }
             catch(Exception& e)
             {
                FFStreamError fse(e.what());
@@ -809,7 +813,7 @@ namespace gpstk
             {
                   // RINEX 2
                if(sat.system == SatID::systemGPS)
-                  fileType = "N: GPS NAV DATA\"";
+                  fileType = "N: GPS NAV DATA";
                else if(sat.system == SatID::systemGlonass)
                   fileType = "G: GLO NAV DATA)";
                else if(sat.system == SatID::systemGeosync)
