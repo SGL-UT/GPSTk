@@ -74,7 +74,7 @@ namespace gpstk {
       ObsID::cbDesc[ObsID::cbE5b]       = "E5b";           //Rinex 7
       ObsID::cbDesc[ObsID::cbE5ab]      = "L5a+b";         //Rinex 8
       ObsID::cbDesc[ObsID::cbE6]        = "E6";            //Rinex 6
-      ObsID::cbDesc[ObsID::cbB1]        = "B1";            //Rinex 1
+      ObsID::cbDesc[ObsID::cbB1]        = "B1";            //Rinex 1  2 in RINEX 3.0[013]
       ObsID::cbDesc[ObsID::cbB2]        = "B2";            //Rinex 7
       ObsID::cbDesc[ObsID::cbB3]        = "B3";            //Rinex 6
       ObsID::cbDesc[ObsID::cbI9]        = "I9";            //Rinex 9
@@ -227,9 +227,9 @@ namespace gpstk {
       // And add the couple 'special' cases
       ObsID::cb2char[ObsID::cbG1] = '1';
       ObsID::cb2char[ObsID::cbG2] = '2';
-      ObsID::cb2char[ObsID::cbB1] = '1';
-      ObsID::cb2char[ObsID::cbB2] = '2';
-      ObsID::cb2char[ObsID::cbB3] = '3';
+      ObsID::cb2char[ObsID::cbB1] = '2';
+      ObsID::cb2char[ObsID::cbB2] = '7';
+      ObsID::cb2char[ObsID::cbB3] = '6';
 
       ObsID::tc2char[ObsID::tcC]    = 'C';
       ObsID::tc2char[ObsID::tcGCA]  = 'C';
@@ -317,7 +317,7 @@ namespace gpstk {
       ObsID::validRinexTrackingCodes['S']['1'] = "C* ";
       ObsID::validRinexTrackingCodes['S']['5'] = "IQX* ";
 
-      //NB 24Jun2013 MGEX data uses 2!
+      //NB 24Jun2013 MGEX data uses 2!  RINEX 3.03: 1 for 3.02, 2 for 3.0[013]
       ObsID::validRinexTrackingCodes['C']['1'] = "IQX* ";
       ObsID::validRinexTrackingCodes['C']['2'] = "IQX* ";
       ObsID::validRinexTrackingCodes['C']['6'] = "IQX* ";

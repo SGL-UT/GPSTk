@@ -55,7 +55,6 @@ namespace gpstk
       try {
          ObsID obsid(strID);
          *this = RinexObsID(obsid.type, obsid.band, obsid.code);
-         //*this = RinexObsID(obsid);
       }
       catch(InvalidParameter& ip) { GPSTK_RETHROW(ip); }
    }
@@ -99,7 +98,7 @@ namespace gpstk
       }
    }
 
-   // RINEX 3.01 document, section 5.1
+   // RINEX 3.03 document, section 5.1
    // GPS
    //       L1   C,S,L,X,P,W,Y,M,N(but not C1N)       G 1 CSLXPWYMN (but not C1N)
    //       L2   C,D,S,L,X,P,W,Y,M,N(but not C2N)     G 2 CDSLXPWYMN (but not C1N)
@@ -125,6 +124,9 @@ namespace gpstk
    //       L2   S,L,X                                J 2 SLX
    //       L5   I,Q,X                                J 5 IQX
    //       L6   S,L,X                                J 6 SLX
+   // IRNSS
+   //       L5   A,B,C,X                              I 5 ABCX
+   //       L9   A,B,C,X                              I 9 ABCX
 
    // Determine if the given ObsID is valid. If the input string is 3 
    // characters long, the system is assumed to be GPS. If this string is 4

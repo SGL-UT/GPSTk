@@ -179,10 +179,11 @@ namespace gpstk
       }
       else if (sys == 'C') // BeiDou
       {
-         if(band == cbL1) band = cbB1;
+         if(band == cbL1) band = cbB1;          // RINEX 3.02
+         if(band == cbL2) band = cbB2;          // RINEX 3.0[013]
          if(band == cbE6) band = cbB3;
 
-         if(band == cbB1) {
+         if(band == cbB1 || band == cbB2) {
             switch (code)
             {
                case tcI5: code = tcCI1; break;     // 'I'
