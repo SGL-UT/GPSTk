@@ -1,0 +1,8 @@
+# RinDump, part of the GPS Toolkit, Ver 2.3 8/26/15, Run 2017/03/14 14:14:59
+# Allow systems BDS
+# Input file(s) sptu0150.16o
+# Satellites All
+# Data C7I C6I C2I C1I
+# RinDump output for file sptu0150.16o
+# wk secs-of-wk sat      C7I           C6I           C2I           C1I     
+# RinDump timing: processing 0.004 sec, wallclock: 0 sec.
