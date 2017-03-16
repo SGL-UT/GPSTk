@@ -262,8 +262,8 @@ void ROWDiff::process()
                cout << "-" << setw(3) << (static_cast<YDSTime>(firstDiffItr->time))
                     << ' ' << setw(2) << firstObsItr->first << ' ';
                Rinex3ObsHeader::RinexObsVec::iterator romIt;
-               for (romIt = intersectRom.at(sysString).begin();
-                    romIt != intersectRom.at(sysString).end();
+               for (romIt = intersectRom[sysString].begin();
+                    romIt != intersectRom[sysString].end();
                     romIt++)
                {
                   size_t idx1 = header1.getObsIndex(sysString,*romIt);
@@ -282,8 +282,8 @@ void ROWDiff::process()
                cout << "<" << setw(3) << (static_cast<YDSTime>(firstDiffItr->time))
                     << ' ' << setw(2) << firstObsItr->first << ' ';
                Rinex3ObsHeader::RinexObsVec::iterator romIt;
-               for (romIt = intersectRom.at(sysString).begin();
-                    romIt != intersectRom.at(sysString).end();
+               for (romIt = intersectRom[sysString].begin();
+                    romIt != intersectRom[sysString].end();
                     romIt++)
                {
                   size_t idx = header1.getObsIndex(sysString,*romIt);
@@ -325,8 +325,8 @@ void ROWDiff::process()
                  << ' ' << setw(2) << firstObsItr->first << ' ';
             string sysString = string(1,firstObsItr->first.systemChar());
             Rinex3ObsHeader::RinexObsVec::iterator romIt;
-            for (romIt = intersectRom.at(sysString).begin();
-                 romIt != intersectRom.at(sysString).end();
+            for (romIt = intersectRom[sysString].begin();
+                 romIt != intersectRom[sysString].end();
                  romIt++)
             {
                size_t idx = header1.getObsIndex(sysString,*romIt);
@@ -347,8 +347,8 @@ void ROWDiff::process()
                  << ' ' << setw(2) << secondObsItr->first << ' ';
             string sysString = string(1,secondObsItr->first.systemChar());
             Rinex3ObsHeader::RinexObsVec::iterator romIt;
-            for (romIt = intersectRom.at(sysString).begin();
-                 romIt != intersectRom.at(sysString).end();
+            for (romIt = intersectRom[sysString].begin();
+                 romIt != intersectRom[sysString].end();
                  romIt++)
             {
                size_t idx = header2.getObsIndex(sysString,*romIt);
