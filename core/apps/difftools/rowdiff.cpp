@@ -34,6 +34,8 @@
 //
 //=============================================================================
 
+/// This utility assumes that epochs are in ascending time order
+
 #include "FileFilterFrameWithHeader.hpp"
 #include "Rinex3ObsStream.hpp"
 #include "Rinex3ObsFilterOperators.hpp"
@@ -241,9 +243,6 @@ void ROWDiff::process()
       // differences found
    exitCode = DIFFS_CODE;
 
-   if (verboseLevel)
-      cout << "Differences of epochs in both files:" << endl;
-
    list<Rinex3ObsData>::iterator firstDiffItr = difflist.first.begin();
    list<Rinex3ObsData>::iterator secondDiffItr = difflist.second.begin();
    while(firstDiffItr != difflist.first.end() || secondDiffItr != difflist.second.end())
@@ -316,7 +315,7 @@ void ROWDiff::process()
          firstDiffItr++;
          secondDiffItr++;
       }
-         //Epoch not in second file
+         //Epoch only in first file
       else if((firstDiffItr != difflist.first.end()) && firstDiffItr->time < secondDiffItr->time)
       {
          Rinex3ObsData::DataMap::iterator firstObsItr = firstDiffItr->obs.begin();
@@ -338,7 +337,7 @@ void ROWDiff::process()
          }
          firstDiffItr++;
       }
-         //Epoch not in first file
+         //Epoch only in second file
       else if (secondDiffItr != difflist.second.end()) // && (secondDiffItr->time < firstDiffItr->time)
       {
          Rinex3ObsData::DataMap::iterator secondObsItr = secondDiffItr->obs.begin();
