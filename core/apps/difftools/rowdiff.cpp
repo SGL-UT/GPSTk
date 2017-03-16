@@ -241,196 +241,125 @@ void ROWDiff::process()
       // differences found
    exitCode = DIFFS_CODE;
 
-   list<Rinex3ObsData>::iterator firstitr = difflist.first.begin();
    if (verboseLevel)
       cout << "Differences of epochs in both files:" << endl;
-   while (firstitr != difflist.first.end())
+
+   list<Rinex3ObsData>::iterator firstDiffItr = difflist.first.begin();
+   list<Rinex3ObsData>::iterator secondDiffItr = difflist.second.begin();
+   while(firstDiffItr != difflist.first.end() || secondDiffItr != difflist.second.end())
    {
-      bool matched = false;
-      list<Rinex3ObsData>::iterator seconditr = difflist.second.begin();
-      while ((!matched) && (seconditr != difflist.second.end()))
+         //Epoch in both files
+      if(firstDiffItr->time == secondDiffItr->time)
       {
-         if (firstitr->time == seconditr->time)
+         Rinex3ObsData::DataMap::iterator firstObsItr = firstDiffItr->obs.begin();
+         Rinex3ObsData::DataMap::iterator secondObsItr = secondDiffItr->obs.begin();
+            // For each satellite
+         while(firstObsItr != firstDiffItr->obs.end() || secondObsItr != secondDiffItr->obs.end())
          {
-            Rinex3ObsData::DataMap::iterator fpoi, spoi;
-            Rinex3ObsData::DataMap secondMap = seconditr->obs;
-            // for every satellite in the first DataMap
-            for (fpoi = firstitr->obs.begin(); fpoi != firstitr->obs.end();
-                 fpoi++)
+               // Both files have data for that satellite
+            if(firstObsItr->first == secondObsItr->first)
             {
-               cout << setw(3) << (static_cast<YDSTime>(firstitr->time)) << ' '
-                    << setw(10) << setprecision(0)
-                    << static_cast<YDSTime>(firstitr->time) << ' '
-                    << ff1.frontHeader().markerName << ' '
-                    << ff2.frontHeader().markerName << ' '
-                    << setw(2) << fpoi->first << ' ';
-               spoi = secondMap.find(fpoi->first);
-               Rinex3ObsHeader::RinexObsMap::iterator romIt;
-               // for each obs type
-               for (romIt = intersectRom.begin(); romIt != intersectRom.end(); romIt++)
+               string sysString = string(1,firstObsItr->first.systemChar());
+               cout << "-" << setw(3) << (static_cast<YDSTime>(firstDiffItr->time))
+                    << ' ' << setw(2) << firstObsItr->first << ' ';
+               Rinex3ObsHeader::RinexObsVec::iterator romIt;
+               for (romIt = intersectRom.at(sysString).begin();
+                    romIt != intersectRom.at(sysString).end();
+                    romIt++)
                {
-                  Rinex3ObsHeader::RinexObsVec::iterator ID;
-                  for (ID = romIt->second.begin();
-                       ID != romIt->second.end();
-                       ID++)
-                  {
-                     // no need to do a find, we're using the merged
-                     // set of obses which guarantees that we have the
-                     // obs in this record
-                     size_t fidx = header1.getObsIndex(romIt->first,*ID);
-                     size_t sidx = header2.getObsIndex(romIt->first,*ID);
-                     double diff = (fpoi->second[fidx]).data;
-                     if (spoi != secondMap.end())
-                     {
-                        diff -= (spoi->second[sidx]).data;
-                     }
-
-                     cout << setw(14) << setprecision(3) << fixed << diff << ' '
-                     << ID->asString() << ' ';
-
-                  }
+                  size_t idx1 = header1.getObsIndex(sysString,*romIt);
+                  size_t idx2 = header2.getObsIndex(sysString,*romIt);
+                  cout << setw(15) << setprecision(3) << fixed
+                       << firstObsItr->second[idx1].data - secondObsItr->second[idx2].data
+                       << ' ' << romIt->asString() << ' ';
                }
-               if (spoi != secondMap.end())
-               {
-                  secondMap.erase(spoi);
-               }
-               cout << endl;
+               firstObsItr++;
+               secondObsItr++;
             }
-            // were there satellites that were in only the second DataMap?
-            for (spoi = secondMap.begin(); spoi != secondMap.end();
-                 spoi++)
+               // Only file 1 has data for that satellite
+            else if ((firstObsItr != firstDiffItr->obs.end()) && (firstObsItr->first.id < secondObsItr->first.id))
             {
-               cout << setw(3) << (static_cast<YDSTime>(firstitr->time)) << ' '
-               << setw(10) << setprecision(0)
-               << static_cast<YDSTime>(firstitr->time) << ' '
-               << ff1.frontHeader().markerName << ' '
-               << ff2.frontHeader().markerName << ' '
-               << setw(2) << spoi->first << ' ';
-               fpoi = firstitr->obs.find(fpoi->first);
-               Rinex3ObsHeader::RinexObsMap::iterator romIt;
-               for (romIt = intersectRom.begin(); romIt != intersectRom.end(); romIt++)
+               string sysString = string(1,firstObsItr->first.systemChar());
+               cout << "<" << setw(3) << (static_cast<YDSTime>(firstDiffItr->time))
+                    << ' ' << setw(2) << firstObsItr->first << ' ';
+               Rinex3ObsHeader::RinexObsVec::iterator romIt;
+               for (romIt = intersectRom.at(sysString).begin();
+                    romIt != intersectRom.at(sysString).end();
+                    romIt++)
                {
-                  Rinex3ObsHeader::RinexObsVec::iterator ID;
-                  for (ID = romIt->second.begin();
-                       ID != romIt->second.end();
-                       ID++)
-                  {
-                     // no need to do a find, we're using the merged
-                     // set of obses which guarantees that we have the
-                     // obs in this record
-                     size_t fidx = header1.getObsIndex(romIt->first,*ID);
-                     size_t sidx = header2.getObsIndex(romIt->first,*ID);
-                     double diff = -(spoi->second[fidx]).data;
-
-                     cout << setw(14) << setprecision(3) << fixed << diff << ' '
-                     << ID->asString() << ' ';
-
-                  }
+                  size_t idx = header1.getObsIndex(sysString,*romIt);
+                  cout << setw(15) << setprecision(3) << fixed
+                       << firstObsItr->second[idx].data << ' ' << romIt->asString() << ' ';
                }
-               cout << endl;
+               firstObsItr++;
             }
-            firstitr = difflist.first.erase(firstitr);
-            seconditr = difflist.second.erase(seconditr);
-            matched = true;
+               // Only file 2 has data for that satellite
+            else if (secondObsItr != secondDiffItr->obs.end())
+            {
+               string sysString = string(1,secondObsItr->first.systemChar());
+               cout << ">" << setw(3) << (static_cast<YDSTime>(secondDiffItr->time))
+                    << ' ' << setw(2) << secondObsItr->first << ' ';
+               Rinex3ObsHeader::RinexObsVec::iterator romIt;
+               for (romIt = intersectRom[sysString].begin();
+                    romIt != intersectRom[sysString].end();
+                    romIt++)
+               {
+                  size_t idx = header2.getObsIndex(sysString,*romIt);
+                  cout << setw(15) << setprecision(3) << fixed
+                       << secondObsItr->second[idx].data << ' ' << romIt->asString() << ' ';
+               }
+               secondObsItr++;
+            }
+            cout << endl;
          }
-         else
-            seconditr++;
+
+         firstDiffItr++;
+         secondDiffItr++;
       }
-
-      if (!matched)
-         firstitr++;
-   }
-
-   list<Rinex3ObsData>::iterator itr = difflist.first.begin();
-   if (verboseLevel)
-      cout << "Epochs only in first file:" << endl;
-   while (itr != difflist.first.end())
-   {
-      if (itr->obs.empty())
-         return;
-
-      cout << "<Dump of RinexObsData - time: ";
-      cout << itr->timeString() << " epochFlag: "
-      << " " << itr->epochFlag << " numSvs: " << itr->numSVs
-      << fixed << setprecision(6)
-      << " clk offset: " << itr->clockOffset << endl;
-      if(itr->epochFlag == 0 || itr->epochFlag == 1)
+         //Epoch not in second file
+      else if((firstDiffItr != difflist.first.end()) && firstDiffItr->time < secondDiffItr->time)
       {
-         Rinex3ObsHeader::RinexObsMap::const_iterator sysIt;
-         for (sysIt = header1.mapObsTypes.begin();
-              sysIt != header1.mapObsTypes.end(); sysIt++)
+         Rinex3ObsData::DataMap::iterator firstObsItr = firstDiffItr->obs.begin();
+         for (;firstObsItr != firstDiffItr->obs.end(); firstObsItr++)
          {
-            Rinex3ObsData::DataMap::iterator satIt;
-            for(satIt = itr->obs.begin(); satIt != itr->obs.end(); satIt++)
+            cout << "<" << setw(3) << (static_cast<YDSTime>(firstDiffItr->time))
+                 << ' ' << setw(2) << firstObsItr->first << ' ';
+            string sysString = string(1,firstObsItr->first.systemChar());
+            Rinex3ObsHeader::RinexObsVec::iterator romIt;
+            for (romIt = intersectRom.at(sysString).begin();
+                 romIt != intersectRom.at(sysString).end();
+                 romIt++)
             {
-               cout << "Sat " << setw(2) << satIt->first;
-               Rinex3ObsHeader::RinexObsVec::const_iterator obsIt;
-               for (obsIt = sysIt->second.begin();
-                    obsIt != sysIt->second.end(); obsIt++)
-               {
-                  RinexDatum datum = satIt->second[header1.getObsIndex(sysIt->first,*obsIt)];
-                  cout << " " << obsIt->asString() << ":" << fixed <<
-                  setprecision(3)
-                  << " " << setw(13) << datum.data
-                  << "/" << datum.lli << "/" << datum.ssi;
-               }
-               cout << endl;
+               size_t idx = header1.getObsIndex(sysString,*romIt);
+               cout << setw(15) << setprecision(3) << fixed
+                    << firstObsItr->second[idx].data << ' ' << romIt->asString() << ' ';
             }
+            cout << endl;
          }
+         firstDiffItr++;
       }
-      else
+         //Epoch not in first file
+      else if (secondDiffItr != difflist.second.end()) // && (secondDiffItr->time < firstDiffItr->time)
       {
-         cout << "aux. header info:\n";
-         itr->auxHeader.dump(cout);
-      }
-      itr++;
-   }
-
-   cout << endl;
-
-   itr = difflist.second.begin();
-   if (verboseLevel)
-        cout << "Epochs only in second file:" << endl;
-   while (itr != difflist.second.end())
-   {
-      if (itr->obs.empty())
-         return;
-
-      cout << "<Dump of RinexObsData - time: ";
-      cout << itr->timeString() << " epochFlag: "
-      << " " << itr->epochFlag << " numSvs: " << itr->numSVs
-      << fixed << setprecision(6)
-      << " clk offset: " << itr->clockOffset << endl;
-      if(itr->epochFlag == 0 || itr->epochFlag == 1)
-      {
-         Rinex3ObsHeader::RinexObsMap::const_iterator sysIt;
-         for (sysIt = header2.mapObsTypes.begin();
-              sysIt != header2.mapObsTypes.end(); sysIt++)
+         Rinex3ObsData::DataMap::iterator secondObsItr = secondDiffItr->obs.begin();
+         for (;secondObsItr != secondDiffItr->obs.end(); secondObsItr++)
          {
-            Rinex3ObsData::DataMap::iterator satIt;
-            for(satIt = itr->obs.begin(); satIt != itr->obs.end(); satIt++)
+            cout << ">" << setw(3) << (static_cast<YDSTime>(secondDiffItr->time))
+                 << ' ' << setw(2) << secondObsItr->first << ' ';
+            string sysString = string(1,secondObsItr->first.systemChar());
+            Rinex3ObsHeader::RinexObsVec::iterator romIt;
+            for (romIt = intersectRom.at(sysString).begin();
+                 romIt != intersectRom.at(sysString).end();
+                 romIt++)
             {
-               cout << "Sat " << setw(2) << satIt->first;
-               Rinex3ObsHeader::RinexObsVec::const_iterator obsIt;
-               for (obsIt = sysIt->second.begin();
-                    obsIt != sysIt->second.end(); obsIt++)
-               {
-                  RinexDatum datum = satIt->second[header2.getObsIndex(sysIt->first,*obsIt)];
-                  cout << " " << obsIt->asString() << ":" << fixed <<
-                  setprecision(3)
-                  << " " << setw(13) << datum.data
-                  << "/" << datum.lli << "/" << datum.ssi;
-               }
-               cout << endl;
+               size_t idx = header2.getObsIndex(sysString,*romIt);
+               cout << setw(15) << setprecision(3) << fixed
+                    << secondObsItr->second[idx].data << ' ' << romIt->asString() << ' ';
             }
+            cout << endl;
          }
+         secondDiffItr++;
       }
-      else
-      {
-         cout << "aux. header info:\n";
-         itr->auxHeader.dump(cout);
-      }
-      itr++;
    }
 }
 
