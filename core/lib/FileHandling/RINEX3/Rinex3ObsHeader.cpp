@@ -358,7 +358,15 @@ namespace gpstk
          else
          {
             SystemTime sysTime;
-            string curDate = printTime(sysTime,"%04Y%02m%02d %02H%02M%02S %P");
+            string curDate;
+            if(version < 3)
+            {
+               curDate = printTime(sysTime,"%02m/%02d/%04Y %02H:%02M:%02S");
+            }
+            else
+            {
+               curDate = printTime(sysTime,"%04Y%02m%02d %02H%02M%02S %P");
+            }
             line += leftJustify(curDate, 20);
          }
          line += hsRunBy;
@@ -2048,7 +2056,10 @@ namespace gpstk
       // Compute map of obs types for use in writing version 2 header and data, call before writing
    void Rinex3ObsHeader::prepareVer2Write(void)
    {
-      version = 2.11;
+      if(version > 3)
+      {
+         version = 2.11;
+      }
       valid |= Rinex3ObsHeader::validWaveFact;
          // TD unset R3-specific header members?
       
@@ -2057,12 +2068,12 @@ namespace gpstk
       map<string,vector<RinexObsID> >::const_iterator mit;
       for (mit = mapObsTypes.begin(); mit != mapObsTypes.end(); mit++)
       {
-         string satString = mit->first;
-         if(satString!="G" && satString!="R" && satString!="E" &&
-            satString!="S" && satString!="T" && satString!="J" &&
-            satString!="C" && satString!="G")
+         string sysString = mit->first;
+         if(sysString!="G" && sysString!="R" && sysString!="E" &&
+            sysString!="S" && sysString!="T" && sysString!="J" &&
+            sysString!="C" && sysString!="G")
          {
-            FFStreamError er("Invalid system char string in header.mapObsTypes: "+satString);
+            FFStreamError er("Invalid system char string in header.mapObsTypes: "+sysString);
             GPSTK_THROW(er);
          }
             // mit->first is system char as a 1-char string
@@ -2116,10 +2127,10 @@ namespace gpstk
                   {
                      mapR2toR3ObsID[R2ot] = mit->second[i];
                   }
-                  if(R2DisambiguityMap.find(satString + R2ot) == R2DisambiguityMap.end())
-                     R2DisambiguityMap.insert(std::pair<string,string>(satString + R2ot,mapR2toR3ObsID[R2ot].asString()));
+                  if(R2DisambiguityMap.find(sysString + R2ot) == R2DisambiguityMap.end())
+                     R2DisambiguityMap.insert(std::pair<string,string>(sysString + R2ot,mapR2toR3ObsID[R2ot].asString()));
                   else
-                     R2DisambiguityMap[satString + R2ot] = lab[2];
+                     R2DisambiguityMap[sysString + R2ot] = lab;
                }
             }
          }
