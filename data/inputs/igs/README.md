@@ -1,6 +1,20 @@
 IGS Rinex data from June 18, 2016, doy 170, week 1901 
 
 ```
+# Configure the proxy for http and ftp traffic
+export ftp_proxy=http://webproxy.arlut.utexas.edu:3128
+export http_proxy=http://webproxy.arlut.utexas.edu:3128
+
+# Rinex 3.00 Mixed w BDS
+wget -q -O - ftp://cddis.gsfc.nasa.gov/pub/gps/data/campaign/mgex/daily/rinex3/2016/015/16o/sptu0150.16o.Z | zcat > sptu1050.16o
+# Manually trimmed for epochs (2016  1 15  1 22 30.0000000) - (2016  1 15  1 24 30.0000000)
+
+# Rinex 3.02 Mixed w BDS
+wget -q -O - ftp://cddis.gsfc.nasa.gov/pub/gps/data/campaign/mgex/daily/rinex3/2016/015/16o/nrmg0150.16o.Z | zcat | head -n 279 > nrmg1050.16o
+
+# Rinex 3.03 Mixed w BDS
+wget -q -O - ftp://cddis.gsfc.nasa.gov/pub/gps/data/campaign/mgex/daily/rinex3/2016/015/16o/solo0150.16o.Z | zcat | head -n 303 > solo1050.16o
+
 # Rinex 3.03
 wget -q -O - ftp://cddis.gsfc.nasa.gov/gnss/data/highrate/2016/170/16d/01/UCAL00CAN_S_20161700100_15M_01S_MO.crx.gz | zcat | CRX2RNX - | head -n 216 > UCAL00CAN_S_20161700100_15M_01S_MO
 
