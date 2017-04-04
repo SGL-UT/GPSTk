@@ -882,7 +882,7 @@ namespace gpstk
       l.push_back(L2Pdata);
       l.push_back(IODC);
       l.push_back(IODE);
-      l.push_back(Toc);
+      l.push_back(Toe);
       l.push_back(af0);
       l.push_back(af1);
       l.push_back(af2);
@@ -1096,8 +1096,7 @@ namespace gpstk
          }
 
          else if(nline == 7) {
-            line += doubleToScientific(HOWtime,19,12,2);
-
+            line += doubleToScientific((HOWtime),19,12,2);
             if(satSys == "G" || satSys == "J") {
                line += doubleToScientific(fitint,19,12,2);
             }

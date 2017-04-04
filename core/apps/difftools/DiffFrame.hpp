@@ -59,7 +59,7 @@ public:
                    " \"beginning of time\")"),
         eTimeOption('e', "end-time", "End of time range to compare"
                     " (default = \"end of time\")"),
-        inputFileOption("An input " + type + " file.", true),
+        inputFileOption("input " + type + " files.", true),
         startTime(gpstk::CommonTime::BEGINNING_OF_TIME),
         endTime(gpstk::CommonTime::END_OF_TIME)
    {
