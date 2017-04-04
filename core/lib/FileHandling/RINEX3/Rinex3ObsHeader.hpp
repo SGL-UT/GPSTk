@@ -240,7 +240,8 @@ namespace gpstk
             // and GLONASS COD/PHS/BIS records
             // marker type is only required if the type is not GEODETIC or NON_GEODETIC
          allValid301            = 0x0412058B, ///< RINEX 3.01
-         allValid302            = 0x0412058B  ///< RINEX 3.02
+         allValid302            = 0x0412058B, ///< RINEX 3.02
+         allValid303            = 0x0412058B  ///< RINEX 3.03
       };
    
 #ifndef SWIG // nested structs/classes not supported by SWIG
@@ -450,7 +451,8 @@ namespace gpstk
          if(     version < 3.00) allValid = allValid2;
          else if(version < 3.01) allValid = allValid30;
          else if(version < 3.02) allValid = allValid301;  
-         else                    allValid = allValid302;
+         else if(version < 3.03) allValid = allValid302;  
+         else                    allValid = allValid303;
          return ((valid & allValid) == allValid);
       }
 

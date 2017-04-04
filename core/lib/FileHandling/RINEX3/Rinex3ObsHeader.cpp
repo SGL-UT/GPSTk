@@ -104,7 +104,7 @@ namespace gpstk
    {
       R2ObsTypes.clear();
       mapSysR2toR3ObsID.clear();
-      version = 3.02;
+      version = 3.03;
       fileType = "O";          // observation data
       fileSys = "G";           // GPS only by default
       preserveVerType = false; // let the write methods chose the above
@@ -179,6 +179,7 @@ namespace gpstk
       if     (version == 3.00)  allValid = allValid30;
       else if(version == 3.01)  allValid = allValid301;
       else if(version == 3.02)  allValid = allValid302;
+      else if(version == 3.03)  allValid = allValid303;
       else if(version <  3)     allValid = allValid2;
       else
       {
@@ -192,7 +193,9 @@ namespace gpstk
          ostringstream msg;
          msg << endl;
          msg << "Version = " << version << hex << endl;
-         if(version == 3.02)
+         if(version == 3.03)
+            msg << "allValid303 = 0x" << setw(8) << nouppercase << allValid303 << endl;
+         else if(version == 3.02)
             msg << "allValid302 = 0x" << setw(8) << nouppercase << allValid302 << endl;
          else if(version == 3.01)
             msg << "allValid301 = 0x" << setw(8) << nouppercase << allValid301 << endl;
@@ -1330,8 +1333,10 @@ namespace gpstk
             if(sysPhaseShift[satSysTemp].find(sysPhaseShiftObsID)
                == sysPhaseShift[satSysTemp].end())
             {
-               FFStreamError e("SYS / PHASE SHIFT: unexpected continuation line");
-               GPSTK_THROW(e);
+               //FFStreamError e("SYS / PHASE SHIFT: unexpected continuation line");
+               //GPSTK_THROW(e);
+               // lenient - some writers have only a single blank record
+               return;
             }
 
             map<RinexSatID,double>& satcorrmap(sysPhaseShift[satSysTemp][sysPhaseShiftObsID]);
@@ -1410,8 +1415,9 @@ namespace gpstk
 
          valid |= validGlonassSlotFreqNo;
       }
-      else if(label == hsGlonassCodPhsBias)
+      else if(label == hsGlonassCodPhsBias || label == hsGlonassCodPhsBias+"#")
       {
+            // several IGS MGEX 3.02 files do the extra "#"
             //std::map<RinexObsID,double> glonassCodPhsBias; ///< "GLONASS COD/PHS/BIS"            R3.02
          for(i=0; i<4; i++)
          {
@@ -1665,10 +1671,11 @@ namespace gpstk
       else if(version == 3.0)  allValid = allValid30;
       else if(version == 3.01) allValid = allValid301;
       else if(version == 3.02) allValid = allValid302;
+      else if(version == 3.03) allValid = allValid303;
       else
       {
          FFStreamError e("Unknown or unsupported RINEX version " + 
-                         asString(version));
+                         asString(version,2));
          GPSTK_THROW(e);
       }
 
@@ -1717,8 +1724,12 @@ namespace gpstk
          }
          else if(fileSysSat.system == SatID::systemMixed)
          {
-            FFStreamError e("TimeSystem in MIXED files must be given by first obs");
-            GPSTK_THROW(e);
+            // lenient
+            strm.timesystem = TimeSystem::GPS;
+            firstObs.setTimeSystem(TimeSystem::GPS);
+            // RINEX 3 requires this
+            //FFStreamError e("TimeSystem in MIXED files must be given by first obs");
+            //GPSTK_THROW(e);
          }
          else
          {
@@ -2201,6 +2212,7 @@ namespace gpstk
       if     (version == 3.0)   allValid = allValid30;
       else if(version == 3.01)  allValid = allValid301;
       else if(version == 3.02)  allValid = allValid302;
+      else if(version == 3.03)  allValid = allValid303;
 
       s << "(This header is ";
       if((valid & allValid) == allValid)
