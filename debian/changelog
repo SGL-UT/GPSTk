@@ -1,0 +1,5 @@
+gpstk (2.9.7-1) unstable; urgency=low
+
+  * Initial Debian Packaging, not using CPack
+
+ -- Johnathan York <york@arlut.utexas.edu>  Thu, 06 Apr 2017 12:24:53 -0500

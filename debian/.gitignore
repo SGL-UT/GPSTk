@@ -1,0 +1,11 @@
+gpstk-bin/
+gpstk-dev/
+libgpstk*/
+tmp/
+files
+*.log
+gpstk-bin.substvars
+libgpstk-dev.substvars
+libgpstk2.9.substvars
+libgpstk2.9.postinst.debhelper
+libgpstk2.9.postrm.debhelper

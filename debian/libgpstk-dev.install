@@ -1,0 +1,5 @@
+usr/include/*
+usr/lib/lib*.so
+usr/share/cmake/GPSTK/*
+#usr/lib/pkgconfig/*
+#usr/share/pkgconfig/*
