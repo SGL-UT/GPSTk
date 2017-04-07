@@ -125,7 +125,7 @@ install( CODE "execute_process(COMMAND ${PYTHON_EXECUTABLE} ${SETUP_PY} install 
 #------------------------------------------------------------
 
 file( GLOB swig_includes ${CMAKE_CURRENT_SOURCE_DIR}/src/* )
-install( FILES ${swig_includes} ${CMAKE_CURRENT_SOURCE_DIR}/gpstk.i DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}" )
+install( FILES ${swig_includes} ${CMAKE_CURRENT_SOURCE_DIR}/gpstk.i DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/gpstk" )
 
 
 include(swig_tests.cmake)
