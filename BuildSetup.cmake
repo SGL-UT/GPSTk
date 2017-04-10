@@ -149,7 +149,7 @@ endif()
 #----------------------------------------
 configure_file( "${PROJECT_SOURCE_DIR}/build_config.h.in" "${PROJECT_BINARY_DIR}/generated/build_config.h" )
 include_directories( "${PROJECT_BINARY_DIR}/generated/" ) 
-install( FILES "${PROJECT_BINARY_DIR}/generated/build_config.h" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}" )
+install( FILES "${PROJECT_BINARY_DIR}/generated/build_config.h" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/gpstk" )
 
 
 #----------------------------------------
