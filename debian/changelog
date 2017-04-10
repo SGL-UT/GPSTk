@@ -1,3 +1,16 @@
+gpstk (2.9.8-1) unstable; urgency=medium
+
+  * Update to upstream version 2.9.8
+
+ -- Johnathan York <york@arlut.utexas.edu>  Wed, 26 Apr 2017 20:16:08 -0500
+
+gpstk (2.9.7-2) unstable; urgency=medium
+
+  * Add -ext and Python support
+  * Fix building on wheezy
+
+ -- Johnathan York <york@arlut.utexas.edu>  Mon, 10 Apr 2017 18:33:36 -0500
+
 gpstk (2.9.7-1) unstable; urgency=low
 
   * Initial Debian Packaging, not using CPack
