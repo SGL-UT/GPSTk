@@ -408,9 +408,9 @@ try {
    // set the DC commands now (setParameter may write to log file)
    for(i=0; i<cfg.DCcmds.size(); i++) {
       cfg.GDConfig.setParameter(cfg.DCcmds[i]);
-      if(cfg.DCcmds[i].substr(0,9) == string("--DCDebug")) {
+      if(cfg.DCcmds[i].substr(0,5) == string("Debug")) {
          string msg("DEBUG");
-         msg += asString(cfg.DCcmds[i].substr(10));
+         msg += asString(cfg.DCcmds[i].substr(6));
          LOGlevel = ConfigureLOG::Level(msg);
       }
       else if(cfg.DCcmds[i].substr(0,4) == string("--DC DT=<dt>")) {
@@ -797,7 +797,6 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
 try {
    size_t i;
       // defaults
-   cfg.debug = -1;
    cfg.DChelp = false;
    cfg.verbose = false;
    cfg.decimate = 0.0;
@@ -941,8 +940,8 @@ try {
 
    opts.Add(0, "verbose", "", false, false, &cfg.verbose, "# Help:",
             "print extended output information");
-   opts.Add(0, "debug", "", false, false, &cfg.debug, "",
-            "print debug output at level 0 [debug<n> for level n=1-7]");
+   //opts.Add(0, "debug", "", false, false, &cfg.debug, "",
+   //         "print debug output at level 0 [debug<n> for level n=1-7]");
    opts.Add(0, "help", "", false, false, &help, "",
             "print this and quit");
 
@@ -1030,11 +1029,10 @@ try {
 
    // --------------------------------------------------------------------
    // return
-   if(opts.hasHelp() || cfg.DChelp || cfg.debug>-1) {
+   if(opts.hasHelp() || cfg.DChelp) {
       stripTrailing(cmdlineUsage,'\n');
       LOG(INFO) << cmdlineUsage;
       if(cfg.DChelp) cfg.GDConfig.DisplayParameterUsage(LOGstrm,cfg.verbose);
-      if(cfg.debug>-1 && !cfg.cmdlineSum.empty()) LOG(DEBUG) << cfg.cmdlineSum;
       return 1;
    }
    if(opts.hasErrors()) {
