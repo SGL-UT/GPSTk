@@ -1,3 +1,74 @@
+Version 2.9.8   Tuesday, April 11, 2017
+
+   General modifications
+   ---------------------
+   - RINEX 3.03 support added
+   - Improvements to rowdiff & rnwdiffd
+   - RINEX 2 & 3 support fixed for RINEX Application Suite
+   - Test Additions and Cleanup
+   - Sdded method skeleton for IRNSS alm orbit cracking
+   - Various Bug and Compile Warning Fixes
+
+   Modifications by Author
+   ---------------------
+
+Anthony Hughes (2):
+      Fixed a FileHunter::find() bug in which the time system of the start time was lost and subsequent time comparisons were sabotaged; improved exception handling.
+      Changed test file specs to avoid ambiguity problems.
+
+Brian Tolman (3):
+      first attempt at R3.03 support
+      testing with RinDump
+      fixed tests
+
+Bryan Parsons (5):
+      Merge branch 'issue_302_OrbAlmGen_IRNSS' into 'master'
+      Merge branch 'issue_307_filehunter' into 'master'
+      Merge branch 'jhprice_dev' into 'master'
+      Merge branch 'issue_308' into 'master'
+      Merge branch 'sys-wide-install' into 'master'
+
+John H. Price (15):
+      Added a command line option to rowdiff to specify precision required to consider data a match.
+      Added a command line option to rnwdiff to specify precision required to consider data a match.
+      improved rnw precision option description
+      allow trimming of data in rowdiff and rnwdiff to prevent diffs caused by differences in precision
+      rowdiff - now also print diffs for satellites in file 2 that aren't in file 1
+      Fixed disambiguity comments showing only last character. renamed satString to sysString for clarity
+      specify double ten = 10 to avoid overloaded pow(...) ambiguity.
+      prevent ambiguous overloaded pow(...) call by casting parameter in function call
+      merge master into jhprice_dev
+      Don't try to translate Transmission Time into HOWtime since the RINEX spec is too ambiguous
+      rowdiff clearer easily filtered formatting
+      improved comments / help text
+      solaris can't do std::map::at(), replace with []
+      expanded inputs/igs/sptu0150.16o to incude BDS observations. Added RinSum outputs for BDS inputs. Documented input sources in readme.md.
+      merge master into branch
+
+Johnathan York (3):
+      Include SONAME in generated shared library (e.g. libgpstk.so)
+      Move installed headers under "gpstk/" subdirectory
+      Update swig .i installation directory to use new "gpstk/" prefix
+
+Michael Presho (9):
+      added method skeleton for irnss alm orbit cracking
+      initial cracking of IRNSS almanac incorporated
+      added hArg as input to loadDataIRN method
+      careful about constructing full week number
+      fixed typo to use global WN in ctToe construction
+      corrected SVID value in loadDataIRN
+      output timing for comparison
+      generalized tform print string in OrbAlm
+      removed debug statement from OrbAlmGen.cpp
+
+renfrob (4):
+      Merge branch 'master' into issue_302_OrbAlmGen_IRNSS
+      Removing throw in non-error case
+      Cleaning up almanac determination logic
+      Merge branch 'master' into issue_302_OrbAlmGen_IRNSS
+
+
+
       #################################################
 
 Version 2.9.7   Monday, February 20, 2017
