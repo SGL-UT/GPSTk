@@ -332,6 +332,10 @@ namespace gpstk
 
          // Note: 1.013*2.27 = 2.29951
       double ddry( 2.29951*std::exp( (-0.000116 * NeillHeight) ) );
+         
+         // where does above come from? Not Neill 1996
+         // probably ought to use SaasDryDelay
+      //return SaasDryDelay(press,NeillLat,NeillHeight);
 
       return ddry;
    }

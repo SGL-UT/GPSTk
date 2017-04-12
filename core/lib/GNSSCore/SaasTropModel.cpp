@@ -48,9 +48,6 @@
 
 namespace gpstk
 {
-      // for temperature conversion from Celcius to Kelvin
-   static const double CELSIUS_TO_KELVIN = 273.15;
-   
    // Saastamoinen tropospheric model.
    // This model needs work; it is not the Saastamoinen model, but appears to be
    // a combination of the Neill mapping functions and an unknown delay model.
@@ -244,14 +241,7 @@ namespace gpstk
    {
       THROW_IF_INVALID_DETAILED();
 
-      // correct pressure for height
-      //double press_at_h =
-      //   press * std::pow((temp+273.16-4.5*height/1000.0)/(temp+273.16),34.1/4.5);
-      // humid is zero for the dry component
-      double delay = 0.0022768 * press //_at_h
-            / (1 - 0.00266 * ::cos(2*latitude*DEG_TO_RAD) - 0.00028 * height/1000.);
-
-      return delay;
+      return SaasDryDelay(press,latitude,height);
 
    }  // end SaasTropModel::dry_zenith_delay()
 
