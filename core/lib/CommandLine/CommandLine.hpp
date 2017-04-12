@@ -72,7 +72,6 @@ private:
       typeCount         // this must be last
    } typeOpt;
 
-   // ---------------------------------------------------------------------
    // Encapsulate information needed to use an option, including where to store values
    class Option {
    public:
@@ -89,15 +88,16 @@ private:
       typeOpt type;       // type target: bool, int, doub, str, vec<str>,
                           //    RinexSatID, vec<RinexSatID>
       void *p_output;     // pointer to output - default is its value on input
+      bool doc;           // if false, option is undocumented
 
       std::vector<std::string> values;    // store values from command line
 
       Option(void) : 
          shortOpt(0),repeat(false),required(false),expand(true),
-         type(typeUndefined),p_output(NULL) { }
+         type(typeUndefined),p_output(NULL),doc(true) { }
 
       Option(char s, std::string l, std::string a, std::string predes,
-               std::string des, bool rep, bool req, typeOpt t, void *ptr)
+               std::string des, bool rep, bool req, typeOpt t, void *ptr, bool d)
       {
          shortOpt = s;
          longOpt = l;
@@ -109,17 +109,18 @@ private:
          type = t;
          p_output = ptr;
          expand = true;
+         doc = d;
       }
-
-   }; // end class Option -------------------------------------------------
+   }; // end class Option
 
    // -------------- member data ------------------------------------------
    // first two for internal use only
-   bool help,verbose,helponly,foundErrors;
+   bool help,verbose,helponly,foundErrors,requireOneArg;
    int debug;        // NB default is -1
 
    int syntaxPageBuilt;       // 0 c'tor, 1 Usage: ..., 2 prgm descript, 3 complete
    std::string syntaxPage;
+   int optionsize;         // length of the string '--opt <arg>     ' in syntax page
 
    /// list of Options
    std::vector<Option> options;
@@ -140,20 +141,22 @@ private:
    /// value must be the longOpt of an option. Include '--' in the strings
    std::map<std::string,std::string> deprec_opts;
 
-   /// undocumented options : from Add(...,false);
-   std::vector<Option> undoc_options;
-
 public:
    // -------------- member functions -------------------------------------
    // constructor
-    CommandLine(void)
-      : help(false),verbose(false),debug(-1),syntaxPageBuilt(0) { }
+   CommandLine(void)
+      : help(false),debug(-1),verbose(false),requireOneArg(true),syntaxPageBuilt(0)
+         { }
+
    // destructor
    ~CommandLine(void) { }
 
    // access
    bool hasHelp(void) { return help; }
    bool hasErrors(void) { return foundErrors; }
+
+   // don't require at least one arg
+   void noArgsRequired(void) { requireOneArg=false; }
 
    // -------------- add to list ---------------------------------------
    /// add an 'ignore' option, that is an option '--opt' that is simply ignored.
@@ -182,40 +185,40 @@ public:
    void Add(char s, std::string l, std::string a, bool rep, bool req,
       bool* ptr, std::string predes, std::string des, bool doc=true)
    {
-      Option opt(s,l,a,predes,des,rep,req,typeBool,(void *)ptr);
-      add(opt,doc);
+      Option opt(s,l,a,predes,des,rep,req,typeBool,(void *)ptr,doc);
+      options.push_back(opt);
    }
 
    /// add an integer option
    void Add(char s, std::string l, std::string a, bool rep, bool req,
       int* ptr, std::string predes, std::string des, bool doc=true)
    {
-      Option opt(s,l,a,predes,des,rep,req,typeInt,(void *)ptr);
-      add(opt,doc);
+      Option opt(s,l,a,predes,des,rep,req,typeInt,(void *)ptr,doc);
+      options.push_back(opt);
    }
 
    /// add a vector integer option
    void Add(char s, std::string l, std::string a, bool rep, bool req,
       std::vector<int>* ptr, std::string predes, std::string des, bool doc=true)
    {
-      Option opt(s,l,a,predes,des,rep,req,typeVectorInt,(void *)ptr);
-      add(opt,doc);
+      Option opt(s,l,a,predes,des,rep,req,typeVectorInt,(void *)ptr,doc);
+      options.push_back(opt);
    }
 
    /// add a double option
    void Add(char s, std::string l, std::string a, bool rep, bool req,
       double* ptr, std::string predes, std::string des, bool doc=true)
    {
-      Option opt(s,l,a,predes,des,rep,req,typeDouble,(void *)ptr);
-      add(opt,doc);
+      Option opt(s,l,a,predes,des,rep,req,typeDouble,(void *)ptr,doc);
+      options.push_back(opt);
    }
 
    /// add a string option
    void Add(char s, std::string l, std::string a, bool rep, bool req,
       std::string* ptr, std::string predes, std::string des, bool doc=true)
    {
-      Option opt(s,l,a,predes,des,rep,req,typeString,(void *)ptr);
-      add(opt,doc);
+      Option opt(s,l,a,predes,des,rep,req,typeString,(void *)ptr,doc);
+      options.push_back(opt);
    }
 
    /// add a vector<string> option
@@ -223,16 +226,16 @@ public:
       std::vector<std::string>* ptr, std::string predes, std::string des,
       bool doc=true)
    {
-      Option opt(s,l,a,predes,des,rep,req,typeVectorString,(void *)ptr);
-      add(opt,doc);
+      Option opt(s,l,a,predes,des,rep,req,typeVectorString,(void *)ptr,doc);
+      options.push_back(opt);
    }
 
    /// add a RinexSatID option
    void Add(char s, std::string l, std::string a, bool rep, bool req,
       gpstk::RinexSatID* ptr, std::string predes, std::string des, bool doc=true)
    {
-      Option opt(s,l,a,predes,des,rep,req,typeSat,(void *)ptr);
-      add(opt,doc);
+      Option opt(s,l,a,predes,des,rep,req,typeSat,(void *)ptr,doc);
+      options.push_back(opt);
    }
 
    /// add a vector<RinexSatID> option
@@ -240,8 +243,8 @@ public:
       std::vector<gpstk::RinexSatID>* ptr, std::string predes, std::string des,
       bool doc=true)
    {
-      Option opt(s,l,a,predes,des,rep,req,typeVectorSat,(void *)ptr);
-      add(opt,doc);
+      Option opt(s,l,a,predes,des,rep,req,typeVectorSat,(void *)ptr,doc);
+      options.push_back(opt);
    }
 
    // -------------------------------------------------------------
@@ -286,7 +289,9 @@ public:
 
    /// Dump the configuration. Output is of the form
    ///   longOpt Descript : values
-   void DumpConfiguration(std::ostream& os) throw(gpstk::Exception);
+   /// if tag is not empty (the default), begin each line with it.
+   void DumpConfiguration(std::ostream& os, std::string tag=std::string())
+      throw(gpstk::Exception);
 
 private:
    /// determine if the command line, as declared, is valid
@@ -311,14 +316,6 @@ private:
    /// Post process - convert value strings to real values
    void Postprocess(std::string& Errors, std::vector<std::string>& Unrecog)
       throw(gpstk::Exception);
-
-   /// Used internally
-   void add(Option& opt, bool doc) {
-      if(doc)
-         options.push_back(opt);
-      else
-         undoc_options.push_back(opt);
-   }
 
 }; // end class CommandLine
 
