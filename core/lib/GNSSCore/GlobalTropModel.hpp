@@ -257,16 +257,6 @@ namespace gpstk
       /// @param ht   Height of the receiver above mean sea level, in meters.
       virtual void setReceiverHeight(const double& ht);
 
-      /// Define the time of interest; this is required before calling
-      /// correction() or any of the zenith_delay routines.
-      /// @param mjd  MJD (double)
-      virtual void setTime(const double& mjd);
-
-      /// Define the time of interest; this is required before calling
-      /// correction() or any of the zenith_delay routines.
-      /// @param time  CommonTime of interest
-      virtual void setTime(const CommonTime& time);
-
       /// Define the day of year; this is required before calling
       /// correction() or any of the zenith_delay routines.
       /// @param doy Day of year (year does not matter)
@@ -278,6 +268,16 @@ namespace gpstk
       virtual void setParameters(const CommonTime& time, const Position& rxPos);
 
    private:
+      /// Define the time of interest; this is required before calling
+      /// correction() or any of the zenith_delay routines.
+      /// @param mjd  MJD (double)
+      void setTime(const double& mjd);
+
+      /// Define the time of interest; this is required before calling
+      /// correction() or any of the zenith_delay routines.
+      /// @param time  CommonTime of interest
+      void setTime(const CommonTime& time);
+
       // GMF
       static const double ADryMean[55];
       static const double BDryMean[55];
