@@ -134,6 +134,10 @@ namespace gpstk
          setTime(time);
       }
 
+      /// Return the name of the model
+      virtual std::string name(void)
+         { return std::string("Global"); }
+
       /// Compute and return the full tropospheric delay. The receiver
       /// height, latitude and Day oy Year must has been set before using
       /// the appropriate constructor or the provided methods.

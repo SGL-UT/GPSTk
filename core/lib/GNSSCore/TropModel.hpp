@@ -107,6 +107,10 @@ namespace gpstk
       bool isValid(void)
          { return valid; }
 
+         /// Return the name of the model
+      virtual std::string name(void)
+         { return std::string("Undefined"); }
+
          /// Compute and return the full tropospheric delay
          /// @param elevation Elevation of satellite as seen at receiver, in degrees
       virtual double correction(double elevation) const
@@ -236,6 +240,10 @@ namespace gpstk
    class ZeroTropModel : public TropModel
    {
    public:
+         /// Return the name of the model
+      virtual std::string name(void)
+         { return std::string("Zero"); }
+
          /// Compute and return the full tropospheric delay
          /// @param elevation Elevation of satellite as seen at receiver, in degrees
       virtual double correction(double elevation) const
