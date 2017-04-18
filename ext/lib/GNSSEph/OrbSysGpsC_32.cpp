@@ -115,8 +115,9 @@ namespace gpstk
       PM_X_dot       = msg.asSignedDouble(164, 15, -21);
       PM_X           = msg.asSignedDouble(179, 21, -20);
       PM_X_dot       = msg.asSignedDouble(200, 15, -21);
-      delta_UT1      = msg.asSignedDouble(215, 31, -34);
+      delta_UT1      = msg.asSignedDouble(215, 31, -24);
       delta_UT1_dot  = msg.asSignedDouble(246, 19, -25);
+      delta_UT1_dot_per_sec = delta_UT1_dot / SEC_PER_DAY;
    
          // Deriving the epoch time is challenging due to the
          // lack of a week number in this message. For the moment, 
@@ -174,8 +175,60 @@ namespace gpstk
       return true;
    } // end of isEopValid()
 
-   double OrbSysGpsC_32::getUT1(const CommonTime& ct) const
-   {}
+   CommonTime OrbSysGpsC_32::getUT1(const CommonTime& ct, 
+                                const CommonTime& tutc) const
+      throw( InvalidRequest )
+   {
+      if (tutc.getTimeSystem()!=TimeSystem::UTC)
+      {
+         stringstream ss;
+         ss << "in OrbSysGpsC_32.  TimeSystem of tutc parameter must be";
+         ss << " TimeSystem::UTC";
+         InvalidRequest ir(ss.str());
+         GPSTK_THROW(ir);
+      }
+
+      double elapt = ct - ctEpoch; 
+      double UT1Adjust = delta_UT1 + delta_UT1_dot_per_sec * elapt;
+
+      CommonTime retVal = tutc;
+      retVal += UT1Adjust;
+
+      return retVal;
+   }
+
+   CommonTime OrbSysGpsC_32::getUT1(const CommonTime& ct,
+                                const OrbSysGpsC_33* mt33) const
+      throw( InvalidRequest )
+   {
+      if (!mt33->isUtcValid(ct))
+      {
+         string tform = "%02m/%02d/%04Y %02H:%02M:%02S";
+         stringstream ss;
+         ss << "Time of ";
+         ss << printTime(ct,tform);
+         ss << " is not a valid evaluation time for an MT33 with a t-sub-ot of ";
+         ss << printTime(mt33->ctEpoch,tform);
+         InvalidRequest ir(ss.str());
+         GPSTK_THROW(ir); 
+      }
+
+      // The simple approach would be 
+      //   double utcOffset = mt33.getUtcOffset(ct);
+      //
+      // However, in the event of a leap second adjust, the UTC would have a
+      // discontinuity and therefore the UT1 would have a discontinuity.   Therefore,
+      // we have to compute the UTC offset from the MT 33 contents and use 
+      // delta t-sub-LS regardless of the leap second situation.
+               // delta t-sub-UTC is the same in all cases.
+      double dtUTC = mt33->getUtcOffsetModLeapSec(ct);
+      double utcOffset = (double) mt33->dtLS + dtUTC; 
+
+      CommonTime tutc = ct - utcOffset;
+      tutc.setTimeSystem(TimeSystem::UTC); 
+
+      return getUT1(ct, tutc);
+   }
 
    double OrbSysGpsC_32::getxp(const CommonTime& ct) const
    {}

@@ -49,6 +49,7 @@
 #include <math.h>
 
 #include "OrbSysGpsC.hpp"
+#include "OrbSysGpsC_33.hpp"
 
 namespace gpstk
 {
@@ -104,7 +105,12 @@ namespace gpstk
           * NOTE: See preceding method, isUtcValid( ) to determine
           * if provided parameters are OK to use.  
           */
-      virtual double getUT1(const CommonTime& ct) const;
+      virtual CommonTime getUT1(const CommonTime& ct, 
+                            const CommonTime& tutc) const
+        throw( InvalidRequest );
+      virtual CommonTime getUT1(const CommonTime& ct,
+                            const OrbSysGpsC_33* mt33) const
+        throw( InvalidRequest );
       virtual double getxp(const CommonTime& ct) const;
       virtual double getyp(const CommonTime& ct) const;
 
@@ -126,6 +132,7 @@ namespace gpstk
       double PM_Y_dot; 
       double delta_UT1;
       double delta_UT1_dot;
+      double delta_UT1_dot_per_sec;   // Convenience translation
       
    }; // end class ORBSYSGPSC_33
 
