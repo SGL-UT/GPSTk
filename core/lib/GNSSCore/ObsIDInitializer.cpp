@@ -181,6 +181,7 @@ namespace gpstk {
       ObsID::char2cb['6'] = ObsID::cbE6;
       ObsID::char2cb['7'] = ObsID::cbE5b;
       ObsID::char2cb['8'] = ObsID::cbE5ab;
+      ObsID::char2cb['9'] = ObsID::cbI9;
       ObsID::char2cb['-'] = ObsID::cbUndefined;
 
       ObsID::char2tc[' '] = ObsID::tcUnknown;
