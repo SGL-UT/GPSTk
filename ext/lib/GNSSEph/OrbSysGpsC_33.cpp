@@ -218,18 +218,20 @@ namespace gpstk
       double diffAbs = fabs(diff);
       double SEC_PER_HALF_DAY = SEC_PER_DAY / 2.0; 
 
-      //out << " diff, diffAbs : " << diff << ", " << diffAbs << endl;
+      //cout << " diff, diffAbs : " << diff << ", " << diffAbs << endl;
 
          // Case a: Effectivity is NOT in the past and is more than
          //         six hours in the future
-      if (diff<0 && diffAbs>SEC_PER_HALF_DAY)
+      if (diff>0 && diffAbs>SEC_PER_HALF_DAY)
       {
+         //cout << "Case a" << endl;
          retVal = (double) dtLS + dtUTC; 
       }
          // Case c: Effectivity is in the past and more than a 
          // half-day in the past. 
-      else if (diff>0 && diffAbs>SEC_PER_HALF_DAY)
+      else if (diff<0 && diffAbs>SEC_PER_HALF_DAY)
       {
+         //cout << "Case c" << endl;
          retVal = (double) dtLSF + dtUTC;
       }
          //  What remains is case b.
@@ -238,6 +240,7 @@ namespace gpstk
          //  case b before I could understand it. 
       else
       {
+         //cout << "Case b" << endl;
          long SOD =  static_cast<YDSTime>(ct).sod;
 
          long variableModulo = 86400 + dtLSF - dtLS;
