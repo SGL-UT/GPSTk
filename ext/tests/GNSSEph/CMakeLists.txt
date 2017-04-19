@@ -52,3 +52,9 @@ add_test(NAME OrbDataSys_T_2
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -DTESTBASE=test_output_OrbDataSys_T_GPS_CNAV
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testsame.cmake)
+#
+#  Following tests the get*() methods of various CNAV MT classes
+add_executable(OrbSysGpsC_T OrbSysGpsC_T.cpp)
+target_link_libraries(OrbSysGpsC_T gpstk)
+add_test(GNSSEph_OrbSysGpsC OrbSysGpsC_T)
+set_property(TEST GNSSEph_OrbSysGpsC PROPERTY LABELS GNSSEph OrbSysGpsC)

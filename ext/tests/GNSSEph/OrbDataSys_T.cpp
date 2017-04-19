@@ -419,7 +419,6 @@ setUpCNAV()
 
 int main(int argc, char *argv[])
 {
-  cout << " argc : " << argc << endl;
   if (argc!=2)
   {
      cout << "OrbDataSys_T requires either LNAV or CNAV as arguments" << endl;
@@ -430,8 +429,6 @@ int main(int argc, char *argv[])
   OrbDataSys_T testClass;
 
   string argValue(argv[1]);
-
-  cout << " argv[0] : " << argValue << endl;
 
   if (argValue==string("LNAV"))
   {
