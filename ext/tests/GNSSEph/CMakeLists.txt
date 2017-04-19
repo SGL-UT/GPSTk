@@ -29,13 +29,26 @@ add_test(NAME OrbAlm_T_1
 # Need to link the test program.  However, instead of running
 # tests that lead to internal pass/fail, this program produces
 # a text file that needs to be compared against truth data.
+#
+# First run the test for LNAV, then run the test for CNAV
+#
 add_executable(OrbDataSys_T OrbDataSys_T.cpp)
 target_link_libraries(OrbDataSys_T gpstk)
 add_test(NAME OrbDataSys_T_1
          COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:OrbDataSys_T>
+         -DARGS=LNAV
          -DTESTBASE=OrbDataSys_T_1
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -DTESTBASE=test_output_OrbDataSys_T_GPS_LNAV
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/testsame.cmake)
+add_test(NAME OrbDataSys_T_2
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:OrbDataSys_T>
+         -DARGS=CNAV
+         -DTESTBASE=OrbDataSys_T_2
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTBASE=test_output_OrbDataSys_T_GPS_CNAV
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testsame.cmake)

@@ -1,8 +1,8 @@
 # test that file produced matches expectations.
 
-message(STATUS "running ${TEST_PROG} ")
+message(STATUS "running ${TEST_PROG} ${ARGS}")
 
-execute_process(COMMAND ${TEST_PROG}
+execute_process(COMMAND ${TEST_PROG} ${ARGS}
                 RESULT_VARIABLE HAD_ERROR)
 
 if(HAD_ERROR)
