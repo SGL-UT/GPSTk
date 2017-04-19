@@ -113,8 +113,8 @@ namespace gpstk
       tEOP           = msg.asUnsignedLong(127, 16, 16);
       PM_X           = msg.asSignedDouble(143, 21, -20);
       PM_X_dot       = msg.asSignedDouble(164, 15, -21);
-      PM_X           = msg.asSignedDouble(179, 21, -20);
-      PM_X_dot       = msg.asSignedDouble(200, 15, -21);
+      PM_Y           = msg.asSignedDouble(179, 21, -20);
+      PM_Y_dot       = msg.asSignedDouble(200, 15, -21);
       delta_UT1      = msg.asSignedDouble(215, 31, -24);
       delta_UT1_dot  = msg.asSignedDouble(246, 19, -25);
       delta_UT1_dot_per_sec = delta_UT1_dot / SEC_PER_DAY;
