@@ -230,11 +230,20 @@ namespace gpstk
       return getUT1(ct, tutc);
    }
 
+
    double OrbSysGpsC_32::getxp(const CommonTime& ct) const
-   {}
+   {
+      double elapt = ct - ctEpoch; 
+      double retVal = PM_X + PM_X_dot/SEC_PER_DAY * elapt;
+      return retVal; 
+   }
 
    double OrbSysGpsC_32::getyp(const CommonTime& ct) const
-   {}
+   {
+      double elapt = ct - ctEpoch; 
+      double retVal = PM_Y + PM_Y_dot/SEC_PER_DAY * elapt;
+      return retVal; 
+   }
 
    void OrbSysGpsC_32::dumpTerse(std::ostream& s) const
          throw(InvalidRequest)
