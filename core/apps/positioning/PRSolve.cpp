@@ -93,6 +93,8 @@
 #include "GGTropModel.hpp"
 #include "GGHeightTropModel.hpp"
 #include "NeillTropModel.hpp"
+#include "GlobalTropModel.hpp"
+
 #include "EphemerisRange.hpp"
 #include "RinexUtilities.hpp"
 
@@ -1601,6 +1603,7 @@ void Configuration::SetDefaults(void) throw()
    decimate = elevLimit = 0.0;
    forceElev = false;
    searchUser = false;
+   weight = false;
    defaultstartStr = string("[Beginning of dataset]");
    defaultstopStr = string("[End of dataset]");
    beginTime = gpsBeginTime = GPSWeekSecond(0,0.,TimeSystem::Any);
@@ -1908,8 +1911,8 @@ string Configuration::BuildCommandLine(void) throw()
    opts.Add(0, "conv", "lim", false, false, &convLimit, "",
             "Maximum convergence criterion in estimation in meters");
    opts.Add(0, "Trop", "m,T,P,H", false, false, &TropStr, "",
-            "Trop model <m> [one of Zero,Black,Saas,NewB,Neill,GG,GGHt\n             "
-            "         with optional weather T(C),P(mb),RH(%)]");
+            "Trop model <m> [one of Zero,Black,Saas,NewB,Neill,GG,GGHt,Global\n"
+            "                      with optional weather T(C),P(mb),RH(%)]");
 
    opts.Add(0, "log", "fn", false, false, &LogFile, "# Output [for formats see "
             "GPSTK::Position (--ref) and GPSTK::Epoch (--timefmt)] :",
@@ -2047,10 +2050,12 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
          else if(msg=="GG")    { pTrop = new GGTropModel(); TropType = "GG"; }
          else if(msg=="GGHT")  { pTrop = new GGHeightTropModel(); TropType = "GGht"; }
          else if(msg=="NEILL") { pTrop = new NeillTropModel(); TropType = "Neill"; }
+         else if(msg=="GLOBAL") { pTrop = new GlobalTropModel(); TropType = "Global";}
          else {
             msg = string();
             oss << "Error : invalid trop model (" << fld[0] << "); choose one of "
-               << "Zero,Black,Saas,NewB,GG,GGht,Neill (cf. gpstk::TropModel)" << endl;
+               << "Zero,Black,Saas,NewB,GG,GGht,Neill,Global (cf. gpstk::TropModel)"
+               << endl;
          }
 
          if(!msg.empty() && !pTrop) {
@@ -2452,7 +2457,7 @@ int SolutionObject::ComputeSolution(const CommonTime& ttag) throw(Exception)
                //statsSPSNEUresid.add(V,Cov);
             }
          }
-      }
+      }  // end if SPSout
 
       // get the RAIM solution ------------------------------------------
       iret = prs.RAIMCompute(ttag, Satellites, satSyss, PRanges, invMCov, C.pEph,
