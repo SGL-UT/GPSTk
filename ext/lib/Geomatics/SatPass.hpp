@@ -71,6 +71,8 @@ protected:
       /// a flag (cf. SatPass::BAD, etc.) that is set to OK at creation
       /// then reset by other processing.
       unsigned short flag;
+      /// a flag for arbitrary use by the user; SatPass ONLY has set/getUserFlag()
+      unsigned int userflag;
       /// time 'count' : time of data = FirstTime + ndt * dt + offset
       unsigned int ndt;
       /// offset of time from integer number * dt since FirstTime.
@@ -85,7 +87,8 @@ protected:
 
       /// constructor
       /// @param n the number of data types to be stored, default 4
-      SatPassData(unsigned short n=4) : flag(SatPass::OK), ndt(0), toffset(0.0)
+      SatPassData(unsigned short n=4)
+         : flag(SatPass::OK), userflag(0), ndt(0), toffset(0.0)
       {
          data = std::vector<double>(n,0.0);
          lli = std::vector<unsigned short>(n,0);
@@ -98,6 +101,7 @@ protected:
       {
          if(&right != this) {
             flag = right.flag;
+            userflag = right.userflag;
             ndt = right.ndt;
             toffset = right.toffset;
             data.resize(right.data.size());
@@ -331,6 +335,12 @@ public:
    /// @param  flag flag (e.g. SatPass::BAD).
    void setFlag(unsigned int i, unsigned short flag) throw(Exception);
 
+   /// set the userflag at one index to inflag;
+   /// NB SatPass does nothing w/ this member except setUserFlag() and getUserFlag();
+   /// @param  i    index of the data of interest
+   /// @param  inflag unsigned int flag meaning whatever the user wants
+   void setUserFlag(unsigned int i, unsigned int inflag) throw(Exception);
+
    // -------------------------------- get only --------------------------------
    /// get the max. gap limit size (seconds); for all SatPass objects
    /// @return the current value of maximum gap (sec)
@@ -348,6 +358,12 @@ public:
    /// @param  i    index of the data of interest
    /// @return the flag for the given index
    unsigned short getFlag(unsigned int i) throw(Exception);
+
+   /// get the userflag at one index
+   /// NB SatPass does nothing w/ this member except setUserFlag() and getUserFlag();
+   /// @param  i    index of the data of interest
+   /// @param  inflag flag meaning whatever the user wants it to
+   unsigned int getUserFlag(unsigned int i) throw(Exception);
 
    /// @return the earliest time (full, including toffset) in this SatPass data
    Epoch getFirstTime(void) const throw();
