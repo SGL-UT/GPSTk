@@ -23,6 +23,7 @@ include /usr/share/dpkg/default.mk
 	dh $@ --parallel --with python2
 
 override_dh_auto_configure:
+	debian/check_versions_match.sh
 	dh_auto_configure -- \
 	 -DBUILD_EXT=ON \
 	 -DBUILD_PYTHON=ON \
