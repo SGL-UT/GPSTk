@@ -276,7 +276,12 @@ void ROWDiff::process()
                secondObsItr++;
             }
                // Only file 1 has data for that satellite
-            else if ((firstObsItr != firstDiffItr->obs.end()) && (firstObsItr->first.id < secondObsItr->first.id))
+            else if (
+               (firstObsItr != firstDiffItr->obs.end()) &&
+               (
+                  (secondObsItr == secondDiffItr->obs.end()) ||
+                  (firstObsItr->first.id < secondObsItr->first.id))
+               )
             {
                string sysString = string(1,firstObsItr->first.systemChar());
                cout << "<" << setw(3) << (static_cast<YDSTime>(firstDiffItr->time))
