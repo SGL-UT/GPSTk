@@ -68,9 +68,6 @@ build_core:
     - cd build
     - cmake -DPYTHON_INSTALL_PREFIX=$HOME/.local -DCMAKE_INSTALL_PREFIX=$HOME/.local/gpstk -DBUILD_EXT=OFF -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
     - make -j8
-  artifacts:
-    paths:
-    - build/
 
 # test_debian:
 #   stage: test
@@ -98,6 +95,7 @@ test_osx:
   tags:
     - osx
   script:
+    - cd build
     - ctest
   dependencies:
     - build_core
@@ -114,9 +112,8 @@ test_core:
   tags:
     - core
   script:
+    - cd build
     - ctest
-  dependencies:
-    - build_core
 
 # deploy_debian:
 #   stage: deploy
@@ -144,6 +141,7 @@ deploy_osx:
   tags:
     - osx
   script:
+    - cd build
     - make install
   dependencies:
     - build_core
@@ -158,11 +156,10 @@ deploy_osx:
 deploy_core:
   stage: deploy
   tags:
+    - cd build
     - core
   script:
     - make install
-  dependencies:
-    - build_core
 
 # package_debian:
 #   stage: package
@@ -190,6 +187,7 @@ package_osx:
   tags:
     - osx
   script:
+    - cd build
     - make package
   dependencies:
     - build_core
@@ -204,8 +202,7 @@ package_osx:
 package_core:
   stage: package
   tags:
+    - cd build
     - core
   script:
     - make package
-  dependencies:
-    - build_core
