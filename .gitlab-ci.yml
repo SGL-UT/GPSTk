@@ -64,7 +64,7 @@ build_core:
     - mkdir build
     - cd build
     - cmake -DPYTHON_INSTALL_PREFIX=$HOME/.local -DCMAKE_INSTALL_PREFIX=$HOME/.local/gpstk -DBUILD_EXT=OFF -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
-    - make -j4
+    - make -j8
   artifacts:
     paths:
     - build/
