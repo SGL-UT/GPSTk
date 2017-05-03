@@ -45,6 +45,9 @@ build_osx:
     - cd build
     - cmake -DPYTHON_INSTALL_PREFIX=$HOME/.local -DCMAKE_INSTALL_PREFIX=$HOME/.local/gpstk -DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
     - make
+  artifacts:
+    paths:
+    - build/
 
 # build_windows:
 #   stage: build
@@ -96,6 +99,8 @@ test_osx:
     - osx
   script:
     - ctest
+  dependencies:
+    - build_core
 
 # test_windows:
 #   stage: test
@@ -140,6 +145,8 @@ deploy_osx:
     - osx
   script:
     - make install
+  dependencies:
+    - build_core
 
 # deploy_windows:
 #   stage: deploy
@@ -184,6 +191,8 @@ package_osx:
     - osx
   script:
     - make package
+  dependencies:
+    - build_core
 
 # package_windows:
 #   stage: package
