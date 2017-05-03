@@ -36,15 +36,15 @@ stages:
 #     - cmake -DPYTHON_INSTALL_PREFIX=$HOME/.local -DCMAKE_INSTALL_PREFIX=$HOME/.local/gpstk -DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
 #     - make
 
-# build_osx:
-#   stage: build
-#   tags:
-#     - osx
-#   script:
-#     - mkdir build
-#     - cd build
-#     - cmake -DPYTHON_INSTALL_PREFIX=$HOME/.local -DCMAKE_INSTALL_PREFIX=$HOME/.local/gpstk -DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
-#     - make
+build_osx:
+  stage: build
+  tags:
+    - osx
+  script:
+    - mkdir build
+    - cd build
+    - cmake -DPYTHON_INSTALL_PREFIX=$HOME/.local -DCMAKE_INSTALL_PREFIX=$HOME/.local/gpstk -DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
+    - make
 
 # build_windows:
 #   stage: build
@@ -90,12 +90,12 @@ build_core:
 #   script:
 #     - ctest
 
-# test_osx:
-#   stage: test
-#   tags:
-#     - osx
-#   script:
-#     - ctest
+test_osx:
+  stage: test
+  tags:
+    - osx
+  script:
+    - ctest
 
 # test_windows:
 #   stage: test
@@ -134,12 +134,12 @@ test_core:
 #   script:
 #     - make install
 
-# deploy_osx:
-#   stage: deploy
-#   tags:
-#     - osx
-#   script:
-#     - make install
+deploy_osx:
+  stage: deploy
+  tags:
+    - osx
+  script:
+    - make install
 
 # deploy_windows:
 #   stage: deploy
@@ -178,12 +178,12 @@ deploy_core:
 #   script:
 #     - make package
 
-# package_osx:
-#   stage: package
-#   tags:
-#     - osx
-#   script:
-#     - make package
+package_osx:
+  stage: package
+  tags:
+    - osx
+  script:
+    - make package
 
 # package_windows:
 #   stage: package
