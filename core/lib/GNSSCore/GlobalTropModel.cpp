@@ -504,7 +504,7 @@ namespace gpstk
 
    // Compute the pressure and temperature at height, and the undulation,
    // for the given position and time.
-   double GlobalTropModel::getGPT(double& P, double& T, double& U)
+   void GlobalTropModel::getGPT(double& P, double& T, double& U)
       throw(InvalidTropModel)
    {
       try { testValidity(); }
