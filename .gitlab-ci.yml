@@ -98,7 +98,7 @@ test_osx:
     - cd build
     - ctest
   dependencies:
-    - build_core
+    - build_osx
 
 # test_windows:
 #   stage: test
@@ -112,6 +112,8 @@ test_core:
   tags:
     - core
   script:
+    - pwd
+    - ls
     - cd build
     - ctest
 
@@ -144,7 +146,7 @@ deploy_osx:
     - cd build
     - make install
   dependencies:
-    - build_core
+    - build_osx
 
 # deploy_windows:
 #   stage: deploy
@@ -190,7 +192,7 @@ package_osx:
     - cd build
     - make package
   dependencies:
-    - build_core
+    - build_osx
 
 # package_windows:
 #   stage: package
