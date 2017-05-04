@@ -6,15 +6,18 @@ stages:
 - deploy
 - package
 
-# build_debian:
-#   stage: build
-#   tags:
-#     - debian
-#   script:
-#     - mkdir build
-#     - cd build
-#     - cmake -DPYTHON_INSTALL_PREFIX=$HOME/.local -DCMAKE_INSTALL_PREFIX=$HOME/.local/gpstk -DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
-#     - make
+build_debian:
+  stage: build
+  tags:
+    - debian
+  script:
+    - mkdir build
+    - cd build
+    - cmake -DPYTHON_INSTALL_PREFIX=$HOME/.local -DCMAKE_INSTALL_PREFIX=$HOME/.local/gpstk -DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
+    - make
+  artifacts:
+    paths:
+    - build/
 
 build_solaris:
   stage: build
@@ -23,15 +26,18 @@ build_solaris:
   script:
    - ./build.sh -evx
 
-# build_redhat:
-#   stage: build
-#   tags:
-#     - redhat
-#   script:
-#     - mkdir build
-#     - cd build
-#     - cmake -DPYTHON_INSTALL_PREFIX=$HOME/.local -DCMAKE_INSTALL_PREFIX=$HOME/.local/gpstk -DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
-#     - make
+build_redhat:
+  stage: build
+  tags:
+    - redhat
+  script:
+    - mkdir build
+    - cd build
+    - cmake -DPYTHON_INSTALL_PREFIX=$HOME/.local -DCMAKE_INSTALL_PREFIX=$HOME/.local/gpstk -DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
+    - make
+  artifacts:
+    paths:
+    - build/
 
 build_osx:
   stage: build
@@ -72,12 +78,16 @@ build_core:
     paths:
     - build/
 
-# test_debian:
-#   stage: test
-#   tags:
-#     - debian
-#   script:
-#     - ctest
+test_debian:
+  stage: test
+  tags:
+    - debian
+  script:
+    - cd build
+    - ctest
+  dependencies:
+    - build_debian
+  allow_failure: true
 
 test_solaris:
   stage: test
@@ -86,12 +96,16 @@ test_solaris:
   script:
     - ./build.sh -evxt
 
-# test_redhat:
-#   stage: test
-#   tags:
-#     - redhat
-#   script:
-#     - ctest
+test_redhat:
+  stage: test
+  tags:
+    - redhat
+  script:
+    - cd build
+    - ctest
+  dependencies:
+    - build_redhat
+  allow_failure: true
 
 test_osx:
   stage: test
@@ -125,12 +139,16 @@ test_core:
     - build_core
   allow_failure: true
 
-# deploy_debian:
-#   stage: deploy
-#   tags:
-#     - debian
-#   script:
-#     - make install
+deploy_debian:
+  stage: deploy
+  tags:
+    - debian
+  script:
+    - cd build
+    - make install
+  dependencies:
+    - build_debian
+  allow_failure: true
 
 # deploy_solaris:
 #   stage: deploy
@@ -139,12 +157,16 @@ test_core:
 #   script:
 #     - make install
 
-# deploy_redhat:
-#   stage: deploy
-#   tags:
-#     - redhat
-#   script:
-#     - make install
+deploy_redhat:
+  stage: deploy
+  tags:
+    - redhat
+  script:
+    - cd build
+    - make install
+  dependencies:
+    - build_redhat
+  allow_failure: true
 
 deploy_osx:
   stage: deploy
@@ -177,12 +199,16 @@ deploy_core:
     - build_core
   allow_failure: true
 
-# package_debian:
-#   stage: package
-#   tags:
-#     - debian
-#   script:
-#     - make package
+package_debian:
+  stage: package
+  tags:
+    - debian
+  script:
+    - cd build
+    - make package
+  dependencies:
+    - build_debian
+  allow_failure: true
 
 # package_solaris:
 #   stage: package
@@ -191,12 +217,16 @@ deploy_core:
 #   script:
 #     - make package
 
-# package_redhat:
-#   stage: package
-#   tags:
-#     - redhat
-#   script:
-#     - make package
+package_redhat:
+  stage: package
+  tags:
+    - redhat
+  script:
+    - cd build
+    - make package
+  dependencies:
+    - build_redhat
+  allow_failure: true
 
 package_osx:
   stage: package
