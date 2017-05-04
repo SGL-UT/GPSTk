@@ -16,15 +16,12 @@ stages:
 #     - cmake -DPYTHON_INSTALL_PREFIX=$HOME/.local -DCMAKE_INSTALL_PREFIX=$HOME/.local/gpstk -DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
 #     - make
 
-# build_solaris:
-#   stage: build
-#   tags:
-#     - solaris
-#   script:
-#     - mkdir build
-#     - cd build
-#     - cmake -DPYTHON_INSTALL_PREFIX=$HOME/.local -DCMAKE_INSTALL_PREFIX=$HOME/.local/gpstk -DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
-#     - make
+build_solaris:
+  stage: build
+  tags:
+    - solaris
+  script:
+   - ./build.sh -evx
 
 # build_redhat:
 #   stage: build
@@ -82,12 +79,12 @@ build_core:
 #   script:
 #     - ctest
 
-# test_solaris:
-#   stage: test
-#   tags:
-#     - solaris
-#   script:
-#     - ctest
+test_solaris:
+  stage: test
+  tags:
+    - solaris
+  script:
+    - ./build.sh -evxt
 
 # test_redhat:
 #   stage: test
@@ -122,7 +119,6 @@ test_core:
   tags:
     - core
   script:
-    - pwd
     - cd build
     - ctest
   dependencies:
@@ -173,9 +169,9 @@ deploy_windows:
 deploy_core:
   stage: deploy
   tags:
-    - cd build
     - core
   script:
+    - cd build
     - make install
   dependencies:
     - build_core
@@ -225,9 +221,9 @@ package_windows:
 package_core:
   stage: package
   tags:
-    - cd build
     - core
   script:
+    - cd build
     - make package
   dependencies:
     - build_core
