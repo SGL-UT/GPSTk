@@ -115,6 +115,7 @@ test_windows:
     - cmake --build . --target RUN_TESTS --config Release
   dependencies:
     - build_windows
+  allow_failure: true
 
 # test_core:
 #   stage: test
