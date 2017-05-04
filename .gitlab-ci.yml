@@ -62,18 +62,18 @@ build_windows:
     paths:
     - build/
 
-# build_core:
-#   stage: build
-#   tags:
-#     - core
-#   script:
-#     - mkdir build
-#     - cd build
-#     - cmake -DPYTHON_INSTALL_PREFIX=$HOME/.local -DCMAKE_INSTALL_PREFIX=$HOME/.local/gpstk -DBUILD_EXT=OFF -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
-#     - make -j8
-#   cache:
-#     paths:
-#     - build/
+build_core:
+  stage: build
+  tags:
+    - core
+  script:
+    - mkdir build
+    - cd build
+    - cmake -DPYTHON_INSTALL_PREFIX=$HOME/.local -DCMAKE_INSTALL_PREFIX=$HOME/.local/gpstk -DBUILD_EXT=OFF -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
+    - make -j8
+  artifacts:
+    paths:
+    - build/
 
 # test_debian:
 #   stage: test
@@ -117,17 +117,17 @@ test_windows:
     - build_windows
   allow_failure: true
 
-# test_core:
-#   stage: test
-#   tags:
-#     - core
-#   script:
-#     - pwd
-#     - cd build
-#     - ctest
-#   cache:
-#     paths:
-#     - build/
+test_core:
+  stage: test
+  tags:
+    - core
+  script:
+    - pwd
+    - cd build
+    - ctest
+  dependencies:
+    - build_core
+  allow_failure: true
 
 # deploy_debian:
 #   stage: deploy
@@ -170,16 +170,16 @@ deploy_windows:
   dependencies:
     - build_windows
 
-# deploy_core:
-#   stage: deploy
-#   tags:
-#     - cd build
-#     - core
-#   script:
-#     - make install
-#   cache:
-#     paths:
-#     - build/
+deploy_core:
+  stage: deploy
+  tags:
+    - cd build
+    - core
+  script:
+    - make install
+  dependencies:
+    - build_core
+  allow_failure: true
 
 # package_debian:
 #   stage: package
@@ -222,13 +222,13 @@ package_windows:
   dependencies:
     - build_windows
 
-# package_core:
-#   stage: package
-#   tags:
-#     - cd build
-#     - core
-#   script:
-#     - make package
-#   cache:
-#     paths:
-#     - build/
+package_core:
+  stage: package
+  tags:
+    - cd build
+    - core
+  script:
+    - make package
+  dependencies:
+    - build_core
+  allow_failure: true
