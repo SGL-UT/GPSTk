@@ -1,0 +1,6 @@
+usr/include/gpstk/*.h
+usr/include/gpstk/*.hpp
+usr/lib/lib*.so
+usr/share/cmake/GPSTK/*
+#usr/lib/pkgconfig/*
+#usr/share/pkgconfig/*
