@@ -59,18 +59,18 @@ build_osx:
 #     - cmake -DPYTHON_INSTALL_PREFIX=$HOME/.local -DCMAKE_INSTALL_PREFIX=$HOME/.local/gpstk -DBUILD_EXT=ON -DBUILD_PYTHON=OFF -DTEST_SWITCH=ON -G "Visual Studio 14 2015 Win64" ../
 #     - cmake --build . --config Release
 
-build_core:
-  stage: build
-  tags:
-    - core
-  script:
-    - mkdir build
-    - cd build
-    - cmake -DPYTHON_INSTALL_PREFIX=$HOME/.local -DCMAKE_INSTALL_PREFIX=$HOME/.local/gpstk -DBUILD_EXT=OFF -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
-    - make -j8
-  cache:
-    paths:
-    - build/
+# build_core:
+#   stage: build
+#   tags:
+#     - core
+#   script:
+#     - mkdir build
+#     - cd build
+#     - cmake -DPYTHON_INSTALL_PREFIX=$HOME/.local -DCMAKE_INSTALL_PREFIX=$HOME/.local/gpstk -DBUILD_EXT=OFF -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
+#     - make -j8
+#   cache:
+#     paths:
+#     - build/
 
 # test_debian:
 #   stage: test
@@ -110,17 +110,17 @@ test_osx:
 #   script:
 #     - ctest
 
-test_core:
-  stage: test
-  tags:
-    - core
-  script:
-    - pwd
-    - cd build
-    - ctest
-  cache:
-    paths:
-    - build/
+# test_core:
+#   stage: test
+#   tags:
+#     - core
+#   script:
+#     - pwd
+#     - cd build
+#     - ctest
+#   cache:
+#     paths:
+#     - build/
 
 # deploy_debian:
 #   stage: deploy
@@ -160,16 +160,16 @@ deploy_osx:
 #   script:
 #     - make install
 
-deploy_core:
-  stage: deploy
-  tags:
-    - cd build
-    - core
-  script:
-    - make install
-  cache:
-    paths:
-    - build/
+# deploy_core:
+#   stage: deploy
+#   tags:
+#     - cd build
+#     - core
+#   script:
+#     - make install
+#   cache:
+#     paths:
+#     - build/
 
 # package_debian:
 #   stage: package
@@ -209,13 +209,13 @@ package_osx:
 #   script:
 #     - make package
 
-package_core:
-  stage: package
-  tags:
-    - cd build
-    - core
-  script:
-    - make package
-  cache:
-    paths:
-    - build/
+# package_core:
+#   stage: package
+#   tags:
+#     - cd build
+#     - core
+#   script:
+#     - make package
+#   cache:
+#     paths:
+#     - build/
