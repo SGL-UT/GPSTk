@@ -49,15 +49,18 @@ build_osx:
     paths:
     - build/
 
-# build_windows:
-#   stage: build
-#   tags:
-#     - windows
-#   script:
-#     - mkdir build
-#     - cd build
-#     - cmake -DPYTHON_INSTALL_PREFIX=$HOME/.local -DCMAKE_INSTALL_PREFIX=$HOME/.local/gpstk -DBUILD_EXT=ON -DBUILD_PYTHON=OFF -DTEST_SWITCH=ON -G "Visual Studio 14 2015 Win64" ../
-#     - cmake --build . --config Release
+build_windows:
+  stage: build
+  tags:
+    - windows
+  script:
+    - mkdir build
+    - cd build
+    - cmake -DCMAKE_INSTALL_PREFIX=install -DBUILD_EXT=ON -DBUILD_PYTHON=OFF -DTEST_SWITCH=ON -G "Visual Studio 14 2015 Win64" ../
+    - cmake --build . --config Release
+  artifacts:
+    paths:
+    - build/
 
 # build_core:
 #   stage: build
@@ -103,12 +106,15 @@ test_osx:
   dependencies:
     - build_osx
 
-# test_windows:
-#   stage: test
-#   tags:
-#     - windows
-#   script:
-#     - ctest
+test_windows:
+  stage: test
+  tags:
+    - windows
+  script:
+    - cd build
+    - cmake --build . --target RUN_TESTS --config Release
+  dependencies:
+    - build_windows
 
 # test_core:
 #   stage: test
@@ -153,12 +159,15 @@ deploy_osx:
   dependencies:
     - build_osx
 
-# deploy_windows:
-#   stage: deploy
-#   tags:
-#     - windows
-#   script:
-#     - make install
+deploy_windows:
+  stage: deploy
+  tags:
+    - windows
+  script:
+    - cd build
+    - cmake --build . --config Release --target install
+  dependencies:
+    - build_windows
 
 # deploy_core:
 #   stage: deploy
@@ -202,12 +211,15 @@ package_osx:
   dependencies:
     - build_osx
 
-# package_windows:
-#   stage: package
-#   tags:
-#     - windows
-#   script:
-#     - make package
+package_windows:
+  stage: package
+  tags:
+    - windows
+  script:
+    - cd build
+    - cpack -C Release
+  dependencies:
+    - build_windows
 
 # package_core:
 #   stage: package
