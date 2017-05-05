@@ -87,7 +87,6 @@ test_debian:
     - ctest
   dependencies:
     - build_debian
-  allow_failure: true
 
 test_solaris:
   stage: test
@@ -105,7 +104,6 @@ test_redhat:
     - ctest
   dependencies:
     - build_redhat
-  allow_failure: true
 
 test_osx:
   stage: test
@@ -137,7 +135,6 @@ test_core:
     - ctest
   dependencies:
     - build_core
-  allow_failure: true
 
 deploy_debian:
   stage: deploy
@@ -148,7 +145,6 @@ deploy_debian:
     - make install
   dependencies:
     - build_debian
-  allow_failure: true
 
 # deploy_solaris:
 #   stage: deploy
@@ -166,7 +162,6 @@ deploy_redhat:
     - make install
   dependencies:
     - build_redhat
-  allow_failure: true
 
 deploy_osx:
   stage: deploy
@@ -197,7 +192,6 @@ deploy_core:
     - make install
   dependencies:
     - build_core
-  allow_failure: true
 
 package_debian:
   stage: package
@@ -208,7 +202,6 @@ package_debian:
     - make package
   dependencies:
     - build_debian
-  allow_failure: true
 
 # package_solaris:
 #   stage: package
@@ -226,7 +219,6 @@ package_redhat:
     - make package
   dependencies:
     - build_redhat
-  allow_failure: true
 
 package_osx:
   stage: package
@@ -257,4 +249,3 @@ package_core:
     - make package
   dependencies:
     - build_core
-  allow_failure: true
