@@ -146,13 +146,6 @@ deploy_debian:
   dependencies:
     - build_debian
 
-# deploy_solaris:
-#   stage: deploy
-#   tags:
-#     - solaris
-#   script:
-#     - make install
-
 deploy_redhat:
   stage: deploy
   tags:
@@ -202,13 +195,6 @@ package_debian:
     - make package
   dependencies:
     - build_debian
-
-# package_solaris:
-#   stage: package
-#   tags:
-#     - solaris
-#   script:
-#     - make package
 
 package_redhat:
   stage: package
