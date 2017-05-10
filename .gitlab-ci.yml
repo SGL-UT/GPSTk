@@ -7,7 +7,7 @@ stages:
 - package
 
 variables:
-  CMAKE_ARG_DEFAULT: "-DPYTHON_INSTALL_PREFIX=$HOME/.local -DCMAKE_INSTALL_PREFIX=$HOME/.local/gpstk -DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../"
+  CMAKE_ARG_DEFAULT: "-DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../"
 
 build_debian:
   stage: build
@@ -16,8 +16,8 @@ build_debian:
   script:
     - mkdir build
     - cd build
-    - cmake $CMAKE_ARG_DEFAULT
-    - make
+    - cmake -DPYTHON_INSTALL_PREFIX=$HOME/.local -DCMAKE_INSTALL_PREFIX=$HOME/.local/gpstk $CMAKE_ARG_DEFAULT 
+    - make all -j 54
   artifacts:
     paths:
     - build/
@@ -36,8 +36,8 @@ build_redhat:
   script:
     - mkdir build
     - cd build
-    - cmake $CMAKE_ARG_DEFAULT
-    - make
+    - cmake -DPYTHON_INSTALL_PREFIX=$HOME/.local -DCMAKE_INSTALL_PREFIX=$HOME/.local/gpstk $CMAKE_ARG_DEFAULT
+    - make all -j 4
   artifacts:
     paths:
     - build/
@@ -49,8 +49,8 @@ build_osx:
   script:
     - mkdir build
     - cd build
-    - cmake $CMAKE_ARG_DEFAULT
-    - make
+    - cmake -DPYTHON_INSTALL_PREFIX=$HOME/.local -DCMAKE_INSTALL_PREFIX=$HOME/.local/gpstk $CMAKE_ARG_DEFAULT
+    - make all -j 4
   artifacts:
     paths:
     - build/
@@ -76,7 +76,7 @@ build_core:
     - mkdir build
     - cd build
     - cmake -DPYTHON_INSTALL_PREFIX=$HOME/.local -DCMAKE_INSTALL_PREFIX=$HOME/.local/gpstk -DBUILD_EXT=OFF -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
-    - make -j8
+    - make all -j 54
   artifacts:
     paths:
     - build/
@@ -87,7 +87,7 @@ test_debian:
     - debian
   script:
     - cd build
-    - ctest
+    - ctest -j 54
   dependencies:
     - build_debian
 
@@ -104,7 +104,7 @@ test_redhat:
     - redhat
   script:
     - cd build
-    - ctest
+    - ctest -j 4
   dependencies:
     - build_redhat
 
@@ -114,7 +114,7 @@ test_osx:
     - osx
   script:
     - cd build
-    - ctest
+    - ctest -j 4
   dependencies:
     - build_osx
 
@@ -135,7 +135,7 @@ test_core:
     - core
   script:
     - cd build
-    - ctest
+    - ctest -j 54
   dependencies:
     - build_core
 
@@ -145,7 +145,7 @@ deploy_debian:
     - debian
   script:
     - cd build
-    - make install
+    - make install -j 54
   dependencies:
     - build_debian
 
@@ -155,7 +155,7 @@ deploy_redhat:
     - redhat
   script:
     - cd build
-    - make install
+    - make install -j 4
   dependencies:
     - build_redhat
 
@@ -165,7 +165,7 @@ deploy_osx:
     - osx
   script:
     - cd build
-    - make install
+    - make install -j 4
   dependencies:
     - build_osx
 
@@ -185,7 +185,7 @@ deploy_core:
     - core
   script:
     - cd build
-    - make install
+    - make install -j 54
   dependencies:
     - build_core
 
@@ -195,7 +195,7 @@ package_debian:
     - debian
   script:
     - cd build
-    - make package
+    - make package -j 54
   dependencies:
     - build_debian
 
@@ -205,7 +205,7 @@ package_redhat:
     - redhat
   script:
     - cd build
-    - make package
+    - make package -j 4
   dependencies:
     - build_redhat
 
@@ -215,7 +215,7 @@ package_osx:
     - osx
   script:
     - cd build
-    - make package
+    - make package -j 4
   dependencies:
     - build_osx
 
@@ -235,6 +235,6 @@ package_core:
     - core
   script:
     - cd build
-    - make package
+    - make package -j 54
   dependencies:
     - build_core
