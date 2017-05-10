@@ -16,7 +16,7 @@ build_debian:
   script:
     - mkdir build
     - cd build
-    - cmake CMAKE_ARG_DEFAULT
+    - cmake $CMAKE_ARG_DEFAULT
     - make
   artifacts:
     paths:
@@ -36,7 +36,7 @@ build_redhat:
   script:
     - mkdir build
     - cd build
-    - cmake CMAKE_ARG_DEFAULT
+    - cmake $CMAKE_ARG_DEFAULT
     - make
   artifacts:
     paths:
@@ -49,7 +49,7 @@ build_osx:
   script:
     - mkdir build
     - cd build
-    - cmake CMAKE_ARG_DEFAULT
+    - cmake $CMAKE_ARG_DEFAULT
     - make
   artifacts:
     paths:
