@@ -6,6 +6,9 @@ stages:
 - deploy
 - package
 
+variables:
+  CMAKE_ARG_DEFAULT: "-DPYTHON_INSTALL_PREFIX=$HOME/.local -DCMAKE_INSTALL_PREFIX=$HOME/.local/gpstk -DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../"
+
 build_debian:
   stage: build
   tags:
@@ -13,7 +16,7 @@ build_debian:
   script:
     - mkdir build
     - cd build
-    - cmake -DPYTHON_INSTALL_PREFIX=$HOME/.local -DCMAKE_INSTALL_PREFIX=$HOME/.local/gpstk -DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
+    - cmake CMAKE_ARG_DEFAULT
     - make
   artifacts:
     paths:
@@ -33,7 +36,7 @@ build_redhat:
   script:
     - mkdir build
     - cd build
-    - cmake -DPYTHON_INSTALL_PREFIX=$HOME/.local -DCMAKE_INSTALL_PREFIX=$HOME/.local/gpstk -DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
+    - cmake CMAKE_ARG_DEFAULT
     - make
   artifacts:
     paths:
@@ -46,7 +49,7 @@ build_osx:
   script:
     - mkdir build
     - cd build
-    - cmake -DPYTHON_INSTALL_PREFIX=$HOME/.local -DCMAKE_INSTALL_PREFIX=$HOME/.local/gpstk -DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
+    - cmake CMAKE_ARG_DEFAULT
     - make
   artifacts:
     paths:
