@@ -672,7 +672,7 @@ namespace gpstk
       gpse.accuracyFlag = accuracy;
       gpse.Tgd = Tgd;
 
-      gpse.HOWtime = HOWtime;
+      gpse.HOWtime = adjHOWtime;
       week = static_cast<GPSWeekSecond>(gpse.ctToe).getWeek();
       
       gpse.transmitTime = GPSWeekSecond(adjWeeknum, static_cast<double>(adjHOWtime),

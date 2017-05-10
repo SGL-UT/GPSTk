@@ -49,6 +49,7 @@
 
 // GPS CNAV OrbDataSys derived classes
 #include "OrbSysGpsC_30.hpp"
+#include "OrbSysGpsC_32.hpp"
 #include "OrbSysGpsC_33.hpp"
 
 using namespace std;
@@ -204,6 +205,11 @@ namespace gpstk
             case 30:
             {
                retVal = new OrbSysGpsC_30(pnb);
+               break;
+            }
+            case 32:
+            {
+               retVal = new OrbSysGpsC_32(pnb);
                break;
             }
             case 33:

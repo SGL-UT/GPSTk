@@ -248,7 +248,13 @@ if [ $test_switch ]; then
 fi
 
 if [ $install ]; then
-    run make install -j $num_threads
+    case `uname` in
+    MINGW32_NT-6.1)
+        run cmake --build . --config Release --target install
+        ;;
+    *)
+        run make install -j $num_threads
+    esac  
 fi
 
 if [ $build_docs ]; then
