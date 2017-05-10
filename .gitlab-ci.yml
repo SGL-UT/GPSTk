@@ -5,6 +5,7 @@ stages:
 - test
 - deploy
 - package
+- downstream
 
 variables:
   CMAKE_ARG_DEFAULT: "-DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../"
@@ -238,3 +239,15 @@ package_core:
     - make package -j 54
   dependencies:
     - build_core
+
+downstream_sgltk:
+  stage: downstream
+  tags:
+    - debian
+  script:
+    - cd build
+    - git clone gitlab@repositories.arlut.utexas.edu:sgl/sgltk.git
+    - cd sgltk
+    - ./build.sh -cvt -g $HOME/.local/gpstk
+  dependencies:
+    - build_debian
