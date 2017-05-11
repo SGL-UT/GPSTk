@@ -7,7 +7,7 @@ files
 *.log
 gpstk-bin.substvars
 libgpstk-dev.substvars
-libgpstk2.9.substvars
+libgpstk*.substvars
 python-gpstk.substvars
 *.postinst.debhelper
 *.prerm.debhelper
