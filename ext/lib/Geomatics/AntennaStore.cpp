@@ -189,6 +189,7 @@ namespace gpstk
             CommonTime time1,time2;
 
             // test for validity within a few days of time
+            time.setTimeSystem(TimeSystem::Any);
             time1 = time2 = time;
             if(time > CommonTime::BEGINNING_OF_TIME) {
                time1 += double(2 * 86400);
@@ -419,4 +420,6 @@ namespace gpstk
          }
          s << "End of dump of AntennaStore\n";
       }
-}
+
+}  // end namespace
+
