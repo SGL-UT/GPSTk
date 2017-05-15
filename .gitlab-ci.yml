@@ -7,9 +7,11 @@ stages:
 - package
 - downstream
 
+#Default cmake arguments
 variables:
   CMAKE_ARG_DEFAULT: "-DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../"
 
+#Build Stage
 build_debian:
   stage: build
   tags:
@@ -82,6 +84,7 @@ build_core:
     paths:
     - build/
 
+#Test Stage
 test_debian:
   stage: test
   tags:
@@ -140,6 +143,7 @@ test_core:
   dependencies:
     - build_core
 
+#Deploy Stage
 deploy_debian:
   stage: deploy
   tags:
@@ -190,6 +194,7 @@ deploy_core:
   dependencies:
     - build_core
 
+#Package Stage
 package_debian:
   stage: package
   tags:
@@ -240,6 +245,7 @@ package_core:
   dependencies:
     - build_core
 
+#Downstream Stage
 downstream_sgltk:
   stage: downstream
   tags:
