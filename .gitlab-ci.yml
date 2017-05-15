@@ -12,6 +12,7 @@ variables:
   CMAKE_ARG_DEFAULT: "-DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../"
 
 #Build Stage
+#Builds GPSTk for each platform, saves build artifacts for future stages
 build_debian:
   stage: build
   tags:
@@ -85,6 +86,7 @@ build_core:
     - build/
 
 #Test Stage
+#Runs all tests of GPSTK for each platform
 test_debian:
   stage: test
   tags:
@@ -144,6 +146,7 @@ test_core:
     - build_core
 
 #Deploy Stage
+#Tests install of GPSTk on each platform
 deploy_debian:
   stage: deploy
   tags:
@@ -195,6 +198,7 @@ deploy_core:
     - build_core
 
 #Package Stage
+#Tests packaging of GPSTk on all platforms
 package_debian:
   stage: package
   tags:
@@ -246,6 +250,7 @@ package_core:
     - build_core
 
 #Downstream Stage
+#Builds SGLTk to test for any downstream issues.
 downstream_sgltk:
   stage: downstream
   tags:
