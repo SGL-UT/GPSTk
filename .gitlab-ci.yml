@@ -20,7 +20,7 @@ build_debian:
   script:
     - mkdir build
     - cd build
-    - cmake -DPYTHON_INSTALL_PREFIX=$HOME/.local -DCMAKE_INSTALL_PREFIX=$HOME/.local/gpstk $CMAKE_ARG_DEFAULT 
+    - cmake -DPYTHON_INSTALL_PREFIX=$CI_PROJECT_DIR/install -DCMAKE_INSTALL_PREFIX=$CI_PROJECT_DIR/install/gpstk $CMAKE_ARG_DEFAULT 
     - make all -j 54
   artifacts:
     paths:
