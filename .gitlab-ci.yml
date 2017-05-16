@@ -40,7 +40,7 @@ build_redhat:
   script:
     - mkdir build
     - cd build
-    - cmake -DPYTHON_INSTALL_PREFIX=$HOME/.local -DCMAKE_INSTALL_PREFIX=$HOME/.local/gpstk $CMAKE_ARG_DEFAULT
+    - cmake -DPYTHON_INSTALL_PREFIX=install -DCMAKE_INSTALL_PREFIX=install/gpstk $CMAKE_ARG_DEFAULT
     - make all -j 4
   artifacts:
     paths:
@@ -259,6 +259,6 @@ downstream_sgltk:
     - cd build
     - git clone gitlab@repositories.arlut.utexas.edu:sgl/sgltk.git
     - cd sgltk
-    - ./build.sh -cvt -g $HOME/.local/gpstk
+    - ./build.sh -cvt -g $CI_PROJECT_DIR/install/gpstk
   dependencies:
     - build_debian
