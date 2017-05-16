@@ -154,6 +154,9 @@ deploy_debian:
   script:
     - cd build
     - make install -j 54
+  artifacts:
+    paths:
+    - build/install
   dependencies:
     - build_debian
 
@@ -261,4 +264,4 @@ downstream_sgltk:
     - cd sgltk
     - ./build.sh -cvt -g ../install/gpstk
   dependencies:
-    - build_debian
+    - deploy_debian
