@@ -20,7 +20,7 @@ build_debian:
   script:
     - mkdir build
     - cd build
-    - cmake -DPYTHON_INSTALL_PREFIX=$CI_PROJECT_DIR/install -DCMAKE_INSTALL_PREFIX=$CI_PROJECT_DIR/install/gpstk $CMAKE_ARG_DEFAULT 
+    - cmake -DPYTHON_INSTALL_PREFIX=install -DCMAKE_INSTALL_PREFIX=install/gpstk $CMAKE_ARG_DEFAULT 
     - make all -j 54
   artifacts:
     paths:
@@ -53,7 +53,7 @@ build_osx:
   script:
     - mkdir build
     - cd build
-    - cmake -DPYTHON_INSTALL_PREFIX=$HOME/.local -DCMAKE_INSTALL_PREFIX=$HOME/.local/gpstk $CMAKE_ARG_DEFAULT
+    - cmake -DPYTHON_INSTALL_PREFIX=install -DCMAKE_INSTALL_PREFIX=install/gpstk $CMAKE_ARG_DEFAULT
     - make all -j 4
   artifacts:
     paths:
@@ -79,7 +79,7 @@ build_core:
   script:
     - mkdir build
     - cd build
-    - cmake -DPYTHON_INSTALL_PREFIX=$HOME/.local -DCMAKE_INSTALL_PREFIX=$HOME/.local/gpstk -DBUILD_EXT=OFF -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
+    - cmake -DPYTHON_INSTALL_PREFIX=install -DCMAKE_INSTALL_PREFIX=install/gpstk -DBUILD_EXT=OFF -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
     - make all -j 54
   artifacts:
     paths:
@@ -259,6 +259,6 @@ downstream_sgltk:
     - cd build
     - git clone gitlab@repositories.arlut.utexas.edu:sgl/sgltk.git
     - cd sgltk
-    - ./build.sh -cvt -g $CI_PROJECT_DIR/install/gpstk
+    - ./build.sh -cvt -g ../install/gpstk
   dependencies:
     - build_debian
