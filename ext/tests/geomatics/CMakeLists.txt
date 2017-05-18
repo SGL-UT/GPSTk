@@ -36,6 +36,7 @@ add_test(NAME DDBase_CmdOpt_f_missing
          -DTEST_PROG=$<TARGET_FILE:DDBase>
          -DARGS="-f missingFile"
          -P ${CMAKE_SOURCE_DIR}/core/tests/testfailexp.cmake)
+set_property(TEST DDBase_CmdOpt_f_missing PROPERTY LABELS DDBase)
 
 # Present but invalid options file
 add_test(NAME DDBase_CmdOpt_f_invalid
@@ -43,6 +44,7 @@ add_test(NAME DDBase_CmdOpt_f_invalid
          -DTEST_PROG=$<TARGET_FILE:DDBase>
          -DARGS="-f ${GPSTK_TEST_DATA_DIR}/test_input_ddbase.sp3"
          -P ${CMAKE_SOURCE_DIR}/core/tests/testfailexp.cmake)
+set_property(TEST DDBase_CmdOpt_f_invalid PROPERTY LABELS DDBase)
 
 # Valid options file - includes valid --ObsFile, --NavFile, --DT, --BeginTime,
 # --EndTime, --EOPFile, --PosXYZ, --Fix, --PosPRS, and --BaseOut
@@ -53,6 +55,7 @@ add_test(NAME DDBase_CmdOpt_f_valid
          -DNODIFF=TRUE
          -DARGS=-f${GPSTK_TEST_DATA_DIR}/test_input_ddbase.opt_ok\ --ObsPath\ ${GPSTK_TEST_DATA_DIR}\ --NavPath\ ${GPSTK_TEST_DATA_DIR}\ --EOPPath\ ${GPSTK_TEST_DATA_DIR}
          -P ${CMAKE_SOURCE_DIR}/core/tests/testsuccexp.cmake)
+set_property(TEST DDBase_CmdOpt_f_valid PROPERTY LABELS DDBase)
 
 
 ###############################################################################
@@ -67,6 +70,7 @@ add_test(NAME DDBase_CmdOpt_log_valid
          -DNODIFF=TRUE
          -DARGS=-f${GPSTK_TEST_DATA_DIR}/test_input_ddbase.opt_ok\ --ObsPath\ ${GPSTK_TEST_DATA_DIR}\ --NavPath\ ${GPSTK_TEST_DATA_DIR}\ --EOPPath\ ${GPSTK_TEST_DATA_DIR}\ --Log\ ${GPSTK_TEST_OUTPUT_DIR}/test_output_ddbase.log
          -P ${CMAKE_SOURCE_DIR}/core/tests/testsuccexp.cmake)
+set_property(TEST DDBase_CmdOpt_log_valid PROPERTY LABELS DDBase)
 
 # Valid options file plus an invalid log file
 add_test(NAME DDBase_CmdOpt_log_invalid
@@ -76,6 +80,7 @@ add_test(NAME DDBase_CmdOpt_log_invalid
          -DNODIFF=TRUE
          -DARGS=-f${GPSTK_TEST_DATA_DIR}/test_input_ddbase.opt_ok\ --ObsPath\ ${GPSTK_TEST_DATA_DIR}\ --NavPath\ ${GPSTK_TEST_DATA_DIR}\ --EOPPath\ ${GPSTK_TEST_DATA_DIR}\ --Log\ ${GPSTK_TEST_OUTPUT_DIR}/floop/derp/test_output_ddbase.log
          -P ${CMAKE_SOURCE_DIR}/core/tests/testfailexp.cmake)
+set_property(TEST DDBase_CmdOpt_log_invalid PROPERTY LABELS DDBase)
 
 
 ###############################################################################
@@ -90,6 +95,7 @@ add_test(NAME DDBase_CmdOpt_obspath_invalid
          -DNODIFF=TRUE
          -DARGS=-f${GPSTK_TEST_DATA_DIR}/test_input_ddbase.opt_ok\ --ObsPath\ ${GPSTK_TEST_DATA_DIR}/floop/derp\ --NavPath\ ${GPSTK_TEST_DATA_DIR}\ --EOPPath\ ${GPSTK_TEST_DATA_DIR}
          -P ${CMAKE_SOURCE_DIR}/core/tests/testfailexp.cmake)
+set_property(TEST DDBase_CmdOpt_obspath_invalid PROPERTY LABELS DDBase)
 
 
 ###############################################################################
@@ -104,6 +110,7 @@ add_test(NAME DDBase_CmdOpt_obsfile_invalid
          -DNODIFF=TRUE
          -DARGS=-f${GPSTK_TEST_DATA_DIR}/test_input_ddbase.opt_ok\ --ObsPath\ ${GPSTK_TEST_DATA_DIR} --NavPath\ ${GPSTK_TEST_DATA_DIR}\ --EOPPath\ ${GPSTK_TEST_DATA_DIR}\ --ObsFile\ missing_obs_file
          -P ${CMAKE_SOURCE_DIR}/core/tests/testfailexp.cmake)
+set_property(TEST DDBase_CmdOpt_obsfile_invalid PROPERTY LABELS DDBase)
 
 
 ###############################################################################
@@ -118,6 +125,7 @@ add_test(NAME DDBase_CmdOpt_navpath_invalid
          -DNODIFF=TRUE
          -DARGS=-f${GPSTK_TEST_DATA_DIR}/test_input_ddbase.opt_ok\ --ObsPath\ ${GPSTK_TEST_DATA_DIR} --NavPath\ ${GPSTK_TEST_DATA_DIR}/floop/derp\ --EOPPath\ ${GPSTK_TEST_DATA_DIR}\ --ObsFile\ missing_obs_file
          -P ${CMAKE_SOURCE_DIR}/core/tests/testfailexp.cmake)
+set_property(TEST DDBase_CmdOpt_navpath_invalid PROPERTY LABELS DDBase)
 
 
 ###############################################################################
@@ -132,6 +140,7 @@ add_test(NAME DDBase_CmdOpt_navfile_invalid
          -DNODIFF=TRUE
          -DARGS=-f${GPSTK_TEST_DATA_DIR}/test_input_ddbase.opt_ok\ --ObsPath\ ${GPSTK_TEST_DATA_DIR} --NavPath\ ${GPSTK_TEST_DATA_DIR}\ --EOPPath\ ${GPSTK_TEST_DATA_DIR}\ --NavFile\ missing_nav_file
          -P ${CMAKE_SOURCE_DIR}/core/tests/testfailexp.cmake)
+set_property(TEST DDBase_CmdOpt_navfile_invalid PROPERTY LABELS DDBase)
 
 
 ###############################################################################
@@ -146,6 +155,7 @@ add_test(NAME DDBase_CmdOpt_eoppath_invalid
          -DNODIFF=TRUE
          -DARGS=-f${GPSTK_TEST_DATA_DIR}/test_input_ddbase.opt_ok\ --ObsPath\ ${GPSTK_TEST_DATA_DIR} --NavPath\ ${GPSTK_TEST_DATA_DIR}\ --EOPPath\ ${GPSTK_TEST_DATA_DIR}/floop/derp\ --ObsFile\ missing_obs_file
          -P ${CMAKE_SOURCE_DIR}/core/tests/testfailexp.cmake)
+set_property(TEST DDBase_CmdOpt_eoppath_invalid PROPERTY LABELS DDBase)
 
 
 ###############################################################################
@@ -160,6 +170,7 @@ add_test(NAME DDBase_CmdOpt_eopfile_invalid
          -DNODIFF=TRUE
          -DARGS=-f${GPSTK_TEST_DATA_DIR}/test_input_ddbase.opt_ok\ --ObsPath\ ${GPSTK_TEST_DATA_DIR} --NavPath\ ${GPSTK_TEST_DATA_DIR}\ --EOPPath\ ${GPSTK_TEST_DATA_DIR}\ --EOPFile\ missing_eop_file
          -P ${CMAKE_SOURCE_DIR}/core/tests/testfailexp.cmake)
+set_property(TEST DDBase_CmdOpt_eopfile_invalid PROPERTY LABELS DDBase)
 
 # @todo - Valid IERS input file
 
@@ -289,3 +300,6 @@ add_test(NAME EarthOrientation_SOFA
          -DTESTBASE=EarthOrientation_SOFA
          -DDIFF_ARGS=-l1\ -e1.e-12
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+set_property(TEST EarthOrientation_SOFA PROPERTY LABELS Geomatics)
+
+###############################################################################
