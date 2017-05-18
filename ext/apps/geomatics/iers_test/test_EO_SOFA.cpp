@@ -1,4 +1,42 @@
-/// @file test.cpp Test IERS routines
+//============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 3.0 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
+//  
+//  Copyright 2004, The University of Texas at Austin
+//
+//============================================================================
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//=============================================================================
+
+/// @file test_EO_SOFA.cpp Test IERS routines by comparing to output of examsofa.c,
+/// which implements examples from SOFA document "SOFA Tools for Earth Attitude".
+/// SOFA is Standards Of Fundamental Astronomy of the IAU.
+/// cf. Doc at bottom of ext/lib/Geomatics/EarthOrientation.cpp
 
 // system includes
 #include <string>
@@ -7,17 +45,18 @@
 #include "GNSSconstants.hpp"
 #include "Matrix.hpp"
 // geomatics
+#include "EphTime.hpp"
 #include "CommandLine.hpp"
-#include "logstream.hpp"
 #include "SolarSystem.hpp"
 #include "EarthOrientation.hpp"
+#include "logstream.hpp"
 
 using namespace std;
 using namespace gpstk;
 using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
-static const string testVersion("1.0 3/12/12");
+static const string testVersion("1.0 5/19/17");
 
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
@@ -70,15 +109,6 @@ try {
          << setprecision(15) << setw(21) << TT << endl
       << setprecision(1) << "       UT1 " << MJD_TO_JD << " + "
          << setprecision(15) << setw(21) << UT1;
-
-   //TT.convertSystemTo(TimeSystem::TT);       // TT
-   //TAI.convertSystemTo(TimeSystem::TAI);     // TAI
-   //LOG(INFO) << fixed << setprecision(1)
-   //            << "Times: UTC " << MJD_TO_JD << ttag.printf(" + %21.15Q\n")
-   //            << "       TAI " << MJD_TO_JD << ttag.printf(" + %21.15Q\n")
-   //            << "       TT  " << MJD_TO_JD << ttag.printf(" + %21.15Q\n")
-   //            << "       UT1 " << MJD_TO_JD << ttag.printf(" + %21.15Q");
-   //            ;
 
    Matrix<double> M;
 
