@@ -48,7 +48,6 @@
 #include "Vector.hpp"
 #include "Matrix.hpp"
 // geomatics
-#include "SparseMatrix.hpp"
 
 namespace gpstk
 {

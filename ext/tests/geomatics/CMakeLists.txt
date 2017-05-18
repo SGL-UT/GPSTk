@@ -275,3 +275,17 @@ add_test(NAME DDBase_CmdOpt_eopfile_invalid
 ##############################################################################
 # @todo - DiscFix: Check that all other command line options are handled properly
 ###############################################################################
+
+
+###############################################################################
+# Test EarthOrientation against SOFA example code
+###############################################################################
+add_test(NAME EarthOrientation_SOFA
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:test_EO_SOFA>
+         -DDIFF_PROG=$<TARGET_FILE:df_diff>
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTBASE=EarthOrientation_SOFA
+         -DDIFF_ARGS=-l1\ -e1.e-12
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)

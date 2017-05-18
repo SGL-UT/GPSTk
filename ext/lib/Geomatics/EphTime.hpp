@@ -44,7 +44,7 @@
 #include "TimeSystem.hpp"
 #include "Exception.hpp"
 
-// for gpstk, uncomment the next line
+// for non-gpstk, comment out the next line
 #define EphTime_uses_gpstk_CommonTime 1
 #ifdef EphTime_uses_gpstk_CommonTime
    #include "CommonTime.hpp"
