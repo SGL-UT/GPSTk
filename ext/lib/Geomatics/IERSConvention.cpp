@@ -1,3 +1,6 @@
+/// @file IERSConvention.cpp
+/// Implementation of class IERSConvention.
+
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -34,12 +37,30 @@
 //
 //=============================================================================
 
-/// @file SparseVector.cpp  Class for a sparse vector.
+//------------------------------------------------------------------------------------
+// GPSTk includes
+#include "IERSConvention.hpp"
 
-#include "SparseVector.hpp"
+using namespace std;
+
 namespace gpstk
 {
-   /// tolerance in considering element to be zero is std::abs(elem) < tolerance
-   /// see zeroize(), where this is the default input value
-   template <class T> const double SparseVector<T>::zeroTolerance=1.0e-14;
-}
+   //---------------------------------------------------------------------------------
+   // static initialization of const std::strings for asString() and fromString().
+   // must parallel enum Convention in GeodeticFrames.hpp
+   const string IERSConvention::Strings[count] =
+   {
+      string("NONE"),
+      string("IERS1996"),
+      string("IERS2003"),
+      string("IERS2010"),
+   };
+
+   // ostream operator
+   ostream& operator<<(ostream os, const IERSConvention& conv)
+   {
+      return os << conv.asString();
+   }
+
+} // end namespace gpstk
+

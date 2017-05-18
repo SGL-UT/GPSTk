@@ -54,7 +54,7 @@
 #include "StringUtils.hpp"
 #include "CommonTime.hpp"
 #include "SystemTime.hpp"
-#include "SolarSystem.hpp"
+#include "SolarSystemEphemeris.hpp"
 #include "logstream.hpp"
 
 //------------------------------------------------------------------------------------
@@ -89,7 +89,7 @@ try {
    int i,iret=0;
    size_t j;
    CommonTime CurrEpoch = SystemTime();
-   SolarSystem eph;
+   SolarSystemEphemeris eph;
 
    // program name, title and version
    PrgmName = string("convertSSEph");
@@ -160,6 +160,7 @@ try {
 
       cout << Title << endl;
       cout << "Output logged in file " << logFilename << endl;
+      cout << "Creating output binary file " << outputFilename << endl;
    }
       // set the maximum level to be logged
    if(debug)
@@ -175,17 +176,18 @@ try {
 
    // display title in log file
    LOG(INFO) << Title;
+   LOG(INFO) << "Creating output binary file " << outputFilename;
 
    // read header file
    eph.readASCIIheader(headerFilename);
    LOG(VERBOSE) << "Finished reading ASCII header " << headerFilename;
-   LOG(INFO) << "Ephemeris number from header is " << eph.JPLNumber();
+   LOG(INFO) << "Ephemeris number from header is " << eph.EphNumber();
 
    // read the data files
    eph.readASCIIdata(dataFilenames);
    for(j=0; j<dataFilenames.size(); j++)
       LOG(VERBOSE) << "Finished reading ASCII data " << dataFilenames[j];
-   LOG(INFO) << "Ephemeris number from data is " << eph.JPLNumber();
+   LOG(INFO) << "Ephemeris number from data is " << eph.EphNumber();
 
    // dump to a file
    LOG(INFO) << "Dump ASCII header to csse.header.asc";
@@ -227,8 +229,6 @@ try {
    totaltime = clock()-totaltime;
    LOG(INFO) << PrgmName << " timing: " << fixed << setprecision(9)
       << double(totaltime)/double(CLOCKS_PER_SEC) << " seconds.";
-   //if(LOGstrm != cout) cout << PrgmName << " timing: " << fixed << setprecision(9)
-   //   << double(totaltime)/double(CLOCKS_PER_SEC) << " seconds." << endl;
 
    return iret;
 }

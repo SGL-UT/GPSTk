@@ -34,11 +34,9 @@
 //
 //=============================================================================
 
-/**
- * @file DDid.cpp
- * Implement DDid - double difference identification, a class to handle the
- * bookkeeping of DDs.
- */
+/// @file DDid.cpp
+/// Implement DDid - double difference identification, a class to handle the
+/// bookkeeping of DDs.
 
 //------------------------------------------------------------------------------------
 // system includes

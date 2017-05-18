@@ -34,10 +34,8 @@
 //
 //=============================================================================
 
-/**
- * @file AntexStream.hpp
- * File stream for Rinex observation file data
- */
+/// @file AntexStream.hpp
+/// File stream for Rinex observation file data
 
 #ifndef GPSTK_ANTEX_STREAM_HPP
 #define GPSTK_ANTEX_STREAM_HPP

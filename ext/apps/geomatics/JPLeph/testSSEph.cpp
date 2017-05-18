@@ -49,6 +49,7 @@
 #include <fstream>
 #include <string>
 #include <time.h>
+#include <cmath>
 
 // GPSTk
 #include "TimeString.hpp"
@@ -56,7 +57,7 @@
 #include "StringUtils.hpp"
 #include "CommonTime.hpp"
 #include "SystemTime.hpp"
-#include "SolarSystem.hpp"
+#include "SolarSystemEphemeris.hpp"
 #include "logstream.hpp"
 
 //------------------------------------------------------------------------------------
@@ -90,7 +91,7 @@ try {
    // locals
    int i,iret=0;
    CommonTime CurrEpoch = SystemTime();
-   SolarSystem SSEphemeris;
+   SolarSystemEphemeris SSEphemeris;
 
    // program name, title and version
    PrgmName = string("testSSEph");
@@ -110,12 +111,15 @@ try {
             << "convertSSEph,\n  and a test file, downloaded from the JPL ftp site, "
             << "containing times and planets\n  with JPL-generated ephemeris "
             << "coordinate values. The coordinates are computed using\n  the binary "
-            << "file and the SolarSystem class, and compared with the JPL values;\n  "
-            << "any difference larger than 10^-13 is noted with the word 'Failure' "
+            << "file and the SolarSystemEphemeris class, and compared with the JPL"
+            << " values;\n  "
+            << "any difference larger than 10^-13 is noted with the word 'Warning' "
             << "at EOL.\n  Note that some large coordinate values may differ at the "
             << "level of 10^-13 because the\n  size of double precision is barely "
             << "able to hold that much precision; compare the\n  computed value "
-            << "with the JPL value (copied as a string) in the output file.\n"
+            << "with the JPL value (copied as a string) in the output file.\n  "
+            << "Differences larger than 10^-12 are atypical and are noted with "
+            << "the word 'Failure'\n  at EOL.\n"
             << "\n Usage: " << PrgmName << " [options]\n Options are:\n"
             << "   --log <file>   name of optional log file (otherwise stderr)\n"
             << "   --file <file>  name of binary SS ephemeris file\n"
@@ -174,12 +178,12 @@ try {
    LOG(VERBOSE) << "Initialize with file " << inputFilename;
    SSEphemeris.initializeWithBinaryFile(inputFilename);
    LOG(VERBOSE) << "End Initialize";
-   LOG(INFO) << "Ephemeris number is " << SSEphemeris.JPLNumber();
+   LOG(INFO) << "Ephemeris number is " << SSEphemeris.EphNumber();
 
    bool foundEOT=false;
    int target,center,coord;
    double JD,PV[6],value,diff;
-   SolarSystem::Planet Target,Center;
+   SolarSystemEphemeris::Planet Target,Center;
    ifstream istrm;
 
    istrm.open(testFilename.c_str(),ios::in);
@@ -208,12 +212,16 @@ try {
          value = for2doub(word);
          word = rightJustify(word,25);
 
-         Target = SolarSystem::Planet(target);
-         Center = SolarSystem::Planet(center);
-         iret = SSEphemeris.computeState(JD, Target, Center, PV, false);
-         if(iret == -1 || iret == -2) continue;   // time is not in file
+         Target = SolarSystemEphemeris::Planet(target);
+         Center = SolarSystemEphemeris::Planet(center);
+         try {
+            SSEphemeris.RelativeInertialPositionVelocity(
+                           JD-MJD_TO_JD, Target, Center, PV, false);
+         } catch(Exception&) { continue; }
 
-         diff = fabs(PV[coord]-value);
+         diff = ::fabs(PV[coord]-value);
+         // NB The original JPL code (testeph.f) prints
+         // "Warning" when the difference is > 1.e-13
          LOG(INFO) << fixed << setprecision(1) << setw(9) << JD
             << " " << setw(2) << target //<< " " << setw(2) << Target
             << " " << setw(2) << center //<< " " << setw(2) << Center
@@ -222,7 +230,7 @@ try {
             << " " << word
             << " " << fixed << setprecision(20) << setw(25) << PV[coord]
             << " " << iret
-            << (diff > 1.e-13 ? " Failure" : "")
+            << (diff > 1.e-11 ? (diff > 1.e-12 ? " Failure" : " Warning") : "")
             ;
       }
 
@@ -240,8 +248,6 @@ try {
    totaltime = clock()-totaltime;
    LOG(INFO) << PrgmName << " timing: " << fixed << setprecision(9)
       << double(totaltime)/double(CLOCKS_PER_SEC) << " seconds.";
-   //if(LOGstrm != cout) cout << PrgmName << " timing: " << fixed << setprecision(9)
-   //   << double(totaltime)/double(CLOCKS_PER_SEC) << " seconds." << endl;
 
    return iret;
 }

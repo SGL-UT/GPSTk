@@ -34,10 +34,8 @@
 //
 //=============================================================================
 
-/**
- * @file AntexBase.hpp
- * Base class for Antex file data
- */
+/// @file AntexBase.hpp
+/// Base class for Antex file data
 
 #ifndef GPSTK_ANTEX_BASE_HPP
 #define GPSTK_ANTEX_BASE_HPP

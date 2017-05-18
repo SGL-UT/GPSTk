@@ -34,10 +34,8 @@
 //
 //=============================================================================
 
-/**
- * @file AntexHeader.cpp
- * Encapsulate header of Rinex observation file, including I/O
- */
+/// @file AntexHeader.cpp
+/// Encapsulate header of Rinex observation file, including I/O
 
 #include "StringUtils.hpp"
 #include "AntexHeader.hpp"

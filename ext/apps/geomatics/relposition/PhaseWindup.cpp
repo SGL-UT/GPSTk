@@ -44,10 +44,10 @@
 // GPSTk includes
 #include "Matrix.hpp"
 #include "GNSSconstants.hpp"             // DEG_TO_RAD
-#include "GNSSconstants.hpp"    // TWO_PI
 // geomatics
 #include "PhaseWindup.hpp"
 #include "SunEarthSatGeometry.hpp"
+#include "SolarPosition.hpp"
 #include <math.h>
 
 using namespace std;
@@ -80,7 +80,7 @@ try {
 
    // get satellite attitude
    Position XT,YT,ZT;
-   Matrix<double> Att = SatelliteAttitude(tt, SV, SSEph, EO, shadow);
+   Matrix<double> Att = SSEph.SatelliteAttitude(tt, SV);
    XT = Position(Att(0,0),Att(0,1),Att(0,2));      // Cartesian is default
    YT = Position(Att(1,0),Att(1,1),Att(1,2));
    ZT = Position(Att(2,0),Att(2,1),Att(2,2));
@@ -142,8 +142,10 @@ try {
    Position TR = -1.0 * Rx2Tx;         // transmitter to receiver
 
    // get satellite attitude
-   Position XT,YT,ZT;
-   Matrix<double> Att = SatelliteAttitude(tt, SV, shadow);
+   Position XT,YT,ZT,Sun;
+   double AR;
+   Sun = SolarPosition(tt,AR);
+   Matrix<double> Att = SatelliteAttitude(SV,Sun);
    XT = Position(Att(0,0),Att(0,1),Att(0,2));      // Cartesian is default
    YT = Position(Att(1,0),Att(1,1),Att(1,2));
    ZT = Position(Att(2,0),Att(2,1),Att(2,2));
