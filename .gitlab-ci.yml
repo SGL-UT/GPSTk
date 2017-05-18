@@ -254,7 +254,19 @@ package_core:
 
 #Downstream Stage
 #Builds SGLTk to test for any downstream issues.
-downstream_sgltk:
+sgltk_core:
+  stage: downstream
+  tags:
+    - core
+  script:
+    - cd build
+    - git clone gitlab@repositories.arlut.utexas.edu:sgl/sgltk.git
+    - cd sgltk
+    - ./build.sh -cvt -g ../install/gpstk
+  dependencies:
+    - deploy_core
+
+sgltk_debian:
   stage: downstream
   tags:
     - debian
@@ -265,3 +277,27 @@ downstream_sgltk:
     - ./build.sh -cvt -g ../install/gpstk
   dependencies:
     - deploy_debian
+
+sgltk_redhat:
+  stage: downstream
+  tags:
+    - redhat
+  script:
+    - cd build
+    - git clone gitlab@repositories.arlut.utexas.edu:sgl/sgltk.git
+    - cd sgltk
+    - ./build.sh -cvt -g ../install/gpstk
+  dependencies:
+    - deploy_redhat
+
+sgltk_solaris:
+  stage: downstream
+  tags:
+    - solaris
+  script:
+    - mkdir build
+    - cd build
+    - cmake -DCMAKE_INSTALL_PREFIX=install/gpstk -DBUILD_EXT=ON -DBUILD_PYTHON=OFF -DTEST_SWITCH=ON ../
+    - git clone gitlab@repositories.arlut.utexas.edu:sgl/sgltk.git
+    - cd sgltk
+    - ./build.sh -cvxt -g ../install/gpstk
