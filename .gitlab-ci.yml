@@ -301,9 +301,8 @@ sgltk_solaris:
   tags:
     - solaris
   script:
-    - mkdir build
+    - ./build.sh -evx -i install/gpstk
     - cd build
-    - cmake -DCMAKE_INSTALL_PREFIX=install/gpstk -DBUILD_EXT=ON -DBUILD_PYTHON=OFF -DTEST_SWITCH=ON ../
     - git clone gitlab@repositories.arlut.utexas.edu:sgl/sgltk.git
     - cd sgltk
     - ./build.sh -cvxt -g ../install/gpstk
