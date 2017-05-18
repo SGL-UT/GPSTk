@@ -2303,4 +2303,4 @@
    static const int jasc[] = {0,1,1,0,1,0,0,1,0,1,1,0,1,0,0,1,0,1,1,0};
    static const int japt[] = {0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4};
 
-   // end data structures to inserted in GeodeticFrames::
+   // end data structures to inserted in EarthOrientation::

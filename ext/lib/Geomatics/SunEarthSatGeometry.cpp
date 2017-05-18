@@ -1,9 +1,3 @@
-/// @file SunEarthSatGeometry.cpp
-/// Module containing various routines related to Sun-Earth-Satellite geometry,
-/// including satellite attitude, XYZ->UEN rotation, and (elevation,azimuth) as
-/// seen at the satellite. Used by PhaseWindup and PreciseRange.
-/// NB Use class SolarSystem or SolarPosition() to get Sun's position as needed.
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -39,6 +33,12 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
+
+/// @file SunEarthSatGeometry.cpp
+/// Module containing various routines related to Sun-Earth-Satellite geometry,
+/// including satellite attitude, XYZ->UEN rotation, and (elevation,azimuth) as
+/// seen at the satellite. Used by PhaseWindup and PreciseRange.
+/// NB Use class SolarSystem or SolarPosition() to get Sun's position as needed.
 
 // system
 #include <map>

@@ -1,7 +1,3 @@
-/// @file EOPStore.hpp
-/// class gpstk::EOPStore encapsulates input, storage and retreval of
-/// Earth Orientation Parameters (EOPs - cf. class EarthOrientation).
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -36,6 +32,10 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
+
+/// @file EOPStore.hpp
+/// class gpstk::EOPStore encapsulates input, storage and retreval of
+/// Earth Orientation Parameters (EOPs - cf. class EarthOrientation).
 
 #ifndef CLASS_EARTHORIENTSTORE_INCLUDE
 #define CLASS_EARTHORIENTSTORE_INCLUDE

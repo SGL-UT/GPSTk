@@ -1,6 +1,3 @@
-/// @file IERSConvention.cpp
-/// Implementation of class IERSConvention.
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -37,7 +34,9 @@
 //
 //=============================================================================
 
-//------------------------------------------------------------------------------------
+/// @file IERSConvention.cpp
+/// Implementation of class IERSConvention.
+
 // GPSTk includes
 #include "IERSConvention.hpp"
 
@@ -47,7 +46,7 @@ namespace gpstk
 {
    //---------------------------------------------------------------------------------
    // static initialization of const std::strings for asString() and fromString().
-   // must parallel enum Convention in GeodeticFrames.hpp
+   // must parallel enum Convention in IERSConvention.hpp
    const string IERSConvention::Strings[count] =
    {
       string("NONE"),

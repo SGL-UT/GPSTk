@@ -1,9 +1,3 @@
-/**
- * @file PreciseRange.cpp
- * Implement computation of range and associated quantities from XvtStore,
- * given receiver position and time.
- */
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -38,6 +32,10 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
+
+/// @file PreciseRange.cpp
+/// Implement computation of range and associated quantities from XvtStore,
+/// given receiver position and time.
 
 // GPSTk includes
 #include "MiscMath.hpp"

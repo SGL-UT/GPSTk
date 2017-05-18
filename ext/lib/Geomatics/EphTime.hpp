@@ -1,8 +1,3 @@
-/// @file EphTime.hpp
-/// gpstk::EphTime - encapsulates date and time-of-day, but only in formats applicable
-/// to SolarSystemEphemeris, EarthOrientation and EOPStore, namely UTC, TT and TDB.
-/// Conversion to and from DayTime or CommonTime should be automatic.
-
 #ifndef GEOMATICS_EPHTIME_HPP
 #define GEOMATICS_EPHTIME_HPP
 
@@ -40,6 +35,11 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
+
+/// @file EphTime.hpp
+/// gpstk::EphTime - encapsulates date and time-of-day, but only in formats applicable
+/// to SolarSystemEphemeris, EarthOrientation and EOPStore, namely UTC, TT and TDB.
+/// Conversion to and from DayTime or CommonTime should be automatic.
 
 #include "TimeSystem.hpp"
 #include "Exception.hpp"

@@ -1568,4 +1568,4 @@
       // Number of terms in the planetary nutation model
       const int NP = int(sizeof PCoeff / sizeof PCoeff[0]);
 
-// end data structures to be inserted in GeodeticFrames::NutationAnglesIERS2003()
+// end data structures to be inserted in EarthOrientation::NutationAnglesIERS2003()

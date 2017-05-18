@@ -1,6 +1,3 @@
-/// @file SatPassUtilities.cpp
-/// Various utilities using SatPass
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -36,6 +33,9 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
+
+/// @file SatPassUtilities.cpp
+/// Various utilities using SatPass
 
 #include "Stats.hpp"
 #include "stl_helpers.hpp"

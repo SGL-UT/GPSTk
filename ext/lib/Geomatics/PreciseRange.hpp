@@ -1,9 +1,3 @@
-/**
- * @file PreciseRange.hpp
- * Include file defining class PreciseRange: computation of range and associated
- * quantities from XvtStore, given receiver position and time.
- */
- 
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -40,6 +34,10 @@
 //
 //=============================================================================
 
+/// @file PreciseRange.hpp
+/// Include file defining class PreciseRange: computation of range and associated
+/// quantities from XvtStore, given receiver position and time.
+ 
 //------------------------------------------------------------------------------------
 #ifndef PRECISE_EPHEMERIS_RANGE_INCLUDE
 #define PRECISE_EPHEMERIS_RANGE_INCLUDE

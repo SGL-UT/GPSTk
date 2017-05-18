@@ -1,10 +1,3 @@
-/// @file EarthOrientation.hpp
-/// Include file defining the EarthOrientation class.
-/// class EarthOrientation encapsulates the Earth orientation parameters or EOPs.
-/// Also, this class includes several static functions that implement the models in
-/// the IERS Conventions, many of which involve the EOPs.
-/// Cf. classes EOPStore and SolarSystem.
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -39,6 +32,13 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
+
+/// @file EarthOrientation.hpp
+/// Include file defining the EarthOrientation class.
+/// class EarthOrientation encapsulates the Earth orientation parameters or EOPs.
+/// Also, this class includes several static functions that implement the models in
+/// the IERS Conventions, many of which involve the EOPs.
+/// Cf. classes EOPStore and SolarSystem.
 
 #ifndef CLASS_EARTHORIENT_INCLUDE
 #define CLASS_EARTHORIENT_INCLUDE

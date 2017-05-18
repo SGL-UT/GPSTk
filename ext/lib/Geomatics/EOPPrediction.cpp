@@ -1,7 +1,3 @@
-/// @file EOPPrediction.cpp
-/// Implementation of class EOPPrediction: formulas to predict EOPs from data in
-///  NGA 'EOPP###.txt' files.
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -36,6 +32,10 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
+
+/// @file EOPPrediction.cpp
+/// Implementation of class EOPPrediction: formulas to predict EOPs from data in
+///  NGA 'EOPP###.txt' files.
 
 //------------------------------------------------------------------------------------
 #include "GNSSconstants.hpp"     // for TWO_PI

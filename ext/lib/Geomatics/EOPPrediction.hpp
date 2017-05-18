@@ -1,7 +1,3 @@
-/// @file EOPPrediction.hpp
-/// class EOPPrediction encapsulates formulas to predict EOPs from data in
-///  NGA 'EOPP###.txt' files.
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -36,6 +32,10 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
+
+/// @file EOPPrediction.hpp
+/// class EOPPrediction encapsulates formulas to predict EOPs from data in
+///  NGA 'EOPP###.txt' files.
 
 #ifndef CLASS_EOPPREDICTION_INCLUDE
 #define CLASS_EOPPREDICTION_INCLUDE

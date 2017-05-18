@@ -34,9 +34,7 @@
 //
 //=============================================================================
 
-/**
- * @file SolarPosition.cpp  Compute solar and lunar positions with a simple algorithm.
- */
+/// @file SolarPosition.cpp  Compute solar and lunar positions with a simple algorithm
 
 //------------------------------------------------------------------------------------
 // includes

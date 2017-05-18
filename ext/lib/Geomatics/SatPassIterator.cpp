@@ -1,6 +1,3 @@
-/// @file SatPassIterator.cpp
-/// Iterate over a vector of SatPass in time order.
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -36,6 +33,9 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
+
+/// @file SatPassIterator.cpp
+/// Iterate over a vector of SatPass in time order.
 
 #include "SatPassIterator.hpp"
 #include "logstream.hpp"
