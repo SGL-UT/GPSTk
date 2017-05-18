@@ -167,6 +167,9 @@ deploy_redhat:
   script:
     - cd build
     - make install -j 4
+  artifacts:
+    paths:
+    - build/install
   dependencies:
     - build_redhat
 
@@ -197,6 +200,9 @@ deploy_core:
   script:
     - cd build
     - make install -j 54
+  artifacts:
+    paths:
+    - build/install
   dependencies:
     - build_core
 
