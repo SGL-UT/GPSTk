@@ -156,7 +156,7 @@ namespace gpstk
       REoRS = REarth/RSun;                         // ratio Earth/Sun radius
       sunFactor = REarth*REoRS*REoRS*REoRS*SERAT;  // = (GMS/GME)*RE^4/RS^3
       REoRM = REarth/RMoon;                        // ratio Earth/Moon radius
-      moonFactor = REarth*REoRM*REoRM*REoRM*EMRAT; // = (GMM/GME)*RE^4/RM^3
+      moonFactor = REarth*REoRM*REoRM*REoRM/EMRAT; // = (GMM/GME)*RE^4/RM^3
       // E/M mass ratio (403) 81.300584999999998         (405) 81.300560000000004
       // S/E mass ratio (403) 332946.048630181234330     (405) 332946.050894783285912
       //LOG(INFO) << " E/M mass ratio " << fixed << setprecision(15) << EMRAT;
