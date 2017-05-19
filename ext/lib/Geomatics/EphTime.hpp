@@ -136,6 +136,13 @@ namespace gpstk
       }
 
       /// Compute MJD
+      /// @return long integer MJD
+      long lMJD(void) const throw()
+      {
+         return iMJD;
+      }
+
+      /// Compute MJD
       /// @return full double MJD
       double dMJD(void) const throw()
       {

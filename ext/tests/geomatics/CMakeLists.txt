@@ -303,3 +303,18 @@ add_test(NAME EarthOrientation_SOFA
 set_property(TEST EarthOrientation_SOFA PROPERTY LABELS Geomatics)
 
 ###############################################################################
+# Test SolidEarth and OceanLoad Tides vs IERS software (cf OceanLoadTides.cpp)
+###############################################################################
+add_test(NAME EarthTides_IERS
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:test_tides>
+         -DDIFF_PROG=$<TARGET_FILE:df_diff>
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTBASE=EarthTides_IERS
+         -DARGS=--dt\ 360.\ --prec\ 6\ --solid\ --ocean\ --oceanfile\ ${GPSTK_TEST_DATA_DIR}/testocean.blq\ --oceansite\ ONSALA,REYKJAVIK
+         -DDIFF_ARGS=-l4\ -e1.e-5
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+set_property(TEST EarthTides_IERS PROPERTY LABELS Geomatics)
+
+###############################################################################
