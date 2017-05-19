@@ -4,6 +4,7 @@
 #include "TestUtil.hpp"
 #include <iostream>
 #include <string>
+#include "SystemTime.hpp"
 
 using namespace gpstk;
 using namespace std;
@@ -33,7 +34,7 @@ public:
       else
          header.fileSysSat.system = SatID::systemGPS;
       std::ostringstream ostr;
-      ostr << gpstk::CivilTime(TimeSystem::GPS);
+      ostr << gpstk::CivilTime(SystemTime());
       header.date = ostr.str();
       header.fileAgency = "From_Scratch_T_" + testID;
       header.valid |= Rinex3ObsHeader::validRunBy;
@@ -76,7 +77,7 @@ public:
       data.epochFlag = 0;
       data.numSVs = 2;
       data.clockOffset = 0;
-      data.time = CommonTime().set(985354, 40530, 0.0, TimeSystem::GPS);
+      data.time = header.firstObs.convertToCommonTime();
 
        std::vector<RinexObsID> newObsIds = setupObsIDs();
 
