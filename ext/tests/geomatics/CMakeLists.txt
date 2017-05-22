@@ -329,7 +329,7 @@ add_test(NAME JPL_403eph_conversion
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -DTESTBASE=JPL_403eph_conversion
          -DARGS=--header\ ${JPLDIR}/header.403\ --data\ ${JPLDIR}/ascp1975.403,${JPLDIR}/ascp2000.403,${JPLDIR}/ascp2025.403\ --output\ SolarSystem1975to2050.403.bin\ --verbose
-         -DDIFF_ARGS=
+         -DDIFF_ARGS=-l1\ -z1
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
 set_property(TEST JPL_403eph_conversion PROPERTY LABELS Geomatics_JPL)
 
@@ -360,7 +360,7 @@ add_test(NAME JPL_405eph_conversion
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -DTESTBASE=JPL_405eph_conversion
          -DARGS=--header\ ${JPLDIR}/header.405\ --data\ ${JPLDIR}/ascp1980.405,${JPLDIR}/ascp2000.405,${JPLDIR}/ascp2020.405\ --output\ SolarSystem1975to2050.405.bin\ --verbose
-         -DDIFF_ARGS=
+         -DDIFF_ARGS=-l1\ -z1
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
 set_property(TEST JPL_405eph_conversion PROPERTY LABELS Geomatics_JPL)
 

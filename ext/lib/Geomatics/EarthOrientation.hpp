@@ -72,7 +72,7 @@ namespace gpstk {
    /// as well as the precise rotation of Earth and its 'wobble' as given by the EOPs.
    /// The class requires time to be in one of two systems: UTC or TT; class EphTime
    /// is a simple class that enforces this requirement (plus TDB), transformation to
-   /// and from DayTime should be automatic. (TT is terrestrial and TDB is
+   /// and from CommonTime should be automatic. (TT is terrestrial and TDB is
    /// barycentric dynamic time, which is the time of SolarSystemEphemeris.)
    /// Also cf. classes EOPStore and SolarSystem.
    /// References:

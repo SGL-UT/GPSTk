@@ -99,7 +99,7 @@ namespace gpstk
 
       /// Version with no antenna, and therefore no Attitude and no SolarSystem;
       /// cf. doc for other version for details.
-      double ComputeAtTransmitTime(const DayTime& nomRecTime,
+      double ComputeAtTransmitTime(const CommonTime& nomRecTime,
                                    const double pr,
                                    const Position& Rx,
                                    const SatID sat,

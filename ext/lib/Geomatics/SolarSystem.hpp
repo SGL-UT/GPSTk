@@ -192,21 +192,21 @@ public:
    }
 
    /// Return the start time of the Solar System ephemeris data
-   DayTime startTime(void) const throw(Exception)
+   CommonTime startTime(void) const throw(Exception)
    {
       EphTime t;
       t.setMJD(SolarSystemEphemeris::startTimeMJD());
       t.setTimeSystem(TimeSystem::TDB);
-      return static_cast<DayTime>(t);
+      return static_cast<CommonTime>(t);
    }
 
    /// Return the end time of the Solar System ephemeris data
-   DayTime endTime(void) const throw(Exception)
+   CommonTime endTime(void) const throw(Exception)
    {
       EphTime t;
       t.setMJD(SolarSystemEphemeris::endTimeMJD());
       t.setTimeSystem(TimeSystem::TDB);
-      return static_cast<DayTime>(t);
+      return static_cast<CommonTime>(t);
    }
 
    /// Overload EOPStore::getEOP() to use the IERS convention of this object

@@ -36,7 +36,7 @@
 /// @file EphTime.hpp
 /// gpstk::EphTime - encapsulates date and time-of-day, but only in formats applicable
 /// to SolarSystemEphemeris, EarthOrientation and EOPStore, namely UTC, TT and TDB.
-/// Conversion to and from DayTime or CommonTime should be automatic.
+/// Conversion to and from CommonTime should be automatic.
 
 #ifndef GEOMATICS_EPHTIME_HPP
 #define GEOMATICS_EPHTIME_HPP
@@ -44,18 +44,10 @@
 #include "TimeSystem.hpp"
 #include "Exception.hpp"
 
-// for non-gpstk, comment out the next line
-#define EphTime_uses_gpstk_CommonTime 1
-#ifdef EphTime_uses_gpstk_CommonTime
-   #include "CommonTime.hpp"
-   #define DayTime CommonTime
-   #define DayTimeException CommonTimeException
-   #include "MJD.hpp"
-   #include "CivilTime.hpp"
-   #include "TimeConverters.hpp"
-#else
-   #include "DayTime.hpp"
-#endif
+#include "CommonTime.hpp"
+#include "MJD.hpp"
+#include "CivilTime.hpp"
+#include "TimeConverters.hpp"
 
 namespace gpstk
 {
@@ -64,7 +56,7 @@ namespace gpstk
 
    /// Class implementing date+time, only in formats applicable solar system
    /// ephemeris and earth orientation, namely UTC, TT and TDB.
-   /// Conversion to and from DayTime is implicit through casts defined here.
+   /// Conversion to and from CommonTime is implicit through casts defined here.
    class EphTime {
    private:
       long iMJD;           ///< integer MJD
@@ -164,28 +156,13 @@ namespace gpstk
          return yy;
       }
 
-      /// constructor from DayTime; convert to UTC if system is not UTC|TT|TDB, and
+      /// constructor from CommonTime; convert to UTC if system is not UTC|TT|TDB, and
       /// change Unknown to UTC.
-      /// @param dt DayTime input
+      /// @param dt CommonTime input
       /// @throw if convertSystemTo does, if input system is Unknown
-      EphTime(const DayTime& dt) throw(Exception)
+      EphTime(const CommonTime& dt) throw(Exception)
       {
          try {
-#ifndef EphTime_uses_gpstk_CommonTime
-         DayTime ttag(dt);
-         TimeSystem sys = ttag.getTimeSystem();
-         // if its invalid, set it to UTC
-         if(sys == TimeSystem::Unknown)
-            ttag.setTimeSystem(TimeSystem::UTC);
-         // if its not UTC TT or TDB, convert to UTC
-         else if(sys != TimeSystem::UTC &&
-                 sys != TimeSystem::TT &&
-                 sys != TimeSystem::TDB)
-            ttag.convertSystemTo(TimeSystem::UTC);
-
-         ttag.getMJDsecOfDay(iMJD,dSOD);           
-         system = ttag.getTimeSystem();
-#else
          CommonTime ct(dt);
          TimeSystem sys = ct.getTimeSystem();
          if(sys == TimeSystem::Unknown || sys == TimeSystem::Any)
@@ -207,40 +184,27 @@ namespace gpstk
          iMJD = static_cast<long>(ctmjd.mjd);
          dSOD = (ctmjd.mjd - static_cast<long double>(iMJD)) * SEC_PER_DAY;
          system = ctmjd.getTimeSystem();
-#endif
          }
          catch(Exception& e) { GPSTK_RETHROW(e); }
       }
 
-      /// const cast EphTime to DayTime
-      operator DayTime() const throw()
+      /// const cast EphTime to CommonTime
+      operator CommonTime() const throw()
       {
-#ifndef EphTime_uses_gpstk_CommonTime
-         DayTime ttag(static_cast<long double>(iMJD), system);
-         ttag += dSOD;
-         return ttag;
-#else
          MJD ctmjd;
          ctmjd.mjd = static_cast<long double>(iMJD + dSOD/SEC_PER_DAY);
          CommonTime ct = ctmjd.convertToCommonTime();
          return ct;
-#endif
       }
 
       // no this is not a duplicate of the previous function
-      /// non-const cast EphTime to DayTime
-      operator DayTime() throw()
+      /// non-const cast EphTime to CommonTime
+      operator CommonTime() throw()
       {
-#ifndef EphTime_uses_gpstk_CommonTime
-         DayTime ttag(static_cast<long double>(iMJD), system);
-         ttag += dSOD;
-         return ttag;
-#else
          MJD ctmjd;
          ctmjd.mjd = static_cast<long double>(iMJD + dSOD/SEC_PER_DAY);
          CommonTime ct = ctmjd.convertToCommonTime();
          return ct;
-#endif
       }
 
       /// return string of form Week sow.sss
