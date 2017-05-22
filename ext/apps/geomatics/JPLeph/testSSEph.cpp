@@ -159,7 +159,7 @@ try {
    }
 
       // set the maximum level to be logged
-   ConfigureLOG::ReportLevels() = ConfigureLOG::ReportTimeTags() = true;
+   ConfigureLOG::ReportLevels() = ConfigureLOG::ReportTimeTags() = false;
    if(debug)
       ConfigureLOG::ReportingLevel() = ConfigureLOG::FromString("DEBUG");
    else if(verbose)
@@ -217,7 +217,17 @@ try {
          try {
             SSEphemeris.RelativeInertialPositionVelocity(
                            JD-MJD_TO_JD, Target, Center, PV, false);
-         } catch(Exception&) { continue; }
+         } catch(Exception& e) {
+            string what=e.getText(0);
+            if(isLike(what,string("Requested time is before .*"))) iret=1;
+            else if(isLike(what,string("Requested time is after .*"))) iret=2;
+            else if(isLike(what,string("Stream error .*"))) iret=3;
+            else if(isLike(what,string("Ephemeris not initialized .*"))) iret=4;
+            else iret = 5;
+            if(iret==1) continue;
+            if(iret==2) iret = 0;
+            break;
+         }
 
          diff = ::fabs(PV[coord]-value);
          // NB The original JPL code (testeph.f) prints
@@ -230,23 +240,26 @@ try {
             << " " << word
             << " " << fixed << setprecision(20) << setw(25) << PV[coord]
             << " " << iret
-            << (diff > 1.e-11 ? (diff > 1.e-12 ? " Failure" : " Warning") : "")
-            ;
+            << (diff > 1.e-12 ? (diff > 1.e-11 ? " Failure" : " Warning") : "");
+
+         if(diff > 1.e-11) { iret = 6; break; }
       }
 
       if(istrm.eof() || !istrm.good()) break;
    }
 
-   if(iret) { LOG(INFO) << PrgmName << " terminating with error code " << iret
-      << ", which means " <<
-      (iret == 0 ? "OK" : 
-      (iret == -1 ? "last time in file was before first time in ephemeris" :
-      (iret == -2 ? "time is beyond end time of ephemeris" :
-      (iret == -3 ? "file reading failed" : "ephemeris file is corrupted")))) ;}
+   if(iret) { LOG(ERROR) << " Error - " << PrgmName
+      << " terminating with error code " << iret << ": " <<
+      (iret == 1 ? "time is before first time in ephemeris" :
+      (iret == 2 ? "time is beyond end time of ephemeris" :
+      (iret == 3 ? "file reading failed" :
+      (iret == 4 ? "ephemeris file not initialized" :
+      (iret == 5 ? "unknown error" : "accuracy failure"))))); }
 
       // compute run time
    totaltime = clock()-totaltime;
-   LOG(INFO) << PrgmName << " timing: " << fixed << setprecision(9)
+   LOG(INFO) << PrgmName << " iret " << iret
+      << " timing: " << fixed << setprecision(9)
       << double(totaltime)/double(CLOCKS_PER_SEC) << " seconds.";
 
    return iret;

@@ -318,3 +318,66 @@ add_test(NAME EarthTides_IERS
 set_property(TEST EarthTides_IERS PROPERTY LABELS Geomatics)
 
 ###############################################################################
+# Test JPL ephemeris 403 conversion
+###############################################################################
+set(JPLDIR ${CMAKE_CURRENT_SOURCE_DIR}/../../apps/geomatics/JPLeph/JPL/)
+add_test(NAME JPL_403eph_conversion
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:convertSSEph>
+         -DDIFF_PROG=$<TARGET_FILE:df_diff>
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTBASE=JPL_403eph_conversion
+         -DARGS=--header\ ${JPLDIR}/header.403\ --data\ ${JPLDIR}/ascp1975.403,${JPLDIR}/ascp2000.403,${JPLDIR}/ascp2025.403\ --output\ SolarSystem1975to2050.403.bin\ --verbose
+         -DDIFF_ARGS=
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+set_property(TEST JPL_403eph_conversion PROPERTY LABELS Geomatics_JPL)
+
+###############################################################################
+# Test JPL ephemeris 403 accuracy
+###############################################################################
+add_test(NAME JPL_403eph_accuracy
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:testSSEph>
+         -DDIFF_PROG=$<TARGET_FILE:df_diff>
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTBASE=JPL_403eph_accuracy
+         -DARGS=--file\ SolarSystem1975to2050.403.bin\ --test\ ${JPLDIR}/testpo.403\ -d
+         -DDIFF_ARGS=-l1\ -z1
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+set_property(TEST JPL_403eph_accuracy PROPERTY LABELS Geomatics_JPL)
+set_property(TEST JPL_403eph_accuracy PROPERTY DEPENDS JPL_403eph_conversion)
+
+###############################################################################
+# Test JPL ephemeris 405 conversion
+###############################################################################
+add_test(NAME JPL_405eph_conversion
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:convertSSEph>
+         -DDIFF_PROG=$<TARGET_FILE:df_diff>
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTBASE=JPL_405eph_conversion
+         -DARGS=--header\ ${JPLDIR}/header.405\ --data\ ${JPLDIR}/ascp1980.405,${JPLDIR}/ascp2000.405,${JPLDIR}/ascp2020.405\ --output\ SolarSystem1975to2050.405.bin\ --verbose
+         -DDIFF_ARGS=
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+set_property(TEST JPL_405eph_conversion PROPERTY LABELS Geomatics_JPL)
+
+###############################################################################
+# Test JPL ephemeris 405 accuracy
+###############################################################################
+add_test(NAME JPL_405eph_accuracy
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:testSSEph>
+         -DDIFF_PROG=$<TARGET_FILE:df_diff>
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTBASE=JPL_405eph_accuracy
+         -DARGS=--file\ SolarSystem1975to2050.405.bin\ --test\ ${JPLDIR}/testpo.405\ -d
+         -DDIFF_ARGS=-l1\ -z1
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+set_property(TEST JPL_405eph_accuracy PROPERTY LABELS Geomatics_JPL)
+set_property(TEST JPL_405eph_accuracy PROPERTY DEPENDS JPL_405eph_conversion)
+
+###############################################################################

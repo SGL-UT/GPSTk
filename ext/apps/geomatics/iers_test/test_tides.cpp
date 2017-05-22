@@ -34,7 +34,7 @@
 //=============================================================================
 
 /// @file test_tides.cpp
-/// Compute and dump solid earth tides, pole tide and ocean loading tide.
+/// Compute and dump solid earth tide, pole tide and ocean loading tide.
 
 // system includes
 #include <string>

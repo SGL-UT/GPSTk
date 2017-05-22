@@ -172,7 +172,7 @@ try {
       // = any of ERROR,WARNING,INFO,DEBUG,DEBUGn (n=1,2,3,4,5,6,7)
    //cout << "Reporting in main is "
    //   << ConfigureLOG::ToString(ConfigureLOG::ReportingLevel()) << endl;
-   ConfigureLOG::ReportLevels() = ConfigureLOG::ReportTimeTags() = true;
+   ConfigureLOG::ReportLevels() = ConfigureLOG::ReportTimeTags() = false;
 
    // display title in log file
    LOG(INFO) << Title;
@@ -190,16 +190,16 @@ try {
    LOG(INFO) << "Ephemeris number from data is " << eph.EphNumber();
 
    // dump to a file
-   LOG(INFO) << "Dump ASCII header to csse.header.asc";
-   ofstream ofs;
-   ofs.open("csse.header.asc",ios_base::out);
-   eph.writeASCIIheader(ofs);
-   ofs.close();
+   //LOG(INFO) << "Dump ASCII header to log";  //csse.header.asc";
+   //ofstream ofs;
+   //ofs.open("csse.header.asc",ios_base::out);
+   //eph.writeASCIIheader(ofs);
+   //ofs.close();
 
-   LOG(INFO) << "Dump ASCII data to csse.data.asc";
-   ofs.open("csse.data.asc",ios_base::out);
-   eph.writeASCIIdata(ofs);
-   ofs.close();
+   //LOG(INFO) << "Dump ASCII data to csse.data.asc";
+   //ofs.open("csse.data.asc",ios_base::out);
+   //eph.writeASCIIdata(ofs);
+   //ofs.close();
 
    // write the whole thing out to a binary file
    LOG(INFO) << "Write to binary file " << outputFilename;
@@ -212,18 +212,18 @@ try {
    LOG(INFO) << "Finished reading binary file " << outputFilename;
 
    // dump to a file
-   LOG(INFO) << "Dump ASCII header to csse.header.bin.asc";
-   ofs.open("csse.header.bin.asc",ios_base::out);
-   eph.writeASCIIheader(ofs);
-   ofs.close();
+   LOG(INFO) << "Dump ASCII header to log";  //csse.header.bin.asc";
+   //ofs.open("csse.header.bin.asc",ios_base::out);
+   eph.writeASCIIheader(LOGstrm);   //ofs);
+   //ofs.close();
 
-   LOG(INFO) << "Dump ASCII data to csse.data.bin.asc";
-   ofs.open("csse.data.bin.asc",ios_base::out);
-   eph.writeASCIIdata(ofs);
-   ofs.close();
-   LOG(INFO) << "Now compare the outputs by differencing";
-   LOG(INFO) << " Try 'diff csse.data.asc csse.data.bin.asc'";
-   LOG(INFO) << " and 'diff csse.data.asc csse.data.bin.asc'";
+   LOG(INFO) << "Dump ASCII data to log";    //csse.data.bin.asc";
+   //ofs.open("csse.data.bin.asc",ios_base::out);
+   eph.writeASCIIdata(LOGstrm);  //ofs);
+   //ofs.close();
+   //LOG(INFO) << "Now compare the outputs by differencing";
+   //LOG(INFO) << " Try 'diff csse.data.asc csse.data.bin.asc'";
+   //LOG(INFO) << " and 'diff csse.data.asc csse.data.bin.asc'";
 
       // compute run time
    totaltime = clock()-totaltime;
