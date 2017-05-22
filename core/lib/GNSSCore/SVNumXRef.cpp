@@ -194,7 +194,7 @@ SVNumXRef::SVNumXRef( )
    // NANU #2016008 (end) - SVN 23 Decommissioned
    NtoPMap.insert( std::pair<const int, XRefNode>( 23, XRefNode( 32, 
                                        CivilTime( 2006, 12,  1,  0,  0,  0.0, TimeSystem::GPS),
-                                       CivilTime( 2016,  1,  25, 0,  0,  0.0, TimeSystem::GPS))));
+                                       CivilTime( 2016,  1,  25, 20,  0,  0.0, TimeSystem::GPS))));
    NtoPMap.insert( std::pair<const int, XRefNode>( 24, XRefNode( 24, 
                                        CivilTime( 1991,  7,  4,  0,  0,  0.0, TimeSystem::GPS),
                                        CivilTime( 2011,  9, 30, 23, 59, 59.9, TimeSystem::GPS))));
@@ -257,7 +257,7 @@ SVNumXRef::SVNumXRef( )
    // NANU 2015091 (end)
    NtoPMap.insert( std::pair<const int, XRefNode>( 34, XRefNode(  4, 
                                        CivilTime( 1993, 10, 26,  0,  0,  0.0, TimeSystem::GPS),
-                                       CivilTime( 2015, 11, 2,  22,  0,  0.0, TimeSystem::GPS))));
+                                       CivilTime( 2015, 11, 9,  22,  0,  0.0, TimeSystem::GPS))));
    // NANU 2016072 (start)
    NtoPMap.insert( std::pair<const int, XRefNode>( 34, XRefNode(  4, 
                                        CivilTime( 2016, 12, 9,  0,  0,  0.0, TimeSystem::GPS),
