@@ -34,10 +34,8 @@
 //
 //=============================================================================
 
-/**
- * @file random.cpp
- * Simple random number generator.
- */
+/// @file random.cpp
+/// Simple random number generator.
 
 // -----------------------------------------------------------------------------
 #include <iostream>

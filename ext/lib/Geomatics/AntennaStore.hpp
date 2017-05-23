@@ -1,14 +1,3 @@
-/**
- * @file AntennaStore.hpp
- * Store antenna phase center offset information, in AntexData objects, with
- * receiver/satellite name.
- * Access using name (receivers), or name and time (satellites); compute compute PCOs
- * at any (elevation, azimuth).
- */
- 
-#ifndef GPSTK_ANTENNA_STORE_INCLUDE
-#define GPSTK_ANTENNA_STORE_INCLUDE
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -43,6 +32,15 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
+
+/// @file AntennaStore.hpp
+/// Store antenna phase center offset information, in AntexData objects, with
+/// receiver/satellite name.
+/// Access using name (receivers), or name and time (satellites); compute compute PCOs
+/// at any (elevation, azimuth).
+ 
+#ifndef GPSTK_ANTENNA_STORE_INCLUDE
+#define GPSTK_ANTENNA_STORE_INCLUDE
 
 #include <iostream>
 #include <string>
@@ -172,7 +170,7 @@ namespace gpstk
       /// Compute the vector from the SV Center of Mass (COM) to
       /// the phase center of the antenna. 
       /// Satellites are identified by two things:
-      /// system character: G or blank GPS, R GLONASS, E GALILEO, M MIXED
+      /// system character: G or blank GPS, R GLONASS, E GALILEO, M MIXED, C BeiDou
       /// and integer PRN or SVN number.
       /// NB. PRNs apply to GLONASS as well as GPS
       /// NB. Typically there is more than one antenna per satellite in ANTEX files;

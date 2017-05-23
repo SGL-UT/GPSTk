@@ -1,9 +1,3 @@
-/// @file SparseVector.hpp  Class for a sparse vector.
-
-#ifndef SPARSE_VECTOR_INCLUDE
-#define SPARSE_VECTOR_INCLUDE
-
-#include "MathBase.hpp"       // defines ABS SQRT
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -42,8 +36,10 @@
 
 /// @file SparseVector.hpp Class for template sparse vectors; use with SparseMatrix.
 
-// TODO
-// outer product?
+#ifndef SPARSE_VECTOR_INCLUDE
+#define SPARSE_VECTOR_INCLUDE
+
+#include "MathBase.hpp"       // defines ABS SQRT
 
 #include <cstdlib>
 
