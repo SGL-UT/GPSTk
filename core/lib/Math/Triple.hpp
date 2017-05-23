@@ -222,11 +222,18 @@ namespace gpstk
 
          /**
           * Multiplication Operator.
-          * @right the scale by which to multiply a Triple
-          * @rhs   the Triple to scale 
+          * @param left the scale by which to multiply a Triple
+          * @param rhs   the Triple to scale 
           * @return a Triple containing the scaled result
           */
-      friend Triple operator*(double right, const Triple& rhs);
+      friend Triple operator*(double left, const Triple& rhs);
+
+         /// Multiplication by a scalar on the right
+         /// @param right the scale by which to multiply a Triple
+         /// @param rhs   the Triple to scale 
+         /// @return a Triple containing the scaled result
+      friend Triple operator*(const Triple& rhs, double left)
+         { return operator*(left,rhs); }
 
          /// Return the size of this object.
       size_t size(void) const

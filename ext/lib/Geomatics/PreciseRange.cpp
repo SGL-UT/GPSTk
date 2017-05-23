@@ -19,7 +19,6 @@
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
-
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
@@ -34,20 +33,19 @@
 //
 //=============================================================================
 
-/**
- * @file PreciseRange.cpp
- * Implement computation of range and associated quantities from XvtStore,
- * given receiver position and time.
- */
+/// @file PreciseRange.cpp
+/// Implement computation of range and associated quantities from XvtStore,
+/// given receiver position and time.
 
 // GPSTk includes
 #include "MiscMath.hpp"
 #include "GPSEllipsoid.hpp"
 #include "GNSSconstants.hpp"
-#include "GNSSconstants.hpp"
 #include "Xvt.hpp"
 // geomatics
 #include "SunEarthSatGeometry.hpp"
+#include "SolarPosition.hpp"
+
 #include "PreciseRange.hpp"
 
 using namespace std;
@@ -59,8 +57,7 @@ namespace gpstk
                                               const Position& Receiver,
                                               const SatID sat,
                                               const AntexData& antenna,
-                                              const SolarSystem& SSEph,
-                                              const EarthOrientation& EO,
+                                              SolarSystem& SolSys,
                                               const XvtStore<SatID>& Eph,
                                               const bool isCOM)
       throw(Exception)
@@ -68,13 +65,13 @@ namespace gpstk
    try {
       int i;
       Position Rx(Receiver);
-      GPSEllipsoid ell;
+      GPSEllipsoid ellips;
       Xvt svPosVel;
 
       // nominal transmit time
       transmit = nomRecTime;     // receive time on receiver's clock
-      transmit -= pr/ell.c();  // correct for measured time of flight and Rx clock
-
+      transmit -= pr/ellips.c(); // correct for measured time of flight and Rx clock
+   
       // get the satellite position at the nominal time, computing and
       // correcting for the satellite clock bias and other delays
       try {
@@ -91,17 +88,18 @@ namespace gpstk
       // ref. Ashby and Spilker, GPS: Theory and Application, 1996 Vol 1, pg 673.
       // this is w(Earth) * (SatR cross Rx).Z() / c*c in seconds
       // beware numerical error by differencing very large to get very small
-      Sagnac = ( (SatR.X()/ell.c()) * (Rx.Y()/ell.c())
-               - (SatR.Y()/ell.c()) * (Rx.X()/ell.c()) ) * ell.angVelocity();
+      Sagnac = ( (SatR.X()/ellips.c()) * (Rx.Y()/ellips.c())
+               - (SatR.Y()/ellips.c()) * (Rx.X()/ellips.c()) ) * ellips.angVelocity();
       transmit -= Sagnac;
 
       // compute other delays -- very small
       // 2GM/c^2 = 0.00887005608 m^3/s^2 * s^2/m^2 = m
       double rx = Rx.radius();
+      if(::fabs(rx) < 1.e-8) GPSTK_THROW(Exception("Rx at origin!"));
       double rs = SatR.radius();
       double dr = range(SatR,Rx);
       relativity2 = -0.00887005608 * ::log((rx+rs+dr)/(rx+rs-dr));
-      transmit -= relativity2 / ell.c();
+      transmit -= relativity2 / ellips.c();
 
       // iterate satellite position
       try {
@@ -113,18 +111,15 @@ namespace gpstk
       catch(InvalidRequest& e) { GPSTK_RETHROW(e); }
 
       // ----------------------------------------------------------
-      //// compute relativity separate from satellite clock
-      //relativity = RelativityCorrection(SatR,SatV) * ell.c();
-
-      // save relativity (m), clock bias (m) and drift (m/s)
-      relativity = svPosVel.relcorr * ell.c();
-      satclkbias = svPosVel.clkbias * ell.c();
-      satclkdrift = svPosVel.clkdrift * ell.c();
-
+      // save relativity and satellite clock
+      relativity = svPosVel.relcorr * ellips.c();
+      satclkbias = svPosVel.clkbias * ellips.c();
+      satclkdrift = svPosVel.clkdrift * ellips.c();
+   
       // correct for Earth rotation
       double sxyz[3], wt;
       rawrange = range(SatR,Rx);
-      wt = ell.angVelocity() * rawrange/ell.c();
+      wt = ellips.angVelocity() * rawrange/ellips.c();
       sxyz[0] =  ::cos(wt)*SatR.X() + ::sin(wt)*SatR.Y();
       sxyz[1] = -::sin(wt)*SatR.X() + ::cos(wt)*SatR.Y();
       sxyz[2] = SatR.Z();
@@ -133,7 +128,7 @@ namespace gpstk
       sxyz[1] = -::sin(wt)*SatV.X() + ::cos(wt)*SatV.Y();
       sxyz[2] = SatV.Z();
       SatV.setECEF(sxyz);
-
+   
       // geometric range, again
       rawrange = range(SatR,Rx);
 
@@ -144,55 +139,73 @@ namespace gpstk
       // ----------------------------------------------------------
       // satellite antenna pco and pcv
       if(isCOM && antenna.isValid()) {
-         double sf;
+         static const double fact1GPS=2.5458;         // (alpha+1)/alpha GPS
+         static const double fact2GPS=-1.5458;        // -1/alpha
+         static const double fact1GLO=2.53125;        // (alpha+1)/alpha GLO
+         static const double fact2GLO=-1.53125;       // -1/alpha
+         double fact1,fact2;
+         string freq1,freq2;
+
          // rotation matrix from satellite attitude: Rot*[XYZ]=[body frame]
-         Matrix<double> Rotation;
-         if(SSEph.JPLNumber() > -1) {
-            // use full JPL ephemeris
-            Rotation = SatelliteAttitude(transmit, SatR, SSEph, EO, sf);
+         Matrix<double> SVAtt;
+
+         // get satellite attitude from SolarSystem; if not valid, get low accuracy
+         // version from SunEarthSatGeometry and SolarPosition.
+         if(SolSys.EphNumber() != -1) {
+            SVAtt = SolSys.SatelliteAttitude(transmit, SatR);
          }
          else {
-            // use SolarPosition
-            Rotation = SatelliteAttitude(transmit, SatR, sf);
+            double AR;     // angular radius of sun
+            Position Sun = SolarPosition(transmit, AR);
+            SVAtt = SatelliteAttitude(SatR, Sun);
          }
 
-         // phase center offset vector in body frame (at L1)
-         Triple pco = antenna.getPhaseCenterOffset(1);
+         // get factors and frequencies for system
+         if(sat.system == SatID::systemGlonass) {
+            fact1=fact1GLO; fact2=fact2GLO;
+            freq1="R01"; freq2="R02";
+         }
+         else {
+            fact1=fact1GPS; fact2=fact2GPS;
+            freq1="G01"; freq2="G02";
+         }
+
+         // phase center offset vector in body frame
+         Triple pco1 = antenna.getPhaseCenterOffset(freq1);
+         Triple pco2 = antenna.getPhaseCenterOffset(freq2);
          Vector<double> PCO(3);
-         for(i=0; i<3; i++) PCO(i) = pco[i]/1000.0;      // body frame, mm -> m
+         for(i=0; i<3; i++)            // body frame, mm -> m, iono-free combo
+            PCO(i) = (fact1*pco1[i]+fact2*pco2[i])/1000.0;
 
          // PCO vector (from COM to PC) in ECEF XYZ frame, m
-         SatPCOXYZ = transpose(Rotation) * PCO;
+         SatPCOXYZ = transpose(SVAtt) * PCO;
 
          Triple pcoxyz(SatPCOXYZ(0),SatPCOXYZ(1),SatPCOXYZ(2));
+         // line of sight phase center offset
          satLOSPCO = pcoxyz.dot(S2R);                       // meters
 
-         // phase center variation NB. this should be subtracted from rawrange
+         // phase center variation TD should this should be subtracted from rawrange?
          // get the body frame azimuth and nadir angles
          double nadir,az;
-         SatelliteNadirAzimuthAngles(SatR, Rx, Rotation, nadir, az);
-         satLOSPCV = antenna.getPhaseCenterVariation(1, az, nadir) / 1000.; // meters
-
+         SatelliteNadirAzimuthAngles(SatR, Rx, SVAtt, nadir, az);
+         satLOSPCV = 0.001*(fact1 * antenna.getPhaseCenterVariation(freq1, az, nadir)
+                         + fact2 * antenna.getPhaseCenterVariation(freq2, az, nadir));
       }
       else {
          satLOSPCO = satLOSPCV = 0.0;
          SatPCOXYZ=Vector<double>(3,0.0);
       }
-
+   
       // ----------------------------------------------------------
-      // other quanitites
       // direction cosines
-      // cosines[0] = (Rx.X()-SatR.X())/rawrange;
-      // cosines[1] = (Rx.Y()-SatR.Y())/rawrange;
-      // cosines[2] = (Rx.Z()-SatR.Z())/rawrange;
       for(i=0; i<3; i++) cosines[i] = -S2R[i];            // receiver to satellite
-
+   
       // elevation and azimuth
       elevation = Rx.elevation(SatR);
       azimuth = Rx.azimuth(SatR);
       elevationGeodetic = Rx.elevationGeodetic(SatR);
       azimuthGeodetic = Rx.azimuthGeodetic(SatR);
-
+   
       // return corrected ephemeris range
       return (rawrange-satclkbias-relativity-relativity2-satLOSPCO+satLOSPCV);
 
@@ -200,21 +213,5 @@ namespace gpstk
    catch(gpstk::Exception& e) { GPSTK_RETHROW(e); }
 
    }  // end PreciseRange::ComputeAtTransmitTime
-
-
-   //------------------------------------------------------------------
-   //// should be unnecessary now
-   //double RelativityCorrection(const Position& R, const Position& V)
-   //{
-   //   // relativity correction is added to dtime by the
-   //   // XvtStore::getPrnXvt routines...
-   //   // dtr = -2*dot(R,V)/(c*c) = -4.4428e-10(s/sqrt(m)) * ecc * sqrt(A(m)) * sinE
-   //   // compute it separately here, in units seconds.
-   //   double dtr = -2*(R.X()/C_MPS)*(V.X()/C_MPS)
-   //                -2*(R.Y()/C_MPS)*(V.Y()/C_MPS)
-   //                -2*(R.Z()/C_MPS)*(V.Z()/C_MPS);
-
-   //   return dtr;
-   //}
-
+   
 }  // namespace gpstk

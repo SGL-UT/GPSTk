@@ -34,11 +34,9 @@
 //
 //=============================================================================
 
-/**
- * @file SRIMatrix.hpp
- * Template routines for efficient manipulation of square root matricies,
- * used for least squares estimation and the SRI form of the Kalman filter.
- */
+/// @file SRIMatrix.hpp
+/// Template routines for efficient manipulation of square root matricies,
+/// used for least squares estimation and the SRI form of the Kalman filter.
 
 //------------------------------------------------------------------------------------
 #ifndef SQUAREROOTINFORMATION_MATRICIES_INCLUDE
@@ -50,7 +48,6 @@
 #include "Vector.hpp"
 #include "Matrix.hpp"
 // geomatics
-#include "SparseMatrix.hpp"
 
 namespace gpstk
 {

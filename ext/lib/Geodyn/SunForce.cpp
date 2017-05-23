@@ -69,7 +69,7 @@ namespace gpstk
           * da/dr = -GM*( I/norm(r-s)^3 - 3(r-s)transpose(r-s)/norm(r-s)^5)
           */
 
-      Vector<double> r_sun = ReferenceFrames::getJ2kPosition(utc.asTDB(), SolarSystem::Sun);
+      Vector<double> r_sun = ReferenceFrames::getJ2kPosition(utc.asTDB(), SolarSystem::idSun);
 
       r_sun = r_sun * 1000.0;                          // from km to m
 
@@ -124,7 +124,7 @@ namespace gpstk
       CivilTime time(2000,1,1,0,0,0.0);
       (void)static_cast<Epoch>(time).MJD();
 
-      Vector<double> posSun =  ReferenceFrames::getJ2kPosition(time,SolarSystem::Sun);
+      Vector<double> posSun =  ReferenceFrames::getJ2kPosition(time,SolarSystem::idSun);
 
       std::cout << posSun << std::endl;
    }

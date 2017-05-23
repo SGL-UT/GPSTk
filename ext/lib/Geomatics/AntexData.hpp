@@ -34,13 +34,11 @@
 //
 //=============================================================================
 
-/**
- * @file AntexData.hpp
- * Encapsulate data from ANTEX (Antenna Exchange) format files, including both
- * receiver and satellite antennas, ANTEX file I/O, discrimination between different
- * satellite antennas based on system, PRN and time, and computation of phase center
- * offsets and variations.
- */
+/// @file AntexData.hpp
+/// Encapsulate data from ANTEX (Antenna Exchange) format files, including both
+/// receiver and satellite antennas, ANTEX file I/O, discrimination between different
+/// satellite antennas based on system, PRN and time, and computation of phase center
+/// offsets and variations.
 
 #ifndef ANTEX_DATA_HPP
 #define ANTEX_DATA_HPP
@@ -67,9 +65,10 @@ namespace gpstk
       /// string is true; e.g. if(valid & validFromValid) then validFrom may be used.
       ///
       /// NB. In calls to the 'get' routines,
-      ///        double total_PCO = getTotalPhaseCenterOffset(freq, az, el_nad)
-      ///        Triple PCO = getPhaseCenterOffset(freq)
-      ///        double PCV = getPhaseCenterVariation(freq, az, el_nad),
+      ///        freq = string("G01");
+      ///        double total_PCO = getTotalPhaseCenterOffset(freq, az, el_nad);
+      ///        Triple PCO = getPhaseCenterOffset(freq);
+      ///        double PCV = getPhaseCenterVariation(freq, az, el_nad);
       /// receivers and satellites (transmitters) are treated differently, in that
       /// receivers call with elevation angle (from North-East plane toward Up) while
       /// satellites call with nadir angle (from Z axis - the bore-sight direction).
@@ -209,13 +208,13 @@ namespace gpstk
       /// NB. PRNs apply to GLONASS as well as GPS
       int PRN, SVN;
 
-      /// system character: G or blank GPS, R GLONASS, E GALILEO, M MIXED
-      /// taken from START OF FREQUENCY record (not header)
+      /// system character: G or blank GPS, R GLONASS, E GALILEO, etc
+      /// used only in the case of satellite antennas
       char systemChar;
 
       /// number of frequencies stored, equal to number of keys in map
       /// from "# OF FREQUENCIES" record
-      int nFreq;
+      unsigned int nFreq;
 
       /// delta azimuth (degrees) stored in azimZenMap
       /// equal to 0 if there is no azimuth dependence
@@ -234,8 +233,8 @@ namespace gpstk
       CommonTime validFrom,validUntil;
       std::string stringValidFrom, stringValidUntil;
 
-      /// map from frequency (1,2,...nFreq) to antennaPCOandPCVData
-      std::map<int, antennaPCOandPCVData> freqPCVmap;
+      /// map from frequency to antennaPCOandPCVData
+      std::map<std::string, antennaPCOandPCVData> freqPCVmap;
 
       std::string type;     ///< antenna type from "TYPE / SERIAL NO"
       std::string serialNo; ///< antenna serial number from "TYPE / SERIAL NO"
@@ -275,20 +274,12 @@ namespace gpstk
       bool isValid(CommonTime& time) const throw();
 
       /// Generate a name from type and serial number
-      inline std::string name(void) const throw()
-      {
-         if(!isValid())
-            return std::string("invaild");
-         if(isRxAntenna)
-            return (type);
-         else
-            return (type + std::string("/") + serialNo);
-      }
+      std::string name(void) const throw();
 
       /// Compute the total phase center offset at the given azimuth and elev_nadir,
       /// including both nominal offset (PCO) and variation (PCV).
       /// NB. see documentation of the class for coordinates, signs and application.
-      /// @param freq frequency (usually 1 or 2)
+      /// @param freq frequency e.g. G01
       /// @param azimuth the azimuth angle in degrees, from N going toward E for
       ///        receivers, or from X going toward Y for satellites
       /// @param elev_nadir elevation in deg from horizontal (North-East) plane for
@@ -297,7 +288,7 @@ namespace gpstk
       /// @throw  if this object is invalid
       ///         if frequency does not exist for this data
       ///         if azimuth is out of range; azimuth is replaced with azim mod 360
-      double getTotalPhaseCenterOffset(const int freq,
+      double getTotalPhaseCenterOffset(const std::string freq,
                                        const double azimuth,
                                        const double elevation) const
          throw(Exception);
@@ -306,17 +297,17 @@ namespace gpstk
       /// should be computed using getPhaseCenterVariations() and added to the PCOs
       /// to get the total phase center offset).
       /// NB. see documentation of the class for coordinates, signs and application.
-      /// @param freq frequency (usually 1 or 2)
+      /// @param freq frequency (usually G01 or G02)
       /// @return Triple containing offsets in millimeters, in appropriate coordinate
       ///                system (satellite-based XYZ or receiver-based NEU).
       /// @throw  if this object is invalid
       ///         if frequency does not exist for this data
-      Triple getPhaseCenterOffset(const int freq) const
+      Triple getPhaseCenterOffset(const std::string freq) const
          throw(Exception);
 
       /// Compute the phase center variation at the given azimuth and elev_nadir
       /// NB. see documentation of the class for coordinates, signs and application.
-      /// @param freq frequency (usually 1 or 2)
+      /// @param freq frequency (usually G01 or G02)
       /// @param azimuth the azimuth angle in degrees, from N going toward E for
       ///        receivers, or from X going toward Y for satellites
       /// @param elev_nadir elevation in deg from horizontal (North-East) plane for
@@ -325,7 +316,7 @@ namespace gpstk
       /// @throw  if this object is invalid
       ///         if frequency does not exist for this data
       ///         if azimuth is out of range, azimuth is replaced with azim % 360
-      double getPhaseCenterVariation(const int freq,
+      double getPhaseCenterVariation(const std::string freq,
                                      const double azimuth,
                                      const double elev_nadir) const
          throw(Exception);
