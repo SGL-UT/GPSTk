@@ -295,14 +295,3 @@ sgltk_redhat:
     - ./build.sh -cvt -g ../install/gpstk
   dependencies:
     - deploy_redhat
-
-sgltk_solaris:
-  stage: downstream
-  tags:
-    - solaris
-  script:
-    - ./build.sh -evx -i install/gpstk
-    - cd build
-    - git clone gitlab@repositories.arlut.utexas.edu:sgl/sgltk.git
-    - cd sgltk
-    - ./build.sh -cvxt -g ../install/gpstk
