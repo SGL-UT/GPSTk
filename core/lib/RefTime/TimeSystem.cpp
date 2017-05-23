@@ -61,7 +61,7 @@ namespace gpstk
        string("UTC"),
        string("TAI"),
        string("TT"),
-       string("TRT"),
+       string("TDB"),
      };
 
    void TimeSystem::setTimeSystem(const Systems& sys)
