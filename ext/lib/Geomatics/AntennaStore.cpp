@@ -417,11 +417,8 @@ namespace gpstk
          if(detail > 0) s << endl;
          it->second.dump(s,detail);
       }
-<<<<<<< HEAD
-=======
       s << "End of dump of AntennaStore\n";
    }
->>>>>>> origin/SolarSystemUpdate
 
 }  // end namespace
 
