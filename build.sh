@@ -226,6 +226,10 @@ case `uname` in
         run cmake $args -G "Visual Studio 14 2015 Win64" $repo
         run cmake --build . --config Release
         ;;
+    MINGW64_NT-6.3)
+        run cmake $args -G "Visual Studio 14 2015 Win64" $repo
+        run cmake --build . --config Release
+        ;;
     *)
         run cmake $args $repo 
         run make all -j $num_threads
@@ -237,7 +241,10 @@ if [ $test_switch ]; then
       ignore_failures=1
   fi
   case `uname` in
-      MINGW32_NT-6.1)    
+      MINGW32_NT-6.1)
+          run cmake --build . --target RUN_TESTS --config Release
+          ;;
+      MINGW64_NT-6.3)
           run cmake --build . --target RUN_TESTS --config Release
           ;;
       *)
@@ -250,6 +257,9 @@ fi
 if [ $install ]; then
     case `uname` in
     MINGW32_NT-6.1)
+        run cmake --build . --config Release --target install
+        ;;
+    MINGW64_NT-6.3)
         run cmake --build . --config Release --target install
         ;;
     *)
@@ -274,6 +284,9 @@ fi
 
 if [ $build_packages ]; then
     case `uname` in
+        MINGW64_NT-6.3)
+            run cpack -C Release
+            ;;
         MINGW32_NT-6.1)
             run cpack -C Release
             ;;
