@@ -194,6 +194,7 @@ namespace gpstk
          MJD ctmjd;
          ctmjd.mjd = static_cast<long double>(iMJD + dSOD/SEC_PER_DAY);
          CommonTime ct = ctmjd.convertToCommonTime();
+         ct.setTimeSystem(system);
          return ct;
       }
 
@@ -204,6 +205,7 @@ namespace gpstk
          MJD ctmjd;
          ctmjd.mjd = static_cast<long double>(iMJD + dSOD/SEC_PER_DAY);
          CommonTime ct = ctmjd.convertToCommonTime();
+         ct.setTimeSystem(system);
          return ct;
       }
 
