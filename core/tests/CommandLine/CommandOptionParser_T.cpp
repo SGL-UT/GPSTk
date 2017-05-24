@@ -43,6 +43,16 @@
 using namespace std;
 using namespace gpstk;
 
+// Macro to assert that there are no errors and add diagnostics to
+// test output if there are
+#define COPANOERR(COP)                                                  \
+   {                                                                    \
+      std::ostringstream oss;                                           \
+      oss << "CommandOptionParser has errors:" << endl;                 \
+      COP.dumpErrors(oss);                                              \
+      testFramework.assert(!COP.hasErrors(), oss.str(), __LINE__);      \
+   }
+
 class CommandOptionParser_T
 {
 public:
@@ -53,6 +63,7 @@ public:
    int testAddOption();
    int testParseOptions();
    int testOptionPresence();
+   int testNOfWhich();
       //int testDisplayUsage();
 
 };
@@ -1964,6 +1975,77 @@ int CommandOptionParser_T::testOptionPresence()
 }
 
 
+void testNOfWhichRpt(unsigned expWhich, gpstk::TestUtil& testFramework,
+                     unsigned argc, char *argv[])
+{
+   try
+   {
+      defaultCommandOptionList.clear();
+      CommandOptionWithAnyArg cmdOpt1('f', "foo", "Foo", false);
+      CommandOptionWithAnyArg cmdOpt2('b', "bar", "Bar", false);
+      CommandOptionWithAnyArg cmdOpt3('B', "baz", "Baz", false);
+      CommandOptionNOf nof(2);
+      CommandOptionParser cop("testNOfWhich");
+      nof.addOption(&cmdOpt1);
+      nof.addOption(&cmdOpt2);
+      nof.addOption(&cmdOpt3);
+      TUPASS("Constructed objects");
+      cop.parseOptions(argc, argv);
+         // based on the construction of nof and argv, only argc==5
+         // can be valid
+      if (argc == 5)
+      {
+         COPANOERR(cop);
+         std::vector<CommandOption*> witches = nof.which();
+         TUASSERTE(unsigned, expWhich, witches.size());
+      }
+      else
+      {
+         TUASSERT(cop.hasErrors());
+      }
+   }
+   catch (...)
+   {
+      TUFAIL("Unexpected exception");
+   }
+}
+
+
+int CommandOptionParser_T :: testNOfWhich()
+{
+   TUDEF("CommandOptionNOf", "which");
+
+      // test a pair of different arguments
+   char* argv1[] =
+      {                                  // argc (argv index+1)
+         const_cast<char*>("program1"),  // 1
+         const_cast<char*>("-f"),        // 2
+         const_cast<char*>("wub1"),      // 3
+         const_cast<char*>("-b"),        // 4
+         const_cast<char*>("wub2"),      // 5
+         const_cast<char*>("-B"),        // 6
+         const_cast<char*>("wub3")       // 7
+      };
+
+      // test a pair of identical arguments
+   char* argv2[] =
+      {                                  // argc (argv index+1)
+         const_cast<char*>("program2"),  // 1
+         const_cast<char*>("-f"),        // 2
+         const_cast<char*>("wub1"),      // 3
+         const_cast<char*>("-f"),        // 4
+         const_cast<char*>("wub2")       // 5
+      };
+
+   for (unsigned argc = 1; argc <= 7; argc++)
+      testNOfWhichRpt(2, testFramework, argc, argv1);
+
+   testNOfWhichRpt(1, testFramework, 5, argv2);
+
+   TURETURN();
+}
+
+
 /** Run the program.
  *
  * @return Total error count for all tests
@@ -1978,6 +2060,7 @@ int main(int argc, char *argv[])
    errorTotal += testClass.testAddOption();
    errorTotal += testClass.testParseOptions();
    errorTotal += testClass.testOptionPresence();
+   errorTotal += testClass.testNOfWhich();
 
    std::cout << "Total Failures for " << __FILE__ << ": " << errorTotal
              << std::endl;
