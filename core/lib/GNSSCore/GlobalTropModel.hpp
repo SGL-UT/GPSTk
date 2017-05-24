@@ -220,7 +220,7 @@ namespace gpstk
       /// @param T output temperature
       /// @param U output undulation
       /// @throw if the height is larger than 44247 meters, which is beyond the model
-      double getGPT(double& P, double& T, double& U)
+      void getGPT(double& P, double& T, double& U)
          throw(InvalidTropModel);
 
       /// GlobalTropModel does not accept weather input, except humid
