@@ -628,45 +628,51 @@ int CommandOption_T::testCommandOptionNOf()
    TUDEF("CommandOptionNOf", "Initialization");
 
    defaultCommandOptionList.clear();
-   CommandOptionWithAnyArg  *cowaa = NULL;
+   CommandOptionNOf *cmdOpt = NULL;
+   CommandOptionWithAnyArg *cowaa1 = NULL, *cowaa2 = NULL;
 
    try
    {
-      CommandOptionNOf  cmdOpt(1);
+      cmdOpt = new CommandOptionNOf(1);
+      cowaa1 = new CommandOptionWithAnyArg('f', "foo", "Foo", false);
+      cowaa2 = new CommandOptionWithAnyArg('b', "bar", "bar", false);
       TUPASS("CommandOptionNOf was created successfully.");
-      TUASSERTE(unsigned long,0,cmdOpt.getCount());
-      TUASSERT(cmdOpt.checkArguments().size() != 0);
-      TUASSERTE(unsigned long,1,defaultCommandOptionList.size());
-
-      try
-      {
-         cmdOpt.addOption(NULL);
-         TUFAIL("CommandOptionNOf()::addOption() succeeded but should have"
-                " failed due to an valid option address.");
-      }
-      catch ( ... )
-      {
-         TUPASS("CommandOptionNOf::addOption() threw an exception as"
-                " expected.");
-      }
-
-      try
-      {
-         cowaa = new CommandOptionWithAnyArg('f', "foo", "Foo", false);
-         cmdOpt.addOption(cowaa);
-         TUPASS("CommandOptionNOf()::addOption() succeeded.");
-      }
-      catch ( ... )
-      {
-         TUFAIL("CommandOptionNOf::addOption() threw an exception but should"
-                " not have.");
-      }
    }
    catch ( ... )
    {
-      TUFAIL("CommandOptionNOf() threw an exception but should not have.");
+      TUFAIL("Exception in constructor");
    }
-   delete cowaa;
+
+   TUASSERTE(unsigned long,0,cmdOpt->getCount());
+   TUASSERT(cmdOpt->checkArguments().size() != 0);
+   TUASSERTE(unsigned long,3,defaultCommandOptionList.size());
+
+   try
+   {
+      cmdOpt->addOption(NULL);
+      TUFAIL("CommandOptionNOf()::addOption() succeeded but should have"
+             " failed due to an invalid option address.");
+   }
+   catch ( ... )
+   {
+      TUPASS("CommandOptionNOf::addOption() threw an exception as"
+             " expected.");
+   }
+
+   try
+   {
+      cmdOpt->addOption(cowaa1);
+      cmdOpt->addOption(cowaa2);
+      TUPASS("CommandOptionNOf()::addOption() succeeded.");
+   }
+   catch ( ... )
+   {
+      TUFAIL("CommandOptionNOf::addOption() threw an exception but should"
+             " not have.");
+   }
+
+   delete cowaa1;
+   delete cowaa2;
    defaultCommandOptionList.clear();
 
    TURETURN();
