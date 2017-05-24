@@ -625,46 +625,51 @@ int CommandOption_T::testCommandOptionRest()
  */
 int CommandOption_T::testCommandOptionNOf()
 {
-   TestUtil  tester( "CommandOptionNOf", "Initialization", __FILE__, __LINE__ );
+   TUDEF("CommandOptionNOf", "Initialization");
 
    defaultCommandOptionList.clear();
+   CommandOptionWithAnyArg  *cowaa = NULL;
 
    try
    {
       CommandOptionNOf  cmdOpt(1);
-      tester.assert( true, "CommandOptionNOf was created successfully.", __LINE__ );
-      tester.assert( (cmdOpt.getCount() == 0), "CommandOptionNOf count should be 0.", __LINE__ );
-      tester.assert( (cmdOpt.checkArguments().size() != 0), "CommandOptionNOf checkArguments() should have returned an error", __LINE__ );
-      tester.assert( (defaultCommandOptionList.size() == 1), "CommandOptionNOf was not added to the default list.", __LINE__ );
+      TUPASS("CommandOptionNOf was created successfully.");
+      TUASSERTE(unsigned long,0,cmdOpt.getCount());
+      TUASSERT(cmdOpt.checkArguments().size() != 0);
+      TUASSERTE(unsigned long,1,defaultCommandOptionList.size());
 
       try
       {
          cmdOpt.addOption(NULL);
-         tester.assert( false, "CommandOptionNOf()::addOption() succeeded but should have failed due to an valid option address.", __LINE__ );
+         TUFAIL("CommandOptionNOf()::addOption() succeeded but should have"
+                " failed due to an valid option address.");
       }
       catch ( ... )
       {
-         tester.assert( true, "CommandOptionNOf::addOption() threw an exception as expected.", __LINE__ );
+         TUPASS("CommandOptionNOf::addOption() threw an exception as"
+                " expected.");
       }
 
       try
       {
-         CommandOptionWithAnyArg  cowaa('f', "foo", "Foo", false);
-         cmdOpt.addOption(&cowaa);
-         tester.assert( true, "CommandOptionNOf()::addOption() succeeded.", __LINE__ );
+         cowaa = new CommandOptionWithAnyArg('f', "foo", "Foo", false);
+         cmdOpt.addOption(cowaa);
+         TUPASS("CommandOptionNOf()::addOption() succeeded.");
       }
       catch ( ... )
       {
-         tester.assert( false, "CommandOptionNOf::addOption() threw an exception but should not have.", __LINE__ );
+         TUFAIL("CommandOptionNOf::addOption() threw an exception but should"
+                " not have.");
       }
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionNOf() threw an exception but should not have.", __LINE__ );
+      TUFAIL("CommandOptionNOf() threw an exception but should not have.");
    }
+   delete cowaa;
    defaultCommandOptionList.clear();
 
-   return tester.countFails();
+   TURETURN();
 }
 
 
