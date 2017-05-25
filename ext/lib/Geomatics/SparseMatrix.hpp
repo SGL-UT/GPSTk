@@ -46,35 +46,6 @@
 #include "SparseVector.hpp"
 #include "Matrix.hpp"
 
-// TODO
-// >trace
-// >add concatenations {&& ||}{SM SV M V} to SparseMatrix
-// >add minabs maxabs to Matrix
-// notes
-// >potential trap in that rowsMap[.].len may not agree with ncols...
-// >do we want a cast-to-Matrix function? Or do we want to replace with explicit func?
-// >watch out for implicit casts to Matrix - this could really confuse things.
-//  compiler could silently cast to Matrix to access some Matrix::func not found here
-//  ?create Matrix from SparseMatrix using an explicit function rather than cast?
-// >can you define SV<double>::zeroTolerance = 1.e-14; SV<int>::zeroTolerance = 1;
-// >document
-//
-// v >inverse,LUD,SVD,HH - only inverse Cholesky for now...cast to Matrix?
-//     costly to implement, how much benefit?  HH is used in SRIF
-//     not able to speed up LUD and SVD - cast to Matrix. Chol, HH< SRIFMU done.
-// v >go through all the code and avoid using proxys; access maps directly; SV friend
-// v >is rowsMap.insert(pair(j,SparseVector) faster than rowsMap[j] = SV ?
-//     stackoverflow says no
-// v >worry about SparseVector::zeroTolerance - make it set-able? No, pass it
-// v > To zeroize or not? that is the question. If you zeroize inside routines here,
-//   there is the risk that you'll ruin the content of your data. For example, a
-//   m. cov. matrix where you set one value very small, to effectively constrain.
-//   If you zeroize in, say, lowerCholesky, you may very well set it to zero which
-//   would make the matrix singular.
-// *** Zeroize ONLY when the user explicitly calls zeroize(), and let him pass the
-//  tolerance, except call zeroize(T(0)) after operations that might create zeros.
-//  Even better, ** never add zeros to the map **
-
 namespace gpstk
 {
    // forward declarations

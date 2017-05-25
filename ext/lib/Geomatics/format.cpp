@@ -34,10 +34,8 @@
 //
 //=============================================================================
 
-/**
- * @file format.cpp
- * Simple class to encapsulate output format
- */
+/// @file format.cpp
+/// Simple class to encapsulate output format
 
 //-----------------------------------------------------------------------------
 #include "format.hpp"

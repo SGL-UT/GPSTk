@@ -64,12 +64,14 @@
 #include "SP3EphemerisStore.hpp"
 #include "GPSEphemerisStore.hpp"
 #include "EarthOrientation.hpp"
+#include "EOPStore.hpp"
 #include "Position.hpp"
 #include "RinexObsBase.hpp"
 #include "RinexObsData.hpp"
 #include "RinexObsHeader.hpp"
 #include "RinexObsStream.hpp"
 #include "Epoch.hpp"
+#include "Matrix.hpp"
 
 // DDBase
 #include "GSatID.hpp"             // this one first
@@ -97,6 +99,8 @@ int QueryTimeTable(std::string bl, int& beg, int& end) throw(gpstk::Exception);
 int DoubleDifference(void) throw(gpstk::Exception);      // DoubleDifference.cpp
 int EditDDs(void) throw(gpstk::Exception);               // EditDDs.cpp
 int Estimation(void) throw(gpstk::Exception);            // Estimation.cpp
+gpstk::Matrix<double> SingleAxisRotation(double angle, const int axis)
+   throw(gpstk::Exception);                              // DDBase.cpp
 
 //------------------------------------------------------------------------------------
 // Global data -- see DDBase.cpp where these are declared and documented

@@ -269,7 +269,7 @@ try {
    }  // end loop over options
 
    // add verbose, debug and help
-   os << "   Print extended output (--verbose) : "
+   os << "   Print extended output, including cmdline summary (--verbose) : "
             << (verbose?"true":"false") << endl;
    os << "   Print debug output at level DEBUGn [n=0-7] (--debug<n>) : "
             << debug << endl;
@@ -755,7 +755,7 @@ try {
       // add verbose, debug and help, which are always there...
       syntaxPage += //"# (automatic options)\n" +
                     leftJustify(" --verbose",optionsize)
-                  + "Print extended output (don't)\n";
+                  + "Print extended output, including cmdline summary (don't)\n";
       syntaxPage += leftJustify(" --debug<n>",optionsize)
                   + "Print debug output at LOGlevel n [n=0-7] (-1)\n";
       syntaxPage += leftJustify(" --help",optionsize)

@@ -1,8 +1,3 @@
-/// @file SRIleastSquares.hpp
-/// Include file defining class SRIleastSquares, which inherits class SRI and
-/// implements a general least squares algorithm that includes linear or linearized
-/// problems, weighting, robust estimation, and sequential estimation.
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -38,6 +33,11 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
+
+/// @file SRIleastSquares.hpp
+/// Include file defining class SRIleastSquares, which inherits class SRI and
+/// implements a general least squares algorithm that includes linear or linearized
+/// problems, weighting, robust estimation, and sequential estimation.
 
 //------------------------------------------------------------------------------------
 #ifndef CLASS_SRI_LEAST_SQUARES_INCLUDE

@@ -1,13 +1,24 @@
-/// @file SpecialFuncs.hpp
-/// Implementation of special functions, including log Gamma, factorial, binomial
-/// coefficients, beta, incomplete beta, and error functions, as well as
-/// probability density functions (PDFs) for various distributions, with their
-/// cumulative distribution (CDF) and percent point (inverse CDF) functions;
-/// these include the Chi square, Student t and F distributions.
-/// The percent point function PPf() is the inverse of the CDF() :
-///    PPf(alpha,N1,N2) == F where alpha=CDF(F,N1,N2).
-/// References: the NIST Engineering Statistics Handbook, 2006
-/// http://www.itl.nist.gov/div898/handbook/ and Abramowitz and Stegun.
+//============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 3.0 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
+//  
+//  Copyright 2004, The University of Texas at Austin
+//
+//============================================================================
 
 //============================================================================
 //
@@ -22,6 +33,17 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
+
+/// @file SpecialFuncs.hpp
+/// Implementation of special functions, including log Gamma, factorial, binomial
+/// coefficients, beta, incomplete beta, and error functions, as well as
+/// probability density functions (PDFs) for various distributions, with their
+/// cumulative distribution (CDF) and percent point (inverse CDF) functions;
+/// these include the Chi square, Student t and F distributions.
+/// The percent point function PPf() is the inverse of the CDF() :
+///    PPf(alpha,N1,N2) == F where alpha=CDF(F,N1,N2).
+/// References: the NIST Engineering Statistics Handbook, 2006
+/// http://www.itl.nist.gov/div898/handbook/ and Abramowitz and Stegun.
 
 #ifndef SPECIAL_FUNCTIONS_INCLUDE
 #define SPECIAL_FUNCTIONS_INCLUDE
