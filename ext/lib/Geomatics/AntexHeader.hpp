@@ -34,10 +34,8 @@
 //
 //=============================================================================
 
-/**
- * @file AntexHeader.hpp
- * Encapsulate header of ANTEX antenna file, including I/O
- */
+/// @file AntexHeader.hpp
+/// Encapsulate header of ANTEX antenna file, including I/O
 
 #ifndef GPSTK_ANTEX_HEADER_HPP
 #define GPSTK_ANTEX_HEADER_HPP

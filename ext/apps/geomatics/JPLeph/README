@@ -1,0 +1,61 @@
+# This script converts the JPL 403/405 ephemeris to a binary file for use by
+# other applications with the gpstk SolarSystemEphemeris class.
+# The 405 ephemeris is newer and presumably better than the 403.
+
+#!/bin/bash
+eph=405
+if [ $# -gt 0 ]; then
+   if [ "$1" == "403" ]; then eph=$1; shift;
+   elif [ "$1" == "405" ]; then eph=$1; shift;
+   else
+      echo "Command line error: specify either 403 or 405";
+      exit;
+   fi
+fi
+
+# Do not leave out any files - there will be a gap in the binary file and convert will throw.
+# verbose and debug are optional
+if [ "$eph" == "403" ]; then
+   if [ ! -e JPL/header.403 ]; then echo "Error JPL/header.403 does not exist."; exit; fi
+   #if [ ! -e JPL/ascp1950.403 ]; then echo "Error JPL/ascp1950.403 does not exist."; exit; fi
+   if [ ! -e JPL/ascp1975.403 ]; then echo "Error JPL/ascp1975.403 does not exist."; exit; fi
+   if [ ! -e JPL/ascp2000.403 ]; then echo "Error JPL/ascp2000.403 does not exist."; exit; fi
+   if [ ! -e JPL/ascp2025.403 ]; then echo "Error JPL/ascp2025.403 does not exist."; exit; fi
+   # do it
+   ./convertSSEph --log convert.log --header JPL/header.403 \
+                  --data JPL/ascp1975.403,JPL/ascp2000.403,JPL/ascp2025.403 \
+                  --output SolarSystem1975to2050.403.bin --verbose --debug
+else
+   if [ ! -e JPL/header.405 ]; then echo "Error JPL/header.405 does not exist."; exit; fi
+   if [ ! -e JPL/ascp1960.405 ]; then echo "Error JPL/ascp1960.405 does not exist."; exit; fi
+   if [ ! -e JPL/ascp1980.405 ]; then echo "Error JPL/ascp1980.405 does not exist."; exit; fi
+   if [ ! -e JPL/ascp2000.405 ]; then echo "Error JPL/ascp2000.405 does not exist."; exit; fi
+   if [ ! -e JPL/ascp2020.405 ]; then echo "Error JPL/ascp2020.405 does not exist."; exit; fi
+   ./convertSSEph --log convert.log --header JPL/header.405 \
+                  --data JPL/ascp1960.405,JPL/ascp1980.405,JPL/ascp2000.405,JPL/ascp2020.405 \
+                  --output SolarSystem1960to2020.405.bin --verbose --debug
+fi
+
+# difference the two versions of the header and data - if there is any difference,
+# then the conversion process failed.
+#
+echo "If any diffs appears after this line, then there was a problem"
+diff csse.header.asc csse.header.bin.asc
+diff csse.data.asc csse.data.bin.asc
+
+# after conversion the binary ephemeris file should be tested using this command.
+#
+echo "Now run the test program"
+if [ ! -e JPL/testpo.$eph ]; then echo "Error JPL/testpo.$eph does not exist - cannot run test."; exit; fi
+if [ "$eph" == "403" ]; then
+   ./testSSEph --log test.log --file SolarSystem1975to2050.403.bin --test JPL/testpo.403
+else
+   ./testSSEph --log test.log --file SolarSystem1980to2040.405.bin --test JPL/testpo.405
+fi
+
+# look for problems - discrepancies on the order of 10^-13 are typical.
+echo "If Warning or Failure appears after this, then check carefully."
+echo "Warnings of order 10^-13 may be attributable to machine precision and safely ignored."
+
+grep Warning test.log
+grep Failure test.log

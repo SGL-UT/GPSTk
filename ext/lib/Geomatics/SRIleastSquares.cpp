@@ -34,12 +34,10 @@
 //
 //=============================================================================
 
-/**
- * @file SRIleastSquares.cpp
- * Include file defining class SRIleastSquares, which inherits class SRI and
- * implements a general least squares algorithm that includes linear or linearized
- * problems, weighting, robust estimation, and sequential estimation.
- */
+/// @file SRIleastSquares.cpp
+/// Include file defining class SRIleastSquares, which inherits class SRI and
+/// implements a general least squares algorithm that includes linear or linearized
+/// problems, weighting, robust estimation, and sequential estimation.
 
 //------------------------------------------------------------------------------------
 // GPSTk includes

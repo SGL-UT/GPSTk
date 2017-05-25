@@ -34,10 +34,8 @@
 //
 //=============================================================================
 
-/**
- * @file GSatID.cpp
- * Define a satellite id class for geomatic lib, inheriting SatID.
- */
+/// @file GSatID.cpp
+/// Define a satellite id class for geomatic lib, inheriting SatID.
 
 #include "GSatID.hpp"
 

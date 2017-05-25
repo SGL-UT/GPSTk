@@ -1146,13 +1146,18 @@ namespace gpstk
          throw(StringException);
 
          /**
-          * Removes indicated words from the string \a s.
-          * \a s is modified as a result.
-          * @param s a string with the words you want removed.
+          * Remove indicated words from the string \a s.
+          * \a s is modified as a result.  Removal of a word begins at the
+          * start of the word and continues to include any delimiters between
+          * the end of the word and the start of the next word.
+          * If the last word in \a s is removed, all trailing delimiters
+          * are removed as well; if all words in \a s are removed, the
+          * resulting string is empty. 
+          * @param s a string with words to be removed.
           * @param first the first word to be removed (the first word is 0).
-          * @param wordsToReplace the number of words you want removed.
-          * @param delimiter the character that marks the start and
-          * end of a word.
+          * @param wordsToReplace the number of words to remove,
+          *    or std::string::npos to remove all subsequent words
+          * @param delimiter character that marks the start and end of words
           * @return a reference to string \a s with the words removed.
           */
       inline std::string& removeWords(std::string& s,
@@ -2164,8 +2169,10 @@ namespace gpstk
          {
             if ((firstWord == 0) && (numWords == 1))
                return StringUtils::firstWord(s, delimiter);
+               
             if (numWords == 0)
                return "";
+               
             std::string::size_type wordNum = 0;
             std::string::size_type pos = 0, startPos = 0;
 
@@ -2177,17 +2184,20 @@ namespace gpstk
             {
                if (wordNum == firstWord)
                   startPos = pos;
+                  
                   // get first delimter after word wordNum
                pos = s.find(delimiter, pos);
                if (((int)numWords != -1)
                    && ((int)wordNum == (int)(firstWord + (numWords-1))))
                   break;
+                  
                pos = s.find_first_not_of(delimiter, pos);
                wordNum++;
             }
 
             if (pos == std::string::npos)
-               return s.substr(startPos);
+               return ((wordNum >= firstWord) ? s.substr(startPos) : "");
+               
             return s.substr(startPos, pos-startPos);
          }
          catch(StringException &e)
@@ -2387,38 +2397,48 @@ namespace gpstk
       {
          try
          {
-            std::string temp(s);
-            std::string::size_type thisWord;
+            std::string::size_type rmStart = std::string::npos;
+            std::string::size_type rmCount = std::string::npos;
+            
+               // Find start of word 0
+            std::string::size_type sPos = s.find_first_not_of(delimiter);
 
-               // empty out s.  add the new parts of s as they are parsed
-            s.erase(0, std::string::npos);
-
-               // copy the part of the string through word 'first'
-               // by appending any delimiters then appending
-               // a word for however many words we're keeping.
-            for(thisWord = 0; thisWord < first; thisWord++)
+            for (std::string::size_type thisWord = 0;
+                 sPos != std::string::npos;
+                 thisWord++)
             {
-               s.append(temp.find_first_not_of(delimiter),delimiter);
-               stripLeading(temp, delimiter);
-               s.append(firstWord(temp));
-               stripLeading(temp, firstWord(temp));
+                  // Check for start and end of range to remove
+               if (thisWord == first)
+               {
+                  rmStart = sPos;
+                  if (wordsToReplace == std::string::npos)
+                  {
+                     break;
+                  }
+               }
+               else if (  (wordsToReplace != std::string::npos)
+                       && (thisWord >= first + wordsToReplace))
+               {
+                  rmCount = sPos - rmStart;
+                  break;
+               }               
+                  // Find the end of the current word
+               sPos = s.find(delimiter, sPos);
+               if (sPos != std::string::npos)
+               {
+                     // Find start of next word
+                  sPos = s.find_first_not_of(delimiter, sPos);
+               }
             }
-
-               // skip over the number of words to replace, making
-               // sure to stop when there's no more string left
-               // to skip
-            for(thisWord = 0;
-                (thisWord < wordsToReplace) &&
-                   (temp.length() != 0);
-                thisWord++)
+               // Remove the words if they were present
+            if (rmStart != std::string::npos)
             {
-               stripLeading(temp, delimiter);
-               stripLeading(temp, firstWord(temp));
-            }
-
-               // add on any extra words at the end
-            s.append(temp);
-
+               s.erase(rmStart, rmCount);
+               if (rmCount == std::string::npos)
+               {
+                  stripTrailing(s, delimiter);
+               }
+            }         
             return s;
          }
          catch(StringException &e)

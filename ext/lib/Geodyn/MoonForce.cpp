@@ -66,7 +66,7 @@ namespace gpstk
        * da/dr = -GM*( I/norm(r-s)^3 - 3(r-s)transpose(r-s)/norm(r-s)^5)
        */
 
-      Vector<double> r_moon = ReferenceFrames::getJ2kPosition(utc.asTDB(), SolarSystem::Moon);
+      Vector<double> r_moon = ReferenceFrames::getJ2kPosition(utc.asTDB(), SolarSystem::idMoon);
       
       r_moon = r_moon * 1000.0;         // from km to m
 

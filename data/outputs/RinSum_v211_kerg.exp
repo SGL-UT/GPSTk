@@ -1,5 +1,5 @@
-# RinSum, part of the GPS Toolkit, Ver 4.1 8/26/15, Run 2016/09/19 12:20:12
-+++++++++++++ RinSum summary of Rinex obs file /home/littlej/git/gpstk/data/inputs/igs/kerg1700.16o +++++++++++++
+# RinSum, part of the GPS Toolkit, Ver 4.1 8/26/15, Run 2017/05/25 11:22:58
++++++++++++++ RinSum summary of Rinex obs file /local/Code/gpstk/data/inputs/igs/kerg1700.16o +++++++++++++
 ---------------------------------- REQUIRED ----------------------------------
 Rinex Version  2.11,  File type OBSERVATION DATA,  System MIXED.
 Prgm: teqc  2016Apr1,  Run: 20160619 00:55:45UTC,  By: 
@@ -93,7 +93,6 @@ Computed interval 30.00 seconds.
 Computed first epoch: 2016/06/18 00:00:00 = 1901 6 518400.000 GPS
 Computed last  epoch: 2016/06/18 00:02:30 = 1901 6 518550.000 GPS
 Computed time span: 0h 2m 30s = 150 seconds.
-Computed file size: 40320 bytes.
 There were 6 epochs (100.00% of 6 possible epochs in this timespan) and 0 inline header blocks.
 
       Summary of data available in this file: (Spans are based on times and interval)
@@ -143,4 +142,4 @@ TOTAL     15      0     15      0     15      0      0     15
  Warning - Obs type SL5 SBASI+Q5 snr (Geosync L5 SBASI+Q5 snr, S5 in ver.2) should be removed from header
  Warning - Obs type SL5 SBASI+Q5 doppler (Geosync L5 SBASI+Q5 doppler, D5 in ver.2) should be removed from header
  Warning - Obs type SL5 SBASI+Q5 pseudorange (Geosync L5 SBASI+Q5 pseudorange, C5 in ver.2) should be removed from header
-RinSum timing: processing 0.040 sec, wallclock: 0 sec.
+RinSum timing: processing 0.019 sec, wallclock: 0 sec.

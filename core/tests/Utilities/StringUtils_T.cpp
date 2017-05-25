@@ -546,35 +546,72 @@ public:
          // String to store resulting data.
       string resultString;
 
+      resultString = firstWord("");
+      TUASSERTE(std::string, "", resultString);
+
       resultString = firstWord(originalString);
       TUASSERTE(std::string, firstWordInString, resultString);
 
       TUCSM("numWords");
+      resultInt = numWords("");
+      TUASSERTE(int, 0, resultInt);
+
       resultInt = numWords(originalString);
       TUASSERTE(int, numberOfWords, resultInt);
 
       TUCSM("word");
+      resultString = word("",2);
+      TUASSERTE(std::string, "", resultString);
+
       resultString = word(originalString,4);
       TUASSERTE(std::string, fifthWordInString, resultString);
 
+      resultString = word(originalString,10);
+      TUASSERTE(std::string, "", resultString);
+
+      std::string  empty;
+
       TUCSM("removeWords");
          // This changes the string passed to the method
+      resultString = removeWords(empty, 1, 1);
+      TUASSERTE(std::string, "", resultString);
+
       resultString = removeWords(originalString, 3, 2);
+      TUASSERTE(std::string, removedFourthFifthWords, originalString);
       TUASSERTE(std::string, removedFourthFifthWords, resultString);
 
       TUCSM("stripFirstWord");
          // This changes the string passed to the method
+      resultString = stripFirstWord(empty);
+      TUASSERTE(std::string, "", resultString);
+
       resultString = stripFirstWord(originalString);
       TUASSERTE(std::string, removedFirstWord, originalString);
+      TUASSERTE(std::string, firstWordInString, resultString);
 
       TUCSM("removeWords");
          // This changes the string passed to the method
-      resultString = removeWords(originalString,5);
+      resultString = removeWords(empty, 2);
+      TUASSERTE(std::string, "", resultString);
+
+      resultString = removeWords(originalString, 5);
+      TUASSERTE(std::string, removedSixthWord, originalString);
       TUASSERTE(std::string, removedSixthWord, resultString);
 
+      std::string  removeAllOfMe(originalString);
+      resultString = removeWords(removeAllOfMe, 0);
+      TUASSERTE(std::string, "", removeAllOfMe);
+      TUASSERTE(std::string, "", resultString);
+
       TUCSM("words");
-      resultString = words(originalString,3);
+      resultString = words("", 2);
+      TUASSERTE(std::string, std::string(), resultString);
+      
+      resultString = words(originalString, 3);
       TUASSERTE(std::string, allWordsFromFourthOn, resultString);
+
+      resultString = words(originalString, 10);
+      TUASSERTE(std::string, std::string(), resultString);
 
       TURETURN();
    }

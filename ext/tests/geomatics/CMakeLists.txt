@@ -36,6 +36,7 @@ add_test(NAME DDBase_CmdOpt_f_missing
          -DTEST_PROG=$<TARGET_FILE:DDBase>
          -DARGS="-f missingFile"
          -P ${CMAKE_SOURCE_DIR}/core/tests/testfailexp.cmake)
+set_property(TEST DDBase_CmdOpt_f_missing PROPERTY LABELS DDBase)
 
 # Present but invalid options file
 add_test(NAME DDBase_CmdOpt_f_invalid
@@ -43,6 +44,7 @@ add_test(NAME DDBase_CmdOpt_f_invalid
          -DTEST_PROG=$<TARGET_FILE:DDBase>
          -DARGS="-f ${GPSTK_TEST_DATA_DIR}/test_input_ddbase.sp3"
          -P ${CMAKE_SOURCE_DIR}/core/tests/testfailexp.cmake)
+set_property(TEST DDBase_CmdOpt_f_invalid PROPERTY LABELS DDBase)
 
 # Valid options file - includes valid --ObsFile, --NavFile, --DT, --BeginTime,
 # --EndTime, --EOPFile, --PosXYZ, --Fix, --PosPRS, and --BaseOut
@@ -53,6 +55,7 @@ add_test(NAME DDBase_CmdOpt_f_valid
          -DNODIFF=TRUE
          -DARGS=-f${GPSTK_TEST_DATA_DIR}/test_input_ddbase.opt_ok\ --ObsPath\ ${GPSTK_TEST_DATA_DIR}\ --NavPath\ ${GPSTK_TEST_DATA_DIR}\ --EOPPath\ ${GPSTK_TEST_DATA_DIR}
          -P ${CMAKE_SOURCE_DIR}/core/tests/testsuccexp.cmake)
+set_property(TEST DDBase_CmdOpt_f_valid PROPERTY LABELS DDBase)
 
 
 ###############################################################################
@@ -67,6 +70,7 @@ add_test(NAME DDBase_CmdOpt_log_valid
          -DNODIFF=TRUE
          -DARGS=-f${GPSTK_TEST_DATA_DIR}/test_input_ddbase.opt_ok\ --ObsPath\ ${GPSTK_TEST_DATA_DIR}\ --NavPath\ ${GPSTK_TEST_DATA_DIR}\ --EOPPath\ ${GPSTK_TEST_DATA_DIR}\ --Log\ ${GPSTK_TEST_OUTPUT_DIR}/test_output_ddbase.log
          -P ${CMAKE_SOURCE_DIR}/core/tests/testsuccexp.cmake)
+set_property(TEST DDBase_CmdOpt_log_valid PROPERTY LABELS DDBase)
 
 # Valid options file plus an invalid log file
 add_test(NAME DDBase_CmdOpt_log_invalid
@@ -76,6 +80,7 @@ add_test(NAME DDBase_CmdOpt_log_invalid
          -DNODIFF=TRUE
          -DARGS=-f${GPSTK_TEST_DATA_DIR}/test_input_ddbase.opt_ok\ --ObsPath\ ${GPSTK_TEST_DATA_DIR}\ --NavPath\ ${GPSTK_TEST_DATA_DIR}\ --EOPPath\ ${GPSTK_TEST_DATA_DIR}\ --Log\ ${GPSTK_TEST_OUTPUT_DIR}/floop/derp/test_output_ddbase.log
          -P ${CMAKE_SOURCE_DIR}/core/tests/testfailexp.cmake)
+set_property(TEST DDBase_CmdOpt_log_invalid PROPERTY LABELS DDBase)
 
 
 ###############################################################################
@@ -90,6 +95,7 @@ add_test(NAME DDBase_CmdOpt_obspath_invalid
          -DNODIFF=TRUE
          -DARGS=-f${GPSTK_TEST_DATA_DIR}/test_input_ddbase.opt_ok\ --ObsPath\ ${GPSTK_TEST_DATA_DIR}/floop/derp\ --NavPath\ ${GPSTK_TEST_DATA_DIR}\ --EOPPath\ ${GPSTK_TEST_DATA_DIR}
          -P ${CMAKE_SOURCE_DIR}/core/tests/testfailexp.cmake)
+set_property(TEST DDBase_CmdOpt_obspath_invalid PROPERTY LABELS DDBase)
 
 
 ###############################################################################
@@ -104,6 +110,7 @@ add_test(NAME DDBase_CmdOpt_obsfile_invalid
          -DNODIFF=TRUE
          -DARGS=-f${GPSTK_TEST_DATA_DIR}/test_input_ddbase.opt_ok\ --ObsPath\ ${GPSTK_TEST_DATA_DIR} --NavPath\ ${GPSTK_TEST_DATA_DIR}\ --EOPPath\ ${GPSTK_TEST_DATA_DIR}\ --ObsFile\ missing_obs_file
          -P ${CMAKE_SOURCE_DIR}/core/tests/testfailexp.cmake)
+set_property(TEST DDBase_CmdOpt_obsfile_invalid PROPERTY LABELS DDBase)
 
 
 ###############################################################################
@@ -118,6 +125,7 @@ add_test(NAME DDBase_CmdOpt_navpath_invalid
          -DNODIFF=TRUE
          -DARGS=-f${GPSTK_TEST_DATA_DIR}/test_input_ddbase.opt_ok\ --ObsPath\ ${GPSTK_TEST_DATA_DIR} --NavPath\ ${GPSTK_TEST_DATA_DIR}/floop/derp\ --EOPPath\ ${GPSTK_TEST_DATA_DIR}\ --ObsFile\ missing_obs_file
          -P ${CMAKE_SOURCE_DIR}/core/tests/testfailexp.cmake)
+set_property(TEST DDBase_CmdOpt_navpath_invalid PROPERTY LABELS DDBase)
 
 
 ###############################################################################
@@ -132,6 +140,7 @@ add_test(NAME DDBase_CmdOpt_navfile_invalid
          -DNODIFF=TRUE
          -DARGS=-f${GPSTK_TEST_DATA_DIR}/test_input_ddbase.opt_ok\ --ObsPath\ ${GPSTK_TEST_DATA_DIR} --NavPath\ ${GPSTK_TEST_DATA_DIR}\ --EOPPath\ ${GPSTK_TEST_DATA_DIR}\ --NavFile\ missing_nav_file
          -P ${CMAKE_SOURCE_DIR}/core/tests/testfailexp.cmake)
+set_property(TEST DDBase_CmdOpt_navfile_invalid PROPERTY LABELS DDBase)
 
 
 ###############################################################################
@@ -146,6 +155,7 @@ add_test(NAME DDBase_CmdOpt_eoppath_invalid
          -DNODIFF=TRUE
          -DARGS=-f${GPSTK_TEST_DATA_DIR}/test_input_ddbase.opt_ok\ --ObsPath\ ${GPSTK_TEST_DATA_DIR} --NavPath\ ${GPSTK_TEST_DATA_DIR}\ --EOPPath\ ${GPSTK_TEST_DATA_DIR}/floop/derp\ --ObsFile\ missing_obs_file
          -P ${CMAKE_SOURCE_DIR}/core/tests/testfailexp.cmake)
+set_property(TEST DDBase_CmdOpt_eoppath_invalid PROPERTY LABELS DDBase)
 
 
 ###############################################################################
@@ -160,6 +170,7 @@ add_test(NAME DDBase_CmdOpt_eopfile_invalid
          -DNODIFF=TRUE
          -DARGS=-f${GPSTK_TEST_DATA_DIR}/test_input_ddbase.opt_ok\ --ObsPath\ ${GPSTK_TEST_DATA_DIR} --NavPath\ ${GPSTK_TEST_DATA_DIR}\ --EOPPath\ ${GPSTK_TEST_DATA_DIR}\ --EOPFile\ missing_eop_file
          -P ${CMAKE_SOURCE_DIR}/core/tests/testfailexp.cmake)
+set_property(TEST DDBase_CmdOpt_eopfile_invalid PROPERTY LABELS DDBase)
 
 # @todo - Valid IERS input file
 
@@ -274,4 +285,99 @@ add_test(NAME DDBase_CmdOpt_eopfile_invalid
 
 ##############################################################################
 # @todo - DiscFix: Check that all other command line options are handled properly
+###############################################################################
+
+
+###############################################################################
+# Test EarthOrientation against SOFA example code
+###############################################################################
+add_test(NAME EarthOrientation_SOFA
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:test_EO_SOFA>
+         -DDIFF_PROG=$<TARGET_FILE:df_diff>
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTBASE=EarthOrientation_SOFA
+         -DDIFF_ARGS=-l1\ -e1.e-12
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+set_property(TEST EarthOrientation_SOFA PROPERTY LABELS Geomatics)
+
+###############################################################################
+# Test SolidEarth and OceanLoad Tides vs IERS software (cf OceanLoadTides.cpp)
+###############################################################################
+add_test(NAME EarthTides_IERS
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:test_tides>
+         -DDIFF_PROG=$<TARGET_FILE:df_diff>
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTBASE=EarthTides_IERS
+         -DARGS=--dt\ 360.\ --prec\ 6\ --solid\ --ocean\ --oceanfile\ ${GPSTK_TEST_DATA_DIR}/testocean.blq\ --oceansite\ ONSALA,REYKJAVIK
+         -DDIFF_ARGS=-l4\ -e1.e-5
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+set_property(TEST EarthTides_IERS PROPERTY LABELS Geomatics)
+
+###############################################################################
+# Test JPL ephemeris 403 conversion
+###############################################################################
+set(JPLDIR ${CMAKE_CURRENT_SOURCE_DIR}/../../apps/geomatics/JPLeph/JPL/)
+add_test(NAME JPL_403eph_conversion
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:convertSSEph>
+         -DDIFF_PROG=$<TARGET_FILE:df_diff>
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTBASE=JPL_403eph_conversion
+         -DARGS=--header\ ${JPLDIR}/header.403\ --data\ ${JPLDIR}/ascp1975.403,${JPLDIR}/ascp2000.403,${JPLDIR}/ascp2025.403\ --output\ SolarSystem1975to2050.403.bin\ --verbose
+         -DDIFF_ARGS=-l50\ -z1\ -e1.e-16
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+set_property(TEST JPL_403eph_conversion PROPERTY LABELS Geomatics_JPL)
+
+###############################################################################
+# Test JPL ephemeris 403 accuracy
+###############################################################################
+add_test(NAME JPL_403eph_accuracy
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:testSSEph>
+         -DDIFF_PROG=$<TARGET_FILE:df_diff>
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTBASE=JPL_403eph_accuracy
+         -DARGS=--file\ SolarSystem1975to2050.403.bin\ --test\ ${JPLDIR}/testpo.403\ -d
+         -DDIFF_ARGS=-l1\ -z1\ -e1.e-16
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+set_property(TEST JPL_403eph_accuracy PROPERTY LABELS Geomatics_JPL)
+set_property(TEST JPL_403eph_accuracy PROPERTY DEPENDS JPL_403eph_conversion)
+
+###############################################################################
+# Test JPL ephemeris 405 conversion
+###############################################################################
+add_test(NAME JPL_405eph_conversion
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:convertSSEph>
+         -DDIFF_PROG=$<TARGET_FILE:df_diff>
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTBASE=JPL_405eph_conversion
+         -DARGS=--header\ ${JPLDIR}/header.405\ --data\ ${JPLDIR}/ascp1980.405,${JPLDIR}/ascp2000.405,${JPLDIR}/ascp2020.405\ --output\ SolarSystem1975to2050.405.bin\ --verbose
+         -DDIFF_ARGS=-l50\ -z1\ -e1.e-16
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+set_property(TEST JPL_405eph_conversion PROPERTY LABELS Geomatics_JPL)
+
+###############################################################################
+# Test JPL ephemeris 405 accuracy
+###############################################################################
+add_test(NAME JPL_405eph_accuracy
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:testSSEph>
+         -DDIFF_PROG=$<TARGET_FILE:df_diff>
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTBASE=JPL_405eph_accuracy
+         -DARGS=--file\ SolarSystem1975to2050.405.bin\ --test\ ${JPLDIR}/testpo.405\ -d
+         -DDIFF_ARGS=-l1\ -z1\ -e1.e-16
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+set_property(TEST JPL_405eph_accuracy PROPERTY LABELS Geomatics_JPL)
+set_property(TEST JPL_405eph_accuracy PROPERTY DEPENDS JPL_405eph_conversion)
+
 ###############################################################################

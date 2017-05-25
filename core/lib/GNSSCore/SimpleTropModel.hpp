@@ -64,6 +64,10 @@ namespace gpstk
                       const double& H)
          throw(InvalidParameter);
 
+         /// Return the name of the model
+      virtual std::string name(void)
+         { return std::string("Simple"); }
+
          /// Compute and return the zenith delay for dry component of the troposphere
       virtual double dry_zenith_delay(void) const
          throw(InvalidTropModel);
