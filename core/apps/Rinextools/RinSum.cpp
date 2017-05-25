@@ -693,7 +693,7 @@ int ProcessFiles(void) throw(Exception)
 
          string filename(C.InputObsFiles[nfile]);
 
-            // iret is set to 0 ok, or could not: 1 open file, 2 read header, 3 read data
+         // iret is set to 0 ok, or could not: 1 open file, 2 read header, 3 read data
          iret = 0;
          for(i=0; i<ndtmax; i++)
             ndt[i] = -1;
@@ -724,10 +724,14 @@ int ProcessFiles(void) throw(Exception)
                       << " +++++++++++++";
          }
 
-            // get file size
+         // get file size, minus the CR's
          istrm.seekg(0,ios::end);
-         streampos filesize(istrm.tellg());
+         streampos sfilesize(istrm.tellg());
          istrm.seekg(0,ios::beg);
+         char ch;
+         long filesize(sfilesize);
+	      while((ch = istrm.get()) != EOF)
+		      if(ch == '\r') filesize--;
 
             // read the header ----------------------------------------------
          try
