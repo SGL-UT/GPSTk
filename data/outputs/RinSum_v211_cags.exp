@@ -1,5 +1,5 @@
-# RinSum, part of the GPS Toolkit, Ver 4.1 8/26/15, Run 2016/09/19 12:24:07
-+++++++++++++ RinSum summary of Rinex obs file /home/littlej/git/gpstk/data/inputs/igs/cags1700.16o +++++++++++++
+# RinSum, part of the GPS Toolkit, Ver 4.1 8/26/15, Run 2017/05/25 11:22:55
++++++++++++++ RinSum summary of Rinex obs file /local/Code/gpstk/data/inputs/igs/cags1700.16o +++++++++++++
 ---------------------------------- REQUIRED ----------------------------------
 Rinex Version  2.11,  File type OBSERVATION DATA,  System G (GPS).
 Prgm: teqc  2013Mar15,  Run: 20160619 01:10:02UTC,  By: Mike Craymer
@@ -41,7 +41,6 @@ Computed interval 30.00 seconds.
 Computed first epoch: 2016/06/18 00:00:00 = 1901 6 518400.000 GPS
 Computed last  epoch: 2016/06/18 00:02:30 = 1901 6 518550.000 GPS
 Computed time span: 0h 2m 30s = 150 seconds.
-Computed file size: 7862 bytes.
 There were 6 epochs (100.00% of 6 possible epochs in this timespan) and 0 inline header blocks.
 
       Summary of data available in this file: (Spans are based on times and interval)
@@ -58,4 +57,4 @@ System G = GPS:
  G25       6      6      6      6      6      6      6      6  2016/06/18 00:00:00 - 2016/06/18 00:02:30
 TOTAL     54     54     18     54     54     54     54
 
-RinSum timing: processing 0.017 sec, wallclock: 0 sec.
+RinSum timing: processing 0.007 sec, wallclock: 0 sec.
