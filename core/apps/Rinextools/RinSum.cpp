@@ -706,6 +706,19 @@ int ProcessFiles(void) throw(Exception)
             iret = 1;
             continue;
          }
+
+         // get file size, minus the CR's
+         char ch;
+         long filesize(0);
+         while(istrm.get(ch))
+            if(ch == '\r') filesize--;
+
+         istrm.clear();
+         istrm.seekg(0,ios::end);
+         streampos sfilesize(istrm.tellg());
+         filesize += long(sfilesize);
+
+         istrm.seekg(0,ios::beg);
          istrm.exceptions(ios::failbit);
 
             // output file name
@@ -723,15 +736,6 @@ int ProcessFiles(void) throw(Exception)
                       << " summary of Rinex obs file " << filename
                       << " +++++++++++++";
          }
-
-         // get file size, minus the CR's
-         istrm.seekg(0,ios::end);
-         streampos sfilesize(istrm.tellg());
-         istrm.seekg(0,ios::beg);
-         char ch;
-         long filesize(sfilesize);
-	      while((ch = istrm.get()) != EOF)
-		      if(ch == '\r') filesize--;
 
             // read the header ----------------------------------------------
          try
@@ -926,8 +930,9 @@ int ProcessFiles(void) throw(Exception)
                // if aux header data, either output or skip
             if(Rdata.epochFlag > 1)
             {
-               if(C.debug > -1) for(j=0; j<Rdata.auxHeader.commentList.size(); j++)
-                                   LOG(DEBUG) << "Comment: " << Rdata.auxHeader.commentList[j];
+               if(C.debug > -1)
+                  for(j=0; j<Rdata.auxHeader.commentList.size(); j++)
+                     LOG(DEBUG) << "Comment: " << Rdata.auxHeader.commentList[j];
                ncommentblocks++;
                continue;
             }
