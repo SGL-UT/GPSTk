@@ -1,5 +1,5 @@
-# RinSum, part of the GPS Toolkit, Ver 4.1 8/26/15, Run 2016/08/17 16:03:00
-+++++++++++++ RinSum summary of Rinex obs file /home/littlej/git/gpstk/data/inputs/igs/faa1170b00.16o +++++++++++++
+# RinSum, part of the GPS Toolkit, Ver 4.1 8/26/15, Run 2017/05/25 11:22:59
++++++++++++++ RinSum summary of Rinex obs file /local/Code/gpstk/data/inputs/igs/faa1170b00.16o +++++++++++++
 ---------------------------------- REQUIRED ----------------------------------
 Rinex Version  2.11,  File type OBSERVATION DATA,  System MIXED.
 Prgm: teqc  2011Oct11,  Run: 20160618 01:19:13UTC,  By: 
@@ -80,7 +80,6 @@ Computed interval  1.00 seconds.
 Computed first epoch: 2016/06/18 01:00:00 = 1901 6 522000.000 GPS
 Computed last  epoch: 2016/06/18 01:00:04 = 1901 6 522004.000 GPS
 Computed time span: 0h 0m 4s = 4 seconds.
-Computed file size: 17225 bytes.
 There were 5 epochs (100.00% of 5 possible epochs in this timespan) and 0 inline header blocks.
 
       Summary of data available in this file: (Spans are based on times and interval)
@@ -115,4 +114,4 @@ System R = GLONASS:
 TOTAL     50      0     50     50     50     50     50     50
 
  Warning - Obs type RG1 GLOP pseudorange (GLONASS G1 GLOP pseudorange, P1 in ver.2) should be removed from header
-RinSum timing: processing 0.035 sec, wallclock: 0 sec.
+RinSum timing: processing 0.025 sec, wallclock: 0 sec.
