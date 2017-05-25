@@ -52,7 +52,7 @@
 namespace gpstk
 {
       // for temperature conversion from Celcius to Kelvin
-   static const double CELSIUS_TO_KELVIN = 273.15;
+   const double TropModel::CELSIUS_TO_KELVIN = 273.15;
 
       // Compute and return the full tropospheric delay. Typically call
       // setWeather(T,P,H) before making this call.

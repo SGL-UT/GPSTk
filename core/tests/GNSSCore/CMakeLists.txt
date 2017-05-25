@@ -39,3 +39,118 @@ add_test(GNSSCore_Xvt Xvt_T)
 add_executable(SVNumXRef_T  SVNumXRef_T.cpp)
 target_link_libraries(SVNumXRef_T gpstk)
 add_test(GNSSCore_SVNumXRef SVNumXRef_T)
+
+###############################################################################
+add_executable(Tropdump Tropdump.cpp)
+target_link_libraries(Tropdump gpstk)
+
+add_test(NAME TropModel_Global
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:Tropdump>
+         -DDIFF_PROG=$<TARGET_FILE:df_diff>
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTBASE=TropModel_Global
+         -DARGS=--trop\ Global
+         -DDIFF_ARGS=-l1\ -z1
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+set_property(TEST TropModel_Global PROPERTY LABELS Tropmodel)
+
+add_test(NAME TropModel_Saas
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:Tropdump>
+         -DDIFF_PROG=$<TARGET_FILE:df_diff>
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTBASE=TropModel_Saas
+         -DARGS=--trop\ Saas
+         -DDIFF_ARGS=-l1\ -z1
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+set_property(TEST TropModel_Saas PROPERTY LABELS Tropmodel)
+
+add_test(NAME TropModel_GCAT
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:Tropdump>
+         -DDIFF_PROG=$<TARGET_FILE:df_diff>
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTBASE=TropModel_GCAT
+         -DARGS=--trop\ GCAT
+         -DDIFF_ARGS=-l1\ -z1
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+set_property(TEST TropModel_GCAT PROPERTY LABELS Tropmodel)
+
+add_test(NAME TropModel_GG
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:Tropdump>
+         -DDIFF_PROG=$<TARGET_FILE:df_diff>
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTBASE=TropModel_GG
+         -DARGS=--trop\ GG
+         -DDIFF_ARGS=-l1\ -z1
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+set_property(TEST TropModel_GG PROPERTY LABELS Tropmodel)
+
+add_test(NAME TropModel_GGHeight
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:Tropdump>
+         -DDIFF_PROG=$<TARGET_FILE:df_diff>
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTBASE=TropModel_GGHeight
+         -DARGS=--trop\ GGHeight
+         -DDIFF_ARGS=-l1\ -z1
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+set_property(TEST TropModel_GGHeight PROPERTY LABELS Tropmodel)
+
+add_test(NAME TropModel_MOPS
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:Tropdump>
+         -DDIFF_PROG=$<TARGET_FILE:df_diff>
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTBASE=TropModel_MOPS
+         -DARGS=--trop\ MOPS
+         -DDIFF_ARGS=-l1\ -z1
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+set_property(TEST TropModel_MOPS PROPERTY LABELS Tropmodel)
+
+add_test(NAME TropModel_NB
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:Tropdump>
+         -DDIFF_PROG=$<TARGET_FILE:df_diff>
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTBASE=TropModel_NB
+         -DARGS=--trop\ NB
+         -DDIFF_ARGS=-l1\ -z1
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+set_property(TEST TropModel_NB PROPERTY LABELS Tropmodel)
+
+add_test(NAME TropModel_Simple
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:Tropdump>
+         -DDIFF_PROG=$<TARGET_FILE:df_diff>
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTBASE=TropModel_Simple
+         -DARGS=--trop\ Simple
+         -DDIFF_ARGS=-l1\ -z1
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+set_property(TEST TropModel_Simple PROPERTY LABELS Tropmodel)
+
+add_test(NAME TropModel_Zero
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:Tropdump>
+         -DDIFF_PROG=$<TARGET_FILE:df_diff>
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTBASE=TropModel_Zero
+         -DARGS=--trop\ Zero
+         -DDIFF_ARGS=-l1\ -z1
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+set_property(TEST TropModel_Zero PROPERTY LABELS Tropmodel)
+
+###############################################################################
+###############################################################################
