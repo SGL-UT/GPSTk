@@ -708,6 +708,12 @@ int ProcessFiles(void) throw(Exception)
          }
          istrm.exceptions(ios::failbit);
 
+         // get file size - on windows its different b/c of CRs
+         //char ch;
+         //istrm.seekg(0,ios::end);
+         //streampos filesize(istrm.tellg());
+         //istrm.seekg(0,ios::beg);
+
             // output file name
          if(C.quiet)
          {
@@ -1175,7 +1181,7 @@ int ProcessFiles(void) throw(Exception)
          LOG(INFO) << oss.str() << delta.hour << "h " << delta.minute << "m "
                    << delta.second << "s = " << secs << " seconds.";
 
-         LOG(INFO) << "Computed file size: " << filesize << " bytes.";
+         //LOG(INFO) << "Computed file size: " << filesize << " bytes.";
 
             // Reusing secs, as it is equivalent to the original expression
             // i = 1+int(0.5+(lastObsTime-firstObsTime)/dt);
