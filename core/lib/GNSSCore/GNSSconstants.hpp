@@ -207,6 +207,10 @@ namespace gpstk
    const double L1_MULT_GLO   = 320.4;
       /// GLO L2 multiplier.
    const double L2_MULT_GLO   = 249.2;
+      /// GLO L3 carrier frequency in Hz.
+   const double L3_FREQ_GLO       = 1202.025e6;
+      /// GLO L3 carrier wavelength in meters.
+   const double L3_WAVELENGTH_GLO = 0.249406175412;
 
       /// Constant for the max array index in SV accuracy table.
    const int SV_ACCURACY_GLO_INDEX_MAX = 15;
