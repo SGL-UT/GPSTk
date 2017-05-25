@@ -127,9 +127,9 @@ void TimeDiff::process()
          unsigned order = timeOpts[i]->getOrder(j);
          orderedTimes[order] = opt->getTime()[j];
          orderedStrs[order] = opt->getValue()[j];
+         orderedTimes[order].setTimeSystem(gpstk::TimeSystem::Any);
       }
    }
-   cerr << orderedTimes.size() << endl;
    oti1 = orderedTimes.begin();
    osi1 = orderedStrs.begin();
    oti2 = oti1;
