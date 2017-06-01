@@ -633,58 +633,58 @@ namespace gpstk
       if(!gpse.dataLoadedFlag)
          return gpse;          // throw?
 
-         // Special case to address common problem in IGS aggregate brdc
-         // files.   In some cases (typ. beginning of week) the last
-         // SF 1/2/3 for the previous day is being output with a HOWtime of 
-         // zero.  This leaves it in conflict with the first SF 1/2/3 of
-         // the new day (which typically has a HOW of zero)
-      long adjHOWtime = HOWtime;
-      short adjWeeknum = weeknum;
-      long lToc = (long) Toc;
-      if ((HOWtime%SEC_PER_DAY)==0 && 
-         ((lToc)%SEC_PER_DAY)==0 &&
-           HOWtime == lToc) 
-      {
-         adjHOWtime = HOWtime - 30;  
-         if (adjHOWtime<0)
-         {
-            adjHOWtime += FULLWEEK;  
-            adjWeeknum--;     
-         }
-      }
-         // end special case adjustment (except for use of adjHOWtime below)
-
-      // get the epochs right
-      CommonTime ct = time;
-      //unsigned int year = static_cast<CivilTime>(ct).year;
-
-      // Get week for clock, to build Toc
-      double dt = Toc - adjHOWtime;
-      int week = adjWeeknum;
-      if(dt < -HALFWEEK) week++; else if(dt > HALFWEEK) week--;
-      gpse.ctToc = GPSWeekSecond(week, Toc, TimeSystem::GPS);
-      gpse.ctToc.setTimeSystem(TimeSystem::GPS);
-
       // now load the GPS-specific parts
       gpse.IODC = IODC;
       gpse.IODE = IODE;
       gpse.health = health;
       gpse.accuracyFlag = accuracy;
       gpse.Tgd = Tgd;
-
-      gpse.HOWtime = adjHOWtime;
-      week = static_cast<GPSWeekSecond>(gpse.ctToe).getWeek();
-      
-      gpse.transmitTime = GPSWeekSecond(adjWeeknum, static_cast<double>(adjHOWtime),
-         TimeSystem::GPS);
-
       gpse.codeflags = codeflgs;
       gpse.L2Pdata = L2Pdata;
 
-      // NB IODC must be set first...
+      // NB IODC must be set first
       gpse.fitint = fitint;
-      gpse.setFitIntervalFlag(int(fitint));  // calls adjustValidity();
+      if (fitint==0) gpse.fitint = 4;
+      if (fitint==1) gpse.fitint = 6; 
+      gpse.setFitIntervalFlag(int(fitint)); 
 
+         // Rinex transmit times are frequently flawed.  For GPS, except for 
+         // the first data set in an upload the beginning of transmission is
+         // deterministic based on the Toe/Toc.   Therefore, 
+         //  a.) For each item with an EVEN Toe/Toc, set
+         // the HOW time to be equivalent to the nominal beginning 
+         // of transmission based on the statements in IS-GPS-200
+         // Section 20.3.4.5 and Table 20-XIII.
+         //  b.) If this is the SECOND data set of an upload, 
+         // set the HOW time to be equivalent to the nominal beginning 
+         // of transmission based on the statements in IS-GPS-200
+         // Section 20.3.4.5 and Table 20-XIII.
+
+         // If Toc/Toe is an even-hour interval the initial time of transmission
+         // will be Toc/Toe minus 1/2 of the fit interval.
+      long adjHOWtime = HOWtime;
+      short adjWeeknum = weeknum;  
+      long sowToc = static_cast<GPSWeekSecond>(time).sow;
+      if (sowToc%3600==0)
+      {
+         adjHOWtime = sowToc - (gpse.fitint/2 * 3600);
+         if (adjHOWtime<0)
+         {
+            adjHOWtime += FULLWEEK;
+            adjWeeknum--; 
+         } 
+      }    
+
+      // Get week for clock, to build Toc
+      gpse.ctToc = time;
+      gpse.ctToc.setTimeSystem(TimeSystem::GPS);
+
+      gpse.HOWtime = adjHOWtime;
+      gpse.transmitTime = GPSWeekSecond(adjWeeknum, static_cast<double>(adjHOWtime),
+         TimeSystem::GPS);
+
+         // N.B.: The preceding times must be set prior to calling adjustValidity().
+      gpse.adjustValidity();
       return gpse;
    }
 

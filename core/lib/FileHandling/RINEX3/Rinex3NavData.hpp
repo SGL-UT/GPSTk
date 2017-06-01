@@ -227,6 +227,7 @@ namespace gpstk
       double  OMEGAdot;    ///< Rate of Rt ascension (rad/sec)
       double  idot;        ///< Rate of inclination angle (rad/sec)
       double  fitint;      ///< Fit interval
+
          //@}
 
          /** @name Tabular Ephemeris Parameters */
