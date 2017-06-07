@@ -263,8 +263,9 @@ try {
       indexForLabel.find("L2") == indexForLabel.end() ||
       (indexForLabel.find("C1") == indexForLabel.end() &&
        indexForLabel.find("P1") == indexForLabel.end()) ||
-      indexForLabel.find("P2") == indexForLabel.end()) {
-      Exception e("Obs types L1 L2 C1/P1 P2 required for GLOchannel()");
+      (indexForLabel.find("P2") == indexForLabel.end() &&
+       indexForLabel.find("C2") == indexForLabel.end())) {
+      Exception e("Obs types L1 L2 C1/P1 C2/P2 required for GLOchannel()");
       GPSTK_THROW(e);
    }
    if(indexForLabel.find("P1") == indexForLabel.end()) useC1=true;
