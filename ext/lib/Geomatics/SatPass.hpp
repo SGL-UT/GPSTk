@@ -205,14 +205,6 @@ public:
                                     Epoch beginTime,
                                     Epoch endTime) throw(Exception);
 
-   /// Iterate over the input vector of SatPass objects (sorted to be in time
-   /// order) and write them, with the given header, to a RINEX observation file
-   /// of the given filename.
-   /// @return -1 if the file could not be opened, otherwise return 0.
-   friend int SatPassToRinexFile(std::string filename,
-                                 RinexObsHeader& header,
-                                 std::vector<SatPass>& SPList) throw(Exception);
-
    // ------------------ configuration --------------------------------
    /// Constructor for the given sat; default obs types are L1, L2, P1, P2,
    /// in that order; dt is the nominal time spacing of the data.

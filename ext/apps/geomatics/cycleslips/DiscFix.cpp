@@ -74,6 +74,7 @@
 #include "expandtilde.hpp"
 #include "CommandLine.hpp"
 #include "SatPass.hpp"
+#include "SatPassUtilities.hpp"
 #include "DiscCorr.hpp"
 
 using namespace std;
@@ -752,7 +753,7 @@ try {
    if(rheadout.valid & RinexObsHeader::prnObsValid)
       rheadout.valid ^= RinexObsHeader::prnObsValid;
 
-   int iret = SatPassToRinexFile(cfg.OutRinexObs,rheadout,cfg.SPList);
+   int iret = SatPassToRinex2File(cfg.OutRinexObs,rheadout,cfg.SPList);
    if(iret) return -4;
 
    return 0;
