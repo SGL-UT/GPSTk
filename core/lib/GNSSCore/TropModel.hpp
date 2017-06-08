@@ -15,7 +15,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -23,13 +23,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -94,7 +94,7 @@ namespace gpstk
    /// parameters have not been specified.
    /// @ingroup exceptiongroup
    NEW_EXCEPTION_CLASS(InvalidTropModel, gpstk::Exception);
-   
+
    class TropModel
    {
    public:
@@ -207,8 +207,17 @@ namespace gpstk
          /// @param d Day of year.
       virtual void setDayOfYear(const int& d) {};
 
-         /// Saastamoinen hydrostatic zenith delay - used by multiple models
-         /// Ref. Davis etal 1985 and Leick, 3rd ed, pg 197, Leick, 4th ed, pg 482.
+         /// Saastamoinen hydrostatic zenith delay as modified by Davis for gravity.
+         /// Used by multiple models.
+         /// Ref. Leick, 3rd ed, pg 197, Leick, 4th ed, pg 482, and
+         /// Saastamoinen 1973 Atmospheric correction for the troposphere and
+         /// stratosphere in radio ranging of satellites. The use of artificial
+         /// satellites for geodesy, Geophys. Monogr. Ser. 15, Amer. Geophys. Union,
+         /// pp. 274-251, 1972.
+         /// Davis, J.L, T.A. Herring, I.I. Shapiro, A.E.E. Rogers, and G. Elgered,
+         /// Geodesy by Radio Interferometry: Effects of Atmospheric Modeling Errors
+         /// on Estimates of Baseline Length, Radio Science, Vol. 20, No. 6,
+         /// pp. 1593-1607, 1985.
          /// @param press pressure in millibars
          /// @param lat  latitude in degrees
          /// @param height ellipsoid height in meters
