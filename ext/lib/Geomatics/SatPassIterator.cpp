@@ -63,12 +63,12 @@ SatPassIterator::SatPassIterator(vector<SatPass>& splist, bool rev, bool dbug)
    vector<string> otlist;
    for(i=0; i<SPList[0].labelForIndex.size(); i++) {
       otlist.push_back(SPList[0].labelForIndex[i]);
-      if(RinexObsHeader::convertObsType(SPList[0].labelForIndex[i])
-            == RinexObsHeader::UN)
-      {
-         Exception e("Unregistered observation type : " + SPList[0].labelForIndex[i]);
-         GPSTK_THROW(e);
-      }
+      //if(RinexObsHeader::convertObsType(SPList[0].labelForIndex[i])
+      //      == RinexObsHeader::UN)
+      //{
+      //   Exception e("Unregistered observation type : "+SPList[0].labelForIndex[i]);
+      //   GPSTK_THROW(e);
+      //}
    }
 
    // copy the data from the first SatPass in the list, for comparison with the rest
