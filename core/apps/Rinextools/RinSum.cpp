@@ -693,7 +693,7 @@ int ProcessFiles(void) throw(Exception)
 
          string filename(C.InputObsFiles[nfile]);
 
-            // iret is set to 0 ok, or could not: 1 open file, 2 read header, 3 read data
+         // iret is set to 0 ok, or could not: 1 open file, 2 read header, 3 read data
          iret = 0;
          for(i=0; i<ndtmax; i++)
             ndt[i] = -1;
@@ -729,11 +729,6 @@ int ProcessFiles(void) throw(Exception)
                       << " summary of Rinex obs file " << filename
                       << " +++++++++++++";
          }
-
-            // get file size
-         istrm.seekg(0,ios::end);
-         streampos filesize(istrm.tellg());
-         istrm.seekg(0,ios::beg);
 
             // read the header ----------------------------------------------
          try
@@ -928,8 +923,9 @@ int ProcessFiles(void) throw(Exception)
                // if aux header data, either output or skip
             if(Rdata.epochFlag > 1)
             {
-               if(C.debug > -1) for(j=0; j<Rdata.auxHeader.commentList.size(); j++)
-                                   LOG(DEBUG) << "Comment: " << Rdata.auxHeader.commentList[j];
+               if(C.debug > -1)
+                  for(j=0; j<Rdata.auxHeader.commentList.size(); j++)
+                     LOG(DEBUG) << "Comment: " << Rdata.auxHeader.commentList[j];
                ncommentblocks++;
                continue;
             }
