@@ -37,6 +37,8 @@
 /// @file SatPassUtilities.cpp
 /// Various utilities using SatPass
 
+#include <algorithm>
+
 #include "Stats.hpp"
 #include "stl_helpers.hpp"
 #include "logstream.hpp"
