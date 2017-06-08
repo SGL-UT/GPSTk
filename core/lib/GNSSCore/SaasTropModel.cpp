@@ -253,9 +253,9 @@ namespace gpstk
       THROW_IF_INVALID_DETAILED();
 
       double T = temp+CELSIUS_TO_KELVIN;
+
       // partial pressure due to water vapor. Leick 4th ed 8.2.4
       double pwv = 0.01 * humid * ::exp(-37.2465+0.213166*T-0.000256908*T*T);
-
       // IERS2003 Ch 9 pg 99 - very similar to Leick above
       //double pwv = 0.01*humid
       //      * 0.01*::exp(33.93711047-1.9121316e-2*T+1.2378847e-5*T*T-6.3431645e3/T)
@@ -264,10 +264,9 @@ namespace gpstk
       // Saastamoinen 1973 Atmospheric correction for the troposphere and
       // stratosphere in radio ranging of satellites. The use of artificial
       // satellites for geodesy, Geophys. Monogr. Ser. 15, Amer. Geophys. Union,
-      // pp. 274-251, 1972, modified by Davis etal 1985 for gravity
-      double delay = 0.002277*((1255/T)+0.05)*pwv
-                     / (1-0.00266*::cos(2*latitude*DEG_TO_RAD)-0.00028*height/1000.);
-      return delay;
+      // pp. 274-251, 1972, modified for gravity as in Davis etal 1985
+      return ( 0.002277*((1255/T)+0.05)*pwv /
+                  (1-0.00266*::cos(2*latitude*DEG_TO_RAD)-0.00028*height/1000.) );
 
    }  // end SaasTropModel::wet_zenith_delay()
 
