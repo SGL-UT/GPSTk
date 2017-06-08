@@ -75,13 +75,13 @@ test_app_with_file(
 
 # Test that the output of RinEdit_Header is a valid Rinex Obs file.
 add_test(NAME RinEdit_ValidOutput
-         COMMAND ${CMAKE_COMMAND}
-         -DTEST_PROG=$<TARGET_FILE:rowcheck>
-         -DARGS=${GPSTK_TEST_OUTPUT_DIR}/RinEdit_Header.out
-         -DTESTBASE=RinEdit_ValidOutput
-         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
-         -DNODIFF=1
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+    COMMAND ${CMAKE_COMMAND}
+    -DTEST_PROG=$<TARGET_FILE:rowcheck>
+    -DARGS=${GPSTK_TEST_OUTPUT_DIR}/RinEdit_Header.out
+    -DTESTBASE=RinEdit_ValidOutput
+    -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+    -DNODIFF=1
+    -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
 set_tests_properties(RinEdit_ValidOutput PROPERTIES DEPENDS RinEdit_Header)
 set_property(TEST RinEdit_ValidOutput PROPERTY LABELS Rinex2)
 
@@ -168,3 +168,18 @@ test_app_with_stdout(RinSum_v302_FAA1 RinSum Rinex3
 #test_app_with_stdout(RinSum_v302_FAA1 RinSum Rinex3
 #    --obs\ ${GPSTK_TEST_DATA_DIR}/inputs/igs/UCAL00CAN_S_20161700100_15M_01S_MO
 #    "-l2 -v")
+
+
+###############################################################################
+# TEST scanBrdcFile
+###############################################################################
+set(test_name scanBrdcFile1)
+add_test(NAME ${test_name}
+    COMMAND ${CMAKE_COMMAND}
+    -DTESTBASE=${test_name}
+    -DTEST_PROG=$<TARGET_FILE:scanBrdcFile>
+    -DDIFF_PROG=$<TARGET_FILE:df_diff>
+    -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+    -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+    -P ${CMAKE_CURRENT_SOURCE_DIR}/testScanBrdcFile.cmake)
+set_property(TEST  ${test_name} PROPERTY LABELS Rinex2)

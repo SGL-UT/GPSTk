@@ -267,3 +267,150 @@ add_test(NAME calgps_Year
          -DARGS=-Y\ 2015
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
 
+
+###############################################################################
+# TEST timediff
+###############################################################################
+
+# check that -h option is valid
+add_test(NAME timediff_CmdOpt_1
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:timediff>
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testhelp.cmake)
+
+add_test(NAME timediff_Equal_1
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:timediff>
+         -DEXP_RC=0
+         -DSPARG1=${TIMECONVERT_CMDOPT_ANSI}
+         -DSPARG2=${TIMECONVERT_CMDOPT_CIVIL}
+         -DEXP_OUT=0.000000
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testinout.cmake)
+
+add_test(NAME timediff_Equal_2
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:timediff>
+         -DEXP_RC=0
+         -DSPARG1=${TIMECONVERT_CMDOPT_ANSI}
+         -DSPARG2=${TIMECONVERT_CMDOPT_RINEX}
+         -DEXP_OUT=0.000000
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testinout.cmake)
+
+add_test(NAME timediff_Equal_3
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:timediff>
+         -DEXP_RC=0
+         -DSPARG1=${TIMECONVERT_CMDOPT_ANSI}
+         -DSPARG2=${TIMECONVERT_CMDOPT_GPSEWS}
+         -DEXP_OUT=0.000000
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testinout.cmake)
+
+add_test(NAME timediff_Equal_4
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:timediff>
+         -DEXP_RC=0
+         -DSPARG1=${TIMECONVERT_CMDOPT_ANSI}
+         -DSPARG2=${TIMECONVERT_CMDOPT_GPSWS}
+         -DEXP_OUT=0.000000
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testinout.cmake)
+
+add_test(NAME timediff_Equal_5
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:timediff>
+         -DEXP_RC=0
+         -DSPARG1=${TIMECONVERT_CMDOPT_ANSI}
+         -DSPARG2=${TIMECONVERT_CMDOPT_GPSWZ}
+         -DEXP_OUT=0.000000
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testinout.cmake)
+
+add_test(NAME timediff_Equal_6
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:timediff>
+         -DEXP_RC=0
+         -DSPARG1=${TIMECONVERT_CMDOPT_ANSI}
+         -DSPARG2=${TIMECONVERT_CMDOPT_GPSFULLZ}
+         -DEXP_OUT=0.000000
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testinout.cmake)
+
+# todo 29-bit zcount
+# JD and MJD are not tested as they result in an answer of -0 which I
+# suspect will be platform-specific.
+
+add_test(NAME timediff_Equal_7
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:timediff>
+         -DEXP_RC=0
+         -DSPARG1=${TIMECONVERT_CMDOPT_ANSI}
+         -DSPARG2=${TIMECONVERT_CMDOPT_UNIX}
+         -DEXP_OUT=0.000000
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testinout.cmake)
+
+add_test(NAME timediff_Equal_8
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:timediff>
+         -DEXP_RC=0
+         -DSPARG1=${TIMECONVERT_CMDOPT_ANSI}
+         -DSPARG2=${TIMECONVERT_CMDOPT_YDS}
+         -DEXP_OUT=0.000000
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testinout.cmake)
+
+# tests with actual time differences
+
+set( TIMECONVERT_CMDOPT_ANSI_B "-A 1437264098" )
+add_test(NAME timediff_Diff_1
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:timediff>
+         -DEXP_RC=0
+         -DSPARG1=${TIMECONVERT_CMDOPT_ANSI_B}
+         -DSPARG2=${TIMECONVERT_CMDOPT_JULIAN}
+         -DEXP_OUT=-1.000000
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testinout.cmake)
+
+add_test(NAME timediff_Diff_2
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:timediff>
+         -DEXP_RC=0
+         -DSPARG1=${TIMECONVERT_CMDOPT_ANSI_B}
+         -DSPARG2=${TIMECONVERT_CMDOPT_MJD}
+         -DEXP_OUT=-1.000000
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testinout.cmake)
+
+set( TIMECONVERT_CMDOPT_GPSFULLZ_B "-Z 972030019" )
+add_test(NAME timediff_Diff_3
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:timediff>
+         -DEXP_RC=0
+         -DSPARG1=${TIMECONVERT_CMDOPT_ANSI_B}
+         -DSPARG2=${TIMECONVERT_CMDOPT_GPSFULLZ_B}
+         -DEXP_OUT=-2.500000
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testinout.cmake)
+
+# test with verbose mode
+# The output format itself isn't especially critical as the fact that
+# verbose mode works.  The original implementation of timediff made
+# some assumptions that were invalid when additional command-line
+# options were present.
+
+# this tests having the -v at the beginning
+add_test(NAME timediff_Verbose_1
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:timediff>
+         -DEXP_RC=0
+         -DARGS=-v
+         -DSPARG1=${TIMECONVERT_CMDOPT_ANSI_B}
+         -DSPARG2=${TIMECONVERT_CMDOPT_GPSFULLZ_B}
+         -DEXP_OUT=\ 1437264098\ -\ \ 972030019\ =\ -2.500000
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testinout.cmake)
+
+# this tests having the -v at the end
+add_test(NAME timediff_Verbose_2
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:timediff>
+         -DEXP_RC=0
+         -DSPARG3=-v
+         -DSPARG1=${TIMECONVERT_CMDOPT_ANSI_B}
+         -DSPARG2=${TIMECONVERT_CMDOPT_GPSFULLZ_B}
+         -DEXP_OUT=\ 1437264098\ -\ \ 972030019\ =\ -2.500000
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testinout.cmake)
