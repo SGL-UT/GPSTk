@@ -110,7 +110,7 @@ namespace gpstk
    class CommandOption
    {
    public:
-         /// let's the CommandOptionParser see it's private parts =)
+         /// lets the CommandOptionParser see its private parts =)
       friend class CommandOptionParser;
 
          /// Every option must either have or not have an argument.

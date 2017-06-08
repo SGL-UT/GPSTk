@@ -266,7 +266,8 @@ namespace gpstk
 
             /// @note IODC must be set first...
          gpse.fitint = fitint;
-         gpse.setFitIntervalFlag(int(fitint));  // calls adjustValidity();
+         gpse.setFitIntervalFlag(int(fitint)); 
+         gpse.adjustValidity();
       }
       catch(Exception& e)
       {
