@@ -57,7 +57,7 @@ SatPassIterator::SatPassIterator(vector<SatPass>& splist, bool rev, bool dbug)
    int i,j;
 
    // ensure time order
-   sort(SPList);
+   std::sort(SPList.begin(), SPList.end());
 
    // copy the list of obs types, and check that each is registered
    vector<string> otlist;
