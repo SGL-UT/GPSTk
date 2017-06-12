@@ -168,10 +168,6 @@ public:
    /// of SatPass objects in time order.
    friend class SatPassIterator;
 
-   // friends in SatPassUtilities.hpp
-   /// Sort a vector<SatPass> on time, using the firstTime member.
-   friend void sort(std::vector<SatPass>& SPList) throw();
-
    /// Read a set of RINEX observation files, filling a vector of SatPass objects.
    /// Create the SatPass objects using the input list of observation types
    /// and timestep. If there are no obs types given (vector obstypes has size 0),

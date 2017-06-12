@@ -37,6 +37,8 @@
 /// @file SatPassUtilities.cpp
 /// Various utilities using SatPass
 
+#include <algorithm>
+
 #include "Stats.hpp"
 #include "stl_helpers.hpp"
 #include "logstream.hpp"
@@ -51,13 +53,7 @@ using namespace gpstk::StringUtils;
 
 namespace gpstk {
 
-// ---------------------------- sort, read and write SatPass lists ---------------
-// NB uses SatPass::operator<()
-void sort(vector<SatPass>& SPList) throw()
-{
-   sort(SPList.begin(), SPList.end());
-}
-
+// ---------------------------- read and write SatPass lists ---------------------
 // -------------------------------------------------------------------------------
 void Dump(vector<SatPass>& SatPassList, ostream& os, bool rev, bool dbug)
    throw(Exception)
@@ -260,7 +256,7 @@ try {
    vector<Epoch> timeOrder,timeShort;
 
    // sort existing list on begin time
-   sort(SPList);
+   std::sort(SPList.begin(), SPList.end());
 
    // fill the index array using SatPass's already there
    // assumes SPList is in time order - later ones overwrite earlier

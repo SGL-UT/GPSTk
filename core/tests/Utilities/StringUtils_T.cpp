@@ -676,6 +676,33 @@ public:
       prettyPrint(prettyPrintThis, "\n", "    ", "      ", 40);
       TUASSERTE(std::string, prettyPrinted, prettyPrintThis);
 
+      prettyPrintThis = "ThisXtestsXprintingXwithXaXwordXdelimiterXotherXthan"
+         "XspaceXasXwellXasXlineXdelimetersXotherXthanXnewline";
+      prettyPrinted = "mehhhhhhhhXThisXtestsXprintingXwithXaZZZZcruddycrudcrud"
+         "XwordXdelimiterXotherZZZZcruddycrudcrudXthanXspaceXasXwellXasZZZZ"
+         "cruddycrudcrudXlineXdelimetersXotherZZZZcruddycrudcrudXthanXnewline"
+         "ZZZZ";
+      prettyPrint(prettyPrintThis, "ZZZZ", "cruddycrudcrud", "mehhhhhhhh", 37,
+                  'X');
+      TUASSERTE(std::string, prettyPrinted, prettyPrintThis);
+
+         // This tests handling of newlines which is useful for
+         // command line option documentation in particular.
+      originalString = "Bit-field: inject errors"
+         "\nbit 0 - corrupt lengths"
+         "\nbit 1 - corrupt addressing"
+         "\nbit 2 - corrupt checksum"
+         "\nbit 3 - corrupt `format'";
+      prettyPrintThis = originalString;
+      prettyPrinted = " -j, --error-inj=NUM     Bit-field: inject errors\n"
+                      "                         bit 0 - corrupt lengths\n"
+                      "                         bit 1 - corrupt addressing\n"
+                      "                         bit 2 - corrupt checksum\n"
+                      "                         bit 3 - corrupt `format'\n";
+      prettyPrint(prettyPrintThis, "\n", "                        ",
+                  " -j, --error-inj=NUM    ", 80);
+      TUASSERTE(std::string, prettyPrinted, prettyPrintThis);
+
       TURETURN();
    }
 

@@ -127,10 +127,6 @@ void RemoveMilliseconds(std::vector<SatPass>& SPList, msecHandler& msh)
    throw(Exception);
 
 // -------------------------------------------------------------------------------
-/// Sort a vector<SatPass> on time, using the firstTime member.
-void sort(std::vector<SatPass>& SPList) throw();
-
-// -------------------------------------------------------------------------------
 /// Dump an entire list of SatPass, in time order
 void Dump(std::vector<SatPass>& SatPassList, std::ostream& os,
    bool rev=false, bool dbug=false) throw(Exception);

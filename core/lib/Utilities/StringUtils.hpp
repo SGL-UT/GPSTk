@@ -2748,62 +2748,54 @@ namespace gpstk
       {
          try
          {
-               // chop aStr up into words based on wordDelim
-            std::list<std::string> wordList;
-            std::string tempStr(aStr);
-            stripLeading(tempStr, wordDelim);
-            while (!tempStr.empty())
+            std::string newStr(firstIndent);
+               // positions of word and line delimiters in aStr
+            std::string::size_type wordPos = 0, linePos = 0, curPos = 0,
+               curLineLen = newStr.length(), minPos = 0, wordLen = 0;
+            bool wordDelimited = false;
+            while (curPos != std::string::npos)
             {
-               std::string theFirstWord = firstWord(tempStr,wordDelim);
-               wordList.push_back(theFirstWord);
-               stripLeading(tempStr, theFirstWord);
-               stripLeading(tempStr, wordDelim);
-            }
-
-               // now reassemble the words into sentences
-            std::string toReturn;
-            std::string thisLine = firstIndent, lastLine;
-            while (!wordList.empty())
-            {
-               lastLine = thisLine;
-               if (!lastLine.empty())
-                  thisLine += wordDelim;
-               thisLine += wordList.front();
-
-               if (thisLine.length() > len)
+               wordPos = aStr.find(wordDelim, curPos);
+               if (wordPos == curPos)
                {
-                     // if the first word is longer than a line, just add it.
-                     // if this is the first line, remember to add the indent.
-                  if (lastLine.empty())
-                  {
-                     if (toReturn.empty())
-                        lastLine += firstIndent;
-                     lastLine = wordList.front();
-                  }
-
-                  toReturn += lastLine + lineDelim;
-
-                  thisLine.erase();
-                  lastLine.erase();
-
-                  thisLine = indent;
+                     // ignore the word delimeter
+                  curPos++;
+                  continue;
                }
+                  // no longer processing a word delimiter
+               wordDelimited = false;
+               linePos = aStr.find(lineDelim, curPos);
+               if (linePos == curPos)
+               {
+                  curPos += lineDelim.length();
+                     // line delimiters are NOT compressed.
+                  newStr += lineDelim + indent;
+                  curLineLen = indent.length();
+                  continue;
+               }
+                  // add a word
+               minPos = std::min(wordPos, linePos);
+               if (minPos != std::string::npos)
+                  wordLen = minPos - curPos;
                else
-                  wordList.erase(wordList.begin());
+                  wordLen = aStr.length() - curPos;
+               if ((curLineLen + wordLen + 1) > len)
+               {
+                  newStr += lineDelim + indent;
+                  curLineLen = indent.length();
+               }
+               newStr += wordDelim;
+               newStr += aStr.substr(curPos, wordLen);
+               curLineLen += wordLen + 1;
+               curPos = minPos;
             }
-            if (!thisLine.empty())
-               toReturn += (thisLine + lineDelim);
-
-            aStr = toReturn;
+            aStr = newStr + lineDelim;
             return aStr;
          }
-         catch(StringException &e)
+         catch (std::exception &e)
          {
-            GPSTK_RETHROW(e);
-         }
-         catch(std::exception &e)
-         {
-            StringException strexc("Exception thrown: " + std::string(e.what()));
+            StringException strexc("Exception thrown: " +
+                                   std::string(e.what()));
             GPSTK_THROW(strexc);
          }
       }
