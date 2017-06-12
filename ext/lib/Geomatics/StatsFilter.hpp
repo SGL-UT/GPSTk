@@ -940,7 +940,7 @@ template<class T> int WindowFilter<T>::filter(const size_t i0, int dsize)
 
    // continue filling windows
    if(fullwindows) {                   // fill up past and future (x x...x)(x x...x)
-      while(ptrPast->N() < width) {  // assumes dsize > 2*width+buffsize
+      while(ptrPast->N() < width) {    // assumes dsize > 2*width+buffsize
          inc(i);
          buff.push_back(i);
          // always true here if(buff.size() > buffsize)
@@ -1220,7 +1220,7 @@ template<class T> int WindowFilter<T>::analyze(void)
             sig.push_back(analvec[j].sigma);                         // sigma
             fminusp.push_back(analvec[j].fsig - analvec[j].psig);    // fsig - psig
          }
-         for(j=0; j<halfwidth-1; j++) { rat1d.push_back(0.0); sig1d.push_back(0.0); }
+         for(j=0; j<2*halfwidth; j++) { rat1d.push_back(0.0); sig1d.push_back(0.0); }
       }
 
       // update the deques
