@@ -345,7 +345,8 @@ namespace gpstk
                   // trop
                   double tc(R.getHeight());  // tc is a dummy here
                   // must test R for reasonableness to avoid corrupting TropModel
-                  if(R.elevation(S) < 0.0 || tc > 100000.0 || tc < -1000.0) {
+                  // Global model sets the upper limit
+                  if(R.elevation(S) < 0.0 || tc > 44247. || tc < -1000.0) {
                      tc = 0.0;
                      TropFlag = true;        // true means failed to apply trop corr
                   }
@@ -823,6 +824,19 @@ namespace gpstk
    {
       ostringstream oss;
 
+      // output header describing regular output
+      if(iret==-999) {
+         oss << printTime(currTime,gpsfmt);
+         int len = oss.str().size();
+         oss.str("");
+         oss << "#" << tag << " NAV " << setw(len) << "time"
+            << " " << setw(16) << "Sol-X(m)"
+            << " " << setw(16) << "Sol-Y(m)"
+            << " " << setw(16) << "Sol-Z(m)"
+            << " sys " << setw(11) << "clock" << " ...";
+         return oss.str();
+      }
+
       // tag NAV timetag X Y Z clks endtag
       oss << tag << " NAV " << printTime(currTime,gpsfmt)
          << fixed << setprecision(6)
@@ -844,6 +858,20 @@ namespace gpstk
    {
       ostringstream oss;
 
+      // output header describing regular output
+      if(iret==-999) {
+         oss << printTime(currTime,gpsfmt);
+         int len = oss.str().size();
+         if(len > 3) len -= 3;
+         oss.str("");
+         oss << "#" << tag << " POS " << setw(len) << "time"
+            << " " << setw(16) << "Sol-X(m)"
+            << " " << setw(16) << "Sol-Y(m)"
+            << " " << setw(16) << "Sol-Z(m)"
+            << " (ret code) Valid/Not";
+         return oss.str();
+      }
+
       // tag POS timetag X Y Z endtag
       oss << tag << " POS " << printTime(currTime,gpsfmt)
          << fixed << setprecision(6)
@@ -858,6 +886,17 @@ namespace gpstk
    string PRSolution::outputCLKString(string tag, int iret) throw()
    {
       ostringstream oss;
+
+      // output header describing regular output
+      if(iret==-999) {
+         oss << printTime(currTime,gpsfmt);
+         int len = oss.str().size();
+         if(len > 3) len -= 3;
+         oss.str("");
+         oss << "#" << tag << " CLK " << setw(len) << "time"
+            << " sys " << setw(11) << "clock" << " ...";
+         return oss.str();
+      }
 
       // tag CLK timetag SYS clk [SYS clk SYS clk ...] endtag
       oss << tag << " CLK " << printTime(currTime,gpsfmt)
@@ -875,6 +914,25 @@ namespace gpstk
    string PRSolution::outputRMSString(string tag, int iret) throw()
    {
       ostringstream oss;
+
+      // output header describing regular output
+      if(iret==-999) {
+         oss << printTime(currTime,gpsfmt);
+         int len = oss.str().size();
+         if(len > 3) len -= 3;
+         oss.str("");
+         oss << "#" << tag << " RMS " << setw(len) << "time"
+            << " " << setw(2) << "Ngood"
+            << " " << setw(8) << "resid"
+            << " " << setw(7) << "TDOP"
+            << " " << setw(7) << "PDOP"
+            << " " << setw(7) << "GDOP"
+            << " " << setw(5) << "Slope"
+            << " " << setw(2) << "nit"
+            << " " << setw(8) << "converge"
+            << " sats(-rej)... (ret code) Valid/Not";
+         return oss.str();
+      }
 
       // remove duplicates from satellite list, and find "any good data" ones
       // this gets tricky since there may be >1 datum from one satellite
