@@ -43,6 +43,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <algorithm>
 #include "Exception.hpp"
 #include "MiscMath.hpp"
 #include "Vector.hpp"
@@ -98,7 +99,7 @@ namespace gpstk
       if(n==0) return T();
 
       std::vector<T> w(v);
-      sort(w.begin(), w.end());
+      std::sort(w.begin(), w.end());
 
       if (n % 2) return w[(n+1)/2-1];
       return ((w[n/2-1]+w[n/2])/T(2));
