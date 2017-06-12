@@ -42,7 +42,8 @@
 
 #include "SatPassIterator.hpp"
 
-#include "RinexObsStream.hpp"
+#include "RinexObsHeader.hpp"
+#include "Rinex3ObsHeader.hpp"
 #include "RinexUtilities.hpp"
 #include "msecHandler.hpp"
 #include "RinexSatID.hpp"
@@ -88,13 +89,24 @@ int SatPassFromRinexFiles(
             gpstk::Epoch endTime=gpstk::CommonTime::END_OF_TIME) throw(Exception);
 
 // -------------------------------------------------------------------------------
+/// deprecated - use SatPassToRinex3File for both 3 and 2.
 /// Iterate over the input vector of SatPass objects (sorted to be in time
-/// order) and write them, with the given header, to a RINEX observation file
+/// order) and write them, with the given header, to a RINEX v.2 observation file
 /// of the given filename.
 /// @return -1 if the file could not be opened, otherwise return 0.
-int SatPassToRinexFile(std::string filename,
-                       RinexObsHeader& header,
-                       std::vector<SatPass>& SPList) throw(Exception);
+int SatPassToRinex2File(std::string filename,
+                        RinexObsHeader& header,
+                        std::vector<SatPass>& SPList) throw(Exception);
+
+// -------------------------------------------------------------------------------
+/// Iterate over the input vector of SatPass objects (sorted to be in time
+/// order) and write them, with the given header, to a RINEX VER 3 observation file
+/// of the given filename.
+/// @return -1 if the file could not be opened, otherwise return 0.
+int SatPassToRinex3File(std::string filename,
+                        Rinex3ObsHeader header,
+                        const std::map<char, std::vector<std::string> >& sysobs,
+                        std::vector<SatPass>& SPList) throw(Exception);
 
 // -------------------------------------------------------------------------------
 /// Find millisecond adjusts of the time tag, pseudoranges C1 C2 P1 P2, phases L1 L2.
@@ -113,10 +125,6 @@ int FindMilliseconds(std::vector<SatPass>& SPList, msecHandler& msh)
 /// @param  message returned from FindMilliseconds()
 void RemoveMilliseconds(std::vector<SatPass>& SPList, msecHandler& msh)
    throw(Exception);
-
-// -------------------------------------------------------------------------------
-/// Sort a vector<SatPass> on time, using the firstTime member.
-void sort(std::vector<SatPass>& SPList) throw();
 
 // -------------------------------------------------------------------------------
 /// Dump an entire list of SatPass, in time order
