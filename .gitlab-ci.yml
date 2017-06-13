@@ -21,7 +21,7 @@ build_debian:
     - mkdir build
     - cd build
     - cmake -DPYTHON_INSTALL_PREFIX=install -DCMAKE_INSTALL_PREFIX=install/gpstk $CMAKE_ARG_DEFAULT 
-    - make all -j 54
+    - make all -j 4
   artifacts:
     paths:
     - build/
@@ -73,7 +73,7 @@ build_core:
     - mkdir build
     - cd build
     - cmake -DPYTHON_INSTALL_PREFIX=install -DCMAKE_INSTALL_PREFIX=install/gpstk -DBUILD_EXT=OFF -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
-    - make all -j 54
+    - make all -j 4
   artifacts:
     paths:
     - build/
@@ -86,7 +86,7 @@ test_debian:
     - debian
   script:
     - cd build
-    - ctest -j 54
+    - ctest -j 4
   dependencies:
     - build_debian
 
@@ -127,7 +127,7 @@ test_core:
     - core
   script:
     - cd build
-    - ctest -j 54
+    - ctest -j 4
   dependencies:
     - build_core
 
@@ -139,7 +139,7 @@ deploy_debian:
     - debian
   script:
     - cd build
-    - make install -j 54
+    - make install -j 4
   artifacts:
     paths:
     - build/install
@@ -185,7 +185,7 @@ deploy_core:
     - core
   script:
     - cd build
-    - make install -j 54
+    - make install -j 4
   artifacts:
     paths:
     - build/install
@@ -200,7 +200,7 @@ package_debian:
     - debian
   script:
     - cd build
-    - make package -j 54
+    - make package -j 4
   dependencies:
     - build_debian
 
@@ -240,7 +240,7 @@ package_core:
     - core
   script:
     - cd build
-    - make package -j 54
+    - make package -j 4
   dependencies:
     - build_core
 
