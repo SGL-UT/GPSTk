@@ -10,7 +10,6 @@ endif()
 message(STATUS "running ${TEST_PROG} --in ${SOURCEDIR}/${FILE1} --in ${SOURCEDIR}/${FILE2} --out ${TARGETDIR}/${TESTBASE}.out ${ARGS} ")
 
 execute_process(COMMAND ${TEST_PROG} --in ${SOURCEDIR}/${FILE1} --in ${SOURCEDIR}/${FILE2} ${ARG_LIST} --out ${TARGETDIR}/${TESTBASE}.out
-                OUTPUT_FILE ${TARGETDIR}/${TESTBASE}.out 
                 RESULT_VARIABLE HAD_ERROR)
 
 # files are expected to be different
