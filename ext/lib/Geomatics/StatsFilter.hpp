@@ -59,8 +59,6 @@
 #include <deque>
 #include "Stats.hpp"
 #include "RobustStats.hpp"
-#include "StringUtils.hpp"       // TEMP
-#include "logstream.hpp"         // TEMP
 
 //------------------------------------------------------------------------------------
 // TD NB pffrac is never used.
@@ -781,12 +779,12 @@ private:
    bool balanced;                ///< if true, 2 panes of sliding window have = size
    bool fullwindows;             ///< if true, only process with full windows
    bool twoSample;               ///< if true, use two-sample statistics
-   int width;                    ///< width or number of points in (1 pane of) window
+   unsigned int width;           ///< width or number of points in (1 pane of) window
    int buffsize;                 ///< number of good points ignored btwn past, future
    bool noxdata;                 ///< true when xdata array is not given
    bool noflags;                 ///< true when flags array is not given
 
-   int halfwidth;                ///< number of points on either side of slip analyzed
+   unsigned int halfwidth;       ///< number of points on either side of slip analyzed
    T minratio;                   ///< ratio=|step/sig| < this is not a slip
    T minstep;                    ///< |step|(=fut ave - past ave) < this is not slip
    T pffrac;                     ///< delta(f,p) sigma < this frac * sigma not a slip
@@ -830,12 +828,13 @@ template<class T> int WindowFilter<T>::filter(const size_t i0, int dsize)
    // validate input -----------------------------------------------------------
    // is there enough data to apply the filter? if not, return -1
    // if there are flags, count the good points
-   int i(i0),j,n(0);
+   int i(i0),j;
+   unsigned int n(0);
    if(!noflags) {
       while(i<ilimit && n < 2*width+buffsize) { if(flags[i]==0) n++; i++; }
       if(i==ilimit) return -1;
    }
-   else if(dsize < 2*width+buffsize) return -1;
+   else if(dsize < int(2*width+buffsize)) return -1;
 
    // is xdata given? can't two-sample without x...
    if(twoSample && noxdata) return -2;
@@ -922,18 +921,13 @@ template<class T> int WindowFilter<T>::filter(const size_t i0, int dsize)
    // find the first good point, but don't necessarily increment
    i = i0; if(!noflags) while(i<ilimit && flags[i]) i++;
 
-   //TEMPtestTSS// keep deques containing the indexes i in the past and future stats
-   //TEMPtestTSS std::deque<int> pindex,findex;
-
    // start with two points in past, and up to width pts in future
    // 'return -1' code above implies this will not overrun arrays
    int iplus,iminus(i),isecond;
    ptrPast->Add(xvec(i),dvec(i));      // put first point in past
-   //TEMPtestTSS pindex.push_back(i);
    T xprev(xvec(i)), xmid;             // save prev x for two-sample slips
    inc(i);                             // second good point
    ptrPast->Add(xvec(i),dvec(i));      // put second point in past
-   //TEMPtestTSS pindex.push_back(i);
 
    // fill the buffer
    while(buff.size() < buffsize) { inc(i); buff.push_back(i); }
@@ -947,28 +941,22 @@ template<class T> int WindowFilter<T>::filter(const size_t i0, int dsize)
          j = buff[0];
          buff.pop_front();
          ptrPast->Add(xvec(j),dvec(j));
-         //TEMPtestTSS pindex.push_back(j);
       }
       isecond = iplus = i;
       while(ptrFuture->N() < width) {  // assumes dsize > 2*width+buffsize
          // NB this fails: ptrFuture->Add(xvec(iplus),dvec(iplus++)); don't use it.
          inc(iplus);
          ptrFuture->Add(xvec(iplus),dvec(iplus));
-         //TEMPtestTSS findex.push_back(iplus);
       }
       inc(iplus);
    }
    else if(balanced) {                 // start at (x x x)(x x x)
       inc(i); ptrPast->Add(xvec(i),dvec(i));       // put third point in past
-      //TEMPtestTSS pindex.push_back(i);
       isecond = i;
       xprev = xvec(i);
       inc(i); ptrFuture->Add(xvec(i),dvec(i));     // put 3 into future
-      //TEMPtestTSS findex.push_back(i);
       inc(i); ptrFuture->Add(xvec(i),dvec(i));
-      //TEMPtestTSS findex.push_back(i);
       inc(i); ptrFuture->Add(xvec(i),dvec(i));
-      //TEMPtestTSS findex.push_back(i);
       inc(i);
       iplus = i;
    }
@@ -978,7 +966,6 @@ template<class T> int WindowFilter<T>::filter(const size_t i0, int dsize)
          // NB this fails: ptrFuture->Add(xvec(iplus),dvec(iplus++)); don't use it.
          inc(iplus);
          ptrFuture->Add(xvec(iplus),dvec(iplus));
-         //TEMPtestTSS findex.push_back(iplus);
       }
       inc(iplus);
    }
@@ -1007,53 +994,6 @@ template<class T> int WindowFilter<T>::filter(const size_t i0, int dsize)
       //A.slope = 0.5*(ptrPast->Slope() + ptrFuture->Slope());
       //A.pslope = ptrPast->Slope();
       //A.fslope = ptrFuture->Slope();
-
-      //Dump the TSS, build the TSS manually, and print that
-      //TEMPtestTSS {
-      //TEMPtestTSS gpstk::TwoSampleStats<T> pTSS,fTSS;
-      //TEMPtestTSS unsigned int k;
-      //TEMPtestTSS std::string str;
-
-      //TEMPtestTSS std::cout << "At i=" << i << " Past_indexes(" << pindex.size()
-      //TEMPtestTSS           << "):";
-      //TEMPtestTSS for(k=0; k<pindex.size(); k++) {
-         //TEMPtestTSS std::cout << " " << pindex[k];
-         //TEMPtestTSS pTSS.Add(xvec(pindex[k]),dvec(pindex[k]));
-      //TEMPtestTSS }
-      //TEMPtestTSS std::cout << std::endl;
-
-      //TEMPtestTSS str = pTSS.asString();
-      //TEMPtestTSS gpstk::StringUtils::change(str,"\n"," ");
-      //TEMPtestTSS std::cout << std::fixed << std::setprecision(3) << xvec(i)
-      //TEMPtestTSS           << " pman " << str << std::endl;
-
-      //TEMPtestTSS str = ptrPast->asString();
-      //TEMPtestTSS gpstk::StringUtils::change(str,"\n"," ");
-      //TEMPtestTSS std::cout << std::fixed << std::setprecision(3) << xvec(i)
-      //TEMPtestTSS           << " past " << str << " eval " << A.pave << std::endl;
-
-      //TEMPtestTSS // ---------
-
-      //TEMPtestTSS std::cout << "At i=" << i << " Futu_indexes(" << findex.size()
-      //TEMPtestTSS           << "):";
-      //TEMPtestTSS for(k=0; k<findex.size(); k++) {
-         //TEMPtestTSS std::cout << " " << findex[k];
-         //TEMPtestTSS fTSS.Add(xvec(findex[k]),dvec(findex[k]));
-      //TEMPtestTSS }
-      //TEMPtestTSS std::cout << std::endl;
-
-      //TEMPtestTSS str = fTSS.asString();
-      //TEMPtestTSS gpstk::StringUtils::change(str,"\n"," ");
-      //TEMPtestTSS std::cout << std::fixed << std::setprecision(3) << xvec(i)
-      //TEMPtestTSS           << " fman " << str << std::endl;
-
-      //TEMPtestTSS str = ptrFuture->asString();
-      //TEMPtestTSS gpstk::StringUtils::change(str,"\n"," ");
-      //TEMPtestTSS std::cout << std::fixed << std::setprecision(3) << xvec(i)
-      //TEMPtestTSS           << " futu " << str << " eval " << A.fave
-      //TEMPtestTSS           << std::endl << std::endl;
-
-      //TEMPtestTSS }
 
       // compute a "step" = difference in future and past averages
       // must evaluate at the same x-point
@@ -1113,12 +1053,10 @@ template<class T> int WindowFilter<T>::filter(const size_t i0, int dsize)
       //               else                 add 1 to F, sub 1 from P
       // move i from future to past
       ptrFuture->Subtract(xvec(i),dvec(i));
-      //TEMPtestTSS findex.pop_front();
       buff.push_back(i);
       j = buff[0];
       buff.pop_front();
       ptrPast->Add(xvec(j),dvec(j));
-      //TEMPtestTSS pindex.push_back(j);
 
       // if fullwindows, quit when future meets limit
       // ?? won't it just stop b/c loop reaches end?
@@ -1127,39 +1065,30 @@ template<class T> int WindowFilter<T>::filter(const size_t i0, int dsize)
 
       // if balanced and future has met the end-of-data, remove two from past
       if(balanced && iplus == i0+dsize) {         // assumes data.size() > 2*width
-         //TEMPtestTSS std::cout << " balanced,fateod\n";
          ptrPast->Subtract(xvec(iminus),dvec(iminus));
-         //TEMPtestTSS pindex.pop_front();
          inc(iminus);
          ptrPast->Subtract(xvec(iminus),dvec(iminus));
-         //TEMPtestTSS pindex.pop_front();
          inc(iminus);
       }
 
       // else if balanced and past not full, move two into the future
       else if(balanced && ptrPast->N() < width+1) {           // same assumption
-         //TEMPtestTSS std::cout << " balanced,pastnotfull\n";
          ptrFuture->Add(xvec(iplus),dvec(iplus));
-         //TEMPtestTSS findex.push_back(iplus);
          inc(iplus);
          ptrFuture->Add(xvec(iplus),dvec(iplus));
-         //TEMPtestTSS findex.push_back(iplus);
          inc(iplus);
       }
 
       // else not near either end
       else {
          // move iplus up by one
-         //TEMPtestTSS std::cout << " normal\n";
          if(balanced || iplus < i0+dsize-1) {
             ptrFuture->Add(xvec(iplus),dvec(iplus));
-            //TEMPtestTSS findex.push_back(iplus);
             inc(iplus);
          }
          // and move iminus up by one
          if(balanced || ptrPast->N() > width) {
             ptrPast->Subtract(xvec(iminus),dvec(iminus));
-            //TEMPtestTSS pindex.pop_front();
             inc(iminus);
          }
       }
