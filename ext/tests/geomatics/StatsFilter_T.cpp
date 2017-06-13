@@ -66,7 +66,8 @@ int testFirstDiff(const vector<double>& xdata,
    fdf.setLimit(ratlimit);
    iret = fdf.filter();
    if(verbose) cout << "# FD Filter returns " << iret << endl;
-   if(iret < 0) cout << "# FD Filter failed (" << iret << ")" << endl;
+   if(iret < 0)
+      cout << "# FD Filter failed (" << iret << ")" << endl;
    else {
       iret = fdf.analyze();
       if(iret < 0) cout << "# FD Filter analysis failed (" << iret << ")" << endl;
@@ -434,16 +435,29 @@ try {
    // dataset 2 ----------------------------------------------------------
    data.clear(); xdata.clear();
    for(i=0; i<M2; i++) {
-      xdata.push_back(data2[3*i]);
-      data.push_back(data2[3*i+1]);
+      xdata.push_back(data2[2*i]);
+      data.push_back(data2[2*i+1]);
    }
 
    label = "Test2FDF";
    iret = testFirstDiff(xdata, data, 2.0, label, verbose, results);
    if(iret == 0) {
       if(results[0].type != FilterHit<double>::outlier ||
-         results[0].index != 0 || results[0].npts != 26 || results[0].ngood != 0) {
-         cout << label << " first hit\n";
+         results[0].index != 0 || results[0].npts != 3 || results[0].ngood != 0) {
+         count++;
+      }
+      if(results[1].type != FilterHit<double>::BOD ||
+         results[1].index != 3 || results[1].npts != 7 || results[1].ngood != 7) {
+         count++;
+      }
+      if(results[2].type != FilterHit<double>::outlier ||
+         results[2].index != 10 || results[2].npts != 1 || results[2].ngood != 0) {
+         count++;
+      }
+      if(results[3].type != FilterHit<double>::slip ||
+         results[3].index != 11 || results[3].npts != 15 || results[3].ngood != 15 ||
+         ::fabs(results[3].step + 15.556) > tol)
+      {
          count++;
       }
    }
