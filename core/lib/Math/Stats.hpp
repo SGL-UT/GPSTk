@@ -35,7 +35,7 @@
 //=============================================================================
 
 /// @file Stats.hpp
-/// One and two-sample statistics
+/// Conventional, sequential and weighted one-sample, and two-sample statistics
 
 #ifndef INCLUDE_GPSTK_STATS_INCLUDE
 #define INCLUDE_GPSTK_STATS_INCLUDE
@@ -240,13 +240,14 @@ namespace gpstk
       /// Dump Stats private members directly;
       /// useful in saving an object (e.g. to a file); reload with Load().
       /// @param vuint output vector<unsigned int> of length 2, input of Load()
-      /// @param vT output vector<T> of length 4, input of Load()
+      /// @param vT output vector<T> of length 5, input of Load()
       void Dump(std::vector<unsigned int>& vuint, std::vector<T>& vT)
       {
          vuint.clear();
          vuint.push_back(n); vuint.push_back(setScale ? 1:0);
 
          vT.clear();
+         vT.push_back(setScale ? scale : T(0));
          vT.push_back(min); vT.push_back(max);
          vT.push_back(sum); vT.push_back(sum2);
       }
@@ -254,7 +255,7 @@ namespace gpstk
       /// Define Stats private members directly; useful in continuing
       /// with an object that was earlier saved (e.g. to a file) using Dump().
       /// @param vuint input vector<unsigned int> of length 2, output of Dump()
-      /// @param vT input vector<T> of length 4, output of Dump()
+      /// @param vT input vector<T> of length 5, output of Dump()
       /// NB no checking at all - caller has burden of validity
       /// NB zero-fill rather than throwing
       void Load(const std::vector<unsigned int>& vuint, const std::vector<T>& vT)
@@ -262,14 +263,16 @@ namespace gpstk
          if(vuint.size() < 2 || vT.size() < 4) {
             n = 0;
             setScale = false;
+            scale = T(0);
             min = T(0); max = T(0);
             sum = T(0); sum2 = T(0);
          }
          else {
             n = vuint[0];
             setScale = (vuint[1] != 0);
-            min = vT[0]; max = vT[1];
-            sum = vT[2]; sum2 = vT[3];
+            scale = vT[0];
+            min = vT[1]; max = vT[2];
+            sum = vT[3]; sum2 = vT[4];
          }
       }
 
@@ -936,7 +939,7 @@ namespace gpstk
       /// Dump TwoSampleStats private members directly;
       /// useful in saving an object (e.g. to a file); reload with Load().
       /// @param vuint output vector<unsigned int> of length 5, input of Load()
-      /// @param vT output vector<T> of length 9, input of Load()
+      /// @param vT output vector<T> of length 11, input of Load()
       void Dump(std::vector<unsigned int>& vuint, std::vector<T>& vT)   // TSS
       {
          size_t i;
@@ -947,11 +950,11 @@ namespace gpstk
 
          SX.Dump(vi,vt);
          for(i=0; i<2; i++) vuint.push_back(vi[i]);
-         for(i=0; i<4; i++) vT.push_back(vt[i]);
+         for(i=0; i<5; i++) vT.push_back(vt[i]);
 
          SY.Dump(vi,vt);                              // this will clear vi,vt first
          for(i=0; i<2; i++) vuint.push_back(vi[i]);
-         for(i=0; i<4; i++) vT.push_back(vt[i]);
+         for(i=0; i<5; i++) vT.push_back(vt[i]);
 
          vuint.push_back(n);
          vT.push_back(sumxy);
@@ -960,7 +963,7 @@ namespace gpstk
       /// Define TwoSampleStats private members directly; useful in continuing
       /// with an object that was earlier saved (e.g. to a file) using Dump().
       /// @param vuint input vector<unsigned int> of length 5, output of Dump()
-      /// @param vT input vector<T> of length 9, output of Dump()
+      /// @param vT input vector<T> of length 11, output of Dump()
       /// NB no checking at all - caller has burden of validity
       /// NB zero-fill rather than throwing
       void Load(std::vector<unsigned int>& vuint, std::vector<T>& vT)   // TSS
@@ -968,19 +971,20 @@ namespace gpstk
          size_t i;
          std::vector<unsigned int> vi2;
          std::vector<double> vt2;
-         if(vuint.size() < 5 || vT.size() < 9) {
+         if(vuint.size() < 5 || vT.size() < 11) {
             vuint.clear();
             for(i=0; i<5; i++) vT.push_back(T(0));
             vT.clear();
-            for(i=0; i<9; i++) vT.push_back(T(0));
+            for(i=0; i<11; i++) vT.push_back(T(0));
          }
-
          SX.Load(vuint,vT);
+
          for(i=0; i<2; i++) vi2.push_back(vuint[i+2]);
-         for(i=0; i<4; i++) vt2.push_back(vT[i+4]);
+         for(i=0; i<5; i++) vt2.push_back(vT[i+5]);
          SY.Load(vi2,vt2);
+
          n = vuint[4];
-         sumxy = vT[8];
+         sumxy = vT[10];
       }
 
       // output -----------------------------------------------------------

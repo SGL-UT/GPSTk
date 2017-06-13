@@ -66,7 +66,8 @@ int testFirstDiff(const vector<double>& xdata,
    fdf.setLimit(ratlimit);
    iret = fdf.filter();
    if(verbose) cout << "# FD Filter returns " << iret << endl;
-   if(iret < 0) cout << "# FD Filter failed (" << iret << ")" << endl;
+   if(iret < 0)
+      cout << "# FD Filter failed (" << iret << ")" << endl;
    else {
       iret = fdf.analyze();
       if(iret < 0) cout << "# FD Filter analysis failed (" << iret << ")" << endl;
@@ -434,16 +435,29 @@ try {
    // dataset 2 ----------------------------------------------------------
    data.clear(); xdata.clear();
    for(i=0; i<M2; i++) {
-      xdata.push_back(data2[3*i]);
-      data.push_back(data2[3*i+1]);
+      xdata.push_back(data2[2*i]);
+      data.push_back(data2[2*i+1]);
    }
 
    label = "Test2FDF";
    iret = testFirstDiff(xdata, data, 2.0, label, verbose, results);
    if(iret == 0) {
       if(results[0].type != FilterHit<double>::outlier ||
-         results[0].index != 0 || results[0].npts != 26 || results[0].ngood != 0) {
-         cout << label << " first hit\n";
+         results[0].index != 0 || results[0].npts != 3 || results[0].ngood != 0) {
+         count++;
+      }
+      if(results[1].type != FilterHit<double>::BOD ||
+         results[1].index != 3 || results[1].npts != 7 || results[1].ngood != 7) {
+         count++;
+      }
+      if(results[2].type != FilterHit<double>::outlier ||
+         results[2].index != 10 || results[2].npts != 1 || results[2].ngood != 0) {
+         count++;
+      }
+      if(results[3].type != FilterHit<double>::slip ||
+         results[3].index != 11 || results[3].npts != 15 || results[3].ngood != 15 ||
+         ::fabs(results[3].step + 15.556) > tol)
+      {
          count++;
       }
    }
@@ -464,24 +478,45 @@ try {
    // dataset 3 ----------------------------------------------------------
    data.clear(); xdata.clear();
    for(i=0; i<M3; i++) {
-      xdata.push_back(data3[3*i]);
-      data.push_back(data3[3*i+1]);
+      xdata.push_back(data3[2*i]);
+      data.push_back(data3[2*i+1]);
    }
 
    label = "Test3FDF";
    iret = testFirstDiff(xdata, data, 2.5, label, verbose, results);
    if(iret == 0) {
-      if(results[0].type != FilterHit<double>::outlier ||
-         results[0].index != 0 || results[0].npts != 162 || results[0].ngood != 0) {
-         cout << label << " first hit\n";
-         count++;
-      }
-      if(results[1].type != FilterHit<double>::BOD ||
-         results[1].index != 162 || results[1].npts != 83 ||
-         results[1].ngood != 83 || ::fabs(results[1].step - 0.038) > tol) {
-         cout << label << " second hit\n";
-         count++;
-      }
+      if(results[0].type != FilterHit<double>::BOD ||
+         results[0].index != 0 ||
+         results[0].npts != 69 ||
+         results[0].ngood != 69)
+            { cout << label << " first hit\n"; count++; }
+      if(results[1].type != FilterHit<double>::outlier ||
+         results[1].index != 69 ||
+         results[1].npts != 1 ||
+         results[1].ngood != 0)
+            { cout << label << " second hit\n"; count++; }
+      if(results[2].type != FilterHit<double>::BOD ||
+         results[2].index != 70 ||
+         results[2].npts != 23 ||
+         results[2].ngood != 23)
+            { cout << label << " third hit\n"; count++; }
+      if(results[3].type != FilterHit<double>::slip ||
+         results[3].index != 93 ||
+         results[3].npts != 102 ||
+         results[3].ngood != 102 ||
+         ::fabs(results[3].step - 2.927) > tol)
+            { cout << label << " fourth hit\n"; count++; }
+      if(results[4].type != FilterHit<double>::slip ||
+         results[4].index != 195 ||
+         results[4].npts != 49 ||
+         results[4].ngood != 49 ||
+         ::fabs(results[4].step + 3.001) > tol)
+            { cout << label << " fifth hit\n"; count++; }
+      if(results[5].type != FilterHit<double>::outlier ||
+         results[5].index != 244 ||
+         results[5].npts != 1 ||
+         results[5].ngood != 0)
+            { cout << label << " sixth hit\n"; count++; }
    }
 
    // --------------------------------------------------------------------
