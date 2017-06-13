@@ -546,35 +546,72 @@ public:
          // String to store resulting data.
       string resultString;
 
+      resultString = firstWord("");
+      TUASSERTE(std::string, "", resultString);
+
       resultString = firstWord(originalString);
       TUASSERTE(std::string, firstWordInString, resultString);
 
       TUCSM("numWords");
+      resultInt = numWords("");
+      TUASSERTE(int, 0, resultInt);
+
       resultInt = numWords(originalString);
       TUASSERTE(int, numberOfWords, resultInt);
 
       TUCSM("word");
+      resultString = word("",2);
+      TUASSERTE(std::string, "", resultString);
+
       resultString = word(originalString,4);
       TUASSERTE(std::string, fifthWordInString, resultString);
 
+      resultString = word(originalString,10);
+      TUASSERTE(std::string, "", resultString);
+
+      std::string  empty;
+
       TUCSM("removeWords");
          // This changes the string passed to the method
+      resultString = removeWords(empty, 1, 1);
+      TUASSERTE(std::string, "", resultString);
+
       resultString = removeWords(originalString, 3, 2);
+      TUASSERTE(std::string, removedFourthFifthWords, originalString);
       TUASSERTE(std::string, removedFourthFifthWords, resultString);
 
       TUCSM("stripFirstWord");
          // This changes the string passed to the method
+      resultString = stripFirstWord(empty);
+      TUASSERTE(std::string, "", resultString);
+
       resultString = stripFirstWord(originalString);
       TUASSERTE(std::string, removedFirstWord, originalString);
+      TUASSERTE(std::string, firstWordInString, resultString);
 
       TUCSM("removeWords");
          // This changes the string passed to the method
-      resultString = removeWords(originalString,5);
+      resultString = removeWords(empty, 2);
+      TUASSERTE(std::string, "", resultString);
+
+      resultString = removeWords(originalString, 5);
+      TUASSERTE(std::string, removedSixthWord, originalString);
       TUASSERTE(std::string, removedSixthWord, resultString);
 
+      std::string  removeAllOfMe(originalString);
+      resultString = removeWords(removeAllOfMe, 0);
+      TUASSERTE(std::string, "", removeAllOfMe);
+      TUASSERTE(std::string, "", resultString);
+
       TUCSM("words");
-      resultString = words(originalString,3);
+      resultString = words("", 2);
+      TUASSERTE(std::string, std::string(), resultString);
+      
+      resultString = words(originalString, 3);
       TUASSERTE(std::string, allWordsFromFourthOn, resultString);
+
+      resultString = words(originalString, 10);
+      TUASSERTE(std::string, std::string(), resultString);
 
       TURETURN();
    }
@@ -637,6 +674,33 @@ public:
          "     each line indented by a few spaces.\n";
 
       prettyPrint(prettyPrintThis, "\n", "    ", "      ", 40);
+      TUASSERTE(std::string, prettyPrinted, prettyPrintThis);
+
+      prettyPrintThis = "ThisXtestsXprintingXwithXaXwordXdelimiterXotherXthan"
+         "XspaceXasXwellXasXlineXdelimetersXotherXthanXnewline";
+      prettyPrinted = "mehhhhhhhhXThisXtestsXprintingXwithXaZZZZcruddycrudcrud"
+         "XwordXdelimiterXotherZZZZcruddycrudcrudXthanXspaceXasXwellXasZZZZ"
+         "cruddycrudcrudXlineXdelimetersXotherZZZZcruddycrudcrudXthanXnewline"
+         "ZZZZ";
+      prettyPrint(prettyPrintThis, "ZZZZ", "cruddycrudcrud", "mehhhhhhhh", 37,
+                  'X');
+      TUASSERTE(std::string, prettyPrinted, prettyPrintThis);
+
+         // This tests handling of newlines which is useful for
+         // command line option documentation in particular.
+      originalString = "Bit-field: inject errors"
+         "\nbit 0 - corrupt lengths"
+         "\nbit 1 - corrupt addressing"
+         "\nbit 2 - corrupt checksum"
+         "\nbit 3 - corrupt `format'";
+      prettyPrintThis = originalString;
+      prettyPrinted = " -j, --error-inj=NUM     Bit-field: inject errors\n"
+                      "                         bit 0 - corrupt lengths\n"
+                      "                         bit 1 - corrupt addressing\n"
+                      "                         bit 2 - corrupt checksum\n"
+                      "                         bit 3 - corrupt `format'\n";
+      prettyPrint(prettyPrintThis, "\n", "                        ",
+                  " -j, --error-inj=NUM    ", 80);
       TUASSERTE(std::string, prettyPrinted, prettyPrintThis);
 
       TURETURN();

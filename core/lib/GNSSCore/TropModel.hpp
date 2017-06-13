@@ -15,7 +15,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -23,13 +23,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -55,11 +55,11 @@
 
 // Model of the troposphere, used to compute non-dispersive delay of
 // satellite signal as function of satellite elevation as seen at the
-// receiver. Both wet and dry components are computed.
+// receiver. Both wet and hydrostatic (dry) components are computed.
 //
 // The default model (implemented here) is a simple Black model.
 //
-// In this model (and many others), the wet and dry components are
+// In this model (and many others), the wet and hydrostatic (dry) components are
 // independent, the zenith delays depend only on the weather
 // (temperature, pressure and humidity), and the mapping functions
 // depend only on the elevation of the satellite as seen at the
@@ -76,27 +76,29 @@ namespace gpstk
    //@{
 
       /** Abstract base class for tropospheric models.
-       * The wet and dry components of the tropospheric delay are each the
-       * product of a zenith delay and a mapping function. Usually the zenith
+       * The wet and hydrostatic (dry) components of the tropospheric delay are each
+       * the product of a zenith delay and a mapping function. Usually the zenith
        * delay depends only on the weather (temperature, pressure and humidity),
        * while the mapping function depends only on the satellite elevation, i.e.
        * the geometry of satellite and receiver. This may not be true in complex
        * models.
-       * The full tropospheric delay is the sum of the wet and dry components.
-       * A TropModel is valid only when all the necessary information
+       * The full tropospheric delay is the sum of the wet and hydrostatic (dry)
+       * components. A TropModel is valid only when all the necessary information
        * (weather + whatever else the model requires) is specified;
        * An InvalidTropModel exception will be thrown when any correction()
        * or zenith_delay() or mapping_function() routine is called for
        * an invalid TropModel.
        */
+
+   /// Thrown when attempting to use a model for which all necessary
+   /// parameters have not been specified.
+   /// @ingroup exceptiongroup
    NEW_EXCEPTION_CLASS(InvalidTropModel, gpstk::Exception);
-   
+
    class TropModel
    {
    public:
-         /// Thrown when attempting to use a model for which all necessary
-         /// parameters have not been specified.
-         /// @ingroup exceptiongroup
+      static const double CELSIUS_TO_KELVIN;
 
          /// Destructor
       virtual ~TropModel() {}
@@ -104,6 +106,10 @@ namespace gpstk
          /// Return validity of model
       bool isValid(void)
          { return valid; }
+
+         /// Return the name of the model
+      virtual std::string name(void)
+         { return std::string("Undefined"); }
 
          /// Compute and return the full tropospheric delay
          /// @param elevation Elevation of satellite as seen at receiver, in degrees
@@ -143,7 +149,8 @@ namespace gpstk
          throw(InvalidTropModel)
       { Position R(RX),S(SV);  return TropModel::correction(R,S,tt); }
 
-         /// Compute and return the zenith delay for dry component of the troposphere
+         /// Compute and return the zenith delay for hydrostatic (dry)
+         /// component of the troposphere
       virtual double dry_zenith_delay(void) const
          throw(InvalidTropModel) = 0;
 
@@ -151,8 +158,8 @@ namespace gpstk
       virtual double wet_zenith_delay(void) const
          throw(InvalidTropModel) = 0;
 
-         /// Compute and return the mapping function for dry component of
-         /// the troposphere.
+         /// Compute and return the mapping function for hydrostatic (dry)
+         /// component of the troposphere.
          /// @param elevation Elevation of satellite as seen at receiver, in degrees
       virtual double dry_mapping_function(double elevation)
          const throw(InvalidTropModel) = 0;
@@ -190,10 +197,34 @@ namespace gpstk
          /// @param lat Latitude of the receiver in degrees.
       virtual void setReceiverLatitude(const double& lat) {};
 
+         /// Define the receiver longitude; this is required by some models
+         /// before calling correction() or any of the zenith_delay routines.
+         /// @param lat  Longitude of receiver, in degrees East.
+      virtual void setReceiverLongitude(const double& lon) {};
+
          /// Define the day of year; this is required by some models before calling
          /// correction() or any of the zenith_delay or mapping_function routines.
          /// @param d Day of year.
       virtual void setDayOfYear(const int& d) {};
+
+         /// Saastamoinen hydrostatic zenith delay as modified by Davis for gravity.
+         /// Used by multiple models.
+         /// Ref. Leick, 3rd ed, pg 197, Leick, 4th ed, pg 482, and
+         /// Saastamoinen 1973 Atmospheric correction for the troposphere and
+         /// stratosphere in radio ranging of satellites. The use of artificial
+         /// satellites for geodesy, Geophys. Monogr. Ser. 15, Amer. Geophys. Union,
+         /// pp. 274-251, 1972.
+         /// Davis, J.L, T.A. Herring, I.I. Shapiro, A.E.E. Rogers, and G. Elgered,
+         /// Geodesy by Radio Interferometry: Effects of Atmospheric Modeling Errors
+         /// on Estimates of Baseline Length, Radio Science, Vol. 20, No. 6,
+         /// pp. 1593-1607, 1985.
+         /// @param press pressure in millibars
+         /// @param lat  latitude in degrees
+         /// @param height ellipsoid height in meters
+      double SaasDryDelay(const double pr, const double lat, const double ht) const
+      {
+         return (0.0022768*pr/(1-0.00266*::cos(2*lat*DEG_TO_RAD)-0.00028*ht/1000.));
+      }
 
          /// get weather data by a standard atmosphere model
          /// reference to white paper of Bernese 5.0, P243
@@ -201,7 +232,8 @@ namespace gpstk
          /// @param T      temperature in degrees Celsius
          /// @param P      atmospheric pressure in millibars
          /// @param H      relative humidity in percent
-      static void weatherByStandardAtmosphereModel(const double& ht, double& T, double& P, double& H);
+      static void weatherByStandardAtmosphereModel(
+         const double& ht, double& T, double& P, double& H);
 
    protected:
       bool valid;                 // true only if current model parameters are valid
@@ -217,6 +249,10 @@ namespace gpstk
    class ZeroTropModel : public TropModel
    {
    public:
+         /// Return the name of the model
+      virtual std::string name(void)
+         { return std::string("Zero"); }
+
          /// Compute and return the full tropospheric delay
          /// @param elevation Elevation of satellite as seen at receiver, in degrees
       virtual double correction(double elevation) const
@@ -257,7 +293,8 @@ namespace gpstk
          throw(InvalidTropModel)
          { return 0.0; }
 
-         /// Compute and return the zenith delay for dry component of the troposphere
+         /// Compute and return the zenith delay for hydrostatic (dry)
+         /// component of the troposphere
       virtual double dry_zenith_delay(void) const
          throw(InvalidTropModel)
          { return 0.0; }
@@ -267,8 +304,8 @@ namespace gpstk
          throw(InvalidTropModel)
          { return 0.0; }
 
-         /// Compute and return the mapping function for dry component of
-         /// the troposphere.
+         /// Compute and return the mapping function for hydrostatic (dry)
+         /// component of the troposphere.
          /// @param elevation Elevation of satellite as seen at receiver, in degrees
       virtual double dry_mapping_function(double elevation)
          const throw(InvalidTropModel)

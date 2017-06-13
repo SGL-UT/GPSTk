@@ -1,6 +1,3 @@
-/// @file SatPassIterator.cpp
-/// Iterate over a vector of SatPass in time order.
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -37,6 +34,9 @@
 //
 //=============================================================================
 
+/// @file SatPassIterator.cpp
+/// Iterate over a vector of SatPass in time order.
+
 #include "SatPassIterator.hpp"
 #include "logstream.hpp"
 
@@ -57,18 +57,18 @@ SatPassIterator::SatPassIterator(vector<SatPass>& splist, bool rev, bool dbug)
    int i,j;
 
    // ensure time order
-   sort(SPList);
+   std::sort(SPList.begin(), SPList.end());
 
    // copy the list of obs types, and check that each is registered
    vector<string> otlist;
    for(i=0; i<SPList[0].labelForIndex.size(); i++) {
       otlist.push_back(SPList[0].labelForIndex[i]);
-      if(RinexObsHeader::convertObsType(SPList[0].labelForIndex[i])
-            == RinexObsHeader::UN)
-      {
-         Exception e("Unregistered observation type : " + SPList[0].labelForIndex[i]);
-         GPSTK_THROW(e);
-      }
+      //if(RinexObsHeader::convertObsType(SPList[0].labelForIndex[i])
+      //      == RinexObsHeader::UN)
+      //{
+      //   Exception e("Unregistered observation type : "+SPList[0].labelForIndex[i]);
+      //   GPSTK_THROW(e);
+      //}
    }
 
    // copy the data from the first SatPass in the list, for comparison with the rest

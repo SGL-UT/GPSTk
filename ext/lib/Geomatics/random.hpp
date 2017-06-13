@@ -34,10 +34,8 @@
 //
 //=============================================================================
 
-/**
- * @file random.hpp
- * Simple random number generator.
- */
+/// @file random.hpp
+/// Simple random number generator.
 
 #ifndef GPSTK_GEOMATICS_RANDOM_INCLUDE
 #define GPSTK_GEOMATICS_RANDOM_INCLUDE

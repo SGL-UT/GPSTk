@@ -9,6 +9,7 @@ ReadObsFiles.cpp
 EphemerisImprovement.cpp
 ClockModel.cpp
 Synchronization.cpp
+DDid.cpp
 DoubleDifference.cpp
 EditDDs.cpp
 DataOutput.cpp
@@ -16,6 +17,7 @@ Estimation.cpp
 Timetable.cpp
 ElevationMask.cpp
 ProcessRawData.cpp
+PhaseWindup.cpp
 ComputeRAIMSolution.cpp
 EditRawDataBuffers.cpp
 StochasticModels.cpp

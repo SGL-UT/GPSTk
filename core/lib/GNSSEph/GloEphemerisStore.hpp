@@ -81,7 +81,7 @@ namespace gpstk
           * @param checkHealth   Enable or disable the use of the health bit.
           */
       GloEphemerisStore( double rkStep,
-                         double checkHealth )
+                         bool checkHealth )
             : initialTime(CommonTime::END_OF_TIME),
               finalTime(CommonTime::BEGINNING_OF_TIME),
               step(rkStep), checkHealthFlag(checkHealth)

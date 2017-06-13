@@ -107,6 +107,10 @@ namespace gpstk
                         const double hH)
          throw(InvalidParameter);
 
+         /// Return the name of the model
+      virtual std::string name(void)
+         { return std::string("GGHeight"); }
+
          /// Compute and return the full tropospheric delay
          /// @param elevation Elevation of satellite as seen at receiver, in degrees
       virtual double correction(double elevation) const

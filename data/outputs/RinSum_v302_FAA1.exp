@@ -1,5 +1,5 @@
-# RinSum, part of the GPS Toolkit, Ver 4.1 8/26/15, Run 2017/03/14 15:02:54
-+++++++++++++ RinSum summary of Rinex obs file ../../data/inputs/igs/FAA100PYF_R_20161700100_15M_01S_MO +++++++++++++
+# RinSum, part of the GPS Toolkit, Ver 4.1 8/26/15, Run 2017/05/25 11:22:57
++++++++++++++ RinSum summary of Rinex obs file /local/Code/gpstk/data/inputs/igs/FAA100PYF_R_20161700100_15M_01S_MO +++++++++++++
 ---------------------------------- REQUIRED ----------------------------------
 Rinex Version  3.02,  File type OBSERVATION DATA,  System MIXED.
 Prgm: sbf2rin-9.3.3,  Run: 20160618 013404 LCL,  By: 
@@ -123,7 +123,6 @@ Computed interval  1.00 seconds.
 Computed first epoch: 2016/06/18 01:00:00 = 1901 6 522000.000 GPS
 Computed last  epoch: 2016/06/18 01:00:04 = 1901 6 522004.000 GPS
 Computed time span: 0h 0m 4s = 4 seconds.
-Computed file size: 38489 bytes.
 There were 5 epochs (100.00% of 5 possible epochs in this timespan) and 0 inline header blocks.
 
       Summary of data available in this file: (Spans are based on times and interval)
@@ -189,4 +188,4 @@ System S = Geosync:
 TOTAL     25     25     25     25
 
  Warning - Computed last time does not agree with header
-RinSum timing: processing 0.020 sec, wallclock: 0 sec.
+RinSum timing: processing 0.037 sec, wallclock: 0 sec.

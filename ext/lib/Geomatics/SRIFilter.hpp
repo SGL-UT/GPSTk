@@ -34,15 +34,13 @@
 //
 //=============================================================================
 
-/**
- * @file SRIFilter.hpp
- * Include file defining class SRIFilter.
- * class SRIFilter implements the square root information matrix form of the
- * Kalman filter and smoother.
- *
- * Reference: "Factorization Methods for Discrete Sequential Estimation,"
- *             G.J. Bierman, Academic Press, 1977.
- */
+/// @file SRIFilter.hpp
+/// Include file defining class SRIFilter.
+/// class SRIFilter implements the square root information matrix form of the
+/// Kalman filter and smoother.
+///
+/// Reference: "Factorization Methods for Discrete Sequential Estimation,"
+///             G.J. Bierman, Academic Press, 1977.
 
 //------------------------------------------------------------------------------------
 #ifndef CLASS_SQUAREROOT_INFORMATION_FILTER_INCLUDE

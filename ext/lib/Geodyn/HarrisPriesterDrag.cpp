@@ -844,7 +844,7 @@ namespace gpstk
       }
 
       Vector<double> r_Sun = ReferenceFrames::getJ2kPosition( utc.asTDB(),
-                                                              SolarSystem::Sun);
+                                                              SolarSystem::idSun);
 
       // get coefficients for this F107
       //updateF107(std::pow(149597870.0/norm(r_Sun),2)*dailyF107);

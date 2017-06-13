@@ -1,10 +1,3 @@
-/// @file SRIFilter.cpp  Implementation of class SRIFilter.
-/// class SRIFilter implements the square root information matrix form of the
-/// Kalman filter.
-///
-/// Reference: "Factorization Methods for Discrete Sequential Estimation,"
-///             G.J. Bierman, Academic Press, 1977.
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -40,6 +33,13 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
+
+/// @file SRIFilter.cpp  Implementation of class SRIFilter.
+/// class SRIFilter implements the square root information matrix form of the
+/// Kalman filter.
+///
+/// Reference: "Factorization Methods for Discrete Sequential Estimation,"
+///             G.J. Bierman, Academic Press, 1977.
 
 //------------------------------------------------------------------------------------
 #include "SRIFilter.hpp"

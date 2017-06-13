@@ -284,8 +284,8 @@ namespace gpstk
                case 'l': hweek = hgalw = true; break;
                case 'I': hfullweek = hqzsfw = true; break;
                case 'i': hweek = hqzsw = true; break;
-               case 'O': hfullweek = hqzsfw = true; break;
-               case 'o': hweek = hqzsw = true; break;
+               case 'O': hfullweek = hirnfw = true; break;
+               case 'o': hweek = hirnw = true; break;
 
 
                default:
@@ -361,6 +361,7 @@ namespace gpstk
                                               asDouble( info['S'] ) );
                }
             }
+
             t = ptt->convertToCommonTime();
             delete ptt;
             return;
@@ -700,6 +701,7 @@ namespace gpstk
             if(hbds) ptt = new BDSWeekSecond();
             else if(hqzs) ptt = new QZSWeekSecond();
             else if(hgal) ptt = new GALWeekSecond();
+            else if(hirn) ptt = new IRNWeekSecond();
             else ptt = new GPSWeekSecond();
 
             //When if( hfullweek ) is the first if entered in the list
@@ -726,6 +728,7 @@ namespace gpstk
             if(hbds) ptt = new BDSWeekSecond(ct);
             else if(hqzs) ptt = new QZSWeekSecond(ct);
             else if(hgal) ptt = new GALWeekSecond(ct);
+            else if(hirn) ptt = new IRNWeekSecond(ct);
             else ptt = new GPSWeekSecond(ct);
             ptt->setModWeek(iweek);
             ct = ptt->convertToCommonTime();
@@ -738,6 +741,7 @@ namespace gpstk
             if(hbds) ptt = new BDSWeekSecond(ct);
             else if(hqzs) ptt = new QZSWeekSecond(ct);
             else if(hgal) ptt = new GALWeekSecond(ct);
+            else if(hirn) ptt = new IRNWeekSecond(ct);
             else ptt = new GPSWeekSecond(ct);
             ptt->sow = static_cast<double>(idow) * SEC_PER_DAY;
             ct = ptt->convertToCommonTime();
@@ -792,6 +796,7 @@ namespace gpstk
             if(hbds) ptt = new BDSWeekSecond(ct);
             else if(hqzs) ptt = new QZSWeekSecond(ct);
             else if(hgal) ptt = new GALWeekSecond(ct);
+            else if(hirn) ptt = new IRNWeekSecond(ct);
             else ptt =  new GPSWeekSecond(ct);
             ptt->sow = isow;
             ct = ptt->convertToCommonTime();
