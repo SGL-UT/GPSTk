@@ -26,13 +26,6 @@ build_debian:
     paths:
     - build/
 
-build_solaris:
-  stage: build
-  tags:
-    - solaris
-  script:
-   - ./build.sh -evx
-
 build_redhat:
   stage: build
   tags:
@@ -96,13 +89,6 @@ test_debian:
     - ctest -j 54
   dependencies:
     - build_debian
-
-test_solaris:
-  stage: test
-  tags:
-    - solaris
-  script:
-    - ./build.sh -evxt
 
 test_redhat:
   stage: test
