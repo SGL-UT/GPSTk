@@ -69,7 +69,7 @@ int testFirstDiff(const vector<double>& xdata,
    if(iret < 0) cout << "# FD Filter failed (" << iret << ")" << endl;
    else {
       iret = fdf.analyze();
-      if(iret < 0) cout << "# FD Filter analysis failed (" << i << ")" << endl;
+      if(iret < 0) cout << "# FD Filter analysis failed (" << iret << ")" << endl;
       else iret=0;
 
       for(i=0; i<fdf.results.size(); i++)
