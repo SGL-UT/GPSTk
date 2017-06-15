@@ -622,7 +622,7 @@ protected:
    void findArc(const unsigned int ind, std::map<int, Arc>::iterator& ait)
       throw(Exception)
    {
-      if(ind < ait->second.index)
+      if(int(ind) < ait->second.index)
          GPSTK_THROW(Exception("index before given Arc"));
 
       while(ait != Arcs.end() && ind >= ait->second.index+ait->second.npts) ++ait;

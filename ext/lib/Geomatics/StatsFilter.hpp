@@ -1485,9 +1485,11 @@ template<class T> void WindowFilter<T>::dump(std::ostream& os, std::string tag)
 template<class T>
 void WindowFilter<T>::getStats(FilterHit<T>& sg, bool skip)
 {
-   int i,j;
+   unsigned int i;
    sg.min = sg.max = sg.med = sg.mad = T(0);
-   for(j=-1,i=0; i<analvec.size(); i++)
+
+   int j(-1);
+   for(i=0; i<analvec.size(); i++)
       if(analvec[i].index == sg.index) { j=i; break; }
    if(j == -1) return;
 

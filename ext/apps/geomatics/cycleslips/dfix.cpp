@@ -325,7 +325,7 @@ try {
          << double(totaltime)/double(CLOCKS_PER_SEC)
          << " seconds. (" << (wallend - wallbegin) << " sec)";
       LOG(INFO) << oss.str();
-      if(LOGstrm != cout) cout << oss.str() << endl;
+      if(pLOGstrm != &cout) cout << oss.str() << endl;
    }
 
    return (iret == 0 ? 0 : 1);

@@ -560,7 +560,10 @@ int gdc::filterWindow(const unsigned which, const string label,
 
       return iret;
    }
-   catch(std::exception& e) { LOG(INFO) << "std exception " << e.what(); }
+   catch(std::exception& e) {
+      LOG(ERROR) << "std exception " << e.what();
+      GPSTK_THROW(Exception(string("std exception")+e.what()));
+   }
    catch(Exception& e) { GPSTK_RETHROW(e); }
 }  // end int gdc::filterWindow()
 
@@ -875,7 +878,7 @@ void gdc::findLargeGaps(void) throw(Exception)
 map<int,int> gdc::findGaps(const Arc& arc) throw(Exception)
 {
    try {
-      int i,count,index;         // count consecutive bad pts, starting at index
+      unsigned int i,count,index;// count consecutive bad pts, starting at index
       map<int,int> gaps;
       for(count=0,i=arc.index; i < arc.index+arc.npts; ++i) {
          if(flags[i] == OK) {    // good
@@ -974,8 +977,8 @@ int gdc::FinalCheck(void) throw(Exception)
 {
    try {
       bool fixup(false);
-      unsigned int i,j,k;
-      int iret(0),currstate,ngood,nbad;
+      unsigned int i,k;
+      int iret(0),j,currstate,ngood,nbad;
       vector<int> gbs;
       
       // look for segments of N good (+) or bad (-) points
