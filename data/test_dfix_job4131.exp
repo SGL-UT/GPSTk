@@ -1,0 +1,112 @@
+dfix ver 2.0 5/20/17, Run 2017/06/14 at 14:58:44
+
+Load the RINEX files using Rinex3ObsFileLoader -------
+ Add obs type RC1P =~ RC1* from /local/Code/gpstk/data/test_dfix_job4131.ed.obs
+ Add obs type RL1C =~ RL1* from /local/Code/gpstk/data/test_dfix_job4131.ed.obs
+ Add obs type RC2P =~ RC2* from /local/Code/gpstk/data/test_dfix_job4131.ed.obs
+ Add obs type RL2C =~ RL2* from /local/Code/gpstk/data/test_dfix_job4131.ed.obs
+Loader read 1 file successfully 
+
+Summary of input RINEX obs data files (1):
+ RINEX obs file: /local/Code/gpstk/data/test_dfix_job4131.ed.obs
+ Interval 30.00sec, obs types RC1P RL1C RC2P RL2C, store size 488
+ Time limits: begin  2013/11/01 00:56:30 1764 435390.000
+                end  2013/11/01 05:00:00 1764 450000.000
+Table of Sat/Obs counts
+      RC1P  RL1C  RC2P  RL2C
+ R03   487   487   488   488
+ TOT   487   487   488   488 total 488 epochs
+End of summary
+
+Header for file /local/Code/gpstk/data/test_dfix_job4131.ed.obs
+---------------------------------- REQUIRED ----------------------------------
+Rinex Version  2.11,  File type OBSERVATION DATA,  System MIXED.
+Prgm: RinEdit,  Run: 06/14/2017 16:33:37,  By: 0.27
+Marker type: .
+Observer : ,  Agency: 
+Rec#: 355548,  Type: LEICA GRX1200GGPRO,  Vers: 8.10/3.019
+Antenna # : ,  Type : LEIAT504GG
+Position      (XYZ,m) : (-2183984.7287, -4897913.8414, 3441520.5493).
+Antenna Delta (HEN,m) : (0.0000, 0.0000, 0.0000).
+Galileo Observation types (1):
+ Type #01 (L1B) L1 GALB phase
+GPS Observation types (4):
+ Type #01 (C1W) L1 GPScodelessZ pseudorange
+ Type #02 (L1C) L1 GPSC/A phase
+ Type #03 (C2W) L2 GPScodelessZ pseudorange
+ Type #04 (L2W) L2 GPScodelessZ phase
+GLONASS Observation types (4):
+ Type #01 (C1P) G1 GLOP pseudorange
+ Type #02 (L1C) G1 GLOC/A phase
+ Type #03 (C2P) G2 GLOP pseudorange
+ Type #04 (L2C) G2 GLOC/A phase
+Geosync Observation types (1):
+ Type #01 (L1C) L1 SBASC/A phase
+R2ObsTypes: P1 L1 P2 L2 
+mapSysR2toR3ObsID[E] L1:L1B 
+mapSysR2toR3ObsID[G] L1:L1C L2:L2W P1:C1W P2:C2W 
+mapSysR2toR3ObsID[R] L1:L1C L2:L2C P1:C1P P2:C2P 
+mapSysR2toR3ObsID[S] L1:L1C 
+Time of first obs 2013/11/01 00:50:00.000 GPS
+(This header is VALID)
+---------------------------------- OPTIONAL ----------------------------------
+Marker number : 3699
+Signal Strenth Unit = 
+Interval =  30.000
+Wavelength factor L1: 1 L2: 1
+Leap seconds: 16
+Number of Satellites with data : 55
+Comments (5) :
+BIT 2 OF LLI FLAGS DATA COLLECTED UNDER A/S CONDITION
+SNR is mapped to RINEX snr flag value [2-9]
+Lx:     = 25dBHz -> 1; 26-27dBHz -> 2; 28-31dBHz -> 3
+32-35dBHz -> 4; 36-38dBHz -> 5; 39-41dBHz -> 6
+42-44dBHz -> 7; 45-48dBHz -> 8; >=49dBHz -> 9
+-------------------------------- END OF HEADER --------------------------------
+
+Write to SatPass -----------------------------
+ Assign RINEX3-ObsIDs to SatPass obstypes for each system :
+ System R (GLO): SatPass obstypes = [RL1C,RL2C,RC1P,RC2P]
+ WriteSatPassList returned 1 passes.
+ Dump the passes:
+SPL   1  488 R03  487  0 1764 435390.000 1764 450000.000 30.0 L1 L2 P1 P2
+
+Searched for millisecond adjusts on obs types: L1 L2 C1 C2 P1 P2
+Millisecond adjusts: 0 total adjusts found, 0 invalid
+
+# GDC configuration:
+#GPSTk Discontinuity Corrector (GDC) v.9.0 5/20/17 configuration:
+# MaxGap=10          : maximum allowed gap within a segment (points)
+# MinPts=10          : minimum number of good points in phase segment (points)
+# WLgrossStep=6      : WL gross slip detection threshold (WLwl)
+# WLfineStep=0.7     : WL fine slip detection threshold (WLwl)
+# GFgrossStep=6      : GF gross slip detection threshold (GFwl)
+# GFfineStep=0.7     : GF fine slip detection threshold (GFwl)
+# oswidth=7          : output stream width (chars)
+# osprec=3           : output stream precision (chars)
+# debug=-1           : level of diagnostic output, from -1(none) to 3(all)
+# verbose=0          : output analysis message in window filter
+# doFix=0            : apply fixes to input L1 and L2 SatPass arrays
+# doCmds=0           : generate editing commands
+#  Advanced options  :
+# width=20           : sliding window width (points)
+# RAW=0              : output data (WL,GF) before any processing (m) [0=don't]
+# WL1=0              : output results of 1st diff filter on WL (wl) [0=don't]
+# WLG=0              : output WL after fixing gross slips (m) [0=don't]
+# WLW=0              : output results of window filter on WL (wl) [0=don't]
+# WLF=0              : output WL after fixing (m) [0=don't]
+# GF1=0              : output results of 1st diff filter on GF (wl) [0=don't]
+# GFG=0              : output GF after fixing gross slips (m) [0=don't]
+# GFW=0              : output results of window filter on GF (wl) [0=don't]
+# GFF=0              : output GF after fixing (m) [0=don't]
+# FIN=0              : output WL/GF after final check [0=don't]
+# doRINEX3=1         : editing commands use L1C L2W instead of L1 L2
+# UserFlag=0         : call SatPass::setUserFlag(value) for rejects
+# End of GDC configuration.
+
+GDC   1 SPS  488 R03  487  0 1764 435390.000 1764 450000.000 30.0 L1 L2 P1 P2
+DFX   1 R03 BEG    0 1764 435390.000    5    4 WL    4  -0.124 +-  0.112 GF    4  -2.007 +-  0.036
+DFX   1 R03 REJ    5 1764 435540.000    2    0 WL  482  -1.205 +-  0.440 GF  482 -114.477 +- 19.175 n(WL,GF) -23,0
+DFX   1 R03 FIX    7 1764 435600.000   14   14 WL  480  -1.208 +-  0.437 GF  480 -115.015 +- 18.620 n(WL,GF) -3,31
+DFX   1 R03 FIX   21 1764 436020.000  467  466 WL  466  -1.233 +-  0.390 GF  466 -118.076 +- 16.718 n(WL,GF) 20,-11
+dfix timing: 0.043 seconds. (0.000 sec)
