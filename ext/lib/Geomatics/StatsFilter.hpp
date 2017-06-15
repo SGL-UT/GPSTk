@@ -115,7 +115,7 @@ public:
       BOD = 0,          ///< beginning of data
       outlier,          ///< outlier(s) - npts is the number of outliers
       slip,             ///< slip (discontinuity)
-      other,            ///< never used?
+      other             ///< never used?
    } event;
 
    /// empty and only constructor
