@@ -551,7 +551,8 @@ try {
       }
       else {
          RinexSatID sat(fields[0]);
-         GD.GLOfreqCh.insert(make_pair(sat,StringUtils::asLong(fields[1])));
+         int chan(StringUtils::asInt(fields[1]);      // for Solaris
+         GD.GLOfreqCh.insert(make_pair(sat,chan));
       }
    }
 
