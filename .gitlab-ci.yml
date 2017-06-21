@@ -132,7 +132,7 @@ test_core:
     - build_core
 
 #Deploy Stage
-#Tests install of GPSTk on each platform
+#Tests install of GPSTk on each platform, saves artifacts for downstream builds.
 deploy_debian:
   stage: deploy
   tags:
