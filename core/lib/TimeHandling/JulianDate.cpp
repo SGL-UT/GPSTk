@@ -37,7 +37,6 @@
 /// @file JulianDate.cpp
 
 #include <cmath>
-#include <cstdlib>            // for strtol
 #include "JulianDate.hpp"
 #include "TimeConstants.hpp"
 
@@ -45,8 +44,8 @@ namespace gpstk
 {
    const unsigned int JulianDate::JDLEN(17);                   // < # dec digits ulong
    const double JulianDate::JDFACT(1.0e-17);                   // 1.0e-JDLEN
-   //const uint64_t JulianDate::JDHALFDAY(500000000L);   // JDLEN=9 digits
-   //const uint64_t JulianDate::JDHALFDAY(500000000000L);   // JDLEN=12 digits
+   //const uint64_t JulianDate::JDHALFDAY(500000000L);           // JDLEN=9 digits
+   //const uint64_t JulianDate::JDHALFDAY(500000000000L);        // JDLEN=12 digits
    const uint64_t JulianDate::JDHALFDAY(50000000000000000L);   // JDLEN=17 digits
 
    JulianDate& JulianDate::operator=( const JulianDate& right )
@@ -64,11 +63,17 @@ namespace gpstk
       {
          // fraction of day
          double frod = static_cast<double>(dday)*JDFACT;
+//std::cout << " convertTo " << jday << " " << dday << " " << fday << std::endl;
+//std::cout << " frod " << std::fixed << std::setprecision(19) << frod << std::endl;
          frod += static_cast<double>(fday)*JDFACT*JDFACT;
+//std::cout << " frodf " << std::fixed << std::setprecision(19) << frod << std::endl;
          long sod = static_cast<long>(frod*SEC_PER_DAY);       // truncate
+//std::cout << " sod " << std::fixed << std::setprecision(19) << sod << std::endl;
          frod -= static_cast<double>(sod)/SEC_PER_DAY;
+//std::cout << " frod2 " << std::fixed << std::setprecision(19) << frod << std::endl;
          // fractional seconds of day
          double frsod = frod*SEC_PER_DAY;
+//std::cout << " frsod " << std::fixed << std::setprecision(19) << frsod << std::endl;
          
          CommonTime ct;
          return ct.set( jday, sod, frsod, timeSystem );

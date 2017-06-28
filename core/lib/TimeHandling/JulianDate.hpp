@@ -40,6 +40,7 @@
 #include "TimeTag.hpp"
 #include <string>
 #include <sstream>
+#include <cstdlib>            // for strtoul
 #include "StringUtils.hpp"
 #include "gpstkplatform.h"
 
@@ -138,20 +139,21 @@ namespace gpstk
          //TEMP std::cout << "istr is " << istr << std::endl;
          // 64 bit long max value is 9223372036854775807, 19 digits
          std::string dstr = (str.length() > 0 ? str.substr(0,JDLEN) : "0");
-         //TEMP std::cout << "dstr is " << dstr << " " << dstr.size() << std::endl;
          StringUtils::leftJustify(dstr,JDLEN,'0');
+         //TEMP std::cout << "dstr is " << dstr << " " << dstr.size() << std::endl;
          // truncate string after 17 digits, 17+17=34 digits past index
          std::string fstr = (str.length() > JDLEN ? str.substr(JDLEN,JDLEN) : "0");
-         //TEMP std::cout << "fstr is " << fstr << " " << fstr.size() << std::endl;
          StringUtils::leftJustify(fstr,JDLEN,'0');
+         //TEMP  std::cout << "fstr is " << fstr << " " << fstr.size() << std::endl;
 
          bool rnd(dstr[0] >= '5');
          jday = std::strtol(istr.c_str(),0,10) + (rnd ? 1 : 0);
-         dday = std::strtol(dstr.c_str(),0,10);
+         dday = std::strtoull(dstr.c_str(),0,10);
+         //TEMP std::cout << "strtoull of " << dstr << " is " << dday << std::endl;
          if(rnd) dday -= JDHALFDAY;
          else    dday += JDHALFDAY;         // this accnts for 0.5d JD-jday
-         fday = std::strtol(fstr.c_str(),0,10);
-         //TEMP std::cout<< "finally "<< jday <<" "<< dday <<" "<< fday << std::endl;
+         fday = std::strtoull(fstr.c_str(),0,10);
+         //TEMP std::cout<< "fromStr "<< jday <<" "<< dday <<" "<< fday << std::endl;
       }
 
       std::string dumpString(void) const
