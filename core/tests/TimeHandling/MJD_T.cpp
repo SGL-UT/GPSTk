@@ -56,12 +56,13 @@ class MJD_T
 		TestUtil testFramework( "MJD", "Constructor", __FILE__, __LINE__ );
 
 
-	  	MJD Compare(135000.0,TimeSystem(2)); //Initialize an object
+	  	MJD Compare;
+      Compare.fromMJDintfrac(135000,0.0,TimeSystem(2)); //Initialize an object
 
 		//---------------------------------------------------------------------
 		//Were the attributes set to expectation with the explicit constructor?
 		//---------------------------------------------------------------------
-		testFramework.assert(fabs((long double)135000.0 - Compare.mjd) < eps, "Explicit constructor did not set the mjd value properly",  __LINE__);
+		testFramework.assert(fabs((long double)135000.0 - Compare.asLongDouble()) < eps, "Explicit constructor did not set the mjd value properly",  __LINE__);
 		testFramework.assert(TimeSystem(2) == Compare.getTimeSystem(),        "Explicit constructor did not set the TimeSystem properly", __LINE__);
 
 
@@ -70,7 +71,7 @@ class MJD_T
 		//---------------------------------------------------------------------
 		//Were the attributes set to expectation with the copy constructor?
 		//---------------------------------------------------------------------
-		testFramework.assert(fabs((long double)135000. - Copy.mjd) < eps, "Copy constructor did not set the mjd value properly",  __LINE__);
+		testFramework.assert(fabs((long double)135000. - Copy.asLongDouble()) < eps, "Copy constructor did not set the mjd value properly",  __LINE__);
 		testFramework.assert(TimeSystem(2) == Copy.getTimeSystem(),       "Copy constructor did not set the TimeSystem properly", __LINE__);
 
 
@@ -80,7 +81,7 @@ class MJD_T
 		//---------------------------------------------------------------------
 		//Were the attributes set to expectation with the Set Operator?
 		//---------------------------------------------------------------------
-		testFramework.assert(fabs((long double)135000. - Assigned.mjd) < eps, "Set Operator did not set the mjd value properly",  __LINE__);
+		testFramework.assert(fabs((long double)135000. - Assigned.asLongDouble()) < eps, "Set Operator did not set the mjd value properly",  __LINE__);
 		testFramework.assert(TimeSystem(2) == Assigned.getTimeSystem(),       "Set Operator did not set the TimeSystem properly", __LINE__);
 
 		return testFramework.countFails();
@@ -98,7 +99,8 @@ class MJD_T
 
 		MJD setFromInfo1;
 		MJD setFromInfo2;
-		MJD Compare(135000.0,TimeSystem(2)), Compare2(0.0,TimeSystem(2));
+		MJD Compare,Compare2;
+      Compare.fromMJDintfrac(135000,0.0,TimeSystem(2)), Compare2.fromMJDintfrac(0,0.0,TimeSystem(2));
 		TimeTag::IdToValue Id;
 		Id['Q'] = "135000.0";
 		Id['P'] = "GPS";
@@ -129,8 +131,10 @@ class MJD_T
 		TestUtil testFramework( "MJD", "OperatorEquivalent", __FILE__, __LINE__ );
 
 
-		gpstk::MJD Compare(135000); // Initialize with value
-		gpstk::MJD LessThanMJD(134000); // Initialize with value
+		gpstk::MJD Compare;
+      Compare.fromMJDintfrac(135000,0.0); // Initialize with value
+		gpstk::MJD LessThanMJD;
+      LessThanMJD.fromMJDintfrac(134000,0.0); // Initialize with value
 		gpstk::MJD CompareCopy(Compare); // Initialize with copy constructor
 
 		//---------------------------------------------------------------------
@@ -195,14 +199,15 @@ class MJD_T
 		TestUtil testFramework( "MJD", "reset", __FILE__, __LINE__ );
 
 
-	  	MJD Compare(135000,TimeSystem(2)); //Initialize an object
+	  	MJD Compare;
+      Compare.fromMJDintfrac(135000,0.0,TimeSystem(2)); //Initialize an object
 
 	  	Compare.reset(); // Reset it
 
 		//---------------------------------------------------------------------
 		//Were the attributes reset to expectation?
 		//---------------------------------------------------------------------
-		testFramework.assert(Compare.mjd==0,                            "reset() did not set the mjd value to 0",    __LINE__);
+		testFramework.assert(Compare.imjd==0,                            "reset() did not set the mjd value to 0",    __LINE__);
 		testFramework.assert(TimeSystem(0) == Compare.getTimeSystem(),  "reset() did not set the TimeSystem to UNK", __LINE__);
 
 		return testFramework.countFails();
@@ -217,7 +222,8 @@ class MJD_T
 		TestUtil testFramework( "MJD", "isValid", __FILE__, __LINE__ );
 
 
-	  	MJD Compare(135000,TimeSystem(2)); //Initialize an object
+	  	MJD Compare;
+      Compare.fromMJDintfrac(135000,0.0,TimeSystem(2)); //Initialize an object
 
 		//---------------------------------------------------------------------
 		//Is the time after the BEGINNING_OF_TIME?
@@ -241,7 +247,7 @@ class MJD_T
 		//Is the result of conversion the same?
 		//---------------------------------------------------------------------
 		testFramework.assert(Compare.getTimeSystem()== Test2.getTimeSystem(), "TimeSystem provided found to be different after converting to and from CommonTime", __LINE__);
-		testFramework.assert(fabs(Test2.mjd - Compare.mjd) < eps,             "MJD provided found to be different after converting to and from CommonTime",        __LINE__);
+		testFramework.assert(fabs(Test2.asLongDouble() - Compare.asLongDouble()) < eps,             "MJD provided found to be different after converting to and from CommonTime",        __LINE__);
 
 		return testFramework.countFails();
 	}
@@ -255,12 +261,18 @@ class MJD_T
 		TestUtil testFramework( "MJD", "OperatorEquivalentWithDifferingTimeSystem", __FILE__, __LINE__ );
 
 
-  		MJD GPS1(135000,TimeSystem(2));
-  		MJD GPS2(134000,TimeSystem(2));
-  		MJD UTC1(135000,TimeSystem(5));
-  		MJD UNKNOWN(135000,TimeSystem(0));
-  		MJD ANY(135000,TimeSystem(1));
-  		MJD ANY2(134000,TimeSystem(1));
+  		MJD GPS1;
+      GPS1.fromMJDintfrac(135000,0.0,TimeSystem(2));
+  		MJD GPS2;
+      GPS2.fromMJDintfrac(134000,0.0,TimeSystem(2));
+  		MJD UTC1;
+      UTC1.fromMJDintfrac(135000,0.0,TimeSystem(5));
+  		MJD UNKNOWN;
+      UNKNOWN.fromMJDintfrac(135000,0.0,TimeSystem(0));
+  		MJD ANY;
+      ANY.fromMJDintfrac(135000,0.0,TimeSystem(1));
+  		MJD ANY2;
+      ANY2.fromMJDintfrac(134000,0.0,TimeSystem(1));
 
 		//---------------------------------------------------------------------
 		//Verify differing TimeSystem sets equivalence operator to false
@@ -305,8 +317,10 @@ class MJD_T
 		TestUtil testFramework( "MJD", "printf", __FILE__, __LINE__ );
 
 
-  		MJD GPS1(135000,TimeSystem::GPS);
-  		MJD UTC1(135000,TimeSystem::UTC);
+  		MJD GPS1;
+      GPS1.fromMJDintfrac(135000,0.0,TimeSystem::GPS);
+  		MJD UTC1;
+      UTC1.fromMJDintfrac(135000,0.0,TimeSystem::UTC);
 		
 		//---------------------------------------------------------------------
 		//Verify printed output matches expectation

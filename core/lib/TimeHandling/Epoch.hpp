@@ -752,7 +752,7 @@ namespace gpstk
    long double Epoch::MJD() const
       throw(Epoch::EpochException)
    {
-      return get<gpstk::MJD>().mjd;    // gpstk to distinguish from Epoch::MJD
+      return get<gpstk::MJD>().asLongDouble();
    }
    
       /// Get year.

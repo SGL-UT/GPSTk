@@ -37,16 +37,149 @@
 /// @file JulianDate.cpp
 
 #include <cmath>
+#include <cstdlib>            // for strtoull
 #include "JulianDate.hpp"
 #include "TimeConstants.hpp"
+#include "StringUtils.hpp"
 
 namespace gpstk
 {
-   const unsigned int JulianDate::JDLEN(17);                   // < # dec digits ulong
-   const double JulianDate::JDFACT(1.0e-17);                   // 1.0e-JDLEN
-   //const uint64_t JulianDate::JDHALFDAY(500000000L);           // JDLEN=9 digits
-   //const uint64_t JulianDate::JDHALFDAY(500000000000L);        // JDLEN=12 digits
-   const uint64_t JulianDate::JDHALFDAY(50000000000000000L);   // JDLEN=17 digits
+   const unsigned int JulianDate::JDLEN(17);                // < # dec digits uint64_t
+   const double JulianDate::JDFACT(1.0e-17);                // 1.0e-JDLEN
+   //const uint64_t JulianDate::JDHALFDAY(500000000L);        // JDLEN=9 digits
+   //const uint64_t JulianDate::JDHALFDAY(500000000000L);     // JDLEN=12 digits
+   const uint64_t JulianDate::JDHALFDAY(50000000000000000L);// JDLEN=17 digits
+
+   // Constructor from long double JD
+   // Warning - precision lost on systems where long double == double (WIN)
+   JulianDate::JulianDate(long double jd, TimeSystem ts)
+   {
+      //std::cout << " ld ctor " << std::fixed << std::setprecision(10) << jd;
+      jday = static_cast<long>(jd+0.5);
+      jd -= static_cast<long double>(jday);
+      if(jd >= 0.5) { dday = static_cast<uint64_t>((jd-0.5)/JDFACT); jday += 1L; }
+      else            dday = static_cast<uint64_t>((jd+0.5)/JDFACT);
+      fday = static_cast<uint64_t>((jd/JDFACT-dday)/JDFACT);
+      timeSystem = ts;
+      //std::cout << " " << jday << " " << dday << " " << fday << std::endl;
+   }
+
+   // Constructor from Julian day (not JD) and seconds-of-day
+   void JulianDate::fromJDaySOD(long jd, double sod, TimeSystem ts)
+   {
+      jday = jd;
+      timeSystem = ts;
+      dday = static_cast<uint64_t>(0);
+      fday = static_cast<uint64_t>(0);
+      if(sod > 0.0) {
+         dday = static_cast<uint64_t>((sod/86400.)/JDFACT);
+         sod -= 86400.*dday*JDFACT;
+         fday = static_cast<uint64_t>((sod/86400.)/(JDFACT*JDFACT));
+      }
+   }
+
+   // Constructor from long int(JD) and frac(JD)
+   void JulianDate::fromJDintfrac(long ijd, double fjd, TimeSystem ts)
+   {
+      jday = ijd;
+      timeSystem = ts;
+      dday = static_cast<uint64_t>(fjd/JDFACT);
+      fday = static_cast<uint64_t>((fjd*JDFACT - dday)/JDFACT);
+   }
+
+   // Constructor (except for system ) from string
+   void JulianDate::fromString(std::string instr)
+   {
+      // parse the string
+      int sign,exp,index;
+      //TEMP std::cout << "instr is " << instr << std::endl;
+      std::string str = StringUtils::parseScientific(instr, sign, exp, index);
+      //TEMP std::cout << "parse is " << str << std::endl;
+
+      // cannot have negative
+      if(sign < 0) GPSTK_THROW(Exception("Negative JD"));
+
+      // mod the string to make exp=0
+      if(exp != 0) { index += exp; exp = 0; }
+      // pad the string to put index within the string
+      if(index < 0)                    // left leading zeros
+         str = std::string(-index,'0') + str;
+      else if(index >= str.size())     // trailing zeros
+         str = str + std::string(str.size()-index,'0');
+      //TEMP std::cout << "str is " << str << std::endl;
+
+      // break into 3 strings  int (.) 17-dig 17-dig
+      std::string istr("0");
+      if(index > 0) {
+         istr = str.substr(0,index);
+         StringUtils::stripLeading(str,istr);
+      }
+      //TEMP std::cout << "istr is " << istr << std::endl;
+      // 64 bit long max value is 9223372036854775807, 19 digits
+      std::string dstr = (str.length() > 0 ? str.substr(0,JDLEN) : "0");
+      StringUtils::leftJustify(dstr,JDLEN,'0');
+      //TEMP std::cout << "dstr is " << dstr << " " << dstr.size() << std::endl;
+      // truncate string after 17 digits, 17+17=34 digits past index
+      std::string fstr = (str.length() > JDLEN ? str.substr(JDLEN,JDLEN) : "0");
+      StringUtils::leftJustify(fstr,JDLEN,'0');
+      //TEMP  std::cout << "fstr is " << fstr << " " << fstr.size() << std::endl;
+
+      bool rnd(dstr[0] >= '5');
+      jday = std::strtol(istr.c_str(),0,10) + (rnd ? 1 : 0);
+      dday = std::strtoull(dstr.c_str(),0,10);
+      //TEMP std::cout << "strtoull of " << dstr << " is " << dday << std::endl;
+      if(rnd) dday -= JDHALFDAY;
+      else    dday += JDHALFDAY;         // this accnts for 0.5d JD-jday
+      fday = std::strtoull(fstr.c_str(),0,10);
+      //TEMP std::cout<< "fromStr "<< jday <<" "<< dday <<" "<< fday << std::endl;
+   }
+
+   // write full JD to string.
+   std::string JulianDate::asString(const int prec) const
+   {
+      long j(jday);
+      uint64_t d(dday),f(fday);
+      static const char ten('9'+1);
+
+      if(dday < JDHALFDAY) { d += JDHALFDAY; j -= 1L; }
+      else                 { d -= JDHALFDAY; }
+
+      // write the part to right of '.' first
+      std::string str;
+      std::ostringstream oss;
+      oss << std::setfill('0') << std::setw(JDLEN) << d;
+      oss << std::setw(JDLEN) << f;
+      oss << std::setfill(' ');
+      str = oss.str();
+
+      // trim to prec digits
+      if(prec > -1) {
+         if(prec < str.length()) {
+            if(str[prec] >= '5' && str[prec] <= '9') {
+               // round the string at prec
+               int k(prec-1);
+               bool rnd(str[k]=='9');
+               str[k] = (rnd ? '0' : str[k]+1);
+
+               while(rnd && --k >= 0) {
+                  str[k] += 1;
+                  rnd = (str[k]==ten);
+                  if(rnd) str[k] = '0';
+               }
+               if(rnd) j += 1L;
+            }
+            // truncate at prec-1
+            str = str.substr(0,prec);
+         }
+         else
+            // 0-pad on the right
+            str = str + std::string(prec-str.length(),'0');
+      }
+
+      oss.str("");
+      oss << j << "." << str;
+      return oss.str();
+   }
 
    JulianDate& JulianDate::operator=( const JulianDate& right )
    {
@@ -193,8 +326,8 @@ namespace gpstk
       //<< " fday " << (fday > right.fday ? fday-right.fday : right.fday-fday)
       //*JDFACT*JDFACT << " eps " << CommonTime::eps << std::endl;
       if(jday == right.jday
-         && std::abs(dday*JDFACT - right.dday*JDFACT
-                   + fday*JDFACT*JDFACT - right.fday*JDFACT*JDFACT) < CommonTime::eps)
+         && std::abs(((dday-right.dday)*JDFACT + (fday-right.fday)*JDFACT) * JDFACT)
+            < CommonTime::eps)
       {
          return true;
       }
@@ -237,6 +370,25 @@ namespace gpstk
    bool JulianDate::operator>=( const JulianDate& right ) const
    {
       return ( !operator<( right ) );
+   }
+
+   // Compute long double JD
+   // Warning - precision lost when cast to double,
+   //    and on systems where long double is implemented as double (eg. WIN)
+   // return long double Julian Date JD (not Julian day jday)
+   long double JulianDate::JD(void) const
+   {
+      long double jd = static_cast<long double>(jday);
+      // NB uint64_t can't do negative
+      if(dday < JDHALFDAY) {
+         jd += (static_cast<long double>(dday+JDHALFDAY)
+                + static_cast<long double>(fday)*JDFACT)*JDFACT-1.0L;
+      }
+      else {
+         jd += (static_cast<long double>(dday-JDHALFDAY)
+                + static_cast<long double>(fday)*JDFACT)*JDFACT;
+      }
+      return jd;
    }
 
 } // namespace

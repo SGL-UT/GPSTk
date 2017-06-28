@@ -123,7 +123,8 @@ namespace gpstk
          return (type);
       else {            // must distinguish name with PRN and start time
          MJD mt(validFrom);
-         return (type + string("/") + serialNo + string("/") + asString(mt.mjd,2));
+         return (type + string("/") + serialNo + string("/")
+                     + asString(mt.asLongDouble(),2));
       }
    }
 
