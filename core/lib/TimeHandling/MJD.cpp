@@ -73,7 +73,7 @@ namespace gpstk
    }
 
    // Constructor from long int(MJD) and double frac(MJD)
-   void MJD::fromMJDintfrac(long lmjd, double frac, TimeSystem ts)
+   void MJD::fromIntFrac(long lmjd, double frac, TimeSystem ts)
    {
       imjd = lmjd;
       if(frac < 0.0 || frac >= 1.0)

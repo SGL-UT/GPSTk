@@ -86,7 +86,7 @@ namespace gpstk
          /**
           * Constructor from long int(JD) and frac(JD)
           */
-      void fromJDintfrac(long ijd, double fjd, TimeSystem ts=TimeSystem::Unknown);
+      void fromIntFrac(long ijd, double fjd, TimeSystem ts=TimeSystem::Unknown);
 
          /**
           * Constructor (except for system ) from string

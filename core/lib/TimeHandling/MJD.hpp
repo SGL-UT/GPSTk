@@ -77,7 +77,7 @@ namespace gpstk
       void fromMJDsod(long mjd, double sod, TimeSystem ts = TimeSystem::Unknown);
 
          /// Constructor from long int(MJD) and double frac(MJD)
-      void fromMJDintfrac(long mjd, double frac, TimeSystem ts = TimeSystem::Unknown);
+      void fromIntFrac(long mjd, double frac, TimeSystem ts = TimeSystem::Unknown);
 
          /// Constructor (except for system) from string
       void fromString(std::string instr);

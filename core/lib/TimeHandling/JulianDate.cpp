@@ -79,7 +79,7 @@ namespace gpstk
    }
 
    // Constructor from long int(JD) and frac(JD)
-   void JulianDate::fromJDintfrac(long ijd, double fjd, TimeSystem ts)
+   void JulianDate::fromIntFrac(long ijd, double fjd, TimeSystem ts)
    {
       jday = ijd;
       timeSystem = ts;

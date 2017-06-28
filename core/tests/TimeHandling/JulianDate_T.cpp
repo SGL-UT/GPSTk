@@ -230,7 +230,7 @@ class JulianDate_T
 		TestUtil testFramework( "JulianDate", "isValid", __FILE__, __LINE__ );
 
 	  	JulianDate Compare;
-      Compare.fromJDintfrac(1350000,0.0,TimeSystem(2)); //Initialize an object
+      Compare.fromIntFrac(1350000,0.0,TimeSystem(2)); //Initialize an object
 
 		//---------------------------------------------------------------------
 		//Is the time after the BEGINNING_OF_TIME?

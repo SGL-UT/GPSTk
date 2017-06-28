@@ -57,7 +57,7 @@ class MJD_T
 
 
 	  	MJD Compare;
-      Compare.fromMJDintfrac(135000,0.0,TimeSystem(2)); //Initialize an object
+      Compare.fromIntFrac(135000,0.0,TimeSystem(2)); //Initialize an object
 
 		//---------------------------------------------------------------------
 		//Were the attributes set to expectation with the explicit constructor?
@@ -100,7 +100,7 @@ class MJD_T
 		MJD setFromInfo1;
 		MJD setFromInfo2;
 		MJD Compare,Compare2;
-      Compare.fromMJDintfrac(135000,0.0,TimeSystem(2)), Compare2.fromMJDintfrac(0,0.0,TimeSystem(2));
+      Compare.fromIntFrac(135000,0.0,TimeSystem(2)), Compare2.fromIntFrac(0,0.0,TimeSystem(2));
 		TimeTag::IdToValue Id;
 		Id['Q'] = "135000.0";
 		Id['P'] = "GPS";
@@ -132,9 +132,9 @@ class MJD_T
 
 
 		gpstk::MJD Compare;
-      Compare.fromMJDintfrac(135000,0.0); // Initialize with value
+      Compare.fromIntFrac(135000,0.0); // Initialize with value
 		gpstk::MJD LessThanMJD;
-      LessThanMJD.fromMJDintfrac(134000,0.0); // Initialize with value
+      LessThanMJD.fromIntFrac(134000,0.0); // Initialize with value
 		gpstk::MJD CompareCopy(Compare); // Initialize with copy constructor
 
 		//---------------------------------------------------------------------
@@ -200,7 +200,7 @@ class MJD_T
 
 
 	  	MJD Compare;
-      Compare.fromMJDintfrac(135000,0.0,TimeSystem(2)); //Initialize an object
+      Compare.fromIntFrac(135000,0.0,TimeSystem(2)); //Initialize an object
 
 	  	Compare.reset(); // Reset it
 
@@ -223,7 +223,7 @@ class MJD_T
 
 
 	  	MJD Compare;
-      Compare.fromMJDintfrac(135000,0.0,TimeSystem(2)); //Initialize an object
+      Compare.fromIntFrac(135000,0.0,TimeSystem(2)); //Initialize an object
 
 		//---------------------------------------------------------------------
 		//Is the time after the BEGINNING_OF_TIME?
@@ -262,17 +262,17 @@ class MJD_T
 
 
   		MJD GPS1;
-      GPS1.fromMJDintfrac(135000,0.0,TimeSystem(2));
+      GPS1.fromIntFrac(135000,0.0,TimeSystem(2));
   		MJD GPS2;
-      GPS2.fromMJDintfrac(134000,0.0,TimeSystem(2));
+      GPS2.fromIntFrac(134000,0.0,TimeSystem(2));
   		MJD UTC1;
-      UTC1.fromMJDintfrac(135000,0.0,TimeSystem(5));
+      UTC1.fromIntFrac(135000,0.0,TimeSystem(5));
   		MJD UNKNOWN;
-      UNKNOWN.fromMJDintfrac(135000,0.0,TimeSystem(0));
+      UNKNOWN.fromIntFrac(135000,0.0,TimeSystem(0));
   		MJD ANY;
-      ANY.fromMJDintfrac(135000,0.0,TimeSystem(1));
+      ANY.fromIntFrac(135000,0.0,TimeSystem(1));
   		MJD ANY2;
-      ANY2.fromMJDintfrac(134000,0.0,TimeSystem(1));
+      ANY2.fromIntFrac(134000,0.0,TimeSystem(1));
 
 		//---------------------------------------------------------------------
 		//Verify differing TimeSystem sets equivalence operator to false
@@ -318,9 +318,9 @@ class MJD_T
 
 
   		MJD GPS1;
-      GPS1.fromMJDintfrac(135000,0.0,TimeSystem::GPS);
+      GPS1.fromIntFrac(135000,0.0,TimeSystem::GPS);
   		MJD UTC1;
-      UTC1.fromMJDintfrac(135000,0.0,TimeSystem::UTC);
+      UTC1.fromIntFrac(135000,0.0,TimeSystem::UTC);
 		
 		//---------------------------------------------------------------------
 		//Verify printed output matches expectation

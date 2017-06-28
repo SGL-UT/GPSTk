@@ -440,6 +440,7 @@ namespace gpstk
          int iweek, ifullweek, idow, iyear, imonth, iday, izcount, idoy,
             izcount29, ihour, imin, iepoch;
          JulianDate jd;
+         MJD mjd;
          TimeSystem ts;
 
          for( TimeTag::IdToValue::iterator itr = info.begin();
@@ -453,7 +454,8 @@ namespace gpstk
                   break;
 
                case 'Q':
-                  t = MJD( asLongDouble(itr->second) );
+                  mjd.fromString(itr->second);
+                  t = mjd;
                   break;
 
                case 'J':
