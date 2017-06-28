@@ -105,12 +105,9 @@ class JulianDate_T
 
 		JulianDate setFromInfo1;
 		JulianDate setFromInfo2;
-		//JulianDate Compare(1350000,TimeSystem::GPS), Compare2(0,TimeSystem(2));
 		JulianDate Compare, Compare2;
-      // Don't use the long double c'tor
-      // JD=1350000 == jday=1350000,frac-of-day=0.5; recall JD == integer(=jday) at noon
       Compare.fromJDaySOD(1350000,43200.0,TimeSystem::GPS);
-      Compare2.fromJDaySOD(0,43200.0,TimeSystem::GPS);
+      Compare2.fromJDaySOD(0,43200.0,TimeSystem(2));
 		TimeTag::IdToValue Id;
 		Id['J'] = "1350000";
 		Id['P'] = "GPS";

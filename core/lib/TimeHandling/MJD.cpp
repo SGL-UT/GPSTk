@@ -60,7 +60,8 @@ namespace gpstk
    }
 
    // Constructor from long int(MJD) and double seconds-of-day
-   void MJD::fromMJDsod(long lmjd, double sod, TimeSystem ts)
+   //void MJD::fromMJDsod(long lmjd, double sod, TimeSystem ts)
+   MJD::MJD(long lmjd, double sod, TimeSystem ts)
    {
       imjd = lmjd;
       if(sod < 0.0 || sod > SEC_PER_DAY)

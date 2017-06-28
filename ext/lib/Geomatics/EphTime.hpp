@@ -191,8 +191,7 @@ namespace gpstk
       /// const cast EphTime to CommonTime
       operator CommonTime() const throw()
       {
-         MJD ctmjd;
-         ctmjd.fromMJDsod(iMJD,dSOD);
+         MJD ctmjd(iMJD,dSOD);
          CommonTime ct = ctmjd.convertToCommonTime();
          ct.setTimeSystem(system);
          return ct;
@@ -202,8 +201,7 @@ namespace gpstk
       /// non-const cast EphTime to CommonTime
       operator CommonTime() throw()
       {
-         MJD ctmjd;
-         ctmjd.fromMJDsod(iMJD,dSOD);
+         MJD ctmjd(iMJD,dSOD);
          CommonTime ct = ctmjd.convertToCommonTime();
          ct.setTimeSystem(system);
          return ct;

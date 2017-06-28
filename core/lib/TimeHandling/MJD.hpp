@@ -74,7 +74,8 @@ namespace gpstk
       MJD(long double mjd, TimeSystem ts = TimeSystem::Unknown);
 
          /// Constructor from long int(MJD) and double seconds-of-day
-      void fromMJDsod(long mjd, double sod, TimeSystem ts = TimeSystem::Unknown);
+      //void fromMJDsod(long mjd, double sod, TimeSystem ts = TimeSystem::Unknown);
+      MJD(long mjd, double sod, TimeSystem ts = TimeSystem::Unknown);
 
          /// Constructor from long int(MJD) and double frac(MJD)
       void fromIntFrac(long mjd, double frac, TimeSystem ts = TimeSystem::Unknown);

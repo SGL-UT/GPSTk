@@ -227,7 +227,7 @@ class TimeTag_T
 
 
   		JulianDate hardCodedTime;
-      hardCodedTime.fromJDaySOD(1234567,43200.0,TimeSystem::GPS);    // Set a hardcoded time - not useing long double
+      hardCodedTime.fromIntFrac(1234567,0.0,TimeSystem::GPS);        // Set a hardcoded time - not using long double
 		std::string formatString = "%10.2J %03P";                      //Provide a format string
 		std::string timeString = hardCodedTime.printf(formatString);   //Print the time using that format
 		JulianDate scannedTime;
