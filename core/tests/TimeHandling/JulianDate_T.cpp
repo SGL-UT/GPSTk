@@ -66,7 +66,7 @@ class JulianDate_T
 		//---------------------------------------------------------------------
 		//Were the attributes set to expectation with the explicit constructor?
 		//---------------------------------------------------------------------
-		testFramework.assert(fabs((long double)1350000 - Compare.jd) < eps,  "Explicit constructor did not set the jd value properly",   __LINE__);
+		testFramework.assert(fabs((long double)1350000 - Compare.jday) < eps,  "Explicit constructor did not set the jd value properly",   __LINE__);
 		testFramework.assert(TimeSystem(2) == Compare.getTimeSystem(),       "Explicit constructor did not set the TimeSystem properly", __LINE__);
 
 
@@ -75,7 +75,7 @@ class JulianDate_T
 		//---------------------------------------------------------------------
 		//Were the attributes set to expectation with the copy constructor?
 		//---------------------------------------------------------------------
-		testFramework.assert(fabs((long double)1350000 - Copy.jd) < eps, "Copy constructor did not set the jd value properly",   __LINE__);
+		testFramework.assert(fabs((long double)1350000 - Copy.jday) < eps, "Copy constructor did not set the jd value properly",   __LINE__);
 		testFramework.assert(TimeSystem(2) == Copy.getTimeSystem(),      "Copy constructor did not set the TimeSystem properly", __LINE__);
 
 
@@ -85,7 +85,7 @@ class JulianDate_T
 		//---------------------------------------------------------------------
 		//Were the attributes set to expectation with the Set Operator?
 		//---------------------------------------------------------------------
-		testFramework.assert(fabs((long double)1350000 - Assigned.jd) < eps, "Set Operator did not set the jd value properly",   __LINE__);
+		testFramework.assert(fabs((long double)1350000 - Assigned.jday) < eps, "Set Operator did not set the jd value properly",   __LINE__);
 		testFramework.assert(TimeSystem(2) == Assigned.getTimeSystem(),      "Set Operator did not set the TimeSystem properly", __LINE__);
 
 		return testFramework.countFails();
@@ -105,7 +105,12 @@ class JulianDate_T
 
 		JulianDate setFromInfo1;
 		JulianDate setFromInfo2;
-		JulianDate Compare(1350000,TimeSystem(2)), Compare2(0,TimeSystem(2));
+		//JulianDate Compare(1350000,TimeSystem::GPS), Compare2(0,TimeSystem(2));
+		JulianDate Compare, Compare2;
+      // Don't use the long double c'tor
+      // JD=1350000 == jday=1350000,frac-of-day=0.5; recall JD == integer(=jday) at noon
+      Compare.fromJDaySOD(1350000,43200.0,TimeSystem::GPS);
+      Compare2.fromJDaySOD(0,43200.0,TimeSystem::GPS);
 		TimeTag::IdToValue Id;
 		Id['J'] = "1350000";
 		Id['P'] = "GPS";
@@ -210,7 +215,7 @@ class JulianDate_T
 		//---------------------------------------------------------------------
 		//Were the attributes reset to expectation?
 		//---------------------------------------------------------------------
-		testFramework.assert(Compare.jd==0,                            "reset() did not set the jd value to 0",   __LINE__);
+		testFramework.assert(Compare.jday==0,                            "reset() did not set the jd value to 0",   __LINE__);
 		testFramework.assert(TimeSystem(0) == Compare.getTimeSystem(), "reset() did not set the TimeSystem to UNK", __LINE__);
 
 		return testFramework.countFails();
@@ -223,7 +228,6 @@ class JulianDate_T
 	int  toFromCommonTimeTest (void)
 	{
 		TestUtil testFramework( "JulianDate", "isValid", __FILE__, __LINE__ );
-
 
 	  	JulianDate Compare(1350000,TimeSystem(2)); //Initialize an object
 
@@ -249,7 +253,7 @@ class JulianDate_T
 		//Is the result of conversion the same?
 		//---------------------------------------------------------------------
 		testFramework.assert(Compare.getTimeSystem()== Test2.getTimeSystem(), "TimeSystem provided found to be different after converting to and from CommonTime", __LINE__);
-		testFramework.assert(fabs(Test2.jd - Compare.jd) < eps,               "JD provided found to be different after converting to and from CommonTime",         __LINE__);
+		testFramework.assert(fabs(Test2.jday - Compare.jday) < eps,               "JD provided found to be different after converting to and from CommonTime",         __LINE__);
 
 		return testFramework.countFails();
 	}
@@ -313,8 +317,8 @@ class JulianDate_T
 		TestUtil testFramework( "JulianDate", "printf", __FILE__, __LINE__ );
 
 
-  		JulianDate GPS1(1350000,TimeSystem::GPS);
-  		JulianDate UTC1(1350000,TimeSystem::UTC);
+  		JulianDate GPS1(1350000,TimeSystem(2)); //TimeSystem::GPS);
+  		JulianDate UTC1(1350000,TimeSystem(8)); //TimeSystem::UTC);
 
 		//---------------------------------------------------------------------
 		//Verify printed output matches expectation

@@ -37,14 +37,23 @@
 /// @file JulianDate.cpp
 
 #include <cmath>
+#include <cstdlib>            // for strtol
 #include "JulianDate.hpp"
 #include "TimeConstants.hpp"
 
 namespace gpstk
 {
+   const unsigned int JulianDate::JDLEN(17);                   // < # dec digits ulong
+   const double JulianDate::JDFACT(1.0e-17);                   // 1.0e-JDLEN
+   //const uint64_t JulianDate::JDHALFDAY(500000000L);   // JDLEN=9 digits
+   //const uint64_t JulianDate::JDHALFDAY(500000000000L);   // JDLEN=12 digits
+   const uint64_t JulianDate::JDHALFDAY(50000000000000000L);   // JDLEN=17 digits
+
    JulianDate& JulianDate::operator=( const JulianDate& right )
    {
-      jd = right.jd;
+      jday = right.jday;
+      dday = right.dday;
+      fday = right.fday;
       timeSystem = right.timeSystem;
       return *this;
    }
@@ -53,16 +62,16 @@ namespace gpstk
    {
       try
       {
-         long double temp_jd( jd + 0.5 );
-         long jday( static_cast<long>( temp_jd ) );
-         long double sod =
-            ( temp_jd - static_cast<long double>( jday ) ) * SEC_PER_DAY;
-
+         // fraction of day
+         double frod = static_cast<double>(dday)*JDFACT;
+         frod += static_cast<double>(fday)*JDFACT*JDFACT;
+         long sod = static_cast<long>(frod*SEC_PER_DAY);       // truncate
+         frod -= static_cast<double>(sod)/SEC_PER_DAY;
+         // fractional seconds of day
+         double frsod = frod*SEC_PER_DAY;
+         
          CommonTime ct;
-         return ct.set( jday,
-                        static_cast<long>( sod ),
-                        static_cast<double>( sod - static_cast<long>( sod ) ),
-                        timeSystem );
+         return ct.set( jday, sod, frsod, timeSystem );
       }
       catch (InvalidParameter& ip)
       {
@@ -73,14 +82,13 @@ namespace gpstk
 
    void JulianDate::convertFromCommonTime( const CommonTime& ct )
    {
-      long jday, sod;
+      long isod;
       double fsod;
-      ct.get( jday, sod, fsod, timeSystem );
+      ct.get( jday, isod, fsod, timeSystem );
 
-      jd =   static_cast<long double>( jday ) +
-           (   static_cast<long double>( sod )
-             + static_cast<long double>( fsod ) ) * DAY_PER_SEC
-           - 0.5;
+      double frac((static_cast<double>(isod)+fsod)/SEC_PER_DAY);
+      dday = static_cast<uint64_t>(frac/JDFACT);
+      fday = static_cast<uint64_t>((frac/JDFACT-static_cast<double>(dday))/JDFACT);
    }
 
    std::string JulianDate::printf( const std::string& fmt ) const
@@ -91,7 +99,7 @@ namespace gpstk
          std::string rv( fmt );
 
          rv = formattedPrint( rv, getFormatPrefixFloat() + "J",
-                              "JLf", jd );
+                              "JLf", JD() );
          rv = formattedPrint( rv, getFormatPrefixInt() + "P",
                               "Ps", timeSystem.asString().c_str() );
          return rv;
@@ -130,7 +138,7 @@ namespace gpstk
          switch( i->first )
          {
             case 'J':
-               jd = asLongDouble( i->second );
+               this->fromString(i->second);
                break;
 
             case 'P':
@@ -159,22 +167,33 @@ namespace gpstk
 
    void JulianDate::reset()
    {
-      jd = 0.0;
+      jday = 0L;
+      dday = fday = static_cast<uint64_t>(0);
       timeSystem = TimeSystem::Unknown;
    }
 
    bool JulianDate::operator==( const JulianDate& right ) const
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
-      if ((timeSystem != TimeSystem::Any &&
-           right.timeSystem != TimeSystem::Any) &&
-          timeSystem != right.timeSystem)
+      if((timeSystem != TimeSystem::Any && right.timeSystem != TimeSystem::Any)
+            && timeSystem != right.timeSystem)
+      {
          return false;
-
-      if( std::abs(jd - right.jd) < CommonTime::eps )
+      //   gpstk::InvalidRequest ir("CommonTime objects not in same time system, "
+      //                                 "cannot be compared");
+      //   GPSTK_THROW(ir);
+      }
+      //std::cout << std::scientific << std::setprecision(4)
+      //<< " dday " << (dday > right.dday ? dday-right.dday : right.dday-dday)*JDFACT
+      //<< " fday " << (fday > right.fday ? fday-right.fday : right.fday-fday)
+      //*JDFACT*JDFACT << " eps " << CommonTime::eps << std::endl;
+      if(jday == right.jday
+         && std::abs(dday*JDFACT - right.dday*JDFACT
+                   + fday*JDFACT*JDFACT - right.fday*JDFACT*JDFACT) < CommonTime::eps)
       {
          return true;
       }
+
       return false;
    }
 
@@ -190,14 +209,12 @@ namespace gpstk
            right.timeSystem != TimeSystem::Any) &&
           timeSystem != right.timeSystem)
       {
-         gpstk::InvalidRequest ir("CommonTime objects not in same time system, cannot be compared");
+         gpstk::InvalidRequest ir("CommonTime objects not in same time system,"
+                                       " cannot be compared");
          GPSTK_THROW(ir);
       }
 
-      if( jd < right.jd )
-      {
-         return true;
-      }
+      if( jday < right.jday || dday < right.dday || fday < right.fday ) return true;
       return false;
    }
 
