@@ -539,7 +539,8 @@ public:
       CommonTime scannedCommonTime, hardcodedCommonTime;
       std::string formatString, timeString;
          // Set a hardcoded time
-      MJD hardcodedTime(123456.0,TimeSystem(1));
+      MJD hardcodedTime;
+      hardcodedTime.fromIntFrac(123456,0.0,TimeSystem(1));
       hardcodedCommonTime = hardcodedTime.convertToCommonTime();
 
          // Provide a format string
