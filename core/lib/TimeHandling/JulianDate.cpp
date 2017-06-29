@@ -55,13 +55,11 @@ namespace gpstk
    {
       if(jd < 0.0L)
          GPSTK_THROW(InvalidParameter("Invalid input"));
-      //std::cout << " ld ctor " << std::fixed << std::setprecision(10) << jd;
       jday = static_cast<long>(jd+0.5);
       jd -= static_cast<long double>(jday);
       if(jd >= 0.5) { dday = static_cast<uint64_t>((jd-0.5L)/JDFACT); jday += 1L; }
       else            dday = static_cast<uint64_t>((jd+0.5L)/JDFACT);
       fday = static_cast<uint64_t>((jd/JDFACT-dday)/JDFACT);
-      //std::cout << " " << jday << " " << dday << " " << fday << std::endl;
    }
 
    // Constructor from Julian day (not JD) and seconds-of-day
@@ -118,9 +116,7 @@ namespace gpstk
    {
       // parse the string
       int sign,exp,index;
-      //TEMP std::cout << "instr is " << instr << std::endl;
       std::string str = StringUtils::parseScientific(instr, sign, exp, index);
-      //TEMP std::cout << "parse is " << str << std::endl;
 
       // cannot have negative
       if(sign < 0) GPSTK_THROW(Exception("Negative JD"));
@@ -132,7 +128,6 @@ namespace gpstk
          str = std::string(-index,'0') + str;
       else if(index >= str.size())     // trailing zeros
          str = str + std::string(str.size()-index,'0');
-      //TEMP std::cout << "str is " << str << std::endl;
 
       // break into 3 strings  int (.) 17-dig 17-dig
       std::string istr("0");
@@ -140,24 +135,19 @@ namespace gpstk
          istr = str.substr(0,index);
          StringUtils::stripLeading(str,istr);
       }
-      //TEMP std::cout << "istr is " << istr << std::endl;
       // 64 bit long max value is 9223372036854775807, 19 digits
       std::string dstr = (str.length() > 0 ? str.substr(0,JDLEN) : "0");
       StringUtils::leftJustify(dstr,JDLEN,'0');
-      //TEMP std::cout << "dstr is " << dstr << " " << dstr.size() << std::endl;
       // truncate string after 17 digits, 17+17=34 digits past index
       std::string fstr = (str.length() > JDLEN ? str.substr(JDLEN,JDLEN) : "0");
       StringUtils::leftJustify(fstr,JDLEN,'0');
-      //TEMP  std::cout << "fstr is " << fstr << " " << fstr.size() << std::endl;
 
       bool rnd(dstr[0] >= '5');
       jday = std::strtol(istr.c_str(),0,10) + (rnd ? 1 : 0);
       dday = strtoull(dstr.c_str(),0,10);
-      //TEMP std::cout << "strtoull of " << dstr << " is " << dday << std::endl;
       if(rnd) dday -= JDHALFDAY;
       else    dday += JDHALFDAY;         // this accnts for 0.5d JD-jday
       fday = strtoull(fstr.c_str(),0,10);
-      //TEMP std::cout<< "fromStr "<< jday <<" "<< dday <<" "<< fday << std::endl;
    }
 
    // write full JD to string.
@@ -222,17 +212,11 @@ namespace gpstk
       {
          // fraction of day
          double frod = static_cast<double>(dday)*JDFACT;
-//std::cout << " convertTo " << jday << " " << dday << " " << fday << std::endl;
-//std::cout << " frod " << std::fixed << std::setprecision(19) << frod << std::endl;
          frod += static_cast<double>(fday)*JDFACT*JDFACT;
-//std::cout << " frodf " << std::fixed << std::setprecision(19) << frod << std::endl;
          long sod = static_cast<long>(frod*SEC_PER_DAY);       // truncate
-//std::cout << " sod " << std::fixed << std::setprecision(19) << sod << std::endl;
          frod -= static_cast<double>(sod)/SEC_PER_DAY;
-//std::cout << " frod2 " << std::fixed << std::setprecision(19) << frod << std::endl;
          // fractional seconds of day
          double frsod = frod*SEC_PER_DAY;
-//std::cout << " frsod " << std::fixed << std::setprecision(19) << frsod << std::endl;
          
          CommonTime ct;
          return ct.set( jday, sod, frsod, timeSystem );
@@ -343,14 +327,7 @@ namespace gpstk
             && timeSystem != right.timeSystem)
       {
          return false;
-      //   gpstk::InvalidRequest ir("CommonTime objects not in same time system, "
-      //                                 "cannot be compared");
-      //   GPSTK_THROW(ir);
       }
-      //std::cout << std::scientific << std::setprecision(4)
-      //<< " dday " << (dday > right.dday ? dday-right.dday : right.dday-dday)*JDFACT
-      //<< " fday " << (fday > right.fday ? fday-right.fday : right.fday-fday)
-      //*JDFACT*JDFACT << " eps " << CommonTime::eps << std::endl;
       if(jday == right.jday
          && std::abs(((dday-right.dday)*JDFACT + (fday-right.fday)*JDFACT) * JDFACT)
             < CommonTime::eps)

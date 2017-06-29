@@ -89,9 +89,7 @@ namespace gpstk
       static const char ten('9'+1);
       // parse the string
       int sign,exp,index;
-      //TEMP std::cout << "instr is " << instr << std::endl;
       std::string str = StringUtils::parseScientific(instr, sign, exp, index);
-      //TEMP std::cout << "parse is " << str << std::endl;
 
       // mod the string to make exp=0
       if(exp != 0) { index += exp; exp = 0; }
@@ -100,7 +98,6 @@ namespace gpstk
          str = std::string(-index,'0') + str;
       else if(index >= str.size())     // trailing zeros
          str = str + std::string(str.size()-index,'0');
-      //TEMP std::cout << "str is " << str << std::endl;
 
       // break into 3 strings  int (.) 17-dig 17-dig
       std::string istr("0");
@@ -108,32 +105,25 @@ namespace gpstk
          istr = str.substr(0,index);
          StringUtils::stripLeading(str,istr);
       }
-      //TEMP std::cout << "istr is " << istr << std::endl;
       imjd = std::strtol(istr.c_str(),0,10);
 
       // str is now fractional part with (.) implied at position -1
       // if MJD is negative, replace str with 1-str
       if(sign < 0) {
-      //TEMP std::cout << "negative - str is now " << str << std::endl;
          imjd = -imjd;
          int i=str.length()-1;
          str[i] = '0'+(ten-str[i]);
          while(--i >= 0) str[i] = '0'+('9'-str[i]);
-      //TEMP std::cout << "negative - fixed str is now " << str << std::endl;
       }
 
       // 64 bit long max value is 9223372036854775807, 19 digits
       std::string dstr = (str.length() > 0 ? str.substr(0,MJDLEN) : "0");
       StringUtils::leftJustify(dstr,MJDLEN,'0');
-      //TEMP std::cout << "dstr is " << dstr << " " << dstr.size() << std::endl;
       // truncate string after 17 digits, 17+17=34 digits past index
       std::string fstr = (str.length() > MJDLEN ? str.substr(MJDLEN,MJDLEN) : "0");
       StringUtils::leftJustify(fstr,MJDLEN,'0');
-      //TEMP std::cout << "fstr is " << fstr << " " << fstr.size() << std::endl;
       dday = strtoull(dstr.c_str(),0,10);
-      //TEMP std::cout << "strtoull of " << dstr << " is " << dday << std::endl;
       fday = strtoull(fstr.c_str(),0,10);
-      //TEMP std::cout<< "fromStr "<< jday <<" "<< dday <<" "<< fday << std::endl;
    }
 
    // Write full MJD to a string.
@@ -195,17 +185,11 @@ namespace gpstk
       {
          // fraction of day
          double frod = static_cast<double>(dday)*MJDFACT;
-//std::cout << " convertTo " << imjd << " " << dday << " " << fday << std::endl;
-//std::cout << " frod " << std::fixed << std::setprecision(19) << frod << std::endl;
          frod += static_cast<double>(fday)*MJDFACT*MJDFACT;
-//std::cout << " frodf " << std::fixed << std::setprecision(19) << frod << std::endl;
          long sod = static_cast<long>(frod*SEC_PER_DAY);       // truncate
-//std::cout << " sod " << std::fixed << std::setprecision(19) << sod << std::endl;
          frod -= static_cast<double>(sod)/SEC_PER_DAY;
-//std::cout << " frod2 " << std::fixed << std::setprecision(19) << frod << std::endl;
          // fractional seconds of day
          double frsod = frod*SEC_PER_DAY;
-//std::cout << " frsod " << std::fixed << std::setprecision(19) << frsod << std::endl;
          
          CommonTime ct;
          return ct.set(imjd+MJD_JDAY, sod, frsod, timeSystem);

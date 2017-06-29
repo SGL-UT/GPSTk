@@ -230,7 +230,7 @@ namespace gpstk
       static const double MJDFACT;        ///< 1.0e-(JDLEN)
 
       // member data
-      long imjd;     ///< integer MJD ("MJ day")
+      long imjd;     ///< integer MJD
       // fraction of day = (dday+fday*MJDFACT)*MJDFACT
       uint64_t dday; ///< fraction of day/MJDFACT
       uint64_t fday; ///< (fraction of day/MJDFACT-dday)/MJDFACT

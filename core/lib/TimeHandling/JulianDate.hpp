@@ -83,7 +83,8 @@ namespace gpstk
       ///    jd.fromIntFrac(135000,0.0);              // int(JD) and frac(JD)
       ///
       /// (5) fromString() and asString() provide I/O which is repeatable and
-      /// the most precise, with up to 34 decimal digits (prec ~ 1e-34 = JDFACT^2)
+      /// the most precise, with up to 34 decimal digits (prec ~ 1e-34 = JDFACT^2).
+      /// fromIntFrac() is the worst b/c of the double fraction of the day.
       ///  
    class JulianDate : public TimeTag
    {
