@@ -49,18 +49,17 @@ namespace gpstk
 
    // Constructor from long double MJD
    // Warning - precision lost on systems where long double == double (WIN)
-   MJD::MJD(long double mjd, TimeSystem ts)
+   MJD::MJD(long double mjd) //, TimeSystem ts)
    {
       imjd = static_cast<long>(mjd);
       mjd -= static_cast<long double>(imjd);          // now fraction of day
       if(mjd < 0.0) { mjd = 1.0L+mjd; imjd += 1L; }
       dday = static_cast<uint64_t>(mjd/MJDFACT);
       fday = static_cast<uint64_t>((mjd/MJDFACT-dday)/MJDFACT);
-      timeSystem = ts;
+      //timeSystem = ts;
    }
 
    // Constructor from long int(MJD) and double seconds-of-day
-   //void MJD::fromMJDsod(long lmjd, double sod, TimeSystem ts)
    MJD::MJD(long lmjd, double sod, TimeSystem ts)
    {
       imjd = lmjd;
@@ -116,10 +115,12 @@ namespace gpstk
       // str is now fractional part with (.) implied at position -1
       // if MJD is negative, replace str with 1-str
       if(sign < 0) {
+      //TEMP std::cout << "negative - str is now " << str << std::endl;
          imjd = -imjd;
          int i=str.length()-1;
          str[i] = '0'+(ten-str[i]);
          while(--i >= 0) str[i] = '0'+('9'-str[i]);
+      //TEMP std::cout << "negative - fixed str is now " << str << std::endl;
       }
 
       // 64 bit long max value is 9223372036854775807, 19 digits
@@ -129,7 +130,7 @@ namespace gpstk
       // truncate string after 17 digits, 17+17=34 digits past index
       std::string fstr = (str.length() > MJDLEN ? str.substr(MJDLEN,MJDLEN) : "0");
       StringUtils::leftJustify(fstr,MJDLEN,'0');
-      //TEMP  std::cout << "fstr is " << fstr << " " << fstr.size() << std::endl;
+      //TEMP std::cout << "fstr is " << fstr << " " << fstr.size() << std::endl;
       dday = std::strtoull(dstr.c_str(),0,10);
       //TEMP std::cout << "strtoull of " << dstr << " is " << dday << std::endl;
       fday = std::strtoull(fstr.c_str(),0,10);

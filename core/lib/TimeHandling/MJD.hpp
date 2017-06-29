@@ -68,23 +68,49 @@ namespace gpstk
          timeSystem = TimeSystem::Unknown;
       }
 
-         /** Constructor from long double MJD
-          * Warning - precision lost on systems where long double == double (WIN)
-          */
-      MJD(long double mjd, TimeSystem ts = TimeSystem::Unknown);
+         /// \deprecated
+         /// Constructor from long double MJD - deprecated
+         /// @param mjd long double MJD
+         ///
+         /// Warning - precision lost on systems where long double == double (e.g.WIN)
+         ///
+         /// NB TimeSystem is left out of this constructor on purpose, otherwise
+         /// compilers see an ambiguity between the two ctors (GPS could be any sys)
+         ///   MJD(long double mjd, TimeSystem::GPS) and
+         ///   MJD(long imjd, double sod) because TimeSystem::GPS is an int and
+         /// therefore can be implicitly cast to double. (really)
+         /// [However note that TimeSystem(2), cannot be implicitly cast.]
+      MJD(long double mjd); //NO , TimeSystem ts = TimeSystem::Unknown);
 
          /// Constructor from long int(MJD) and double seconds-of-day
-      //void fromMJDsod(long mjd, double sod, TimeSystem ts = TimeSystem::Unknown);
-      MJD(long mjd, double sod, TimeSystem ts = TimeSystem::Unknown);
+         /// NB if (full) MJD is negative, imjd here should also be, but sod should
+         ///  still be a positive seconds of the day.
+         /// @param imjd long int MJD; may be negative
+         /// @param sod double seconds of the day (positive even if imjd is not)
+         /// @param ts TimeSystem, defaults to Unknown
+      MJD(long imjd, double sod, TimeSystem ts = TimeSystem::Unknown);
 
          /// Constructor from long int(MJD) and double frac(MJD)
-      void fromIntFrac(long mjd, double frac, TimeSystem ts = TimeSystem::Unknown);
+         /// NB if (full) MJD is negative, imjd here should also be, but frac should
+         ///  still be a positive fraction of the day.
+         /// @param imjd long int MJD; may be negative
+         /// @param frac double fraction of the day (positive even if imjd is not)
+         /// @param ts TimeSystem, defaults to Unknown
+      void fromIntFrac(long imjd, double frac, TimeSystem ts = TimeSystem::Unknown);
 
          /// Constructor (except for system) from string
       void fromString(std::string instr);
 
          /// Write full MJD to a string.
       std::string asString(const int prec=-1) const;
+
+         /// Dump member data
+      std::string dumpString(void) const
+      {
+         std::ostringstream oss;
+         oss << imjd << "," << dday << "," << fday;
+         return oss.str();
+      }
 
          /**
           * Copy Constructor.

@@ -52,39 +52,67 @@ namespace gpstk
 
    // Constructor from long double JD
    // Warning - precision lost on systems where long double == double (WIN)
-   JulianDate::JulianDate(long double jd, TimeSystem ts)
+   JulianDate::JulianDate(long double jd) //, TimeSystem ts)
    {
+      if(jd < 0.0L)
+         GPSTK_THROW(InvalidParameter("Invalid input"));
       //std::cout << " ld ctor " << std::fixed << std::setprecision(10) << jd;
       jday = static_cast<long>(jd+0.5);
       jd -= static_cast<long double>(jday);
-      if(jd >= 0.5) { dday = static_cast<uint64_t>((jd-0.5)/JDFACT); jday += 1L; }
-      else            dday = static_cast<uint64_t>((jd+0.5)/JDFACT);
+      if(jd >= 0.5) { dday = static_cast<uint64_t>((jd-0.5L)/JDFACT); jday += 1L; }
+      else            dday = static_cast<uint64_t>((jd+0.5L)/JDFACT);
       fday = static_cast<uint64_t>((jd/JDFACT-dday)/JDFACT);
-      timeSystem = ts;
+      //timeSystem = ts;
       //std::cout << " " << jday << " " << dday << " " << fday << std::endl;
    }
 
    // Constructor from Julian day (not JD) and seconds-of-day
-   void JulianDate::fromJDaySOD(long jd, double sod, TimeSystem ts)
+   JulianDate::JulianDate(long jd, int isod, double fsod, TimeSystem ts)
    {
+      if(jd < 0)
+         GPSTK_THROW(InvalidParameter("Invalid jday input"));
+      if(isod < 0 || isod >= SEC_PER_DAY)
+         GPSTK_THROW(InvalidParameter("Invalid sec-of-day input"));
+      if(fsod < 0.0 || fsod >= 1.0)
+         GPSTK_THROW(InvalidParameter("Invalid frac-sec-of-day input"));
+
       jday = jd;
-      timeSystem = ts;
       dday = static_cast<uint64_t>(0);
       fday = static_cast<uint64_t>(0);
-      if(sod > 0.0) {
-         dday = static_cast<uint64_t>((sod/86400.)/JDFACT);
-         sod -= 86400.*dday*JDFACT;
-         fday = static_cast<uint64_t>((sod/86400.)/(JDFACT*JDFACT));
+
+      double fracday;
+      if(isod > 0) {
+         fracday = static_cast<double>(isod)/SEC_PER_DAY; // NB SEC_PER_DAY=int
+         dday = static_cast<uint64_t>(fracday/JDFACT);
+         fracday -= static_cast<double>(dday)*JDFACT;
+         fday = static_cast<uint64_t>(fracday/(JDFACT*JDFACT));
       }
+      if(fsod > 0.0) {
+         fracday = fsod/SEC_PER_DAY;
+         uint64_t fdday = static_cast<uint64_t>(fracday/JDFACT);
+         fracday -= static_cast<double>(fdday)*JDFACT;
+         uint64_t ffday = static_cast<uint64_t>(fracday/(JDFACT*JDFACT));
+
+         if(ffday > 0) { fday += ffday; }
+         if(fday >= 2*JDHALFDAY) { fday -= 2*JDHALFDAY; dday += 1L; }
+         if(fdday > 0) { dday += fdday; }
+         if(dday >= 2*JDHALFDAY) { dday -= 2*JDHALFDAY; jday += 1L; }
+      }
+      timeSystem = ts;
    }
 
    // Constructor from long int(JD) and frac(JD)
    void JulianDate::fromIntFrac(long ijd, double fjd, TimeSystem ts)
    {
-      jday = ijd;
+      if(ijd < 0 || fjd < 0.0 || fjd >= 1.0)
+         GPSTK_THROW(InvalidParameter("Invalid input"));
+
+      bool rnd(fjd >= 0.5);
+      jday = ijd + (rnd ? 1L : 0L);
+      if(rnd) dday = static_cast<uint64_t>((fjd-0.5)/JDFACT);
+      else    dday = static_cast<uint64_t>((fjd+0.5)/JDFACT);
+      fday = static_cast<uint64_t>((fjd - dday*JDFACT)/(JDFACT*JDFACT));
       timeSystem = ts;
-      dday = static_cast<uint64_t>(fjd/JDFACT);
-      fday = static_cast<uint64_t>((fjd*JDFACT - dday)/JDFACT);
    }
 
    // Constructor (except for system ) from string

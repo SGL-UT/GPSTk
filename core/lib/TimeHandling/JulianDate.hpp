@@ -70,32 +70,45 @@ namespace gpstk
          timeSystem = TimeSystem::Unknown;
       }
 
-         /**
-          * Constructor from long double JD
-          * Warning - precision lost on systems where long double == double (WIN)
-          */
-      JulianDate(long double jd, TimeSystem ts = TimeSystem::Unknown);
+         /// \deprecated
+         /// Constructor from long double JD - deprecated
+         /// Warning - precision lost on systems where long double == double (e.g.WIN)
+         /// NB TimeSystem is left out of this constructor on purpose, otherwise
+         /// compilers see an ambiguity between the two c'tors (GPS could be any sys)
+         ///   JD(long double jd, TimeSystem::GPS) and
+         ///   JD(long ijd, double sod)
+         /// because TimeSystem::GPS is an int and can be implicitly cast to double.
+         /// [However note that TimeSystem(2) cannot be implicitly cast.]
+         ///
+         /// @param JD long double JD (non-negative)
+      JulianDate(long double JD);
 
-         /**
-          * Constructor from Julian day (not JD) and seconds-of-day
-          * NB do not write JulianDate(long, double, TimeSystem) since this creates
-          *  ambiguity with JulianDate(long double, TimeSystem) b/c TimeSystem is int
-          */
-      void fromJDaySOD(long jd, double sod, TimeSystem ts = TimeSystem::Unknown);
+         /// Constructor from Julian day (not JD) and seconds-of-day
+         /// NB see note for fromString().
+         /// @param jd long Julian day (not JD : jday=int(JD+0.5)), non-negative
+         /// @param isod int seconds of day 0 <= sod < 86400
+         /// @param fsod double seconds of day 0 <= sod < 1.
+         /// @param ts TimeSystem, defaults to Unknown
+         /// @throw InvalidParameter if jd or isod or fsod out of range
+      JulianDate(long jd, int isod, double fsod, TimeSystem ts = TimeSystem::Unknown);
 
-         /**
-          * Constructor from long int(JD) and frac(JD)
-          */
+         /// Constructor from long int(JD) and frac(JD)
+         /// NB precision here is limited by double fjd; prefer other forms.
+         /// @param ijd long integer part of JD (not jday), non-negative
+         /// @param fjd double fractional part of JD 0<= fjd < 1.
+         /// @param ts TimeSystem, defaults to Unknown
       void fromIntFrac(long ijd, double fjd, TimeSystem ts=TimeSystem::Unknown);
 
-         /**
-          * Constructor (except for system ) from string
-          */
+         /// Constructor (except for system ) from string representation of full JD.
+         /// fromString provides the most precise input, up to 1.e-34 (JDFACT^2)
+         /// NB on constructors for JulianDate jd - these give the same value:
+         ///    jd.fromString("1350000");                // full JD
+         ///    jd = JulianDate(1350000,43200,0.0);      // jday not int(JD), sod
+         ///    jd.fromIntFrac(135000,0.0);              // int(JD) and frac(JD)
+         /// @param instr string rep of full JD e.g. "2457222.50114583333333333333"
       void fromString(std::string instr);
 
-         /**
-          * Dump member data
-          */
+         /// Dump member data as string of comma-separated long integers.
       std::string dumpString(void) const
       {
          std::ostringstream oss;
@@ -208,13 +221,14 @@ namespace gpstk
       bool operator>=( const JulianDate& right ) const;
          //@}
 
-         /**
-          * Compute long double JD
-          * Warning - precision lost when cast to double,
-          *    and on systems where long double is implemented as double (eg. WIN)
-          * @return long double Julian Date JD (not Julian day jday)
-          */
+         /// Compute long double JD
+         /// Warning - precision lost when cast to double,
+         ///    and on systems where long double is implemented as double (eg. WIN)
+         /// @return long double Julian Date JD (not Julian day jday)
       long double JD(void) const;
+
+         ///
+      void getSecOfDay(int& isod, double& fsod) const;
 
       // constants
       static const unsigned int JDLEN;

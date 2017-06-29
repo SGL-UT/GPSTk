@@ -56,8 +56,7 @@ class MJD_T
 		TestUtil testFramework( "MJD", "Constructor", __FILE__, __LINE__ );
 
 
-	  	MJD Compare;
-      Compare.fromIntFrac(135000,0.0,TimeSystem(2)); //Initialize an object
+	  	MJD Compare(135000,0.0,TimeSystem(2)); //Initialize an object
 
 		//---------------------------------------------------------------------
 		//Were the attributes set to expectation with the explicit constructor?
@@ -99,8 +98,8 @@ class MJD_T
 
 		MJD setFromInfo1;
 		MJD setFromInfo2;
-		MJD Compare,Compare2;
-      Compare.fromIntFrac(135000,0.0,TimeSystem(2)), Compare2.fromIntFrac(0,0.0,TimeSystem(2));
+      MJD Compare(135000,0.0,TimeSystem(2));
+      MJD Compare2(0,0.0,TimeSystem::GPS);
 		TimeTag::IdToValue Id;
 		Id['Q'] = "135000.0";
 		Id['P'] = "GPS";
@@ -131,10 +130,8 @@ class MJD_T
 		TestUtil testFramework( "MJD", "OperatorEquivalent", __FILE__, __LINE__ );
 
 
-		gpstk::MJD Compare;
-      Compare.fromIntFrac(135000,0.0); // Initialize with value
-		gpstk::MJD LessThanMJD;
-      LessThanMJD.fromIntFrac(134000,0.0); // Initialize with value
+		gpstk::MJD Compare(135000,0.0); // Initialize with value
+		gpstk::MJD LessThanMJD(134000,0.0); // Initialize with value
 		gpstk::MJD CompareCopy(Compare); // Initialize with copy constructor
 
 		//---------------------------------------------------------------------
@@ -199,8 +196,7 @@ class MJD_T
 		TestUtil testFramework( "MJD", "reset", __FILE__, __LINE__ );
 
 
-	  	MJD Compare;
-      Compare.fromIntFrac(135000,0.0,TimeSystem(2)); //Initialize an object
+	  	MJD Compare(135000,0.0,TimeSystem(2)); //Initialize an object
 
 	  	Compare.reset(); // Reset it
 
@@ -222,8 +218,7 @@ class MJD_T
 		TestUtil testFramework( "MJD", "isValid", __FILE__, __LINE__ );
 
 
-	  	MJD Compare;
-      Compare.fromIntFrac(135000,0.0,TimeSystem(2)); //Initialize an object
+	  	MJD Compare(135000,0.0,TimeSystem(2)); //Initialize an object
 
 		//---------------------------------------------------------------------
 		//Is the time after the BEGINNING_OF_TIME?
@@ -261,18 +256,12 @@ class MJD_T
 		TestUtil testFramework( "MJD", "OperatorEquivalentWithDifferingTimeSystem", __FILE__, __LINE__ );
 
 
-  		MJD GPS1;
-      GPS1.fromIntFrac(135000,0.0,TimeSystem(2));
-  		MJD GPS2;
-      GPS2.fromIntFrac(134000,0.0,TimeSystem(2));
-  		MJD UTC1;
-      UTC1.fromIntFrac(135000,0.0,TimeSystem(5));
-  		MJD UNKNOWN;
-      UNKNOWN.fromIntFrac(135000,0.0,TimeSystem(0));
-  		MJD ANY;
-      ANY.fromIntFrac(135000,0.0,TimeSystem(1));
-  		MJD ANY2;
-      ANY2.fromIntFrac(134000,0.0,TimeSystem(1));
+  		MJD GPS1(135000,0.0,TimeSystem(2));
+  		MJD GPS2(134000,0.0,TimeSystem(2));
+  		MJD UTC1(135000,0.0,TimeSystem(5));
+  		MJD UNKNOWN(135000,0.0,TimeSystem(0));
+  		MJD ANY(135000,0.0,TimeSystem(1));
+  		MJD ANY2(134000,0.0,TimeSystem(1));
 
 		//---------------------------------------------------------------------
 		//Verify differing TimeSystem sets equivalence operator to false
@@ -317,10 +306,8 @@ class MJD_T
 		TestUtil testFramework( "MJD", "printf", __FILE__, __LINE__ );
 
 
-  		MJD GPS1;
-      GPS1.fromIntFrac(135000,0.0,TimeSystem::GPS);
-  		MJD UTC1;
-      UTC1.fromIntFrac(135000,0.0,TimeSystem::UTC);
+  		MJD GPS1(135000,0.0,TimeSystem::GPS);
+  		MJD UTC1(135000,0.0,TimeSystem::UTC);
 		
 		//---------------------------------------------------------------------
 		//Verify printed output matches expectation
