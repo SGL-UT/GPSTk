@@ -48,7 +48,8 @@ namespace gpstk
 
       /**
        * This class encapsulates the "Modified Julian Date" time
-       * representation.
+       * representation; implementation is very similar to that of class JulianDate.
+       * See the documentation of class JulianDate.
        */
    class MJD : public TimeTag
    {
@@ -80,7 +81,7 @@ namespace gpstk
          ///   MJD(long imjd, double sod) because TimeSystem::GPS is an int and
          /// therefore can be implicitly cast to double. (really)
          /// [However note that TimeSystem(2), cannot be implicitly cast.]
-      MJD(long double mjd); //NO , TimeSystem ts = TimeSystem::Unknown);
+      MJD(long double mjd);
 
          /// Constructor from long int(MJD) and double seconds-of-day
          /// NB if (full) MJD is negative, imjd here should also be, but sod should
@@ -222,11 +223,11 @@ namespace gpstk
 
       /// Compute and @return seconds of day
       double SecOfDay(void) const
-         { return static_cast<double>((dday+fday*MJDFACT)*MJDFACT) * SEC_PER_DAY; }
+         { return ((dday+fday*MJDFACT)*MJDFACT*SEC_PER_DAY); }
 
       // constants
-      static const unsigned int MJDLEN;
-      static const double MJDFACT;
+      static const unsigned int MJDLEN;   ///< decimal digits in dday,fday
+      static const double MJDFACT;        ///< 1.0e-(JDLEN)
 
       // member data
       long imjd;     ///< integer MJD ("MJ day")

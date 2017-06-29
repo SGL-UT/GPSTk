@@ -51,7 +51,7 @@ namespace gpstk
 
    // Constructor from long double JD
    // Warning - precision lost on systems where long double == double (WIN)
-   JulianDate::JulianDate(long double jd) //, TimeSystem ts)
+   JulianDate::JulianDate(long double jd)
    {
       if(jd < 0.0L)
          GPSTK_THROW(InvalidParameter("Invalid input"));
@@ -61,7 +61,6 @@ namespace gpstk
       if(jd >= 0.5) { dday = static_cast<uint64_t>((jd-0.5L)/JDFACT); jday += 1L; }
       else            dday = static_cast<uint64_t>((jd+0.5L)/JDFACT);
       fday = static_cast<uint64_t>((jd/JDFACT-dday)/JDFACT);
-      //timeSystem = ts;
       //std::cout << " " << jday << " " << dday << " " << fday << std::endl;
    }
 
