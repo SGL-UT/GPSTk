@@ -131,9 +131,9 @@ namespace gpstk
       std::string fstr = (str.length() > MJDLEN ? str.substr(MJDLEN,MJDLEN) : "0");
       StringUtils::leftJustify(fstr,MJDLEN,'0');
       //TEMP std::cout << "fstr is " << fstr << " " << fstr.size() << std::endl;
-      dday = std::strtoull(dstr.c_str(),0,10);
+      dday = strtoull(dstr.c_str(),0,10);
       //TEMP std::cout << "strtoull of " << dstr << " is " << dday << std::endl;
-      fday = std::strtoull(fstr.c_str(),0,10);
+      fday = strtoull(fstr.c_str(),0,10);
       //TEMP std::cout<< "fromStr "<< jday <<" "<< dday <<" "<< fday << std::endl;
    }
 

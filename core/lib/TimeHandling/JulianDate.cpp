@@ -37,7 +37,6 @@
 /// @file JulianDate.cpp
 
 #include <cmath>
-#include <cstdlib>            // for strtoull
 #include "JulianDate.hpp"
 #include "TimeConstants.hpp"
 #include "StringUtils.hpp"
@@ -154,11 +153,11 @@ namespace gpstk
 
       bool rnd(dstr[0] >= '5');
       jday = std::strtol(istr.c_str(),0,10) + (rnd ? 1 : 0);
-      dday = std::strtoull(dstr.c_str(),0,10);
+      dday = strtoull(dstr.c_str(),0,10);
       //TEMP std::cout << "strtoull of " << dstr << " is " << dday << std::endl;
       if(rnd) dday -= JDHALFDAY;
       else    dday += JDHALFDAY;         // this accnts for 0.5d JD-jday
-      fday = std::strtoull(fstr.c_str(),0,10);
+      fday = strtoull(fstr.c_str(),0,10);
       //TEMP std::cout<< "fromStr "<< jday <<" "<< dday <<" "<< fday << std::endl;
    }
 
