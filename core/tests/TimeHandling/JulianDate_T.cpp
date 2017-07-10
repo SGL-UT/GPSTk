@@ -259,7 +259,7 @@ cout << "Compare is        " << Compare2.dumpString() << endl;
 		//Is the result of conversion the same?
 		//---------------------------------------------------------------------
 		testFramework.assert(Compare.getTimeSystem()== Test2.getTimeSystem(), "TimeSystem provided found to be different after converting to and from CommonTime", __LINE__);
-		testFramework.assert(fabs(Test2.jday - Compare.jday) < eps,               "JD provided found to be different after converting to and from CommonTime",         __LINE__);
+		testFramework.assert(abs(Test2.jday - Compare.jday) < eps,               "JD provided found to be different after converting to and from CommonTime",         __LINE__);
 
 		return testFramework.countFails();
 	}
