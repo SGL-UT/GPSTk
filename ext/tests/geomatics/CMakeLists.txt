@@ -381,3 +381,9 @@ set_property(TEST JPL_405eph_accuracy PROPERTY LABELS Geomatics_JPL)
 set_property(TEST JPL_405eph_accuracy PROPERTY DEPENDS JPL_405eph_conversion)
 
 ###############################################################################
+add_executable(StatsFilter_T StatsFilter_T.cpp)
+target_link_libraries(StatsFilter_T gpstk)
+add_test(StatsFilter StatsFilter_T)
+set_property(TEST StatsFilter PROPERTY LABELS Geomatics)
+
+###############################################################################
