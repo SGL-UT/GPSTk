@@ -39,7 +39,6 @@
 
 #include "TimeTag.hpp"
 #include "TimeSystem.hpp"
-#include "gpstkplatform.h"
 
 namespace gpstk
 {
@@ -48,8 +47,7 @@ namespace gpstk
 
       /**
        * This class encapsulates the "Modified Julian Date" time
-       * representation; implementation is very similar to that of class JulianDate.
-       * See the documentation of class JulianDate.
+       * representation.
        */
    class MJD : public TimeTag
    {
@@ -58,67 +56,21 @@ namespace gpstk
           * @name MJD Basic Operations
           */
          //@{
-
-         /** Default empty constructor
+         /**
+          * Default Constructor.
           * All elements are initialized to zero.
           */
-      MJD(void)
-      {
-         imjd = 0L;
-         dday = fday = static_cast<uint64_t>(0);
-         timeSystem = TimeSystem::Unknown;
-      }
-
-         /// \deprecated
-         /// Constructor from long double MJD - deprecated
-         /// @param mjd long double MJD
-         ///
-         /// Warning - precision lost on systems where long double == double (e.g.WIN)
-         ///
-         /// NB TimeSystem is left out of this constructor on purpose, otherwise
-         /// compilers see an ambiguity between the two ctors (GPS could be any sys)
-         ///   MJD(long double mjd, TimeSystem::GPS) and
-         ///   MJD(long imjd, double sod) because TimeSystem::GPS is an int and
-         /// therefore can be implicitly cast to double. (really)
-         /// [However note that TimeSystem(2), cannot be implicitly cast.]
-      MJD(long double mjd);
-
-         /// Constructor from long int(MJD) and double seconds-of-day
-         /// NB if (full) MJD is negative, imjd here should also be, but sod should
-         ///  still be a positive seconds of the day.
-         /// @param imjd long int MJD; may be negative
-         /// @param sod double seconds of the day (positive even if imjd is not)
-         /// @param ts TimeSystem, defaults to Unknown
-      MJD(long imjd, double sod, TimeSystem ts = TimeSystem::Unknown);
-
-         /// Constructor from long int(MJD) and double frac(MJD)
-         /// NB if (full) MJD is negative, imjd here should also be, but frac should
-         ///  still be a positive fraction of the day.
-         /// @param imjd long int MJD; may be negative
-         /// @param frac double fraction of the day (positive even if imjd is not)
-         /// @param ts TimeSystem, defaults to Unknown
-      void fromIntFrac(long imjd, double frac, TimeSystem ts = TimeSystem::Unknown);
-
-         /// Constructor (except for system) from string
-      void fromString(std::string instr);
-
-         /// Write full MJD to a string.
-      std::string asString(const int prec=-1) const;
-
-         /// Dump member data
-      std::string dumpString(void) const
-      {
-         std::ostringstream oss;
-         oss << imjd << "," << dday << "," << fday;
-         return oss.str();
-      }
+      MJD( long double m = 0.,
+           TimeSystem ts = TimeSystem::Unknown )
+            : mjd( m )
+      { timeSystem = ts; }
 
          /**
           * Copy Constructor.
           * @param right a reference to the MJD object to copy
           */
       MJD( const MJD& right )
-            : imjd(right.imjd), dday(right.dday), fday(right.fday)
+            : mjd( right.mjd )
       { timeSystem = right.timeSystem; }
 
          /**
@@ -211,29 +163,7 @@ namespace gpstk
       bool operator>=( const MJD& right ) const;
          //@}
 
-      /// Compute long double MJD
-      /// Warning - precision lost when cast to double, and on systems where
-      ///   long double is implemented as double (WIN)
-      /// @return long double MJD
-      long double asLongDouble(void) const;
-
-      /// Compute and @return long MJD
-      long asLong(void) const
-         { return imjd; }
-
-      /// Compute and @return seconds of day
-      double SecOfDay(void) const
-         { return ((dday+fday*MJDFACT)*MJDFACT*SEC_PER_DAY); }
-
-      // constants
-      static const unsigned int MJDLEN;   ///< decimal digits in dday,fday
-      static const double MJDFACT;        ///< 1.0e-(JDLEN)
-
-      // member data
-      long imjd;     ///< integer MJD
-      // fraction of day = (dday+fday*MJDFACT)*MJDFACT
-      uint64_t dday; ///< fraction of day/MJDFACT
-      uint64_t fday; ///< (fraction of day/MJDFACT-dday)/MJDFACT
+      long double mjd;
    };
 
       //@}
