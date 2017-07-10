@@ -61,13 +61,12 @@ class JulianDate_T
 		TestUtil testFramework( "JulianDate", "Constructor", __FILE__, __LINE__ );
 
 
-	  	JulianDate Compare(1350000);
-      Compare.setTimeSystem(TimeSystem(2)); //Initialize an object
+	  	JulianDate Compare(1350000,TimeSystem(2)); //Initialize an object
 
 		//---------------------------------------------------------------------
 		//Were the attributes set to expectation with the explicit constructor?
 		//---------------------------------------------------------------------
-		testFramework.assert(fabs((long double)1350000 - Compare.jday) < eps,  "Explicit constructor did not set the jd value properly",   __LINE__);
+		testFramework.assert(fabs((long double)1350000 - Compare.jd) < eps,  "Explicit constructor did not set the jd value properly",   __LINE__);
 		testFramework.assert(TimeSystem(2) == Compare.getTimeSystem(),       "Explicit constructor did not set the TimeSystem properly", __LINE__);
 
 
@@ -76,7 +75,7 @@ class JulianDate_T
 		//---------------------------------------------------------------------
 		//Were the attributes set to expectation with the copy constructor?
 		//---------------------------------------------------------------------
-		testFramework.assert(fabs((long double)1350000 - Copy.jday) < eps, "Copy constructor did not set the jd value properly",   __LINE__);
+		testFramework.assert(fabs((long double)1350000 - Copy.jd) < eps, "Copy constructor did not set the jd value properly",   __LINE__);
 		testFramework.assert(TimeSystem(2) == Copy.getTimeSystem(),      "Copy constructor did not set the TimeSystem properly", __LINE__);
 
 
@@ -86,7 +85,7 @@ class JulianDate_T
 		//---------------------------------------------------------------------
 		//Were the attributes set to expectation with the Set Operator?
 		//---------------------------------------------------------------------
-		testFramework.assert(fabs((long double)1350000 - Assigned.jday) < eps, "Set Operator did not set the jd value properly",   __LINE__);
+		testFramework.assert(fabs((long double)1350000 - Assigned.jd) < eps, "Set Operator did not set the jd value properly",   __LINE__);
 		testFramework.assert(TimeSystem(2) == Assigned.getTimeSystem(),      "Set Operator did not set the TimeSystem properly", __LINE__);
 
 		return testFramework.countFails();
@@ -104,14 +103,9 @@ class JulianDate_T
 		TestUtil testFramework( "JulianDate", "setFromInfo", __FILE__, __LINE__ );
 
 
-		JulianDate setFromInfo1, setFromInfo2;
-      //JulianDate Compare(1350000,43200,0.0,TimeSystem::GPS);
-      // OR
-      JulianDate Compare;
-      Compare.fromString("1350000");
-      Compare.setTimeSystem(TimeSystem::GPS);
-
-      JulianDate Compare2(0,43200,0.0,TimeSystem(2));
+		JulianDate setFromInfo1;
+		JulianDate setFromInfo2;
+		JulianDate Compare(1350000,TimeSystem(2)), Compare2(0,TimeSystem(2));
 		TimeTag::IdToValue Id;
 		Id['J'] = "1350000";
 		Id['P'] = "GPS";
@@ -120,8 +114,6 @@ class JulianDate_T
 		//Does a proper setFromInfo work with all information provided?
 		//---------------------------------------------------------------------
 		testFramework.assert(setFromInfo1.setFromInfo(Id), "setFromInfo experienced an error and returned false", __LINE__);
-cout << "setFromInfo gives " << setFromInfo1.dumpString() << endl;
-cout << "Compare is        " << Compare.dumpString() << endl;
 		testFramework.assert(Compare == setFromInfo1,      "setFromInfo did not set all of the values properly",  __LINE__); 
 
 
@@ -131,8 +123,6 @@ cout << "Compare is        " << Compare.dumpString() << endl;
 		//---------------------------------------------------------------------
 		testFramework.assert(setFromInfo2.setFromInfo(Id), "setFromInfo experienced an error and returned false", __LINE__);
 		testFramework.assert(Compare2 == setFromInfo2,     "setFromInfo did not set all of the values properly",  __LINE__); 	
-cout << "setFromInfo gives " << setFromInfo2.dumpString() << endl;
-cout << "Compare is        " << Compare2.dumpString() << endl;
 
 		return testFramework.countFails();
 	}
@@ -213,15 +203,14 @@ cout << "Compare is        " << Compare2.dumpString() << endl;
 		TestUtil testFramework( "JulianDate", "reset", __FILE__, __LINE__ );
 
 
-	  	JulianDate Compare(1350000);
-      Compare.setTimeSystem(TimeSystem(2)); //Initialize an object
+	  	JulianDate Compare(1350000,TimeSystem(2)); //Initialize an object
 
 	  	Compare.reset(); // Reset it
 
 		//---------------------------------------------------------------------
 		//Were the attributes reset to expectation?
 		//---------------------------------------------------------------------
-		testFramework.assert(Compare.jday==0,                            "reset() did not set the jd value to 0",   __LINE__);
+		testFramework.assert(Compare.jd==0,                            "reset() did not set the jd value to 0",   __LINE__);
 		testFramework.assert(TimeSystem(0) == Compare.getTimeSystem(), "reset() did not set the TimeSystem to UNK", __LINE__);
 
 		return testFramework.countFails();
@@ -235,7 +224,8 @@ cout << "Compare is        " << Compare2.dumpString() << endl;
 	{
 		TestUtil testFramework( "JulianDate", "isValid", __FILE__, __LINE__ );
 
-	  	JulianDate Compare(1350000,0,0.0,TimeSystem(2)); //Initialize an object
+
+	  	JulianDate Compare(1350000,TimeSystem(2)); //Initialize an object
 
 		//---------------------------------------------------------------------
 		//Is the time after the BEGINNING_OF_TIME?
@@ -259,7 +249,7 @@ cout << "Compare is        " << Compare2.dumpString() << endl;
 		//Is the result of conversion the same?
 		//---------------------------------------------------------------------
 		testFramework.assert(Compare.getTimeSystem()== Test2.getTimeSystem(), "TimeSystem provided found to be different after converting to and from CommonTime", __LINE__);
-		testFramework.assert(abs(Test2.jday - Compare.jday) < eps,               "JD provided found to be different after converting to and from CommonTime",         __LINE__);
+		testFramework.assert(fabs(Test2.jd - Compare.jd) < eps,               "JD provided found to be different after converting to and from CommonTime",         __LINE__);
 
 		return testFramework.countFails();
 	}
@@ -273,18 +263,12 @@ cout << "Compare is        " << Compare2.dumpString() << endl;
 		TestUtil testFramework( "JulianDate", "OperatorEquivalentWithDifferingTimeSystem", __FILE__, __LINE__ );
 
 
-  		JulianDate GPS1(1350000);
-      GPS1.setTimeSystem(TimeSystem(2));
-  		JulianDate GPS2(1340000);
-      GPS2.setTimeSystem(TimeSystem(2));
-  		JulianDate UTC1(1350000);
-      UTC1.setTimeSystem(TimeSystem(7));
-  		JulianDate UNKNOWN(1350000);
-      UNKNOWN.setTimeSystem(TimeSystem(0));
-  		JulianDate ANY(1350000);
-      ANY.setTimeSystem(TimeSystem(1));
-  		JulianDate ANY2(1340000);
-      ANY2.setTimeSystem(TimeSystem(1));
+  		JulianDate GPS1(1350000,TimeSystem(2));
+  		JulianDate GPS2(1340000,TimeSystem(2));
+  		JulianDate UTC1(1350000,TimeSystem(7));
+  		JulianDate UNKNOWN(1350000,TimeSystem(0));
+  		JulianDate ANY(1350000,TimeSystem(1));
+  		JulianDate ANY2(1340000,TimeSystem(1));
 
 		//---------------------------------------------------------------------
 		//Verify differing TimeSystem sets equivalence operator to false
@@ -329,10 +313,8 @@ cout << "Compare is        " << Compare2.dumpString() << endl;
 		TestUtil testFramework( "JulianDate", "printf", __FILE__, __LINE__ );
 
 
-  		JulianDate GPS1(1350000);
-      GPS1.setTimeSystem(TimeSystem(2)); //TimeSystem::GPS);
-  		JulianDate UTC1(1350000);
-      UTC1.setTimeSystem(TimeSystem(8)); //TimeSystem::UTC);
+  		JulianDate GPS1(1350000,TimeSystem::GPS);
+  		JulianDate UTC1(1350000,TimeSystem::UTC);
 
 		//---------------------------------------------------------------------
 		//Verify printed output matches expectation

@@ -226,13 +226,14 @@ class TimeTag_T
 		TestUtil testFramework( "TimeTag", "scanf(JulianDate)", __FILE__, __LINE__ );
 
 
-  		JulianDate hardCodedTime(1234567,0,0.0,TimeSystem::GPS);        // Set a hardcoded time - not using long double
-		std::string formatString = "%10.2J %03P";                      //Provide a format string
+  		JulianDate hardCodedTime(1234567,TimeSystem(2));                //Set a hardcoded time
+		std::string formatString = "%10.2J %03P";                        //Provide a format string
 		std::string timeString = hardCodedTime.printf(formatString);   //Print the time using that format
 		JulianDate scannedTime;
 
 		scannedTime.scanf(timeString, formatString);                   //Read the formatted string back into a new
 		                                                               //time variable
+
 		//Verify the scanned time is the same as the hardcoded time
 		testFramework.assert(scannedTime == hardCodedTime, "scanf was unable to scan the time appropriately", __LINE__);
 
@@ -247,7 +248,7 @@ class TimeTag_T
 		TestUtil testFramework( "TimeTag", "scanf(MJD)", __FILE__, __LINE__ );
 
 
-  		MJD hardCodedTime(123456,0.0,TimeSystem(1));                   //Set a hardcoded time
+  		MJD hardCodedTime(123456,TimeSystem(1));                       //Set a hardcoded time
 		std::string formatString = "%08Q %03P";                        //Provide a format string
 		std::string timeString = hardCodedTime.printf(formatString);   //Print the time using that format
 		MJD scannedTime;
