@@ -261,8 +261,8 @@ int main(int argc, char **argv)
       double d,xd;
       string stuff;
       vector<double> data,wts,xdata;
-      Stats<double> S,cstats;
-      WtdStats<double> cwstats;
+      Stats<double> S;
+      Stats<double> cstats;
       TwoSampleStats<double> TSS;
       ostringstream oss;
 
@@ -474,26 +474,26 @@ int main(int argc, char **argv)
 	      cout << " KS test = " << setprecision(prec) << KS << endl;
       }
 
-      cwstats.Reset();
+      cstats.Reset();
       for(i=0; i<int(data.size()); i++) {
          //cout << "WTD " << i << fixed << setprecision(8)
             //<< " " << data[i] << " " << wts[i] << endl;
-         cwstats.Add(data[i],wts[i]);
+         cstats.Add(data[i],wts[i]);
       }
 
       if(brief & 2) cout << "rstats(wtd)" << (fit==0 ? "" : "(fit resid)")
          << ":" << (label.empty() ? "" : " "+label)
-         << " N " << setw(prec) << cwstats.N()
-         << "  Ave " << setw(prec+3) << cwstats.Average()
-         << "  Std " << setw(prec+3) << cwstats.StdDev()
-         << "  Var " << setw(prec+3) << cwstats.Variance()
-         << "  Min " << setw(prec+3) << cwstats.Minimum()
-         << "  Max " << setw(prec+3) << cwstats.Maximum()
-         << "  P2P " << setw(prec+3) << cwstats.Maximum()-cwstats.Minimum()
+         << " N " << setw(prec) << cstats.N()
+         << "  Ave " << setw(prec+3) << cstats.Average()
+         << "  Std " << setw(prec+3) << cstats.StdDev()
+         << "  Var " << setw(prec+3) << cstats.Variance()
+         << "  Min " << setw(prec+3) << cstats.Minimum()
+         << "  Max " << setw(prec+3) << cstats.Maximum()
+         << "  P2P " << setw(prec+3) << cstats.Maximum()-cstats.Minimum()
          << endl;
       else if(brief==0)
          cout << "Conventional statistics with robust weighting: " << msg << ":\n"
-            << fixed << setprecision(prec) << cwstats << endl;
+            << fixed << setprecision(prec) << cstats << endl;
 
       if(xcol > -1) {
          if(brief & 8) cout << "rstats(2sm)"
