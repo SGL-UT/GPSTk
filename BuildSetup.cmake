@@ -24,9 +24,21 @@ elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
     set( CMAKE_SHARED_LIBRARY_SUFFIX .dylib )
     set( CMAKE_INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib" )
     set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -shared" )
-    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2" )
+    # Do not optimize for debug builds.  Do the same for RELWITHDEBINFO ?
+    set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -O2" )
+    set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS} -O2" )
+    set( CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS} -O2" )
+    set( CMAKE_C_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -O2" )
+    set( CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS} -O2" )
+    set( CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS} -O2" )
 elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" )
-    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2" )
+    # Do not optimize for debug builds.  Do the same for RELWITHDEBINFO ?
+    set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -O2" )
+    set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS} -O2" )
+    set( CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS} -O2" )
+    set( CMAKE_C_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -O2" )
+    set( CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS} -O2" )
+    set( CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS} -O2" )
     set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -shared" )
 elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
 else()
@@ -65,24 +77,36 @@ endif()
 # Set Build path options
 #----------------------------------------
 
-# Use, i.e. don't skip the full RPATH for the build tree
-set( CMAKE_SKIP_BUILD_RPATH FALSE )
+if( USE_RPATH )
 
-# When building, don't use the install RPATH
-# (but later on when installing)
-set( CMAKE_BUILD_WITH_INSTALL_RPATH FALSE )
+    # Use, i.e. don't skip the full RPATH for the build tree
+    set( CMAKE_SKIP_BUILD_RPATH FALSE )
 
-set( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}:$ORIGIN/../lib" )
+    # When building, don't use the install RPATH
+    # (but later on when installing)
+    set( CMAKE_BUILD_WITH_INSTALL_RPATH FALSE )
 
-# Add the automatically determined parts of the RPATH
-# which point to directories outside the build tree to the install RPATH
-set( CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE )
+    set( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}:$ORIGIN/../lib" )
 
-# The RPATH to be used when installing, but only if it's not a system directory
-list( FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}:$ORIGIN/../lib" isSystemDir )
-if( "${isSystemDir}" STREQUAL "-1" )
-   set( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}:$ORIGIN/../lib" )
-endif( "${isSystemDir}" STREQUAL "-1" )
+    # Add the automatically determined parts of the RPATH
+    # which point to directories outside the build tree to the install RPATH
+    set( CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE )
+
+    # The RPATH to be used when installing, but only if it's not a system directory
+    list( FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}:$ORIGIN/../lib" isSystemDir )
+    if( "${isSystemDir}" STREQUAL "-1" )
+       set( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}:$ORIGIN/../lib" )
+    endif( "${isSystemDir}" STREQUAL "-1" )
+else()
+    set( CMAKE_SKIP_BUILD_RPATH TRUE )
+endif()
+
+# Remove hardening-no-relro warnings.
+if( (${CMAKE_SYSTEM_NAME} MATCHES "Linux") )
+   set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-z,relro -Wl,-z,now ${CMAKE_SHARED_LINKER_FLAGS}")
+   set(CMAKE_EXE_LINKER_FLAGS "-Wl,-z,relro -Wl,-z,now ${CMAKE_EXE_LINKER_FLAGS}")
+   set(CMAKE_MODULE_LINKER_FLAGS "-Wl,-z,relro -Wl,-z,now ${CMAKE_MODULE_LINKER_FLAGS}")
+endif()
 
 
 #----------------------------------------
@@ -130,7 +154,7 @@ endif()
 #----------------------------------------
 configure_file( "${PROJECT_SOURCE_DIR}/build_config.h.in" "${PROJECT_BINARY_DIR}/generated/build_config.h" )
 include_directories( "${PROJECT_BINARY_DIR}/generated/" ) 
-install( FILES "${PROJECT_BINARY_DIR}/generated/build_config.h" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}" )
+install( FILES "${PROJECT_BINARY_DIR}/generated/build_config.h" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/gpstk" )
 
 
 #----------------------------------------
@@ -159,9 +183,9 @@ elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
     set( CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}/LICENSE.md")
 endif()
 
-set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "GPSTk libraries and applications for GNSS processing.") 
+set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "Libraries and applications for the GNSS processing GPSTk toolkit.") 
 set( CPACK_PACKAGE_VENDOR "ARL:UT SGL" )
-set( CPACK_PACKAGE_CONTACT "Bryan Parsons" )
+set( CPACK_PACKAGE_CONTACT "Bryan Parsons <bparsons@arlut.utexas.edu>" )
 set( CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.md" )
 set( CPACK_PACKAGE_VERSION_MAJOR "${GPSTK_VERSION_MAJOR}" )
 set( CPACK_PACKAGE_VERSION_MINOR "${GPSTK_VERSION_MINOR}" )
@@ -174,7 +198,10 @@ set( CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.13)" )
 set( CPACK_DEBIAN_SECTION "stable" )
 set( CPACK_DEBIAN_PACKAGE_SECTION "science" )
 
-set( CPACK_SOURCE_IGNORE_FILES "${PROJECT_BINARY_DIR}" "/build-.*/" ".*/[.].*" )
+set( CPACK_SOURCE_IGNORE_FILES "build/" "build-.*/" "examples/" "ref/" ".*/[.].*" )
 set( CPACK_SOURCE_GENERATOR "TGZ")
+
+# Prevents unstripped-binary-or-object Lintian errors.
+SET(CPACK_STRIP_FILES "1")
 
 include( CPack )

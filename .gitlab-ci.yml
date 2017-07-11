@@ -38,7 +38,7 @@ build_redhat:
   tags:
     - redhat
   script:
-    - ./build.sh -ev -b ./build-gpstk-redhat
+   - ./build.sh -ev -b ./build-gpstk-redhat
 
 test_redhat:
   stage: test

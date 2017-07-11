@@ -43,6 +43,7 @@
 #include "GPSWeekSecond.hpp"
 #include "StringUtils.hpp"
 #include "TimeString.hpp"
+#include "YDSTime.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -134,7 +135,7 @@ namespace gpstk
 
          // Note that DN parameter is 1-7
       double SOW = (DN-1) * gpstk::SEC_PER_DAY;
-      ctLSF   = GPSWeekSecond(WN_LSF, TimeSystem::GPS);
+      ctLSF   = GPSWeekSecond(WN_LSF, SOW, TimeSystem::GPS);
 
       dataLoadedFlag = true;   
    } // end of loadData()
@@ -157,9 +158,16 @@ namespace gpstk
       // 24 hours.  Therefore, t-sub-ot is still in the future
       // at the end of the transmission interval, but may 
       // only be in the future by ~(70-24) hours = 46 hours. 
+      //
+      // 2017/04/18 - OOOPS!  This is NOT what CNAV is doing. 
+      // CNAV is broadcasting data with t-sub-ot in the past 
+      // by about a day.   Therefore, we'll (a.) report this
+      // to Karl and P.J., (b.) change this to be a straight
+      // fit interval check.
    bool OrbSysGpsC_33::isUtcValid(const CommonTime& ct,
                                   const bool initialXMit) const
    {
+      /*  Old test
          // Test that the t-sub-ot is in the future.  If 
          // initialXMit check that it is at least two days.
          // If not initial Xmit check that is is at least
@@ -177,6 +185,17 @@ namespace gpstk
       CommonTime testTime = ct + FULLWEEK;
       if (ctEpoch>testTime) return false;
       return true;
+      */
+      // Values from IS-GPS-200 Table 30-VIII
+      double upperBound = (144 - 70) * 3600.0; 
+      double lowerBound = -70 *3600; 
+
+      // Determine distance in seconds between time of interest and t-sub-ot.  
+      // Positive is when the time of interest is in the future wrt to the t-sub-ot
+      double testDiff = ct - ctEpoch;
+      if (testDiff>=lowerBound &&
+          testDiff<=upperBound) return true;
+      return false; 
    } // end of isUtcValid()
 
       // 20.3.3.5.2.4 establishes three cases. Before, near the event, 
@@ -191,20 +210,66 @@ namespace gpstk
          // delta t-sub-UTC is the same in all cases.
       double dtUTC = getUtcOffsetModLeapSec(ct);
 
-         // compute offset between user's time and 
-         // leap second time of effectivity. 
-      double diff = ctLSF - ct; 
+         // ctLSF is the "GPS day" that will contain the leap second.   In addition, ctLSF is
+         // set to the BEGINNING of the day that will contain the leap second.   
+         // First, compute the offset between the GPS time of interest and the 
+         // time of effectivity of the leap second (in GPS time)
+      double diff = (ctLSF + SEC_PER_DAY) - ct; 
       double diffAbs = fabs(diff);
+      double SEC_PER_HALF_DAY = SEC_PER_DAY / 2.0; 
 
-         // Case a: WN-sub-LSF/DN is not in the past.
-         // That is to say, it is >= the current time. 
-      if (diff>=0)
+      //cout << " diff, diffAbs : " << diff << ", " << diffAbs << endl;
+
+         // Case a: Effectivity is NOT in the past and is more than
+         //         six hours in the future
+      if (diff>0 && diffAbs>SEC_PER_HALF_DAY)
       {
+         //cout << "Case a" << endl;
          retVal = (double) dtLS + dtUTC; 
       }
+         // Case c: Effectivity is in the past and more than a 
+         // half-day in the past. 
+      else if (diff<0 && diffAbs>SEC_PER_HALF_DAY)
+      {
+         //cout << "Case c" << endl;
+         retVal = (double) dtLSF + dtUTC;
+      }
+         //  What remains is case b.
+         //  This attempts to implement what's in IS-GPS-200 as closely as practical.  
+         //  In point of fact, I needed to put together a spreadsheet implementation of 
+         //  case b before I could understand it. 
       else
       {
-         retVal = (double) dtLSF + dtUTC;
+         //cout << "Case b" << endl;
+         long SOD =  static_cast<YDSTime>(ct).sod;
+
+         long variableModulo = 86400 + dtLSF - dtLS;
+         
+         double WLeftTerm = (SOD - ((double) dtLS + dtUTC)) - 43200;
+         double W = fmod(WLeftTerm,86400.0);
+
+            // Modulo SHOULD return [0.0, +value} but appears to return (-value, value)
+         if (W<0.0) W += SEC_PER_DAY;         
+         W += 43200;
+
+         double SODutc = fmod(W,variableModulo); 
+
+         double deltaSOD = SODutc - SOD;
+         if (deltaSOD<-SEC_PER_HALF_DAY)
+            deltaSOD += SEC_PER_DAY;
+         else if (deltaSOD>SEC_PER_HALF_DAY) 
+            deltaSOD -= SEC_PER_DAY;
+
+         CommonTime ctUTC = ct + deltaSOD;
+
+         //debug
+         //cout << " SOD, WLeftTerm, W, variableMod, SODutc, deltaSOD:  " << SOD << ", " << WLeftTerm << ", "
+         //     << W << ", " << variableModulo << ", " << SODutc << ", " << deltaSOD << endl;
+
+         // We're supposed to return delta t-sub-UTC, so we have to do a little manipulation.
+         //   t-sub-UTC = t-sub-E - delta t-sub-UTC. 
+         //   delta t-sub-UTC = t-sub-E - t-sub-UTC 
+         retVal = ct - ctUTC;
       }
 
       return retVal;

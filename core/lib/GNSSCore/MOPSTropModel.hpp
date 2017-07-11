@@ -114,6 +114,10 @@ namespace gpstk
           */
       MOPSTropModel(const Position& RX, const CommonTime& time);
 
+      /// Return the name of the model
+      virtual std::string name(void)
+         { return std::string("MOPS"); }
+
 
          /** Compute and return the full tropospheric delay. The receiver
           *  height, latitude and Day oy Year must has been set before using

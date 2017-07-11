@@ -50,6 +50,16 @@
 #define _MSC_EXTENSIONS
 #endif
 
+#ifdef ABS
+#undef ABS
+#endif
+#ifdef SQRT
+#undef SQRT
+#endif
+#ifdef MAX
+#undef MAX
+#endif
+
 namespace gpstk
 {
 // do Doxygen elsewhere

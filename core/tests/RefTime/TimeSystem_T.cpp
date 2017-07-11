@@ -188,10 +188,11 @@ public:
       gpstk::TimeSystem GALtime(4);
       gpstk::TimeSystem QZStime(5);
       gpstk::TimeSystem BDTtime(6);
-      gpstk::TimeSystem UTCtime(7);
-      gpstk::TimeSystem TAItime(8);
-      gpstk::TimeSystem TTtime(9);
-      gpstk::TimeSystem TDBtime(10);
+      gpstk::TimeSystem IRNtime(7);
+      gpstk::TimeSystem UTCtime(8);
+      gpstk::TimeSystem TAItime(9);
+      gpstk::TimeSystem TTtime(10);
+      gpstk::TimeSystem TDBtime(11);
 
 
          //-------------------------------------------------------------------------
@@ -217,9 +218,15 @@ public:
          //testFramework.assert(std::abs(gpstk::TimeSystem::Correction(QZStime, UTCtime, 2010, 2, 14) - 15) < eps, testMesg, __LINE__);
 		
       testMesg = "Conversion from UTC time to BDT time was incorrect";
-      testFramework.assert(std::abs(gpstk::TimeSystem::Correction(UTCtime, BDTtime, 2001, 9, 21) - 0) < eps, testMesg, __LINE__);
+      testFramework.assert(std::abs(gpstk::TimeSystem::Correction(UTCtime, BDTtime, 2006, 9, 21) - 0) < eps, testMesg, __LINE__);
       testMesg = "Conversion from BDT time to UTC time was incorrect";
-      testFramework.assert(std::abs(gpstk::TimeSystem::Correction(BDTtime, UTCtime, 2012, 8, 27) - 0) < eps, testMesg, __LINE__);
+      testFramework.assert(std::abs(gpstk::TimeSystem::Correction(BDTtime, UTCtime, 2012, 8, 27) + 2) < eps, testMesg, __LINE__);
+
+      testMesg = "Conversion from UTC time to IRN time was incorrect";
+      testFramework.assert(std::abs(gpstk::TimeSystem::Correction(UTCtime, IRNtime, 2004, 11, 16) - 13) < eps, testMesg, __LINE__);
+      testMesg = "Conversion from IRN time to UTC time was incorrect";
+      testFramework.assert(std::abs(gpstk::TimeSystem::Correction(IRNtime, UTCtime, 2004, 11, 16) + 13) < eps, testMesg, __LINE__);
+
       testMesg = "Conversion from UTC time to TAI time was incorrect";
       testFramework.assert(std::abs(gpstk::TimeSystem::Correction(UTCtime, TAItime, 2014, 6, 1) - 35) < eps, testMesg, __LINE__);
       testMesg = "Conversion from TAI time to UTC time was incorrect";

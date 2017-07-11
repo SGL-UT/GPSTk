@@ -38,7 +38,7 @@
   *  @file OrbAlmGen.hpp
   *  Contains the "engineering units" contents of a almanac that uses 
   *  pseudo-Keplerian elements as its parameters.  This include GPS LNAV,
-  *  GPS CNAV (Midi), and BeiDou (both D1 and D2).
+  *  GPS CNAV (Midi), BeiDou (both D1 and D2), and IRNSS
   *  The same algorithm is used across all these systems. therefore, it
   *  is practical to roll them all into one class.  Several of the members
   *  in OrbElem are not used by the almanac formats.  These are all set
@@ -159,7 +159,7 @@ namespace gpstk
          throw( gpstk::InvalidRequest );     
          //@}
  
-         // GPS LNAV, GPS CNAV, and BDS D1/D2 all have the following
+         // GPS LNAV, GPS CNAV, BDS D1/D2, and IRNSS all have the following
          // almanac members in common. 
       double          AHalf;       // sqrt A
       double              A;       // semi-major axis
@@ -176,6 +176,7 @@ namespace gpstk
 
          // For GPS, health is provided in the page containing the orbit data.
          // For BDs, health is supplied from Sf5 pg 7 or pg 8
+         // For IRNSS, TBD
       unsigned short health;
 
    protected:
@@ -197,6 +198,9 @@ namespace gpstk
                 throw(gpstk::InvalidParameter);
       void loadDataBDS(const gpstk::PackedNavBits& msg,
                     const unsigned short hArg = 0)
+                throw(gpstk::InvalidParameter);
+      void loadDataIRN(const gpstk::PackedNavBits& msg,
+		       const unsigned short hArg = 0)
                 throw(gpstk::InvalidParameter);
 
          // Used internally during startup if WNa has not been received

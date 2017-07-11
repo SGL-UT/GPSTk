@@ -1,4 +1,4 @@
-License
+LICENSE
 -------
 
 The source code provided by the GPSTk is distributed under the GNU LGPL, Version 3.

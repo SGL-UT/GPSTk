@@ -47,6 +47,7 @@
 #include "GNSSconstants.hpp"
 #include "CommonTime.hpp"
 #include "GPSWeekSecond.hpp"
+#include "IRNWeekSecond.hpp"
 #include "CivilTime.hpp"
 
 namespace gpstk
@@ -70,7 +71,9 @@ namespace gpstk
          QZGP,    ///< QZS  to GPS using A0, A1
          QZUT,    ///< QZS  to UTC using A0, A1
          BDUT,    ///< BDT  to UTC using A0, A1
-         BDGP    ///< BDT  to GPS using A0, A1  // not in RINEX
+         BDGP,    ///< BDT  to GPS using A0, A1  !! not in RINEX
+         IRUT,    ///< IRN  to UTC using A0, A1
+         IRGP     ///< IRN  to GPS using A0, A1 
       };
 
          /// Empty constructor
@@ -78,6 +81,9 @@ namespace gpstk
 
          /// Constructor from string
       TimeSystemCorrection(std::string str);
+
+         //// Set members to known (even if invalid) values
+      void init();
 
       void fromString(const std::string& str);
 
@@ -93,12 +99,12 @@ namespace gpstk
          /** Equal operator.
           * @warning Only tests type, not the full set of fields */
       inline bool operator==(const TimeSystemCorrection& tc) const
-      { return tc.type == type; }
+      { return type == tc.type; }
 
          /** Less than operator - required for map.find()
           * @warning Only tests type, not the full set of fields */
       inline bool operator<(const TimeSystemCorrection& tc) const
-      { return tc.type < type; }
+      { return type < tc.type; }
 
          /** Return true if this object provides the correction
          * necessary to convert between the two given time
@@ -129,10 +135,21 @@ namespace gpstk
       double Correction(const CommonTime& ct) const;
 
          //// Member data
+         ///  NOTE: User is responsible for setting the following parameters
+         ///  after instantiation of a TimeSystemCorrection object and prior 
+         ///  to calling Correction( )
+         ///    refWeek - must be in GPS full weeks (regardless of what GNSS
+         ///              is being considered.)
+         ///    refSOW
+         ///    A0      - A0utc or A0gps for most system.  For GLONASS
+         ///              GLUT corection supply -1.0 * tau_sub_c.  
+         ///              This convention is selected in order to maintain
+         ///              consistency with the RINEX documentation in Table A5.
+         ///    A1 
       CorrType type;
       TimeSystem frTS,toTS;
       double A0, A1;
-      long refWeek,refSOW;       ///< reference time for polynominal (week,sow)
+      long refWeek,refSOW;       ///< reference time for polynominal (week,sow) - MUST BE GPS TIME
       long refYr,refMon,refDay;  ///< reference time (yr,mon,day) for RINEX ver 2 GLO
       std::string geoProvider;   ///< string 'EGNOS' 'WAAS' or 'MSAS'
       int geoUTCid;              ///< UTC Identifier [0 unknown, 1=UTC(NIST),

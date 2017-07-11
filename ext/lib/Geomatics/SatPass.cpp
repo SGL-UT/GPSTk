@@ -263,8 +263,9 @@ try {
       indexForLabel.find("L2") == indexForLabel.end() ||
       (indexForLabel.find("C1") == indexForLabel.end() &&
        indexForLabel.find("P1") == indexForLabel.end()) ||
-      indexForLabel.find("P2") == indexForLabel.end()) {
-      Exception e("Obs types L1 L2 C1/P1 P2 required for GLOchannel()");
+      (indexForLabel.find("P2") == indexForLabel.end() &&
+       indexForLabel.find("C2") == indexForLabel.end())) {
+      Exception e("Obs types L1 L2 C1/P1 C2/P2 required for GLOchannel()");
       GPSTK_THROW(e);
    }
    if(indexForLabel.find("P1") == indexForLabel.end()) useC1=true;
@@ -645,6 +646,18 @@ void SatPass::setFlag(unsigned int i, unsigned short f) throw(Exception)
    spdvector[i].flag = f;
 }
 
+// set the userflag at one index to inflag;
+// NB SatPass does nothing w/ this member except setUserFlag() and getUserFlag();
+void SatPass::setUserFlag(unsigned int i, unsigned int f) throw(Exception)
+{
+   if(i >= spdvector.size()) {
+      Exception e("Invalid index in setUserFlag() " + asString(i));
+      GPSTK_THROW(e);
+   }
+
+   spdvector[i].userflag = f;
+}
+
 // ---------------------------------- get routines ----------------------------
 // get value of flag at one index
 unsigned short SatPass::getFlag(unsigned int i) throw(Exception)
@@ -654,6 +667,17 @@ unsigned short SatPass::getFlag(unsigned int i) throw(Exception)
       GPSTK_THROW(e);
    }
    return spdvector[i].flag;
+}
+
+// get the userflag at one index
+// NB SatPass does nothing w/ this member except setUserFlag() and getUserFlag();
+unsigned int SatPass::getUserFlag(unsigned int i) throw(Exception)
+{
+   if(i >= spdvector.size()) {
+      Exception e("Invalid index in getUserFlag() " + asString(i));
+      GPSTK_THROW(e);
+   }
+   return spdvector[i].userflag;
 }
 
 // get one element of the count array of this SatPass

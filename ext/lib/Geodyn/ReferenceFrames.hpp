@@ -81,7 +81,7 @@ namespace gpstk
           * @return           The position of the planet in km
           */
       static Vector<double> getJ2kPosition( const CommonTime&      TT,
-                                            SolarSystem::Planet entity = SolarSystem::Earth)
+                                            SolarSystem::Planet entity = SolarSystem::idEarth)
          throw(Exception);
 
          /** Compute planet velocity in J2000
@@ -91,7 +91,7 @@ namespace gpstk
           * @return           The velocity of the planet in km/s
           */
       static Vector<double> getJ2kVelocity( const CommonTime&      TT, 
-                                            SolarSystem::Planet entity = SolarSystem::Earth)
+                                            SolarSystem::Planet entity = SolarSystem::idEarth)
          throw(Exception);
 
 
@@ -105,7 +105,7 @@ namespace gpstk
           */
       static Vector<double> getJ2kPosVel( const CommonTime&      TT, 
                                           SolarSystem::Planet entity,
-                                          SolarSystem::Planet center = SolarSystem::Earth)
+                                          SolarSystem::Planet center = SolarSystem::idEarth)
          throw(Exception);
       
          /** Compute planet position in ECEF
@@ -117,7 +117,7 @@ namespace gpstk
           */
       static Vector<double> getECEFPosition(UTCTime             UTC, 
                                           SolarSystem::Planet entity,
-                                          SolarSystem::Planet center = SolarSystem::Earth)
+                                          SolarSystem::Planet center = SolarSystem::idEarth)
          throw(Exception);
 
       
@@ -130,7 +130,7 @@ namespace gpstk
           */
       static Vector<double> getECEFVelocity(UTCTime             UTC, 
                                           SolarSystem::Planet entity,
-                                          SolarSystem::Planet center = SolarSystem::Earth)
+                                          SolarSystem::Planet center = SolarSystem::idEarth)
          throw(Exception);
 
 
@@ -143,7 +143,7 @@ namespace gpstk
            */
       static Vector<double> getECEFPosVel(UTCTime             UTC, 
                                           SolarSystem::Planet entity,
-                                          SolarSystem::Planet center = SolarSystem::Earth)
+                                          SolarSystem::Planet center = SolarSystem::idEarth)
          throw(Exception);
 
 

@@ -342,8 +342,8 @@ class GPSWeekZcount_T
 		TestUtil testFramework( "GPSWeekZCount", "printf", __FILE__, __LINE__ );
 		
 
-  		GPSWeekZcount GPS1(1300,13500.,TimeSystem(2));
-  		GPSWeekZcount UTC1(1300,13500.,TimeSystem(7));
+  		GPSWeekZcount GPS1(1300,13500.,TimeSystem::GPS);
+  		GPSWeekZcount UTC1(1300,13500.,TimeSystem::UTC);
 
 		//---------------------------------------------------------------------
 		//Verify printed output matches expectation

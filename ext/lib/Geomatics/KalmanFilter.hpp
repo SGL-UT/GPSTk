@@ -34,10 +34,8 @@
 //
 //=============================================================================
 
-/**
- * @file KalmanFilter.hpp
- * Kalman filter implementation using the SRIFilter class.
- */
+/// @file KalmanFilter.hpp
+/// Kalman filter implementation using the SRIFilter class.
 
 #ifndef KALMAN_FILTER_INCLUDE
 #define KALMAN_FILTER_INCLUDE

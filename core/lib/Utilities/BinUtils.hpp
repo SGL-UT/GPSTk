@@ -48,8 +48,6 @@
 
 #ifdef __sun
 #include <arpa/nameser_compat.h>
-#elif defined (__CYGWIN__)
-#include <sys/param.h>
 #elif defined (_AIX)
 #include <sys/machine.h>
 #endif

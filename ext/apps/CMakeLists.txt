@@ -1,6 +1,5 @@
 # apps/CMakeLists.txt
 
-add_subdirectory (checktools)
 add_subdirectory (clocktools)
 add_subdirectory (differential)
 add_subdirectory (filetools)

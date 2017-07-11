@@ -319,8 +319,8 @@ public:
    {
       TUDEF("GPSWeekSecond", "printf");
 
-      GPSWeekSecond GPS1(1300,13500.,TimeSystem(2));
-      GPSWeekSecond UTC1(1300,13500.,TimeSystem(7));
+      GPSWeekSecond GPS1(1300,13500.,TimeSystem::GPS);
+      GPSWeekSecond UTC1(1300,13500.,TimeSystem::UTC);
 
          //--------------------------------------------------------------------
          //Verify printed output matches expectation

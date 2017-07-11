@@ -71,6 +71,8 @@ protected:
       /// a flag (cf. SatPass::BAD, etc.) that is set to OK at creation
       /// then reset by other processing.
       unsigned short flag;
+      /// a flag for arbitrary use by the user; SatPass ONLY has set/getUserFlag()
+      unsigned int userflag;
       /// time 'count' : time of data = FirstTime + ndt * dt + offset
       unsigned int ndt;
       /// offset of time from integer number * dt since FirstTime.
@@ -85,7 +87,8 @@ protected:
 
       /// constructor
       /// @param n the number of data types to be stored, default 4
-      SatPassData(unsigned short n=4) : flag(SatPass::OK), ndt(0), toffset(0.0)
+      SatPassData(unsigned short n=4)
+         : flag(SatPass::OK), userflag(0), ndt(0), toffset(0.0)
       {
          data = std::vector<double>(n,0.0);
          lli = std::vector<unsigned short>(n,0);
@@ -98,6 +101,7 @@ protected:
       {
          if(&right != this) {
             flag = right.flag;
+            userflag = right.userflag;
             ndt = right.ndt;
             toffset = right.toffset;
             data.resize(right.data.size());
@@ -164,10 +168,6 @@ public:
    /// of SatPass objects in time order.
    friend class SatPassIterator;
 
-   // friends in SatPassUtilities.hpp
-   /// Sort a vector<SatPass> on time, using the firstTime member.
-   friend void sort(std::vector<SatPass>& SPList) throw();
-
    /// Read a set of RINEX observation files, filling a vector of SatPass objects.
    /// Create the SatPass objects using the input list of observation types
    /// and timestep. If there are no obs types given (vector obstypes has size 0),
@@ -200,14 +200,6 @@ public:
                                     bool lenient,
                                     Epoch beginTime,
                                     Epoch endTime) throw(Exception);
-
-   /// Iterate over the input vector of SatPass objects (sorted to be in time
-   /// order) and write them, with the given header, to a RINEX observation file
-   /// of the given filename.
-   /// @return -1 if the file could not be opened, otherwise return 0.
-   friend int SatPassToRinexFile(std::string filename,
-                                 RinexObsHeader& header,
-                                 std::vector<SatPass>& SPList) throw(Exception);
 
    // ------------------ configuration --------------------------------
    /// Constructor for the given sat; default obs types are L1, L2, P1, P2,
@@ -331,6 +323,12 @@ public:
    /// @param  flag flag (e.g. SatPass::BAD).
    void setFlag(unsigned int i, unsigned short flag) throw(Exception);
 
+   /// set the userflag at one index to inflag;
+   /// NB SatPass does nothing w/ this member except setUserFlag() and getUserFlag();
+   /// @param  i    index of the data of interest
+   /// @param  inflag unsigned int flag meaning whatever the user wants
+   void setUserFlag(unsigned int i, unsigned int inflag) throw(Exception);
+
    // -------------------------------- get only --------------------------------
    /// get the max. gap limit size (seconds); for all SatPass objects
    /// @return the current value of maximum gap (sec)
@@ -348,6 +346,12 @@ public:
    /// @param  i    index of the data of interest
    /// @return the flag for the given index
    unsigned short getFlag(unsigned int i) throw(Exception);
+
+   /// get the userflag at one index
+   /// NB SatPass does nothing w/ this member except setUserFlag() and getUserFlag();
+   /// @param  i    index of the data of interest
+   /// @param  inflag flag meaning whatever the user wants it to
+   unsigned int getUserFlag(unsigned int i) throw(Exception);
 
    /// @return the earliest time (full, including toffset) in this SatPass data
    Epoch getFirstTime(void) const throw();

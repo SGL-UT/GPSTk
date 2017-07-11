@@ -240,7 +240,8 @@ namespace gpstk
             // and GLONASS COD/PHS/BIS records
             // marker type is only required if the type is not GEODETIC or NON_GEODETIC
          allValid301            = 0x0412058B, ///< RINEX 3.01
-         allValid302            = 0x0412058B  ///< RINEX 3.02
+         allValid302            = 0x0412058B, ///< RINEX 3.02
+         allValid303            = 0x0412058B  ///< RINEX 3.03
       };
    
 #ifndef SWIG // nested structs/classes not supported by SWIG
@@ -296,6 +297,8 @@ namespace gpstk
       typedef std::map<RinexSatID, int> GLOFreqNumMap;
          /// Map GLONASS SV observable to code phase bias
       typedef std::map<RinexObsID, double> GLOCodPhsBias;
+         /// Map SysChar + R2 Obs Type to Obs ID
+      typedef std::map<std::string,std::string> DisAmbMap;
 #ifndef SWIG
          /// Corrections (e.g. code bias) vector
       typedef std::vector<Rinex3CorrInfo> CorrVec;
@@ -312,6 +315,9 @@ namespace gpstk
          /** map between RINEX ver 3 ObsIDs and ver 2 obstypes for
           * each system: reallyPut */
       VersionObsMap mapSysR2toR3ObsID;
+
+         /** map Sys + R2ot to their ObsID origins*/
+      DisAmbMap R2DisambiguityMap;
 
 
       double version;                  ///< RINEX 3 version/type
@@ -386,6 +392,9 @@ namespace gpstk
          /// Map P to Y code observations in RINEX 2 files
       bool PisY;
 
+         /// Used to help debug this class
+      static int debug;
+
          /// Destructor
       virtual ~Rinex3ObsHeader()
       {}
@@ -442,13 +451,14 @@ namespace gpstk
          if(     version < 3.00) allValid = allValid2;
          else if(version < 3.01) allValid = allValid30;
          else if(version < 3.02) allValid = allValid301;  
-         else                    allValid = allValid302;
+         else if(version < 3.03) allValid = allValid302;  
+         else                    allValid = allValid303;
          return ((valid & allValid) == allValid);
       }
 
          /** Compute map of obs types for use in writing version 2
           * header and data */
-      void prepareVer2Write(void) throw();
+      void prepareVer2Write(void);
 
          /** Compare this header with another.
           * @param[in] right the header to compare this with.
@@ -465,7 +475,6 @@ namespace gpstk
                    StringVec& diffs,
                    const StringVec& inclExclList,
                    bool incl = false);
-
 
    protected:
 

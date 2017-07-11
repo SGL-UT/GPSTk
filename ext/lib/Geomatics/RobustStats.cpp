@@ -34,15 +34,13 @@
 //
 //=============================================================================
 
-/**
- * @file RobustStats.cpp
- * Namespace Robust includes basic robust statistical computations, including median,
- * median average deviation, quartiles and m-estimate, as well as implementation of
- * of stem-and-leaf plots, quantile plots and robust least squares estimation of a
- * polynomial.
- * Reference: Mason, Gunst and Hess, "Statistical Design and
- *            Analysis of Experiments," Wiley, New York, 1989.
- */
+/// @file RobustStats.cpp
+/// Namespace Robust includes basic robust statistical computations, including median,
+/// median average deviation, quartiles and m-estimate, as well as implementation of
+/// of stem-and-leaf plots, quantile plots and robust least squares estimation of a
+/// polynomial.
+/// Reference: Mason, Gunst and Hess, "Statistical Design and
+///            Analysis of Experiments," Wiley, New York, 1989.
  
 //------------------------------------------------------------------------------------
 // GPSTk includes

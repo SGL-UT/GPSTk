@@ -320,8 +320,8 @@ class UnixTime_T
 		TestUtil testFramework( "UnixTime", "printf", __FILE__, __LINE__ );
 
 
-  		UnixTime GPS1(1350000,0,TimeSystem(2));
-  		UnixTime UTC1(1350000,0,TimeSystem(7));
+  		UnixTime GPS1(1350000,0,TimeSystem::GPS);
+  		UnixTime UTC1(1350000,0,TimeSystem::UTC);
 		
 		//---------------------------------------------------------------------
 		//Verify printed output matches expectation

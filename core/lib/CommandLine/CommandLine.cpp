@@ -59,6 +59,7 @@
 #include "Exception.hpp"
 #include "StringUtils.hpp"
 #include "stl_helpers.hpp"
+// geomatics
 #include "logstream.hpp"
 #include "expandtilde.hpp"
 
@@ -75,8 +76,7 @@ int CommandLine::ProcessCommandLine(int argc, char** argv, string PrgmDesc,
    throw(Exception)
 {
 try {
-   int j;
-   size_t k;
+   int i,j;
    string option,word;
 
    // if caller has set LOGlevel to DEBUG already, set debug here
@@ -117,8 +117,8 @@ try {
    Usage = SyntaxPage();
 
    // pre-processing -----------------------------------------------------
-   // no args means help ... TD an option?
-   if(argc==1) helponly = true;
+   // no args means help
+   if(argc==1 && requireOneArg) helponly = true;
 
    // PreProcessArgs pulls out help, debug, verbose, file, deprecated and ignore args
    vector<string> Args;
@@ -126,12 +126,13 @@ try {
    LOG(DEBUG) << "Return from CommandLine::PreProcessArgs: help is "
       << (help ? "T":"F") << " and helponly is " << (helponly ? "T":"F");
 
-   if(Args.size() == 0 || helponly) help = true;
+   // PreProcessArgs may have removed all cmd line args....
+   if((requireOneArg && Args.size() == 0) || helponly) help = true;
 
    if(debug >= 0) {
       ostringstream oss;
       oss << "CommandLine argument list passed to parser:" << endl;
-      for(k=0; k<Args.size(); k++)
+      for(size_t k=0; k<Args.size(); k++)
          oss << " arg[" << k << "] = " << Args[k] << endl;
 
       word = oss.str();
@@ -160,36 +161,33 @@ try {
 
 }  // end try
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) {
+   Exception E("std except: "+string(e.what())); GPSTK_THROW(E);
+}
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 // -----------------------------------------------------------------------------------
 // public
-void CommandLine::DumpConfiguration(ostream& os) throw(Exception)
+void CommandLine::DumpConfiguration(ostream& os, string tag) throw(Exception)
 {
 try {
-   size_t i, j;
+   size_t i,j;
    double d;
    string str;
    RinexSatID sat;
    vector<string> values;
 
-   // first determine the max size of the string '--option'
-   size_t maxoptsize(0);
-   for(i=0; i<options.size(); i++) {
-      j = options[i].longOpt.length();
-      if(j > maxoptsize) maxoptsize = j;
-   }
-
    // loop over all options, output of the form:
    // Description (--option) : value
    for(i=0; i<options.size(); i++) {
+      if(!tag.empty()) os << tag << " ";
       if(options[i].predesc.size()) {
          str = options[i].predesc;
-         if(str[0] == '#' || str[0] == '\n') ;
+         if(str[0] == '#' || str[0] == '\n') ;     // do nothing
          else str = string("   ") + str;
          os << str << endl;
+         if(!tag.empty()) os << tag << " ";
       }
 
       str = options[i].desc;
@@ -255,9 +253,9 @@ try {
                      str += sats[j].toString() + (j==sats.size()-1 ? "" : ",");
             }
             break;
-         default:
+         case typeUndefined:
+         case typeCount:
             break;
-         
       }  // end switch(type)
 
       if(!str.empty()) {
@@ -270,9 +268,19 @@ try {
 
    }  // end loop over options
 
+   // add verbose, debug and help
+   os << "   Print extended output, including cmdline summary (--verbose) : "
+            << (verbose?"true":"false") << endl;
+   os << "   Print debug output at level DEBUGn [n=0-7] (--debug<n>) : "
+            << debug << endl;
+   os << "   Print this syntax page and quit (--help) : "
+            << (help?"true":"false") << endl;
+
 }  // end try
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) {
+   Exception E("std except: "+string(e.what())); GPSTK_THROW(E);
+}
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -316,14 +324,6 @@ try {
       }
       //LOG(DEBUG) << " ignore_off_opts ok";
 
-      for(j=0; j<undoc_options.size(); j++) {
-         if(undoc_options[j].longOpt == opt) {
-            isValid = false;
-            oss << tag << options[i].longOpt << " is both undocumented and not.\n";
-         }
-      }
-      //LOG(DEBUG) << " undoc_options ok";
-
       for(j=0; j<i; j++) {
          if(options[i].longOpt == options[j].longOpt) {
             isValid = false;
@@ -345,7 +345,8 @@ try {
       bool found(false);
       for(i=0; i<options.size(); i++) {
          if(it->second == string("--") + options[i].longOpt ||
-            it->second == string("-") + options[i].shortOpt) { found=true; break; }
+            it->second == string("-") + options[i].shortOpt)
+               { found=true; break; }
       }
       if(!found) {
          isValid = false;
@@ -362,7 +363,9 @@ try {
 
 }  // end try
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) {
+   Exception E("std except: "+string(e.what())); GPSTK_THROW(E);
+}
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -370,16 +373,15 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 void CommandLine::BuildSyntaxPage(void) throw(Exception)
 {
 try {
-   int k;
-   size_t i, j;
+   size_t i,j,k;
    double d;
    string option,deflt;
 
    // first determine the max size of the string '--option <arg>'
-   size_t maxoptsize(0);
+   optionsize = 0;                        // member data
    for(i=0; i<options.size(); i++) {
       j = options[i].longOpt.length() + options[i].arg.length() + 7;
-      if(j > maxoptsize) maxoptsize = j;
+      if(j > optionsize) optionsize = j;
    }
 
    // build the command line ----------------------------------------
@@ -391,7 +393,7 @@ try {
       // get the padded string ' --option <arg> '
       option = " --" + options[i].longOpt;
       if(options[i].arg.length()) option += " <" + options[i].arg + "> ";
-      option = leftJustify(option,maxoptsize);
+      option = leftJustify(option,optionsize);
       
       // get the default string
       switch(options[i].type) {
@@ -434,27 +436,29 @@ try {
                vector<RinexSatID> *gptr = (vector<RinexSatID> *)(options[i].p_output);
                deflt = string("");
                for(k=0,j=0; j<gptr->size(); j++)
-                  if((*gptr)[j].id > 0) {
+                  if((*gptr)[j].id > 0)
                      deflt += (k++>0 ? ",":"") + (*gptr)[j].toString();
-                  }
             }
             break;
-         default:
+         case typeUndefined:
+         case typeCount:
             break;
       }
 
       // build the syntax line
       options[i].syntax = options[i].predesc
                         + (options[i].predesc.size() ? "\n" : "")
-                        + option                                 // --opt <arg>
-                        + options[i].desc                        // desc
-            + (options[i].repeat ? " [repeat]" : "")             // add 'repeat'
-            + " (" + deflt + ")";                                // add default
+                        + option                                    // --opt <arg>
+                        + options[i].desc                           // desc
+            + (options[i].repeat ? " [repeatable]" : "")            // add 'repeat'
+            + " (" + deflt + ")";                                   // add default
    }
 
 }  // end try
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) {
+   Exception E("std except: "+string(e.what())); GPSTK_THROW(E);
+}
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -467,9 +471,7 @@ try {
    static bool found_cfg_file=false;
    static bool ignore_opts=false;              // ignore args for now...
    static bool ignore_once=false;              // ignore one argument
-   static bool process_undoc=false;
-   static int process_undoc_index=-1;
-   size_t i;
+   int i,k;
    string msg,sarg(in_arg);
 
    if(sarg == string()) return;
@@ -515,76 +517,12 @@ try {
       return;
    }
 
-   // handle undocumented args - value (except bool)
-   if(process_undoc) {                        // process an undocumented value
-      i = process_undoc_index;
-      switch(undoc_options[i].type) {
-         //case typeBool:                 // bool -- handled below with key
-         //   *((bool *)(undoc_options[i].p_output)) = true;  // TD toggle?
-         //   break;
-         case typeInt:
-            *((int *)(undoc_options[i].p_output)) = asInt(sarg); //j-1?
-            break;
-         case typeVectorInt:
-            ((vector<int> *)(undoc_options[i].p_output))->push_back(asInt(sarg));
-            break;
-         case typeDouble:
-            if(!isScientificString(sarg)) {
-               Errors += "Warning: invalid value for --" + undoc_options[i].longOpt
-                  + ": " + sarg + "\n";
-            }
-            else
-               *((double *)(undoc_options[i].p_output)) = asDouble(sarg);
-            break;
-         case typeString:
-            *((string *)(undoc_options[i].p_output)) = sarg;
-            break;
-         case typeVectorString:
-            ((vector<string> *)(undoc_options[i].p_output))->push_back(sarg);
-            break;
-         case typeSat:
-            *(RinexSatID *)(undoc_options[i].p_output) = RinexSatID(msg);
-            break;
-         case typeVectorSat:
-            while(!(msg = stripFirstWord(sarg,',')).empty()) {
-               RinexSatID sat(msg);
-               ((vector<RinexSatID> *)(undoc_options[i].p_output))->push_back(sat);
-            }
-            break;
-         default:
-            break;
-      }
-      LOG(DEBUG) << "CommandLine::PreProcess: process arg " << sarg
-         << " of undocumented option " << undoc_options[i].longOpt;
-      process_undoc = false;
-      return;
-   }
-   
-   // handle undocumented args - key and bool value
-   for(i=0; i<undoc_options.size(); i++) {
-      string arg(sarg);
-
-      if(sarg.substr(0,2) == "--") arg = sarg.substr(2);       // remove --
-      else if(sarg.substr(0,1) == "-") arg = sarg.substr(1);   // remove -
-
-      if((sarg.size()==2 && arg[0]==undoc_options[i].shortOpt)
-         || arg == undoc_options[i].longOpt) {                 // match
-
-         if(undoc_options[i].type == typeBool) {
-            *((bool *)(undoc_options[i].p_output)) = true;     // TD toggle?
-            undoc_options[i].values.push_back(string("T"));
-         }
-         else {
-            process_undoc = true;         // next go-round
-            process_undoc_index = i;
-         }
-         LOG(DEBUG) << "CommandLine::PreProcess found undocumented option " << sarg;
-         return;
-      }
-   }
-
    // config file
-   if(found_cfg_file || (in_arg[0]=='-' && in_arg[1]=='f')) {
+   if(sarg == "--file" || sarg == "-f")         // strip out before found_cfg_file
+      found_cfg_file = true;
+
+   // NB second test (in_arg[0]...) is for -f <file> embedded in another cfg file *1*
+   else if(found_cfg_file || (in_arg[0]=='-' && in_arg[1]=='f')) {
       string filename(in_arg);
       if(!found_cfg_file) filename.erase(0,2); else found_cfg_file = false;
       LOG(DEBUG) << "CommandLine::PreProcess found a file of options: " << filename;
@@ -606,7 +544,7 @@ try {
          while(!buffer.empty()) {
             word = firstWord(buffer);
             if(again_cfg_file) {
-               word = "-f" + word;
+               word = "-f" + word;           // see above *1*
                again_cfg_file = false;
                PreProcessArgs(word.c_str(),Args,Errors);
             }
@@ -659,8 +597,6 @@ try {
          ConfigureLOG::ReportingLevel() = ConfigureLOG::Level("VERBOSE");
       LOG(DEBUG) << "CommandLine::PreProcess found the verbose option";
    }
-   else if(sarg == "--file" || sarg == "-f")
-      found_cfg_file = true;
 
    // deprecated options
    // note that -- is included in both key and value
@@ -674,7 +610,9 @@ try {
    }
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) {
+   Exception E("std except: "+string(e.what())); GPSTK_THROW(E);
+}
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -685,7 +623,7 @@ void expand_args(vector<string>& oldvalues, vector<string>& newvalues, string& m
 try {
    string arg;
 
-   for(size_t k=0; k<oldvalues.size(); k++) {         // first split values on ','
+   for(size_t k=0; k<oldvalues.size(); k++) {      // first split values on ','
       while(!(arg = stripFirstWord(oldvalues[k],',')).empty()) {
          if(arg.substr(0,1) == "@") {              // list file
             // remove the '@'
@@ -709,7 +647,9 @@ try {
    }  // end for
 }  // end try
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) {
+   Exception E("std except: "+string(e.what())); GPSTK_THROW(E);
+}
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -725,13 +665,12 @@ try {
    // parse args, saving values -----------------------
    i = 0;
    while(i < Args.size()) {
-      arg = Args[i];                            // arg
+      arg = Args[i];                               // arg
       // does it match an option?
       for(j=0; j<options.size(); ++j) {
          if((arg.size() == 2 && arg[0] == '-' && arg[1] == options[j].shortOpt) ||
                (arg.substr(0,2) == "--" && arg.substr(2) == options[j].longOpt))
          {                                         // match
-
             if(options[j].type > typeBool) {       // find value
                if(i == Args.size()-1) {
                   Errors += "Error - option " + arg + " without value.\n";
@@ -795,18 +734,11 @@ try {
          Errors += "Not-repeatable option "+options[j].longOpt+" was repeated.\n";
    }
    
-   // same for undocumented options
-   for(j=0; j<undoc_options.size(); ++j) {
-      if(undoc_options[j].required && undoc_options[j].values.size() == 0)
-         Errors += "Required option " + undoc_options[j].longOpt + " is not found.\n";
-
-      if(!undoc_options[j].repeat && undoc_options[j].values.size() > 1)
-         Errors+="Not-repeatable option "+undoc_options[j].longOpt+" was repeated.\n";
-   }
-
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) {
+   Exception E("std except: "+string(e.what())); GPSTK_THROW(E);
+}
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -815,16 +747,29 @@ string CommandLine::SyntaxPage(void) throw(Exception)
 {
 try {
    if(syntaxPageBuilt == 2) {
-      if(options.size() > 0) for(size_t i=0; i<options.size(); i++)
-         syntaxPage += options[i].syntax + "\n";
-      stripTrailing(syntaxPage,'\n');
+      if(options.size() > 0)
+         for(int i=0; i<options.size(); i++)
+            if(options[i].doc)
+               syntaxPage += options[i].syntax + "\n";
+
+      // add verbose, debug and help, which are always there...
+      syntaxPage += //"# (automatic options)\n" +
+                    leftJustify(" --verbose",optionsize)
+                  + "Print extended output, including cmdline summary (don't)\n";
+      syntaxPage += leftJustify(" --debug<n>",optionsize)
+                  + "Print debug output at LOGlevel n [n=0-7] (-1)\n";
+      syntaxPage += leftJustify(" --help",optionsize)
+                  + "Print this syntax page and quit (don't)";
+
       syntaxPageBuilt = 3;
    }
 
    return syntaxPage;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) {
+   Exception E("std except: "+string(e.what())); GPSTK_THROW(E);
+}
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
@@ -845,7 +790,7 @@ try {
       // was the option even found on the command line?
       if(options[i].values.size() == 0) continue;
       LOG(DEBUG) << "CommandLine::Postprocess parse " << options[i].longOpt
-         << " of type " << options[i].type;
+         << " of type " << options[i].type << (options[i].doc ? "":" undocumented");
       
       // bool is special b/c values are ignored
       if(options[i].type == typeBool) {
@@ -871,20 +816,30 @@ try {
       }
 
       switch(options[i].type) {
-         //case typeBool:                 // bool -- done above
+         case typeBool:                 // bool -- done above
+            break;
 
          case typeInt:
-            *((int *)(options[i].p_output)) = asInt(values[0]); //j-1?
+            if(!isDigitString(values[0]))
+               oss << "Error: non-integer value for --" << options[i].longOpt
+                  << ": " << values[0] << endl;
+            else
+               *((int *)(options[i].p_output)) = asInt(values[0]); //j-1?
             break;
 
          case typeVectorInt:
-            for(k=0; k<values.size(); k++)
-               ((vector<int> *)(options[i].p_output))->push_back(asInt(values[k]));
+            for(k=0; k<values.size(); k++) {
+               if(!isDigitString(values[k]))
+                  oss << "Error: non-integer value for --" << options[i].longOpt
+                     << ": " << values[k] << endl;
+               else
+                  ((vector<int> *)(options[i].p_output))->push_back(asInt(values[k]));
+            }
             break;
 
          case typeDouble:
             if(!isScientificString(values[0]))
-               oss << "Warning: invalid value for --" << options[i].longOpt
+               oss << "Error: invalid value for --" << options[i].longOpt
                   << ": " << values[0] << endl;
             else
                *((double *)(options[i].p_output))=asDouble(values[0]);
@@ -910,8 +865,8 @@ try {
                ((vector<RinexSatID> *)(options[i].p_output))->push_back(sat);
             }
             break;
-
-         default:
+         case typeUndefined:
+         case typeCount:
             break;
       }
 
@@ -928,7 +883,9 @@ try {
 
 }  // end try
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(std::exception& e) {
+   Exception E("std except: "+string(e.what())); GPSTK_THROW(E);
+}
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 

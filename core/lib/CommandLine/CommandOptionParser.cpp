@@ -206,7 +206,7 @@ namespace gpstk
 
             // Solaris uses '?' for all getopt errors.  Linux uses '?'
             // for unknown options and ':' for options that require
-            // arguments but don't have then. That's why the error
+            // arguments but don't have them. That's why the error
             // message is "option error" cause we can't differentiate
             // what the REAL error is...
          if ((cha == '?') || (cha == ':'))

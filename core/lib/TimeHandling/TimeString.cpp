@@ -44,6 +44,7 @@
 #include "BDSWeekSecond.hpp"
 #include "GALWeekSecond.hpp"
 #include "QZSWeekSecond.hpp"
+#include "IRNWeekSecond.hpp"
 #include "GPSWeekZcount.hpp"
 #include "JulianDate.hpp"
 #include "MJD.hpp"
@@ -74,6 +75,7 @@ namespace gpstk
          try {rv = GALWeekSecond(t).printf( rv );} catch (gpstk::InvalidRequest e){};
          try {rv = BDSWeekSecond(t).printf( rv );} catch (gpstk::InvalidRequest e){};
          try {rv = QZSWeekSecond(t).printf( rv );} catch (gpstk::InvalidRequest e){};
+         try {rv = IRNWeekSecond(t).printf( rv );} catch (gpstk::InvalidRequest e){};
          return rv;
       }
       catch( gpstk::StringUtils::StringException& se )
@@ -135,9 +137,9 @@ namespace gpstk
             hzcount32( false ), hhour( false ), hmin( false ), hsec( false ),
             hsod( false ), hunixsec( false ), hunixusec( false ), 
             hepoch( false ), hansi( false ), hjulian( false ),
-            hbdsw( false ), hqzsw( false ), hgalw( false ),
-            hbdsfw( false ), hqzsfw( false ), hgalfw( false ),
-            hbdse( false ), hqzse( false ), hgale( false);
+            hbdsw( false ), hqzsw( false ), hgalw( false ), hirnw( false ),
+            hbdsfw( false ), hqzsfw( false ), hgalfw( false ), hirnfw( false ),
+            hbdse( false ), hqzse( false ), hgale( false), hirne( false );
 
             // These are to hold data that no one parses.
          int idow(0);
@@ -274,6 +276,7 @@ namespace gpstk
                case 'R': hepoch = hbdse = true; break;
                case 'T': hepoch = hgale = true; break;
                case 'V': hepoch = hqzse = true; break;
+               case 'X': hepoch = hirne = true; break;
 
                case 'D': hfullweek = hbdsfw = true; break;
                case 'e': hweek = hbdsw = true; break;
@@ -281,6 +284,9 @@ namespace gpstk
                case 'l': hweek = hgalw = true; break;
                case 'I': hfullweek = hqzsfw = true; break;
                case 'i': hweek = hqzsw = true; break;
+               case 'O': hfullweek = hirnfw = true; break;
+               case 'o': hweek = hirnw = true; break;
+
 
                default:
                   {
@@ -338,6 +344,7 @@ namespace gpstk
             if(hbdse || hbdsfw || hbdsw) ptt = new BDSWeekSecond();
             else if(hqzse || hqzsfw || hqzsw) ptt = new QZSWeekSecond();
             else if(hgale || hgalfw || hgalw) ptt = new GALWeekSecond();
+            else if(hirne || hirnfw || hirnw) ptt = new IRNWeekSecond();
             else ptt = new GPSWeekSecond();
             ptt->setFromInfo(info);
             if( hdow && !hsow )
@@ -354,6 +361,7 @@ namespace gpstk
                                               asDouble( info['S'] ) );
                }
             }
+
             t = ptt->convertToCommonTime();
             delete ptt;
             return;
@@ -419,9 +427,9 @@ namespace gpstk
             hhour( false ), hmin( false ), hsec( false ),
             hsod( false ), hepoch( false ),
             //hunixsec( false ), hunixusec( false ),
-            hbdsw( false ), hqzsw( false ), hgalw( false ),
-            hbdsfw( false ), hqzsfw( false ), hgalfw( false ),
-            hbdse( false ), hqzse( false ), hgale( false);
+            hbdsw( false ), hqzsw( false ), hgalw( false ), hirnw( false ),
+            hbdsfw( false ), hqzsfw( false ), hgalfw( false ), hirnfw( false ),
+            hbdse( false ), hqzse( false ), hgale( false ), hirne( false );
 
             // MJD, Julian Date, ANSI time, Unix time, and 32-bit Zcounts
             // are treated as stand-alone types and are not mixed with others
@@ -628,12 +636,19 @@ namespace gpstk
                   iepoch = asInt(itr->second);
                   break;
 
+               case 'X':
+                  hepoch = hirne = true;
+                  iepoch = asInt(itr->second);
+                  break;
+
                case 'D': hfullweek = hbdsfw = true; break;
                case 'e': hweek = hbdsw = true; break;
                case 'L': hfullweek = hgalfw = true; break;
                case 'l': hweek = hgalw = true; break;
                case 'I': hfullweek = hqzsfw = true; break;
                case 'i': hweek = hqzsw = true; break;
+               case 'O': hfullweek = hirnfw = true; break;
+               case 'o': hweek = hirnw = true; break;
 
                default:
                      // do nothing
@@ -645,6 +660,7 @@ namespace gpstk
          bool hbds(hbdse || hbdsfw || hbdsw);
          bool hgal(hgale || hgalfw || hgalw);
          bool hqzs(hqzse || hqzsfw || hqzsw);
+         bool hirn(hirne || hirnfw || hirnw);
 
             // We'll copy this time to 't' after all of the processing.
          CommonTime ct(t);
@@ -658,6 +674,7 @@ namespace gpstk
             if(hbds) ptt = new BDSWeekSecond(ct);
             else if(hqzs) ptt = new QZSWeekSecond(ct);
             else if(hgal) ptt = new GALWeekSecond(ct);
+            else if(hirn) ptt = new IRNWeekSecond(ct);
             else ptt = new GPSWeekSecond(ct);
             ptt->setEpoch( iepoch );
             ct = ptt->convertToCommonTime();
@@ -684,6 +701,7 @@ namespace gpstk
             if(hbds) ptt = new BDSWeekSecond();
             else if(hqzs) ptt = new QZSWeekSecond();
             else if(hgal) ptt = new GALWeekSecond();
+            else if(hirn) ptt = new IRNWeekSecond();
             else ptt = new GPSWeekSecond();
 
             //When if( hfullweek ) is the first if entered in the list
@@ -710,6 +728,7 @@ namespace gpstk
             if(hbds) ptt = new BDSWeekSecond(ct);
             else if(hqzs) ptt = new QZSWeekSecond(ct);
             else if(hgal) ptt = new GALWeekSecond(ct);
+            else if(hirn) ptt = new IRNWeekSecond(ct);
             else ptt = new GPSWeekSecond(ct);
             ptt->setModWeek(iweek);
             ct = ptt->convertToCommonTime();
@@ -722,6 +741,7 @@ namespace gpstk
             if(hbds) ptt = new BDSWeekSecond(ct);
             else if(hqzs) ptt = new QZSWeekSecond(ct);
             else if(hgal) ptt = new GALWeekSecond(ct);
+            else if(hirn) ptt = new IRNWeekSecond(ct);
             else ptt = new GPSWeekSecond(ct);
             ptt->sow = static_cast<double>(idow) * SEC_PER_DAY;
             ct = ptt->convertToCommonTime();
@@ -776,6 +796,7 @@ namespace gpstk
             if(hbds) ptt = new BDSWeekSecond(ct);
             else if(hqzs) ptt = new QZSWeekSecond(ct);
             else if(hgal) ptt = new GALWeekSecond(ct);
+            else if(hirn) ptt = new IRNWeekSecond(ct);
             else ptt =  new GPSWeekSecond(ct);
             ptt->sow = isow;
             ct = ptt->convertToCommonTime();

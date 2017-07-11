@@ -52,7 +52,7 @@
 namespace gpstk
 {
       // for temperature conversion from Celcius to Kelvin
-   static const double CELSIUS_TO_KELVIN = 273.15;
+   const double TropModel::CELSIUS_TO_KELVIN = 273.15;
 
       // Compute and return the full tropospheric delay. Typically call
       // setWeather(T,P,H) before making this call.
@@ -123,11 +123,17 @@ namespace gpstk
          InvalidParameter e("Invalid pressure.");
          GPSTK_THROW(e);
       }
-      if (humid < 0.0 || humid > 100.0)
+      if (humid < 0.0 || humid > 105.0)
       {
          valid = false;
          InvalidParameter e("Invalid humidity.");
          GPSTK_THROW(e);
+      }
+         // truncates humidity to 100 if between 105 and 100.
+         // models cannot handle supersaturation.
+      if (humid > 100)
+      {
+         humid = 100.0;
       }
    }  // end TropModel::setWeather(T,P,H)
 

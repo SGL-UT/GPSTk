@@ -76,6 +76,7 @@ namespace gpstk
          ntGloCivilF,
          ntGloCivilC,
          ntGalOS,
+         ntIRNSS_SPS,
          ntUnknown
       };
    
@@ -104,16 +105,18 @@ namespace gpstk
          std::string retVal = "";
          switch(s)
          {
-            case ntGPSLNAV:      {retVal = NavTypeStrings[0];     break;}
-            case ntGPSCNAVL2:    {retVal = NavTypeStrings[1];     break;}
-            case ntGPSCNAVL5:    {retVal = NavTypeStrings[2];     break;}
-            case ntGPSMNAV:      {retVal = NavTypeStrings[3];     break;}
-            case ntBeiDou_D1:    {retVal = NavTypeStrings[4];     break;}
-            case ntBeiDou_D2:    {retVal = NavTypeStrings[5];     break;}
-            case ntGloCivilF:    {retVal = NavTypeStrings[6];     break;}
-            case ntGloCivilC:    {retVal = NavTypeStrings[7];     break;}
-            case ntGalOS:        {retVal = NavTypeStrings[8];     break;}
-            default: ntUnknown:  {retVal = NavTypeStrings[9];     break;}
+            case ntGPSLNAV:      {retVal = NavTypeStrings[ 0];     break;}
+            case ntGPSCNAVL2:    {retVal = NavTypeStrings[ 1];     break;}
+            case ntGPSCNAVL5:    {retVal = NavTypeStrings[ 2];     break;}
+            case ntGPSMNAV:      {retVal = NavTypeStrings[ 3];     break;}
+            case ntBeiDou_D1:    {retVal = NavTypeStrings[ 4];     break;}
+            case ntBeiDou_D2:    {retVal = NavTypeStrings[ 5];     break;}
+            case ntGloCivilF:    {retVal = NavTypeStrings[ 6];     break;}
+            case ntGloCivilC:    {retVal = NavTypeStrings[ 7];     break;}
+            case ntGalOS:        {retVal = NavTypeStrings[ 8];     break;}
+            case ntIRNSS_SPS:    {retVal = NavTypeStrings[ 9];     break;}
+            case ntUnknown:
+            default:             {retVal = NavTypeStrings[10];     break;}
          };
          //return retVal in case switch isn't reached
         return retVal;

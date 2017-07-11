@@ -52,7 +52,8 @@ namespace gpstk
        string("WGS84(G1150)"),   // WGS84, GPS week 1150 version
        string("ITRF"),           // ITRF, assumed to be the latest version
        string("PZ90"),           // PZ90 (GLONASS) assumed to be the latest version
-       string("PZ90KGS")         // PZ90 (KGS) the "original"
+       string("PZ90KGS"),         // PZ90 (KGS) the "original"
+       string("CGCS2000")
      };
 
    ReferenceFrame::ReferenceFrame(const string str) throw()

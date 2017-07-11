@@ -194,7 +194,7 @@ SVNumXRef::SVNumXRef( )
    // NANU #2016008 (end) - SVN 23 Decommissioned
    NtoPMap.insert( std::pair<const int, XRefNode>( 23, XRefNode( 32, 
                                        CivilTime( 2006, 12,  1,  0,  0,  0.0, TimeSystem::GPS),
-                                       CivilTime( 2016,  1,  25, 0,  0,  0.0, TimeSystem::GPS))));
+                                       CivilTime( 2016,  1,  25, 20,  0,  0.0, TimeSystem::GPS))));
    NtoPMap.insert( std::pair<const int, XRefNode>( 24, XRefNode( 24, 
                                        CivilTime( 1991,  7,  4,  0,  0,  0.0, TimeSystem::GPS),
                                        CivilTime( 2011,  9, 30, 23, 59, 59.9, TimeSystem::GPS))));
@@ -257,7 +257,11 @@ SVNumXRef::SVNumXRef( )
    // NANU 2015091 (end)
    NtoPMap.insert( std::pair<const int, XRefNode>( 34, XRefNode(  4, 
                                        CivilTime( 1993, 10, 26,  0,  0,  0.0, TimeSystem::GPS),
-                                       CivilTime( 2015, 11, 2,  22,  0,  0.0, TimeSystem::GPS))));
+                                       CivilTime( 2015, 11, 9,  22,  0,  0.0, TimeSystem::GPS))));
+   // NANU 2016072 (start)
+   NtoPMap.insert( std::pair<const int, XRefNode>( 34, XRefNode(  4, 
+                                       CivilTime( 2016, 12, 9,  0,  0,  0.0, TimeSystem::GPS),
+                                       CivilTime( 2017,  1, 3, 16,  0,  0.0, TimeSystem::GPS))));
                                        
    NtoPMap.insert( std::pair<const int, XRefNode>( 35, XRefNode(  5, 
                                        CivilTime( 1993,  8, 30,  0,  0,  0.0, TimeSystem::GPS),
@@ -387,7 +391,12 @@ SVNumXRef::SVNumXRef( )
    // NANU 2016009 (general/start)
    NtoPMap.insert( std::pair<const int, XRefNode>( 49, XRefNode(  4, 
                                        CivilTime( 2016,  2, 4,  0,  0,  0.0, TimeSystem::GPS),
+                                       CivilTime( 2016, 12, 5, 15, 10,  0.0, TimeSystem::GPS))));
+   // NANU 2017001 (start)
+   NtoPMap.insert( std::pair<const int, XRefNode>( 49, XRefNode(  4, 
+                                       CivilTime( 2017,  1, 5,  0,  0,  0.0, TimeSystem::GPS),
                                        CommonTime::END_OF_TIME  )));
+
    NtoPMap.insert( std::pair<const int, XRefNode>( 50, XRefNode(  5, 
                                        CivilTime( 2009,  8, 27,  0,  0,  0.0, TimeSystem::GPS),
                                        CommonTime::END_OF_TIME  )));

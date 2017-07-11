@@ -2,7 +2,7 @@ all: gpstk-user-reference
 
 gpstk-user-reference: gpstk-user-reference.dvi gpstk-user-reference.pdf
 
-gpstk-user-reference.dvi: gpstk-user-reference.tex sec2.tex calgps.tex poscvt.tex timeconvert.tex gpstk.bib src/cmd.tex RinexDump.tex navdmp.tex vecsol.tex DiscFix.tex
+gpstk-user-reference.dvi: gpstk-user-reference.tex gpstk.bib src/cmd.tex 
 	./makescr
 
 gpstk-user-reference.pdf: gpstk-user-reference.dvi

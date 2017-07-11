@@ -47,6 +47,7 @@
 #include "GNSSconstants.hpp"
 #include "GPSEllipsoid.hpp"
 #include "GPSWeekSecond.hpp"
+#include "IRNWeekSecond.hpp"
 #include "NavID.hpp"
 #include "StringUtils.hpp"
 #include "SVNumXRef.hpp"
@@ -122,6 +123,12 @@ namespace gpstk
             break;
          }
 
+	      case NavID::ntIRNSS_SPS:
+         {
+            loadDataIRN(pnb, hArg);
+            break;
+         }
+	 
          default:
          {
             stringstream ss;
@@ -196,14 +203,16 @@ namespace gpstk
    //  If the first almanac data page is received prior to the
    //  first definition of the WNa and Toa, estimate the 
    //  WNa_full based on the transmit time of the message.
-   //  This assumes that the almanac WNa/toa is "in the future"
-   //  from the current time by at least a day. 
-   //  Needed a BDS-specific version in order to address the
+   //  This assumes that the almanac WNa/toa is within a 
+   //  half-day of the current time.  In fact, there ARE NOT
+   //  PROMISES on this matter in the BDS ICD and I'm basing
+   //  this on observed behavior.  
+   //  Also needed a BDS-specific version in order to address the
    //  fact that the currTime is coming from the HRTR transmit
    //  time.  Therfore, it is going to be in GPS Time. 
    void OrbAlmGen::estimateWeekNumberBDS(const CommonTime& currTime)
    {
-      CommonTime adjustedTime = currTime + SEC_PER_DAY;
+      CommonTime adjustedTime = currTime;
       unsigned int WN_est = static_cast<BDSWeekSecond>(adjustedTime).week;
       double toa_est = static_cast<BDSWeekSecond>(adjustedTime).sow;
       loadWeekNumber(WN_est, toa_est);
@@ -286,6 +295,14 @@ namespace gpstk
 
          // Compute time since ephemeris & clock epochs
       elapte = t - ctToe;
+
+      /* debug 
+      string tstr("%D %w:%02H:%02M:%4.1f %8.2g");
+      cout << " t " << printTime(t,tstr)
+           << ", ctToe " << printTime(ctToe,tstr)
+           << ", adj " << printTime(adj,tstr)
+           << ", elapte " << elapte << endl;
+      */
 
       double sqrtgm = SQRT(ell.gm());
 
@@ -832,6 +849,27 @@ namespace gpstk
       if (!isDT1 && subframe==5 && page>=95 && page<=100) valid = true;
       if (valid)
       {
+            // Almanacs for SVs that are unavailable will be all zeroes in
+            // bits 61-300.  Reject such messages out of hand. 
+         bool content = false;
+         int iword = 3; 
+         int nbit = 30;
+         while (!content && iword<=10)
+         {
+            int startBit = (iword-1) * nbit;
+            unsigned long uword = msg.asUnsignedLong(startBit,nbit,1);
+            if (uword!=0x00000000)
+               content = true; 
+            iword++;
+         }
+         if (!content)
+         {
+            stringstream ss;
+            ss << "Empty alamanc (all zero content).";
+            InvalidParameter exc(ss.str());
+            GPSTK_THROW(exc);    
+         }
+
             // If the almanac time parameters are not yet set, estimate 
             // them based on the current transmit time. 
          if (!WN_set)
@@ -842,10 +880,12 @@ namespace gpstk
  
          unsigned short prn = translateToSubjectPRN(isDT1, subframe, page); 
          subjectSV = SatID(prn,SatID::systemBeiDou);
+         bool isSubjSV_DT1 = true;
+         if (prn<6) isSubjSV_DT1 = false;
 
          const unsigned startBits0[] = {50, 60};
          const unsigned numBits0[]   = { 2, 22};
-         AHalf   = msg.asSignedDouble(startBits0, numBits0, 2, -11);
+         AHalf   = msg.asUnsignedDouble(startBits0, numBits0, 2, -11);
          A       = AHalf * AHalf;
          af1     = msg.asSignedDouble( 90, 11, -38);
          af0     = msg.asSignedDouble(101, 11, -20);
@@ -860,10 +900,11 @@ namespace gpstk
          const unsigned numBits2[]   = {  3,  13};
          deltai  = msg.asDoubleSemiCircles(startBits2, numBits2, 2, -19);  
          i0 = 0.0;     // Default for GEO.
-         if (isDT1) 
+         if (isSubjSV_DT1) 
          {      
-            i0 = (0.3 + deltai) * PI; 
+            i0 = 0.3 * PI; 
          }
+         i0 = i0 + deltai;
 
          unsigned long toa = msg.asUnsignedLong(193, 8, 4096);
 
@@ -925,6 +966,92 @@ namespace gpstk
          GPSTK_THROW(exc);    
       } 
 
+   }
+
+   void OrbAlmGen::loadDataIRN(const gpstk::PackedNavBits& msg,
+			       const unsigned short hArg)
+               throw(gpstk::InvalidParameter)
+   {
+
+         // Ignore anything that is NOT an IRNSS almanac message
+      unsigned long subframeid = msg.asUnsignedLong(27, 2, 1);
+
+         // message ID is only valid for SF3 and SF4
+      unsigned long msgid = 0;
+      if (subframeid==2 || subframeid==3)
+         msgid = msg.asUnsignedLong(30,6,1);
+
+      if ( msgid != 7 )
+      {
+         stringstream ss;
+         ss << "Expected IRNSS message type 7.  Found message " << msgid;
+         InvalidParameter ip(ss.str());
+         GPSTK_THROW(ip); 
+      }
+
+         // This is the SVID of the SUBJECT of the almanac, not the transmitting SV
+      unsigned short SVID     = (unsigned short) msg.asUnsignedLong(236, 6, 1);
+
+         // Store the transmitting SV
+      satID = msg.getsatSys();
+
+         // Set the subjectSV (found in OrbAlm.hpp)
+      subjectSV = SatID(SVID, SatID::systemIRNSS);
+
+         // Crack the bits into engineering units.
+      unsigned short WNa = (unsigned short) msg.asUnsignedLong(36, 10, 1);  
+      toa                = msg.asUnsignedLong(62, 16, 16);
+      health             = hArg;   
+      ecc                = msg.asUnsignedDouble(46, 16, -21); 
+      OMEGAdot           = msg.asDoubleSemiCircles(102, 16, -38);
+      AHalf              = msg.asUnsignedDouble(118, 24, -11);
+      A = AHalf * AHalf;
+      OMEGA0             = msg.asDoubleSemiCircles(142, 24, -23);
+      w                  = msg.asDoubleSemiCircles(166, 24, -23);
+      M0                 = msg.asDoubleSemiCircles(190, 24, -23);
+      af0                = msg.asSignedDouble(214, 11, -20);
+      af1                = msg.asSignedDouble(225, 11, -38);
+      i0                 = msg.asDoubleSemiCircles(78, 24, -23);
+
+      healthy = false;
+      const ObsID& oidr = msg.getobsID();
+      if ( oidr.band==ObsID::cbL5 && (health == 0) )
+      {
+         healthy = true; 
+      }
+
+         // This is where we're extra careful about creating ctToe
+         // (based on cutover vs non-cutover)
+      const CommonTime& Xmit = msg.getTransmitTime();
+      short XmitWeek = static_cast<IRNWeekSecond>(Xmit).week; //<---Gives non-cutover week number
+      
+      short epochNum = XmitWeek / 1024;   
+      WNa_full = WNa + (epochNum * 1024);
+
+      short diffWNa_full = WNa_full - XmitWeek;
+
+      if ( diffWNa_full < -512 )
+      {
+         WNa_full += 1024;
+      }
+      if ( diffWNa_full > 512 )
+      {
+         WNa_full -= 1024;
+      }
+
+         // Now create ctToe with WNa_full
+      ctToe = IRNWeekSecond(WNa_full, toa, TimeSystem::IRN);
+
+      
+         // Determine beginValid.  This is set to the transmit time of this page. 
+      beginValid = msg.getTransmitTime();
+      beginValid.setTimeSystem(TimeSystem::IRN);
+
+
+         // Determine endValid.   This is set to "end of time" 
+      endValid   = CommonTime::END_OF_TIME;
+      endValid.setTimeSystem(TimeSystem::IRN);
+      
    }
 
       // For BeiDou, the subject PRN of the almanac is dependent upon the page

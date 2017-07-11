@@ -179,7 +179,8 @@ namespace gpstk
       }
       else if (sys == 'C') // BeiDou
       {
-         if(band == cbL1) band = cbB1;
+         if(band == cbL1) band = cbB1;          // RINEX 3.02
+         if(band == cbL2) band = cbB1;          // RINEX 3.0[013]
          if(band == cbE6) band = cbB3;
 
          if(band == cbB1) {
@@ -204,6 +205,20 @@ namespace gpstk
                case tcI5: code = tcCI6; break;     // 'I'
                case tcQ5: code = tcCQ6; break;     // 'Q'
                case tcC2LM: code = tcCIQ6; break;  // 'X'
+            default: break;
+            }
+         }
+      }
+      else if (sys== 'I')  // IRNSS
+      {
+         if(band == cbL5)
+         {
+            switch (code)
+            {
+               case tcCA:   code = tcIA5; break;   // 'A'
+               case tcA:    code = tcIB5; break;   // 'B'
+               case tcB:    code = tcIC5; break;   // 'B'
+               case tcC2LM: code = tcIX5; break;   // 'X'
             default: break;
             }
          }

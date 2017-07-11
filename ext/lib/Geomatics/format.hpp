@@ -34,10 +34,8 @@
 //
 //=============================================================================
 
-/**
- * @file format.hpp
- * Simple class to encapsulate output format
- */
+/// @file format.hpp
+/// Simple class to encapsulate output format
 
 #ifndef CLASS_FORMAT_HELPER_INCLUDE
 #define CLASS_FORMAT_HELPER_INCLUDE

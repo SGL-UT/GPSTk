@@ -79,7 +79,7 @@ class SystemTime_T
 			//---------------------------------------------------------------------
 			testFramework.assert( day == day2, "The obtained day was not correct", __LINE__ );
 			testFramework.assert( sod == sod2, "The obtained sod was not correct", __LINE__ );
-			testFramework.assert( commonTime_SystemTime.getTimeSystem() == TimeSystem(7), "The set TimeSystem was unexpected", __LINE__ );
+			testFramework.assert( commonTime_SystemTime.getTimeSystem() == TimeSystem(8), "The set TimeSystem was unexpected", __LINE__ );
 
 			return testFramework.countFails();
 		}

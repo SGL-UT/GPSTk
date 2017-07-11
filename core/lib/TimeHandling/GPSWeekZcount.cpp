@@ -39,6 +39,7 @@
 #include "GPSWeekZcount.hpp"
 #include "TimeConstants.hpp"
 #include "TimeConverters.hpp"
+#include "GPSWeekSecond.hpp"
 
 namespace gpstk
 {
@@ -154,6 +155,8 @@ namespace gpstk
    bool GPSWeekZcount::setFromInfo( const IdToValue& info )
    {
       using namespace gpstk::StringUtils;
+
+      GPSWeek::setFromInfo(info);
 
       for( IdToValue::const_iterator i = info.begin(); i != info.end(); i++ )
       {

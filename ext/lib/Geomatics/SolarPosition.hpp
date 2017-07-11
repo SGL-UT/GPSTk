@@ -34,9 +34,7 @@
 //
 //=============================================================================
 
-/**
- * @file SolarPosition.hpp  Compute solar and lunar positions with a simple algorithm.
- */
+/// @file SolarPosition.hpp  Compute solar and lunar positions with a simple algorithm
 
 //------------------------------------------------------------------------------------
 #ifndef SOLAR_POSITION_INCLUDE

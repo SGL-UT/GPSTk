@@ -98,6 +98,10 @@ namespace gpstk
       GCATTropModel(const double& ht);
 
 
+         /// Return the name of the model
+      virtual std::string name(void)
+         { return std::string("GCAT"); }
+
          /** Compute and return the full tropospheric delay. The receiver
           *  height must has been provided before, whether using the
           *  appropriate constructor or with the setReceiverHeight() method

@@ -31,16 +31,7 @@ if( ${CMAKE_SYSTEM_NAME} MATCHES "SunOS" )
 elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w -std=c++11" )
 elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" )
-    execute_process(COMMAND "/usr/bin/lsb_release" "-is"
-                    TIMEOUT 4
-                    OUTPUT_VARIABLE LINUX_DISTRO
-                    ERROR_QUIET
-                    OUTPUT_STRIP_TRAILING_WHITESPACE)
-    if (${LINUX_DISTRO} MATCHES "RedHatEnterpriseServer")
-        message( STATUS "Linux Red Hat machine, Ignoring -std=c++11 flag")
-    else()
-        set( CMAKE_CXX_FLAGS "-std=c++11" )
-    endif()
+    set( CMAKE_CXX_FLAGS "-std=c++11" )
 elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
     set( CMAKE_CXX_FLAGS "-std=c++11" )
 endif()
@@ -90,6 +81,9 @@ set( CMAKE_SWIG_OUTDIR ${MODULE_PATH}/${SWIG_MODULE} )
 #        testing shows that this ONLY works for the gpstk.py
 #        and does NOT work for the _gpstk.so
 #----------------------------------------
+add_custom_target(swig-make-directory ALL
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${MODULE_PATH}/gpstk)
+add_dependencies("_${SWIG_MODULE}" swig-make-directory)
 add_custom_command( TARGET "_${SWIG_MODULE}" POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "_${SWIG_MODULE}.so" ${CMAKE_SWIG_OUTDIR} )
 add_custom_command( TARGET "_${SWIG_MODULE}" POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${SWIG_MODULE}.py" ${CMAKE_SWIG_OUTDIR} )
 
@@ -131,7 +125,7 @@ install( CODE "execute_process(COMMAND ${PYTHON_EXECUTABLE} ${SETUP_PY} install 
 #------------------------------------------------------------
 
 file( GLOB swig_includes ${CMAKE_CURRENT_SOURCE_DIR}/src/* )
-install( FILES ${swig_includes} ${CMAKE_CURRENT_SOURCE_DIR}/gpstk.i DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}" )
+install( FILES ${swig_includes} ${CMAKE_CURRENT_SOURCE_DIR}/gpstk.i DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/gpstk" )
 
 
 include(swig_tests.cmake)

@@ -55,7 +55,6 @@ namespace gpstk
                              const Rinex3ObsData& rod )
       throw(FFStreamError, StringException)
    {
-
          // is there anything to write?
       if( (rod.epochFlag==0 || rod.epochFlag==1 || rod.epochFlag==6)
           && (rod.numSVs==0 || rod.obs.empty()) ) return;
@@ -129,7 +128,6 @@ namespace gpstk
          // write the epoch line
       strm << line << endl;
       strm.lineNumber++;
-
          // write the auxiliary header records, if any
       if( rod.epochFlag >= 2 && rod.epochFlag <= 5 )
       {
@@ -157,7 +155,6 @@ namespace gpstk
 
             RinexSatID sat(itr->first);               // current satellite
             string sys(string(1,sat.systemChar()));   // system
-            itr = rod.obs.find(sat);           // get data vector to be written
             int obsWritten(0);
             line = string("");
 
@@ -285,7 +282,9 @@ namespace gpstk
    {
          // is there anything to write?
       if( (epochFlag == 0 || epochFlag == 1 || epochFlag == 6)
-          && (numSVs==0 || obs.empty())) return;
+          && (numSVs==0 || obs.empty())){
+         return;
+      }
 
       Rinex3ObsStream& strm = dynamic_cast<Rinex3ObsStream&>(ffs);
 
@@ -790,13 +789,17 @@ namespace gpstk
       return line;
    }  // end writeTime
 
+   string Rinex3ObsData::timeString() const throw(StringException)
+   {
+      return writeTime(time);
+   }
 
    void Rinex3ObsData::dump(ostream& s) const
    {
       if(obs.empty())
          return;
 
-      s << "Dump of Rinex3ObsData" << endl << " - time: " << writeTime(time)
+      s << "Dump of Rinex3ObsData - time: " << writeTime(time)
         << " epochFlag: " << " " << epochFlag
         << " numSVs: " << numSVs
         << fixed << setprecision(9) << " clk offset: " << clockOffset << endl;

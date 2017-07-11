@@ -34,11 +34,12 @@
 //
 //=============================================================================
 
+#include <RINEX3/Rinex3ObsFilterOperators.hpp>
 #include "FileFilterFrameWithHeader.hpp"
 
-#include "RinexNavData.hpp"
-#include "RinexNavStream.hpp"
-#include "RinexNavFilterOperators.hpp"
+#include "Rinex3NavData.hpp"
+#include "Rinex3NavStream.hpp"
+#include "Rinex3NavFilterOperators.hpp"
 
 #include "DiffFrame.hpp"
 #include "YDSTime.hpp"
@@ -55,19 +56,42 @@ public:
    static const int DIFFS_CODE = 1;
    RNWDiff(char* arg0)
          : DiffFrame(arg0, 
-                     std::string("RINEX Nav"))
+                     std::string("RINEX Nav")),
+           precisionOption('p',"precision", "Ignore diffs smaller than "
+              "(data * (10 ^ -ARG). Default = 13")
    {}
+   virtual bool initialize(int argc, char* argv[]) throw();
 
 protected:
    virtual void process();
+   gpstk::CommandOptionWithAnyArg precisionOption;
+
+private:
+   int precision;
+   static const int DEFAULT_PRECISION = 13;
 };
 
-
+bool RNWDiff::initialize(int argc, char* argv[]) throw()
+{
+   if (!DiffFrame::initialize(argc, argv))
+   {
+      return false;
+   }
+   if (precisionOption.getCount())
+   {
+      precision = atoi(precisionOption.getValue()[0].c_str());
+   }
+   else
+   {
+      precision = DEFAULT_PRECISION;
+   }
+   return true;
+}
 void RNWDiff::process()
 {
    try
    {
-      FileFilterFrameWithHeader<RinexNavStream, RinexNavData, RinexNavHeader>
+      FileFilterFrameWithHeader<Rinex3NavStream, Rinex3NavData, Rinex3NavHeader>
          ff1(inputFileOption.getValue()[0]),
          ff2(inputFileOption.getValue()[1]);
 
@@ -86,15 +110,21 @@ void RNWDiff::process()
          exitCode = EXIST_ERROR;
          return;
       }
-      
-      ff1.sort(RinexNavDataOperatorLessThanFull());
-      ff2.sort(RinexNavDataOperatorLessThanFull());
-      
-      pair< list<RinexNavData>, list<RinexNavData> > difflist = 
-         ff1.diff(ff2, RinexNavDataOperatorLessThanFull());
+      Rinex3NavDataOperatorLessThanFull op;
+         // Always sort by the default to mantain organization
+      op.setPrecision(DEFAULT_PRECISION);
+      ff1.sort(op);
+      ff2.sort(op);
+
+      //set desired precision for diffs
+      op.setPrecision(precision);
+
+      pair< list<Rinex3NavData>, list<Rinex3NavData> > difflist =
+         ff1.diff(ff2, op);
       
       if (difflist.first.empty() && difflist.second.empty())
       {
+         cout << "no differences were found" << endl;
             // no differences
          exitCode = 0;
          return;
@@ -103,19 +133,19 @@ void RNWDiff::process()
          // differences found
       exitCode = DIFFS_CODE;
 
-      list<RinexNavData>::iterator firstitr = difflist.first.begin();
+      list<Rinex3NavData>::iterator firstitr = difflist.first.begin();
       while (firstitr != difflist.first.end())
       {
          bool matched = false;
-         list<RinexNavData>::iterator seconditr = difflist.second.begin();
+         list<Rinex3NavData>::iterator seconditr = difflist.second.begin();
          while ((!matched) && (seconditr != difflist.second.end()))
          {
                // this will match the exact same nav message in both
-               // files, not just the same ephemeris broadcasted at
+               // files, not just the same ephemeris broadcast at
                // different times.
             if ((firstitr->time == seconditr->time) &&
                 (firstitr->PRNID == seconditr->PRNID) &&
-                (firstitr->sf1XmitTime == seconditr->sf1XmitTime) )
+                (firstitr->HOWtime == seconditr->HOWtime) )
             {
                YDSTime recTime(firstitr->time);
                cout << fixed << setw(3) << recTime.doy << ' ' 
@@ -143,13 +173,13 @@ void RNWDiff::process()
                     << (firstitr->OMEGAdot - seconditr->OMEGAdot) << ' '
                     << (firstitr->idot     - seconditr->idot) << ' '
                     << (firstitr->codeflgs - seconditr->codeflgs) << ' '
-                    << (firstitr->toeWeek  - seconditr->toeWeek) << ' '
+                    << (firstitr->weeknum  - seconditr->weeknum) << ' '
                     << (firstitr->L2Pdata  - seconditr->L2Pdata) << ' '
                     << (firstitr->accuracy - seconditr->accuracy) << ' '
                     << (firstitr->health   - seconditr->health) << ' '
                     << (firstitr->Tgd      - seconditr->Tgd) << ' '
                     << (firstitr->IODC     - seconditr->IODC) << ' '
-                    << (firstitr->sf1XmitTime - seconditr->sf1XmitTime) << ' '
+                    << (firstitr->HOWtime - seconditr->HOWtime) << ' '
                     << (firstitr->fitint   - seconditr->fitint)
                     << endl;
 
@@ -165,10 +195,10 @@ void RNWDiff::process()
             firstitr++;
       }
 
-      list<RinexNavData>::iterator itr = difflist.first.begin();
+      list<Rinex3NavData>::iterator itr = difflist.first.begin();
       while (itr != difflist.first.end())
       {
-         cout << '<' << itr->stableText() << endl;
+         cout << '<' << itr->dumpString() << endl;
          itr++;
       }
 
@@ -177,7 +207,7 @@ void RNWDiff::process()
       itr = difflist.second.begin();
       while (itr != difflist.second.end())
       {
-         cout << '>' << itr->stableText() << endl;
+         cout << '>' << itr->dumpString() << endl;
          itr++;
       }
 
