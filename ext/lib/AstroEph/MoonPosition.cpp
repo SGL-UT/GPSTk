@@ -462,7 +462,7 @@ namespace gpstk
 
 
          // Centuries since J1900
-      double tt(static_cast<double>((MJD(t).mjd-15019.5)/36525.0));
+      double tt(static_cast<double>((MJD(t).asLongDouble()-15019.5)/36525.0));
 
 
          // Fundamental arguments (radians) and derivatives (radians per
@@ -664,7 +664,7 @@ namespace gpstk
 
 
          // Julian centuries since J2000
-      tt=(MJD(t).mjd-51544.5)/36525.0;
+      tt=(MJD(t).asLongDouble()-51544.5)/36525.0;
 
          // lower-case because 1) upper case is ugly and 2) name
          // collisions with macros.

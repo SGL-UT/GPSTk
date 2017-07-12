@@ -56,7 +56,8 @@ class TestTimeTags(unittest.TestCase):
 
     def test_JulianDate(self):
         t0 = JulianDate(0.0)
-        self.assertEqual(str(t0), "0.000000 UNK")
+        #self.assertEqual(str(t0), "0.000000 UNK")
+        self.assertEqual(t0.printf("%.6J %P"), "0.000000 UNK")
         t1 = CivilTime(t0.toCommonTime())
         # See http://aa.usno.navy.mil/data/docs/JulianDate.php
         self.assertEqual(str(t1), "01/01/-4713 12:00:00 UNK")
