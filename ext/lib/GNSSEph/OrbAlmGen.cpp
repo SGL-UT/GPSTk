@@ -931,9 +931,6 @@ namespace gpstk
             // Assume the toa found in this almanac is either 
             // equal to the WNa, t_oa provided, or within a 
             // week of that time. 
-            // Furthermore, the toa must be no more than
-            // a day in the past
-            // wrt the tranmit time.
          unsigned short wk = WNa_full;
 
          if (toa!=t_oa)
@@ -943,8 +940,6 @@ namespace gpstk
             if (diff >  HALFWEEK) wk--;
          }
          ctToe = BDSWeekSecond(wk,toa,TimeSystem::BDT);
-         double diff = ctToe - msg.getTransmitTime();
-         if (diff < -SEC_PER_DAY) ctToe += FULLWEEK;
 
             // There is no stated fit interval or period of validity
             // for almanac data.  However, it is generally safe to
@@ -1032,11 +1027,11 @@ namespace gpstk
 
       if ( diffWNa_full < -512 )
       {
-         WNa_full += 1024;
+	 WNa_full += 1024;
       }
       if ( diffWNa_full > 512 )
       {
-         WNa_full -= 1024;
+	 WNa_full -= 1024;
       }
 
          // Now create ctToe with WNa_full
