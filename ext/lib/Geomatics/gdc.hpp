@@ -233,7 +233,7 @@ public:
       else
          os << " WL";
       if(WLinfo.n > 0)
-         os << " " << WLinfo.n << " " << WLinfo.ave << " +-" << WLinfo.sig;
+         os << " " << WLinfo.n << " " << WLinfo.ave << " +- " << WLinfo.sig;
       else
          os << " NoAn";
 
@@ -242,7 +242,7 @@ public:
       else
          os << " GF";
       if(GFinfo.n > 0)
-         os << " " << GFinfo.n << " " << GFinfo.ave << " +-" << GFinfo.sig;
+         os << " " << GFinfo.n << " " << GFinfo.ave << " +- " << GFinfo.sig;
       else
          os << " NoAn";
 

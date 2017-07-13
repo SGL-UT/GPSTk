@@ -1202,9 +1202,9 @@ string gdc::returnMessage(int prec, int wid) throw()
          << " " << printTime(xtime(A.index),outfmt)
          << " " << setw(4) << A.npts << " " << setw(4) << A.ngood;
       if(A.WLinfo.n > 0) oss << " WL " << setw(4) << A.WLinfo.n
-         << " " << setw(wid) << A.WLinfo.ave << " +-" << setw(wid) << A.WLinfo.sig;
+         << " " << setw(wid) << A.WLinfo.ave << " +- " << setw(wid) << A.WLinfo.sig;
       if(A.GFinfo.n > 0) oss << " GF " << setw(4) << A.GFinfo.n
-         << " " << setw(wid) << A.GFinfo.ave << " +-" << setw(wid) << A.GFinfo.sig;
+         << " " << setw(wid) << A.GFinfo.ave << " +- " << setw(wid) << A.GFinfo.sig;
       oss << oss2.str();
 
       retmsg += oss.str() + "\n";
