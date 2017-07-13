@@ -601,7 +601,7 @@ namespace gpstk
    // @param time  CommonTime of interest
    void GlobalTropModel::setTime(const CommonTime& time)
    {
-      double mjd = static_cast<MJD>(time).mjd;
+      double mjd = static_cast<MJD>(time).asLongDouble();
       setTime(mjd);
    }
 

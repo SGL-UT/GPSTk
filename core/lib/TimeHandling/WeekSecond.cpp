@@ -75,7 +75,7 @@ namespace gpstk
 
    void WeekSecond::convertFromCommonTime( const CommonTime& ct )
    {
-      if(static_cast<MJD>(ct).mjd < MJDEpoch())
+      if(static_cast<MJD>(ct).asLong() < MJDEpoch())
       {
          InvalidRequest ir("Unable to convert to Week/Second - before Epoch.");
          GPSTK_THROW(ir);

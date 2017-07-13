@@ -85,7 +85,7 @@ namespace gpstk
       try
       {
          double rvState[6] = {0.0};
-         int rc = jplEphemeris.computeState(JulianDate(TT).jd,entity, center, rvState);
+         int rc = jplEphemeris.computeState(JulianDate(TT).JD(),entity, center, rvState);
 
          // change the unit to km/s from km/day
          rvState[3] /= 86400.0;
