@@ -242,8 +242,16 @@ namespace gpstk
          // See if first non-whitespace character is '[' or '('
       std::string whitespace(" \t\n"); 
       std::string::size_type n = str.find_first_not_of(whitespace);
+         // Helps when given invalid strings
+      if (n == string::npos)
+      {
+         TimeRangeException tre;
+         tre.addText("TimeRange:Failure finding first non-whitespace character");
+         GPSTK_THROW(tre);
+      }
       includeStartTime = true;    // default case
       string leadChar = str.substr(n,1);
+
 //      std::cout << "leadChar :'" << leadChar << "'" << endl;
       if (leadChar.compare("[")==0)
       {
