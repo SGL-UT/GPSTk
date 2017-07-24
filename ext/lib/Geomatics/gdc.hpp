@@ -343,7 +343,7 @@ public:
    ///        
    ///
    /// @param SP       SatPass object containing the input data.
-   /// @param retMsg   string summary of results: see 'GDC' in output, class GDCreturn
+   /// @param retMsg   string summary of results: see 'GDC' in output
    /// @param cmds     vector of strings giving editing commands for RINEX editor.
    /// @param GLOn     GLONASS frequency channel (-7<=n<7), -99 (default) : UNKNOWN
    ///                 if -99, try to compute from SatPass.

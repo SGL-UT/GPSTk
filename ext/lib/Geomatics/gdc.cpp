@@ -99,7 +99,7 @@ const map<unsigned, string> Arc::markStr = Arc::create_mark_string_map();
 // Glonass satellites require a frequency channel integer; the caller may pass
 //  this in, or let the GDC compute it from the data - if it fails it returns -6.
 // param SP       SatPass object containing the input data.
-// param retMsg   string summary of results: see 'GDC' in output, class GDCreturn
+// param retMsg   string summary of results: see 'GDC' in output
 // param cmds     vector of strings giving editing commands for RINEX editor.
 // param GLOn     GLONASS frequency channel (-7<=n<7), -99 means UNKNOWN
 // return 0 for success, otherwise return an Error code.
