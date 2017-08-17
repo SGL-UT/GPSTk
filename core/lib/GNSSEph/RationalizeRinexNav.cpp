@@ -160,8 +160,8 @@ namespace gpstk
             Rinex3NavData& r3nd = *it2; 
 
             long sowToc = static_cast<GPSWeekSecond>(r3nd.time).sow;
-            long origHOWtime = r3nd.HOWtime;
-            CommonTime howCT = formXmitTime(r3nd);
+            long origxmitTime = r3nd.xmitTime;
+            CommonTime xmitCT = formXmitTime(r3nd);
 
                // RINEX specifcation allows fit interval to be expressed in hours 
                // or as a two-state identifier.  We want the fit interval consistently
@@ -185,21 +185,21 @@ namespace gpstk
                // will be Toc/Toe minus 1/2 of the fit interval. 
             if (sowToc%3600==0)
             {
-               r3nd.HOWtime = sowToc - (r3nd.fitint/2 * 3600);
+               r3nd.xmitTime = sowToc - (r3nd.fitint/2 * 3600);
                r3nd.weeknum = static_cast<GPSWeekSecond>(r3nd.time).week;
-               if (r3nd.HOWtime<0)
+               if (r3nd.xmitTime<0)
                {
-                  r3nd.HOWtime += FULLWEEK;
+                  r3nd.xmitTime += FULLWEEK;
                   r3nd.weeknum--; 
                } 
             }
 
                // Log changes
-            long diff = r3nd.HOWtime - origHOWtime;
+            long diff = r3nd.xmitTime - origxmitTime;
             if (diff!=0)
             {
                stringstream ss;
-               ss << "HOWtime adjusted by " << diff << " s";
+               ss << "xmitTime adjusted by " << diff << " s";
                addLog(sidr,r3nd.time,ss.str()); 
             }
          }
@@ -226,26 +226,26 @@ namespace gpstk
             Rinex3NavData& r3nd = *it2; 
 
             long sowToc = static_cast<GPSWeekSecond>(r3nd.time).sow;
-            long origHOWtime = r3nd.HOWtime;
-            CommonTime howCT = formXmitTime(r3nd);
+            long origXmitTime = r3nd.xmitTime;
+            CommonTime xmitCT = formXmitTime(r3nd);
 
-               // In some cases, the HOW time in the 
+               // In some cases, the transmission time in the
                // Rinex nav file is slightly AFTER the Toc.   
-               // So (arbitrarily) set the HOW time to five minutes
+               // So (arbitrarily) set the transmission time to five minutes
                // before the Toc (rounded to the nearest two hour interval).
             if (sowToc%3600!=0 && !prevTocOffset)
             {
-               if (howCT>r3nd.time)
+               if (xmitCT>r3nd.time)
                {
                   short week = static_cast<GPSWeekSecond>(r3nd.time).week;
                   long twoHourOfWeek = sowToc / 7200;
-                  long testTime = (twoHourOfWeek + 1) * 7200; 
-                  howCT = GPSWeekSecond(week,testTime);
-                  howCT -= 300;
-                  r3nd.HOWtime = static_cast<GPSWeekSecond>(howCT).sow;
+                  long testTime = (twoHourOfWeek + 1) * 7200;
+                  xmitCT = GPSWeekSecond(week,testTime);
+                  xmitCT -= 300;
+                  r3nd.xmitTime = static_cast<GPSWeekSecond>(xmitCT).sow;
 
                   stringstream ss;
-                  ss << "Orig. HOWtime after Toc ";
+                  ss << "Orig. xmitTime after Toc  ";
                   addLog(sidr,r3nd.time,ss.str()); 
                }
             }
@@ -254,10 +254,10 @@ namespace gpstk
                // for an upload cutover must be sometime in the 
                // two hours preceding the time of the Toc (rounded
                // up to account for the small difference).  So if the
-               // HOW time is before this, move it to be five minutes after
+               // transmission time is before this, move it to be five minutes after
                // the preceding two-hour epoch.   NOTE: This is an absolute
                // fabrication, but the other options are 
-               //  a.) Have the HOW times in the file out-of-order of 
+               //  a.) Have the transmission times in the file out-of-order of
                //      transmission and wrong,
                //  b.) Omit this data set entirely.
             if (sowToc%3600!=0 && !prevTocOffset && !prev2TocOffset)
@@ -268,17 +268,17 @@ namespace gpstk
                CommonTime prevTwoHourEpoch = GPSWeekSecond(week,testTime);
 /*
                cout << "Found a 'too early' first data set.  PRN " << sidr
-                    << " HOW: " << printTime(howCT,"%02H:%02M:%02S") 
+                    << " xmit: " << printTime(howCT,"%02H:%02M:%02S")
                     << " sowToc: " << printTime(r3nd.time,"%02H:%02M:%02S")
                     << " prevTwoHourEpoch: " << printTime(prevTwoHourEpoch,"%02H:%02M:%02S") << endl; 
 */
-               if (howCT<prevTwoHourEpoch)
+               if (xmitCT<prevTwoHourEpoch)
                {
-                  howCT = prevTwoHourEpoch + 300;
-                  r3nd.HOWtime = static_cast<GPSWeekSecond>(howCT).sow;
+                  xmitCT = prevTwoHourEpoch + 300;
+                  r3nd.xmitTime = static_cast<GPSWeekSecond>(xmitCT).sow;
 
                   stringstream ss;
-                  ss << "Orig. HOWtime too early. ";
+                  ss << "Orig. xmitTime too early. ";
                   addLog(sidr,r3nd.time,ss.str()); 
                }            
             }
@@ -287,11 +287,11 @@ namespace gpstk
             if (sowToc%3600!=0) prevTocOffset = true;
              else prevTocOffset = false; 
 
-            long diff = r3nd.HOWtime - origHOWtime;
+            long diff = r3nd.xmitTime - origXmitTime;
             if (diff!=0)
             {
                stringstream ss;
-               ss << "HOWtime adjusted by " << diff << " s";
+               ss << "xmitTime adjusted by " << diff << " s";
                addLog(sidr,r3nd.time,ss.str()); 
             }
          }
@@ -306,7 +306,7 @@ namespace gpstk
             // to each other in the sort order.
             //
             // If this is the SECOND data set of an upload, 
-            // set the HOW time to be equivalent to the nominal beginning 
+            // set the transmission time to be equivalent to the nominal beginning
             // of transmission based on the statements in IS-GPS-200
             // Section 20.3.4.5 and Table 20-XIII.
          prevTocOffset = false;
@@ -317,8 +317,8 @@ namespace gpstk
             Rinex3NavData& r3nd = *it2;
 
             long sowToc = static_cast<GPSWeekSecond>(r3nd.time).sow;
-            long origHOWtime = r3nd.HOWtime;
-            CommonTime howCT = formXmitTime(r3nd);
+            long origXmitTime = r3nd.xmitTime;
+            CommonTime xmitCT = formXmitTime(r3nd);
 
             bool secondDataSet = false;
 
@@ -337,15 +337,15 @@ namespace gpstk
                   // We use the modulo to determine the two hour interval within the
                   // week and set the transmit time to the beginning of that period. 
                   long twoHourOfWeek = sowToc / 7200;
-                  r3nd.HOWtime = twoHourOfWeek * 7200; 
+                  r3nd.xmitTime = twoHourOfWeek * 7200;
                }
             }
 
-            long diff = r3nd.HOWtime - origHOWtime;
+            long diff = r3nd.xmitTime - origXmitTime;
             if (diff!=0)
             {
                stringstream ss;
-               ss << "HOWtime adjusted by " << diff << " s";
+               ss << "xmitTime adjusted by " << diff << " s";
                addLog(sidr,r3nd.time,ss.str()); 
             }
 
@@ -481,7 +481,7 @@ namespace gpstk
 
          out << endl << "Nav Data Sets for " << sidr << endl;
          out << "---------------------------------------------" << endl;
-         out << "!              HOW                    !            Toc          !     !" << endl;
+         out << "!              xmit                   !            Toc          !     !" << endl;
          out << "!   SOW  week mm/dd/yyyy DOY hh:mm:ss ! mm/dd/yyyy DOY hh:mm:ss ! fit !" << endl;
 
          NAV_DATA_LIST::const_iterator cit2;
@@ -507,7 +507,7 @@ namespace gpstk
 
          out << endl << "Nav Data Sets for " << sidr << endl;
          out << "---------------------------------------------" << endl;
-         out << "!              HOW                    !        Toc              !     !" << endl;
+         out << "!              xmit                   !        Toc              !     !" << endl;
          out << "!   SOW  week mm/dd/yyyy DOY hh:mm:ss ! mm/dd/yyyy DOY hh:mm:ss ! fit ! Action" << endl;
 
          NAV_DATA_LIST::const_iterator cit2;
@@ -559,11 +559,11 @@ namespace gpstk
       string tform="%02m/%02d/%04Y %03j %02H:%02M:%02S";
       stringstream ss;
 
-         // Have to figure out the appropriate week for the HOW
-      CommonTime howCT = formXmitTime(r3nd); 
-      int xmitWeek = static_cast<GPSWeekSecond>(howCT).week;
-      ss << "!" << setw(6) << r3nd.HOWtime << "  " << setw(4) << xmitWeek << " " ;
-      ss << printTime(howCT,tform) << " ! "; 
+         // Have to figure out the appropriate week for the transmission time
+      CommonTime xmitCT = formXmitTime(r3nd);
+      int xmitWeek = static_cast<GPSWeekSecond>(xmitCT).week;
+      ss << "!" << setw(6) << r3nd.xmitTime << "  " << setw(4) << xmitWeek << " " ;
+      ss << printTime(xmitCT,tform) << " ! ";
       ss << printTime(r3nd.time,tform) << " ! ";
       ss << setw(3) << r3nd.fitint << " ! "; 
       return(ss.str());
@@ -601,12 +601,12 @@ namespace gpstk
       int sowEpoch = static_cast<GPSWeekSecond>(r3nd.time).sow; 
 
       int xmitWeek = weekEpoch;
-      long diff = sowEpoch - r3nd.HOWtime;
+      long diff = sowEpoch - r3nd.xmitTime;
       if (diff<-HALFWEEK)
          xmitWeek--; 
 
-      CommonTime howCT = GPSWeekSecond(xmitWeek, r3nd.HOWtime); 
-      return(howCT); 
+      CommonTime xmitCT = GPSWeekSecond(xmitWeek, r3nd.xmitTime);
+      return(xmitCT);
    }
 
 }  // End of namespace gpstk
