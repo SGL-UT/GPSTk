@@ -208,7 +208,7 @@ namespace gpstk
       // combine two Stats objects -------------------------------------
 
       /// combine two Stats (assumed taken from the same or equivalent ensembles)
-      Stats<T>& operator+=(Stats<T>& S)
+      Stats<T>& operator+=(const Stats<T>& S)
       {
          if(n + S.n == 0)
             return *this;
@@ -226,7 +226,7 @@ namespace gpstk
       /// equivalent ensembles.
       /// NB. Assumes that these samples were previously added.
       /// NB. Minimum() and Maximum() may no longer be valid.
-      Stats<T>& operator-=(Stats<T>& S)
+      Stats<T>& operator-=(const Stats<T>& S)
       {
          if(n <= S.n) { Reset(); return *this; }
          sum -= S.scale*S.sum/scale;

@@ -91,6 +91,9 @@ namespace gpstk
          /// @param ts TimeSystem, defaults to Unknown
       MJD(long imjd, double sod, TimeSystem ts = TimeSystem::Unknown);
 
+         /// Fill MJD from a long double
+      void fromLongDouble(long double mjd);
+
          /// Constructor from long int(MJD) and double frac(MJD)
          /// NB if (full) MJD is negative, imjd here should also be, but frac should
          ///  still be a positive fraction of the day.
