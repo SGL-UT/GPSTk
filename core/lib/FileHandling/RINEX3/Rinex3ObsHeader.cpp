@@ -362,14 +362,7 @@ namespace gpstk
          {
             SystemTime sysTime;
             string curDate;
-            if(version < 3)
-            {
-               curDate = printTime(sysTime,"%02m/%02d/%04Y %02H:%02M:%02S");
-            }
-            else
-            {
-               curDate = printTime(sysTime,"%04Y%02m%02d %02H%02M%02S %P");
-            }
+            curDate = printTime(sysTime,"%04Y%02m%02d %02H%02M%02S %P");
             line += leftJustify(curDate, 20);
          }
          line += hsRunBy;
