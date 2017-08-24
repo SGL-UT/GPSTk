@@ -519,6 +519,7 @@ int gdc::filterWindow(const unsigned which, const string label,
       wf.setprecision(cfg(osprec));
       wf.setMinStep(limit);
       wf.setTwoSample(which==GF);
+      //wf.setDebug(true);            // TEMP
 
       // run it
       int iret = wf.filter();
@@ -544,7 +545,6 @@ int gdc::filterWindow(const unsigned which, const string label,
       wf.setDumpAnalMsg(cfg(debug)>-1 || cfg(verbose)!=0);
       if(cfg_func(label)) wf.dump(LOGstrm, tag + " " + label);
 
-      // TEMP
       //LOG(INFO) << " There are " << wf.maybes.size() << " maybes";
       for(i=0; i<wf.maybes.size(); i++) {
          //if(wf.maybes[i].score < 66) continue;
