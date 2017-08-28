@@ -767,7 +767,7 @@ void gdc::recomputeArcs(void) throw(Exception)
       // loop over Arcs, recomputing ngood
       for(ait = Arcs.begin(); ait != Arcs.end(); ++ait) {
          computeNgood(ait->second);                         // ignore return value
-         LOG(INFO) << "GDC recomputeArcs " << ait->second.asString();
+         //LOG(INFO) << "GDC recomputeArcs " << ait->second.asString();
       }
    }
    catch(Exception& e) { GPSTK_RETHROW(e); }
@@ -846,6 +846,7 @@ void gdc::findLargeGaps(void) throw(Exception)
 
       // process the gaps
       // must do it this way (not within Arcs loop), in case one Arc gets split twice
+      bool fixup(false);
       for(git=gaps.begin(); git!=gaps.end(); ++git) {
          if(git->second <= limit)
             continue;                     // skip small gaps
@@ -860,17 +861,10 @@ void gdc::findLargeGaps(void) throw(Exception)
             continue;                     // skip 'gap' at end of Arc
 
          // Arc at ait must to be split   // we don't need fixUp ... or do we TD???
-LOG(INFO) << "GDC addArc ";
-         addArc(git->first+git->second, Arc::BEG);    // after gap
-
-         // must recompute ngood, but only for one Arc .. oh well
-         //computeNgood(ait->second);
-         //ait = Arcs.begin();              // iterator is corrupted by addArc
-         //findArc(git->first+git->second, ait);
-         //computeNgood(ait->second);
-
-         fixUpArcs();                     // recompute points for all Arcs
+         addArc(git->first+git->second, Arc::BEG);    // after the gap
+         fixup = true;                    // required on windos -- incomprehensible
       }
+      if(fixup) fixUpArcs();              // recompute points for all Arcs
 
    }
    catch(Exception& e) { GPSTK_RETHROW(e); }
