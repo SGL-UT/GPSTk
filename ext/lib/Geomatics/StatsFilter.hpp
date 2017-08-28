@@ -351,18 +351,18 @@ LOG(INFO) << "ANALYZE " << i << " " << std::fixed << std::setprecision(3) << ana
          nbad++;
          sumbad += analvec[i].diff;
          prevIsBad = true;
-         //LOG(INFO) << "bad index " << analvec[i].index << " nbad " << nbad;
+         LOG(INFO) << "bad index " << analvec[i].index << " nbad " << nbad;
       }
       else if(!prevIsBad) {               // good 1st diff following good 1st diff
-         //LOG(INFO) << "good index " << analvec[i].index;
+         LOG(INFO) << "good index " << analvec[i].index;
          igood = i;
       }
       else {                              // good 1st diff following bad one(s)
-         //LOG(INFO) << "good after bad index "<< analvec[i].index<< " nbad " << nbad;
+         LOG(INFO) << "good after bad index "<< analvec[i].index<< " nbad " << nbad;
          results[curr].ngood -= nbad+1;   // finish the current segment
 
          if(::fabs(sumbad) > fdlimit) {   // its a slip
-            //LOG(INFO) << "slip " << sumbad << " > " << fdlimit;
+            LOG(INFO) << "slip " << sumbad << " > " << fdlimit;
             // if nbad > 1, must report outlier(s) first
             FilterHit<T> fe;
             if(nbad > 1) {
@@ -382,7 +382,7 @@ LOG(INFO) << "ANALYZE " << i << " " << std::fixed << std::setprecision(3) << ana
             results.push_back(fe); curr++;
          }
          else {                           // its just outliers(s)
-            //LOG(INFO) << "outliers " << sumbad << " <= " << fdlimit;
+            LOG(INFO) << "outliers " << sumbad << " <= " << fdlimit;
             results[curr].npts = analvec[igood+1].index - results[curr].index;
             // report the outliers
             FilterHit<T> fe;
@@ -418,8 +418,11 @@ LOG(INFO) << "ANALYZE " << i << " " << std::fixed << std::setprecision(3) << ana
       fe.npts = ilimit - fe.index;
       results.push_back(fe); curr++;
    }
-   else // define npts for the last segment
+   else {
+      // define npts for the last segment
       results[curr].npts = ilimit - results[curr].index;
+      LOG(INFO) << "npts for last segment " << results[curr].npts << " good " << results[curr].ngood;
+   }
 
    fixUpResults();
 
@@ -509,6 +512,7 @@ void FirstDiffFilter<T>::getStats(FilterHit<T>& fe)
    T fd;
    std::vector<T> fdv;
    for(i=i0; i<fe.npts; i++) {
+      if(j+i >= analvec.size()) break;
       if(analvec[j+i].index >= k) break;  // no more good data
 LOG(INFO) << "GETSTATS " << i << " " << std::fixed << std::setprecision(3) << analvec[j+i].diff << " index " << analvec[j+i].index << " flag " << flags[analvec[j+i].index];
       if(!noflags && flags[analvec[j+i].index]) continue;
