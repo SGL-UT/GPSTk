@@ -561,7 +561,6 @@ protected:
       for(unsigned int i=arc.index; i < arc.index+arc.npts; ++i) {
          if(flags[i] == OK) arc.ngood++;
       }
-LOG(INFO) << "GDC computeNgood " << arc.asString();
       return arc.ngood;
    }
 
