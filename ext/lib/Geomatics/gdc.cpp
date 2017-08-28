@@ -57,13 +57,13 @@ const string gdc::GDCVersion = string("9.0 5/20/17");
 // ----------------------- flags and bitmaps
 // values for flags[]; NB flags[] is either good (0) or bad (non-zero)
 // not to be confused with Arc::marks or SatPass flags  TD bitmap?
-const unsigned gdc::OK         = 0;  // NB SatPass::OK == 1
-const unsigned gdc::BAD        = 1;  // meaning bad in SatPass; NB SatPass::BAD == 0
-const unsigned gdc::WLOUTLIER  = 2;  // called outlier by WL filter
-const unsigned gdc::GFOUTLIER  = 3;  // called outlier by GF filter
-const unsigned gdc::WLSHORT    = 4;  // data with Arc.ngood < MinPts
-const unsigned gdc::GFSHORT    = 5;  // data with Arc.ngood < MinPts
-const unsigned gdc::ISOLATED   = 6;  // final check - isolated good points (<MinPts)
+const int gdc::OK         = 0;  // NB SatPass::OK == 1
+const int gdc::BAD        = 1;  // meaning bad in SatPass; NB SatPass::BAD == 0
+const int gdc::WLOUTLIER  = 2;  // called outlier by WL filter
+const int gdc::GFOUTLIER  = 3;  // called outlier by GF filter
+const int gdc::WLSHORT    = 4;  // data with Arc.ngood < MinPts
+const int gdc::GFSHORT    = 5;  // data with Arc.ngood < MinPts
+const int gdc::ISOLATED   = 6;  // final check - isolated good points (<MinPts)
 
 // Bitmap values used by Arc::mark - see create_mark_string_map() routine.
 const unsigned Arc::BEG    =  1;
