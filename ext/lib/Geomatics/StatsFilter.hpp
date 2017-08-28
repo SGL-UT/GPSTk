@@ -460,22 +460,24 @@ template<class T> void FirstDiffFilter<T>::dump(std::ostream& os, std::string ta
       << (noxdata ? " (xdata is index)" : "")
       << "\n#" << tag << "  i    xdata   data    1stdiff" << std::endl;
 
+   const size_t N(analvec.size());
    for(i=0,j=0,k=0; i<ilimit; i++) {
-      if(i != analvec[j].index) {
+      if(j >= N || i != analvec[j].index) {
          if(dumpNA) os << tag << std::fixed << std::setprecision(osp)
             << " " << std::setw(3) << i
             << " " << std::setw(osw) << (noxdata ? T(i) : xdata[i])
-            //<< " " << std::setw(3) << (noflags ? 0 : flags[i])
+            << " " << std::setw(3) << (noflags ? 0 : flags[i])
             << " " << std::setw(osw) << data[i]
-            << " " << std::setw(osw) << 0.0 << "  NA" << std::endl;
+            << " " << std::setw(osw) << 0.0 << "  NA"
+            << std::endl;
       }
       else {
          os << tag << std::fixed << std::setprecision(osp)
             << " " << std::setw(3) << i
             << " " << std::setw(osw) << (noxdata ? T(i) : xdata[i])
-            //<< " " << std::setw(3) << (noflags ? 0 : flags[i])
+            << " " << std::setw(3) << (noflags ? 0 : flags[i])
             << " " << std::setw(osw) << data[i]
-            << " " << std::setw(osw) << analvec[j].diff;
+            << " " << std::setw(osw) << (j >= N ? 0.0 : analvec[j].diff);
          if(k < results.size() && i == results[k].index) {
             os << "  " << (results[k].mad != T(0) ?   // has getStats been called?
                            results[k].asStatsString(osp) : results[k].asString());
