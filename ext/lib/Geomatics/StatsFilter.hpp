@@ -95,7 +95,6 @@
 #include <deque>
 #include "Stats.hpp"
 #include "RobustStats.hpp"
-#include "logstream.hpp"      // TEMP
 
 //------------------------------------------------------------------------------------
 // TD NB pffrac is never used.
@@ -116,7 +115,7 @@ public:
       BOD = 0,          ///< beginning of data
       outlier,          ///< outlier(s) - npts is the number of outliers
       slip,             ///< slip (discontinuity)
-      other             ///< never used?
+      other,            ///< never used?
    } event;
 
    /// empty and only constructor
@@ -416,7 +415,7 @@ template<class T> int FirstDiffFilter<T>::analyze(void)
       fe.npts = ilimit - fe.index;
       results.push_back(fe); curr++;
    }
-   else  // define npts for the last segment
+   else // define npts for the last segment
       results[curr].npts = ilimit - results[curr].index;
 
    fixUpResults();
@@ -459,14 +458,14 @@ template<class T> void FirstDiffFilter<T>::dump(std::ostream& os, std::string ta
    os << "#" << tag << " FirstDiffFilter::dump() with limit "
       << std::fixed << std::setprecision(osp) << fdlimit
       << (noxdata ? " (xdata is index)" : "")
-      << "\n#" << tag << "  i    xdata   flag  data    1stdiff" << std::endl;
+      << "\n#" << tag << "  i    xdata   data    1stdiff" << std::endl;
 
    for(i=0,j=0,k=0; i<ilimit; i++) {
       if(i != analvec[j].index) {
          if(dumpNA) os << tag << std::fixed << std::setprecision(osp)
             << " " << std::setw(3) << i
             << " " << std::setw(osw) << (noxdata ? T(i) : xdata[i])
-            << " " << std::setw(3) << (noflags ? 0 : flags[i])
+            //<< " " << std::setw(3) << (noflags ? 0 : flags[i])
             << " " << std::setw(osw) << data[i]
             << " " << std::setw(osw) << 0.0 << "  NA" << std::endl;
       }
@@ -474,7 +473,7 @@ template<class T> void FirstDiffFilter<T>::dump(std::ostream& os, std::string ta
          os << tag << std::fixed << std::setprecision(osp)
             << " " << std::setw(3) << i
             << " " << std::setw(osw) << (noxdata ? T(i) : xdata[i])
-            << " " << std::setw(3) << (noflags ? 0 : flags[i])
+            //<< " " << std::setw(3) << (noflags ? 0 : flags[i])
             << " " << std::setw(osw) << data[i]
             << " " << std::setw(osw) << analvec[j].diff;
          if(k < results.size() && i == results[k].index) {
@@ -507,9 +506,8 @@ void FirstDiffFilter<T>::getStats(FilterHit<T>& fe)
    T fd;
    std::vector<T> fdv;
    for(i=i0; i<fe.npts; i++) {
-      if(j+i >= analvec.size()) break;
-      if(analvec[j+i].index >= k) break;  // no more good data
-      if(!noflags && flags[analvec[j+i].index]) continue;
+      if(j+i >= analvec.size() || analvec[j+i].index >= k)
+         break;  // no more good data
       fd = analvec[j+i].diff;
       if(first) {
          fe.min=fe.max=fe.med=fd;
