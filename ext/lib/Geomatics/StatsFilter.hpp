@@ -525,7 +525,7 @@ void FirstDiffFilter<T>::getStats(FilterHit<T>& fe)
 
 for(i=0;i<fdv.size(); i++) LOG(INFO) << "GETSTATS " << i << " " << std::fixed << std::setprecision(3) << fdv[i];
    fe.mad=gpstk::Robust::MedianAbsoluteDeviation<T>(&fdv[0],fdv.size(),fe.med,false);
-LOG(INFO) << "GETSTATS " << fdv.size() << " med " << fe.med << " mad " << fe.mad;
+LOG(INFO) << "GETSTATS " << fdv.size() << " med " << fe.med << " mad " << fe.mad << " index " << fe.index << " npts " << fe.npts << " k " << k;
    fe.haveStats = true;
 }
 
