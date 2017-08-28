@@ -95,6 +95,7 @@
 #include <deque>
 #include "Stats.hpp"
 #include "RobustStats.hpp"
+#include "logstream.hpp"      // TEMP
 
 //------------------------------------------------------------------------------------
 // TD NB pffrac is never used.
@@ -522,7 +523,10 @@ void FirstDiffFilter<T>::getStats(FilterHit<T>& fe)
 
    if(fdv.size() < 2) return;       // else MAD throws
 
+LOGstrm << "getStats " << std::fixed << std::setprecision(3) << fdv.size();
+for(i=0;i<fdv.size(); i++) LOGstrm << " " << i << " " << fdv[i];
    fe.mad=gpstk::Robust::MedianAbsoluteDeviation<T>(&fdv[0],fdv.size(),fe.med,false);
+LOGstrm << " med " << fe.med << " mad " << fe.mad << std::endl;
    fe.haveStats = true;
 }
 
