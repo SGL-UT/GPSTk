@@ -1,3 +1,39 @@
+//============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 3.0 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
+//  
+//  Copyright 2004, The University of Texas at Austin
+//
+//============================================================================
+
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//=============================================================================
+
 /// @file StatsFilter.hpp
 ///    This module defines several classes which together implement two kinds of
 /// statistical filters - a first-difference filter, and a window filter. All these
@@ -424,8 +460,9 @@ template<class T> void FirstDiffFilter<T>::dump(std::ostream& os, std::string ta
       << (noxdata ? " (xdata is index)" : "")
       << "\n#" << tag << "  i    xdata   data    1stdiff" << std::endl;
 
+   const size_t N(analvec.size());
    for(i=0,j=0,k=0; i<ilimit; i++) {
-      if(i != analvec[j].index) {
+      if(j >= N || i != analvec[j].index) {
          if(dumpNA) os << tag << std::fixed << std::setprecision(osp)
             << " " << std::setw(3) << i
             << " " << std::setw(osw) << (noxdata ? T(i) : xdata[i])
@@ -439,7 +476,7 @@ template<class T> void FirstDiffFilter<T>::dump(std::ostream& os, std::string ta
             << " " << std::setw(osw) << (noxdata ? T(i) : xdata[i])
             //<< " " << std::setw(3) << (noflags ? 0 : flags[i])
             << " " << std::setw(osw) << data[i]
-            << " " << std::setw(osw) << analvec[j].diff;
+            << " " << std::setw(osw) << (j >= N ? 0.0 : analvec[j].diff);
          if(k < results.size() && i == results[k].index) {
             os << "  " << (results[k].mad != T(0) ?   // has getStats been called?
                            results[k].asStatsString(osp) : results[k].asString());
@@ -1450,9 +1487,11 @@ template<class T> void WindowFilter<T>::dump(std::ostream& os, std::string tag)
 template<class T>
 void WindowFilter<T>::getStats(FilterHit<T>& sg, bool skip)
 {
-   int i,j;
+   unsigned int i;
    sg.min = sg.max = sg.med = sg.mad = T(0);
-   for(j=-1,i=0; i<analvec.size(); i++)
+
+   int j(-1);
+   for(i=0; i<analvec.size(); i++)
       if(analvec[i].index == sg.index) { j=i; break; }
    if(j == -1) return;
 
