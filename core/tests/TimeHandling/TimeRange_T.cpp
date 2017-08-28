@@ -1,8 +1,11 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <stdexcept>
 #include "TestUtil.hpp"
 #include "CivilTime.hpp"
+#include "YDSTime.hpp"
+#include "GPSWeekZcount.hpp"
 #include "BasicFramework.hpp"
 #include "TimeRange.hpp"
 #include "CommonTime.hpp"
@@ -740,6 +743,226 @@ public:
       return testFramework.countFails();
    }
 
+
+//=============================================================================
+// Test for the setToString method
+// Usage: referenceRange.setToString(string, format)
+// Converts the reference TimeRange instance's start/end times to the start/end
+// times represented in the input string.
+//=============================================================================
+   int setToStringTest ( void )
+   {
+      TUDEF("TimeRange", "setToString");
+         /* Formatted string input.
+          * Assume string has
+          *  \li possible white space followed by
+          *  \li optional '[' or '(' (assume '['),
+          *  \li followed by a valid CommonTime string corresponding to fmt,
+          *  \li followed by a ','
+          *  \li followed by a valid CommonTime string corresponding to fmt,
+          *  \li followed by an optional ']' or ')' (assume ']').  */
+      const int NUMTESTS = 21;
+      std::string testStrings[NUMTESTS] =
+      {
+            // Y/m/d H:M:S
+            // %Y %m %d %H %M %S
+         "[2012 1 1 0 0 0.0, 2012 1 31 23 59 59.9]",     // Inclusive
+         "(2012 1 1 0 0 0.0, 2012 1 31 23 59 59.9)",     // Exclusive
+         "2012 1 1 0 0 0.0, 2012 1 31 23 59 59.9",       // Inclusive default
+         "(2012 1 1 0 0 0.0, 2012 1 31 23 59 59.9]",     // Exclusive/Inclusive
+         "[2012 1 1 0 0 0.0, 2012 1 31 23 59 59.9)",     // Inclusive/Exclusive
+            // Exception cases
+            // This throws a TimeRange exception
+         "2012 1 1 0 0 0.0,@ 2012 1 31 23 59 59.9)",     // Invalid character
+            // This doesn't throw - it returns a wonky CommonTime
+            // Not sure if that's what it should do, I'm just documenting it
+         "[2012 1 1 ! 0 0 0.0, 2012 1 31 $ 23 59 59.*",  // Invalid characters
+         "[]",
+         " ( ",
+         " (  ]",
+         "[  ) ",
+
+
+            // Year, DOY, SOD
+            // %Y %j %s
+         "[2012 001 0.0, 2012 031 86399.0]",    // OK
+         "(2003 1 42300.0, 2003 180 42300.0)",  // OK
+         "2011 360 0.0,  2012 364 84599.0",     // OK
+            // Exception cases
+            // This case throws a TimeRange exception
+         "2016 4 23000.0, 2016 4 8$000.0",      // Invalid character
+            // This breaks everything
+         "",                                    // Blank string
+            // This throws a StringUtils::StringException
+         "random four word string",             // Random string
+
+
+            // full GPSweek, Zcount
+            // %F %Z
+         "  [1906 254884,   1906 254890]",      // OK, extra whitespace is fine
+         "(1801 114924, 1903 254890)",
+         "1900 123456, 1906 254777",
+            // Exception cases
+            // This doesn't throw - it returns a wonky CommonTime
+            // Not sure if that's what it should do, I'm just documenting it
+         "  1900 abc 123456, 1906 254777)"      // Invalid Character
+      };
+
+      std::string testFmts[NUMTESTS]=
+      {
+         "%Y %m %d %H %M %S",
+         "%Y %m %d %H %M %S",
+         "%Y %m %d %H %M %S",
+         "%Y %m %d %H %M %S",
+         "%Y %m %d %H %M %S",
+         "%Y %m %d %H %M %S",
+         "%Y %m %d %H %M %S",
+         "%Y %m %d %H %M %S",
+         "%Y %m %d %H %M %S",
+         "%Y %m %d %H %M %S",
+         "%Y %m %d %H %M %S",
+         "%Y %j %s",
+         "%Y %j %s",
+         "%Y %j %s",
+         "%Y %j %s",
+         "",
+         "%s %s %s %s",
+         "%F %Z",
+         "%F %Z",
+         "%F %Z",
+         "%F %Z"
+      };
+
+      TimeRange hardcodedResults[NUMTESTS] =
+      {
+            // %Y %m %d %H %M %S
+         TimeRange(CivilTime(2012, 1, 1, 0, 0, 0.0).convertToCommonTime(),
+                   CivilTime(2012, 1, 31, 23, 59, 59.9).convertToCommonTime(),
+                   true, true),
+         TimeRange(CivilTime(2012, 1, 1, 0, 0, 0.0).convertToCommonTime(),
+                   CivilTime(2012, 1, 31, 23, 59, 59.9).convertToCommonTime(),
+                   false, false),
+         TimeRange(CivilTime(2012, 1, 1, 0, 0, 0.0).convertToCommonTime(),
+                   CivilTime(2012, 1, 31, 23, 59, 59.9).convertToCommonTime()
+                   ),
+         TimeRange(CivilTime(2012, 1, 1, 0, 0, 0.0).convertToCommonTime(),
+                   CivilTime(2012, 1, 31, 23, 59, 59.9).convertToCommonTime(),
+                   false, true),
+         TimeRange(CivilTime(2012, 1, 1, 0, 0, 0.0).convertToCommonTime(),
+                   CivilTime(2012, 1, 31, 23, 59, 59.9).convertToCommonTime(),
+                   true, false),
+         TimeRange(CivilTime(2012, 1, 1, 0, 0, 0).convertToCommonTime(),
+                   CivilTime(2012, 1, 31, 23, 59, 59.9).convertToCommonTime(),
+                   true, false),
+         TimeRange(CivilTime(2012, 1, 1, 0, 0, 0).convertToCommonTime(),
+                   CivilTime(2012, 1, 31, 0, 23, 59).convertToCommonTime(),
+                   true, true),
+         TimeRange(CivilTime(2012, 1, 1, 0, 0, 0).convertToCommonTime(),
+                   CivilTime(2012, 1, 31, 0, 23, 59).convertToCommonTime(),
+                   true, true),
+         TimeRange(CivilTime(2012, 1, 1, 0, 0, 0).convertToCommonTime(),
+                   CivilTime(2012, 1, 31, 0, 23, 59).convertToCommonTime(),
+                   true, true),
+         TimeRange(CivilTime(2012, 1, 1, 0, 0, 0).convertToCommonTime(),
+                   CivilTime(2012, 1, 31, 0, 23, 59).convertToCommonTime(),
+                   true, true),
+         TimeRange(CivilTime(2012, 1, 1, 0, 0, 0).convertToCommonTime(),
+                   CivilTime(2012, 1, 31, 0, 23, 59).convertToCommonTime(),
+                   true, true),
+
+            // %Y %j %s
+         TimeRange(gpstk::YDSTime(2012, 1, 0.0).convertToCommonTime(),
+                   gpstk::YDSTime(2012, 31, 86399.0).convertToCommonTime(),
+                   true, true),
+         TimeRange(gpstk::YDSTime(2003, 1, 42300.0).convertToCommonTime(),
+                   gpstk::YDSTime(2003, 180, 42300.0).convertToCommonTime(),
+                   false, false),
+         TimeRange(gpstk::YDSTime(2011, 360, 0.0).convertToCommonTime(),
+                   gpstk::YDSTime(2012, 364, 84599.0).convertToCommonTime()
+                   ),
+         TimeRange(gpstk::YDSTime(2016, 4, 23000.0).convertToCommonTime(),
+                   gpstk::YDSTime(2016, 4, 80000.0).convertToCommonTime()
+                   ),
+         TimeRange(gpstk::YDSTime(2016, 4, 23000.0).convertToCommonTime(),
+                   gpstk::YDSTime(2016, 4, 80000.0).convertToCommonTime()
+                   ),
+         TimeRange(gpstk::YDSTime(2016, 4, 23000.0).convertToCommonTime(),
+                   gpstk::YDSTime(2016, 4, 80000.0).convertToCommonTime()
+                   ),
+
+            // %F %Z
+         TimeRange(GPSWeekZcount(1906, 254884).convertToCommonTime(),
+                   GPSWeekZcount(1906, 254890).convertToCommonTime(),
+                   true, true),
+         TimeRange(GPSWeekZcount(1801, 114924).convertToCommonTime(),
+                   GPSWeekZcount(1903, 254890).convertToCommonTime(),
+                   false, false),
+         TimeRange(GPSWeekZcount(1900, 123456).convertToCommonTime(),
+                   GPSWeekZcount(1906, 254777).convertToCommonTime()
+                   ),
+         TimeRange(GPSWeekZcount(1900, 0).convertToCommonTime(),
+                   GPSWeekZcount(1906, 254777).convertToCommonTime(),
+                   true, false),
+      };
+
+
+         // Indices of test cases that should throw
+      int invalid[] = {5,6,7,8,9,10,14,15,16,20};
+
+      for (size_t i = 0; i < NUMTESTS; ++i)
+      {
+         try
+         {
+            stringstream ss;
+            ss << "setToString loop Index " << i;
+            TUCSM(ss.str());
+            TimeRange testRange;
+            testRange.setToString(testStrings[i],testFmts[i]);
+            TUASSERT(hardcodedResults[i] == testRange);
+         }
+         catch(StringUtils::StringException& exc)
+         {
+               // This checks if i is in the array of invalid
+               // test cases; invalid+10 is the last address of the array
+            int * it = std::find(invalid, invalid+10, i);
+            if (*it != *(invalid+10))
+            {
+               TUPASS("Received expected exception when trying to call setToString: "
+                     + exc.what());
+            }
+            else
+            {
+               TUFAIL("Received unexpected exception when trying to call setToString: "
+                     + exc.what());
+            }
+         }
+         catch(TimeRange::TimeRangeException& exc)
+         {
+            int * it = std::find(invalid, invalid+10, i);
+            if (*it != *(invalid+10))
+            {
+               TUPASS("Received expected exception when trying to call setToString: "
+                     + exc.what());
+            }
+            else
+            {
+               TUFAIL("Received unexpected exception when trying to call setToString: "
+                     + exc.what());
+            }
+         }
+         catch (gpstk::InvalidRequest& exc)
+         {
+            TUFAIL("Received unexpected exception when trying to call setToString: " 
+                  + exc.what());
+         }
+         catch(...)
+         {
+            TUFAIL("Received unexpected exception when trying to call setToString");
+         }
+      }
+      TURETURN();
+   }
+
 //=============================================================================
 // Test for the == Operator
 // Usage: leftRange == rightRange
@@ -1035,6 +1258,7 @@ int main() //Main function to initialize and run all tests above
    errorTotal += testClass.overlapsTest();
    errorTotal += testClass.isSubsetOfTest();
    errorTotal += testClass.isAfterTest();
+   errorTotal += testClass.setToStringTest();
    errorTotal += testClass.equalsOperatorTest();
    errorTotal += testClass.lessThanOperatorTest();
    errorTotal += testClass.setTest();

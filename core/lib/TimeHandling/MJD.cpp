@@ -51,11 +51,7 @@ namespace gpstk
    // Warning - precision lost on systems where long double == double (WIN)
    MJD::MJD(long double mjd)
    {
-      imjd = static_cast<long>(mjd);
-      mjd -= static_cast<long double>(imjd);          // now fraction of day
-      if(mjd < 0.0) { mjd = 1.0L+mjd; imjd += 1L; }
-      dday = static_cast<uint64_t>(mjd/MJDFACT);
-      fday = static_cast<uint64_t>((mjd/MJDFACT-dday)/MJDFACT);
+      fromLongDouble(mjd);
    }
 
    // Constructor from long int(MJD) and double seconds-of-day
@@ -69,6 +65,15 @@ namespace gpstk
       dday = static_cast<uint64_t>(sod/MJDFACT);
       fday = static_cast<uint64_t>((sod/MJDFACT-dday)/MJDFACT);
       timeSystem = ts;
+   }
+
+   void MJD::fromLongDouble(long double mjd)
+   {
+      imjd = static_cast<long>(mjd);
+      mjd -= static_cast<long double>(imjd);          // now fraction of day
+      if(mjd < 0.0) { mjd = 1.0L+mjd; imjd += 1L; }
+      dday = static_cast<uint64_t>(mjd/MJDFACT);
+      fday = static_cast<uint64_t>((mjd/MJDFACT-dday)/MJDFACT);
    }
 
    // Constructor from long int(MJD) and double frac(MJD)

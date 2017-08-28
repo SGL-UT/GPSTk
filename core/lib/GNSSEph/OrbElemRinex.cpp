@@ -269,7 +269,7 @@ namespace gpstk
       L2Pdata          = rinNav.L2Pdata;
       Tgd              = rinNav.Tgd;
 
-      HOWtime        = rinNav.HOWtime;
+      HOWtime        = rinNav.xmitTime;
       fitDuration    = rinNav.fitint;
 
       short fullXmitWeekNum    = rinNav.weeknum;
