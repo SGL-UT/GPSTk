@@ -310,6 +310,7 @@ template<class T> int FirstDiffFilter<T>::filter(const size_t i0, int dsize)
       Analysis A;
       A.index = i;
       A.diff = (iprev == -1 ? T(0) : data[i]-data[iprev]);
+LOG(INFO) << "FILTER " << i << " " << std::fixed << std::setprecision(3) << A.diff << " ilimit " << ilimit << " iprev " << iprev;
       analvec.push_back(A);
       iprev = i;
       i++; if(!noflags) while(i<ilimit && flags[i]) i++;
