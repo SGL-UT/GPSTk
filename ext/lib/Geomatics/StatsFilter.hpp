@@ -470,7 +470,8 @@ void FirstDiffFilter<T>::getStats(FilterHit<T>& fe)
    T fd;
    std::vector<T> fdv;
    for(i=i0; i<fe.npts; i++) {
-      if(analvec[j+i].index >= k) break;  // no more good data
+      if(j+i >= analvec.size() || analvec[j+i].index >= k)
+         break;  // no more good data
       fd = analvec[j+i].diff;
       if(first) {
          fe.min=fe.max=fe.med=fd;
