@@ -507,6 +507,7 @@ void FirstDiffFilter<T>::getStats(FilterHit<T>& fe)
    T fd;
    std::vector<T> fdv;
    for(i=i0; i<fe.npts; i++) {
+LOG(INFO) << "GETSTATS " << i << " " << std::fixed << std::setprecision(3) << analvec[j+i].diff << " index " << analvec[j+i].index;
       if(analvec[j+i].index >= k) break;  // no more good data
       fd = analvec[j+i].diff;
       if(first) {
@@ -523,9 +524,8 @@ void FirstDiffFilter<T>::getStats(FilterHit<T>& fe)
 
    if(fdv.size() < 2) return;       // else MAD throws
 
-for(i=0;i<fdv.size(); i++) LOG(INFO) << "GETSTATS " << i << " " << std::fixed << std::setprecision(3) << fdv[i];
    fe.mad=gpstk::Robust::MedianAbsoluteDeviation<T>(&fdv[0],fdv.size(),fe.med,false);
-LOG(INFO) << "GETSTATS " << fdv.size() << " med " << fe.med << " mad " << fe.mad << " index " << fe.index << " npts " << fe.npts << " k " << k;
+LOG(INFO) << "GETSTATS " << fdv.size() << " med " << fe.med << " mad " << fe.mad << " index " << fe.index << " npts " << fe.npts << " k " << k << " j " << j;
    fe.haveStats = true;
 }
 
