@@ -389,13 +389,13 @@ protected:
    // Arcs handles BEG, SLIP/FIX, and GAP(new BEG); flags handle bad data w/in Arc
    // NB BAD != SatPass::BAD but ONLY SatPass::BAD on input => BAD
    /// Values for flags[] = bit maps
-   static const int OK;         ///< flag for good data = 0 NB SatPass::OK = 1
-   static const int BAD;        ///< flag for bad data  = 1 NB SatPass::BAD = 0
-   static const int WLOUTLIER;  ///< flag for data called outlier by WL filter
-   static const int GFOUTLIER;  ///< flag for data called outlier by GF filter
-   static const int WLSHORT;    ///< flag for data with Arc.ngood < MinPts
-   static const int GFSHORT;    ///< flag for data with Arc.ngood < MinPts
-   static const int ISOLATED;   ///< flag for isolated good data (< MinPts)
+   static const unsigned OK;         ///< flag for good data = 0 NB SatPass::OK = 1
+   static const unsigned BAD;        ///< flag for bad data  = 1 NB SatPass::BAD = 0
+   static const unsigned WLOUTLIER;  ///< flag for data called outlier by WL filter
+   static const unsigned GFOUTLIER;  ///< flag for data called outlier by GF filter
+   static const unsigned WLSHORT;    ///< flag for data with Arc.ngood < MinPts
+   static const unsigned GFSHORT;    ///< flag for data with Arc.ngood < MinPts
+   static const unsigned ISOLATED;   ///< flag for isolated good data (< MinPts)
    //others?
 
    /// conveniences
@@ -561,6 +561,7 @@ protected:
       for(unsigned int i=arc.index; i < arc.index+arc.npts; ++i) {
          if(flags[i] == OK) arc.ngood++;
       }
+LOG(INFO) << "GDC computeNgood " << arc.asString();
       return arc.ngood;
    }
 

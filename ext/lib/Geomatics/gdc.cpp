@@ -57,13 +57,13 @@ const string gdc::GDCVersion = string("9.0 5/20/17");
 // ----------------------- flags and bitmaps
 // values for flags[]; NB flags[] is either good (0) or bad (non-zero)
 // not to be confused with Arc::marks or SatPass flags  TD bitmap?
-const int gdc::OK         = 0;  // NB SatPass::OK == 1
-const int gdc::BAD        = 1;  // meaning bad in SatPass; NB SatPass::BAD == 0
-const int gdc::WLOUTLIER  = 2;  // called outlier by WL filter
-const int gdc::GFOUTLIER  = 3;  // called outlier by GF filter
-const int gdc::WLSHORT    = 4;  // data with Arc.ngood < MinPts
-const int gdc::GFSHORT    = 5;  // data with Arc.ngood < MinPts
-const int gdc::ISOLATED   = 6;  // final check - isolated good points (<MinPts)
+const unsigned gdc::OK         = 0;  // NB SatPass::OK == 1
+const unsigned gdc::BAD        = 1;  // meaning bad in SatPass; NB SatPass::BAD == 0
+const unsigned gdc::WLOUTLIER  = 2;  // called outlier by WL filter
+const unsigned gdc::GFOUTLIER  = 3;  // called outlier by GF filter
+const unsigned gdc::WLSHORT    = 4;  // data with Arc.ngood < MinPts
+const unsigned gdc::GFSHORT    = 5;  // data with Arc.ngood < MinPts
+const unsigned gdc::ISOLATED   = 6;  // final check - isolated good points (<MinPts)
 
 // Bitmap values used by Arc::mark - see create_mark_string_map() routine.
 const unsigned Arc::BEG    =  1;
@@ -765,8 +765,10 @@ void gdc::recomputeArcs(void) throw(Exception)
       ait->second.npts = xdata.size() - ait->second.index;  // last one
 
       // loop over Arcs, recomputing ngood
-      for(ait = Arcs.begin(); ait != Arcs.end(); ++ait)
+      for(ait = Arcs.begin(); ait != Arcs.end(); ++ait) {
          computeNgood(ait->second);                         // ignore return value
+         LOG(INFO) << "GDC recomputeArcs " << ait->second.asString();
+      }
    }
    catch(Exception& e) { GPSTK_RETHROW(e); }
 }
@@ -857,14 +859,17 @@ void gdc::findLargeGaps(void) throw(Exception)
          if(git->first+git->second == ait->second.index+ait->second.npts)
             continue;                     // skip 'gap' at end of Arc
 
-         // Arc at ait must to be split   // we don't need fixUp
-         addArc(git->first+git->second, Arc::BEG);
+         // Arc at ait must to be split   // we don't need fixUp ... or do we TD???
+LOG(INFO) << "GDC addArc ";
+         addArc(git->first+git->second, Arc::BEG);    // after gap
 
          // must recompute ngood, but only for one Arc .. oh well
-         computeNgood(ait->second);
-         ait = Arcs.begin();              // iterator is corrupted by addArc
-         findArc(git->first+git->second, ait);
-         computeNgood(ait->second);
+         //computeNgood(ait->second);
+         //ait = Arcs.begin();              // iterator is corrupted by addArc
+         //findArc(git->first+git->second, ait);
+         //computeNgood(ait->second);
+
+         fixUpArcs();                     // recompute points for all Arcs
       }
 
    }
