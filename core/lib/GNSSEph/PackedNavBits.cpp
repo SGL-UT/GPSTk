@@ -651,6 +651,10 @@ namespace gpstk
          {
             return true;
          }
+         if (bits[i]==true && right.bits[i]==false)
+         {
+            return false;
+         }
       }
       return false;
    }
