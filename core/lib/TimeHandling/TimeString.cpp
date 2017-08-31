@@ -49,6 +49,7 @@
 #include "JulianDate.hpp"
 #include "MJD.hpp"
 #include "UnixTime.hpp"
+#include "PosixTime.hpp"
 #include "YDSTime.hpp"
 
 #include "TimeConverters.hpp"
@@ -71,6 +72,7 @@ namespace gpstk
          try {rv = JulianDate(t).printf( rv );} catch (gpstk::InvalidRequest e){};
          try {rv = MJD(t).printf( rv );} catch (gpstk::InvalidRequest e){};
          try {rv = UnixTime(t).printf( rv );} catch (gpstk::InvalidRequest e){};
+         try {rv = PosixTime(t).printf( rv );} catch (gpstk::InvalidRequest e){};
          try {rv = YDSTime(t).printf( rv );} catch (gpstk::InvalidRequest e){};
          try {rv = GALWeekSecond(t).printf( rv );} catch (gpstk::InvalidRequest e){};
          try {rv = BDSWeekSecond(t).printf( rv );} catch (gpstk::InvalidRequest e){};
@@ -139,7 +141,8 @@ namespace gpstk
             hepoch( false ), hansi( false ), hjulian( false ),
             hbdsw( false ), hqzsw( false ), hgalw( false ), hirnw( false ),
             hbdsfw( false ), hqzsfw( false ), hgalfw( false ), hirnfw( false ),
-            hbdse( false ), hqzse( false ), hgale( false), hirne( false );
+            hbdse( false ), hqzse( false ), hgale( false), hirne( false ),
+            hposixsec( false ), hposixnsec( false );
 
             // These are to hold data that no one parses.
          int idow(0);
@@ -252,6 +255,14 @@ namespace gpstk
                case 'u':
                   hunixusec = true;
                   break;
+
+               case 'W':
+                  hposixsec = true;
+                  break;
+
+               case 'N':
+                  hposixnsec = true;
+                  break;
                   
                case 'c':
                   hzcount29 = true;
@@ -282,7 +293,7 @@ namespace gpstk
                case 'e': hweek = hbdsw = true; break;
                case 'L': hfullweek = hgalfw = true; break;
                case 'l': hweek = hgalw = true; break;
-               case 'I': hfullweek = hqzsfw = true; break;
+               case 'h': hfullweek = hqzsfw = true; break;
                case 'i': hweek = hqzsw = true; break;
                case 'O': hfullweek = hirnfw = true; break;
                case 'o': hweek = hirnw = true; break;
@@ -399,6 +410,14 @@ namespace gpstk
             return;
          }
 
+         if( hposixsec || hposixnsec )
+         {
+            PosixTime tt;
+            tt.setFromInfo( info );
+            t = tt.convertToCommonTime();
+            return;
+         }
+
          InvalidRequest ir("Incomplete time specification for readTime");
          GPSTK_THROW( ir );
       }
@@ -431,9 +450,9 @@ namespace gpstk
             hbdsfw( false ), hqzsfw( false ), hgalfw( false ), hirnfw( false ),
             hbdse( false ), hqzse( false ), hgale( false ), hirne( false );
 
-            // MJD, Julian Date, ANSI time, Unix time, and 32-bit Zcounts
-            // are treated as stand-alone types and are not mixed with others
-            // if detected.
+            // MJD, Julian Date, ANSI time, Unix time, Posix time, and
+            // 32-bit Zcounts are treated as stand-alone types and are
+            // not mixed with others if detected.
          
             // These variables will hold the values for use later.
          double isow, isod, isec;
@@ -475,6 +494,16 @@ namespace gpstk
                case 'u':
                {
                   UnixTime tt;
+                  tt.setFromInfo( info );
+                  t = tt.convertToCommonTime();
+                  break;
+               }
+               break;
+
+               case 'N':
+               case 'W':
+               {
+                  PosixTime tt;
                   tt.setFromInfo( info );
                   t = tt.convertToCommonTime();
                   break;

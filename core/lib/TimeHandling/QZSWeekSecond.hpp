@@ -98,13 +98,13 @@ namespace gpstk
          /// understands when printing times.
       virtual std::string getPrintChars() const
       {
-         return "VIiwgP";
+         return "VhiwgP";
       }
 
          /// Return a string containing the default format to use in printing.
       virtual std::string getDefaultFormat() const
       {
-         return "%I %g %P";
+         return "%h %g %P";
       }
 
          /// This function formats this time to a string.  The exceptions
@@ -117,8 +117,8 @@ namespace gpstk
             std::string rv = fmt;
             rv = formattedPrint( rv, getFormatPrefixInt() + "V",
                                  "Vu", getEpoch() );
-            rv = formattedPrint( rv, getFormatPrefixInt() + "I",
-                                 "Iu", week );
+            rv = formattedPrint( rv, getFormatPrefixInt() + "h",
+                                 "hu", week );
             rv = formattedPrint( rv, getFormatPrefixInt() + "i",
                                  "iu", getModWeek() );
             rv = formattedPrint( rv, getFormatPrefixInt() + "w",
@@ -143,8 +143,8 @@ namespace gpstk
 
             rv = formattedPrint( rv, getFormatPrefixInt() + "V",
                                  "Vs", "BadQZSepoch");
-            rv = formattedPrint( rv, getFormatPrefixInt() + "I",
-                                 "Is", "BadQZSfweek");
+            rv = formattedPrint( rv, getFormatPrefixInt() + "h",
+                                 "hs", "BadQZSfweek");
             rv = formattedPrint( rv, getFormatPrefixInt() + "i",
                                  "is", "BadQZSmweek");
             rv = formattedPrint( rv, getFormatPrefixInt() + "w",
@@ -174,7 +174,7 @@ namespace gpstk
                case 'V':
                   setEpoch( gpstk::StringUtils::asInt( i->second ) );
                   break;
-               case 'I':
+               case 'h':
                   week = gpstk::StringUtils::asInt( i->second );
                   break;
                case 'i':
