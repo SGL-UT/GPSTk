@@ -691,12 +691,24 @@ equalityTest()
    leftEqual.rawBitInput("035 0xFFFFFF0F 0xE0000000");
    leftSmall.rawBitInput("035 0xFFFFFE0F 0xE0000000");
    leftLarge.rawBitInput("035 0xFFFFFFFF 0xE0000000");
+
+      // Ovbserved real-world case that trggered a failure.  
+      // Right is greater than left at bit 5, but less than
+      // at bit 6.   The greater than was not causing false, so 
+      // when the code got to bit 6, it would (incorrectly) return
+      // true.
+   PackedNavBits leftMixed(satID,obsID,navID,rxID2,ct);
+   PackedNavBits rightMixed(satID,obsID,navID,rxID2,ct);
+   leftMixed.rawBitInput( "035 0x03019AA1 0x00000000");
+   rightMixed.rawBitInput("035 0x057E77B8 0x00000000");
    longer.rawBitInput(   "064 0x00000000 0x00000000");
    TUASSERTE(bool,  true, leftSmall<rightTest);
    TUASSERTE(bool, false, leftEqual<rightTest);
    TUASSERTE(bool, false, leftLarge<rightTest);
    TUASSERTE(bool,  true, leftSmall<longer);
    TUASSERTE(bool, false, longer<leftSmall);
+   TUASSERTE(bool,  true, leftMixed<rightMixed);
+   TUASSERTE(bool, false, rightMixed<leftMixed);
 
    TURETURN();
 }
