@@ -112,7 +112,7 @@ add_test(NAME timeconvert_CmdOpt_GPSzcount29
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testopts.cmake)
 
 # check Julian date
-set( TIMECONVERT_CMDOPT_JULIAN "-j 2457222.501145833333333333333" )
+set( TIMECONVERT_CMDOPT_JULIAN "-j 2457222.5011458333333333" )
 add_test(NAME timeconvert_CmdOpt_Julian
          COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:timeconvert>
@@ -124,7 +124,7 @@ add_test(NAME timeconvert_CmdOpt_Julian
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testopts.cmake)
 
 # check MJD
-set( TIMECONVERT_CMDOPT_MJD "-m 57222.001145833333333333333" )
+set( TIMECONVERT_CMDOPT_MJD "-m 57222.0011458333333333" )
 add_test(NAME timeconvert_CmdOpt_MJD
          COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:timeconvert>

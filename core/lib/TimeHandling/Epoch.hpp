@@ -743,7 +743,7 @@ namespace gpstk
    long double Epoch::JD() const
       throw(Epoch::EpochException)
    {
-      return get<JulianDate>().JD();
+      return get<JulianDate>().jd;
    }
    
       /// Get Modified Julian Date MJD
@@ -752,7 +752,7 @@ namespace gpstk
    long double Epoch::MJD() const
       throw(Epoch::EpochException)
    {
-      return get<gpstk::MJD>().asLongDouble();
+      return get<gpstk::MJD>().mjd;    // gpstk to distinguish from Epoch::MJD
    }
    
       /// Get year.
