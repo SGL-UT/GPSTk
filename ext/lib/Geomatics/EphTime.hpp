@@ -181,8 +181,8 @@ namespace gpstk
 
          MJD ctmjd;
          ctmjd.convertFromCommonTime(ct);
-         iMJD = ctmjd.asLong();
-         dSOD = ctmjd.SecOfDay();
+         iMJD = static_cast<long>(ctmjd.mjd);
+         dSOD = (ctmjd.mjd - static_cast<long double>(iMJD)) * SEC_PER_DAY;
          system = ctmjd.getTimeSystem();
          }
          catch(Exception& e) { GPSTK_RETHROW(e); }
@@ -191,7 +191,8 @@ namespace gpstk
       /// const cast EphTime to CommonTime
       operator CommonTime() const throw()
       {
-         MJD ctmjd(iMJD,dSOD);
+         MJD ctmjd;
+         ctmjd.mjd = static_cast<long double>(iMJD + dSOD/SEC_PER_DAY);
          CommonTime ct = ctmjd.convertToCommonTime();
          ct.setTimeSystem(system);
          return ct;
@@ -201,7 +202,8 @@ namespace gpstk
       /// non-const cast EphTime to CommonTime
       operator CommonTime() throw()
       {
-         MJD ctmjd(iMJD,dSOD);
+         MJD ctmjd;
+         ctmjd.mjd = static_cast<long double>(iMJD + dSOD/SEC_PER_DAY);
          CommonTime ct = ctmjd.convertToCommonTime();
          ct.setTimeSystem(system);
          return ct;

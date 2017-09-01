@@ -199,6 +199,7 @@ void TimCvt::process()
       string eight(8, ' '); // eight spaces
       
       GPSWeekZcount wz(ct);
+      CivilTime civ(ct);
 
       cout << endl
            << eight << leftJustify("Month/Day/Year H:M:S", 32) 

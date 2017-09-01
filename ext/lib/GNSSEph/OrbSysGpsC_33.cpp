@@ -303,7 +303,6 @@ namespace gpstk
 
       s.setf(ios::scientific, ios::floatfield);
       s.setf(ios::right, ios::adjustfield);
-      s.setf(ios::uppercase);
       s.precision(10);
       s.fill(' ');
 
@@ -330,11 +329,17 @@ namespace gpstk
         << endl
         << "Parameter              Value" << endl;
 
-      string tform="  %02m/%02d/%04Y %02H:%02M:%02S";
+      string tform="  %02m/%02d/%04Y %02H:%02M:%02S  Week %F  SOW %6.0g";
       s << "t-sub-ot    " << printTime(ctEpoch,tform) << endl; 
-      s << "A0          " << setw(16) << A0 << " sec" << endl;
-      s << "A1          " << setw(16) << A1 << " sec/sec" << endl;
-      s << "A2          " << setw(16) << A2 << " sec/sec**2" << endl;
+
+      s.setf(ios::scientific, ios::floatfield);
+      s.setf(ios::right, ios::adjustfield);
+      s.precision(10);
+      s.fill(' ');
+    
+      s << "A0         " << setw(17) << A0 << " sec" << endl;
+      s << "A1         " << setw(17) << A1 << " sec/sec" << endl;
+      s << "A2         " << setw(17) << A2 << " sec/sec**2" << endl;
 
       s.setf(ios::fixed, ios::floatfield);
       s.precision(0);
