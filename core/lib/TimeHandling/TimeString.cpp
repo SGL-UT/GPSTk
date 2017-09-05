@@ -458,8 +458,6 @@ namespace gpstk
          double isow, isod, isec;
          int iweek, ifullweek, idow, iyear, imonth, iday, izcount, idoy,
             izcount29, ihour, imin, iepoch;
-         JulianDate jd;
-         MJD mjd;
          TimeSystem ts;
 
          for( TimeTag::IdToValue::iterator itr = info.begin();
@@ -473,13 +471,11 @@ namespace gpstk
                   break;
 
                case 'Q':
-                  mjd.fromString(itr->second);
-                  t = mjd;
+                  t = MJD( asLongDouble(itr->second) );
                   break;
 
                case 'J':
-                  jd.fromString(itr->second);
-                  t = jd;
+                  t = JulianDate( asLongDouble(itr->second) );
                   break;
                   
                case 'C':

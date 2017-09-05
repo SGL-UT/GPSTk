@@ -487,8 +487,8 @@ public:
       JulianDate scannedTime;
       CommonTime scannedCommonTime, hardcodedCommonTime;
       std::string formatString, timeString;
-         // Set a hardcoded time - but don't use long double c'tor
-      JulianDate hardcodedTime(1234567,0,0.0,TimeSystem(2));
+         // Set a hardcoded time
+      JulianDate hardcodedTime(1234567,TimeSystem(2));
       hardcodedCommonTime = hardcodedTime.convertToCommonTime();
 
          // Provide a format string
@@ -538,7 +538,7 @@ public:
       CommonTime scannedCommonTime, hardcodedCommonTime;
       std::string formatString, timeString;
          // Set a hardcoded time
-      MJD hardcodedTime(123456,0.0,TimeSystem(1));
+      MJD hardcodedTime(123456.0,TimeSystem(1));
       hardcodedCommonTime = hardcodedTime.convertToCommonTime();
 
          // Provide a format string
