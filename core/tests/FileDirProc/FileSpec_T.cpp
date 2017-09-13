@@ -60,52 +60,52 @@ public:
       // test conversion of file spec type values to strings and vice-versa.
       // Also test that no duplicate file spec types exist.
       // @return  number of failures, i.e., 0=PASS, !0=FAIL
-   int testConvertFileSpecType();
+   unsigned testConvertFileSpecType();
 
       // test operator++() and operator--() for FileSpecType
       // @return  number of failures, i.e., 0=PASS, !0=FAIL
-   int testFileSpecTypeOps();
+   unsigned testFileSpecTypeOps();
 
       // test creation of invalid FileSpec objects
       // @return  number of failures, i.e., 0=PASS, !0=FAIL
-   int testInitInvalid();
+   unsigned testInitInvalid();
 
       // test creation of valid FileSpec objects and test a few methods
       // that get the state of FileSpec objects
       // @return  number of failures, i.e., 0=PASS, !0=FAIL
-   int testInitValid();
+   unsigned testInitValid();
 
       // test FileSpec method newSpec()
       // @return  number of failures, i.e., 0=PASS, !0=FAIL
-   int testNewSpec();
+   unsigned testNewSpec();
 
       // test FileSpec method hasField()
       // @return  number of failures, i.e., 0=PASS, !0=FAIL
-   int testHasField();
+   unsigned testHasField();
 
       // test FileSpec method getSpecString()
       // @return  number of failures, i.e., 0=PASS, !0=FAIL
-   int testGetSpecString();
+   unsigned testGetSpecString();
 
       // test FileSpec method createSearchString()
       // @return  number of failures, i.e., 0=PASS, !0=FAIL
-   int testCreateSearchString();
+   unsigned testCreateSearchString();
 
       // test FileSpec method extractField()
       // @return  number of failures, i.e., 0=PASS, !0=FAIL
-   int testExtractField();
+   unsigned testExtractField();
 
       // test FileSpec method extractCommonTime()
       // @return  number of failures, i.e., 0=PASS, !0=FAIL
-   int testExtractCommonTime();
+   unsigned testExtractCommonTime();
 
       // test FileSpec method toString()
       // @return  number of failures, i.e., 0=PASS, !0=FAIL
-   int testToString();
+   unsigned testToString();
 
       // test FileSpec method sortList()
       // @return  number of failures, i.e., 0=PASS, !0=FAIL
-   int testSortList();
+   unsigned testSortList();
 
 }; // class FileSpec_T
 
@@ -118,9 +118,9 @@ void FileSpec_T :: init()
 
 
 //---------------------------------------------------------------------------
-int FileSpec_T :: testConvertFileSpecType()
+unsigned FileSpec_T :: testConvertFileSpecType()
 {
-   TestUtil  tester( "FileSpec", "convertFileSpecType", __FILE__, __LINE__ );
+   TUDEF( "FileSpec", "convertFileSpecType" );
 
    set<std::string>  fstSet;
    FileSpec::FileSpecType  fst = FileSpec::unknown;
@@ -136,7 +136,7 @@ int FileSpec_T :: testConvertFileSpecType()
 
          ostringstream  oss;
          oss << "duplicate file spec type string: " << fstStr;
-         tester.assert( (fstSet.find(fstStr) == fstSet.end() ), oss.str(), __LINE__ );
+         TUASSERT(fstSet.find(fstStr) == fstSet.end());
 
             // check for empty file spec type string
          if (fstStr.size() == 0)
@@ -146,13 +146,13 @@ int FileSpec_T :: testConvertFileSpecType()
                   // Special Case : 'fixed' should convert to "" to denote
                   // no future value substitution, don't try to convert
                   // from "" to fixed though
-               tester.assert( true, "fixed FileSpecType", __LINE__ );
+               TUPASS("fixed FileSpecType");
             }
             else
             {
                ostringstream  oss;
                oss << "empty file spec type string for value: " << fst;
-               tester.assert( false, oss.str(), __LINE__ );
+               TUFAIL(oss.str());
             }
             continue;  // don't test with an empty file spec type string
          }
@@ -160,11 +160,13 @@ int FileSpec_T :: testConvertFileSpecType()
             // check that file spec type string is exactly one character
          {
             ostringstream  oss;
-            oss << "file spec type string should be a single character: " << fstStr;
-            tester.assert( fstStr.size() == 1, oss.str(), __LINE__ );
+            oss << "file spec type string should be a single character: "
+                << fstStr;
+            TUASSERTE(string::size_type, 1, fstStr.size());
          }
 
-            // store the file spec type string so it can be checked for duplication
+            // store the file spec type string so it can be checked
+            // for duplication
          switch (fst)
          {
                // Special Case : 'y' and 'Y' should both denote year
@@ -178,11 +180,12 @@ int FileSpec_T :: testConvertFileSpecType()
                {
                   ostringstream  oss;
                   oss << "special case failed for file spec type: y / Y";
-                  tester.assert( false, oss.str(), __LINE__ );
+                  TUFAIL(oss.str());
                }
                break;
 
-                  // Special Case : 'c' and 'C' should both denote full GPS zcount
+                  // Special Case : 'c' and 'C' should both denote
+                  // full GPS zcount
             case FileSpec::fullzcount:
                if ((fstStr[0] == 'c') || (fstStr[0] == 'C'))
                {
@@ -193,7 +196,7 @@ int FileSpec_T :: testConvertFileSpecType()
                {
                   ostringstream  oss;
                   oss << "special case failed for file spec type: c / C";
-                  tester.assert( false, oss.str(), __LINE__ );
+                  TUFAIL(oss.str());
                }
                break;
 
@@ -205,23 +208,23 @@ int FileSpec_T :: testConvertFileSpecType()
       {
          ostringstream  oss;
          oss << "unexpected exception for file spec type value: " << fst;
-         tester.assert( false, oss.str(), __LINE__ );
+         TUFAIL(oss.str());
       }
 
          // attempt to convert from a string to a FileSpecType
       try
       {
-         FileSpec::FileSpecType  fstPost = FileSpec::convertFileSpecType(fstStr);
+         FileSpec::FileSpecType fstPost = FileSpec::convertFileSpecType(fstStr);
 
          ostringstream  oss;
          oss << "file spec type value/string/value mismatch: "
              << fst << "/" + fstStr + "/" << fstPost;
 
-         tester.assert( (fst == fstPost), oss.str(), __LINE__ );
+         TUASSERTE(FileSpec::FileSpecType, fst, fstPost);
       }
       catch (FileSpecException& fse)
       {
-         tester.assert( false, "unexpected exception for file spec type string: " + fstStr, __LINE__ );
+         TUFAIL("unexpected exception for file spec type string: " + fstStr);
       }
    }
 
@@ -230,11 +233,11 @@ int FileSpec_T :: testConvertFileSpecType()
    {
       FileSpec::FileSpecType  fsty = FileSpec::convertFileSpecType("y");
       FileSpec::FileSpecType  fstY = FileSpec::convertFileSpecType("Y");
-      tester.assert( (fsty == fstY), "'y' and 'Y' should be equivalent", __LINE__ );
+      TUASSERTE(FileSpec::FileSpecType, fsty, fstY);
    }
    catch (FileSpecException& fse)
    {
-      tester.assert( false, "unexpected exception for file spec type: y / Y", __LINE__ );
+      TUFAIL("unexpected exception for file spec type: y / Y");
    }
 
       // Special Case : check that 'c' and 'C' both denote full GPS zcount
@@ -242,54 +245,54 @@ int FileSpec_T :: testConvertFileSpecType()
    {
       FileSpec::FileSpecType  fstc = FileSpec::convertFileSpecType("c");
       FileSpec::FileSpecType  fstC = FileSpec::convertFileSpecType("C");
-      tester.assert( (fstc == fstC), "'c' and 'C' should be equivalent", __LINE__ );
+      TUASSERTE(FileSpec::FileSpecType, fstc, fstC);
    }
    catch (FileSpecException& fse)
    {
-      tester.assert( false, "unexpected exception for file spec type: c / C", __LINE__ );
+      TUFAIL("unexpected exception for file spec type: c / C");
    }
 
       // check for file spec type value underflow
    try
    {
       string  fstStr = FileSpec::convertFileSpecType(FileSpec::unknown);
-      tester.assert(false, "exception expected for file spec type: unknown", __LINE__ );
+      TUFAIL("exception expected for file spec type: unknown");
    }
    catch (FileSpecException& fse)
    {
-      tester.assert( true, "expected exception for invalid FileSpecType", __LINE__ );
+      TUPASS("expected exception for invalid FileSpecType");
    }
 
       // check for file spec type value overflow
    try
    {
       string  fstStr = FileSpec::convertFileSpecType(FileSpec::end);
-      tester.assert( false, "exception expected for file spec type: end", __LINE__ );
+      TUFAIL("exception expected for file spec type: end");
    }
    catch (FileSpecException& fse)
    {
-      tester.assert( true, "expected exception for invalid FileSpecType", __LINE__ );
+      TUPASS("expected exception for invalid FileSpecType");
    }
 
-   return tester.countFails();
+   TURETURN();
 }
 
 
 //---------------------------------------------------------------------------
-int FileSpec_T :: testFileSpecTypeOps()
+unsigned FileSpec_T :: testFileSpecTypeOps()
 {
-   TestUtil  tester( "FileSpecType", "operators", __FILE__, __LINE__ );
+   TUDEF( "FileSpecType", "operators" );
 
       /// @todo implement testFileSpecTypeOps
 
-   return tester.countFails();
+   TURETURN();
 }
 
 
 //---------------------------------------------------------------------------
-int FileSpec_T :: testInitInvalid()
+unsigned FileSpec_T :: testInitInvalid()
 {
-   TestUtil  tester( "FileSpec", "init (invalid)", __FILE__, __LINE__ );
+   TUDEF( "FileSpec", "init (invalid)" );
 
    const string  PCT("%");
 
@@ -340,33 +343,33 @@ int FileSpec_T :: testInitInvalid()
          ostringstream  oss;
          oss << "missing expected exception creating FileSpec(\""
              << *specIter << "\")";
-         tester.assert( false, oss.str(), __LINE__ );
+         TUFAIL(oss.str());
       }
       catch (FileSpecException& fse)
       {
-         tester.assert( true, "expected exception for invalid FileSpec", __LINE__ );
+         TUPASS("expected exception for invalid FileSpec");
       }
    }   
 
-   return tester.countFails();
+   TURETURN();
 }
 
 
 //---------------------------------------------------------------------------
-int FileSpec_T :: testInitValid()
+unsigned FileSpec_T :: testInitValid()
 {
-   TestUtil  tester( "FileSpec", "init (valid)", __FILE__, __LINE__ );
+   TUDEF( "FileSpec", "init (valid)" );
 
    try   // create a default object
    {
       FileSpec  fs;
-      tester.assert( true, "FileSpec created", __LINE__ );
+      TUPASS("FileSpec created");
    }
    catch (FileSpecException& fse)
    {
       ostringstream  oss;
       oss << "exception creating default, empty FileSpec: " << fse;
-      tester.assert( false, oss.str(), __LINE__ );
+      TUFAIL(oss.str());
    }
 
 
@@ -414,68 +417,65 @@ int FileSpec_T :: testInitValid()
       try
       {
          FileSpec  fs(*specIter);
-         tester.assert( true, "FileSpec created", __LINE__ );
+         TUPASS("FileSpec created");
       }
       catch (FileSpecException& fse)
       {
          ostringstream  oss;
          oss << "exception creating FileSpec(\""
              << *specIter << "\"): " << fse;
-         tester.assert( false, oss.str(), __LINE__ );
+         TUFAIL(oss.str());
       }
    }   
    
-   return tester.countFails();
+   TURETURN();
 }
 
 
 //---------------------------------------------------------------------------
-int FileSpec_T :: testNewSpec()
+unsigned FileSpec_T :: testNewSpec()
 {
-   TestUtil  tester( "FileSpec", "newSpec", __FILE__, __LINE__ );
+   TUDEF( "FileSpec", "newSpec" );
 
    try
    {
       FileSpec  spec;
-      tester.assert( (spec.getSpecString().size() == 0),
-                     "empty spec string mismatch", __LINE__ );
+      TUASSERTE(string::size_type, 0, spec.getSpecString().size());
 
       string  str1("test-%y-spec");
       spec.newSpec(str1);
-      tester.assert( (str1.compare(spec.getSpecString()) == 0),
-                     "non-empty spec string mismatch", __LINE__ );
+      TUASSERTE(int, 0, str1.compare(spec.getSpecString()));
 
       string  str2("another-%y-one");
       spec.newSpec(str2);
-      tester.assert( (str2.compare(spec.getSpecString()) == 0),
-                     "non-empty spec string mismatch", __LINE__ );
+      TUASSERTE(int, 0, str2.compare(spec.getSpecString()));
    }
    catch (FileSpecException& fse)
    {
       ostringstream  oss;
       oss << "unexpected exception: " << fse;
-      tester.assert( false, oss.str(), __LINE__ );
+      TUFAIL(oss.str());
    }
-   return tester.countFails();
+   TURETURN();
 }
 
 
 //---------------------------------------------------------------------------
-int FileSpec_T :: testHasField()
+unsigned FileSpec_T :: testHasField()
 {
-   TestUtil  tester( "FileSpec", "hasField", __FILE__, __LINE__ );
+   TUDEF( "FileSpec", "hasField" );
 
    try   // empty spec
    {
       FileSpec  spec;
       bool  found = spec.hasField(FileSpec::year);
-      tester.assert( !found, "spec field not found", __LINE__ );
+      TUASSERT(!found);
    }
    catch (FileSpecException& fse)
    {
       ostringstream  oss;
       oss << "unexpected exception: " << fse;
-      tester.assert( false, oss.str(), __LINE__ );
+      TUFAIL(oss.str());
    }
 
    try   // non-empty spec containing field
@@ -483,13 +483,13 @@ int FileSpec_T :: testHasField()
       string  str("test-%y-spec");
       FileSpec  spec(str);
       bool  found = spec.hasField(FileSpec::year);
-      tester.assert( found, "spec field not found", __LINE__ );
+      TUASSERT(found);
    }
    catch (FileSpecException& fse)
    {
       ostringstream  oss;
       oss << "unexpected exception: " << fse;
-      tester.assert( false, oss.str(), __LINE__ );
+      TUFAIL(oss.str());
    }
 
    try   // non-empty spec missing field
@@ -497,83 +497,79 @@ int FileSpec_T :: testHasField()
       string  str("test-%p-spec");
       FileSpec  spec(str);
       bool  found = spec.hasField(FileSpec::year);
-      tester.assert( !found, "missing spec field mistakenly found", __LINE__ );
+      TUASSERT(!found);
    }
    catch (FileSpecException& fse)
    {
       ostringstream  oss;
       oss << "unexpected exception: " << fse;
-      tester.assert( false, oss.str(), __LINE__ );
+      TUFAIL(oss.str());
    }
-   return tester.countFails();
+   TURETURN();
 }
 
 
 //---------------------------------------------------------------------------
-int FileSpec_T :: testGetSpecString()
+unsigned FileSpec_T :: testGetSpecString()
 {
-   TestUtil  tester( "FileSpec", "getSpecString", __FILE__, __LINE__ );
+   TUDEF( "FileSpec", "getSpecString" );
 
    try
    {
       FileSpec  spec;
-      tester.assert( (spec.getSpecString().size() == 0),
-                     "empty spec string mismatch", __LINE__ );
+      TUASSERTE(string::size_type, 0, spec.getSpecString().size());
    }
    catch (FileSpecException& fse)
    {
       ostringstream  oss;
       oss << "unexpected exception: " << fse;
-      tester.assert( false, oss.str(), __LINE__ );
+      TUFAIL(oss.str());
    }
 
    try
    {
       string  str("test-%y-spec");
       FileSpec  spec(str);
-      tester.assert( (str.compare(spec.getSpecString()) == 0),
-                     "non-empty spec string mismatch", __LINE__ );
+      TUASSERTE(int, 0, str.compare(spec.getSpecString()));
    }
    catch (FileSpecException& fse)
    {
       ostringstream  oss;
       oss << "unexpected exception: " << fse;
-      tester.assert( false, oss.str(), __LINE__ );
+      TUFAIL(oss.str());
    }
-   return tester.countFails();
+   TURETURN();
 }
 
 
 //---------------------------------------------------------------------------
-int FileSpec_T :: testCreateSearchString()
+unsigned FileSpec_T :: testCreateSearchString()
 {
-   TestUtil  tester( "FileSpec", "createSearchString", __FILE__, __LINE__ );
+   TUDEF( "FileSpec", "createSearchString" );
 
    try   // empty spec
    {
       FileSpec  spec;
-      tester.assert( (spec.createSearchString().size() == 0),
-                     "empty spec string mismatch", __LINE__ );
+      TUASSERTE(string::size_type, 0, spec.createSearchString().size());
    }
    catch (FileSpecException& fse)
    {
       ostringstream  oss;
       oss << "unexpected exception: " << fse;
-      tester.assert( false, oss.str(), __LINE__ );
+      TUFAIL(oss.str());
    }
 
    try   // fixed spec
    {
       string  str("test-spec");
       FileSpec  spec(str);
-      tester.assert( (str.compare(spec.createSearchString()) == 0),
-                     "fixed spec string mismatch", __LINE__ );
+      TUASSERTE(int, 0, str.compare(spec.createSearchString()));
    }
    catch (FileSpecException& fse)
    {
       ostringstream  oss;
       oss << "unexpected exception: " << fse;
-      tester.assert( false, oss.str(), __LINE__ );
+      TUFAIL(oss.str());
    }
 
    try   // non-fixed spec, single substitution
@@ -581,14 +577,13 @@ int FileSpec_T :: testCreateSearchString()
       string  str("test-%y-spec");
       string  expect("test-?-spec");
       FileSpec  spec(str);
-      tester.assert( (expect.compare(spec.createSearchString()) == 0),
-                     "non-fixed spec single substitution string mismatch", __LINE__ );
+      TUASSERTE(int, 0, expect.compare(spec.createSearchString()));
    }
    catch (FileSpecException& fse)
    {
       ostringstream  oss;
       oss << "unexpected exception: " << fse;
-      tester.assert( false, oss.str(), __LINE__ );
+      TUFAIL(oss.str());
    }
 
    try   // non-fixed spec, multiple substitution
@@ -596,36 +591,35 @@ int FileSpec_T :: testCreateSearchString()
       string  str("test-%y-spec-%y.%y");
       string  expect("test-?-spec-?.?");
       FileSpec  spec(str);
-      tester.assert( (expect.compare(spec.createSearchString()) == 0),
-                     "non-fixed spec multiple substituion string mismatch", __LINE__ );
+      TUASSERTE(int, 0, expect.compare(spec.createSearchString()));
    }
    catch (FileSpecException& fse)
    {
       ostringstream  oss;
       oss << "unexpected exception: " << fse;
-      tester.assert( false, oss.str(), __LINE__ );
+      TUFAIL(oss.str());
    }
-   return tester.countFails();
+   TURETURN();
 }
 
 
 //---------------------------------------------------------------------------
-int FileSpec_T :: testExtractField()
+unsigned FileSpec_T :: testExtractField()
 {
-   TestUtil  tester( "FileSpec", "extractField", __FILE__, __LINE__ );
+   TUDEF( "FileSpec", "extractField" );
 
    try   // extract a field that is present (single)
    {
       FileSpec  spec("test-%4y-spec");
          
       string  field = spec.extractField("test-1999-spec", FileSpec::year);
-      tester.assert( (field.compare("1999") == 0), "extract field failed", __LINE__ );
+      TUASSERTE(int, 0, field.compare("1999"));
    }
    catch (FileSpecException& fse)
    {
       ostringstream  oss;
       oss << "unexpected exception: " << fse;
-      tester.assert( false, oss.str(), __LINE__ );
+      TUFAIL(oss.str());
    }
       
    try   // extract a field that is present multiple times
@@ -633,13 +627,13 @@ int FileSpec_T :: testExtractField()
       FileSpec  spec("test-%2y-spec-%2y");
          
       string  field = spec.extractField("test-97-spec-96", FileSpec::year);
-      tester.assert( (field.compare("97") == 0), "extract field failed", __LINE__ );
+      TUASSERTE(string, "97", field);
    }
    catch (FileSpecException& fse)
    {
       ostringstream  oss;
       oss << "unexpected exception: " << fse;
-      tester.assert( false, oss.str(), __LINE__ );
+      TUFAIL(oss.str());
    }
       
    try   // extract multiple different fields
@@ -647,19 +641,20 @@ int FileSpec_T :: testExtractField()
       FileSpec  spec("test-%4y%03j%05s-spec");
          
       string  yField = spec.extractField("test-200412312345", FileSpec::year);
-      tester.assert( (yField.compare("2004") == 0), "extract field failed", __LINE__ );
+      TUASSERTE(string, "2004", yField);
 
       string  jField = spec.extractField("test-200412312345", FileSpec::day);
-      tester.assert( (jField.compare("123") == 0), "extract field failed", __LINE__ );
+      TUASSERTE(string, "123", jField);
 
-      string  sField = spec.extractField("test-200412312345", FileSpec::doysecond);
-      tester.assert( (sField.compare("12345") == 0), "extract field failed", __LINE__ );
+      string  sField = spec.extractField("test-200412312345",
+                                         FileSpec::doysecond);
+      TUASSERTE(string, "12345", sField);
    }
    catch (FileSpecException& fse)
    {
       ostringstream  oss;
       oss << "unexpected exception: " << fse;
-      tester.assert( false, oss.str(), __LINE__ );
+      TUFAIL(oss.str());
    }
       
    try   // extract a field that isn't there
@@ -669,23 +664,23 @@ int FileSpec_T :: testExtractField()
       string field = spec.extractField("test-1999-spec", FileSpec::station);
       ostringstream  oss;
       oss << "missing expected exception";
-      tester.assert( false, oss.str(), __LINE__ );
+      TUFAIL(oss.str());
    }
    catch (FileSpecException& fse)
    {
       ostringstream  oss;
       oss << "received expected exception: " << fse;
-      tester.assert( true, oss.str(), __LINE__ );
+      TUPASS(oss.str());
    }
 
-   return tester.countFails();
+   TURETURN();
 }
 
 
 //---------------------------------------------------------------------------
-int FileSpec_T :: testExtractCommonTime()
+unsigned FileSpec_T :: testExtractCommonTime()
 {
-   TestUtil  tester( "FileSpec", "extractCommonTime", __FILE__, __LINE__ );
+   TUDEF( "FileSpec", "extractCommonTime" );
 
    try   // extract a valid time
    {
@@ -693,14 +688,13 @@ int FileSpec_T :: testExtractCommonTime()
          
       CommonTime t = spec.extractCommonTime("test-200412312345-spec");
       YDSTime  ydst(2004, 123, 12345.0);
-      tester.assert( (ydst == t), "extract time failed", __LINE__ );
-
+      TUASSERT(ydst == t);
    }
    catch (FileSpecException& fse)
    {
       ostringstream  oss;
       oss << "unexpected exception: " << fse;
-      tester.assert( false, oss.str(), __LINE__ );
+      TUFAIL(oss.str());
    }
 
    try   // extract an invalid time
@@ -708,31 +702,31 @@ int FileSpec_T :: testExtractCommonTime()
       FileSpec  spec("test-%4Y%03j%05s-spec");
          
       CommonTime t = spec.extractCommonTime("test-101043299999-spec");
-      tester.assert( false, "expected exception for invalid time", __LINE__ );
+      TUFAIL("expected exception for invalid time");
    }
    catch (FileSpecException& fse)
    {
       ostringstream  oss;
       oss << "expected exception for invalid time: " << fse;
-      tester.assert( true, oss.str(), __LINE__ );
+      TUPASS(oss.str());
    }
 
 /* This test would have worked with the old DayTime implementation,
  * however CommonTime performs no such checks.
 
-   try   // extract an incomplete time
-   {
-      FileSpec  spec("test-%4Y-%05s-spec");
+ try   // extract an incomplete time
+ {
+ FileSpec  spec("test-%4Y-%05s-spec");
          
-      CommonTime t = spec.extractCommonTime("test-1999-12345-spec");
-      tester.assert( false, "expected exception for incomplete time", __LINE__ );
-   }
-   catch (FileSpecException& fse)
-   {
-      ostringstream  oss;
-      oss << "expected exception for incomplete time: " << fse;
-      tester.assert( true, oss.str(), __LINE__ );
-   }
+ CommonTime t = spec.extractCommonTime("test-1999-12345-spec");
+ TUFAIL("expected exception for incomplete time");
+ }
+ catch (FileSpecException& fse)
+ {
+ ostringstream  oss;
+ oss << "expected exception for incomplete time: " << fse;
+ TUPASS(oss.str());
+ }
 */
 
    try   // extract a missing time
@@ -740,39 +734,40 @@ int FileSpec_T :: testExtractCommonTime()
       FileSpec  spec("test-%4Y%03j%05s-spec");
          
       CommonTime t = spec.extractCommonTime("test-spec");
-      tester.assert( false, "expected exception for missing time", __LINE__ );
+      TUFAIL("expected exception for missing time");
    }
    catch (FileSpecException& fse)
    {
       ostringstream  oss;
       oss << "expected exception for missing time: " << fse;
-      tester.assert( true, oss.str(), __LINE__ );
+      TUPASS(oss.str());
    }
 
 /* Really? Was it ever requried that a FileSpec have a time?
    try   // extract from a time-less spec
    {
-      FileSpec  spec("test-%2p-%2r-spec");
+   FileSpec  spec("test-%2p-%2r-spec");
          
-      CommonTime t = spec.extractCommonTime("test-24-01-spec");
-      tester.assert( false, "expected exception for missing time in spec", __LINE__ );
+   CommonTime t = spec.extractCommonTime("test-24-01-spec");
+   TUFAIL("expected exception for missing time in spec");
    }
    catch (FileSpecException& fse)
    {
-      ostringstream  oss;
-      oss << "expected exception for missing time in spec: " << fse;
-      tester.assert( true, oss.str(), __LINE__ );
+   ostringstream  oss;
+   oss << "expected exception for missing time in spec: " << fse;
+   TUPASS(oss.str());
    }
 */
 
-   return tester.countFails();
+   TURETURN();
 }
 
 
 //---------------------------------------------------------------------------
-int FileSpec_T :: testToString()
+unsigned FileSpec_T :: testToString()
 {
-   TestUtil  tester( "FileSpec", "toString", __FILE__, __LINE__ );
+      /// @todo test all spec tokens to uncover any conflicts
+   TUDEF( "FileSpec", "toString" );
 
    try // default GPSWeekZcount
    {
@@ -781,14 +776,13 @@ int FileSpec_T :: testToString()
       GPSWeekZcount wz;
       CommonTime t(wz);
       string  str = spec.toString(t);
-      tester.assert( (str.compare("test-0000000000-spec") == 0),
-                     "toString failed: " + str, __LINE__ );
+      TUASSERTE(string, "test-0000000000-spec", str);
    }
    catch (FileSpecException& fse)
    {
       ostringstream  oss;
       oss << "unexpected exception: " << fse;
-      tester.assert( false, oss.str(), __LINE__ );
+      TUFAIL(oss.str());
    }
 
    try // non-default GPSWeekZcount
@@ -798,31 +792,29 @@ int FileSpec_T :: testToString()
       GPSWeekZcount wz(1234,56789);
       CommonTime t(wz);
       string  str = spec.toString(t);
-      tester.assert( (str.compare("test-1234056789-spec") == 0),
-                     "toString failed: " + str, __LINE__ );
+      TUASSERTE(string, "test-1234056789-spec", str);
    }
    catch (FileSpecException& fse)
    {
       ostringstream  oss;
       oss << "unexpected exception: " << fse;
-      tester.assert( false, oss.str(), __LINE__ );
+      TUFAIL(oss.str());
    }
 
    try // non-default GPSWeekZcount plus missing other stuff
    {
-      FileSpec  spec("test-%04F%06Z-%p-%n-%k-spec");
+      FileSpec  spec("test-%04F%06Z-%p-%n-%k-%I-spec");
          
       GPSWeekZcount wz(1234,56789);
       CommonTime t(wz);
       string  str = spec.toString(t);
-      tester.assert( (str.compare("test-1234056789-%1p-%1n-%1k-spec") == 0),
-                     "toString failed: " + str, __LINE__ );
+      TUASSERTE(string, "test-1234056789-%1p-%1n-%1k-%1I-spec", str);
    }
    catch (FileSpecException& fse)
    {
       ostringstream  oss;
       oss << "unexpected exception: " << fse;
-      tester.assert( false, oss.str(), __LINE__ );
+      TUFAIL(oss.str());
    }
 
    try // non-default GPSWeekZcount plus supplied other stuff
@@ -837,110 +829,108 @@ int FileSpec_T :: testToString()
       stuff[FileSpec::receiver] = "1";
       stuff[FileSpec::clock] = "1";
       string  str = spec.toString(t, stuff);
-      tester.assert( (str.compare("test-1234056789-12-96344-01-01-spec") == 0),
-                     "toString failed: " + str, __LINE__ );
+      TUASSERTE(string, "test-1234056789-12-96344-01-01-spec", str);
    }
    catch (FileSpecException& fse)
    {
       ostringstream  oss;
       oss << "unexpected exception: " << fse;
-      tester.assert( false, oss.str(), __LINE__ );
+      TUFAIL(oss.str());
    }
 
       ///@todo implement precision support in FileSpec
 /*
-   try   // default CommonTime
-   {
-      FileSpec  spec("test-%04Y%03j%05.0s-spec");
+  try   // default CommonTime
+  {
+  FileSpec  spec("test-%04Y%03j%05.0s-spec");
          
-      CommonTime t;
-      string  str = spec.toString(t);
-      tester.assert( (str.compare("test-000000000000-spec") == 0),
-                     "toString failed: " + str, __LINE__ );
-   }
-   catch (FileSpecException& fse)
-   {
-      ostringstream  oss;
-      oss << "unexpected exception: " << fse;
-      tester.assert( false, oss.str(), __LINE__ );
-   }
+  CommonTime t;
+  string  str = spec.toString(t);
+  testFramework.assert( (str.compare("test-000000000000-spec") == 0),
+  "toString failed: " + str);
+  }
+  catch (FileSpecException& fse)
+  {
+  ostringstream  oss;
+  oss << "unexpected exception: " << fse;
+  TUFAIL(oss.str());
+  }
 
-   try   // non-default CommonTime
-   {
-      FileSpec  spec("test-%04Y%03j%05.0s-spec");
+  try   // non-default CommonTime
+  {
+  FileSpec  spec("test-%04Y%03j%05.0s-spec");
          
-      YDSTime  ydst(1991, 234, 23456);
-      string  str = spec.toString(ydst);
-      tester.assert( (str.compare("test-199123423456-spec") == 0),
-                     "toString failed: " + str, __LINE__ );
-   }
-   catch (FileSpecException& fse)
-   {
-      ostringstream  oss;
-      oss << "unexpected exception: " << fse;
-      tester.assert( false, oss.str(), __LINE__ );
-   }
+  YDSTime  ydst(1991, 234, 23456);
+  string  str = spec.toString(ydst);
+  testFramework.assert( (str.compare("test-199123423456-spec") == 0),
+  "toString failed: " + str);
+  }
+  catch (FileSpecException& fse)
+  {
+  ostringstream  oss;
+  oss << "unexpected exception: " << fse;
+  TUFAIL(oss.str());
+  }
 
-   try   // non-default CommonTime plus missing other stuff
-   {
-      FileSpec  spec("test-%04Y%03j%05.0s-%p-%n-%k-spec");
+  try   // non-default CommonTime plus missing other stuff
+  {
+  FileSpec  spec("test-%04Y%03j%05.0s-%p-%n-%k-spec");
          
-      YDSTime  ydst(1991, 234, 23456);
-      string  str = spec.toString(ydst);
-      tester.assert( (str.compare("test-199123423456-spec") == 0),
-                     "toString failed: " + str, __LINE__ );
-   }
-   catch (FileSpecException& fse)
-   {
-      ostringstream  oss;
-      oss << "unexpected exception: " << fse;
-      tester.assert( false, oss.str(), __LINE__ );
-   }
+  YDSTime  ydst(1991, 234, 23456);
+  string  str = spec.toString(ydst);
+  testFramework.assert( (str.compare("test-199123423456-spec") == 0),
+  "toString failed: " + str);
+  }
+  catch (FileSpecException& fse)
+  {
+  ostringstream  oss;
+  oss << "unexpected exception: " << fse;
+  TUFAIL(oss.str());
+  }
 
-   try   // non-default CommonTime plus supplied other stuff
-   {
-      FileSpec  spec("test-%04Y%03j%05.0s-%02p-%05n-%02r-%02k-spec");
+  try   // non-default CommonTime plus supplied other stuff
+  {
+  FileSpec  spec("test-%04Y%03j%05.0s-%02p-%05n-%02r-%02k-spec");
          
-      YDSTime  ydst(1991, 234, 23456);
-      FileSpec::FSTStringMap  stuff;
-      stuff[FileSpec::prn] = "12";
-      stuff[FileSpec::station] = "96344";
-      stuff[FileSpec::receiver] = "1";
-      stuff[FileSpec::clock] = "1";
-      string  str = spec.toString(ydst, stuff);
-      tester.assert( (str.compare("test-199123423456-12-96344-01-01-spec") == 0),
-                     "toString failed: " + str, __LINE__ );
-   }
-   catch (FileSpecException& fse)
-   {
-      ostringstream  oss;
-      oss << "unexpected exception: " << fse;
-      tester.assert( false, oss.str(), __LINE__ );
-   }
+  YDSTime  ydst(1991, 234, 23456);
+  FileSpec::FSTStringMap  stuff;
+  stuff[FileSpec::prn] = "12";
+  stuff[FileSpec::station] = "96344";
+  stuff[FileSpec::receiver] = "1";
+  stuff[FileSpec::clock] = "1";
+  string  str = spec.toString(ydst, stuff);
+  testFramework.assert( (str.compare("test-199123423456-12-96344-01-01-spec") == 0),
+  "toString failed: " + str);
+  }
+  catch (FileSpecException& fse)
+  {
+  ostringstream  oss;
+  oss << "unexpected exception: " << fse;
+  TUFAIL(oss.str());
+  }
 */
 
-   return tester.countFails();
+   TURETURN();
 }
 
 
 //---------------------------------------------------------------------------
-int FileSpec_T :: testSortList()
+unsigned FileSpec_T :: testSortList()
 {
-   TestUtil  tester( "FileSpec", "sortList", __FILE__, __LINE__ );
+   TUDEF( "FileSpec", "sortList" );
 
    try   // sort an empty list
    {
       FileSpec  spec("test-%04Y%03j%05s-%p-%n-%r-%k-spec");
       vector<string>  fileList;
       spec.sortList(fileList);
-      tester.assert( (fileList.size() == 0),
-                     "failed empty list sort", __LINE__ );
+      TUASSERT(fileList.empty());
    }
    catch (FileSpecException& fse)
    {
       ostringstream  oss;
       oss << "unexpected exception: " << fse;
-      tester.assert( false, oss.str(), __LINE__ );
+      TUFAIL(oss.str());
    }
 
    try   // sort a list with one element
@@ -949,15 +939,14 @@ int FileSpec_T :: testSortList()
       vector<string>  fileList;
       fileList.push_back("test-1997020030000-23-96344-1-1-spec");
       spec.sortList(fileList);
-      tester.assert(  (  (fileList.size() == 1) 
-                         && (fileList[0].compare("test-1997020030000-23-96344-1-1-spec") == 0) ),
-                      "failed single element list sort", __LINE__ );
+      TUASSERTE(vector<string>::size_type, 1, fileList.size());
+      TUASSERTE(string, "test-1997020030000-23-96344-1-1-spec", fileList[0]);
    }
    catch (FileSpecException& fse)
    {
       ostringstream  oss;
       oss << "unexpected exception: " << fse;
-      tester.assert( false, oss.str(), __LINE__ );
+      TUFAIL(oss.str());
    }
 
    try   // sort a list with several elements differentiated only by time
@@ -986,17 +975,18 @@ int FileSpec_T :: testSortList()
       fileList.push_back(sortedFileList[1]);
       fileList.push_back(sortedFileList[3]);
       spec.sortList(fileList);
-      tester.assert( equal(fileList.begin(), fileList.end(), sortedFileList.begin() ),
-                     "failed multiple element list sort", __LINE__ );
+      TUASSERT(equal(fileList.begin(), fileList.end(), sortedFileList.begin()));
    }
    catch (FileSpecException& fse)
    {
       ostringstream  oss;
       oss << "unexpected exception: " << fse;
-      tester.assert( false, oss.str(), __LINE__ );
+      TUFAIL(oss.str());
    }
 
-   try   // sort a list with several elements differentiated by non-time elements
+      // sort a list with several elements differentiated by non-time
+      // elements
+   try
    {
       FileSpec  spec("test-%04Y%03j%05s-%02p-%05n-%02r-%02k-spec");
 
@@ -1028,18 +1018,16 @@ int FileSpec_T :: testSortList()
       fileList.push_back(sortedFileList[7]);
       fileList.push_back(sortedFileList[3]);
       spec.sortList(fileList);
-      tester.assert( equal(fileList.begin(), fileList.end(),
-                           sortedFileList.begin() ),
-                     "failed multiple element list sort", __LINE__ );
+      TUASSERT(equal(fileList.begin(), fileList.end(), sortedFileList.begin()));
    }
    catch (FileSpecException& fse)
    {
       ostringstream  oss;
       oss << "unexpected exception: " << fse;
-      tester.assert( false, oss.str(), __LINE__ );
+      TUFAIL(oss.str());
    }
 
-   return tester.countFails();
+   TURETURN();
 }
 
 

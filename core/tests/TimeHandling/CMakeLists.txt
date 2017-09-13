@@ -65,6 +65,11 @@ target_link_libraries(UnixTime_T gpstk)
 add_test(TimeHandling_UnixTime UnixTime_T)
 set_property(TEST TimeHandling_UnixTime PROPERTY LABELS TimeHandling TimeTag TimeStorage)
 
+add_executable(PosixTime_T PosixTime_T.cpp)
+target_link_libraries(PosixTime_T gpstk)
+add_test(TimeHandling_PosixTime PosixTime_T)
+set_property(TEST TimeHandling_PosixTime PROPERTY LABELS TimeHandling TimeTag TimeStorage)
+
 add_executable(YDSTime_T YDSTime_T.cpp)
 target_link_libraries(YDSTime_T gpstk)
 add_test(TimeHandling_YDSTime YDSTime_T)
