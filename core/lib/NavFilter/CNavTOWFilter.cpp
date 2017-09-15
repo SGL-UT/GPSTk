@@ -60,8 +60,9 @@ namespace gpstk
                // < 604800 sow or < 100800 TOW counts
               TOWCount < 100800 &&
                // subframe ID
-             ( (msgType >= 10 && msgType <= 15 ) || 
-               (msgType >= 30 && msgType <= 37 ) ) );
+             (  msgType==0 ||
+               (msgType >= 10 && msgType <= 15 ) || 
+               (msgType >= 30 && msgType <= 39 ) ) );
          if (valid)
             accept(fd, msgBitsOut);
          else
