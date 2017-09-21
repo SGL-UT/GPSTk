@@ -11,7 +11,6 @@
 #    $ build.sh -h
 #
 #----------------------------------------
-
 #----------------------------------------
 # Qué hora es? Dónde estamos? Y dónde vamos?
 #----------------------------------------
@@ -33,6 +32,9 @@ examples:
    $ sudo build.sh -s -b /tmp/qwe    # Build and install core to $system_install_prefix
    $ build.sh -tue     # Build, test and install core, external, and python bindings to $gpstk
    $ build.sh -vt  -- -DCMAKE_BUILD_TYPE=debug  # build for running debugger
+   # BWT: for now run with
+   # ./build.sh -evx -- -DCMAKE_CXX_FLAGS=-O3
+   #  which gives cmake -DCMAKE_CXX_FLAGS=-O3 -DBUILD_PYTHON=OFF -DBUILD_EXT=ON -DDEBUG_SWITCH=ON /local/Code/gpstk
 
 OPTIONS:
 
@@ -207,7 +209,7 @@ fi
 cd "$build_root"
 
 # setup the cmake command
-args=$@
+args="$@ -DCMAKE_CXX_FLAGS=-O3"  # BWT force optimization - cmake doesn't do it
 if [ $exclude_python ]; then
     args+=" -DBUILD_PYTHON=OFF"
 elif [ $build_ext ]; then
@@ -231,8 +233,10 @@ case `uname` in
         run cmake --build . --config Release
         ;;
     *)
+        echo "Run cmake $args $repo ##########################"
         run cmake $args $repo 
         run make all -j $num_threads
+        #run make all -j $num_threads VERBOSE=1   # BWT make make verbose
 esac
 
 
