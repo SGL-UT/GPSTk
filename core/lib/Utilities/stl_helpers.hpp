@@ -124,6 +124,35 @@ namespace gpstk
       return int(it - vec.begin());
    }
 
+      /// find the intersection of two vectors - elements common to both vectors
+      /// return vector of common elements
+   template <class T> std::vector<T> vec_intersect(
+                           const std::vector<T>& v1, const std::vector<T>& v2)
+   {
+      std::vector<T> vinter;
+      typename std::vector<T>::const_iterator it;
+      for(it=v1.begin(); it!=v1.end(); ++it) {
+         if(std::find(v2.begin(), v2.end(), *it) != v2.end())
+            vinter.push_back(*it);
+      }
+      return vinter;
+   }
+
+      /// find the union minus the intersection of two vectors
+      /// that is elements that appear in only one of the two vectors
+      /// return vector of non-common elements
+   template <class T> std::vector<T> vec_notintersect(
+                           const std::vector<T>& v1, const std::vector<T>& v2)
+   {
+      std::vector<T> vinter;
+      typename std::vector<T>::const_iterator it;
+      for(it=v1.begin(); it!=v1.end(); ++it) {
+         if(std::find(v2.begin(), v2.end(), *it) == v2.end())
+            vinter.push_back(*it);
+      }
+      return vinter;
+   }
+
       //@}
 
 } // namespace
