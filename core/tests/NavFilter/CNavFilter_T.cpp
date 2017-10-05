@@ -345,6 +345,10 @@ testCNavEmpty()
    unsigned long bits_277_300 = p->asUnsignedLong(276,24,1);
    unsigned long alternating = 0xAAAAAAAA; 
 
+/*
+   Actually, the 1/0 pattern is default navigation message data.
+   While it may be default, its not "empty"
+
    pnbEmptyMsg->reset_num_bits();
    pnbEmptyMsg->addUnsignedLong(bits_1_32,32,1);
    pnbEmptyMsg->addUnsignedLong(bits_33_38,6,1);
@@ -361,11 +365,11 @@ testCNavEmpty()
    pnbEmptyMsg->addUnsignedLong(bits_277_300,24,1);
 
    pnbEmptyMsg->trimsize();
-
    CNavFilterData fdEmpty(pnbEmptyMsg);
    gpstk::NavFilter::NavMsgList l = mgr.validate(&fdEmpty);
    acceptCount += l.size();
    rejectCount += filtEmpty.rejected.size();
+*/
 
       // Now build a message with zeroes in the payload
    PackedNavBits* pnbZeroMsg = p->clone();
@@ -386,7 +390,7 @@ testCNavEmpty()
    pnbZeroMsg->trimsize();
 
    CNavFilterData fdZero(pnbZeroMsg);
-   l = mgr.validate(&fdZero);
+   gpstk::NavFilter::NavMsgList l = mgr.validate(&fdZero);
    acceptCount += l.size();
    rejectCount += filtEmpty.rejected.size();
 
@@ -413,7 +417,7 @@ testCNavEmpty()
    rejectCount += filtEmpty.rejected.size(); 
 
    TUASSERTE(unsigned long, 0, acceptCount);
-   TUASSERTE(unsigned long, 3, rejectCount);
+   TUASSERTE(unsigned long, 2, rejectCount);
    TURETURN();
 }
 
@@ -475,7 +479,7 @@ testCNavTOW()
 
       // Bad Message Type tests
       // Test the invalid MT immediately above/below the valid ranges.
-   unsigned long badMT[] = { 9, 16, 29, 38}; 
+   unsigned long badMT[] = { 9, 16, 29, 40}; 
    int badMTCount = 4; 
    PackedNavBits* pnbBadMT = p->clone();
    for (int i=0; i<badMTCount; i++)

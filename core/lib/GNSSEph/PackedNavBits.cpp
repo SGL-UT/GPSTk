@@ -831,7 +831,7 @@ namespace gpstk
          numBitInWord++;
          if (numBitInWord >= 32)
          {
-            s << "  0x" << setw(8) << setfill('0') << hex << word;
+            s << "  0x" << setw(8) << setfill('0') << hex << word << dec << setfill(' ');
             numBitInWord = 0;
             word_count++;
             //Print four words per line 
@@ -839,7 +839,7 @@ namespace gpstk
          }
       }
       word <<= 32 - numBitInWord;
-      if (numBitInWord > 0 ) s << "  0x" << setw(8) << setfill('0') << hex << word;
+      if (numBitInWord > 0 ) s << "  0x" << setw(8) << setfill('0') << hex << word << dec << setfill(' ');
       s.setf(ios::fixed, ios::floatfield);
       s.precision(3);
       s.flags(oldFlags);      // Reset whatever conditions pertained on entry
@@ -870,7 +870,7 @@ namespace gpstk
          numBitInWord++;
          if (numBitInWord >= numBitsPerWord)
          {
-            s << delimiter << " 0x" << setw(8) << setfill('0') << hex << word;
+            s << delimiter << " 0x" << setw(8) << setfill('0') << hex << word << dec << setfill(' ');
             word = 0;
             numBitInWord = 0;
             word_count++;
@@ -886,7 +886,7 @@ namespace gpstk
       word <<= 32 - numBitInWord;
       if (numBitInWord>0)
       {
-         s << delimiter << " 0x" << setw(8) << setfill('0') << hex << word;
+         s << delimiter << " 0x" << setw(8) << setfill('0') << hex << word << dec << setfill(' ');
       }
       s.flags(oldFlags);      // Reset whatever conditions pertained on entry
       return(bits.size()); 
