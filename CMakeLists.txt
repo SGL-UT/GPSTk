@@ -22,9 +22,6 @@ set( GPSTK_TEST_OUTPUT_DIR ${PROJECT_BINARY_DIR}/Testing/Temporary )
 # This sets up variables contining GNU standard installation locations.
 include( GNUInstallDirs )
 
-# For now, override to use 'lib' for the library install dir.
-set( CMAKE_INSTALL_LIBDIR lib )
-
 # Set a filename for collecting exported targets.
 set( EXPORT_TARGETS_FILENAME "GPSTKTargets" )
 
