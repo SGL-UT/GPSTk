@@ -585,7 +585,8 @@ int gdc::mergeFilterResultsIntoArcs(vector< FilterHit<double> >& hits,
       if(hits.size() == 0) GPSTK_THROW(Exception("No Filter results found"));
 
       bool fixup(false);
-      int i, minpts(cfg(MinPts)), narcs(0);
+      int i, narcs(0);
+      unsigned int minpts(cfg(MinPts));
       double lostslip(0.0);
 
       // flag data BAD for new outliers and small segments
@@ -682,7 +683,7 @@ void gdc::flagBadData(const FilterHit<double>& hit, const unsigned flagvalue)
    throw(Exception)
 {
    // loop over all the data in this segment (hit)
-   for(int i=hit.index; i<hit.index+hit.npts; i++) {
+   for(unsigned int i=hit.index; i<hit.index+hit.npts; i++) {
       if(flags[i] == OK) {
          flags[i] = flagvalue;            // TD let flags be a bitmap too?
          // don't modify Arc.ngood b/c fixUpArcs() will have to be called anyway
