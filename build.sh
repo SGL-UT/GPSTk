@@ -209,7 +209,6 @@ fi
 cd "$build_root"
 
 # setup the cmake command
-args="$@ -DCMAKE_CXX_FLAGS=-O3"  # BWT force optimization - cmake doesn't do it
 if [ $exclude_python ]; then
     args+=" -DBUILD_PYTHON=OFF"
 elif [ $build_ext ]; then
@@ -233,6 +232,7 @@ case `uname` in
         run cmake --build . --config Release
         ;;
     *)
+        args+=" -DCMAKE_CXX_FLAGS=-O3"  # BWT force optimization - cmake doesn't do it
         echo "Run cmake $args $repo ##########################"
         run cmake $args $repo 
         run make all -j $num_threads
