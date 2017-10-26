@@ -145,6 +145,15 @@ public:
       /// add a single name to the Namelist
       /// @throw if the name is not unique
    Namelist& operator+=(const std::string&);
+      /// add entire Namelist to this using operator+=(string)
+   Namelist& operator+=(const Namelist& right)
+   {
+      try {
+         for(unsigned int i=0; i<right.size(); i++)
+            this->operator+=(right.getName(i));
+      } catch(gpstk::Exception& e) { GPSTK_RETHROW(e); }
+      return *this;
+   }
       /// remove a name from the Namelist; does nothing if the name is not found.
    Namelist& operator-=(const std::string&);
 
