@@ -101,8 +101,8 @@ public:
    LabeledMatrix& setprecision(int p) { prec = p; return *this; }
    LabeledMatrix& fixed(void) { form = 1; return *this; }
    LabeledMatrix& scientific(void) { form = 2; return *this; }
-   LabeledMatrix& symmetric(bool s) { sym = s; return *this; }
-   LabeledMatrix& clean(bool s) { cln = s; return *this; }
+   LabeledMatrix& symmetric(bool s=true) { sym = s; return *this; }
+   LabeledMatrix& clean(bool s=true) { cln = s; return *this; }
    LabeledMatrix& both(void) { rc=0; return *this; }
    LabeledMatrix& rows(void) { rc=1; return *this; }
    LabeledMatrix& cols(void) { rc=2; return *this; }
