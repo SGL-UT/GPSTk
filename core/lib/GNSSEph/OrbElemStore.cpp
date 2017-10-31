@@ -74,7 +74,7 @@ namespace gpstk
          // calculate an SV position and throw.
          if (!eph->healthy)
          {
-            InvalidRequest exc( std::string("SV is transmitting unhealhty navigation ")
+            InvalidRequest exc( std::string("SV is transmitting unhealthy navigation ")
                 + std::string("message at time of interest.") );
             GPSTK_THROW( exc );
          }

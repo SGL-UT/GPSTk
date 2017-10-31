@@ -1,3 +1,272 @@
+Version 2.10   Monday, October 6, 2017
+
+   General modifications
+   ---------------------
+   - Significant changes to Gitlab CI builds
+   - Deprecation of Solaris from Gitlab CI builds, moved to nightly builds
+   - Comments added for Upcoming Deprecation/Privatization of CommonTime Accessor/Mutator Methods
+   - Native Debian Package Support, more compliant than CPack-based support
+   - Test Additions and Cleanup
+   - Various Bug and Compile Warning Fixes
+
+   Modifications by Author
+   ---------------------
+
+Anthony Hughes (1):
+      Fixed handling of wordless strings in words() and removeWords().
+
+Audric Terry (2):
+      Adding unit test for TimeRange::setToString method
+      Merge branch 'master' into issue_321_sts
+
+Brian Tolman (66):
+      trivial bug in configuration input
+      turn off exec permissions
+      IRN band 9 missing from ObsID::char2cb
+      Merge remote-tracking branch 'origin/master' into btolman_dev
+      Merge remote-tracking branch 'origin/issue_IRN_freq_9' into btolman_dev
+      trivial bug in configuration input
+      update, put undoc options on same footing as regular, handle help verbose and debug properly, and several smaller changes
+      update, put undoc options on same footing as regular, handle help verbose and debug properly, and several smaller changes
+      add Global trop model
+      add name() to base class
+      use setTime internally only
+      trivial change to help output
+      fix PRSolve test
+      bug in Initial/FinalTime(), do not access times of empty stores
+      set system to Any on typical time
+      add new code, move some DDBase-only code to relposition
+      clean up doc only
+      add test of EarthOrientation (IERS) code vs SOFA example
+      clean up comments
+      give DDBase tests their own catagory
+      bug found in ppp
+      add test of SE and OL tides vs IERS
+      add JPL ephemeris tests
+      clean up DT
+      modify for windows
+      dont understand, diff was 1.e-18
+      Merge remote-tracking branch 'origin/master' into SolarSystemUpdate
+      mod script to build on win64
+      Barycentric dynamic time TDB should not be labeled TRT, thats Turkey time
+      set time system in cast to common time
+      wrong return value in getGPT
+      merge master
+      add tests that dump trop model results
+      fix the windows tests of RinSum, drop filesize in output
+      bug - double for bool, trivial other changes
+      bug in Saas wet delay, also fix comments
+      fix Saas test after fixing bug
+      update PRSolve to use Global trop, add small functionality to PRSolution
+      update SatPass to write RINEX3, deprecate SatPassToRinex and add "2" to name, handle C2, and add UserFlag
+      try to satisfy Solaris
+      Remove local sort() to for Solaris
+      Merge remote-tracking branch 'origin/master' into updateSatPass
+      Improve Stats by defining wtd and sequential as separate classes, add simple statistical filters to geomatics
+      add std:: for windows
+      fix buffer overflow
+      trivial change that silences windows warning
+      bug, output the wrong int
+      bug in test2FDF
+      another bug
+      clean up and remove windows signed/unsigned warnings
+      improve Dump and Load
+      redesign internals of JulianDate to avoid long double
+      add temp test prgm
+      use strtoull for unint64_t; NB on WIN long=int=32bit
+      redesign internals of MJD to avoid long double
+      refine implementation slightly
+      clean up a little
+      put back MJD ctor(int day double sod)
+      decide on ctors, deprecate long double, remove ctor ambiguities, doc
+      strtoull is not in std::
+      implement SecOfDay and add to doc
+      clean up
+      fix swig test
+      fix for solaris - jday is long
+      bug in computation of stats in segment
+      clean up and fix one minor output bug
+
+Bryan Parsons (101):
+      Merge branch 'issue_IRN_freq_9' into 'master'
+      Merge branch 'issue_310_discfix' into 'master'
+      Merge branch 'PRSolve_test' into CommandLine_update
+      Merge branch 'PRSolve_test' into 'master'
+      Revert "Merge branch 'PRSolve_test' into 'master'"
+      Merge branch 'revert-f78eff9e' into 'master'
+      Merge branch 'CommandLine_update' into 'master'
+      Revert "Merge branch 'revert-f78eff9e' into 'master'"
+      Merge branch 'revert-4f6c9ec1' into 'master'
+      Merge branch 'issue_311_CNAV_MT32' into 'master'
+      Merge branch 'issue_313' into 'master'
+      Updating gitlab ci YAML file for smarter, flexible CI builds.
+      Gitlab CI YAML config tweak for faster builds and passing artifacts between build and test stages.
+      Updated all stages to accept artifacts from build stage as dependent stages.
+      Increase speed for gitlab ci file test.
+      Testing gitlab ci script functionality for OSX
+      Added artifacts and dependencies to osx ci build.
+      gitlab YAML tweaks for test and additional stages.
+      Continued tweaking to Debian and OSX ci builds.
+      Update gitlab-ci.yml with cache parameters for stages.
+      Updated build script for supporting VS 14 2015 install via command line.
+      Isolating OSX build for tweaking for all stages using artifacts and dependencies.
+      Merge branch 'update_build_win' into 'master'
+      Merge branch 'move_rationalize_function' into 'master'
+      Merge branch 'master' into gitlab_ci_update
+      Merge branch 'master' into gitlab_ci_update
+      Adding Windows ci build to gitlab ci YAML file for testing.
+      Added allow_failure flag for Windows ci test build, to handle known failures.
+      Adding Core builds to runner list.
+      Adding Solaris build to runners, updating incorrect tags.
+      Add Debian and Redhat builds to runners.
+      Servers updated with Gitlab Runners, removed Allowed_Failure flags.
+      Merge branch 'issue_314_mixedScanTime' into 'master'
+      Removed Deploy and Package stages for Solaris builds.
+      Merge branch 'issue_316_OrbitEphStore' into 'master'
+      Added variables for common arguments.
+      Updating issue with variable implementation.
+      Updated variables and added multi-thread support for appropriate builds.
+      Adding downstream sgltk build for debian platform.
+      Merge branch 'issue_317_StringUtils' into 'master'
+      Merge branch 'formal-deb-pkg2' into 'master'
+      Merge branch 'R3EphStore_time_bug' into 'master'
+      Merge branch 'AntStore_timesys_bug' into 'master'
+      Adding comments to .gitlab-ci.yml file
+      Adding more details to comments of .gitlab-ci.yml.
+      Changing install path for CI builds.
+      Testing new install location, adding downstream build to new gpstk install.
+      Updated all gitlab CI platforms for local install path.
+      Updating install stage artifacts for downstream dependency stage in gitlab ci.
+      Adding multiple downstream stages for different platforms.
+      Updating gitlab-ci.yml with artifacts for passing to SGLTk downstream builds.
+      Fixing SGLTk Solaris build commands in gitlab-ci.yml file.
+      Merge branch 'issue_318' into 'master'
+      Merge branch 'svnumxref_update' into 'master'
+      Merge branch 'SolarSystemUpdate' into 'master'
+      Removing Solaris Downstream stage due to long build times.
+      Merge branch 'add_G3_constants' into 'master'
+      Merge branch 'build_script_win64' into 'master'
+      Merge branch 'TDB_time_string' into 'master'
+      Merge branch 'GlobalTrop' into 'master'
+      Merge branch 'RinSum_tests_fix' into 'master'
+      Merge branch 'issue_319' into 'master'
+      Merge branch 'issue_316_OrbitEphStore' into 'master'
+      Merge branch '312-prettyprint-does-not-handle-newlines' into 'master'
+      Merge branch 'bug_double_for_bool' into 'master'
+      Merge branch 'SaasTropWetBug' into 'master'
+      Merge branch 'GlobalTropToPRSolve' into 'master'
+      Merge branch 'updateSatPass' into 'master'
+      Changes to bc2sp3 test to fix failures on windows.
+      Merge branch 'NavID_windows_warning' into 'master'
+      Merge branch 'bc2sp3_win_fix' into 'master'
+      Removing Solaris from CI builds.
+      Merge branch 'master' into gitlab_ci_update
+      Cleaning up gitlab ci script.
+      Updated comments for Gitlab CI .yml file.
+      Merge branch 'JD_MJD_rewrite' into 'master'
+      Merge branch 'updateStats' into 'master'
+      Revert "Merge branch 'JD_MJD_rewrite' into 'master'"
+      Merge branch 'revert-aef0847c' into 'master'
+      Revert "Merge branch 'updateStats' into 'master'"
+      Merge branch 'revert-409a9765' into 'master'
+      Merge branch 'updateStats' into 'master'
+      Merge branch 'cherry-pick-409a9765' into 'master'
+      Merge branch 'issue_249' into 'master'
+      Reapplying JD_MJD changes submitted by Brian Tolman, along with some UpdateStats tests.  Changes were originally reverted after merging due to SGLTk issues.  When re-applying changes, git merge-base encountered issues recognizing all changed files.  Creating a patch from full diff was the best solution to resolving this issue.
+      Merge branch 'JD_MJD_master_merged' into 'master'
+      Merge branch 'svnumxref_update' into 'master'
+      Merge branch 'issue_321_sts' into 'master'
+      Merge branch 'master' into gitlab_ci_update
+      Merge branch 'gitlab_ci_update' into 'master'
+      Merge branch 'issue_320' into 'master'
+      Merge branch 'issue_325' into 'master'
+      Merge branch 'bugStatsFilterStats' into 'master'
+      Merge branch 'issue_326_pnb_less_than' into 'master'
+      Moving MJD/JD Changes to separate branch. Revert "Reapplying JD_MJD changes submitted by Brian Tolman, along with some UpdateStats tests.  Changes were originally reverted after merging due to SGLTk issues.  When re-applying changes, git merge-base encountered issues recognizing all changed files.  Creating a patch from full diff was the best solution to resolving this issue."
+      Merge branch 'MJD_JD' into 'master'
+      Merge branch 'issue_327' into 'master'
+      Updated JulianDate.hpp for updated definition of jday, which is int(JD+0.5) and needed clarification.  Also, comments added for future deprecation of public methods for all CommonTime.* Accessor/Mutator methods.
+      Merge branch 'trop_model_tests' into 'master'
+      Merge branch 'Issue_248_Resolution' into 'master'
+      Merge branch 'issue_329_CNav_filters' into 'master'
+
+John H. Price (4):
+      check that secondObsItr exists before attempting to compare against it
+      Fix Rinex3Obs_FromScratch_T set commontime directly
+      Replaced HOWtime with xmitTime because the Rinex spec asks for xmitTime and not HOWtime.     Added fromLongDouble() to MJD class.     Added const qualifier to Stats::operator+= and -=.
+      output date as yyyymmdd hhmmss zone regardless of version
+
+Johnathan York (9):
+      Add initial native Debian packaging support
+      Initial support for Debian packaging of -ext and python components
+      test_utils.py: Fix shbang
+      Add explicit USE_RPATH build option
+      debian/rules: Utilize new USE_RPATH option
+      Add script to verify that versions in debian files match upstream
+      Fix Debian source package builds by changing format from "native" to "git"
+      Build a libgpstkX.Y-dbg Debian package with debugging symbols
+      Bump Debian pkg version to 2.9.8-2
+
+Jon Little (2):
+      Merge branch 'formal-deb-pkg' into 'master'
+      Issue 316 orbit eph store
+
+Michael Presho (1):
+      Added frequency and wavelength constants for Glonass G3 carrier
+
+Miquela Stein (6):
+      removed rationalize function, moved to OrbElemStore
+      added rationalize function, moved from GPSOrbElemStore. added check that GPS data is used
+      updated svnumxref to have the correct dates and times as verified through rawNavDump
+      updated for nanu 2017070
+      update to include nanu 2017042
+      updated trop model python tests
+
+Richard Ji-Cathriner (3):
+      bug fix and tests for addMessage()
+      Merge branch 'issue_249' of repositories.arlut.utexas.edu:sgl/gpstk into issue_249
+      added BDS and QZSS support to SP3c parsing
+
+johnk (12):
+      Rewrite prettyPrint to handle embedded newlines and test accordingly
+      testCommandOptionNOf use macros and fix out of scope pointer issue
+      Some bits of clean-up
+      clean up, formatting and test macros
+      Test CommandOptionNOf::which and bug fix
+      add tool for differencing time stamps
+      Add timediff tests and fix time system issue
+      cmake test script for output in variable checking
+      Merge remote-tracking branch 'origin/master' into 312-prettyprint-does-not-handle-newlines
+      Merge remote-tracking branch 'origin/master' into 312-prettyprint-does-not-handle-newlines
+      First cut at implementing a wrapper for struct timespec used by clock_gettime etc
+      Merge remote-tracking branch 'origin/master' into issue_327
+
+renfrob (19):
+      Tweaking OrbAlmGen
+      rge branch 'master' into issue_249
+      Fix formatting
+      Initial commit of OrbSysGpsC_32
+      Implementing CNAV MT32(EOP) and enhancing MT33(UTC)
+      Merge branch 'master' into issue_311_CNAV_MT32
+      Fixing failure to initialize some variables
+      Adding OrbSysGpsC* load tests
+      Tweaking leap second caes
+      Adding test cases for OrbSysGpsC_3x
+      Fixing missing returns
+      Fixing missing conversions for IRN
+      Completing HOW time adjustment workaround
+      Merge branch 'master' into issue_316_OrbitEphStore
+      Updating expected file
+      Fixing problem with PackedNavBits less than operator
+      Tweaking CNAV filters wrt default nav
+      Fixing fill characters in output statements
+      Fixing typo in exception message
+
+
+
+   #################################################
+
+
 Version 2.9.8   Tuesday, April 11, 2017
 
    General modifications

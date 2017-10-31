@@ -16,7 +16,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2017, The University of Texas at Austin
 //
 //============================================================================
 
@@ -34,41 +34,29 @@
 //
 //=============================================================================
 
-/// @file MJD.hpp
+/// @file PosixTime.cpp
 
-#include <cmath>
-#include "MJD.hpp"
+#include "PosixTime.hpp"
 #include "TimeConstants.hpp"
 
 namespace gpstk
 {
-   MJD& MJD::operator=( const MJD& right )
+   PosixTime& PosixTime::operator=( const PosixTime& right )
    {
-      mjd = right.mjd;
+      ts.tv_sec  = right.ts.tv_sec ;
+      ts.tv_nsec = right.ts.tv_nsec;
       timeSystem = right.timeSystem;
       return *this;
    }
 
-   CommonTime MJD::convertToCommonTime() const
+   CommonTime PosixTime::convertToCommonTime() const
    {
       try
       {
-            // convert to Julian Day
-         long double tmp( mjd + MJD_JDAY );
-            // get the whole number of days
-         long jday( static_cast<long>( tmp ) );
-            // tmp now holds the partial days
-         tmp -= static_cast<long>( tmp );
-            // convert tmp to seconds of day
-         tmp *= SEC_PER_DAY;
-            // Lose excess precision in 'tmp' because it may cause rounding
-            // problems in the conversion to CommonTime.
-         double dTmp( static_cast<double>( tmp ) );
-
          CommonTime ct;
-         return ct.set( jday,
-                        static_cast<long>( dTmp ),
-                        dTmp - static_cast<long>( dTmp ),
+         return ct.set( ( MJD_JDAY + UNIX_MJD + ts.tv_sec / SEC_PER_DAY ),
+                        ( ts.tv_sec % SEC_PER_DAY ),
+                        ( static_cast<double>( ts.tv_nsec ) * 1e-9 ),
                         timeSystem );
       }
       catch (InvalidParameter& ip)
@@ -76,31 +64,52 @@ namespace gpstk
          InvalidRequest ir(ip);
          GPSTK_THROW(ip);
       }
-
    }
 
-   void MJD::convertFromCommonTime( const CommonTime& ct )
+   void PosixTime::convertFromCommonTime( const CommonTime& ct )
    {
+         /// This is the earliest CommonTime for which PosixTimes are valid.
+      static const CommonTime MIN_CT = PosixTime(0, 0, TimeSystem::Any);
+         /// This is the latest CommonTime for which PosixTimes are valid.
+         /// (2^31 - 1) s and 999999 us
+      static const CommonTime MAX_CT = PosixTime(2147483647, 999999,
+                                                 TimeSystem::Any);
+
+      if ( ct < MIN_CT || ct > MAX_CT )
+      {
+         InvalidRequest ir("Unable to convert given CommonTime to PosixTime.");
+         GPSTK_THROW(ir);
+      }
+
       long jday, sod;
       double fsod;
       ct.get( jday, sod, fsod, timeSystem );
 
-      mjd =  static_cast<long double>( jday - MJD_JDAY ) +
-           (  static_cast<long double>( sod )
-            + static_cast<long double>( fsod ) ) * DAY_PER_SEC;
+      ts.tv_sec = (jday - MJD_JDAY - UNIX_MJD) * SEC_PER_DAY + sod;
+
+         // round to the nearest nanosecond
+      ts.tv_nsec = static_cast<time_t>( fsod * 1e9 + 0.5 ) ;
+
+      if (ts.tv_nsec >= 1000000000)
+      {
+         ts.tv_nsec -= 1000000000;
+         ++ts.tv_sec;
+      }
    }
 
-   std::string MJD::printf( const std::string& fmt ) const
+   std::string PosixTime::printf( const std::string& fmt ) const
    {
       try
       {
          using gpstk::StringUtils::formattedPrint;
          std::string rv( fmt );
 
-         rv = formattedPrint( rv, getFormatPrefixFloat() + "Q",
-                              "QLf", mjd );
-         rv = formattedPrint( rv, getFormatPrefixInt() + "P",
-                              "Ps", timeSystem.asString().c_str() );
+         rv = formattedPrint(rv, getFormatPrefixInt() + "W",
+                             "Wlu", ts.tv_sec);
+         rv = formattedPrint(rv, getFormatPrefixInt() + "N",
+                             "Nlu", ts.tv_nsec);
+         rv = formattedPrint(rv, getFormatPrefixInt() + "P",
+                             "Ps", timeSystem.asString().c_str() );
          return rv;
       }
       catch( gpstk::StringUtils::StringException& se )
@@ -109,17 +118,19 @@ namespace gpstk
       }
    }
 
-   std::string MJD::printError( const std::string& fmt ) const
+   std::string PosixTime::printError( const std::string& fmt ) const
    {
       try
       {
          using gpstk::StringUtils::formattedPrint;
          std::string rv( fmt );
 
-         rv = formattedPrint( rv, getFormatPrefixFloat() + "Q",
-                              "Qs", getError().c_str() );
+         rv = formattedPrint(rv, getFormatPrefixInt() + "W",
+                             "Ws", getError().c_str());
+         rv = formattedPrint(rv, getFormatPrefixInt() + "N",
+                             "Ns", getError().c_str());
          rv = formattedPrint( rv, getFormatPrefixInt() + "P",
-                              "Ps", getError().c_str() );
+                              "Ps", getError().c_str());
          return rv;
       }
       catch( gpstk::StringUtils::StringException& se )
@@ -128,7 +139,7 @@ namespace gpstk
       }
    }
 
-   bool MJD::setFromInfo( const IdToValue& info )
+   bool PosixTime::setFromInfo( const IdToValue& info )
    {
       using namespace gpstk::StringUtils;
 
@@ -136,8 +147,12 @@ namespace gpstk
       {
          switch( i->first )
          {
-            case 'Q':
-               mjd = asLongDouble( i->second );
+            case 'W':
+               ts.tv_sec = asInt( i->second );
+               break;
+
+            case 'N':
+               ts.tv_nsec = asInt( i->second );
                break;
 
             case 'P':
@@ -153,9 +168,9 @@ namespace gpstk
       return true;
    }
 
-   bool MJD::isValid() const
+   bool PosixTime::isValid() const
    {
-      MJD temp;
+      PosixTime temp;
       temp.convertFromCommonTime( convertToCommonTime() );
       if( *this == temp )
       {
@@ -164,62 +179,71 @@ namespace gpstk
       return false;
    }
 
-   void MJD::reset()
+   void PosixTime::reset()
    {
-      mjd = 0.0;
+      ts.tv_sec = ts.tv_nsec = 0;
       timeSystem = TimeSystem::Unknown;
    }
 
-   bool MJD::operator==( const MJD& right ) const
+   bool PosixTime::operator==( const PosixTime& right ) const
    {
-     /// Any (wildcard) type exception allowed, otherwise must be same time systems
+         /// Any (wildcard) type exception allowed, otherwise must be
+         /// same time systems
       if ((timeSystem != TimeSystem::Any &&
            right.timeSystem != TimeSystem::Any) &&
           timeSystem != right.timeSystem)
          return false;
 
-      if( std::fabs(mjd - right.mjd) < CommonTime::eps )
+      if( ts.tv_sec == right.ts.tv_sec  &&
+          abs(ts.tv_nsec - right.ts.tv_nsec) < CommonTime::eps )
       {
          return true;
       }
       return false;
    }
 
-   bool MJD::operator!=( const MJD& right ) const
+   bool PosixTime::operator!=( const PosixTime& right ) const
    {
       return ( !operator==( right ) );
    }
 
-   bool MJD::operator<( const MJD& right ) const
+   bool PosixTime::operator<( const PosixTime& right ) const
    {
-     /// Any (wildcard) type exception allowed, otherwise must be same time systems
+         /// Any (wildcard) type exception allowed, otherwise must be
+         /// same time systems
       if ((timeSystem != TimeSystem::Any &&
            right.timeSystem != TimeSystem::Any) &&
           timeSystem != right.timeSystem)
       {
-         gpstk::InvalidRequest ir("CommonTime objects not in same time system, cannot be compared");
+         gpstk::InvalidRequest ir("CommonTime objects not in same time system,"
+                                  " cannot be compared");
          GPSTK_THROW(ir);
       }
 
-      if( mjd < right.mjd )
+      if( ts.tv_sec  <  right.ts.tv_sec )
+      {
+         return true;
+      }
+      if( ts.tv_sec  == right.ts.tv_sec  &&
+          ts.tv_nsec <  right.ts.tv_nsec   )
       {
          return true;
       }
       return false;
    }
 
-   bool MJD::operator>( const MJD& right ) const
+   bool PosixTime::operator>( const PosixTime& right ) const
    {
       return ( !operator<=( right ) );
    }
 
-   bool MJD::operator<=( const MJD& right ) const
+   bool PosixTime::operator<=( const PosixTime& right ) const
    {
-      return ( operator<(  right ) ||
-               operator==( right )   );
+      return ( operator<( right ) ||
+               operator==( right ) );
    }
 
-   bool MJD::operator>=( const MJD& right ) const
+   bool PosixTime::operator>=( const PosixTime& right ) const
    {
       return ( !operator<( right ) );
    }

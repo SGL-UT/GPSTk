@@ -1250,25 +1250,6 @@ namespace gpstk
                              const std::string::size_type length = std::string::npos);
 
          /**
-          * Parse a string, containing a decimal number, of the form
-          *          [+|-]ddd.dddE[+|-]ddd
-          * where d is a decimal digit, and E is one of EeDd.
-          * The decimal (.), exponent (E+-ddd) and sign are optional.
-          * Parsing stops at first invalid (non-digit/exp/repeated decimal) character,
-          * but whitespace may appear anywhere within the string.
-          * Return a string of just the digits (i.e. remove sign, decimal, exponent,
-          * whitespace and invalid characters), and sign, exponent and '.' position.
-          * @param instr input string
-          * @param sign output sign (+1 or -1)
-          * @param exp output exponent
-          * @param index output decimal belongs at str[index];
-          *     ie first index char's are before the decimal.
-          * @return string with only digits
-          */
-      inline std::string parseScientific(const std::string instr,
-                                         int& sign, int& exp, int& index);
-
-         /**
           * Change a string into printable characters.  Control
           * characters 0, 1, ... 31 are changed to ^@, ^A, ... ^_ ;
           * control character 127 is changed to ^? (as per Caret-notation).
@@ -2713,91 +2694,6 @@ namespace gpstk
 
          return d;
       }
-
-      inline std::string parseScientific(const std::string instr,
-                                         int& sign, int& exp, int& index)
-      {
-         sign = 1;
-         exp = 0;
-         index = 1;
-
-         std::string str(instr);
-         if(str.size() == 0) return std::string("0");
-
-         int i,j;
-         static const std::string white(" \t\n\r");
-         static const std::string explab("EeDd");
-
-         // remove whitespace
-         i = str.size()-1;
-         while(i >= 0) {
-            if( (i=str.find_last_of(white,i)) != std::string::npos)
-               str.erase(i,1);
-            i--;
-         }
-         if(str.size() == 0) return std::string("0");
-
-         // find sign and remove
-         sign = 1;
-         while(str.size() > 0 && (str[0] == '-' || str[0] == '+')) {
-            if(str[0] == '-') sign = -1;
-            str.erase(0,1);
-         }
-
-         // find the exponent: sign and value
-         if((i=str.find_first_of(explab,0)) != std::string::npos) {
-            std::string sub=str.substr(i);               // substr containing E+dd
-            sub.erase(0,1);                              // remove the E
-            int expsign=1;                               // get the sign and remove it
-            while(sub.size()>0 && (sub[0] == '-' || sub[0] == '+')) {
-               if(sub[0] == '-') expsign=-1; else expsign=1;
-               sub.erase(0,1);
-            }
-            exp = static_cast<int>(strtol(sub.c_str(), 0, 10));   // convert to int
-            exp *= expsign;                                       // with sign
-
-            // remove the whole 'E+dd' from str
-            str.erase(i);
-         }
-
-         // find placement of decimal
-         index = str.size();
-         if( (i=str.find_first_of(".",0)) != std::string::npos) {
-            index = i;
-            str.erase(index,1);
-         }
-
-         // truncate at first non-digit
-         static const std::string digits("0123456789");
-         i = str.find_first_not_of(digits);
-         if(i != std::string::npos) {
-            str.erase(i);
-            if(i < index) str.append(index-i,'0');
-         }
-
-         // remove leading/trailing 0's
-         i = str.size()-1; j=0;
-         while(i >= 0 && i > index) {
-            if(str[i--] == '0') j++;
-            else break;
-         }
-         if(j > 0) str.erase(str.length()-j);
-
-         i = j = 0;
-         while(i <= index) {
-            if(str[i++] == '0') j++;
-            else break;
-         }
-         if(j > 0) {
-            str.erase(0,j);
-            index -= j;
-            if(index < 0) { exp -= j; index = 0; }
-         }
-         if(str.size() == 0) return std::string("0");
-
-         return str;
-      }  // end parseScientific
-
 
       inline std::string printable(const std::string& aStr)
          throw(StringException)

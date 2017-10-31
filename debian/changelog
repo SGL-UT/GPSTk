@@ -1,3 +1,9 @@
+gpstk (2.10-1) UNRELEASED; urgency=medium
+
+  * Update to upstream version 2.10
+
+ -- Bryan Parsons <bparsons@clau.arlut.utexas.edu>  Fri, 13 Oct 2017 09:53:11 -0500
+
 gpstk (2.9.8-2) unstable; urgency=medium
 
   * Switch source format to "git" to allow deb src packages to build

@@ -1195,8 +1195,8 @@ namespace gpstk
 
       // Julian centuries since fundamental epoch. 
       double d2 = MJD_TO_JD;
-      double d1 = MJD(UT1).asLongDouble();
-      double t = ( MJD(UT1).asLongDouble() - MJD(J2000).asLongDouble() ) / DJC;
+      double d1 = MJD(UT1).mjd;
+      double t = ( MJD(UT1).mjd - MJD(J2000).mjd ) / DJC;
 
       // Fractional part of JD(UT1), in seconds. 
       double f = 86400.0 * (fmod(d1, 1.0) + fmod(d2, 1.0));
@@ -1242,7 +1242,7 @@ namespace gpstk
    {
       // IAU 2000 model
       double t = (UT1 - J2000)/86400.0;
-         double f = ( fmod(static_cast<double>(MJD(UT1).asLongDouble()), 1.0) +
+         double f = ( fmod(static_cast<double>(MJD(UT1).mjd), 1.0) +
                       fmod(static_cast<double>(MJD_TO_JD), 1.0) );
 
       double era = normalizeAngle(D2PI*(f+0.7790572732640+0.00273781191135448*t));

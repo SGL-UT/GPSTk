@@ -16,7 +16,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2017, The University of Texas at Austin
 //
 //============================================================================
 
@@ -34,77 +34,62 @@
 //
 //=============================================================================
 
-#ifndef GPSTK_JULIANDATE_HPP
-#define GPSTK_JULIANDATE_HPP
+#ifndef GPSTK_POSIXTIME_HPP
+#define GPSTK_POSIXTIME_HPP
 
+#include <time.h>
 #include "TimeTag.hpp"
 
 namespace gpstk
 {
- /// @ingroup TimeHandling
+      /// @ingroup TimeHandling
       //@{
 
-      /// This class encapsulates the "Julian Date" time representation.
-      ///
-      /// The implementation is in terms of "jday", which is int(JD+0.5), plus two
-      /// scaled 64-bit integers (dday,fday) to represent the fraction of the day.
-      /// So fraction of day = (dday+fday*JDFACT)*JDFACT where JDFACT = 1.0e-17;
-      /// this yields precision up to 1e-34. Implementation of class MJD is similar.
-      ///
-      /// There are a few subtle implementation issues here:
-      /// (0) JD is integer at noon, which is awkward; MJD is integer at midnight.
-      /// Thus the representation of "integer day" plus "fractional part of day"
-      /// or similar is straightforward for MJD but for JD there is that pesky 0.5.
-      /// 
-      /// (1) Some compliers, notably MSVC on Windows implement long double as double.
-      /// This causes a loss of precision when attempting to write JD as a single
-      /// floating number (double or even long double). Therefore, point 2:
-      /// 
-      /// (2) Here, long double is eliminated; the long double c'tor is deprecated.
-      /// There is a "long double JD()" provided, for convenience when high precision
-      /// is not needed (e.g. Solar system ephemeris), but with a warning of less
-      /// precision. NEVER try to store timetags for reuse as long double JD().
-      ///
-      /// (3) TimeSystem is left out of the long double constructor on purpose,
-      /// otherwise compilers see an ambiguity between the two c'tors
-      /// (GPS here could be any system)
-      ///   MJD(long double jd, TimeSystem::GPS) and
-      ///   MJD(long ijd, double sod)
-      /// because TimeSystem::GPS is an int and can be implicitly cast to double.
-      /// [However note that TimeSystem(2) will not be implicitly cast.]
-      /// Use setTimeSystem(TimeSystem::GPS).
-      ///
-      /// (4) On constructors for JulianDate jd. The following give the same value:
-      ///    jd.fromString("1350000");                // full JD
-      ///    jd = JulianDate(1350000,43200,0.0);      // jday not int(JD), sod, fsod
-      ///    jd.fromIntFrac(135000,0.0);              // int(JD) and frac(JD)
-      ///
-      /// (5) fromString() and asString() provide I/O which is repeatable and
-      /// the most precise, with up to 34 decimal digits (prec ~ 1e-34 = JDFACT^2).
-      /// fromIntFrac() is the worst b/c of the double fraction of the day.
-      ///  
-
-   class JulianDate : public TimeTag
+      /**
+       * This class encapsulates the struct timespec time
+       * representation defined by POSIX as a replacement (?) for
+       * timeval.
+       *
+       * @note struct timeval used by gettimeofday() is expected to
+       * represent a real time, but there is no such expectation for
+       * struct timespec, which may be used to represent a variety of
+       * clocks, including but not limited to real-time.  It is
+       * assumed that the timespec is a real-time clock value when
+       * converting to and from CommonTime.
+       */
+   class PosixTime : public TimeTag
    {
    public:
          /**
-          * @name JulianDate Basic Operations
+          * @name PosixTime Basic Operations
+          * Default and Copy Constructors, Assignment Operator and Destructor.
           */
          //@{
+
          /**
           * Default Constructor.
           * All elements are initialized to zero.
           */
-      JulianDate( long double j = 0., TimeSystem ts = TimeSystem::Unknown )
-            : jd( j )
-      { timeSystem = ts; }
+      PosixTime( int sec = 0,
+                 int nsec = 0,
+                 TimeSystem tsys = TimeSystem::Unknown )
+      { ts.tv_sec = sec;  ts.tv_nsec = nsec;  timeSystem = tsys; }
+
+         /** struct timespec Constructor.
+          * Sets time according to the given struct timespec.
+          */
+      PosixTime( struct timespec t,
+                 TimeSystem tsys = TimeSystem::Unknown )
+      {
+         ts.tv_sec = t.tv_sec;  ts.tv_nsec = t.tv_nsec;  timeSystem = tsys;
+      }
 
          /**
           * Copy Constructor.
-          * @param right a reference to the JulianDate object to copy
+          * @param right a reference to the PosixTime object to copy
           */
-      JulianDate( const JulianDate& right )
-            : jd( right.jd )
+      PosixTime( const PosixTime& right )
+            : ts( right.ts )
       { timeSystem = right.timeSystem; }
 
          /**
@@ -114,7 +99,7 @@ namespace gpstk
           * @param right a const reference to the BasicTime object to copy
           * @throw InvalidRequest on over-/under-flow
           */
-      JulianDate( const TimeTag& right )
+      PosixTime( const TimeTag& right )
       {
          convertFromCommonTime( right.convertToCommonTime() );
       }
@@ -126,20 +111,20 @@ namespace gpstk
           * @param right a const reference to the CommonTime object to copy
           * @throw InvalidRequest on over-/under-flow
           */
-      JulianDate( const CommonTime& right )
+      PosixTime( const CommonTime& right )
       {
          convertFromCommonTime( right );
       }
 
          /**
           * Assignment Operator.
-          * @param right a const reference to the JulianDate to copy
-          * @return a reference to this JulianDate
+          * @param right a const reference to the PosixTime to copy
+          * @return a reference to this PosixTime
           */
-      JulianDate& operator=( const JulianDate& right );
+      PosixTime& operator=( const PosixTime& right );
 
          /// Virtual Destructor.
-      virtual ~JulianDate()
+      virtual ~PosixTime()
       {}
          //@}
 
@@ -168,13 +153,13 @@ namespace gpstk
          /// understands when printing times.
       virtual std::string getPrintChars() const
       {
-         return "JP";
+         return "WNP";
       }
 
          /// Return a string containing the default format to use in printing.
       virtual std::string getDefaultFormat() const
       {
-         return "%J %P";
+         return "%W %N %P";
       }
 
       virtual bool isValid() const;
@@ -182,26 +167,26 @@ namespace gpstk
       virtual void reset();
 
          /**
-          * @name JulianDate Comparison Operators
+          * @name PosixTime Comparison Operators
           * All comparison operators have a parameter "right" which corresponds
-          *  to the JulianDate object to the right of the symbol.
+          *  to the PosixTime object to the right of the symbol.
           * All comparison operators are const and return true on success
           *  and false on failure.
           */
          //@{
-      bool operator==( const JulianDate& right ) const;
-      bool operator!=( const JulianDate& right ) const;
-      bool operator<( const JulianDate& right ) const;
-      bool operator>( const JulianDate& right ) const;
-      bool operator<=( const JulianDate& right ) const;
-      bool operator>=( const JulianDate& right ) const;
+      virtual bool operator==( const PosixTime& right ) const;
+      virtual bool operator!=( const PosixTime& right ) const;
+      virtual bool operator<( const PosixTime& right ) const;
+      virtual bool operator>( const PosixTime& right ) const;
+      virtual bool operator<=( const PosixTime& right ) const;
+      virtual bool operator>=( const PosixTime& right ) const;
          //@}
 
-      long double jd;
+      struct timespec ts;
    };
 
       //@}
 
 } // namespace
 
-#endif // GPSTK_JULIANDATE_HPP
+#endif // GPSTK_POSIXTIME_HPP

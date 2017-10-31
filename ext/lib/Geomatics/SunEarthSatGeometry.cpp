@@ -300,6 +300,54 @@ namespace gpstk
       }
       catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
    }
+
+  // -----------------------------------------------------------------------------------
+  // Compute the satellite attitude, given the satellite position P and velocity V,
+  // assuming an orbit-normal attitude.
+  // Return a 3x3 Matrix which contains, as rows, the unit (ECEF) vectors X,Y,Z
+  // in the body frame of the satellite, namely
+  //    Z = along the boresight (i.e. towards Earth center),
+  //    Y = perpendicular to orbital plane, pointing opposite the angular momentum vector
+  //    X = along-track (same direction as velocity vector for circular orbit)
+  // Thus this rotation matrix R transforms an ECEF XYZ vector into the body frame
+  // of the satellite, so R * (ECEF XYZ vector) = components in body frame.
+  // Also, R.transpose() * (sat. body. frame vector) = ECEF XYZ components.
+  Matrix<double> OrbitNormalAttitude(const Position& P, const Position& V)
+    throw(Exception)
+  {
+    try {
+      int i;
+      double svrange, angmom;
+      Position X,Y,Z;
+      Matrix<double> R(3,3);
+
+      // Z points from satellite to Earth center - along the antenna boresight
+      svrange = P.mag();
+      Z = P*(-1.0/svrange); // reverse and normalize Z
+      Z.transformTo(Position::Cartesian);
+
+      // Y points opposite the angular momentum vector
+      Y = P.cross(V);
+      angmom = Y.mag();
+      Y = Y*(-1.0/angmom); // reverse and normalize Y
+      Y.transformTo(Position::Cartesian);
+
+      // X completes the right-handed system
+      X = Y.cross(Z);
+
+      // fill the matrix and return it
+      for(i=0; i<3; i++) {
+	R(0,i) = X[i];
+	R(1,i) = Y[i];
+	R(2,i) = Z[i];
+      }
+
+      return R;
+    }
+    catch(Exception& e) { GPSTK_RETHROW(e); }
+    catch(std::exception& e) {Exception E("std except: "+string(e.what())); GPSTK_THROW(E);}
+    catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+  }
    
    // --------------------------------------------------------------------------------
    // Compute the azimuth and nadir angle, in the satellite body frame,

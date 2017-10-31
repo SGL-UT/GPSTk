@@ -100,10 +100,10 @@ delta_UT1_dot -1.3321638107E-03 sec/day
 
            GPS UTC PARAMETERS
 Parameter              Value
-t-sub-ot      12/31/2016 02:14:56
-A0             -0.0000000009 sec
-A1             -0.0000000000 sec/sec
-A2              0.0000000000 sec/sec**2
+t-sub-ot      12/31/2016 02:14:56  Week 1929  SOW 526496
+A0         -9.3132257462E-10 sec
+A1         -7.9936057773E-15 sec/sec
+A2          0.0000000000E+00 sec/sec**2
 dtLS                      17 sec
 dtLSF                     18 sec
 WN_LSF             1929 Full GPS week
@@ -116,10 +116,10 @@ Epoch(lsf)        12/31/2016
 
            GPS UTC PARAMETERS
 Parameter              Value
-t-sub-ot      01/01/2017 00:14:56
-A0                         0 sec
-A1                         0 sec/sec
-A2                         0 sec/sec**2
+t-sub-ot      01/01/2017 00:14:56  Week 1930  SOW    896
+A0          1.7462298274E-10 sec
+A1          2.2204460493E-15 sec/sec
+A2          0.0000000000E+00 sec/sec**2
 dtLS                      18 sec
 dtLSF                     18 sec
 WN_LSF             1929 Full GPS week
@@ -198,10 +198,10 @@ delta_UT1_dot -1.3321638107E-03 sec/day
 
            GPS UTC PARAMETERS
 Parameter              Value
-t-sub-ot      12/31/2016 02:45:04
-A0             -0.0000000010 sec
-A1             -0.0000000000 sec/sec
-A2              0.0000000000 sec/sec**2
+t-sub-ot      12/31/2016 02:45:04  Week 1929  SOW 528304
+A0         -9.6042640507E-10 sec
+A1         -7.9936057773E-15 sec/sec
+A2          0.0000000000E+00 sec/sec**2
 dtLS                      17 sec
 dtLSF                     18 sec
 WN_LSF             1929 Full GPS week
@@ -214,10 +214,10 @@ Epoch(lsf)        12/31/2016
 
            GPS UTC PARAMETERS
 Parameter              Value
-t-sub-ot      01/01/2017 00:30:08
-A0                         0 sec
-A1                         0 sec/sec
-A2                         0 sec/sec**2
+t-sub-ot      01/01/2017 00:30:08  Week 1930  SOW   1808
+A0          1.7462298274E-10 sec
+A1          2.2204460493E-15 sec/sec
+A2          0.0000000000E+00 sec/sec**2
 dtLS                      18 sec
 dtLSF                     18 sec
 WN_LSF             1929 Full GPS week
