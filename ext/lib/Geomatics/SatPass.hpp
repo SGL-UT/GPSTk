@@ -277,6 +277,9 @@ public:
    /// Access the status; l-value may be assigned SP.status() = 1;
    int& status(void) throw() { return Status; }
 
+   /// Access the status as r-value only
+   int getStatus(void) const throw() { return Status; }
+
    /// Access the data for one obs type at one index, as either l-value or r-value
    /// @param  i    index of the data of interest
    /// @param  type observation type (e.g. "L1") of the data of interest
@@ -345,13 +348,13 @@ public:
    /// get the flag at one index
    /// @param  i    index of the data of interest
    /// @return the flag for the given index
-   unsigned short getFlag(unsigned int i) throw(Exception);
+   unsigned short getFlag(unsigned int i) const throw(Exception);
 
    /// get the userflag at one index
    /// NB SatPass does nothing w/ this member except setUserFlag() and getUserFlag();
    /// @param  i    index of the data of interest
    /// @param  inflag flag meaning whatever the user wants it to
-   unsigned int getUserFlag(unsigned int i) throw(Exception);
+   unsigned int getUserFlag(unsigned int i) const throw(Exception);
 
    /// @return the earliest time (full, including toffset) in this SatPass data
    Epoch getFirstTime(void) const throw();
@@ -402,7 +405,8 @@ public:
    /// @param  type1 observation type (e.g. "P1") of the data of interest
    /// @param  type2 observation type (e.g. "C1") of the data of interest
    /// @return the data of the given type at the given index
-   double data(unsigned int i, std::string type1, std::string type2) throw(Exception);
+   double data(unsigned int i, std::string type1, std::string type2) const
+      throw(Exception);
 
    /// Access the LLI for either of two obs type at one index, as r-value only
    /// @param  i     index of the data of interest
@@ -422,7 +426,7 @@ public:
 
    /// Test whether the object has obstype type
    /// @return true if this obstype was passed to the c'tor (i.e. is in indexForLabel)
-   inline bool hasType(std::string type) throw()
+   inline bool hasType(std::string type) const throw()
    {
       return (indexForLabel.find(type) != indexForLabel.end());
    }
