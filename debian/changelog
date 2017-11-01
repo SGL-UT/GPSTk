@@ -1,6 +1,6 @@
-gpstk (2.10-1) UNRELEASED; urgency=medium
+gpstk (2.10.0-1) UNRELEASED; urgency=medium
 
-  * Update to upstream version 2.10
+  * Update to upstream version 2.10.0
 
  -- Bryan Parsons <bparsons@clau.arlut.utexas.edu>  Fri, 13 Oct 2017 09:53:11 -0500
 
