@@ -195,7 +195,7 @@ namespace gpstk
          return false;
 
       if( ts.tv_sec == right.ts.tv_sec  &&
-          abs(ts.tv_nsec - right.ts.tv_nsec) < CommonTime::eps )
+          std::abs(ts.tv_nsec - right.ts.tv_nsec) < CommonTime::eps )
       {
          return true;
       }
