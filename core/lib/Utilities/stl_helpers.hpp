@@ -115,13 +115,54 @@ namespace gpstk
    }
 
       /// find the index of the first element of a vector with a given value
-      /// return -1 if not found
+      /// @param vec vector<T> in which to look for value
+      /// @param value T value to search for in vector
+      /// @return -1 if value is not found, else index in vector of value
    template <class T> int vectorindex(const std::vector<T>& vec, const T& value) 
    {
       typename std::vector<T>::const_iterator it;
       it = std::find(vec.begin(), vec.end(), value);
       if(it == vec.end()) return -1;
       return int(it - vec.begin());
+   }
+
+      /// find the intersection of two vectors - elements common to both vectors
+      /// NB STL algorithms require sorting
+      /// @param v1 first vector to consider
+      /// @param v2 second vector to consider
+      /// @return vector<T> of elements common to v1 and v2
+   template <class T> std::vector<T> vec_intersect(
+                           const std::vector<T>& v1, const std::vector<T>& v2)
+   {
+      std::vector<T> vinter;
+      typename std::vector<T>::const_iterator it;
+      for(it=v1.begin(); it!=v1.end(); ++it) {
+         if(std::find(v2.begin(), v2.end(), *it) != v2.end())
+            vinter.push_back(*it);
+      }
+      return vinter;
+   }
+
+      /// find the union minus the intersection of two vectors,
+      /// that is, elements that appear in either one of the two vectors but not both.
+      /// NB STL algorithms require sorting
+      /// @param v1 first vector to consider
+      /// @param v2 second vector to consider
+      /// @return vector<T> of elements not common to v1 and v2
+   template <class T> std::vector<T> vec_notintersect(
+                           const std::vector<T>& v1, const std::vector<T>& v2)
+   {
+      std::vector<T> vinter;
+      typename std::vector<T>::const_iterator it;
+      for(it=v1.begin(); it!=v1.end(); ++it) {
+         if(std::find(v2.begin(), v2.end(), *it) == v2.end())
+            vinter.push_back(*it);
+      }
+      for(it=v2.begin(); it!=v2.end(); ++it) {
+         if(std::find(v1.begin(), v1.end(), *it) == v1.end())
+            vinter.push_back(*it);
+      }
+      return vinter;
    }
 
       //@}
