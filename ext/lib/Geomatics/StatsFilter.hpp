@@ -125,10 +125,10 @@ public:
    // member data
    event type;          ///< type of event: BOD, outlier(s), slip, other
 
-   int index;           ///< index in the data array(s) at which this event occurs
-   int npts;            ///< number of data points in this segment (= a delta index)
-   int ngood;           ///< number of good (flag==0) points in this segment
-   int score;           ///< weight of slip (=100 except >=lim for getMaybeSlips(lim))
+   unsigned int index;  ///< index in the data array(s) at which this event occurs
+   unsigned int npts;   ///< number of data points in this segment (= a delta index)
+   unsigned int ngood;  ///< number of good (flag==0) points in this segment
+   unsigned int score;  ///< weight of slip (=100 except >=lim for getMaybeSlips(lim))
 
    T step;              ///< for a slip, an estimate of the step in the data
    bool haveStats;      ///< set true when getStats() is called
@@ -466,15 +466,16 @@ template<class T> void FirstDiffFilter<T>::dump(std::ostream& os, std::string ta
          if(dumpNA) os << tag << std::fixed << std::setprecision(osp)
             << " " << std::setw(3) << i
             << " " << std::setw(osw) << (noxdata ? T(i) : xdata[i])
-            //<< " " << std::setw(3) << (noflags ? 0 : flags[i])
+            << " " << std::setw(3) << (noflags ? 0 : flags[i])
             << " " << std::setw(osw) << data[i]
-            << " " << std::setw(osw) << 0.0 << "  NA" << std::endl;
+            << " " << std::setw(osw) << 0.0 << "  NA"
+            << std::endl;
       }
       else {
          os << tag << std::fixed << std::setprecision(osp)
             << " " << std::setw(3) << i
             << " " << std::setw(osw) << (noxdata ? T(i) : xdata[i])
-            //<< " " << std::setw(3) << (noflags ? 0 : flags[i])
+            << " " << std::setw(3) << (noflags ? 0 : flags[i])
             << " " << std::setw(osw) << data[i]
             << " " << std::setw(osw) << (j >= N ? 0.0 : analvec[j].diff);
          if(k < results.size() && i == results[k].index) {
@@ -493,7 +494,8 @@ template<class T> void FirstDiffFilter<T>::dump(std::ostream& os, std::string ta
 template<class T>
 void FirstDiffFilter<T>::getStats(FilterHit<T>& fe)
 {
-   int i,j(-1),k;
+   int j(-1);
+   unsigned int i,k;
    fe.min = fe.max = fe.med = fe.mad = T(0);
    for(i=0; i<analvec.size(); i++)
       if(analvec[i].index == fe.index) { j=i; break; }
@@ -507,7 +509,7 @@ void FirstDiffFilter<T>::getStats(FilterHit<T>& fe)
    T fd;
    std::vector<T> fdv;
    for(i=i0; i<fe.npts; i++) {
-      if(j+i >= analvec.size() || analvec[j+i].index >= k)
+      if((unsigned int)(j)+i >= analvec.size() || analvec[j+i].index >= k)
          break;  // no more good data
       fd = analvec[j+i].diff;
       if(first) {
