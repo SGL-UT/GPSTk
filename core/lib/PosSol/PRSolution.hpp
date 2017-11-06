@@ -66,13 +66,16 @@ namespace gpstk
       std::string lab[3];
       Stats<double> S[3];
       Matrix<double> sumInfo;
-      Vector<double> sumInfoState;
+      Vector<double> sumInfoState,Sbias;
 
    public:
 
       // ctor
-      WtdAveStats(void) : N(0)
-         { lab[0]="ECEF_X";  lab[1]="ECEF_Y"; lab[2]="ECEF_Z"; }
+      WtdAveStats(void)
+      {
+         reset();
+         lab[0]="ECEF_X";  lab[1]="ECEF_Y"; lab[2]="ECEF_Z";
+      }
 
       void setMessage(std::string m) throw() { msg = m; }
       std::string getMessage(void) const throw() { return msg; }
@@ -82,10 +85,7 @@ namespace gpstk
 
       Vector<double> getSol(void) const
       {
-         Vector<double> sol(3);
-         for(size_t i=0; i<3; i++)
-            sol(i) = S[i].Average();
-         return sol;
+         return (getCov()*sumInfoState + Sbias);
       }
 
       Matrix<double> getCov(void) const { return inverseSVD(sumInfo); }
@@ -99,6 +99,7 @@ namespace gpstk
          N = 0;
          sumInfo = Matrix<double>();
          sumInfoState = Vector<double>();
+         Sbias = Vector<double>(3);
          S[0].Reset();
          S[1].Reset();
          S[2].Reset();
@@ -110,11 +111,15 @@ namespace gpstk
       {
          try {
             // add to the statistics
-            for(int i=0; i<3; i++) S[i].Add(Sol(i));
+            for(unsigned int i=0; i<3; i++) {
+               if(N==0) Sbias(i) = Sol(i);
+               S[i].Add(Sol(i)-Sbias(i));
+            }
 
             // NB do NOT include clock(s); this can ruin the position average
             Vector<double> Sol3(Sol);
             Sol3.resize(3);               // assumes position states come first
+            Sol3 = Sol3 - Sbias;
             Matrix<double> Cov3(Cov,0,0,3,3);
 
             // information matrix (position only)
@@ -141,23 +146,29 @@ namespace gpstk
             if(N > 0) {
                os << "  " << lab[0] << " N: " << S[0].N()
                   << std::fixed << std::setprecision(4)
-                  << " Ave: " << S[0].Average() << " Std: " << S[0].StdDev()
-                  << " Min: " << S[0].Minimum() << " Max: " << S[0].Maximum()
+                  << " Ave: " << S[0].Average()+Sbias[0]
+                  << " Std: " << S[0].StdDev()
+                  << " Min: " << S[0].Minimum()+Sbias[0]
+                  << " Max: " << S[0].Maximum()+Sbias[0]
                   << std::endl;
                os << "  " << lab[1] << " N: " << S[1].N()
                   << std::fixed << std::setprecision(4)
-                  << " Ave: " << S[1].Average() << " Std: " << S[1].StdDev()
-                  << " Min: " << S[1].Minimum() << " Max: " << S[1].Maximum()
+                  << " Ave: " << S[1].Average()+Sbias[1]
+                  << " Std: " << S[1].StdDev()
+                  << " Min: " << S[1].Minimum()+Sbias[1]
+                  << " Max: " << S[1].Maximum()+Sbias[1]
                   << std::endl;
                os << "  " << lab[2] << " N: " << S[2].N()
                   << std::fixed << std::setprecision(4)
-                  << " Ave: " << S[2].Average() << " Std: " << S[2].StdDev()
-                  << " Min: " << S[2].Minimum() << " Max: " << S[2].Maximum()
+                  << " Ave: " << S[2].Average()+Sbias[2]
+                  << " Std: " << S[2].StdDev()
+                  << " Min: " << S[2].Minimum()+Sbias[2]
+                  << " Max: " << S[2].Maximum()+Sbias[2]
                   << std::endl;
 
                os << "Weighted average " << msg << std::endl;
                Matrix<double> Cov(inverseSVD(sumInfo));
-               Vector<double> Sol(Cov * sumInfoState);
+               Vector<double> Sol(Cov * sumInfoState + Sbias);
                os << std::setw(14) << std::setprecision(4) << Sol << "    " << N;
             }
             else os << " No data!";
