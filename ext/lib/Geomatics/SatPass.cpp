@@ -660,7 +660,7 @@ void SatPass::setUserFlag(unsigned int i, unsigned int f) throw(Exception)
 
 // ---------------------------------- get routines ----------------------------
 // get value of flag at one index
-unsigned short SatPass::getFlag(unsigned int i) throw(Exception)
+unsigned short SatPass::getFlag(unsigned int i) const throw(Exception)
 {
    if(i >= spdvector.size()) {
       Exception e("Invalid index in getFlag() " + asString(i));
@@ -671,7 +671,7 @@ unsigned short SatPass::getFlag(unsigned int i) throw(Exception)
 
 // get the userflag at one index
 // NB SatPass does nothing w/ this member except setUserFlag() and getUserFlag();
-unsigned int SatPass::getUserFlag(unsigned int i) throw(Exception)
+unsigned int SatPass::getUserFlag(unsigned int i) const throw(Exception)
 {
    if(i >= spdvector.size()) {
       Exception e("Invalid index in getUserFlag() " + asString(i));
@@ -697,7 +697,8 @@ Epoch SatPass::getFirstTime(void) const throw() { return time(0); }
 Epoch SatPass::getLastTime(void) const throw() { return time(spdvector.size()-1); }
 
 // these allow you to get e.g. P1 or C1. NB return double not double& as above: rvalue
-double SatPass::data(unsigned int i, string type1, string type2) throw(Exception)
+double SatPass::data(unsigned int i, string type1, string type2) const
+   throw(Exception)
 {
    if(i >= spdvector.size()) {
       Exception e("Invalid index in data() " + asString(i));
