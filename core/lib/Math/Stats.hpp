@@ -210,7 +210,7 @@ namespace gpstk
       /// combine two Stats (assumed taken from the same or equivalent ensembles)
       Stats<T>& operator+=(const Stats<T>& S)
       {
-         if(n + S.n == 0)
+         if(S.n == 0)
             return *this;
          if(!setScale) { setScale=true; scale = S.scale; }
          // TD what if both have !setScale?
