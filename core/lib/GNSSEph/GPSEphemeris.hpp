@@ -115,7 +115,6 @@ namespace gpstk
       void setFitIntervalFlag(const short fitintFlag)
       {
          fitDuration = getFitInterval(IODC, fitintFlag);
-         adjustValidity();
       }
 
          // member data

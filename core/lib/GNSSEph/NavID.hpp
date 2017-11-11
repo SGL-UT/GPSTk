@@ -76,6 +76,7 @@ namespace gpstk
          ntGloCivilF,
          ntGloCivilC,
          ntGalOS,
+         ntIRNSS_SPS,
          ntUnknown
       };
    
@@ -83,6 +84,14 @@ namespace gpstk
       NavID() { navType=ntUnknown; }
 
          /// explicit constructor, no defaults
+         /// WARNING: This constructor has proven insufficient
+         /// for BeiDou.  The BDS ICD requires that PRN 1-5 
+         /// use format D2 and PRN 6-30 use format D1.  That
+         /// appears to not be followed in all cases.   Therefore
+         /// users need to differentiate D1/D2 outside NavID 
+         /// and use the explicit constructor
+         ///      NavID( NavID::nt<xxxxx> )
+         /// to instatiate a BeiDou-related NavID. 
       NavID( const SatID& sidr, const ObsID& oidr );
 
       NavID( const NavType nt) { navType = nt; }
@@ -96,17 +105,18 @@ namespace gpstk
          std::string retVal = "";
          switch(s)
          {
-            case ntGPSLNAV:      {retVal = NavTypeStrings[0];     break;}
-            case ntGPSCNAVL2:    {retVal = NavTypeStrings[1];     break;}
-            case ntGPSCNAVL5:    {retVal = NavTypeStrings[2];     break;}
-            case ntGPSMNAV:      {retVal = NavTypeStrings[3];     break;}
-            case ntBeiDou_D1:    {retVal = NavTypeStrings[4];     break;}
-            case ntBeiDou_D2:    {retVal = NavTypeStrings[5];     break;}
-            case ntGloCivilF:    {retVal = NavTypeStrings[6];     break;}
-            case ntGloCivilC:    {retVal = NavTypeStrings[7];     break;}
-            case ntGalOS:        {retVal = NavTypeStrings[8];     break;}
+            case ntGPSLNAV:      {retVal = NavTypeStrings[ 0];     break;}
+            case ntGPSCNAVL2:    {retVal = NavTypeStrings[ 1];     break;}
+            case ntGPSCNAVL5:    {retVal = NavTypeStrings[ 2];     break;}
+            case ntGPSMNAV:      {retVal = NavTypeStrings[ 3];     break;}
+            case ntBeiDou_D1:    {retVal = NavTypeStrings[ 4];     break;}
+            case ntBeiDou_D2:    {retVal = NavTypeStrings[ 5];     break;}
+            case ntGloCivilF:    {retVal = NavTypeStrings[ 6];     break;}
+            case ntGloCivilC:    {retVal = NavTypeStrings[ 7];     break;}
+            case ntGalOS:        {retVal = NavTypeStrings[ 8];     break;}
+            case ntIRNSS_SPS:    {retVal = NavTypeStrings[ 9];     break;}
             case ntUnknown:       // fall through...
-            default:             {retVal = NavTypeStrings[9];     break;}
+            default:             {retVal = NavTypeStrings[10];     break;}
          };
          //return retVal in case switch isn't reached
         return retVal;

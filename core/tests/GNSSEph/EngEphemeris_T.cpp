@@ -834,6 +834,147 @@ IODE (91)      IDOT*2^43 (.307155651409E-9*2^43/pi) parity comp
       TURETURN();
    }
 
+
+   unsigned equalityTest()
+   {
+      TUDEF("EngEphemeris", "operator== / !=");
+      EngEphemeris eeph;
+      TUASSERT(eeph.addSubframe(&ephEOW[ 0], ephEOWwk, ephEOWprn, 1));
+      TUASSERT(eeph.addSubframe(&ephEOW[10], ephEOWwk, ephEOWprn, 1));
+      TUASSERT(eeph.addSubframe(&ephEOW[20], ephEOWwk, ephEOWprn, 1));
+      EngEphemeris eephCopy(eeph);
+         // make sure our copy reports as being the same
+      TUASSERTE(EngEphemeris, eeph, eephCopy);
+         // Tweak each data member one by one and compare.
+         // Yes the comments are fairly redundant but it helps to
+         // visually separate each batch of statements per data
+         // member.
+      eephCopy.tlm_message[0] = 0xbeef;
+      TUASSERT(eephCopy != eeph);
+      TUASSERT(!(eephCopy == eeph));
+         // tlm[1]
+      TUCATCH(eephCopy = eeph);
+      TUASSERTE(EngEphemeris, eeph, eephCopy);
+      eephCopy.tlm_message[1] = 0xbeef;
+      TUASSERT(eephCopy != eeph);
+      TUASSERT(!(eephCopy == eeph));
+         // tlm[2]
+      TUCATCH(eephCopy = eeph);
+      TUASSERTE(EngEphemeris, eeph, eephCopy);
+      eephCopy.tlm_message[2] = 0xbeef;
+      TUASSERT(eephCopy != eeph);
+      TUASSERT(!(eephCopy == eeph));
+         // satSys
+      TUCATCH(eephCopy = eeph);
+      TUASSERTE(EngEphemeris, eeph, eephCopy);
+      eephCopy.satSys = "twaffle";
+      TUASSERT(eephCopy != eeph);
+      TUASSERT(!(eephCopy == eeph));
+         // PRNID
+      TUCATCH(eephCopy = eeph);
+      TUASSERTE(EngEphemeris, eeph, eephCopy);
+      eephCopy.PRNID = 93;
+      TUASSERT(eephCopy != eeph);
+      TUASSERT(!(eephCopy == eeph));
+         // tracker
+      TUCATCH(eephCopy = eeph);
+      TUASSERTE(EngEphemeris, eeph, eephCopy);
+      eephCopy.tracker = 39;
+      TUASSERT(eephCopy != eeph);
+      TUASSERT(!(eephCopy == eeph));
+         // HOWtime[0]
+      TUCATCH(eephCopy = eeph);
+      TUASSERTE(EngEphemeris, eeph, eephCopy);
+      eephCopy.HOWtime[0] = 0xbeef;
+      TUASSERT(eephCopy != eeph);
+      TUASSERT(!(eephCopy == eeph));
+         // HOWtime[1]
+      TUCATCH(eephCopy = eeph);
+      TUASSERTE(EngEphemeris, eeph, eephCopy);
+      eephCopy.HOWtime[1] = 0xbeef;
+      TUASSERT(eephCopy != eeph);
+      TUASSERT(!(eephCopy == eeph));
+         // HOWtime[2]
+      TUCATCH(eephCopy = eeph);
+      TUASSERTE(EngEphemeris, eeph, eephCopy);
+      eephCopy.HOWtime[2] = 0xbeef;
+      TUASSERT(eephCopy != eeph);
+      TUASSERT(!(eephCopy == eeph));
+         // ASalert[0]
+      TUCATCH(eephCopy = eeph);
+      TUASSERTE(EngEphemeris, eeph, eephCopy);
+      eephCopy.ASalert[0] = 0xbeef;
+      TUASSERT(eephCopy != eeph);
+      TUASSERT(!(eephCopy == eeph));
+         // ASalert[1]
+      TUCATCH(eephCopy = eeph);
+      TUASSERTE(EngEphemeris, eeph, eephCopy);
+      eephCopy.ASalert[1] = 0xbeef;
+      TUASSERT(eephCopy != eeph);
+      TUASSERT(!(eephCopy == eeph));
+         // ASalert[2]
+      TUCATCH(eephCopy = eeph);
+      TUASSERTE(EngEphemeris, eeph, eephCopy);
+      eephCopy.ASalert[2] = 0xbeef;
+      TUASSERT(eephCopy != eeph);
+      TUASSERT(!(eephCopy == eeph));
+         // weeknum
+      TUCATCH(eephCopy = eeph);
+      TUASSERTE(EngEphemeris, eeph, eephCopy);
+      eephCopy.weeknum = 1027;
+      TUASSERT(eephCopy != eeph);
+      TUASSERT(!(eephCopy == eeph));
+         // codeflags
+      TUCATCH(eephCopy = eeph);
+      TUASSERTE(EngEphemeris, eeph, eephCopy);
+      eephCopy.codeflags = 7;
+      TUASSERT(eephCopy != eeph);
+      TUASSERT(!(eephCopy == eeph));
+         // health
+      TUCATCH(eephCopy = eeph);
+      TUASSERTE(EngEphemeris, eeph, eephCopy);
+      eephCopy.health = 9;
+      TUASSERT(eephCopy != eeph);
+      TUASSERT(!(eephCopy == eeph));
+         // L2Pdata
+      TUCATCH(eephCopy = eeph);
+      TUASSERTE(EngEphemeris, eeph, eephCopy);
+      eephCopy.L2Pdata = 11;
+      TUASSERT(eephCopy != eeph);
+      TUASSERT(!(eephCopy == eeph));
+         // IODC
+      TUCATCH(eephCopy = eeph);
+      TUASSERTE(EngEphemeris, eeph, eephCopy);
+      eephCopy.IODC = 13;
+      TUASSERT(eephCopy != eeph);
+      TUASSERT(!(eephCopy == eeph));
+         // IODE
+      TUCATCH(eephCopy = eeph);
+      TUASSERTE(EngEphemeris, eeph, eephCopy);
+      eephCopy.IODE = 17;
+      TUASSERT(eephCopy != eeph);
+      TUASSERT(!(eephCopy == eeph));
+         // AODO
+      TUCATCH(eephCopy = eeph);
+      TUASSERTE(EngEphemeris, eeph, eephCopy);
+      eephCopy.AODO = 19;
+      TUASSERT(eephCopy != eeph);
+      TUASSERT(!(eephCopy == eeph));
+         // fitint
+      TUCATCH(eephCopy = eeph);
+      TUASSERTE(EngEphemeris, eeph, eephCopy);
+      eephCopy.fitint = 23;
+      TUASSERT(eephCopy != eeph);
+      TUASSERT(!(eephCopy == eeph));
+         // Tgd
+      TUCATCH(eephCopy = eeph);
+      TUASSERTE(EngEphemeris, eeph, eephCopy);
+      eephCopy.Tgd = 31;
+      TUASSERT(eephCopy != eeph);
+      TUASSERT(!(eephCopy == eeph));
+      TURETURN();
+   }
+
    std::string testMesg;
 
 private:
@@ -867,6 +1008,7 @@ int main() //Main function to initialize and run all tests above
    errorTotal += testClass.loadDataTest();
    errorTotal += testClass.addIncompleteTest();
    errorTotal += testClass.endOfWeekTest();
+   errorTotal += testClass.equalityTest();
 
    cout << "Total Failures for " << __FILE__ << ": " << errorTotal << endl;
 

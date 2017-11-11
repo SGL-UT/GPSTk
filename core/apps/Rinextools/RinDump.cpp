@@ -82,7 +82,12 @@
 //#include "GPSEphemerisStore.hpp"
 //#include "GloEphemerisStore.hpp"
 
-#include "TropModel.hpp"
+#include "SimpleTropModel.hpp"
+#include "SaasTropModel.hpp"
+#include "NBTropModel.hpp"
+#include "GGTropModel.hpp"
+#include "GGHeightTropModel.hpp"
+#include "NeillTropModel.hpp"
 #include "EphemerisRange.hpp"
 #include "Position.hpp"
 
@@ -183,6 +188,7 @@ public:
 
    string Obspath,SP3path,Navpath;      // paths
 
+   bool dumpHeader;              // input dump headers
    vector<RinexSatID> InputSats; // input RinexSatID to dump
    vector<string> InputTags;     // input all tags
    vector<string> InputCombos;   // input linear combination tags
@@ -500,13 +506,13 @@ try {
                continue;
             }
             else if(n == -2) {   // failed to read header
-               LOG(WARNING) << "Warning - Failed to read header: "
+               LOG(WARNING) << "Warning - Failed to read nav header: "
                   << C.RinEphStore.what << "\nHeader dump follows.";
                C.RinEphStore.Rhead.dump(LOGstrm);
                continue;
             }
             else if(n == -3) {   // failed to read data
-               LOG(WARNING) << "Warning - Failed to read data: "
+               LOG(WARNING) << "Warning - Failed to read nav data: "
                   << C.RinEphStore.what << "\nData dump follows.";
                C.RinEphStore.Rdata.dump(LOGstrm);
                continue;
@@ -780,7 +786,7 @@ void Configuration::SetDefaults(void) throw()
    elevlimit = 0.0;
 
    userfmt = gpsfmt;
-   help = verbose = noHeader = doTECU = false;
+   help = verbose = noHeader = dumpHeader = doTECU = false;
    debug = -1;
 
    NonObsTags.push_back("RNG");
@@ -827,6 +833,7 @@ void Configuration::SetDefaults(void) throw()
    mapSysCodes.insert(make_pair(string("GEO"),string("CIQX")));
    mapSysCodes.insert(make_pair(string("BDS"),string("IQX")));
    mapSysCodes.insert(make_pair(string("QZS"),string("CSLXZ")));
+   mapSysCodes.insert(make_pair(string("IRN"),string("ABCX")));
 
    map1to3Sys["G"] = "GPS";   map3to1Sys["GPS"] = "G";
    map1to3Sys["R"] = "GLO";   map3to1Sys["GLO"] = "R";
@@ -834,6 +841,7 @@ void Configuration::SetDefaults(void) throw()
    map1to3Sys["S"] = "GEO";   map3to1Sys["GEO"] = "S";
    map1to3Sys["C"] = "BDS";   map3to1Sys["BDS"] = "C";
    map1to3Sys["J"] = "QZS";   map3to1Sys["QZS"] = "J";
+   map1to3Sys["I"] = "IRN";   map3to1Sys["IRN"] = "I";
 
    string validSys(ObsID::validRinexSystems);
    for(size_t i=0; i<validSys.size(); i++) {
@@ -1165,6 +1173,8 @@ string Configuration::BuildCommandLine(void) throw()
             "data (raw,combination, or other) to dump (see above)");
    opts.Add(0, "combo", "spec", true, false, &InputCombos,"",
             "custom linear combination; spec is co[co[co]]; see --combohelp");
+   opts.Add(0, "header", "", false, false, &dumpHeader, "",
+            "Dump RINEX header");
 
    opts.Add(0, "sys", "s", true, false, &InputSyss,
             "# Define or restrict values used in --dat and --combo",
@@ -1489,7 +1499,7 @@ try {
       // read the header ----------------------------------------------
       try { istrm >> Rhead; }
       catch(Exception& e) {
-         LOG(WARNING) << "Warning : Failed to read header: " << e.what()
+         LOG(ERROR) << "Error : Failed to read obs header: " << e.getText(0)
             << "\n Header dump follows.";
          Rhead.dump(LOGstrm);
          istrm.close();
@@ -1503,6 +1513,12 @@ try {
 
       if(!C.noHeader) {
          LOG(INFO) << "# " << C.PrgmName << " output for file " << filename;
+
+         // dump the header first
+         if(C.dumpHeader) {
+            LOG(INFO) << "# Header dump follows";
+            Rhead.dump(LOGstrm);
+         }
 
          // dump the obs types
          map<string,vector<RinexObsID> >::const_iterator kt;
@@ -1552,7 +1568,7 @@ try {
 
       // check for no data here
       if(!C.haveObs && !C.haveNonObs && !C.haveRCL && !C.haveCombo && !C.havePOS) {
-         LOG(INFO) << "Warning - No data specified for output...skip this file.";
+         LOG(WARNING) << "Warning - No data specified for output...skip this file.";
          continue;
       }
 
@@ -1560,7 +1576,7 @@ try {
       while(1) {
          try { istrm >> Rdata; }
          catch(Exception& e) {
-            LOG(WARNING) << " Warning : Failed to read obs data (Exception "
+            LOG(ERROR) << " Error : Failed to read obs data (Exception "
                << e.getText(0) << "); dump follows.";
             Rdata.dump(LOGstrm,Rhead);
             istrm.close();

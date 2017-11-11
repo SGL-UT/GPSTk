@@ -50,6 +50,7 @@
 #include "Rinex3NavData.hpp"
 #include "Rinex3NavHeader.hpp"
 #include "GPSWeekSecond.hpp"
+#include <math.h>
 
 namespace gpstk
 {
@@ -61,11 +62,15 @@ namespace gpstk
       public std::binary_function<Rinex3NavData, Rinex3NavData, bool>
    {
    public:
+      void setPrecision(int e)
+      {
+         precision = e;
+      }
 
       bool operator()(const Rinex3NavData& l, const Rinex3NavData& r) const
       {
-         GPSWeekSecond lXmitTime(l.weeknum, (double)l.HOWtime);
-         GPSWeekSecond rXmitTime(r.weeknum, (double)r.HOWtime);
+         GPSWeekSecond lXmitTime(l.weeknum, (double)l.xmitTime);
+         GPSWeekSecond rXmitTime(r.weeknum, (double)r.xmitTime);
 
          if (lXmitTime < rXmitTime)
             return true;
@@ -86,9 +91,9 @@ namespace gpstk
 
                while (litr != llist.end())
                {
-                  if (*litr < *ritr)
+                  if ((*litr + std::abs(*litr * std::pow((long double)10, -precision))) < *ritr )
                      return true;
-                  else if (*litr > *ritr)
+                  else if (*litr > (*ritr + std::abs(*ritr * std::pow((long double)10,-precision))))
                      return false;
                   else
                   {
@@ -98,9 +103,10 @@ namespace gpstk
                }
             }
          } // if (lXmitTime == rXmitTime)
-
          return false;
       }
+   private:
+      int precision;
    };
 
       /// This compares all elements of the Rinex3NavData with equals
@@ -145,8 +151,8 @@ namespace gpstk
 
       bool operator()(const Rinex3NavData& l, const Rinex3NavData& r) const
       {
-         GPSWeekSecond lXmitTime(l.weeknum, static_cast<double>(l.HOWtime));
-         GPSWeekSecond rXmitTime(r.weeknum, static_cast<double>(r.HOWtime));
+         GPSWeekSecond lXmitTime(l.weeknum, static_cast<double>(l.xmitTime));
+         GPSWeekSecond rXmitTime(r.weeknum, static_cast<double>(r.xmitTime));
          if (lXmitTime < rXmitTime)
             return true;
          return false;

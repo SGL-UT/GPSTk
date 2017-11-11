@@ -1,0 +1,15 @@
+gpstk-bin/
+gpstk-dev/
+libgpstk*/
+python-gpstk/
+tmp/
+files
+*.log
+gpstk-bin.substvars
+libgpstk-dev.substvars
+libgpstk*.substvars
+python-gpstk.substvars
+*.postinst.debhelper
+*.prerm.debhelper
+*.postrm.debhelper
+

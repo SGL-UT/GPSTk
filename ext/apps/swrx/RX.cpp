@@ -71,7 +71,7 @@ hilbert -i data.bin | ./RX -b 1 -q 2 -x 4.13 -r 8.184 -c c:1:30:416.789:-8800 -c
 #include <GPSEphemerisStore.hpp>
 #include <RinexNavStream.hpp>
 #include <RinexNavData.hpp>
-#include <TropModel.hpp>
+#include <GGTropModel.hpp>
 #include <IonoModel.hpp>
 #include <GPSEllipsoid.hpp>
 #include <PRSolution2.hpp>

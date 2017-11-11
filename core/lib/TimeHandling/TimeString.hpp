@@ -80,8 +80,11 @@ namespace gpstk
        *   - L     integer full GAL Week
        *   - l     integer mod GAL Week
        *   - V     integer QZS Epoch
-       *   - I     integer full QZS Week
+       *   - h     integer full QZS Week
        *   - i     integer mod QZS Week - same as I
+       *   - X     integer IRNSS Epoch
+       *   - O     integer IRNSS week
+       *   - o     integer mod INRSS Week 
        *
        * - WeekSecond (GPS/BDS/GAL/QZS):
        *   - w     integer GPS day-of-week
@@ -103,6 +106,10 @@ namespace gpstk
        * - UnixTime:
        *   - U     integer seconds since Unix Epoch (00:00, Jan 1, 1970 UTC)
        *   - u     integer microseconds
+       *
+       * - PosixTime:
+       *   - W     integer seconds
+       *   - N     integer nanoseconds
        *
        * - YDSTime:
        *   - Y     integer 4-digit year
@@ -136,9 +143,10 @@ namespace gpstk
       }
    }
 
-      /// This function determines if the given format includes items that would
-      /// be printed by the TimeTag's printf(fmt); NB except 'P' (system).
-      /// In other words, determine if printAs<T>(t,fmt) will not modify the string.
+      /// This function determines if the given format includes items
+      /// that would be printed by the TimeTag's printf(fmt); NB
+      /// except 'P' (system).  In other words, determine if
+      /// printAs<T>(t,fmt) will not modify the string.
    template <class TimeTagType>
    bool willPrintAs( const std::string& fmt )
    {

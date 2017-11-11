@@ -60,6 +60,7 @@ namespace gpstk
           * Default Constructor.
           * All elements are initialized to zero.
           */
+
       MJD( long double m = 0.,
            TimeSystem ts = TimeSystem::Unknown )
             : mjd( m )

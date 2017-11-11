@@ -185,6 +185,7 @@ namespace gpstk
                                 static_cast<CivilTime>(start).minute, 0.0);
             break;
       }
+      exStart.setTimeSystem(start.getTimeSystem());
       
       vector<string> toReturn;
          // Seed the return vector with an empty string which will be
@@ -204,18 +205,8 @@ namespace gpstk
             // If Windows, we should seed it with the drive spec
          if (itr != fileSpecList.end())
          {
-            toReturn[0] = (*itr).getSpecString() + string(1,'\\');
-            fileSpecStr = (*itr).getSpecString() + string(1,'\\'); 
-            itr++;
-         }
-#endif
-#ifdef __CYGWIN__
-            // If Cygwin AND the user is attempting to use DOS file paths,
-            // need to see with the /cygdrive "head".
-         if (itr != fileSpecList.end())
-         { 
-            toReturn[0] = string(1,slash) + (*itr).getSpecString();
-            fileSpecStr = string(1,slash) + (*itr).getSpecString();
+            toReturn[0] = (*itr).getSpecString();
+            fileSpecStr = (*itr).getSpecString(); 
             itr++;
          }
 #endif
@@ -223,11 +214,8 @@ namespace gpstk
          while (itr != fileSpecList.end())
          {
             vector<string> toReturnTemp;
-#ifdef _WIN32
-            fileSpecStr += string(1, '\\') + itr->getSpecString();
-#else
+
             fileSpecStr += string(1, slash) + itr->getSpecString();
-#endif
             for(size_t i = 0; i < toReturn.size(); i++)
             {
                   // search for the next entries
@@ -241,21 +229,9 @@ namespace gpstk
                   // seed toReturn
                for(size_t j = 0; j < newEntries.size(); j++)
                {
-#ifdef _WIN32
-                  if (toReturn[i].empty())
-                     toReturnTemp.push_back(newEntries[j]);
-                  else
-                  {
-                     if ( toReturn[i][toReturn[i].size()-1]=='\\')
-                        toReturnTemp.push_back(toReturn[i] + newEntries[j]);
-                     else
-                        toReturnTemp.push_back(toReturn[i] + string(1,'\\') + 
-                                               newEntries[j]);
-                  }
-#else
+
                   toReturnTemp.push_back(toReturn[i] + string(1,slash) + 
                                          newEntries[j]);
-#endif
                } // for(size_t j = 0; j < newEntries.size(); j++)
             } // for(size_t i = 0; i < toReturn.size(); i++)
 
@@ -279,14 +255,22 @@ namespace gpstk
       }
          // filter by time
       vector<string> filtered;
-      FileSpec fullSpec(fileSpecStr);
-      for (unsigned i = 0; i < toReturn.size(); i++)
+      try
       {
-         CommonTime fileTime = fullSpec.extractCommonTime(toReturn[i]);
-         if ((fileTime >= exStart) && (fileTime <= end))
+         FileSpec fullSpec(fileSpecStr);
+         for (unsigned i = 0; i < toReturn.size(); i++)
          {
-            filtered.push_back(toReturn[i]);
+            CommonTime fileTime = fullSpec.extractCommonTime(toReturn[i]);
+            if ((fileTime >= exStart) && (fileTime <= end))
+            {
+               filtered.push_back(toReturn[i]);
+            }
          }
+      }
+      catch(gpstk::Exception& exc)
+      {
+         FileHunterException nexc(exc);
+         GPSTK_THROW(nexc);
       }
       return filtered;
    }
@@ -307,81 +291,14 @@ namespace gpstk
 
          string fs(filespec);
 
-            // If working under Cygwin, then the file specification will be
-            // handled as if it's a system rooted in '/'.  HOWEVER, if the 
-            // user provided a spec that starts with a drive letter or
-            // provided a relative path, it needs to be modified to fit the
-            //
-            // /cygdrive/<drive letter>/path
-            //
-            // For example,
-            //     c:\ ->  /cygdrive/c
-            //     something -> <cwd>/something
-            //     c:\foo -> /cygdrive/c/foo
-            //
-            // form.
-#ifdef __CYGWIN__
-         //printf(" Entering 'ifdef __CYGWIN__' branch.\n");
-         char backSlash = '\\';
-         string::size_type st;
-         if (fs[1] == ':')
-         {
-            //printf("Cygwin 'if' branch.  fs = '%s'.  Size = %d\n",
-            //      fs.c_str(),fs.size());
-            char driveLetter = fs[0];
-            
-               // Change all '\' to '/'
-            while ((st = fs.find( backSlash )) != fs.npos)
-            {
-               //printf(" st = %d, ",st);
-               fs = fs.replace(st, 1, 1, slash );
-            }
-            //printf(" end of back slash replacement.\n");
-            //printf("After backslash replace.  fs = '%s'.\n",fs.c_str());
-            
-               // Remove drive letter and colon
-            fs.erase(0,2);
-            //printf("After removing draft letter and colon.  fs = '%s'.\n",fs.c_str());
-            
-               // Prepend "/cygdrive/driveLetter" to filespec
-            fs.insert(0, 1, driveLetter);
-            fs.insert(0,"/cygdrive/");
-         }
-         else
-         {
-            //printf("Cygwin 'else' branch.  fs = '%s'.\n",fs.c_str());
-               // Get current working directory.
-            char* cwd = getcwd(NULL, PATH_MAX);
-
-               // If strokes are in wrong directon, fix them
-            while ((st = fs.find( backSlash )) != fs.npos)
-            {
-               //printf(" st = %d, ",st);
-               fs = fs.replace(st, 1, 1, slash );
-            }
-            //printf("After backslash replace.  fs = '%s'.\n",fs.c_str());
-
-               // Prepend cwd to filespec
-            if (fs[0]!=slash)
-            {
-               fs.insert(0,string(1,slash));
-               fs.insert(0,cwd);
-            }
-         }
-         //printf(" Operating under Cygwin.  Filespec after modification:\n");
-         //printf(" fs = %s.\n",fs.c_str());
-#endif
          
             // first, check if the file spec has a leading '/'.  if not
             // prepend the current directory to it.
 #ifndef _WIN32
          if (fs[0] != slash)
          {
-//                                                     #ifdef _WIN32
-//          char* cwd = _getcwd(NULL, PATH_MAX);
-//                                                     #else
             char* cwd = getcwd(NULL, PATH_MAX);
-//                                                     #endif
+
             if (cwd == NULL)
             {
                FileHunterException fhe("Cannot get working directory");

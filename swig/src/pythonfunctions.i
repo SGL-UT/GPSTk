@@ -117,8 +117,10 @@ def eval(expr, **kwargs):
 ///////////////////////////////////////////////
 // Uses the dump method in the class to get string output
 %define STR_DUMP_HELPER(name)
-%extend gpstk:: ## name {
-   std::string __str__() {
+%extend gpstk:: ## name
+{
+   std::string __str__()
+   {
       std::ostringstream stream;
       $self->dump(stream);
       return stream.str();
@@ -150,7 +152,6 @@ STR_DUMP_HELPER(RinexNavData)
 STR_DUMP_HELPER(RinexNavHeader)
 STR_DUMP_HELPER(RinexObsData)
 STR_DUMP_HELPER(RinexObsHeader)
-STR_DUMP_HELPER(RinexSatID)
 STR_DUMP_HELPER(SEMData)
 STR_DUMP_HELPER(SEMHeader)
 STR_DUMP_HELPER(SP3Data)
@@ -162,13 +163,15 @@ STR_DUMP_HELPER(YumaHeader)
 
 // Uses the print method in the class to get string output
 %define STR_PRINT_HELPER(name)
-%extend gpstk:: ## name {
-   std::string __str__() {
+%extend gpstk:: ## name
+{
+   std::string __str__()
+   {
       std::ostringstream stream;
       $self->print(stream);
       return stream.str();
    }
-}
+}   
 %enddef
 STR_PRINT_HELPER(Expression)
 

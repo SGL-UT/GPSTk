@@ -1,0 +1,35 @@
+Multipath Environment Evaluation Tool, a GPSTk utility
+
+Edited 113 points (9.2%).
+Removing mean of each pass.
+Overhead passes used: 11
+
+Standard deviation of bins sorted by azimuth.
+
+From   0 to  15: 0.289
+From  15 to  30: 0.232
+From  30 to  45: 0.608
+From  45 to  60: 0.353
+From  60 to  75: 0.654
+From  75 to  90: 0.28
+From  90 to 105: 0.164
+From 105 to 120: 0.246
+From 120 to 135: 0.428
+From 135 to 150: 0.785
+From 150 to 165: 0.867
+From 165 to 180: 1.1
+From 180 to 195: 0
+From 195 to 210: 0.282
+From 210 to 225: 0.251
+From 225 to 240: 0.17
+From 240 to 255: 0
+From 255 to 270: 0.304
+From 270 to 285: 0.482
+From 285 to 300: 0.274
+From 300 to 315: 0.993
+From 315 to 330: 0.425
+From 330 to 345: 0
+From 345 to 360: 0
+
+Total points used: 1109
+         rejected: 0

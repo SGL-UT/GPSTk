@@ -60,7 +60,7 @@ namespace gpstk
 
       static const char* myId;
 
-      virtual std::string getName() const {return "epb";}
+      virtual std::string getName() const {return "alb";}
       
       bool checkId(std::string hdrId) const {return hdrId==myId;}
 

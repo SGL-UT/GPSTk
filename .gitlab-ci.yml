@@ -4,73 +4,280 @@ stages:
 - build
 - test
 - deploy
+- package
+- downstream
 
+#Default cmake arguments
+variables:
+  CMAKE_ARG_DEFAULT: "-DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../"
+
+#Build Stage
+#Builds GPSTk for each platform, saves build artifacts for future stages
 build_debian:
   stage: build
   tags:
     - debian
   script:
-    - ./build.sh -ev
-
-test_debian:
-  stage: test
-  tags:
-    - debian
-  script:
-    - ./build.sh -evt
-
-build_solaris:
-  stage: build
-  tags:
-    - solaris
-  script:
-    - ./build.sh -evx
-
-test_solaris:
-  stage: test
-  tags:
-    - solaris
-  script:
-    - ./build.sh -evxt
+    - mkdir build
+    - cd build
+    - cmake -DPYTHON_INSTALL_PREFIX=install -DCMAKE_INSTALL_PREFIX=install/gpstk $CMAKE_ARG_DEFAULT 
+    - make all -j 4
+  artifacts:
+    paths:
+    - build/
 
 build_redhat:
   stage: build
   tags:
     - redhat
   script:
-    - ./build.sh -ev -b ./build-gpstk-redhat
-
-test_redhat:
-  stage: test
-  tags:
-    - redhat
-  script:
-    - ./build.sh -evt -b ./test-gpstk-redhat
+    - mkdir build
+    - cd build
+    - cmake -DPYTHON_INSTALL_PREFIX=install -DCMAKE_INSTALL_PREFIX=install/gpstk $CMAKE_ARG_DEFAULT
+    - make all -j 4
+  artifacts:
+    paths:
+    - build/
 
 build_osx:
   stage: build
   tags:
     - osx
   script:
-    - ./build.sh -ev -b ./build-gpstk-osx
-
-test_osx:
-  stage: test
-  tags:
-    - osx
-  script:
-    - ./build.sh -evt -b ./test-gpstk-osx
+    - mkdir build
+    - cd build
+    - cmake -DPYTHON_INSTALL_PREFIX=install -DCMAKE_INSTALL_PREFIX=install/gpstk $CMAKE_ARG_DEFAULT
+    - make all -j 4
+  artifacts:
+    paths:
+    - build/
 
 build_windows:
   stage: build
   tags:
     - windows
   script:
-    - build.sh -evx
+    - mkdir build
+    - cd build
+    - cmake -DCMAKE_INSTALL_PREFIX=install -DBUILD_EXT=ON -DBUILD_PYTHON=OFF -DTEST_SWITCH=ON -G "Visual Studio 14 2015 Win64" ../
+    - cmake --build . --config Release
+  artifacts:
+    paths:
+    - build/
+
+build_core:
+  stage: build
+  tags:
+    - core
+  script:
+    - mkdir build
+    - cd build
+    - cmake -DPYTHON_INSTALL_PREFIX=install -DCMAKE_INSTALL_PREFIX=install/gpstk -DBUILD_EXT=OFF -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
+    - make all -j 4
+  artifacts:
+    paths:
+    - build/
+
+#Test Stage
+#Runs all tests of GPSTK for each platform
+test_debian:
+  stage: test
+  tags:
+    - debian
+  script:
+    - cd build
+    - ctest -j 4
+  dependencies:
+    - build_debian
+
+test_redhat:
+  stage: test
+  tags:
+    - redhat
+  script:
+    - cd build
+    - ctest -j 4
+  dependencies:
+    - build_redhat
+
+test_osx:
+  stage: test
+  tags:
+    - osx
+  script:
+    - cd build
+    - ctest -j 4
+  dependencies:
+    - build_osx
 
 test_windows:
   stage: test
   tags:
     - windows
   script:
-    - build.sh -evxt
+    - cd build
+    - cmake --build . --target RUN_TESTS --config Release
+  dependencies:
+    - build_windows
+  allow_failure: true
+
+test_core:
+  stage: test
+  tags:
+    - core
+  script:
+    - cd build
+    - ctest -j 4
+  dependencies:
+    - build_core
+
+#Deploy Stage
+#Tests install of GPSTk on each platform, saves artifacts for downstream builds.
+deploy_debian:
+  stage: deploy
+  tags:
+    - debian
+  script:
+    - cd build
+    - make install -j 4
+  artifacts:
+    paths:
+    - build/install
+  dependencies:
+    - build_debian
+
+deploy_redhat:
+  stage: deploy
+  tags:
+    - redhat
+  script:
+    - cd build
+    - make install -j 4
+  artifacts:
+    paths:
+    - build/install
+  dependencies:
+    - build_redhat
+
+deploy_osx:
+  stage: deploy
+  tags:
+    - osx
+  script:
+    - cd build
+    - make install -j 4
+  dependencies:
+    - build_osx
+
+deploy_windows:
+  stage: deploy
+  tags:
+    - windows
+  script:
+    - cd build
+    - cmake --build . --config Release --target install
+  dependencies:
+    - build_windows
+
+deploy_core:
+  stage: deploy
+  tags:
+    - core
+  script:
+    - cd build
+    - make install -j 4
+  artifacts:
+    paths:
+    - build/install
+  dependencies:
+    - build_core
+
+#Package Stage
+#Tests packaging of GPSTk on all platforms
+package_debian:
+  stage: package
+  tags:
+    - debian
+  script:
+    - cd build
+    - make package -j 4
+  dependencies:
+    - build_debian
+
+package_redhat:
+  stage: package
+  tags:
+    - redhat
+  script:
+    - cd build
+    - make package -j 4
+  dependencies:
+    - build_redhat
+
+package_osx:
+  stage: package
+  tags:
+    - osx
+  script:
+    - cd build
+    - make package -j 4
+  dependencies:
+    - build_osx
+
+package_windows:
+  stage: package
+  tags:
+    - windows
+  script:
+    - cd build
+    - cpack -C Release
+  dependencies:
+    - build_windows
+
+package_core:
+  stage: package
+  tags:
+    - core
+  script:
+    - cd build
+    - make package -j 4
+  dependencies:
+    - build_core
+
+#Downstream Stage
+#Builds SGLTk to test for any downstream issues.
+sgltk_core:
+  stage: downstream
+  tags:
+    - core
+  script:
+    - cd build
+    - git clone gitlab@repositories.arlut.utexas.edu:sgl/sgltk.git
+    - cd sgltk
+    - ./build.sh -cvt -g ../install/gpstk
+  dependencies:
+    - deploy_core
+
+sgltk_debian:
+  stage: downstream
+  tags:
+    - debian
+  script:
+    - cd build
+    - git clone gitlab@repositories.arlut.utexas.edu:sgl/sgltk.git
+    - cd sgltk
+    - ./build.sh -cvt -g ../install/gpstk
+  dependencies:
+    - deploy_debian
+
+sgltk_redhat:
+  stage: downstream
+  tags:
+    - redhat
+  script:
+    - cd build
+    - git clone gitlab@repositories.arlut.utexas.edu:sgl/sgltk.git
+    - cd sgltk
+    - ./build.sh -cvt -g ../install/gpstk
+  dependencies:
+    - deploy_redhat

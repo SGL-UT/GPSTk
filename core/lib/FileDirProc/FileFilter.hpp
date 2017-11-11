@@ -255,7 +255,7 @@ namespace gpstk
       diff(const FileFilter<FileData>& r, BinaryPredicate p) const
       {
          std::pair< std::list<FileData>, std::list<FileData> > toReturn;
-         
+
          std::set_difference(dataVec.begin(), dataVec.end(),
                              r.dataVec.begin(), r.dataVec.end(),
                              std::inserter(toReturn.first, 

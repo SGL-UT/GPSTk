@@ -78,35 +78,6 @@ namespace gpstk
       void dump(std::ostream& s=std::cout, short detail=0) const
          throw();
 
-      /*
-       *  Following method is unique to GPSOrbElemStore and does not 
-       *  exist in OrbElemStore.
-       *
-       *  Notes regarding the rationalize( ) function.
-       *  The timing relationships defined in IS-GPS-200 20.3.4.5 mean
-       *  (1.) The end of validity of a given set of orbital elements
-       *  may be determined by the beginning of transmission of a new
-       *  upload.   
-       *  (2.) The beginning of validity of the SECOND set of elements
-       *  following and upload should be Toe-(0.5 fit interval) but
-       *  it is not practical to differentiate between the first and
-
-       *  second set following an upload when only looking at a 
-       *  single set of elements.
-       *
-       *  The rationalize( ) function is a means of addressing these 
-       *  shortcomings.   The intention is to load all the navigation
-       *  message data in the store, then call rationalize( ).  The
-       *  function will sweep through the ordered set of elements and
-       *  make appropriate adjustments to beginning and end of 
-       *  validity values.  In general, the only changes will
-       *  occur in set of elements immediately before an upload,
-       *  the first set following the upload, and (perhaps) the
-       *  second set following the upload. 
-       * 
-       */ 
-      void rationalize( );
-
    }; // end class
 
    //@}

@@ -18,12 +18,17 @@ set_property(TEST TimeHandling_CommonTime PROPERTY LABELS TimeHandling TimeStora
 add_executable(GPSWeekSecond_T GPSWeekSecond_T.cpp)
 target_link_libraries(GPSWeekSecond_T gpstk)
 add_test(TimeHandling_GPSWeekSecond GPSWeekSecond_T) 
-set_property(TEST TimeHandling_ANSITime PROPERTY LABELS TimeHandling TimeTag TimeStorage)
+set_property(TEST TimeHandling_GPSWeekSecond PROPERTY LABELS TimeHandling TimeTag TimeStorage)
 
 add_executable(GPSWeekZcount_T GPSWeekZcount_T.cpp)
 target_link_libraries(GPSWeekZcount_T gpstk)
 add_test(TimeHandling_GPSWeekZcount GPSWeekZcount_T)
 set_property(TEST TimeHandling_GPSWeekZcount PROPERTY LABELS TimeHandling TimeTag TimeStorage)
+
+add_executable(IRNWeekSecond_T IRNWeekSecond_T.cpp)
+target_link_libraries(IRNWeekSecond_T gpstk)
+add_test(TimeHandling_IRNWeekSecond IRNWeekSecond_T) 
+set_property(TEST TimeHandling_IRNWeekSecond PROPERTY LABELS TimeHandling TimeTag TimeStorage)
 
 add_executable(JulianDate_T JulianDate_T.cpp)
 target_link_libraries(JulianDate_T gpstk)
@@ -59,6 +64,11 @@ add_executable(UnixTime_T UnixTime_T.cpp)
 target_link_libraries(UnixTime_T gpstk)
 add_test(TimeHandling_UnixTime UnixTime_T)
 set_property(TEST TimeHandling_UnixTime PROPERTY LABELS TimeHandling TimeTag TimeStorage)
+
+add_executable(PosixTime_T PosixTime_T.cpp)
+target_link_libraries(PosixTime_T gpstk)
+add_test(TimeHandling_PosixTime PosixTime_T)
+set_property(TEST TimeHandling_PosixTime PROPERTY LABELS TimeHandling TimeTag TimeStorage)
 
 add_executable(YDSTime_T YDSTime_T.cpp)
 target_link_libraries(YDSTime_T gpstk)

@@ -80,6 +80,14 @@ namespace gpstk
       void setLabels(std::string lab1, std::string lab2, std::string lab3) throw()
          { lab[0]=lab1; lab[1]=lab2; lab[2]=lab3; }
 
+      Vector<double> getSol(void) const
+      {
+         Vector<double> sol(3);
+         for(size_t i=0; i<3; i++)
+            sol(i) = S[i].Average();
+         return sol;
+      }
+
       Matrix<double> getCov(void) const { return inverseSVD(sumInfo); }
 
       Matrix<double> getInfo(void) const { return sumInfo; }
@@ -241,6 +249,12 @@ namespace gpstk
          return 0.0;
       }
 
+      /// get the number of degrees of freedom
+      inline int getNDOF(void) { return ndof; }
+
+      /// get the average solution vector
+      Vector<double> getSol(void) const { return was.getSol(); }
+
       /// get the accumulated covariance matrix
       Matrix<double> getCov(void) const { return was.getCov(); }
 
@@ -306,14 +320,14 @@ namespace gpstk
                Namelist NL;
                NL += "ECEF_X"; NL += "ECEF_Y"; NL += "ECEF_Z";
                LabeledMatrix LM(NL,Cov);
-               LM.scientific().setprecision(3).setw(14);
+               LM.scientific().setprecision(3).setw(14).symmetric(true);
 
                os << "Covariance: " << msg << std::endl << LM << std::endl;
                os << "APV: " << msg << std::fixed << std::setprecision(3)
                   << " sigma = " << sig << " meters with "
-                  << ndof << " degrees of freedom.";
+                  << ndof << " degrees of freedom.\n";
             }
-            else os << " Not enough data for covariance.";
+            else os << " Not enough data for covariance.\n";
          }
          catch(Exception& e) { GPSTK_RETHROW(e); }
       }
@@ -599,27 +613,39 @@ namespace gpstk
       int DOPCompute(void) throw(Exception);
 
       /// conveniences for printing the results of the pseudorange solution algorithm
-      /// output position, error code and V/NV
+      /// return string of position, error code and V/NV
       std::string outputPOSString(std::string tag, int iret=-99,
                                     const Vector<double>& Vec=PRSNullVector) throw();
-      /// output {SYS clock} for all systems, error code and V/NV
+
+      /// return string of {SYS clock} for all systems, error code and V/NV
       std::string outputCLKString(std::string tag, int iret=-99) throw();
-      /// output info in POS and CLK
+
+      /// return string of info in POS and CLK
       std::string outputNAVString(std::string tag, int iret=-99,
                                     const Vector<double>& Vec=PRSNullVector) throw();
-      /// output NSVdropped, Nsvs, RMS residual, TDOP, PDOP, GDOP, Slope, niter, conv,
+
+      /// return string of Nsvs, RMS residual, TDOP, PDOP, GDOP, Slope, niter, conv,
       /// satellites, error code and V/NV
       std::string outputRMSString(std::string tag, int iret=-99) throw();
       std::string outputValidString(int iret=-99) throw();
-      /// output POS, CLK and RMS strings
+
+      /// return string of NAV and RMS strings
       std::string outputString(std::string tag, int iret=-99,
                                const Vector<double>& Vec=PRSNullVector) throw();
+      /// return string of the form "#tag label etc" which is header for data strings
+      std::string outputStringHeader(std::string tag) throw()
+         { return outputString(tag,-999); }
 
       /// A convenience for printing the error code (return value)
       std::string errorCodeString(int iret) throw();
 
       /// A convenience for printing the current configuarion
       std::string configString(std::string tag) throw();
+
+      /// Set current time
+
+      void setTime(const CommonTime& ct) throw()
+         { currTime = ct; }
 
    private:
 

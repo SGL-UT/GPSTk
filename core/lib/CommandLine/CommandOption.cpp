@@ -383,7 +383,6 @@ namespace gpstk
          if (optionVec[i]->getCount())
          {
             rv.push_back(optionVec[i]);
-            break;
          }
       }
 

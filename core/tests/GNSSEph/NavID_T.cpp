@@ -106,6 +106,11 @@ int main()
    NavID testIDGalOS( SatID( 2, SatID::systemGalileo ), ObsID( ObsID::otNavMsg, ObsID::cbL1, ObsID::tcB ) );
    if ( testIDGalOS.navType == NavID::ntGalOS ) TUPASS( "" );
    else TUFAIL( "ntGalOS instantiation failed." );
+
+      //IRNSS L5 SPS
+   NavID testID_IRNSS_SPS( SatID( 2, SatID::systemIRNSS ), ObsID( ObsID::otNavMsg, ObsID::cbL5, ObsID::tcIA5 ) );
+   if ( testID_IRNSS_SPS.navType == NavID::ntIRNSS_SPS ) TUPASS( "" );
+   else TUFAIL( "ntIRNSS_SPS instantiation failed." );
    
       //Unknown
    NavID testIDUnkwn( SatID( 1, SatID::systemGPS ), ObsID( ObsID::otNavMsg, ObsID::cbL5, ObsID::tcM ) );
@@ -125,12 +130,12 @@ int main()
    
    stringstream l2;
    l2 << testIDCNAVL2;
-   if ( l2.str() == "GPS_L2_CNAV" ) TUPASS( "" );
+   if ( l2.str() == "GPS_CNAV_L2" ) TUPASS( "" );
    else TUFAIL( "String does not match GPS_L2_CNAV." );
    
    stringstream l5;
    l5 << testIDCNAVL5;
-   if ( l5.str() == "GPS_L5_CNAV" ) TUPASS( "" );
+   if ( l5.str() == "GPS_CNAV_L5" ) TUPASS( "" );
    else TUFAIL( "String does not match GPS_L5_CNAV." );
    
    stringstream mn;
@@ -162,6 +167,11 @@ int main()
    os << testIDGalOS;
    if ( os.str() == "GalOS" ) TUPASS( "" );
    else TUFAIL( "String does not match GPS_LNAV." );
+
+   stringstream is;
+   is << testID_IRNSS_SPS;
+   if ( is.str() == "IRNSS_SPS" ) TUPASS( "" );
+   else TUFAIL( "String does not match IRNSS_SPS." );
    
    stringstream un;
    un << testIDUnkwn;
@@ -209,6 +219,10 @@ int main()
    if ( testIDGalOSString.navType == NavID::ntGalOS ) TUPASS( "" );
    else TUFAIL( "String input constructor failed to insantiate NavID object." );
    
+   NavID testID_IRNSS_SPS_String( is.str() );
+   if ( testID_IRNSS_SPS_String.navType == NavID::ntIRNSS_SPS ) TUPASS( "" );
+   else TUFAIL( "String input constructor failed to insantiate NavID object." );
+   
    NavID testIDUnkwnString( un.str() );
    if ( testIDUnkwnString.navType == NavID::ntUnknown ) TUPASS( "" );
    else TUFAIL( "String input constructor failed to insantiate NavID object." );
@@ -221,6 +235,7 @@ int main()
    set<NavID> testSet;
       //Insert NavTypes into set in backward order.
    testSet.insert( testIDUnkwn );
+   testSet.insert( testID_IRNSS_SPS);
    testSet.insert( testIDGalOS );
    testSet.insert( testIDGloC );
    testSet.insert( testIDGloF );

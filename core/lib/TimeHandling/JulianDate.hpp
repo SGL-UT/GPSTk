@@ -41,12 +41,49 @@
 
 namespace gpstk
 {
-      /// @ingroup TimeHandling
+ /// @ingroup TimeHandling
       //@{
 
-      /**
-       * This class encapsulates the "Julian Date" time representation.
-       */
+      /// This class encapsulates the "Julian Date" time representation.
+      ///
+      /// The implementation is in terms of "jday", which is int(JD+0.5), plus two
+      /// scaled 64-bit integers (dday,fday) to represent the fraction of the day.
+      /// So fraction of day = (dday+fday*JDFACT)*JDFACT where JDFACT = 1.0e-17;
+      /// this yields precision up to 1e-34. Implementation of class MJD is similar.
+      ///
+      /// There are a few subtle implementation issues here:
+      /// (0) JD is integer at noon, which is awkward; MJD is integer at midnight.
+      /// Thus the representation of "integer day" plus "fractional part of day"
+      /// or similar is straightforward for MJD but for JD there is that pesky 0.5.
+      /// 
+      /// (1) Some compliers, notably MSVC on Windows implement long double as double.
+      /// This causes a loss of precision when attempting to write JD as a single
+      /// floating number (double or even long double). Therefore, point 2:
+      /// 
+      /// (2) Here, long double is eliminated; the long double c'tor is deprecated.
+      /// There is a "long double JD()" provided, for convenience when high precision
+      /// is not needed (e.g. Solar system ephemeris), but with a warning of less
+      /// precision. NEVER try to store timetags for reuse as long double JD().
+      ///
+      /// (3) TimeSystem is left out of the long double constructor on purpose,
+      /// otherwise compilers see an ambiguity between the two c'tors
+      /// (GPS here could be any system)
+      ///   MJD(long double jd, TimeSystem::GPS) and
+      ///   MJD(long ijd, double sod)
+      /// because TimeSystem::GPS is an int and can be implicitly cast to double.
+      /// [However note that TimeSystem(2) will not be implicitly cast.]
+      /// Use setTimeSystem(TimeSystem::GPS).
+      ///
+      /// (4) On constructors for JulianDate jd. The following give the same value:
+      ///    jd.fromString("1350000");                // full JD
+      ///    jd = JulianDate(1350000,43200,0.0);      // jday not int(JD), sod, fsod
+      ///    jd.fromIntFrac(135000,0.0);              // int(JD) and frac(JD)
+      ///
+      /// (5) fromString() and asString() provide I/O which is repeatable and
+      /// the most precise, with up to 34 decimal digits (prec ~ 1e-34 = JDFACT^2).
+      /// fromIntFrac() is the worst b/c of the double fraction of the day.
+      ///  
+
    class JulianDate : public TimeTag
    {
    public:

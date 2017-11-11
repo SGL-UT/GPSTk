@@ -57,7 +57,10 @@ namespace gpstk
    bool GPSEphemeris::isValid(const CommonTime& ct) const
    {
       try {
-         if(ct >= beginValid && ct <= endValid) return true;
+         if(ct >= beginValid && ct <= endValid)
+         {
+            return true;
+         }
          return false;
       }
       catch(Exception& e) { GPSTK_RETHROW(e); }
@@ -97,25 +100,21 @@ namespace gpstk
 	      //   this may yield a later time as such a SF 1/2/3 will be on a even
 	      //   hour boundary.  Unfortunately, we have no way of knowing whether
 	      //   this item is first or second after upload without additional information
-	      //   2.) If Toc IS even two hour interval, pick time from SF 1,
-	      //   round back to nearest EVEN two hour boundary.  This assumes collection
-	      //   SOMETIME in first hour of transmission.  Could be more
-	      //   complete by looking at fit interval and IODC to more accurately
-	      //   determine earliest transmission time.
+	      //   2.) If Toc IS even two hour interval, then derive beginValid from promis
+         //   in IS-GPS-200 that beginning of transmission will be Toc- fitInterval/2.
          long longToc = static_cast<GPSWeekSecond>(ctToc).getSOW();
-         long XmitWeek = static_cast<GPSWeekSecond>(transmitTime).getWeek();
-         double XmitSOW = 0.0;
          if ( (longToc % 7200) != 0)     // NOT an even two hour change
          {
+            long XmitWeek = static_cast<GPSWeekSecond>(transmitTime).getWeek();
+            double XmitSOW = 0.0;
             long Xmit = HOWtime - (HOWtime % 30);
 	         XmitSOW = (double) Xmit;
+            beginValid = GPSWeekSecond( XmitWeek, XmitSOW, TimeSystem::GPS );
          }
          else
          {
-            long Xmit = HOWtime - HOWtime % 7200;
-	         XmitSOW = (double) Xmit;
+            beginValid = ctToc - ((fitDuration/2) * 3600);
          }
-         beginValid = GPSWeekSecond( XmitWeek, XmitSOW, TimeSystem::GPS );
 
 	      // End of Validity.
 	      // The end of validity is calculated from the fit interval

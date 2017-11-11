@@ -1,0 +1,16 @@
+Multipath Environment Evaluation Tool, a GPSTk utility
+
+Edited 3 points (0.25%).
+Removing mean of each pass.
+Overhead passes used: 11
+
+Standard deviation of bins sorted by elevation.
+
+From   0 to  90: 9.53e+12
+From  10 to  30: 1.11e+13
+From  20 to  40: 1.2e+13
+From  40 to  90: 5.11e+12
+From  10 to  90: 8.66e+12
+
+Total points used: 1219
+         rejected: 0

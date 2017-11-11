@@ -1,0 +1,240 @@
+# of OrbSysStore entries: 12
+**********************************************************
+ Summary Table of OrbSysStore
+
+HH:MM:SS  15  32
+00:00:24  30  30
+00:00:36  32  32
+00:01:24  33  33
+00:39:36  30   -
+00:40:36  33   -
+00:41:24  32   -
+00:53:24   -  32
+00:54:00   -  30
+00:54:12   -  33
+**********************************************************
+ One-line summary of non-orbit constellation overhead data
+       Sat  ID mm/dd/yyyy DOY HH:MM:SS  Data
+    GPS 15  30 01/01/2017 001 00:00:24  
+    GPS 15  30 01/01/2017 001 00:39:36  
+    GPS 15  32 01/01/2017 001 00:00:36  tEOP: 12/31/2016 366 02:14:56  PM_X:  8.1434249878E-02  PM_Y:  2.6428318024E-01  dUT1: -4.0764749050E-01 
+    GPS 15  32 01/01/2017 001 00:41:24  tEOP: 01/01/2017 001 00:14:56  PM_X:  8.0125808716E-02  PM_Y:  2.6366043091E-01  dUT1:  5.9148496389E-01 
+    GPS 15  33 01/01/2017 001 00:01:24  tot: 12/31/2016 366 02:14:56  A0: -9.3132257462E-10  A1: -7.9936057773E-15  A2:  0.0000000000E+00  dtLS:  17
+    GPS 15  33 01/01/2017 001 00:40:36  tot: 01/01/2017 001 00:14:56  A0:  1.7462298274E-10  A1:  2.2204460493E-15  A2:  0.0000000000E+00  dtLS:  18
+    GPS 32  30 01/01/2017 001 00:00:24  
+    GPS 32  30 01/01/2017 001 00:54:00  
+    GPS 32  32 01/01/2017 001 00:00:36  tEOP: 12/31/2016 366 02:45:04  PM_X:  8.1394195557E-02  PM_Y:  2.6429843903E-01  dUT1: -4.0767258406E-01 
+    GPS 32  32 01/01/2017 001 00:53:24  tEOP: 01/01/2017 001 00:30:08  PM_X:  8.0105781555E-02  PM_Y:  2.6366806030E-01  dUT1:  5.9147107601E-01 
+    GPS 32  33 01/01/2017 001 00:01:24  tot: 12/31/2016 366 02:45:04  A0: -9.6042640507E-10  A1: -7.9936057773E-15  A2:  0.0000000000E+00  dtLS:  17
+    GPS 32  33 01/01/2017 001 00:54:12  tot: 01/01/2017 001 00:30:08  A0:  1.7462298274E-10  A1:  2.2204460493E-15  A2:  0.0000000000E+00  dtLS:  18
+*********************************************************
+ GPS CNAV System-level navigation message data.  UID: 30
+ Transmitting SV : GPS 15
+ Transmit Time   : 01/01/2017 DOY 001 00:00:24  1930     24
+
+           GROUP DELAY CORRECTIONS
+Parameter    Avail?     Value
+Tgd            Y        -1.07102096E-08
+ISC(L1CA)      Y        -4.07453626E-10
+ISC(L2C)       Y         5.96628524E-09
+ISC(L5I5)      N
+ISC(L5Q5)      N
+
+           IONOSPHERIC PARAMETERS
+  Alpha 0:   7.45058060E-09 sec          Beta 0:   9.21600000E+04 sec       
+  Alpha 1:  -4.74318692E-09 sec/rad      Beta 1:  -3.65063242E+04 sec/rad   
+  Alpha 2:  -6.03921316E-09 sec/rad**2   Beta 2:  -1.32803702E+04 sec/rad**2
+  Alpha 3:   3.84468251E-09 sec/rad**3   Beta 3:   2.32500022E+04 sec/rad**3
+*********************************************************
+ GPS CNAV System-level navigation message data.  UID: 30
+ Transmitting SV : GPS 15
+ Transmit Time   : 01/01/2017 DOY 001 00:39:36  1930   2376
+
+           GROUP DELAY CORRECTIONS
+Parameter    Avail?     Value
+Tgd            Y        -1.07102096E-08
+ISC(L1CA)      Y        -4.07453626E-10
+ISC(L2C)       Y         5.96628524E-09
+ISC(L5I5)      N
+ISC(L5Q5)      N
+
+           IONOSPHERIC PARAMETERS
+  Alpha 0:   7.45058060E-09 sec          Beta 0:   9.01120000E+04 sec       
+  Alpha 1:  -4.74318692E-09 sec/rad      Beta 1:  -2.08607567E+04 sec/rad   
+  Alpha 2:  -6.03921316E-09 sec/rad**2   Beta 2:  -1.32803702E+04 sec/rad**2
+  Alpha 3:   3.84468251E-09 sec/rad**3   Beta 3:   1.47954559E+04 sec/rad**3
+*********************************************************
+ GPS CNAV System-level navigation message data.  UID: 32
+ Transmitting SV : GPS 15
+ Transmit Time   : 01/01/2017 DOY 001 00:00:36  1930     36
+
+           EOP PARAMETERS
+Parameter              Value
+t-sub-EOP       12/31/2016 02:14:56
+t-sub_EOP(sow)    526496 sec
+PM_X          8.1434249878E-02 arc -sec
+PM_X_dot      -1.8868446350E-03 arc-sec/day
+PM_Y          2.6428318024E-01 arc-sec
+PM_Y_dot      7.3957443237E-04 arc-sec/day
+delta_UT1     -4.0764749050E-01 sec
+delta_UT1_dot -1.2058913708E-03 sec/day
+*********************************************************
+ GPS CNAV System-level navigation message data.  UID: 32
+ Transmitting SV : GPS 15
+ Transmit Time   : 01/01/2017 DOY 001 00:41:24  1930   2484
+
+           EOP PARAMETERS
+Parameter              Value
+t-sub-EOP       01/01/2017 00:14:56
+t-sub_EOP(sow)       896 sec
+PM_X          8.0125808716E-02 arc -sec
+PM_X_dot      -1.9383430481E-03 arc-sec/day
+PM_Y          2.6366043091E-01 arc-sec
+PM_Y_dot      7.5864791870E-04 arc-sec/day
+delta_UT1     5.9148496389E-01 sec
+delta_UT1_dot -1.3321638107E-03 sec/day
+*********************************************************
+ GPS CNAV System-level navigation message data.  UID: 33
+ Transmitting SV : GPS 15
+ Transmit Time   : 01/01/2017 DOY 001 00:01:24  1930     84
+
+           GPS UTC PARAMETERS
+Parameter              Value
+t-sub-ot      12/31/2016 02:14:56  Week 1929  SOW 526496
+A0         -9.3132257462E-10 sec
+A1         -7.9936057773E-15 sec/sec
+A2          0.0000000000E+00 sec/sec**2
+dtLS                      17 sec
+dtLSF                     18 sec
+WN_LSF             1929 Full GPS week
+DN                         7 day (1-7)
+Epoch(lsf)        12/31/2016
+*********************************************************
+ GPS CNAV System-level navigation message data.  UID: 33
+ Transmitting SV : GPS 15
+ Transmit Time   : 01/01/2017 DOY 001 00:40:36  1930   2436
+
+           GPS UTC PARAMETERS
+Parameter              Value
+t-sub-ot      01/01/2017 00:14:56  Week 1930  SOW    896
+A0          1.7462298274E-10 sec
+A1          2.2204460493E-15 sec/sec
+A2          0.0000000000E+00 sec/sec**2
+dtLS                      18 sec
+dtLSF                     18 sec
+WN_LSF             1929 Full GPS week
+DN                         7 day (1-7)
+Epoch(lsf)        12/31/2016
+*********************************************************
+ GPS CNAV System-level navigation message data.  UID: 30
+ Transmitting SV : GPS 32
+ Transmit Time   : 01/01/2017 DOY 001 00:00:24  1930     24
+
+           GROUP DELAY CORRECTIONS
+Parameter    Avail?     Value
+Tgd            Y         4.65661287E-10
+ISC(L1CA)      Y         2.32830644E-10
+ISC(L2C)       Y        -1.28056854E-09
+ISC(L5I5)      Y         8.87666829E-09
+ISC(L5Q5)      Y         9.31322575E-09
+
+           IONOSPHERIC PARAMETERS
+  Alpha 0:   7.45058060E-09 sec          Beta 0:   9.21600000E+04 sec       
+  Alpha 1:  -4.74318692E-09 sec/rad      Beta 1:  -3.65063242E+04 sec/rad   
+  Alpha 2:  -6.03921316E-09 sec/rad**2   Beta 2:  -1.32803702E+04 sec/rad**2
+  Alpha 3:   3.84468251E-09 sec/rad**3   Beta 3:   2.32500022E+04 sec/rad**3
+*********************************************************
+ GPS CNAV System-level navigation message data.  UID: 30
+ Transmitting SV : GPS 32
+ Transmit Time   : 01/01/2017 DOY 001 00:54:00  1930   3240
+
+           GROUP DELAY CORRECTIONS
+Parameter    Avail?     Value
+Tgd            Y         4.65661287E-10
+ISC(L1CA)      Y         2.32830644E-10
+ISC(L2C)       Y        -1.28056854E-09
+ISC(L5I5)      Y         8.87666829E-09
+ISC(L5Q5)      Y         9.31322575E-09
+
+           IONOSPHERIC PARAMETERS
+  Alpha 0:   7.45058060E-09 sec          Beta 0:   9.01120000E+04 sec       
+  Alpha 1:  -4.74318692E-09 sec/rad      Beta 1:  -2.08607567E+04 sec/rad   
+  Alpha 2:  -6.03921316E-09 sec/rad**2   Beta 2:  -1.32803702E+04 sec/rad**2
+  Alpha 3:   3.84468251E-09 sec/rad**3   Beta 3:   1.47954559E+04 sec/rad**3
+*********************************************************
+ GPS CNAV System-level navigation message data.  UID: 32
+ Transmitting SV : GPS 32
+ Transmit Time   : 01/01/2017 DOY 001 00:00:36  1930     36
+
+           EOP PARAMETERS
+Parameter              Value
+t-sub-EOP       12/31/2016 02:45:04
+t-sub_EOP(sow)    528304 sec
+PM_X          8.1394195557E-02 arc -sec
+PM_X_dot      -1.8868446350E-03 arc-sec/day
+PM_Y          2.6429843903E-01 arc-sec
+PM_Y_dot      7.3957443237E-04 arc-sec/day
+delta_UT1     -4.0767258406E-01 sec
+delta_UT1_dot -1.2058913708E-03 sec/day
+*********************************************************
+ GPS CNAV System-level navigation message data.  UID: 32
+ Transmitting SV : GPS 32
+ Transmit Time   : 01/01/2017 DOY 001 00:53:24  1930   3204
+
+           EOP PARAMETERS
+Parameter              Value
+t-sub-EOP       01/01/2017 00:30:08
+t-sub_EOP(sow)      1808 sec
+PM_X          8.0105781555E-02 arc -sec
+PM_X_dot      -1.9383430481E-03 arc-sec/day
+PM_Y          2.6366806030E-01 arc-sec
+PM_Y_dot      7.5864791870E-04 arc-sec/day
+delta_UT1     5.9147107601E-01 sec
+delta_UT1_dot -1.3321638107E-03 sec/day
+*********************************************************
+ GPS CNAV System-level navigation message data.  UID: 33
+ Transmitting SV : GPS 32
+ Transmit Time   : 01/01/2017 DOY 001 00:01:24  1930     84
+
+           GPS UTC PARAMETERS
+Parameter              Value
+t-sub-ot      12/31/2016 02:45:04  Week 1929  SOW 528304
+A0         -9.6042640507E-10 sec
+A1         -7.9936057773E-15 sec/sec
+A2          0.0000000000E+00 sec/sec**2
+dtLS                      17 sec
+dtLSF                     18 sec
+WN_LSF             1929 Full GPS week
+DN                         7 day (1-7)
+Epoch(lsf)        12/31/2016
+*********************************************************
+ GPS CNAV System-level navigation message data.  UID: 33
+ Transmitting SV : GPS 32
+ Transmit Time   : 01/01/2017 DOY 001 00:54:12  1930   3252
+
+           GPS UTC PARAMETERS
+Parameter              Value
+t-sub-ot      01/01/2017 00:30:08  Week 1930  SOW   1808
+A0          1.7462298274E-10 sec
+A1          2.2204460493E-15 sec/sec
+A2          0.0000000000E+00 sec/sec**2
+dtLS                      18 sec
+dtLSF                     18 sec
+WN_LSF             1929 Full GPS week
+DN                         7 day (1-7)
+Epoch(lsf)        12/31/2016
+**********************************************************
+ One-line summary of non-orbit constellation overhead data
+       Sat  ID mm/dd/yyyy DOY HH:MM:SS  Data
+    GPS 15  30 01/01/2017 001 00:00:24  
+    GPS 32  30 01/01/2017 001 00:00:24  
+    GPS 15  32 01/01/2017 001 00:00:36  tEOP: 12/31/2016 366 02:14:56  PM_X:  8.1434249878E-02  PM_Y:  2.6428318024E-01  dUT1: -4.0764749050E-01 
+    GPS 32  32 01/01/2017 001 00:00:36  tEOP: 12/31/2016 366 02:45:04  PM_X:  8.1394195557E-02  PM_Y:  2.6429843903E-01  dUT1: -4.0767258406E-01 
+    GPS 15  33 01/01/2017 001 00:01:24  tot: 12/31/2016 366 02:14:56  A0: -9.3132257462E-10  A1: -7.9936057773E-15  A2:  0.0000000000E+00  dtLS:  17
+    GPS 32  33 01/01/2017 001 00:01:24  tot: 12/31/2016 366 02:45:04  A0: -9.6042640507E-10  A1: -7.9936057773E-15  A2:  0.0000000000E+00  dtLS:  17
+    GPS 15  30 01/01/2017 001 00:39:36  
+    GPS 15  33 01/01/2017 001 00:40:36  tot: 01/01/2017 001 00:14:56  A0:  1.7462298274E-10  A1:  2.2204460493E-15  A2:  0.0000000000E+00  dtLS:  18
+    GPS 15  32 01/01/2017 001 00:41:24  tEOP: 01/01/2017 001 00:14:56  PM_X:  8.0125808716E-02  PM_Y:  2.6366043091E-01  dUT1:  5.9148496389E-01 
+    GPS 32  32 01/01/2017 001 00:53:24  tEOP: 01/01/2017 001 00:30:08  PM_X:  8.0105781555E-02  PM_Y:  2.6366806030E-01  dUT1:  5.9147107601E-01 
+    GPS 32  30 01/01/2017 001 00:54:00  
+    GPS 32  33 01/01/2017 001 00:54:12  tot: 01/01/2017 001 00:30:08  A0:  1.7462298274E-10  A1:  2.2204460493E-15  A2:  0.0000000000E+00  dtLS:  18

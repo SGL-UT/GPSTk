@@ -1,0 +1,60 @@
+# RinSum, part of the GPS Toolkit, Ver 4.1 8/26/15, Run 2017/05/25 11:22:55
++++++++++++++ RinSum summary of Rinex obs file /local/Code/gpstk/data/inputs/igs/cags1700.16o +++++++++++++
+---------------------------------- REQUIRED ----------------------------------
+Rinex Version  2.11,  File type OBSERVATION DATA,  System G (GPS).
+Prgm: teqc  2013Mar15,  Run: 20160619 01:10:02UTC,  By: Mike Craymer
+Marker type: .
+Observer : MRC,  Agency: NRCan/GSD
+Rec#: 4931K62895,  Type: TRIMBLE NETR8,  Vers: 4.17
+Antenna # : 4926353381,  Type : TRM59800.00     NONE
+Position      (XYZ,m) : (1096349.1598, -4335060.6685, 4533255.2278).
+Antenna Delta (HEN,m) : (0.1000, 0.0000, 0.0000).
+GPS Observation types (7):
+ Type #01 (L1C) L1 GPSC/A phase
+ Type #02 (L2W) L2 GPScodelessZ phase
+ Type #03 (L5X) L5 GPSI+Q5 phase
+ Type #04 (C1C) L1 GPSC/A pseudorange
+ Type #05 (C2W) L2 GPScodelessZ pseudorange
+ Type #06 (S1C) L1 GPSC/A snr
+ Type #07 (S2W) L2 GPScodelessZ snr
+R2ObsTypes: L1 L2 L5 C1 P2 S1 S2 
+mapSysR2toR3ObsID[G] C1:C1C L1:L1C L2:L2W L5:L5X P2:C2W S1:S1C S2:S2W 
+Time of first obs 2016/06/18 00:00:00.000 GPS
+(This header is VALID)
+---------------------------------- OPTIONAL ----------------------------------
+Marker number : 40147M001
+Signal Strenth Unit = 
+Interval =  30.000
+Wavelength factor L1: 1 L2: 1
+Leap seconds: 17
+Comments (6) :
+Linux 2.4.20-8|Pentium IV|gcc -static|Linux|486/DX+
+BIT 2 OF LLI FLAGS DATA COLLECTED UNDER A/S CONDITION
+This data is subject to the Open Government Licence -Canada
+http://open.canada.ca/en/open-government-licence-canada
+SNR is mapped to RINEX snr flag value [0-9]
+L1 & L2: min(max(int(snr_dBHz/6), 0), 9)
+-------------------------------- END OF HEADER --------------------------------
+
+Reading the observation data...
+Computed interval 30.00 seconds.
+Computed first epoch: 2016/06/18 00:00:00 = 1901 6 518400.000 GPS
+Computed last  epoch: 2016/06/18 00:02:30 = 1901 6 518550.000 GPS
+Computed time span: 0h 2m 30s = 150 seconds.
+There were 6 epochs (100.00% of 6 possible epochs in this timespan) and 0 inline header blocks.
+
+      Summary of data available in this file: (Spans are based on times and interval)
+System G = GPS:
+ Sat\OT: L1C    L2W    L5X    C1C    C2W    S1C    S2W   Span             Begin time - End time
+ G02       6      6      0      6      6      6      6      6  2016/06/18 00:00:00 - 2016/06/18 00:02:30
+ G05       6      6      0      6      6      6      6      6  2016/06/18 00:00:00 - 2016/06/18 00:02:30
+ G06       6      6      6      6      6      6      6      6  2016/06/18 00:00:00 - 2016/06/18 00:02:30
+ G09       6      6      6      6      6      6      6      6  2016/06/18 00:00:00 - 2016/06/18 00:02:30
+ G12       6      6      0      6      6      6      6      6  2016/06/18 00:00:00 - 2016/06/18 00:02:30
+ G17       6      6      0      6      6      6      6      6  2016/06/18 00:00:00 - 2016/06/18 00:02:30
+ G19       6      6      0      6      6      6      6      6  2016/06/18 00:00:00 - 2016/06/18 00:02:30
+ G23       6      6      0      6      6      6      6      6  2016/06/18 00:00:00 - 2016/06/18 00:02:30
+ G25       6      6      6      6      6      6      6      6  2016/06/18 00:00:00 - 2016/06/18 00:02:30
+TOTAL     54     54     18     54     54     54     54
+
+RinSum timing: processing 0.007 sec, wallclock: 0 sec.

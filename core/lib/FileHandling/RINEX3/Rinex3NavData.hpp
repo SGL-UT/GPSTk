@@ -148,6 +148,9 @@ namespace gpstk
          return (t < r);
       }
 
+      static long fixSF1xmitSOW(unsigned long sow)
+      { return sow - (sow % 30); }
+
 
          /** @name General Data */
          //@{
@@ -155,7 +158,7 @@ namespace gpstk
       std::string satSys;  ///< Satellite system of Epoch: G,R,E,S,C
       short PRNID;         ///< SV PRN ID
       RinexSatID sat;      ///< RinexSatID (from PRNID & satSys)
-      long HOWtime;        ///< Time of subframe 1-3 (sec of week)
+      long xmitTime;        ///< Time of subframe 1-3 (sec of week)
       short weeknum;       ///< GPS full week corresponding to HOWtime of SF1
                            ///< (N.B.:in RINEX files, week number corresponds
                            /// >to ToE, not GLO)
@@ -227,6 +230,7 @@ namespace gpstk
       double  OMEGAdot;    ///< Rate of Rt ascension (rad/sec)
       double  idot;        ///< Rate of inclination angle (rad/sec)
       double  fitint;      ///< Fit interval
+
          //@}
 
          /** @name Tabular Ephemeris Parameters */

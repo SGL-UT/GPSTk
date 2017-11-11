@@ -47,7 +47,7 @@
 
 #include "DataStructures.hpp"
 #include "ProcessingClass.hpp"
-#include "TropModel.hpp"
+#include "NBTropModel.hpp"
 #include "GNSSconstants.hpp"             // DEG_TO_RAD
 
 

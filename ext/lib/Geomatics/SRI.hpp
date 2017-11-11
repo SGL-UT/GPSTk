@@ -34,15 +34,13 @@
 //
 //=============================================================================
 
-/**
- * @file SRI.hpp
- * Include file defining class SRI.
- * class SRI implements the square root information methods, used for least squares
- * estimation and the SRI form of the Kalman filter.
- *
- * Reference: "Factorization Methods for Discrete Sequential Estimation,"
- *             by G.J. Bierman, Academic Press, 1977.
- */
+/// @file SRI.hpp
+/// Include file defining class SRI.
+/// class SRI implements the square root information methods, used for least squares
+/// estimation and the SRI form of the Kalman filter.
+///
+/// Reference: "Factorization Methods for Discrete Sequential Estimation,"
+///             by G.J. Bierman, Academic Press, 1977.
 
 //------------------------------------------------------------------------------------
 // TD go back thru and add const and throw() everywhere, also in Namelist

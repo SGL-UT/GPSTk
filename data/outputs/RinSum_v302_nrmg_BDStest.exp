@@ -1,0 +1,269 @@
+# RinSum, part of the GPS Toolkit, Ver 4.1 8/26/15, Run 2017/03/22 15:08:05
++++++++++++++ RinSum summary of Rinex obs file /home/jhprice/Documents/git/gpstk/data/inputs/igs/nrmg0150.16o +++++++++++++
+---------------------------------- REQUIRED ----------------------------------
+Rinex Version  3.02,  File type OBSERVATION DATA,  System MIXED.
+Prgm: cnvtToRINEX 2.30.0,  Run: 16-Jan-16 00:35 UTC,  By: REGINA
+Marker type: GEODETIC.
+Observer : GNSS Observer,  Agency: CNES
+Rec#: 5101K72972,  Type: TRIMBLE NETR9,  Vers: 5.01
+Antenna # : 1440921240,  Type : TRM57971.00     TZGD
+Position      (XYZ,m) : (-5743537.8595, 1380504.5339, -2397896.7305).
+Antenna Delta (HEN,m) : (0.0000, 0.0000, 0.0000).
+BeiDou Observation types (12):
+ Type #01 (C2I) B1 BDSIB1 pseudorange
+ Type #02 (C6I) B3 BDSIB2 pseudorange
+ Type #03 (C7I) E5b BDSIB3 pseudorange
+ Type #04 (D2I) B1 BDSIB1 doppler
+ Type #05 (D6I) B3 BDSIB2 doppler
+ Type #06 (D7I) E5b BDSIB3 doppler
+ Type #07 (L2I) B1 BDSIB1 phase
+ Type #08 (L6I) B3 BDSIB2 phase
+ Type #09 (L7I) E5b BDSIB3 phase
+ Type #10 (S2I) B1 BDSIB1 snr
+ Type #11 (S6I) B3 BDSIB2 snr
+ Type #12 (S7I) E5b BDSIB3 snr
+Galileo Observation types (16):
+ Type #01 (C1X) L1 GALB+C pseudorange
+ Type #02 (C5X) L5 GALI+Q5 pseudorange
+ Type #03 (C7X) E5b GALI+Q5 pseudorange
+ Type #04 (C8X) L5a+b GALI+Q5 pseudorange
+ Type #05 (D1X) L1 GALB+C doppler
+ Type #06 (D5X) L5 GALI+Q5 doppler
+ Type #07 (D7X) E5b GALI+Q5 doppler
+ Type #08 (D8X) L5a+b GALI+Q5 doppler
+ Type #09 (L1X) L1 GALB+C phase
+ Type #10 (L5X) L5 GALI+Q5 phase
+ Type #11 (L7X) E5b GALI+Q5 phase
+ Type #12 (L8X) L5a+b GALI+Q5 phase
+ Type #13 (S1X) L1 GALB+C snr
+ Type #14 (S5X) L5 GALI+Q5 snr
+ Type #15 (S7X) E5b GALI+Q5 snr
+ Type #16 (S8X) L5a+b GALI+Q5 snr
+GPS Observation types (16):
+ Type #01 (C1C) L1 GPSC/A pseudorange
+ Type #02 (C2W) L2 GPScodelessZ pseudorange
+ Type #03 (C2X) L2 GPSC2L+M pseudorange
+ Type #04 (C5X) L5 GPSI+Q5 pseudorange
+ Type #05 (D1C) L1 GPSC/A doppler
+ Type #06 (D2W) L2 GPScodelessZ doppler
+ Type #07 (D2X) L2 GPSC2L+M doppler
+ Type #08 (D5X) L5 GPSI+Q5 doppler
+ Type #09 (L1C) L1 GPSC/A phase
+ Type #10 (L2W) L2 GPScodelessZ phase
+ Type #11 (L2X) L2 GPSC2L+M phase
+ Type #12 (L5X) L5 GPSI+Q5 phase
+ Type #13 (S1C) L1 GPSC/A snr
+ Type #14 (S2W) L2 GPScodelessZ snr
+ Type #15 (S2X) L2 GPSC2L+M snr
+ Type #16 (S5X) L5 GPSI+Q5 snr
+QZSS Observation types (12):
+ Type #01 (C1C) L1 QZSSC/A pseudorange
+ Type #02 (C2X) L2 QZSSL2C(M+L) pseudorange
+ Type #03 (C5X) L5 QZSSL5I+Q pseudorange
+ Type #04 (D1C) L1 QZSSC/A doppler
+ Type #05 (D2X) L2 QZSSL2C(M+L) doppler
+ Type #06 (D5X) L5 QZSSL5I+Q doppler
+ Type #07 (L1C) L1 QZSSC/A phase
+ Type #08 (L2X) L2 QZSSL2C(M+L) phase
+ Type #09 (L5X) L5 QZSSL5I+Q phase
+ Type #10 (S1C) L1 QZSSC/A snr
+ Type #11 (S2X) L2 QZSSL2C(M+L) snr
+ Type #12 (S5X) L5 QZSSL5I+Q snr
+GLONASS Observation types (16):
+ Type #01 (C1C) G1 GLOC/A pseudorange
+ Type #02 (C1P) G1 GLOP pseudorange
+ Type #03 (C2C) G2 GLOC/A pseudorange
+ Type #04 (C2P) G2 GLOP pseudorange
+ Type #05 (D1C) G1 GLOC/A doppler
+ Type #06 (D1P) G1 GLOP doppler
+ Type #07 (D2C) G2 GLOC/A doppler
+ Type #08 (D2P) G2 GLOP doppler
+ Type #09 (L1C) G1 GLOC/A phase
+ Type #10 (L1P) G1 GLOP phase
+ Type #11 (L2C) G2 GLOC/A phase
+ Type #12 (L2P) G2 GLOP phase
+ Type #13 (S1C) G1 GLOC/A snr
+ Type #14 (S1P) G1 GLOP snr
+ Type #15 (S2C) G2 GLOC/A snr
+ Type #16 (S2P) G2 GLOP snr
+Geosync Observation types (8):
+ Type #01 (C1C) L1 SBASC/A pseudorange
+ Type #02 (C5I) L5 SBASI5 pseudorange
+ Type #03 (D1C) L1 SBASC/A doppler
+ Type #04 (D5I) L5 SBASI5 doppler
+ Type #05 (L1C) L1 SBASC/A phase
+ Type #06 (L5I) L5 SBASI5 phase
+ Type #07 (S1C) L1 SBASC/A snr
+ Type #08 (S5I) L5 SBASI5 snr
+R2ObsTypes: 
+Time of first obs 2016/01/15 00:00:00.000 GPS
+(This header is VALID)
+---------------------------------- OPTIONAL ----------------------------------
+Marker number : 92701M005
+Marker type : GEODETIC
+Time of Last Obs 2016/01/15 23:59:30.000 GPS
+Clock offset record is present and offsets are NOT applied.
+Phase shift correction for system G: -0.25000 cycles applied to obs type L2X GPS
+Phase shift correction for system J: -0.25000 cycles applied to obs type L2X QZSS
+Phase shift correction for system R:  0.25000 cycles applied to obs type L1P GLONASS
+Phase shift correction for system R: -0.25000 cycles applied to obs type L2C GLONASS
+Leap seconds: 17
+Number of Satellites with data : 78
+ PRN and number of observations for each obs type:
+ GPS     C1C    C2W    C2X    C5X    D1C    D2W    D2X    D5X    L1C    L2W    L2X    L5X    S1C    S2W    S2X    S5X
+ G01    1227   1219   1222   1225   1227   1211   1216   1219   1226
+ G02     956    953      0      0    956    951      0      0    956
+ G03    1021    994   1015   1015   1021    979   1010   1010   1017
+ G05     815    809    814      0    815    804    812      0    815
+ G06     849    844    843    845    849    839    836    839    845
+ G07    1010   1008   1009      0   1010   1005   1007      0   1010
+ G08    1177   1163   1171   1172   1177   1147   1158   1159   1172
+ G09     811    807    808    809    811    806    807    807    809
+ G10    1042   1040   1040   1040   1042   1039   1039   1039   1040
+ G11    1380   1350      0      0   1380   1342      0      0   1375
+ G12     841    824    836      0    841    808    822      0    839
+ G13    1213   1200      0      0   1213   1189      0      0   1209
+ G14     963    962      0      0    963    958      0      0    963
+ G15    1116   1097   1111      0   1116   1082   1102      0   1112
+ G16    1017    978      0      0   1017    966      0      0   1011
+ G17     971    969    970      0    971    967    968      0    970
+ G18    1022   1021      0      0   1022   1020      0      0   1021
+ G19     982    980      0      0    982    978      0      0    981
+ G20     967    963      0      0    967    961      0      0    967
+ G21     942    929      0      0    942    919      0      0    942
+ G22     984    981      0      0    984    976      0      0    984
+ G23     916    913      0      0    916    910      0      0    915
+ G24    1224   1205   1215   1218   1224   1190   1204   1205   1220
+ G25    1141   1133   1139   1140   1141   1119   1129   1131   1141
+ G26    1153   1141   1150   1150   1153   1128   1141   1141   1150
+ G27    1206   1197   1201   1202   1206   1188   1190   1195   1203
+ G28    1044   1040      0      0   1044   1032      0      0   1044
+ G29     843    825    840      0    843    821    834      0    840
+ G30     943    940    942    942    943    937    940    940    942
+ G31     848    844    845      0    848    839    841      0    847
+ G32     851    846      0      0    851    844      0      0    850
+ GAL     C1X    C5X    C7X    C8X    D1X    D5X    D7X    D8X    L1X    L5X    L7X    L8X    S1X    S5X    S7X    S8X
+ E11     804    803    803    802    804    797    794    797    804
+ E12    1323   1323   1323   1323   1323   1321   1321   1321   1323
+ E14     967    967    967    967    967    965    965    965    967
+ E19    1310   1310   1310   1310   1310   1309   1309   1309   1310
+ E20    1311      0      0      0   1311      0      0      0   1310
+ E22     650    649    649    649    650    648    648    648    649
+ E24     874    874    874    874    874    873    873    873    874
+ E26    1558   1555   1555   1556   1558   1543   1540   1542   1558
+ E30     874    868    870    870    874    860    858    860    873
+ GLO     C1C    C1P    C2C    C2P    D1C    D1P    D2C    D2P    L1C    L1P    L2C    L2P    S1C    S1P    S2C    S2P
+ R01     950    950    950    949    950    949    949    948    950
+ R02     943    943    942    941    943    939    939    938    943
+ R03     802    800    800    799    802    793    793    793    801
+ R04    1025   1025   1025   1025   1025   1022   1022   1022   1025
+ R05    1101   1101   1100   1099   1101   1097   1097   1097   1101
+ R06    1100   1100   1100   1099   1100   1094   1094   1094   1100
+ R07    1012   1012   1012   1012   1012   1007   1007   1007   1012
+ R08     853    853    853    853    853    852    852    852    853
+ R09    1001    999    980    905   1001    981    962    865    999
+ R10    1003   1003    998    995   1003    999    993    988   1003
+ R11     997    995    995    990    997    988    990    981    996
+ R12     912    912    911    909    912    898    898    897    912
+ R13     686    686    686    686    686    680    680    680    686
+ R14     868    868    868    862    868    863    864    856    868
+ R15    1157   1157   1157   1157   1157   1155   1155   1155   1157
+ R16    1150   1150   1150   1150   1150   1147   1147   1147   1150
+ R18    1169   1168   1167   1167   1169   1163   1161   1161   1169
+ R19    1019   1019   1019   1019   1019   1015   1015   1015   1019
+ R20    1152   1152   1151   1151   1152   1150   1149   1149   1152
+ R21     963    963    963    963    963    959    961    961    963
+ R22     789    789    789    789    789    788    788    788    789
+ R23     736    736    728    701    736    731    717    684    736
+ R24     936    936    936    934    936    932    932    930    936
+ GEO     C1C    C5I    D1C    D5I    L1C    L5I    S1C    S5I
+ S29    2880      0   2880      0   2880      0   2880      0
+ S35    2880   2880   2880   2879   2880   2879   2880   2880
+ S37    2880      0   2880      0   2880      0   2880      0
+ BDS     C2I    C6I    C7I    D2I    D6I    D7I    L2I    L6I    L7I    S2I    S6I    S7I
+ C01    2880   2880   2880   2880   2879   2879   2880   2880   2880
+ C03    2880   2880   2880   2880   2879   2879   2880   2880   2880
+ C04    2880   2880   2880   2880   2879   2879   2880   2880   2880
+ C06    2371   2366   2367   2371   2357   2359   2367   2365   2365
+ C07    2359   2357   2357   2359   2349   2351   2358   2355   2355
+ C08    2284   2283   2283   2284   2280   2279   2283   2282   2282
+ C09    1944   1936   1935   1944   1926   1926   1937   1936   1933
+ C10    1907   1904   1902   1907   1895   1893   1904   1903   1901
+ C11     850    849    849    850    848    848    849    849    849
+ C12     670    670    670    670    668    668    670    670    670
+ C14     983    978    978    983    970    970    978    978    978
+ QZS     C1C    C2X    C5X    D1C    D2X    D5X    L1C    L2X    L5X    S1C    S2X    S5X
+ J01    2880   2880   2880   2880   2879   2879   2880   2880   2880
+Comments (1) :
+-----------------------------------------------------------
+-------------------------------- END OF HEADER --------------------------------
+
+Reading the observation data...
+Computed interval 30.00 seconds.
+Computed first epoch: 2016/01/15 00:00:00 = 1879 5 432000.000 GPS
+Computed last  epoch: 2016/01/15 00:02:00 = 1879 5 432120.000 GPS
+Computed time span: 0h 2m 0s = 120 seconds.
+Computed file size: 44675 bytes.
+There were 5 epochs (100.00% of 5 possible epochs in this timespan) and 0 inline header blocks.
+
+      Summary of data available in this file: (Spans are based on times and interval)
+System C = BeiDou:
+ Sat\OT: C2I    C6I    C7I    D2I    D6I    D7I    L2I    L6I    L7I    S2I    S6I    S7I   Span             Begin time - End time
+ C01       5      5      5      5      4      4      5      5      5      5      5      5      5  2016/01/15 00:00:00 - 2016/01/15 00:02:00
+ C03       5      5      5      5      4      4      5      5      5      5      5      5      5  2016/01/15 00:00:00 - 2016/01/15 00:02:00
+ C04       5      5      5      5      4      4      5      5      5      5      5      5      5  2016/01/15 00:00:00 - 2016/01/15 00:02:00
+ C06       5      5      5      5      4      4      5      5      5      5      5      5      5  2016/01/15 00:00:00 - 2016/01/15 00:02:00
+ C07       5      5      5      5      4      4      5      5      5      5      5      5      5  2016/01/15 00:00:00 - 2016/01/15 00:02:00
+ C08       5      5      5      5      4      4      5      5      5      5      5      5      5  2016/01/15 00:00:00 - 2016/01/15 00:02:00
+ C09       5      5      5      5      4      4      5      5      5      5      5      5      5  2016/01/15 00:00:00 - 2016/01/15 00:02:00
+ C10       5      5      5      5      4      4      5      5      5      5      5      5      5  2016/01/15 00:00:00 - 2016/01/15 00:02:00
+ C11       5      5      5      5      4      4      5      5      5      5      5      5      5  2016/01/15 00:00:00 - 2016/01/15 00:02:00
+ C12       5      5      5      5      4      4      5      5      5      5      5      5      5  2016/01/15 00:00:00 - 2016/01/15 00:02:00
+TOTAL     50     50     50     50     40     40     50     50     50     50     50     50
+
+System E = Galileo:
+ Sat\OT: C1X    C5X    C7X    C8X    D1X    D5X    D7X    D8X    L1X    L5X    L7X    L8X    S1X    S5X    S7X    S8X   Span             Begin time - End time
+ E14       5      5      5      5      5      4      4      4      5      5      5      5      5      5      5      5      5  2016/01/15 00:00:00 - 2016/01/15 00:02:00
+ E22       5      5      5      5      5      4      4      4      5      5      5      5      5      5      5      5      5  2016/01/15 00:00:00 - 2016/01/15 00:02:00
+ E30       5      5      5      5      5      4      4      4      5      5      5      5      5      5      5      5      5  2016/01/15 00:00:00 - 2016/01/15 00:02:00
+TOTAL     15     15     15     15     15     12     12     12     15     15     15     15     15     15     15     15
+
+System G = GPS:
+ Sat\OT: C1C    C2W    C2X    C5X    D1C    D2W    D2X    D5X    L1C    L2W    L2X    L5X    S1C    S2W    S2X    S5X   Span             Begin time - End time
+ G01       5      5      5      5      5      4      4      4      5      5      5      5      5      5      5      5      5  2016/01/15 00:00:00 - 2016/01/15 00:02:00
+ G06       5      5      5      5      5      4      4      4      5      5      5      5      5      5      5      5      5  2016/01/15 00:00:00 - 2016/01/15 00:02:00
+ G07       5      5      5      0      5      4      4      0      5      5      5      0      5      5      5      0      5  2016/01/15 00:00:00 - 2016/01/15 00:02:00
+ G11       5      5      0      0      5      4      0      0      5      5      0      0      5      5      0      0      5  2016/01/15 00:00:00 - 2016/01/15 00:02:00
+ G13       5      5      0      0      5      4      0      0      5      5      0      0      5      5      0      0      5  2016/01/15 00:00:00 - 2016/01/15 00:02:00
+ G15       5      5      5      0      5      4      4      0      5      5      5      0      5      5      5      0      5  2016/01/15 00:00:00 - 2016/01/15 00:02:00
+ G17       5      5      5      0      5      4      4      0      5      5      5      0      5      5      5      0      5  2016/01/15 00:00:00 - 2016/01/15 00:02:00
+ G19       5      5      0      0      5      4      0      0      5      5      0      0      5      5      0      0      5  2016/01/15 00:00:00 - 2016/01/15 00:02:00
+ G28       5      5      0      0      5      4      0      0      5      5      0      0      5      5      0      0      5  2016/01/15 00:00:00 - 2016/01/15 00:02:00
+ G30       5      5      5      5      5      4      4      4      5      5      5      5      5      5      5      5      5  2016/01/15 00:00:00 - 2016/01/15 00:02:00
+TOTAL     50     50     30     15     50     40     24     12     50     50     30     15     50     50     30     15
+
+System J = QZSS:
+ Sat\OT: C1C    C2X    C5X    D1C    D2X    D5X    L1C    L2X    L5X    S1C    S2X    S5X   Span             Begin time - End time
+ J01       5      5      5      5      4      4      5      5      5      5      5      5      5  2016/01/15 00:00:00 - 2016/01/15 00:02:00
+TOTAL      5      5      5      5      4      4      5      5      5      5      5      5
+
+System R = GLONASS:
+ Sat\OT: C1C    C1P    C2C    C2P    D1C    D1P    D2C    D2P    L1C    L1P    L2C    L2P    S1C    S1P    S2C    S2P   Span             Begin time - End time
+ R09       5      5      5      5      5      4      4      4      5      5      5      5      5      5      5      5      5  2016/01/15 00:00:00 - 2016/01/15 00:02:00
+ R14       5      5      5      5      5      4      4      4      5      5      5      5      5      5      5      5      5  2016/01/15 00:00:00 - 2016/01/15 00:02:00
+ R15       5      5      5      5      5      4      4      4      5      5      5      5      5      5      5      5      5  2016/01/15 00:00:00 - 2016/01/15 00:02:00
+ R16       5      5      5      5      5      4      4      4      5      5      5      5      5      5      5      5      5  2016/01/15 00:00:00 - 2016/01/15 00:02:00
+ R18       5      5      5      5      5      4      4      4      5      5      5      5      5      5      5      5      5  2016/01/15 00:00:00 - 2016/01/15 00:02:00
+ R19       5      5      5      5      5      4      4      4      5      5      5      5      5      5      5      5      5  2016/01/15 00:00:00 - 2016/01/15 00:02:00
+ R20       1      1      0      0      1      0      0      0      1      1      0      0      1      1      0      0      1  2016/01/15 00:02:00 - 2016/01/15 00:02:00
+TOTAL     31     31     30     30     31     24     24     24     31     31     30     30     31     31     30     30
+
+System S = Geosync:
+ Sat\OT: C1C    C5I    D1C    D5I    L1C    L5I    S1C    S5I   Span             Begin time - End time
+ S29       5      0      5      0      5      0      5      0      5  2016/01/15 00:00:00 - 2016/01/15 00:02:00
+ S35       5      5      5      4      5      5      5      5      5  2016/01/15 00:00:00 - 2016/01/15 00:02:00
+ S37       5      0      5      0      5      0      5      0      5  2016/01/15 00:00:00 - 2016/01/15 00:02:00
+TOTAL     15      5     15      4     15      5     15      5
+
+ Warning - Computed last time does not agree with header
+RinSum timing: processing 0.021 sec, wallclock: 0 sec.

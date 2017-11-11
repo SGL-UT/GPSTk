@@ -1,0 +1,9 @@
+ Alm-SP3 Comparions for GPS_LNAV
+         Xmit               Differences
+       Sat  mm/dd/yy HH:MM:SS  Position RSS (m)  Velocity RSS (m/s)  Clock Bias (nsec)  Clock Drift (nsec/sec)
+     GPS 1  12/31/15 00:02:54          1042.130               0.162           -343.849                  -0.094
+     GPS 1  12/31/15 12:20:24           968.979               0.157            609.825                  -0.094
+     GPS 2  12/31/15 00:03:24           696.392               0.124            238.911                  -0.046
+     GPS 2  12/31/15 12:20:54           601.096               0.158            238.911                  -0.046
+    GPS 25  12/31/15 00:03:18           967.847               0.132             55.781                   0.616
+    GPS 25  12/31/15 12:20:48          1169.205               0.144            681.629                   0.616

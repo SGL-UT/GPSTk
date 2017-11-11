@@ -659,10 +659,10 @@ int Rinex3Obs_T :: filterOperatorsTest( void )
       merged( h2 );
       out << "Merged Header:" << endl;
       merged.theHeader.dump(out);
-      gpstk::Rinex3ObsDataOperatorLessThanFull LessThanFull;
+      gpstk::Rinex3ObsDataOperatorLessThanFull LessThanFull(merged.theHeader.mapObsTypes);
       testFramework.changeSourceMethod("Rinex3ObsDataOperatorLessThanFull");
-      testFramework.assert( !LessThanFull( d1, d1 ) , "",  __LINE__ );
-      testFramework.assert( !LessThanFull( d1, d2 ) , "", __LINE__ );
+      testFramework.assert( !LessThanFull( d1, h1, d1, h1, 5 ) , "",  __LINE__ );
+      testFramework.assert( !LessThanFull( d1, h1, d2, h2, 5 ) , "", __LINE__ );
    }
    catch (gpstk::Exception& e)
    {

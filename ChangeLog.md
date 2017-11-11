@@ -1,3 +1,929 @@
+Version 2.10   Monday, October 6, 2017
+
+   General modifications
+   ---------------------
+   - Significant changes to Gitlab CI builds
+   - Deprecation of Solaris from Gitlab CI builds, moved to nightly builds
+   - Comments added for Upcoming Deprecation/Privatization of CommonTime Accessor/Mutator Methods
+   - Native Debian Package Support, more compliant than CPack-based support
+   - Test Additions and Cleanup
+   - Various Bug and Compile Warning Fixes
+
+   Modifications by Author
+   ---------------------
+
+Anthony Hughes (1):
+      Fixed handling of wordless strings in words() and removeWords().
+
+Audric Terry (2):
+      Adding unit test for TimeRange::setToString method
+      Merge branch 'master' into issue_321_sts
+
+Brian Tolman (66):
+      trivial bug in configuration input
+      turn off exec permissions
+      IRN band 9 missing from ObsID::char2cb
+      Merge remote-tracking branch 'origin/master' into btolman_dev
+      Merge remote-tracking branch 'origin/issue_IRN_freq_9' into btolman_dev
+      trivial bug in configuration input
+      update, put undoc options on same footing as regular, handle help verbose and debug properly, and several smaller changes
+      update, put undoc options on same footing as regular, handle help verbose and debug properly, and several smaller changes
+      add Global trop model
+      add name() to base class
+      use setTime internally only
+      trivial change to help output
+      fix PRSolve test
+      bug in Initial/FinalTime(), do not access times of empty stores
+      set system to Any on typical time
+      add new code, move some DDBase-only code to relposition
+      clean up doc only
+      add test of EarthOrientation (IERS) code vs SOFA example
+      clean up comments
+      give DDBase tests their own catagory
+      bug found in ppp
+      add test of SE and OL tides vs IERS
+      add JPL ephemeris tests
+      clean up DT
+      modify for windows
+      dont understand, diff was 1.e-18
+      Merge remote-tracking branch 'origin/master' into SolarSystemUpdate
+      mod script to build on win64
+      Barycentric dynamic time TDB should not be labeled TRT, thats Turkey time
+      set time system in cast to common time
+      wrong return value in getGPT
+      merge master
+      add tests that dump trop model results
+      fix the windows tests of RinSum, drop filesize in output
+      bug - double for bool, trivial other changes
+      bug in Saas wet delay, also fix comments
+      fix Saas test after fixing bug
+      update PRSolve to use Global trop, add small functionality to PRSolution
+      update SatPass to write RINEX3, deprecate SatPassToRinex and add "2" to name, handle C2, and add UserFlag
+      try to satisfy Solaris
+      Remove local sort() to for Solaris
+      Merge remote-tracking branch 'origin/master' into updateSatPass
+      Improve Stats by defining wtd and sequential as separate classes, add simple statistical filters to geomatics
+      add std:: for windows
+      fix buffer overflow
+      trivial change that silences windows warning
+      bug, output the wrong int
+      bug in test2FDF
+      another bug
+      clean up and remove windows signed/unsigned warnings
+      improve Dump and Load
+      redesign internals of JulianDate to avoid long double
+      add temp test prgm
+      use strtoull for unint64_t; NB on WIN long=int=32bit
+      redesign internals of MJD to avoid long double
+      refine implementation slightly
+      clean up a little
+      put back MJD ctor(int day double sod)
+      decide on ctors, deprecate long double, remove ctor ambiguities, doc
+      strtoull is not in std::
+      implement SecOfDay and add to doc
+      clean up
+      fix swig test
+      fix for solaris - jday is long
+      bug in computation of stats in segment
+      clean up and fix one minor output bug
+
+Bryan Parsons (101):
+      Merge branch 'issue_IRN_freq_9' into 'master'
+      Merge branch 'issue_310_discfix' into 'master'
+      Merge branch 'PRSolve_test' into CommandLine_update
+      Merge branch 'PRSolve_test' into 'master'
+      Revert "Merge branch 'PRSolve_test' into 'master'"
+      Merge branch 'revert-f78eff9e' into 'master'
+      Merge branch 'CommandLine_update' into 'master'
+      Revert "Merge branch 'revert-f78eff9e' into 'master'"
+      Merge branch 'revert-4f6c9ec1' into 'master'
+      Merge branch 'issue_311_CNAV_MT32' into 'master'
+      Merge branch 'issue_313' into 'master'
+      Updating gitlab ci YAML file for smarter, flexible CI builds.
+      Gitlab CI YAML config tweak for faster builds and passing artifacts between build and test stages.
+      Updated all stages to accept artifacts from build stage as dependent stages.
+      Increase speed for gitlab ci file test.
+      Testing gitlab ci script functionality for OSX
+      Added artifacts and dependencies to osx ci build.
+      gitlab YAML tweaks for test and additional stages.
+      Continued tweaking to Debian and OSX ci builds.
+      Update gitlab-ci.yml with cache parameters for stages.
+      Updated build script for supporting VS 14 2015 install via command line.
+      Isolating OSX build for tweaking for all stages using artifacts and dependencies.
+      Merge branch 'update_build_win' into 'master'
+      Merge branch 'move_rationalize_function' into 'master'
+      Merge branch 'master' into gitlab_ci_update
+      Merge branch 'master' into gitlab_ci_update
+      Adding Windows ci build to gitlab ci YAML file for testing.
+      Added allow_failure flag for Windows ci test build, to handle known failures.
+      Adding Core builds to runner list.
+      Adding Solaris build to runners, updating incorrect tags.
+      Add Debian and Redhat builds to runners.
+      Servers updated with Gitlab Runners, removed Allowed_Failure flags.
+      Merge branch 'issue_314_mixedScanTime' into 'master'
+      Removed Deploy and Package stages for Solaris builds.
+      Merge branch 'issue_316_OrbitEphStore' into 'master'
+      Added variables for common arguments.
+      Updating issue with variable implementation.
+      Updated variables and added multi-thread support for appropriate builds.
+      Adding downstream sgltk build for debian platform.
+      Merge branch 'issue_317_StringUtils' into 'master'
+      Merge branch 'formal-deb-pkg2' into 'master'
+      Merge branch 'R3EphStore_time_bug' into 'master'
+      Merge branch 'AntStore_timesys_bug' into 'master'
+      Adding comments to .gitlab-ci.yml file
+      Adding more details to comments of .gitlab-ci.yml.
+      Changing install path for CI builds.
+      Testing new install location, adding downstream build to new gpstk install.
+      Updated all gitlab CI platforms for local install path.
+      Updating install stage artifacts for downstream dependency stage in gitlab ci.
+      Adding multiple downstream stages for different platforms.
+      Updating gitlab-ci.yml with artifacts for passing to SGLTk downstream builds.
+      Fixing SGLTk Solaris build commands in gitlab-ci.yml file.
+      Merge branch 'issue_318' into 'master'
+      Merge branch 'svnumxref_update' into 'master'
+      Merge branch 'SolarSystemUpdate' into 'master'
+      Removing Solaris Downstream stage due to long build times.
+      Merge branch 'add_G3_constants' into 'master'
+      Merge branch 'build_script_win64' into 'master'
+      Merge branch 'TDB_time_string' into 'master'
+      Merge branch 'GlobalTrop' into 'master'
+      Merge branch 'RinSum_tests_fix' into 'master'
+      Merge branch 'issue_319' into 'master'
+      Merge branch 'issue_316_OrbitEphStore' into 'master'
+      Merge branch '312-prettyprint-does-not-handle-newlines' into 'master'
+      Merge branch 'bug_double_for_bool' into 'master'
+      Merge branch 'SaasTropWetBug' into 'master'
+      Merge branch 'GlobalTropToPRSolve' into 'master'
+      Merge branch 'updateSatPass' into 'master'
+      Changes to bc2sp3 test to fix failures on windows.
+      Merge branch 'NavID_windows_warning' into 'master'
+      Merge branch 'bc2sp3_win_fix' into 'master'
+      Removing Solaris from CI builds.
+      Merge branch 'master' into gitlab_ci_update
+      Cleaning up gitlab ci script.
+      Updated comments for Gitlab CI .yml file.
+      Merge branch 'JD_MJD_rewrite' into 'master'
+      Merge branch 'updateStats' into 'master'
+      Revert "Merge branch 'JD_MJD_rewrite' into 'master'"
+      Merge branch 'revert-aef0847c' into 'master'
+      Revert "Merge branch 'updateStats' into 'master'"
+      Merge branch 'revert-409a9765' into 'master'
+      Merge branch 'updateStats' into 'master'
+      Merge branch 'cherry-pick-409a9765' into 'master'
+      Merge branch 'issue_249' into 'master'
+      Reapplying JD_MJD changes submitted by Brian Tolman, along with some UpdateStats tests.  Changes were originally reverted after merging due to SGLTk issues.  When re-applying changes, git merge-base encountered issues recognizing all changed files.  Creating a patch from full diff was the best solution to resolving this issue.
+      Merge branch 'JD_MJD_master_merged' into 'master'
+      Merge branch 'svnumxref_update' into 'master'
+      Merge branch 'issue_321_sts' into 'master'
+      Merge branch 'master' into gitlab_ci_update
+      Merge branch 'gitlab_ci_update' into 'master'
+      Merge branch 'issue_320' into 'master'
+      Merge branch 'issue_325' into 'master'
+      Merge branch 'bugStatsFilterStats' into 'master'
+      Merge branch 'issue_326_pnb_less_than' into 'master'
+      Moving MJD/JD Changes to separate branch. Revert "Reapplying JD_MJD changes submitted by Brian Tolman, along with some UpdateStats tests.  Changes were originally reverted after merging due to SGLTk issues.  When re-applying changes, git merge-base encountered issues recognizing all changed files.  Creating a patch from full diff was the best solution to resolving this issue."
+      Merge branch 'MJD_JD' into 'master'
+      Merge branch 'issue_327' into 'master'
+      Updated JulianDate.hpp for updated definition of jday, which is int(JD+0.5) and needed clarification.  Also, comments added for future deprecation of public methods for all CommonTime.* Accessor/Mutator methods.
+      Merge branch 'trop_model_tests' into 'master'
+      Merge branch 'Issue_248_Resolution' into 'master'
+      Merge branch 'issue_329_CNav_filters' into 'master'
+
+John H. Price (4):
+      check that secondObsItr exists before attempting to compare against it
+      Fix Rinex3Obs_FromScratch_T set commontime directly
+      Replaced HOWtime with xmitTime because the Rinex spec asks for xmitTime and not HOWtime.     Added fromLongDouble() to MJD class.     Added const qualifier to Stats::operator+= and -=.
+      output date as yyyymmdd hhmmss zone regardless of version
+
+Johnathan York (9):
+      Add initial native Debian packaging support
+      Initial support for Debian packaging of -ext and python components
+      test_utils.py: Fix shbang
+      Add explicit USE_RPATH build option
+      debian/rules: Utilize new USE_RPATH option
+      Add script to verify that versions in debian files match upstream
+      Fix Debian source package builds by changing format from "native" to "git"
+      Build a libgpstkX.Y-dbg Debian package with debugging symbols
+      Bump Debian pkg version to 2.9.8-2
+
+Jon Little (2):
+      Merge branch 'formal-deb-pkg' into 'master'
+      Issue 316 orbit eph store
+
+Michael Presho (1):
+      Added frequency and wavelength constants for Glonass G3 carrier
+
+Miquela Stein (6):
+      removed rationalize function, moved to OrbElemStore
+      added rationalize function, moved from GPSOrbElemStore. added check that GPS data is used
+      updated svnumxref to have the correct dates and times as verified through rawNavDump
+      updated for nanu 2017070
+      update to include nanu 2017042
+      updated trop model python tests
+
+Richard Ji-Cathriner (3):
+      bug fix and tests for addMessage()
+      Merge branch 'issue_249' of repositories.arlut.utexas.edu:sgl/gpstk into issue_249
+      added BDS and QZSS support to SP3c parsing
+
+johnk (12):
+      Rewrite prettyPrint to handle embedded newlines and test accordingly
+      testCommandOptionNOf use macros and fix out of scope pointer issue
+      Some bits of clean-up
+      clean up, formatting and test macros
+      Test CommandOptionNOf::which and bug fix
+      add tool for differencing time stamps
+      Add timediff tests and fix time system issue
+      cmake test script for output in variable checking
+      Merge remote-tracking branch 'origin/master' into 312-prettyprint-does-not-handle-newlines
+      Merge remote-tracking branch 'origin/master' into 312-prettyprint-does-not-handle-newlines
+      First cut at implementing a wrapper for struct timespec used by clock_gettime etc
+      Merge remote-tracking branch 'origin/master' into issue_327
+
+renfrob (19):
+      Tweaking OrbAlmGen
+      rge branch 'master' into issue_249
+      Fix formatting
+      Initial commit of OrbSysGpsC_32
+      Implementing CNAV MT32(EOP) and enhancing MT33(UTC)
+      Merge branch 'master' into issue_311_CNAV_MT32
+      Fixing failure to initialize some variables
+      Adding OrbSysGpsC* load tests
+      Tweaking leap second caes
+      Adding test cases for OrbSysGpsC_3x
+      Fixing missing returns
+      Fixing missing conversions for IRN
+      Completing HOW time adjustment workaround
+      Merge branch 'master' into issue_316_OrbitEphStore
+      Updating expected file
+      Fixing problem with PackedNavBits less than operator
+      Tweaking CNAV filters wrt default nav
+      Fixing fill characters in output statements
+      Fixing typo in exception message
+
+
+
+   #################################################
+
+
+Version 2.9.8   Tuesday, April 11, 2017
+
+   General modifications
+   ---------------------
+   - RINEX 3.03 support added
+   - Improvements to rowdiff & rnwdiffd
+   - RINEX 2 & 3 support fixed for RINEX Application Suite
+   - Test Additions and Cleanup
+   - Sdded method skeleton for IRNSS alm orbit cracking
+   - Various Bug and Compile Warning Fixes
+
+   Modifications by Author
+   ---------------------
+
+Anthony Hughes (2):
+      Fixed a FileHunter::find() bug in which the time system of the start time was lost and subsequent time comparisons were sabotaged; improved exception handling.
+      Changed test file specs to avoid ambiguity problems.
+
+Brian Tolman (3):
+      first attempt at R3.03 support
+      testing with RinDump
+      fixed tests
+
+Bryan Parsons (5):
+      Merge branch 'issue_302_OrbAlmGen_IRNSS' into 'master'
+      Merge branch 'issue_307_filehunter' into 'master'
+      Merge branch 'jhprice_dev' into 'master'
+      Merge branch 'issue_308' into 'master'
+      Merge branch 'sys-wide-install' into 'master'
+
+John H. Price (15):
+      Added a command line option to rowdiff to specify precision required to consider data a match.
+      Added a command line option to rnwdiff to specify precision required to consider data a match.
+      improved rnw precision option description
+      allow trimming of data in rowdiff and rnwdiff to prevent diffs caused by differences in precision
+      rowdiff - now also print diffs for satellites in file 2 that aren't in file 1
+      Fixed disambiguity comments showing only last character. renamed satString to sysString for clarity
+      specify double ten = 10 to avoid overloaded pow(...) ambiguity.
+      prevent ambiguous overloaded pow(...) call by casting parameter in function call
+      merge master into jhprice_dev
+      Don't try to translate Transmission Time into HOWtime since the RINEX spec is too ambiguous
+      rowdiff clearer easily filtered formatting
+      improved comments / help text
+      solaris can't do std::map::at(), replace with []
+      expanded inputs/igs/sptu0150.16o to incude BDS observations. Added RinSum outputs for BDS inputs. Documented input sources in readme.md.
+      merge master into branch
+
+Johnathan York (3):
+      Include SONAME in generated shared library (e.g. libgpstk.so)
+      Move installed headers under "gpstk/" subdirectory
+      Update swig .i installation directory to use new "gpstk/" prefix
+
+Michael Presho (9):
+      added method skeleton for irnss alm orbit cracking
+      initial cracking of IRNSS almanac incorporated
+      added hArg as input to loadDataIRN method
+      careful about constructing full week number
+      fixed typo to use global WN in ctToe construction
+      corrected SVID value in loadDataIRN
+      output timing for comparison
+      generalized tform print string in OrbAlm
+      removed debug statement from OrbAlmGen.cpp
+
+renfrob (4):
+      Merge branch 'master' into issue_302_OrbAlmGen_IRNSS
+      Removing throw in non-error case
+      Cleaning up almanac determination logic
+      Merge branch 'master' into issue_302_OrbAlmGen_IRNSS
+
+
+
+      #################################################
+
+Version 2.9.7   Monday, February 20, 2017
+
+   General modifications
+   ---------------------
+   - Turned on RHEL Runner commands, removed C++11 ignore flag for RHEL6.
+   - Test Cleanup
+   - Added ability to process Windows line endings (CR/LF)
+   - Add a macro for try/catch block wrapping in tests
+   - Various Bug and Compile Warning Fixes
+
+   Modifications by Author
+   ---------------------
+
+Bryan Parsons (19):
+      Turned on RHEL Runner commands, removed C++11 ignore flag for RHEL6.
+      Update .gitlab-ci.yml to fix YAML error.
+      Merge branch 'Redhat_Runner_Integration' into 'master'
+      Merge branch 'Rinex3Formatting' into 'master'
+      Revert "Merge branch 'Rinex3NavXmitTime' into 'master'"
+      Merge branch 'revert-f78d6ddf' into 'master'
+      Merge branch 'Rinex3NavXmitTime' into 'master'
+      Rinex3Formatting branch patch, omitted when reverting and remerging branches, reverts changes from merged Rinex3Formatting branch
+      Merge branch 'R3F_Patch' into 'master'
+      Merge branch 'issue_304' into 'master'
+      Merge branch '300-hexdumpdata-fixes' into 'master'
+      Merge branch '305-engephemeris-has-no-operator' into 'master'
+      Revert "Merge branch 'R3F_Patch' into 'master'"
+      Merge branch 'revert-da9de91e' into 'master'
+      Revert "Added newlines to rowdiff for clarity"
+      Merge branch 'revert-8ceddb36' into 'master'
+      Revert "Merge branch 'Rinex3Formatting' into 'master'"
+      Merge branch 'revert-5fd7a4b8' into 'master'
+      Update rowdiff.cpp
+
+John H. Price (2):
+      Added newlines to rowdiff for clarity (reverted per MSN request)
+      Rinex 2 date format matched to previous Rinex class output. rowdiff newline after epochs for readability. (reverted per MSN request)
+
+Jon C. Little (2):
+      Added ability to process Windows line endings (CR/LF)
+      Merge branch 'master' into issue_304
+
+johnk (5):
+      Add a macro for try/catch block wrapping in tests
+      Eliminate a warning under red hat/gcc
+      Replace single character ASCII separator in hex dumps with two arbitrary length strings
+      Add operator== for EngEphemeris, BrcKeplerOrbit and BrcClockCorrection and test
+      Make tlm argument to loadData methods const.
+
+
+
+      #################################################
+
+Version 2.9.6   Monday, January 30, 2017
+
+   General modifications
+   ---------------------
+   - CMake scripts fix for SWIG module directory building
+   - Test Cleanup
+   - Clean up the mess that was StringUtils_T.cpp
+   - Updated unit tests with fancy macros
+   - cleaned up NAV header label to match version spec
+   - Various Bug and Compile Warning Fixes
+
+   Modifications by Author
+   ---------------------
+
+Audric Terry (1):
+      Updating PRN 4 relationships from NANU 2016072 and 2017001
+
+Bryan Parsons (11):
+      Merge branch 'issue_290_IRNSS' into 'master'
+      Merge branch 'issue_292_deltaT_LSF' into 'master'
+      Merge branch 'issue_253_DataID_55' into 'master'
+      Merge branch 'issue_294_irnss_cleanup' into 'master'
+      Merge branch 'issue_296_svnumxref' into 'master'
+      Merge branch 'issue_295' into 'master'
+      Merge branch '297-tuassert-macros-should-catch-exceptions-and-fail' into 'master'
+      Merge branch '299-hexdumpdata-stream-issues' into 'master'
+      Merge branch 'Rinex3NavXmitTime' into 'master'
+      Merge branch 'issue_301' into 'master'
+      Merge branch '300-hexdumpdata-fixes' into 'master'
+
+John H. Price (4):
+      Fixed off by 6 bug in Rinex 3 Nav Xmit Time. Updated rowdiff and rnwdiff to compare Rinex 3 (can still compare Rinex 2)
+      Rinex3NavData.toList() added Toc twice and not Toe
+      cleaned up NAV header label to match version spec
+      changed xmitTime to HOWTime - 6 rather than HOWTime - (HOWTime % 30) to prevent unexpected diffs i.e. in round trips. improved rowdiff output. fixed diff not completing comparison in rowdiff
+
+Jon C. Little (1):
+      Fixed cmake scripts to build swig module directory prior to building the module
+
+johnk (13):
+      Make test assert macros catch exceptions and mark as fail
+      Kill tabs and all who use them
+      Kill tabs and all who use them
+      Merge remote-tracking branch 'origin/master' into 297-tuassert-macros-should-catch-exceptions-and-fail
+      Make sure stream flags are changed and restored as needed in hexDumpData
+      Clean up the mess that was StringUtils_T.cpp
+      More complete stream state saving/storation in hexDumpData
+      Don't optimize debug builds
+      hexDumpData:     Add the option to show radix on index and/or data.     Don't add index to col if it's not being printed.     Print a newline even if there's no ascii output.     Change the test data so it's not on even 8-byte boundaries to exercise fills.     Add tests for various configurations.
+      Move hexDumpData implementation out of StringUtils.hpp, enhance it a bunch and add a bunch of tests for it
+      data output was somehow dropping the fill character in some cases
+      0 fill hexDumpData
+      Merge remote-tracking branch 'origin/master' into 300-hexdumpdata-fixes
+
+renfrob (16):
+      Adding IRNSS signals to identifiers
+      Updating tests for IRN time
+      Adding new time class and associated test
+      Adding IRN time to TimeSystem
+      Updating tests to include IRNTime
+      Merge branch 'master' into issue_290_IRNSS
+      Fixing an oversight
+      Add IRN to the list of time system corrections
+      Adding test for RefTime/TimeSystemCorrection
+      Adding GLONASS<->UTC correction tests
+      Merge branch 'master' into issue_290_IRNSS
+      Adding deltaTLSF to Data ID 56 terse output
+      Modifying output for GPS LNAV Data ID 55
+      Cleaning/Correcting IRN time scanning/printing
+      Simplifying handling of non-GPS navigation message types
+      Changes for additional BeiDou support in the infrastructure classes
+
+      #################################################
+
+Version 2.9.5   Friday, December 16, 2016
+
+   General modifications
+   ---------------------
+   - Fixed type of stream position test
+   - Updated Truth Data for tests
+   - Added unit tests to catch incorrect CRC length and other record length problems
+   - Updated unit tests with fancy macros
+   - Adding antenna phase center offset calculations
+   - Various Bug and Compile Warning Fixes
+
+   Modifications by Author
+   ---------------------
+
+Anthony Hughes (2):
+      Fixed incorrect CRC length; added unit tests to catch incorrect CRC length and other record length problems; updateded unit tests with fancy macros.
+      Fixed type of stream position test
+
+Bryan Parsons (4):
+      Update .gitlab-ci.yml to comment out Redhat runner, which is currently offline.
+      New line characters were producing errors when building RPMs.  Updated Description to fix this issue.  Reported by Anthony Hughes.
+      Merge branch 'issue_289_binex_crc' into 'master'
+      Merge branch 'issue_284_ANTEX' into 'master'
+      
+renfrob (1):
+      Adding antenna phase center offset calculations
+
+
+
+      #################################################
+
+Version 2.9.4   Tuesday, November 22, 2016
+
+   General modifications
+   ---------------------
+   - Numerous Windows fixes
+   - Updated Truth Data for tests
+   - Various fixes for test infrastructure and individual tests
+   - This release includes new/modified source code comments for improved readability.
+   - Various Bug and Compile Warning Fixes
+
+   Modifications by Author
+   ---------------------
+
+Bryan Parsons (15):
+      Merge branch 'issue_271' into 'master'
+      Merge branch 'issue_272' into 'master'
+      Merge branch '274-multi-gnss-support-in-sp3c-files' into 'master'
+      Merge branch 'issue_275_TSC_in_OrbSysGpsL_56' into 'master'
+      Fixed FileHunter_T file and dir creation under Windows.
+      FileHunter has been updated to work correctly on Windows.  All failed tests cleared.  Windows api can handle both Unix and Windows file paths now.  Removed old file path code.  Also removed all CYGWIN defs from Core library.
+      Fixed FileUtils test failures - Tweaks to FileUtils library code for handling mangled directory paths on Windows.  FileUtils_T test omissions for tests not compatible with Windows.
+      Merge branch 'issue_276_BDSEllipsoid' into 'master'
+      Merge branch 'master' into windows_tests
+      Merge branch 'windows_tests' into 'master'
+      Merge branch 'issue_276_BDSEllipsoid' into 'master'
+      Truth test data updated to handle new OrbitEphStore edge case fixes and subsequent output changes.
+      Merge branch 'issue_277' into 'master'
+      Merge branch 'issue_286' into 'master'
+      Merge branch '288-vector-obsid-is-not-swig-wrapped' into 'master'
+
+John H. Price (14):
+      Calling prepareVer2Write is no longer necessary for outputting Rinex2 files     Added checking and excepting for likely programmer/user mistakes:     -invalid system char string in Header.mapObsTypes     -overlapping R3->R2 Obs Type conversion
+      Added 4-digit year for Rinex 3.02 Met file support
+      Glonass-related required fields now required iff a Glonass satellite is included in the file
+      Fixed reallyGetRecord for 3.02's 4-digit year     Updated comments for Rinex3Obs_FromScratch_T
+      Updated comments, respaced code for readability
+      Refactored code for readability. Added version test to RinexMet_T
+      Added missing data for new Rinex Met and Obs tests
+      Fixed --DO removing extra obs in RinEdit, updated tests to avoid duplicate obs
+      fixed Rinex 2 GPS output
+      partial fix of multi-GNSS rinex file io, save to test master behavior
+      removed debug messages, fixed glonass cod/phs/bias bug in writeHeaderRecords
+      Added check for prepareVer2Write following its re-requirement to output R2 files
+      Found print statement in Rinex3ObsHeader writeHeaderRecords implementation, surrounded with if(debug)
+      added back auto-selection of 'best' ObsID for R2 Obs Types in prepareVer2Write. Doing so now adds a header comment to clarify the origin of the Obs Type
+
+Jon C. Little (18):
+      Making df_diff report when a file isn't found
+      Allowing a slight variation in the SYS / PHASE SHIFT header
+      Adding more Rinex v2 & v3 testing
+      Now tests splitting and merging of files with RinEdit
+      Added another RinDump test
+      Merge branch 'master' into RinEdit_Galileo
+      Fixing several files that got overwritten in the previous merge of     master in to RinEdit_Galileo
+      Added more test cases for various Rinex variants.     see data/inputs/igs/README.md for the files used
+      Fixed and incorrectly specified dependency in the ctest of RinEdit
+      Merge branch 'master' into RinEdit_Galileo
+      Documentation for test data. Oh my!
+      Merge branch 'master' into RinEdit_Galileo
+      Fixing return code to be non-zero when there are uncaught exceptions thrown during tests
+      Added logging of environment to the build log.
+      Changed finding the GLONASS bias since the initializer seemed to be optimized out on solaris
+      Changed verbosity level to dump the environment
+      Merge branch 'master' into RinEdit_Checker
+      mend
+
+Jon Little (4):
+      Merge branch 'issue_283_OrbAlmGen' into 'master'
+      Merge branch '287_python_test' into 'master'
+      Merge branch 'RinEdit_Galileo' into 'master'
+      Merge branch 'RinEdit_Checker' into 'master'
+
+Richard Ji-Cathriner (2):
+      added BDS and QZSS support to SP3c parsing
+      Add template for vector with ObsID contents
+
+johnk (9):
+      Demonstrate how GPSEphemerisStore selection fails
+      Finding two return statements in the same scope, one after the other, made me reformat this to figure out what's really going on
+      It wasn't that I'd deleted a close curly, it was that I'd added an open curly.  Oops
+      Change eph2 HOW time, eph3 IODC/IODE
+      Add handling of edge cases and remove debugging cruft
+      Merge branch 'master' into issue_277
+      Merge attempt 1
+      Redo changes for ephemeris selection, using master, sans reformatting
+      Make find methods return NULL on empty map
+
+renfrob (10):
+      Adding operator<() to TimeRange
+      Fixing test failures
+      Changed key for OrbAlmStore to beginValid
+      Adding method to retrieve list of subject SVs
+      Correcting time frame for estimateWeekNumberBDS
+      Adding TimeSystemCorr method
+      Adding OrbSysStore
+      Adding new ellipsoid
+      Fixed file name problem
+      Modify OrbAlmGen to recognize and reject placeholder almanacs
+
+      #################################################
+
+Version 2.9.3   Thursday, September 15, 2016
+
+   General modifications
+   ---------------------
+   - Updated user documentation
+   - Progress towards making codebase Lintian clean for Debian packages
+   - Swig Examples fixed
+   - Jan 2017 leap second added to table
+   - This release includes new/modified source code comments for improved readability.
+   - Various Bug and Compile Warning Fixes
+
+   Modifications by Author
+   ---------------------
+
+Alex Kovacs (5):
+      gpstk/BuildSetup.cmake hardening-no-relro warnings.
+      gpstk/BuildSetup.cmake unstripped binaries
+      gpstk/BuildSetup.cmake starts-with-package-name
+      gpstk/BuildSetup.cmake extended description
+      gpstk/BuildSetup.cmake maintainer address
+
+Anthony Hughes (1):
+      Fixed memory leak during clear(); moved the implementation out of the header file.
+
+Bryan Parsons (9):
+      Merge branch 'IRNSS_Shim' into 'master'
+      Merge branch 'tropModelFix' into 'master'
+      Merge branch '268-bdt-conversion-in-timesystem-pp' into 'master'
+      Migrated svvis documentation to SGLTk.
+      Merge branch 'usermanual_update' into 'master'
+      Merge branch 'issue_269_OrbitEphStore' into 'master'
+      Merge branch 'issue_270' into 'master'
+      Merge branch 'alex-lintian-fixes' into 'master'
+      Merge branch 'swig_examples' into 'master'
+
+Jon C. Little (10):
+      Fixed reading of obs files with continuation lines in their obs types
+      Now will fully delete obs and satellites, including from the header
+      Fixed test for additional Rinex3ObsHeader dump output
+      Full test suite now working again on Debian & Solaris
+      Pulled Nick's testing doc changes
+      Moved a couple more tests to use testsuccexp.cmake
+      Moved a couple more tests to use testsuccexp.cmake
+      Merge branch 'RinEdit_Galileo' of repositories.arlut.utexas.edu:sgl/gpstk into RinEdit_Galileo
+      Making data paths available to swig
+      Fixing paths for test files
+
+Jon Little (6):
+      Fixing missing DataMap wrapping
+      Another one working
+      Making example4 wok
+      Refactored to work better and not require user input
+      swig example4 works again
+      swig example5 works again
+
+Kevin Kraatz (1):
+      Issue 270: Fix usage of Position in ORD classes
+
+Nathaniel Hill (1):
+      Minimal 4 line change to avoid RinDump aborting when files contain IRNSS data
+
+Richard Ji-Cathriner (1):
+      fixed conversions to/from BDT, added Jan 2017 leap second to table, cleaned up magic numbers
+
+bsorrells (1):
+      Added missing Trop Models to swig files
+
+
+
+      #################################################
+
+Version 2.9.2   Friday, August 5, 2016
+
+   General modifications
+   ---------------------
+   - Additional Unit and Application Tests
+   - Application Migration from ext to core
+   - Updated TESTING.md file
+      - Updated information about Unit Test Framework
+      - Information for writing Unit and Application Tests
+   - This release includes new/modified source code comments for improved readability.
+   - Various Bug and Compile Warning Fixes
+
+   Modifications by Author
+   ---------------------
+
+Anthony Hughes (3):
+      Added some minimal tests for DDBase as a starting point.
+      Excluded 'build' and 'ref' directories during source package build; removed execute bit from many files; properly completed move of mpsolve back into ext.
+      Removed the examples directory from the source package due to its immense size.
+
+Bryan Parsons (7):
+      Removed novaRinex from User's Reference Manual, after Caleb reported the error.
+      Merge branch 'more_doc_changes' into 'master'
+      Merge branch 'specialfuncs_max_iteration' into 'master'
+      Merge branch 'moreAppUnitTests' into 'master'
+      Merge branch 'specialfuncs_max_iteration' into 'master'
+      Merge branch 'issue_265' into 'master'
+      Merge branch 'issue_266' into 'master'
+
+Frederick Doe (2):
+      Fixed bug in timeconvert in which the first input for --z29 inputs was ignored. No matter which value was given, timeconvert output the time for that zcount in the first GPS epoch.     Also fixed bug in the CTest test for timeconvert --z29
+      Merge branch 'moreAppUnitTests' of repositories.arlut.utexas.edu:sgl/gpstk into moreAppUnitTests
+
+Jae-Ho Song (2):
+      Increased the maximum number of iterations for invChisqCDF from 100 to 1000. Additionally, this has been done for invNormalCDF, invStudentsCDF for consistency
+      Also increased the maximum number of iterations for contfracIncompGamma, cfIBeta, seriesIncompGamma
+
+Nick Fitzsimmons (22):
+      Moved RINEX Checktools to Core
+      Actually Added Tests
+      Added Additional Merge Application Testing
+      Changes to timeconvert Tests
+      Added Additional Input/Output Checking for the RINEX Tools
+      Merge remote-tracking branch 'origin/master' into moreAppUnitTests
+      Added Input/Output Checking for PRSolve and bc2sp3
+      Merge remote-tracking branch 'origin/master' into moreAppUnitTests
+      Merge branch 'moreAppUnitTests' of https://repositories.arlut.utexas.edu/sgl/gpstk into moreAppUnitTests
+      Added Seg Fault Checking to testfailexp.cmake
+      Merge remote-tracking branch 'origin/master' into moreAppUnitTests
+      Removed Improper Use Tests for Apps and Modified PRSolve Tests
+      Updated TESTING Documentation
+      Consolidated Valid Output Checks
+      Re-enabled the RinEdit_ValidOutput Test
+      Amended the ValidOutput Tests Again
+      Fixed a couple of comments
+      Updated TESTING.md
+      Updated TESTING.md
+      Updated TESTING.md Another Time
+      Removal of Help Tests for DDBase and DiscFix
+      Added More Precision to timeconvert Tests and Fixed a CMake File
+
+anthony (12):
+      Moved ext/apps/multipath to core/apps/multipath and removed graphics dependencies. Retained a copy of mpsolve.cpp in the old location renamed to mpsolve_svg.cpp. Added a new unit test for mpsolve.
+      Moved DDBase and DiscFix apps from ext to core ; added initial, minimal unit tests for each.
+      Fixed many tab/space, whitespace, comment, and line length issues.
+      Merge branch 'moreAppUnitTests' of repositories.arlut.utexas.edu:sgl/gpstk into moreAppUnitTests
+      Merge branch 'moreAppUnitTests' of repositories.arlut.utexas.edu:sgl/gpstk into moreAppUnitTests
+      Implemented unit tests for mpsolve.
+      Moving mpsolve and its tests back to ext; applying mpsolve fixes
+      Move DDBase and DiscFix back to ext along with their tests
+      Fixed overloading ambiguity when calling TUASSERTFE
+      Added check for invalid PR solution; added SP3 ephemeris test input for the proper time window; added a new test with the new SP3 input data; retained old test with invalid SP3 input data.
+      Reenable geomatics/cycleslips, geomatics/relposition, and multipath app builds and tests
+      Silenced errors on some platforms by removing redundant file closes and clears from the observation file reader.
+
+macosta (2):
+      Treat super saturated humidity as 100% and throw exceptions if humidity is above 105.
+      Merge remote-tracking branch 'origin/master' into issue_266
+
+
+
+      #################################################
+
+Version 2.9.1   Tuesday, July 12, 2016
+
+   General modifications
+   ---------------------
+   - Documentation across the GPSTk have been revamped
+     - LaTex User's Reference Manual PDF has been updated
+        - Old applications and LaTex files removed
+        - Migrated documentation for applications in SGLTk
+        - Various information updated
+     - Documentation.md added for how-tos on building GPSTk documentation
+     - Application documentation added to each app directory, in markdown for easy reading and auto-rendering on Gitlab
+   - Additional Application and Unit tests
+   - This release includes new/modified source code comments for improved readability.
+   - Various Bug and Compile Warning Fixes
+
+   Modifications by Author
+   ---------------------
+
+Audric Terry (2):
+      Adding minIdentical messages class member along with accessor functions
+      Merge branch 'master' into issue_252_CNAV_Filter
+
+Bryan Parsons (50):
+      Merge branch 'issue_252_CNAV_Filter' into 'master'
+      Update AUTHORS.md
+      Merge branch 'issue_254' into 'master'
+      Merge branch 'issue_249' into 'master'
+      Merge branch 'issue_250_NavID' into 'master'
+      calgps application and application tests have migrated from /ext to /core
+      Migrated all mergetools applications (mergeRinMet, mergeRinNav, mergeRinObs) and application tests from /ext to /core
+      RinEdit and RinSum applications with application tests have been migrated from /ext to /core
+      Migrated all difftools (rmwdiff, rnwdiff, rowdiff, rinheaddiff) applications and application tests from /ext to /core.  This commit closes JIRA issues GPSTK-61 and GPSTk-160.
+      Merge branch 'doc_mod' into 'master'
+      Merge branch 'ext_core_migration' into 'master'
+      Adding newline to end of CNavFilterData.hpp to quiet Solaris warnings.
+      Merge branch 'issue_249' into 'master'
+      Merge branch 'issue_249' into 'master'
+      Merge branch 'abc_test' into 'master'
+      Migrated calgps back to /ext, as library dependencies proved too numerous and must be tested properly prior to full migration of app and library code (vdraw in this case).  Also, added core-only build test to gitlab-ci builds to catch any reverse dependencies between core and ext.
+      Migrate calgps tests from core to ext
+      Merge branch 'ext_core_migration' into 'master'
+      Merge branch 'issue_256_bc2sp3' into 'master'
+      Merge branch 'issue_257' into 'master'
+      Merge branch 'issue_257' into 'master'
+      Merge branch 'issue_249' into 'master'
+      Merge branch 'issue_252_CNAV_Filter' into 'master'
+      RINEX bug fix submitted by Brian Tolman.  Code originally assumed only one continuation line.
+      Merge branch 'tolman_fix' into 'master'
+      Calgps application successfully split.  Original Calgps with svg,postscript, and EPS support left in /ext/apps/timeand renamed to calgps_svg.  New calgps with no vdraw library support added to /core/apps/time as calgps.  Primary tests have been migrated to /core test suite, while eps, postscript, and svg tests were left in /ext.
+      Syncing 'master' into ext_core_migration prior to Merge Request
+      Reverted /ext calgps test names back to original.
+      Merge branch 'ext_core_migration' into 'master'
+      Merge branch 'rinex_bug' into 'master'
+      Updating Doxyfile for latest version of GPSTk.
+      Latex Users Manual cleanup, removed old and migrated documentation to SGLTk.
+      Cleaned up User's Manual, updating dates, names, tables, and other relevant data.
+      Changed README.txt to README.md.
+      Added in folder README.txt for difftools application directory.  Developer documentation for Gitlab server and easy reference without the need to build the Latex manual.
+      Merge branch 'issue_263_PNB_NavID' into 'master'
+      Merge branch 'issue_249' into 'master'
+      Git enforcing line endings to LF on commit.
+      Sync branch 'master' into doc_overhaul
+      Update diff-tools README.md
+      Added filetools - bc2sp3 documentation into apps/filetools folder.  Tweaked some markdown in difftools README
+      Application documentation for poscvt and PRSolve have been added to core/apps/positioning folder.  PRSolve documentation was migrated from pdf.
+      Update apps/positioning README.md for better readability
+      Moved PRSolve.pdf into /doc subdirectory in apps/positioning.
+      Updated Rinextools, positioning, and time app folders with README.md files for app descriptions.
+      DOCUMENTATION.md file added to root GPSTk folder for instructions on how to build Doxygen API documentations and LaTex Users Manual.
+      Updated info in DOCUMENTATION.md file.
+      Some formatting cleanup for documentation.
+      Migrated some SGLTk app documentation to SGLTk from GPSTk documentation.
+      Updated README.txt to README.md for proper markdown rendering for /core/apps/time folder.
+
+Conor Lindahl (3):
+      Making sure I can commit
+      Removed tester file
+      Edited README.md for timeconvert to match with help
+
+Jessica Rosenquest (3):
+      Created OrbSysGpsL_52 and renamed OrbDataSys_T.cpp as OrbSysStore_T.cpp.
+      Merge branch 'master' into issue_249
+      Merge branch 'issue_249' of repositories.arlut.utexas.edu:sgl/gpstk into issue_249
+
+Jon C. Little (13):
+      Robustifiying input
+      Commenting out ineffective tests
+      Backing out a change that shoudn't be required
+      dangling semicolon
+      Merging in master to abc_test
+      Merge branch 'master' into abc_test
+      Fixing xmitReadTest
+      Refactoring code so one class per file.     Refactored exception throwing so location information would be preserved.     Fixed some uninitialized variables.
+      Merge branch 'issue_254' into abc_test
+      Making -O2 default on builds
+      Merge branch 'master' into abc_test
+      Merge branch 'master' into abc_test
+      Using tilde for home dir expansion wasn't always working.
+
+Jon Little (17):
+      Making build work on hrtr
+      Added sanitize for the python bindings
+      Misc changes to fix parsing of bogus data in input files.
+      Using the address sanitizer in debug builds under gcc
+      supports just dumping config
+      Fixing the __str__ and __repr__ funcions for some classes.
+      Merging in changes from master
+      Stream output operator doesn't seem to stack.
+      Refactored test to use the test utilities macros
+      Tweaking the tolerances.
+      Providing a better way for the GPSTk build to communicate where the python bindings are located.
+      Fixing output of the phase shift header records in rinex v3
+      Adding a new obs type, freqIndex, for recording the GLONAS frequency offset index
+      Line ending removal
+      Removing DOS line endings
+      Merge branch 'master' into rinex_bug
+      removing missed merge flags
+
+renfrob (50):
+      First valid compile of initial CNav filters
+      Initial implementation of CNav simple filters
+      Merge branch 'master' into issue_252_CNAV_Filter
+      Adding reject cases and doubling the amount of data
+      Finishing initial implementation of CNavFilters
+      Various changes to get initial CNav Filter sucess
+      Adding debug print methods
+      Removing debug include
+      Merge branch 'master' into issue_252_CNAV_Filter
+      Adding SV ID 53, 54, 55, 57-62
+      Merge branch 'master' into issue_249
+      Adding a general means to create OrbDataSys objects
+      Remving OrbSysStoreGpsL in facor of OrbDataSysFactory
+      Clean-up terse mode output
+      Adding test for OrbDataSys classes
+      Changing string IDs for CNAV_L2 and CNAV_L5
+      Tweaking output format for dumpTerse
+      Adding OrbAlm, OrbAlmGen, and a store for OrbAlm classes
+      Adding a test for OrbAlmStore
+      Improving tests, adding tests, improvements to OrbAlmStore.find()
+      Complete version of OrbAlmStore_T
+      Merge branch 'master' into issue_249
+      Adding test for OrbAlm classes
+      Merge branch 'master' into issue_249
+      Fixing units in bc2sp3
+      Moving bc2sp3 from ext to core
+      Fixing end time calculation
+      Adding test cases for bc2sp3
+      Removing unused files
+      Add test for --msg and fixing error in same
+      Adding a 900s test for bc2sp3
+      Adding deriveLastXmit to OrbAlmStore
+      Merge branch 'master' into issue_256_bc2sp3
+      Additional tweaks for OrbAlmStore
+      Adding ability to retrieve list of SVs tranmitting a specific almanac
+      Fixing comments
+      Improving handling of almanac time
+      Adding precision to text output
+      Fixing error in almanac cracker
+      Merge branch 'master' into issue_249
+      Adding comments on BDS limitations
+      Adding NavID to PackedNavBits as part of issue_263
+      Adding test for PackedNavBits::invert()
+      Adding test for copyBits
+      Adding test for insertUnsignedLong
+      Fix CRLF problems
+      Adding CNAV MT33
+      Incorporting OrbSysGpsC_33 into OrbDataSysFactory
+      Adding MT30 to CNAV system data
+      Once again fixing a CRLF problem
+
+
       #################################################
 
 Version 2.9   Friday, May 20, 2016

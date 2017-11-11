@@ -1,0 +1,275 @@
+# of OrbSysStore entries: 12
+**********************************************************
+ Summary Table of OrbSysStore
+
+HH:MM:SS   1   2   3
+00:00:18  57   -   -
+00:02:18  63   -   -
+00:02:24  51   -   -
+00:08:48  52  52   -
+00:10:48  55   -   -
+00:11:18  56  56  56
+12:26:18  52   -   -
+12:28:48  56   -   -
+18:43:48   -  56   -
+**********************************************************
+ One-line summary of non-orbit constellation overhead data
+       Sat  ID mm/dd/yyyy DOY HH:MM:SS  Data
+    GPS  1  51 12/31/2015 365 00:02:24  toa: 01/01/2016 001 19:56:48  Hlt 0x00:#23, Hlt 0x3f:#1
+    GPS  1  52 12/31/2015 365 00:08:48  NMCT 1 - Encrypted
+    GPS  1  52 12/31/2015 365 12:26:18  NMCT 0 - Unencrypted
+    GPS  1  55 12/31/2015 365 00:10:48   (Contents are no longer text. Awaiting new ICD)
+    GPS  1  56 12/31/2015 365 00:11:18  tot: 01/01/2016 001 19:56:48  A0: -1.8626451492E-09s,  A1: -3.5527136788E-15s/s,  dtLS:  17s,  dtLS_LSF:  17s 
+    GPS  1  56 12/31/2015 365 12:28:48  tot: 01/02/2016 002 19:50:24  A0:  9.3132257462E-10s,  A1:  4.4408920985E-15s/s,  dtLS:  17s,  dtLS_LSF:  17s 
+    GPS  1  57 12/31/2015 365 00:00:18  Reserved bits 
+    GPS  1  63 12/31/2015 365 00:02:18  Cfg 0011:#1, Cfg 1001:#13, Cfg 1010:#7, Cfg 1011:#11  Hlt 0x00:#8
+    GPS  2  52 12/31/2015 365 00:08:48  NMCT 1 - Encrypted
+    GPS  2  56 12/31/2015 365 00:11:18  tot: 01/01/2016 001 19:56:48  A0:  9.3132257462E-10s,  A1:  4.4408920985E-15s/s,  dtLS:  17s,  dtLS_LSF:  17s 
+    GPS  2  56 12/31/2015 365 18:43:48  tot: 01/02/2016 002 19:50:24  A0: -2.7939677238E-09s,  A1: -6.2172489379E-15s/s,  dtLS:  17s,  dtLS_LSF:  17s 
+    GPS  3  56 12/31/2015 365 00:11:18  tot: 01/01/2016 001 19:56:48  A0: -1.8626451492E-09s,  A1: -3.5527136788E-15s/s,  dtLS:  17s,  dtLS_LSF:  17s 
+*******************************************************
+ GPS System-level navigation message data.  UID: 51
+ Transmitting SV : GPS 1
+ Transmit Time   : 12/31/2015 DOY 365 00:02:24  1877 345744
+
+ toa, WNa : 503808, 85
+ Full Toa : 01/01/2016 19:56:48  1877 503808
+SV Health
+ PRN  hex  dec   PRN  hex dec   PRN  hex dec   PRN  hex dec
+   1: 0x 0   0    2: 0x 0   0    3: 0x 0   0    4: 0x3F  63 
+   5: 0x 0   0    6: 0x 0   0    7: 0x 0   0    8: 0x 0   0 
+   9: 0x 0   0   10: 0x 0   0   11: 0x 0   0   12: 0x 0   0 
+  13: 0x 0   0   14: 0x 0   0   15: 0x 0   0   16: 0x 0   0 
+  17: 0x 0   0   18: 0x 0   0   19: 0x 0   0   20: 0x 0   0 
+  21: 0x 0   0   22: 0x 0   0   23: 0x 0   0   24: 0x 0   0 
+*******************************************************
+ GPS System-level navigation message data.  UID: 52
+ Transmitting SV : GPS 1
+ Transmit Time   : 12/31/2015 DOY 365 00:08:48  1877 346128
+
+           GPS NMCT Data
+Parameter              Value
+availIndicator     1 - Encrypted
+NMCT data is encrypted, not available, or reserved. No ERD output will be displayed.
+*******************************************************
+ GPS System-level navigation message data.  UID: 52
+ Transmitting SV : GPS 1
+ Transmit Time   : 12/31/2015 DOY 365 12:26:18  1877 390378
+
+           GPS NMCT Data
+Parameter              Value
+availIndicator   0 - Unencrypted
+ERD[ 0]                 -0.3 meters   valid
+ERD[ 1]                 -7.5 meters   valid
+ERD[ 2]                  3.6 meters   valid
+ERD[ 3]                  9.3 meters   valid
+ERD[ 4]                 -9.3 meters   valid
+ERD[ 5]                  0.0 meters INVALID
+ERD[ 6]                 -7.8 meters   valid
+ERD[ 7]                 -2.1 meters   valid
+ERD[ 8]                  1.2 meters   valid
+ERD[ 9]                 -9.0 meters   valid
+ERD[10]                  0.0 meters INVALID
+ERD[11]                 -4.2 meters   valid
+ERD[12]                 -8.4 meters   valid
+ERD[13]                  7.5 meters   valid
+ERD[14]                  6.6 meters   valid
+ERD[15]                  4.2 meters   valid
+ERD[16]                 -4.5 meters   valid
+ERD[17]                 -7.2 meters   valid
+ERD[18]                  0.3 meters   valid
+ERD[19]                 -3.6 meters   valid
+ERD[20]                  2.4 meters   valid
+ERD[21]                 -6.9 meters   valid
+ERD[22]                 -4.2 meters   valid
+ERD[23]                  4.2 meters   valid
+ERD[24]                 -9.0 meters   valid
+ERD[25]                  1.2 meters   valid
+ERD[26]                  3.0 meters   valid
+ERD[27]                 -9.0 meters   valid
+ERD[28]                  5.1 meters   valid
+ERD[29]                  1.5 meters   valid
+*******************************************************
+ GPS System-level navigation message data.  UID: 55
+ Transmitting SV : GPS 1
+ Transmit Time   : 12/31/2015 DOY 365 00:10:48  1877 346248
+ Text message:
+ (Contents are no longer text. Awaiting new ICD)
+Reserved bits (6 bits, right-justified): 0x00
+*******************************************************
+ GPS System-level navigation message data.  UID: 56
+ Transmitting SV : GPS 1
+ Transmit Time   : 12/31/2015 DOY 365 00:11:18  1877 346278
+
+           GPS IONO PARAMETERS
+Parameter              Value
+alpha[0]      1.21071935E-08 sec
+alpha[1]     -2.34066893E-08 sec/rad
+alpha[2]     -1.87253514E-07 sec/rad**2
+alpha[3]      3.74507028E-07 sec/rad**3
+beta[0]       1.16736000E+05 sec
+beta[1]      -7.72077811E+05 sec/rad
+beta[2]      -2.05887416E+05 sec/rad**2
+beta[3]       3.50008607E+06 sec/rad**3
+
+           GPS UTC PARAMETERS
+Parameter              Value
+t-sub-ot      01/01/2016 19:56:48
+A0           -1.86264515E-09 sec
+A1           -3.55271368E-15 sec/sec
+dtLS                      17 sec
+dtLSF                     17 sec
+WN_LSF             1851( 59) Full week (modulo 256 week)
+DN                         3 day (1-7)
+Epoch(lsf)        06/30/2015
+*******************************************************
+ GPS System-level navigation message data.  UID: 56
+ Transmitting SV : GPS 1
+ Transmit Time   : 12/31/2015 DOY 365 12:28:48  1877 390528
+
+           GPS IONO PARAMETERS
+Parameter              Value
+alpha[0]      1.21071935E-08 sec
+alpha[1]     -2.34066893E-08 sec/rad
+alpha[2]     -1.87253514E-07 sec/rad**2
+alpha[3]      3.74507028E-07 sec/rad**3
+beta[0]       1.16736000E+05 sec
+beta[1]      -7.72077811E+05 sec/rad
+beta[2]      -2.05887416E+05 sec/rad**2
+beta[3]       3.50008607E+06 sec/rad**3
+
+           GPS UTC PARAMETERS
+Parameter              Value
+t-sub-ot      01/02/2016 19:50:24
+A0            9.31322575E-10 sec
+A1            4.44089210E-15 sec/sec
+dtLS                      17 sec
+dtLSF                     17 sec
+WN_LSF             1851( 59) Full week (modulo 256 week)
+DN                         3 day (1-7)
+Epoch(lsf)        06/30/2015
+*******************************************************
+ GPS System-level navigation message data.  UID: 57
+ Transmitting SV : GPS 1
+ Transmit Time   : 12/31/2015 DOY 365 00:00:18  1877 345618
+ Contents of Reserved Bits in Words 4-10 (with parity removed)
+ 182 bits, left-justified in 32 bit words
+ 0xC60770B9 0xA23D141F 0x91C24F9B 0x1C831F80 0x04065800
+*******************************************************
+ GPS System-level navigation message data.  UID: 63
+ Transmitting SV : GPS 1
+ Transmit Time   : 12/31/2015 DOY 365 00:02:18  1877 345738
+
+SV Configuration
+  PRN       PRN       PRN       PRN       PRN       PRN       PRN       PRN     
+   01:1011   02:1001   03:1011   04:0011   05:1010   06:1011   07:1010   08:1011
+   09:1011   10:1011   11:1001   12:1010   13:1001   14:1001   15:1010   16:1001
+   17:1010   18:1001   19:1001   20:1001   21:1001   22:1001   23:1001   24:1011
+   25:1011   26:1011   27:1011   28:1001   29:1010   30:1011   31:1010   32:1001
+
+SV Health
+ PRN  hex  dec   PRN  hex dec   PRN  hex dec   PRN  hex dec
+  25: 0x00  00   26: 0x00  00   27: 0x00  00   28: 0x00  00 
+  29: 0x00  00   30: 0x00  00   31: 0x00  00   32: 0x00  00 
+*******************************************************
+ GPS System-level navigation message data.  UID: 52
+ Transmitting SV : GPS 2
+ Transmit Time   : 12/31/2015 DOY 365 00:08:48  1877 346128
+
+           GPS NMCT Data
+Parameter              Value
+availIndicator     1 - Encrypted
+NMCT data is encrypted, not available, or reserved. No ERD output will be displayed.
+*******************************************************
+ GPS System-level navigation message data.  UID: 56
+ Transmitting SV : GPS 2
+ Transmit Time   : 12/31/2015 DOY 365 00:11:18  1877 346278
+
+           GPS IONO PARAMETERS
+Parameter              Value
+alpha[0]      1.21071935E-08 sec
+alpha[1]     -2.34066893E-08 sec/rad
+alpha[2]     -1.87253514E-07 sec/rad**2
+alpha[3]      3.74507028E-07 sec/rad**3
+beta[0]       1.16736000E+05 sec
+beta[1]      -7.72077811E+05 sec/rad
+beta[2]      -2.05887416E+05 sec/rad**2
+beta[3]       3.50008607E+06 sec/rad**3
+
+           GPS UTC PARAMETERS
+Parameter              Value
+t-sub-ot      01/01/2016 19:56:48
+A0            9.31322575E-10 sec
+A1            4.44089210E-15 sec/sec
+dtLS                      17 sec
+dtLSF                     17 sec
+WN_LSF             1851( 59) Full week (modulo 256 week)
+DN                         3 day (1-7)
+Epoch(lsf)        06/30/2015
+*******************************************************
+ GPS System-level navigation message data.  UID: 56
+ Transmitting SV : GPS 2
+ Transmit Time   : 12/31/2015 DOY 365 18:43:48  1877 413028
+
+           GPS IONO PARAMETERS
+Parameter              Value
+alpha[0]      1.21071935E-08 sec
+alpha[1]     -2.34066893E-08 sec/rad
+alpha[2]     -1.87253514E-07 sec/rad**2
+alpha[3]      3.74507028E-07 sec/rad**3
+beta[0]       1.16736000E+05 sec
+beta[1]      -7.72077811E+05 sec/rad
+beta[2]      -2.05887416E+05 sec/rad**2
+beta[3]       3.50008607E+06 sec/rad**3
+
+           GPS UTC PARAMETERS
+Parameter              Value
+t-sub-ot      01/02/2016 19:50:24
+A0           -2.79396772E-09 sec
+A1           -6.21724894E-15 sec/sec
+dtLS                      17 sec
+dtLSF                     17 sec
+WN_LSF             1851( 59) Full week (modulo 256 week)
+DN                         3 day (1-7)
+Epoch(lsf)        06/30/2015
+*******************************************************
+ GPS System-level navigation message data.  UID: 56
+ Transmitting SV : GPS 3
+ Transmit Time   : 12/31/2015 DOY 365 00:11:18  1877 346278
+
+           GPS IONO PARAMETERS
+Parameter              Value
+alpha[0]      1.21071935E-08 sec
+alpha[1]     -2.34066893E-08 sec/rad
+alpha[2]     -1.87253514E-07 sec/rad**2
+alpha[3]      3.74507028E-07 sec/rad**3
+beta[0]       1.16736000E+05 sec
+beta[1]      -7.72077811E+05 sec/rad
+beta[2]      -2.05887416E+05 sec/rad**2
+beta[3]       3.50008607E+06 sec/rad**3
+
+           GPS UTC PARAMETERS
+Parameter              Value
+t-sub-ot      01/01/2016 19:56:48
+A0           -1.86264515E-09 sec
+A1           -3.55271368E-15 sec/sec
+dtLS                      17 sec
+dtLSF                     17 sec
+WN_LSF             1851( 59) Full week (modulo 256 week)
+DN                         3 day (1-7)
+Epoch(lsf)        06/30/2015
+**********************************************************
+ One-line summary of non-orbit constellation overhead data
+       Sat  ID mm/dd/yyyy DOY HH:MM:SS  Data
+    GPS  1  57 12/31/2015 365 00:00:18  Reserved bits 
+    GPS  1  63 12/31/2015 365 00:02:18  Cfg 0011:#1, Cfg 1001:#13, Cfg 1010:#7, Cfg 1011:#11  Hlt 0x00:#8
+    GPS  1  51 12/31/2015 365 00:02:24  toa: 01/01/2016 001 19:56:48  Hlt 0x00:#23, Hlt 0x3F:#1
+    GPS  1  52 12/31/2015 365 00:08:48  NMCT 1 - Encrypted
+    GPS  2  52 12/31/2015 365 00:08:48  NMCT 1 - Encrypted
+    GPS  1  55 12/31/2015 365 00:10:48   (Contents are no longer text. Awaiting new ICD)
+    GPS  1  56 12/31/2015 365 00:11:18  tot: 01/01/2016 001 19:56:48  A0: -1.8626451492E-09s,  A1: -3.5527136788E-15s/s,  dtLS:  17s,  dtLS_LSF:  17s 
+    GPS  2  56 12/31/2015 365 00:11:18  tot: 01/01/2016 001 19:56:48  A0:  9.3132257462E-10s,  A1:  4.4408920985E-15s/s,  dtLS:  17s,  dtLS_LSF:  17s 
+    GPS  3  56 12/31/2015 365 00:11:18  tot: 01/01/2016 001 19:56:48  A0: -1.8626451492E-09s,  A1: -3.5527136788E-15s/s,  dtLS:  17s,  dtLS_LSF:  17s 
+    GPS  1  52 12/31/2015 365 12:26:18  NMCT 0 - Unencrypted
+    GPS  1  56 12/31/2015 365 12:28:48  tot: 01/02/2016 002 19:50:24  A0:  9.3132257462E-10s,  A1:  4.4408920985E-15s/s,  dtLS:  17s,  dtLS_LSF:  17s 
+    GPS  2  56 12/31/2015 365 18:43:48  tot: 01/02/2016 002 19:50:24  A0: -2.7939677238E-09s,  A1: -6.2172489379E-15s/s,  dtLS:  17s,  dtLS_LSF:  17s 

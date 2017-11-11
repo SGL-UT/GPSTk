@@ -1,0 +1,17 @@
+     2.11           OBSERVATION DATA    G (GPS)             RINEX VERSION / TYPE
+rinex3Test          From_Scratch_T_Valid05/19/2017 19:30:40 PGM / RUN BY / DATE
+NCCM1                                                       MARKER NAME
+85401                                                       MARKER NUMBER
+Monitor Station     NGA                                     OBSERVER / AGENCY
+1                   ITT MSN SAASM       3.2.13              REC # / TYPE / VERS
+1                   Topcon CR-G5                            ANT # / TYPE
+   -18000.2700 -4991850.1200  3957008.5000                  APPROX POSITION XYZ
+        0.0000        0.0000        0.0000                  ANTENNA: DELTA H/E/N
+     5    L1    P1    C1    L2    P2                        # / TYPES OF OBSERV
+     1     1                                                WAVELENGTH FACT L1/2
+    30.000                                                  INTERVAL
+  2016    10     2    11    15   30.0000000     GPS         TIME OF FIRST OBS
+                                                            END OF HEADER
+ 16 10  2 11 15 30.0000000  0  2G03G06
+         1.00000         3.00000         5.00000         7.00000         9.00000
+         2.00000         4.00000         6.00000         8.00000        10.00000

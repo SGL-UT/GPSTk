@@ -57,6 +57,9 @@ namespace gpstk
          /// Add a list of invalid nav messages to the reject list.
       inline void reject(const NavMsgList& invalid);
 
+         /// Debug support 
+      virtual void dumpRejected(std::ostream& out) const; 
+
          /** Rejected nav messages go here.  If using NavFilterMgr,
           * this list will be cleared prior to the validate message
           * being called (to prevent memory bloat).

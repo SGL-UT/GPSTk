@@ -76,12 +76,6 @@ OPTIONS:
    -p                   Build supported packages (source, binary, deb,  ...)
 
    -v                   Include debugging output.
-
-Notes:
-   Remember to add user and non-standard locations to your environment. Eg:
-     $ export LD_LIBRARY_PATH=/tmp/test/gpstk/lib:\$LD_LIBRARY_PATH
-     $ export PYTHONPATH=/tmp/test/lib/python2.7/site-packages:\$PYTHONPATH
-
 EOF
 }
 
@@ -104,6 +98,7 @@ while getopts "hb:cdepi:j:xP:sutTv" OPTION; do
            ;;
         i) install=1
            install_prefix=$(abspath ${OPTARG})
+           python_install=$install_prefix
            ;;
         j) num_threads=$OPTARG
            ;;
@@ -178,6 +173,12 @@ if ((verbose>0)); then
     log
 fi
 
+if ((verbose>2)); then
+    log "============================================================"
+    set >> $LOG
+    log "============================================================"
+fi
+
 if ((verbose>3)); then
     exit
 fi
@@ -195,7 +196,7 @@ if [ $build_docs ]; then
     log "Generating Doxygen files from C/C++ source ..."
     sed -e "s#^INPUT *=.*#INPUT = $sources#" -e "s#gpstk_sources#$sources#g" -e "s#gpstk_doc_dir#$build_root/doc#g" $repo/Doxyfile >$repo/doxyfoo
     sed -e "s#^INPUT *=.*#INPUT = $sources#" -e "s#gpstk_sources#$sources#g" -e "s#gpstk_doc_dir#$build_root/doc#g" $repo/Doxyfile | doxygen - >"$build_root"/Doxygen.log
-    tar -czf gpstk_doc_cpp.tgz -C doc/html .
+    tar -czf gpstk_doc_cpp.tgz -C "$build_root"/doc/html .
     
     if [[ -z $exclude_python && $build_ext ]] ; then
         log "Generating swig/python doc files from Doxygen output ..."
@@ -225,6 +226,10 @@ case `uname` in
         run cmake $args -G "Visual Studio 14 2015 Win64" $repo
         run cmake --build . --config Release
         ;;
+    MINGW64_NT-6.3)
+        run cmake $args -G "Visual Studio 14 2015 Win64" $repo
+        run cmake --build . --config Release
+        ;;
     *)
         run cmake $args $repo 
         run make all -j $num_threads
@@ -236,7 +241,10 @@ if [ $test_switch ]; then
       ignore_failures=1
   fi
   case `uname` in
-      MINGW32_NT-6.1)    
+      MINGW32_NT-6.1)
+          run cmake --build . --target RUN_TESTS --config Release
+          ;;
+      MINGW64_NT-6.3)
           run cmake --build . --target RUN_TESTS --config Release
           ;;
       *)
@@ -247,7 +255,16 @@ if [ $test_switch ]; then
 fi
 
 if [ $install ]; then
-    run make install -j $num_threads
+    case `uname` in
+    MINGW32_NT-6.1)
+        run cmake --build . --config Release --target install
+        ;;
+    MINGW64_NT-6.3)
+        run cmake --build . --config Release --target install
+        ;;
+    *)
+        run make install -j $num_threads
+    esac  
 fi
 
 if [ $build_docs ]; then
@@ -267,6 +284,9 @@ fi
 
 if [ $build_packages ]; then
     case `uname` in
+        MINGW64_NT-6.3)
+            run cpack -C Release
+            ;;
         MINGW32_NT-6.1)
             run cpack -C Release
             ;;

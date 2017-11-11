@@ -10,7 +10,7 @@ cmake_minimum_required( VERSION 2.8.5 )
 
 project( GPSTK )
 set( GPSTK_VERSION_MAJOR "2" )
-set( GPSTK_VERSION_MINOR "9" )
+set( GPSTK_VERSION_MINOR "10" )
 set( GPSTK_VERSION_PATCH "0" )
 set( GPSTK_VERSION "${GPSTK_VERSION_MAJOR}.${GPSTK_VERSION_MINOR}.${GPSTK_VERSION_PATCH}" )
 
@@ -34,6 +34,7 @@ option( DEBUG_VERBOSE "HELP: DEBUG_VERBOSE: Default = OFF, print all CMake varia
 option( BUILD_EXT "HELP: BUILD_EXT: SWITCH, Default = OFF, Build the ext library, in addition to the core library." OFF )
 option( TEST_SWITCH "HELP: TEST_SWITCH: SWITCH, Default = OFF, Turn on test mode." OFF )
 option( BUILD_PYTHON "HELP: BUILD_PYTHON: SWITCH, Default = OFF, Turn on processing of python extension package." OFF )
+option( USE_RPATH "HELP: USE_RPATH: SWITCH, Default= ON, Set RPATH in libraries and binaries." ON )
 
 if( BUILD_PYTHON AND !BUILD_EXT )
     message( WARNING "Combination of BUILD_PYTHON=ON and BUILD_EXT=OFF is not allowed. Python swig bindings depend on gpstk/ext." )
@@ -128,7 +129,18 @@ add_library( gpstk ${STADYN} ${GPSTK_SRC_FILES} ${GPSTK_INC_FILES} )
 install( TARGETS gpstk DESTINATION "${CMAKE_INSTALL_LIBDIR}" EXPORT "${EXPORT_TARGETS_FILENAME}" )
 
 # GPSTk header file install target
-install( FILES ${GPSTK_INC_FILES} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}" )
+install( FILES ${GPSTK_INC_FILES} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/gpstk" )
+
+
+#============================================================
+# GPSTK Library parameters
+#============================================================
+
+# GPSTk doesn't yet follow semantic versioning. Binary compatibility is only within a specific MAJOR.MINOR version, so
+#   SOVERSION has both MAJOR and MINOR for now.
+set_target_properties(gpstk PROPERTIES VERSION "${GPSTK_VERSION_MAJOR}.${GPSTK_VERSION_MINOR}.${GPSTK_VERSION_PATCH}"
+                                       SOVERSION "${GPSTK_VERSION_MAJOR}.${GPSTK_VERSION_MINOR}")
+
 
 #============================================================
 # Testing

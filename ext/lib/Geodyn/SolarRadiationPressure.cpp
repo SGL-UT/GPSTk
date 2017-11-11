@@ -265,8 +265,8 @@ namespace gpstk
       dryMass = sc.getDryMass();
       reflectCoeff = sc.getReflectCoeff();
 
-      Vector<double> r_sun = ReferenceFrames::getJ2kPosition(utc.asTDB(),SolarSystem::Sun);
-      Vector<double> r_moon = ReferenceFrames::getJ2kPosition(utc.asTDB(),SolarSystem::Moon);
+      Vector<double> r_sun = ReferenceFrames::getJ2kPosition(utc.asTDB(),SolarSystem::idSun);
+      Vector<double> r_moon = ReferenceFrames::getJ2kPosition(utc.asTDB(),SolarSystem::idMoon);
       
       // from km to m
       r_sun = r_sun*1000.0;

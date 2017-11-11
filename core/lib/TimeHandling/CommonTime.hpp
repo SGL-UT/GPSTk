@@ -124,6 +124,10 @@ namespace gpstk
       virtual ~CommonTime()
       {}
 
+         //FUTURE DEPRECATION
+         //ALL COMMONTIME ACCESSOR/MUTATOR METHODS ARE SET FOR FUTURE DEPRECATION (PRIVATIZATION)
+         //Accessor/Mutator methods should only be used by TimeTag classes and not made public,
+         //therefore these methods will be deprecated in a future release.
          //@}
 
          /**
@@ -135,6 +139,7 @@ namespace gpstk
           * fractional seconds of day.  It also checks the validity of the
           * arguments and throws an exception if any values are out of bounds.
           */
+          //METHOD SET FOR FUTURE DEPRECATION (PRIVATIZATION)
       CommonTime& set( long day,
                        long sod,
                        double fsod = 0.0,
@@ -145,6 +150,7 @@ namespace gpstk
           * checks the validity of the arguments and throws an exception if any
           * values are out of bounds.
           */
+          //METHOD SET FOR FUTURE DEPRECATION (PRIVATIZATION)
       CommonTime& set( long day,
                        double sod = 0.0,
                        const TimeSystem& timeSystem = TimeSystem::Unknown );
@@ -154,6 +160,7 @@ namespace gpstk
           * validity of the argument and throws an exception if its value is
           * out of bounds.
           */
+          //METHOD SET FOR FUTURE DEPRECATION (PRIVATIZATION)
       CommonTime& set( double day,
                        const TimeSystem& timeSys = TimeSystem::Unknown );
 
@@ -162,6 +169,7 @@ namespace gpstk
           * directly.  Checks the validity of the given time representation
           * and throws an exception if any values are out of bounds.
           */
+          //METHOD SET FOR FUTURE DEPRECATION (PRIVATIZATION)
       CommonTime& setInternal( long day = 0,
                                long msod = 0,
                                double fsod = 0.0,
@@ -170,6 +178,7 @@ namespace gpstk
          /**
           * Set method for internal variable m_timeSystem.
           */
+          //METHOD SET FOR FUTURE DEPRECATION (PRIVATIZATION)
       void setTimeSystem( const TimeSystem& timeSystem )
       { m_timeSystem = timeSystem; }
 
@@ -177,6 +186,7 @@ namespace gpstk
           * Get method.  Obtain values in days, second of day and fractional
           * second of day, plus the time frame.
           */
+          //METHOD SET FOR FUTURE DEPRECATION (PRIVATIZATION)
       void get( long& day,
                 long& sod,
                 double& fsod,
@@ -186,6 +196,7 @@ namespace gpstk
           * Get method.  Obtain values in days, second of day and fractional
           * second of day.
           */
+          //METHOD SET FOR FUTURE DEPRECATION (PRIVATIZATION)
       void get( long& day,
                 long& sod,
                 double& fsod ) const;
@@ -195,6 +206,7 @@ namespace gpstk
           * second of day which includes the fractional second of day,
           * plus the time frame.
           */
+          //METHOD SET FOR FUTURE DEPRECATION (PRIVATIZATION)
       void get( long& day,
                 double& sod,
                 TimeSystem& timeSystem ) const;
@@ -203,6 +215,7 @@ namespace gpstk
           * Get method through which one may obtain values for day and
           * second of day which includes the fractional second of day.
           */
+          //METHOD SET FOR FUTURE DEPRECATION (PRIVATIZATION)
       void get( long& day,
                 double& sod ) const;
 
@@ -210,6 +223,7 @@ namespace gpstk
           * Get method through which one may obtain a value for day which
           * includes the fraction of a day, plus the time frame.
           */
+          //METHOD SET FOR FUTURE DEPRECATION (PRIVATIZATION)
       void get( double& day,
                 TimeSystem& timeSystem ) const;
 
@@ -217,12 +231,14 @@ namespace gpstk
           * Get method through which one may obtain a value for day which
           * includes the fraction of a day.
           */
+          //METHOD SET FOR FUTURE DEPRECATION (PRIVATIZATION)
       void get( double& day ) const;
 
          /**
           * Get internal values method.  Obtain the values stored within this
           * object.
           */
+          //METHOD SET FOR FUTURE DEPRECATION (PRIVATIZATION)
       void getInternal( long& day,
                         long& msod,
                         double& fsod,
@@ -233,18 +249,22 @@ namespace gpstk
           * Get internal values method.  Obtain the values stored within this
           * object.
           */
+          //METHOD SET FOR FUTURE DEPRECATION (PRIVATIZATION)
       void getInternal( long& day,
                         long& msod,
                         double& fsod ) const
       { day = m_day; msod = m_msod; fsod = m_fsod; }
 
          /// Obtain the time, in days, including the fraction of a day.
+          //METHOD SET FOR FUTURE DEPRECATION (PRIVATIZATION)
       double getDays() const;
 
          /// Obtain the seconds of day (ignoring the day).
+          //METHOD SET FOR FUTURE DEPRECATION (PRIVATIZATION)
       double getSecondOfDay() const;
 
          /// Obtain time system info (enum).
+          //METHOD SET FOR FUTURE DEPRECATION (PRIVATIZATION)
       TimeSystem getTimeSystem() const;
 
          //@}

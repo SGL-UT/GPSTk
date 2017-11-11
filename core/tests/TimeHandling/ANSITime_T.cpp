@@ -303,8 +303,8 @@ class ANSITime_T
 		TestUtil testFramework( "ANSITime", "printf", __FILE__, __LINE__ );
 
 
-  		ANSITime GPS1(13500000,TimeSystem(2));
-  		ANSITime UTC1(13500000,TimeSystem(7));
+  		ANSITime GPS1(13500000,TimeSystem::GPS);
+  		ANSITime UTC1(13500000,TimeSystem::UTC);
 
 		//---------------------------------------------------------------------
 		//Verify printed output matches expectation

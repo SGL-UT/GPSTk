@@ -77,7 +77,7 @@ namespace gpstk
       s << " GPS System-level navigation message data.  UID: " << UID << endl;
       s << " Transmitting SV : " << satID << endl;
       s << " Transmit Time   : " 
-        << printTime(beginValid,"%02m/%02d/%4Y DOY %03j %02H:%02M:%02S  %F %g")
+        << printTime(beginValid,"%02m/%02d/%4Y DOY %03j %02H:%02M:%02S  %F %6.0g")
         << endl;
    }
 

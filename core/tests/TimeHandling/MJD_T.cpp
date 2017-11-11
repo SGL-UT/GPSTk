@@ -305,8 +305,8 @@ class MJD_T
 		TestUtil testFramework( "MJD", "printf", __FILE__, __LINE__ );
 
 
-  		MJD GPS1(135000,TimeSystem(2));
-  		MJD UTC1(135000,TimeSystem(7));
+  		MJD GPS1(135000,TimeSystem::GPS);
+  		MJD UTC1(135000,TimeSystem::UTC);
 		
 		//---------------------------------------------------------------------
 		//Verify printed output matches expectation
