@@ -19,7 +19,8 @@ build_debian:
     - debian
   script:
     - mkdir build
-    - cd build- export gpstk=`pwd`/install
+    - cd build
+    - export gpstk=`pwd`/install
     - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=install $CMAKE_ARG_DEFAULT 
     - make all -j 4
   artifacts:
