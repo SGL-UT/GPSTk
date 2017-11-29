@@ -268,7 +268,7 @@ sgltk_debian:
   script:
     - cd build
     - git clone gitlab@repositories.arlut.utexas.edu:sgl/sgltk.git
-    - export gpstk=`pwd`/build/install
+    - export gpstk=`pwd`/install
     - export LD_LIBRARY_PATH=$gpstk/lib:$LD_LIBRARY_PATH
     - cd sgltk
     - mkdir build
