@@ -253,6 +253,8 @@ sgltk_core:
   script:
     - cd build
     - git clone gitlab@repositories.arlut.utexas.edu:sgl/sgltk.git
+    - export gpstk=`pwd`/build/install/gpstk
+    - export LD_LIBRARY_PATH=$gpstk/lib:$LD_LIBRARY_PATH
     - cd sgltk
     - ./build.sh -cvt -g ../install/gpstk
   dependencies:
@@ -265,6 +267,8 @@ sgltk_debian:
   script:
     - cd build
     - git clone gitlab@repositories.arlut.utexas.edu:sgl/sgltk.git
+    - export gpstk=`pwd`/build/install/gpstk
+    - export LD_LIBRARY_PATH=$gpstk/lib:$LD_LIBRARY_PATH
     - cd sgltk
     - ./build.sh -cvt -g ../install/gpstk
   dependencies:
@@ -277,6 +281,8 @@ sgltk_redhat:
   script:
     - cd build
     - git clone gitlab@repositories.arlut.utexas.edu:sgl/sgltk.git
+    - export gpstk=`pwd`/build/install/gpstk
+    - export LD_LIBRARY_PATH=$gpstk/lib:$LD_LIBRARY_PATH
     - cd sgltk
     - ./build.sh -cvt -g ../install/gpstk
   dependencies:
