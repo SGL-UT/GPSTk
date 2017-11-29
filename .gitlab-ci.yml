@@ -19,8 +19,8 @@ build_debian:
     - debian
   script:
     - mkdir build
-    - cd build
-    - cmake -DPYTHON_INSTALL_PREFIX=install -DCMAKE_INSTALL_PREFIX=install/gpstk $CMAKE_ARG_DEFAULT 
+    - cd build- export gpstk=`pwd`/install
+    - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=install $CMAKE_ARG_DEFAULT 
     - make all -j 4
   artifacts:
     paths:
@@ -267,10 +267,11 @@ sgltk_debian:
   script:
     - cd build
     - git clone gitlab@repositories.arlut.utexas.edu:sgl/sgltk.git
-    - export gpstk=`pwd`/build/install/gpstk
+    - export gpstk=`pwd`/build/install
     - export LD_LIBRARY_PATH=$gpstk/lib:$LD_LIBRARY_PATH
     - cd sgltk
-    - ./build.sh -cvt -g ../install/gpstk
+    - cmake -DCMAKE_PREFIX_PATH=$gpstk -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
+    - make all -j 4
   dependencies:
     - deploy_debian
 
