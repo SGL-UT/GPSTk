@@ -1,9 +1,9 @@
 #ifndef NAVORDERFILTER_HPP
 #define NAVORDERFILTER_HPP
 
-#include <gpstk/NavFilterMgr.hpp>
-#include <gpstk/NavFilter.hpp>
-#include <gpstk/NavFilterKey.hpp>
+#include <NavFilterMgr.hpp>
+#include <NavFilter.hpp>
+#include <NavFilterKey.hpp>
 
 namespace gpstk
 {
