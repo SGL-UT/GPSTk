@@ -254,10 +254,13 @@ sgltk_core:
   script:
     - cd build
     - git clone gitlab@repositories.arlut.utexas.edu:sgl/sgltk.git
-    - export gpstk=`pwd`/build/install/gpstk
+    - export gpstk=`pwd`/install
     - export LD_LIBRARY_PATH=$gpstk/lib:$LD_LIBRARY_PATH
     - cd sgltk
-    - ./build.sh -cvt -g ../install/gpstk
+    - mkdir build
+    - cd build
+    - cmake -DCMAKE_PREFIX_PATH=$gpstk -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
+    - make all -j 4
   dependencies:
     - deploy_core
 
@@ -285,9 +288,12 @@ sgltk_redhat:
   script:
     - cd build
     - git clone gitlab@repositories.arlut.utexas.edu:sgl/sgltk.git
-    - export gpstk=`pwd`/build/install/gpstk
+    - export gpstk=`pwd`/install
     - export LD_LIBRARY_PATH=$gpstk/lib:$LD_LIBRARY_PATH
     - cd sgltk
-    - ./build.sh -cvt -g ../install/gpstk
+    - mkdir build
+    - cd build
+    - cmake -DCMAKE_PREFIX_PATH=$gpstk -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
+    - make all -j 4
   dependencies:
     - deploy_redhat
