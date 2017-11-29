@@ -271,6 +271,8 @@ sgltk_debian:
     - export gpstk=`pwd`/build/install
     - export LD_LIBRARY_PATH=$gpstk/lib:$LD_LIBRARY_PATH
     - cd sgltk
+    - mkdir build
+    - cd build
     - cmake -DCMAKE_PREFIX_PATH=$gpstk -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
     - make all -j 4
   dependencies:
