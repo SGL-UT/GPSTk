@@ -31,6 +31,10 @@ namespace gpstk
       virtual void finalize(NavMsgList& msgBitsOut)
       {}
 
+         /// No internal storage of subframe data so return 0.
+      virtual unsigned processingDepth() const throw()
+      { return 0; }
+
          /// Specific value range checks
       static bool checkAlmValRange(LNavFilterData* fd);
    };

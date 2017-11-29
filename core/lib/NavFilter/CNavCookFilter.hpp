@@ -69,6 +69,10 @@ namespace gpstk
       virtual void finalize(NavMsgList& msgBitsOut)
       {}
 
+         /// No internal storage of subframe data so return 0.
+      virtual unsigned processingDepth() const throw()
+      { return 0; }
+
          /// Turn an CNAV subframe data upright.
       static void cookSubframe(CNavFilterData* fd);
    };

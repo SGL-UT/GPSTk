@@ -40,6 +40,10 @@ namespace gpstk
           *   messages are stored here on return. */
       virtual void finalize(NavMsgList& msgBitsOut);
 
+         /// Internally stores 1 epoch's worth of subframe data.
+      virtual unsigned processingDepth() const throw()
+      { return 1; }
+
    protected:
          /// Map from subframe data to source list
       typedef std::map<LNavFilterData*, NavMsgList, LNavMsgSort> SubframeMap;

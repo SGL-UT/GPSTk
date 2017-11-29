@@ -59,6 +59,10 @@ namespace gpstk
 
       virtual void finalize(NavMsgList& msgBitsOut);
 
+         /// Internally stores 3 epochs worth of subframe data.
+      virtual unsigned processingDepth() const throw()
+      { return 3; }
+
          /// Storage for the assembly of ephemerides.
       EphMap ephemerides;
          /** Storage of pointers to complete, valid ephemerides.  This

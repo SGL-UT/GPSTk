@@ -45,6 +45,19 @@ namespace gpstk
           *   the filter. */
       virtual void finalize(NavMsgList& msgBitsOut) = 0;
 
+         /** Return the number of epochs worth of navigation data that
+          * the filter child class stores internally to function
+          * properly.  This can be used to determine the size of a nav
+          * data buffer to allocate.  A return value of 0 means that
+          * the subframes in msgBitsIn for the validate() call are
+          * immediately put in msgBitsOut or in rejected.  A return
+          * value of 1 means that nav subframes of time t will not be
+          * accepted or rejected until validate is called with a nav
+          * subframe of time t+1 or later, and so on.
+          * Most filters will return a value of 0, indicating an
+          * immediate validation of the data. */
+      virtual unsigned processingDepth() const throw() = 0;
+
          /// Add a validated nav msg to the output list.
       inline void accept(NavFilterKey* data, NavMsgList& msgBitsOut);
 
