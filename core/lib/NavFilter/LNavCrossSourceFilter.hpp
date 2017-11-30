@@ -44,6 +44,10 @@ namespace gpstk
       virtual unsigned processingDepth() const throw()
       { return 1; }
 
+         /// Return the filter name.
+      virtual std::string filterName() const throw()
+      { return "CrossSource"; }
+
    protected:
          /// Map from subframe data to source list
       typedef std::map<LNavFilterData*, NavMsgList, LNavMsgSort> SubframeMap;

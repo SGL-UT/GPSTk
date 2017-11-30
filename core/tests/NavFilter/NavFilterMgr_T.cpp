@@ -97,6 +97,8 @@ public:
    {}
    virtual unsigned processingDepth() const throw()
    { return 0; }
+   virtual std::string filterName() const throw()
+   { return "Bunk1"; }
 };
 // filter with cache
 class BunkFilter2 : public NavFilter
@@ -122,6 +124,8 @@ public:
    }
    virtual unsigned processingDepth() const throw()
    { return 4; }
+   virtual std::string filterName() const throw()
+   { return "Bunk2"; }
    NavMsgList cache;
 };
 

@@ -43,6 +43,10 @@ namespace gpstk
       virtual unsigned processingDepth() const throw()
       { return 1; }
 
+         /// Return the filter name.
+      virtual std::string filterName() const throw()
+      { return "CrossSource"; }
+
       virtual void setMinIdentical(const unsigned value)
       { minIdentical = value;}
 

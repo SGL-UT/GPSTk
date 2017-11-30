@@ -39,6 +39,10 @@ namespace gpstk
 
          /// Turn an LNAV subframe data upright.
       static void cookSubframe(LNavFilterData* fd);
+
+         /// Return the filter name.
+      virtual std::string filterName() const throw()
+      { return "Cook"; }
    };
 
       //@}

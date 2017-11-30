@@ -77,6 +77,10 @@ namespace gpstk
       virtual unsigned processingDepth() const throw()
       { return procDepth; }
 
+         /// Return the filter name.
+      virtual std::string filterName() const throw()
+      { return "Order"; }
+
       unsigned procDepth;
 
    protected:

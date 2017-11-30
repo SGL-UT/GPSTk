@@ -63,6 +63,10 @@ namespace gpstk
       virtual unsigned processingDepth() const throw()
       { return 3; }
 
+         /// Return the filter name.
+      virtual std::string filterName() const throw()
+      { return "EphMaker"; }
+
          /// Storage for the assembly of ephemerides.
       EphMap ephemerides;
          /** Storage of pointers to complete, valid ephemerides.  This

@@ -58,6 +58,15 @@ namespace gpstk
           * immediate validation of the data. */
       virtual unsigned processingDepth() const throw() = 0;
 
+         /** Return a simple string containing the name of the filter
+          * for the purposes of providing some user feedback as to
+          * which filter rejected a message.  As an example,
+          * LNavEmptyFilter would return "Empty".  The reason for
+          * using this method instead of type_id.name() is that the
+          * latter often returns compiler-munged names rather than
+          * human-readable ones. */
+      virtual std::string filterName() const throw() = 0;
+
          /// Add a validated nav msg to the output list.
       inline void accept(NavFilterKey* data, NavMsgList& msgBitsOut);
 

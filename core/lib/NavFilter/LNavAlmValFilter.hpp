@@ -35,6 +35,10 @@ namespace gpstk
       virtual unsigned processingDepth() const throw()
       { return 0; }
 
+         /// Return the filter name.
+      virtual std::string filterName() const throw()
+      { return "AlmVal"; }
+
          /// Specific value range checks
       static bool checkAlmValRange(LNavFilterData* fd);
    };
