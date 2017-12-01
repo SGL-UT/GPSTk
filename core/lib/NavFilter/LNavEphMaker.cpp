@@ -18,11 +18,10 @@ namespace gpstk
       {
          LNavFilterData *fd = dynamic_cast<LNavFilterData*>(*nmli);
          uint32_t sfid = EngNav::getSFID(fd->sf[1]);
-            // always accept the data, we're just assembling it.
-         accept(fd, msgBitsOut);
          if ((sfid < 1) || (sfid > 3))
          {
                // ignore non-ephemeris data
+            accept(fd, msgBitsOut);
             continue;
          }
          if (ephemerides.find(fd) == ephemerides.end())

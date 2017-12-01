@@ -67,18 +67,6 @@ namespace gpstk
           * human-readable ones. */
       virtual std::string filterName() const throw() = 0;
 
-         /// Add a validated nav msg to the output list.
-      inline void accept(NavFilterKey* data, NavMsgList& msgBitsOut);
-
-         /// Add a list of validated nav msg to the output list.
-      inline void accept(const NavMsgList& valid, NavMsgList& msgBitsOut);
-
-         /// Add an invalid nav message to the reject list.
-      inline void reject(NavFilterKey* data);
-
-         /// Add a list of invalid nav messages to the reject list.
-      inline void reject(const NavMsgList& invalid);
-
          /// Debug support 
       virtual void dumpRejected(std::ostream& out) const; 
 
@@ -93,6 +81,35 @@ namespace gpstk
           *   you will need to manage the rejected list yourself to
           *   avoid it growing unbounded. */
       NavMsgList rejected;
+
+   protected:
+         /** Add a validated nav msg to the output list.  This method
+          * should be used by derived classes to pass validated
+          * navigation message back to the NavFilterMgr user ONLY once
+          * the nav data is no longer being internally stored by the
+          * derived filter class. */
+      inline void accept(NavFilterKey* data, NavMsgList& msgBitsOut);
+
+         /** Add a list of validated nav messages to the output list.
+          * This method should be used by derived classes to pass
+          * validated navigation message back to the NavFilterMgr user
+          * ONLY once the nav data is no longer being internally
+          * stored by the derived filter class. */
+      inline void accept(const NavMsgList& valid, NavMsgList& msgBitsOut);
+
+         /** Add an invalid nav message to the reject list.  This
+          * method should be used by derived classes to pass validated
+          * navigation message back to the NavFilterMgr user ONLY once
+          * the nav data is no longer being internally stored by the
+          * derived filter class. */
+      inline void reject(NavFilterKey* data);
+
+         /** Add a list of invalid nav messages to the reject list.
+          * This method should be used by derived classes to pass
+          * validated navigation message back to the NavFilterMgr user
+          * ONLY once the nav data is no longer being internally
+          * stored by the derived filter class. */
+      inline void reject(const NavMsgList& invalid);
    };
 
       //@}
