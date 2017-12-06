@@ -20,7 +20,7 @@ namespace gpstk
       oldestAllowed.setTimeSystem(gpstk::TimeSystem::Any);
       if (!orderedNav.empty())
       {
-         SubframeSet::const_reverse_iterator rssi = orderedNav.rbegin();
+         SubframeSet::reverse_iterator rssi = orderedNav.rbegin();
          CommonTime newest = (*rssi)->timeStamp;
          oldestAllowed = newest - (epochInSeconds * procDepth);
       }
@@ -59,7 +59,7 @@ namespace gpstk
          return; // nothing to do
 
       SubframeSet::iterator ssi, oldIt = orderedNav.end();
-      SubframeSet::const_reverse_iterator rssi = orderedNav.rbegin();
+      SubframeSet::reverse_iterator rssi = orderedNav.rbegin();
       CommonTime newest = (*rssi)->timeStamp;
       CommonTime oldestAllowed = newest - (epochInSeconds * procDepth);
       SubframeSet::iterator oldestIt = orderedNav.begin();
