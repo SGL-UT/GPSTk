@@ -354,6 +354,7 @@ namespace gpstk
       sv.v[0] = vxef;
       sv.v[1] = vyef;
       sv.v[2] = vzef;
+      delete ell;
 
       return sv;
    }
