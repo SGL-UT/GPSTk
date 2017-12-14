@@ -91,21 +91,9 @@ const map<unsigned, string> Arc::markStr = Arc::create_mark_string_map();
 
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
-// GPSTK Discontinuity Corrector. Find, and fix if possible, discontinuities
-// in the GPS or GLONASS carrier phase data, given dual-frequency pseudorange and
-// phase data for a satellite pass.
-// Input is the SatPass object holding the data.
-// Output is in the form of a list of strings - editing commands  TD fix this
-// Glonass satellites require a frequency channel integer; the caller may pass
-//  this in, or let the GDC compute it from the data - if it fails it returns -6.
-// param SP       SatPass object containing the input data.
-// param retMsg   string summary of results: see 'GDC' in output
-// param cmds     vector of strings giving editing commands for RINEX editor.
-// param GLOn     GLONASS frequency channel (-7<=n<7), -99 means UNKNOWN
-// return 0 for success, otherwise return an Error code.
-//
+// See doc in .hpp
 // what it does
-//    Initialize() define globals and wavelengths, check GLOn
+//    Initialize() define globals and wavelengths, check GLOn and compute if nec.
 //    FillDataVectors define first Arc(BEG), fill 5 parallel arrays
 //           xdata=time-begin, (dataWL, dataGF, dataIF), flag=OK or BAD
 //           units cycles(WL,GF,NL), remove biases WLbias, GFbias, IFbias, get N12bias
@@ -142,8 +130,96 @@ const map<unsigned, string> Arc::markStr = Arc::create_mark_string_map();
 //  Arcs handles BEG, SLIP/FIX, and GAP(new BEG); flags handle bad data w/in Arc
 //  NB BAD != SatPass::BAD, but ONLY SatPass::BAD on input produces flag = BAD
 //
+// convert SatPass to data arrays and call DC(arrays)
 int gdc::DiscontinuityCorrector(SatPass& SP, string& retMsg, vector<string>& cmds,
       int GLOn) throw(Exception)
+{
+   try {
+      sat = SP.getSat();
+      isGLO = (sat.system == SatID::systemGlonass);
+      GLOchan = GLOn;
+      // if GLONASS frequency channel not given, try to find it
+      if(isGLO && GLOchan == -99) {
+         if(!SP.getGLOchannel(GLOchan, retMsg)) {
+            retMsg = " Error - unable to compute GLO channel - fail: " + retMsg;
+            return -9;
+         }
+         LOG(VERBOSE) << "# Compute GLO channel = " << GLOchan << " " << retMsg;
+      }
+
+      // get obstypes for this pass
+      vector<string> obstypes(SP.getObsTypes());
+      string L1("L1"), L2("L2"), P1("P1"), P2("P2");
+      // useCA? no, assume caller knows what he is doing and only gave you C || P
+      if(vectorindex(obstypes,string("P1")) == -1) P1=string("C1");
+      if(vectorindex(obstypes,string("P2")) == -1) P2=string("C2");
+
+      outfmt = SP.getOutputFormat();
+      Epoch beg = SP.getFirstTime();
+
+      double d;
+      vector<double> L1_in,L2_in,P1_in,P2_in,dt_in;
+      vector<int> flags_in;
+
+      // loop over the pass - MUST keep flags_in, dt_in, arrays all parallel
+      for(unsigned int i=0; i<SP.size(); i++) {
+
+         // save the seconds since beg
+         dt_in.push_back(SP.time(i) - beg);
+
+         // test for good data
+         // must consistently mark bad data in SP with SatPass::BAD
+         if(!(SP.spdvector[i].flag & SatPass::OK)
+            || SP.data(i,L1) == 0.0 || SP.data(i,L2) == 0.0
+            || SP.data(i,P1) == 0.0 || SP.data(i,P2) == 0.0)
+         {
+            flags_in.push_back(0);           // 0 bad - as in SatPass
+            L1_in.push_back(0.0);
+            L2_in.push_back(0.0);
+            P1_in.push_back(0.0);
+            P2_in.push_back(0.0);
+            continue;
+         }
+
+         // good data
+         flags_in.push_back(1);              // 1 good data - as in SatPass
+         L1_in.push_back(SP.data(i,L1));
+         L2_in.push_back(SP.data(i,L2));
+         P1_in.push_back(SP.data(i,P1));
+         P2_in.push_back(SP.data(i,P2));
+      }
+
+      // first GDC line - from SatPass - have to be tricky here
+      unique++;
+      ostringstream oss;
+      oss << "GDC " << setw(3) << unique;
+      tag = oss.str();
+      LOG(INFO) << tag << " SPS " << SP;
+      unique--;
+
+      int iret = DiscontinuityCorrector(sat, SP.getDT(), beg,
+                  L1_in, L2_in, P1_in, P2_in, dt_in, flags_in,
+                  retMsg, cmds, outfmt, GLOchan);
+      if(iret) return iret;
+
+      // apply fixes to SatPass
+      if(cfg(doFix)) applyFixesToSatPass(SP);   // ,breaks,marks);
+
+      return 0;
+   }
+   catch(Exception& e) { GPSTK_RETHROW(e); }
+}  // end int gdc::NewDiscontinuityCorrector(SatPass& SP, string& retMsg, int GLOn)
+
+//------------------------------------------------------------------------------------
+// Call to DC without SatPass.
+// Flags on input must be either 0(OK) or 1(BAD)
+int gdc::DiscontinuityCorrector(
+      const RinexSatID& sat_in, const double& nominalDT, const Epoch& beginTime,
+      vector<double> dataL1, vector<double> dataL2,
+      vector<double> dataP1, vector<double> dataP2,
+      vector<double> dt_in, vector<int> flags_in,
+      string& retMsg, vector<string>& cmds,
+      string& outfmt_in, int GLOn) throw(Exception)
 {
    try {
       int iret;
@@ -154,20 +230,94 @@ int gdc::DiscontinuityCorrector(SatPass& SP, string& retMsg, vector<string>& cmd
       oss << "GDC " << setw(3) << unique;
       tag = oss.str();
 
-      // get sat, GLO freq chan, wavelength, etc, and clear Arcs
+      sat = sat_in;
+      dt = nominalDT;
+      beginT = beginTime;
+      outfmt = outfmt_in;
+
+      isGLO = (sat.system == SatID::systemGlonass);
       GLOchan = GLOn;
-      if(!Initialize(SP, retMsg)) {
-         retMsg = string("Could not compute GLONASS frequency channel from data");
+      // must assume GLOchan is good at this point - need to move out of SatPass!
+      if(isGLO && GLOchan == -99) {
+         retMsg = " Error - unable to compute GLO channel - fail: " + retMsg;
          return -9;
       }
 
-      // fill data vectors, fill and save arc
-      Arc a(FillDataVectors(SP));
-      Arcs[a.index] = a;
+      wl1 = getWavelength(sat,1,GLOchan);    // GLOchan ignored by GPS
+      wl2 = getWavelength(sat,2,GLOchan);
+      alpha = getAlpha(sat,1,2);
+      beta = getBeta(sat,1,2);
+      wlWL = wl2*(beta+1.0)/alpha;// wl(WL) = 86cm GPS, depends on GLOchan
+      wlGF = wl2 - wl1;           // wl(GF) = wl1-wl2 = 5.376cm GPS, or f(GLOchan)
+      wlNL = 1.0/(1.0/wl1 + 1.0/wl2);  // wl(NL) = 10.7cm GPS, used for IF phase
 
-      // first GDC line
-      LOG(INFO) << tag << " SPS " << SP;
+      // fill data vectors from input -------------------------------
+      Arc arc(0,0,0,Arc::BEG);
+      xdata.clear(); flags.clear(); dataWL.clear(); dataGF.clear();
+      dataIF.clear(); dataGR.clear();
 
+      // loop over the pass - MUST keep xdata, flags, dataWL and dataGF parallel
+      double d;
+      arc.ngood = 0;
+      for(i=0; i<dt_in.size(); i++) {
+         // save the seconds since beginT
+         xdata.push_back(dt_in[i]);
+
+         // test for good data
+         // must consistently mark bad data in SP with SatPass::BAD
+         if(!(flags_in[i] & SatPass::OK)
+                     || dataL1[i] == 0.0 || dataL2[i] == 0.0
+                     || dataP1[i] == 0.0 || dataP2[i] == 0.0)
+         {
+            flags.push_back(BAD);         // 1 bad data from SatPass
+            dataWL.push_back(0.0);
+            dataGF.push_back(0.0);
+            dataIF.push_back(0.0);
+            dataGR.push_back(0.0);
+            continue;
+         }
+
+         // good data
+         flags.push_back(OK);             // 0 good data
+         arc.ngood++;
+
+         // WLC = (WLphase - NLrange) in units of WLwl
+         d = ((beta*wl1*dataL1[i] - wl2*dataL2[i]) / (beta-1.0)
+            - (beta*dataP1[i] + dataP2[i]) / (beta+1.0)) / wlWL;
+         if(arc.ngood == 1) WLbias = d;
+         dataWL.push_back(d - WLbias);
+
+         // LGF = wl1*L1 - wl2*L2 in units of GFwl
+         d = (wl1*dataL1[i] - wl2*dataL2[i]) / wlGF;
+         if(arc.ngood == 1) GFbias = d;
+         dataGF.push_back(d - GFbias);
+
+         // LIF - PIF in units of NLwl
+         d  = (alpha+1.0)*wl1*dataL1[i] - wl2*dataL2[i];
+         d -= (alpha+1.0)    *dataP1[i] -     dataP2[i];
+         d /= wlNL*alpha;
+         if(arc.ngood == 1) IFbias = d;
+         dataIF.push_back(d - IFbias);
+
+         // P2 - P1 = alpha*I1 in meters, no bias
+         d = dataP2[i]-dataP1[i];
+         if(arc.ngood == 1) GRbias = d;
+         dataGR.push_back(d - GRbias);
+
+         // initial phase biases - mainly just for output
+         if(arc.ngood == 1) {
+            N1bias = static_cast<long long>(dataP1[i]/wl1 - dataL1[i]);
+            N2bias = static_cast<long long>(dataP2[i]/wl2 - dataL2[i]);
+         }
+      }
+
+      // fill the Arc as much as possible
+      Arcs.clear();
+      arc.index = 0;                      // always since we use data[0,size-1]
+      arc.npts = xdata.size();
+      Arcs[arc.index] = arc;
+
+      // Begin GDC processing ----------------------------------------
       // dump data with tag RAW
       if(cfg(RAW)) dumpData(LOGstrm,tag+" RAW");
 
@@ -187,7 +337,7 @@ int gdc::DiscontinuityCorrector(SatPass& SP, string& retMsg, vector<string>& cmd
 
          // Process GF --------------------------------------
          iret = ProcessOneCombo(GF);
-         if(iret < 0) break;
+         if(iret < 0) break;              // TD not return?
 
          // Check value of slips found
 
@@ -203,8 +353,8 @@ int gdc::DiscontinuityCorrector(SatPass& SP, string& retMsg, vector<string>& cmd
       retMsg = returnMessage();
       if(cfg_func("verbose")) DumpArcs("#"+tag+" FIN","");
 
-      // generate editing commands and apply fixes
-      applyFixesToSatPass(SP,cmds);   // ,breaks,marks);
+      // generate editing commands
+      if(cfg(doCmds)) generateCmds(cmds);
 
       //// are there ever going to be breaks?
       //for(i=0; i<breaks.size(); i++)
@@ -213,123 +363,7 @@ int gdc::DiscontinuityCorrector(SatPass& SP, string& retMsg, vector<string>& cmd
       return 0;
    }
    catch(Exception& e) { GPSTK_RETHROW(e); }
-}  // end int gdc::DiscontinuityCorrector(SatPass& SP, string& retMsg, int GLOn)
-
-//------------------------------------------------------------------------------------
-// get sat, wavelengths, clear Arcs etc; called in Disc..Corr()
-// return false if GLONASS frequency channel cannot be found
-bool gdc::Initialize(SatPass& SP, string& msg)
-{
-   sat = SP.getSat();
-   dt = SP.getDT();                      // TD put obstypes = SP.getObsTypes() here?
-   beginT = SP.getFirstTime();
-   outfmt = SP.getOutputFormat();
-
-   isGLO = (sat.system == SatID::systemGlonass);
-   // if GLONASS frequency channel not given, try to find it
-   if(isGLO && GLOchan == -99) {
-      if(!SP.getGLOchannel(GLOchan, msg)) {
-         msg = " Error - unable to compute GLO channel - fail: " + msg;
-         return false;
-      }
-      LOG(VERBOSE) << "# Compute GLO channel = " << GLOchan << " " << msg;
-   }
-
-   // these will be for any system; only wl1 and wl2 depend on GLOchan
-   wl1 = getWavelength(sat,1,GLOchan);    // GLOchan ignored by GPS
-   wl2 = getWavelength(sat,2,GLOchan);
-   alpha = getAlpha(sat,1,2);
-   beta = getBeta(sat,1,2);
-   wlWL = wl2*(beta+1.0)/alpha;// wl(WL) = 86cm GPS, depends on GLOchan
-   wlGF = wl2 - wl1;           // wl(GF) = wl1-wl2 = 5.376cm GPS, depends on GLOchan
-   wlNL = 1.0/(1.0/wl1 + 1.0/wl2);  // wl(NL) = 10.7cm GPS, used for IF phase
-
-   Arcs.clear();
-
-   return true;
-}  // end void gdc::Initialize(SatPass& SP)
-
-//------------------------------------------------------------------------------------
-// fill data vectors. return an Arc, the first (mark=BEG) for the dataset
-Arc gdc::FillDataVectors(SatPass& SP) throw(Exception)
-{
-   try {
-      Arc arc(0,0,0,Arc::BEG);
-      xdata.clear(); flags.clear(); dataWL.clear(); dataGF.clear();
-      dataIF.clear(); dataGR.clear();
-
-      // get obstypes for this pass
-      vector<string> obstypes(SP.getObsTypes());
-      string L1("L1"), L2("L2"), P1("P1"), P2("P2");
-      // useCA? no, assume caller knows what he is doing and only gave you C || P
-      if(vectorindex(obstypes,string("P1")) == -1) P1=string("C1");
-      if(vectorindex(obstypes,string("P2")) == -1) P2=string("C2");
-
-      // loop over the pass - MUST keep xdata, flags, dataWL and dataGF parallel
-      double d;
-      arc.ngood = 0;
-      for(unsigned int i=0; i<SP.size(); i++) {
-         //// save the count
-         //xdata.push_back(double(SP.spdvector[i].ndt));
-         // save the seconds since beginT
-         xdata.push_back(SP.time(i) - beginT);
-
-         // test for good data
-         // must consistently mark bad data in SP with SatPass::BAD
-         if(!(SP.spdvector[i].flag & SatPass::OK)
-            || SP.data(i,L1) == 0.0 || SP.data(i,L2) == 0.0
-            || SP.data(i,P1) == 0.0 || SP.data(i,P2) == 0.0)
-         {
-            flags.push_back(BAD);         // 1 bad data from SatPass
-            dataWL.push_back(0.0);
-            dataGF.push_back(0.0);
-            dataIF.push_back(0.0);
-            dataGR.push_back(0.0);
-            continue;
-         }
-
-         // good data
-         flags.push_back(OK);             // 0 good data
-         arc.ngood++;
-
-         // WLC = (WLphase - NLrange) in units of WLwl
-         d = ((beta*wl1*SP.data(i,L1) - wl2*SP.data(i,L2)) / (beta-1.0)
-            - (beta*SP.data(i,P1) + SP.data(i,P2)) / (beta+1.0)) / wlWL;
-         if(arc.ngood == 1) WLbias = d;
-         dataWL.push_back(d - WLbias);
-
-         // LGF = wl1*L1 - wl2*L2 in units of GFwl
-         d = (wl1*SP.data(i,L1) - wl2*SP.data(i,L2)) / wlGF;
-         if(arc.ngood == 1) GFbias = d;
-         dataGF.push_back(d - GFbias);
-
-         // LIF - PIF in units of NLwl
-         d  = (alpha+1.0)*wl1*SP.data(i,L1) - wl2*SP.data(i,L2);
-         d -= (alpha+1.0)    *SP.data(i,P1) -     SP.data(i,P2);
-         d /= wlNL*alpha;
-         if(arc.ngood == 1) IFbias = d;
-         dataIF.push_back(d - IFbias);
-
-         // P2 - P1 = alpha*I1 in meters, no bias
-         d = SP.data(i,P2)-SP.data(i,P1);
-         if(arc.ngood == 1) GRbias = d;
-         dataGR.push_back(d - GRbias);
-
-         // initial phase biases - mainly just for output
-         if(arc.ngood == 1) {
-            N1bias = static_cast<long long>(SP.data(i,P1)/wl1 - SP.data(i,L1));
-            N2bias = static_cast<long long>(SP.data(i,P2)/wl2 - SP.data(i,L2));
-         }
-      }
-
-      // fill the Arc as much as possible
-      arc.index = 0;                      // always since we use data[0,size-1]
-      arc.npts = xdata.size();
-
-      return arc;
-   }
-   catch(Exception& e) { GPSTK_RETHROW(e); }
-}  // end Arc gdc::FillDataVectors(SatPass& SP) throw(Exception)
+}  // end int gdc::DiscontinuityCorrector(dataL1, dataL2,...)
 
 //------------------------------------------------------------------------------------
 // NB return value == nslips is not used
@@ -861,9 +895,14 @@ void gdc::findLargeGaps(void) throw(Exception)
          if(git->first+git->second == ait->second.index+ait->second.npts)
             continue;                     // skip 'gap' at end of Arc
 
-         // Arc at ait must to be split   // we don't need fixUp ... or do we TD???
-         addArc(git->first+git->second, Arc::BEG);    // after the gap
-         fixup = true;                    // required on windos -- incomprehensible
+         // Arc at ait must to be split   // we don't need fixUp
+         addArc(git->first+git->second, Arc::BEG);
+
+         // must recompute ngood, but only for one Arc .. oh well
+         computeNgood(ait->second);
+         ait = Arcs.begin();              // iterator is corrupted by addArc
+         findArc(git->first+git->second, ait);
+         computeNgood(ait->second);
       }
       if(fixup) fixUpArcs();              // recompute points for all Arcs
 
@@ -1215,19 +1254,86 @@ string gdc::returnMessage(int prec, int wid) throw()
 }
 
 //------------------------------------------------------------------------------------
-// apply the results to generate editing commands and/or fix the input SatPass
-// cf. cfg(doFix) and cfg(doCmds)
+// apply the results to fix the input SatPass cf. cfg(doFix)
 // param SP       SatPass object containing the input data.
-// param cmds     vector of strings giving editing commands for RINEX editor.
 // param breaks  vector of indexes where SatPass SP must be broken into two
 // param marks   vector of indexes in SatPass SP where breaks are suspected
-void gdc::applyFixesToSatPass(SatPass& SP, vector<string>& cmds)
+void gdc::applyFixesToSatPass(SatPass& SP) throw(Exception)
                            //, vector<int>& breaks, vector<int>& marks)
-   throw(Exception)
 {
 try {
-   if(!cfg(doFix) && !cfg(doCmds)) return;
+   unsigned int i,j,k;
+   long long nGF, nWL, nL1, nL2;
+   Epoch ttag,tbeg,tend;
+   map<int, Arc>::iterator ait;
 
+   double dL1, dL2;                       // just double versions of nL1, nL2
+   const string L1("L1"), L2("L2");
+
+   nL1 = nL2 = 0;                         // running total slip
+   ait = Arcs.begin();  
+   for(i=0; i<SP.size(); i++) {
+      if(ait != Arcs.end() && i == ait->first) {      // at new arc
+         Arc& arc(ait->second);
+
+         LOG(DEBUG) << "#" << tag << " applyFix with Arc[" << ait->first << "] "
+                                 << ait->second.asString();
+
+         if((arc.mark & (Arc::WLSLIP | Arc::GFSLIP)) || (arc.mark & Arc::REJ)) {
+            // redefine biases nL1 nL2
+            nGF = arc.GFinfo.Nslip;
+            nWL = arc.WLinfo.Nslip;
+            // real slips do accumulate here
+            nL1 -= nGF;                // b/c Ngf(corrected) = -N1
+            nL2 -= (nGF+nWL);          // b/c Nwl = N1-N2
+            dL1 = static_cast<double>(nL1);
+            dL2 = static_cast<double>(nL2);
+         }
+
+         //if((arc.mark & Arc::WLMARK) || (arc.mark & Arc::GFMARK)) {
+         //   marks.push_back(i);
+         //   NO continue;
+         //}
+
+         if(arc.mark & Arc::REJ) {
+            // reject all the data in this Arc
+            for(j=0; j<arc.npts; j++) {
+               SP.setFlag(i+j,SatPass::BAD);
+               if(cfg(UserFlag)) SP.setUserFlag(i+j,cfg(UserFlag));
+            }
+         }
+
+         if(arc.mark & Arc::BEG) {
+            if(i != 0) LOG(WARNING) << " Warning - GDC breaks pass at index " << i;
+         }
+
+         // increment ait, prep for next arc
+         ++ait;
+      }
+
+      if(flags[i] == BAD)              // nothing to do - SatPass set before call
+         continue;
+
+      if(flags[i] != OK) {
+         SP.setFlag(i,SatPass::BAD);
+         if(cfg(UserFlag)) SP.setUserFlag(i,cfg(UserFlag));
+      }
+      else {
+         if(nL1) SP.data(i,L1) -= dL1;
+         if(nL2) SP.data(i,L2) -= dL2;
+      }
+   }  // end loop over data in SP
+}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+}
+
+//------------------------------------------------------------------------------------
+// apply the results to generate editing commands; cfg(doCmds)
+// Use tk-RinEdit form for commands (--IF name, etc) since EditRinex also takes.
+// @param cmds     vector of strings giving editing commands for RINEX editor.
+void gdc::generateCmds(vector<string>& cmds) throw(Exception)
+{
+try {
    unsigned int i,j,k;
    long long nGF, nWL, nL1, nL2;
    Epoch ttag,tbeg,tend;
@@ -1235,182 +1341,121 @@ try {
    static const string L1(cfg(doRINEX3) ? "L1C":"L1"), L2(cfg(doRINEX3) ? "L2W":"L2");
 
    // generate commands
-   if(cfg(doCmds)) {
-      ostringstream oss;
-      oss << "--BD+ " << sat << "," << L1 << ","
+   ostringstream oss;
+   oss << "--BD+ " << sat << "," << L1 << ","
          << printTime(beginT,"%Y,%m,%d,%H,%M,%S,")
          << N1bias << printTime(beginT," # initial L1 bias at %F,%.3g");
-      cmds.push_back(oss.str()); oss.str("");
-      oss << "--BD+ " << sat << "," << L2 << ","
+   cmds.push_back(oss.str()); oss.str("");
+   oss << "--BD+ " << sat << "," << L2 << ","
          << printTime(beginT,"%Y,%m,%d,%H,%M,%S,")
          << N2bias << printTime(beginT," # initial L2 bias at %F,%.3g");
-      cmds.push_back(oss.str()); oss.str("");
+   cmds.push_back(oss.str()); oss.str("");
 
-      for(ait = Arcs.begin(); ait != Arcs.end(); ++ait) {
-         Arc& arc(ait->second);
+   for(ait = Arcs.begin(); ait != Arcs.end(); ++ait) {
+      Arc& arc(ait->second);
 
-         // apply slips -- REJ can store a slip - see karr0880.10o pass 7
-         if((arc.mark & (Arc::WLSLIP | Arc::GFSLIP)) || (arc.mark & Arc::REJ)) {
-            nGF = arc.GFinfo.Nslip;
-            nWL = arc.WLinfo.Nslip;
-            // slips don't accumulate here, but editing commands do
-            nL1 = -nGF;                // b/c Ngf(corrected) = -N1
-            nL2 = -nGF-nWL;            // b/c Nwl = N1-N2
-            ttag = SP.time(arc.index);
-            if(nL1) {
-               oss << "--BD+ " << sat << "," << L1 << ","
-                   << printTime(ttag,"%Y,%m,%d,%H,%M,%S,") << -nL1
-                   << printTime(ttag," # L1 slip at %F,%.3g");
-               cmds.push_back(oss.str()); oss.str("");
-            }
-            if(nL2) {
-               oss << "--BD+ " << sat << "," << L2 << ","
-                   << printTime(ttag,"%Y,%m,%d,%H,%M,%S,") << -nL2
-                   << printTime(ttag," # L2 slip at %F,%.3g");
-               cmds.push_back(oss.str()); oss.str("");
-            }
+      // apply slips -- REJ can store a slip - see karr0880.10o pass 7
+      if((arc.mark & (Arc::WLSLIP | Arc::GFSLIP)) || (arc.mark & Arc::REJ)) {
+         nGF = arc.GFinfo.Nslip;
+         nWL = arc.WLinfo.Nslip;
+         // slips don't accumulate here, but editing commands do
+         nL1 = -nGF;                // b/c Ngf(corrected) = -N1
+         nL2 = -nGF-nWL;            // b/c Nwl = N1-N2
+         ttag = xtime(arc.index);
+         if(nL1) {
+            oss << "--BD+ " << sat << "," << L1 << ","
+                << printTime(ttag,"%Y,%m,%d,%H,%M,%S,") << -nL1
+                << printTime(ttag," # L1 slip at %F,%.3g");
+            cmds.push_back(oss.str()); oss.str("");
          }
-
-         // delete entire segment
-         if(arc.mark & Arc::REJ) {
-            tbeg = SP.time(arc.index);
-            tend = SP.time(arc.index+arc.npts-1);
-            tend += dt;                   // NB DD- means stop here, don't do this one
-            if(arc.npts == 1) {
-               oss << "--DD " << sat << "," << L1 << ","
-               << printTime(tbeg,"%Y,%m,%d,%H,%M,%S # delete outlier at %F,%.3g");
-               cmds.push_back(oss.str()); oss.str("");
-               oss << "--DD " << sat << "," << L2 << ","
-               << printTime(tbeg,"%Y,%m,%d,%H,%M,%S # delete outlier at %F,%.3g");
-               cmds.push_back(oss.str()); oss.str("");
-            }
-            else {
-               oss << "--DD+ " << sat << "," << L1
-                  << "," << printTime(tbeg,"%Y,%m,%d,%H,%M,%S # from %F,%.3g")
-                  << " - delete entire segment = " << arc.npts << " epochs";
-               cmds.push_back(oss.str()); oss.str("");
-               oss << "--DD- " << sat
-               << "," << L1 << ","<< printTime(tend,"%Y,%m,%d,%H,%M,%S # to %F,%.3g");
-               cmds.push_back(oss.str()); oss.str("");
-               oss << "--DD+ " << sat << "," << L2
-               << "," << printTime(tbeg,"%Y,%m,%d,%H,%M,%S # from %F,%.3g");
-               cmds.push_back(oss.str()); oss.str("");
-               oss << "--DD- " << sat
-               << "," << L2 << ","<< printTime(tend,"%Y,%m,%d,%H,%M,%S # to %F,%.3g");
-               cmds.push_back(oss.str()); oss.str("");
-            }
-
-            continue;
+         if(nL2) {
+            oss << "--BD+ " << sat << "," << L2 << ","
+                << printTime(ttag,"%Y,%m,%d,%H,%M,%S,") << -nL2
+                << printTime(ttag," # L2 slip at %F,%.3g");
+            cmds.push_back(oss.str()); oss.str("");
          }
+      }
 
-         // if there are no outliers, done
-         if(arc.ngood == arc.npts) continue;
-
-         // now run over the data in this Arc looking for outliers
-         bool bad=false; j=0;
-         k = arc.index+arc.npts;
-         for(i=arc.index; i<k; i++) {
-            if(!bad) {
-               if(flags[i] == OK) continue;
-               j = i;
-               bad = true;
-            }
-
-            if(bad && (flags[i] == OK || i == k-1)) {
-               if((flags[i]==OK && i == j+1) || (i==k-1 && i==j)) {
-                                                      // isolated outlier
-                  ttag = SP.time(j);
-                  oss << "--DD " << sat << "," << L1 << ","
-                  << printTime(ttag,"%Y,%m,%d,%H,%M,%S # delete outlier at %F,%.3g");
-                  cmds.push_back(oss.str()); oss.str("");
-                  oss << "--DD " << sat << "," << L2 << ","
-                  << printTime(ttag,"%Y,%m,%d,%H,%M,%S # delete outlier at %F,%.3g");
-                  cmds.push_back(oss.str()); oss.str("");
-               }
-               else {                                 // more than one outlier
-                  ttag = SP.time(j);
-                  oss << "--DD+ " << sat << "," << L1 << "," << printTime(ttag,
-                     "%Y,%m,%d,%H,%M,%S # delete outliers starting at %F,%.3g");
-                  cmds.push_back(oss.str()); oss.str("");
-                  oss << "--DD+ " << sat << "," << L2 << "," << printTime(ttag,
-                     "%Y,%m,%d,%H,%M,%S # delete outliers starting at %F,%.3g");
-                  cmds.push_back(oss.str()); oss.str("");
-
-                  ttag = SP.time(i==k-1 ? i : i-1);
-                  ttag += dt;
-                  oss << "--DD- " << sat << "," << L1 << "," << printTime(ttag,
-                     "%Y,%m,%d,%H,%M,%S # end deleting outliers at %F,%.3g");
-                  cmds.push_back(oss.str()); oss.str("");
-                  oss << "--DD- " << sat << "," << L2 << "," << printTime(ttag,
-                     "%Y,%m,%d,%H,%M,%S # end deleting outliers at %F,%.3g");
-                  cmds.push_back(oss.str()); oss.str("");
-               }
-               bad = false;
-            }
-         }
-
-      }  // end loop over Arcs
-   }  // end if doCmds
-
-   // fix - NO: outliers -- only needed if more than one arc
-   if(cfg(doFix)) {
-      double dL1, dL2;                       // just double versions of nL1, nL2
-      const string L1("L1"), L2("L2");
-
-      nL1 = nL2 = 0;                         // running total slip
-      ait = Arcs.begin();  
-      for(i=0; i<SP.size(); i++) {
-         if(ait != Arcs.end() && i == ait->first) {      // at new arc
-            Arc& arc(ait->second);
-
-            LOG(DEBUG) << "#" << tag << " applyFix with Arc[" << ait->first << "] "
-                                    << ait->second.asString();
-
-            if((arc.mark & (Arc::WLSLIP | Arc::GFSLIP)) || (arc.mark & Arc::REJ)) {
-               // redefine biases nL1 nL2
-               nGF = arc.GFinfo.Nslip;
-               nWL = arc.WLinfo.Nslip;
-               // real slips do accumulate here
-               nL1 -= nGF;                // b/c Ngf(corrected) = -N1
-               nL2 -= (nGF+nWL);          // b/c Nwl = N1-N2
-               dL1 = static_cast<double>(nL1);
-               dL2 = static_cast<double>(nL2);
-            }
-
-            //if((arc.mark & Arc::WLMARK) || (arc.mark & Arc::GFMARK)) {
-            //   marks.push_back(i);
-            //   NO continue;
-            //}
-
-            if(arc.mark & Arc::REJ) {
-               // reject all the data in this Arc
-               for(j=0; j<arc.npts; j++) {
-                  SP.setFlag(i+j,SatPass::BAD);
-                  if(cfg(UserFlag)) SP.setUserFlag(i+j,cfg(UserFlag));
-               }
-            }
-
-            if(arc.mark & Arc::BEG) {
-               if(i != 0) LOG(WARNING) << " Warning - GDC breaks pass at index " << i;
-            }
-
-            // increment ait, prep for next arc
-            ++ait;
-         }
-
-         if(flags[i] == BAD)              // nothing to do - SatPass set before call
-            continue;
-
-         if(flags[i] != OK) {
-            SP.setFlag(i,SatPass::BAD);
-            if(cfg(UserFlag)) SP.setUserFlag(i,cfg(UserFlag));
+      // delete entire segment
+      if(arc.mark & Arc::REJ) {
+         tbeg = xtime(arc.index);
+         tend = xtime(arc.index+arc.npts-1);
+         tend += dt;                   // NB DD- means stop here, don't do this one
+         if(arc.npts == 1) {
+            oss << "--DD " << sat << "," << L1 << ","
+            << printTime(tbeg,"%Y,%m,%d,%H,%M,%S # delete outlier at %F,%.3g");
+            cmds.push_back(oss.str()); oss.str("");
+            oss << "--DD " << sat << "," << L2 << ","
+            << printTime(tbeg,"%Y,%m,%d,%H,%M,%S # delete outlier at %F,%.3g");
+            cmds.push_back(oss.str()); oss.str("");
          }
          else {
-            if(nL1) SP.data(i,L1) -= dL1;
-            if(nL2) SP.data(i,L2) -= dL2;
+            oss << "--DD+ " << sat << "," << L1
+               << "," << printTime(tbeg,"%Y,%m,%d,%H,%M,%S # from %F,%.3g")
+               << " - delete entire segment = " << arc.npts << " epochs";
+            cmds.push_back(oss.str()); oss.str("");
+            oss << "--DD- " << sat
+            << "," << L1 << ","<< printTime(tend,"%Y,%m,%d,%H,%M,%S # to %F,%.3g");
+            cmds.push_back(oss.str()); oss.str("");
+            oss << "--DD+ " << sat << "," << L2
+            << "," << printTime(tbeg,"%Y,%m,%d,%H,%M,%S # from %F,%.3g");
+            cmds.push_back(oss.str()); oss.str("");
+            oss << "--DD- " << sat
+            << "," << L2 << ","<< printTime(tend,"%Y,%m,%d,%H,%M,%S # to %F,%.3g");
+            cmds.push_back(oss.str()); oss.str("");
          }
-      }  // end loop over data in SP
-   }  // end if there is more than one arc
+
+         continue;
+      }
+
+      // if there are no outliers, done
+      if(arc.ngood == arc.npts) continue;
+
+      // now run over the data in this Arc looking for outliers
+      bool bad=false; j=0;
+      k = arc.index+arc.npts;
+      for(i=arc.index; i<k; i++) {
+         if(!bad) {
+            if(flags[i] == OK) continue;
+            j = i;
+            bad = true;
+         }
+
+         if(bad && (flags[i] == OK || i == k-1)) {
+            if((flags[i]==OK && i == j+1) || (i==k-1 && i==j)) {
+                                                   // isolated outlier
+               ttag = xtime(j);
+               oss << "--DD " << sat << "," << L1 << ","
+               << printTime(ttag,"%Y,%m,%d,%H,%M,%S # delete outlier at %F,%.3g");
+               cmds.push_back(oss.str()); oss.str("");
+               oss << "--DD " << sat << "," << L2 << ","
+               << printTime(ttag,"%Y,%m,%d,%H,%M,%S # delete outlier at %F,%.3g");
+               cmds.push_back(oss.str()); oss.str("");
+            }
+            else {                                 // more than one outlier
+               ttag = xtime(j);
+               oss << "--DD+ " << sat << "," << L1 << "," << printTime(ttag,
+                  "%Y,%m,%d,%H,%M,%S # delete outliers starting at %F,%.3g");
+               cmds.push_back(oss.str()); oss.str("");
+               oss << "--DD+ " << sat << "," << L2 << "," << printTime(ttag,
+                  "%Y,%m,%d,%H,%M,%S # delete outliers starting at %F,%.3g");
+               cmds.push_back(oss.str()); oss.str("");
+
+               ttag = xtime(i==k-1 ? i : i-1);
+               ttag += dt;
+               oss << "--DD- " << sat << "," << L1 << "," << printTime(ttag,
+                  "%Y,%m,%d,%H,%M,%S # end deleting outliers at %F,%.3g");
+               cmds.push_back(oss.str()); oss.str("");
+               oss << "--DD- " << sat << "," << L2 << "," << printTime(ttag,
+                  "%Y,%m,%d,%H,%M,%S # end deleting outliers at %F,%.3g");
+               cmds.push_back(oss.str()); oss.str("");
+            }
+            bad = false;
+         }
+      }
+
+   }  // end loop over Arcs
+
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
 }

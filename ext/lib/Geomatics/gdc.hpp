@@ -310,13 +310,29 @@ public:
    /// @param n integer force unique number in output to be this+1
    void ForceUniqueNumber(int n) throw() { unique = n; }
 
-   /// GPSTK Discontinuity Corrector (GDC). Find, and fix if possible, discontinuities
-   /// in the GPS or GLONASS carrier phase data, given dual-frequency pseudorange and
-   /// phase data for a satellite pass.
-   /// Input is the SatPass object holding the data; it is assumed that the GDC has 
-   /// been configured before this call. See DisplayParameterUsage() for list of cfg.
-   /// Output is determined by the two configuration parameters doFix and doCmds.
+   //---------------------------------------------------------------------------
+   /// GPSTK Discontinuity Corrector (GDC).
+   /// Find, and fix if possible, discontinuities in the GPS or GLONASS carrier phase
+   /// data, given dual-frequency pseudorange and phase data for a satellite pass.
    ///
+   /// There are two versions, one accepts the data in parallel vectors, the other
+   /// uses class SatPass, converts the data to vectors and calls the first version.
+   ///
+   /// Input is the SatPass object, or a set of vectors, that hold the data.
+   /// Part of the input is a flags array, which is defined in SatPass (ok=1, bad=0);
+   /// a similarly defined array is required in the array-input version.
+   ///
+   /// Glonass satellites require a frequency channel integer; the caller may pass
+   ///  this in, or let the GDC compute it from the data - if it fails it returns -9.
+   ///
+   /// This call assumes that the GDC has already been configured.
+   /// See DisplayParameterUsage() for list of cfg.
+   ///
+   /// The results of the process can be found in the flags array, with its values
+   /// defined by static constants OK, SLIP, etc.
+   /// NB on output OK=0, the OPPOSITE of input/SatPass where OK/BAD = 1/0.
+   /// 
+   /// Other output depends on the two configuration parameters doFix and doCmds.
    /// If doFix is on (non-zero) then the SatPass is modified for slips, outliers and
    /// bad data. Note that the GDC never splits a SatPass in two, even if rejecting
    /// data has created a large gap; this is a function only the caller can apply and
@@ -330,7 +346,7 @@ public:
    /// The routine will flag bad points in the input data using the values defined in
    /// this class, including OK, BAD, WLOUTLIER, GFOUTLIER, Arc::WLSLIP, Arc::GFSLIP
    /// Glonass satellites require a frequency channel integer; the caller may pass
-   ///  this in, or let the GDC compute it from the data - if it fails it returns -6.
+   ///  this in, or let the GDC compute it from the data - if it fails it returns -9.
    ///
    /// Output data       filter output    : use setParameter(WLF,1)
    ///        RAW                data as read from SatPass in m
@@ -340,7 +356,7 @@ public:
    ///                   GF1     results of first difference filter of GF in wl
    ///                   GFW     results of window filter of GF in wl
    ///        GFF                data with GF slips fixed and outliers removed in m
-   ///        
+   ///        FIN                data after final check
    ///
    /// @param SP       SatPass object containing the input data.
    /// @param retMsg   string summary of results: see 'GDC' in output
@@ -356,6 +372,25 @@ public:
    ///    failed to find the Glonass frequency channel
    int DiscontinuityCorrector(SatPass& SP, std::string& retMsg,
                   std::vector<std::string>& cmds, int GLOn=-99) throw(Exception);
+
+   //---------------------------------------------------------------------------
+   /// Overloaded version that accepts input data in parallel arrays.
+   /// See the doc in the SatPass version.
+   /// This is where the work is done; SatPass version creates arrays and calls this.
+   /// Flags on input must be either 1(OK) or 0(BAD) (as in SatPass), however on
+   /// output they are defined by static consts OK, BAD, etc
+   int DiscontinuityCorrector(const RinexSatID& sat,
+                              const double& nominalDT,
+                              const Epoch& beginTime,
+                              std::vector<double> dataL1,
+                              std::vector<double> dataL2,
+                              std::vector<double> dataP1,
+                              std::vector<double> dataP2,
+                              std::vector<double> dt,
+                              std::vector<int> flags,
+                              std::string& retMsg, std::vector<std::string>& cmds,
+                              std::string& outfmt, int GLOn=-99)
+   throw(Exception);
 
 private:
    /// helper routine to initialize vectors
@@ -458,6 +493,7 @@ protected:
    /// vector of dt*ndt = number of steps of dt from begin point * dt; from spdvector
    std::vector<double> xdata;
 
+   // NB flags must be int, not unsigned, for StatsFilter processing
    /// vector of flags from SatPass OR GDC processing; non-zero == ignore data
    std::vector<int> flags;
 
@@ -477,19 +513,8 @@ protected:
    // member functions
    //---------------------------------------------------------------------------
 
-   /// Initializer used in c'tor
+   /// Initializer used in c'tor to define default configuration
    void init(void);
-
-   /// get sat, wavelengths, clear Arcs etc; called in Disc..Corr()
-   /// @param SatPass input data, containing L1 L2 P1 P2
-   /// @param msg string returning error message when GLO channel not found
-   /// @return false if GLONASS frequency channel cannot be found
-   bool Initialize(SatPass& SP, std::string& msg);
-
-   /// fill data vectors and
-   /// @return index, npts in the first Arc (type BEG) for this dataset
-   /// @throw if there is a SatPass problem.
-   Arc FillDataVectors(SatPass& SP) throw(Exception);
 
    /// process one combo (WL or GF) all the way through 1st diff and window filters,
    /// flagging outliers, marking and fixing slips, and dumping.
@@ -649,16 +674,16 @@ protected:
    /// build the string that is returned by the discontinuity corrector
    std::string returnMessage(int prec=-1, int wid=-1) throw();
 
-   /// apply the results to generate editing commands and/or fix the input SatPass
-   /// cf. cfg(doFix) and cfg(doCmds)
-   /// Use tk-RinEdit form for commands (--IF name, etc) since EditRinex also takes.
+   /// apply the results to fix the input SatPass cf. cfg(doFix)
    /// @param SP       SatPass object containing the input data.
-   /// @param cmds     vector of strings giving editing commands for RINEX editor.
    // @param breaks  vector of indexes where SatPass SP must be broken into two
    // @param marks   vector of indexes in SatPass SP where breaks are suspected
-   void applyFixesToSatPass(SatPass& SP, std::vector<std::string>& cmds)
-            //, std::vector<int>& breaks, std::vector<int>& marks)
-      throw(Exception);
+   void applyFixesToSatPass(SatPass& SP) throw(Exception);
+
+   /// apply the results to generate editing commands; cfg(doCmds)
+   /// Use tk-RinEdit form for commands (--IF name, etc) since EditRinex also takes.
+   /// @param cmds     vector of strings giving editing commands for RINEX editor.
+   void generateCmds(std::vector<std::string>& cmds) throw(Exception);
 
    /// do a final check on the pass. Look for isolated good points (< MinPts good
    /// points surrounded by N(?) bad points on each side.
