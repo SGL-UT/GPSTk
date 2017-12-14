@@ -17,7 +17,7 @@
 
 source $(dirname "$BASH_SOURCE")/build_setup.sh
 
-user_install_prefix+="/gpstk"
+user_install_prefix+="/gpstkDiffProc"  # or use -u ~/.local/gpstk
 system_install_prefix+="/gpstk"
 
 usage()
