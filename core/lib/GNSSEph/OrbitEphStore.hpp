@@ -291,7 +291,7 @@ namespace gpstk
          /** Add all ephemerides to an existing list<OrbitEph>.  If
           * SatID sat is given, limit selections to sat's satellite
           * system, plus if sat's id is not -1, limit to sat's id as
-          * well.
+          * well.  The caller owns any added ephemerides and must delete them.
           * @return the number of ephemerides added. */
       virtual int addToList(std::list<OrbitEph*>& v,
                             SatID sat=SatID(-1,SatID::systemUnknown)) const;
