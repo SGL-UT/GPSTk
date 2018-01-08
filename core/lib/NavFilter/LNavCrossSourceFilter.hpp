@@ -1,5 +1,5 @@
-#ifndef LNAVCROSSOURCEFILTER_HPP
-#define LNAVCROSSOURCEFILTER_HPP
+#ifndef LNAVCROSSSOURCEFILTER_HPP
+#define LNAVCROSSSOURCEFILTER_HPP
 
 #include <NavFilterMgr.hpp>
 #include <NavFilter.hpp>
@@ -74,4 +74,4 @@ namespace gpstk
 
 }
 
-#endif // LNAVCROSSOURCEFILTER_HPP
+#endif // LNAVCROSSSOURCEFILTER_HPP
