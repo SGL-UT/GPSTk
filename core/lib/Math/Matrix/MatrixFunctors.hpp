@@ -432,7 +432,7 @@ namespace gpstk
       void operator() (const ConstMatrixBase<T, BaseClass>& m)
          throw (MatrixException)
       {
-         if(!m.isSquare() || m.rows()<=1) {
+         if(!m.isSquare() || m.rows()<1) {
             MatrixException e("LUDecomp requires a square, non-trivial matrix");
             GPSTK_THROW(e);
          }
