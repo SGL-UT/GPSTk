@@ -471,8 +471,8 @@ protected:
    // just to keep numerical range down
    double WLbias;       ///< bias determined by initial value of WL, in wl
    double GFbias;       ///< bias determined by initial value of GF, in wl
-   double IFbias;       ///< bias determined by initial value of IF, in wl
-   double GRbias;       ///< bias determined by initial value of GR, in m
+   //TEMP_IF_GRdouble IFbias;       ///< bias determined by initial value of IF, in wl
+   //TEMP_IF_GRdouble GRbias;       ///< bias determined by initial value of GR, in m
    // approximate; for output of editing commands only
    long long N1bias;    ///< bias in L1 at initial point (from P1=wl1*(N1bias+L1))
    long long N2bias;    ///< bias in L2 at initial point (from P2=wl2*(N2bias+L2))
@@ -488,7 +488,7 @@ protected:
    /// vectors used in processing - these MUST always remain parallel and equal length
    /// vector of data e.g. WLC and GFP, in wavelengths
    std::vector<double> dataWL, dataGF;
-   std::vector<double> dataIF, dataGR;
+   //TEMP_IF_GRstd::vector<double> dataIF, dataGR;    // NB these are not needed
 
    /// vector of dt*ndt = number of steps of dt from begin point * dt; from spdvector
    std::vector<double> xdata;

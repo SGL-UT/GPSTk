@@ -45,7 +45,7 @@ namespace gpstk
       // Default constructor
    SimpleTropModel::SimpleTropModel(void)
    {
-      setWeather(20.0, 980.0, 50.0);
+      //setWeather(20.0, 980.0, 50.0);
       Cwetdelay = 0.122382715318184;
       Cdrydelay = 2.235486646978727;
       Cwetmap = 1.000282213715744;

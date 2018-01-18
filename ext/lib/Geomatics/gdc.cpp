@@ -254,7 +254,7 @@ int gdc::DiscontinuityCorrector(
       // fill data vectors from input -------------------------------
       Arc arc(0,0,0,Arc::BEG);
       xdata.clear(); flags.clear(); dataWL.clear(); dataGF.clear();
-      dataIF.clear(); dataGR.clear();
+      //TEMP_IF_GRdataIF.clear(); dataGR.clear();
 
       // loop over the pass - MUST keep xdata, flags, dataWL and dataGF parallel
       double d;
@@ -272,8 +272,8 @@ int gdc::DiscontinuityCorrector(
             flags.push_back(BAD);         // 1 bad data from SatPass
             dataWL.push_back(0.0);
             dataGF.push_back(0.0);
-            dataIF.push_back(0.0);
-            dataGR.push_back(0.0);
+            //TEMP_IF_GRdataIF.push_back(0.0);
+            //TEMP_IF_GRdataGR.push_back(0.0);
             continue;
          }
 
@@ -292,17 +292,17 @@ int gdc::DiscontinuityCorrector(
          if(arc.ngood == 1) GFbias = d;
          dataGF.push_back(d - GFbias);
 
-         // LIF - PIF in units of NLwl
-         d  = (alpha+1.0)*wl1*dataL1[i] - wl2*dataL2[i];
-         d -= (alpha+1.0)    *dataP1[i] -     dataP2[i];
-         d /= wlNL*alpha;
-         if(arc.ngood == 1) IFbias = d;
-         dataIF.push_back(d - IFbias);
+         //TEMP_IF_GR// LIF - PIF in units of NLwl
+         //TEMP_IF_GRd  = (alpha+1.0)*wl1*dataL1[i] - wl2*dataL2[i];
+         //TEMP_IF_GRd -= (alpha+1.0)    *dataP1[i] -     dataP2[i];
+         //TEMP_IF_GRd /= wlNL*alpha;
+         //TEMP_IF_GRif(arc.ngood == 1) IFbias = d;
+         //TEMP_IF_GRdataIF.push_back(d - IFbias);
 
-         // P2 - P1 = alpha*I1 in meters, no bias
-         d = dataP2[i]-dataP1[i];
-         if(arc.ngood == 1) GRbias = d;
-         dataGR.push_back(d - GRbias);
+         //TEMP_IF_GR// P2 - P1 = alpha*I1 in meters, no bias
+         //TEMP_IF_GRd = dataP2[i]-dataP1[i];
+         //TEMP_IF_GRif(arc.ngood == 1) GRbias = d;
+         //TEMP_IF_GRdataGR.push_back(d - GRbias);
 
          // initial phase biases - mainly just for output
          if(arc.ngood == 1) {
@@ -990,13 +990,13 @@ int gdc::fixSlips(const unsigned which) throw(Exception)
                for(i=ait->second.index; i<xdata.size(); i++) {
                   dataWL[i] -= istep;
                   dataGF[i] -= GFfactor*istep;
-                  dataIF[i] -= IFfactor*istep;
+                  //TEMP_IF_GRdataIF[i] -= IFfactor*istep;
                }
             }
             else {
                for(i=ait->second.index; i<xdata.size(); i++) {
                   dataGF[i] -= istep;
-                  dataIF[i] += istep;
+                  //TEMP_IF_GRdataIF[i] += istep;
                }
             }
 
@@ -1116,8 +1116,8 @@ void gdc::dumpData(ostream& os, const string msg)
          << " " << setw(2) << flags[i] << fixed << setprecision(4)
          << " " << setw(9) << dataWL[i] * wlWL
          << " " << setw(9) << dataGF[i] * wlGF
-         << " " << setw(9) << dataIF[i] * wlNL
-         << " " << setw(9) << dataGR[i]
+         //TEMP_IF_GR<< " " << setw(9) << dataIF[i] * wlNL
+         //TEMP_IF_GR<< " " << setw(9) << dataGR[i]
          << arcmsg << endl;
    }
 }  // end void gdc::dumpData(ostream& os, const string msg)
