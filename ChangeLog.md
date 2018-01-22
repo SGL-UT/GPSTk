@@ -1,3 +1,60 @@
+Version 2.10.1   Monday, January 22, 2012
+
+   General modifications
+   ---------------------
+   - Tweaks to Core and RedHat builds for fixes to SGLTk portion of GPSTk CI build
+   - Test Additions and Cleanup
+   - Various Bug and Compile Warning Fixes
+
+   Modifications by Author
+   ---------------------
+
+Anthony Hughes (1):
+      Freed memory returned by OrbitEphStore::addToList and updated comments for that method.
+
+Brian Tolman (8):
+      make change() more robust, empty input string causes almost infinite loop
+      add vector intersect routines
+      make all geomatics tests have the same label
+      add unsigned where appropriate
+      add operator+=(Namelist), fix randomize() and improve format of output
+      add debiasing before computing stats
+      add const where needed
+      simple bug when adding empty Stats
+
+Bryan Parsons (22):
+      Merge branch 'SunEarthSatGeometry' into 'master'
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Appropriately updated Debian information for correctly building debian packages.
+      Merge branch 'issue_331' into 'master'
+      Merge branch 'string_change_bug' into 'master'
+      Merge branch 'stlhelpers_add_vector_intersect' into 'master'
+      Merge branch 'geomatics_test_names' into 'master'
+      Merge branch 'StatsFilter_unsigned' into 'master'
+      Merge branch 'Namelist_improvements' into 'master'
+      Merge branch 'PRSolution_stats_bias' into 'master'
+      Merge branch 'SatPass_consts' into 'master'
+      Merge branch 'Stats_plus_bug' into 'master'
+      Merge branch 'RinexNavWeek' into 'master'
+      Tweaks for resolving issues with SGLTk builds of GPSTk CI.
+      Additional tweaks to .gitlab-ci.yml file for fixing SGLTK issues in GPSTk CI pipeline.
+      Additional Gitlab CI tweaks.
+      More changes to Gitlab CI.
+      Updates to .gitlab-ci.yml
+      Debian GPSTk SGLTk fixed, change for Core and Redhat added.
+      Tweaks to Core and RedHat builds for fixes to SGLTk portion of GPSTk CI build.
+      Merge branch 'Gitlab_CI_Fix' into 'master'
+      Merge branch 'issue_334' into 'master'
+
+John H. Price (2):
+      output negative xmitTime in Rinex Nav files if in the week prior to the week # as per the RINEX spec
+      update EngEphemeris::getFullWeek() description for clarification
+
+johnk (1):
+      Remove inadequately explained lib directory override
+
+      #################################################
+
 Version 2.10   Monday, October 6, 2017
 
    General modifications
