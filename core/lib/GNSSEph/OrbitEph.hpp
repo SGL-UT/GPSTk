@@ -126,7 +126,7 @@ namespace gpstk
           * Adot and dndot variables are appropriately set to 0.0 by the 
           * LNAV loaders.) 
           * @throw Invalid Request if the required data has not been stored. */
-      Xvt svXvt(const CommonTime& t) const;
+      virtual Xvt svXvt(const CommonTime& t) const;
 
          /** Compute satellite relativity correction (sec) at the given time
           * @throw Invalid Request if the required data has not been stored. */
