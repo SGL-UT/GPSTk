@@ -137,6 +137,7 @@ public:
 
    void init();
 
+   unsigned findEmptyTest();
    unsigned createAndDump();
    void testFind(const PassFailData& pfd, 
                        OrbAlmStore& oas,
@@ -207,6 +208,67 @@ OrbAlmStore_T()
 {
    debugLevel = 0; 
    init();
+}
+
+unsigned OrbAlmStore_T::
+findEmptyTest()
+{
+   TUDEF("OrbAlmStore", "find");
+   try
+   {
+         // test that an exception is thrown for a completely empty OrbAlmStore
+      OrbAlmStore oas;
+      SatID s(1,SatID::systemGPS);
+      SystemTime now;
+      CommonTime ct(now);
+      ct.setTimeSystem(TimeSystem::Any);
+         // first try with useEffectivity on
+      try
+      {
+         oas.find(s, ct, true);
+         TUFAIL("Expected an InvalidRequest exception to be thrown");
+      }
+      catch (gpstk::InvalidRequest &exc)
+      {
+         TUPASS("Expected exception");
+      }
+      catch (gpstk::Exception &exc)
+      {
+         cerr << exc;
+         TUFAIL("Unexpected gpstk exception");
+      }
+      catch (std::exception &exc)
+      {
+         cerr << exc.what() << endl;
+         TUFAIL("Unexpected std c++ exception");
+      }
+         // then try with useEffectivity off
+      try
+      {
+         oas.find(s, ct, false);
+         TUFAIL("Expected an InvalidRequest exception to be thrown");
+      }
+      catch (gpstk::InvalidRequest &exc)
+      {
+         TUPASS("Expected exception");
+      }
+      catch (gpstk::Exception &exc)
+      {
+         cerr << exc;
+         TUFAIL("Unexpected gpstk exception");
+      }
+      catch (std::exception &exc)
+      {
+         cerr << exc.what() << endl;
+         TUFAIL("Unexpected std c++ exception");
+      }
+   }
+   catch (...)
+   {
+      TUFAIL("Unexpected exception");
+   }
+   
+   TURETURN();
 }
 
 unsigned OrbAlmStore_T::
@@ -400,6 +462,32 @@ createAndDump()
 
       // Dump terse in time order
    oas.dump(out,3);
+
+      /* This checks for a situation where the OrbAlmStore top-level
+       * map has satellites mapped to empty maps.  Prior to addressing
+       * this issue, it would seg fault due to trying to dereference
+       * an "end" iterator value. */
+   currMethod = typeDesc + " OrbAlmStore.edit()";
+   TUCSM(currMethod);
+   CivilTime editTime(2015,12,31,12,28,55,TimeSystem::GPS);
+   TUCATCH(oas.edit(editTime));
+   SystemTime now;
+   CommonTime ct(now);
+   ct.setTimeSystem(TimeSystem::Any);
+   for (unsigned prn = 1; prn <= 32; prn++)
+   {
+      const OrbAlm *foo = (const OrbAlm*)-1;
+      SatID sidee(prn,SatID::systemGPS);
+      try
+      {
+         foo = oas.find(sidee, ct);
+         TUFAIL("find should throw an exception");
+      }
+      catch (gpstk::InvalidRequest)
+      {
+         TUPASS("find should throw an exception");
+      }
+   }
 
    //--- Clear the store ----------------------
    currMethod = typeDesc + " OrbAlmStore.clear()";
@@ -995,6 +1083,7 @@ int main()
 
   testClass.setUpLNAV();
   errorTotal += testClass.createAndDump();
+  errorTotal += testClass.findEmptyTest();
   
   testClass.setUpCNAV();
   //errorTotal += testClass.createAndDump();
