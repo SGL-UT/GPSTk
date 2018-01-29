@@ -1647,7 +1647,7 @@ namespace gpstk
         << "           SV STATUS"
         << endl
         << endl
-        << "Health bits:   0x" << setfill('0')  << setw(2) << health
+        << "Health bits:   0x" << setfill('0')  << setw(2) << hex << health << dec
         << "      URA index: " << setfill(' ') << setw(4) << orbit.getURAoe() << endl
         << "Code on L2:   ";
 
