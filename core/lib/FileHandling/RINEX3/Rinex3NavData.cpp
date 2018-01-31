@@ -1356,7 +1356,6 @@ namespace gpstk
             // Some RINEX files have xmitTime < 0.
             while(xmitTime < 0) {
                xmitTime += (long)FULLWEEK;
-               weeknum--;
             }
    
             // In RINEX *files*, weeknum is the week of TOE.
