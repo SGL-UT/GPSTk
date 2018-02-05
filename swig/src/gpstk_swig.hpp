@@ -186,6 +186,9 @@
 // Geomatics:
 #include "SunEarthSatGeometry.hpp"
 
+// ORD
+#include "ord.hpp"
+
 // So the python examples can find the test data
 #include "build_config.h"
 
