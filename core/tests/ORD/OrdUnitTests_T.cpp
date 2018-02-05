@@ -59,6 +59,9 @@ using gpstk::Xvt;
 using gpstk::Position;
 using gpstk::ord::IonosphereFreeRange;
 using gpstk::ord::RawRange1;
+using gpstk::ord::RawRange2;
+using gpstk::ord::RawRange3;
+using gpstk::ord::RawRange4;
 using gpstk::ord::SvRelativityCorrection;
 
 using ::testing::Return;
@@ -88,6 +91,7 @@ TEST(OrdTestCase, TestGetXvtFromStore) {
     // This assertion is a proxy for verifying that the two Xvt instances are
     // the same.
     ASSERT_EQ(fakeXvt.clkbias, resultXvt.clkbias);
+    ASSERT_EQ(resultXvt.x.theArray[0], fakeXvt.x.theArray[0]);
 }
 
 TEST(OrdTestCase, TestRawRange1) {
@@ -98,12 +102,17 @@ TEST(OrdTestCase, TestRawRange1) {
     Xvt fakeXvt;
     fakeXvt.x = gpstk::Triple(100, 100, 100);
     fakeXvt.v = gpstk::Triple(0, 0, 0);
+    Xvt returnedXvt;
 
     EXPECT_CALL(foo, getXvt(satId, _)).WillRepeatedly(Return(fakeXvt));
 
-    double resultrange = RawRange1(rxLocation, satId, time, foo, fakeXvt);
+    double resultrange = RawRange1(rxLocation, satId, time, foo, returnedXvt);
 
-    ASSERT_EQ(resultrange, 0);
+    ASSERT_GT(resultrange, 0);
+
+    // Can't really check returnedXvt, since it will have been rotated
+    // by the earth.
+    // ASSERT_EQ(returnedXvt.x.theArray[0], fakeXvt.x.theArray[0]);
 }
 
 TEST(OrdTestCase, TestRawRange1HandlesException) {
@@ -114,11 +123,123 @@ TEST(OrdTestCase, TestRawRange1HandlesException) {
     Xvt fakeXvt;
     fakeXvt.x = gpstk::Triple(100, 100, 100);
     fakeXvt.v = gpstk::Triple(0, 0, 0);
+    Xvt returnedXvt;
 
     EXPECT_CALL(foo, getXvt(satId, _)).WillOnce(
             Throw(gpstk::InvalidRequest("Unsupported satellite system")));
 
-    ASSERT_THROW(RawRange1(rxLocation, satId, time, foo, fakeXvt),
+    ASSERT_THROW(RawRange1(rxLocation, satId, time, foo, returnedXvt),
+            gpstk::Exception);
+}
+
+TEST(OrdTestCase, TestRawRange2) {
+    MockXvtStore foo;
+    Position rxLocation(10, 10, 0);
+    gpstk::SatID satId(10, gpstk::SatID::systemUserDefined);
+    gpstk::CommonTime time(gpstk::CommonTime::BEGINNING_OF_TIME);
+    Xvt fakeXvt;
+    fakeXvt.x = gpstk::Triple(100, 100, 100);
+    fakeXvt.v = gpstk::Triple(0, 0, 0);
+    Xvt returnedXvt;
+
+    EXPECT_CALL(foo, getXvt(satId, _)).WillRepeatedly(Return(fakeXvt));
+
+    double resultrange = RawRange2(0, rxLocation, satId, time, foo, returnedXvt);
+
+    ASSERT_GT(resultrange, 0);
+
+    // Check to see that returnedXvt has been assigned _something_.
+    ASSERT_GT(returnedXvt.x.theArray[0], 0);
+}
+
+TEST(OrdTestCase, TestRawRange2HandlesException) {
+    MockXvtStore foo;
+    Position rxLocation(10, 10, 0);
+    SatID satId(10, gpstk::SatID::systemUserDefined);
+    CommonTime time(gpstk::CommonTime::BEGINNING_OF_TIME);
+    Xvt fakeXvt;
+    fakeXvt.x = gpstk::Triple(100, 100, 100);
+    fakeXvt.v = gpstk::Triple(0, 0, 0);
+    Xvt returnedXvt;
+
+    EXPECT_CALL(foo, getXvt(satId, _)).WillOnce(
+            Throw(gpstk::InvalidRequest("Unsupported satellite system")));
+
+    ASSERT_THROW(RawRange2(0, rxLocation, satId, time, foo, returnedXvt),
+            gpstk::Exception);
+}
+
+TEST(OrdTestCase, TestRawRange3) {
+    MockXvtStore foo;
+    Position rxLocation(10, 10, 0);
+    gpstk::SatID satId(10, gpstk::SatID::systemUserDefined);
+    gpstk::CommonTime time(gpstk::CommonTime::BEGINNING_OF_TIME);
+    Xvt fakeXvt;
+    fakeXvt.x = gpstk::Triple(100, 100, 100);
+    fakeXvt.v = gpstk::Triple(0, 0, 0);
+    Xvt returnedXvt;
+
+    EXPECT_CALL(foo, getXvt(satId, _)).WillRepeatedly(Return(fakeXvt));
+
+    double resultrange = RawRange3(0, rxLocation, satId, time, foo, returnedXvt);
+
+    ASSERT_GT(resultrange, 0);
+
+    // Check to see that returnedXvt has been assigned _something_.
+    ASSERT_GT(returnedXvt.x.theArray[0], 0);
+}
+
+TEST(OrdTestCase, TestRawRange3HandlesException) {
+    MockXvtStore foo;
+    Position rxLocation(10, 10, 0);
+    SatID satId(10, gpstk::SatID::systemUserDefined);
+    CommonTime time(gpstk::CommonTime::BEGINNING_OF_TIME);
+    Xvt fakeXvt;
+    fakeXvt.x = gpstk::Triple(100, 100, 100);
+    fakeXvt.v = gpstk::Triple(0, 0, 0);
+    Xvt returnedXvt;
+
+    EXPECT_CALL(foo, getXvt(satId, _)).WillOnce(
+            Throw(gpstk::InvalidRequest("Unsupported satellite system")));
+
+    ASSERT_THROW(RawRange3(0, rxLocation, satId, time, foo, returnedXvt),
+            gpstk::Exception);
+}
+
+TEST(OrdTestCase, TestRawRange4) {
+    MockXvtStore foo;
+    Position rxLocation(10, 10, 0);
+    gpstk::SatID satId(10, gpstk::SatID::systemUserDefined);
+    gpstk::CommonTime time(gpstk::CommonTime::BEGINNING_OF_TIME);
+    Xvt fakeXvt;
+    fakeXvt.x = gpstk::Triple(100, 100, 100);
+    fakeXvt.v = gpstk::Triple(0, 0, 0);
+    Xvt returnedXvt;
+
+    EXPECT_CALL(foo, getXvt(satId, _)).WillRepeatedly(Return(fakeXvt));
+
+    double resultrange = RawRange4(rxLocation, satId, time, foo, returnedXvt);
+
+    ASSERT_GT(resultrange, 0);
+
+    // Check to see that returnedXvt has been assigned _something_.
+    ASSERT_GT(returnedXvt.x.theArray[0], 0);
+}
+
+TEST(OrdTestCase, TestRawRange4HandlesException) {
+    MockXvtStore foo;
+    Position rxLocation(10, 10, 0);
+    SatID satId(10, gpstk::SatID::systemUserDefined);
+    CommonTime time(gpstk::CommonTime::BEGINNING_OF_TIME);
+    Xvt fakeXvt;
+    fakeXvt.x = gpstk::Triple(100, 100, 100);
+    fakeXvt.v = gpstk::Triple(0, 0, 0);
+    Xvt returnedXvt;
+
+    EXPECT_CALL(foo, getXvt(satId, _)).WillOnce(
+            Throw(gpstk::InvalidRequest("Unsupported satellite system")));
+
+    ASSERT_THROW(RawRange4(rxLocation, satId, time, foo, returnedXvt),
             gpstk::Exception);
 }
 
@@ -129,8 +250,8 @@ TEST(OrdTestCase, TestSvRelativityCorrection) {
 
     double return_value = gpstk::ord::SvRelativityCorrection(sv_xvt);
 
-    // Only verify that the number is greater than 1e6
+    // Only verify that the number is less than -1e6
     // --- it's been multiplied by the speed of light.
-    ASSERT_GT(return_value, 1e6);
+    ASSERT_LT(return_value, -1e6);
 }
 

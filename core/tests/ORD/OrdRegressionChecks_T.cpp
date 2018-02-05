@@ -51,6 +51,8 @@
 
 #include "OrdMockClasses.hpp"
 
+using gpstk::CorrectedEphemerisRange;
+
 using ::testing::Return;
 using ::testing::Invoke;
 using ::testing::_;
@@ -66,17 +68,105 @@ TEST(OrdTestRegression, TestRawRange1) {
     fakeXvt.clkbias = 10;
     fakeXvt.clkdrift = 10;
     fakeXvt.relcorr = 10;
+    Xvt returnedXvt;
 
     EXPECT_CALL(foo, getXvt(satId, _)).WillRepeatedly(Return(fakeXvt));
 
     double resultRange = gpstk::ord::RawRange1(rxLocation, satId, time, foo,
-            fakeXvt);
-    resultRange += gpstk::ord::SvClockBiasCorrection(fakeXvt);
-    resultRange += gpstk::ord::SvRelativityCorrection(fakeXvt);
+            returnedXvt);
+    resultRange += gpstk::ord::SvClockBiasCorrection(returnedXvt);
+    resultRange += gpstk::ord::SvRelativityCorrection(returnedXvt);
 
     CorrectedEphemerisRange cer;
 
     double originalRange = cer.ComputeAtReceiveTime(time, rxLocation, satId,
+            foo);
+
+    // Compare the new calculation to the old, for our contrived variables.
+    ASSERT_EQ(resultRange, originalRange);
+}
+
+TEST(OrdTestRegression, TestRawRange2) {
+    MockXvtStore foo;
+    gpstk::Position rxLocation(10, 10, 0);
+    gpstk::SatID satId(10, gpstk::SatID::systemUserDefined);
+    gpstk::CommonTime time(gpstk::CommonTime::BEGINNING_OF_TIME);
+    gpstk::Xvt fakeXvt;
+    fakeXvt.x = gpstk::Triple(100, 100, 100);
+    fakeXvt.v = gpstk::Triple(10, 0, 0);
+    fakeXvt.clkbias = 10;
+    fakeXvt.clkdrift = 10;
+    fakeXvt.relcorr = 10;
+    Xvt returnedXvt;
+
+    EXPECT_CALL(foo, getXvt(satId, _)).WillRepeatedly(Return(fakeXvt));
+
+    double resultRange = gpstk::ord::RawRange2(0, rxLocation, satId, time, foo,
+            returnedXvt);
+    resultRange += gpstk::ord::SvClockBiasCorrection(returnedXvt);
+    resultRange += gpstk::ord::SvRelativityCorrection(returnedXvt);
+
+    CorrectedEphemerisRange cer;
+
+    double originalRange = cer.ComputeAtTransmitTime(time, 0, rxLocation, satId,
+            foo);
+
+    // Compare the new calculation to the old, for our contrived variables.
+    ASSERT_EQ(resultRange, originalRange);
+}
+
+TEST(OrdTestRegression, TestRawRange3) {
+    MockXvtStore foo;
+    gpstk::Position rxLocation(10, 10, 0);
+    gpstk::SatID satId(10, gpstk::SatID::systemUserDefined);
+    gpstk::CommonTime time(gpstk::CommonTime::BEGINNING_OF_TIME);
+    gpstk::Xvt fakeXvt;
+    fakeXvt.x = gpstk::Triple(100, 100, 100);
+    fakeXvt.v = gpstk::Triple(10, 0, 0);
+    fakeXvt.clkbias = 10;
+    fakeXvt.clkdrift = 10;
+    fakeXvt.relcorr = 10;
+    Xvt returnedXvt;
+
+    EXPECT_CALL(foo, getXvt(satId, _)).WillRepeatedly(Return(fakeXvt));
+
+    double resultRange = gpstk::ord::RawRange3(0, rxLocation, satId, time, foo,
+            returnedXvt);
+    resultRange += gpstk::ord::SvClockBiasCorrection(returnedXvt);
+    resultRange += gpstk::ord::SvRelativityCorrection(returnedXvt);
+
+    CorrectedEphemerisRange cer;
+
+    double originalRange = cer.ComputeAtTransmitSvTime(time, 0, rxLocation, satId,
+            foo);
+
+    // Compare the new calculation to the old, for our contrived variables.
+    ASSERT_EQ(resultRange, originalRange);
+}
+
+TEST(OrdTestRegression, TestRawRange4) {
+    MockXvtStore foo;
+    gpstk::Position rxLocation(10, 10, 0);
+    gpstk::SatID satId(10, gpstk::SatID::systemUserDefined);
+    gpstk::CommonTime time(gpstk::CommonTime::BEGINNING_OF_TIME);
+    gpstk::Xvt fakeXvt;
+    fakeXvt.x = gpstk::Triple(100, 100, 100);
+    fakeXvt.v = gpstk::Triple(10, 0, 0);
+    fakeXvt.clkbias = 10;
+    fakeXvt.clkdrift = 10;
+    fakeXvt.relcorr = 10;
+    Xvt returnedXvt;
+
+    EXPECT_CALL(foo, getXvt(satId, _)).WillRepeatedly(Return(fakeXvt));
+
+    double resultRange = gpstk::ord::RawRange4(rxLocation, satId, time, foo,
+            returnedXvt);
+    resultRange += gpstk::ord::SvClockBiasCorrection(returnedXvt);
+    resultRange += gpstk::ord::SvRelativityCorrection(returnedXvt);
+
+    CorrectedEphemerisRange cer;
+
+    double originalRange = cer.ComputeAtTransmitTime(time, rxLocation, satId,
             foo);
 
     // Compare the new calculation to the old, for our contrived variables.

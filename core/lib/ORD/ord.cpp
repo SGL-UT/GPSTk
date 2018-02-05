@@ -75,7 +75,7 @@ double IonosphereFreeRange(const std::vector<double>& frequencies,
 }
 
 double IonosphereModelCorrection(const gpstk::IonoModelStore& iono_model,
-        const gpstk::Position& rx_loc, const gpstk::Xvt& sv_xvt) {
+        const gpstk::Position& rx_loc, const gpstk::Xvt& svXvt) {
     return 0;
 }
 
@@ -124,22 +124,91 @@ double RawRange1(const gpstk::Position& rxLoc, const gpstk::SatID& satId,
     }
 }
 
-double RawRange2(double pseudorange, const gpstk::Position& rx_loc,
-        const gpstk::SatID& sat_id, const gpstk::CommonTime& time,
-        const gpstk::XvtStore<gpstk::SatID>& ephemeris, gpstk::Xvt& sv_xvt) {
-    return 0;
+double RawRange2(double pseudorange, const gpstk::Position& rxLoc,
+        const gpstk::SatID& satId, const gpstk::CommonTime& time,
+        const gpstk::XvtStore<gpstk::SatID>& ephemeris, gpstk::Xvt& svXvt) {
+    try {
+        CommonTime tt, transmit;
+        Xvt svPosVel;     // Initialize to zero
+        double rawrange;
+        GPSEllipsoid ellipsoid;
+
+        // 0-th order estimate of transmit time = receiver - pseudorange/c
+        transmit = time;
+        transmit -= pseudorange / C_MPS;
+        tt = transmit;
+
+        // correct for SV clock
+        for (int i = 0; i < 2; i++) {
+            // get SV position
+            try {
+                svPosVel = ephemeris.getXvt(satId, tt);
+            } catch (InvalidRequest& e) {
+                GPSTK_RETHROW(e);
+            }
+            tt = transmit;
+            // remove clock bias and relativity correction
+            tt -= (svPosVel.clkbias + svPosVel.relcorr);
+        }
+
+        svPosVel = rotateEarth(rxLoc, svPosVel, ellipsoid);
+
+        // raw range
+        rawrange = RSS(svPosVel.x[0] - rxLoc.X(),
+                       svPosVel.x[1] - rxLoc.Y(),
+                       svPosVel.x[2] - rxLoc.Z());
+
+        svXvt = svPosVel;
+
+        return rawrange;
+    } catch (gpstk::Exception& e) {
+        GPSTK_RETHROW(e);
+    }
 }
 
-double RawRange3(double pseudorange, const gpstk::Position& rx_loc,
-        const gpstk::SatID& sat_id, const gpstk::CommonTime& time,
-        const gpstk::XvtStore<gpstk::SatID>& ephemeris, gpstk::Xvt& sv_xvt) {
-    return 0;
+double RawRange3(double pseudorange, const gpstk::Position& rxLoc,
+        const gpstk::SatID& satId, const gpstk::CommonTime& time,
+        const gpstk::XvtStore<gpstk::SatID>& ephemeris, gpstk::Xvt& svXvt) {
+
+    Position trx(rxLoc);
+    trx.asECEF();
+
+    Xvt svPosVel = ephemeris.getXvt(satId, time);
+
+    // compute rotation angle in the time of signal transit
+
+    // While this is quite similiar to rotateEarth, its not the same
+    // and jcl doesn't know which is really correct
+    // BWT this uses the measured pseudorange, corrected for SV clock and
+    // relativity, to compute the time of flight; rotateEarth uses the value
+    // computed from the receiver position and the ephemeris. They should be
+    // very nearly the same, and multiplying by angVel/c should make the angle
+    // of rotation very nearly identical.
+    GPSEllipsoid ell;
+    double range(pseudorange/ell.c() - svPosVel.clkbias - svPosVel.relcorr);
+    double rotation_angle = -ell.angVelocity() * range;
+    svPosVel.x[0] = svPosVel.x[0] - svPosVel.x[1] * rotation_angle;
+    svPosVel.x[1] = svPosVel.x[1] + svPosVel.x[0] * rotation_angle;
+    //svPosVel.x[2] = svPosVel.x[2];  // ?? Reassign for readability ??
+
+    double rawrange = trx.slantRange(svPosVel.x);
+
+    svXvt = svPosVel;
+    return rawrange;
 }
 
-double RawRange4(const gpstk::Position& rx_loc, const gpstk::SatID& sat_id,
+double RawRange4(const gpstk::Position& rxLoc, const gpstk::SatID& satId,
         const gpstk::CommonTime& time,
-        const gpstk::XvtStore<gpstk::SatID>& ephemeris, gpstk::Xvt& sv_xvt) {
-    return 0;
+        const gpstk::XvtStore<gpstk::SatID>& ephemeris, gpstk::Xvt& svXvt) {
+    try {
+       gpstk::GPSEllipsoid gm;
+       Xvt svPosVel = ephemeris.getXvt(satId, time);
+       double pr = svPosVel.preciseRho(rxLoc, gm);
+       return RawRange2(pr, rxLoc, satId, time, ephemeris, svXvt);
+    }
+    catch(gpstk::Exception& e) {
+       GPSTK_RETHROW(e);
+    }
 }
 
 double SvClockBiasCorrection(const gpstk::Xvt& svXvt) {
@@ -155,7 +224,7 @@ double SvRelativityCorrection(gpstk::Xvt& svXvt) {
 }
 
 double TroposphereCorrection(const gpstk::TropModel& trop_model,
-        const gpstk::Position& rx_loc, const gpstk::Xvt& sv_xvt) {
+        const gpstk::Position& rx_loc, const gpstk::Xvt& svXvt) {
     return 0;
 }
 
