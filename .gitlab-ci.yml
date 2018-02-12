@@ -1,18 +1,28 @@
 #.yml file for Gitlab-CI support
 
 stages:
+- check
 - build
 - test
 - deploy
 - package
 - downstream
 
-#Default cmake arguments
+# Default cmake arguments
 variables:
   CMAKE_ARG_DEFAULT: "-DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../"
 
-#Build Stage
-#Builds GPSTk for each platform, saves build artifacts for future stages
+# Check Stage
+# Runs static analysis on code.
+static_analysis:
+  stage: check
+  tags:
+    - debian
+  script:
+    - ./lint_test.sh
+
+# Build Stage
+# Builds GPSTk for each platform, saves build artifacts for future stages
 build_debian:
   stage: build
   tags:
@@ -81,8 +91,8 @@ build_core:
     paths:
     - build/
 
-#Test Stage
-#Runs all tests of GPSTK for each platform
+# Test Stage
+# Runs all tests of GPSTK for each platform
 test_debian:
   stage: test
   tags:
@@ -134,8 +144,8 @@ test_core:
   dependencies:
     - build_core
 
-#Deploy Stage
-#Tests install of GPSTk on each platform, saves artifacts for downstream builds.
+# Deploy Stage
+# Tests install of GPSTk on each platform, saves artifacts for downstream builds.
 deploy_debian:
   stage: deploy
   tags:
@@ -195,8 +205,8 @@ deploy_core:
   dependencies:
     - build_core
 
-#Package Stage
-#Tests packaging of GPSTk on all platforms
+# Package Stage
+# Tests packaging of GPSTk on all platforms
 package_debian:
   stage: package
   tags:
@@ -247,8 +257,8 @@ package_core:
   dependencies:
     - build_core
 
-#Downstream Stage
-#Builds SGLTk to test for any downstream issues.
+# Downstream Stage
+# Builds SGLTk to test for any downstream issues.
 sgltk_core:
   stage: downstream
   tags:
