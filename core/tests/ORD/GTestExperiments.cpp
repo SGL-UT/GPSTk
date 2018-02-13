@@ -37,7 +37,7 @@ TEST_F(ORDTest, testCrop) {
     const int kCropWidth = 320;
     const int kCropHeight = 240;
 
-    ASSERT_GE(kCropTop + kCropHeight, kCropLeft + kCropWidth);
+    ASSERT_LE(kCropTop + kCropHeight, kCropLeft + kCropWidth);
 }
 /**
  *
