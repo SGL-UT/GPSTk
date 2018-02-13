@@ -50,6 +50,8 @@ build_redhat:
   artifacts:
     paths:
     - build/
+  # TODO: Temporarily allow failure to allow unit testing on debian
+  allow_failure: true
 
 build_osx:
   stage: build
@@ -63,6 +65,8 @@ build_osx:
   artifacts:
     paths:
     - build/
+  # TODO: Temporarily allow failure to allow unit testing on debian
+  allow_failure: true
 
 build_windows:
   stage: build
@@ -76,6 +80,8 @@ build_windows:
   artifacts:
     paths:
     - build/
+  # TODO: Temporarily allow failure to allow unit testing on debian
+  allow_failure: true
 
 build_core:
   stage: build
