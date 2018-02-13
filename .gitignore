@@ -2,6 +2,7 @@
 *~
 .*.swp
 
+# Python compiled byte-code
 *.pyc
 
 # build directories
@@ -12,3 +13,6 @@ build*/
 
 # Sublime Test temp files
 ._*
+
+# Coverage file results
+gcovr

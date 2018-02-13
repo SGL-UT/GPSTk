@@ -21,6 +21,9 @@ if( GMOCK_SOURCE_DIR )
     add_subdirectory(${GMOCK_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}/gmock )
 endif( )
 
+# STOPGAP until debian build machine has gmock installed.
+include_directories(/home/kuck/Downloads/googletest-release-1.8.0/googletest/include /home/kuck/Downloads/googletest-release-1.8.0/googlemock/include)
+link_directories(/home/kuck/Downloads/googletest-release-1.8.0/googletest/build-clau /home/kuck/Downloads/googletest-release-1.8.0/googlemock/build-clau)
 
 add_executable(GTestExperiments_T GTestExperiments.cpp)
 target_link_libraries(GTestExperiments_T pthread gmock_main gmock gtest_main gtest)

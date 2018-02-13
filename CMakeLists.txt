@@ -145,6 +145,11 @@ set_target_properties(gpstk PROPERTIES VERSION "${GPSTK_VERSION_MAJOR}.${GPSTK_V
 
 if( TEST_SWITCH )
   enable_testing()
+  if (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang"
+    OR ((${CMAKE_CXX_COMPILER_VERSION} VERSION_GREATER "4.9.0" ) AND CMAKE_COMPILER_IS_GNUCXX))
+    message(STATUS "Enabling address sanitizer for debug build")
+    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage" )
+  endif()
 endif( )
 
 #----------------------------------------
