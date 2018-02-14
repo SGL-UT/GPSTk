@@ -70,14 +70,17 @@ double IonosphereFreeRange(const std::vector<double>& frequencies,
 
 /// Given an ionosphere model, and locations of receiver and satellite,
 /// range correction due to ionospheric effects.
+/// TODO(someone): IonoModel assumes only L1 and L2 frequencies, this
+/// should be updated to work with an arbitrary frequency.  Currently
+/// This call assumes frequency is L1.
 /// @param ionoModel Class that encapsulates ionospheric models
 /// @params time The time of interest.
-/// @params frequency Frequency of interest (L1 or L2) GPS only.
+/// @params frequency Frequency of interest - see note above.
 /// @param rx_loc The location of the receiver.
 /// @param sv_loc The location of the satellite at time of interest.
 /// @return Range correction (delta) in meters
 double IonosphereModelCorrection(const gpstk::IonoModelStore& ionoModel,
-        const gpstk::CommonTime& time, gpstk::IonoModel::Frequency freq,
+        const gpstk::CommonTime& time, double frequency,
         const gpstk::Position& rxLoc, const gpstk::Xvt& svXvt);
 
 /// Given a satellite id, a time, and an ephemeris store, retrieves the
@@ -214,7 +217,7 @@ double calculate_ord(const std::vector<double>& frequencies,
 
     // apply ionosphere model correction
     range += IonosphereModelCorrection(iono_model, receive_time,
-            gpstk::IonoModel::L1,
+            frequencies[0],
             rx_loc, sv_xvt);
 
     return ps_range - range;

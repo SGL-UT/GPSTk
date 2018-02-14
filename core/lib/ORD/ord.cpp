@@ -105,7 +105,7 @@ double IonosphereFreeRange(const std::vector<double>& frequencies,
 }
 
 double IonosphereModelCorrection(const gpstk::IonoModelStore& ionoModel,
-        const gpstk::CommonTime& time, gpstk::IonoModel::Frequency freq,
+        const gpstk::CommonTime& time, double freq,
         const gpstk::Position& rxLoc, const gpstk::Xvt& svXvt) {
     Position trx(rxLoc);
     Position svPos(svXvt);
@@ -117,7 +117,7 @@ double IonosphereModelCorrection(const gpstk::IonoModelStore& ionoModel,
     // should be updated to work with an arbitrary frequency.
     double iono = ionoModel.getCorrection(time, trx,
                                           elevation, azimuth,
-                                          freq);
+                                          IonoModel::L1);
     return -iono;
 }
 
