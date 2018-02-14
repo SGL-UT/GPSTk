@@ -52,10 +52,40 @@
 #include "OrdMockClasses.hpp"
 
 using gpstk::CorrectedEphemerisRange;
+using gpstk::GAMMA_GPS;
+using gpstk::L1_FREQ_GPS;
+using gpstk::L2_FREQ_GPS;
 
 using ::testing::Return;
 using ::testing::Invoke;
 using ::testing::_;
+
+TEST(OrdTestRegression, TestIonoFreeRange) {
+    std::vector<double> frequencies;
+    frequencies.push_back(L1_FREQ_GPS);
+    frequencies.push_back(L2_FREQ_GPS);
+    std::vector<double> pseudoranges;
+    pseudoranges.push_back(5000.0);
+    pseudoranges.push_back(6000.0);
+
+    for (int i = 0; i < pseudoranges.size(); i++) {
+        std::cout << "PR[" << i << "] is: " << pseudoranges[i] << std::endl;
+    }
+
+    double range = gpstk::ord::IonosphereFreeRange(frequencies, pseudoranges);
+
+    // Old calculation in ObsRngDev.cpp
+    // for dual frequency see ICD-GPS-211, section 20.3.3.3.3.3
+    double icpr = (pseudoranges[0] - GAMMA_GPS *
+                   pseudoranges[1])/(1-GAMMA_GPS);
+
+    // Compare the new calculation to the old, for our contrived variables.
+    double delta = fabs(range-icpr);
+    std::cout << "difference of: " << delta << std::endl;
+    // ASSERT_EQ(range, icpr);
+    // TODO(someone) Is this an acceptable difference?
+    ASSERT_LT(delta, 1e-5);
+}
 
 TEST(OrdTestRegression, TestRawRange1) {
     MockXvtStore foo;
@@ -137,8 +167,8 @@ TEST(OrdTestRegression, TestRawRange3) {
 
     CorrectedEphemerisRange cer;
 
-    double originalRange = cer.ComputeAtTransmitSvTime(time, 0, rxLocation, satId,
-            foo);
+    double originalRange = cer.ComputeAtTransmitSvTime(time, 0,
+            rxLocation, satId, foo);
 
     // Compare the new calculation to the old, for our contrived variables.
     ASSERT_EQ(resultRange, originalRange);

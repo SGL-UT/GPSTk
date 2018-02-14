@@ -69,7 +69,7 @@ class MockXvtStore: public gpstk::XvtStore<SatID> {
     MOCK_CONST_METHOD1(isPresent, bool(const SatID& id));
 
     MOCK_CONST_METHOD2(getXvt, Xvt(const SatID& id, const CommonTime& t));
-    MOCK_CONST_METHOD2(dump, void(std::ostream& s, short detail));
+    MOCK_CONST_METHOD2(dump, void(std::ostream& s, short detail));  // NOLINT(runtime/int)
 
     MOCK_METHOD2(edit, void(const CommonTime& tmin, const CommonTime& tmax));
 };
@@ -77,6 +77,63 @@ class MockXvtStore: public gpstk::XvtStore<SatID> {
 class MockXvt: public gpstk::Xvt {
  public:
     MOCK_METHOD0(computeRelativityCorrection, double());
+};
+
+class MockTropo: public gpstk::TropModel {
+ public:
+    // It turns out that you can't mock a method with a throw() specifier.
+    // Google test doesn't support it.
+    // https://stackoverflow.com/questions/4922595/mocking-a-method-with-throw-specifier
+    // The workaround is to create a wrapper method that doesn't throw.
+    virtual double dry_zenith_delay() const
+        throw(gpstk::InvalidTropModel) {
+        return dry_zenith_delay_wrap();
+    }
+    MOCK_CONST_METHOD0(dry_zenith_delay_wrap, double());
+
+    virtual double wet_zenith_delay() const
+        throw(gpstk::InvalidTropModel) {
+        return wet_zenith_delay_wrap();
+    }
+    MOCK_CONST_METHOD0(wet_zenith_delay_wrap, double());
+
+    MOCK_CONST_METHOD1(dry_mapping_function_wrap, double(double elevation));
+    virtual double dry_mapping_function(double elevation) const
+        throw(gpstk::InvalidTropModel) {
+        return dry_mapping_function_wrap(elevation);
+    }
+
+    MOCK_CONST_METHOD1(wet_mapping_function_wrap, double(double elevation));
+    virtual double wet_mapping_function(double elevation) const
+        throw(gpstk::InvalidTropModel) {
+        return wet_mapping_function_wrap(elevation);
+    }
+
+    MOCK_CONST_METHOD1(correction_wrap, double(double elevation));
+    virtual double correction(double elevation) const
+        throw(gpstk::InvalidTropModel) {
+        return correction_wrap(elevation);
+    }
+};
+
+class MockIono: public gpstk::IonoModelStore {
+ public:
+    MOCK_CONST_METHOD5(getCorrection_wrap,
+            double(const CommonTime& time,
+                   const Position& rxgeo,
+                   double svel,
+                   double svaz,
+                   gpstk::IonoModel::Frequency freq));
+
+    virtual double getCorrection(
+            const CommonTime& time,
+            const Position& rxgeo,
+            double svel,
+            double svaz,
+            gpstk::IonoModel::Frequency freq) const
+        throw(gpstk::IonoModelStore::NoIonoModelFound) {
+        return getCorrection_wrap(time, rxgeo, svel, svaz, freq);
+    }
 };
 
 #endif  // CORE_TESTS_ORD_ORDMOCKCLASSES_HPP_

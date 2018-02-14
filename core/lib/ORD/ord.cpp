@@ -39,6 +39,7 @@
 #include <vector>
 #include "ord.hpp"
 #include "GPSEllipsoid.hpp"
+#include "GNSSconstants.hpp"
 
 using std::vector;
 using std::cout;
@@ -71,12 +72,53 @@ Xvt rotateEarth(const Position& Rx, const Xvt& svPosVel,
 
 double IonosphereFreeRange(const std::vector<double>& frequencies,
         const std::vector<double>& pseudoranges) {
-    return 0;
+    // Check vectors are same length
+    if (frequencies.size() != pseudoranges.size()) {
+        gpstk::Exception exc(
+            "Mismatch between frequency and pseudorange array size");
+        GPSTK_THROW(exc)
+    }
+
+    // Check vectors are at least two
+    if (frequencies.size() < 2) {
+        gpstk::Exception exc(
+            "Multiple frequency and range values are required.");
+        GPSTK_THROW(exc)
+    }
+
+    // Check vectors aren't greater than two
+    if (frequencies.size() > 2) {
+        gpstk::Exception exc(
+            "Only dual-frequency ionosphere correction is supported.");
+        GPSTK_THROW(exc)
+    }
+
+    // TODO(someone): Add proper gamma calculation for arbitrary
+    //                number of frequencies.
+    const double gamma = (frequencies[0]/frequencies[1]) *
+                         (frequencies[0]/frequencies[1]);
+
+    // for dual frequency see ICD-GPS-211, section 20.3.3.3.3.3
+    double icpr = (pseudoranges[0] - gamma * pseudoranges[1])/(1-gamma);
+
+    return icpr;
 }
 
-double IonosphereModelCorrection(const gpstk::IonoModelStore& iono_model,
-        const gpstk::Position& rx_loc, const gpstk::Xvt& svXvt) {
-    return 0;
+double IonosphereModelCorrection(const gpstk::IonoModelStore& ionoModel,
+        const gpstk::CommonTime& time, gpstk::IonoModel::Frequency freq,
+        const gpstk::Position& rxLoc, const gpstk::Xvt& svXvt) {
+    Position trx(rxLoc);
+    Position svPos(svXvt);
+
+    double elevation = trx.elevation(svPos);
+    double azimuth = trx.azimuth(svPos);
+
+    // TODO(someone): IonoModel assumes only L1 and L2 frequencies, this
+    // should be updated to work with an arbitrary frequency.
+    double iono = ionoModel.getCorrection(time, trx,
+                                          elevation, azimuth,
+                                          freq);
+    return -iono;
 }
 
 gpstk::Xvt getSvXvt(const gpstk::SatID& satId, const gpstk::CommonTime& time,
@@ -169,7 +211,6 @@ double RawRange2(double pseudorange, const gpstk::Position& rxLoc,
 double RawRange3(double pseudorange, const gpstk::Position& rxLoc,
         const gpstk::SatID& satId, const gpstk::CommonTime& time,
         const gpstk::XvtStore<gpstk::SatID>& ephemeris, gpstk::Xvt& svXvt) {
-
     Position trx(rxLoc);
     trx.asECEF();
 
@@ -189,7 +230,7 @@ double RawRange3(double pseudorange, const gpstk::Position& rxLoc,
     double rotation_angle = -ell.angVelocity() * range;
     svPosVel.x[0] = svPosVel.x[0] - svPosVel.x[1] * rotation_angle;
     svPosVel.x[1] = svPosVel.x[1] + svPosVel.x[0] * rotation_angle;
-    //svPosVel.x[2] = svPosVel.x[2];  // ?? Reassign for readability ??
+    // svPosVel.x[2] = svPosVel.x[2];  // ?? Reassign for readability ??
 
     double rawrange = trx.slantRange(svPosVel.x);
 
@@ -218,14 +259,20 @@ double SvClockBiasCorrection(const gpstk::Xvt& svXvt) {
 }
 
 double SvRelativityCorrection(gpstk::Xvt& svXvt) {
-    std::cout << "Data Type of svXvt is:" << typeid(svXvt).name() << std::endl;
     double relativity = svXvt.computeRelativityCorrection() * C_MPS;
     return -relativity;
 }
 
-double TroposphereCorrection(const gpstk::TropModel& trop_model,
-        const gpstk::Position& rx_loc, const gpstk::Xvt& svXvt) {
-    return 0;
+double TroposphereCorrection(const gpstk::TropModel& tropModel,
+        const gpstk::Position& rxLoc, const gpstk::Xvt& svXvt) {
+    Position trx(rxLoc);
+    Position svPos(svXvt);
+
+    double elevation = trx.elevation(svPos);
+
+    double trop = tropModel.correction(elevation);
+
+    return -trop;
 }
 
 }  // namespace ord
