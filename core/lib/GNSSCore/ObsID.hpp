@@ -82,6 +82,7 @@ namespace gpstk
          otDoppler,   ///< Doppler, in Hz
          otSNR,       ///< Signal strength, in dB-Hz
          otChannel,   ///< Channel number
+         otDemodStat, ///< Demodulator status
          otIono,      ///< Ionospheric delay (see RINEX3 section 5.12)
          otSSI,       ///< Signal Strength Indicator (RINEX)
          otLLI,       ///< Loss of Lock Indicator (RINEX)
