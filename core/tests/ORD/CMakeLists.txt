@@ -5,9 +5,9 @@ message( STATUS "Setting CMAKE_CURRENT_SOURCE_DIR = ${CMAKE_CURRENT_SOURCE_DIR}"
 
 # /usr/lib64/libgmock.so
 find_path(GMOCK_SOURCE_DIR NAMES src/gmock.cc CMakeLists.txt
-          PATHS /usr/src/gmock)
+          PATHS /usr/src/gmock /usr/local/src/gmock)
 find_path(GMOCK_INCLUDE_DIR NAMES gmock.h
-          PATHS /usr/include/gmock)
+          PATHS /usr/include/gmock /usr/local/include/gmock)
 
 # If we can't locate the INCLUDE directory, just give up.
 if ( GMOCK_INCLUDE_DIR )
