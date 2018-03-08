@@ -36,8 +36,8 @@
 
 #include "CheckFrame.hpp"
 
-#include "RinexNavStream.hpp"
-#include "RinexNavData.hpp"
+#include "Rinex3NavStream.hpp"
+#include "Rinex3NavData.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
 {
    try
    {
-      CheckFrame<RinexNavStream, RinexNavData> cf(argv[0],
+      CheckFrame<Rinex3NavStream, Rinex3NavData> cf(argv[0],
                                                   std::string("Rinex Nav"));
       
       if (!cf.initialize(argc, argv))
