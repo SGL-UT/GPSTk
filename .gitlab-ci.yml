@@ -20,6 +20,8 @@ static_analysis:
     - debian
   script:
     - ./lint_test.sh
+  # Allow failures here to prevent blocking the rest of the pipeline.
+  allow_failure: true
 
 # Build Stage
 # Builds GPSTk for each platform, saves build artifacts for future stages
@@ -65,8 +67,6 @@ build_osx:
   artifacts:
     paths:
     - build/
-  # TODO: Temporarily allow failure to allow unit testing on debian
-  allow_failure: true
 
 build_windows:
   stage: build
@@ -80,8 +80,6 @@ build_windows:
   artifacts:
     paths:
     - build/
-  # TODO: Temporarily allow failure to allow unit testing on debian
-  allow_failure: true
 
 build_core:
   stage: build
