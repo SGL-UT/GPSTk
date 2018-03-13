@@ -73,6 +73,8 @@ OPTIONS:
    -t                   Build and run tests.
    -T                   Build and run tests but don't stop on test failures.
 
+   -g                   Compile code with gcov instrumenation enabled.
+
    -p                   Build supported packages (source, binary, deb,  ...)
 
    -v                   Include debugging output.
@@ -80,7 +82,7 @@ EOF
 }
 
 
-while getopts "hb:cdepi:j:xP:sutTv" OPTION; do
+while getopts "hb:cdepi:j:xP:sutTgv" OPTION; do
     case $OPTION in
         h) usage
            exit 0
@@ -117,6 +119,8 @@ while getopts "hb:cdepi:j:xP:sutTv" OPTION; do
         t) test_switch=1
            ;;
         T) test_switch=-1
+           ;;
+        g) coverage_switch=1
            ;;
         v) verbose+=1
            ;;
@@ -161,6 +165,7 @@ if ((verbose>0)); then
     log "build_docs      = $(ptof $build_docs)"
     log "build_packages  = $(ptof $build_packages)"
     log "test_switch     = $(ptof $test_switch)"
+    log "coverage_switch = $(ptof $coverage_switch)"
     log "clean           = $(ptof $clean)"
     log "verbose         = $(ptof $verbose)"
     log "num_threads     = $num_threads"
@@ -219,6 +224,7 @@ args+=${install_prefix:+" -DCMAKE_INSTALL_PREFIX=$install_prefix"}
 args+=${build_ext:+" -DBUILD_EXT=ON"}
 args+=${verbose:+" -DDEBUG_SWITCH=ON"}
 args+=${test_switch:+" -DTEST_SWITCH=ON"}
+args+=${coverage_switch:+" -DCOVERAGE_SWITCH=ON"}
 args+=${build_docs:+" --graphviz=$build_root/doc/graphviz/gpstk_graphviz.dot"}
 
 case `uname` in

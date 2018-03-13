@@ -1,18 +1,30 @@
 #.yml file for Gitlab-CI support
 
 stages:
+- check
 - build
 - test
 - deploy
 - package
 - downstream
 
-#Default cmake arguments
+# Default cmake arguments
 variables:
   CMAKE_ARG_DEFAULT: "-DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../"
 
-#Build Stage
-#Builds GPSTk for each platform, saves build artifacts for future stages
+# Check Stage
+# Runs static analysis on code.
+static_analysis:
+  stage: check
+  tags:
+    - debian
+  script:
+    - ./lint_test.sh
+  # Allow failures here to prevent blocking the rest of the pipeline.
+  allow_failure: true
+
+# Build Stage
+# Builds GPSTk for each platform, saves build artifacts for future stages
 build_debian:
   stage: build
   tags:
@@ -21,7 +33,7 @@ build_debian:
     - mkdir build
     - cd build
     - export gpstk=`pwd`/install
-    - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=install $CMAKE_ARG_DEFAULT 
+    - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=install $CMAKE_ARG_DEFAULT
     - make all -j 4
   artifacts:
     paths:
@@ -35,11 +47,13 @@ build_redhat:
     - mkdir build
     - cd build
     - export gpstk=`pwd`/install
-    - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=install $CMAKE_ARG_DEFAULT 
+    - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=install $CMAKE_ARG_DEFAULT
     - make all -j 4
   artifacts:
     paths:
     - build/
+  # TODO: Temporarily allow failure to allow unit testing on debian
+  allow_failure: true
 
 build_osx:
   stage: build
@@ -75,14 +89,14 @@ build_core:
     - mkdir build
     - cd build
     - export gpstk=`pwd`/install
-    - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=install $CMAKE_ARG_DEFAULT 
+    - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=install -DCOVERAGE_SWITCH=ON $CMAKE_ARG_DEFAULT
     - make all -j 4
   artifacts:
     paths:
     - build/
 
-#Test Stage
-#Runs all tests of GPSTK for each platform
+# Test Stage
+# Runs all tests of GPSTK for each platform
 test_debian:
   stage: test
   tags:
@@ -131,11 +145,22 @@ test_core:
   script:
     - cd build
     - ctest -j 4
+    - cd ..
+    # Execute once to get the tabular output (which we can scrape for gitlab)
+    - echo $PWD
+    - gcovr --object-directory=build/core/tests/ORD/CMakeFiles/OrdUnitTests_T.dir -r . -e .*_T.cpp
+    # Execute again, generating html
+    - mkdir gcovr
+    - gcovr --object-directory=build/core/tests/ORD/CMakeFiles/OrdUnitTests_T.dir --html --html-details -o gcovr/index.html -r . -e .*_T.cpp
   dependencies:
     - build_core
+  artifacts:
+    paths:
+    - gcovr
+    expire_in: 2 days
 
-#Deploy Stage
-#Tests install of GPSTk on each platform, saves artifacts for downstream builds.
+# Deploy Stage
+# Tests install of GPSTk on each platform, saves artifacts for downstream builds.
 deploy_debian:
   stage: deploy
   tags:
@@ -195,8 +220,8 @@ deploy_core:
   dependencies:
     - build_core
 
-#Package Stage
-#Tests packaging of GPSTk on all platforms
+# Package Stage
+# Tests packaging of GPSTk on all platforms
 package_debian:
   stage: package
   tags:
@@ -247,8 +272,8 @@ package_core:
   dependencies:
     - build_core
 
-#Downstream Stage
-#Builds SGLTk to test for any downstream issues.
+# Downstream Stage
+# Builds SGLTk to test for any downstream issues.
 sgltk_core:
   stage: downstream
   tags:
