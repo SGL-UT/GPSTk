@@ -899,7 +899,6 @@ void gdc::findLargeGaps(void) throw(Exception)
          addArc(git->first+git->second, Arc::BEG);
 
          // must recompute ngood, but only for one Arc .. oh well
-         computeNgood(ait->second);
          ait = Arcs.begin();              // iterator is corrupted by addArc
          findArc(git->first+git->second, ait);
          computeNgood(ait->second);
