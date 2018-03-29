@@ -333,8 +333,8 @@ void SRIFilter::Reset(const int N)
 //    There are three ways to handle non-zero process noise covariance.
 // (1) If Q is the (known) a priori process noise covariance Q, then
 // set Q=Rw(-1)*Rw(-T), and G=1.
-// (2) Transform process noise covariance matrix to UDU form, Q=UDU,
-// then set G=U  and Rw = (D)**-1/2.
+// (2) Transform process noise covariance matrix to UDU form, Q=UDU^T,
+// then set G=U  and Rw = (D)^-1/2.
 // (3) Take the sqrt of process noise covariance matrix Q, then set
 // G=this sqrt and Rw = 1.  [2 and 3 have been tested.]
 //    The routine applies a Householder transformation to a large
@@ -412,7 +412,7 @@ void SRIFilter::SrifTU(Matrix<T>& R,
       // initialize
       Rwx = T(0);
       PhiInv = R * PhiInv;                   // set PhiInv = Rd = R*PhiInv
-      G = -PhiInv * G;
+      G = -PhiInv * G;                       // set G = -Rd * G
       // fixed Matrix problem - unary minus should not return an l-value
       //G = -(PhiInv * G);                     // set G = -Rd*G
 
