@@ -481,7 +481,7 @@ template<class T> void FirstDiffFilter<T>::fixUpResults(void)
 template<class T> int FirstDiffFilter<T>::analyze2(const double ratlim,
                                                    bool dump, std::string& dumpmsg)
 {
-   unsigned int i,N(4),j,k;
+   unsigned int i,N(4),j;
    std::ostringstream oss;
    gpstk::Stats<double> pstats,fstats;
 
@@ -1293,7 +1293,7 @@ template<class T> int WindowFilter<T>::analyze(void)
    }
    int curr(0);
    size_t i,j;
-   double tmp,tmp2;
+   double tmp;
 
    // ratio(step/sigma), its 1st diff, sigma, its 1st diff, future minus past sigma
    std::deque<double> rat,rat1d,sig,sig1d,fminusp;
@@ -1545,7 +1545,6 @@ template<class T> int WindowFilter<T>::analyze(void)
 template<class T> void WindowFilter<T>::dump(std::ostream& os, std::string tag)
 {
    size_t i,j,k;
-   T min,max,med,mad;
    std::string msg(tag), slip, res;
 
    // TD print slope?
