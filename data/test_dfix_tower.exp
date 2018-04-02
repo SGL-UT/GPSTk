@@ -1,4 +1,4 @@
-dfix ver 2.0 5/20/17, Run 2017/06/14 at 15:23:20
+dfix ver 2.0 5/20/17, Run 2018/04/02 at 11:25:59
 
 Load the RINEX files using Rinex3ObsFileLoader -------
  Add obs type GL1C =~ GL1* from /local/Code/gpstk/data/test_dfix_tower239.ed.15o
@@ -93,6 +93,6 @@ Millisecond adjusts: 0 total adjusts found, 0 invalid
 # End of GDC configuration.
 
 GDC   1 SPS 1333 G11 1333  0 1859 363501.000 1859 365499.000 1.5 L1 L2 P1 P2
-DFX   1 G11 BEG    0 1859 363501.000  628  628 WL 1333  -0.053 +-  0.450 GF  628  -1.845 +-  0.164
-DFX   1 G11 FIX  628 1859 364443.000  705  705 WL  705   0.004 +-  0.477 GF  705  -5.814 +-  0.235 n(WL,GF) 1,0
-dfix timing: 0.193 seconds. (1.000 sec)
+DFX   1 G11 BEG    0 1859 363501.000  628  626 WL 1331  -1.112 +-   1.038 GF 1331  -2.388 +-   0.588
+DFX   1 G11 FIX  628 1859 364443.000  705  705 WL  705  -1.996 +-   0.477 GF  705  -2.873 +-   0.235 n(WL,GF) 3,-12
+dfix timing: 0.041 seconds. (0.000 sec)
