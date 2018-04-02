@@ -170,6 +170,22 @@ namespace gpstk
           *   filters. */
       virtual NavFilter::NavMsgList finalize();
 
+         /** Gets the effective buffer size in epochs required for
+          * maintaining subframe data, given the filters that have
+          * been added using addFilter().  This is the sum of
+          * NavFilter::processingDepth() return values +1.
+          *
+          * The method can be used as in this example:
+          * \code{.cpp}
+          * struct Subframe { uint32_t word[10]; };
+          * typedef vector<Subframe> SubframeBuf;
+          * NavFilterMgr mgr;
+          * mgr.addFilter(...);
+          * SubframeBuf buf(numRx * numCode * numChl * mgr.processingDepth());
+          * \endcode
+          */
+      unsigned processingDepth() const throw();
+
          /** This set contains any filters with rejected data after a
           * validate() or finalize() call.  The set will be cleared at
           * the beginning of the validate() or finalize() call so that

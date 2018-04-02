@@ -354,6 +354,7 @@ namespace gpstk
       sv.v[0] = vxef;
       sv.v[1] = vyef;
       sv.v[2] = vzef;
+      delete ell;
 
       return sv;
    }
@@ -377,6 +378,7 @@ namespace gpstk
 
       double twoPI  = 2.0e0 * PI;
       double sqrtgm = SQRT(ell->gm());
+      delete ell;
       double elapte = t - ctToe;
 
          // Compute A at time of interest

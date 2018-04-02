@@ -640,7 +640,7 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjI
       throw( InvalidRequest )
    {
       OrbAlmMap::const_iterator cit; 
-      const OrbAlm* candidate = 0; 
+      const OrbAlm* candidate = NULL; 
 
          // For the moment, this is implemented as a dirt-stupid linear search
          // from the beginning of the map.  If we ever want to process
@@ -680,7 +680,16 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjI
          // We reached the end of the map without finding a transmit
          // time beyond the time of interest.  Return the last item
          // in the map. 
-      if (candidate==0) candidate = previt->second;
+      if (candidate == NULL)
+      {
+            // make sure previt is valid before we try to use it.
+         if (previt == em.end())
+         {
+            InvalidRequest e("No orbital elements for requested satellite ");
+            GPSTK_THROW(e);
+         }
+         candidate = previt->second;
+      }
 
          // If effectivity is of interest, verify that effectivity is met
          // for this candidate

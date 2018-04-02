@@ -22,7 +22,17 @@ namespace gpstk
       /** "Filter" GPS LNAV subframes, assembling valid ephemerides
        * into groups.
        *
-       * @attention Processing depth = 3 epochs.
+       * @attention Processing depth = 3 epochs.  Unlike other
+       * filters, valid data isn't always returned using the
+       * validate() or finalize() methods.  In this implementation,
+       * validate() only uses the accept mechanism for returning data
+       * from validate() calls for subframes that are NOT ephemeris
+       * subframes, i.e. not subframe ID 1-3.  Instead, valid
+       * ephemeris subframes are stored internally in the ephemerides
+       * structure and then copied to completedEphs when the full
+       * three subframes are accumulated.  The data in completedEphs
+       * should be treated as accepted and should also be deleted when
+       * the user is finished with the data.
        */
    class LNavEphMaker : public NavFilter
    {
@@ -58,6 +68,14 @@ namespace gpstk
       virtual void validate(NavMsgList& msgBitsIn, NavMsgList& msgBitsOut);
 
       virtual void finalize(NavMsgList& msgBitsOut);
+
+         /// Internally stores 3 epochs worth of subframe data.
+      virtual unsigned processingDepth() const throw()
+      { return 3; }
+
+         /// Return the filter name.
+      virtual std::string filterName() const throw()
+      { return "EphMaker"; }
 
          /// Storage for the assembly of ephemerides.
       EphMap ephemerides;

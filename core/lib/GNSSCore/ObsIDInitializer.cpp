@@ -52,6 +52,7 @@ namespace gpstk {
       ObsID::otDesc[ObsID::otDoppler]   = "doppler";       //Rinex D
       ObsID::otDesc[ObsID::otSNR]       = "snr";           //Rinex S
       ObsID::otDesc[ObsID::otChannel]   = "channel";       //Rinex  
+      ObsID::otDesc[ObsID::otDemodStat] = "demodStatus";
       ObsID::otDesc[ObsID::otIono]      = "iono";          //Rinex  
       ObsID::otDesc[ObsID::otSSI]       = "ssi";           //Rinex  
       ObsID::otDesc[ObsID::otLLI]       = "lli";           //Rinex  
