@@ -77,11 +77,12 @@ namespace gpstk
       OrbitEphStore()
             : initialTime(CommonTime::END_OF_TIME),
               finalTime(CommonTime::BEGINNING_OF_TIME),
-              strictMethod(true), onlyHealthy(false)
+              strictMethod(true)
       {
          timeSystem = TimeSystem::Any;
          initialTime.setTimeSystem(timeSystem);
          finalTime.setTimeSystem(timeSystem);
+         setOnlyHealthyFlag(false);
       }
 
          /// Destructor
@@ -305,14 +306,6 @@ namespace gpstk
       void SearchUser(void)
       { strictMethod = true; }
 
-         /// get the flag that limits getXvt() to healthy ephemerides
-      bool getOnlyHealthyFlag(void) const
-      { return onlyHealthy; }
-
-         /// set the flag that limits getXvt() to healthy ephemerides
-      void setOnlyHealthyFlag(bool flag)
-      { onlyHealthy = flag; }
-
          /** Return the satellite health at the given time.
           * @param SatID sat satellite of interest
           * @param CommonTime t time of interest
@@ -363,10 +356,6 @@ namespace gpstk
          /** flag indicating search method (find...Eph) to use in
           *  getSatXvt and getSatHealth */
       bool strictMethod;
-
-         /** flag indicating unhealthy ephemerides should be excluded
-          * from getXvt, otherwise it will throw (default false) */
-      bool onlyHealthy;
 
          /// Convenience routines
       void updateTimeLimits(const OrbitEph* eph)

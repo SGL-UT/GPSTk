@@ -72,7 +72,7 @@ namespace gpstk
 
          // If the orbital elements are unhealthy, refuse to 
          // calculate an SV position and throw.
-         if (!eph->healthy)
+         if (!eph->healthy && onlyHealthy)
          {
             InvalidRequest exc( std::string("SV is transmitting unhealthy navigation ")
                 + std::string("message at time of interest.") );
