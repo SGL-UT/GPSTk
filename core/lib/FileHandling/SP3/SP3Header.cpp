@@ -146,9 +146,9 @@ namespace gpstk
              {
                 svLineCount++;
                    // get the total number of svs on line 3
-                if (i == 3)
+                if (svLineCount == 1)
                 {
-                   numSVs = asInt(line.substr(4,2));
+                   numSVs = asInt(line.substr(3,3));
                    svsAsWritten.resize(numSVs);
                 }
                 for(index = 9; index < 60; index += 3)
@@ -180,7 +180,7 @@ namespace gpstk
       readSVs = 0;
 
          // read in the accuracy.
-      for (i = 0; i <= svLineCount; i++)                                    // lines 8-12
+      for (i = 0; i < svLineCount; i++)                                    // lines 8-12
       {
          if (i==0)
          {
@@ -188,9 +188,9 @@ namespace gpstk
          }
          else
          {
-         strm.formattedGetLine(line);
+            strm.formattedGetLine(line);
+            lineCount++;
          }
-         lineCount++;
 
          if(debug) std::cout << "SP3 Header Line " << lineCount << " " << line << std::endl;
          if ((line[0]=='+') && (line[1]=='+'))
@@ -214,7 +214,7 @@ namespace gpstk
 
       strm.formattedGetLine(line);
       lineCount++;
-      if(debug) std::cout << "SP3 Header Line \%c1 " << line << std::endl;
+      if(debug) std::cout << "SP3 Header Line %c1 " << line << std::endl;
       if (version == SP3b || version == SP3c) {
          if(line[0]=='%' && line[1]=='c')
          {
@@ -227,14 +227,14 @@ namespace gpstk
          }
          else
          {
-            FFStreamError e("Unknown label in line \%c1: " + line.substr(0,2));
+            FFStreamError e("Unknown label in line %c1: " + line.substr(0,2));
             GPSTK_THROW(e);
          }
       }
 
       strm.formattedGetLine(line);
       lineCount++;
-      if(debug) std::cout << "SP3 Header Line \%c2 " << line << std::endl;
+      if(debug) std::cout << "SP3 Header Line %c2 " << line << std::endl;
 
       strm.formattedGetLine(line);
       lineCount++;
@@ -303,6 +303,7 @@ namespace gpstk
       bool isVerA  = (version == SP3a);
       bool isVerB  = (version == SP3b);
       bool isVerC  = (version == SP3c);
+      bool isVerD  = (version == SP3d);
 
       // line 1
       CivilTime civTime(time);
@@ -330,47 +331,100 @@ namespace gpstk
       strm << line << endl;
       strm.lineNumber++;
 
-      // lines 3-7 and 8-12
+      //SV lines and SV Accuracy lines
       //Map<SV,accuracy flag> (all SVs in data)
       std::map<SP3SatID, short>::const_iterator it;
-      for(i=3; i<=12; i++) {                 // loop over the lines
-         if(i==3) line = "+   " + rightJustify(asString(satList.size()),2) + "   ";
-         else if(i < 8) line = "+        ";
-         else           line = "++       ";
-         k = 0;
-         if(i == 3 || i == 8)                // start the iteration
-            it = satList.begin();
-         while(k < 17) {                     // there are 17 per line
-            if(it != satList.end()) {
-               if(i < 8) {                   // lines 3-7 - sat id
-                  if(!isVerA) {
-                     // a satellite in version b or c -> let j be -1 to mark it
-                     SVid = it->first;
-                     j = -1;
-                  }
-                  else j = it->first.id;
-               }
-               else                          // lines 8-12 - accuracy
-                  j = it->second;
-               it++;
-            }
-            else j=0;            // no more
-
-            if(j == -1)          // sat version b or c
-               try {
-                  line += rightJustify(SP3SatID(SVid).toString(),3);
-               }
-               catch (Exception& e)
-               {
-                  FFStreamError ffse(e);
-                  GPSTK_THROW(ffse);
-               }
-            else                 // sat version a, accuracy, or 0
-               line += rightJustify(asString(j),3);
-            k++;
-         }
-         strm << line << endl;
-         strm.lineNumber++;
+      if (isVerD)
+      {
+          int totalLines = satList.size()/17;
+          if (satList.size()%17 != 0) totalLines++;
+          for(i=1;i<=2*totalLines;i++){
+              cout << i <<" ";
+              if (i==1) line = "+  " + rightJustify(asString(satList.size()),3) + "   ";
+              else if ( i < totalLines+1) line = "+        ";
+              else                      line = "+        ";
+              k=0;
+              if(i==1 || i==totalLines+1)
+              {
+                it = satList.begin();
+              }
+              while(k<17)
+              {
+                if (it != satList.end())
+                {
+                    if (i < totalLines+1)
+                    {
+                        SVid = it->first;
+                        j=-1;
+                    }
+                    else
+                    {
+                        j = it->second;
+                    }
+                    it++;
+                }
+                else
+                {
+                    j=0;
+                }
+                if(j==-1)
+                {
+                    try{
+                        line += rightJustify(SP3SatID(SVid).toString(),3);
+                    }
+                    catch(Exception& e)
+                    {
+                        FFStreamError ffse(e);
+                        GPSTK_THROW(ffse);
+                    }
+                }
+                k++;
+              }
+          }
+          strm << line << endl;
+          strm.lineNumber++;
+      }
+      else
+      {
+          for(i=3; i<=12; i++) {                 // loop over the lines
+             if(i==3) line = "+   " + rightJustify(asString(satList.size()),2) + "   ";
+             else if(i < 8) line = "+        ";
+             else           line = "++       ";
+             k = 0;
+             if(i == 3 || i == 8)                // start the iteration
+                it = satList.begin();
+             while(k < 17) {                     // there are 17 per line
+                if(it != satList.end()) {
+                   if(i < 8) {                   // lines 3-7 - sat id
+                      if(!isVerA) {
+                         // a satellite in version b or c -> let j be -1 to mark it
+                         SVid = it->first;
+                         j = -1;
+                      }
+                      else j = it->first.id;
+                   }
+                   else                          // lines 8-12 - accuracy
+                      j = it->second;
+                   it++;
+                }
+                else j=0;            // no more
+    
+                if(j == -1)          // sat version b or c
+                   try {
+                      line += rightJustify(SP3SatID(SVid).toString(),3);
+                   }
+                   catch (Exception& e)
+                   {
+                      FFStreamError ffse(e);
+                      GPSTK_THROW(ffse);
+                   }
+                else                 // sat version a, accuracy, or 0
+                   line += rightJustify(asString(j),3);
+                k++;
+             }
+             strm << line << endl;
+             strm.lineNumber++;
+          }
       }
 
       // line 13
@@ -419,12 +473,29 @@ namespace gpstk
       strm << "%i    0    0    0    0      0      0      0      0         0" << endl;
       strm.lineNumber++;
 
-      // lines 19-22
+      // Comment lines
       //std::vector<std::string> comments; ///< vector of 4 comment lines
-      for(j=0,i=19; i<=22; i++) {
+      bool done=false;
+      j=0;
+    while (!done) {
          line = "/* ";
-         if(j < (int)comments.size()) line += leftJustify(comments[j++],57);
-         else line += string(57,'C');
+         if((int)comments.size()<4)
+         {
+            if(j < (int)comments.size()) line += leftJustify(comments[j++],57);
+            else line += string(57,'C');
+            if(j=4)
+            {
+                done=true;
+            }
+         }
+         else
+         {
+            line += leftJustify(comments[j++],57);
+            if(j==(int)comments.size())
+            {
+                done=true;
+            }
+         } 
          strm << line << endl;
          strm.lineNumber++;
       }
