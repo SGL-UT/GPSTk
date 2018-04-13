@@ -778,7 +778,7 @@ void CommandLine::Postprocess(string& Errors, vector<string>& Unrecog)
    throw(Exception)
 {
 try {
-   size_t i, k;
+   size_t i,k;
    RinexSatID sat;
    string msg,errStr;
    vector<string> values;
@@ -794,9 +794,8 @@ try {
       
       // bool is special b/c values are ignored
       if(options[i].type == typeBool) {
-         *((bool *)(options[i].p_output)) = true;  // TD toggle? for all values?
-         //*((bool *)(options[i].p_output)) = 
-         //   ! (*((bool *)(options[i].p_output)));  // toggle
+         *((bool *)(options[i].p_output)) = ( options[i].toggle ? 
+                  ! (*((bool *)(options[i].p_output))) :    true );
          continue;
       }
 
@@ -824,7 +823,7 @@ try {
                oss << "Error: non-integer value for --" << options[i].longOpt
                   << ": " << values[0] << endl;
             else
-               *((int *)(options[i].p_output)) = asInt(values[0]); //j-1?
+               *((int *)(options[i].p_output)) = asInt(values[0]);
             break;
 
          case typeVectorInt:
