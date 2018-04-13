@@ -467,9 +467,9 @@ namespace gpstk
 
       // line 15
       strm << "%f "
-           << ((isVerC or isVerD) ? rightJustify(asString(basePV,7),10) : " 0.0000000")
+           << ((isVerC || isVerD) ? rightJustify(asString(basePV,7),10) : " 0.0000000")
            << " "
-           << ((isVerC or isVerD) ? rightJustify(asString(baseClk,9),12) : " 0.000000000")
+           << ((isVerC || isVerD) ? rightJustify(asString(baseClk,9),12) : " 0.000000000")
            << "  0.00000000000  0.000000000000000" << endl;
       strm.lineNumber++;
 

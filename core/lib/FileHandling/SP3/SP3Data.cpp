@@ -330,7 +330,7 @@ namespace gpstk
 
       // version to be written out is determined by written header (stored in strm)
       bool isVerA = (strm.header.getVersion() == SP3Header::SP3a);
-      bool isVerC = (strm.header.getVersion() == SP3Header::SP3c) or (strm.header.getVersion() == SP3Header::SP3d);
+      bool isVerC = (strm.header.getVersion() == SP3Header::SP3c) || (strm.header.getVersion() == SP3Header::SP3d);
 
       // output Epoch Header Record
       if(RecType == '*') {
