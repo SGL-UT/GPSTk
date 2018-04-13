@@ -140,7 +140,6 @@ namespace gpstk
    protected:
 
          /// Writes the formatted record to the FFStream \a s.
-         /// @warning This function is currently unimplemented
       virtual void reallyPutRecord(FFStream& s) const
          throw(std::exception, FFStreamError,
                gpstk::StringUtils::StringException);

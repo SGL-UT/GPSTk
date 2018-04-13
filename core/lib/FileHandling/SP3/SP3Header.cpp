@@ -215,7 +215,7 @@ namespace gpstk
       strm.formattedGetLine(line);
       lineCount++;
       if(debug) std::cout << "SP3 Header Line %c1 " << line << std::endl;
-      if (version == SP3b || version == SP3c) {
+      if (version == SP3b || version == SP3c || version == SP3d) {
          if(line[0]=='%' && line[1]=='c')
          {
             // file system
@@ -239,7 +239,7 @@ namespace gpstk
       strm.formattedGetLine(line);
       lineCount++;
       if(debug) std::cout << "SP3 Header Line \%f1 " << line << std::endl;
-      if (version == SP3c) {
+      if (version == SP3c || version == SP3d) {
          if (line[0]=='%' && line[1]=='f')
          {
             basePV = asDouble(line.substr(3,10));
@@ -338,13 +338,17 @@ namespace gpstk
       {
           int totalLines = satList.size()/17;
           if (satList.size()%17 != 0) totalLines++;
-          for(i=1;i<=2*totalLines;i++){
-              cout << i <<" ";
+          int numberOfLines = 2*totalLines;
+          if (numberOfLines < 10){
+              numberOfLines = 10;
+          }
+          int linesInSec = numberOfLines/2;
+          for(i=1;i<=numberOfLines;i++){
               if (i==1) line = "+  " + rightJustify(asString(satList.size()),3) + "   ";
-              else if ( i < totalLines+1) line = "+        ";
-              else                      line = "+        ";
+              else if ( i < linesInSec+1) line = "+        ";
+              else                        line = "++       ";
               k=0;
-              if(i==1 || i==totalLines+1)
+              if(i==1 || i==linesInSec+1)
               {
                 it = satList.begin();
               }
@@ -352,7 +356,7 @@ namespace gpstk
               {
                 if (it != satList.end())
                 {
-                    if (i < totalLines+1)
+                    if (i < linesInSec+1)
                     {
                         SVid = it->first;
                         j=-1;
@@ -378,11 +382,15 @@ namespace gpstk
                         GPSTK_THROW(ffse);
                     }
                 }
+                else
+                {
+                    line += rightJustify(asString(j),3);
+                }
                 k++;
               }
+              strm << line << endl;
+              strm.lineNumber++;
           }
-          strm << line << endl;
-          strm.lineNumber++;
       }
       else
       {
@@ -440,7 +448,7 @@ namespace gpstk
             GPSTK_THROW(ffse);
          }
       }
-      if(isVerC) {
+      if(isVerC || isVerD) {
          TimeSystem::Systems tsys = timeSystem.getTimeSystem();
          if(   tsys != TimeSystem::GPS && tsys != TimeSystem::GLO
             && tsys != TimeSystem::GAL && tsys != TimeSystem::TAI
@@ -459,9 +467,9 @@ namespace gpstk
 
       // line 15
       strm << "%f "
-           << (isVerC ? rightJustify(asString(basePV,7),10) : " 0.0000000")
+           << ((isVerC or isVerD) ? rightJustify(asString(basePV,7),10) : " 0.0000000")
            << " "
-           << (isVerC ? rightJustify(asString(baseClk,9),12) : " 0.000000000")
+           << ((isVerC or isVerD) ? rightJustify(asString(baseClk,9),12) : " 0.000000000")
            << "  0.00000000000  0.000000000000000" << endl;
       strm.lineNumber++;
 
@@ -477,25 +485,25 @@ namespace gpstk
       //std::vector<std::string> comments; ///< vector of 4 comment lines
       bool done=false;
       j=0;
-    while (!done) {
+      int linesOfComments = 4;
+      if ((int)comments.size() > linesOfComments){
+          linesOfComments = (int)comments.size();
+      }
+      std::cout << "size: " << (int)comments.size() << ", linesOf: " << linesOfComments << std::endl;
+      while (!done) {
          line = "/* ";
-         if((int)comments.size()<4)
-         {
-            if(j < (int)comments.size()) line += leftJustify(comments[j++],57);
-            else line += string(57,'C');
-            if(j=4)
-            {
-                done=true;
-            }
+         if(isVerD){
+            if(j < (int)comments.size()) line += leftJustify(comments[j],77);
+            else line += string(77,'C');
          }
-         else
-         {
-            line += leftJustify(comments[j++],57);
-            if(j==(int)comments.size())
-            {
-                done=true;
-            }
-         } 
+         else{
+            if(j < (int)comments.size()) line += leftJustify(comments[j],57);
+            else line += string(57,'C');
+         }
+         j++;
+         if(j==linesOfComments){
+             done=true;
+         }
          strm << line << endl;
          strm.lineNumber++;
       }
