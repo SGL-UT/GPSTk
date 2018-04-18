@@ -68,6 +68,7 @@ namespace gpstk
          if(line[1] == 'a')      version = SP3a;
          else if(line[1] == 'b') version = SP3b;
          else if(line[1] == 'c') version = SP3c;
+         else if(line[1] == 'd') version = SP3d;
          else {
             FFStreamError e("Unknown version of SP3: " + line.substr(0,3));
             GPSTK_THROW(e);
@@ -123,51 +124,75 @@ namespace gpstk
       vector<SP3SatID> svsAsWritten;
       SP3SatID sat;
 
-            // read in the SV list
-      for(i = 3; i <= 7; i++)                                     // lines 3-7
+          //Count lines for use in SP3d
+      int lineCount = 2;
+      int svLineCount = 0;
+      bool done = false;
+
+          // read in the SV list
+      while(!done)
       {
          strm.formattedGetLine(line);
-         if(debug) std::cout << "SP3 Header Line " << i << " " << line << std::endl;
-         if (line[0]=='+')
+         lineCount++;
+         if(debug) std::cout << "SP3 Header Line " << lineCount << " " << line << std::endl;
+         if (line[0]=='+' && line[1]=='+')
          {
-               // get the total number of svs on line 3
-            if (i == 3)
-            {
-               numSVs = asInt(line.substr(4,2));
-               svsAsWritten.resize(numSVs);
-            }
-            for(index = 9; index < 60; index += 3)
-            {
-               if (readSVs < numSVs)
-               {
-                  try {
-                     sat = SP3SatID(line.substr(index,3));
-                  }
-                  catch (Exception& e) {
-                     FFStreamError ffse(e);
-                     GPSTK_THROW(ffse);
-                  }
-                  svsAsWritten[readSVs] = sat;
-                  satList[sat] = 0;
-                  readSVs++;
-               }
-            }
+             done=true;
+             strm.lastLine=line;
          }
          else
          {
-            FFStreamError e("Unknown 1st char in line " + asString(i) + ": "
-               + string(1, line[0]));
-            GPSTK_THROW(e);
+             if (line[0]=='+')
+             {
+                svLineCount++;
+                   // get the total number of svs on line 3
+                if (svLineCount == 1)
+                {
+                   numSVs = asInt(line.substr(3,3));
+                   svsAsWritten.resize(numSVs);
+                }
+                for(index = 9; index < 60; index += 3)
+                {
+                   if (readSVs < numSVs)
+                   {
+                      try {
+                         sat = SP3SatID(line.substr(index,3));
+                      }
+                      catch (Exception& e) {
+                         FFStreamError ffse(e);
+                         GPSTK_THROW(ffse);
+                      }
+                      svsAsWritten[readSVs] = sat;
+                      satList[sat] = 0;
+                      readSVs++;
+                   }
+                }
+             }
+             else
+             {
+                FFStreamError e("Unknown 1st char in line " + asString(i) + ": "
+                   + string(1, line[0]));
+                GPSTK_THROW(e);
+             }
          }
       }
 
       readSVs = 0;
 
          // read in the accuracy.
-      for(i = 8; i <= 12; i++)                                    // lines 8-12
+      for (i = 0; i < svLineCount; i++)                                    // lines 8-12
       {
-         strm.formattedGetLine(line);
-         if(debug) std::cout << "SP3 Header Line " << i << " " << line << std::endl;
+         if (i==0)
+         {
+            line=strm.lastLine;
+         }
+         else
+         {
+            strm.formattedGetLine(line);
+            lineCount++;
+         }
+
+         if(debug) std::cout << "SP3 Header Line " << lineCount << " " << line << std::endl;
          if ((line[0]=='+') && (line[1]=='+'))
          {
             for(index = 9; index < 60; index += 3)
@@ -188,9 +213,10 @@ namespace gpstk
       }
 
       strm.formattedGetLine(line);
-      if(debug) std::cout << "SP3 Header Line 13 " << line << std::endl;
-      if (version == SP3b || version == SP3c) {
-         if(line[0]=='%' && line[1]=='c')                         // line 13
+      lineCount++;
+      if(debug) std::cout << "SP3 Header Line %c1 " << line << std::endl;
+      if (version == SP3b || version == SP3c || version == SP3d) {
+         if(line[0]=='%' && line[1]=='c')
          {
             // file system
             system.fromString(line.substr(3,2));
@@ -201,48 +227,62 @@ namespace gpstk
          }
          else
          {
-            FFStreamError e("Unknown label in line 13: " + line.substr(0,2));
+            FFStreamError e("Unknown label in line %c1: " + line.substr(0,2));
             GPSTK_THROW(e);
          }
       }
 
-      strm.formattedGetLine(line);                                // line 14
-      if(debug) std::cout << "SP3 Header Line 14 " << line << std::endl;
+      strm.formattedGetLine(line);
+      lineCount++;
+      if(debug) std::cout << "SP3 Header Line %c2 " << line << std::endl;
 
       strm.formattedGetLine(line);
-      if(debug) std::cout << "SP3 Header Line 15 " << line << std::endl;
-      if (version == SP3c) {
-         if (line[0]=='%' && line[1]=='f')                           // line 15
+      lineCount++;
+      if(debug) std::cout << "SP3 Header Line \%f1 " << line << std::endl;
+      if (version == SP3c || version == SP3d) {
+         if (line[0]=='%' && line[1]=='f')
          {
             basePV = asDouble(line.substr(3,10));
             baseClk = asDouble(line.substr(14,12));
          }
          else
          {
-            FFStreamError e("Unknown label in line 15: " + line.substr(0,2));
+            FFStreamError e("Unknown label in line \%f1: " + line.substr(0,2));
             GPSTK_THROW(e);
          }
       }
 
-      strm.formattedGetLine(line);                                // line 16
-      if(debug) std::cout << "SP3 Header Line 16 " << line << std::endl;
+      strm.formattedGetLine(line);
+      lineCount++;
+      if(debug) std::cout << "SP3 Header Line \%f2 " << line << std::endl;
 
          // read in 2 unused %i lines                             // lines 17,18
-      for(i = 17; i <= 18; i++) {
+      for(i = 0; i <= 1; i++) {
          strm.formattedGetLine(line);
-         if(debug) std::cout << "SP3 Header Line " << i << " " << line << std::endl;
+         lineCount++;
+         if(debug) std::cout << "SP3 Header Line \%i " << line << std::endl;
       }
 
-         // read in 4 comment lines
+         // read in comment lines
       comments.clear();
-      for(i = 19; i <= 22; i++)                                   // lines 19-22
+      done=false;
+      while(!done)                                   // lines 19-22
       {
          strm.formattedGetLine(line);
-         if(debug) std::cout << "SP3 Header Line " << i << " " << line << std::endl;
-            // strip the first 3 characters
-         line.erase(0, 3);
-            // and add to the comment vector
-         comments.push_back(line);
+         lineCount++;
+         if(line[0]=='/' && line[1]=='*')
+         {
+             if(debug) std::cout << "SP3 Header Line " << i << " " << line << std::endl;
+                // strip the first 3 characters
+             line.erase(0, 3);
+                // and add to the comment vector
+             comments.push_back(line);
+         }
+         else
+         {
+             done=true;
+             strm.lastLine=line;
+         }
       }
 
       // save the header, for use later when reading SP3Data records
@@ -263,6 +303,7 @@ namespace gpstk
       bool isVerA  = (version == SP3a);
       bool isVerB  = (version == SP3b);
       bool isVerC  = (version == SP3c);
+      bool isVerD  = (version == SP3d);
 
       // line 1
       CivilTime civTime(time);
@@ -290,47 +331,108 @@ namespace gpstk
       strm << line << endl;
       strm.lineNumber++;
 
-      // lines 3-7 and 8-12
+      //SV lines and SV Accuracy lines
       //Map<SV,accuracy flag> (all SVs in data)
       std::map<SP3SatID, short>::const_iterator it;
-      for(i=3; i<=12; i++) {                 // loop over the lines
-         if(i==3) line = "+   " + rightJustify(asString(satList.size()),2) + "   ";
-         else if(i < 8) line = "+        ";
-         else           line = "++       ";
-         k = 0;
-         if(i == 3 || i == 8)                // start the iteration
-            it = satList.begin();
-         while(k < 17) {                     // there are 17 per line
-            if(it != satList.end()) {
-               if(i < 8) {                   // lines 3-7 - sat id
-                  if(!isVerA) {
-                     // a satellite in version b or c -> let j be -1 to mark it
-                     SVid = it->first;
-                     j = -1;
-                  }
-                  else j = it->first.id;
-               }
-               else                          // lines 8-12 - accuracy
-                  j = it->second;
-               it++;
-            }
-            else j=0;            // no more
-
-            if(j == -1)          // sat version b or c
-               try {
-                  line += rightJustify(SP3SatID(SVid).toString(),3);
-               }
-               catch (Exception& e)
-               {
-                  FFStreamError ffse(e);
-                  GPSTK_THROW(ffse);
-               }
-            else                 // sat version a, accuracy, or 0
-               line += rightJustify(asString(j),3);
-            k++;
-         }
-         strm << line << endl;
-         strm.lineNumber++;
+      if (isVerD)
+      {
+          int totalLines = satList.size()/17;
+          if (satList.size()%17 != 0) totalLines++;
+          int numberOfLines = 2*totalLines;
+          if (numberOfLines < 10){
+              numberOfLines = 10;
+          }
+          int linesInSec = numberOfLines/2;
+          for(i=1;i<=numberOfLines;i++){
+              if (i==1) line = "+  " + rightJustify(asString(satList.size()),3) + "   ";
+              else if ( i < linesInSec+1) line = "+        ";
+              else                        line = "++       ";
+              k=0;
+              if(i==1 || i==linesInSec+1)
+              {
+                it = satList.begin();
+              }
+              while(k<17)
+              {
+                if (it != satList.end())
+                {
+                    if (i < linesInSec+1)
+                    {
+                        SVid = it->first;
+                        j=-1;
+                    }
+                    else
+                    {
+                        j = it->second;
+                    }
+                    it++;
+                }
+                else
+                {
+                    j=0;
+                }
+                if(j==-1)
+                {
+                    try{
+                        line += rightJustify(SP3SatID(SVid).toString(),3);
+                    }
+                    catch(Exception& e)
+                    {
+                        FFStreamError ffse(e);
+                        GPSTK_THROW(ffse);
+                    }
+                }
+                else
+                {
+                    line += rightJustify(asString(j),3);
+                }
+                k++;
+              }
+              strm << line << endl;
+              strm.lineNumber++;
+          }
+      }
+      else
+      {
+          for(i=3; i<=12; i++) {                 // loop over the lines
+             if(i==3) line = "+   " + rightJustify(asString(satList.size()),2) + "   ";
+             else if(i < 8) line = "+        ";
+             else           line = "++       ";
+             k = 0;
+             if(i == 3 || i == 8)                // start the iteration
+                it = satList.begin();
+             while(k < 17) {                     // there are 17 per line
+                if(it != satList.end()) {
+                   if(i < 8) {                   // lines 3-7 - sat id
+                      if(!isVerA) {
+                         // a satellite in version b or c -> let j be -1 to mark it
+                         SVid = it->first;
+                         j = -1;
+                      }
+                      else j = it->first.id;
+                   }
+                   else                          // lines 8-12 - accuracy
+                      j = it->second;
+                   it++;
+                }
+                else j=0;            // no more
+    
+                if(j == -1)          // sat version b or c
+                   try {
+                      line += rightJustify(SP3SatID(SVid).toString(),3);
+                   }
+                   catch (Exception& e)
+                   {
+                      FFStreamError ffse(e);
+                      GPSTK_THROW(ffse);
+                   }
+                else                 // sat version a, accuracy, or 0
+                   line += rightJustify(asString(j),3);
+                k++;
+             }
+             strm << line << endl;
+             strm.lineNumber++;
+          }
       }
 
       // line 13
@@ -346,7 +448,7 @@ namespace gpstk
             GPSTK_THROW(ffse);
          }
       }
-      if(isVerC) {
+      if(isVerC || isVerD) {
          TimeSystem::Systems tsys = timeSystem.getTimeSystem();
          if(   tsys != TimeSystem::GPS && tsys != TimeSystem::GLO
             && tsys != TimeSystem::GAL && tsys != TimeSystem::TAI
@@ -365,9 +467,9 @@ namespace gpstk
 
       // line 15
       strm << "%f "
-           << (isVerC ? rightJustify(asString(basePV,7),10) : " 0.0000000")
+           << ((isVerC || isVerD) ? rightJustify(asString(basePV,7),10) : " 0.0000000")
            << " "
-           << (isVerC ? rightJustify(asString(baseClk,9),12) : " 0.000000000")
+           << ((isVerC || isVerD) ? rightJustify(asString(baseClk,9),12) : " 0.000000000")
            << "  0.00000000000  0.000000000000000" << endl;
       strm.lineNumber++;
 
@@ -379,12 +481,28 @@ namespace gpstk
       strm << "%i    0    0    0    0      0      0      0      0         0" << endl;
       strm.lineNumber++;
 
-      // lines 19-22
+      // Comment lines
       //std::vector<std::string> comments; ///< vector of 4 comment lines
-      for(j=0,i=19; i<=22; i++) {
+      bool done=false;
+      j=0;
+      int linesOfComments = 4;
+      if ((int)comments.size() > linesOfComments){
+          linesOfComments = (int)comments.size();
+      }
+      while (!done) {
          line = "/* ";
-         if(j < (int)comments.size()) line += leftJustify(comments[j++],57);
-         else line += string(57,'C');
+         if(isVerD){
+            if(j < (int)comments.size()) line += leftJustify(comments[j],77);
+            else line += string(77,'C');
+         }
+         else{
+            if(j < (int)comments.size()) line += leftJustify(comments[j],57);
+            else line += string(57,'C');
+         }
+         j++;
+         if(j==linesOfComments){
+             done=true;
+         }
          strm << line << endl;
          strm.lineNumber++;
       }

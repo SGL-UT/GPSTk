@@ -308,6 +308,7 @@ int main()  //Main function to initialize and run all tests above
       errorTotal += testClass.doReadWriteTests(gpstk::SP3Header::SP3a, "SP3ae");
       errorTotal += testClass.doReadWriteTests(gpstk::SP3Header::SP3b, "SP3b");
       errorTotal += testClass.doReadWriteTests(gpstk::SP3Header::SP3c, "SP3c");
+      errorTotal += testClass.doReadWriteTests(gpstk::SP3Header::SP3d, "SP3d");
       
       // The SP3c_mgex# series tries do approximate a set of "unit" tests using
       // mocked SP3c files. Multiple satellite systems, unusual time systems,
