@@ -489,7 +489,6 @@ namespace gpstk
       if ((int)comments.size() > linesOfComments){
           linesOfComments = (int)comments.size();
       }
-      std::cout << "size: " << (int)comments.size() << ", linesOf: " << linesOfComments << std::endl;
       while (!done) {
          line = "/* ";
          if(isVerD){
