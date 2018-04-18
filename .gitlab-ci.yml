@@ -89,7 +89,7 @@ build_core:
     - mkdir build
     - cd build
     - export gpstk=`pwd`/install
-    - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=install -DCOVERAGE_SWITCH=ON $CMAKE_ARG_DEFAULT
+    - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=install -DCOVERAGE_SWITCH=ON -DBUILD_EXT=OFF -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
     - make all -j 4
   artifacts:
     paths:
@@ -290,6 +290,7 @@ sgltk_core:
     - make all -j 4
   dependencies:
     - deploy_core
+  allow_failure: true
 
 sgltk_debian:
   stage: downstream
