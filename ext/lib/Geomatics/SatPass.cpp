@@ -443,6 +443,128 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 
 // Smooth pseudorange and debias phase; replace the data only if the corresponding
 // input flag is 'true'; use real bias for pseudorange, integer (cycles) for phase.
+// Single frequency version: requires obs types Lf C/Pf
+// Call this ONLY after cycleslips have been removed.
+void SatPass::smoothSF(const bool smoothPR, const bool debiasPH, string& msg,
+                       const int freq, const double wl) throw(Exception)
+{
+try {
+   if(freq != 1 && freq != 2)
+      GPSTK_THROW(Exception("smoothSF requires freq 1 or 2"));
+
+   // make sure Lf, Cf/Pf are present
+   ostringstream oss;
+   if(freq==1 && !hasType("L1")) oss << " L1";
+   if(freq==2 && !hasType("L2")) oss << " L2";
+   if(freq==1 && !hasType("C1") && !hasType("P1")) oss << " C/P1";
+   if(freq==2 && !hasType("C2") && !hasType("P2")) oss << " C/P2";
+   if(!oss.str().empty())
+      GPSTK_THROW(Exception(string("smoothSF() requires pseudorange and phase:"
+                              + oss.str() + string(" are missing."))));
+
+   bool first,useC1(hasType("C1")),useC2(hasType("C2"));
+   int i;
+   double RB,dbL,dLB0(0.0);
+   long LB,LB0;
+   Stats<double> PB;
+
+   // get the biases B = L - P
+   for(first=true,i=0; i<spdvector.size(); i++) {
+      if(!(spdvector[i].flag & OK)) continue;        // skip bad data
+
+      double P,L;
+      if(freq==1) P = spdvector[i].data[indexForLabel[(useC1 ? "C1" : "P1")]];
+      else        P = spdvector[i].data[indexForLabel[(useC2 ? "C2" : "P2")]];
+      if(freq==1) L = spdvector[i].data[indexForLabel["L1"]];
+      else        L = spdvector[i].data[indexForLabel["L2"]];
+
+      if(first) {                   // remove the large numerical range
+         LB0 = long(L-P/wl);
+         dLB0 = double(LB0);
+      }
+      L -= dLB0;
+
+      // Bias = L(m) - P
+      RB = wl*L - P;
+
+      if(first) {
+         dbL = RB;
+      }
+
+      // crude cycleslip detector
+      // TD good idea? warn user if "cycleslips" found?
+      if(::fabs(RB-dbL) > 15.0) {
+         dbL = long(RB + RB>=0.0 ? 0.5:-0.5);
+      }
+
+      PB.Add(RB-dbL);
+
+      if(first) LOG(DEBUG) << "SMTDMP   sat week  sow    RmP    L    P   RB dLB0";
+      LOG(DEBUG) << "SMTDMP " << sat << " " << time(i).printf(outFormat)
+         << fixed << setprecision(3)
+         << " " << setw(13) << RB-dbL
+         << " " << setw(13) << L
+         << " " << setw(13) << P
+         << " " << setw(13) << RB
+         << " " << setw(13) << dLB0
+         ;
+
+      first = false;
+   }
+
+   // real biases in cycles
+   RB = PB.Average()/wl;
+   // integer biases (cycles)
+   LB = LB0 + long(RB + (RB > 0 ? 0.5 : -0.5));
+
+   oss.str("");
+   oss << "SMT" << fixed << setprecision(2)
+       << " " << sat
+       << " " << getFirstGoodTime().printf(outFormat)
+       << " " << getLastGoodTime().printf(outFormat)
+       << " " << setw(5)  << (freq==1 ? PB.N() : 0)
+       << " " << setw(12) << (freq==1 ? PB.Average()+dLB0 : 0)
+       << " " << setw(5)  << (freq==1 ? PB.StdDev() : 0)
+       << " " << setw(12) << (freq==1 ? PB.Minimum()+dLB0 : 0)
+       << " " << setw(12) << (freq==1 ? PB.Maximum()+dLB0 : 0)
+       << " " << setw(5)  << (freq==1 ? 0 : PB.N())
+       << " " << setw(12) << (freq==1 ? 0 : PB.Average()+dLB0)
+       << " " << setw(5)  << (freq==1 ? 0 : PB.StdDev())
+       << " " << setw(12) << (freq==1 ? 0 : PB.Minimum()+dLB0)
+       << " " << setw(12) << (freq==1 ? 0 : PB.Maximum()+dLB0)
+       << " " << setw(13) << (freq==1 ? RB : 0)
+       << " " << setw(13) << (freq==1 ? 0 : RB)
+       << " " << setw(10) << (freq==1 ? LB : 0)
+       << " " << setw(10) << (freq==1 ? 0 : LB);
+   msg = oss.str();
+
+   if(!debiasPH && !smoothPR) return;
+
+   for(i=0; i<spdvector.size(); i++) {
+      if(!(spdvector[i].flag & OK)) continue;        // skip bad data
+
+      // replace the phase with the debiased phase, with integer bias (cycles)
+      if(debiasPH) {
+         if(freq==1) spdvector[i].data[indexForLabel["L1"]] -= LB;
+         if(freq==2) spdvector[i].data[indexForLabel["L2"]] -= LB;
+      }
+
+      // replace the pseudorange with the smoothed pseudorange
+      if(smoothPR) {
+         // compute the debiased phase, with real bias
+         if(freq==1) dbL = spdvector[i].data[indexForLabel["L1"]] - RB;
+         if(freq==2) dbL = spdvector[i].data[indexForLabel["L2"]] - RB;
+
+         if(freq==1) spdvector[i].data[indexForLabel[(useC1 ? "C1" : "P1")]] = dbL;
+         if(freq==2) spdvector[i].data[indexForLabel[(useC2 ? "C2" : "P2")]] = dbL;
+      }
+   }
+}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+}
+
+// Smooth pseudorange and debias phase; replace the data only if the corresponding
+// input flag is 'true'; use real bias for pseudorange, integer (cycles) for phase.
 // Call this ONLY after cycleslips have been removed.
 void SatPass::smooth(const bool smoothPR, const bool debiasPH, string& msg,
                      const double& wl1, const double& wl2) throw(Exception)

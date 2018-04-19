@@ -615,6 +615,28 @@ public:
             const double& wl1=L1_WAVELENGTH_GPS, const double& wl2=L2_WAVELENGTH_GPS)
       throw(Exception);
 
+   /// Single frequency version of smooth(); cf. smooth().
+   /// This includes a crude cycleslip detector (15m bias change).
+   /// @param  smoothPR  if true, replace the pseudorange with smoothed range
+   ///                   (= phase + REAL estimate of range-minus-phase in m).
+   /// @param  smoothPH  if true, replace the phase with debiased phase
+   ///                   (= phase + INTEGER estimate of range-minus-phase in cycles).
+   /// @param  msg       a string containing a single-line statistical summary of
+   ///                   the smoothing results, and the estimated phase biases.
+   /// @param  freq      integer 1 or 2, as data to smooth is L1,C1/P1 or L2,C2/P2.
+   /// @param  wl        wavelength of phase for this data
+   ///  This string consists of the following 18 fields separated by whitespace.
+   ///  1) "SMT", 2) satellite id (e.g. G07), 3) start GPS week, 4) start GPS
+   ///  seconds of week, 5) end GPS week, 6) end GPS seconds of week,
+   ///  (7-11 are for the L1 bias data in units of meters)
+   ///  7) number, 8) average, 9) std deviation, 10) minimum, and 11) maximum,
+   ///  (12-16 are for the L2 bias data in units of meters)
+   ///  12) number, 13) average, 14) std deviation, 15) minimum, and 16) maximum,
+   ///  17) the L1 bias in cycles, 18) the L2 bias in cycles.
+   void smoothSF(const bool smoothPR, const bool smoothPH, std::string& msg,
+                  const int freq, const double wl)
+      throw(Exception);
+
    // output -----------------------------------------------------------
    /// Dump one line summary of the pass; do not put linefeed at end
    /// @param msg  put message msg1 at beginning of line
