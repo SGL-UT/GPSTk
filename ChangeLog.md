@@ -1,4 +1,22 @@
-Version 2.10.1   Monday, January 22, 2012
+Version 2.10.2   Thursday, April 19, 2018
+
+   General modifications
+   ---------------------
+   - Tweaks to Core and RedHat builds for fixes to SGLTk portion of GPSTk CI build
+   - Test Additions and Cleanup
+   - Various Bug and Compile Warning Fixes
+
+   Modifications by Author
+   ---------------------
+
+
+
+
+
+      #################################################
+
+
+Version 2.10.1   Monday, January 22, 2018
 
    General modifications
    ---------------------
