@@ -319,7 +319,8 @@ try {
          double RB2 = wl2*L2 - D21*P1 - D22*P2;
 
          if(!first && (::fabs(RB1-pRB1) > 2000. || ::fabs(RB2-pRB2) > 2000. ||
-                       ::fabs(L1-pL1)/2848. > 1000. || ::fabs(L2-pL2)/2848. > 1000.)){
+                       ::fabs(L1-pL1)/2848. > 1000. || ::fabs(L2-pL2)/2848. > 1000.))
+         {
             first = true;
             continue;
          }
@@ -494,7 +495,7 @@ try {
       // crude cycleslip detector
       // TD good idea? warn user if "cycleslips" found?
       if(::fabs(RB-dbL) > 15.0) {
-         dbL = long(RB + RB>=0.0 ? 0.5:-0.5);
+         dbL = long(RB + (RB>=0.0 ? 0.5:-0.5));
       }
 
       PB.Add(RB-dbL);
