@@ -488,15 +488,11 @@ try {
       // Bias = L(m) - P
       RB = wl*L - P;
 
-      if(first) {
-         dbL = RB;
-      }
-
       // crude cycleslip detector
-      // TD good idea? warn user if "cycleslips" found?
-      if(::fabs(RB-dbL) > 15.0) {
+      // TD? warn user if "cycleslips" found
+      if(first) dbL = RB;
+      if(::fabs(RB-dbL) > 15.0)
          dbL = long(RB + (RB>=0.0 ? 0.5:-0.5));
-      }
 
       PB.Add(RB-dbL);
 
@@ -507,16 +503,14 @@ try {
          << " " << setw(13) << L
          << " " << setw(13) << P
          << " " << setw(13) << RB
-         << " " << setw(13) << dLB0
+         << " " << setw(13) << LB0
          ;
 
       first = false;
-   }
+   }  // end loop over data
 
-   // real biases in cycles
-   RB = PB.Average()/wl;
-   // integer biases (cycles)
-   LB = LB0 + long(RB + (RB > 0 ? 0.5 : -0.5));
+   RB = PB.Average()/wl;                           // real bias in cycles
+   LB = LB0 + long(RB + (RB > 0 ? 0.5 : -0.5));    // integer bias (cycles)
 
    oss.str("");
    oss << "SMT" << fixed << setprecision(2)
