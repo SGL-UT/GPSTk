@@ -75,7 +75,8 @@ namespace gpstk
          ntBeiDou_D2,
          ntGloCivilF,
          ntGloCivilC,
-         ntGalOS,
+         ntGalFNAV,
+         ntGalINAV,
          ntIRNSS_SPS,
          ntUnknown
       };
@@ -113,10 +114,11 @@ namespace gpstk
             case ntBeiDou_D2:    {retVal = NavTypeStrings[ 5];     break;}
             case ntGloCivilF:    {retVal = NavTypeStrings[ 6];     break;}
             case ntGloCivilC:    {retVal = NavTypeStrings[ 7];     break;}
-            case ntGalOS:        {retVal = NavTypeStrings[ 8];     break;}
-            case ntIRNSS_SPS:    {retVal = NavTypeStrings[ 9];     break;}
+            case ntGalFNAV:      {retVal = NavTypeStrings[ 8];     break;}
+            case ntGalINAV:      {retVal = NavTypeStrings[ 9];     break;}
+            case ntIRNSS_SPS:    {retVal = NavTypeStrings[10];     break;}
             case ntUnknown:
-            default:             {retVal = NavTypeStrings[10];     break;}
+            default:             {retVal = NavTypeStrings[11];     break;}
          };
          //return retVal in case switch isn't reached
         return retVal;
