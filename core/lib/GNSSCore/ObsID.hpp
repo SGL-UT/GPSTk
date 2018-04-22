@@ -163,6 +163,12 @@ namespace gpstk
          tcIE5,     ///< Galileo L5 I code
          tcQE5,     ///< Galileo L5 Q code
          tcIQE5,    ///< Galileo L5 I+Q combined tracking
+         tcIE5a,    ///< Galileo E5a I code
+         tcQE5a,    ///< Galileo E5a Q code
+         tcIQE5a,   ///< Galileo E5a I+Q combined tracking
+         tcIE5b,    ///< Galileo E5b I code
+         tcQE5b,    ///< Galileo E5b Q code
+         tcIQE5b,   ///< Galileo E5b I+Q combined tracking
 
          tcSCA,     ///< SBAS civil code
          tcSI5,     ///< SBAS L5 I code
