@@ -54,7 +54,7 @@ namespace gpstk
    {
 
          // If enabled, check SV health before entering here (health = 0 -> OK)
-      if( (data.health == 0) || (!checkHealthFlag) )
+      if( (data.health == 0) || (!onlyHealthy) )
       {
             // Get a GloEphemeris object from Rinex3NavData object
          GloEphemeris gloEphem(data);
@@ -72,7 +72,7 @@ namespace gpstk
 
          return true;
 
-      }  // End of 'if( (data.health == 0) || (!checkHealthFlag) )'
+      }  // End of 'if( (data.health == 0) || (!onlyHealthy) )'
 
       return false;
 
@@ -188,7 +188,7 @@ namespace gpstk
         << " to " << (finalTime == CommonTime::BEGINNING_OF_TIME
                                     ? "Begin_time" : printTime(finalTime, fmt))
         << " with " << pe.size() << " entries; checkHealthFlag is "
-        << (checkHealthFlag ? "T":"F") << std::endl;
+        << (onlyHealthy ? "T":"F") << std::endl;
 
       //}
       //else
