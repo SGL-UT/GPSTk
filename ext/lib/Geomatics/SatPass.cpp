@@ -465,7 +465,7 @@ try {
 
    bool first,useC1(hasType("C1")),useC2(hasType("C2"));
    int i;
-   double RB,dbL,dLB0(0.0);
+   double RB,dLB0(0.0);
    long LB,LB0;
    Stats<double> PB;
 
@@ -487,24 +487,16 @@ try {
 
       // Bias = L(m) - P
       RB = wl*L - P;
+      PB.Add(RB);
 
-      // crude cycleslip detector
-      // TD? warn user if "cycleslips" found
-      if(first) dbL = RB;
-      if(::fabs(RB-dbL) > 15.0)
-         dbL = long(RB + (RB>=0.0 ? 0.5:-0.5));
-
-      PB.Add(RB-dbL);
-
-      if(first) LOG(DEBUG) << "SMTDMP   sat week  sow    RmP    L    P   RB dLB0";
+      if(first) LOG(DEBUG) << "SMTDMP   sat week  sow    RmP    L    P   RB LB0";
       LOG(DEBUG) << "SMTDMP " << sat << " " << time(i).printf(outFormat)
          << fixed << setprecision(3)
-         << " " << setw(13) << RB-dbL
+         << " " << setw(13) << RB
          << " " << setw(13) << L
          << " " << setw(13) << P
          << " " << setw(13) << RB
-         << " " << setw(13) << LB0
-         ;
+         << " " << setw(13) << LB0;
 
       first = false;
    }  // end loop over data
@@ -538,20 +530,23 @@ try {
    for(i=0; i<spdvector.size(); i++) {
       if(!(spdvector[i].flag & OK)) continue;        // skip bad data
 
+      // replace the pseudorange with the smoothed pseudorange
+      if(smoothPR) {
+         // compute the debiased phase, with real bias
+         if(freq==1) {
+            spdvector[i].data[indexForLabel[(useC1 ? "C1" : "P1")]]
+                        = spdvector[i].data[indexForLabel["L1"]] - RB;
+         }
+         else if(freq==2) {
+            spdvector[i].data[indexForLabel[(useC2 ? "C2" : "P2")]]
+                        = spdvector[i].data[indexForLabel["L2"]] - RB;
+         }
+      }
+
       // replace the phase with the debiased phase, with integer bias (cycles)
       if(debiasPH) {
          if(freq==1) spdvector[i].data[indexForLabel["L1"]] -= LB;
          if(freq==2) spdvector[i].data[indexForLabel["L2"]] -= LB;
-      }
-
-      // replace the pseudorange with the smoothed pseudorange
-      if(smoothPR) {
-         // compute the debiased phase, with real bias
-         if(freq==1) dbL = spdvector[i].data[indexForLabel["L1"]] - RB;
-         if(freq==2) dbL = spdvector[i].data[indexForLabel["L2"]] - RB;
-
-         if(freq==1) spdvector[i].data[indexForLabel[(useC1 ? "C1" : "P1")]] = dbL;
-         if(freq==2) spdvector[i].data[indexForLabel[(useC2 ? "C2" : "P2")]] = dbL;
       }
    }
 }
@@ -675,12 +670,6 @@ try {
    for(i=0; i<spdvector.size(); i++) {
       if(!(spdvector[i].flag & OK)) continue;        // skip bad data
 
-      // replace the phase with the debiased phase, with integer bias (cycles)
-      if(debiasPH) {
-         spdvector[i].data[indexForLabel["L1"]] -= LB1;
-         spdvector[i].data[indexForLabel["L2"]] -= LB2;
-      }
-
       // replace the pseudorange with the smoothed pseudorange
       if(smoothPR) {
          // compute the debiased phase, with real bias
@@ -691,6 +680,12 @@ try {
                                                 = D11*wl1*dbL1 + D12*wl2*dbL2;
          spdvector[i].data[indexForLabel[(useC2 ? "C2" : "P2")]]
                                                 = D21*wl1*dbL1 + D22*wl2*dbL2;
+      }
+
+      // replace the phase with the debiased phase, with integer bias (cycles)
+      if(debiasPH) {
+         spdvector[i].data[indexForLabel["L1"]] -= LB1;
+         spdvector[i].data[indexForLabel["L2"]] -= LB2;
       }
    }
 }
