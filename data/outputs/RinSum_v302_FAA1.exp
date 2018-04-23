@@ -1,5 +1,5 @@
-# RinSum, part of the GPS Toolkit, Ver 4.1 8/26/15, Run 2017/05/25 11:22:57
-+++++++++++++ RinSum summary of Rinex obs file /local/Code/gpstk/data/inputs/igs/FAA100PYF_R_20161700100_15M_01S_MO +++++++++++++
+# RinSum, part of the GPS Toolkit, Ver 4.1 8/26/15, Run 2018/04/21 14:48:18
++++++++++++++ RinSum summary of Rinex obs file /home/renfrob/git/gpstk/data/inputs/igs/FAA100PYF_R_20161700100_15M_01S_MO +++++++++++++
 ---------------------------------- REQUIRED ----------------------------------
 Rinex Version  3.02,  File type OBSERVATION DATA,  System MIXED.
 Prgm: sbf2rin-9.3.3,  Run: 20160618 013404 LCL,  By: 
@@ -31,10 +31,10 @@ Galileo Observation types (16):
  Type #10 (L7Q) E5b GALQ5 phase
  Type #11 (D7Q) E5b GALQ5 doppler
  Type #12 (S7Q) E5b GALQ5 snr
- Type #13 (C8Q) L5a+b GALQ5 pseudorange
- Type #14 (L8Q) L5a+b GALQ5 phase
- Type #15 (D8Q) L5a+b GALQ5 doppler
- Type #16 (S8Q) L5a+b GALQ5 snr
+ Type #13 (C8Q) E5a+b GALQ5 pseudorange
+ Type #14 (L8Q) E5a+b GALQ5 phase
+ Type #15 (D8Q) E5a+b GALQ5 doppler
+ Type #16 (S8Q) E5a+b GALQ5 snr
 GPS Observation types (18):
  Type #01 (C1C) L1 GPSC/A pseudorange
  Type #02 (L1C) L1 GPSC/A phase
@@ -188,4 +188,4 @@ System S = Geosync:
 TOTAL     25     25     25     25
 
  Warning - Computed last time does not agree with header
-RinSum timing: processing 0.037 sec, wallclock: 0 sec.
+RinSum timing: processing 0.070 sec, wallclock: 0 sec.

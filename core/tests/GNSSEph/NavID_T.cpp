@@ -104,8 +104,16 @@ int main()
    
       //Galileo Open Sys
    NavID testIDGalOS( SatID( 2, SatID::systemGalileo ), ObsID( ObsID::otNavMsg, ObsID::cbL1, ObsID::tcB ) );
-   if ( testIDGalOS.navType == NavID::ntGalOS ) TUPASS( "" );
-   else TUFAIL( "ntGalOS instantiation failed." );
+   if ( testIDGalOS.navType == NavID::ntGalINAV ) TUPASS( "" );
+   else TUFAIL( "ntGalINAV instantiation failed." );
+
+   NavID testIDGalOS_2( SatID( 2, SatID::systemGalileo ), ObsID( ObsID::otNavMsg, ObsID::cbE5b, ObsID::tcIE5b ) );
+   if ( testIDGalOS_2.navType == NavID::ntGalINAV ) TUPASS( "" );
+   else TUFAIL( "ntGalINAV instantiation failed." );
+
+   NavID testIDGalOS_F( SatID( 2, SatID::systemGalileo ), ObsID( ObsID::otNavMsg, ObsID::cbL5, ObsID::tcIE5a ) );
+   if ( testIDGalOS_F.navType == NavID::ntGalFNAV ) TUPASS( "" );
+   else TUFAIL( "ntGalFNAV instantiation failed." );
 
       //IRNSS L5 SPS
    NavID testID_IRNSS_SPS( SatID( 2, SatID::systemIRNSS ), ObsID( ObsID::otNavMsg, ObsID::cbL5, ObsID::tcIA5 ) );
@@ -163,10 +171,20 @@ int main()
    if ( gc.str() == "GloCivilC" ) TUPASS( "" );
    else TUFAIL( "String does not match GloCivilC." );
    
-   stringstream os;
-   os << testIDGalOS;
-   if ( os.str() == "GalOS" ) TUPASS( "" );
-   else TUFAIL( "String does not match GPS_LNAV." );
+   stringstream ginv;
+   ginv << testIDGalOS;
+   if ( ginv.str() == "GalINAV" ) TUPASS( "" );
+   else TUFAIL( "String does not match GalINAV." );
+   
+   stringstream ginv_2;
+   ginv_2 << testIDGalOS_2;
+   if ( ginv_2.str() == "GalINAV" ) TUPASS( "" );
+   else TUFAIL( "String does not match GalINAV." );
+   
+   stringstream gfnv;
+   gfnv << testIDGalOS_F;
+   if ( gfnv.str() == "GalFNAV" ) TUPASS( "" );
+   else TUFAIL( "String does not match GalFNAV." );
 
    stringstream is;
    is << testID_IRNSS_SPS;
@@ -215,8 +233,12 @@ int main()
    if ( testIDGloCString.navType == NavID::ntGloCivilC ) TUPASS( "" );
    else TUFAIL( "String input constructor failed to insantiate NavID object." );
    
-   NavID testIDGalOSString( os.str() );
-   if ( testIDGalOSString.navType == NavID::ntGalOS ) TUPASS( "" );
+   NavID testIDGalOSStringI( ginv.str() );
+   if ( testIDGalOSStringI.navType == NavID::ntGalINAV ) TUPASS( "" );
+   else TUFAIL( "String input constructor failed to insantiate NavID object." );
+   
+   NavID testIDGalOSStringF( gfnv.str() );
+   if ( testIDGalOSStringF.navType == NavID::ntGalFNAV ) TUPASS( "" );
    else TUFAIL( "String input constructor failed to insantiate NavID object." );
    
    NavID testID_IRNSS_SPS_String( is.str() );
@@ -237,6 +259,7 @@ int main()
    testSet.insert( testIDUnkwn );
    testSet.insert( testID_IRNSS_SPS);
    testSet.insert( testIDGalOS );
+   testSet.insert( testIDGalOS_F );
    testSet.insert( testIDGloC );
    testSet.insert( testIDGloF );
    testSet.insert( testIDBD2 );
