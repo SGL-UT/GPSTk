@@ -272,7 +272,7 @@ double TroposphereCorrection(const gpstk::TropModel& tropModel,
 
     double trop = tropModel.correction(elevation);
 
-    return -trop;
+    return trop;
 }
 
 }  // namespace ord
