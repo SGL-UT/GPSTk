@@ -99,7 +99,7 @@ double IonosphereFreeRange(const std::vector<double>& frequencies,
                          (frequencies[0]/frequencies[1]);
 
     // for dual frequency see ICD-GPS-211, section 20.3.3.3.3.3
-    double icpr = (pseudoranges[0] - gamma * pseudoranges[1])/(1-gamma);
+    double icpr = (pseudoranges[1] - gamma * pseudoranges[0])/(1-gamma);
 
     return icpr;
 }
