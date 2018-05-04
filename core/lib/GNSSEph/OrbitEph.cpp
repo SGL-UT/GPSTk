@@ -349,6 +349,8 @@ namespace gpstk {
             case 6: os << "Sat-6"; break;
             default: break;
          }
+         
+         delete ptr;         
 
          os << printTime(t,"   %3j   %5.0s   %02m/%02d/%04Y   %02H:%02M:%02S %P");
 

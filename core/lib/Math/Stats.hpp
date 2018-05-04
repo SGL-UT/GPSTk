@@ -141,7 +141,13 @@ namespace gpstk
       Stats() { Reset(); }
 
       /// reset, i.e. ignore earlier data and restart sampling
-      inline void Reset(void) { n=0; setScale=false; scale=T(1); }
+      inline void Reset(void)
+      {
+         n = 0;
+         setScale = false;
+         scale = T(1);
+         sum = sum2 = min = max = T();
+      }
 
       // add and subtract ---------------------------------------------------
 
@@ -214,8 +220,8 @@ namespace gpstk
             return *this;
          if(!setScale) { setScale=true; scale = S.scale; }
          // TD what if both have !setScale?
-         if(S.min < min) min=S.min;
-         if(S.max > max) max=S.max;
+         if((n == 0) || (S.min < min)) min=S.min;
+         if((n == 0) || (S.max > max)) max=S.max;
          sum += S.scale*S.sum/scale;
          sum2 += (S.scale/scale)*(S.scale/scale)*S.sum2;
          n += S.n;
