@@ -896,7 +896,7 @@ public:
    inline bool willDumpNoAnal(void) { return dumpNA; }
    /// debug prints in analysis()
    inline void setDebug(bool b) { debug = b; }
-   inline void getDebug(void) { return debug; }
+   inline bool getDebug(void) { return debug; }
 
    inline void setw(int w) { osw=w; }
    inline void setprecision(int p) { osp=p; }
