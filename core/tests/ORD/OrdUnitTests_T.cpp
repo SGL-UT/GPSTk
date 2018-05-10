@@ -305,7 +305,7 @@ TEST(OrdTestCase, TestTropoCorrection) {
 
     double return_value = TroposphereCorrection(tropo, rxLocation, fakeXvt);
 
-    ASSERT_EQ(return_value, -42.0);
+    ASSERT_EQ(return_value, 42.0);
 }
 
 TEST(OrdTestCase, TestIonoCorrection) {
