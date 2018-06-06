@@ -76,8 +76,8 @@ TEST(OrdTestRegression, TestIonoFreeRange) {
 
     // Old calculation in ObsRngDev.cpp
     // for dual frequency see ICD-GPS-211, section 20.3.3.3.3.3
-    double icpr = (pseudoranges[0] - GAMMA_GPS *
-                   pseudoranges[1])/(1-GAMMA_GPS);
+    double icpr = (pseudoranges[1] - GAMMA_GPS *
+                   pseudoranges[0])/(1-GAMMA_GPS);
 
     // Compare the new calculation to the old, for our contrived variables.
     double delta = fabs(range-icpr);
