@@ -112,6 +112,19 @@ namespace gpstk
       bool hasErrors() { return !errorStrings.empty(); }
          /// Writes the errors to \c out.
       std::ostream& dumpErrors(std::ostream& out);
+         /// Returns true if any help was requested.
+      bool helpRequested() { return !helpOptions.empty(); }
+         /** Print the requested help information.
+          * @param[in] out The stream to which the help text will be printed.
+          * @param[in] pretty If true, use "pretty print" as
+          *   appropriate (dependent on child class implementation as
+          *   to how it's used).
+          * @param[in] firstOnly If true, only print the help for the
+          *   first processed command-line option requesting help.  If
+          *   false, each specified help-like command-line option will
+          *   print its help text. */
+      std::ostream& printHelp(std::ostream& out, bool doPretty = true,
+                              bool firstOnly = true);
 
          /** Writes the arguments nicely to the output.
           * @param out ostream on which to write
@@ -140,6 +153,11 @@ namespace gpstk
 
          /// the name of this program
       std::string progName;
+
+         /** After calling parseOptions, this will contain all of the
+          * help-like options that were specified on the command
+          * line. */
+      std::vector<CommandOptionHelp*> helpOptions;
    };
       //@}
 }
