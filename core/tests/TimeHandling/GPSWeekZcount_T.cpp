@@ -335,6 +335,350 @@ public:
 
       TURETURN();
    }
+
+
+      /// Check the various math methods
+   unsigned mathTest()
+   {
+      TUDEF("GPSWeekZcount", "getTotalZcounts");
+      GPSWeekZcount orig(1024, 0), copy, diff1(1024,1), diff2(1023,403199),
+         diff3(1025,0);
+      long expDiff1 = 1, expDiff2(-1), expDiff3(403200);
+
+      TUASSERTE(unsigned long, 412876800, orig.getTotalZcounts());
+
+      TUCSM("addWeeks");
+      try
+      {
+         copy = orig;
+         GPSWeekZcount &ref1 = copy.addWeeks(1);
+            // ref1 and copy should both have the updated week number, and
+            // ref1 should be a reference to copy
+         TUASSERTE(int, 1025, copy.week);
+         TUASSERTE(int, 1025, ref1.week);
+         TUASSERTE(GPSWeekZcount*, &copy, &ref1);
+      }
+      catch (...)
+      {
+         TUFAIL("Caught an exception");
+      }
+
+      try
+      {
+         copy = orig;
+         GPSWeekZcount &ref2 = copy.addWeeks(-1);
+            // ref2 and copy should both have the updated week number, and
+            // ref2 should be a reference to copy
+         TUASSERTE(int, 1023, copy.week);
+         TUASSERTE(int, 1023, ref2.week);
+         TUASSERTE(GPSWeekZcount*, &copy, &ref2);
+      }
+      catch (...)
+      {
+         TUFAIL("Caught an exception");
+      }
+         // invalid week
+      try
+      {
+         copy = orig;
+         copy.addWeeks(-1025);
+         TUFAIL("addWeeks(invalid)");
+      }
+      catch (gpstk::InvalidRequest)
+      {
+         TUPASS("addWeeks(invalid)");
+      }
+      catch (...)
+      {
+         TUFAIL("addWeeks(invalid)");
+      }
+      
+
+      TUCSM("addZcounts");
+         // simple add
+      copy = orig;
+      TUCATCH(copy.addZcounts(27));
+      TUASSERTE(int, 1024, copy.week);
+      TUASSERTE(unsigned int, 27, copy.zcount);
+         // simple subtract
+      TUCATCH(copy.addZcounts(-27));
+      TUASSERTE(int, 1024, copy.week);
+      TUASSERTE(unsigned int, 0, copy.zcount);
+         // subtract with week roll-over
+      TUCATCH(copy.addZcounts(-43));
+      TUASSERTE(int, 1023, copy.week);
+      TUASSERTE(unsigned int, 403157, copy.zcount);
+         // add with week roll-over
+      TUCATCH(copy.addZcounts(71));
+      TUASSERTE(int, 1024, copy.week);
+      TUASSERTE(unsigned int, 28, copy.zcount);
+         // invalid week
+      try
+      {
+         copy = orig;
+         copy.addZcounts(-413280000);
+         TUFAIL("addZcounts(invalid)");
+      }
+      catch (gpstk::InvalidRequest)
+      {
+         TUPASS("addZcounts(invalid)");
+      }
+      catch (...)
+      {
+         TUFAIL("addZcounts(invalid)");
+      }
+
+      TUCSM("operator++ (postfix)");
+      copy = orig;
+         // zcount should not be modified until AFTER this statement
+      TUASSERTE(unsigned int, 0, (copy++).zcount);
+      TUASSERTE(unsigned int, 1, copy.zcount);
+      TUASSERTE(int, 1024, copy.week);
+
+      TUCSM("operator++ (prefix)");
+      copy = orig;
+         // zcount should be modified at the start of this statement
+      TUASSERTE(unsigned int, 1, (++copy).zcount);
+      TUASSERTE(unsigned int, 1, copy.zcount);
+      TUASSERTE(int, 1024, copy.week);
+         // prefix should return reference to copy
+      TUASSERTE(GPSWeekZcount*, &copy, &(++copy));
+
+      TUCSM("operator-- (postfix)");
+      copy = orig;
+         // zcount should not be modified until AFTER this statement
+      TUASSERTE(unsigned int, 0, (copy--).zcount);
+      TUASSERTE(unsigned int, 403199, copy.zcount);
+      TUASSERTE(int, 1023, copy.week);
+
+      TUCSM("operator-- (prefix)");
+      copy = orig;
+         // zcount should be modified at the start of this statement
+      TUASSERTE(unsigned int, 403199, (--copy).zcount);
+      TUASSERTE(unsigned int, 403199, copy.zcount);
+      TUASSERTE(int, 1023, copy.week);
+         // prefix should return reference to copy
+      TUASSERTE(GPSWeekZcount*, &copy, &(--copy));
+
+      TUCSM("operator+");
+      try
+      {
+         copy = orig;
+         GPSWeekZcount added = copy + 1;
+            // copy should not have changed
+         TUASSERTE(GPSWeekZcount, orig, copy);
+         TUASSERTE(int, 1024, added.week);
+         TUASSERTE(unsigned int, 1, added.zcount);
+      }
+      catch (...)
+      {
+         TUFAIL("Caught an exception");
+      }
+         // add a negative
+      try
+      {
+         copy = orig;
+         long counts = -1;
+         GPSWeekZcount added = copy + counts;
+            // copy should not have changed
+         TUASSERTE(GPSWeekZcount, orig, copy);
+         TUASSERTE(int, 1023, added.week);
+         TUASSERTE(unsigned int, 403199, added.zcount);
+      }
+      catch (...)
+      {
+         TUFAIL("Caught an exception");
+      }
+         // invalid week
+      try
+      {
+         copy = orig;
+         long counts = -413280000;
+         GPSWeekZcount added = copy + counts;
+         TUFAIL("operator+(invalid)");
+      }
+      catch (gpstk::InvalidRequest)
+      {
+         TUPASS("operator+(invalid)");
+      }
+      catch (...)
+      {
+         TUFAIL("operator+(invalid)");
+      }
+
+      TUCSM("operator-(long)");
+      try
+      {
+         copy = orig;
+         GPSWeekZcount added = copy - 1;
+            // copy should not have changed
+         TUASSERTE(GPSWeekZcount, orig, copy);
+         TUASSERTE(int, 1023, added.week);
+         TUASSERTE(unsigned int, 403199, added.zcount);
+      }
+      catch (...)
+      {
+         TUFAIL("Caught an exception");
+      }
+         // add a negative
+      try
+      {
+         copy = orig;
+         long counts = -1;
+         GPSWeekZcount added = copy - counts;
+            // copy should not have changed
+         TUASSERTE(GPSWeekZcount, orig, copy);
+         TUASSERTE(int, 1024, added.week);
+         TUASSERTE(unsigned int, 1, added.zcount);
+      }
+      catch (...)
+      {
+         TUFAIL("Caught an exception");
+      }
+         // invalid week
+      try
+      {
+         copy = orig;
+         long counts = 413280000;
+         GPSWeekZcount added = copy - counts;
+         TUFAIL("operator-(invalid)");
+      }
+      catch (gpstk::InvalidRequest)
+      {
+         TUPASS("operator-(invalid)");
+      }
+      catch (...)
+      {
+         TUFAIL("operator-(invalid)");
+      }
+
+         // difference two GPSWeekZcount objects
+      TUCSM("operator-(GPSWeekZcount)");
+      copy = orig;
+      TUASSERTE(long, 0, (orig - copy));
+      TUASSERTE(long, expDiff1, diff1-copy);
+      TUASSERTE(long, expDiff2, diff2-copy);
+      TUASSERTE(long, expDiff3, diff3-copy);
+
+      TUCSM("operator+=");
+      copy = orig;
+      TUASSERTE(unsigned int, 27, (copy += 27).zcount);
+      TUASSERTE(unsigned int, 27, copy.zcount);
+      TUASSERTE(int, 1024, copy.week);
+         // += should return reference to copy
+      TUASSERTE(GPSWeekZcount*, &copy, &(copy += 99));
+         // add a negative
+      try
+      {
+         copy = orig;
+         long counts = -1;
+         TUASSERTE(unsigned int, 403199, (copy += counts).zcount);
+         TUASSERTE(int, 1023, copy.week);
+      }
+      catch (...)
+      {
+         TUFAIL("Caught an exception");
+      }
+         // invalid week
+      try
+      {
+         copy = orig;
+         long counts = -413280000;
+         copy += counts;
+         TUFAIL("operator+(invalid)");
+      }
+      catch (gpstk::InvalidRequest)
+      {
+         TUPASS("operator+(invalid)");
+      }
+      catch (...)
+      {
+         TUFAIL("operator+(invalid)");
+      }
+
+      TUCSM("operator-=");
+      copy = orig;
+      TUASSERTE(unsigned int, 403199, (copy -= 1).zcount);
+      TUASSERTE(unsigned int, 403199, copy.zcount);
+      TUASSERTE(int, 1023, copy.week);
+         // -= should return reference to copy
+      TUASSERTE(GPSWeekZcount*, &copy, &(copy -= 99));
+         // subtract a negative
+      try
+      {
+         copy = orig;
+         long counts = -1;
+         TUASSERTE(unsigned int, 1, (copy -= counts).zcount);
+         TUASSERTE(int, 1024, copy.week);
+      }
+      catch (...)
+      {
+         TUFAIL("Caught an exception");
+      }
+         // invalid week
+      try
+      {
+         copy = orig;
+         long counts = 413280000;
+         copy -= counts;
+         TUFAIL("operator-(invalid)");
+      }
+      catch (gpstk::InvalidRequest)
+      {
+         TUPASS("operator-(invalid)");
+      }
+      catch (...)
+      {
+         TUFAIL("operator-(invalid)");
+      }
+
+      TURETURN();
+   }
+
+
+   unsigned testTimeBlock()
+   {
+      TUDEF("GPSWeekZcount", "inSameTimeBlock");
+      GPSWeekZcount
+         t0(1024, 10),
+         sameMinute(1024,39),
+         sameHour(1024, 2399),
+         sameWeek(1024,403199),
+         sameWeekOffset(1025, 9),
+         notSameWeek(1023,403199);
+
+      TUASSERT(t0.inSameTimeBlock(sameMinute, ZCOUNT_PER_MINUTE));
+      TUASSERT(t0.inSameTimeBlock(sameMinute, ZCOUNT_PER_HOUR));
+      TUASSERT(t0.inSameTimeBlock(sameMinute, ZCOUNT_PER_WEEK));
+
+      TUASSERT(!t0.inSameTimeBlock(sameHour, ZCOUNT_PER_MINUTE));
+      TUASSERT(t0.inSameTimeBlock(sameHour, ZCOUNT_PER_HOUR));
+      TUASSERT(t0.inSameTimeBlock(sameHour, ZCOUNT_PER_WEEK));
+
+      TUASSERT(!t0.inSameTimeBlock(sameWeek, ZCOUNT_PER_MINUTE));
+      TUASSERT(!t0.inSameTimeBlock(sameWeek, ZCOUNT_PER_HOUR));
+      TUASSERT(t0.inSameTimeBlock(sameWeek, ZCOUNT_PER_WEEK));
+
+      TUASSERT(!t0.inSameTimeBlock(sameWeekOffset, ZCOUNT_PER_MINUTE));
+      TUASSERT(!t0.inSameTimeBlock(sameWeekOffset, ZCOUNT_PER_HOUR));
+      TUASSERT(!t0.inSameTimeBlock(sameWeekOffset, ZCOUNT_PER_WEEK));
+
+      TUASSERT(!t0.inSameTimeBlock(notSameWeek, ZCOUNT_PER_MINUTE));
+      TUASSERT(!t0.inSameTimeBlock(notSameWeek, ZCOUNT_PER_HOUR));
+      TUASSERT(!t0.inSameTimeBlock(notSameWeek, ZCOUNT_PER_WEEK));
+
+      TUASSERT(!t0.inSameTimeBlock(notSameWeek, ZCOUNT_PER_MINUTE, 10));
+      TUASSERT(!t0.inSameTimeBlock(notSameWeek, ZCOUNT_PER_HOUR, 10));
+      TUASSERT(!t0.inSameTimeBlock(notSameWeek, ZCOUNT_PER_WEEK, 10));
+
+      TUASSERT(!t0.inSameTimeBlock(sameWeekOffset, ZCOUNT_PER_MINUTE, 10));
+      TUASSERT(!t0.inSameTimeBlock(sameWeekOffset, ZCOUNT_PER_HOUR, 10));
+      TUASSERT(t0.inSameTimeBlock(sameWeekOffset, ZCOUNT_PER_WEEK, 10));
+
+      TURETURN();
+   }
+
+
 private:
    double eps;
 };
@@ -352,6 +696,8 @@ int main() //Main function to initialize and run all tests above
    errorCounter += testClass.timeSystemTest();
    errorCounter += testClass.toFromCommonTimeTest();
    errorCounter += testClass.printfTest();
+   errorCounter += testClass.mathTest();
+   errorCounter += testClass.testTimeBlock();
 
    std::cout << "Total Failures for " << __FILE__ << ": " << errorCounter
              << std::endl;
