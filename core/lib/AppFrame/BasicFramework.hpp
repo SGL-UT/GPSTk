@@ -160,7 +160,7 @@ namespace gpstk
       //@{
       CommandOptionNoArg debugOption; ///< Enable debugging output and syslog message cloning to stdout.
       CommandOptionNoArg verboseOption;
-      CommandOptionNoArg helpOption;
+      CommandOptionHelpUsage helpOption;
       //@}
 
 

@@ -58,6 +58,7 @@ namespace gpstk
       //@{
 
       // forward declaration
+   class CommandOptionParser;
    class CommandOption;
    typedef std::vector<CommandOption*> CommandOptionVec;
 
@@ -246,6 +247,9 @@ namespace gpstk
       unsigned long maxCount;
          /// The order in which this option was encountered on the command line
       std::vector<unsigned long> order;
+         /** CommandOptionParser used to parse this CommandOption.
+          * Set in CommandOptionParser::parseOptions. */
+      CommandOptionParser *parser;
 
          /// Default Constructor
       CommandOption() {}
@@ -706,6 +710,122 @@ namespace gpstk
 
          /// returns the sum of all encapsulated option counts if all are in use, zero otherwise.
       virtual unsigned long getCount() const;
+   };
+
+      /**
+       * A CommandOption used for providing help information.  This
+       * option should be used when a program should print help
+       * information and terminate without no error.  This prevents
+       * errors from being indicated if otherwise required
+       * command-line options are not specified.
+       * @note It doesn't really make sense for this kind of option to
+       *   be required, so it is forced to be optional.
+       */
+   class CommandOptionHelp : public CommandOption
+   {
+   public:
+         /** Constructor.
+          * @param[in] of Specify whether this help option should have
+          *   arguments or not.  Most will not, but allowing arguments
+          *   allows for things like "--whatis thisthing" to get
+          *   detailed help on "thisthing".
+          * @param[in] shOpt The one character command line option.
+          *   Set to 0 if unused.
+          * @param[in] loOpt The long command option.  Set to
+          *   std::string() if unused.
+          * @param[in] desc A string describing what this option does.
+          */
+      CommandOptionHelp(const CommandOption::CommandOptionFlag of,
+                        const char shOpt,
+                        const std::string& loOpt,
+                        const std::string& desc)
+            : CommandOption(of, stdType, shOpt, loOpt, desc, false)
+      {}
+         
+         /// Destructor
+      virtual ~CommandOptionHelp() {}
+         /** Print the requested help information.
+          * @param[in] out The stream to which the help text will be printed.
+          * @param[in] pretty If true, use "pretty print" as
+          *   appropriate (dependent on child class implementation as
+          *   to how it's used). */
+      virtual void printHelp(std::ostream& out, bool pretty = true) = 0;
+   };
+
+      /** This is a specific implementation of CommandOptionHelp for
+       * printing command usage help, e.g. the standard -h or --help
+       * options. */
+   class CommandOptionHelpUsage : public CommandOptionHelp
+   {
+   public:
+         /** Constructor.
+          * @param[in] of Specify whether this help option should have
+          *   arguments or not.  Most will not, but allowing arguments
+          *   allows for things like "--whatis thisthing" to get
+          *   detailed help on "thisthing".
+          * @param[in] shOpt The one character command line option.
+          *   Set to 0 if unused.
+          * @param[in] loOpt The long command option.  Set to
+          *   std::string() if unused.
+          * @param[in] desc A string describing what this option does.
+          */
+      CommandOptionHelpUsage(const char shOpt = 'h',
+                             const std::string& loOpt = "help",
+                             const std::string& desc = "Print help usage")
+            : CommandOptionHelp(noArgument, shOpt, loOpt, desc)
+      {}
+         
+         /// Destructor
+      virtual ~CommandOptionHelpUsage() {}
+         /** Print command-line usage information.
+          * @param[in] out The stream to which the help text will be printed. 
+          * @param[in] pretty If true, use "pretty print"
+          *   descriptions.  See CommandOptionParser::displayUsage.
+          *   appropriate (dependent on child class implementation as
+          *   to how it's used). */
+      virtual void printHelp(std::ostream& out, bool pretty = true);
+   };
+
+      /** This is a specific implementation of CommandOptionHelp for
+       * printing simple help text specified in the constructor.
+       * @note The help text must be preformatted, prettyPrint is not
+       *   used by this class as there's no way of knowing what the
+       *   preferred format is. */
+   class CommandOptionHelpSimple : public CommandOptionHelp
+   {
+   public:
+         /** Constructor.
+          * @param[in] of Specify whether this help option should have
+          *   arguments or not.  Most will not, but allowing arguments
+          *   allows for things like "--whatis thisthing" to get
+          *   detailed help on "thisthing".
+          * @param[in] shOpt The one character command line option.
+          *   Set to 0 if unused.
+          * @param[in] loOpt The long command option.  Set to
+          *   std::string() if unused.
+          * @param[in] desc A string describing what this option does.
+          * @param[in] help The help text to be printed when this
+          *   option is used.
+          */
+      CommandOptionHelpSimple(const char shOpt,
+                              const std::string& loOpt,
+                              const std::string& desc,
+                              const std::string& help)
+            : CommandOptionHelp(noArgument, shOpt, loOpt, desc),
+              helpText(help)
+      {}
+         
+         /// Destructor
+      virtual ~CommandOptionHelpSimple() {}
+         /** Print command-line simple information.
+          * @param[in] out The stream to which the help text will be printed. 
+          * @param[in] pretty Ignored. */
+      virtual void printHelp(std::ostream& out, bool pretty = true)
+      {
+         out << helpText;
+      }
+   protected:
+      std::string helpText;
    };
 
       //@}
