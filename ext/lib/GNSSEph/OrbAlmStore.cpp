@@ -60,23 +60,12 @@ namespace gpstk
    const unsigned short OrbAlmStore::ADD_SUBJ    = 0x02; 
 
 //--------------------------------------------------------------------------
-
    Xvt OrbAlmStore::getXvt(const SatID& subjID, const CommonTime& t) const
       throw( InvalidRequest )
    {
       try
       {
-         // test for GPS satellite system in sat?
-         const OrbAlm* alm = find(subjID,t);
-
-         // If the orbital elements are unhealthy, refuse to 
-         // calculate an SV position and throw.
-         if (!alm->healthy)
-         {
-            InvalidRequest exc( std::string("SV is transmitting unhealhty navigation ")
-                + std::string("message at time of interest.") );
-            GPSTK_THROW( exc );
-         }
+         const OrbAlm* alm = find(subjID,t,false);
          Xvt sv = alm->svXvt(t);
          return sv;
       }
@@ -85,6 +74,23 @@ namespace gpstk
          GPSTK_RETHROW(ir);
       }
    }
+
+//--------------------------------------------------------------------------
+   Xvt OrbAlmStore::getXvt_WithinValidity(const SatID& subjID, const CommonTime& t) const
+      throw( InvalidRequest )
+   {
+      try
+      {
+         const OrbAlm* alm = find(subjID,t);
+         Xvt sv = alm->svXvt(t);
+         return sv;
+      }
+      catch(InvalidRequest& ir)
+      {
+         GPSTK_RETHROW(ir);
+      }
+   }
+
 
 //------------------------------------------------------------------------------
       // This method is basically unimplemented at this level.   It may

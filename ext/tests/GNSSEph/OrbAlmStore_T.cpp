@@ -463,6 +463,115 @@ createAndDump()
       // Dump terse in time order
    oas.dump(out,3);
 
+   //--- Test getXVT( ) and validity 
+   //  Verify that getXvt( ) will return values for times beyond the fit interval
+   //  of the alamanc data.   
+   //
+   //  Verify that getXvtWithinValid( ) will throw an exeption in this condition. 
+   //         Expect                Expect   Test             
+   //         getXvt  getXvt_WithinValid()   Time                Comment
+   //      1.   True                 False   12/31/15 00:00:00   Earlier than fit interval
+   //      2.   True                  True   12/31/15 12:00:00   Within fit interval
+   //      3.   True                 False   01/31/16 00:00:00   Later than fit interval   currMethod = typeDesc + " getXvt()";
+   currMethod = typeDesc + " OrbAlmStore.getXvt()";
+   TUCSM(currMethod);
+
+   SatID sidXvt(1,SatID::systemGPS);
+   CommonTime test1 = CivilTime(2015,12,31,00,00,00,TimeSystem::GPS);
+   CommonTime test2 = CivilTime(2015,12,31,12,00,00,TimeSystem::GPS);
+   CommonTime test3 = CivilTime(2016, 1,31,00,00,00,TimeSystem::GPS); 
+   vector<CommonTime> ctVector;
+   ctVector.push_back(test1);
+   ctVector.push_back(test2);
+   ctVector.push_back(test3);
+
+      // First, verify getXvt( ) succeeds with out-of-fit-interval times
+   Xvt saveXvt;
+   for (int i=0;i<3;i++)
+   {
+      try
+      {
+         Xvt xvt1 = oas.getXvt(sidXvt, ctVector[i]);
+         stringstream ss;
+         ss << "getXvt() succeeded for time ";
+         switch(i)
+         {
+            case 0: ss << " earlier than fit interval."; break;
+            case 1: ss << " within fit interval."; saveXvt = xvt1; break;
+            case 2: ss << " later than fit interval."; break;
+         }
+         TUPASS(ss.str());
+      }
+      catch(InvalidRequest ir)
+      {
+         stringstream ss;
+         ss << "getXvt() failed for time ";
+         switch(i)
+         {
+            case 0: ss << " earlier than fit interval."; break;
+            case 1: ss <<" within fit interval."; break;
+            case 2: ss <<" later than fit interval."; break;
+         }
+         ss << endl << ir;
+         TUFAIL(ss.str()); 
+      }
+   }
+      // Next verify getXvt_WithinValid( ) fails in 2-of-3 cases. 
+   for (int i=0;i<3;i++)
+   {
+      try
+      {
+         Xvt xvt1 = oas.getXvt_WithinValidity(sidXvt, ctVector[i]);
+         stringstream ss;
+         switch(i)
+         {
+            case 0: 
+               ss << "getXvt_WithinValidity() succeeded (correctly) for time earlier than fit interval."; 
+               TUFAIL(ss.str()); 
+               break;
+            case 1: 
+               ss << "getXvt_WithinValidity() succeeded for time within fit interval."; 
+               TUPASS(ss.str());
+               if (saveXvt.x[0]     != xvt1.x[0] ||
+                   saveXvt.x[1]     != xvt1.x[1] ||
+                   saveXvt.x[2]     != xvt1.x[2] ||
+                   saveXvt.v[0]     != xvt1.v[0] ||
+                   saveXvt.v[1]     != xvt1.v[1] ||
+                   saveXvt.v[2]     != xvt1.v[2] ||
+                   saveXvt.clkbias  != xvt1.clkbias ||
+                   saveXvt.clkdrift != xvt1.clkdrift)
+               {
+                  TUFAIL("getXvt() and getXvt_WithinValidity() did not return matching results.");
+               }
+               break;
+            case 2: 
+               ss << "getXvt_WithinValidity() succeeded (correctly) for time later than fit interval."; 
+               TUFAIL(ss.str()); 
+               break;
+         }
+      }
+      catch(InvalidRequest ir)
+      {
+         stringstream ss;
+         ss << "getXvt() failed for time ";
+         switch(i)
+         {
+            case 0: 
+               ss << "getXvt_WithinValid() failed (correctly) for time earlier than fit interval."; 
+               TUPASS(ss.str());
+               break;
+            case 1: 
+               ss << "getXvt_WithinValid() failed for time within fit interval."; 
+               TUFAIL(ss.str()); 
+               break;
+            case 2: 
+               ss << "getXvt_WithinValid() failed (correctly) for time later than fit interval."; 
+               TUPASS(ss.str());
+               break;
+         }
+      }
+   }
+
       /* This checks for a situation where the OrbAlmStore top-level
        * map has satellites mapped to empty maps.  Prior to addressing
        * this issue, it would seg fault due to trying to dereference
@@ -1075,6 +1184,8 @@ setUpGLO()
       }  
    }
 
+
+//---------------------------------------------------------------------------------
 int main()
 {
   unsigned errorTotal = 0;
