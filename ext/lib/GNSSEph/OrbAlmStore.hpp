@@ -101,18 +101,18 @@ namespace gpstk
       /// @return the Xvt of the SV at time
       /// @throw InvalidRequest If the request can not be completed for any
       ///    reason, this is thrown. The text may have additional
-      ///    information as to why the request failed.  Possible reasons
-      ///    include
-      ///       1. No orbital elements stored for the SV
-      ///       2. No orbital elements with time of validity covering time t
-      ///       3. Orbital elements appropriate for time t are unhealhty
-      ///  The purpose of getXvt is to be as SAFE as possible.  
-      ///  If you MUST obtain SV PVT in the failure conditions noted above,
-      ///  please consider calling findOrbAlm( ) 
-      ///  directly to obtain elements, then use OrbAlm.svXvt( ) 
-      ///  to obtain positions.  
+      ///    information as to why the request failed.  The most common reason
+      ///    is that no orbital elements are stored for the SV.
       virtual Xvt getXvt( const SatID& subjID, const CommonTime& t ) const
          throw( InvalidRequest );
+
+
+      /// As getXvt( ) with the additional check that the elements used
+      /// must have a fit interval that covers the requested time.  If not,
+      /// InvalidRequest is thrown. 
+      virtual Xvt getXvt_WithinValidity( const SatID& subjID, const CommonTime& t ) const
+         throw( InvalidRequest );
+
 
       /// A debugging function that outputs in human readable form,
       /// all data stored in this object.
