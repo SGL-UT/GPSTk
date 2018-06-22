@@ -1,3 +1,65 @@
+Version 2.10.2   Friday, June 22, 2018
+
+   General modifications
+   ---------------------
+   - Updated unit tests to comply with logic changes.
+   - Test Additions and Cleanup
+   - Various Bug and Compile Warning Fixes
+
+   Modifications by Author
+   ---------------------
+Andrew Kuck (3):
+      Fixed calculation error in Ionosphere Free Range calculation.
+      Fixed sign error on troposphere correction.
+      Updated unit tests to comply with logic changes.
+
+Anthony Hughes (1):
+      Ensured full initialization of Stats objects and fixed a memory leak in OrbitEph::timeDisplay.
+
+Bryan Parsons (11):
+      Merge branch 'issue_340_Gal_Ellip' into 'master'
+      Merge branch 'change_confusing_ObsID_comment' into 'master'
+      Merge branch 'getXvt_unhealthy_SVs' into 'master'
+      Merge branch 'issue_341_GalSupport' into 'master'
+      Merge branch 'issue_342_stats' into 'master'
+      Merge branch 'issue_343_yuma_reader_fix' into 'master'
+      Merge branch 'ord_fix' into 'master'
+      Merge branch '345-add-support-in-commandoption-for-custom-help' into 'master'
+      Merge branch '346-restore-missing-gpsweekzcount-math' into 'master'
+      Merge branch 'issue_348_OrbAlmStore' into 'master'
+      Merge branch 'issue_347_Galileo_Antex_Offsets' into 'master'
+
+Miquela Stein (1):
+      updated yuma reader to work without newline at end of file
+
+Richard Ji-Cathriner (1):
+      Change documentation of ObsID phase units
+
+johnk (4):
+      Add support for generalized help-like options and update BasicFramework to use them
+      Tests for help-like options
+      Clean up this train wreck
+      Add the lost math functions back to GPSWeekZcount
+
+nmerlene (2):
+      Added ability to use getXvt() calls on unhealthy SVs in XvtStore objects returned by EphReader
+      Changed implementation of health status in GloEphemerisStore
+
+renfrob (9):
+      Adding Ellipsoid model for Galileo
+      Adding, clarifying Galileo E5a, E5b, E5a+b definitions
+      Refining Galileo nav msg IDs
+      Updating NavID test
+      Updating Rinex tests for Galileo L5 to E5
+      Adding Galileo antenna capbility
+      Removing health checks.  Implementing a separate fit interval check.
+      Adding getXvt() tests
+      Merge branch 'master' into issue_347_Galileo_Antex_Offsets
+
+
+      #################################################
+
+
 Version 2.10.2   Thursday, April 19, 2018
 
    General modifications
@@ -8,6 +70,88 @@ Version 2.10.2   Thursday, April 19, 2018
 
    Modifications by Author
    ---------------------
+Andrew Kuck (20):
+      Added ord routine calculation header file for review.
+      Added initial implementation of several methods, as well as initial unit tests and regression tests against the original methods.
+      Changed computeRelativityCorrection to virtual to allow overriding in mock-classes.
+      Renamed test for consistency.
+      Style cleanup based on cpplint.
+      Updated documentation to be doxygen compatible.
+      First pass implementations of RawRange2,3,4 - Includes single unit test and mocked regression.
+      Added ORD methods to exposed methods in python.
+      Added lint check to the ci-pipeline.
+      Temporary commit.
+      Remove known failing test, and reference to personal copies of gtest/gmock libs.
+      Rewrote the cmake file to find either debian-style or redhat-style gtest/gmock installation
+      Try generating a coverage report on core only
+      Added implementations for IonosphereFreeRange(), IonosphereModelCorrection(), TroposphereCorrection() with unit tests.
+      Changed IonosphereModelCorrection to take a double frequency
+      Removed stop-gap code to see if googletest has been installed anywhere.
+      Fix coverage numbers.
+      Add additional search paths for gmock.
+      Added coverage build switch.  Enabled _only_ for core_build.
+      Added allow-failures on static analysis.
+
+Bryan Parsons (16):
+      Added line to GPSTKConfig.cmake to allow dependent projects to find header files regardless of explicit or implicit paths.
+      Merge branch 'Explicit_Header_Fix' into 'master'
+      Merge branch 'GPSTk_2_10_1' into 'master'
+      Merge branch 'EngEphHealthFix' into 'master'
+      Merge branch 'issue_335_scanBrdc' into 'master'
+      Merge branch 'issue_333' into 'master'
+      Merge branch 'Add_demodulator_status_obs_type' into 'master'
+      Merge branch 'rowcheck_rin3' into 'master'
+      Merge branch 'ord_refactor' into 'master'
+      Merge branch 'SVNumXRef_update54' into 'master'
+      Merge branch '54_18_corrected' into 'master'
+      Merge branch 'issue_333' into 'master'
+      Merge branch 'issue_339_sp3d_support' into 'master'
+      Fixing bug that introduced false positive on Downstream GPSTk Core build.  Making this test an Allowed Failure at this time.
+      Merge branch 'gitlab_ci_bug' into 'master'
+      GPSTk v2.10.2
+
+John H. Price (1):
+      Use newer rinex classes to allow RINEX 3 file checking
+
+Jon C. Little (1):
+      Corrected prettying print of eph health bits
+
+Nick Boeker (10):
+      Updated references for 54/18 and 34/18 and updated PRN 4 gap
+      Fixed incorrect Syntax
+      Fixed incorrect end time for 54/18
+      Updated for SP3d reading
+      Everything but bc2sp3 working
+      SP3d successfully passes all build tests
+      Merge remote-tracking branch 'origin/master' into issue_339_sp3d_support
+      Fixed minor issues
+      Fixed another small thing
+      Removed unused debug statement
+
+Richard Ji-Cathriner (1):
+      Add ObservationType for demodulator status codes
+
+johnk (15):
+      Add helper methods for computing appropriate buffer sizes.     Add a filter class for putting nav data in time order.     Change LNavEphMaker to always accept all nav data.
+      Fix include path
+      Merge remote-tracking branch 'origin/master' into issue_333
+      Add name strings to nav filter classes to help reduce redundant code.
+      Make accept/reject methods of NavFilter protected as they should only     be called by derived classes.     Undo previous changes made to LNavEphMaker that broke it and document     the situation a bit better.
+      Fix memory leak
+      Change iterator class to work with pre-c++11
+      fix another memory leak
+      Fix typo
+      Eliminate seg fault due to empty map
+      Merge remote-tracking branch 'origin/master' into issue_333
+      Fix a problem causing seg faults
+      Merge remote-tracking branch 'origin/master' into issue_333
+      Merge remote-tracking branch 'origin/master' into issue_333
+      Filter for forcing time-order of legacy nav subframe data
+
+renfrob (2):
+      Fixing week rollover with negative HOW bug
+      Adding mistagging PRN detection to scanBrdcFile
+
 
 
 
