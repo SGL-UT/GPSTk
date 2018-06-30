@@ -77,6 +77,11 @@ int main()
    if ( testIDCNAVL5.navType == NavID::ntGPSCNAVL5 ) TUPASS( "" );
    else TUFAIL( "ntGPSCNAVL5 instantiation failed." );
    
+      //GPS CNAV2
+   NavID testIDCNAV2( SatID( 1, SatID::systemGPS ), ObsID( ObsID::otNavMsg, ObsID::cbL1, ObsID::tcG1X ) );
+   if ( testIDCNAV2.navType == NavID::ntGPSCNAV2 ) TUPASS( "" );
+   else TUFAIL( "ntGPSCNAV2 instantiation failed." );
+   
       //GPS MNAV
    NavID testIDMNAV( SatID( 1, SatID::systemGPS ), ObsID( ObsID::otNavMsg, ObsID::cbL2, ObsID::tcM ) );
    if ( testIDMNAV.navType == NavID::ntGPSMNAV ) TUPASS( "" );
@@ -145,6 +150,11 @@ int main()
    l5 << testIDCNAVL5;
    if ( l5.str() == "GPS_CNAV_L5" ) TUPASS( "" );
    else TUFAIL( "String does not match GPS_L5_CNAV." );
+
+   stringstream cnav2;
+   cnav2 << testIDCNAV2;
+   if ( cnav2.str() == "GPS_CNAV2" ) TUPASS( "" );
+   else TUFAIL( "String does not match GPS_CNAV2." );
    
    stringstream mn;
    mn << testIDMNAV;
