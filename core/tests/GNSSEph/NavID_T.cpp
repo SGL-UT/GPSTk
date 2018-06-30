@@ -223,6 +223,10 @@ int main()
    if ( testIDCNAVL5String.navType == NavID::ntGPSCNAVL5 ) TUPASS( "" );
    else TUFAIL( "String input constructor failed to insantiate NavID object." );
    
+   NavID testIDCNAV2String( cnav2.str() );
+   if ( testIDCNAV2String.navType == NavID::ntGPSCNAV2 ) TUPASS( "" );
+   else TUFAIL( "String input constructor failed to insantiate NavID object." );
+   
    NavID testIDMNAVString( mn.str() );
    if ( testIDMNAVString.navType == NavID::ntGPSMNAV ) TUPASS( "" );
    else TUFAIL( "String input constructor failed to insantiate NavID object." );
@@ -275,6 +279,7 @@ int main()
    testSet.insert( testIDBD2 );
    testSet.insert( testIDBD1 );
    testSet.insert( testIDMNAV );
+   testSet.insert( testIDCNAV2 );
    testSet.insert( testIDCNAVL5 );
    testSet.insert( testIDCNAVL2 );
    testSet.insert( testIDLNAV );
