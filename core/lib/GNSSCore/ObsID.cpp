@@ -83,13 +83,24 @@ namespace gpstk
       char ot = strID[i];
       char cb = strID[i+1];
       char tc = strID[i+2];
-      
+ 
+      std::cout << "ObsID(): strID, i, sys, ot, cb, tc: '" << strID << "'," << i 
+           << ", '" << sys 
+           << "', '" << ot
+           << "', '" << cb
+           << "', '" << tc
+           << std::endl; 
+     
       if (!char2ot.count(ot) || !char2cb.count(cb) || !char2tc.count(tc))
          idCreator(strID.substr(i,3));
+
+      std::cout << "Below idCreator()" << std::endl;
 
       type = char2ot[ ot ];
       band = char2cb[ cb ];
       code = char2tc[ tc ];
+
+      std::cout << "type, band, code: " << type << ", " << band << ", " << code << std::endl;
 
       /// This next block takes care of fixing up the codes that are reused
       /// between the various signals
@@ -149,17 +160,17 @@ namespace gpstk
          if(band == cbL1) switch (code)
          {
             case tcCA: code = tcJCA; break;     // 'C'
-            case tcC2M: code = tcJD1; break;    // 'S'
-            case tcC2L: code = tcJP1; break;    // 'L'
-            case tcC2LM: code = tcJX1; break;   // 'X'
+            case tcC2M: case tcG1D: code = tcJD1; break;    // 'S'
+            case tcC2L: case tcG1P: code = tcJP1; break;    // 'L'
+            case tcC2LM: case tcG1X: code = tcJX1; break;   // 'X'
             case tcABC: code = tcJZ1; break;    // 'Z'
             default: break;
          }
          if(band == cbL2) switch (code)
          {
-            case tcC2M: code = tcJM2; break;    // 'S'
-            case tcC2L: code = tcJL2; break;    // 'L'
-            case tcC2LM: code = tcJX2; break;   // 'X'
+            case tcC2M: case tcG1D: code = tcJM2; break;    // 'S'
+            case tcC2L: case tcG1P: code = tcJL2; break;    // 'L'
+            case tcC2LM: case tcG1X: code = tcJX2; break;   // 'X'
             default: break;
          }
          if(band == cbL5) switch (code)
@@ -171,9 +182,9 @@ namespace gpstk
          }
          if(band == cbE6) switch (code)
          {
-            case tcC2M: code = tcJI6; break;    // 'S'
-            case tcC2L: code = tcJQ6; break;    // 'L'
-            case tcC2LM: code = tcJIQ6; break;  // 'X'
+            case tcC2M: case tcG1D: code = tcJI6; break;    // 'S'
+            case tcC2L: case tcG1P: code = tcJQ6; break;    // 'L'
+            case tcC2LM: case tcG1X: code = tcJIQ6; break;  // 'X'
             default: break;
          }
       }
@@ -255,6 +266,8 @@ namespace gpstk
 
    ObsID ObsID::idCreator(const std::string& strID, const std::string& desc)
    {
+      std::cout << "ObsID::idCreator(). stdID '" << strID 
+                << "', desc '" << desc << "'" << std::endl;
       char ot = strID[0];
       ObservationType type;
       if (!char2ot.count(ot))
@@ -290,7 +303,9 @@ namespace gpstk
       }
       else
          code = char2tc[tc];
-      
+ 
+      std::cout << " type, band, code: " << type << ", " << band << ", " << code << std::endl;
+
       return ObsID(type, band, code);
    }
 

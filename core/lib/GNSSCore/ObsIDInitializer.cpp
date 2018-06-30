@@ -97,6 +97,9 @@ namespace gpstk {
       ObsID::tcDesc[ObsID::tcI5]        = "GPSI5";         //Rinex I    // GPScivil_I
       ObsID::tcDesc[ObsID::tcQ5]        = "GPSQ5";         //Rinex Q    // GPScivil_Q
       ObsID::tcDesc[ObsID::tcIQ5]       = "GPSI+Q5";       //Rinex X    // GPScivil_I+Q
+      ObsID::tcDesc[ObsID::tcG1P]       = "GPSC1P";        //Rinex L    // GPScivil_L1P
+      ObsID::tcDesc[ObsID::tcG1D]       = "GPSC1D";        //Rinex S    // GPScivil_L1D
+      ObsID::tcDesc[ObsID::tcG1X]       = "GPSC1(D+P)";    //Rinex X    // GPScivil_L1D+P
 
       ObsID::tcDesc[ObsID::tcGCA]       = "GLOC/A";        //Rinex C    // GLOcivil
       ObsID::tcDesc[ObsID::tcGP]        = "GLOP";          //Rinex P    // GLOprecise
@@ -206,6 +209,9 @@ namespace gpstk {
       ObsID::char2tc['I'] = ObsID::tcI5;
       ObsID::char2tc['Q'] = ObsID::tcQ5;
       ObsID::char2tc['A'] = ObsID::tcA;
+      ObsID::char2tc['S'] = ObsID::tcG1D;
+      ObsID::char2tc['L'] = ObsID::tcG1P;
+      ObsID::char2tc['X'] = ObsID::tcG1X;
       ObsID::char2tc['B'] = ObsID::tcB;
       ObsID::char2tc['Z'] = ObsID::tcABC;
       ObsID::char2tc['-'] = ObsID::tcUndefined;

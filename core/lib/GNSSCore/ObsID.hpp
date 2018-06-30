@@ -148,6 +148,9 @@ namespace gpstk
          tcI5,      ///< Modernized GPS L5 civil in-phase
          tcQ5,      ///< Modernized GPS L5 civil quadrature
          tcIQ5,     ///< Modernized GPS L5 civil I+Q combined tracking
+         tcG1P,     ///< Modernized GPS L1C civil code tracking (pilot)
+         tcG1D,     ///< Modernized GPS L1C civil code tracking (data)
+         tcG1X,     ///< Modernized GPS L1C civil code tracking (pilot + data)
 
          tcGCA,     ///< Legacy Glonass civil signal
          tcGP,      ///< Legacy Glonass precise signal
