@@ -84,32 +84,26 @@ namespace gpstk
       char cb = strID[i+1];
       char tc = strID[i+2];
  
-      std::cout << "ObsID(): strID, i, sys, ot, cb, tc: '" << strID << "'," << i 
-           << ", '" << sys 
-           << "', '" << ot
-           << "', '" << cb
-           << "', '" << tc
-           << std::endl; 
-     
       if (!char2ot.count(ot) || !char2cb.count(cb) || !char2tc.count(tc))
          idCreator(strID.substr(i,3));
-
-      std::cout << "Below idCreator()" << std::endl;
 
       type = char2ot[ ot ];
       band = char2cb[ cb ];
       code = char2tc[ tc ];
 
-      std::cout << "type, band, code: " << type << ", " << band << ", " << code << std::endl;
-
       /// This next block takes care of fixing up the codes that are reused
       /// between the various signals
-      if (sys == 'G') // GPS
+      switch (sys)
+      {
+         case 'G':    // GPS
       {
          if (tc=='X' && band==cbL5)
             code = tcIQ5;
+         if (tc=='X' && band==cbL2)
+            code = tcC2LM;
+         break;
       }
-      if (sys == 'E') // Galileo
+         case 'E':   // Galileo
       {
          switch (code)
          {
@@ -125,8 +119,9 @@ namespace gpstk
             else if (band == cbL5 || band == cbE5b || band == cbE5ab)
                code = tcIQE5;
          }
+         break;
       }
-      else if (sys == 'R') // Glonass
+         case 'R': // Glonass
       {
          switch (code)
          {
@@ -134,7 +129,7 @@ namespace gpstk
             case tcP: code = tcGP; break;
             case tcI5: code = tcIR3; break;
             case tcQ5: code = tcQR3; break;
-            case tcC2LM: code = tcIQR3; break;
+            case tcC2LM: case tcG1X: code = tcIQR3; break;
             default: break;
          }
          switch (band)
@@ -143,19 +138,21 @@ namespace gpstk
             case cbL2: band = cbG2; break;
             default: break;
          }
+         break;
       }
-      else if (sys == 'S') // SBAS or Geosync
+         case 'S':    // SBAS or Geosync
       {
          switch (code)
          {
             case tcCA: code = tcSCA; break;     // 'C'
             case tcI5: code = tcSI5; break;     // 'I'
             case tcQ5: code = tcSQ5; break;     // 'Q'
-            case tcC2LM: code = tcSIQ5; break;  // 'X'
+            case tcC2LM: case tcG1X: code = tcSIQ5; break;  // 'X'
             default: break;
          }
+         break;
       }
-      else if (sys == 'J') // QZSS
+         case 'J':   // QZSS
       {
          if(band == cbL1) switch (code)
          {
@@ -187,8 +184,9 @@ namespace gpstk
             case tcC2LM: case tcG1X: code = tcJIQ6; break;  // 'X'
             default: break;
          }
+         break;
       }
-      else if (sys == 'C') // BeiDou
+         case 'C':   // BeiDou
       {
          if(band == cbL1) band = cbB1;          // RINEX 3.02
          if(band == cbL2) band = cbB1;          // RINEX 3.0[013]
@@ -199,7 +197,7 @@ namespace gpstk
             {
                case tcI5: code = tcCI1; break;     // 'I'
                case tcQ5: code = tcCQ1; break;     // 'Q'
-               case tcC2LM: code = tcCIQ1; break;  // 'X'
+               case tcC2LM: case tcG1X: code = tcCIQ1; break;  // 'X'
                default: break;
             }
          }
@@ -207,7 +205,7 @@ namespace gpstk
          {
             case tcI5: code = tcCI7; break;     // 'I'
             case tcQ5: code = tcCQ7; break;     // 'Q'
-            case tcC2LM: code = tcCIQ7; break;  // 'X'
+            case tcC2LM: case tcG1X: code = tcCIQ7; break;  // 'X'
             default: break;
          }
          if(band == cbE5b) {
@@ -215,12 +213,13 @@ namespace gpstk
             {
                case tcI5: code = tcCI6; break;     // 'I'
                case tcQ5: code = tcCQ6; break;     // 'Q'
-               case tcC2LM: code = tcCIQ6; break;  // 'X'
+               case tcC2LM: case tcG1X: code = tcCIQ6; break;  // 'X'
             default: break;
             }
          }
+         break;
       }
-      else if (sys== 'I')  // IRNSS
+         case 'I':  // IRNSS
       {
          if(band == cbL5)
          {
@@ -229,10 +228,14 @@ namespace gpstk
                case tcCA:   code = tcIA5; break;   // 'A'
                case tcA:    code = tcIB5; break;   // 'B'
                case tcB:    code = tcIC5; break;   // 'B'
-               case tcC2LM: code = tcIX5; break;   // 'X'
+               case tcC2LM: case tcG1X: code = tcIX5; break;   // 'X'
             default: break;
             }
          }
+         break;
+      }
+         default:
+            break;
       } // end of checking which GNSS system this obs is for
    }
 
@@ -266,8 +269,6 @@ namespace gpstk
 
    ObsID ObsID::idCreator(const std::string& strID, const std::string& desc)
    {
-      std::cout << "ObsID::idCreator(). stdID '" << strID 
-                << "', desc '" << desc << "'" << std::endl;
       char ot = strID[0];
       ObservationType type;
       if (!char2ot.count(ot))
@@ -304,8 +305,6 @@ namespace gpstk
       else
          code = char2tc[tc];
  
-      std::cout << " type, band, code: " << type << ", " << band << ", " << code << std::endl;
-
       return ObsID(type, band, code);
    }
 
