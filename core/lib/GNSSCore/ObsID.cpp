@@ -99,8 +99,12 @@ namespace gpstk
       {
          if (tc=='X' && band==cbL5)
             code = tcIQ5;
-         if (tc=='X' && band==cbL2)
-            code = tcC2LM;
+         if (band==cbL1)
+         {
+            if (tc=='X') code = tcG1X;
+            if (tc=='S') code = tcG1D;
+            if (tc=='L') code = tcG1P;
+         }
          break;
       }
          case 'E':   // Galileo

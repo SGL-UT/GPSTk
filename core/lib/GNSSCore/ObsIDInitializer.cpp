@@ -209,9 +209,6 @@ namespace gpstk {
       ObsID::char2tc['I'] = ObsID::tcI5;
       ObsID::char2tc['Q'] = ObsID::tcQ5;
       ObsID::char2tc['A'] = ObsID::tcA;
-      ObsID::char2tc['S'] = ObsID::tcG1D;
-      ObsID::char2tc['L'] = ObsID::tcG1P;
-      ObsID::char2tc['X'] = ObsID::tcG1X;
       ObsID::char2tc['B'] = ObsID::tcB;
       ObsID::char2tc['Z'] = ObsID::tcABC;
       ObsID::char2tc['-'] = ObsID::tcUndefined;
