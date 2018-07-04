@@ -57,6 +57,7 @@ namespace gpstk
       for (i = msgBitsIn.begin(); i != msgBitsIn.end(); i++)
       {
          CNavFilterData *fd = dynamic_cast<CNavFilterData*>(*i);
+         uint32_t msgWeek = (uint32_t) fd->pnb->asUnsignedLong(9,13,1); 
          uint32_t TOI   = (uint32_t) fd->pnb->asUnsignedLong(0,9,1);
          uint32_t ITOW  = (uint32_t) fd->pnb->asUnsignedLong(22,8,1);
          unsigned bitOffset = 9 + 600;
@@ -66,10 +67,13 @@ namespace gpstk
 
          unsigned msgSOW = 7200 * ITOW + TOI * 18; 
          unsigned xmitSOW = static_cast<GPSWeekSecond>(fd->pnb->getTransmitTime()).sow;
+         unsigned xmitWeek = static_cast<GPSWeekSecond>(fd->pnb->getTransmitTime()).week;
 
          bool valid =
-               // check time is consistent
+               // check SOW time is consistent
             ( msgSOW == xmitSOW &&
+               // check week number is consistent
+              msgWeek == xmitWeek &&
                // check PRN is consistent
               PRN == fd->pnb->getsatSys().id &&
                // check subframe 3 page number is valid
