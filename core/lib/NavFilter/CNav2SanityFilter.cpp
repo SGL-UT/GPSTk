@@ -71,11 +71,6 @@ namespace gpstk
             msgSOW += 604800; 
          unsigned xmitSOW = static_cast<GPSWeekSecond>(fd->pnb->getTransmitTime()).sow;
          unsigned xmitWeek = static_cast<GPSWeekSecond>(fd->pnb->getTransmitTime()).week;
-
-         std::cout << "msgSOW, xmitSOW: " << msgSOW << ", " << xmitSOW << std::endl;
-         std::cout << "   msgWeek, xmitWeek: " << msgWeek << ", " << xmitWeek << std::endl;
-         std::cout << "   PRN, PRN: " << PRN << ", " << fd->pnb->getsatSys().id << std::endl;
-         std::cout << "   pageNum: " << pageNum << std::endl;
  
          bool valid =
                // check SOW time is consistent
@@ -86,7 +81,6 @@ namespace gpstk
               PRN == fd->pnb->getsatSys().id &&
                // check subframe 3 page number is valid
              (pageNum>=1 && pageNum<=6) );
-         std::cout << "   VALID:  " << valid << std::endl;
          if (valid)
             accept(fd, msgBitsOut);
          else
