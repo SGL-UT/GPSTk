@@ -115,6 +115,9 @@ loadData()
       unsigned week = static_cast<GPSWeekSecond>(ct).week;
       double dSOW = static_cast<GPSWeekSecond>(ct).sow;
       unsigned SOW = (unsigned) dSOW;
+      SOW += 18;
+      if (SOW>=FULLWEEK)
+         SOW -= FULLWEEK;
       unsigned ITOW = SOW / TWO_HOURS;
       unsigned TOI  = SOW - (ITOW * TWO_HOURS);
       TOI = TOI / 18;     
