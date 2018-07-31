@@ -1,4 +1,16 @@
-gpstk (2.10.1-1) UNRELEASED; urgency=medium
+gpstk (2.10.3-2) stable; urgency=medium
+
+  * Update to upstream version 2.10.3
+
+ -- Bryan Parsons <bparsons@clau.arlut.utexas.edu>  Mon, 30 Jul 2018 13:43:26 -0500
+
+gpstk (2.10.2-1) stable; urgency=medium
+
+  * Update to upstream version 2.10.2
+
+ -- Bryan Parsons <bparsons@clau.arlut.utexas.edu>  Thu, 26 Apr 2018 13:52:11 -0500
+
+gpstk (2.10.1-1) stable; urgency=medium
 
   * Update to upstream version 2.10.1 
 
