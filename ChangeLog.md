@@ -1,4 +1,31 @@
-Version 2.10.2   Friday, June 22, 2018
+Version 2.10.4   Wednesday, August 1, 2018
+
+   General modifications
+   ---------------------
+   - Debian configuration complete for building debian packages
+
+   Modifications by Author
+   ---------------------
+
+Bryan Parsons (10):
+      Updated Debian Files for proper building.
+      Updated debian changelog for new version.
+      Updated Debian install configuration files for updated path to lib.
+      Adding site-packages install to Debian Packages.
+      Fixed bug in python-gpst.install file.
+      Updating site-packages line in python-gpstk.install file.
+      Additional tweaks to Debian files.
+      Incremented Debian revision as changes to debian files have occured.
+      Merge branch 'debian_touchup' into 'master'
+      Merge branch 'rinex3clkASAR' into 'master'
+
+John H. Price (1):
+      add support for Rinex 3 AS/AR Clock files
+
+      #################################################
+
+
+Version 2.10.3   Friday, June 22, 2018
 
    General modifications
    ---------------------
@@ -151,9 +178,6 @@ johnk (15):
 renfrob (2):
       Fixing week rollover with negative HOW bug
       Adding mistagging PRN detection to scanBrdcFile
-
-
-
 
 
 
