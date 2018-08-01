@@ -47,6 +47,7 @@
 #include <map>
 #include "Rinex3ClockBase.hpp"
 #include "RinexSatID.hpp"
+#include "RinexObsID.hpp"
 #include "TimeSystem.hpp"
 
 namespace gpstk
@@ -63,7 +64,6 @@ namespace gpstk
 
          /// constructor
       Rinex3ClockHeader() : version(3.0), leapSeconds(0), timeSystem(TimeSystem::Any),
-                            pcvsSystem(1, RinexSatID::systemGPS),
                             numSolnStations(0), numSolnSatellites(0)
       {}
 
@@ -149,16 +149,28 @@ namespace gpstk
       double version;                        ///< Rinex3Clock Version or file format
       std::string program;                   ///< Program name
       std::string runby;                     ///< Run by string
+      std::string fileSys;                   ///< GNSS system OR Mixed
       std::vector<std::string> dataTypes;    ///< list of data types
+
+      /// recall the prev sat. sys for continuation lines.
+      std::string satSysPrev;
+      /// save OBS # / TYPES and Sys / SCALE FACTOR for continuation lines.
+      int numObs;
+      typedef std::map<std::string, std::vector<RinexObsID> > RinexObsMap;
+      RinexObsMap sysObsTypes;               ///< list of obs types used for each GNSS
+
       int leapSeconds;                       ///< Leap seconds
       TimeSystem timeSystem;                 ///< Time system
 
       std::string analCenterDesignator;      ///< Analysis center designator (3 char)
       std::string analysisCenter;            ///< Analysis center
       std::string terrRefFrame;              ///< Terr Ref Frame or SINEX solution
-      RinexSatID pcvsSystem;                 ///< system (G=GPS, R=GLO) for PCVs
-      std::string pcvsProgram;               ///< program used to apply PCVs
-      std::string pcvsSource;                ///< source of applied PCVs
+         // system letter, program name, and source of code bias corrections
+      typedef std::pair<std::string,std::string> stringPair;
+      std::map<std::string, stringPair > dcbsMap;
+         // system letter, program name, and source of phase center corrections
+      std::map<std::string, stringPair > pcvsMap;
+
 
       int numSolnStations;                   ///< Number of stations in the solution
       std::map<std::string,std::string> stationID; ///< 4-char name, station id
@@ -186,9 +198,8 @@ namespace gpstk
          analysisCenter = std::string();
          terrRefFrame = std::string();
          timeSystem = TimeSystem::Any;
-         pcvsSystem = RinexSatID(-1, RinexSatID::systemGPS);
-         pcvsProgram = std::string();
-         pcvsSource = std::string();
+         dcbsMap.clear();
+         pcvsMap.clear();
          numSolnStations = 0;
          stationID.clear();
          stationX.clear();
