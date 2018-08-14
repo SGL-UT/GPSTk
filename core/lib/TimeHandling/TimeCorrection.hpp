@@ -57,7 +57,7 @@ namespace gpstk
        *   performed to turn that time into GPS week-second time.  The
        *   week according to the system clock should be valid for at
        *   least a single week epoch, i.e. 1024 weeks (~19 years), so
-       *   if you're planning on leaving your software running for
+       *   unless you're planning on leaving your software running for
        *   more than 19 years straight, it should be valid.
        * @return The value of toCorrectWeek having been adjusted by as
        *   many epochs as necessary to bring it to within half a GPS
