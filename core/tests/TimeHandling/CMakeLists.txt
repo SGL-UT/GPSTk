@@ -84,3 +84,8 @@ add_executable(GPSZcount_T GPSZcount_T.cpp)
 target_link_libraries(GPSZcount_T gpstk)
 add_test(TimeHandling_GPSZcount GPSZcount_T)
 set_property(TEST TimeHandling_GPSZcount PROPERTY LABELS TimeHandling TimeStorage)
+
+add_executable(TimeCorrection_T TimeCorrection_T.cpp)
+target_link_libraries(TimeCorrection_T gpstk)
+add_test(TimeHandling_TimeCorrection TimeCorrection_T)
+set_property(TEST TimeHandling_TimeCorrection PROPERTY LABELS TimeHandling TimeStorage)
