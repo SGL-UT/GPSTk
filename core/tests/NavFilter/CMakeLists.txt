@@ -5,3 +5,7 @@ add_test(NavFilter_NavFilterMgr NavFilterMgr_T)
 add_executable(CNavFilter_T CNavFilter_T.cpp)
 target_link_libraries(CNavFilter_T gpstk)
 add_test(NavFilter_CNavFilter CNavFilter_T)
+
+add_executable(CNav2Filter_T CNav2Filter_T.cpp)
+target_link_libraries(CNav2Filter_T gpstk)
+add_test(NavFilter_CNav2Filter CNav2Filter_T)
