@@ -1,14 +1,17 @@
-GPSTk 2.10.4 Release Notes
+GPSTk 2.10.5 Release Notes
 ========================
 
-Updates since v2.10.3
+Updates since v2.10.4
 ----------------------
 
-**Build System & Packaging Changes**
- * Updated Debian configuration files for complete debian package building capability
+**Library Changes*
+ * Create a simple class for applying 10-bit week rollover corrections, with room to expand for other similar capabilities
 
-*New Truth Data*
- * data/test_output_rinex3_clock_TestR3HeaderOutput.exp
+*New Library Classes*
+ * core/lib/TimeHandling/TimeCorrection.*
+
+*New Tests*
+ * core/tests/TimeHandling/TimeCorrection_T.cpp
 
 
 

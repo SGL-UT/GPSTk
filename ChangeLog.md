@@ -1,3 +1,24 @@
+Version 2.10.5   Wednesday, August 22, 2018
+
+   General modifications
+   ---------------------
+   - Add function for correcting issues with 10-bit week rollover
+      fix a typo
+
+   Modifications by Author
+   ---------------------
+
+Bryan Parsons (1):
+      Merge branch '350-implement-a-utility-class-for-time-offset-corrections' into 'master'
+
+johnk (2):
+      Add function for correcting issues with 10-bit week rollover
+      fix a typo
+
+
+
+      #################################################
+
 Version 2.10.4   Wednesday, August 1, 2018
 
    General modifications
