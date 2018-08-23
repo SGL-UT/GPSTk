@@ -49,6 +49,7 @@
 #include "SystemTime.hpp"
 #include "FFStream.hpp"
 #include "TimeString.hpp"
+#include "FileUtils.hpp"
 
 namespace gpstk
 {
@@ -101,36 +102,36 @@ namespace gpstk
       // Update the file name, returns true if the file name changed
       bool updateFileName(const CommonTime& t=SystemTime())
       {
-         bool openedNewFile = false;
          const std::string newFilename=printTime(t,filespec);
-         if (currentFilename.size() == 0 && newFilename.size() > 0)
-         {
-            currentFilename = newFilename;
-            currentTime = t;
-            BaseStream::open(currentFilename.c_str(), omode);
-            if (debugLevel)
-               std::cout << "Opened " << currentFilename << std::endl;
-            openedNewFile=true;
-         }
-         else if (newFilename == currentFilename)
+         if (currentFilename.size() > 0 and newFilename == currentFilename)
          {
             currentTime = t;
-            openedNewFile=false;
+            return false;
          }
-         else
+         
+         if (currentFilename.size() > 0)
          {
             if (debugLevel)
                std::cout << "Closing " << currentFilename << std::endl;
             BaseStream::close();
-            currentFilename = newFilename;
-            currentTime = t;
-            BaseStream::open(currentFilename.c_str(), omode);
-            if (debugLevel)
-               std::cout << "Opened " << currentFilename << std::endl;
-            openedNewFile=true;
          }
-
-         return openedNewFile;
+         currentFilename = newFilename;
+         currentTime = t;
+         
+         std::string::size_type i = newFilename.rfind('/');
+         std::string dir(newFilename.substr(0, i));
+         if (dir.size())
+         {
+            if (debugLevel)
+               std::cout << "Creating directory " << dir << std::endl;
+            gpstk::FileUtils::makeDir(dir, 0755);
+         }
+         
+         BaseStream::open(currentFilename.c_str(), omode);
+         if (debugLevel)
+            std::cout << "Opened " << currentFilename << std::endl;
+         
+         return true;
       }
 
       int debugLevel;
