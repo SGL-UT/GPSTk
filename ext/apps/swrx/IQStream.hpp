@@ -41,8 +41,8 @@
 #include <map>
 #include <complex>
 
-#include <gpstkplatform.h>
-#include <FFBinaryStream.hpp>
+#include "gpstkplatform.h"
+#include "FFBinaryStream.hpp"
 
 namespace gpstk
 {

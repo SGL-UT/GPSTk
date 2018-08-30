@@ -37,8 +37,8 @@
 #ifndef CNAVCOOKFILTER_HPP
 #define CNAVCOOKFILTER_HPP
 
-#include <NavFilter.hpp>
-#include <CNavFilterData.hpp>
+#include "NavFilter.hpp"
+#include "CNavFilterData.hpp"
 
 namespace gpstk
 {

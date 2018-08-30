@@ -1,9 +1,9 @@
 #ifndef CNAVCROSSOURCEFILTER_HPP
 #define CNAVCROSSOURCEFILTER_HPP
 
-#include <NavFilterMgr.hpp>
-#include <NavFilter.hpp>
-#include <CNavFilterData.hpp>
+#include "NavFilterMgr.hpp"
+#include "NavFilter.hpp"
+#include "CNavFilterData.hpp"
 
 namespace gpstk
 {
