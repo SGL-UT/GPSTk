@@ -133,12 +133,6 @@ void Robust::StemLeafPlot(ostream& os, double *xd, long nd, string msg)
       buf = asString<long>(stem);
       if(len < buf.size()) len=buf.size();
    }
-   //buf = asString<long>(::abs(Stem(xd[0],scale)));
-   //len = buf.size();
-   //buf = asString<long>(::abs(Stem(xd[nd-1],scale)));
-   //if(len < buf.size()) len=buf.size();
-   //buf = asString<long>(::abs(Stem(M,scale)));
-   //if(len < buf.size()) len=buf.size();
 
       // loop through data, adding stems and leaves to plot
    bool start=true;
@@ -204,11 +198,6 @@ void Robust::StemLeafPlot(ostream& os, double *xd, long nd, string msg)
                // print the new line with stem s
             os << "\n";
             buf = asString<long>(s < 0 ? -s : s); // abs(stem)
-
-            //for(kk=buf.size(); kk<len; kk++) os << " ";
-            //if(s<0) c='-'; else if(s>0) c='+'; else if(pos>0)c='+'; else c='-';
-            //os << c;
-            //os << buf << " ";
 
             if(s<0) c='-';                                     // sign of stem
             else if(s>0) c='+';
