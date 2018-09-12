@@ -110,6 +110,19 @@ namespace gpstk
          /// Return true if the given IndexType is present in the store
       virtual bool isPresent(const IndexType& id) const = 0;
 
+         /** flag indicating unhealthy ephemerides should be excluded
+          * from getXvt, otherwise it will throw (default condition may vary
+          * with sub-classes) */
+      bool onlyHealthy;
+
+         /// get the flag that limits getXvt() to healthy ephemerides
+      bool getOnlyHealthyFlag(void) const
+      { return onlyHealthy; }
+
+         /// set the flag that limits getXvt() to healthy ephemerides
+      void setOnlyHealthyFlag(bool flag)
+      { onlyHealthy = flag; }
+
    }; // end class XvtStore
 
       //@}

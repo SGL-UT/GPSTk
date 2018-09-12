@@ -20,7 +20,7 @@ include /usr/share/dpkg/default.mk
 
 # main packaging script based on dh7 syntax
 %:
-	dh $@ --parallel --with python2
+	dh $@ --with python2
 
 override_dh_auto_configure:
 	debian/check_versions_match.sh

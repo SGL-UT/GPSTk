@@ -23,6 +23,7 @@
 #    ${TESTBASE}.out.
 # NODIFF: if set, do not compare the output to a reference file as
 #    part of the test.
+# DIFFSTDERR: if set, the stderr output will be compared to a reference file
 
 if(NOT EXP_RC)
     set(EXP_RC 0)
@@ -38,6 +39,7 @@ IF(NOT DEFINED OWNOUTPUT)
     message(STATUS "${TEST_PROG} ${ARGS} ${SPARG1} ${SPARG2} ${SPARG3} ${SPARG4} >${TARGETDIR}/${TESTBASE}.out")
     execute_process(COMMAND ${TEST_PROG} ${ARG_LIST} ${SPARG1} ${SPARG2} ${SPARG3} ${SPARG4}
         OUTPUT_FILE ${TARGETDIR}/${TESTBASE}.out
+        ERROR_FILE ${TARGETDIR}/${TESTBASE}.err
         RESULT_VARIABLE RC)
 ELSE(NOT DEFINED OWNOUTPUT)
     message(STATUS "${TEST_PROG} ${ARGS} ${SPARG1} ${SPARG2} ${SPARG3} ${SPARG4}")
@@ -71,3 +73,25 @@ IF(NOT DEFINED NODIFF)
        message(STATUS "Test passed")
    endif(DIFFERENT)
 ENDIF(NOT DEFINED NODIFF)
+
+
+IF(DEFINED DIFFSTDERR)
+    set(exp "${SOURCEDIR}/${TESTBASE}.err.exp")
+    set(out "${TARGETDIR}/${TESTBASE}.err")
+
+    if(DEFINED DIFF_PROG)
+        message(STATUS         "${DIFF_PROG} ${DIFF_ARGS} -1 ${out} -2 ${exp}")
+        execute_process(COMMAND ${DIFF_PROG} ${DIFF_ARGS} -1 ${out} -2 ${exp}
+            RESULT_VARIABLE DIFFERENT)
+    else()
+        message(STATUS "diff ${out} ${exp}")
+        execute_process(COMMAND ${CMAKE_COMMAND} -E compare_files ${out} ${exp}
+            RESULT_VARIABLE DIFFERENT)
+    endif()
+    
+   if(DIFFERENT)
+       message(FATAL_ERROR "Test failed - files differ: ${DIFFERENT}")
+   else()
+       message(STATUS "Test passed")
+   endif(DIFFERENT)
+ENDIF(NOT DEFINED DIFFSTDERR)

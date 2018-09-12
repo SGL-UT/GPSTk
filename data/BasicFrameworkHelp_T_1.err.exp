@@ -1,0 +1,10 @@
+Usage: BasicFrameworkHelp_T [OPTION] ...
+ Facilitate testing of help-like options
+
+Optional arguments:
+  -d, --debug     Increase debug level
+  -v, --verbose   Increase verbosity
+  -h, --help      Print help usage
+  -x, --xhelp     Print x help
+  -y, --yhelp=ARG Print y help
+  -w, --whelp     It was just a coincidence, I swear.

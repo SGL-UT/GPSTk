@@ -78,7 +78,7 @@ namespace gpstk
          otUnknown,
          otAny,       ///< Used to match any observation type
          otRange,     ///< pseudorange, in meters
-         otPhase,     ///< accumulated phase, in meters
+         otPhase,     ///< accumulated phase, in cycles
          otDoppler,   ///< Doppler, in Hz
          otSNR,       ///< Signal strength, in dB-Hz
          otChannel,   ///< Channel number
@@ -89,7 +89,7 @@ namespace gpstk
          otTrackLen,  ///< Number of continuous epochs of 'good' tracking
          otNavMsg,    ///< Navigation Message data
          otRngStdDev, ///< pseudorange standard deviation, in meters
-         otPhsStdDev, ///< phase standard deviation, in meters
+         otPhsStdDev, ///< phase standard deviation, in cycles
          otFreqIndx,  ///< GLONASS frequency offset index [-6..7]
          otUndefined, ///< Undefined
          otLast       ///< Used to verify that all items are described at compile time
@@ -163,6 +163,12 @@ namespace gpstk
          tcIE5,     ///< Galileo L5 I code
          tcQE5,     ///< Galileo L5 Q code
          tcIQE5,    ///< Galileo L5 I+Q combined tracking
+         tcIE5a,    ///< Galileo E5a I code
+         tcQE5a,    ///< Galileo E5a Q code
+         tcIQE5a,   ///< Galileo E5a I+Q combined tracking
+         tcIE5b,    ///< Galileo E5b I code
+         tcQE5b,    ///< Galileo E5b Q code
+         tcIQE5b,   ///< Galileo E5b I+Q combined tracking
 
          tcSCA,     ///< SBAS civil code
          tcSI5,     ///< SBAS L5 I code
