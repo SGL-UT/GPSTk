@@ -211,6 +211,8 @@ public:
       // member data
       unsigned int index;  ///< index in original arrays to which this info applies.
       T diff;              ///< first difference = data[index]-data[index-1]
+      T aveN,sigN;         ///< stats from N pts ending at index (fstats at index)
+                              // pstats for index+N+1
    }; // end class Analysis
 
    /// constructor with two arrays - x is used only in dump(); x and f must exist
@@ -257,14 +259,14 @@ public:
    /// of, vs fdiff at, point of interest.
    /// @param ratlim limit on |ratio fdiff to <sigmas>| (also fdiff > fdlimit for hit)
    /// @return the number of slips (size of results vector<FilterHit> - 1)
-   int analyze2(const double ratlim)
-      { std::string msg; return analyze2(ratlim, false, msg); }
+   int analyze2(const double ratlim, const double siglim)
+      { std::string msg; return analyze2(ratlim, siglim, false, msg); }
 
    /// Overloaded version with analysis dump to string reference; cf. other versions
    /// @param ratlim limit on |ratio fdiff to <sigmas>| (also fdiff > fdlimit for hit)
    /// @param dumpmsg string for analysis dump when bool dump is true
-   int analyze2(const double ratlim, std::string& dumpmsg)
-      { return analyze2(ratlim, true, dumpmsg); }
+   int analyze2(const double ratlim, const double siglim, std::string& dumpmsg)
+      { return analyze2(ratlim, siglim, true, dumpmsg); }
 
    /// fix some potential problems in the results vector, namely:
    /// if the first point(s) are outliers, analyze() makes the first FilterHit BOD
@@ -289,6 +291,7 @@ public:
    bool dumpNA;                  ///< if false, don't dump() data with no analysis (T)
 
    T fdlimit;                    ///< |first diff| must be > this to be an outlier
+   unsigned int Npts;            ///< size of sliding window
    const std::vector<T>& xdata;  ///< reference to xdata - used only in dump
    const std::vector<T>& data;   ///< reference to data to be filtered
    const std::vector<int>& flags;///< reference to flags, parallel to data, 0 == good
@@ -306,7 +309,8 @@ private:
    /// @param ratlim limit on |ratio fdiff to <sigmas>| (also fdiff > fdlimit for hit)
    /// @param dump bool if true dump analysis output to dumpmsg
    /// @param dumpmsg string for analysis dump when bool dump is true
-   int analyze2(const double ratlim, bool dump, std::string& dumpmsg);
+   int analyze2(const double ratlim, const double siglim,
+                  bool dump, std::string& dumpmsg);
 
 }; // end class FirstDiffFilter
 
@@ -376,19 +380,14 @@ template<class T> int FirstDiffFilter<T>::analyze(void)
          nbad++;
          sumbad += analvec[i].diff;
          prevIsBad = true;
-         //LOG(INFO) << "bad index " << analvec[i].index << " nbad " << nbad;
       }
       else if(!prevIsBad) {               // good 1st diff following good 1st diff
-         //LOG(INFO) << "good index " << analvec[i].index;
          igood = i;
       }
       else {                              // good 1st diff following bad one(s)
-         //LOG(INFO) << "good after bad index "<< analvec[i].index<< " nbad " << nbad;
          results[curr].ngood -= nbad+1;   // finish the current segment
 
          if(::fabs(sumbad) > fdlimit) {   // its a slip
-            //LOG(INFO) << "slip " << sumbad << " > " << fdlimit;
-            // if nbad > 1, must report outlier(s) first
             FilterHit<T> fe;
             if(nbad > 1) {
                results[curr].npts = analvec[igood+1].index - results[curr].index;
@@ -407,7 +406,6 @@ template<class T> int FirstDiffFilter<T>::analyze(void)
             results.push_back(fe); curr++;
          }
          else {                           // its just outliers(s)
-            //LOG(INFO) << "outliers " << sumbad << " <= " << fdlimit;
             results[curr].npts = analvec[igood+1].index - results[curr].index;
             // report the outliers
             FilterHit<T> fe;
@@ -480,17 +478,20 @@ template<class T> void FirstDiffFilter<T>::fixUpResults(void)
 }
 
 //------------------------------------------------------------------------------------
-template<class T> int FirstDiffFilter<T>::analyze2(const double ratlim,
-                                                   bool dump, std::string& dumpmsg)
+template<class T> int FirstDiffFilter<T>::analyze2(
+                                    const double ratlim, const double siglim,
+                                    bool dump, std::string& dumpmsg)
 {
-   unsigned int i,N(4),j;
+   const unsigned int N(4);
+   unsigned int i,j;
    std::ostringstream oss;
    gpstk::Stats<double> pstats,fstats;
 
    if(dump) oss << "FirstDiff analyze2" << std::fixed << std::setprecision(3)
-                  << " fdlimit=" << fdlimit << " ratlim=" << ratlim
-                  << " COLs: index,xdata,data,diff,pave,psig,fave,fsig,pratio,fratio"
-                  << ",[HIT],[gap]" << std::endl;
+         << " fdlimit=" << fdlimit << " siglim=" << siglim << " ratlim=" << ratlim
+         << "\n# index xdata data diff step5  ave sig7 rat8  "
+            << "pave psig prat  fave fsig frat [SLIP] [gap]"
+         << std::endl;
 
    // create first event = BOD
    results.clear();
@@ -504,33 +505,41 @@ template<class T> int FirstDiffFilter<T>::analyze2(const double ratlim,
    int curr(0), i0(1);
    double tstep,tstepmin,tstepmax(0.0);
    tstepmin = (noxdata ? 0 : xdata[analvec[1].index] - xdata[analvec[0].index]);
+   const unsigned int size(analvec.size());
 
    // loop over first differences
    // keep stats on the N points before, and N points after, the current point
    // NB skip the first pt b/c diff==0 and it means nothing
-   for(j=0,i=i0; i<analvec.size(); i++) {
+   for(j=0,i=i0; i<size+N-1; i++) {       // NB i0 changes when hit
       results[curr].ngood++;              // count it; only good gets into analvec
 
       j++;                                // count points added
-      fstats.Add(analvec[i].diff);
-      if(fstats.N() > N) fstats.Subtract(analvec[i-N].diff);
-      if(j>N+2) pstats.Add(analvec[i-N-2].diff);
-      if(pstats.N() > N) pstats.Subtract(analvec[i-2*N-2].diff);
+      if(i<size) {
+         fstats.Add(analvec[i].diff);
+         analvec[i].aveN = fstats.Average();
+         analvec[i].sigN = fstats.StdDev();
+      }
+      if(j>N) fstats.Subtract(analvec[i-N].diff);
+      if(j>N+1) pstats.Add(analvec[i-N-1].diff);
+      if(j>2*N+1) pstats.Subtract(analvec[i-2*N-1].diff);
 
-      if(j>N+3) {
-         double diff(analvec[i-N-1].diff);
+      if(j>N+2 && pstats.N()>2) {
+         double diff(analvec[i-N].diff);
          double pa(pstats.Average()), fa(fstats.Average());
          double ps(pstats.StdDev()), fs(fstats.StdDev());
          double avefd((pa+fa)/2.0);                // fdiff ave of past and future
          double step(diff-avefd);                  // fd minus average fd
-         if(pstats.N()<2) { pa=0.0; ps=1.0; }
-         double pr((diff-pa)/ps), fr((diff-fa)/fs);// ratios step/sigma
+         if(pstats.N()<2) { pa=0.0; ps=0.0; }
+         double sig(::sqrt(pstats.N()*ps*ps+fstats.N()*fs*fs));
+         double pr(::fabs(diff-pa)/ps), fr(::fabs(diff-fa)/fs);// ratios step/sigma
+         double rat((pr+fr)/2.0);
+         //double rat(step/sig);
 
          // criteria for finding a slip
-         bool hit(::fabs(step) > fdlimit           // step is big
-               && ::fabs(avefd) < fdlimit/2.       // typical fdiff is not large
-               && ::fabs(pr) > ratlim              // ratio step/sig large in past
-               && ::fabs(fr) > ratlim);            // ratio step/sig large in future
+         bool hitslip(::fabs(step) > fdlimit    // step is big
+                         && sig < siglim        // noise is not large
+                         && rat > ratlim);      // ratio step/sig large
+         bool hisig(sig > fdlimit);             // sigma is high - bigger than steplim
 
          tstep = xdata[analvec[i-N-1].index] - xdata[analvec[i-N-2].index];
          if(tstep > tstepmax) tstepmax = tstep;
@@ -540,15 +549,24 @@ template<class T> int FirstDiffFilter<T>::analyze2(const double ratlim,
             oss << i << std::fixed << std::setprecision(3)
                << " " << (noxdata?T(analvec[i-N-1].index):xdata[analvec[i-N-1].index])
                << " " << data[analvec[i-N-1].index]
-               << " " << diff
-               << " " << pa << " " << ps << " " << fa << " " << fs
-               << " " << pr << " " << fr << (hit ? " HIT" : "");
+               << " " << diff << " " << step
+               << "  " << avefd << " " << sig << " " << rat
+               << "  " << pa << " " << ps << " " << pr
+               << "  " << fa << " " << fs << " " << fr
+               << (hitslip ? " SLIP":"")
+               << (hisig ? " SIG":"");
             if(!noxdata && tstep/tstepmin - 1 > 5)
                oss << " gap(" << tstepmin << "<=" << tstep << "<=" << tstepmax << ")";
+            oss << (::fabs(step) > fdlimit ? " step":"")
+                << (sig < siglim ? " sig":"")
+                << (rat > ratlim ? " rat":"")
+                << (pr > ratlim ? " prat":"")
+                << (fr > ratlim ? " frat":"")
+                ;
             oss << std::endl;
          }
 
-         if(hit) {
+         if(hitslip) {
             results[curr].ngood--;
             results[curr].npts = analvec[i].index - analvec[i0].index;
             results[curr].sigma = ps;
@@ -564,7 +582,7 @@ template<class T> int FirstDiffFilter<T>::analyze2(const double ratlim,
       }
    }  // end loop over first differences
 
-   results[curr].npts = analvec[analvec.size()-1].index - analvec[i0].index + 1;
+   results[curr].npts = analvec[size-1].index - analvec[i0].index + 1;
 
    if(dump) dumpmsg = oss.str();
 
@@ -1155,10 +1173,6 @@ template<class T> int WindowFilter<T>::filter(const size_t i0, int dsize)
       xmid = xprev + 0.5*(xvec(i)-xprev);
       A.pave = ptrPast->Evaluate(xmid); //xvec(i));
       A.fave = ptrFuture->Evaluate(xmid); //xvec(i));
-      // slope
-      //A.slope = 0.5*(ptrPast->Slope() + ptrFuture->Slope());
-      //A.pslope = ptrPast->Slope();
-      //A.fslope = ptrFuture->Slope();
 
       // compute a "step" = difference in future and past averages
       // must evaluate at the same x-point
@@ -1198,15 +1212,6 @@ template<class T> int WindowFilter<T>::filter(const size_t i0, int dsize)
          << " " << std::setw(osw) << A.fave
          << " " << std::setw(osw) << A.fsig
          << " " << std::setw(osw) << ::fabs(A.step/A.sigma) << std::endl;
-
-      // dump data and Evaluate()'s for both sides for entire 2-pane window
-      //if(twoSample) for(int ii=iminus; ii<iplus; ii++)
-      //   LOG(INFO) << "WLTEST " << std::fixed << std::setprecision(osp) << i
-      //   << " " << std::setw(osw) << xvec(i) << " -- " << std::setw(osw) << xvec(ii)
-      //   << " " << std::setw(osw) << dvec(ii)
-      //   << " " << ptrPast->Evaluate(xvec(ii))
-      //   << " " << ptrFuture->Evaluate(xvec(ii))
-      //   << " " << ptrFuture->Evaluate(xvec(ii)) - ptrPast->Evaluate(xvec(ii));
 
       // save in analvec
       analvec.push_back(A);
@@ -1339,9 +1344,6 @@ template<class T> int WindowFilter<T>::analyze(void)
       while(rat1d.size() > 2*halfwidth) { rat1d.pop_front(); sig1d.pop_front(); }
 
       // test min/max in ratio, sig and fmp of the form +,+,+,any,-,-,-
-      // 5/16 but subtract the 'any' first
-      // TD rmin and smax are not used
-      //bool rmin=true, smax=true;
       bool rmax=true, smin=true, fmp=true;
       int fmpcount(2*halfwidth);
       double fmp0(fminusp[halfwidth]);
@@ -1357,9 +1359,6 @@ template<class T> int WindowFilter<T>::analyze(void)
             if(rat1d[j] < -rat0/10.0) rmax=false;
             if(rat1d[j+halfwidth] > rat0/10.0) rmax=false;
          }
-
-         //if(rat1d[j] > 0.0) rmin=false; else
-         //if(rat1d[j+halfwidth] < 0.0) rmin=false; else
 
          if(fminusp[j]-fmp0 < 0.0)             { fmp=false; fmpcount--; }
          if(fminusp[j+halfwidth+1]-fmp0 > 0.0) { fmp=false; fmpcount--; }
@@ -1384,12 +1383,10 @@ template<class T> int WindowFilter<T>::analyze(void)
             // for 1-sample, test is sigma is at minimum - so 1st dif is -,-,-,*,+,+,+
             if(sig1d[j] > slim) smin=false;
             if(sig1d[j+halfwidth] < -slim) smin=false;
-            //if(sig1d[j] < -slim) smax=false;
-            //if(sig1d[j+halfwidth] > slim) smax=false;
          }
       }
 
-      // arrrrg TD make this configurable?
+      // make this configurable?
       if(2*halfwidth-fmpcount <= halfwidth/3) fmp=true;
 
       // define a weight [0,1], used in score but only if it passes first tests
@@ -1618,8 +1615,6 @@ template<class T> void WindowFilter<T>::dump(std::ostream& os, std::string tag)
             << " " << std::setw(osw) << analvec[j].fsig
                                                             // ratio:
             << " " << std::setw(osw) << ::fabs(analvec[j].step/analvec[j].sigma)
-            //<< " " << std::setw(osw) << analvec[j].pslope*1000.  // slope
-            //<< " " << std::setw(osw) << analvec[j].fslope*1000.  // slope
 
             // results(stats) string, slip string, analysis message
             << res << slip << (dumpAmsg ? analvec[j].msg : "") << std::endl;
