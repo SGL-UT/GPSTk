@@ -177,6 +177,7 @@ try {
    string str;
    RinexSatID sat;
    vector<string> values;
+   string::size_type pos;
 
    // loop over all options, output of the form:
    // Description (--option) : value
@@ -191,13 +192,6 @@ try {
       }
 
       str = options[i].desc;
-      // replace the string "\n\s+" in str with " "
-      string::size_type pos(str.find_first_of("\n"));
-      if(pos != string::npos) {
-         str.erase(pos++,1);
-         while(pos < str.length() && str[pos] == ' ') str.erase(pos,1);
-      }
-
       os << "   " << str << " (--" << options[i].longOpt << ") : ";
 
       str = string();

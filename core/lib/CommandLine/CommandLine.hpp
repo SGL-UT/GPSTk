@@ -155,6 +155,13 @@ public:
    // access
    bool hasHelp(void) { return help; }
    bool hasErrors(void) { return foundErrors; }
+   unsigned int count(std::string lopt) {
+      for(unsigned int i=0; i<options.size(); i++) {
+         if(options[i].longOpt == lopt)
+            return options[i].values.size();
+      }
+      return 0;
+   }
 
    // don't require at least one arg
    void noArgsRequired(void) { requireOneArg=false; }
