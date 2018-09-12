@@ -54,7 +54,6 @@
 #include "StatsFilter.hpp"
 //#include "FDiffFilter.hpp"
 #include "singleton.hpp"
-//#include "icd_200_constants.hpp"
 // geomatics
 #include "CommandLine.hpp"
 #include "RobustStats.hpp"
@@ -254,7 +253,7 @@ private:
 }; // end class GlobalData
 
 //------------------------------------------------------------------------------------
-const string GlobalData::Version(string("3.0 9/9/18 rev"));
+const string GlobalData::Version(string("3.0 9/9/18"));
 
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
@@ -662,7 +661,7 @@ try {
    }
 
    // set nostats
-   if(GD.doBin || GD.doFDF || GD.doFDF2 || GD.doWF || GD.doXWF); // || GD.doFixF);
+   if(GD.doBin || GD.doFDF || GD.doFDF2 || GD.doWF || GD.doXWF) // || GD.doFixF)
       GD.nostats = true;
 
    // set -b flags
