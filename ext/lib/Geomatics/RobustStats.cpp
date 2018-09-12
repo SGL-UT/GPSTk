@@ -68,7 +68,7 @@ inline long Stem(double x, double& scale) { return (long(x/scale)); }
 void Robust::StemLeafPlot(ostream& os, double *xd, long nd, string msg)
    throw(Exception)
 {
-   long stem, l, nout=0, s=0, sM, sQ1, sQ3, sOH, sOL;
+   long stem, l, nout=0, s, sM, sQ1, sQ3, sOH, sOL;
    int i, sign, pos, k, leaf;
    unsigned len=0, kk;
    char c;
@@ -116,12 +116,29 @@ void Robust::StemLeafPlot(ostream& os, double *xd, long nd, string msg)
    }
 
       // find length of stem for printing
-   buf = asString<long>(std::abs(Stem(xd[0],scale)));
-   len = buf.size();
-   buf = asString<long>(std::abs(Stem(xd[nd-1],scale)));
-   if(len < buf.size()) len=buf.size();
-   buf = asString<long>(std::abs(Stem(M,scale)));
-   if(len < buf.size()) len=buf.size();
+      // must look through all data b/c leaf==10 can bump up the stem
+   len = 0;
+   for(l=0; l<nd; l++) {
+      // this code is duplicated below in the main loop
+      sign = 1;
+      if(xd[l] < 0.0) sign=-1;
+      stem = Stem(fabs(xd[l]),scale);
+      x = 10*fabs(xd[l]/scale-sign*stem);
+      leaf = short(x + 0.5);
+      if(leaf == 10) {
+         stem++;
+         leaf=0;
+      }
+      stem = sign*stem;
+      buf = asString<long>(stem);
+      if(len < buf.size()) len=buf.size();
+   }
+   //buf = asString<long>(::abs(Stem(xd[0],scale)));
+   //len = buf.size();
+   //buf = asString<long>(::abs(Stem(xd[nd-1],scale)));
+   //if(len < buf.size()) len=buf.size();
+   //buf = asString<long>(::abs(Stem(M,scale)));
+   //if(len < buf.size()) len=buf.size();
 
       // loop through data, adding stems and leaves to plot
    bool start=true;
@@ -150,24 +167,29 @@ void Robust::StemLeafPlot(ostream& os, double *xd, long nd, string msg)
          // Change of stem -> print
          if(start) {                                        // first time through
             os << "Stem and Leaf Plot (scale ";             // print scale
-            i=nscale;
-            if(nscale < 0) {
-               os << "0.";
-               i++;
-               k = 1;
+            if(nscale < -8 || nscale > 8) {
+               os << "1.0e" << nscale;
             }
             else {
-               os << "1";
-               k = -1;
+               i=nscale;
+               if(nscale < 0) {
+                  os << "0.";
+                  i++;
+                  k = 1;
+               }
+               else {
+                  os << "1";
+                  k = -1;
+               }
+               while(i != 0) {
+                  os << "0";
+                  i += k;
+               }
+               if(nscale < 0)
+                  os << "1";
+               else
+                  os << ".0";
             }
-            while(i != 0) {
-               os << "0";
-               i += k;
-            }
-            if(nscale < 0)
-               os << "1";
-            else
-               os << ".0";
             os << ", " << nd << "pts) : ";                  // print npts
             if(msg.size() > 0) os << msg;                   // and message
             s = stem - 1;                                   // save for later
@@ -244,10 +266,10 @@ void Robust::StemLeafPlot(ostream& os, double *xd, long nd, string msg)
 }  // end StemLeafPlot
 
 
-void Robust::QuantilePlot(double *yd, long nd, double *xd)
+void Robust::Quantiles(double *xd, long nd)
    throw(Exception)
 {
-   if(!xd || nd<2 || !yd) {
+   if(!xd || nd<2) {
       Exception e("Invalid input");
       GPSTK_THROW(e);
    }
@@ -258,7 +280,7 @@ void Robust::QuantilePlot(double *yd, long nd, double *xd)
       xd[i] = 4.91*(::pow(f,0.14) - ::pow(1-f,0.14));
    }
 
-}  // end QuantilePlot
+}  // end Quantiles
 
 
 #define SEQUENTIAL 1     // don't see much difference in timing...
@@ -274,7 +296,7 @@ int Robust::RobustPolyFit(double *xd, const double *td, int nd,
 
       const int maxiter=50;
       const double conv_limit=::sqrt(double(nd))*1.e-3;
-      int i,j,niter;
+      int i,j,k,niter;
       double x0=xd[0],t0=td[0],mad,median,conv;
 #ifdef SEQUENTIAL
       double fit,dt;
@@ -304,7 +326,7 @@ int Robust::RobustPolyFit(double *xd, const double *td, int nd,
          Z = Vector<double>(N,0.0);
          // loop over the data
          for(i=0; i<nd; i++) {
-            //if(Wts(i) < 1.e-8) continue;             // ignore if weight is very small
+            //if(Wts(i) < 1.e-8) continue;           // ignore if weight is very small
             A(0,N) = (xd[i]-x0)*Wts(i);              // data
             dt = td[i]-t0;       
             A(0,0) = 1.0*Wts(i);                     // partials
@@ -410,7 +432,7 @@ double gpstk::ADtest(double *xd, const int nd,
 
    try {
       int i;
-      double *save = NULL;
+      double med, *save;
 
       if(save_flag) {
          save = new double[nd];
