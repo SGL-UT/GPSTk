@@ -1,18 +1,16 @@
-GPSTk 2.10.5 Release Notes
+GPSTk 2.10.6 Release Notes
 ========================
 
-Updates since v2.10.4
+Updates since v2.10.5
 ----------------------
 
 **Library Changes*
- * Create a simple class for applying 10-bit week rollover corrections, with room to expand for other similar capabilities
+ * ext/lib/FileHandling/TimeNamedFileStream.hppnow creates directories for the files it outputs. REASON: ext/apps/rfw/rfw.cpp needed handholding to do its job. Now it doesn't.
 
-*New Library Classes*
- * core/lib/TimeHandling/TimeCorrection.*
 
-*New Tests*
- * core/tests/TimeHandling/TimeCorrection_T.cpp
-
+Fixes since v2.10.5
+----------------------
+ * Replaced ICD-GPS-211 with IS-GPS-200 in several comments
 
 
 
