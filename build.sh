@@ -17,7 +17,7 @@
 
 source $(dirname "$BASH_SOURCE")/build_setup.sh
 
-# or export gpstk=/gpstk -- but doesn't work
+# or set gpstk=~/.local/gpstk
 #user_install_prefix+="/gpstk"
 user_install_prefix+="/gpstkDiffProc"
 
@@ -138,7 +138,6 @@ done
 
 shift $(($OPTIND - 1))
 LOG="$build_root"/build.log
-
 
 #----------------------------------------
 # Clean build directory
