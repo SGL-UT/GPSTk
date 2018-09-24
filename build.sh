@@ -17,7 +17,7 @@
 
 source $(dirname "$BASH_SOURCE")/build_setup.sh
 
-# NO doesn't work : or use -u ~/.local/gpstk
+# or export gpstk=/gpstk -- but doesn't work
 #user_install_prefix+="/gpstk"
 user_install_prefix+="/gpstkDiffProc"
 
@@ -35,7 +35,7 @@ examples:
    $ sudo build.sh -s -b /tmp/qwe    # Build and install core to $system_install_prefix
    $ build.sh -tue     # Build, test and install core, external, and python bindings to $gpstk
    $ build.sh -vt  -- -DCMAKE_BUILD_TYPE=debug  # build for running debugger
-   # BWT: for now run with
+   # BWT: -O3 is forced for now (see below); or run with
    # ./build.sh -evx -- -DCMAKE_CXX_FLAGS=-O3
    #  which gives cmake -DCMAKE_CXX_FLAGS=-O3 -DBUILD_PYTHON=OFF -DBUILD_EXT=ON -DDEBUG_SWITCH=ON /local/Code/gpstk
 
