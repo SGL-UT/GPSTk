@@ -18,8 +18,8 @@ addons:
    - swig
    - libncurses5-dev 
    - libncursesw5-dev
-   - gtest
-   - gmock
+   - libgtest-dev
+   - libgmock-dev
 
 script:
  - ./lint_test.sh
