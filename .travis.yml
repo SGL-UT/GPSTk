@@ -16,7 +16,8 @@ addons:
   packages:
    - cmake
    - swig
-   - ncurses-devel
+   - libncurses5-dev 
+   - libncursesw5-dev
 
 before_install:
 - sudo apt-get update -qq
