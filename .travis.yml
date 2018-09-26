@@ -1,0 +1,28 @@
+#.yml file for Github/Travis-CI support
+language: c++
+language: c
+language: python
+
+os: 
+- linux
+- osx
+
+compiler:
+- gcc
+- gcc-c++
+
+addons:
+ apt:
+  packages:
+   - cmake
+   - swig
+   - ncurses-devel
+
+before_install:
+- sudo apt-get update -qq
+- sudo apt-get install --qq cmake swig gcc gcc-c++ ncurses-devel
+
+script:
+ - ./lint_test.sh
+ - ./build.sh -evtcu
+
