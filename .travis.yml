@@ -18,10 +18,8 @@ addons:
    - swig
    - libncurses5-dev 
    - libncursesw5-dev
-
-before_install:
-- sudo apt-get update -qq
-- sudo apt-get install cmake swig
+   - gtest
+   - gmock
 
 script:
  - ./lint_test.sh
