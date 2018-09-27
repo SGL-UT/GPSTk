@@ -37,7 +37,7 @@
 #define LNAVFILTERDATA_HPP
 
 #include <stdint.h>
-#include <NavFilterKey.hpp>
+#include "NavFilterKey.hpp"
 
 namespace gpstk
 {

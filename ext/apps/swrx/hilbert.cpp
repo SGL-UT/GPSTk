@@ -56,8 +56,8 @@ g++ -o hilbert hilbert.o /.../gpstk/dev/apps/swrx/simlib.a /.../gpstk/dev/src/li
 #include <complex>
 #include <fftw3.h>
 #include <vector>
-#include <CommandOption.hpp>
-#include <CommandOptionParser.hpp>
+#include "CommandOption.hpp"
+#include "CommandOptionParser.hpp"
 #include "BasicFramework.hpp"
 #include "IQStream.hpp"
 using namespace gpstk;

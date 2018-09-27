@@ -45,12 +45,12 @@
 #include <map>
 #include <iostream>
 
-#include <Exception.hpp>
-#include <StringUtils.hpp>
-#include <BinUtils.hpp>
+#include "Exception.hpp"
+#include "StringUtils.hpp"
+#include "BinUtils.hpp"
 
-#include <FFData.hpp>
-#include <FFStream.hpp>
+#include "FFData.hpp"
+#include "FFStream.hpp"
 #include "DataStatus.hpp"
 
 namespace gpstk

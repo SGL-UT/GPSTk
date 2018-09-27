@@ -1,7 +1,7 @@
 #ifndef LNAVEMPTYFILTER_HPP
 #define LNAVEMPTYFILTER_HPP
 
-#include <NavFilter.hpp>
+#include "NavFilter.hpp"
 
 namespace gpstk
 {

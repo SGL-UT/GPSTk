@@ -3,7 +3,7 @@
 
 #include <list>
 #include <set>
-#include <NavFilter.hpp>
+#include "NavFilter.hpp"
 
 namespace gpstk
 {

@@ -4,8 +4,8 @@
 #include <iterator>
 #include <stdint.h>
 #include <list>
-#include <ObsID.hpp>
-#include <NavFilterKey.hpp>
+#include "ObsID.hpp"
+#include "NavFilterKey.hpp"
 
 namespace gpstk
 {

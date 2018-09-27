@@ -35,9 +35,9 @@
 //=============================================================================
 
 
-#include <BasicFramework.hpp>
-#include <CommonTime.hpp>
-#include <CommandOptionWithCommonTimeArg.hpp>
+#include "BasicFramework.hpp"
+#include "CommonTime.hpp"
+#include "CommandOptionWithCommonTimeArg.hpp"
 
 using namespace std;
 using namespace gpstk;
