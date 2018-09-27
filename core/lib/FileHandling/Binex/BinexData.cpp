@@ -1448,13 +1448,13 @@ namespace gpstk
                      std::string&        crc) const
    {
       size_t crcDataLen = head.size() + message.size();
-      //size_t crcLen     = 0;
+      size_t crcLen     = 0;
       unsigned long crcTmp = 0;
 
       if (crcDataLen >= 1048576)
       {
             // @todo - Use 16-byte CRC (128-bit MD5 checksum)
-         //crcLen  = 16;
+         crcLen  = 16;
       }
       else // (crcLen < 1048576)
       {
@@ -1471,7 +1471,7 @@ namespace gpstk
                crcTmp = BinUtils::computeCRC((const unsigned char*)message.data(),
                                              message.size(),
                                              params);
-               //crcLen = 2;
+               crcLen = 2;
             }
             else
             {
@@ -1484,7 +1484,7 @@ namespace gpstk
                crcTmp = BinUtils::computeCRC((const unsigned char*)message.data(),
                                              message.size(),
                                              params);
-               //crcLen = 4;
+               crcLen = 4;
             }
          }
          else // Regular CRC
@@ -1504,7 +1504,7 @@ namespace gpstk
                {
                   crcTmp ^= *ptr;
                }
-               //crcLen = 1;
+               crcLen = 1;
             }
             else if (crcDataLen < 4096)
             {
@@ -1517,7 +1517,7 @@ namespace gpstk
                crcTmp = BinUtils::computeCRC((const unsigned char*)message.data(),
                                              message.size(),
                                              params);
-               //crcLen = 2;
+               crcLen = 2;
             }
             else
             {
@@ -1530,7 +1530,7 @@ namespace gpstk
                crcTmp = BinUtils::computeCRC((const unsigned char*)message.data(),
                                              message.size(),
                                              params);
-               //crcLen = 4;
+               crcLen = 4;
             }
          } // Regular CRC
 
