@@ -16,46 +16,55 @@
 //
 
 %define STREAM_HELPER(FORMATNAME)
-%extend gpstk:: ## FORMATNAME ## Stream { 
+%extend gpstk:: ## FORMATNAME ## Stream
+{ 
 
    // methods for the stream itself:
-   static gpstk:: ## FORMATNAME ## Stream* in ## FORMATNAME ## Stream(const std::string fileName) {
+   static gpstk:: ## FORMATNAME ## Stream* in ## FORMATNAME ## Stream(const std::string fileName)
+   {
       FORMATNAME ## Stream * s = new FORMATNAME ## Stream (fileName.c_str());
       return s;
    }
 
-   static gpstk:: ## FORMATNAME ## Stream* out ## FORMATNAME ## Stream(const std::string fileName) {
+   static gpstk:: ## FORMATNAME ## Stream* out ## FORMATNAME ## Stream(const std::string fileName)
+   {
       FORMATNAME ## Stream * s = new FORMATNAME ## Stream (fileName.c_str(), std::ios::out|std::ios::trunc);
       return s;
    }
 
-   static void _remove(gpstk:: ## FORMATNAME ## Stream * ptr) {
+   static void _remove(gpstk:: ## FORMATNAME ## Stream * ptr)
+   {
       delete ptr;
    }
 
    // reader functions:
-   gpstk:: ## FORMATNAME ## Header readHeader() {
+   gpstk:: ## FORMATNAME ## Header readHeader()
+   {
       gpstk:: ##FORMATNAME ## Header head;
       (*($self)) >> head;
       return head;
    }
 
-   gpstk:: ## FORMATNAME ## Data readData() {
+   gpstk:: ## FORMATNAME ## Data readData()
+   {
       gpstk:: ## FORMATNAME ##Data data;
-      if( (*($self)) >> data ) {
+      *($self) >> data;
+
+      if( *($self) )
          return data;
-      } else {
-         gpstk::EndOfFile e(" FORMATNAME ## Stream reached an EOF.");
-         GPSTK_THROW(e);
-      }
+      
+      gpstk::EndOfFile e("## FORMATNAME ## Stream reached an EOF.");
+      GPSTK_THROW(e);
    }
 
    // write functions:
-   void writeHeader(const gpstk:: ## FORMATNAME ## Header & head) {
+   void writeHeader(const gpstk:: ## FORMATNAME ## Header & head)
+   {
       (*($self)) << head;
    }
 
-   void writeData(const gpstk:: ## FORMATNAME ## Data & data) {
+   void writeData(const gpstk:: ## FORMATNAME ## Data & data)
+   {
       (*($self)) << data;
    }
 
@@ -134,54 +143,76 @@ STREAM_HELPER(SP3)
 STREAM_HELPER(Yuma)
 
 
-/* class FORMATNAME ## Dataset(list): */
-/*     def __init__(self, times, typecodes, data=None): */
-/*         list.__init__(self,data) */
-
-/*         self.startTime = times[0] */
-/*         self.__header = FORMATNAME ## Header() */
-/*         for gnssSys in typecodes: */
-/*             self.__header.mapObsTypes[gnssSys] = [FORMATNAME ## ID("%s" % tc) for tc in typecodes[gnssSys])] */
-        
-/*         for i,t in enumerate(times): */
-/*             datum = FORMATNAME ## Data() */
-/*             datum.time = t */
-/*             datum.epochFlag = 0 */
-/*             datum.clockOffset = 0. */
-/*             datum.numSVs = 0 */
-/*             self.append(datum) */
-
-/*     def writeEpoch(self,satID,index,typecode,data,ssi=0,lli=0): */
-/*         sid = FORMATNAME ## SatID(satID) */
-/*         if sid not in self[index].obs: self[index].obs = [] */
-/*         smap = self[index].obs[sid] */
-/*         rd = vrd[self.__header.getObsIndex(typecode)] */
-/*         rd.data, rd.ssi, rd.lli = data, ssi, lli */
 
 %inline %{
-    void writeEpochs(std::vector<gpstk::Rinex3ObsData>& rodarr
-                     , const gpstk::Rinex3ObsHeader& roh
-                     , const gpstk::RinexSatID& svid
-                     , const std::vector<double>& data
-                     , const std::vector<int>& where
-                     , const int rotidx) {
-
+   void writeEpochs(std::vector<gpstk::Rinex3ObsData>& rodarr
+                    , const gpstk::Rinex3ObsHeader& roh
+                    , const gpstk::RinexSatID& svid
+                    , const std::vector<double>& data
+                    , const std::vector<int>& where
+                    , const int rotidx)
+   {
       int i = 0;
       // gpstk::RinexDatum rd;
-      for(std::vector<int>::const_iterator it=where.begin(); it != where.end(); ++it, ++i) {
-
-        // check if there is any sv entries at this epoch and create one if necessary
-        if (rodarr[*it].obs.find(svid) == rodarr[*it].obs.end()) {
-          std::map<std::string , std::vector<RinexObsID> >::const_iterator kt = roh.mapObsTypes.find("G");
-          if (kt == roh.mapObsTypes.end()) { return; }
-          rodarr[*it].obs[svid] = gpstk::Rinex3ObsData::DataMap::mapped_type (kt->second.size());
-          rodarr[*it].numSVs++;
-        }
-        
-        // rd.data = data[i];
-        rodarr[*it].obs[svid][rotidx].data = data[i];
+      for(std::vector<int>::const_iterator it=where.begin(); it != where.end(); ++it, ++i)
+      {
+         // check if there is any sv entries at this epoch and create one if necessary
+         if (rodarr[*it].obs.find(svid) == rodarr[*it].obs.end())
+         {
+            std::map<std::string , std::vector<RinexObsID> >::const_iterator kt = roh.mapObsTypes.find("G");
+            if (kt == roh.mapObsTypes.end()) { return; }
+            rodarr[*it].obs[svid] = gpstk::Rinex3ObsData::DataMap::mapped_type (kt->second.size());
+            rodarr[*it].numSVs++;
+         }
+         
+         // rd.data = data[i];
+         rodarr[*it].obs[svid][rotidx].data = data[i];
       }
-    }
+   }
 %}
 
-
+/* Since the ashtech stream/data is slightly different,
+   it is extended separately
+*/
+%extend gpstk::AshtechStream
+{
+   // methods for the stream itself:
+   static gpstk::AshtechStream* inAshtechStream(const std::string fileName)
+   {
+      AshtechStream *s = new AshtechStream (fileName.c_str());
+      return s;
+   }
+   
+   static gpstk::AshtechStream* outAshtechStream(const std::string fileName)
+   {
+      AshtechStream *s = new AshtechStream (fileName.c_str(), std::ios::out|std::ios::trunc);
+      return s;
+   }
+   
+   static void _remove(gpstk::AshtechStream *ptr)
+   {
+      delete ptr;
+   }
+   
+   // reader functions:
+   gpstk::AshtechData readHeader()
+   {
+      gpstk::AshtechData head;
+      (*($self)) >> head;
+      return head;
+   }
+   
+   gpstk::AshtechData readData()
+   {
+      gpstk::AshtechData data;
+      if( (*($self)) >> data )
+      {
+         return data;
+      }
+      else
+      {
+         gpstk::EndOfFile e("AshtechStream reached an EOF.");
+         GPSTK_THROW(e);
+      }
+   }
+}

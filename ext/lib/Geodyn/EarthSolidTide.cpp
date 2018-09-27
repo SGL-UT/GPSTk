@@ -158,8 +158,8 @@ namespace gpstk
           
       Matrix<double> E = ReferenceFrames::J2kToECEFMatrix(utc);
       
-      Vector<double> moonReci = ReferenceFrames::getJ2kPosition(utc.asTDB(),SolarSystem::Moon)*1000.0;
-      Vector<double> sunReci = ReferenceFrames::getJ2kPosition(utc.asTDB(),SolarSystem::Sun)*1000.0;
+      Vector<double> moonReci = ReferenceFrames::getJ2kPosition(utc.asTDB(),SolarSystem::idMoon)*1000.0;
+      Vector<double> sunReci = ReferenceFrames::getJ2kPosition(utc.asTDB(),SolarSystem::idSun)*1000.0;
 
       Vector<double> moonR = E * moonReci;         // in ecef m
       Vector<double> sunR = E * sunReci;           // in ecef m

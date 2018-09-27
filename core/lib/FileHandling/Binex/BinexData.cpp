@@ -15,7 +15,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -23,13 +23,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -48,6 +48,25 @@ using namespace std;
 
 namespace gpstk
 {
+   #if BYTE_ORDER == LITTLE_ENDIAN
+      const bool BinexData::nativeLittleEndian = true;
+   #else
+      const bool BinexData::nativeLittleEndian = false;
+   #endif
+
+   const BinexData::RecordID  BinexData::INVALID_RECORD_ID    = 0xFFFFFFFF;
+   const BinexData::SyncByte  BinexData::DEFAULT_RECORD_FLAGS = 0x20;
+   const BinexData::SyncByte  BinexData::VALID_RECORD_FLAGS   = 0x38;
+
+   const unsigned long  BinexData::UBNXI::MIN_VALUE = 0;
+   const unsigned long  BinexData::UBNXI::MAX_VALUE = 536870911;
+   const unsigned char  BinexData::UBNXI::MAX_BYTES = 4;
+
+   const long long      BinexData::MGFZI::MIN_VALUE = -1157442765409226759LL;
+   const long long      BinexData::MGFZI::MAX_VALUE =  1157442765409226759LL;
+   const unsigned char  BinexData::MGFZI::MAX_BYTES =  8;
+
+
    // =========================================================================
    // BinexData::UBNXI Methods
    // =========================================================================
@@ -1518,6 +1537,7 @@ namespace gpstk
             // Copy the CRC into the output
          crc.resize(sizeof(crcTmp));
          BinUtils::encodeVarLE(crcTmp, crc);
+         crc.resize(crcLen);
 
       } // (crcLen < 1048576)
 

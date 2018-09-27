@@ -64,7 +64,7 @@ namespace gpstk
    bool isValidRinexObsID(const std::string& id, const char syschar);
 
       /** class RinexObsID is the set of ObsID's which are valid in
-      * RINEX 3.01.  This class simply limits possible values of
+      * RINEX 3.03.  This class simply limits possible values of
       * ObsID, plus a little functionality.
       *
       * @note it depends critically on map validRinexTrackingCodes,
@@ -72,7 +72,7 @@ namespace gpstk
       *
       * This map[sys][freq] = valid codes; e.g.  valid['G'][1]="CSLXPWYMN"
       * Only exception is there is no pseudorange (C) on GPS L1/L2 N (codeless)
-      * RINEX 3.02 document, section 5.1
+      * RINEX 3.03 document, section 5.1
       * sys  freq  code                    ObsID = sys+type+freq+code
       * GPS   L1   C,S,L,X,P,W,Y,M,N       G CLDS 1 CSLXPWYMN (but not C1N)
       *       L2   C,D,S,L,X,P,W,Y,M,N     G CLDS 2 CDSLXPWYMN (but not C2N)
@@ -92,7 +92,10 @@ namespace gpstk
       * QZSS  L1   C,S,L,X,Z               J CLDS 1 CSLXZ
       *       L2   S,L,X                   J CLDS 2 SLX
       *       L5   I,Q,X                   J CLDS 5 IQX
-      *       L6   S,L,X                   J CLDS 6 SLX */
+      *       L6   S,L,X                   J CLDS 6 SLX
+      * IRNSS L5   A,B,C,X                 I CLDS 5 ABCX
+      *       L9   A,B,C,X                 I CLDS 9 ABCX
+      */
    class RinexObsID : public ObsID
    {
    public:

@@ -42,15 +42,31 @@ namespace gpstk
    TimeSystemCorrection()
          : type(Unknown), frTS(TimeSystem::Unknown), toTS(TimeSystem::Unknown)
    {
+      init();
    }
 
 
    TimeSystemCorrection ::
    TimeSystemCorrection(std::string str)
    {
+      init();
       this->fromString(str);
    }
 
+      // Set members to known (even if invalid) values
+   void TimeSystemCorrection::
+   init()
+   {
+      A0 = 0.0;
+      A1 = 0.0;
+      refWeek = 0;
+      refSOW = 0;
+      refYr = 0;
+      refMon = 0;
+      refDay = 0;
+      geoProvider = "";
+      geoUTCid = 0; 
+   }
 
    void TimeSystemCorrection ::
    fromString(const std::string& str)
@@ -117,6 +133,18 @@ namespace gpstk
          frTS = TimeSystem::BDT;
          toTS = TimeSystem::GPS;
       }
+      else if(STR == std::string("IRUT"))
+      { 
+         type = IRUT;
+         frTS = TimeSystem::IRN;
+         toTS = TimeSystem::UTC;
+      }
+      else if(STR == std::string("IRGP"))
+      { 
+         type = IRGP;
+         frTS = TimeSystem::IRN;
+         toTS = TimeSystem::GPS;
+      }
       else
       {
          Exception e("Unknown TimeSystemCorrection type: " + str);
@@ -139,6 +167,8 @@ namespace gpstk
          case QZUT: return std::string("QZS to UTC");
          case BDUT: return std::string("BDT to UTC");
          case BDGP: return std::string("BDT to GPS");
+         case IRUT: return std::string("IRN to UTC");
+         case IRGP: return std::string("IRN to GPS");
          default:   return std::string("ERROR");
       }
    }
@@ -158,6 +188,8 @@ namespace gpstk
          case QZUT: return std::string("QZUT");
          case BDUT: return std::string("BDUT");
          case BDGP: return std::string("BDGP");
+         case IRUT: return std::string("IRUT");
+         case IRGP: return std::string("IRGP");
          default:   return std::string("ERROR");
       }
    }
@@ -210,6 +242,13 @@ namespace gpstk
             s << ", A0 = " << A0 << ", A1 = " << A1
               << ", RefTime = week/sow " << refWeek << "/" << refSOW;
             break;
+         case IRUT:
+            s << ", A0 = " << A0 << ", A1 = " << A1
+              << ", RefTime = week/sow " << refWeek << "/" << refSOW;
+            break;
+         case IRGP:
+            s << ", A0 = " << A0 << ", A1 = " << A1
+              << ", RefTime = week/sow " << refWeek << "/" << refSOW;
          default:
             break;
       }
@@ -280,9 +319,9 @@ namespace gpstk
             dt = ct - refTime;
 
             if(fromTS == TimeSystem::GAL)             // GAL => UTC
-               corr = A0+A1*dt;
-            else                                      // UTC => GAL
                corr = -A0-A1*dt;
+            else                                      // UTC => GAL
+               corr = A0+A1*dt;
 
             break;
 
@@ -297,9 +336,9 @@ namespace gpstk
             }
 
             if(fromTS == TimeSystem::GLO)             // GLO => UTC
-               corr = A0;
-            else                                      // UTC => GLO
                corr = -A0;
+            else                                      // UTC => GLO
+               corr = A0;
 
             break;
 
@@ -361,9 +400,9 @@ namespace gpstk
             dt = ct - refTime;
 
             if(fromTS == TimeSystem::QZS)             // QZS => UTC
-               corr = A0+A1*dt;
-            else                                      // UTC => QZS
                corr = -A0-A1*dt;
+            else                                      // UTC => QZS
+               corr =  A0+A1*dt;
 
             break;
 
@@ -380,9 +419,9 @@ namespace gpstk
             dt = ct - refTime;
 
             if(fromTS == TimeSystem::BDT)             // BDT => UTC
-               corr = A0+A1*dt;
-            else                                      // UTC => BDT
                corr = -A0-A1*dt;
+            else                                      // UTC => BDT
+               corr =  A0+A1*dt;
 
             break;
 
@@ -402,6 +441,43 @@ namespace gpstk
                corr = A0;
             else                                      // GPS => BDT
                corr = -A0;
+
+            break;
+
+         case IRUT:
+            if(fromTS != TimeSystem::IRN && fromTS != TimeSystem::UTC)
+            {
+               GPSTK_THROW(e);
+            }
+
+               // dt = fromTime - refTime
+            gpsws = GPSWeekSecond(refWeek,refSOW);
+            refTime = gpsws.convertToCommonTime();
+            refTime.setTimeSystem(fromTS);
+            dt = ct - refTime;
+
+            if(fromTS == TimeSystem::IRN)             // GPS => UTC
+               corr = -A0-A1*dt;
+            else                                      // UTC => GPS
+               corr = A0+A1*dt;
+
+            break;
+
+         case IRGP:
+            if(fromTS != TimeSystem::IRN && fromTS != TimeSystem::GPS)
+            {
+               GPSTK_THROW(e);
+            }
+
+            gpsws = GPSWeekSecond(refWeek,refSOW);
+            refTime = gpsws.convertToCommonTime();
+            refTime.setTimeSystem(fromTS);
+            dt = ct - refTime;
+
+            if(fromTS == TimeSystem::IRN)             // IRN => GPS
+               corr = -A0-A1*dt;
+            else                                      // GPS => IRn
+               corr = A0+A1*dt;
 
             break;
 

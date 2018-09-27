@@ -50,7 +50,7 @@ tries to estimate the pseudoranges from the correlation delays.
 #include <GPSEphemerisStore.hpp>
 #include <RinexNavStream.hpp>
 #include <RinexNavData.hpp>
-#include <TropModel.hpp>
+#include <GGTropModel.hpp>
 #include <IonoModel.hpp>
 #include <GPSEllipsoid.hpp>
 #include <PRSolution2.hpp>

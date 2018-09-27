@@ -91,6 +91,10 @@ namespace gpstk
          /// Destructor
       virtual ~EngEphemeris() {}
 
+      bool operator==(const EngEphemeris& right) const throw();
+      bool operator!=(const EngEphemeris& right) const throw()
+      { return !(operator==(right)); }
+
          /**
           * Store a subframe in this object.
           * @param subframe ten word navigation subframe stored in the
@@ -286,8 +290,8 @@ namespace gpstk
       short getASAlert(short subframe) const
          throw( gpstk::InvalidRequest );
 
-         /** This function return the GPS week number for the
-          * ephemeris.  this is the full GPS week (ie > 10 bits). */
+         /** This function returns the GPS week number contained in
+          * subframe 1.  this is the full GPS week (ie > 10 bits). */
       short getFullWeek() const
          throw( gpstk::InvalidRequest );
 
@@ -527,7 +531,7 @@ namespace gpstk
           */
 
       EngEphemeris& loadData( const std::string satSysArg,
-                              unsigned short tlm[3], const long how[3],
+                              const unsigned short tlm[3], const long how[3],
                               const short asalert[3],
                               const short Tracker, const short prn,
                               const short fullweek, const short cflags,

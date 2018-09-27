@@ -61,8 +61,8 @@ namespace gpstk
       satSys = "G";
       PRNID = rnd.PRNID;
       sat = RinexSatID(PRNID,SatID::systemGPS);
-      HOWtime = rnd.getHOWWS().sow;
-      weeknum = rnd.getHOWWS().week;
+      xmitTime = rnd.getXmitWS().sow;
+      weeknum = rnd.getXmitWS().week;
       accuracy = rnd.accuracy;
       health = rnd.health;
 
@@ -140,7 +140,7 @@ namespace gpstk
 
       Toc = static_cast<GPSWeekSecond>(gpseph.ctToc).getSOW();
       Toe = static_cast<GPSWeekSecond>(gpseph.ctToe).getSOW();
-      HOWtime = gpseph.HOWtime;
+      xmitTime = static_cast<GPSWeekSecond>(gpseph.transmitTime).getSOW();
       weeknum = static_cast<GPSWeekSecond>(gpseph.transmitTime).getWeek();
 
       accuracy = gpseph.accuracyFlag;
@@ -164,7 +164,7 @@ namespace gpstk
 
       Toc = static_cast<GALWeekSecond>(galeph.ctToc).getSOW();
       Toe = static_cast<GALWeekSecond>(galeph.ctToe).getSOW();
-      HOWtime = galeph.HOWtime;
+      xmitTime = static_cast<GPSWeekSecond>(galeph.transmitTime).getSOW();
       weeknum = static_cast<GPSWeekSecond>(galeph.transmitTime).getWeek();
 
       IODnav = galeph.IODnav;
@@ -182,7 +182,7 @@ namespace gpstk
 
       Toc = static_cast<BDSWeekSecond>(bdseph.ctToc).getSOW();
       Toe = static_cast<BDSWeekSecond>(bdseph.ctToe).getSOW();
-      HOWtime = bdseph.HOWtime;
+      xmitTime = static_cast<BDSWeekSecond>(bdseph.transmitTime).getSOW();
       weeknum = static_cast<BDSWeekSecond>(bdseph.transmitTime).getWeek();
 
       //Cis = -Cis;       // really? Rinex3.02 A13 misprint?
@@ -201,7 +201,7 @@ namespace gpstk
 
       Toc = static_cast<QZSWeekSecond>(qzseph.ctToc).getSOW();
       Toe = static_cast<QZSWeekSecond>(qzseph.ctToe).getSOW();
-      HOWtime = qzseph.HOWtime;
+      xmitTime = static_cast<QZSWeekSecond>(qzseph.transmitTime).getSOW();
       weeknum = static_cast<QZSWeekSecond>(qzseph.transmitTime).getWeek();
 
       PRNID -= 192;                    // RINEX stores PRN minus 192
@@ -232,7 +232,7 @@ namespace gpstk
       time   = ee.getEpochTime();
 
       Toc     = ee.getToc();
-      HOWtime = long(ee.getHOWTime(1));
+      xmitTime = fixSF1xmitSOW(ee.getHOWTime(1));
       weeknum = ee.getFullWeek();
 
       accuracy = ee.getAccuracy();
@@ -352,7 +352,7 @@ namespace gpstk
          if(satSys == "S" || satSys == "R") return;
 
          // GPS GAL QZSS BDS have 7 records, get 4-7
-         if(satSys == "G" || satSys == "E" || satSys == "J" || satSys == "C")
+         if(satSys == "G" || satSys == "E" || satSys == "J" || satSys == "C" || satSys == "I")
             for(int i=4; i<=7; i++) getRecord(i, strm);
       }
       catch(std::exception& e) {
@@ -402,7 +402,7 @@ namespace gpstk
          << satSys << setfill('0') << setw(2) << PRNID << setfill(' ')
          << static_cast<CivilTime>(time).printf(" TOC %Y/%02m/%02d %02H:%02M:%02S")
          << fixed << setprecision(3)
-         << " wk " << weeknum << " HOW " << HOWtime << " Toe " << Toe << endl;
+         << " wk " << weeknum << " xmit " << xmitTime << " Toe " << Toe << endl;
       s << " Toc " << Toc << scientific << setprecision(12)
          << " af0 " << af0 << " af1 " << af1 << " af2 " << af2
          << " Tgd " << Tgd << " Tgd2 " << Tgd2 << endl;
@@ -432,7 +432,7 @@ namespace gpstk
          s << " TOE: " << setw(4) << weeknum
            << " " << fixed << setw(10) << setprecision(3) << Toe
            << " TOC: " << printTime(time,"%4Y %02m %02d %02H %02M %06.3f %P")
-           << " HOWtime: " << setw(6) << HOWtime
+           << " xmitTime: " << setw(6) << xmitTime
            << " IODE/C: " << int(IODE) << "/" << int(IODC) << " hlth: " << health
            << " cflgs: " << codeflgs << " L2P: " << L2Pdata
            << " fit: " << fitint;
@@ -456,14 +456,14 @@ namespace gpstk
          s << " TOE: " << setw(4) << weeknum
            << " " << fixed << setw(10) << setprecision(3) << Toe
            << " TOC: " << printTime(time,"%4Y %02m %02d %02H %02M %06.3f %P")
-           << " HOWtime: " << setw(6) << HOWtime
+           << " xmitTime: " << setw(6) << xmitTime
            << " IODnav: " << int(IODnav) << " hlth: " << health
            << " datasources " << datasources;
       else if(satSys == "C")   // BeiDou
          s << " TOE: " << setw(4) << weeknum
            << " " << fixed << setw(10) << setprecision(3) << Toe
            << " TOC: " << printTime(time,"%4Y %02m %02d %02H %02M %06.3f %P")
-           << " HOWtime: " << setw(6) << HOWtime
+           << " xmitTime: " << setw(6) << xmitTime
            << " IODE/C: " << int(IODE) << "/" << int(IODC);
       else
          s << " (unknown system: " << satSys << ")";
@@ -487,9 +487,9 @@ namespace gpstk
       ee.tlm_message[0] = 0;           
       ee.tlm_message[1] = 0;
       ee.tlm_message[2] = 0;
-      ee.HOWtime[0] = HOWtime;  // RINEX does not actually specify 
-      ee.HOWtime[1] = HOWtime;  // how the transmit time is derived.  Therefore,
-      ee.HOWtime[2] = HOWtime;  // These values may be misleading.  
+      ee.HOWtime[0] = xmitTime + 6;       // GPS standard specifies
+      ee.HOWtime[1] = ee.HOWtime[0] + 6;  // how the transmit time
+      ee.HOWtime[2] = ee.HOWtime[1] + 6;  // relates to HOWtime.
       ee.ASalert[0] = 1;               //AS and alert flags set to 1 (default)
       ee.ASalert[1] = 1;
       ee.ASalert[2] = 1;
@@ -633,58 +633,58 @@ namespace gpstk
       if(!gpse.dataLoadedFlag)
          return gpse;          // throw?
 
-         // Special case to address common problem in IGS aggregate brdc
-         // files.   In some cases (typ. beginning of week) the last
-         // SF 1/2/3 for the previous day is being output with a HOWtime of 
-         // zero.  This leaves it in conflict with the first SF 1/2/3 of
-         // the new day (which typically has a HOW of zero)
-      long adjHOWtime = HOWtime;
-      short adjWeeknum = weeknum;
-      long lToc = (long) Toc;
-      if ((HOWtime%SEC_PER_DAY)==0 && 
-         ((lToc)%SEC_PER_DAY)==0 &&
-           HOWtime == lToc) 
-      {
-         adjHOWtime = HOWtime - 30;  
-         if (adjHOWtime<0)
-         {
-            adjHOWtime += FULLWEEK;  
-            adjWeeknum--;     
-         }
-      }
-         // end special case adjustment (except for use of adjHOWtime below)
-
-      // get the epochs right
-      CommonTime ct = time;
-      //unsigned int year = static_cast<CivilTime>(ct).year;
-
-      // Get week for clock, to build Toc
-      double dt = Toc - adjHOWtime;
-      int week = adjWeeknum;
-      if(dt < -HALFWEEK) week++; else if(dt > HALFWEEK) week--;
-      gpse.ctToc = GPSWeekSecond(week, Toc, TimeSystem::GPS);
-      gpse.ctToc.setTimeSystem(TimeSystem::GPS);
-
       // now load the GPS-specific parts
       gpse.IODC = IODC;
       gpse.IODE = IODE;
       gpse.health = health;
       gpse.accuracyFlag = accuracy;
       gpse.Tgd = Tgd;
-
-      gpse.HOWtime = HOWtime;
-      week = static_cast<GPSWeekSecond>(gpse.ctToe).getWeek();
-      
-      gpse.transmitTime = GPSWeekSecond(adjWeeknum, static_cast<double>(adjHOWtime),
-         TimeSystem::GPS);
-
       gpse.codeflags = codeflgs;
       gpse.L2Pdata = L2Pdata;
 
-      // NB IODC must be set first...
+      // NB IODC must be set first
       gpse.fitint = fitint;
-      gpse.setFitIntervalFlag(int(fitint));  // calls adjustValidity();
+      if (fitint==0) gpse.fitint = 4;
+      if (fitint==1) gpse.fitint = 6; 
+      gpse.setFitIntervalFlag(int(fitint)); 
 
+         // Rinex transmit times are frequently flawed.  For GPS, except for 
+         // the first data set in an upload the beginning of transmission is
+         // deterministic based on the Toe/Toc.   Therefore, 
+         //  a.) For each item with an EVEN Toe/Toc, set
+         // the transmission time to be equivalent to the nominal beginning
+         // of transmission based on the statements in IS-GPS-200
+         // Section 20.3.4.5 and Table 20-XIII.
+         //  b.) If this is the SECOND data set of an upload, 
+         // set the transmission time to be equivalent to the nominal beginning
+         // of transmission based on the statements in IS-GPS-200
+         // Section 20.3.4.5 and Table 20-XIII.
+
+         // If Toc/Toe is an even-hour interval the initial time of transmission
+         // will be Toc/Toe minus 1/2 of the fit interval.
+      long adjXmitTime = xmitTime;
+      short adjWeeknum = weeknum;  
+      long sowToc = static_cast<GPSWeekSecond>(time).sow;
+      if (sowToc%3600==0)
+      {
+         adjXmitTime = sowToc - (gpse.fitint/2 * 3600);
+         if (adjXmitTime<0)
+         {
+            adjXmitTime += FULLWEEK;
+            adjWeeknum--; 
+         } 
+      }    
+
+      // Get week for clock, to build Toc
+      gpse.ctToc = time;
+      gpse.ctToc.setTimeSystem(TimeSystem::GPS);
+
+      gpse.transmitTime = GPSWeekSecond(adjWeeknum, static_cast<double>(adjXmitTime),
+         TimeSystem::GPS);
+      gpse.HOWtime = adjXmitTime + 6;
+
+         // N.B.: The preceding times must be set prior to calling adjustValidity().
+      gpse.adjustValidity();
       return gpse;
    }
 
@@ -732,7 +732,7 @@ namespace gpstk
       //unsigned int year = static_cast<CivilTime>(ct).year;
 
       // Get week for clock, to build Toc
-      double dt = Toc - HOWtime;
+      double dt = Toc - xmitTime;
       int week = weeknum;
       if(dt < -HALFWEEK) week++; else if(dt > HALFWEEK) week--;
       //MGEX NB MGEX data has GPS week numbers in all systems except BeiDou,
@@ -753,9 +753,9 @@ namespace gpstk
       gale.datasources = datasources;
       gale.fitDuration = 4;
 
-      gale.HOWtime = HOWtime;
+//      gale.HOWtime = xmitTime;
       week = static_cast<GALWeekSecond>(gale.ctToe).getWeek();
-      gale.transmitTime = GALWeekSecond(week, static_cast<double>(HOWtime),
+      gale.transmitTime = GALWeekSecond(week, static_cast<double>(xmitTime),
                                        TimeSystem::GAL);
       gale.adjustValidity();
 
@@ -783,7 +783,7 @@ namespace gpstk
       unsigned int year = static_cast<CivilTime>(ct).year;
 
       // Get week for clock, to build Toc
-      double dt = Toc - HOWtime;
+      double dt = Toc - xmitTime;
       int week = weeknum;
       if(dt < -HALFWEEK) week++; else if(dt > HALFWEEK) week--;
       BDSWeekSecond bdsws = BDSWeekSecond(week, Toc, TimeSystem::BDT);
@@ -799,9 +799,9 @@ namespace gpstk
       bdse.Tgd13 = Tgd;
       bdse.Tgd23 = Tgd2;
 
-      bdse.HOWtime = HOWtime;
+//      bdse.HOWtime = xmitTime;
       week = static_cast<BDSWeekSecond>(bdse.ctToe).getWeek();
-      bdse.transmitTime = BDSWeekSecond(week, static_cast<double>(HOWtime),
+      bdse.transmitTime = BDSWeekSecond(week, static_cast<double>(xmitTime),
                                        TimeSystem::BDT);
       bdse.adjustValidity();
 
@@ -828,7 +828,7 @@ namespace gpstk
       unsigned int year = static_cast<CivilTime>(ct).year;
 
       // Get week for clock, to build Toc
-      double dt = Toc - HOWtime;
+      double dt = Toc - xmitTime;
       int week = weeknum;
       if(dt < -HALFWEEK) week++; else if(dt > HALFWEEK) week--;
       QZSWeekSecond qzsws = QZSWeekSecond(week, Toc, TimeSystem::QZS);
@@ -850,9 +850,9 @@ namespace gpstk
       qzse.accuracy = accuracy;
       qzse.Tgd = Tgd;
 
-      qzse.HOWtime = HOWtime;
+//      qzse.HOWtime = xmitTime;
       week = static_cast<QZSWeekSecond>(qzse.ctToe).getWeek();
-      qzse.transmitTime = QZSWeekSecond(week, static_cast<double>(HOWtime),
+      qzse.transmitTime = QZSWeekSecond(week, static_cast<double>(xmitTime),
                                           TimeSystem::QZS);
 
       qzse.codeflags = codeflgs;
@@ -874,7 +874,7 @@ namespace gpstk
       list<double> l;
 
       l.push_back(PRNID);
-      l.push_back(HOWtime);
+      l.push_back(xmitTime);
       l.push_back(weeknum);
       l.push_back(codeflgs);
       l.push_back(accuracy);
@@ -882,7 +882,7 @@ namespace gpstk
       l.push_back(L2Pdata);
       l.push_back(IODC);
       l.push_back(IODE);
-      l.push_back(Toc);
+      l.push_back(Toe);
       l.push_back(af0);
       l.push_back(af1);
       l.push_back(af2);
@@ -986,6 +986,22 @@ namespace gpstk
          if(strm.header.version < 3) line += string(3, ' ');
          else                        line += string(4, ' ');
 
+
+         // Internally (Rinex3NavData), weeknum=week of HOW
+         // In RINEX 3 *files*, weeknum is the week of TOE.
+         double wk = double(weeknum);
+         long xmit = xmitTime;
+         if(xmit - Toe > HALFWEEK)
+         {
+            xmit -= FULLWEEK;
+            wk++;
+         }
+         else if(xmit - Toe < -(HALFWEEK))
+         {
+            xmit += FULLWEEK;
+            wk--;
+         }
+
          if(nline == 1) {
             if(satSys == "R" || satSys == "S") {     // GLO and GEO
                line += doubleToScientific(px,19,12,2);
@@ -1053,14 +1069,6 @@ namespace gpstk
          }
 
          else if(nline == 5) {
-            // Internally (Rinex3NavData), weeknum=week of HOW
-            // In RINEX 3 *files*, weeknum is the week of TOE.
-            double wk = double(weeknum);
-            if(HOWtime - Toe > HALFWEEK)
-               wk++;
-            else if(HOWtime - Toe < -(HALFWEEK))
-               wk--;
-
             if(satSys == "G" || satSys == "J") {      // GPS QZS
                line += doubleToScientific(idot,19,12,2);
                line += doubleToScientific((double)codeflgs,19,12,2);
@@ -1096,8 +1104,7 @@ namespace gpstk
          }
 
          else if(nline == 7) {
-            line += doubleToScientific(HOWtime,19,12,2);
-
+            line += doubleToScientific((xmit),19,12,2);
             if(satSys == "G" || satSys == "J") {
                line += doubleToScientific(fitint,19,12,2);
             }
@@ -1338,7 +1345,7 @@ namespace gpstk
          }
 
          else if(nline == 7) {
-            HOWtime = long(StringUtils::for2doub(line.substr(n,19))); n+=19;
+            xmitTime = long(StringUtils::for2doub(line.substr(n,19))); n+=19;
             if(satSys == "C") {
                IODC    =        StringUtils::for2doub(line.substr(n,19)); n+=19;
             }
@@ -1346,17 +1353,16 @@ namespace gpstk
                fitint  =        StringUtils::for2doub(line.substr(n,19)); n+=19;
             }
    
-            // Some RINEX files have HOW < 0.
-            while(HOWtime < 0) {
-               HOWtime += (long)FULLWEEK;
-               weeknum--;
+            // Some RINEX files have xmitTime < 0.
+            while(xmitTime < 0) {
+               xmitTime += (long)FULLWEEK;
             }
    
             // In RINEX *files*, weeknum is the week of TOE.
-            // Internally (Rinex3NavData), weeknum is week of HOW
-            if(HOWtime - Toe > HALFWEEK)
+            // Internally (Rinex3NavData), weeknum is week of transmission
+            if(xmitTime - Toe > HALFWEEK)
                weeknum--;
-            else if(HOWtime - Toe < -HALFWEEK)
+            else if(xmitTime - Toe < -HALFWEEK)
                weeknum++;
          }
       }

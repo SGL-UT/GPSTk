@@ -10,8 +10,8 @@ cmake_minimum_required( VERSION 2.8.5 )
 
 project( GPSTK )
 set( GPSTK_VERSION_MAJOR "2" )
-set( GPSTK_VERSION_MINOR "9" )
-set( GPSTK_VERSION_PATCH "0" )
+set( GPSTK_VERSION_MINOR "10" )
+set( GPSTK_VERSION_PATCH "6" )
 set( GPSTK_VERSION "${GPSTK_VERSION_MAJOR}.${GPSTK_VERSION_MINOR}.${GPSTK_VERSION_PATCH}" )
 
 # Test data file source directory
@@ -22,9 +22,6 @@ set( GPSTK_TEST_OUTPUT_DIR ${PROJECT_BINARY_DIR}/Testing/Temporary )
 # This sets up variables contining GNU standard installation locations.
 include( GNUInstallDirs )
 
-# For now, override to use 'lib' for the library install dir.
-set( CMAKE_INSTALL_LIBDIR lib )
-
 # Set a filename for collecting exported targets.
 set( EXPORT_TARGETS_FILENAME "GPSTKTargets" )
 
@@ -33,7 +30,9 @@ option( DEBUG_SWITCH "HELP: DEBUG_SWITCH: Default = OFF, print some CMake variab
 option( DEBUG_VERBOSE "HELP: DEBUG_VERBOSE: Default = OFF, print all CMake variable values." OFF )
 option( BUILD_EXT "HELP: BUILD_EXT: SWITCH, Default = OFF, Build the ext library, in addition to the core library." OFF )
 option( TEST_SWITCH "HELP: TEST_SWITCH: SWITCH, Default = OFF, Turn on test mode." OFF )
+option( COVERAGE_SWITCH "HELP: COVERAGE_SWITCH: SWITCH, Default = OFF, Turn on coverage instrumentation." OFF )
 option( BUILD_PYTHON "HELP: BUILD_PYTHON: SWITCH, Default = OFF, Turn on processing of python extension package." OFF )
+option( USE_RPATH "HELP: USE_RPATH: SWITCH, Default= ON, Set RPATH in libraries and binaries." ON )
 
 if( BUILD_PYTHON AND !BUILD_EXT )
     message( WARNING "Combination of BUILD_PYTHON=ON and BUILD_EXT=OFF is not allowed. Python swig bindings depend on gpstk/ext." )
@@ -128,7 +127,18 @@ add_library( gpstk ${STADYN} ${GPSTK_SRC_FILES} ${GPSTK_INC_FILES} )
 install( TARGETS gpstk DESTINATION "${CMAKE_INSTALL_LIBDIR}" EXPORT "${EXPORT_TARGETS_FILENAME}" )
 
 # GPSTk header file install target
-install( FILES ${GPSTK_INC_FILES} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}" )
+install( FILES ${GPSTK_INC_FILES} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/gpstk" )
+
+
+#============================================================
+# GPSTK Library parameters
+#============================================================
+
+# GPSTk doesn't yet follow semantic versioning. Binary compatibility is only within a specific MAJOR.MINOR version, so
+#   SOVERSION has both MAJOR and MINOR for now.
+set_target_properties(gpstk PROPERTIES VERSION "${GPSTK_VERSION_MAJOR}.${GPSTK_VERSION_MINOR}.${GPSTK_VERSION_PATCH}"
+                                       SOVERSION "${GPSTK_VERSION_MAJOR}.${GPSTK_VERSION_MINOR}")
+
 
 #============================================================
 # Testing
@@ -137,6 +147,19 @@ install( FILES ${GPSTK_INC_FILES} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}" )
 if( TEST_SWITCH )
   enable_testing()
 endif( )
+
+#============================================================
+# Coverage
+#============================================================
+
+if( COVERAGE_SWITCH )
+  if (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang"
+    OR ((${CMAKE_CXX_COMPILER_VERSION} VERSION_GREATER "4.9.0" ) AND CMAKE_COMPILER_IS_GNUCXX))
+    message(STATUS "Enabling address sanitizer for debug build")
+    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage" )
+  endif()
+endif( )
+
 
 #----------------------------------------
 # Add sub-directories

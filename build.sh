@@ -73,20 +73,16 @@ OPTIONS:
    -t                   Build and run tests.
    -T                   Build and run tests but don't stop on test failures.
 
+   -g                   Compile code with gcov instrumenation enabled.
+
    -p                   Build supported packages (source, binary, deb,  ...)
 
    -v                   Include debugging output.
-
-Notes:
-   Remember to add user and non-standard locations to your environment. Eg:
-     $ export LD_LIBRARY_PATH=/tmp/test/gpstk/lib:\$LD_LIBRARY_PATH
-     $ export PYTHONPATH=/tmp/test/lib/python2.7/site-packages:\$PYTHONPATH
-
 EOF
 }
 
 
-while getopts "hb:cdepi:j:xP:sutTv" OPTION; do
+while getopts "hb:cdepi:j:xP:sutTgv" OPTION; do
     case $OPTION in
         h) usage
            exit 0
@@ -104,6 +100,7 @@ while getopts "hb:cdepi:j:xP:sutTv" OPTION; do
            ;;
         i) install=1
            install_prefix=$(abspath ${OPTARG})
+           python_install=$install_prefix
            ;;
         j) num_threads=$OPTARG
            ;;
@@ -122,6 +119,8 @@ while getopts "hb:cdepi:j:xP:sutTv" OPTION; do
         t) test_switch=1
            ;;
         T) test_switch=-1
+           ;;
+        g) coverage_switch=1
            ;;
         v) verbose+=1
            ;;
@@ -166,6 +165,7 @@ if ((verbose>0)); then
     log "build_docs      = $(ptof $build_docs)"
     log "build_packages  = $(ptof $build_packages)"
     log "test_switch     = $(ptof $test_switch)"
+    log "coverage_switch = $(ptof $coverage_switch)"
     log "clean           = $(ptof $clean)"
     log "verbose         = $(ptof $verbose)"
     log "num_threads     = $num_threads"
@@ -176,6 +176,12 @@ if ((verbose>0)); then
     log "git id          =" $(get_repo_state $repo)
     log "logfile         =" $LOG
     log
+fi
+
+if ((verbose>2)); then
+    log "============================================================"
+    set >> $LOG
+    log "============================================================"
 fi
 
 if ((verbose>3)); then
@@ -195,7 +201,7 @@ if [ $build_docs ]; then
     log "Generating Doxygen files from C/C++ source ..."
     sed -e "s#^INPUT *=.*#INPUT = $sources#" -e "s#gpstk_sources#$sources#g" -e "s#gpstk_doc_dir#$build_root/doc#g" $repo/Doxyfile >$repo/doxyfoo
     sed -e "s#^INPUT *=.*#INPUT = $sources#" -e "s#gpstk_sources#$sources#g" -e "s#gpstk_doc_dir#$build_root/doc#g" $repo/Doxyfile | doxygen - >"$build_root"/Doxygen.log
-    tar -czf gpstk_doc_cpp.tgz -C doc/html .
+    tar -czf gpstk_doc_cpp.tgz -C "$build_root"/doc/html .
     
     if [[ -z $exclude_python && $build_ext ]] ; then
         log "Generating swig/python doc files from Doxygen output ..."
@@ -218,10 +224,15 @@ args+=${install_prefix:+" -DCMAKE_INSTALL_PREFIX=$install_prefix"}
 args+=${build_ext:+" -DBUILD_EXT=ON"}
 args+=${verbose:+" -DDEBUG_SWITCH=ON"}
 args+=${test_switch:+" -DTEST_SWITCH=ON"}
+args+=${coverage_switch:+" -DCOVERAGE_SWITCH=ON"}
 args+=${build_docs:+" --graphviz=$build_root/doc/graphviz/gpstk_graphviz.dot"}
 
 case `uname` in
     MINGW32_NT-6.1)
+        run cmake $args -G "Visual Studio 14 2015 Win64" $repo
+        run cmake --build . --config Release
+        ;;
+    MINGW64_NT-6.3)
         run cmake $args -G "Visual Studio 14 2015 Win64" $repo
         run cmake --build . --config Release
         ;;
@@ -236,7 +247,10 @@ if [ $test_switch ]; then
       ignore_failures=1
   fi
   case `uname` in
-      MINGW32_NT-6.1)    
+      MINGW32_NT-6.1)
+          run cmake --build . --target RUN_TESTS --config Release
+          ;;
+      MINGW64_NT-6.3)
           run cmake --build . --target RUN_TESTS --config Release
           ;;
       *)
@@ -247,7 +261,16 @@ if [ $test_switch ]; then
 fi
 
 if [ $install ]; then
-    run make install -j $num_threads
+    case `uname` in
+    MINGW32_NT-6.1)
+        run cmake --build . --config Release --target install
+        ;;
+    MINGW64_NT-6.3)
+        run cmake --build . --config Release --target install
+        ;;
+    *)
+        run make install -j $num_threads
+    esac  
 fi
 
 if [ $build_docs ]; then
@@ -267,6 +290,9 @@ fi
 
 if [ $build_packages ]; then
     case `uname` in
+        MINGW64_NT-6.3)
+            run cpack -C Release
+            ;;
         MINGW32_NT-6.1)
             run cpack -C Release
             ;;

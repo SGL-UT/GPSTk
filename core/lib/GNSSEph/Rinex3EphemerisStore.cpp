@@ -346,15 +346,19 @@ namespace gpstk
          // or if one is "Any"
          retTime.setTimeSystem(TimeSystem::Any);
          
-         time = ORBstore.getInitialTime();
-         if(time < retTime) {
-            retTime = time;
-            retTime.setTimeSystem(TimeSystem::Any);
+         if(ORBstore.size()) {
+            time = ORBstore.getInitialTime();
+            if(time < retTime) {
+               retTime = time;
+               retTime.setTimeSystem(TimeSystem::Any);
+            }
          }
-         time = GLOstore.getInitialTime();
-         if(time < retTime) {
-            retTime = time;
-            retTime.setTimeSystem(TimeSystem::Any);
+         if(GLOstore.size()) {
+            time = GLOstore.getInitialTime();
+            if(time < retTime) {
+               retTime = time;
+               retTime.setTimeSystem(TimeSystem::Any);
+            }
          }
          //time = GEOstore.getInitialTime();
          //if(time < retTime) {
@@ -380,17 +384,21 @@ namespace gpstk
          // or if one is "Any"
          retTime.setTimeSystem(TimeSystem::Any);
          
-         time = ORBstore.getInitialTime();
-         if(time > retTime) {
-            retTime = time;
-            retTime.setTimeSystem(TimeSystem::Any);
+         if(ORBstore.size()) {
+            time = ORBstore.getFinalTime();
+            if(time > retTime) {
+               retTime = time;
+               retTime.setTimeSystem(TimeSystem::Any);
+            }
          }
-         time = GLOstore.getInitialTime();
-         if(time > retTime) {
-            retTime = time;
+         if(GLOstore.size()) {
+            time = GLOstore.getFinalTime();
+            if(time > retTime) {
+               retTime = time;
             retTime.setTimeSystem(TimeSystem::Any);
+            }
          }
-         //time = GEOstore.getInitialTime();
+         //time = GEOstore.getFinalTime();
          //if(time > retTime) {
          //   retTime = time;
          //   retTime.setTimeSystem(TimeSystem::Any);
@@ -511,6 +519,7 @@ namespace gpstk
                theList.push_back(Rinex3NavData(*sysptr));
                n++;
             }
+            delete ptr;
          }
       }
       if(keepGLO) {

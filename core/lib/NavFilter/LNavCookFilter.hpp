@@ -33,8 +33,16 @@ namespace gpstk
       virtual void finalize(NavMsgList& msgBitsOut)
       {}
 
+         /// No internal storage of subframe data so return 0.
+      virtual unsigned processingDepth() const throw()
+      { return 0; }
+
          /// Turn an LNAV subframe data upright.
       static void cookSubframe(LNavFilterData* fd);
+
+         /// Return the filter name.
+      virtual std::string filterName() const throw()
+      { return "Cook"; }
    };
 
       //@}

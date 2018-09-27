@@ -136,6 +136,8 @@ namespace gpstk
       CommandOptionVec::size_type index;
       for(index = 0; index < optionVec.size(); index++)
       {
+            // Make sure the parser is set in every option
+         optionVec[index]->parser = this;
             // add short options
          switch (optionVec[index]->optType)
          {
@@ -206,7 +208,7 @@ namespace gpstk
 
             // Solaris uses '?' for all getopt errors.  Linux uses '?'
             // for unknown options and ':' for options that require
-            // arguments but don't have then. That's why the error
+            // arguments but don't have them. That's why the error
             // message is "option error" cause we can't differentiate
             // what the REAL error is...
          if ((cha == '?') || (cha == ':'))
@@ -274,6 +276,13 @@ namespace gpstk
                      pickedOption->order.push_back(order);
                   }
                }
+                  // special handling for help-like options
+               CommandOptionHelp *helpOpt =
+                  dynamic_cast<CommandOptionHelp*>(pickedOption);
+               if (helpOpt)
+               {
+                  helpOptions.push_back(helpOpt);
+               }
             } // itr != end()
             else
             {
@@ -328,6 +337,25 @@ namespace gpstk
       vector<string>::size_type index;
       for(index = 0; index < errorStrings.size(); index++)
          out << errorStrings[index] << endl;
+      return out;
+   }
+
+   std::ostream& CommandOptionParser::printHelp(std::ostream& out,
+                                                bool doPretty, bool firstOnly)
+   {
+      std::vector<CommandOptionHelp*>::size_type index;
+      if (!helpOptions.empty())
+      {
+         if (firstOnly)
+         {
+            helpOptions[0]->printHelp(out, doPretty);
+         }
+         else
+         {
+            for(index = 0; index < helpOptions.size(); index++)
+               helpOptions[index]->printHelp(out, doPretty);
+         }
+      }
       return out;
    }
 

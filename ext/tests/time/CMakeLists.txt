@@ -1,68 +1,11 @@
 ###############################################################################
-# TEST calgps
+# TEST calgps_svg
 ###############################################################################
-
-# These tests check both that options haven't changed and output
-# format hasn't changed.
-
-# Check that -h option is valid.  calgps doesn't use BasicFramework so
-# we don't do the usual checks of verbose and debug and so on.
-add_test(NAME calgps_CmdOpt_1
-         COMMAND ${CMAKE_COMMAND}
-         -DTEST_PROG=$<TARGET_FILE:calgps>
-         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
-         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
-         -DTESTBASE=calgps_CmdOpt_1
-         -DARGS=-h
-         -DNODIFF=1
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/../../../core/tests/testsuccexp.cmake)
-
-# Check that -3 option is valid.
-add_test(NAME calgps_CmdOpt_2
-         COMMAND ${CMAKE_COMMAND}
-         -DTEST_PROG=$<TARGET_FILE:calgps>
-         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
-         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
-         -DTESTBASE=calgps_CmdOpt_2
-         -DARGS=-3
-         -DNODIFF=1
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/../../../core/tests/testsuccexp.cmake)
-
-# Check that -y option is valid.
-add_test(NAME calgps_CmdOpt_3
-         COMMAND ${CMAKE_COMMAND}
-         -DTEST_PROG=$<TARGET_FILE:calgps>
-         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
-         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
-         -DTESTBASE=calgps_CmdOpt_3
-         -DARGS=-y
-         -DNODIFF=1
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/../../../core/tests/testsuccexp.cmake)
-
-# Check that no options is valid.
-add_test(NAME calgps_CmdOpt_4
-         COMMAND ${CMAKE_COMMAND}
-         -DTEST_PROG=$<TARGET_FILE:calgps>
-         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
-         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
-         -DTESTBASE=calgps_CmdOpt_4
-         -DNODIFF=1
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/../../../core/tests/testsuccexp.cmake)
-
-# Check that -Y produces expected output.
-add_test(NAME calgps_Year
-         COMMAND ${CMAKE_COMMAND}
-         -DTEST_PROG=$<TARGET_FILE:calgps>
-         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
-         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
-         -DTESTBASE=calgps_Year
-         -DARGS=-Y\ 2015
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/../../../core/tests/testsuccexp.cmake)
 
 # Check that -p produces expected output.
 add_test(NAME calgps_Postscript
          COMMAND ${CMAKE_COMMAND}
-         -DTEST_PROG=$<TARGET_FILE:calgps>
+         -DTEST_PROG=$<TARGET_FILE:calgps_svg>
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -DTESTBASE=calgps_Postscript
@@ -73,7 +16,7 @@ add_test(NAME calgps_Postscript
 # Check that -n with -p produces expected output.
 add_test(NAME calgps_Postscript_Quiet
          COMMAND ${CMAKE_COMMAND}
-         -DTEST_PROG=$<TARGET_FILE:calgps>
+         -DTEST_PROG=$<TARGET_FILE:calgps_svg>
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -DTESTBASE=calgps_Postscript_Quiet
@@ -84,7 +27,7 @@ add_test(NAME calgps_Postscript_Quiet
 # Check that -e produces expected output.
 add_test(NAME calgps_EPS
          COMMAND ${CMAKE_COMMAND}
-         -DTEST_PROG=$<TARGET_FILE:calgps>
+         -DTEST_PROG=$<TARGET_FILE:calgps_svg>
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -DTESTBASE=calgps_EPS
@@ -95,7 +38,7 @@ add_test(NAME calgps_EPS
 # Check that -s produces expected output.
 add_test(NAME calgps_SVG
          COMMAND ${CMAKE_COMMAND}
-         -DTEST_PROG=$<TARGET_FILE:calgps>
+         -DTEST_PROG=$<TARGET_FILE:calgps_svg>
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -DTESTBASE=calgps_SVG

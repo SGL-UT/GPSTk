@@ -48,6 +48,7 @@
 #include <math.h>
 
 #include "OrbSysGpsL.hpp"
+#include "TimeSystemCorr.hpp"    // For class TimeSystemCorrection
 
 namespace gpstk
 {
@@ -106,8 +107,11 @@ namespace gpstk
       virtual double getUtcOffset(const CommonTime& ct) const;
       virtual double getUtcOffsetModLeapSec(const CommonTime& ct) const;
 
+      virtual gpstk::TimeSystemCorrection getTSC() const
+         throw(InvalidRequest);
+
       virtual void dumpUtcTerse(std::ostream& s = std::cout, 
-              const std::string tform="%02m/%02d/%04Y %02H:%02M:%02S") const
+              const std::string tform="%02m/%02d/%04Y %03j %02H:%02M:%02S") const
          throw( InvalidRequest );
 
          /** Output the contents of this orbit data to the given stream.

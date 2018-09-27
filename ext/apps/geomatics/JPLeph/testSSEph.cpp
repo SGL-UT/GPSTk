@@ -49,6 +49,7 @@
 #include <fstream>
 #include <string>
 #include <time.h>
+#include <cmath>
 
 // GPSTk
 #include "TimeString.hpp"
@@ -56,7 +57,7 @@
 #include "StringUtils.hpp"
 #include "CommonTime.hpp"
 #include "SystemTime.hpp"
-#include "SolarSystem.hpp"
+#include "SolarSystemEphemeris.hpp"
 #include "logstream.hpp"
 
 //------------------------------------------------------------------------------------
@@ -90,7 +91,7 @@ try {
    // locals
    int i,iret=0;
    CommonTime CurrEpoch = SystemTime();
-   SolarSystem SSEphemeris;
+   SolarSystemEphemeris SSEphemeris;
 
    // program name, title and version
    PrgmName = string("testSSEph");
@@ -110,12 +111,15 @@ try {
             << "convertSSEph,\n  and a test file, downloaded from the JPL ftp site, "
             << "containing times and planets\n  with JPL-generated ephemeris "
             << "coordinate values. The coordinates are computed using\n  the binary "
-            << "file and the SolarSystem class, and compared with the JPL values;\n  "
-            << "any difference larger than 10^-13 is noted with the word 'Failure' "
+            << "file and the SolarSystemEphemeris class, and compared with the JPL"
+            << " values;\n  "
+            << "any difference larger than 10^-13 is noted with the word 'Warning' "
             << "at EOL.\n  Note that some large coordinate values may differ at the "
             << "level of 10^-13 because the\n  size of double precision is barely "
             << "able to hold that much precision; compare the\n  computed value "
-            << "with the JPL value (copied as a string) in the output file.\n"
+            << "with the JPL value (copied as a string) in the output file.\n  "
+            << "Differences larger than 10^-12 are atypical and are noted with "
+            << "the word 'Failure'\n  at EOL.\n"
             << "\n Usage: " << PrgmName << " [options]\n Options are:\n"
             << "   --log <file>   name of optional log file (otherwise stderr)\n"
             << "   --file <file>  name of binary SS ephemeris file\n"
@@ -155,7 +159,7 @@ try {
    }
 
       // set the maximum level to be logged
-   ConfigureLOG::ReportLevels() = ConfigureLOG::ReportTimeTags() = true;
+   ConfigureLOG::ReportLevels() = ConfigureLOG::ReportTimeTags() = false;
    if(debug)
       ConfigureLOG::ReportingLevel() = ConfigureLOG::FromString("DEBUG");
    else if(verbose)
@@ -174,12 +178,12 @@ try {
    LOG(VERBOSE) << "Initialize with file " << inputFilename;
    SSEphemeris.initializeWithBinaryFile(inputFilename);
    LOG(VERBOSE) << "End Initialize";
-   LOG(INFO) << "Ephemeris number is " << SSEphemeris.JPLNumber();
+   LOG(INFO) << "Ephemeris number is " << SSEphemeris.EphNumber();
 
    bool foundEOT=false;
    int target,center,coord;
    double JD,PV[6],value,diff;
-   SolarSystem::Planet Target,Center;
+   SolarSystemEphemeris::Planet Target,Center;
    ifstream istrm;
 
    istrm.open(testFilename.c_str(),ios::in);
@@ -208,12 +212,26 @@ try {
          value = for2doub(word);
          word = rightJustify(word,25);
 
-         Target = SolarSystem::Planet(target);
-         Center = SolarSystem::Planet(center);
-         iret = SSEphemeris.computeState(JD, Target, Center, PV, false);
-         if(iret == -1 || iret == -2) continue;   // time is not in file
+         Target = SolarSystemEphemeris::Planet(target);
+         Center = SolarSystemEphemeris::Planet(center);
+         try {
+            SSEphemeris.RelativeInertialPositionVelocity(
+                           JD-MJD_TO_JD, Target, Center, PV, false);
+         } catch(Exception& e) {
+            string what=e.getText(0);
+            if(isLike(what,string("Requested time is before .*"))) iret=1;
+            else if(isLike(what,string("Requested time is after .*"))) iret=2;
+            else if(isLike(what,string("Stream error .*"))) iret=3;
+            else if(isLike(what,string("Ephemeris not initialized .*"))) iret=4;
+            else iret = 5;
+            if(iret==1) continue;
+            if(iret==2) iret = 0;
+            break;
+         }
 
-         diff = fabs(PV[coord]-value);
+         diff = ::fabs(PV[coord]-value);
+         // NB The original JPL code (testeph.f) prints
+         // "Warning" when the difference is > 1.e-13
          LOG(INFO) << fixed << setprecision(1) << setw(9) << JD
             << " " << setw(2) << target //<< " " << setw(2) << Target
             << " " << setw(2) << center //<< " " << setw(2) << Center
@@ -222,26 +240,27 @@ try {
             << " " << word
             << " " << fixed << setprecision(20) << setw(25) << PV[coord]
             << " " << iret
-            << (diff > 1.e-13 ? " Failure" : "")
-            ;
+            << (diff > 1.e-12 ? (diff > 1.e-11 ? " Failure" : " Warning") : "");
+
+         if(diff > 1.e-11) { iret = 6; break; }
       }
 
       if(istrm.eof() || !istrm.good()) break;
    }
 
-   if(iret) { LOG(INFO) << PrgmName << " terminating with error code " << iret
-      << ", which means " <<
-      (iret == 0 ? "OK" : 
-      (iret == -1 ? "last time in file was before first time in ephemeris" :
-      (iret == -2 ? "time is beyond end time of ephemeris" :
-      (iret == -3 ? "file reading failed" : "ephemeris file is corrupted")))) ;}
+   if(iret) { LOG(ERROR) << " Error - " << PrgmName
+      << " terminating with error code " << iret << ": " <<
+      (iret == 1 ? "time is before first time in ephemeris" :
+      (iret == 2 ? "time is beyond end time of ephemeris" :
+      (iret == 3 ? "file reading failed" :
+      (iret == 4 ? "ephemeris file not initialized" :
+      (iret == 5 ? "unknown error" : "accuracy failure"))))); }
 
       // compute run time
    totaltime = clock()-totaltime;
-   LOG(INFO) << PrgmName << " timing: " << fixed << setprecision(9)
+   LOG(INFO) << PrgmName << " iret " << iret
+      << " timing: " << fixed << setprecision(9)
       << double(totaltime)/double(CLOCKS_PER_SEC) << " seconds.";
-   //if(LOGstrm != cout) cout << PrgmName << " timing: " << fixed << setprecision(9)
-   //   << double(totaltime)/double(CLOCKS_PER_SEC) << " seconds." << endl;
 
    return iret;
 }

@@ -83,15 +83,27 @@ namespace gpstk
       string line;
 
       SEMStream& strm = dynamic_cast<SEMStream&>(ffs);
-
+      
       //Grab the first line
       strm.formattedGetLine(line);
-
+      if (line.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890_ .-+") != std::string::npos ||
+          line.length() < 4 || line.length() > 28)
+      {
+         FFStreamError fe("Invalid data");
+         GPSTK_THROW(fe);
+      }
+                  
       numRecords = (short) asInt(line.substr(0,2));
       Title = line.substr(3,24);
 
       //Grab the second line
       strm.formattedGetLine(line);
+      if (line.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890_ .-+") != std::string::npos ||
+          line.length() < 6 || line.length() > 12)
+      {
+         FFStreamError fe("Invalid data");
+         GPSTK_THROW(fe);
+      }
       week = (short) asInt(line.substr(0,4));
       Toa = asInt(line.substr(5,6));
 

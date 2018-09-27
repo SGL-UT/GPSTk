@@ -3,6 +3,7 @@
 //            std::vector wraps
 //////////////////////////////////////////////////
 %template(vector_SatID)      std::vector<gpstk::SatID>;
+%template(vector_ObsID)      std::vector<gpstk::ObsID>;
 %template(vector_double)     std::vector<double>;
 %template(vector_int)        std::vector<int>;
 %template(vector_string)     std::vector<std::string>;

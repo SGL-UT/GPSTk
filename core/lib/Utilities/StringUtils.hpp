@@ -67,6 +67,7 @@
 #endif
 
 #include "Exception.hpp"
+#include "HexDumpDataConfig.hpp"
 
 namespace gpstk
 {
@@ -91,8 +92,8 @@ namespace gpstk
        */
    namespace StringUtils
    {
-         // All the functionality here is inlined since they are
-         // farily small functions.
+         // Most of the functionality here is inlined since they are
+         // fairly small functions.
 
          /// @ingroup stringutilsgroup
          //@{
@@ -106,47 +107,28 @@ namespace gpstk
          /// @ingroup exceptiongroup
       NEW_EXCEPTION_CLASS(StringException, Exception);
 
-         /// Class for configuring the appearance of hexDumpData() output
-      class HexDumpDataConfig
-      {
-      public:
-         HexDumpDataConfig()
-               : showIndex(true), hexIndex(true), upperHex(false),
-                 idxDigits(4), indexWS(1), groupBy(1), groupWS(1),
-                 group2By(8), group2WS(2), bytesPerLine(16), showText(true),
-                 separator(0), textWS(4)
-         {}
-         HexDumpDataConfig(bool ashowIndex, bool ahexIndex, bool aupperHex,
-                           unsigned aidxDigits, unsigned aindexWS,
-                           unsigned agroupBy, unsigned agroupWS,
-                           unsigned agroup2By, unsigned agroup2WS,
-                           unsigned abytesPerLine, bool ashowText,
-                           char aseparator, unsigned atextWS)
-               : showIndex(ashowIndex), hexIndex(ahexIndex),
-                 upperHex(aupperHex), idxDigits(aidxDigits),
-            indexWS(aindexWS), groupBy(agroupBy), groupWS(agroupWS),
-            group2By(agroup2By), group2WS(agroup2WS),
-            bytesPerLine(abytesPerLine), showText(ashowText),
-            separator(aseparator), textWS(atextWS)
-         {}
-         bool showIndex; ///< display index into string on each line.
-         bool hexIndex; ///< if true, use hex index numbers (else decimal).
-         bool upperHex; ///< if true, use upper-case hex digits.
-         unsigned idxDigits; ///< number of positions to use for index.
-         unsigned indexWS; ///< number of whitespace charaters between index and data.
-         unsigned groupBy; ///< number of bytes of data to show between spaces.
-         unsigned groupWS; ///< number of whitespace charaters between groups of hex data.
-         unsigned group2By; ///< number of groups to show per 2nd layer group (0=none, must be multiple of groupBy).
-         unsigned group2WS; ///< number of whitespace charaters between 2nd layer groups.
-         unsigned bytesPerLine; ///< number of bytes to display on a line of output (must be evenly divisible by both groupBy and group2By).
-         bool showText; ///< if true, show text of message (unprintable characters become '.'.
-         char separator; ///< character to offset text with (0 = none).
-         unsigned textWS; ///< number of whitespace characters between hex and text.
-      };
+         /**
+          * Perform a formatted hex-dump of the (potentially) binary
+          * data to the given stream.
+          *
+          * @note argument order reversed from earlier implementations
+          *   to avoid ambiguity of prototypes.
+          *
+          * @param[in] data data to hex-dump.
+          * @param[in,out] s stream to dump data to.
+          * @param[in] cfg formatting configuration.
+          */
+      void hexDumpData(const std::string& data,
+                       std::ostream& s,
+                       const HexDumpDataConfig& cfg = HexDumpDataConfig());
 
          /**
           * Perform a formatted hex-dump of the (potentially) binary
           * data to the given stream.
+          *
+          * @deprecated Set cfg.prefix and use the 3-parameter
+          *   function instead.
+          *
           * @param s stream to dump data to.
           * @param data data to hex-dump.
           * @param indent indents the string by that many spaces.
@@ -155,11 +137,15 @@ namespace gpstk
       inline void hexDumpData(std::ostream& s,
                               const std::string& data,
                               unsigned indent = 0,
-                              HexDumpDataConfig cfg = HexDumpDataConfig());
+                              const HexDumpDataConfig& cfg = HexDumpDataConfig());
 
          /**
           * Perform a formatted hex-dump of the (potentially) binary
           * data to the given stream.
+          *
+          * @deprecated Set cfg.prefix and use the 3-parameter
+          *   function instead.
+          *
           * @param s stream to dump data to.
           * @param data data to hex-dump.
           * @param tag string to put at the beginning of each line of output.
@@ -1160,13 +1146,18 @@ namespace gpstk
          throw(StringException);
 
          /**
-          * Removes indicated words from the string \a s.
-          * \a s is modified as a result.
-          * @param s a string with the words you want removed.
+          * Remove indicated words from the string \a s.
+          * \a s is modified as a result.  Removal of a word begins at the
+          * start of the word and continues to include any delimiters between
+          * the end of the word and the start of the next word.
+          * If the last word in \a s is removed, all trailing delimiters
+          * are removed as well; if all words in \a s are removed, the
+          * resulting string is empty. 
+          * @param s a string with words to be removed.
           * @param first the first word to be removed (the first word is 0).
-          * @param wordsToReplace the number of words you want removed.
-          * @param delimiter the character that marks the start and
-          * end of a word.
+          * @param wordsToReplace the number of words to remove,
+          *    or std::string::npos to remove all subsequent words
+          * @param delimiter character that marks the start and end of words
           * @return a reference to string \a s with the words removed.
           */
       inline std::string& removeWords(std::string& s,
@@ -1335,17 +1326,17 @@ namespace gpstk
                                                       bool trimWhitespace = true,
                                                       bool ignoreEmpty = true);
 
-      /// Split a string on the given delimiter, respecting fields enclosed by
-      /// a pair of double quotes. Quotes are removed in output, and optionally
-      /// also leading and trailing whitespace.
-      /// @param  aStr           the string to be split
-      /// @param  delimiter      character delimiter (not ")
-      /// @param  trimWhitespace will trim the token string, default is true
-      /// @param  ignoreEmpty    will ignore the empty tokens, default is true
+         /// Split a string on the given delimiter, respecting fields enclosed by
+         /// a pair of double quotes. Quotes are removed in output, and optionally
+         /// also leading and trailing whitespace.
+         /// @param  aStr           the string to be split
+         /// @param  delimiter      character delimiter (not ")
+         /// @param  trimWhitespace will trim the token string, default is true
+         /// @param  ignoreEmpty    will ignore the empty tokens, default is true
       inline std::vector<std::string> splitWithDoubleQuotes(const std::string& aStr,
-                                                      const char delimiter = ' ',
-                                                      bool trimWhitespace = true,
-                                                      bool ignoreEmpty = true);
+                                                            const char delimiter = ' ',
+                                                            bool trimWhitespace = true,
+                                                            bool ignoreEmpty = true);
    } // namespace StringUtils
 
 } // namespace gpstk
@@ -1360,141 +1351,25 @@ namespace gpstk
    namespace StringUtils
    {
       inline void hexDumpData(std::ostream& s, const std::string& data,
-                              unsigned indent, HexDumpDataConfig cfg)
+                              unsigned indent, const HexDumpDataConfig& cfg)
       {
          std::string instr(indent, ' ');
          hexDumpData(s, data, instr, cfg);
       }
 
       inline void hexDumpData(std::ostream& s, const std::string& data,
-                              const std::string& tag, HexDumpDataConfig cfg)
+                              const std::string& tag,
+                              HexDumpDataConfig cfg)
       {
-         std::string ascii="";
-         unsigned indent = tag.length();
-         int col = 0;
-         int datasize=data.size();
-         std::string groupws(cfg.groupWS, ' ');
-         std::string group2ws(cfg.group2WS, ' ');
-         std::string indexws(cfg.indexWS, ' ');
-         std::string textws(cfg.textWS, ' ');
-         unsigned linesize;
-
-         if (cfg.groupBy && ((cfg.bytesPerLine % cfg.groupBy) != 0))
-         {
-            s << "hexDumpData: cfg.bytesPerLine % cfg.groupBy != 0"
-              << std::endl;
-            return;
-         }
-         if (cfg.group2By && ((cfg.bytesPerLine % cfg.group2By) != 0))
-         {
-            s << "hexDumpData: cfg.bytesPerLine % cfg.group2By != 0"
-              << std::endl;
-            return;
-         }
-         if (cfg.groupBy && ((cfg.group2By % cfg.groupBy) != 0))
-         {
-            s << "hexDumpData: cfg.group2By % cfg.groupBy != 0"
-              << std::endl;
-            return;
-         }
-
-            // line format:
-            // <tag><index>:<indexws><group1byte1>...<group1byte[groupBy]><groupws>...<group[group2By]byte1>...<group[group2By]byte[groupBy]><group2ws>....<byte[bytesPerLine]><textws><separator><text><separator>\n
-         linesize = indent;
-         if (cfg.showIndex)
-            linesize += cfg.idxDigits + 1 + cfg.indexWS;
-         linesize += cfg.bytesPerLine * 2;
-         unsigned w2 = 0;
-         unsigned w1 = 0;
-         if (cfg.group2By)
-            w2 = (cfg.bytesPerLine / cfg.group2By) - 1;
-         if (cfg.groupBy)
-            w1 = (cfg.bytesPerLine / cfg.groupBy) - w2 - 1;
-         if (cfg.groupBy > 0)
-            linesize += cfg.groupWS * w1;
-         if (cfg.group2By > 0)
-            linesize += cfg.group2WS * w2;
-            /*
-              linesize doesn't include text stuff
-         if (cfg.showText)
-            linesize += cfg.textWS + cfg.bytesPerLine;
-         if (cfg.separator)
-            linesize += 2;
-            */
-
-         for (int i=0; i<datasize; i++)
-         {
-            if (i%cfg.bytesPerLine==0)
-            {
-               s << tag;
-               col = indent;
-               if (cfg.showIndex)
-               {
-                  if (cfg.hexIndex)
-                  {
-                     s << std::hex;
-                     if (cfg.upperHex)
-                        s << std::uppercase;
-                     else
-                        s << std::nouppercase;
-                  }
-                  else
-                     s << std::dec;
-                  s << std::setfill('0');
-                  s << std::setw(cfg.idxDigits) << i << ":" << indexws;
-                  s << std::dec << std::nouppercase;
-               }
-               col += cfg.idxDigits + 1 + cfg.indexWS;
-            }
-            unsigned char c=data[i];
-            if (isprint(c))
-               ascii += c;
-            else
-               ascii += '.';
-            if (cfg.upperHex)
-               s << std::uppercase;
-            else
-               s << std::nouppercase;
-            s << std::hex << std::setw(2) << (int)c << std::dec
-              << std::nouppercase;
-            col += 2;
-            if (((i % cfg.bytesPerLine) == (cfg.bytesPerLine-1)) ||
-                (i == (datasize-1)))
-            {
-               if (cfg.showText)
-               {
-                  int extra = linesize-col;
-                  std::string space(extra, ' ');
-                  s << space << textws;
-                  if (cfg.separator)
-                     s << cfg.separator;
-                  s << ascii;
-                  if (cfg.separator)
-                     s << cfg.separator;
-                  s << std::endl;
-               }
-                  // this *should* be updated at the beginning of the loop
-                  //col=indent+6;
-               ascii.erase();
-            }
-            else if (cfg.group2By && ((i % cfg.group2By) == (cfg.group2By-1)))
-            {
-               s << group2ws;
-               col += cfg.group2WS;
-            }
-            else if (cfg.groupBy && ((i % cfg.groupBy) == (cfg.groupBy-1)))
-            {
-               s << groupws;
-               col += cfg.groupWS;
-            }
-         }
+         cfg.prefix = tag;
+         hexDumpData(data, s, cfg);
       }
 
          // Keep searching for aString at the start of s
          // until num == 0 or aString is not found at the start of s
       inline std::string& stripLeading(std::string& s,
-                                  const std::string& aString,
-                                  std::string::size_type num)
+                                       const std::string& aString,
+                                       std::string::size_type num)
          throw(StringException)
       {
          try
@@ -1521,8 +1396,8 @@ namespace gpstk
          // keep searching for aString at the end of s
          // until aString isn't found there or num == 0
       inline std::string& stripTrailing(std::string& s,
-                                   const std::string& aString,
-                                   std::string::size_type num)
+                                        const std::string& aString,
+                                        std::string::size_type num)
          throw(StringException)
       {
          try
@@ -1551,8 +1426,8 @@ namespace gpstk
       }
 
       inline std::string& strip(std::string& s,
-                           const std::string& aString,
-                           std::string::size_type num)
+                                const std::string& aString,
+                                std::string::size_type num)
          throw(StringException)
       {
          stripLeading(s, aString, num);
@@ -1561,9 +1436,9 @@ namespace gpstk
       }
 
       inline std::string translate(const std::string& aString,
-                              const std::string& inputChars,
-                              const std::string& outputChars,
-                              const char pad)
+                                   const std::string& inputChars,
+                                   const std::string& outputChars,
+                                   const char pad)
       {
          std::string rv = aString;
          std::string::size_type aspos = 0;
@@ -1591,9 +1466,9 @@ namespace gpstk
       }
 
       inline std::string change(const std::string& aString,
-                           const std::string& inputString,
-                           const std::string& outputString,
-                           std::string::size_type startPos, unsigned numChanges)
+                                const std::string& inputString,
+                                const std::string& outputString,
+                                std::string::size_type startPos, unsigned numChanges)
       {
          std::string rv(aString);
          change(rv, inputString, outputString, startPos, numChanges);
@@ -1601,9 +1476,10 @@ namespace gpstk
       }
 
       inline std::string& change(std::string& aString, const std::string& inputString,
-                            const std::string& outputString,
-                            std::string::size_type startPos, unsigned numChanges)
+                                 const std::string& outputString,
+                                 std::string::size_type startPos, unsigned numChanges)
       {
+         if(inputString.empty() || aString.empty()) return aString;
          unsigned count = 0;
          std::string::size_type opos = startPos;
 
@@ -1626,8 +1502,8 @@ namespace gpstk
          // if the string is bigger than length, truncate it from the left.
          // otherwise, add pad characters to it's left.
       inline std::string& rightJustify(std::string& s,
-                                  const std::string::size_type length,
-                                  const char pad)
+                                       const std::string::size_type length,
+                                       const char pad)
          throw(StringException)
       {
          try
@@ -1652,8 +1528,8 @@ namespace gpstk
          // if the string is bigger than length, truncate it from the right.
          // otherwise, add pad characters to it's right.
       inline std::string& leftJustify(std::string& s,
-                                 const std::string::size_type length,
-                                 const char pad)
+                                      const std::string::size_type length,
+                                      const char pad)
          throw(StringException)
       {
          try
@@ -1678,8 +1554,8 @@ namespace gpstk
          // leftJustify if s is bigger than length.
          // otherwise, add pad to the left and right of s.
       inline std::string& center(std::string& s,
-             const std::string::size_type length,
-             const char pad)
+                                 const std::string::size_type length,
+                                 const char pad)
          throw(StringException)
       {
          try
@@ -1848,7 +1724,7 @@ namespace gpstk
       }
 
          /// @todo Need to find a way to combine this with x2d.
-          // hex to a long.
+         // hex to a long.
       inline unsigned int x2uint(const std::string& s)
          throw (StringException)
       {
@@ -1929,8 +1805,8 @@ namespace gpstk
       }
 
       inline std::string& replaceAll(std::string& s,
-                                const std::string& oldString,
-                                const std::string& newString)
+                                     const std::string& oldString,
+                                     const std::string& newString)
          throw(StringException)
       {
          try
@@ -2021,49 +1897,49 @@ namespace gpstk
                                  const char anyChar)
          throw(StringException)
       {
-		  std::string thisPattern(aPattern);
-		  std::string thisStr(s);
+         std::string thisPattern(aPattern);
+         std::string thisStr(s);
 
-		  // check if something other than the regex standard
-		  // characters (*,+,.) is used for those variables
-		  if (zeroOrMore != '*')
-		  {
-			  replaceAll(thisPattern, "*", "\\*");
-			  replaceAll(thisPattern, std::string(1, zeroOrMore), "*");
-		  }
-		  if (oneOrMore != '+')
-		  {
-			  replaceAll(thisPattern, "+", "\\+");
-			  replaceAll(thisPattern, std::string(1, oneOrMore), "+");
-		  }
-		  if (anyChar != '.')
-		  {
-			  replaceAll(thisPattern, ".", "\\.");
-			  replaceAll(thisPattern, std::string(1, anyChar), ".");
-		  }
+            // check if something other than the regex standard
+            // characters (*,+,.) is used for those variables
+         if (zeroOrMore != '*')
+         {
+            replaceAll(thisPattern, "*", "\\*");
+            replaceAll(thisPattern, std::string(1, zeroOrMore), "*");
+         }
+         if (oneOrMore != '+')
+         {
+            replaceAll(thisPattern, "+", "\\+");
+            replaceAll(thisPattern, std::string(1, oneOrMore), "+");
+         }
+         if (anyChar != '.')
+         {
+            replaceAll(thisPattern, ".", "\\.");
+            replaceAll(thisPattern, std::string(1, anyChar), ".");
+         }
 
 #if defined(_WIN32) && _MSC_VER >= 1700
-		  try
-		  {
-			  std::regex reg (thisPattern);
+         try
+         {
+            std::regex reg (thisPattern);
 
-			  std::smatch sm;
-			  if(std::regex_search(thisStr,sm,reg,
-				  std::regex_constants::match_not_bol|
-				  std::regex_constants::match_not_eol))
-			  {
-				  return sm.str();
-			  }
-			  else
-			  {
-				  return std::string();
-			  }
-		  }
-		  catch(std::regex_error& e)
-		  {
-			  Exception E(std::string("std::regex_error: ") + e.what() );
-			  GPSTK_THROW(E);
-		  }
+            std::smatch sm;
+            if(std::regex_search(thisStr,sm,reg,
+                                 std::regex_constants::match_not_bol|
+                                 std::regex_constants::match_not_eol))
+            {
+               return sm.str();
+            }
+            else
+            {
+               return std::string();
+            }
+         }
+         catch(std::regex_error& e)
+         {
+            Exception E(std::string("std::regex_error: ") + e.what() );
+            GPSTK_THROW(E);
+         }
 
 #else
 
@@ -2109,31 +1985,31 @@ namespace gpstk
       {
 #if defined(_WIN32) && _MSC_VER >= 1700
 
-          std::string rv(fmt);
+         std::string rv(fmt);
 
-        try
-        {
-	        std::regex reg(pat);
+         try
+         {
+            std::regex reg(pat);
 
-	        std::smatch m;
-	        while (std::regex_search (rv,m,reg))
-	        {
-		        std::string mac = m.str();
-		        mac = StringUtils::replaceAll(mac, rep.substr(0,1), rep.substr(1));
+            std::smatch m;
+            while (std::regex_search (rv,m,reg))
+            {
+               std::string mac = m.str();
+               mac = StringUtils::replaceAll(mac, rep.substr(0,1), rep.substr(1));
 
-		        char buffer[1024];
-		        sprintf(buffer, mac.c_str(), to);
+               char buffer[1024];
+               sprintf(buffer, mac.c_str(), to);
 
-		        rv.replace(m.position(), m.length(), std::string(buffer));
-	        }
-        }
-        catch(std::regex_error& e)
-        {
-	        Exception E(std::string("std::regex_error:")+e.what());
-	        GPSTK_THROW(E);
-        }
+               rv.replace(m.position(), m.length(), std::string(buffer));
+            }
+         }
+         catch(std::regex_error& e)
+         {
+            Exception E(std::string("std::regex_error:")+e.what());
+            GPSTK_THROW(E);
+         }
 
-        return rv;
+         return rv;
 #else
          regex_t re;
          const size_t bufferSize = 513;
@@ -2210,7 +2086,7 @@ namespace gpstk
       }
 
       inline std::string memToString(const void* p,
-                                const std::string::size_type size)
+                                     const std::string::size_type size)
       {
          unsigned char* q = (unsigned char*)p;
          std::string s(size,'\0');
@@ -2222,7 +2098,7 @@ namespace gpstk
       }
 
       inline std::string firstWord(const std::string& s,
-                              const char delimiter)
+                                   const char delimiter)
          throw(StringException)
       {
          try
@@ -2285,17 +2161,19 @@ namespace gpstk
       }
 
       inline std::string words(const std::string& s,
-                          const std::string::size_type firstWord,
-                          const std::string::size_type numWords,
-                          const char delimiter)
+                               const std::string::size_type firstWord,
+                               const std::string::size_type numWords,
+                               const char delimiter)
          throw(StringException)
       {
          try
          {
             if ((firstWord == 0) && (numWords == 1))
                return StringUtils::firstWord(s, delimiter);
+               
             if (numWords == 0)
                return "";
+               
             std::string::size_type wordNum = 0;
             std::string::size_type pos = 0, startPos = 0;
 
@@ -2307,17 +2185,20 @@ namespace gpstk
             {
                if (wordNum == firstWord)
                   startPos = pos;
+                  
                   // get first delimter after word wordNum
                pos = s.find(delimiter, pos);
                if (((int)numWords != -1)
-                  && ((int)wordNum == (int)(firstWord + (numWords-1))))
-                     break;
+                   && ((int)wordNum == (int)(firstWord + (numWords-1))))
+                  break;
+                  
                pos = s.find_first_not_of(delimiter, pos);
                wordNum++;
             }
 
             if (pos == std::string::npos)
-               return s.substr(startPos);
+               return ((wordNum >= firstWord) ? s.substr(startPos) : "");
+               
             return s.substr(startPos, pos-startPos);
          }
          catch(StringException &e)
@@ -2332,7 +2213,7 @@ namespace gpstk
       }
 
       inline std::string stripFirstWord(std::string& s,
-                                   const char delimiter)
+                                        const char delimiter)
          throw(StringException)
       {
          try
@@ -2420,34 +2301,34 @@ namespace gpstk
          {
             currentDelimiter = delimiter;
 
-            // if first character is a quote, set current delimiter to it
+               // if first character is a quote, set current delimiter to it
             if(aStr.compare(begPos,1,"\"") == 0) currentDelimiter = '"';
             if(aStr.compare(begPos,1,"\'") == 0) currentDelimiter = '\'';
 
-            // find next delimiter
+               // find next delimiter
             endPos = aStr.find_first_of(currentDelimiter,
-                                 begPos + (currentDelimiter == delimiter ? 0 : 1));
+                                        begPos + (currentDelimiter == delimiter ? 0 : 1));
 
-            // if this token is quoted, make sure to capture the trailing quote
-            // if(delimiter is a quote and second quote is found) include it
+               // if this token is quoted, make sure to capture the trailing quote
+               // if(delimiter is a quote and second quote is found) include it
             if(currentDelimiter != delimiter && std::string::npos != endPos) endPos++;
 
-            // length of new field
+               // length of new field
             tokenLength = endPos - begPos;
-            // copy out the field
+               // copy out the field
             std::string token = aStr.substr(begPos, tokenLength);
 
-            // if quoted, remove the quotes
+               // if quoted, remove the quotes
             if(currentDelimiter != delimiter)
                token = gpstk::StringUtils::strip(token,currentDelimiter);
 
-            // remove whitespace at beginning and end
+               // remove whitespace at beginning and end
             if(trimWhitespace) token = gpstk::StringUtils::strip(token);
 
-            // save it
+               // save it
             if(!token.empty() || !ignoreEmpty) toReturn.push_back(token);
 
-            // find the next token, and go back to delimiter
+               // find the next token, and go back to delimiter
             begPos = endPos;
             if(begPos != std::string::npos) begPos++;
             endPos = begPos;
@@ -2457,9 +2338,9 @@ namespace gpstk
       }
 
       inline std::vector<std::string> splitWithDoubleQuotes(const std::string& aStr,
-                                                      const char delimiter,
-                                                      bool trimWhitespace,
-                                                      bool ignoreEmpty)
+                                                            const char delimiter,
+                                                            bool trimWhitespace,
+                                                            bool ignoreEmpty)
       {
          std::vector<std::string> toReturn;
          std::string::size_type begPos = 0;
@@ -2474,33 +2355,33 @@ namespace gpstk
          {
             currentDelimiter = delimiter;
 
-            // if first character is a quote, set current delimiter to it
+               // if first character is a quote, set current delimiter to it
             if(aStr.compare(begPos,1,"\"") == 0) currentDelimiter = '"';
 
-            // find next delimiter
+               // find next delimiter
             endPos = aStr.find_first_of(currentDelimiter,
-                                 begPos + (currentDelimiter == delimiter ? 0 : 1));
+                                        begPos + (currentDelimiter == delimiter ? 0 : 1));
 
-            // if this token is quoted, make sure to capture the trailing quote
-            // if(delimiter is a quote and second quote is found) include it
+               // if this token is quoted, make sure to capture the trailing quote
+               // if(delimiter is a quote and second quote is found) include it
             if(currentDelimiter != delimiter && std::string::npos != endPos) endPos++;
 
-            // length of new field
+               // length of new field
             tokenLength = endPos - begPos;
-            // copy out the field
+               // copy out the field
             std::string token = aStr.substr(begPos, tokenLength);
 
-            // if quoted, remove the quotes
+               // if quoted, remove the quotes
             if(currentDelimiter != delimiter)
                token = gpstk::StringUtils::strip(token,currentDelimiter);
 
-            // remove whitespace at beginning and end
+               // remove whitespace at beginning and end
             if(trimWhitespace) token = gpstk::StringUtils::strip(token);
 
-            // save it
+               // save it
             if(!token.empty() || !ignoreEmpty) toReturn.push_back(token);
 
-            // find the next token, and go back to delimiter
+               // find the next token, and go back to delimiter
             begPos = endPos;
             if(begPos != std::string::npos) begPos++;
             endPos = begPos;
@@ -2510,45 +2391,55 @@ namespace gpstk
       }
 
       inline std::string& removeWords(std::string& s,
-                                 const std::string::size_type first,
-                                 const std::string::size_type wordsToReplace,
-                                 const char delimiter)
+                                      const std::string::size_type first,
+                                      const std::string::size_type wordsToReplace,
+                                      const char delimiter)
          throw(StringException)
       {
          try
          {
-            std::string temp(s);
-            std::string::size_type thisWord;
+            std::string::size_type rmStart = std::string::npos;
+            std::string::size_type rmCount = std::string::npos;
+            
+               // Find start of word 0
+            std::string::size_type sPos = s.find_first_not_of(delimiter);
 
-               // empty out s.  add the new parts of s as they are parsed
-            s.erase(0, std::string::npos);
-
-               // copy the part of the string through word 'first'
-               // by appending any delimiters then appending
-               // a word for however many words we're keeping.
-            for(thisWord = 0; thisWord < first; thisWord++)
+            for (std::string::size_type thisWord = 0;
+                 sPos != std::string::npos;
+                 thisWord++)
             {
-               s.append(temp.find_first_not_of(delimiter),delimiter);
-               stripLeading(temp, delimiter);
-               s.append(firstWord(temp));
-               stripLeading(temp, firstWord(temp));
+                  // Check for start and end of range to remove
+               if (thisWord == first)
+               {
+                  rmStart = sPos;
+                  if (wordsToReplace == std::string::npos)
+                  {
+                     break;
+                  }
+               }
+               else if (  (wordsToReplace != std::string::npos)
+                       && (thisWord >= first + wordsToReplace))
+               {
+                  rmCount = sPos - rmStart;
+                  break;
+               }               
+                  // Find the end of the current word
+               sPos = s.find(delimiter, sPos);
+               if (sPos != std::string::npos)
+               {
+                     // Find start of next word
+                  sPos = s.find_first_not_of(delimiter, sPos);
+               }
             }
-
-               // skip over the number of words to replace, making
-               // sure to stop when there's no more string left
-               // to skip
-            for(thisWord = 0;
-                (thisWord < wordsToReplace) &&
-                   (temp.length() != 0);
-                thisWord++)
+               // Remove the words if they were present
+            if (rmStart != std::string::npos)
             {
-               stripLeading(temp, delimiter);
-               stripLeading(temp, firstWord(temp));
-            }
-
-               // add on any extra words at the end
-            s.append(temp);
-
+               s.erase(rmStart, rmCount);
+               if (rmCount == std::string::npos)
+               {
+                  stripTrailing(s, delimiter);
+               }
+            }         
             return s;
          }
          catch(StringException &e)
@@ -2563,10 +2454,10 @@ namespace gpstk
       }
 
       inline std::string doub2sci(const double& d,
-                             const std::string::size_type length,
-                             const std::string::size_type expLen,
-                             const bool showSign,
-              const bool checkSwitch)
+                                  const std::string::size_type length,
+                                  const std::string::size_type expLen,
+                                  const bool showSign,
+                                  const bool checkSwitch)
       {
          std::string toReturn;
          short exponentLength = expLen;
@@ -2602,46 +2493,46 @@ namespace gpstk
                                             const std::string::size_type explen,
                                             bool showPlus)
       {
-         // get final exp length, precision and total length
+            // get final exp length, precision and total length
          std::string::size_type elen = (explen > 0 ? (explen < 3 ? explen : 3) : 1);
          std::string::size_type prec = (precision > 0 ? precision : 1);
          std::string::size_type leng = (length > 0 ? length : 1);
 
-         // i will be minimum length required with prec==1: force leng if necessary
+            // i will be minimum length required with prec==1: force leng if necessary
          size_t i = (int(leng) - int(elen) - 4);
          if(showPlus) i--;
          if(i > 0 && leng < i) leng = std::string::size_type(i);
 
-         // set up the stream for writing
+            // set up the stream for writing
          std::stringstream ss;
          ss << std::scientific << std::setprecision(prec);
          if(showPlus) ss << std::showpos;
 
-         // write d to a string with precision, sign and in scientific notation
+            // write d to a string with precision, sign and in scientific notation
          ss << d;
 
-         // now read that string
+            // now read that string
          std::string str1,str2;
          ss >> str1;
          std::string::size_type pos = str1.find_first_of("EDed");    // find exponent
          str2 = str1.substr(0,pos+2);        // str2 = +123.2345e+
          str1 = str1.substr(pos+2);          // str1 = exponent only
 
-         // make the exponent length elen
+            // make the exponent length elen
          str2 += StringUtils::rightJustify(
-                     StringUtils::asString(StringUtils::asInt(str1)),elen,'0');
+            StringUtils::asString(StringUtils::asInt(str1)),elen,'0');
 
-         // pad if necessary
+            // pad if necessary
          if(str2.length() < leng) str2 = StringUtils::rightJustify(str2,leng);
 
          return str2;
       }
 
       inline std::string& sci2for(std::string& aStr,
-                             const std::string::size_type startPos,
-                             const std::string::size_type length,
-                             const std::string::size_type expLen,
-              const bool checkSwitch)
+                                  const std::string::size_type startPos,
+                                  const std::string::size_type length,
+                                  const std::string::size_type expLen,
+                                  const bool checkSwitch)
          throw(StringException)
       {
          try
@@ -2650,9 +2541,9 @@ namespace gpstk
             int expAdd = 0;
             std::string exp;
             long iexp;
-         //If checkSwitch is false, always redo the exponential. Otherwise,
-         //set it to false.
-       bool redoexp=!checkSwitch;
+               //If checkSwitch is false, always redo the exponential. Otherwise,
+               //set it to false.
+            bool redoexp=!checkSwitch;
 
                // Check for decimal place within specified boundaries
             if ((idx == 0) || (idx >= (startPos + length - expLen - 1)))
@@ -2688,12 +2579,12 @@ namespace gpstk
                }
             }
                // Change the exponent character to D normally, or E of checkSwitch is false.
-       if (checkSwitch)
+            if (checkSwitch)
                aStr[idx] = 'D';
-       else
+            else
                aStr[idx] = 'E';
 
-          // Change the exponent itself
+               // Change the exponent itself
             if (redoexp)
             {
                exp = aStr.substr(idx + 1, std::string::npos);
@@ -2719,10 +2610,10 @@ namespace gpstk
                aStr.insert((std::string::size_type)0, 1, ' ');
             }
 
-          //If checkSwitch is false, add on one leading zero to the string
-       if (!checkSwitch)
-       {
-          aStr.insert((std::string::size_type)1, 1, '0');
+               //If checkSwitch is false, add on one leading zero to the string
+            if (!checkSwitch)
+            {
+               aStr.insert((std::string::size_type)1, 1, '0');
             }
 
 
@@ -2741,9 +2632,9 @@ namespace gpstk
 
 
       inline std::string doub2for(const double& d,
-                             const std::string::size_type length,
-                             const std::string::size_type expLen,
-              const bool checkSwitch)
+                                  const std::string::size_type length,
+                                  const std::string::size_type expLen,
+                                  const bool checkSwitch)
          throw(StringException)
       {
          try
@@ -2858,62 +2749,54 @@ namespace gpstk
       {
          try
          {
-               // chop aStr up into words based on wordDelim
-            std::list<std::string> wordList;
-            std::string tempStr(aStr);
-            stripLeading(tempStr, wordDelim);
-            while (!tempStr.empty())
+            std::string newStr(firstIndent);
+               // positions of word and line delimiters in aStr
+            std::string::size_type wordPos = 0, linePos = 0, curPos = 0,
+               curLineLen = newStr.length(), minPos = 0, wordLen = 0;
+            bool wordDelimited = false;
+            while (curPos != std::string::npos)
             {
-               std::string theFirstWord = firstWord(tempStr,wordDelim);
-               wordList.push_back(theFirstWord);
-               stripLeading(tempStr, theFirstWord);
-               stripLeading(tempStr, wordDelim);
-            }
-
-               // now reassemble the words into sentences
-            std::string toReturn;
-            std::string thisLine = firstIndent, lastLine;
-            while (!wordList.empty())
-            {
-               lastLine = thisLine;
-               if (!lastLine.empty())
-                  thisLine += wordDelim;
-               thisLine += wordList.front();
-
-               if (thisLine.length() > len)
+               wordPos = aStr.find(wordDelim, curPos);
+               if (wordPos == curPos)
                {
-                     // if the first word is longer than a line, just add it.
-                     // if this is the first line, remember to add the indent.
-                  if (lastLine.empty())
-                  {
-                     if (toReturn.empty())
-                        lastLine += firstIndent;
-                     lastLine = wordList.front();
-                  }
-
-                  toReturn += lastLine + lineDelim;
-
-                  thisLine.erase();
-                  lastLine.erase();
-
-                  thisLine = indent;
+                     // ignore the word delimeter
+                  curPos++;
+                  continue;
                }
+                  // no longer processing a word delimiter
+               wordDelimited = false;
+               linePos = aStr.find(lineDelim, curPos);
+               if (linePos == curPos)
+               {
+                  curPos += lineDelim.length();
+                     // line delimiters are NOT compressed.
+                  newStr += lineDelim + indent;
+                  curLineLen = indent.length();
+                  continue;
+               }
+                  // add a word
+               minPos = std::min(wordPos, linePos);
+               if (minPos != std::string::npos)
+                  wordLen = minPos - curPos;
                else
-                  wordList.erase(wordList.begin());
+                  wordLen = aStr.length() - curPos;
+               if ((curLineLen + wordLen + 1) > len)
+               {
+                  newStr += lineDelim + indent;
+                  curLineLen = indent.length();
+               }
+               newStr += wordDelim;
+               newStr += aStr.substr(curPos, wordLen);
+               curLineLen += wordLen + 1;
+               curPos = minPos;
             }
-            if (!thisLine.empty())
-               toReturn += (thisLine + lineDelim);
-
-            aStr = toReturn;
+            aStr = newStr + lineDelim;
             return aStr;
          }
-         catch(StringException &e)
+         catch (std::exception &e)
          {
-            GPSTK_RETHROW(e);
-         }
-         catch(std::exception &e)
-         {
-            StringException strexc("Exception thrown: " + std::string(e.what()));
+            StringException strexc("Exception thrown: " +
+                                   std::string(e.what()));
             GPSTK_THROW(strexc);
          }
       }

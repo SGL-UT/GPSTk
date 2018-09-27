@@ -82,6 +82,21 @@ namespace gpstk
        * | LNavEmptyFilter       |            1 | no           |
        * | LNavParityFilter      |            1 | no           |
        * | LNavTLMHOWFilter      |            1 | no           |
+       *
+       * @section GPSCNAV GPS Civil Nav Filters
+       *
+       * Filters in this group use the data class CNavFilterData,
+       * which contains a pointer to gpstk::PackedNavBits object
+       * that contains the message data.
+       *
+       * | Class                 | Filter Depth | Modifies Msg |
+       * | :-------------------- | -----------: | :----------- |
+       * | CNavFilterData        |          n/a | no           |
+       * | CNavCookFilter        |            1 | yes          |
+       * | CNavCrossSourceFilter |            2 | no           |
+       * | CNavEmptyFilter       |            1 | no           |
+       * | CNavParityFilter      |            1 | no           |
+       * | LNavTWFilter          |            1 | no           |
        */
 
       /// @ingroup NavFilter
@@ -154,6 +169,22 @@ namespace gpstk
           * @return The remaining messages successfully passing the
           *   filters. */
       virtual NavFilter::NavMsgList finalize();
+
+         /** Gets the effective buffer size in epochs required for
+          * maintaining subframe data, given the filters that have
+          * been added using addFilter().  This is the sum of
+          * NavFilter::processingDepth() return values +1.
+          *
+          * The method can be used as in this example:
+          * \code{.cpp}
+          * struct Subframe { uint32_t word[10]; };
+          * typedef vector<Subframe> SubframeBuf;
+          * NavFilterMgr mgr;
+          * mgr.addFilter(...);
+          * SubframeBuf buf(numRx * numCode * numChl * mgr.processingDepth());
+          * \endcode
+          */
+      unsigned processingDepth() const throw();
 
          /** This set contains any filters with rejected data after a
           * validate() or finalize() call.  The set will be cleared at

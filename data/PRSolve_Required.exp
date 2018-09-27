@@ -1,10 +1,10 @@
-PRSolve, part of the GPS Toolkit, Ver 5.2 10/13/15, Run 2015/11/20 07:30:45
+PRSolve, part of the GPS Toolkit, Ver 5.2 10/13/15, Run 2017/04/12 14:23:56
 ------ Summary of PRSolve command line configuration ------
 # Input via configuration file:
    Name of file with more options [#->EOL = comment] (--file) : <none>
 # Required input data and ephemeris files:
-   RINEX observation file name(s) (--obs) : ../../../../data/arlm200b.15o
-   Input Ephemeris+clock (SP3 format) file name(s) (--eph) : ../../../../data/test_input_sp3_nav_ephemerisData.sp3
+   RINEX observation file name(s) (--obs) : /home/btolman/git/gpstk/data/arlm200b.15o
+   Input Ephemeris+clock (SP3 format) file name(s) (--eph) : /home/btolman/git/gpstk/data/test_input_sp3_nav_ephemerisData.sp3
    Input RINEX nav file name(s) (also cf. --BCEpast) (--nav) : <none>
 # Other (optional) input files
    Input clock (RINEX format) file name(s) (--clk) : <none>
@@ -38,7 +38,7 @@ PRSolve, part of the GPS Toolkit, Ver 5.2 10/13/15, Run 2015/11/20 07:30:45
    Maximum convergence criterion in estimation in meters (--conv) : 3.00e-07
    Trop model <m> [one of Zero,Black,Saas,NewB,Neill,GG,GGHt with optional weather T(C),P(mb),RH(%)] (--Trop) : NewB,20.0,1013.0,50.0
 # Output [for formats see GPSTK::Position (--ref) and GPSTK::Epoch (--timefmt)] :
-   Output log file name (--log) : prs.log
+   Output log file name (--log) : /home/btolman/git/gpstk/build/opti003-btolman_dev/Testing/Temporary/PRSolve_Required.out
    Output RINEX observations (with position solution in comments) (--out) : <none>
    In output RINEX (--out), write RINEX version 2.11 [otherwise 3.01] (--ver2) : false
    Known position p in fmt f (def. '%x,%y,%z'), for resids, elev and ORDs (--ref) : <none>
@@ -49,6 +49,9 @@ PRSolve, part of the GPS Toolkit, Ver 5.2 10/13/15, Run 2015/11/20 07:30:45
    Print extended output information (--verbose) : false
    Print debug output at level 0 [debug<n> for level n=1-7] (--debug) : -1
    Print this and quit (--help) : false
+   Print extended output (--verbose) : false
+   Print debug output at level DEBUGn [n=0-7] (--debug<n>) : -1
+   Print this syntax page and quit (--help) : false
 ------ End configuration summary ------
 
 Dump ephemeris sat list with count, times and GLO channel.
@@ -386,4 +389,4 @@ RPF GPS:12:WC DAT 1854   7170.000 11 11 G02:1W2W G05:1W2W G12:1W2W G13:1W2W G15:
 
  ----- Final output GPS:12:WC -----
  No data!
-PRSolve timing: processing 0.620 sec, wallclock: 0 sec.
+PRSolve timing: processing 0.670 sec, wallclock: 0 sec.

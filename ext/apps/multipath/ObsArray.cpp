@@ -51,6 +51,7 @@
 #include "PRSolution2.hpp"
 #include "IonoModel.hpp"
 #include "ExtractPC.hpp"
+#include "GGTropModel.hpp"
 
 #include "RinexObsStream.hpp"
 #include "RinexObsHeader.hpp"

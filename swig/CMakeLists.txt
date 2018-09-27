@@ -19,27 +19,19 @@ include( ${SWIG_USE_FILE} )
 #     389: operator[] ignored
 #     503: can't wrap 'identifer' unless renamed to a valid identifier (e.g. operator<<)
 
-set( CMAKE_SWIG_FLAGS "-w362,383,384,389,503" )
+set( CMAKE_SWIG_FLAGS "-w362,383,384,389,503 -builtin" )
 
 #----------------------------------------
 # Compiler flags that are used only
 # in the compiling of the swig bindings
+# @todo: see if -std=c++11 can be removed from all builds
 #----------------------------------------
 if( ${CMAKE_SYSTEM_NAME} MATCHES "SunOS" )
     set( CMAKE_CXX_FLAGS "-std=c++11" )
 elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w -std=c++11" )
 elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" )
-    execute_process(COMMAND "/usr/bin/lsb_release" "-is"
-                    TIMEOUT 4
-                    OUTPUT_VARIABLE LINUX_DISTRO
-                    ERROR_QUIET
-                    OUTPUT_STRIP_TRAILING_WHITESPACE)
-    if (${LINUX_DISTRO} MATCHES "RedHatEnterpriseServer")
-        message( STATUS "Linux Red Hat machine, Ignoring -std=c++11 flag")
-    else()
-        set( CMAKE_CXX_FLAGS "-std=c++11" )
-    endif()
+    set( CMAKE_CXX_FLAGS "-std=c++11" )
 elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
     set( CMAKE_CXX_FLAGS "-std=c++11" )
 endif()
@@ -47,21 +39,11 @@ endif()
 
 set_source_files_properties( gpstk.i PROPERTIES CPLUSPLUS ON )
 
-if( NOT PYTHON_INSTALL_PREFIX )
-    message( STATUS "PYTHON_INSTALL_PREFIX: Install prefix for python package was not set by user." )
-    set( PYTHON_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}" )
-    message( STATUS "PYTHON_INSTALL_PREFIX: Using CMAKE_INSTALL_PREFIX as the default, so that PYTHON_INSTALL_PREFIX = ${PYTHON_INSTALL_PREFIX}" )
-endif()
-
 if( DEBUG_SWITCH )
     message( STATUS "SWIG_EXECUTABLE          = ${SWIG_EXECUTABLE}" )
     message( STATUS "SWIG_USE_FILE            = ${SWIG_USE_FILE}" )
-    message( STATUS "CMAKE_CURRENT_LIST_DIR   = ${CMAKE_CURRENT_LIST_DIR}" )
-    message( STATUS "CMAKE_CURRENT_LIST_FILE  = ${CMAKE_CURRENT_LIST_FILE}" )
-    message( STATUS "CMAKE_SOURCE_DIR         = ${CMAKE_SOURCE_DIR}" )
-    message( STATUS "CMAKE_CURRENT_SOURCE_DIR = ${CMAKE_CURRENT_SOURCE_DIR}" )
-    message( STATUS "CMAKE_CURRENT_BINARY_DIR = ${CMAKE_CURRENT_BINARY_DIR}" )
     message( STATUS "SWIG_DOC_DIR             = ${SWIG_DOC_DIR}")
+    message( STATUS "PYTHON_INSTALL_PREFIX    = ${PYTHON_INSTALL_PREFIX}")
 endif()
 
 #----------------------------------------
@@ -99,6 +81,9 @@ set( CMAKE_SWIG_OUTDIR ${MODULE_PATH}/${SWIG_MODULE} )
 #        testing shows that this ONLY works for the gpstk.py
 #        and does NOT work for the _gpstk.so
 #----------------------------------------
+add_custom_target(swig-make-directory ALL
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${MODULE_PATH}/gpstk)
+add_dependencies("_${SWIG_MODULE}" swig-make-directory)
 add_custom_command( TARGET "_${SWIG_MODULE}" POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "_${SWIG_MODULE}.so" ${CMAKE_SWIG_OUTDIR} )
 add_custom_command( TARGET "_${SWIG_MODULE}" POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${SWIG_MODULE}.py" ${CMAKE_SWIG_OUTDIR} )
 
@@ -140,7 +125,7 @@ install( CODE "execute_process(COMMAND ${PYTHON_EXECUTABLE} ${SETUP_PY} install 
 #------------------------------------------------------------
 
 file( GLOB swig_includes ${CMAKE_CURRENT_SOURCE_DIR}/src/* )
-install( FILES ${swig_includes} ${CMAKE_CURRENT_SOURCE_DIR}/gpstk.i DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}" )
+install( FILES ${swig_includes} ${CMAKE_CURRENT_SOURCE_DIR}/gpstk.i DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/gpstk" )
 
 
 include(swig_tests.cmake)

@@ -41,6 +41,7 @@
 #include "RinexEphemerisStore.hpp"
 
 #include "EphemerisRange.hpp"
+#include "SimpleTropModel.hpp"
 
 //=====================================================================================
 // Test Structure
@@ -54,830 +55,512 @@
 
 gpstk::IonoModelStore ionoModelStoreGen(std::vector<gpstk::CommonTime>& cTimeVec)
 {
-	double a[] = {1,2,3,4}; double b[] = {4,3,2,1};
+   double a[] = {1,2,3,4}; double b[] = {4,3,2,1};
 
-	gpstk::IonoModelStore ims;
+   gpstk::IonoModelStore ims;
 
-	for (int i=0; i < cTimeVec.size(); i++)	
-		ims.addIonoModel(cTimeVec[i], gpstk::IonoModel(a,b));
+   for (int i=0; i < cTimeVec.size(); i++)	
+      ims.addIonoModel(cTimeVec[i], gpstk::IonoModel(a,b));
 
-	return ims;
+   return ims;
 }
 
 class ObsRngDev_T
 {
-    public: 
-	ObsRngDev_T(){ eps = 1E-12; floatPrecision = 1E-6; }// Default Constructor, set the precision value to 6 digits due to float
-	~ObsRngDev_T() {} // Default Destructor
+public: 
+   ObsRngDev_T()
+   {
+      receiverPos.setGeodetic(30.387577, -97.727607, 240);
 
-	void initialization(void)
-	{
-		receiverPos.setGeodetic(30.387577, -97.727607, 240);
+      prange.push_back(21665483.747); prange.push_back(21662553.318); prange.push_back(21659650.826);
+      prange2.push_back(21665487.640); prange2.push_back(21662557.419); prange2.push_back(21659655.019);
 
-		prange.push_back(21665483.747); prange.push_back(21662553.318); prange.push_back(21659650.826);
-		prange2.push_back(21665487.640); prange2.push_back(21662557.419); prange2.push_back(21659655.019);
+      id.id = 1;
+      id.system = gpstk::SatID::systemGPS;
 
-		id.id = 1;
-		id.system = gpstk::SatID::systemGPS;
+      gpstk::CommonTime ct1 = gpstk::CivilTime(2006, 1, 31, 2, 0, 0, gpstk::TimeSystem::GPS).convertToCommonTime();
+      gpstk::CommonTime ct2 = gpstk::CivilTime(2006, 1, 31, 4, 0, 0, gpstk::TimeSystem::GPS).convertToCommonTime();
+      gpstk::CommonTime ct3 = gpstk::CivilTime(2006, 1, 31, 6, 0, 0, gpstk::TimeSystem::GPS).convertToCommonTime();
+      cTimeVec.push_back(ct1);
+      cTimeVec.push_back(ct2);
+      cTimeVec.push_back(ct3);
 
-		gpstk::CommonTime ct1 = gpstk::CivilTime(2006, 1, 31, 2, 0, 0, gpstk::TimeSystem::GPS).convertToCommonTime();
-		gpstk::CommonTime ct2 = gpstk::CivilTime(2006, 1, 31, 4, 0, 0, gpstk::TimeSystem::GPS).convertToCommonTime();
-		gpstk::CommonTime ct3 = gpstk::CivilTime(2006, 1, 31, 6, 0, 0, gpstk::TimeSystem::GPS).convertToCommonTime();
-		cTimeVec.push_back(ct1);
-		cTimeVec.push_back(ct2);
-		cTimeVec.push_back(ct3);
+      std::string path = gpstk::getPathData() + "/test_input_rinex_nav_ephemerisData.031";
+      ephemStore.loadFile(path);
+   };
+   
+   ~ObsRngDev_T() {}
 
-		std::string path = gpstk::getPathData() + "/test_input_rinex_nav_ephemerisData.031";
-		ephemStore.loadFile(path);
-	}	
+   int BasicConstructorTest(void)
+   {
+      TUDEF("ObsRngDev", "BasicConstructor");
 
+      try
+      {
+         for (int i=0; i < cTimeVec.size(); i++)
+         {
+            gpstk::ObsRngDev ord(prange[i], id, cTimeVec[i], receiverPos, ephemStore, em);
+            ordVec.push_back(ord);
+         }
+      }
+      catch(gpstk::Exception e)
+      {
+         TUFAIL("unexpected exception");
+      }
 
-//=================================================================================
-//	Begin Constructor Tests
-//=================================================================================
+      failCount = 0;
+      for (int i=0; i < ordVec.size(); i++)
+         if(!(ordVec[i].obstime == cTimeVec[i]))
+            failCount++;
+      TUASSERT(failCount == 0);
+      TUASSERT(ordVec.size() == 3);
 
-	int BasicConstructorTest(void)
-	{
-           gpstk::TestUtil testFramework("ObsRngDev", "BasicConstructor", __FILE__, __LINE__);
+      failCount = 0;
+      for (int i=0; i < ordVec.size(); i++)
+         if(!(ordVec[i].svid == id))
+            failCount++;
+      TUASSERT(failCount == 0);
 
-		//same prn for different ranges & different time
-		testMesg = "Generation of ORDs with the basic constructor failed";
-		try
-		{
-			for (int i=0; i < cTimeVec.size(); i++)
-			{
-					gpstk::ObsRngDev ord(prange[i], id, cTimeVec[i], receiverPos, ephemStore, em);
-					ordVec.push_back(ord);
-			}
-			testFramework.assert(true, testMesg, __LINE__);
-		}
-		catch(gpstk::Exception e)
-		{
-			std::cout<<e<<std::endl;
-			testFramework.assert(false, testMesg, __LINE__);
-		}
-		testMesg = "obstime value was not set correctly in the basic constructor";
-		//testFramework.assert(ordVec[i].obstime == cTimeVec[i], testMesg, __LINE__);
-		failCount = 0;
-		for (int i=0; i < ordVec.size(); i++)
-			if(!(ordVec[i].obstime == cTimeVec[i]))
-				failCount++;
-		testFramework.assert(failCount == 0 && ordVec.size() != 0, testMesg, __LINE__);
+      failCount = 0;
+      for (int i=0; i < ordVec.size(); i++)
+         if(!(ordVec[i].health.get_value() == 0))
+            failCount++;
+      TUASSERT(failCount == 0);
+
+      TURETURN();
+   }
+
+   int IonosphericConstructorTest(void)
+   {
+      TUDEF("ObsRngDev", "IonosphericConstructor");
+
+      gpstk::IonoModelStore ims = ionoModelStoreGen(cTimeVec);
+      gpstk::IonoModel::Frequency L1 = gpstk::IonoModel::L1;
+
+      try
+      {
+         for (int i=0; i < cTimeVec.size(); i++)
+         {
+            gpstk::ObsRngDev ord(prange[i], id, cTimeVec[i], receiverPos,
+                                 ephemStore, em, ims, L1);
+            ordVecIon.push_back(ord);
+         }
+      }
+      catch (gpstk::Exception e)
+      {
+         std::cout << e << std::endl;
+         TUFAIL("unexpected exception");
+      }
+      
+      failCount = 0;
+      for (int i=0; i < ordVecIon.size(); i++)
+         if(!(ordVecIon[i].obstime == cTimeVec[i]))
+            failCount++;
+      TUASSERT(failCount == 0);
+      TUASSERT(ordVecIon.size() == 3);
 	
-		testMesg = "svid value was not set correctly in the basic constructor";
-		//testFramework.assert(ordVec[i].svid == id, testMesg, __LINE__);
-		failCount = 0;
-		for (int i=0; i < ordVec.size(); i++)
-			if(!(ordVec[i].svid == id))
-				failCount++;
-		testFramework.assert(failCount == 0 && ordVec.size() != 0, testMesg, __LINE__);
+      failCount = 0;
+      for (int i=0; i < ordVecIon.size(); i++)
+         if(!(ordVecIon[i].svid == id))
+            failCount++;
+      TUASSERT(failCount == 0);
 
-		testMesg = "health value was not set correctly in the basic constructor";
-		//testFramework.assert(ordVec[i].svid == id, testMesg, __LINE__);
-		failCount = 0;
-		for (int i=0; i < ordVec.size(); i++)
-			if(!(ordVec[i].health.get_value() == 0))
-				failCount++;
-		testFramework.assert(failCount == 0 && ordVec.size() != 0, testMesg, __LINE__);
+      failCount = 0;
+      for (int i=0; i < ordVecIon.size(); i++)
+         if(!(ordVecIon[i].health.get_value() == 0))
+            failCount++;
+      TUASSERT(failCount == 0);
 
-		return testFramework.countFails();
-	}
+      TURETURN();
+   }
 
-	int IonosphericConstructorTest(void)
-	{
-           gpstk::TestUtil testFramework("ObsRngDev", "IonosphericConstructor", __FILE__, __LINE__);
+   int TroposphericConstructorTest(void)
+   {
+      TUDEF("ObsRngDev", "TroposphericConstructor");
 
-		gpstk::IonoModelStore ims = ionoModelStoreGen(cTimeVec);
-		gpstk::IonoModel::Frequency L1 = gpstk::IonoModel::L1;
-		testMesg = "Generation of ORDs with the Ionospheric constructor failed";
-		try
-		{
-			for (int i=0; i < cTimeVec.size(); i++)
-			{
-					gpstk::ObsRngDev ord(prange[i], id, cTimeVec[i],
-										receiverPos, ephemStore, em, ims, L1);
-					ordVecIon.push_back(ord);
-			}
-			testFramework.assert(true, testMesg, __LINE__);
-		}
-		catch (gpstk::Exception e)
-		{
-			std::cout<<e<<std::endl;
-			testFramework.assert(false, testMesg, __LINE__);
-		}
-		testMesg = "obstime value was not set correctly in the Ionospheric constructor";
-		//testFramework.assert(ordVecIon[i].obstime == cTimeVec[i], testMesg, __LINE__);
-		failCount = 0;
-		for (int i=0; i < ordVecIon.size(); i++)
-			//Have same timeVec for every 10 instances of ordVecIon
-			if(!(ordVecIon[i].obstime == cTimeVec[i]))
-				failCount++;
-		testFramework.assert(failCount == 0 && ordVecIon.size() != 0, testMesg, __LINE__);
-	
-		testMesg = "svid value was not set correctly in the Ionospheric constructor";
-		//testFramework.assert(ordVecIon[i].svid == id, testMesg, __LINE__);
-		failCount = 0;
-		for (int i=0; i < ordVecIon.size(); i++)
-			if(!(ordVecIon[i].svid == id))
-				failCount++;
-		testFramework.assert(failCount == 0 && ordVecIon.size() != 0, testMesg, __LINE__);
+      gpstk::SimpleTropModel stm(18.8889, 1021.2176, 77.7777); // Celsius, mmBar, %humidity		
 
-		testMesg = "health value was not set correctly in the Ionospheric constructor";
-		//testFramework.assert(ordVecIon[i].svid == id, testMesg, __LINE__);
-		failCount = 0;
-		for (int i=0; i < ordVecIon.size(); i++)
-			if(!(ordVecIon[i].health.get_value() == 0))
-				failCount++;
-		testFramework.assert(failCount == 0 && ordVecIon.size() != 0, testMesg, __LINE__);
-
-		return testFramework.countFails();
-	}
-
-	int TroposphericConstructorTest(void)
-	{
-           gpstk::TestUtil testFramework("ObsRngDev", "TroposphericConstructor", __FILE__, __LINE__);
-
-		gpstk::SimpleTropModel stm(18.8889, 1021.2176, 77.7777); // Celsius, mmBar, %humidity		
-		testMesg = "Generation of ORDS with the Tropospheric constructor failed";
-		try
-		{
-			for (int i=0; i < cTimeVec.size(); i++)
-			{
-					gpstk::ObsRngDev ord(prange[i], id, cTimeVec[i],
-										receiverPos, ephemStore, em, stm);
-					ordVecTrop.push_back(ord);
-			}
-			testFramework.assert(true, testMesg, __LINE__);
-		}
-		catch (gpstk::Exception e)
-		{
-			std::cout<<e<<std::endl;
-			testFramework.assert(false, testMesg, __LINE__);
-		}
+      try
+      {
+         for (int i=0; i < cTimeVec.size(); i++)
+         {
+            gpstk::ObsRngDev ord(prange[i], id, cTimeVec[i],
+                                 receiverPos, ephemStore, em, stm);
+            ordVecTrop.push_back(ord);
+         }
+      }
+      catch (gpstk::Exception e)
+      {
+         TUFAIL("unexpected exception");
+      }
 		
-		testMesg = "obstime value was not set correctly in the Tropospheric constructor";
-		//testFramework.assert(ordVecTrop[i].obstime == cTimeVec[i], testMesg, __LINE__);
-		failCount = 0;
-		for (int i=0; i < ordVecTrop.size(); i++)
-			//Have same timeVec for every 10 instances of ordVecTrop
-			if(!(ordVecTrop[i].obstime == cTimeVec[i]))
-				failCount++;
-		testFramework.assert(failCount == 0 && ordVecTrop.size() != 0, testMesg, __LINE__);
+      failCount = 0;
+      for (int i=0; i < ordVecTrop.size(); i++)
+            //Have same timeVec for every 10 instances of ordVecTrop
+         if(!(ordVecTrop[i].obstime == cTimeVec[i]))
+            failCount++;
+      TUASSERT(failCount == 0);
+      TUASSERT(ordVecTrop.size() == 3);
 	
-		testMesg = "svid value was not set correctly in the Tropospheric constructor";
-		//testFramework.assert(ordVecTrop[i].svid == id, testMesg, __LINE__);
-		failCount = 0;
-		for (int i=0; i < ordVecTrop.size(); i++)
-			if(!(ordVecTrop[i].svid == id))
-				failCount++;
-		testFramework.assert(failCount == 0 && ordVecTrop.size() != 0, testMesg, __LINE__);
+      failCount = 0;
+      for (int i=0; i < ordVecTrop.size(); i++)
+         if(!(ordVecTrop[i].svid == id))
+            failCount++;
+      TUASSERT(failCount == 0);
 
-		testMesg = "health value was not set correctly in the Tropospheric constructor";
-		//testFramework.assert(ordVecTrop[i].svid == id, testMesg, __LINE__);
-		failCount = 0;
-		for (int i=0; i < ordVecTrop.size(); i++)
-			if(!(ordVecTrop[i].health.get_value() == 0))
-				failCount++;
-		testFramework.assert(failCount == 0 && ordVecTrop.size() != 0, testMesg, __LINE__);
+      failCount = 0;
+      for (int i=0; i < ordVecTrop.size(); i++)
+         if(!(ordVecTrop[i].health.get_value() == 0))
+            failCount++;
+      TUASSERT(failCount == 0);
 
-		return testFramework.countFails();
-	}
+      TURETURN();
+   }
 
-	int IonosphericTroposphericConstructorTest(void)
-	{
-           gpstk::TestUtil testFramework("ObsRngDev", "IonosphericTroposphericConstructor", __FILE__, __LINE__);
+   int IonosphericTroposphericConstructorTest(void)
+   {
+      TUDEF("ObsRngDev", "IonosphericTroposphericConstructor");
 
-		gpstk::SimpleTropModel stm(18.8889, 1021.2176, 77.7777);
-		gpstk::IonoModelStore ims = ionoModelStoreGen(cTimeVec);
-		gpstk::IonoModel::Frequency L1 = gpstk::IonoModel::L1;		
-		testMesg = "Generation of ORDs with the Ionospheric and Tropospheric constructor failed";
-		try
-		{
-			for (int i=0; i < cTimeVec.size(); i++)
-			{
-					gpstk::ObsRngDev ord(prange[i], id, cTimeVec[i], receiverPos, 
-										ephemStore, em, stm, ims, L1);
-					ordVecTropIon.push_back(ord);
-			}
-			testFramework.assert(true, testMesg, __LINE__);
-		}
-		catch (gpstk::Exception e)
-		{
-			std::cout<<e<<std::endl;
-			testFramework.assert(false, testMesg, __LINE__);
-		}
-		testMesg = "obstime value was not set correctly in the Ionospheric & Tropospheric constructor";
-		//testFramework.assert(ordVecTropIon[i].obstime == cTimeVec[i], testMesg, __LINE__);
-		failCount = 0;
-		for (int i=0; i < ordVecTropIon.size(); i++)
-			//Have same timeVec for every 10 instances of ordVecTropIon
-			if(!(ordVecTropIon[i].obstime == cTimeVec[i]))
-				failCount++;
-		testFramework.assert(failCount == 0 && ordVecTropIon.size() != 0, testMesg, __LINE__);
+      gpstk::SimpleTropModel stm(18.8889, 1021.2176, 77.7777);
+      gpstk::IonoModelStore ims = ionoModelStoreGen(cTimeVec);
+      gpstk::IonoModel::Frequency L1 = gpstk::IonoModel::L1;		
+
+      try
+      {
+         for (int i=0; i < cTimeVec.size(); i++)
+         {
+            gpstk::ObsRngDev ord(prange[i], id, cTimeVec[i], receiverPos, 
+                                 ephemStore, em, stm, ims, L1);
+            ordVecTropIon.push_back(ord);
+         }
+      }
+      catch (gpstk::Exception e)
+      {
+         TUFAIL("unexpected exception");
+      }
+      
+      failCount = 0;
+      for (int i=0; i < ordVecTropIon.size(); i++)
+         if(!(ordVecTropIon[i].obstime == cTimeVec[i]))
+            failCount++;
+      TUASSERT(failCount == 0);
+      TUASSERT(ordVecTropIon.size() == 3);
 	
-		testMesg = "svid value was not set correctly in the Ionospheric & Tropospheric constructor";
-		//testFramework.assert(ordVecTropIon[i].svid == id, testMesg, __LINE__);
-		failCount = 0;
-		for (int i=0; i < ordVecTropIon.size(); i++)
-			if(!(ordVecTropIon[i].svid == id))
-				failCount++;
-		testFramework.assert(failCount == 0 && ordVecTropIon.size() != 0, testMesg, __LINE__);
+      failCount = 0;
+      for (int i=0; i < ordVecTropIon.size(); i++)
+         if(!(ordVecTropIon[i].svid == id))
+            failCount++;
+      TUASSERT(failCount == 0);
 
-		testMesg = "health value was not set correctly in the Ionospheric & Tropospheric constructor";
-		//testFramework.assert(ordVecTropIon[i].svid == id, testMesg, __LINE__);
-		failCount = 0;
-		for (int i=0; i < ordVecTropIon.size(); i++)
-			if(!(ordVecTropIon[i].health.get_value() == 0))
-				failCount++;
-		testFramework.assert(failCount == 0 && ordVecTropIon.size() != 0, testMesg, __LINE__);
+      failCount = 0;
+      for (int i=0; i < ordVecTropIon.size(); i++)
+         if(!(ordVecTropIon[i].health.get_value() == 0))
+            failCount++;
+      TUASSERT(failCount == 0);
 
-		return testFramework.countFails();
-	}
+      TURETURN();
+   }
 
-	int GammaConstructorTest(void)
-	{
-		gpstk::TestUtil testFramework("ObsRngDev", "GammaConstructor", __FILE__, __LINE__);
-
-		testMesg = "Generation of ORDs with Gamma constructor failed";
-		try
-		{
-			for (int i=0; i < cTimeVec.size(); i++)
-			{
-					gpstk::ObsRngDev ord(prange[i], prange2[i], id, cTimeVec[i],
-										receiverPos, ephemStore, em);
-					ordVecGamma.push_back(ord);
-			}
-			testFramework.assert(true, testMesg, __LINE__);
-		}
-		catch (gpstk::Exception e)
-		{
-			std::cout<<e<<std::endl;
-			testFramework.assert(false, testMesg, __LINE__);
-		}
-		testMesg = "obstime value was not set correctly in the Gamma constructor";
-		//testFramework.assert(ordVecGamma[i].obstime == cTimeVec[i], testMesg, __LINE__);
-		failCount = 0;
-		for (int i=0; i < ordVecGamma.size(); i++)
-			//Have same timeVec for every 10 instances of ordVecGamma
-			if(!(ordVecGamma[i].obstime == cTimeVec[i]))
-				failCount++;
-		testFramework.assert(failCount == 0 && ordVecGamma.size() != 0, testMesg, __LINE__);
+   int GammaConstructorTest(void)
+   {
+      TUDEF("ObsRngDev", "GammaConstructor");
+      
+      try
+      {
+         for (int i=0; i < cTimeVec.size(); i++)
+         {
+            gpstk::ObsRngDev ord(prange[i], prange2[i], id, cTimeVec[i],
+                                 receiverPos, ephemStore, em);
+            ordVecGamma.push_back(ord);
+         }
+      }
+      catch (gpstk::Exception e)
+      {
+         TUFAIL("unexpected exception");
+      }
+      
+      failCount = 0;
+      for (int i=0; i < ordVecGamma.size(); i++)
+         if(!(ordVecGamma[i].obstime == cTimeVec[i]))
+            failCount++;
+      TUASSERT(failCount == 0);
+      TUASSERT(ordVecGamma.size() == 3);
 	
-		testMesg = "svid value was not set correctly in the Gamma constructor";
-		//testFramework.assert(ordVecGamma[i].svid == id, testMesg, __LINE__);
-		failCount = 0;
-		for (int i=0; i < ordVecGamma.size(); i++)
-			if(!(ordVecGamma[i].svid == id))
-				failCount++;
-		testFramework.assert(failCount == 0 && ordVecGamma.size() != 0, testMesg, __LINE__);
+      failCount = 0;
+      for (int i=0; i < ordVecGamma.size(); i++)
+         if(!(ordVecGamma[i].svid == id))
+            failCount++;
+      TUASSERT(failCount == 0);
 
-		testMesg = "health value was not set correctly in the Gamma constructor";
-		//testFramework.assert(ordVecGamma[i].svid == id, testMesg, __LINE__);
-		failCount = 0;
-		for (int i=0; i < ordVecGamma.size(); i++)
-			if(!(ordVecGamma[i].health.get_value() == 0))
-				failCount++;
-		testFramework.assert(failCount == 0 && ordVecGamma.size() != 0, testMesg, __LINE__);
+      failCount = 0;
+      for (int i=0; i < ordVecGamma.size(); i++)
+         if(!(ordVecGamma[i].health.get_value() == 0))
+            failCount++;
+      TUASSERT(failCount == 0);
 
-		return testFramework.countFails();
-	}
+      TURETURN();
+   }
 
-	int GammaTroposphericConstructorTest(void)
-	{
-		gpstk::TestUtil testFramework("ObsRngDev", "GammaTroposphericConstructor", __FILE__, __LINE__);
+   int GammaTroposphericConstructorTest(void)
+   {
+      TUDEF("ObsRngDev", "GammaTroposphericConstructor");
 
-		gpstk::SimpleTropModel stm(18.8889, 1021.2176, 77.7777);
-		testMesg = "Generation of ORDs with Gamma and Tropospheric constructor failed";
-		try
-		{
-			for (int i=0; i < cTimeVec.size(); i++)
-			{
-					gpstk::ObsRngDev ord(prange[i], prange2[i], id, cTimeVec[i],
-										receiverPos, ephemStore, em, stm);
-					ordVecTropGamma.push_back(ord);
-			}
-			testFramework.assert(true, testMesg, __LINE__);
-		}
-		catch (gpstk::Exception e)
-		{
-			std::cout<<e<<std::endl;
-			testFramework.assert(false, testMesg, __LINE__);
-		}
-		testMesg = "obstime value was not set correctly in the Gamma and Tropospheric constructor";
-		//testFramework.assert(ordVecTropGamma[i].obstime == cTimeVec[i], testMesg, __LINE__);
-		failCount = 0;
-		for (int i=0; i < ordVecTropGamma.size(); i++)
-			//Have same timeVec for every 10 instances of ordVecTropGamma
-			if(!(ordVecTropGamma[i].obstime == cTimeVec[i]))
-				failCount++;
-		testFramework.assert(failCount == 0 && ordVecTropGamma.size() != 0, testMesg, __LINE__);
+      gpstk::SimpleTropModel stm(18.8889, 1021.2176, 77.7777);
+      try
+      {
+         for (int i=0; i < cTimeVec.size(); i++)
+         {
+            gpstk::ObsRngDev ord(prange[i], prange2[i], id, cTimeVec[i],
+                                 receiverPos, ephemStore, em, stm);
+            ordVecTropGamma.push_back(ord);
+         }
+      }
+      catch (gpstk::Exception e)
+      {
+         TUFAIL("unexpected exception");
+      }
+
+      failCount = 0;
+      for (int i=0; i < ordVecTropGamma.size(); i++)
+         if(!(ordVecTropGamma[i].obstime == cTimeVec[i]))
+            failCount++;
+      TUASSERT(failCount == 0);
+      TUASSERT(ordVecTropGamma.size() == 3);
 	
-		testMesg = "svid value was not set correctly in the Gamma and Tropospheric constructor";
-		//testFramework.assert(ordVecTropGamma[i].svid == id, testMesg, __LINE__);
-		failCount = 0;
-		for (int i=0; i < ordVecTropGamma.size(); i++)
-			if(!(ordVecTropGamma[i].svid == id))
-				failCount++;
-		testFramework.assert(failCount == 0 && ordVecTropGamma.size() != 0, testMesg, __LINE__);
+      failCount = 0;
+      for (int i=0; i < ordVecTropGamma.size(); i++)
+         if(!(ordVecTropGamma[i].svid == id))
+            failCount++;
+      TUASSERT(failCount == 0);
 
-		testMesg = "health value was not set correctly in the Gamma and Tropospheric constructor";
-		//testFramework.assert(ordVecTropGamma[i].svid == id, testMesg, __LINE__);
-		failCount = 0;
-		for (int i=0; i < ordVecTropGamma.size(); i++)
-			if(!(ordVecTropGamma[i].health.get_value() == 0))
-				failCount++;
-		testFramework.assert(failCount == 0 && ordVecTropGamma.size() != 0, testMesg, __LINE__);
+      failCount = 0;
+      for (int i=0; i < ordVecTropGamma.size(); i++)
+         if(!(ordVecTropGamma[i].health.get_value() == 0))
+            failCount++;
+      TUASSERT(failCount == 0);
 
-		return testFramework.countFails();
-	}
+      TURETURN();
+   }
 
 //===================================================================================
 // Begin Get Functions Test
 //===================================================================================
 
-	int getFunctionsTest(void)
-	{
-		gpstk::TestUtil testFramework("ObsRngDev", "Get Methods", __FILE__, __LINE__);
-		std::string testMesg;
-		int failCount;
+   int getFunctionsTest(void)
+   {
+      TUDEF("ObsRngDev", "Get Methods");
 
-		//Fails all tests if ordVec isn't generated
-		if (ordVec.size() == 0)
-		{
-			testMesg = "ORDs never generated, impossible to do any get function test";
-			for (int i=0; i<=9; i++)
-				testFramework.assert(false, testMesg, __LINE__);
-			return testFramework.countFails();
-		}
+      TUASSERT(ordVec.size() > 0);
 
-		failCount = 0;
-		testMesg = "getTime returned an incorrect value";
-		//testFramework.assert(ordVec[i].getTime() == ordVec[i].obstime, testMesg, __LINE__);
-		for(int i=0; i<ordVec.size(); i++)
-		{
-			if (!(ordVec[i].getTime() == ordVec[i].obstime))
-				failCount++;
-		}
-		testFramework.assert(failCount == 0 && ordVec.size() != 0, testMesg, __LINE__);
+      failCount = 0;
+      for(int i=0; i<ordVec.size(); i++)
+         if (!(ordVec[i].getTime() == ordVec[i].obstime))
+            failCount++;
+      TUASSERT(failCount == 0);
 
-		failCount = 0;
-		testMesg = "getSvID returned an incorrect value";
-		//testFramework.assert(ordVec[i].getSvID() == ordVec[i].svid, testMesg, __LINE__);
-		for(int i=0; i<ordVec.size(); i++)
-		{
-			if (!(ordVec[i].getSvID() == ordVec[i].svid))
-				failCount++;
-		}
-		testFramework.assert(failCount == 0 && ordVec.size() != 0, testMesg, __LINE__);
+      failCount = 0;
+      for(int i=0; i<ordVec.size(); i++)
+         if (!(ordVec[i].getSvID() == ordVec[i].svid))
+            failCount++;
+      TUASSERT(failCount == 0);
+      
+      failCount = 0;
+      for(int i=0; i<ordVec.size(); i++)
+         if (!(ordVec[i].getAzimuth().get_value() == ordVec[i].azimuth.get_value()))
+            failCount++;
+      TUASSERT(failCount == 0);
 
-		failCount = 0;
-		testMesg = "getAzim returned an incorrect value";
-		//testFramework.assert(ordVec[i].getAzimuth().get_value() == ordVec[i].azimuth.get_value(), testMesg, __LINE__);
-		for(int i=0; i<ordVec.size(); i++)
-		{
-			if (!(ordVec[i].getAzimuth().get_value() == ordVec[i].azimuth.get_value()))
-				failCount++;
-		}
-		testFramework.assert(failCount == 0 && ordVec.size() != 0, testMesg, __LINE__);
+      failCount = 0;
+      for(int i=0; i<ordVec.size(); i++)
+         if (!(ordVec[i].getElevation().get_value() == ordVec[i].elevation.get_value()))
+            failCount++;
+      TUASSERT(failCount == 0);
 
-		failCount = 0;
-		testMesg = "getElev returned an incorrect value";
-		//testFramework.assert(ordVec[i].getElevation().get_value() == ordVec[i].elevation.get_value(), testMesg, __LINE__);
-		for(int i=0; i<ordVec.size(); i++)
-		{
-			if (!(ordVec[i].getElevation().get_value() == ordVec[i].elevation.get_value()))
-				failCount++;
-		}
-		testFramework.assert(failCount == 0 && ordVec.size() != 0, testMesg, __LINE__);
+      failCount = 0;
+      for(int i=0; i<ordVec.size(); i++)
+         if (!(ordVec[i].getHealth().get_value() == ordVec[i].health.get_value()))
+            failCount++;
+      TUASSERT(failCount == 0);
 
-		failCount = 0;
-		testMesg = "getHealth returned an incorrect value";
-		//testFramework.assert(ordVec[i].getHealth().get_value() == ordVec[i].health.get_value(), testMesg, __LINE__);
-		for(int i=0; i<ordVec.size(); i++)
-		{
-			if (!(ordVec[i].getHealth().get_value() == ordVec[i].health.get_value()))
-				failCount++;
-		}
-		testFramework.assert(failCount == 0 && ordVec.size() != 0, testMesg, __LINE__);
+      failCount = 0;
+      for(int i=0; i<ordVec.size(); i++)
+         if (!(ordVec[i].getIODC().get_value() == ordVec[i].iodc.get_value()))
+            failCount++;
+      TUASSERT(failCount == 0);
 
-		failCount = 0;
-		testMesg = "getIODC returned an incorrect value";
-		//testFramework.assert(ordVec[i].getIODC().get_value() == ordVec[i].iodc.get_value(), testMesg, __LINE__);
-		for(int i=0; i<ordVec.size(); i++)
-		{
-			if (!(ordVec[i].getIODC().get_value() == ordVec[i].iodc.get_value()))
-				failCount++;
-		}
-		testFramework.assert(failCount == 0 && ordVec.size() != 0, testMesg, __LINE__);
+      failCount = 0;
+      for(int i=0; i<ordVec.size(); i++)
+         if (!(ordVec[i].getORD() == ordVec[i].ord))
+            failCount++;
+      TUASSERT(failCount == 0);
 
-		failCount = 0;
-		testMesg = "getORD( returned an incorrect value";
-			//testFramework.assert(ordVec[i].getORD() == ordVec[i].ord, testMesg, __LINE__);
-		for(int i=0; i<ordVec.size(); i++)
-		{
-			if (!(ordVec[i].getORD() == ordVec[i].ord))
-				failCount++;
-		}
-		testFramework.assert(failCount == 0 && ordVec.size() != 0, testMesg, __LINE__);
+      failCount = 0;
+      for(int i=0; i<ordVec.size(); i++)
+         if (!(ordVec[i].getIono().get_value() == ordVec[i].iono.get_value()))
+            failCount++;
+      TUASSERT(failCount == 0);
 
-		failCount = 0;
-		testMesg = "getIono returned an incorrect value";
-		//testFramework.assert(ordVec[i].getIono().get_value() == ordVec[i].iono.get_value(), testMesg, __LINE__);
-		for(int i=0; i<ordVec.size(); i++)
-		{
-			if (!(ordVec[i].getIono().get_value() == ordVec[i].iono.get_value()))
-				failCount++;
-		}
-		testFramework.assert(failCount == 0 && ordVec.size() != 0, testMesg, __LINE__);
+      failCount = 0;
+      for(int i=0; i<ordVec.size(); i++)
+         if (!(ordVec[i].getTrop().get_value() == ordVec[i].trop.get_value()))
+            failCount++;
+      TUASSERT(failCount == 0);
 
-		failCount = 0;
-		testMesg = "getTrop returned an incorrect value";
-		//testFramework.assert(ordVec[i].getTrop().get_value() == ordVec[i].trop.get_value(), testMesg, __LINE__);
-		for(int i=0; i<ordVec.size(); i++)
-		{
-			if (!(ordVec[i].getTrop().get_value() == ordVec[i].trop.get_value()))
-				failCount++;
-		}
-		testFramework.assert(failCount == 0 && ordVec.size() != 0, testMesg, __LINE__);
-
-		return testFramework.countFails();
-	}
+      TURETURN();
+   }
 	
-//===================================================================================
-// Begin Calculations Test
-//===================================================================================
+   int BasicCalculationTest(void) 
+   {
+      TUDEF("ObsRngDev", "BasicCalculation");      
+      TUASSERT(ordVec.size() > 0);
 
-	int BasicCalculationTest(void) 
-	{
-		//need to test computeOrdRx, computeOrdTx, and computeTrop
-		//none of the math is actually done in this class, is entirely reliant on calls to other files.
-		//Therefore, how test? Calculation at it's core in Xvt::preciseRho
-           gpstk::TestUtil testFramework("ObsRngDev", "BasicCalculation", __FILE__, __LINE__);
+      for (int i=0; i < ordVec.size(); i++)
+      {
+         gpstk::CorrectedEphemerisRange cer;
+         double rho = cer.ComputeAtTransmitTime(ordVec[i].obstime, prange[i], receiverPos, ordVec[i].svid, ephemStore);
+         TUASSERTFE(prange[i] - rho - ordVec[i].trop, ordVec[i].ord);
+         TUASSERTFE(ordVec[i].rho, rho);
+         TUASSERTE(int, ordVec[i].azimuth, cer.azimuth);
+         TUASSERTE(int, ordVec[i].elevation, cer.elevation);
+      }
 
-		gpstk::CorrectedEphemerisRange cer;
-		double rho;
-		double CompareOrd;
-		int failCount1 = 0; int failCount2 = 0; int failCount3 = 0; int failCount4 = 0;
+      TURETURN();
+   }
 
-		//Fails all tests if ordVec isn't generated
-		if (ordVec.size() == 0)
-		{
-			testMesg = "ORDs never generated, impossible to do calculation test";
-			for (int i=0; i<=4; i++)
-				testFramework.assert(false, testMesg, __LINE__);
-		}
+   int IonosphericCalculationTest(void)
+   {
+      TUDEF("ObsRngDev", "IonosphericCalculation");      
+      TUASSERT(ordVecIon.size() > 0);
 
-//Basic
-		for (int i=0; i < ordVec.size(); i++)
-		{
-			rho = cer.ComputeAtTransmitTime(ordVec[i].obstime, prange[i], receiverPos, ordVec[i].svid, ephemStore);
-			CompareOrd = prange[i] - rho - ordVec[i].trop;
-			// testMesg = "Incorrect value for ord";
-			if (!(std::abs(ordVec[i].ord - CompareOrd) < eps)) failCount1++;
-			// testFramework.assert(std::abs(ordVec[i].ord - CompareOrd) < eps, testMesg, __LINE__);
-			// testMesg = "Incorrect value for rho";
-			if (!(std::abs(ordVec[i].rho - rho) < eps)) failCount2++;
-			// testFramework.assert(std::abs(ordVec[i].rho - rho) < eps, testMesg, __LINE__);
-			// testMesg = "Incorrect value for azimuth";
-			relError = std::abs(ordVec[i].azimuth - (float) cer.azimuth) / cer.azimuth;
-			if (!(relError < floatPrecision)) failCount3++;
-			// testFramework.assert(std::abs(ordVec[i].azimuth - (float) cer.azimuth) < eps, testMesg, __LINE__);
-			// testMesg = "Incorrect value for elevation";
-			relError = std::abs(ordVec[i].elevation - (float) cer.elevation) / cer.elevation;
-			if (!(relError < floatPrecision)) failCount4++;
-			// testFramework.assert(std::abs(ordVec[i].elevation - (float) cer.elevation) < eps, testMesg, __LINE__);
-		}
-		testMesg = "Incorrect value for ord";
-		testFramework.assert(failCount1 == 0, testMesg, __LINE__);
-		testMesg = "Incorrect value for rho";
-		testFramework.assert(failCount2 == 0, testMesg, __LINE__);
-		testMesg = "Incorrect value for azimuth";
-		testFramework.assert(failCount3 == 0, testMesg, __LINE__);
-		testMesg = "Incorrect value for elevation";
-		testFramework.assert(failCount4 == 0, testMesg, __LINE__);
+      for (int i=0; i < ordVecIon.size(); i++)
+      {
+         gpstk::CorrectedEphemerisRange cer;
+         double rho = cer.ComputeAtTransmitTime(ordVecIon[i].obstime, prange[i], receiverPos, ordVecIon[i].svid, ephemStore);
+         TUASSERTFEPS(prange[i] - rho - ordVecIon[i].trop - ordVecIon[i].iono, ordVecIon[i].ord, 1e-6);
+         TUASSERTFE(ordVecIon[i].rho, rho);
+         TUASSERTE(int, ordVecIon[i].azimuth, cer.azimuth);
+         TUASSERTE(int, ordVecIon[i].elevation, cer.elevation);
+      }
 
-		return testFramework.countFails();
-	}
+      TURETURN();
+   }
 
-	int IonosphericCalculationTest(void)
-	{
-           gpstk::TestUtil testFramework("ObsRngDev", "IonosphericCalculation", __FILE__, __LINE__);
+   int TroposphericCalculationTest(void)
+   {
+      TUDEF("ObsRngDev", "TroposphericCalculation");      
+      TUASSERT(ordVecTrop.size() > 0);
 
-		gpstk::CorrectedEphemerisRange cer;
-		double rho;
-		double CompareOrd;
-		int failCount1 = 0; int failCount2 = 0; int failCount3 = 0; int failCount4 = 0;
+      for (int i=0; i < ordVecTrop.size(); i++)
+      {
+         gpstk::CorrectedEphemerisRange cer;
+         double rho = cer.ComputeAtTransmitTime(ordVecTrop[i].obstime, prange[i], receiverPos, ordVecTrop[i].svid, ephemStore);
+         double CompareOrd = prange[i] - rho - ordVec[i].trop;
+         TUASSERTFEPS(prange[i] - rho - ordVecTrop[i].trop, ordVecTrop[i].ord, 1e-6);
+         TUASSERTFE(ordVecTrop[i].rho, rho);
+         TUASSERTE(int, ordVecTrop[i].azimuth, cer.azimuth);
+         TUASSERTE(int, ordVecTrop[i].elevation, cer.elevation);
+      }
 
-		//Fails all tests if ordVecIon isn't generated
-		if (ordVecIon.size() == 0)
-		{
-			testMesg = "ORDs never generated, impossible to do calculation test";
-			for (int i=0; i<=4; i++)
-				testFramework.assert(false, testMesg, __LINE__);
-		}
+      TURETURN();
+   }
 
-//Iono
-		for (int i=0; i < ordVecIon.size(); i++)
-		{
-			rho = cer.ComputeAtTransmitTime(ordVecIon[i].obstime, prange[i], receiverPos, ordVecIon[i].svid, ephemStore);
-			CompareOrd = prange[i] - rho - ordVecIon[i].trop - ordVecIon[i].iono;
-			// testMesg = "Incorrect value for ord";
-			if (!(std::abs(ordVecIon[i].ord - CompareOrd) < eps)) failCount1++;
-			// testFramework.assert(std::abs(ordVecIon[i].ord - CompareOrd) < eps, testMesg, __LINE__);
-			// testMesg = "Incorrect value for rho";
-			if (!(std::abs(ordVecIon[i].rho - rho) < eps)) failCount2++;
-			// testFramework.assert(std::abs(ordVecIon[i].rho - rho) < eps, testMesg, __LINE__);
-			// testMesg = "Incorrect value for azimuth";
-			relError = std::abs(ordVecIon[i].azimuth - (float) cer.azimuth) / cer.azimuth;
-			if (!(relError < floatPrecision)) failCount3++;
-			// testFramework.assert(std::abs(ordVecIon[i].azimuth - (float) cer.azimuth) < eps, testMesg, __LINE__);
-			// testMesg = "Incorrect value for elevation";
-			relError = std::abs(ordVecIon[i].elevation - (float) cer.elevation) / cer.elevation;
-			if (!(relError < floatPrecision)) failCount4++;
-			// testFramework.assert(std::abs(ordVecIon[i].elevation - (float) cer.elevation) < eps, testMesg, __LINE__);
-		}
-		testMesg = "Incorrect value for ord";
-		testFramework.assert(failCount1 == 0, testMesg, __LINE__);
-		testMesg = "Incorrect value for rho";
-		testFramework.assert(failCount2 == 0, testMesg, __LINE__);
-		testMesg = "Incorrect value for azimuth";
-		testFramework.assert(failCount3 == 0, testMesg, __LINE__);
-		testMesg = "Incorrect value for elevation";
-		testFramework.assert(failCount4 == 0, testMesg, __LINE__);
+   int IonosphericTroposphericCalculationTest(void)
+   {
+      TUDEF("ObsRngDev", "IonosphericTroposphericCalculation");      
+      TUASSERT(ordVecTropIon.size() > 0);
 
-		return testFramework.countFails();
-	}
+      for (int i=0; i < ordVecTropIon.size(); i++)
+      {
+         gpstk::CorrectedEphemerisRange cer;
+         double rho = cer.ComputeAtTransmitTime(ordVecTropIon[i].obstime, prange[i], receiverPos, ordVecTropIon[i].svid, ephemStore);
+         TUASSERTFEPS(prange[i] - rho - ordVecTropIon[i].trop - ordVecTropIon[i].iono, ordVecTropIon[i].ord, 1e-6);
+         TUASSERTFE(ordVecTropIon[i].rho, rho);
+         TUASSERTE(int, ordVecTropIon[i].azimuth, cer.azimuth);
+         TUASSERTE(int, ordVecTropIon[i].elevation, cer.elevation);
+      }
 
-	int TroposphericCalculationTest(void)
-	{
-		gpstk::TestUtil testFramework("ObsRngDev", "TroposphericCalculation", __FILE__, __LINE__);
+      TURETURN();
+   }
 
-		gpstk::CorrectedEphemerisRange cer;
-		double rho;
-		double CompareOrd;
-		int failCount1 = 0; int failCount2 = 0; int failCount3 = 0; int failCount4 = 0;
+   int GammaCalculationTest(void)
+   {
+      TUDEF("ObsRngDev", "GammaCalculation");      
+      TUASSERT(ordVecGamma.size() > 0);
 
-		//Fails all tests if ordVecTrop isn't generated
-		if (ordVecTrop.size() == 0)
-		{
-			testMesg = "ORDs never generated, impossible to do calculation test";
-			for (int i=0; i<=4; i++)
-				testFramework.assert(false, testMesg, __LINE__);
-		}
+      for (int i=0; i < ordVecGamma.size(); i++)
+      {
+         gpstk::CorrectedEphemerisRange cer;
+         double rho = cer.ComputeAtTransmitTime(ordVecGamma[i].obstime, prange[i], receiverPos, ordVecGamma[i].svid, ephemStore);
+         TUASSERTFEPS(prange[i] - rho - ordVecGamma[i].trop - ordVecGamma[i].iono, ordVecGamma[i].ord, 1e-4);
+         TUASSERTFEPS(ordVecGamma[i].rho, rho, 1e-4);
+         TUASSERTE(int, ordVecGamma[i].azimuth, cer.azimuth);
+         TUASSERTE(int, ordVecGamma[i].elevation, cer.elevation);
+      }
 
-//Trop
-		for (int i=0; i < ordVecTrop.size(); i++)
-		{
-			rho = cer.ComputeAtTransmitTime(ordVecTrop[i].obstime, prange[i], receiverPos, ordVecTrop[i].svid, ephemStore);
-			CompareOrd = prange[i] - rho - ordVecTrop[i].trop;
-			// testMesg = "Incorrect value for ord";
-			if (!(std::abs(ordVecTrop[i].ord - CompareOrd) < eps)) failCount1++;
-			// testFramework.assert(std::abs(ordVecTrop[i].ord - CompareOrd) < eps, testMesg, __LINE__);
-			// testMesg = "Incorrect value for rho";
-			if (!(std::abs(ordVecTrop[i].rho - rho) < eps)) failCount2++;
-			// testFramework.assert(std::abs(ordVecTrop[i].rho - rho) < eps, testMesg, __LINE__);
-			// testMesg = "Incorrect value for azimuth";
-			relError = std::abs(ordVecTrop[i].azimuth - (float) cer.azimuth) / cer.azimuth;
-			if (!(relError < floatPrecision)) failCount3++;
-			// testFramework.assert(std::abs(ordVecTrop[i].azimuth - (float) cer.azimuth) < eps, testMesg, __LINE__);
-			// testMesg = "Incorrect value for elevation";
-			relError = std::abs(ordVecTrop[i].elevation - (float) cer.elevation) / cer.elevation;
-			if (!(relError < floatPrecision)) failCount4++;
-			// testFramework.assert(std::abs(ordVecTrop[i].elevation - (float) cer.elevation) < eps, testMesg, __LINE__);
-		}
-		testMesg = "Incorrect value for ord";
-		testFramework.assert(failCount1 == 0, testMesg, __LINE__);
-		testMesg = "Incorrect value for rho";
-		testFramework.assert(failCount2 == 0, testMesg, __LINE__);
-		testMesg = "Incorrect value for azimuth";
-		testFramework.assert(failCount3 == 0, testMesg, __LINE__);
-		testMesg = "Incorrect value for elevation";
-		testFramework.assert(failCount4 == 0, testMesg, __LINE__);
+      TURETURN();
+   }
 
-		return testFramework.countFails();
-	}
+   int TroposphericGammaCalculationTest(void)
+   {
+      TUDEF("ObsRngDev", "TroposphericGammaCalculation");      
+      TUASSERT(ordVecTropGamma.size() > 0);
 
-	int IonosphericTroposphericCalculationTest(void)
-	{
-		gpstk::TestUtil testFramework("ObsRngDev", "IonosphericTroposphericCalculation", __FILE__, __LINE__);
+      for (int i=0; i < ordVecTropGamma.size(); i++)
+      {
+         gpstk::CorrectedEphemerisRange cer;
+         double rho = cer.ComputeAtTransmitTime(ordVecTropGamma[i].obstime, prange[i], receiverPos, ordVecTropGamma[i].svid, ephemStore);
+         TUASSERTFEPS(prange[i] - rho - ordVecTropGamma[i].trop - ordVecTropGamma[i].iono, ordVecTropGamma[i].ord, 1e-4);
+         TUASSERTFEPS(ordVecTropGamma[i].rho, rho, 1e-4);
+         TUASSERTE(int, ordVecTropGamma[i].azimuth, cer.azimuth);
+         TUASSERTE(int, ordVecTropGamma[i].elevation, cer.elevation);
+      }
 
-		gpstk::CorrectedEphemerisRange cer;
-		double rho;
-		double CompareOrd;
-		int failCount1 = 0; int failCount2 = 0; int failCount3 = 0; int failCount4 = 0;
+      TURETURN();
+   }
 
-		//Fails all tests if ordVecTropIon isn't generated
-		if (ordVecTropIon.size() == 0)
-		{
-			testMesg = "ORDs never generated, impossible to do calculation test";
-			for (int i=0; i<=4; i++)
-				testFramework.assert(false, testMesg, __LINE__);
-		}
+private:
+   int failCount;
+   gpstk::SatID id;
+   std::vector<float> prange;
+   std::vector<float> prange2;
 
-//Trop & Iono
-		for (int i=0; i < ordVecTropIon.size(); i++)
-		{
-			rho = cer.ComputeAtTransmitTime(ordVecTropIon[i].obstime, prange[i], receiverPos, ordVecTropIon[i].svid, ephemStore);
-			CompareOrd = prange[i] - rho - ordVecTropIon[i].trop - ordVecTropIon[i].iono;
-			// testMesg = "Incorrect value for ord";
-			if (!(std::abs(ordVecTropIon[i].ord - CompareOrd) < eps)) failCount1++;
-			// testFramework.assert(std::abs(ordVecTropIon[i].ord - CompareOrd) < eps, testMesg, __LINE__);
-			// testMesg = "Incorrect value for rho";
-			if (!(std::abs(ordVecTropIon[i].rho - rho) < eps)) failCount2++;
-			// testFramework.assert(std::abs(ordVecTropIon[i].rho - rho) < eps, testMesg, __LINE__);
-			// testMesg = "Incorrect value for azimuth";
-			relError = std::abs(ordVecTropIon[i].azimuth - (float) cer.azimuth) / cer.azimuth;
-			if (!(relError < floatPrecision)) failCount3++;
-			// testFramework.assert(std::abs(ordVecTropIon[i].azimuth - (float) cer.azimuth) < eps, testMesg, __LINE__);
-			// testMesg = "Incorrect value for elevation";
-			relError = std::abs(ordVecTropIon[i].elevation - (float) cer.elevation) / cer.elevation;
-			if (!(relError < floatPrecision)) failCount4++;
-			// testFramework.assert(std::abs(ordVecTropIon[i].elevation - (float) cer.elevation) < eps, testMesg, __LINE__);
-		}
-		testMesg = "Incorrect value for ord";
-		testFramework.assert(failCount1 == 0, testMesg, __LINE__);
-		testMesg = "Incorrect value for rho";
-		testFramework.assert(failCount2 == 0, testMesg, __LINE__);
-		testMesg = "Incorrect value for azimuth";
-		testFramework.assert(failCount3 == 0, testMesg, __LINE__);
-		testMesg = "Incorrect value for elevation";
-		testFramework.assert(failCount4 == 0, testMesg, __LINE__);
+   char *buff;
 
-		return testFramework.countFails();
-	}
+   std::vector<gpstk::ObsRngDev> ordVec;
+   std::vector<gpstk::ObsRngDev> ordVecIon;
+   std::vector<gpstk::ObsRngDev> ordVecTrop;
+   std::vector<gpstk::ObsRngDev> ordVecTropIon;
+   std::vector<gpstk::ObsRngDev> ordVecGamma;
+   std::vector<gpstk::ObsRngDev> ordVecTropGamma;
 
-	int GammaCalculationTest(void)
-	{
-		gpstk::TestUtil testFramework("ObsRngDev", "GammaCalculation", __FILE__, __LINE__);
-
-		gpstk::CorrectedEphemerisRange cer;
-		double rho;
-		double CompareOrd;
-		double newPRange;
-		int failCount1 = 0; int failCount2 = 0; int failCount3 = 0; int failCount4 = 0;
-
-		//Fails all tests if ordVecGamma isn't generated
-		if (ordVecGamma.size() == 0)
-		{
-			testMesg = "ORDs never generated, impossible to do calculation test";
-			for (int i=0; i<=4; i++)
-				testFramework.assert(false, testMesg, __LINE__);
-		}
-
-		for (int i=0; i < ordVecGamma.size(); i++)
-		{
-			newPRange = prange[i] - ordVecGamma[i].iono;
-			rho = cer.ComputeAtTransmitTime(ordVecGamma[i].obstime, newPRange, receiverPos, ordVecGamma[i].svid, ephemStore);
-			CompareOrd = prange[i] - rho - ordVecGamma[i].trop - ordVecGamma[i].iono;
-			// testMesg = "Incorrect value for ord";
-			if (!(std::abs(ordVecGamma[i].ord - CompareOrd) < eps)) failCount1++;
-			// testFramework.assert(std::abs(ordVecGamma[i].ord - CompareOrd) < eps, testMesg, __LINE__);
-			// testMesg = "Incorrect value for rho";
-			if (!(std::abs(ordVecGamma[i].rho - rho) < eps)) failCount2++;
-			// testFramework.assert(std::abs(ordVecGamma[i].rho - rho) < eps, testMesg, __LINE__);
-			// testMesg = "Incorrect value for azimuth";
-			relError = std::abs(ordVecGamma[i].azimuth - (float) cer.azimuth) / cer.azimuth;
-			if (!(relError < floatPrecision)) failCount3++;
-			// testFramework.assert(std::abs(ordVecGamma[i].azimuth - (float) cer.azimuth) < eps, testMesg, __LINE__);
-			// testMesg = "Incorrect value for elevation";
-			relError = std::abs(ordVecGamma[i].elevation - (float) cer.elevation) / cer.elevation;
-			if (!(relError < floatPrecision)) failCount4++;
-			// testFramework.assert(std::abs(ordVecGamma[i].elevation - (float) cer.elevation) < eps, testMesg, __LINE__);
-		}
-		testMesg = "Incorrect value for ord";
-		testFramework.assert(failCount1 == 0, testMesg, __LINE__);
-		testMesg = "Incorrect value for rho";
-		testFramework.assert(failCount2 == 0, testMesg, __LINE__);
-		testMesg = "Incorrect value for azimuth";
-		testFramework.assert(failCount3 == 0, testMesg, __LINE__);
-		testMesg = "Incorrect value for elevation";
-		testFramework.assert(failCount4 == 0, testMesg, __LINE__);
-
-		return testFramework.countFails();
-	}
-
-	int TroposphericGammaCalculationTest(void)
-	{
-		gpstk::TestUtil testFramework("ObsRngDev", "TroposphericGammaCalculation", __FILE__, __LINE__);
-
-		gpstk::CorrectedEphemerisRange cer;
-		double rho;
-		double CompareOrd;
-		double newPRange;
-		int failCount1 = 0; int failCount2 = 0; int failCount3 = 0; int failCount4 = 0;
-
-		//Fails all tests if ordVecTropGamma isn't generated
-		if (ordVecTropGamma.size() == 0)
-		{
-			testMesg = "ORDs never generated, impossible to do calculation test";
-			for (int i=0; i<=4; i++)
-                           testFramework.assert(false, testMesg, __LINE__);
-		}
-
-		for (int i=0; i < ordVecTropGamma.size(); i++)
-		{
-			newPRange = prange[i] - ordVecTropGamma[i].iono;
-			rho = cer.ComputeAtTransmitTime(ordVecTropGamma[i].obstime, newPRange, receiverPos, ordVecTropGamma[i].svid, ephemStore);
-			CompareOrd = prange[i] - rho - ordVecTropGamma[i].trop - ordVecTropGamma[i].iono;
-			// testMesg = "Incorrect value for ord";
-			if (!(std::abs(ordVecTropGamma[i].ord - CompareOrd) < eps)) failCount1++;
-			// testFramework.assert(std::abs(ordVecTropGamma[i].ord - CompareOrd) < eps, testMesg, __LINE__);
-			// testMesg = "Incorrect value for rho";
-			if (!(std::abs(ordVecTropGamma[i].rho - rho) < eps)) failCount2++;
-			// testFramework.assert(std::abs(ordVecTropGamma[i].rho - rho) < eps, testMesg, __LINE__);
-			// testMesg = "Incorrect value for azimuth";
-			relError = std::abs(ordVecTropGamma[i].azimuth - (float) cer.azimuth) / cer.azimuth;
-			if (!(relError < floatPrecision)) failCount3++;
-			// testFramework.assert(std::abs(ordVecTropGamma[i].azimuth - (float) cer.azimuth) < eps, testMesg, __LINE__);
-			// testMesg = "Incorrect value for elevation";
-			relError = std::abs(ordVecTropGamma[i].elevation - (float) cer.elevation) / cer.elevation;
-			if (!(relError < floatPrecision)) failCount4++;
-			// testFramework.assert(std::abs(ordVecTropGamma[i].elevation - (float) cer.elevation) < eps, testMesg, __LINE__);
-		}
-		testMesg = "Incorrect value for ord";
-		testFramework.assert(failCount1 == 0, testMesg, __LINE__);
-		testMesg = "Incorrect value for rho";
-		testFramework.assert(failCount2 == 0, testMesg, __LINE__);
-		testMesg = "Incorrect value for azimuth";
-		testFramework.assert(failCount3 == 0, testMesg, __LINE__);
-		testMesg = "Incorrect value for elevation";
-		testFramework.assert(failCount4 == 0, testMesg, __LINE__);
-
-		return testFramework.countFails();
-	}
-
-	private:
-		double eps;
-		float floatPrecision;
-		float relError;
-		std::string testMesg;
-		int failCount;
-		gpstk::SatID id;
-		std::vector<float> prange;
-		std::vector<float> prange2;
-
-		std::vector<gpstk::ObsRngDev> ordVec;
-		std::vector<gpstk::ObsRngDev> ordVecIon;
-		std::vector<gpstk::ObsRngDev> ordVecTrop;
-		std::vector<gpstk::ObsRngDev> ordVecTropIon;
-		std::vector<gpstk::ObsRngDev> ordVecGamma;
-		std::vector<gpstk::ObsRngDev> ordVecTropGamma;
-
-		std::vector< std::map<int, float> > prnPrange;
-		std::vector<gpstk::CommonTime> cTimeVec;
-		gpstk::Position receiverPos;
-		gpstk::RinexEphemerisStore ephemStore;
-		gpstk::WGS84Ellipsoid em;
+   std::vector< std::map<int, float> > prnPrange;
+   std::vector<gpstk::CommonTime> cTimeVec;
+   gpstk::Position receiverPos;
+   gpstk::RinexEphemerisStore ephemStore;
+   gpstk::WGS84Ellipsoid em;
 };
 
 
 int main() //Main function to initialize and run all tests above
 {
-	int check = 0, errorCounter = 0;
-	ObsRngDev_T testClass;
+   int errorCounter = 0;
+   ObsRngDev_T testClass;
 
-	testClass.initialization();
+   errorCounter += testClass.BasicConstructorTest();
+   errorCounter += testClass.IonosphericConstructorTest();
+   errorCounter += testClass.TroposphericConstructorTest();
+   errorCounter += testClass.IonosphericTroposphericConstructorTest();
+   errorCounter += testClass.GammaConstructorTest();
+   errorCounter += testClass.GammaTroposphericConstructorTest();
+   errorCounter += testClass.getFunctionsTest();
+   errorCounter += testClass.BasicCalculationTest();
+   errorCounter += testClass.IonosphericCalculationTest();
+   errorCounter += testClass.TroposphericCalculationTest();
+   errorCounter += testClass.IonosphericTroposphericCalculationTest();
+   errorCounter += testClass.GammaCalculationTest();
+   errorCounter += testClass.TroposphericGammaCalculationTest();
 
-	check = testClass.BasicConstructorTest();
-	errorCounter += check;
+   std::cout << "Total Failures for " << __FILE__ << ": " << errorCounter << std::endl;
 
-	check = testClass.IonosphericConstructorTest();
-	errorCounter += check;
-
-	check = testClass.TroposphericConstructorTest();
-	errorCounter += check;
-
-	check = testClass.IonosphericTroposphericConstructorTest();
-	errorCounter += check;
-
-	check = testClass.GammaConstructorTest();
-	errorCounter += check;
-
-	check = testClass.GammaTroposphericConstructorTest();
-	errorCounter += check;
-
-	check = testClass.getFunctionsTest();
-	errorCounter += check;
-
-	check = testClass.BasicCalculationTest();
-	errorCounter += check;
-
-	check = testClass.IonosphericCalculationTest();
-	errorCounter += check;
-
-	check = testClass.TroposphericCalculationTest();
-	errorCounter += check;
-
-	check = testClass.IonosphericTroposphericCalculationTest();
-	errorCounter += check;
-
-	check = testClass.GammaCalculationTest();
-	errorCounter += check;
-
-	check = testClass.TroposphericGammaCalculationTest();
-	errorCounter += check;	
-
-	std::cout << "Total Failures for " << __FILE__ << ": " << errorCounter << std::endl;
-
-	return errorCounter; //Return the total number of errors
+   return errorCounter;
 }

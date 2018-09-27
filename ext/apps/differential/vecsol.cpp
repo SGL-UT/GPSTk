@@ -63,7 +63,7 @@
 #include "SP3Data.hpp"
 #include "SP3Stream.hpp"
 
-#include "TropModel.hpp"
+#include "SimpleTropModel.hpp"
 #include "WGS84Ellipsoid.hpp"
 #include "IonoModelStore.hpp"
 

@@ -370,7 +370,7 @@ class Expression_test(unittest.TestCase):
         self.assertAlmostEqual(12.0, e.evaluate())
 
         e = gpstk.Expression('L1 + L2')
-        e.setGPSConstants();
+        e.setGPSConstants()
         self.assertAlmostEqual(2803020000.0, e.evaluate())
 
     def test_function(self):

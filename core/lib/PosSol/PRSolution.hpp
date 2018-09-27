@@ -66,19 +66,27 @@ namespace gpstk
       std::string lab[3];
       Stats<double> S[3];
       Matrix<double> sumInfo;
-      Vector<double> sumInfoState;
+      Vector<double> sumInfoState,Sbias;
 
    public:
 
       // ctor
-      WtdAveStats(void) : N(0)
-         { lab[0]="ECEF_X";  lab[1]="ECEF_Y"; lab[2]="ECEF_Z"; }
+      WtdAveStats(void)
+      {
+         reset();
+         lab[0]="ECEF_X";  lab[1]="ECEF_Y"; lab[2]="ECEF_Z";
+      }
 
       void setMessage(std::string m) throw() { msg = m; }
       std::string getMessage(void) const throw() { return msg; }
 
       void setLabels(std::string lab1, std::string lab2, std::string lab3) throw()
          { lab[0]=lab1; lab[1]=lab2; lab[2]=lab3; }
+
+      Vector<double> getSol(void) const
+      {
+         return (getCov()*sumInfoState + Sbias);
+      }
 
       Matrix<double> getCov(void) const { return inverseSVD(sumInfo); }
 
@@ -91,6 +99,7 @@ namespace gpstk
          N = 0;
          sumInfo = Matrix<double>();
          sumInfoState = Vector<double>();
+         Sbias = Vector<double>(3);
          S[0].Reset();
          S[1].Reset();
          S[2].Reset();
@@ -102,11 +111,15 @@ namespace gpstk
       {
          try {
             // add to the statistics
-            for(int i=0; i<3; i++) S[i].Add(Sol(i));
+            for(unsigned int i=0; i<3; i++) {
+               if(N==0) Sbias(i) = Sol(i);
+               S[i].Add(Sol(i)-Sbias(i));
+            }
 
             // NB do NOT include clock(s); this can ruin the position average
             Vector<double> Sol3(Sol);
             Sol3.resize(3);               // assumes position states come first
+            Sol3 = Sol3 - Sbias;
             Matrix<double> Cov3(Cov,0,0,3,3);
 
             // information matrix (position only)
@@ -133,23 +146,29 @@ namespace gpstk
             if(N > 0) {
                os << "  " << lab[0] << " N: " << S[0].N()
                   << std::fixed << std::setprecision(4)
-                  << " Ave: " << S[0].Average() << " Std: " << S[0].StdDev()
-                  << " Min: " << S[0].Minimum() << " Max: " << S[0].Maximum()
+                  << " Ave: " << S[0].Average()+Sbias[0]
+                  << " Std: " << S[0].StdDev()
+                  << " Min: " << S[0].Minimum()+Sbias[0]
+                  << " Max: " << S[0].Maximum()+Sbias[0]
                   << std::endl;
                os << "  " << lab[1] << " N: " << S[1].N()
                   << std::fixed << std::setprecision(4)
-                  << " Ave: " << S[1].Average() << " Std: " << S[1].StdDev()
-                  << " Min: " << S[1].Minimum() << " Max: " << S[1].Maximum()
+                  << " Ave: " << S[1].Average()+Sbias[1]
+                  << " Std: " << S[1].StdDev()
+                  << " Min: " << S[1].Minimum()+Sbias[1]
+                  << " Max: " << S[1].Maximum()+Sbias[1]
                   << std::endl;
                os << "  " << lab[2] << " N: " << S[2].N()
                   << std::fixed << std::setprecision(4)
-                  << " Ave: " << S[2].Average() << " Std: " << S[2].StdDev()
-                  << " Min: " << S[2].Minimum() << " Max: " << S[2].Maximum()
+                  << " Ave: " << S[2].Average()+Sbias[2]
+                  << " Std: " << S[2].StdDev()
+                  << " Min: " << S[2].Minimum()+Sbias[2]
+                  << " Max: " << S[2].Maximum()+Sbias[2]
                   << std::endl;
 
                os << "Weighted average " << msg << std::endl;
                Matrix<double> Cov(inverseSVD(sumInfo));
-               Vector<double> Sol(Cov * sumInfoState);
+               Vector<double> Sol(Cov * sumInfoState + Sbias);
                os << std::setw(14) << std::setprecision(4) << Sol << "    " << N;
             }
             else os << " No data!";
@@ -241,6 +260,12 @@ namespace gpstk
          return 0.0;
       }
 
+      /// get the number of degrees of freedom
+      inline int getNDOF(void) { return ndof; }
+
+      /// get the average solution vector
+      Vector<double> getSol(void) const { return was.getSol(); }
+
       /// get the accumulated covariance matrix
       Matrix<double> getCov(void) const { return was.getCov(); }
 
@@ -306,14 +331,14 @@ namespace gpstk
                Namelist NL;
                NL += "ECEF_X"; NL += "ECEF_Y"; NL += "ECEF_Z";
                LabeledMatrix LM(NL,Cov);
-               LM.scientific().setprecision(3).setw(14);
+               LM.scientific().setprecision(3).setw(14).symmetric(true);
 
                os << "Covariance: " << msg << std::endl << LM << std::endl;
                os << "APV: " << msg << std::fixed << std::setprecision(3)
                   << " sigma = " << sig << " meters with "
-                  << ndof << " degrees of freedom.";
+                  << ndof << " degrees of freedom.\n";
             }
-            else os << " Not enough data for covariance.";
+            else os << " Not enough data for covariance.\n";
          }
          catch(Exception& e) { GPSTK_RETHROW(e); }
       }
@@ -599,27 +624,39 @@ namespace gpstk
       int DOPCompute(void) throw(Exception);
 
       /// conveniences for printing the results of the pseudorange solution algorithm
-      /// output position, error code and V/NV
+      /// return string of position, error code and V/NV
       std::string outputPOSString(std::string tag, int iret=-99,
                                     const Vector<double>& Vec=PRSNullVector) throw();
-      /// output {SYS clock} for all systems, error code and V/NV
+
+      /// return string of {SYS clock} for all systems, error code and V/NV
       std::string outputCLKString(std::string tag, int iret=-99) throw();
-      /// output info in POS and CLK
+
+      /// return string of info in POS and CLK
       std::string outputNAVString(std::string tag, int iret=-99,
                                     const Vector<double>& Vec=PRSNullVector) throw();
-      /// output NSVdropped, Nsvs, RMS residual, TDOP, PDOP, GDOP, Slope, niter, conv,
+
+      /// return string of Nsvs, RMS residual, TDOP, PDOP, GDOP, Slope, niter, conv,
       /// satellites, error code and V/NV
       std::string outputRMSString(std::string tag, int iret=-99) throw();
       std::string outputValidString(int iret=-99) throw();
-      /// output POS, CLK and RMS strings
+
+      /// return string of NAV and RMS strings
       std::string outputString(std::string tag, int iret=-99,
                                const Vector<double>& Vec=PRSNullVector) throw();
+      /// return string of the form "#tag label etc" which is header for data strings
+      std::string outputStringHeader(std::string tag) throw()
+         { return outputString(tag,-999); }
 
       /// A convenience for printing the error code (return value)
       std::string errorCodeString(int iret) throw();
 
       /// A convenience for printing the current configuarion
       std::string configString(std::string tag) throw();
+
+      /// Set current time
+
+      void setTime(const CommonTime& ct) throw()
+         { currTime = ct; }
 
    private:
 

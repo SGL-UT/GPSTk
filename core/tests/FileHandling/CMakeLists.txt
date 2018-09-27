@@ -28,6 +28,10 @@ add_executable(RinexMet_T RinexMet_T.cpp)
 target_link_libraries(RinexMet_T gpstk)
 add_test(FileHandling_RinexMet_T RinexMet_T)
 
+add_executable(Rinex3Obs_FromScratch_T Rinex3Obs_FromScratch_T.cpp)
+target_link_libraries(Rinex3Obs_FromScratch_T gpstk)
+add_test(FileHandling_Rinex3Obs_FromScratch_T Rinex3Obs_FromScratch_T)
+
 add_executable(RinexNav_T RinexNav_T.cpp)
 target_link_libraries(RinexNav_T gpstk)
 add_test(FileHandling_RinexNav_T RinexNav_T)

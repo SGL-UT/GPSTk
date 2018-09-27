@@ -15,7 +15,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -23,13 +23,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -69,8 +69,6 @@ try {
       string filename;
 
          // initialize -- this will mark unopened file
-      ObsFileList[i].ins.close();
-      ObsFileList[i].ins.clear();
       ObsFileList[i].nread = -1;
       ObsFileList[i].dt = -1.0;
       ObsFileList[i].firstTime = CommonTime::BEGINNING_OF_TIME;
@@ -80,7 +78,7 @@ try {
       if(!CI.InputPath.empty()) filename = CI.InputPath + "/";
       filename += ObsFileList[i].name;
 
-         // open
+         // open (calls close and clear during initialization)
       ObsFileList[i].ins.open(filename.c_str(),ios_base::in);
 
          // did open succeed?
@@ -209,11 +207,10 @@ try {
          << endl;
       }
 
-         // go back and do it again
-      ObsFileList[i].ins.close();
-      ObsFileList[i].ins.clear();
+      // Prepare to read again - reopening the file clears errors
+      // and resets the file position to the start of the file
       ObsFileList[i].ins.open(filename.c_str(),ios_base::in);
-      ObsFileList[i].ins.exceptions(ios_base::failbit);
+
       } // end reading twice
 
    }  // end loop over input observation files

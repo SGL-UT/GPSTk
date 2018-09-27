@@ -46,19 +46,22 @@ namespace gpstk
 {
       const std::string NavID::NavTypeStrings[] = {
          "GPS_LNAV",
-         "GPS_L2_CNAV",
-         "GPS_L5_CNAV",
+         "GPS_CNAV_L2",
+         "GPS_CNAV_L5",
          "GPS_MNAV",
          "Beidou_D1",
          "Beidou_D2",
          "GloCivilF",
          "GloCivilC",
-         "GalOS",
+         "GalFNAV",
+         "GalINAV",
+         "IRNSS_SPS",
          "Unknown"
       };
          /// explicit constructor, no defaults
       NavID::NavID( const SatID& sidr, const ObsID& oidr )
-      {     //If SatID (sat system type) corresponds to GPS AND ObsID
+      {    
+            //If SatID (sat system type) corresponds to GPS AND ObsID
             //(carrier band) corresponds to either L1 OR L2 AND ObsID
             //(tracking code) matches CA, P, Y, W, N, OR D then NavID 
             //corresponds to GPS LNAV.
@@ -106,14 +109,24 @@ namespace gpstk
                  ( oidr.code==ObsID::tcIR3 || oidr.code==ObsID::tcQR3 ||
                    oidr.code==ObsID::tcIQR3 )) navType = ntGloCivilC;
               
-         else if ( sidr.system==SatID::systemGalileo &&                   
-                 ( oidr.band==ObsID::cbL1  || oidr.band==ObsID::cbL5  ||
-                   oidr.band==ObsID::cbE5b || oidr.band==ObsID::cbE5ab ) &&
-                 ( oidr.code>=ObsID::tcB   || oidr.code==ObsID::tcBC  ||
-                   oidr.code==ObsID::tcABC || oidr.code==ObsID::tcIE5 ||
-                   oidr.code==ObsID::tcQE5 || oidr.code<=ObsID::tcIQE5 )) 
-                   navType = ntGalOS; 
-               
+         else if ( sidr.system==SatID::systemGalileo )
+         {
+            if ( oidr.band==ObsID::cbL1 && oidr.code==ObsID::tcB )
+                 navType = ntGalINAV;
+            else if ( oidr.band==ObsID::cbE5b  && 
+                   ( oidr.code==ObsID::tcIE5b || oidr.code==ObsID::tcIQE5b ))
+                 navType = ntGalINAV;
+            else if ( oidr.band==ObsID::cbL5 &&            // This is Galileo E5a
+                   ( oidr.code==ObsID::tcIE5a || oidr.code==ObsID::tcIQE5a ))
+                 navType = ntGalFNAV; 
+         }
+
+         else if ( sidr.system==SatID::systemIRNSS &&
+                   oidr.band==ObsID::cbL5 &&
+                 ( oidr.code==ObsID::tcIA5 || oidr.code==ObsID::tcIB5 ||
+                   oidr.code==ObsID::tcIC5 || oidr.code==ObsID::tcIX5 ))  
+                   navType = ntIRNSS_SPS; 
+
          else navType = ntUnknown;
          
       }
@@ -145,7 +158,13 @@ namespace gpstk
             navType = ntGloCivilC;
             
          else if ( s.compare( NavTypeStrings[8] ) == 0 )
-            navType = ntGalOS;
+            navType = ntGalFNAV;
+            
+         else if ( s.compare( NavTypeStrings[9] ) == 0 )
+            navType = ntGalINAV;
+
+         else if ( s.compare( NavTypeStrings[10] ) == 0 )
+            navType = ntIRNSS_SPS;
             
          else navType = ntUnknown;
       }

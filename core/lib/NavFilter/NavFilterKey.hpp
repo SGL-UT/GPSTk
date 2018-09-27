@@ -1,6 +1,7 @@
 #ifndef NAVFILTERKEY_HPP
 #define NAVFILTERKEY_HPP
 
+#include <ostream>
 #include <ObsID.hpp>
 #include <CommonTime.hpp>
 #include <gpstkplatform.h>
@@ -42,15 +43,20 @@ namespace gpstk
          // Nav code is not necessary as each filter is unique to a
          // given navigation message structure.
 
+      virtual void dump(std::ostream& s) const; 
+
          // Do not define an operator<(), let the filter classes
          // define their own sorting algorithms as needed.
    protected:
          // make this a polymorphic type so dynamic_cast works
       virtual void dummy() {}
+
    };
 
       //@}
-
+   
+      // Write to output stream
+   std::ostream& operator<<(std::ostream& s, const NavFilterKey& nfk); 
 }
 
 #endif // NAVFILTERKEY_HPP

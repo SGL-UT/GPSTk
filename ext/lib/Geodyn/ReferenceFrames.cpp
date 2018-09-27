@@ -138,7 +138,8 @@ namespace gpstk
       try
       {
          double rvState[6] = {0.0};
-         int ret = solarPlanets.computeState(JD_TO_MJD + static_cast<Epoch>(TT).MJD(),
+         solarPlanets.RelativeInertialPositionVelocity(
+            static_cast<Epoch>(TT).MJD(),
             entity,
             center,
             rvState);
@@ -148,24 +149,22 @@ namespace gpstk
          rvState[4] /= 86400.0;
          rvState[5] /= 86400.0;
 
-         if(ret == 0)
-         {
+         //if(ret == 0)
+         //{
             rvJ2k = rvState;
             return rvJ2k;
-         }
-         else
-         {
-            rvJ2k.resize(6,0.0);
-
-            // failed to compute
-            InvalidRequest e("Failed to compute, error code: "
-               +StringUtils::asString(ret)+" with meaning\n"
-               +"-1 and -2 given time is out of the file \n"
-               +"-3 and -4 input stream is not open or not valid,"
-               +" or EOF was found prematurely");
-
-            GPSTK_THROW(e);
-         }
+         //}
+         //else
+         //{
+         //   rvJ2k.resize(6,0.0);
+         //   // failed to compute
+         //   InvalidRequest e("Failed to compute, error code: "
+         //      +StringUtils::asString(ret)+" with meaning\n"
+         //      +"-1 and -2 given time is out of the file \n"
+         //      +"-3 and -4 input stream is not open or not valid,"
+         //      +" or EOF was found prematurely");
+         //   GPSTK_THROW(e);
+         //}
       }
       catch(Exception& e)
       {

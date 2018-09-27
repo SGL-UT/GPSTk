@@ -43,6 +43,16 @@
 using namespace std;
 using namespace gpstk;
 
+// Macro to assert that there are no errors and add diagnostics to
+// test output if there are
+#define COPANOERR(COP)                                                  \
+   {                                                                    \
+      std::ostringstream oss;                                           \
+      oss << "CommandOptionParser has errors:" << endl;                 \
+      COP.dumpErrors(oss);                                              \
+      testFramework.assert(!COP.hasErrors(), oss.str(), __LINE__);      \
+   }
+
 class CommandOptionParser_T
 {
 public:
@@ -53,7 +63,8 @@ public:
    int testAddOption();
    int testParseOptions();
    int testOptionPresence();
-   //int testDisplayUsage();
+   int testNOfWhich();
+      //int testDisplayUsage();
 
 };
 
@@ -62,96 +73,114 @@ public:
  */
 int CommandOptionParser_T::testInitialization()
 {
-   TestUtil  tester( "CommandOptionParser", "Initialization", __FILE__, __LINE__ );
+   TUDEF("CommandOptionParser", "Initialization");
 
    try
    {
       CommandOptionParser  cop("");
-      tester.assert( (cop.hasErrors() == false), "CommandOptionParser has unexpected errors.", __LINE__ );
-      tester.assert( true, "CommandOptionParser was created successfully.", __LINE__ );
+      TUASSERT(!cop.hasErrors());
+      TUPASS("CommandOptionParser was created successfully.");
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception but should not have.");
    }
 
    try
    {
       CommandOptionParser  cop("Program description");
-      tester.assert( (cop.hasErrors() == false), "CommandOptionParser has unexpected errors.", __LINE__ );
-      tester.assert( true, "CommandOptionParser was created successfully.", __LINE__ );
+      TUASSERT(!cop.hasErrors());
+      TUPASS("CommandOptionParser was created successfully.");
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception but should not have.");
    }
 
    try
    {
       CommandOptionVec  testCmdOptVec;
       CommandOptionParser  cop("Program description", testCmdOptVec);
-      tester.assert( (cop.hasErrors() == false), "CommandOptionParser has unexpected errors.", __LINE__ );
-      tester.assert( true, "CommandOptionParser was created successfully.", __LINE__ );
+      TUASSERT(!cop.hasErrors());
+      TUPASS("CommandOptionParser was created successfully.");
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception but should not have.");
    }
 
    try
    {
       CommandOptionVec  testCmdOptVec;
-      CommandOption  cmdOpt1(CommandOption::noArgument, CommandOption::stdType, 'f', "foo", "Foo", false, testCmdOptVec);
-      CommandOption  cmdOpt2(CommandOption::noArgument, CommandOption::stdType, 'b', "bar", "Boo", false, testCmdOptVec);
+      CommandOption  cmdOpt1(CommandOption::noArgument,
+                             CommandOption::stdType, 'f', "foo", "Foo", false,
+                             testCmdOptVec);
+      CommandOption  cmdOpt2(CommandOption::noArgument,
+                             CommandOption::stdType, 'b', "bar", "Boo", false,
+                             testCmdOptVec);
       CommandOptionParser  cop("Program description", testCmdOptVec);
-      tester.assert( (cop.hasErrors() == false), "CommandOptionParser has unexpected errors.", __LINE__ );
-      tester.assert( true, "CommandOptions were added successfully.", __LINE__ );
+      TUASSERT(!cop.hasErrors());
+      TUPASS("CommandOptions were added successfully.");
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception but should not have.");
    }
 
    try  // Disallow multiple CommandOption's with identical short options
    {
       CommandOptionVec  testCmdOptVec;
-      CommandOption  cmdOpt1(CommandOption::noArgument, CommandOption::stdType, 'f', "foo", "Foo", false, testCmdOptVec);
-      CommandOption  cmdOpt2(CommandOption::noArgument, CommandOption::stdType, 'f', "far", "Far", false, testCmdOptVec);
+      CommandOption  cmdOpt1(CommandOption::noArgument, CommandOption::stdType,
+                             'f', "foo", "Foo", false, testCmdOptVec);
+      CommandOption  cmdOpt2(CommandOption::noArgument, CommandOption::stdType,
+                             'f', "far", "Far", false, testCmdOptVec);
       CommandOptionParser  cop("Program description", testCmdOptVec);
-      tester.assert( false, "CommandOptionParser should have disallowed conflicting short options.", __LINE__ );
+      TUFAIL("CommandOptionParser should have disallowed conflicting short"
+             " options.");
    }
    catch ( ... )
    {
-      tester.assert( true, "CommandOptionParser correctly threw an exception to disallow conflicting short options.", __LINE__ );
+      TUPASS("CommandOptionParser correctly threw an exception to disallow"
+             " conflicting short options.");
    }
 
    try  // Disallow multiple CommandOption's with identical long options
    {
       CommandOptionVec  testCmdOptVec;
-      CommandOption  cmdOpt1(CommandOption::noArgument, CommandOption::stdType, 'f', "foo", "Foo1", false, testCmdOptVec);
-      CommandOption  cmdOpt2(CommandOption::noArgument, CommandOption::stdType, 'F', "foo", "Foo2", false, testCmdOptVec);
+      CommandOption  cmdOpt1(CommandOption::noArgument, CommandOption::stdType,
+                             'f', "foo", "Foo1", false, testCmdOptVec);
+      CommandOption  cmdOpt2(CommandOption::noArgument, CommandOption::stdType,
+                             'F', "foo", "Foo2", false, testCmdOptVec);
       CommandOptionParser  cop("Program description", testCmdOptVec);
-      tester.assert( false, "CommandOptionParser should have disallowed conflicting long options.", __LINE__ );
+      TUFAIL("CommandOptionParser should have disallowed conflicting long"
+             " options.");
    }
    catch ( ... )
    {
-      tester.assert( true, "CommandOptionParser correctly threw an exception to disallow conflicting long options.", __LINE__ );
+      TUPASS("CommandOptionParser correctly threw an exception to disallow"
+             " conflicting long options.");
    }
 
    try  // Disallow multiple CommandOptionRest instances
    {
       CommandOptionVec  testCmdOptVec;
-      CommandOption  cmdOpt1(CommandOption::noArgument, CommandOption::trailingType, 0, "", "Foo1", false, testCmdOptVec);
-      CommandOption  cmdOpt2(CommandOption::noArgument, CommandOption::trailingType, 0, "", "Foo2", false, testCmdOptVec);
+      CommandOption  cmdOpt1(CommandOption::noArgument,
+                             CommandOption::trailingType, 0, "", "Foo1", false,
+                             testCmdOptVec);
+      CommandOption  cmdOpt2(CommandOption::noArgument,
+                             CommandOption::trailingType, 0, "", "Foo2", false,
+                             testCmdOptVec);
       CommandOptionParser  cop("Program description", testCmdOptVec);
-      tester.assert( false, "CommandOptionParser should have disallowed multiple CommandOptionRest instances.", __LINE__ );
+      TUFAIL("CommandOptionParser should have disallowed multiple"
+             " CommandOptionRest instances.");
    }
    catch ( ... )
    {
-      tester.assert( true, "CommandOptionParser correctly threw an exception to multiple CommandOptionRest instances.", __LINE__ );
+      TUPASS("CommandOptionParser correctly threw an exception to multiple"
+             " CommandOptionRest instances.");
    }
 
-   return tester.countFails();
+   TURETURN();
 }
 
 
@@ -159,69 +188,85 @@ int CommandOptionParser_T::testInitialization()
  */
 int CommandOptionParser_T::testAddOption()
 {
-   TestUtil  tester( "CommandOptionParser", "AddOption", __FILE__, __LINE__ );
+   TUDEF("CommandOptionParser", "AddOption");
 
    try
    {
       CommandOptionVec  testCmdOptVec;
-      CommandOption  cmdOpt1(CommandOption::noArgument, CommandOption::stdType, 'f', "foo", "Foo", false, testCmdOptVec);
-      CommandOption  cmdOpt2(CommandOption::noArgument, CommandOption::stdType, 'b', "bar", "Boo", false, testCmdOptVec);
+      CommandOption  cmdOpt1(CommandOption::noArgument, CommandOption::stdType,
+                             'f', "foo", "Foo", false, testCmdOptVec);
+      CommandOption  cmdOpt2(CommandOption::noArgument, CommandOption::stdType,
+                             'b', "bar", "Boo", false, testCmdOptVec);
       CommandOptionParser  cop("Program description");
       cop.addOption(cmdOpt1);
       cop.addOption(cmdOpt2);
-      tester.assert( true, "CommandOptions were added successfully.", __LINE__ );
+      TUPASS("CommandOptions were added successfully.");
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception but should not have.");
    }
 
    try  // Disallow multiple CommandOption's with identical short options
    {
       CommandOptionVec  testCmdOptVec;
-      CommandOption  cmdOpt1(CommandOption::noArgument, CommandOption::stdType, 'f', "foo", "Foo", false, testCmdOptVec);
-      CommandOption  cmdOpt2(CommandOption::noArgument, CommandOption::stdType, 'f', "far", "Far", false, testCmdOptVec);
+      CommandOption  cmdOpt1(CommandOption::noArgument, CommandOption::stdType,
+                             'f', "foo", "Foo", false, testCmdOptVec);
+      CommandOption  cmdOpt2(CommandOption::noArgument, CommandOption::stdType,
+                             'f', "far", "Far", false, testCmdOptVec);
       CommandOptionParser  cop("Program description");
       cop.addOption(cmdOpt1);
       cop.addOption(cmdOpt2);
-      tester.assert( false, "CommandOptionParser should have disallowed conflicting short options.", __LINE__ );
+      TUFAIL("CommandOptionParser should have disallowed conflicting short"
+             " options.");
    }
    catch ( ... )
    {
-      tester.assert( true, "CommandOptionParser correctly threw an exception to disallow conflicting short options.", __LINE__ );
+      TUPASS("CommandOptionParser correctly threw an exception to disallow"
+             " conflicting short options.");
    }
 
    try  // Disallow multiple CommandOption's with identical long options
    {
       CommandOptionVec  testCmdOptVec;
-      CommandOption  cmdOpt1(CommandOption::noArgument, CommandOption::stdType, 'f', "foo", "Foo1", false, testCmdOptVec);
-      CommandOption  cmdOpt2(CommandOption::noArgument, CommandOption::stdType, 'F', "foo", "Foo2", false, testCmdOptVec);
+      CommandOption  cmdOpt1(CommandOption::noArgument, CommandOption::stdType,
+                             'f', "foo", "Foo1", false, testCmdOptVec);
+      CommandOption  cmdOpt2(CommandOption::noArgument, CommandOption::stdType,
+                             'F', "foo", "Foo2", false, testCmdOptVec);
       CommandOptionParser  cop("Program description");
       cop.addOption(cmdOpt1);
       cop.addOption(cmdOpt2);
-      tester.assert( false, "CommandOptionParser should have disallowed conflicting long options.", __LINE__ );
+      TUFAIL("CommandOptionParser should have disallowed conflicting long"
+             " options.");
    }
    catch ( ... )
    {
-      tester.assert( true, "CommandOptionParser correctly threw an exception to disallow conflicting long options.", __LINE__ );
+      TUPASS("CommandOptionParser correctly threw an exception to disallow"
+             " conflicting long options.");
    }
 
    try  // Disallow multiple CommandOptionRest instances
    {
       CommandOptionVec  testCmdOptVec;
-      CommandOption  cmdOpt1(CommandOption::noArgument, CommandOption::trailingType, 0, "", "Foo1", false, testCmdOptVec);
-      CommandOption  cmdOpt2(CommandOption::noArgument, CommandOption::trailingType, 0, "", "Foo2", false, testCmdOptVec);
+      CommandOption  cmdOpt1(CommandOption::noArgument,
+                             CommandOption::trailingType, 0, "", "Foo1", false,
+                             testCmdOptVec);
+      CommandOption  cmdOpt2(CommandOption::noArgument,
+                             CommandOption::trailingType, 0, "", "Foo2", false,
+                             testCmdOptVec);
       CommandOptionParser  cop("Program description");
       cop.addOption(cmdOpt1);
       cop.addOption(cmdOpt2);
-      tester.assert( false, "CommandOptionParser should have disallowed multiple CommandOptionRest instances.", __LINE__ );
+      TUFAIL("CommandOptionParser should have disallowed multiple"
+             " CommandOptionRest instances.");
    }
    catch ( ... )
    {
-      tester.assert( true, "CommandOptionParser correctly threw an exception to multiple CommandOptionRest instances.", __LINE__ );
+      TUPASS("CommandOptionParser correctly threw an exception to multiple"
+             " CommandOptionRest instances.");
    }
 
-   return tester.countFails();
+   TURETURN();
 }
 
 
@@ -229,7 +274,7 @@ int CommandOptionParser_T::testAddOption()
  */
 int CommandOptionParser_T::testParseOptions()
 {
-   TestUtil  tester( "CommandOptionParser", "ParseOptions", __FILE__, __LINE__ );
+   TUDEF("CommandOptionParser", "ParseOptions");
 
    try  // Parse with no CommandOptions
    {
@@ -237,260 +282,300 @@ int CommandOptionParser_T::testParseOptions()
       int  argc = 1;
       char*  argv[] = { const_cast<char*>("program") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
       if (cop.hasErrors() )
       {
          std::ostringstream  oss;
-         oss << "CommandOptionParser encountered unexpected errors while parsing: ";
+         oss << "CommandOptionParser encountered unexpected errors while"
+             << " parsing: ";
          cop.dumpErrors(oss);
-         tester.assert( false, oss.str(), __LINE__ );
+         TUFAIL(oss.str());
       }
       else
       {
-         tester.assert( true, "CommandOptionParser parsed without errors.", __LINE__ );
+         TUPASS("CommandOptionParser parsed without errors.");
       }
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    try  // Parse with a single CommandOption with no value
    {
       CommandOptionVec  testCmdOptVec;
-      CommandOption  cmdOpt(CommandOption::noArgument, CommandOption::stdType, 'f', "foo", "Foo", false, testCmdOptVec);
+      CommandOption  cmdOpt(CommandOption::noArgument, CommandOption::stdType,
+                            'f', "foo", "Foo", false, testCmdOptVec);
       CommandOptionParser  cop("Description", testCmdOptVec);
       int  argc = 2;
-      char*  argv[] = { const_cast<char*>("program"), const_cast<char*>("-f") };
+      char*  argv[] = { const_cast<char*>("program"), const_cast<char*>("-f")};
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
-      if (cop.hasErrors() )
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
+      if (cop.hasErrors())
       {
          std::ostringstream  oss;
-         oss << "CommandOptionParser encountered unexpected errors while parsing: ";
+         oss << "CommandOptionParser encountered unexpected errors while"
+             << " parsing: ";
          cop.dumpErrors(oss);
-         tester.assert( false, oss.str(), __LINE__ );
+         TUFAIL(oss.str());
       }
       else
       {
-         tester.assert( true, "CommandOptionParser parsed without errors.", __LINE__ );
+         TUPASS("CommandOptionParser parsed without errors.");
          std::ostringstream  countOss;
          countOss << cmdOpt.getCount();
-         tester.assert( (cmdOpt.getCount() == 1), "Expected 1 instance of CommandOption, not " + countOss.str(), __LINE__ );
+         TUASSERTE(unsigned long,1,cmdOpt.getCount());
          std::ostringstream  orderOss;
          orderOss << cmdOpt.getOrder();
-         tester.assert( (cmdOpt.getOrder() == 1), "Expected CommandOption to be option 1, not " + orderOss.str(), __LINE__ );
+         TUASSERTE(unsigned long,1,cmdOpt.getOrder());
       }
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an unexpected exception.");
    }
 
    try  // Parse with a single CommandOption with a value
    {
       CommandOptionVec  testCmdOptVec;
-      CommandOption  cmdOpt(CommandOption::hasArgument, CommandOption::stdType, 'f', "foo", "Foo", false, testCmdOptVec);
+      CommandOption  cmdOpt(CommandOption::hasArgument, CommandOption::stdType,
+                            'f', "foo", "Foo", false, testCmdOptVec);
       CommandOptionParser  cop("Description", testCmdOptVec);
       int  argc = 3;
-      char*  argv[] = { const_cast<char*>("program"), const_cast<char*>("-f"), const_cast<char*>("value") };
+      char*  argv[] = { const_cast<char*>("program"), const_cast<char*>("-f"),
+                        const_cast<char*>("value") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
       if (cop.hasErrors() )
       {
          std::ostringstream  oss;
-         oss << "CommandOptionParser encountered unexpected errors while parsing: ";
+         oss << "CommandOptionParser encountered unexpected errors while"
+             << " parsing: ";
          cop.dumpErrors(oss);
-         tester.assert( false, oss.str(), __LINE__ );
+         TUFAIL(oss.str());
       }
       else
       {
-         tester.assert( true, "CommandOptionParser parsed without errors.", __LINE__ );
+         TUPASS("CommandOptionParser parsed without errors.");
          std::ostringstream  countOss;
          countOss << cmdOpt.getCount();
-         tester.assert( (cmdOpt.getCount() == 1), "Expected 1 instance of CommandOption, not " + countOss.str(), __LINE__ );
+         TUASSERTE(unsigned long,1,cmdOpt.getCount());
          std::ostringstream  orderOss;
          orderOss << cmdOpt.getOrder();
-         tester.assert( (cmdOpt.getOrder() == 1), "Expected CommandOption to be option 1, not " + orderOss.str(), __LINE__ );
+         TUASSERTE(unsigned long,1,cmdOpt.getOrder());
          std::vector<std::string>  values = cmdOpt.getValue();
-         tester.assert( (values.size() == 1), "Expected CommandOption to have 1 value.", __LINE__ );
+         TUASSERTE(unsigned long,1,values.size());
          if (values.size() == 1)
          {
-            tester.assert( (values[0].compare("value") == 0), "Expected CommandOption value to be 'value'.", __LINE__ );
+            TUASSERTE(unsigned long,0,values[0].compare("value"));
          }
       }
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an unexpected exception.");
    }
 
    try  // Parse with an unexpected standard CommandOption
    {
       CommandOptionVec  testCmdOptVec;
-      CommandOption  cmdOpt(CommandOption::noArgument, CommandOption::stdType, 'f', "foo", "Foo", false, testCmdOptVec);
+      CommandOption  cmdOpt(CommandOption::noArgument, CommandOption::stdType,
+                            'f', "foo", "Foo", false, testCmdOptVec);
       CommandOptionParser  cop("Description", testCmdOptVec);
       int  argc = 2;
-      char*  argv[] = { const_cast<char*>("program"), const_cast<char*>("-g") };
+      char*  argv[] = { const_cast<char*>("program"), const_cast<char*>("-g")};
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
-      tester.assert( cop.hasErrors(), "CommandOptionParser should have generated errors while parsing.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
+      TUASSERT(cop.hasErrors());
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    try  // Parse with an unexpected trailing CommandOption
    {
       CommandOptionVec  testCmdOptVec;
-      CommandOption  cmdOpt(CommandOption::noArgument, CommandOption::stdType, 'f', "foo", "Foo", false, testCmdOptVec);
+      CommandOption  cmdOpt(CommandOption::noArgument, CommandOption::stdType,
+                            'f', "foo", "Foo", false, testCmdOptVec);
       CommandOptionParser  cop("Description", testCmdOptVec);
       int  argc = 3;
-      char*  argv[] = { const_cast<char*>("program"), const_cast<char*>("-f"), const_cast<char*>("trailing") };
+      char*  argv[] = { const_cast<char*>("program"), const_cast<char*>("-f"),
+                        const_cast<char*>("trailing") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
-      tester.assert( cop.hasErrors(), "CommandOptionParser should have generated errors while parsing.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
+      TUASSERT(cop.hasErrors());
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    try  // Parse with a missing required CommandOption
    {
       CommandOptionVec  testCmdOptVec;
-      CommandOption  cmdOpt(CommandOption::noArgument, CommandOption::stdType, 'f', "foo", "Foo", true, testCmdOptVec);
+      CommandOption  cmdOpt(CommandOption::noArgument, CommandOption::stdType,
+                            'f', "foo", "Foo", true, testCmdOptVec);
       CommandOptionParser  cop("Description", testCmdOptVec);
       int  argc = 2;
-      char*  argv[] = { const_cast<char*>("program"), const_cast<char*>("trailing") };
+      char*  argv[] = { const_cast<char*>("program"),
+                        const_cast<char*>("trailing") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
-      tester.assert( cop.hasErrors(), "CommandOptionParser should have generated errors while parsing.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
+      TUASSERT(cop.hasErrors());
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    try  // Parse with a violated CommandOption max count
    {
       CommandOptionVec  testCmdOptVec;
-      CommandOption  cmdOpt(CommandOption::noArgument, CommandOption::stdType, 'f', "foo", "Foo", false, testCmdOptVec);
+      CommandOption  cmdOpt(CommandOption::noArgument, CommandOption::stdType,
+                            'f', "foo", "Foo", false, testCmdOptVec);
       cmdOpt.setMaxCount(1);
       CommandOptionParser  cop("Description", testCmdOptVec);
       int  argc = 3;
-      char*  argv[] = { const_cast<char*>("program"), const_cast<char*>("-f"), const_cast<char*>("-f") };
+      char*  argv[] = { const_cast<char*>("program"), const_cast<char*>("-f"),
+                        const_cast<char*>("-f") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
-      tester.assert( cop.hasErrors(), "CommandOptionParser should have generated errors while parsing.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
+      TUASSERT(cop.hasErrors());
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    try  // Parse with multiple CommandOptions
    {
       CommandOptionVec  testCmdOptVec;
-      CommandOption  cmdOpt1(CommandOption::noArgument, CommandOption::stdType, 'f', "foo", "Foo", false, testCmdOptVec);
-      CommandOption  cmdOpt2(CommandOption::noArgument, CommandOption::stdType, 'g', "goo", "Goo", false, testCmdOptVec);
+      CommandOption  cmdOpt1(CommandOption::noArgument, CommandOption::stdType,
+                             'f', "foo", "Foo", false, testCmdOptVec);
+      CommandOption  cmdOpt2(CommandOption::noArgument, CommandOption::stdType,
+                             'g', "goo", "Goo", false, testCmdOptVec);
       CommandOptionParser  cop("Description", testCmdOptVec);
       int  argc = 3;
-      char*  argv[] = { const_cast<char*>("program"), const_cast<char*>("-g"), const_cast<char*>("-f") };
+      char*  argv[] = { const_cast<char*>("program"), const_cast<char*>("-g"),
+                        const_cast<char*>("-f") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
       if (cop.hasErrors() )
       {
          std::ostringstream  oss;
-         oss << "CommandOptionParser encountered unexpected errors while parsing: ";
+         oss << "CommandOptionParser encountered unexpected errors while"
+             << " parsing: ";
          cop.dumpErrors(oss);
-         tester.assert( false, oss.str(), __LINE__ );
+         TUFAIL(oss.str());
       }
       else
       {
-         tester.assert( true, "CommandOptionParser parsed without errors.", __LINE__ );
+         TUPASS("CommandOptionParser parsed without errors.");
          std::ostringstream  count1Oss;
          count1Oss << cmdOpt1.getCount();         
-         tester.assert( (cmdOpt1.getCount() == 1), "Expected 1 instance of CommandOption 1, not " + count1Oss.str(), __LINE__ );
+         TUASSERTE(unsigned long,1,cmdOpt1.getCount());
          std::ostringstream  count2Oss;
          count2Oss << cmdOpt1.getCount();         
-         tester.assert( (cmdOpt2.getCount() == 1), "Expected 1 instance of CommandOption 2, not " + count2Oss.str(), __LINE__ );
+         TUASSERTE(unsigned long,1,cmdOpt2.getCount());
          std::ostringstream  order1Oss;
          order1Oss << cmdOpt2.getOrder();
-         tester.assert( (cmdOpt1.getOrder() == 2), "Expected CommandOption 1 to be option 2, not " + order1Oss.str(), __LINE__ );
+         TUASSERTE(unsigned long,2,cmdOpt1.getOrder());
          std::ostringstream  order2Oss;
          order2Oss << cmdOpt2.getOrder();
-         tester.assert( (cmdOpt2.getOrder() == 1), "Expected CommandOption 2 to be option 1, not " + order2Oss.str(), __LINE__ );
+         TUASSERTE(unsigned long,1,cmdOpt2.getOrder());
       }
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    try  // Parse a CommandOption with no short option
    {
       CommandOptionVec  testCmdOptVec;
-      CommandOption  cmdOpt(CommandOption::noArgument, CommandOption::stdType, 0, "foo", "Foo", false, testCmdOptVec);
+      CommandOption  cmdOpt(CommandOption::noArgument, CommandOption::stdType,
+                            0, "foo", "Foo", false, testCmdOptVec);
       CommandOptionParser  cop("Description", testCmdOptVec);
       int  argc = 2;
-      char*  argv[] = { const_cast<char*>("program"), const_cast<char*>("--foo") };
+      char*  argv[] = { const_cast<char*>("program"),
+                        const_cast<char*>("--foo") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
       if (cop.hasErrors() )
       {
          std::ostringstream  oss;
-         oss << "CommandOptionParser encountered unexpected errors while parsing: ";
+         oss << "CommandOptionParser encountered unexpected errors while"
+             << " parsing: ";
          cop.dumpErrors(oss);
-         tester.assert( false, oss.str(), __LINE__ );
+         TUFAIL(oss.str());
       }
       else
       {
-         tester.assert( true, "CommandOptionParser parsed without errors.", __LINE__ );
+         TUPASS("CommandOptionParser parsed without errors.");
          std::ostringstream  countOss;
          countOss << cmdOpt.getCount();
-         tester.assert( (cmdOpt.getCount() == 1), "Expected 1 instance of CommandOption, not " + countOss.str(), __LINE__ );
+         TUASSERTE(unsigned long,1,cmdOpt.getCount());
          std::ostringstream  orderOss;
          orderOss << cmdOpt.getOrder();
-         tester.assert( (cmdOpt.getOrder() == 1), "Expected CommandOption to be option 1, not " + orderOss.str(), __LINE__ );
+         TUASSERTE(unsigned long,1,cmdOpt.getOrder());
       }
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    try  // Parse a CommandOption with no long option
    {
       CommandOptionVec  testCmdOptVec;
-      CommandOption  cmdOpt(CommandOption::noArgument, CommandOption::stdType, 'f', "", "Foo", false, testCmdOptVec);
+      CommandOption  cmdOpt(CommandOption::noArgument, CommandOption::stdType,
+                            'f', "", "Foo", false, testCmdOptVec);
       CommandOptionParser  cop("Description", testCmdOptVec);
       int  argc = 2;
-      char*  argv[] = { const_cast<char*>("program"), const_cast<char*>("-f") };
+      char*  argv[] = { const_cast<char*>("program"), const_cast<char*>("-f")};
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
       if (cop.hasErrors() )
       {
          std::ostringstream  oss;
-         oss << "CommandOptionParser encountered unexpected errors while parsing: ";
+         oss << "CommandOptionParser encountered unexpected errors while"
+             << " parsing: ";
          cop.dumpErrors(oss);
-         tester.assert( false, oss.str(), __LINE__ );
+         TUFAIL(oss.str());
       }
       else
       {
-         tester.assert( true, "CommandOptionParser parsed without errors.", __LINE__ );
+         TUPASS("CommandOptionParser parsed without errors.");
          std::ostringstream  countOss;
          countOss << cmdOpt.getCount();
-         tester.assert( (cmdOpt.getCount() == 1), "Expected 1 instance of CommandOption, not " + countOss.str(), __LINE__ );
+         TUASSERTE(unsigned long,1,cmdOpt.getCount());
          std::ostringstream  orderOss;
          orderOss << cmdOpt.getOrder();
-         tester.assert( (cmdOpt.getOrder() == 1), "Expected CommandOption to be option 1, not " + orderOss.str(), __LINE__ );
+         TUASSERTE(unsigned long,1,cmdOpt.getOrder());
       }
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    defaultCommandOptionList.clear();
@@ -500,70 +585,81 @@ int CommandOptionParser_T::testParseOptions()
       CommandOptionNoArg  cmdOpt('f', "foo", "Foo", false);
       CommandOptionParser  cop("Description");
       int  argc = 3;
-      char*  argv[] = { const_cast<char*>("program"), const_cast<char*>("-f"), const_cast<char*>("--foo") };
+      char*  argv[] = { const_cast<char*>("program"), const_cast<char*>("-f"),
+                        const_cast<char*>("--foo") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
       if (cop.hasErrors() )
       {
          std::ostringstream  oss;
-         oss << "CommandOptionParser encountered unexpected errors while parsing: ";
+         oss << "CommandOptionParser encountered unexpected errors while"
+             << " parsing: ";
          cop.dumpErrors(oss);
-         tester.assert( false, oss.str(), __LINE__ );
+         TUFAIL(oss.str());
       }
       else
       {
-         tester.assert( true, "CommandOptionParser parsed without errors.", __LINE__ );
+         TUPASS("CommandOptionParser parsed without errors.");
          std::ostringstream  countOss;
          countOss << cmdOpt.getCount();
-         tester.assert( (cmdOpt.getCount() == 2), "Expected 2 instances of CommandOptionNoArg, not " + countOss.str(), __LINE__ );
+         TUASSERTE(unsigned long,2,cmdOpt.getCount());
          std::ostringstream  orderOss;
          orderOss << cmdOpt.getOrder();
-         tester.assert( (cmdOpt.getOrder() == 2), "Expected CommandOptioNoArg to be option 2, not " + orderOss.str(), __LINE__ );
+         TUASSERTE(unsigned long,2,cmdOpt.getOrder());
       }
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    defaultCommandOptionList.clear();
 
    try  // Parse a CommandOptionWithArg
    {
-      CommandOptionWithArg  cmdOpt(CommandOption::stdType, 'f', "foo", "Foo", false);
+      CommandOptionWithArg  cmdOpt(CommandOption::stdType, 'f', "foo", "Foo",
+                                   false);
       CommandOptionParser  cop("Description");
       int  argc = 5;
-      char*  argv[] = { const_cast<char*>("program"), const_cast<char*>("-f"), const_cast<char*>("value1"), const_cast<char*>("--foo"), const_cast<char*>("value2") };
+      char*  argv[] = { const_cast<char*>("program"), const_cast<char*>("-f"),
+                        const_cast<char*>("value1"),
+                        const_cast<char*>("--foo"),
+                        const_cast<char*>("value2") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
       if (cop.hasErrors() )
       {
          std::ostringstream  oss;
-         oss << "CommandOptionParser encountered unexpected errors while parsing: ";
+         oss << "CommandOptionParser encountered unexpected errors while"
+             << " parsing: ";
          cop.dumpErrors(oss);
-         tester.assert( false, oss.str(), __LINE__ );
+         TUFAIL(oss.str());
       }
       else
       {
-         tester.assert( true, "CommandOptionParser parsed without errors.", __LINE__ );
+         TUPASS("CommandOptionParser parsed without errors.");
          std::ostringstream  countOss;
          countOss << cmdOpt.getCount();
-         tester.assert( (cmdOpt.getCount() == 2), "Expected 2 instances of CommandOptionWithArg, not " + countOss.str(), __LINE__ );
+         TUASSERTE(unsigned long,2,cmdOpt.getCount());
          std::ostringstream  orderOss;
          orderOss << cmdOpt.getOrder();
-         tester.assert( (cmdOpt.getOrder() == 2), "Expected CommandOptioWithArg to be option 2, not " + orderOss.str(), __LINE__ );
+         TUASSERTE(unsigned long,2,cmdOpt.getOrder());
          std::vector<std::string>  values = cmdOpt.getValue();
-         tester.assert( (values.size() == 2), "Expected CommandOption to have 2 values.", __LINE__ );
+         TUASSERTE(unsigned long,2,values.size());
          if (values.size() == 2)
          {
-            tester.assert( (values[0].compare("value1") == 0), "Expected 1st CommandOptionWithArg value to be 'value1'.", __LINE__ );
-            tester.assert( (values[1].compare("value2") == 0), "Expected 2nd CommandOptionWithArg value to be 'value2'.", __LINE__ );
+            TUASSERTE(std::string,"value1",values[0]);
+            TUASSERTE(std::string,"value2",values[1]);
          }
       }
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    defaultCommandOptionList.clear();
@@ -573,37 +669,43 @@ int CommandOptionParser_T::testParseOptions()
       CommandOptionWithAnyArg  cmdOpt('f', "foo", "Foo", false);
       CommandOptionParser  cop("Description");
       int  argc = 5;
-      char*  argv[] = { const_cast<char*>("program"), const_cast<char*>("-f"), const_cast<char*>("value1"), const_cast<char*>("--foo"), const_cast<char*>("value2") };
+      char*  argv[] = { const_cast<char*>("program"), const_cast<char*>("-f"),
+                        const_cast<char*>("value1"),
+                        const_cast<char*>("--foo"),
+                        const_cast<char*>("value2") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
       if (cop.hasErrors() )
       {
          std::ostringstream  oss;
-         oss << "CommandOptionParser encountered unexpected errors while parsing: ";
+         oss << "CommandOptionParser encountered unexpected errors while"
+             << " parsing: ";
          cop.dumpErrors(oss);
-         tester.assert( false, oss.str(), __LINE__ );
+         TUFAIL(oss.str());
       }
       else
       {
-         tester.assert( true, "CommandOptionParser parsed without errors.", __LINE__ );
+         TUPASS("CommandOptionParser parsed without errors.");
          std::ostringstream  countOss;
          countOss << cmdOpt.getCount();
-         tester.assert( (cmdOpt.getCount() == 2), "Expected 2 instances of CommandOptionWithAnyArg, not " + countOss.str(), __LINE__ );
+         TUASSERTE(unsigned long,2,cmdOpt.getCount());
          std::ostringstream  orderOss;
          orderOss << cmdOpt.getOrder();
-         tester.assert( (cmdOpt.getOrder() == 2), "Expected CommandOptioWithAnyArg to be option 2, not " + orderOss.str(), __LINE__ );
+         TUASSERTE(unsigned long,2,cmdOpt.getOrder());
          std::vector<std::string>  values = cmdOpt.getValue();
-         tester.assert( (values.size() == 2), "Expected CommandOption to have 2 values.", __LINE__ );
+         TUASSERTE(unsigned long,2,values.size());
          if (values.size() == 2)
          {
-            tester.assert( (values[0].compare("value1") == 0), "Expected 1st CommandOptionWithAnyArg value to be 'value1'.", __LINE__ );
-            tester.assert( (values[1].compare("value2") == 0), "Expected 2nd CommandOptionWithAnyArg value to be 'value2'.", __LINE__ );
+            TUASSERTE(std::string,"value1",values[0]);
+            TUASSERTE(std::string,"value2",values[1]);
          }
       }
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    defaultCommandOptionList.clear();
@@ -619,22 +721,26 @@ int CommandOptionParser_T::testParseOptions()
                         const_cast<char*>("--foo"),
                         const_cast<char*>("value2") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
       if (cop.hasErrors() )
       {
          std::ostringstream  oss;
-         oss << "CommandOptionParser encountered expected errors while parsing: ";
+         oss << "CommandOptionParser encountered expected errors while"
+          << " parsing: ";
          cop.dumpErrors(oss);
-         tester.assert( true, oss.str(), __LINE__ );
+         TUPASS(oss.str());
       }
       else
       {
-         tester.assert( false, "CommandOptionParser parsed without errors but should have rejected the argument value due to its format", __LINE__ );
+         TUFAIL("CommandOptionParser parsed without errors but should have"
+                " rejected the argument value due to its format");
       }
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    defaultCommandOptionList.clear();
@@ -644,37 +750,43 @@ int CommandOptionParser_T::testParseOptions()
       CommandOptionWithStringArg  cmdOpt('f', "foo", "Foo", false);
       CommandOptionParser  cop("Description");
       int  argc = 5;
-      char*  argv[] = { const_cast<char*>("program"), const_cast<char*>("-f"), const_cast<char*>("valueOne"), const_cast<char*>("--foo"), const_cast<char*>("valueTwo") };
+      char*  argv[] = { const_cast<char*>("program"), const_cast<char*>("-f"),
+                        const_cast<char*>("valueOne"),
+                        const_cast<char*>("--foo"),
+                        const_cast<char*>("valueTwo") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
       if (cop.hasErrors() )
       {
          std::ostringstream  oss;
-         oss << "CommandOptionParser encountered unexpected errors while parsing: ";
+         oss << "CommandOptionParser encountered unexpected errors while"
+             << " parsing: ";
          cop.dumpErrors(oss);
-         tester.assert( false, oss.str(), __LINE__ );
+         TUFAIL(oss.str());
       }
       else
       {
-         tester.assert( true, "CommandOptionParser parsed without errors.", __LINE__ );
+         TUPASS("CommandOptionParser parsed without errors.");
          std::ostringstream  countOss;
          countOss << cmdOpt.getCount();
-         tester.assert( (cmdOpt.getCount() == 2), "Expected 2 instances of CommandOptionWithStringArg, not " + countOss.str(), __LINE__ );
+         TUASSERTE(unsigned long,2,cmdOpt.getCount());
          std::ostringstream  orderOss;
          orderOss << cmdOpt.getOrder();
-         tester.assert( (cmdOpt.getOrder() == 2), "Expected CommandOptioWithStringArg to be option 2, not " + orderOss.str(), __LINE__ );
+         TUASSERTE(unsigned long,2,cmdOpt.getOrder());
          std::vector<std::string>  values = cmdOpt.getValue();
-         tester.assert( (values.size() == 2), "Expected CommandOption to have 2 values.", __LINE__ );
+         TUASSERTE(unsigned long,2,values.size());
          if (values.size() == 2)
          {
-            tester.assert( (values[0].compare("valueOne") == 0), "Expected 1st CommandOptionWithStringArg value to be 'valueOne'.", __LINE__ );
-            tester.assert( (values[1].compare("valueTwo") == 0), "Expected 2nd CommandOptionWithStringArg value to be 'valueTwo'.", __LINE__ );
+            TUASSERTE(std::string,"valueOne",values[0]);
+            TUASSERTE(std::string,"valueTwo",values[1]);
          }
       }
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    defaultCommandOptionList.clear();
@@ -690,22 +802,26 @@ int CommandOptionParser_T::testParseOptions()
                         const_cast<char*>("--foo"),
                         const_cast<char*>("12.45") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
       if (cop.hasErrors() )
       {
          std::ostringstream  oss;
-         oss << "CommandOptionParser encountered expected errors while parsing: ";
+         oss << "CommandOptionParser encountered expected errors while"
+          << " parsing: ";
          cop.dumpErrors(oss);
-         tester.assert( true, oss.str(), __LINE__ );
+         TUPASS(oss.str());
       }
       else
       {
-         tester.assert( false, "CommandOptionParser parsed without errors but should have rejected the argument value due to its format", __LINE__ );
+         TUFAIL("CommandOptionParser parsed without errors but should have"
+                " rejected the argument value due to its format");
       }
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    defaultCommandOptionList.clear();
@@ -721,35 +837,38 @@ int CommandOptionParser_T::testParseOptions()
                         const_cast<char*>("--foo"),
                         const_cast<char*>("12345") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
       if (cop.hasErrors() )
       {
          std::ostringstream  oss;
-         oss << "CommandOptionParser encountered unexpected errors while parsing: ";
+         oss << "CommandOptionParser encountered unexpected errors while"
+             << " parsing: ";
          cop.dumpErrors(oss);
-         tester.assert( false, oss.str(), __LINE__ );
+         TUFAIL(oss.str());
       }
       else
       {
-         tester.assert( true, "CommandOptionParser parsed without errors.", __LINE__ );
+         TUPASS("CommandOptionParser parsed without errors.");
          std::ostringstream  countOss;
          countOss << cmdOpt.getCount();
-         tester.assert( (cmdOpt.getCount() == 2), "Expected 2 instances of CommandOptionWithNumberArg, not " + countOss.str(), __LINE__ );
+         TUASSERTE(unsigned long,2,cmdOpt.getCount());
          std::ostringstream  orderOss;
          orderOss << cmdOpt.getOrder();
-         tester.assert( (cmdOpt.getOrder() == 2), "Expected CommandOptioWithNumberArg to be option 2, not " + orderOss.str(), __LINE__ );
+         TUASSERTE(unsigned long,2,cmdOpt.getOrder());
          std::vector<std::string>  values = cmdOpt.getValue();
-         tester.assert( (values.size() == 2), "Expected CommandOption to have 2 values.", __LINE__ );
+         TUASSERTE(unsigned long,2,values.size());
          if (values.size() == 2)
          {
-            tester.assert( (values[0].compare("0") == 0), "Expected 1st CommandOptionWithNumberArg value to be '0'.", __LINE__ );
-            tester.assert( (values[1].compare("12345") == 0), "Expected 2nd CommandOptionWithNumberArg value to be '12345'.", __LINE__ );
+            TUASSERTE(std::string,"0",values[0]);
+            TUASSERTE(std::string,"12345",values[1]);
          }
       }
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    defaultCommandOptionList.clear();
@@ -765,22 +884,26 @@ int CommandOptionParser_T::testParseOptions()
                         const_cast<char*>("--foo"),
                         const_cast<char*>("1.2e34") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
       if (cop.hasErrors() )
       {
          std::ostringstream  oss;
-         oss << "CommandOptionParser encountered expected errors while parsing: ";
+         oss << "CommandOptionParser encountered expected errors while"
+          << " parsing: ";
          cop.dumpErrors(oss);
-         tester.assert( true, oss.str(), __LINE__ );
+         TUPASS(oss.str());
       }
       else
       {
-         tester.assert( false, "CommandOptionParser parsed without errors but should have rejected the argument value due to its format", __LINE__ );
+         TUFAIL("CommandOptionParser parsed without errors but should have"
+                " rejected the argument value due to its format");
       }
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    defaultCommandOptionList.clear();
@@ -796,42 +919,46 @@ int CommandOptionParser_T::testParseOptions()
                         const_cast<char*>("--foo"),
                         const_cast<char*>("123.45") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
       if (cop.hasErrors() )
       {
          std::ostringstream  oss;
-         oss << "CommandOptionParser encountered unexpected errors while parsing: ";
+         oss << "CommandOptionParser encountered unexpected errors while"
+             << " parsing: ";
          cop.dumpErrors(oss);
-         tester.assert( false, oss.str(), __LINE__ );
+         TUFAIL(oss.str());
       }
       else
       {
-         tester.assert( true, "CommandOptionParser parsed without errors.", __LINE__ );
+         TUPASS("CommandOptionParser parsed without errors.");
          std::ostringstream  countOss;
          countOss << cmdOpt.getCount();
-         tester.assert( (cmdOpt.getCount() == 2), "Expected 2 instances of CommandOptionWithDecimalArg, not " + countOss.str(), __LINE__ );
+         TUASSERTE(unsigned long,2,cmdOpt.getCount());
          std::ostringstream  orderOss;
          orderOss << cmdOpt.getOrder();
-         tester.assert( (cmdOpt.getOrder() == 2), "Expected CommandOptionWithDecimalArg to be option 2, not " + orderOss.str(), __LINE__ );
+         TUASSERTE(unsigned long,2,cmdOpt.getOrder());
          std::vector<std::string>  values = cmdOpt.getValue();
-         tester.assert( (values.size() == 2), "Expected CommandOption to have 2 values.", __LINE__ );
+         TUASSERTE(unsigned long,2,values.size());
          if (values.size() == 2)
          {
-            tester.assert( (values[0].compare("0") == 0), "Expected 1st CommandOptionWithDecimalArg value to be '0'.", __LINE__ );
-            tester.assert( (values[1].compare("123.45") == 0), "Expected 2nd CommandOptionWithDecimalArg value to be '123.45'.", __LINE__ );
+            TUASSERTE(std::string,"0",values[0]);
+            TUASSERTE(std::string,"123.45",values[1]);
          }
       }
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    defaultCommandOptionList.clear();
 
    try  // Parse a CommandOptionWithCommonTimeArg (invalid)
    {
-      CommandOptionWithCommonTimeArg  cmdOpt('t', "time", "%Y %j %s", "Time", false);
+      CommandOptionWithCommonTimeArg  cmdOpt('t', "time", "%Y %j %s", "Time",
+                                             false);
       CommandOptionParser  cop("Description");
       int  argc = 5;
       char*  argv[] = { const_cast<char*>("program"),
@@ -840,29 +967,34 @@ int CommandOptionParser_T::testParseOptions()
                         const_cast<char*>("--time"),
                         const_cast<char*>("1234") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
       if (cop.hasErrors() )
       {
          std::ostringstream  oss;
-         oss << "CommandOptionParser encountered expected errors while parsing: ";
+         oss << "CommandOptionParser encountered expected errors while"
+             << " parsing: ";
          cop.dumpErrors(oss);
-         tester.assert( true, oss.str(), __LINE__ );
+         TUPASS(oss.str());
       }
       else
       {
-         tester.assert( false, "CommandOptionParser parsed without errors but should have rejected the argument value due to its format.", __LINE__ );
+         TUFAIL("CommandOptionParser parsed without errors but should have"
+                " rejected the argument value due to its format.");
       }
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    defaultCommandOptionList.clear();
 
    try  // Parse a CommandOptionWithCommonTimeArg (valid YDS)
    {
-      CommandOptionWithCommonTimeArg  cmdOpt('t', "time", "%Y %j %s", "Time", false);
+      CommandOptionWithCommonTimeArg  cmdOpt('t', "time", "%Y %j %s", "Time",
+                                             false);
       CommandOptionParser  cop("Description");
       int  argc = 5;
       char*  argv[] = { const_cast<char*>("program"),
@@ -871,44 +1003,48 @@ int CommandOptionParser_T::testParseOptions()
                         const_cast<char*>("--time"),
                         const_cast<char*>("2015 234 56789.0") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
       if (cop.hasErrors() )
       {
          std::ostringstream  oss;
-         oss << "CommandOptionParser encountered unexpected errors while parsing: ";
+         oss << "CommandOptionParser encountered unexpected errors while"
+             << " parsing: ";
          cop.dumpErrors(oss);
-         tester.assert( false, oss.str(), __LINE__ );
+         TUFAIL(oss.str());
       }
       else
       {
-         tester.assert( true, "CommandOptionParser parsed without errors.", __LINE__ );
+         TUPASS("CommandOptionParser parsed without errors.");
          std::ostringstream  countOss;
          countOss << cmdOpt.getCount();
-         tester.assert( (cmdOpt.getCount() == 2), "Expected 2 instances of CommandOptionWithCommonTimeArg, not " + countOss.str(), __LINE__ );
+         TUASSERTE(unsigned long,2,cmdOpt.getCount());
          std::ostringstream  orderOss;
          orderOss << cmdOpt.getOrder();
-         tester.assert( (cmdOpt.getOrder() == 2), "Expected CommandOptionWithCommonTimeArg to be option 2, not " + orderOss.str(), __LINE__ );
+         TUASSERTE(unsigned long,2,cmdOpt.getOrder());
          std::vector<std::string>  values = cmdOpt.getValue();
-         tester.assert( (values.size() == 2), "Expected CommandOption to have 2 values.", __LINE__ );
+         TUASSERTE(unsigned long,2,values.size());
          if (values.size() == 2)
          {
-            tester.assert( (values[0].compare("2015 123 45678.0") == 0), "Expected 1st CommandOptionWithCommonTimeArg value to be '2015 123 45678.0'.", __LINE__ );
-            tester.assert( (values[1].compare("2015 234 56789.0") == 0), "Expected 2nd CommandOptionWithCommonTimeArg value to be '2015 234 56789.0'.", __LINE__ );
+            TUASSERTE(std::string,"2015 123 45678.0",values[0]);
+            TUASSERTE(std::string,"2015 234 56789.0",values[1]);
          }
          std::vector<gpstk::CommonTime>  times = cmdOpt.getTime();
-         tester.assert( (times.size() == 2), "Expected CommandOption to have 2 times.", __LINE__ );
+         TUASSERTE(unsigned long,2,times.size());
          if (times.size() == 2)
          {
-            gpstk::CommonTime  t1 = gpstk::YDSTime(2015, 123, 45678.0).convertToCommonTime();
-            gpstk::CommonTime  t2 = gpstk::YDSTime(2015, 234, 56789.0).convertToCommonTime();
-            tester.assert( (times[0] == t1), "Expected 1st CommandOptionWithCommonTimeArg time to be '2015 123 45678.0'.", __LINE__ );
-            tester.assert( (times[1] == t2), "Expected 2nd CommandOptionWithCommonTimeArg time to be '2015 234 56789.0'.", __LINE__ );
+            gpstk::CommonTime  t1 =
+               gpstk::YDSTime(2015, 123, 45678.0).convertToCommonTime();
+            gpstk::CommonTime  t2 =
+               gpstk::YDSTime(2015, 234, 56789.0).convertToCommonTime();
+            TUASSERTE(gpstk::CommonTime,t1,times[0]);
+            TUASSERTE(gpstk::CommonTime,t2,times[1]);
          }
       }
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an unexpected exception.");
    }
 
    defaultCommandOptionList.clear();
@@ -920,12 +1056,14 @@ int CommandOptionParser_T::testParseOptions()
       int  argc = 1;
       char*  argv[] = { const_cast<char*>("program") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
-      tester.assert( cop.hasErrors(), "CommandOptionParser should have produced errors due to missing CommandOptionRest.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
+      TUASSERT(cop.hasErrors());
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    defaultCommandOptionList.clear();
@@ -935,42 +1073,47 @@ int CommandOptionParser_T::testParseOptions()
       CommandOptionRest  cmdOpt("Description", false);
       CommandOptionParser  cop("Description");
       int  argc = 3;
-      char*  argv[] = { const_cast<char*>("program"), const_cast<char*>("trailing1"), const_cast<char*>("trailing2") };
+      char*  argv[] = { const_cast<char*>("program"),
+                        const_cast<char*>("trailing1"),
+                        const_cast<char*>("trailing2") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
       if (cop.hasErrors() )
       {
          std::ostringstream  oss;
-         oss << "CommandOptionParser encountered unexpected errors while parsing: ";
+         oss << "CommandOptionParser encountered unexpected errors while"
+             << " parsing: ";
          cop.dumpErrors(oss);
-         tester.assert( false, oss.str(), __LINE__ );
+         TUFAIL(oss.str());
       }
       else
       {
-         tester.assert( true, "CommandOptionParser parsed without errors.", __LINE__ );
+         TUPASS("CommandOptionParser parsed without errors.");
          std::ostringstream  countOss;
          countOss << cmdOpt.getCount();
-         tester.assert( (cmdOpt.getCount() == 2), "Expected 2 instances of CommandOptionRest, not " + countOss.str(), __LINE__ );
+         TUASSERTE(unsigned long,2,cmdOpt.getCount());
          std::ostringstream  orderOss;
          orderOss << cmdOpt.getOrder();
-         tester.assert( (cmdOpt.getOrder() == 2), "Expected CommandOptionRest to be option 2, not " + orderOss.str(), __LINE__ );
+         TUASSERTE(unsigned long,2,cmdOpt.getOrder());
          std::vector<std::string>  values = cmdOpt.getValue();
-         tester.assert( (values.size() == 2), "Expected CommandOption to have 2 values.", __LINE__ );
+         TUASSERTE(unsigned long,2,values.size());
          if (values.size() == 2)
          {
-            tester.assert( (values[0].compare("trailing1") == 0), "Expected 1st CommandOptionRest value to be 'trailing1'.", __LINE__ );
-            tester.assert( (values[1].compare("trailing2") == 0), "Expected 1st CommandOptionRest value to be 'trailing2'.", __LINE__ );
+            TUASSERTE(std::string,"trailing1",values[0]);
+            TUASSERTE(std::string,"trailing2",values[1]);
          }
       }
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    defaultCommandOptionList.clear();
 
-   return tester.countFails();
+   TURETURN();
 }
 
 
@@ -978,7 +1121,7 @@ int CommandOptionParser_T::testParseOptions()
  */
 int CommandOptionParser_T::testOptionPresence()
 {
-   TestUtil  tester( "CommandOptionParser", "OptionPresence", __FILE__, __LINE__ );
+   TUDEF("CommandOptionParser", "OptionPresence");
 
    try  // Parse with a satisfied CommandOptionMutex
    {
@@ -997,23 +1140,26 @@ int CommandOptionParser_T::testOptionPresence()
                         const_cast<char*>("value2"),
                         const_cast<char*>("trailing") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
       if (cop.hasErrors() )
       {
          std::ostringstream  oss;
-         oss << "CommandOptionParser encountered unexpected errors while parsing: ";
+         oss << "CommandOptionParser encountered unexpected errors while"
+             << " parsing: ";
          cop.dumpErrors(oss);
-         tester.assert( false, oss.str(), __LINE__ );
+         TUFAIL(oss.str());
       }
       else
       {
-         tester.assert( true, "CommandOptionParser parsed without errors.", __LINE__ );
-         tester.assert( com.whichOne() == &cmdOptF, "whichOne() reported an unexpected option.", __LINE__ );
+         TUPASS("CommandOptionParser parsed without errors.");
+         TUASSERTE(CommandOption*,&cmdOptF,com.whichOne());
       }
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    defaultCommandOptionList.clear();
@@ -1035,12 +1181,14 @@ int CommandOptionParser_T::testOptionPresence()
                         const_cast<char*>("value2"),
                         const_cast<char*>("trailing") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
-      tester.assert( cop.hasErrors(), "CommandOptionParser parsed without errors but should have reported a violated mutex.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
+      TUASSERT(cop.hasErrors());
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    defaultCommandOptionList.clear();
@@ -1062,12 +1210,14 @@ int CommandOptionParser_T::testOptionPresence()
                         const_cast<char*>("value2"),
                         const_cast<char*>("trailing") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
-      tester.assert( cop.hasErrors(), "CommandOptionParser parsed without errors but should have reported a violated mutex.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
+      TUASSERT(cop.hasErrors());
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    defaultCommandOptionList.clear();
@@ -1087,22 +1237,25 @@ int CommandOptionParser_T::testOptionPresence()
                         const_cast<char*>("value2"),
                         const_cast<char*>("trailing") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
       if (cop.hasErrors() )
       {
          std::ostringstream  oss;
-         oss << "CommandOptionParser encountered unexpected errors while parsing: ";
+         oss << "CommandOptionParser encountered unexpected errors while"
+             << " parsing: ";
          cop.dumpErrors(oss);
-         tester.assert( false, oss.str(), __LINE__ );
+         TUFAIL(oss.str());
       }
       else
       {
-         tester.assert( true, "CommandOptionParser parsed without errors.", __LINE__ );
+         TUPASS("CommandOptionParser parsed without errors.");
       }
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    defaultCommandOptionList.clear();
@@ -1122,22 +1275,25 @@ int CommandOptionParser_T::testOptionPresence()
                         const_cast<char*>("value2"),
                         const_cast<char*>("trailing") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
       if (cop.hasErrors() )
       {
          std::ostringstream  oss;
-         oss << "CommandOptionParser encountered unexpected errors while parsing: ";
+         oss << "CommandOptionParser encountered unexpected errors while"
+             << " parsing: ";
          cop.dumpErrors(oss);
-         tester.assert( false, oss.str(), __LINE__ );
+         TUFAIL(oss.str());
       }
       else
       {
-         tester.assert( true, "CommandOptionParser parsed without errors.", __LINE__ );
+         TUPASS("CommandOptionParser parsed without errors.");
       }
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    defaultCommandOptionList.clear();
@@ -1157,12 +1313,14 @@ int CommandOptionParser_T::testOptionPresence()
                         const_cast<char*>("value2"),
                         const_cast<char*>("trailing") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
-      tester.assert( cop.hasErrors(), "CommandOptionParser parsed without errors but should have reported a missing dependency", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
+      TUASSERT(cop.hasErrors());
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    defaultCommandOptionList.clear();
@@ -1182,12 +1340,14 @@ int CommandOptionParser_T::testOptionPresence()
                         const_cast<char*>("value2"),
                         const_cast<char*>("trailing") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
-      tester.assert( cop.hasErrors(), "CommandOptionParser parsed without errors but should have reported a missing dependency", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
+      TUASSERT(cop.hasErrors());
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    defaultCommandOptionList.clear();
@@ -1208,23 +1368,26 @@ int CommandOptionParser_T::testOptionPresence()
                         const_cast<char*>("value2"),
                         const_cast<char*>("trailing") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
       if (cop.hasErrors() )
       {
          std::ostringstream  oss;
-         oss << "CommandOptionParser encountered unexpected errors while parsing: ";
+         oss << "CommandOptionParser encountered unexpected errors while"
+             << " parsing: ";
          cop.dumpErrors(oss);
-         tester.assert( false, oss.str(), __LINE__ );
+         TUFAIL(oss.str());
       }
       else
       {
-         tester.assert( true, "CommandOptionParser parsed without errors.", __LINE__ );
-         // @todo - Check which() result
+         TUPASS("CommandOptionParser parsed without errors.");
+            // @todo - Check which() result
       }
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    defaultCommandOptionList.clear();
@@ -1244,23 +1407,26 @@ int CommandOptionParser_T::testOptionPresence()
                         const_cast<char*>("value1"),
                         const_cast<char*>("trailing") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
       if (cop.hasErrors() )
       {
          std::ostringstream  oss;
-         oss << "CommandOptionParser encountered unexpected errors while parsing: ";
+         oss << "CommandOptionParser encountered unexpected errors while"
+             << " parsing: ";
          cop.dumpErrors(oss);
-         tester.assert( false, oss.str(), __LINE__ );
+         TUFAIL(oss.str());
       }
       else
       {
-         tester.assert( true, "CommandOptionParser parsed without errors.", __LINE__ );
-         // @todo - Check which() result
+         TUPASS("CommandOptionParser parsed without errors.");
+            // @todo - Check which() result
       }
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    defaultCommandOptionList.clear();
@@ -1282,23 +1448,26 @@ int CommandOptionParser_T::testOptionPresence()
                         const_cast<char*>("value2"),
                         const_cast<char*>("trailing") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
       if (cop.hasErrors() )
       {
          std::ostringstream  oss;
-         oss << "CommandOptionParser encountered unexpected errors while parsing: ";
+         oss << "CommandOptionParser encountered unexpected errors while"
+             << " parsing: ";
          cop.dumpErrors(oss);
-         tester.assert( false, oss.str(), __LINE__ );
+         TUFAIL(oss.str());
       }
       else
       {
-         tester.assert( true, "CommandOptionParser parsed without errors.", __LINE__ );
-         // @todo - Check which() result
+         TUPASS("CommandOptionParser parsed without errors.");
+            // @todo - Check which() result
       }
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    defaultCommandOptionList.clear();
@@ -1320,23 +1489,26 @@ int CommandOptionParser_T::testOptionPresence()
                         const_cast<char*>("value2"),
                         const_cast<char*>("trailing") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
       if (cop.hasErrors() )
       {
          std::ostringstream  oss;
-         oss << "CommandOptionParser encountered unexpected errors while parsing: ";
+         oss << "CommandOptionParser encountered unexpected errors while"
+             << " parsing: ";
          cop.dumpErrors(oss);
-         tester.assert( false, oss.str(), __LINE__ );
+         TUFAIL(oss.str());
       }
       else
       {
-         tester.assert( true, "CommandOptionParser parsed without errors.", __LINE__ );
-         // @todo - Check which() result
+         TUPASS("CommandOptionParser parsed without errors.");
+            // @todo - Check which() result
       }
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    defaultCommandOptionList.clear();
@@ -1357,12 +1529,14 @@ int CommandOptionParser_T::testOptionPresence()
                         const_cast<char*>("value2"),
                         const_cast<char*>("trailing") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
-      tester.assert( cop.hasErrors(), "CommandOptionParser parsed without errors but should have reported an excessive argument.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
+      TUASSERT(cop.hasErrors());
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    defaultCommandOptionList.clear();
@@ -1384,12 +1558,14 @@ int CommandOptionParser_T::testOptionPresence()
                         const_cast<char*>("value2"),
                         const_cast<char*>("trailing") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
-      tester.assert( cop.hasErrors(), "CommandOptionParser parsed without errors but should have reported an excessive argument.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
+      TUASSERT(cop.hasErrors());
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    defaultCommandOptionList.clear();
@@ -1411,12 +1587,14 @@ int CommandOptionParser_T::testOptionPresence()
                         const_cast<char*>("value2"),
                         const_cast<char*>("trailing") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
-      tester.assert( cop.hasErrors(), "CommandOptionParser parsed without errors but should have reported too few arguments.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
+      TUASSERT(cop.hasErrors());
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    defaultCommandOptionList.clear();
@@ -1437,23 +1615,26 @@ int CommandOptionParser_T::testOptionPresence()
                         const_cast<char*>("value2"),
                         const_cast<char*>("trailing") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
       if (cop.hasErrors() )
       {
          std::ostringstream  oss;
-         oss << "CommandOptionParser encountered unexpected errors while parsing: ";
+         oss << "CommandOptionParser encountered unexpected errors while"
+             << " parsing: ";
          cop.dumpErrors(oss);
-         tester.assert( false, oss.str(), __LINE__ );
+         TUFAIL(oss.str());
       }
       else
       {
-         tester.assert( true, "CommandOptionParser parsed without errors.", __LINE__ );
-         tester.assert( cooo.whichOne() == &cmdOptB, "whichOne() reported an unexpected option.", __LINE__ );
+         TUPASS("CommandOptionParser parsed without errors.");
+         TUASSERTE(CommandOption*,&cmdOptB,cooo.whichOne());
       }
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    defaultCommandOptionList.clear();
@@ -1475,23 +1656,26 @@ int CommandOptionParser_T::testOptionPresence()
                         const_cast<char*>("value2"),
                         const_cast<char*>("trailing") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
       if (cop.hasErrors() )
       {
          std::ostringstream  oss;
-         oss << "CommandOptionParser encountered unexpected errors while parsing: ";
+         oss << "CommandOptionParser encountered unexpected errors while"
+             << " parsing: ";
          cop.dumpErrors(oss);
-         tester.assert( false, oss.str(), __LINE__ );
+         TUFAIL(oss.str());
       }
       else
       {
-         tester.assert( true, "CommandOptionParser parsed without errors.", __LINE__ );
-         tester.assert( cooo.whichOne() == &cmdOptF, "whichOne() reported an unexpected option.", __LINE__ );
+         TUPASS("CommandOptionParser parsed without errors.");
+         TUASSERTE(CommandOption*,&cmdOptF,cooo.whichOne());
       }
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    defaultCommandOptionList.clear();
@@ -1512,12 +1696,14 @@ int CommandOptionParser_T::testOptionPresence()
                         const_cast<char*>("--foo"),
                         const_cast<char*>("value2") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
-      tester.assert( cop.hasErrors(), "CommandOptionParser parsed without errors but should have reported a missing argument.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
+      TUASSERT(cop.hasErrors());
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    defaultCommandOptionList.clear();
@@ -1538,22 +1724,25 @@ int CommandOptionParser_T::testOptionPresence()
                         const_cast<char*>("value2"),
                         const_cast<char*>("trailing") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
       if (cop.hasErrors() )
       {
          std::ostringstream  oss;
-         oss << "CommandOptionParser encountered unexpected errors while parsing: ";
+         oss << "CommandOptionParser encountered unexpected errors while"
+             << " parsing: ";
          cop.dumpErrors(oss);
-         tester.assert( false, oss.str(), __LINE__ );
+         TUFAIL(oss.str());
       }
       else
       {
-         tester.assert( true, "CommandOptionParser parsed without errors.", __LINE__ );
+         TUPASS("CommandOptionParser parsed without errors.");
       }
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    defaultCommandOptionList.clear();
@@ -1576,22 +1765,25 @@ int CommandOptionParser_T::testOptionPresence()
                         const_cast<char*>("value2"),
                         const_cast<char*>("trailing") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
       if (cop.hasErrors() )
       {
          std::ostringstream  oss;
-         oss << "CommandOptionParser encountered unexpected errors while parsing: ";
+         oss << "CommandOptionParser encountered unexpected errors while"
+             << " parsing: ";
          cop.dumpErrors(oss);
-         tester.assert( false, oss.str(), __LINE__ );
+         TUFAIL(oss.str());
       }
       else
       {
-         tester.assert( true, "CommandOptionParser parsed without errors.", __LINE__ );
+         TUPASS("CommandOptionParser parsed without errors.");
       }
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    defaultCommandOptionList.clear();
@@ -1614,12 +1806,14 @@ int CommandOptionParser_T::testOptionPresence()
                         const_cast<char*>("value2"),
                         const_cast<char*>("trailing") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
-      tester.assert( cop.hasErrors(), "CommandOptionParser parsed without errors but should have reported a missing argument.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
+      TUASSERT(cop.hasErrors());
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    defaultCommandOptionList.clear();
@@ -1651,23 +1845,26 @@ int CommandOptionParser_T::testOptionPresence()
                         const_cast<char*>("value2"),
                         const_cast<char*>("trailing") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
       if (cop.hasErrors() )
       {
          std::ostringstream  oss;
-         oss << "CommandOptionParser encountered unexpected errors while parsing: ";
+         oss << "CommandOptionParser encountered unexpected errors while"
+             << " parsing: ";
          cop.dumpErrors(oss);
-         tester.assert( false, oss.str(), __LINE__ );
+         TUFAIL(oss.str());
       }
       else
       {
-         tester.assert( true, "CommandOptionParser parsed without errors.", __LINE__ );
-         tester.assert( cogo.whichOne() == &cmdOptF, "whichOne() reported an unexpected option.", __LINE__ );
+         TUPASS("CommandOptionParser parsed without errors.");
+         TUASSERTE(CommandOption*,&cmdOptF,cogo.whichOne());
       }
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    defaultCommandOptionList.clear();
@@ -1689,12 +1886,14 @@ int CommandOptionParser_T::testOptionPresence()
                         const_cast<char*>("value1"),
                         const_cast<char*>("trailing") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
-      tester.assert( cop.hasErrors(), "CommandOptionParser parsed without errors but should have reported a missing dependency.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
+      TUASSERT(cop.hasErrors());
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    defaultCommandOptionList.clear();
@@ -1717,23 +1916,26 @@ int CommandOptionParser_T::testOptionPresence()
                         const_cast<char*>("value2"),
                         const_cast<char*>("trailing") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
       if (cop.hasErrors() )
       {
          std::ostringstream  oss;
-         oss << "CommandOptionParser encountered unexpected errors while parsing: ";
+         oss << "CommandOptionParser encountered unexpected errors while"
+             << " parsing: ";
          cop.dumpErrors(oss);
-         tester.assert( false, oss.str(), __LINE__ );
+         TUFAIL(oss.str());
       }
       else
       {
-         tester.assert( true, "CommandOptionParser parsed without errors.", __LINE__ );
-         tester.assert( coga.whichOne() == &cmdOptF, "whichOne() reported an unexpected option.", __LINE__ );
+         TUPASS("CommandOptionParser parsed without errors.");
+         TUASSERTE(CommandOption*,&cmdOptF,coga.whichOne());
       }
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    defaultCommandOptionList.clear();
@@ -1756,18 +1958,91 @@ int CommandOptionParser_T::testOptionPresence()
                         const_cast<char*>("value2"),
                         const_cast<char*>("trailing") };
       cop.parseOptions(argc, argv);
-      tester.assert( true, "CommandOptionParser parsed the options without throwing an exception.", __LINE__ );
-      tester.assert( cop.hasErrors(), "CommandOptionParser parsed without errors but should have reported a missing dependency.", __LINE__ );
+      TUPASS("CommandOptionParser parsed the options without throwing an"
+             " exception.");
+      TUASSERT(cop.hasErrors());
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionParser() threw an exception while parsing but should not have.", __LINE__ );
+      TUFAIL("CommandOptionParser() threw an exception while parsing but"
+             " should not have.");
    }
 
    defaultCommandOptionList.clear();
 #endif
 
-   return tester.countFails();
+   TURETURN();
+}
+
+
+void testNOfWhichRpt(unsigned expWhich, gpstk::TestUtil& testFramework,
+                     unsigned argc, char *argv[])
+{
+   try
+   {
+      defaultCommandOptionList.clear();
+      CommandOptionWithAnyArg cmdOpt1('f', "foo", "Foo", false);
+      CommandOptionWithAnyArg cmdOpt2('b', "bar", "Bar", false);
+      CommandOptionWithAnyArg cmdOpt3('B', "baz", "Baz", false);
+      CommandOptionNOf nof(2);
+      CommandOptionParser cop("testNOfWhich");
+      nof.addOption(&cmdOpt1);
+      nof.addOption(&cmdOpt2);
+      nof.addOption(&cmdOpt3);
+      TUPASS("Constructed objects");
+      cop.parseOptions(argc, argv);
+         // based on the construction of nof and argv, only argc==5
+         // can be valid
+      if (argc == 5)
+      {
+         COPANOERR(cop);
+         std::vector<CommandOption*> witches = nof.which();
+         TUASSERTE(unsigned, expWhich, witches.size());
+      }
+      else
+      {
+         TUASSERT(cop.hasErrors());
+      }
+   }
+   catch (...)
+   {
+      TUFAIL("Unexpected exception");
+   }
+}
+
+
+int CommandOptionParser_T :: testNOfWhich()
+{
+   TUDEF("CommandOptionNOf", "which");
+
+      // test a pair of different arguments
+   char* argv1[] =
+      {                                  // argc (argv index+1)
+         const_cast<char*>("program1"),  // 1
+         const_cast<char*>("-f"),        // 2
+         const_cast<char*>("wub1"),      // 3
+         const_cast<char*>("-b"),        // 4
+         const_cast<char*>("wub2"),      // 5
+         const_cast<char*>("-B"),        // 6
+         const_cast<char*>("wub3")       // 7
+      };
+
+      // test a pair of identical arguments
+   char* argv2[] =
+      {                                  // argc (argv index+1)
+         const_cast<char*>("program2"),  // 1
+         const_cast<char*>("-f"),        // 2
+         const_cast<char*>("wub1"),      // 3
+         const_cast<char*>("-f"),        // 4
+         const_cast<char*>("wub2")       // 5
+      };
+
+   for (unsigned argc = 1; argc <= 7; argc++)
+      testNOfWhichRpt(2, testFramework, argc, argv1);
+
+   testNOfWhichRpt(1, testFramework, 5, argv2);
+
+   TURETURN();
 }
 
 
@@ -1785,8 +2060,10 @@ int main(int argc, char *argv[])
    errorTotal += testClass.testAddOption();
    errorTotal += testClass.testParseOptions();
    errorTotal += testClass.testOptionPresence();
+   errorTotal += testClass.testNOfWhich();
 
-   std::cout << "Total Failures for " << __FILE__ << ": " << errorTotal << std::endl;
+   std::cout << "Total Failures for " << __FILE__ << ": " << errorTotal
+             << std::endl;
 
    return( errorTotal );
    

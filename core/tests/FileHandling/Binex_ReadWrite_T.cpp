@@ -286,7 +286,7 @@ bool BinexReadWrite_T :: createRecs()
 
 int BinexReadWrite_T :: doForwardTests()
 {
-   TestUtil  tester( "BinexData", "Read/Write (Fwd)", __FILE__, __LINE__ );
+   TUDEF("BinexData", "Read/Write (Fwd)");
 
    string  tempFilePath = gpstk::getPathTestTemp();
    string  tempFileName = tempFilePath + gpstk::getFileSep() +
@@ -294,7 +294,7 @@ int BinexReadWrite_T :: doForwardTests()
    BinexStream  outStream(tempFileName.c_str(),
                           std::ios::out | std::ios::binary);
 
-   tester.assert( outStream.good(), "error creating ouput stream", __LINE__ );
+   TUASSERT(outStream.good());
 
    outStream.exceptions(ios_base::failbit | ios_base::badbit);
    RecordList::iterator  recordIter = testRecords.begin();
@@ -302,18 +302,20 @@ int BinexReadWrite_T :: doForwardTests()
    {
       try
       {
+         std::streampos posBefore = outStream.tellp();
          (*recordIter).putRecord(outStream);
-         tester.assert( true, "put record", __LINE__ );
+         std::streampos posAfter = outStream.tellp();
+         TUASSERTE(long long, (*recordIter).getRecordSize(), (posAfter - posBefore));
       }
       catch (Exception& e)
       {
          ostringstream  oss;
          oss << "exception writing record: " << e;
-         tester.assert( false, oss.str(), __LINE__ );
+         TUFAIL(oss.str());
       }
       catch (...)
       {
-         tester.assert( false, "unknown exception writing record", __LINE__ );
+         TUFAIL("unknown exception writing record");
       }
    }
    outStream.close();
@@ -322,15 +324,14 @@ int BinexReadWrite_T :: doForwardTests()
                          std::ios::in | std::ios::binary);
    inStream.exceptions(ios_base::failbit);
 
-   tester.assert( inStream.good(), "error creating input stream", __LINE__ );
+   TUASSERT(inStream.good());
 
    recordIter = testRecords.begin();
    while (inStream.good() && (EOF != inStream.peek() ) )
    {
       if (recordIter == testRecords.end() )
       {
-         tester.assert( false, "stored records exhausted before file records",
-                        __LINE__ );
+         TUFAIL("stored records exhausted before file records");
          break;
       }
       BinexData record;
@@ -339,7 +340,7 @@ int BinexReadWrite_T :: doForwardTests()
          record.getRecord(inStream);
          if (record == *recordIter)
          {
-            tester.assert( true, "get record", __LINE__ );
+            TUPASS("gotten record matches");
          }
          else
          {
@@ -349,35 +350,35 @@ int BinexReadWrite_T :: doForwardTests()
             oss << "Expected record:" << endl;
             record.dump(oss);
 
-            tester.assert( false, oss.str(), __LINE__ );
+            TUFAIL(oss.str());
          }
       }
       catch (Exception& e)
       {
          ostringstream  oss;
          oss << "stream exception reading record: " << e;
-         tester.assert( false, oss.str(), __LINE__ );
+         TUFAIL(oss.str());
       }
       catch (...)
       {
-         tester.assert( false, "unknown exception reading record", __LINE__ );
+         TUFAIL("unknown exception reading record");
       }
 
       recordIter++;
    }
    inStream.close();
 
-   return tester.countFails();
+   TURETURN();
 }
 
 
 int BinexReadWrite_T :: doReverseTests()
 {
-   TestUtil  tester( "BinexData", "Read/Write (Rev)", __FILE__, __LINE__ );
+   TUDEF("BinexData", "Read/Write (Rev)");
 
       // @todo
 
-   return tester.countFails();
+   TURETURN();
 }
 
 

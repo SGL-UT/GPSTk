@@ -229,6 +229,7 @@ namespace gpstk
             recordNumber = initialRecordNumber;
             setstate(std::ios::failbit);
             conditionalThrow();
+          
          }
       }
          // this is if you throw an FFStream error in the above catch

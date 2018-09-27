@@ -34,10 +34,8 @@
 //
 //=============================================================================
 
-/**
- * @file AntexHeader.cpp
- * Encapsulate header of Rinex observation file, including I/O
- */
+/// @file AntexHeader.cpp
+/// Encapsulate header of Rinex observation file, including I/O
 
 #include "StringUtils.hpp"
 #include "AntexHeader.hpp"
@@ -136,7 +134,8 @@ namespace gpstk
          version = asDouble(line.substr(0,8));
          system = line[20];
          if(system != ' ' && system != 'G' &&
-            system != 'R' && system != 'E' && system != 'M')
+            system != 'R' && system != 'E' && 
+            system != 'C' && system != 'M')
          {
             stringstream os;
 			os >> system;
@@ -209,7 +208,7 @@ namespace gpstk
       }   // end while(not end of header)
 
       unsigned long allValid;
-      if (version == 1.3)
+      if (version == 1.3 || version == 1.4)
          allValid = allValid13;
       else {
          FFStreamError e("Unknown or unsupported Antex version " + asString(version));

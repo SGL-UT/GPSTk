@@ -39,6 +39,7 @@
 #include "GPSWeekZcount.hpp"
 #include "TimeConstants.hpp"
 #include "TimeConverters.hpp"
+#include "GPSWeekSecond.hpp"
 
 namespace gpstk
 {
@@ -155,6 +156,8 @@ namespace gpstk
    {
       using namespace gpstk::StringUtils;
 
+      GPSWeek::setFromInfo(info);
+
       for( IdToValue::const_iterator i = info.begin(); i != info.end(); i++ )
       {
             // based on the character, we know what to do...
@@ -219,5 +222,165 @@ namespace gpstk
       return *this;
    }
 
+
+   GPSWeekZcount& GPSWeekZcount::addWeeks(short inWeeks)
+      throw(gpstk::InvalidRequest)
+   {
+      week += inWeeks;
+      if (week < 0)
+      {
+         gpstk::InvalidRequest exc("addWeeks results in negative week");
+         GPSTK_THROW(exc);
+      }
+      return *this;
+   }
+
+
+   GPSWeekZcount& GPSWeekZcount::addZcounts(long inZcounts)
+      throw(gpstk::InvalidRequest)
+   {
+      if (inZcounts == 0)
+         return *this;
+
+      short originalWeek(week);
+      long originalZcount(zcount);
+
+      try
+      {
+            // First, do week modifications.
+         addWeeks(inZcounts / ZCOUNT_PER_WEEK);
+
+            // Now, take care of Z-counts.
+         long tmp = zcount + (inZcounts % ZCOUNT_PER_WEEK);
+
+         if (tmp < 0)
+         {
+            addWeeks(-1);
+            tmp += ZCOUNT_PER_WEEK;
+         }
+         else if (tmp >= ZCOUNT_PER_WEEK)
+         {
+            addWeeks(1);
+            tmp -= ZCOUNT_PER_WEEK;
+         }
+
+         zcount = tmp;
+         return *this;
+      }
+      catch (gpstk::InvalidRequest& ir)
+      {
+         week = originalWeek;
+         zcount = originalZcount;
+         ir.addText("Did not add " + StringUtils::asString(inZcounts) +
+                    " Z-counts.");
+         GPSTK_RETHROW(ir);
+      }
+      catch (gpstk::InvalidParameter& ip)
+      {
+         week = originalWeek;
+         zcount = originalZcount;
+         gpstk::InvalidRequest ir(ip);
+         ir.addText("Did not add " + StringUtils::asString(inZcounts) +
+                    " Z-counts.");
+         GPSTK_THROW(ir);
+      }
+   }
+
+
+   GPSWeekZcount GPSWeekZcount::operator++(int)
+      throw(gpstk::InvalidRequest)
+   {
+      GPSWeekZcount temp = *this;
+      ++(*this);
+      return temp;
+   }
+
+
+   GPSWeekZcount& GPSWeekZcount::operator++()
+      throw(gpstk::InvalidRequest)
+   {
+      return addZcounts(1);
+   }
+
+
+   GPSWeekZcount GPSWeekZcount::operator--(int)
+      throw(gpstk::InvalidRequest)
+   {
+      GPSWeekZcount temp = *this;
+      --(*this);
+      return temp;
+   }
+
+
+   GPSWeekZcount& GPSWeekZcount::operator--()
+      throw(gpstk::InvalidRequest)
+   {
+      return addZcounts(-1);
+   }
+
+
+   GPSWeekZcount GPSWeekZcount::operator+(long inZcounts) const
+      throw(gpstk::InvalidRequest)
+   {
+      return GPSWeekZcount(*this).addZcounts(inZcounts);
+   }
+
+
+   GPSWeekZcount GPSWeekZcount::operator-(long inZcounts) const
+      throw(gpstk::InvalidRequest)
+   {
+      return operator+(-inZcounts);
+   }
+
+
+   long GPSWeekZcount::operator-(const GPSWeekZcount& right) const
+      throw()
+   {
+      return (((long(week) - long(right.week)) * ZCOUNT_PER_WEEK) +
+              (long(zcount) - long(right.zcount)));
+   }
+
+
+   GPSWeekZcount& GPSWeekZcount::operator+=(long inZcounts)
+      throw(gpstk::InvalidRequest)
+   {
+      return addZcounts(inZcounts);
+   }
+
+
+   GPSWeekZcount& GPSWeekZcount::operator-=(long inZcounts)
+      throw(gpstk::InvalidRequest)
+   {
+      return addZcounts(-inZcounts);
+   }
+
+
+   bool GPSWeekZcount::inSameTimeBlock(const GPSWeekZcount& other,
+                                       unsigned long inZcountBlock,
+                                       unsigned long inZcountOffset)
+      throw()
+   {
+      if (inZcountBlock < ZCOUNT_PER_WEEK)
+      {
+            // Make sure that we're in the same week, and then checkto
+            // see if we're in the same time block.
+         if ((week == other.week) &&
+             (((zcount - inZcountOffset) / inZcountBlock) ==
+              ((other.zcount - inZcountOffset) / inZcountBlock)))
+         {
+            return true;
+         }
+      }
+      else
+      {
+            // Comare using the total number of Z-counts
+         if (long((getTotalZcounts() - inZcountOffset) / inZcountBlock) ==
+             long((other.getTotalZcounts() - inZcountOffset) / inZcountBlock))
+         {
+            return true;
+         }
+      }
+      return false;
+   }
 
 } // namespace

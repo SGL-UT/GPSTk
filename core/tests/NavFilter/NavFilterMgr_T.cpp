@@ -42,6 +42,8 @@
 #include "LNavEmptyFilter.hpp"
 #include "LNavTLMHOWFilter.hpp"
 #include "LNavEphMaker.hpp"
+#include "LNavCrossSourceFilter.hpp"
+#include "NavOrderFilter.hpp"
 #include "CommonTime.hpp"
 #include "TimeString.hpp"
 
@@ -63,6 +65,8 @@ unsigned long expLNavCombined = 1488;
 // the source file (which was 5526, which is in the same ball park).
 // /usr/bin/tail +109 test_input_NavFilterMgr.txt | head -27513 | grep ':[03]0.0, ' | wc -l
 unsigned long expLNavEphs = 5210;
+
+typedef std::set<gpstk::CommonTime> TimeSet;
 
 // define some classes for exercising NavFilterMgr
 class BunkFilterData : public NavFilterKey
@@ -91,6 +95,10 @@ public:
    }
    virtual void finalize(NavMsgList& msgBitsOut)
    {}
+   virtual unsigned processingDepth() const throw()
+   { return 0; }
+   virtual std::string filterName() const throw()
+   { return "Bunk1"; }
 };
 // filter with cache
 class BunkFilter2 : public NavFilter
@@ -114,6 +122,10 @@ public:
                 std::back_insert_iterator<NavMsgList>(msgBitsOut));
       cache.clear();
    }
+   virtual unsigned processingDepth() const throw()
+   { return 4; }
+   virtual std::string filterName() const throw()
+   { return "Bunk2"; }
    NavMsgList cache;
 };
 
@@ -140,6 +152,15 @@ public:
    unsigned testLNavEphMaker();
       /// Test the combination of parity, empty and TLM/HOW filters
    unsigned testLNavCombined();
+      /** Test that the processingDepth() method returns a correct
+       * value for any given NavFilter class. */
+   template <class Filter>
+   unsigned testProcessingDepth(const std::string& filterName);
+      /// Test the processingDepth() method of NavFilterMgr.
+   unsigned testCombinedDepths();
+      /** Test the processingDepth() method of known NavFilter classes.
+       * @note LNavEphMaker is not tested due to its unusual depth behavior. */
+   unsigned testProcessingDepths();
 
       /// test a simple bit pattern filter
    unsigned testBunk1();
@@ -240,6 +261,7 @@ loadData()
          gpstk::StringUtils::word(line, 3, ','));
       tmp.code = (ObsID::TrackingCode)gpstk::StringUtils::asInt(
          gpstk::StringUtils::word(line, 4, ','));
+      tmp.timeStamp = recTime;
 
       dataLNAV[dataIdxLNAV++] = tmp;
    }
@@ -296,7 +318,7 @@ noFilterTest()
    }
    TUASSERTE(unsigned long, dataIdxLNAV, count);
 
-   return testFramework.countFails();
+   TURETURN();
 }
 
 
@@ -345,7 +367,7 @@ testLNavCook()
    }
    TUASSERTE(unsigned long, dataIdxLNAV, count);
 
-   return testFramework.countFails();
+   TURETURN();
 }
 
 
@@ -393,7 +415,7 @@ testLNavParity()
    }
    TUASSERTE(unsigned long, expLNavParity, rejectCount);
 
-   return testFramework.countFails();
+   TURETURN();
 }
 
 
@@ -425,7 +447,7 @@ testLNavEmpty()
    TUASSERTE(unsigned long, 0, l.size());
    TUASSERTE(unsigned long, 1, filtEmpty.rejected.size());
 
-   return testFramework.countFails();
+   TURETURN();
 }
 
 
@@ -462,7 +484,7 @@ testLNavTLMHOW()
    }
    TUASSERTE(unsigned long, expLNavTLMHOW, rejectCount);
 
-   return testFramework.countFails();
+   TURETURN();
 }
 
 
@@ -485,7 +507,7 @@ testLNavEphMaker()
    }
    TUASSERTE(unsigned long, expLNavEphs, ephCount);
 
-   return testFramework.countFails();
+   TURETURN();
 }
 
 
@@ -525,7 +547,132 @@ testLNavCombined()
    }
    TUASSERTE(unsigned long, expLNavCombined, rejectCount);
 
-   return testFramework.countFails();
+   TURETURN();
+}
+
+
+template <class Filter>
+unsigned NavFilterMgr_T ::
+testProcessingDepth(const std::string& filterName)
+{
+   TUDEF(filterName, "processingDepth");
+   try
+   {
+      NavFilterMgr mgr;
+      Filter filt;
+      NavFilterMgr::FilterSet::iterator fsi;
+      mgr.addFilter(&filt);
+      TimeSet allTimes;
+         // 6 seconds for each subframe epoch
+      int expDelta = 6 * filt.processingDepth(); 
+      for (unsigned i = 0; i < dataIdxLNAV; i++)
+      {
+         TimeSet timestamps;
+         gpstk::NavFilter::NavMsgList l = mgr.validate(&dataLNAV[i]);
+         gpstk::NavFilter::NavMsgList::iterator nmli;
+         allTimes.insert(gpstk::CommonTime(dataLNAV[i].timeStamp));
+         for (nmli = l.begin(); nmli != l.end(); nmli++)
+         {
+            timestamps.insert(gpstk::CommonTime((*nmli)->timeStamp));
+         }
+         for (fsi = mgr.rejected.begin(); fsi != mgr.rejected.end(); fsi++)
+         {
+            for (nmli = (*fsi)->rejected.begin(); nmli != (*fsi)->rejected.end();
+                 nmli++)
+            {
+               timestamps.insert(gpstk::CommonTime((*nmli)->timeStamp));
+            }
+         }
+         if (allTimes.size() > filt.processingDepth())
+         {
+            TUASSERTE(TimeSet::size_type, 1, timestamps.size());
+            gpstk::CommonTime timestampsTime;
+            if (!timestamps.empty())
+            {
+               timestampsTime = (*timestamps.begin());
+               int delta = (dataLNAV[i].timeStamp - timestampsTime);
+               TUASSERTE(int, expDelta, delta);
+            }
+               // Time stamp has changed, we've done our test/check for
+               // the new time stamp, and since it's been processed,
+               // remove it from allTimes to prevent erroneous triggering
+               // of the check.
+            TimeSet::iterator tsi;
+            for (tsi = timestamps.begin(); tsi != timestamps.end(); tsi++)
+            {
+               allTimes.erase(*tsi);
+            }
+         }
+         else
+         {
+            TUASSERTE(TimeSet::size_type, 0, timestamps.size());
+         }
+      }
+   }
+   catch (...)
+   {
+      TUFAIL("Exception");
+   }
+   TURETURN();
+}
+
+
+unsigned NavFilterMgr_T ::
+testCombinedDepths()
+{
+   TUDEF("NavFilterMgr", "processingDepth");
+   try
+   {
+      LNavParityFilter filt1;
+      LNavCookFilter filt2;
+      LNavEmptyFilter filt3;
+      LNavTLMHOWFilter filt4;
+      LNavCrossSourceFilter filt5;
+         // No particular meaning to these values other than to have
+         // something non-default.
+      NavOrderFilter filt6(7,20);
+      NavFilterMgr mgr;
+      unsigned expProcDepth = 1;
+      TUASSERTE(unsigned, expProcDepth, mgr.processingDepth());
+      expProcDepth += filt1.processingDepth();
+      mgr.addFilter(&filt1);
+      TUASSERTE(unsigned, expProcDepth, mgr.processingDepth());
+      expProcDepth += filt2.processingDepth();
+      mgr.addFilter(&filt2);
+      TUASSERTE(unsigned, expProcDepth, mgr.processingDepth());
+      expProcDepth += filt3.processingDepth();
+      mgr.addFilter(&filt3);
+      TUASSERTE(unsigned, expProcDepth, mgr.processingDepth());
+      expProcDepth += filt4.processingDepth();
+      mgr.addFilter(&filt4);
+      TUASSERTE(unsigned, expProcDepth, mgr.processingDepth());
+      expProcDepth += filt5.processingDepth();
+      mgr.addFilter(&filt5);
+      TUASSERTE(unsigned, expProcDepth, mgr.processingDepth());
+      expProcDepth += filt6.processingDepth();
+      mgr.addFilter(&filt6);
+      TUASSERTE(unsigned, expProcDepth, mgr.processingDepth());
+   }
+   catch (...)
+   {
+      TUFAIL("Exception");
+   }
+   TURETURN();
+}
+
+
+unsigned NavFilterMgr_T ::
+testProcessingDepths()
+{
+   unsigned rv = 0;
+   rv += testProcessingDepth<LNavParityFilter>("LNavParityFilter");
+   rv += testProcessingDepth<LNavCookFilter>("LNavCookFilter");
+   rv += testProcessingDepth<LNavEmptyFilter>("LNavEmptyFilter");
+   rv += testProcessingDepth<LNavTLMHOWFilter>("LNavTLMHOWFilter");
+   rv += testProcessingDepth<LNavCrossSourceFilter>("LNavCrossSourceFilter");
+   rv += testProcessingDepth<NavOrderFilter>("NavOrderFilter");
+   rv += testCombinedDepths();
+   return rv;
 }
 
 
@@ -543,7 +690,7 @@ testBunk1()
    if (!outs)
    {
       TUFAIL("Could not open \"" + outputFileBunk1 + "\" for output");
-      return testFramework.countFails();
+      TURETURN();
    }
 
    mgr.addFilter(&filt1);
@@ -568,7 +715,7 @@ testBunk1()
    testFramework.assert_files_equal(__LINE__, refFileBunk1, outputFileBunk1,
                                     "Files differ");
 
-   return testFramework.countFails();
+   TURETURN();
 }
 
 
@@ -588,7 +735,7 @@ testBunk2()
    if (!outs)
    {
       TUFAIL("Could not open \"" + outputFileBunk2 + "\" for output");
-      return testFramework.countFails();
+      TURETURN();
    }
 
    mgr.addFilter(&filt2);
@@ -644,7 +791,7 @@ testBunk2()
    testFramework.assert_files_equal(__LINE__, refFileBunk2, outputFileBunk2,
                                     "Files differ");
 
-   return testFramework.countFails();
+   TURETURN();
 }
 
 
@@ -662,6 +809,7 @@ int main()
    errorTotal += testClass.testLNavTLMHOW();
    errorTotal += testClass.testLNavEphMaker();
    errorTotal += testClass.testLNavCombined();
+   errorTotal += testClass.testProcessingDepths();
    errorTotal += testClass.testBunk1();
    errorTotal += testClass.testBunk2();
 

@@ -34,13 +34,11 @@
 //
 //=============================================================================
 
-/**
- * @file AntexData.cpp
- * Encapsulate data from ANTEX (Antenna Exchange) format files, including both
- * receiver and satellite antennas, ANTEX file I/O, discrimination between different
- * satellite antennas based on system, PRN and time, and computation of phase center
- * offsets and variations.
- */
+/// @file AntexData.cpp
+/// Encapsulate data from ANTEX (Antenna Exchange) format files, including both
+/// receiver and satellite antennas, ANTEX file I/O, discrimination between different
+/// satellite antennas based on system, PRN and time, and computation of phase center
+/// offsets and variations.
 
 #include "AntexData.hpp"
 #include "AntexStream.hpp"
@@ -48,6 +46,7 @@
 #include "GNSSconstants.hpp"
 #include "TimeString.hpp"
 #include "CivilTime.hpp"
+#include "MJD.hpp"
 
 using namespace gpstk::StringUtils;
 using namespace std;
@@ -68,13 +67,13 @@ namespace gpstk
    const string AntexData::neuFreqString      = "NORTH / EAST / UP";
    const string AntexData::endOfFreqString    = "END OF FREQUENCY";
    const string AntexData::startFreqRMSString = "START OF FREQ RMS";
-   const string AntexData::neuFreqRMSString   = "NORTH / EAST / UP";
+   const string AntexData::neuFreqRMSString   = "NORTH / EAST / UP"; // NB duplicate!
    const string AntexData::endOfFreqRMSString = "END OF FREQ RMS";
    const string AntexData::endOfAntennaString = "END OF ANTENNA";
 
    // NB. this dimension must be updated with the list
    /// Number of types that are used for satellites
-   const int Nsattype=11;
+   const int Nsattype=18;
    string sattype[Nsattype] =
    { 
       string("BLOCK I"),         // 1
@@ -87,7 +86,14 @@ namespace gpstk
       string("BLOCK IIF"),       // 8
       string("GLONASS"),         // 9
       string("GLONASS-M"),       // 10
-      string("GLONASS-K")        // 11
+      string("GLONASS-K1"),      // 11
+      string("BEIDOU-2G"),       // 12
+      string("BEIDOU-2I"),       // 13
+      string("BEIDOU-2M"),       // 14
+      string("GALILEO-1"),       // 15
+      string("GALILEO-2"),       // 16
+      string("GALILEO-0A"),      // 17
+      string("GALILEO-0B")       // 18
    };
    /// vector of type strings that identify satellites; must be kept updated.
    const vector<string> AntexData::SatelliteTypes(sattype,sattype+Nsattype);
@@ -112,7 +118,21 @@ namespace gpstk
    }
 
    // ----------------------------------------------------------------------------
-   double AntexData::getTotalPhaseCenterOffset(const int freq,
+   // Generate a name from type and serial number
+   string AntexData::name(void) const throw()
+   {
+      if(!isValid())
+         return string("invalid");
+      if(isRxAntenna)
+         return (type);
+      else {            // must distinguish name with PRN and start time
+         MJD mt(validFrom);
+         return (type + string("/") + serialNo + string("/") + asString(mt.mjd,2));
+      }
+   }
+
+   // ----------------------------------------------------------------------------
+   double AntexData::getTotalPhaseCenterOffset(const string freq,
                                                const double azim,
                                                const double elev_nadir) const
       throw(Exception)
@@ -143,23 +163,19 @@ namespace gpstk
    // (This does NOT include the phase center variations, which should
    // be computed using getPhaseCenterVariation() and added to the PCOs to get
    // the total phase center offset).
-   Triple AntexData::getPhaseCenterOffset(const int freq) const
+   Triple AntexData::getPhaseCenterOffset(const string freq) const
       throw(Exception)
    {
       if(!isValid()) {
-         gpstk::Exception e("Invalid object");
-         GPSTK_THROW(e);
-      }
-      if(freq <= 0 || freq > nFreq) {
-         gpstk::Exception e("Invalid frequency");
+         gpstk::Exception e("Invalid AntexData object");
          GPSTK_THROW(e);
       }
 
       // get the antennaPCOandPCVData for this frequency
-      map<int, antennaPCOandPCVData>::const_iterator it = freqPCVmap.find(freq);
+      map<string, antennaPCOandPCVData>::const_iterator it = freqPCVmap.find(freq);
       if(it == freqPCVmap.end()) {
-         gpstk::Exception e("Frequency " + gpstk::StringUtils::asString(freq)
-               + " not found! object must be corrupted.");
+         gpstk::Exception e("Frequency " + freq
+               + " not found! System not supported or data corrupted.");
          GPSTK_THROW(e);
       }
       //const antennaPCOandPCVData& antpco = it->second;
@@ -173,17 +189,13 @@ namespace gpstk
 
    // Compute the phase center variation (only) at the given azimuth and elevation
    // (receiver) or nadir (satellite) angles
-   double AntexData::getPhaseCenterVariation(const int freq,
+   double AntexData::getPhaseCenterVariation(const string freq,
                                              const double azimuth,
                                              const double elev_nadir) const
       throw(Exception)
    {
       if(!isValid()) {
-         Exception e("Invalid object");
-         GPSTK_THROW(e);
-      }
-      if(freq <= 0 || freq > nFreq) {
-         Exception e("Invalid frequency");
+         Exception e("Invalid AntexData object");
          GPSTK_THROW(e);
       }
       if(elev_nadir < 0.0 || elev_nadir > 90.0) {
@@ -197,10 +209,10 @@ namespace gpstk
          zen = 90. - elev_nadir;
 
       // ensure azim is within range
-      if(azimuth < 0.0 || azimuth >= 360.0)
-         azim = fmod(azimuth,360.0);
-      else
-         azim = azimuth;
+      //LOG(INFO) << "PCV:0 " << fixed << setprecision(2) <<azimuth<< ","<<elev_nadir;
+      azim = azimuth;
+      while(azim < 0.0) azim += 360.0;
+      while(azim >= 360.0) azim -= 360.0;
 
       // find four points bracketing the point (azim,zen)
       //       zen
@@ -213,28 +225,33 @@ namespace gpstk
       //
       // find bracketing azims within the map, then find bracketing zeniths and PCOs
       double az_lo,az_hi,zn_lo,zn_hi,pco[4];
-      map<int, antennaPCOandPCVData>::const_iterator it;
       map<double, zenOffsetMap>::const_iterator jt_lo,jt_hi;
 
+      map<string, antennaPCOandPCVData>::const_iterator it;
       it = freqPCVmap.find(freq);
       if(it == freqPCVmap.end()) {
-         Exception e("Frequency " + StringUtils::asString(freq)
-               + " not found! object must be corrupted.");
+         Exception e("Frequency " + freq
+               + " not found! System not supported or data corrupted.");
          GPSTK_THROW(e);
       }
 
       const antennaPCOandPCVData& antpco = it->second;
-      const azimZenMap& azzenmap = antpco.PCVvalue;
+      const azimZenMap& azzenmap = antpco.PCVvalue;      // map<double, zenOffsetMap>
 
-      if(!antpco.hasAzimuth)
-         jt_hi = azzenmap.begin(); // this will be only entry
-      else
+      if(!antpco.hasAzimuth) {
+      //LOG(INFO) << "No azim"; az_lo = az_hi = azim;
+         jt_hi = azzenmap.begin(); // this will be only entry, with az == -1
+      }
+      else {
+      //LOG(INFO) << "Look for " << azim << " in azzenmap";
          jt_hi = azzenmap.find(azim); // find() returns end() unless exact match
+      }
 
       // either azimuth is not there, or there is an exact match in azimuth
       if(jt_hi != azzenmap.end()) {
+      //LOG(INFO) << "Found azim " << fixed << setprecision(2) << jt_hi->first;
          //az_lo = az_hi = azim;
-         const zenOffsetMap& zenoffmap = jt_hi->second;
+         const zenOffsetMap& zenoffmap = jt_hi->second;     // map<double,double>
          // bracket zenith angle
          evaluateZenithMap(zen, zenoffmap, zn_lo, zn_hi, pco[2], pco[0]);
          if(zn_lo == zn_hi)                  // exact match in zenith angle
@@ -248,20 +265,23 @@ namespace gpstk
          jt_lo = jt_hi = azzenmap.lower_bound(azim);
 
          if(jt_lo == azzenmap.end()) {        // beyond the last value
-            jt_lo--;                         // last value
+            jt_lo--;                          // last value
             az_lo = jt_lo->first;
             jt_hi = azzenmap.begin();         // wrap around to beginning
             az_hi = jt_hi->first + 360.;
+            //LOG(INFO) << "Beyond high";
          }
          else if(jt_hi == azzenmap.begin()) { // before the first value
             az_hi = jt_hi->first;
             (jt_lo = azzenmap.end())--;       // wrap around to end
             az_lo = jt_lo->first - 360.;
+            //LOG(INFO) << "Before low";
          }
          else {                              // azim is bracketed
             az_hi = jt_hi->first;
             jt_lo--;
             az_lo = jt_lo->first;
+            //LOG(INFO) << "Bracket";
          }
 
          // get zenith angles and pcos at upper and lower azimuths
@@ -269,14 +289,19 @@ namespace gpstk
          evaluateZenithMap(zen, jt_lo->second, zn_lo, zn_hi, pco[2], pco[0]);
 
          // interpolation
-         if(zn_hi == zn_lo)   // zen exact match, linear interpolate in azimuth
+         if(zn_hi == zn_lo) {
+            // zen exact match, linear interpolate in azimuth
             retpco = (pco[2]*(az_hi - azim) + pco[3]*(azim - az_lo))/(az_hi - az_lo);
-         else                 // bi-linear interpolation
+            //LOG(INFO) << "Exact match";
+         }
+         else {
+            // bi-linear interpolation
             retpco = ( pco[0] * (az_hi - azim)*(zen - zn_lo)
                      + pco[1] * (azim - az_lo)*(zen - zn_lo)
                      + pco[2] * (az_hi - azim)*(zn_hi - zen)
                      + pco[3] * (azim - az_lo)*(zn_hi - zen) )
                            / ( (az_hi - az_lo)*(zn_hi - zn_lo) );
+         }
       }
 
       // do not change the sign; just interpolate the map
@@ -285,7 +310,7 @@ namespace gpstk
 
    void AntexData::dump(ostream& s, int detail) const
    {
-      map<int, antennaPCOandPCVData>::const_iterator it;
+      map<string, antennaPCOandPCVData>::const_iterator it;
       map<double, zenOffsetMap>::const_iterator jt;
       map<double, double>::const_iterator kt;
 
@@ -294,13 +319,12 @@ namespace gpstk
          s << " (Receiver)" << endl;
       else {
          if(PRN != -1 || SVN != -1) {
-           s << " (" << (type == string("GLONASS") ? "GLONASS" : "GPS");
+           s << " (" << (type.substr(0,7) == string("GLONASS") ? "GLO" : "GPS");
            if(PRN != -1) s << string(" PRN ") + asString(PRN);
            if(SVN != -1) s << string(" SVN ") + asString(SVN);
            s << ")";
         }
-        s << " Sat. code: " << satCode
-          << " COSPAR ID: " << cospar << endl;
+        s << " code " << satCode << ", COSPAR " << cospar << endl;
       }
 
       if(detail <= 0) return;
@@ -317,11 +341,8 @@ namespace gpstk
          << " in steps of " << zenRange[2] << " degrees." << endl;
       s << "Frequencies stored (" << nFreq << "): ";
 
-      it = freqPCVmap.begin();
-      while(it != freqPCVmap.end()) {
-         s << " " << (serialNo[0]=='G' ? "L" : "") << it->first;
-         it++;
-      }
+      for(it = freqPCVmap.begin(); it != freqPCVmap.end(); ++it)
+         s << " " << it->first;
       s << endl;
       s << "Valid FROM "
          << (validFrom == CommonTime::BEGINNING_OF_TIME ? " (all time) "
@@ -450,7 +471,7 @@ namespace gpstk
 
       size_t i;
       string line;
-      map<int, antennaPCOandPCVData>::const_iterator it;
+      map<string, antennaPCOandPCVData>::const_iterator it;
       map<double, zenOffsetMap>::const_iterator jt;
       map<double, double>::const_iterator kt;
       AntexStream& strm = dynamic_cast<AntexStream&>(ffs);
@@ -538,9 +559,8 @@ namespace gpstk
       for(it = freqPCVmap.begin(); it != freqPCVmap.end(); it++) {
          const antennaPCOandPCVData& antpco = it->second;
 
-         ostringstream oss; // b/c asString does not allow set fill char
-         oss << systemChar << setfill('0') << setw(2) << it->first;
-         freqStr = oss.str();
+         ostringstream oss;
+         freqStr = it->first;
          line  = string("   ");
          line += freqStr;
          line  = leftJustify(line,60);
@@ -583,9 +603,8 @@ namespace gpstk
          // loop over frequency again
          for(it = freqPCVmap.begin(); it != freqPCVmap.end(); it++) {
             const antennaPCOandPCVData& antpco = it->second;
-            ostringstream oss; // b/c asString does not allow set fill char
-            oss << systemChar << setfill('0') << setw(2) << it->first;
-            freqStr = oss.str();
+            ostringstream oss;
+            freqStr = it->first;
             line  = string("   ");
             line += freqStr;
             line  = leftJustify(line,60);
@@ -681,9 +700,9 @@ namespace gpstk
       throw(FFStreamError)
    {
    try {
-      static bool hasAzim;
-      static int freq;
-      static string freqStr;
+      static bool hasAzim, foundRMS(false);
+      //static int freq;
+      static string freq;
       string label(line, 60, 20);
 
       if(label == startAntennaString) {        // "START OF ANTENNA"
@@ -705,6 +724,7 @@ namespace gpstk
             else PRN = -1;
             if(satCode.length() > 1) SVN = asInt(satCode.substr(1,3));
             else SVN = -1;
+            systemChar = line[20];
          }
          valid |= typeSerNumValid;
       }
@@ -762,17 +782,18 @@ namespace gpstk
          valid |= dataCommentValid;
       }
       else if(label == startFreqString) {      // "START OF FREQUENCY"
-         throwRecordOutOfOrder(startFreqRMSValid|neuFreqRMSValid|endOfFreqRMSValid|
-               endOfAntennaValid,label);
-         freqStr = line.substr(3,3);
-         systemChar = line[3];
-         if(systemChar == ' ') systemChar = 'G';
-         freq = asInt(line.substr(4,2));
+         foundRMS = false;
+         throwRecordOutOfOrder(
+            startFreqRMSValid|neuFreqRMSValid|endOfFreqRMSValid|endOfAntennaValid,
+            label);
+         freq = line.substr(3,3);
          valid |= startFreqValid;
       }
-      else if(label == neuFreqString) {        // "NORTH / EAST / UP"
-         throwRecordOutOfOrder(startFreqRMSValid|neuFreqRMSValid|endOfFreqRMSValid|
-               endOfAntennaValid,label);
+      else if(label == neuFreqString && !foundRMS) {        // "NORTH / EAST / UP"
+         //LOG(INFO) << "Found NORTH / EAST / UP";
+         throwRecordOutOfOrder(
+            startFreqRMSValid|neuFreqRMSValid|endOfFreqRMSValid|endOfAntennaValid,
+            label);
          freqPCVmap[freq].PCOvalue[0] = asDouble(line.substr(0,10));
          freqPCVmap[freq].PCOvalue[1] = asDouble(line.substr(10,10));
          freqPCVmap[freq].PCOvalue[2] = asDouble(line.substr(20,10));
@@ -781,22 +802,25 @@ namespace gpstk
          freqPCVmap[freq].hasAzimuth = hasAzim;
       }
       else if(label == endOfFreqString) {      // "END OF FREQUENCY"
-         throwRecordOutOfOrder(startFreqRMSValid|neuFreqRMSValid|endOfFreqRMSValid|
-               endOfAntennaValid,label);
-         if(freqStr != line.substr(3,3)) {
+         throwRecordOutOfOrder(
+            startFreqRMSValid|neuFreqRMSValid|endOfFreqRMSValid|endOfAntennaValid,
+            label);
+         if(freq != line.substr(3,3)) {
             FFStreamError fse("START/END OF FREQ confused: "
-                  + freqStr + " != " + line.substr(3,3));
+                  + freq + " != " + line.substr(3,3));
             GPSTK_THROW(fse);
          }
          valid |= endOfFreqValid;
       }
       else if(label == startFreqRMSString) {   // "START OF FREQ RMS"
+         foundRMS = true;
+         //LOG(INFO) << "Found START OF FREQ RMS";
          throwRecordOutOfOrder(endOfAntennaValid,label);
-         freqStr = line.substr(3,3);
-         freq = asInt(line.substr(4,2));
+         freq = line.substr(3,3);
          valid |= startFreqRMSValid;
       }
-      else if(label == neuFreqRMSString) {     // "NORTH / EAST / UP"
+      else if(label == neuFreqRMSString && foundRMS) {     // "NORTH / EAST / UP"
+         //LOG(INFO) << "Found NORTH / EAST / UP for RMS";
          throwRecordOutOfOrder(endOfAntennaValid,label);
          freqPCVmap[freq].PCOrms[0] = asDouble(line.substr(0,10));
          freqPCVmap[freq].PCOrms[1] = asDouble(line.substr(10,10));
@@ -804,10 +828,11 @@ namespace gpstk
          valid |= neuFreqRMSValid;
       }
       else if(label == endOfFreqRMSString) {   // "END OF FREQ RMS"
+         foundRMS = false;
          throwRecordOutOfOrder(endOfAntennaValid,label);
-         if(freqStr != line.substr(3,3)) {
+         if(freq != line.substr(3,3)) {
             FFStreamError fse("START/END OF FREQ RMS confused: "
-                  + freqStr + " != " + line.substr(3,3));
+                  + freq + " != " + line.substr(3,3));
             GPSTK_THROW(fse);
          }
          valid |= endOfFreqRMSValid;
@@ -816,6 +841,7 @@ namespace gpstk
          valid |= endOfAntennaValid;
       }
       else {
+         //LOG(INFO) << "Found data record, valid is " << hex << valid;
          int i,n;
          string noazi = line.substr(3,5);
          double azim = asDouble(line.substr(0,8));

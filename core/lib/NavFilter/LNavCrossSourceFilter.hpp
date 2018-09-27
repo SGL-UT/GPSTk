@@ -1,5 +1,5 @@
-#ifndef LNAVCROSSOURCEFILTER_HPP
-#define LNAVCROSSOURCEFILTER_HPP
+#ifndef LNAVCROSSSOURCEFILTER_HPP
+#define LNAVCROSSSOURCEFILTER_HPP
 
 #include <NavFilterMgr.hpp>
 #include <NavFilter.hpp>
@@ -40,6 +40,14 @@ namespace gpstk
           *   messages are stored here on return. */
       virtual void finalize(NavMsgList& msgBitsOut);
 
+         /// Internally stores 1 epoch's worth of subframe data.
+      virtual unsigned processingDepth() const throw()
+      { return 1; }
+
+         /// Return the filter name.
+      virtual std::string filterName() const throw()
+      { return "CrossSource"; }
+
    protected:
          /// Map from subframe data to source list
       typedef std::map<LNavFilterData*, NavMsgList, LNavMsgSort> SubframeMap;
@@ -66,4 +74,4 @@ namespace gpstk
 
 }
 
-#endif // LNAVCROSSOURCEFILTER_HPP
+#endif // LNAVCROSSSOURCEFILTER_HPP

@@ -50,6 +50,7 @@
 #include "GPSEllipsoid.hpp"
 #include "IonoModelStore.hpp"
 #include "TropModel.hpp"
+#include "NBTropModel.hpp"
 #include "ValidType.hpp"
 #include "SatID.hpp"
 #include "GNSSconstants.hpp"

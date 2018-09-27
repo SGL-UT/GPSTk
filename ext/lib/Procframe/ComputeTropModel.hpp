@@ -45,7 +45,7 @@
 #define GPSTK_COMPUTETROPMODEL_HPP
 
 #include "ProcessingClass.hpp"
-#include "TropModel.hpp"
+#include "NeillTropModel.hpp"
 
 
 namespace gpstk

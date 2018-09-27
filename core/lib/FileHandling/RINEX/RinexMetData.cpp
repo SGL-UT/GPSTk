@@ -61,7 +61,7 @@ namespace gpstk
       string line;
 
       // first the epoch line to 'line'
-      line  = writeTime(time);
+      line = writeTime(time, strm.header.version);
 
       for (int i = 0;
            (i < int(strm.header.obsTypeList.size())) && (i < maxObsPerLine);
@@ -129,9 +129,9 @@ namespace gpstk
       else
          strm.formattedGetLine(line, true);
 
-      processFirstLine(line, hdr);
+      processFirstLine(line, hdr, hdr.version);
 
-      time = parseTime(line);
+      time = parseTime(line, hdr.version);
 
       while (data.size() < hdr.obsTypeList.size())
       {
@@ -150,16 +150,22 @@ namespace gpstk
    } 
 
    void RinexMetData::processFirstLine(const string& line,
-                                       const RinexMetHeader& hdr)
+                                       const RinexMetHeader& hdr,
+                                       double version)
       throw(FFStreamError)
    {
+      int yrLen = 18;
+      if(version >= 3.02)
+      {
+         yrLen = 20;
+      }
       try
       {
          for (int i = 0;
               (i < maxObsPerLine) && (i < int(hdr.obsTypeList.size()));
               i++)
          {
-            int currPos = 7*i + 18;
+            int currPos = 7*i + yrLen;
             data[hdr.obsTypeList[i]] = asDouble(line.substr(currPos,7));
          }
       }
@@ -193,24 +199,30 @@ namespace gpstk
       }
    }
 
-   CommonTime RinexMetData::parseTime(const string& line) const
+   CommonTime RinexMetData::parseTime(const string& line, double version) const
       throw(FFStreamError)
    {
+      int addYrLen = 0;
+      if(version >=3.02)
+      {
+         addYrLen = 2;
+      }
       try
       {
             // According to the RINEX spec, any 2 digit year 80 or greater
             // is a year in the 1900s (1980-1999), under 80 is 2000s.
+            // Rinex 3.02 uses 4 digit years
          const int YearRollover = 80;
 
             // check if the spaces are in the right place - an easy way to check
             // if there's corruption in the file
-         if ( line.size() < 18  ||
+         if ( line.size() < 18+addYrLen  ||
               (line[0]  != ' ') ||
-              (line[3]  != ' ') ||
-              (line[6]  != ' ') ||
-              (line[9]  != ' ') ||
-              (line[12] != ' ') ||
-              (line[15] != ' '))
+              (line[3+addYrLen]  != ' ') ||
+              (line[6+addYrLen]  != ' ') ||
+              (line[9+addYrLen]  != ' ') ||
+              (line[12+addYrLen] != ' ') ||
+              (line[15+addYrLen] != ' '))
          {
             FFStreamError e("Invalid time format");
             GPSTK_THROW(e);
@@ -219,18 +231,21 @@ namespace gpstk
          int year, month, day, hour, min;
          double sec;
 
-         year  = asInt(line.substr(1, 2));
-         month = asInt(line.substr(3, 3));
-         day   = asInt(line.substr(6, 3));
-         hour  = asInt(line.substr(9, 3));
-         min   = asInt(line.substr(12,3));
-         sec   = asInt(line.substr(15,3));
+         year  = asInt(line.substr(1, 2+addYrLen));
+         month = asInt(line.substr(3+addYrLen, 3));
+         day   = asInt(line.substr(6+addYrLen, 3));
+         hour  = asInt(line.substr(9+addYrLen, 3));
+         min   = asInt(line.substr(12+addYrLen,3));
+         sec   = asInt(line.substr(15+addYrLen,3));
 
-         if (year < YearRollover)
+         if(!addYrLen)
          {
-            year += 100;
+            if (year < YearRollover)
+            {
+               year += 100;
+            }
+            year += 1900;
          }
-         year += 1900;
 
          CivilTime rv(year, month, day, hour, min, sec, TimeSystem::Any);
          return CommonTime(rv);
@@ -242,9 +257,15 @@ namespace gpstk
       }
    }
 
-   string RinexMetData::writeTime(const CommonTime& dt) const
+   string RinexMetData::writeTime(const CommonTime& dt, double version) const
       throw(StringException)
    {
+      int yrLen = 2;
+      if(version >= 3.02)
+      {
+         yrLen = 4;
+      }
+
       if (dt == CommonTime::BEGINNING_OF_TIME)
       {
          return string(26, ' ');
@@ -252,7 +273,7 @@ namespace gpstk
 
       string line(" ");
       CivilTime civtime(dt);
-      line += rightJustify(asString<short>(civtime.year  ),2,'0');
+      line += rightJustify(asString<short>(civtime.year  ),yrLen,'0');
       line += " ";
       line += rightJustify(asString<short>(civtime.month ),2);
       line += " ";

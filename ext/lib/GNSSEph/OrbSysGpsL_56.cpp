@@ -264,6 +264,23 @@ namespace gpstk
       return retVal;
    } // end of getUtcOffsetModLeapSec()
 
+   gpstk::TimeSystemCorrection OrbSysGpsL_56::getTSC() const
+         throw(InvalidRequest)
+   {
+      if (!dataLoadedFlag)
+      {
+         InvalidRequest exc("Required data not stored.");
+         GPSTK_THROW(exc);
+      }
+      TimeSystemCorrection tsc("GPUT");
+      tsc.A0 = A0;
+      tsc.A1 = A1;
+      tsc.refSOW = static_cast<GPSWeekSecond>(ctEpoch).sow;
+      tsc.refWeek = static_cast<GPSWeekSecond>(ctEpoch).week;
+      tsc.geoProvider = string ("    ");
+      tsc.geoUTCid = 2;
+      return tsc; 
+   }
 
    void OrbSysGpsL_56::dumpUtcTerse(std::ostream& s, const std::string tform) const
          throw(InvalidRequest)
@@ -288,12 +305,13 @@ namespace gpstk
       s.precision(10);
       s.fill(' ');
 
-      s << " A0:" << setw(18) << A0 << " ";
-      s << " A1:" << setw(18) << A1 << " ";
+      s << " A0:" << setw(18) << A0 << "s, ";
+      s << " A1:" << setw(18) << A1 << "s/s, ";
 
       s.setf(ios::fixed, ios::floatfield);
       s.precision(0);
-      s << " dtLS:" << setw(4) << dtLS;
+      s << " dtLS:" << setw(4) << dtLS << "s, ";
+      s << " dtLS_LSF:" << setw(4) << dtLSF << "s "; 
    } // end of dumpTerse()
 
    void OrbSysGpsL_56::dumpBody(ostream& s) const

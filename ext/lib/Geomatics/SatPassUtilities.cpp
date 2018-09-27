@@ -1,6 +1,3 @@
-/// @file SatPassUtilities.cpp
-/// Various utilities using SatPass
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -37,24 +34,26 @@
 //
 //=============================================================================
 
+/// @file SatPassUtilities.cpp
+/// Various utilities using SatPass
+
+#include <algorithm>
+
 #include "Stats.hpp"
 #include "stl_helpers.hpp"
 #include "logstream.hpp"
 
 #include "SatPassUtilities.hpp"
+#include "RinexObsStream.hpp"
+#include "Rinex3ObsStream.hpp"
+#include "Rinex3ObsData.hpp"
 
 using namespace std;
 using namespace gpstk::StringUtils;
 
 namespace gpstk {
 
-// ---------------------------- sort, read and write SatPass lists ---------------
-// NB uses SatPass::operator<()
-void sort(vector<SatPass>& SPList) throw()
-{
-   std::sort(SPList.begin(), SPList.end());
-}
-
+// ---------------------------- read and write SatPass lists ---------------------
 // -------------------------------------------------------------------------------
 void Dump(vector<SatPass>& SatPassList, ostream& os, bool rev, bool dbug)
    throw(Exception)
@@ -167,7 +166,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 // User the handler to print messages, etc.
 // @param  input SatPass list for modification
 // @param  message returned from FindMilliseconds()
-void RemoveMilliseconds(std::vector<SatPass>& SPList, msecHandler& msh)
+void RemoveMilliseconds(vector<SatPass>& SPList, msecHandler& msh)
    throw(Exception)
 {
 try {
@@ -257,7 +256,7 @@ try {
    vector<Epoch> timeOrder,timeShort;
 
    // sort existing list on begin time
-   sort(SPList);
+   std::sort(SPList.begin(), SPList.end());
 
    // fill the index array using SatPass's already there
    // assumes SPList is in time order - later ones overwrite earlier
@@ -500,10 +499,11 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 }
 
 // -------------------------------------------------------------------------------
-// TD no this only works if the passes all have the same OTs in the same order....
-int SatPassToRinexFile(string filename,
-                       RinexObsHeader& header,
-                       vector<SatPass>& SPList) throw(Exception)
+// TD note this only works if the passes all have the same OTs in the same order....
+int SatPassToRinex2File(string filename,
+                        RinexObsHeader& header,
+                        vector<SatPass>& SPList)
+   throw(Exception)
 {
    try {
       if(filename.empty()) return 0;
@@ -599,6 +599,134 @@ int SatPassToRinexFile(string filename,
          if(robs.numSvs == 0) continue;
 
          robs.epochFlag = 0;
+         rstrm << robs;
+      }
+
+      rstrm.close();
+   }
+   catch(Exception& e) { GPSTK_RETHROW(e); }
+
+   return 0;
+}
+
+// -------------------------------------------------------------------------------
+// Iterate over the input vector of SatPass objects (sorted to be in time
+// order) and write them, with the given header, to a RINEX VER 3 observation file
+// of the given filename.
+// return -1 if the file could not be opened, otherwise return 0.
+int SatPassToRinex3File(string filename,
+                        Rinex3ObsHeader header_in,
+                        const map<char, vector<string> >& sysobs,
+                        vector<SatPass>& SPList)
+   throw(Exception)
+{
+   try {
+      if(filename.empty()) return 0;
+
+      int i,j,ii,jj,ngood;
+      vector<string> obstypes;
+      map<unsigned int, unsigned int> indexMap;
+      map<unsigned int, unsigned int>::const_iterator kt;
+      Rinex3ObsData robs;
+
+      // open file
+      Rinex3ObsStream rstrm(filename.c_str(), ios::out);
+      if(!rstrm.is_open()) return -1;
+
+      rstrm.exceptions(fstream::failbit);
+
+      // create a new header
+      Rinex3ObsHeader header(header_in);
+      //header.commentList.push_back(string("Written by SatPassToRinex3File"));
+
+      if(header.version < 3) {
+         // create a master list of obstypes - union of all passes
+         for(i=0; i<SPList.size(); i++) {
+            vector<string> ots(SPList[i].getObsTypes());
+            for(j=0; j<ots.size(); j++)
+               if(vectorindex(obstypes, ots[j]) == -1)
+                  obstypes.push_back(ots[j]);
+         }
+
+         // clear R2 obs types and replace
+         header.R2ObsTypes.clear();
+         //obstypes = SPList[0].getObstypes(); // SatPass == R2 obstypes (L1L2P1P2)
+         for(i=0; i<obstypes.size(); i++)
+            header.R2ObsTypes.push_back(obstypes[i]);
+      }
+
+      // define R3 ObsIDs for each system
+      // map<string sys char, vec<ObsID> >
+      header.mapObsTypes.clear();
+      map<char, vector<string> >::const_iterator it;
+      for(it = sysobs.begin(); it != sysobs.end(); ++it) {
+         vector<RinexObsID> v;
+         string sysstr(string(1,it->first));
+         header.mapObsTypes[sysstr] = v;
+         for(j=0; j<it->second.size(); j++) {
+            RinexObsID roid(it->second[j]);
+            header.mapObsTypes[sysstr].push_back(roid);
+         }
+      }
+      
+      // create the iterator
+      SatPassIterator spit(SPList);
+
+      // put obs types, first time and interval in header
+      header.firstObs = static_cast<CivilTime>(spit.getFirstTime());
+      header.lastObs = static_cast<CivilTime>(spit.getLastTime());
+      header.interval = spit.getDT();
+      header.valid |= Rinex3ObsHeader::validFirstTime;
+      header.valid |= Rinex3ObsHeader::validLastTime;
+      header.valid |= Rinex3ObsHeader::validInterval;
+
+      rstrm << header;
+
+      while(spit.next(indexMap)) {
+         robs.obs.clear();
+         robs.epochFlag = 0;
+         robs.numSVs = 0;
+         robs.clockOffset = 0.0;
+
+         kt = indexMap.begin();
+         robs.time = SPList[kt->first].time(kt->second);
+
+         for(kt=indexMap.begin(); kt != indexMap.end(); ++kt) {
+            ii = kt->first; jj = kt->second;
+            if(SPList[ii].status() == -1) continue;         // skip bad passes
+            RinexSatID sat = SPList[ii].getSat();           // get sat
+
+            // in R2, obstypes are defined above, a superset of all systems/passes
+            // in R3, obstypes are defined per system/pass
+            if(header.version >= 3)
+               obstypes = SPList[ii].getObstypes();
+
+            vector<RinexDatum> vRD;
+            for(ngood=0,j=0; j<obstypes.size(); j++) {
+               RinexDatum rd;
+
+               if(SPList[ii].getFlag(jj) != SatPass::BAD &&
+                  SPList[ii].hasType(obstypes[j]))
+               {
+                  rd.data = SPList[ii].data(jj,obstypes[j]);
+                  //rd.ssi = ?;
+                  //rd.lli = ?;
+                  ngood++;
+               }
+
+               // save it in vector - zero or not
+               vRD.push_back(rd);
+            }
+
+            if(ngood > 0) {
+               robs.obs.insert(
+                  map<RinexSatID, vector<RinexDatum> >::value_type(sat,vRD));
+               robs.numSVs++;
+            }
+         }
+
+         if(robs.numSVs == 0) continue;
+
          rstrm << robs;
       }
 

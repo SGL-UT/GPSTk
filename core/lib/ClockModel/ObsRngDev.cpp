@@ -65,8 +65,11 @@ namespace gpstk
       : obstime(time), svid(svid), ord(0), wonky(false)
    {
       computeOrd(prange, rxpos, eph, em, svTime);
-      Position gx(rxpos, Position::Geodetic, &em);
-      NBTropModel nb(gx.getAltitude(), gx.getGeodeticLatitude(), static_cast<YDSTime>(time).doy);
+      Position gx(rxpos);
+      gx.asGeodetic(&em);
+      NBTropModel nb(gx.getAltitude(),
+                     gx.getGeodeticLatitude(),
+                     static_cast<YDSTime>(time).doy);
       computeTrop(nb);
    }
 
@@ -83,8 +86,11 @@ namespace gpstk
          : obstime(time), svid(svid), ord(0), wonky(false)
    {
       computeOrd(prange, rxpos, eph, em, svTime);
-      Position gx(rxpos, Position::Geodetic, &em);
-      NBTropModel nb(gx.getAltitude(), gx.getGeodeticLatitude(), static_cast<YDSTime>(time).doy);
+      Position gx(rxpos);
+      gx.asGeodetic(&em);
+      NBTropModel nb(gx.getAltitude(),
+                     gx.getGeodeticLatitude(),
+                     static_cast<YDSTime>(time).doy);
       computeTrop(nb);
       iono = ion.getCorrection(time, gx, elevation, azimuth, fq);
       ord -= iono;
@@ -120,7 +126,8 @@ namespace gpstk
    {
       computeOrd(prange, rxpos, eph, em, svTime);
       computeTrop(tm);
-      Position gx(rxpos, Position::Geodetic, &em);
+      Position gx(rxpos);
+      gx.asGeodetic(&em);
       iono = ion.getCorrection(time, gx, elevation, azimuth, fq);
       ord -= iono;
    }
@@ -138,19 +145,22 @@ namespace gpstk
       double gamma)
          : obstime(time), svid(svid), ord(0), wonky(false)
    {
-      // for dual frequency see ICD-GPS-211, section 20.3.3.3.3.3
+      // for dual frequency see IS-GPS-200, section 20.3.3.3.3.3
       double icpr = (prange2 - gamma * prange1)/(1-gamma);
       iono = prange1 - icpr;
 
       computeOrd(icpr, rxpos, eph, em, svTime);
-      Position gx(rxpos, Position::Geodetic, &em);
-      NBTropModel nb(gx.getAltitude(), gx.getGeodeticLatitude(), static_cast<YDSTime>(time).doy);
+      Position gx(rxpos);
+      gx.asGeodetic(&em);
+      NBTropModel nb(gx.getAltitude(),
+                     gx.getGeodeticLatitude(),
+                     static_cast<YDSTime>(time).doy);
       computeTrop(nb);
    }
 
 
    ObsRngDev::ObsRngDev(
-      const  double prange1,
+      const double prange1,
       const double prange2,
       const SatID& svid,
       const CommonTime& time,
@@ -162,7 +172,7 @@ namespace gpstk
       double gamma)
          : obstime(time), svid(svid), ord(0), wonky(false)
    {
-      // for dual frequency see ICD-GPS-211, section 20.3.3.3.3.3
+      // for dual frequency see IS-GPS-200, section 20.3.3.3.3.3
       double icpr = (prange2 - gamma * prange1)/(1-gamma);
       iono = prange1 - icpr;
 
@@ -178,7 +188,7 @@ namespace gpstk
       const EllipsoidModel& em)
    {
       CorrectedEphemerisRange cer;
-      rho = cer.ComputeAtTransmitTime(obstime, obs, rxpos, svid, eph);
+      rho = cer.ComputeAtTransmitTime(obstime,obs, rxpos, svid, eph);
       azimuth = cer.azimuth;
       elevation = cer.elevation;
       ord = obs - rho;

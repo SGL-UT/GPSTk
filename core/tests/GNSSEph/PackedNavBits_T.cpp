@@ -61,6 +61,7 @@ public:
    unsigned abstractTest();
    unsigned realDataTest();
    unsigned equalityTest();
+   unsigned ancillaryMethods();
 
    double eps; 
 };
@@ -521,46 +522,53 @@ equalityTest()
       // the metadata handling. 
    SatID satID(1, SatID::systemGPS);
    ObsID obsID( ObsID::otNavMsg, ObsID::cbL2, ObsID::tcC2LM );
+   NavID navID(satID,obsID);
    std::string rxID = "rx1";
    CommonTime ct = CivilTime( 2011, 6, 2, 12, 14, 44.0, TimeSystem::GPS );
 
    SatID satID2(2, SatID::systemGPS);
    ObsID obsID2(ObsID::otNavMsg, ObsID::cbL5, ObsID::tcQ5 );
+   NavID navID2(satID2,obsID2); 
    std::string rxID2 = "rx2";
    CommonTime ctPlus = ct + 900.0;
 
-   PackedNavBits master(satID,obsID,rxID,ct);
+   PackedNavBits master(satID,obsID,navID,rxID,ct);
    PackedNavBits masterCopy(master);
 
-   PackedNavBits diffSat(satID2,obsID,rxID,ct);
-   PackedNavBits diffObs(satID,obsID2,rxID,ct); 
-   PackedNavBits diffRx(satID,obsID,rxID2,ct); 
-   PackedNavBits diffTime(satID,obsID,rxID,ctPlus); 
-      // Typical same SV/OBS across multiple Rx/Time case.
-   PackedNavBits diffRxTime(satID,obsID,rxID2,ctPlus); 
+   PackedNavBits diffSat(satID2,obsID,navID,rxID,ct);
+   PackedNavBits diffObs(satID,obsID2,navID,rxID,ct); 
+   PackedNavBits diffNav(satID,obsID,navID2,rxID,ct); 
+   PackedNavBits diffRx(satID,obsID,navID,rxID2,ct); 
+   PackedNavBits diffTime(satID,obsID,navID,rxID,ctPlus); 
+      // Typical same SV/OBS/NAV across multiple Rx/Time case.
+   PackedNavBits diffRxTime(satID,obsID,navID,rxID2,ctPlus); 
 
    TUDEF("PackedNavBits","matchMetaData");
    TUASSERTE(bool,true,master.matchMetaData(master));
    TUASSERTE(bool,true,master.matchMetaData(masterCopy));
    TUASSERTE(bool,false,master.matchMetaData(diffSat));
    TUASSERTE(bool,false,master.matchMetaData(diffObs));
+   TUASSERTE(bool,false,master.matchMetaData(diffNav));
    TUASSERTE(bool,false,master.matchMetaData(diffRx));
    TUASSERTE(bool,false,master.matchMetaData(diffTime));
  
-   unsigned int ignoreSAT  =         PackedNavBits::mmOBS |  PackedNavBits::mmRX | PackedNavBits::mmTIME;
-   unsigned int ignoreOBS  = PackedNavBits::mmSAT |          PackedNavBits::mmRX | PackedNavBits::mmTIME;
-   unsigned int ignoreRX   = PackedNavBits::mmSAT | PackedNavBits::mmOBS |         PackedNavBits::mmTIME;
-   unsigned int ignoreTIME = PackedNavBits::mmSAT | PackedNavBits::mmOBS | PackedNavBits::mmRX;
+   unsigned int ignoreSAT  =                        PackedNavBits::mmOBS | PackedNavBits::mmNAV | PackedNavBits::mmRX | PackedNavBits::mmTIME;
+   unsigned int ignoreOBS  = PackedNavBits::mmSAT |                        PackedNavBits::mmNAV | PackedNavBits::mmRX | PackedNavBits::mmTIME;
+   unsigned int ignoreNAV  = PackedNavBits::mmSAT | PackedNavBits::mmOBS |                        PackedNavBits::mmRX | PackedNavBits::mmTIME;
+   unsigned int ignoreRX   = PackedNavBits::mmSAT | PackedNavBits::mmOBS | PackedNavBits::mmNAV |                       PackedNavBits::mmTIME;
+   unsigned int ignoreTIME = PackedNavBits::mmSAT | PackedNavBits::mmOBS | PackedNavBits::mmNAV | PackedNavBits::mmRX;
    unsigned int checkRXTIME = PackedNavBits::mmRX | PackedNavBits::mmTIME;
    unsigned int checkSATOBS = PackedNavBits::mmSAT | PackedNavBits::mmOBS;
    TUASSERTE(bool,true,master.matchMetaData( diffSat, ignoreSAT));
    TUASSERTE(bool,true,master.matchMetaData( diffObs, ignoreOBS));
+   TUASSERTE(bool,true,master.matchMetaData( diffNav, ignoreNAV));
    TUASSERTE(bool,true,master.matchMetaData(  diffRx,  ignoreRX));
    TUASSERTE(bool,true,master.matchMetaData(diffTime,ignoreTIME));
    TUASSERTE(bool,true,master.matchMetaData(diffRxTime,checkSATOBS));
 
    TUASSERTE(bool,false,master.matchMetaData(  diffSat,  PackedNavBits::mmSAT));
    TUASSERTE(bool,false,master.matchMetaData(  diffObs,  PackedNavBits::mmOBS));
+   TUASSERTE(bool,false,master.matchMetaData(  diffNav,  PackedNavBits::mmNAV));
    TUASSERTE(bool,false,master.matchMetaData(   diffRx,   PackedNavBits::mmRX));
    TUASSERTE(bool,false,master.matchMetaData( diffTime, PackedNavBits::mmTIME));
    TUASSERTE(bool,false,master.matchMetaData(diffRxTime, checkRXTIME));
@@ -568,10 +576,10 @@ equalityTest()
       // Now keep the metadata the same across copies, but add some 
       // bits.  NOTE: The metadata is all left identical. 
    TUCSM("matchBits");
-   PackedNavBits withBits(satID,obsID,rxID,ct);
-   PackedNavBits withSameBits(satID,obsID,rxID,ct); 
-   PackedNavBits withShortBits(satID,obsID,rxID,ct);
-   PackedNavBits withLongBits(satID,obsID,rxID,ct);
+   PackedNavBits withBits(satID,obsID,navID,rxID,ct);
+   PackedNavBits withSameBits(satID,obsID,navID,rxID,ct); 
+   PackedNavBits withShortBits(satID,obsID,navID,rxID,ct);
+   PackedNavBits withLongBits(satID,obsID,navID,rxID,ct);
 
       // Reuse test data from abstractTest( )
    unsigned long u_i1 = 32767;
@@ -632,7 +640,7 @@ equalityTest()
       // In fact, the first TWO entries are swapped, but
       // the third entry should be the same bits in the 
       // same location.
-   PackedNavBits diffOrder(satID,obsID,rxID,ct);
+   PackedNavBits diffOrder(satID,obsID,navID,rxID,ct);
 
    diffOrder.addUnsignedLong(u_i2, u_n2, u_s2);  // 8 bits  (0- 7)
    diffOrder.addUnsignedLong(u_i1, u_n1, u_s1);  // 16 bits (8-23)
@@ -643,7 +651,7 @@ equalityTest()
 
       // Now build some test cases with both metadata AND bits
    TUCSM("match");
-   PackedNavBits sameAsWithBits(satID,obsID,rxID,ct);
+   PackedNavBits sameAsWithBits(satID,obsID,navID,rxID,ct);
    sameAsWithBits.addUnsignedLong(u_i1, u_n1, u_s1);
    sameAsWithBits.addUnsignedLong(u_i2, u_n2, u_s2);
    sameAsWithBits.addUnsignedLong(u_i3, u_n3, u_s3);
@@ -655,9 +663,9 @@ equalityTest()
    diffMetaWithBits.addUnsignedLong(u_i3, u_n3, u_s3);
    diffMetaWithBits.trimsize();
 
-      // Same SatID and ObsID, but different Rx and XmitTime
+      // Same SatID, ObsID, and NavID but different Rx and XmitTime
       // and with same bits 24-31 but different bits 0-23.
-   PackedNavBits diffMetaWithBits2(satID,obsID,rxID2,ctPlus);
+   PackedNavBits diffMetaWithBits2(satID,obsID,navID,rxID2,ctPlus);
    diffMetaWithBits2.addUnsignedLong(u_i2, u_n2, u_s2);
    diffMetaWithBits2.addUnsignedLong(u_i1, u_n1, u_s1);
    diffMetaWithBits2.addUnsignedLong(u_i3, u_n3, u_s3);
@@ -674,21 +682,154 @@ equalityTest()
    TUASSERTE(bool, false,withBits==diffMetaWithBits2);
 
    TUCSM("operator<");
-   PackedNavBits rightTest(satID,obsID,rxID2,ct); 
-   PackedNavBits leftSmall(satID,obsID,rxID2,ct);
-   PackedNavBits leftLarge(satID,obsID,rxID2,ct);
-   PackedNavBits leftEqual(satID,obsID,rxID2,ct);
-   PackedNavBits longer(satID,obsID,rxID2,ct);
+   PackedNavBits rightTest(satID,obsID,navID,rxID2,ct); 
+   PackedNavBits leftSmall(satID,obsID,navID,rxID2,ct);
+   PackedNavBits leftLarge(satID,obsID,navID,rxID2,ct);
+   PackedNavBits leftEqual(satID,obsID,navID,rxID2,ct);
+   PackedNavBits longer(satID,obsID,navID,rxID2,ct);
    rightTest.rawBitInput("035 0xFFFFFF0F 0xE0000000");
    leftEqual.rawBitInput("035 0xFFFFFF0F 0xE0000000");
    leftSmall.rawBitInput("035 0xFFFFFE0F 0xE0000000");
    leftLarge.rawBitInput("035 0xFFFFFFFF 0xE0000000");
+
+      // Ovbserved real-world case that trggered a failure.  
+      // Right is greater than left at bit 5, but less than
+      // at bit 6.   The greater than was not causing false, so 
+      // when the code got to bit 6, it would (incorrectly) return
+      // true.
+   PackedNavBits leftMixed(satID,obsID,navID,rxID2,ct);
+   PackedNavBits rightMixed(satID,obsID,navID,rxID2,ct);
+   leftMixed.rawBitInput( "035 0x03019AA1 0x00000000");
+   rightMixed.rawBitInput("035 0x057E77B8 0x00000000");
    longer.rawBitInput(   "064 0x00000000 0x00000000");
    TUASSERTE(bool,  true, leftSmall<rightTest);
    TUASSERTE(bool, false, leftEqual<rightTest);
    TUASSERTE(bool, false, leftLarge<rightTest);
    TUASSERTE(bool,  true, leftSmall<longer);
    TUASSERTE(bool, false, longer<leftSmall);
+   TUASSERTE(bool,  true, leftMixed<rightMixed);
+   TUASSERTE(bool, false, rightMixed<leftMixed);
+
+   TURETURN();
+}
+
+   // These test cases are designed to test the methods
+   // test were added to enable more flexible use of 
+   // PackedNavBits in testing:
+   //    invert()
+   //    copyBits()
+   //    insertUnsignedBits()
+   // 
+unsigned PackedNavBits_T::
+ancillaryMethods()
+{
+   TUDEF("PackedNavBits", "ancillary methods");
+
+      // -------------------------------------------------------------
+      // First test the invert() method.
+      // Create a sample PackedNavBits.
+      // At this point, the "packed bits" section of 
+      // this object is empty.  We are focused on testing
+      // the metadata handling. 
+   SatID satID(1, SatID::systemGPS);
+   ObsID obsID( ObsID::otNavMsg, ObsID::cbL2, ObsID::tcC2LM );
+   NavID navID(satID,obsID);
+   std::string rxID = "rx1";
+   CommonTime ct = CivilTime( 2011, 6, 2, 12, 14, 44.0, TimeSystem::GPS );
+   PackedNavBits copyUpright(satID,obsID,navID,rxID,ct);
+
+      // Next add some bits with a fixed pattern. 
+      // Make a copy with a given bit pattern,....
+   unsigned long uword = 0xAAAAAAAA;
+   try
+   {
+      copyUpright.addUnsignedLong(uword,32,1);
+      copyUpright.addUnsignedLong(uword,32,1);
+   }
+   catch (InvalidParameter ip)
+   {
+      cout << "Caught an exception" << endl;
+      cout << ip << endl;
+   }
+   copyUpright.trimsize();
+
+      // Make copy with the inverse bit pattern
+   PackedNavBits copyInverse(satID,obsID,navID,rxID,ct);
+   unsigned long uwordInverse = (~uword) & 0xFFFFFFFF;
+   try
+   {
+      copyInverse.addUnsignedLong(uwordInverse,32,1);
+      copyInverse.addUnsignedLong(uwordInverse,32,1);
+   }
+   catch (InvalidParameter ip)
+   {
+      cout << "Caught an exception" << endl;
+      cout << ip << endl;
+   }
+   copyInverse.trimsize();
+
+      // Invert the upright and see that the results 
+      // matches expectations
+   copyUpright.invert(); 
+   TUASSERTE(bool,true,copyUpright.matchBits(copyInverse)); 
+
+      // -------------------------------------------------------------
+      // Now test copyBits()
+      // Create a PNB with 64 1's and a PNB with 64 0's
+   PackedNavBits allOnes(satID,obsID,navID,rxID,ct);
+   unsigned long uwordOnes = 0xFFFFFFFF;
+   allOnes.addUnsignedLong(uwordOnes,32,1);
+   allOnes.addUnsignedLong(uwordOnes,32,1);
+   allOnes.trimsize();
+
+   PackedNavBits allZeros(satID,obsID,navID,rxID,ct);
+   unsigned long uwordZeros = 0x00000000;
+   allZeros.addUnsignedLong(uwordZeros,32,1);
+   allZeros.addUnsignedLong(uwordZeros,32,1);
+   allZeros.trimsize();
+
+      // Copy first and last 16 bits from allZeros to all ones
+   allOnes.copyBits(allZeros,0,15); 
+   allOnes.copyBits(allZeros,48,63);
+
+   PackedNavBits expected(satID,obsID,navID,rxID,ct);
+   unsigned long uword1 = 0x0000FFFF;
+   unsigned long uword2 = 0xFFFF0000;
+   expected.addUnsignedLong(uword1,32,1);
+   expected.addUnsignedLong(uword2,32,1);
+   expected.trimsize();
+
+   TUASSERTE(bool,true,expected.matchBits(allOnes));
+
+      // -------------------------------------------------------------
+      // Now test insertUnsignedLong( )
+      // Create a PNB with 96 0's
+   PackedNavBits insertTest(satID,obsID,navID,rxID,ct);
+   insertTest.addUnsignedLong(uwordZeros,32,1);
+   insertTest.addUnsignedLong(uwordZeros,32,1);
+   insertTest.addUnsignedLong(uwordZeros,32,1);
+   insertTest.trimsize();
+
+   unsigned long fakeSOW = 604800 - 6; 
+   unsigned long tenOnes = 0x000003FF;
+
+      // Insert an unscaled set of 10 1's into bits 20-29 
+   insertTest.insertUnsignedLong(tenOnes,20,10,1);
+
+      // Insert a 17 bit SOW of 604794 scaled by 6 
+      // starting at bit 0
+   insertTest.insertUnsignedLong(fakeSOW,0,17,6);
+
+      // Build an expected PNB
+   PackedNavBits insertExpected(satID,obsID,navID,rxID,ct);
+   insertExpected.addUnsignedLong(fakeSOW,17,6); 
+   insertExpected.addUnsignedLong(uwordZeros,3,1);
+   insertExpected.addUnsignedLong(tenOnes,10,1);
+   insertExpected.addUnsignedLong(uwordZeros,32,1);
+   insertExpected.addUnsignedLong(uwordZeros,32,1);
+   insertExpected.addUnsignedLong(uwordZeros, 2,1);
+   insertExpected.trimsize();
+   TUASSERTE(bool,true,insertExpected.matchBits(insertTest));
 
    TURETURN();
 }
@@ -702,6 +843,7 @@ int main()
    errorTotal += testClass.abstractTest();
    errorTotal += testClass.realDataTest();
    errorTotal += testClass.equalityTest();
+   errorTotal += testClass.ancillaryMethods();
 
    cout << "Total Failures for " << __FILE__ << ": " << errorTotal << endl;
 

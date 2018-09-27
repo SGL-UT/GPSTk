@@ -7,7 +7,6 @@
 using namespace gpstk;
 %}
 
-
 // =============================================================
 //  Section 1: C++ template containers & typedefs
 // =============================================================
@@ -21,6 +20,8 @@ using namespace gpstk;
 %include "std_set.i"
 %include "std_multimap.i"
 
+ // Several clases have specifc .i files that
+ // may override this
 %rename(__str__) *::asString() const;
 
 // Ignores on things we can't wrap
@@ -225,11 +226,13 @@ namespace std { class fstream {}; }
 
 // RINEX format:
 %include "RinexSatID.hpp"
+%include "RinexObsID.hpp"
+%include "RinexSatID.i"
+%include "RinexObsID.i"
 // RINEX obs:
 %include "RinexObsBase.hpp"
 %include "RinexObsHeader.hpp"
 %include "RinexObsData.hpp"
-%include "RinexObsID.hpp"
 %include "RinexObsStream.hpp"
 // RINEX nav:
 %include "RinexNavBase.hpp"
@@ -252,11 +255,11 @@ namespace std { class fstream {}; }
 %include "Rinex3NavData.hpp"
 %include "OrbElemRinex.hpp"
 // RINEX 3 clock/obs:
+%include "RinexDatum.hpp"
 %include "Rinex3ClockBase.hpp"
 %include "Rinex3ObsBase.hpp"
 %include "Rinex3ObsHeader.hpp"
 %include "Rinex3ObsData.hpp"
-%include "RinexDatum.hpp"
 %include "Rinex3ObsStream.hpp"
 %include "Rinex3ClockHeader.hpp"
 %include "Rinex3ClockData.hpp"
@@ -296,13 +299,26 @@ namespace std { class fstream {}; }
 %include "ObsEpochMap.hpp"
 %include "WxObsMap.hpp"
 %include "TropModel.hpp"
+%include "GCATTropModel.hpp"
+%include "GGHeightTropModel.hpp"
+%include "GGTropModel.hpp"
+%include "MOPSTropModel.hpp"
+%include "NBTropModel.hpp"
+%include "NeillTropModel.hpp"
+%include "SaasTropModel.hpp"
+%include "SimpleTropModel.hpp"
 %include "PRSolution2.hpp"
 %include "ExtractData.hpp"
 %ignore gpstk::Expression::print(std::ostream& ostr) const;
 %include "Expression.hpp"
 
-// FIC format:
 %include "FFBinaryStream.hpp"
+%include "AshtechStream.hpp"
+%include "AshtechData.hpp"
+%include "AshtechALB.hpp"
+%include "AshtechEPB.hpp"
+%include "AshtechMBEN.hpp"
+%include "AshtechPBEN.hpp"
 
 %include "MoonPosition.hpp"
 %include "SunPosition.hpp"
@@ -318,6 +334,13 @@ namespace std { class fstream {}; }
 // instead of creating another small file.
 %include "pythonfunctions.i"
 %include "FileIO.i"
+
+// Note that the path functions really don't make sense outside of the build
+// environment 
+%include "build_config.h"
+
+%include "ord.i"
+
 
 %pythoncode %{
         # clean-up the dir listing by removing *_swigregister.

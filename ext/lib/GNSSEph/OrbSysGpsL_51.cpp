@@ -151,7 +151,7 @@ namespace gpstk
       s << setw(7) << ssys;
       s << " " << setw(2) << satID.id;
 
-      string tform="%02m/%02d/%04Y %02H:%02M:%02S";
+      string tform="%02m/%02d/%04Y %03j %02H:%02M:%02S";
       s << "  51";      // UID
       s << " " << printTime(beginValid,tform) << "  ";
       s << "toa: " << printTime(ctToa,tform) << "  ";

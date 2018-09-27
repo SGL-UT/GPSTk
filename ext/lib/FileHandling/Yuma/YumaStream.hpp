@@ -36,7 +36,7 @@
 
 /**
  * @file YumaStream.hpp
- * gpstk::YumaStream - ASCII FIC file stream container.
+ * gpstk::YumaStream - ASCII YUMA file stream container.
  */
 
 #ifndef YUMASTREAM_HPP

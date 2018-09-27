@@ -78,17 +78,19 @@ namespace gpstk
          otUnknown,
          otAny,       ///< Used to match any observation type
          otRange,     ///< pseudorange, in meters
-         otPhase,     ///< accumulated phase, in meters
+         otPhase,     ///< accumulated phase, in cycles
          otDoppler,   ///< Doppler, in Hz
          otSNR,       ///< Signal strength, in dB-Hz
          otChannel,   ///< Channel number
+         otDemodStat, ///< Demodulator status
          otIono,      ///< Ionospheric delay (see RINEX3 section 5.12)
          otSSI,       ///< Signal Strength Indicator (RINEX)
          otLLI,       ///< Loss of Lock Indicator (RINEX)
          otTrackLen,  ///< Number of continuous epochs of 'good' tracking
          otNavMsg,    ///< Navigation Message data
          otRngStdDev, ///< pseudorange standard deviation, in meters
-         otPhsStdDev, ///< phase standard deviation, in meters
+         otPhsStdDev, ///< phase standard deviation, in cycles
+         otFreqIndx,  ///< GLONASS frequency offset index [-6..7]
          otUndefined, ///< Undefined
          otLast       ///< Used to verify that all items are described at compile time
       };
@@ -102,7 +104,7 @@ namespace gpstk
          cbZero, ///< Used with the channel observation type (see RINEx3 section 5.13)
          cbL1,   ///< GPS L1, Galileo E2-L1-E1, SBAS L1, QZSS L1
          cbL2,   ///< GPS L2, QZSS L2
-         cbL5,   ///< GPS L5, Galileo E5a, SBAS L5, QZSS L5
+         cbL5,   ///< GPS L5, Galileo E5a, SBAS L5, QZSS L5, INRSS L5
          cbG1,   ///< Glonass G1
          cbG2,   ///< Glonass G2
          cbG3,   ///< Glonass G3
@@ -112,6 +114,7 @@ namespace gpstk
          cbB1,   ///< BeiDou L1
          cbB2,   ///< BeiDou L7
          cbB3,   ///< BeiDou L6
+         cbI9,   ///< IRNSS S-band (RINEX '9')
          cbL1L2, ///< Combined L1L2 (like an ionosphere free obs)
          cbUndefined,
          cbLast  ///< Used to verify that all items are described at compile time
@@ -160,6 +163,12 @@ namespace gpstk
          tcIE5,     ///< Galileo L5 I code
          tcQE5,     ///< Galileo L5 Q code
          tcIQE5,    ///< Galileo L5 I+Q combined tracking
+         tcIE5a,    ///< Galileo E5a I code
+         tcQE5a,    ///< Galileo E5a Q code
+         tcIQE5a,   ///< Galileo E5a I+Q combined tracking
+         tcIE5b,    ///< Galileo E5b I code
+         tcQE5b,    ///< Galileo E5b Q code
+         tcIQE5b,   ///< Galileo E5b I+Q combined tracking
 
          tcSCA,     ///< SBAS civil code
          tcSI5,     ///< SBAS L5 I code
@@ -190,6 +199,16 @@ namespace gpstk
          tcCI6,     ///< BeiDou B3 I code
          tcCQ6,     ///< BeiDou B3 Q code
          tcCIQ6,    ///< BeiDou B3 I+Q code
+
+                    ///  Nomenclature follows RiNEX 3.03 Table 10
+         tcIA5,     ///< IRNSS L5 SPS
+         tcIB5,     ///< IRNSS L5 RS(D)
+         tcIC5,     ///< IRNSS L5 RS(P)
+         tcIX5,     ///< IRNSS L5 B+C
+         tcIA9,     ///< IRNSS S-band SPS
+         tcIB9,     ///< IRNSS S=band RS(D)
+         tcIC9,     ///< INRSS S-band RS(P)
+         tcIX9,     ///< IRNSS S-band B+C
 
          tcUndefined,
          tcLast     ///< Used to verify that all items are described at compile time

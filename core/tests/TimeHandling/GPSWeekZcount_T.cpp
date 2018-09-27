@@ -15,7 +15,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -23,13 +23,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -48,351 +48,659 @@ using namespace std;
 
 class GPSWeekZcount_T
 {
-	public:
-		GPSWeekZcount_T(){eps = 1e-12;}// Default Constructor, set the precision value
-		~GPSWeekZcount_T() {} // Default Desructor
+public:
+      /// Default Constructor, set the precision value
+   GPSWeekZcount_T(){eps = 1e-12;}
+      /// Default Desructor
+   ~GPSWeekZcount_T() {}
 
-//==========================================================================================================================
-//	initializationTest ensures the constructors set the values properly
-//==========================================================================================================================
-	int initializationTest(void)
-	{
-		TestUtil testFramework( "GPSWeekZcount", "Constructor", __FILE__, __LINE__ );
+      /// initializationTest ensures the constructors set the values properly
+   unsigned initializationTest()
+   {
+      TUDEF("GPSWeekZcount", "GPSWeekZcount(w,z,ts)");
 
-		GPSWeekZcount Compare(1300,13500.,TimeSystem(2)); //Initialize an object
-		//---------------------------------------------------------------------
-		//Were the attributes set to expectation with the explicit constructor?
-		//---------------------------------------------------------------------
-		testFramework.assert(1300 == Compare.week,                     "Explicit constructor did not set the week value properly",   __LINE__);
-		testFramework.assert(13500 == Compare.zcount,                  "Explicit constructor did not set the zcount value properly", __LINE__);
-		testFramework.assert(TimeSystem(2) == Compare.getTimeSystem(), "Explicit constructor did not set the TimeSystem properly",   __LINE__);
-		
+      GPSWeekZcount compare(1300,13500.,TimeSystem(2)); //Initialize an object
+         //---------------------------------------------------------------------
+         //Were the attributes set to expectation with the explicit constructor?
+         //---------------------------------------------------------------------
+      TUASSERTE(int, 1300, compare.week);
+      TUASSERTE(unsigned int, 13500, compare.zcount);
+      TUASSERTE(TimeSystem, TimeSystem(2), compare.getTimeSystem());
 
-		testFramework.changeSourceMethod("ConstructorCopy");
-		GPSWeekZcount Copy(Compare); // Initialize with copy constructor
+      TUCSM("GPSWeekZcount(GPSWeekZcount)");
+      GPSWeekZcount copy(compare); // Initialize with copy constructor
 
-		//---------------------------------------------------------------------
-		//Were the attributes set to expectation with the copy constructor?
-		//---------------------------------------------------------------------
-		testFramework.assert(1300 == Copy.week,                     "Copy constructor did not set the week value properly",   __LINE__);
-		testFramework.assert(13500 == Copy.zcount,                  "Copy constructor did not set the zcount value properly", __LINE__);
-		testFramework.assert(TimeSystem(2) == Copy.getTimeSystem(), "Copy constructor did not set the TimeSystem properly",   __LINE__);
-		
+         //---------------------------------------------------------------------
+         //Were the attributes set to expectation with the copy constructor?
+         //---------------------------------------------------------------------
+      TUASSERTE(int, 1300, copy.week);
+      TUASSERTE(unsigned int, 13500, copy.zcount);
+      TUASSERTE(TimeSystem, TimeSystem(2), copy.getTimeSystem());
 
-		testFramework.changeSourceMethod("OperatorSet");
-		GPSWeekZcount Assigned;
-		Assigned = Compare;
+      TUCSM("operator=");
+      GPSWeekZcount assigned;
+      assigned = compare;
 
-		//---------------------------------------------------------------------
-		//Were the attributes set to expectation with the Set operator?
-		//---------------------------------------------------------------------
-		testFramework.assert(1300 == Assigned.week,                     "Set Operator did not set the week value properly",   __LINE__);
-		testFramework.assert(13500 == Assigned.zcount,                  "Set Operator did not set the zcount value properly", __LINE__);
-		testFramework.assert(TimeSystem(2) == Assigned.getTimeSystem(), "Set Operator did not set the TimeSystem properly",   __LINE__);
-		
+         //---------------------------------------------------------------------
+         //Were the attributes set to expectation with the Set operator?
+         //---------------------------------------------------------------------
+      TUASSERTE(int, 1300, assigned.week);
+      TUASSERTE(unsigned int, 13500, assigned.zcount);
+      TUASSERTE(TimeSystem, TimeSystem(2), assigned.getTimeSystem());
 
-		return testFramework.countFails();
-
-	}
+      TURETURN();
+   }
 
 
-//==========================================================================================================================
-//	Test will check if GPSWeekZcount variable can be set from a map.
-//	Test also implicity tests whether the != operator functions.
-//==========================================================================================================================
-	int setFromInfoTest (void)
-	{
+      /** Test will check if GPSWeekZcount variable can be set from a map.
+       * Test also implicity tests whether the != operator functions. */
+   unsigned setFromInfoTest ()
+   {
+      TUDEF("GPSWeekZcount", "setFromInfo");
 
-		TestUtil testFramework( "GPSWeekZcount", "setFromInfo", __FILE__, __LINE__ );
-		
+      GPSWeekZcount setFromInfo1;
+      GPSWeekZcount setFromInfo2;
+      GPSWeekZcount setFromInfo3;
+      TimeTag::IdToValue id;
+      id['F'] = "1300";
+      id['z'] = "13500";
+      id['P'] = "GPS";
 
-		GPSWeekZcount setFromInfo1;
-		GPSWeekZcount setFromInfo2;
-		GPSWeekZcount setFromInfo3;
-		TimeTag::IdToValue Id;
-		Id['F'] = "1300";
-		Id['z'] = "13500";
-		Id['P'] = "GPS";
+      GPSWeekZcount compare(1300,13500.,TimeSystem(2)); //Initialize an object
+         //---------------------------------------------------------------------
+         //Does a proper setFromInfo work with all information provided?
+         //---------------------------------------------------------------------
+      TUASSERT(setFromInfo1.setFromInfo(id));
+      TUASSERTE(GPSWeekZcount, compare, setFromInfo1);
 
-		GPSWeekZcount Compare(1300,13500.,TimeSystem(2)); //Initialize an object
-		//---------------------------------------------------------------------
-		//Does a proper setFromInfo work with all information provided?
-		//---------------------------------------------------------------------
-		testFramework.assert(setFromInfo1.setFromInfo(Id),"setFromInfo experienced an error and returned false", __LINE__);
-		testFramework.assert(Compare == setFromInfo1, "setFromInfo did not set all of the values properly", __LINE__); 
-		
+      id.erase('z');
+      id['w'] = "3";
+      GPSWeekZcount compare2(1300,3*57600L,TimeSystem(2));
+         //---------------------------------------------------------------------
+         //Does a proper setFromInfo work with different data type?
+         //---------------------------------------------------------------------
+      TUASSERT(setFromInfo2.setFromInfo(id));
+      TUASSERTE(GPSWeekZcount, compare2, setFromInfo2);
 
-		Id.erase('z');
-		Id['w'] = "3";
-		GPSWeekZcount Compare2(1300,3*57600L,TimeSystem(2));
-		//---------------------------------------------------------------------
-		//Does a proper setFromInfo work with different data type?
-		//---------------------------------------------------------------------
-		testFramework.assert(setFromInfo2.setFromInfo(Id),"setFromInfo experienced an error and returned false", __LINE__);
-		testFramework.assert(Compare2 == setFromInfo2, "setFromInfo did not set all of the values properly", __LINE__); 
-		
+      id.erase('F');
+      GPSWeekZcount compare3(0,3*57600L,TimeSystem(2));
+         //---------------------------------------------------------------------
+         //Does a proper setFromInfo work with missing information?
+         //---------------------------------------------------------------------
+      TUASSERT(setFromInfo3.setFromInfo(id));
+      TUASSERTE(GPSWeekZcount, compare3, setFromInfo3);
 
-		Id.erase('F');
-		GPSWeekZcount Compare3(0,3*57600L,TimeSystem(2));
-		//---------------------------------------------------------------------
-		//Does a proper setFromInfo work with missing information?
-		//---------------------------------------------------------------------
-		testFramework.assert(setFromInfo3.setFromInfo(Id),"setFromInfo experienced an error and returned false", __LINE__);
-		testFramework.assert(Compare3 == setFromInfo3, "setFromInfo did not set all of the values properly", __LINE__); 
-
-		return testFramework.countFails();
-	}
+      TURETURN();
+   }
 
 
-//==========================================================================================================================
-//	Test will check if the ways to initialize and set an GPSWeekZcount object.
-//	Test also tests whether the comparison operators and isValid method function.
-//==========================================================================================================================
-	int operatorTest (void)
-	{
-		TestUtil testFramework( "GPSWeekZCount", "OperatorEquivalent", __FILE__, __LINE__ );
-		
+      /** Test will check if the ways to initialize and set an
+       * GPSWeekZcount object.  Test also tests whether the comparison
+       * operators and isValid method function. */
+   unsigned operatorTest()
+   {
+      TUDEF("GPSWeekZCount", "operator==");
 
-		GPSWeekZcount Compare(1300,13500);
-		GPSWeekZcount LessThanWeek(1299,13500);
-		GPSWeekZcount LessThanZcount(1300,13400);
-		GPSWeekZcount CompareCopy(Compare); // Initialize with copy constructor
+      GPSWeekZcount compare(1300,13500);
+      GPSWeekZcount lessThanWeek(1299,13500);
+      GPSWeekZcount lessThanZcount(1300,13400);
+      GPSWeekZcount compareCopy(compare); // Initialize with copy constructor
 
-		//---------------------------------------------------------------------
-		//Does the == Operator function?
-		//---------------------------------------------------------------------
-		testFramework.assert(  Compare == CompareCopy,     "Equivalence operator found equivalent objects to be not equivalent",     __LINE__);
-		testFramework.assert(!(Compare == LessThanWeek),   "Equivalence operator found different week objects to be equivalent",     __LINE__);
-		testFramework.assert(!(Compare == LessThanZcount), "Equivalence operator found different zcount objects to be equivalent",   __LINE__);	
-		
+         //---------------------------------------------------------------------
+         //Does the == Operator function?
+         //---------------------------------------------------------------------
+      TUASSERT(compare == compareCopy);
+      TUASSERT(!(compare == lessThanWeek));
+      TUASSERT(!(compare == lessThanZcount));
 
-		testFramework.changeSourceMethod("OperatorNotEquivalent");
-		//---------------------------------------------------------------------
-		//Does the != Operator function?
-		//---------------------------------------------------------------------
-		testFramework.assert(  Compare != LessThanWeek,   "Not-equal operator found different week objects to be equivalent",     __LINE__);
-		testFramework.assert(  Compare != LessThanZcount, "Not-equal operator found different zcount objects to be equivalent",   __LINE__);
-		testFramework.assert(!(Compare != Compare),       "Not-equal operator found equivalent objects to not be equivalent",     __LINE__);
-		
+      TUCSM("operator!=");
+         //---------------------------------------------------------------------
+         //Does the != Operator function?
+         //---------------------------------------------------------------------
+      TUASSERT(compare != lessThanWeek);
+      TUASSERT(compare != lessThanZcount);
+      TUASSERT(!(compare != compare));
 
-		testFramework.changeSourceMethod("OperatorLessThan");
-		//---------------------------------------------------------------------
-		//Does the < Operator function?
-		//---------------------------------------------------------------------
-		testFramework.assert(  LessThanWeek < Compare,    "Less-than operator found less-than week object to not be less than",   __LINE__);
-		testFramework.assert(  LessThanZcount < Compare,  "Less-than operator found less-than zcount object to not be less than", __LINE__);
-		testFramework.assert(!(Compare < LessThanWeek),   "Less-than operator found greater-than week object to be less than",    __LINE__);
-		testFramework.assert(!(Compare < LessThanZcount), "Less-than operator found greater-than zcount object to be less than",  __LINE__);
-		testFramework.assert(!(Compare < CompareCopy),    "Less-than operator found equivalent object to be less than",           __LINE__);
+      TUCSM("operator<");
+         //---------------------------------------------------------------------
+         //Does the < Operator function?
+         //---------------------------------------------------------------------
+      TUASSERT(lessThanWeek < compare);
+      TUASSERT(lessThanZcount < compare);
+      TUASSERT(!(compare < lessThanWeek));
+      TUASSERT(!(compare < lessThanZcount));
+      TUASSERT(!(compare < compareCopy));
 
-		testFramework.changeSourceMethod("OperatorGreaterThan");
-		//---------------------------------------------------------------------
-		//Does the > Operator function?
-		//---------------------------------------------------------------------
-		testFramework.assert(!(LessThanWeek > Compare),   "Greater-than operator found less-than week object to be greater than",          __LINE__);
-		testFramework.assert(!(LessThanZcount > Compare), "Greater-than operator found less-than zcount object to be greater than",        __LINE__);
-		testFramework.assert(  Compare > LessThanWeek,    "Greater-than operator found greater-than week object to not be greater than",   __LINE__);
-		testFramework.assert(  Compare > LessThanZcount,  "Greater-than operator found greater-than zcount object to not be greater than", __LINE__);
-		testFramework.assert(!(Compare > CompareCopy),    "Greater-than operator found equivalent object to be greater than",              __LINE__);
-		
+      TUCSM("operator>");
+         //---------------------------------------------------------------------
+         //Does the > Operator function?
+         //---------------------------------------------------------------------
+      TUASSERT(!(lessThanWeek > compare));
+      TUASSERT(!(lessThanZcount > compare));
+      TUASSERT(compare > lessThanWeek);
+      TUASSERT(compare > lessThanZcount);
+      TUASSERT(!(compare > compareCopy));
 
-		testFramework.changeSourceMethod("OperatorLessThanOrEqualTo");
-		//---------------------------------------------------------------------
-		//Does the <= Operator function?
-		//---------------------------------------------------------------------
-		testFramework.assert(  LessThanWeek <= Compare,    "Less-than operator found less-than week object to not be less-than-or-equal-to",   __LINE__);
-		testFramework.assert(  LessThanZcount <= Compare,  "Less-than operator found less-than zcount object to not be less-than-or-equal-to", __LINE__);
-		testFramework.assert(!(Compare <= LessThanWeek),   "Less-than operator found greater-than week object to be less-than-or-equal-to",    __LINE__);
-		testFramework.assert(!(Compare <= LessThanZcount), "Less-than operator found greater-than zcount object to be less-than-or-equal-to",  __LINE__);
-		testFramework.assert(  Compare <= CompareCopy,     "Less-than operator found equivalent object to not be less-than-or-equal-to",       __LINE__);
-		
+      TUCSM("operator<=");
+         //---------------------------------------------------------------------
+         //Does the <= Operator function?
+         //---------------------------------------------------------------------
+      TUASSERT(lessThanWeek <= compare);
+      TUASSERT(lessThanZcount <= compare);
+      TUASSERT(!(compare <= lessThanWeek));
+      TUASSERT(!(compare <= lessThanZcount));
+      TUASSERT(compare <= compareCopy);
 
-		testFramework.changeSourceMethod("OperatorGreaterThanOrEqualTo");
-		//---------------------------------------------------------------------
-		//Does the >= Operator function?
-		//---------------------------------------------------------------------
-		testFramework.assert(!(LessThanWeek >= Compare),   "Greater-than-or-equal-to operator found less-than week object to be greater-than-or-equal-to",          __LINE__);
-		testFramework.assert(!(LessThanZcount >= Compare), "Greater-than-or-equal-to operator found less-than zcount object to be greater-than-or-equal-to",        __LINE__);
-		testFramework.assert(  Compare >= LessThanWeek,    "Greater-than-or-equal-to operator found greater-than week object to not be greater-than-or-equal-to",   __LINE__);
-		testFramework.assert(  Compare >= LessThanZcount,  "Greater-than-or-equal-to operator found greater-than zcount object to not be greater-than-or-equal-to", __LINE__);
-		testFramework.assert(  Compare >= CompareCopy,     "Greater-than-or-equal-to operator found equivalent object to not be greater-than-or-equal-to",          __LINE__);
+      TUCSM("operator>=");
+         //---------------------------------------------------------------------
+         //Does the >= Operator function?
+         //---------------------------------------------------------------------
+      TUASSERT(!(lessThanWeek >= compare));
+      TUASSERT(!(lessThanZcount >= compare));
+      TUASSERT(compare >= lessThanWeek);
+      TUASSERT(compare >= lessThanZcount);
+      TUASSERT(compare >= compareCopy);
 
-		return testFramework.countFails();
-	}
+      TURETURN();
+   }
 
 
-//==========================================================================================================================
-//	Test will check the reset method.
-//==========================================================================================================================
-	int  resetTest (void)
-	{
+      /// Test will check the reset method.
+   unsigned  resetTest()
+   {
+      TUDEF("GPSWeekZcount", "reset");
 
-		TestUtil testFramework( "GPSWeekZcount", "reset", __FILE__, __LINE__ );
-		
+      GPSWeekZcount compare(1300,13500.,TimeSystem::GPS); //Initialize an object
 
-		GPSWeekZcount Compare(1300,13500.,TimeSystem::GPS); //Initialize an object
+      compare.reset(); // Reset it
 
-	  	Compare.reset(); // Reset it
+         //---------------------------------------------------------------------
+         //Were the attributes reset to expectation?
+         //---------------------------------------------------------------------
+      TUASSERTE(int, 0, compare.week);
+      TUASSERTE(unsigned int, 0, compare.zcount);
+      TUASSERTE(TimeSystem, TimeSystem(2), compare.getTimeSystem());
 
-		//---------------------------------------------------------------------
-		//Were the attributes reset to expectation?
-		//---------------------------------------------------------------------
-	  	testFramework.assert(0 == (int)Compare.week,                   "reset() did not set the week value to 0",   __LINE__);
-	  	testFramework.assert(0 == (int)Compare.zcount,                 "reset() did not set the zcount value to 0", __LINE__);
-	  	testFramework.assert(TimeSystem(2) == Compare.getTimeSystem(), "reset() did not set the TimeSystem to GPS", __LINE__);
-
-		return testFramework.countFails();
-	}
+      TURETURN();
+   }
 
 
-//==========================================================================================================================
-//	Test will check converting to/from CommonTime.
-//==========================================================================================================================
-	int  toFromCommonTimeTest (void)
-	{
-		TestUtil testFramework( "GPSWeekZcount", "isValid", __FILE__, __LINE__ );
-		
+      /// Test will check converting to/from CommonTime.
+   unsigned  toFromCommonTimeTest()
+   {
+      TUDEF("GPSWeekZcount", "isValid");
 
-	  	GPSWeekZcount Compare(1300,13500.,TimeSystem(2)); //Initialize an object
+      GPSWeekZcount compare(1300,13500.,TimeSystem(2)); //Initialize an object
 
-		//---------------------------------------------------------------------
-		//Is the time after the BEGINNING_OF_TIME?
-		//---------------------------------------------------------------------
-  		testFramework.assert(Compare.convertToCommonTime() > CommonTime::BEGINNING_OF_TIME, "Time provided found to be less than the beginning of time", __LINE__);
-		
+         //---------------------------------------------------------------------
+         //Is the time after the BEGINNING_OF_TIME?
+         //---------------------------------------------------------------------
+      TUASSERT(compare.convertToCommonTime() > CommonTime::BEGINNING_OF_TIME);
 
-		//---------------------------------------------------------------------
-		//Is the set object valid?
-		//---------------------------------------------------------------------
-		testFramework.assert(Compare.isValid(), "Time provided found to be unable to convert to/from CommonTime", __LINE__);
-		
+         //---------------------------------------------------------------------
+         //Is the set object valid?
+         //---------------------------------------------------------------------
+      TUASSERT(compare.isValid());
 
-  		CommonTime Test = Compare.convertToCommonTime(); //Convert to
+      CommonTime test = compare.convertToCommonTime(); //Convert to
 
-  		GPSWeekZcount Test2;
-  		Test2.convertFromCommonTime(Test); //Convert From
+      GPSWeekZcount test2;
+      test2.convertFromCommonTime(test); //Convert From
 
-		testFramework.changeSourceMethod("CommonTimeConversion");
-		//---------------------------------------------------------------------
-		//Is the result of conversion the same?
-		//---------------------------------------------------------------------
-		testFramework.assert(Compare.getTimeSystem()== Test2.getTimeSystem(), "TimeSystem provided found to be different after converting to and from CommonTime", __LINE__);
-		testFramework.assert(Compare.week==Test2.week,                         "Week provided found to be different after converting to and from CommonTime",       __LINE__);
-		testFramework.assert(Compare.zcount==Test2.zcount,                     "Zcount provided found to be different after converting to and from CommonTime",     __LINE__);
+      TUCSM("CommonTimeConversion");
+         //---------------------------------------------------------------------
+         //Is the result of conversion the same?
+         //---------------------------------------------------------------------
+      TUASSERTE(TimeSystem, compare.getTimeSystem(), test2.getTimeSystem());
+      TUASSERTE(int, compare.week, test2.week);
+      TUASSERTE(unsigned int, compare.zcount, test2.zcount);
 
-		return testFramework.countFails();
-	}
+      TURETURN();
+   }
 
 
-//==========================================================================================================================
-//	Test will check the TimeSystem comparisons when using the comparison operators.
-//==========================================================================================================================
-	int  timeSystemTest (void)
-	{
-		TestUtil testFramework( "GPSWeekZcount", "OperatorEquivalentWithDifferingTimeSystem", __FILE__, __LINE__ );
-		
+      /** Test will check the TimeSystem comparisons when using the
+       * comparison operators. */
+   unsigned  timeSystemTest()
+   {
+      TUDEF("GPSWeekZcount", "operator==");
 
-  		GPSWeekZcount GPS1(1300,13500.,TimeSystem(2));
-  		GPSWeekZcount GPS2(1200,13500.,TimeSystem(2));
-  		GPSWeekZcount UTC1(1300,13500.,TimeSystem(5));
-  		GPSWeekZcount UNKNOWN(1300,13500.,TimeSystem(0));
-  		GPSWeekZcount ANY(1300,13500.,TimeSystem(1));
-  		GPSWeekZcount ANY2(1200,13500.,TimeSystem(1));
+      GPSWeekZcount gps1(1300,13500.,TimeSystem(2));
+      GPSWeekZcount gps2(1200,13500.,TimeSystem(2));
+      GPSWeekZcount utc1(1300,13500.,TimeSystem(5));
+      GPSWeekZcount unknown(1300,13500.,TimeSystem(0));
+      GPSWeekZcount any(1300,13500.,TimeSystem(1));
+      GPSWeekZcount any2(1200,13500.,TimeSystem(1));
 
-		//---------------------------------------------------------------------
-		//Verify differing TimeSystem sets equivalence operator to false
-		//Note that the operator test checks for == in ALL members
-		//---------------------------------------------------------------------
-		testFramework.assert(!(GPS1 == UTC1), "Equivalence operator found objects with differing TimeSystems to be the same", __LINE__);
-		testFramework.assert(GPS1 == ANY,     "Differing TimeSystems where one is TimeSystem::Any is not ignored for equals", __LINE__);
-		testFramework.assert(UTC1 == ANY,     "Differing TimeSystems where one is TimeSystem::Any is not ignored for equals", __LINE__);
-		testFramework.assert(UNKNOWN == ANY,  "Differing TimeSystems where one is TimeSystem::Any is not ignored for equals", __LINE__);
+         //---------------------------------------------------------------------
+         //Verify differing TimeSystem sets equivalence operator to false
+         //Note that the operator test checks for == in ALL members
+         //---------------------------------------------------------------------
+      TUASSERT(!(gps1 == utc1));
+      TUASSERT(gps1 == any);
+      TUASSERT(utc1 == any);
+      TUASSERT(unknown == any);
 
-		testFramework.changeSourceMethod("OperatorNotEquivalentWithDifferingTimeSystem");
-		//---------------------------------------------------------------------
-		//Verify different Time System but same time inequality
-		//---------------------------------------------------------------------
-		testFramework.assert(GPS1 != UTC1,    "Equivalent objects with differing TimeSystems are found to be equal",                                  __LINE__);
-		testFramework.assert(GPS1 != UNKNOWN, "Equivalent objects with differing TimeSystems are found to be equal",                                  __LINE__);
-		testFramework.assert(!(GPS1 != ANY),  "Equivalent objects with differing TimeSystems where one is TimeSystem::Any are found to be not-equal", __LINE__);
+         //---------------------------------------------------------------------
+         //Verify different Time System but same time inequality
+         //---------------------------------------------------------------------
+      TUASSERT(gps1 != utc1);
+      TUASSERT(gps1 != unknown);
+      TUASSERT(!(gps1 != any));
 
-		testFramework.changeSourceMethod("OperatorLessThanWithDifferingTimeSystem");	
-		//---------------------------------------------------------------------
-		//Verify TimeSystem=ANY does not matter in other operator comparisons 
-		//---------------------------------------------------------------------
-		testFramework.assert(ANY2 < GPS1, "Less than object with Any TimeSystem is not found to be less than", __LINE__);
-		testFramework.assert(GPS2 < ANY,"Less than object with GPS TimeSystem is not found to be less-than a greater object with Any TimeSystem", __LINE__);
+      TUCSM("operator<");
+         //---------------------------------------------------------------------
+         //Verify TimeSystem=ANY does not matter in other operator comparisons
+         //---------------------------------------------------------------------
+      TUASSERT(any2 < gps1);
+      TUASSERT(gps2 < any);
 
-		testFramework.changeSourceMethod("setTimeSystem");	
-  		UNKNOWN.setTimeSystem(TimeSystem(2)); //Set the Unknown TimeSystem
-		//---------------------------------------------------------------------
-		//Ensure resetting a Time System changes it
-		//---------------------------------------------------------------------
-		testFramework.assert(UNKNOWN.getTimeSystem()==TimeSystem(2), "setTimeSystem was unable to set the TimeSystem", __LINE__);
+      TUCSM("setTimeSystem");
+      unknown.setTimeSystem(TimeSystem(2)); //Set the Unknown TimeSystem
+         //---------------------------------------------------------------------
+         //Ensure resetting a Time System changes it
+         //---------------------------------------------------------------------
+      TUASSERTE(TimeSystem, TimeSystem(2), unknown.getTimeSystem());
 
-		return testFramework.countFails();
-	}
+      TURETURN();
+   }
 
 
-//==========================================================================================================================
-//		Test for the formatted printing of GPSWeekZcount objects
-//==========================================================================================================================
-	int  printfTest (void)
-	{
-		TestUtil testFramework( "GPSWeekZCount", "printf", __FILE__, __LINE__ );
-		
+      /// Test for the formatted printing of GPSWeekZcount objects
+   unsigned  printfTest()
+   {
+      TUDEF("GPSWeekZCount", "printf");
 
-  		GPSWeekZcount GPS1(1300,13500.,TimeSystem(2));
-  		GPSWeekZcount UTC1(1300,13500.,TimeSystem(7));
+      GPSWeekZcount gps1(1300,13500.,TimeSystem::GPS);
+      GPSWeekZcount utc1(1300,13500.,TimeSystem::UTC);
 
-		//---------------------------------------------------------------------
-		//Verify printed output matches expectation
-		//---------------------------------------------------------------------
-		testFramework.assert(GPS1.printf("%04F %05z %02P") == (std::string)"1300 13500 GPS", "printf did not output in the proper format", __LINE__);
-		testFramework.assert(UTC1.printf("%04F %05z %02P") == (std::string)"1300 13500 UTC", "printf did not output in the proper format", __LINE__);
-		
+         //---------------------------------------------------------------------
+         //Verify printed output matches expectation
+         //---------------------------------------------------------------------
+      TUASSERTE(std::string, (std::string)"1300 13500 GPS",
+                gps1.printf("%04F %05z %02P"));
+      TUASSERTE(std::string, (std::string)"1300 13500 UTC",
+                utc1.printf("%04F %05z %02P"));
 
-		testFramework.changeSourceMethod("printError");	
-		//---------------------------------------------------------------------
-		//Verify printed error message matches expectation
-		//---------------------------------------------------------------------
-		testFramework.assert(GPS1.printError("%04F %05z %02P") == (std::string)"ErrorBadTime ErrorBadTime ErrorBadTime", "printError did not output in the proper format", __LINE__);
-		testFramework.assert(UTC1.printError("%04F %05z %02P") == (std::string)"ErrorBadTime ErrorBadTime ErrorBadTime", "printError did not output in the proper format", __LINE__);
+      TUCSM("printError");
+         //---------------------------------------------------------------------
+         //Verify printed error message matches expectation
+         //---------------------------------------------------------------------
+      TUASSERTE(std::string,
+                (std::string)"ErrorBadTime ErrorBadTime ErrorBadTime",
+                gps1.printError("%04F %05z %02P"));
+      TUASSERTE(std::string,
+                (std::string)"ErrorBadTime ErrorBadTime ErrorBadTime",
+                utc1.printError("%04F %05z %02P"));
 
-		return testFramework.countFails();
-	}
-	private:
-		double eps;
+      TURETURN();
+   }
+
+
+      /// Check the various math methods
+   unsigned mathTest()
+   {
+      TUDEF("GPSWeekZcount", "getTotalZcounts");
+      GPSWeekZcount orig(1024, 0), copy, diff1(1024,1), diff2(1023,403199),
+         diff3(1025,0);
+      long expDiff1 = 1, expDiff2(-1), expDiff3(403200);
+
+      TUASSERTE(unsigned long, 412876800, orig.getTotalZcounts());
+
+      TUCSM("addWeeks");
+      try
+      {
+         copy = orig;
+         GPSWeekZcount &ref1 = copy.addWeeks(1);
+            // ref1 and copy should both have the updated week number, and
+            // ref1 should be a reference to copy
+         TUASSERTE(int, 1025, copy.week);
+         TUASSERTE(int, 1025, ref1.week);
+         TUASSERTE(GPSWeekZcount*, &copy, &ref1);
+      }
+      catch (...)
+      {
+         TUFAIL("Caught an exception");
+      }
+
+      try
+      {
+         copy = orig;
+         GPSWeekZcount &ref2 = copy.addWeeks(-1);
+            // ref2 and copy should both have the updated week number, and
+            // ref2 should be a reference to copy
+         TUASSERTE(int, 1023, copy.week);
+         TUASSERTE(int, 1023, ref2.week);
+         TUASSERTE(GPSWeekZcount*, &copy, &ref2);
+      }
+      catch (...)
+      {
+         TUFAIL("Caught an exception");
+      }
+         // invalid week
+      try
+      {
+         copy = orig;
+         copy.addWeeks(-1025);
+         TUFAIL("addWeeks(invalid)");
+      }
+      catch (gpstk::InvalidRequest)
+      {
+         TUPASS("addWeeks(invalid)");
+      }
+      catch (...)
+      {
+         TUFAIL("addWeeks(invalid)");
+      }
+      
+
+      TUCSM("addZcounts");
+         // simple add
+      copy = orig;
+      TUCATCH(copy.addZcounts(27));
+      TUASSERTE(int, 1024, copy.week);
+      TUASSERTE(unsigned int, 27, copy.zcount);
+         // simple subtract
+      TUCATCH(copy.addZcounts(-27));
+      TUASSERTE(int, 1024, copy.week);
+      TUASSERTE(unsigned int, 0, copy.zcount);
+         // subtract with week roll-over
+      TUCATCH(copy.addZcounts(-43));
+      TUASSERTE(int, 1023, copy.week);
+      TUASSERTE(unsigned int, 403157, copy.zcount);
+         // add with week roll-over
+      TUCATCH(copy.addZcounts(71));
+      TUASSERTE(int, 1024, copy.week);
+      TUASSERTE(unsigned int, 28, copy.zcount);
+         // invalid week
+      try
+      {
+         copy = orig;
+         copy.addZcounts(-413280000);
+         TUFAIL("addZcounts(invalid)");
+      }
+      catch (gpstk::InvalidRequest)
+      {
+         TUPASS("addZcounts(invalid)");
+      }
+      catch (...)
+      {
+         TUFAIL("addZcounts(invalid)");
+      }
+
+      TUCSM("operator++ (postfix)");
+      copy = orig;
+         // zcount should not be modified until AFTER this statement
+      TUASSERTE(unsigned int, 0, (copy++).zcount);
+      TUASSERTE(unsigned int, 1, copy.zcount);
+      TUASSERTE(int, 1024, copy.week);
+
+      TUCSM("operator++ (prefix)");
+      copy = orig;
+         // zcount should be modified at the start of this statement
+      TUASSERTE(unsigned int, 1, (++copy).zcount);
+      TUASSERTE(unsigned int, 1, copy.zcount);
+      TUASSERTE(int, 1024, copy.week);
+         // prefix should return reference to copy
+      TUASSERTE(GPSWeekZcount*, &copy, &(++copy));
+
+      TUCSM("operator-- (postfix)");
+      copy = orig;
+         // zcount should not be modified until AFTER this statement
+      TUASSERTE(unsigned int, 0, (copy--).zcount);
+      TUASSERTE(unsigned int, 403199, copy.zcount);
+      TUASSERTE(int, 1023, copy.week);
+
+      TUCSM("operator-- (prefix)");
+      copy = orig;
+         // zcount should be modified at the start of this statement
+      TUASSERTE(unsigned int, 403199, (--copy).zcount);
+      TUASSERTE(unsigned int, 403199, copy.zcount);
+      TUASSERTE(int, 1023, copy.week);
+         // prefix should return reference to copy
+      TUASSERTE(GPSWeekZcount*, &copy, &(--copy));
+
+      TUCSM("operator+");
+      try
+      {
+         copy = orig;
+         GPSWeekZcount added = copy + 1;
+            // copy should not have changed
+         TUASSERTE(GPSWeekZcount, orig, copy);
+         TUASSERTE(int, 1024, added.week);
+         TUASSERTE(unsigned int, 1, added.zcount);
+      }
+      catch (...)
+      {
+         TUFAIL("Caught an exception");
+      }
+         // add a negative
+      try
+      {
+         copy = orig;
+         long counts = -1;
+         GPSWeekZcount added = copy + counts;
+            // copy should not have changed
+         TUASSERTE(GPSWeekZcount, orig, copy);
+         TUASSERTE(int, 1023, added.week);
+         TUASSERTE(unsigned int, 403199, added.zcount);
+      }
+      catch (...)
+      {
+         TUFAIL("Caught an exception");
+      }
+         // invalid week
+      try
+      {
+         copy = orig;
+         long counts = -413280000;
+         GPSWeekZcount added = copy + counts;
+         TUFAIL("operator+(invalid)");
+      }
+      catch (gpstk::InvalidRequest)
+      {
+         TUPASS("operator+(invalid)");
+      }
+      catch (...)
+      {
+         TUFAIL("operator+(invalid)");
+      }
+
+      TUCSM("operator-(long)");
+      try
+      {
+         copy = orig;
+         GPSWeekZcount added = copy - 1;
+            // copy should not have changed
+         TUASSERTE(GPSWeekZcount, orig, copy);
+         TUASSERTE(int, 1023, added.week);
+         TUASSERTE(unsigned int, 403199, added.zcount);
+      }
+      catch (...)
+      {
+         TUFAIL("Caught an exception");
+      }
+         // add a negative
+      try
+      {
+         copy = orig;
+         long counts = -1;
+         GPSWeekZcount added = copy - counts;
+            // copy should not have changed
+         TUASSERTE(GPSWeekZcount, orig, copy);
+         TUASSERTE(int, 1024, added.week);
+         TUASSERTE(unsigned int, 1, added.zcount);
+      }
+      catch (...)
+      {
+         TUFAIL("Caught an exception");
+      }
+         // invalid week
+      try
+      {
+         copy = orig;
+         long counts = 413280000;
+         GPSWeekZcount added = copy - counts;
+         TUFAIL("operator-(invalid)");
+      }
+      catch (gpstk::InvalidRequest)
+      {
+         TUPASS("operator-(invalid)");
+      }
+      catch (...)
+      {
+         TUFAIL("operator-(invalid)");
+      }
+
+         // difference two GPSWeekZcount objects
+      TUCSM("operator-(GPSWeekZcount)");
+      copy = orig;
+      TUASSERTE(long, 0, (orig - copy));
+      TUASSERTE(long, expDiff1, diff1-copy);
+      TUASSERTE(long, expDiff2, diff2-copy);
+      TUASSERTE(long, expDiff3, diff3-copy);
+
+      TUCSM("operator+=");
+      copy = orig;
+      TUASSERTE(unsigned int, 27, (copy += 27).zcount);
+      TUASSERTE(unsigned int, 27, copy.zcount);
+      TUASSERTE(int, 1024, copy.week);
+         // += should return reference to copy
+      TUASSERTE(GPSWeekZcount*, &copy, &(copy += 99));
+         // add a negative
+      try
+      {
+         copy = orig;
+         long counts = -1;
+         TUASSERTE(unsigned int, 403199, (copy += counts).zcount);
+         TUASSERTE(int, 1023, copy.week);
+      }
+      catch (...)
+      {
+         TUFAIL("Caught an exception");
+      }
+         // invalid week
+      try
+      {
+         copy = orig;
+         long counts = -413280000;
+         copy += counts;
+         TUFAIL("operator+(invalid)");
+      }
+      catch (gpstk::InvalidRequest)
+      {
+         TUPASS("operator+(invalid)");
+      }
+      catch (...)
+      {
+         TUFAIL("operator+(invalid)");
+      }
+
+      TUCSM("operator-=");
+      copy = orig;
+      TUASSERTE(unsigned int, 403199, (copy -= 1).zcount);
+      TUASSERTE(unsigned int, 403199, copy.zcount);
+      TUASSERTE(int, 1023, copy.week);
+         // -= should return reference to copy
+      TUASSERTE(GPSWeekZcount*, &copy, &(copy -= 99));
+         // subtract a negative
+      try
+      {
+         copy = orig;
+         long counts = -1;
+         TUASSERTE(unsigned int, 1, (copy -= counts).zcount);
+         TUASSERTE(int, 1024, copy.week);
+      }
+      catch (...)
+      {
+         TUFAIL("Caught an exception");
+      }
+         // invalid week
+      try
+      {
+         copy = orig;
+         long counts = 413280000;
+         copy -= counts;
+         TUFAIL("operator-(invalid)");
+      }
+      catch (gpstk::InvalidRequest)
+      {
+         TUPASS("operator-(invalid)");
+      }
+      catch (...)
+      {
+         TUFAIL("operator-(invalid)");
+      }
+
+      TURETURN();
+   }
+
+
+   unsigned testTimeBlock()
+   {
+      TUDEF("GPSWeekZcount", "inSameTimeBlock");
+      GPSWeekZcount
+         t0(1024, 10),
+         sameMinute(1024,39),
+         sameHour(1024, 2399),
+         sameWeek(1024,403199),
+         sameWeekOffset(1025, 9),
+         notSameWeek(1023,403199);
+
+      TUASSERT(t0.inSameTimeBlock(sameMinute, ZCOUNT_PER_MINUTE));
+      TUASSERT(t0.inSameTimeBlock(sameMinute, ZCOUNT_PER_HOUR));
+      TUASSERT(t0.inSameTimeBlock(sameMinute, ZCOUNT_PER_WEEK));
+
+      TUASSERT(!t0.inSameTimeBlock(sameHour, ZCOUNT_PER_MINUTE));
+      TUASSERT(t0.inSameTimeBlock(sameHour, ZCOUNT_PER_HOUR));
+      TUASSERT(t0.inSameTimeBlock(sameHour, ZCOUNT_PER_WEEK));
+
+      TUASSERT(!t0.inSameTimeBlock(sameWeek, ZCOUNT_PER_MINUTE));
+      TUASSERT(!t0.inSameTimeBlock(sameWeek, ZCOUNT_PER_HOUR));
+      TUASSERT(t0.inSameTimeBlock(sameWeek, ZCOUNT_PER_WEEK));
+
+      TUASSERT(!t0.inSameTimeBlock(sameWeekOffset, ZCOUNT_PER_MINUTE));
+      TUASSERT(!t0.inSameTimeBlock(sameWeekOffset, ZCOUNT_PER_HOUR));
+      TUASSERT(!t0.inSameTimeBlock(sameWeekOffset, ZCOUNT_PER_WEEK));
+
+      TUASSERT(!t0.inSameTimeBlock(notSameWeek, ZCOUNT_PER_MINUTE));
+      TUASSERT(!t0.inSameTimeBlock(notSameWeek, ZCOUNT_PER_HOUR));
+      TUASSERT(!t0.inSameTimeBlock(notSameWeek, ZCOUNT_PER_WEEK));
+
+      TUASSERT(!t0.inSameTimeBlock(notSameWeek, ZCOUNT_PER_MINUTE, 10));
+      TUASSERT(!t0.inSameTimeBlock(notSameWeek, ZCOUNT_PER_HOUR, 10));
+      TUASSERT(!t0.inSameTimeBlock(notSameWeek, ZCOUNT_PER_WEEK, 10));
+
+      TUASSERT(!t0.inSameTimeBlock(sameWeekOffset, ZCOUNT_PER_MINUTE, 10));
+      TUASSERT(!t0.inSameTimeBlock(sameWeekOffset, ZCOUNT_PER_HOUR, 10));
+      TUASSERT(t0.inSameTimeBlock(sameWeekOffset, ZCOUNT_PER_WEEK, 10));
+
+      TURETURN();
+   }
+
+
+private:
+   double eps;
 };
 
 
 int main() //Main function to initialize and run all tests above
 {
-	int check, errorCounter = 0;
-	GPSWeekZcount_T testClass;
+   unsigned errorCounter = 0;
+   GPSWeekZcount_T testClass;
 
-	check = testClass.initializationTest();
-	errorCounter += check;
+   errorCounter += testClass.initializationTest();
+   errorCounter += testClass.operatorTest();
+   errorCounter += testClass.setFromInfoTest();
+   errorCounter += testClass.resetTest();
+   errorCounter += testClass.timeSystemTest();
+   errorCounter += testClass.toFromCommonTimeTest();
+   errorCounter += testClass.printfTest();
+   errorCounter += testClass.mathTest();
+   errorCounter += testClass.testTimeBlock();
 
-	check = testClass.operatorTest();
-	errorCounter += check;
+   std::cout << "Total Failures for " << __FILE__ << ": " << errorCounter
+             << std::endl;
 
-	check = testClass.setFromInfoTest();
-	errorCounter += check;
-
-	check = testClass.resetTest();
-	errorCounter += check;
-
-	check = testClass.timeSystemTest();
-	errorCounter += check;
-
-	check = testClass.toFromCommonTimeTest();
-	errorCounter += check;
-
-	check = testClass.printfTest();
-	errorCounter += check;
-	
-	std::cout << "Total Failures for " << __FILE__ << ": " << errorCounter << std::endl;
-
-	return errorCounter; //Return the total number of errors
+   return errorCounter; //Return the total number of errors
 }

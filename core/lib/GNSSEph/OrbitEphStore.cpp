@@ -15,7 +15,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -23,13 +23,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -318,6 +318,25 @@ namespace gpstk
    }
 
    //---------------------------------------------------------------------------------
+   void OrbitEphStore::clear(void)
+   {
+      for(SatTableMap::iterator ui=satTables.begin(); ui!=satTables.end(); ui++) {
+         TimeOrbitEphTable& toet = ui->second;
+         for(TimeOrbitEphTable::iterator toeti = toet.begin(); toeti != toet.end(); toeti++) {
+            delete toeti->second;
+         }
+         toet.clear();
+      }
+
+      satTables.clear();
+
+      initialTime = CommonTime::END_OF_TIME;
+      initialTime.setTimeSystem(timeSystem);
+      finalTime = CommonTime::BEGINNING_OF_TIME;
+      finalTime.setTimeSystem(timeSystem);
+   }
+
+   //---------------------------------------------------------------------------------
    unsigned OrbitEphStore::size(void) const
    {
       unsigned counter = 0;
@@ -367,6 +386,9 @@ namespace gpstk
       // to table.lower_bound(t) will return the element of the map
       // with a key "just beyond t" assuming the t is NOT a direct match for any key.
 
+      if (table.empty())
+         return NULL;
+
       TimeOrbitEphTable::const_iterator it = table.find(t);
       if(it == table.end()) {                   // not a direct match
          it = table.lower_bound(t);
@@ -399,6 +421,8 @@ namespace gpstk
       // The exception is if it is pointing to table.begin( ),
       // then all of the elements in the map are too late.
       if(it == table.begin()) {
+         if (it->second->isValid(t))
+            return it->second;
          //string mess = "Time is before table for satellite " + asString(sat)
          //      + " for time " + printTime(t,fmt);
          //InvalidRequest e(mess);
@@ -412,6 +436,10 @@ namespace gpstk
       // not overlap. That's OK, the key represents the EARLIEST
       // time the elements should be used.  Therefore, we can
       // decrement the counter and test to see if the element is valid.
+      if (it->second->isValid(t))
+      {
+         return it->second;
+      }
       it--;
       if(!(it->second->isValid(t))) {
          //// there is a "hole" in the middle of a map.
@@ -439,6 +467,9 @@ namespace gpstk
       // No OrbitEph in store for requested sat time
       // Define reference to the relevant map of orbital elements
       const TimeOrbitEphTable& table = getTimeOrbitEphMap(sat);
+
+      if (table.empty())
+         return NULL;
 
       TimeOrbitEphTable::const_iterator itNext = table.find(t);
       if(itNext != table.end())               // exact match

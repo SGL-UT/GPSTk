@@ -90,6 +90,10 @@ namespace gpstk
    const long ZCOUNT_PER_WEEK = 403200L;
       /// Weeks in a Zcount.
    const double WEEK_PER_ZCOUNT = 1.0/ZCOUNT_PER_WEEK;
+      /// Z-counts per minute.
+   const long ZCOUNT_PER_MINUTE = 40;
+      /// Z-counts per hour.
+   const long ZCOUNT_PER_HOUR = 2400;
 
    // GAL -------------------------------------------
       /// 'Julian day' of GAL epoch (Aug 22 1999)
@@ -114,6 +118,15 @@ namespace gpstk
    const long BDS_EPOCH_MJD = 53736L;
       /// Weeks per BDS Epoch
    const long BDS_WEEK_PER_EPOCH = 8192L;
+
+   // IRN -------------------------------------------
+      /// 'Julian day' of IRN epoch (Aug 22, 1999).
+   const double IRN_EPOCH_JD = 2451412.5;
+      /// Modified Julian Date of BDS epoch (Aug 22, 1999).
+   const long IRN_EPOCH_MJD = 51412L;
+      /// Weeks per BDS Epoch
+   const long IRN_WEEK_PER_EPOCH = 1024L;
+
 
       //@}
 

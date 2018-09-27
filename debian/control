@@ -1,0 +1,73 @@
+Source: gpstk
+Priority: optional
+Maintainer: Bryan Parsons <bparsons@arlut.utexas.edu>
+Build-Depends: debhelper (>= 9), cmake, python-dev, dh-python
+X-Python-Version: 2.7
+Standards-Version: 3.9.5
+Section: libs
+Homepage: http://www.gpstk.org/
+Vcs-Git: https://github.com/SGL-UT/GPSTk.git
+Vcs-Browser: https://github.com/SGL-UT/GPSTk.git
+
+Package: gpstk-bin
+Architecture: any
+Depends: libgpstk2.10 (>= ${binary:Version}), ${misc:Depends}, ${shlibs:Depends}, ${python:Depends}
+Description: GPS Toolkit (GPSTk) - command line tools
+ The GPS Toolkit (GPSTk) is an open-source (LGPL) project sponsored by
+ the Space and Geophysics Laboratory (SGL), part of the Applied Research
+ Laboratories (ARL) at The University of Texas at Austin.
+ The primary goals of the GPSTk project are to:
+ * provide applications for use by the GNSS and satellite navigation community.
+ * provide a core library to facilitate the development of GNSS applications.
+
+
+Package: libgpstk-dev
+Section: libdevel
+Architecture: any
+Depends: libgpstk2.10 (= ${binary:Version}), ${misc:Depends}
+Description: GPS Toolkit (GPSTk) - Headers 
+ The GPS Toolkit (GPSTk) is an open-source (LGPL) project sponsored by
+ the Space and Geophysics Laboratory (SGL), part of the Applied Research
+ Laboratories (ARL) at The University of Texas at Austin.
+ The primary goals of the GPSTk project are to:
+ * provide applications for use by the GNSS and satellite navigation community.
+ * provide a core library to facilitate the development of GNSS applications.
+
+Package: libgpstk2.10
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: GPS Toolkit (GPSTk) - Shared Libraries
+ The GPS Toolkit (GPSTk) is an open-source (LGPL) project sponsored by
+ the Space and Geophysics Laboratory (SGL), part of the Applied Research
+ Laboratories (ARL) at The University of Texas at Austin.
+ The primary goals of the GPSTk project are to:
+ * provide applications for use by the GNSS and satellite navigation community.
+ * provide a core library to facilitate the development of GNSS applications.
+
+Package: libgpstk2.10-dbg
+Architecture: any
+Section: debug
+Priority: extra
+Depends: libgpstk2.10 (= ${binary:Version}), ${misc:Depends}
+Description: GPS Toolkit (GPSTk) - Shared Library Debugging Symbols
+ The GPS Toolkit (GPSTk) is an open-source (LGPL) project sponsored by
+ the Space and Geophysics Laboratory (SGL), part of the Applied Research
+ Laboratories (ARL) at The University of Texas at Austin.
+ The primary goals of the GPSTk project are to:
+ * provide applications for use by the GNSS and satellite navigation community.
+ * provide a core library to facilitate the development of GNSS applications.
+
+Package: python-gpstk
+Section: python
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${python:Depends}
+Provides: ${python:Provides}
+XB-Python-Version: ${python:Versions}
+Description: GPS Toolkit (GPSTk) - Python bindings
+ The GPS Toolkit (GPSTk) is an open-source (LGPL) project sponsored by
+ the Space and Geophysics Laboratory (SGL), part of the Applied Research
+ Laboratories (ARL) at The University of Texas at Austin.
+ The primary goals of the GPSTk project are to:
+ * provide applications for use by the GNSS and satellite navigation community.
+ * provide a core library to facilitate the development of GNSS applications.
+
