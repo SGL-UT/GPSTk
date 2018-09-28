@@ -15,7 +15,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -23,13 +23,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -118,7 +118,7 @@ namespace gpstk
        * @warning When using open(), the internal header data of the stream
        * is not guaranteed to be retained.
        */
-   class FFStream : public std::fstream
+   class FFStream : public std::basic_iostream<char>
    {
    public:
          /// Default constructor, initialize internal data
@@ -140,6 +140,12 @@ namespace gpstk
           * @param[in] mode file open mode (std::ios)
           */
       FFStream( const std::string& fn, std::ios::openmode mode=std::ios::in );
+
+         /** Construction from another stream for decoration
+          *
+          * @param anotherStream
+          */
+      FFStream( std::basic_iostream<char>& anotherStream);
 
          /**
           * Overrides fstream::open so derived classes can make appropriate
@@ -170,6 +176,9 @@ namespace gpstk
          /// Check if the input stream is the kind of RinexObsStream
       static bool isFFStream(std::istream& i);
 
+      virtual void close();
+      virtual bool is_open();
+
          /// This stores the most recently thrown exception.
       FFStreamError mostRecentException;
 
@@ -185,6 +194,7 @@ namespace gpstk
 
    protected:
 
+      std::fstream fileStream; // used only in file system case;
 
          /// Encapsulates shared try/catch blocks for all file types
          /// to hide std::exception.
