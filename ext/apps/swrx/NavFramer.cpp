@@ -104,9 +104,10 @@ void NavFramer::Subframe::load(const std::bitset<5 * 300>& bs)
 
 
 const char* NavFramer::Subframe::checkWords() const
-{
+{ static const std::string unknown("??????????");
+
    if (!complete)
-      return string("??????????").c_str();
+      return unknown.c_str();
 
    string good;
    for (int w=0; w<10; w++)
@@ -120,7 +121,7 @@ const char* NavFramer::Subframe::checkWords() const
       else
          good.append("0");
    }
-   return good.c_str();
+   return good.c_str();   // FIXME - this returns pointer to temporary variable!
 }
 
 NavFramer::NavFramer()
