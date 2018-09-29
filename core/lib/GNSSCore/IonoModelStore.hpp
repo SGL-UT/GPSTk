@@ -70,11 +70,11 @@ namespace gpstk
 
 
          /// constructor
-      IonoModelStore() throw() {}
+      IonoModelStore() {}
 
 
          /// destructor
-      virtual ~IonoModelStore() throw() {}
+      virtual ~IonoModelStore() {}
 
 
          /** Get the ionospheric correction value.
@@ -86,7 +86,7 @@ namespace gpstk
           * \param freq the GPS frequency the observation was made from
           * \return the ionospheric correction (meters)
           */
-      double getCorrection(const CommonTime& time,
+      virtual double getCorrection(const CommonTime& time,
                            const Position& rxgeo,
                            double svel,
                            double svaz,

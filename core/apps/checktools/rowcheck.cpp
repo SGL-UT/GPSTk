@@ -36,8 +36,8 @@
 
 #include "CheckFrame.hpp"
 
-#include "RinexObsStream.hpp"
-#include "RinexObsData.hpp"
+#include "Rinex3ObsStream.hpp"
+#include "Rinex3ObsData.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
 {
    try
    {
-      CheckFrame<RinexObsStream, RinexObsData> cf(argv[0],
+      CheckFrame<Rinex3ObsStream, Rinex3ObsData> cf(argv[0],
                                                   std::string("Rinex Obs"));
       
       if (!cf.initialize(argc, argv))

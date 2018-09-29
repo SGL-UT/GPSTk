@@ -290,8 +290,8 @@ namespace gpstk
       short getASAlert(short subframe) const
          throw( gpstk::InvalidRequest );
 
-         /** This function return the GPS week number for the
-          * ephemeris.  this is the full GPS week (ie > 10 bits). */
+         /** This function returns the GPS week number contained in
+          * subframe 1.  this is the full GPS week (ie > 10 bits). */
       short getFullWeek() const
          throw( gpstk::InvalidRequest );
 

@@ -79,4 +79,18 @@ namespace gpstk
       }
       return rv;
    }
+
+
+   unsigned NavFilterMgr ::
+   processingDepth()
+      const throw()
+   {
+      FilterList::const_iterator fli;
+      unsigned rv = 1;
+      for (fli = filters.begin(); fli != filters.end(); fli++)
+      {
+         rv += (*fli)->processingDepth();
+      }
+      return rv;
+   }
 }

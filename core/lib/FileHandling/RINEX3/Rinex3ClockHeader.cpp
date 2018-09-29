@@ -109,7 +109,7 @@ namespace gpstk
                   FFStreamError e("Invalid file type: " + line.substr(20,1));
                   GPSTK_THROW(e);
                }
-                  // TD system
+               fileSys = strip(line.substr(35,20));
                valid |= versionValid;
             }
             else if(label == runByString) {
@@ -123,7 +123,26 @@ namespace gpstk
                valid |= commentValid;
             }
             else if(label == sysString) {
-               ; // TD ??
+               string satSys = strip(line.substr(0,1));
+               if (satSys != "")
+               {
+                  numObs = asInt(line.substr(3,3));
+                  satSysPrev = satSys;
+               }
+               else
+                  satSys = satSysPrev;
+
+               try
+               {
+                  const int maxObsPerLine = 13;
+                  for (int i=0; i < maxObsPerLine && sysObsTypes[satSys].size() < numObs; i++)
+                     sysObsTypes[satSys].push_back(RinexObsID(satSys+line.substr(4 * i + 7, 3)));
+               }
+               catch(InvalidParameter& ip)
+               {
+                  FFStreamError fse("InvalidParameter: "+ip.what());
+                  GPSTK_THROW(fse);
+               }
                valid |= sysValid;
             }
             else if(label == timeSystemString) {
@@ -136,27 +155,21 @@ namespace gpstk
                valid |= leapSecondsValid;
             }
             else if(label == sysDCBString) {
-                  //if(line[0] == 'G')
-                  //   dcbSystem = RinexSatID(-1,RinexSatID::systemGPS);
-                  //else if(line[0] == 'R')
-                  //   dcbSystem = RinexSatID(-1,RinexSatID::systemGlonass);
-                  //else {
-                  //   FFStreamError e("Invalid dcb system : " + line.substr(0,1));
-                  //   GPSTK_THROW(e);
-                  //}
+               if(line[0] == 'G' || line[0] == 'R')
+                  dcbsMap[line.substr(0,1)] = stringPair(strip(line.substr(1,17)),strip(line.substr(20,40)));
+               else {
+                  FFStreamError e("Invalid dcbs system : " + line.substr(0,1));
+                  GPSTK_THROW(e);
+               }
                valid |= sysDCBValid;
             }
             else if(label == sysPCVString) {
-               if(line[0] == 'G')
-                  pcvsSystem = RinexSatID(-1,RinexSatID::systemGPS);
-               else if(line[0] == 'R')
-                  pcvsSystem = RinexSatID(-1,RinexSatID::systemGlonass);
+               if(line[0] == 'G' || line[0] == 'R')
+                  pcvsMap[line.substr(0,1)] = stringPair(strip(line.substr(1,17)),strip(line.substr(20,40)));
                else {
                   FFStreamError e("Invalid pcvs system : " + line.substr(0,1));
                   GPSTK_THROW(e);
                }
-               pcvsProgram = strip(line.substr(1,17));
-               pcvsSource = strip(line.substr(20,40));
                valid |= sysPCVValid;
             }
             else if(label == numDataString) {
@@ -217,7 +230,7 @@ namespace gpstk
                      GPSTK_THROW(e);
                   }
                }
-                  // TD how to check numSolnSatsValid == satList.size() ?
+                  // @TODO how to check numSolnSatsValid == satList.size() ?
                valid |= prnListValid;
             }
             else if(label == endOfHeaderString) {
@@ -269,7 +282,10 @@ namespace gpstk
             line = rightJustify(asString(version,2), 9);
             line += string(11,' ');
             line += string("CLOCK") + string(15,' ');
-            line += string("GPS") + string(17,' ');      // TD fix
+            if (version >=3)
+               line += leftJustify(fileSys,20);
+            else
+               line += string(20,' ');
             line += versionString;         // "RINEX VERSION / TYPE"
             strm << line << endl;
             strm.lineNumber++;
@@ -277,21 +293,64 @@ namespace gpstk
             line = leftJustify(program,20);
             line += leftJustify(runby,20);
             CommonTime dt = SystemTime();
-            string dat = printTime(dt,"%02m/%02d/%04Y %02H:%02M:%02S");
+            string dat;
+            if (version >= 3)
+               dat = printTime(dt,"%04Y/%02m/%02d %02H:%02M:%02S %4P");
+            else
+               dat = printTime(dt,"%02m/%02d/%04Y %02H:%02M:%02S");
             line += leftJustify(dat, 20);
             line += runByString;           // "PGM / RUN BY / DATE"
             strm << line << endl;
             strm.lineNumber++;
 
-            if(valid & sysValid) {
-               line = string(60,' ');  // TD
-               line += sysString;             // "SYS / # / OBS TYPES"
-               strm << line << endl;
-               strm.lineNumber++;
+            if(valid & sysValid && version >= 3) {
+               RinexObsMap::const_iterator it = sysObsTypes.begin();
+               for (;it != sysObsTypes.end(); it++)
+               {
+                  static const int maxObsPerLine = 13;
+
+                  map<string,vector<RinexObsID> >::const_iterator mapIter;
+                  for(mapIter = sysObsTypes.begin(); mapIter != sysObsTypes.end();
+                      mapIter++)
+                  {
+                     int obsWritten = 0;
+                     line = ""; // make sure the line contents are reset
+
+                     vector<RinexObsID> ObsTypeList = mapIter->second;
+
+                     for(size_t i = 0; i < ObsTypeList.size(); i++)
+                     {
+                        // the first line needs to have the GNSS type and # of obs
+                        if(obsWritten == 0)
+                        {
+                           line  =  leftJustify(mapIter->first, 1);
+                           line += string(2, ' ');
+                           line += rightJustify(asString(ObsTypeList.size()), 3);
+                        }
+                           // if you hit 13, write out the line and start a new one
+                        else if((obsWritten % maxObsPerLine) == 0)
+                        {
+                           line += string(2, ' ');
+                           line += sysString;
+                           strm << line << endl;
+                           strm.lineNumber++;
+                           line  = string(6, ' ');
+                        }
+                        line += string(1, ' ');
+                        line += rightJustify(ObsTypeList[i].asString(), 3);
+                        obsWritten++;
+                     }
+                     line += string(60 - line.size(), ' ');
+                     line += sysString;
+                     strm << line << endl;
+                     strm.lineNumber++;
+                  }
+               }
             }
 
-            if(valid & timeSystemValid) {
-               line = string(60,' ');  // TD
+            if(valid & timeSystemValid && version >= 3) {
+               line = string(3,' ');
+               line += leftJustify(timeSystem.asString(),57);
                line += timeSystemString;      // "TIME SYSTEM ID"
                strm << line << endl;
                strm.lineNumber++;
@@ -312,22 +371,30 @@ namespace gpstk
                strm.lineNumber++;
             }
 
-            if(valid & sysDCBValid) {
-               line = string(60,' ');  // TD
-               line += sysDCBString;          // "SYS / DCBS APPLIED"
-               strm << line << endl;
-               strm.lineNumber++;
+            if(valid & sysDCBValid && version >= 3) {
+               std::map<std::string,stringPair>::const_iterator cbsCor;
+               for (cbsCor = dcbsMap.begin(); cbsCor != dcbsMap.end(); cbsCor++)
+               {
+                  line = leftJustify(cbsCor->first,2);
+                  line += leftJustify(cbsCor->second.first,18);
+                  line += leftJustify(cbsCor->second.second,40);
+                  line += sysDCBString;          // "SYS / DCBS APPLIED"
+                  strm << line << endl;
+                  strm.lineNumber++;
+               }
             }
 
-            if(valid & sysPCVValid) {
-               line = string("  ");
-               line[0] = pcvsSystem.systemChar();
-               line += leftJustify(pcvsProgram,17);
-               line += string(" ");
-               line += leftJustify(pcvsSource,40);
-               line += sysPCVString;          // "SYS / PCVS APPLIED"
-               strm << line << endl;
-               strm.lineNumber++;
+            if(valid & sysPCVValid && version >= 3) {
+               std::map<std::string,stringPair>::const_iterator pcCor;
+               for (pcCor = pcvsMap.begin(); pcCor != pcvsMap.end(); pcCor++)
+               {
+                  line = leftJustify(pcCor->first,2);
+                  line += leftJustify(pcCor->second.first,18);
+                  line += leftJustify(pcCor->second.second,40);
+                  line += sysPCVString;          // "SYS / PCVS APPLIED"
+                  strm << line << endl;
+                  strm.lineNumber++;
+               }
             }
 
             line = rightJustify(asString(dataTypes.size()), 6);
@@ -338,11 +405,11 @@ namespace gpstk
             strm << line << endl;
             strm.lineNumber++;
 
-               //TD line += stationNameString;     // "STATION NAME / NUM"
+               //@TODO line += stationNameString;     // "STATION NAME / NUM"
                //strm << line << endl;
                //strm.lineNumber++;
 
-               //TD line += stationClockRefString; // "STATION CLK REF"
+               //@TODO line += stationClockRefString; // "STATION CLK REF"
                //strm << line << endl;
                //strm.lineNumber++;
 
@@ -440,8 +507,18 @@ namespace gpstk
       os << " Analysis center: /" << analCenterDesignator
          << "/ /" << analysisCenter << "/" << endl;
       os << " Terrestrial Reference Frame " << terrRefFrame << endl;
-      os << " PCVs: " << pcvsSystem << " /" << pcvsProgram << "/ /"
-         << pcvsSource << "/" << endl;
+      std::map<std::string,stringPair>::const_iterator dcbs;
+      for (dcbs = dcbsMap.begin(); dcbs != dcbsMap.end(); dcbs++)
+      {
+         os << " DCBs: " << dcbs->first << " /" << dcbs->second.first << "/ /"
+            << dcbs->second.second << "/" << endl;
+      }
+      std::map<std::string,stringPair>::const_iterator pcvs;
+      for (pcvs = pcvsMap.begin(); pcvs != pcvsMap.end(); pcvs++)
+      {
+         os << " PCVs: " << pcvs->first << " /" << pcvs->second.first << "/ /"
+            << pcvs->second.second << "/" << endl;
+      }
       os << " Comments:\n";
       for(i=0; i<commentList.size(); ++i)
          os << "    " << commentList[i] << endl;

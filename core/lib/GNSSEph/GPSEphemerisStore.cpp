@@ -248,6 +248,7 @@ namespace gpstk
          GPSEphemeris *gpsptr = dynamic_cast<GPSEphemeris*>(ptr);
          GPSEphemeris gpseph(*gpsptr);
          gpslist.push_back(gpseph);
+         delete ptr;
          n++;
       }
 

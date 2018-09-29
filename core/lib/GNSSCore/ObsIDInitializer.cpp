@@ -52,6 +52,7 @@ namespace gpstk {
       ObsID::otDesc[ObsID::otDoppler]   = "doppler";       //Rinex D
       ObsID::otDesc[ObsID::otSNR]       = "snr";           //Rinex S
       ObsID::otDesc[ObsID::otChannel]   = "channel";       //Rinex  
+      ObsID::otDesc[ObsID::otDemodStat] = "demodStatus";
       ObsID::otDesc[ObsID::otIono]      = "iono";          //Rinex  
       ObsID::otDesc[ObsID::otSSI]       = "ssi";           //Rinex  
       ObsID::otDesc[ObsID::otLLI]       = "lli";           //Rinex  
@@ -72,7 +73,7 @@ namespace gpstk {
       ObsID::cbDesc[ObsID::cbG2]        = "G2";            //Rinex 2
       ObsID::cbDesc[ObsID::cbG3]        = "G3";            //Rinex 3
       ObsID::cbDesc[ObsID::cbE5b]       = "E5b";           //Rinex 7
-      ObsID::cbDesc[ObsID::cbE5ab]      = "L5a+b";         //Rinex 8
+      ObsID::cbDesc[ObsID::cbE5ab]      = "E5a+b";         //Rinex 8
       ObsID::cbDesc[ObsID::cbE6]        = "E6";            //Rinex 6
       ObsID::cbDesc[ObsID::cbB1]        = "B1";            //Rinex 1  2 in RINEX 3.0[013]
       ObsID::cbDesc[ObsID::cbB2]        = "B2";            //Rinex 7
@@ -111,6 +112,12 @@ namespace gpstk {
       ObsID::tcDesc[ObsID::tcIE5]       = "GALI5";         //Rinex I    // GAL
       ObsID::tcDesc[ObsID::tcQE5]       = "GALQ5";         //Rinex Q    // GAL
       ObsID::tcDesc[ObsID::tcIQE5]      = "GALI+Q5";       //Rinex X    // GAL
+      ObsID::tcDesc[ObsID::tcIE5a]      = "GALI5a";        //Rinex I    // GAL
+      ObsID::tcDesc[ObsID::tcQE5a]      = "GALQ5a";        //Rinex Q    // GAL
+      ObsID::tcDesc[ObsID::tcIQE5a]     = "GALI+Q5a";      //Rinex X    // GAL
+      ObsID::tcDesc[ObsID::tcIE5b]      = "GALI5b";        //Rinex I    // GAL
+      ObsID::tcDesc[ObsID::tcQE5b]      = "GALQ5b";        //Rinex Q    // GAL
+      ObsID::tcDesc[ObsID::tcIQE5b]     = "GALI+Q5b";      //Rinex X    // GAL
 
       ObsID::tcDesc[ObsID::tcSCA]       = "SBASC/A";       //Rinex C    // SBAS civil code
       ObsID::tcDesc[ObsID::tcSI5]       = "SBASI5";        //Rinex I    // SBAS L5 I code
@@ -241,6 +248,12 @@ namespace gpstk {
       ObsID::tc2char[ObsID::tcIE5]  = 'I';
       ObsID::tc2char[ObsID::tcQE5]  = 'Q';
       ObsID::tc2char[ObsID::tcIQE5] = 'X';
+      ObsID::tc2char[ObsID::tcIE5a]  = 'I';
+      ObsID::tc2char[ObsID::tcQE5a]  = 'Q';
+      ObsID::tc2char[ObsID::tcIQE5a] = 'X';
+      ObsID::tc2char[ObsID::tcIE5b]  = 'I';
+      ObsID::tc2char[ObsID::tcQE5b]  = 'Q';
+      ObsID::tc2char[ObsID::tcIQE5b] = 'X';
       ObsID::tc2char[ObsID::tcIQ5]  = 'X';
       ObsID::tc2char[ObsID::tcBC]   = 'X';
       ObsID::tc2char[ObsID::tcSCA]  = 'C';

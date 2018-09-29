@@ -1,5 +1,5 @@
-# RinSum, part of the GPS Toolkit, Ver 4.1 8/26/15, Run 2017/05/25 11:22:58
-+++++++++++++ RinSum summary of Rinex obs file /local/Code/gpstk/data/inputs/igs/kerg1700.16o +++++++++++++
+# RinSum, part of the GPS Toolkit, Ver 4.1 8/26/15, Run 2018/04/21 14:48:18
++++++++++++++ RinSum summary of Rinex obs file /home/renfrob/git/gpstk/data/inputs/igs/kerg1700.16o +++++++++++++
 ---------------------------------- REQUIRED ----------------------------------
 Rinex Version  2.11,  File type OBSERVATION DATA,  System MIXED.
 Prgm: teqc  2016Apr1,  Run: 20160619 00:55:45UTC,  By: 
@@ -11,8 +11,8 @@ Position      (XYZ,m) : (1406337.1601, 3918161.1297, -4816167.3659).
 Antenna Delta (HEN,m) : (0.4200, 0.0000, 0.0000).
 Galileo Observation types (16):
  Type #01 (S1B) L1 GALB snr
- Type #02 (D8X) L5a+b GALI+Q5 doppler
- Type #03 (L8X) L5a+b GALI+Q5 phase
+ Type #02 (D8X) E5a+b GALI+Q5 doppler
+ Type #03 (L8X) E5a+b GALI+Q5 phase
  Type #04 (L5I) L5 GALI5 phase
  Type #05 (L1B) L1 GALB phase
  Type #06 (D7X) E5b GALI+Q5 doppler
@@ -23,9 +23,9 @@ Galileo Observation types (16):
  Type #11 (C1B) L1 GALB pseudorange
  Type #12 (S7X) E5b GALI+Q5 snr
  Type #13 (L7X) E5b GALI+Q5 phase
- Type #14 (C8X) L5a+b GALI+Q5 pseudorange
+ Type #14 (C8X) E5a+b GALI+Q5 pseudorange
  Type #15 (C7X) E5b GALI+Q5 pseudorange
- Type #16 (S8X) L5a+b GALI+Q5 snr
+ Type #16 (S8X) E5a+b GALI+Q5 snr
 GPS Observation types (13):
  Type #01 (S1C) L1 GPSC/A snr
  Type #02 (L5X) L5 GPSI+Q5 phase
@@ -142,4 +142,4 @@ TOTAL     15      0     15      0     15      0      0     15
  Warning - Obs type SL5 SBASI+Q5 snr (Geosync L5 SBASI+Q5 snr, S5 in ver.2) should be removed from header
  Warning - Obs type SL5 SBASI+Q5 doppler (Geosync L5 SBASI+Q5 doppler, D5 in ver.2) should be removed from header
  Warning - Obs type SL5 SBASI+Q5 pseudorange (Geosync L5 SBASI+Q5 pseudorange, C5 in ver.2) should be removed from header
-RinSum timing: processing 0.019 sec, wallclock: 0 sec.
+RinSum timing: processing 0.058 sec, wallclock: 0 sec.

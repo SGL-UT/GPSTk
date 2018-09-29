@@ -78,6 +78,7 @@ namespace gpstk
       {
          initialTime.setTimeSystem(timeSysForStore);
          finalTime.setTimeSystem(timeSysForStore);
+         setOnlyHealthyFlag(true);
       }
 
       ///

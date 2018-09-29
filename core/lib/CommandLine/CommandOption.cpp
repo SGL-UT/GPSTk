@@ -40,6 +40,7 @@
  */
 
 #include "CommandOption.hpp"
+#include "CommandOptionParser.hpp"
 #include "StringUtils.hpp"
 
 #include <sstream>
@@ -61,7 +62,7 @@ namespace gpstk
       CommandOptionVec& optVectorList)
          : optFlag(of),  optType(ot),
            shortOpt(shOpt), longOpt(loOpt), description(desc),
-           required(req), count(0), maxCount(0), order(0)
+           required(req), count(0), maxCount(0), order(0), parser(NULL)
    {
       if (ot == CommandOption::stdType)
       {
@@ -544,6 +545,13 @@ namespace gpstk
          rv += optionVec[i]->getCount();
       }
       return rv;
+   }
+
+   void CommandOptionHelpUsage::printHelp(std::ostream& out, bool pretty)
+   {
+      GPSTK_ASSERT(parser != NULL);
+      if (getCount())
+         parser->displayUsage(out, pretty);
    }
 
 } // namespace gpstk

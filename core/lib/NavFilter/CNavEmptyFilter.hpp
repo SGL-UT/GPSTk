@@ -65,6 +65,14 @@ namespace gpstk
          /// Filter stores no data, therefore this does nothing.
       virtual void finalize(NavMsgList& msgBitsOut)
       {}
+
+         /// No internal storage of subframe data so return 0.
+      virtual unsigned processingDepth() const throw()
+      { return 0; }
+
+         /// Return the filter name.
+      virtual std::string filterName() const throw()
+      { return "Empty"; }
    };
 
       //@}

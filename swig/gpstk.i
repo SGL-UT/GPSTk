@@ -339,6 +339,9 @@ namespace std { class fstream {}; }
 // environment 
 %include "build_config.h"
 
+%include "ord.i"
+
+
 %pythoncode %{
         # clean-up the dir listing by removing *_swigregister.
         import gpstk

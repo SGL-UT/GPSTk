@@ -1,6 +1,6 @@
 Source: gpstk
 Priority: optional
-Maintainer: Brian Parsons <bparsons@arlut.utexas.edu>
+Maintainer: Bryan Parsons <bparsons@arlut.utexas.edu>
 Build-Depends: debhelper (>= 9), cmake, python-dev, dh-python
 X-Python-Version: 2.7
 Standards-Version: 3.9.5

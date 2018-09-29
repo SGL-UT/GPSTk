@@ -233,7 +233,148 @@ namespace gpstk
       {
          return ( !operator<( right ) );
       }
+
          //@}
+
+         /** Calculate the total number of Z-counts in this object.
+          * @return weeks * ZCOUNT_PER_WEEK + zcount
+          */
+      unsigned long getTotalZcounts() const
+         throw()
+      { return (unsigned long)week * ZCOUNT_PER_WEEK + zcount; }
+
+         /** Add the given number of weeks to the current value.
+          * @param[in] inWeeks the number of weeks to add to the current value.
+          * @return a reference to this object
+          * @throw gpstk::InvalidRequest if adding inWeeks would
+          *   render this object invalid. */
+      GPSWeekZcount& addWeeks(short inWeeks)
+         throw(gpstk::InvalidRequest);
+
+         /** Add the given number of Z-counts to the current value.
+          * This may cause a roll-(over/under) of the Z-count and
+          * appropriate modification of the week.
+          * @param[in] inZcounts the number of Z-counts to add to the
+          *   current value.
+          * @return a reference to this object.
+          * @throw gpstk::InvalidRequest if adding inZcounts would
+          *   render this object invalid. */
+      GPSWeekZcount& addZcounts(long inZcounts)
+         throw(gpstk::InvalidRequest);
+
+         /** Postfix increment the Z-count in this object (x++).  This
+          * may also cause the roll-over of the Z-count and
+          * incrementing of the week.
+          * @return a GPSWeekZcount with the value of this object
+          *   before the increment.
+          * @throw gpstk::InvalidRequest if adding inZcounts would
+          *   render this object invalid. */
+      GPSWeekZcount operator++(int)
+         throw(gpstk::InvalidRequest);
+
+         /** Prefix increment the Z-count in this object (++x). This
+          * may also cause the roll-over of the Z-count and
+          * incrementing of the week.
+          * @return a reference to this object.
+          * @throw gpstk::InvalidRequest if adding inZcounts would
+          *   render this object invalid. */
+      GPSWeekZcount& operator++()
+         throw(gpstk::InvalidRequest);
+
+         /** Postfix decrement the Z-count in this object (x--).  This
+          * may also cause the roll-under of the Z-count and
+          * decrementing of the week.
+          * @return a GPSWeekZcount with the value of this object
+          *   before the decrement.
+          * @throw gpstk::InvalidRequest if a Z-count decrement would
+          *   render this object invalid. */
+      GPSWeekZcount operator--(int)
+         throw(gpstk::InvalidRequest);
+
+         /** Prefix decrement the Z-count in this object (--x). This
+          * may also cause the roll-under of the Z-count and
+          * decrementing of the week.
+          * @return a reference to this object.
+          * @throw gpstk::InvalidRequest if a Z-count decrement would
+          *   render this object invalid. */
+      GPSWeekZcount& operator--()
+         throw(gpstk::InvalidRequest);
+
+         /** Add the given number of Z-counts to the current value.
+          * This may cause a roll-(over/under) of the Z-count and
+          * appropriate modification of the week.
+          * @param[in] inZcounts the number of Z-counts to add to the
+          *   current value.
+          * @return a modified GPSWeekZcount object.
+          * @throw gpstk::InvalidRequest if adding inZcounts would
+          *   render this object invalid. */
+      GPSWeekZcount operator+(long inZcounts) const
+         throw(gpstk::InvalidRequest);
+
+         /** Subtract the given number of Z-counts to the current value.
+          * This may cause a roll-(over/under) of the Z-count and
+          * appropriate modification of the week.
+          * @param[in] inZcounts the number of Z-counts to subtract from the
+          *   current value.
+          * @return a modified GPSWeekZcount object.
+          * @throw gpstk::InvalidRequest if adding inZcounts would
+          *   render this object invalid. */
+      GPSWeekZcount operator-(long inZcounts) const
+         throw(gpstk::InvalidRequest);
+
+         /** Compute the time difference between this object and \a right.
+          * @param[in] right the GPSWeekZcount to subtract from this object.
+          * @return the number of Z-counts between this object and \a right */
+      long operator-(const GPSWeekZcount& right) const
+         throw();
+
+         /** Add the given number of Z-counts to the current value.
+          * This may cause a roll-(over/under) of the Z-count and
+          * appropriate modification of the week.
+          * @param[in] inZcounts the number of Z-counts to add to the
+          *   current value.
+          * @return a reference to this object.
+          * @throw gpstk::InvalidRequest if adding inZcounts would
+          *   render this object invalid. */
+      GPSWeekZcount& operator+=(long inZcounts)
+         throw(gpstk::InvalidRequest);
+
+         /** Subtract the given number of Z-counts to the current value.
+          * This may cause a roll-(over/under) of the Z-count and
+          * appropriate modification of the week.
+          * @param[in] inZcounts the number of Z-counts to subtract from the
+          *   current value.
+          * @return a reference to this object.
+          * @throw gpstk::InvalidRequest if adding inZcounts would
+          *   render this object invalid. */
+      GPSWeekZcount& operator-=(long inZcounts)
+         throw(gpstk::InvalidRequest);
+
+         /**
+          * This is a test of whether or not this object and the given
+          * GPSWeekZcount object are within the same time-block.  Say
+          * you need to find out if the two GPSWeekZcounts are:
+          * ... in the same day:    inZcountBlock == ZCOUNT_PER_DAY
+          * ... or the same minute: inZcountBlock == ZCOUNT_PER_MINUTE   etc.
+          * For inZcountBlock < ZCOUNT_WEEK, block start at the
+          *   beginning of the week.
+          * For inZcountBlock >= ZCOUNT_WEEK, blocks start at the
+          *   beginning of GPS week 0.
+          * inZcountOffset allows checking of times off of the usual
+          *   boundaries, i.e. in the same day, where a day is defined
+          *   as starting at noon instead of midnight, or in the same
+          *   minute where a minute starts at 23 seconds instead of
+          *   zero.
+          * @param[in] other The other GPSWeekZcount object.
+          * @param[in] inZcountBlock The number of Z-counts in a time-block.
+          * @param[in] inZcountOffset The number of Z-counts to offset
+          *   the time-block (default = 0).
+          * @return true if this object and \a other are in the same time-block.
+          */
+      bool inSameTimeBlock(const GPSWeekZcount& other,
+                           unsigned long inZcountBlock,
+                           unsigned long inZcountOffset = 0)
+         throw();
 
       unsigned int zcount;
    };

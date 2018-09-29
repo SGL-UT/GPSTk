@@ -72,7 +72,7 @@ namespace gpstk
 
          // If the orbital elements are unhealthy, refuse to 
          // calculate an SV position and throw.
-         if (!eph->healthy)
+         if (!eph->healthy && onlyHealthy)
          {
             InvalidRequest exc( std::string("SV is transmitting unhealthy navigation ")
                 + std::string("message at time of interest.") );
@@ -407,6 +407,11 @@ namespace gpstk
 
          // Define reference to the relevant map of orbital elements
       const OrbElemMap& em = prn_i->second;
+      if (em.empty())
+      {
+         InvalidRequest e("No orbital elements for satellite " + asString(sat));
+         GPSTK_THROW(e);
+      }
 
          // The map is ordered by beginning times of validity, which
 	 // is another way of saying "earliest transmit time".  A call

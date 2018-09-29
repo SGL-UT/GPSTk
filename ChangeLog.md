@@ -1,3 +1,290 @@
+Version 2.10.6   Monday, September 24, 2018
+
+   General modifications
+   ---------------------
+   - TimeNamedFileStream now creates the directory for the files it outputs
+   - Updated debian/libgpstk-dev.install to fix debian install error mentioned in issue #353
+
+   Modifications by Author
+   ---------------------
+
+Bryan Parsons (4):
+      Comments were found that were referencing ICD-GPS-211 instead of IS-GPS-200.  These comments were updated.
+      Merge branch 'comment_fix' into 'master'
+      Merge branch 'issue_351' into 'master'
+      Updated debian/libgpstk-dev.install to fix debian install error mentioned in issue #353
+
+Jon C. Little (1):
+      TimeNamedFileStream now creates the directory for the files it outputs
+
+
+      #################################################
+
+
+Version 2.10.5   Wednesday, August 22, 2018
+
+   General modifications
+   ---------------------
+   - Add function for correcting issues with 10-bit week rollover
+      fix a typo
+
+   Modifications by Author
+   ---------------------
+
+Bryan Parsons (1):
+      Merge branch '350-implement-a-utility-class-for-time-offset-corrections' into 'master'
+
+johnk (2):
+      Add function for correcting issues with 10-bit week rollover
+      fix a typo
+
+
+
+      #################################################
+
+Version 2.10.4   Wednesday, August 1, 2018
+
+   General modifications
+   ---------------------
+   - Debian configuration complete for building debian packages
+
+   Modifications by Author
+   ---------------------
+
+Bryan Parsons (10):
+      Updated Debian Files for proper building.
+      Updated debian changelog for new version.
+      Updated Debian install configuration files for updated path to lib.
+      Adding site-packages install to Debian Packages.
+      Fixed bug in python-gpst.install file.
+      Updating site-packages line in python-gpstk.install file.
+      Additional tweaks to Debian files.
+      Incremented Debian revision as changes to debian files have occured.
+      Merge branch 'debian_touchup' into 'master'
+      Merge branch 'rinex3clkASAR' into 'master'
+
+John H. Price (1):
+      add support for Rinex 3 AS/AR Clock files
+
+      #################################################
+
+
+Version 2.10.3   Friday, June 22, 2018
+
+   General modifications
+   ---------------------
+   - Updated unit tests to comply with logic changes.
+   - Test Additions and Cleanup
+   - Various Bug and Compile Warning Fixes
+
+   Modifications by Author
+   ---------------------
+Andrew Kuck (3):
+      Fixed calculation error in Ionosphere Free Range calculation.
+      Fixed sign error on troposphere correction.
+      Updated unit tests to comply with logic changes.
+
+Anthony Hughes (1):
+      Ensured full initialization of Stats objects and fixed a memory leak in OrbitEph::timeDisplay.
+
+Bryan Parsons (11):
+      Merge branch 'issue_340_Gal_Ellip' into 'master'
+      Merge branch 'change_confusing_ObsID_comment' into 'master'
+      Merge branch 'getXvt_unhealthy_SVs' into 'master'
+      Merge branch 'issue_341_GalSupport' into 'master'
+      Merge branch 'issue_342_stats' into 'master'
+      Merge branch 'issue_343_yuma_reader_fix' into 'master'
+      Merge branch 'ord_fix' into 'master'
+      Merge branch '345-add-support-in-commandoption-for-custom-help' into 'master'
+      Merge branch '346-restore-missing-gpsweekzcount-math' into 'master'
+      Merge branch 'issue_348_OrbAlmStore' into 'master'
+      Merge branch 'issue_347_Galileo_Antex_Offsets' into 'master'
+
+Miquela Stein (1):
+      updated yuma reader to work without newline at end of file
+
+Richard Ji-Cathriner (1):
+      Change documentation of ObsID phase units
+
+johnk (4):
+      Add support for generalized help-like options and update BasicFramework to use them
+      Tests for help-like options
+      Clean up this train wreck
+      Add the lost math functions back to GPSWeekZcount
+
+nmerlene (2):
+      Added ability to use getXvt() calls on unhealthy SVs in XvtStore objects returned by EphReader
+      Changed implementation of health status in GloEphemerisStore
+
+renfrob (9):
+      Adding Ellipsoid model for Galileo
+      Adding, clarifying Galileo E5a, E5b, E5a+b definitions
+      Refining Galileo nav msg IDs
+      Updating NavID test
+      Updating Rinex tests for Galileo L5 to E5
+      Adding Galileo antenna capbility
+      Removing health checks.  Implementing a separate fit interval check.
+      Adding getXvt() tests
+      Merge branch 'master' into issue_347_Galileo_Antex_Offsets
+
+
+      #################################################
+
+
+Version 2.10.2   Thursday, April 19, 2018
+
+   General modifications
+   ---------------------
+   - Tweaks to Core and RedHat builds for fixes to SGLTk portion of GPSTk CI build
+   - Test Additions and Cleanup
+   - Various Bug and Compile Warning Fixes
+
+   Modifications by Author
+   ---------------------
+Andrew Kuck (20):
+      Added ord routine calculation header file for review.
+      Added initial implementation of several methods, as well as initial unit tests and regression tests against the original methods.
+      Changed computeRelativityCorrection to virtual to allow overriding in mock-classes.
+      Renamed test for consistency.
+      Style cleanup based on cpplint.
+      Updated documentation to be doxygen compatible.
+      First pass implementations of RawRange2,3,4 - Includes single unit test and mocked regression.
+      Added ORD methods to exposed methods in python.
+      Added lint check to the ci-pipeline.
+      Temporary commit.
+      Remove known failing test, and reference to personal copies of gtest/gmock libs.
+      Rewrote the cmake file to find either debian-style or redhat-style gtest/gmock installation
+      Try generating a coverage report on core only
+      Added implementations for IonosphereFreeRange(), IonosphereModelCorrection(), TroposphereCorrection() with unit tests.
+      Changed IonosphereModelCorrection to take a double frequency
+      Removed stop-gap code to see if googletest has been installed anywhere.
+      Fix coverage numbers.
+      Add additional search paths for gmock.
+      Added coverage build switch.  Enabled _only_ for core_build.
+      Added allow-failures on static analysis.
+
+Bryan Parsons (16):
+      Added line to GPSTKConfig.cmake to allow dependent projects to find header files regardless of explicit or implicit paths.
+      Merge branch 'Explicit_Header_Fix' into 'master'
+      Merge branch 'GPSTk_2_10_1' into 'master'
+      Merge branch 'EngEphHealthFix' into 'master'
+      Merge branch 'issue_335_scanBrdc' into 'master'
+      Merge branch 'issue_333' into 'master'
+      Merge branch 'Add_demodulator_status_obs_type' into 'master'
+      Merge branch 'rowcheck_rin3' into 'master'
+      Merge branch 'ord_refactor' into 'master'
+      Merge branch 'SVNumXRef_update54' into 'master'
+      Merge branch '54_18_corrected' into 'master'
+      Merge branch 'issue_333' into 'master'
+      Merge branch 'issue_339_sp3d_support' into 'master'
+      Fixing bug that introduced false positive on Downstream GPSTk Core build.  Making this test an Allowed Failure at this time.
+      Merge branch 'gitlab_ci_bug' into 'master'
+      GPSTk v2.10.2
+
+John H. Price (1):
+      Use newer rinex classes to allow RINEX 3 file checking
+
+Jon C. Little (1):
+      Corrected prettying print of eph health bits
+
+Nick Boeker (10):
+      Updated references for 54/18 and 34/18 and updated PRN 4 gap
+      Fixed incorrect Syntax
+      Fixed incorrect end time for 54/18
+      Updated for SP3d reading
+      Everything but bc2sp3 working
+      SP3d successfully passes all build tests
+      Merge remote-tracking branch 'origin/master' into issue_339_sp3d_support
+      Fixed minor issues
+      Fixed another small thing
+      Removed unused debug statement
+
+Richard Ji-Cathriner (1):
+      Add ObservationType for demodulator status codes
+
+johnk (15):
+      Add helper methods for computing appropriate buffer sizes.     Add a filter class for putting nav data in time order.     Change LNavEphMaker to always accept all nav data.
+      Fix include path
+      Merge remote-tracking branch 'origin/master' into issue_333
+      Add name strings to nav filter classes to help reduce redundant code.
+      Make accept/reject methods of NavFilter protected as they should only     be called by derived classes.     Undo previous changes made to LNavEphMaker that broke it and document     the situation a bit better.
+      Fix memory leak
+      Change iterator class to work with pre-c++11
+      fix another memory leak
+      Fix typo
+      Eliminate seg fault due to empty map
+      Merge remote-tracking branch 'origin/master' into issue_333
+      Fix a problem causing seg faults
+      Merge remote-tracking branch 'origin/master' into issue_333
+      Merge remote-tracking branch 'origin/master' into issue_333
+      Filter for forcing time-order of legacy nav subframe data
+
+renfrob (2):
+      Fixing week rollover with negative HOW bug
+      Adding mistagging PRN detection to scanBrdcFile
+
+
+
+      #################################################
+
+
+Version 2.10.1   Monday, January 22, 2018
+
+   General modifications
+   ---------------------
+   - Tweaks to Core and RedHat builds for fixes to SGLTk portion of GPSTk CI build
+   - Test Additions and Cleanup
+   - Various Bug and Compile Warning Fixes
+
+   Modifications by Author
+   ---------------------
+
+Anthony Hughes (1):
+      Freed memory returned by OrbitEphStore::addToList and updated comments for that method.
+
+Brian Tolman (8):
+      make change() more robust, empty input string causes almost infinite loop
+      add vector intersect routines
+      make all geomatics tests have the same label
+      add unsigned where appropriate
+      add operator+=(Namelist), fix randomize() and improve format of output
+      add debiasing before computing stats
+      add const where needed
+      simple bug when adding empty Stats
+
+Bryan Parsons (22):
+      Merge branch 'SunEarthSatGeometry' into 'master'
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Appropriately updated Debian information for correctly building debian packages.
+      Merge branch 'issue_331' into 'master'
+      Merge branch 'string_change_bug' into 'master'
+      Merge branch 'stlhelpers_add_vector_intersect' into 'master'
+      Merge branch 'geomatics_test_names' into 'master'
+      Merge branch 'StatsFilter_unsigned' into 'master'
+      Merge branch 'Namelist_improvements' into 'master'
+      Merge branch 'PRSolution_stats_bias' into 'master'
+      Merge branch 'SatPass_consts' into 'master'
+      Merge branch 'Stats_plus_bug' into 'master'
+      Merge branch 'RinexNavWeek' into 'master'
+      Tweaks for resolving issues with SGLTk builds of GPSTk CI.
+      Additional tweaks to .gitlab-ci.yml file for fixing SGLTK issues in GPSTk CI pipeline.
+      Additional Gitlab CI tweaks.
+      More changes to Gitlab CI.
+      Updates to .gitlab-ci.yml
+      Debian GPSTk SGLTk fixed, change for Core and Redhat added.
+      Tweaks to Core and RedHat builds for fixes to SGLTk portion of GPSTk CI build.
+      Merge branch 'Gitlab_CI_Fix' into 'master'
+      Merge branch 'issue_334' into 'master'
+
+John H. Price (2):
+      output negative xmitTime in Rinex Nav files if in the week prior to the week # as per the RINEX spec
+      update EngEphemeris::getFullWeek() description for clarification
+
+johnk (1):
+      Remove inadequately explained lib directory override
+
+      #################################################
+
 Version 2.10   Monday, October 6, 2017
 
    General modifications

@@ -1479,6 +1479,7 @@ namespace gpstk
                                  const std::string& outputString,
                                  std::string::size_type startPos, unsigned numChanges)
       {
+         if(inputString.empty() || aString.empty()) return aString;
          unsigned count = 0;
          std::string::size_type opos = startPos;
 

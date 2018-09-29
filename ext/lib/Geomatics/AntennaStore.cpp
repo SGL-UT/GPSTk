@@ -301,7 +301,7 @@ namespace gpstk
                   fact1 = 2.5458;   // (alpha+1)/alpha
                   fact2 = -1.5458;  // -1/alpha
                   freq1 = "G01";
-                  freq2 = "G01";
+                  freq2 = "G02";
                   break;
                }
                case 'R':
@@ -318,6 +318,16 @@ namespace gpstk
                   fact2 = -1.52125;
                   freq1 = "C01";
                   freq2 = "C02";
+                  break;
+               }
+
+               case 'E':
+               {
+                  double alpha = ((154*154) / (116.5*116.5)) -1.0;   // E1 and E5a
+                  fact1 = (alpha+1.0) / alpha;   
+                  fact2 = -1.0 / alpha; 
+                  freq1 = "E01";
+                  freq2 = "E05";
                   break;
                }
 
@@ -382,7 +392,7 @@ namespace gpstk
       switch (sidr.system)
       {
          case SatID::systemGPS:     {sys='G'; break;}
-         //case systemGalileo: {sys='E'; break;}   Not yet  implemented
+         case SatID::systemGalileo: {sys='E'; break;}  
          case SatID::systemGlonass: {sys='R'; break;}
          case SatID::systemBeiDou:  {sys='C'; break;}
          default:
