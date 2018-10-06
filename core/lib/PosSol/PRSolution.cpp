@@ -335,6 +335,10 @@ namespace gpstk
 
                // ------------ data
                // corrected pseudorange (m) minus geometric range
+               if (n >= Nsvs) {
+                 Exception e("Counting error within satellite loop");
+                 GPSTK_THROW(e);
+               }
                CRange(n) = SVP(i,3) - rho;
 
                // correct for troposphere and PCOs (but not on the first iteration)
