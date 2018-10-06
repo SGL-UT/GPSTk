@@ -1,4 +1,4 @@
-/* $Id$
+/*
 *  Xbegweek.cpp - Test scaffold for demonstrating correctness of the 
 *  SVPCodeGen class.
 *

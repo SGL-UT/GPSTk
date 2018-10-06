@@ -151,8 +151,6 @@ namespace gpstk
 
       if (resolved) ostr << "resolved";
       else ostr << "not resolved ";
-
-      return;
    }
 
    bool Expression::operatorsDefined = false;

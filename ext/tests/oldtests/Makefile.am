@@ -1,4 +1,3 @@
-# $Id$
 INCLUDES = -I$(srcdir)/../src
 LDADD = ../src/libgpstk.la
 

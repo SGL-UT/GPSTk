@@ -35,7 +35,6 @@
 //=============================================================================
 
 /*********************************************************************
-*  $Id:$
 *
 *  Test program from August 2011.  Written to test the EngEphemeris 
 *  module using the CPPUNIT test module.

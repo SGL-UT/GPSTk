@@ -357,7 +357,6 @@ namespace gpstk
       string manyerrstr("No more than " + StringUtils::asString(maxCount));
       string errstr(" of the following options must be specified: ");
 
-      bool found = false;
       unsigned long n = 0;
 
       for (CommandOptionVec::size_type i = 0; i < optionVec.size(); i++)

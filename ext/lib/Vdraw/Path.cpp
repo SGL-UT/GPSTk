@@ -45,13 +45,11 @@ namespace vdraw
    { 
       Point p(X,Y);
       this->push_back(p);
-      return;
    }
 
    void Path::addPointAbsolute(double X, double Y)
    {
       addPointRelative(X - originX, Y-originY);
-      return;
    }
 
    void Path::addPointDelta(double DX, double DY) throw(VDrawException)
@@ -65,7 +63,6 @@ namespace vdraw
       lastPair--;
       Point p(lastPair->first-DX,lastPair->second-DY);
       this->push_back(p);
-      return;
    }
 
    void Path::rotate(double angleDegrees, double rx, double ry)

@@ -111,8 +111,6 @@ namespace vdraw
 
       // Use the viewerManager
       viewerManager.view(filename);
-
-      return;
    }
 
 } // namespace vdraw

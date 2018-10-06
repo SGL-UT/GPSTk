@@ -35,7 +35,6 @@
 //=============================================================================
 
 /*********************************************************************
-*  $Id$
 *
 *  Test program from July 2012. Written to test the OrbElemCNAV2 and
 *  PackedNavBits modules as they were being developed. First, nav

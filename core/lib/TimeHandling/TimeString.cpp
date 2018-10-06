@@ -455,9 +455,10 @@ namespace gpstk
             // not mixed with others if detected.
          
             // These variables will hold the values for use later.
-         double isow, isod, isec;
-         int iweek, ifullweek, idow, iyear, imonth, iday, izcount, idoy,
-            izcount29, ihour, imin, iepoch;
+         double isow = 0, isod = 0, isec = 0;
+         int iweek = 0, ifullweek = 0, idow = 0, iyear = 0, imonth = 0,
+            iday = 0, izcount = 0, idoy = 0,
+            izcount29 = 0, ihour = 0, imin = 0, iepoch = 0;
          TimeSystem ts;
 
          for( TimeTag::IdToValue::iterator itr = info.begin();

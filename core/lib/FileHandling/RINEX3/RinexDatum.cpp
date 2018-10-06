@@ -46,8 +46,9 @@ namespace gpstk
 {
    RinexDatum ::
    RinexDatum()
-         : data(0), lli(0), ssi(0),
-           dataBlank(false), lliBlank(false), ssiBlank(false)
+         : data(0), dataBlank(false),
+           lli(0), lliBlank(false),
+           ssi(0), ssiBlank(false)
    {
          // blanks are false by default for backwards compatibility
    }

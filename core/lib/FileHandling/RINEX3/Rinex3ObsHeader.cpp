@@ -1795,7 +1795,7 @@ namespace gpstk
          // "beyond RINEX v2.11" extra-special handling.
          //
       bool hasL2P = find(R2ObsTypes.begin(),R2ObsTypes.end(), string("P2")) != R2ObsTypes.end();
-      bool hasL2C = find(R2ObsTypes.begin(),R2ObsTypes.end(), string("C2")) != R2ObsTypes.end();
+      //bool hasL2C = find(R2ObsTypes.begin(),R2ObsTypes.end(), string("C2")) != R2ObsTypes.end();
 
       string code2 = "X";   // Correct condition as long as P2 is not in the list
       string code2P = "X";  // Condition is irrelvant unless P2 is in the list
@@ -1865,11 +1865,11 @@ namespace gpstk
          // This assumes that any files claiming to track GLONASS P1 is 
          // actually doing so with a codeless technique.  There is no RINEX V3
          // "C1W" for GLONASS, so we'll leave P1 as C1P as the closest approximation.
-      bool hasL1P = find(R2ObsTypes.begin(),R2ObsTypes.end(), string("P1")) != R2ObsTypes.end();
+      //bool hasL1P = find(R2ObsTypes.begin(),R2ObsTypes.end(), string("P1")) != R2ObsTypes.end();
       string code1 = "C";
 
          // Assume D2, S2, and L2 come from C/A.  Same logic as above.
-      bool hasL2P = find(R2ObsTypes.begin(),R2ObsTypes.end(), string("P2")) != R2ObsTypes.end();
+      //bool hasL2P = find(R2ObsTypes.begin(),R2ObsTypes.end(), string("P2")) != R2ObsTypes.end();
       string code2 = "C";
 
       string syss("R");     

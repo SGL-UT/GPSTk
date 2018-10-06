@@ -229,10 +229,6 @@ namespace gpstk
 
       }  // End of 'if (detail >= 0)...'
 
-
-      return;
-
-
    }  // End of method 'IonexStore::dump()'
 
 
@@ -246,9 +242,6 @@ namespace gpstk
 
       initialTime = CommonTime::END_OF_TIME;
       finalTime = CommonTime::BEGINNING_OF_TIME;
-
-      return;
-
    }  // End of method 'IonexStore::clear()'
 
 

@@ -117,7 +117,7 @@ namespace gpstk
             case ntGalFNAV:      {retVal = NavTypeStrings[ 8];     break;}
             case ntGalINAV:      {retVal = NavTypeStrings[ 9];     break;}
             case ntIRNSS_SPS:    {retVal = NavTypeStrings[10];     break;}
-            case ntUnknown:
+            case ntUnknown:       // fall through...
             default:             {retVal = NavTypeStrings[11];     break;}
          };
          //return retVal in case switch isn't reached

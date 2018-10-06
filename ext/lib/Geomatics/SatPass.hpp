@@ -104,13 +104,10 @@ protected:
             userflag = right.userflag;
             ndt = right.ndt;
             toffset = right.toffset;
-            data.resize(right.data.size());
-            lli.resize(right.lli.size());
-            ssi.resize(right.ssi.size());
-            int i;
-            for(i=0; i<right.data.size(); i++) data[i] = right.data[i];
-            for(i=0; i<right.lli.size(); i++) lli[i] = right.lli[i];
-            for(i=0; i<right.ssi.size(); i++) ssi[i] = right.ssi[i];
+
+            data = right.data;
+            lli = right.lli;
+            ssi = right.ssi;
          }
 
          return *this;
@@ -130,8 +127,21 @@ protected:
    RinexSatID sat;
 
    /// STL map relating strings identifying obs types with indexes in SatPassData
-   std::map<std::string,unsigned int> indexForLabel;
-   std::map<unsigned int,std::string> labelForIndex;
+   typedef std::map<std::string, unsigned> LabelToIndexMap;
+   typedef std::map<unsigned, std::string> IndexToLabelMap;
+   LabelToIndexMap indexForLabel;
+   IndexToLabelMap labelForIndex;
+
+   inline unsigned findValidLabel(const std::string& type) const throw(Exception) {
+     const LabelToIndexMap::const_iterator it = indexForLabel.find(type);
+
+     if (it == indexForLabel.end()) {
+       Exception e("Invalid obs type " + type);
+       GPSTK_THROW(e);
+     }
+
+     return it->second;
+   }
 
       // above determined at construction; the rest determined by input data
 
@@ -157,7 +167,8 @@ protected:
    int push_back(const Epoch tt, SatPassData& spd) throw();
 
    /// get a complete SatPassData at count i
-   struct SatPassData getData(unsigned int i) const throw(Exception);
+   const SatPassData& getData(unsigned int i) const throw(Exception);
+   SatPassData& getData(unsigned int i) throw(Exception);
 
 public:
    // ------------------ friends --------------------------------------
@@ -237,8 +248,8 @@ public:
    /// @return n>=0 if data was added successfully, n is the index of the new data
    ///        -1 if a gap is found (no data is added),
    ///        -2 if time tag is out of order (no data is added)
-   int addData(const Epoch tt, std::vector<std::string>& obstypes,
-                                  std::vector<double>& data) throw(Exception);
+   int addData(const Epoch tt, const std::vector<std::string>& obstypes,
+                               const std::vector<double>& data) throw(Exception);
 
    /// Add vector of data, identified by obstypes (same as used in c'tor) at tt,
    /// Flag, lli and ssi are set using input (parallel to data).
@@ -280,11 +291,17 @@ public:
    /// Access the status as r-value only
    int getStatus(void) const throw() { return Status; }
 
+   /// Access the (constant) data for one obs type at one index
+   /// @param  i    index of the data of interest
+   /// @param  type observation type (e.g. "L1") of the data of interest
+   /// @return the data of the given type at the given index
+   double data(unsigned int i, const std::string& type) const throw(Exception);
+
    /// Access the data for one obs type at one index, as either l-value or r-value
    /// @param  i    index of the data of interest
    /// @param  type observation type (e.g. "L1") of the data of interest
    /// @return the data of the given type at the given index
-   double& data(unsigned int i, std::string type) throw(Exception);
+   double& data(unsigned int i, const std::string& type) throw(Exception);
 
    /// Access the time offset from the nominal time (i.e. timetag) at one index
    /// (epoch), as either l-value or r-value
@@ -296,13 +313,13 @@ public:
    /// @param  i    index of the data of interest
    /// @param  type observation type (e.g. "L1") of the data of interest
    /// @return the LLI of the given type at the given index
-   unsigned short& LLI(unsigned int i, std::string type) throw(Exception);
+   unsigned short& LLI(unsigned int i, const std::string& type) throw(Exception);
 
    /// Access the ssi for one obs type at one index, as either l-value or r-value
    /// @param  i    index of the data of interest
    /// @param  type observation type (e.g. "L1") of the data of interest
    /// @return the SSI of the given type at the given index
-   unsigned short& SSI(unsigned int i, std::string type) throw(Exception);
+   unsigned short& SSI(unsigned int i, const std::string& type) throw(Exception);
 
    // -------------------------------- set only --------------------------------
    /// change the maximum time gap (in seconds) allowed within any SatPass
@@ -339,9 +356,12 @@ public:
 
    /// get the list of obstypes
    /// @return the vector of strings giving RINEX obs types
-   std::vector<std::string> getObsTypes(void) throw() {
+   std::vector<std::string> getObsTypes(void) const throw() {
       std::vector<std::string> v;
-      for(int i=0; i<labelForIndex.size(); i++) v.push_back(labelForIndex[i]);
+      std::map<unsigned int, std::string>::const_iterator li;
+      for (li=labelForIndex.begin(); li!=labelForIndex.end(); ++li) {
+            v.push_back(li->second);
+      }
       return v;
    }
 
@@ -364,7 +384,7 @@ public:
 
    /// @return the earliest time of good data in this SatPass data
    Epoch getFirstGoodTime(void) const throw() {
-      for(int j=0; j<spdvector.size(); j++) if(spdvector[j].flag & OK) {
+      for(unsigned j=0; j<spdvector.size(); j++) if(spdvector[j].flag & OK) {
          return time(j);
       }
       return CommonTime::END_OF_TIME;
@@ -405,24 +425,24 @@ public:
    /// @param  type1 observation type (e.g. "P1") of the data of interest
    /// @param  type2 observation type (e.g. "C1") of the data of interest
    /// @return the data of the given type at the given index
-   double data(unsigned int i, std::string type1, std::string type2) const
-      throw(Exception);
+   double data(unsigned int i, const std::string& type1,
+               const std::string& type2) const throw(Exception);
 
    /// Access the LLI for either of two obs type at one index, as r-value only
    /// @param  i     index of the data of interest
    /// @param  type1 observation type (e.g. "P1") of the data of interest
    /// @param  type2 observation type (e.g. "C1") of the data of interest
    /// @return the LLI of the given type at the given index
-   unsigned short LLI(unsigned int i, std::string type1, std::string type2)
-      throw(Exception);
+   unsigned short LLI(unsigned int i, const std::string& type1,
+                      const std::string& type2) const throw(Exception);
 
    /// Access the ssi for either of two obs type at one index, as r-value only
    /// @param  i     index of the data of interest
    /// @param  type1 observation type (e.g. "P2") of the data of interest
    /// @param  type2 observation type (e.g. "C2") of the data of interest
    /// @return the SSI of the given type at the given index
-   unsigned short SSI(unsigned int i, std::string type1, std::string type2)
-      throw(Exception);
+   unsigned short SSI(unsigned int i, const std::string& type1,
+                      const std::string& type2) const throw(Exception);
 
    /// Test whether the object has obstype type
    /// @return true if this obstype was passed to the c'tor (i.e. is in indexForLabel)
@@ -434,7 +454,7 @@ public:
    /// Access the obstypes (as strings)
    std::vector<std::string> getObstypes(void) {
       std::vector<std::string> ots;
-      for(int i=0; i<labelForIndex.size(); i++)
+      for(unsigned i=0; i<labelForIndex.size(); i++)
          ots.push_back(labelForIndex[i]);
       return ots;
    }
@@ -455,8 +475,8 @@ public:
    {
       int count = countForTime(tt);
       if(count < 0) return -1;
-      for(int i=0; i<spdvector.size(); i++)
-         if(count == spdvector[i].ndt) return i;
+      for(unsigned i=0; i<spdvector.size(); i++)
+         if(count == (int)spdvector[i].ndt) return i;
       return -1;
    }
 
@@ -630,7 +650,7 @@ public:
          << " to " << printTime(getLastTime(),fmt)
          << " obs:";
       std::vector<std::string> ots = getObstypes();
-      for(int i=0; i<ots.size(); i++) os << " " << ots[i];
+      for(unsigned i=0; i<ots.size(); i++) os << " " << ots[i];
       return os.str();
    }
    /// Dump all the data in the pass, one line per timetag.

@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# $Id: allanplot 1210 2008-04-22 03:46:29Z ocibu $
 # A routine to plot the output of the oallandev and ohadamarddev.
 #
 import sys, string, time, datetime, numpy, matplotlib, pylab

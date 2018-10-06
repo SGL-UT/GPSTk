@@ -2704,7 +2704,7 @@ namespace gpstk
             size_t len = aStr.length();
             rv.reserve(len);
 
-            for (int i = 0; i < len; i++)
+            for (size_t i = 0; i < len; i++)
             {
                char c = aStr[i];
                if (c > 31 && c < 127)  // Handle printable ASCII characters
@@ -2753,7 +2753,7 @@ namespace gpstk
                // positions of word and line delimiters in aStr
             std::string::size_type wordPos = 0, linePos = 0, curPos = 0,
                curLineLen = newStr.length(), minPos = 0, wordLen = 0;
-            bool wordDelimited = false;
+
             while (curPos != std::string::npos)
             {
                wordPos = aStr.find(wordDelim, curPos);
@@ -2764,7 +2764,6 @@ namespace gpstk
                   continue;
                }
                   // no longer processing a word delimiter
-               wordDelimited = false;
                linePos = aStr.find(lineDelim, curPos);
                if (linePos == curPos)
                {

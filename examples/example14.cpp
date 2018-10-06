@@ -945,8 +945,6 @@ void example14::process()
 
 
       // The rest of the processing will be in method 'example14::shutDown()'
-   return;
-
 }  // End of 'example14::process()'
 
 

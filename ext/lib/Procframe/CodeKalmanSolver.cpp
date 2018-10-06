@@ -392,7 +392,7 @@ covariance matrix.");
 
             // Count the number of satellites with weights
          size_t nW(dummy.numSats());
-         for (int i=0; i<numMeas; i++)
+         for (size_t i=0; i<numMeas; i++)
          {
             if (nW == numMeas)   // Check if weights match
             {

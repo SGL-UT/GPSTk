@@ -120,7 +120,6 @@ testErrorSeverity()
 {
    TUDEF("Exception", "getErrorId()");
    unsigned loc1Line = 0, loc2Line = 0;
-   int locFails = 0;
    std::string fn("testErrorSeverity");
    try
    {

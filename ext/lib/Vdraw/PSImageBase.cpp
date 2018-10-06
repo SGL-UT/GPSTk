@@ -147,8 +147,6 @@ namespace vdraw
       else
         ostr << i->first << " " << ((ll)?i->second:(canvasHeight-i->second)) << " lineto" << endl;
     } // Step through points in the path
-
-    return;
   }
 
   void PSImageBase::markPath(const Path& path, const char * name)
@@ -161,8 +159,6 @@ namespace vdraw
     // Step through each point
     for (i=abspath->begin(); i!=abspath->end(); i++)
       ostr << i->first << " " << ((ll)?i->second:(canvasHeight-i->second)) << " " << name << endl;
-
-    return;
   }
 
 

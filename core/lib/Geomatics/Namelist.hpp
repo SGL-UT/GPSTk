@@ -81,11 +81,11 @@ public:
 /// class LabeledMatrix. Pretty print a Matrix using the labels in a Namelist.
 class LabeledMatrix {
 public:
-   int wid,prec;
-   int form;         // format: 1=fixed, 2=scientific
-   int rc;           // rows only (1) columns only (2) or both (0)
    bool sym;         // if true, print only lower triangle
    bool cln;         // if true, print 0.0 as "0"
+   int wid, prec;
+   int form;         // format: 1=fixed, 2=scientific
+   int rc;           // rows only (1) columns only (2) or both (0)
    std::string msg;
    std::string tag;
    const Namelist& NLrows;
@@ -93,10 +93,10 @@ public:
    const Matrix<double>& M;
    LabeledMatrix(const Namelist& nl, const Matrix<double>& m)
       : sym(false), cln(false), wid(12), prec(5), form(1), rc(0),
-         M(m), NLrows(nl), NLcols(nl) { }
+        NLrows(nl), NLcols(nl), M(m) { }
    LabeledMatrix(const Namelist& nr, const Namelist& nc, const Matrix<double>& m)
       : sym(false), cln(false), wid(12), prec(5), form(1), rc(0),
-         M(m), NLrows(nr), NLcols(nc) { }
+         NLrows(nr), NLcols(nc), M(m) { }
    LabeledMatrix& setw(int w) { wid = w; return *this; }
    LabeledMatrix& setprecision(int p) { prec = p; return *this; }
    LabeledMatrix& fixed(void) { form = 1; return *this; }

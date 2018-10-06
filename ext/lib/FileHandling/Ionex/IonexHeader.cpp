@@ -98,9 +98,6 @@ namespace gpstk
       exponent = -1;    // that's the default value
       svsmap.clear();
       valid = auxDataFlag = false;
-
-      return;
-
    }  // End of method 'IonexHeader::clear()'
 
 
@@ -220,9 +217,6 @@ namespace gpstk
          GPSTK_THROW(e);
 
       }  // End of 'if (label == endAuxDataString)'...
-
-      return;
-
    }  // End of method 'IonexHeader::ParseDcbRecord()'
 
 

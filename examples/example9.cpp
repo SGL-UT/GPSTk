@@ -322,11 +322,6 @@ void example9::printSolution( ofstream& outfile,
 
       // Add end-of-line
    outfile << endl;
-
-
-   return;
-
-
 }  // End of method 'example9::printSolution()'
 
 
@@ -1126,9 +1121,6 @@ void example9::process()
 
 
    }  // end of 'while ( (station = confReader.getEachSection()) != "" )'
-
-   return;
-
 }  // End of 'example9::process()'
 
 

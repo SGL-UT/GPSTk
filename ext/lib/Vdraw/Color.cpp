@@ -151,7 +151,5 @@ namespace vdraw
     else if (ls=="navy")         rgb=NAVY;
     else if (ls=="darkpurple")   rgb=DARK_PURPLE;
     else if (ls=="clear")        rgb=CLEAR;
-
-    return;
   }
 } // namespace vdraw

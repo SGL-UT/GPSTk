@@ -476,11 +476,10 @@ namespace gpstk
       if(rod.epochFlag==0 || rod.epochFlag==1 || rod.epochFlag==6)
       {
             // first read the SatIDs off the epoch line
-         int isv, ndx, line_ndx;
          string satsys;
          RinexSatID sat;
          vector<RinexSatID> satIndex(rod.numSVs);
-         for(isv=1, ndx=0; ndx<rod.numSVs; isv++, ndx++)
+         for(int isv=1, ndx=0; ndx<rod.numSVs; isv++, ndx++)
          {
             if(!(isv % 13))
             {                   // get a new continuation line
@@ -512,13 +511,13 @@ namespace gpstk
          unsigned numObs(strm.header.R2ObsTypes.size());
          rod.obs.clear();
             // loop over all sats, reading obs data
-         for(isv=0; isv < rod.numSVs; isv++)
+         for(int isv=0; isv < rod.numSVs; isv++)
          {
             sat = satIndex[isv];                   // sat for this data
             satsys = asString(sat.systemChar());   // system for this sat
             vector<RinexDatum> data;
                // loop over data in the line
-            for(ndx=0, line_ndx=0; ndx < numObs; ndx++, line_ndx++)
+            for(unsigned ndx=0, line_ndx=0; ndx < numObs; ndx++, line_ndx++)
             {
                if(! (line_ndx % 5))
                {              // get a new line

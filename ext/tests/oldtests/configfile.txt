@@ -1,4 +1,3 @@
-# $Id$
 # Configuration file for GPSTk regression test script
 #
 AnotherFileFilterTest;

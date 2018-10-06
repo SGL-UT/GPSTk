@@ -183,9 +183,6 @@ namespace gpstk
 
       isTypeIndexed = typeIndex;    // default is true, this is important YAN Wei added
 
-     
-      return;
-
    }  // End of method 'Variable::Init()'
 
 

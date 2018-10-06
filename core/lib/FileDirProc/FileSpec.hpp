@@ -289,10 +289,10 @@ namespace gpstk
             /// in the strings
          bool operator() (const std::string& l, const std::string& r) const;
       private:
-            /// ascending or descending
-         FileSpecSortType sortDir;
             /// The FileSpec doing the sorting
          const FileSpec &fileSpec;
+            /// ascending or descending
+         FileSpecSortType sortDir;
       };
 
          /// Holds all of the FileSpecElements for this FileSpec

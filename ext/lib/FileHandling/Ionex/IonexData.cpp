@@ -418,9 +418,6 @@ namespace gpstk
          }
 
       }  // end of 'while (ityp != 0)' loop
-
-      return;
-
    }  // End of method 'IonexData::reallyGetRecord()'
 
 
@@ -441,9 +438,6 @@ namespace gpstk
       os << "Number of values            : " << data.size()
                 << " values." << std::endl;
       os << "Valid object?               : " << isValid() << endl;
-
-      return;
-
    }  // End of method 'IonexData::dump()'
 
 

@@ -53,10 +53,10 @@ namespace gpstk
 {
    using namespace std;
    PackedNavBits::PackedNavBits()
-                 : transmitTime(CommonTime::BEGINNING_OF_TIME),
+                 : rxID(""),
+                   transmitTime(CommonTime::BEGINNING_OF_TIME),
                    bits(900),
                    bits_used(0),
-                   rxID(""),
                    xMitCoerced(false)
    {
       transmitTime.setTimeSystem(TimeSystem::GPS);
@@ -64,9 +64,9 @@ namespace gpstk
    PackedNavBits::PackedNavBits(const SatID& satSysArg, 
                                 const ObsID& obsIDArg,
                                 const CommonTime& transmitTimeArg)
-                                : bits(900),
+                                : rxID(""),
+                                  bits(900),
                                   bits_used(0),
-                                  rxID(""),
                                   xMitCoerced(false)
    {
       satSys = satSysArg;
@@ -79,9 +79,9 @@ namespace gpstk
                                 const ObsID& obsIDArg,
                                 const std::string rxString,
                                 const CommonTime& transmitTimeArg)
-                                : bits(900),
+                                : rxID(""),
+                                  bits(900),
                                   bits_used(0),
-                                  rxID(""),
                                   xMitCoerced(false)
    {
       satSys = satSysArg;
@@ -644,7 +644,7 @@ namespace gpstk
          return false;
       }
 
-      for (int i=0;i<bits.size();i++)
+      for (size_t i=0;i<bits.size();i++)
       {
          if (bits[i]==false && right.bits[i]==true)
          //if (bits[i]<right.bits[i])
@@ -859,7 +859,6 @@ namespace gpstk
       int rollover = numPerLine;
       
       int numBitInWord = 0;
-      int bit_count    = 0; 
       int word_count   = 0;
       uint32_t word    = 0;
       for(size_t i = 0; i < bits.size(); ++i)

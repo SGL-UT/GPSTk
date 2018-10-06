@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# $Id: PRSplot.pl 89 2012-02-09 21:14:16Z btolman $
+
 use strict;
 use warnings;
 

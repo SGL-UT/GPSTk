@@ -400,42 +400,6 @@ namespace gpstk
          << (static_cast<CivilTime>(t)).printf("%02m/%02d/%04Y   %02H:%02M:%02S");
    }
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-function"
-   static void shortcut(ostream & os, const long HOW )
-   {
-      short DOW, hour, min, sec;
-      long SOD, SOW;
-      short SOH;
-      
-      SOW = static_cast<long>( HOW );
-      DOW = static_cast<short>( SOW / SEC_PER_DAY );
-      SOD = SOW - static_cast<long>( DOW * SEC_PER_DAY );
-      hour = static_cast<short>( SOD/3600 );
-
-      SOH = static_cast<short>( SOD - (hour*3600) );
-      min = SOH/60;
-
-      sec = SOH - min * 60;
-      switch (DOW)
-      {
-         case 0: os << "Sun-0"; break;
-         case 1: os << "Mon-1"; break;
-         case 2: os << "Tue-2"; break;
-         case 3: os << "Wed-3"; break;
-         case 4: os << "Thu-4"; break;
-         case 5: os << "Fri-5"; break;
-         case 6: os << "Sat-6"; break;
-         default: break;
-      }
-
-      os << ":" << setfill('0')
-         << setw(2) << hour
-         << ":" << setw(2) << min
-         << ":" << setw(2) << sec
-         << setfill(' ');
-   }
-#pragma clang diagnostic pop
    void CNAVEphemeris :: dump(ostream& s) const
       throw()
    { 

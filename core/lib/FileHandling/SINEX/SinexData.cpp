@@ -1,5 +1,3 @@
-#pragma ident "$Id: //depot/msn/main/code/shared/gpstk/SinexData.cpp#5 $"
-
 //lgpl-license START
 //lgpl-license END
 

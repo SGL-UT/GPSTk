@@ -35,7 +35,6 @@
 //=============================================================================
 
 /*********************************************************************
-*  $Id:$
 *
 *  Test program from June 2011.  Written to test the BrcKeplerOrbit 
 *  module as it was being developed.

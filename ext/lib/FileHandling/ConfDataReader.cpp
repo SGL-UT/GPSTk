@@ -831,9 +831,6 @@ namespace gpstk
       FFTextStream::open(fn, std::ios::in);
 
       loadData();
-
-      return;
-
    }  // End of method 'ConfDataReader::open()'
 
 

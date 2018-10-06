@@ -206,8 +206,7 @@ namespace gpstk
          GPSTK_THROW(e);
       }
 
-      int iret(0),k,n;
-      size_t i, j;
+      int iret(0);
       double rho,wt,svxyz[3];
       GPSEllipsoid ellip;
 
@@ -220,7 +219,8 @@ namespace gpstk
          {
             // define the Syss (system IDs) vector, and count good satellites
             vector<SatID::SatelliteSystem> tempSyss;
-            for(Nsvs=0,i=0; i<Sats.size(); i++) {
+            Nsvs = 0;
+            for(size_t i=0; i<Sats.size(); i++) {
                if(Sats[i].id <= 0)                          // reject marked sats
                   continue;
 
@@ -234,7 +234,7 @@ namespace gpstk
             }
 
             // must sort as in Syss
-            for(i=0; i<Syss.size(); i++)
+            for(size_t i=0; i<Syss.size(); i++)
                if(vectorindex(tempSyss, Syss[i]) != -1)
                   mySyss.push_back(Syss[i]);
          }
@@ -252,9 +252,9 @@ namespace gpstk
          if(invMC.rows() > 0) {
             LOG(DEBUG) << "Build inverse MCov";
             iMC = Matrix<double>(Nsvs,Nsvs,0.0);
-            for(n=0,i=0; i<Sats.size(); i++) {
+            for(size_t n=0,i=0; i<Sats.size(); i++) {
                if(Sats[i].id <= 0) continue;
-               for(k=0,j=0; j<Sats.size(); j++) {
+               for(size_t k=0,j=0; j<Sats.size(); j++) {
                   if(Sats[j].id <= 0) continue;
                   iMC(n,k) = invMC(i,j);
                   ++k;
@@ -296,14 +296,16 @@ namespace gpstk
 
          // -----------------------------------------------------------
          // iteration loop
+         size_t n = 0;
          do {
             TropFlag = false;       // true means the trop corr was NOT applied
+            size_t j;
 
             // current estimate of position solution
             RX.x = Triple(Solution(0),Solution(1),Solution(2));
 
             // loop over satellites, computing partials matrix
-            for(n=0,i=0; i<Sats.size(); i++) {
+            for(size_t i=0; i<Sats.size(); i++) {
                // ignore marked satellites
                if(Sats[i].id <= 0) continue;
 
@@ -333,6 +335,10 @@ namespace gpstk
 
                // ------------ data
                // corrected pseudorange (m) minus geometric range
+               if (n >= Nsvs) {
+                 Exception e("Counting error within satellite loop");
+                 GPSTK_THROW(e);
+               }
                CRange(n) = SVP(i,3) - rho;
 
                // correct for troposphere and PCOs (but not on the first iteration)
@@ -446,14 +452,14 @@ namespace gpstk
          // compute slopes and find max member
          MaxSlope = 0.0;
          Slopes = 0.0;
-         if(iret == 0) for(j=0,i=0; i<Sats.size(); i++) {
+         if(iret == 0) for(size_t j=0,i=0; i<Sats.size(); i++) {
             if(Sats[i].id <= 0) continue;
 
             // NB when one (few) sats have their own clock, PG(j,j) = 1 (nearly 1)
             // and slope is inf (large)
             if(::fabs(1.0-PG(j,j)) < 1.e-8) continue;
 
-            for(int k=0; k<dim; k++) Slopes(j) += G(k,j)*G(k,j); // TD dim=4 here?
+            for(unsigned k=0; k<dim; k++) Slopes(j) += G(k,j)*G(k,j); // TD dim=4 here?
             Slopes(j) = SQRT(Slopes(j)*double(n-dim)/(1.0-PG(j,j)));
             if(Slopes(j) > MaxSlope) MaxSlope = Slopes(j);
             j++;

@@ -727,7 +727,7 @@ namespace gpstk
          else if(center == EarthMoonBarycenter)   CENTER = EMBARY;
 
          // Earth and Moon need special treatment
-         double PVMOON[6], PVEMBARY[6], Eratio, Mratio=0.0;
+         double PVMOON[6], PVEMBARY[6], Eratio=0.0, Mratio=0.0;
 
          // special cases of Earth AND Moon: Moon result is always geocentric
          if(target == Earth && center == Moon)    TARGET = NONE;
