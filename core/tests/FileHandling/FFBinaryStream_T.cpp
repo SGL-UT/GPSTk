@@ -267,7 +267,7 @@ testStream(const std::string& outfn, const std::string& reffn,
    #ifdef WIN32
    testFramework.assert(bool(testStrmIn), "Couldn't open " + outfn + " for input", __LINE__);
    #else
-   testFramework.assert(testStrmIn, "Couldn't open " + outfn + " for input", __LINE__);
+   testFramework.assert(testStrmIn.good(), "Couldn't open " + outfn + " for input", __LINE__);
    #endif
 
       // check file size
