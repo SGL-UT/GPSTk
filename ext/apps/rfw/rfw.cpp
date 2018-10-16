@@ -204,7 +204,7 @@ protected:
       while (input)
       {
          input.read(data, max_len);
-         if (debugLevel)
+         if (debugLevel > 1)
             cout << "process read: " << input.gcount() << " bytes read." << endl;
          if (use_stdout)
          {

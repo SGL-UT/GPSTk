@@ -1,15 +1,16 @@
-GPSTk 2.10.4 Release Notes
+GPSTk 2.10.6 Release Notes
 ========================
 
-Updates since v2.10.3
+Updates since v2.10.5
 ----------------------
 
-**Build System & Packaging Changes**
- * Updated Debian configuration files for complete debian package building capability
+**Library Changes*
+ * ext/lib/FileHandling/TimeNamedFileStream.hppnow creates directories for the files it outputs. REASON: ext/apps/rfw/rfw.cpp needed handholding to do its job. Now it doesn't.
 
-*New Truth Data*
- * data/test_output_rinex3_clock_TestR3HeaderOutput.exp
 
+Fixes since v2.10.5
+----------------------
+ * Replaced ICD-GPS-211 with IS-GPS-200 in several comments
 
 
 

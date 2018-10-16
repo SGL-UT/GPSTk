@@ -52,8 +52,6 @@ build_redhat:
   artifacts:
     paths:
     - build/
-  # TODO: Temporarily allow failure to allow unit testing on debian
-  allow_failure: true
 
 build_osx:
   stage: build
@@ -80,6 +78,8 @@ build_windows:
   artifacts:
     paths:
     - build/
+# Temporarily allow failures as Windows Runner issues are resolved
+  allow_failure: true
 
 build_core:
   stage: build
@@ -206,6 +206,8 @@ deploy_windows:
     - cmake --build . --config Release --target install
   dependencies:
     - build_windows
+# Temporarily allow failures as Windows Runner issues are resolved
+  allow_failure: true  
 
 deploy_core:
   stage: deploy
@@ -261,6 +263,8 @@ package_windows:
     - cpack -C Release
   dependencies:
     - build_windows
+# Temporarily allow failures as Windows Runner issues are resolved
+  allow_failure: true
 
 package_core:
   stage: package

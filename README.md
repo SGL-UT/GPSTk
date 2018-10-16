@@ -1,6 +1,13 @@
 README
 ------
 
+Gitlab -
+[![build status](https://repositories.arlut.utexas.edu/sgl/gpstk/badges/master/build.svg)](https://repositories.arlut.utexas.edu/sgl/gpstk/commits/master)
+[![coverage report](https://repositories.arlut.utexas.edu/sgl/gpstk/badges/master/coverage.svg)](https://repositories.arlut.utexas.edu/sgl/gpstk/commits/master)
+
+Github - 
+[![Build Status](https://travis-ci.org/SGL-UT/GPSTk.svg?branch=master)](https://travis-ci.org/SGL-UT/GPSTk)
+
 Contents:
 ---------
 

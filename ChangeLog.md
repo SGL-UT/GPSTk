@@ -1,3 +1,47 @@
+Version 2.10.6   Monday, September 24, 2018
+
+   General modifications
+   ---------------------
+   - TimeNamedFileStream now creates the directory for the files it outputs
+   - Updated debian/libgpstk-dev.install to fix debian install error mentioned in issue #353
+
+   Modifications by Author
+   ---------------------
+
+Bryan Parsons (4):
+      Comments were found that were referencing ICD-GPS-211 instead of IS-GPS-200.  These comments were updated.
+      Merge branch 'comment_fix' into 'master'
+      Merge branch 'issue_351' into 'master'
+      Updated debian/libgpstk-dev.install to fix debian install error mentioned in issue #353
+
+Jon C. Little (1):
+      TimeNamedFileStream now creates the directory for the files it outputs
+
+
+      #################################################
+
+
+Version 2.10.5   Wednesday, August 22, 2018
+
+   General modifications
+   ---------------------
+   - Add function for correcting issues with 10-bit week rollover
+      fix a typo
+
+   Modifications by Author
+   ---------------------
+
+Bryan Parsons (1):
+      Merge branch '350-implement-a-utility-class-for-time-offset-corrections' into 'master'
+
+johnk (2):
+      Add function for correcting issues with 10-bit week rollover
+      fix a typo
+
+
+
+      #################################################
+
 Version 2.10.4   Wednesday, August 1, 2018
 
    General modifications
