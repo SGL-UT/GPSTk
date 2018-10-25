@@ -282,6 +282,11 @@ test_ReducedAlm()
       {  6.3813600776E-01, -9.8174770425E-02, -7.3631077819E-01, -4.9087385212E-02, -3.0925052684E+00,  2.5525440310E+00},
       {  1.7180584824E+00, -1.9144080233E+00, -1.8653206381E+00, -1.3744467859E+00, -3.0434178832E+00, -2.3071071050E+00}
    };
+   int L5HVals[2][6] =
+   {
+      { 0, 1, 1, 0, 1, 1 },
+      { 1, 1, 0, 0, 1, 1 }
+   };
 
 
          // Construct a fake CommonTime for test purposes
@@ -306,6 +311,9 @@ test_ReducedAlm()
             TUASSERTFEPS(cra.deltaA,deltaAVals[countMajor][countMinor],epsilon); 
             TUASSERTFEPS(cra.OMEGA0,Omega0Vals[countMajor][countMinor],epsilon); 
             TUASSERTFEPS(cra.Psi0,Psi0Vals[countMajor][countMinor],epsilon); 
+            TUASSERTE(unsigned,0,cra.L1HEALTH);
+            TUASSERTE(unsigned,0,cra.L2HEALTH);
+            TUASSERTE(unsigned,L5HVals[countMajor][countMinor],cra.L5HEALTH); 
             startBit += 33;
             countMinor++; 
          }

@@ -93,7 +93,7 @@ namespace gpstk
    {
          // Verify that the PackedNavBits contains an appropriate data set
       const ObsID& oidr = pnb.getobsID();
-         // Check CNAV case
+         // Check CNAV-2 case
       if (almType==atCNAV2)
       {
          unsigned pageID = pnb.asUnsignedLong(8,6,1);
@@ -105,10 +105,17 @@ namespace gpstk
             GPSTK_THROW(ip); 
          }
       }
-         // Check CNAV-2 case
+         // Check CNAV case
       else
       {
-
+         unsigned mt = pnb.asUnsignedLong(14,6,1);
+         if (mt!=31 && mt!=12)
+         {
+            stringstream ss;
+            ss << "CNavReducedAlm::loadData().  Expected CNAV, MT 12 or MT 21.   Found MT " << mt;
+            InvalidParameter ip(ss.str());
+            GPSTK_THROW(ip); 
+         }
       }
 
          // Verify PackedNavBits object has sufficient size
@@ -152,8 +159,8 @@ namespace gpstk
 
       nextStart = startBit + 28 + offset;
       L1HEALTH = (unsigned short) pnb.asUnsignedLong(nextStart,1,1);
-      L2HEALTH = (unsigned short) pnb.asUnsignedLong(nextStart,1,1);
-      L5HEALTH = (unsigned short) pnb.asUnsignedLong(nextStart,1,1);
+      L2HEALTH = (unsigned short) pnb.asUnsignedLong(nextStart+1,1,1);
+      L5HEALTH = (unsigned short) pnb.asUnsignedLong(nextStart+2,1,1);
 
       dataLoadedFlag = true;   
    } // end of loadData()
