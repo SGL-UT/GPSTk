@@ -91,6 +91,26 @@ namespace gpstk
                                  const unsigned int startBit)
          throw(InvalidParameter)
    {
+         // Verify that the PackedNavBits contains an appropriate data set
+      const ObsID& oidr = pnb.getobsID();
+         // Check CNAV case
+      if (almType==atCNAV2)
+      {
+         unsigned pageID = pnb.asUnsignedLong(8,6,1);
+         if (pageID!=3) 
+         {
+            stringstream ss;
+            ss << "CNavReducedAlm::loadData().  Expected CNAV-2, Subframe 3, Page 3.   Found page " << pageID;
+            InvalidParameter ip(ss.str());
+            GPSTK_THROW(ip); 
+         }
+      }
+         // Check CNAV-2 case
+      else
+      {
+
+      }
+
          // Verify PackedNavBits object has sufficient size
       unsigned endBit = startBit + 31;
       if (almType==atCNAV2) endBit += 2;
@@ -138,18 +158,6 @@ namespace gpstk
       dataLoadedFlag = true;   
    } // end of loadData()
 
-/*
-      CommonTime ctEpoch;
-      SatID  subjSv;
-      double deltaA;
-      double A;
-      double OMEGA0;
-      double Psi0;
-      unsigned L1HEALTH;
-      unsigned L2HEALTH;
-      unsigned L5HEALTH;
-*/
-
          /** Output the contents of this orbit data to the given stream.
           * @throw Invalid Request if the required data has not been stored.
           */
@@ -167,9 +175,9 @@ namespace gpstk
       s << ":" << setw(2) << setfill('0') << subjSv.id << setfill(' ');
    }
 
-   void dumpHeader(std::ostream& s)
+   void CNavReducedAlm::dumpHeader(std::ostream& s)
    {
-      s << "PRN            deltaA            OMEGA0              Psi0  L1 L2 L5" << endl;
+      s << "PRN         deltaA(m)       OMEGA0(rad)         Psi0(rad)  L1 L2 L5" << endl;
    }
 
 
@@ -186,7 +194,7 @@ namespace gpstk
 
       s.setf(ios::fixed, ios::floatfield);
       s.precision(0);
-      s << "  " << L1HEALTH;
+      s << "   " << L1HEALTH;
       s << "  " << L2HEALTH;
       s << "  " << L5HEALTH;
       s << endl;

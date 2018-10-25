@@ -9,6 +9,11 @@ target_link_libraries(OrbAlmStore_T gpstk)
 add_test(GNSSEph_OrbAlmStore OrbAlmStore_T)
 set_property(TEST GNSSEph_OrbAlmStore PROPERTY LABELS GNSSEph OrbAlmStore)
 
+add_executable(CNavPackets_T CNavPackets_T.cpp)
+target_link_libraries(CNavPackets_T gpstk)
+add_test(GNSSEph_CNavPackets CNavPackets_T)
+set_property(TEST GNSSEph_CNavPackets PROPERTY LABELS GNSSEph)
+
 # Need to link the test program.  However, instead of running
 # tests that lead to internal pass/fail, this program produces
 # a text file that needs to be compared against truth data.
