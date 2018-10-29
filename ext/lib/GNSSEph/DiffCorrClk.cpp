@@ -87,7 +87,7 @@ namespace gpstk
       }
 
       unsigned short subjPrnId = msg.asUnsignedLong(startBit,8,1);
-      daf0 = msg.asSignedDouble(startBit+9,13,-35);
+      daf0 = msg.asSignedDouble(startBit+8,13,-35);
       daf1 = msg.asSignedDouble(startBit+21,8,-51);
       UDRA = msg.asLong(startBit+29,5,1);
 

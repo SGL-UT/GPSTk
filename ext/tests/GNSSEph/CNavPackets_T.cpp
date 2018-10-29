@@ -36,7 +36,9 @@
 *
 *  Test program for 
 *     gpstk/ext/lib/GNSSEph/CNavReducedAlm
-*     gpstk/ext/lib/GNSSEph/
+*     gpstk/ext/lib/GNSSEph/DiffCorrBase
+*     gpstk/ext/lib/GNSSEph/DiffCorrClk
+*     gpstk/ext/lib/GNSSEph/DiffCorrEph
 *
 *********************************************************************/
 #include <iostream>
@@ -53,6 +55,7 @@
 #include "TimeSystem.hpp"
 
 #include "CNavReducedAlm.hpp"
+#include "DiffCorrClk.hpp"
 
 #include "build_config.h"
 #include "TestUtil.hpp"
@@ -369,7 +372,65 @@ test_Corrections()
 {
    string currMethod = "loadData()";
    TUDEF("CNavDiffCorrection",currMethod);
+
+      // Truth values.  Empirically obtained by cracking the test messages
+   CommonTime ctExpected = GPSWeekSecond(1647, 456000.0);
+   ctExpected.setTimeSystem(TimeSystem::GPS);
+   double epsilon = 1.0e-18;
+   unsigned xmitPrnId = 11;
+   double daf0[2] = {  -2.9103830457E-11,   1.4551915228E-10 };
+   double daf1[2] = {   8.8817841970E-16,  -1.3322676296E-15 };
+   unsigned subjPrnId[2] = { 22, 18 };
+  
    unsigned retVal = 0;
+   unsigned countMajor = 0; 
+   unsigned totalCount = 0; 
+   list<PackedNavBits>::const_iterator cit;
+   for (cit=dataList.begin(); cit!=dataList.end(); cit++)
+   {
+      const PackedNavBits& pnb = *cit;
+      try
+      {
+         unsigned startBit = 37;
+         DiffCorrClk cdc = DiffCorrClk(pnb,startBit);
+         TUASSERTE(CommonTime,ctExpected,cdc.topD); 
+         TUASSERTE(CommonTime,ctExpected,cdc.tOD);
+         TUASSERTFEPS(daf0[countMajor],cdc.daf0,epsilon); 
+         TUASSERTFEPS(daf1[countMajor],cdc.daf1,epsilon); 
+         TUASSERTE(unsigned,subjPrnId[countMajor],cdc.subjSv.id);
+         TUASSERTE(unsigned,xmitPrnId,cdc.xmitSv.id);
+
+         //startBit = startBit + 34; 
+         //DiffCorrEph edc = DiffCorrEph(pnb,startBit);
+         countMajor++;
+      }
+      catch (InvalidParameter ip)
+      {
+         if (totalCount>1)
+         {
+            stringstream ss;
+            ss << "Successfully caught InvalidRequest on wrong message type.";
+            TUPASS(ss.str());
+         }
+         /*
+         else if (totalCount==4)
+         {
+            stringstream ss;
+            ss << "Successfully detected zero PRN packet." << endl;
+            ss << "Exception text: " << ip; 
+            TUPASS(ss.str());           
+         }
+         */
+         else
+         {
+            stringstream ss;
+            ss << "Threw InvalidParameter exception on valid data set.";
+            ss << endl << "Exception text: " << ip; 
+            TUFAIL(ss.str());
+         }
+      }
+      totalCount++; 
+   }
 
    TURETURN(); 
 }

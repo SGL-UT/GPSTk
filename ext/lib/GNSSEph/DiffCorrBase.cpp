@@ -87,13 +87,17 @@ namespace gpstk
 
          // Determine type of the message
       int numBits = msg.getNumBits();
-         // CNAV-2, subframe 3
+         // CNAV-2, subframe 3, page 5
       if (numBits==274)
       {
-         startBit_topD = 14;
-         startBit_tOD = 25;
-         startBit_prn = 0;
-         prnBitLength = 8; 
+         unsigned pageNo = msg.asUnsignedLong(8,6,1);
+         if (pageNo==5)
+         {
+            startBit_topD = 14;
+            startBit_tOD = 25;
+            startBit_prn = 0;
+            prnBitLength = 8;
+         }
       }
          // CNAV
       else if (numBits==300)
@@ -136,6 +140,8 @@ namespace gpstk
       topD = GPSWeekSecond(topD_week,topD_sow);
       topD.setTimeSystem(TimeSystem::GPS);
 
+      cout << " topD: " << printTime(topD,"%02m/%02d/%04Y %02H:%02M:%02S %P ") << endl;
+
           // Same check for the reference time.
       diff = xmitSOW - topD_sow;
       unsigned tOD_week = xmitWeek;
@@ -145,6 +151,7 @@ namespace gpstk
         tOD_week++;
       tOD = GPSWeekSecond(tOD_week,tOD_sow);
       tOD.setTimeSystem(TimeSystem::GPS);
+      cout << " tOD:  " << printTime(topD,"%02m/%02d/%04Y %02H:%02M:%02S %P ") << endl;
 
          // Obtain the transmit PRN ID.
       unsigned prnID = msg.asUnsignedLong(startBit_prn,prnBitLength,1);
