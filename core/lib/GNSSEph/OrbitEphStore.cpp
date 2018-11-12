@@ -53,6 +53,7 @@
 #include "RinexSatID.hpp"  // for dump
 
 #include "OrbitEphStore.hpp"
+#include "BDSEphemeris.hpp"
 
 using namespace std;
 using namespace gpstk::StringUtils;
