@@ -170,7 +170,7 @@ namespace gpstk
              }
              else
              {
-                FFStreamError e("Unknown 1st char in line " + asString(i) + ": "
+                FFStreamError e("Unknown 1st char in line " + asString(lineCount) + ": "
                    + string(1, line[0]));
                 GPSTK_THROW(e);
              }
