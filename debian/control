@@ -21,6 +21,18 @@ Description: GPS Toolkit (GPSTk) - command line tools
  * provide a core library to facilitate the development of GNSS applications.
 
 
+Package: libgpstk-dev
+Section: libdevel
+Architecture: any
+Depends: libgpstk2.10 (= ${binary:Version}), ${misc:Depends}
+Description: GPS Toolkit (GPSTk) - Headers 
+ The GPS Toolkit (GPSTk) is an open-source (LGPL) project sponsored by
+ the Space and Geophysics Laboratory (SGL), part of the Applied Research
+ Laboratories (ARL) at The University of Texas at Austin.
+ The primary goals of the GPSTk project are to:
+ * provide applications for use by the GNSS and satellite navigation community.
+ * provide a core library to facilitate the development of GNSS applications.
+
 Package: libgpstk2.10
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
