@@ -20,7 +20,7 @@ include /usr/share/dpkg/default.mk
 
 # main packaging script based on dh7 syntax
 %:
-	dh $@ --with python2
+	dh $@  --parallel --with python2
 
 override_dh_auto_configure:
 	debian/check_versions_match.sh
@@ -35,3 +35,6 @@ override_dh_auto_configure:
 .PHONY: override_dh_strip
 override_dh_strip:
 	dh_strip --dbg-package=$(shell grep -o "Package: libgpstk[0-9.]\+-dbg" debian/control | cut -d " " -f 2)
+
+override_dh_shlibdeps:
+	dh_shlibdeps --dpkg-shlibdeps-params=--ignore-missing-info
