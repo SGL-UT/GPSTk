@@ -229,8 +229,7 @@ package_debian:
   tags:
     - debian
   script:
-    - cd build
-    - make package -j 4
+    - dpkg-buildpackage -us -uc -d
   dependencies:
     - build_debian
 
