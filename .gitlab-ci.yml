@@ -228,6 +228,9 @@ package_debian:
   stage: package
   tags:
     - debian
+  only:
+    refs:
+      - master
   script:
     - rm -rf ../*.deb
     - dpkg-buildpackage -us -uc -d
