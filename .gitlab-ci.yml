@@ -229,7 +229,11 @@ package_debian:
   tags:
     - debian
   script:
+    - rm -rf ../*.deb
     - dpkg-buildpackage -us -uc -d
+  artifacts:
+    paths:
+    - ../*.deb
   dependencies:
     - build_debian
 
