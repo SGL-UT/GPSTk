@@ -231,9 +231,11 @@ package_debian:
   script:
     - rm -rf ../*.deb
     - dpkg-buildpackage -us -uc -d
+    - mkdir debs
+    - mv ../*.deb debs 
   artifacts:
     paths:
-    - ../*.deb
+    - debs/*.deb
   dependencies:
     - build_debian
 
