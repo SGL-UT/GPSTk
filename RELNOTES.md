@@ -1,16 +1,26 @@
-GPSTk 2.10.6 Release Notes
+GPSTk 2.10.7 Release Notes
 ========================
 
-Updates since v2.10.5
+Updates since v2.10.6
 ----------------------
+
+**Gitlab/Github CI**
+ * Travis-CI yaml script added for external Github CI autobuilds.  
+ * Official deb packages are now build for master branch builds and available as artifacts.
 
 **Library Changes*
- * ext/lib/FileHandling/TimeNamedFileStream.hppnow creates directories for the files it outputs. REASON: ext/apps/rfw/rfw.cpp needed handholding to do its job. Now it doesn't.
+ * Adding L1C to ObsID and QZSS to various places. REASON: Need L1C support for upcoming GPS III launch.  QZSS already has a L1C broadcast, so it makes sense to look at that as well.
+ * Added method that returns a reference to PtoNMap. Used to generate csv format of the map. REASON: Want to generate a CSV form of svNumXRef, and this method is used for that.  
 
+*New Library Classes*
+ * core/lib/NavFilter/CNav2SanityFilter.*
 
-Fixes since v2.10.5
-----------------------
- * Replaced ICD-GPS-211 with IS-GPS-200 in several comments
+*New/Added Tests*
+ * core/tests/NavFilter/CNav2Filter_T.cpp
+
+*Modified Test files*
+ * core/tests/GNSSEph/NavID_T.cpp
+
 
 
 
