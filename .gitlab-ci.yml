@@ -237,9 +237,11 @@ package_debian:
     - mkdir debs
     - mv ../*.deb debs 
     - mv ../*.changes debs
+    - mv ../*.dsc debs
+    - mv ../*.git debs
   artifacts:
     paths:
-    - debs/*.deb
+    - debs/
   dependencies:
     - build_debian
 
