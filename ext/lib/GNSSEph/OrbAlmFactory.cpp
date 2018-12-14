@@ -78,27 +78,9 @@ namespace gpstk
             break;
          }
 
-         case NavID::ntBeiDou_D1:
-         { 
-            retVal = BeiDou_D1(pnb); 
-            break;
-         }
-
-         case NavID::ntBeiDou_D2:
-         {
-            retVal = BeiDou_D2(pnb); 
-            break;
-         }
-
-         case NavID::ntGloCivilF: 
-         {
-            retVal = GloCivilF(pnb);
-            break;
-         }
-
          default: 
             break;
-      }
+         }
       }
       catch (InvalidParameter ip)
       {
@@ -166,30 +148,4 @@ namespace gpstk
       OrbAlm* retVal = 0;
       return retVal; 
    }
-
-   OrbAlm* OrbAlmFactory::
-   BeiDou_D1(const gpstk::PackedNavBits& pnb)
-      throw(InvalidParameter)
-   {
-      OrbAlm* retVal = 0;
-      return retVal; 
-   }
-
-   OrbAlm* OrbAlmFactory::
-   BeiDou_D2(const gpstk::PackedNavBits& pnb)
-      throw(InvalidParameter)
-   {
-      OrbAlm* retVal = 0;
-      return retVal; 
-   }
-
-   OrbAlm* OrbAlmFactory::
-   GloCivilF(const gpstk::PackedNavBits& pnb)
-      throw(InvalidParameter)
-   {
-      OrbAlm* retVal = 0;
-      return retVal; 
-   }
-   
 }
- 

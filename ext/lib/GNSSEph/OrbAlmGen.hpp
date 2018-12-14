@@ -196,24 +196,9 @@ namespace gpstk
                 throw(gpstk::InvalidParameter);
       void loadDataGpsCNAV(const gpstk::PackedNavBits& msg)
                 throw(gpstk::InvalidParameter);
-      void loadDataBDS(const gpstk::PackedNavBits& msg,
-                    const unsigned short hArg = 0)
-                throw(gpstk::InvalidParameter);
-      void loadDataIRN(const gpstk::PackedNavBits& msg,
-		       const unsigned short hArg = 0)
-                throw(gpstk::InvalidParameter);
-
          // Used internally during startup if WNa has not been received
          // prior to first almanac data page.         
       void estimateWeekNumber(const CommonTime& currTime);
-      void estimateWeekNumberBDS(const CommonTime& currTime);
-
-
-         // Only used for BDS
-      unsigned short translateToSubjectPRN(const bool isD1,
-                                           const unsigned short subframe,
-                                           const unsigned short page) const;
-
    }; // end class OrbAlmGen
 
    //@}

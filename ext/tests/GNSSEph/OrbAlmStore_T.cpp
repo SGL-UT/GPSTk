@@ -160,8 +160,6 @@ public:
 
    void setUpLNAV();
    void setUpCNAV();
-   void setUpBDS();
-   void setUpGLO();
    gpstk::PackedNavBits getPnbLNav(const gpstk::ObsID& oidr,
                                    const std::string& str)
              throw(gpstk::InvalidParameter);
@@ -1039,20 +1037,6 @@ setUpCNAV()
    return;
 }
 
-//---------------------------------------------------------------------------------
-void OrbAlmStore_T::
-setUpBDS()
-{
-
-}
-
-//---------------------------------------------------------------------------------
-void OrbAlmStore_T::
-setUpGLO()
-{
-
-}
-
    //---------------------------------------------------------------
    gpstk::PackedNavBits
    OrbAlmStore_T::
@@ -1198,12 +1182,6 @@ int main()
   
   testClass.setUpCNAV();
   //errorTotal += testClass.createAndDump();
-  
-  testClass.setUpBDS();
-  //errorTotal += testClass.writeReadTest();
-  
-  testClass.setUpGLO();
-  //errorTotal += testClass.writeReadTest();
 
   cout << "Total Failures for " << __FILE__ << ": " << errorTotal << endl;
   return errorTotal; // Return the total number of errors
