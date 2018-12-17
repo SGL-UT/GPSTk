@@ -42,6 +42,8 @@
 #define GPSTK_GLOEPHEMERISSTORE_HPP
 
 #include <iostream>
+#include <set>
+
 #include "XvtStore.hpp"
 #include "GloEphemeris.hpp"
 #include "Rinex3NavData.hpp"
@@ -252,6 +254,8 @@ namespace gpstk
          /// Add all ephemerides to an existing list<GloEphemeris>.
          /// @return the number of ephemerides added.
       int addToList( std::list<GloEphemeris>& v ) const;
+
+      virtual std::set<gpstk::SatID> getIndexSet() const; 
 
    private:
 

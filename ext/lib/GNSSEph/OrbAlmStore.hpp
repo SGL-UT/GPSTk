@@ -61,6 +61,7 @@
 #include <iostream>
 #include <list>
 #include <map>
+#include <set>
 
 #include "OrbAlm.hpp"
 #include "Exception.hpp"
@@ -164,6 +165,8 @@ namespace gpstk
          if(subjectAlmMap.find(sat) != subjectAlmMap.end()) return true;
          return false;
       }
+
+      virtual std::set<gpstk::SatID> getIndexSet() const; 
 
       //---------------------------------------------------------------
       // Below are interfaces that are unique to this class (i.e. not

@@ -627,6 +627,22 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjI
       return retList; 
    }
 
+   //-----------------------------------------------------------------------------
+   // Preceding method was written earlier, then this nearly-identical
+   // method was written when getIndexSet( ) was added to the XvtStoreSatID
+   // interface definition.
+   std::set<SatID> OrbAlmStore::getIndexSet() const
+   {
+      std::set<SatID> retSet;
+      std::list<SatID> sl = listOfSubjectSV();
+      std::list<SatID>::const_iterator cit;
+      for (cit=sl.begin();cit!=sl.end();cit++)
+      {
+         const SatID& sidr = *cit;
+         retSet.insert(sidr);
+      }
+      return retSet;
+   } 
 
 //-----------------------------------------------------------------------------
 // Goal is to find the set of orbital elements that would have been
