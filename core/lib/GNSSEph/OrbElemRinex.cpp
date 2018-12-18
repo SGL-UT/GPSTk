@@ -45,7 +45,10 @@
 #include "StringUtils.hpp"
 #include "GNSSconstants.hpp"
 #include "GPS_URA.hpp"
+#include "BDSWeekSecond.hpp"
+#include "GALWeekSecond.hpp"
 #include "GPSWeekSecond.hpp"
+#include "IRNWeekSecond.hpp"
 #include "SVNumXRef.hpp"
 #include "TimeString.hpp"
 
@@ -125,7 +128,7 @@ namespace gpstk
 
       // - - - Now work on the things that need to be calculated - - -
 
-	 // The system is assumed (legacy navigation message is from GPS)
+    // The system is assumed (legacy navigation message is from GPS)
       satID.id = static_cast<short>( rinNav.PRNID );
 
          // The observation ID has a type of navigation, but the
@@ -303,8 +306,19 @@ namespace gpstk
 
       // - - - Now work on the things that need to be calculated - - -
 
-	 // The system is assumed (legacy navigation message is from GPS)
       satID.id = static_cast<short>( rinNav.PRNID );
+      satID.system = rinNav.sat.system; 
+
+      TimeSystem ts = TimeSystem::Unknown;
+      switch (satID.system)
+      {
+         case SatID::systemGPS:     { ts = TimeSystem::GPS; break; }
+         case SatID::systemGlonass: { ts = TimeSystem::GLO; break; }
+         case SatID::systemGalileo: { ts = TimeSystem::GAL; break; }
+         case SatID::systemBeiDou:  { ts = TimeSystem::BDT; break; }
+         case SatID::systemQZSS:    { ts = TimeSystem::QZS; break; }
+         case SatID::systemIRNSS:   { ts = TimeSystem::IRN; break; }
+      }
 
          // The observation ID has a type of navigation, but the
          // carrier and code types are undefined.  They could be
@@ -313,89 +327,32 @@ namespace gpstk
       obsID.band = ObsID::cbUndefined;
       obsID.code = ObsID::tcUndefined;
 
-	 // Beginning of Validity
-         // New concept.  Admit the following.
-	 //  (a.) The collection system may not capture the data at earliest transmit.
-	 //  (b.) The collection system may not capture the three SFs consecutively.
-	 // Consider a couple of IS-GPS-200 promises,
-	 //  (c.) By definition, beginning of validity == beginning of transmission.
-	 //  (d.) Except for uploads, cutovers will only happen on hour boundaries
-	 //  (e.) Cutovers can be detected by non-even Toc.
-	 //  (f.) Even uploads will cutover on a frame (30s) boundary.
-         // Therefore,
-	 //   1.) If Toc is NOT even two hour interval, pick lowest HOW time,
-	 //   round back to even 30s.  That's the earliest Xmit time we can prove.
-	 //   NOTE: For the case where this is the SECOND SF 1/2/3 after an upload,
-	 //   this may yield a later time as such a SF 1/2/3 will be on a even
-	 //   hour boundary.  Unfortunately, we have no way of knowing whether
-	 //   this item is first or second after upload without additional information.
-	 //   2.) If Toc IS even two hour interval, pick time from SF 1,
-	 //   round back to nearest EVEN two hour boundary.  This assumes collection
-	 //   SOMETIME in first hour of transmission.  Could be more
-	 //   complete by looking at fit interval and IODC to more accurately
-	 //   determine earliest transmission time.
-	 //
-	 //   3.) SPECIAL CASE to address oddity in IGS brdc aggregate files. 
-	 //   At the beginning of day, it appears the some stations report 
-	 //   the last set of the previous day with a "transmit time" of 0 SOD 
-	 //   and a Toc of 0 SOD.  This is errant nonsense, but its in the data.
-	 //   I suspect someone's "daily file writer" is dumping out the last 
-	 //   SF 1/2/3 of the previous day with the earliest valid time for the
-	 //   current day. 
-	 //   SO - If the "transmit time" claims 0 SOD with the Toc of 0 SOD, we'll
-	 //   nudge the "tranmist time" back into the previous day. 
-      long longToc = (long) Toc;
-
-         // Case 3 check
-      long adjHOWtime = HOWtime;
-      if ((longToc % SEC_PER_DAY) == 0 &&
-          (HOWtime % SEC_PER_DAY) == 0 &&
-           longToc == HOWtime            )
-      {
-         adjHOWtime = HOWtime - 30;  
-         if (adjHOWtime<0)
-         {
-            adjHOWtime += FULLWEEK;  
-            fullXmitWeekNum--;     
-         }
-      }
-      
-      double XmitSOW = 0.0;
-      if ( (longToc % 7200) != 0)     // NOT an even two hour change
-      {
-         long Xmit = adjHOWtime - (adjHOWtime % 30);
-         XmitSOW = (double) Xmit;
-      }
-      else
-      {
-         long Xmit = adjHOWtime - adjHOWtime % 7200;
-         XmitSOW = (double) Xmit;
-      }
-      beginValid = GPSWeekSecond( fullXmitWeekNum, XmitSOW, TimeSystem::GPS );
-
       // Determine Transmit Time
       // Transmit time is the actual time this
       // SF 1/2/3 sample was collected
-      long Xmit = adjHOWtime - (adjHOWtime % 30);
-      transmitTime = GPSWeekSecond( fullXmitWeekNum, (double)Xmit, TimeSystem::GPS );
+      long Xmit = HOWtime - (HOWtime % 30);
+      transmitTime = GPSWeekSecond( fullXmitWeekNum, (double)Xmit, ts );
 
          // Fully qualified Toe and Toc
-	 // As broadcast, Toe and Toc are in GPS SOW and do not include
-	 // the GPS week number.  OrbElem (rightly) insists on having a
-	 // Toe and Toc in CommonTime objects which implies determining
-	 // the week number.
+	   // As broadcast, Toe and Toc are in GPS SOW and do not include
+	   // the GPS week number.  OrbElem (rightly) insists on having a
+	   // Toe and Toc in CommonTime objects which implies determining
+	   // the week number.
       double timeDiff = Toe - XmitSOW;
       short epochWeek = fullXmitWeekNum;
       if (timeDiff < -HALFWEEK) epochWeek++;
       else if (timeDiff > HALFWEEK) epochWeek--;
 
-      ctToc = GPSWeekSecond(epochWeek, Toc, TimeSystem::GPS);
-      ctToe = GPSWeekSecond(epochWeek, Toe, TimeSystem::GPS);
+      ctToc = GPSWeekSecond(epochWeek, Toc, ts);
+      ctToe = GPSWeekSecond(epochWeek, Toe, ts);
 
-	 // End of Validity.
-	 // The end of validity is calculated from the fit interval
-	 // and the Toe.  In RINEX, the fit duration in hours is
-	 // stored in the file.
+      // Beginning of validity is both complicated and system-specific.
+      determineBegValid(fullXmitWeekNum,ts);
+
+	   // End of Validity.
+	   // The end of validity is calculated from the fit interval
+	   // and the Toe.  In RINEX, the fit duration in hours is
+	   // stored in the file.
       long endFitSOW = Toe + (fitDuration/2)*3600;
       short endFitWk = epochWeek;
       if (endFitSOW >= FULLWEEK)
@@ -403,7 +360,16 @@ namespace gpstk
          endFitSOW -= FULLWEEK;
          endFitWk++;
       }
-      endValid = GPSWeekSecond(endFitWk, endFitSOW, TimeSystem::GPS);
+      switch (satID.system)
+      {
+         case SatID::systemGPS:     { endValid = GPSWeekSecond(endFitWk, endFitSOW, ts); break; }
+         case SatID::systemGalileo: { endValid = GALWeekSecond(endFitWk, endFitSOW, ts); break; }
+         case SatID::systemBeiDou:  { endValid = BDSWeekSecond(endFitWk, endFitSOW, ts); break; }
+         case SatID::systemQZSS:    { endValid = GPSWeekSecond(endFitWk, endFitSOW, ts); break; }
+         case SatID::systemIRNSS:   { endValid = IRNWeekSecond(endFitWk, endFitSOW, ts); break; }
+         case SatID::systemGlonass: { endValid = GPSWeekSecond(endFitWk, endFitSOW, ts); break; } // Need to figure this one out with real data.
+         default: { endValid = CommonTime::END_OF_TIME; }
+      }
 
 	 // Semi-major axis and time-rate-of-change of semi-major axis
 	 //    Note: Legacy navigation message (SF 1/2/3) used SQRT(A).
@@ -438,9 +404,123 @@ namespace gpstk
       return ( accuracyValue );
    }
 
+
+   //----------------------------------------------------------------
+   // For some GNSSs, it is practical to detemine the earliest time
+   // of transmission, even if the earliest time is not captured.
+   // For others, all we can do is set the earliest time of 
+   // transmission equivalent to the beginning of the first message
+   // of the CEI data set. 
+   void OrbElemRinex::determineBegValid(const unsigned fullXMitWeekNum, const TimeSystem& ts)
+   {
+      switch (satID.system)
+      {
+         case SatID::systemGPS:     { determineBegValidGPS(fullXMitWeekNum);     break; }
+         case SatID::systemGalileo: { determineBegValidGalileo(fullXMitWeekNum); break; }
+         default:                   { determineBegValidDefault(fullXMitWeekNum, ts); }
+      }
+      return;
+   }
+
+   //----------------------------------------------------------------
+   // Beginning of Validity
+   // New concept.  Admit the following.
+   //  (a.) The collection system may not capture the data at earliest transmit.
+   //  (b.) The collection system may not capture the three SFs consecutively.
+   // Consider a couple of IS-GPS-200 promises,
+   //  (c.) By definition, beginning of validity == beginning of transmission.
+   //  (d.) Except for uploads, cutovers will only happen on hour boundaries
+   //  (e.) Cutovers can be detected by non-even Toc.
+   //  (f.) Even uploads will cutover on a frame (30s) boundary.
+   // Therefore,
+   //   1.) If Toc is NOT even two hour interval, pick lowest HOW time,
+   //   round back to even 30s.  That's the earliest Xmit time we can prove.
+   //   NOTE: For the case where this is the SECOND SF 1/2/3 after an upload,
+   //   this may yield a later time as such a SF 1/2/3 will be on a even
+   //   hour boundary.  Unfortunately, we have no way of knowing whether
+   //   this item is first or second after upload without additional information.
+   //   2.) If Toc IS even two hour interval, pick time from SF 1,
+   //   round back to nearest EVEN two hour boundary.  This assumes collection
+   //   SOMETIME in first hour of transmission.  Could be more
+   //   complete by looking at fit interval and IODC to more accurately
+   //   determine earliest transmission time.
+   //
+   //   3.) SPECIAL CASE to address oddity in IGS brdc aggregate files. 
+   //   At the beginning of day, it appears the some stations report 
+   //   the last set of the previous day with a "transmit time" of 0 SOD 
+   //   and a Toc of 0 SOD.  This is errant nonsense, but its in the data.
+   //   I suspect someone's "daily file writer" is dumping out the last 
+   //   SF 1/2/3 of the previous day with the earliest valid time for the
+   //   current day. 
+   //   SO - If the "transmit time" claims 0 SOD with the Toc of 0 SOD, we'll
+   //   nudge the "transmit time" back into the previous day. 
+   void OrbElemRinex::determineBegValidGPS(const unsigned fullXmitWeekNum)
+   {
+      long longToc = (long) static_cast<GPSWeekSecond>(Toc).sow;
+
+         // Case 3 check
+      long adjHOWtime = HOWtime;
+      if ((longToc % SEC_PER_DAY) == 0 &&
+          (HOWtime % SEC_PER_DAY) == 0 &&
+           longToc == HOWtime            )
+      {
+         adjHOWtime = HOWtime - 30;  
+         if (adjHOWtime<0)
+         {
+            adjHOWtime += FULLWEEK;  
+            fullXmitWeekNum--;     
+         }
+      }
+      
+      double XmitSOW = 0.0;
+      if ( (longToc % 7200) != 0)     // NOT an even two hour change
+      {
+         long Xmit = adjHOWtime - (adjHOWtime % 30);
+         XmitSOW = (double) Xmit;
+      }
+      else
+      {
+         long Xmit = adjHOWtime - adjHOWtime % 7200;
+         XmitSOW = (double) Xmit;
+      }
+      beginValid = GPSWeekSecond( fullXmitWeekNum, XmitSOW, TimeSystem::GPS );
+
+      return; 
+   }
+
+   //----------------------------------------------------------------
+   // All we can say for Galileo is that the earliest transmit time
+   // is equivalent to the HOWTime rounded back to the beginning 
+   // of the subframe.  Unfortunately, in RINEX we've lost reference to
+   // which band/code the data were collected from.   Therefore, we can only
+   // go with the HOWtime.
+   // However, we'll go ahead and define a specific method against the hope
+   // that we will figure out some brilliant way around this later. 
+   void OrbElemRinex::determineBegValidGalileo(const unsigned fullXMitWeekNum)
+   {
+      determineBegValidDefault(fullXMitWeekNum, TimeSystem::GAL );
+   }
+
+   //----------------------------------------------------------------
+   // Fro the default case, simply accept the HOWtime as the
+   // beginning of effectivity.
+   void OrbElemRinex::determineBegValidDefault(const unsigned fullXmitWeekNum, const TimeSystem& ts)
+   {
+      double XmitSOW = HOWtime;
+      beginValid = GPSWeekSecond( fullXmitWeekNum, XmitSOW, ts);
+   }
+
+   //----------------------------------------------------------------
+   // The following method should only be used by 
+   // GPSOrbElemStore::rationnalize()
    void OrbElemRinex::adjustBeginningValidity()
    {
       if (!dataLoaded()) return;
+
+         // The adjustment logic only applies to GPS.  The other
+         // systems do not make these promises in their ICDs. 
+      if (satID.system!=SatID::systemGPS) 
+         return;
 
          // The nominal beginning of validity is calculated from
          // the fit interval and the Toe.  In RINEX the fit duration

@@ -187,7 +187,7 @@ namespace gpstk
    bool OrbElemStore::addOrbElem(const OrbElemBase* eph)
       throw(InvalidParameter,Exception)
    {
-     bool dbg = false;
+     bool dbg = true;
      //if (eph->satID.id==2 ||
      //    eph->satID.id==5) dbg = true;
      
@@ -252,10 +252,13 @@ namespace gpstk
            stringstream os;
            os << eph->satID;
            str += " but different Toe.   SV = " + os.str();
-           str += ", beginValid= " + printTime(eph->beginValid,ts);
+           str += ", beginValid(map)= " + printTime(eph->beginValid,ts);
            str += ", Toe(map)= " + printTime(eph->ctToe,ts);
-           str += ", Toe(candidate)= "+ printTime(oe->ctToe," %6.0g");
+           str += ", beginValid(candidate)" + printTime(oe->beginValid,ts);
+           str += ", Toe(candidate)= "+ printTime(oe->ctToe,ts);
            str += ". ";
+           if (dbg)
+             cout << str << endl; 
            InvalidParameter exc( str );
            GPSTK_THROW(exc); 
         }

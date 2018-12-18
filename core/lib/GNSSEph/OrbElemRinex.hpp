@@ -79,7 +79,7 @@ namespace gpstk
            *  @throw InvalidParameter if the data are not consistent.
            */ 
       void loadData( const RinexNavData& rinNav )
-	 throw( InvalidParameter); 
+	       throw( InvalidParameter); 
 
          /** Load an existing object from a Rinex3NavData object. 
            * @throw InvalidParameter if the data are not consistent.
@@ -100,7 +100,7 @@ namespace gpstk
          /// Returns the upper bound of the URA range
       double getAccuracy()  const
          throw( InvalidRequest );
-
+ 
         /* Should only be used by GPSOrbElemStore::rationalize()
          */
       void adjustBeginningValidity();
@@ -122,8 +122,14 @@ namespace gpstk
       void dumpTerse(std::ostream& s = std::cout) const
          throw( InvalidRequest );
 
-     
-         /// Ephemeris overhead information
+   private:
+      void determineBegValid(const unsigned fullXMitWeekNum, const TimeSystem& ts);
+      void determineBegValidGPS(const unsigned fullXMitWeekNum);
+      void determineBegValidGalileo(const unsigned fullXMitWeekNum);
+      void determineBegValidDefault(const unsigned fullXMitWeekNum, const TimeSystem& ts);
+
+   public:
+              /// Ephemeris overhead information
          //@{
       
       CommonTime transmitTime; /** Estimated beginning time of this sample */
