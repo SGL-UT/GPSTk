@@ -123,10 +123,10 @@ namespace gpstk
          throw( InvalidRequest );
 
    private:
-      void determineBegValid(const unsigned fullXMitWeekNum, const TimeSystem& ts);
-      void determineBegValidGPS(const unsigned fullXMitWeekNum);
-      void determineBegValidGalileo(const unsigned fullXMitWeekNum);
-      void determineBegValidDefault(const unsigned fullXMitWeekNum, const TimeSystem& ts);
+      void determineTimes();
+      void determineTimesGPS();
+      void determineTimesGalileo();
+      void determineTimesDefault();
 
    public:
               /// Ephemeris overhead information
@@ -142,6 +142,14 @@ namespace gpstk
       short  fitDuration;   /**< Fit duration (hours) */
       double Tgd;           /**< L1 and L2 correction term */
       long   HOWtime;        /**< Handover Word time */
+
+   private:
+         // The following two members are used for communicatiaon within
+         // OrbElemRinex.
+      double Toc3;            // As read from RINEX
+      double Toe3;
+      short fullXmitWeekNum; // As read from RINEX
+
          //@}
 
    }; // end class OrbElemRinex

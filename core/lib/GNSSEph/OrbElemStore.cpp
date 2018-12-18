@@ -187,7 +187,7 @@ namespace gpstk
    bool OrbElemStore::addOrbElem(const OrbElemBase* eph)
       throw(InvalidParameter,Exception)
    {
-     bool dbg = true;
+     bool dbg = false;
      //if (eph->satID.id==2 ||
      //    eph->satID.id==5) dbg = true;
      

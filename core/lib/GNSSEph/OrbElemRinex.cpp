@@ -49,23 +49,28 @@
 #include "GALWeekSecond.hpp"
 #include "GPSWeekSecond.hpp"
 #include "IRNWeekSecond.hpp"
+#include "QZSWeekSecond.hpp"
 #include "SVNumXRef.hpp"
 #include "TimeString.hpp"
 
 namespace gpstk
 {
    using namespace std;
+   //----------------------------------------------------------------
    OrbElemRinex::OrbElemRinex()
       : OrbElem(),
         codeflags(0), accuracyValue(0.0), health(0),
         L2Pdata(0), IODC(0), fitDuration(0), Tgd(0.0)
    {}
+
+   //----------------------------------------------------------------
    OrbElemRinex::OrbElemRinex( const RinexNavData& rinNav )
       throw( InvalidParameter )
    {
       loadData( rinNav );
    }
 
+   //----------------------------------------------------------------
    OrbElemRinex::OrbElemRinex( const Rinex3NavData& rinNav )
      throw( InvalidParameter )
    {
@@ -73,11 +78,13 @@ namespace gpstk
    }
 
      /// Clone method
+   //----------------------------------------------------------------
    OrbElemRinex* OrbElemRinex::clone() const
    {
       return new OrbElemRinex (*this);
    }
 
+   //----------------------------------------------------------------
    void OrbElemRinex::loadData( const RinexNavData& rinNav )
       throw( InvalidParameter )
    {
@@ -115,7 +122,7 @@ namespace gpstk
       Cis            = rinNav.Cis;
 
 
-      double Toe     = rinNav.Toe;       // Not a member of OrbElem.  See notes below.
+      double Toe     = rinNav.Toe; 
       M0             = rinNav.M0;       // OrbElem only stores fully qualified times
       dn             = rinNav.dn;       // see notes below.
       ecc            = rinNav.ecc;
@@ -261,6 +268,7 @@ namespace gpstk
       dataLoadedFlag = true;
    }
 
+   //----------------------------------------------------------------
    void OrbElemRinex::loadData( const Rinex3NavData& rinNav )
      throw( InvalidParameter )
    {
@@ -272,14 +280,14 @@ namespace gpstk
       L2Pdata          = rinNav.L2Pdata;
       Tgd              = rinNav.Tgd;
 
-      HOWtime        = rinNav.xmitTime;
-      fitDuration    = rinNav.fitint;
+      HOWtime          = rinNav.xmitTime;
+      fitDuration      = rinNav.fitint;
 
-      short fullXmitWeekNum    = rinNav.weeknum;
+      fullXmitWeekNum  = rinNav.weeknum;
 
          // Fill in the variables in the OrbElem parent
 	 // - - - First the simple copies - - -
-      double Toc     = rinNav.Toc;       // OrbElem only stores fully qualified times
+      Toc3           = rinNav.Toc;       // OrbElem only stores fully qualified times
                                          // see notes below.
       af0            = rinNav.af0;
       af1            = rinNav.af1;
@@ -292,8 +300,7 @@ namespace gpstk
       Cic            = rinNav.Cic;
       Cis            = rinNav.Cis;
 
-
-      double Toe     = rinNav.Toe;       // Not a member of OrbElem.  See notes below.
+      Toe3           = rinNav.Toe; 
       M0             = rinNav.M0;       // OrbElem only stores fully qualified times
       dn             = rinNav.dn;       // see notes below.
       ecc            = rinNav.ecc;
@@ -306,19 +313,8 @@ namespace gpstk
 
       // - - - Now work on the things that need to be calculated - - -
 
-      satID.id = static_cast<short>( rinNav.PRNID );
+      satID.id     = rinNav.sat.id;
       satID.system = rinNav.sat.system; 
-
-      TimeSystem ts = TimeSystem::Unknown;
-      switch (satID.system)
-      {
-         case SatID::systemGPS:     { ts = TimeSystem::GPS; break; }
-         case SatID::systemGlonass: { ts = TimeSystem::GLO; break; }
-         case SatID::systemGalileo: { ts = TimeSystem::GAL; break; }
-         case SatID::systemBeiDou:  { ts = TimeSystem::BDT; break; }
-         case SatID::systemQZSS:    { ts = TimeSystem::QZS; break; }
-         case SatID::systemIRNSS:   { ts = TimeSystem::IRN; break; }
-      }
 
          // The observation ID has a type of navigation, but the
          // carrier and code types are undefined.  They could be
@@ -327,72 +323,34 @@ namespace gpstk
       obsID.band = ObsID::cbUndefined;
       obsID.code = ObsID::tcUndefined;
 
-      // Determine Transmit Time
-      // Transmit time is the actual time this
-      // SF 1/2/3 sample was collected
-      long Xmit = HOWtime - (HOWtime % 30);
-      transmitTime = GPSWeekSecond( fullXmitWeekNum, (double)Xmit, ts );
+         // The rules for deriving Toe, Toc, begin valid, begin transmit,
+         // and end valid are similar, but system-specific. 
+         // Therefore, we'll encapsulate all this into a set of methods.
+      determineTimes();
 
-         // Fully qualified Toe and Toc
-	   // As broadcast, Toe and Toc are in GPS SOW and do not include
-	   // the GPS week number.  OrbElem (rightly) insists on having a
-	   // Toe and Toc in CommonTime objects which implies determining
-	   // the week number.
-      double timeDiff = Toe - XmitSOW;
-      short epochWeek = fullXmitWeekNum;
-      if (timeDiff < -HALFWEEK) epochWeek++;
-      else if (timeDiff > HALFWEEK) epochWeek--;
-
-      ctToc = GPSWeekSecond(epochWeek, Toc, ts);
-      ctToe = GPSWeekSecond(epochWeek, Toe, ts);
-
-      // Beginning of validity is both complicated and system-specific.
-      determineBegValid(fullXmitWeekNum,ts);
-
-	   // End of Validity.
-	   // The end of validity is calculated from the fit interval
-	   // and the Toe.  In RINEX, the fit duration in hours is
-	   // stored in the file.
-      long endFitSOW = Toe + (fitDuration/2)*3600;
-      short endFitWk = epochWeek;
-      if (endFitSOW >= FULLWEEK)
-      {
-         endFitSOW -= FULLWEEK;
-         endFitWk++;
-      }
-      switch (satID.system)
-      {
-         case SatID::systemGPS:     { endValid = GPSWeekSecond(endFitWk, endFitSOW, ts); break; }
-         case SatID::systemGalileo: { endValid = GALWeekSecond(endFitWk, endFitSOW, ts); break; }
-         case SatID::systemBeiDou:  { endValid = BDSWeekSecond(endFitWk, endFitSOW, ts); break; }
-         case SatID::systemQZSS:    { endValid = GPSWeekSecond(endFitWk, endFitSOW, ts); break; }
-         case SatID::systemIRNSS:   { endValid = IRNWeekSecond(endFitWk, endFitSOW, ts); break; }
-         case SatID::systemGlonass: { endValid = GPSWeekSecond(endFitWk, endFitSOW, ts); break; } // Need to figure this one out with real data.
-         default: { endValid = CommonTime::END_OF_TIME; }
-      }
-
-	 // Semi-major axis and time-rate-of-change of semi-major axis
-	 //    Note: Legacy navigation message (SF 1/2/3) used SQRT(A).
-	 //    The CNAV and CNAV-2 formats use deltaA and Adot.  As a
-	 //    result, OrbElem uses A and Adot and SQRT(A) and deltaA
-	 //    are converted to A at runtime.
+	      // Semi-major axis and time-rate-of-change of semi-major axis
+	      //    Note: Legacy navigation message (SF 1/2/3) used SQRT(A).
+	      //    The CNAV and CNAV-2 formats use deltaA and Adot.  As a
+	      //    result, OrbElem uses A and Adot and SQRT(A) and deltaA
+	      //    are converted to A at runtime.
       A = AHalf * AHalf;
       Adot = 0.0;
          // Legacy nav doesn't have Rate of Change to Correction to mean motion,
-	 // so set it to zero.
+	      // so set it to zero.
       dndot = 0.0;
 
          // Health
          // OrbElemRinex stores the full 8 bits health from the legacy
-	 // navigation message.  OrbElem only stores the true/false,
-	 // use/don't use based on whether the 8 bit health is 0 or non-zero
+	      // navigation message.  OrbElem only stores the true/false,
+	      // use/don't use based on whether the 8 bit health is 0 or non-zero
       healthy = (health==0);
 
          // After all this is done, declare that data has been loaded
-	 // into this object (so it may be used).
+	      // into this object (so it may be used).
       dataLoadedFlag = true;
    }
 
+   //----------------------------------------------------------------
    double OrbElemRinex::getAccuracy()  const
       throw(InvalidRequest)
    {
@@ -406,18 +364,15 @@ namespace gpstk
 
 
    //----------------------------------------------------------------
-   // For some GNSSs, it is practical to detemine the earliest time
-   // of transmission, even if the earliest time is not captured.
-   // For others, all we can do is set the earliest time of 
-   // transmission equivalent to the beginning of the first message
-   // of the CEI data set. 
-   void OrbElemRinex::determineBegValid(const unsigned fullXMitWeekNum, const TimeSystem& ts)
+   // The rules for deriving Toe, Toc, begin valid, begin transmit,
+   // and end valid are similar, but system-specific. 
+   void OrbElemRinex::determineTimes()
    {
       switch (satID.system)
       {
-         case SatID::systemGPS:     { determineBegValidGPS(fullXMitWeekNum);     break; }
-         case SatID::systemGalileo: { determineBegValidGalileo(fullXMitWeekNum); break; }
-         default:                   { determineBegValidDefault(fullXMitWeekNum, ts); }
+         case SatID::systemGPS:     { determineTimesGPS();     break; }
+         case SatID::systemGalileo: { determineTimesGalileo(); break; }
+         default:                   { determineTimesDefault(); }
       }
       return;
    }
@@ -454,9 +409,9 @@ namespace gpstk
    //   current day. 
    //   SO - If the "transmit time" claims 0 SOD with the Toc of 0 SOD, we'll
    //   nudge the "transmit time" back into the previous day. 
-   void OrbElemRinex::determineBegValidGPS(const unsigned fullXmitWeekNum)
+   void OrbElemRinex::determineTimesGPS()
    {
-      long longToc = (long) static_cast<GPSWeekSecond>(Toc).sow;
+      long longToc = (long) Toc3;
 
          // Case 3 check
       long adjHOWtime = HOWtime;
@@ -464,14 +419,14 @@ namespace gpstk
           (HOWtime % SEC_PER_DAY) == 0 &&
            longToc == HOWtime            )
       {
-         adjHOWtime = HOWtime - 30;  
+         adjHOWtime = HOWtime - 30;
          if (adjHOWtime<0)
          {
-            adjHOWtime += FULLWEEK;  
-            fullXmitWeekNum--;     
+            adjHOWtime += FULLWEEK;
+            fullXmitWeekNum--;
          }
       }
-      
+
       double XmitSOW = 0.0;
       if ( (longToc % 7200) != 0)     // NOT an even two hour change
       {
@@ -485,7 +440,46 @@ namespace gpstk
       }
       beginValid = GPSWeekSecond( fullXmitWeekNum, XmitSOW, TimeSystem::GPS );
 
-      return; 
+      // Determine Transmit Time
+      // Transmit time is the actual time this
+      // SF 1/2/3 sample was collected
+      long Xmit = adjHOWtime - (adjHOWtime % 30);
+      transmitTime = GPSWeekSecond( fullXmitWeekNum, (double)Xmit, TimeSystem::GPS );
+
+         // Fully qualified Toe and Toc
+         // As broadcast, Toe and Toc are in GPS SOW and do not include
+         // the GPS week number.  OrbElem (rightly) insists on having a
+         // Toe and Toc in CommonTime objects which implies determining
+         // the week number.
+      double timeDiff = Toe3 - XmitSOW;
+      short epochWeek = fullXmitWeekNum;
+      if (timeDiff < -HALFWEEK) epochWeek++;
+      else if (timeDiff > HALFWEEK) epochWeek--;
+
+      ctToc = GPSWeekSecond(epochWeek, Toc3, TimeSystem::GPS);
+      ctToe = GPSWeekSecond(epochWeek, Toe3, TimeSystem::GPS);
+
+         // End of Validity.
+         // The end of validity is calculated from the fit interval
+         // and the Toe.  Since this is RINEX, the fit interval is
+         // already supposed to be stated in hours.
+         // Round the Toe value to the hour to elminate confusion
+         // due to possible "small offsets" indicating uploads
+      short fitHours = fitDuration;
+      long  ToeOffset = (long) Toe3 % 3600;
+      double adjToe = Toe3;                  // Default case
+      if (ToeOffset)
+      {
+         adjToe += 3600.0 - (double)ToeOffset;   // If offset, then adjust to remove it
+      }
+      long endFitSOW = adjToe + (fitHours/2)*3600;
+      short endFitWk = epochWeek;
+      if (endFitSOW >= FULLWEEK)
+      {
+         endFitSOW -= FULLWEEK;
+         endFitWk++;
+      }
+      endValid = GPSWeekSecond(endFitWk, endFitSOW, TimeSystem::GPS);
    }
 
    //----------------------------------------------------------------
@@ -496,18 +490,154 @@ namespace gpstk
    // go with the HOWtime.
    // However, we'll go ahead and define a specific method against the hope
    // that we will figure out some brilliant way around this later. 
-   void OrbElemRinex::determineBegValidGalileo(const unsigned fullXMitWeekNum)
+   void OrbElemRinex::determineTimesGalileo()
    {
-      determineBegValidDefault(fullXMitWeekNum, TimeSystem::GAL );
+      fullXmitWeekNum -= 1024;    // RINEX 3 stores GPS Week numbers. 
+                                  // Need to move to Galileo week numbers.
+
+      long longToc = (long) Toc3;
+
+         // Check for incorrectly tagged BOD data.
+      long adjHOWtime = HOWtime;
+      if ((longToc % SEC_PER_DAY) == 0 &&
+          (HOWtime % SEC_PER_DAY) == 0 &&
+           longToc == HOWtime            )
+      {
+         adjHOWtime = HOWtime - 30;
+         if (adjHOWtime<0)
+         {
+            adjHOWtime += FULLWEEK;
+            fullXmitWeekNum--;
+         }
+      }
+
+      // Determine Transmit Time
+      // Transmit time is the actual time this
+      // SF 1/2/3 sample was collected
+      double XmitSOW = adjHOWtime;
+      beginValid   = GALWeekSecond(fullXmitWeekNum, XmitSOW,   TimeSystem::GAL);
+      transmitTime = GALWeekSecond(fullXmitWeekNum, XmitSOW,   TimeSystem::GAL);
+
+         // Fully qualified Toe and Toc
+         // As broadcast, Toe and Toc are in GPS SOW and do not include
+         // the GPS week number.  OrbElem (rightly) insists on having a
+         // Toe and Toc in CommonTime objects which implies determining
+         // the week number.
+      double timeDiff = Toe3 - XmitSOW;
+      short epochWeek = fullXmitWeekNum;
+      if (timeDiff < -HALFWEEK) epochWeek++;
+      else if (timeDiff > HALFWEEK) epochWeek--;
+      ctToc        = GALWeekSecond(epochWeek,       Toc3,       TimeSystem::GAL);
+      ctToe        = GALWeekSecond(epochWeek,       Toe3,       TimeSystem::GAL);
+
+         // End of Validity.
+         // Galileo doens't have a fit interval, for the SDD claims healthy
+         // messages will never be valid for more than 4 hours from beginning of transmission.
+      endValid =  beginValid  + 4 * 3600.0;
+/*
+      string tform1("%02m/%02d/%04Y %02H:%02M:%02S %P");
+      cout << "Time Summary: " << endl;
+      cout << "   beginValid: " << printTime(beginValid,tform1) << endl;
+      cout << " transmitTime: " << printTime(transmitTime,tform1) << endl;
+      cout << "          Toe: " << printTime(ctToe,tform1) << endl;
+      cout << "          Toc: " << printTime(ctToc,tform1) << endl;
+      cout << "     endValid: " << printTime(endValid,tform1) << endl;
+ */
    }
 
    //----------------------------------------------------------------
    // Fro the default case, simply accept the HOWtime as the
    // beginning of effectivity.
-   void OrbElemRinex::determineBegValidDefault(const unsigned fullXmitWeekNum, const TimeSystem& ts)
+   void OrbElemRinex::determineTimesDefault()
    {
-      double XmitSOW = HOWtime;
-      beginValid = GPSWeekSecond( fullXmitWeekNum, XmitSOW, ts);
+      long longToc = (long) Toc3;
+
+         // Check for incorrectly tagged BOD data.
+      long adjHOWtime = HOWtime;
+      if ((longToc % SEC_PER_DAY) == 0 &&
+          (HOWtime % SEC_PER_DAY) == 0 &&
+           longToc == HOWtime            )
+      {
+         adjHOWtime = HOWtime - 30;
+         if (adjHOWtime<0)
+         {
+            adjHOWtime += FULLWEEK;
+            fullXmitWeekNum--;
+         }
+      }
+
+      // Determine Transmit Time
+      // Transmit time is the actual time this
+      // SF 1/2/3 sample was collected
+      double XmitSOW = adjHOWtime;
+
+         // Fully qualified Toe and Toc
+         // As broadcast, Toe and Toc are in GPS SOW and do not include
+         // the GPS week number.  OrbElem (rightly) insists on having a
+         // Toe and Toc in CommonTime objects which implies determining
+         // the week number.
+      double timeDiff = Toe3 - XmitSOW;
+      short epochWeek = fullXmitWeekNum;
+      if (timeDiff < -HALFWEEK) epochWeek++;
+      else if (timeDiff > HALFWEEK) epochWeek--;
+
+         // End of Validity.
+         // The end of validity is calculated from the fit interval
+         // and the Toe.  Since this is RINEX, the fit interval is
+         // already supposed to be stated in hours.
+         // Round the Toe value to the hour to elminate confusion
+         // due to possible "small offsets" indicating uploads
+      short fitHours = fitDuration;
+      long endFitSOW = Toe3 + (fitHours/2)*3600;
+      short endFitWk = epochWeek;
+      if (endFitSOW >= FULLWEEK)
+      {
+         endFitSOW -= FULLWEEK;
+         endFitWk++;
+      }
+
+      switch (satID.system)
+      {
+         case SatID::systemGlonass: 
+         {
+            ctToc        = GPSWeekSecond(epochWeek,       Toc3,       TimeSystem::GPS);
+            ctToe        = GPSWeekSecond(epochWeek,       Toe3,       TimeSystem::GPS);
+            beginValid   = GPSWeekSecond(fullXmitWeekNum, XmitSOW,   TimeSystem::GPS);
+            transmitTime = GPSWeekSecond(fullXmitWeekNum, XmitSOW,   TimeSystem::GPS);
+            endValid     = GPSWeekSecond(endFitWk,        endFitSOW, TimeSystem::GPS);
+            break; 
+         }
+
+         case SatID::systemBeiDou:  
+         { 
+            beginValid   = BDSWeekSecond(fullXmitWeekNum, XmitSOW,   TimeSystem::BDT);
+            transmitTime = BDSWeekSecond(fullXmitWeekNum, XmitSOW,   TimeSystem::BDT);
+            ctToc        = BDSWeekSecond(epochWeek,       Toc3,       TimeSystem::BDT);
+            ctToe        = BDSWeekSecond(epochWeek,       Toe3,       TimeSystem::BDT);
+            endValid     = BDSWeekSecond(endFitWk,        endFitSOW, TimeSystem::BDT);
+            break; 
+         }
+         
+         case SatID::systemQZSS:    
+         { 
+            beginValid   = QZSWeekSecond(fullXmitWeekNum, XmitSOW,   TimeSystem::QZS);
+            transmitTime = QZSWeekSecond(fullXmitWeekNum, XmitSOW,   TimeSystem::QZS);
+            ctToc        = QZSWeekSecond(epochWeek,       Toc3,       TimeSystem::QZS);
+            ctToe        = QZSWeekSecond(epochWeek,       Toe3,       TimeSystem::QZS);
+            endValid     = QZSWeekSecond(endFitWk,        endFitSOW, TimeSystem::QZS);
+            break; 
+         }
+         
+         case SatID::systemIRNSS:   
+         { 
+            beginValid   = IRNWeekSecond(fullXmitWeekNum, XmitSOW,   TimeSystem::IRN);
+            transmitTime = IRNWeekSecond(fullXmitWeekNum, XmitSOW,   TimeSystem::IRN);
+            ctToc        = IRNWeekSecond(epochWeek,       Toc3,       TimeSystem::IRN);
+            ctToe        = IRNWeekSecond(epochWeek,       Toe3,       TimeSystem::IRN);
+            endValid     = IRNWeekSecond(endFitWk,        endFitSOW, TimeSystem::IRN);
+            break; 
+         }
+      }
    }
 
    //----------------------------------------------------------------
@@ -539,16 +669,17 @@ namespace gpstk
          //
          // Therefore, we are FIRST going to remove that offset,
          // THEN determine beginValid.
-      long sow = (long) (static_cast<GPSWeekSecond>(ctToe)).sow;
-      short week = (static_cast<GPSWeekSecond>(ctToe)).week;
+      long sow = (long) (static_cast<BDSWeekSecond>(ctToe)).sow;
+      short week = (static_cast<BDSWeekSecond>(ctToe)).week;
       sow = sow + (3600 - (sow%3600));
-      CommonTime adjustedToe = GPSWeekSecond(week, (double) sow);
-      adjustedToe.setTimeSystem(TimeSystem::GPS);
+      CommonTime adjustedToe = BDSWeekSecond(week, (double) sow);
+      adjustedToe.setTimeSystem(TimeSystem::BDT);
 
       beginValid = adjustedToe - oneHalfInterval;
       return;
    }
 
+   //----------------------------------------------------------------
    void OrbElemRinex::dumpHeader(ostream& s) const
       throw( InvalidRequest )
    {
@@ -649,6 +780,7 @@ namespace gpstk
       s << endl;
    } // end of dumpHeader()
 
+   //----------------------------------------------------------------
    void OrbElemRinex :: dumpTerse(ostream& s) const
       throw(InvalidRequest )
    {
@@ -673,14 +805,12 @@ namespace gpstk
       int NAVSTARNum = 0;
       try
       {
-	NAVSTARNum = svNumXRef.getNAVSTAR(satID.id, ctToe );
-
-
-        s << setw(2) << " " << NAVSTARNum << "  ";
+      	NAVSTARNum = svNumXRef.getNAVSTAR(satID.id, ctToe );
+         s << setw(2) << " " << NAVSTARNum << "  ";
       }
       catch(NoNAVSTARNumberFound)
       {
-	s << "  XX  ";
+      	s << "  XX  ";
       }
 
       s << setw(2) << satID.id << " ! ";
@@ -703,6 +833,7 @@ namespace gpstk
     } // end of dumpTerse()
 
 
+   //----------------------------------------------------------------
    void OrbElemRinex :: dump(ostream& s) const
       throw( InvalidRequest )
    {
@@ -713,8 +844,7 @@ namespace gpstk
 
    } // end of dump()
 
-
-
+   //----------------------------------------------------------------
    ostream& operator<<(ostream& s, const OrbElemRinex& eph)
    {
       try
@@ -728,7 +858,5 @@ namespace gpstk
       return s;
 
    } // end of operator<<
-
-
 
 } // namespace
