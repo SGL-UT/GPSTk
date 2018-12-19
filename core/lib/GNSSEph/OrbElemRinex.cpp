@@ -316,6 +316,14 @@ namespace gpstk
       satID.id     = rinNav.sat.id;
       satID.system = rinNav.sat.system; 
 
+         // Galileo-specific override
+         // This points out that the existing OrbElemRinex is wholly inadequate to the 
+         // task of representing all the special cases in Rinex V3.
+      if (satID.system==SatID::systemGalileo)
+      {
+         IODC = rinNav.IODnav;
+      }
+
          // The observation ID has a type of navigation, but the
          // carrier and code types are undefined.  They could be
          // L1/L2 C/A, P, Y,.....
