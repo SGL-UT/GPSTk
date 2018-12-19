@@ -501,44 +501,45 @@ namespace gpstk
       timeDisplay(s, endValid);
 
       s.setf(ios::scientific, ios::floatfield);
-      s.precision(8);
+      s.precision(12);
       s.fill(' ');
+      unsigned fw = 20;
 
       s << endl
         << endl
         << "           CLOCK PARAMETERS"
         << endl
         << endl
-        << "Bias T0:     " << setw(16) << af0 << " sec" << endl
-        << "Drift:       " << setw(16) << af1 << " sec/sec" << endl
-        << "Drift rate:  " << setw(16) << af2 << " sec/(sec**2)" << endl;
+        << "Bias T0:     " << setw(fw) << af0 << " sec" << endl
+        << "Drift:       " << setw(fw) << af1 << " sec/sec" << endl
+        << "Drift rate:  " << setw(fw) << af2 << " sec/(sec**2)" << endl;
 
       s << endl
         << "           ORBIT PARAMETERS"
         << endl
         << endl
-        << "Semi-major axis:       " << setw(16) <<  A     << " m       "
-        << setw(16) << Adot  << "   m/sec" << endl
-        << "Motion correction:     " << setw(16) <<  dn    << " rad/sec "
-        << setw(16) << dndot << " rad/(sec**2)" << endl
-        << "Eccentricity:          " << setw(16) << ecc << endl
-        << "Arg of perigee:        " << setw(16) << w << " rad" << endl
-        << "Mean anomaly at epoch: " << setw(16) << M0 << " rad" << endl
-        << "Right ascension:       " << setw(16) << OMEGA0 << " rad     "
-        << setw(16) << OMEGAdot << " rad/sec" << endl
-        << "Inclination:           " << setw(16) << i0     << " rad     "
-        << setw(16) << idot << " rad/sec" << endl;
+        << "Semi-major axis:       " << setw(fw) <<  A     << " m       "
+        << setw(fw) << Adot  << "   m/sec" << endl
+        << "Motion correction:     " << setw(fw) <<  dn    << " rad/sec "
+        << setw(fw) << dndot << " rad/(sec**2)" << endl
+        << "Eccentricity:          " << setw(fw) << ecc << endl
+        << "Arg of perigee:        " << setw(fw) << w << " rad" << endl
+        << "Mean anomaly at epoch: " << setw(fw) << M0 << " rad" << endl
+        << "Right ascension:       " << setw(fw) << OMEGA0 << " rad     "
+        << setw(fw) << OMEGAdot << " rad/sec" << endl
+        << "Inclination:           " << setw(fw) << i0     << " rad     "
+        << setw(fw) << idot << " rad/sec" << endl;
 
        s << endl
         << "           HARMONIC CORRECTIONS"
         << endl
         << endl
-        << "Radial        Sine: " << setw(16) << Crs << " m    Cosine: "
-        << setw(16) << Crc << " m" << endl
-        << "Inclination   Sine: " << setw(16) << Cis << " rad  Cosine: "
-        << setw(16) << Cic << " rad" << endl
-        << "In-track      Sine: " << setw(16) << Cus << " rad  Cosine: "
-        << setw(16) << Cuc << " rad" << endl;
+        << "Radial        Sine: " << setw(fw) << Crs << " m    Cosine: "
+        << setw(fw) << Crc << " m" << endl
+        << "Inclination   Sine: " << setw(fw) << Cis << " rad  Cosine: "
+        << setw(fw) << Cic << " rad" << endl
+        << "In-track      Sine: " << setw(fw) << Cus << " rad  Cosine: "
+        << setw(fw) << Cuc << " rad" << endl;
 
        s.flags(oldFlags);
    } // end of dumpBody()
