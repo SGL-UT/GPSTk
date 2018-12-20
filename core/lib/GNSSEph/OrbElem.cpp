@@ -476,6 +476,7 @@ namespace gpstk
          GPSTK_THROW(exc);
       }
       const ios::fmtflags oldFlags = s.flags();
+      size_t precision = 8; 
 
       s.setf(ios::fixed, ios::floatfield);
       s.setf(ios::right, ios::adjustfield);
@@ -501,9 +502,9 @@ namespace gpstk
       timeDisplay(s, endValid);
 
       s.setf(ios::scientific, ios::floatfield);
-      s.precision(12);
+      s.precision(precision);
       s.fill(' ');
-      unsigned fw = 20;
+      unsigned fw = precision + 8;
 
       s << endl
         << endl

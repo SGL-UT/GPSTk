@@ -678,10 +678,10 @@ namespace gpstk
          // Therefore, we are FIRST going to remove that offset,
          // THEN determine beginValid.
       long sow = (long) (static_cast<BDSWeekSecond>(ctToe)).sow;
-      short week = (static_cast<BDSWeekSecond>(ctToe)).week;
+      short week = (static_cast<GPSWeekSecond>(ctToe)).week;
       sow = sow + (3600 - (sow%3600));
-      CommonTime adjustedToe = BDSWeekSecond(week, (double) sow);
-      adjustedToe.setTimeSystem(TimeSystem::BDT);
+      CommonTime adjustedToe = GPSWeekSecond(week, (double) sow);
+      adjustedToe.setTimeSystem(TimeSystem::GPS);
 
       beginValid = adjustedToe - oneHalfInterval;
       return;
