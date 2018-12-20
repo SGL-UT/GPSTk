@@ -558,14 +558,21 @@ namespace gpstk
       s << endl;
       s << "PRN : " << setw(2) << satID.id << " / "
         << "SVN : " << setw(2);
-      try
+      if (satID.system==SatID::systemGPS)
       {
-         NAVSTARNum = svNumXRef.getNAVSTAR(satID.id, ctToe );
-         s << NAVSTARNum << "  ";
+         try
+         {
+            NAVSTARNum = svNumXRef.getNAVSTAR(satID.id, ctToe );
+            s << NAVSTARNum << "  ";
+         }
+         catch(NoNAVSTARNumberFound)
+         {
+            s << "XX";
+         }
       }
-      catch(NoNAVSTARNumberFound)
+      else
       {
-         s << "XX";
+         s << "  ";
       }
       s << endl
         << endl;

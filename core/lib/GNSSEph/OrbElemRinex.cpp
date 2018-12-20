@@ -698,27 +698,7 @@ namespace gpstk
       }
 
       OrbElem::dumpHeader(s);
-   /*   s << "Source : " << getNameLong() << endl;
 
-      SVNumXRef svNumXRef;
-      int NAVSTARNum = 0;
-
-      s << endl;
-      s << "PRN : " << setw(2) << satID.id << " / "
-        << "SVN : " << setw(2);
-      try
-      {
-	NAVSTARNum = svNumXRef.getNAVSTAR(satID.id, ctToe );
-        s << NAVSTARNum << "  ";
-      }
-      catch(NoNAVSTARNumberFound)
-      {
-	s << "XX";
-      }
-
-
-      s << endl
-        << endl */
       s	<< "           SUBFRAME OVERHEAD"
       	<< endl
       	<< endl
@@ -811,14 +791,21 @@ namespace gpstk
 
       SVNumXRef svNumXRef;
       int NAVSTARNum = 0;
-      try
+      if (satID.system==SatID::systemGPS)
       {
-      	NAVSTARNum = svNumXRef.getNAVSTAR(satID.id, ctToe );
-         s << setw(2) << " " << NAVSTARNum << "  ";
+         try
+         {
+         	NAVSTARNum = svNumXRef.getNAVSTAR(satID.id, ctToe );
+            s << setw(2) << " " << NAVSTARNum << "  ";
+         }
+         catch(NoNAVSTARNumberFound)
+         {
+         	 s << "  XX  ";
+         }
       }
-      catch(NoNAVSTARNumberFound)
+      else
       {
-      	s << "  XX  ";
+         s << "      ";
       }
 
       s << setw(2) << satID.id << " ! ";
