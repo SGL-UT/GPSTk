@@ -48,7 +48,6 @@ using namespace std;
 namespace gpstk
 {
 
-
       // Add ephemeris information from a Rinex3NavData object.
    bool GloEphemerisStore::addEphemeris(const Rinex3NavData& data)
    {
@@ -373,6 +372,18 @@ namespace gpstk
          ret = rit->first;
       }
       return ret;
+   }
+
+   set<SatID> GloEphemerisStore::getIndexSet() const
+   {
+      set<SatID> retSet;
+      GloEphMap::const_iterator cit;
+      for (cit=pe.begin();cit!=pe.end();cit++)
+      {
+        const SatID& sidr = cit->first;
+        retSet.insert(sidr);
+      }
+      return retSet; 
    }
 
       /* Find the corresponding GLONASS ephemeris for the given epoch.

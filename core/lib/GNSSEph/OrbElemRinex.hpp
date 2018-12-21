@@ -79,7 +79,7 @@ namespace gpstk
            *  @throw InvalidParameter if the data are not consistent.
            */ 
       void loadData( const RinexNavData& rinNav )
-	 throw( InvalidParameter); 
+	       throw( InvalidParameter); 
 
          /** Load an existing object from a Rinex3NavData object. 
            * @throw InvalidParameter if the data are not consistent.
@@ -100,7 +100,7 @@ namespace gpstk
          /// Returns the upper bound of the URA range
       double getAccuracy()  const
          throw( InvalidRequest );
-
+ 
         /* Should only be used by GPSOrbElemStore::rationalize()
          */
       void adjustBeginningValidity();
@@ -122,8 +122,14 @@ namespace gpstk
       void dumpTerse(std::ostream& s = std::cout) const
          throw( InvalidRequest );
 
-     
-         /// Ephemeris overhead information
+   private:
+      void determineTimes();
+      void determineTimesGPS();
+      void determineTimesGalileo();
+      void determineTimesDefault();
+
+   public:
+              /// Ephemeris overhead information
          //@{
       
       CommonTime transmitTime; /** Estimated beginning time of this sample */
@@ -136,6 +142,14 @@ namespace gpstk
       short  fitDuration;   /**< Fit duration (hours) */
       double Tgd;           /**< L1 and L2 correction term */
       long   HOWtime;        /**< Handover Word time */
+
+   private:
+         // The following two members are used for communicatiaon within
+         // OrbElemRinex.
+      double Toc3;            // As read from RINEX
+      double Toe3;
+      short fullXmitWeekNum; // As read from RINEX
+
          //@}
 
    }; // end class OrbElemRinex

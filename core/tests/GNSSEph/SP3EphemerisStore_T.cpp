@@ -430,6 +430,47 @@ public:
                                   __LINE__);
             testMessageStream.str(std::string());
          }
+
+
+            //--------------------------------------------------------------------
+            // Check that getSatList() and getIndexSet() return expected values
+            // The data set has data for 29 SVs with PRN 12, PRN 16, and PRN 32 missing
+            //--------------------------------------------------------------------
+         set<SatID> expectedSet;
+         for (int i=1;i<=31;i++)
+         {
+            if (i!=12 && i!=16 && i!=32)
+            {
+               SatID sid(i,SatID::systemGPS);
+               expectedSet.insert(sid);
+            }
+         }
+     
+         vector<SatID> loadedList = apcStore.getSatList();
+         set<SatID> loadedSet = apcStore.getIndexSet();
+         TUASSERTE(int,expectedSet.size(),loadedSet.size());
+         TUASSERTE(int,expectedSet.size(),loadedList.size());
+
+         set<SatID>::const_iterator cit;
+         for (cit=expectedSet.begin();cit!=expectedSet.end();cit++)
+         {
+            bool found = false;
+            const SatID& sidr = *cit;
+            if (loadedSet.find(sidr)!=loadedSet.end())
+               found = true;
+            TUASSERTE(bool,true,found);
+         }
+
+         vector<SatID>::const_iterator citl;
+         for (citl=loadedList.begin();citl!=loadedList.end();citl++)
+         {
+            bool found = false;
+            const SatID& sidr = *citl;
+            if (expectedSet.find(sidr)!=expectedSet.end())
+               found = true;
+            TUASSERTE(bool,true,found);
+         }
+
       }
       catch (...)
       {

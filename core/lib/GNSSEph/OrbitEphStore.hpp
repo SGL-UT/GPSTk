@@ -48,6 +48,7 @@
 
 #include <iostream>
 #include <list>
+#include <set>
 
 #include "OrbitEph.hpp"
 #include "Exception.hpp"
@@ -241,6 +242,8 @@ namespace gpstk
             return false;
          return true;
       }
+
+      virtual std::set<SatID> getIndexSet() const; 
 
          /** Explanation of find() function for OrbitEphStore The
           * findUserOrbitEph() funtion does the best possible job of
