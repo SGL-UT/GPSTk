@@ -1,4 +1,4 @@
-Version 2.10.7   Thursday, December 6, 2018
+Version 2.11   Thursday, January 3, 2019
 
    General modifications
    ---------------------
@@ -6,55 +6,39 @@ Version 2.10.7   Thursday, December 6, 2018
    - Added official debian builds to package stage of GPSTk CI
 
    Modifications by Author
-   ---------------------
-Bryan Parsons (28):
-      First cut of Travis-CI build file for external CI builds with Github.
-      Travis.yml file update for external gitlab CI
-      Travis.yml update
-      .travis.yml update and added shebang to swig/gpstk/__init__.py as Travis CI defaults to using SH.
-      Updated apt-get gtest and gmock definitions for travis.yml
-      Linux build for External Github/Travis-CI is now working, .travis.yml is good to go.
-      Added build and coverage badges to README.md and updated .travis.yml.
-      Temporarily allowing failures for windows CI builds, as Runner is having authentication issues.
-      Merge branch 'issue_349_L1C' into 'master'
-      Merge branch 'issue_361_CSVxref' into 'master'
-      Updating Debian package files to resolve libgpstk-dev conflict.
-      Additional tweak to .install files
-      Additional changes to fix issues building deb packages.
-      Another tweak to fix debian package build issues.
-      tweaking deb package build process for debian wheezy.
-      Removing parallel builds due to potential bug issues utilizing feature when building deb packages.
-      Tweak to deb rules file.
-      Continued tweaking as deb packages errors are debugged.
-      Updates for debian package building.
-      Adding official debian builds to package stage of GPSTk CI
-      Updating debian package building scrding command.
-      Adding official debian builds to package stage of GPSTk CI
-      Updating debian package building scrding command.
-      Merge branch 'gitlab_ci_tweaks' of repositories.arlut.utexas.edu:sgl/gpstk into gitlab_ci_tweaks
-      Merge branch 'gitlab_ci_tweaks' into 'master'
-      Update gitlab ci to add .deb packages to artifacts.
-      Additional tweaks to .gitlab-ci.yml for proper debian package artifacts.
-      Updated gitlab ci deb artifact building to only build on Master.
+   --------------------- 
+   
+Bryan Parsons (4):  
+      Adding .changes file to gitlab.ci debian artifacts.  
+      Expose all debian package files to be swept into package artifact.  
+      Merge branch 'issue_363_moving_alm' into 'master'  
+      Merge branch 'issue_365_XvtStoreSatID' into 'master'  
 
-Eric Bigenwald (1):
-      added method that returns a reference to PtoNMap. Used to generate csv format of the map
+Nick Boeker (7):  
+      Merge remote-tracking branch 'origin/master' into issue_359_CNAV_Packets  
+      Moved Non-GPS Almanac Calculation to sgltk  
+      Merge remote-tracking branch 'origin/master' into issue_363_moving_alm  
+      Merge remote-tracking branch 'origin/master' into issue_363_moving_alm  
+      Merge remote-tracking branch 'origin/master' into issue_362_moving_alm  
+      Rolled back CNAV2 changes  
+      Merge remote-tracking branch 'origin/master' into issue_363_moving_alm  
 
-renfrob (14):
-      Add L1C to ObsID (incomplete)
-      Add L1C to NavID (incomplete)
-      Updated NavID_T for L1C
-      More iterim changes
-      De-conflating similar Rinex track codes
-      Adding CNAV-2 filter for sanity checks
-      Adding tests for CNav2SanityFilter
-      Tweaks following testing
-      Fix for next-frame offset
-      Removing debug prints
-      Correcting time tags in test messages
-      Merge branch 'issue_349_L1C'
-      Merge branch 'master' into issue_349_L1C
-      Update SVN/PRN relationships
+renfrob (15):  
+      Add CNAV Reduced packet encapsulation  
+      Adding units tests for CNavReducedAlm  
+      Adding test cases  
+      Adding support for CNAV/CNAV-2 Differentail Correction Packets  
+      Making unit tests work.:  
+      Adding CNAV/CNAV-2 Reduced Almanac read/dump  
+      Adding getIndexSet() method to XvtStore  
+      Extending tests to permit XvtStore.getIndexSet()  
+      Adding a test for OrbElemStore  
+      Working out various time representation issues.  
+      Removing debug prints  
+      Increasing precision in dumpBody() to match Rinex  
+      Adding patch to place Galileo IODnav in IODC location  
+      Softening GPS dependences in dumpHeader() and dumpTerse() to permit Galileo output  
+      Returning output precision to previous width to avoid replacing several test output files.  
 
 
       #################################################
