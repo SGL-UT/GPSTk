@@ -37,6 +37,7 @@
  * DiffCorrBase.cpp.
  * A single CNAV/CNAV-2 Clokc Differential Correction (CDC) packet
  * in engineering units.
+ *
  */
 #include <iomanip>
 

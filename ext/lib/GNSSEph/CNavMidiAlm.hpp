@@ -36,6 +36,7 @@
 /**
  * @file CNavMidiAlm.hpp
  * Enables cracking of CNAV and CNAV-2 Midi Almanac packet data. 
+ *
  */
 
 #ifndef GPSTK_CNAVMIDIALM_HPP

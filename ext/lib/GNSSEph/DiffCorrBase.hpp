@@ -37,6 +37,7 @@
  * @file DiffCorrBase.hpp
  * General data and methods for cracking CDC and EDC packets from CNAV 
  * MT 34, 13, 14 OR CNAV-2 subframe 3 page 5. 
+ *
  */
 
 #ifndef SGLTK_DIFFCORRBASE_HPP

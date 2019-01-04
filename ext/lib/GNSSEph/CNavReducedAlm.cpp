@@ -36,7 +36,9 @@
 /**
  * @file CNavReducedAlm.cpp
  * CNavReducedAlm data encapsulated in engineering terms
+ *
  */
+
 #include <iomanip>
 
 #include "CNavReducedAlm.hpp"

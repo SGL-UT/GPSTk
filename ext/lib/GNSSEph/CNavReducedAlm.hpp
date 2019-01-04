@@ -36,6 +36,7 @@
 /**
  * @file CNavReducedAlm.hpp
  * Enables cracking of CNAV and CNAV-2 Reduced Almanac packet data. 
+ *
  */
 
 #ifndef GPSTK_CNAVREDUCEDALM_HPP
