@@ -65,6 +65,7 @@ class MockXvtStore: public gpstk::XvtStore<SatID> {
     MOCK_CONST_METHOD0(getTimeSystem, TimeSystem());
     MOCK_CONST_METHOD0(getInitialTime, CommonTime());
     MOCK_CONST_METHOD0(getFinalTime, CommonTime());
+    MOCK_CONST_METHOD0(getIndexSet, std::set<SatID>());
 
     MOCK_CONST_METHOD1(isPresent, bool(const SatID& id));
 

@@ -545,4 +545,17 @@ namespace gpstk
    //---------------------------------------------------------------------------------
    const string OrbitEphStore::fmt("%Y/%02m/%02d %02H:%02M:%02S %P");
 
+   //---------------------------------------------------------------------------------
+   set<SatID> OrbitEphStore::getIndexSet() const
+   {
+      set<SatID> retSet;
+      SatTableMap::const_iterator cit;
+      for (cit=satTables.begin();cit!=satTables.end();cit++)
+      {
+         const SatID& sidr = cit->first;
+         retSet.insert(sidr);
+      }
+      return retSet;
+   }
+
 } // namespace

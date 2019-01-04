@@ -228,9 +228,20 @@ package_debian:
   stage: package
   tags:
     - debian
+  only:
+    refs:
+      - master
   script:
-    - cd build
-    - make package -j 4
+    - rm -rf ../*.deb
+    - dpkg-buildpackage -us -uc -d
+    - mkdir debs
+    - mv ../*.deb debs 
+    - mv ../*.changes debs
+    - mv ../*.dsc debs
+    - mv ../*.git debs
+  artifacts:
+    paths:
+    - debs/
   dependencies:
     - build_debian
 

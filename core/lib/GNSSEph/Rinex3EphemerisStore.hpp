@@ -45,6 +45,7 @@
 #include <string>
 #include <list>
 #include <map>
+#include <set>
 #include <algorithm>
 
 #include "Exception.hpp"
@@ -442,6 +443,21 @@ namespace gpstk
       void SearchUser(void)
       {
          ORBstore.SearchUser();
+      }
+
+      virtual std::set<gpstk::SatID> getIndexSet() const
+      {
+         std::set<gpstk::SatID> retSet;
+         retSet = ORBstore.getIndexSet();
+         std::set<gpstk::SatID> set2;
+         set2 = GLOstore.getIndexSet();
+         std::set<gpstk::SatID>::const_iterator cit;
+         for (cit=set2.begin();cit!=set2.end();cit++)
+         {
+            const gpstk::SatID sidr = *cit;
+            retSet.insert(sidr);
+         }
+         return retSet;
       }
 
    }; // end class Rinex3EphemerisStore
