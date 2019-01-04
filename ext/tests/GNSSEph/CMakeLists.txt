@@ -9,6 +9,11 @@ target_link_libraries(OrbAlmStore_T gpstk)
 add_test(GNSSEph_OrbAlmStore OrbAlmStore_T)
 set_property(TEST GNSSEph_OrbAlmStore PROPERTY LABELS GNSSEph OrbAlmStore)
 
+add_executable(CNavPackets_T CNavPackets_T.cpp)
+target_link_libraries(CNavPackets_T gpstk)
+add_test(GNSSEph_CNavPackets CNavPackets_T)
+set_property(TEST GNSSEph_CNavPackets PROPERTY LABELS GNSSEph)
+
 # Need to link the test program.  However, instead of running
 # tests that lead to internal pass/fail, this program produces
 # a text file that needs to be compared against truth data.
@@ -53,7 +58,7 @@ add_test(NAME OrbDataSys_T_2
          -DTESTBASE=test_output_OrbDataSys_T_GPS_CNAV
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testsame.cmake)
 #
-#  Following tests the get*() methods of various CNAV MT classes
+#  Following tests the get*() methods of various CNAV MT classes.
 add_executable(OrbSysGpsC_T OrbSysGpsC_T.cpp)
 target_link_libraries(OrbSysGpsC_T gpstk)
 add_test(GNSSEph_OrbSysGpsC OrbSysGpsC_T)
