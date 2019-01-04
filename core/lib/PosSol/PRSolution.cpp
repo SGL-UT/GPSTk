@@ -458,13 +458,16 @@ namespace gpstk
             if(Slopes(j) > MaxSlope) MaxSlope = Slopes(j);
             j++;
          }
+         LOG(DEBUG) << "Computed slopes, found max member";
 
          // compute pre-fit residuals
          if(hasMemory)
             PreFitResidual = P*(Solution-APSolution) - Resids;
+         LOG(DEBUG) << "Computed pre-fit residuals";
 
          // Compute RMS residual (member)
          RMSResidual = RMS(Resids);
+         LOG(DEBUG) << "Computed RMS residual";
 
          // Find the maximum slope (member)
          //MaxSlope = 0.0;
@@ -491,16 +494,17 @@ namespace gpstk
 
    // -------------------------------------------------------------------------
    // Compute a solution using RAIM.
+                               // vector<SatID::SatelliteSystem>& Syss,
    int PRSolution::RAIMCompute(const CommonTime& Tr,
                                vector<SatID>& Sats,
-                               vector<SatID::SatelliteSystem>& Syss,
                                const vector<double>& Pseudorange,
-                               const Matrix<double>& invMC,
                                const XvtStore<SatID> *pEph,
                                TropModel *pTropModel)
       throw(Exception)
    {
       try {
+         //LOGlevel = ConfigureLOG::Level("DEBUG"); // uncomment to turn on DEBUG output to stdout
+
          LOG(DEBUG) << "RAIMCompute at time " << printTime(Tr,gpsfmt);
 
          int iret,N;
@@ -515,11 +519,18 @@ namespace gpstk
          vector<SatID> BestSats,SaveSats;
          Matrix<double> SVP,BestCov,BestInvMCov,BestPartials;
          vector<SatID::SatelliteSystem> BestSyss;
+         Matrix<double> invMC;
 
          // initialize
          Valid = false;
          currTime = Tr;
          TropFlag = SlopeFlag = RMSFlag = false;
+
+         vector<SatID::SatelliteSystem> Syss;
+         for (i=0; i<Sats.size(); i++) {
+            if(vectorindex(Syss, Sats[i].system) == -1)
+               Syss.push_back(Sats[i].system);
+         }
 
          // ----------------------------------------------------------------
          // fill the SVP matrix, and use it for every solution
