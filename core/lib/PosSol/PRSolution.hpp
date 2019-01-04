@@ -609,10 +609,11 @@ namespace gpstk
       /// -3  not enough good data (> 4) to form a (RAIM) solution
       ///     (the 4 satellite solution might be ok)
       /// -4  ephemeris not found for all the satellites
-                      /// std::vector<SatID::SatelliteSystem>& Systems,
       int RAIMCompute(const CommonTime& Tr,
                       std::vector<SatID>& Satellites,
+                      //std::vector<SatID::SatelliteSystem>& Systems, // original
                       const std::vector<double>& Pseudorange,
+                      //const Matrix<double>& invMC, // original
                       const XvtStore<SatID> *pEph,
                       TropModel *pTropModel)
          throw(Exception);
@@ -670,8 +671,6 @@ namespace gpstk
 
       /// empty vector used to detect default
       static const Vector<double> PRSNullVector;
-
-      /// std::vector<SatID::SatelliteSystem>& Systems;
 
    }; // end class PRSolution
 

@@ -494,10 +494,11 @@ namespace gpstk
 
    // -------------------------------------------------------------------------
    // Compute a solution using RAIM.
-                               // vector<SatID::SatelliteSystem>& Syss,
    int PRSolution::RAIMCompute(const CommonTime& Tr,
                                vector<SatID>& Sats,
+                               //vector<SatID::SatelliteSystem>& Syss, // original
                                const vector<double>& Pseudorange,
+                               //const Matrix<double>& invMC, // original
                                const XvtStore<SatID> *pEph,
                                TropModel *pTropModel)
       throw(Exception)
@@ -519,18 +520,14 @@ namespace gpstk
          vector<SatID> BestSats,SaveSats;
          Matrix<double> SVP,BestCov,BestInvMCov,BestPartials;
          vector<SatID::SatelliteSystem> BestSyss;
-         Matrix<double> invMC;
+
+         vector<SatID::SatelliteSystem> Syss; // needed if not in routine's signature
+         Matrix<double> invMC;                // needed if not in routine's signature
 
          // initialize
          Valid = false;
          currTime = Tr;
          TropFlag = SlopeFlag = RMSFlag = false;
-
-         vector<SatID::SatelliteSystem> Syss;
-         for (i=0; i<Sats.size(); i++) {
-            if(vectorindex(Syss, Sats[i].system) == -1)
-               Syss.push_back(Sats[i].system);
-         }
 
          // ----------------------------------------------------------------
          // fill the SVP matrix, and use it for every solution
