@@ -183,7 +183,7 @@ namespace vdraw
     if ( line.size() <= 2 )
     {
       ostr << tab << "<line";
-      auto_ptr<Path> abspath = line.asAbsolute();
+      unique_ptr<Path> abspath = line.asAbsolute();
       Path::const_iterator i=abspath->begin();
       // Since there is no method for drawing a single point and there already
       // is a marker defined...
@@ -536,7 +536,7 @@ namespace vdraw
     // output each point
     ostr << tab << " points=";
     ostr << "\"";
-    auto_ptr<Path> temp = path.asAbsolute();
+    unique_ptr<Path> temp = path.asAbsolute();
     Path::const_iterator i;
     short count=1, width=5;
     for (i=temp->begin(); i!=temp->end(); i++, count++)

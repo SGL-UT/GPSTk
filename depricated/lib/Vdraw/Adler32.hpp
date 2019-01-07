@@ -108,7 +108,7 @@ namespace vdraw
           *
           * @param  str  The string to update the Adler32 with.
           */
-      void update(const std::auto_ptr<std::string> &str)
+      void update(const std::unique_ptr<std::string> &str)
       {
          update(str->c_str(),str->length());
       }

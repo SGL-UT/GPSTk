@@ -6,16 +6,12 @@ add_subdirectory (filetools)
 add_subdirectory (geomatics)
 add_subdirectory (misc)
 add_subdirectory (positioning)
-add_subdirectory (time)
 
 # If on UNIX, do these
 if (UNIX)
-	add_subdirectory (rfw)
-	add_subdirectory (swrx)
-	#add_subdirectory (receiver)
+    add_subdirectory (rfw)
 endif (UNIX)
 
-add_subdirectory (multipath)
 add_subdirectory (Rinextools)
 
 
