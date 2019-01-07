@@ -44,10 +44,6 @@
 #include<utility> // std::pair
 #include<memory>  // std::auto_ptr
 
-// TODO In the future?
-// #include "boost/shared_ptr.hpp" // boost::shared_ptr
-// To use shared_ptr instead of auto_ptr
-
 #include "GraphicsConstants.hpp"
 #include "VDrawException.hpp"
 
@@ -263,7 +259,7 @@ namespace vdraw
        * auto_ptr will guarantee that it is deleted when the auto_ptr object
        * itself is deleted.  
        */
-      std::auto_ptr<Path> asAbsolute(void) const;
+      std::unique_ptr<Path> asAbsolute(void) const;
 
     protected:
 

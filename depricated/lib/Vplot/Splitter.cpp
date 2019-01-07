@@ -223,7 +223,7 @@ namespace vplot
     return inside;
   }
 
-  std::auto_ptr< std::list< vdraw::Path > > Splitter::interpToBox(double minX, double maxX, double minY, double maxY, const vdraw::Path& p)
+  std::unique_ptr< std::list< vdraw::Path > > Splitter::interpToBox(double minX, double maxX, double minY, double maxY, const vdraw::Path& p)
   {
     using namespace vdraw;
     Path::const_iterator i=p.begin(),j=p.begin();
@@ -233,7 +233,7 @@ namespace vplot
     double cx, cy;
     p.getOrigin(cx,cy);
 
-    std::auto_ptr< std::list< Path > > thelist(new std::list<Path>());
+    std::unique_ptr< std::list< Path > > thelist(new std::list<Path>());
     Path current(cx,cy);
     if(inside) 
       current.push_back(*i);
@@ -265,12 +265,12 @@ namespace vplot
     return thelist;
   }
 
-  std::auto_ptr< vdraw::Path > Splitter::cropToBox(double minX, double maxX, double minY, double maxY, const vdraw::Path& p)
+  std::unique_ptr< vdraw::Path > Splitter::cropToBox(double minX, double maxX, double minY, double maxY, const vdraw::Path& p)
   {
     using namespace vdraw;
     Path::const_iterator i=p.begin();
     bool inside = inBox(*i,minX,maxX,minY,maxY);
-    std::auto_ptr< Path >  newpath(new Path(0,0,p.size()));
+    std::unique_ptr< Path >  newpath(new Path(0,0,p.size()));
     if(inside) newpath->push_back(*i);
     i++;
     for(;i!=p.end();i++)

@@ -13,6 +13,7 @@ elseif( WIN32 )
     set( STADYN "STATIC" )
 endif()
 
+
 #----------------------------------------
 # Platform-dependent Compiler flags
 #----------------------------------------
@@ -33,6 +34,7 @@ elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
     set( CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS} -O2" )
 elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" )
     # Do not optimize for debug builds.  Do the same for RELWITHDEBINFO ?
+    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11" )
     set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -O2" )
     set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS} -O2" )
     set( CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS} -O2" )
@@ -78,7 +80,6 @@ endif()
 #----------------------------------------
 
 if( USE_RPATH )
-
     # Use, i.e. don't skip the full RPATH for the build tree
     set( CMAKE_SKIP_BUILD_RPATH FALSE )
 

@@ -280,16 +280,6 @@ class convhelp_test(unittest.TestCase):
         self.assertAlmostEqual(121.1, gpstk.cel2far(49.5))
 
 
-class Xv_test(unittest.TestCase):
-    def test(self):
-        data = gpstk.Xv()
-        data.x = gpstk.Triple(1.5, 2.5, 3.5)
-        data.v = gpstk.Triple(500, 1000, -100)
-        self.assertEqual(1.5, data.x[0])
-        expected = 'x:(1.5, 2.5, 3.5), v:(500, 1000, -100)'
-        self.assertEqual(expected, str(data))
-
-
 class Xvt_test(unittest.TestCase):
     def test(self):
         data = gpstk.Xvt()
@@ -381,7 +371,7 @@ class Expression_test(unittest.TestCase):
 
         e = gpstk.Expression('1 + 2*x')
         self.assertAlmostEqual(12.0, gpstk.eval(e, x=5.5))
- 
+
 
 if __name__ == '__main__':
     run_unit_tests()

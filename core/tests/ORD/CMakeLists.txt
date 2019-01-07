@@ -1,16 +1,14 @@
 
-message( STATUS "Setting CMAKE_CURRENT_SOURCE_DIR = ${CMAKE_CURRENT_SOURCE_DIR}" )
-
 # --- Here's the existing CMake method
 
 # /usr/lib64/libgmock.so
 find_path(GMOCK_SOURCE_DIR NAMES src/gmock.cc CMakeLists.txt
-          PATHS /usr/src/gmock /usr/local/src/gmock)
+          PATHS /usr/src/gmock /usr/local/src/gmock /usr/src/googletest/googlemock)
 find_path(GMOCK_INCLUDE_DIR NAMES gmock.h
           PATHS /usr/include/gmock /usr/local/include/gmock)
 
 # If we can't locate the INCLUDE directory, just give up.
-if ( GMOCK_INCLUDE_DIR )
+if ( EXISTS ${GMOCK_INCLUDE_DIR}/CMakeLists.txt )
     # On Debian, gtest/gmock source is installed so it must be compiled.
     # On RedHat shared libraries are installed in standard locations.
     # MacOSX TBD
