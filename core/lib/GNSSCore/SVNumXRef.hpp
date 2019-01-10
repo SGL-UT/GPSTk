@@ -143,7 +143,8 @@ namespace gpstk
 	IIA,
 	IIR,
 	IIR_M,
-	IIF
+	IIF,
+  III
       };
       SVNumXRef( );
       ~SVNumXRef() {}
