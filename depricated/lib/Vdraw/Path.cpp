@@ -97,9 +97,9 @@ namespace vdraw
       originY += deltaY;      
    }
 
-   std::auto_ptr<Path> Path::asAbsolute(void) const
+   std::unique_ptr<Path> Path::asAbsolute(void) const
    {
-     std::auto_ptr<Path> absPath(new Path(*this));
+     Path* absPath = new Path(*this);
       
       for (Path::iterator i=absPath->begin(); i!=absPath->end(); i++)
       {
@@ -107,7 +107,7 @@ namespace vdraw
          i->second = i->second + originY;
       }      
 
-      return absPath;
+      return std::unique_ptr<Path>(absPath);
    }
    
 } // namespace vdraw
