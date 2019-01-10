@@ -121,6 +121,7 @@ SVNumXRef::SVNumXRef( )
    NtoBMap.insert( make_pair( 71,IIF ));
    NtoBMap.insert( make_pair( 72,IIF ));
    NtoBMap.insert( make_pair( 73,IIF ));
+   NtoBMap.insert( make_pair( 74,III ));
 
 
       // Note: This table start with Block I values
@@ -309,7 +310,7 @@ SVNumXRef::SVNumXRef( )
    // NANU 2018042 (start)
    NtoPMap.insert( std::pair<const int, XRefNode>( 36, XRefNode( 4, 
                                        CivilTime( 2018, 10, 10,  0,  0,  0.0, TimeSystem::GPS),
-                                       CommonTime::END_OF_TIME  )));
+                                       CivilTime( 2019,  1,  3, 23, 59, 59.9, TimeSystem::GPS))));
 
    NtoPMap.insert( std::pair<const int, XRefNode>( 37, XRefNode(  7, 
                                        CivilTime( 1993,  5, 13,  0,  0,  0.0, TimeSystem::GPS),
@@ -501,6 +502,10 @@ SVNumXRef::SVNumXRef( )
    //Added before NANU was sent.
    NtoPMap.insert( std::pair<const int, XRefNode>( 73, XRefNode(  10,
                                        CivilTime( 2015,  10,   31, 16,  23,  0.0, TimeSystem::GPS),
+                                       CommonTime::END_OF_TIME  )));
+   //NANU 2019001 LAUNCH
+   NtoPMap.insert( std::pair<const int, XRefNode>( 74, XRefNode(   4,
+                                       CivilTime( 2019,   1,    8, 23,  0,  0.0, TimeSystem::GPS),
                                        CommonTime::END_OF_TIME  )));
                                          
                                        
