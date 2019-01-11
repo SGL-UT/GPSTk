@@ -493,12 +493,43 @@ namespace gpstk
 
 
    // -------------------------------------------------------------------------
+   // Simple interface to RAIMCompute.
+   // Builds vector<SatID::SatelliteSystem> and Matrix<double> for you.
+   // ** TEMPORARY ** -- to be deprecated when the above two data types
+   // are exposed in swig.
+   int PRSolution::RAIMComputeSimple(const CommonTime& Tr,
+                                     vector<SatID>& Sats,
+                                     const vector<double>& Pseudorange,
+                                     const XvtStore<SatID> *pEph,
+                                     TropModel *pTropModel)
+      throw(Exception)
+   {
+      try {
+         // Declare the non-swig'ed variables needed by RAIMCompute;
+         // it will do the actual filling.
+         vector<SatID::SatelliteSystem> Syss; // needed if not in routine's signature
+         Matrix<double> invMC;                // needed if not in routine's signature
+
+         int iret;
+
+         // Call RAIMCompute.
+         iret = RAIMCompute(Tr, Sats, Syss, Pseudorange, invMC, pEph, pTropModel);
+
+         return iret;
+      }
+      catch(Exception& e) {
+         GPSTK_RETHROW(e);
+      }
+   }  // end PRSolution::RAIMComputeSimple()
+
+
+   // -------------------------------------------------------------------------
    // Compute a solution using RAIM.
    int PRSolution::RAIMCompute(const CommonTime& Tr,
                                vector<SatID>& Sats,
-                               //vector<SatID::SatelliteSystem>& Syss, // original
+                               vector<SatID::SatelliteSystem>& Syss,
                                const vector<double>& Pseudorange,
-                               //const Matrix<double>& invMC, // original
+                               const Matrix<double>& invMC,
                                const XvtStore<SatID> *pEph,
                                TropModel *pTropModel)
       throw(Exception)
@@ -520,9 +551,6 @@ namespace gpstk
          vector<SatID> BestSats,SaveSats;
          Matrix<double> SVP,BestCov,BestInvMCov,BestPartials;
          vector<SatID::SatelliteSystem> BestSyss;
-
-         vector<SatID::SatelliteSystem> Syss; // needed if not in routine's signature
-         Matrix<double> invMC;                // needed if not in routine's signature
 
          // initialize
          Valid = false;
