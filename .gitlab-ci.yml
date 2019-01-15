@@ -236,9 +236,6 @@ package_debian:
     - dpkg-buildpackage -us -uc -d
     - mkdir debs
     - mv ../*.deb debs 
-    - mv ../*.changes debs
-    - mv ../*.dsc debs
-    - mv ../*.git debs
   artifacts:
     paths:
     - debs/
