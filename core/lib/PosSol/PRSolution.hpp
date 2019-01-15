@@ -620,9 +620,9 @@ namespace gpstk
       /// -4  ephemeris not found for all the satellites
       int RAIMCompute(const CommonTime& Tr,
                       std::vector<SatID>& Satellites,
-                      std::vector<SatID::SatelliteSystem>& Systems, // original
+                      std::vector<SatID::SatelliteSystem>& Systems,
                       const std::vector<double>& Pseudorange,
-                      const Matrix<double>& invMC, // original
+                      const Matrix<double>& invMC,
                       const XvtStore<SatID> *pEph,
                       TropModel *pTropModel)
          throw(Exception);
