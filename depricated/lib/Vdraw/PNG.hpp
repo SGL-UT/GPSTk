@@ -64,7 +64,7 @@ namespace vdraw
   {
     public:
       /// Typedef of string pointer using auto_ptr
-      typedef std::auto_ptr<std::string> string_ptr;
+      typedef std::unique_ptr<std::string> string_ptr;
 
       /**
        * Get a string representing the contents of a PNG file using a Bitmap.

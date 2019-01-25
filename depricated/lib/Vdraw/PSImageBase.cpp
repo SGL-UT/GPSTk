@@ -132,7 +132,7 @@ namespace vdraw
   {
     using namespace std;
 
-    auto_ptr<Path> abspath = path.asAbsolute();
+    unique_ptr<Path> abspath = path.asAbsolute();
     Path::const_iterator i;
     bool first=true;
 
@@ -155,7 +155,7 @@ namespace vdraw
   {
     using namespace std;
 
-    auto_ptr<Path> abspath = path.asAbsolute();    
+    unique_ptr<Path> abspath = path.asAbsolute();    
     Path::const_iterator i;
 
     // Step through each point

@@ -477,6 +477,25 @@ namespace gpstk
          return retList;
       }
 
+         // Get a set of the SatIDs present in both clock and position stores
+      std::set<SatID> getIndexSet(void) const
+      {
+         std::set<SatID> retSet;
+         try
+         {
+            std::vector<SatID> posList(posStore.getSatList());
+            std::vector<SatID> clkList(clkStore.getSatList());
+            for(size_t i=0; i<posList.size(); i++)
+               if(std::find(clkList.begin(),clkList.end(),posList[i]) != clkList.end())
+                  retSet.insert(posList[i]);
+         }
+         catch(gpstk::Exception)
+         {
+            // do nothing
+         }
+         return retSet;
+      }
+
          /// Get a list (std::vector) of SatIDs present in the position store
       std::vector<SatID> getPositionSatList(void) const throw()
       { return posStore.getSatList(); }

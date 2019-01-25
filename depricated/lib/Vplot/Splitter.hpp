@@ -133,7 +133,7 @@ namespace vplot
      * @param p The set of points to cut up where it intersects the box
      * @return Sets of lines with interpolated points on the edge of the box
      */
-    static std::auto_ptr< std::list< vdraw::Path > > interpToBox(double minX, double maxX, double minY, double maxY, const vdraw::Path& p);
+    static std::unique_ptr< std::list< vdraw::Path > > interpToBox(double minX, double maxX, double minY, double maxY, const vdraw::Path& p);
 
     /**
      * Crop the points to fit the box.  This particular one would be useful for
@@ -145,7 +145,7 @@ namespace vplot
      * @param p The set of points to crop
      * @return The set of cropped points
      */
-    static std::auto_ptr< vdraw::Path > cropToBox(double minX, double maxX, double minY, double maxY, const vdraw::Path& p);
+    static std::unique_ptr< vdraw::Path > cropToBox(double minX, double maxX, double minY, double maxY, const vdraw::Path& p);
 
   private:
     /// Get the x value where a line between the two points p1 and p2 would 

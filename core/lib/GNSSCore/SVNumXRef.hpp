@@ -143,7 +143,8 @@ namespace gpstk
 	IIA,
 	IIR,
 	IIR_M,
-	IIF
+	IIF,
+  III
       };
       SVNumXRef( );
       ~SVNumXRef() {}
@@ -157,6 +158,9 @@ namespace gpstk
       bool NAVSTARIDActive( const int NAVSTARID, const gpstk::CommonTime dt ) const;
       void dump(std::ostream& out=std::cout) const;
       bool isConsistent() const;
+
+      const std::multimap<int, XRefNode>& getPtoNMap()
+        { return PtoNMap; }
 
       protected:
          std::multimap<int,XRefNode> NtoPMap;

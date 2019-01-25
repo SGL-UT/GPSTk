@@ -44,11 +44,9 @@
 #include "Xvt.hpp"
 #include "StringUtils.hpp"
 #include "Position.hpp"
-#include "Xv.hpp"
 #include "convhelp.hpp"
 #include "VectorBase.hpp"
 #include "Vector.hpp"
-#include "Antenna.hpp"
 #include "DataStatus.hpp"
 
 // more specific almanac/ephemeris files:
@@ -163,9 +161,7 @@
 #include "NeillTropModel.hpp"
 #include "SaasTropModel.hpp"
 #include "SimpleTropModel.hpp"
-#include "CheckPRData.hpp"
 #include "PRSolution2.hpp"
-#include "ExtractData.hpp"
 #include "Expression.hpp"
 
 // Ashtech serial data
@@ -182,6 +178,10 @@
 #include "SunPosition.hpp"
 #include "PoleTides.hpp"
 #include "SolidTides.hpp"
+
+// PosSol
+#include "Combinations.hpp"
+#include "PRSolution.hpp"
 
 // Geomatics:
 #include "SunEarthSatGeometry.hpp"

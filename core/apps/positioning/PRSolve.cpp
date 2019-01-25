@@ -2461,7 +2461,7 @@ int SolutionObject::ComputeSolution(const CommonTime& ttag) throw(Exception)
 
       // get the RAIM solution ------------------------------------------
       iret = prs.RAIMCompute(ttag, Satellites, satSyss, PRanges, invMCov, C.pEph,
-                              C.pTrop);
+                             C.pTrop);
 
       if(iret < 0) {
          LOG(VERBOSE) << "RAIMCompute failed "

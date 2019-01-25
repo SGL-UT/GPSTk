@@ -44,6 +44,7 @@
 #define GPSTK_XVTSTORE_INCLUDE
 
 #include <iostream>
+#include <set>
 
 #include "Exception.hpp"
 #include "CommonTime.hpp"
@@ -109,6 +110,11 @@ namespace gpstk
 
          /// Return true if the given IndexType is present in the store
       virtual bool isPresent(const IndexType& id) const = 0;
+
+         /// Return a set containing the indices found in this store.
+         /// For exmaple, for an XvtStore<SatID> return a set of all the unique
+         /// SatIDs available in the store. 
+      virtual std::set<IndexType> getIndexSet() const = 0; 
 
          /** flag indicating unhealthy ephemerides should be excluded
           * from getXvt, otherwise it will throw (default condition may vary

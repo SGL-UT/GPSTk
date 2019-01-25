@@ -52,8 +52,6 @@ build_redhat:
   artifacts:
     paths:
     - build/
-  # TODO: Temporarily allow failure to allow unit testing on debian
-  allow_failure: true
 
 build_osx:
   stage: build
@@ -80,6 +78,8 @@ build_windows:
   artifacts:
     paths:
     - build/
+# Temporarily allow failures as Windows Runner issues are resolved
+  allow_failure: true
 
 build_core:
   stage: build
@@ -145,19 +145,19 @@ test_core:
   script:
     - cd build
     - ctest -j 4
-    - cd ..
+    #- cd ..
     # Execute once to get the tabular output (which we can scrape for gitlab)
-    - echo $PWD
-    - gcovr --object-directory=build/core/tests/ORD/CMakeFiles/OrdUnitTests_T.dir -r . -e .*_T.cpp
+    #- echo $PWD
+    #- gcovr --object-directory=build/core/tests/ORD/CMakeFiles/OrdUnitTests_T.dir -r . -e .*_T.cpp
     # Execute again, generating html
-    - mkdir gcovr
-    - gcovr --object-directory=build/core/tests/ORD/CMakeFiles/OrdUnitTests_T.dir --html --html-details -o gcovr/index.html -r . -e .*_T.cpp
+    #- mkdir gcovr
+    #- gcovr --object-directory=build/core/tests/ORD/CMakeFiles/OrdUnitTests_T.dir --html --html-details -o gcovr/index.html -r . -e .*_T.cpp
   dependencies:
     - build_core
-  artifacts:
-    paths:
-    - gcovr
-    expire_in: 2 days
+  #artifacts:
+  #  paths:
+  #  - gcovr
+  #  expire_in: 2 days
 
 # Deploy Stage
 # Tests install of GPSTk on each platform, saves artifacts for downstream builds.
@@ -206,6 +206,8 @@ deploy_windows:
     - cmake --build . --config Release --target install
   dependencies:
     - build_windows
+# Temporarily allow failures as Windows Runner issues are resolved
+  allow_failure: true  
 
 deploy_core:
   stage: deploy
@@ -226,9 +228,17 @@ package_debian:
   stage: package
   tags:
     - debian
+  only:
+    refs:
+      - master
   script:
-    - cd build
-    - make package -j 4
+    - rm -rf ../*.deb
+    - dpkg-buildpackage -us -uc -d
+    - mkdir debs
+    - mv ../*.deb debs 
+  artifacts:
+    paths:
+    - debs/
   dependencies:
     - build_debian
 
@@ -261,6 +271,8 @@ package_windows:
     - cpack -C Release
   dependencies:
     - build_windows
+# Temporarily allow failures as Windows Runner issues are resolved
+  allow_failure: true
 
 package_core:
   stage: package

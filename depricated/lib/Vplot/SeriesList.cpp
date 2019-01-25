@@ -102,7 +102,7 @@ namespace vplot
       if(s.getColor().isClear())
       {
         // crop
-        auto_ptr< Path > cropX = Splitter::cropToBox(minX,maxX,minY,maxY,curve);
+        unique_ptr< Path > cropX = Splitter::cropToBox(minX,maxX,minY,maxY,curve);
 
         // Fit it to the box.
         std::for_each(cropX->begin(), cropX->end(), map_instance);
@@ -113,7 +113,7 @@ namespace vplot
       else 
       {
         // interpolate
-        auto_ptr< std::list<Path> > interpX = Splitter::interpToBox(minX,maxX,minY,maxY,curve);
+        unique_ptr< std::list<Path> > interpX = Splitter::interpToBox(minX,maxX,minY,maxY,curve);
 
         for(std::list<Path>::iterator i=interpX->begin();i!=interpX->end();i++)
         {

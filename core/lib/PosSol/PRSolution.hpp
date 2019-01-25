@@ -583,6 +583,15 @@ namespace gpstk
                            Vector<double>& Resids,
                            Vector<double>& Slopes) throw(Exception);
 
+      /// Simple interface for RAIMCompute.
+      /// To be deprecated once the additional two variables are exposed in swig.
+      int RAIMComputeSimple(const CommonTime& Tr,
+                      std::vector<SatID>& Satellites,
+                      const std::vector<double>& Pseudorange,
+                      const XvtStore<SatID> *pEph,
+                      TropModel *pTropModel)
+         throw(Exception);
+
       /// Compute a position/time solution, given satellite PRNs and pseudoranges
       /// using a RAIM algorithm. This is the main computation done by this class.
       /// @param Tr          Measured time of reception of the data.
