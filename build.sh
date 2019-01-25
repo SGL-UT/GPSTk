@@ -216,6 +216,7 @@ fi
 cd "$build_root"
 
 # setup the cmake command
+args=$@
 if [ $exclude_python ]; then
     args+=" -DBUILD_PYTHON=OFF"
 elif [ $build_ext ]; then
