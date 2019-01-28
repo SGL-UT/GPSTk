@@ -65,6 +65,8 @@ build_osx:
   artifacts:
     paths:
     - build/
+  only:
+    - schedules
 
 build_windows:
   stage: build
@@ -126,6 +128,8 @@ test_osx:
     - ctest -j 4
   dependencies:
     - build_osx
+  only:
+    - schedules
 
 test_windows:
   stage: test
@@ -196,6 +200,8 @@ deploy_osx:
     - make install -j 4
   dependencies:
     - build_osx
+  only:
+    - schedules    
 
 deploy_windows:
   stage: deploy
@@ -261,6 +267,8 @@ package_osx:
     - make package -j 4
   dependencies:
     - build_osx
+  only:
+    - schedules    
 
 package_windows:
   stage: package
