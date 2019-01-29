@@ -3,7 +3,7 @@
 ---------------------------------- REQUIRED ----------------------------------
 Rinex Version  2.11,  File type OBSERVATION DATA,  System MIXED.
 Prgm: teqc  2016Apr1,  Run: 20160619 00:55:45UTC,  By: 
-Marker type: .
+Marker name: KERG, Marker type: .
 Observer : Automatic,  Agency: CNES
 Rec#: 5048K71849,  Type: TRIMBLE NETR9,  Vers: 5.01
 Antenna # : CR6200539022,  Type : ASH701945E_M    SNOW
