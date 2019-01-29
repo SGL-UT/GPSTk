@@ -3,7 +3,7 @@
 ---------------------------------- REQUIRED ----------------------------------
 Rinex Version  2.11,  File type OBSERVATION DATA,  System MIXED.
 Prgm: teqc  2011Oct11,  Run: 20160618 01:19:13UTC,  By: 
-Marker type: .
+Marker name: FAA1, Marker type: .
 Observer : AUTOMATIC,  Agency: ESA/ESOC
 Rec#: 3001347,  Type: SEPT POLARX4,  Vers: 2.5.2
 Antenna # : 725235,  Type : LEIAR25.R4      NONE

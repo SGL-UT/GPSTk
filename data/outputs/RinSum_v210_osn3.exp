@@ -3,7 +3,7 @@
 ---------------------------------- REQUIRED ----------------------------------
 Rinex Version  2.10,  File type OBSERVATION DATA,  System G (GPS).
 Prgm: RinEdit,  Run: 20160619 011233 UTC,  By: 
-Marker type: .
+Marker name: OSN3, Marker type: .
 Observer : Monitor Station,  Agency: NGA
 Rec#: 115,  Type: ITT 3750300,  Vers: V3.2.14
 Antenna # : 762-11526,  Type : TPSCR.G5        TPSH
