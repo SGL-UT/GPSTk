@@ -3,7 +3,7 @@
 ---------------------------------- REQUIRED ----------------------------------
 Rinex Version  2.11,  File type OBSERVATION DATA,  System G (GPS).
 Prgm: teqc  2013Mar15,  Run: 20160619 01:10:02UTC,  By: Mike Craymer
-Marker type: .
+Marker name: CAGS, Marker type: .
 Observer : MRC,  Agency: NRCan/GSD
 Rec#: 4931K62895,  Type: TRIMBLE NETR8,  Vers: 4.17
 Antenna # : 4926353381,  Type : TRM59800.00     NONE
