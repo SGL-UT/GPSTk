@@ -2163,7 +2163,7 @@ namespace gpstk
         << ",  File type " << fileType << ",  System " << str << "." << endl;
       s << "Prgm: " << fileProgram << ",  Run: " << date
         << ",  By: " << fileAgency << endl;
-         //s << "Marker name: " << markerName << ", ";
+      s << "Marker name: " << markerName << ", ";
       s << "Marker type: " << markerType << "." << endl;
       s << "Observer : " << observer << ",  Agency: " << agency << endl;
       s << "Rec#: " << recNo << ",  Type: " << recType
