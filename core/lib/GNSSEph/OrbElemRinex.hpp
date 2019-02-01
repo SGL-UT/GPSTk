@@ -143,12 +143,30 @@ namespace gpstk
       double Tgd;           /**< L1 and L2 correction term */
       long   HOWtime;        /**< Handover Word time */
 
+         // Static and public for test support pruposes.  Should only be used with OrbElemCNAV and OrbElemCNAV2
+         // in production.
+         //
+         // Determining the earliest transmit time is deterministic for non-upload cutovers 
+         // and needs to be done correctly in order to replicated user experience in post-processing, 
+         // even if the actual data were collected later than earliest transmission. However, in the
+         // case of upload cutovers, we have to depend on continuous collection to properly detect
+         // upload cutover times. 
+      static CommonTime computeBeginValid(const CommonTime& xmit,
+                                          const CommonTime& ctToe ); 
+      static CommonTime computeEndValid(const CommonTime& ctToe,
+                                        const int fitHours );
+      static bool  isNominalToe(const CommonTime& ctToe);
+
+      static long TWO_HOURS;
+      static long SIXTEEN_SECONDS;
+
    private:
          // The following two members are used for communicatiaon within
          // OrbElemRinex.
       double Toc3;            // As read from RINEX
       double Toe3;
       short fullXmitWeekNum; // As read from RINEX
+
 
          //@}
 
