@@ -903,8 +903,10 @@ namespace gpstk
       // - The toe is in the nominal alignment.   In this case the mid-point of the 
       //   curve fit interval is aligned with the toe and the end valid determination
       //   is trivial. 
-      // - The tow is NOT aligned with the nominal.   In this case, the mid-poin of the 
-      //   curve fit is 1 lsb (16 sec.) LATER than the toe.  
+      // - The tow is NOT aligned with the nominal.   In this case, the mid-point of the 
+      //   curve fit is the first even 15 minute interval later than the toe.
+      //   Prior to GPS, this would be a 2 hour boundary.  With GPS III it could be
+      //   any 15 minute boundary.
    CommonTime OrbElemRinex::computeEndValid(const CommonTime& ctToe,
                                             const int fitHours )
    {
@@ -913,15 +915,23 @@ namespace gpstk
       CommonTime endValid = ctToe + (double) (fitSeconds/2); 
 
          // If an upload cutover, need some adjustment.
+         // Calculate the SOW aligned with the mid point and then
+         // calculate the number of seconds the toe is SHORT
+         // of that value.   That's how far the endValid needs
+         // to be adjusted.   
       if (!isNominalToe(ctToe))
       {
-         endValid += SIXTEEN_SECONDS;
+         long sow = (long) static_cast<GPSWeekSecond>(ctToe).sow;
+         long num900secIntervals = sow / 900;
+         long midPointSOW = (num900secIntervals+1) * 900;
+         double adjustUp = (double) (midPointSOW - sow);
+         endValid += adjustUp;
       }
       return endValid;
    }
 
    //----------------------------------------------------------------
-      // For a CEi data set that is NOT an upload cutover, toe should be 
+      // For a CEI data set that is NOT an upload cutover, toe should be 
       // an even two hour boundary.
    bool OrbElemRinex::isNominalToe(const gpstk::CommonTime& ctToe)
    {
