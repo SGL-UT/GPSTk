@@ -200,21 +200,6 @@ namespace gpstk
          }
       }
       
-      /*
-      double XmitSOW = 0.0;
-      if ( (longToc % 7200) != 0)     // NOT an even two hour change
-      {
-         long Xmit = adjHOWtime - (adjHOWtime % 30);
-         XmitSOW = (double) Xmit;
-      }
-      else
-      {
-         long Xmit = adjHOWtime - adjHOWtime % 7200;
-         XmitSOW = (double) Xmit;
-      }
-      beginValid = GPSWeekSecond( fullXmitWeekNum, XmitSOW, TimeSystem::GPS );
-      */
-
       // Determine Transmit Time
       // Transmit time is the actual time this
       // SF 1/2/3 sample was collected
@@ -238,29 +223,6 @@ namespace gpstk
       beginValid = computeBeginValid(transmitTime, ctToe); 
       endValid = computeEndValid(ctToe,fitDuration); 
 
-/*
-	 // End of Validity.
-	 // The end of validity is calculated from the fit interval
-	 // and the Toe.  Since this is RINEX, the fit interval is
-	 // already supposed to be stated in hours.   
-	 // Round the Toe value to the hour to elminate confusion
-	 // due to possible "small offsets" indicating uploads
-      short fitHours = fitDuration;
-      long  ToeOffset = (long) Toe % 3600;
-      double adjToe = Toe;                  // Default case
-      if (ToeOffset)
-      {
-         adjToe += 3600.0 - (double)ToeOffset;   // If offset, then adjust to remove it
-      }
-      long endFitSOW = adjToe + (fitHours/2)*3600;
-      short endFitWk = epochWeek;
-      if (endFitSOW >= FULLWEEK)
-      {
-         endFitSOW -= FULLWEEK;
-         endFitWk++;
-      }
-      endValid = GPSWeekSecond(endFitWk, endFitSOW, TimeSystem::GPS);
-*/
 	 // Semi-major axis and time-rate-of-change of semi-major axis
 	 //    Note: Legacy navigation message (SF 1/2/3) used SQRT(A).
 	 //    The CNAV and CNAV-2 formats use deltaA and Adot.  As a
@@ -453,20 +415,6 @@ namespace gpstk
             fullXmitWeekNum--;
          }
       }
-/*
-      double XmitSOW = 0.0;
-      if ( (longToc % 7200) != 0)     // NOT an even two hour change
-      {
-         long Xmit = adjHOWtime - (adjHOWtime % 30);
-         XmitSOW = (double) Xmit;
-      }
-      else
-      {
-         long Xmit = adjHOWtime - adjHOWtime % 7200;
-         XmitSOW = (double) Xmit;
-      }
-      beginValid = GPSWeekSecond( fullXmitWeekNum, XmitSOW, TimeSystem::GPS );
-*/
 
       // Determine Transmit Time
       // Transmit time is the actual time this
@@ -489,28 +437,6 @@ namespace gpstk
       ctToe = GPSWeekSecond(epochWeek, Toe3, TimeSystem::GPS);
       beginValid = computeBeginValid(transmitTime, ctToe); 
       endValid = computeEndValid(ctToe,fitDuration);                 
-
-         // End of Validity.
-         // The end of validity is calculated from the fit interval
-         // and the Toe.  Since this is RINEX, the fit interval is
-         // already supposed to be stated in hours.
-         // Round the Toe value to the hour to elminate confusion
-         // due to possible "small offsets" indicating uploads
-      short fitHours = fitDuration;
-      long  ToeOffset = (long) Toe3 % 3600;
-      double adjToe = Toe3;                  // Default case
-      if (ToeOffset)
-      {
-         adjToe += 3600.0 - (double)ToeOffset;   // If offset, then adjust to remove it
-      }
-      long endFitSOW = adjToe + (fitHours/2)*3600;
-      short endFitWk = epochWeek;
-      if (endFitSOW >= FULLWEEK)
-      {
-         endFitSOW -= FULLWEEK;
-         endFitWk++;
-      }
-      endValid = GPSWeekSecond(endFitWk, endFitSOW, TimeSystem::GPS);
    }
 
    //----------------------------------------------------------------
