@@ -67,7 +67,7 @@ int main()
 
       // Upload cutover.  Example from prior to GPS III
    xmit = CivilTime(2019, 1, 11, 2, 36, 0.0, TimeSystem::GPS); 
-   toe = CivilTime(2019, 1, 11, 3, 50, 44.0, TimeSystem::GPS);
+   toe = CivilTime(2019, 1, 11, 3, 59, 44.0, TimeSystem::GPS);
    result = OrbElemRinex::computeBeginValid(xmit,toe);
    TUASSERTE( CommonTime, xmit, result );
 
@@ -81,7 +81,7 @@ int main()
    result = OrbElemRinex::computeBeginValid(xmit,toe);
    TUASSERTE( CommonTime, xmit, result );
 
-   endValid = toe + OrbElemRinex::SIXTEEN_SECONDS + OrbElemRinex::TWO_HOURS;
+   endValid = CivilTime(2019, 1, 10,  2, 30, 0.0, TimeSystem::GPS);
    result = OrbElemRinex::computeEndValid(toe, fitHours);
    TUASSERTE( CommonTime, endValid, result );
 
