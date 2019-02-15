@@ -54,7 +54,7 @@ namespace gpstk {
       /// explicit constructor, no defaults
       GSatID(int p, SatelliteSystem s) throw()
       {
-         system = s;
+         id = p; system = s;
          switch(system) {
             case systemGPS:
             case systemGalileo:
@@ -68,9 +68,7 @@ namespace gpstk {
             default:
                system = systemGPS;
                id = -1;
-               return;
          }
-         id = p;
       }
 
       /// constructor from string
@@ -92,6 +90,35 @@ namespace gpstk {
          { return fillchar; }
 
       // operator=, copy constructor and destructor built by compiler
+
+      /// operator ==
+      bool operator==(const GSatID& right) const throw()
+         { return ((system == right.system) && (id == right.id)); }
+
+      /// operator< (used by STL to sort)
+      bool operator<(const GSatID& right) const throw()
+      {
+         if (system==right.system)
+            return (id<right.id);
+         return (system<right.system);
+      }
+
+      // the rest follow from Boolean algebra...
+      /// boolean operator!=
+      bool operator!=(const GSatID& right) const throw()
+         { return !operator==(right); }
+
+      /// boolean operator>=
+      bool operator>=(const GSatID& right) const throw()
+         { return !operator<(right); }
+
+      /// boolean operator<=
+      bool operator<=(const GSatID& right) const throw()
+         { return (operator<(right) || operator==(right)); }
+
+      /// boolean operator>
+      bool operator>(const GSatID& right) const throw()
+         { return (!operator<(right) && !operator==(right)); }
 
       /// return the single-character system descriptor
       char systemChar() const throw()

@@ -109,7 +109,7 @@
 template <class T> class FilterHit
 {
 public:
-   /// enum used to indicate the kind of event
+   /// enum used to indicate the kind of event in this result
    typedef enum EventType {
       BOD = 0,          ///< beginning of data
       outlier,          ///< outlier(s) - npts is the number of outliers
@@ -118,8 +118,9 @@ public:
    } event;
 
    /// empty and only constructor
-   FilterHit() : index(-1), type(BOD), npts(0), ngood(0), step(T(0)),
-                 haveStats(false), sigma(T(0)), score(0) { }
+   FilterHit() : index(-1), type(BOD), npts(0), ngood(0), score(0),
+                 step(T(0)), sigma(T(0)), dx(T(0)),
+                 haveStats(false) { }
 
    // member data
    event type;          ///< type of event: BOD, outlier(s), slip, other
@@ -131,6 +132,7 @@ public:
 
    T step;              ///< for a slip, an estimate of the step in the data
    T sigma;             ///< for a slip, RSS future and past sigma on the data
+   T dx;                ///< step in xdata: before SLIP or after OUT
 
    bool haveStats;      ///< set true when getStats() is called
    // see getStats() - meanings depend on filter
@@ -157,9 +159,32 @@ public:
          case slip: oss << "SLIP"; break;
          default: case other: oss << "other"; break;
       }
-      oss << "; index=" << index << " npts=" << npts << " ngood=" << ngood
-         << std::fixed << std::setprecision(osp) << "; step=" << step
-         << "; sigma=" << sigma << "; score=" << score;
+      oss << std::fixed << std::setprecision(osp);
+
+      // ind npts step dx sig score - be sure this order matches asStringRead()
+      oss << " " << index << " " << npts << " " << dx;
+      if(type == slip) oss << " " << step << " " << sigma << " " << score;
+      else             oss << " ?" << " ?" << " ?";
+
+      return oss.str();
+   }
+
+   /// return as a single human-readable string giving all the relevant info
+   std::string asStringRead(const int osp=3) const
+   {
+      std::stringstream oss;
+      switch(type) {
+         case BOD: oss << "BOD"; break;
+         case outlier: oss << "OUT"; break;
+         case slip: oss << "SLIP"; break;
+         default: case other: oss << "other"; break;
+      }
+      oss << " index=" << index << " npts=" << npts
+            << std::fixed << std::setprecision(osp)
+            << " x_gap=" << dx;
+      if(type == slip) oss << " step=" << step << " sigma=" << sigma
+                           << " score=" << score << (score<100 ? " SMALL":"");
+
       return oss.str();
    }
 
@@ -217,6 +242,9 @@ public:
 
    /// constructor with two arrays - x is used only in dump(); x and f must exist
    /// but may be empty
+   /// @param x const vector<T> of 'times' values, NB (x,d,f) all parallel
+   /// @param d const vector<T> of data values
+   /// @param f const vector<int> of flags, 0 means good. this array may be empty.
    FirstDiffFilter(const std::vector<T>& x,
                    const std::vector<T>& d,
                    const std::vector<int>& f) : data(d), xdata(x), flags(f)
@@ -860,6 +888,9 @@ public:
    }; // end class Analysis
 
    /// constructor
+   /// @param x const vector<T> of 'times' values, NB (x,d,f) all parallel
+   /// @param d const vector<T> of data values
+   /// @param f const vector<int> of flags, 0 means good. this array may be empty.
    WindowFilter(const std::vector<T>& x,
                 const std::vector<T>& d,
                 const std::vector<int>& f) : xdata(x), data(d), flags(f)

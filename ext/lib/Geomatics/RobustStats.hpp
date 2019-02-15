@@ -61,7 +61,7 @@ namespace gpstk {
 /// tuning constant used in robust estimate of variance
 #define RobustTuningA (0.778)       // or 0.67
 /// tuning constant used in MAD
-#define RobustTuningE (0.6745)
+#define RobustTuningE (0.6745)      // so MAD of a std normal dist is StdDev
 
 //------------------------------------------------------------------------------------
    /// @ingroup math 

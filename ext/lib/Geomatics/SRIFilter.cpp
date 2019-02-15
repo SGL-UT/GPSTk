@@ -1,3 +1,10 @@
+/// @file SRIFilter.cpp  Implementation of class SRIFilter.
+/// class SRIFilter implements the square root information matrix form of the
+/// Kalman filter.
+///
+/// Reference: "Factorization Methods for Discrete Sequential Estimation,"
+///             G.J. Bierman, Academic Press, 1977.
+
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -33,13 +40,6 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
-
-/// @file SRIFilter.cpp  Implementation of class SRIFilter.
-/// class SRIFilter implements the square root information matrix form of the
-/// Kalman filter.
-///
-/// Reference: "Factorization Methods for Discrete Sequential Estimation,"
-///             G.J. Bierman, Academic Press, 1977.
 
 //------------------------------------------------------------------------------------
 #include "SRIFilter.hpp"
@@ -148,8 +148,9 @@ void SRIFilter::measurementUpdate(const Matrix<double>& H, Vector<double>& D,
    try {
          // whiten partials and data
       Matrix<double> P(H);
-      Matrix<double> CHL(lowerCholesky(CM));
+      Matrix<double> CHL;
       if(&CM != &SRINullMatrix) {
+         CHL = lowerCholesky(CM);
          Matrix<double> L(inverseLT(CHL));
          P = L * P;
          D = L * D;
@@ -159,9 +160,8 @@ void SRIFilter::measurementUpdate(const Matrix<double>& H, Vector<double>& D,
       SrifMU(R, Z, P, D);
 
          // un-whiten residuals
-      if(&CM != &SRINullMatrix) {         // same if above creates CHL
+      if(&CM != &SRINullMatrix)           // same if above creates CHL
          D = CHL * D;
-      }
    }
    catch(MatrixException& me) { GPSTK_RETHROW(me); }
    catch(VectorException& ve) { GPSTK_RETHROW(ve); }
@@ -412,7 +412,7 @@ void SRIFilter::SrifTU(Matrix<T>& R,
       // initialize
       Rwx = T(0);
       PhiInv = R * PhiInv;                   // set PhiInv = Rd = R*PhiInv
-      G = -PhiInv * G;                       // set G = -Rd * G
+      G = -PhiInv * G;
       // fixed Matrix problem - unary minus should not return an l-value
       //G = -(PhiInv * G);                     // set G = -Rd*G
 
