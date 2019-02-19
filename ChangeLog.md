@@ -1,3 +1,64 @@
+Version 2.11.1   Monday, February 4, 2019
+
+   General modifications
+   ---------------------
+   - Updated gitlab-ci debian package management
+   - Updated and upgraded tests
+   - Various Bug and Compile Warning Fixes
+   - Deprecation of some ext code, moved to deprecate folder
+   - Updated to the toolkit to build on deb9 Stretch
+   - Cleanup comments & remove commented out code.
+
+   Modifications by Author
+   --------------------- 
+Andrew Kuck (2):
+      Cleanup comments & remove commented out code.
+      Set the return value in OrbAlmFactory convert default case of no match.
+
+Bryan Parsons (13):
+      Updating debian/changelog to stable build
+      Updating file state to prevent removal upon merging branch into master.
+      Resolving merge conflict with master.
+      Test missed from merge with master.
+      Merge branch 'issue_364' into 'master'
+      Removing unneeded files from gitlab-ci debian package build stage.
+      Merge branch 'issue_359_CNAV_Packets' into 'master'
+      Exposing core/lib/PosSol code for swig interface.
+      Merge branch 'PRSolution_swig' into 'master'
+      Merge branch 'navcracker' into 'master'
+      Update .gitlab-ci.yml
+      Merge branch 'fixingPRSolveRinSumBugs' into 'master'
+      Merge branch 'issue_368_GPSIII_FitInterval' into 'master'
+
+Dave Rainwater (3):
+      Version with altered RAIMCompute signature (no Sat Sys type vector) to work with PySGLTk.  This is a temporary solution, until someone can modify GPSTk's swig to accommodate the full normal signature.
+      Revision to PRSolution signature changes to work with Python swig-bound code.
+      Modified PRSolution with a simplified RAIMCompute interface, RAIMComputeSimple, that doesn't have the vector and matrix varibles that aren't yet exposed in swig.
+
+Eric Bigenwald (1):
+      support for CNAV/CNAV-2 Ephemeris Differential Correction packets.
+
+Jon Little (2):
+      Issue 364
+      Merge branch 'issue_366_SVNumXRef' into 'master'
+
+Sarah Magliocca (2):
+      fixing prsolve extra line bug and rinsum marker name
+      updating rinsum tests to include marker name
+
+renfrob (8):
+      Adding SVN74-PRN4 relationship
+      Merge branch 'master' into issue_359_CNAV_Packets
+      Merge branch 'master' into issue_359_CNAV_Packets
+      Adding GPS III LNAV fit improvements
+      Adding unit tests for fit intervals
+      Fixing a typo in a comment
+      Removing commented old code
+      Fixing two flawed tests cases
+
+
+      #################################################
+
 Version 2.11   Thursday, January 3, 2019
 
    General modifications
