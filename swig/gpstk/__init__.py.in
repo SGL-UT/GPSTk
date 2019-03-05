@@ -6,3 +6,4 @@
 # Populate gpstk namespace
 #----------
 from gpstk import *
+__version__ = "@GPSTK_VERSION@"
