@@ -159,7 +159,7 @@ STREAM_HELPER(Yuma)
          // check if there is any sv entries at this epoch and create one if necessary
          if (rodarr[*it].obs.find(svid) == rodarr[*it].obs.end())
          {
-            std::map<std::string , std::vector<RinexObsID> >::const_iterator kt = roh.mapObsTypes.find("G");
+            std::map<std::string , std::vector<RinexObsID> >::const_iterator kt = roh.mapObsTypes.find(std::string(1, svid.systemChar()));
             if (kt == roh.mapObsTypes.end()) { return; }
             rodarr[*it].obs[svid] = gpstk::Rinex3ObsData::DataMap::mapped_type (kt->second.size());
             rodarr[*it].numSVs++;

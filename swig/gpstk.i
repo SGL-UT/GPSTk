@@ -322,6 +322,10 @@ namespace std { class fstream {}; }
 %include "PoleTides.hpp"
 %include "SolidTides.hpp"
 
+// PosSol
+%include "Combinations.hpp"
+%include "PRSolution.hpp"
+
 // Geomatics:
 %include "Geomatics.i"
 %include "SunEarthSatGeometry.hpp"

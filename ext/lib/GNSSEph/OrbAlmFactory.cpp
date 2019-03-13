@@ -79,6 +79,7 @@ namespace gpstk
          }
 
          default: 
+            retVal = 0;
             break;
          }
       }
