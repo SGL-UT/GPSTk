@@ -242,6 +242,9 @@ namespace gpstk {
       ObsID::cb2char[ObsID::cbB2] = '7';
       ObsID::cb2char[ObsID::cbB3] = '6';
 
+      ObsID::tc2char[ObsID::tcG1D]  = 'S';
+      ObsID::tc2char[ObsID::tcG1P]  = 'L';
+      ObsID::tc2char[ObsID::tcG1X]  = 'X';
       ObsID::tc2char[ObsID::tcC]    = 'C';
       ObsID::tc2char[ObsID::tcGCA]  = 'C';
       ObsID::tc2char[ObsID::tcGP]   = 'P';
