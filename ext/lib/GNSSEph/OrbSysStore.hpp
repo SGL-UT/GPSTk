@@ -192,7 +192,20 @@ namespace gpstk
                                             const NavID& navtype,
                                             const unsigned long UID) const
          throw(InvalidRequest);
-      
+
+      /// FUrther generalization of the preceeding method.   In this case,
+      /// the search is conducted across all SVs in the store.   
+      /// Given a message type and a system-specific 
+      /// message unique ID (UID),
+      /// return a list of the messages in the store and fit the
+      /// description.
+      /// Throws InvalidRequest if
+      ///   - the NavID isn't in the store
+      ///   - if there are no message with the specified UID in the store
+      std::list<const OrbDataSys*> findList(const NavID& navtype,
+                                            const unsigned long UID) const
+         throw(InvalidRequest);      
+
       /// Given a satellite, a system-specific message unique ID (UID), and a 
       /// time, return pointers to the two messages in the time series that 
       /// bound the given time. The lower bound is the first element and the 
@@ -207,10 +220,21 @@ namespace gpstk
                                                                  const unsigned long UID,
                                                                  const CommonTime& t) const;
 
-      /// Return a list of SatID object representing the satellites that
+      /// Return a list of SatID objects representing the satellites that
       /// are contained in the store.
       /// @return list of SatID objects
       std::list<gpstk::SatID> getSatIDList() const;
+
+      /// Return a list of NavID objects representing the satellites that
+      /// are contained in the store.
+      /// @return list of SatID objects
+      std::list<gpstk::NavID> getNavIDList() const;
+
+      /// Return a list of SatID::SatelliteSystem enums representing the satellite
+      /// systems that
+      /// are contained in the store.
+      /// @return list of SatID::SatelliteSystem items
+      const std::list<gpstk::SatID::SatelliteSystem>& getSatSysList() const;
 
       unsigned int setDebugLevel(const unsigned int newLevel)
          { debugLevel = newLevel; return debugLevel; }

@@ -73,7 +73,7 @@ namespace gpstk
    bool OrbSysStore::addMessage(const OrbDataSys* p)
          throw(InvalidRequest,Exception)
    {
-      if (debugLevel) cout << "Entering addMessage(OrbDataSys*)" << endl;
+      if (debugLevel) cout << "Entering CHECK-CHECK addMessage(OrbDataSys*)" << endl;
 
          // Set up the indexing information for convenience
       const CommonTime& ct = p->beginValid;
@@ -82,6 +82,8 @@ namespace gpstk
       const SatID& sidr = p->satID;
       NavID navtype = NavID(sidr,oidr);
       
+      cout << "UID, sidr, oidr, navtype: " << UID << ", " << sidr << ", " << oidr << ", " << navtype << endl;
+
       //default return value
       bool itemWasAdded = false;
       
@@ -102,8 +104,11 @@ namespace gpstk
       // Because of the return policy of map::lower_bound and map::upper_bound,
       // we only ever need to check to see if the lower bound is equal in time
       // to the input message.
+      cout << "Calling findBounds()." << endl;
       pair<const OrbDataSys*, const OrbDataSys*> bounds = findBounds(sidr,navtype,UID,ct);
       
+      cout << "Entering the massive if/else." << endl;
+
       // The following logic structure selects input states in order of
       // precedence, and acts accordingly. This structure is meant to emulate
       // the logic described above using a different set of input values
@@ -112,6 +117,7 @@ namespace gpstk
       {  // An invalid case, where the input matches the lower bound in time,
          // but does not match in payload data. This is a confusing request for
          // the user to make.
+         cout << "case 1" << endl;
          stringstream failString;
          failString << "Undefined input/datastore state: "
                     << "Input message matches a previously accepted message "
@@ -122,11 +128,13 @@ namespace gpstk
       else if(storeAll)
       {  // Case where the user does not care for uniqueness testing, all valid
          // messages will be added
+         cout << "case 2" << endl;
          insertToMsgMap(p);
          itemWasAdded = true;
       }
       else if((bounds.first == NULL) && (bounds.second == NULL))
       {  // Case where the appropriate time-series is empty or does not exist
+         cout << "case 3" << endl;
          insertToMsgMap(p);
          itemWasAdded = true;
       }
@@ -139,6 +147,7 @@ namespace gpstk
       }
       else if((bounds.second != NULL) && (bounds.second->isSameData(p)))
       {  // Case where input matches the upper bound in payload
+         cout << "case 4" << endl;
          deleteMessage(sidr, navtype, UID, bounds.second->beginValid);
          insertToMsgMap(p);
          itemWasAdded = true;
@@ -148,10 +157,23 @@ namespace gpstk
            || ((bounds.first == NULL) && (bounds.second != NULL) && !(bounds.second->isSameData(p))) )
       {  // Case where input matches neither bound in payload, including cases
          // where one bound is the end of the time-series
+         cout << "case 5" << endl;
          insertToMsgMap(p);
          itemWasAdded = true;
       }
       
+
+
+      cout << "In addMessage().  itemWasAdded = " << itemWasAdded << endl;
+      if (itemWasAdded)
+      {
+         cout << "Testing to see if " << sidr.system << " present. " << endl;
+         if (!isSatSysPresent(sidr.system))
+         {
+            cout << "   it was NOT present.  Calling addSatSys()" << endl;
+            addSatSys(sidr.system);
+         }
+      }
       return itemWasAdded;
    }
 
@@ -860,6 +882,39 @@ namespace gpstk
    }
 
 //-----------------------------------------------------------------------------
+   std::list<const OrbDataSys*> OrbSysStore::findList(const NavID& navtype,
+                                         const unsigned long UID) const
+         throw(InvalidRequest)
+   {
+      std::list<const OrbDataSys*> retList;
+      SAT_NM_UID_MSG_MAP::const_iterator cit1;
+      for (cit1=msgMap.begin();cit1!=msgMap.end();cit1++)
+      {
+         SatID sid = cit1->first;
+         try
+         {
+            list<const OrbDataSys*> tList = findList(sid,navtype,UID);
+            if (tList.size()>0)
+               retList.splice(retList.end(), tList);
+         }
+         catch(InvalidRequest)
+         {
+            // Do nothing.  Just try next SV.
+         }
+      }
+
+      if (retList.size()==0)
+      {
+         stringstream failString;
+         failString << "No messages with " << navtype << " and UID " << UID << " found in message store.";
+         InvalidRequest ir(failString.str());
+         GPSTK_THROW(ir);
+      }
+      return retList;
+   }
+
+
+//-----------------------------------------------------------------------------
    std::list<const OrbDataSys*> OrbSysStore::findList(const SatID& sat,
                                                       const NavID& navtype,
                                                       const unsigned long UID) const
@@ -1032,6 +1087,39 @@ namespace gpstk
       return retList;
    }
 
+//-----------------------------------------------------------------------------
+   std::list<gpstk::NavID> OrbSysStore::getNavIDList() const
+   {     
+         // Initially place the results in a set to enforce uniqueness.
+      set<gpstk::NavID> retSet;
+      SAT_NM_UID_MSG_MAP::const_iterator cit1;
+      for (cit1=msgMap.begin();cit1!=msgMap.end();cit1++)
+      {
+         const NM_UID_MSG_MAP& mapr = cit1->second;
+         NM_UID_MSG_MAP::const_iterator cit2;
+         for (cit2=mapr.begin();cit2!=mapr.end();cit2++)
+         {
+            const NavID& nidr = cit2->first;
+            retSet.insert(nidr);
+         }
+      }
+
+         // Now convert the set to a list for the return
+      list<gpstk::NavID> retList;
+      set<gpstk::NavID>::const_iterator cit3;
+      for (cit3=retSet.begin();cit3!=retSet.end();cit3++)
+      {
+         NavID nid = *cit3;
+         retList.push_back(nid);
+      }
+      return retList;     
+   }
+
+//-----------------------------------------------------------------------------
+   const std::list<gpstk::SatID::SatelliteSystem>& OrbSysStore::getSatSysList() const
+   {
+      return sysList;
+   }
 
 //-----------------------------------------------------------------------------
    bool OrbSysStore::isSatSysPresent(const SatID::SatelliteSystem ss) const
