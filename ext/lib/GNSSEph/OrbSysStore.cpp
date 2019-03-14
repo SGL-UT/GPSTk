@@ -73,7 +73,7 @@ namespace gpstk
    bool OrbSysStore::addMessage(const OrbDataSys* p)
          throw(InvalidRequest,Exception)
    {
-      if (debugLevel) cout << "Entering CHECK-CHECK addMessage(OrbDataSys*)" << endl;
+      if (debugLevel) cout << "Entering addMessage(OrbDataSys*)" << endl;
 
          // Set up the indexing information for convenience
       const CommonTime& ct = p->beginValid;
@@ -82,8 +82,6 @@ namespace gpstk
       const SatID& sidr = p->satID;
       NavID navtype = NavID(sidr,oidr);
       
-      cout << "UID, sidr, oidr, navtype: " << UID << ", " << sidr << ", " << oidr << ", " << navtype << endl;
-
       //default return value
       bool itemWasAdded = false;
       
@@ -104,11 +102,8 @@ namespace gpstk
       // Because of the return policy of map::lower_bound and map::upper_bound,
       // we only ever need to check to see if the lower bound is equal in time
       // to the input message.
-      cout << "Calling findBounds()." << endl;
       pair<const OrbDataSys*, const OrbDataSys*> bounds = findBounds(sidr,navtype,UID,ct);
       
-      cout << "Entering the massive if/else." << endl;
-
       // The following logic structure selects input states in order of
       // precedence, and acts accordingly. This structure is meant to emulate
       // the logic described above using a different set of input values
@@ -117,7 +112,6 @@ namespace gpstk
       {  // An invalid case, where the input matches the lower bound in time,
          // but does not match in payload data. This is a confusing request for
          // the user to make.
-         cout << "case 1" << endl;
          stringstream failString;
          failString << "Undefined input/datastore state: "
                     << "Input message matches a previously accepted message "
@@ -128,13 +122,11 @@ namespace gpstk
       else if(storeAll)
       {  // Case where the user does not care for uniqueness testing, all valid
          // messages will be added
-         cout << "case 2" << endl;
          insertToMsgMap(p);
          itemWasAdded = true;
       }
       else if((bounds.first == NULL) && (bounds.second == NULL))
       {  // Case where the appropriate time-series is empty or does not exist
-         cout << "case 3" << endl;
          insertToMsgMap(p);
          itemWasAdded = true;
       }
@@ -147,7 +139,6 @@ namespace gpstk
       }
       else if((bounds.second != NULL) && (bounds.second->isSameData(p)))
       {  // Case where input matches the upper bound in payload
-         cout << "case 4" << endl;
          deleteMessage(sidr, navtype, UID, bounds.second->beginValid);
          insertToMsgMap(p);
          itemWasAdded = true;
@@ -157,20 +148,14 @@ namespace gpstk
            || ((bounds.first == NULL) && (bounds.second != NULL) && !(bounds.second->isSameData(p))) )
       {  // Case where input matches neither bound in payload, including cases
          // where one bound is the end of the time-series
-         cout << "case 5" << endl;
          insertToMsgMap(p);
          itemWasAdded = true;
       }
       
-
-
-      cout << "In addMessage().  itemWasAdded = " << itemWasAdded << endl;
       if (itemWasAdded)
       {
-         cout << "Testing to see if " << sidr.system << " present. " << endl;
          if (!isSatSysPresent(sidr.system))
          {
-            cout << "   it was NOT present.  Calling addSatSys()" << endl;
             addSatSys(sidr.system);
          }
       }

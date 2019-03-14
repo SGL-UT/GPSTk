@@ -91,7 +91,7 @@ public:
 OrbSysStore_T::
 OrbSysStore_T()
 {
-   debugLevel = 1; 
+   debugLevel = 0; 
    init();
 }
 
