@@ -409,6 +409,7 @@ createAndDump()
    TUASSERTE(NavID,nid,expNid);
 
       // Test getSatSysList()
+   /*
    currMethod = typeDesc + " OrbSysStore.getSatSysList()";
    TUCSM(currMethod);
    const list<SatID::SatelliteSystem>& satSysList = oss.getSatSysList();
@@ -421,7 +422,7 @@ createAndDump()
    {
       cout << " " << *tt << endl;
    }
-
+  */
       // Dump the store
    currMethod = typeDesc + " OrbSysStore.dump()";
    TUCSM(currMethod);
