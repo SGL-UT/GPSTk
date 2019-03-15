@@ -1691,7 +1691,7 @@ void Configuration::SolDescHelp(void)
    //os << " or";
    //for(i=0; i<systs.size(); i++) os <<" "<< systs[i];
    os << endl;
-   os << "   F is a frequency, one of:";
+   os << "   F is a frequency, one or two of:";
    for(i=0; i<freqs.size(); i++) os << " " << freqs[i];
    os << endl;
    os << "   C is an ordered set of one or more tracking codes, for example WPC\n"
@@ -1706,8 +1706,9 @@ void Configuration::SolDescHelp(void)
       << "   frequencies to eliminate the ionospheric delay, for example\n"
       << "   GPS:12:PC is the usual L1/L2-ionosphere-corrected GPS solution.\n"
       << " Triple frequency solutions are not supported.\n\n"
-      << " More that one tracking code may be provided, for example GPS:12:PC\n"
-      << "  This tells PRSolve to prefer P, but if it is not available, use C.\n\n"
+      << " More that one tracking code may be provided, for example GPS:12:PWC\n"
+      << "  This tells PRSolve to prefer P, but if it is not available, use W,\n"
+      << "  and if neither P nor W are available, use C.\n\n"
       << " Finally, combined solutions may be specified, in which different\n"
       << "  data types, even from different systems, are used together.\n"
       << "  The component descriptors are combined using a '+'. For example\n"
