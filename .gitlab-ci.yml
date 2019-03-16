@@ -67,6 +67,8 @@ build_osx:
     - build/
   only:
     - schedules
+  except:
+    - merge_requests
 
 build_windows:
   stage: build
@@ -82,6 +84,10 @@ build_windows:
     - build/
 # Temporarily allow failures as Windows Runner issues are resolved
   allow_failure: true
+  only:
+    - schedules
+  except:
+    - merge_requests
 
 build_core:
   stage: build
@@ -130,6 +136,8 @@ test_osx:
     - build_osx
   only:
     - schedules
+  except:
+    - merge_requests
 
 test_windows:
   stage: test
@@ -141,6 +149,10 @@ test_windows:
   dependencies:
     - build_windows
   allow_failure: true
+  only:
+    - schedules
+  except:
+    - merge_requests
 
 test_core:
   stage: test
@@ -201,7 +213,9 @@ deploy_osx:
   dependencies:
     - build_osx
   only:
-    - schedules    
+    - schedules  
+  except:
+    - merge_requests  
 
 deploy_windows:
   stage: deploy
@@ -214,6 +228,10 @@ deploy_windows:
     - build_windows
 # Temporarily allow failures as Windows Runner issues are resolved
   allow_failure: true  
+  only:
+    - schedules
+  except:
+    - merge_requests
 
 deploy_core:
   stage: deploy
@@ -268,7 +286,9 @@ package_osx:
   dependencies:
     - build_osx
   only:
-    - schedules    
+    - schedules
+  except:
+    - merge_requests
 
 package_windows:
   stage: package
@@ -281,6 +301,10 @@ package_windows:
     - build_windows
 # Temporarily allow failures as Windows Runner issues are resolved
   allow_failure: true
+  only:
+    - schedules
+  except:
+    - merge_requests
 
 package_core:
   stage: package
