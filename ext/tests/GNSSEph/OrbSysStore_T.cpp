@@ -374,6 +374,55 @@ createAndDump()
       TUFAIL(ss.str());
    }
 
+      // Test findList(NavID,UID)
+   currMethod = typeDesc + " OrbSysStore.findList(NavID,UID)";
+   TUCSM(currMethod);
+   UID = 56; 
+   try
+   {
+      list<const OrbDataSys*> pList = oss.findList(nidTest,UID); 
+      TUASSERTE(int,5,pList.size());
+   }
+   catch (InvalidRequest ir)
+   {
+      stringstream ss;
+      ss << "Unexpected exception" << endl;
+      ss << ir << endl;
+      TUFAIL(ss.str());
+   }
+
+      // Test getSatIDList()
+   currMethod = typeDesc + " OrbSysStore.getSatIDList()";
+   TUCSM(currMethod);
+   list<SatID> satIDList = oss.getSatIDList();
+   TUASSERTE(int,3,satIDList.size());
+   SatID sid = satIDList.front();
+   TUASSERTE(SatID,sid,SatID(1,SatID::systemGPS));
+
+      // Test getNavIDList()
+   currMethod = typeDesc + " OrbSysStore.getNavIDList()";
+   TUCSM(currMethod);
+   list<NavID> navIDList = oss.getNavIDList();
+   TUASSERTE(int,1,navIDList.size());
+   NavID nid = navIDList.front();
+   NavID expNid = NavID(NavID::ntGPSLNAV);
+   TUASSERTE(NavID,nid,expNid);
+
+      // Test getSatSysList()
+   /*
+   currMethod = typeDesc + " OrbSysStore.getSatSysList()";
+   TUCSM(currMethod);
+   const list<SatID::SatelliteSystem>& satSysList = oss.getSatSysList();
+   TUASSERTE(int,1,satSysList.size());
+   SatID::SatelliteSystem ss = satSysList.front();
+   TUASSERTE(SatID::SatelliteSystem,ss,SatID::systemGPS);
+   cout << "Length of satSysList: " << satSysList.size() << endl;
+   list<SatID::SatelliteSystem>::const_iterator tt;
+   for (tt=satSysList.begin(); tt!=satSysList.end(); tt++)
+   {
+      cout << " " << *tt << endl;
+   }
+  */
       // Dump the store
    currMethod = typeDesc + " OrbSysStore.dump()";
    TUCSM(currMethod);
