@@ -152,6 +152,13 @@ namespace gpstk
          itemWasAdded = true;
       }
       
+      if (itemWasAdded)
+      {
+         if (!isSatSysPresent(sidr.system))
+         {
+            addSatSys(sidr.system);
+         }
+      }
       return itemWasAdded;
    }
 
@@ -860,6 +867,39 @@ namespace gpstk
    }
 
 //-----------------------------------------------------------------------------
+   std::list<const OrbDataSys*> OrbSysStore::findList(const NavID& navtype,
+                                         const unsigned long UID) const
+         throw(InvalidRequest)
+   {
+      std::list<const OrbDataSys*> retList;
+      SAT_NM_UID_MSG_MAP::const_iterator cit1;
+      for (cit1=msgMap.begin();cit1!=msgMap.end();cit1++)
+      {
+         SatID sid = cit1->first;
+         try
+         {
+            list<const OrbDataSys*> tList = findList(sid,navtype,UID);
+            if (tList.size()>0)
+               retList.splice(retList.end(), tList);
+         }
+         catch(InvalidRequest)
+         {
+            // Do nothing.  Just try next SV.
+         }
+      }
+
+      if (retList.size()==0)
+      {
+         stringstream failString;
+         failString << "No messages with " << navtype << " and UID " << UID << " found in message store.";
+         InvalidRequest ir(failString.str());
+         GPSTK_THROW(ir);
+      }
+      return retList;
+   }
+
+
+//-----------------------------------------------------------------------------
    std::list<const OrbDataSys*> OrbSysStore::findList(const SatID& sat,
                                                       const NavID& navtype,
                                                       const unsigned long UID) const
@@ -1032,6 +1072,39 @@ namespace gpstk
       return retList;
    }
 
+//-----------------------------------------------------------------------------
+   std::list<gpstk::NavID> OrbSysStore::getNavIDList() const
+   {     
+         // Initially place the results in a set to enforce uniqueness.
+      set<gpstk::NavID> retSet;
+      SAT_NM_UID_MSG_MAP::const_iterator cit1;
+      for (cit1=msgMap.begin();cit1!=msgMap.end();cit1++)
+      {
+         const NM_UID_MSG_MAP& mapr = cit1->second;
+         NM_UID_MSG_MAP::const_iterator cit2;
+         for (cit2=mapr.begin();cit2!=mapr.end();cit2++)
+         {
+            const NavID& nidr = cit2->first;
+            retSet.insert(nidr);
+         }
+      }
+
+         // Now convert the set to a list for the return
+      list<gpstk::NavID> retList;
+      set<gpstk::NavID>::const_iterator cit3;
+      for (cit3=retSet.begin();cit3!=retSet.end();cit3++)
+      {
+         NavID nid = *cit3;
+         retList.push_back(nid);
+      }
+      return retList;     
+   }
+
+//-----------------------------------------------------------------------------
+   const std::list<gpstk::SatID::SatelliteSystem>& OrbSysStore::getSatSysList() const
+   {
+      return sysList;
+   }
 
 //-----------------------------------------------------------------------------
    bool OrbSysStore::isSatSysPresent(const SatID::SatelliteSystem ss) const

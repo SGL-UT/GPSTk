@@ -22,6 +22,11 @@ include( ${SWIG_USE_FILE} )
 set( CMAKE_SWIG_FLAGS "-w362,383,384,389,503 -builtin" )
 
 #----------------------------------------
+# Don't set the RPATH for dependencies.
+#----------------------------------------
+set( CMAKE_SKIP_INSTALL_RPATH TRUE )
+
+#----------------------------------------
 # Compiler flags that are used only
 # in the compiling of the swig bindings
 # @todo: see if -std=c++11 can be removed from all builds
@@ -115,6 +120,10 @@ file( WRITE ${SWIG_DOC_DIR}/doc.i "// dummy file. Is replaced when docs are gene
 set( SETUP_PY_IN "${CMAKE_CURRENT_SOURCE_DIR}/setup.py.in" )
 set( SETUP_PY    "${MODULE_PATH}/setup.py" )
 configure_file( ${SETUP_PY_IN} ${SETUP_PY} )
+
+set( GPSTK_ROOT_PY_IN "${CMAKE_CURRENT_SOURCE_DIR}/gpstk/__init__.py.in" )
+set( GPSTK_ROOT_PY    "${MODULE_PATH}/gpstk/__init__.py" )
+configure_file( ${GPSTK_ROOT_PY_IN} ${GPSTK_ROOT_PY} )
 
 # Note: For setup.py install options, see https://docs.python.org/2/install/
 install( CODE "execute_process(COMMAND ${PYTHON_EXECUTABLE} ${SETUP_PY} install --prefix=${PYTHON_INSTALL_PREFIX} WORKING_DIRECTORY ${MODULE_PATH})" )

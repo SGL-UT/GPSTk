@@ -34,10 +34,11 @@
 //
 //=============================================================================
 
-#include "RinexNavStream.hpp"
-#include "RinexNavHeader.hpp"
-#include "RinexNavData.hpp"
-#include "RinexNavFilterOperators.hpp"
+#include "Rinex3NavStream.hpp"
+#include "Rinex3NavHeader.hpp"
+#include "Rinex3NavData.hpp"
+#include "Rinex3NavFilterOperators.hpp"
+
 #include "FileFilterFrameWithHeader.hpp"
 #include "SystemTime.hpp"
 #include "CivilTime.hpp"
@@ -66,16 +67,16 @@ void MergeRinNav::process()
 
       // FFF will sort and merge the obs data using
       // a simple time check
-   FileFilterFrameWithHeader<RinexNavStream, RinexNavData, RinexNavHeader> 
-      fff(files);
+   FileFilterFrameWithHeader<Rinex3NavStream, Rinex3NavData, Rinex3NavHeader> fff(files);
 
       // get the header data
-   RinexNavHeaderTouchHeaderMerge merged;
+   Rinex3NavHeaderTouchHeaderMerge merged;
+
    fff.touchHeader(merged);
 
       // sort and filter the data
-   fff.sort(RinexNavDataOperatorLessThanFull());
-   fff.unique(RinexNavDataOperatorEqualsFull());
+   fff.sort(Rinex3NavDataOperatorLessThanFull());
+   fff.unique(Rinex3NavDataOperatorEqualsFull());
    
       // set the pgm/runby/date field
    merged.theHeader.fileType = string("NAVIGATION");
@@ -83,10 +84,10 @@ void MergeRinNav::process()
    merged.theHeader.fileAgency = std::string("gpstk");
    merged.theHeader.date = CivilTime(SystemTime()).asString();
    merged.theHeader.version = 2.1;
-   merged.theHeader.valid |= gpstk::RinexNavHeader::versionValid;
-   merged.theHeader.valid |= gpstk::RinexNavHeader::runByValid;
-   merged.theHeader.valid |= gpstk::RinexNavHeader::commentValid;
-   merged.theHeader.valid |= gpstk::RinexNavHeader::endValid;
+   merged.theHeader.valid |= gpstk::Rinex3NavHeader::validVersion;
+   merged.theHeader.valid |= gpstk::Rinex3NavHeader::validRunBy;
+   merged.theHeader.valid |= gpstk::Rinex3NavHeader::validComment;
+   merged.theHeader.valid |= gpstk::Rinex3NavHeader::validEoH;
 
       // write the header
    std::string outputFile = outputFileOption.getValue().front();
