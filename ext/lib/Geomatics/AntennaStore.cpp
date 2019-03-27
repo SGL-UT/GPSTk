@@ -286,6 +286,7 @@ namespace gpstk
    {
       AntexData antenna;
       string name;
+      bool dualFrequency = true;
       try
       {
          if (getSatelliteAntenna(sys, n, name, antenna))
@@ -314,10 +315,9 @@ namespace gpstk
                }
                case 'C':
                {
-                  fact1 = 2.53125;
-                  fact2 = -1.52125;
+                  dualFrequency = false;
+                  fact1 = 1.00;
                   freq1 = "C01";
-                  freq2 = "C02";
                   break;
                }
 
@@ -352,19 +352,29 @@ namespace gpstk
            SVAtt = SatelliteAttitude(Rx,Sun);
 
            // phase center offset vector in body frame (at L1)
-           Triple pco1 = antenna.getPhaseCenterOffset(freq1);
-           Triple pco2 = antenna.getPhaseCenterOffset(freq2);
            Vector<double> PCO(3);
-           for(int i=0; i<3; i++)            // body frame, mm -> m, iono-free combo
-              PCO(i) = (fact1*pco1[i]+fact2*pco2[i])/1000.0;
+           if (dualFrequency)
+           {
+              Triple pco1 = antenna.getPhaseCenterOffset(freq1);
+              Triple pco2 = antenna.getPhaseCenterOffset(freq2);
+              for(int i=0; i<3; i++)            // body frame, mm -> m, iono-free combo
+                 PCO(i) = (fact1*pco1[i]+fact2*pco2[i])/1000.0;
+
+           }
+              // Single-frequency case.
+           else
+           {
+              Triple pco1 = antenna.getPhaseCenterOffset(freq1);
+              for(int i=0; i<3; i++)            // body frame, mm -> m, iono-free combo
+                 PCO(i) = (fact1*pco1[i])/1000.0;
+           }
 
            // PCO vector (from COM to PC) in ECEF XYZ frame, m
            Vector<double> SatPCOXYZ(3);
            SatPCOXYZ = transpose(SVAtt) * PCO;
            Triple pcoxyz = Triple(SatPCOXYZ(0), SatPCOXYZ(1), SatPCOXYZ(2));
-
+           
            return pcoxyz; 
-
          }
          else
          {

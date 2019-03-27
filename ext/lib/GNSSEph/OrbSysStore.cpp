@@ -81,6 +81,16 @@ namespace gpstk
       const ObsID& oidr = p->obsID;
       const SatID& sidr = p->satID;
       NavID navtype = NavID(sidr,oidr);
+
+         // Have to account for the fact that SatID/ObsID are ambiguous for BeiDou
+      if (sidr.system==SatID::systemBeiDou)
+      {
+         unsigned long dt = UID/10000;
+         if (dt==1)
+            navtype = NavID(NavID::ntBeiDou_D1);
+         else
+            navtype = NavID(NavID::ntBeiDou_D2);
+      }
       
       //default return value
       bool itemWasAdded = false;
@@ -245,7 +255,6 @@ namespace gpstk
          return;
       }
 
-
          // If detail==0 (or at least !=1 and !=2 and !=3) generate a summary
          // table of the contents of the store.
       s << "**********************************************************" << endl;
@@ -270,9 +279,18 @@ namespace gpstk
          }
       }
 
+      s << "NavIDs in the Store: ";
+      for (cit=navSet.begin();cit!=navSet.end();cit++)
+      {
+         const NavID& navTypeTarget = *cit;
+         s << navTypeTarget << "; ";
+      }
+      s << endl;
+
       list<SatID> satIDList = getSatIDList();
       list<SatID>::const_iterator csat;
       typedef map<unsigned short, unsigned long> SUB_MAP;
+
 
          // For each NavID, build a map<CommonTime, map<SatID.id, UID>>
          // for all the unique messages received.   HEAVEN HELP the user who
