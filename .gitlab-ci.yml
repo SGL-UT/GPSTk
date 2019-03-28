@@ -65,6 +65,8 @@ build_solaris:
   artifacts:
     paths:
     - build/
+  # Temporarily allow failures as Solaris Runner issues are resolved
+  allow_failure: true
   only:
     - schedules
   except:
@@ -151,6 +153,8 @@ test_solaris:
     - ctest -j 4
   dependencies:
     - build_solaris
+# Temporarily allow failures as Solaris Runner issues are resolved
+  allow_failure: true    
   only:
     - schedules
   except:
@@ -243,6 +247,8 @@ deploy_solaris:
     - make install -j 4
   dependencies:
     - build_solaris
+# Temporarily allow failures as Solaris Runner issues are resolved
+  allow_failure: true   
   only:
     - schedules  
   except:
@@ -330,6 +336,8 @@ package_solaris:
     - make package -j 4
   dependencies:
     - build_solaris
+# Temporarily allow failures as Solaris Runner issues are resolved
+  allow_failure: true   
   only:
     - schedules
   except:
