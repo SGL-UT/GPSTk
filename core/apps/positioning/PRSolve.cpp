@@ -1992,7 +1992,7 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
 
    // start and stop times
    for(i=0; i<2; i++) {
-      static const string fmtGPS("%F,%g"),fmtCAL("%Y,%m,%d,%H,%M,%S %P");
+      static const string fmtGPS("%F,%g"),fmtCAL("%Y,%m,%d,%H,%M,%S");
       msg = (i==0 ? startStr : stopStr);
       if(msg == (i==0 ? defaultstartStr : defaultstopStr)) continue;
 
@@ -2022,7 +2022,7 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
       }
 
       if(ok) {
-         msg = printTime((i==0 ? beginTime : endTime),fmtGPS+" = "+fmtCAL);
+         msg = printTime((i==0 ? beginTime : endTime),fmtGPS+" = "+fmtCAL+" %P");
          if(msg.find("Error") != string::npos) ok = false;
       }
 
@@ -2031,7 +2031,7 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
             << " " << (i==0 ? startStr : stopStr) << endl;
       else
          ossx << (i==0 ? "   Begin time --start" : "   End time --stop") << " is "
-            << printTime((i==0 ? beginTime : endTime), fmtGPS+" = "+fmtCAL+"\n");
+            << printTime((i==0 ? beginTime : endTime), fmtGPS+" = "+fmtCAL+" %P\n");
    }
 
    // trop model and default weather
