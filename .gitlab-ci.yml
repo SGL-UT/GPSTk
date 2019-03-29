@@ -245,6 +245,9 @@ deploy_solaris:
   script:
     - cd build
     - make install -j 4
+    artifacts:
+    paths:
+    - build/install
   dependencies:
     - build_solaris
 # Temporarily allow failures as Solaris Runner issues are resolved
@@ -261,6 +264,9 @@ deploy_osx:
   script:
     - cd build
     - make install -j 4
+    artifacts:
+    paths:
+    - build/install
   dependencies:
     - build_osx
   only:
