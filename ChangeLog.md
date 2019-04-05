@@ -1,3 +1,67 @@
+Version 2.11.2   Friday, April 5, 2019
+
+   General modifications
+   ---------------------
+   - Updating CI pipeline to trigger OSX and Windows builds only on scheduled nightly builds.
+   - Updated and upgraded tests
+   - Various Bug and Compile Warning Fixes
+
+   Modifications by Author
+   --------------------- 
+Andrew Kuck (3):
+      Disable rpath for swig python binaries.
+      Merge branch 'swig_rpath_removal' into 'master'
+      [swig] Added version variable at the top level of the gsptk python module.
+
+Anthony Hughes (1):
+      Fixed Issue 375 (erroneously treating files as directories) and mostly addressed Issue 229 (added progressive time filtering for better performance).  Also performed some general code cleanup and improved exception handling and doxygen.
+
+Anthony Nguyen (3):
+      Now using Rinex3 classes instead of Rinex
+      data/mergeRinNav_1.exp
+      changed mergeRinNav exp files to expect one less significant figure
+
+Bryan Parsons (13):
+      Merge branch 'support_python_rinex_gnss' into 'master'
+      Merge branch 'l1c_obsid_character_codes' into 'master'
+      Merge branch 'master' into change_to_Rinex3_mergeRinNav
+      Merge branch 'change_to_Rinex3_mergeRinNav' into 'master'
+      Updating CI pipeline to trigger OSX and Windows builds only on scheduled nightly builds.
+      Additional tweaks for Solaris and OSX to be added to nightly builds only.
+      Merge branch 'ci_nightly' into 'master'
+      Merge branch 'issue_373_OrbSysStore' into 'master'
+      Merge branch 'issue_374_OrbSys_again' into 'master'
+      Merge branch 'issue_375_FileHunter' into 'master'
+      Allowing Solaris Nightly test failure until Gitlab Runner issues is resolved.
+      Fix to sgltk_osx stage of currently nightly build.
+      Additional tweak to .yml for sgltk_osx ci.
+
+Jon C. Little (1):
+      Initializing vars that the compiler didn't seem to
+
+Jon Little (1):
+      Merge branch 'rin3headerbug' into 'master'
+
+Richard Ji-Cathriner (2):
+      Allow Obs of GNSS other than GPS to be written with the RINEX3 classes from python
+      Add the L1C RINEX character codes to ObsID data structure
+
+renfrob (8):
+      Adding functionality (and tests) to OrbSysStore
+      no comment
+      Removing debug
+      Merge branch 'master' into issue_373_OrbSysStore
+      Adding BeiDou NavID disambiguation
+      Modifying BeiDou to return single-frequency phase center
+      Making svXvt() virtual to support down-hierarchy overrides
+      Update to unit test files.
+
+vestuto (1):
+      Merge branch 'py_version' into 'master'
+
+      #################################################
+
+
 Version 2.11.1   Monday, February 4, 2019
 
    General modifications
