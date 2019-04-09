@@ -131,8 +131,8 @@ namespace gpstk
       unsigned short currXMitWeekMSBs = currXMitWeek & 0xFF00;
       unsigned short WNaFull = currXMitWeekMSBs + WNa; 
       short diff8 = (short) WNa - (short) currXMitWeek8bit;
-      if (diff8 < -127) WNaFull += 128; 
-      if (diff8 >  127) WNaFull -= 128;
+      if (diff8 < -127) WNaFull += 256; 
+      if (diff8 >  127) WNaFull -= 256;
       ctToa = GPSWeekSecond(WNaFull, toa, TimeSystem::GPS);
 
       dataLoadedFlag = true;   
