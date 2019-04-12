@@ -448,7 +448,8 @@ namespace gpstk
             // open the dir
          DIR* theDir;
 
-         //printf(" In searchHelper(). About to call opendir.\n"); 
+         //cerr << "In searchHelper() before opendir()" << endl;
+          
             // The first clause is a special kludge for Cygwin
             // referencing DOS drive structures
          //if (searchString.compare("cygdrive")==0)
@@ -463,7 +464,7 @@ namespace gpstk
          else
             theDir = opendir(directory.c_str());
 
-         //printf(" In searchHelper().  Back from opendir call.\n");
+         //cerr << "In searchHelper() after opendir()" < endl;
          
          if (theDir == NULL)
          {
@@ -478,8 +479,7 @@ namespace gpstk
          {
             string filename(entry->d_name);
             
-               // DEBUG
-            //printf("Testing '%s'\n",filename.c_str());
+            //cerr << "Testing '" << filename << "'" << endl;
             
             if ((filename.length() == searchString.length()) &&
                 (filename != ".") && (filename != "..") && 
@@ -491,13 +491,18 @@ namespace gpstk
                {
                   isDir = true;
                }
-               else if (entry->d_type == DT_UNKNOWN)
+               else if ( (entry->d_type == DT_UNKNOWN)
+                         || (entry->d_type == DT_LNK))
                {
+                  string fullname(directory + slash + filename);
                   struct stat statBuf;
-                  if (  (0 == stat(filename.c_str(), &statBuf)
-                     && (S_ISDIR(statBuf.st_mode))))
+                  int rc = stat(fullname.c_str(), &statBuf);
+                  if (0 == rc)
                   {
-                     isDir = true;
+                     if (S_ISDIR(statBuf.st_mode))
+                     {
+                        isDir = true;
+                     }
                   }
                }
                if (expectDir == isDir)
