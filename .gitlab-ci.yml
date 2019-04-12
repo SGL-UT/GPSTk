@@ -53,25 +53,6 @@ build_redhat:
     paths:
     - build/
 
-build_solaris:
-  stage: build
-  tags:
-    - solaris
-  script:
-    - mkdir build
-    - cd build
-    - cmake -DPYTHON_INSTALL_PREFIX=install -DCMAKE_INSTALL_PREFIX=install/gpstk -DBUILD_EXT=ON -DBUILD_PYTHON=OFF -DTEST_SWITCH=ON ../
-    - make all -j 4
-  artifacts:
-    paths:
-    - build/
-  # Temporarily allow failures as Solaris Runner issues are resolved
-  allow_failure: true
-  only:
-    - schedules
-  except:
-    - merge_requests
-
 build_osx:
   stage: build
   tags:
@@ -143,22 +124,6 @@ test_redhat:
     - ctest -j 4
   dependencies:
     - build_redhat
-
-test_solaris:
-  stage: test
-  tags:
-    - solaris
-  script:
-    - cd build
-    - ctest -j 4
-  dependencies:
-    - build_solaris
-# Temporarily allow failures as Solaris Runner issues are resolved
-  allow_failure: true    
-  only:
-    - schedules
-  except:
-    - merge_requests
 
 test_osx:
   stage: test
@@ -238,25 +203,6 @@ deploy_redhat:
   dependencies:
     - build_redhat
 
-deploy_solaris:
-  stage: deploy
-  tags:
-    - solaris
-  script:
-    - cd build
-    - make install -j 4
-  artifacts:
-    paths:
-    - build/install
-  dependencies:
-    - build_solaris
-# Temporarily allow failures as Solaris Runner issues are resolved
-  allow_failure: true   
-  only:
-    - schedules  
-  except:
-    - merge_requests 
-
 deploy_osx:
   stage: deploy
   tags:
@@ -332,22 +278,6 @@ package_redhat:
     - make package -j 4
   dependencies:
     - build_redhat
-
-package_solaris:
-  stage: package
-  tags:
-    - solaris
-  script:
-    - cd build
-    - make package -j 4
-  dependencies:
-    - build_solaris
-# Temporarily allow failures as Solaris Runner issues are resolved
-  allow_failure: true   
-  only:
-    - schedules
-  except:
-    - merge_requests
 
 package_osx:
   stage: package
@@ -442,28 +372,6 @@ sgltk_redhat:
     - make all -j 4
   dependencies:
     - deploy_redhat
-
-sgltk_solaris:
-  stage: downstream
-  tags:
-    - solaris
-  script:
-    - cd build
-    - git clone gitlab@repositories.arlut.utexas.edu:sgl/sgltk.git
-    - export gpstk=`pwd`/install
-    - export LD_LIBRARY_PATH=$gpstk/lib:$LD_LIBRARY_PATH
-    - cd sgltk
-    - mkdir build
-    - cd build
-    - cmake -DCMAKE_PREFIX_PATH=$gpstk -DBUILD_PYTHON=OFF -DTEST_SWITCH=ON ../
-    - make all -j 4
-  dependencies:
-    - deploy_solaris
-  allow_failure: true
-  only:
-    - schedules
-  except:
-    - merge_requests
 
 sgltk_osx:
   stage: downstream
