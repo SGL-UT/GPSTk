@@ -216,12 +216,12 @@ namespace gpstk
          vector<FileSpec>::const_iterator fsIter = fileSpecList.begin();
 
 #ifdef _WIN32
-         if (itr != fileSpecList.end())
+         if (fsIter != fileSpecList.end())
          {
                // If Windows, we should seed it with the drive spec
-            toReturn[0] = (*itr).getSpecString();
-            fileSpecStr = (*itr).getSpecString(); 
-            itr++;
+            toReturn[0] = (*fsIter).getSpecString();
+            fileSpecStr = (*fsIter).getSpecString(); 
+            fsIter++;
          }
 #endif
          while (fsIter != fileSpecList.end())
@@ -537,7 +537,7 @@ namespace gpstk
             }
             while( _findnext( hFile, &c_file ) == 0 )
             {
-               isDir = (c_file.attrib & _A_DIR);
+               isDir = (c_file.attrib & _A_SUBDIR);
                filename = std::string(c_file.name);
                if ((filename != ".") && (filename != ".."))
                {
