@@ -1843,21 +1843,26 @@ string Configuration::BuildCommandLine(void) throw()
             "# Input via configuration file:",
             "Name of file with more options [#->EOL = comment]");
 
+   // required
    opts.Add(0, "obs", "fn", true, true, &InputObsFiles,
-            "# Required input data and ephemeris files:",
+            "# Required input:",
             "RINEX observation file name(s)");
-   opts.Add(0, "eph", "fn", true, false, &InputSP3Files,"",
-            "Input Ephemeris+clock (SP3 format) file name(s)");
+   opts.Add(0, "sol", "S:F:C", true, true, &inSolDesc, "",
+            "Solution(s) to compute: Sys:Freqs:Codes (cf. --SOLhelp)");
+   opts.Add(0, "eph", "fn", true, false, &InputSP3Files,
+            "#   (require --eph OR --nav, but NOT both)",
+            "Ephemeris+clock (SP3 format) file name(s)");
    opts.Add(0, "nav", "fn", true, false, &InputNavFiles, "",
-            "Input RINEX nav file name(s) (also cf. --BCEpast)");
+            "RINEX nav file name(s) (also cf. --BCEpast)");
 
+   // optional
    opts.Add(0, "clk", "fn", true, false, &InputClkFiles,
-            "# Other (optional) input files",
-            "Input clock (RINEX format) file name(s)");
+            "# Optional input\n# Other input files",
+            "Clock (RINEX format) file name(s)");
    opts.Add(0, "met", "fn", true, false, &InputMetFiles, "",
-            "Input RINEX meteorological file name(s)");
+            "RINEX meteorological file name(s)");
    opts.Add(0, "dcb", "fn", true, false, &InputDCBFiles, "",
-            "Input differential code bias (P1-C1) file name(s)");
+            "Differential code bias (P1-C1) file name(s)");
 
    opts.Add(0, "obspath", "p", false, false, &Obspath,
             "# Paths of input files:", "Path of input RINEX observation file(s)");
@@ -1892,11 +1897,6 @@ string Configuration::BuildCommandLine(void) throw()
             "Use 'User' find-ephemeris-algorithm (else nearest) (--nav only)");
    opts.Add(0, "PisY", "", false, false, &PisY, "",
             "P code data is actually Y code data");
-   opts.Add(0, "sol", "S:F:C", true, false, &inSolDesc,
-            "# Solution Descriptors <S:F:C> define data used in solution algorithm",
-            "Specify data System:Freqs:Codes to be used to generate solution(s)");
-   opts.Add(0, "SOLhelp", "", false, false, &SOLhelp, "",
-            "Show more information on --sol <Solution Descriptor>");
 
    opts.Add(0, "wt", "", false, false, &weight,
             "# Solution Algorithm:",
@@ -1932,6 +1932,9 @@ string Configuration::BuildCommandLine(void) throw()
    //         "Keep information between epochs, output APV etc.");
    opts.Add(0, "timefmt", "f", false, false, &userfmt, "",
             "Format for time tags in output");
+
+   opts.Add(0, "SOLhelp", "", false, false, &SOLhelp, "# Help",
+            "Show more information and examples for --sol <Solution Descriptor>");
 
    // deprecated (old,new)
    opts.Add_deprecated("--SP3","--eph");
@@ -2091,6 +2094,9 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
 
    if(!OutputORDFile.empty() && knownPos.getCoordinateSystem() == Position::Unknown)
       oss << "Error : --ORDs requires --ref\n";
+
+   if(InputNavFiles.size() > 0 && InputSP3Files.size() > 0)
+      oss << "Error : Both --nav and --eph appear: provide only one.\n";
 
    //
    if(LOGlevel != 2)
