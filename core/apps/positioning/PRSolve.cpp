@@ -637,9 +637,9 @@ try {
       ostringstream oss;
       oss << C.PrgmName << " timing: processing " << fixed << setprecision(3)
          << double(totaltime)/double(CLOCKS_PER_SEC) << " sec, wallclock: "
-         << setprecision(0) << (wallclkend-wallclkbeg) << " sec.";
-      LOGstrm << oss.str() << endl;
-      cout << oss.str() << endl;
+         << setprecision(0) << (wallclkend-wallclkbeg) << " sec.\n";
+      LOGstrm << oss.str();
+      cout << oss.str();
    }
 
    return iret;
@@ -1933,13 +1933,6 @@ string Configuration::BuildCommandLine(void) throw()
    opts.Add(0, "timefmt", "f", false, false, &userfmt, "",
             "Format for time tags in output");
 
-   opts.Add(0, "verbose", "", false, false, &verbose, "# Diagnostic output:",
-            "Print extended output information");
-   opts.Add(0, "debug", "", false, false, &debug, "",
-            "Print debug output at level 0 [debug<n> for level n=1-7]");
-   opts.Add(0, "help", "", false, false, &help, "",
-            "Print this and quit");
-
    // deprecated (old,new)
    opts.Add_deprecated("--SP3","--eph");
 
@@ -2083,17 +2076,25 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
    pLOGstrm = &logstrm;
    LOG(INFO) << Title;
 
+   // help, debug and verbose handeled automatically by CommandLine
+   verbose = (LOGlevel >= VERBOSE);
+   debug = (LOGlevel - DEBUG);
+
    // check consistency
    if(elevLimit>0. && knownPos.getCoordinateSystem()==Position::Unknown && !forceElev)
       oss << "Error : --elev with no --ref input requires --forceElev\n";
 
    if(forceElev && elevLimit <= 0.0)
-      ossx << "   Warning : --forceElev with no --elev <= 0 appears.";
+      ossx << "   Warning : --forceElev with no --elev <= 0 appears.\n";
    else if(forceElev && knownPos.getCoordinateSystem() == Position::Unknown)
-      ossx << "   Warning : with --ref input, --forceElev is not required.";
+      ossx << "   Warning : with --ref input, --forceElev is not required.\n";
 
    if(!OutputORDFile.empty() && knownPos.getCoordinateSystem() == Position::Unknown)
       oss << "Error : --ORDs requires --ref\n";
+
+   //
+   if(LOGlevel != 2)
+      ossx << "   LOG level is " << ConfigureLOG::ToString(LOGlevel) << "\n";
 
    // add new errors to the list
    msg = oss.str();
