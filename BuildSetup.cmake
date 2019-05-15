@@ -50,7 +50,7 @@ endif()
 # address sanitizer. This has a 2x slowdown
 # but is adept at catching various memory problems.
 #----------------------------------------
-if( (${CMAKE_BUILD_TYPE} MATCHES "debug"))
+if( (${CMAKE_BUILD_TYPE} MATCHES "debug") AND (${ADDRESS_SANITIZER} MATCHES "ON") )
     if (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang"
         OR ((${CMAKE_CXX_COMPILER_VERSION} VERSION_GREATER "4.9.0" ) AND CMAKE_COMPILER_IS_GNUCXX))
         message(STATUS "Enabling address sanitizer for debug build")

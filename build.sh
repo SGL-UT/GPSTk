@@ -66,6 +66,8 @@ OPTIONS:
    -x                   Disable building the python bindings. Default is to build them
                         if -e is specified.
 
+   -n                   Do not use address sanitizer for debug build (used by default)
+
    -P  <python_exe>     Python executable used to help determine with python system libraries
                         will be used when building python extension package. 
                         Default=$python_exe
@@ -80,7 +82,7 @@ EOF
 }
 
 
-while getopts "hb:cdepi:j:xP:sutTv" OPTION; do
+while getopts "hb:cdepi:j:xnP:sutTv" OPTION; do
     case $OPTION in
         h) usage
            exit 0
@@ -103,6 +105,8 @@ while getopts "hb:cdepi:j:xP:sutTv" OPTION; do
         j) num_threads=$OPTARG
            ;;
         x) exclude_python=1
+           ;;
+        n) no_address_sanitizer=1
            ;;
         P) python_exe=$OPTARG
            ;;
@@ -150,26 +154,27 @@ fi
 if ((verbose>0)); then
     log "============================================================"
     log "GPSTk build config ..."
-    log "repo            = $repo"
-    log "build_root      = $build_root"
-    log "install         = $(ptof $install)"
-    log "install_prefix  = $install_prefix"
-    log "build_ext       = $(ptof $build_ext)"
-    log "exclude_python  = $(ptof $exclude_python)"
-    log "python_install  = $python_install"
-    log "python_exe      = $python_exe"
-    log "build_docs      = $(ptof $build_docs)"
-    log "build_packages  = $(ptof $build_packages)"
-    log "test_switch     = $(ptof $test_switch)"
-    log "clean           = $(ptof $clean)"
-    log "verbose         = $(ptof $verbose)"
-    log "num_threads     = $num_threads"
-    log "cmake args      = $@"
-    log "time            =" `date`
-    log "hostname        =" $hostname
-    log "uname           =" `uname -a`
-    log "git id          =" $(get_repo_state $repo)
-    log "logfile         =" $LOG
+    log "repo                 = $repo"
+    log "build_root           = $build_root"
+    log "install              = $(ptof $install)"
+    log "install_prefix       = $install_prefix"
+    log "build_ext            = $(ptof $build_ext)"
+    log "exclude_python       = $(ptof $exclude_python)"
+    log "python_install       = $python_install"
+    log "python_exe           = $python_exe"
+    log "no_address_sanitizer = $(ptof $no_address_sanitizer)"
+    log "build_docs           = $(ptof $build_docs)"
+    log "build_packages       = $(ptof $build_packages)"
+    log "test_switch          = $(ptof $test_switch)"
+    log "clean                = $(ptof $clean)"
+    log "verbose              = $(ptof $verbose)"
+    log "num_threads          = $num_threads"
+    log "cmake args           = $@"
+    log "time                 =" `date`
+    log "hostname             =" $hostname
+    log "uname                =" `uname -a`
+    log "git id               =" $(get_repo_state $repo)
+    log "logfile              =" $LOG
     log
 fi
 
@@ -220,6 +225,11 @@ args+=${build_ext:+" -DBUILD_EXT=ON"}
 args+=${verbose:+" -DDEBUG_SWITCH=ON"}
 args+=${test_switch:+" -DTEST_SWITCH=ON"}
 args+=${build_docs:+" --graphviz=$build_root/doc/graphviz/gpstk_graphviz.dot"}
+if [ $no_address_sanitizer ]; then
+    args+=" -DADDRESS_SANITIZER=OFF"
+else
+    args+=" -DADDRESS_SANITIZER=ON"
+fi
 
 case `uname` in
     MINGW32_NT-6.1)
