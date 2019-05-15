@@ -42,6 +42,8 @@
 #define GPSTK_GLOEPHEMERISSTORE_HPP
 
 #include <iostream>
+#include <set>
+
 #include "XvtStore.hpp"
 #include "GloEphemeris.hpp"
 #include "Rinex3NavData.hpp"
@@ -72,8 +74,10 @@ namespace gpstk
       GloEphemerisStore()
             : initialTime(CommonTime::END_OF_TIME),
               finalTime(CommonTime::BEGINNING_OF_TIME),
-              step(1.0), checkHealthFlag(false)
-      { };
+              step(1.0)
+      {
+            setCheckHealthFlag(false);
+      }
 
          /** Common constructor
           *
@@ -84,8 +88,10 @@ namespace gpstk
                          bool checkHealth )
             : initialTime(CommonTime::END_OF_TIME),
               finalTime(CommonTime::BEGINNING_OF_TIME),
-              step(rkStep), checkHealthFlag(checkHealth)
-      { };
+              step(rkStep)
+      {
+            setCheckHealthFlag(false);
+      }
 
          /// Destructor
       virtual ~GloEphemerisStore() {};
@@ -123,14 +129,14 @@ namespace gpstk
 
          /// Get whether satellite health bit will be used or not.
       bool getCheckHealthFlag() const
-      { return checkHealthFlag; };
+      { return onlyHealthy; };
 
          /** Set whether satellite health bit will be used or not.
           *
           * @param checkHealth   Enable or disable the use of the health bit.
           */
       GloEphemerisStore& setCheckHealthFlag( bool checkHealth )
-      { checkHealthFlag = checkHealth; return (*this); };
+      { onlyHealthy = checkHealth; return (*this); };
 
          /** A debugging function that outputs in human readable form,
           *  all data stored in this object.
@@ -249,6 +255,8 @@ namespace gpstk
          /// @return the number of ephemerides added.
       int addToList( std::list<GloEphemeris>& v ) const;
 
+      virtual std::set<gpstk::SatID> getIndexSet() const; 
+
    private:
 
          /// The map of SVs and Xvt's
@@ -262,10 +270,6 @@ namespace gpstk
 
          /// Integration step for Runge-Kutta algorithm (1 second by default)
       double step;
-
-         /// Flag signaling if satellites will be screened out according to
-         /// their health bit (by default it is false)
-      bool checkHealthFlag;
 
    };  // End of class 'GloEphemerisStore'
 

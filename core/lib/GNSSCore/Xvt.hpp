@@ -90,7 +90,7 @@ namespace gpstk
 
       /// Compute and return the relativity correction (-2R dot V/c^2) in seconds
       /// NB -2*dot(R,V)/(c*c) = -4.4428e-10(s/sqrt(m)) * ecc * sqrt(A(m)) * sinE
-      double computeRelativityCorrection(void);
+      virtual double computeRelativityCorrection(void);
 
       /// Given the position of a ground location, compute the range
       /// to the spacecraft position.

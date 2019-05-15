@@ -32,6 +32,14 @@ add_executable(NavID_T NavID_T.cpp)
 target_link_libraries(NavID_T gpstk)
 add_test(GNSSEph_NavID NavID_T)
 
+add_executable(OrbElemLNav_valid_T OrbElemLNav_valid_T.cpp)
+target_link_libraries(OrbElemLNav_valid_T gpstk)
+add_test(GNSSEph_OrbElemLNav_valid OrbElemLNav_valid_T)
+
+add_executable(OrbElemStore_T OrbElemStore_T.cpp)
+target_link_libraries(OrbElemStore_T gpstk)
+add_test(GNSSEph_OrbElemStore OrbElemStore_T)
+
 add_executable(OrbitEphStore_T OrbitEphStore_T.cpp)
 target_link_libraries(OrbitEphStore_T gpstk)
 add_test(GNSSEph_OrbitEphStore OrbitEphStore_T)

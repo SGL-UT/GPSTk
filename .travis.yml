@@ -1,0 +1,33 @@
+#.yml file for Github/Travis-CI support
+# Use new trusty images, should yield newer compilers and packages
+sudo: required
+language: c++
+
+os: 
+- linux
+
+compiler:
+- gcc-c++
+
+addons:
+ apt:
+  packages:
+   - cmake
+   - swig
+   - libncurses5-dev 
+   - libncursesw5-dev
+   - libgtest-dev
+   - gcovr
+
+script:
+ - bash ./lint_test.sh
+ - mkdir build
+ - cd build
+ - export gpstk=`pwd`/install
+ - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=install -DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
+ - make all -j 2
+ - ctest -j 2
+
+
+after_success:
+ - make install -j 2

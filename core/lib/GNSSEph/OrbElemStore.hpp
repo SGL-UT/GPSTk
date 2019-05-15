@@ -78,6 +78,7 @@ namespace gpstk
       {
          initialTime.setTimeSystem(timeSysForStore);
          finalTime.setTimeSystem(timeSysForStore);
+         setOnlyHealthyFlag(true);
       }
 
       ///
@@ -227,6 +228,8 @@ namespace gpstk
       /// are contained in the store.
       /// @return list of SatID objects
       std::list<gpstk::SatID> getSatIDList() const;
+
+      virtual std::set<SatID> getIndexSet() const; 
 
       /// Add all ephemerides to an existing list<OrbElemBase>.
       /// @return the number of ephemerides added.

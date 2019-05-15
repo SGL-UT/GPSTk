@@ -52,10 +52,28 @@
 ///    that period.   This is clearly not exactly correct, but what's 
 ///    in the file is clearly wrong and we want to at least maintain a 
 ///    record of the order in which the elements were received. 
-///  - For second dasta sets in an upload, the HOW time is set to
+///  - For second data sets in an upload, the HOW time is set to
 ///    the Toc 1/2 fit interval (as per IS-GPS-200 20.3.3.4).
 /// The logic for all the above is located in the class RationalizeRinexNav.
 ///
+///
+/// January 2018.  Extension to detect and eliminate mis-tagged eph. 
+/// After loading all the data sets, and BEFORE doing any of the checking
+/// above, do the following for each PRN in sequence.
+///    -- For each data set, compute the SV location at at the beginning
+///       of the day.  Do this regardless of fit interval.
+///    -- For each adjacent pair of data sets, compute the difference 
+///       between the beginning of day location for the two sets.
+///    -- If any differences exceed a threshold of TBD, do the following.
+///      o Compute the average beginningn of day location using all data sets EXCEPT
+///        those involved in differences that exceeded the threshold.
+///        (Assuming that there are at least two such data sets.)
+///      o For the data sets involved in large differences, compute
+///        the differences against the average.  For one data set, 
+///        the difference should be much larger.   Remove that 
+///        data set from the collection.
+/// This logic for this is located in the class RationalizRinexNav
+/// 
 ///
 // System
 #include <iostream>
@@ -194,6 +212,10 @@ void scanBrdcFile::process()
       out << endl << "One-line summaries of data sets as they were read" << endl;
       rrn.dump(out);
    }
+
+      // Remove any data sets that are labelled (tagged) withe
+      // the wrong PRN ID
+   rrn.removeMisTaggedDataSets();
 
       // Attempt to fix up the data set
    rrn.rationalize();

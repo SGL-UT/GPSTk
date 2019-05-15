@@ -145,7 +145,7 @@ namespace gpstk
       double gamma)
          : obstime(time), svid(svid), ord(0), wonky(false)
    {
-      // for dual frequency see ICD-GPS-211, section 20.3.3.3.3.3
+      // for dual frequency see IS-GPS-200, section 20.3.3.3.3.3
       double icpr = (prange2 - gamma * prange1)/(1-gamma);
       iono = prange1 - icpr;
 
@@ -172,7 +172,7 @@ namespace gpstk
       double gamma)
          : obstime(time), svid(svid), ord(0), wonky(false)
    {
-      // for dual frequency see ICD-GPS-211, section 20.3.3.3.3.3
+      // for dual frequency see IS-GPS-200, section 20.3.3.3.3.3
       double icpr = (prange2 - gamma * prange1)/(1-gamma);
       iono = prange1 - icpr;
 

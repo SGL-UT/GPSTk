@@ -110,7 +110,7 @@ if (TEST_SWITCH)
     add_subdirectory( RefTime )
     add_subdirectory( CommandLine )
     add_subdirectory( NavFilter )
-
+    add_subdirectory( ORD )
 
     # application testing
     add_subdirectory( difftools )
@@ -120,5 +120,5 @@ if (TEST_SWITCH)
     add_subdirectory( Rinextools )
     add_subdirectory( mergetools )
     add_subdirectory( checktools )
-    # add_subdirectory( AppFrame )
+    add_subdirectory( AppFrame )
 endif()

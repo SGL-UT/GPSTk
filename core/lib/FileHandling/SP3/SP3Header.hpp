@@ -67,14 +67,15 @@ namespace gpstk
    {
    public:
 
-         /// Supported SP3 versions (file formats) : 'a' 'b' or 'c'
+         /// Supported SP3 versions (file formats) : 'a' 'b' 'c' or 'd'
          /// See the SP3 format definition documents.
       enum Version
       {
          undefined,        ///< Unknown or undefined SP3 file format
          SP3a,             ///< SP3 version a
          SP3b,             ///< SP3 version b (very similar to SP3a)
-         SP3c              ///< SP3 version c (contains a/b as a subset)
+         SP3c,             ///< SP3 version c (contains a/b as a subset)
+         SP3d              ///< SP3 version d (Expanded Satellites and Comments)
       };
 
          /// constructor
@@ -110,6 +111,8 @@ namespace gpstk
                ch = 'b'; break;
             case SP3c:
                ch = 'c'; break;
+            case SP3d:
+               ch = 'd'; break;
             case undefined: default:
                ch = 'U'; break;
          };
@@ -136,6 +139,8 @@ namespace gpstk
                str = std::string("SP3b"); break;
             case SP3c:
                str = std::string("SP3c"); break;
+            case SP3d:
+               str = std::string("SP3d"); break;
             case undefined: default:
                str = std::string("Undefined"); break;
          };

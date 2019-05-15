@@ -1,3 +1,77 @@
+gpstk (2.11.2-1~bpo9+3) wheezy-backports; urgency=low
+
+  * Rebuild for wheezy-backports.
+  * no changes
+
+ -- Bryan Parsons <bparsons@ayudar.arlut.utexas.edu>  Fri, 12 Apr 2019 09:34:54 -0500
+
+gpstk (2.11.2-1~bpo9+2) stretch-backports; urgency=medium
+
+  * Rebuild for stretch-backports.
+  * no changes
+
+ -- Bryan Parsons <bparsons@clau.arlut.utexas.edu>  Tue, 09 Apr 2019 08:59:26 -0500
+
+gpstk (2.11.2-1) stable; urgency=medium
+
+  * Update to upstream version 2.11.2 
+
+ -- Bryan Parsons <bparsons@arlut.utexas.edu>  Fri, 05 Apr 2019 09:33:29 -0500
+
+gpstk (2.11.1-1) stable; urgency=medium
+
+  * Update to upstream version 2.11.1
+
+ -- Bryan Parsons <bparsons@arlut.utexas.edu>  Mon, 04 Feb 2019 13:23:58 -0600
+
+gpstk (2.11.0-1) stable; urgency=medium
+
+  * Update to upstream version 2.11
+
+ -- Bryan Parsons <bparsons@arlut.utexas.edu>  Tue, 18 Dec 2018 10:32:41 -0600
+
+gpstk (2.10.7-1) stable; urgency=medium
+
+  * Update to upstream version 2.10.7
+
+ -- Bryan Parsons <bparsons@arlut.utexas.edu>  Thu, 06 Dec 2018 15:02:41 -0600
+
+gpstk (2.10.6-1) stable; urgency=medium
+
+  * Update to upstream version 2.10.6
+
+ -- Bryan Parsons <bparsons@arlut.utexas.edu>  Mon, 24 Sep 2018 15:02:46 -0500
+
+gpstk (2.10.5-1) stable; urgency=medium
+
+  * Update to upstream version 2.10.5
+
+ -- Bryan Parsons <bparsons@arlut.utexas.edu>  Wed, 22 Aug 2018 10:14:23 -0500
+
+gpstk (2.10.4-1) stable; urgency=medium
+
+  * Update to upstream version 2.10.4
+
+ -- Bryan Parsons <bparsons@arlut.utexas.edu>  Wed, 01 Aug 2018 11:41:37 -0500
+
+gpstk (2.10.3-2) stable; urgency=medium
+
+  * Update to upstream version 2.10.3
+
+ -- Bryan Parsons <bparsons@arlut.utexas.edu>  Mon, 30 Jul 2018 13:43:26 -0500
+
+gpstk (2.10.2-1) stable; urgency=medium
+
+  * Update to upstream version 2.10.2
+
+ -- Bryan Parsons <bparsons@arlut.utexas.edu>  Thu, 26 Apr 2018 13:52:11 -0500
+
+gpstk (2.10.1-1) stable; urgency=medium
+
+  * Update to upstream version 2.10.1 
+
+ -- Bryan Parsons <bparsons@arlut.utexas.edu>  Mon, 22 Jan 2018 14:55:58 -0600
+
 gpstk (2.9.8-2) unstable; urgency=medium
 
   * Switch source format to "git" to allow deb src packages to build

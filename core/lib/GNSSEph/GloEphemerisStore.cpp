@@ -48,13 +48,12 @@ using namespace std;
 namespace gpstk
 {
 
-
       // Add ephemeris information from a Rinex3NavData object.
    bool GloEphemerisStore::addEphemeris(const Rinex3NavData& data)
    {
 
          // If enabled, check SV health before entering here (health = 0 -> OK)
-      if( (data.health == 0) || (!checkHealthFlag) )
+      if( (data.health == 0) || (!onlyHealthy) )
       {
             // Get a GloEphemeris object from Rinex3NavData object
          GloEphemeris gloEphem(data);
@@ -72,7 +71,7 @@ namespace gpstk
 
          return true;
 
-      }  // End of 'if( (data.health == 0) || (!checkHealthFlag) )'
+      }  // End of 'if( (data.health == 0) || (!onlyHealthy) )'
 
       return false;
 
@@ -188,7 +187,7 @@ namespace gpstk
         << " to " << (finalTime == CommonTime::BEGINNING_OF_TIME
                                     ? "Begin_time" : printTime(finalTime, fmt))
         << " with " << pe.size() << " entries; checkHealthFlag is "
-        << (checkHealthFlag ? "T":"F") << std::endl;
+        << (onlyHealthy ? "T":"F") << std::endl;
 
       //}
       //else
@@ -373,6 +372,18 @@ namespace gpstk
          ret = rit->first;
       }
       return ret;
+   }
+
+   set<SatID> GloEphemerisStore::getIndexSet() const
+   {
+      set<SatID> retSet;
+      GloEphMap::const_iterator cit;
+      for (cit=pe.begin();cit!=pe.end();cit++)
+      {
+        const SatID& sidr = cit->first;
+        retSet.insert(sidr);
+      }
+      return retSet; 
    }
 
       /* Find the corresponding GLONASS ephemeris for the given epoch.

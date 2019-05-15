@@ -1,3 +1,39 @@
+//============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 3.0 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
+//  
+//  Copyright 2004, The University of Texas at Austin
+//
+//============================================================================
+
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//=============================================================================
+
 /// @file StatsFilter.hpp
 ///    This module defines several classes which together implement two kinds of
 /// statistical filters - a first-difference filter, and a window filter. All these
@@ -89,10 +125,10 @@ public:
    // member data
    event type;          ///< type of event: BOD, outlier(s), slip, other
 
-   int index;           ///< index in the data array(s) at which this event occurs
-   int npts;            ///< number of data points in this segment (= a delta index)
-   int ngood;           ///< number of good (flag==0) points in this segment
-   int score;           ///< weight of slip (=100 except >=lim for getMaybeSlips(lim))
+   unsigned int index;  ///< index in the data array(s) at which this event occurs
+   unsigned int npts;   ///< number of data points in this segment (= a delta index)
+   unsigned int ngood;  ///< number of good (flag==0) points in this segment
+   unsigned int score;  ///< weight of slip (=100 except >=lim for getMaybeSlips(lim))
 
    T step;              ///< for a slip, an estimate of the step in the data
    bool haveStats;      ///< set true when getStats() is called
@@ -424,22 +460,24 @@ template<class T> void FirstDiffFilter<T>::dump(std::ostream& os, std::string ta
       << (noxdata ? " (xdata is index)" : "")
       << "\n#" << tag << "  i    xdata   data    1stdiff" << std::endl;
 
+   const size_t N(analvec.size());
    for(i=0,j=0,k=0; i<ilimit; i++) {
-      if(i != analvec[j].index) {
+      if(j >= N || i != analvec[j].index) {
          if(dumpNA) os << tag << std::fixed << std::setprecision(osp)
             << " " << std::setw(3) << i
             << " " << std::setw(osw) << (noxdata ? T(i) : xdata[i])
-            //<< " " << std::setw(3) << (noflags ? 0 : flags[i])
+            << " " << std::setw(3) << (noflags ? 0 : flags[i])
             << " " << std::setw(osw) << data[i]
-            << " " << std::setw(osw) << 0.0 << "  NA" << std::endl;
+            << " " << std::setw(osw) << 0.0 << "  NA"
+            << std::endl;
       }
       else {
          os << tag << std::fixed << std::setprecision(osp)
             << " " << std::setw(3) << i
             << " " << std::setw(osw) << (noxdata ? T(i) : xdata[i])
-            //<< " " << std::setw(3) << (noflags ? 0 : flags[i])
+            << " " << std::setw(3) << (noflags ? 0 : flags[i])
             << " " << std::setw(osw) << data[i]
-            << " " << std::setw(osw) << analvec[j].diff;
+            << " " << std::setw(osw) << (j >= N ? 0.0 : analvec[j].diff);
          if(k < results.size() && i == results[k].index) {
             os << "  " << (results[k].mad != T(0) ?   // has getStats been called?
                            results[k].asStatsString(osp) : results[k].asString());
@@ -456,7 +494,8 @@ template<class T> void FirstDiffFilter<T>::dump(std::ostream& os, std::string ta
 template<class T>
 void FirstDiffFilter<T>::getStats(FilterHit<T>& fe)
 {
-   int i,j(-1),k;
+   int j(-1);
+   unsigned int i,k;
    fe.min = fe.max = fe.med = fe.mad = T(0);
    for(i=0; i<analvec.size(); i++)
       if(analvec[i].index == fe.index) { j=i; break; }
@@ -470,7 +509,8 @@ void FirstDiffFilter<T>::getStats(FilterHit<T>& fe)
    T fd;
    std::vector<T> fdv;
    for(i=i0; i<fe.npts; i++) {
-      if(analvec[j+i].index >= k) break;  // no more good data
+      if((unsigned int)(j)+i >= analvec.size() || analvec[j+i].index >= k)
+         break;  // no more good data
       fd = analvec[j+i].diff;
       if(first) {
          fe.min=fe.max=fe.med=fd;
@@ -732,7 +772,7 @@ public:
    inline bool willDumpNoAnal(void) { return dumpNA; }
    /// debug prints in analysis()
    inline void setDebug(bool b) { debug = b; }
-   inline void getDebug(void) { return debug; }
+   inline bool getDebug(void) { return debug; }
 
    inline void setw(int w) { osw=w; }
    inline void setprecision(int p) { osp=p; }
@@ -1449,9 +1489,11 @@ template<class T> void WindowFilter<T>::dump(std::ostream& os, std::string tag)
 template<class T>
 void WindowFilter<T>::getStats(FilterHit<T>& sg, bool skip)
 {
-   int i,j;
+   unsigned int i;
    sg.min = sg.max = sg.med = sg.mad = T(0);
-   for(j=-1,i=0; i<analvec.size(); i++)
+
+   int j(-1);
+   for(i=0; i<analvec.size(); i++)
       if(analvec[i].index == sg.index) { j=i; break; }
    if(j == -1) return;
 

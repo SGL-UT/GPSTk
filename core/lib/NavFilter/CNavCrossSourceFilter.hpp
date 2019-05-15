@@ -21,7 +21,7 @@ namespace gpstk
    public:
       CNavCrossSourceFilter();
 
-         /** Add LNAV messages to the voting collection (groupedNav).
+         /** Add CNAV messages to the voting collection (groupedNav).
           * @pre NavFilterKey::timeStamp is set to either the the 
           * time of transmission of the message/
           * @pre NavFilterKey::prn is set
@@ -38,6 +38,14 @@ namespace gpstk
           * @param[out] msgBitsOut Any remaining valid (by vote) nav
           *   messages are stored here on return. */
       virtual void finalize(NavMsgList& msgBitsOut);
+
+         /// Internally stores 1 epoch's worth of subframe data.
+      virtual unsigned processingDepth() const throw()
+      { return 1; }
+
+         /// Return the filter name.
+      virtual std::string filterName() const throw()
+      { return "CrossSource"; }
 
       virtual void setMinIdentical(const unsigned value)
       { minIdentical = value;}

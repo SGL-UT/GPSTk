@@ -90,6 +90,10 @@ namespace gpstk
    const long ZCOUNT_PER_WEEK = 403200L;
       /// Weeks in a Zcount.
    const double WEEK_PER_ZCOUNT = 1.0/ZCOUNT_PER_WEEK;
+      /// Z-counts per minute.
+   const long ZCOUNT_PER_MINUTE = 40;
+      /// Z-counts per hour.
+   const long ZCOUNT_PER_HOUR = 2400;
 
    // GAL -------------------------------------------
       /// 'Julian day' of GAL epoch (Aug 22 1999)

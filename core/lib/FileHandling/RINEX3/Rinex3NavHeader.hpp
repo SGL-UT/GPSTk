@@ -105,7 +105,8 @@ namespace gpstk
 
          /// Constructor
       Rinex3NavHeader(void)
-            : valid(0), version(3.02)
+         : valid(0), version(3.02),
+           leapSeconds(0), leapDelta(0), leapWeek(0),leapDay(0)
       {}
 
          /// Destructor

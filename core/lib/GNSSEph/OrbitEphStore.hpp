@@ -48,6 +48,7 @@
 
 #include <iostream>
 #include <list>
+#include <set>
 
 #include "OrbitEph.hpp"
 #include "Exception.hpp"
@@ -77,11 +78,12 @@ namespace gpstk
       OrbitEphStore()
             : initialTime(CommonTime::END_OF_TIME),
               finalTime(CommonTime::BEGINNING_OF_TIME),
-              strictMethod(true), onlyHealthy(false)
+              strictMethod(true)
       {
          timeSystem = TimeSystem::Any;
          initialTime.setTimeSystem(timeSystem);
          finalTime.setTimeSystem(timeSystem);
+         setOnlyHealthyFlag(false);
       }
 
          /// Destructor
@@ -241,6 +243,8 @@ namespace gpstk
          return true;
       }
 
+      virtual std::set<SatID> getIndexSet() const; 
+
          /** Explanation of find() function for OrbitEphStore The
           * findUserOrbitEph() funtion does the best possible job of
           * emulating the choice that would be made by a real-time
@@ -291,7 +295,7 @@ namespace gpstk
          /** Add all ephemerides to an existing list<OrbitEph>.  If
           * SatID sat is given, limit selections to sat's satellite
           * system, plus if sat's id is not -1, limit to sat's id as
-          * well.
+          * well.  The caller owns any added ephemerides and must delete them.
           * @return the number of ephemerides added. */
       virtual int addToList(std::list<OrbitEph*>& v,
                             SatID sat=SatID(-1,SatID::systemUnknown)) const;
@@ -304,14 +308,6 @@ namespace gpstk
           * (the default) */
       void SearchUser(void)
       { strictMethod = true; }
-
-         /// get the flag that limits getXvt() to healthy ephemerides
-      bool getOnlyHealthyFlag(void) const
-      { return onlyHealthy; }
-
-         /// set the flag that limits getXvt() to healthy ephemerides
-      void setOnlyHealthyFlag(bool flag)
-      { onlyHealthy = flag; }
 
          /** Return the satellite health at the given time.
           * @param SatID sat satellite of interest
@@ -363,10 +359,6 @@ namespace gpstk
          /** flag indicating search method (find...Eph) to use in
           *  getSatXvt and getSatHealth */
       bool strictMethod;
-
-         /** flag indicating unhealthy ephemerides should be excluded
-          * from getXvt, otherwise it will throw (default false) */
-      bool onlyHealthy;
 
          /// Convenience routines
       void updateTimeLimits(const OrbitEph* eph)

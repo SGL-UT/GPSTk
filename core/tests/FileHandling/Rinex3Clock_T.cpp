@@ -40,6 +40,8 @@
 #include "Rinex3ClockHeader.hpp"
 #include "Rinex3ClockData.hpp"
 #include "Rinex3ClockStream.hpp"
+#include "RinexObsID.hpp"
+#include "SatID.hpp"
 
 #include "build_config.h"
 
@@ -56,6 +58,7 @@ public:
    int hardCodeTest(void);
    int dataExceptionTest(void);
    int filterOperatorsTest(void);
+   int rinex3HeaderFormat(void);
 
 private:
    std::string dataFilePath;
@@ -68,6 +71,8 @@ private:
    std::string dataRinexClockFile;
    std::string dataUnknownHeaderLabel;
 
+   std::string testR3HeaderOutputExp;
+   std::string testR3HeaderOutput;
    std::string dataTestOutput;
 
    std::string testMesg;
@@ -101,6 +106,10 @@ void Rinex3Clock_T::init(void)
 
    dataTestOutput                       = tempFilePath + file_sep +
                                           "test_output_rinex2_clock_TestOutput.96c";
+   testR3HeaderOutput                       = tempFilePath + file_sep +
+                                            "test_output_rinex3_clock_TestR3HeaderOutput.96c";
+   testR3HeaderOutputExp                       = dataFilePath + file_sep +
+                                              "test_output_rinex3_clock_TestR3HeaderOutput.exp";
 
 
 }
@@ -364,6 +373,42 @@ int Rinex3Clock_T::hardCodeTest(void)
    return testFramework.countFails();
 }
 
+//Test that reading/writing out the file doesn't change it
+int Rinex3Clock_T::rinex3HeaderFormat(void)
+{
+   TUDEF("Rinex3ClockStream", "write to R3 file");
+
+   gpstk::Rinex3ClockHeader ch;
+
+   gpstk::Rinex3ClockStream inputStream;
+   gpstk::Rinex3ClockStream outputStream;
+
+   try
+   {
+      inputStream.open(testR3HeaderOutputExp.c_str(), std::ios::in);
+      outputStream.open(testR3HeaderOutput.c_str(), std::ios::out);
+      inputStream >> ch;
+      outputStream << ch;
+
+      TUPASS(testMesg);
+   }
+   catch (gpstk::Exception e)
+   {
+      testMesg = "Unable to read/write to file stream: " + e.what();
+      TUFAIL(testMesg);
+   }
+
+   int skipLines = 2; //First two lines of the header are not supposed to match
+
+   fileEqual = testFramework.fileEqualTest(testR3HeaderOutput,
+                                           testR3HeaderOutputExp, skipLines);
+
+   testMesg = "Headers are not consistent after input & out";
+   testFramework.assert(fileEqual, testMesg, __LINE__);
+
+   return testFramework.countFails();
+}
+
 
 int main(void) //Main function to initialize and run all tests above
 {
@@ -388,6 +433,8 @@ int main(void) //Main function to initialize and run all tests above
 
    check = testClass.headerExceptionTest();
    errorCounter += check;
+
+   errorCounter += testClass.rinex3HeaderFormat();
 
 #ifdef RINEX_3_CLOCK_ACTUALLY_IMPLEMENTED
    check = testClass.dataExceptionTest();

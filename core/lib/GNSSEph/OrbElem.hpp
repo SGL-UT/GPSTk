@@ -132,8 +132,10 @@ namespace gpstk
          /** Compute satellite position at the given time
           * using this orbit data.
           * @throw Invalid Request if the required data has not been stored.
+          * This is virtual due to need to eventually address other 
+          * methods of orbit determination.
           */
-      Xvt svXvt(const CommonTime& t) const throw(gpstk::InvalidRequest);
+      virtual Xvt svXvt(const CommonTime& t) const throw(gpstk::InvalidRequest);
 
          /** Compute satellite relativity correction (sec) at the given time
           *  @throw Invalid Request if the required data has not been stored.

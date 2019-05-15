@@ -85,8 +85,9 @@ public:
    int testSetFilter();
 
       // test the find() method
+      // @param[in] absPath Whether to test using absolute paths
       // @return  number of failures, i.e., 0=PASS, !0=FAIL
-   int testFind();
+   int testFind(bool absPath);
 
 private:
 
@@ -110,6 +111,8 @@ private:
    vector<string>  dirsToRemove;
    vector<string>  filesToRemove;
 
+   int debugLevel = 1;
+
 }; // class FileHunter_T
 
 
@@ -125,6 +128,8 @@ void FileHunter_T :: init()
 
    tempFilePath += getFileSep();  // ensure trailing slash
 
+   newFile(tempFilePath + "9999");
+   newFile(tempFilePath + "nope");
    newFile(tempFilePath + "sample.data");
    newFile(tempFilePath + "prn_08.data");
    newFile(tempFilePath + "prn_16.data");
@@ -139,10 +144,12 @@ void FileHunter_T :: init()
 
    newDir(tempFilePath + "2003");
    newDir(tempFilePath + "2004");
+   newFile(tempFilePath + "2003" + getFileSep() + "not_a_match");
    newFile(tempFilePath + "2003" + getFileSep() + "123_08.data");
    newFile(tempFilePath + "2003" + getFileSep() + "123_16.data");
    newFile(tempFilePath + "2003" + getFileSep() + "234_08.data");
    newFile(tempFilePath + "2003" + getFileSep() + "234_16.data");
+   newFile(tempFilePath + "2004" + getFileSep() + "not_a_match");
    newFile(tempFilePath + "2004" + getFileSep() + "123_08.data");
    newFile(tempFilePath + "2004" + getFileSep() + "123_16.data");
    newFile(tempFilePath + "2004" + getFileSep() + "234_08.data");
@@ -153,6 +160,7 @@ void FileHunter_T :: init()
    newFile(tempFilePath + "2004" + getFileSep() + "2004_234.data");
 
    newDir(tempFilePath + "pe");
+   newFile(tempFilePath + "pe" + getFileSep() + "fake_match");
    newFile(tempFilePath + "pe" + getFileSep() + "1284_6.sp3");
    newFile(tempFilePath + "pe" + getFileSep() + "1284_7.sp3");
    newFile(tempFilePath + "pe" + getFileSep() + "1285_1.sp3");
@@ -375,6 +383,10 @@ int FileHunter_T :: testNewHunt()
       hunter.newHunt("new_fixed_spec");
       tester.assert( true, "fixed file spec", __LINE__ );
    }
+   catch (Exception& exc)
+   {
+      tester.assert( false, "unexpected exception:\n" + exc.what(), __LINE__ );
+   }
    catch (...)
    {
       tester.assert( false, "unexpected exception", __LINE__ );
@@ -385,6 +397,10 @@ int FileHunter_T :: testNewHunt()
       FileHunter  hunter("fixed_spec");
       hunter.newHunt("no_path_%p");
       tester.assert( true, "no path file spec", __LINE__ );
+   }
+   catch (Exception& exc)
+   {
+      tester.assert( false, "unexpected exception:\n" + exc.what(), __LINE__ );
    }
    catch (...)
    {
@@ -397,6 +413,10 @@ int FileHunter_T :: testNewHunt()
       hunter.newHunt("dir" + getFileSep() + "spec_%p");
       tester.assert( true, "relative path file spec", __LINE__ );
    }
+   catch (Exception& exc)
+   {
+      tester.assert( false, "unexpected exception:\n" + exc.what(), __LINE__ );
+   }
    catch (...)
    {
       tester.assert( false, "unexpected exception", __LINE__ );
@@ -408,6 +428,10 @@ int FileHunter_T :: testNewHunt()
       hunter.newHunt(tempFilePath + "2001"
                     + getFileSep() + "spec_%p");
       tester.assert( true, "absolute path file spec", __LINE__ );
+   }
+   catch (Exception& exc)
+   {
+      tester.assert( false, "unexpected exception:\n" + exc.what(), __LINE__ );
    }
    catch (...)
    {
@@ -432,6 +456,10 @@ int FileHunter_T :: testNewHunt()
       hunter.newHunt(tempFilePath + "2001_%n"
                     + getFileSep() + "spec_%p");
       tester.assert( true, "multi-directory file spec", __LINE__ );
+   }
+   catch (Exception& exc)
+   {
+      tester.assert( false, "unexpected exception:\n" + exc.what(), __LINE__ );
    }
    catch (...)
    {
@@ -505,6 +533,10 @@ int FileHunter_T :: testSetFilter()
       hunter.setFilter(FileSpec::prn, toFilter);
       tester.assert( true, "single-entry filter list", __LINE__ );
    }
+   catch (Exception& exc)
+   {
+      tester.assert( false, "unexpected exception:\n" + exc.what(), __LINE__ );
+   }
    catch (...)
    {
       tester.assert( false, "unexpected exception", __LINE__ );
@@ -519,6 +551,10 @@ int FileHunter_T :: testSetFilter()
       toFilter.push_back("24");
       hunter.setFilter(FileSpec::prn, toFilter);
       tester.assert( true, "multiple-entry filter list", __LINE__ );
+   }
+   catch (Exception& exc)
+   {
+      tester.assert( false, "unexpected exception:\n" + exc.what(), __LINE__ );
    }
    catch (...)
    {
@@ -539,6 +575,10 @@ int FileHunter_T :: testSetFilter()
       hunter.setFilter(FileSpec::prn, toFilter2);
       tester.assert( true, "multiple setFilter invocations, same file spec type", __LINE__ );
    }
+   catch (Exception& exc)
+   {
+      tester.assert( false, "unexpected exception:\n" + exc.what(), __LINE__ );
+   }
    catch (...)
    {
       tester.assert( false, "unexpected exception", __LINE__ );
@@ -558,6 +598,10 @@ int FileHunter_T :: testSetFilter()
       hunter.setFilter(FileSpec::station, toFilter2);
       tester.assert( true, "multiple setFilter invocations, different file spec type", __LINE__ );
    }
+   catch (Exception& exc)
+   {
+      tester.assert( false, "unexpected exception:\n" + exc.what(), __LINE__ );
+   }
    catch (...)
    {
       tester.assert( false, "unexpected exception", __LINE__ );
@@ -568,17 +612,37 @@ int FileHunter_T :: testSetFilter()
 
 
 //---------------------------------------------------------------------------
-int FileHunter_T :: testFind()
+int FileHunter_T :: testFind(bool absPath)
 {
-   TestUtil  tester( "FileHunter", "find", __FILE__, __LINE__ );
+   string pathType = absPath ? "(abs)" : "(rel)";
+   TestUtil  tester( "FileHunter", "find" + pathType, __FILE__, __LINE__ );
+
+   string basePath;
+   if (absPath)
+   {
+      basePath = tempFilePath;  // test absolute path
+   }
+   else
+   {
+      #ifdef WIN32
+      _chdir(tempFilePath.c_str());  // test relative path
+      #else
+      chdir(tempFilePath.c_str());  // test relative path
+      #endif
+   }
 
    try   // fixed file spec (present)
    {
-      string  filename(tempFilePath + "sample.data");
+      string  filename(basePath + "sample.data");
       FileHunter  hunter(filename);
       vector<string>  files = hunter.find();
-      tester.assert( ( (files.size() == 1) && (0 == filename.compare(files[0]) ) ),
+      tester.assert( (  (files.size() == 1)
+                     && (contains(files, tempFilePath + "sample.data") > 0) ),
                      "fixed file spec (present)", __LINE__ );
+   }
+   catch (Exception& exc)
+   {
+      tester.assert( false, "unexpected exception:\n" + exc.what(), __LINE__ );
    }
    catch (...)
    {
@@ -587,11 +651,15 @@ int FileHunter_T :: testFind()
 
    try   // fixed file spec (absent)
    {
-      string  filename(tempFilePath + "missing.data");
+      string  filename(basePath + "missing.data");
       FileHunter  hunter(filename);
       vector<string>  files = hunter.find();
       tester.assert( (files.size() == 0),
                      "fixed file spec (absent)", __LINE__ );
+   }
+   catch (Exception& exc)
+   {
+      tester.assert( false, "unexpected exception:\n" + exc.what(), __LINE__ );
    }
    catch (...)
    {
@@ -600,13 +668,17 @@ int FileHunter_T :: testFind()
 
    try   // single file spec type (present)
    {
-      string  filename(tempFilePath + "prn_%02p.data");
+      string  filename(basePath + "prn_%02p.data");
       FileHunter  hunter(filename);
       vector<string>  files = hunter.find();
       tester.assert( (  (files.size() == 2)
                      && (contains(files, tempFilePath + "prn_08.data") > 0)
                      && (contains(files, tempFilePath + "prn_16.data") > 0) ),
                      "single file spec type (present)", __LINE__ );
+   }
+   catch (Exception& exc)
+   {
+      tester.assert( false, "unexpected exception:\n" + exc.what(), __LINE__ );
    }
    catch (...)
    {
@@ -615,11 +687,15 @@ int FileHunter_T :: testFind()
 
    try   // single file spec type (absent)
    {
-      string  filename(tempFilePath + "prn_%02p.missing");
+      string  filename(basePath + "prn_%02p.missing");
       FileHunter  hunter(filename);
       vector<string>  files = hunter.find();
       tester.assert( (files.size() == 0),
                      "single file spec type (absent)", __LINE__ );
+   }
+   catch (Exception& exc)
+   {
+      tester.assert( false, "unexpected exception:\n" + exc.what(), __LINE__ );
    }
    catch (...)
    {
@@ -628,7 +704,7 @@ int FileHunter_T :: testFind()
 
    try   //  multiple file spec types (present)
    {
-      string  filename(tempFilePath + "%04Y_%03j.data");
+      string  filename(basePath + "%04Y_%03j.data");
       FileHunter  hunter(filename);
       vector<string>  files = hunter.find();
       tester.assert( (  (files.size() == 4)
@@ -638,6 +714,10 @@ int FileHunter_T :: testFind()
                      && (contains(files, tempFilePath + "2002_234.data") > 0) ),
                      "multiple file spec types (present)", __LINE__ );
    }
+   catch (Exception& exc)
+   {
+      tester.assert( false, "unexpected exception:\n" + exc.what(), __LINE__ );
+   }
    catch (...)
    {
       tester.assert( false, "unexpected exception", __LINE__ );
@@ -645,7 +725,7 @@ int FileHunter_T :: testFind()
 
    try   //  multiple file spec types (present)
    {
-      string  filename(tempFilePath + "%04Y_%03j_%02p.data");
+      string  filename(basePath + "%04Y_%03j_%02p.data");
       FileHunter  hunter(filename);
       vector<string>  files = hunter.find();
       tester.assert( (  (files.size() == 4)
@@ -655,6 +735,10 @@ int FileHunter_T :: testFind()
                      && (contains(files, tempFilePath + "2002_234_16.data") > 0) ),
                      "multiple file spec types (present)", __LINE__ );
    }
+   catch (Exception& exc)
+   {
+      tester.assert( false, "unexpected exception:\n" + exc.what(), __LINE__ );
+   }
    catch (...)
    {
       tester.assert( false, "unexpected exception", __LINE__ );
@@ -662,11 +746,15 @@ int FileHunter_T :: testFind()
 
    try   // multiple file spec types (absent)
    {
-      string  filename(tempFilePath + "%02p_%04Y_%03j.data");
+      string  filename(basePath + "%02p_%04Y_%03j.data");
       FileHunter  hunter(filename);
       vector<string>  files = hunter.find();
       tester.assert( (files.size() == 0),
                      "multiple file spec types (absent)", __LINE__ );
+   }
+   catch (Exception& exc)
+   {
+      tester.assert( false, "unexpected exception:\n" + exc.what(), __LINE__ );
    }
    catch (...)
    {
@@ -675,7 +763,7 @@ int FileHunter_T :: testFind()
 
    try   //  multi-directory file spec (present)
    {
-      string  filename(tempFilePath + "%04Y"
+      string  filename(basePath + "%04Y"
                       + getFileSep() + "%03j_%02p.data");
       FileHunter  hunter(filename);
       vector<string>  files = hunter.find();
@@ -690,6 +778,10 @@ int FileHunter_T :: testFind()
                      && (contains(files, tempFilePath + "2004" + getFileSep() + "234_16.data") > 0) ),
                      "multi-directory file spec (present)", __LINE__ );
    }
+   catch (Exception& exc)
+   {
+      tester.assert( false, "unexpected exception:\n" + exc.what(), __LINE__ );
+   }
    catch (...)
    {
       tester.assert( false, "unexpected exception", __LINE__ );
@@ -697,12 +789,16 @@ int FileHunter_T :: testFind()
 
    try   // multi-directory file spec (absent)
    {
-      string  filename(tempFilePath + "%04Y"
+      string  filename(basePath + "%04Y"
                       + getFileSep() + "%02p.%03j.data");
       FileHunter  hunter(filename);
       vector<string>  files = hunter.find();
       tester.assert( (files.size() == 0),
                      "multi-directory file spec (absent)", __LINE__ );
+   }
+   catch (Exception& exc)
+   {
+      tester.assert( false, "unexpected exception:\n" + exc.what(), __LINE__ );
    }
    catch (...)
    {
@@ -711,7 +807,7 @@ int FileHunter_T :: testFind()
 
    try   // single-value filtering (file)
    {
-      string  filename(tempFilePath + "%04Y"
+      string  filename(basePath + "%04Y"
                       + getFileSep() + "%03j_%02p.data");
       FileHunter  hunter(filename);
       std::vector<string>  toFilter;
@@ -725,6 +821,10 @@ int FileHunter_T :: testFind()
                      && (contains(files, tempFilePath + "2004" + getFileSep() + "234_16.data") > 0) ),
                      "single-value filtering (file)", __LINE__ );
    }
+   catch (Exception& exc)
+   {
+      tester.assert( false, "unexpected exception:\n" + exc.what(), __LINE__ );
+   }
    catch (...)
    {
       tester.assert( false, "unexpected exception", __LINE__ );
@@ -732,7 +832,7 @@ int FileHunter_T :: testFind()
 
    try   // single-value filtering (dir)
    {
-      string  filename(tempFilePath + "%04Y"
+      string  filename(basePath + "%04Y"
                       + getFileSep() + "%03j_%02p.data");
       FileHunter  hunter(filename);
       std::vector<string>  toFilter;
@@ -746,6 +846,10 @@ int FileHunter_T :: testFind()
                      && (contains(files, tempFilePath + "2004" + getFileSep() + "234_16.data") > 0) ),
                      "single-value filtering (dir)", __LINE__ );
    }
+   catch (Exception& exc)
+   {
+      tester.assert( false, "unexpected exception:\n" + exc.what(), __LINE__ );
+   }
    catch (...)
    {
       tester.assert( false, "unexpected exception", __LINE__ );
@@ -753,7 +857,7 @@ int FileHunter_T :: testFind()
 
    try   // single-value filtering (missing)
    {
-      string  filename(tempFilePath + "%04Y"
+      string  filename(basePath + "%04Y"
                       + getFileSep() + "%03j_%02p.data");
       FileHunter  hunter(filename);
       std::vector<string>  toFilter;
@@ -763,6 +867,10 @@ int FileHunter_T :: testFind()
       tester.assert( (files.size() == 0),
                      "single-value filtering (missing)", __LINE__ );
    }
+   catch (Exception& exc)
+   {
+      tester.assert( false, "unexpected exception:\n" + exc.what(), __LINE__ );
+   }
    catch (...)
    {
       tester.assert( false, "unexpected exception", __LINE__ );
@@ -770,7 +878,7 @@ int FileHunter_T :: testFind()
 
    try   // multiple-value filtering
    {
-      string  filename(tempFilePath + "%04Y"
+      string  filename(basePath + "%04Y"
                       + getFileSep() + "%03j_%02p.data");
       FileHunter  hunter(filename);
       std::vector<string>  yearFilter;
@@ -785,6 +893,10 @@ int FileHunter_T :: testFind()
                      && (contains(files, tempFilePath + "2004" + getFileSep() + "234_16.data") > 0) ),
                      "multiple-value filtering", __LINE__ );
    }
+   catch (Exception& exc)
+   {
+      tester.assert( false, "unexpected exception:\n" + exc.what(), __LINE__ );
+   }
    catch (...)
    {
       tester.assert( false, "unexpected exception", __LINE__ );
@@ -792,7 +904,7 @@ int FileHunter_T :: testFind()
 
    try   // time filtering (unspecified file spec time system)
    {
-      string  filename(tempFilePath + "%04Y"
+      string  filename(basePath + "%04Y"
                       + getFileSep() + "%03j_%02p.data");
       FileHunter  hunter(filename);
       vector<string>  files;
@@ -842,6 +954,10 @@ int FileHunter_T :: testFind()
       if (files.size() != 4) dump(files);  // @debug
 
    }
+   catch (Exception& exc)
+   {
+      tester.assert( false, "unexpected exception:\n" + exc.what(), __LINE__ );
+   }
    catch (...)
    {
       tester.assert( false, "unexpected exception", __LINE__ );
@@ -849,7 +965,7 @@ int FileHunter_T :: testFind()
 
    try   // time filtering (GPS file spec time system)
    {
-      string  filename(tempFilePath + "pe" + getFileSep() + "%04F_%1w.sp3");
+      string  filename(basePath + "pe" + getFileSep() + "%04F_%1w.sp3");
       FileHunter  hunter(filename);
       vector<string>  files;
       CommonTime  minTime;
@@ -898,6 +1014,10 @@ int FileHunter_T :: testFind()
       if (files.size() != 5) dump(files);  // @debug
 
    }
+   catch (Exception& exc)
+   {
+      tester.assert( false, "unexpected exception:\n" + exc.what(), __LINE__ );
+   }
    catch (...)
    {
       tester.assert( false, "unexpected exception", __LINE__ );
@@ -905,7 +1025,7 @@ int FileHunter_T :: testFind()
 
    try   // multi-dir time filtering
    {
-      string  filename(tempFilePath + "%04Y"
+      string  filename(basePath + "%04Y"
                       + getFileSep() + "%03j_%02p.data");
       FileHunter  hunter(filename);
       vector<string>  files;
@@ -955,6 +1075,10 @@ int FileHunter_T :: testFind()
       if (files.size() != 4) dump(files);  // @debug
 
    }
+   catch (Exception& exc)
+   {
+      tester.assert( false, "unexpected exception:\n" + exc.what(), __LINE__ );
+   }
    catch (...)
    {
       tester.assert( false, "unexpected exception", __LINE__ );
@@ -977,8 +1101,9 @@ int main(int argc, char *argv[])
    errorTotal += testClass.testInitialization();
    errorTotal += testClass.testNewHunt();
    errorTotal += testClass.testSetFilter();
-   errorTotal += testClass.testFind();
-   
+   errorTotal += testClass.testFind(true);  // absolute paths
+   errorTotal += testClass.testFind(false); // relative paths
+
    cout << "Total Failures for " << __FILE__ << ": " << errorTotal << endl;
 
    return errorTotal;

@@ -43,7 +43,7 @@
 // GPSTk
 #include "StringUtils.hpp"
 #include "MiscMath.hpp"
-#include "geometry.hpp"
+#include "GNSSconstants.hpp"
 // geomatics
 #include "OceanLoadTides.hpp"
 #include "RobustStats.hpp"       // for QSort

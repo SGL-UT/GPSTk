@@ -110,7 +110,6 @@ using namespace gpstk;
 //  Section 3: General/Utils classes
 // =============================================================
 // Utils stuff
-%include "geometry.hpp"
 %include "gps_constants.hpp"
 %include "SatID.hpp"
 %include "SatID.i"
@@ -144,7 +143,6 @@ using namespace gpstk;
 %include "Position.i"
 
 %include "convhelp.hpp"
-%include "Xv.hpp"
 %ignore gpstk::VectorBase::operator[] (size_t i) const;
 %ignore gpstk::VectorBase::operator() (size_t i) const;
 %ignore gpstk::RefVectorBaseHelper::zeroTolerance;
@@ -308,7 +306,6 @@ namespace std { class fstream {}; }
 %include "SaasTropModel.hpp"
 %include "SimpleTropModel.hpp"
 %include "PRSolution2.hpp"
-%include "ExtractData.hpp"
 %ignore gpstk::Expression::print(std::ostream& ostr) const;
 %include "Expression.hpp"
 
@@ -325,6 +322,10 @@ namespace std { class fstream {}; }
 %include "PoleTides.hpp"
 %include "SolidTides.hpp"
 
+// PosSol
+%include "Combinations.hpp"
+%include "PRSolution.hpp"
+
 // Geomatics:
 %include "Geomatics.i"
 %include "SunEarthSatGeometry.hpp"
@@ -338,6 +339,9 @@ namespace std { class fstream {}; }
 // Note that the path functions really don't make sense outside of the build
 // environment 
 %include "build_config.h"
+
+%include "ord.i"
+
 
 %pythoncode %{
         # clean-up the dir listing by removing *_swigregister.

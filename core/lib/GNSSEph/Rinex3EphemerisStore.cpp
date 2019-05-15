@@ -519,6 +519,7 @@ namespace gpstk
                theList.push_back(Rinex3NavData(*sysptr));
                n++;
             }
+            delete ptr;
          }
       }
       if(keepGLO) {

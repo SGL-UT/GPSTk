@@ -458,13 +458,16 @@ namespace gpstk
             if(Slopes(j) > MaxSlope) MaxSlope = Slopes(j);
             j++;
          }
+         LOG(DEBUG) << "Computed slopes, found max member";
 
          // compute pre-fit residuals
          if(hasMemory)
             PreFitResidual = P*(Solution-APSolution) - Resids;
+         LOG(DEBUG) << "Computed pre-fit residuals";
 
          // Compute RMS residual (member)
          RMSResidual = RMS(Resids);
+         LOG(DEBUG) << "Computed RMS residual";
 
          // Find the maximum slope (member)
          //MaxSlope = 0.0;
@@ -490,6 +493,37 @@ namespace gpstk
 
 
    // -------------------------------------------------------------------------
+   // Simple interface to RAIMCompute.
+   // Builds vector<SatID::SatelliteSystem> and Matrix<double> for you.
+   // ** TEMPORARY ** -- to be deprecated when the above two data types
+   // are exposed in swig.
+   int PRSolution::RAIMComputeSimple(const CommonTime& Tr,
+                                     vector<SatID>& Sats,
+                                     const vector<double>& Pseudorange,
+                                     const XvtStore<SatID> *pEph,
+                                     TropModel *pTropModel)
+      throw(Exception)
+   {
+      try {
+         // Declare the non-swig'ed variables needed by RAIMCompute;
+         // it will do the actual filling.
+         vector<SatID::SatelliteSystem> Syss; // needed if not in routine's signature
+         Matrix<double> invMC;                // needed if not in routine's signature
+
+         int iret;
+
+         // Call RAIMCompute.
+         iret = RAIMCompute(Tr, Sats, Syss, Pseudorange, invMC, pEph, pTropModel);
+
+         return iret;
+      }
+      catch(Exception& e) {
+         GPSTK_RETHROW(e);
+      }
+   }  // end PRSolution::RAIMComputeSimple()
+
+
+   // -------------------------------------------------------------------------
    // Compute a solution using RAIM.
    int PRSolution::RAIMCompute(const CommonTime& Tr,
                                vector<SatID>& Sats,
@@ -501,6 +535,8 @@ namespace gpstk
       throw(Exception)
    {
       try {
+         //LOGlevel = ConfigureLOG::Level("DEBUG"); // uncomment to turn on DEBUG output to stdout
+
          LOG(DEBUG) << "RAIMCompute at time " << printTime(Tr,gpsfmt);
 
          int iret,N;

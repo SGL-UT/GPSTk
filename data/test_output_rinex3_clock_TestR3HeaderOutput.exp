@@ -1,0 +1,13 @@
+     3.00           CLOCK               GPS                 RINEX VERSION / TYPE
+Rinex3Clock_T       User                2018/07/31 21:08:17 PGM / RUN BY / DATE
+G    4 C1W L1W C2W L2W                                      SYS / # / OBS TYPES
+   GPS                                                      TIME SYSTEM ID
+G CC2NONCC          p1c1bias.hist @ goby.nrl.navy.mil       SYS / DCBS APPLIED
+G PAGES             igs05.atx @ igscb.jpl.nasa.gov          SYS / PCVS APPLIED
+     2    AS    AR                                          # / TYPES OF DATA
+NGA  National Geospatial Intelligence Agency                ANALYSIS CENTER
+     1                                                      # OF SOLN STA / TRF
+GOLD 40405S031            1234567890 -1234567890 -1234567890SOLN STA NAME / NUM
+     1                                                      # OF SOLN SATS
+G12                                                         PRN LIST
+                                                            END OF HEADER

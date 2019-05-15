@@ -80,9 +80,9 @@ namespace gpstk
 
          cop.parseOptions(argc, argv);
 
-         if (helpOption.getCount())
+         if (cop.helpRequested())
          {
-            cop.displayUsage(cerr, pretty);
+            cop.printHelp(cerr, pretty);
             return false;
          }
 
