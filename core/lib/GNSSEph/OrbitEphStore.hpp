@@ -301,13 +301,29 @@ namespace gpstk
                             SatID sat=SatID(-1,SatID::systemUnknown)) const;
 
          /// use findNearOrbitEph() in getXvt() and getSatHealth()
-      void SearchNear(void)
-      { strictMethod = false; }
+         // MUST be done priot to starting to load nav data sets.
+      bool SearchNear(void)
+      { 
+         if (size()==0)
+         {
+            strictMethod = false; 
+            return true;
+         }
+         return false; 
+      }
 
          /** use findUserOrbitEph() in getXvt() and getSatHealth()
           * (the default) */
-      void SearchUser(void)
-      { strictMethod = true; }
+         // MUST be done priot to starting to load nav data sets.
+      bool SearchUser(void)
+      { 
+         if (size()==0)
+         {
+            strictMethod = true; 
+            return true;
+         }
+         return false; 
+      }
 
          /** Return the satellite health at the given time.
           * @param SatID sat satellite of interest
