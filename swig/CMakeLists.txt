@@ -91,6 +91,7 @@ add_custom_target(swig-make-directory ALL
 add_dependencies("_${SWIG_MODULE}" swig-make-directory)
 add_custom_command( TARGET "_${SWIG_MODULE}" POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "_${SWIG_MODULE}.so" ${CMAKE_SWIG_OUTDIR} )
 add_custom_command( TARGET "_${SWIG_MODULE}" POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${SWIG_MODULE}.py" ${CMAKE_SWIG_OUTDIR} )
+add_custom_command( TARGET "_${SWIG_MODULE}" POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "../lib${SWIG_MODULE}.so*" ${CMAKE_SWIG_OUTDIR} )
 
 # Find all files in the gpstk, apps, and tests directories and set up dependancies to
 # copy them to the python module directory
@@ -127,6 +128,11 @@ configure_file( ${GPSTK_ROOT_PY_IN} ${GPSTK_ROOT_PY} )
 
 # Note: For setup.py install options, see https://docs.python.org/2/install/
 install( CODE "execute_process(COMMAND ${PYTHON_EXECUTABLE} ${SETUP_PY} install --prefix=${PYTHON_INSTALL_PREFIX} WORKING_DIRECTORY ${MODULE_PATH})" )
+
+add_custom_target(swig-make-sdist ALL
+        COMMAND ${PYTHON_EXECUTABLE} ${SETUP_PY} sdist
+        WORKING_DIRECTORY ${MODULE_PATH}
+        DEPENDS "_${SWIG_MODULE}")
 
 #------------------------------------------------------------
 # These files aren't required to use the bindings but are

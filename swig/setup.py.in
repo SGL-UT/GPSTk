@@ -20,11 +20,21 @@ Details:
 
 """
 
-from distutils.core import setup
+import os
+import sys
+from distutils.sysconfig import get_python_lib
+
+from setuptools import setup
+from setuptools.command.install import install
+from subprocess import Popen
+
+if 'bdist_wheel' in sys.argv:
+    raise RuntimeError("This setup.py does not support wheels")
 
 #----------------------------------------
 # File lists
 #----------------------------------------
+
 
 scripts_list = [
     "apps/gpstk_timeconvert.py",
@@ -60,24 +70,40 @@ requirements_list = [ "python >= 2.7.3",
                       "setuptools >= 0.6",
                       ]
 
+
+class PostInstallCommand(install):
+    """Post-installation for installation mode."""
+    def run(self):
+        install.run(self)
+        # After install, run patchelf to set the rpath inside _gpstk.so to point to the site-packages/gpstk directory.
+        python_lib = get_python_lib()
+        Popen(['patchelf',
+               '--set-rpath',
+               os.path.join(python_lib, 'gpstk'),
+               os.path.join(python_lib, 'gpstk/_gpstk.so')])
+
 #----------------------------------------
 # setup() call
 #----------------------------------------
 
-setup( name              = "gpstk",
-       version           = "@GPSTK_VERSION@",
-       author            = "Space and Geophysics Lab, ARL, University of Texas at Austin",
-       author_email      = "gpstk@arlut.utexas.edu",
-       url               = "http://www.gpstk.org/",
-       license           = "LICENSE.txt",
-       description       = "GPSTk python package installer",
-       long_description  = open('README.md').read(),
-       keywords          = ('GNSS', 'GPS', 'RINEX'),
-       classifiers       = classifiers_list,
-       packages          = ['gpstk'],
-       package_data      = { 'gpstk': ['_gpstk.so'],},
-       scripts           = scripts_list,
-       )
+setup(name              = "gpstk",
+      version           = "@GPSTK_VERSION@",
+      author            = "Space and Geophysics Lab, ARL, University of Texas at Austin",
+      author_email      = "gpstk@arlut.utexas.edu",
+      url               = "http://www.gpstk.org/",
+      license           = "LICENSE.txt",
+      description       = "GPSTk python package installer",
+      long_description  = open(os.path.join(MODULE_DIR, 'README.md')).read(),
+      keywords          = ('GNSS', 'GPS', 'RINEX'),
+      classifiers       = classifiers_list,
+      packages          = ['gpstk'],
+      package_data      = { 'gpstk': ['_gpstk.so', 'libgpstk.so*'], },
+      data_files        = [('', ['README.md',]),],
+      scripts           = scripts_list,
+      cmdclass={
+           'install': PostInstallCommand,
+       },
+      )
 
 #----------------------------------------
 # The End
