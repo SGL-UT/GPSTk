@@ -89,9 +89,12 @@ set( CMAKE_SWIG_OUTDIR ${MODULE_PATH}/${SWIG_MODULE} )
 add_custom_target(swig-make-directory ALL
     COMMAND ${CMAKE_COMMAND} -E make_directory ${MODULE_PATH}/gpstk)
 add_dependencies("_${SWIG_MODULE}" swig-make-directory)
+
 add_custom_command( TARGET "_${SWIG_MODULE}" POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "_${SWIG_MODULE}.so" ${CMAKE_SWIG_OUTDIR} )
 add_custom_command( TARGET "_${SWIG_MODULE}" POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${SWIG_MODULE}.py" ${CMAKE_SWIG_OUTDIR} )
-add_custom_command( TARGET "_${SWIG_MODULE}" POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "../lib${SWIG_MODULE}.so*" ${CMAKE_SWIG_OUTDIR} )
+add_custom_command( TARGET "_${SWIG_MODULE}"
+                    COMMAND ${CMAKE_COMMAND} -E copy "../libgpstk.so*" ${CMAKE_SWIG_OUTDIR}
+                    DEPENDS "../libgpstk.so")
 
 # Find all files in the gpstk, apps, and tests directories and set up dependancies to
 # copy them to the python module directory

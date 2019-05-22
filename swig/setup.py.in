@@ -31,6 +31,8 @@ from subprocess import Popen
 if 'bdist_wheel' in sys.argv:
     raise RuntimeError("This setup.py does not support wheels")
 
+MODULE_DIR = os.path.split(__file__)[0]
+
 #----------------------------------------
 # File lists
 #----------------------------------------
