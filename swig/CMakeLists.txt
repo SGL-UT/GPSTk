@@ -49,6 +49,7 @@ if( DEBUG_SWITCH )
     message( STATUS "SWIG_USE_FILE            = ${SWIG_USE_FILE}" )
     message( STATUS "SWIG_DOC_DIR             = ${SWIG_DOC_DIR}")
     message( STATUS "PYTHON_INSTALL_PREFIX    = ${PYTHON_INSTALL_PREFIX}")
+    message( STATUS "PROJECT_BINARY_DIR       = ${PROJECT_BINARY_DIR}/libgpstk.so*")
 endif()
 
 #----------------------------------------
@@ -93,8 +94,8 @@ add_dependencies("_${SWIG_MODULE}" swig-make-directory)
 add_custom_command( TARGET "_${SWIG_MODULE}" POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "_${SWIG_MODULE}.so" ${CMAKE_SWIG_OUTDIR} )
 add_custom_command( TARGET "_${SWIG_MODULE}" POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${SWIG_MODULE}.py" ${CMAKE_SWIG_OUTDIR} )
 add_custom_command( TARGET "_${SWIG_MODULE}"
-                    COMMAND ${CMAKE_COMMAND} -E copy "../libgpstk.so*" ${CMAKE_SWIG_OUTDIR}
-                    DEPENDS "../libgpstk.so")
+                    COMMAND ${CMAKE_COMMAND} -E copy "${PROJECT_BINARY_DIR}/libgpstk.so*" ${CMAKE_SWIG_OUTDIR}
+                    DEPENDS gpstk)
 
 # Find all files in the gpstk, apps, and tests directories and set up dependancies to
 # copy them to the python module directory
