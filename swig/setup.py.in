@@ -21,15 +21,9 @@ Details:
 """
 
 import os
-import sys
-from distutils.sysconfig import get_python_lib
 
 from setuptools import setup
-from setuptools.command.install import install
-from subprocess import Popen
 
-if 'bdist_wheel' in sys.argv:
-    raise RuntimeError("This setup.py does not support wheels")
 
 MODULE_DIR = os.path.split(__file__)[0]
 
@@ -72,19 +66,6 @@ requirements_list = [ "python >= 2.7.3",
                       "setuptools >= 0.6",
                       ]
 
-
-class PostInstallCommand(install):
-    """Post-installation for installation mode."""
-    def run(self):
-        install.run(self)
-        # After install, run patchelf to set the rpath inside _gpstk.so to point to the site-packages/gpstk directory.
-        python_lib = get_python_lib()
-        Popen(['patchelf',
-               '--set-rpath',
-               os.path.join(python_lib, 'gpstk'),
-               os.path.join(python_lib, 'gpstk/_gpstk.so')])
-
-#----------------------------------------
 # setup() call
 #----------------------------------------
 
@@ -102,9 +83,6 @@ setup(name              = "gpstk",
       package_data      = { 'gpstk': ['_gpstk.so', 'libgpstk.so*'], },
       data_files        = [('', ['README.md',]),],
       scripts           = scripts_list,
-      cmdclass={
-           'install': PostInstallCommand,
-       },
       )
 
 #----------------------------------------
