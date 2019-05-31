@@ -49,7 +49,7 @@ if( DEBUG_SWITCH )
     message( STATUS "SWIG_USE_FILE            = ${SWIG_USE_FILE}" )
     message( STATUS "SWIG_DOC_DIR             = ${SWIG_DOC_DIR}")
     message( STATUS "PYTHON_INSTALL_PREFIX    = ${PYTHON_INSTALL_PREFIX}")
-    message( STATUS "PROJECT_BINARY_DIR       = ${PROJECT_BINARY_DIR}/libgpstk.so*")
+    message( STATUS "PROJECT_BINARY_DIR       = ${PROJECT_BINARY_DIR}/libgpstk.so.${GPSTK_VERSION_MAJOR}.${GPSTK_VERSION_MINOR}.${GPSTK_VERSION_PATCH}")
 endif()
 
 #----------------------------------------
@@ -90,11 +90,11 @@ set( CMAKE_SWIG_OUTDIR ${MODULE_PATH}/${SWIG_MODULE} )
 add_custom_target(swig-make-directory ALL
     COMMAND ${CMAKE_COMMAND} -E make_directory ${MODULE_PATH}/gpstk)
 add_dependencies("_${SWIG_MODULE}" swig-make-directory)
-
 add_custom_command( TARGET "_${SWIG_MODULE}" POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "_${SWIG_MODULE}.so" ${CMAKE_SWIG_OUTDIR} )
 add_custom_command( TARGET "_${SWIG_MODULE}" POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${SWIG_MODULE}.py" ${CMAKE_SWIG_OUTDIR} )
+
 add_custom_command( TARGET "_${SWIG_MODULE}"
-                    COMMAND ${CMAKE_COMMAND} -E copy "${PROJECT_BINARY_DIR}/libgpstk.so*" ${CMAKE_SWIG_OUTDIR}
+                    COMMAND ${CMAKE_COMMAND} -E copy "${PROJECT_BINARY_DIR}/libgpstk.so.${GPSTK_VERSION}" ${CMAKE_SWIG_OUTDIR}
                     DEPENDS gpstk)
 
 # Find all files in the gpstk, apps, and tests directories and set up dependancies to

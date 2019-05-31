@@ -83,6 +83,12 @@ class PostInstallCommand(install):
                '--set-rpath',
                os.path.join(python_lib, 'gpstk'),
                os.path.join(python_lib, 'gpstk/_gpstk.so')])
+        # Also create a symlink to alternate filenames
+        os.symlink(os.path.join(python_lib, 'gpstk/libgpstk.so.@GPSTK_VERSION@'),
+                   os.path.join(python_lib, 'gpstk/libgpstk.so.@GPSTK_VERSION_MAJOR@.@GPSTK_VERSION_MINOR@'))
+        os.symlink(os.path.join(python_lib, 'gpstk/libgpstk.so.@GPSTK_VERSION@'),
+                   os.path.join(python_lib, 'gpstk/libgpstk.so'))
+
 
 #----------------------------------------
 # setup() call
