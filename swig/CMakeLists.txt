@@ -133,10 +133,13 @@ configure_file( ${GPSTK_ROOT_PY_IN} ${GPSTK_ROOT_PY} )
 # Note: For setup.py install options, see https://docs.python.org/2/install/
 install( CODE "execute_process(COMMAND ${PYTHON_EXECUTABLE} ${SETUP_PY} install --prefix=${PYTHON_INSTALL_PREFIX} WORKING_DIRECTORY ${MODULE_PATH})" )
 
-add_custom_target(swig-make-wheel ALL
-        COMMAND ${PYTHON_EXECUTABLE} ${SETUP_PY} bdist_wheel
-        WORKING_DIRECTORY ${MODULE_PATH}
-        DEPENDS "_${SWIG_MODULE}")
+if( PIP_WHEEL_SWITCH )
+    add_custom_target(swig-make-wheel ALL
+            COMMAND ${PYTHON_EXECUTABLE} ${SETUP_PY} bdist_wheel
+            WORKING_DIRECTORY ${MODULE_PATH}
+            DEPENDS "_${SWIG_MODULE}")
+endif()
+
 
 #------------------------------------------------------------
 # These files aren't required to use the bindings but are

@@ -33,7 +33,7 @@ build_debian:
     - mkdir build
     - cd build
     - export gpstk=`pwd`/install
-    - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=install $CMAKE_ARG_DEFAULT
+    - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=install -DPIP_WHEEL_SWITCH=ON $CMAKE_ARG_DEFAULT
     - make all -j 4
   artifacts:
     paths:
