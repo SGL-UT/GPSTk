@@ -274,10 +274,12 @@ package_debian_wheel:
   tags:
     - debian
   script:
+    - mkdir dist
+    - mv build/swig/module/dist/* dist
     - echo "Saving wheel"
   artifacts:
     paths:
-      - build/swig/module/dist/
+      - dist/
   dependencies:
     - build_debian
 
@@ -296,10 +298,12 @@ package_redhat_wheel:
   tags:
     - redhat
   script:
+    - mkdir dist
+    - mv build/swig/module/dist/* dist
     - echo "Saving wheel"
   artifacts:
     paths:
-      - build/swig/module/dist/
+      - dist/
   dependencies:
     - build_redhat
 
