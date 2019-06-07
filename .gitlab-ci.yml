@@ -291,6 +291,18 @@ package_redhat:
   dependencies:
     - build_redhat
 
+package_redhat_wheel:
+  stage: package
+  tags:
+    - redhat
+  script:
+    - echo "Saving wheel"
+  artifacts:
+    paths:
+      - build/swig/module/dist/
+  dependencies:
+    - build_redhat
+
 package_osx:
   stage: package
   tags:
