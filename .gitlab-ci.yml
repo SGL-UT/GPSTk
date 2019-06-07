@@ -10,7 +10,7 @@ stages:
 
 # Default cmake arguments
 variables:
-  CMAKE_ARG_DEFAULT: "-DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../"
+  CMAKE_ARG_DEFAULT: "-DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON -DPIP_WHEEL_SWITCH=ON ../"
 
 # Check Stage
 # Runs static analysis on code.
@@ -269,6 +269,20 @@ package_debian:
   dependencies:
     - build_debian
 
+package_debian_wheel:
+  stage: package
+  tags:
+    - debian
+  script:
+    - mkdir dist
+    - mv build/swig/module/dist/* dist
+    - echo "Saving wheel"
+  artifacts:
+    paths:
+      - dist/
+  dependencies:
+    - build_debian
+
 package_redhat:
   stage: package
   tags:
@@ -276,6 +290,20 @@ package_redhat:
   script:
     - cd build
     - make package -j 4
+  dependencies:
+    - build_redhat
+
+package_redhat_wheel:
+  stage: package
+  tags:
+    - redhat
+  script:
+    - mkdir dist
+    - mv build/swig/module/dist/* dist
+    - echo "Saving wheel"
+  artifacts:
+    paths:
+      - dist/
   dependencies:
     - build_redhat
 
