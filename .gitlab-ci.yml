@@ -255,9 +255,9 @@ package_debian:
   stage: package
   tags:
     - debian
-#  only:
-#    refs:
-#      - master
+  only:
+    refs:
+      - master
   script:
     - rm -rf ../*.deb
     - dpkg-buildpackage -us -uc -d
@@ -266,7 +266,18 @@ package_debian:
   artifacts:
     paths:
     - debs/
-    - swig/module/dist
+  dependencies:
+    - build_debian
+
+package_debian_wheel:
+  stage: package
+  tags:
+    - debian
+  script:
+    - echo "Saving wheel"
+  artifacts:
+    paths:
+      - build/swig/module/dist/
   dependencies:
     - build_debian
 
