@@ -2,6 +2,12 @@
 """The GPS Toolkit, python extension package - gpstk module
     an open source library to the satellite navigation community."""
 
+import os
+
+# Force load the libgpstk library, so the symbols will already be present, even if ld wouldn't find them.
+from ctypes import cdll
+lib_gpstk = cdll.LoadLibrary(os.path.join(os.path.split(__file__)[0], 'libgpstk.so.@GPSTK_VERSION@'))
+
 #----------
 # Populate gpstk namespace
 #----------

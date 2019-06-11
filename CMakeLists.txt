@@ -33,12 +33,20 @@ option( TEST_SWITCH "HELP: TEST_SWITCH: SWITCH, Default = OFF, Turn on test mode
 option( COVERAGE_SWITCH "HELP: COVERAGE_SWITCH: SWITCH, Default = OFF, Turn on coverage instrumentation." OFF )
 option( BUILD_PYTHON "HELP: BUILD_PYTHON: SWITCH, Default = OFF, Turn on processing of python extension package." OFF )
 option( USE_RPATH "HELP: USE_RPATH: SWITCH, Default= ON, Set RPATH in libraries and binaries." ON )
+option( PIP_WHEEL_SWITCH "HELP: PIP_WHEEL_SWITCH: SWITCH, Default= OFF, Build a PIP installable wheel." OFF )
+
+if( PIP_WHEEL_SWITCH AND !BUILD_PYTHON )
+    message( WARNING "Combination of PIP_WHEEL_SWITCH=ON and BUILD_PYTHON=OFF is not allowed. Wheels depend on python module." )
+    message( WARNING "Setting BUILD_PYTHON = TRUE" )
+    set( BUILD_PYTHON TRUE )
+endif()
 
 if( BUILD_PYTHON AND !BUILD_EXT )
     message( WARNING "Combination of BUILD_PYTHON=ON and BUILD_EXT=OFF is not allowed. Python swig bindings depend on gpstk/ext." )
     message( WARNING "Setting BUILD_EXT = TRUE" )
     set( BUILD_EXT TRUE )
 endif()
+
 
 include( BuildSetup.cmake )
 

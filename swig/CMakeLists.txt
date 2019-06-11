@@ -49,6 +49,7 @@ if( DEBUG_SWITCH )
     message( STATUS "SWIG_USE_FILE            = ${SWIG_USE_FILE}" )
     message( STATUS "SWIG_DOC_DIR             = ${SWIG_DOC_DIR}")
     message( STATUS "PYTHON_INSTALL_PREFIX    = ${PYTHON_INSTALL_PREFIX}")
+    message( STATUS "PROJECT_BINARY_DIR       = ${PROJECT_BINARY_DIR}/libgpstk.so.${GPSTK_VERSION_MAJOR}.${GPSTK_VERSION_MINOR}.${GPSTK_VERSION_PATCH}")
 endif()
 
 #----------------------------------------
@@ -92,6 +93,10 @@ add_dependencies("_${SWIG_MODULE}" swig-make-directory)
 add_custom_command( TARGET "_${SWIG_MODULE}" POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "_${SWIG_MODULE}.so" ${CMAKE_SWIG_OUTDIR} )
 add_custom_command( TARGET "_${SWIG_MODULE}" POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${SWIG_MODULE}.py" ${CMAKE_SWIG_OUTDIR} )
 
+add_custom_command( TARGET "_${SWIG_MODULE}"
+                    COMMAND ${CMAKE_COMMAND} -E copy "${PROJECT_BINARY_DIR}/libgpstk.so.${GPSTK_VERSION}" ${CMAKE_SWIG_OUTDIR}
+                    DEPENDS gpstk)
+
 # Find all files in the gpstk, apps, and tests directories and set up dependancies to
 # copy them to the python module directory
 file(GLOB_RECURSE module_files RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
@@ -127,6 +132,14 @@ configure_file( ${GPSTK_ROOT_PY_IN} ${GPSTK_ROOT_PY} )
 
 # Note: For setup.py install options, see https://docs.python.org/2/install/
 install( CODE "execute_process(COMMAND ${PYTHON_EXECUTABLE} ${SETUP_PY} install --prefix=${PYTHON_INSTALL_PREFIX} WORKING_DIRECTORY ${MODULE_PATH})" )
+
+if( PIP_WHEEL_SWITCH )
+    add_custom_target(swig-make-wheel ALL
+            COMMAND ${PYTHON_EXECUTABLE} ${SETUP_PY} bdist_wheel
+            WORKING_DIRECTORY ${MODULE_PATH}
+            DEPENDS "_${SWIG_MODULE}")
+endif()
+
 
 #------------------------------------------------------------
 # These files aren't required to use the bindings but are

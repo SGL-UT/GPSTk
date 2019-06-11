@@ -10,7 +10,7 @@ stages:
 
 # Default cmake arguments
 variables:
-  CMAKE_ARG_DEFAULT: "-DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../"
+  CMAKE_ARG_DEFAULT: "-DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON -DPIP_WHEEL_SWITCH=ON ../"
 
 # Check Stage
 # Runs static analysis on code.
@@ -52,23 +52,6 @@ build_redhat:
   artifacts:
     paths:
     - build/
-
-build_osx:
-  stage: build
-  tags:
-    - osx
-  script:
-    - mkdir build
-    - cd build
-    - cmake -DPYTHON_INSTALL_PREFIX=install -DCMAKE_INSTALL_PREFIX=install/gpstk $CMAKE_ARG_DEFAULT
-    - make all -j 4
-  artifacts:
-    paths:
-    - build/
-  only:
-    - schedules
-  except:
-    - merge_requests
 
 build_windows:
   stage: build
@@ -124,20 +107,6 @@ test_redhat:
     - ctest -j 4
   dependencies:
     - build_redhat
-
-test_osx:
-  stage: test
-  tags:
-    - osx
-  script:
-    - cd build
-    - ctest -j 4
-  dependencies:
-    - build_osx
-  only:
-    - schedules
-  except:
-    - merge_requests
 
 test_windows:
   stage: test
@@ -203,22 +172,6 @@ deploy_redhat:
   dependencies:
     - build_redhat
 
-deploy_osx:
-  stage: deploy
-  tags:
-    - osx
-  script:
-    - cd build
-    - make install -j 4
-  artifacts:
-    paths:
-    - build/install
-  dependencies:
-    - build_osx
-  only:
-    - schedules  
-  except:
-    - merge_requests  
 
 deploy_windows:
   stage: deploy
@@ -269,6 +222,20 @@ package_debian:
   dependencies:
     - build_debian
 
+package_debian_wheel:
+  stage: package
+  tags:
+    - debian
+  script:
+    - mkdir dist
+    - mv build/swig/module/dist/* dist
+    - echo "Saving wheel"
+  artifacts:
+    paths:
+      - dist/
+  dependencies:
+    - build_debian
+
 package_redhat:
   stage: package
   tags:
@@ -279,19 +246,19 @@ package_redhat:
   dependencies:
     - build_redhat
 
-package_osx:
+package_redhat_wheel:
   stage: package
   tags:
-    - osx
+    - redhat
   script:
-    - cd build
-    - make package -j 4
+    - mkdir dist
+    - mv build/swig/module/dist/* dist
+    - echo "Saving wheel"
+  artifacts:
+    paths:
+      - dist/
   dependencies:
-    - build_osx
-  only:
-    - schedules
-  except:
-    - merge_requests
+    - build_redhat
 
 package_windows:
   stage: package
@@ -372,25 +339,3 @@ sgltk_redhat:
     - make all -j 4
   dependencies:
     - deploy_redhat
-
-sgltk_osx:
-  stage: downstream
-  tags:
-    - osx
-  script:
-    - cd build
-    - git clone gitlab@repositories.arlut.utexas.edu:sgl/sgltk.git
-    - export gpstk=`pwd`/install
-    - export LD_LIBRARY_PATH=$gpstk/lib:$LD_LIBRARY_PATH
-    - cd sgltk
-    - mkdir build
-    - cd build
-    - cmake -DCMAKE_PREFIX_PATH=$gpstk -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
-    - make all -j 4
-  dependencies:
-    - deploy_osx
-  allow_failure: true
-  only:
-    - schedules
-  except:
-    - merge_requests
