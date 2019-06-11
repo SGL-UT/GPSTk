@@ -396,7 +396,7 @@ namespace gpstk
 
    bool CommonTime::operator>( const CommonTime& right ) const
    {
-      return !operator<=(right);
+      return !operator <=(right);
    }
 
    bool CommonTime::operator<=( const CommonTime& right ) const
