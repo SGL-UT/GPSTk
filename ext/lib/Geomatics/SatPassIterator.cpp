@@ -147,11 +147,12 @@ void SatPassIterator::reset(bool rev, bool dbug) throw()
 // -------------------------------------------------------------------------------
 // return 1 for success, 0 at end of data
 // Access (all of) the data for the next epoch. As long as this function
-// returns zero, there is more data to be accessed. Ignore passes with
+// returns non-zero, there is more data to be accessed. Ignore passes with
 // Status less than zero.
 // @param indexMap  map<unsigned int, unsigned int> defined so that all the
 //                  data in the current iteration is found at
 //                  SatPassList[i].data(j) where indexMap[i] = j.
+// @return 1 for success, 0 at the end of the dataset.
 // @throw if time tags are out of order.
 int SatPassIterator::next(map<unsigned int, unsigned int>& indexMap) throw(Exception)
 {
