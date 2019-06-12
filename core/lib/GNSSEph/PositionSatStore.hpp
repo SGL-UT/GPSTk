@@ -244,7 +244,7 @@ namespace gpstk
          throw(InvalidRequest);
 
          /// Get current interpolation order.
-      unsigned int getInterpolationOrder(void) throw()
+      unsigned int getInterpolationOrder(void) const throw()
       { return interpOrder; }
 
          /** Set the interpolation order; this routine forces the
