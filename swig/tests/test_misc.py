@@ -221,9 +221,6 @@ class std_template_test(unittest.TestCase):
         list = [1, 2.2, 'c']  # mismatching types not allowed
         self.assertRaises(TypeError, gpstk.seqToVector, list)
 
-        list = [1000L, 2000L]  # PyLongs are not templated
-        self.assertRaises(TypeError, gpstk.seqToVector, list)
-
     def test_map(self):
         map = gpstk.map_int_char()
         map[1] = 'A'
