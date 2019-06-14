@@ -34,11 +34,10 @@
 //
 //=============================================================================
 
-/// @file StatsFilter_T.cpp Test classes in StatsFilter.hpp
+/// @file StatsFilter_T.cpp Test the classes in StatsFilter.hpp
 
 #include <vector>
 #include "StatsFilter.hpp"
-#include "logstream.hpp"
 
 //------------------------------------------------------------------------------------
 using namespace std;
