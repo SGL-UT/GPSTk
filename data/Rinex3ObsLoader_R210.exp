@@ -1,0 +1,65 @@
+Load file /home/btolman/pre053/gpstk/data/Rinex3ObsLoader210.obs
+Store size is 3600
+---------------------------------- REQUIRED ----------------------------------
+Rinex Version  2.10,  File type OBSERVATION DATA,  System MIXED.
+Prgm: sbf2rin-11.3.3,  Run: 05-APR-17 10:54,  By: 
+Marker name: SEPT, Marker type: .
+Observer : Unknown,  Agency: Unknown
+Rec#: 3010425,  Type: SEPT ALTUS NR2,  Vers: 1.2.0
+Antenna # : APS-NR2,  Type : APSAPS-NR2      NONE
+Position      (XYZ,m) : (-740519.8372, -5457010.8698, 3207282.3336).
+Antenna Delta (HEN,m) : (0.0000, 0.0000, 0.0000).
+Galileo Observation types (2):
+ Type #01 (C1B) L1 GALB pseudorange
+ Type #02 (L1B) L1 GALB phase
+GPS Observation types (5):
+ Type #01 (C1C) L1 GPSC/A pseudorange
+ Type #02 (L1C) L1 GPSC/A phase
+ Type #03 (L2W) L2 GPScodelessZ phase
+ Type #04 (C2W) L2 GPScodelessZ pseudorange
+ Type #05 (C1W) L1 GPScodelessZ pseudorange
+GLONASS Observation types (5):
+ Type #01 (C1C) G1 GLOC/A pseudorange
+ Type #02 (L1C) G1 GLOC/A phase
+ Type #03 (L2C) G2 GLOC/A phase
+ Type #04 (C2P) G2 GLOP pseudorange
+ Type #05 (C1P) G1 GLOP pseudorange
+Geosync Observation types (2):
+ Type #01 (C1C) L1 SBASC/A pseudorange
+ Type #02 (L1C) L1 SBASC/A phase
+R2ObsTypes: C1 L1 L2 P2 P1 
+mapSysR2toR3ObsID[E] C1:C1B L1:L1B 
+mapSysR2toR3ObsID[G] C1:C1C L1:L1C L2:L2W P1:C1W P2:C2W 
+mapSysR2toR3ObsID[R] C1:C1C L1:L1C L2:L2C P1:C1P P2:C2P 
+mapSysR2toR3ObsID[S] C1:C1C L1:L1C 
+Time of first obs 2017/01/26 00:00:00.000 GPS
+(This header is VALID)
+---------------------------------- OPTIONAL ----------------------------------
+Marker number : Unknown
+Signal Strenth Unit = 
+Interval =   1.000
+Time of Last Obs 2017/01/26 00:59:59.000 GPS
+Wavelength factor L1: 1 L2: 1
+Number of Satellites with data : 26
+-------------------------------- END OF HEADER --------------------------------
+Summary of input RINEX obs data files (1):
+ RINEX obs file: /home/btolman/pre053/gpstk/data/Rinex3ObsLoader210.obs
+ Interval 1.00sec, obs types GC1C GL1C GL2W GC2W, store size 3600
+ Time limits: begin  2017/01/26 00:00:00 1933 345600.000
+                end  2017/01/26 00:59:59 1933 349199.000
+Table of Sat/Obs counts
+      GC1C  GL1C  GL2W  GC2W
+ G03  1846  1399  1392  1392
+ G07  3600  3600  3600  3600
+ G08  3600  3600  3600  3600
+ G09  3600  3600  3600  3600
+ G11  3600  3600  3528  3528
+ G16  3600  3600  3600  3600
+ G22   152     0     0     0
+ G23  3600  3600  3600  3600
+ G26   535   398   352   352
+ G27  3600  3600  3600  3600
+ G28  3600  3600  3600  3600
+ G30  3600  3600  3600  3600
+ TOT 34933 34197 34072 34072 total 3600 epochs
+End of summary

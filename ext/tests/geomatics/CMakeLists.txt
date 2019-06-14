@@ -381,9 +381,56 @@ set_property(TEST JPL_405eph_accuracy PROPERTY LABELS Geomatics)
 set_property(TEST JPL_405eph_accuracy PROPERTY DEPENDS JPL_405eph_conversion)
 
 ###############################################################################
+# Test StatsFilters filters
+###############################################################################
 add_executable(StatsFilter_T StatsFilter_T.cpp)
 target_link_libraries(StatsFilter_T gpstk)
 add_test(StatsFilter StatsFilter_T)
 set_property(TEST StatsFilter PROPERTY LABELS Geomatics)
+
+###############################################################################
+# Test Rinex3ObsFileLoader RINEX3.03 input
+###############################################################################
+add_test(NAME Rinex3ObsLoader_R303
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:Rinex3ObsLoader_T>
+         -DDIFF_PROG=$<TARGET_FILE:df_diff>
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTBASE=Rinex3ObsLoader_R303
+         -DARGS=${GPSTK_TEST_DATA_DIR}/Rinex3ObsLoader303.obs
+         -DDIFF_ARGS=-l2\ -z2
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+set_property(TEST Rinex3ObsLoader_R303 PROPERTY LABELS Geomatics)
+
+###############################################################################
+# Test Rinex3ObsFileLoader RINEX2.11 input
+###############################################################################
+add_test(NAME Rinex3ObsLoader_R211
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:Rinex3ObsLoader_T>
+         -DDIFF_PROG=$<TARGET_FILE:df_diff>
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTBASE=Rinex3ObsLoader_R211
+         -DARGS=${GPSTK_TEST_DATA_DIR}/Rinex3ObsLoader211.obs
+         -DDIFF_ARGS=-l2\ -z2
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+set_property(TEST Rinex3ObsLoader_R211 PROPERTY LABELS Geomatics)
+
+###############################################################################
+# Test Rinex3ObsFileLoader RINEX2.10 input
+###############################################################################
+add_test(NAME Rinex3ObsLoader_R210
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:Rinex3ObsLoader_T>
+         -DDIFF_PROG=$<TARGET_FILE:df_diff>
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTBASE=Rinex3ObsLoader_R210
+         -DARGS=${GPSTK_TEST_DATA_DIR}/Rinex3ObsLoader210.obs
+         -DDIFF_ARGS=-l2\ -z2
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+set_property(TEST Rinex3ObsLoader_R210 PROPERTY LABELS Geomatics)
 
 ###############################################################################
