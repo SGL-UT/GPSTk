@@ -1,39 +1,3 @@
-//============================================================================
-//
-//  This file is part of GPSTk, the GPS Toolkit.
-//
-//  The GPSTk is free software; you can redistribute it and/or modify
-//  it under the terms of the GNU Lesser General Public License as published
-//  by the Free Software Foundation; either version 3.0 of the License, or
-//  any later version.
-//
-//  The GPSTk is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU Lesser General Public License for more details.
-//
-//  You should have received a copy of the GNU Lesser General Public
-//  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
-//  Copyright 2004, The University of Texas at Austin
-//
-//============================================================================
-
-//============================================================================
-//
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
-//
-//Pursuant to DoD Directive 523024 
-//
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
-//
-//=============================================================================
-
 /// @file rstats.cpp
 /// Read the data in one [or two] column(s) of a file, and output robust statistics,
 /// two-sample statistics, a stem-and-leaf plot, a quantile-quantile plot,
@@ -48,17 +12,21 @@
 #include <string>
 #include <vector>
 // GPSTk
+#include "svn_version.hpp"          // BWT
 #include "Exception.hpp"
 #include "StringUtils.hpp"
+#include "DayTime.hpp"
 #include "Stats.hpp"
-#include "StatsFilter.hpp"
-//#include "FDiffFilter.hpp"
+#include "FirstDiffFilter.hpp"
+#include "WindowFilter.hpp"
+#include "FDiffFilter.hpp"
 #include "singleton.hpp"
+#include "WNJfilter.hpp"
 // geomatics
 #include "CommandLine.hpp"
 #include "RobustStats.hpp"
 #include "MostCommonValue.hpp"
-#include "expandtilde.hpp"
+#include "expandpath.hpp"
 #include "logstream.hpp"
 
 //------------------------------------------------------------------------------------
@@ -84,7 +52,9 @@ int Sequential(void) throw(Exception);
 int Discontinuity(void) throw(Exception);
 int FDFilter(void) throw(Exception);
 int WindFilter(void) throw(Exception);
-//int FixFilter(void) throw(Exception);
+int FixFilter(void) throw(Exception);
+int WhiteNoiseJerkFilter(void) throw(Exception);
+int ComputeFFT(void) throw(Exception);
 int OutputStats(void) throw(Exception);
 int Outliers(void) throw(Exception);
 
@@ -142,7 +112,7 @@ public:
    double ytol,xtol;                   // tolerances to discontinuities
 
    // filters
-   bool doFDF,doFDF2,doWF,doXWF;       // first difference and window filters
+   bool doFDF,doFDF2,doWF,doXWF,doFixF;// first difference and window filters
    double fdfstep,fdfsig,fdfrat;       // step, sigma and ratio limit for FDF(2)
    string fdfstr,fdf2str;              // fdf and fdf2 filters
    string windstr,xwindstr;            // window filters
@@ -151,6 +121,11 @@ public:
    string fixfstr;                     // input for fixer filter
    int fixN;                           // width of fixer filter
    double fixlim,fixsig;               // step and sigma limits of fixer filter
+
+   // other
+   bool doWNJ,doFFT;                   // white noise jerk, FFT
+   double wnjpom;                      // WNJ process/measurement noise ratio
+   double dtfft;                       // dt for FFT
 
    // output
    bool quiet;                         // suppress title, timing and other output
@@ -162,6 +137,7 @@ public:
    bool doOuts;                        // outlier lists
    string outstr;                      // use string so no default shows
    double outscale;                    // outlier scaling for --outs
+   int width;                          // width of floating output
    int prec;                           // precision of floating output
 
    bool verbose,help;                  // help, etc
@@ -239,6 +215,7 @@ private:
       quiet = nostats = doKS = doOuts = brief = bc = br = bw = b2 = brw = false;
       label = string("");
       prec = 3;
+      width = 6;
       // help
       debug = -1;
       help = verbose = false;
@@ -253,7 +230,7 @@ private:
 }; // end class GlobalData
 
 //------------------------------------------------------------------------------------
-const string GlobalData::Version(string("3.0 9/9/18"));
+const string GlobalData::Version(string("3.0 9/9/18 rev") + string(SVNversion()));
 
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
@@ -263,6 +240,8 @@ int main(int argc, char **argv)
 try {
    // begin counting time
    clock_t totaltime = clock();
+   DayTime wallbegin,wallend;
+   wallbegin.setLocalTime();
 
    // get (create) the global data object (a singleton);
    // since this is the first instance, this will also set default values
@@ -270,7 +249,10 @@ try {
    PrgmName = GD.PrgmName;
 
    // Build title
-   GD.Title = GD.PrgmName + ", Ver. " + GD.Version;
+   DayTime ttag;
+   ttag.setLocalTime();
+   GD.Title = GD.PrgmName + ", Ver. "
+      + GD.Version + ttag.printf(", Run %04Y/%02m/%02d at %02H:%02M:%02S");
  
    // display title on screen -- see below after cmdline input
 
@@ -307,7 +289,12 @@ try {
       // filters - all set nostats
       if(GD.doFDF || GD.doFDF2) { iret = FDFilter(); if(iret) break; }
       if(GD.doWF || GD.doXWF) { iret = WindFilter(); if(iret) break; }
-      //if(GD.doFixF) { iret = FixFilter(); if(iret) break; }
+      if(GD.doFixF) { iret = FixFilter(); if(iret) break; }
+
+      // other - all set nostats
+      if(GD.doWNJ) { iret = WhiteNoiseJerkFilter(); if(iret) break; }
+      // uses GD.tsstats
+      if(GD.doFFT) { iret = ComputeFFT(); if(iret) break; }
 
       // output stats
       if(!GD.nostats) { iret = OutputStats(); if(iret) break; }
@@ -352,11 +339,13 @@ try {
 
    // compute and print run time ----------------------------------------------
    if(iret != 1 && !GD.quiet) {
+      wallend.setLocalTime();
       totaltime = clock()-totaltime;
       ostringstream oss;
-      cout << "# " << PrgmName << " timing: " << fixed << setprecision(3)
+      oss << "# " << PrgmName << " timing: " << fixed << setprecision(3)
          << double(totaltime)/double(CLOCKS_PER_SEC)
-         << " seconds.\n";
+         << " seconds. (" << (wallend - wallbegin) << " sec)";
+      cout << oss.str() << endl;
    }
 
    if(iret == 0) return 0; else return -1;
@@ -412,8 +401,8 @@ try {
             "read data in this column [-y|-c]");
    opts.Add('x', "xcol", "c", false, req, &GD.xcol, "",
             "also read 'x' data in this column [-x]");
-   opts.Add('w', "wcol", "c", false, req, &GD.wcol, "",
-            "weight with fabs() of data in this column [-w]");
+   opts.Add(0, "wt", "c", false, req, &GD.wcol, "",
+            "weight with fabs() of data in this column [-wt]");
 
    // modify input
    opts.Add(0, "beg", "xb", false, req, &GD.begstr, "\n# modify input:",
@@ -461,8 +450,17 @@ try {
             "window filter width n, limits: slip s, ratio r");
    opts.Add(0, "xwind", "n[,s,r]", false, req, &GD.xwindstr, "",
             "window filter (--wind) with 2-sample stats");
-   //opts.Add(0, "fix", "n[,x,s]", false, req, &GD.fixfstr, "",
-   //         "SD fix filter width n, limits: slip x sigma s");
+   opts.Add(0, "fix", "n[,x,s]", false, req, &GD.fixfstr, "",
+            "FDiff 'fix' filter (for SSD phase) width n, limits: slip x sigma s");
+   // others
+   opts.Add(0, "wnj", "pom", false, req, &GD.wnjpom, "\n# other {*}:",
+            "white noise jerk KF using pom = process/meas noises (small=>smooth)\n"
+            +pad+"  e.g. rstats prsclk.dat -x 1 -y 11 --wnj 1.e-8 | grep KSU | plot\n"
+            +pad+"  -x 3 -y 10,data -y 4,,'lines lt 3' -y2 11,res --points");
+   opts.Add(0, "fft", "dt", false, req, &GD.dtfft, "",
+            "compute FFT with dt [dt=0 => compute dt from xdata] NB beware -p\n"
+            +pad+"  e.g. rstats testfft.data -x 1 -y 9 --fft 0.0034722 |\n"
+            +pad+"       plotrfft -o2 'set xr [0:25]'");
    // output
    opts.Add(0, "nostats", "", false, req, &GD.nostats, "\n# output:",
             "supress total stats output (for analyses)");
@@ -478,8 +476,10 @@ try {
             +pad+"  [or -bc -br -bw -brw -b2 for single quiet brief output]");
    opts.Add('l', "label", "L", false, req, &GD.label, "",
             "add label L to the (brief/disc/seq/fdf/wind/fft) outputs [-l]");
-   opts.Add('p', "prec", "p", false, req, &GD.prec, "\n# format and help:",
+   opts.Add('p', "prec", "n", false, req, &GD.prec, "\n# format and help:",
             "specify precision of all float outputs [-p]");
+   opts.Add('w', "width", "n", false, req, &GD.width, "",
+            "specify width of all float outputs");
    // help,verbose,debug handled by CommandLine
 
    // add options that are ignored (true if it has an arg)
@@ -547,7 +547,9 @@ try {
    GD.doFDF2 = (opts.count("fdf2") > 0);
    GD.doWF = (opts.count("wind") > 0);
    GD.doXWF = (opts.count("xwind") > 0);
-   //GD.doFixF = (opts.count("fix") > 0);
+   GD.doFixF = (opts.count("fix") > 0);
+   GD.doWNJ = (opts.count("wnj") > 0);
+   GD.doFFT = (opts.count("fft") > 0);
 
    // bin
    if(!GD.binstr.empty()) {
@@ -629,22 +631,22 @@ try {
       }
    }
 
-   //// fix filter
-   //if(GD.doFixF) {
-   //   fields = split(GD.fixfstr,',');
-   //   if(fields.size() == 1) {
-   //      GD.fixN = asInt(fields[0]);
-   //   }
-   //   else if(fields.size() == 3) {
-   //      GD.fixN = asInt(fields[0]);
-   //      GD.fixlim = asDouble(fields[1]);
-   //      GD.fixsig = asDouble(fields[2]);
-   //   }
-   //   else {
-   //      oss << " Error - invalid argument to --fix " << GD.fixfstr << "\n";
-   //      GD.doFixF = false;
-   //   }
-   //}
+   // fix filter
+   if(GD.doFixF) {
+      fields = split(GD.fixfstr,',');
+      if(fields.size() == 1) {
+         GD.fixN = asInt(fields[0]);
+      }
+      else if(fields.size() == 3) {
+         GD.fixN = asInt(fields[0]);
+         GD.fixlim = asDouble(fields[1]);
+         GD.fixsig = asDouble(fields[2]);
+      }
+      else {
+         oss << " Error - invalid argument to --fix " << GD.fixfstr << "\n";
+         GD.doFixF = false;
+      }
+   }
 
    // window filters
    if(GD.doWF || GD.doXWF) {
@@ -661,7 +663,8 @@ try {
    }
 
    // set nostats
-   if(GD.doBin || GD.doFDF || GD.doFDF2 || GD.doWF || GD.doXWF) // || GD.doFixF)
+   if(GD.doBin || GD.doFDF || GD.doFDF2 || GD.doWF || GD.doXWF
+               || GD.doFixF || GD.doWNJ || GD.doFFT)
       GD.nostats = true;
 
    // set -b flags
@@ -897,13 +900,13 @@ try {
 
    if(GD.bc || GD.b2) {
       cout << "rstats(con):" << label
-         << " N " << setw(GD.prec) << GD.cstats.N()
-         << "  Ave " << setw(GD.prec+3) << GD.cstats.Average()
-         << "  Std " << setw(GD.prec+3) << GD.cstats.StdDev()
-         << "  Var " << setw(GD.prec+3) << GD.cstats.Variance()
-         << "  Min " << setw(GD.prec+3) << GD.cstats.Minimum()
-         << "  Max " << setw(GD.prec+3) << GD.cstats.Maximum()
-         << "  P2P " << setw(GD.prec+3) << GD.cstats.Maximum()-GD.cstats.Minimum();
+         << " N " << setw(GD.width) << GD.cstats.N()
+         << "  Ave " << setw(GD.width) << GD.cstats.Average()
+         << "  Std " << setw(GD.width) << GD.cstats.StdDev()
+         << "  Var " << setw(GD.width) << GD.cstats.Variance()
+         << "  Min " << setw(GD.width) << GD.cstats.Minimum()
+         << "  Max " << setw(GD.width) << GD.cstats.Maximum()
+         << "  P2P " << setw(GD.width) << GD.cstats.Maximum()-GD.cstats.Minimum();
       if(GD.dodebias) cout << " Bias " << GD.debias;
       cout << endl;
    }
@@ -916,7 +919,7 @@ try {
    if(GD.xcol > -1) {
       if(GD.b2) {
          cout << "rstats(two):" << label
-            << " N " << setw(GD.prec) << GD.data.size()
+            << " N " << setw(GD.width) << GD.data.size()
             //<< " VarX " << setprecision(GD.prec) << GD.tsstats.VarianceX()
             //<< " VarY " << setprecision(GD.prec) << GD.tsstats.VarianceY()
             << "  Int " << setprecision(GD.prec) << GD.tsstats.Intercept()
@@ -936,13 +939,13 @@ try {
 
    if(GD.bw && GD.wcol > -1) {
       cout << "rstats(wtd):" << label
-         << " N " << setw(GD.prec) << GD.wstats.N()
-         << "  Ave " << setw(GD.prec+3) << GD.wstats.Average()
-         << "  Std " << setw(GD.prec+3) << GD.wstats.StdDev()
-         << "  Var " << setw(GD.prec+3) << GD.wstats.Variance()
-         << "  Min " << setw(GD.prec+3) << GD.wstats.Minimum()
-         << "  Max " << setw(GD.prec+3) << GD.wstats.Maximum()
-         << "  P2P " << setw(GD.prec+3) << GD.wstats.Maximum()-GD.wstats.Minimum();
+         << " N " << setw(GD.width) << GD.wstats.N()
+         << "  Ave " << setw(GD.width) << GD.wstats.Average()
+         << "  Std " << setw(GD.width) << GD.wstats.StdDev()
+         << "  Var " << setw(GD.width) << GD.wstats.Variance()
+         << "  Min " << setw(GD.width) << GD.wstats.Minimum()
+         << "  Max " << setw(GD.width) << GD.wstats.Maximum()
+         << "  P2P " << setw(GD.width) << GD.wstats.Maximum()-GD.wstats.Minimum();
       if(GD.dodebias) cout << " Bias " << GD.debias;
       cout << endl;
    }
@@ -955,13 +958,13 @@ try {
 
    if(GD.brw) {
       cout << "rstats(rwt):" << label
-         << " N " << setw(GD.prec) << GD.robwtstats.N()
-         << "  Ave " << setw(GD.prec+3) << GD.robwtstats.Average()
-         << "  Std " << setw(GD.prec+3) << GD.robwtstats.StdDev()
-         << "  Var " << setw(GD.prec+3) << GD.robwtstats.Variance()
-         << "  Min " << setw(GD.prec+3) << GD.robwtstats.Minimum()
-         << "  Max " << setw(GD.prec+3) << GD.robwtstats.Maximum()
-         << "  P2P " << setw(GD.prec+3)
+         << " N " << setw(GD.width) << GD.robwtstats.N()
+         << "  Ave " << setw(GD.width) << GD.robwtstats.Average()
+         << "  Std " << setw(GD.width) << GD.robwtstats.StdDev()
+         << "  Var " << setw(GD.width) << GD.robwtstats.Variance()
+         << "  Min " << setw(GD.width) << GD.robwtstats.Minimum()
+         << "  Max " << setw(GD.width) << GD.robwtstats.Maximum()
+         << "  P2P " << setw(GD.width)
                                  << GD.robwtstats.Maximum()-GD.robwtstats.Minimum();
       if(GD.dodebias) cout << " Bias " << GD.debias;
       cout << endl;
@@ -974,14 +977,14 @@ try {
 
    if(GD.br) {
       cout << "rstats(rob):" << label
-         << " N " << setw(GD.prec) << GD.data.size()
-         << "  Med " << setw(GD.prec+3) << GD.median << "  MAD " << GD.mad
-         << "  Min " << setw(GD.prec+3) << GD.cstats.Minimum()
-         << "  Max " << GD.cstats.Maximum()
-         << "  P2P " << setw(GD.prec+3) << GD.cstats.Maximum()-GD.cstats.Minimum()
-         << "  Q1 " << setw(GD.prec+3) << GD.Q1 << "  Q3 " << setw(GD.prec+3)<< GD.Q3
-         << "  QL " << setw(GD.prec+3) << 2.5*GD.Q1-1.5*GD.Q3
-         << "  QH " << setw(GD.prec+3) << 2.5*GD.Q3-1.5*GD.Q1;
+         << " N " << setw(GD.width) << GD.data.size()
+         << "  Med " << setw(GD.width) << GD.median << "  MAD " << GD.mad
+         << "  Min " << setw(GD.width) << GD.cstats.Minimum()
+         << "  Max " << setw(GD.width) << GD.cstats.Maximum()
+         << "  P2P " << setw(GD.width) << GD.cstats.Maximum()-GD.cstats.Minimum()
+         << "  Q1 " << setw(GD.width) << GD.Q1 << "  Q3 " << setw(GD.width)<< GD.Q3
+         << "  QL " << setw(GD.width) << 2.5*GD.Q1-1.5*GD.Q3
+         << "  QH " << setw(GD.width) << 2.5*GD.Q3-1.5*GD.Q1;
       if(GD.dodebias) cout << "  Bias " << GD.debias;
       cout << endl;
    }
@@ -1047,31 +1050,31 @@ try {
    vector<double> qdata(GD.data.size());
    Robust::Quantiles(&qdata[0],qdata.size());
 
-   // output to file qplot.out
-   ostream *pout = new ofstream("qplot.out");
+   // output to file rstats.out
+   ostream *pout = new ofstream("rstats.out");
    if(pout->fail()) {
-      cout << "Unable to open file qplot.out - output to screen\n";
+      cout << "Unable to open file rstats.out - output to screen\n";
       pout = &cout;
    }
-   else cout << "Output quantiles, data to file qplot.out\n";
+   else cout << "Output quantiles, data to file rstats.out\n";
 
    // get TS stats
    TwoSampleStats<double> TSS;
    for(i=0; i<GD.data.size(); i++) TSS.Add(qdata[i],GD.data[i]);
 
-   *pout << "# Quantile plot mean " << setprecision(GD.prec) << TSS.Intercept()
-      << " std (slope) " << TSS.Slope() << " quantile data line follow:" << endl;
+   *pout << "# Quantile plot mean " << fixed << setprecision(GD.prec)
+      << TSS.Intercept() << " std (slope) " << TSS.Slope()
+      << " quantile data line follow:" << endl;
    for(i=0; i<GD.data.size(); i++)
       *pout << qdata[i] << " " << GD.data[i]
-         << " " << TSS.Intercept() + TSS.Slope()*qdata[i]
-         << endl;
+            << " " << TSS.Intercept() + TSS.Slope()*qdata[i] << endl;
 
    if(pout != &cout) ((ofstream *)pout)->close();
 
    cout << "Data vs quantiles fit to line yields y-intercept (=mean) "
-      << setprecision(3) << TSS.Intercept()
+      << fixed << setprecision(GD.prec) << TSS.Intercept()
       << " and slope (=std.dev.) " << TSS.Slope() << endl;
-      //<< " try `plot qplot.out -x 1 -y 2,data -y 3,line,lines"
+      //<< " try `plot rstats.out -x 1 -y 2,data -y 3,line,lines"
       //<< " -xl quantile -yl data -t \"Quantile plot\"`"
       //<< endl;
 
@@ -1083,10 +1086,12 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 //------------------------------------------------------------------------------------
 // bins - given min, max and number of bins, find "pretty" bin boundaries
 // (first-bin,step,<have nbins>) where first-bin is the *center* of the first bin,
+// input min,max,nbins, output the rest
 // return 0 if ok
-int Bins(const double& min, const double& max,
-            int& nbins, double& firstbin, double& binstep, int& sexp) throw(Exception)
+int Bins(const double& min, const double& max, int& nbins,
+         double& firstbin, double& binstep, int& prec) throw(Exception)
 {
+try {
    if(nbins <= 2) GPSTK_THROW(Exception("Too few bins"));
    firstbin = binstep = 0.0;
 
@@ -1098,16 +1103,17 @@ int Bins(const double& min, const double& max,
    binstep = (amax-amin)/double(nbins);
    //cout << "# Raw binstep " << binstep << endl;
    double tmp = log10(double(binstep)) - 1.0;
-   sexp = int(tmp + (tmp > 0 ? 0.5 : -0.5));
-   //cout << "# tmp is " << tmp << " and initial scale exp is " << sexp << endl;
-   double scal = pow(10.0,sexp);
-   //cout << "# scal binstep/scal " << scal << " " << binstep/scal <<endl;
-   while(binstep/scal < 1.0) { scal /= 10.0; sexp--; }
-   while(binstep/scal >= 10.0) { scal *= 10.0; sexp++; }
-   //cout << "# Scale exponent is " << sexp << endl;
+   prec = int(tmp + (tmp > 0 ? 0.5 : -0.5));
+   //cout << "# tmp is " << tmp << " and initial scale exp is " << prec << endl;
+   double scal = pow(10.0,prec);
+   //cout << "# scal binstep/scal " << setprecision(10) << scal
+   //<< " " << binstep/scal <<endl;
+   while(binstep/scal < 1.0) { scal /= 10.0; prec--; }
+   while(binstep/scal >= 10.0) { scal *= 10.0; prec++; }
+   //cout << "# Scale exponent is " << prec << endl;
    binstep = double(int(0.5+binstep/scal)*scal);
    //cout << "# binstep " << binstep << endl;
-   if(::fabs(binstep) < 1.e-3) { cout << " Error - binstep 0\n"; return -1; }
+   if(::fabs(binstep) < 1.e-8) { cout << " Error - binstep < 1.e-8\n"; return -1; }
    double half(binstep/2.0);
    firstbin = binstep * int((amin + (amin > 0 ? 0.5 : -0.5))/binstep);
    while(firstbin-half > min) firstbin -= binstep;
@@ -1122,6 +1128,8 @@ int Bins(const double& min, const double& max,
    //   << firstbin+(nbins-0.5)*binstep << endl;
    return 0;
 }
+catch(Exception& e) { GPSTK_RETHROW(e); }
+}
 
 //------------------------------------------------------------------------------------
 int FindBins(void) throw(Exception)
@@ -1129,13 +1137,12 @@ int FindBins(void) throw(Exception)
 try {
    unsigned int i,j,k;
    GlobalData& GD=GlobalData::Instance();
-
-   int binprec;
+   int prec;
    const double min(GD.cstats.Minimum()), max(GD.cstats.Maximum());
    if(GD.whichbin == 1) {        // only n user input
-      i = Bins(min,max,GD.nbin,GD.firstbin,GD.widbin,binprec);       // bins
+      i = Bins(min,max,GD.nbin,GD.firstbin,GD.widbin,prec);       // bins
       if(i) return -1;
-      if(binprec >= 0) binprec = 0; else binprec = -binprec;
+      if(prec >= 0) prec = 0; else prec = -prec;
    }
    else if(GD.whichbin == 2) {   // compute firstbin from min, max and GD.widbin
       GD.nbin = 1+int(0.5+(max-min)/GD.widbin);
@@ -1143,12 +1150,30 @@ try {
       if(min < GD.firstbin-GD.widbin/2.0) { GD.nbin++; GD.firstbin -= GD.widbin; }
       if(max > GD.firstbin+(GD.nbin-0.5)*GD.widbin) { GD.nbin++; }
    }
-   cout << fixed << setprecision(binprec);
+   else if(GD.whichbin == 3) {   // nbin,widbin and firstbin are specified
+      ;
+   }
+
+   // compute precision exponent
+   if(GD.whichbin != 1) {
+      double tmp = log10(double(GD.widbin)) - 1.0;
+//cout << " tmp " << fixed << setprecision(8) << tmp << endl;
+      prec = int(tmp + (tmp > 0 ? 0.5 : -0.5));
+//cout << " prec " << fixed << setprecision(8) << prec << endl;
+      double scal = pow(10.0,prec);
+//cout << " scale " << fixed << setprecision(8) << scal << endl;
+      while(GD.widbin/scal < 1.0) { scal /= 10.0; prec--; }
+      while(GD.widbin/scal >= 10.0) { scal *= 10.0; prec++; }
+//cout << " final scale " << fixed << setprecision(8) << scal << " " << prec << endl;
+      if(prec < 0) prec = -prec+1;
+   }
+
+   //cout << fixed << setprecision(prec);
    //cout << "# Bins: n " << GD.nbin << " start " << GD.firstbin
-   //         << " step " << GD.widbin << " prec " << binprec << endl;
+   //<< " step " << GD.widbin << " prec " << prec << endl;
    //cout << "Bin centers: (edges are center +- GD.widbin/2)";
    //for(i=0; i<GD.nbin; i++) cout << " " << GD.firstbin + i*GD.widbin; cout << endl;
-   if(GD.nbin > 100) {
+   if(GD.nbin > 60) {
       cout << "Error - too many bins: " << GD.nbin << endl;
       return 0;
    }
@@ -1175,11 +1200,12 @@ try {
    cout << "# bins: N,width,first " << GD.nbin
          << "," << GD.widbin << "," << GD.firstbin << endl;
    cout << "# n center samples (low_edge to high_edge)" << endl;
-   cout << "# total number of samples within bins " << k << endl;
+   cout << "# total number of samples within bins " << k //<< " prec " << prec
+   << endl;
    for(i=0; i<GD.nbin; i++)
-      cout << setw(3) << i+1 << " " << setprecision(binprec)
-         << GD.firstbin+i*GD.widbin << " " << setw(3) << bins[i]
-         << setprecision(binprec+1)
+      cout << setw(3) << i+1 << " " << fixed << setprecision(prec)
+         << GD.firstbin+i*GD.widbin << " " << setw(GD.width) << bins[i]
+         << setprecision(prec+1)
          << "    (" << GD.firstbin+(i-0.5)*GD.widbin << " to "
          << GD.firstbin+(i+0.5)*GD.widbin << ")" << endl;
 
@@ -1574,90 +1600,259 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-//int FixFilter(void) throw(Exception)
-//{
-//try {
-//   unsigned int i,j,k;
-//   GlobalData& GD=GlobalData::Instance();
-//
-//   cout << "# fix filter with width " << GD.fixN << ", limit "
-//         << fixed << setprecision(3)
-//         << GD.fixlim << " and siglim " << GD.fixsig << endl;
-//
-//   // iterate filter-Rstats-analysis
-//   double slim;
-//   unsigned iter(0),itermax(3);
-//   vector<int> flags(GD.data.size(),0);
-//   while(iter < itermax) {
-//      // must redefine filter each time since arrays (const in fdf) change
-//      FDiffFilter<double> fdf(GD.xdata, GD.data, flags);
-//      fdf.setWidth(GD.fixN);
-//      fdf.setSigma(GD.fixsig);
-//      fdf.setLimit(GD.fixlim);
-//      fdf.setprecision(5);
-//      fdf.setw(10);
-//
-//      // filter the data
-//      i = fdf.filter();
-//      //cout << "# filter returned " << i << endl;
-//      if(i <= 2) { cout << "Not enough data, abort.\n"; return 0; }
-//
-//      //TEMP?if(iter > 0 && fdf.getNhighSigma() == 0)
-//      //TEMP?   { cout << "Done.\n"; break; }
-//
-//      // change sig lim?
-//      i = fdf.RstatsOnSigma(slim);
-//      cout << "# Estimated sigma limit " << fixed << setprecision(5)
-//                  << slim << " with " << i << " hi-sigma points " << endl;
-//
-//      if(slim > GD.fixsig)
-//         fdf.setSigma(slim);        // use the new sigma limit
-//
-//      fdf.analysis();               // get the outliers and slips
-//
-//      // run over results - NB flags is const in fdf
-//      for(i=0; i<fdf.results.size(); i++) {
-//         cout << "# Result # " << i << " " << fdf.results[i].asString() << endl;
-//
-//         // mark outliers
-//         if(fdf.results[i].type == FDFResult<double>::OUT) {
-//            k = fdf.results[i].index;
-//            for(j=0; j<fdf.results[i].npts; j++) {
-//               flags[k+j] = 1;
-//            }
-//         }
-//
-//         // fix slips
-//         else if(fdf.results[i].type == FDFResult<double>::SLIP) {
-//            if(::fabs(fdf.results[i].step) < GD.fixlim) {
-//               cout << "# Slip too small: " << fixed << setprecision(3)
-//                  << fdf.results[i].step << " < " << GD.fixlim << endl;
-//               continue;
-//            }
-//
-//            int islip(fdf.results[i].step
-//                        + (fdf.results[i].step >= 0.0 ? 0.5:-0.5));
-//            if(islip) {
-//               cout << "# Fix slip " << islip
-//                        << " " << fdf.results[i].asString() << endl;
-//
-//               for(j=fdf.results[i].index; j<GD.data.size(); j++)
-//                  GD.data[j] -= islip;
-//            }
-//         }
-//      }
-//
-//      fdf.dump(cout,"FIX"+StringUtils::asString(iter));
-//
-//      //fdf.setSigma(fixsig);         // reset it
-//
-//      ++iter;
-//   }  // end iteration
-//
-//   return 0;
-//}
-//catch(Exception& e) { GPSTK_RETHROW(e); }
-//}
+int FixFilter(void) throw(Exception)
+{
+try {
+   int N;
+   unsigned int i,j,k,Nsig;
+   double Esiglim(0);
+   GlobalData& GD=GlobalData::Instance();
+
+   if(!GD.quiet) cout << "# fix filter with width " << GD.fixN << " limit "
+         << fixed << setprecision(GD.prec)
+         << GD.fixlim << " and siglim " << GD.fixsig << endl;
+
+   // new call
+   vector<int> flags;
+   vector< FilterHit<double> > results;
+
+   // NB arrays xdata, data, flags do NOT get edited - const
+   IterativeFDiffFilter<double> ifdf(GD.xdata, GD.data, flags);
+   ifdf.setWidth(GD.fixN);
+   ifdf.setLimit(GD.fixlim);
+   ifdf.setSigma(GD.fixsig);
+   ifdf.setw(GD.width);
+   ifdf.setprecision(GD.prec);
+   ifdf.doVerbose(GD.verbose);
+   ifdf.doResetSigma(true);
+   ifdf.doSmallSlips(false);
+
+   N = ifdf.analysis();
+   results = ifdf.getResults();
+   Nsig = ifdf.getNhighSigma();
+   Esiglim = ifdf.getComputedSigmaLimit();
+
+   if(N < 0)
+      cout << "Error - not enough data for fix filter.\n";
+   else if(N==0)
+      cout << "No outliers or slips found.\n";
+   else {
+      unsigned int nb=0,ns=0,npts(0);
+      double xbeg,xend;
+      for(i=0; i<results.size(); i++) {
+         cout << "FIXRES " << setw(2) << (i+1)
+               << " " << results[i].asStringRead(GD.prec)
+               << fixed << setprecision(GD.prec)
+               << " (x=" << GD.xdata[results[i].index] << ")"
+               << endl;
+         if(i == 0) xbeg = xend = GD.xdata[results[i].index];
+         if(GD.xdata[results[i].index] < xbeg) xbeg = GD.xdata[results[i].index];
+         if(GD.xdata[results[i].index] > xend) xend = GD.xdata[results[i].index];
+         if(results[i].isOutlier()) { nb++; npts += results[i].npts; }
+         if(results[i].isSlip()) ns++;
+      }
+      cout << "FIXRES found " << N << " results: "
+            << nb << " outlier" << (nb==1 ? "":"s")
+            << " rejecting " << npts << (npts==1 ? " pt":" pts")
+            << " and " << ns << " slip" << (nb==1 ? "":"s")
+            << " (small slips " << (ifdf.doSmallSlips() ? "reported":"ignored") << ")"
+            << fixed << setprecision(GD.prec)
+            << " in x-interval (" << xbeg << " " << xend << ") = " << xend-xbeg
+            << "\nFIXRES    with " << Nsig << " high sigma" << (Nsig==1 ? "":"s")
+            << " remaining and estimated limit " << Esiglim << endl;
+   }
+
+   return 0;
+}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+}
+
+//------------------------------------------------------------------------------------
+int WhiteNoiseJerkFilter(void) throw(Exception)
+{
+try {
+   unsigned int i;
+   GlobalData& GD=GlobalData::Instance();
+
+   // WNJ uses LOG
+   pLOGstrm = &cout;
+   ConfigureLOG::ReportLevels() = false;
+   ConfigureLOG::ReportTimeTags() = false;
+   if(GD.verbose) ConfigureLOG::Level("VERBOSE");
+
+   // compute white noise jerk filter
+   // e.g. rstats prsclk.dat -x 1 -y 11 --wnj 1.0,0.0001 | grep KSU \
+   // | plot -x 3 -y 10,data,'points ps 0.5' -yr 0:35 -y2 11,res -y 4,,'lines lt 3'
+   // smaller process noise -> smoother; since mn and pn are const,
+   // only ratio mn/pn determines smoothness - mn/pn ~ 1.e-8 typically
+   vector<double> x,v,a;
+   WNJfilter wnjkf;
+   wnjkf.ptrx = &x;
+   wnjkf.ptrv = &v;
+   wnjkf.ptra = &a;
+   wnjkf.Reset(3);
+   for(i=0; i<GD.data.size(); i++) {
+      wnjkf.ttag.push_back(GD.xdata[i]);  // leave x as-is    -xdata[0]);
+      wnjkf.data.push_back(GD.data[i]);
+      wnjkf.msig.push_back(1.0);
+      wnjkf.psig.push_back(GD.wnjpom);    // pom = process/measurement noises
+   }
+   wnjkf.prec = GD.prec;
+   wnjkf.width = GD.width;
+   cout << "# White noise jerk filter, unweighted, times since "
+      << fixed << setprecision(3) << GD.xdata[0] << endl;
+   // get dt, the nominal timestep
+   MostCommonValue mcv;
+   mcv.setTol(0.1);                 // don't need fine tuning
+   for(i=1; i<GD.xdata.size(); i++)
+      mcv.add(GD.xdata[i]-GD.xdata[i-1]);
+   double dt = mcv.bestDT();
+   double tbeg(wnjkf.ttag[0]), tend(wnjkf.ttag[wnjkf.ttag.size()-1]);
+
+   wnjkf.apState(0) = GD.data[0];
+   wnjkf.apNoise(0) = 10000000.;       // no info
+   for(i=1; i<3; i++) {
+      wnjkf.apState(i) = 0.0;
+      wnjkf.apNoise(i) = wnjkf.apNoise(i-1)/dt;
+   }
+
+   // run the filter
+   if(GD.debug > -1) LOGlevel = ConfigureLOG::Level("DEBUG");
+   wnjkf.filterOutput = true;
+   wnjkf.setSmoother(true);
+   wnjkf.setSRISU(true);
+   wnjkf.initializeFilter();
+   wnjkf.ForwardFilter(tend,dt);
+   wnjkf.BackwardFilter(0);
+   if(GD.debug > -1) LOGlevel = ConfigureLOG::Level("INFO");
+
+   return 0;
+}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+}
+
+//------------------------------------------------------------------------------------
+// discrete Fourier transform
+void DFT(const vector<double>& data, vector<double>& ampcos, vector<double>& ampsin)
+{
+   const double TWO_PI(6.2831853071796);
+   int i,j,N(data.size());
+   double oon(1.0/double(N)),ton(2.0/double(N));
+   double tpon(TWO_PI*oon);
+   ampsin = vector<double>(1+N/2);
+   ampcos = vector<double>(1+N/2);
+
+   for(i=0; i<N/2; i++) {
+      ampsin[i] = ampcos[i] = 0.0;
+      for(j=0; j<N; j++) {
+         ampcos[i] += data[j] * ::cos(tpon*i*j);
+         ampsin[i] += data[j] * ::sin(tpon*i*j);
+      }
+      ampcos[i] *= (i==0 || i==N/2) ? oon : ton;
+      ampsin[i] *= ton;
+   }
+}
+// inverse discrete Fourier transform
+void invDFT(const vector<double>& ampcos, const vector<double>& ampsin, const int& N,
+   vector<double>& reform)
+{
+   const double TWO_PI(6.2831853071796);
+   int i,j;
+   double tpon(TWO_PI/double(N));
+   reform = vector<double>(N);
+   for(i=0; i<N; i++) {
+      reform[i] = ampcos[0];
+      // for low pass, change j<=N/2 to, say, j<=N/8
+      for(j=1; j<=N/2; j++) {
+         reform[i] += ampcos[j] * ::cos(tpon*i*j) + ampsin[j] * ::sin(tpon*i*j);
+      }
+   }
+}
+
+//------------------------------------------------------------------------------------
+int ComputeFFT(void) throw(Exception)
+{
+try {
+   unsigned int i;
+   GlobalData& GD=GlobalData::Instance();
+
+   // NB providing --xcol means it will search for and fill gaps in x.
+   // also this will compute dt
+   if(GD.xcol == -1) {
+      // replace with count -- assume no gaps in data
+      for(i=0; i<GD.data.size(); i++)
+         GD.xdata.push_back(double(i));
+   }
+
+   // first find step in xdata
+   MostCommonValue mcv;
+   mcv.setTol(0.002);         // make it larger than a millisecond
+   for(i=1; i<GD.xdata.size(); i++) mcv.add(GD.xdata[i]-GD.xdata[i-1]);
+   //mcv.dump(cout,prec);
+   int count(mcv.bestN());
+   const double dt(mcv.bestDT()), tol(mcv.getTol());
+   cout << "#FFT Computed X-step is " << fixed << setprecision(GD.prec) << dt 
+      << " with " << count << " occurances." << endl;
+   if(GD.dtfft == 0.0) GD.dtfft = dt;
+   else cout << "#FFT X-step is forced by user to be "
+               << scientific << setprecision(GD.prec) << GD.dtfft << endl;
+
+   // find average
+   const double ave(GD.tsstats.AverageY());
+   cout << "#FFT Remove data average " << scientific << setprecision(GD.prec)
+            << ave << endl;
+
+   // copy over, removing average and filling gaps
+   vector<double> vxdata,vdata;
+   double vx(GD.xdata[0]);
+   vxdata.push_back(vx);
+   vdata.push_back(GD.data[0]-ave);
+   for(i=1; i<GD.data.size(); i++) {
+      while(GD.xdata[i]-vx-dt > tol) {
+         vx += dt;
+         vxdata.push_back(vx);
+         vdata.push_back(0.0);
+      }
+      vxdata.push_back(GD.xdata[i]);
+      vdata.push_back(GD.data[i]-ave);
+      vx = GD.xdata[i];
+   }
+
+   int N(vdata.size());
+
+   // get the DFT (not fast) of real valued data
+   vector<double> ampsin(1+N/2),ampcos(1+N/2);
+   //vector<double> reform(N);
+
+   DFT(vdata, ampcos, ampsin);             // data is unchanged
+   //invDFT(ampcos, ampsin, N, reform);     // amps unchanged
+
+   // output
+   double amp, dtot(0.0), ftot(0.0), fact(2.0/N);
+   cout << "#FFT N=" << N << fixed << setprecision(GD.prec) << " dx is " << GD.dtfft
+      << " Nyquist = 1/2dx = " << 1.0/(2*GD.dtfft)
+      << ", freq at i is (2i/N)*Nyquist = i * " << scientific << 1.0/(N*GD.dtfft)
+      << ", WL at i is N*dx/i = " << N*GD.dtfft << " / i " << endl;
+   cout << "#FFT i xd(i*dx) data freq |ampfft| xdata wl " << endl;
+   for(i=0; i<N; i++) {
+      amp = (i < 1+N/2 ? ::sqrt(ampsin[i]*ampsin[i]+ampcos[i]*ampcos[i]) : 0.0);
+      cout << "FFT " << fixed << setprecision(GD.prec) << i
+         << " " << double(i)*GD.dtfft << " " << vdata[i]
+         << " " << i/(N*GD.dtfft) << " " << amp
+         //<< " " << reform[i]
+         << " " << GD.xdata[i]
+         << " " << (i==0 ? 0 : (N*GD.dtfft)/i)
+         << endl;
+      dtot += fact*vdata[i]*vdata[i];
+      if(i < 1+N/2) ftot += amp*amp;
+   }
+   cout << "#FFT Total power (2/N)*sum(data^2) = sum(fft^2) = " << scientific
+      << setprecision(GD.prec) << dtot << " " << ftot << " " << GD.label << endl;
+
+   return 0;
+}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+}
 
 //------------------------------------------------------------------------------------
 int Outliers(void) throw(Exception)

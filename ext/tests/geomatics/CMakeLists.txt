@@ -387,6 +387,7 @@ add_test(StatsFilter StatsFilter_T)
 set_property(TEST StatsFilter PROPERTY LABELS Geomatics)
 
 ###############################################################################
+<<<<<<< HEAD
 # Test dfix
 ###############################################################################
 add_test(NAME test_dfix_karr
@@ -439,5 +440,11 @@ add_test(NAME test_dfix_job4131
          -DDIFF_ARGS=-l93\ -z1
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
 set_property(TEST test_dfix_job4131 PROPERTY LABELS Geomatics)
+=======
+add_executable(KalmanFilter_T KalmanFilter_T.cpp)
+target_link_libraries(KalmanFilter_T gpstk)
+add_test(KalmanFilter KalmanFilter_T)
+set_property(TEST KalmanFilter PROPERTY LABELS Geomatics)
+>>>>>>> origin/master
 
 ###############################################################################

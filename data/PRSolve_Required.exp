@@ -388,4 +388,4 @@ RPF GPS:12:WC DAT 1854   7170.000 11 11 G02:1W2W G05:1W2W G12:1W2W G13:1W2W G15:
 
  ----- Final output GPS:12:WC -----
  No data!
-PRSolve timing: processing 0.370 sec, wallclock: 0 sec.
+PRSolve timing: processing 0.316 sec, wallclock: 0 sec.
