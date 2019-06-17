@@ -578,7 +578,7 @@ int main(int argc, char **argv)
       // output quantile plot --------------------------------------------------
       if(qplot) {
          xdata.resize(data.size());    // replace xcol data with quantiles.
-         Robust::QuantilePlot(&data[0],data.size(),&xdata[0]);
+         Robust::Quantiles(&data[0],data.size());
          // output to file rstats.out
          pout = new ofstream("qplot.out");
          if(pout->fail()) {
