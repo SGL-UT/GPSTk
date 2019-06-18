@@ -389,57 +389,57 @@ set_property(TEST StatsFilter PROPERTY LABELS Geomatics)
 ###############################################################################
 ## Test dfix
 ################################################################################
-#add_test(NAME test_dfix_karr
-#         COMMAND ${CMAKE_COMMAND}
-#         -DTEST_PROG=$<TARGET_FILE:dfix>
-#         -DDIFF_PROG=$<TARGET_FILE:df_diff>
-#         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
-#         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
-#         -DTESTBASE=test_dfix_karr
-#         -DARGS=--obs\ ${GPSTK_TEST_DATA_DIR}/test_dfix_karr0880.ed.10o
-#         -DDIFF_ARGS=-l101\ -z1
-#         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
-#set_property(TEST test_dfix_karr PROPERTY LABELS Geomatics)
-#
+add_test(NAME test_dfix_karr
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:dfix>
+         -DDIFF_PROG=$<TARGET_FILE:df_diff>
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTBASE=test_dfix_karr
+         -DARGS=--obs\ ${GPSTK_TEST_DATA_DIR}/test_dfix_karr0880.ed.10o
+         -DDIFF_ARGS=-l101\ -z1
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+set_property(TEST test_dfix_karr PROPERTY LABELS Geomatics)
+
 ################################################################################
-#add_test(NAME test_dfix_tower
-#         COMMAND ${CMAKE_COMMAND}
-#         -DTEST_PROG=$<TARGET_FILE:dfix>
-#         -DDIFF_PROG=$<TARGET_FILE:df_diff>
-#         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
-#         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
-#         -DTESTBASE=test_dfix_tower
-#         -DARGS=--obs\ ${GPSTK_TEST_DATA_DIR}/test_dfix_tower239.ed.15o\ --DC\ width=200,MinPts=100,MaxGap=100
-#         -DDIFF_ARGS=-l94\ -z1
-#         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
-#set_property(TEST test_dfix_tower PROPERTY LABELS Geomatics)
-#
+add_test(NAME test_dfix_tower
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:dfix>
+         -DDIFF_PROG=$<TARGET_FILE:df_diff>
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTBASE=test_dfix_tower
+         -DARGS=--obs\ ${GPSTK_TEST_DATA_DIR}/test_dfix_tower239.ed.15o\ --DC\ width=200,MinPts=100,MaxGap=100
+         -DDIFF_ARGS=-l94\ -z1
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+set_property(TEST test_dfix_tower PROPERTY LABELS Geomatics)
+
 ################################################################################
-#add_test(NAME test_dfix_txau
-#         COMMAND ${CMAKE_COMMAND}
-#         -DTEST_PROG=$<TARGET_FILE:dfix>
-#         -DDIFF_PROG=$<TARGET_FILE:df_diff>
-#         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
-#         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
-#         -DTESTBASE=test_dfix_txau
-#         -DARGS=--obs\ ${GPSTK_TEST_DATA_DIR}/test_dfix_txau047.ed.12o\ --DC\ width=100,MinPts=50,MaxGap=50
-#         -DDIFF_ARGS=-l93\ -z1
-#         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
-#set_property(TEST test_dfix_txau PROPERTY LABELS Geomatics)
-#
+add_test(NAME test_dfix_txau
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:dfix>
+         -DDIFF_PROG=$<TARGET_FILE:df_diff>
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTBASE=test_dfix_txau
+         -DARGS=--obs\ ${GPSTK_TEST_DATA_DIR}/test_dfix_txau047.ed.12o\ --DC\ width=100,MinPts=50,MaxGap=50
+         -DDIFF_ARGS=-l93\ -z1
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+set_property(TEST test_dfix_txau PROPERTY LABELS Geomatics)
+
 ################################################################################
-#add_test(NAME test_dfix_job4131
-#         COMMAND ${CMAKE_COMMAND}
-#         -DTEST_PROG=$<TARGET_FILE:dfix>
-#         -DDIFF_PROG=$<TARGET_FILE:df_diff>
-#         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
-#         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
-#         -DTESTBASE=test_dfix_job4131
-#         -DARGS=--obs\ ${GPSTK_TEST_DATA_DIR}/test_dfix_job4131.ed.obs\ --obsID\ RC1*,RC2*,RL1*,RL2*
-#         -DDIFF_ARGS=-l93\ -z1
-#         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
-#set_property(TEST test_dfix_job4131 PROPERTY LABELS Geomatics)
-#
+add_test(NAME test_dfix_job4131
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:dfix>
+         -DDIFF_PROG=$<TARGET_FILE:df_diff>
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTBASE=test_dfix_job4131
+         -DARGS=--obs\ ${GPSTK_TEST_DATA_DIR}/test_dfix_job4131.ed.obs\ --obsID\ RC1*,RC2*,RL1*,RL2*
+         -DDIFF_ARGS=-l93\ -z1
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+set_property(TEST test_dfix_job4131 PROPERTY LABELS Geomatics)
+
 ################################################################################
 add_executable(KalmanFilter_T KalmanFilter_T.cpp)
 target_link_libraries(KalmanFilter_T gpstk)

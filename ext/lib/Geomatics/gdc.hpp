@@ -54,7 +54,8 @@
 #include "Epoch.hpp"
 #include "RinexSatID.hpp"
 #include "SatPass.hpp"
-#include "StatsFilter.hpp"
+#include "FirstDiffFilter.hpp"
+#include "WindowFilter.hpp"
 #include "logstream.hpp"
 
 namespace gpstk {
