@@ -1,56 +1,15 @@
-//============================================================================
-//
-//  This file is part of GPSTk, the GPS Toolkit.
-//
-//  The GPSTk is free software; you can redistribute it and/or modify
-//  it under the terms of the GNU Lesser General Public License as published
-//  by the Free Software Foundation; either version 3.0 of the License, or
-//  any later version.
-//
-//  The GPSTk is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU Lesser General Public License for more details.
-//
-//  You should have received a copy of the GNU Lesser General Public
-//  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
-//  Copyright 2004, The University of Texas at Austin
-//
-//============================================================================
+/// @file WindowFilter.hpp
 
-//============================================================================
-//
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
-//
-//Pursuant to DoD Directive 523024 
-//
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
-//
-//=============================================================================
-
-/// @file StatsFilter.hpp
-///    This module defines several classes which together implement two kinds of
-/// statistical filters - a first-difference filter, and a window filter. All these
-/// classes are templates; the template parameter should be a float (probably double);
+///    This class implements a statistical filter that uses 'windowed' averages. There
+/// are several statistical filters implemented as classes. These classes are
+/// templates; the template parameter should be a float (probably double);
 /// it is used to construct gpstk::Stats<T>, gpstk::TwoSampleStats<T> and
 /// gpstk::SeqStats<T>, which are fundamental to these algorithms.
-///    Both filters look for outliers and discontinuities (slips) in a timeseries.
+///    All the filters look for outliers and discontinuities (slips) in a timeseries.
 /// The first difference filter analyses the simple first difference of the data.
 /// The window filter uses a 2-pane sliding window centered on the data point in
 /// question; statistics on the data in each to the 2 panes are computed and used
 /// in the analysis.
-///    Both filters' analysis() function computes a vector of FilterHit objects named
-/// 'results'that give the caller the results of the filtering. FilterHit is a simple
-/// class that contains an index into the data array, the type of event
-/// (beginning-of-data, outlier, slip, etc), the number of points in data arrays
-/// (just a delta index) and the number of good points following the event. It has a
-/// member function asString() that is used in the filter dump() routines.
 ///    The window filter uses 1- and 2-sample statistics in Stats.hpp, along with a
 /// wrapper class (StatsFilterBase, this module) that provides a single interface for
 /// the two statistics, allowing WindowFilter::filter() to use either type of filter
@@ -58,11 +17,10 @@
 /// along with the data array; this is appropriate for data that has systematic
 /// "time" dependence. One-sample stats are used when the data is ~constant; in this
 /// case the xdata can be given as well but will be used only in dump().
-///    Both filters have a getStats(FilterHit) function that computes statistics on
+///    All the filters have a getStats(FilterHit) function that computes statistics on
 /// the filter quantities (NOT the data) over the interval covered by the event, and
 /// stores them in the FilterHit. These stats are slightly different for the two
-/// filters; FirstDiffFilter::getStats computes min, max, median and mad of the first
-/// differences, while WindowFilter::getStats computes min, max, median and mad of
+/// filters; WindowFilter::getStats computes min, max, median and mad of
 /// sigma = rms(sig of future and past), but not including points within one width of
 /// the endpoints (avoids the bump in sigma due to slip(s) at the segment boundaries).
 ///
@@ -87,88 +45,16 @@
 ///    NB the caller must construct a new filter at each call - if you declare a
 /// Filter object, run filter(), then use the results to modify flags[] and try to
 /// call filter() again, it does not see the changes to flags[]. Instead you need to
-/// call the constructor again. TD try removing const from flags[] in c'tor ...
+/// call the constructor again.
 
-#ifndef STATISTICAL_FILTER_INCLUDE
-#define STATISTICAL_FILTER_INCLUDE
-
+#include <vector>
 #include <deque>
 #include "Stats.hpp"
 #include "RobustStats.hpp"
+//#include "StringUtils.hpp"       // TEMP
+//#include "logstream.hpp"         // TEMP
 
-//------------------------------------------------------------------------------------
-// TD NB pffrac is never used.
-//------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------
-/// The 'results' object used by the filters to indicate presence of 'events' :
-/// outlier(s), a slip or the beginning-of-data (BOD).
-/// Each filter's analyze() function returns a std::vector of one or more these
-/// objects; always with at least one element: the first is usually a BOD, but if
-/// there are outliers at the start, it can be type outlier.
-/// Calling the filter's getStats(FilterHit) will return statistics on the filter
-/// quantities (not the data) in the segment that _begins_ at the event.
-template <class T> class FilterHit
-{
-public:
-   /// enum used to indicate the kind of event
-   typedef enum EventType {
-      BOD = 0,          ///< beginning of data
-      outlier,          ///< outlier(s) - npts is the number of outliers
-      slip,             ///< slip (discontinuity)
-      other,            ///< never used?
-   } event;
-
-   /// empty and only constructor
-   FilterHit() : index(-1), type(BOD), npts(0), step(T(0)), haveStats(false), score(0)
-      { }
-
-   // member data
-   event type;          ///< type of event: BOD, outlier(s), slip, other
-
-   unsigned int index;  ///< index in the data array(s) at which this event occurs
-   unsigned int npts;   ///< number of data points in this segment (= a delta index)
-   unsigned int ngood;  ///< number of good (flag==0) points in this segment
-   unsigned int score;  ///< weight of slip (=100 except >=lim for getMaybeSlips(lim))
-
-   T step;              ///< for a slip, an estimate of the step in the data
-   bool haveStats;      ///< set true when getStats() is called
-   // see getStats() - meanings depend on filter
-   T min,max,med,mad;   ///< robust stats on the filter quantities (not data)
-
-   /// convenience routines
-   bool isBOD(void) { return (type == BOD); }
-   bool isOutlier(void) { return (type == outlier); }
-   bool isSlip(void) { return (type == slip); }
-
-   /// return as a single string with just type, index and npts
-   std::string asString(const int osp=3) const
-   {
-      std::stringstream oss;
-      switch(type) {
-         case BOD: oss << "BOD"; break;
-         case outlier: oss << "OUT"; break;
-         case slip: oss << "SLIP"; break;
-         default: case other: oss << "other"; break;
-      }
-      oss << "; index=" << index << " npts=" << npts << " ngood=" << ngood
-         << std::fixed << std::setprecision(osp) << "; step=" << step;
-      return oss.str();
-   }
-
-   /// return as a longer single string containing asString() plus stats
-   /// @param osp precision for fixed format
-   std::string asStatsString(const int osp=3) const
-   {
-      std::stringstream oss;
-      oss << asString(osp) << std::fixed << std::setprecision(osp);
-      if(!haveStats)
-         oss << "; NoSt";
-      else
-         oss << " min=" << min << " max=" << max << " med=" << med << " mad=" << mad;
-      return oss.str();
-   }
-
-}; // end class FilterHit
+#include "StatsFilterHit.hpp"
 
 /// A special subset of class FilterHit used for "almost slips" in WindowFilter
 template <class T> class FilterNearMiss
@@ -180,359 +66,11 @@ public:
    int index;           ///< index in the data array(s) at which this event occurs
    int score;           ///< weight of slip, 0 < score <= 100
    T step;              ///< an estimate of the step in the data
+   T sigma;             ///< for a slip, RSS future and past sigma on the data
    std::string msg;     ///< message from analyze()
 
 }; // end class FilterNearMiss
 
-//------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------
-/// This class computes the first difference of the input data array. It will read the
-/// data, compute the first difference and store it, then analyze the result,
-/// returning a vector of simple results giving outliers and statistics on the data
-/// between outliers.
-template <class T> class FirstDiffFilter
-{
-public:
-   /// class used to store analysis arrays filled by the first difference filter
-   class Analysis
-   {
-   public:
-      /// constructor
-      Analysis() { }
-      // member data
-      unsigned int index;  ///< index in original arrays to which this info applies.
-      T diff;              ///< first difference = data[index]-data[index-1]
-   }; // end class Analysis
-
-   /// constructor with two arrays - x is used only in dump(); x and f must exist
-   /// but may be empty
-   FirstDiffFilter(const std::vector<T>& x,
-                   const std::vector<T>& d,
-                   const std::vector<int>& f) : data(d), xdata(x), flags(f)
-   {
-      fdlimit = T(8.0);
-      noxdata = (xdata.size() == 0);
-      noflags = (flags.size() == 0);
-      dumpNA = true;
-      osw = 8; osp = 3;
-   }
-
-   /// get and set
-   inline void setLimit(T val) { fdlimit = val; }
-   inline T getLimit(void) { return fdlimit; }
-   /// get and set for dump
-   inline void setw(int w) { osw=w; }
-   inline void setprecision(int p) { osp=p; }
-   inline void setDumpNoAnal(bool b) { dumpNA = b; }
-   inline bool willDumpNoAnal(void) { return dumpNA; }
-   /// return a copy of the filter hit results
-   std::vector< FilterHit<T> > getResults(void) { return results; }
-
-   /// filter routine that computes the first difference
-   /// @param index in data arrays at which to start, defaults to 0
-   /// @param npts  number of data to process, defaults to -1, meaning to end of data.
-   /// @return > 0 number of points in the analysis vector == number good data
-   ///          -1 the data array is too short (< 2)
-   ///          -3 if the flags array is given but shorter than data array
-   /// This routine clears the analysis vector.
-   int filter(const size_t index=0, int npts=-1);
-
-   /// analyze the output of the filter(), filling the analysis array 'analvec'
-   /// also fills the 'results' vector of one or more FilterHit.
-   /// @return the number of slips, outliers, etc (size of results vector<FilterHit>)
-   int analyze(void);
-
-   /// fix some potential problems in the results vector, namely:
-   /// if the first point(s) are outliers, analyze() makes the first FilterHit BOD
-   /// with only 1 point, then either outliers or a slip; fix this by making first
-   /// FilterHit outliers. Called at end of analyze()
-   void fixUpResults(void);
-
-   /// dump the data and analysis; optionally include a tag at the start of each line,
-   /// and configure width and precision.
-   void dump(std::ostream& s, std::string tag=std::string());
-
-   // NB there should be another routine (outside this class) to get stats on the
-   // data within a segment
-   /// compute stats on the first differences within the given FilterHit, store in Seg
-   /// NB this must be called on filter.results[i] in order to show stats in dump()
-   void getStats(FilterHit<T>& fe);
-
-   // member data
-   int osw,osp;                  ///< width and precision for dump(), (default 8,3)
-   bool noxdata;                 ///< true when xdata is not given
-   bool noflags;                 ///< true when flags array is not given
-   bool dumpNA;                  ///< if false, don't dump() data with no analysis (T)
-
-   T fdlimit;                    ///< |first diff| must be > this to be an outlier
-   const std::vector<T>& xdata;  ///< reference to xdata - used only in dump
-   const std::vector<T>& data;   ///< reference to data to be filtered
-   const std::vector<int>& flags;///< reference to flags, parallel to data, 0 == good
-   int ilimit;                   ///< largest allowed index in data[] is ilimit-1
-
-   /// vector of Analysis objects, holding first differences and indexes,
-   /// generated by filter(), used by analyze() and included in dump() output.
-   std::vector<Analysis> analvec;
-
-   /// vector of FilterHit, generated by analyze(), also for use in dump()
-   std::vector< FilterHit<T> > results;
-
-//private:
-
-}; // end class FirstDiffFilter
-
-//------------------------------------------------------------------------------------
-template<class T> int FirstDiffFilter<T>::filter(const size_t i0, int dsize)
-{
-   if(dsize == -1) dsize = data.size()-i0;
-
-   // largest allowed index is ilimit-1
-   ilimit = dsize+i0;
-
-   // is there enough data? if not return -1
-   int i(i0),n(0);
-   if(!noflags) {
-      while(i<ilimit && n < 2) { if(flags[i]==0) n++; i++; }
-      if(i==ilimit) return -1;
-   }
-   else if(dsize < 2) return -1;
-
-   // if xdata or flags is there, make sure its big enough
-   if(!noflags && flags.size()-i0 < dsize) return -3;
-
-   analvec.clear();
-
-   // find the first good point, but don't necessarily increment
-   i = i0; if(!noflags) while(i<ilimit && flags[i]) i++;
-   int iprev(-1);
-   while(i<ilimit) {
-      Analysis A;
-      A.index = i;
-      A.diff = (iprev == -1 ? T(0) : data[i]-data[iprev]);
-      analvec.push_back(A);
-      iprev = i;
-      i++; if(!noflags) while(i<ilimit && flags[i]) i++;
-   }
-
-   return analvec.size();
-
-}  // end FirstDiffFilter::filter()
-
-//------------------------------------------------------------------------------------
-/// Analyse the first difference data, looking for slips, outliers and gaps and
-/// computing statistics. Return number of elements in results vector (FilterHit)
-template<class T> int FirstDiffFilter<T>::analyze(void)
-{
-   bool prevIsBad(false);
-   int i,igood(0),nbad(0);
-   T sumbad(0);
-   gpstk::SeqStats<T> sst;
-
-   // create first event = BOD
-   results.clear();
-   {
-      FilterHit<T> fe;
-      fe.index = analvec[0].index;
-      fe.type = FilterHit<T>::BOD;
-      fe.ngood = 0;
-      results.push_back(fe);
-   }
-   int curr(0);
-
-   // loop over first differences
-   for(i=0; i<analvec.size(); i++) {
-      results[curr].ngood++;               // count it; only good gets into analvec
-
-      // NB analvec[0].diff == 0 always
-      if(::fabs(analvec[i].diff) > fdlimit) {
-         nbad++;
-         sumbad += analvec[i].diff;
-         prevIsBad = true;
-         //LOG(INFO) << "bad index " << analvec[i].index << " nbad " << nbad;
-      }
-      else if(!prevIsBad) {               // good 1st diff following good 1st diff
-         //LOG(INFO) << "good index " << analvec[i].index;
-         igood = i;
-      }
-      else {                              // good 1st diff following bad one(s)
-         //LOG(INFO) << "good after bad index "<< analvec[i].index<< " nbad " << nbad;
-         results[curr].ngood -= nbad+1;   // finish the current segment
-
-         if(::fabs(sumbad) > fdlimit) {   // its a slip
-            //LOG(INFO) << "slip " << sumbad << " > " << fdlimit;
-            // if nbad > 1, must report outlier(s) first
-            FilterHit<T> fe;
-            if(nbad > 1) {
-               results[curr].npts = analvec[igood+1].index - results[curr].index;
-               fe.index = analvec[igood+1].index;
-               fe.type = FilterHit<T>::outlier;
-               fe.ngood = 0;
-               fe.npts = analvec[i].index - fe.index;
-               results.push_back(fe); curr++;
-            }
-            results[curr].npts = analvec[igood+nbad].index - results[curr].index;
-            // start the new segment (slip)
-            fe.index = analvec[igood+nbad].index;
-            fe.type = FilterHit<T>::slip;
-            fe.ngood = 2;                 // bc this is 2nd point into slip
-            fe.step = data[analvec[igood+nbad].index]-data[analvec[igood].index];
-            results.push_back(fe); curr++;
-         }
-         else {                           // its just outliers(s)
-            //LOG(INFO) << "outliers " << sumbad << " <= " << fdlimit;
-            results[curr].npts = analvec[igood+1].index - results[curr].index;
-            // report the outliers
-            FilterHit<T> fe;
-            fe.index = analvec[igood+1].index;
-            fe.type = FilterHit<T>::outlier;
-            fe.ngood = 0;
-            fe.npts = analvec[igood+nbad].index - fe.index;
-            fe.step = sumbad;
-            results.push_back(fe); curr++;
-            // start the new segment (BOD)
-            fe.index = analvec[igood+nbad].index;
-            fe.type = FilterHit<T>::BOD;
-            fe.ngood = 2;
-            results.push_back(fe); curr++;
-         }
-
-         // prep for next segment
-         sumbad = T(0);
-         nbad = 0;
-         igood = i;
-         prevIsBad = false;
-      }
-   }  // end loop over first differences
-
-   // finish off with outlier(s)
-   if(prevIsBad) {
-      results[curr].ngood -= nbad;
-      FilterHit<T> fe;
-      fe.index = analvec[igood+1].index;
-      fe.type = FilterHit<T>::outlier;
-      fe.ngood = 0;
-      results[curr].npts = fe.index - results[curr].index;
-      fe.npts = ilimit - fe.index;
-      results.push_back(fe); curr++;
-   }
-   else // define npts for the last segment
-      results[curr].npts = ilimit - results[curr].index;
-
-   fixUpResults();
-
-   return (results.size());
-
-}  // end FirstDiffFilter::analyze()
-
-//------------------------------------------------------------------------------------
-// fix some potential problems in the results vector, namely:
-// if the first point(s) are outliers, analyze() makes the first FilterHit BOD
-// with only 1 point (because the first point is good *by definition*),
-// then either outliers or a slip; fix this by making first
-// FilterHit outliers.
-template<class T> void FirstDiffFilter<T>::fixUpResults(void)
-{
-   if(results[0].npts > 1) return;
-
-   // change the first FilterHit to outliers
-   results[0].type = FilterHit<T>::outlier;
-
-   while(results.size() > 1) {
-      if(results[1].type == FilterHit<T>::slip) {
-         results[1].type = FilterHit<T>::BOD;
-         break;
-      }
-      else if(results[1].type == FilterHit<T>::outlier) {
-         results[0].npts += results[1].npts;
-         results[0].ngood = 0;
-         results.erase(results.begin()+1);
-      }
-      else break;
-   }
-}
-
-//------------------------------------------------------------------------------------
-template<class T> void FirstDiffFilter<T>::dump(std::ostream& os, std::string tag)
-{
-   size_t i,j,k;
-   os << "#" << tag << " FirstDiffFilter::dump() with limit "
-      << std::fixed << std::setprecision(osp) << fdlimit
-      << (noxdata ? " (xdata is index)" : "")
-      << "\n#" << tag << "  i    xdata   data    1stdiff" << std::endl;
-
-   const size_t N(analvec.size());
-   for(i=0,j=0,k=0; i<ilimit; i++) {
-      if(j >= N || i != analvec[j].index) {
-         if(dumpNA) os << tag << std::fixed << std::setprecision(osp)
-            << " " << std::setw(3) << i
-            << " " << std::setw(osw) << (noxdata ? T(i) : xdata[i])
-            << " " << std::setw(3) << (noflags ? 0 : flags[i])
-            << " " << std::setw(osw) << data[i]
-            << " " << std::setw(osw) << 0.0 << "  NA"
-            << std::endl;
-      }
-      else {
-         os << tag << std::fixed << std::setprecision(osp)
-            << " " << std::setw(3) << i
-            << " " << std::setw(osw) << (noxdata ? T(i) : xdata[i])
-            << " " << std::setw(3) << (noflags ? 0 : flags[i])
-            << " " << std::setw(osw) << data[i]
-            << " " << std::setw(osw) << (j >= N ? 0.0 : analvec[j].diff);
-         if(k < results.size() && i == results[k].index) {
-            os << "  " << (results[k].mad != T(0) ?   // has getStats been called?
-                           results[k].asStatsString(osp) : results[k].asString());
-            k++;
-         }
-         os << std::endl;
-         j++;
-      }
-   }
-}  // end FirstDiffFilter<T>::dump()
-
-//------------------------------------------------------------------------------------
-// compute stats on the segment of first differences given by the input FilterHit
-template<class T>
-void FirstDiffFilter<T>::getStats(FilterHit<T>& fe)
-{
-   int j(-1);
-   unsigned int i,k;
-   fe.min = fe.max = fe.med = fe.mad = T(0);
-   for(i=0; i<analvec.size(); i++)
-      if(analvec[i].index == fe.index) { j=i; break; }
-   if(j == -1) return;
-   k = fe.index + fe.npts;                // last index in this seg is k-1
-
-   // don't include the step in stats for a segment that starts with a slip
-   int i0(0); if(fe.type == FilterHit<T>::slip) i0=1;
-   // stats on first difference
-   bool first(true);
-   T fd;
-   std::vector<T> fdv;
-   for(i=i0; i<fe.npts; i++) {
-      if((unsigned int)(j)+i >= analvec.size() || analvec[j+i].index >= k)
-         break;  // no more good data
-      fd = analvec[j+i].diff;
-      if(first) {
-         fe.min=fe.max=fe.med=fd;
-         fe.mad=T(0);
-         first=false;
-      }
-      else {
-         if(fd < fe.min) fe.min=fd;
-         if(fd > fe.max) fe.max=fd;
-      }
-      fdv.push_back(fd);
-   }
-
-   if(fdv.size() < 2) return;       // else MAD throws
-
-   fe.mad=gpstk::Robust::MedianAbsoluteDeviation<T>(&fdv[0],fdv.size(),fe.med,false);
-   fe.haveStats = true;
-}
-
-// end template <class T> class FirstDiffFilter
-
-//------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
 /// Build a wrapper for these Stats classes that allows interchangeability in
@@ -715,12 +253,17 @@ public:
       //T pslope;          ///< (twoSample only) slope (ave p,f) in units data/xdata
       //T fslope;          ///< (twoSample only) slope (ave p,f) in units data/xdata
       // results of analysis
-      int score;           ///< net result of analysis: -1,-2,-3,-4,-5 or %
+      /// net result of analysis: -1,-2,-3,-4 (failure) or a percentage
+      /// -1 near end; -2 small step; -3 small ratio; -4 marginal step&ratio;
+      int score;
       std::string msg;     ///< readable description of what analysis found
 
    }; // end class Analysis
 
    /// constructor
+   /// @param x const vector<T> of 'times' values, NB (x,d,f) all parallel
+   /// @param d const vector<T> of data values
+   /// @param f const vector<int> of flags, 0 means good. this array may be empty.
    WindowFilter(const std::vector<T>& x,
                 const std::vector<T>& d,
                 const std::vector<int>& f) : xdata(x), data(d), flags(f)
@@ -729,6 +272,7 @@ public:
       twoSample = false;
       minratio = T(2.0);
       minstep = T(0.8);
+      minmargin = T(0.5);
       pffrac = T(0.75);
       halfwidth = 3;
       buffsize = 0;
@@ -757,10 +301,12 @@ public:
    /// get and set analysis configuration
    inline void setMinRatio(T val) { minratio=val; }
    inline void setMinStep(T val) { minstep=val; }
+   inline void setMinMargin(T val) { minmargin=val; }
    inline void setPFFrac(T val) { pffrac=val; }
    inline void setHalfWidth(int hw) { halfwidth=hw; }
    inline T getMinRatio(void) { return minratio; }
    inline T getMinStep(void) { return minstep; }
+   inline T getMinMargin(void) { return minmargin; }
    inline T getPFFrac(void) { return pffrac; }
    inline int getHalfWidth(void) { return halfwidth; }
    /// get and set for dump() parameters
@@ -827,6 +373,7 @@ private:
    unsigned int halfwidth;       ///< number of points on either side of slip analyzed
    T minratio;                   ///< ratio=|step/sig| < this is not a slip
    T minstep;                    ///< |step|(=fut ave - past ave) < this is not slip
+   T minmargin;                  ///< limit on step/minstep+ratio/minratio-2
    T pffrac;                     ///< delta(f,p) sigma < this frac * sigma not a slip
 
    const std::vector<T>& xdata;  ///< reference to x-data to be filtered (TwoSample)
@@ -961,13 +508,18 @@ template<class T> int WindowFilter<T>::filter(const size_t i0, int dsize)
    // find the first good point, but don't necessarily increment
    i = i0; if(!noflags) while(i<ilimit && flags[i]) i++;
 
+   //TEMPtestTSS// keep deques containing the indexes i in the past and future stats
+   //TEMPtestTSS std::deque<int> pindex,findex;
+
    // start with two points in past, and up to width pts in future
    // 'return -1' code above implies this will not overrun arrays
    int iplus,iminus(i),isecond;
    ptrPast->Add(xvec(i),dvec(i));      // put first point in past
+   //TEMPtestTSS pindex.push_back(i);
    T xprev(xvec(i)), xmid;             // save prev x for two-sample slips
    inc(i);                             // second good point
    ptrPast->Add(xvec(i),dvec(i));      // put second point in past
+   //TEMPtestTSS pindex.push_back(i);
 
    // fill the buffer
    while(buff.size() < buffsize) { inc(i); buff.push_back(i); }
@@ -981,22 +533,28 @@ template<class T> int WindowFilter<T>::filter(const size_t i0, int dsize)
          j = buff[0];
          buff.pop_front();
          ptrPast->Add(xvec(j),dvec(j));
+         //TEMPtestTSS pindex.push_back(j);
       }
       isecond = iplus = i;
       while(ptrFuture->N() < width) {  // assumes dsize > 2*width+buffsize
          // NB this fails: ptrFuture->Add(xvec(iplus),dvec(iplus++)); don't use it.
          inc(iplus);
          ptrFuture->Add(xvec(iplus),dvec(iplus));
+         //TEMPtestTSS findex.push_back(iplus);
       }
       inc(iplus);
    }
    else if(balanced) {                 // start at (x x x)(x x x)
       inc(i); ptrPast->Add(xvec(i),dvec(i));       // put third point in past
+      //TEMPtestTSS pindex.push_back(i);
       isecond = i;
       xprev = xvec(i);
       inc(i); ptrFuture->Add(xvec(i),dvec(i));     // put 3 into future
+      //TEMPtestTSS findex.push_back(i);
       inc(i); ptrFuture->Add(xvec(i),dvec(i));
+      //TEMPtestTSS findex.push_back(i);
       inc(i); ptrFuture->Add(xvec(i),dvec(i));
+      //TEMPtestTSS findex.push_back(i);
       inc(i);
       iplus = i;
    }
@@ -1006,6 +564,7 @@ template<class T> int WindowFilter<T>::filter(const size_t i0, int dsize)
          // NB this fails: ptrFuture->Add(xvec(iplus),dvec(iplus++)); don't use it.
          inc(iplus);
          ptrFuture->Add(xvec(iplus),dvec(iplus));
+         //TEMPtestTSS findex.push_back(iplus);
       }
       inc(iplus);
    }
@@ -1034,6 +593,53 @@ template<class T> int WindowFilter<T>::filter(const size_t i0, int dsize)
       //A.slope = 0.5*(ptrPast->Slope() + ptrFuture->Slope());
       //A.pslope = ptrPast->Slope();
       //A.fslope = ptrFuture->Slope();
+
+      //Dump the TSS, build the TSS manually, and print that
+      //TEMPtestTSS {
+      //TEMPtestTSS gpstk::TwoSampleStats<T> pTSS,fTSS;
+      //TEMPtestTSS unsigned int k;
+      //TEMPtestTSS std::string str;
+
+      //TEMPtestTSS std::cout << "At i=" << i << " Past_indexes(" << pindex.size()
+      //TEMPtestTSS           << "):";
+      //TEMPtestTSS for(k=0; k<pindex.size(); k++) {
+         //TEMPtestTSS std::cout << " " << pindex[k];
+         //TEMPtestTSS pTSS.Add(xvec(pindex[k]),dvec(pindex[k]));
+      //TEMPtestTSS }
+      //TEMPtestTSS std::cout << std::endl;
+
+      //TEMPtestTSS str = pTSS.asString();
+      //TEMPtestTSS gpstk::StringUtils::change(str,"\n"," ");
+      //TEMPtestTSS std::cout << std::fixed << std::setprecision(3) << xvec(i)
+      //TEMPtestTSS           << " pman " << str << std::endl;
+
+      //TEMPtestTSS str = ptrPast->asString();
+      //TEMPtestTSS gpstk::StringUtils::change(str,"\n"," ");
+      //TEMPtestTSS std::cout << std::fixed << std::setprecision(3) << xvec(i)
+      //TEMPtestTSS           << " past " << str << " eval " << A.pave << std::endl;
+
+      //TEMPtestTSS // ---------
+
+      //TEMPtestTSS std::cout << "At i=" << i << " Futu_indexes(" << findex.size()
+      //TEMPtestTSS           << "):";
+      //TEMPtestTSS for(k=0; k<findex.size(); k++) {
+         //TEMPtestTSS std::cout << " " << findex[k];
+         //TEMPtestTSS fTSS.Add(xvec(findex[k]),dvec(findex[k]));
+      //TEMPtestTSS }
+      //TEMPtestTSS std::cout << std::endl;
+
+      //TEMPtestTSS str = fTSS.asString();
+      //TEMPtestTSS gpstk::StringUtils::change(str,"\n"," ");
+      //TEMPtestTSS std::cout << std::fixed << std::setprecision(3) << xvec(i)
+      //TEMPtestTSS           << " fman " << str << std::endl;
+
+      //TEMPtestTSS str = ptrFuture->asString();
+      //TEMPtestTSS gpstk::StringUtils::change(str,"\n"," ");
+      //TEMPtestTSS std::cout << std::fixed << std::setprecision(3) << xvec(i)
+      //TEMPtestTSS           << " futu " << str << " eval " << A.fave
+      //TEMPtestTSS           << std::endl << std::endl;
+
+      //TEMPtestTSS }
 
       // compute a "step" = difference in future and past averages
       // must evaluate at the same x-point
@@ -1093,10 +699,12 @@ template<class T> int WindowFilter<T>::filter(const size_t i0, int dsize)
       //               else                 add 1 to F, sub 1 from P
       // move i from future to past
       ptrFuture->Subtract(xvec(i),dvec(i));
+      //TEMPtestTSS findex.pop_front();
       buff.push_back(i);
       j = buff[0];
       buff.pop_front();
       ptrPast->Add(xvec(j),dvec(j));
+      //TEMPtestTSS pindex.push_back(j);
 
       // if fullwindows, quit when future meets limit
       // ?? won't it just stop b/c loop reaches end?
@@ -1105,30 +713,39 @@ template<class T> int WindowFilter<T>::filter(const size_t i0, int dsize)
 
       // if balanced and future has met the end-of-data, remove two from past
       if(balanced && iplus == i0+dsize) {         // assumes data.size() > 2*width
+         //TEMPtestTSS std::cout << " balanced,fateod\n";
          ptrPast->Subtract(xvec(iminus),dvec(iminus));
+         //TEMPtestTSS pindex.pop_front();
          inc(iminus);
          ptrPast->Subtract(xvec(iminus),dvec(iminus));
+         //TEMPtestTSS pindex.pop_front();
          inc(iminus);
       }
 
       // else if balanced and past not full, move two into the future
       else if(balanced && ptrPast->N() < width+1) {           // same assumption
+         //TEMPtestTSS std::cout << " balanced,pastnotfull\n";
          ptrFuture->Add(xvec(iplus),dvec(iplus));
+         //TEMPtestTSS findex.push_back(iplus);
          inc(iplus);
          ptrFuture->Add(xvec(iplus),dvec(iplus));
+         //TEMPtestTSS findex.push_back(iplus);
          inc(iplus);
       }
 
       // else not near either end
       else {
          // move iplus up by one
+         //TEMPtestTSS std::cout << " normal\n";
          if(balanced || iplus < i0+dsize-1) {
             ptrFuture->Add(xvec(iplus),dvec(iplus));
+            //TEMPtestTSS findex.push_back(iplus);
             inc(iplus);
          }
          // and move iminus up by one
          if(balanced || ptrPast->N() > width) {
             ptrPast->Subtract(xvec(iminus),dvec(iminus));
+            //TEMPtestTSS pindex.pop_front();
             inc(iminus);
          }
       }
@@ -1150,6 +767,7 @@ template<class T> int WindowFilter<T>::filter(const size_t i0, int dsize)
 // analysis, with debug print
 // test 1a. ratio must be > minratio (2)
 // test 1b. step must be > minstep (0.8)
+// test 1c. step/minstep + ratio/minratio - 2 must be > minmargin (0.5)
 // look in neighborhood of i - is ratio a local max and sigma a local min?
 // test 2. ratio is a local max, n2=# intervals with right sign, n2 <= 2*halfwidth
 // test 3. sigma is a local min, n3=# intervals with right sign, n3 <= 2*halfwidth
@@ -1169,7 +787,7 @@ template<class T> int WindowFilter<T>::analyze(void)
    }
    int curr(0);
    size_t i,j;
-   double tmp,tmp2;
+   double tmp;
 
    // ratio(step/sigma), its 1st diff, sigma, its 1st diff, future minus past sigma
    std::deque<double> rat,rat1d,sig,sig1d,fminusp;
@@ -1218,12 +836,20 @@ template<class T> int WindowFilter<T>::analyze(void)
       //bool rmin=true, smax=true;
       bool rmax=true, smin=true, fmp=true;
       int fmpcount(2*halfwidth);
-      double fmp0(fminusp[halfwidth+1]);
+      double fmp0(fminusp[halfwidth]);
+      double rat0(::fabs(rat[halfwidth]));
       for(j=0; j<halfwidth; j++) {
          // test is that ratio is at maximum - so 1st dif is +,+,+,-,-,-
          //                                              j=  0 1 2 h h+1 h+2
-         if(rat1d[j] < 0.0) rmax=false;
-         if(rat1d[j+halfwidth] > 0.0) rmax=false;
+         if(j == halfwidth-1) {
+            if(rat1d[j] < 0.0) rmax=false;
+            if(rat1d[j+halfwidth] > 0.0) rmax=false;
+         }
+         else {
+            if(rat1d[j] < -rat0/10.0) rmax=false;
+            if(rat1d[j+halfwidth] > rat0/10.0) rmax=false;
+         }
+
          //if(rat1d[j] > 0.0) rmin=false; else
          //if(rat1d[j+halfwidth] < 0.0) rmin=false; else
 
@@ -1308,7 +934,7 @@ template<class T> int WindowFilter<T>::analyze(void)
          << std::flush;
 
       // ---------------------- do the tests ----------------------
-      // test 1a. ratio must be > 2
+      // test 1a. ratio must be > minratio(2)
       if(::fabs(analvec[i].step/analvec[i].sigma) <= minratio) {
          if(debug) std::cout << " small ratio" << std::flush;
          analvec[i].score = -3;                                   // failure
@@ -1321,7 +947,7 @@ template<class T> int WindowFilter<T>::analyze(void)
          analvec[i].score = -2;                                   // failure
          analvec[i].msg = " small_step";
       }
-
+      
       // its too early - before we can compute score
       // usually ratio|step will be small, so not reach here
       else if(i==0) {
@@ -1335,6 +961,14 @@ template<class T> int WindowFilter<T>::analyze(void)
          if(debug) std::cout << " end" << std::flush;
          analvec[i].score = -1;                                   // failure
          analvec[i].msg = " i=end_no_tests";
+      }
+
+      // test 1c. exclude case where step AND ratio are very close to limit
+      else if(::fabs(analvec[i].step/analvec[i].sigma) / minratio
+         + ::fabs(analvec[i].step) / minstep - 2. < minmargin) {
+         if(debug) std::cout << " marginal" << std::flush;
+         analvec[i].score = -4;                                   // failure
+         analvec[i].msg = " marginal_step+ratio";
       }
 
       // test 2. ratio is a local max
@@ -1360,14 +994,6 @@ template<class T> int WindowFilter<T>::analyze(void)
          analvec[i].score = int(100.*weight+0.5);
          analvec[i].msg += wtmsg;
          if(debug) std::cout << std::flush;
-
-         // save the "almost slip" - TD add flag to turn this on
-         FilterNearMiss<T> fnm;
-         fnm.index = analvec[i].index;
-         fnm.step = analvec[i].step;
-         fnm.score = analvec[i].score;
-         fnm.msg = analvec[i].msg;
-         maybes.push_back(fnm);
       }
 
       else {                                                      // its a slip
@@ -1380,7 +1006,21 @@ template<class T> int WindowFilter<T>::analyze(void)
          fe.index = analvec[i].index;
          fe.ngood = 1;
          fe.step = analvec[i].step;
+         fe.sigma = analvec[i].sigma;
+         fe.score = analvec[i].score;
+         fe.msg = analvec[i].msg;
          results.push_back(fe); curr++;
+      }
+
+      if(!rmax || !smin || !fmp || analvec[i].score == -4) {   // maybe a slip
+         // save the "almost slip" - TD add flag to turn this on
+         FilterNearMiss<T> fnm;
+         fnm.index = analvec[i].index;
+         fnm.step = analvec[i].step;
+         fnm.sigma = analvec[i].sigma;
+         fnm.score = analvec[i].score;
+         fnm.msg = analvec[i].msg;
+         maybes.push_back(fnm);
       }
 
       // also see several lines above
@@ -1399,7 +1039,6 @@ template<class T> int WindowFilter<T>::analyze(void)
 template<class T> void WindowFilter<T>::dump(std::ostream& os, std::string tag)
 {
    size_t i,j,k;
-   T min,max,med,mad;
    std::string msg(tag), slip, res;
 
    // TD print slope?
@@ -1521,6 +1160,3 @@ void WindowFilter<T>::getStats(FilterHit<T>& sg, bool skip)
 
 // end template <class T> class WindowFilter
 
-//------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------
-#endif   //  #define STATISTICAL_FILTER_INCLUDE
