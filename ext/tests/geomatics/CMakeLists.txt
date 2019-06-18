@@ -434,3 +434,9 @@ add_test(NAME Rinex3ObsLoader_R210
 set_property(TEST Rinex3ObsLoader_R210 PROPERTY LABELS Geomatics)
 
 ###############################################################################
+add_executable(KalmanFilter_T KalmanFilter_T.cpp)
+target_link_libraries(KalmanFilter_T gpstk)
+add_test(KalmanFilter KalmanFilter_T)
+set_property(TEST KalmanFilter PROPERTY LABELS Geomatics)
+
+###############################################################################

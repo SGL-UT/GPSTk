@@ -47,8 +47,8 @@
 
 //------------------------------------------------------------------------------------
 // system includes
-#include <cmath>
 #include <string>
+#include <cmath>
 
 // GPSTk
 #include "Exception.hpp"
@@ -61,7 +61,7 @@ namespace gpstk {
 /// tuning constant used in robust estimate of variance
 #define RobustTuningA (0.778)       // or 0.67
 /// tuning constant used in MAD
-#define RobustTuningE (0.6745)
+#define RobustTuningE (0.6745)      // so MAD of a std normal dist is StdDev
 
 //------------------------------------------------------------------------------------
    /// @ingroup math 
@@ -303,7 +303,7 @@ namespace gpstk {
 
       try {
          int i;
-         T med, *save = NULL;
+         T med, *save=NULL;
 
          if(save_flag) {
             save = new T[nd];
@@ -435,6 +435,7 @@ namespace gpstk {
    /// @param MAD input median absolute deviation of data in array xd.
    /// @param w output array of length nd to contain weights on output.
    /// @return m-estimate of data in array xd.
+   // TD return a sigma - just form RMS(xd-mest)
    template <typename T>
    T MEstimate(const T *xd, int nd, const T& M, const T& MAD, T *w=NULL)
       throw(Exception)
@@ -509,17 +510,14 @@ namespace gpstk {
          std::string msg=std::string(""))
       throw(Exception);
 
-   /// Generate data for a quantile-quantile plot. Given an array of data yd,
-   /// of length nd (sorted in ascending order), and another array xd of the
-   /// same length, fill the xd array with data such that (xd,yd) give a
-   /// quantile-quantile plot. The distribution of yd is a normal distribution
-   /// to the extent that this plot is a straight line, with y-intercept and
-   /// slope identified with mean and standard deviation, respectively, of the
-   /// distribution.
-   /// @param yd array of data, sorted in ascending order.
+   /// Generate quantiles. Given an array xd of length nd, fill it with quantiles
+   /// such that (xd,yd) gives a quantile plot. The distribution of yd is a normal
+   /// distribution to the extent that this plot is a straight line,
+   /// with y-intercept and slope identified with mean and standard deviation,
+   /// respectively, of the distribution.
+   /// @param xd array of length nd containing quantiles on output.
    /// @param nd length of array xd.
-   /// @param xd array of length nd containing quantiles of yd on output.
-   void QuantilePlot(double *yd, long nd, double *xd)
+   void Quantiles(double *xd, long nd)
       throw(Exception);
 
    }  // end Robust namespace

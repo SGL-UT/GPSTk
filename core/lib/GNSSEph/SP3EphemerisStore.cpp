@@ -195,7 +195,6 @@ namespace gpstk
 
       // Get the earliest time of data in the store for the given satellite.
       // Return the first time
-      // Throw InvalidRequest if there is no data
    CommonTime SP3EphemerisStore::getInitialTime(const SatID& sat)
       const throw(InvalidRequest)
    {

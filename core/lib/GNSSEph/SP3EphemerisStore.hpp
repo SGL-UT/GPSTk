@@ -433,7 +433,7 @@ namespace gpstk
 
 
          /// Get current interpolation order for the position table
-      unsigned int getPositionInterpOrder(void) throw()
+      unsigned int getPositionInterpOrder(void) const throw()
       { return posStore.getInterpolationOrder(); }
 
          /** Set the interpolation order for the position table; it is
