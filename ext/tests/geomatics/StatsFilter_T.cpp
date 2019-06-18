@@ -37,7 +37,9 @@
 /// @file StatsFilter_T.cpp Test classes in StatsFilter.hpp
 
 #include <vector>
-#include "StatsFilter.hpp"
+#include "FirstDiffFilter.hpp"
+#include "FDiffFilter.hpp"
+#include "WindowFilter.hpp"
 #include "logstream.hpp"
 
 //------------------------------------------------------------------------------------
@@ -151,6 +153,72 @@ int testWindow(const vector<double>& xdata,
       for(j=0; j<hit.size(); j++)
          cout << label << " " << hit[j].asString() << endl;
    }
+
+   return iret;
+}
+
+//------------------------------------------------------------------------------------
+int testFDiff(const vector<double>& xdata,
+              const vector<double>& data,
+              const double& ratlimit,
+              const string& label,
+              const bool& verbose,
+              vector< FilterHit<double> >& hit)
+{
+   int iret;
+   unsigned int i,j,k;
+
+   // fill flags
+   vector<int> flags;
+   flags = vector<int>(data.size(),0);
+
+   // xdata and flags must exist but may be empty
+   IterativeFDiffFilter<double> fdf(xdata, data, flags);
+   fdf.setw(7);
+   fdf.setprecision(4);
+
+   fdf.setWidth(4);
+   fdf.setLimit(0.8);
+   fdf.setSigma(ratlimit);
+
+   fdf.doVerbose(verbose);
+   fdf.doResetSigma(true);
+   fdf.doSmallSlips(false);
+
+   iret = fdf.analysis();
+   if(iret < 0) cout << "# FDiffFilter analysis failed (" << iret << ")" << endl;
+   else iret=0;
+
+   hit = fdf.getResults();
+
+   // clean the data based on results of filter
+   //vector< FilterHit<double> > hit=fdf.getResults();
+   for(j=0; j<hit.size(); j++) {
+      cout << label << " " << hit[j].asString() << endl;
+
+      //if(hit[j].type == FilterHit<double>::BOD) continue;
+      //else if(hit[j].type == FilterHit<double>::outlier) {
+      //   for(k=0; k<hit[j].npts; k++)
+      //      flags[hit[j].index+k] = -1;      // flag for outlier
+      //}
+      //else if(hit[j].type == FilterHit<double>::slip) {
+      //   for(k=hit[j].index; k<data.size(); k++)
+      //      data[k] -= hit[j].step;
+      //}
+   }
+
+   //// write cleaned data to rstats.out
+   //ostream *pout = new ofstream("rstats.out");
+   //if(pout->fail()) {
+   //   cout << "Unable to open file rstats.out - output to screen\n";
+   //   pout = &cout;
+   //}
+
+   //for(i=0; i<data.size(); i++)
+   //   *pout << fixed << setprecision(prec) << i
+   //         << " " << (xdata.size() ? xdata[i] : (double)(i))
+   //         << " " << data[i] << " " << flags[i] << endl;
+   //if(pout != &cout) ((ofstream *)pout)->close();
 
    return iret;
 }
@@ -517,6 +585,79 @@ try {
          results[5].npts != 1 ||
          results[5].ngood != 0)
             { cout << label << " sixth hit\n"; count++; }
+   }
+
+   label = "Test3FDiffF";
+   iret = testFDiff(xdata, data, 0.4, label, verbose, results);
+   if(iret == 0) {
+      if(results[0].type != FilterHit<double>::outlier ||
+         results[0].index != 69 ||
+         results[0].npts !=  1 ||
+         results[0].dx !=  30.0)
+            { cout << label << " first hit\n"; count++; }
+      if(results[1].type != FilterHit<double>::slip ||
+         results[1].index != 79 ||
+         results[1].npts != 1 ||
+         ::fabs(results[1].dx - 30.0) > 0.001 ||
+         ::fabs(results[1].step - 0.910) > 0.001 ||
+         ::fabs(results[1].sigma - 0.497) > 0.001)
+            { cout << label << " second hit\n"; count++; }
+      if(results[2].type != FilterHit<double>::outlier ||
+         results[2].index != 91 ||
+         results[2].npts !=  5 ||
+         results[2].dx !=  150.0)
+            { cout << label << " third hit\n"; count++; }
+      if(results[3].type != FilterHit<double>::outlier ||
+         results[3].index != 110 ||
+         results[3].npts !=  7 ||
+         results[3].dx !=  210.0)
+            { cout << label << " fourth hit\n"; count++; }
+      if(results[4].type != FilterHit<double>::outlier ||
+         results[4].index != 122 ||
+         results[4].npts !=  1 ||
+         results[4].dx !=  30.0)
+            { cout << label << " fifth hit\n"; count++; }
+      if(results[5].type != FilterHit<double>::slip ||
+         results[5].index != 128 ||
+         results[5].npts != 1 ||
+         ::fabs(results[5].dx - 30.0) > 0.001 ||
+         ::fabs(results[5].step + 0.930) > 0.001 ||
+         ::fabs(results[5].sigma - 0.548) > 0.001)
+            { cout << label << " sixth hit\n"; count++; }
+      if(results[6].type != FilterHit<double>::outlier ||
+         results[6].index != 137 ||
+         results[6].npts !=  1 ||
+         results[6].dx !=  30.0)
+            { cout << label << " seventh hit\n"; count++; }
+      if(results[7].type != FilterHit<double>::outlier ||
+         results[7].index != 159 ||
+         results[7].npts !=  11 ||
+         results[7].dx !=  330.0)
+            { cout << label << " eighth hit\n"; count++; }
+      if(results[8].type != FilterHit<double>::outlier ||
+         results[8].index != 177 ||
+         results[8].npts !=  23 ||
+         results[8].dx !=  690.0)
+            { cout << label << " ninth hit\n"; count++; }
+      if(results[9].type != FilterHit<double>::outlier ||
+         results[9].index != 209 ||
+         results[9].npts !=  36 ||
+         results[9].dx !=  1050.0)
+            { cout << label << " tenth hit\n"; count++; }
+      if(results[10].type != FilterHit<double>::slip ||
+         results[10].index != 117 ||
+         results[10].npts != 8 ||
+         ::fabs(results[10].dx - 240.0) > 0.001 ||
+         ::fabs(results[10].step + 3.216) > 0.001 ||
+         ::fabs(results[10].sigma - 1.756) > 0.001)
+            { cout << label << " eleventh hit\n"; count++; }
+      if(results[11].type != FilterHit<double>::slip ||
+         results[11].index != 200 ||
+         results[11].npts != 24 ||
+         ::fabs(results[11].dx - 720.0) > 0.001 ||
+         ::fabs(results[11].step + 5.034) > 0.001 ||
+         ::fabs(results[11].sigma - 2.626) > 0.001)
+            { cout << label << " twelfth hit\n"; count++; }
    }
 
    // --------------------------------------------------------------------
