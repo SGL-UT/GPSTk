@@ -1,0 +1,71 @@
+Load file /home/btolman/pre053/gpstk/data/Rinex3ObsLoader303.obs
+Store size is 3600
+---------------------------------- REQUIRED ----------------------------------
+Rinex Version  3.03,  File type OBSERVATION DATA,  System MIXED.
+Prgm: sbf2rin-11.3.3,  Run: 20170405 110933 LCL,  By: 
+Marker name: SEPT, Marker type: .
+Observer : Unknown,  Agency: Unknown
+Rec#: 3010425,  Type: SEPT ALTUS NR2,  Vers: 1.2.0
+Antenna # : APS-NR2,  Type : APSAPS-NR2      NONE
+Position      (XYZ,m) : (-740519.8372, -5457010.8698, 3207282.3336).
+Antenna Delta (HEN,m) : (0.0000, 0.0000, 0.0000).
+GPS Observation types (7):
+ Type #01 (C1C) L1 GPSC/A pseudorange
+ Type #02 (L1C) L1 GPSC/A phase
+ Type #03 (C1W) L1 GPScodelessZ pseudorange
+ Type #04 (C2W) L2 GPScodelessZ pseudorange
+ Type #05 (L2W) L2 GPScodelessZ phase
+ Type #06 (C2L) L2 GPSC2L pseudorange
+ Type #07 (L2L) L2 GPSC2L phase
+GLONASS Observation types (4):
+ Type #01 (C1C) G1 GLOC/A pseudorange
+ Type #02 (L1C) G1 GLOC/A phase
+ Type #03 (C2C) G2 GLOC/A pseudorange
+ Type #04 (L2C) G2 GLOC/A phase
+Geosync Observation types (2):
+ Type #01 (C1C) L1 SBASC/A pseudorange
+ Type #02 (L1C) L1 SBASC/A phase
+R2ObsTypes: 
+Time of first obs 2017/01/26 00:00:00.000 GPS
+(This header is VALID)
+---------------------------------- OPTIONAL ----------------------------------
+Marker number : Unknown
+Interval =   1.000
+Time of Last Obs 2017/01/26 00:59:59.000 GPS
+Phase shift correction for system G:  0.00000 cycles applied to obs type L1C GPS
+Phase shift correction for system G:  0.00000 cycles applied to obs type L2W GPS
+Phase shift correction for system G:  0.00000 cycles applied to obs type L2L GPS
+Phase shift correction for system R:  0.00000 cycles applied to obs type L1C GLONASS
+Phase shift correction for system R:  0.00000 cycles applied to obs type L2C GLONASS
+Phase shift correction for system S:  0.00000 cycles applied to obs type L1C Geosync
+GLONASS frequency channels:
+ R05  1 R06 -4 R07  5 R08  6 R09 -2 R15  0 R16 -1 R17  4
+ R18 -3 R19  3
+GLONASS Code-phase biases:
+ C1C    0.000 C2C    0.000
+Number of Satellites with data : 26
+Comments (2) :
+SEPTENTRIO RECEIVERS OUTPUT ALIGNED CARRIER PHASES.
+NO FURTHER PHASE SHIFT APPLIED IN THE RINEX ENCODER.
+-------------------------------- END OF HEADER --------------------------------
+Summary of input RINEX obs data files (1):
+ RINEX obs file: filename removed, see above
+ Interval 1.00sec, obs types GC1C GL1C GC2W GL2W, store size 3600
+ Time limits: begin  2017/01/26 00:00:00 1933 345600.000
+                end  2017/01/26 00:59:59 1933 349199.000
+Table of Sat/Obs counts
+      GC1C  GL1C  GC2W  GL2W
+ G03  1846  1399  1392  1392
+ G07  3600  3600  3600  3600
+ G08  3600  3600  3600  3600
+ G09  3600  3600  3600  3600
+ G11  3600  3600  3528  3528
+ G16  3600  3600  3600  3600
+ G22   152     0     0     0
+ G23  3600  3600  3600  3600
+ G26   535   398   352   352
+ G27  3600  3600  3600  3600
+ G28  3600  3600  3600  3600
+ G30  3600  3600  3600  3600
+ TOT 34933 34197 34072 34072 total 3600 epochs
+End of summary
