@@ -399,7 +399,7 @@ add_test(NAME Rinex3ObsLoader_R303
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -DTESTBASE=Rinex3ObsLoader_R303
          -DARGS=${GPSTK_TEST_DATA_DIR}/Rinex3ObsLoader303.obs
-         -DDIFF_ARGS=-l2\ -z2
+         -DDIFF_ARGS=-l1
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
 set_property(TEST Rinex3ObsLoader_R303 PROPERTY LABELS Geomatics)
 
@@ -414,7 +414,7 @@ add_test(NAME Rinex3ObsLoader_R211
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -DTESTBASE=Rinex3ObsLoader_R211
          -DARGS=${GPSTK_TEST_DATA_DIR}/Rinex3ObsLoader211.obs
-         -DDIFF_ARGS=-l2\ -z2
+         -DDIFF_ARGS=-l1
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
 set_property(TEST Rinex3ObsLoader_R211 PROPERTY LABELS Geomatics)
 
@@ -429,7 +429,7 @@ add_test(NAME Rinex3ObsLoader_R210
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -DTESTBASE=Rinex3ObsLoader_R210
          -DARGS=${GPSTK_TEST_DATA_DIR}/Rinex3ObsLoader210.obs
-         -DDIFF_ARGS=-l2\ -z2
+         -DDIFF_ARGS=-l1
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
 set_property(TEST Rinex3ObsLoader_R210 PROPERTY LABELS Geomatics)
 

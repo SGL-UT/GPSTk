@@ -8,6 +8,7 @@
 #include <map>
 #include <iostream>
 #include <fstream>
+#include "StringUtils.hpp"
 #include "Exception.hpp"
 #include "logstream.hpp"
 #include "Rinex3ObsHeader.hpp"
@@ -51,7 +52,12 @@ try {
    Rinex3ObsHeader rhead = rofl.getFullHeader(0);
    rhead.dump(cout);
 
-   cout << rofl.asString() << endl;
+   // have to remove file name - paths conflict
+   ostringstream oss;
+   oss << rofl.asString();
+   str = oss.str();
+   str = StringUtils::replaceAll(str,filename,"filename removed, see above");
+   cout << str << endl;
 
    return 0;
 }

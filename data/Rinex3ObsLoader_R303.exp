@@ -49,7 +49,7 @@ SEPTENTRIO RECEIVERS OUTPUT ALIGNED CARRIER PHASES.
 NO FURTHER PHASE SHIFT APPLIED IN THE RINEX ENCODER.
 -------------------------------- END OF HEADER --------------------------------
 Summary of input RINEX obs data files (1):
- RINEX obs file: /home/btolman/pre053/gpstk/data/Rinex3ObsLoader303.obs
+ RINEX obs file: filename removed, see above
  Interval 1.00sec, obs types GC1C GL1C GC2W GL2W, store size 3600
  Time limits: begin  2017/01/26 00:00:00 1933 345600.000
                 end  2017/01/26 00:59:59 1933 349199.000
