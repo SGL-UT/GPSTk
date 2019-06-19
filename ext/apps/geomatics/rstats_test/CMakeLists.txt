@@ -17,8 +17,9 @@ add_test(NAME test_rstats
          -DDIFF_PROG=$<TARGET_FILE:df_diff>
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
-         -DTESTBASE=test_rstats.exp
-         -DDIFF_ARGS=-l1
+         -DTESTBASE=test_rstats
+         -DARGS=--pathexe\ ${CMAKE_CURRENT_BINARY_DIR}/../robust\ --path\ ${CMAKE_CURRENT_SOURCE_DIR}
+         -DDIFF_ARGS=-l1\ -e\ 1.e-5
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../../../tests/testsuccexp.cmake)
 set_property(TEST test_rstats PROPERTY LABELS Geomatics)
 
