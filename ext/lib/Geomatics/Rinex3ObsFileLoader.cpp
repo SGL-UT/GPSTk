@@ -201,6 +201,7 @@ try {
                }
 
                if(dt >= dttol) {      // positive dt only
+                  // add to the timestep estimator
                   mcv.add(dt);
                }
                else if(dt < dttol) {  // negative, and positive but tiny (< dttol)
