@@ -444,16 +444,16 @@ set_property(TEST KalmanFilter PROPERTY LABELS Geomatics)
 ###############################################################################
 #find_package(PythonInterp 3)
 #set(PYTHON_EXE ${PYTHON_EXECUTABLE})
-add_test(NAME rstats
-         COMMAND ${CMAKE_COMMAND}
-         -DTEST_PROG=$<TARGET_FILE:testrstats.py>
-         -DDIFF_PROG=$<TARGET_FILE:df_diff>
-         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
-         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
-         -DTESTBASE=test_rstats.exp
-         -DARGS=
-         -DDIFF_ARGS=-l1
-         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
-set_property(TEST rstats PROPERTY LABELS Geomatics)
+#add_test(NAME rstats
+#         COMMAND ${CMAKE_COMMAND}
+#         -DTEST_PROG=$<TARGET_FILE:testrstats.py>
+#         -DDIFF_PROG=$<TARGET_FILE:df_diff>
+#         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+#         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+#         -DTESTBASE=test_rstats.exp
+#         -DARGS=
+#         -DDIFF_ARGS=-l1
+#         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+#set_property(TEST rstats PROPERTY LABELS Geomatics)
 
 ###############################################################################
