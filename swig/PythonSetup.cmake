@@ -41,7 +41,7 @@ if( ${PYTHON_CUSTOM_CONFIG} MATCHES "NOTFOUND" )
   # which does not necessiarly match what the executable found by PythonInterp
   # will be copacetic with. So, we set CMAKE_INCLUDE_PATH to what is returned
   # by the found python-config
-  execute_process( COMMAND "${PYTHON_EXECUTABLE}3.6-config" "--includes" OUTPUT_VARIABLE PYTHON_INCLUDES)
+  execute_process( COMMAND "${PYTHON_EXECUTABLE}-config" "--includes" OUTPUT_VARIABLE PYTHON_INCLUDES)
   string(REGEX MATCH "^-I(.*) " _python_include ${PYTHON_INCLUDES})
   string(STRIP ${_python_include} _python_include)
   string(SUBSTRING ${_python_include} 2 -1 _python_include) # strip the "-I"
