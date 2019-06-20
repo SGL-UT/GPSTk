@@ -34,7 +34,7 @@
 //
 //=============================================================================
 
-/// @file StatsFilter_T.cpp Test the classes in StatsFilter.hpp
+/// @file StatsFilter_T.cpp Test classes in StatsFilter.hpp
 
 #include <vector>
 #include "FirstDiffFilter.hpp"
