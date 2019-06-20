@@ -55,6 +55,7 @@
 #include "RinexSatID.hpp"
 #include "SatPass.hpp"
 #include "FirstDiffFilter.hpp"
+#include "FDiffFilter.hpp"
 #include "WindowFilter.hpp"
 #include "logstream.hpp"
 
@@ -111,6 +112,7 @@ public:
       double step;   ///< for slips, estimate of slip magnitude (data units).
                      ///< does not accumulate across the data - for this Acc only
                      ///< is only the latest filter estimate (gross OR fine)
+      double sigma;  ///< for slips, RSS future and past sigma on the data
       // TD half-cycles?
       int Nslip;     ///< net slip in wavelengths = accumulated integerized step
                      ///< Thus Nslip always is the total slip, while step has only
@@ -347,7 +349,7 @@ public:
    /// The routine will flag bad points in the input data using the values defined in
    /// this class, including OK, BAD, WLOUTLIER, GFOUTLIER, Arc::WLSLIP, Arc::GFSLIP
    /// Glonass satellites require a frequency channel integer; the caller may pass
-   ///  this in, or let the GDC compute it from the data - if it fails it returns -9.
+   /// this in, or let the GDC compute it from the data - if this fails it returns -9.
    ///
    /// Output data       filter output    : use setParameter(WLF,1)
    ///        RAW                data as read from SatPass in m
@@ -376,6 +378,7 @@ public:
 
    //---------------------------------------------------------------------------
    /// Overloaded version that accepts input data in parallel arrays.
+   /// NB phases are in cycles, ranges in meters.
    /// See the doc in the SatPass version.
    /// This is where the work is done; SatPass version creates arrays and calls this.
    /// Flags on input must be either 1(OK) or 0(BAD) (as in SatPass), however on
@@ -390,7 +393,8 @@ public:
                               std::vector<double> dt,
                               std::vector<int> flags,
                               std::string& retMsg, std::vector<std::string>& cmds,
-                              std::string& outfmt, int GLOn=-99)
+                              int GLOn=-99,
+                              std::string outfmt=std::string("%4F %10.3g"))
    throw(Exception);
 
 private:
@@ -457,6 +461,7 @@ protected:
    /// unique number, counting passes or calls
    int unique;
    std::string tag;     ///< begin each output line with 'GDC <unique>' ( <label>)
+   std::string SPSstr;  ///< SPS output of SatPass, or generated equivalent
 
    /// member data used internally
    RinexSatID sat;      ///< satellite id, from SatPass
@@ -472,8 +477,6 @@ protected:
    // just to keep numerical range down
    double WLbias;       ///< bias determined by initial value of WL, in wl
    double GFbias;       ///< bias determined by initial value of GF, in wl
-   //TEMP_IF_GRdouble IFbias;       ///< bias determined by initial value of IF, in wl
-   //TEMP_IF_GRdouble GRbias;       ///< bias determined by initial value of GR, in m
    // approximate; for output of editing commands only
    long long N1bias;    ///< bias in L1 at initial point (from P1=wl1*(N1bias+L1))
    long long N2bias;    ///< bias in L2 at initial point (from P2=wl2*(N2bias+L2))
@@ -483,13 +486,12 @@ protected:
    double alpha;        ///< alpha, from sat
    double beta;         ///< beta, from sat
    double wlWL;         ///< WL wavelength ~86cm, in meters
-   double wlNL;         ///< NL wavelength ~10.7cm, in meters
    double wlGF;         ///< GF wavelength = wl2-wl1 = 5.376cm, in meters
+   double wlNL;         ///< NL wavelength ~10.7cm, in meters
 
    /// vectors used in processing - these MUST always remain parallel and equal length
    /// vector of data e.g. WLC and GFP, in wavelengths
    std::vector<double> dataWL, dataGF;
-   //TEMP_IF_GRstd::vector<double> dataIF, dataGR;    // NB these are not needed
 
    /// vector of dt*ndt = number of steps of dt from begin point * dt; from spdvector
    std::vector<double> xdata;
@@ -675,7 +677,7 @@ protected:
    /// build the string that is returned by the discontinuity corrector
    std::string returnMessage(int prec=-1, int wid=-1) throw();
 
-   /// apply the results to fix the input SatPass cf. cfg(doFix)
+   /// apply the results to fix the input SatPass; cf. cfg(doFix)
    /// @param SP       SatPass object containing the input data.
    // @param breaks  vector of indexes where SatPass SP must be broken into two
    // @param marks   vector of indexes in SatPass SP where breaks are suspected

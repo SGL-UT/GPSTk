@@ -57,8 +57,8 @@ const string gdc::GDCVersion = string("9.0 5/20/17");
 // ----------------------- flags and bitmaps
 // values for flags[]; NB flags[] is either good (0) or bad (non-zero)
 // not to be confused with Arc::marks or SatPass flags  TD bitmap?
-const unsigned gdc::OK         = 0;  // NB SatPass::OK == 1
-const unsigned gdc::BAD        = 1;  // meaning bad in SatPass; NB SatPass::BAD == 0
+const unsigned gdc::OK         = 0;  // good;           NB SatPass::OK == 1
+const unsigned gdc::BAD        = 1;  // bad in SatPass; NB SatPass::BAD == 0
 const unsigned gdc::WLOUTLIER  = 2;  // called outlier by WL filter
 const unsigned gdc::GFOUTLIER  = 3;  // called outlier by GF filter
 const unsigned gdc::WLSHORT    = 4;  // data with Arc.ngood < MinPts
@@ -87,7 +87,7 @@ const vector<string> gdc::LAB = gdc::create_vector_LAB();
 const map<unsigned, string> Arc::markStr = Arc::create_mark_string_map();
 
 // used to access CFG - also see setcfg(a,b,c) below
-#define cfg(a) cfg_func(#a)
+#define cfg(a) cfg_func(#a)      // #a 'string-izes' a "a"
 
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
@@ -188,17 +188,25 @@ int gdc::DiscontinuityCorrector(SatPass& SP, string& retMsg, vector<string>& cmd
          P2_in.push_back(SP.data(i,P2));
       }
 
-      // first GDC line - from SatPass - have to be tricky here
-      unique++;
-      ostringstream oss;
-      oss << "GDC " << setw(3) << unique;
-      tag = oss.str();
-      LOG(INFO) << tag << " SPS " << SP;
-      unique--;
+      // first GDC line - from SatPass - have to play tricks with unique here
+      //{
+      //   unique++;
+      //   ostringstream oss;
+      //   oss << "GDC " << setw(3) << unique;
+      //   tag = oss.str();
+      //   LOG(INFO) << tag << " SPS " << SP;
+      //   unique--;
+      //}
+      // save the first GDC output line from SatPass (SPS)
+      {
+         ostringstream oss;
+         oss << "GDC " << setw(3) << unique+1 << " SPS " << SP;
+         SPSstr = oss.str();
+      }
 
       int iret = DiscontinuityCorrector(sat, SP.getDT(), beg,
                   L1_in, L2_in, P1_in, P2_in, dt_in, flags_in,
-                  retMsg, cmds, outfmt, GLOchan);
+                  retMsg, cmds, GLOchan, outfmt);
       if(iret) return iret;
 
       // apply fixes to SatPass
@@ -218,66 +226,65 @@ int gdc::DiscontinuityCorrector(
       vector<double> dataP1, vector<double> dataP2,
       vector<double> dt_in, vector<int> flags_in,
       string& retMsg, vector<string>& cmds,
-      string& outfmt_in, int GLOn) throw(Exception)
+      int GLOn, string outfmt_in) throw(Exception)
 {
    try {
       int iret;
       unsigned int i;
 
-      unique++;
-      ostringstream oss;
-      oss << "GDC " << setw(3) << unique;
-      tag = oss.str();
+      // TD check that arrays are all full length
 
       sat = sat_in;
       dt = nominalDT;
       beginT = beginTime;
+      beginT += dt_in[0];
       outfmt = outfmt_in;
 
       isGLO = (sat.system == SatID::systemGlonass);
       GLOchan = GLOn;
-      // must assume GLOchan is good at this point - need to move out of SatPass!
       if(isGLO && GLOchan == -99) {
-         retMsg = " Error - unable to compute GLO channel - fail: " + retMsg;
-         return -9;
+         //// this is the non-SatPass version, still in SatPass.cpp
+         //if(!getGLOchannel(GLOchan,sat,dataL1,dataL2,dataP1,dataP2,flags_in,retMsg))
+         //{
+         //   retMsg = " Error - unable to compute GLO channel - fail: " + retMsg;
+            return -9;
+         //}
       }
 
+      // NB wl1,alpha,beta are used only in this routine...
       wl1 = getWavelength(sat,1,GLOchan);    // GLOchan ignored by GPS
       wl2 = getWavelength(sat,2,GLOchan);
       alpha = getAlpha(sat,1,2);
       beta = getBeta(sat,1,2);
-      wlWL = wl2*(beta+1.0)/alpha;// wl(WL) = 86cm GPS, depends on GLOchan
-      wlGF = wl2 - wl1;           // wl(GF) = wl1-wl2 = 5.376cm GPS, or f(GLOchan)
-      wlNL = 1.0/(1.0/wl1 + 1.0/wl2);  // wl(NL) = 10.7cm GPS, used for IF phase
+      wlWL = wl2*(beta+1.0)/alpha;  // wl(WL) = 86cm GPS, depends on GLOchan
+      wlGF = wl2 - wl1;             // wl(GF) = wl1-wl2 = 5.376cm GPS, or f(GLOchan)
+                                    // wl(NL) = 10.7cm GPS, used for IF
 
       // fill data vectors from input -------------------------------
       Arc arc(0,0,0,Arc::BEG);
       xdata.clear(); flags.clear(); dataWL.clear(); dataGF.clear();
-      //TEMP_IF_GRdataIF.clear(); dataGR.clear();
 
       // loop over the pass - MUST keep xdata, flags, dataWL and dataGF parallel
-      double d;
+      double d,dtlast;
       arc.ngood = 0;
       for(i=0; i<dt_in.size(); i++) {
          // save the seconds since beginT
          xdata.push_back(dt_in[i]);
 
          // test for good data
-         // must consistently mark bad data in SP with SatPass::BAD
+         // caller must consistently mark bad data with SatPass::BAD(0)
          if(!(flags_in[i] & SatPass::OK)
                      || dataL1[i] == 0.0 || dataL2[i] == 0.0
                      || dataP1[i] == 0.0 || dataP2[i] == 0.0)
          {
-            flags.push_back(BAD);         // 1 bad data from SatPass
+            flags.push_back(BAD);         // bad data from SatPass
             dataWL.push_back(0.0);
             dataGF.push_back(0.0);
-            //TEMP_IF_GRdataIF.push_back(0.0);
-            //TEMP_IF_GRdataGR.push_back(0.0);
             continue;
          }
 
          // good data
-         //dtlast = dt_in[i];
+         dtlast = dt_in[i];
          flags.push_back(OK);             // 0 good data
          arc.ngood++;
 
@@ -291,18 +298,6 @@ int gdc::DiscontinuityCorrector(
          d = (wl1*dataL1[i] - wl2*dataL2[i]) / wlGF;
          if(arc.ngood == 1) GFbias = d;
          dataGF.push_back(d - GFbias);
-
-         //TEMP_IF_GR// LIF - PIF in units of NLwl
-         //TEMP_IF_GRd  = (alpha+1.0)*wl1*dataL1[i] - wl2*dataL2[i];
-         //TEMP_IF_GRd -= (alpha+1.0)    *dataP1[i] -     dataP2[i];
-         //TEMP_IF_GRd /= wlNL*alpha;
-         //TEMP_IF_GRif(arc.ngood == 1) IFbias = d;
-         //TEMP_IF_GRdataIF.push_back(d - IFbias);
-
-         //TEMP_IF_GR// P2 - P1 = alpha*I1 in meters, no bias
-         //TEMP_IF_GRd = dataP2[i]-dataP1[i];
-         //TEMP_IF_GRif(arc.ngood == 1) GRbias = d;
-         //TEMP_IF_GRdataGR.push_back(d - GRbias);
 
          // initial phase biases - mainly just for output
          if(arc.ngood == 1) {
@@ -318,6 +313,25 @@ int gdc::DiscontinuityCorrector(
       Arcs[arc.index] = arc;
 
       // Begin GDC processing ----------------------------------------
+      unique++;
+      // generate strings for output
+      ostringstream oss;
+      oss << "GDC " << setw(3) << unique;
+      tag = oss.str();
+      if(SPSstr.empty()) {
+         Epoch endT(beginT);
+         endT += dtlast;
+         oss.str("");
+         oss << tag << " SPS " << setw(4) << arc.npts           // ntot
+            << " " << sat << " " << setw(4) << arc.ngood        // sat ngood
+            << " 0 "                // status flag
+            << printTime(beginT,outfmt) << " " << printTime(endT,outfmt)
+            << " " << setprecision(1) << fixed << dt << " L1 L2 P1 P2";
+         SPSstr = oss.str();
+      }
+      LOG(INFO) << SPSstr;
+      SPSstr = string();            // clear for next call
+
       // dump data with tag RAW
       if(cfg(RAW)) dumpData(LOGstrm,tag+" RAW");
 
@@ -414,6 +428,7 @@ int gdc::GrossProcessing(const unsigned which) throw(Exception)
       if(cfg_func("debug") > -1) DumpHits(filterResults,"#"+tag,label,2);
    
       // merge 1st difference filter results with Arcs; returns number of new arcs
+      // NB i unused
       i = mergeFilterResultsIntoArcs(filterResults, which);
       
       // recompute stats in each segment
@@ -428,6 +443,7 @@ int gdc::GrossProcessing(const unsigned which) throw(Exception)
    
       // fix gross slips
       // remove slips that are "size 0" -- do this in vector<FilterHit> ? no
+      // NB i unused
       i = fixSlips(which);
    
       // dump data (WLG GFG)
@@ -477,6 +493,7 @@ int gdc::FineProcessing(const unsigned which) throw(Exception)
       getArcStats(which);
    
       // fix small slips using stats
+      // NB i unused
       i = fixSlips(which);
    
       // dump Arcs
@@ -692,11 +709,14 @@ int gdc::mergeFilterResultsIntoArcs(vector< FilterHit<double> >& hits,
             (which == WL ? Arcs[hits[i].index].WLinfo.step :
                            Arcs[hits[i].index].GFinfo.step)
                            = lostslip + hits[i].step;
+            (which == WL ? Arcs[hits[i].index].WLinfo.sigma :
+                           Arcs[hits[i].index].GFinfo.sigma)
+                           = lostslip + hits[i].sigma;
             lostslip = 0.0;
 
          }  // end if slip
 
-         // NB note continue above
+         // NB note there is a continue stmt above
 
       }  // end loop over hits
 
@@ -895,7 +915,7 @@ void gdc::findLargeGaps(void) throw(Exception)
          if(git->first+git->second == ait->second.index+ait->second.npts)
             continue;                     // skip 'gap' at end of Arc
 
-         // Arc at ait must to be split   // we don't need fixUp
+         // Arc at ait must be split      // we don't need fixUp
          addArc(git->first+git->second, Arc::BEG);
 
          // must recompute ngood, but only for one Arc .. oh well
@@ -989,13 +1009,11 @@ int gdc::fixSlips(const unsigned which) throw(Exception)
                for(i=ait->second.index; i<xdata.size(); i++) {
                   dataWL[i] -= istep;
                   dataGF[i] -= GFfactor*istep;
-                  //TEMP_IF_GRdataIF[i] -= IFfactor*istep;
                }
             }
             else {
                for(i=ait->second.index; i<xdata.size(); i++) {
                   dataGF[i] -= istep;
-                  //TEMP_IF_GRdataIF[i] += istep;
                }
             }
 
@@ -1115,8 +1133,6 @@ void gdc::dumpData(ostream& os, const string msg)
          << " " << setw(2) << flags[i] << fixed << setprecision(4)
          << " " << setw(9) << dataWL[i] * wlWL
          << " " << setw(9) << dataGF[i] * wlGF
-         //TEMP_IF_GR<< " " << setw(9) << dataIF[i] * wlNL
-         //TEMP_IF_GR<< " " << setw(9) << dataGR[i]
          << arcmsg << endl;
    }
 }  // end void gdc::dumpData(ostream& os, const string msg)
@@ -1150,7 +1166,7 @@ void gdc::DumpArcs(const string& tag, const string& label, int prec) throw()
 // build the string that is returned by the discontinuity corrector
 string gdc::returnMessage(int prec, int wid) throw()
 {
-   int i,minpts(cfg(MinPts));
+   int minpts(cfg(MinPts));
    string retmsg;
    ostringstream oss,oss2;
    map<int, Arc>::iterator ait;
@@ -1226,8 +1242,6 @@ string gdc::returnMessage(int prec, int wid) throw()
       }
       else if((mark & Arc::WLSLIP) || (mark & Arc::GFSLIP)) {
          oss << "FIX";
-         //nL1 = -nGF;                // b/c Ngf(corrected) = -N1
-         //nL2 = -nGF-nWL;            // b/c Nwl = N1-N2
          oss2 << " n(WL,GF) " << A.WLinfo.Nslip << "," << A.GFinfo.Nslip;
       }
       else if(mark & Arc::REJ) {
@@ -1240,9 +1254,11 @@ string gdc::returnMessage(int prec, int wid) throw()
          << " " << printTime(xtime(A.index),outfmt)
          << " " << setw(4) << A.npts << " " << setw(4) << A.ngood;
       if(A.WLinfo.n > 0) oss << " WL " << setw(4) << A.WLinfo.n
-         << " " << setw(wid) << A.WLinfo.ave << " +- " << setw(wid) << A.WLinfo.sig;
+         << " " << setw(wid) << A.WLinfo.ave
+         << " +- " << setw(wid) << A.WLinfo.sig;
       if(A.GFinfo.n > 0) oss << " GF " << setw(4) << A.GFinfo.n
-         << " " << setw(wid) << A.GFinfo.ave << " +- " << setw(wid) << A.GFinfo.sig;
+         << " " << setw(wid) << A.GFinfo.ave
+         << " +- " << setw(wid) << A.GFinfo.sig;
       oss << oss2.str();
 
       retmsg += oss.str() + "\n";
@@ -1261,7 +1277,7 @@ void gdc::applyFixesToSatPass(SatPass& SP) throw(Exception)
                            //, vector<int>& breaks, vector<int>& marks)
 {
 try {
-   unsigned int i,j,k;
+   unsigned int i,j;
    long long nGF, nWL, nL1, nL2;
    Epoch ttag,tbeg,tend;
    map<int, Arc>::iterator ait;
