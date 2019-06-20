@@ -112,7 +112,10 @@ class CommonTime_Tests(unittest.TestCase):
         self.assertEqual(500.0, next(times).getSecondOfDay())
         self.assertEqual(700.0, next(times).getSecondOfDay())
         self.assertEqual(900.0, next(times).getSecondOfDay())
-        self.assertRaises(StopIteration, times.__next__)
+        if sys.version_info[0] < 3:
+            self.assertRaises(StopIteration, times.next)
+        else:
+            self.assertRaises(StopIteration, times.__next__)
 
     def test_times_list(self):
         start = gpstk.CommonTime()

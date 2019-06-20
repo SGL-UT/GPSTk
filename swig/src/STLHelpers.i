@@ -21,7 +21,11 @@ def dictToMap(dict, outtype=''):
     the function will attempt to discover what the appropriate type is. For example, you
     might use outType=\'map_string_int\'.
     """
-    import builtins
+    import sys
+    if sys.version_info[0] < 3:
+        import __builtin__ as builtins
+    else:
+        import builtins
     if len(dict) == 0:
         return None
     first_key = builtins.list(dict.keys())[0]
@@ -84,7 +88,11 @@ def seqToVector(seq, outtype=''):
     the function will attempt to discover what the appropriate type is. For example, you
     might use outtype=\'vector_double\'.
     """
-    import builtins
+    import sys
+    if sys.version_info[0] < 3:
+        import __builtin__ as builtins
+    else:
+        import builtins
 
     if outtype == '':
         if len(seq) == 0:
@@ -117,7 +125,11 @@ def vectorToSeq(vector):
     Note that this recopies the contents of the vector and is a linear time operation.
     """
     list = [None] * vector.size()  # pre-allocates size to help efficiency
-    import builtins
+    import sys
+    if sys.version_info[0] < 3:
+        import __builtin__ as builtins
+    else:
+        import builtins
     for i in builtins.range(vector.size()):
         list[i] = vector[i]
     return list
