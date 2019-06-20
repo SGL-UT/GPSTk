@@ -9,8 +9,6 @@
 ###############################################################################
 # Test rstats - robust stats and much more
 ###############################################################################
-find_package(PythonInterp 3)
-set(PYTHON_EXE ${PYTHON_EXECUTABLE})
 add_test(NAME test_rstats
          COMMAND ${CMAKE_COMMAND}
     	 -DTEST_PROG=${CMAKE_CURRENT_SOURCE_DIR}/rstats_T.py 
