@@ -188,15 +188,6 @@ int gdc::DiscontinuityCorrector(SatPass& SP, string& retMsg, vector<string>& cmd
          P2_in.push_back(SP.data(i,P2));
       }
 
-      // first GDC line - from SatPass - have to play tricks with unique here
-      //{
-      //   unique++;
-      //   ostringstream oss;
-      //   oss << "GDC " << setw(3) << unique;
-      //   tag = oss.str();
-      //   LOG(INFO) << tag << " SPS " << SP;
-      //   unique--;
-      //}
       // save the first GDC output line from SatPass (SPS)
       {
          ostringstream oss;
