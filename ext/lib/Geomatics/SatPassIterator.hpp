@@ -54,7 +54,7 @@ public:
    /// Ignore passes with Status less than zero.
    /// After building a vector<SatPass> (in time order), declare an iterator
    /// using this constructor, then call member function next(RinexObsData&) to
-   /// access the data in time order, until it returns non-zero.
+   /// access the data in time order, until it returns zero.
    /// @param splist   Vector of (consistent) SatPass objects
    /// @param rev      If true, interate in reverse time order
    /// @param dbug     If true, print debug info in next()
