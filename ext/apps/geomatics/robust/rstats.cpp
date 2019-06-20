@@ -1061,7 +1061,6 @@ try {
          cout << "(No stem and leaf plot; data is trivial)\n";
          return 0;
       }
-      //if(e.getText(0) == string("Array is not sorted"))
       GPSTK_RETHROW(e);
    }
 
@@ -1105,9 +1104,6 @@ try {
    cout << "Data vs quantiles fit to line yields y-intercept (=mean) "
       << fixed << setprecision(GD.prec) << TSS.Intercept()
       << " and slope (=std.dev.) " << TSS.Slope() << endl;
-      //<< " try `plot rstats.out -x 1 -y 2,data -y 3,line,lines"
-      //<< " -xl quantile -yl data -t \"Quantile plot\"`"
-      //<< endl;
 
    return 0;
 }
@@ -1130,20 +1126,13 @@ try {
    if(amin > amax) { amin = max; amax = min; }
    else if(amin == amax) GPSTK_THROW(Exception("Equal limits"));
 
-   //cout << "# Min Max " << fixed << setprecision(3) << min << " " << max << endl;
    binstep = (amax-amin)/double(nbins);
-   //cout << "# Raw binstep " << binstep << endl;
    double tmp = log10(double(binstep)) - 1.0;
    prec = int(tmp + (tmp > 0 ? 0.5 : -0.5));
-   //cout << "# tmp is " << tmp << " and initial scale exp is " << prec << endl;
    double scal = pow(10.0,prec);
-   //cout << "# scal binstep/scal " << setprecision(10) << scal
-   //<< " " << binstep/scal <<endl;
    while(binstep/scal < 1.0) { scal /= 10.0; prec--; }
    while(binstep/scal >= 10.0) { scal *= 10.0; prec++; }
-   //cout << "# Scale exponent is " << prec << endl;
    binstep = double(int(0.5+binstep/scal)*scal);
-   //cout << "# binstep " << binstep << endl;
    if(::fabs(binstep) < 1.e-8) { cout << " Error - binstep < 1.e-8\n"; return -1; }
    double half(binstep/2.0);
    firstbin = binstep * int((amin + (amin > 0 ? 0.5 : -0.5))/binstep);
@@ -1152,11 +1141,6 @@ try {
    nbins = int((max-firstbin+half)/binstep);
    while(firstbin+(nbins-1.5)*binstep > max) nbins--;
    while(firstbin+(nbins-0.5)*binstep < max) nbins++;
-   //cout << "# Check: first bin " << fixed << setprecision(2) << firstbin-0.5*binstep
-   //   << " < " << min << " < " << firstbin+0.5*binstep << endl;
-   //cout << "# Check: last bin " << fixed << setprecision(2)
-   //   << firstbin+(nbins-1.5)*binstep << " < " << max << " < "
-   //   << firstbin+(nbins-0.5)*binstep << endl;
    return 0;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
@@ -1188,22 +1172,13 @@ try {
    // compute precision exponent
    if(GD.whichbin != 1) {
       double tmp = log10(double(GD.widbin)) - 1.0;
-//cout << " tmp " << fixed << setprecision(8) << tmp << endl;
       prec = int(tmp + (tmp > 0 ? 0.5 : -0.5));
-//cout << " prec " << fixed << setprecision(8) << prec << endl;
       double scal = pow(10.0,prec);
-//cout << " scale " << fixed << setprecision(8) << scal << endl;
       while(GD.widbin/scal < 1.0) { scal /= 10.0; prec--; }
       while(GD.widbin/scal >= 10.0) { scal *= 10.0; prec++; }
-//cout << " final scale " << fixed << setprecision(8) << scal << " " << prec << endl;
       if(prec < 0) prec = -prec+1;
    }
 
-   //cout << fixed << setprecision(prec);
-   //cout << "# Bins: n " << GD.nbin << " start " << GD.firstbin
-   //<< " step " << GD.widbin << " prec " << prec << endl;
-   //cout << "Bin centers: (edges are center +- GD.widbin/2)";
-   //for(i=0; i<GD.nbin; i++) cout << " " << GD.firstbin + i*GD.widbin; cout << endl;
    if(GD.nbin > 60) {
       cout << "Error - too many bins: " << GD.nbin << endl;
       return 0;
@@ -1213,11 +1188,6 @@ try {
    vector<int> bins(GD.nbin,0);
    for(k=0,i=0; i<GD.data.size(); i++) {
       j = int((GD.data[i]-GD.firstbin+half)/GD.widbin);
-      //double cen = GD.firstbin+j*GD.widbin;
-      //cout << " Data " << i << " in bin " << j << " : "
-      //   << cen-half << " < " << GD.data[i] << " < " << cen+half << " "
-      //   << ((cen-half < GD.data[i] && GD.data[i] < cen+half) ? "ok":"oops")
-      //   << endl;
       if(j < 0 || j > GD.nbin-1) {
          cout << "# Warning - invalid bin " << j << " for data " << GD.data[i]
                   << endl;
@@ -1253,9 +1223,6 @@ try {
    GlobalData& GD=GlobalData::Instance();
 
    // compute sum, dt, gaps -------------------------------------------------
-   // NB e.g. for files dgar3650.12o.Z etc try
-   // ls -1 dgar*.12o.Z | perl -nl -e 'print substr($_,4,3)' | rstats --sum
-   // bash requires either '..$_..' or "..\$_.." on the perl cmd
    bool first(true);
    const int ndtmax(9);
    int jj,kk,nleast,ndt[ndtmax];
@@ -1378,10 +1345,6 @@ try {
       }
       else if(!GD.quiet) {
          cout << " Output polynomial fit to file rstats.out (try plotrfit)\n";
-         //cout << " Try the command plot rstats.out -x 1 -y 4,residuals "
-         //   << "-y2 2,data,points -y2 3,fit,lines -xl X -yl Residuals \\\n     "
-         //   << "-y2l \"Data and fit\" -t \"Robust fit (degree " << GD.nfit
-         //   << "), output of rstats for file " << GD.inputfile << "\"\n";
       }
 
       // write to rstats.out
@@ -1487,7 +1450,6 @@ try {
          gap=true;
 
       // is there a potential discontinuity?
-      // TD eliminate outliers, which produce adjacent fd's of opposite sign
       if(fabs(fd) > GD.ytol)
          slip=true;
 
@@ -1713,8 +1675,6 @@ try {
    ConfigureLOG::ReportTimeTags() = false;
 
    // compute white noise jerk filter
-   // e.g. rstats prsclk.dat -x 1 -y 11 --wnj 1.0,0.0001 | grep KSU \
-   // | plot -x 3 -y 10,data,'points ps 0.5' -yr 0:35 -y2 11,res -y 4,,'lines lt 3'
    // smaller process noise -> smoother; since mn and pn are const,
    // only ratio mn/pn determines smoothness - mn/pn ~ 1.e-8 typically
    vector<double> x,v,a;
@@ -1787,6 +1747,7 @@ void DFT(const vector<double>& data, vector<double>& ampcos, vector<double>& amp
       ampsin[i] *= ton;
    }
 }
+
 // inverse discrete Fourier transform
 void invDFT(const vector<double>& ampcos, const vector<double>& ampsin, const int& N,
    vector<double>& reform)
