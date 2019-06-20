@@ -157,7 +157,6 @@ int gdc::DiscontinuityCorrector(SatPass& SP, string& retMsg, vector<string>& cmd
       outfmt = SP.getOutputFormat();
       Epoch beg = SP.getFirstTime();
 
-      double d;
       vector<double> L1_in,L2_in,P1_in,P2_in,dt_in;
       vector<int> flags_in;
 
@@ -208,11 +207,11 @@ int gdc::DiscontinuityCorrector(SatPass& SP, string& retMsg, vector<string>& cmd
       return 0;
    }
    catch(Exception& e) { GPSTK_RETHROW(e); }
-}  // end int gdc::NewDiscontinuityCorrector(SatPass& SP, string& retMsg, int GLOn)
+}  // end int gdc::DiscontinuityCorrector(SatPass& SP, string& retMsg, int GLOn)
 
 //------------------------------------------------------------------------------------
 // Call to DC without SatPass.
-// Flags on input must be either 0(OK) or 1(BAD)
+// Flags on input must be either 1(OK) or 0(BAD), as in SatPass
 int gdc::DiscontinuityCorrector(
       const RinexSatID& sat_in, const double& nominalDT, const Epoch& beginTime,
       vector<double> dataL1, vector<double> dataL2,
@@ -278,6 +277,7 @@ int gdc::DiscontinuityCorrector(
          }
 
          // good data
+         //dtlast = dt_in[i];
          flags.push_back(OK);             // 0 good data
          arc.ngood++;
 

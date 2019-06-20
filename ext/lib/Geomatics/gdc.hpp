@@ -40,8 +40,8 @@
 /// detect discontinuities in the phase and, if possible, estimate their size.
 /// Output is a list of Rinex editing commands (see EditRinex or class RinexEditor).
 
-#ifndef GPSTK_CYCLESLIP_FIXER_INCLUDE
-#define GPSTK_CYCLESLIP_FIXER_INCLUDE
+#ifndef GPSTK_DISCONTINUITY_CORRECTOR_INCLUDE
+#define GPSTK_DISCONTINUITY_CORRECTOR_INCLUDE
 
 #include <iostream>
 #include <fstream>
@@ -695,4 +695,4 @@ protected:
 }  // end namespace gpstk
 
 //------------------------------------------------------------------------------------
-#endif   // GPSTK_CYCLESLIP_FIXER_INCLUDE
+#endif   // GPSTK_DISCONTINUITY_CORRECTOR_INCLUDE
