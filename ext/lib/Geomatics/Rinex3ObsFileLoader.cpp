@@ -1,3 +1,39 @@
+//============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 3.0 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
+//  
+//  Copyright 2004, The University of Texas at Austin
+//
+//============================================================================
+
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//=============================================================================
+
 /// @file Rinex3ObsFileLoader.cpp  Read a RINEX3 file, selecting, counting and saving
 /// obs data, then allow caller to access that data easily.
 
@@ -40,18 +76,13 @@ try {
    unsigned int i,j;
    double dt;
    string str;
-   // Rinex3ObsHeader from Rinex3ObsHeader class GPSTk class
-   // roh = rinex obs header
    Rinex3ObsHeader roh;
-   // Rinex3ObsData from Rinex3ObsData class in GPSTk
-   // rod = rinex obs data, and outrod = output rinex obs data?
    Rinex3ObsData rod, outrod;
    vector<string>::const_iterator vit;
    map< RinexSatID, vector<int> >::iterator soit;     // SatObsCountMap
    ostringstream oss, ossx;
 
    prevtime = CommonTime::BEGINNING_OF_TIME;
-   // setTimeSystem sets the method for internal variable m_timeSystem
    prevtime.setTimeSystem(TimeSystem::Any);
 
    // read the files
@@ -59,19 +90,15 @@ try {
    int nread(0);
    // loop over file names
    for(unsigned int nf=0; nf<filenames.size(); nf++) {
-      // set the file name to a particular string
       string filename(filenames[nf]);
-      // strip any blank values from beginning of file name
       StringUtils::stripLeading(filename);
-      // strip any blank values from end of file name
       StringUtils::stripTrailing(filename);
-      // If the file name list is empty, then an error in the file name
       if(filename.empty()) {
          oss << "Error - file name " << nf+1 << " is blank";
          continue;
       }
 
-      // declare and initialize onOrder to false
+      // this will look for records out of time-order
       bool onOrder(false);
       vector<int> nOrder;
       vector<CommonTime> timeOrder;
@@ -79,7 +106,6 @@ try {
       // read one file
       for(;;) {
          // open file ---------------------------------------------
-         // converts file name from a string to a vector of characters using c_str
          Rinex3ObsStream strm(filename.c_str());
          // if the obs stream is not successfully opened
          if(!strm.is_open()) {
@@ -93,13 +119,6 @@ try {
             strm >> roh;
 
             // update list of wanted obs types
-            // create iterator for looping through roh.mapObsTypes
-            // make it a const_iterator, so that it can be used for access only,
-            // and cannot be used for modification
-            // the roh.mapObsTypes is of type RinexObsMap, which has format
-            // map<string,RinexObsVec> == map<string,vector<RinexObsID>>
-            // A map where string values are the keys and vector<RinexObsID>
-            // are the values mapped to those strings
             map<string,vector<RinexObsID> >::const_iterator kt;
             for(kt = roh.mapObsTypes.begin(); kt != roh.mapObsTypes.end(); kt++) {
                for(i=0; i<kt->second.size(); i++) {
@@ -108,12 +127,7 @@ try {
                   string rot = kt->second[i].asString(); // 3-char id
                   string srot = sys + rot;               // 4-char id
 
-                  // is this ObsID Wanted? and should it be added?
-                  // NB RinexObsID::operator==() handles '*' but does not compare sys
-                  // NB input (loadObsID()) checks validity of ObsIDs
-
                   for(j=0; j<inputWantedObsTypes.size(); j++) {
-                     // Guessing wsrot = wanted string rinex obs type
                      string wsrot(inputWantedObsTypes[j]);
                      string wsys(wsrot.substr(0,1));
                      string wrot(wsrot.substr(1,3));
@@ -156,7 +170,6 @@ try {
          }
 
          // loop over epochs --------------------------------------
-         // while(1) always true, so only breaks out of loop with a break statement
          while(1) {
             try {
                strm >> rod;
@@ -216,7 +229,7 @@ try {
             if(rod.time < begDataTime) begDataTime = rod.time;
             if(rod.time > endDataTime) endDataTime = rod.time;
 
-            // The integer number of epochs is advanced
+            // count epochs
             nepochs++;
             if(nepochsToRead > -1 && nepochs >= nepochsToRead) break;
 
@@ -224,16 +237,13 @@ try {
             outrod.time = rod.time;
             outrod.clockOffset = rod.clockOffset;
             outrod.epochFlag = rod.epochFlag;
-            //?? outrod.auxHeader.clear();
+            // outrod.auxHeader.clear();
             outrod.numSVs = 0;
             outrod.obs.clear();
 
             // loop over satellites, counting data per ObsID
-            //vector<SatID> toSkip;
             Rinex3ObsData::DataMap::const_iterator it;
             for(it=rod.obs.begin(); it != rod.obs.end(); ++it) {
-               // Create new RinexSatID variable called sat, initialize with the
-               // it->first pointer from rod.obs current iteration
                RinexSatID sat(it->first);
 
                // is the sat excluded?  NB it does not exclude sat=(sys,-1)
@@ -241,17 +251,12 @@ try {
                   find(exSats.begin(), exSats.end(), sat) != exSats.end())
                      continue;
 
-               // Exract GNSS system from sat ID, creating new string variable sys
+               // 1-char string = system
                string sys(sat.toString().substr(0,1));
-               // Extract the observation types from the rinex obs header object
-               // roh corresponding to the GNSS system from the sat ID, creating
-               // new RinexObsID vector types
                const vector<RinexObsID> types(roh.mapObsTypes[sys]);
 
                // loop over obs
                for(i=0; i<it->second.size(); i++) {
-                  // if the obs data is equal to zero, then do not consider that
-                  // obs value (equivalent to missing data)
                   if(it->second[i].data == 0.0) continue;   // don't count missing
 
                   // combine the system and obs type into total rinex obs ID
@@ -259,13 +264,10 @@ try {
 
                   // is it wanted? nint is the index into
                   // wantedObsTypes, SatObsCountMap and outrod.obs
-                  // vectorindex returns the index of the value srot in wantedObsTypes
-                  // if it doesn't exist in that vector, return -1
                   nint = vectorindex(wantedObsTypes,srot);
                   if(nint == -1) continue;
 
                   // count the sat/obs
-                  // map<RinexSatID, std::vector<int>>
                   soit = SatObsCountMap.find(sat);
                   if(soit == SatObsCountMap.end()) {           // add the sat
                      vector<int> v(wantedObsTypes.size(),0);   // keep parallel
@@ -276,7 +278,6 @@ try {
 
                   // add it to outrod
                   if(saveData) {
-                     // if the satellite is not in outrod.obs
                      if(outrod.obs.find(sat) == outrod.obs.end()) {
                         vector<RinexDatum> v(wantedObsTypes.size());
                         outrod.obs[sat] = v;
@@ -287,7 +288,6 @@ try {
                }
             }
 
-            // if saving data, save
             if(saveData && outrod.obs.size() > 0) datastore.push_back(outrod);
 
             if(nepochsToRead > -1 && nepochs >= nepochsToRead) break;
@@ -389,9 +389,7 @@ try {
    unsigned short flag;
    GSatID sat;
    map<GSatID,unsigned int> indexForSat;
-   // satellite iterator
    map<GSatID,unsigned int>::const_iterator satit;
-   // observation iterator
    map<char,vector<string> >::const_iterator obsit;
 
    // add to existing SPList
@@ -405,9 +403,7 @@ try {
    }
 
    // for use in putting data into SatPass
-   // initialize observation iterator
    obsit = sysSPOT.begin();
-   // initialize/determine number of observations, from input sysSPOT map
    const int nobs(obsit->second.size());
    vector<double> data(nobs,0.0);
    vector<unsigned short> ssi(nobs,0), lli(nobs,0);
@@ -434,10 +430,6 @@ try {
          flag = SatPass::OK;
          for(i=0; i<jt->second.size(); i++) {
             int ind = jt->second[i];
-            //LOG(INFO) << " ind " << ind << " SPOT " << obsit->second[i]
-            //<< " R3OT " << (ind >= 0 ? wantedObsTypes[ind]:"NA")
-            //<< " data " << fixed << setprecision(4)
-            //<< (ind >= 0 ? it->second[ind].data : 0.0);
             if(ind < 0) {
                data[i] = 0.0;
                ssi[i] = lli[i] = 0;
@@ -447,8 +439,6 @@ try {
                data[i] = it->second[ind].data;
                ssi[i] = it->second[ind].ssi;
                lli[i] = it->second[ind].lli;
-               // NB so one bad obs makes the sat/epoch bad
-               // TD does loader keep epochs with no good data?
                if(::fabs(data[i]) < 1.e-8) flag = SatPass::BAD;
             }
          }
@@ -656,6 +646,4 @@ void dumpAllRinex3ObsTypes(ostream& os)
 }
 
 //------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------
-
 } // end namespace gpstk

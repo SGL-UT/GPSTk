@@ -1,3 +1,38 @@
+//============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 3.0 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
+//  
+//  Copyright 2004, The University of Texas at Austin
+//
+//============================================================================
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//=============================================================================
+
 /// @file WindowFilter.hpp
 
 ///    This class implements a statistical filter that uses 'windowed' averages. There
@@ -589,10 +624,6 @@ template<class T> int WindowFilter<T>::filter(const size_t i0, int dsize)
       xmid = xprev + 0.5*(xvec(i)-xprev);
       A.pave = ptrPast->Evaluate(xmid); //xvec(i));
       A.fave = ptrFuture->Evaluate(xmid); //xvec(i));
-      // slope
-      //A.slope = 0.5*(ptrPast->Slope() + ptrFuture->Slope());
-      //A.pslope = ptrPast->Slope();
-      //A.fslope = ptrFuture->Slope();
 
       //Dump the TSS, build the TSS manually, and print that
       //TEMPtestTSS {
@@ -679,15 +710,6 @@ template<class T> int WindowFilter<T>::filter(const size_t i0, int dsize)
          << " " << std::setw(osw) << A.fave
          << " " << std::setw(osw) << A.fsig
          << " " << std::setw(osw) << ::fabs(A.step/A.sigma) << std::endl;
-
-      // dump data and Evaluate()'s for both sides for entire 2-pane window
-      //if(twoSample) for(int ii=iminus; ii<iplus; ii++)
-      //   LOG(INFO) << "WLTEST " << std::fixed << std::setprecision(osp) << i
-      //   << " " << std::setw(osw) << xvec(i) << " -- " << std::setw(osw) << xvec(ii)
-      //   << " " << std::setw(osw) << dvec(ii)
-      //   << " " << ptrPast->Evaluate(xvec(ii))
-      //   << " " << ptrFuture->Evaluate(xvec(ii))
-      //   << " " << ptrFuture->Evaluate(xvec(ii)) - ptrPast->Evaluate(xvec(ii));
 
       // save in analvec
       analvec.push_back(A);
@@ -831,9 +853,6 @@ template<class T> int WindowFilter<T>::analyze(void)
       while(rat1d.size() > 2*halfwidth) { rat1d.pop_front(); sig1d.pop_front(); }
 
       // test min/max in ratio, sig and fmp of the form +,+,+,any,-,-,-
-      // 5/16 but subtract the 'any' first
-      // TD rmin and smax are not used
-      //bool rmin=true, smax=true;
       bool rmax=true, smin=true, fmp=true;
       int fmpcount(2*halfwidth);
       double fmp0(fminusp[halfwidth]);
@@ -876,12 +895,10 @@ template<class T> int WindowFilter<T>::analyze(void)
             // for 1-sample, test is sigma is at minimum - so 1st dif is -,-,-,*,+,+,+
             if(sig1d[j] > slim) smin=false;
             if(sig1d[j+halfwidth] < -slim) smin=false;
-            //if(sig1d[j] < -slim) smax=false;
-            //if(sig1d[j+halfwidth] > slim) smax=false;
          }
       }
 
-      // arrrrg TD make this configurable?
+      // make this configurable?
       if(2*halfwidth-fmpcount <= halfwidth/3) fmp=true;
 
       // define a weight [0,1], used in score but only if it passes first tests
@@ -1110,8 +1127,6 @@ template<class T> void WindowFilter<T>::dump(std::ostream& os, std::string tag)
             << " " << std::setw(osw) << analvec[j].fsig
                                                             // ratio:
             << " " << std::setw(osw) << ::fabs(analvec[j].step/analvec[j].sigma)
-            //<< " " << std::setw(osw) << analvec[j].pslope*1000.  // slope
-            //<< " " << std::setw(osw) << analvec[j].fslope*1000.  // slope
 
             // results(stats) string, slip string, analysis message
             << res << slip << (dumpAmsg ? analvec[j].msg : "") << std::endl;
