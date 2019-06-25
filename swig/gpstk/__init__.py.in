@@ -3,13 +3,15 @@
     an open source library to the satellite navigation community."""
 
 import os
+import warnings
 
 # Force load the libgpstk library, so the symbols will already be present, even if ld wouldn't find them.
 from ctypes import cdll
 try:
     lib_gpstk = cdll.LoadLibrary(os.path.join(os.path.split(__file__)[0], 'libgpstk.so.@GPSTK_VERSION@'))
 except:
-    print("Oh well, I tried...")
+    warnings.warn("Failed to import internal binaries.  Will attempt to use standard LD search path.", ImportWarning)
+
 #----------
 # Populate gpstk namespace
 #----------
