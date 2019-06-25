@@ -22,7 +22,7 @@ Details:
 
 import os
 
-from setuptools import setup
+from distutils.core import setup
 
 
 MODULE_DIR = os.path.split(__file__)[0]
