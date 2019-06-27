@@ -46,6 +46,7 @@
 #include "CivilTime.hpp"
 #include "OrbDataSysFactory.hpp"
 #include "OrbSysStore.hpp"
+#include "OrbSysGpsL_63.hpp"
 #include "StringUtils.hpp"
 #include "TimeString.hpp"
 
@@ -91,10 +92,10 @@ namespace gpstk
          else
             navtype = NavID(NavID::ntBeiDou_D2);
       }
-      
+
       //default return value
       bool itemWasAdded = false;
-      
+
          // See if there is already a message in the store that
          // matches this one.  If not, it needs to be added.
          // If so, there are several cases.
@@ -106,14 +107,14 @@ namespace gpstk
          //     -- If !storeAll and time of new object is earlier
          //        than time of existing object, delete existing
          //        object and add this object.
-         
+
       // Recall from documentation, first element is lower bound and second
       // element is the upper bound
       // Because of the return policy of map::lower_bound and map::upper_bound,
       // we only ever need to check to see if the lower bound is equal in time
       // to the input message.
       pair<const OrbDataSys*, const OrbDataSys*> bounds = findBounds(sidr,navtype,UID,ct);
-      
+
       // The following logic structure selects input states in order of
       // precedence, and acts accordingly. This structure is meant to emulate
       // the logic described above using a different set of input values
@@ -161,7 +162,7 @@ namespace gpstk
          insertToMsgMap(p);
          itemWasAdded = true;
       }
-      
+
       if (itemWasAdded)
       {
          if (!isSatSysPresent(sidr.system))
@@ -184,7 +185,7 @@ namespace gpstk
       const ObsID& oidr = ods->obsID;
       const SatID& sidr = ods->satID;
       NavID navtype = NavID(sidr,oidr);
-      
+
       NM_UID_MSG_MAP& mapr1 = msgMap[sidr];
       UID_MSG_MAP& mapr2 = mapr1[navtype];
       MSG_MAP& mapr3 = mapr2[UID];
@@ -722,7 +723,7 @@ namespace gpstk
          // If not at the end, retreat one item.
       if (debugLevel)
       {
-	      cout << "Time associated with pointer upper: " << printTime(upper->first,tform) << endl;
+          cout << "Time associated with pointer upper: " << printTime(upper->first,tform) << endl;
          cout << "Retreating one entry" << endl;
       }
       prior = upper;
@@ -741,7 +742,7 @@ namespace gpstk
       if (debugLevel) cout << "Attempting to retreating a second time" << endl;
       if (prior==mapr.begin())
       {
-	 if (debugLevel) cout << "...failed to retreat.  Already at beginning" << endl;
+     if (debugLevel) cout << "...failed to retreat.  Already at beginning" << endl;
          stringstream ss;
          ss << "Requested time is earlier than any message of requested type.";
          InvalidRequest ir(ss.str());
@@ -749,27 +750,27 @@ namespace gpstk
       }
       prior--;
       if (debugLevel) cout << "Returning object with xmit time: "
-	                   << printTime(prior->first,tform) << endl;
+                       << printTime(prior->first,tform) << endl;
       return prior->second;
    }
 
 //-----------------------------------------------------------------------------
-//  This instations of find() is different in that we want the most recently 
-//  seen unique data for a given UID across all SVs.  
+//  This instations of find() is different in that we want the most recently
+//  seen unique data for a given UID across all SVs.
 //   0.) Create an empty OrbDataSys* in which to store candidate pointer
 //   1.) For each SatId, for each NavID, pull up the list of messages
 //       correponding for the UID.
 //   2.) Scan the messages and compare the transmit time to the candidate.
 //       if no candidate, the message becomes the candidate.
 //       if message time < t and message time > candidate, message becomes candidate.
-// 
-   const OrbDataSys* 
+//
+   const OrbDataSys*
    OrbSysStore::find(const NavID& navtype,
-                     const unsigned long UID, 
+                     const unsigned long UID,
                      const CommonTime& t) const
          throw(InvalidRequest)
    {
-      const OrbDataSys* retVal = 0; 
+      const OrbDataSys* retVal = 0;
 
       SAT_NM_UID_MSG_MAP::const_iterator cit1;
       NM_UID_MSG_MAP::const_iterator cit2;
@@ -791,12 +792,12 @@ namespace gpstk
                for (cit4=mapr.begin();cit4!=mapr.end();cit4++)
                {
                   const CommonTime& ct = cit4->first;
-                  const OrbDataSys* odsp = cit4->second; 
+                  const OrbDataSys* odsp = cit4->second;
 
-                     // If we are past the time of interest, 
+                     // If we are past the time of interest,
                      // then we don't need to store this message.
                   if (ct>t) continue;
-                  if (retVal==0) 
+                  if (retVal==0)
                   {
                      retVal = odsp;
                   }
@@ -815,7 +816,7 @@ namespace gpstk
       if (retVal==0)
       {
          stringstream failString;
-         failString << "No Unique message ID " << UID 
+         failString << "No Unique message ID " << UID
                     << " prior to time " << printTime(t,"%02m/%02d/%4Y %02H:%02M:%02S")
                     << " was found in message store.";
          InvalidRequest ir(failString.str());
@@ -1019,7 +1020,7 @@ namespace gpstk
       lowerBound = msgmapr.lower_bound(t);
       lowerBound_min1 = (msgmapr.lower_bound(t))--;
       upperBound = msgmapr.upper_bound(t);
-      
+
          // Tranform lowerbound to be the last element that is less-than or
          // equal-to the input, rather than the default return of first element
          // not less-than. The lowerbound of a pre-first element input will be
@@ -1031,7 +1032,7 @@ namespace gpstk
          else
             lowerBound--;
       }
-      
+
          // Finally, assign values to the return pair
       if (lowerBound != msgmapr.end())
          boundingElements.first = lowerBound->second;
@@ -1092,7 +1093,7 @@ namespace gpstk
 
 //-----------------------------------------------------------------------------
    std::list<gpstk::NavID> OrbSysStore::getNavIDList() const
-   {     
+   {
          // Initially place the results in a set to enforce uniqueness.
       set<gpstk::NavID> retSet;
       SAT_NM_UID_MSG_MAP::const_iterator cit1;
@@ -1115,7 +1116,7 @@ namespace gpstk
          NavID nid = *cit3;
          retList.push_back(nid);
       }
-      return retList;     
+      return retList;
    }
 
 //-----------------------------------------------------------------------------
@@ -1166,5 +1167,34 @@ namespace gpstk
       }
    }
 
+   bool OrbSysStore::hasSignal(const SatID& sidr,
+                               const CommonTime& ct,
+                               const ObsID& oidr) const
+      throw (InvalidRequest)
+   {
+      bool retVal = false;
+      if (sidr.system!=SatID::systemGPS)
+      {
+         stringstream ss;
+         ss << "OrbSysStore::hasSignal() is only valid for GPS at this time.  sidr: " << sidr;
+         InvalidRequest ir(ss.str());
+         GPSTK_THROW(ir);
+      }
+
+      NavID nid(NavID::ntGPSLNAV);
+
+      unsigned long UID = 63;   // Unique ID for subframe 4, page 25.
+      try
+      {
+         const OrbDataSys* odsp = find(nid,UID,ct);
+         const OrbSysGpsL_63* o63p = dynamic_cast<const OrbSysGpsL_63*>(odsp);
+         retVal = o63p->hasSignal(sidr, ct, oidr);
+      }
+      catch (InvalidRequest ir)
+      {
+         GPSTK_THROW(ir);
+      }
+      return retVal;
+   }
 
 } // namespace
