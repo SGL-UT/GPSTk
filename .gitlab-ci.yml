@@ -152,6 +152,9 @@ deploy_debian:
     - debian
   script:
     - cd build
+    - export gpstk=`pwd`/install
+    - export PYTHONPATH=$gpstk/lib/python2.7/site-packages
+    - mkdir -p $PYTHONPATH
     - make install -j 4
   artifacts:
     paths:
