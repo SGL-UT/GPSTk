@@ -11,14 +11,16 @@
 #    $ build.sh -h
 #
 #----------------------------------------
-
 #----------------------------------------
 # Qué hora es? Dónde estamos? Y dónde vamos?
 #----------------------------------------
 
 source $(dirname "$BASH_SOURCE")/build_setup.sh
 
-user_install_prefix+="/gpstk"
+# or set gpstk=~/.local/gpstk
+#user_install_prefix+="/gpstk"
+user_install_prefix+="/gpstkDiffProc"
+
 system_install_prefix+="/gpstk"
 
 usage()
@@ -33,6 +35,9 @@ examples:
    $ sudo build.sh -s -b /tmp/qwe    # Build and install core to $system_install_prefix
    $ build.sh -tue     # Build, test and install core, external, and python bindings to $gpstk
    $ build.sh -vt  -- -DCMAKE_BUILD_TYPE=debug  # build for running debugger
+   # BWT: -O3 is forced for now (see below); or run with
+   # ./build.sh -evx -- -DCMAKE_CXX_FLAGS=-O3
+   #  which gives cmake -DCMAKE_CXX_FLAGS=-O3 -DBUILD_PYTHON=OFF -DBUILD_EXT=ON -DDEBUG_SWITCH=ON /local/Code/gpstk
 
 OPTIONS:
 
@@ -137,7 +142,6 @@ done
 
 shift $(($OPTIND - 1))
 LOG="$build_root"/build.log
-
 
 #----------------------------------------
 # Clean build directory
@@ -247,8 +251,11 @@ case `uname` in
         run cmake --build . --config Release
         ;;
     *)
+        args+=" -DCMAKE_CXX_FLAGS=-O3"  # BWT force optimization - cmake doesn't do it
+        echo "Run cmake $args $repo ##########################"
         run cmake $args $repo 
         run make all -j $num_threads
+        #run make all -j $num_threads VERBOSE=1   # BWT make make verbose
 esac
 
 
