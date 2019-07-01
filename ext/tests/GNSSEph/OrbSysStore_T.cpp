@@ -15,20 +15,20 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //============================================================================
@@ -82,16 +82,16 @@ public:
    CommonTime finalCT;
    int msgsExpectedToBeAdded;
 
-   ofstream out; 
+   ofstream out;
 
       // For testing the test
-   int debugLevel;   
+   int debugLevel;
 };
 
 OrbSysStore_T::
 OrbSysStore_T()
 {
-   debugLevel = 0; 
+   debugLevel = 0;
    init();
 }
 
@@ -102,7 +102,7 @@ createAndDump()
    TUDEF("OrbSysStore",currMethod);
 
       // Open an output stream specific to this navigation message type
-   std::string fs = getFileSep(); 
+   std::string fs = getFileSep();
    std::string tf(getPathTestTemp()+fs);
    std::string tempFile = tf + "test_output_OrbSysStore_T_" +
                          typeDesc+".out";
@@ -115,12 +115,12 @@ createAndDump()
       TURETURN();
    }
 
-      // All the navigation message data will be placed here. 
+      // All the navigation message data will be placed here.
    OrbSysStore oss;
-   oss.setDebugLevel(debugLevel); 
+   oss.setDebugLevel(debugLevel);
 
    bool passed = true;
-   unsigned long addSuccess = 0; 
+   unsigned long addSuccess = 0;
    list<PackedNavBits>::const_iterator cit;
    for (cit=dataList.begin();cit!=dataList.end();cit++)
    {
@@ -135,7 +135,7 @@ createAndDump()
          passed = false;
          std::stringstream ss;
          ss << "Load of OrbSysStore failed." << std::endl;
-         ss << ir; 
+         ss << ir;
          TUFAIL(ss.str());
       }
    }
@@ -143,30 +143,30 @@ createAndDump()
    if (count!=msgsExpectedToBeAdded)
    {
       stringstream ss;
-      ss << "Size of ObsSysStore incorrect after loading.  Expected " 
+      ss << "Size of ObsSysStore incorrect after loading.  Expected "
          << msgsExpectedToBeAdded << " actual size " << count;
       TUFAIL(ss.str());
-      passed = false; 
+      passed = false;
    }
    if (passed) TUPASS("Successfully loaded data to store.");
 
 //--- Test the isPresent( ) method --------------------------------
-   currMethod = typeDesc + " OrbSysStore.isPresent() "; 
+   currMethod = typeDesc + " OrbSysStore.isPresent() ";
    TUCSM(currMethod);
    SatID sidT1(1,SatID::systemGPS);
-   if (oss.isPresent(sidT1)) 
+   if (oss.isPresent(sidT1))
       TUPASS("");
    else
-      TUFAIL("Failed to find PRN 1 in store"); 
-   
+      TUFAIL("Failed to find PRN 1 in store");
+
    SatID sidT2(33,SatID::systemGPS);
    if (oss.isPresent(sidT2))
       TUFAIL("Reported PRN 33 as present (which is not true)");
-   else 
+   else
       TUPASS("");
-      
+
 //--- Test the getXXXTime( ) methods -------------------------
-   currMethod = typeDesc + " OrbSysStore.getXxxxTime() "; 
+   currMethod = typeDesc + " OrbSysStore.getXxxxTime() ";
    TUCSM(currMethod);
    try
    {
@@ -212,17 +212,17 @@ createAndDump()
    }
 
 //--- Test the find( ) method --------------------------------
-   currMethod = typeDesc + " OrbSysStore.find() "; 
+   currMethod = typeDesc + " OrbSysStore.find() ";
    TUCSM(currMethod);
    SatID sidTest(1,SatID::systemGPS);
    NavID nidTest(NavID::ntGPSLNAV);
    unsigned long UID = 56;
 
       // TOO EARLY
-   CommonTime testTime = CivilTime(2015,12,31,00,00,00,TimeSystem::GPS); 
+   CommonTime testTime = CivilTime(2015,12,31,00,00,00,TimeSystem::GPS);
    try
    {
-      const OrbDataSys* p = oss.find(sidTest,nidTest,UID,testTime); 
+      const OrbDataSys* p = oss.find(sidTest,nidTest,UID,testTime);
       stringstream ss;
       ss << "Failed to throw exception for time prior to all data";
       TUFAIL(ss.str());
@@ -233,10 +233,10 @@ createAndDump()
    }
 
       // Right on time (which is still too early)
-   testTime = CivilTime(2015,12,31,00,11,18,TimeSystem::GPS); 
+   testTime = CivilTime(2015,12,31,00,11,18,TimeSystem::GPS);
    try
    {
-      const OrbDataSys* p = oss.find(sidTest,nidTest,UID,testTime); 
+      const OrbDataSys* p = oss.find(sidTest,nidTest,UID,testTime);
       stringstream ss;
       ss << "Failed to throw exception for time prior to all data";
       TUFAIL(ss.str());
@@ -251,15 +251,15 @@ createAndDump()
    testTime = CivilTime(2015,12,31,02,00,00,TimeSystem::GPS);
    try
    {
-      const OrbDataSys* p = oss.find(sidTest,nidTest,UID,testTime); 
+      const OrbDataSys* p = oss.find(sidTest,nidTest,UID,testTime);
       if (p->beginValid==expTime) TUPASS("");
       else
       {
          stringstream ss;
          ss << "Wrong object found.  Expected xmit time "
             << printTime(expTime,"%02H:%02M:%02S")
-            << " found time " 
-            << printTime(p->beginValid,"%02H:%02M:%02S"); 
+            << " found time "
+            << printTime(p->beginValid,"%02H:%02M:%02S");
          TUFAIL(ss.str());
       }
    }
@@ -270,20 +270,20 @@ createAndDump()
       ss << ir << endl;
       TUFAIL(ss.str());
    }
-   
+
       // Should return object with xMit of 00:11:31
    testTime = CivilTime(2015,12,31,12,28,48,TimeSystem::GPS);
    try
    {
-      const OrbDataSys* p = oss.find(sidTest,nidTest,UID,testTime); 
+      const OrbDataSys* p = oss.find(sidTest,nidTest,UID,testTime);
       if (p->beginValid==expTime) TUPASS("");
       else
       {
          stringstream ss;
          ss << "Wrong object found.  Expected xmit time "
             << printTime(expTime,"%02H:%02M:%02S")
-            << " found time " 
-            << printTime(p->beginValid,"%02H:%02M:%02S"); 
+            << " found time "
+            << printTime(p->beginValid,"%02H:%02M:%02S");
          TUFAIL(ss.str());
       }
    }
@@ -300,15 +300,15 @@ createAndDump()
    testTime = CivilTime(2015,12,31,14,00,00,TimeSystem::GPS);
    try
    {
-      const OrbDataSys* p = oss.find(sidTest,nidTest,UID,testTime); 
+      const OrbDataSys* p = oss.find(sidTest,nidTest,UID,testTime);
       if (p->beginValid==expTime) TUPASS("");
       else
       {
          stringstream ss;
          ss << "Wrong object found.  Expected xmit time "
             << printTime(expTime,"%02H:%02M:%02S")
-            << " found time " 
-            << printTime(p->beginValid,"%02H:%02M:%02S"); 
+            << " found time "
+            << printTime(p->beginValid,"%02H:%02M:%02S");
          TUFAIL(ss.str());
       }
    }
@@ -320,24 +320,24 @@ createAndDump()
       TUFAIL(ss.str());
    }
 
-      // Test find() for most recent GPS UTC information (418) 
+      // Test find() for most recent GPS UTC information (418)
       // Should return object with xMit of 12:28:48
    currMethod = typeDesc + " OrbSysStore.find() across all SVs";
    TUCSM(currMethod);
    expTime =  CivilTime(2015,12,31,18,43,48,TimeSystem::GPS);
    testTime = CivilTime(2015,12,31,23,59,59,TimeSystem::GPS);
-   UID = 56; 
+   UID = 56;
    try
    {
-      const OrbDataSys* p = oss.find(nidTest,UID,testTime); 
+      const OrbDataSys* p = oss.find(nidTest,UID,testTime);
       if (p->beginValid==expTime) TUPASS("");
       else
       {
          stringstream ss;
          ss << "Wrong object found.  Expected xmit time "
             << printTime(expTime,"%02H:%02M:%02S")
-            << " found time " 
-            << printTime(p->beginValid,"%02H:%02M:%02S"); 
+            << " found time "
+            << printTime(p->beginValid,"%02H:%02M:%02S");
          TUFAIL(ss.str());
       }
    }
@@ -351,18 +351,18 @@ createAndDump()
 
    expTime =  CivilTime(2015,12,31,12,28,48,TimeSystem::GPS);
    testTime = CivilTime(2015,12,31,13,00,00,TimeSystem::GPS);
-   UID = 56; 
+   UID = 56;
    try
    {
-      const OrbDataSys* p = oss.find(nidTest,UID,testTime); 
+      const OrbDataSys* p = oss.find(nidTest,UID,testTime);
       if (p->beginValid==expTime) TUPASS("");
       else
       {
          stringstream ss;
          ss << "Wrong object found.  Expected xmit time "
             << printTime(expTime,"%02H:%02M:%02S")
-            << " found time " 
-            << printTime(p->beginValid,"%02H:%02M:%02S"); 
+            << " found time "
+            << printTime(p->beginValid,"%02H:%02M:%02S");
          TUFAIL(ss.str());
       }
    }
@@ -377,10 +377,10 @@ createAndDump()
       // Test findList(NavID,UID)
    currMethod = typeDesc + " OrbSysStore.findList(NavID,UID)";
    TUCSM(currMethod);
-   UID = 56; 
+   UID = 56;
    try
    {
-      list<const OrbDataSys*> pList = oss.findList(nidTest,UID); 
+      list<const OrbDataSys*> pList = oss.findList(nidTest,UID);
       TUASSERTE(int,5,pList.size());
    }
    catch (InvalidRequest ir)
@@ -423,6 +423,170 @@ createAndDump()
       cout << " " << *tt << endl;
    }
   */
+  //
+//-------------------------------------------------------------------------------
+//  Test hasSignal() method
+//
+      // Test data has a Subframe 4, page 25 from 12/31/2015 a little after 0200.
+      // Therefore, we'll set the test time-of-interest to 12/31/2015 0300.
+   CommonTime ctHS = CivilTime(2015,12,31,3,0,0.0,TimeSystem::Any);
+//
+//  Test Cases
+//
+//   SV Type   Signal     hasSignal      Exception
+//   -------   ---------  ---------      ---------
+//     IIA      L1 C/A         Y             N
+//     IIA      L1 P           Y             N
+//     IIA      L2 Y           Y             N
+//     IIA      L2 CM          N             N
+//     IIA      L1 M           N             N
+//     IIA      L5 I           N             N
+//     IIA      L1C            N             N
+//     IIR      L1 C/A         Y             N
+//     IIR      L1 P           Y             N
+//     IIR      L2 Y           Y             N
+//     IIR      L2 CM          N             N
+//     IIR      L1 M           N             N
+//     IIR      L5 I           N             N
+//     IIR      L1C            N             N
+//     IIR-M    L1 C/A         Y             N
+//     IIR-M    L1 P           Y             N
+//     IIR-M    L2 Y           Y             N
+//     IIR-M    L2 CM          Y             N
+//     IIR-M    L1 M           Y             N
+//     IIR-M    L5 I           N             N
+//     IIR-M    L1C            N             N
+//     IIF      L1 C/A         Y             N
+//     IIF      L1 P           Y             N
+//     IIF      L2 Y           Y             N
+//     IIF      L2 CM          Y             N
+//     IIF      L1 M           Y             N
+//     IIF      L5 I           Y             N
+//     IIF      L1C            N             N
+//     III      L1 C/A         Y             N
+//     III      L1 P           Y             N
+//     III      L2 Y           Y             N
+//     III      L2 CM          Y             N
+//     III      L1 M           Y             N
+//     III      L5 I           Y             N
+//     III      L1C            Y             N
+//  PRN==99     L1 C/A         -             Y
+//  Beidou      L1 C/A         -             Y
+//
+   currMethod = typeDesc + " OrbSysStore.hasSignal()";
+   TUCSM(currMethod);
+
+      // Define test control structure
+   struct hsTestData
+   {
+      int svNdx;
+      int obsNdx;
+      bool isPass;
+      bool throwException;
+   };
+   hsTestData hsTestArray[] =
+   {
+      // Block IIA tests
+      { 0, 0,  true, false },
+      { 0, 1,  true, false },
+      { 0, 2,  true, false },
+      { 0, 3, false, false },
+      { 0, 4, false, false },
+      { 0, 5, false, false },
+      { 0, 6, false, false },
+      // Block IIR tests
+      { 1, 0,  true, false },
+      { 1, 1,  true, false },
+      { 1, 2,  true, false },
+      { 1, 3, false, false },
+      { 1, 4, false, false },
+      { 1, 5, false, false },
+      { 1, 6, false, false },
+      // Block IIR-M tests
+      { 2, 0,  true, false },
+      { 2, 1,  true, false },
+      { 2, 2,  true, false },
+      { 2, 3,  true, false },
+      { 2, 4,  true, false },
+      { 2, 5, false, false },
+      { 2, 6, false, false },
+      // Block IIF tests
+      { 3, 0,  true, false },
+      { 3, 1,  true, false },
+      { 3, 2,  true, false },
+      { 3, 3,  true, false },
+      { 3, 4,  true, false },
+      { 3, 5,  true, false },
+      { 3, 6, false, false },
+      // GPS III tests
+      { 4, 0,  true, false },
+      { 4, 1,  true, false },
+      { 4, 2,  true, false },
+      { 4, 3,  true, false },
+      { 4, 4,  true, false },
+      { 4, 5,  true, false },
+      { 4, 6,  true, false },
+      // Invalid cases
+      { 5,  0, false,  true },
+      { 6,  0, false,  true }
+   };
+   int NCASES = 37;
+
+      // Define SVs of interest
+   SatID sidAr[] =
+   {
+      SatID(18,SatID::systemGPS),    // Block IIA.  None in system on 12/13/2015.  Had to hand-edit data
+      SatID(19,SatID::systemGPS),    // Block IIR.  SVN 59/PRN 19
+      SatID(17,SatID::systemGPS),    // Block IIR-M.  SVN 53/PRN 17
+      SatID( 9,SatID::systemGPS),    // Block IIF.  SVN 68/PRN 9
+      SatID( 1,SatID::systemGPS),    // GPS III.  None in system on 12/13/2015.  Had to hand-edit data
+      SatID(99,SatID::systemGPS),    // Invalid PRN ID.
+      SatID( 1,SatID::systemBeiDou), // Invalid System
+   };
+
+      // Define signals of interest
+   ObsID oidAr[] =
+   {
+      ObsID(ObsID::otUnknown, ObsID::cbL1, ObsID::tcCA),    // L1 C/A  - 0
+      ObsID(ObsID::otUnknown, ObsID::cbL1, ObsID::tcP),     // L1 P    - 1
+      ObsID(ObsID::otUnknown, ObsID::cbL1, ObsID::tcY),     // L2 Y    - 2
+      ObsID(ObsID::otUnknown, ObsID::cbL2, ObsID::tcC2LM),  // L2 CMCL - 3
+      ObsID(ObsID::otUnknown, ObsID::cbL1, ObsID::tcM),     // L1 M    - 4
+      ObsID(ObsID::otUnknown, ObsID::cbL5, ObsID::tcI5),    // L5 I    - 5
+      ObsID(ObsID::otUnknown, ObsID::cbL1, ObsID::tcG1D),   // L1C     - 6
+   };
+
+      // Execute the test cases
+   for (int ndx=0;ndx<NCASES;ndx++)
+   {
+      hsTestData& currTest = hsTestArray[ndx];
+      try
+      {
+         bool retVal = oss.hasSignal(sidAr[currTest.svNdx],
+                           ctHS,
+                           oidAr[currTest.obsNdx]);
+         TUASSERTE(bool,retVal,currTest.isPass);
+      }
+         // hasSignal() threw an exception
+      catch(InvalidRequest exc)
+      {
+         if (currTest.throwException)
+         {
+            stringstream ss;
+            ss << "Threw expected exception for case ";
+            ss << ndx;
+            TUPASS(ss.str());
+         }
+         else
+         {
+            stringstream ss;
+            ss << "Unexpectedly threw exception for case ";
+            ss << ndx;
+            ss << "," << exc;
+            TUFAIL(ss.str());
+         }
+      }
+   }
       // Dump the store
    currMethod = typeDesc + " OrbSysStore.dump()";
    TUCSM(currMethod);
@@ -457,7 +621,7 @@ void OrbSysStore_T::
 init()
 {
    dataList.clear();
-} 
+}
 
 void OrbSysStore_T::
 setUpLNAV()
@@ -470,7 +634,7 @@ setUpLNAV()
    finalCT   = CivilTime(2015,12,31,18,43,48,TimeSystem::GPS);
    msgsExpectedToBeAdded = 11;
 
-      // Literals for LNAV test data 
+      // Literals for LNAV test data
    const unsigned short LNavExCount = 20;
    const std::string LNavEx[] =
    {
@@ -483,7 +647,8 @@ setUpLNAV()
       "365,12/31/2015,00:11:24,1877,346284,1,63,518, 0x22C3550A, 0x1C2E6D4C, 0x14A1B3B8, 0x1EFD15DB, 0x3F4E4029, 0x2843301D, 0x0F1B6C25, 0x2C6E2942, 0x2EFBFAA5, 0x0F400B20", // not added
       "365,12/31/2015,12:28:48,1877,390528,1,63,418, 0x22C3550A, 0x1FC82C44, 0x1E037FFB, 0x3FC08E66, 0x3C7FC45D, 0x0000014E, 0x00000029, 0x00641562, 0x044EC0EB, 0x044000D8", // added
       "365,12/31/2015,12:28:54,1877,390534,1,63,518, 0x22C3550A, 0x1FC84D34, 0x14A1B582, 0x243D154A, 0x3F4DC023, 0x28432F8B, 0x0F198ACA, 0x2C6EA741, 0x2EC76168, 0x0F400C54", // not added
-      "365,12/31/2015,00:02:18,1877,345738,1,63,425, 0x22C3550A, 0x1C230C58, 0x1FEE6CC4, 0x2AEAEEC0, 0x26A66A75, 0x2A666666, 0x26EEEE53, 0x2AEA4013, 0x0000003F, 0x0000006C", // added
+                                             // Hand edited this column from 0x1FEE6CC4, to 0x1FF26CC4
+      "365,12/31/2015,00:02:18,1877,345738,1,63,425, 0x22C3550A, 0x1C230C58, 0x1FF26CC4, 0x2AEAEEC0, 0x26A66A75, 0x2A666666, 0x26EEEE53, 0x2AEA4013, 0x0000003F, 0x0000006C", // added
       "365,12/31/2015,00:02:24,1877,345744,1,63,525, 0x22C3550A, 0x1C232DD0, 0x1CDED544, 0x00000FDE, 0x00000029, 0x00000016, 0x00000029, 0x00000016, 0x00000029, 0x000000E0", // added
       "365,12/31/2015,00:11:18,1877,346278,2,61,418, 0x22C3550A, 0x1C2E4CC4, 0x1E037FFB, 0x3FC08E66, 0x3C7FC45D, 0x0000014E, 0x00000029, 0x005ED55B, 0x044EC0FD, 0x04400054", // added
       "365,12/31/2015,18:43:48,1877,413028,2,61,418, 0x22C3550A, 0x219CECF0, 0x1E037FFB, 0x3FC08E66, 0x3C7FC45D, 0x3FFFFE7B, 0x3FFFFFFC, 0x3F641555, 0x044EC0D4, 0x044000B4", // added
@@ -516,13 +681,13 @@ setUpCNAV()
    init();
 
       // Define state variables for writing an CNAV data
-   gpstk::ObsID currObsID(gpstk::ObsID::otNavMsg, 
-                    gpstk::ObsID::cbL2, 
+   gpstk::ObsID currObsID(gpstk::ObsID::otNavMsg,
+                    gpstk::ObsID::cbL2,
                     gpstk::ObsID::tcC2LM);
    msgsExpectedToBeAdded = 8; // FIX: unsure on this count, should be edited if this test is ever fully implemented
    typeDesc = "GPS_CNAV";
 
-      // Literals for CNAV test data 
+      // Literals for CNAV test data
    const unsigned short CNavExCount = 8;
    const std::string CNavEx[] =
    {
@@ -563,7 +728,7 @@ setUpGLO()
    OrbSysStore_T::
    getPnbLNav(const gpstk::ObsID& oidr, const std::string& str)
                           throw(gpstk::InvalidParameter)
-   {      
+   {
       try
       {
             // Split the line into words separated by commas.
@@ -575,7 +740,7 @@ setUpGLO()
               << ", [0]: '" << words[0]
               << "', [numWords-1]: '" << words[numWords-1] << "'." << endl;
          */
-         if (numWords!=18) 
+         if (numWords!=18)
          {
             stringstream ss;
             ss << "Line format problem. ";
@@ -588,15 +753,15 @@ setUpGLO()
          int week = gpstk::StringUtils::asInt(words[3]);
          double sow = gpstk::StringUtils::asDouble(words[4]);
          CommonTime ct = GPSWeekSecond(week,sow,TimeSystem::GPS);
-         
+
             // Convert the PRN to a SatID
          int prn = StringUtils::asInt(words[5]);
          SatID sid(prn,SatID::systemGPS);
 
             // Get the message ID
-         int msgID = StringUtils::asInt(words[7]); 
+         int msgID = StringUtils::asInt(words[7]);
 
-         PackedNavBits pnb(sid,oidr,ct); 
+         PackedNavBits pnb(sid,oidr,ct);
 
             // Load the raw data
          int offset = 8;
@@ -604,13 +769,13 @@ setUpGLO()
          {
             int ndx = i + offset;
             string hexStr = StringUtils::strip(words[ndx]);
-            string::size_type n = hexStr.find("x"); 
+            string::size_type n = hexStr.find("x");
             hexStr = hexStr.substr(n+1);
             unsigned long bits = StringUtils::x2uint(hexStr);
             pnb.addUnsignedLong(bits,30,1);
          }
          pnb.trimsize();
-         return pnb; 
+         return pnb;
       }
       catch (StringUtils::StringException)
       {
@@ -618,12 +783,12 @@ setUpGLO()
          ss << "String conversion error:'" << str << "'.";
          InvalidParameter ip(ss.str());
          GPSTK_THROW(ip);
-      }  
+      }
    }
 
-   
+
    //-------------------------------------------------
-   gpstk::PackedNavBits 
+   gpstk::PackedNavBits
    OrbSysStore_T::
    getPnbCNav(const gpstk::ObsID& oidr, const std::string& str)
              throw(gpstk::InvalidParameter)
@@ -634,7 +799,7 @@ setUpGLO()
             // There should be 18 words
          vector<string> words = StringUtils::split(str,',');
          unsigned short numWords = words.size();
-         if (numWords!=18) 
+         if (numWords!=18)
          {
             stringstream ss;
             ss << "Line format problem. ";
@@ -647,15 +812,15 @@ setUpGLO()
          int week = gpstk::StringUtils::asInt(words[3]);
          double sow = gpstk::StringUtils::asDouble(words[4]);
          CommonTime ct = GPSWeekSecond(week,sow,TimeSystem::GPS);
-         
+
             // Convert the PRN to a SatID
          int prn = StringUtils::asInt(words[5]);
          SatID sid(prn,SatID::systemGPS);
 
             // Get the message ID
-         int msgID = StringUtils::asInt(words[7]); 
+         int msgID = StringUtils::asInt(words[7]);
 
-         PackedNavBits pnb(sid,oidr,ct); 
+         PackedNavBits pnb(sid,oidr,ct);
 
             // Load the raw data
             // Words 0-8 have 32 bits.
@@ -667,7 +832,7 @@ setUpGLO()
          {
             int ndx = i + offset;
             string hexStr = StringUtils::strip(words[ndx]);
-            string::size_type n = hexStr.find("x"); 
+            string::size_type n = hexStr.find("x");
             hexStr = hexStr.substr(n+1);
             unsigned long bits = StringUtils::x2uint(hexStr);
             if (offset<9) pnb.addUnsignedLong(bits,32,1);
@@ -686,24 +851,24 @@ setUpGLO()
          ss << "String conversion error:'" << str << "'.";
          InvalidParameter ip(ss.str());
          GPSTK_THROW(ip);
-      }  
+      }
    }
 
 int main()
 {
   unsigned errorTotal = 0;
-  
+
   OrbSysStore_T testClass;
 
   testClass.setUpLNAV();
   errorTotal += testClass.createAndDump();
-  
+
   testClass.setUpCNAV();
   //errorTotal += testClass.createAndDump();
-  
+
   testClass.setUpBDS();
   //errorTotal += testClass.writeReadTest();
-  
+
   testClass.setUpGLO();
   //errorTotal += testClass.writeReadTest();
 
