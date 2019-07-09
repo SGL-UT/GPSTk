@@ -9,7 +9,8 @@ import warnings
 from ctypes import cdll
 try:
     lib_gpstk = cdll.LoadLibrary(os.path.join(os.path.split(__file__)[0], 'libgpstk.so.@GPSTK_VERSION@'))
-except:
+except Exception as ex:
+    warnings.warn(ex.message)
     warnings.warn("Failed to import internal binaries.  Will attempt to use standard LD search path.", ImportWarning)
 
 #----------
