@@ -32,6 +32,9 @@ override_dh_auto_configure:
 	 -DUSE_RPATH=OFF \
 	 -DCMAKE_BUILD_TYPE=relwithdebinfo
 
+# The python package tries to install files to user local.  Allow it for now.
+override_dh_usrlocal:
+
 .PHONY: override_dh_strip
 override_dh_strip:
 	dh_strip --dbg-package=$(shell grep -o "Package: libgpstk[0-9.]\+-dbg" debian/control | cut -d " " -f 2)
