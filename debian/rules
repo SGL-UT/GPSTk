@@ -29,6 +29,7 @@ override_dh_auto_configure:
 	 -DBUILD_PYTHON=ON \
 	 -DPYTHON_EXECUTABLE=/usr/bin/python \
 	 -DPYTHON_INSTALL_PREFIX=$(CURDIR)/debian/python-gpstk \
+	 -DBUILD_FOR_PACKAGE_SWITCH=ON \
 	 -DUSE_RPATH=OFF \
 	 -DCMAKE_BUILD_TYPE=relwithdebinfo
 
