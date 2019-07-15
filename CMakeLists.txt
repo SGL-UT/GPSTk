@@ -34,9 +34,23 @@ option( COVERAGE_SWITCH "HELP: COVERAGE_SWITCH: SWITCH, Default = OFF, Turn on c
 option( BUILD_PYTHON "HELP: BUILD_PYTHON: SWITCH, Default = OFF, Turn on processing of python extension package." OFF )
 option( USE_RPATH "HELP: USE_RPATH: SWITCH, Default= ON, Set RPATH in libraries and binaries." ON )
 option( PIP_WHEEL_SWITCH "HELP: PIP_WHEEL_SWITCH: SWITCH, Default= OFF, Build a PIP installable wheel." OFF )
+option( BUILD_FOR_PACKAGE_SWITCH "HELP: BUILD_FOR_PACKAGE_SWITCH: SWITCH, Default= OFF, Modify python install paths assuming creation of deb/rpm." OFF )
+option( PYTHON_USER_INSTALL "HELP: PYTHON_USER_INSTALL: SWITCH, Default= OFF, Install python in user mode." OFF )
+
+if( PYTHON_USER_INSTALL AND !BUILD_PYTHON )
+    message( WARNING "Combination of PYTHON_USER_INSTALL=ON and BUILD_PYTHON=OFF is not allowed. " )
+    message( WARNING "Setting BUILD_PYTHON = TRUE" )
+    set( BUILD_PYTHON TRUE )
+endif()
 
 if( PIP_WHEEL_SWITCH AND !BUILD_PYTHON )
     message( WARNING "Combination of PIP_WHEEL_SWITCH=ON and BUILD_PYTHON=OFF is not allowed. Wheels depend on python module." )
+    message( WARNING "Setting BUILD_PYTHON = TRUE" )
+    set( BUILD_PYTHON TRUE )
+endif()
+
+if( BUILD_FOR_PACKAGE_SWITCH AND !BUILD_PYTHON )
+    message( WARNING "Combination of BUILD_FOR_PACKAGE_SWITCH=ON and BUILD_PYTHON=OFF is not allowed. Packages depend on python module." )
     message( WARNING "Setting BUILD_PYTHON = TRUE" )
     set( BUILD_PYTHON TRUE )
 endif()

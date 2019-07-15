@@ -130,8 +130,17 @@ set( GPSTK_ROOT_PY_IN "${CMAKE_CURRENT_SOURCE_DIR}/gpstk/__init__.py.in" )
 set( GPSTK_ROOT_PY    "${MODULE_PATH}/gpstk/__init__.py" )
 configure_file( ${GPSTK_ROOT_PY_IN} ${GPSTK_ROOT_PY} )
 
+
 # Note: For setup.py install options, see https://docs.python.org/2/install/
-install( CODE "execute_process(COMMAND ${PYTHON_EXECUTABLE} ${SETUP_PY} install --root=${PYTHON_INSTALL_PREFIX} WORKING_DIRECTORY ${MODULE_PATH})" )
+if( BUILD_FOR_PACKAGE_SWITCH )
+    # If building for a package, use the "root" switch to imitate the system package path
+    install( CODE "execute_process(COMMAND ${PYTHON_EXECUTABLE} ${SETUP_PY} install --root=${PYTHON_INSTALL_PREFIX} WORKING_DIRECTORY ${MODULE_PATH})" )
+elseif( PYTHON_USER_INSTALL )
+    # If performing a user-install, use the `--user` flag, otherwise it may not create the correct directores.
+    install( CODE "execute_process(COMMAND ${PYTHON_EXECUTABLE} ${SETUP_PY} install --user WORKING_DIRECTORY ${MODULE_PATH})" )
+else()
+    install( CODE "execute_process(COMMAND ${PYTHON_EXECUTABLE} ${SETUP_PY} install --prefix=${PYTHON_INSTALL_PREFIX} WORKING_DIRECTORY ${MODULE_PATH})" )
+endif()
 
 if( PIP_WHEEL_SWITCH )
     add_custom_target(swig-make-wheel ALL

@@ -120,6 +120,7 @@ while getopts "hb:cdepi:j:xnP:sutTgv" OPTION; do
         u) install=1
            install_prefix=${gpstk:-$user_install_prefix}
            python_install=$user_python_install
+           user_install=1
            ;;
         s) install=1
            install_prefix=$system_install_prefix
@@ -232,6 +233,7 @@ fi
 args+=${install_prefix:+" -DCMAKE_INSTALL_PREFIX=$install_prefix"}
 args+=${build_ext:+" -DBUILD_EXT=ON"}
 args+=${verbose:+" -DDEBUG_SWITCH=ON"}
+args+=${user_install:+" -DPYTHON_USER_INSTALL=ON"}
 args+=${test_switch:+" -DTEST_SWITCH=ON"}
 args+=${coverage_switch:+" -DCOVERAGE_SWITCH=ON"}
 args+=${build_docs:+" --graphviz=$build_root/doc/graphviz/gpstk_graphviz.dot"}
