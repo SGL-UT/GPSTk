@@ -44,9 +44,15 @@
 #include <set>
 
 #include "CivilTime.hpp"
+#include "CommonTime.hpp"
+#include "Exception.hpp"
 #include "OrbDataSysFactory.hpp"
 #include "OrbSysStore.hpp"
 #include "OrbSysGpsL_63.hpp"
+#include "OrbSysGpsC_33.hpp"
+#include "OrbSysGpsL_56.hpp"
+#include "OrbDataUTC.hpp"
+#include "NavID.hpp"
 #include "StringUtils.hpp"
 #include "TimeString.hpp"
 
@@ -484,6 +490,60 @@ namespace gpstk
          }
       }
    } // end OrbSysStore::dumpTerseTimeOrdered
+
+//-----------------------------------------------------------------------------
+// Given a navigaton message type and a time, attempt to find
+// the UTC data for the appropriate system at that time.   The
+// OrbDataUTC interface provides a generalized means to access
+// the UTC data.   If the find fails, throw InvalidRequest.
+
+    const OrbDataUTC* OrbSysStore::findUtcData(const NavID& nidr,
+                                               const CommonTime& ct)
+       throw(InvalidRequest)
+    {
+          // Determine the appropriate unique ID based on the
+          // navigation message type.
+       unsigned long uid = 0;
+       switch (nidr.navType)
+       {
+          case NavID::ntGPSLNAV:   { uid = 56; break; }
+          case NavID::ntGPSCNAVL2: { uid = 33; break; }
+          case NavID::ntGPSCNAVL5: { uid = 33; break; }
+          // ADD OTHER NAVIGATION MESSAGES HERE.
+       }
+
+          // Attempt to find an appropriate message.
+          // If no message is found, throw an exception
+       try
+       {
+          const OrbDataSys* ods  = find(nidr,uid,ct);
+          if (ods)
+          {
+              switch(nidr.navType)
+              {
+                    // Cast the return as an OrbDataUTC* so the user can
+                    // access the data via this interface.
+                 case NavID::ntGPSLNAV:   { const OrbSysGpsL_56* retVal = dynamic_cast<const OrbSysGpsL_56*>(ods); return retVal; break; }
+                 case NavID::ntGPSCNAVL2: { const OrbSysGpsC_33* retVal = dynamic_cast<const OrbSysGpsC_33*>(ods); return retVal; break; }
+                 case NavID::ntGPSCNAVL5: { const OrbSysGpsC_33* retVal = dynamic_cast<const OrbSysGpsC_33*>(ods); return retVal; break; }
+              }
+          }
+       }
+       catch (InvalidRequest ir)
+       {
+          GPSTK_RETHROW(ir);
+       }
+
+          // Should never reach this point.   Leave an exception
+          // so if that's incorrect, we receive a clear error as
+          // opposed to some mysterious crash.
+       stringstream ss;
+       ss << "OrbSysStore::findUtcData(). ";
+       ss << "  Unexpected error. ";
+       InvalidRequest ir(ss.str());
+       GPSTK_THROW(ir);
+    }
+
 
 //-----------------------------------------------------------------------------
    void OrbSysStore::dumpContents(std::ostream& s,
