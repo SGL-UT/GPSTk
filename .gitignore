@@ -1,12 +1,15 @@
 # Editor backup files:
 *~
 .*.swp
+.idea
 
 # Python compiled byte-code
 *.pyc
 
 # build directories
 build*/
+cmake-build-debug/
+gpstk.egg-info/
 
 # OS/X File system droppings
 *.DS_Store

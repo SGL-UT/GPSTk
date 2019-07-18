@@ -28,9 +28,13 @@ override_dh_auto_configure:
 	 -DBUILD_EXT=ON \
 	 -DBUILD_PYTHON=ON \
 	 -DPYTHON_EXECUTABLE=/usr/bin/python \
-	 -DPYTHON_INSTALL_PREFIX=$(CURDIR)/debian/python-gpstk/usr \
-         -DUSE_RPATH=OFF \
-         -DCMAKE_BUILD_TYPE=relwithdebinfo
+	 -DPYTHON_INSTALL_PREFIX=$(CURDIR)/debian/python-gpstk \
+	 -DBUILD_FOR_PACKAGE_SWITCH=ON \
+	 -DUSE_RPATH=OFF \
+	 -DCMAKE_BUILD_TYPE=relwithdebinfo
+
+# The python package tries to install files to user local.  Allow it for now.
+override_dh_usrlocal:
 
 .PHONY: override_dh_strip
 override_dh_strip:

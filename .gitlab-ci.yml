@@ -156,6 +156,7 @@ deploy_debian:
     - export PYTHONPATH=$gpstk/lib/python2.7/site-packages
     - mkdir -p $PYTHONPATH
     - make install -j 4
+    - python -c "import gpstk"
   artifacts:
     paths:
     - build/install
@@ -168,7 +169,11 @@ deploy_redhat:
     - redhat
   script:
     - cd build
+    - export gpstk=`pwd`/install
+    - export PYTHONPATH=$gpstk/lib/python2.7/site-packages
+    - mkdir -p $PYTHONPATH
     - make install -j 4
+    - python -c "import gpstk"
   artifacts:
     paths:
     - build/install
@@ -211,9 +216,9 @@ package_debian:
   stage: package
   tags:
     - debian
-  only:
-    refs:
-      - master
+#  only:
+#    refs:
+#      - master
   script:
     - rm -rf ../*.deb
     - dpkg-buildpackage -us -uc -d
