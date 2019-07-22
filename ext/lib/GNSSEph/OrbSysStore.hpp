@@ -50,6 +50,7 @@
 #include "CommonTime.hpp"
 #include "Exception.hpp"
 #include "OrbDataSys.hpp"
+#include "OrbDataUTC.hpp"
 #include "PackedNavBits.hpp"
 #include "NavID.hpp"
 #include "SatID.hpp"
@@ -219,6 +220,10 @@ namespace gpstk
                                                                  const NavID& navtype,
                                                                  const unsigned long UID,
                                                                  const CommonTime& t) const;
+
+      const OrbDataUTC* findUtcData(const NavID& nidr,
+                                    const CommonTime& ct)
+         throw(InvalidRequest);
 
       /// Return a list of SatID objects representing the satellites that
       /// are contained in the store.

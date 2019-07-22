@@ -44,6 +44,8 @@
 #include "Exception.hpp"
 #include "GPSWeekSecond.hpp"
 #include "OrbDataSys.hpp"
+#include "OrbSysGpsL_56.hpp"
+#include "OrbSysGpsC_33.hpp"
 #include "OrbSysStore.hpp"
 #include "SystemTime.hpp"
 #include "TimeString.hpp"
@@ -62,7 +64,8 @@ public:
 
    void init();
 
-   unsigned createAndDump();
+   unsigned createAndDump_LNAV();
+   unsigned createAndDump_CNAV();
    void setUpLNAV();
    void setUpCNAV();
    void setUpBDS();
@@ -96,7 +99,7 @@ OrbSysStore_T()
 }
 
 unsigned OrbSysStore_T::
-createAndDump()
+createAndDump_LNAV()
 {
    string currMethod = typeDesc + " create/store OrbDataSys objects";
    TUDEF("OrbSysStore",currMethod);
@@ -587,6 +590,194 @@ createAndDump()
          }
       }
    }
+
+   //
+   // Test findUtcData() method
+   //
+   CommonTime ctUtc = CivilTime(2015,12,31,13,0,0.0,TimeSystem::GPS);   // 01:00:00 of day.
+
+   double TOLERANCE = 1e-12;
+
+      // Calculate an assmed truth value.
+   double A0Assumed =  9.31322575e-10;
+   double A1Assumed =  4.44089210e-15;
+   CommonTime totAssumed = CivilTime(2016,1,2,19,50,24,TimeSystem::GPS);
+   double assumedOffset = A0Assumed + A1Assumed * (ctUtc - totAssumed);
+
+   NavID nidUtc(NavID::ntGPSLNAV);
+   try
+   {
+      const OrbDataUTC* odu = oss.findUtcData(nidUtc,ctUtc);
+      double testOffset = odu->getUtcOffsetModLeapSec(ctUtc);
+      TUASSERTFEPS(assumedOffset, testOffset, TOLERANCE);
+         //
+      const OrbSysGpsL_56* p56 = dynamic_cast<const OrbSysGpsL_56*>(odu);
+   }
+   catch (InvalidRequest ir)
+   {
+      stringstream ss;
+      ss << "Failed to find when expected to success.  ";
+      ss << ir;
+      TUFAIL(ss.str());
+   }
+
+      // Test a too early value.  Should throw an exception
+   ctUtc = CivilTime(2015,12,30,0,0,0.0,TimeSystem::GPS);   // Time too early
+   try
+   {
+       const OrbDataUTC* odu = oss.findUtcData(nidUtc,ctUtc);
+       TUFAIL("Returned a value when time is prior to data.");
+   }
+   catch (InvalidRequest)
+   {
+      TUPASS("Threw expected exception when time is prior to data.");
+   }
+
+      // Dump the store
+   currMethod = typeDesc + " OrbSysStore.dump()";
+   TUCSM(currMethod);
+   oss.dump(out);
+
+      // Dump terse (one-line) summaries
+   oss.dump(out,1);
+
+      // Dump all contents
+   oss.dump(out,2);
+
+      // Dump terese in time order
+   oss.dump(out,3);
+
+      // Clear the store
+   currMethod = typeDesc + " OrbSysStore.clear()";
+   TUCSM(currMethod);
+
+   oss.clear();
+   if (oss.size()!=0)
+   {
+      TUFAIL("Failed to entirely clear OrbSysStore.");
+   }
+   else TUPASS("");
+
+   out.close();
+
+   TURETURN();
+}
+
+unsigned OrbSysStore_T::
+createAndDump_CNAV()
+{
+   string currMethod = typeDesc + " create/store OrbDataSys objects";
+   TUDEF("OrbSysStore",currMethod);
+
+      // Open an output stream specific to this navigation message type
+   std::string fs = getFileSep();
+   std::string tf(getPathTestTemp()+fs);
+   std::string tempFile = tf + "test_output_OrbSysStore_T_" +
+                         typeDesc+".out";
+   out.open(tempFile.c_str(),std::ios::out);
+   if (!out)
+   {
+      stringstream ss;
+      ss << "Could not open file " << tempFile << " for output.";
+      TUFAIL(ss.str());
+      TURETURN();
+   }
+
+      // All the navigation message data will be placed here.
+   OrbSysStore oss;
+   oss.setDebugLevel(debugLevel);
+
+   bool passed = true;
+   unsigned long addSuccess = 0;
+   list<PackedNavBits>::const_iterator cit;
+   for (cit=dataList.begin();cit!=dataList.end();cit++)
+   {
+      try
+      {
+         const PackedNavBits& pnbr = *cit;
+         bool retval = oss.addMessage(pnbr);
+         if (retval) addSuccess++;
+      }
+      catch(gpstk::InvalidRequest ir)
+      {
+         passed = false;
+         std::stringstream ss;
+         ss << "Load of OrbSysStore failed." << std::endl;
+         ss << ir;
+         TUFAIL(ss.str());
+      }
+   }
+   unsigned long count = oss.size();
+   if (count!=msgsExpectedToBeAdded)
+   {
+      stringstream ss;
+      ss << "Size of ObsSysStore incorrect after loading.  Expected "
+         << msgsExpectedToBeAdded << " actual size " << count;
+      TUFAIL(ss.str());
+      passed = false;
+   }
+   if (passed) TUPASS("Successfully loaded data to store.");
+
+    //
+   // Test findUtcData() method
+   //
+   CommonTime ctUtc = CivilTime(2016,3,7,1,0,0.0,TimeSystem::GPS);   // 00:00:00 of day.
+
+   double TOLERANCE = 1e-12;
+
+      // Calculate an assmed truth value.
+   double A0Assumed =  5.8207660913e-10;
+   double A1Assumed =  0.00;
+   CommonTime totAssumed = CivilTime(2016,3,6,12,45,04,TimeSystem::GPS);
+   double assumedOffset = A0Assumed + A1Assumed * (ctUtc - totAssumed);
+
+   NavID nidUtcL2(NavID::ntGPSCNAVL2);
+   try
+   {
+      const OrbDataUTC* odu = oss.findUtcData(nidUtcL2,ctUtc);
+      double testOffset = odu->getUtcOffsetModLeapSec(ctUtc);
+      TUASSERTFEPS(assumedOffset, testOffset, TOLERANCE);
+         //
+      const OrbSysGpsC_33* p33 = dynamic_cast<const OrbSysGpsC_33*>(odu);
+   }
+   catch (InvalidRequest ir)
+   {
+      stringstream ss;
+      ss << "Failed to find when expected to success.  ";
+      ss << ir;
+      TUFAIL(ss.str());
+   }
+
+        //L5 check
+   NavID nidUtcL5(NavID::ntGPSCNAVL5);
+   try
+   {
+      const OrbDataUTC* odu = oss.findUtcData(nidUtcL5,ctUtc);
+      double testOffset = odu->getUtcOffsetModLeapSec(ctUtc);
+      TUASSERTFEPS(assumedOffset, testOffset, TOLERANCE);
+         //
+      const OrbSysGpsC_33* p33 = dynamic_cast<const OrbSysGpsC_33*>(odu);
+   }
+   catch (InvalidRequest ir)
+   {
+      stringstream ss;
+      ss << "Failed to find when expected to success.  ";
+      ss << ir;
+      TUFAIL(ss.str());
+   }
+
+      // Test a too early value.  Should throw an exception
+   ctUtc = CivilTime(2016,3,6,0,0,0.0,TimeSystem::GPS);   // Time too early
+   try
+   {
+       const OrbDataUTC* odu = oss.findUtcData(nidUtcL2,ctUtc);
+       TUFAIL("Returned a value when time is prior to data.");
+   }
+   catch (InvalidRequest)
+   {
+      TUPASS("Threw expected exception when time is prior to data.");
+   }
+
       // Dump the store
    currMethod = typeDesc + " OrbSysStore.dump()";
    TUCSM(currMethod);
@@ -681,10 +872,13 @@ setUpCNAV()
    init();
 
       // Define state variables for writing an CNAV data
-   gpstk::ObsID currObsID(gpstk::ObsID::otNavMsg,
+   gpstk::ObsID L2ObsID(gpstk::ObsID::otNavMsg,
                     gpstk::ObsID::cbL2,
                     gpstk::ObsID::tcC2LM);
-   msgsExpectedToBeAdded = 8; // FIX: unsure on this count, should be edited if this test is ever fully implemented
+   gpstk::ObsID L5ObsID(gpstk::ObsID::otNavMsg,
+                    gpstk::ObsID::cbL5,
+                    gpstk::ObsID::tcI5);
+   msgsExpectedToBeAdded = 4;
    typeDesc = "GPS_CNAV";
 
       // Literals for CNAV test data
@@ -705,7 +899,9 @@ setUpCNAV()
    gpstk::PackedNavBits msg;
    for (unsigned short i=0; i<CNavExCount; i++)
    {
-      msg = getPnbCNav(currObsID, CNavEx[i]);
+      msg = getPnbCNav(L2ObsID, CNavEx[i]);
+      dataList.push_back(msg);
+      msg = getPnbCNav(L5ObsID, CNavEx[i]);
       dataList.push_back(msg);
    }
    return;
@@ -861,10 +1057,10 @@ int main()
   OrbSysStore_T testClass;
 
   testClass.setUpLNAV();
-  errorTotal += testClass.createAndDump();
+  errorTotal += testClass.createAndDump_LNAV();
 
   testClass.setUpCNAV();
-  //errorTotal += testClass.createAndDump();
+  errorTotal += testClass.createAndDump_CNAV();
 
   testClass.setUpBDS();
   //errorTotal += testClass.writeReadTest();
