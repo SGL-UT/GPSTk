@@ -216,9 +216,9 @@ package_debian:
   stage: package
   tags:
     - debian
-#  only:
-#    refs:
-#      - master
+  only:
+    refs:
+      - master
   script:
     - rm -rf ../*.deb
     - dpkg-buildpackage -us -uc -d
@@ -234,6 +234,9 @@ package_debian_wheel:
   stage: package
   tags:
     - debian
+  only:
+    refs:
+      - master
   script:
     - mkdir dist
     - mv build/swig/module/dist/* dist
@@ -248,9 +251,22 @@ package_redhat:
   stage: package
   tags:
     - redhat
+  only:
+    refs:
+     - master
   script:
     - cd build
-    - make package -j 4
+    - git clone gitlab@repositories.arlut.utexas.edu:sgl/rpm_files.git
+    - cd rpm_files
+    - cd SOURCES
+    - wget https://repositories.arlut.utexas.edu/sgl/gpstk/-/archive/v2.11.2/gpstk-v2.11.2.tar.gz
+    - mv gpstk-v2.11.2.tar.gz gpstk-v2.11.2-master.tar.gz
+    - cd ..
+    - rpmbuild --define "_topdir ${PWD}" --define "debug_package %{nil}" -ba SPECS/gpstk.spec
+  artifacts:
+    paths:
+      - build/rpm_files/RPMS/x86_64/gpstk-*
+      - build/rpm_files/SRPMS/gpstk-*
   dependencies:
     - build_redhat
 
@@ -258,6 +274,9 @@ package_redhat_wheel:
   stage: package
   tags:
     - redhat
+  only:
+    refs:
+      - master
   script:
     - mkdir dist
     - mv build/swig/module/dist/* dist
