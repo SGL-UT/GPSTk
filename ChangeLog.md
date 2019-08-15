@@ -1,63 +1,307 @@
-Version 2.11.2   Friday, April 5, 2019
+Version 2.12   Thursday, August 15, 2019
 
    General modifications
    ---------------------
-   - Updating CI pipeline to trigger OSX and Windows builds only on scheduled nightly builds.
+   - Updated gitlab-ci rpm package management
    - Updated and upgraded tests
    - Various Bug and Compile Warning Fixes
+   - Code in /deprecate was removed...code from Ext staged in /deprecate
+   - Cleanup comments & remove commented out code.
 
    Modifications by Author
    --------------------- 
-Andrew Kuck (3):
-      Disable rpath for swig python binaries.
-      Merge branch 'swig_rpath_removal' into 'master'
-      [swig] Added version variable at the top level of the gsptk python module.
 
-Anthony Hughes (1):
-      Fixed Issue 375 (erroneously treating files as directories) and mostly addressed Issue 229 (added progressive time filtering for better performance).  Also performed some general code cleanup and improved exception handling and doxygen.
+Andrew Kuck (27):
+      Add sdist python target for standalone installation.
+      Added depends statement, fixed setup.py
+      Removed relative directory from copy operation.
+      Name explicit file and create symlinks at install time.
+      Moved symlink creation into CMake from setuptools-install.
+      Modified to produce a wheel, rather than sdist with binaries.
+      Added CMake switch to build wheel, default OFF.
+      Add wheel output as package artifact.
+      Use seperate stage to create debian wheel.
+      Use seperate stage to create redhat wheel.
+      Moved directory location
+      Don't fail completely if the internal import fails.
+      Try setting pythonpath before building debian package.
+      Replace import error message with quiet warning.
+      Try setting pythonpath before building debian package.
+      Switch from setuptools back to distutil.
+      Try creating pythonpath for setuptools.
+      Add check that gpstk python module installed.
+      Improve import warning message.
+      Added additional ignorable files.
+      Install using root parameter.
+      Use machine specific pythonpath.
+      Correct CI debian package build path.
+      Allow deb package to install to usr-local
+      Add Cmake switch to install python differently when building for a package.
+      TEMPORARY: Enable debian package build on non-master branch.
+      Added flag to pass for user-installation of python module.
 
-Anthony Nguyen (3):
-      Now using Rinex3 classes instead of Rinex
-      data/mergeRinNav_1.exp
-      changed mergeRinNav exp files to expect one less significant figure
+Brian Tolman (185):
+      add name() to base class
+      use setTime internally only
+      trivial change to help output
+      fix PRSolve test
+      do not test for registered obstypes in R3
+      trivial mods to PR solution
+      add user flag to SatPass
+      fix Saastamoinen wet delay
+      wrong return value in getGPT
+      dont force double into bool
+      Merge remote-tracking branch 'origin/master' into btolman_dev
+      Merge remote-tracking branch 'origin/master' into btolman_dev
+      bug in Initial/FinalTime(), do not access times of empty stores
+      set system to Any on typical time
+      fix weird code copy blunder
+      missed one
+      Merge remote-tracking branch 'origin/build_script_win64' into btolman_dev
+      Merge branch 'btolman_dev' of repositories.arlut.utexas.edu:sgl/gpstk into btolman_dev
+      set time system in cast to common time
+      Barycentric dynamic time TDB should not be labeled TRT, thats Turkey time
+      mod script to build on win64
+      Merge remote-tracking branch 'origin/master' into btolman_dev
+      Merge branch 'btolman_dev' of repositories.arlut.utexas.edu:sgl/gpstk into btolman_dev
+      Merge branch 'btolman_dev' of repositories.arlut.utexas.edu:sgl/gpstk into btolman_dev
+      remove CR from filesize computation
+      remove CRs from filesize
+      Merge branch 'btolman_dev' of repositories.arlut.utexas.edu:sgl/gpstk into btolman_dev
+      fix the windows tests of RinSum, drop filesize in output
+      add function to write RINEX3 from SatPass
+      include C2 in SatPass
+      Merge remote-tracking branch 'origin/master' into btolman_dev
+      fix bug and comments Saas wet delay, also fix test
+      merge master
+      Improve Stats by defining wtd and sequential as separate classes, add simple statistical filters to geomatics
+      add std:: for windows
+      fix buffer overflow
+      bug, output the wrong int
+      Merge remote-tracking branch 'origin/master' into btolman_dev
+      merge in updateStats
+      trivial to match master
+      Merge remote-tracking branch 'origin/master' into updateStats
+      trivial to match master
+      dfix is a complete re-write of DiscFix; leave old alone for now
+      changes for windows
+      Merge remote-tracking branch 'origin/DiscFix_rewrite' into btolman_dev
+      forgot to add test data
+      changes for Solaris
+      for Solaris
+      another Solaris fix
+      add space to stats output
+      Merge remote-tracking branch 'origin/master' into btolman_dev
+      added a space to the output
+      trivial change in comments
+      memory bug remains
+      temp debug stmts
+      more debug
+      more debug
+      more debug
+      more debug
+      more debug
+      more debug
+      bug in computing stats for a segment
+      Merge remote-tracking branch 'origin/master' into btolman_dev
+      bug in getStats()
+      output bug
+      flag must be int for consistency with StatsFilter
+      testing
+      clean up
+      oops, left debug print in
+      Merge remote-tracking branch 'origin/master' into btolman_dev
+      deleted in master
+      mod build script to optimize manually until others fix it
+      Remove bias when computing stats to avoid numerical error in stddev
+      add two small utilities re vector intersection
+      small changes, to allow accessors when object is const
+      improve vector non-intersection, doc
+      dont optimize with O3 on windows
+      signed/unsigned changes for windows
+      change() loops almost infinitely when inputString is blank
+      add operator combining two objects
+      several small fixes
+      merge with master
+      trivial diff with master
+      Merge remote-tracking branch 'origin/master' into btolman_dev
+      bug when adding empty Stats
+      move diffproc install location
+      add non-SatPass interface to GDC
+      Merge branch 'btolman_dev' of repositories.arlut.utexas.edu:sgl/gpstk into btolman_dev
+      no need to call setWeather here
+      LUD works on a 1x1 matrix
+      Merge remote-tracking branch 'origin/master' into btolman_dev
+      small doc fix
+      mistaken call with corrupt iterator, leads to seg fault in rare cases
+      comments only
+      add a second analysis method to first diff filter, improve detection algo slightly
+      trivial
+      trivial changes for windows
+      small doc fix
+      fix dfix test
+      Merge remote-tracking branch 'origin/master' into btolman_dev
+      allow toggle of bool options
+      several modest changes to SRI functionality
+      add single frequency version of smooth()
+      bug in smoothSF, enclose ? : in ()
+      small changes
+      remove single freq jump removal, and remove subtle bug when both smoothPR and debiasPH are requested
+      wrong return value
+      Merge remote-tracking branch 'origin/master' into btolman_dev
+      add count() for each option, dont remove linefeeds from long option in dump
+      improve second analysis algorithm of FirstDiffFilter
+      improve stem and leaf, and quantiles functions
+      refactor rstats, expand functionality, add CommandLine
+      bug in setting nostats
+      comments
+      finally cleared that up
+      fix cmake command in build shell
+      Merge remote-tracking branch 'origin/master' into btolman_dev
+      R3 output marker name in header
+      merge master
+      small changes
+      update ANTEX to recognize BLOCK IIIA
+      Merge remote-tracking branch 'origin/master' into btolman_dev
+      small fix to SOL help page
+      Merge branch 'btolman_dev' of repositories.arlut.utexas.edu:sgl/gpstk into btolman_dev
+      Merge remote-tracking branch 'origin/master' into btolman_dev
+      small fixes
+      missed a line feed
+      small format error
+      Merge remote-tracking branch 'origin/master' into btolman_dev
+      handle verbose and debug correctly, and add linefeeds where missing
+      improve syntax page
+      Merge remote-tracking branch 'origin/master' into btolman_dev
+      Merge remote-tracking branch 'origin/master' into btolman_dev
+      trivial
+      update test
+      trivial changes to command line, remove time system in prints, test invalid nav+eph inputs
+      dont set weather in constructor
+      add BLOCK IIIA
+      add equality operators
+      trivial changes, avoid this->
+      trivial changes, mostly to doc
+      doc changes
+      trivial changes to syntax page
+      trivial change to command line doc
+      make getInterpolationOrder const
+      allow 1x1 matrix, remove unused variable
+      refinements to stem-and-leaf plot, and doc changes
+      and replace the call
+      add toggle bool to CommandLine, also count()
+      updated master
+      make retriangularize its own function, add a few convenience routines, and add to doc
+      Better Cholesky, add LDL and UDU
+      add a single frequency version of smooth()
+      update Kalman filter object
+      add test of KalmanFilter
+      split StatsFilter into two, and add a better first difference filter FDiffFilter, upgrade test
+      Add Rinex obs file loader with tests
+      trivial
+      trying to update with master
+      after merging master, 2 small mods
+      merge master into this branch
+      Merge remote-tracking branch 'origin/master' into geomatics-RinexObsLoader
+      merge master
+      remove full path length from test output
+      trying to add test of rstats that runs python
+      update rstats, comment out test for now
+      add path inputs
+      add license and remove comments
+      add license, remove many comments, comments ONLY
+      add license
+      get test of rstats to work
+      preliminary, about to mod rstats.cpp again
+      trivial
+      merge master
+      trivial
+      Merge remote-tracking branch 'origin/master' into rstats-rewrite
+      trivial
+      trivial
+      comments only
+      update code to research version
+      trivial
+      change version number
+      make test python2-compatible
+      remove comments
+      Merge remote-tracking branch 'origin/master' into btolman_dev
 
-Bryan Parsons (13):
-      Merge branch 'support_python_rinex_gnss' into 'master'
-      Merge branch 'l1c_obsid_character_codes' into 'master'
-      Merge branch 'master' into change_to_Rinex3_mergeRinNav
-      Merge branch 'change_to_Rinex3_mergeRinNav' into 'master'
-      Updating CI pipeline to trigger OSX and Windows builds only on scheduled nightly builds.
-      Additional tweaks for Solaris and OSX to be added to nightly builds only.
-      Merge branch 'ci_nightly' into 'master'
-      Merge branch 'issue_373_OrbSysStore' into 'master'
-      Merge branch 'issue_374_OrbSys_again' into 'master'
-      Merge branch 'issue_375_FileHunter' into 'master'
-      Allowing Solaris Nightly test failure until Gitlab Runner issues is resolved.
-      Fix to sgltk_osx stage of currently nightly build.
-      Additional tweak to .yml for sgltk_osx ci.
+Bryan Parsons (14):
+      Merge branch 'issue_378_WNa_bug' into 'master'
+      Updated debian/changelog for wheezy/stretch repository channel builds.  Removed Solaris from gitlab pipelines.
+      Merge branch 'windowsFixes' into 'master'
+      Merge branch 'no_address_sanitizer' into 'master'
+      Merge branch 'issue_392_fitInterval' into 'master'
+      Deprecating OSX support from CI
+      Added Geomatics Rstats python test to Cmake test suite.  Python test is still in development and currently fails.
+      Merge branch 'rstats-rewrite' of repositories.arlut.utexas.edu:sgl/gpstk into rstats-rewrite
+      Updating rstats test code
+      Update license and copyright headers on all relevant files.
+      Missed a header
+      Deprecating all files currently in Deprecate Folder
+      Adding some ext directories and files to deprecate folder, staging them for future deprecation.
+      Updating CMakelists.txt in ext/apps due to deprecation of applications.  While slated for deprecation, PRSolution2.* still has dependencies within the codebase that need to be reviewed.
 
-Jon C. Little (1):
-      Initializing vars that the compiler didn't seem to
+Corwin Olson (2):
+      adding Windows build script for GPSTk
+      adding script to install gpstk for diffproc to ~./local/gpstkDiffProc
 
-Jon Little (1):
-      Merge branch 'rin3headerbug' into 'master'
+Don Tucker (2):
+      Adding a -n flag to build.sh to allow address sanitizer to be turned off for debug builds.
+      Resolved merge conflicts with latest pull from master
 
-Richard Ji-Cathriner (2):
-      Allow Obs of GNSS other than GPS to be written with the RINEX3 classes from python
-      Add the L1C RINEX character codes to ObsID data structure
+James Morales (7):
+      added bool function hasSignal to find out which signal the sv is using
+      added function bool hasSignal to handle more than one signal
+      added the include OrbSysGpsL_63.hpp and function bool hasSignal to handle more than one signal
+      added function bool hasSignal to retrieve particular data types based on the system and the signaltype
+      Modified file to handle more than one signal.
+      adding generalized ability to find UTCOffset
+      Merge branch 'master' into Updates_UTCOffset
 
-renfrob (8):
-      Adding functionality (and tests) to OrbSysStore
-      no comment
-      Removing debug
-      Merge branch 'master' into issue_373_OrbSysStore
-      Adding BeiDou NavID disambiguation
-      Modifying BeiDou to return single-frequency phase center
-      Making svXvt() virtual to support down-hierarchy overrides
-      Update to unit test files.
+Sarah Magliocca (5):
+      adding relative install build script for bpi submodules
+      adding windows build script for bpi
+      updatin install path
+      fixing windows compiler errors
+      Merge branch 'windowsFixes' into btolman_dev
 
-vestuto (1):
-      Merge branch 'py_version' into 'master'
+bparsons (24):
+      Merge branch 'add_sdist_target' into 'master'
+      Merge branch 'issue_384' into 'master'
+      Merge branch 'issue_385' into 'master'
+      Merge branch 'issue_386' into 'master'
+      Merge branch 'issue_387' into 'master'
+      Merge branch 'issue_388' into 'master'
+      Merge branch 'geomatics-SRI' into 'master'
+      Merge branch 'geomatics-SRIMatrix' into 'master'
+      Merge branch 'geomatics-SatPass' into 'master'
+      Merge branch 'geomatics-Kalman-update' into 'master'
+      Merge branch 'geomatics-StatsFilter-update' into 'master'
+      Merge branch 'geomatics-RinexObsLoader' into 'master'
+      Merge branch 'geomatics-comments-only' into 'master'
+      Merge branch 'rstats-rewrite' into 'master'
+      Merge branch 'fix_sdist' into 'master'
+      Merge branch 'geomatics-cycleslips' into 'master'
+      Merge branch 'Update_OrbSysGps_63' into 'master'
+      Merge branch 'alt_build_pkg' into 'master'
+      Merge branch 'issue_390_SNumXRef' into 'master'
+      Merge branch 'Updates_UTCOffset' into 'master'
+      Updating .gitlab-ci.yml to automate RPM generation during master branch and scheduled builds.  RPMs will be saved as artifacts and can be plucked by other CI pipelines.
+      Merge branch 'ci_rpm' into 'master'
+      Merge branch 'dws_licence_ci' into 'master'
+      Merge branch 'deprecating_files' into 'master'
+
+kuck (1):
+      Merge branch 'add_python_install_check' into 'master'
+
+renfrob (4):
+      Fixing 8-bit week rollover error
+      Correcting problems in OrbitEphStore::findNewOrbitEph()
+      Merge branch 'master' into issue_392_fitInterval
+      Changing PRN 4 from SVN 74 to SVN 36
+
 
       #################################################
 

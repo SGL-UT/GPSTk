@@ -103,7 +103,6 @@ try {
    // uncomment to see all the filter output
    //ConfigureLOG::ReportingLevel() = ConfigureLOG::Level("VERBOSE");
 
-// This data comes from MSN data at StLouis, file s011071a.07o,
 // satellite G01, first complete pass.
 // The data are seconds_of_week, L1, L2, P1, P2, (L in cycles, P in meters.)
    const unsigned int M=734;

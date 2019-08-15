@@ -259,8 +259,8 @@ package_redhat:
     - git clone gitlab@repositories.arlut.utexas.edu:sgl/rpm_files.git
     - cd rpm_files
     - cd SOURCES
-    - wget https://repositories.arlut.utexas.edu/sgl/gpstk/-/archive/v2.11.2/gpstk-v2.11.2.tar.gz
-    - mv gpstk-v2.11.2.tar.gz gpstk-v2.11.2-master.tar.gz
+    - wget https://repositories.arlut.utexas.edu/sgl/gpstk/-/archive/v2.12/gpstk-v2.12.tar.gz
+    - mv gpstk-v2.12.tar.gz gpstk-v2.12-master.tar.gz
     - cd ..
     - rpmbuild --define "_topdir ${PWD}" --define "debug_package %{nil}" -ba SPECS/gpstk.spec
   artifacts:
