@@ -1,3 +1,15 @@
+gpstk (2.12.0-1~bpo9+3) stable; urgency=low
+
+  * Rebuild for wheezy-backports
+
+ -- Bryan Parsons <bparsons@arlut.utexas.edu>  Fri, 16 Aug 2019 11:07:54 -0500
+
+gpstk (2.12.0-1~bpo9+2) stable; urgency=medium
+
+  * Rebuild for stretch-backports
+
+ -- Bryan Parsons <bparsons@arlut.utexas.edu>  Fri, 16 Aug 2019 10:50:24 -0500
+
 gpstk (2.12.0-1) stable; urgency=medium
 
   * Update to upstream version 2.12
