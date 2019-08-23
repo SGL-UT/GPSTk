@@ -103,6 +103,30 @@ namespace gpstk
           *   there are no orbit elements at time t. */
       virtual Xvt getXvt(const SatID& id, const CommonTime& t) const;
 
+         /** Compute the position, velocity and clock offset of the
+          * indicated object in ECEF coordinates (meters) at the
+          * indicated time.
+          * This method functions similarly to getXvt() except that it
+          * does not throw an exception for any reason.  Instead, the
+          * caller is expected to check the value of the "health"
+          * field of the returned Xvt and decide what to do with the
+          * data.
+          * @note This function ignores the onlyHealthy flag.  It is
+          *   up to the caller to examine the state of the health flag
+          *   and decide what to do.
+          * @param[in] id the object's identifier
+          * @param[in] t the time to look up
+          * @return the Xvt of the object at the indicated time */
+      virtual Xvt computeXvt(const SatID& id, const CommonTime& t) const
+         throw();
+
+         /** Get the satellite health at a specific time.
+          * @param[in] id the object's identifier
+          * @param[in] t the time to look up
+          * @return the health status of the object at the indicated time. */
+      virtual Xvt::HealthStatus getSVHealth(const SatID& id,
+                                            const CommonTime& t) const throw();
+
          /** Output summary of store data in human readable form, with detail:
           *  0: Time limits and number of entries for entire store
           *  1: Level 0 plus for each satellite: one line giving
@@ -300,8 +324,8 @@ namespace gpstk
       virtual int addToList(std::list<OrbitEph*>& v,
                             SatID sat=SatID(-1,SatID::systemUnknown)) const;
 
-         /// use findNearOrbitEph() in getXvt() and getSatHealth()
-         // MUST be done priot to starting to load nav data sets.
+         /// use findNearOrbitEph() in getXvt()
+         // MUST be done prior to starting to load nav data sets.
       bool SearchNear(void)
       { 
          if (size()==0)
@@ -312,9 +336,9 @@ namespace gpstk
          return false; 
       }
 
-         /** use findUserOrbitEph() in getXvt() and getSatHealth()
+         /** use findUserOrbitEph() in getXvt()
           * (the default) */
-         // MUST be done priot to starting to load nav data sets.
+         // MUST be done prior to starting to load nav data sets.
       bool SearchUser(void)
       { 
          if (size()==0)
@@ -323,19 +347,6 @@ namespace gpstk
             return true;
          }
          return false; 
-      }
-
-         /** Return the satellite health at the given time.
-          * @param SatID sat satellite of interest
-          * @param CommonTime t time of interest
-          * @return true if the satellite is healthy */
-      bool getSatHealth(const SatID& sat, const CommonTime& t) const
-      {
-            // get the appropriate OrbitEph
-         const OrbitEph *eph = findOrbitEph(sat,t);
-         if (eph == NULL)
-            return false;
-         return eph->isHealthy();
       }
 
          /** This map stores sets of unique orbital elements for a
@@ -372,8 +383,7 @@ namespace gpstk
 
       TimeSystem timeSystem;  ///< Time system of store i.e. initial and final times
 
-         /** flag indicating search method (find...Eph) to use in
-          *  getSatXvt and getSatHealth */
+         /// flag indicating search method (find...Eph) to use.
       bool strictMethod;
 
          /// Convenience routines

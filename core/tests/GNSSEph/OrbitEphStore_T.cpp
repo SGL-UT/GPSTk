@@ -111,6 +111,134 @@ public:
       }
       TURETURN();
    }
+
+
+   unsigned basicTests()
+   {
+      TUDEF("OrbitEphStore","Basic Access Tests");
+      try
+      {
+         gpstk::OrbitEphStore store;
+
+            // Create a small number of OrbElemBase object with
+            // specific characteristics.
+
+         gpstk::OrbitEph to1;
+         gpstk::SatID sat1(1, gpstk::SatID::systemGPS);
+         gpstk::ObsID obsID(gpstk::ObsID::otNavMsg,
+                            gpstk::ObsID::cbL1,
+                            gpstk::ObsID::tcCA);
+         to1.dataLoadedFlag = true;
+         to1.satID = sat1;
+         to1.obsID = obsID;
+         to1.ctToe = gpstk::GPSWeekSecond(2000, 7200);   // 0200
+         to1.ctToc = to1.ctToe;
+         to1.beginValid = to1.ctToe - 7200;
+         to1.endValid = to1.ctToe + 7200;
+
+         gpstk::OrbitEph to2;
+         gpstk::SatID sat2(32, gpstk::SatID::systemGPS);
+         to2.dataLoadedFlag = true;
+         to2.satID = sat2;
+         to2.obsID = obsID;
+         to2.ctToe = gpstk::GPSWeekSecond(2000, 79200);    // 2200
+         to2.ctToc = to2.ctToe;
+         to2.beginValid = to2.ctToe - 7200;
+         to2.endValid = to2.ctToe + 7200;
+
+         gpstk::OrbitEph to3;
+         gpstk::SatID sat3(16, gpstk::SatID::systemGPS);
+         to3.dataLoadedFlag = true;
+         to3.satID = sat3;
+         to3.obsID = obsID;
+         to3.ctToe = gpstk::GPSWeekSecond(2000, 43200);    // 1200
+         to3.ctToc = to3.ctToe;
+         to3.beginValid = to3.ctToe - 7200;
+         to3.endValid = to3.ctToe + 7200;
+
+         store.addEphemeris(&to1);
+         store.addEphemeris(&to2);
+         store.addEphemeris(&to3);
+
+            // make sure the ephemeris is in the store
+         TUCSM("size");
+         TUASSERTE(unsigned, 3, store.size());
+
+         TUCSM("getIndexSet");
+         set<gpstk::SatID> testSet = store.getIndexSet(); 
+         if (testSet.find(sat1)==testSet.end())
+         {
+            stringstream ss;
+            ss << "Did not find expected SV ";
+            ss << sat1;
+            ss << " in the store.";
+            TUFAIL(ss.str());
+         }
+         if (testSet.find(sat2)==testSet.end())
+         {
+            stringstream ss;
+            ss << "Did not find expected SV ";
+            ss << sat2;
+            ss << " in the store.";
+            TUFAIL(ss.str());
+         }
+         if (testSet.find(sat3)==testSet.end())
+         {
+            stringstream ss;
+            ss << "Did not find expected SV ";
+            ss << sat3;
+            ss << " in the store.";
+            TUFAIL(ss.str());
+         }
+
+         TUCSM("computeXvt");
+         gpstk::Xvt xvt;
+         TUCATCH(xvt = store.computeXvt(to1.satID, to1.ctToe));
+         TUASSERTE(gpstk::Xvt::HealthStatus,
+                   gpstk::Xvt::HealthStatus::Healthy, xvt.health);
+         TUCATCH(xvt = store.computeXvt(to2.satID, to2.ctToe));
+         TUASSERTE(gpstk::Xvt::HealthStatus,
+                   gpstk::Xvt::HealthStatus::Healthy, xvt.health);
+         TUCATCH(xvt = store.computeXvt(to3.satID, to3.ctToe));
+         TUASSERTE(gpstk::Xvt::HealthStatus,
+                   gpstk::Xvt::HealthStatus::Healthy, xvt.health);
+         gpstk::SatID bogus(33, gpstk::SatID::systemGPS);
+         TUCATCH(xvt = store.computeXvt(bogus, to3.ctToe));
+         TUASSERTE(gpstk::Xvt::HealthStatus,
+                   gpstk::Xvt::HealthStatus::Unavailable, xvt.health);
+
+         TUCSM("getSVHealth");
+         gpstk::Xvt::HealthStatus health;
+         TUCATCH(health = store.getSVHealth(to1.satID, to1.ctToe));
+         TUASSERTE(gpstk::Xvt::HealthStatus,
+                   gpstk::Xvt::HealthStatus::Healthy, health);
+         TUCATCH(health = store.getSVHealth(to2.satID, to2.ctToe));
+         TUASSERTE(gpstk::Xvt::HealthStatus,
+                   gpstk::Xvt::HealthStatus::Healthy, health);
+         TUCATCH(health = store.getSVHealth(to3.satID, to3.ctToe));
+         TUASSERTE(gpstk::Xvt::HealthStatus,
+                   gpstk::Xvt::HealthStatus::Healthy, health);
+         TUCATCH(health = store.getSVHealth(bogus, to3.ctToe));
+         TUASSERTE(gpstk::Xvt::HealthStatus,
+                   gpstk::Xvt::HealthStatus::Unavailable, health);
+
+         TUCSM("getInitialTime");
+         TUASSERTE(gpstk::CommonTime, to1.beginValid, store.getInitialTime());
+
+         TUCSM("getFinalTime");
+         TUASSERTE(gpstk::CommonTime, to2.endValid, store.getFinalTime());
+      }
+      catch (gpstk::Exception &exc)
+      {
+         cerr << exc << endl;
+         TUFAIL("Unexpected exception");
+      }
+      catch (...)
+      {
+         TUFAIL("Unexpected exception");
+      }
+      TURETURN();
+   }    
 };
 
 
@@ -119,6 +247,7 @@ int main(int argc, char *argv[])
    unsigned total = 0;
    OrbitEphStore_T testClass;
    total += testClass.doFindEphEmptyTests();
+   total += testClass.basicTests();
 
    cout << "Total Failures for " << __FILE__ << ": " << total << endl;
    return total;

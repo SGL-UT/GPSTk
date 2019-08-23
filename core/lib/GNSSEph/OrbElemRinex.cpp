@@ -95,7 +95,7 @@ namespace gpstk
       // Fill in the variables unique to OrbElemFIC9
       codeflags        = rinNav.codeflgs;
       accuracyValue    = rinNav.accuracy;
-      health           = rinNav.health;
+      setHealth(rinNav.health);
       IODC             = rinNav.IODC;
       L2Pdata          = rinNav.L2Pdata;
       Tgd              = rinNav.Tgd;
@@ -234,12 +234,6 @@ namespace gpstk
 	 // so set it to zero.
       dndot = 0.0;
 
-         // Health
-         // OrbElemRinex stores the full 8 bits health from the legacy
-	 // navigation message.  OrbElem only stores the true/false,
-	 // use/don't use based on whether the 8 bit health is 0 or non-zero
-      healthy = (health==0);
-
          // After all this is done, declare that data has been loaded
 	 // into this object (so it may be used).
       dataLoadedFlag = true;
@@ -252,7 +246,7 @@ namespace gpstk
       // Fill in the variables unique to OrbElemFIC9
       codeflags        = rinNav.codeflgs;
       accuracyValue    = rinNav.accuracy;
-      health           = rinNav.health;
+      setHealth(rinNav.health);
       IODC             = rinNav.IODC;
       L2Pdata          = rinNav.L2Pdata;
       Tgd              = rinNav.Tgd;
@@ -323,12 +317,6 @@ namespace gpstk
          // Legacy nav doesn't have Rate of Change to Correction to mean motion,
 	      // so set it to zero.
       dndot = 0.0;
-
-         // Health
-         // OrbElemRinex stores the full 8 bits health from the legacy
-	      // navigation message.  OrbElem only stores the true/false,
-	      // use/don't use based on whether the 8 bit health is 0 or non-zero
-      healthy = (health==0);
 
          // After all this is done, declare that data has been loaded
 	      // into this object (so it may be used).
@@ -674,7 +662,7 @@ namespace gpstk
         << endl
         << endl
         << "Health bits         :      0x" << setfill('0') << hex << setw(2)
-        << health << dec << ", " << health;
+        << getHealth() << dec << ", " << getHealth();
       s << endl
         << "Fit duration (Hrs)  :         " << setw(1) << fitDuration << " hrs";
       s << endl
@@ -767,9 +755,9 @@ namespace gpstk
 
       s << setw(4) << setprecision(1) << getAccuracy() << "  ! ";
       s << "0x" << setfill('0') << hex << setw(3) << IODC << " ! ";
-      s << "0x" << setfill('0')  << setw(2) << health;
+      s << "0x" << setfill('0')  << setw(2) << getHealth();
       s << setfill(' ') << dec;
-      s << "   " << setw(2) << health << " ! ";
+      s << "   " << setw(2) << getHealth() << " ! ";
 
       s << endl;
       s.flags(oldFlags);

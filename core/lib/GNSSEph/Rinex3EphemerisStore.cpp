@@ -297,6 +297,93 @@ namespace gpstk
       catch(InvalidRequest& ir) { GPSTK_RETHROW(ir); }
    }
 
+
+   Xvt Rinex3EphemerisStore ::
+   computeXvt(const SatID& sat, const CommonTime& inttag) const throw()
+   {
+      Xvt rv;
+      rv.health = Xvt::HealthStatus::Unavailable;
+      try
+      {
+         CommonTime ttag;
+         TimeSystem ts;
+
+         switch(sat.system)
+         {
+            case SatID::systemGPS:
+            case SatID::systemGalileo:
+            case SatID::systemBeiDou:
+            case SatID::systemQZSS:
+               if(sat.system == SatID::systemGPS    ) ts = TimeSystem::GPS;
+               if(sat.system == SatID::systemGalileo) ts = TimeSystem::GAL;
+               if(sat.system == SatID::systemBeiDou ) ts = TimeSystem::BDT;
+               if(sat.system == SatID::systemQZSS   ) ts = TimeSystem::QZS;
+               ttag = correctTimeSystem(inttag, ts);
+               return ORBstore.computeXvt(sat,ttag);
+               break;
+            case SatID::systemGlonass:
+               ttag = correctTimeSystem(inttag, TimeSystem::GLO);
+               return GLOstore.computeXvt(sat,ttag);
+               break;
+            //case SatID::systemGeosync:
+            //   ttag = correctTimeSystem(inttag, TimeSystem::GEO);
+            //   xvt = GEOstore.computeXvt(sat,ttag);
+            //   break;
+            default:
+               return rv;
+               break;
+         }
+         return rv;
+      }
+      catch(...)
+      {
+      }
+      return rv;
+   }
+
+
+   Xvt::HealthStatus Rinex3EphemerisStore ::
+   getSVHealth(const SatID& sat, const CommonTime& inttag) const throw()
+   {
+      Xvt::HealthStatus rv = Xvt::HealthStatus::Unavailable;
+      try
+      {
+         CommonTime ttag;
+         TimeSystem ts;
+
+         switch(sat.system)
+         {
+            case SatID::systemGPS:
+            case SatID::systemGalileo:
+            case SatID::systemBeiDou:
+            case SatID::systemQZSS:
+               if(sat.system == SatID::systemGPS    ) ts = TimeSystem::GPS;
+               if(sat.system == SatID::systemGalileo) ts = TimeSystem::GAL;
+               if(sat.system == SatID::systemBeiDou ) ts = TimeSystem::BDT;
+               if(sat.system == SatID::systemQZSS   ) ts = TimeSystem::QZS;
+               ttag = correctTimeSystem(inttag, ts);
+               return ORBstore.getSVHealth(sat,ttag);
+               break;
+            case SatID::systemGlonass:
+               ttag = correctTimeSystem(inttag, TimeSystem::GLO);
+               return GLOstore.getSVHealth(sat,ttag);
+               break;
+            //case SatID::systemGeosync:
+            //   ttag = correctTimeSystem(inttag, TimeSystem::GEO);
+            //   xvt = GEOstore.computeXvt(sat,ttag);
+            //   break;
+            default:
+               return rv;
+               break;
+         }
+         return rv;
+      }
+      catch(...)
+      {
+      }
+      return rv;
+   }
+
    // Dump information about the store to an ostream.
    // @param[in] os ostream to receive the output; defaults to cout
    // @param[in] detail integer level of detail to provide; allowed values are

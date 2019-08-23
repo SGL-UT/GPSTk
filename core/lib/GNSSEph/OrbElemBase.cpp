@@ -52,16 +52,17 @@ namespace gpstk
 {
    using namespace std;
    using namespace gpstk;
-    OrbElemBase::OrbElemBase()
-      :dataLoadedFlag(false),
-       ctToe(CommonTime::BEGINNING_OF_TIME),
-       beginValid(CommonTime::BEGINNING_OF_TIME),
-       endValid(CommonTime::BEGINNING_OF_TIME)
+   OrbElemBase::OrbElemBase()
+         : dataLoadedFlag(false),
+           ctToe(CommonTime::BEGINNING_OF_TIME),
+           beginValid(CommonTime::BEGINNING_OF_TIME),
+           endValid(CommonTime::BEGINNING_OF_TIME)
    {
-      healthy = false;
+      ctToe.setTimeSystem(TimeSystem::GPS);
+      setHealthy(false);
    }
 
-    bool OrbElemBase::isValid(const CommonTime& ct) const
+   bool OrbElemBase::isValid(const CommonTime& ct) const
       throw(InvalidRequest)
    {
       if (!dataLoaded())
@@ -106,10 +107,10 @@ namespace gpstk
    {
       if (dataLoadedFlag != right->dataLoadedFlag) return false;
       if (satID          != right->satID)          return false;
-      //if (obsID          != right->obsID)          return false;
+         //if (obsID          != right->obsID)          return false;
       if (ctToe          != right->ctToe)          return false;
       if (healthy        != right->healthy)        return false;
-      //if (beginValid     != right->beginValid)     return false;
+         //if (beginValid     != right->beginValid)     return false;
       if (endValid       != right->endValid)       return false;
       return true;
    }
@@ -152,7 +153,7 @@ namespace gpstk
 
 
    Rinex3NavData OrbElemBase::makeRinex3NavData() const
-         throw( InvalidRequest )
+      throw( InvalidRequest )
    {
       InvalidRequest ir("Method makeRinex3NavData() not implemented.");
       GPSTK_THROW(ir); 

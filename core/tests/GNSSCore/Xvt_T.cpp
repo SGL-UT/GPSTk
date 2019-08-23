@@ -43,71 +43,68 @@
 #include <string>
 #include <sstream>
 
+using namespace std;
 using namespace gpstk;
 
 class Xvt_T
 {
 public: 
-   Xvt_T() {eps = 1E-12;}// Default Constructor, set the precision value
-   ~Xvt_T() {} // Default Desructor
+      /// Default Constructor, set the precision value
+   Xvt_T()
+         : eps(1E-12)
+   {}
+      /// Do-nothing Destructor
+   ~Xvt_T()
+   {}
 
       /*Tests the get methods and constructor of Xvt */
-   int getTest (void)
+   unsigned getTest()
    {
-      TestUtil testFramework("Xvt","Get",__FILE__,__LINE__ );
-      std::string failMesg;
-      {
-            /* data */
-      };
+      TUDEF("Xvt","Get");
 
          //Add in blank initialization check here
 
       Triple pos(1,2,3);
       Triple vel(4,5,6);
       double clockBias = 7, clockDrift = 8, relativityCorrection = 9;
-      Xvt Compare;
+      Xvt compare;
 
-      Compare.x = pos;
-      Compare.v = vel;
-      Compare.clkbias = clockBias;
-      Compare.clkdrift = clockDrift;
-      Compare.relcorr = relativityCorrection;
+      compare.x = pos;
+      compare.v = vel;
+      compare.clkbias = clockBias;
+      compare.clkdrift = clockDrift;
+      compare.relcorr = relativityCorrection;
 
-      failMesg = "Is the position value accurate?";
-      testFramework.assert(pos == Compare.getPos(), failMesg, __LINE__);
+      TUCSM("getPos");
+      TUASSERTE(Triple, pos, compare.getPos());
+      TUCSM("getVel");
+      TUASSERTE(Triple, vel, compare.getVel());
+      TUCSM("getClockBias");
+      TUASSERTFE(clockBias, compare.getClockBias());
+      TUCSM("getClockDrift");
+      TUASSERTFE(clockDrift, compare.getClockDrift());
+      TUCSM("getRelativityCorr");
+      TUASSERTFE(relativityCorrection, compare.getRelativityCorr());
+      TUCSM("Xvt()");
+      TUASSERTE(gpstk::Xvt::HealthStatus, gpstk::Xvt::Uninitialized,
+                compare.health);
 
-      failMesg = "Is the velocity value accurate?";
-      testFramework.assert(vel == Compare.getVel(), failMesg, __LINE__);
-
-      failMesg = "Is the clock bias value accurate?";
-      testFramework.assert(clockBias == Compare.getClockBias(), failMesg, __LINE__);
-
-      failMesg = "Is the clock drift value accurate?";
-      testFramework.assert(clockDrift == Compare.getClockDrift(), failMesg, __LINE__);
-
-      failMesg = "Is the relativity correction value accurate?";
-      testFramework.assert(relativityCorrection == Compare.getRelativityCorr(), failMesg, __LINE__);
-
-      return testFramework.countFails();
+      TURETURN();
    }
+
       /* Ensures the computeRelativityCorrection method is accurate */
-   int computeRelativityCorrectionTest (void)
+   unsigned computeRelativityCorrectionTest()
    {
-      TestUtil testFramework("Xvt","computeRelativityCorrection",__FILE__,__LINE__ );
-      std::string failMesg;
-      {
-            /* data */
-      };
+      TUDEF("Xvt","computeRelativityCorrection");
 
       Triple pos( 1234567000, 887654, 321 );
       Triple vel(4321, 1234, 1342); 
-      Xvt Compare;
+      Xvt compare;
       double relcorr = -0.00011873444357376972;
-      Compare.x = pos;
-      Compare.v = vel;
+      compare.x = pos;
+      compare.v = vel;
 
-      failMesg = "Was the relativity correction computation correct?";
-      testFramework.assert(std::abs(Compare.computeRelativityCorrection() - relcorr) < eps, failMesg, __LINE__);
+      TUASSERTFEPS(relcorr, compare.computeRelativityCorrection(), eps);
 
       pos[0] = -1234567000;
       pos[1] = 887654;
@@ -116,11 +113,10 @@ public:
       vel[1] = -500;
       vel[2] = -20;
       relcorr =8.242829448184317e-05;
-      Compare.x = pos;
-      Compare.v = vel;
+      compare.x = pos;
+      compare.v = vel;
 
-      failMesg = "Was the relativity correction computation correct?";
-      testFramework.assert(std::abs(Compare.computeRelativityCorrection() - relcorr) < eps, failMesg, __LINE__);
+      TUASSERTFEPS(relcorr, compare.computeRelativityCorrection(), eps);
 
       pos[0] = 0;
       pos[1] = 0;
@@ -129,44 +125,36 @@ public:
       vel[1] = 0;
       vel[2] = 0;
       relcorr =0;
-      Compare.x = pos;
-      Compare.v = vel;
+      compare.x = pos;
+      compare.v = vel;
 
-      failMesg = "Was the relativity correction computation correct?";
-      testFramework.assert(std::abs(Compare.computeRelativityCorrection()) < eps, failMesg, __LINE__);
+      TUASSERTFEPS(relcorr, compare.computeRelativityCorrection(), eps);
 
-      return testFramework.countFails();
+      TURETURN();
    }
 
 #if 0
       /* Ensures the preciseRho method is accurate */
-   int preciseRhoTest (void)
+   unsigned preciseRhoTest()
    {
-      TestUtil testFramework("Xvt","preciseRho Method Unverified",__FILE__,__LINE__ );
+      TUDEF("Xvt","preciseRho Method Unverified");
       std::string failMesg;
-      {
-            /* data */
-      };
 
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 //      Unable to verify if operations done in Xvt.hpp are correct
 //      Creating placeholder for testing, and setting it to fail as a signifier
       failMesg = "UNVERIFIED preciseRhoTest. Set to FAIL until verified";
       testFramework.assert(false, failMesg, __LINE__);
 
       return testFramework.countFails();
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
    }
 #endif
 
-      /* Tests to see if the redirection operator << is functioning properly*/
-   int operatorTest (void)
+      /* Tests to see if the stream output operator << is functioning properly*/
+   unsigned operatorTest()
    {
-      TestUtil testFramework("Xvt","<< Operator",__FILE__,__LINE__ );
-      std::string failMesg;
-      {
-            /* data */
-      };
+      TUDEF("Xvt","operator<<");
 
       Triple pos(1,2,3);
       Triple vel(4,5,6);
@@ -185,12 +173,9 @@ public:
 
       try
       { 
-            // Creates a string with the contents of output via the redirection operator
+            // Creates a string with the contents of output via the
+            // stream output operator
          streamOutput << output;
-
-         failMesg = "Was the operation using the << operator successful?";
-         testFramework.assert(true, failMesg, __LINE__);
-
          stringOutput = streamOutput.str();
 
             // Creates a string of what the output stream should be
@@ -198,22 +183,38 @@ public:
                        << ", v:" << output.v
                        << ", clk bias:" << output.clkbias
                        << ", clk drift:" << output.clkdrift
-                       << ", relcorr:" << output.relcorr;
+                       << ", relcorr:" << output.relcorr
+                       << ", health:" << output.health;
          stringCompare = streamCompare.str();
-
-         failMesg = "Were the contents of the Xvt output stream correct?";
-         testFramework.assert(stringCompare == stringOutput, failMesg, __LINE__);
-
+         TUASSERTE(std::string, stringCompare, stringOutput);
       }
       catch (...)
       {
-         failMesg = "Outputting an Xvt object using the redirection operator << caused an error";
-         testFramework.assert(false, failMesg, __LINE__);
-         failMesg = "This test failed automatically because the redirection operator failed";                   
-         testFramework.assert(false, failMesg, __LINE__);
+         TUFAIL("Unexpected exception");
       }
+      TURETURN();
+   }
 
-      return testFramework.countFails();
+   unsigned healthStatusStreamTest()
+   {
+      TUDEF("Xvt::HealthStatus", "operator<<");
+      for (unsigned i = static_cast<unsigned>(Xvt::HealthStatus::MinValue);
+           i <= static_cast<unsigned>(Xvt::HealthStatus::MaxValue);
+           i++)
+      {
+         ostringstream s;
+         s << static_cast<Xvt::HealthStatus>(i);
+         string str(s.str());
+         TUASSERT(!str.empty());
+         TUASSERT(str != "???");
+      }
+      unsigned i = static_cast<unsigned>(Xvt::HealthStatus::MaxValue) + 1;
+      ostringstream s;
+      s << static_cast<Xvt::HealthStatus>(i);
+      string str(s.str());
+      TUASSERT(!str.empty());
+      TUASSERTE(string, "???", str);
+      TURETURN();
    }
 
 private:
@@ -223,23 +224,17 @@ private:
 
 int main() //Main function to initialize and run all tests above
 {
-   int check, errorCounter = 0;
+   unsigned errorTotal = 0;
    Xvt_T testClass;
 
-   check = testClass.getTest();
-   errorCounter += check;
+   errorTotal += testClass.getTest();
+      //errorTotal += testClass.preciseRhoTest();
+   errorTotal += testClass.computeRelativityCorrectionTest();
+   errorTotal += testClass.operatorTest();
+   errorTotal += testClass.healthStatusStreamTest();
 
-      //check = testClass.preciseRhoTest();
-      //errorCounter += check;
+   cout << "Total Failures for " << __FILE__ << ": " << errorTotal << endl;
 
-   check = testClass.computeRelativityCorrectionTest();
-   errorCounter += check;
-
-   check = testClass.operatorTest();
-   errorCounter += check;
-
-   std::cout << "Total Failures for " << __FILE__ << ": " << errorCounter << std::endl;
-
-   return errorCounter; //Return the total number of errors
+   return errorTotal; //Return the total number of errors
 }
 

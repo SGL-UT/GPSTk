@@ -122,6 +122,28 @@ namespace gpstk
       void dumpTerse(std::ostream& s = std::cout) const
          throw( InvalidRequest );
 
+         /// Accessor for the \c health data member.
+      short getHealth() const throw()
+      { return health; }
+
+         /** Set the \c health data member to the value of h and
+          * update the \c healthy flag. */
+      virtual void setHealth(short h) throw()
+      {
+         health = h;
+         OrbElem::setHealthy(health == 0);
+      }
+
+         /** Set the \c health data member to either 0 or non-zero,
+          * depending on the requested value of h (true=0,
+          * false=non-zero). */
+      virtual void setHealthy(bool h) throw()
+      {
+         OrbElem::setHealthy(h);
+         health = (h ? 0 : 1);
+      }
+
+
    private:
       void determineTimes();
       void determineTimesGPS();
@@ -136,7 +158,6 @@ namespace gpstk
 
       short  codeflags;     /**< L2 codes */
       double accuracyValue; /**< User Range Accuracy (meters) */ 
-      short  health;        /**< SV health */
       short  L2Pdata;       /**< L2 P data flag */
       short  IODC;          /**< Index of data-clock  */
       short  fitDuration;   /**< Fit duration (hours) */
@@ -161,11 +182,18 @@ namespace gpstk
       static long SIXTEEN_SECONDS;
 
    private:
-         // The following two members are used for communicatiaon within
+         // The following two members are used for communication within
          // OrbElemRinex.
       double Toc3;            // As read from RINEX
       double Toe3;
       short fullXmitWeekNum; // As read from RINEX
+         /** SV health bits.  Kept private so that it can be made
+          * consistent with OrbElemBase::healthy.
+          * The specific meaning of the value is dependent on the
+          * satellite system represented in this object and defined by
+          * the RINEX standard, but in general 0 means healthy and
+          * anything else means unhealthy. */
+      short health;
 
 
          //@}

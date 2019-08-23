@@ -68,6 +68,7 @@ public:
          baleted.satID = sat;
          baleted.obsID = obsID;
          baleted.ctToe = gpstk::GPSWeekSecond(1917, 576000);
+         baleted.ctToc = gpstk::GPSWeekSecond(1917, 576000);
          baleted.beginValid = baleted.ctToe - 3600;
          baleted.endValid = baleted.ctToe + 3600;
 
@@ -131,10 +132,7 @@ public:
       TURETURN();
    }
 
-      /** This tests the behavior of OrbElemStore when the store is
-       * empty.  Under normal circumstances the map for a given
-       * satellite would not be empty, but that can't be guaranteed as
-       * soon as edit() is used. */
+
    unsigned basicTests()
    {
       TUDEF("OrbElemStore","Basic Access Tests");
@@ -142,8 +140,12 @@ public:
       {
          gpstk::OrbElemStore store;
 
-            // Create a small number of OrbElemBase object with specific characteristics.
-         gpstk::OrbElemRinex to1;             // Picked OrbElemRinex as minimum concrete class derived from OrbElemBase
+            // Create a small number of OrbElemBase object with
+            // specific characteristics.
+
+             // Picked OrbElemRinex as minimum concrete class derived
+             // from OrbElemBase
+         gpstk::OrbElemRinex to1;
          gpstk::SatID sat1(1, gpstk::SatID::systemGPS);
          gpstk::ObsID obsID(gpstk::ObsID::otNavMsg,
                             gpstk::ObsID::cbL1,
@@ -154,6 +156,7 @@ public:
          to1.ctToe = gpstk::GPSWeekSecond(2000, 7200);   // 0200
          to1.beginValid = to1.ctToe - 7200;
          to1.endValid = to1.ctToe + 7200;
+         to1.setHealth(0);
 
          gpstk::OrbElemRinex to2;
          gpstk::SatID sat2(32, gpstk::SatID::systemGPS);
@@ -163,6 +166,7 @@ public:
          to2.ctToe = gpstk::GPSWeekSecond(2000, 79200);    // 2200
          to2.beginValid = to2.ctToe - 7200;
          to2.endValid = to2.ctToe + 7200;
+         to2.setHealth(1);
 
          gpstk::OrbElemRinex to3;
          gpstk::SatID sat3(16, gpstk::SatID::systemGPS);
@@ -172,6 +176,7 @@ public:
          to3.ctToe = gpstk::GPSWeekSecond(2000, 43200);    // 1200
          to3.beginValid = to3.ctToe - 7200;
          to3.endValid = to3.ctToe + 7200;
+         to3.setHealth(666);
 
          store.addOrbElem(&to1);
          store.addOrbElem(&to2);
@@ -208,11 +213,42 @@ public:
             TUFAIL(ss.str());
          }
 
+         TUCSM("computeXvt");
+         gpstk::Xvt xvt;
+         TUCATCH(xvt = store.computeXvt(to1.satID, to1.ctToe));
+         TUASSERTE(gpstk::Xvt::HealthStatus,
+                   gpstk::Xvt::HealthStatus::Healthy, xvt.health);
+         TUCATCH(xvt = store.computeXvt(to2.satID, to2.ctToe));
+         TUASSERTE(gpstk::Xvt::HealthStatus,
+                   gpstk::Xvt::HealthStatus::Unhealthy, xvt.health);
+         TUCATCH(xvt = store.computeXvt(to3.satID, to3.ctToe));
+         TUASSERTE(gpstk::Xvt::HealthStatus,
+                   gpstk::Xvt::HealthStatus::Unhealthy, xvt.health);
+         gpstk::SatID bogus(33, gpstk::SatID::systemGPS);
+         TUCATCH(xvt = store.computeXvt(bogus, to3.ctToe));
+         TUASSERTE(gpstk::Xvt::HealthStatus,
+                   gpstk::Xvt::HealthStatus::Unavailable, xvt.health);
+
+         TUCSM("getSVHealth");
+         gpstk::Xvt::HealthStatus health;
+         TUCATCH(health = store.getSVHealth(to1.satID, to1.ctToe));
+         TUASSERTE(gpstk::Xvt::HealthStatus,
+                   gpstk::Xvt::HealthStatus::Healthy, health);
+         TUCATCH(health = store.getSVHealth(to2.satID, to2.ctToe));
+         TUASSERTE(gpstk::Xvt::HealthStatus,
+                   gpstk::Xvt::HealthStatus::Unhealthy, health);
+         TUCATCH(health = store.getSVHealth(to3.satID, to3.ctToe));
+         TUASSERTE(gpstk::Xvt::HealthStatus,
+                   gpstk::Xvt::HealthStatus::Unhealthy, health);
+         TUCATCH(health = store.getSVHealth(bogus, to3.ctToe));
+         TUASSERTE(gpstk::Xvt::HealthStatus,
+                   gpstk::Xvt::HealthStatus::Unavailable, health);
+
          TUCSM("getInitialTime");
          TUASSERTE(gpstk::CommonTime, to1.beginValid, store.getInitialTime());
 
          TUCSM("getFinalTime");
-         TUASSERTE(gpstk::CommonTime, to1.endValid, store.getFinalTime());
+         TUASSERTE(gpstk::CommonTime, to2.endValid, store.getFinalTime());
       }
       catch (gpstk::Exception &exc)
       {
@@ -234,6 +270,7 @@ int main(int argc, char *argv[])
    unsigned total = 0;
    OrbElemStore_T testClass;
    total += testClass.doFindEphEmptyTests();
+   total += testClass.basicTests();
 
    cout << "Total Failures for " << __FILE__ << ": " << total << endl;
    return total;

@@ -72,7 +72,7 @@ namespace gpstk
 
          // If the orbital elements are unhealthy, refuse to 
          // calculate an SV position and throw.
-         if (!eph->healthy && onlyHealthy)
+         if (!eph->isHealthy() && onlyHealthy)
          {
             InvalidRequest exc( std::string("SV is transmitting unhealthy navigation ")
                 + std::string("message at time of interest.") );
@@ -85,6 +85,51 @@ namespace gpstk
       {
          GPSTK_RETHROW(ir);
       }
+   }
+
+
+   Xvt OrbElemStore::computeXvt(const SatID& sat, const CommonTime& t) const
+      throw()
+   {
+      Xvt rv;
+      rv.health = Xvt::HealthStatus::Unavailable;
+      try
+      {
+            // Find appropriate orbit elements (if available)
+         const OrbElemBase* eph = findOrbElem(sat,t);
+         if (eph != nullptr)
+         {
+               // compute the position, velocity and time
+            rv = eph->svXvt(t);
+            rv.health = (eph->isHealthy() ? Xvt::HealthStatus::Healthy
+                         : Xvt::HealthStatus::Unhealthy);
+         }
+      }
+      catch (...)
+      {
+      }
+      return rv;
+   }
+
+
+   Xvt::HealthStatus OrbElemStore ::
+   getSVHealth(const SatID& sat, const CommonTime& t) const throw()
+   {
+      Xvt::HealthStatus rv = Xvt::HealthStatus::Unavailable;
+      try
+      {
+            // Find appropriate orbit elements (if available)
+         const OrbElemBase* eph = findOrbElem(sat,t);
+         if (eph != nullptr)
+         {
+            rv = (eph->isHealthy() ? Xvt::HealthStatus::Healthy
+                  : Xvt::HealthStatus::Unhealthy);
+         }
+      }
+      catch (...)
+      {
+      }
+      return rv;
    }
 
 //------------------------------------------------------------------------------
@@ -111,26 +156,6 @@ namespace gpstk
          GPSTK_THROW(ir);
       }
    }
-
-//--------------------------------------------------------------------------
-
-   bool OrbElemStore::isHealthy(const SatID& sat, const CommonTime& t) const
-      throw( InvalidRequest )
-   {
-      try
-      {
-         validSatSystem(sat);
-
-         // Find appropriate orbit elements (if available)
-         const OrbElemBase* eph = findOrbElem(sat, t);
-         
-         return eph->isHealthy();
-      }
-      catch(InvalidRequest& ir)
-      {
-         GPSTK_RETHROW(ir);
-      }
-   } // end of OrbElemStore::getHealth()
 
 //--------------------------------------------------------------------------
 // Typically overridden by descendents to obtain system-specific 

@@ -115,6 +115,31 @@ namespace gpstk
       Xvt getXvt( const SatID& sat,
                   const CommonTime& epoch ) const;
 
+         /** Compute the position, velocity and clock offset of the
+          * indicated object in ECEF coordinates (meters) at the
+          * indicated time.
+          * This method functions similarly to getXvt() except that it
+          * does not throw an exception for any reason.  Instead, the
+          * caller is expected to check the value of the "health"
+          * field of the returned Xvt and decide what to do with the
+          * data.
+          * @note This function ignores the onlyHealthy flag.  It is
+          *   up to the caller to examine the state of the health flag
+          *   and decide what to do.
+          * @param[in] id the object's identifier
+          * @param[in] t the time to look up
+          * @return the Xvt of the object at the indicated time */
+      virtual Xvt computeXvt(const SatID& id, const CommonTime& t)
+         const throw();
+
+         /** Get the satellite health at a specific time.
+          * @param[in] id the object's identifier
+          * @param[in] t the time to look up
+          * @return the health status of the object at the indicated time. */
+      virtual Xvt::HealthStatus getSVHealth(const SatID& id,
+                                            const CommonTime& t)
+         const throw();
+
          /// Get integration step for Runge-Kutta algorithm.
       double getIntegrationStep() const
       { return step; };

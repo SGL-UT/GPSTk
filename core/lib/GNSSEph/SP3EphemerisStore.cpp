@@ -90,6 +90,7 @@ namespace gpstk
 
       try {
          Xvt retXvt;
+         retXvt.health = Xvt::HealthStatus::Unavailable;
          for(int i=0; i<3; i++) {
             retXvt.x[i] = prec.Pos[i] * 1000.0;    // km -> m
             retXvt.v[i] = prec.Vel[i] * 0.1;       // dm/s -> m/s
@@ -105,10 +106,71 @@ namespace gpstk
 
             // compute relativity correction, in seconds
          retXvt.computeRelativityCorrection();
-
+         retXvt.health = Xvt::HealthStatus::Unused;
          return retXvt;
       }
       catch(InvalidRequest& e) { GPSTK_RETHROW(e); }
+   }
+
+
+   Xvt SP3EphemerisStore::computeXvt(const SatID& sat, const CommonTime& ttag)
+      const throw()
+   {
+      Xvt rv;
+      rv.health = Xvt::HealthStatus::Unavailable;
+      PositionRecord prec;
+      ClockRecord crec;
+      try
+      {
+         prec = posStore.getValue(sat,ttag);
+      }
+      catch(...)
+      {
+         return rv;
+      }
+      try
+      {
+         crec = clkStore.getValue(sat,ttag);
+      }
+      catch(...)
+      {
+         return rv;
+      }
+
+      try
+      {
+         for (int i=0; i<3; i++)
+         {
+            rv.x[i] = prec.Pos[i] * 1000.0;    // km -> m
+            rv.v[i] = prec.Vel[i] * 0.1;       // dm/s -> m/s
+         }
+         if (useSP3clock)
+         {                                        // SP3
+            rv.clkbias = crec.bias * 1.e-6;       // microsec -> sec
+            rv.clkdrift = crec.drift * 1.e-6;     // microsec/sec -> sec/sec
+         }
+         else
+         {                                        // RINEX clock
+            rv.clkbias = crec.bias;               // sec
+            rv.clkdrift = crec.drift;             // sec/sec
+         }
+
+            // compute relativity correction, in seconds
+         rv.computeRelativityCorrection();
+         rv.health = Xvt::HealthStatus::Unused;
+      }
+      catch(...)
+      {
+      }
+      return rv;
+   }
+
+
+   Xvt::HealthStatus SP3EphemerisStore ::
+   getSVHealth(const SatID& sat, const CommonTime& ttag) const throw()
+   {
+         // health information is not available in SP3
+      return Xvt::HealthStatus::Unused;
    }
 
       // Determine the earliest time for which this object can successfully 
@@ -466,7 +528,7 @@ namespace gpstk
                      haveP = haveV = haveEV = haveEP = false; // bad position record
                   }
                   else if(fillClockStore && rejectBadClockFlag
-                          && crec.bias >= 999999.)
+                          && (fabs(crec.bias) >= 999999.))
                   {
                         //cout << "Bad clock" << endl;
                      haveP = haveV = haveEV = haveEP = false; // bad clock record
@@ -501,7 +563,8 @@ namespace gpstk
                      //cout << "Bad last rec: position" << endl;
                   ;
                }
-               else if(fillClockStore && rejectBadClockFlag && crec.bias >= 999999.)
+               else if(fillClockStore && rejectBadClockFlag &&
+                       (fabs(crec.bias) >= 999999.))
                {
                      //cout << "Bad last rec: clock" << endl;
                   ;

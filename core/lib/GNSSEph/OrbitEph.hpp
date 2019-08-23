@@ -102,7 +102,8 @@ namespace gpstk
           * function, computing a meaningful health. */
       virtual bool isHealthy(void) const
       {
-         if(!dataLoadedFlag) GPSTK_THROW(InvalidRequest("Data not loaded"));
+         if(!dataLoadedFlag)
+            GPSTK_THROW(InvalidRequest("Data not loaded"));
          return true;
       }
 

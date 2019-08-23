@@ -69,7 +69,7 @@ public:
 //      Test to assure the that RES throws its exceptions in the right
 //      place and that it loads the RINEX Nav file correctly
 //=============================================================================
-   int RESTest (void)
+   unsigned RESTest()
    {
       TUDEF("RinexEphemerisStore", "Constructor");
 
@@ -90,7 +90,7 @@ public:
          //-----------------------------------------------------------
          // Verify the inability to load nonexistent files.
          //-----------------------------------------------------------
-      testFramework.changeSourceMethod("loadFile");
+      TUCSM("loadFile");
       try
       {
          rinEphStore.loadFile(inputNotaFile.c_str());
@@ -137,7 +137,7 @@ public:
          */
 //-------------------------------------------------------======================
 
-      testFramework.changeSourceMethod("clear");
+      TUCSM("clear");
          //--------------------------------------------------------------------
          // Verify that once a clear() has been performed the repeated
          // filename can be opened.
@@ -169,9 +169,9 @@ public:
 //      To see the ephemeris information for the selected Time and PRN
 //      please see findEph#.txt
 //=============================================================================
-   int findEphTest (void)
+   unsigned findEphTest()
    {
-      TUDEF( "GPSEphemerisStore", "findEphemeris" );
+      TUDEF("GPSEphemerisStore", "findEphemeris");
 
       RinexEphemerisStore rinEphStore;
       rinEphStore.loadFile(inputRinexNavData.c_str());
@@ -191,10 +191,10 @@ public:
       }
 
          // debug dump of gpsEphStore for reference if needed
-      ofstream GDumpData;
-      GDumpData.open(gpsEphemerisStoreDumpOutput.c_str());
-      gpsEphStore.dump(GDumpData,1);
-      GDumpData.close();
+      ofstream gDumpData;
+      gDumpData.open(gpsEphemerisStoreDumpOutput.c_str());
+      gpsEphStore.dump(gDumpData,1);
+      gDumpData.close();
 
       const short PRN0 = 0; // Zero PRN (Border test case)
       const short PRN1 = 1;
@@ -344,11 +344,11 @@ public:
          // Removed because formatting inconsistencies.  If you want
          // to do regression tests on formats, create an independent
          // test.
-         //testFramework.changeSourceMethod("findEphemeris Output");
+         //TUCSM("findEphemeris Output");
          //-------------------------------------------------------
          // Check findEphemeris output with pre-determined standard
          //-------------------------------------------------------
-         //testFramework.assert( testFramework.fileEqualTest( findEphTestOutput, findEphTestInput, 0), "Output file did not match regressive standard.", __LINE__ );
+         //testFramework.assert(testFramework.fileEqualTest(findEphTestOutput, findEphTestInput, 0), "Output file did not match regressive standard.", __LINE__);
 
       return testFramework.countFails();
    }
@@ -365,7 +365,7 @@ public:
 //      please see the files getXvt#.txt
 //=============================================================================
 
-   int getXvtTest (void)
+   unsigned getXvtTest()
    {
       TUDEF("OrbitEphStore", "getXvt");
 
@@ -466,40 +466,146 @@ public:
          " v:(354.696, 2812.26, -117.977),"
          " clk bias:3.42039e-05,"
          " clk drift:1.93268e-12,"
-         " relcorr:-1.49802e-09";
+         " relcorr:-1.49802e-09,"
+         " health:Healthy";
       std::string comparisonOutput15 =
          "x:(1.46708e+07, 7.54272e+06, 2.07205e+07),"
          " v:(-2147.79, 1575.58, 902.848),"
          " clk bias:0.000558473,"
          " clk drift:5.91172e-12,"
-         " relcorr:2.04148e-08";
+         " relcorr:2.04148e-08,"
+         " health:Healthy";
       std::string comparisonOutput32 =
          "x:(8.40859e+06, 1.71989e+07, -1.87307e+07),"
          " v:(-2248.12, -606.201, -1577.94),"
          " clk bias:2.12814e-05,"
          " clk drift:3.41061e-12,"
-         " relcorr:-5.04954e-09";
-      testFramework.changeSourceMethod("getXvt Output");
+         " relcorr:-5.04954e-09,"
+         " health:Healthy";
+      TUCSM("getXvt Output");
 
          //-------------------------------------------------------
          // Compare data for SatID 1 with pre-determined standard
          //-------------------------------------------------------
-      testFramework.assert( fPRN1.str() == comparisonOutput1,
-                            "Xvt redirect did not match regressive standard.", __LINE__ );
+      testFramework.assert(fPRN1.str() == comparisonOutput1,
+                            "Xvt redirect did not match regressive standard.", __LINE__);
 
          //-------------------------------------------------------
          // Compare data for SatID 15 with pre-determined standard
          //-------------------------------------------------------
-      testFramework.assert( fPRN15.str() == comparisonOutput15,
-                            "Xvt redirect did not match regressive standard.", __LINE__ );
+      testFramework.assert(fPRN15.str() == comparisonOutput15,
+                            "Xvt redirect did not match regressive standard.", __LINE__);
 
          //-------------------------------------------------------
          // Compare data for SatID 32 with pre-determined standard
          //-------------------------------------------------------
-      testFramework.assert( fPRN32.str() == comparisonOutput32,
-                            "Xvt redirect did not match regressive standard.", __LINE__ );
+      testFramework.assert(fPRN32.str() == comparisonOutput32,
+                            "Xvt redirect did not match regressive standard.", __LINE__);
 
       return testFramework.countFails();
+   }
+
+   unsigned computeXvtTest()
+   {
+      TUDEF("OrbitEphStore", "computeXvt");
+
+      try
+      {
+         RinexEphemerisStore rinEphStore;
+         rinEphStore.loadFile(inputRinexNavData.c_str());
+
+         stringstream fPRN1;
+         stringstream fPRN15;
+         stringstream fPRN32;
+         Xvt rv;
+         const short PRN0 = 0; // Zero PRN (Border test case)
+         const short PRN1 = 1;
+         const short PRN15 = 15;
+         const short PRN32 = 32;
+         const short PRN33 = 33;  // Top PRN (33) (Border test case);
+
+         SatID sid0(PRN0,SatID::systemGPS);
+         SatID sid1(PRN1,SatID::systemGPS);
+         SatID sid15(PRN15,SatID::systemGPS);
+         SatID sid32(PRN32,SatID::systemGPS);
+         SatID sid33(PRN33,SatID::systemGPS);
+
+         CivilTime tTime(2006,1,31,11,45,0,1);
+            // Border Time (Time of Border test cases)
+         CivilTime bTime(2006,1,31,2,0,0,1);
+         const CommonTime comTime = (CommonTime)tTime;
+         const CommonTime combTime = (CommonTime)bTime;
+
+         TUCATCH(rv = rinEphStore.computeXvt(sid1,comTime));
+         TUASSERTE(Xvt::HealthStatus, Xvt::HealthStatus::Healthy,rv.health);
+         fPRN1 << rv;
+         TUCATCH(rv = rinEphStore.computeXvt(sid15,comTime));
+         TUASSERTE(Xvt::HealthStatus, Xvt::HealthStatus::Healthy,rv.health);
+         fPRN15 << rv;
+         TUCATCH(rv = rinEphStore.computeXvt(sid32,comTime));
+         TUASSERTE(Xvt::HealthStatus, Xvt::HealthStatus::Healthy,rv.health);
+         fPRN32 << rv;
+         TUCATCH(rv = rinEphStore.computeXvt(sid0,combTime));
+         TUASSERTE(Xvt::HealthStatus, Xvt::HealthStatus::Unavailable,rv.health);
+         TUCATCH(rv = rinEphStore.computeXvt(sid33,combTime));
+         TUASSERTE(Xvt::HealthStatus, Xvt::HealthStatus::Unavailable,rv.health);
+
+         TUASSERTE(std::string, comparisonOutput1, fPRN1.str());
+         TUASSERTE(std::string, comparisonOutput15, fPRN15.str());
+         TUASSERTE(std::string, comparisonOutput32, fPRN32.str());
+      }
+      catch (...)
+      {
+         TUFAIL("Unexpected exception");
+      }
+      TURETURN();
+   }
+
+
+   unsigned getSVHealthTest()
+   {
+      TUDEF("OrbitEphStore", "getSVHealth");
+
+      try
+      {
+         RinexEphemerisStore rinEphStore;
+         rinEphStore.loadFile(inputRinexNavData.c_str());
+
+         Xvt::HealthStatus rv;
+         const short PRN0 = 0; // Zero PRN (Border test case)
+         const short PRN1 = 1;
+         const short PRN15 = 15;
+         const short PRN32 = 32;
+         const short PRN33 = 33;  // Top PRN (33) (Border test case);
+
+         SatID sid0(PRN0,SatID::systemGPS);
+         SatID sid1(PRN1,SatID::systemGPS);
+         SatID sid15(PRN15,SatID::systemGPS);
+         SatID sid32(PRN32,SatID::systemGPS);
+         SatID sid33(PRN33,SatID::systemGPS);
+
+         CivilTime Time(2006,1,31,11,45,0,1);
+            // Border Time (Time of Border test cases)
+         CivilTime bTime(2006,1,31,2,0,0,1);
+         const CommonTime comTime = (CommonTime)Time;
+         const CommonTime combTime = (CommonTime)bTime;
+
+         TUCATCH(rv = rinEphStore.getSVHealth(sid1,comTime));
+         TUASSERTE(Xvt::HealthStatus, Xvt::HealthStatus::Healthy, rv);
+         TUCATCH(rv = rinEphStore.getSVHealth(sid15,comTime));
+         TUASSERTE(Xvt::HealthStatus, Xvt::HealthStatus::Healthy, rv);
+         TUCATCH(rv = rinEphStore.getSVHealth(sid32,comTime));
+         TUASSERTE(Xvt::HealthStatus, Xvt::HealthStatus::Healthy, rv);
+         TUCATCH(rv = rinEphStore.getSVHealth(sid0,combTime));
+         TUASSERTE(Xvt::HealthStatus, Xvt::HealthStatus::Unavailable, rv);
+         TUCATCH(rv = rinEphStore.getSVHealth(sid33,combTime));
+         TUASSERTE(Xvt::HealthStatus, Xvt::HealthStatus::Unavailable, rv);
+      }
+      catch (...)
+      {
+         TUFAIL("Unexpected exception");
+      }
+      TURETURN();
    }
 
 
@@ -523,7 +629,7 @@ public:
 // should it be used again.
 //=============================================================================
       /*
-        int getXvt2Test (void)
+        unsigned getXvt2Test()
         {
         TUDEF("OrbitEphStore", "getXvt with IODC");
 
@@ -624,7 +730,7 @@ public:
          fPRN15.close();
          fPRN32.close();
 
-         testFramework.changeSourceMethod("getXvt with IODC Output");
+         TUCSM("getXvt with IODC Output");
       //--------------RinexEphemerisStore_getXvt2Test_4 - Compare data for SatID 1 with pre-determined standard
       testFramework.assert(fileEqualTest((char*)(filename+"/Logs/getXvt2_1.txt").c_str(),(char*)(filename+"/Checks/getPrnXvt1.chk").c_str()));
       testFramework.next();
@@ -641,150 +747,28 @@ public:
 
 
 //=============================================================================
-//      Test to assure the quality of GPSEphemerisStore class member
-//      getSatHealth()
-//
-//      This test makes sure that exceptions are thrown if there is no
-//      ephemeris data for the given PRN and also that an exception is
-//      thrown if there is no data for the PRN at the given
-//      time. Furthermore, this test assures that for a specific PRN
-//      and Time, that SV is as we expect it, health (0).
-//=============================================================================
-   int getSatHealthTest (void)
-   {
-      TUDEF( "OrbitEphStore", "getSatHealth" );
-
-      const short PRN0 = 0; // Zero PRN (Border test case)
-      const short PRN1 = 1;
-      const short PRN15 = 15;
-      const short PRN32 = 32;
-      const short PRN33 = 33;  // Top PRN (33) (Border test case);
-      SatID sid0(PRN0,SatID::systemGPS);
-      SatID sid1(PRN1,SatID::systemGPS);
-      SatID sid15(PRN15,SatID::systemGPS);
-      SatID sid32(PRN32,SatID::systemGPS);
-      SatID sid33(PRN33,SatID::systemGPS);
-
-      RinexEphemerisStore rinEphStore;
-      rinEphStore.loadFile(inputRinexNavData.c_str());
-
-      std::list<GPSEphemeris> R3NList;
-      GPSEphemerisStore gpsEphStore;
-      list<GPSEphemeris>::const_iterator it;
-      rinEphStore.addToList(R3NList);
-      for (it = R3NList.begin(); it != R3NList.end(); ++it)
-         gpsEphStore.addEphemeris(GPSEphemeris(*it));
-
-      CivilTime Time(2006,1,31,11,45,0,2);
-         // Border Time (Time of Border test cases)
-      CivilTime bTime(2006,1,31,2,0,0,2);
-      const CommonTime ComTime = (CommonTime)Time;
-      const CommonTime CombTime = (CommonTime)bTime;
-
-
-      try
-      {
-            //-------------------------------------------------------
-            // Does getSatHealth work in ideal conditions?
-            //-------------------------------------------------------
-         try
-         {
-            gpsEphStore.getSatHealth(sid1,ComTime);
-            TUPASS("sedIdentifier");
-         }
-         catch (...)
-         {
-            TUFAIL("getXvt threw an exception in ideal conditions");
-         }
-
-            //-------------------------------------------------------
-            // Does getSatHealth return the proper value?
-            //-------------------------------------------------------
-         testFramework.assert((short) 1 == gpsEphStore.getSatHealth(sid1,ComTime),
-                              "A listed healthy SV was not found or was found to be unhealthy.", __LINE__);
-
-            //-------------------------------------------------------
-            // Does getSatHealth return the proper value?
-            //-------------------------------------------------------
-         testFramework.assert((short) 1 == gpsEphStore.getSatHealth(sid15,ComTime),
-                              "A listed healthy SV was not found or was found to be unhealthy.", __LINE__);
-
-            //-------------------------------------------------------
-            // Does getSatHealth return the proper value?
-            //-------------------------------------------------------
-         testFramework.assert((short) 1 == gpsEphStore.getSatHealth(sid32,ComTime),
-                              "A listed healthy SV was not found or was found to be unhealthy.", __LINE__);
-
-            //-------------------------------------------------------
-            // Does getSatHealth throw an error for bad SatID request?
-            //-------------------------------------------------------
-         try
-         {
-            gpsEphStore.getSatHealth(sid0,CombTime);
-            TUPASS("sedIdentifier");
-         }
-         catch (...)
-         {
-            TUFAIL("Error thrown for bad SatID request. 0 should have been returned.");
-         }
-
-            //-------------------------------------------------------
-            // Does getSatHealth throw an error for bad SatID request?
-            //-------------------------------------------------------
-         try
-         {
-            gpsEphStore.getSatHealth(sid33,CombTime);
-            TUPASS("sedIdentifier");
-         }
-         catch (...)
-         {
-            TUFAIL("Error thrown for bad SatID request. 0 should have been returned.");
-         }
-
-            //-----------------------------------------------------------
-            // Does getSatHealth return the proper value for bad SatID request?
-            //-----------------------------------------------------------
-         testFramework.assert((short) 0 == gpsEphStore.getSatHealth(sid0,ComTime),
-                              "An unlisted SatID was not set to unhealthy", __LINE__);
-
-            //-----------------------------------------------------------
-            // Does getSatHealth return the proper value for bad SatID request?
-            //-----------------------------------------------------------
-         testFramework.assert((short) 0 == gpsEphStore.getSatHealth(sid33,ComTime),
-                              "An unlisted SatID was not set to unhealthy", __LINE__);
-      }
-      catch (Exception& e)
-      {
-            // cout << e;
-      }
-
-      return testFramework.countFails();
-   }
-
-
-//=============================================================================
 //      Test to assure the quality of GPSEphemerisStore class member dump()
 //
 //      This test makes sure that dump() behaves as expected.  With
-//      paramters from 1-3 with each giving more and more respective
+//      parameters from 1-3 with each giving more and more respective
 //      information, this information is then put into txt files.
 //
-//      To see the dump with paramter 1, please view DumpData1.txt
-//      To see the dump with paramter 2, pleave view DumpData2.txt
-//      To see the dump with paramter 3, please view DumpData3.txt
+//      To see the dump with parameter 1, please view DumpData1.txt
+//      To see the dump with parameter 2, pleave view DumpData2.txt
+//      To see the dump with parameter 3, please view DumpData3.txt
 //=============================================================================
-   int dumpTest (void)
+   unsigned dumpTest()
    {
-      TUDEF( "GPSEphemerisStore", "dump" );
+      TUDEF("GPSEphemerisStore", "dump");
 
 
       ofstream dumpTestOutputStreamForDetail0;
       ofstream dumpTestOutputStreamForDetail1;
       ofstream dumpTestOutputStreamForDetail2;
 
-      dumpTestOutputStreamForDetail0.open ( dumpTestOutputForDetail0.c_str() );
-      dumpTestOutputStreamForDetail1.open ( dumpTestOutputForDetail1.c_str() );
-      dumpTestOutputStreamForDetail2.open ( dumpTestOutputForDetail2.c_str() );
+      dumpTestOutputStreamForDetail0.open(dumpTestOutputForDetail0.c_str());
+      dumpTestOutputStreamForDetail1.open(dumpTestOutputForDetail1.c_str());
+      dumpTestOutputStreamForDetail2.open(dumpTestOutputForDetail2.c_str());
 
 
       RinexEphemerisStore rinEphStore;
@@ -793,7 +777,7 @@ public:
       try
       {
             //-----------------------------------------------------------
-            // Check that dump( , detail = 1) will work with no exceptions
+            // Check that dump(, detail = 1) will work with no exceptions
             //-----------------------------------------------------------
          try
          {
@@ -806,7 +790,7 @@ public:
          }
 
             //-----------------------------------------------------------
-            // Check that dump( , detail = 2) will work with no exceptions
+            // Check that dump(, detail = 2) will work with no exceptions
             //-----------------------------------------------------------
          try
          {
@@ -819,7 +803,7 @@ public:
          }
 
             //-----------------------------------------------------------
-            // Check that dump( , detail = 3) will work with no exceptions
+            // Check that dump(, detail = 3) will work with no exceptions
             //-----------------------------------------------------------
          try
          {
@@ -843,28 +827,28 @@ public:
       dumpTestOutputStreamForDetail2.close();
 
          //-----------------------------------------------------------
-         // Check dump( , detail = 1) output against its
+         // Check dump(, detail = 1) output against its
          // pre-determined standard
          //-----------------------------------------------------------
-      testFramework.assert( testFramework.fileEqualTest( dumpTestOutputForDetail0,
+      testFramework.assert(testFramework.fileEqualTest(dumpTestOutputForDetail0,
                             dumpTestInputForDetail0, 2),
-                            "Dump(*,detail=1) did not match its regressive output", __LINE__ );
+                            "Dump(*,detail=1) did not match its regressive output", __LINE__);
 
          //-----------------------------------------------------------
-         // Check dump( , detail = 2) output against its
+         // Check dump(, detail = 2) output against its
          // pre-determined standard
          //-----------------------------------------------------------
-      testFramework.assert( testFramework.fileEqualTest( dumpTestOutputForDetail1,
+      testFramework.assert(testFramework.fileEqualTest(dumpTestOutputForDetail1,
                             dumpTestInputForDetail1, 2),
-                            "Dump(*,detail=2) did not match its regressive output", __LINE__ );
+                            "Dump(*,detail=2) did not match its regressive output", __LINE__);
 
          //-----------------------------------------------------------
-         // Check dump( , detail = 3) output against its
+         // Check dump(, detail = 3) output against its
          // pre-determined standard
          //-----------------------------------------------------------
-      testFramework.assert( testFramework.fileEqualTest( dumpTestOutputForDetail2,
+      testFramework.assert(testFramework.fileEqualTest(dumpTestOutputForDetail2,
                             dumpTestInputForDetail2, 2),
-                            "Dump(*,detail=3) did not match its regressive output", __LINE__ );
+                            "Dump(*,detail=3) did not match its regressive output", __LINE__);
 
       return testFramework.countFails();
    }
@@ -879,9 +863,9 @@ public:
 //      object by checking the start and end times of the Object
 //=============================================================================
 
-   int addEphemerisTest (void)
+   unsigned addEphemerisTest()
    {
-      TUDEF( "GPSEphemerisStore", "addEphemeris" );
+      TUDEF("GPSEphemerisStore", "addEphemeris");
 
 
       GPSEphemerisStore Blank;
@@ -935,7 +919,7 @@ public:
             // Verify that addEphemeris added by checking the initial
             // time of the GPSEphemerisStore
             //-----------------------------------------------------------
-         testFramework.assert( ComTimeB == Blank.getInitialTime(),
+         testFramework.assert(ComTimeB == Blank.getInitialTime(),
                                "addEphemeris may not have added the ephemeris or updated the initial time",
                                __LINE__);
 
@@ -943,9 +927,9 @@ public:
             // Verify that addEphemeris added by checking the final
             // time of the GPSEphemerisStore
             //-----------------------------------------------------------
-         testFramework.assert( ComTimeE == Blank.getFinalTime(),
+         testFramework.assert(ComTimeE == Blank.getFinalTime(),
                                "addEphemeris may not have added the ephemeris or updated the final time",
-                               __LINE__ );
+                               __LINE__);
 
 
          Blank.clear();
@@ -953,15 +937,15 @@ public:
             // Verify that clear() worked by checking the initial time
             // of the GPSEphemerisStore
             //-----------------------------------------------------------
-         testFramework.assert( ComDefB == Blank.getInitialTime(),
-                               "clear may not have functioned or reset the initial time", __LINE__ );
+         testFramework.assert(ComDefB == Blank.getInitialTime(),
+                               "clear may not have functioned or reset the initial time", __LINE__);
 
             //-----------------------------------------------------------
             // Verify that clear() worked by checking the initial time
             // of the GPSEphemerisStore
             //-----------------------------------------------------------
-         testFramework.assert( ComDefE == Blank.getFinalTime(),
-                               "clear may not have functioned or reset the final time", __LINE__ );
+         testFramework.assert(ComDefE == Blank.getFinalTime(),
+                               "clear may not have functioned or reset the final time", __LINE__);
       }
       catch (Exception& e)
       {
@@ -983,14 +967,14 @@ public:
 //
 //      For further inspection of the edit, please view editTest.txt
 //=============================================================================
-   int editTest (void)
+   unsigned editTest()
    {
 
       TUDEF("OrbitEphStore", "edit");
 
 
       ofstream editTestOutputStream;
-      editTestOutputStream.open (editTestOutput.c_str());
+      editTestOutputStream.open(editTestOutput.c_str());
 
       RinexEphemerisStore rinEphStore;
       rinEphStore.loadFile(inputRinexNavData.c_str());
@@ -1046,9 +1030,9 @@ public:
          //-----------------------------------------------------------
          // Check edited output against its pre-determined standard
          //-----------------------------------------------------------
-      testFramework.assert( testFramework.fileEqualTest( editTestOutput,
+      testFramework.assert(testFramework.fileEqualTest(editTestOutput,
                             editTestInput, 2), "Output from edit does not match regressive standard",
-                            __LINE__ );
+                            __LINE__);
 
       return testFramework.countFails();
    }
@@ -1066,17 +1050,17 @@ public:
 //
 //      Please note that this test also indirectly tests size
 //=============================================================================
-      /*              int wiperTest (void)
+      /*              unsigned wiperTest()
                       {
                       TUDEF("RinexEphemerisStore", "wiper");
 
 
-                      ofstream DumpData1;
-                      ofstream DumpData2;
+                      ofstream dumpData1;
+                      ofstream dumpData2;
                       outputTestOutput1 = outputTestOutput + "wiperTest.txt";
                       outputTestOutput15 = outputTestOutput + "wiperTest2.txt";
-                      DumpData1.open (outputTestOutput1.c_str());
-                      DumpData2.open (outputTestOutput15.c_str());
+                      dumpData1.open(outputTestOutput1.c_str());
+                      dumpData2.open(outputTestOutput15.c_str());
 
 
                       RinexEphemerisStore rinEphStore;
@@ -1108,7 +1092,7 @@ public:
             // up to the provided time.
             gpsEphStore.wiper(ComTime);
 
-            gpsEphStore.dump(DumpData1,1);
+            gpsEphStore.dump(dumpData1,1);
 
       //--------------RinexEphemerisStore_wiperTest_2 - Verify that the new initial time is the time provided (partial wipe)
       testFramework.assert(ComTime == gpsEphStore.getInitialTime());
@@ -1126,23 +1110,23 @@ public:
       testFramework.assert(CommonTime::END_OF_TIME == gpsEphStore.getInitialTime());
       testFramework.next();
 
-      gpsEphStore.dump(DumpData2,1);
+      gpsEphStore.dump(dumpData2,1);
       }
       catch (Exception& e)
       {
          // cout << e;
          }
-         DumpData1.close();
-         DumpData2.close();
+         dumpData1.close();
+         dumpData2.close();
          inputComparisonOutput1  = inputComparisonOutput + "wiperTest.chk";
          inputComparisonOutput15 = inputComparisonOutput + "wiperTest2.chk";
 
       //--------------RinexEphemerisStore_dumpTest_5 - Check partially wiped output against its pre-determined standard
-      testFramework.assert( testFramework.fileEqualTest( outputTestOutput1, inputComparisonOutput1, 0) );
+      testFramework.assert(testFramework.fileEqualTest(outputTestOutput1, inputComparisonOutput1, 0));
       testFramework.next();
 
       //--------------RinexEphemerisStore_dumpTest_6 - Check totally wiped output against its pre-determined standard
-      testFramework.assert( testFramework.fileEqualTest( outputTestOutput15, inputComparisonOutput15, 0) );
+      testFramework.assert(testFramework.fileEqualTest(outputTestOutput15, inputComparisonOutput15, 0));
       testFramework.next();
 
       return testFramework.countFails();
@@ -1160,7 +1144,7 @@ public:
 //
 //      For further inspection of the edit, please view clearTest.txt
 //=============================================================================
-   int clearTest (void)
+   unsigned clearTest()
    {
       TUDEF("OrbitEphStore", "clear");
 
@@ -1211,9 +1195,9 @@ public:
          //-----------------------------------------------------------
          // Check partially wiped output against its pre-determined standard
          //-----------------------------------------------------------
-      testFramework.assert( testFramework.fileEqualTest( clearTestOutput,
+      testFramework.assert(testFramework.fileEqualTest(clearTestOutput,
                             clearTestInput, 2),
-                            "Output from clear does not match its regressive standard.", __LINE__ );
+                            "Output from clear does not match its regressive standard.", __LINE__);
       return testFramework.countFails();
    }
 
@@ -1238,9 +1222,9 @@ public:
 //
 //      For further inspection of the find, please view findUserTest.txt
 //=============================================================================
-   int findUserOrbEphTest (void)
+   unsigned findUserOrbEphTest()
    {
-      TUDEF( "OrbitEphStore", "findUserOrbitEph" );
+      TUDEF("OrbitEphStore", "findUserOrbitEph");
 
 
       ofstream findUserTestOutputStream;
@@ -1339,9 +1323,9 @@ public:
          //-----------------------------------------------------------
          // Check findUserOrbitEph output against its pre-determined standard
          //-----------------------------------------------------------
-      testFramework.assert( testFramework.fileEqualTest( findUserTestOutput,
+      testFramework.assert(testFramework.fileEqualTest(findUserTestOutput,
                             findUserTestInput, 0),
-                            "findUserOrbitEph output does not match its regressive standard", __LINE__ );
+                            "findUserOrbitEph output does not match its regressive standard", __LINE__);
       return testFramework.countFails();
    }
 
@@ -1362,9 +1346,9 @@ public:
 
 
 
-   int findNearOrbEphTest (void)
+   unsigned findNearOrbEphTest()
    {
-      TUDEF( "OrbitEphStore", "findNearOrbitEph" );
+      TUDEF("OrbitEphStore", "findNearOrbitEph");
 
 
       ofstream findNearTestOutputStream;
@@ -1420,7 +1404,7 @@ public:
             //-----------------------------------------------------------
             // Check that an invalid time yields a thrown error
             //
-            // TEST REMOVED.  findNearOrbitEph( ) does not check
+            // TEST REMOVED.  findNearOrbitEph() does not check
             // that the elements are within their fit interval.  Therefore
             // there is no concept of an "invalid time".
             //-----------------------------------------------------------
@@ -1471,9 +1455,9 @@ public:
          //-----------------------------------------------------------
          // Check findNearOrbitEph output against its pre-determined standard
          //-----------------------------------------------------------
-      testFramework.assert( testFramework.fileEqualTest( findNearTestOutput,
+      testFramework.assert(testFramework.fileEqualTest(findNearTestOutput,
                             findNearTestInput, 0),
-                            "findNearOrbitEph output does not match its regressive standard", __LINE__ );
+                            "findNearOrbitEph output does not match its regressive standard", __LINE__);
       return testFramework.countFails();
    }
 
@@ -1488,7 +1472,7 @@ public:
 //      and Store are checked to be equal.
 //=============================================================================
 
-   int addToListTest (void)
+   unsigned addToListTest()
    {
       TUDEF("OrbitEphStore", "addToList");
 
@@ -1526,23 +1510,23 @@ public:
             //-----------------------------------------------------------
          testFramework.assert(rinEphStore.gpstk::OrbitEphStore::size() ==
                               gpsEphStore.gpstk::OrbitEphStore::size(),
-                              "The added entries are not reflected in the GPSEphemerisStore", __LINE__ );
+                              "The added entries are not reflected in the GPSEphemerisStore", __LINE__);
 
          testFramework.assert(rinEphStore.gpstk::OrbitEphStore::size() ==
                               numberOfEntries, "The total number of entries is not what is expected",
-                              __LINE__ );
+                              __LINE__);
 
          testFramework.assert(rinEphStore.gpstk::OrbitEphStore::size(
                                  sid1) == numberOfEntries1,
-                              "The total number of entries for SatID 1 is not what is expected", __LINE__ );
+                              "The total number of entries for SatID 1 is not what is expected", __LINE__);
 
          testFramework.assert(rinEphStore.gpstk::OrbitEphStore::size(
                                  sid15) == numberOfEntries15,
-                              "The total number of entries for SatID 15 is not what is expected", __LINE__ );
+                              "The total number of entries for SatID 15 is not what is expected", __LINE__);
 
          testFramework.assert(rinEphStore.gpstk::OrbitEphStore::size(
                                  sid32) == numberOfEntries32,
-                              "The total number of entries for SatID 32 is not what is expected", __LINE__ );
+                              "The total number of entries for SatID 32 is not what is expected", __LINE__);
       }
       catch (Exception& e)
       {
@@ -1555,10 +1539,8 @@ public:
 //      Initialize Test Data Filenames
 //=============================================================================
 
-   void init( void )
+   void init()
    {
-
-      TestUtil test0;
       std::string dataFilePath = gpstk::getPathData();
       std::string tempFilePath = gpstk::getPathTestTemp();
       std::string file_sep = "/";
@@ -1605,6 +1587,27 @@ public:
                                       "test_output_ephemeris_dump_findNear.txt";
       findNearTestInput             = dataFilePath + file_sep +
                                       "test_input_ephemeris_dump_findNear.txt";
+      comparisonOutput1  =
+         "x:(1.43293e+07, -2.70658e+06, -2.19986e+07),"
+         " v:(354.696, 2812.26, -117.977),"
+         " clk bias:3.42039e-05,"
+         " clk drift:1.93268e-12,"
+         " relcorr:-1.49802e-09,"
+         " health:Healthy";
+      comparisonOutput15 =
+         "x:(1.46708e+07, 7.54272e+06, 2.07205e+07),"
+         " v:(-2147.79, 1575.58, 902.848),"
+         " clk bias:0.000558473,"
+         " clk drift:5.91172e-12,"
+         " relcorr:2.04148e-08,"
+         " health:Healthy";
+      comparisonOutput32 =
+         "x:(8.40859e+06, 1.71989e+07, -1.87307e+07),"
+         " v:(-2248.12, -606.201, -1577.94),"
+         " clk bias:2.12814e-05,"
+         " clk drift:3.41061e-12,"
+         " relcorr:-5.04954e-09,"
+         " health:Healthy";
    }
 
 private:
@@ -1633,49 +1636,31 @@ private:
 
    std::string findNearTestOutput;
    std::string findNearTestInput;
+
+   std::string comparisonOutput1;
+   std::string comparisonOutput15;
+   std::string comparisonOutput32;
 };
 
 int main() // Main function to initialize and run all tests above
 {
-   int check, errorCounter = 0;
+   unsigned errorTotal = 0;
    RinexEphemerisStore_T testClass;
    testClass.init();
 
-   check = testClass.RESTest();
-   errorCounter += check;
+   errorTotal += testClass.RESTest();
+   errorTotal += testClass.findEphTest();
+   errorTotal += testClass.getXvtTest();
+   errorTotal += testClass.computeXvtTest();
+   errorTotal += testClass.getSVHealthTest();
+   errorTotal += testClass.dumpTest();
+   errorTotal += testClass.addToListTest();
+   errorTotal += testClass.addEphemerisTest();
+   errorTotal += testClass.editTest();
+   errorTotal += testClass.clearTest();
+   errorTotal += testClass.findUserOrbEphTest();
+   errorTotal += testClass.findNearOrbEphTest();
+   cout << "Total Failures for " << __FILE__ << ": " << errorTotal << endl;
 
-   check = testClass.findEphTest();
-   errorCounter += check;
-
-   check = testClass.getXvtTest();
-   errorCounter += check;
-
-   check = testClass.getSatHealthTest();
-   errorCounter += check;
-
-   check = testClass.dumpTest();
-   errorCounter += check;
-
-   check = testClass.addToListTest();
-   errorCounter += check;
-
-   check = testClass.addEphemerisTest();
-   errorCounter += check;
-
-   check = testClass.editTest();
-   errorCounter += check;
-
-   check = testClass.clearTest();
-   errorCounter += check;
-
-   check = testClass.findUserOrbEphTest();
-   errorCounter += check;
-
-   check = testClass.findNearOrbEphTest();
-   errorCounter += check;
-
-   std::cout << "Total Failures for " << __FILE__ << ": " << errorCounter <<
-             std::endl;
-
-   return errorCounter; // Return the total number of errors
+   return errorTotal; // Return the total number of errors
 }
