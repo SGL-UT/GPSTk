@@ -192,9 +192,9 @@ public:
       gpstk::Rinex3NavStream ns(inputRN3Data.c_str());
       gpstk::Rinex3NavHeader nh;
       gpstk::Rinex3NavData nd;
-      TUASSERT(ns);
+      TUASSERT(ns.good());
       ns >> nh;
-      TUASSERT(ns);
+      TUASSERT(ns.good());
       ns >> nd;
       if (firstOnly)
       {
