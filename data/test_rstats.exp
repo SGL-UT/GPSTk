@@ -1274,10 +1274,9 @@ SEQS 69090.0000 65.8500   134 34.5510 15.5113
  132 69060.00000 65.03000       --       --   0       --       --   0       --       --       --
  133 69090.00000 65.85000       --       --   0       --       --   0       --       --       --
 ============= rstats SDexam01.txt -q -p 5 -x 1 -y 2 --fix 4
-FIXRES  1 OUT ind=101 npts=1 x_gap=90.00000 (x=68070.00000)
-FIXRES  2 SLIP ind=102 npts=2 x_gap=120.00000 step=-1.22286 sig=0.64739 score=100 (x=68160.00000)
-FIXRES found 2 results: 1 outlier rejecting 1 pt and 1 slip (small slips ignored) in x-interval (68070.00000 68160.00000) = 90.00000
-FIXRES    with 0 high sigmas remaining and estimated limit 0.13091
+FIXRES  1 OUT ind=98 npts=4 x_gap=180.00000 (x=67980.00000)
+FIXRES found 1 results: 1 outlier rejecting 4 pts and 0 slip (small slips ignored) in x-interval (67980.00000 67980.00000) = 0.00000
+FIXRES    with 9 high sigmas remaining and estimated limit 0.12148
 ============= rstats SDexam01.txt -q -p 5 -x 1 -y 2 --wnj 1.e-4
 # White noise jerk filter, unweighted, times since 65010.000
 #K[MTS]U N   time  X     V     A    sigX   sigV   sigA  data  SOLresid  (M)PFresid

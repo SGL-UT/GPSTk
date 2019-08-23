@@ -1626,7 +1626,7 @@ try {
    N = ifdf.analysis();
    results = ifdf.getResults();
    Nsig = ifdf.getNhighSigma();
-   Esiglim = ifdf.getComputedSigmaLimit();
+   Esiglim = ifdf.getEstimatedSigmaLimit();
 
    if(N < 0)
       cout << "Error - not enough data for fix filter.\n";

@@ -746,7 +746,7 @@ double FDistCDF(const double& F, const int& n1, const int& n2)
    catch(Exception& e) { GPSTK_RETHROW(e); }
 }
 
-// Probabiliy density function for F distribution
+// Probability density function for F distribution
 // The F distribution is the ratio of two chi-square distributions with degrees
 // of freedom N1 and N2, respectively, where each chi-square has first been
 // divided by its degrees of freedom.
