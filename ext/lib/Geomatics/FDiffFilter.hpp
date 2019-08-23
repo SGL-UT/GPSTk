@@ -113,6 +113,8 @@ template <class T> class IterativeFDiffFilter;
 /// NB Flags and xdata are required and critical. Outliers must be flagged or
 /// removed between iterations, and xdata is needed for gaps and to correct slip
 /// magnitudes for the slope of the data.
+/// Probably the major weakness of this filter is it tends to find false slips
+/// after large gaps.
 template <class T> class FDiffFilter
 {
 private:
@@ -158,6 +160,8 @@ private:
    bool doSmall;                 ///< if true, include small slips (<fdlim) in results
    bool keepSigIndex;            ///< if true, keep vector of HighSigmaIndex
    std::vector<unsigned int> sigIndexes; ///< saved indexes of Nsig high sigma pts
+
+   T medSlope, madSlope;         ///< robust stats on slope
 
 public:
    // member functions ---------------------------------------
@@ -257,6 +261,7 @@ template<class T> int FDiffFilter<T>::filter(const size_t i0, int dsize)
    // compute stats on sigmas and data in a sliding window of width Nwind
    gpstk::TwoSampleStats<T> fstats;       // stats on the first diffs in window
    gpstk::TwoSampleStats<T> dstats;       // stats on the data in window
+   std::vector<T> slopes;                 // store slopes, for robust stats
 
    // loop over all data, computing first difference and stats in sliding window
    Nsig = 0;
@@ -278,7 +283,7 @@ template<class T> int FDiffFilter<T>::filter(const size_t i0, int dsize)
          // get approx slope at first pt (often slope==0 here => OUT; index=0)
          if(n==2) Avec[islope].sloN =     // first slope = 2nd slope = d(data)/dx
                   (data[i]-data[iprev])/(xdata[i]-xdata[iprev]);
-         // TEMP
+         // index of latest good slope
          A.sloInd = islope;
          // compute the difference = change in data - correction for slope
          A.diff = data[i]-data[iprev]
@@ -301,12 +306,20 @@ template<class T> int FDiffFilter<T>::filter(const size_t i0, int dsize)
          Nsig++;                          // count it if sigma is high
          if(keepSigIndex) sigIndexes.push_back(i);
       }
-      else islope = Avec.size();          // keep this, the most recent good slope
+      else {
+         islope = Avec.size();          // keep this, the most recent good slope
+         // keep slopes for roubst stats
+         slopes.push_back(A.sloN);
+      }
 
       Avec.push_back(A);
       iprev = i;
       i++; if(!noflags) while(i<ilimit && flags[i]) i++;
    }
+
+   // compute robust stats on slopes
+   madSlope = gpstk::Robust::MedianAbsoluteDeviation(&slopes[0], slopes.size(),
+                                                      medSlope, false);
 
    return Avec.size();
 
@@ -409,6 +422,16 @@ template<class T> int FDiffFilter<T>::analysis(void)
             fdfr.score = (unsigned int)(0.5 + 100.*::fabs(fdfr.step)/fdlim);
             if(fdfr.score > 100) fdfr.score = 100;
 
+            // BUT if step is of order few*MADslope*dx, then probably a false positive
+            if(fdfr.score == 100 && ::fabs(fdfr.step) < 3*madSlope*fdfr.dx) {
+               //if(debug)
+               //std::cout << "FDFa: F+ slip (|diff| < 3*madSlope*dx) at index "
+               //<< Avec[j].index << std::fixed << std::setprecision(osp)
+               //<< ": " << Avec[j].diff << " < 3 * " << madSlope
+               //<< " * " << fdfr.dx << " = " << 3*madSlope*fdfr.dx << std::endl;
+               fdfr.score = -100;
+            }
+
             // save the hit
             if(doSmall || fdfr.score == 100) results.push_back(fdfr);
          }
@@ -455,17 +478,20 @@ template<class T> void FDiffFilter<T>::dump(std::ostream& os, std::string tag)
    int i,j,k,iprev,w(osw>5?osw+1:5);
    os << "#" << tag << " FDiffFilter::dump() with limit "
       << std::fixed << std::setprecision(osp) << fdlim << " sigma limit " << siglim
-      << (noxdata ? " (xdata is index)" : "")
+      << std::setprecision(osp+2) << " med,mad slope " << medSlope << " " << madSlope
+      << std::setprecision(osp) << (noxdata ? " (xdata is index)" : "")
       << "\n#" << tag << " " << std::setw(2) << "i"
       << " " << std::setw(w) << "xd" << " "
       << std::setw(3) << "flg" << " " << std::setw(w) << "data" << " "
       << std::setw(w) << "fdif" << " " << std::setw(w) << "sig" << " "
       << std::setw(w) << "slope" << " " << std::setw(w) << "slp_u" << " "
       << std::setw(w) << "sl*dx" << " " << std::setw(w) << "slu*dx" << " "
-      << std::setw(5) << "dx" << std::endl;
+      << std::setw(5) << "dx"
+      //<< " " << std::setw(w) << "sigslope*dx"
+      << std::endl;
 
    T dt(0);
-   std::string sdif,ssig,sldx,slop,slou,sludx;
+   std::string sdif,ssig,sldx,slop,slou,sludx;//,sigslo;
    const size_t N(Avec.size());
    for(i=0,j=0,k=0,iprev=-1; i<ilimit; i++) {
       // find j where Avec[j].index == i
@@ -479,8 +505,11 @@ template<class T> void FDiffFilter<T>::dump(std::ostream& os, std::string tag)
          slou = gpstk::StringUtils::asString(Avec[Avec[j].sloInd].sloN,osp);
          sldx = gpstk::StringUtils::asString(Avec[j].sloN*dt,osp);
          sludx = gpstk::StringUtils::asString(Avec[Avec[j].sloInd].sloN*dt,osp);
+         //sigslo = gpstk::StringUtils::asString(madSlope*dt,osp);
       }
-      else {  sdif = ssig = sldx = sludx = slou = "?"; }
+      else {
+         sdif = ssig = sldx = sludx = slou = "?"; //sigslo = "?";
+      }
       os << tag << std::fixed << std::setprecision(osp)
          << " " << std::setw(3) << i
          << " " << std::setw(w) << (noxdata ? T(i) : xdata[i])
@@ -493,6 +522,7 @@ template<class T> void FDiffFilter<T>::dump(std::ostream& os, std::string tag)
          << " " << std::setw(w) << sldx
          << " " << std::setw(w) << sludx
          << " " << std::setprecision(2) << std::setw(5) << dt
+         //<< " " << std::setw(w) << sigslo
          << (haveAvec && Avec[j].sigN > siglim ? " SIG":"")
          << (haveAvec ? "":" NA");
       if(k < results.size() && haveAvec && i == results[k].index) {
@@ -535,9 +565,11 @@ private:
    T Esiglim;                    ///< Estimated sigma limit computed from robust stats
    std::ostream& logstrm;        ///< write to output stream
    bool resetSigma;              ///< if true, set siglim to Esiglim in each iteration
+   T siguse;                     ///< sigma limit used in last iteration
    bool keepSigIndex;            ///< if true, keep vector of HighSigmaIndex
    std::vector<unsigned int> sigIndexes; ///< saved indexes of Nsig high sigma pts
    bool verbose;                 ///< output comments and dump FDiffFilters
+   std::string label;            ///< put on output lines when verbose
 
 public:
    // member functions ---------------------------------------
@@ -555,6 +587,7 @@ public:
       keepSigIndex = resetSigma = verbose = false;
       doSmall = true;
       itermax = 3;
+      label = std::string();
       // rest are defaults of FDiffFilter
       FDiffFilter<T> fdf(x,d,f);
       osw = fdf.osw;
@@ -574,22 +607,24 @@ public:
    inline bool indexHighSigmas(const bool& doit) { keepSigIndex = doit; return doit; }
    inline bool indexingHighSigmas(void) { return keepSigIndex; }
    inline bool doVerbose(const bool& doit) { verbose = doit; return doit; }
+   inline void setLabel(const std::string doit) { label = doit; }
+   inline std::string getLabel(void) { return label; }
 
    /// get and set for dump
    inline void setw(int w) { osw=w; }
    inline void setprecision(int p) { osp=p; }
 
    /// get computed sigma limit (= robust outlier limit) after analysis()
-   inline T getComputedSigmaLimit(void) { return Esiglim; }
+   inline T getEstimatedSigmaLimit(void) { return Esiglim; }
+
+   /// get sigma limit used in last iteration
+   inline T getUsedSigmaLimit(void) { return siguse; }
 
    /// get results vector of FilterHit
    std::vector< FilterHit<T> > getResults(void) { return results; }
 
    /// get the number of remaining high-sigma points after analysis()
    inline unsigned int getNhighSigma(void) { return Nsig; }
-
-   /// get the computed sigma limit (robust outlier limit) after analysis()
-   inline unsigned int getEstimatedSigmaLimit(void) { return Esiglim; }
 
    /// get the indexes of high-sigma points (only if indexHighSigmas(true))
    inline std::vector<unsigned int> getHighSigmaIndex(void) { return sigIndexes; }
@@ -639,6 +674,7 @@ template<class T> int IterativeFDiffFilter<T>::analysis(void)
 
    // analysis ------------------------------------------
    unsigned int iter,i,j,k,nr(0);
+   siguse = siglim;
 
    // iterate over (filter / compute new sigma limit / analysis)
    iter = 1;
@@ -647,7 +683,7 @@ template<class T> int IterativeFDiffFilter<T>::analysis(void)
       FDiffFilter<T> fdf(xdata, Tdata, Tflags);
       fdf.setWidth(Nwind);          // fdf.Nwind
       fdf.setLimit(fdlim);          // fdf.fdlim
-      fdf.setSigma(siglim);         // fdf.siglim
+      fdf.setSigma(siguse);         // fdf.siglim
       fdf.setprecision(osp);        // fdf.osp
       fdf.setw(osw);                // fdf.osw
       fdf.doSmallSlips(doSmall);    // fdf.doSmall
@@ -655,7 +691,7 @@ template<class T> int IterativeFDiffFilter<T>::analysis(void)
 
       // filter the data -----------
       i = fdf.filter();
-      //if(verbose) logstrm << "# filter returned " << i << std::endl;
+      //if(verbose) logstrm << "# " << label << " filter returned " << i << std::endl;
       if(i <= 2) { logstrm << "Not enough data, abort.\n"; return -1; }
 
       if(iter==itermax && keepSigIndex)
@@ -664,14 +700,26 @@ template<class T> int IterativeFDiffFilter<T>::analysis(void)
       // compute outlier limit from robust stats, and count outliers
       int N;
       fdf.ComputeRobustSigmaLimit(N, Esiglim);
-      if(verbose) logstrm << "# Estimated sigma limit "
-                  << std::fixed << std::setprecision(osp)
-                  << Esiglim << " (input was " << siglim << ") with "
+      if(verbose) logstrm << "# " << label << " Estimated sigma limit "
+                  << std::fixed << std::setprecision(osp) << Esiglim
+                  << " and used sigma limit " << siguse
+                  << " (input was " << siglim << ") with "
                   << N << " hi-sigma points " << std::endl;
 
       // reset sigma limit in filter, but not if its too large
-      if(resetSigma && Esiglim > siglim && Esiglim/siglim < 3.)
-         fdf.setSigma(Esiglim);     // use the new sigma limit
+      // Esiglim/siglim < 3.0            // not too big
+      // Esiglim/siglim > 0.1            // not too small
+      if(resetSigma) {
+         if(Esiglim > siglim) {
+            if(Esiglim/siglim < 3.0) siguse = Esiglim;
+            else                     siguse = 3*siglim;
+         }
+         else if(Esiglim < siglim) {
+            if(Esiglim/siglim > 0.1) siguse = Esiglim;
+            else                     siguse = 0.1*siglim;
+         }
+         fdf.setSigma(siguse);      // use the new sigma limit
+      }
 
       // analysis ------------------
       fdf.analysis();               // get the outliers and slips
@@ -682,7 +730,7 @@ template<class T> int IterativeFDiffFilter<T>::analysis(void)
 
       // loop over results: mark duplicates to be erased, mark outliers, fix slips
       for(i=0; i<results.size(); i++) {
-         if(verbose) logstrm << "# Result " << ++nr
+         if(verbose) logstrm << "# " << label << " Result " << ++nr
                << std::fixed << std::setprecision(osp)
                << " " << xdata[results[i].index]
                << " " << results[i].asString(osp) << std::endl;
@@ -739,17 +787,16 @@ template<class T> int IterativeFDiffFilter<T>::analysis(void)
 
             // if slip is too small to fix, go on
             if(::fabs(results[i].step) < fdlim) {
-               //if(verbose) logstrm << "# Slip too small: " << std::fixed
-               //<< std::setprecision(osp) << results[i].step
+               //if(verbose) logstrm << "# " << label << " Slip too small: "
+               // << std::fixed << std::setprecision(osp) << results[i].step
                //<< " < " << fdlim << std::endl;
                continue;
             }
 
             // fix the slip in the Tdata
-            int islip(results[i].step
-                        + (results[i].step >= 0.0 ? 0.5:-0.5));
+            int islip(results[i].step + (results[i].step >= 0.0 ? 0.5:-0.5));
             if(islip) {
-               if(verbose) logstrm << "# Fix slip " << islip
+               if(verbose) logstrm << "# " << label << " Fix slip " << islip
                      << " " << results[i].asString(osp) << std::endl;
 
                // NB if slips in Tdata not fixed, its going to affect later
@@ -778,9 +825,7 @@ template<class T> int IterativeFDiffFilter<T>::analysis(void)
       results.clear();
 
       // dump this analysis
-      if(verbose) fdf.dump(logstrm,"FIX"+gpstk::StringUtils::asString(iter-1));
-
-      //fdf.setSigma(fixsig);         // ? reset it to original value ?
+      if(verbose) fdf.dump(logstrm,"FIX"+gpstk::StringUtils::asString(iter-1)+label);
 
       ++iter;                    // next iteration
 

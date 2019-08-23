@@ -595,69 +595,30 @@ try {
          results[0].npts !=  1 ||
          results[0].dx !=  30.0)
             { cout << label << " first hit\n"; count++; }
-      if(results[1].type != FilterHit<double>::slip ||
-         results[1].index != 79 ||
-         results[1].npts != 1 ||
-         ::fabs(results[1].dx - 30.0) > 0.001 ||
-         ::fabs(results[1].step - 0.910) > 0.001 ||
-         ::fabs(results[1].sigma - 0.497) > 0.001)
+      if(results[1].type != FilterHit<double>::outlier ||
+         results[1].index != 93 ||
+         results[1].npts !=  1 ||
+         results[1].dx !=  30.0)
             { cout << label << " second hit\n"; count++; }
-      if(results[2].type != FilterHit<double>::outlier ||
-         results[2].index != 91 ||
-         results[2].npts !=  5 ||
-         results[2].dx !=  150.0)
+      if(results[2].type != FilterHit<double>::slip ||
+         results[2].index != 190 ||
+         results[2].npts != 1 ||
+         ::fabs(results[2].dx - 30.0) > 0.001 ||
+         ::fabs(results[2].step - 1.552) > 0.001 ||
+         ::fabs(results[2].sigma - 1.283) > 0.001)
             { cout << label << " third hit\n"; count++; }
-      if(results[3].type != FilterHit<double>::outlier ||
-         results[3].index != 110 ||
-         results[3].npts !=  7 ||
-         results[3].dx !=  210.0)
+      if(results[3].type != FilterHit<double>::slip ||
+         results[3].index != 195 ||
+         results[3].npts != 1 ||
+         ::fabs(results[3].dx - 30.0) > 0.001 ||
+         ::fabs(results[3].step + 3.172) > 0.001 ||
+         ::fabs(results[3].sigma - 1.855) > 0.001)
             { cout << label << " fourth hit\n"; count++; }
       if(results[4].type != FilterHit<double>::outlier ||
-         results[4].index != 122 ||
+         results[4].index != 244 ||
          results[4].npts !=  1 ||
-         results[4].dx !=  30.0)
+         results[4].dx !=  0.0)
             { cout << label << " fifth hit\n"; count++; }
-      if(results[5].type != FilterHit<double>::slip ||
-         results[5].index != 128 ||
-         results[5].npts != 1 ||
-         ::fabs(results[5].dx - 30.0) > 0.001 ||
-         ::fabs(results[5].step + 0.930) > 0.001 ||
-         ::fabs(results[5].sigma - 0.548) > 0.001)
-            { cout << label << " sixth hit\n"; count++; }
-      if(results[6].type != FilterHit<double>::outlier ||
-         results[6].index != 137 ||
-         results[6].npts !=  1 ||
-         results[6].dx !=  30.0)
-            { cout << label << " seventh hit\n"; count++; }
-      if(results[7].type != FilterHit<double>::outlier ||
-         results[7].index != 159 ||
-         results[7].npts !=  11 ||
-         results[7].dx !=  330.0)
-            { cout << label << " eighth hit\n"; count++; }
-      if(results[8].type != FilterHit<double>::outlier ||
-         results[8].index != 177 ||
-         results[8].npts !=  23 ||
-         results[8].dx !=  690.0)
-            { cout << label << " ninth hit\n"; count++; }
-      if(results[9].type != FilterHit<double>::outlier ||
-         results[9].index != 209 ||
-         results[9].npts !=  36 ||
-         results[9].dx !=  1050.0)
-            { cout << label << " tenth hit\n"; count++; }
-      if(results[10].type != FilterHit<double>::slip ||
-         results[10].index != 117 ||
-         results[10].npts != 8 ||
-         ::fabs(results[10].dx - 240.0) > 0.001 ||
-         ::fabs(results[10].step + 3.216) > 0.001 ||
-         ::fabs(results[10].sigma - 1.756) > 0.001)
-            { cout << label << " eleventh hit\n"; count++; }
-      if(results[11].type != FilterHit<double>::slip ||
-         results[11].index != 200 ||
-         results[11].npts != 24 ||
-         ::fabs(results[11].dx - 720.0) > 0.001 ||
-         ::fabs(results[11].step + 5.034) > 0.001 ||
-         ::fabs(results[11].sigma - 2.626) > 0.001)
-            { cout << label << " twelfth hit\n"; count++; }
    }
 
    // --------------------------------------------------------------------
