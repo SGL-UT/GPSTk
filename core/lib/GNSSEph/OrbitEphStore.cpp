@@ -53,6 +53,7 @@
 #include "RinexSatID.hpp"  // for dump
 
 #include "OrbitEphStore.hpp"
+#include "BDSEphemeris.hpp"
 
 using namespace std;
 using namespace gpstk::StringUtils;
@@ -73,8 +74,24 @@ namespace gpstk
          if(onlyHealthy && !eph->isHealthy())
             GPSTK_THROW(InvalidRequest("Not healthy"));
 
-         // compute the position, velocity and time
-         Xvt sv = eph->svXvt(t);
+          Xvt sv;
+          const BDSEphemeris *bdsEph = NULL;
+          // compute the position, velocity and time
+          switch (eph->satID.system)
+          {
+             // BDS: Prn 1~5 and 59 satellites in BDS are GEO type. 
+             // Special treatments are needed.
+             // ref. http://www.csno-tarc.cn/system/constellation&ce=english
+          case SatID::systemBeiDou:
+             bdsEph = dynamic_cast<const BDSEphemeris *>(eph);
+             sv = bdsEph->svXvt(t);
+             break;
+             // GPS, GAL, QZSS 
+          default:
+             sv = eph->svXvt(t);
+             break;
+          }
+
          return sv;
       }
       catch(InvalidRequest& ir) { GPSTK_RETHROW(ir); }

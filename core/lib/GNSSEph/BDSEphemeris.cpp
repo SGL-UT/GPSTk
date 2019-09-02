@@ -160,7 +160,7 @@ namespace gpstk
          // If the PRN ID is greatet than 5, assume this
          // is a MEO or IGSO SV and use the standard OrbitEph
          // version of svXvt
-      if (satID.id>5) return(OrbitEph::svXvt(t));
+      if (satID.id>5 && satID.id != 59) return(OrbitEph::svXvt(t));
 
          // If PRN ID is in the range 1-5, treat this as a GEO
          // 
