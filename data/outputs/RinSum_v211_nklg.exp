@@ -1,4 +1,4 @@
-# RinSum, part of the GPS Toolkit, Ver 4.1 8/26/15, Run 2018/04/21 14:48:18
+# RinSum, part of the GPS Toolkit, Ver 4.1 8/26/15, Run 2019/09/10 06:40:46
 +++++++++++++ RinSum summary of Rinex obs file /home/renfrob/git/gpstk/data/inputs/igs/nklg170b00.16o +++++++++++++
 ---------------------------------- REQUIRED ----------------------------------
 Rinex Version  2.11,  File type OBSERVATION DATA,  System MIXED.
@@ -13,9 +13,9 @@ Galileo Observation types (16):
  Type #01 (C6X) E6 GALB+C pseudorange
  Type #02 (L6X) E6 GALB+C phase
  Type #03 (S6X) E6 GALB+C snr
- Type #04 (C7X) E5b GALI+Q5 pseudorange
- Type #05 (L7X) E5b GALI+Q5 phase
- Type #06 (S7X) E5b GALI+Q5 snr
+ Type #04 (C7X) E5b GALI+Q5b pseudorange
+ Type #05 (L7X) E5b GALI+Q5b phase
+ Type #06 (S7X) E5b GALI+Q5b snr
  Type #07 (C1B) L1 GALB pseudorange
  Type #08 (L1B) L1 GALB phase
  Type #09 (D1B) L1 GALB doppler
@@ -23,9 +23,9 @@ Galileo Observation types (16):
  Type #11 (C8X) E5a+b GALI+Q5 pseudorange
  Type #12 (L8X) E5a+b GALI+Q5 phase
  Type #13 (S8X) E5a+b GALI+Q5 snr
- Type #14 (C5I) L5 GALI5 pseudorange
- Type #15 (L5I) L5 GALI5 phase
- Type #16 (S5I) L5 GALI5 snr
+ Type #14 (C5I) L5 GALI5a pseudorange
+ Type #15 (L5I) L5 GALI5a phase
+ Type #16 (S5I) L5 GALI5a snr
 GPS Observation types (13):
  Type #01 (C2X) L2 GPSC2L+M pseudorange
  Type #02 (L2W) L2 GPScodelessZ phase
@@ -124,4 +124,4 @@ TOTAL      0      0      0      0     40     40      0     40     35      0
  Warning - Obs type RG2 GLOC/A snr (GLONASS G2 GLOC/A snr, S2 in ver.2) should be removed from header
  Warning - Obs type RG1 GLOC/A doppler (GLONASS G1 GLOC/A doppler, D1 in ver.2) should be removed from header
  Warning - Obs type RG1 GLOP pseudorange (GLONASS G1 GLOP pseudorange, P1 in ver.2) should be removed from header
-RinSum timing: processing 0.045 sec, wallclock: 0 sec.
+RinSum timing: processing 0.136 sec, wallclock: 0 sec.
