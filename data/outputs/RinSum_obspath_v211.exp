@@ -1,4 +1,4 @@
-# RinSum, part of the GPS Toolkit, Ver 4.1 8/26/15, Run 2018/04/21 14:48:18
+# RinSum, part of the GPS Toolkit, Ver 4.1 8/26/15, Run 2019/09/10 06:40:46
 +++++++++++++ RinSum summary of Rinex obs file /home/renfrob/git/gpstk/data/inputs/igs/faa1170b00.16o +++++++++++++
 ---------------------------------- REQUIRED ----------------------------------
 Rinex Version  2.11,  File type OBSERVATION DATA,  System MIXED.
@@ -13,12 +13,12 @@ Galileo Observation types (12):
  Type #01 (C1B) L1 GALB pseudorange
  Type #02 (L1B) L1 GALB phase
  Type #03 (S1B) L1 GALB snr
- Type #04 (C5I) L5 GALI5 pseudorange
- Type #05 (L5I) L5 GALI5 phase
- Type #06 (S5I) L5 GALI5 snr
- Type #07 (C7X) E5b GALI+Q5 pseudorange
- Type #08 (L7X) E5b GALI+Q5 phase
- Type #09 (S7X) E5b GALI+Q5 snr
+ Type #04 (C5I) L5 GALI5a pseudorange
+ Type #05 (L5I) L5 GALI5a phase
+ Type #06 (S5I) L5 GALI5a snr
+ Type #07 (C7X) E5b GALI+Q5b pseudorange
+ Type #08 (L7X) E5b GALI+Q5b phase
+ Type #09 (S7X) E5b GALI+Q5b snr
  Type #10 (C8X) E5a+b GALI+Q5 pseudorange
  Type #11 (L8X) E5a+b GALI+Q5 phase
  Type #12 (S8X) E5a+b GALI+Q5 snr
@@ -114,4 +114,4 @@ System R = GLONASS:
 TOTAL     50      0     50     50     50     50     50     50
 
  Warning - Obs type RG1 GLOP pseudorange (GLONASS G1 GLOP pseudorange, P1 in ver.2) should be removed from header
-RinSum timing: processing 0.047 sec, wallclock: 0 sec.
+RinSum timing: processing 0.123 sec, wallclock: 0 sec.
