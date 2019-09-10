@@ -1,4 +1,4 @@
-#set title "PPP Smoother Position Solution GPS engl136k.nga.ppp.log Run 1"
+#set title "PPP Smoother Position Solution GPS engl136k.ppp.log Run 1"
 #sow     x       y       z       clk   trop   N       E     U
 345600 0.0499 0.0088 0.0659 1.1900 -0.0589 0.0026 0.0096 0.0826
 345900 0.0485 0.0085 0.0653 -0.4337 -0.0599 0.0034 0.0093 0.0811
