@@ -191,7 +191,7 @@ deploy_windows:
   dependencies:
     - build_windows
 # Temporarily allow failures as Windows Runner issues are resolved
-  allow_failure: true  
+  allow_failure: true
   only:
     - schedules
   except:
@@ -223,7 +223,7 @@ package_debian:
     - rm -rf ../*.deb
     - dpkg-buildpackage -us -uc -d
     - mkdir debs
-    - mv ../*.deb debs 
+    - mv ../*.deb debs
   artifacts:
     paths:
     - debs/
@@ -259,8 +259,7 @@ package_redhat:
     - git clone gitlab@repositories.arlut.utexas.edu:sgl/rpm_files.git
     - cd rpm_files
     - cd SOURCES
-    - wget https://repositories.arlut.utexas.edu/sgl/gpstk/-/archive/v2.12/gpstk-v2.12.tar.gz
-    - mv gpstk-v2.12.tar.gz gpstk-v2.12-master.tar.gz
+    - wget https://repositories.arlut.utexas.edu/sgl/gpstk/-/archive/master/gpstk-master.tar.gz
     - cd ..
     - rpmbuild --define "_topdir ${PWD}" --define "debug_package %{nil}" -ba SPECS/gpstk.spec
   artifacts:
