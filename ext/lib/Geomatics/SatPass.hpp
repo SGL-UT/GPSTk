@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /// @file SatPass.hpp
 /// Data for one complete satellite pass.
@@ -613,6 +613,28 @@ public:
    ///  17) the L1 bias in cycles, 18) the L2 bias in cycles.
    void smooth(const bool smoothPR, const bool smoothPH, std::string& msg,
             const double& wl1=L1_WAVELENGTH_GPS, const double& wl2=L2_WAVELENGTH_GPS)
+      throw(Exception);
+
+   /// Single frequency version of smooth(); cf. smooth().
+   /// This includes a crude cycleslip detector (15m bias change).
+   /// @param  smoothPR  if true, replace the pseudorange with smoothed range
+   ///                   (= phase + REAL estimate of range-minus-phase in m).
+   /// @param  smoothPH  if true, replace the phase with debiased phase
+   ///                   (= phase + INTEGER estimate of range-minus-phase in cycles).
+   /// @param  msg       a string containing a single-line statistical summary of
+   ///                   the smoothing results, and the estimated phase biases.
+   /// @param  freq      integer 1 or 2, as data to smooth is L1,C1/P1 or L2,C2/P2.
+   /// @param  wl        wavelength of phase for this data
+   ///  This string consists of the following 18 fields separated by whitespace.
+   ///  1) "SMT", 2) satellite id (e.g. G07), 3) start GPS week, 4) start GPS
+   ///  seconds of week, 5) end GPS week, 6) end GPS seconds of week,
+   ///  (7-11 are for the L1 bias data in units of meters)
+   ///  7) number, 8) average, 9) std deviation, 10) minimum, and 11) maximum,
+   ///  (12-16 are for the L2 bias data in units of meters)
+   ///  12) number, 13) average, 14) std deviation, 15) minimum, and 16) maximum,
+   ///  17) the L1 bias in cycles, 18) the L2 bias in cycles.
+   void smoothSF(const bool smoothPR, const bool smoothPH, std::string& msg,
+                  const int freq, const double wl)
       throw(Exception);
 
    // output -----------------------------------------------------------

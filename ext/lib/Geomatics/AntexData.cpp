@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /// @file AntexData.cpp
 /// Encapsulate data from ANTEX (Antenna Exchange) format files, including both
@@ -73,7 +73,7 @@ namespace gpstk
 
    // NB. this dimension must be updated with the list
    /// Number of types that are used for satellites
-   const int Nsattype=18;
+   const int Nsattype=19;
    string sattype[Nsattype] =
    { 
       string("BLOCK I"),         // 1
@@ -84,16 +84,17 @@ namespace gpstk
       string("BLOCK IIR-B"),     // 6
       string("BLOCK IIR-M"),     // 7
       string("BLOCK IIF"),       // 8
-      string("GLONASS"),         // 9
-      string("GLONASS-M"),       // 10
-      string("GLONASS-K1"),      // 11
-      string("BEIDOU-2G"),       // 12
-      string("BEIDOU-2I"),       // 13
-      string("BEIDOU-2M"),       // 14
-      string("GALILEO-1"),       // 15
-      string("GALILEO-2"),       // 16
-      string("GALILEO-0A"),      // 17
-      string("GALILEO-0B")       // 18
+      string("BLOCK IIIA"),      // 9
+      string("GLONASS"),         // 10
+      string("GLONASS-M"),       // 11
+      string("GLONASS-K1"),      // 12
+      string("BEIDOU-2G"),       // 13
+      string("BEIDOU-2I"),       // 14
+      string("BEIDOU-2M"),       // 15
+      string("GALILEO-1"),       // 16
+      string("GALILEO-2"),       // 17
+      string("GALILEO-0A"),      // 18
+      string("GALILEO-0B")       // 19
    };
    /// vector of type strings that identify satellites; must be kept updated.
    const vector<string> AntexData::SatelliteTypes(sattype,sattype+Nsattype);

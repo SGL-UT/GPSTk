@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /// @file SatPass.cpp
 /// Data for one complete satellite pass overhead.
@@ -319,7 +319,8 @@ try {
          double RB2 = wl2*L2 - D21*P1 - D22*P2;
 
          if(!first && (::fabs(RB1-pRB1) > 2000. || ::fabs(RB2-pRB2) > 2000. ||
-                       ::fabs(L1-pL1)/2848. > 1000. || ::fabs(L2-pL2)/2848. > 1000.)){
+                       ::fabs(L1-pL1)/2848. > 1000. || ::fabs(L2-pL2)/2848. > 1000.))
+         {
             first = true;
             continue;
          }
@@ -443,6 +444,117 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 
 // Smooth pseudorange and debias phase; replace the data only if the corresponding
 // input flag is 'true'; use real bias for pseudorange, integer (cycles) for phase.
+// Single frequency version: requires obs types Lf C/Pf
+// Call this ONLY after cycleslips have been removed.
+void SatPass::smoothSF(const bool smoothPR, const bool debiasPH, string& msg,
+                       const int freq, const double wl) throw(Exception)
+{
+try {
+   if(freq != 1 && freq != 2)
+      GPSTK_THROW(Exception("smoothSF requires freq 1 or 2"));
+
+   // make sure Lf, Cf/Pf are present
+   ostringstream oss;
+   if(freq==1 && !hasType("L1")) oss << " L1";
+   if(freq==2 && !hasType("L2")) oss << " L2";
+   if(freq==1 && !hasType("C1") && !hasType("P1")) oss << " C/P1";
+   if(freq==2 && !hasType("C2") && !hasType("P2")) oss << " C/P2";
+   if(!oss.str().empty())
+      GPSTK_THROW(Exception(string("smoothSF() requires pseudorange and phase:"
+                              + oss.str() + string(" are missing."))));
+
+   bool first,useC1(hasType("C1")),useC2(hasType("C2"));
+   int i;
+   double RB,dLB0(0.0);
+   long LB,LB0;
+   Stats<double> PB;
+
+   // get the biases B = L - P
+   for(first=true,i=0; i<spdvector.size(); i++) {
+      if(!(spdvector[i].flag & OK)) continue;        // skip bad data
+
+      double P,L;
+      if(freq==1) P = spdvector[i].data[indexForLabel[(useC1 ? "C1" : "P1")]];
+      else        P = spdvector[i].data[indexForLabel[(useC2 ? "C2" : "P2")]];
+      if(freq==1) L = spdvector[i].data[indexForLabel["L1"]];
+      else        L = spdvector[i].data[indexForLabel["L2"]];
+
+      if(first) {                   // remove the large numerical range
+         LB0 = long(L-P/wl);
+         dLB0 = double(LB0);
+      }
+      L -= dLB0;
+
+      // Bias = L(m) - P
+      RB = wl*L - P;
+      PB.Add(RB);
+
+      if(first) LOG(DEBUG) << "SMTDMP   sat week  sow    RmP    L    P   RB LB0";
+      LOG(DEBUG) << "SMTDMP " << sat << " " << time(i).printf(outFormat)
+         << fixed << setprecision(3)
+         << " " << setw(13) << RB
+         << " " << setw(13) << L
+         << " " << setw(13) << P
+         << " " << setw(13) << RB
+         << " " << setw(13) << LB0;
+
+      first = false;
+   }  // end loop over data
+
+   RB = PB.Average()/wl;                           // real bias in cycles
+   LB = LB0 + long(RB + (RB > 0 ? 0.5 : -0.5));    // integer bias (cycles)
+
+   oss.str("");
+   oss << "SMT" << fixed << setprecision(2)
+       << " " << sat
+       << " " << getFirstGoodTime().printf(outFormat)
+       << " " << getLastGoodTime().printf(outFormat)
+       << " " << setw(5)  << (freq==1 ? PB.N() : 0)
+       << " " << setw(12) << (freq==1 ? PB.Average()+dLB0 : 0)
+       << " " << setw(5)  << (freq==1 ? PB.StdDev() : 0)
+       << " " << setw(12) << (freq==1 ? PB.Minimum()+dLB0 : 0)
+       << " " << setw(12) << (freq==1 ? PB.Maximum()+dLB0 : 0)
+       << " " << setw(5)  << (freq==1 ? 0 : PB.N())
+       << " " << setw(12) << (freq==1 ? 0 : PB.Average()+dLB0)
+       << " " << setw(5)  << (freq==1 ? 0 : PB.StdDev())
+       << " " << setw(12) << (freq==1 ? 0 : PB.Minimum()+dLB0)
+       << " " << setw(12) << (freq==1 ? 0 : PB.Maximum()+dLB0)
+       << " " << setw(13) << (freq==1 ? RB : 0)
+       << " " << setw(13) << (freq==1 ? 0 : RB)
+       << " " << setw(10) << (freq==1 ? LB : 0)
+       << " " << setw(10) << (freq==1 ? 0 : LB);
+   msg = oss.str();
+
+   if(!debiasPH && !smoothPR) return;
+
+   for(i=0; i<spdvector.size(); i++) {
+      if(!(spdvector[i].flag & OK)) continue;        // skip bad data
+
+      // replace the pseudorange with the smoothed pseudorange
+      if(smoothPR) {
+         // compute the debiased phase, with real bias
+         if(freq==1) {
+            spdvector[i].data[indexForLabel[(useC1 ? "C1" : "P1")]]
+                        = spdvector[i].data[indexForLabel["L1"]] - RB;
+         }
+         else if(freq==2) {
+            spdvector[i].data[indexForLabel[(useC2 ? "C2" : "P2")]]
+                        = spdvector[i].data[indexForLabel["L2"]] - RB;
+         }
+      }
+
+      // replace the phase with the debiased phase, with integer bias (cycles)
+      if(debiasPH) {
+         if(freq==1) spdvector[i].data[indexForLabel["L1"]] -= LB;
+         if(freq==2) spdvector[i].data[indexForLabel["L2"]] -= LB;
+      }
+   }
+}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+}
+
+// Smooth pseudorange and debias phase; replace the data only if the corresponding
+// input flag is 'true'; use real bias for pseudorange, integer (cycles) for phase.
 // Call this ONLY after cycleslips have been removed.
 void SatPass::smooth(const bool smoothPR, const bool debiasPH, string& msg,
                      const double& wl1, const double& wl2) throw(Exception)
@@ -558,12 +670,6 @@ try {
    for(i=0; i<spdvector.size(); i++) {
       if(!(spdvector[i].flag & OK)) continue;        // skip bad data
 
-      // replace the phase with the debiased phase, with integer bias (cycles)
-      if(debiasPH) {
-         spdvector[i].data[indexForLabel["L1"]] -= LB1;
-         spdvector[i].data[indexForLabel["L2"]] -= LB2;
-      }
-
       // replace the pseudorange with the smoothed pseudorange
       if(smoothPR) {
          // compute the debiased phase, with real bias
@@ -574,6 +680,12 @@ try {
                                                 = D11*wl1*dbL1 + D12*wl2*dbL2;
          spdvector[i].data[indexForLabel[(useC2 ? "C2" : "P2")]]
                                                 = D21*wl1*dbL1 + D22*wl2*dbL2;
+      }
+
+      // replace the phase with the debiased phase, with integer bias (cycles)
+      if(debiasPH) {
+         spdvector[i].data[indexForLabel["L1"]] -= LB1;
+         spdvector[i].data[indexForLabel["L2"]] -= LB2;
       }
    }
 }

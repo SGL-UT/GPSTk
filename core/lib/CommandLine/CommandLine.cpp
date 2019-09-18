@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 
 // CommandLine.cpp  Command line options and argument processing.
@@ -177,6 +177,7 @@ try {
    string str;
    RinexSatID sat;
    vector<string> values;
+   string::size_type pos;
 
    // loop over all options, output of the form:
    // Description (--option) : value
@@ -191,13 +192,6 @@ try {
       }
 
       str = options[i].desc;
-      // replace the string "\n\s+" in str with " "
-      string::size_type pos(str.find_first_of("\n"));
-      if(pos != string::npos) {
-         str.erase(pos++,1);
-         while(pos < str.length() && str[pos] == ' ') str.erase(pos,1);
-      }
-
       os << "   " << str << " (--" << options[i].longOpt << ") : ";
 
       str = string();
@@ -778,7 +772,7 @@ void CommandLine::Postprocess(string& Errors, vector<string>& Unrecog)
    throw(Exception)
 {
 try {
-   size_t i, k;
+   size_t i,k;
    RinexSatID sat;
    string msg,errStr;
    vector<string> values;
@@ -794,9 +788,8 @@ try {
       
       // bool is special b/c values are ignored
       if(options[i].type == typeBool) {
-         *((bool *)(options[i].p_output)) = true;  // TD toggle? for all values?
-         //*((bool *)(options[i].p_output)) = 
-         //   ! (*((bool *)(options[i].p_output)));  // toggle
+         *((bool *)(options[i].p_output)) = ( options[i].toggle ? 
+                  ! (*((bool *)(options[i].p_output))) :    true );
          continue;
       }
 
@@ -824,7 +817,7 @@ try {
                oss << "Error: non-integer value for --" << options[i].longOpt
                   << ": " << values[0] << endl;
             else
-               *((int *)(options[i].p_output)) = asInt(values[0]); //j-1?
+               *((int *)(options[i].p_output)) = asInt(values[0]);
             break;
 
          case typeVectorInt:

@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,30 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
-
-/// @file SRIFilter.cpp  Implementation of class SRIFilter.
-/// class SRIFilter implements the square root information matrix form of the
-/// Kalman filter.
-///
-/// Reference: "Factorization Methods for Discrete Sequential Estimation,"
-///             G.J. Bierman, Academic Press, 1977.
+//==============================================================================
 
 //------------------------------------------------------------------------------------
 #include "SRIFilter.hpp"
@@ -148,8 +141,9 @@ void SRIFilter::measurementUpdate(const Matrix<double>& H, Vector<double>& D,
    try {
          // whiten partials and data
       Matrix<double> P(H);
-      Matrix<double> CHL(lowerCholesky(CM));
+      Matrix<double> CHL;
       if(&CM != &SRINullMatrix) {
+         CHL = lowerCholesky(CM);
          Matrix<double> L(inverseLT(CHL));
          P = L * P;
          D = L * D;
@@ -159,9 +153,8 @@ void SRIFilter::measurementUpdate(const Matrix<double>& H, Vector<double>& D,
       SrifMU(R, Z, P, D);
 
          // un-whiten residuals
-      if(&CM != &SRINullMatrix) {         // same if above creates CHL
+      if(&CM != &SRINullMatrix)           // same if above creates CHL
          D = CHL * D;
-      }
    }
    catch(MatrixException& me) { GPSTK_RETHROW(me); }
    catch(VectorException& ve) { GPSTK_RETHROW(ve); }
@@ -333,8 +326,8 @@ void SRIFilter::Reset(const int N)
 //    There are three ways to handle non-zero process noise covariance.
 // (1) If Q is the (known) a priori process noise covariance Q, then
 // set Q=Rw(-1)*Rw(-T), and G=1.
-// (2) Transform process noise covariance matrix to UDU form, Q=UDU,
-// then set G=U  and Rw = (D)**-1/2.
+// (2) Transform process noise covariance matrix to UDU form, Q=UDU^T,
+// then set G=U  and Rw = (D)^-1/2.
 // (3) Take the sqrt of process noise covariance matrix Q, then set
 // G=this sqrt and Rw = 1.  [2 and 3 have been tested.]
 //    The routine applies a Householder transformation to a large

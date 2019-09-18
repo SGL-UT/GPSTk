@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,24 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
+
 /**
  * @file OrbSysGpsL_63.cpp
  * OrbSysGpsL_63 data encapsulated in engineering terms
@@ -83,18 +84,119 @@ namespace gpstk
 
    OrbSysGpsL_63* OrbSysGpsL_63::clone() const
    {
-      return new OrbSysGpsL_63 (*this); 
+      return new OrbSysGpsL_63 (*this);
    }
 
-   bool OrbSysGpsL_63::isSameData(const OrbData* right) const      
+//-------------------------------------------------------------------
+   bool OrbSysGpsL_63::hasSignal(const SatID& sidr,
+                                 const CommonTime& ct,
+                                 const ObsID::CarrierBand cb,
+                                 const ObsID::TrackingCode tc) const
+       throw (InvalidRequest)
+   {
+      // Verify that the object has been loaded with data.
+       if (!dataLoadedFlag)
+       {
+           InvalidRequest exc("Required data not stored.");
+           GPSTK_THROW(exc);
+       }
+
+      // Check for a valid satelilte ID
+       if (sidr.system!=SatID::systemGPS ||
+           sidr.id>MAX_PRN)
+       {
+           stringstream ss;
+           ss << sidr << " is not a valid GPS satellite.";
+           InvalidRequest ir(ss.str());
+           GPSTK_THROW(ir);
+       }
+
+      // Determine if the requested signal combination is valid.
+      // Possible values are in the range of 1-7 (three bits, unsigned).
+      // Set the default to something out of range.
+        static const int INVALID = 8;
+        int minimumValue = INVALID;
+
+      // Legacy GPS Signals.   L1 P(Y), L2 P(Y), L1 C/A
+        if ( (cb==ObsID::cbL1 || cb==ObsID::cbL2) &&
+             (tc==ObsID::tcP || tc==ObsID::tcY || tc==ObsID::tcW || tc==ObsID::tcN || tc==ObsID::tcD))
+        {
+            minimumValue = 1;
+        }
+        if (cb==ObsID::cbL1 && tc==ObsID::tcCA)
+        {
+            minimumValue = 1;
+        }
+
+          // L2C and M-Code (added with Block IIR-M)
+        if (cb==ObsID::cbL2 && (tc==ObsID::tcC2L || tc==ObsID::tcC2M || tc==ObsID::tcC2LM))
+        {
+            minimumValue = 2;
+        }
+        if ( (cb==ObsID::cbL1 || cb==ObsID::cbL2) && tc==ObsID::tcM)
+        {
+            minimumValue = 2;
+        }
+
+          // L5
+        if (cb==ObsID::cbL5 && (tc==ObsID::tcI5 || tc==ObsID::tcQ5))
+        {
+            minimumValue = 3;
+        }
+
+          // L1C
+        if (cb==ObsID::cbL1 && (tc==ObsID::tcG1P || tc==ObsID::tcG1D || tc==ObsID::tcG1X))
+        {
+            minimumValue = 4;
+        }
+
+        if (minimumValue==INVALID)
+        {
+            stringstream ss;
+            ss << " Carrier " << cb << ", tracking code " << tc << " is not a valid combination for a GPS SV.";
+            InvalidRequest ir(ss.str());
+            GPSTK_THROW(ir);
+        }
+
+          // Obtain configuration bits for this SV and mask off the A-S bit
+        unsigned short configBits = config[sidr.id];
+        configBits &= 0x7;
+
+        if (configBits>=minimumValue)
+            return true;
+
+        return false;
+    }
+
+
+//-------------------------------------------------------------------
+   bool OrbSysGpsL_63::hasSignal(const SatID& sidr,
+                                 const CommonTime& ct,
+                                 const ObsID& oidr) const
+       throw (InvalidRequest)
+   {
+       bool retVal = false;
+       try
+       {
+          retVal = hasSignal(sidr,ct,oidr.band,oidr.code);
+       }
+       catch (InvalidRequest ir)
+       {
+          GPSTK_RETHROW(ir);
+       }
+       return retVal;
+    }
+
+//-------------------------------------------------------------------
+   bool OrbSysGpsL_63::isSameData(const OrbData* right) const
    {
          // First, test whether the test object is actually a OrbSysGpsL_63 object.
       const OrbSysGpsL_63* p = dynamic_cast<const OrbSysGpsL_63*>(right);
-      if (p==0) return false; 
+      if (p==0) return false;
 
-         // Establish if it refers to the same SV and UID. 
+         // Establish if it refers to the same SV and UID.
       if (!OrbSysGpsL::isSameData(right)) return false;
-       
+
          // Finally, examine the contents
       for (int i=1; i<9; i++)
       {
@@ -104,9 +206,9 @@ namespace gpstk
       {
          if (config[i] != p->config[i]) return false;
       }
-      return true;      
+      return true;
    }
-   
+
    void OrbSysGpsL_63::loadData(const PackedNavBits& msg)
       throw(InvalidParameter)
    {
@@ -117,10 +219,10 @@ namespace gpstk
          ss << "Expected GPS Subframe 4, Page 25, SVID 63 (425).  Found unique ID ";
          ss << StringUtils::asString(UID);
          InvalidParameter exc(ss.str());
-         GPSTK_THROW(exc);    
-      } 
+         GPSTK_THROW(exc);
+      }
 
-         // Clear any existing data 
+         // Clear any existing data
       for (int i=0;i< 9;i++) { health[i] = 0; }
       for (int i=0;i<33;i++) { config[i] = 0; }
 
@@ -137,7 +239,7 @@ namespace gpstk
          health[i] = (unsigned short) msg.asUnsignedLong(hBit[i],6,1);
       }
 
-      dataLoadedFlag = true;   
+      dataLoadedFlag = true;
    } // end of loadData()
 
    void OrbSysGpsL_63::dumpTerse(std::ostream& s) const
@@ -149,7 +251,7 @@ namespace gpstk
          GPSTK_THROW(exc);
       }
 
-      string ssys = SatID::convertSatelliteSystemToString(satID.system); 
+      string ssys = SatID::convertSatelliteSystemToString(satID.system);
       s << setw(7) << ssys;
       s << " " << setw(2) << satID.id;
 
@@ -158,7 +260,7 @@ namespace gpstk
       s << " " << printTime(beginValid,tform) << "  ";
 
          // We are going to be cute here, count the number of unique
-         // SV config and health bit combinations and summarize them 
+         // SV config and health bit combinations and summarize them
          //by frequency.
       map<unsigned short, unsigned short> fMap;
       map<unsigned short, unsigned short>::iterator it;
@@ -167,19 +269,19 @@ namespace gpstk
          it = fMap.find(config[i]);
          if (it==fMap.end())
          {
-            unsigned short count = 0; 
+            unsigned short count = 0;
             map<unsigned short, unsigned short>::value_type p(config[i],count);
             fMap.insert(p);
             it = fMap.find(config[i]);
          }
-         (it->second)++; 
+         (it->second)++;
       }
       for (it=fMap.begin();it!=fMap.end();it++)
       {
          unsigned short cfg = it->first;
          if (it!=fMap.begin()) s << ", ";
          s << "Cfg ";
-         if (cfg & 0x8) s << "1"; 
+         if (cfg & 0x8) s << "1";
            else s<< "0";
          if (cfg & 0x4) s << "1";
            else s << "0";
@@ -190,24 +292,24 @@ namespace gpstk
          s << ":#" << it->second;
       }
       s << "  ";
-      
-      fMap.clear(); 
+
+      fMap.clear();
       for (int i=1;i<=8;i++)
       {
          it = fMap.find(health[i]);
          if (it==fMap.end())
          {
-            unsigned short count = 0; 
+            unsigned short count = 0;
             map<unsigned short, unsigned short>::value_type p(health[i],count);
             fMap.insert(p);
             it = fMap.find(health[i]);
          }
-         (it->second)++; 
+         (it->second)++;
       }
       for (it=fMap.begin();it!=fMap.end();it++)
       {
          if (it!=fMap.begin()) s << ", ";
-         s << "Hlt 0x" 
+         s << "Hlt 0x"
            << hex << setfill('0') << setw(2) << it->first
            << dec << setfill(' ') << ":#" << it->second;
       }
@@ -237,7 +339,7 @@ namespace gpstk
       for (int j=1; j<=32; j++)
       {
          s << "   " << setw(2) << j << ":";
-         if (config[j] & 0x8) s << "1"; 
+         if (config[j] & 0x8) s << "1";
            else s<< "0";
          if (config[j] & 0x4) s << "1";
            else s << "0";
@@ -250,15 +352,15 @@ namespace gpstk
 
       s << endl;
       s << "SV Health" << endl;
-      s << " PRN  hex  dec   PRN  hex dec   PRN  hex dec   PRN  hex dec" << endl;      
+      s << " PRN  hex  dec   PRN  hex dec   PRN  hex dec   PRN  hex dec" << endl;
       for (int i=1; i<=8; i++)
       {
          unsigned prnNum = 24 + i;
          s << "  " << setw(2) << prnNum << ": 0x";
-         s << hex << setw(2) << health[i] << "  " 
+         s << hex << setw(2) << health[i] << "  "
            << dec << setw(2) << health[i] << " ";
-         if (i%4==0) s << endl; 
-      }      
-   } // end of dumpBody()   
+         if (i%4==0) s << endl;
+      }
+   } // end of dumpBody()
 
 } // end namespace gpstk

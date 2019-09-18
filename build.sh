@@ -11,14 +11,16 @@
 #    $ build.sh -h
 #
 #----------------------------------------
-
 #----------------------------------------
 # Qué hora es? Dónde estamos? Y dónde vamos?
 #----------------------------------------
 
 source $(dirname "$BASH_SOURCE")/build_setup.sh
 
-user_install_prefix+="/gpstk"
+# or set gpstk=~/.local/gpstk
+#user_install_prefix+="/gpstk"
+user_install_prefix+="/gpstkDiffProc"
+
 system_install_prefix+="/gpstk"
 
 usage()
@@ -33,6 +35,9 @@ examples:
    $ sudo build.sh -s -b /tmp/qwe    # Build and install core to $system_install_prefix
    $ build.sh -tue     # Build, test and install core, external, and python bindings to $gpstk
    $ build.sh -vt  -- -DCMAKE_BUILD_TYPE=debug  # build for running debugger
+   # BWT: -O3 is forced for now (see below); or run with
+   # ./build.sh -evx -- -DCMAKE_CXX_FLAGS=-O3
+   #  which gives cmake -DCMAKE_CXX_FLAGS=-O3 -DBUILD_PYTHON=OFF -DBUILD_EXT=ON -DDEBUG_SWITCH=ON /local/Code/gpstk
 
 OPTIONS:
 
@@ -66,6 +71,8 @@ OPTIONS:
    -x                   Disable building the python bindings. Default is to build them
                         if -e is specified.
 
+   -n                   Do not use address sanitizer for debug build (used by default)
+
    -P  <python_exe>     Python executable used to help determine with python system libraries
                         will be used when building python extension package. 
                         Default=$python_exe
@@ -82,7 +89,7 @@ EOF
 }
 
 
-while getopts "hb:cdepi:j:xP:sutTgv" OPTION; do
+while getopts "hb:cdepi:j:xnP:sutTgv" OPTION; do
     case $OPTION in
         h) usage
            exit 0
@@ -106,11 +113,14 @@ while getopts "hb:cdepi:j:xP:sutTgv" OPTION; do
            ;;
         x) exclude_python=1
            ;;
+        n) no_address_sanitizer=1
+           ;;
         P) python_exe=$OPTARG
            ;;
         u) install=1
            install_prefix=${gpstk:-$user_install_prefix}
            python_install=$user_python_install
+           user_install=1
            ;;
         s) install=1
            install_prefix=$system_install_prefix
@@ -134,7 +144,6 @@ done
 shift $(($OPTIND - 1))
 LOG="$build_root"/build.log
 
-
 #----------------------------------------
 # Clean build directory
 #----------------------------------------
@@ -154,27 +163,28 @@ fi
 if ((verbose>0)); then
     log "============================================================"
     log "GPSTk build config ..."
-    log "repo            = $repo"
-    log "build_root      = $build_root"
-    log "install         = $(ptof $install)"
-    log "install_prefix  = $install_prefix"
-    log "build_ext       = $(ptof $build_ext)"
-    log "exclude_python  = $(ptof $exclude_python)"
-    log "python_install  = $python_install"
-    log "python_exe      = $python_exe"
-    log "build_docs      = $(ptof $build_docs)"
-    log "build_packages  = $(ptof $build_packages)"
-    log "test_switch     = $(ptof $test_switch)"
+    log "repo                 = $repo"
+    log "build_root           = $build_root"
+    log "install              = $(ptof $install)"
+    log "install_prefix       = $install_prefix"
+    log "build_ext            = $(ptof $build_ext)"
+    log "exclude_python       = $(ptof $exclude_python)"
+    log "python_install       = $python_install"
+    log "python_exe           = $python_exe"
+    log "no_address_sanitizer = $(ptof $no_address_sanitizer)"
+    log "build_docs           = $(ptof $build_docs)"
+    log "build_packages       = $(ptof $build_packages)"
+    log "test_switch          = $(ptof $test_switch)"
     log "coverage_switch = $(ptof $coverage_switch)"
-    log "clean           = $(ptof $clean)"
-    log "verbose         = $(ptof $verbose)"
-    log "num_threads     = $num_threads"
-    log "cmake args      = $@"
-    log "time            =" `date`
-    log "hostname        =" $hostname
-    log "uname           =" `uname -a`
-    log "git id          =" $(get_repo_state $repo)
-    log "logfile         =" $LOG
+    log "clean                = $(ptof $clean)"
+    log "verbose              = $(ptof $verbose)"
+    log "num_threads          = $num_threads"
+    log "cmake args           = $@"
+    log "time                 =" `date`
+    log "hostname             =" $hostname
+    log "uname                =" `uname -a`
+    log "git id               =" $(get_repo_state $repo)
+    log "logfile              =" $LOG
     log
 fi
 
@@ -223,9 +233,15 @@ fi
 args+=${install_prefix:+" -DCMAKE_INSTALL_PREFIX=$install_prefix"}
 args+=${build_ext:+" -DBUILD_EXT=ON"}
 args+=${verbose:+" -DDEBUG_SWITCH=ON"}
+args+=${user_install:+" -DPYTHON_USER_INSTALL=ON"}
 args+=${test_switch:+" -DTEST_SWITCH=ON"}
 args+=${coverage_switch:+" -DCOVERAGE_SWITCH=ON"}
 args+=${build_docs:+" --graphviz=$build_root/doc/graphviz/gpstk_graphviz.dot"}
+if [ $no_address_sanitizer ]; then
+    args+=" -DADDRESS_SANITIZER=OFF"
+else
+    args+=" -DADDRESS_SANITIZER=ON"
+fi
 
 case `uname` in
     MINGW32_NT-6.1)
@@ -237,8 +253,11 @@ case `uname` in
         run cmake --build . --config Release
         ;;
     *)
+        args+=" -DCMAKE_CXX_FLAGS=-O3"  # BWT force optimization - cmake doesn't do it
+        echo "Run cmake $args $repo ##########################"
         run cmake $args $repo 
         run make all -j $num_threads
+        #run make all -j $num_threads VERBOSE=1   # BWT make make verbose
 esac
 
 

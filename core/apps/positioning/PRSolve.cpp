@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -15,24 +15,24 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
+//  
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//  Copyright 2004, The University of Texas at Austin
-//
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S.
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software.
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /// @file PRSolve.cpp
 /// Read Rinex observation files (version 2 or 3) and ephemeris store, and compute a
@@ -637,9 +637,9 @@ try {
       ostringstream oss;
       oss << C.PrgmName << " timing: processing " << fixed << setprecision(3)
          << double(totaltime)/double(CLOCKS_PER_SEC) << " sec, wallclock: "
-         << setprecision(0) << (wallclkend-wallclkbeg) << " sec.";
+         << setprecision(0) << (wallclkend-wallclkbeg) << " sec.\n";
       LOGstrm << oss.str();
-      cout << oss.str() << endl;
+      cout << oss.str();
    }
 
    return iret;
@@ -1691,7 +1691,7 @@ void Configuration::SolDescHelp(void)
    //os << " or";
    //for(i=0; i<systs.size(); i++) os <<" "<< systs[i];
    os << endl;
-   os << "   F is a frequency, one of:";
+   os << "   F is a frequency, one or two of:";
    for(i=0; i<freqs.size(); i++) os << " " << freqs[i];
    os << endl;
    os << "   C is an ordered set of one or more tracking codes, for example WPC\n"
@@ -1706,8 +1706,9 @@ void Configuration::SolDescHelp(void)
       << "   frequencies to eliminate the ionospheric delay, for example\n"
       << "   GPS:12:PC is the usual L1/L2-ionosphere-corrected GPS solution.\n"
       << " Triple frequency solutions are not supported.\n\n"
-      << " More that one tracking code may be provided, for example GPS:12:PC\n"
-      << "  This tells PRSolve to prefer P, but if it is not available, use C.\n\n"
+      << " More that one tracking code may be provided, for example GPS:12:PWC\n"
+      << "  This tells PRSolve to prefer P, but if it is not available, use W,\n"
+      << "  and if neither P nor W are available, use C.\n\n"
       << " Finally, combined solutions may be specified, in which different\n"
       << "  data types, even from different systems, are used together.\n"
       << "  The component descriptors are combined using a '+'. For example\n"
@@ -1842,21 +1843,26 @@ string Configuration::BuildCommandLine(void) throw()
             "# Input via configuration file:",
             "Name of file with more options [#->EOL = comment]");
 
+   // required
    opts.Add(0, "obs", "fn", true, true, &InputObsFiles,
-            "# Required input data and ephemeris files:",
+            "# Required input:",
             "RINEX observation file name(s)");
-   opts.Add(0, "eph", "fn", true, false, &InputSP3Files,"",
-            "Input Ephemeris+clock (SP3 format) file name(s)");
+   opts.Add(0, "sol", "S:F:C", true, true, &inSolDesc, "",
+            "Solution(s) to compute: Sys:Freqs:Codes (cf. --SOLhelp)");
+   opts.Add(0, "eph", "fn", true, false, &InputSP3Files,
+            "#   (require --eph OR --nav, but NOT both)",
+            "Ephemeris+clock (SP3 format) file name(s)");
    opts.Add(0, "nav", "fn", true, false, &InputNavFiles, "",
-            "Input RINEX nav file name(s) (also cf. --BCEpast)");
+            "RINEX nav file name(s) (also cf. --BCEpast)");
 
+   // optional
    opts.Add(0, "clk", "fn", true, false, &InputClkFiles,
-            "# Other (optional) input files",
-            "Input clock (RINEX format) file name(s)");
+            "# Optional input\n# Other input files",
+            "Clock (RINEX format) file name(s)");
    opts.Add(0, "met", "fn", true, false, &InputMetFiles, "",
-            "Input RINEX meteorological file name(s)");
+            "RINEX meteorological file name(s)");
    opts.Add(0, "dcb", "fn", true, false, &InputDCBFiles, "",
-            "Input differential code bias (P1-C1) file name(s)");
+            "Differential code bias (P1-C1) file name(s)");
 
    opts.Add(0, "obspath", "p", false, false, &Obspath,
             "# Paths of input files:", "Path of input RINEX observation file(s)");
@@ -1891,11 +1897,6 @@ string Configuration::BuildCommandLine(void) throw()
             "Use 'User' find-ephemeris-algorithm (else nearest) (--nav only)");
    opts.Add(0, "PisY", "", false, false, &PisY, "",
             "P code data is actually Y code data");
-   opts.Add(0, "sol", "S:F:C", true, false, &inSolDesc,
-            "# Solution Descriptors <S:F:C> define data used in solution algorithm",
-            "Specify data System:Freqs:Codes to be used to generate solution(s)");
-   opts.Add(0, "SOLhelp", "", false, false, &SOLhelp, "",
-            "Show more information on --sol <Solution Descriptor>");
 
    opts.Add(0, "wt", "", false, false, &weight,
             "# Solution Algorithm:",
@@ -1932,12 +1933,8 @@ string Configuration::BuildCommandLine(void) throw()
    opts.Add(0, "timefmt", "f", false, false, &userfmt, "",
             "Format for time tags in output");
 
-   opts.Add(0, "verbose", "", false, false, &verbose, "# Diagnostic output:",
-            "Print extended output information");
-   opts.Add(0, "debug", "", false, false, &debug, "",
-            "Print debug output at level 0 [debug<n> for level n=1-7]");
-   opts.Add(0, "help", "", false, false, &help, "",
-            "Print this and quit");
+   opts.Add(0, "SOLhelp", "", false, false, &SOLhelp, "# Help",
+            "Show more information and examples for --sol <Solution Descriptor>");
 
    // deprecated (old,new)
    opts.Add_deprecated("--SP3","--eph");
@@ -1991,7 +1988,7 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
 
    // start and stop times
    for(i=0; i<2; i++) {
-      static const string fmtGPS("%F,%g"),fmtCAL("%Y,%m,%d,%H,%M,%S %P");
+      static const string fmtGPS("%F,%g"),fmtCAL("%Y,%m,%d,%H,%M,%S");
       msg = (i==0 ? startStr : stopStr);
       if(msg == (i==0 ? defaultstartStr : defaultstopStr)) continue;
 
@@ -2021,7 +2018,7 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
       }
 
       if(ok) {
-         msg = printTime((i==0 ? beginTime : endTime),fmtGPS+" = "+fmtCAL);
+         msg = printTime((i==0 ? beginTime : endTime),fmtGPS+" = "+fmtCAL+" %P");
          if(msg.find("Error") != string::npos) ok = false;
       }
 
@@ -2030,7 +2027,7 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
             << " " << (i==0 ? startStr : stopStr) << endl;
       else
          ossx << (i==0 ? "   Begin time --start" : "   End time --stop") << " is "
-            << printTime((i==0 ? beginTime : endTime), fmtGPS+" = "+fmtCAL+"\n");
+            << printTime((i==0 ? beginTime : endTime), fmtGPS+" = "+fmtCAL+" %P\n");
    }
 
    // trop model and default weather
@@ -2082,17 +2079,28 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
    pLOGstrm = &logstrm;
    LOG(INFO) << Title;
 
+   // help, debug and verbose handeled automatically by CommandLine
+   verbose = (LOGlevel >= VERBOSE);
+   debug = (LOGlevel - DEBUG);
+
    // check consistency
    if(elevLimit>0. && knownPos.getCoordinateSystem()==Position::Unknown && !forceElev)
       oss << "Error : --elev with no --ref input requires --forceElev\n";
 
    if(forceElev && elevLimit <= 0.0)
-      ossx << "   Warning : --forceElev with no --elev <= 0 appears.";
+      ossx << "   Warning : --forceElev with no --elev <= 0 appears.\n";
    else if(forceElev && knownPos.getCoordinateSystem() == Position::Unknown)
-      ossx << "   Warning : with --ref input, --forceElev is not required.";
+      ossx << "   Warning : with --ref input, --forceElev is not required.\n";
 
    if(!OutputORDFile.empty() && knownPos.getCoordinateSystem() == Position::Unknown)
       oss << "Error : --ORDs requires --ref\n";
+
+   if(InputNavFiles.size() > 0 && InputSP3Files.size() > 0)
+      oss << "Error : Both --nav and --eph appear: provide only one.\n";
+
+   //
+   if(LOGlevel != 2)
+      ossx << "   LOG level is " << ConfigureLOG::ToString(LOGlevel) << "\n";
 
    // add new errors to the list
    msg = oss.str();

@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,31 +16,33 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
-/// @file SRI.cpp
-/// Implementation of class SRI.
-/// class SRI implements the square root information methods, used for least squares
-/// estimation and the SRI form of the Kalman filter.
-///
-/// Reference: "Factorization Methods for Discrete Sequential Estimation,"
-///             by G.J. Bierman, Academic Press, 1977.
+/**
+ * @file SRI.cpp
+ * Implementation of class SRI.
+ * class SRI implements the square root information methods, used for least squares
+ * estimation and the SRI form of the Kalman filter.
+ *
+ * Reference: "Factorization Methods for Discrete Sequential Estimation,"
+ *             by G.J. Bierman, Academic Press, 1977.
+ */
 
 // -----------------------------------------------------------------------------------
 // system
@@ -51,7 +53,6 @@
 // geomatics
 #include "SRI.hpp"
 #include "Namelist.hpp"
-#include "logstream.hpp"
 // GPSTk
 #include "StringUtils.hpp"
 
@@ -99,14 +100,31 @@ using namespace StringUtils;
                + asString<int>(r.rows()) + "x"
                + asString<int>(r.cols()) + ", Z has length "
                + asString<int>(z.size()) + " and NL has length "
-               + asString<int>(nl.size())
-               );
+               + asString<int>(nl.size()));
          GPSTK_THROW(me);
       }
       if(r.rows() <= 0) return;
       R = r;
       Z = z;
       names = nl;
+   }
+
+   // --------------------------------------------------------------------------------
+   // define from covariance and state
+   void SRI::setFromCovState(const Matrix<double>& Cov, const Vector<double>& State,
+                     const Namelist& NL) throw(MatrixException)
+   {
+      if(Cov.rows()!=Cov.cols() || Cov.rows()!=State.size() || Cov.rows()!=NL.size())
+      {
+         MatrixException me("Invalid dimensions in SRI constructor from Cov,State:\n"
+              " Cov is " + asString<int>(Cov.rows()) + "x" + asString<int>(Cov.cols())
+            + ", State has length " + asString<int>(State.size())
+            + " and NL has length " + asString<int>(NL.size()));
+         GPSTK_THROW(me);
+      }
+      R = inverseUT(upperCholesky(Cov));
+      Z = R * State;
+      names = NL;
    }
 
    // --------------------------------------------------------------------------------
@@ -140,28 +158,22 @@ using namespace StringUtils;
    {
       if(identical(names,nl)) return;
       if(names != nl) {
-         MatrixException me("Invalid input: Namelists must be == to permute");
+         MatrixException me("Invalid input: Namelists must be == to w/in permute");
          GPSTK_THROW(me);
       }
 
       try {
+         const unsigned int n(R.rows());
          unsigned int i,j;
          // build a permutation matrix
-         Matrix<double> P(R.rows(),R.rows(),0.0);
-         for(i=0; i<R.rows(); i++) {
+         Matrix<double> P(n,n,0.0);
+         for(i=0; i<n; i++) {
             j = nl.index(names.getName(i));
             P(j,i) = 1;
          }
 
-         Matrix<double> B;
-         Vector<double> Q;
-         B = P * R * transpose(P);
-         Q = P * Z;
-
-         // re-triangularize
-         R = 0.0;
-         Z = 0.0;
-         SrifMU(R,Z,B,Q);
+         // inverse of P is transpose of P
+         retriangularize(R*transpose(P), Z);
          names = nl;
       }
       catch(MatrixException& me) {
@@ -206,13 +218,13 @@ using namespace StringUtils;
    // where "." denotes a zero.  The split is simply separating the linear
    // equations which make up R*X=Z into two groups; because of the ordering,
    // one of the groups of equations (S1) depends only on a particular subset
-   // of the elements of the state vector, i.e. the elements labelled by the
+   // of the elements of the state vector, i.e. the elements labeled by the
    // Namelist NL.
    //
    // The equation shown here is an information equation; if the two SRIs S1
    // and Sleft were merged again, none of the information would be lost.
    // Note that S1 has no dependence on A B C (hence the .'s), and therefore
-   // its size can be reduced. However S2 still depends on the full names
+   // its size can be reduced. However Sleft still depends on the full names
    // Namelist. Sleft is necessarily singular, but S1 is not.
    //
    // Note that the SRI contains information about both the solution and
@@ -269,7 +281,6 @@ using namespace StringUtils;
             // copy parts of Sleft into S1, and then zero out those parts of Sleft
          SRI S1(NL);
          S1.R = Matrix<double>(Sleft.R,m-n,m-n,n,n);
-         //S1.Z = Vector<double>(Sleft.Z,m-n,n);
          S1.Z.resize(n);
          for(i=0; i<n; i++) S1.Z(i) = Sleft.Z(m-n+i);
          for(i=m-n; i<m; i++) Sleft.zeroOne(i);
@@ -436,7 +447,9 @@ using namespace StringUtils;
             for(i=0; i<=j; i++) A(m+i,k) = S.R(i,j);
             A(m+j,n) = S.Z(j);
          }
+
             // now triangularize A and pull out the new R and Z
+         //DONT - dimensions change - retriangularize(A);
          Householder<double> HA;
          HA(A);
          // submatrix args are matrix,toprow,topcol,numrows,numcols
@@ -483,8 +496,6 @@ using namespace StringUtils;
       if(n >= R.rows())
          return;
 
-      //TD this is not right -- you should permute the element
-      //to the first row, then zero
       for(unsigned int j=n; j<R.cols(); j++) 
          R(n,j) = 0.0;
       Z(n) = 0.0;
@@ -548,78 +559,75 @@ using namespace StringUtils;
    }
 
    // --------------------------------------------------------------------------------
-   // Transform this SRI with the transformation matrix T;
-   // i.e. R -> T * R * inverse(T) and Z -> T * Z. The matrix inverse(T)
-   // may optionally be supplied as input, otherwise it is computed from
-   // T. NB names in this SRI are most likely changed; but this routine does
-   // not change the Namelist. Throw MatrixException if the input has
-   // the wrong dimension or cannot be inverted.
-   void SRI::transform(const Matrix<double>& T,
-                       const Matrix<double>& invT)
-      throw(MatrixException,VectorException)
+   // Retriangularize the SRI, when it has been modified to a non-UT matrix
+   // (e.g. by transform()). Given the matrix A=[R||Z], apply HH transforms
+   // to retriagularize it and pull out new R and Z.
+   // param A Matrix<double> which is [R || Z] to be retriangularizied.
+   // throw if dimensions are wrong.
+   void SRI::retriangularize(const Matrix<double>& A) throw(MatrixException)
    {
-      if(T.rows() != R.rows() ||
-         T.cols() != R.cols() ||
-         (&invT != &SRINullMatrix && (invT.rows() != R.rows() ||
-         invT.cols() != R.cols()))) {
-            MatrixException me("Invalid input dimension:\n  SRI has dimension "
-               + asString<int>(R.rows()) + " while T has dimension "
-               + asString<int>(T.rows()) + "x"
-               + asString<int>(T.cols()));
-            if(&invT != &SRINullMatrix) me.addText("\n  and invT has dimension "
-                           + asString<int>(invT.rows()) + "x"
-                           + asString<int>(invT.cols()));
-            GPSTK_THROW(me);
+      const unsigned int n(R.rows());
+      if(A.rows() != n || A.cols() != n+1) {
+         MatrixException me("Invalid input dimension: SRI has dimension "
+            + asString<int>(n) + " while input has dimension "
+            + asString<int>(A.rows()) + "x" + asString<int>(A.cols()));
+         GPSTK_THROW(me);
       }
 
-      try {
-            // get the inverse matrix
-         Matrix<double> Ti(T);
-         if(&invT == &SRINullMatrix)
-            Ti = inverseSVD(T);
-         else
-            Ti = invT;
+      Householder<double> HA;
+      HA(A);
+      // submatrix args are matrix,toprow,topcol,numrows,numcols
+      R = Matrix<double>(HA.A,0,0,n,n);
+      Z = Vector<double>(HA.A.colCopy(n));
+      // NB names cannot be changed - caller must do it.
+   }
 
-            // transform
-         Matrix<double> B = T * R * Ti;
-         Vector<double> Q = T * Z;
-
-            // re-triangularize
-         R = 0.0;
-         Z = 0.0;
-         SrifMU(R,Z,B,Q);
+   // Retriangularize the SRI, that is assuming R has been modified to a non-UT
+   // matrix (e.g. by transform()). Given RR and ZZ, apply HH transforms to 
+   // retriangularize, and store as R,Z.
+   // @param R Matrix<double> input the modified (non-UT) R
+   // @param Z Vector<double> input the (potentially) modified Z
+   // @throw if dimensions are wrong.
+   void SRI::retriangularize(Matrix<double> RR, Vector<double> ZZ)
+      throw(MatrixException)
+   {
+      const unsigned int n(R.rows());
+      if(RR.rows() != n || RR.cols() != n || ZZ.size() != n) {
+         MatrixException me("Invalid input dimension: SRI has dimension "
+            + asString<int>(n) + " while input has dimension "
+            + asString<int>(RR.rows()) + "x" + asString<int>(RR.cols())
+            + " and " + asString<int>(ZZ.size()));
+         GPSTK_THROW(me);
       }
-      catch(MatrixException& me) {
-         GPSTK_RETHROW(me);
-      }
-      catch(VectorException& ve) {
-         GPSTK_RETHROW(ve);
-      }
+      
+      Matrix<double> A(RR || ZZ);
+      retriangularize(A);
    }
 
    // --------------------------------------------------------------------------------
-   // Transform the state by the transformation matrix T; i.e. X -> T*X,
-   // without transforming the SRI; this is done by right multiplying R by
-   // inverse(T), which is the input. Thus R -> R*inverse(T),
-   // so R*inverse(T)*T*X = Z.  Input is the _inverse_ of the transformation.
+   // Apply transformation matrix T to the SRI; i.e. X -> T*X, Cov -> T*Cov*T^T
+   // X' = T*X, C' = T*C*T^T = (TR^-1)(TR^-1)^T = R'^-1*R'^-T;
+   // but then Z' = R'*X' = R'TX = RT^-1TX = RX = Z
+   // This implies right multiplying R by inverse(T), which is the input, and then
+   // using HH to retriangularize.
+   // Input is the _inverse_ of the transformation.
+   // SRI.names is set to input Namelist
    // throw MatrixException if input dimensions are wrong.
-   void SRI::transformState(const Matrix<double>& invT)
+   void SRI::transform(const Matrix<double>& invT, const Namelist& NL)
       throw(MatrixException)
    {
-      if(invT.rows() != R.rows() || invT.cols() != R.rows()) {
+      const unsigned int n(R.rows());
+      if(invT.rows() != n || invT.cols() != n) {
          MatrixException me("Invalid input dimension: SRI has dimension "
-            + asString<int>(R.rows()) + " while invT has dimension "
+            + asString<int>(n) + " while invT has dimension "
             + asString<int>(invT.rows()) + "x"
             + asString<int>(invT.cols()));
          GPSTK_THROW(me);
       }
 
-         // transform
-      Matrix<double> A = R * invT;
-         // re-triangularize
-      Householder<double> HA;
-      HA(A);
-      R = HA.A;
+      R = R*invT;
+      retriangularize(R,Z);
+      names = NL;
    }
 
    // --------------------------------------------------------------------------------
@@ -661,6 +669,7 @@ using namespace StringUtils;
          }
 
             // triangularize and pull out the new R and Z
+            // NB do not call retriangularize() here!
          Householder<double> HA;                //    A  =  Rw  Rwx  zw
          HA(A);                                 //          0    R   z
          R = Matrix<double>(HA.A,ns,ns,n,n);
@@ -676,11 +685,59 @@ using namespace StringUtils;
    }
 
    // --------------------------------------------------------------------------------
+   // Fix one state element (with the given name) to a given value, and set the
+   // information for that element (== 1/sigma) to a given value.
+   // No effect if name is not found
+   // param name string labeling the state in Namelist names
+   // param value to which the state element is fixed
+   // param sigma (1/information) assigned to the element
+   void SRI::stateFix(const string& name,
+                      const double& value, const double& sigma, bool restore)
+      throw(Exception)
+   {
+      int index = names.index(name);
+      if(index == -1) return;
+      stateFix((unsigned int)(index), value, sigma, restore);
+   }
+
+   // --------------------------------------------------------------------------------
+   // Fix one state element (at the given index) to a given value, and set the
+   // information for that element (== 1/sigma) to a given value.
+   // No effect if index is out of range.
+   // param index of the element to fix
+   // param value to which the state element is fixed
+   // param sigma (1/information) assigned to the element
+   void SRI::stateFix(const unsigned int& index,
+                      const double& value, const double& sigma, bool restore)
+      throw(Exception)
+   {
+      if(index >= names.size()) GPSTK_THROW(Exception("Index out of range"));
+      const unsigned int N(names.size());
+
+      // make a namelist with the desired element last
+      Namelist NL(names);
+      if(index != N-1) {
+         NL.swap(index, N-1);
+         permute(NL);
+      }
+
+      // fix the element and information
+      Z(N-1) = value/sigma;
+      R(N-1,N-1) = 1.0/sigma;
+
+      // permute back, if the caller wants
+      if(restore && index != N-1) {
+         NL = names;
+         NL.swap(index, N-1);
+         permute(NL);
+      }
+   }
+
+   // --------------------------------------------------------------------------------
    // Fix the state element with the input index to the input value, and
    // collapse the SRI by removing that element.
    // No effect if index is out of range.
-   void SRI::stateFix(const unsigned int& in,
-                      const double& bias)
+   void SRI::stateFixAndRemove(const unsigned int& in, const double& bias)
       throw(MatrixException,VectorException)
    {
       if(in >= R.rows()) return;
@@ -706,17 +763,13 @@ using namespace StringUtils;
          Z = Znew;
          names -= names.labels[in];
       }
-      catch(MatrixException& me) {
-         GPSTK_RETHROW(me);
-      }
-      catch(VectorException& ve) {
-         GPSTK_RETHROW(ve);
-      }
+      catch(MatrixException& me) { GPSTK_RETHROW(me); }
+      catch(VectorException& ve) { GPSTK_RETHROW(ve); }
    }
 
    // --------------------------------------------------------------------------------
-   // Vector version of stateFix with several states given in a Namelist.
-   void SRI::stateFix(const Namelist& dropNL, const Vector<double>& values_in)
+   // Vector version of stateFixAndRemove with several states given in a Namelist.
+   void SRI::stateFixAndRemove(const Namelist& dropNL,const Vector<double>& values_in)
       throw(MatrixException,VectorException)
    {
       try {
@@ -814,12 +867,8 @@ using namespace StringUtils;
             names -= name;
          }
       }
-      catch(MatrixException& me) {
-         GPSTK_RETHROW(me);
-      }
-      catch(VectorException& ve) {
-         GPSTK_RETHROW(ve);
-      }
+      catch(MatrixException& me) { GPSTK_RETHROW(me); }
+      catch(VectorException& ve) { GPSTK_RETHROW(ve); }
    }
 
    //---------------------------------------------------------------------------------
@@ -833,8 +882,7 @@ using namespace StringUtils;
             + asString<int>(R.rows()) + ",\n  while input is Cov("
             + asString<int>(Cov.rows()) + "x"
             + asString<int>(Cov.cols()) + ") and X("
-            + asString<int>(X.size()) + ")."
-            );
+            + asString<int>(X.size()) + ").");
          GPSTK_THROW(me);
       }
 
@@ -875,7 +923,7 @@ using namespace StringUtils;
    }
 
    // --------------------------------------------------------------------------------
-   void SRI::getConditionNumber(double& small, double& big)
+   void SRI::getConditionNumber(double& small, double& big) const
       throw(MatrixException)
    {
       try {
@@ -898,7 +946,7 @@ using namespace StringUtils;
    // Compute state without computing covariance. Use the fact that R is upper
    // triangular. Throw if and when a zero diagonal element is found; values at larger
    // index are still valid. On output *ptr is the largest singular index
-   void SRI::getState(Vector<double>& X, int *ptr)
+   void SRI::getState(Vector<double>& X, int *ptr) const
       throw(MatrixException)
    {
       const int n=Z.size();
@@ -927,7 +975,7 @@ using namespace StringUtils;
    void SRI::getStateAndCovariance(Vector<double>& X,
                                    Matrix<double>& C,
                                    double *ptrSmall,
-                                   double *ptrBig)
+                                   double *ptrBig) const
       throw(MatrixException,VectorException)
    {
       try {
@@ -973,6 +1021,7 @@ using namespace StringUtils;
       if(flags & ios_base::scientific) LM.scientific();
       LM.setw(os.width());
       LM.setprecision(os.precision());
+      LM.clean();
       //LM.message("NL");
       //LM.linetag("tag");
 
@@ -983,4 +1032,5 @@ using namespace StringUtils;
 
 } // end namespace gpstk
 
+//------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------

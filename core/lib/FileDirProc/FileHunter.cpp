@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /**
  * @file FileHunter.cpp
@@ -216,12 +216,12 @@ namespace gpstk
          vector<FileSpec>::const_iterator fsIter = fileSpecList.begin();
 
 #ifdef _WIN32
-         if (itr != fileSpecList.end())
+         if (fsIter != fileSpecList.end())
          {
                // If Windows, we should seed it with the drive spec
-            toReturn[0] = (*itr).getSpecString();
-            fileSpecStr = (*itr).getSpecString(); 
-            itr++;
+            toReturn[0] = (*fsIter).getSpecString();
+            fileSpecStr = (*fsIter).getSpecString(); 
+            fsIter++;
          }
 #endif
          while (fsIter != fileSpecList.end())
@@ -542,7 +542,7 @@ namespace gpstk
             }
             while( _findnext( hFile, &c_file ) == 0 )
             {
-               isDir = (c_file.attrib & _A_DIR);
+               isDir = (c_file.attrib & _A_SUBDIR);
                filename = std::string(c_file.name);
                if ((filename != ".") && (filename != ".."))
                {

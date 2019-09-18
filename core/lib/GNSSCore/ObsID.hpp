@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /// @file ObsID.hpp
 /// gpstk::ObsID - navigation system, receiver, and file specification
@@ -163,9 +163,9 @@ namespace gpstk
          tcC,       ///< Galileo Dataless code
          tcBC,      ///< Galileo B+C combined tracking
          tcABC,     ///< Galileo A+B+C combined tracking
-         tcIE5,     ///< Galileo L5 I code
-         tcQE5,     ///< Galileo L5 Q code
-         tcIQE5,    ///< Galileo L5 I+Q combined tracking
+         tcIE5,     ///< Galileo E5 I code
+         tcQE5,     ///< Galileo E5 Q code
+         tcIQE5,    ///< Galileo E5 I+Q combined tracking
          tcIE5a,    ///< Galileo E5a I code
          tcQE5a,    ///< Galileo E5a Q code
          tcIQE5a,   ///< Galileo E5a I+Q combined tracking

@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /**
  * @file Namelist.cpp
@@ -96,7 +96,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 Namelist& Namelist::operator+=(const string& name)
 {
 try {
-   if(this->contains(name))
+   if(contains(name))
       GPSTK_THROW(Exception("Name is not unique: " + name));
    labels.push_back(name);
    return *this;
@@ -154,7 +154,7 @@ try {
          oss << "NAME" << setw(3) << setfill('0') << N;
          s = oss.str();
          N++;
-      } while(this->contains(s));
+      } while(contains(s));
       labels.push_back(s);
    }
    while(labels.size() > n) {
@@ -195,8 +195,9 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 bool Namelist::contains(const string& name) const
 {
 try {
-   for(unsigned int i=0; i<labels.size(); i++)
+   for(unsigned int i=0; i<labels.size(); i++) {
       if(labels[i] == name) return true;
+   }
    return false;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
@@ -281,7 +282,7 @@ Namelist& Namelist::operator&=(const Namelist& N)
 try {
    Namelist NAND;
    for(unsigned int i=0; i<N.labels.size(); i++)
-      if(this->contains(N.labels[i])) NAND += N.labels[i];
+      if(contains(N.labels[i])) NAND += N.labels[i];
    *this = NAND;
    return *this;
 }
@@ -295,7 +296,7 @@ Namelist& Namelist::operator|=(const Namelist& N)
 try {
    Namelist NOR(*this);
    for(unsigned int i=0; i<N.labels.size(); i++)
-      if(!(this->contains(N.labels[i]))) NOR += N.labels[i];
+      if(!(contains(N.labels[i]))) NOR += N.labels[i];
    *this = NOR;
    return *this;
 }
@@ -311,7 +312,7 @@ try {
    for(i=0; i<labels.size(); i++)
       if(!(N.contains(labels[i]))) NXOR += labels[i];
    for(i=0; i<N.labels.size(); i++)
-      if(!(this->contains(N.labels[i]))) NXOR += N.labels[i];
+      if(!(contains(N.labels[i]))) NXOR += N.labels[i];
    *this = NXOR;
    return *this;
 }

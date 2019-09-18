@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /// @file SRIMatrix.hpp
 /// Template routines for efficient manipulation of square root matricies,
@@ -235,11 +235,13 @@ namespace gpstk
    /// Compute lower triangular square root of a symmetric positive definite matrix
    /// (Cholesky decomposition) Crout algorithm.
    /// @param A Matrix to be decomposed; symmetric and positive definite, unchanged
+   /// @param ztol zero tolerance, defaults to 1.e-16
    /// @return Matrix lower triangular square root of input matrix
    /// @throw MatrixException if input Matrix is not square
-   /// @throw MatrixException if input Matrix is not positive definite
+   /// @throw SingularMatrixException if input Matrix is not positive definite
    template <class T>
-   Matrix<T> lowerCholesky(const Matrix<T>& A) throw(MatrixException)
+   Matrix<T> lowerCholesky(const Matrix<T>& A, const T ztol=T(1.e-16))
+      throw(MatrixException)
    {
       if(A.rows() != A.cols() || A.rows() == 0) {
          std::ostringstream oss;
@@ -254,11 +256,11 @@ namespace gpstk
       for(j=0; j<n; j++) {             // loop over cols
          T d(A(j,j));
          for(k=0; k<j; k++) d -= L(j,k)*L(j,k);
-         if(d <= T(0)) {
+         if(d <= ztol) {
             std::ostringstream oss;
-            oss << "Non-positive eigenvalue " << d << " at col " << j
-               << ": lowerCholesky() requires positive-definite input";
-            GPSTK_THROW(MatrixException(oss.str()));
+            oss << "Non-positive eigenvalue " << std::scientific << d << " at col "
+               << j << ": lowerCholesky() requires positive-definite input";
+            GPSTK_THROW(SingularMatrixException(oss.str()));
          }
          L(j,j) = ::sqrt(d);
          for(i=j+1; i<n; i++) {        // loop over rows below diagonal
@@ -273,18 +275,50 @@ namespace gpstk
 
 
    //---------------------------------------------------------------------------------
-   /// Compute upper triangular square root of a symmetric positive definite matrix
-   /// (Cholesky decomposition) Crout algorithm; that is A = transpose(U)*U.
-   /// Note that this result will be equal to
-   /// transpose(lowerCholesky(A)) == transpose(Ch.L from class Cholesky), NOT Ch.U;
-   /// class Cholesky computes L,U where A = L*LT = U*UT [while A=UT*U here].
+   /// Compute upper triangular square root of a symmetric positive definite matrix,
+   /// the Cholesky decomposition; that is A = U*UT = U*transpose(U).
    /// @param A   Matrix to be decomposed; symmetric and positive definite, unchanged
-   /// @return Matrix upper triangular square root of input matrix
+   /// @return Matrix U upper triangular square root of input matrix, A=U*UT
    /// @throw MatrixException if input Matrix is not square
-   /// @throw MatrixException if input Matrix is not positive definite
+   /// @throw SingularMatrixException if input Matrix is not positive definite
    template <class T>
-   Matrix<T> upperCholesky(const Matrix<T>& A) throw(MatrixException)
-      { return transpose(lowerCholesky(A)); }
+   Matrix<T> upperCholesky(const Matrix<T>& A, const T ztol=T(1.e-16))
+      throw(MatrixException)
+   {
+      if(A.rows() != A.cols() || A.rows() == 0) {
+         std::ostringstream oss;
+         oss << "Invalid input dimensions: " << A.rows() << "x" << A.cols();
+         GPSTK_THROW(MatrixException(oss.str()));
+      }
+   
+      const unsigned int n=A.cols();
+      unsigned int i,j,k;
+      Matrix<T> U(n,n,T(0));
+      Matrix<T> P = A;
+
+      // loop over columns in reverse order
+      for(j=n-1; j>=0; j--) {
+         T d(P(j,j));                            // d = diagonal element j
+         if(d <= ztol) {
+            std::ostringstream oss;
+            oss << "Non-positive eigenvalue " << std::scientific << d << " at col "
+               << j << ": upperCholesky() requires positive-definite input";
+            GPSTK_THROW(SingularMatrixException(oss.str()));
+         }
+         U(j,j) = ::sqrt(d);
+         d = T(1)/U(j,j);
+
+         for(k=0; k<j; k++) U(k,j) = d*P(k,j);
+         for(k=0; k<j; k++) {
+            for(i=0; i<=k; i++)
+               P(i,k) -= U(k,j)*U(i,j);
+         }
+
+         if(j==0) break;                        // since j is unsigned
+      }
+
+      return U;
+   }
 
 
    //---------------------------------------------------------------------------------
@@ -346,36 +380,35 @@ namespace gpstk
    
       big = small = fabs(dum);
       Inv(n-1,n-1) = T(1)/dum;
-      if(n == 1) {
-         if(ptrSmall) *ptrSmall=small;
-         if(ptrBig) *ptrBig=big;
-         return Inv;                 // 1x1 matrix
-      }
-      for(i=0; i<n-1; i++) Inv(n-1,i)=0;     // zero row i to left of diagonal
+
+      if(n > 1) {
+         // zero row n-1 to left of diagonal
+         for(i=0; i<n-1; i++) Inv(n-1,i)=0;
    
-         // now move to rows i = n-2 to 0
-      for(i=n-2; ; i--) {
-         if(UT(i,i) == T(0)) {
-            std::ostringstream oss;
-            oss << "Singular matrix at element " << i;
-            GPSTK_THROW(MatrixException(oss.str()));
-         }
+         // move to rows i = n-2 to 0; NB i is unsigned, so break loop at bottom
+         for(i=n-2; ; i--) {
+            if(UT(i,i) == T(0)) {
+               std::ostringstream oss;
+               oss << "Singular matrix at element " << i;
+               GPSTK_THROW(MatrixException(oss.str()));
+            }
    
-         if(fabs(UT(i,i)) > big) big = fabs(UT(i,i));
-         if(fabs(UT(i,i)) < small) small = fabs(UT(i,i));
-         dum = T(1)/UT(i,i);
-         Inv(i,i) = dum;                        // diagonal element first
+            if(fabs(UT(i,i)) > big) big = fabs(UT(i,i));
+            if(fabs(UT(i,i)) < small) small = fabs(UT(i,i));
+            dum = T(1)/UT(i,i);
+            Inv(i,i) = dum;                        // diagonal element first
    
             // now do off-diagonal elements (i,i+1) to (i,n-1): row i to right
-         for(j=i+1; j<n; j++) {
-            sum = T(0);
-            for(k=i+1; k<=j; k++)
-               sum += Inv(k,j) * UT(i,k);
-            Inv(i,j) = - sum * dum;
-         }
-         for(j=0; j<i; j++) Inv(i,j)=0;         // zero row i to left of diag
+            for(j=i+1; j<n; j++) {
+               sum = T(0);
+               for(k=i+1; k<=j; k++)
+                  sum += Inv(k,j) * UT(i,k);
+               Inv(i,j) = - sum * dum;
+            }
+            for(j=0; j<i; j++) Inv(i,j)=0;         // zero row i to left of diag
    
-         if(i==0) break;         // NB i is unsigned, hence 0-1 = 4294967295!
+            if(i==0) break;         // NB i is unsigned, hence 0-1 = 4294967295!
+         }
       }
    
       if(ptrSmall) *ptrSmall=small;
@@ -485,6 +518,106 @@ namespace gpstk
       if(ptrBig) *ptrBig=big;
  
       return Inv;
+   }
+   
+   //---------------------------------------------------------------------------------
+   /// Compute LDL (lower-diagonal-lower) decomposition of a square positive definite
+   /// matrix. Return the lower triangular matrix L and the diagonal as a Vector<T>.
+   /// The decomposition is such that A = L*diag(D)*transpose(L).
+   /// @param A Matrix<T> to be decomposed, must be square and positive definite
+   /// @param D Vector<T> output diagonal matrix stored as a Vector
+   /// @return Matrix<T> lower triangular matrix L
+   /// @throw MatrixException if input is not square,
+   /// @throw SingularMatrixException if input is not positive definite
+   template <class T>
+   Matrix<T> LDL(const Matrix<T>& A, Vector<T>& D) throw(MatrixException)
+   {
+      try {
+         if(A.rows() != A.cols() || A.rows() == 0) {
+            std::ostringstream oss;
+            oss << "Invalid input dimensions: " << A.rows() << "x" << A.cols();
+            GPSTK_THROW(MatrixException(oss.str()));
+         }
+   
+         const unsigned int N(A.rows());
+         Matrix<T> L;
+         try {
+            L = lowerCholesky(A);
+         }
+         catch(MatrixException& me) {
+            me.addText("lowerCholesky failed");
+            GPSTK_RETHROW(me);
+         }
+
+         D = L.diagCopy();          // have to square these later
+
+         unsigned int i,j;
+         // scale column j of L by 1/L(j,j) = 1/sqrt(D(j))
+         for(j=0; j<N; j++) {
+            T d(D(j));
+            //if(d <= 0) never happens - Cholesky will catch
+            D(j) = d*d;
+            L(j,j) = T(1);
+            for(i=j+1; i<N; i++) // scale column below diagonal by d
+               L(i,j) /= d;
+         }
+
+         return L;
+      }
+      catch(MatrixException& me) {
+         me.addText("Called by LDL()");
+         GPSTK_RETHROW(me);
+      }
+   }
+   
+   //---------------------------------------------------------------------------------
+   /// Compute UDU (upper-diagonal-upper) decomposition of a square positive definite
+   /// matrix. Return the upper triangular matrix U and the diagonal as a Vector<T>.
+   /// The decomposition is such that A = U*diag(D)*transpose(U).
+   /// @param A Matrix<T> to be decomposed, must be square and positive definite
+   /// @param D Vector<T> output diagonal matrix stored as a Vector
+   /// @return Matrix<T> upper triangular matrix U
+   /// @throw MatrixException if input is not square,
+   /// @throw SingularMatrixException if input is not positive definite
+   template <class T>
+   Matrix<T> UDU(const Matrix<T>& A, Vector<T>& D) throw(MatrixException)
+   {
+      try {
+         if(A.rows() != A.cols() || A.rows() == 0) {
+            std::ostringstream oss;
+            oss << "Invalid input dimensions: " << A.rows() << "x" << A.cols();
+            GPSTK_THROW(MatrixException(oss.str()));
+         }
+   
+         const unsigned int N(A.rows());
+         Matrix<T> U;
+         try {
+            U = upperCholesky(A);
+         }
+         catch(MatrixException& me) {
+            me.addText("upperCholesky failed");
+            GPSTK_RETHROW(me);
+         }
+
+         D = U.diagCopy();          // have to square these later
+
+         unsigned int i,j;
+         // scale column j of U by 1/U(j,j) = 1/sqrt(D(j))
+         for(j=0; j<N; j++) {
+            T d(D(j));
+            //if(d <= 0) never happens - Cholesky will catch
+            D(j) = d*d;
+            U(j,j) = T(1);
+            for(i=0; i<j; i++)      // scale column above diagonal by d
+               U(i,j) /= d;
+         }
+
+         return U;
+      }
+      catch(MatrixException& me) {
+         me.addText("Called by UDU()");
+         GPSTK_RETHROW(me);
+      }
    }
    
 } // end namespace gpstk

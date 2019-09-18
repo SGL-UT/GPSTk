@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,28 +16,30 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /// @file StatsFilter_T.cpp Test classes in StatsFilter.hpp
 
 #include <vector>
-#include "StatsFilter.hpp"
+#include "FirstDiffFilter.hpp"
+#include "FDiffFilter.hpp"
+#include "WindowFilter.hpp"
 #include "logstream.hpp"
 
 //------------------------------------------------------------------------------------
@@ -151,6 +153,72 @@ int testWindow(const vector<double>& xdata,
       for(j=0; j<hit.size(); j++)
          cout << label << " " << hit[j].asString() << endl;
    }
+
+   return iret;
+}
+
+//------------------------------------------------------------------------------------
+int testFDiff(const vector<double>& xdata,
+              const vector<double>& data,
+              const double& ratlimit,
+              const string& label,
+              const bool& verbose,
+              vector< FilterHit<double> >& hit)
+{
+   int iret;
+   unsigned int i,j,k;
+
+   // fill flags
+   vector<int> flags;
+   flags = vector<int>(data.size(),0);
+
+   // xdata and flags must exist but may be empty
+   IterativeFDiffFilter<double> fdf(xdata, data, flags);
+   fdf.setw(7);
+   fdf.setprecision(4);
+
+   fdf.setWidth(4);
+   fdf.setLimit(0.8);
+   fdf.setSigma(ratlimit);
+
+   fdf.doVerbose(verbose);
+   fdf.doResetSigma(true);
+   fdf.doSmallSlips(false);
+
+   iret = fdf.analysis();
+   if(iret < 0) cout << "# FDiffFilter analysis failed (" << iret << ")" << endl;
+   else iret=0;
+
+   hit = fdf.getResults();
+
+   // clean the data based on results of filter
+   //vector< FilterHit<double> > hit=fdf.getResults();
+   for(j=0; j<hit.size(); j++) {
+      cout << label << " " << hit[j].asString() << endl;
+
+      //if(hit[j].type == FilterHit<double>::BOD) continue;
+      //else if(hit[j].type == FilterHit<double>::outlier) {
+      //   for(k=0; k<hit[j].npts; k++)
+      //      flags[hit[j].index+k] = -1;      // flag for outlier
+      //}
+      //else if(hit[j].type == FilterHit<double>::slip) {
+      //   for(k=hit[j].index; k<data.size(); k++)
+      //      data[k] -= hit[j].step;
+      //}
+   }
+
+   //// write cleaned data to rstats.out
+   //ostream *pout = new ofstream("rstats.out");
+   //if(pout->fail()) {
+   //   cout << "Unable to open file rstats.out - output to screen\n";
+   //   pout = &cout;
+   //}
+
+   //for(i=0; i<data.size(); i++)
+   //   *pout << fixed << setprecision(prec) << i
+   //         << " " << (xdata.size() ? xdata[i] : (double)(i))
+   //         << " " << data[i] << " " << flags[i] << endl;
+   //if(pout != &cout) ((ofstream *)pout)->close();
 
    return iret;
 }
@@ -517,6 +585,40 @@ try {
          results[5].npts != 1 ||
          results[5].ngood != 0)
             { cout << label << " sixth hit\n"; count++; }
+   }
+
+   label = "Test3FDiffF";
+   iret = testFDiff(xdata, data, 0.4, label, verbose, results);
+   if(iret == 0) {
+      if(results[0].type != FilterHit<double>::outlier ||
+         results[0].index != 69 ||
+         results[0].npts !=  1 ||
+         results[0].dx !=  30.0)
+            { cout << label << " first hit\n"; count++; }
+      if(results[1].type != FilterHit<double>::outlier ||
+         results[1].index != 93 ||
+         results[1].npts !=  1 ||
+         results[1].dx !=  30.0)
+            { cout << label << " second hit\n"; count++; }
+      if(results[2].type != FilterHit<double>::slip ||
+         results[2].index != 190 ||
+         results[2].npts != 1 ||
+         ::fabs(results[2].dx - 30.0) > 0.001 ||
+         ::fabs(results[2].step - 1.552) > 0.001 ||
+         ::fabs(results[2].sigma - 1.283) > 0.001)
+            { cout << label << " third hit\n"; count++; }
+      if(results[3].type != FilterHit<double>::slip ||
+         results[3].index != 195 ||
+         results[3].npts != 1 ||
+         ::fabs(results[3].dx - 30.0) > 0.001 ||
+         ::fabs(results[3].step + 3.172) > 0.001 ||
+         ::fabs(results[3].sigma - 1.855) > 0.001)
+            { cout << label << " fourth hit\n"; count++; }
+      if(results[4].type != FilterHit<double>::outlier ||
+         results[4].index != 244 ||
+         results[4].npts !=  1 ||
+         results[4].dx !=  0.0)
+            { cout << label << " fifth hit\n"; count++; }
    }
 
    // --------------------------------------------------------------------

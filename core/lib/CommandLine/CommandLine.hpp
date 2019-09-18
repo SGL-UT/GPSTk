@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 // CommandLine.hpp  Command line options and argument processing.
 //
@@ -85,15 +85,15 @@ private:
                           // parse error if the option appears more than once
       bool required;      // if true, option is required
       bool expand;        // if true, expand arguments a,b,c (vector types only)
-      typeOpt type;       // type target: bool, int, doub, str, vec<str>,
-                          //    RinexSatID, vec<RinexSatID>
+      bool toggle;        // if true for typeBool, toggle instead of set true
+      typeOpt type;       // type target: bool,int,doub,str,vec<str>,RinexSatID,vec<sat>
       void *p_output;     // pointer to output - default is its value on input
       bool doc;           // if false, option is undocumented
 
       std::vector<std::string> values;    // store values from command line
 
       Option(void) : 
-         shortOpt(0),repeat(false),required(false),expand(true),
+         shortOpt(0),repeat(false),required(false),expand(true),toggle(false),
          type(typeUndefined),p_output(NULL),doc(true) { }
 
       Option(char s, std::string l, std::string a, std::string predes,
@@ -109,6 +109,7 @@ private:
          type = t;
          p_output = ptr;
          expand = true;
+         toggle = false;
          doc = d;
       }
    }; // end class Option
@@ -154,6 +155,13 @@ public:
    // access
    bool hasHelp(void) { return help; }
    bool hasErrors(void) { return foundErrors; }
+   unsigned int count(std::string lopt) {
+      for(unsigned int i=0; i<options.size(); i++) {
+         if(options[i].longOpt == lopt)
+            return options[i].values.size();
+      }
+      return 0;
+   }
 
    // don't require at least one arg
    void noArgsRequired(void) { requireOneArg=false; }
@@ -248,8 +256,8 @@ public:
    }
 
    // -------------------------------------------------------------
-   // modify an option - string must match long option string passed to constructor
-   // vector types only: turn off expansion of arguments ('a,b,c' -> 'a' 'b' and 'c')
+   /// modify a Vector option; string l must match long option string passed to
+   /// constructor: turn off expansion of arguments ('a,b,c' -> 'a' 'b' and 'c')
    void noExpansion(std::string l)
    {
       for(size_t i=0; i<options.size(); i++) {
@@ -258,6 +266,22 @@ public:
                                         options[i].type == typeVectorInt))
          {
             options[i].expand = false;
+            return;
+         }
+      }
+   }
+
+   // -------------------------------------------------------------
+   /// Modify a Bool option; string l must match long option string passed to
+   /// constructor: when option is found, toggle instead of setting true
+   /// If toggle is true, argument toggles the value rather than just setting it true.
+   /// @param lstr long option string which identifies the option to be changed
+   /// @param b bool set 'toggle' switch to this, default true
+   void setToggle(std::string lstr, bool b=true)
+   {
+      for(size_t i=0; i<options.size(); i++) {
+         if(options[i].longOpt == lstr && options[i].type == typeBool) {
+            options[i].toggle = b;
             return;
          }
       }

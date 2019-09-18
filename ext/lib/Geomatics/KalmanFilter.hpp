@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /// @file KalmanFilter.hpp
 /// Kalman filter implementation using the SRIFilter class.
@@ -52,55 +52,68 @@
 
 // -----------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------
-// A base class for implementing Kalman filter using SRIFilter. Define a class with
-// this class as base, implement some or all the virtual functions to define problem.
-//
-// The derived class MUST overload:
-//   virtual int defineInitial() to define initial time and apriori state and cov.
-//   virtual int defineMeasurements() to define Partials, data and meas.covariance.
-//   virtual void defineTimestep() to define Phi, G, Rw and Control
-//
-// The derived class MAY overload these, if the state will be modified on the fly:
-//   virtual int defineAddsDrops() to define an initial SRI for states to be added
-//      and to define a Namelist of states to be removed. This routine is called
-//      three times, before the MU, between the MU and the TU, and after the TU.
-//      If it returns -1, it does nothing (this allows the caller to skip an epoch).
-//
-// The derived class may want to overload the output() routine.
-// The Update routines may be overloaded if necessary (but it shouldn't be).
-//
-// How to use the derived class:
-// 1. Define all the 'define' functions; this constitutes the filter design.
-//
-// 2. create the filter, using either empty c'tor and Reset(Namelist), or c'tor(NL)
-//
-// 3. initialize the filter by calling initializeFilter() (calls defineInitial())
-//
-// 4. call ForwardFilter(finalTime); which increment time and NTU (from 0),
-//    until time reaches finalTime.
-//       This routine is a loop over time; the loop consists of:
-//
-//       KalmanAddsDrops(), which calls
-//          defineAddsDrops(1,...) to get any new states (an SRI) to be added
-//          or states to be dropped (a Namelist).
-//
-//       KalmanMeasurementUpdate(), which calls
-//          defineMeasurements() to get current time, data, mcov, and partials
-//          NB. defineMeasurements() controls the time steps.
-//
-//       KalmanAddsDrops(), calling defineAddsDrops(2,...)
-//
-//       KalmanTimeUpdate(), which calls
-//          defineTimestep() to get Phi,Rw,G,Control
-//
-//       KalmanAddsDrops(), calling defineAddsDrops(3,...)
-//
-// Several switches may be used to control the filter. For each there is also a 'set'
-// routine.
-// 1. setDoOutput(false) turns off the output routine.
-// 2. setDoInvert(false) stops inversions (compute State and Cov from the SRI) and
-//       output during the forward filter. NB. cf. setSRISU for the backward filter.
-//
+/// A base class for implementing Kalman filter using SRIFilter. Define a class with
+/// this class as base, implement some or all the virtual functions to define problem.
+///
+/// The derived class MUST overload:
+///   virtual int defineInitial() to define initial time and apriori state and cov.
+///   virtual int defineMeasurements() to define Partials, Data and MCov.
+///   virtual void defineTimestep() to define Phi, G, Rw and Control
+///
+/// The derived class MAY overload this function, which is called between updates,
+///   virtual int defineInterim() to output, change the state or anything else.
+///      This routine is called at four times:
+///        before the measurement update (MU),
+///        between the MU and the time update (TU),
+///        after the TU,
+///        between smoother updates (SU).
+///  If it returns >0 output() is called.
+///
+/// The derived class may want to overload the output() routine.
+/// The Update routines may be overloaded if necessary (but it shouldn't be).
+///
+/// Note that a "time" is used by the Kalman to index the data and determine how to
+/// time update (TU); this need not be a real time, however; it is ONLY required that
+/// 0. defineInitial(T0 ...) defines the starting value of T (NB also timeReverse)
+/// 1. ForwardFilter(finalT,dt) defines ending value of T and nominalDT = dt
+/// 2. defineMeasurements(T...) on input, T tells which data (epoch) to get
+/// 3. defineMeasurements(T...) on output, T contains the time of the NEXT data epoch
+/// The actual value of T is used only a) it is printed in output(), and
+///   b) some implementations will use DT in the TU to compute process noise(s).
+/// Otherwise, T could be completely fictional.
+///
+/// How to use the derived class:
+/// 1. Define all the 'define' functions; this constitutes the filter design.
+/// 2. create the filter, using either empty c'tor and Reset(Namelist), or c'tor(NL)
+/// 3. initialize the filter by calling initializeFilter() (calls defineInitial())
+/// 4. call ForwardFilter(finalTime,dt); which increments time by dt and NTU (from 0),
+///    until time reaches finalTime.
+///       This routine is a loop over time; the loop consists of:
+///       KalmanInterim(), which calls defineInterim(1,...)
+///       KalmanMeasurementUpdate(), which calls
+///          defineMeasurements() to get current time, data, mcov, and partials
+///          NB. defineMeasurements() controls the time steps.
+///       KalmanInterim(), calling defineInterim(2,...)
+///       KalmanTimeUpdate(), which calls
+///          defineTimestep() to get Phi,Rw,G,Control
+///       KalmanInterim(), calling defineInterim(3,...)
+///  5. call BackwardFilter(M); this will smooth, starting at the current time down to
+///     NTU = M, it will decrement both time and NTU.
+///     This calls KalmanInterim(), calling defineInterim(4,...)
+///     NB. Smoothing knows nothing about time, but times stored during the
+///        forward filter are restored here for output purposes.
+///
+/// Several switches may be used to control the filter. For each there is also a 'set'
+/// routine.
+/// 1. setDoOutput(false) turns off the output routine.
+/// 2. setDoInvert(false) stops inversions (compute State and Cov from the SRI) and
+///       output during the forward filter. NB. cf. setSRISU for the backward filter.
+/// 3. setSmoother(true) must be called before ForwardFilter() if BackwardFilter() is
+///       to be called. This causes the smoothing information to be stored during TUs.
+/// 4. setSRISU(true) causes BackwardFilter() to use the SRIF form of the smoothing
+///       algorithm (which requires inversions); otherwise the DM form is used.
+/// 5. setTimeReverse(true) to run in reverse time order.
+///
 class KalmanFilter {
 public:
 
@@ -108,7 +121,7 @@ public:
    typedef enum FilterStageEnum {
       Unknown=0,
       Init,
-      AD1, AD2, AD3,
+      IB1, IB2, IB3,             // for "in between" meaning Interim
       TU,
       MU,
       SU,
@@ -118,74 +131,147 @@ public:
    // enum to define the return values for defineMeasurements()
    typedef enum KalmanMUReturnValuesEnum {
       Process=0,
-      ProcessThenQuit,
-      SkipThisEpoch,
-      SkipThenQuit,
-      QuitImmediately,
-      ReturnCount
+      ProcessThenQuit,  // 1
+      SkipThisEpoch,    // 2
+      SkipThenQuit,     // 3
+      QuitImmediately,  // 4
+      ReturnCount       // 5
    } KalmanReturn;
 
+   // -------------------------------------------------------------------------------
+   // data
+protected:
+   /// if true, output at each stage using output() routine. NB used inside output()
+   bool doOutput;
+   /// if true, invert the SRIF to get State and Covariance whenever SRIF changes.
+   /// In general it is wise to set this false, then reset to true only when the
+   /// State is to be used. For example if you need the State Vector in the MU, then
+   /// set doInversions=true in defineIntermin(1), then set to false in defineM.
+   /// Inversions are called between all the define...() calls.
+   bool doInversions;
+   /// if true then the SRIF is currently singular (not a problem unless doInversions)
+   bool singular;
+   /// if true use the SRIF form of the smoother update in the backward filter
+   bool doSRISU;
+   /// if true the filter is considered extended; this will zero the state before MU
+   bool extended;
+   /// if true the forward filter will save the data needed by the backward filter
+   bool smoother;
+   /// if true then the SRI has been inverted and State and Cov are valid
+   bool inverted;
+   /// if true then independent variable "time" decreases
+   bool timeReversed;
+   /// if true, do a "dry run" calling all user-defined func, but none of the SRIF
+   bool dryRun;
+
+   int NTU;                         ///< count of time updates: ++ in TU, -- in SU
+   int NMU;                         ///< count of measurement updates
+   int NSU;                         ///< count of smoother updates
+   int Nstate;                      ///< number of state elements
+   int Nnoise;                      ///< Nnoise is there only for the user
+
+   FilterStage stage;               ///< current stage of the filter - see enum
+   double time;                     ///< seconds since start
+   double nominalDT;                ///< change in time for one TU seconds
+   double big,small;                ///< condition number at last inversion = b/s
+   std::string KFtag;               ///< optional tag to put in output (2nd field)
+
+   gpstk::Vector<double> State;     ///< filter state
+   gpstk::Matrix<double> Cov;       ///< filter covariance
+   gpstk::SRIFilter srif;           ///< SRIF
+   // MU
+   gpstk::Vector<double> PFResid;   ///< post-fit residuals - valid after MU
+   gpstk::Matrix<double> Partials;  ///< matrix defined by defineM() and used in MU
+   gpstk::Vector<double> Data;      ///< vector defined by defineM() and used in MU
+   gpstk::Matrix<double> MCov;      ///< measurement covariance (defineM() for MU)
+   // TU
+   gpstk::Vector<double> Zw;        ///< SRIF vector used internally
+   gpstk::Vector<double> Control;   ///< SRIF vector used internally
+   gpstk::Matrix<double> PhiInv;    ///< SRIF matrix used internally - inv state trans
+   gpstk::Matrix<double> G;         ///< SRIF matrix used internally - noise
+   gpstk::Matrix<double> Rw;        ///< SRIF matrix used internally
+   // SU
+   gpstk::Vector<double> SMResid;   ///< post-smoother residuals - value after SU
+
+   /// Storage for smoothing algorithm; stored by forward filter, used by SU
+   typedef struct Smoother_storage_record {
+      gpstk::Matrix<double> Rw;
+      gpstk::Matrix<double> Rwx;
+      gpstk::Matrix<double> PhiInv;
+      gpstk::Matrix<double> G;
+      gpstk::Vector<double> Zw;
+      gpstk::Vector<double> Control;
+      double Time;
+   } SmootherStoreRec;
+   std::map<int, SmootherStoreRec> SmootherStore;
+
+public:
+   // functions
    // -------------------------------------------------------------------------------
    // 1. Define all the 'define' functions; this constitutes the filter design; these
    // get information from the user and MUST be implemented in the derived class.
    // -------------------------------------------------------------------------------
-   //
-   /// Get complete apriori information from user, including initial time T0, and
+
+   /// Pure virtual function, to be overloaded and provided by the caller, providing
+   /// complete apriori information, including initial time T0, and
    /// either {state vector X, and covariance Cov} (return 1) or the inverse
    /// {inverse covariance*state X, and inverse covariance Cov} (return -1) or no
    /// (zero) information (return 0). If non-0 is returned, the matrix must be
    /// non-singular. Note that the SRIF was zero-ed by either the constructor or
    /// Reset() just before this call, so if no information is added, doInversions
    /// should be false.
-   virtual int defineInitial(double& T0, gpstk::Vector<double>& X,
-                              gpstk::Matrix<double>& Cov)
+   /// @param T0 initial time
+   /// @param X initial state/inv(cov)*state/ignored as return 1/-1/0
+   /// @param Cov initial covariance/inv(cov)/ignored as return 1/-1/0
+   /// @param return 1 for state/cov, -1 for information, 0 for nothing provided
+   virtual int defineInitial(double& T0,
+                             gpstk::Vector<double>& X, gpstk::Matrix<double>& Cov)
       throw(gpstk::Exception) = 0;
 
-   /// Derived class must provide Partials, Data and Measurement Covariance at next
-   /// data epoch time T.
+   /// Pure virtual function, to be overloaded and provided by the caller, providing
+   /// members Partials, Data and MCov (M. Covariance) at next data epoch time T.
    /// The current time T is passed into this routine; it should redefine T to be
    /// the time of the next data epoch.
-   /// Generally, if T(next) > T(curr) + filterDT, this routine should return 2
+   /// Generally, if T(next) > T(curr) + nominalDT, this routine should return Skip(2)
    /// (data will not be used) and save the data until T(next) ~<= T(curr) + DT.
    /// if useFlag=false, State and Cov should NOT be used as they may be singular.
-   /// Return 0 process the data,
-   ///        1 process this data, but then quit
-   ///        2 skip both this data and output, but don't quit
-   ///        3 quit immediately without processing or output
+   /// @param T current time (input), on output time of NEXT set of data
+   /// @param X current state (input)
+   /// @param C current covariance (input)
+   /// @param useFlag if false, State and Cov are singular - do not use
+   /// @return Process (0) process the data,
+   ///         ProcessThenQuit (1) process this data, but then quit
+   ///         SkipThisEpoch (2) skip both this data and output, but don't quit
+   ///         SkipThenQuit (3) skip data and output, and quit
+   ///         QuitImmediately (4) quit immediately without processing or output
    virtual KalmanReturn defineMeasurements(double& T,
                                            const gpstk::Vector<double>& X,
-                                           const gpstk::Matrix<double>& Cov,
-                                           const bool useFlag,
-                                           gpstk::Matrix<double>& Partials,
-                                           gpstk::Vector<double>& Data,
-                                           gpstk::Matrix<double>& MCov)
+                                           const gpstk::Matrix<double>& C,
+                                           const bool useFlag)
        throw(gpstk::Exception) = 0;
 
-   /// User must provide PhiInv,G,Rw,Control, given T,DT,X,Cov at each timestep.
+   /// Pure virtual function, to be overloaded and provided by the caller, providing
+   /// members PhiInv,G,Rw,Control, given T,DT,X,Cov at each timestep.
    /// if useFlag=false, State and Cov should NOT be used ... may be singular
+   /// @param T current time (input)
+   /// @param DT current timestep (input)
+   /// @param X current state (input)
+   /// @param C current covariance (input)
+   /// @param useFlag if false, State and Cov are singular - do not use
    virtual void defineTimestep(const double T, const double DT,
                                const gpstk::Vector<double>& State,
                                const gpstk::Matrix<double>& Cov,
-                               const bool useFlag,
-                               gpstk::Matrix<double>& PhiInv,
-                               gpstk::Matrix<double>& G,
-                               gpstk::Matrix<double>& Rw,
-                               gpstk::Vector<double>& Control)
+                               const bool useFlag)
        throw(gpstk::Exception) = 0;
 
-   /// The derived class MAY provide additions to or deletions from the state.
-   /// This routine is called three times within the ForwardFilter loop. If there are
-   /// no adds (drops), the SRI (Namelist) in the argument should be cleared.
-   /// If there are adds, the SRI is defined by the user and gives an apriori SRI for
-   /// the states to be added, including state names (must be unique) and apriori
-   /// state Z and information R. If there are drops, the dNL Namelist is the list of
-   /// states (currently in the SRIF) that are to be dropped.
-   /// Return -1 if this epoch is to be skipped, otherwise return >= 0.
-   virtual int defineAddsDrops(int which, const double T,
-                                gpstk::SRI& aSRI,
-                                gpstk::Namelist& dNL)
-      throw(gpstk::Exception)
-      { aSRI = gpstk::SRI(); dNL.clear(); return -1; }
+   /// Pure virtual function, to be overloaded and provided by the caller, providing
+   /// This routine is called three times within the ForwardFilter loop:
+   /// before MU, between MU and TU, and after TU, and once during the BackwardFilter
+   /// between SUs.
+   /// @param which = 1(before MU), 2(between MU and TU), 3(after TU), 4(after SU)
+   /// @return -1 if this epoch is to be skipped, otherwise return >= 0.
+   virtual int defineInterim(int which, const double Time) throw(gpstk::Exception)
+      { return -1; }
 
    // -------------------------------------------------------------------------------
    // 2. create the filter, using either the empty c'tor followed by Reset(Namelist),
@@ -193,25 +279,28 @@ public:
 
    /// empty constructor; Reset() must be called before initializing or filtering
    KalmanFilter(void)
-         : NTU(0),NMU(-1),Nstate(0),stage(Unknown),Nnoise(0),
-           extended(false),smoother(false),doSRISU(false),
-           doOutput(true),doInversions(true),singular(true)
+         : NTU(0),NMU(0),NSU(0),Nstate(0),stage(Unknown),Nnoise(0),
+           extended(false),smoother(false),doSRISU(true),
+           doOutput(true),doInversions(true),singular(true),
+           timeReversed(false),dryRun(false)
       { }
 
-   /// the constructor with an initial namelist for the filter state
+   /// Constructor given an initial Namelist for the filter state
+   /// @param NL Namelist of the filter states (determines Nstate)
    KalmanFilter(const gpstk::Namelist& NL)
+      { Reset(NL); }
+
+   /// Reset or recreate filter - use this after the empty constructor
+   /// @param NL Namelist of the filter states (determines Nstate)
+   void Reset(const gpstk::Namelist& NL) throw()
       { initialize(NL); }
 
-   /// reset or recreate filter - use this after the empty constructor
-   void Reset(const gpstk::Namelist& NL)
-      throw()
-      { initialize(NL); }
-
-   // destructor
+   /// destructor
    virtual ~KalmanFilter(void) {};
 
    // -------------------------------------------------------------------------------
-   /// 3. initialize the filter; this calls defineInitial to get the apriori state/cov
+   /// 3. initialize the filter; this calls defineInitial() to get the apriori
+   /// state and covariance (or information)
    virtual void initializeFilter(void) throw(gpstk::Exception)
    {
       try {
@@ -221,6 +310,7 @@ public:
          gpstk::Vector<double> initX;
          gpstk::Matrix<double> initCov;       // may be info or cov
 
+         // call derived class to get initial time, apriori state and covariance
          isInfo = defineInitial(T, initX, initCov);
          time = T;
          stage = Init;
@@ -232,10 +322,11 @@ public:
             }
             else if(isInfo == 1) {
                srif.addAPriori(initCov,initX);
-               // this assumes srif was 0 before addAPriori....
-               Cov = initCov;
-               State = initX;
-               inverted = true;
+               Invert(std::string("Invert after adding a priori info"));
+               //// this assumes srif was 0 before addAPriori....
+               //Cov = initCov;
+               //State = initX;
+               //inverted = true;
             }
             else { // returned zero
                State = initX;
@@ -248,39 +339,51 @@ public:
             GPSTK_RETHROW(e);
          }
 
-         if(inverted && doOutput) output(NTU);
+         if(inverted) output(NTU);
       }
-      catch(gpstk::Exception& e) {
-         e.addText("initializeFilter");
-         GPSTK_RETHROW(e);
-      }
+      catch(gpstk::Exception& e) { e.addText("initializeFilter"); GPSTK_RETHROW(e); }
    }
 
    // -------------------------------------------------------------
-   /// 4. forward filter(finalTime,filterDT).
+   /// 4. forward filter(finalTime,nominalDT).
    /// This is main routine; it runs the filter forward to finalTime, using timesteps
-   /// filterDT (NB the defineMeasurements() routine controls actual timesteps).
+   /// nominalDT (NB the defineMeasurements() routine controls actual timesteps).
    /// This calls defineTimestep() to get propagation matricies at each timestep.
    /// It calls defineMeasurements() to get time of the next data, data, mcov, and
    /// partials at each timestep. Timing is controlled by defineMeasurements().
-   /// It calls defineAddsDrops 3 times, before MU, between MU and TU, and after TU.
-   virtual void ForwardFilter(const double finalT, const double filterDT)
+   /// It calls defineInterim 3 times, before MU, between MU and TU, and after TU.
+   /// @param finalT time at which to stop the filter
+   /// @param DT nominal timestep
+   virtual void ForwardFilter(const double finalT, const double DT)
       throw(gpstk::Exception)
    {
       int iret;
       try {
+         // don't allow a non-positive timestep
+         if((!timeReversed && DT <= 0.0) || (timeReversed && DT >= 0.0)) {
+            gpstk::Exception e(std::string("Filter time step must be ")
+               + (timeReversed ? std::string("< 0") : std::string("> 0")));
+            GPSTK_THROW(e);
+         }
+
+         // save filter timestep, which is the timestep of one TU,
+         // and ~timestep between consecutive defineMeasurements()
+         nominalDT = DT;
+
+         // to avoid round-off problems, make time comparisons only to within tol
+         const double tol(nominalDT/10.0);
+
          // forward filter: loop over time
-         while(time <= finalT) {
+         while((timeReversed ? time-finalT >= tol : time-finalT <= tol)) {
 
             // ------------------------------------------------------------
-            // MOD 1: add new state and drop states from the last iteration
-            // Calls defineAddsDrops(1,time,addsSRI,dropsNL,(any drops here?))
-            iret = KalmanAddsDrops(1,time);
+            // interim #1
+            iret = KalmanInterim(1,time);
 
             if(iret) {
-               stage = AD1;
-               Invert(std::string("Invert after add/drop states"));
-               if(doOutput) output(NTU);
+               stage = IB1;
+               Invert(std::string("Invert after interim 1"));
+               output(NTU);
             }
 
             // ------------------------------------------------------------
@@ -292,82 +395,138 @@ public:
             // This defines nexttime as the next available data epoch.
             double nexttime = time;
             KalmanReturn ret = KalmanMeasurementUpdate(nexttime);
-            if(ret == QuitImmediately)
+            if(ret == QuitImmediately || ret == SkipThenQuit)
                break;
-            // else Skip
-            // else SkipThenQuit
+            // else SkipThisEpoch
             else if(ret == Process || ret == ProcessThenQuit) {
                stage = MU;
 
                if(doInversions) {
                   Invert(std::string("Invert after MU"));
-                  if(doOutput) output(NMU);
+                  output(NMU);
                }
             }
-
-            // ------------------------------------------------------------
-            // MOD 2: add new state and drop states from the last iteration
-            // Calls defineAddsDrops(2,time,addsSRI,dropsNL,(any drops here?))
-            iret = KalmanAddsDrops(2,time);
-
-            if(iret) {
-               stage = AD2;
-               Invert(std::string("Invert after add/drop states"));
-               if(doOutput) output(NTU);
+            // TD would you ever want several TUs before the first good MU?
+            else if(ret == SkipThisEpoch && NTU == 0) {
+               time = nexttime;
+               continue;
             }
 
-            // compute next timestep
-            double deltaT = nexttime - time;
-            if(deltaT > 1.5*filterDT) deltaT=filterDT;
+            // ------------------------------------------------------------
+            // interim #2
+            iret = KalmanInterim(2,time);
+
+            if(iret) {
+               stage = IB2;
+               Invert(std::string("Invert after interim 2"));
+               output(NTU);
+            }
 
             // ------------------------------------------------------------
+            // compute next timestep
+            double deltaT = nexttime - time;
+            // why the 1.5? why not? it must be >1 and <=2
+            if(::fabs(deltaT) > 1.5*::fabs(nominalDT)) deltaT=nominalDT;
+
             // TU. this will update time by deltaT
             KalmanTimeUpdate(time,deltaT);
             stage = TU;
 
             if(doInversions) {
                Invert(std::string("Invert after TU"));
-               if(doOutput) output(NTU);
+               output(NTU);
             }
 
             // ------------------------------------------------------------
-            // MOD 3: add new state and drop states from the last iteration
-            // Calls defineAddsDrops(3,time,addsSRI,dropsNL,(any drops here?))
-            iret = KalmanAddsDrops(3,time);
+            // interim #3
+            iret = KalmanInterim(3,time);
 
             if(iret) {
-               stage = AD3;
-               Invert(std::string("Invert after add/drop states"));
-               if(doOutput) output(NTU);
+               stage = IB3;
+               Invert(std::string("Invert after interim 3"));
+               output(NTU);
             }
 
             if(ret == ProcessThenQuit || ret == SkipThenQuit) break;
 
          }  // end loop over forward filter
       }
-      catch(gpstk::Exception& e) {
-         e.addText("ForwardFilter");
-         GPSTK_RETHROW(e);
-      }
+      catch(gpstk::Exception& e) { e.addText("ForwardFilter"); GPSTK_RETHROW(e); }
    }
 
    // -------------------------------------------------------------
-   /// output at each stage ... the user may override
+   // prevent common confusion - Forward(t,dt) but Backward(firstNTU usually 0)
+   /// Backward filter (smoother) with double argument - this is a trick to prevent
+   /// the user from calling BackwardFilter(time).
+   void BackwardFilter(double M)
+   {
+      GPSTK_THROW(gpstk::Exception("BackwardFilter must be called with integer NTU"));
+   }
+
+   // -------------------------------------------------------------
+   /// Backward filter or smoother. Smooth down to NTU==M. Decrements time and NTU
+   /// Calls defineInterim(4,time) after each smoother update
+   /// @param M value of NTU at which to stop the smoother (usually 0)
+   virtual void BackwardFilter(int M)
+      throw(gpstk::Exception)
+   {
+      try {
+         if(!isSmoother()) {
+            gpstk::Exception e("Use setSmoother(true) to turn on smoothing");
+            GPSTK_THROW(e);
+         }
+         if(singular) {
+            gpstk::Exception e("Cannot smooth singular filter");
+            GPSTK_THROW(e);
+         }
+
+         stage = SU;
+         if(M < 0) M=0;
+
+         while(NTU > M) {
+
+            // Do the SU. Decrements time by timestep, and decrements NTU (first)
+            KalmanSmootherUpdate();
+
+            // get state after SU -- only if using SRISU, not SRIS_DM
+            if(doSRISU) {
+               Invert(std::string("Invert after SRISU"));
+            }
+
+            // ------------------------------------------------------------
+            // interim #4
+            // Calls defineInterim(4,time);     NB ignore return value
+            KalmanInterim(4,time);
+
+            // output - do it here so names agree forward/backward
+            output(NTU);
+
+         }  // end loop
+      }
+      catch(gpstk::Exception& e) { e.addText("BackwardFilter"); GPSTK_RETHROW(e); }
+   }
+
+   // -------------------------------------------------------------
+   /// Output at each stage ... the user may override
    /// if singular is true, State and Cov may or may not be good
+   /// @param N user-defined counter that is included on each line after the tag.
    virtual void output(int N) throw()
    {
-      int i;
+      if(!doOutput) return;
+
+      unsigned int i;
       std::ostringstream oss;
 
       if(stage == Unknown) {
          LOG(ERROR) << "Kalman stage not defined in output().";
          return;
       }
+      LOG(DEBUG) << "Enter KalmanFilter::output(" << N << ")";
 
       // if MU or SU, output the namelist first
       // TD make verbose
-      if(stage == MU || stage == SU) {
-         oss << (stage==MU ? "KNL" : "KSL") << msg << " "
+      if(stage == Init || stage == MU || stage == SU) {
+         oss << ((stage==MU || stage==Init) ? "KNL" : "KSL") << KFtag << " "
             << std::fixed << N << " " << std::setprecision(3) << time;
          gpstk::Namelist NL = srif.getNames();
          for(i=0; i<NL.size(); i++)
@@ -380,9 +539,9 @@ public:
       // output a label
       switch(stage) {
          case    Init: oss << "KIN"; break;
-         case      AD1:
-         case      AD2:
-         case      AD3: oss << "KAD"; break;
+         case     IB1:
+         case     IB2:
+         case     IB3: oss << "KIB"; break;
          case      TU: oss << "KTU"; break;
          case      MU: oss << "KMU"; break;
          case      SU: oss << "KSU"; break;
@@ -391,7 +550,7 @@ public:
             LOG(INFO) << "Kalman stage not defined." << std::endl;
             return;
       }
-      oss << msg << " ";
+      oss << KFtag << " ";
 
       // output the time
       oss << std::fixed << N << " " << std::setprecision(3) << time;
@@ -411,180 +570,104 @@ public:
    // -------------------------------------------------------------------------------
    // The support routines
    // -------------------------------------------------------------------------------
-   /// Add states to the filter, called just before the MU
-   /// Return the number of states added and dropped.
-   virtual int KalmanAddsDrops(int which, double T)
+   /// Interim processing.
+   /// @return defineInterim(), if >0 output() is called, ignored after SU
+   virtual int KalmanInterim(int which, double Time)
       throw(gpstk::Exception)
    {
       try {
-         gpstk::SRI addsSRI, dropSRI;
-         gpstk::Namelist addsNL;
-
-         // get new adds and drops from the caller
-         int iret = defineAddsDrops(which, T, addsSRI, dropsNL);
-         if(iret < 0) return 0;           // skip this epoch
-         iret = 0;
-
-
-         // drop states that were found in the last iteration
-         if(dropsNL.size() > 0) {
-            LOG(DEBUG) << "KalmanAddsDrops(" << which << ") drops " << dropsNL;
-
-            gpstk::Namelist saveNL(srif.getNames());
-
-            // get state without inverting information matrix
-            int i,k,nsingular;
-            gpstk::Vector<double> X;
-            try {
-               srif.getState(X, &nsingular);
-            }
-            catch(gpstk::MatrixException& me) {
-               for(k=0; k<dropsNL.size(); k++) {
-                  i = saveNL.index(dropsNL.getName(k));
-                  if(nsingular == -1 || i < nsingular) {
-                     gpstk::Exception e("Cannot drop states; problem is singular");
-                     GPSTK_THROW(e);
-                  }
-               }
-            }
-
-            //LOG(INFO) << "SRIF before drops:\n" << std::fixed
-            //   << std::setprecision(5) << std::setw(10) << srif;
-            //LOG(INFO) << "State before drops:\n" << std::fixed
-            //   << std::setprecision(5) << std::setw(10) << X;
-
-            // fill a vector of drop states
-            gpstk::Vector<double> dropStates(dropsNL.size());
-            for(k=0; k<dropsNL.size(); k++) {
-               i = saveNL.index(dropsNL.getName(k));
-               dropStates(k) = X(i);
-            }
-
-            //LOG(DEBUG) << "Drops states are " << std::fixed << std::setprecision(5)
-            //   << std::setw(10) << dropStates;
-
-            srif.stateFix(dropsNL, dropStates);
-
-            //LOG(DEBUG) << "srif after drops:\n" << std::scientific
-            //   << std::setprecision(5) << std::setw(10) << srif;
-
-            iret += dropsNL.size();
-         }
-
-         if(addsSRI.size() > 0) {
-            LOG(DEBUG) << "KalmanAddsDrops(" << which << ") adds "
-               << addsSRI.getNames();
-
-            // check that addsNL and srif have no states in common
-            if((addsNL & srif.getNames()).size() > 0) {
-               gpstk::Exception e("Adding a state that is already present");
-               GPSTK_THROW(e);
-            }
-
-            //LOG(DEBUG) << "srif before adds:\n" << std::fixed
-            //   << std::setprecision(5) << std::setw(10) << srif;
-
-            // append addsSRI onto end
-            srif.append(addsSRI);
-
-            iret += addsSRI.size();
-            
-            //LOG(DEBUG) << "srif after adds:\n" << std::fixed
-            //   << std::setprecision(5) << std::setw(10) << srif;
-         }
-
+         int iret = defineInterim(which, Time);
+         if(iret < 0) return Process;
          return iret;
       }
-      catch(gpstk::Exception& e) {
-         e.addText("KADD");
-         GPSTK_RETHROW(e);
-      }
+      catch(gpstk::Exception& e) { e.addText("KINT"); GPSTK_RETHROW(e); }
    }
 
    // -------------------------------------------------------------
-   /// do the measurement update;
-   /// returns 0: ok, 1: quit after this data, 2: skip, 3: quit now
+   /// Perform the measurement update;
+   /// @param T current time(input), time of NEXT data(output)
+   /// @return Process=0,
+   ///         ProcessThenQuit, quit after this data
+   ///         SkipThisEpoch, skip this data and output
+   ///         SkipThenQuit, skip this data and output, then quit
+   ///         QuitImmediately, quit now
    virtual KalmanReturn KalmanMeasurementUpdate(double& T)
       throw(gpstk::Exception)
    {
       try {
-         gpstk::Matrix<double> Partials, MCov;
-         gpstk::Vector<double> Data;
-
-         // 0: ok, 1: quit after this data, 2: skip, 3: quit now
-         // TD replace with enum
          // Pass in T=current, return T=next data epoch;
-         // if next > curr + filterDT, this should return 2 so TU will catch up
-         KalmanReturn ret = defineMeasurements(T, State, Cov, !singular && inverted,
-                                                  Partials, Data, MCov);
-
+         // if next > curr+nominalDT, should return SkipThisEpoch so TU will catch up
+         KalmanReturn ret = defineMeasurements(T, State, Cov, !singular && inverted);
          PFResid = gpstk::Vector<double>(0);
          if(ret == Process || ret == ProcessThenQuit) {
             if(extended)
                srif.zeroState();
                // NB. derived class must update reference trajectory
 
-            srif.measurementUpdate(Partials, Data, MCov);
-            PFResid = Data;
+            if(!dryRun) {
+               // this func whitens before update, then unwhitens resid (PFResid)
+               PFResid = Data;   // MU will replace with post-fit residuals
+               srif.measurementUpdate(Partials, PFResid, MCov);
+            }
+
             inverted = false;
             NMU++;
          }
 
-
          return ret;
       }
-      catch(gpstk::Exception& e) {
-         e.addText("KMU");
-         GPSTK_RETHROW(e);
-      }
+      catch(gpstk::Exception& e) { e.addText("KMU"); GPSTK_RETHROW(e); }
    }
 
    // -------------------------------------------------------------
    /// the Kalman time update
+   /// @param T current time (input)
+   /// @param DT current timestep (input)
    virtual void KalmanTimeUpdate(double T, double DT) throw(gpstk::Exception)
    {
       try {
-         gpstk::Vector<double> Control, Zw;
-         gpstk::Matrix<double> PhiInv, G, Rw;
+         //LOG(INFO) << "KTU with NTU NMU " << NTU << " " << NMU;
+
+         double timesave(time);
 
          time += DT;
-         defineTimestep(time, DT, State, Cov, !singular && inverted,
-                              PhiInv, G, Rw, Control);
+         defineTimestep(time, DT, State, Cov, !singular && inverted);
 
          Nnoise = Rw.rows();                    // Nnoise is member, but temporary
          Zw = gpstk::Vector<double>(Nnoise);
 
          // control
          if(Control.size() > 0) {
-            srif.shift(-PhiInv*Control);
+            srif.shift(-PhiInv*Control);        // not tested
          }
 
+         // create a new smoother storage record
          if(isSmoother()) {                     // save for smoother
+            SmootherStore[NTU] = SmootherStoreRec();
+            SmootherStoreRec& rec = SmootherStore[NTU];
             // timeUpdate will trash these
-            PhiInvStore[NTU] = PhiInv;
-            GStore[NTU] = G;
-            if(Control.size() > 0) ControlStore[NTU] = Control;
+            rec.PhiInv = PhiInv;
+            rec.G = G;
+            if(Control.size() > 0) rec.Control = Control;
          }
 
          Zw = 0.0;         // yes this is necessary
          gpstk::Matrix<double> Rwx(Nnoise,Nstate,0.0);
-         srif.timeUpdate(PhiInv, Rw, G, Zw, Rwx);
+         if(!dryRun) srif.timeUpdate(PhiInv, Rw, G, Zw, Rwx);
          inverted = false;
 
          if(isSmoother()) {                     // save for smoother
+            SmootherStoreRec& rec = SmootherStore[NTU];
             // indexing is 0...NTU-1
-            RwStore[NTU] = Rw;
-            RwxStore[NTU] = Rwx;
-            ZwStore[NTU] = Zw;
-            TimeStore[NTU] = time;
+            rec.Rw = Rw;
+            rec.Rwx = Rwx;
+            rec.Zw = Zw;
+            rec.Time = timesave;
          }
 
          NTU++;
       }
-      catch(gpstk::Exception& e) {
-         e.addText("KTU");
-         GPSTK_RETHROW(e);
-      }
+      catch(gpstk::Exception& e) { e.addText("KTU"); GPSTK_RETHROW(e); }
    }
 
    // -------------------------------------------------------------
@@ -593,124 +676,103 @@ public:
    {
       try {
          NTU--;
+         NSU++;
 
          //LOG(DEBUG) << " SU at " << NTU << " with state " << srif.getNames();
-         gpstk::Matrix<double> Rw = RwStore[NTU];
-         gpstk::Matrix<double> Rwx = RwxStore[NTU];
-         gpstk::Matrix<double> PhiInv = PhiInvStore[NTU];
-         gpstk::Matrix<double> G = GStore[NTU];
-         gpstk::Vector<double> Zw = ZwStore[NTU];
+         SmootherStoreRec& rec(SmootherStore[NTU]);
+         gpstk::Matrix<double> Rw = rec.Rw;
+         gpstk::Matrix<double> Rwx = rec.Rwx;
+         gpstk::Matrix<double> PhiInv = rec.PhiInv;
+         gpstk::Matrix<double> G = rec.G;
+         gpstk::Vector<double> Zw = rec.Zw;
          // SU knows nothing about time; this is just for output purposes
-         time = TimeStore[NTU];
+         time = rec.Time;
 
-         // should Control vector correction be here???
+         // TD should Control vector correction be here???
 
-         if(doSRISU) {
-            gpstk::Matrix<double> Phi;
-            Phi = inverse(PhiInv);
-            srif.smootherUpdate(Phi,Rw,G,Zw,Rwx);
-            inverted = false;
-         }
-         else {
-            srif.DMsmootherUpdate(Cov,State,PhiInv,Rw,G,Zw,Rwx);
+         if(!dryRun) {
+            if(doSRISU) {
+               gpstk::Matrix<double> Phi;
+               Phi = inverse(PhiInv);
+               srif.smootherUpdate(Phi,Rw,G,Zw,Rwx);
+               inverted = false;
+            }
+            else
+               srif.DMsmootherUpdate(Cov,State,PhiInv,Rw,G,Zw,Rwx);
          }
 
          // correct for Control vector
-         if(ControlStore.size() > 0) {
-            gpstk::Vector<double> Control = ControlStore[NTU];
-            if(doSRISU) {
+         if(rec.Control.size() > 0) {
+            gpstk::Vector<double> Control = rec.Control;
+            if(doSRISU)
                srif.shift(PhiInv*Control);
-            }
-            else {
+            else
                State -= PhiInv * Control;
-            }
          }
       }
-      catch(gpstk::Exception& e) {
-         e.addText("KSU");
-         GPSTK_RETHROW(e);
-      }
+      catch(gpstk::Exception& e) { e.addText("KSU"); GPSTK_RETHROW(e); }
    }
 
    // -------------------------------------------------------------------------------
    // Utilities
+   /// if doInversions, SRIF is inverted at each step, defining State and Cov
    bool getDoInvert(void) { return doInversions; }
    void setDoInvert(bool on) { doInversions=on; }
 
+   /// if doOutput, output() is called at each step
    bool getDoOutput(void) { return doOutput; }
    void setDoOutput(bool on) { doOutput=on; }
 
+   /// if extended, use an extended Kalman (not implemented)
    bool isExtended(void) { return extended; }
    void setExtended(bool ext) { extended=ext; }
 
+   /// if smoother, save info during forward filter for use by backward filter
    void setSmoother(bool ext) { smoother=ext; }
    bool isSmoother(void) { return smoother; }
 
+   /// if doSRISU use SRIF form of smoother, else DM smoother
    void setSRISU(bool ext) { doSRISU=ext; }
    bool isSRISU(void) { return doSRISU; }
 
+   /// true when filter is singular
    bool isSingular(void) { return singular; }
 
-   std::string getTag(void) { return msg; }
-   void setTag(std::string tag) { msg = tag; }
+   /// if timeReversed, time T decreases during the forward filter
+   void setTimeReverse(bool tr=true) { timeReversed=tr; }
+   bool isTimeReversed(void) { return timeReversed; }
 
+   /// if dryRun, do not operate the filter, just print
+   void setDryRun(bool t=true) { dryRun=t; }
+   bool isDryRun(void) { return dryRun; }
+
+   /// KF tag is a user-defined string output on each line
+   std::string getTag(void) { return KFtag; }
+   void setTag(std::string tag) { KFtag = tag; }
+
+   /// get the filter SRI
+   void setSRI(gpstk::SRI& sri) { srif = static_cast<gpstk::SRIFilter&>(sri); }
+   gpstk::SRI getSRI(void) { return static_cast<gpstk::SRI>(srif); }
+
+   /// get the state namelist
    gpstk::Namelist getNames(void) { return srif.getNames(); }
+   /// get the state (must be non-singular)
    gpstk::Vector<double> getState(void) { return State; }
+   /// get the covariance (must be non-singular)
    gpstk::Matrix<double> getCovariance(void) { return Cov; }
 
-   // -------------------------------------------------------------------------------
-   // data
-protected:
-   /// if true, output at each stage using the output() routine
-   bool doOutput;
-   /// if true, invert the SRIF to get State and Covariance whenever SRIF changes.
-   /// In general it is wise to set this false, then reset to true only when the
-   /// State is to be used. For example if you need the State Vector in the MU, then
-   /// set doInversions=true in defineAddsDrops, then set it back to false in defineM.
-   /// Inversions are called between all the define...() calls.
-   bool doInversions;
-   /// if true then the SRIF is currently singular (not a problem unless doInversions)
-   bool singular;
-   /// if true use the SRIF form of the smoother update in the backward filter
-   bool doSRISU;
-   /// if true the filter is considered extended; this will zero the state before MU
-   bool extended;
-   /// if true the forward filter will save the data needed by the backward filter
-   bool smoother;
-   /// if true then the SRI has been inverted and State and Cov are valid
-   bool inverted;
+   /// get number of measurements processed
+   int getNMU(void) { return NMU; }
 
-   int NTU,NMU,Nstate,Nnoise;       // Nnoise is there only for the user
-                                    // NTU increases with TU, decreases with SU
-                                    // NMU just counts MUs, mainly for user
-   FilterStage stage;
-   double time;
-   double big,small;                // condition number at last inversion
-   std::string msg;                 // optional tag to put in output (2nd field)
-   gpstk::Vector<double> State;
-   gpstk::Matrix<double> Cov;
-   gpstk::SRIFilter srif;
-   gpstk::Vector<double> PFResid;   // valid after MU
-   // store by forward filter, used by backward filter
-   std::map<int, gpstk::Matrix<double> > RwStore, RwxStore, PhiInvStore, GStore;
-   std::map<int, gpstk::Vector<double> > ZwStore, ControlStore;
-   std::map<int, double> TimeStore;
-   // these are different in that there is not a value at every NTU
-   std::map<int, gpstk::Namelist> AddsStore, NamesStore;
-   std::map<int, gpstk::SRI> DropsStore;
-   // when there are adds and drops on the same epoch, the dropped SRI put in Store
-   // must have adds removed from it.
-   gpstk::Namelist dropsNL;         // save drops until after TU
-
-   // -------------------------------------------------------------------------------
 private:
-   // for internal use in constructors and by Reset
+   // -------------------------------------------------------------------------------
+   /// for internal use in constructors and by Reset. Create SRIF and initialize
+   /// counters and stores
    void initialize(const gpstk::Namelist& NL)
    {
       Nstate = NL.size();
       //Nnoise = Ns;    // Nnoise is for the user only
-      NTU = 0;
-      NMU = -1;
+      NTU = NMU = NSU = 0;
 
       stage = Unknown;
 
@@ -721,19 +783,22 @@ private:
       State = gpstk::Vector<double>(Nstate,0.0);
       Cov = gpstk::Matrix<double>(Nstate,Nstate,0.0);
 
-      // clear stores
-      RwStore.clear(); RwxStore.clear(); PhiInvStore.clear(); GStore.clear();
-      ZwStore.clear(); ControlStore.clear();
-      TimeStore.clear(); AddsStore.clear(), NamesStore.clear(); DropsStore.clear();
-
-      dropsNL.clear();
+      // clear smoother store
+      SmootherStore.clear();
    }
 
-   // use to invert the SRIF to get State and Covariance
+
+   /// For internal use to invert the SRIF to get State and Covariance
    void Invert(const std::string& msg=std::string()) throw(gpstk::Exception)
    {
-      LOG(DEBUG) << msg;
-      if(!doInversions) return;
+      if(dryRun) {
+         LOG(INFO) << "Dry invert" << (msg.empty() ? "" : " "+msg);
+         return;
+      }
+      if(!doInversions) {
+         LOG(DEBUG) << msg << " (doInversions false)";
+         return;
+      }
 
       // get state and covariance
       try {
@@ -741,11 +806,18 @@ private:
          singular = false;
          inverted = true;
          Nstate = srif.size();
+         LOG(DEBUG) << msg << " (non-singular)";
       }
       catch(gpstk::Exception& e) {
          singular = true;
+         inverted = false;
+         LOG(DEBUG) << msg << " (singular)";
          e.addText(msg);
          GPSTK_RETHROW(e);
+      }
+      catch(std::exception& e) {
+         gpstk::Exception E(std::string("std exception: ") + e.what());
+         GPSTK_THROW(E);
       }
    }
 
