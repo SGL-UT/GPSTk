@@ -163,9 +163,9 @@ namespace gpstk
          tcC,       ///< Galileo Dataless code
          tcBC,      ///< Galileo B+C combined tracking
          tcABC,     ///< Galileo A+B+C combined tracking
-         tcIE5,     ///< Galileo L5 I code
-         tcQE5,     ///< Galileo L5 Q code
-         tcIQE5,    ///< Galileo L5 I+Q combined tracking
+         tcIE5,     ///< Galileo E5 I code
+         tcQE5,     ///< Galileo E5 Q code
+         tcIQE5,    ///< Galileo E5 I+Q combined tracking
          tcIE5a,    ///< Galileo E5a I code
          tcQE5a,    ///< Galileo E5a Q code
          tcIQE5a,   ///< Galileo E5a I+Q combined tracking

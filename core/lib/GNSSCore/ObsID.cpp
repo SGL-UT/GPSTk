@@ -107,21 +107,79 @@ namespace gpstk
          }
          break;
       }
+//
+// Explanation of Galileo cases.
+//
+// Left three columns are from RINEX 3.04, Table 6.
+// Next two columns show the desired ObsID code/band.
+// Last three columns show the simple char2cb[ ] and char2tc[ ] conversions.
+// The band conversions appear to be correct in all cases.   However, the
+// code converstion marked "NO" are incorrect.  This is due to the overloading
+// of several characters by the RINEX standard.  These need to be "fixed up"
+// following the simple conversion.
+//
+//                     RINEX   Desired ObsID       Simple char2tc[ ] conversion
+// Band  Channel/Code   code    band     code      band   code     code correct?
+//   E1  A PRS           x1A    cbL1     tcA       cbL1   tcA
+//       B I/NAV OS      x1B             tcB              tcB
+//       C               x1C             tcC              tcCA      NO
+//       B+C             x1X             tcBC             tcC2LM    NO
+//       A+B+C           x1Z             tcABC            tcABC
+//  E5a  I F/NAV OS      x5I    cbL5     tcIE5a    cbL5   tcI5      NO
+//       Q               x5Q             tcQE5a           tcQ5      NO
+//       I+Q             x5X             tcIQE5a          tcC2LM    NO
+//  E5b  I I/NAV OS      x7I    cbE5b    tcIE5b    cbE5b  tcI5      NO
+//       Q               x7Q             tcQE5b           tcQ5      NO
+//       I+Q             x7X             tcIQE5b          tcC2LM    NO
+//   E5  I               x8I    cbE5ab   tcIE5     cbE5ab tcI5      NO
+//       Q               x8Q             tcQE5            tcQ5      NO
+//       I+Q             x8X             tcIQE5           txC2LM    NO
+//   E6  A PRS           x6A    cbE6     tcA       cbE6   tcA
+//       B C/NAV CS      x6B             tcB              tcB
+//       C               x6C             tcC              tcCA      NO
+//       B+C             x6X             tcBC             tcC2LM    NO
+//       A+B+C           x6Z             tcABC            tcABD
+//
          case 'E':   // Galileo
       {
-         switch (code)
+         if (band==cbL1 || band==cbE6)
          {
-            case tcCA: code = tcC; break;
-            case tcI5: code = tcIE5; break;
-            case tcQ5: code = tcQE5; break;
-            default: break;
+            switch (code)
+            {
+               case tcCA:   code = tcC;  break;
+               case tcC2LM: code = tcBC; break;
+               default: break;
+            }
          }
-         if (tc == 'X')
+         if (band==cbL5)
          {
-            if (band == cbL1 || band == cbE6)
-               code = tcBC;
-            else if (band == cbL5 || band == cbE5b || band == cbE5ab)
-               code = tcIQE5;
+            switch (code)
+            {
+               case tcI5:   code = tcIE5a;  break;
+               case tcQ5:   code = tcQE5a;  break;
+               case tcC2LM: code = tcIQE5a; break;
+               default: break;
+            }
+         }
+         if (band==cbE5b)
+         {
+            switch (code)
+            {
+               case tcI5:   code = tcIE5b;  break;
+               case tcQ5:   code = tcQE5b;  break;
+               case tcC2LM: code = tcIQE5b; break;
+               default: break;
+            }
+         }
+         if (band==cbE5ab)
+         {
+            switch (code)
+            {
+               case tcI5:   code = tcIE5;  break;
+               case tcQ5:   code = tcQE5;  break;
+               case tcC2LM: code = tcIQE5; break;
+               default: break;
+            }
          }
          break;
       }
@@ -252,9 +310,6 @@ namespace gpstk
         << ObsID::otDesc[type];
       return s;
    } // ObsID::dump()
-
-
-
 
    // This is used to register a new ObsID & Rinex 3 identifier.  The syntax for the
    // Rinex 3 identifier is the same as for the ObsID constructor. 
