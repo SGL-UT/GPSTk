@@ -129,15 +129,14 @@ namespace gpstk
                   // store must AT LEAST be OrbElem.  
                const OrbElemBase* oeb = ei->second;
                const OrbElem* oe = dynamic_cast<const OrbElem*>(oeb);
-               s << it->first << "  " << printTime(ei->first,tf1)
-                              << "  " << printTime(oe->beginValid,tf2)
-                              << "  " << printTime(oe->ctToe,tf2)
-                              << "  " << printTime(oe->ctToc,tf2)
-                              << "  " << printTime(oe->endValid,tf2);
-	       if (oe->healthy) s << "  " << "   Yes";
-	        else            s << "  " << "    No";
-               s << std::endl;
-
+               s << it->first
+                 << "  " << printTime(ei->first,tf1)
+                 << "  " << printTime(oe->beginValid,tf2)
+                 << "  " << printTime(oe->ctToe,tf2)
+                 << "  " << printTime(oe->ctToc,tf2)
+                 << "  " << printTime(oe->endValid,tf2)
+                 << "  " << (oe->isHealthy() ? "   Yes" : "    No")
+                 << std::endl;
             } //end inner for-loop */
 
          } // end outer for-loop

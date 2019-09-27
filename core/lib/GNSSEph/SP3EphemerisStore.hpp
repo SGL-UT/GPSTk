@@ -160,6 +160,36 @@ namespace gpstk
       virtual Xvt getXvt(const SatID& sat, const CommonTime& ttag)
          const throw(InvalidRequest);
 
+         /** Compute the position, velocity and clock offset of the
+          * indicated object in ECEF coordinates (meters) at the
+          * indicated time.
+          * This method functions similarly to getXvt() except that it
+          * does not throw an exception for any reason.  Instead, the
+          * caller is expected to check the value of the "health"
+          * field of the returned Xvt and decide what to do with the
+          * data.
+          * @note This function ignores the onlyHealthy flag as health
+          *   information is not available in the SP3 format.
+          * @note The health flag in the returned Xvt can have one of
+          *   two values, "Unavailable", in which case the Xvt could
+          *   not be determined from the data in the store, or
+          *   "Unused" in which case the Xvt could be determined.
+          *   "Unused" because the SP3 format does not include health
+          *   status information.
+          * @param[in] id the object's identifier
+          * @param[in] t the time to look up
+          * @return the Xvt of the object at the indicated time */
+      virtual Xvt computeXvt(const SatID& id, const CommonTime& t) const
+         throw();
+
+         /** Get the satellite health at a specific time.
+          * @param[in] id the object's identifier
+          * @param[in] t the time to look up
+          * @return "Unused" at all times as the SP3 format does not
+          *   provide health status. */
+      virtual Xvt::HealthStatus getSVHealth(const SatID& id,
+                                            const CommonTime& t) const throw();
+
          /** Dump information about the store to an ostream.
           * @param[in] os ostream to receive the output; defaults to std::cout
           * @param[in] detail integer level of detail to provide;

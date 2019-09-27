@@ -75,6 +75,48 @@ namespace gpstk
       }
    }
 
+
+   Xvt OrbAlmStore::computeXvt(const SatID& subjID, const CommonTime& t) const
+      throw()
+   {
+      Xvt rv;
+      rv.health = Xvt::HealthStatus::Unavailable;
+      try
+      {
+         const OrbAlm* alm = find(subjID,t,false);
+         if (alm != nullptr)
+         {
+            rv = alm->svXvt(t);
+            rv.health = (alm->isHealthy() ? Xvt::HealthStatus::Healthy
+                         : Xvt::HealthStatus::Unhealthy);
+         }
+      }
+      catch (...)
+      {
+      }
+      return rv;
+   }
+
+
+   Xvt::HealthStatus OrbAlmStore ::
+   getSVHealth(const SatID& subjID, const CommonTime& t) const throw()
+   {
+      Xvt::HealthStatus rv = Xvt::HealthStatus::Unavailable;
+      try
+      {
+         const OrbAlm* alm = find(subjID,t,false);
+         if (alm != nullptr)
+         {
+            rv = (alm->isHealthy() ? Xvt::HealthStatus::Healthy
+                  : Xvt::HealthStatus::Unhealthy);
+         }
+      }
+      catch (...)
+      {
+      }
+      return rv;
+   }
+
 //--------------------------------------------------------------------------
    Xvt OrbAlmStore::getXvt_WithinValidity(const SatID& subjID, const CommonTime& t) const
       throw( InvalidRequest )

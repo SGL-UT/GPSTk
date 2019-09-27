@@ -476,7 +476,7 @@ namespace gpstk
          //if (satID          != right->satID)          return false;
          //if (obsID          != right->obsID)          return false;
          if (ctToe          != right->ctToe)          return false;
-         if (healthy        != right->healthy)        return false;
+         if (isHealthy()    != right->isHealthy())    return false;
          //if (beginValid     != right->beginValid)     return false;
          //if (endValid       != right->endValid)       return false;
 
@@ -517,7 +517,7 @@ namespace gpstk
          NavID rightNid(right->satID, right->obsID);
          if (nid.navType    != rightNid.navType)      retVal += " navType"; 
          if (ctToe          != right->ctToe)          retVal += " ctToe";
-         if (healthy        != right->healthy)        retVal += " healthy";
+         if (isHealthy()    != right->isHealthy())    retVal += " healthy";
          if (subjectSV  != rp->subjectSV)  retVal += " subjectSV"; 
          if (AHalf      != rp->AHalf)      retVal += " AHalf";
          if (af1        != rp->af1)        retVal += " af1";
@@ -620,8 +620,14 @@ namespace gpstk
       ss << printTime(beginValid,tform2);
       ss << "  toa: ";
       ss << printTime(ctToe,tform2);
-      if (healthy) ss << ",   Healthy";
-       else        ss << ", UNhealthy"; 
+      if (isHealthy())
+      {
+         ss << ",   Healthy";
+      }
+      else
+      {
+         ss << ", UNhealthy"; 
+      }
       ss << "  xmit PRN: " << setw(2) << satID.id;
       s << ss.str(); 
 
@@ -705,8 +711,7 @@ namespace gpstk
       A = AHalf * AHalf;
       i0 = (0.3 * PI) + deltai;   // deltai is already in radians. 
 
-      healthy = false; 
-      if (health==0) healthy = true;
+      setHealthy(health==0);
 
          // Determine fully qualified toa.
          // Assume the toa found in this almanac is either 
@@ -771,17 +776,17 @@ namespace gpstk
       A = AHalf * AHalf;
       i0 = (0.3 * PI) + deltai;   // deltai is already in radians. 
 
-      healthy = false; 
+      setHealthy(false); 
       const ObsID& oidr = msg.getobsID();
       if (oidr.band==ObsID::cbL2 &&
            !(health & 0x02))
       {
-         healthy = true;
+         setHealthy(true);
       }
       if (oidr.band==ObsID::cbL5 &&
           !(health & 0x01))
       {
-         healthy = false; 
+         setHealthy(false); 
       }
       ctToe = GPSWeekSecond(wna,toa,TimeSystem::GPS); 
 

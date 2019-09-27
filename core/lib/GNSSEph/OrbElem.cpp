@@ -54,16 +54,15 @@ namespace gpstk
 {
    using namespace std;
    using namespace gpstk;
-    OrbElem::OrbElem()
-      :ctToc(CommonTime::BEGINNING_OF_TIME)
+   OrbElem::OrbElem()
+         : ctToc(CommonTime::BEGINNING_OF_TIME)
    {
-      ctToe.setTimeSystem(TimeSystem::GPS);
       ctToc.setTimeSystem(TimeSystem::GPS);
       beginValid.setTimeSystem(TimeSystem::GPS);
       endValid.setTimeSystem(TimeSystem::GPS);
    } 
 
-    bool OrbElem::isValid(const CommonTime& ct) const
+   bool OrbElem::isValid(const CommonTime& ct) const
       throw(InvalidRequest)
    {
       if (!dataLoaded())
@@ -75,11 +74,6 @@ namespace gpstk
       return(false);
    }
 
-
-   bool OrbElem::dataLoaded() const
-   {
-      return(dataLoadedFlag);
-   }
 
    bool OrbElem::isSameData(const OrbElem* right) const
    {
@@ -135,17 +129,6 @@ namespace gpstk
       return retList;
    }
 
-   bool OrbElem::isHealthy() const
-      throw(InvalidRequest)
-   {
-      if (!dataLoaded())
-      {
-         InvalidRequest exc("Required data not stored.");
-         GPSTK_THROW(exc);
-      }
-      return(healthy);
-   }
-
    double OrbElem::svClockBias(const CommonTime& t) const
       throw(gpstk::InvalidRequest)
    {
@@ -160,7 +143,7 @@ namespace gpstk
       return dtc;
    }
 
-    double OrbElem::svClockBiasM(const CommonTime& t) const
+   double OrbElem::svClockBiasM(const CommonTime& t) const
       throw(gpstk::InvalidRequest)
    {
       if (!dataLoaded())
@@ -212,7 +195,7 @@ namespace gpstk
       double ea;              // eccentric anomaly //
       double delea;           // delta eccentric anomaly during iteration */
       double elapte;          // elapsed time since Toe
-      //double elaptc;          // elapsed time since Toc
+         //double elaptc;          // elapsed time since Toc
       double q,sinea,cosea;
       double GSTA,GCTA;
       double amm;
@@ -228,7 +211,7 @@ namespace gpstk
       EllipsoidModel *ell;
       if (satID.system==SatID::systemBeiDou)
          ell = new CGCS2000Ellipsoid();
-       else
+      else
          ell = new GPSEllipsoid();
 
          // Compute time since ephemeris & clock epochs
@@ -270,7 +253,7 @@ namespace gpstk
          loop_cnt++;
       } while ( (fabs(delea) > 1.0e-11 ) && (loop_cnt <= 20) );
 
-      // Compute clock corrections
+         // Compute clock corrections
       sv.relcorr = svRelativity(t);
       sv.clkbias = svClockBias(t);
       sv.clkdrift = svClockDrift(t);
@@ -306,7 +289,7 @@ namespace gpstk
 
          //  Longitude of ascending node (ANLON)
       ANLON = OMEGA0 + (OMEGAdot - ell->angVelocity()) *
-              elapte - ell->angVelocity() * ToeSOW;
+         elapte - ell->angVelocity() * ToeSOW;
 
          // In plane location
       cosu = ::cos( U );
@@ -359,7 +342,7 @@ namespace gpstk
       return sv;
    }
 
-     double OrbElem::svRelativity(const CommonTime& t) const
+   double OrbElem::svRelativity(const CommonTime& t) const
       throw( InvalidRequest )
    {
       if (!dataLoaded())
@@ -373,7 +356,7 @@ namespace gpstk
       EllipsoidModel *ell;
       if (satID.system==SatID::systemBeiDou)
          ell = new CGCS2000Ellipsoid();
-       else
+      else
          ell = new GPSEllipsoid();
 
       double twoPI  = 2.0e0 * PI;
@@ -531,7 +514,7 @@ namespace gpstk
         << "Inclination:           " << setw(fw) << i0     << " rad     "
         << setw(fw) << idot << " rad/sec" << endl;
 
-       s << endl
+      s << endl
         << "           HARMONIC CORRECTIONS"
         << endl
         << endl
@@ -542,7 +525,7 @@ namespace gpstk
         << "In-track      Sine: " << setw(fw) << Cus << " rad  Cosine: "
         << setw(fw) << Cuc << " rad" << endl;
 
-       s.flags(oldFlags);
+      s.flags(oldFlags);
    } // end of dumpBody()
 
    void OrbElem::dumpHeader(ostream& s) const

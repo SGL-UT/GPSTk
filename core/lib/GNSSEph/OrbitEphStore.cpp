@@ -59,28 +59,82 @@ using namespace gpstk::StringUtils;
 
 namespace gpstk
 {
-   //---------------------------------------------------------------------------------
    Xvt OrbitEphStore::getXvt(const SatID& sat, const CommonTime& t) const
    {
-      try {
-         // get the appropriate OrbitEph
+      try
+      {
+            // get the appropriate OrbitEph
          const OrbitEph *eph = findOrbitEph(sat,t);
-         if(!eph)
-            GPSTK_THROW(InvalidRequest("No OrbitEph for satellite " + asString(sat)));
+         if (!eph)
+         {
+            InvalidRequest exc("No OrbitEph for satellite " + asString(sat));
+            GPSTK_THROW(exc);
+         }
 
-         // no consideration is given to health here (OrbitEph does not have health);
-         // derived classes should override isHealthy()
-         if(onlyHealthy && !eph->isHealthy())
+            // no consideration is given to health here (OrbitEph does
+            // not have health);
+            // derived classes should override isHealthy()
+         if (onlyHealthy && !eph->isHealthy())
             GPSTK_THROW(InvalidRequest("Not healthy"));
 
-         // compute the position, velocity and time
+            // compute the position, velocity and time
          Xvt sv = eph->svXvt(t);
+         sv.health = (eph->isHealthy() ? Xvt::HealthStatus::Healthy
+                      : Xvt::HealthStatus::Unhealthy);
          return sv;
       }
-      catch(InvalidRequest& ir) { GPSTK_RETHROW(ir); }
+      catch(InvalidRequest& ir)
+      {
+         GPSTK_RETHROW(ir);
+      }
    }
 
-   //---------------------------------------------------------------------------------
+
+   Xvt OrbitEphStore::computeXvt(const SatID& sat, const CommonTime& t) const
+      throw()
+   {
+      Xvt rv;
+      rv.health = Xvt::HealthStatus::Unavailable;
+      try
+      {
+            // get the appropriate OrbitEph
+         const OrbitEph *eph = findOrbitEph(sat,t);
+         if (eph != nullptr)
+         {
+               // compute the position, velocity and time
+            rv = eph->svXvt(t);
+            rv.health = (eph->isHealthy() ? Xvt::HealthStatus::Healthy
+                         : Xvt::HealthStatus::Unhealthy);
+         }
+      }
+      catch (...)
+      {
+      }
+      return rv;
+   }
+
+
+   Xvt::HealthStatus OrbitEphStore ::
+   getSVHealth(const SatID& sat, const CommonTime& t) const throw()
+   {
+      Xvt::HealthStatus rv = Xvt::HealthStatus::Unavailable;
+      try
+      {
+            // get the appropriate OrbitEph
+         const OrbitEph *eph = findOrbitEph(sat,t);
+         if (eph != nullptr)
+         {
+            rv = (eph->isHealthy() ? Xvt::HealthStatus::Healthy
+                  : Xvt::HealthStatus::Unhealthy);
+         }
+      }
+      catch (...)
+      {
+      }
+      return rv;
+   }
+
+
    void OrbitEphStore::dump(ostream& os, short detail) const
    {
       SatTableMap::const_iterator it;
@@ -384,7 +438,6 @@ namespace gpstk
       // Is this satellite found in the table?
       if(satTables.find(sat) == satTables.end())
          return NULL;
-
       // Define reference to the relevant map of orbital elements
       const TimeOrbitEphTable& table = getTimeOrbitEphMap(sat);
 
@@ -409,7 +462,9 @@ namespace gpstk
          if(it == table.end()) {
             TimeOrbitEphTable::const_reverse_iterator rit = table.rbegin();
             if(rit->second->isValid(t))         // Last element in map works
+            {
                return rit->second;
+            }
 
             // have nothing
             //string mess = "Time is beyond table for satellite " + asString(sat)
@@ -429,7 +484,9 @@ namespace gpstk
       // then all of the elements in the map are too late.
       if(it == table.begin()) {
          if (it->second->isValid(t))
+         {
             return it->second;
+         }
          //string mess = "Time is before table for satellite " + asString(sat)
          //      + " for time " + printTime(t,fmt);
          //InvalidRequest e(mess);
@@ -466,7 +523,6 @@ namespace gpstk
    const OrbitEph* OrbitEphStore::findNearOrbitEph(const SatID& sat,
                                                    const CommonTime& t) const
    {
-
         // Check for any OrbitEph for this SV
       if(satTables.find(sat) == satTables.end())
          return NULL;

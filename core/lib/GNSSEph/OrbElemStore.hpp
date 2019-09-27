@@ -120,17 +120,36 @@ namespace gpstk
       virtual Xvt getXvt(const SatID& id, const CommonTime& t)
          const throw( InvalidRequest );
 
+         /** Compute the position, velocity and clock offset of the
+          * indicated object in ECEF coordinates (meters) at the
+          * indicated time.
+          * This method functions similarly to getXvt() except that it
+          * does not throw an exception for any reason.  Instead, the
+          * caller is expected to check the value of the "health"
+          * field of the returned Xvt and decide what to do with the
+          * data.
+          * @note This function ignores the onlyHealthy flag.  It is
+          *   up to the caller to examine the state of the health flag
+          *   and decide what to do.
+          * @param[in] id the object's identifier
+          * @param[in] t the time to look up
+          * @return the Xvt of the object at the indicated time */
+      virtual Xvt computeXvt(const SatID& id, const CommonTime& t) const
+         throw();
+
+         /** Get the satellite health at a specific time.
+          * @param[in] id the object's identifier
+          * @param[in] t the time to look up
+          * @return the health status of the object at the indicated time. */
+      virtual Xvt::HealthStatus getSVHealth(const SatID& id,
+                                            const CommonTime& t) const throw();
+
       /// A debugging function that outputs in human readable form,
       /// all data stored in this object.
       /// @param[in] s the stream to receive the output; defaults to cout
       /// @param[in] detail the level of detail to provide
       virtual void dump(std::ostream& s = std::cout, short detail = 0)
          const throw();
-
-      ///
-      ///   
-      virtual bool isHealthy(const SatID& sat, const CommonTime& t) 
-         const throw(InvalidRequest); 
 
       virtual bool addOrbElem(const OrbElemBase* eph)
          throw(InvalidParameter,Exception);

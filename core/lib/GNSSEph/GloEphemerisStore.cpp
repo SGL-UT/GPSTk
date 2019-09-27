@@ -65,7 +65,7 @@ namespace gpstk
 
          if (t < initialTime)
             initialTime = t;
-         else if (t > finalTime)
+         if (t > finalTime)
             finalTime = t;
 
          return true;
@@ -164,6 +164,162 @@ namespace gpstk
       return sv;
 
    }; // End of method 'GloEphemerisStore::getXvt()'
+
+
+   Xvt GloEphemerisStore::computeXvt(const SatID& sat,
+                                     const CommonTime& epoch) const throw()
+   {
+      Xvt rv;
+      rv.health = Xvt::HealthStatus::Unavailable;
+      try
+      {
+            // TD is this too strict?
+         if (epoch.getTimeSystem() != initialTime.getTimeSystem())
+         {
+               // Not valid, but we don't have a specific "health" state
+               // of "wrong time system"
+            return rv;
+         }
+      
+            // Check that the given epoch is within the available time limits.
+            // We have to add a margin of 15 minutes (900 seconds).
+         if ((epoch <  (initialTime - 900.0)) ||
+             (epoch >  (finalTime   + 900.0)))
+         {
+            return rv;
+         }
+
+            // Look for the satellite in the 'pe' (EphMap) data structure.
+         GloEphMap::const_iterator svmap = pe.find(sat);
+
+            // If satellite was not found, say so
+         if (svmap == pe.end())
+         {
+            return rv;
+         }
+
+            // Let's take the second part of the EphMap
+         const TimeGloMap& sem = svmap->second;
+
+            // Look for 'i': the first element whose key >= epoch.
+         TimeGloMap::const_iterator i = sem.lower_bound(epoch);;
+
+            // If we reached the end, the requested time is beyond the last
+            // ephemeris record, but it may still be within the allowable time
+            // span, so we can use the last record.
+         if (i == sem.end())
+         {
+            i = --i;
+         }
+
+            // If key > (epoch+900), we must use the previous record
+            // if possible.
+         if ((i->first > (epoch+900.0)) && (i != sem.begin()))
+         {
+            i = --i;
+         }
+
+            // Check that the given epoch is within the available time
+            // limits for this specific satellite, with a margin of 15
+            // minutes (900 seconds).
+         if ((epoch <  (i->first - 900.0)) ||
+             (epoch >= (i->first + 900.0)))
+         {
+            return rv;
+         }
+
+            // We now have the proper reference data record. Let's use it
+         GloEphemeris data(i->second);
+
+            // Compute the satellite position, velocity and clock offset
+         rv = data.svXvt(epoch);
+         rv.health = (data.getHealth() == 0 ? Xvt::HealthStatus::Healthy
+                      : Xvt::HealthStatus::Unhealthy);
+      }
+      catch (...)
+      {
+      }
+
+         // We are done, let's return
+      return rv;
+   }
+
+
+   Xvt::HealthStatus GloEphemerisStore::getSVHealth(const SatID& sat,
+                                                    const CommonTime& epoch)
+      const throw()
+   {
+      Xvt::HealthStatus rv = Xvt::HealthStatus::Unavailable;
+      try
+      {
+            // TD is this too strict?
+         if (epoch.getTimeSystem() != initialTime.getTimeSystem())
+         {
+               // Not valid, but we don't have a specific "health" state
+               // of "wrong time system"
+            return rv;
+         }
+      
+            // Check that the given epoch is within the available time limits.
+            // We have to add a margin of 15 minutes (900 seconds).
+         if ((epoch <  (initialTime - 900.0)) ||
+             (epoch >  (finalTime   + 900.0)))
+         {
+            return rv;
+         }
+
+            // Look for the satellite in the 'pe' (EphMap) data structure.
+         GloEphMap::const_iterator svmap = pe.find(sat);
+
+            // If satellite was not found, say so
+         if (svmap == pe.end())
+         {
+            return rv;
+         }
+
+            // Let's take the second part of the EphMap
+         const TimeGloMap& sem = svmap->second;
+
+            // Look for 'i': the first element whose key >= epoch.
+         TimeGloMap::const_iterator i = sem.lower_bound(epoch);;
+
+            // If we reached the end, the requested time is beyond the last
+            // ephemeris record, but it may still be within the allowable time
+            // span, so we can use the last record.
+         if (i == sem.end())
+         {
+            i = --i;
+         }
+
+            // If key > (epoch+900), we must use the previous record
+            // if possible.
+         if ((i->first > (epoch+900.0)) && (i != sem.begin()))
+         {
+            i = --i;
+         }
+
+            // Check that the given epoch is within the available time
+            // limits for this specific satellite, with a margin of 15
+            // minutes (900 seconds).
+         if ((epoch <  (i->first - 900.0)) ||
+             (epoch >= (i->first + 900.0)))
+         {
+            return rv;
+         }
+
+            // We now have the proper reference data record. Let's use it
+         GloEphemeris data(i->second);
+         rv = (data.getHealth() == 0 ? Xvt::HealthStatus::Healthy
+               : Xvt::HealthStatus::Unhealthy);
+      }
+      catch (...)
+      {
+      }
+
+         // We are done, let's return
+      return rv;
+
+   }
 
 
       /* A debugging function that outputs in human readable form,
@@ -393,8 +549,8 @@ namespace gpstk
        * @return a reference to the desired ephemeris.
        * @throw InvalidRequest object thrown when no ephemeris is found.
        */
-   const GloEphemeris& GloEphemerisStore::findEphemeris( const SatID& sat,
-                                                const CommonTime& epoch ) const
+   const GloEphemeris& GloEphemerisStore ::
+   findEphemeris( const SatID& sat, const CommonTime& epoch ) const
    {
          // Check that the given epoch is within the available time limits.
          // We have to add a margin of 15 minutes (900 seconds).

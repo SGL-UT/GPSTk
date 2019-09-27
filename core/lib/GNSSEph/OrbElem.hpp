@@ -93,13 +93,6 @@ namespace gpstk
           */
       virtual bool isValid(const CommonTime& ct) const throw(InvalidRequest);
 
-	 /**
-          *   Return true if orbit data have been loaded.
-          *   Returns false if the object has been instantiated,
-          *   but no data have been loaded.
-          */
-      virtual bool dataLoaded( ) const;
-
       virtual std::string getName() const = 0;
 
       virtual std::string getNameLong() const = 0;
@@ -107,11 +100,6 @@ namespace gpstk
       virtual bool isSameData(const OrbElem* right) const;
 
       virtual std::list<std::string> compare(const OrbElem* right) const;
-
-         /** This function returns the health status of the SV.
-          * @throw Invalid Request if the required data has not been stored.
-          */
-      bool isHealthy() const throw(gpstk::InvalidRequest);
 
          /** Compute the satellite clock bias (sec) at the given time
           *  @throw Invalid Request if the required data has not been stored.
@@ -178,15 +166,6 @@ namespace gpstk
 
       virtual void dump(std::ostream& s = std::cout) const
 	 throw( InvalidRequest );
-
-         /// Overhead information
-         //@{ // Moved to OrbElemBase
-      //bool    dataLoadedFlag;  /**< True if data is present, False otherwise */
-      //SatID   satID;	       /**< Define satellite system and specific SV */
-      //ObsID   obsID;           /**< Defines carrier and tracking code */
-      //CommonTime ctToe;        /**< Orbit epoch in commontime format */
-      //bool    healthy;         /**< SV health (healthy=true, other=false */
-              //@}
 
 	 /// Harmonic perturbations
          //@{

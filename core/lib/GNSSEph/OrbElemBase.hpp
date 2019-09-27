@@ -110,6 +110,10 @@ namespace gpstk
           */
       bool isHealthy() const throw(gpstk::InvalidRequest);
 
+         /// Set the SV health status.  Child classes may do more.
+      virtual void setHealthy(bool h) throw()
+      { healthy = h; }
+
          /** Compute the satellite clock bias (sec) at the given time
           *  @throw Invalid Request if the required data has not been stored.
           */
@@ -187,7 +191,13 @@ namespace gpstk
       SatID   satID;	       /**< Define satellite system and specific SV */
       ObsID   obsID;           /**< Defines carrier and tracking code */
       CommonTime ctToe;        /**< Orbit epoch in commontime format */
+   private:
+         // Must be private because child classes have their own
+         // definitions of "healthy".  Too bad there isn't an access
+         // spec that means "don't even let myself use it directly
+         // except by accessors".
       bool    healthy;         /**< SV health (healthy=true, other=false */
+   public:
               //@}
 
          // Fit Interval Definition

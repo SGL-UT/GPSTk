@@ -62,33 +62,36 @@ public:
 //=============================================================================
 // Initialize Test Data Filenames
 //=============================================================================
-   void init( void )
+   void init()
    {
-      TestUtil test0;
       std::string dataFilePath = gpstk::getPathData();
       std::string tempFilePath = gpstk::getPathTestTemp();
-      std::string file_sep = "/";
+      std::string fileSep = gpstk::getFileSep();
 
-      inputSP3Data             =  dataFilePath + file_sep +
+      inputSP3Data = dataFilePath + fileSep +
          "test_input_sp3_nav_ephemerisData.sp3";
-      inputAPCData             =  dataFilePath + file_sep +
+      inputAPCData = dataFilePath + fileSep +
          "test_input_sp3_nav_apcData.sp3";
-      inputNotaFile            =  dataFilePath + file_sep + "NotaFILE";
-
-      outputDataDump           =  tempFilePath + file_sep + "SP3_DataDump.txt";
+      inputSixNinesData = dataFilePath + fileSep +
+         "inputs" + fileSep + "igs" + fileSep + "igr20354.sp3";
+      inputNotaFile = dataFilePath + fileSep + "NotaFILE";
+      outputDataDump = tempFilePath + fileSep + "SP3_DataDump.txt";
 
       inputComparisonOutput1 =
          "x:(-1.51906e+07, -2.15539e+07, 3.31227e+06),"
          " v:(488.793, 118.124, 3125.01), clk bias:1.68268e-05,"
-         " clk drift:1.93783e-11, relcorr:-8.45152e-09";
+         " clk drift:1.93783e-11, relcorr:-8.45152e-09,"
+         " health:Unused";
       inputComparisonOutput15 =
          "x:(-1.57075e+07, 1.72951e+07, 1.24252e+07),"
          " v:(408.54, -1568.11, 2651.16), clk bias:0.000411558,"
-         " clk drift:3.22901e-12, relcorr:1.32734e-08";
+         " clk drift:3.22901e-12, relcorr:1.32734e-08,"
+         " health:Unused";
       inputComparisonOutput31 =
          "x:(-1.69885e+07, 2.21265e+06, 2.02132e+07),"
          " v:(-1670.69, -1985.6, -1151.13), clk bias:0.000294455,"
-         " clk drift:-5.8669e-11, relcorr:-1.60472e-08";
+         " clk drift:-5.8669e-11, relcorr:-1.60472e-08,"
+         " health:Unused";
    }
 
 
@@ -97,9 +100,9 @@ public:
 // Makes sure SP3EphemerisStore can be instantiated and can load
 // a file; also ensures that nonexistent files throw an exception
 //=============================================================================
-   int SP3ESTest(void)
+   unsigned SP3ESTest()
    {
-      TUDEF( "SP3EphemerisStore", "Constructor" );
+      TUDEF("SP3EphemerisStore", "Constructor");
 
          // Verify the consturctor builds the SP3EphemerisStore object
       try
@@ -132,30 +135,21 @@ public:
          // Verify opening a file works with no errors
       try
       {
-/*
-  fstream smoo;
-  smoo.open(inputSP3Data.c_str(),std::ios::in);
-  testFramework.assert(smoo, "plain file open fail", __LINE__);
-  smoo.close();
-  cerr << "-------------------------" << endl;
-*/
          store.loadFile(inputSP3Data);
-//         cerr << "-------------------------" << endl;
          TUPASS("Opening a valid file works with no exceptions");
       }
       catch (...)
       {
-//         cerr << "-------------------------" << endl;
          TUFAIL("Exception thrown when opening a valid file");
       }
 
          // Write the dump of the loaded file
-      ofstream DumpData;
-      DumpData.open (outputDataDump.c_str());
-      store.dump(DumpData,1);
-      DumpData.close();
+      ofstream dumpData;
+      dumpData.open (outputDataDump.c_str());
+      store.dump(dumpData,1);
+      dumpData.close();
 
-      return testFramework.countFails();
+      TURETURN();
    }
 
 
@@ -165,9 +159,9 @@ public:
 // results with the method's output for various time stamps in an
 // SP3 file; also ensures nonexistent SatIDs throw an exception
 //=============================================================================
-   int getXvtTest (void)
+   unsigned getXvtTest()
    {
-      TUDEF( "SP3EphemerisStore", "getXvt" );
+      TUDEF("SP3EphemerisStore", "getXvt");
 
       try
       {
@@ -190,14 +184,15 @@ public:
          SatID sid31(PRN31,SatID::systemGPS);
          SatID sid32(PRN32,SatID::systemGPS);
 
-         CivilTime eTime_civ(1997,4,6,6,15,0); // Time stamp of one epoch
-         CommonTime eTime = eTime_civ.convertToCommonTime();
-         CivilTime bTime_civ(1997,4,6,0,0,0); // Time stamp of first epoch
-         CommonTime bTime = bTime_civ.convertToCommonTime();
+         CivilTime eTimeCiv(1997,4,6,6,15,0); // Time stamp of one epoch
+         CommonTime eTime = eTimeCiv.convertToCommonTime();
+         CivilTime bTimeCiv(1997,4,6,0,0,0); // Time stamp of first epoch
+         CommonTime bTime = bTimeCiv.convertToCommonTime();
 
          try
          {
-               // Verify that an InvalidRequest exception is thrown when SatID is not in the data
+               // Verify that an InvalidRequest exception is thrown
+               // when SatID is not in the data
             try
             {
                store.getXvt(sid0,bTime);
@@ -206,8 +201,8 @@ public:
             }
             catch (InvalidRequest& e)
             {
-               TUPASS("Expected exception thrown when getXvt looks for an invalid"
-                      " SatID");
+               TUPASS("Expected exception thrown when getXvt looks for an"
+                      " invalid SatID");
             }
             catch (...)
             {
@@ -215,7 +210,8 @@ public:
                       " invalid SatID");
             }
 
-               // Verify that an InvalidRequest exception is thrown when SatID is not in the data
+               // Verify that an InvalidRequest exception is thrown
+               // when SatID is not in the data
             try
             {
                store.getXvt(sid32,bTime);
@@ -224,8 +220,8 @@ public:
             }
             catch (InvalidRequest& e)
             {
-               TUPASS("Expected exception thrown when getXvt looks for an invalid"
-                      " SatID");
+               TUPASS("Expected exception thrown when getXvt looks for an"
+                      " invalid SatID");
             }
             catch (...)
             {
@@ -237,7 +233,8 @@ public:
             try
             {
                store.getXvt(sid1,eTime);
-               TUPASS("No exception thrown when getXvt looks for a valid SatID");
+               TUPASS("No exception thrown when getXvt looks for a valid"
+                      " SatID");
             }
             catch (...)
             {
@@ -254,9 +251,8 @@ public:
             cout << e;
          }
 
-            //--------------------------------------------------------------------
-            // Were the values set to expectation using the explicit constructor?
-            //--------------------------------------------------------------------
+            // Were the values set to expectation using the explicit
+            //constructor?
          TUASSERTE(std::string, inputComparisonOutput1, outputStream1.str());
          TUASSERTE(std::string, inputComparisonOutput15, outputStream15.str());
          TUASSERTE(std::string, inputComparisonOutput31, outputStream31.str());
@@ -266,7 +262,125 @@ public:
          TUFAIL("Unexpected exception");
       }
 
-      return testFramework.countFails();
+      TURETURN();
+   }
+
+
+//=============================================================================
+// Test for computeXvt.
+// Tests the computeXvt method in SP3EphemerisStore by comparing known
+// results with the method's output for various time stamps in an
+// SP3 file; also ensures nonexistent SatIDs throw an exception
+//=============================================================================
+   unsigned computeXvtTest()
+   {
+      TUDEF("SP3EphemerisStore", "computeXvt");
+
+      try
+      {
+         SP3EphemerisStore store;
+         stringstream outputStream1;
+         stringstream outputStream15;
+         stringstream outputStream31;
+         Xvt rv;
+         SatID sid0(0, SatID::systemGPS);
+         SatID sid1(1, SatID::systemGPS);
+         SatID sid15(15, SatID::systemGPS);
+         SatID sid31(31, SatID::systemGPS);
+         SatID sid32(32, SatID::systemGPS);
+         CommonTime eTime = CivilTime(1997,4,6,6,15,0,gpstk::TimeSystem::GPS);
+         CommonTime bTime = CivilTime(1997,4,6,0,0,0,gpstk::TimeSystem::GPS);
+
+         store.rejectBadPositions(false);
+         store.rejectBadClocks(false);
+         store.rejectPredPositions(false);
+         store.rejectPredClocks(false);
+         store.loadFile(inputSP3Data);
+
+         TUCATCH(rv = store.computeXvt(sid0,bTime));
+         TUASSERTE(Xvt::HealthStatus, Xvt::HealthStatus::Unavailable,rv.health);
+         TUCATCH(rv = store.computeXvt(sid32,bTime));
+         TUASSERTE(Xvt::HealthStatus, Xvt::HealthStatus::Unavailable,rv.health);
+         TUCATCH(rv = store.computeXvt(sid1,eTime));
+         TUASSERTE(Xvt::HealthStatus, Xvt::HealthStatus::Unused, rv.health);
+         outputStream1 << store.computeXvt(sid1,eTime);
+         outputStream15 << store.computeXvt(sid15,eTime);
+         outputStream31 << store.computeXvt(sid31,eTime);
+
+            // Were the values set to expectation using the explicit
+            //constructor?
+         TUASSERTE(std::string, inputComparisonOutput1, outputStream1.str());
+         TUASSERTE(std::string, inputComparisonOutput15, outputStream15.str());
+         TUASSERTE(std::string, inputComparisonOutput31, outputStream31.str());
+      }
+      catch (...)
+      {
+         TUFAIL("Unexpected exception");
+      }
+
+      TURETURN();
+   }
+
+
+//=============================================================================
+// Test for getSVHealth.
+// Tests the getSVHealth method in SP3EphemerisStore by comparing known
+// results with the method's output for various time stamps in an
+// SP3 file; also ensures nonexistent SatIDs throw an exception
+//=============================================================================
+   unsigned getSVHealthTest()
+   {
+      TUDEF("SP3EphemerisStore", "getSVHealth");
+
+      try
+      {
+            // These are the same test queries used in computeXvt but
+            // the health results expected are different given that
+            // SP3 can provide Xvt data but not health data.
+         SP3EphemerisStore store;
+         Xvt::HealthStatus rv;
+         SatID sid0(0, SatID::systemGPS);
+         SatID sid1(1, SatID::systemGPS);
+         SatID sid15(15, SatID::systemGPS);
+         SatID sid27(27, SatID::systemGPS);
+         SatID sid31(31, SatID::systemGPS);
+         SatID sid32(32, SatID::systemGPS);
+         CommonTime eTime = CivilTime(1997,4,6,6,15,0,gpstk::TimeSystem::GPS);
+         CommonTime bTime = CivilTime(1997,4,6,0,0,0,gpstk::TimeSystem::GPS);
+
+         store.rejectBadPositions(false);
+         store.rejectBadClocks(false);
+         store.rejectPredPositions(false);
+         store.rejectPredClocks(false);
+         store.loadFile(inputSP3Data);
+
+         TUCATCH(rv = store.getSVHealth(sid0,bTime));
+         TUASSERTE(Xvt::HealthStatus, Xvt::HealthStatus::Unused, rv);
+         TUCATCH(rv = store.getSVHealth(sid32,bTime));
+         TUASSERTE(Xvt::HealthStatus, Xvt::HealthStatus::Unused, rv);
+         TUCATCH(rv = store.getSVHealth(sid1,eTime));
+         TUASSERTE(Xvt::HealthStatus, Xvt::HealthStatus::Unused, rv);
+
+         store.clear();
+         TUASSERTE(int, 0, store.size());
+         store.loadFile(inputSixNinesData);
+         SatID sid4(4, SatID::systemGPS);
+         CommonTime cTime = CivilTime(2019,1,10,1,5,0,gpstk::TimeSystem::GPS);
+            // PRN 4 has clock bias of 999999.999999 but a valid position
+         TUCATCH(rv = store.getSVHealth(sid4, cTime));
+         TUASSERTE(Xvt::HealthStatus, Xvt::HealthStatus::Unused, rv);
+            // PRN 27 has an invalid position and clock bias
+         TUCATCH(rv = store.getSVHealth(sid27, cTime));
+         TUASSERTE(Xvt::HealthStatus, Xvt::HealthStatus::Unused, rv);
+            // PRN 1 should be fine
+         TUCATCH(rv = store.getSVHealth(sid1, cTime));
+         TUASSERTE(Xvt::HealthStatus, Xvt::HealthStatus::Unused, rv);
+      }
+      catch (...)
+      {
+         TUFAIL("Unexpected exception");
+      }
+      TURETURN();
    }
 
 
@@ -275,9 +389,9 @@ public:
 // Tests getInitialTime method in SP3EphemerisStore by ensuring that
 // the method outputs the initial time stamp in an SP3 file
 //=============================================================================
-   int getInitialTimeTest (void)
+   unsigned getInitialTimeTest()
    {
-      TUDEF( "SP3EphemerisStore", "getInitialTime" );
+      TUDEF("SP3EphemerisStore", "getInitialTime");
 
       try
       {
@@ -286,8 +400,9 @@ public:
 
          CommonTime computedInitialTime = store.getInitialTime();
 
-         CivilTime knownInitialTime_civ(1997,4,6,0,0,0);
-         CommonTime knownInitialTime = knownInitialTime_civ.convertToCommonTime();
+         CivilTime knownInitialTimeCiv(1997,4,6,0,0,0);
+         CommonTime knownInitialTime =
+            knownInitialTimeCiv.convertToCommonTime();
 
             // Check that the function returns the initial time from the file
          TUASSERTE(CommonTime, knownInitialTime, computedInitialTime);
@@ -297,7 +412,7 @@ public:
          TUFAIL("Unexpected exception");
       }
 
-      return testFramework.countFails();
+      TURETURN();
    }
 
 
@@ -306,9 +421,9 @@ public:
 // Tests getFinalTime method in SP3EphemerisStore by ensuring that
 // the method outputs the final time stamp in an SP3 file
 //=============================================================================
-   int getFinalTimeTest (void)
+   unsigned getFinalTimeTest()
    {
-      TUDEF( "SP3EphemerisStore", "getFinalTime" );
+      TUDEF("SP3EphemerisStore", "getFinalTime");
 
       try
       {
@@ -317,8 +432,8 @@ public:
 
          CommonTime computedFinalTime = store.getFinalTime();
 
-         CivilTime knownFinalTime_civ(1997,4,6,23,45,0);
-         CommonTime knownFinalTime = knownFinalTime_civ.convertToCommonTime();
+         CivilTime knownFinalTimeCiv(1997,4,6,23,45,0);
+         CommonTime knownFinalTime = knownFinalTimeCiv.convertToCommonTime();
 
             // Check that the function returns the initial time from the file
          TUASSERTE(CommonTime, knownFinalTime, computedFinalTime);
@@ -328,7 +443,7 @@ public:
          TUFAIL("Unexpected exception");
       }
 
-      return testFramework.countFails();
+      TURETURN();
    }
 //=============================================================================
 // Test for getPosition
@@ -336,9 +451,9 @@ public:
 // of the method to known values in two SP3 files--one with position and
 // velocity values and one with only position values
 //=============================================================================
-   int getPositionTest (void)
+   unsigned getPositionTest()
    {
-      TUDEF( "SP3EphemerisStore", "getPosition" );
+      TUDEF("SP3EphemerisStore", "getPosition");
 
       try
       {
@@ -348,8 +463,8 @@ public:
          const short PRN1 = 1;
          const short PRN31 = 31;
 
-         CivilTime igsTime_civ(1997,4,6,2,0,0);
-         CommonTime igsTime = igsTime_civ.convertToCommonTime();
+         CivilTime igsTimeCiv(1997,4,6,2,0,0);
+         CommonTime igsTime = igsTimeCiv.convertToCommonTime();
 
          SatID sid1(PRN1,SatID::systemGPS);
          SatID sid31(PRN31,SatID::systemGPS);
@@ -362,40 +477,45 @@ public:
 
          double relativeError;
          std::stringstream testMessageStream;
-         std::string testMessageP1 = "getPosition obtained the wrong position in the ";
+         std::string testMessageP1 =
+            "getPosition obtained the wrong position in the ";
          std::string testMessageP2 = " direction for SatID 1";
-            //--------------------------------------------------------------------
-            // Check that the computed position matches the known value for SatID 1
-            //--------------------------------------------------------------------
-         for (int i = 0; i < 3; i++)
+            // Check that the computed position matches the known
+            // value for SatID 1
+         for (unsigned i = 0; i < 3; i++)
          {
             testMessageStream << testMessageP1 << i << testMessageP2;
-            relativeError  = fabs(knownPosition_igs1[i]  - computedPosition_igs1[i]) /fabs(
-               knownPosition_igs1[i] );
-            testFramework.assert( relativeError < epsilon , testMessageStream.str() ,
-                                  __LINE__);
+            relativeError  =
+               fabs(knownPosition_igs1[i] - computedPosition_igs1[i]) /
+               fabs(knownPosition_igs1[i]);
+            testFramework.assert(relativeError < epsilon,
+                                 testMessageStream.str(),
+                                 __LINE__);
             testMessageStream.str(std::string());
          }
 
-            //--------------------------------------------------------------------
-            // Check that the computed position matches the known value for SatID 31
-            //--------------------------------------------------------------------
+            //------------------------------------------------------------------
+            // Check that the computed position matches the known
+            // value for SatID 31
+            //------------------------------------------------------------------
          testMessageP2 = " direction for SatID 31";
-         for (int i = 0; i < 3; i++)
+         for (unsigned i = 0; i < 3; i++)
          {
             testMessageStream << testMessageP1 << i << testMessageP2;
             relativeError  = fabs(knownPosition_igs31[i]  -
-                                  computedPosition_igs31[i]) /fabs(knownPosition_igs31[i] );
-            testFramework.assert( relativeError < epsilon , testMessageStream.str() ,
-                                  __LINE__);
+                                  computedPosition_igs31[i]) /
+               fabs(knownPosition_igs31[i]);
+            testFramework.assert(relativeError < epsilon ,
+                                 testMessageStream.str() ,
+                                 __LINE__);
             testMessageStream.str(std::string());
          }
 
          SP3EphemerisStore apcStore;
          apcStore.loadFile(inputAPCData);
 
-         CivilTime apcTime_civ(2001,7,22,2,0,0);
-         CommonTime apcTime = apcTime_civ.convertToCommonTime();
+         CivilTime apcTimeCiv(2001,7,22,2,0,0);
+         CommonTime apcTime = apcTimeCiv.convertToCommonTime();
 
          Triple computedPosition_apc1 = apcStore.getPosition(sid1,apcTime);
          Triple computedPosition_apc31 = apcStore.getPosition(sid31,apcTime);
@@ -403,41 +523,48 @@ public:
          Triple knownPosition_apc1(-5327654.053,-16633919.811,20164748.602);
          Triple knownPosition_apc31(2170451.938,-22428932.839,-14059088.503);
 
-            //--------------------------------------------------------------------
-            // Check that the computed position matches the known value for SatID 1
-            //--------------------------------------------------------------------
+            //------------------------------------------------------------------
+            // Check that the computed position matches the known
+            // value for SatID 1
+            //------------------------------------------------------------------
          testMessageP2 = " direction for SatID 1";
-         for (int i = 0; i < 3; i++)
+         for (unsigned i = 0; i < 3; i++)
          {
             testMessageStream << testMessageP1 << i << testMessageP2;
-            relativeError = fabs(knownPosition_apc1[i]  - computedPosition_apc1[i]) /fabs(
-               knownPosition_apc1[i] );
-            testFramework.assert( relativeError < epsilon , testMessageStream.str() ,
-                                  __LINE__);
+            relativeError = fabs(knownPosition_apc1[i]  -
+                                 computedPosition_apc1[i]) /
+               fabs(knownPosition_apc1[i]);
+            testFramework.assert(relativeError < epsilon ,
+                                 testMessageStream.str() ,
+                                 __LINE__);
             testMessageStream.str(std::string());
          }
 
-            //--------------------------------------------------------------------
-            // Check that the computed position matches the known value for SatID 31
-            //--------------------------------------------------------------------
+            //------------------------------------------------------------------
+            // Check that the computed position matches the known
+            // value for SatID 31
+            //------------------------------------------------------------------
          testMessageP2 = " direction for SatID 31";
-         for (int i = 0; i < 3; i++)
+         for (unsigned i = 0; i < 3; i++)
          {
             testMessageStream << testMessageP1 << i << testMessageP2;
             relativeError = fabs(knownPosition_apc31[i]  -
-                                 computedPosition_apc31[i]) /fabs(knownPosition_apc31[i] );
-            testFramework.assert( relativeError < epsilon , testMessageStream.str() ,
-                                  __LINE__);
+                                 computedPosition_apc31[i]) /
+               fabs(knownPosition_apc31[i]);
+            testFramework.assert(relativeError < epsilon ,
+                                 testMessageStream.str() ,
+                                 __LINE__);
             testMessageStream.str(std::string());
          }
 
 
-            //--------------------------------------------------------------------
+            //------------------------------------------------------------------
             // Check that getSatList() and getIndexSet() return expected values
-            // The data set has data for 29 SVs with PRN 12, PRN 16, and PRN 32 missing
-            //--------------------------------------------------------------------
+            // The data set has data for 29 SVs with PRN 12, PRN 16,
+            // and PRN 32 missing
+            //------------------------------------------------------------------
          set<SatID> expectedSet;
-         for (int i=1;i<=31;i++)
+         for (unsigned i=1;i<=31;i++)
          {
             if (i!=12 && i!=16 && i!=32)
             {
@@ -448,8 +575,8 @@ public:
      
          vector<SatID> loadedList = apcStore.getSatList();
          set<SatID> loadedSet = apcStore.getIndexSet();
-         TUASSERTE(int,expectedSet.size(),loadedSet.size());
-         TUASSERTE(int,expectedSet.size(),loadedList.size());
+         TUASSERTE(unsigned,expectedSet.size(),loadedSet.size());
+         TUASSERTE(unsigned,expectedSet.size(),loadedList.size());
 
          set<SatID>::const_iterator cit;
          for (cit=expectedSet.begin();cit!=expectedSet.end();cit++)
@@ -477,7 +604,7 @@ public:
          TUFAIL("Unexpected exception");
       }
 
-      return testFramework.countFails();
+      TURETURN();
    }
 
 
@@ -487,9 +614,9 @@ public:
 // of the method to known values in an SP3 files with position and
 // velocity values
 //=============================================================================
-   int getVelocityTest (void)
+   unsigned getVelocityTest()
    {
-      TUDEF( "SP3EphemerisStore", "getVelocity" );
+      TUDEF("SP3EphemerisStore", "getVelocity");
 
       try
       {
@@ -499,8 +626,8 @@ public:
          const short PRN1 = 1;
          const short PRN31 = 31;
 
-         CivilTime testTime_civ(2001,7,22,2,0,0);
-         CommonTime testTime = testTime_civ.convertToCommonTime();
+         CivilTime testTimeCiv(2001,7,22,2,0,0);
+         CommonTime testTime = testTimeCiv.convertToCommonTime();
 
          SatID sid1(PRN1,SatID::systemGPS);
          SatID sid31(PRN31,SatID::systemGPS);
@@ -515,31 +642,35 @@ public:
          std::stringstream testMessageStream;
          std::string testMessageP2,
             testMessageP1 = "getVelocity obtained the wrong velocity in the ";
-            //--------------------------------------------------------------------
-            // Check that the computed position matches the known value for SatID 1
-            //--------------------------------------------------------------------
+            //------------------------------------------------------------------
+            // Check that the computed position matches the known
+            // value for SatID 1
+            //------------------------------------------------------------------
          testMessageP2 = " direction for SatID 1";
-         for (int i = 0; i < 3; i++)
+         for (unsigned i = 0; i < 3; i++)
          {
             testMessageStream << testMessageP1 << i << testMessageP2;
-            relativeError = fabs(knownVelocity_1[i]  - computedVelocity_1[i]) /fabs(
-               computedVelocity_1[i] );
-            testFramework.assert( relativeError < epsilon , testMessageStream.str() ,
-                                  __LINE__);
+            relativeError = fabs(knownVelocity_1[i]  - computedVelocity_1[i]) /
+               fabs(computedVelocity_1[i]);
+            testFramework.assert(relativeError < epsilon ,
+                                 testMessageStream.str() ,
+                                 __LINE__);
             testMessageStream.str(std::string());
          }
 
-            //--------------------------------------------------------------------
-            // Check that the computed position matches the known value for SatID 1
-            //--------------------------------------------------------------------
+            //------------------------------------------------------------------
+            // Check that the computed position matches the known
+            // value for SatID 1
+            //------------------------------------------------------------------
          testMessageP2 = " direction for SatID 31";
-         for (int i = 0; i < 3; i++)
+         for (unsigned i = 0; i < 3; i++)
          {
             testMessageStream << testMessageP1 << i << testMessageP2;
-            relativeError = fabs(knownVelocity_31[i] - computedVelocity_31[i])/fabs(
-               computedVelocity_31[i]);
-            testFramework.assert( relativeError < epsilon , testMessageStream.str() ,
-                                  __LINE__);
+            relativeError = fabs(knownVelocity_31[i] - computedVelocity_31[i])/
+               fabs(computedVelocity_31[i]);
+            testFramework.assert(relativeError < epsilon ,
+                                 testMessageStream.str() ,
+                                 __LINE__);
             testMessageStream.str(std::string());
          }
       }
@@ -548,7 +679,7 @@ public:
          TUFAIL("Unexpected exception");
       }
 
-      return testFramework.countFails();
+      TURETURN();
    }
 
 private:
@@ -557,6 +688,7 @@ private:
 
    std::string inputSP3Data;
    std::string inputAPCData;
+   std::string inputSixNinesData;
 
    std::string outputDataDump;
 
@@ -570,12 +702,14 @@ private:
 
 int main() // Main function to initialize and run all tests above
 {
-   int errorTotal = 0;
+   unsigned errorTotal = 0;
    SP3EphemerisStore_T testClass;
    testClass.init();
 
    errorTotal += testClass.SP3ESTest();
    errorTotal += testClass.getXvtTest();
+   errorTotal += testClass.computeXvtTest();
+   errorTotal += testClass.getSVHealthTest();
    errorTotal += testClass.getInitialTimeTest();
    errorTotal += testClass.getFinalTimeTest();
    errorTotal += testClass.getPositionTest();
