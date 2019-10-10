@@ -38,6 +38,7 @@ add_test(NAME rmwdiff_Diff_1
          -DFILE1=arlm200a.15m
          -DFILE2=arlm200b.15m
          -DTESTBASE=rmwdiff1
+         -DTESTNAME=rmwdiff1
          -DSOURCEDIR=${SD}
          -DTARGETDIR=${TD}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testdiff.cmake)
@@ -49,6 +50,7 @@ add_test(NAME rmwdiff_Diff_2
          -DFILE1=arlm2000.15m
          -DFILE2=arlm2001.15m
          -DTESTBASE=rmwdiff2
+         -DTESTNAME=rmwdiff2
          -DSOURCEDIR=${SD}
          -DTARGETDIR=${TD}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testsame.cmake)
@@ -60,6 +62,7 @@ add_test(NAME rmwdiff_Diff_3
          -DFILE1=arlm200a.15m
          -DFILE2=arlm200z.15m
          -DTESTBASE=rmwdiff3
+         -DTESTNAME=rmwdiff3
          -DSOURCEDIR=${SD}
          -DTARGETDIR=${TD}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testdiff.cmake)
@@ -71,6 +74,7 @@ add_test(NAME rmwdiff_Diff_3
 #         -DFILE1=arlm200a.15o
 #         -DFILE2=arlm200z.15m
 #         -DTESTBASE=rmwdiff4
+#         -DTESTNAME=rmwdiff4
 #         -DSOURCEDIR=${SD}
 #         -DTARGETDIR=${TD}
 #         -P ${CMAKE_CURRENT_SOURCE_DIR}/testfail.cmake)
@@ -82,6 +86,7 @@ add_test(NAME rmwdiff_Diff_5
          -DFILE1=arlm200a.15m
          -DFILE2=arlm200y.15m
          -DTESTBASE=rmwdiff5
+         -DTESTNAME=rmwdiff5
          -DSOURCEDIR=${SD}
          -DTARGETDIR=${TD}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testsame.cmake)
@@ -114,6 +119,7 @@ add_test(NAME rnwdiff_Diff_1
          -DFILE1=arlm200a.15n
          -DFILE2=arlm200b.15n
          -DTESTBASE=rnwdiff1
+         -DTESTNAME=rnwdiff1
          -DSOURCEDIR=${SD}
          -DTARGETDIR=${TD}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testdiff.cmake)
@@ -125,6 +131,7 @@ add_test(NAME rnwdiff_Diff_2
          -DFILE1=arlm2000.15n
          -DFILE2=arlm2001.15n
          -DTESTBASE=rnwdiff2
+         -DTESTNAME=rnwdiff2
          -DSOURCEDIR=${SD}
          -DTARGETDIR=${TD}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testsame.cmake)
@@ -136,6 +143,7 @@ add_test(NAME rnwdiff_Diff_3
          -DFILE1=arlm200a.15n
          -DFILE2=arlm200z.15n
          -DTESTBASE=rnwdiff3
+         -DTESTNAME=rnwdiff3
          -DSOURCEDIR=${SD}
          -DTARGETDIR=${TD}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testdiff.cmake)
@@ -147,6 +155,7 @@ add_test(NAME rnwdiff_Diff_3
 #         -DFILE1=arlm200a.15o
 #         -DFILE2=arlm200z.15n
 #         -DTESTBASE=rnwdiff4
+#         -DTESTNAME=rnwdiff4
 #         -DSOURCEDIR=${SD}
 #         -DTARGETDIR=${TD}
 #         -P ${CMAKE_CURRENT_SOURCE_DIR}/testfail.cmake)
@@ -179,6 +188,7 @@ add_test(NAME rowdiff_Diff_1
          -DFILE1=arlm200a.15o
          -DFILE2=arlm200b.15o
          -DTESTBASE=rowdiff1
+         -DTESTNAME=rowdiff1
          -DSOURCEDIR=${SD}
          -DTARGETDIR=${TD}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testdiff.cmake)
@@ -190,6 +200,7 @@ add_test(NAME rowdiff_Diff_2
          -DFILE1=arlm200a.15o
          -DFILE2=arlm200x.15o
          -DTESTBASE=rowdiff2
+         -DTESTNAME=rowdiff2
          -DSOURCEDIR=${SD}
          -DTARGETDIR=${TD}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testsame.cmake)
@@ -201,6 +212,7 @@ add_test(NAME rowdiff_Diff_3
          -DFILE1=arlm200a.15o
          -DFILE2=arlm200z.15o
          -DTESTBASE=rowdiff3
+         -DTESTNAME=rowdiff3
          -DSOURCEDIR=${SD}
          -DTARGETDIR=${TD}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testdiff.cmake)
@@ -212,6 +224,7 @@ add_test(NAME rowdiff_Diff_3
 #         -DFILE1=arlm200a.15n
 #         -DFILE2=arlm200z.15o
 #         -DTESTBASE=rowdiff4
+#         -DTESTNAME=rowdiff4
 #         -DSOURCEDIR=${SD}
 #         -DTARGETDIR=${TD}
 #         -P ${CMAKE_CURRENT_SOURCE_DIR}/testfail.cmake)
@@ -236,6 +249,7 @@ add_test(NAME rinheaddiff_3OBS_Diff_0
          -DFILE1=RINEX3_OBS_ref.txt
          -DFILE2=RINEX3_OBS_ref.txt
          -DTESTBASE=rinheaddiff_3obs_0
+         -DTESTNAME=rinheaddiff_3obs_0
          -DSOURCEDIR=${SD}/rinheaddiff
          -DTARGETDIR=${TD}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinheadsame.cmake)
@@ -248,6 +262,7 @@ add_test(NAME rinheaddiff_3OBS_Diff_1
          -DFILE1=RINEX3_OBS_ref.txt
          -DFILE2=RINEX3_OBS_1.txt
          -DTESTBASE=rinheaddiff_3obs_1
+         -DTESTNAME=rinheaddiff_3obs_1
          -DSOURCEDIR=${SD}/rinheaddiff
          -DTARGETDIR=${TD}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinheadsame.cmake)
@@ -259,6 +274,7 @@ add_test(NAME rinheaddiff_3OBS_Diff_2a
          -DFILE1=RINEX3_OBS_ref.txt
          -DFILE2=RINEX3_OBS_2.txt
          -DTESTBASE=rinheaddiff_3obs_2a
+         -DTESTNAME=rinheaddiff_3obs_2a
          -DSOURCEDIR=${SD}/rinheaddiff
          -DTARGETDIR=${TD}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinheaddiff.cmake)
@@ -272,6 +288,7 @@ add_test(NAME rinheaddiff_3OBS_Diff_2b
          -DFILE2=RINEX3_OBS_2.txt
          -DIXOPTS=${OPT_2B}
          -DTESTBASE=rinheaddiff_3obs_2b
+         -DTESTNAME=rinheaddiff_3obs_2b
          -DSOURCEDIR=${SD}/rinheaddiff
          -DTARGETDIR=${TD}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinheaddiff.cmake)
@@ -285,6 +302,7 @@ add_test(NAME rinheaddiff_3OBS_Diff_2c
          -DFILE2=RINEX3_OBS_2.txt
          -DIXOPTS=${OPT_2C}
          -DTESTBASE=rinheaddiff_3obs_2c
+         -DTESTNAME=rinheaddiff_3obs_2c
          -DSOURCEDIR=${SD}/rinheaddiff
          -DTARGETDIR=${TD}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinheaddiff.cmake)
@@ -298,6 +316,7 @@ add_test(NAME rinheaddiff_3OBS_Diff_2d
          -DFILE2=RINEX3_OBS_2.txt
          -DIXOPTS=--include=${OPT_2D}
          -DTESTBASE=rinheaddiff_3obs_2d
+         -DTESTNAME=rinheaddiff_3obs_2d
          -DSOURCEDIR=${SD}/rinheaddiff
          -DTARGETDIR=${TD}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinheadsame.cmake)
@@ -312,6 +331,7 @@ add_test(NAME rinheaddiff_3OBS_Diff_2e
          -DFILE2=RINEX3_OBS_2.txt
          -DIXOPTS=--include=${OPT_2E}
          -DTESTBASE=rinheaddiff_3obs_2e
+         -DTESTNAME=rinheaddiff_3obs_2e
          -DSOURCEDIR=${SD}/rinheaddiff
          -DTARGETDIR=${TD}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinhead2e.cmake)
@@ -328,6 +348,7 @@ add_test(NAME rinheaddiff_2OBS_Diff_0
          -DFILE1=RINEX2_OBS_ref.txt
          -DFILE2=RINEX2_OBS_ref.txt
          -DTESTBASE=rinheaddiff_2obs_0
+         -DTESTNAME=rinheaddiff_2obs_0
          -DSOURCEDIR=${SD}/rinheaddiff
          -DTARGETDIR=${TD}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinheadsame.cmake)
@@ -340,6 +361,7 @@ add_test(NAME rinheaddiff_2OBS_Diff_1
          -DFILE1=RINEX2_OBS_ref.txt
          -DFILE2=RINEX2_OBS_1.txt
          -DTESTBASE=rinheaddiff_2obs_1
+         -DTESTNAME=rinheaddiff_2obs_1
          -DSOURCEDIR=${SD}/rinheaddiff
          -DTARGETDIR=${TD}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinheadsame.cmake)
@@ -351,6 +373,7 @@ add_test(NAME rinheaddiff_2OBS_Diff_2a
          -DFILE1=RINEX2_OBS_ref.txt
          -DFILE2=RINEX2_OBS_2.txt
          -DTESTBASE=rinheaddiff_2obs_2a
+         -DTESTNAME=rinheaddiff_2obs_2a
          -DSOURCEDIR=${SD}/rinheaddiff
          -DTARGETDIR=${TD}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinheaddiff.cmake)
@@ -364,6 +387,7 @@ add_test(NAME rinheaddiff_2OBS_Diff_2b
          -DFILE2=RINEX2_OBS_2.txt
          -DIXOPTS=${OPT_2B}
          -DTESTBASE=rinheaddiff_2obs_2b
+         -DTESTNAME=rinheaddiff_2obs_2b
          -DSOURCEDIR=${SD}/rinheaddiff
          -DTARGETDIR=${TD}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinheaddiff.cmake)
@@ -377,6 +401,7 @@ add_test(NAME rinheaddiff_2OBS_Diff_2c
          -DFILE2=RINEX2_OBS_2.txt
          -DIXOPTS=${OPT_2C}
          -DTESTBASE=rinheaddiff_2obs_2c
+         -DTESTNAME=rinheaddiff_2obs_2c
          -DSOURCEDIR=${SD}/rinheaddiff
          -DTARGETDIR=${TD}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinheaddiff.cmake)
@@ -390,6 +415,7 @@ add_test(NAME rinheaddiff_2OBS_Diff_2d
          -DFILE2=RINEX2_OBS_2.txt
          -DIXOPTS=--include=${OPT_2D}
          -DTESTBASE=rinheaddiff_2obs_2d
+         -DTESTNAME=rinheaddiff_2obs_2d
          -DSOURCEDIR=${SD}/rinheaddiff
          -DTARGETDIR=${TD}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinheadsame.cmake)
@@ -404,6 +430,7 @@ add_test(NAME rinheaddiff_2OBS_Diff_2e
          -DFILE2=RINEX2_OBS_2.txt
          -DIXOPTS=--include=${OPT_2E}
          -DTESTBASE=rinheaddiff_2obs_2e
+         -DTESTNAME=rinheaddiff_2obs_2e
          -DSOURCEDIR=${SD}/rinheaddiff
          -DTARGETDIR=${TD}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testrinhead2e.cmake)

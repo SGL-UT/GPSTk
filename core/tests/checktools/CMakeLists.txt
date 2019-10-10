@@ -23,6 +23,7 @@ add_test(NAME rmwcheck_Valid
          -DNODIFF=1
          -DARGS=${SD}/arlm200a.15m
          -DGPSTK_BINDIR=${GPSTK_BINDIR}
+         -DTESTNAME=rmwcheck_CmdOpt_1
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
 
 # check a valid RINEX Nav file (should fail, as it isn't a Met file)
@@ -81,6 +82,7 @@ add_test(NAME rnwcheck_Valid
          -DNODIFF=1
          -DARGS=${SD}/arlm200a.15n
          -DGPSTK_BINDIR=${GPSTK_BINDIR}
+         -DTESTNAME=rnwcheck_Valid
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
 
 # check a valid RINEX Obs file (should fail, as it isn't a Nav file)
@@ -138,6 +140,7 @@ add_test(NAME rowcheck_Valid
          -DNODIFF=1
          -DARGS=${SD}/arlm200a.15o
          -DGPSTK_BINDIR=${GPSTK_BINDIR}
+         -DTESTNAME=rowcheck_Valid
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
 
 # check a valid RINEX Met file (should fail, as it isn't a Obs file)

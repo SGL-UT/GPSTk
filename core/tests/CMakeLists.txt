@@ -21,6 +21,7 @@ add_test(NAME df_diff_2
     COMMAND ${CMAKE_COMMAND}
     -DTEST_PROG=$<TARGET_FILE:df_diff>
     -DTESTBASE=df_diff_2
+    -DTESTNAME=df_diff_2
     -DARGS=-1\ ${GPSTK_TEST_DATA_DIR}/arlm200b.15o\ -2\ ${GPSTK_TEST_DATA_DIR}/df_diff.in
     -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
     -DEXP_RC=2
@@ -32,6 +33,7 @@ add_test(NAME df_diff_3
     COMMAND ${CMAKE_COMMAND}
     -DTEST_PROG=$<TARGET_FILE:df_diff>
     -DTESTBASE=df_diff_3
+    -DTESTNAME=df_diff_3
     -DARGS=-1\ ${GPSTK_TEST_DATA_DIR}/arlm200b.15o\ -2\ ${GPSTK_TEST_DATA_DIR}/df_diff.in\ -l\ 2
     -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
     -DEXP_RC=1
@@ -43,6 +45,7 @@ add_test(NAME df_diff_4
     COMMAND ${CMAKE_COMMAND}
     -DTEST_PROG=$<TARGET_FILE:df_diff>
     -DTESTBASE=df_diff_3
+    -DTESTNAME=df_diff_4
     -DARGS=-1\ ${GPSTK_TEST_DATA_DIR}/arlm200b.15o\ -2\ ${GPSTK_TEST_DATA_DIR}/df_diff.in\ -l\ 2\ -e\ 1e-4
     -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
     -DEXP_RC=0
@@ -54,6 +57,7 @@ add_test(NAME df_diff_5
     COMMAND ${CMAKE_COMMAND}
     -DTEST_PROG=$<TARGET_FILE:df_diff>
     -DTESTBASE=df_diff_5
+    -DTESTNAME=df_diff_5
     -DARGS=-1\ ${GPSTK_TEST_DATA_DIR}/arlm200b.15o\ -2\ ${GPSTK_TEST_DATA_DIR}/df_diff.in\ -l\ 2\ -e\ 1e-14\ -z\ 2617
     -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
     -DEXP_RC=2
@@ -69,6 +73,7 @@ function(test_app_with_file test_name app_name labels args diff_args)
         COMMAND ${CMAKE_COMMAND}
         -DTEST_PROG=$<TARGET_FILE:${app_name}>
         -DTESTBASE=${test_name}
+        -DTESTNAME=${test_name}
         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}/outputs
         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
         -DARGS=${args}
@@ -88,6 +93,7 @@ function(test_app_with_stdout test_name app_name labels args diff_args)
         COMMAND ${CMAKE_COMMAND}
         -DTEST_PROG=$<TARGET_FILE:${app_name}>
         -DTESTBASE=${test_name}
+        -DTESTNAME=${test_name}
         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}/outputs
         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
         -DARGS=${args}
