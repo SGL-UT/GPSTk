@@ -1,3 +1,48 @@
+Version 2.12.1   Wednesday, October 9, 2019
+
+   General modifications
+   ---------------------
+   - Updated gitlab-ci rpm package management
+   - Updated and upgraded tests
+   - Various Bug and Compile Warning Fixes
+   - Code in /deprecate was removed...code from Ext staged in /deprecate
+   - Cleanup comments & remove commented out code.
+
+   Modifications by Author
+   ---------------------
+
+   Brian Tolman (3):
+         update filter to look at slopes
+         update tests
+         spelling error in comments
+
+   Bryan Parsons (3):
+         Tweaks to debian/changelog for building Debian Stretch and Wheezy backport packages.
+         Updating GPSTKConfig.cmake.in for proper cmake package paths.
+         Updated .gitlab-ci.yml for building rpm packages from latest master
+
+   bparsons (3):
+         Merge branch 'StatsFilter_improve' into 'master'
+         Merge branch 'issue_393_ObsID' into 'master'
+         Merge branch 'issue_360' into 'master'
+
+   johnk (5):
+         Add health status enum to Xvt. Add computeXvt method and getSVHealth method to XvtStore and children. Fix bug preventing GloEphemerisStore from working with a single ephemeris. Cleaned up stuff in OrbElem that had been partially moved to OrbElemBase. Made health/healthy flags in OrbElemBase etc. private and consistent. Add tests.
+         Merge remote-tracking branch 'origin/master' into issue_360
+         gitlab compiler doesn't implicitly use operator bool on streams with TUASSERT
+         Test input file for GloEphemerisStore_T that came from the RINEX spec
+         Merge remote-tracking branch 'origin' into issue_360
+
+   renfrob (3):
+         Updating Galileo track code definitions
+         Updating test cases to reflect Galileo ObsID changes
+         Merge branch 'master' into issue_393_ObsID
+
+
+
+   #################################################
+
+
 Version 2.12   Thursday, August 15, 2019
 
    General modifications
@@ -9,7 +54,7 @@ Version 2.12   Thursday, August 15, 2019
    - Cleanup comments & remove commented out code.
 
    Modifications by Author
-   --------------------- 
+   ---------------------
 
 Andrew Kuck (27):
       Add sdist python target for standalone installation.
@@ -318,7 +363,7 @@ Version 2.11.1   Monday, February 4, 2019
    - Cleanup comments & remove commented out code.
 
    Modifications by Author
-   --------------------- 
+   ---------------------
 Andrew Kuck (2):
       Cleanup comments & remove commented out code.
       Set the return value in OrbAlmFactory convert default case of no match.
@@ -375,8 +420,8 @@ Version 2.11   Thursday, January 3, 2019
    - Added official debian builds to package stage of GPSTk CI
 
    Modifications by Author
-   --------------------- 
-   
+   ---------------------
+
 Bryan Parsons (4):  
       Adding .changes file to gitlab.ci debian artifacts.  
       Expose all debian package files to be swept into package artifact.  
@@ -1191,7 +1236,7 @@ Bryan Parsons (4):
       New line characters were producing errors when building RPMs.  Updated Description to fix this issue.  Reported by Anthony Hughes.
       Merge branch 'issue_289_binex_crc' into 'master'
       Merge branch 'issue_284_ANTEX' into 'master'
-      
+
 renfrob (1):
       Adding antenna phase center offset calculations
 
@@ -1644,7 +1689,7 @@ Version 2.9   Friday, May 20, 2016
 
    Modifications by Author
    ---------------------
-   
+
 Andrew Joplin (2):
       SunEarthSatGeometry: Added OrbitNormalAttitude function
       Added swig bindings for SunEarthSatGeometry
@@ -2517,7 +2562,7 @@ Version 2.6   Tuesday, May 12, 2015
       - Python Install
       - Build Source and Binary Tarball
    - This release includes new/modified source code comments for improved readability.
-   - Various Bug and Compile Warning Fixes 
+   - Various Bug and Compile Warning Fixes
 
    Modifications by Author
    ---------------------
@@ -2927,7 +2972,7 @@ Version 2.5   Friday, October 10, 2014
    - GPSTk Script Changes
       - Tweaks and Clean-up
       - Build and Install C++ Lib/Apps
-      - Build and Install Python Lib 
+      - Build and Install Python Lib
    - This release includes new/modified source code comments for improved readability.
    - Rearrangement and clean-up of various documentation
    - Various Bug and Compile Warning Fixes (Thanks Richard Penney!)
@@ -3180,7 +3225,7 @@ Jon Little (5):
 
 
 
-      
+
    #################################################
 
 
@@ -3271,10 +3316,10 @@ Version 2.2   Friday, September 6, 2013
             - Visual Studio 2012 IDE (32-bit & 64-bit)
             - XCode (32-bit & 64-bit)
    - Basic RINEX 3.02 Framework has been added, still developmental and subject to change
-   - Basic Python Interface Bindings have been added, still developmental and subject to change 
+   - Basic Python Interface Bindings have been added, still developmental and subject to change
          - Additional Information: http://www.gpstk.org/pythondoc/
-   - Minor modifications to Jamfiles, Makefiles, and source code 
-     for clean compilation (no warnings or errors) & compatibility with the latest 
+   - Minor modifications to Jamfiles, Makefiles, and source code
+     for clean compilation (no warnings or errors) & compatibility with the latest
     Cygwin, Windows 7 VS, Solaris 10 Sparc, and Mac OX X Lion (10.7.5).
    - The next planned release, GPSTk v2.3, will be a minor upgrade that will introduce a new function-oriented dirctory structure.
    - This release includes new/modified source code comments for improved
@@ -3489,7 +3534,7 @@ Version 2.2   Friday, September 6, 2013
          Updated python bindings to use new Ephemeris & EphemerisStore classes.
          Python API changes to FileIO and time API.
          Python binding formatting changes.
-         Python support for Expression evaluation added. 
+         Python support for Expression evaluation added.
 
 
       #################################################
@@ -3500,9 +3545,9 @@ Version 2.1   Tuesday, June 25, 2013
 
    General modifications
    ---------------------
-   - Version 2.1 is comprised of SVN revision number 3143 to Git revision number 4daf3c5 
-   - A number of modifications were made to Jamfiles, Makefiles, and source code 
-     for clean compilation (no warnings or errors) & compatibility with the latest 
+   - Version 2.1 is comprised of SVN revision number 3143 to Git revision number 4daf3c5
+   - A number of modifications were made to Jamfiles, Makefiles, and source code
+     for clean compilation (no warnings or errors) & compatibility with the latest
     Cygwin, Windows 7 VS, Solaris 10 Sparc, and Mac OX X Lion (10.7.5).
    - Base CMake files have been added for future CMake support, still in development
      stages.
@@ -3512,27 +3557,27 @@ Version 2.1   Tuesday, June 25, 2013
    - This release includes new/modified source code comments for improved
      readability.
 
-   
+
    Library modifications
    ---------------------
    - Added to dev
-   
+
       dev/CMakeLists.txt
          Added first CMake files to src, lib, apps, and examples  
-      
+
       dev/.gitignore
          added .gitignore
-         
+
    - Modified in dev
-      
+
       dev/Jamrules
           Code Changes to fix Solaris Sparc Warnings
          Fixed Make build files, code format cleanup, TimeSystem error
          Add ruls for vs2012 to get rid of 'regex.lib' on windows.
-      
+
       dev/Makefile.am
          Fixed Make build files, code format cleanup, TimeSystem error
-         
+
       dev/config.guess
       dev/config.sub
       dev/configure.ac
@@ -3541,17 +3586,17 @@ Version 2.1   Tuesday, June 25, 2013
       dev/ltmain.sh
       dev/missing
          Fixed Make build files, code format cleanup, TimeSystem error
-         
+
    - Added to src
-   
+
       dev/src/CMakeLists.txt
          Added first CMake files to src and lib.
-   
+
    - Modified in src   
-   
+
       dev/src/Makefile.am
          Fixed Make build files, code format cleanup, TimeSystem error
-         
+
       dev/src/Jamfile
          jam install wasn't installing GNSSconstants.hpp. Now it will
 
@@ -3582,45 +3627,45 @@ Version 2.1   Tuesday, June 25, 2013
       dev/src/BinexData.cpp
       dev/src/TypeID.hpp
       dev/src/TabularSatStore.hpp      
-         Code Changes to fix various Warnings on various supported platforms 
+         Code Changes to fix various Warnings on various supported platforms
 
       dev/src/TypeID.cpp
          Add a new TypeID::transmit for POD.
-         
+
       dev/src/BrcClockCorrection.hpp
       dev/src/BrcKeplerOrbit.hpp
       dev/src/EngEphemeris.hpp
       dev/src/GalEphemeris.hpp
-         Commented out unused functions for Python development efforts 
-         
+         Commented out unused functions for Python development efforts
+
       dev/src/OrbElemLNav.cpp
       dev/src/OrbElemRinex.cpp
       dev/src/OrbElemFIC9.cpp
          Fix health bit format
          Mod to round endValid UP to appropriate value when Toe offset
-            
+
       dev/src/SVPCodeGen.cpp
          Fixed end of week bug for PRNs 38-210.
-         
+
       dev/src/TimeString.cpp
          Fixed a bug where scanTime would not process a %f specifier correctly
-         
+
       dev/src/GNSSconstants.hpp
       dev/src/ObsID.cpp
       dev/src/ObsRngDev.cpp
       dev/src/ObsRngDev.hpp
          Paramaterizing ObsRngDev to allow for other than L1-L2 dual frequency iono corrections
-         
+
       dev/src/DebugUtils.hpp
          Adding support for ashtech smoothing
 
       dev/src/Rinex3NavData.cpp
       dev/src/Rinex3NavData.hpp
          Added constructor to allow conversions between OrbElem and Rinex3NavData objects
-         
+
       dev/src/StringUtils.hpp
          We can use 'std::regex' instead of 'gnu regex' for visual studio 2012!
-         
+
       dev/src/Matrix.hpp
       dev/src/MatrixOperators.hpp
       dev/src/Vector.hpp
@@ -3628,15 +3673,15 @@ Version 2.1   Tuesday, June 25, 2013
          2)Enable 'Vector || Vector' to get a left to right matrix;
          3)Add a operator '<<' for 'Vector', and user can construct a vector as the following:
            Vector v; v << 1 << 2 << 3 << 4 << 5 << 6;
-            
+
       dev/src/FICFilterOperators.hpp
       dev/src/FileFilter.hpp
          Add blockNum tests to Block 62 & 162 unique methods in FICFilterOperators to fix seg fault in mergeFIC.
-         
+
       dev/src/MemoryUtils.hpp
       dev/src/RinexUtilities.cpp
          Fix some expression 'GPSTK_THROW(Exception("..."))' for it COULD NOT get the exception location properly!
-         
+
       dev/src/GPSOrbElemStore.cpp
       dev/src/GPSOrbElemStore.hpp
       dev/src/OrbElem.hpp
@@ -3651,23 +3696,23 @@ Version 2.1   Tuesday, June 25, 2013
       dev/src/OrbElemICE.cpp
          Bug fixes from synthetic data testing
          Added OrbElemICE and OrbElemCNAV2 to accomandate the new CNAV2 navigation message coming soon.
-         Added OrbElemCNAV to accomodate new CNAV message coming soon. 
+         Added OrbElemCNAV to accomodate new CNAV message coming soon.
          OrbElemRinex.hpp: Added loadData( Rinex3NavData ) to fix compile error.
-         
+
       dev/src/AntexReader.cpp
       dev/src/MoonPosition.cpp
       dev/src/SunPosition.cpp
          Fix problems for PPP examples.
-         
+
       dev/src/TimeSystem.cpp
          Add the TimeSystem string for COM(BeiDou Time,BDT)
-         
+
       dev/src/ReferenceFrame.cpp
       dev/src/ReferenceFrame.hpp
          fixed a segmentation fault when initializing static data members.
-         
+
    - Deleted from src
-   
+
       none
 
    - Added to lib
@@ -3680,9 +3725,9 @@ Version 2.1   Tuesday, June 25, 2013
       dev/lib/vdraw/CMakeLists.txt
       dev/lib/vplot/CMakeLists.txt
          Added first CMake files to src and lib.
-   
+
    - Modified in lib
-      
+
       dev/lib/geodyn/Makefile.am
       dev/lib/geomatics/Makefile.am
       dev/lib/procframe/Makefile.am
@@ -3690,7 +3735,7 @@ Version 2.1   Tuesday, June 25, 2013
       dev/lib/vdraw/Makefile.am
       dev/lib/vplot/Makefile.am  
          Fixed Make build files, code format cleanup, TimeSystem error
-      
+
       dev/lib/geomatics/SRIMatrix.hpp
       dev/lib/procframe/GeneralConstraint.cpp
       dev/lib/vplot/LinePlot.cpp
@@ -3704,34 +3749,34 @@ Version 2.1   Tuesday, June 25, 2013
       dev/lib/rxio/AshtechALB.hpp
       dev/lib/rxio/AshtechData.hpp
          Code Changes to fix various Warnings on various supported platforms
-      
+
       dev/lib/geodyn/IERSConventions.cpp
-         Updates Leap History Map and UTC Timesystem initializations to prevent 
+         Updates Leap History Map and UTC Timesystem initializations to prevent
          comparison exceptions.
-         
+
       dev/lib/rxio/MDPObsEpoch.cpp
          Fixed bug in reading epochs
-         
+
       dev/lib/rxio/ObsUtils.cpp
       dev/lib/rxio/ObsUtils.hpp
       dev/lib/rxio/RinexConverters.cpp
       dev/lib/rxio/miscenum.hpp     
          Adding support for ashtech smoothing
          Now supports removing smoothing from ashtech data
-      
+
       dev/lib/rxio/FFIdentifier.cpp
          Correctly detects when a file is not SP3
-         
-      
-         
+
+
+
    - Deleted from lib   
-   
+
       none
 
    Application modifications
    -------------------------
    - Added to apps
-   
+
       dev/apps/CMakeLists.txt
       dev/apps/DataAvailability/CMakeLists.txt
       dev/apps/MDPtools/CMakeLists.txt
@@ -3760,18 +3805,18 @@ Version 2.1   Tuesday, June 25, 2013
       dev/apps/time/CMakeLists.txt
       dev/apps/visibility/CMakeLists.txt
          Added the apps to the CMake build.
-         
+
       dev/apps/reszilla/.gitignore
          .gitignore added
-      
+
       dev/apps/filetools/RinexElvStrip.cpp
          Add a tool to strip RINEX obs data by elevation
-      
+
    - Modified in apps
 
       dev/apps/filetools/Jamfile
          Add a tool to strip RINEX obs data by elevation
-         
+
       dev/apps/DataAvailability/Makefile.am
       dev/apps/MDPtools/Makefile.am
       dev/apps/ObsArrayEvaluator/Makefile.am
@@ -3836,108 +3881,108 @@ Version 2.1   Tuesday, June 25, 2013
       dev/apps/swrx/IQStream.cpp
       dev/apps/reszilla/OrdEngine.cpp
       dev/apps/reszilla/ddGen.cpp
-         Code Changes to fix various Warnings on various supported platforms 
-            
+         Code Changes to fix various Warnings on various supported platforms
+
       dev/apps/reszilla/OrdApp.cpp
       dev/apps/reszilla/OrdEngine.cpp
       dev/apps/reszilla/OrdEngine.hpp
       dev/apps/reszilla/ordGen.cpp
       dev/apps/reszilla/ordPlot
-         ordGen now handles two frequency combos other than L1-L2 better. 
+         ordGen now handles two frequency combos other than L1-L2 better.
          Fixing some obs combos
-         
+
       dev/apps/Rinextools/RinDump.cpp
          Add GPS Nav support and debiasing
-         
+
       dev/apps/converters/ash2mdp.cpp
          Adding support for ashtech smoothing
          Now supports removing smoothing from ashtech data
          Fixed a week rollover problem
-         
+
       dev/apps/MDPtools/SummaryProc.cpp
       dev/apps/MDPtools/SummaryProc.hpp
       dev/apps/MDPtools/TrackProc.cpp
       dev/apps/MDPtools/TrackProc.hpp
          Removing a 12 channel limit
-         
+
       dev/apps/reszilla/ddrecord.py
       dev/apps/reszilla/ordPlot
          Adding ability to parse stats records
-         
+
       dev/apps/reszilla/ordStats.cpp
          doesn't segfault when no data is provided
-         
+
       dev/apps/visibility/compStaVis.cpp
          Fixed CompStaVis debug mesage time display error
-         
+
       dev/apps/difftools/DiffFrame.hpp
       dev/apps/difftools/ficdiff.cpp
          Added notification for missing input files
-         
+
       dev/apps/geomatics/relposition/ReadRawData.cpp
          Fixed reference to global SolutionEpoch variable in ReadRawData.
-      
+
       dev/apps/geomatics/relposition/CommandInput.cpp    
          Time system mismatch fix.
-      
+
       dev/apps/geomatics/relposition/ProcessRawData.cpp
          Fix for DDBase in ProcessRawData.cpp - CommonTime TimeSystem mismatch corrected.
-      
+
       dev/apps/clocktools/ffp.cpp
       dev/apps/clocktools/pff.cpp
          Added usage information and examples for ffp.cpp and pff.cpp
-      
+
       dev/apps/mergetools/mergeFIC.cpp
          Add blockNum tests to Block 62 & 162 unique methods in FICFilterOperators to fix seg fault in mergeFIC.
-      
+
       dev/apps/MDPtools/mdp2rinex.cpp
       dev/apps/MDPtools/mdpEdit.cpp
       dev/apps/MDPtools/mdpScrubber.cpp
          Fixed a bug in filtering by PRN number
-         
+
       dev/apps/visibility/compSatVis.cpp
          fixed a time printing error in the output.
-         
+
       dev/apps/converters/ash2xyz.cpp
-         fixed a bug where a cleared vector wasn't removed from the map which contains it. 
-         
+         fixed a bug where a cleared vector wasn't removed from the map which contains it.
+
       dev/apps/filetools/ficfica.cpp
          Added basic invalid input file error handling and output dialog to ficfica app
-         
+
       dev/apps/geomatics/cycleslips/DiscFix.cpp
          Fixed a logic bug in ignoring other satellite systems
-         
+
       dev/apps/reszilla/DDEpoch.cpp
       dev/apps/reszilla/PhaseResidual.cpp
          Corrected bug in computing triple difference.
 
-      
+
    - Deleted from apps
-   
+
       dev/apps/filetools/sp32bc.cpp
          Removed sp32bc from repository         
-   
+
    Example modifications
    -------------------------   
    - Added to examples
-   
+
       dev/examples/CMakeLists.txt
          Added examples to the CMake build.
 
    - Modified in examples  
-   
+
       /Makefile.am
           Code changes to fix remaining Windows error & warnings
-   
+
       dev/examples/Jamfile
           Examples folder Make/Jam file changes
 
       dev/examples/example14.cpp
          Added examples to the CMake build.
-       
-   
+
+
    - Deleted from examples  
-   
+
       none
 
    Testing modifications
@@ -3946,16 +3991,16 @@ Version 2.1   Tuesday, June 25, 2013
 
       dev/tests/GPSOrbElemStore/xTestRationalize.cpp
          Adding a program that specifically tests GPSOrbElemStore::rationalize()
-   
+
    - Modified in tests
-   
+
       dev/tests/Makefile.am
           Fixed Make build files, code format cleanup, TimeSystem error
-   
+
    - Deleted from tests
-   
+
       none
-   
+
    Reference modifications
    -------------------------     
 
@@ -4076,19 +4121,19 @@ Version 2.1   Tuesday, June 25, 2013
       ref/usersguide/xcolor2.tex
       ref/usersguide/xcolor3.tex
       ref/usersguide/xcolor4.tex
-         Updated Users Guide to version 3.0 of Rinex, added more usage 
+         Updated Users Guide to version 3.0 of Rinex, added more usage
          examples for applications that were lacking them.
-   
+
    #################################################
 
-   
-   
+
+
    Version 2.0   Thursday, 24 May, 2012
 
    General modifications
    ---------------------
 
-   - Version 2.0 was branched from dev/ on revision 2537, merged back into the 
+   - Version 2.0 was branched from dev/ on revision 2537, merged back into the
      trunk with revision 3140.
 
    Library modifications
@@ -4096,7 +4141,7 @@ Version 2.1   Tuesday, June 25, 2013
 
    - Added to src
 
-       PZ90Ellipsoid.hpp 
+       PZ90Ellipsoid.hpp
        OrbElemStore.hpp       
        GloEphemerisStore.cpp
        GloEphemerisStore.hpp
@@ -4137,7 +4182,7 @@ Version 2.1   Tuesday, June 25, 2013
        Rinex3ObsData.cpp
        Rinex3ObsData.hpp
       The new 'Rinex3ObsData' method was modified and renamed to improve consistency
-      with the former GPSTk version, and a new method was added. 
+      with the former GPSTk version, and a new method was added.
 
        Rinex3ObsFilterOperators.hpp
        Rinex3ObsHeader.cpp
@@ -4170,11 +4215,11 @@ Version 2.1   Tuesday, June 25, 2013
            Hand-merged src/ directories of the trunk and Rinex-3 branch.
 
        RinexGloNavData.[h|c]pp
-          Added Rinex-2 GLONASS Navigation files data parsers with 
+          Added Rinex-2 GLONASS Navigation files data parsers with
      documentation.
 
        RK4VehicleModel.[h|c]pp
-     Added a class that implements a simple model of a vehicle based on 
+     Added a class that implements a simple model of a vehicle based on
      the Runge-Kutta-4 numerical integration algorithm.
 
       GlonassSatelliteModel.[h|c]pp
@@ -4182,7 +4227,7 @@ Version 2.1   Tuesday, June 25, 2013
      inheriting from the 'RK4VehicleModel' class.
 
       GloBrcEphemerisStore.[h|c]pp
-     Added working version of a class to compute GLONASS satellite 
+     Added working version of a class to compute GLONASS satellite
      positions based on broadcast ephemeris.
 
       FIRDifferentiator5thOrder.[h|c]pp
@@ -4212,7 +4257,7 @@ Version 2.1   Tuesday, June 25, 2013
      Condenses constants from all GNSS including GPS, GALILEO, and COMPASS.
 
    - Modified in src
-       
+
        ANSITime.cpp
        ANSITime.hpp
        AlmOrbit.cpp
@@ -4229,7 +4274,7 @@ Version 2.1   Tuesday, June 25, 2013
        EngEphemeris.cpp
        EngEphemeris.hpp
        EngNav.cpp
-       EphemerisRange.cpp 
+       EphemerisRange.cpp
        EphemerisRange.hpp
        Exception.hpp
        Expression.cpp
@@ -4327,9 +4372,9 @@ Version 2.1   Tuesday, June 25, 2013
        TropModel.cpp
        TropModel.hpp
        UnixTime.cpp
-       UnixTime.hpp 
-       Xvt.cpp 
-       Xvt.hpp 
+       UnixTime.hpp
+       Xvt.cpp
+       Xvt.hpp
        XvtStore.hpp
        YDSTime.cpp
        YDSTime.hpp
@@ -4346,7 +4391,7 @@ Version 2.1   Tuesday, June 25, 2013
           Propagating some of Dagoberto's changes/additions in /src.
 
        GPSAlmanacStore.[h|c]pp
-          Adjusted some functions in GPSAlmanacStore so that it and 
+          Adjusted some functions in GPSAlmanacStore so that it and
      YumaAlmanacStore aren't abstract classes.
 
        RinexGlonavHeader.[h|c]pp
@@ -4355,7 +4400,7 @@ Version 2.1   Tuesday, June 25, 2013
        PZ90Ellipsoid.hpp
           Minor updates to the last GLONASS ICD v5.1 (defined in table 3.2)
      to update it to PZ90.02 ellipsoid.
-          Improvements in the documentation, and the addition of the 
+          Improvements in the documentation, and the addition of the
      J20 parameter.
 
        RinexGloNavData.cpp
@@ -4373,11 +4418,11 @@ Version 2.1   Tuesday, June 25, 2013
        Rinex3ObsHeader.[h|c]pp
        RinexSatID.hpp
        SatID.hpp
-     Partial update to RINEX 3.01. 
-     Cf. http://igscb.jpl.nasa.gov/igscb/data/format/rinex301.pdf, 
-     particularly section 9. Updated the Obs header for new records. 
-     Added Compass to RinexSatID and SatID; someone needs to update 
-     ObsID based on Table 5.Did not implement 9.1 in ObsData, 
+     Partial update to RINEX 3.01.
+     Cf. http://igscb.jpl.nasa.gov/igscb/data/format/rinex301.pdf,
+     particularly section 9. Updated the Obs header for new records.
+     Added Compass to RinexSatID and SatID; someone needs to update
+     ObsID based on Table 5.Did not implement 9.1 in ObsData,
      nor attempt to implement 9.2, 9.4, 9.6-8.
 
        SP3EphemerisStore.[h|c]pp
@@ -4391,10 +4436,10 @@ Version 2.1   Tuesday, June 25, 2013
        GloEphemerisStore.cpp
      Modified FileStore to stand alone, and modify the ephemeris store
      classes to contain FileStore(s) rather than inherit FileStore.
-     Redesign the tabular ephemeris store classes based on 
-     TabularSatStore; eventually TabularEphemerisStore will be deleted. 
-     Add classes ClockSatStore and PositionSatStore, which are 
-     standalone functional stores, derived from TabularSatStore, 
+     Redesign the tabular ephemeris store classes based on
+     TabularSatStore; eventually TabularEphemerisStore will be deleted.
+     Add classes ClockSatStore and PositionSatStore, which are
+     standalone functional stores, derived from TabularSatStore,
      which are not associated with any file type.Added 'findEphemeris()' methods to
      'GloEphemerisStore' in order to keep consistency with 'GPSEphemerisStore' and
      'GalEphemerisStore' classes.
@@ -4434,10 +4479,10 @@ Version 2.1   Tuesday, June 25, 2013
        Xvt.cpp
        Xvt.hpp
        XvtStore.hpp
-     Change slightly XvtStore.hpp; this affects the interface of all 
-     ephemeris store class.  Modify Xvt to separate 
-     the relativity correction from the clock bias, and rename dtime 
-     clkbias, and ddtime clkdrift; modify all of src and some apps to 
+     Change slightly XvtStore.hpp; this affects the interface of all
+     ephemeris store class.  Modify Xvt to separate
+     the relativity correction from the clock bias, and rename dtime
+     clkbias, and ddtime clkdrift; modify all of src and some apps to
      account for this change.
 
        ClockSatStore.cpp
@@ -4500,7 +4545,7 @@ Version 2.1   Tuesday, June 25, 2013
 
        Rinex3ObsData.[h|c]pp
      Add dump() that uses the header.
-    
+
        RinexClockStore.hpp
        ClockSatStore.hpp
        SP3EphemerisStore.[h|c]pp
@@ -4512,7 +4557,7 @@ Version 2.1   Tuesday, June 25, 2013
      Fixed dummy methods which were not returning the expected types.
 
       PreciseRange.[h|c]pp
-     Fix for new definitions in Xvt; remove functions here to 
+     Fix for new definitions in Xvt; remove functions here to
      compute rel. corr.
 
       MatrixBase.hpp
@@ -4636,7 +4681,7 @@ Version 2.1   Tuesday, June 25, 2013
      Commented out a debugging line.
 
        Xvt.[h|c]pp
-     Added preciseRho function which was originally in the now 
+     Added preciseRho function which was originally in the now
      obsoleted class, Xt.
 
        Rinex3NAVData.cpp
@@ -4970,12 +5015,12 @@ Version 2.1   Tuesday, June 25, 2013
    - Deleted from src
 
        TabularEphemerisStore.cpp
-         This class now obsoleted; functions reimplemented in new Ephemeris 
+         This class now obsoleted; functions reimplemented in new Ephemeris
     Store classes (SP3).
 
        ECEF.[h|c]pp
        Geodetic.[h|c]pp
-     Removed ECEF and Geodetic (which are deprecated), and 
+     Removed ECEF and Geodetic (which are deprecated), and
      modified code to use Position instead.
 
        EngEphemeris.cpp
@@ -4999,8 +5044,8 @@ Version 2.1   Tuesday, June 25, 2013
      changes in 'Variable' class.
 
        /procframe/GeneralEquations.[h|c]pp
-     Added class 'GeneralEquations' to RC2.0.  The original 
-     version had very long inline methods, which are not recommended; 
+     Added class 'GeneralEquations' to RC2.0.  The original
+     version had very long inline methods, which are not recommended;
      therefore, a 'GeneralEquations.cpp' file was added.
 
        /procframe/Differentiator.[h|c]pp
@@ -5009,7 +5054,7 @@ Version 2.1   Tuesday, June 25, 2013
        /procframe/EquationSystem.[h|c]pp
        /procframe/GeneralConstraint.[h|c]pp
        /procframe/SolverGeneral.[h|c]pp
-     Added 'GeneralConstraint' class, as well as additions to related 
+     Added 'GeneralConstraint' class, as well as additions to related
      classes.
 
    - Modified in lib
@@ -5043,7 +5088,7 @@ Version 2.1   Tuesday, June 25, 2013
        /rxio/EphReader.cpp
        /rxio/FFIdentifier.cpp
        /rxio/MDPPVTSolution.hpp
-     Modified library to reflect more meaningful constants' names in 
+     Modified library to reflect more meaningful constants' names in
      XvtStore.
 
        /procframe/DataHeaders.[h|c]pp
@@ -5051,9 +5096,9 @@ Version 2.1   Tuesday, June 25, 2013
      Changed to CommonTime.
 
        /procframe/ProcessingClass.hpp
-          The 'getIndex()' method and its associated operators were deleted 
-     from 'ProcessingClass'. This feature made developing more complex, 
-     it potentially limited the compilation on parallel machines, and 
+          The 'getIndex()' method and its associated operators were deleted
+     from 'ProcessingClass'. This feature made developing more complex,
+     it potentially limited the compilation on parallel machines, and
      it seems that no one was using it.
 
        /procframe/BasicModel.cpp
@@ -5219,7 +5264,7 @@ Version 2.1   Tuesday, June 25, 2013
      consequential compile errors.
 
        /geomatics/SolarSystem.[h|c]pp
-     MJD_TO_JD in TimeConstants is the same (same sign) as 
+     MJD_TO_JD in TimeConstants is the same (same sign) as
      DayTime::JD_TO_MJD.
 
        /rxio/EphReader.cpp
@@ -5249,7 +5294,7 @@ Version 2.1   Tuesday, June 25, 2013
        /geodyn/SphericalHarmonicGravity.cpp
        /geodyn/UTCTime.cpp
        /geodyn/UTCTime.hpp
-          Converted geomatics library from obsoleted DayTime class, and 
+          Converted geomatics library from obsoleted DayTime class, and
      resolved consequential compile errors.
 
        /geodyn/IERS.cpp
@@ -5485,7 +5530,7 @@ Version 2.1   Tuesday, June 25, 2013
        /visibility/compSatVis.cpp
        /visibility/compStaVis.cpp
        /visibility/findMoreThan12
-          Modified library to reflect more meaningful constants' names in 
+          Modified library to reflect more meaningful constants' names in
      XvtStore.
 
       /filetools/bc2sp3.cpp
@@ -5497,7 +5542,7 @@ Version 2.1   Tuesday, June 25, 2013
       /geomatics/relposition/CommandInput.[h|c]pp
       /geomatics/relposition/DataOutput.cpp
       /geomatics/relposition/DataStructures.hpp
-      /geomatics/relposition/ReadObsFiles.cpp 
+      /geomatics/relposition/ReadObsFiles.cpp
       /geomatics/relposition/Estimation.cpp
       /ionosphere/IonoBias.cpp
       /ionosphere/TECMaps.cpp
@@ -5663,7 +5708,7 @@ Version 2.1   Tuesday, June 25, 2013
        /ReferenceFrame/xReferenceFrame.[h|c]pp
        /ReferenceFrame/xReferenceFrameM.cpp
        /SP3EphemerisStore/SP3EphemerisStore.[h|c]pp
-     Added new tests from UnitTests in Rinex-3 branch to tests 
+     Added new tests from UnitTests in Rinex-3 branch to tests
      directory in RC2.0.
 
        /RinexNav/xRinexTest.cpp
@@ -5753,7 +5798,7 @@ Version 2.1   Tuesday, June 25, 2013
       /SP3EphemerisStore/igs09000.sp3
       /SP3EphemerisStore/xSP3EphemerisStore.cpp
       /SP3EphemerisStore/xSP3EphemerisStore.hpp
-   
+
    - Modified in tests
 
        /ANSITime/xANSITime.[h|c]pp
@@ -5802,8 +5847,8 @@ Version 2.1   Tuesday, June 25, 2013
         Yuma/YumaStream.hpp
            Adapting test suite to new GNSSconstants.hpp.
 
-   
-      
+
+
 
       /RACRotation/xRACRotation.cpp
       /SEM/SEMData.cpp
@@ -5811,7 +5856,7 @@ Version 2.1   Tuesday, June 25, 2013
       /Yuma/YumaData.cpp
       /oldtests/DayTimeIncrementTest.cpp
       /oldtests/DayTimeIncrememntTest2.cpp
-     Changed instances icd_200 constants to adaptations in 
+     Changed instances icd_200 constants to adaptations in
      GNSSconstants.hpp.
 
    Examples modifications
@@ -5840,10 +5885,10 @@ Version 2.1   Tuesday, June 25, 2013
        example7.cpp
        example8.cpp
        example9.cpp
-     The examples directory has been modified to reflect obsoletion of 
-     DayTime class and the consolidation of GNSSconstants.  Expect changes 
-     to examples 8,9, and 14 which instantiate non-existent SP3EphemerisStore 
-     member functions to quality-check the precise ephemeris data for data 
+     The examples directory has been modified to reflect obsoletion of
+     DayTime class and the consolidation of GNSSconstants.  Expect changes
+     to examples 8,9, and 14 which instantiate non-existent SP3EphemerisStore
+     member functions to quality-check the precise ephemeris data for data
      gaps and too wide intervals.
 
        example3.cpp
@@ -5861,7 +5906,7 @@ Version 1.7   Friday, 8 October, 2010
      branching took place under revision 2476 from dev/ to branches/RC1.7/
    - A number of modifications were made to Jamfiles and Makefiles, and some
      tweaks to code for clean compilation, for compatibility with the latest
-     Cygwin, Windows 7 VS, Solaris and Mac Snow Leopard (OSX 6.6).  Release 
+     Cygwin, Windows 7 VS, Solaris and Mac Snow Leopard (OSX 6.6).  Release
      during the week of 21 February 2011.
    - Major additions to dev/apps/bindings/octave for a SWIG-based interface to
      the MATLAB-like language Octave. SWIG-based Octave wrapper added for most
@@ -5869,21 +5914,21 @@ Version 1.7   Friday, 8 October, 2010
      functionality omitted in this summary.
    - Major addition of dev/lib/geodyn library. Additions listed below,
      modifications not involving new functionality omitted in this summary.
-   - Essential documentation and minimal examples were added for various 
+   - Essential documentation and minimal examples were added for various
      graphics formats in /ref/graphics/.
    - This release includes new/modified source code comments for improved
      readability.
    - Cleaned up and added comments to various examples to make them more
      useful.
    - The next planned release, GPSTk v2.0, will be a major upgrade and will
-     merge the RINEX 3 development branch back into the trunk; 
+     merge the RINEX 3 development branch back into the trunk;
      GPSTk v1.7 is expected to be the last 1.x release.
-  
+
 
    Library modifications
    ---------------------
    - Added to src
-       
+
        ConfDataWriter.[h|c]pp
           Added ConfDataWriter to work with ConfDataReader written years ago.
 
@@ -5913,7 +5958,7 @@ Version 1.7   Friday, 8 October, 2010
 
        MatrixBase.hpp
        VectorBase.hpp
-          Update to have the unary minus operator be a const function that 
+          Update to have the unary minus operator be a const function that
           returns a const value.(ref: Solter, Kleper,"Professional C++", p.439)
 
        ObsID.cpp
@@ -5933,7 +5978,7 @@ Version 1.7   Friday, 8 October, 2010
           Modified appearance of SF4, SF5 data. Also fixed navdmp so that date
           filtering works. Data are filtered based upon the transmission rather
           than the epoch date; related to SourceForge Bug #1196179. Also fixed
-          a small bug by adding an argument to the command line to specify 
+          a small bug by adding an argument to the command line to specify
      which block to convert in the RINEX file (if blank, default=9).
 
        Position.cpp
@@ -5957,9 +6002,9 @@ Version 1.7   Friday, 8 October, 2010
           Added extra qualification on member class and std space for 'pair'
           to fix compilation errors. Also added a new TypeID 'codeBias' used to
           estimate slant TEC and separate interfrequency bias. Also added new
-          "wide lane" TypeIDs for use in fast ambiguity resolution, as well as 
+          "wide lane" TypeIDs for use in fast ambiguity resolution, as well as
           'WL2' and related combinations. TypeIDs added to support 'spaceborne'
-          data processing. TypeIDs added for GPS precise code observation 
+          data processing. TypeIDs added for GPS precise code observation
           derivative.
 
        AntexReader.[h|c]pp
@@ -5970,7 +6015,7 @@ Version 1.7   Friday, 8 October, 2010
           interpolation. Also changed operator name 'and' to '&&'.
 
        TabularEphemerisStore.[h|c]pp
-          Added method to compute the acceleration of the indicated object in 
+          Added method to compute the acceleration of the indicated object in
           ECEF coordinates. Also private class members changed to protected to
           allow inheritance.
 
@@ -6011,7 +6056,7 @@ Version 1.7   Friday, 8 October, 2010
           Updated to support new data format which allows for greater precision
           in specifying station positions. New format described on GPSTk wiki
           at: http://gpstk.arlut.utexas.edu/bin/view/Documentation/
-          MonitorStationCoordinatesFileFormat. Change related to 1/7/09 e-mail 
+          MonitorStationCoordinatesFileFormat. Change related to 1/7/09 e-mail
           from B. Renfro to gpstk developers e-mail list re these classes. Also
           fixed to properly read records with fractional dates in the epoch
           time in the old MSC format.
@@ -6039,7 +6084,7 @@ Version 1.7   Friday, 8 October, 2010
           Changed to look in current directory for getopt.h (for MSVC 9.0).
 
        CommandOptionParser.cpp
-          Modified to allow clean compile with MSVC 2010 re std::min and 
+          Modified to allow clean compile with MSVC 2010 re std::min and
           std::max.
 
        TropModel.[h|c]pp
@@ -6083,7 +6128,7 @@ Version 1.7   Friday, 8 October, 2010
 
        SEMHeader.[h|c]pp
           Fixed SEMHeader::reallyGetRecord() in SEMHeader.cpp -- now properly
-          sets the header and headerRead members of the stream. Static data 
+          sets the header and headerRead members of the stream. Static data
           members added for more versatile handling of 10-bit GPS weeks found
           in files.
 
@@ -6117,7 +6162,7 @@ Version 1.7   Friday, 8 October, 2010
 
        /procframe/CorrectCodeBiases.[h|c]pp
           Added new class 'CorrectCodeBiases' to work with GDS and correct code
-          biases for P1 P2 P3 (PC), P4 (PI), P6 (MW), C1 and C1-based 
+          biases for P1 P2 P3 (PC), P4 (PI), P6 (MW), C1 and C1-based
           combinations.
 
        /procframe/DoubleOp.[h|c]pp
@@ -6172,9 +6217,9 @@ Version 1.7   Friday, 8 October, 2010
        /procframe/LinearCombinations.[h|c]pp
           Minor improvements in class 'LinearCombinations'. Also added objects
           to compute the GRAPHIC combinations. Also added 'p1Prefit' linear
-          combination, plus a remark about TGD. Corrected mixing 'c1Prefit' 
+          combination, plus a remark about TGD. Corrected mixing 'c1Prefit'
           with 'p1Prefit'. Comment added for 'instC1' component. Added
-          'l1Prefit' linear combination, and the multipath corresponding 
+          'l1Prefit' linear combination, and the multipath corresponding
           coefficient. Also fixed comment error and added combinations to aid
           fast ambiguity resolution. Added 'WL2' and related combinations.
           Reverted LC 'formal' wavelength to its proper value.
@@ -6190,8 +6235,8 @@ Version 1.7   Friday, 8 October, 2010
           operator 'and' to '&&'.
 
        /procframe/BasicModel.[h|c]pp
-          Now 'BasicModel' also inserts satellite velocity into GDS. In 
-          BasicModel.cpp, store receiver position and velocity in the 
+          Now 'BasicModel' also inserts satellite velocity into GDS. In
+          BasicModel.cpp, store receiver position and velocity in the
           gnssRinex object.
 
        /procframe/LICSDetector2.hpp
@@ -6217,7 +6262,7 @@ Version 1.7   Friday, 8 October, 2010
        /procframe/CorrectCodeBiases.[h|c]pp
        /procframe/DoubleOp.[h|c]pp
           Added end of lines to several files in order to suppress some
-          compilation warnings. Fixed wrong property value in 
+          compilation warnings. Fixed wrong property value in
           CorrectCodeBiases.
 
        /procframe/ComputeSatPCenter.cpp
@@ -6244,7 +6289,7 @@ Version 1.7   Friday, 8 October, 2010
 
        /rxio/FFIdentifier.cpp
        /rxio/EphReader.[h|c]pp
-          FFIdentifier now properly identifies SEM files. EphReader can now 
+          FFIdentifier now properly identifies SEM files. EphReader can now
           modify 10-bit weeks within SEM and Yuma almanac files.
 
        /rxio/MDPHeader.cpp
@@ -6252,8 +6297,8 @@ Version 1.7   Friday, 8 October, 2010
        /rxio/ObsUtils.cpp
        /rxio/miscenum.hpp
           Fixed some nav IDs. Also modified MDPHeader and MDPObsEpoch to remove
-          limits on how far into a file to read before giving up. Also 
-          MDPHeader now dumps the current message if there's a CRC error. Also 
+          limits on how far into a file to read before giving up. Also
+          MDPHeader now dumps the current message if there's a CRC error. Also
           fixed MDPHeader include for actual location of file.
 
        /rxio/ObsReader.[h|c]pp
@@ -6263,7 +6308,7 @@ Version 1.7   Friday, 8 October, 2010
           Cleaned up lli/ssi code.
 
        /rxio/NovatelData.[h|c]pp
-          Added malformed message and large NovatelData records handling to 
+          Added malformed message and large NovatelData records handling to
           novaRinex (associated changes).
 
        /geomatics/RobustStats.hpp
@@ -6271,7 +6316,7 @@ Version 1.7   Friday, 8 October, 2010
 
        /geomatics/PhaseWindup.[h|c]pp
           Mods/updates/bugfixes to PhaseWindup, plus minor mod to namespace.
-          Also modified to remove round()- not supported by all compilers, 
+          Also modified to remove round()- not supported by all compilers,
           notably Windows.
 
        /geomatics/DiscCorr.cpp
@@ -6318,7 +6363,7 @@ Version 1.7   Friday, 8 October, 2010
    Application modifications
    -------------------------
    - Added to apps
-   
+
        /bindings/octave/gpstk.i
        /bindings/octave/gpstk_ANSITime.i
        /bindings/octave/gpstk_AllanDeviation.i
@@ -6352,7 +6397,7 @@ Version 1.7   Friday, 8 October, 2010
        /bindings/octave/gpstk_orbitgroup.i
        /bindings/octave/gpstk_position.i
        /bindings/octave/build.bash (precursor to makefile)
-          Beginnings of a SWIG-based interface to 
+          Beginnings of a SWIG-based interface to
      (the MATLAB-like language) Octave.
 
        /bindings/octave/Makefile
@@ -6537,11 +6582,11 @@ Version 1.7   Friday, 8 October, 2010
 
        /bindings/swig/old
        /bindings/swig/old/Daytime.i (from /bindings:2072)
-       /bindings/swig/old/Exception.i 
+       /bindings/swig/old/Exception.i
      (from /bindings:2072)
-       /bindings/swig/old/FFTextStream.i 
+       /bindings/swig/old/FFTextStream.i
      (from /bindings:2072)
-       /bindings/swig/old/GPSZcount.i 
+       /bindings/swig/old/GPSZcount.i
      (from /bindings:2072)
        /bindings/swig/old/README (from /bindings:2072)
        /bindings/swig/old/RinexObsStream.i
@@ -6555,7 +6600,7 @@ Version 1.7   Friday, 8 October, 2010
        /bindings/swig/old/tcl (from /bindings/tcl:2072)
           Partial move of old SWIG code and final reorg of old SWIG
      interfaces.
-   
+
        /bindings/octave/gpstk_OctaveUtils.i
        /bindings/octave/gpstk_OctaveUtilsFile.i
           Additions for new FFData.i
@@ -6584,7 +6629,7 @@ Version 1.7   Friday, 8 October, 2010
        /geomatics/JPLeph/testSSEph.cpp
           Added conversion and test programs for JPL ephemeris (class
           SolarSystem in lib/geomatics)
-   
+
    - Modified in apps
 
        /MDPTools/NavProc.[h|c]pp
@@ -6603,7 +6648,7 @@ Version 1.7   Friday, 8 October, 2010
 
        /positioning/PRSolve.cpp
           Fixed flag-setting to reject bad SP3 data; improved Householder
-          algorithm. Fixed missing bracket and cleaned up per GPSTk coding 
+          algorithm. Fixed missing bracket and cleaned up per GPSTk coding
           standards.
 
        /positioning/rinexpvt.[h|c]pp
@@ -6641,14 +6686,14 @@ Version 1.7   Friday, 8 October, 2010
           option (-f).
 
        /filetools/navdmp.cpp
-          Fixed navdmp so that datefiltering works now. The data are filtered 
-          based upon the transmission rather than the epoch date. Related to 
+          Fixed navdmp so that datefiltering works now. The data are filtered
+          based upon the transmission rather than the epoch date. Related to
           SourceForge bug #1196179.
 
        /filetools/fic2rin.cpp
           Added an argument to fic2rin. Extra argument is --9 | --109 | --all
           which will either convert block 9, block 109, or block 9 and 109 data
-          to the RINEX file. Formerly converting block 9 was the default, and 
+          to the RINEX file. Formerly converting block 9 was the default, and
           still is. Argument must be specified at end of parameter list. If
           left blank, defaults to block 9 only.
 
@@ -6662,7 +6707,7 @@ Version 1.7   Friday, 8 October, 2010
           Improved initialization.
 
        /visibility/svvis.cpp
-          Added an option to svvis to display its data by PRN instead of by 
+          Added an option to svvis to display its data by PRN instead of by
           epoch. Later added options to add a tabular display and specify that
           10-bit weeks in ephemeris sources are "recent".
 
@@ -6748,7 +6793,7 @@ Version 1.7   Friday, 8 October, 2010
 
        /converters/novaRinex.cpp
           Open temporary file on Windows in env(TEMP) directory; necessary for
-          Vista. Later added fix to address breakage related to changes in 
+          Vista. Later added fix to address breakage related to changes in
           /dev/src/RinexSatID (rev2319). However, fix only allows GPS system
           type. Later fix added malformed message and large NovatelData records
           handling.
@@ -6776,7 +6821,7 @@ Version 1.7   Friday, 8 October, 2010
           user can edit out days when processing large directories of data.
           Also added zero mean assumption to add final de-bias/constraint on
           DFM processing. Disabled position solution consistency check. Also in
-          mpsolve fixed two bugs: one for the DFM method when no intersections 
+          mpsolve fixed two bugs: one for the DFM method when no intersections
           were found, one for the DFM method when a pass exists that is less
           than two points.
 
@@ -6786,7 +6831,7 @@ Version 1.7   Friday, 8 October, 2010
 
        /multipath/ObsArray.[h|c]pp
           Major bug fix.
-         
+
 
    Example modifications
    -------------------------
@@ -6807,11 +6852,11 @@ Version 1.7   Friday, 8 October, 2010
           Positioning' (POP) processing strategy.
 
        example15.cpp
-          Added example for RobustStats and Random Number generation in 
+          Added example for RobustStats and Random Number generation in
           geomatics library.       
 
    - Modified in examples
-         
+
        pppconf.txt
           Minor change in configuration file.
 
@@ -6822,10 +6867,10 @@ Version 1.7   Friday, 8 October, 2010
 
        Jamfile
        Makefile.am
-          Changed for addition of 'example14.cpp': an implementation of 
-          the 'Precise Orbits Positioning' (POP) processing strategy. Also 
+          Changed for addition of 'example14.cpp': an implementation of
+          the 'Precise Orbits Positioning' (POP) processing strategy. Also
           changed for addition of example15.
-   
+
 
    Test Modifications
    -------------------------
@@ -6833,7 +6878,7 @@ Version 1.7   Friday, 8 October, 2010
 
        /Stats/xStats.cpp
           Updated/improved testing in Stats test class.
-   
+
        /Vector directory
        /Vector/Jamfile
        /Vector/makefile
@@ -6864,7 +6909,7 @@ Version 1.7   Friday, 8 October, 2010
 
    #################################################
 
-   
+
 Version 1.6   Tuesday, June 19, 2009
 
    General modifications
@@ -6877,7 +6922,7 @@ Version 1.6   Tuesday, June 19, 2009
    - Major improvements in readability of code by adding new comments and
      rearraging a lot of code
    - Added the LGPL to serveral files from which it was missing.
-   
+
 
    Library modifications
    ---------------------
@@ -7150,11 +7195,11 @@ Version 1.5   Tuesday, March 11, 2008
    General modifications
    ---------------------
 
-   - Majority of version 1.5 comprised of revision number 1115, 
+   - Majority of version 1.5 comprised of revision number 1115,
      branching took place under revision 1115 from dev/ to RC1.5/
 
    - A large amount of work went into ensuring that the GPSTk built
-     on all supported platforms using both jam and make. A place has 
+     on all supported platforms using both jam and make. A place has
      been set aside on the TWiki to inform developers on which platforms
      the Tk has been built successfully.
      http://www.gpstk.org/bin/view/Development/SourceStatus
@@ -7162,7 +7207,7 @@ Version 1.5   Tuesday, March 11, 2008
    - The Tk now builds successfully on Mac OSX using jam and make
 
    - Added a library /dev/lib/procframe/ (from Processing Framework)
-     under which all pre-existing classes related to GNSS Data 
+     under which all pre-existing classes related to GNSS Data
      Structures (GDS) have been moved out of /src/.
 
          + lib/procframe/CodeSmoother.[h|c]pp
@@ -7200,9 +7245,9 @@ Version 1.5   Tuesday, March 11, 2008
    - GCC 3.3.5 chokes on the use of __attribute__ - avoid using it
      unless we're compiling under GCC 4.x
 
-   - Updates to the INSTALL and README including additional website 
+   - Updates to the INSTALL and README including additional website
      information, information about new lib directory, an update of
-     the build instructions, and an additional plug for help and 
+     the build instructions, and an additional plug for help and
      instruction available on the website
 
    - Added a script to parse apps for user manual
@@ -7213,14 +7258,14 @@ Version 1.5   Tuesday, March 11, 2008
 
    - Added src/BLQDataReader.[h|c]pp
            Reads and parses ocean tides harmonics data in BLQ file format.
-      Ocean loading displacement models usually use the ocean tide 
+      Ocean loading displacement models usually use the ocean tide
       harmonics to compute station biases due to this effect.
-      You may find this data in 
+      You may find this data in
       http://www.oso.chalmers.se/~loading/
-   
+
    - Added src/ComputeWindUp.[h|c]pp
            Computes the wind-up effect on the phase observables in radians.
-   
+
    - Added src/MoonPosition.[h|c]pp
            Computes the approximate position of the Moon in ECEF.
 
@@ -7232,11 +7277,11 @@ Version 1.5   Tuesday, March 11, 2008
 
    - Added src/SatDataReader.[h|c]pp
            Reads and parses satellite data from PRN_GPS-like files. JPL
-      provides files called PRN_GPS with important satellite 
+      provides files called PRN_GPS with important satellite
       information for some precise GPS data processing algorithms.
-      You may find this file in 
+      You may find this file in
       ftp://sideshow.jpl.nasa.gov:/pub/gipsy_products/gipsy_params
-   
+
    - Added src/SolidTides.[h|c]pp
            Computes the solid tide effect at a given position and epoch
       based on the Williams model (1970).
@@ -7244,42 +7289,42 @@ Version 1.5   Tuesday, March 11, 2008
    - Added lib/rxio/NovatelData.[h|c]pp
            lib/rxio/NovatelDtream.hpp
       Moved Novatel data parsing into the rxio library
-   
+
    - Added lib/procframe/BasicModel.[h|c]pp
-           Computes the basic parts of a GNSS model. It is a more modular 
+           Computes the basic parts of a GNSS model. It is a more modular
       alternative to classes such as ModelObs.
 
    - Added lib/procframe/ComputeLinear.[h|c]pp
            ComputeLinear is a GDS-enabled class that allows you to
       compute several previously defined linear combinations in
       one pass and in a flexible way.
-   
+
    - Added lib/procframe/ComputeTropModel.[h|c]pp
            ComputeTropModel is a GDS-enabled class that computes and
-      inserts the main values related to a given GNSS 
-      tropospheric model. 
-   
+      inserts the main values related to a given GNSS
+      tropospheric model.
+
    - Added lib/procframe/CorrectObservables.[h|c]pp
-           Corrects observables from effects such as antenna 
+           Corrects observables from effects such as antenna
       eccentricity, differences in phase centers, offsets due
       to tide effects, etc.
 
    - Added lib/procframe/Equation.[h|c]pp
            Used to define and handle an equation when dealing with GDS.
-   
+
    - Added lib/procframe/LinearCombinations.[h|c]pp
            Defines handy linear conmbinations of GDS data.
 
    - Added lib/procframe/StochasticModel.[h|c]pp
            Simple implementations of common stochastic models
       used in Kalman filters.
-   
+
    - Added lib/procframe/Variable.[h|c]pp
            Used to define and handle a variable when dealing with GDS
 
    - Improved lib/procframe/ComputeMOPSWeights.[h|c]pp
       More robust when ionospheric information is missing for GDS.
-   
+
    - Improved lib/rxio/MDPNavSubframe.cpp
               lib/rxio/RinexConverters.cpp
       The above classes now have better LLI computation.
@@ -7287,10 +7332,10 @@ Version 1.5   Tuesday, March 11, 2008
    - Improved src/AlmOrbit.cpp
               src/SEMAlmanacStore.[h|c]pp
            Added GPS epoch handling option.
-   
+
    - Improved src/AstronomicalFunctions.[h|c]pp
               src/SunPosition.[h|c]pp
-           Improvements: Use of static members, definition of 
+           Improvements: Use of static members, definition of
       constants, etc.
 
    - Improved src/EngEphemeris.[h|c]pp
@@ -7298,25 +7343,25 @@ Version 1.5   Tuesday, March 11, 2008
          src/GPSEphemerisStore.[h|c]pp
            Added AODO to FIC bit cracking. Added means to access stored
       eph moaps by SV.
-   
+
    - Improved src/MSCData.[h|c]pp
               src/MSCStore.[h|c]pp
-           Promoted getXvt from MSCStore to MSCData. 
-      Old MSCStore::getXvt(string, DayTime) still there. Now 
+           Promoted getXvt from MSCStore to MSCData.
+      Old MSCStore::getXvt(string, DayTime) still there. Now
       overloaded with MSCStore::getXvt(unsigned long, DayTime)
 
    - Improved src/SP3Data.[h|c]pp
            Added a version guessing test to support SP3 better.
-   
+
    - Improved src/TropModel.[h|c]pp
            Added NeillTropModel, a useful model implementing Neill
-      mapping functions and used in deodetic software such as 
+      mapping functions and used in deodetic software such as
       JPLs Gipsy/OASIS.
-   
+
    - Improved src/YumaAlmanacStore.[h|c]pp
            Added time_of_interest option to aid with 10-bit week problem.
 
-   
+
    Application modifications
    -------------------------
 
@@ -7324,15 +7369,15 @@ Version 1.5   Tuesday, March 11, 2008
            ash2mdp moved from apps/receiver/ to /apps/converters/
 
    - Added apps/converters/ash2xyz.cpp
-           Takes a stream of Ashtech observation and ephemeris data 
+           Takes a stream of Ashtech observation and ephemeris data
       and outputs SV positions and ionospheric corrections. Added
       an exponential filter to iono error and rate calculation.
-   
+
    - Added apps/DataAvailability/DataAvailabilityAnalyzer.[h|c]pp
            Includes the per-obs changes in the raw statistics.
-   
+
    - Added apps/MDPtools/mdpscreen.cpp
-           mdpscreen moved back into MDPtools, but only being built 
+           mdpscreen moved back into MDPtools, but only being built
       conditionally.
 
    - Added apps/MDPtools/mdpEdit.cpp
@@ -7353,9 +7398,9 @@ Version 1.5   Tuesday, March 11, 2008
 
    - Improved apps/reszilla/OrdPlot.cpp
            Added a % data autoranger and smoothing on the ords.
-   
+
    - Improved apps/rfw/rfw.cpp
-           Added command line option that sends strings to the 
+           Added command line option that sends strings to the
       source periodically.
 
    - Improved apps/swrx/PCodeGenerator.hpp
@@ -7372,7 +7417,7 @@ Version 1.5   Tuesday, March 11, 2008
       + Added time format option.
       + Output clock correction in ms, not seconds.
       + Better exception handling.
-   
+
    - Improved apps/MDPtools/
            To allow the Tk to build under all platforms MDPTool was
       removed from all non UNIX based system builds, namely Windows.
@@ -7381,7 +7426,7 @@ Version 1.5   Tuesday, March 11, 2008
            Compilation disabled becasue of severe linking problems.
 
    - Improved apps/reszilla/
-           Changed Install process to allow python scripts to be 
+           Changed Install process to allow python scripts to be
       installed without a hickup under Windows.
 
 
@@ -7392,12 +7437,12 @@ Version 1.4   Tuesday, December 18, 2007
    General modifications
    ---------------------
 
-   - Majority of version 1.4 comprised of revision number 863 
+   - Majority of version 1.4 comprised of revision number 863
      branching took place under revision 864 from dev/ to RC1.4/
-   
-   - Major refactoring of the Ephemeris/Almanac classes. This change may 
+
+   - Major refactoring of the Ephemeris/Almanac classes. This change may
      break some apps. To fix them the following translations are useful:
-   
+
               Old                           |        New
     -------------------------------------------------------------------------------
     gpstk::EphemerisStore         | gpstk::XvtStore<gpstk::SatID>
@@ -7409,25 +7454,25 @@ Version 1.4   Tuesday, December 18, 2007
     eph.dump(0, cout)             | eph.dump(cout, 0)
 
 
-        - Added an updated LaTeX source for table describing apps of v1.3, 
-           as well as a list of classes in the gpstk libraries 
+        - Added an updated LaTeX source for table describing apps of v1.3,
+           as well as a list of classes in the gpstk libraries
            (sorted & categorized) found in ref/glance/
 
    - Added LeTex source for the GPSTk paper at the ION-GNSS-2006
 
-   - Added a library /dev/lib/vplot/ to create drawing primitives in SVG 
-           and postscript formats. Intended to support complex, fully 
-           customizable visualizations on GNSS analyses. Supported only 
+   - Added a library /dev/lib/vplot/ to create drawing primitives in SVG
+           and postscript formats. Intended to support complex, fully
+           customizable visualizations on GNSS analyses. Supported only
            in jam for now, but with the hope of support in make.
 
-   - Improved version control 
+   - Improved version control
      * set gpstk package version to 1.3 in the autoconf build world
      * set the current shared library major version to 13, so gpstk 1.3
        delivers lib{gpstk,rxio,mdplib,...}.so.13.0
-     * now allows jam and make to build shared libraries with the 
+     * now allows jam and make to build shared libraries with the
        appropriate versions
-     * causes jam to install headers to $PREFIX/include/gpstk to prevent 
-       header namespace collision. This behaviour is consistent with the 
+     * causes jam to install headers to $PREFIX/include/gpstk to prevent
+       header namespace collision. This behaviour is consistent with the
        "make" build.
 
    - Moved apps/geomatics/lib library to dev/lib/geomatics
@@ -7436,37 +7481,37 @@ Version 1.4   Tuesday, December 18, 2007
    ---------------------
 
    - Added src/InOutFramework.hpp
-           New framework that is useful for a program that processes one 
-      input and produces one output. 
-   
+           New framework that is useful for a program that processes one
+      input and produces one output.
+
    - Added src/ModelObs.[h|c]pp
            ModelObs class is a GDS-optimized version ModeledPR
-   
+
    - Added src/GPSAlmanacStore.[h|c]pp
            Part of the refactoring of the Ephemeris/Almanac classes
-      A migration path has been provided for BCEPhemerisStore, 
+      A migration path has been provided for BCEPhemerisStore,
       EphemerisStore, and AlmanacStore
-   
+
    - Added src/GPSEphemerisStore.[h|c]pp
            Part of the refactoring of the Ephemeris/Almanac classes
-      A migration path has been provided for BCEPhemerisStore, 
+      A migration path has been provided for BCEPhemerisStore,
       EphemerisStore, and AlmanacStore
 
    - Added src/XvtStore.hpp
            Part of the refactoring of the Ephemeris/Almanac classes
-      A migration path has been provided for BCEPhemerisStore, 
+      A migration path has been provided for BCEPhemerisStore,
       EphemerisStore, and AlmanacStore
-   
+
    - Added src/ProcessingClass.hpp
-           ProcessingClass is an abstract base class for all objects 
-      processing GNSS Data Structures. This step furthers the GNSS 
-      Data Structures (GDS) processing paradigm clearly separating 
+           ProcessingClass is an abstract base class for all objects
+      processing GNSS Data Structures. This step furthers the GNSS
+      Data Structures (GDS) processing paradigm clearly separating
       the GDS and the objects that process them.
 
    - Added src/ProcessingList.[h|c]pp
-           ProcessingList allows to create run-time defined and modified 
-      lists of processing objects to be applied on GNSS data 
-      structures. This class furthers the paradigm of GNSS data 
+           ProcessingList allows to create run-time defined and modified
+      lists of processing objects to be applied on GNSS data
+      structures. This class furthers the paradigm of GNSS data
       processing as an assembly line.
 
    - Added src/ProcessingVector.[h|c]pp
@@ -7476,11 +7521,11 @@ Version 1.4   Tuesday, December 18, 2007
       processing as an assembly line.
 
    - Added src/SimpleFilter.cpp
-           SimpleFilter class was modified in order to inherit from 
+           SimpleFilter class was modified in order to inherit from
            ProcessingClass.
-   
+
    - Added lib/vplot/Helper.hpp
-           A helper class for creating VGImage pointer for a file name 
+           A helper class for creating VGImage pointer for a file name
       using the extension.
 
    - Added src/ComputeLC.cpp
@@ -7513,16 +7558,16 @@ Version 1.4   Tuesday, December 18, 2007
          lib/rxio/ash2mdp.cpp
            Added checksum checking to ashtech data, and made the parsing
       a bit more robust
-   
+
    - Improved lib/rxio/FFIdentifier.[h|c]pp
            FFIdentifier no londer uses iostream exceptions to determine
       file type
 
-   - Improved lib/rxio/EphReader.[h|c]pp 
+   - Improved lib/rxio/EphReader.[h|c]pp
            Added support for YUMA and SEM streams
 
    - Improved src/SatID.hpp
-           Added systemUderDefined to SatId and corresponding change 
+           Added systemUderDefined to SatId and corresponding change
            in example7.cpp
 
 
@@ -7530,22 +7575,22 @@ Version 1.4   Tuesday, December 18, 2007
    -------------------------
 
    - Added apps/visibility/svvis.cpp
-           Computes when satellites are visible at a given point 
+           Computes when satellites are visible at a given point
       on the earth
 
    - Improved apps/DataAvailability/DataAvailabilityAnalyzer.[h|c]pp
            Added a position option
-   
+
    - Improved apps/receiver/rfw.cpp
            Added new input option??????
-   
+
    - Improved apps/visibility/findMoreThan12.cpp
            Added SV azmith to output
 
    - Improved apps/time/calgps.cpp
            Added ability to draw a calender
 
-   
+
 
 Version 1.3   Monday, July 16, 2007
 
@@ -7556,21 +7601,21 @@ Version 1.3   Monday, July 16, 2007
 
    - gpstk1.3/apps/time/calgps.cpp was pulled from revision nember 707
 
-   - The current msi for the windows package may not update the 
+   - The current msi for the windows package may not update the
            previous version installations
-   
+
    - Added examples/example7.cpp & associated RINEX data files
            This program shows 10 different ways to process GPS data using
-      "GNSS data structures". The "GNSS Data Structures" paradigm can 
-           process GPS code-based data based on Vectors, Matrices 
+      "GNSS data structures". The "GNSS Data Structures" paradigm can
+           process GPS code-based data based on Vectors, Matrices
       and other objects.
-   
+
    - Added examples/example6.cpp
            Shows a rather minimalist way to process GPS data using GNSS Data
       Structures
 
    - Improved src/icd_200_constants.hpp
-           Fixed RSVCLK value 
+           Fixed RSVCLK value
 
    - GPSTk is now able to build under the MS Visual Studio 2005 (Express
            Edition)
@@ -7591,7 +7636,7 @@ Version 1.3   Monday, July 16, 2007
 
    - Added src/TypeID.[h|c]pp
            Index able to represent any type of observation, correction,
-      model parameter or other data value of interest 
+      model parameter or other data value of interest
 
    - Added src/DataHeaders.[h|c]pp
            Adds several headers to be used with the GNSS data structures
@@ -7626,7 +7671,7 @@ Version 1.3   Monday, July 16, 2007
            Eases computing the PI combination for GNSS data structures
 
    - Added src/ComputeMelbourneWubbena.hpp
-           Eases computing the ComputeMelbourneWubbena combination for 
+           Eases computing the ComputeMelbourneWubbena combination for
       GNSS data structures
 
    - Added src/ComputeIURAWeights.hpp
@@ -7638,7 +7683,7 @@ Version 1.3   Monday, July 16, 2007
       (RTCA/DO-229C), for GNSS data structures
 
    - Added src/SimpleFilter.hpp
-           Filters satellites with observables grossly out of bounds, 
+           Filters satellites with observables grossly out of bounds,
       intended for GNSS data structures
 
    - Added src/OneFreqCSDetector.hpp
@@ -7651,7 +7696,7 @@ Version 1.3   Monday, July 16, 2007
            Detects cycle slips using the Melbourne-Wubbena combination
 
    - Added src/CodeSmoother.hpp
-           Smoothes a given code observable using the corresponding phase 
+           Smoothes a given code observable using the corresponding phase
       observable
 
    - Added src/PCsmoother.hpp
@@ -7695,11 +7740,11 @@ Version 1.3   Monday, July 16, 2007
            Modified the reader to be tolerant of short PG lines
 
    - Improved src/RinexUtilitties.[h|c]pp
-           Added a sort routine 
+           Added a sort routine
 
    - Improved src/EngAlmanac.[h|c]pp
            Routing added that performs a simple sanity check on the almanac
-   
+
    Application modifications
    -------------------------
 
@@ -7717,32 +7762,32 @@ Version 1.3   Monday, July 16, 2007
       apps/positioning/PRSolve.cpp
 
 Version 1.2   Monday, November 6, 2006
-   
+
    General modifications
    ---------------------
-   
-   - Moved from Perforce to a Subversion repository located at 
+
+   - Moved from Perforce to a Subversion repository located at
       https://svn.sourceforge.net/svnroot/gpstk
-   
+
    - GPSTk library testing is now being implemented in dev/tests
       These unit tests for the library currently cover over
-      40% of the code with an average of 95% coverage for 
+      40% of the code with an average of 95% coverage for
       tested classes.  Tests use CppUnit and Perl scripts.
       See test documentation for more information.
-   
+
    - Added examples/example5.cpp
       An example that shows how to use some very useful high level
       GPSTk classes for positioning
-         
+
    - Added Python support to the GPSTk
-   
+
    - Added capability for FileHunter to work under Window and Cygwin
-   
+
    Library modifications
    ---------------------
-   
+
    - Added RINEX version 2.11 support for GPS Navigation files
-   
+
    - Added the following prototype time classes:
       src/CommonTime.[h|c]pp
       src/YDSTime.[h|c]pp
@@ -7753,122 +7798,122 @@ Version 1.2   Monday, November 6, 2006
       src/JulianDate.[h|c]pp
       src/MJD.[h|c]pp
       src/UnixTime.[h|c]pp
-      
+
    - Added src/TimeConstants.hpp
       Time constants
-   
+
    - Added src/TimeConverters.[c|h]pp
       Time converstion routines
-   
-   - Added src/Bancroft.[h|c]pp 
+
+   - Added src/Bancroft.[h|c]pp
       Class gets an initial guess of GPS receiver's position
-      
+
    - Added src/SVExclusionList.[h|c]pp
-   
+
    - Added and implemented src/SatID.hpp
       Class which encapsulates Satellite Identification information
-   
+
    - Added src/ModeledPR.[h|c]pp
       Encapsulates computation of modeled pseudoranges of a mobile
       receiver
-      
+
    - Added src/SimpleIURAWeight.[h|c]pp
       Assigns weights to satellites based on their URA Index
-    
+
    - Added src/ModeledPseudorangeBase.hpp
       An abstract base class for modeled pseudoranges
-   
+
    - Added src/WeightBase.hpp
       An abstract base class for algorithms assigning weights to satellites
-         
+
    - Improved src/Matrix.hpp and src/Vector.hpp
       Added unary minus operator, CholeskyCrout class and inverseChol method
-   
+
    - Improved src/Vector.hpp
       Added add() method
-      
-   - Improved src/Stats.hpp 
+
+   - Improved src/Stats.hpp
       Better handling of weighted input
-      
+
    - Improved src/Tropmodel.[h|c]pp
       Added GCAT tropospheric model
       Added MOPSTropModel
-      
-   - Improved src/Position.[h|c]pp 
+
+   - Improved src/Position.[h|c]pp
       Added methods elevationGeodetic() and azimuthGeodetic()
-   
+
    - Improved src/TabularEphemerisStore.[h|c]pp
       Added method hasTGD()
-      
+
    - Improved src/BCEphemerisStore.[h|c]pp
       Added method getTGD() to return the Total Group Delay of the SV
-   
+
    - Improved src/EphemerisRange.[h|c]pp
       Added methods elevationGeodeitc() and azimuthGeodetic().
       Changed RelativityCorrection() to improved speed and precision
-   
+
    - Added src/BinexData.[c|h]pp BinexFilterOperators.hpp BinexStream.hpp
       Added BINEX code
-   
+
    Application modifications
    -------------------------
-   
+
    - Added apps/positioning/poscvt
       A position converter modeled after timecvt
-      
+
    - Added apps/geomatics/relposition/DDBase
       A network positioning application that uses double
       differenced carrier phases
-   
+
    - Added apps/geomatics/kalman
       Tools for Kalman filtering
-      
+
    - Added apps/geomatics/robust
       Tool for robust statistics
-   
+
    - Added apps/geomatics/????
       Added geodetic reference frames
-      
+
    - Complete rewrite and move of apps/cycleslips/DiscFix
      Located now in apps/geomatics/cycleslips/DiscFix
       DiscFix is now much more object-oriented, faster, more robust
       and more accurate.  Significant changes have been made to the
       algorithm.
-   
+
    - Added apps/visibility/wheresat
       A tool for calculating SV position, azimuth and
       elevation from a navigation file
-   
+
    - Added apps/converters/novaRinex
       A NovAtel binary to Rinex converter
-   
+
    - Improved apps/filetools/navdmp
       Added -r (RINEX) input capability
-   
+
    - Added apps/qa/Expression
       A fully functional expression interpreter
-   
+
    - Added apps/qa/obsrip
       A utility which transforms RINEX files into linear combos, ect.
-   
+
    - Added functionality to apps/multipath/ObsArray
       Can track observations by PRN and by epoch.  Also can insert
       GPS constants into Expressions.
-      
+
    - Added apps/positioning/posInterp
       This application interpolates positions in a RINEX file, increasing
       the data rate by an integer factor.  An example that uses both
       posInterp and PRSolve is included.
-   
+
    - Added apps/visibility/findMoreThan12
       A new tools which given an ephemeris source, finds times when there are
       more than 12 SVs simultaneously above a specified elevation angle.
-   
+
    - Improved apps/positioning/rinexpvt
       Added optional log file to output
       Added option to set observation rate to other than 30s
-      
-   
+
+
 Version 1.1   Friday, January 7, 2005
 
    General modifications
@@ -7887,7 +7932,7 @@ Version 1.1   Friday, January 7, 2005
      These examples are described in the website.
 
    - Major revamp of the website.
-   
+
    Library modifications
    ---------------------
 
@@ -7895,31 +7940,31 @@ Version 1.1   Friday, January 7, 2005
      processes that use the shared library. Now the 20 megabytes
      are not allocated until the P code generator is initialized
      by the user.
-   
+
    - Bug fix: FileSpec::extractDayTime() now initializes
      DayTimes generated from file name to have zero hours,
      zero minutes, zero seconds, etc.
-   
+
    - Bug fix: DayTime::setGPS now more robust when accepting
      a year number as a hint to disambiguate which full GPS
      week to use.
-   
+
    - Added more DayTime tests.
-   
+
    - Bug fix: DayTime user-defined tolerance for comparisons now is
      working.
 
    - Bug fix: DayTime::setGPS(short week, long zcount, short year)
      now works across a year rollover.
-   
+
    - Renamed WxObsData::find(...) to getWxObservation(...) to remove
      any confusion that might develop over having the same method
      name as the STL.
-   
-   - Bug fix: satellite combinations in RAIM sometimes incorrect when 
+
+   - Bug fix: satellite combinations in RAIM sometimes incorrect when
      a user-marked satellite was present.
 
-   - Some Vector routines were throwing Exception instead of 
+   - Some Vector routines were throwing Exception instead of
      VectorException.
 
    - Added Vector-Matrix concatentation operators.
@@ -7927,30 +7972,30 @@ Version 1.1   Friday, January 7, 2005
    - Added a sub-Vector constructor.
 
    - Modification to Householder decomposition routine.
-   
+
    - Various fixes to MatrixOperators.
 
    - Updates to FIC routines.
 
-   - Implemented azimuth and elevation functions in Position, making 
+   - Implemented azimuth and elevation functions in Position, making
      use of the functions inherited from Triple. Modified EphemerisRange
-     to use Position, as well as TropModel and ResCor; this eliminated 
-     a bug in the azimuth() in EphemerisRange and means that now there 
-     is only one implementation of az and el. Added a test of the new 
+     to use Position, as well as TropModel and ResCor; this eliminated
+     a bug in the azimuth() in EphemerisRange and means that now there
+     is only one implementation of az and el. Added a test of the new
      routines in positiontest. Also added a Position constructor from Xvt.
 
-   - Bugs in DayTime::setToString() - %f was missing (!) and %S 
-     was acting as %f should; date was trashed when time was set, 
+   - Bugs in DayTime::setToString() - %f was missing (!) and %S
+     was acting as %f should; date was trashed when time was set,
      and vice versa, and year input was not properly handled.
 
    - Implemented ionospheric model types other than linear.
 
    - Cleaned up weather data handling (e.g., error checks).
 
-   
+
    Application modifications
    -------------------------
-   
+
    apps/difftools
 
    - Unified code using a common class.
@@ -7963,15 +8008,15 @@ Version 1.1   Friday, January 7, 2005
    - New utility called rinexthin for subsampling RINEX observation
      files.
 
-   
+
    apps/binding
-   
+
    - This  new project provides GPSTk bindings in other languages
      has been added. This capability is in an alpha state.
      Currently there are a limited set of bindings for
      Tcl/Tk, Python and Octave.
 
-   
+
    apps/RinexEditor
 
    -  Bug fix: 'delete all' command was being deleted prematurely.
@@ -7989,14 +8034,3 @@ Version 1.1   Friday, January 7, 2005
    apps/ionosphere
 
    - Various improvements.
-
-
-
-
-
-
-
-
-
-
-   
