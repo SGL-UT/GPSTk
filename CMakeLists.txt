@@ -64,10 +64,11 @@ endif()
 
 # GPSTk header file install target (whether it is version dependent changes based on user flag)
 if( VERSIONED_HEADER_INSTALL )
-    set( GPSTK_INCLUDE_TGT_DIR "${CMAKE_INSTALL_INCLUDEDIR}/gpstk_${GPSTK_VERSION_MAJOR}_${GPSTK_VERSION_MINOR}" )
-    message( WARNING "Setting GPSTK_INCLUDE_TGT_DIR = ${GPSTK_INCLUDE_TGT_DIR}" )
+    set( GPSTK_INCLUDE_TGT_DIR "gpstk_${GPSTK_VERSION_MAJOR}_${GPSTK_VERSION_MINOR}" )
+    set( CMAKE_INSTALL_INCLUDEDIR "${CMAKE_INSTALL_INCLUDEDIR}/${GPSTK_INCLUDE_TGT_DIR}" )
+    message( WARNING "Setting GPSTK_INCLUDE_TGT_DIR = ${CMAKE_INSTALL_INCLUDEDIR}" )
 else()
-    set( GPSTK_INCLUDE_TGT_DIR "${CMAKE_INSTALL_INCLUDEDIR}/gpstk" )
+    set( CMAKE_INSTALL_INCLUDEDIR "${CMAKE_INSTALL_INCLUDEDIR}/gpstk" )
 endif()
 
 
@@ -156,14 +157,10 @@ endif()
 add_library( gpstk ${STADYN} ${GPSTK_SRC_FILES} ${GPSTK_INC_FILES} )
 
 # GPSTk library install target
-install( TARGETS gpstk
-         DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-         EXPORT "${EXPORT_TARGETS_FILENAME}" )
+install( TARGETS gpstk DESTINATION "${CMAKE_INSTALL_LIBDIR}" EXPORT "${EXPORT_TARGETS_FILENAME}" )
 
 # GPSTk header file install target (whether it is version dependent changes based on user flag)
-install( TARGETS gpstk LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}" INCLUDES DESTINATION ${GPSTK_INCLUDE_TGT_DIR} )
-install( FILES ${GPSTK_INC_FILES} DESTINATION ${GPSTK_INCLUDE_TGT_DIR} )
-
+install( FILES ${GPSTK_INC_FILES} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} )
 
 
 #============================================================
@@ -172,11 +169,6 @@ install( FILES ${GPSTK_INC_FILES} DESTINATION ${GPSTK_INCLUDE_TGT_DIR} )
 
 # GPSTk doesn't yet follow semantic versioning. Binary compatibility is only within a specific MAJOR.MINOR version, so
 #   SOVERSION has both MAJOR and MINOR for now.
-target_include_directories(gpstk PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/gpstk_${GPSTK_VERSION_MAJOR}_${GPSTK_VERSION_MINOR}>
-        $<INSTALL_INTERFACE:include/gpstk_${GPSTK_VERSION_MAJOR}_${GPSTK_VERSION_MINOR}>
-        )
-
 set_target_properties(gpstk PROPERTIES VERSION "${GPSTK_VERSION_MAJOR}.${GPSTK_VERSION_MINOR}.${GPSTK_VERSION_PATCH}"
                                        SOVERSION "${GPSTK_VERSION_MAJOR}.${GPSTK_VERSION_MINOR}")
 
@@ -235,7 +227,4 @@ install( FILES
     DESTINATION 
     ${INSTALL_CONFIG_DIR} )
 
-install(TARGETS gpstk
-        EXPORT ${EXPORT_TARGETS_FILENAME}
-        DESTINATION ${INSTALL_CONFIG_DIR}
-        INCLUDES DESTINATION ${GPSTK_INCLUDE_TGT_DIR})
+install( EXPORT ${EXPORT_TARGETS_FILENAME} DESTINATION ${INSTALL_CONFIG_DIR} )
