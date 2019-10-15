@@ -36,6 +36,7 @@ option( USE_RPATH "HELP: USE_RPATH: SWITCH, Default= ON, Set RPATH in libraries 
 option( PIP_WHEEL_SWITCH "HELP: PIP_WHEEL_SWITCH: SWITCH, Default= OFF, Build a PIP installable wheel." OFF )
 option( BUILD_FOR_PACKAGE_SWITCH "HELP: BUILD_FOR_PACKAGE_SWITCH: SWITCH, Default= OFF, Modify python install paths assuming creation of deb/rpm." OFF )
 option( PYTHON_USER_INSTALL "HELP: PYTHON_USER_INSTALL: SWITCH, Default= OFF, Install python in user mode." OFF )
+option( VERSIONED_HEADER_INSTALL "HELP: VERSIONED_HEADER_INSTALL: SWITCH, Default= OFF, Install header files into maj/min versioned directory." OFF )
 
 if( PYTHON_USER_INSTALL AND !BUILD_PYTHON )
     message( WARNING "Combination of PYTHON_USER_INSTALL=ON and BUILD_PYTHON=OFF is not allowed. " )
@@ -60,6 +61,16 @@ if( BUILD_PYTHON AND !BUILD_EXT )
     message( WARNING "Setting BUILD_EXT = TRUE" )
     set( BUILD_EXT TRUE )
 endif()
+
+# GPSTk header file install target (whether it is version dependent changes based on user flag)
+if( VERSIONED_HEADER_INSTALL )
+    set( GPSTK_INCLUDE_TGT_DIR "gpstk_${GPSTK_VERSION_MAJOR}_${GPSTK_VERSION_MINOR}" )
+    set( CMAKE_INSTALL_INCLUDEDIR "${CMAKE_INSTALL_INCLUDEDIR}/${GPSTK_INCLUDE_TGT_DIR}" )
+    message( WARNING "Setting GPSTK_INCLUDE_TGT_DIR = ${CMAKE_INSTALL_INCLUDEDIR}" )
+else()
+    set( CMAKE_INSTALL_INCLUDEDIR "${CMAKE_INSTALL_INCLUDEDIR}/gpstk" )
+endif()
+
 
 
 include( BuildSetup.cmake )
@@ -148,8 +159,8 @@ add_library( gpstk ${STADYN} ${GPSTK_SRC_FILES} ${GPSTK_INC_FILES} )
 # GPSTk library install target
 install( TARGETS gpstk DESTINATION "${CMAKE_INSTALL_LIBDIR}" EXPORT "${EXPORT_TARGETS_FILENAME}" )
 
-# GPSTk header file install target
-install( FILES ${GPSTK_INC_FILES} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/gpstk" )
+# GPSTk header file install target (whether it is version dependent changes based on user flag)
+install( FILES ${GPSTK_INC_FILES} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} )
 
 
 #============================================================
