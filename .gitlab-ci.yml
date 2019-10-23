@@ -38,6 +38,23 @@ build_debian:
     paths:
     - build/
 
+
+build_conda_py36:
+  stage: build
+  tags:
+    - docker-executor
+  image: centos7_conda_py36
+  script:
+    - conda activate py36
+    - mkdir build
+    - cd build
+    - export gpstk=`pwd`/install
+    - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=install $CMAKE_ARG_DEFAULT
+    - make all -j 4
+  artifacts:
+    paths:
+      - build/
+
 build_redhat:
   stage: build
   tags:
