@@ -18,7 +18,7 @@ class TestConstants(unittest.TestCase):
         self.assertAlmostEqual(gpstk.PI, 3.14159265359, places=12)
         self.assertEqual(gpstk.ZCOUNT_PER_DAY, 57600)
         with self.assertRaises(AttributeError):
-            print gpstk.foo.bar
+            print(gpstk.foo.bar)
 
 class GPS_consants_test(unittest.TestCase):
     def test_constants(self):

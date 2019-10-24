@@ -52,7 +52,7 @@ class TestTropModelsValid(unittest.TestCase):
         elif tropName == "GCAT"    : pTrop = gpstk.GCATTropModel()
         elif tropName == "MOPS"    : pTrop = gpstk.MOPSTropModel()
         else:
-            print " Warning - unknown trop model: " + tropName+ "; use Simple"
+            print(" Warning - unknown trop model: " + tropName+ "; use Simple")
             tropName = "Simple"
             pTrop = gpstk.SimpleTropModel()
 

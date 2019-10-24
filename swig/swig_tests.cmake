@@ -4,7 +4,7 @@
 # be quite different from the C++ library and application tests
 
 add_test(NAME swig_test_import
-  COMMAND ${PYTHON_EXECUTABLE} -c "import gpstk; print 'gpstk imported successfully'"
+  COMMAND ${PYTHON_EXECUTABLE} -c "import gpstk; print('gpstk imported successfully')"
   WORKING_DIRECTORY ${MODULE_PATH}
   )
 set_property(TEST swig_test_import PROPERTY LABELS swig)
