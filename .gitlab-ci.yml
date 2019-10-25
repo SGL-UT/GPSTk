@@ -70,24 +70,6 @@ build_redhat:
     paths:
     - build/
 
-build_windows:
-  stage: build
-  tags:
-    - windows
-  script:
-    - mkdir build
-    - cd build
-    - cmake -DCMAKE_INSTALL_PREFIX=install -DBUILD_EXT=ON -DBUILD_PYTHON=OFF -DTEST_SWITCH=ON -G "Visual Studio 14 2015 Win64" ../
-    - cmake --build . --config Release
-  artifacts:
-    paths:
-    - build/
-# Temporarily allow failures as Windows Runner issues are resolved
-  allow_failure: true
-  only:
-    - schedules
-  except:
-    - merge_requests
 
 # Test Stage
 # Runs all tests of GPSTK for each platform
@@ -133,21 +115,6 @@ test_redhat:
          grep "Total Failures for" $CI_PROJECT_DIR/build/Testing/Temporary/LastTest.log
       fi
 
-test_windows:
-  stage: test
-  tags:
-    - windows
-  script:
-    - cd build
-    - cmake --build . --target RUN_TESTS --config Release
-  dependencies:
-    - build_windows
-  allow_failure: true
-  only:
-    - schedules
-  except:
-    - merge_requests
-
 # Deploy Stage
 # Tests install of GPSTk on each platform, saves artifacts for downstream builds.
 deploy_debian:
@@ -186,22 +153,6 @@ deploy_redhat:
   dependencies:
     - build_redhat
 
-
-deploy_windows:
-  stage: deploy
-  tags:
-    - windows
-  script:
-    - cd build
-    - cmake --build . --config Release --target install
-  dependencies:
-    - build_windows
-# Temporarily allow failures as Windows Runner issues are resolved
-  allow_failure: true
-  only:
-    - schedules
-  except:
-    - merge_requests
 
 # Package Stage
 # Tests packaging of GPSTk on all platforms
@@ -287,21 +238,6 @@ package_redhat_wheel:
   dependencies:
     - build_redhat
 
-package_windows:
-  stage: package
-  tags:
-    - windows
-  script:
-    - cd build
-    - cpack -C Release
-  dependencies:
-    - build_windows
-# Temporarily allow failures as Windows Runner issues are resolved
-  allow_failure: true
-  only:
-    - schedules
-  except:
-    - merge_requests
 
 sgltk_debian:
 sgltk_debian:
