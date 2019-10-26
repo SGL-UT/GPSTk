@@ -315,10 +315,10 @@ SVNumXRef::SVNumXRef( )
    NtoPMap.insert( std::pair<const int, XRefNode>( 36, XRefNode( 4, 
                                        CivilTime( 2018, 10, 10,  0,  0,  0.0, TimeSystem::GPS),
                                        CivilTime( 2019,  1,  3, 23, 59, 59.9, TimeSystem::GPS))));
-   // NANU 2019104 (start)
+   // NANU 2019104 (start), NANU 2019159 & observation (end)
    NtoPMap.insert( std::pair<const int, XRefNode>( 36, XRefNode(  4,
-                                       CivilTime( 2019,   7,   18,  0,   0,  0.0, TimeSystem::GPS),
-                                       CommonTime::END_OF_TIME  )));
+                                       CivilTime( 2019,  7, 18,  0,   0, 0.0, TimeSystem::GPS),
+                                       CivilTime( 2019, 10, 07, 23, 59, 59.9, TimeSystem::GPS))));
 
    NtoPMap.insert( std::pair<const int, XRefNode>( 37, XRefNode(  7, 
                                        CivilTime( 1993,  5, 13,  0,  0,  0.0, TimeSystem::GPS),
@@ -516,6 +516,10 @@ SVNumXRef::SVNumXRef( )
    NtoPMap.insert( std::pair<const int, XRefNode>( 74, XRefNode(   4,
                                        CivilTime( 2019,   1,    8, 23,  0,  0.0, TimeSystem::GPS),
                                        CivilTime( 2019,   7,   12, 20,  0,  0.0, TimeSystem::GPS))));
+   //NANU 2019159 (and supported CGSIC e-mail)
+   NtoPMap.insert( std::pair<const int, XRefNode>( 74, XRefNode(   4,
+                                       CivilTime( 2019, 10, 21, 20, 00, 0.0, TimeSystem::GPS),
+                                       CommonTime::END_OF_TIME  )));
                                          
                                        
       //Iterate through the data to produce the PtoNMap
