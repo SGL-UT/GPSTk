@@ -51,6 +51,7 @@ add_test(NAME TropModel_Global
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -DTESTBASE=TropModel_Global
+         -DTESTNAME=TropModel_Global
          -DARGS=--trop\ Global
          -DDIFF_ARGS=-l1\ -z1
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
@@ -63,6 +64,7 @@ add_test(NAME TropModel_Saas
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -DTESTBASE=TropModel_Saas
+         -DTESTNAME=TropModel_Saas
          -DARGS=--trop\ Saas
          -DDIFF_ARGS=-l1\ -z1
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
@@ -75,6 +77,7 @@ add_test(NAME TropModel_GCAT
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -DTESTBASE=TropModel_GCAT
+         -DTESTNAME=TropModel_GCAT
          -DARGS=--trop\ GCAT
          -DDIFF_ARGS=-l1\ -z1
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
@@ -87,6 +90,7 @@ add_test(NAME TropModel_GG
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -DTESTBASE=TropModel_GG
+         -DTESTNAME=TropModel_GG
          -DARGS=--trop\ GG
          -DDIFF_ARGS=-l1\ -z1
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
@@ -99,6 +103,7 @@ add_test(NAME TropModel_GGHeight
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -DTESTBASE=TropModel_GGHeight
+         -DTESTNAME=TropModel_GGHeight
          -DARGS=--trop\ GGHeight
          -DDIFF_ARGS=-l1\ -z1
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
@@ -111,6 +116,7 @@ add_test(NAME TropModel_MOPS
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -DTESTBASE=TropModel_MOPS
+         -DTESTNAME=TropModel_MOPS
          -DARGS=--trop\ MOPS
          -DDIFF_ARGS=-l1\ -z1
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
@@ -123,6 +129,7 @@ add_test(NAME TropModel_NB
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -DTESTBASE=TropModel_NB
+         -DTESTNAME=TropModel_NB
          -DARGS=--trop\ NB
          -DDIFF_ARGS=-l1\ -z1
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
@@ -135,6 +142,7 @@ add_test(NAME TropModel_Simple
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -DTESTBASE=TropModel_Simple
+         -DTESTNAME=TropModel_Simple
          -DARGS=--trop\ Simple
          -DDIFF_ARGS=-l1\ -z1
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
@@ -147,6 +155,7 @@ add_test(NAME TropModel_Zero
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -DTESTBASE=TropModel_Zero
+         -DTESTNAME=TropModel_Zero
          -DARGS=--trop\ Zero
          -DDIFF_ARGS=-l1\ -z1
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)

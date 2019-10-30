@@ -20,9 +20,9 @@
 # DIFF_ARGS: arguments to pass to ${DIFF_PROG}
 #
 # Flags:
-# OWNOUTPUT: if unset, stdout will be captured to ${TESTBASE}.out.  If
+# OWNOUTPUT: if unset, stdout will be captured to ${TESTNAME}.out.  If
 #    set, it is expected that the application itself will produce
-#    ${TESTBASE}.out.
+#    ${TESTNAME}.out.
 # NODIFF: if set, do not compare the output to a reference file as
 #    part of the test.
 # DIFFSTDERR: if set, the stderr output will be compared to a reference file
@@ -39,12 +39,12 @@ ENDIF(DEFINED ARGS)
 
 IF(NOT DEFINED OWNOUTPUT)
     IF(NOT DEFINED TESTNAME)
-       message(FATAL_ERROR "Test failed, TESTNAME is not set")
+       message(FATAL_ERROR "Test failed, TESTNAME is not set (stdout)")
     ENDIF(NOT DEFINED TESTNAME)
-    message(STATUS "${TEST_PROG} ${ARGS} ${SPARG1} ${SPARG2} ${SPARG3} ${SPARG4} >${TARGETDIR}/${TESTBASE}.out")
+    message(STATUS "${TEST_PROG} ${ARGS} ${SPARG1} ${SPARG2} ${SPARG3} ${SPARG4} >${TARGETDIR}/${TESTNAME}.out")
     execute_process(COMMAND ${TEST_PROG} ${ARG_LIST} ${SPARG1} ${SPARG2} ${SPARG3} ${SPARG4}
-        OUTPUT_FILE ${TARGETDIR}/${TESTBASE}.out
-        ERROR_FILE ${TARGETDIR}/${TESTBASE}.err
+        OUTPUT_FILE ${TARGETDIR}/${TESTNAME}.out
+        ERROR_FILE ${TARGETDIR}/${TESTNAME}.err
         RESULT_VARIABLE RC)
 ELSE(NOT DEFINED OWNOUTPUT)
     message(STATUS "${TEST_PROG} ${ARGS} ${SPARG1} ${SPARG2} ${SPARG3} ${SPARG4}")
@@ -59,11 +59,14 @@ endif()
 
 
 IF(NOT DEFINED NODIFF)
+    IF(NOT DEFINED TESTBASE)
+       message(FATAL_ERROR "Test failed, TESTBASE is not set (regular)")
+    ENDIF(NOT DEFINED TESTBASE)
     IF(NOT DEFINED TESTNAME)
-       message(FATAL_ERROR "Test failed, TESTNAME is not set")
+       message(FATAL_ERROR "Test failed, TESTNAME is not set (regular)")
     ENDIF(NOT DEFINED TESTNAME)
     set(exp "${SOURCEDIR}/${TESTBASE}.exp")
-    set(out "${TARGETDIR}/${TESTBASE}.out")
+    set(out "${TARGETDIR}/${TESTNAME}.out")
 
     if(DEFINED DIFF_PROG)
         message(STATUS         "${DIFF_PROG} ${DIFF_ARGS} -1 ${out} -2 ${exp}")
@@ -85,10 +88,10 @@ ENDIF(NOT DEFINED NODIFF)
 
 IF(DEFINED DIFFSTDERR)
     IF(NOT DEFINED TESTBASE)
-       message(FATAL_ERROR "Test failed, TESTBASE is not set")
+       message(FATAL_ERROR "Test failed, TESTBASE is not set (stderr)")
     ENDIF(NOT DEFINED TESTBASE)
     IF(NOT DEFINED TESTNAME)
-       message(FATAL_ERROR "Test failed, TESTNAME is not set")
+       message(FATAL_ERROR "Test failed, TESTNAME is not set (stderr)")
     ENDIF(NOT DEFINED TESTNAME)
     set(exp "${SOURCEDIR}/${TESTBASE}.err.exp")
     set(out "${TARGETDIR}/${TESTNAME}.err")

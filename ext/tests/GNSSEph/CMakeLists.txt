@@ -23,9 +23,11 @@ add_test(NAME OrbAlm_T_1
          COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:OrbAlm_T>
          -DTESTBASE=OrbAlm_T_1
+         -DTESTNAME=OrbAlm_T_1
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -DTESTBASE=test_output_OrbAlm_T_GPS_LNAV
+         -DTESTNAME=test_output_OrbAlm_T_GPS_LNAV
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testsame.cmake)
 
 #add_test(GNSSEph_OrbAlm OrbAlm_T)
@@ -44,18 +46,22 @@ add_test(NAME OrbDataSys_T_1
          -DTEST_PROG=$<TARGET_FILE:OrbDataSys_T>
          -DARGS=LNAV
          -DTESTBASE=OrbDataSys_T_1
+         -DTESTNAME=OrbDataSys_T_1
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -DTESTBASE=test_output_OrbDataSys_T_GPS_LNAV
+         -DTESTNAME=test_output_OrbDataSys_T_GPS_LNAV
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testsame.cmake)
 add_test(NAME OrbDataSys_T_2
          COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:OrbDataSys_T>
          -DARGS=CNAV
          -DTESTBASE=OrbDataSys_T_2
+         -DTESTNAME=OrbDataSys_T_2
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -DTESTBASE=test_output_OrbDataSys_T_GPS_CNAV
+         -DTESTNAME=test_output_OrbDataSys_T_GPS_CNAV
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testsame.cmake)
 #
 #  Following tests the get*() methods of various CNAV MT classes.
