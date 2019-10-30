@@ -4,7 +4,9 @@
 # Expected variables (required unless otherwise noted):
 # SOURCEDIR: the location of the reference file
 # TARGETDIR: the directory to store stdout to compare with the reference output
-# TESTBASE: the name of the test, used to create output file and find reference
+# TESTNAME: the name of the test, used to create the output files
+#   (must be unique, otherwise parallel tests can fail at random)
+# TESTBASE: the name of the test providing the reference data
 #
 # TEST_PROG: the program under test
 # ARGS: a space-separated argument list (optional)
@@ -36,6 +38,9 @@ ENDIF(DEFINED ARGS)
 
 
 IF(NOT DEFINED OWNOUTPUT)
+    IF(NOT DEFINED TESTNAME)
+       message(FATAL_ERROR "Test failed, TESTNAME is not set")
+    ENDIF(NOT DEFINED TESTNAME)
     message(STATUS "${TEST_PROG} ${ARGS} ${SPARG1} ${SPARG2} ${SPARG3} ${SPARG4} >${TARGETDIR}/${TESTBASE}.out")
     execute_process(COMMAND ${TEST_PROG} ${ARG_LIST} ${SPARG1} ${SPARG2} ${SPARG3} ${SPARG4}
         OUTPUT_FILE ${TARGETDIR}/${TESTBASE}.out
@@ -54,6 +59,9 @@ endif()
 
 
 IF(NOT DEFINED NODIFF)
+    IF(NOT DEFINED TESTNAME)
+       message(FATAL_ERROR "Test failed, TESTNAME is not set")
+    ENDIF(NOT DEFINED TESTNAME)
     set(exp "${SOURCEDIR}/${TESTBASE}.exp")
     set(out "${TARGETDIR}/${TESTBASE}.out")
 
@@ -76,8 +84,14 @@ ENDIF(NOT DEFINED NODIFF)
 
 
 IF(DEFINED DIFFSTDERR)
+    IF(NOT DEFINED TESTBASE)
+       message(FATAL_ERROR "Test failed, TESTBASE is not set")
+    ENDIF(NOT DEFINED TESTBASE)
+    IF(NOT DEFINED TESTNAME)
+       message(FATAL_ERROR "Test failed, TESTNAME is not set")
+    ENDIF(NOT DEFINED TESTNAME)
     set(exp "${SOURCEDIR}/${TESTBASE}.err.exp")
-    set(out "${TARGETDIR}/${TESTBASE}.err")
+    set(out "${TARGETDIR}/${TESTNAME}.err")
 
     if(DEFINED DIFF_PROG)
         message(STATUS         "${DIFF_PROG} ${DIFF_ARGS} -1 ${out} -2 ${exp}")
