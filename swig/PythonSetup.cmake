@@ -41,12 +41,32 @@ if( ${PYTHON_CUSTOM_CONFIG} MATCHES "NOTFOUND" )
   # which does not necessiarly match what the executable found by PythonInterp
   # will be copacetic with. So, we set CMAKE_INCLUDE_PATH to what is returned
   # by the found python-config
-  execute_process( COMMAND "${PYTHON_EXECUTABLE}-config" "--includes" OUTPUT_VARIABLE PYTHON_INCLUDES)
-  string(REGEX MATCH "^-I(.*) " _python_include ${PYTHON_INCLUDES})
-  string(STRIP ${_python_include} _python_include)
-  string(SUBSTRING ${_python_include} 2 -1 _python_include) # strip the "-I"
-  set(CMAKE_INCLUDE_PATH ${_python_include})
-  find_package( PythonLibs ${PYTHON_VERSION_STRING} REQUIRED )
+  if( ${PYTHON_VERSION_MAJOR} EQUAL 3 )
+    execute_process( COMMAND "${PYTHON_EXECUTABLE}3-config" "--includes" OUTPUT_VARIABLE PYTHON_INCLUDES)
+    execute_process( COMMAND "${PYTHON_EXECUTABLE}3-config" "--prefix" OUTPUT_VARIABLE PYTHON_PREFIX)
+
+    string(REGEX MATCH "^-I(.*) " _python_include ${PYTHON_INCLUDES})
+    string(STRIP ${_python_include} _python_include)
+    string(SUBSTRING ${_python_include} 2 -1 _python_include) # strip the "-I"
+    set(CMAKE_INCLUDE_PATH ${_python_include})
+
+    # Python 3 isn't well supported for earlier versions of CMAKE.  So we roll our own.
+    string(STRIP ${PYTHON_PREFIX} PYTHON_PREFIX)
+    set(PYTHON_LIBRARIES "${PYTHON_PREFIX}/lib/libpython${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}m.so")
+    set(PYTHON_INCLUDE_DIR ${_python_include})
+    set(PYTHON_INCLUDE_DIRS ${_python_include})
+    set(PYTHONLIBS_VERSION_STRING ${PYTHON_VERSION_STRING})
+    set(PYTHONLIBS_FOUND TRUE)
+  else()
+    execute_process( COMMAND "${PYTHON_EXECUTABLE}-config" "--includes" OUTPUT_VARIABLE PYTHON_INCLUDES)
+    string(REGEX MATCH "^-I(.*) " _python_include ${PYTHON_INCLUDES})
+    string(STRIP ${_python_include} _python_include)
+    string(SUBSTRING ${_python_include} 2 -1 _python_include) # strip the "-I"
+    set(CMAKE_INCLUDE_PATH ${_python_include})
+
+    find_package( PythonLibs ${PYTHON_VERSION_STRING} REQUIRED )
+  endif()
+
 endif()
 
 

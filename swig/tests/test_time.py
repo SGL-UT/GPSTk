@@ -45,7 +45,7 @@ class TestTimeTags(unittest.TestCase):
         self.assertEqual(str(t4), "08/22/1999 00:00:00 GPS")
 
     def test_GPSWeekZcount(self):
-        t0 = GPSWeekZcount(1023, (2*86400/3)*7-1)
+        t0 = GPSWeekZcount(1023, (2*86400//3)*7-1)
         self.assertEqual(str(t0), "1023 403199 GPS")
         t1 = GPSWeekZcount(t0.toCommonTime())
         self.assertEqual(str(t1), "1023 403199 GPS")
@@ -107,12 +107,15 @@ class CommonTime_Tests(unittest.TestCase):
         end = gpstk.CommonTime()
         end.addSeconds(900.0)
         times = gpstk.times(start, end, seconds=200.0)
-        self.assertEqual(100.0, times.next().getSecondOfDay())
-        self.assertEqual(300.0, times.next().getSecondOfDay())
-        self.assertEqual(500.0, times.next().getSecondOfDay())
-        self.assertEqual(700.0, times.next().getSecondOfDay())
-        self.assertEqual(900.0, times.next().getSecondOfDay())
-        self.assertRaises(StopIteration, times.next)
+        self.assertEqual(100.0, next(times).getSecondOfDay())
+        self.assertEqual(300.0, next(times).getSecondOfDay())
+        self.assertEqual(500.0, next(times).getSecondOfDay())
+        self.assertEqual(700.0, next(times).getSecondOfDay())
+        self.assertEqual(900.0, next(times).getSecondOfDay())
+        if sys.version_info[0] < 3:
+            self.assertRaises(StopIteration, times.next)
+        else:
+            self.assertRaises(StopIteration, times.__next__)
 
     def test_times_list(self):
         start = gpstk.CommonTime()

@@ -16,5 +16,5 @@ except Exception as ex:
 #----------
 # Populate gpstk namespace
 #----------
-from gpstk import *
+from .gpstk import *
 __version__ = "@GPSTK_VERSION@"
