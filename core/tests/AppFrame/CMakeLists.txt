@@ -14,6 +14,7 @@ target_link_libraries(BasicFrameworkHelpReq_T gpstk)
 add_test(NAME BasicFrameworkHelp_T_1
   COMMAND ${CMAKE_COMMAND}
   -DTEST_PROG=$<TARGET_FILE:BasicFrameworkHelp_T>
+  -DTESTNAME=BasicFrameworkHelp_T_1
   -DTESTBASE=BasicFrameworkHelp_T_1
   -DDIFFSTDERR=yes
   -DARGS=-h
@@ -26,6 +27,7 @@ add_test(NAME BasicFrameworkHelp_T_1
 add_test(NAME BasicFrameworkHelp_T_2
   COMMAND ${CMAKE_COMMAND}
   -DTEST_PROG=$<TARGET_FILE:BasicFrameworkHelp_T>
+  -DTESTNAME=BasicFrameworkHelp_T_2
   -DTESTBASE=BasicFrameworkHelp_T_1
   -DDIFFSTDERR=yes
   -DARGS=--help
@@ -37,6 +39,7 @@ add_test(NAME BasicFrameworkHelp_T_2
 add_test(NAME BasicFrameworkHelp_T_3
   COMMAND ${CMAKE_COMMAND}
   -DTEST_PROG=$<TARGET_FILE:BasicFrameworkHelp_T>
+  -DTESTNAME=BasicFrameworkHelp_T_3
   -DTESTBASE=BasicFrameworkHelp_T_3
   -DDIFFSTDERR=yes
   -DARGS=-x
@@ -48,6 +51,7 @@ add_test(NAME BasicFrameworkHelp_T_3
 add_test(NAME BasicFrameworkHelp_T_4
   COMMAND ${CMAKE_COMMAND}
   -DTEST_PROG=$<TARGET_FILE:BasicFrameworkHelp_T>
+  -DTESTNAME=BasicFrameworkHelp_T_4
   -DTESTBASE=BasicFrameworkHelp_T_4
   -DDIFFSTDERR=yes
   -DARGS=-y\ JunkText
@@ -59,6 +63,7 @@ add_test(NAME BasicFrameworkHelp_T_4
 add_test(NAME BasicFrameworkHelp_T_5
   COMMAND ${CMAKE_COMMAND}
   -DTEST_PROG=$<TARGET_FILE:BasicFrameworkHelp_T>
+  -DTESTNAME=BasicFrameworkHelp_T_5
   -DTESTBASE=BasicFrameworkHelp_T_1
   -DDIFFSTDERR=yes
   -DARGS=-h\ -x\ -y\ JunkText
@@ -70,6 +75,7 @@ add_test(NAME BasicFrameworkHelp_T_5
 add_test(NAME BasicFrameworkHelp_T_6
   COMMAND ${CMAKE_COMMAND}
   -DTEST_PROG=$<TARGET_FILE:BasicFrameworkHelp_T>
+  -DTESTNAME=BasicFrameworkHelp_T_6
   -DTESTBASE=BasicFrameworkHelp_T_3
   -DDIFFSTDERR=yes
   -DARGS=-x\ -y\ JunkText\ -h
@@ -81,6 +87,7 @@ add_test(NAME BasicFrameworkHelp_T_6
 add_test(NAME BasicFrameworkHelp_T_7
   COMMAND ${CMAKE_COMMAND}
   -DTEST_PROG=$<TARGET_FILE:BasicFrameworkHelp_T>
+  -DTESTNAME=BasicFrameworkHelp_T_7
   -DTESTBASE=BasicFrameworkHelp_T_4
   -DDIFFSTDERR=yes
   -DARGS=-y\ JunkText\ -h\ -x
@@ -92,6 +99,7 @@ add_test(NAME BasicFrameworkHelp_T_7
 add_test(NAME BasicFrameworkHelp_T_8
   COMMAND ${CMAKE_COMMAND}
   -DTEST_PROG=$<TARGET_FILE:BasicFrameworkHelp_T>
+  -DTESTNAME=BasicFrameworkHelp_T_8
   -DTESTBASE=BasicFrameworkHelp_T_8
   -DDIFFSTDERR=yes
   -DARGS=-w
@@ -104,6 +112,7 @@ add_test(NAME BasicFrameworkHelp_T_8
 add_test(NAME BasicFrameworkHelpReq_T_1
   COMMAND ${CMAKE_COMMAND}
   -DTEST_PROG=$<TARGET_FILE:BasicFrameworkHelpReq_T>
+  -DTESTNAME=BasicFrameworkHelpReq_T_1
   -DTESTBASE=BasicFrameworkHelpReq_T_1
   -DDIFFSTDERR=yes
   -DARGS=-h
@@ -116,6 +125,7 @@ add_test(NAME BasicFrameworkHelpReq_T_1
 add_test(NAME BasicFrameworkHelpReq_T_2
   COMMAND ${CMAKE_COMMAND}
   -DTEST_PROG=$<TARGET_FILE:BasicFrameworkHelpReq_T>
+  -DTESTNAME=BasicFrameworkHelpReq_T_2
   -DTESTBASE=BasicFrameworkHelp_T_3
   -DDIFFSTDERR=yes
   -DARGS=-x
@@ -128,6 +138,7 @@ add_test(NAME BasicFrameworkHelpReq_T_2
 add_test(NAME BasicFrameworkHelpReq_T_3
   COMMAND ${CMAKE_COMMAND}
   -DTEST_PROG=$<TARGET_FILE:BasicFrameworkHelpReq_T>
+  -DTESTNAME=BasicFrameworkHelpReq_T_3
   -DTESTBASE=BasicFrameworkHelp_T_4
   -DDIFFSTDERR=yes
   -DARGS=-y\ JunkText

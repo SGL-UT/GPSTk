@@ -53,6 +53,7 @@ add_test(NAME DDBase_CmdOpt_f_valid
          -DTEST_PROG=$<TARGET_FILE:DDBase>
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -DNODIFF=TRUE
+         -DTESTNAME=DDBase_CmdOpt_f_valid
          -DARGS=-f${GPSTK_TEST_DATA_DIR}/test_input_ddbase.opt_ok\ --ObsPath\ ${GPSTK_TEST_DATA_DIR}\ --NavPath\ ${GPSTK_TEST_DATA_DIR}\ --EOPPath\ ${GPSTK_TEST_DATA_DIR}
          -P ${CMAKE_SOURCE_DIR}/core/tests/testsuccexp.cmake)
 set_property(TEST DDBase_CmdOpt_f_valid PROPERTY LABELS DDBase)
@@ -68,6 +69,7 @@ add_test(NAME DDBase_CmdOpt_log_valid
          -DTEST_PROG=$<TARGET_FILE:DDBase>
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -DNODIFF=TRUE
+         -DTESTNAME=DDBase_CmdOpt_log_valid
          -DARGS=-f${GPSTK_TEST_DATA_DIR}/test_input_ddbase.opt_ok\ --ObsPath\ ${GPSTK_TEST_DATA_DIR}\ --NavPath\ ${GPSTK_TEST_DATA_DIR}\ --EOPPath\ ${GPSTK_TEST_DATA_DIR}\ --Log\ ${GPSTK_TEST_OUTPUT_DIR}/test_output_ddbase.log
          -P ${CMAKE_SOURCE_DIR}/core/tests/testsuccexp.cmake)
 set_property(TEST DDBase_CmdOpt_log_valid PROPERTY LABELS DDBase)
@@ -297,6 +299,7 @@ add_test(NAME EarthOrientation_SOFA
          -DDIFF_PROG=$<TARGET_FILE:df_diff>
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTNAME=EarthOrientation_SOFA
          -DTESTBASE=EarthOrientation_SOFA
          -DDIFF_ARGS=-l1\ -e1.e-12
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
@@ -311,6 +314,7 @@ add_test(NAME EarthTides_IERS
          -DDIFF_PROG=$<TARGET_FILE:df_diff>
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTNAME=EarthTides_IERS
          -DTESTBASE=EarthTides_IERS
          -DARGS=--dt\ 360.\ --prec\ 6\ --solid\ --ocean\ --oceanfile\ ${GPSTK_TEST_DATA_DIR}/testocean.blq\ --oceansite\ ONSALA,REYKJAVIK
          -DDIFF_ARGS=-l4\ -e1.e-5
@@ -327,6 +331,7 @@ add_test(NAME JPL_403eph_conversion
          -DDIFF_PROG=$<TARGET_FILE:df_diff>
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTNAME=JPL_403eph_conversion
          -DTESTBASE=JPL_403eph_conversion
          -DARGS=--header\ ${JPLDIR}/header.403\ --data\ ${JPLDIR}/ascp1975.403,${JPLDIR}/ascp2000.403,${JPLDIR}/ascp2025.403\ --output\ SolarSystem1975to2050.403.bin\ --verbose
          -DDIFF_ARGS=-l50\ -z1\ -e1.e-16
@@ -342,6 +347,7 @@ add_test(NAME JPL_403eph_accuracy
          -DDIFF_PROG=$<TARGET_FILE:df_diff>
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTNAME=JPL_403eph_accuracy
          -DTESTBASE=JPL_403eph_accuracy
          -DARGS=--file\ SolarSystem1975to2050.403.bin\ --test\ ${JPLDIR}/testpo.403\ -d
          -DDIFF_ARGS=-l1\ -z1\ -e1.e-16
@@ -358,6 +364,7 @@ add_test(NAME JPL_405eph_conversion
          -DDIFF_PROG=$<TARGET_FILE:df_diff>
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTNAME=JPL_405eph_conversion
          -DTESTBASE=JPL_405eph_conversion
          -DARGS=--header\ ${JPLDIR}/header.405\ --data\ ${JPLDIR}/ascp1980.405,${JPLDIR}/ascp2000.405,${JPLDIR}/ascp2020.405\ --output\ SolarSystem1975to2050.405.bin\ --verbose
          -DDIFF_ARGS=-l50\ -z1\ -e1.e-16
@@ -373,6 +380,7 @@ add_test(NAME JPL_405eph_accuracy
          -DDIFF_PROG=$<TARGET_FILE:df_diff>
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTNAME=JPL_405eph_accuracy
          -DTESTBASE=JPL_405eph_accuracy
          -DARGS=--file\ SolarSystem1975to2050.405.bin\ --test\ ${JPLDIR}/testpo.405\ -d
          -DDIFF_ARGS=-l1\ -z1\ -e1.e-16
@@ -397,6 +405,7 @@ add_test(NAME test_dfix_karr
          -DDIFF_PROG=$<TARGET_FILE:df_diff>
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTNAME=test_dfix_karr
          -DTESTBASE=test_dfix_karr
          -DARGS=--obs\ ${GPSTK_TEST_DATA_DIR}/test_dfix_karr0880.ed.10o
          -DDIFF_ARGS=-l101\ -z1
@@ -410,6 +419,7 @@ add_test(NAME test_dfix_tower
          -DDIFF_PROG=$<TARGET_FILE:df_diff>
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTNAME=test_dfix_tower
          -DTESTBASE=test_dfix_tower
          -DARGS=--obs\ ${GPSTK_TEST_DATA_DIR}/test_dfix_tower239.ed.15o\ --DC\ width=200,MinPts=100,MaxGap=100
          -DDIFF_ARGS=-l94\ -z1
@@ -423,6 +433,7 @@ add_test(NAME test_dfix_txau
          -DDIFF_PROG=$<TARGET_FILE:df_diff>
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTNAME=test_dfix_txau
          -DTESTBASE=test_dfix_txau
          -DARGS=--obs\ ${GPSTK_TEST_DATA_DIR}/test_dfix_txau047.ed.12o\ --DC\ width=100,MinPts=50,MaxGap=50
          -DDIFF_ARGS=-l93\ -z1
@@ -436,6 +447,7 @@ add_test(NAME test_dfix_job4131
          -DDIFF_PROG=$<TARGET_FILE:df_diff>
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTNAME=test_dfix_job4131
          -DTESTBASE=test_dfix_job4131
          -DARGS=--obs\ ${GPSTK_TEST_DATA_DIR}/test_dfix_job4131.ed.obs\ --obsID\ RC1*,RC2*,RL1*,RL2*
          -DDIFF_ARGS=-l93\ -z1
@@ -451,6 +463,7 @@ add_test(NAME Rinex3ObsLoader_R303
          -DDIFF_PROG=$<TARGET_FILE:df_diff>
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTNAME=Rinex3ObsLoader_R303
          -DTESTBASE=Rinex3ObsLoader_R303
          -DARGS=${GPSTK_TEST_DATA_DIR}/Rinex3ObsLoader303.obs
          -DDIFF_ARGS=-l1
@@ -466,6 +479,7 @@ add_test(NAME Rinex3ObsLoader_R211
          -DDIFF_PROG=$<TARGET_FILE:df_diff>
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTNAME=Rinex3ObsLoader_R211
          -DTESTBASE=Rinex3ObsLoader_R211
          -DARGS=${GPSTK_TEST_DATA_DIR}/Rinex3ObsLoader211.obs
          -DDIFF_ARGS=-l1
@@ -481,6 +495,7 @@ add_test(NAME Rinex3ObsLoader_R210
          -DDIFF_PROG=$<TARGET_FILE:df_diff>
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTNAME=Rinex3ObsLoader_R210
          -DTESTBASE=Rinex3ObsLoader_R210
          -DARGS=${GPSTK_TEST_DATA_DIR}/Rinex3ObsLoader210.obs
          -DDIFF_ARGS=-l1
