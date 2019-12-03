@@ -36,6 +36,7 @@ add_test(NAME bc2sp3_Same_1
          -DFILE1=nga002.15n
          -DFILE2=nga003.15n
          -DTESTBASE=bc2sp3_Same_1
+         -DTESTNAME=bc2sp3_Same_1
          -DSOURCEDIR=${SD}
          -DTARGETDIR=${TD}
          -DARGS=${ARGS_1}
@@ -49,6 +50,7 @@ add_test(NAME bc2sp3_Same_2
          -DFILE1=nga002.15n
          -DFILE2=nga003.15n
          -DTESTBASE=bc2sp3_Same_2
+         -DTESTNAME=bc2sp3_Same_2
          -DSOURCEDIR=${SD}
          -DTARGETDIR=${TD}
          -DARGS=${ARGS_2}
@@ -62,6 +64,7 @@ add_test(NAME bc2sp3_Same_3
          -DFILE1=nga002.15n
          -DFILE2=nga003.15n
          -DTESTBASE=bc2sp3_Same_3
+         -DTESTNAME=bc2sp3_Same_3
          -DSOURCEDIR=${SD}
          -DTARGETDIR=${TD}
          -DARGS=${ARGS_2}

@@ -413,6 +413,9 @@ namespace gpstk
        void setXmitCoerced(bool tf=true) {xMitCoerced=tf;}
        bool isXmitCoerced() const {return xMitCoerced;}
 
+      const std::vector<bool>& getBits() const
+      { return bits; }
+
    private:
       SatID satSys;            /**< System ID (based on RINEX defintions */
       ObsID obsID;             /**< Defines carrier and code tracked */

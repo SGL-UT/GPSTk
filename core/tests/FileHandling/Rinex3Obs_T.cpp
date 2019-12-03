@@ -79,6 +79,8 @@ public:
    int version2ToVersion3Test( void );
    int version3ToVersion2Test( void );
 
+   int embeddedHeadersTest();
+
 private:
 
    string dataFilePath;
@@ -96,6 +98,7 @@ private:
    string dataSystemTransit;
    string dataUnSupVersion ;
    string dataRinexContData;
+   string dataHeaderTest;
 
    string dataBadEpochLine;
    string dataBadEpochFlag;
@@ -163,6 +166,8 @@ void Rinex3Obs_T :: init( void )
       "test_input_rinex2_obs_UnSupVersion.06o";
    dataRinexContData           = dataFilePath + file_sep +
       "test_input_rinex2_obs_RinexContData.06o";   // not in v3 test
+   dataHeaderTest              = dataFilePath + file_sep +
+      "mixed211.05o";
 
    dataBadEpochLine            = dataFilePath + file_sep +
       "test_input_rinex2_obs_BadEpochLine.06o";
@@ -776,6 +781,315 @@ int Rinex3Obs_T::roundTripTest( void )
    return testFramework.countFails();
 }
 
+
+int Rinex3Obs_T ::
+embeddedHeadersTest()
+{
+   TUDEF("Rinex3ObsData", "operator<<");
+   try
+   {
+      cerr << "opening " << dataHeaderTest << endl;
+      gpstk::Rinex3ObsStream ros(dataHeaderTest, std::ios::in);
+      gpstk::Rinex3ObsData rod;
+      gpstk::TimeSystem ts = gpstk::TimeSystem::GPS;
+      TUASSERTE(bool, true, ros.good());
+      ros >> ros.header;
+      TUASSERTE(bool, true, ros.good());
+         // make sure we read all of the header info, nothing more, nothing less
+      TUASSERTE(unsigned long,
+                gpstk::Rinex3ObsHeader::validVersion |
+                gpstk::Rinex3ObsHeader::validComment |
+                gpstk::Rinex3ObsHeader::validRunBy |
+                gpstk::Rinex3ObsHeader::validMarkerName |
+                gpstk::Rinex3ObsHeader::validMarkerNumber |
+                gpstk::Rinex3ObsHeader::validObserver |
+                gpstk::Rinex3ObsHeader::validReceiver |
+                gpstk::Rinex3ObsHeader::validAntennaType |
+                gpstk::Rinex3ObsHeader::validAntennaPosition |
+                gpstk::Rinex3ObsHeader::validAntennaDeltaHEN |
+                gpstk::Rinex3ObsHeader::validWaveFact |
+                gpstk::Rinex3ObsHeader::validReceiverOffset |
+                gpstk::Rinex3ObsHeader::validNumObs |
+                gpstk::Rinex3ObsHeader::validInterval |
+                gpstk::Rinex3ObsHeader::validFirstTime,
+                ros.header.valid);
+         // Go through each record in the source file (there aren't
+         // many) and verify that the contents are reasonable,
+         // i.e. comments associated with header record epoch flags
+         // and correct times and so on.
+         /*
+ 05  3 24 13 10 36.0000000  0  4G12G09G06E11                         -.123456789
+  23629347.915            .300 8         -.353    23629364.158
+  20891534.648           -.120 9         -.358    20891541.292
+  20607600.189           -.430 9          .394    20607605.848
+                          .324 8                                          .178 7
+         */
+      ros >> rod;
+      TUASSERTE(bool, true, ros.good());
+      TUASSERTE(short, 0, rod.epochFlag);
+      TUASSERTE(gpstk::CommonTime,
+                gpstk::CivilTime(2005,3,24,13,10,36,ts).convertToCommonTime(),
+                rod.time);
+      TUASSERTE(short, 4, rod.numSVs);
+      TUASSERTE(size_t, 4, rod.obs.size());
+      TUASSERTE(unsigned long, 0, rod.auxHeader.valid);
+
+/*
+ 05  3 24 13 10 50.0000000  4  4
+     1     2     2   G 9   G12                              WAVELENGTH FACT L1/2
+  *** WAVELENGTH FACTOR CHANGED FOR 2 SATELLITES ***        COMMENT
+      NOW 8 SATELLITES HAVE WL FACT 1 AND 2!                COMMENT
+                                                            COMMENT
+*/
+      ros >> rod;
+      TUASSERTE(bool, true, ros.good());
+      TUASSERTE(short, 4, rod.epochFlag);
+      TUASSERTE(gpstk::CommonTime,
+                gpstk::CivilTime(2005,3,24,13,10,50,ts).convertToCommonTime(),
+                rod.time);
+      TUASSERTE(short, 4, rod.numSVs);
+      TUASSERTE(size_t, 0, rod.obs.size());
+      TUASSERTE(unsigned long,
+                gpstk::Rinex3ObsHeader::validWaveFact |
+                gpstk::Rinex3ObsHeader::validComment,
+                rod.auxHeader.valid);
+      TUASSERTE(size_t, 3, rod.auxHeader.commentList.size());
+
+/*
+ 05  3 24 13 10 54.0000000  0  6G12G09G06R21R22E11                   -.123456789
+  23619095.450      -53875.632 8    -41981.375    23619112.008
+  20886075.667      -28688.027 9    -22354.535    20886082.101
+  20611072.689       18247.789 9     14219.770    20611078.410
+  21345678.576       12345.567 5
+  22123456.789       23456.789 5
+                     65432.123 5                                     48861.586 7
+*/
+      ros >> rod;
+      TUASSERTE(bool, true, ros.good());
+      TUASSERTE(short, 0, rod.epochFlag);
+      TUASSERTE(gpstk::CommonTime,
+                gpstk::CivilTime(2005,3,24,13,10,54,ts).convertToCommonTime(),
+                rod.time);
+      TUASSERTE(short, 6, rod.numSVs);
+      TUASSERTE(size_t, 6, rod.obs.size());
+      TUASSERTE(unsigned long, 0, rod.auxHeader.valid);
+
+/*
+ 05  3 24 13 11  0.0000000  2  1
+            *** FROM NOW ON KINEMATIC DATA! ***             COMMENT
+*/
+      ros >> rod;
+      TUASSERTE(bool, true, ros.good());
+      TUASSERTE(short, 2, rod.epochFlag);
+      TUASSERTE(gpstk::CommonTime,
+                gpstk::CivilTime(2005,3,24,13,11,0,ts).convertToCommonTime(),
+                rod.time);
+      TUASSERTE(short, 1, rod.numSVs);
+      TUASSERTE(size_t, 0, rod.obs.size());
+      TUASSERTE(unsigned long,
+                gpstk::Rinex3ObsHeader::validComment,
+                rod.auxHeader.valid);
+      TUASSERTE(size_t, 1, rod.auxHeader.commentList.size());
+
+/*
+ 05  3 24 13 11 48.0000000  0  4G16G12G09G06                         -.123456789
+  21110991.756       16119.980 7     12560.510    21110998.441
+  23588424.398     -215050.557 6   -167571.734    23588439.570
+  20869878.790     -113803.187 8    -88677.926    20869884.938
+  20621643.727       73797.462 7     57505.177    20621649.276
+*/
+      ros >> rod;
+      TUASSERTE(bool, true, ros.good());
+      TUASSERTE(short, 0, rod.epochFlag);
+      TUASSERTE(gpstk::CommonTime,
+                gpstk::CivilTime(2005,3,24,13,11,48,ts).convertToCommonTime(),
+                rod.time);
+      TUASSERTE(short, 4, rod.numSVs);
+      TUASSERTE(size_t, 4, rod.obs.size());
+      TUASSERTE(unsigned long, 0, rod.auxHeader.valid);
+
+/*
+                            3  4
+A 9080                                                      MARKER NAME
+9080.1.34                                                   MARKER NUMBER
+         .9030         .0000         .0000                  ANTENNA: DELTA H/E/N
+          --> THIS IS THE START OF A NEW SITE <--           COMMENT
+*/
+      ros >> rod;
+      TUASSERTE(bool, true, ros.good());
+      TUASSERTE(short, 3, rod.epochFlag);
+      TUASSERTE(gpstk::CommonTime,
+                gpstk::CivilTime(2005,3,24,13,11,48,ts).convertToCommonTime(),
+                rod.time);
+      TUASSERTE(short, 4, rod.numSVs);
+      TUASSERTE(size_t, 0, rod.obs.size());
+      TUASSERTE(unsigned long,
+                gpstk::Rinex3ObsHeader::validMarkerName |
+                gpstk::Rinex3ObsHeader::validMarkerNumber |
+                gpstk::Rinex3ObsHeader::validAntennaDeltaHEN |
+                gpstk::Rinex3ObsHeader::validComment,
+                rod.auxHeader.valid);
+      TUASSERTE(size_t, 1, rod.auxHeader.commentList.size());
+
+/*
+ 05  3 24 13 12  6.0000000  0  4G16G12G06G09                         -.123456987
+  21112589.384       24515.877 6     19102.763 3  21112596.187
+  23578228.338     -268624.234 7   -209317.284 4  23578244.398
+  20625218.088       92581.207 7     72141.846 4  20625223.795
+  20864539.693     -141858.836 8   -110539.435 5  20864545.943
+*/
+      ros >> rod;
+      TUASSERTE(bool, true, ros.good());
+      TUASSERTE(short, 0, rod.epochFlag);
+      TUASSERTE(gpstk::CommonTime,
+                gpstk::CivilTime(2005,3,24,13,12,6,ts).convertToCommonTime(),
+                rod.time);
+      TUASSERTE(short, 4, rod.numSVs);
+      TUASSERTE(size_t, 4, rod.obs.size());
+      TUASSERTE(unsigned long, 0, rod.auxHeader.valid);
+
+/*
+ 05  3 24 13 13  1.2345678  5  0
+*/
+      ros >> rod;
+      TUASSERTE(bool, true, ros.good());
+      TUASSERTE(short, 5, rod.epochFlag);
+      TUASSERTE(gpstk::CommonTime,
+                gpstk::CivilTime(2005,3,24,13,13,1.2345678,
+                                 ts).convertToCommonTime(),
+                rod.time);
+      TUASSERTE(short, 0, rod.numSVs);
+      TUASSERTE(size_t, 0, rod.obs.size());
+      TUASSERTE(unsigned long, 0, rod.auxHeader.valid);
+
+/*
+                            4  1
+        (AN EVENT FLAG WITH SIGNIFICANT EPOCH)              COMMENT
+*/
+      ros >> rod;
+      TUASSERTE(bool, true, ros.good());
+      TUASSERTE(short, 4, rod.epochFlag);
+      TUASSERTE(gpstk::CommonTime,
+                gpstk::CivilTime(2005,3,24,13,13,1.2345678,
+                                 ts).convertToCommonTime(),
+                rod.time);
+      TUASSERTE(short, 1, rod.numSVs);
+      TUASSERTE(size_t, 0, rod.obs.size());
+      TUASSERTE(unsigned long,
+                gpstk::Rinex3ObsHeader::validComment,
+                rod.auxHeader.valid);
+      TUASSERTE(size_t, 1, rod.auxHeader.commentList.size());
+
+/*
+ 05  3 24 13 14 12.0000000  0  4G16G12G09G06                         -.123456012
+  21124965.133       89551.30216     69779.62654  21124972.2754
+  23507272.372     -212616.150 7   -165674.789 5  23507288.421
+  20828010.354     -333820.093 6   -260119.395 5  20828017.129
+  20650944.902      227775.130 7    177487.651 4  20650950.363
+*/
+      ros >> rod;
+      TUASSERTE(bool, true, ros.good());
+      TUASSERTE(short, 0, rod.epochFlag);
+      TUASSERTE(gpstk::CommonTime,
+                gpstk::CivilTime(2005,3,24,13,14,12,ts).convertToCommonTime(),
+                rod.time);
+      TUASSERTE(short, 4, rod.numSVs);
+      TUASSERTE(size_t, 4, rod.obs.size());
+      TUASSERTE(unsigned long, 0, rod.auxHeader.valid);
+
+/*
+                            4  1
+           *** ANTISPOOFING ON G 16 AND LOST LOCK           COMMENT
+*/
+      ros >> rod;
+      TUASSERTE(bool, true, ros.good());
+      TUASSERTE(short, 4, rod.epochFlag);
+      TUASSERTE(gpstk::CommonTime,
+                gpstk::CivilTime(2005,3,24,13,14,12,ts).convertToCommonTime(),
+                rod.time);
+      TUASSERTE(short, 1, rod.numSVs);
+      TUASSERTE(size_t, 0, rod.obs.size());
+      TUASSERTE(unsigned long,
+                gpstk::Rinex3ObsHeader::validComment,
+                rod.auxHeader.valid);
+      TUASSERTE(size_t, 1, rod.auxHeader.commentList.size());
+
+/*
+ 05  3 24 13 14 12.0000000  6  2G16G09
+                 123456789.0      -9876543.5
+                         0.0            -0.5
+*/
+      ros >> rod;
+      TUASSERTE(bool, true, ros.good());
+      TUASSERTE(short, 6, rod.epochFlag);
+      TUASSERTE(gpstk::CommonTime,
+                gpstk::CivilTime(2005,3,24,13,14,12,ts).convertToCommonTime(),
+                rod.time);
+      TUASSERTE(short, 2, rod.numSVs);
+      TUASSERTE(size_t, 2, rod.obs.size());
+      TUASSERTE(unsigned long, 0, rod.auxHeader.valid);
+
+/*
+                            4  2
+           ---> CYCLE SLIPS THAT HAVE BEEN APPLIED TO       COMMENT
+                THE OBSERVATIONS                            COMMENT
+*/
+      ros >> rod;
+      TUASSERTE(bool, true, ros.good());
+      TUASSERTE(short, 4, rod.epochFlag);
+      TUASSERTE(gpstk::CommonTime,
+                gpstk::CivilTime(2005,3,24,13,14,12,ts).convertToCommonTime(),
+                rod.time);
+      TUASSERTE(short, 2, rod.numSVs);
+      TUASSERTE(size_t, 0, rod.obs.size());
+      TUASSERTE(unsigned long,
+                gpstk::Rinex3ObsHeader::validComment,
+                rod.auxHeader.valid);
+      TUASSERTE(size_t, 2, rod.auxHeader.commentList.size());
+
+/*
+ 05  3 24 13 14 48.0000000  0  4G16G12G09G06                         -.123456234
+  21128884.159      110143.144 7     85825.18545  21128890.7764
+  23487131.045     -318463.297 7   -248152.72824  23487146.149
+  20817844.743     -387242.571 6   -301747.22925  20817851.322
+  20658519.895      267583.67817    208507.26234  20658525.869
+*/
+      ros >> rod;
+      TUASSERTE(bool, true, ros.good());
+      TUASSERTE(short, 0, rod.epochFlag);
+      TUASSERTE(gpstk::CommonTime,
+                gpstk::CivilTime(2005,3,24,13,14,48,ts).convertToCommonTime(),
+                rod.time);
+      TUASSERTE(short, 4, rod.numSVs);
+      TUASSERTE(size_t, 4, rod.obs.size());
+      TUASSERTE(unsigned long, 0, rod.auxHeader.valid);
+
+/*
+                            4  3
+         ***   SATELLITE G 9   THIS EPOCH ON WLFACT 1 (L2)  COMMENT
+         *** G 6 LOST LOCK AND THIS EPOCH ON WLFACT 2 (L2)  COMMENT
+                (OPPOSITE TO PREVIOUS SETTINGS)             COMMENT
+*/
+      ros >> rod;
+      TUASSERTE(bool, true, ros.good());
+      TUASSERTE(short, 4, rod.epochFlag);
+      TUASSERTE(gpstk::CommonTime,
+                gpstk::CivilTime(2005,3,24,13,14,48,ts).convertToCommonTime(),
+                rod.time);
+      TUASSERTE(short, 3, rod.numSVs);
+      TUASSERTE(size_t, 0, rod.obs.size());
+      TUASSERTE(unsigned long,
+                gpstk::Rinex3ObsHeader::validComment,
+                rod.auxHeader.valid);
+      TUASSERTE(size_t, 3, rod.auxHeader.commentList.size());
+   }
+   catch (...)
+   {
+      TUFAIL("unexpected exception");
+   }
+   TURETURN();
+}
+
 int main()
 {
    int errorTotal = 0;
@@ -786,6 +1100,7 @@ int main()
    errorTotal += testClass.dataExceptionsTest();
    errorTotal += testClass.filterOperatorsTest();
    errorTotal += testClass.roundTripTest();
+   errorTotal += testClass.embeddedHeadersTest();
 
       //Change to test v.3
    testClass.toRinex3();

@@ -18,6 +18,7 @@ add_test(NAME mergeRinMet_1
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -DTESTBASE=mergeRinMet_1
+         -DTESTNAME=mergeRinMet_1
          -DRINHEADDIFF=$<TARGET_FILE:rinheaddiff>
          -DRINDIFF=$<TARGET_FILE:rmwdiff>
          -DINFILE1=arlm200a.15m
@@ -30,6 +31,7 @@ add_test(NAME mergeRinMet_ValidOutput
          -DTEST_PROG=$<TARGET_FILE:rmwcheck>
          -DARGS=${TD}/mergeRinMet_1.out
          -DTESTBASE=mergeRinMet_ValidOutput
+         -DTESTNAME=mergeRinMet_ValidOutput
          -DTARGETDIR=${TD}
          -DNODIFF=1
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
@@ -42,6 +44,7 @@ add_test(NAME mergeRinMet_2
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -DTESTBASE=mergeRinMet_2
+         -DTESTNAME=mergeRinMet_2
          -DRINHEADDIFF=$<TARGET_FILE:rinheaddiff>
          -DRINDIFF=$<TARGET_FILE:rmwdiff>
          -DINFILE1=mergeRinMet_2.exp
@@ -77,6 +80,7 @@ add_test(NAME mergeRinNav_1
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -DTESTBASE=mergeRinNav_1
+         -DTESTNAME=mergeRinNav_1
          -DRINHEADDIFF=$<TARGET_FILE:rinheaddiff>
          -DRINDIFF=$<TARGET_FILE:rnwdiff>
          -DINFILE1=arlm200a.15n
@@ -89,6 +93,7 @@ add_test(NAME mergeRinNav_ValidOutput
          -DTEST_PROG=$<TARGET_FILE:rnwcheck>
          -DARGS=${TD}/mergeRinNav_1.out
          -DTESTBASE=mergeRinNav_ValidOutput
+         -DTESTNAME=mergeRinNav_ValidOutput
          -DTARGETDIR=${TD}
          -DNODIFF=1
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
@@ -102,6 +107,7 @@ add_test(NAME mergeRinNav_2
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -DTESTBASE=mergeRinNav_2
+         -DTESTNAME=mergeRinNav_2
          -DRINHEADDIFF=$<TARGET_FILE:rinheaddiff>
          -DRINDIFF=$<TARGET_FILE:rnwdiff>
          -DINFILE1=mergeRinNav_2.exp
@@ -137,6 +143,7 @@ add_test(NAME mergeRinObs_1
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -DTESTBASE=mergeRinObs_1
+         -DTESTNAME=mergeRinObs_1
          -DRINHEADDIFF=$<TARGET_FILE:rinheaddiff>
          -DRINDIFF=$<TARGET_FILE:rowdiff>
          -DINFILE1=arlm200a.15o
@@ -149,6 +156,7 @@ add_test(NAME mergeRinObs_ValidOutput
          -DTEST_PROG=$<TARGET_FILE:rowcheck>
          -DARGS=${TD}/mergeRinObs_1.out
          -DTESTBASE=mergeRinObs_ValidOutput
+         -DTESTNAME=mergeRinObs_ValidOutput
          -DTARGETDIR=${TD}
          -DNODIFF=1
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
@@ -161,6 +169,7 @@ add_test(NAME mergeRinObs_2
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -DTESTBASE=mergeRinObs_2
+         -DTESTNAME=mergeRinObs_2
          -DRINHEADDIFF=$<TARGET_FILE:rinheaddiff>
          -DRINDIFF=$<TARGET_FILE:rowdiff>
          -DINFILE1=mergeRinObs_2.exp

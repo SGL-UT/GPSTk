@@ -581,6 +581,11 @@ namespace gpstk
          // If the header hasn't been read, read it.
       if(!strm.headerRead) strm >> strm.header;
 
+      Rinex3ObsData rod;
+
+         // clear out this ObsData
+      *this = rod;
+
          // call the version for RINEX ver 2
       if(strm.header.version < 3)
       {
@@ -596,10 +601,6 @@ namespace gpstk
       }
 
       string line;
-      Rinex3ObsData rod;
-
-         // clear out this ObsData
-      *this = rod;
 
          // read the first (epoch) line
       strm.formattedGetLine(line, true);
