@@ -220,6 +220,7 @@ add_test(NAME calgps_CmdOpt_1
          -DTEST_PROG=$<TARGET_FILE:calgps>
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTNAME=calgps_CmdOpt_1
          -DTESTBASE=calgps_CmdOpt_1
          -DARGS=-h
          -DNODIFF=1
@@ -231,6 +232,7 @@ add_test(NAME calgps_CmdOpt_2
          -DTEST_PROG=$<TARGET_FILE:calgps>
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTNAME=calgps_CmdOpt_2
          -DTESTBASE=calgps_CmdOpt_2
          -DARGS=-3
          -DNODIFF=1
@@ -242,6 +244,7 @@ add_test(NAME calgps_CmdOpt_3
          -DTEST_PROG=$<TARGET_FILE:calgps>
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTNAME=calgps_CmdOpt_3
          -DTESTBASE=calgps_CmdOpt_3
          -DARGS=-y
          -DNODIFF=1
@@ -253,6 +256,7 @@ add_test(NAME calgps_CmdOpt_4
          -DTEST_PROG=$<TARGET_FILE:calgps>
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTNAME=calgps_CmdOpt_4
          -DTESTBASE=calgps_CmdOpt_4
          -DNODIFF=1
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
@@ -263,6 +267,7 @@ add_test(NAME calgps_Year
          -DTEST_PROG=$<TARGET_FILE:calgps>
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -DTESTNAME=calgps_Year
          -DTESTBASE=calgps_Year
          -DARGS=-Y\ 2015
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)

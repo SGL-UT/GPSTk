@@ -21,6 +21,7 @@ add_test(NAME RinDump_Default_C1C
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -DTESTBASE=RinDump_sat_default_C1C
+         -DTESTNAME=RinDump_sat_default_C1C
          -DARGS=${ARGS1}
          -DDIFF_ARGS=-l6\ -z2
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
@@ -35,6 +36,7 @@ add_test(NAME RinDump_Single_C1C
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -DTESTBASE=RinDump_sat_single_C1C
+         -DTESTNAME=RinDump_sat_single_C1C
          -DARGS=${ARGS2}
          -DDIFF_ARGS=-l6\ -z2
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
@@ -49,6 +51,7 @@ add_test(NAME RinDump_Rinex2Input
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -DTESTBASE=RinDump_Rinex2Input
+         -DTESTNAME=RinDump_Rinex2Input
          -DARGS=${ARGS2}
          -DDIFF_ARGS=-l6\ -z2
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
@@ -79,6 +82,7 @@ add_test(NAME RinEdit_ValidOutput
     -DTEST_PROG=$<TARGET_FILE:rowcheck>
     -DARGS=${GPSTK_TEST_OUTPUT_DIR}/RinEdit_Header.out
     -DTESTBASE=RinEdit_ValidOutput
+    -DTESTNAME=RinEdit_ValidOutput
     -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
     -DNODIFF=1
     -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
@@ -177,6 +181,7 @@ set(test_name scanBrdcFile1)
 add_test(NAME ${test_name}
     COMMAND ${CMAKE_COMMAND}
     -DTESTBASE=${test_name}
+    -DTESTNAME=${test_name}
     -DTEST_PROG=$<TARGET_FILE:scanBrdcFile>
     -DDIFF_PROG=$<TARGET_FILE:df_diff>
     -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
