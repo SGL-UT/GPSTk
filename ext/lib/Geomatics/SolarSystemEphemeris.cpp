@@ -48,6 +48,7 @@
 // GPSTk
 #include "StringUtils.hpp"
 #include "TimeConverters.hpp"
+#include "logstream.hpp"
 
 //------------------------------------------------------------------------------------
 using namespace std;

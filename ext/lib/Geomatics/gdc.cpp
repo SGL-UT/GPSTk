@@ -43,6 +43,7 @@
 #include "gdc.hpp"
 #include "GNSSconstants.hpp"
 #include "stl_helpers.hpp"
+#include "logstream.hpp"
 
 using namespace std;
 

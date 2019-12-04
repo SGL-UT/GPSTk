@@ -44,7 +44,6 @@
 #include <vector>
 #include "Exception.hpp"
 #include "StringUtils.hpp"
-#include "logstream.hpp"
 
 namespace gpstk
 {

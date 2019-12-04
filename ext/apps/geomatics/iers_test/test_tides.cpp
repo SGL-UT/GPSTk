@@ -57,6 +57,7 @@
 #include "SunEarthSatGeometry.hpp"
 #include "OceanLoadTides.hpp"
 #include "AtmLoadTides.hpp"
+#include "logstream.hpp"
 
 using namespace std;
 using namespace gpstk;
