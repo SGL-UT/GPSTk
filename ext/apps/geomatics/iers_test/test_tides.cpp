@@ -64,7 +64,7 @@ using namespace gpstk;
 using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
-static const string tidesVersion("3.0 5/19/17");
+static const string tidesVersion("4.0 12/3/19");
 
 //------------------------------------------------------------------------------------
 // data input from command line
