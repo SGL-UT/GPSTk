@@ -91,11 +91,12 @@ public:
    /// @param site  string Input name of the site; must be the same as previously
    ///              successfully passed to initializeSites().
    /// @param t     EphTime Input time of interest.
+   /// @param UT1mUTC Difference of UT1 and UTC, a very small correction to t.
    /// @return Triple containing the North, East and Up components of the site
    ///                displacement in meters.
    /// @throw if the site has not been initialized, if the time system is unknown,
    ///                if there is corruption in the static arrays
-   Triple computeDisplacement(std::string site, EphTime t);
+   Triple computeDisplacement(std::string site, EphTime t, double UT1mUTC=0);
 
    /// Return the recorded latitude, longitude and ht(=0) for the given site.
    /// Return value of (0.0,0.0,0.0) probably means the position was not found.

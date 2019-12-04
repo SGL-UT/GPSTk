@@ -202,14 +202,15 @@ namespace gpstk {
    // Compute the site displacement vector at the given time for the given site.
    // The site must have been successfully initialized; if not an exception is
    // thrown.
-   // @param site  string Input name of the site; must be the same as previously
-   //              successfully passed to initializeSites().
-   // @param t     EphTime Input time of interest.
-   // @return Triple containing the North, East and Up components of the site
+   // param site    string Input name of the site; must be the same as previously
+   //                successfully passed to initializeSites().
+   // param t       EphTime Input time of interest.
+   // param UT1mUTC Difference of UT1 and UTC, a very small correction to t.
+   // return Triple containing the North, East and Up components of the site
    //                displacement in meters.
-   // @throw if the site has not been initialized, if the time system is unknown,
+   // throw if the site has not been initialized, if the time system is unknown,
    //                if there is corruption in the static arrays, or .
-   Triple AtmLoadTides::computeDisplacement(string site, EphTime time)
+   Triple AtmLoadTides::computeDisplacement(string site, EphTime time, double UT1mUTC)
    {
       try {
 
@@ -220,7 +221,9 @@ namespace gpstk {
 
          // compute time argument
          EphTime ttag(time);
-         ttag.convertSystemTo(TimeSystem::UTC);    // ignore UT1-UTC
+         ttag.convertSystemTo(TimeSystem::UTC);
+         // ignoring UT1-UTC is probably fine, since this is extremely small
+         ttag += UT1mUTC;
          double dayfr(ttag.secOfDay()/86400.0);    // fraction of day
          static const double w1(2*PI), w2(4*PI);
          const double cos1(::cos(w1*dayfr));
@@ -262,107 +265,3 @@ namespace gpstk {
 }  // end namespace gpstk
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
-/*
-https://geophy.uni.lu/displacementgrids/
-
-Method 2: Using the Displacement grids
-Based on the Proposed IERS Conventions... (PRELIMINARY UNTIL CONVENTIONS ARE APPROVED)
-
-   T. M. van Dam, University of Luxembourg
-   R. Ray, Space Geodesy Branch, NASA Goddard Space Flight Center
-Anyone using this data set directly or products derived from this page is requested
-   to use the following citation:
-van Dam, T. and R. Ray, 2010, Updated October 2010.
-   "S1 and S2 Atmospheric Tide Loading Effects for Geodetic Applications."
-
-The displacement grids are determined at every 1.0 degree of latitude and longitude
-They have been calculated by convolving 1.125 deg x 1.125 deg S1 and S2 annual mean
-atmospheric tides [Ray and Ponte, 2003]
-with Farrell's Green's Functions. We assume no ocean response to pressure
-
-To use the grids and interpolate yourself you must:
-   Download at least one of the following files
-   CE (s1_s2_def_ce.dat)
-   CM (s1_s2_def_cm.dat)
-
-If you do not already have a program for interpolating evenly spaced grid points,
-   you may download, grdintrp.f
-CE, and CM designate the reference frame in which the displacements are determined.
-   See Blewitt [2003] for further information
-The ascii grids contain the up (dr), north (vt) and east (vl) components of
-   the sine and cosine amplitudes for the S1 and S2 tides
-The deformations are in mm
-Each displacement component has 4 parameters: cosS1,sinS1,cosS2,sinS2 written
-   in that order in the file
-
-To read the grids:
-   do i=1,nlon (nlon=361)
-   do j=1,nlat (nlat=181)
-   read(iun,*) rlon,rlat,(dr(k),k=1,4),(vt(k),k=1,4),(vl(k),k=1,4)
-   end do
-   end do
-
-total dr(t) = dr(1)*cos(t*ω1) + dr(2)*sin(t*ω1) + dr(3)*cos(t*ω2) + dr(4)*sin(t*ω2)
-   If t is in fractions of a UT1 day, then ω1=2π radians/day and ω2=4π radians/day
-
-If you will use your own routine to interpolate the grids, you do not need to
-   muddle through the remainder of this document;
-
-If you need information on running the supplied interpolation routine, grdintrp.f,
-   please continue
-
-To run grdintrp.f:
-   You will need to specify the input file to read from in grdintrp.f (variable=iref)
-   You will need to specify the output format in grdintrp.f (variable=iout)
-   The program reads 3 variables: STA, longitude, latitude from a file that you
-   create called in.grdintrp
-      e.g.
-      bjfs 115.892487 39.6086006
-      blyt 245.285156 33.6104164
-      bogt 285.919067 4.64007235
-      bor1 17.0734558 52.2769585
-      bran 241.722961 34.1848946
-      bras 11.1130829 44.1221657
-      braz 312.122131 -15.9474754
-
-Note: currently grdintrp.f expects STA to be 4 characters in length,
-   you (of course) must change this specification if you use longer character names
-Customize the program to address your own particular needs
-Compile the program using your favorite fortran compiler;
-   on UNIX or LINUX: f77 grdinterp.f -o grdinterp
-Run program (Type grdintrp at the system prompt)
-The output file is named grdintrp.dat
-
-Data in these files can be used to generate a time series of the surface
-   displacement at the site
-   total dr(t) = dr(1)*cos(t*ω1) + dr(2)*sin(t*ω1) + dr(3)*cos(t*ω2) + dr(4)*sin(t*ω2)
-   If t is in fractions of a UT1 day, then ω1=2π radians/day and ω2=4π radians/day.
-
-Center of Mass Corrections:
-   As with ocean loading, it may be necessary to compute the crust-frame translation
-   (geocenter motion) due to the atmospheric tidal mass, dX(t),dY(t), and dZ(t).
-   These values may be computed according to the method given by Scherneck
-   at http://www.oso.chalmers.se/âˆ¼loading/cmc.html. For example,
-      dX(t)=A1*cos(t*ω1)+ B1*sin(t*ω1) A2*cos(t*ω2) +B2*sin(t*ω2)
-      If t is in fractions of a UT1 day, then ω1=πradians/day and ω2=2πradians/day
-
-Download the COM corrections here
-   com.dat (com_table.pdf)
-
-As with ocean tidal loading, this correction should be applied in transforming
-   GPS orbits from the CM frame to the CF frame expected in the sp3 orbit.
-
-References
-Blewitt, G. (2003), Self-consistency in reference frames, geocenter definition,
-   and srface loading of the solid Earth, J. Geophys. Res., ,108, 2103,
-   doi:10.1029/2002JB002082.
-
-Farrell, W. E. (1972), Deformation of the Earth by surface loads,
-   Rev. Geophys., 10, 761-797.
-
-Ray, R.D. and R.M. Ponte (2003), Barometeric tides from ECMWF operational analyses,
-   Annales Geophysicae, 21, 1897-1910.
-
-Ray, R.D. and G. Egbert (2004), The global S_1 tide, J. Phys. Oceanogr.,
-   34, 1922-1935.
-*/
