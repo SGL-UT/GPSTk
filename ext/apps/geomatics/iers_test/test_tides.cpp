@@ -94,7 +94,7 @@ public:
    // ctor with defaults
    InputConfig(void) throw() {
       fmtGPS = string("%F,%g");
-      fmtCAL = string("%Y,%m,%d,%H,%M,%f");
+      fmtCAL = string("%Y,%m,%d,%02H,%M,%f");
       fmt = string("%4F %10.3g %4Y %2m %2d %2H %2M %6.3f");
       prec = 5;
       help = verbose = false;
@@ -341,20 +341,20 @@ try {
 
    // do it
    if(C.doSolid) {
-   LOG(INFO) << "SET week  secs_of_wk year mo da hr mn secs  "
-            << "SET X m  SET Y m  SET Z m  SET N m  SET E m  SET U m";
+   LOG(INFO) << "SET   MJD HH:MM:SS.sss "
+            << "SET_X_cm  SET_Y_cm  SET_Z_cm  SET_N_cm  SET_E_cm  SET_U_cm";
    }
    if(C.doOcean) {
-      LOG(INFO) << "OLT week  secs_of_wk year mo da hr mn secs  "
-               << "OLT X m  OLT Y m  OLT Z m  OLT N m  OLT E m  OLT U m  site";
+      LOG(INFO) << "OLT   MJD HH:MM:SS.sss "
+            << "OLT_X_cm  OLT_Y_cm  OLT_Z_cm  OLT_N_cm  OLT_E_cm  OLT_U_cm  site";
    }
    if(C.doPole) {
-      LOG(INFO) << "POT week  secs_of_wk year mo da hr mn secs  "
-               << "POT X m  POT Y m  POT Z m  POT N m  POT E m  POT U m";
+      LOG(INFO) << "POT   MJD HH:MM:SS.sss "
+            << "POT_X_cm  POT_Y_cm  POT_Z_cm  POT_N_cm  POT_E_cm  POT_U_cm";
    }
    if(C.doAtm) {
-      LOG(INFO) << "ATL week  secs_of_wk year mo da hr mn secs  "
-               << "ATL X m  ATL Y m  ATL Z m  ATL N m  ATL E m  ATL U m  site";
+      LOG(INFO) << "ATL   MJD HH:MM:SS.sss "
+            << "ATL_X_cm  ATL_Y_cm  ATL_Z_cm  ATL_N_cm  ATL_E_cm  ATL_U_cm  site";
    }
 
    // loop over times
@@ -383,12 +383,12 @@ try {
 
          LOG(INFO) << "SET " << ttag.asMJDString()
             << fixed << setprecision(C.prec)
-            << " " << setw(w) << XYZ(0)
-            << " " << setw(w) << XYZ(1)
-            << " " << setw(w) << XYZ(2)
-            << " " << setw(w) << NEU(0)
-            << " " << setw(w) << NEU(1)
-            << " " << setw(w) << NEU(2);
+            << " " << setw(w) << XYZ(0)*100.
+            << " " << setw(w) << XYZ(1)*100.
+            << " " << setw(w) << XYZ(2)*100.
+            << " " << setw(w) << NEU(0)*100.
+            << " " << setw(w) << NEU(1)*100.
+            << " " << setw(w) << NEU(2)*100.;
       }
 
       if(C.doOcean) {
@@ -399,12 +399,12 @@ try {
 
             LOG(INFO) << "OLT " << ttag.asMJDString()
                << fixed << setprecision(C.prec)
-               << " " << setw(w) << XYZ(0)
-               << " " << setw(w) << XYZ(1)
-               << " " << setw(w) << XYZ(2)
-               << " " << setw(w) << NEU(0)
-               << " " << setw(w) << NEU(1)
-               << " " << setw(w) << NEU(2)
+               << " " << setw(w) << XYZ(0)*100.
+               << " " << setw(w) << XYZ(1)*100.
+               << " " << setw(w) << XYZ(2)*100.
+               << " " << setw(w) << NEU(0)*100.
+               << " " << setw(w) << NEU(1)*100.
+               << " " << setw(w) << NEU(2)*100.
                << "  " << C.oceannames[j];
          }
       }
@@ -416,12 +416,12 @@ try {
 
          LOG(INFO) << "POT " << ttag.asMJDString()
             << fixed << setprecision(C.prec)
-            << " " << setw(w) << XYZ(0)
-            << " " << setw(w) << XYZ(1)
-            << " " << setw(w) << XYZ(2)
-            << " " << setw(w) << NEU(0)
-            << " " << setw(w) << NEU(1)
-            << " " << setw(w) << NEU(2);
+            << " " << setw(w) << XYZ(0)*100.
+            << " " << setw(w) << XYZ(1)*100.
+            << " " << setw(w) << XYZ(2)*100.
+            << " " << setw(w) << NEU(0)*100.
+            << " " << setw(w) << NEU(1)*100.
+            << " " << setw(w) << NEU(2)*100.;
       }
 
       if(C.doAtm) {
@@ -432,12 +432,12 @@ try {
 
             LOG(INFO) << "ATL " << ttag.asMJDString()
                << fixed << setprecision(C.prec)
-               << " " << setw(w) << XYZ(0)
-               << " " << setw(w) << XYZ(1)
-               << " " << setw(w) << XYZ(2)
-               << " " << setw(w) << NEU(0)
-               << " " << setw(w) << NEU(1)
-               << " " << setw(w) << NEU(2)
+               << " " << setw(w) << XYZ(0)*100.
+               << " " << setw(w) << XYZ(1)*100.
+               << " " << setw(w) << XYZ(2)*100.
+               << " " << setw(w) << NEU(0)*100.
+               << " " << setw(w) << NEU(1)*100.
+               << " " << setw(w) << NEU(2)*100.
                << "  " << C.atmnames[j];
          }
       }
@@ -469,10 +469,11 @@ try {
    string PrgmDesc =
    "Prgm tides computes tides (solid earth, ocean loading, pole) for a given\n"
    " time (UTC) and site, and dumps them to the screen.\n"
-   " NB SSEfile and earthfile are optional (unless --pole); they are more accurate.\n"
-   " NB One or more of options: solid ocean and pole must be provided.\n"
+   " NB One or more of options (solid ocean pole atm) must be provided.\n"
    " NB ocean option requires oceanfile and oceansite.\n"
+   " NB atm option requires atmfile and atmsite.\n"
    " NB pole requires SSEfile and earthfile.\n"
+   " NB SSEfile and earthfile are optional (unless pole); they are more accurate.\n"
    " Input is on the command line, or of the same format in a file (see --file);\n"
    " lines in that file which begin with '#' are ignored.\n"
    " Options are shown below, with a description and default value, if any, in ().\n"
@@ -502,13 +503,13 @@ try {
    opts.Add(0, "dt", "sec", false, req, &C.dt, "",
             "Timestep in seconds");
    opts.Add(0, "refPos", "X,Y,Z", false, req, &C.refPosstr, "",
-            "Position (ECEF XYZ)");
+            "Position for SET (ECEF XYZ)");
    opts.Add(0, "IERS", "year", false, req, &C.iersyear, "",
             "Year of IERS convention: 1996, 2003 or 2010");
    opts.Add(0, "SSEfile", "fn", false, req, &C.SSEfile, "",
             "Solar System ephemeris binary file name [else use simple ephem]");
    opts.Add(0, "earthfile", "fn", false, req, &C.earthfile, "",
-            "Earth orientation parameter file name [if + only if SSE]");
+            "Earth orientation parameter file name [if & only if --SSEfile]");
    opts.Add(0, "oceanfile", "fn", true, req, &C.oceanfile, "",
             "Ocean loading file name");
    opts.Add(0, "oceansite", "name", true, req, &C.oceannames, "",
@@ -519,7 +520,7 @@ try {
             "Site name in atmospheric loading file");
    opts.Add(0, "timefmt", "f", false, req, &C.fmt, "# Output",
             "Output format for time tag");
-   opts.Add(0, "prec", "n", false, req, &C.prec, "",
+   opts.Add('p', "prec", "n", false, req, &C.prec, "",
             "Output precision for offsets");
    opts.Add('d', "debug", "", false, req, &C.debug, "",
             "Print debug output at level 0 [debug<n> for level n=1-7]");
