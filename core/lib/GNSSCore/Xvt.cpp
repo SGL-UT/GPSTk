@@ -61,25 +61,25 @@ namespace gpstk
    {
       switch (health)
       {
-         case Xvt::Uninitialized:
+         case Xvt::HealthStatus::Uninitialized:
             os << "Uninitialized";
             break;
-         case Xvt::Unavailable:
+         case Xvt::HealthStatus::Unavailable:
             os << "Unavailable";
             break;
-         case Xvt::Unused:
+         case Xvt::HealthStatus::Unused:
             os << "Unused";
             break;
-         case Xvt::Unknown:
+         case Xvt::HealthStatus::Unknown:
             os << "Unknown";
             break;
-         case Xvt::Unhealthy:
+         case Xvt::HealthStatus::Unhealthy:
             os << "Unhealthy";
             break;
-         case Xvt::Degraded:
+         case Xvt::HealthStatus::Degraded:
             os << "Degraded";
             break;
-         case Xvt::Healthy:
+         case Xvt::HealthStatus::Healthy:
             os << "Healthy";
             break;
          default:

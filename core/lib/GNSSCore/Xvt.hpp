@@ -82,7 +82,7 @@ namespace gpstk
           * \li Healthy - This indicates that the satellite is known
           *     to be in a healthy state.
           */
-      enum HealthStatus
+      enum class HealthStatus
       {
          MinValue,
          Uninitialized = MinValue, ///< Health status has not been set.

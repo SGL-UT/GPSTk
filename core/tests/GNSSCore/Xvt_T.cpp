@@ -86,7 +86,8 @@ public:
       TUCSM("getRelativityCorr");
       TUASSERTFE(relativityCorrection, compare.getRelativityCorr());
       TUCSM("Xvt()");
-      TUASSERTE(gpstk::Xvt::HealthStatus, gpstk::Xvt::Uninitialized,
+      TUASSERTE(gpstk::Xvt::HealthStatus,
+                gpstk::Xvt::HealthStatus::Uninitialized,
                 compare.health);
 
       TURETURN();
