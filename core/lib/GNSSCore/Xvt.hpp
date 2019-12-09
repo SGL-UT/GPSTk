@@ -99,7 +99,7 @@ namespace gpstk
       Xvt() : x(0.,0.,0.), v(0.,0.,0.),
               clkbias(0.), clkdrift(0.),
               relcorr(0.), frame(ReferenceFrame::Unknown),
-              health(HealthStatus::Uninitialized)
+              health(Uninitialized)
       {};
 
          /// Destructor.
