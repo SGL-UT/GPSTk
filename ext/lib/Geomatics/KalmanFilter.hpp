@@ -374,7 +374,8 @@ public:
          const double tol(nominalDT/10.0);
 
          // forward filter: loop over time
-         while((timeReversed ? time-finalT >= tol : time-finalT <= tol)) {
+         double tmax(finalT+nominalDT);
+         while((timeReversed ? (time-tmax >= tol) : (time-tmax <= -tol))) {
 
             // ------------------------------------------------------------
             // interim #1
@@ -394,11 +395,11 @@ public:
             //             4: QuitImmediately : stop now
             // This defines nexttime as the next available data epoch.
             double nexttime = time;
-            KalmanReturn ret = KalmanMeasurementUpdate(nexttime);
-            if(ret == QuitImmediately || ret == SkipThenQuit)
+            KalmanReturn kfret = KalmanMeasurementUpdate(nexttime);
+            if(kfret == QuitImmediately || kfret == SkipThenQuit)
                break;
             // else SkipThisEpoch
-            else if(ret == Process || ret == ProcessThenQuit) {
+            else if(kfret == Process || kfret == ProcessThenQuit) {
                stage = MU;
 
                if(doInversions) {
@@ -407,7 +408,7 @@ public:
                }
             }
             // TD would you ever want several TUs before the first good MU?
-            else if(ret == SkipThisEpoch && NTU == 0) {
+            else if(kfret == SkipThisEpoch && NTU == 0) {
                time = nexttime;
                continue;
             }
@@ -447,7 +448,7 @@ public:
                output(NTU);
             }
 
-            if(ret == ProcessThenQuit || ret == SkipThenQuit) break;
+            if(kfret == ProcessThenQuit || kfret == SkipThenQuit) break;
 
          }  // end loop over forward filter
       }
