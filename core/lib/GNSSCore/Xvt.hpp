@@ -82,7 +82,7 @@ namespace gpstk
           * \li Healthy - This indicates that the satellite is known
           *     to be in a healthy state.
           */
-      enum class HealthStatus
+      enum HealthStatus
       {
          MinValue,
          Uninitialized = MinValue, ///< Health status has not been set.
@@ -99,7 +99,7 @@ namespace gpstk
       Xvt() : x(0.,0.,0.), v(0.,0.,0.),
               clkbias(0.), clkdrift(0.),
               relcorr(0.), frame(ReferenceFrame::Unknown),
-              health(HealthStatus::Uninitialized)
+              health(Uninitialized)
       {};
 
          /// Destructor.
