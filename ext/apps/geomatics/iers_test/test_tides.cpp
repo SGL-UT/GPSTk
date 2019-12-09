@@ -56,21 +56,23 @@
 #include "SolarSystem.hpp"
 #include "SunEarthSatGeometry.hpp"
 #include "OceanLoadTides.hpp"
+#include "AtmLoadTides.hpp"
+#include "logstream.hpp"
 
 using namespace std;
 using namespace gpstk;
 using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
-static const string tidesVersion("3.0 5/19/17");
+static const string tidesVersion("4.0 12/3/19");
 
 //------------------------------------------------------------------------------------
 // data input from command line
 class InputConfig : public Singleton<InputConfig> {
 public:
    // input data
-   bool doSimple,doOcean,doSolid,doPole;
-   string logfile, SSEfile, earthfile, oceanfile;
+   bool doSimple,doOcean,doSolid,doPole,doAtm;
+   string logfile, SSEfile, earthfile, oceanfile, atmfile;
    string fmtGPS,fmtCAL,fmt;
    ofstream oflog;
    EphTime beg, end;
@@ -79,10 +81,11 @@ public:
    int prec, debug, iersyear;          // debug output - prints all the data
    double dt;
    string refPosstr;
-   vector<string> oceannames;
-   Position pos;
+   vector<string> oceannames,atmnames;
+   Position posset,posotl,posatm;
    SolarSystem SolSys;
    OceanLoadTides oceanStore;
+   AtmLoadTides atmStore;
 
    // for CommandLine::ProcessCommandLine()
    string cmdlineUsage, cmdlineErrors, cmdlineDump;
@@ -91,7 +94,7 @@ public:
    // ctor with defaults
    InputConfig(void) throw() {
       fmtGPS = string("%F,%g");
-      fmtCAL = string("%Y,%m,%d,%H,%M,%f");
+      fmtCAL = string("%Y,%m,%d,%02H,%M,%f");
       fmt = string("%4F %10.3g %4Y %2m %2d %2H %2M %6.3f");
       prec = 5;
       help = verbose = false;
@@ -102,7 +105,7 @@ public:
       refPosstr = string("-740289.9049,-5457071.7352,3207245.5544  #ARL.2012.0000");
       iersyear = 2010;
       // add options to make it look like three programs
-      doPole = doSolid = doOcean = false;
+      doPole = doSolid = doOcean = doAtm = false;
       // make default NOT to use SSE and earth
       doSimple = true;
       //SSEfile = string("/home/btolman/.grits/SolarSystem1960to2020.405.bin");
@@ -255,6 +258,8 @@ try {
             else LOG(VERBOSE) << "Found ocean loading site " << C.oceannames[i]
                      << " at position " << pos[0] << "N, " << pos[1] << "E";
 
+            C.posotl.setGeodetic(pos[0],pos[1],0.0);
+
          }
          catch(Exception& e) {
             LOG(ERROR) << "Error - failed to get ocean loading site: "
@@ -269,9 +274,64 @@ try {
       }
    }
 
+   // fill atmospheric loading store
+   if(C.doAtm && (C.atmfile.empty() || C.atmnames.size()==0)) {
+      // no atm file and doAtm inconsistent
+      LOG(ERROR) << "Error - atm option requires atmfile and atmsite; abort.";
+      isValid = false;
+   }
+   else if(C.doAtm) {
+      vector<string> sites(C.atmnames);
+      // add the atm file(s) and name(s) to the store
+      try {
+         C.atmStore.initializeSites(sites,C.atmfile);
+      }
+      catch(Exception& e) {
+         LOG(ERROR) << "Error - failed to open atm loading file: "
+            << C.atmfile << " :\n" << e.what();
+         isValid = false;
+      }
+      catch(exception& e) {
+         LOG(ERROR) << "Error - failed to open atm loading file: "
+            << C.atmfile << " :\n" << e.what();
+         isValid = false;
+      }
+
+      // get the site
+      for(i=0; i<C.atmnames.size(); i++) {
+         if(C.atmnames[i].empty())
+            isValid = false;
+         else try {
+            Triple pos = C.atmStore.getPosition(C.atmnames[i]);
+            if(pos[0] == 0.0 && pos[1] == 0.0) {
+               LOG(ERROR) << "Error - Failed to find atm site name "
+                              << C.atmnames[i];
+               isValid = false;
+            }
+            else LOG(VERBOSE) << "Found atm loading site " << C.atmnames[i]
+                     << " at position " << pos[0] << "N, " << pos[1] << "E";
+
+            C.posatm.setGeodetic(pos[0],pos[1],0.0);
+
+         }
+         catch(Exception& e) {
+            LOG(ERROR) << "Error - failed to get atm loading site: "
+               << C.atmnames[i] << " from atm loading files" << " :\n"<< e.what();
+            isValid = false;
+         }
+         catch(exception& e) {
+            LOG(ERROR) << "Error - failed to get atm loading site: "
+               << C.atmnames[i] << " from atm loading files\n" << e.what();
+            isValid = false;
+         }
+      }
+   }
+
    // get rotation matrix XYZ->NEU for pos
-   Matrix<double> Rotate;
-   Rotate = NorthEastUp(C.pos);
+   Matrix<double> Rotate,RotOTL,RotATM;
+   Rotate = NorthEastUp(C.posset);
+   RotOTL = NorthEastUp(C.posotl);
+   RotATM = NorthEastUp(C.posatm);
 
    // -------------------------------------------------------------------------
    if(!isValid) {
@@ -281,16 +341,20 @@ try {
 
    // do it
    if(C.doSolid) {
-   LOG(INFO) << "SET week  secs_of_wk year mo da hr mn secs  "
-            << "SET X m  SET Y m  SET Z m  SET N m  SET E m  SET U m";
+   LOG(INFO) << "SET   MJD HH:MM:SS.sss "
+            << "SET_X_cm  SET_Y_cm  SET_Z_cm  SET_N_cm  SET_E_cm  SET_U_cm";
    }
    if(C.doOcean) {
-      LOG(INFO) << "OLT week  secs_of_wk year mo da hr mn secs  "
-               << "OLT X m  OLT Y m  OLT Z m  OLT N m  OLT E m  OLT U m  site";
+      LOG(INFO) << "OLT   MJD HH:MM:SS.sss "
+            << "OLT_X_cm  OLT_Y_cm  OLT_Z_cm  OLT_N_cm  OLT_E_cm  OLT_U_cm  site";
    }
    if(C.doPole) {
-      LOG(INFO) << "POT week  secs_of_wk year mo da hr mn secs  "
-               << "POT X m  POT Y m  POT Z m  POT N m  POT E m  POT U m";
+      LOG(INFO) << "POT   MJD HH:MM:SS.sss "
+            << "POT_X_cm  POT_Y_cm  POT_Z_cm  POT_N_cm  POT_E_cm  POT_U_cm";
+   }
+   if(C.doAtm) {
+      LOG(INFO) << "ATL   MJD HH:MM:SS.sss "
+            << "ATL_X_cm  ATL_Y_cm  ATL_Z_cm  ATL_N_cm  ATL_E_cm  ATL_U_cm  site";
    }
 
    // loop over times
@@ -309,55 +373,73 @@ try {
          if(C.doSimple) {
             Position Sun(SolarPosition(ttag, arad));
             Position Moon(LunarPosition(ttag, arad));
-            dXYZ = computeSolidEarthTides(C.pos, ttag, Sun, Moon);
+            dXYZ = computeSolidEarthTides(C.posset, ttag, Sun, Moon);
          }
          else {
-            dXYZ = C.SolSys.computeSolidEarthTides(C.pos, ttag);
+            dXYZ = C.SolSys.computeSolidEarthTides(C.posset, ttag);
          }
          for(i=0; i<3; i++) XYZ(i) = dXYZ[i];
          NEU = Rotate * XYZ;
 
          LOG(INFO) << "SET " << ttag.asMJDString()
             << fixed << setprecision(C.prec)
-            << " " << setw(w) << XYZ(0)
-            << " " << setw(w) << XYZ(1)
-            << " " << setw(w) << XYZ(2)
-            << " " << setw(w) << NEU(0)
-            << " " << setw(w) << NEU(1)
-            << " " << setw(w) << NEU(2);
+            << " " << setw(w) << XYZ(0)*100.
+            << " " << setw(w) << XYZ(1)*100.
+            << " " << setw(w) << XYZ(2)*100.
+            << " " << setw(w) << NEU(0)*100.
+            << " " << setw(w) << NEU(1)*100.
+            << " " << setw(w) << NEU(2)*100.;
       }
 
       if(C.doOcean) {
          for(size_t j=0; j<C.oceannames.size(); j++) {
             dNEU = C.oceanStore.computeDisplacement(C.oceannames[j], ttag);
             for(i=0; i<3; i++) NEU(i) = dNEU[i];
-            XYZ = transpose(Rotate) * NEU;
+            XYZ = transpose(RotOTL) * NEU;
 
             LOG(INFO) << "OLT " << ttag.asMJDString()
                << fixed << setprecision(C.prec)
-               << " " << setw(w) << XYZ(0)
-               << " " << setw(w) << XYZ(1)
-               << " " << setw(w) << XYZ(2)
-               << " " << setw(w) << NEU(0)
-               << " " << setw(w) << NEU(1)
-               << " " << setw(w) << NEU(2)
+               << " " << setw(w) << XYZ(0)*100.
+               << " " << setw(w) << XYZ(1)*100.
+               << " " << setw(w) << XYZ(2)*100.
+               << " " << setw(w) << NEU(0)*100.
+               << " " << setw(w) << NEU(1)*100.
+               << " " << setw(w) << NEU(2)*100.
                << "  " << C.oceannames[j];
          }
       }
 
       if(C.doPole) {
-         dXYZ = C.SolSys.computePolarTides(C.pos, ttag);
+         dXYZ = C.SolSys.computePolarTides(C.posset, ttag);
          for(i=0; i<3; i++) XYZ(i) = dXYZ[i];
          NEU = Rotate * XYZ;
 
          LOG(INFO) << "POT " << ttag.asMJDString()
             << fixed << setprecision(C.prec)
-            << " " << setw(w) << XYZ(0)
-            << " " << setw(w) << XYZ(1)
-            << " " << setw(w) << XYZ(2)
-            << " " << setw(w) << NEU(0)
-            << " " << setw(w) << NEU(1)
-            << " " << setw(w) << NEU(2);
+            << " " << setw(w) << XYZ(0)*100.
+            << " " << setw(w) << XYZ(1)*100.
+            << " " << setw(w) << XYZ(2)*100.
+            << " " << setw(w) << NEU(0)*100.
+            << " " << setw(w) << NEU(1)*100.
+            << " " << setw(w) << NEU(2)*100.;
+      }
+
+      if(C.doAtm) {
+         for(size_t j=0; j<C.atmnames.size(); j++) {
+            dNEU = C.atmStore.computeDisplacement(C.atmnames[j], ttag);
+            for(i=0; i<3; i++) NEU(i) = dNEU[i];
+            XYZ = transpose(RotATM) * NEU;
+
+            LOG(INFO) << "ATL " << ttag.asMJDString()
+               << fixed << setprecision(C.prec)
+               << " " << setw(w) << XYZ(0)*100.
+               << " " << setw(w) << XYZ(1)*100.
+               << " " << setw(w) << XYZ(2)*100.
+               << " " << setw(w) << NEU(0)*100.
+               << " " << setw(w) << NEU(1)*100.
+               << " " << setw(w) << NEU(2)*100.
+               << "  " << C.atmnames[j];
+         }
       }
 
    }  // end loop over times
@@ -387,10 +469,11 @@ try {
    string PrgmDesc =
    "Prgm tides computes tides (solid earth, ocean loading, pole) for a given\n"
    " time (UTC) and site, and dumps them to the screen.\n"
-   " NB SSEfile and earthfile are optional (unless --pole); they are more accurate.\n"
-   " NB One or more of options: solid ocean and pole must be provided.\n"
+   " NB One or more of options (solid ocean pole atm) must be provided.\n"
    " NB ocean option requires oceanfile and oceansite.\n"
+   " NB atm option requires atmfile and atmsite.\n"
    " NB pole requires SSEfile and earthfile.\n"
+   " NB SSEfile and earthfile are optional (unless pole); they are more accurate.\n"
    " Input is on the command line, or of the same format in a file (see --file);\n"
    " lines in that file which begin with '#' are ignored.\n"
    " Options are shown below, with a description and default value, if any, in ().\n"
@@ -407,6 +490,8 @@ try {
             "Output Ocean loading [requires oceanfile and oceansite]");
    opts.Add(0, "pole", "", false, req, &C.doPole, "",
             "Output Polar tide [requires SSEfile and earthfile]");
+   opts.Add(0, "atm", "", false, req, &C.doAtm, "",
+            "Output Atmospheric loading [requires atmfile and atmsite]");
    opts.Add('f', "file", "name", true, req, &dummy, "# File I/O:",
             "Name of file containing more options [#-EOL = comment]");
    opts.Add('o', "log", "fn", false, req, &C.logfile, "",
@@ -418,20 +503,24 @@ try {
    opts.Add(0, "dt", "sec", false, req, &C.dt, "",
             "Timestep in seconds");
    opts.Add(0, "refPos", "X,Y,Z", false, req, &C.refPosstr, "",
-            "Position (ECEF XYZ)");
+            "Position for SET (ECEF XYZ)");
    opts.Add(0, "IERS", "year", false, req, &C.iersyear, "",
             "Year of IERS convention: 1996, 2003 or 2010");
    opts.Add(0, "SSEfile", "fn", false, req, &C.SSEfile, "",
             "Solar System ephemeris binary file name [else use simple ephem]");
    opts.Add(0, "earthfile", "fn", false, req, &C.earthfile, "",
-            "Earth orientation parameter file name [if + only if SSE]");
+            "Earth orientation parameter file name [if & only if --SSEfile]");
    opts.Add(0, "oceanfile", "fn", true, req, &C.oceanfile, "",
             "Ocean loading file name");
    opts.Add(0, "oceansite", "name", true, req, &C.oceannames, "",
             "Site name in ocean loading file");
+   opts.Add(0, "atmfile", "fn", true, req, &C.atmfile, "",
+            "Ocean loading file name");
+   opts.Add(0, "atmsite", "name", true, req, &C.atmnames, "",
+            "Site name in atmospheric loading file");
    opts.Add(0, "timefmt", "f", false, req, &C.fmt, "# Output",
             "Output format for time tag");
-   opts.Add(0, "prec", "n", false, req, &C.prec, "",
+   opts.Add('p', "prec", "n", false, req, &C.prec, "",
             "Output precision for offsets");
    opts.Add('d', "debug", "", false, req, &C.debug, "",
             "Print debug output at level 0 [debug<n> for level n=1-7]");
@@ -478,7 +567,7 @@ try {
       if(fields.size() != 3)
          oss << "Error - invalid field in --refPos input: " << C.refPosstr << endl;
       else {
-         try { C.pos.setECEF(StringUtils::asDouble(fields[0]),
+         try { C.posset.setECEF(StringUtils::asDouble(fields[0]),
                              StringUtils::asDouble(fields[1]),
                              StringUtils::asDouble(fields[2]));
          }
@@ -507,7 +596,7 @@ try {
       oss << endl << "   Begin time is " << C.beg.asMJDString() << endl;
       oss << "   End time is " << C.end.asMJDString() << endl;
       oss << "   Position is "
-         << C.pos.printf("ECEF %.4x %.4y %.4z meters") << endl;
+         << C.posset.printf("ECEF %.4x %.4y %.4z meters") << endl;
       oss << "------ End configuration summary --------" << endl;
       C.cmdlineDump = oss.str();
       stripTrailing(C.cmdlineDump,'\n');

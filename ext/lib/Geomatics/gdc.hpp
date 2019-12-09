@@ -57,7 +57,6 @@
 #include "FirstDiffFilter.hpp"
 #include "FDiffFilter.hpp"
 #include "WindowFilter.hpp"
-#include "logstream.hpp"
 
 namespace gpstk {
 
