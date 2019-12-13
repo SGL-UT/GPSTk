@@ -125,7 +125,7 @@ deploy_debian:
   script:
     - cd build
     - export gpstk=`pwd`/install
-    - export PYTHONPATH=$gpstk/lib/python2.7/site-packages
+    - export PYTHONPATH=$gpstk/lib/python3.6/site-packages
     - mkdir -p $PYTHONPATH
     - make install -j 4
     - python -c "import gpstk"
@@ -143,7 +143,7 @@ deploy_redhat:
   script:
     - cd build
     - export gpstk=`pwd`/install
-    - export PYTHONPATH=$gpstk/lib/python2.7/site-packages
+    - export PYTHONPATH=$gpstk/lib/python3.6/site-packages
     - mkdir -p $PYTHONPATH
     - make install -j 4
     - python -c "import gpstk"
