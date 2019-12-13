@@ -10,7 +10,7 @@ stages:
 
 # Default cmake arguments
 variables:
-  CMAKE_ARG_DEFAULT: "-DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON -DPIP_WHEEL_SWITCH=ON ../"
+  CMAKE_ARG_DEFAULT: "-DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON -DPIP_WHEEL_SWITCH=ON -DPYTHON_EXECUTABLE=/usr/bin/python3.6 ../"
 
 # Check Stage
 # Runs static analysis on code.
@@ -210,8 +210,11 @@ package_redhat:
     - cd rpm_files
     - cd SOURCES
     - wget https://repositories.arlut.utexas.edu/sgl/gpstk/-/archive/master/gpstk-master.tar.gz
+    - tar -xvzf gpstk-master.tar.gz
+    - mv gpstk-master gpstk_py36-master
+    - tar -czvf gpstk_py36-master.tar.gz gpstk_py36-master
     - cd ..
-    - rpmbuild --define "_topdir ${PWD}" --define "debug_package %{nil}" -ba SPECS/gpstk.spec
+    - rpmbuild --define "_topdir ${PWD}" --define "debug_package %{nil}" -ba SPECS/gpstk_py36.spec
   artifacts:
     paths:
       - build/rpm_files/RPMS/x86_64/gpstk-*
