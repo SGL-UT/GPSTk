@@ -10,7 +10,7 @@ stages:
 
 # Default cmake arguments
 variables:
-  CMAKE_ARG_DEFAULT: "-DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON -DPIP_WHEEL_SWITCH=ON ../"
+  CMAKE_ARG_DEFAULT: "-DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON -DPIP_WHEEL_SWITCH=ON -DBUILD_FOR_PACKAGE_SWITCH=ON -DPYTHON_EXECUTABLE=/usr/bin/python3.6 ../"
 
 # Check Stage
 # Runs static analysis on code.
@@ -23,12 +23,11 @@ static_analysis:
   # Allow failures here to prevent blocking the rest of the pipeline.
   allow_failure: true
 
-# Build Stage
-# Builds GPSTk for each platform, saves build artifacts for future stages
 build_debian:
   stage: build
   tags:
-    - debian
+    - docker-executor
+  image: debian9_fai_ish
   script:
     - mkdir build
     - cd build
@@ -38,11 +37,29 @@ build_debian:
   artifacts:
     paths:
     - build/
+
+
+build_conda_py36:
+  stage: build
+  tags:
+    - docker-executor
+  image: centos7_conda_py36
+  script:
+    - conda activate py36
+    - mkdir build
+    - cd build
+    - export gpstk=`pwd`/install
+    - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=install $CMAKE_ARG_DEFAULT
+    - make all -j 4
+  artifacts:
+    paths:
+      - build/
 
 build_redhat:
   stage: build
   tags:
-    - redhat
+    - docker-executor
+  image: centos7_sgl
   script:
     - mkdir build
     - cd build
@@ -53,107 +70,62 @@ build_redhat:
     paths:
     - build/
 
-build_windows:
-  stage: build
-  tags:
-    - windows
-  script:
-    - mkdir build
-    - cd build
-    - cmake -DCMAKE_INSTALL_PREFIX=install -DBUILD_EXT=ON -DBUILD_PYTHON=OFF -DTEST_SWITCH=ON -G "Visual Studio 14 2015 Win64" ../
-    - cmake --build . --config Release
-  artifacts:
-    paths:
-    - build/
-# Temporarily allow failures as Windows Runner issues are resolved
-  allow_failure: true
-  only:
-    - schedules
-  except:
-    - merge_requests
-
-build_core:
-  stage: build
-  tags:
-    - core
-  script:
-    - mkdir build
-    - cd build
-    - export gpstk=`pwd`/install
-    - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=install -DCOVERAGE_SWITCH=ON -DBUILD_EXT=OFF -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
-    - make all -j 4
-  artifacts:
-    paths:
-    - build/
 
 # Test Stage
 # Runs all tests of GPSTK for each platform
 test_debian:
   stage: test
   tags:
-    - debian
+    - docker-executor
+  image: debian9_fai_ish
   script:
     - cd build
     - ctest -j 4
+    - touch $CI_PROJECT_DIR/success
   dependencies:
     - build_debian
+  after_script:
+    # Only show the failure log, if there were failures.
+    # Also, the whole log is too long, so grep for lines of interest.
+    - |
+      if [ -e success ]; then
+         echo "Good. Gooooood."
+      else
+         grep "Total Failures for" $CI_PROJECT_DIR/build/Testing/Temporary/LastTest.log
+      fi
 
 test_redhat:
   stage: test
   tags:
-    - redhat
+    - docker-executor
+  image: centos7_sgl
   script:
     - cd build
     - ctest -j 4
+    - touch $CI_PROJECT_DIR/success
   dependencies:
     - build_redhat
-
-test_windows:
-  stage: test
-  tags:
-    - windows
-  script:
-    - cd build
-    - cmake --build . --target RUN_TESTS --config Release
-  dependencies:
-    - build_windows
-  allow_failure: true
-  only:
-    - schedules
-  except:
-    - merge_requests
-
-test_core:
-  stage: test
-  tags:
-    - core
-  script:
-    - cd build
-    - ctest -j 4
-    #- cd ..
-    # Execute once to get the tabular output (which we can scrape for gitlab)
-    #- echo $PWD
-    #- gcovr --object-directory=build/core/tests/ORD/CMakeFiles/OrdUnitTests_T.dir -r . -e .*_T.cpp
-    # Execute again, generating html
-    #- mkdir gcovr
-    #- gcovr --object-directory=build/core/tests/ORD/CMakeFiles/OrdUnitTests_T.dir --html --html-details -o gcovr/index.html -r . -e .*_T.cpp
-  dependencies:
-    - build_core
-  #artifacts:
-  #  paths:
-  #  - gcovr
-  #  expire_in: 2 days
+  after_script:
+    # Only show the failure log, if there were failures.
+    # Also, the whole log is too long, so grep for lines of interest.
+    - |
+      if [ -e success ]; then
+         echo "Good. Gooooood."
+      else
+         grep "Total Failures for" $CI_PROJECT_DIR/build/Testing/Temporary/LastTest.log
+      fi
 
 # Deploy Stage
 # Tests install of GPSTk on each platform, saves artifacts for downstream builds.
 deploy_debian:
   stage: deploy
   tags:
-    - debian
+    - docker-executor
+  image: debian9_fai_ish
   script:
     - cd build
     - export gpstk=`pwd`/install
-    - export PYTHONPATH=$gpstk/lib/python2.7/site-packages
+    - export PYTHONPATH=$gpstk/lib/python3.6/site-packages
     - mkdir -p $PYTHONPATH
     - make install -j 4
     - python -c "import gpstk"
@@ -166,11 +138,12 @@ deploy_debian:
 deploy_redhat:
   stage: deploy
   tags:
-    - redhat
+    - docker-executor
+  image: centos7_sgl
   script:
     - cd build
     - export gpstk=`pwd`/install
-    - export PYTHONPATH=$gpstk/lib/python2.7/site-packages
+    - export PYTHONPATH=$gpstk/lib/python3.6/site-packages
     - mkdir -p $PYTHONPATH
     - make install -j 4
     - python -c "import gpstk"
@@ -181,44 +154,17 @@ deploy_redhat:
     - build_redhat
 
 
-deploy_windows:
-  stage: deploy
-  tags:
-    - windows
-  script:
-    - cd build
-    - cmake --build . --config Release --target install
-  dependencies:
-    - build_windows
-# Temporarily allow failures as Windows Runner issues are resolved
-  allow_failure: true
-  only:
-    - schedules
-  except:
-    - merge_requests
-
-deploy_core:
-  stage: deploy
-  tags:
-    - core
-  script:
-    - cd build
-    - make install -j 4
-  artifacts:
-    paths:
-    - build/install
-  dependencies:
-    - build_core
-
 # Package Stage
 # Tests packaging of GPSTk on all platforms
 package_debian:
   stage: package
   tags:
-    - debian
+    - docker-executor
+  image: debian9_fai_ish
   only:
     refs:
       - master
+      - /^ci_.*$/
   script:
     - rm -rf ../*.deb
     - dpkg-buildpackage -us -uc -d
@@ -233,10 +179,12 @@ package_debian:
 package_debian_wheel:
   stage: package
   tags:
-    - debian
+    - docker-executor
+  image: debian9_fai_ish
   only:
     refs:
       - master
+      - /^ci_.*$/
   script:
     - mkdir dist
     - mv build/swig/module/dist/* dist
@@ -250,18 +198,23 @@ package_debian_wheel:
 package_redhat:
   stage: package
   tags:
-    - redhat
+    - docker-executor
+  image: centos7_sgl
   only:
     refs:
-     - master
+      - master
+      - /^ci_.*$/
   script:
     - cd build
-    - git clone gitlab@repositories.arlut.utexas.edu:sgl/rpm_files.git
+    - git clone https://repositories.arlut.utexas.edu/sgl/rpm_files.git
     - cd rpm_files
     - cd SOURCES
     - wget https://repositories.arlut.utexas.edu/sgl/gpstk/-/archive/master/gpstk-master.tar.gz
+    - tar -xvzf gpstk-master.tar.gz
+    - mv gpstk-master gpstk_py36-master
+    - tar -czvf gpstk_py36-master.tar.gz gpstk_py36-master
     - cd ..
-    - rpmbuild --define "_topdir ${PWD}" --define "debug_package %{nil}" -ba SPECS/gpstk.spec
+    - rpmbuild --define "_topdir ${PWD}" --define "debug_package %{nil}" -ba SPECS/gpstk_py36.spec
   artifacts:
     paths:
       - build/rpm_files/RPMS/x86_64/gpstk-*
@@ -272,10 +225,12 @@ package_redhat:
 package_redhat_wheel:
   stage: package
   tags:
-    - redhat
+    - docker-executor
+  image: centos7_sgl
   only:
     refs:
       - master
+      - /^ci_.*$/
   script:
     - mkdir dist
     - mv build/swig/module/dist/* dist
@@ -286,59 +241,16 @@ package_redhat_wheel:
   dependencies:
     - build_redhat
 
-package_windows:
-  stage: package
-  tags:
-    - windows
-  script:
-    - cd build
-    - cpack -C Release
-  dependencies:
-    - build_windows
-# Temporarily allow failures as Windows Runner issues are resolved
-  allow_failure: true
-  only:
-    - schedules
-  except:
-    - merge_requests
 
-package_core:
-  stage: package
-  tags:
-    - core
-  script:
-    - cd build
-    - make package -j 4
-  dependencies:
-    - build_core
-
-# Downstream Stage
-# Builds SGLTk to test for any downstream issues.
-sgltk_core:
-  stage: downstream
-  tags:
-    - core
-  script:
-    - cd build
-    - git clone gitlab@repositories.arlut.utexas.edu:sgl/sgltk.git
-    - export gpstk=`pwd`/install
-    - export LD_LIBRARY_PATH=$gpstk/lib:$LD_LIBRARY_PATH
-    - cd sgltk
-    - mkdir build
-    - cd build
-    - cmake -DCMAKE_PREFIX_PATH=$gpstk -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
-    - make all -j 4
-  dependencies:
-    - deploy_core
-  allow_failure: true
-
+sgltk_debian:
 sgltk_debian:
   stage: downstream
   tags:
-    - debian
+    - docker-executor
+  image: debian9_fai_ish
   script:
     - cd build
-    - git clone gitlab@repositories.arlut.utexas.edu:sgl/sgltk.git
+    - git clone https://repositories.arlut.utexas.edu/sgl/sgltk.git
     - export gpstk=`pwd`/install
     - export LD_LIBRARY_PATH=$gpstk/lib:$LD_LIBRARY_PATH
     - cd sgltk
@@ -352,10 +264,11 @@ sgltk_debian:
 sgltk_redhat:
   stage: downstream
   tags:
-    - redhat
+    - docker-executor
+  image: centos7_sgl
   script:
     - cd build
-    - git clone gitlab@repositories.arlut.utexas.edu:sgl/sgltk.git
+    - git clone https://repositories.arlut.utexas.edu/sgl/sgltk.git
     - export gpstk=`pwd`/install
     - export LD_LIBRARY_PATH=$gpstk/lib:$LD_LIBRARY_PATH
     - cd sgltk

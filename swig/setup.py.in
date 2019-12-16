@@ -83,6 +83,7 @@ setup(name              = "gpstk",
       package_data      = { 'gpstk': ['_gpstk.so', 'libgpstk.so*'], },
       data_files        = [('', ['README.md',]),],
       scripts           = scripts_list,
+      zip_safe          = False,
       )
 
 #----------------------------------------

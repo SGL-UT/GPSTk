@@ -449,49 +449,46 @@ namespace gpstk
       }
 
          // The map is ordered by beginning times of validity, which
-	 // is another way of saying "earliest transmit time".  A call
+	       // is another way of saying "earliest transmit time".  A call
          // to em.lower_bound( t ) will return the element of the map
-	 // with a key "one beyond the key" assuming the t is NOT a direct
-	 // match for any key. 
+	       // with a key "one beyond the key" assuming the t is NOT a direct
+	       // match for any key. 
 	 
-	 // First, check for the "direct match" case
+	    // First, check for the "direct match" case.   If this is
+      // found, return the result. 
       OrbElemMap::const_iterator it = em.find(t);
-         // If that fails, then use lower_bound( )
-      if (it == em.end( ))    
-      {
-	 it = em.lower_bound(t); 
+      if (it!=em.end())
+         return it->second;
+
+      it = em.lower_bound(t); 
 	              
-	 // Tricky case here.  If the key is beyond the last key in the table,
-	 // lower_bound( ) will return em.end( ).  However, this doesn't entirely
-	 // settle the matter.  It is theoretically possible that the final 
-	 // item in the table may have an effectivity that "stretches" far enough
-	 // to cover time t.   Therefore, if it==em.end( ) we need to check 
-	 // the period of validity of the final element in the table against 
-	 // time t.
-	 //
-	 if (it==em.end())	
-         {
-            OrbElemMap::const_reverse_iterator rit = em.rbegin();
-            if (rit->second->isValid(t)) return(rit->second);   // Last element in map works
+	       // Tricky case here.  If the key is beyond the last key in the table,
+	       // lower_bound( ) will return em.end( ).  However, this doesn't entirely
+	       // settle the matter.  It is theoretically possible that the final 
+	       // item in the table may have an effectivity that "stretches" far enough
+	       // to cover time t.   Therefore, if it==em.end( ) we need to check 
+	       // the period of validity of the final element in the table against 
+	       // time t.
+	       //
+	    if (it==em.end())	
+      {
+         OrbElemMap::const_reverse_iterator rit = em.rbegin();
+         if (rit->second->isValid(t)) return(rit->second);   // Last element in map works
 
-	       // We reached the end of the map, checked the end of the map,
-	       // and we still have nothing.  
-            string mess = "All orbital elements found for satellite " + asString(sat) + " are too early for time "
-               + (static_cast<CivilTime>(t)).printf("%02m/%02d/%04Y %02H:%02M:%02S %P");
-            InvalidRequest e(mess);
-            GPSTK_THROW(e);
-         }
-      } 
+	          // We reached the end of the map, checked the end of the map,
+	          // and we still have nothing.  
+         string mess = "All orbital elements found for satellite " + asString(sat) + " are too early for time "
+            + (static_cast<CivilTime>(t)).printf("%02m/%02d/%04Y %02H:%02M:%02S %P");
+         InvalidRequest e(mess);
+         GPSTK_THROW(e);
+      }
 
-         // If the algorithm found a direct match, then we should 
-	 // probably use the PRIOR set since it takes ~30 seconds
-	 // from beginning of transmission to complete reception.
-	 // If lower_bound( ) was called, it points to the element
-	 // after the time of the key.
-	 // So either way, it points ONE BEYOND the element we want.
-	 //
-	 // The exception is if it is pointing to em.begin( ).  If that is the case,
-	 // then all of the elements in the map are too late.
+         // Since lower_bound( ) was called, "it" points to the element
+	       // after the time of the key.
+	       // That is to say "it" points ONE BEYOND the element we want.
+	       //
+	       // The exception is if it is pointing to em.begin( ).  If that is the case,
+	       // then all of the elements in the map are too late.
       if (it==em.begin())
       {
          string mess = "All orbital elements found for satellite " + asString(sat) + " are too late for time "
@@ -500,13 +497,13 @@ namespace gpstk
          GPSTK_THROW(e);
       }
 
-	 // The iterator should be a valid iterator and set one beyond
-	 // the item of interest.  However, there may be gaps in the 
-	 // middle of the map and cases where periods of effectivity do
-	 // not overlap.  That's OK, the key represents the EARLIEST 
-	 // time the elements should be used.   Therefore, we can 
-	 // decrement the counter and test to see if the element is
-	 // valid. 
+	    // The iterator should be a valid iterator and set one beyond
+	    // the item of interest.  However, there may be gaps in the 
+	    // middle of the map and cases where periods of effectivity do
+	    // not overlap.  That's OK, the key represents the EARLIEST 
+	    // time the elements should be used.   Therefore, we can 
+	    // decrement the counter and test to see if the element is
+	    // valid. 
       it--; 
       if (!(it->second->isValid(t)))
       {

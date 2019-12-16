@@ -58,8 +58,6 @@
 // GPSTk
 #include "Exception.hpp"
 #include "TimeConstants.hpp"
-// geomatics
-#include "logstream.hpp"
 
 namespace gpstk {
 

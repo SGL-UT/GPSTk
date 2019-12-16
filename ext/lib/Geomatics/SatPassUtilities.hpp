@@ -47,7 +47,6 @@
 #include "RinexUtilities.hpp"
 #include "msecHandler.hpp"
 #include "RinexSatID.hpp"
-#include "logstream.hpp"
 
 namespace gpstk {
 

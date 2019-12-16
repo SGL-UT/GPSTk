@@ -1,0 +1,88 @@
+ $$ Atmospheric Tidal loading displacememt
+ $$ 
+ $$ calculated using grdinterp.f (t. van Dam)
+ $$ calculated using atmospheric tidal model Ray and
+ $$ Ponte, Annales Geophysicae (2003) v21; 1897-1910
+ $$ Farrell elastic Greens functions have been used
+ $$ 
+ $$ Displacement is defined positive up, north
+ $$ and east directions, and is in millimeters
+ $$ 
+ $$ total dr(t) = dr(1)*cos(t*w1) + dr(2)*sin(t*w1)
+ $$  + dr(3)*cos(t*w2) + dr(4)*sin(t*w2)
+ $$ If t is fractions of a UT1 day,
+ $$  then w1=2pi radians/day and w2=4pi radians/day.
+ $$ 
+ $$ Column order coss1 sins1 coss2 sins2
+ $$ 
+ $$ Row order:
+ $$ RADIAL
+ $$ TANGENTIAL NS
+ $$ TANGENTIAL EW
+ $$ 
+ $$ 
+ $$ 
+ $$ 
+ $$ station bjfs; coord.(long,lat)   115.892487       39.6086006    
+ $$ 
+ bjfs
+     -0.1688      0.1729     -0.2565     -0.5271
+     -0.0863      0.0368     -0.0232     -0.0367
+     -0.0326     -0.0638      0.0311     -0.0196
+ $$ 
+ $$ station blyt; coord.(long,lat)   245.285156       33.6104164    
+ $$ 
+ blyt
+      0.1142      0.3208      0.6948     -0.2226
+      0.0634      0.0290      0.0629     -0.0186
+     -0.0613      0.0489      0.0099      0.0491
+ $$ 
+ $$ station bogt; coord.(long,lat)   285.919067       4.64007235    
+ $$ 
+ bogt
+      0.4477     -0.2615     -0.1603     -1.2688
+      0.0563     -0.0202     -0.0041     -0.0184
+     -0.0074      0.0860      0.0836     -0.0085
+ $$ 
+ $$ station bor1; coord.(long,lat)   17.0734558       52.2769585    
+ $$ 
+ bor1
+      0.0422      0.0412     -0.0094      0.3658
+     -0.0215     -0.0844     -0.0039      0.0246
+      0.0553      0.0052     -0.0159     -0.0110
+ $$ 
+ $$ station bran; coord.(long,lat)   241.722961       34.1848946    
+ $$ 
+ bran
+      0.0040      0.2430      0.6977     -0.1321
+      0.0507      0.0328      0.0647     -0.0121
+     -0.0661      0.0396      0.0032      0.0491
+ $$ 
+ $$ station bras; coord.(long,lat)   11.1130829       44.1221657    
+ $$ 
+ bras
+      0.0590     -0.0186     -0.1049      0.5228
+     -0.0128     -0.0919     -0.0114      0.0325
+      0.0558      0.0134     -0.0229     -0.0179
+ $$ 
+ $$ station braz; coord.(long,lat)   312.122131      -15.9474754    
+ $$ 
+ braz
+      0.4890     -0.3271     -0.9588     -0.5444
+     -0.0423      0.0502      0.0320      0.0210
+      0.0884      0.0309      0.0390     -0.0630
+ $$ 
+ $$ station reyk; coord.(long,lat)   338.044495       64.1388016    
+ $$ 
+ reyk
+     -0.0190      0.2066     -0.2174      0.0749
+      0.0128     -0.0384     -0.0124     -0.0028
+      0.0312      0.0149      0.0102     -0.0099
+ $$ 
+ $$ station onsa; coord.(long,lat)   11.9264002       57.3958015    
+ $$ 
+ onsa
+      0.0562      0.1231     -0.0739      0.2793
+     -0.0131     -0.0680     -0.0076      0.0164
+      0.0517      0.0126     -0.0082     -0.0128
+ $$ 
