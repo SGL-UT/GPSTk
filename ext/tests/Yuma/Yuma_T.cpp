@@ -35,55 +35,89 @@
 //==============================================================================
 
 /*********************************************************************
-*  $Id$
 *
-*  Test program from November 2006.  Written to test the YumaAlmRecord.cpp
-*  module..
+*  Test program to exercise YumaBase, YumaData, YumaStream.
 *
 // *********************************************************************/
+// System
+#include <iostream>
+#include <fstream>
 
 #include "YumaData.hpp"
 #include "YumaStream.hpp"
 #include "YumaBase.hpp"
-#include "SMODFData.hpp"
+
+#include "build_config.h"
+#include "TestUtil.hpp"
 
 using namespace std;
 using namespace gpstk;
 
 int main( int argc, char * argv[] )
 {
+   TUDEF("Yuma_T","readData");
+
+   string origFile("yuma377.txt");
+   string testFile("test_output_yuma377.out");
+   string testFile2("test_output_Yuma_T.out");
+
+   std::list<OrbAlmGen> oagList;
+
       // Read an existing Yuma almanac file and write it back out.
    try
    {
-   YumaStream In("yuma377.txt");
-   YumaStream Out("yuma377.dbg", ios::out);
-   YumaData Data;
+      string fs = getFileSep();
+      string df(getPathData()+fs);
+      string inFile = df + origFile;
+
+      string tf(getPathTestTemp()+fs);
+      string outFile1 = tf + testFile; 
+
+      YumaStream In(inFile.c_str());
+      YumaStream Out(outFile1.c_str(), ios::out);
+      YumaData Data;
+
+      string outFile2 = tf + testFile2; 
+      ofstream outAlmDmp;
+      outAlmDmp.open(outFile2.c_str(),ios::out);
+
+      while (In >> Data)
+      {
+         Out << Data;
+
+         OrbAlmGen oag = OrbAlmGen(Data);
+         oag.dump(outAlmDmp);
+         oagList.push_back(oag);
+      }
+      In.close();
+      Out.close();
    
-   while (In >> Data)
-   {
-      Out << Data;
-   }
-   
-   YumaStream In2("yuma377.dbg");
-   YumaStream Out2("yuma377_2.dbg", ios::out);
-   
-   while (In2 >> Data)
-   {
-      Out2 << Data;
-   }
-   
-   }
+      TUCSM("RereadData");
+      YumaStream In2(outFile1.c_str(), ios::in);
+      std::list<OrbAlmGen>::const_iterator cit = oagList.begin(); 
+      int index = 0; 
+      while (In2 >> Data)
+      {
+         OrbAlmGen oag2 = OrbAlmGen(Data);
+         const OrbAlmGen& oagRef = *cit;
+         bool test = oag2.isSameData(&(oagRef));
+         TUASSERTE(bool,test,true);
+         index++;
+         cit++;
+      }
+      outAlmDmp.close();
+    }
    catch(gpstk::Exception& e)
    {
-      cout << e;
-      exit(1);
+      stringstream ss;
+      ss << e;
+      TUFAIL(ss.str());
    }
    catch (...)
    {
-      cout << "unknown error.  Done." << endl;
-      exit(1);
+      stringstream ss;
+      ss << "unknown error.  Done.";
+      TUFAIL(ss.str());
    }
-
-   
-   return(0);
+   TURETURN();
 }
