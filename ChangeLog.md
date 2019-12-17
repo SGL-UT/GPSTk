@@ -468,7 +468,7 @@ Version 2.10.6   Monday, September 24, 2018
    ---------------------
 
 Bryan Parsons (4):
-      Comments were found that were referencing ICD-GPS-211 instead of IS-GPS-200.  These comments were updated.
+      Comments were found that were referencing incorrect ICD.  These comments were updated.
       Merge branch 'comment_fix' into 'master'
       Merge branch 'issue_351' into 'master'
       Updated debian/libgpstk-dev.install to fix debian install error mentioned in issue #353
@@ -1121,8 +1121,8 @@ Bryan Parsons (19):
       Update rowdiff.cpp
 
 John H. Price (2):
-      Added newlines to rowdiff for clarity (reverted per MSN request)
-      Rinex 2 date format matched to previous Rinex class output. rowdiff newline after epochs for readability. (reverted per MSN request)
+      Added newlines to rowdiff for clarity (reverted per request)
+      Rinex 2 date format matched to previous Rinex class output. rowdiff newline after epochs for readability. (reverted per request)
 
 Jon C. Little (2):
       Added ability to process Windows line endings (CR/LF)
@@ -1696,7 +1696,7 @@ Andrew Joplin (2):
 
 Anthony Hughes (4):
       Make output of END OF HEADER mandatory in reallyPutRecord.
-      Handle NGA-specific event extension to SP3a during output; fixed SP3b SV ID format; added basic unit tests.
+      Handle event extension to SP3a during output; fixed SP3b SV ID format; added basic unit tests.
       Added a more correct and efficient addSubframe() variant that accepts the subframe as an array of uint32_t, thus avoiding several array copies.
       Fixed exception specifications for several methods that could throw despite throw().
 
@@ -1849,7 +1849,7 @@ Steve Johnson (3):
       Fix redhat, solaris, osx broken builds
 
 anthony (1):
-      Merge branch 'issue_232_sp3_nga' into 'master'
+      Merge branch 'issue_232_sp3' into 'master'
 
 johnk (103):
       Doxygen overhaul part 1
@@ -2331,7 +2331,7 @@ Version 2.7   Friday, October 16, 2015
    ---------------------
 Anthony Hughes (14):
       Ensure that SinexBlock contents are subclasses of Sinex::DataType.
-      Updated BINEX classes with latest MSN changes: typedefs, bugfixes, and tweeks.
+      Updated BINEX classes with latest changes: typedefs, bugfixes, and tweeks.
       Added GPSTK_ASSERT macro.
       Added CommandOptionWithDecimalArg.
       Added const versions of encodeVar and decodeVar; added some inline directives; fixed a decodeVar unit test error.
@@ -2628,7 +2628,7 @@ Bryan Parsons (40):
       Submitted by Brian Tolman - PRSplot.pl update
       RefTime/TimeHandling Lib folders have migrated from Ext to Core.  First round of Unit Tests have been pulled from /tets folder for usage.
       Merge RefTime/TimeHandling migration to UpStream Master changes.
-      Targetted MSN Merger Classes, with tests, have migrated from /ext and /tests to /core and /core/tests
+      Targeted Classes, with tests, have migrated from /ext and /tests to /core and /core/tests
       Current tests have been consolidated, from Nick and /tests folder, into the current test framework.  Placeholder tests have been added and designated with an *, with some tests still needing attention due to build issues.
       TimeTag class bug fix - Nick.  Ext -> Core file movement.
       Pull down from gitlab repository.
@@ -2858,7 +2858,7 @@ Nick Fitzsimmons (74):
       Update for TestUtil.hpp to include the three extra methods to change a string in the output and the passTest and failTest methods. ANSITime_T.cpp has been updated to reflect these changes.
       Updated core/lib/GNSSEph/RinexEphemerisStore.cpp so that the loadFile method will open the file before reading from it. Updated TestUtil.hpp so that passTest() and failTest() will increment the test counter properly. Updated CivilTime_T.cpp so to remove a couple of redundant tests.
       I broke the build. It is now fixed. RinexEphemerisStore::loadFile will no longer use the is_open method derived from the (great-grand)parent fstream class. The new method is to use a simple !RinexNavStream_Object to denote whether the file has been opened.
-      Adding minor comment changes to ANSITime_T and CivilTime_T. Also adding a completed RinexEphemerisStore_T. This new test has many failures associated with it. These failures are documented on GPSTk-MSNTk merger Test Bug list. Also some small functionality has been removed from GPSEphemeris in that the dumpHeader method will no longer rely on the SVNumXRef class in ext.
+      Adding minor comment changes to ANSITime_T and CivilTime_T. Also adding a completed RinexEphemerisStore_T. This new test has many failures associated with it. These failures are documented on Test Bug list. Also some small functionality has been removed from GPSEphemeris in that the dumpHeader method will no longer rely on the SVNumXRef class in ext.
       Commit to clean up a number of small issues:       1) core/tests/CMakeLists.txt now only includes directories where GPSTk tests have been written. Be sure to update this list as you move to the skipped directories.       2) core/tests/Math/Vector_T.cpp did not compile. This has been fixed.       3) core/tests/TimeHandling/CivilTime_T.cpp and core/tests/TimeHandling/YDSTime_T.cpp have been updated to fail as per the bug page.
       Forgot to cleanup the GNSSEph directory and remove some comments as the test was being built. Also removing IonoModel_T so that the tests will build on non cppunit machines when cloned.
       Commit changes the following:
@@ -2866,7 +2866,7 @@ Nick Fitzsimmons (74):
       Pulling changes which include the addition of Sinex.
       Adding core/tests/Utilities/StringUtils_T.cpp tests.
       When trying to build with the SunSolaris compiler, there are issues.     These issues stem from the use of __func__ which CC does not recognize.     The changes are:
-      Commit for test result filtering and new additions:     1) All test result output which contained additional commas have been revised.     2) RinexEphemerisStore_T test results now correctly reflect which of the parent        classes to RinexEphemerisStore is actually under test.     3) Added TimeRange.hpp and TimeRange.cpp from MSNTk to core/lib/TimeHandling     4) Added an unfinished test for TimeRange to core/tests/TimeHandling
+      Commit for test result filtering and new additions:     1) All test result output which contained additional commas have been revised.     2) RinexEphemerisStore_T test results now correctly reflect which of the parent        classes to RinexEphemerisStore is actually under test.     3) Added TimeRange.hpp and TimeRange.cpp to core/lib/TimeHandling     4) Added an unfinished test for TimeRange to core/tests/TimeHandling
       Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
       Build broke in last commit. Updating the CMakeLists.txt file to reflect the change fixes the build.
       Commiting the completed TimeRange_T.cpp file.
