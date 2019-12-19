@@ -69,16 +69,11 @@ int main( int argc, char * argv[] )
       string fs = getFileSep();
       string df(getPathData()+fs);
       string inFile = df + origFile;
-      //string inFile = "/v/scratch/refrob/currentYuma.txt.txt";
-      cout << "inFile: '" << inFile << "'." << endl;
 
       string tf(getPathTestTemp()+fs);
       string outFile1 = tf + testFile; 
-      cout << "outFile1: '" << outFile1 << "'." << endl;
 
-      cout << "Constructing (and opening) In." << endl;
       SEMStream In(inFile.c_str());
-      cout << "Back from constructing In." << endl;
       if (!In)
       {
          stringstream ss;
@@ -93,11 +88,9 @@ int main( int argc, char * argv[] )
       string outFile2 = tf + testFile2; 
       ofstream outAlmDmp;
       outAlmDmp.open(outFile2.c_str(),ios::out);
-   
 
       In >> Header;
       Out << Header;
-      Header.dump(cout); 
       while (In >> Data)
       {
          Out << Data;
@@ -108,6 +101,29 @@ int main( int argc, char * argv[] )
       }
       In.close();
       Out.close();
+
+      TUCSM("RereadData");
+      SEMStream In2(outFile1.c_str(), ios::in);
+      if (!In2)
+      {
+         stringstream ss;
+         ss << "Test file " << outFile1 << " could not be re-opened." << endl;
+         TUFAIL(ss.str());
+         TURETURN();
+      }
+      SEMHeader Header2;
+      In2 >> Header2;
+      std::list<OrbAlmGen>::const_iterator cit = oagList.begin(); 
+      int index = 0; 
+      while (In2 >> Data)
+      {
+         OrbAlmGen oag2 = OrbAlmGen(Data);
+         const OrbAlmGen& oagRef = *cit;
+         bool test = oag2.isSameData(&(oagRef));
+         TUASSERTE(bool,test,true);
+         index++;
+         cit++;
+      }
       outAlmDmp.close();
    }
    catch(gpstk::Exception& e)
