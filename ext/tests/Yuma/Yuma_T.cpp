@@ -57,7 +57,7 @@ int main( int argc, char * argv[] )
 {
    TUDEF("Yuma_T","readData");
 
-   string origFile("yuma377.txt");
+   string origFile("test_input_yuma377.txt");
    string testFile("test_output_yuma377.out");
    string testFile2("test_output_Yuma_T.out");
 
