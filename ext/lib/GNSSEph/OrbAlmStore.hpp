@@ -190,6 +190,7 @@ namespace gpstk
          return false;
       }
 
+      virtual std::list<gpstk::SatID> getSatIDList() const; 
       virtual std::set<gpstk::SatID> getIndexSet() const; 
 
       //---------------------------------------------------------------
