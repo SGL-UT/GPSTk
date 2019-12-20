@@ -42,7 +42,7 @@
 #ifndef YUMAALMANACSTORE_HPP
 #define YUMAALMANACSTORE_HPP
 
-#include "GPSAlmanacStore.hpp"
+#include "OrbAlmStore.hpp"
 #include "FileStore.hpp"
 #include "YumaData.hpp"
 #include "YumaStream.hpp"
@@ -52,7 +52,7 @@ namespace gpstk
    /// @ingroup ephemstore 
    //@{
    class YumaAlmanacStore : public FileStore<YumaHeader>, 
-                            public GPSAlmanacStore
+                            public OrbAlmStore
    {
    public:
       YumaAlmanacStore(const CommonTime& dtInterest =
@@ -63,6 +63,9 @@ namespace gpstk
       
       void loadFile(const std::string& filename) 
          throw(FileMissingException);
+
+      bool addAlmanac(const YumaData& yAlmData)
+         throw(InvalidParameter, Exception);
          
       CommonTime timeOfInterest;
    };

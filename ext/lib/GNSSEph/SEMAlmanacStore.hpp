@@ -42,7 +42,7 @@
 #ifndef SEMALMANACSTORE_HPP
 #define SEMALMANACSTORE_HPP
 
-#include "GPSAlmanacStore.hpp"
+#include "OrbAlmStore.hpp"
 #include "FileStore.hpp"
 #include "SEMData.hpp"
 #include "SEMStream.hpp"
@@ -53,7 +53,7 @@ namespace gpstk
    //@{
 
    class SEMAlmanacStore : public FileStore<SEMHeader>, 
-                           public GPSAlmanacStore
+                           public OrbAlmStore
    {
    public:
       SEMAlmanacStore(const gpstk::CommonTime& dtInterest=
@@ -64,6 +64,9 @@ namespace gpstk
       
       void loadFile(const std::string& filename) 
          throw(FileMissingException);
+
+      bool addAlmanac(const SEMData& sAlmData)
+         throw(InvalidParameter, Exception);
          
       gpstk::CommonTime timeOfInterest;
    };
