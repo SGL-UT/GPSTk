@@ -181,10 +181,19 @@ namespace gpstk
       // Find next header line.
       // We don't need the header line as we will get all the information from the others
       bool found = false;
+      unsigned lineCount = 0; 
       while (!found)
       {
           strm.formattedGetLine(line, true);
           if (line.substr(0,2).compare("**")==0) found = true;
+          lineCount++;
+             // If we don't find a header within 14 lines (which is the length
+             // of a Yuma record) assume we will not find one.
+          if (!found && lineCount>14)
+          {
+             FFStreamError exc("Could not find Yuma record.");
+             GPSTK_THROW(exc);
+          }  
       }
 
       //Second Line - PRN
