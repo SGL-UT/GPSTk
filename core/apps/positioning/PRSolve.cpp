@@ -2188,7 +2188,7 @@ bool SolutionObject::ValidateDescriptor(const string desc, string& msg)
    // Now we can assumes descriptor is single system and does NOT contain +
    fields = split(desc,':');
 
-   // test system
+   // is system valid?
    string sys(fields[0]);
    string sys1(ObsID::map3to1sys[sys]);
    if(!sys1.size() || ObsID::validRinexSystems.find_first_of(sys1[0])==string::npos) {
@@ -2197,24 +2197,37 @@ bool SolutionObject::ValidateDescriptor(const string desc, string& msg)
    }
    char csys(sys1[0]);
 
-   // test freq(s) and code(s)
-   if(fields[1].size() > 2) {
+   // are there too many frequencies?
+   const unsigned int nfreq(fields[1].size());
+   if(nfreq > 2) {
       msg = desc + " : only 1 or 2 frequencies allowed";
       return false;
    }
 
-   for(i=0; i<fields[1].size(); i++) {
+   // are these frequencies valid in this system?
+   for(i=0; i<nfreq; i++) {
       if(ObsID::validRinexTrackingCodes[csys].find(fields[1][i]) ==
          ObsID::validRinexTrackingCodes[csys].end())
       {
          msg = desc + string(" : invalid frequency /") + fields[1][i] + string("/");
          return false;
       }
-      string codes = ObsID::validRinexTrackingCodes[csys][fields[1][i]];
-      // GPS C1N and C2N are not allowed
-      if(csys == 'G' && (fields[1][i] == '1'||fields[1][i] == '2')) strip(codes,'N');
-      for(j=0; j<fields[2].size(); j++) {
-         if(codes.find_first_of(fields[2][j]) == string::npos) {
+   }
+
+   // are these codes valid in this system and freq? (codes1 is blank if single freq)
+   string codes1, codes0 = ObsID::validRinexTrackingCodes[csys][fields[1][0]];
+   if(nfreq > 1)  codes1 = ObsID::validRinexTrackingCodes[csys][fields[1][1]];
+
+   // GPS C1N and C2N are not allowed
+   if(csys == 'G') {
+      if(fields[1][0] == '1' || fields[1][0] == '2') strip(codes0,'N');
+      if(nfreq > 1 && (fields[1][1] == '1' || fields[1][1] == '2')) strip(codes1,'N');
+   }
+
+   // are codes valid for sys, either freq?
+   for(j=0; j<fields[2].size(); j++) {
+      if(codes0.find_first_of(fields[2][j]) == string::npos) {
+         if(codes1.empty() || codes1.find_first_of(fields[2][j]) == string::npos) {
             msg = desc + string(" : invalid code /") + fields[2][j] + string("/");
             return false;
          }
