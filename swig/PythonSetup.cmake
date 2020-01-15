@@ -42,8 +42,8 @@ if( ${PYTHON_CUSTOM_CONFIG} MATCHES "NOTFOUND" )
   # will be copacetic with. So, we set CMAKE_INCLUDE_PATH to what is returned
   # by the found python-config
   if( ${PYTHON_VERSION_MAJOR} EQUAL 3 )
-    execute_process( COMMAND "${PYTHON_EXECUTABLE}-config" "--includes" OUTPUT_VARIABLE PYTHON_INCLUDES)
-    execute_process( COMMAND "${PYTHON_EXECUTABLE}-config" "--prefix" OUTPUT_VARIABLE PYTHON_PREFIX)
+    execute_process( COMMAND "${PYTHON_EXECUTABLE}3-config" "--includes" OUTPUT_VARIABLE PYTHON_INCLUDES)
+    execute_process( COMMAND "${PYTHON_EXECUTABLE}3-config" "--prefix" OUTPUT_VARIABLE PYTHON_PREFIX)
 
     string(REGEX MATCH "^-I(.*) " _python_include ${PYTHON_INCLUDES})
     string(STRIP ${_python_include} _python_include)
