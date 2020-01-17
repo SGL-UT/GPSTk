@@ -1,6 +1,25 @@
+gpstk (2.12.2-1) stable; urgency=medium
+
+  * Update to upstream version 2.12.2
+  * Build for Stretch
+
+ -- Bryan Parsons <bparsons@arlut.utexas.edu>  Fri, 17 Jan 2020 12:09:38 -0600
+
+gpstk (2.12.2-1~bpo9+2) stable; urgency=medium
+
+  * Rebuild for wheezy-backports
+
+ -- Bryan Parsons <bparsons@arlut.utexas.edu>  Fri, 17 Jan 2020 12:08:38 -0600
+
+gpstk (2.12.2-1~bpo9+3) stable; urgency=medium
+
+  * Rebuild for jessie-backports
+
+ -- Bryan Parsons <bparsons@arlut.utexas.edu>  Fri, 17 Jan 2020 12:07:38 -0600
+
 gpstk (2.12.1-2) stable; urgency=medium
 
-  * Rebuild for Stretch 
+  * Rebuild for Stretch
 
  -- Bryan Parsons <bparsons@clau>  Wed, 16 Oct 2019 10:25:41 -0500
 
