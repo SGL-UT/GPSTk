@@ -176,6 +176,25 @@ package_debian:
   dependencies:
     - build_debian
 
+package_conda:
+  stage: package
+  tags:
+    - docker-executor
+  image: deb9_conda_py36
+  only:
+    refs:
+      - master
+      - /^ci_.*$/
+  script:
+    - conda activate conda_builder
+    - export GIT_COMMIT=$CI_COMMIT_REF_NAME
+    - conda-build conda_recipe
+    - conda-build conda_recipe_py36
+  artifacts:
+    paths:
+    - conda_envs/conda_builder/conda-bld/linux-64/
+  dependencies: []
+
 package_debian_wheel:
   stage: package
   tags:
@@ -239,7 +258,6 @@ package_redhat_wheel:
     - build_redhat
 
 
-sgltk_debian:
 sgltk_debian:
   stage: downstream
   tags:

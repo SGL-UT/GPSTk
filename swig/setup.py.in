@@ -58,11 +58,6 @@ classifiers_list = ['License :: OSI Approved :: GNU Library or Lesser General Pu
 # Dependencies for easy_install (may not be needed)
 requirements_list = [ "python >= 2.7.3",
                       "numpy >= 1.4.4",
-                      "doxygen >= 1.8.1",
-                      "cmake >= 2.8",
-                      "make >= 3.81",
-                      "gcc >= 4.7.2",
-                      "swig >= 2.0",
                       "setuptools >= 0.6",
                       ]
 
