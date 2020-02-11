@@ -1,3 +1,16 @@
+Version 3.0.0  Tuesday, February 11, 2020
+
+   Modifications by Author
+   ---------------------
+   Andy Kuck (1):
+         Add Conda Recipe
+
+   Bryan Parsons (1):
+         Merge branch 'ci_conda' into 'master'
+
+
+   #################################################
+
 Version 2.12.2   Wednesday, January 15, 2020
 
    Modifications by Author
