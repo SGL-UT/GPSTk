@@ -1,0 +1,35 @@
+package:
+  name: gpstk
+  version: {{ environ.get('GIT_DESCRIBE_TAG', 'v0.0')[1:] }}
+
+source:
+  git_rev: {{ environ.get('GIT_COMMIT', 'master') }}
+  git_url: https://repositories.arlut.utexas.edu/sgl/gpstk.git
+
+build:
+  number: {{ environ.get('GIT_DESCRIBE_NUMBER', 0) }}
+  script_env:
+    - GIT_COMMIT
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ cdt('xorg-x11-proto-devel') }}  # [linux]
+  host:
+    - python=2.7
+    - setuptools
+    - numpy {{ numpy }}
+  run:
+    - python=2.7
+    - {{ pin_compatible('numpy') }}
+
+test:
+  imports:
+    - gpstk
+
+about:
+  home: https://repositories.arlut.utexas.edu:sgl/gpstk
+  summary: The GPS Toolkit (GPSTk)
+  description: |
+    The GPS Toolkit (GPSTk) is an open-source (LGPL) project sponsored by
+    the Space and Geophysics Laboratory (SGL).
