@@ -1,21 +1,12 @@
 #pragma ident "$Id$"
 
-/**
- * @file FFStream.hpp
- * Formatted File Stream, root class to provide formatted I/O
- * operators ('<<' & '>>')
- */
-
-#ifndef GPSTK_FFSTREAM_HPP
-#define GPSTK_FFSTREAM_HPP
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
 //  The GPSTk is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU Lesser General Public License as published
-//  by the Free Software Foundation; either version 2.1 of the License, or
+//  by the Free Software Foundation; either version 3.0 of the License, or
 //  any later version.
 //
 //  The GPSTk is distributed in the hope that it will be useful,
@@ -26,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//
+//  
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -34,21 +25,29 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S.
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software.
+//duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024
+//Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
 //                           release, distribution is unlimited.
 //
 //=============================================================================
 
+/**
+ * @file FFStream.hpp
+ * Formatted File Stream, root class to provide formatted I/O
+ * operators ('<<' & '>>')
+ */
 
+#ifndef GPSTK_FFSTREAM_HPP
+#define GPSTK_FFSTREAM_HPP
 
 #include <iostream>
 #include <fstream>
+#include <istream>
 #include <string>
 #include <typeinfo>
 
@@ -117,7 +116,7 @@ namespace gpstk
        * @warning When using open(), the internal header data of the stream
        * is not guaranteed to be retained.
        */
-   class FFStream : public std::fstream
+   class FFStream : public std::basic_iostream<char>
    {
    public:
 
@@ -128,8 +127,20 @@ namespace gpstk
          /**
           * Default constructor
           */
-      FFStream()
-            : recordNumber(0) {};
+      FFStream();
+      
+         /** Construction from another stream for decoration
+          *
+          * @param anotherStream
+          */
+      FFStream(std::basic_iostream<char>& anotherStream);
+
+         /** Common constructor.
+          *
+          * @param fn file name.
+          * @param mode file open mode (std::ios)
+          */
+      FFStream( const char* fn, std::ios::openmode mode=std::ios::in );
 
 
          /** Common constructor.
@@ -137,19 +148,7 @@ namespace gpstk
           * @param fn file name.
           * @param mode file open mode (std::ios)
           */
-      FFStream( const char* fn, std::ios::openmode mode=std::ios::in )
-         : std::fstream(fn, mode), recordNumber(0), filename(fn)
-      { clear(); }
-
-
-         /** Common constructor.
-          *
-          * @param fn file name.
-          * @param mode file open mode (std::ios)
-          */
-      FFStream( const std::string& fn, std::ios::openmode mode=std::ios::in )
-         : std::fstream(fn.c_str(), mode), recordNumber(0), filename(fn)
-      { clear(); };
+      FFStream( const std::string& fn, std::ios::openmode mode=std::ios::in );
 
 
          /**
@@ -205,6 +204,9 @@ namespace gpstk
 
          return true;
       }
+      
+      virtual void close();
+      virtual bool is_open();
 
 
          ///@name Data members
@@ -221,14 +223,17 @@ namespace gpstk
       std::string filename;
 
          //@}
-
+      
+      
 
          /// FFData is a friend so it can access the try* functions.
       friend class FFData;
 
 
    protected:
-
+     
+      std::fstream fileStream; // used only in file system case;
+      
 
          /// Encapsulates shared try/catch blocks for all file types
          /// to hide std::exception.
@@ -239,7 +244,7 @@ namespace gpstk
          /// Encapsulates shared try/catch blocks for all file types
          /// to hide std::exception.
       virtual void tryFFStreamPut(const FFData& rec)
-         throw(FFStreamError, gpstk::StringUtils::StringException);
+         throw(FFStreamError, gpstk::StringUtils::StringException,std::bad_cast);
 
 
    }; // End of class 'FFStream'

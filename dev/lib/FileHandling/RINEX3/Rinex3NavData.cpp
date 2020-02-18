@@ -1,5 +1,4 @@
-/// @file Rinex3NavData.cpp
-/// Encapsulates RINEX 3 Navigation data.
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -7,7 +6,7 @@
 //
 //  The GPSTk is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU Lesser General Public License as published
-//  by the Free Software Foundation; either version 2.1 of the License, or
+//  by the Free Software Foundation; either version 3.0 of the License, or
 //  any later version.
 //
 //  The GPSTk is distributed in the hope that it will be useful,
@@ -18,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//
+//  
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -26,16 +25,19 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S.
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software.
+//duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024
+//Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
 //                           release, distribution is unlimited.
 //
 //=============================================================================
+
+/// @file Rinex3NavData.cpp
+/// Encapsulates RINEX 3 Navigation data.
 
 #include "Rinex3NavData.hpp"
 
@@ -47,6 +49,7 @@
 #include "TimeString.hpp"
 #include "GNSSconstants.hpp"
 #include "StringUtils.hpp"
+#include <assert.h>
 
 namespace gpstk
 {
@@ -74,6 +77,7 @@ namespace gpstk
 
       // clock
       Toc = rnd.Toc;
+      assert(Toc >= 0 && Toc < (FULLWEEK));
       af0 = rnd.af0;
       af1 = rnd.af1;
       af2 = rnd.af2;
@@ -110,6 +114,7 @@ namespace gpstk
       PRNID = sat.id;
 
       //Toc = static_cast<GPSWeekSecond>(oeptr->ctToe).getSOW();
+      Toc = 0.0;
       af0 = oeptr->af0;
       af1 = oeptr->af1;
       af2 = oeptr->af2;
@@ -139,11 +144,12 @@ namespace gpstk
       loadFrom(dynamic_cast<const OrbitEph*>(&gpseph));
 
       Toc = static_cast<GPSWeekSecond>(gpseph.ctToc).getSOW();
+      assert(Toc >= 0 && Toc < (FULLWEEK));
       Toe = static_cast<GPSWeekSecond>(gpseph.ctToe).getSOW();
       HOWtime = gpseph.HOWtime;
       weeknum = static_cast<GPSWeekSecond>(gpseph.transmitTime).getWeek();
 
-      accuracy = gpseph.accuracyFlag;
+      accuracy = gpseph.accuracy;
       health = gpseph.health;
 
       codeflgs = gpseph.codeflags;
@@ -163,6 +169,7 @@ namespace gpstk
       loadFrom(dynamic_cast<const OrbitEph*>(&galeph));
 
       Toc = static_cast<GALWeekSecond>(galeph.ctToc).getSOW();
+      assert(Toc >= 0 && Toc < (FULLWEEK));
       Toe = static_cast<GALWeekSecond>(galeph.ctToe).getSOW();
       HOWtime = galeph.HOWtime;
       weeknum = static_cast<GPSWeekSecond>(galeph.transmitTime).getWeek();
@@ -181,6 +188,7 @@ namespace gpstk
       loadFrom(dynamic_cast<const OrbitEph*>(&bdseph));
 
       Toc = static_cast<BDSWeekSecond>(bdseph.ctToc).getSOW();
+      assert(Toc >= 0 && Toc < (FULLWEEK));
       Toe = static_cast<BDSWeekSecond>(bdseph.ctToe).getSOW();
       HOWtime = bdseph.HOWtime;
       weeknum = static_cast<BDSWeekSecond>(bdseph.transmitTime).getWeek();
@@ -200,6 +208,7 @@ namespace gpstk
       loadFrom(dynamic_cast<const OrbitEph*>(&qzseph));
 
       Toc = static_cast<QZSWeekSecond>(qzseph.ctToc).getSOW();
+      assert(Toc >= 0 && Toc < (FULLWEEK));
       Toe = static_cast<QZSWeekSecond>(qzseph.ctToe).getSOW();
       HOWtime = qzseph.HOWtime;
       weeknum = static_cast<QZSWeekSecond>(qzseph.transmitTime).getWeek();
@@ -232,6 +241,7 @@ namespace gpstk
       time   = ee.getEpochTime();
 
       Toc     = ee.getToc();
+      assert(Toc >= 0 && Toc < (FULLWEEK));
       HOWtime = long(ee.getHOWTime(1));
       weeknum = ee.getFullWeek();
 
@@ -288,6 +298,8 @@ namespace gpstk
       sat    = RinexSatID(PRNID,SatID::systemGlonass);
       time   = gloe.getEpochTime();
 
+      Toc = 0.0;
+
          // GLONASS parameters
       TauN = gloe.getTauN();
       GammaN = gloe.getGammaN();
@@ -324,7 +336,6 @@ namespace gpstk
        *          to its pre-read position.
        */
    void Rinex3NavData::reallyGetRecord(FFStream& ffs)
-      throw(exception, FFStreamError, StringException)
    {
 
       try {
@@ -633,13 +644,34 @@ namespace gpstk
       if(!gpse.dataLoadedFlag)
          return gpse;          // throw?
 
+         // Special case to address common problem in IGS aggregate brdc
+         // files.   In some cases (typ. beginning of week) the last
+         // SF 1/2/3 for the previous day is being output with a HOWtime of 
+         // zero.  This leaves it in conflict with the first SF 1/2/3 of
+         // the new day (which typically has a HOW of zero)
+      long adjHOWtime = HOWtime;
+      short adjWeeknum = weeknum;
+      long lToc = (long) Toc;
+      if ((HOWtime%SEC_PER_DAY)==0 && 
+         ((lToc)%SEC_PER_DAY)==0 &&
+           HOWtime == lToc) 
+      {
+         adjHOWtime = HOWtime - 30;  
+         if (adjHOWtime<0)
+         {
+            adjHOWtime += FULLWEEK;  
+            adjWeeknum--;     
+         }
+      }
+         // end special case adjustment (except for use of adjHOWtime below)
+
       // get the epochs right
       CommonTime ct = time;
       //unsigned int year = static_cast<CivilTime>(ct).year;
 
       // Get week for clock, to build Toc
-      double dt = Toc - HOWtime;
-      int week = weeknum;
+      double dt = Toc - adjHOWtime;
+      int week = adjWeeknum;
       if(dt < -HALFWEEK) week++; else if(dt > HALFWEEK) week--;
       gpse.ctToc = GPSWeekSecond(week, Toc, TimeSystem::GPS);
       gpse.ctToc.setTimeSystem(TimeSystem::GPS);
@@ -648,12 +680,13 @@ namespace gpstk
       gpse.IODC = IODC;
       gpse.IODE = IODE;
       gpse.health = health;
-      gpse.accuracyFlag = accuracy;
+      gpse.accuracy = accuracy;
       gpse.Tgd = Tgd;
 
       gpse.HOWtime = HOWtime;
       week = static_cast<GPSWeekSecond>(gpse.ctToe).getWeek();
-      gpse.transmitTime = GPSWeekSecond(weeknum, static_cast<double>(HOWtime),
+      
+      gpse.transmitTime = GPSWeekSecond(adjWeeknum, static_cast<double>(adjHOWtime),
          TimeSystem::GPS);
 
       gpse.codeflags = codeflgs;
@@ -931,7 +964,13 @@ namespace gpstk
       if(satSys == "R" || satSys == "S") {
          line += doubleToScientific(TauN,19,12,2);
          line += doubleToScientific(GammaN,19,12,2);
-         line += doubleToScientific((double)MFtime,19,12,2);
+         if(satSys == "R" && strm.header.version < 3) {
+            long mftime = MFtime;
+            mftime -= int(Toc/86400) * 86400;
+            line += doubleToScientific((double)mftime,19,12,2);
+         } else {
+            line += doubleToScientific((double)MFtime,19,12,2);
+         }
       }
       else if(satSys == "G" || satSys == "E" || satSys == "J" || satSys == "C") {
          line += doubleToScientific(af0,19,12,2);
@@ -1167,6 +1206,8 @@ namespace gpstk
          // TOC is the clock time
          GPSWeekSecond gws(time);         // sow is system-independent
          Toc = gws.sow;
+
+         assert(Toc >= 0 && Toc < (FULLWEEK));
 
          if(strm.header.version < 3) {    // Rinex 2.*
             if(satSys == "G") {

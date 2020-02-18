@@ -1,22 +1,12 @@
 #pragma ident "$Id$"
 
-
-
-/**
- * @file FFData.hpp
- * Formatted File Data base class
- */
-
-#ifndef GPSTK_FFDATA_HPP
-#define GPSTK_FFDATA_HPP
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
 //  The GPSTk is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU Lesser General Public License as published
-//  by the Free Software Foundation; either version 2.1 of the License, or
+//  by the Free Software Foundation; either version 3.0 of the License, or
 //  any later version.
 //
 //  The GPSTk is distributed in the hope that it will be useful,
@@ -46,10 +36,13 @@
 //
 //=============================================================================
 
+/**
+ * @file FFData.hpp
+ * Formatted File Data base class
+ */
 
-
-
-
+#ifndef GPSTK_FFDATA_HPP
+#define GPSTK_FFDATA_HPP
 
 #include <iostream>
 #include <typeinfo>
@@ -102,7 +95,7 @@ namespace gpstk
           * @param s a FFStream-based stream
           */
       void putRecord(FFStream& s) const 
-         throw(FFStreamError, gpstk::StringUtils::StringException);
+         throw(FFStreamError, gpstk::StringUtils::StringException, std::bad_cast);
 
          /**
           * Retrieve a "record" from the given stream.
@@ -174,9 +167,7 @@ namespace gpstk
 
    protected:
          /// Does the actual reading from the stream into this FFData object.
-      virtual void reallyGetRecord(FFStream& s)
-         throw(std::exception, gpstk::StringUtils::StringException, 
-               gpstk::FFStreamError) = 0;
+      virtual void reallyGetRecord(FFStream& s) = 0;
 
          /// Does the actual writing from the stream into this FFData object.
       virtual void reallyPutRecord(FFStream& s) const

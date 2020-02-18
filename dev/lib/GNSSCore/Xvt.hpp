@@ -80,11 +80,11 @@ namespace gpstk
          { return v; }
 
       /// access the clock bias, in second
-      double getClockBias() throw()
+      double getClockBias() const throw()
          { return clkbias; }
 
       /// access the clock drift, in second/second
-      double getClockDrift() throw()
+      double getClockDrift() const throw()
          { return clkdrift; }
 
       /// access the relativity correction, in seconds

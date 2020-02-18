@@ -1,21 +1,12 @@
 #pragma ident "$Id$"
 
-
-/**
- * @file Rinex3NavStream.hpp
- * File stream for Rinex 3 navigation file data
- */
-
-#ifndef GPSTK_RINEX3NAVSTREAM_HPP
-#define GPSTK_RINEX3NAVSTREAM_HPP
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
 //  The GPSTk is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU Lesser General Public License as published
-//  by the Free Software Foundation; either version 2.1 of the License, or
+//  by the Free Software Foundation; either version 3.0 of the License, or
 //  any later version.
 //
 //  The GPSTk is distributed in the hope that it will be useful,
@@ -45,6 +36,13 @@
 //
 //=============================================================================
 
+/**
+ * @file Rinex3NavStream.hpp
+ * File stream for Rinex 3 navigation file data
+ */
+
+#ifndef GPSTK_RINEX3NAVSTREAM_HPP
+#define GPSTK_RINEX3NAVSTREAM_HPP
 
 #include "FFTextStream.hpp"
 #include "Rinex3NavHeader.hpp"
@@ -70,6 +68,9 @@ namespace gpstk
             : headerRead(false)
          {}
       
+      Rinex3NavStream(std::basic_iostream<char>& anotherStream) 
+            : FFTextStream(anotherStream), headerRead(false) {}
+            
          /** Constructor 
           * Opens a file named \a fn using ios::openmode \a mode.
           */

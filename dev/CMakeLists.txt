@@ -102,3 +102,5 @@ install (FILES ${HEADERS} ${HEADERS2} DESTINATION include/gpstk )
 add_subdirectory (apps)
 add_subdirectory (examples)
 
+include(CPack)
+

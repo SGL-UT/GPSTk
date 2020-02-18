@@ -731,7 +731,7 @@ try {
                      RinexSatID(-1,sat.system)) != C.exSats.end())
                continue;
 
-            const vector<RinexDatum>& vecData(it->second);
+            const vector<Rinex3Datum>& vecData(it->second);
 
             // find this sat in the table; add it if necessary
             vector<TableData>::iterator ptab;

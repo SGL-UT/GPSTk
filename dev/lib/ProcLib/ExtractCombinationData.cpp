@@ -77,7 +77,7 @@ namespace gpstk
                // The satellites are stored in the first elements of the map...
             SatID sat(it->first);
                // .. and vectors of available obs are in the second elements
-            vector<RinexDatum> vecData(it->second);
+            vector<Rinex3Datum> vecData(it->second);
 
                // Extract observation values
             double obsValue1( (vecData[indexObs1]).data );

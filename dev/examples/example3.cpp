@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
       roffs.exceptions(ios::failbit);
       Rinex3ObsHeader roh;
       Rinex3ObsData roe;
-      RinexDatum dataobj;
+      Rinex3Datum dataobj;
 
          // Read the RINEX header (don't skip this step)
          // --------------------------------------------

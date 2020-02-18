@@ -1,5 +1,4 @@
-/// @file Rinex3ObsData.cpp
-/// Encapsulate RINEX 3 observation file data, including I/O.
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -7,7 +6,7 @@
 //
 //  The GPSTk is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU Lesser General Public License as published
-//  by the Free Software Foundation; either version 2.1 of the License, or
+//  by the Free Software Foundation; either version 3.0 of the License, or
 //  any later version.
 //
 //  The GPSTk is distributed in the hope that it will be useful,
@@ -37,6 +36,9 @@
 //
 //=============================================================================
 
+/// @file Rinex3ObsData.cpp
+/// Encapsulate RINEX 3 observation file data, including I/O.
+
 #include <algorithm>
 #include "StringUtils.hpp"
 #include "CivilTime.hpp"
@@ -44,17 +46,16 @@
 #include "RinexObsID.hpp"
 #include "Rinex3ObsStream.hpp"
 #include "Rinex3ObsData.hpp"
+#include <iostream>
 
 using namespace gpstk::StringUtils;
 using namespace std;
 
 namespace gpstk
 {
-
-
    void reallyPutRecordVer2( Rinex3ObsStream& strm,
                              const Rinex3ObsData& rod )
-      throw(FFStreamError, StringException)
+      throw(FFStreamError, StringException, std::bad_cast)
    {
 
          // is there anything to write?
@@ -104,7 +105,7 @@ namespace gpstk
             itr++;
          }
 
-            // add clock offset
+         // add clock offset
          if( rod.clockOffset != 0.0 )
          {
             line += string(68 - line.size(), ' ');
@@ -150,62 +151,46 @@ namespace gpstk
       else if( rod.epochFlag == 0 || rod.epochFlag == 1 || rod.epochFlag == 6 )
       {
          size_t i;
-         const int maxObsPerLine(5);
-
-            // loop over satellites in R3 obs data
-         for( itr = rod.obs.begin(); itr != rod.obs.end(); ++itr )
-         {
-
-            RinexSatID sat(itr->first);               // current satellite
-            string sys(string(1,sat.systemChar()));   // system
-            itr = rod.obs.find(sat);           // get data vector to be written
-            int obsWritten(0);
+         static const int MAX_OBS_PER_LINE = 5;
+         
+         for(Rinex3ObsData::DataMap::const_iterator it = rod.obs.begin(); 
+             it != rod.obs.end(); ++it
+         ) {
+            size_t obsWritten = 0;
             line = string("");
 
-               // loop over R2 obstypes
-            for( i=0; i<strm.header.R2ObsTypes.size(); i++ )
-            {
-
-                  // get the R3 obs ID from the map
-               RinexObsID obsid;
-               obsid =
-                 strm.header.mapSysR2toR3ObsID[sys][strm.header.R2ObsTypes[i]];
-
-                 // now find index of that data from R3 header
-               const vector<RinexObsID>& vecData(strm.header.mapObsTypes[sys]);
-
-               vector<RinexObsID>::const_iterator jt;
-               jt = find(vecData.begin(), vecData.end(), obsid);
-
-               int ind(-1);                           // index into vecData
-
-               if( jt != vecData.end() ) ind = jt-vecData.begin();
-
-                  // need a continuation line?
-               if( obsWritten != 0 && (obsWritten % maxObsPerLine) == 0 )
-               {
+            for(vector<Rinex3Datum>::const_iterator jt = it->second.begin();
+                jt != it->second.end(); ++jt
+            ) {
+                if(obsWritten == MAX_OBS_PER_LINE) {
                   strm << line << endl;
                   strm.lineNumber++;
                   line = string("");
-               }
-
-                  // write the line
-               line += rightJustify(asString(            // double 14.3
-                          ( ind == -1 ? 0.0 : itr->second[ind].data),3),14 );
-               line += (ind == -1 || itr->second[ind].lli == 0)
-                       ? string(1, ' ')
-                       : rightJustify(asString<short>(itr->second[ind].lli),1);
-               line += (ind == -1 || itr->second[ind].ssi == 0)
-                       ? string(1, ' ')
-                       : rightJustify(asString<short>(itr->second[ind].ssi),1);
-               obsWritten++;
-
-            }  // End of 'for( i=0; i<strm.header.R2ObsTypes.size(); i++ )'
-
+                  obsWritten = 0;
+                }
+                if(jt->isEmpty) {
+                  line += string(14 + 1 + 3 + 2, ' ');
+                } else {
+                  line += rightJustify(
+                    asString(jt->data, 3), 14
+                  );
+                  if(jt->lli != 0) {
+                    line += rightJustify(asString<short>(jt->lli), 1);
+                  } else {
+                    line += " ";
+                  }
+                  if(jt->ssi != 0) {
+                    line += rightJustify(asString<short>(jt->ssi), 1);
+                  } else {
+                    line += " ";
+                  }
+                }
+                obsWritten++;
+            }
             strm << line << endl;
             strm.lineNumber++;
 
-         }  // End of 'for( itr = rod.obs.begin(); itr != rod.obs.end();...'
+         } 
 
       }  // Ebf of 'else if( rod.epochFlag == 0 || rod.epochFlag == 1 || ...'
 
@@ -219,7 +204,7 @@ namespace gpstk
        *                obtained from corresponding RINEX Observation Header
        *                using method 'Rinex3ObsHeader::getObsIndex()'.
        */
-   RinexDatum Rinex3ObsData::getObs( const SatID& sat, int index ) const
+   Rinex3Datum Rinex3ObsData::getObs( const SatID& sat, int index ) const
       throw(InvalidRequest)
    {
 
@@ -237,7 +222,7 @@ namespace gpstk
       }
 
          // Extract a copy of the data vector
-      vector<RinexDatum> vecData(it->second);
+      vector<Rinex3Datum> vecData(it->second);
 
          // Return the corresponding data
       return vecData[index];
@@ -251,7 +236,7 @@ namespace gpstk
       * @param type String representing the observation type.
       * @param hdr  RINEX Observation Header for current RINEX file.
       */
-   RinexDatum Rinex3ObsData::getObs( const SatID& sat, std::string type,
+   Rinex3Datum Rinex3ObsData::getObs( const SatID& sat, std::string type,
                                              const Rinex3ObsHeader& hdr ) const
       throw(InvalidRequest)
    {
@@ -276,7 +261,7 @@ namespace gpstk
 
 
    void Rinex3ObsData::reallyPutRecord(FFStream& ffs) const
-      throw(std::exception, FFStreamError, StringException)
+      throw(std::exception, FFStreamError, StringException, std::bad_cast)
    {
       // is there anything to write?
       if( (epochFlag == 0 || epochFlag == 1 || epochFlag == 6)
@@ -318,7 +303,7 @@ namespace gpstk
             line = itr->first.toString();
 
             for(size_t i=0; i < itr->second.size(); i++) {
-               RinexDatum thisData = itr->second[i];
+               Rinex3Datum thisData = itr->second[i];
                line += rightJustify(asString(thisData.data,3),14);
 
                if(thisData.lli == 0)
@@ -493,7 +478,7 @@ namespace gpstk
             //line.resize(80, ' ');                  // pad just in case
             sat = satIndex[isv];                   // sat for this data
             satsys = asString(sat.systemChar());   // system for this sat
-            vector<RinexDatum> data;
+            vector<Rinex3Datum> data;
             // loop over data in the line
             for(ndx=0, line_ndx=0; ndx < numObs; ndx++, line_ndx++) {
                if(! (line_ndx % 5)) {              // get a new line
@@ -510,14 +495,21 @@ namespace gpstk
                string R2ot(strm.header.R2ObsTypes[ndx]);
                string R3ot(strm.header.mapSysR2toR3ObsID[satsys][R2ot].asString());
                if(R3ot != string("   ")) {
-                  RinexDatum tempData;
-                  tempData.data = asDouble(line.substr(line_ndx*16,   14));
-                  tempData.lli =     asInt(line.substr(line_ndx*16+14, 1));
-                  tempData.ssi =     asInt(line.substr(line_ndx*16+15, 1));
+                  Rinex3Datum tempData;
+                  string token = line.substr(line_ndx*16,14);
+                  if(token.find_first_not_of(' ') == std::string::npos) {
+                    tempData.isEmpty = true;
+                  } else {
+                    tempData.data = asDouble(line.substr(line_ndx*16,   14));
+                    tempData.lli =     asInt(line.substr(line_ndx*16+14, 1));
+                    tempData.ssi =     asInt(line.substr(line_ndx*16+15, 1));
+                  }
                   data.push_back(tempData);
                }
             }
-            rod.obs[sat] = data;
+            if(rod.obs.find(sat) == rod.obs.end()) {
+              rod.obs.insert(make_pair(sat, data));
+            }
 
          }  // end loop over sats to read obs data
       }
@@ -590,7 +582,7 @@ namespace gpstk
       // Read the observations: SV ID and data ----------------------------
       if(epochFlag == 0 || epochFlag == 1 || epochFlag == 6) {
          vector<RinexSatID> satIndex(numSVs);
-         map<RinexSatID, vector<RinexDatum> > tempDataMap;
+         map<RinexSatID, vector<Rinex3Datum> > tempDataMap;
 
          for(int isv = 0; isv < numSVs; isv++) {
             strm.formattedGetLine(line);
@@ -617,10 +609,10 @@ namespace gpstk
                line += string(minSize-line.size(), ' ');
 
             // get the data (# entries in ObsType map of maps from header)
-            vector<RinexDatum> data;
+            vector<Rinex3Datum> data;
             for(int i = 0; i < size; i++) {
                size_t pos = 3 + 16*i;
-               RinexDatum tempData;
+               Rinex3Datum tempData;
                tempData.data = asDouble(line.substr(pos   , 14));
                if( line.size() > pos+14 )
                   tempData.lli  = asInt( line.substr(pos+14,  1));
@@ -628,7 +620,9 @@ namespace gpstk
                   tempData.ssi  = asInt( line.substr(pos+15,  1));
                data.push_back(tempData);
             }
-            obs[satIndex[isv]] = data;
+            if(obs.find(satIndex[isv]) == obs.end()) {
+              obs.insert(make_pair(satIndex[isv], data));
+            }
          }
       }
 

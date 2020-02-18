@@ -1,6 +1,4 @@
-/// @file Rinex3NavHeader.hpp
-/// Encapsulate header of RINEX 3 navigation file, including RINEX 2
-/// compatibility.
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -8,7 +6,7 @@
 //
 //  The GPSTk is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU Lesser General Public License as published
-//  by the Free Software Foundation; either version 2.1 of the License, or
+//  by the Free Software Foundation; either version 3.0 of the License, or
 //  any later version.
 //
 //  The GPSTk is distributed in the hope that it will be useful,
@@ -37,6 +35,10 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
+
+/// @file Rinex3NavHeader.hpp
+/// Encapsulate header of RINEX 3 navigation file, including RINEX 2
+/// compatibility.
 
 #ifndef GPSTK_RINEX3NAVHEADER_HPP
 #define GPSTK_RINEX3NAVHEADER_HPP
@@ -140,44 +142,7 @@ class Rinex3NavHeader : public Rinex3NavBase
       /// Change the file system, keeping fileType, fileSys, and fileSysSat
       /// consistent.
       /// @param string str beginning with system character or "M" for mixed
-   void setFileSystem(const std::string& str) throw(Exception)
-   {
-      try {
-         if(str[0] == 'M' || str[0] == 'm') {
-            if(version < 3) {
-               Exception e("RINEX version 2 'Mixed' Nav files do not exist");
-               GPSTK_THROW(e);
-            }
-            fileType = "NAVIGATION";
-            fileSys = "MIXED";
-            fileSysSat = SatID(-1, SatID::systemMixed);
-         }
-         else {
-            RinexSatID sat(std::string(1,str[0]));
-            fileSysSat = SatID(sat);
-            fileSys = StringUtils::asString(sat.systemChar())
-                           + ": (" + sat.systemString3()+")";
-            if(version >= 3) {
-               fileType = "NAVIGATION";
-            }
-            else {            // RINEX 2
-               if(sat.system == SatID::systemGPS)
-                  fileType = "N (GPS Nav)";
-               else if(sat.system == SatID::systemGlonass)
-                  fileType = "G (GLO Nav)";
-               else if(sat.system == SatID::systemGeosync)
-                  fileType = "H (GEO Nav)";
-               else {
-                  Exception e( std::string("RINEX version 2 ") +
-                               sat.systemString3() +
-                               std::string(" Nav files do not exist") );
-                  GPSTK_THROW(e);
-               }
-            }
-         }
-      }
-      catch(Exception& e) { GPSTK_RETHROW(e); }
-   }
+   void setFileSystem(const std::string& str) throw(Exception);
 
       //// Member data
       /// All 'valid..' bits found in this header

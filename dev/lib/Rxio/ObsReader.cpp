@@ -229,15 +229,15 @@ namespace gpstk
    ObsReader::operator bool ()
    {
       if (inputType == FFIdentifier::tRinexObs)
-         return ros;
+         return static_cast<bool>(ros);
       else if (inputType == FFIdentifier::tMDP)
-         return mdps;
+         return static_cast<bool>(mdps);
       else if (inputType == FFIdentifier::tSMODF)
-         return smos;
+         return static_cast<bool>(smos);
       else if (inputType == FFIdentifier::tNovatelOem)
-         return novas;
+         return static_cast<bool>(novas);
       else if (inputType == FFIdentifier::tAshtechSerial)
-         return ashs;
+         return static_cast<bool>(ashs);
       return false;
    }
 

@@ -216,7 +216,7 @@ try {
    totaltime = clock()-totaltime;
    LOG(INFO) << PrgmName << " timing: " << fixed << setprecision(9)
       << double(totaltime)/double(CLOCKS_PER_SEC) << " seconds.";
-   if(LOGstrm != cout) cout << PrgmName << " timing: " << fixed << setprecision(9)
+   if(pLOGstrm != &cout) cout << PrgmName << " timing: " << fixed << setprecision(9)
       << double(totaltime)/double(CLOCKS_PER_SEC) << " seconds." << endl;
 
    return iret;

@@ -1,7 +1,4 @@
-/**
- * @file Rinex3ObsData.hpp
- * Encapsulate RINEX observation file data, including I/O
- */
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -9,7 +6,7 @@
 //
 //  The GPSTk is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU Lesser General Public License as published
-//  by the Free Software Foundation; either version 2.1 of the License, or
+//  by the Free Software Foundation; either version 3.0 of the License, or
 //  any later version.
 //
 //  The GPSTk is distributed in the hope that it will be useful,
@@ -20,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//
+//  
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -28,16 +25,21 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S.
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software.
+//duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024
+//Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
 //                           release, distribution is unlimited.
 //
 //=============================================================================
+
+/**
+ * @file Rinex3ObsData.hpp
+ * Encapsulate RINEX observation file data, including I/O
+ */
 
 #ifndef RINEX3OBSDATA_HPP
 #define RINEX3OBSDATA_HPP
@@ -46,27 +48,16 @@
 #include <list>
 #include <map>
 
+
 #include "CommonTime.hpp"
 #include "FFStream.hpp"
 #include "Rinex3ObsBase.hpp"
 #include "Rinex3ObsHeader.hpp"
+#include "Rinex3Datum.h"
+
 
 namespace gpstk
 {
-
-   /// A structure used to store a single RINEX Data point.
-   #ifndef GPSTK_RINEXDATUM
-   #define GPSTK_RINEXDATUM
-   struct RinexDatum
-   {
-      RinexDatum() : data(0), lli(0), ssi(0) {} ///< constructor
-      double data;  ///< The actual data point.
-      short lli;    ///< See the RINEX Spec. for an explanation.
-      short ssi;    ///< See the RINEX Spec. for an explanation.
-   };
-   #endif // GPSTK_RINEXDATUM
-
-
       /** @addtogroup Rinex3Obs */
       //@{
 
@@ -87,7 +78,7 @@ namespace gpstk
 
          /// Map from RinexSatID to RinexDatum; order of the data matches the
          /// order of RinexObsIDs in the header
-      typedef std::map<RinexSatID, std::vector<RinexDatum> > DataMap;
+      typedef std::map<RinexSatID, std::vector<Rinex3Datum> > DataMap;
 
          /// Time corresponding to the observations
       CommonTime time;
@@ -125,7 +116,7 @@ namespace gpstk
           *                obtained from corresponding RINEX Observation Header
           *                using method 'Rinex3ObsHeader::getObsIndex()'.
           */
-      virtual RinexDatum getObs( const SatID& sat, int index ) const
+      virtual Rinex3Datum getObs( const SatID& sat, int index ) const
          throw(InvalidRequest);
 
 
@@ -135,7 +126,7 @@ namespace gpstk
           * @param type String representing the observation type.
           * @param hdr  RINEX Observation Header for current RINEX file.
           */
-      virtual RinexDatum getObs( const SatID& sat,
+      virtual Rinex3Datum getObs( const SatID& sat,
                                  std::string type,
                                  const Rinex3ObsHeader& hdr ) const
          throw(InvalidRequest);
@@ -163,7 +154,7 @@ namespace gpstk
          /// number for the type of header data you want to write.
       virtual void reallyPutRecord(FFStream& s) const
          throw( std::exception, FFStreamError,
-                gpstk::StringUtils::StringException );
+                gpstk::StringUtils::StringException, std::bad_cast);
 
 
          /** This functions obtains a RINEX 3 Observation record from the given

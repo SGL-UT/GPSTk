@@ -1,10 +1,4 @@
-/**
- * @file Rinex3ObsHeader.hpp
- * Encapsulate header of Rinex observation file, including I/O
- */
-
-#ifndef GPSTK_RINEX3OBSHEADER_HPP
-#define GPSTK_RINEX3OBSHEADER_HPP
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -12,7 +6,7 @@
 //
 //  The GPSTk is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU Lesser General Public License as published
-//  by the Free Software Foundation; either version 2.1 of the License, or
+//  by the Free Software Foundation; either version 3.0 of the License, or
 //  any later version.
 //
 //  The GPSTk is distributed in the hope that it will be useful,
@@ -41,6 +35,14 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
+
+/**
+ * @file Rinex3ObsHeader.hpp
+ * Encapsulate header of Rinex observation file, including I/O
+ */
+
+#ifndef GPSTK_RINEX3OBSHEADER_HPP
+#define GPSTK_RINEX3OBSHEADER_HPP
 
 #include <vector>
 #include <list>
@@ -137,7 +139,7 @@ namespace gpstk
          validComment           =        0x4, ///< "COMMENT"               optional
          validMarkerName        =        0x8, ///< "MARKER NAME"
          validMarkerNumber      =       0x10, ///< "MARKER NUMBER"         optional
-         validMarkerType        =       0x20, ///< "MARKER TYPE"                    R3
+         validMarkerType        =       0x20, ///< "MARKER TYPE"           optional R3
          validObserver          =       0x40, ///< "OBSERVER / AGENCY"
          validReceiver          =       0x80, ///< "REC # / TYPE / VERS"
          validAntennaType       =      0x100, ///< "ANT # / TYPE"
@@ -160,8 +162,8 @@ namespace gpstk
          validSystemDCBSapplied =   0x800000, ///< "SYSTEM DCBS APPLIED"   optional R3
          validSystemPCVSapplied =  0x1000000, ///< "SYSTEM PCVS APPLIED"   optional R3
          validSystemScaleFac    =  0x2000000, ///< "SYSTEM SCALE FACTOR"   optional R3
-         validSystemPhaseShift  =  0x4000000, ///< "SYS / PHASE SHIFT"              R3.01,3.02
-         validGlonassFreqNo     =  0x8000000, ///< "GLONASS SLOT / FRQ #"           R3.01
+         validSystemPhaseShift  =  0x4000000, ///< "SYS / PHASE SHIFT"              R3.01
+         validGlonassFreqNo     =  0x8000000, ///< "GLONASS SLOT / FRQ #"   not defined in R3, optional in R3.01, required in R3.02
          validGlonassCodPhsBias = 0x10000000, ///< "GLONASS COD/PHS/BIS"            R3.02
          validLeapSeconds       = 0x20000000, ///< "LEAP SECONDS"          optional
          validNumSats           = 0x40000000, ///< "# OF SATELLITES"       optional
@@ -171,7 +173,7 @@ namespace gpstk
          /// This mask is for all required valid fields
          allValid2              = 0x001207CB, // RINEX 2
 
-         //allValid30           = 0x001207CB, // RINEX 3.0 for static receivers - AntennaPosition present
+         //allValid30           = 0x091207CB, // RINEX 3.0 for static receivers - AntennaPosition present
          allValid30             = 0x001205CB, // RINEX 3.0 for moving receivers -- make default
 
          //allValid301            = 0x0C1205AB, // RINEX 3.01
@@ -305,7 +307,7 @@ namespace gpstk
       /// Write all valid header records to the given stream.
       /// Used by reallyPutRecord for both Rinex3ObsHeader and Rinex3ObsData.
       void WriteHeaderRecords(FFStream& s) const
-         throw(FFStreamError, gpstk::StringUtils::StringException);
+         throw(FFStreamError, gpstk::StringUtils::StringException, std::bad_cast);
 
       /// Return boolean : is this a valid Rinex header?
       bool isValid() const

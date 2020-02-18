@@ -1,8 +1,4 @@
-/**
- * @file Rinex3NavHeader.cpp
- * Encapsulate header of RINEX 3 navigation file, including RINEX 2
- * compatibility.
- */
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -10,7 +6,7 @@
 //
 //  The GPSTk is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU Lesser General Public License as published
-//  by the Free Software Foundation; either version 2.1 of the License, or
+//  by the Free Software Foundation; either version 3.0 of the License, or
 //  any later version.
 //
 //  The GPSTk is distributed in the hope that it will be useful,
@@ -21,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//
+//  
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -31,14 +27,20 @@
 //This software developed by Applied Research Laboratories at the University of
 //Texas at Austin, under contract to an agency or agencies within the U.S. 
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software.
+//duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024
+//Pursuant to DoD Directive 523024 
 //
 // DISTRIBUTION STATEMENT A: This software has been approved for public 
 //                           release, distribution is unlimited.
 //
 //=============================================================================
+
+/**
+ * @file Rinex3NavHeader.cpp
+ * Encapsulate header of RINEX 3 navigation file, including RINEX 2
+ * compatibility.
+ */
 
 #include "StringUtils.hpp"
 #include "GNSSconstants.hpp"
@@ -583,5 +585,54 @@ namespace gpstk
          << "-------------------------------\n";
 
    } // end of dump
+  
+   void Rinex3NavHeader::setFileSystem(const std::string& str) throw(Exception)
+  {
+    try
+    {
+      if (str[0] == 'M' || str[0] == 'm')
+      {
+        if (version < 3)
+        {
+          Exception e("RINEX version 2 'Mixed' Nav files do not exist");
+          GPSTK_THROW(e);
+        }
+        fileType = "NAVIGATION";
+        fileSys = "MIXED";
+        fileSysSat = SatID(-1, SatID::systemMixed);
+      }
+      else
+      {
+        RinexSatID sat(std::string(1, str[0]));
+        fileSysSat = SatID(sat);
+        fileSys = StringUtils::asString(sat.systemChar())
+                + ": (" + sat.systemString3() + ")";
+        if (version >= 3)
+        {
+          fileType = "NAVIGATION";
+        }
+        else
+        {            // RINEX 2
+          if (sat.system == SatID::systemGPS)
+            fileType = "N (GPS Nav)";
+          else if (sat.system == SatID::systemGlonass)
+            fileType = "G (GLO Nav)";
+          else if (sat.system == SatID::systemGeosync)
+            fileType = "H (GEO Nav)";
+          else
+          {
+            Exception e( std::string("RINEX version 2 ") +
+                    sat.systemString3() +
+                    std::string(" Nav files do not exist") );
+            GPSTK_THROW(e);
+          }
+        }
+      }
+    }
+    catch(Exception& e)
+    {
+      GPSTK_RETHROW(e);
+    }
+  }
    
 } // namespace

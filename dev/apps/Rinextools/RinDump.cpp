@@ -117,7 +117,7 @@ public:
 
    /// compute the linear combination, given the satellite and RINEX data
    double Compute(const RinexSatID sat, Rinex3ObsHeader& Rhead,
-                  const vector<RinexDatum>& vrdata) throw(Exception);
+                  const vector<Rinex3Datum>& vrdata) throw(Exception);
 
    /// remove a bias if jump larger than limit occurs
    bool removeBias(const RinexSatID& sat) throw();
@@ -253,7 +253,7 @@ const string Configuration::longfmt = calfmt + " = " + gpsfmt;
 int Initialize(string& errors) throw(Exception);
 int ProcessFiles(void) throw(Exception);
 double getObsData(string tag, RinexSatID sat, Rinex3ObsHeader& Rhead,
-                  const vector<RinexDatum>& vrdata) throw(Exception);
+                  const vector<Rinex3Datum>& vrdata) throw(Exception);
 double getNonObsData(string tag, RinexSatID sat, const CommonTime& time)
    throw(Exception);
 
@@ -1687,7 +1687,7 @@ try {
                   }
 
                   // access the data
-                  const vector<RinexDatum>& vrdata(it->second);
+                  const vector<Rinex3Datum>& vrdata(it->second);
 
                   // don't output all zero's, or elev > elevlimit
                   ok = false;                // reuse ok; if one datum is good, output
@@ -1768,7 +1768,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 
 //------------------------------------------------------------------------------------
 double getObsData(string tag, RinexSatID sat, Rinex3ObsHeader& Rhead,
-                   const vector<RinexDatum>& vrdata) throw(Exception)
+                   const vector<Rinex3Datum>& vrdata) throw(Exception)
 {
    try {
       double data(0);
@@ -2200,7 +2200,7 @@ bool LinCom::ParseAndSave(const string& lab, bool save) throw()
 
 //------------------------------------------------------------------------------------
 double LinCom::Compute(const RinexSatID sat, Rinex3ObsHeader& Rhead,
-                  const vector<RinexDatum>& vrdata) throw(Exception)
+                  const vector<Rinex3Datum>& vrdata) throw(Exception)
 {
    Configuration& C(Configuration::Instance());
 
