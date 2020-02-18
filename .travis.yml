@@ -24,7 +24,7 @@ script:
  - mkdir build
  - cd build
  - export gpstk=`pwd`/install
- - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=install -DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
+ - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=install -DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON -DPIP_WHEEL_SWITCH=ON ../
  - make all -j 2
  - ctest -j 2
 
