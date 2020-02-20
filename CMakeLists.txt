@@ -9,9 +9,9 @@
 cmake_minimum_required( VERSION 2.8.5 )
 
 project( GPSTK )
-set( GPSTK_VERSION_MAJOR "2" )
-set( GPSTK_VERSION_MINOR "12" )
-set( GPSTK_VERSION_PATCH "1" )
+set( GPSTK_VERSION_MAJOR "3" )
+set( GPSTK_VERSION_MINOR "0" )
+set( GPSTK_VERSION_PATCH "0" )
 set( GPSTK_VERSION "${GPSTK_VERSION_MAJOR}.${GPSTK_VERSION_MINOR}.${GPSTK_VERSION_PATCH}" )
 
 # Test data file source directory
@@ -154,24 +154,10 @@ endif()
 #============================================================
 
 # GPSTk shared-object library (e.g. libgpstk.so) build target
-add_library( gpstkStatic STATIC ${GPSTK_SRC_FILES} ${GPSTK_INC_FILES} )
-if( WIN32 )
-  # if we ever build windows DLL, it needs separate lib names between
-  # static and shared
-else()
-  # UNIX etc. use the same name for shared and static,
-  # e.g. libgpstk.so and libgpstk.a
-  set_target_properties(gpstkStatic PROPERTIES OUTPUT_NAME gpstk)
-  add_library( gpstk SHARED ${GPSTK_SRC_FILES} ${GPSTK_INC_FILES} )
-  install( TARGETS gpstk DESTINATION "${CMAKE_INSTALL_LIBDIR}" EXPORT "${EXPORT_TARGETS_FILENAME}" )
-  set_target_properties(gpstk
-    PROPERTIES
-    VERSION "${GPSTK_VERSION_MAJOR}.${GPSTK_VERSION_MINOR}.${GPSTK_VERSION_PATCH}"
-    SOVERSION "${GPSTK_VERSION_MAJOR}.${GPSTK_VERSION_MINOR}")
-endif()
+add_library( gpstk ${STADYN} ${GPSTK_SRC_FILES} ${GPSTK_INC_FILES} )
 
 # GPSTk library install target
-install( TARGETS gpstkStatic DESTINATION "${CMAKE_INSTALL_LIBDIR}" EXPORT "${EXPORT_TARGETS_FILENAME}" )
+install( TARGETS gpstk DESTINATION "${CMAKE_INSTALL_LIBDIR}" EXPORT "${EXPORT_TARGETS_FILENAME}" )
 
 # GPSTk header file install target (whether it is version dependent changes based on user flag)
 install( FILES ${GPSTK_INC_FILES} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} )
@@ -183,10 +169,8 @@ install( FILES ${GPSTK_INC_FILES} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} )
 
 # GPSTk doesn't yet follow semantic versioning. Binary compatibility is only within a specific MAJOR.MINOR version, so
 #   SOVERSION has both MAJOR and MINOR for now.
-set_target_properties(gpstkStatic
-  PROPERTIES
-  VERSION "${GPSTK_VERSION_MAJOR}.${GPSTK_VERSION_MINOR}.${GPSTK_VERSION_PATCH}"
-  SOVERSION "${GPSTK_VERSION_MAJOR}.${GPSTK_VERSION_MINOR}")
+set_target_properties(gpstk PROPERTIES VERSION "${GPSTK_VERSION_MAJOR}.${GPSTK_VERSION_MINOR}.${GPSTK_VERSION_PATCH}"
+                                       SOVERSION "${GPSTK_VERSION_MAJOR}.${GPSTK_VERSION_MINOR}")
 
 
 #============================================================

@@ -3,6 +3,12 @@ NEWS
 
 GPS Toolkit News
 ------------------------------------------------------------------------------
+   February 11, 2020 . .  Release Candidate for Version 3.0.0 is frozen in the
+                          repository
+
+   January 15, 2020 . . . Release Candidate for Version 2.12.2 is frozen in the
+                          repository
+
    October 9, 2019  . . . Release Candidate for Version 2.12.1 is frozen in the
                           repository
 
@@ -12,7 +18,7 @@ GPS Toolkit News
    April 5, 2019  . . . . Release Candidate for Version 2.11.2 is frozen in the
                           repository
 
-   February 4, 2019 . . . Release Candidate for Version 2.11.1 is frozen in the 
+   February 4, 2019 . . . Release Candidate for Version 2.11.1 is frozen in the
                           repository
 
    January 3, 2019 . . .  Release Candidate for Version 2.11 is frozen in the

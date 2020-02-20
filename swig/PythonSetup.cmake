@@ -27,7 +27,7 @@
 # If the user provides a custom Python configuration, use it
 #------------------------------------------------------------
 
-include( CustomPythonSetup.cmake 
+include( CustomPythonSetup.cmake
          OPTIONAL
          RESULT_VARIABLE PYTHON_CUSTOM_CONFIG )
 
@@ -36,7 +36,7 @@ include( CustomPythonSetup.cmake
 #------------------------------------------------------------
 if( ${PYTHON_CUSTOM_CONFIG} MATCHES "NOTFOUND" )
   find_package( PythonInterp )
-  
+
   # It looks like the find for PythonLibs gets the 'first' Python.h it can find,
   # which does not necessiarly match what the executable found by PythonInterp
   # will be copacetic with. So, we set CMAKE_INCLUDE_PATH to what is returned
@@ -82,7 +82,7 @@ if( DEBUG_SWITCH OR NOT PYTHONLIBS_FOUND)
   message( STATUS "PYTHON_INCLUDE_DIR        = ${PYTHON_INCLUDE_DIRS}" )
   message( STATUS "PYTHON_INCLUDE_DIRS       = ${PYTHON_INCLUDE_DIRS}" )
   message( STATUS "PYTHONLIBS_VERSION_STRING = ${PYTHONLIBS_VERSION_STRING}" )
-  message( STATUS "PYTHON_INSTALL_PREFIX     = ${PYTHON_INSTALL_PREFIX}" ) 
+  message( STATUS "PYTHON_INSTALL_PREFIX     = ${PYTHON_INSTALL_PREFIX}" )
 endif()
 
 #------------------------------------------------------------

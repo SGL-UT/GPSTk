@@ -54,6 +54,7 @@ namespace gpstk
    using namespace std;
    PackedNavBits::PackedNavBits()
                  : transmitTime(CommonTime::BEGINNING_OF_TIME),
+                   parityStatus(psUnknown),
                    bits(900),
                    bits_used(0),
                    rxID(""),
@@ -65,6 +66,7 @@ namespace gpstk
                                 const ObsID& obsIDArg,
                                 const CommonTime& transmitTimeArg)
                                 : bits(900),
+                                  parityStatus(psUnknown),
                                   bits_used(0),
                                   rxID(""),
                                   xMitCoerced(false)
@@ -80,6 +82,7 @@ namespace gpstk
                                 const std::string rxString,
                                 const CommonTime& transmitTimeArg)
                                 : bits(900),
+                                  parityStatus(psUnknown),
                                   bits_used(0),
                                   rxID(""),
                                   xMitCoerced(false)
@@ -97,6 +100,7 @@ namespace gpstk
                                 const std::string rxString,
                                 const CommonTime& transmitTimeArg)
                                 : bits(900),
+                                  parityStatus(psUnknown),
                                   bits_used(0),
                                   rxID(""),
                                   xMitCoerced(false)
@@ -119,6 +123,7 @@ namespace gpstk
       transmitTime = right.transmitTime;
       bits_used = right.bits_used;
       bits.resize(bits_used);
+      parityStatus = right.parityStatus;
       for (int i=0;i<bits_used;i++)
       {
          bits[i] = right.bits[i];

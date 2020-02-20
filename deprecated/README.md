@@ -1,0 +1,1 @@
+Stage files in this directory that will be deprecated in a future release.

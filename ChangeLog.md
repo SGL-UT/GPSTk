@@ -1,3 +1,91 @@
+Version 3.0.0  Tuesday, February 11, 2020
+
+   Modifications by Author
+   ---------------------
+   Andy Kuck (1):
+         Add Conda Recipe
+
+   Bryan Parsons (1):
+         Merge branch 'ci_conda' into 'master'
+
+
+   #################################################
+
+Version 2.12.2   Wednesday, January 15, 2020
+
+   Modifications by Author
+   ---------------------
+   Andrew Kuck (3):
+         Add zip_safe flag to force it to expand egg files to directory.
+         Add py36 stage to CI pipeline.
+         Add carve-out for python3
+
+   Anthony Hughes (1):
+         Fixed FileHunuter such that it can again traverse symbolic links to directories.
+
+   Brian Tolman (17):
+         restore build scripts
+         Merge remote-tracking branch 'origin/master' into btolman_dev
+         implement atmospheric loading and add test to test_tides in EarthTides_IERS test
+         Merge remote-tracking branch 'origin/master' into AtmosphericLoading
+         Merge remote-tracking branch 'origin/master' into btolman_dev
+         include UT1-UTC, even though extremely small effect
+         remove logstream include where it should not be
+         fix bug that caused filter to skip the last epoch
+         fix bug that caused filter to skip the last epoch
+         change version number
+         pretty up the output
+         Merge remote-tracking branch 'origin/master' into btolman_dev
+         remove enum HealthStatus:: to compile on Debian 8
+         Merge remote-tracking branch 'origin/master' into btolman_dev
+         Revert "Build static on windows, static and dynamic on everything else"
+         Merge remote-tracking branch 'origin/master' into btolman_dev
+         Handle the case of code1 on freq1 and code2 on freq2
+
+   Bryan Parsons (7):
+         Temporarily Removing Windows from CI
+         Merge branch 'issue_394' into 'master'
+         Merge branch '396-allow-building-static-and-dynamic-versions-of-the-library-on-unix' into 'master'
+         Merge branch 'AtmosphericLoading' into 'master'
+         Merge branch '399-xvt-hpp-does-not-compile-on-debian-8-with-healthstatus-on-line-102' into 'master'
+         Merge branch 'issue_400' into 'master'
+         Merge branch 'PRSolve_2freq_2code' into 'master'
+
+   bparsons (5):
+         Merge branch 'python_install_fix' into 'master'
+         Merge branch 'ci_docker' into 'master'
+         Merge branch 'py36' into 'master'
+         Merge branch 'issue_395_SVNumXRef' into 'master'
+         Merge branch 'Issue_379_FileHunter_Links' into 'master'
+
+   johnk (7):
+         Clear the Rinex3ObsData object before trying to process RINEX 2 data
+         Change testsuccexp to use TESTNAME for output files, distinctly from TESTBASE for reference files, so that tests that share reference files don't stomp on each other's output, causing random test failures
+         Add accessor to PackedNavBits.  Make testsuccexp check that required variables are set.
+         Merge branch 'issue_394' of repositories.arlut.utexas.edu:sgl/gpstk into issue_394
+         Build static on windows, static and dynamic on everything else
+         Hopefully make Xvt::HealthStatus consistent
+         Hopefully make it build on the redhat CI host which apparently doesn't do C++11
+
+   kuck (1):
+         Transition GPSTK CI to use Docker
+
+   macosta (1):
+         Merge remote-tracking branch 'origin/master' into Issue_379_FileHunter_Links
+
+   qduong (3):
+         Migrate from Python 2.7 to Python 3.6
+         Revert python3.6-config change as -P flag in build.sh takes care of that
+         Update swig tests + helper file for Python 2 compatibility
+
+   renfrob (2):
+         Updated SVN-PRN References
+         Changing find() behavior for exact beginValid match
+
+
+
+   #################################################
+
 Version 2.12.1   Wednesday, October 9, 2019
 
    General modifications
