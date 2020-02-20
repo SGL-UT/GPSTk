@@ -4,6 +4,14 @@
 # options in this file
 #========================================
 
+#----------------------------------------
+# Shared(Dynamic) vs. Static libraries
+#----------------------------------------
+if( UNIX )
+    set( STADYN "SHARED" )
+elseif( WIN32 )
+    set( STADYN "STATIC" )
+endif()
 
 
 #----------------------------------------
@@ -26,6 +34,7 @@ elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
     set( CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS} -O2" )
 elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" )
     # Do not optimize for debug builds.  Do the same for RELWITHDEBINFO ?
+    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3" ) # BWT force optimization - cmake doesn't do it
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11" )
     set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -O2" )
     set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS} -O2" )
@@ -114,6 +123,7 @@ if( DEBUG_SWITCH AND NOT DEBUG_VERBOSE )
     message( STATUS "CMAKE_COMMAND             = ${CMAKE_COMMAND}" )     # e.g., /usr/bin/cmake
     message( STATUS "CMAKE_VERSION             = ${CMAKE_VERSION}" )     # e.g., 2.8.9
     message( STATUS "CMAKE_BUILD_TOOL          = ${CMAKE_BUILD_TOOL}" )  # e.g., /usr/bin/make
+    message( STATUS "STADYN                    = ${STADYN}" )
     message( STATUS "CMAKE_COMPILER_IS_GNUCC   = ${CMAKE_COMPILER_IS_GNUCC}" )
     message( STATUS "CMAKE_CXX_FLAGS           = ${CMAKE_CXX_FLAGS}" )
     message( STATUS "CMAKE_SHARED_LINKER_FLAGS = ${CMAKE_SHARED_LINKER_FLAGS}" )

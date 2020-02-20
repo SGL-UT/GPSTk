@@ -61,6 +61,16 @@ namespace gpstk
    class PackedNavBits
    {
    public:
+         /** Indicate whether parity/CRC/whatever checking has been
+          * performed and whether that check passed or failed on this
+          * subframe/message. */
+      enum ParityStatus
+      {
+         psUnknown, ///< Parity/CRC check has not been performed.
+         psPassed,  ///< Parity/CRC check was performed and passed.
+         psFailed   ///< Parity/CRC check was performed and failed.
+      };
+
       /// empty constructor
       PackedNavBits();
 
@@ -415,6 +425,11 @@ namespace gpstk
 
       const std::vector<bool>& getBits() const
       { return bits; }
+
+         /** Indicate the status of parity/CRC checking.  Must be
+          * explicitly set after construction, no parity checking is
+          * supported in this class. */
+      ParityStatus parityStatus;
 
    private:
       SatID satSys;            /**< System ID (based on RINEX defintions */
