@@ -104,8 +104,14 @@ namespace gpstk
          FFStreamError fe("Invalid data");
          GPSTK_THROW(fe);
       }
-      week = (short) asInt(line.substr(0,4));
-      Toa = asInt(line.substr(5,6));
+      vector<std::string> values = split(line,' '); 
+      if (values.size()!=2)
+      {
+         FFStreamError fe("Invalid data");
+         GPSTK_THROW(fe);
+      }
+      week = (short) asInt(values[0]);
+      Toa = asInt(values[1]);
 
       if (nearFullWeek > 0)
       {
