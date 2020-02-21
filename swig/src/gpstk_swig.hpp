@@ -52,6 +52,7 @@
 // more specific almanac/ephemeris files:
 #include "AstronomicalFunctions.hpp"
 #include "XvtStore.hpp"
+#include "OrbAlmStore.hpp"
 #include "PZ90Ellipsoid.hpp"
 #include "WGS84Ellipsoid.hpp"
 #include "gpstkplatform.h"

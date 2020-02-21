@@ -186,6 +186,7 @@ namespace std { class fstream {}; }
 %ignore gpstk::EngAlmanac::getUTC;
 %include "EngAlmanac.hpp"
 
+%include "OrbAlmStore.hpp"
 %include "OrbElemBase.hpp"
 %include "OrbElem.hpp"
 %include "OrbElemStore.hpp"
@@ -337,7 +338,7 @@ namespace std { class fstream {}; }
 %include "FileIO.i"
 
 // Note that the path functions really don't make sense outside of the build
-// environment 
+// environment
 %include "build_config.h"
 
 %include "ord.i"
