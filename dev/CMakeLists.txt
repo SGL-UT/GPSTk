@@ -187,9 +187,9 @@ endif()
 
 install (TARGETS gpstk DESTINATION lib)
 if (CORE_ONLY)
-  install (FILES ${CORE_HDRS} ${CORE_HDRS2} DESTINATION include )
+  install (FILES ${CORE_HDRS} ${CORE_HDRS2} DESTINATION include/gpstk )
 else ()
-  install (FILES ${CORE_HDRS} ${CORE_HDRS2} ${EXT_HDRS} ${EXT_HDRS2} DESTINATION include )
+  install (FILES ${CORE_HDRS} ${CORE_HDRS2} ${EXT_HDRS} ${EXT_HDRS2} DESTINATION include/gpstk )
 endif ()
 
 
