@@ -141,8 +141,8 @@ add_library( gpstk ${STADYN} ${GPSTK_SRC_FILES} ${GPSTK_INC_FILES} )
 # GPSTk library install target
 install( TARGETS gpstk DESTINATION "${CMAKE_INSTALL_LIBDIR}" EXPORT "${PROJECT_NAME}Config" )
 
-# GPSTk header file install target
-install( FILES ${GPSTK_INC_FILES} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}" )
+# GPSTk header file install target \todo without "/gpstk"?
+install( FILES ${GPSTK_INC_FILES} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/gpstk" )
 
 #============================================================
 # Testing
@@ -185,8 +185,9 @@ endif()
 #----------------------------------------
 
 configure_file( "${CMAKE_SOURCE_DIR}/ProjectConfig-misc.cmake.in" "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config-misc.cmake" )
-install( FILES "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config-misc.cmake" DESTINATION "${CMAKE_INSTALL_DATADIR}/cmake/${PROJECT_NAME}" )
-install( EXPORT "${PROJECT_NAME}Config" DESTINATION "${CMAKE_INSTALL_DATADIR}/cmake/${PROJECT_NAME}" )
+# \todo make smth with it
+#install( FILES "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config-misc.cmake" DESTINATION "${CMAKE_INSTALL_DATADIR}/cmake/${PROJECT_NAME}" )
+#install( EXPORT "${PROJECT_NAME}Config" DESTINATION "${CMAKE_INSTALL_DATADIR}/cmake/${PROJECT_NAME}" )
 
 #============================================================
 # The End
