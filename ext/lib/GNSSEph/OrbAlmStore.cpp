@@ -194,7 +194,8 @@ void OrbAlmStore::dumpSubjAlm( std::ostream& s, short detail, const SatID& subjI
 
       if (detail==0)
       {
-         s << " Span is " << (initialTime == CommonTime::END_OF_TIME
+          s << "Dump of OrbAlmStore by subject satellite:\n";
+          s << " Span is " << (initialTime == CommonTime::END_OF_TIME
                                       ? "Beginning_of_time" : printTime(initialTime,fmt))
            << " to " << (finalTime == CommonTime::BEGINNING_OF_TIME
                                       ? "End_of_time" : printTime(finalTime,fmt))
@@ -433,9 +434,12 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjI
          } 
 
             // Then work on the xmitAlmMap
-         UniqueAlmMap& uam = xmitAlmMap[alm->satID];
-         OrbAlmMap& oemX = uam[alm->subjectSV];
-         test2 = addOrbAlmToOrbAlmMap(alm,oemX); 
+         if ((alm->satID).id>0)
+         {
+            UniqueAlmMap& uam = xmitAlmMap[alm->satID];
+            OrbAlmMap& oemX = uam[alm->subjectSV];
+            test2 = addOrbAlmToOrbAlmMap(alm,oemX);
+         };
       }
       catch(Exception& e)
       {
@@ -685,6 +689,14 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjI
       }
       return retSet;
    } 
+
+   //-----------------------------------------------------------------------------
+   // Added for parallelism with OrbElemStore
+   std::list<gpstk::SatID> OrbAlmStore::getSatIDList() const
+   {
+      return listOfSubjectSV();
+   }
+
 
 //-----------------------------------------------------------------------------
 // Goal is to find the set of orbital elements that would have been

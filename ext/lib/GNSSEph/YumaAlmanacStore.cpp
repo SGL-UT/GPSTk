@@ -44,7 +44,7 @@
 
 namespace gpstk
 {
-
+   //----------------------------------------------------------------
    void YumaAlmanacStore::loadFile(const std::string& filename)
       throw(FileMissingException)
    {
@@ -76,13 +76,37 @@ namespace gpstk
                short nEpochs = (diff+512) / 1024;
                rec.week += nEpochs * 1024;
             }
-	         addAlmanac(AlmOrbit(rec));
+            OrbAlmGen oag = OrbAlmGen(rec); 
+            addOrbAlm(&(oag));
          }	 
       }
       catch (Exception& e)
       {
          GPSTK_RETHROW(e);
       }   
+   }
+
+   //----------------------------------------------------------------
+   bool YumaAlmanacStore::addAlmanac(const YumaData& yAlmData)
+         throw(InvalidParameter, Exception)
+   {
+      unsigned short retVal = OrbAlmStore::ADD_NEITHER;
+      try
+      {
+         OrbAlmGen oag = OrbAlmGen(yAlmData);
+         retVal = addOrbAlm(&oag);
+      }
+      catch (InvalidParameter ip)
+      {
+         GPSTK_RETHROW(ip);
+      }
+      catch (Exception exc)
+      {
+         GPSTK_RETHROW(exc);
+      }
+      if (retVal==OrbAlmStore::ADD_NEITHER)
+         return false;
+      return true; 
    }
 
 }

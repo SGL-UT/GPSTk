@@ -35,51 +35,110 @@
 //=============================================================================
 
 /*********************************************************************
-*  $Id$
 *
-*  Test program from November 2006.  Written to test the SEMAlmRecord.cpp
-*  module..
+*  Test program to exercise SEMBase, SEMData, and SEMStream.
 *
 // *********************************************************************/
+#include <iostream>
+#include <fstream>
 
 #include "SEMData.hpp"
 #include "SEMStream.hpp"
 #include "SEMHeader.hpp"
 #include "SEMBase.hpp"
 
+#include "build_config.h"
+#include "TestUtil.hpp"
+
 using namespace std;
 using namespace gpstk;
 
 int main( int argc, char * argv[] )
 {
+   TUDEF("SEM_T","readData");
+
+   string origFile("test_input_sem387.txt");
+   string testFile("test_output_sem387.out");
+   string testFile2("test_output_SEM_T.out");
+
+   std::list<OrbAlmGen> oagList;
+
       // Read an existing SEM almanac file and write it back out.
    try
    {
-   SEMStream In("sem387.txt");
-   SEMStream Out("sem.dbg", ios::out);
-   SEMHeader Header;
-   SEMData Data;
-   
-   In >> Header;
-   Out << Header;
-   while (In >> Data)
-   {
-      Out << Data;
-   }
-   
-   
+      string fs = getFileSep();
+      string df(getPathData()+fs);
+      string inFile = df + origFile;
+
+      string tf(getPathTestTemp()+fs);
+      string outFile1 = tf + testFile; 
+
+      SEMStream In(inFile.c_str());
+      if (!In)
+      {
+         stringstream ss;
+         ss << "Input stream could not be opened." << endl;
+         TUFAIL(ss.str());
+         TURETURN();
+      }
+      SEMStream Out(outFile1.c_str(), ios::out);
+      SEMHeader Header;
+      SEMData Data;
+
+      string outFile2 = tf + testFile2; 
+      ofstream outAlmDmp;
+      outAlmDmp.open(outFile2.c_str(),ios::out);
+
+      In >> Header;
+      Out << Header;
+      while (In >> Data)
+      {
+         Out << Data;
+
+         OrbAlmGen oag = OrbAlmGen(Data);
+         oag.dump(outAlmDmp);
+         oagList.push_back(oag);
+      }
+      In.close();
+      Out.close();
+
+      TUCSM("RereadData");
+      SEMStream In2(outFile1.c_str(), ios::in);
+      if (!In2)
+      {
+         stringstream ss;
+         ss << "Test file " << outFile1 << " could not be re-opened." << endl;
+         TUFAIL(ss.str());
+         TURETURN();
+      }
+      SEMHeader Header2;
+      In2 >> Header2;
+      std::list<OrbAlmGen>::const_iterator cit = oagList.begin(); 
+      int index = 0; 
+      while (In2 >> Data)
+      {
+         OrbAlmGen oag2 = OrbAlmGen(Data);
+         const OrbAlmGen& oagRef = *cit;
+         bool test = oag2.isSameData(&(oagRef));
+         TUASSERTE(bool,test,true);
+         index++;
+         cit++;
+      }
+      outAlmDmp.close();
    }
    catch(gpstk::Exception& e)
    {
-      cout << e;
-      exit(1);
+      stringstream ss;
+      ss << e;
+      TUFAIL(ss.str());
+      cout << ss.str() << endl;
    }
    catch (...)
    {
-      cout << "unknown error.  Done." << endl;
-      exit(1);
+      stringstream ss;
+      ss << "unknown error.  Done.";
+      TUFAIL(ss.str());
+      cout << ss.str() << endl;
    }
-
-   
-   return(0);
+   TURETURN();
 }
