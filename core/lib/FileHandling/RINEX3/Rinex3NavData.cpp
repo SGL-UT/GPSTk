@@ -1187,7 +1187,13 @@ namespace gpstk
          // specify the time system based on satellite system
          time.setTimeSystem(TimeSystem::Any);
          if(satSys == "G") time.setTimeSystem(TimeSystem::GPS);
-         if(satSys == "R") time.setTimeSystem(TimeSystem::GLO);
+         if(satSys == "R") {
+             time.setTimeSystem(TimeSystem::GLO);
+
+             // RINEX reports GLONASS times as UTC, not GLONASS time (Moscow +
+             // 3h). Return a GLONASS timestamp rather than UTC.
+             time += 3 * 3600.0;
+         }
          if(satSys == "E") time.setTimeSystem(TimeSystem::GAL);
          if(satSys == "C") time.setTimeSystem(TimeSystem::BDT);
          if(satSys == "J") time.setTimeSystem(TimeSystem::QZS);
