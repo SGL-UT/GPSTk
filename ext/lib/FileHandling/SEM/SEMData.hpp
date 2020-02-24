@@ -48,6 +48,7 @@
 
 #include "FFStream.hpp"
 #include "AlmOrbit.hpp"
+#include "OrbAlmGen.hpp"
 #include "SEMBase.hpp"
 #include "StringUtils.hpp"
 #include "SEMHeader.hpp"
@@ -79,17 +80,18 @@ namespace gpstk
       
          
       short PRN;
-      short SVNnum;
-      short URAnum;
-      double ecc;
-      double i_offset;
-      double OMEGAdot;
-      double Ahalf;
-      double OMEGA0;
-      double w;
-      double M0;
-      double AF0;
-      double AF1;
+      short SVNnum;          // SVN
+      short URAnum;          // "Avg" URA index over unknown period
+      double ecc;            // no units
+      double i_offset;       // redians
+      double i_total;        // radians
+      double OMEGAdot;       // redians
+      double Ahalf;          // m**0.5
+      double OMEGA0;         // radians
+      double w;              // radians
+      double M0;             // radians
+      double AF0;            // sec
+      double AF1;            // sec/sec 
       short SV_health;
       short satConfig;
       
@@ -114,7 +116,12 @@ namespace gpstk
           */
       operator AlmOrbit() const;
       
-      
+         /**
+          * cast *this into an OrbAlmGen
+          * @return the constructed OrbAlmGen object
+          */
+      operator OrbAlmGen() const;    
+            
    protected:      
 	 
 	 /**

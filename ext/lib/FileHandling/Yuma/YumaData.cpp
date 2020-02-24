@@ -67,6 +67,16 @@ namespace gpstk
    const std::string YumaData::sAf1  = "Af1(s/s):";
    const std::string YumaData::sweek = "week:";
 
+   // NOTE: It is impractical to EXACTLY produce the ICD-GPS-240
+   // Yuma almanac format in C++.  The format includes scientific
+   // format feature that work in FORTRAN but are not supported by
+   // the C++ standard.  Specifically, 
+   //  1.) three-digit exponents when they are not required, and 
+   //  2.) the leading character is always zero 
+   //      (i.e., the value is always beween -1 and +1).
+   // The following will produce a something "very close" to the
+   // Yuma format that will be successfully read by the reallyGetRecord
+   // parser.
    void YumaData::reallyPutRecord(FFStream& ffs) const
       throw(std::exception, FFStreamError,
                gpstk::StringUtils::StringException)
@@ -74,23 +84,70 @@ namespace gpstk
       YumaStream& strm = dynamic_cast<YumaStream&>(ffs);
 
       const int width=27;
-      strm << "******** Week" << setw(5) << (week % 1024)
-           << " almanac for PRN-" << PRN
-           << " ********" << endl
-           << left
-           << setw(width) << sID   << PRN << endl
-           << setw(width) << sHlth << hex << SV_health << endl
-           << setw(width) << sEcc  << ecc << endl
-           << setw(width) << sTOA  << Toa << endl
-           << setw(width) << sOrbI << (i_offset + 54.0 * (gpstk::PI / 180.0)) << endl
-           << setw(width) << sRRA  << OMEGAdot << endl
-           << setw(width) << sSqrA << Ahalf << endl
-           << setw(width) << sRtAs << OMEGA0 << endl
-           << setw(width) << sArgP << w << endl
-           << setw(width) << sMnAn << M0 << endl
-           << setw(width) << sAf0  << AF0 << endl
-           << setw(width) << sAf1  << AF1 << endl
-           << setw(width) << sweek << week << endl;
+      strm.setf(ios::fixed, ios::floatfield);
+      strm.precision(0); 
+      strm << right
+           << "******** Week" << setw(5) << (week % 1024)
+           << " almanac for PRN-" << setfill('0') << setw(2) << PRN << setfill(' ') 
+           << " ********" << endl;
+
+      strm << left
+           << setw(width) << sID << "   "  
+           << right
+           << setfill('0') << setw(2) << PRN 
+           << setfill(' ') << endl;
+
+      strm << left 
+           << setw(width) << sHlth << "   "
+           << right 
+           << setfill('0') << setw(3) << SV_health 
+           << setfill(' ') << endl;
+
+      strm.setf(ios::scientific, ios::floatfield);
+      strm.setf(ios_base::uppercase);
+      strm.precision(10);
+      strm << left
+           << setw(width) << sEcc  
+           << right
+           << setw(19) << ecc << endl;
+
+      strm.setf(ios::fixed, ios::floatfield);
+      strm.precision(6);
+      strm << left
+           << setw(width) << sTOA << "   "
+           << setw(6) << Toa << endl;
+
+      strm.setf(ios::scientific, ios::floatfield);
+      strm.precision(10);
+      strm << left << setw(width) << sOrbI << right << setw(19) << i_total << endl;
+      strm << left << setw(width) << sRRA  << right << setw(19) << OMEGAdot << endl;
+
+      strm.setf(ios::fixed, ios::floatfield);
+      strm.precision(6);
+      strm << left << setw(width) << sSqrA << "   " 
+           << setw(11) << Ahalf << endl;
+
+      strm.setf(ios::scientific, ios::floatfield);
+      strm.precision(10);
+      strm << left << setw(width) << sRtAs << right << setw(19) << OMEGA0 << endl;
+
+      strm.setf(ios::fixed, ios::floatfield);
+      strm.precision(9);
+      strm << left << setw(width) << sArgP << "  "
+           << right
+           << setw(12) << w << endl;
+
+      strm.setf(ios::scientific, ios::floatfield);
+      strm.precision(10);
+      strm << left << setw(width) << sMnAn << right << setw(19) << M0 << endl;
+      strm << left << setw(width) << sAf0  << right << setw(19) << AF0 << endl;
+      strm << left << setw(width) << sAf1  << right << setw(19) << AF1 << endl;
+
+      strm.setf(ios::fixed, ios::floatfield);
+      strm.precision(4);
+      strm << left << setw(width) << sweek << "   "
+           << setw(4) << week << endl;
+      strm << endl;
    }   // end YumaData::reallyPutRecord
 
 
@@ -124,10 +181,19 @@ namespace gpstk
       // Find next header line.
       // We don't need the header line as we will get all the information from the others
       bool found = false;
+      unsigned lineCount = 0; 
       while (!found)
       {
           strm.formattedGetLine(line, true);
           if (line.substr(0,2).compare("**")==0) found = true;
+          lineCount++;
+             // If we don't find a header within 14 lines (which is the length
+             // of a Yuma record) assume we will not find one.
+          if (!found && lineCount>14)
+          {
+             FFStreamError exc("Could not find Yuma record.");
+             GPSTK_THROW(exc);
+          }  
       }
 
       //Second Line - PRN
@@ -148,7 +214,7 @@ namespace gpstk
 
       //Sixth Line - Orbital Inclination
       strm.formattedGetLine(line, true);
-      double i_total = asDouble(lineParser(line, sOrbI));
+      i_total = asDouble(lineParser(line, sOrbI));
       i_offset = i_total - 54.0 * (gpstk::PI / 180.0);
 
       //Seventh Line - Rate of Right Ascen
@@ -225,4 +291,55 @@ namespace gpstk
       return ao;
 
    } // end of AlmOrbit()
+
+   YumaData::operator OrbAlmGen() const
+   {
+     OrbAlmGen oag;
+
+     oag.AHalf    = Ahalf; 
+     oag.A        = Ahalf * Ahalf; 
+     oag.af1      = AF1;
+     oag.af0      = AF0;
+     oag.OMEGA0   = OMEGA0; 
+     oag.ecc      = ecc;
+     oag.deltai   = i_offset;
+     oag.i0       = i_total;
+     oag.OMEGAdot = OMEGAdot;
+     oag.w        = w;
+     oag.M0       = M0;
+     oag.toa      = Toa;
+     oag.health   = SV_health; 
+     
+     // At this writing Yuma almanacs only exist for GPS
+     oag.subjectSV = SatID(PRN, SatID::systemGPS); 
+
+     // Unfortunately, we've NO IDEA which SV transmitted 
+     // these data.
+     oag.satID = SatID(0,SatID::systemGPS); 
+
+     // 
+     oag.ctToe = GPSWeekSecond(week,Toa,TimeSystem::GPS);
+
+     // There is no transmit time in the Yuma alamanc format.  
+     // Therefore, beginValid and endvalid are estimated.  The
+     // estimate is based on IS-GPS-200 Table 20-XIII.  
+     oag.beginValid = oag.ctToe - (70 * 3600.0);
+     oag.endValid   = oag.beginValid + (144 * 3600.0);
+
+     oag.dataLoadedFlag = true; 
+     oag.setHealthy(false);
+     if (oag.health==0) 
+        oag.setHealthy(true);
+
+        // It is assumed that the data were broadcast on
+        // each of L1 C/A, L1 P(Y), and L2 P(Y).   We'll
+        // load obsID with L1 C/A for the sake of completeness,
+        // but this will probably never be examined.
+     oag.obsID = ObsID(ObsID::otNavMsg,ObsID::cbL1,ObsID::tcCA);
+
+     return oag; 
+   }
+
+
+
 } // namespace

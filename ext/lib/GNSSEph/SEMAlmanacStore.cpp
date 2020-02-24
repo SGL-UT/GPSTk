@@ -44,7 +44,7 @@
 
 namespace gpstk
 {
-
+   //----------------------------------------------------------------
    void SEMAlmanacStore::loadFile(const std::string& filename)
       throw(FileMissingException)
    {
@@ -88,13 +88,37 @@ namespace gpstk
 	         rec.Toa = header.Toa;
 	         rec.week = header.week;
             
-	         addAlmanac(AlmOrbit(rec));
+            OrbAlmGen oag = OrbAlmGen(rec); 
+            addOrbAlm(&(oag));
          }
       }
       catch (Exception& e)
       {
          GPSTK_RETHROW(e);
       }  
+   }
+
+   //----------------------------------------------------------------
+   bool SEMAlmanacStore::addAlmanac(const SEMData& sAlmData)
+         throw(InvalidParameter, Exception)
+   {
+      unsigned short retVal = OrbAlmStore::ADD_NEITHER;
+      try
+      {
+         OrbAlmGen oag = OrbAlmGen(sAlmData);
+         retVal = addOrbAlm(&oag);
+      }
+      catch (InvalidParameter ip)
+      {
+         GPSTK_RETHROW(ip);
+      }
+      catch (Exception exc)
+      {
+         GPSTK_RETHROW(exc);
+      }
+      if (retVal==OrbAlmStore::ADD_NEITHER)
+         return false;
+      return true; 
    }
    
 }
