@@ -1,0 +1,570 @@
+**************************************************************
+ ORB/CLK ALMANAC PARAMETERS FOR GPS 1
+
+              MM/DD/YYYY DOY HH:MM:SS      SOD  WWWW    SOW
+Transmit   :  06/10/1987 161 21:50:24    78624   387 337824  GPS
+Orbit Epoch:  06/13/1987 164 19:50:24    71424   387 589824  GPS
+
+Parameter              Value
+AHalf         5.15368457E+03 m**0.5
+af1           3.63797881E-12 sec/sec
+af0           1.03950500E-04 sec
+Omega0       -1.81851999E+00 rad
+e             6.70051575E-03 dimensionless
+deltai        4.69541932E-02 rad
+Omega_Dot    -7.78318134E-09 rad/sec
+w            -1.75902019E+00 rad
+M0           -1.63337495E+00 rad
+Health                  0x00 8 bits
+Xmit by PRN                0
+**************************************************************
+ ORB/CLK ALMANAC PARAMETERS FOR GPS 2
+
+              MM/DD/YYYY DOY HH:MM:SS      SOD  WWWW    SOW
+Transmit   :  06/10/1987 161 21:50:24    78624   387 337824  GPS
+Orbit Epoch:  06/13/1987 164 19:50:24    71424   387 589824  GPS
+
+Parameter              Value
+AHalf         5.15372070E+03 m**0.5
+af1           3.63797881E-12 sec/sec
+af0           7.72476196E-05 sec
+Omega0        2.32079234E+00 rad
+e             8.90016556E-03 dimensionless
+deltai        4.91353221E-03 rad
+Omega_Dot    -7.88604277E-09 rad/sec
+w             2.20057259E+00 rad
+M0           -4.24120970E-01 rad
+Health                  0x00 8 bits
+Xmit by PRN                0
+**************************************************************
+ ORB/CLK ALMANAC PARAMETERS FOR GPS 3
+
+              MM/DD/YYYY DOY HH:MM:SS      SOD  WWWW    SOW
+Transmit   :  06/10/1987 161 21:50:24    78624   387 337824  GPS
+Orbit Epoch:  06/13/1987 164 19:50:24    71424   387 589824  GPS
+
+Parameter              Value
+AHalf         5.15365527E+03 m**0.5
+af1           7.27595761E-12 sec/sec
+af0           4.76837158E-06 sec
+Omega0        1.18141201E+00 rad
+e             9.10091400E-03 dimensionless
+deltai       -1.67539464E-02 rad
+Omega_Dot    -8.17176896E-09 rad/sec
+w             7.32618139E-01 rad
+M0           -1.08161937E+00 rad
+Health                  0x00 8 bits
+Xmit by PRN                0
+**************************************************************
+ ORB/CLK ALMANAC PARAMETERS FOR GPS 4
+
+              MM/DD/YYYY DOY HH:MM:SS      SOD  WWWW    SOW
+Transmit   :  06/10/1987 161 21:50:24    78624   387 337824  GPS
+Orbit Epoch:  06/13/1987 164 19:50:24    71424   387 589824  GPS
+
+Parameter              Value
+AHalf         5.15369238E+03 m**0.5
+af1           3.63797881E-12 sec/sec
+af0           3.57627869E-04 sec
+Omega0        2.34020416E+00 rad
+e             7.80296326E-03 dimensionless
+deltai        4.38023420E-03 rad
+Omega_Dot    -7.88604277E-09 rad/sec
+w             2.46355217E-01 rad
+M0            2.13742621E+00 rad
+Health                  0x3F 8 bits
+Xmit by PRN                0
+**************************************************************
+ ORB/CLK ALMANAC PARAMETERS FOR GPS 5
+
+              MM/DD/YYYY DOY HH:MM:SS      SOD  WWWW    SOW
+Transmit   :  06/10/1987 161 21:50:24    78624   387 337824  GPS
+Orbit Epoch:  06/13/1987 164 19:50:24    71424   387 589824  GPS
+
+Parameter              Value
+AHalf         5.15379541E+03 m**0.5
+af1           1.09139364E-11 sec/sec
+af0           2.19345093E-05 sec
+Omega0        1.45546164E-01 rad
+e             7.65180588E-03 dimensionless
+deltai       -2.90018243E-03 rad
+Omega_Dot    -8.01176229E-09 rad/sec
+w             1.15068932E+00 rad
+M0            1.77548876E+00 rad
+Health                  0x00 8 bits
+Xmit by PRN                0
+**************************************************************
+ ORB/CLK ALMANAC PARAMETERS FOR GPS 6
+
+              MM/DD/YYYY DOY HH:MM:SS      SOD  WWWW    SOW
+Transmit   :  06/10/1987 161 21:50:24    78624   387 337824  GPS
+Orbit Epoch:  06/13/1987 164 19:50:24    71424   387 589824  GPS
+
+Parameter              Value
+AHalf         5.15352100E+03 m**0.5
+af1          -2.54658516E-11 sec/sec
+af0           4.28199768E-04 sec
+Omega0        1.24192298E+00 rad
+e             5.72395325E-03 dimensionless
+deltai       -9.24582951E-03 rad
+Omega_Dot    -8.08033658E-09 rad/sec
+w            -1.76096538E+00 rad
+M0            3.13379242E+00 rad
+Health                  0x00 8 bits
+Xmit by PRN                0
+**************************************************************
+ ORB/CLK ALMANAC PARAMETERS FOR GPS 7
+
+              MM/DD/YYYY DOY HH:MM:SS      SOD  WWWW    SOW
+Transmit   :  06/10/1987 161 21:50:24    78624   387 337824  GPS
+Orbit Epoch:  06/13/1987 164 19:50:24    71424   387 589824  GPS
+
+Parameter              Value
+AHalf         5.15371631E+03 m**0.5
+af1          -1.09139364E-11 sec/sec
+af0           4.33921814E-04 sec
+Omega0        1.21609211E+00 rad
+e             1.03759766E-02 dimensionless
+deltai       -7.66990394E-03 rad
+Omega_Dot    -8.05747848E-09 rad/sec
+w            -1.74157528E+00 rad
+M0            2.98849980E+00 rad
+Health                  0x00 8 bits
+Xmit by PRN                0
+**************************************************************
+ ORB/CLK ALMANAC PARAMETERS FOR GPS 8
+
+              MM/DD/YYYY DOY HH:MM:SS      SOD  WWWW    SOW
+Transmit   :  06/10/1987 161 21:50:24    78624   387 337824  GPS
+Orbit Epoch:  06/13/1987 164 19:50:24    71424   387 589824  GPS
+
+Parameter              Value
+AHalf         5.15369873E+03 m**0.5
+af1           0.00000000E+00 sec/sec
+af0          -9.44137573E-05 sec
+Omega0       -7.71878834E-01 rad
+e             9.77754593E-03 dimensionless
+deltai        3.40292066E-02 rad
+Omega_Dot    -7.62317468E-09 rad/sec
+w             2.74887972E+00 rad
+M0           -3.06681371E+00 rad
+Health                  0x00 8 bits
+Xmit by PRN                0
+**************************************************************
+ ORB/CLK ALMANAC PARAMETERS FOR GPS 9
+
+              MM/DD/YYYY DOY HH:MM:SS      SOD  WWWW    SOW
+Transmit   :  06/10/1987 161 21:50:24    78624   387 337824  GPS
+Orbit Epoch:  06/13/1987 164 19:50:24    71424   387 589824  GPS
+
+Parameter              Value
+AHalf         5.15367334E+03 m**0.5
+af1           0.00000000E+00 sec/sec
+af0           5.53131104E-05 sec
+Omega0       -8.54735518E-01 rad
+e             1.85880661E-02 dimensionless
+deltai        2.17094234E-02 rad
+Omega_Dot    -7.76032325E-09 rad/sec
+w             1.30418253E+00 rad
+M0            2.85081341E+00 rad
+Health                  0x00 8 bits
+Xmit by PRN                0
+**************************************************************
+ ORB/CLK ALMANAC PARAMETERS FOR GPS 10
+
+              MM/DD/YYYY DOY HH:MM:SS      SOD  WWWW    SOW
+Transmit   :  06/10/1987 161 21:50:24    78624   387 337824  GPS
+Orbit Epoch:  06/13/1987 164 19:50:24    71424   387 589824  GPS
+
+Parameter              Value
+AHalf         5.15371289E+03 m**0.5
+af1           0.00000000E+00 sec/sec
+af0           9.63211060E-05 sec
+Omega0       -2.88748289E+00 rad
+e             7.49301910E-03 dimensionless
+deltai        2.85524158E-02 rad
+Omega_Dot    -7.95461706E-09 rad/sec
+w             4.52096271E-01 rad
+M0            1.23539757E-01 rad
+Health                  0x00 8 bits
+Xmit by PRN                0
+**************************************************************
+ ORB/CLK ALMANAC PARAMETERS FOR GPS 11
+
+              MM/DD/YYYY DOY HH:MM:SS      SOD  WWWW    SOW
+Transmit   :  06/10/1987 161 21:50:24    78624   387 337824  GPS
+Orbit Epoch:  06/13/1987 164 19:50:24    71424   387 589824  GPS
+
+Parameter              Value
+AHalf         5.15363818E+03 m**0.5
+af1           0.00000000E+00 sec/sec
+af0           4.76837158E-06 sec
+Omega0        2.16372147E+00 rad
+e             6.54792786E-03 dimensionless
+deltai       -4.79129312E-02 rad
+Omega_Dot    -8.37749181E-09 rad/sec
+w             4.67993345E-01 rad
+M0           -2.64377844E+00 rad
+Health                  0x00 8 bits
+Xmit by PRN                0
+**************************************************************
+ ORB/CLK ALMANAC PARAMETERS FOR GPS 12
+
+              MM/DD/YYYY DOY HH:MM:SS      SOD  WWWW    SOW
+Transmit   :  06/10/1987 161 21:50:24    78624   387 337824  GPS
+Orbit Epoch:  06/13/1987 164 19:50:24    71424   387 589824  GPS
+
+Parameter              Value
+AHalf         5.15365088E+03 m**0.5
+af1           3.63797881E-12 sec/sec
+af0          -5.72204590E-05 sec
+Omega0        2.27541108E-01 rad
+e             3.39460373E-03 dimensionless
+deltai        1.89770201E-02 rad
+Omega_Dot    -7.77175230E-09 rad/sec
+w            -1.31991894E+00 rad
+M0           -2.01293146E+00 rad
+Health                  0x00 8 bits
+Xmit by PRN                0
+**************************************************************
+ ORB/CLK ALMANAC PARAMETERS FOR GPS 13
+
+              MM/DD/YYYY DOY HH:MM:SS      SOD  WWWW    SOW
+Transmit   :  06/10/1987 161 21:50:24    78624   387 337824  GPS
+Orbit Epoch:  06/13/1987 164 19:50:24    71424   387 589824  GPS
+
+Parameter              Value
+AHalf         5.15361963E+03 m**0.5
+af1           3.63797881E-12 sec/sec
+af0           1.37329102E-04 sec
+Omega0       -1.83199438E+00 rad
+e             2.99644470E-03 dimensionless
+deltai        5.11247034E-02 rad
+Omega_Dot    -7.76032325E-09 rad/sec
+w             1.24468459E+00 rad
+M0           -1.68247282E-02 rad
+Health                  0x00 8 bits
+Xmit by PRN                0
+**************************************************************
+ ORB/CLK ALMANAC PARAMETERS FOR GPS 14
+
+              MM/DD/YYYY DOY HH:MM:SS      SOD  WWWW    SOW
+Transmit   :  06/10/1987 161 21:50:24    78624   387 337824  GPS
+Orbit Epoch:  06/13/1987 164 19:50:24    71424   387 589824  GPS
+
+Parameter              Value
+AHalf         5.15368799E+03 m**0.5
+af1           0.00000000E+00 sec/sec
+af0           5.72204590E-06 sec
+Omega0       -1.84651327E+00 rad
+e             3.00979614E-03 dimensionless
+deltai        4.51625516E-02 rad
+Omega_Dot    -7.81746849E-09 rad/sec
+w            -2.05626380E+00 rad
+M0           -6.25626724E-01 rad
+Health                  0x00 8 bits
+Xmit by PRN                0
+**************************************************************
+ ORB/CLK ALMANAC PARAMETERS FOR GPS 16
+
+              MM/DD/YYYY DOY HH:MM:SS      SOD  WWWW    SOW
+Transmit   :  06/10/1987 161 21:50:24    78624   387 337824  GPS
+Orbit Epoch:  06/13/1987 164 19:50:24    71424   387 589824  GPS
+
+Parameter              Value
+AHalf         5.15353320E+03 m**0.5
+af1           3.63797881E-12 sec/sec
+af0           1.16348267E-04 sec
+Omega0        2.42959562E-01 rad
+e             3.68595123E-03 dimensionless
+deltai        2.09843778E-02 rad
+Omega_Dot    -7.73746515E-09 rad/sec
+w            -7.55439099E-01 rad
+M0            1.61121200E+00 rad
+Health                  0x00 8 bits
+Xmit by PRN                0
+**************************************************************
+ ORB/CLK ALMANAC PARAMETERS FOR GPS 17
+
+              MM/DD/YYYY DOY HH:MM:SS      SOD  WWWW    SOW
+Transmit   :  06/10/1987 161 21:50:24    78624   387 337824  GPS
+Orbit Epoch:  06/13/1987 164 19:50:24    71424   387 589824  GPS
+
+Parameter              Value
+AHalf         5.15352246E+03 m**0.5
+af1           0.00000000E+00 sec/sec
+af0           8.10623169E-05 sec
+Omega0        1.28207238E+00 rad
+e             2.42996216E-03 dimensionless
+deltai        1.70655363E-02 rad
+Omega_Dot    -7.78318134E-09 rad/sec
+w             3.10801922E+00 rad
+M0            5.00585943E-01 rad
+Health                  0x00 8 bits
+Xmit by PRN                0
+**************************************************************
+ ORB/CLK ALMANAC PARAMETERS FOR GPS 18
+
+              MM/DD/YYYY DOY HH:MM:SS      SOD  WWWW    SOW
+Transmit   :  06/10/1987 161 21:50:24    78624   387 337824  GPS
+Orbit Epoch:  06/13/1987 164 19:50:24    71424   387 589824  GPS
+
+Parameter              Value
+AHalf         5.15369727E+03 m**0.5
+af1           0.00000000E+00 sec/sec
+af0          -2.53677368E-04 sec
+Omega0       -2.86933279E+00 rad
+e             7.80487061E-03 dimensionless
+deltai        1.26313731E-02 rad
+Omega_Dot    -8.12605277E-09 rad/sec
+w            -2.59324283E+00 rad
+M0            1.53893589E+00 rad
+Health                  0x00 8 bits
+Xmit by PRN                0
+**************************************************************
+ ORB/CLK ALMANAC PARAMETERS FOR GPS 19
+
+              MM/DD/YYYY DOY HH:MM:SS      SOD  WWWW    SOW
+Transmit   :  06/10/1987 161 21:50:24    78624   387 337824  GPS
+Orbit Epoch:  06/13/1987 164 19:50:24    71424   387 589824  GPS
+
+Parameter              Value
+AHalf         5.15363770E+03 m**0.5
+af1           3.63797881E-12 sec/sec
+af0           6.19888306E-05 sec
+Omega0        1.34071644E+00 rad
+e             3.52239609E-03 dimensionless
+deltai        1.49323442E-02 rad
+Omega_Dot    -7.81746849E-09 rad/sec
+w            -9.74306624E-01 rad
+M0            1.07280534E-01 rad
+Health                  0x00 8 bits
+Xmit by PRN                0
+**************************************************************
+ ORB/CLK ALMANAC PARAMETERS FOR GPS 20
+
+              MM/DD/YYYY DOY HH:MM:SS      SOD  WWWW    SOW
+Transmit   :  06/10/1987 161 21:50:24    78624   387 337824  GPS
+Orbit Epoch:  06/13/1987 164 19:50:24    71424   387 589824  GPS
+
+Parameter              Value
+AHalf         5.15355518E+03 m**0.5
+af1           0.00000000E+00 sec/sec
+af0          -2.19345093E-05 sec
+Omega0       -2.92245548E+00 rad
+e             3.03411484E-03 dimensionless
+deltai        1.21340277E-02 rad
+Omega_Dot    -8.11462372E-09 rad/sec
+w             1.26891894E+00 rad
+M0            1.57870292E+00 rad
+Health                  0x00 8 bits
+Xmit by PRN                0
+**************************************************************
+ ORB/CLK ALMANAC PARAMETERS FOR GPS 21
+
+              MM/DD/YYYY DOY HH:MM:SS      SOD  WWWW    SOW
+Transmit   :  06/10/1987 161 21:50:24    78624   387 337824  GPS
+Orbit Epoch:  06/13/1987 164 19:50:24    71424   387 589824  GPS
+
+Parameter              Value
+AHalf         5.15360889E+03 m**0.5
+af1           0.00000000E+00 sec/sec
+af0           6.96182251E-05 sec
+Omega0        2.35889019E+00 rad
+e             1.19423866E-02 dimensionless
+deltai       -2.04930246E-03 rad
+Omega_Dot    -7.93175896E-09 rad/sec
+w            -2.89498614E+00 rad
+M0            2.88708180E+00 rad
+Health                  0x00 8 bits
+Xmit by PRN                0
+**************************************************************
+ ORB/CLK ALMANAC PARAMETERS FOR GPS 22
+
+              MM/DD/YYYY DOY HH:MM:SS      SOD  WWWW    SOW
+Transmit   :  06/10/1987 161 21:50:24    78624   387 337824  GPS
+Orbit Epoch:  06/13/1987 164 19:50:24    71424   387 589824  GPS
+
+Parameter              Value
+AHalf         5.15363379E+03 m**0.5
+af1           3.63797881E-12 sec/sec
+af0           1.64031982E-04 sec
+Omega0       -2.86177785E+00 rad
+e             4.86564636E-03 dimensionless
+deltai        1.02045675E-02 rad
+Omega_Dot    -8.14891086E-09 rad/sec
+w            -1.64744406E+00 rad
+M0            4.99910707E-02 rad
+Health                  0x00 8 bits
+Xmit by PRN                0
+**************************************************************
+ ORB/CLK ALMANAC PARAMETERS FOR GPS 23
+
+              MM/DD/YYYY DOY HH:MM:SS      SOD  WWWW    SOW
+Transmit   :  06/10/1987 161 21:50:24    78624   387 337824  GPS
+Orbit Epoch:  06/13/1987 164 19:50:24    71424   387 589824  GPS
+
+Parameter              Value
+AHalf         5.15364502E+03 m**0.5
+af1           0.00000000E+00 sec/sec
+af0           1.47819519E-04 sec
+Omega0       -1.86427689E+00 rad
+e             4.66394424E-03 dimensionless
+deltai        2.74139145E-02 rad
+Omega_Dot    -8.01176229E-09 rad/sec
+w             2.59130438E+00 rad
+M0           -8.46974983E-01 rad
+Health                  0x00 8 bits
+Xmit by PRN                0
+**************************************************************
+ ORB/CLK ALMANAC PARAMETERS FOR GPS 24
+
+              MM/DD/YYYY DOY HH:MM:SS      SOD  WWWW    SOW
+Transmit   :  06/10/1987 161 21:50:24    78624   387 337824  GPS
+Orbit Epoch:  06/13/1987 164 19:50:24    71424   387 589824  GPS
+
+Parameter              Value
+AHalf         5.15538916E+03 m**0.5
+af1           3.63797881E-12 sec/sec
+af0           7.24792480E-05 sec
+Omega0        2.37660887E+00 rad
+e             8.59260559E-03 dimensionless
+deltai        1.46027780E-02 rad
+Omega_Dot    -7.77175230E-09 rad/sec
+w            -7.57367810E-01 rad
+M0            1.78524392E+00 rad
+Health                  0x00 8 bits
+Xmit by PRN                0
+**************************************************************
+ ORB/CLK ALMANAC PARAMETERS FOR GPS 25
+
+              MM/DD/YYYY DOY HH:MM:SS      SOD  WWWW    SOW
+Transmit   :  06/10/1987 161 21:50:24    78624   387 337824  GPS
+Orbit Epoch:  06/13/1987 164 19:50:24    71424   387 589824  GPS
+
+Parameter              Value
+AHalf         5.15521631E+03 m**0.5
+af1          -1.45519152E-11 sec/sec
+af0           3.69071960E-04 sec
+Omega0       -9.10765889E-01 rad
+e             1.25293732E-02 dimensionless
+deltai        1.50521865E-02 rad
+Omega_Dot    -7.81746849E-09 rad/sec
+w            -1.31920138E+00 rad
+M0           -2.94734634E+00 rad
+Health                  0x00 8 bits
+Xmit by PRN                0
+**************************************************************
+ ORB/CLK ALMANAC PARAMETERS FOR GPS 26
+
+              MM/DD/YYYY DOY HH:MM:SS      SOD  WWWW    SOW
+Transmit   :  06/10/1987 161 21:50:24    78624   387 337824  GPS
+Orbit Epoch:  06/13/1987 164 19:50:24    71424   387 589824  GPS
+
+Parameter              Value
+AHalf         5.15357617E+03 m**0.5
+af1          -1.81898940E-11 sec/sec
+af0          -1.52587891E-05 sec
+Omega0       -1.83188765E+00 rad
+e             1.77392960E-02 dimensionless
+deltai        4.92072275E-02 rad
+Omega_Dot    -7.78318134E-09 rad/sec
+w             8.28472464E-01 rad
+M0           -1.61810668E+00 rad
+Health                  0x00 8 bits
+Xmit by PRN                0
+**************************************************************
+ ORB/CLK ALMANAC PARAMETERS FOR GPS 27
+
+              MM/DD/YYYY DOY HH:MM:SS      SOD  WWWW    SOW
+Transmit   :  06/10/1987 161 21:50:24    78624   387 337824  GPS
+Orbit Epoch:  06/13/1987 164 19:50:24    71424   387 589824  GPS
+
+Parameter              Value
+AHalf         5.15373047E+03 m**0.5
+af1           3.63797881E-12 sec/sec
+af0           9.05990601E-05 sec
+Omega0       -8.77838857E-01 rad
+e             2.05225945E-02 dimensionless
+deltai        1.96421446E-02 rad
+Omega_Dot    -7.74889420E-09 rad/sec
+w            -1.84989769E+00 rad
+M0            1.99468510E+00 rad
+Health                  0x00 8 bits
+Xmit by PRN                0
+**************************************************************
+ ORB/CLK ALMANAC PARAMETERS FOR GPS 28
+
+              MM/DD/YYYY DOY HH:MM:SS      SOD  WWWW    SOW
+Transmit   :  06/10/1987 161 21:50:24    78624   387 337824  GPS
+Orbit Epoch:  06/13/1987 164 19:50:24    71424   387 589824  GPS
+
+Parameter              Value
+AHalf         5.15363037E+03 m**0.5
+af1           0.00000000E+00 sec/sec
+af0           8.58306885E-06 sec
+Omega0        2.52231233E-01 rad
+e             1.21917725E-02 dimensionless
+deltai        1.90728939E-02 rad
+Omega_Dot    -7.76032325E-09 rad/sec
+w            -2.21780890E+00 rad
+M0            8.09670713E-01 rad
+Health                  0x00 8 bits
+Xmit by PRN                0
+**************************************************************
+ ORB/CLK ALMANAC PARAMETERS FOR GPS 29
+
+              MM/DD/YYYY DOY HH:MM:SS      SOD  WWWW    SOW
+Transmit   :  06/10/1987 161 21:50:24    78624   387 337824  GPS
+Orbit Epoch:  06/13/1987 164 19:50:24    71424   387 589824  GPS
+
+Parameter              Value
+AHalf         5.15357471E+03 m**0.5
+af1           1.45519152E-11 sec/sec
+af0           3.30924988E-04 sec
+Omega0       -1.86725534E+00 rad
+e             1.00822449E-02 dimensionless
+deltai        4.57377944E-02 rad
+Omega_Dot    -7.81746849E-09 rad/sec
+w            -7.78548055E-01 rad
+M0            1.96098247E-01 rad
+Health                  0x00 8 bits
+Xmit by PRN                0
+**************************************************************
+ ORB/CLK ALMANAC PARAMETERS FOR GPS 30
+
+              MM/DD/YYYY DOY HH:MM:SS      SOD  WWWW    SOW
+Transmit   :  06/10/1987 161 21:50:24    78624   387 337824  GPS
+Orbit Epoch:  06/13/1987 164 19:50:24    71424   387 589824  GPS
+
+Parameter              Value
+AHalf         5.15358545E+03 m**0.5
+af1           0.00000000E+00 sec/sec
+af0           2.38418579E-05 sec
+Omega0        1.93762072E-01 rad
+e             9.55247879E-03 dimensionless
+deltai        3.52935423E-03 rad
+Omega_Dot    -7.95461706E-09 rad/sec
+w             1.32620317E+00 rad
+M0            1.11891802E+00 rad
+Health                  0x00 8 bits
+Xmit by PRN                0
+**************************************************************
+ ORB/CLK ALMANAC PARAMETERS FOR GPS 31
+
+              MM/DD/YYYY DOY HH:MM:SS      SOD  WWWW    SOW
+Transmit   :  06/10/1987 161 21:50:24    78624   387 337824  GPS
+Orbit Epoch:  06/13/1987 164 19:50:24    71424   387 589824  GPS
+
+Parameter              Value
+AHalf         5.15359033E+03 m**0.5
+af1           3.63797881E-12 sec/sec
+af0           1.90734863E-06 sec
+Omega0       -8.20737770E-01 rad
+e             6.26993179E-03 dimensionless
+deltai        1.83059035E-02 rad
+Omega_Dot    -7.79461039E-09 rad/sec
+w            -1.39689324E+00 rad
+M0           -2.62186753E+00 rad
+Health                  0x00 8 bits
+Xmit by PRN                0

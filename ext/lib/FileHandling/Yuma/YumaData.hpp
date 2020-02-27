@@ -48,6 +48,7 @@
 
 #include "FFStream.hpp"
 #include "AlmOrbit.hpp"
+#include "OrbAlmGen.hpp"
 #include "YumaBase.hpp"
 #include "YumaHeader.hpp"
 #include "StringUtils.hpp"
@@ -99,14 +100,15 @@ namespace gpstk
       short SV_health;
       double ecc;
       long Toa;
-      double i_offset;
-      double OMEGAdot;
-      double Ahalf;
-      double OMEGA0;
-      double w;
-      double M0;
-      double AF0;
-      double AF1;
+      double i_total;    //radians
+      double i_offset;   // radians from 54 degrees (to match IS-GPS-200)
+      double OMEGAdot;   // radians
+      double Ahalf;      // m**1/2
+      double OMEGA0;     // radians
+      double w;          // radians
+      double M0;         // radians 
+      double AF0;        // s
+      double AF1;        // s/s
       long xmit_time;
       
       
@@ -126,7 +128,11 @@ namespace gpstk
           */
       operator AlmOrbit() const;
       
-      
+         /**
+          * cast *this into an OrbAlmGen
+          * @return the constructed OrbAlmGen object
+          */
+      operator OrbAlmGen() const;    
 
    protected:      
 	 /**
