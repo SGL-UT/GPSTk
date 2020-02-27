@@ -272,6 +272,7 @@ package_debian:
     refs:
       - master
       - /^ci_.*$/
+      - /^version_.*_prep$/
   script:
     - rm -rf ../*.deb
     - dpkg-buildpackage -us -uc -d
@@ -292,6 +293,7 @@ package_conda:
     refs:
       - master
       - /^ci_.*$/
+      - /^version_.*_prep$/
   script:
     - conda activate conda_builder
     - export GIT_COMMIT=$CI_COMMIT_REF_NAME
@@ -330,6 +332,7 @@ package_redhat:
     refs:
       - master
       - /^ci_.*$/
+      - /^version_.*_prep$/
   script:
     - mkdir build
     - pushd build
@@ -376,6 +379,7 @@ package_redhat_wheel:
     refs:
       - master
       - /^ci_.*$/
+      - /^version_.*_prep$/
   script:
     - mkdir dist
     - mv build/swig/module/dist/* dist
