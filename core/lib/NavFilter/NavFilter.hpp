@@ -102,6 +102,22 @@ namespace gpstk
           * latter often returns compiler-munged names rather than
           * human-readable ones. */
       virtual std::string filterName() const throw() = 0;
+         /** Return a human-readable string containing a terse (short,
+          * 1-line) description of the reasons for the current
+          * contents of the rejected data.
+          * In most cases this will be an empty string as most filters
+          * are single-purpose and the filter name is sufficient to
+          * determine the cause.  This method is meant to be used by
+          * complex filters with multiple pass/fail criteria. */
+      virtual std::string reasonTerse() const noexcept
+      { return ""; }
+         /** Return a human-readable string containing a verbose
+          * description containing the detailed reasoning behind the
+          * current rejected data.  As an example, reasonTerse() might
+          * only return "Ahalf", while this method might return
+          * "Ahalf=10" i.e. include the rejected value. */
+      virtual std::vector<std::string> reasonVerbose() const noexcept
+      { return std::vector<std::string>(); }
 
          /// Debug support 
       virtual void dumpRejected(std::ostream& out) const; 
