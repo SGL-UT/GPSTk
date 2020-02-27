@@ -144,13 +144,13 @@ namespace gpstk
       end = line.find_first_of(whitespace,front);
       length = end - front;
       i_offset = asDouble(line.substr(front,length));
+      i_total = i_offset + 54.0 * (gpstk::PI / 180.0);
 
       front = line.find_first_not_of(whitespace,end);
       length = line.length() - front;
       OMEGAdot = asDouble(line.substr(front,length));
       i_offset *= gpstk::PI;
       OMEGAdot *= gpstk::PI;
-
 
       // Sixth line - Sqrt of A, Omega0, and Arg of Perigee
       strm.formattedGetLine(line, true);
@@ -232,7 +232,55 @@ namespace gpstk
                    w, M0, AF0, AF1, Toa, xmit_time, week, SV_health);
 
       return ao;
-
    }
+
+   SEMData::operator OrbAlmGen() const
+   {
+     OrbAlmGen oag;
+
+     oag.AHalf    = Ahalf; 
+     oag.A        = Ahalf * Ahalf; 
+     oag.af1      = AF1;
+     oag.af0      = AF0;
+     oag.OMEGA0   = OMEGA0; 
+     oag.ecc      = ecc;
+     oag.deltai   = i_offset;
+     oag.i0       = i_total;
+     oag.OMEGAdot = OMEGAdot;
+     oag.w        = w;
+     oag.M0       = M0;
+     oag.toa      = Toa;
+     oag.health   = SV_health; 
+     
+     // At this writing Yuma almanacs only exist for GPS
+     oag.subjectSV = SatID(PRN, SatID::systemGPS); 
+
+     // Unfortunately, we've NO IDEA which SV transmitted 
+     // these data.
+     oag.satID = SatID(0,SatID::systemGPS); 
+
+     // 
+     oag.ctToe = GPSWeekSecond(week,Toa,TimeSystem::GPS);
+
+     // There is no transmit time in the SEM alamanc format.  
+     // Therefore, beginValid and endvalid are estimated.  The
+     // estimate is based on IS-GPS-200 Table 20-XIII.  
+     oag.beginValid = oag.ctToe - (70 * 3600.0);
+     oag.endValid   = oag.beginValid + (144 * 3600.0);
+
+     oag.dataLoadedFlag = true; 
+     oag.setHealthy(false);
+     if (oag.health==0) 
+        oag.setHealthy(true);
+
+        // It is assumed that the data were broadcast on
+        // each of L1 C/A, L1 P(Y), and L2 P(Y).   We'll
+        // load obsID with L1 C/A for the sake of completeness,
+        // but this will probably never be examined.
+     oag.obsID = ObsID(ObsID::otNavMsg,ObsID::cbL1,ObsID::tcCA);
+
+     return oag;       
+   }
+
 
 } // namespace
