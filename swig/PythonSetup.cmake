@@ -45,17 +45,15 @@ if( ${PYTHON_CUSTOM_CONFIG} MATCHES "NOTFOUND" )
 
     # Python 3 executables _might_ be named "python3" or "python"
     # Get the form without the 3 so we can explicitly add it.
-    message( STATUS "PYTHON_EXECUTABLE         = ${PYTHON_EXECUTABLE}" )
-    string(REGEX MATCH "^(.*python)" _python_exe_base ${PYTHON_EXECUTABLE})
-    message( STATUS "_python_exe_base        = ${_python_exe_base}" )
+    string(REGEX MATCH "^(.*python)" PYTHON_EXE_BASE ${PYTHON_EXECUTABLE})
 
-    if(NOT EXISTS "${_python_exe_base}3-config")
-      message( FATAL_ERROR "Cannot find ${_python_exe_base}3-config. Cannot proceed. Exiting now!" )
+    if(NOT EXISTS "${PYTHON_EXE_BASE}3-config")
+      message( FATAL_ERROR "Cannot find ${PYTHON_EXE_BASE}3-config. Cannot proceed. Exiting now!" )
       return()
     endif()
 
-    execute_process( COMMAND "${_python_exe_base}3-config" "--includes" OUTPUT_VARIABLE PYTHON_INCLUDES)
-    execute_process( COMMAND "${_python_exe_base}3-config" "--prefix" OUTPUT_VARIABLE PYTHON_PREFIX)
+    execute_process( COMMAND "${PYTHON_EXE_BASE}3-config" "--includes" OUTPUT_VARIABLE PYTHON_INCLUDES)
+    execute_process( COMMAND "${PYTHON_EXE_BASE}3-config" "--prefix" OUTPUT_VARIABLE PYTHON_PREFIX)
 
     string(REGEX MATCH "^-I(.*) " _python_include ${PYTHON_INCLUDES})
     string(STRIP ${_python_include} _python_include)
@@ -86,6 +84,7 @@ endif()
 # Debug messaging
 #------------------------------------------------------------
 if( DEBUG_SWITCH OR NOT PYTHONLIBS_FOUND)
+  message( STATUS "PYTHON_EXE_BASE          = ${PYTHON_EXE_BASE}" )
   message( STATUS "PYTHONINTERP_FOUND        = ${PYTHONINTERP_FOUND}" )
   message( STATUS "PYTHON_EXECUTABLE         = ${PYTHON_EXECUTABLE}" )
   message( STATUS "PYTHON_VERSION_STRING     = ${PYTHON_VERSION_STRING}" )
