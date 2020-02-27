@@ -42,8 +42,20 @@ if( ${PYTHON_CUSTOM_CONFIG} MATCHES "NOTFOUND" )
   # will be copacetic with. So, we set CMAKE_INCLUDE_PATH to what is returned
   # by the found python-config
   if( ${PYTHON_VERSION_MAJOR} EQUAL 3 )
-    execute_process( COMMAND "${PYTHON_EXECUTABLE}3-config" "--includes" OUTPUT_VARIABLE PYTHON_INCLUDES)
-    execute_process( COMMAND "${PYTHON_EXECUTABLE}3-config" "--prefix" OUTPUT_VARIABLE PYTHON_PREFIX)
+
+    # Python 3 executables _might_ be named "python3" or "python"
+    # Get the form without the 3 so we can explicitly add it.
+    message( STATUS "PYTHON_EXECUTABLE         = ${PYTHON_EXECUTABLE}" )
+    string(REGEX MATCH "^(.*python)" _python_exe_base ${PYTHON_EXECUTABLE})
+    message( STATUS "_python_exe_base        = ${_python_exe_base}" )
+
+    if(NOT EXISTS "${_python_exe_base}3-config")
+      message( FATAL_ERROR "Cannot find ${_python_exe_base}3-config. Cannot proceed. Exiting now!" )
+      return()
+    endif()
+
+    execute_process( COMMAND "${_python_exe_base}3-config" "--includes" OUTPUT_VARIABLE PYTHON_INCLUDES)
+    execute_process( COMMAND "${_python_exe_base}3-config" "--prefix" OUTPUT_VARIABLE PYTHON_PREFIX)
 
     string(REGEX MATCH "^-I(.*) " _python_include ${PYTHON_INCLUDES})
     string(STRIP ${_python_include} _python_include)
