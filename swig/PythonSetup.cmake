@@ -68,7 +68,7 @@ if( ${PYTHON_CUSTOM_CONFIG} MATCHES "NOTFOUND" )
 
     # Python 3 isn't well supported for earlier versions of CMAKE.  So we roll our own.
     string(STRIP ${PYTHON_PREFIX} PYTHON_PREFIX)
-    set(PYTHON_LIBRARIES "${_python_libdir}/${_python_libname}.so")
+    set(PYTHON_LIBRARIES "${_python_libdir}/lib${_python_libname}.so")
     set(PYTHON_INCLUDE_DIR ${_python_include})
     set(PYTHON_INCLUDE_DIRS ${_python_include})
     set(PYTHONLIBS_VERSION_STRING ${PYTHON_VERSION_STRING})
