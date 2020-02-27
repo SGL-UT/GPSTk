@@ -76,9 +76,8 @@ if( ${PYTHON_CUSTOM_CONFIG} MATCHES "NOTFOUND" )
 
   else()
     execute_process( COMMAND "${PYTHON_EXECUTABLE}-config" "--includes" OUTPUT_VARIABLE PYTHON_INCLUDES)
-    string(REGEX MATCH "^-I(.*) " _python_include ${PYTHON_INCLUDES})
-    string(STRIP ${_python_include} _python_include)
-    string(SUBSTRING ${_python_include} 2 -1 _python_include) # strip the "-I"
+    string(REGEX MATCH "-I(.*) " _python_include ${PYTHON_INCLUDES})
+    set(_python_include ${CMAKE_MATCH_1})
     set(CMAKE_INCLUDE_PATH ${_python_include})
 
     find_package( PythonLibs ${PYTHON_VERSION_STRING} REQUIRED )
