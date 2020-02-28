@@ -71,6 +71,21 @@ build_redhat:
     paths:
     - build/
 
+build_redhat_py36:
+  stage: build
+  tags:
+    - docker-executor
+  image: centos7_sgl
+  script:
+    - mkdir build
+    - cd build
+    - export gpstk=`pwd`/install
+    - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=install -DPYTHON_EXECUTABLE=/usr/bin/python3.6 $CMAKE_ARG_DEFAULT
+    - make all -j 4
+  artifacts:
+    paths:
+      - build/
+
 build_windows:
   stage: build
   tags:
