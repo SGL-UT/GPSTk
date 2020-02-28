@@ -42,26 +42,42 @@ if( ${PYTHON_CUSTOM_CONFIG} MATCHES "NOTFOUND" )
   # will be copacetic with. So, we set CMAKE_INCLUDE_PATH to what is returned
   # by the found python-config
   if( ${PYTHON_VERSION_MAJOR} EQUAL 3 )
-    execute_process( COMMAND "${PYTHON_EXECUTABLE}3-config" "--includes" OUTPUT_VARIABLE PYTHON_INCLUDES)
-    execute_process( COMMAND "${PYTHON_EXECUTABLE}3-config" "--prefix" OUTPUT_VARIABLE PYTHON_PREFIX)
 
-    string(REGEX MATCH "^-I(.*) " _python_include ${PYTHON_INCLUDES})
-    string(STRIP ${_python_include} _python_include)
-    string(SUBSTRING ${_python_include} 2 -1 _python_include) # strip the "-I"
+    # Python 3 executables _might_ be named "python3" or "python"
+    # Get the form without the 3 so we can explicitly add it.
+    string(REGEX MATCH "^(.*python)" PYTHON_EXE_BASE ${PYTHON_EXECUTABLE})
+
+    if(NOT EXISTS "${PYTHON_EXE_BASE}3-config")
+      message( FATAL_ERROR "Cannot find ${PYTHON_EXE_BASE}3-config. Cannot proceed. Exiting now!" )
+      return()
+    endif()
+
+    execute_process( COMMAND "${PYTHON_EXE_BASE}3-config" "--includes" OUTPUT_VARIABLE PYTHON_INCLUDES)
+    execute_process( COMMAND "${PYTHON_EXE_BASE}3-config" "--prefix" OUTPUT_VARIABLE PYTHON_PREFIX)
+    execute_process( COMMAND "${PYTHON_EXE_BASE}3-config" "--ldflags" OUTPUT_VARIABLE PYTHON_LDFLAGS)
+
+    # String parsing to get the include path
+    string(REGEX MATCH "-I(.*) " _python_include ${PYTHON_INCLUDES})
+    set(_python_include ${CMAKE_MATCH_1})
     set(CMAKE_INCLUDE_PATH ${_python_include})
+
+    # String parsing to get the library path and libarary name
+    string(REGEX MATCH "-L([^ ]*) -l([^ ]*) " _python_libdir ${PYTHON_LDFLAGS})
+    set(_python_libdir ${CMAKE_MATCH_1})
+    set(_python_libname ${CMAKE_MATCH_2})
 
     # Python 3 isn't well supported for earlier versions of CMAKE.  So we roll our own.
     string(STRIP ${PYTHON_PREFIX} PYTHON_PREFIX)
-    set(PYTHON_LIBRARIES "${PYTHON_PREFIX}/lib/libpython${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}m.so")
+    set(PYTHON_LIBRARIES "${_python_libdir}/lib${_python_libname}.so")
     set(PYTHON_INCLUDE_DIR ${_python_include})
     set(PYTHON_INCLUDE_DIRS ${_python_include})
     set(PYTHONLIBS_VERSION_STRING ${PYTHON_VERSION_STRING})
     set(PYTHONLIBS_FOUND TRUE)
+
   else()
     execute_process( COMMAND "${PYTHON_EXECUTABLE}-config" "--includes" OUTPUT_VARIABLE PYTHON_INCLUDES)
-    string(REGEX MATCH "^-I(.*) " _python_include ${PYTHON_INCLUDES})
-    string(STRIP ${_python_include} _python_include)
-    string(SUBSTRING ${_python_include} 2 -1 _python_include) # strip the "-I"
+    string(REGEX MATCH "-I(.*) " _python_include ${PYTHON_INCLUDES})
+    set(_python_include ${CMAKE_MATCH_1})
     set(CMAKE_INCLUDE_PATH ${_python_include})
 
     find_package( PythonLibs ${PYTHON_VERSION_STRING} REQUIRED )
@@ -74,6 +90,7 @@ endif()
 # Debug messaging
 #------------------------------------------------------------
 if( DEBUG_SWITCH OR NOT PYTHONLIBS_FOUND)
+  message( STATUS "PYTHON_EXE_BASE          = ${PYTHON_EXE_BASE}" )
   message( STATUS "PYTHONINTERP_FOUND        = ${PYTHONINTERP_FOUND}" )
   message( STATUS "PYTHON_EXECUTABLE         = ${PYTHON_EXECUTABLE}" )
   message( STATUS "PYTHON_VERSION_STRING     = ${PYTHON_VERSION_STRING}" )
