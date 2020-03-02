@@ -1,82 +1,26 @@
-GPSTk 3.0.0 Release Notes
+GPSTk 3.1.0 Release Notes
 ========================
 
- * Major version bump triggered by migration of MDH code from SGLTk into its own repository - MDHTk
+ * This version was created in response to additional Navigation message processing capability.
 
-Updates since v2.12.2
+Updates since v3.0.0
 ---------------------
 
 **Build System and Test Suite**
- * Added conda recipes for compiling GPSTK conda packages.
-
+  * Adjusted build.sh to better support specifying a python3 executable.
 
 **Gitlab CI**
- * Added job to the CI pipeline to verify that those recipes compile.
-
+  * Windows CI testing was added back.
+  * Added package building and testing for redhat and debian to master branch pipelines.
 
 **Library Changes**
- * Added parityStatus flag to PackedNavBits. REASON: Needed to support proper conversion of raw receiver files to MDH.
+  * OrbAlm/OrbAlmGen updated to support direct loading of the engineering unit values. (Better support for Nav Messages)
+  * NavFilter framework updated to include classes that abstract access to the storage of the subframe data.
+  * Modified YumaAlamancStore and SEMAlmanacStore to inherit from OrbAlmStore (instead of GPSAlmanacStore).
 
-
-Fixes since v2.12.2
+Fixes since v3.0.0
 --------------------
- * Fixed a bug that prevented some compiler arguments to be passed through build.sh
+ * Fixed a bug revealed by GPS III where endValid times was calculated incorrectly in OrbElemRinex
 
-
- Removed Code due to Deprecation
- -------------------------------
- * /apps
-   * /clocktools
-     *  rmoutlier
-     *  dallandev
-     *  ffp
-     *  mallandev
-     *  nallandev
-     *  oallandev
-     *  ohadamarddev
-     *  ORDPhaseParser
-     *  pff
-     *  scale
-     *  tallandev
-     *  TIAPhaseParser
-     *  trunc
-     *  allanplot.py
-   * /differential
-     *  vecsol
-   * /filetools
-     *  GloDump
-     *  rinexthin
-   * /positioning
-     *  posInterp
- * /lib
-   * /Geodyn
-     *  ASConstant.hpp
-     *  AtmosphericDrag
-     *  CiraExpotentialDrag
-     *  EarthBody
-     *  EarthOceanTide
-     *  EarthPoleTide
-     *  EarthSolidTide
-     *  EGM96GravityModel
-     *  EquationOfMotion.hpp
-     *  ForceModel.hpp
-     *  ForceModelList
-     *  HarrisPriesterDrag
-     *  IERS
-     *  IERSConventions
-     *  Integrator.hpp
-     *  JGM3GravityModel
-     *  KeplerOrbit
-     *  MoonForce
-     *  Msise00Drag
-     *  PvtStore
-     *  ReferenceFrames
-     *  RelativityEffect
-     *  RungeKuttaFehlberg
-     *  SatOrbit
-     *  SatOrbitPropogator
-     *  SolarRadiationPressure
-     *  Spacecraft
-     *  SphericalHarmonicGravity
-     *  SunForce
-     *  UTCTime
+Removed Code due to Deprecation
+-------------------------------
