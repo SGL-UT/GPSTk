@@ -356,6 +356,7 @@ package_redhat_py36:
     refs:
       - master
       - /^ci_.*$/
+      - /^version_.*_prep$/
   script:
     - mkdir build
     - pushd build
@@ -401,6 +402,7 @@ deploy_debian:
     refs:
       - master
       - /^ci_.*$/
+      - /^version_.*_prep$/
   script:
     - cd debs
     - sudo apt-get -y install ./*.deb
@@ -418,6 +420,7 @@ deploy_redhat:
     refs:
       - master
       - /^ci_.*$/
+      - /^version_.*_prep$/
   script:
     - cd build/rpm_files/RPMS/x86_64/
     - sudo yum install gpstk-*.rpm -y
@@ -435,6 +438,7 @@ deploy_redhat_py36:
     refs:
       - master
       - /^ci_.*$/
+      - /^version_.*_prep$/
   script:
     - cd build/rpm_files/RPMS/x86_64/
     - sudo yum install gpstk_py36-*.rpm -y
