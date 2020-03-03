@@ -1,3 +1,52 @@
+Version 3.1.0   Tuesday March 03, 2020
+
+   Modifications by Author
+     Andrew Kuck (8):
+           Try to ensure we get the proper python-exe base.
+           Add CentOS7 Py36 build stage.
+           Cleanup
+           Use python3-config to get library name[
+           Use REGEX capture groups everywhere.
+           Fix bad libname.
+           Allow building all stages if on version_prep branch
+           Updated Release Notes.
+
+     Andy Kuck (1):
+           Merge branch 'ci_new_stages' into 'master'
+
+     Bryan Parsons (9):
+           Merge branch 'version3_stable' into 'master'
+           Adding back empty deprecated folder.
+           SWIG wrapping OrbAlmStore for issue 401 changes.
+           Merge branch 'issue_401_OrbAlm' into 'master'
+           Adding Windows Back into CI
+           Merge branch 'ci_windows' into 'master'
+           Merge branch 'issue_407' into 'master'
+           Merge branch 'py36_build_update' into 'master'
+           First pass at switching to Py36 as default in CI.  Also added User and System install stages.  Commented out Deploy stage until Package installation stage is finished.
+
+     johnk (3):
+           add reasonTerse and reasonVerbose methods to NavFilter to support filters that perform multiple checks
+           Add classes for abstracting nav data when using the NavFilter frameworks
+           Merge remote-tracking branch 'origin/master' into issue_407
+
+     renfrob (13):
+           Adding OrbAlm generation to YumaData
+           Adding tests cases for YumaBase, YumaData, YumaStream
+           Cleaning up Yuma_T test execution
+           Removing misplaced test file
+           Adding test case for SEM almanac handling
+           Adding OrbElem construction operator
+           Changing filenames for test case
+           Cleaning up debug, adding another error trap.
+           Adding method to support existing downstream code.
+           Adding test for non-Yuma data
+           Adding getSatIDList(), omitting elements with no known xmit ID.
+           Merge branch 'master' into issue_401_OrbAlm
+           Fixing header read problem in which Toa was truncated
+
+   #################################################
+
 Version 3.0.0  Tuesday, February 11, 2020
 
    Modifications by Author

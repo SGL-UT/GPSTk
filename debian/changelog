@@ -1,3 +1,9 @@
+gpstk (3.1.0-1) stable; urgency=low
+
+  * Updated to version 3.1.0
+
+ -- Andrew Kuck <kuck@arlut.utexas.edu>  Tue, 03 Mar 2020 13:34:46 -0600
+
 gpstk (3.0.0-1) stable; urgency=medium
 
   * Build for stretch 
