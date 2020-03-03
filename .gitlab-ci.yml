@@ -4,8 +4,9 @@ stages:
 - check
 - build
 - test
-- deploy
+- install
 - package
+- deploy
 - downstream
 
 # Default cmake arguments
@@ -39,6 +40,21 @@ build_debian:
     paths:
     - build/
 
+build_conda_py27:
+  stage: build
+  tags:
+    - docker-executor
+  image: centos7_conda_py27
+  script:
+    - conda activate py27
+    - mkdir build
+    - cd build
+    - export gpstk=`pwd`/install
+    - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=install $CMAKE_ARG_DEFAULT
+    - make all -j 4
+  artifacts:
+    paths:
+      - build/
 
 build_conda_py36:
   stage: build
@@ -98,6 +114,7 @@ build_windows:
   artifacts:
     paths:
     - build/
+  timeout: 30m
 # Temporarily allow failures as Windows Runner issues are resolved
   allow_failure: true
 
@@ -156,12 +173,13 @@ test_windows:
   dependencies:
     - build_windows
   allow_failure: true
+  timeout: 5m
 
 
-# Deploy Stage
-# Tests install of GPSTk on each platform, saves artifacts for downstream builds.
-deploy_debian:
-  stage: deploy
+# User_Install Stage
+# Tests user install of GPSTk on each platform, saves artifacts for downstream builds.
+user_install_debian:
+  stage: install
   tags:
     - docker-executor
   image: debian9_fai_ish
@@ -170,16 +188,17 @@ deploy_debian:
     - export gpstk=`pwd`/install
     - export PYTHONPATH=$gpstk/lib/python2.7/site-packages
     - mkdir -p $PYTHONPATH
+    - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=$gpstk ../
     - make install -j 4
     - python -c "import gpstk"
   artifacts:
     paths:
-    - build/install
+      - build/install
   dependencies:
     - build_debian
 
-deploy_redhat:
-  stage: deploy
+user_install_redhat:
+  stage: install
   tags:
     - docker-executor
   image: centos7_sgl
@@ -188,16 +207,17 @@ deploy_redhat:
     - export gpstk=`pwd`/install
     - export PYTHONPATH=$gpstk/lib/python2.7/site-packages
     - mkdir -p $PYTHONPATH
+    - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=$gpstk ../
     - make install -j 4
     - python -c "import gpstk"
   artifacts:
     paths:
-    - build/install
+      - build/install
   dependencies:
     - build_redhat
 
-deploy_windows:
-  stage: deploy
+user_install_windows:
+  stage: install
   tags:
     - win10
   script:
@@ -207,8 +227,39 @@ deploy_windows:
     - build_windows
 # Temporarily allow failures as Windows Runner issues are resolved
   allow_failure: true
+  timeout: 5m
 
+# System Stage
+# Tests install of GPSTk on each platform, saves artifacts for downstream builds.
+system_install_debian:
+  stage: install
+  tags:
+    - docker-executor
+  image: debian9_fai_ish
+  script:
+    - cd build
+    - export gpstk=/usr/local
+    - export PYTHONPATH=$gpstk/lib/python2.7/site-packages
+    - sudo mkdir -p $PYTHONPATH
+    - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=$gpstk ../
+    - sudo make install -j 4
+    - python -c "import gpstk"
+  dependencies:
+    - build_debian
 
+system_install_redhat:
+  stage: install
+  tags:
+    - docker-executor
+  image: centos7_sgl
+  script:
+    - cd build
+    - export gpstk=/usr/local
+    - cmake -DPYTHON_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_PREFIX=$gpstk ../
+    - sudo make install -j 4
+    - python -c "import gpstk"
+  dependencies:
+    - build_redhat
 
 # Package Stage
 # Tests packaging of GPSTk on all platforms
@@ -280,19 +331,41 @@ package_redhat:
       - master
       - /^ci_.*$/
   script:
-    - cd build
+    - mkdir build
+    - pushd build
     - git clone https://repositories.arlut.utexas.edu/sgl/rpm_files.git
-    - cd rpm_files
-    - cd SOURCES
-    - wget https://repositories.arlut.utexas.edu/sgl/gpstk/-/archive/master/gpstk-master.tar.gz
-    - cd ..
+    - popd
+    - git archive --prefix gpstk-master/ -o build/rpm_files/SOURCES/gpstk-master.tar.gz HEAD
+    - pushd build/rpm_files
     - rpmbuild --define "_topdir ${PWD}" --define "debug_package %{nil}" -ba SPECS/gpstk.spec
   artifacts:
     paths:
       - build/rpm_files/RPMS/x86_64/gpstk-*
       - build/rpm_files/SRPMS/gpstk-*
-  dependencies:
-    - build_redhat
+  dependencies: []
+
+package_redhat_py36:
+  stage: package
+  tags:
+    - docker-executor
+  image: centos7_sgl
+  only:
+    refs:
+      - master
+      - /^ci_.*$/
+  script:
+    - mkdir build
+    - pushd build
+    - git clone https://repositories.arlut.utexas.edu/sgl/rpm_files.git
+    - popd
+    - git archive --prefix gpstk-master_py36/ -o build/rpm_files/SOURCES/gpstk-master_py36.tar.gz HEAD
+    - pushd build/rpm_files
+    - rpmbuild --define "_topdir ${PWD}" --define "debug_package %{nil}" -ba SPECS/gpstk_py36.spec
+  artifacts:
+    paths:
+      - build/rpm_files/RPMS/x86_64/gpstk_py36-*
+      - build/rpm_files/SRPMS/gpstk_py36-*
+  dependencies: []
 
 package_redhat_wheel:
   stage: package
@@ -313,6 +386,59 @@ package_redhat_wheel:
   dependencies:
     - build_redhat
 
+# Deploy Stage
+# Tests install of GPSTk package on each platform, saves artifacts for downstream builds.
+deploy_debian:
+  stage: deploy
+  tags:
+    - docker-executor
+  image: debian9_fai_ish
+  only:
+    refs:
+      - master
+      - /^ci_.*$/
+  script:
+    - cd debs
+    - sudo apt-get -y install ./*.deb
+    - python -c "import gpstk"
+    - timeconvert
+  dependencies:
+    - package_debian
+
+deploy_redhat:
+  stage: deploy
+  tags:
+    - docker-executor
+  image: centos7_sgl
+  only:
+    refs:
+      - master
+      - /^ci_.*$/
+  script:
+    - cd build/rpm_files/RPMS/x86_64/
+    - sudo yum install gpstk-*.rpm -y
+    - python -c "import gpstk"
+    - timeconvert
+  dependencies:
+    - package_redhat
+
+deploy_redhat_py36:
+  stage: deploy
+  tags:
+    - docker-executor
+  image: centos7_sgl
+  only:
+    refs:
+      - master
+      - /^ci_.*$/
+  script:
+    - cd build/rpm_files/RPMS/x86_64/
+    - sudo yum install gpstk_py36-*.rpm -y
+    - python3 -c "import gpstk"
+    - timeconvert
+  dependencies:
+    - package_redhat_py36
+
 # package_windows:
 #   stage: package
 #   tags:
@@ -324,7 +450,6 @@ package_redhat_wheel:
 #     - build_windows
 
 # Temporarily allow failures as Windows Runner issues are resolved
-  allow_failure: true
 
 
 sgltk_debian:
@@ -343,7 +468,7 @@ sgltk_debian:
     - cmake -DCMAKE_PREFIX_PATH=$gpstk -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
     - make all -j 4
   dependencies:
-    - deploy_debian
+    - user_install_debian
 
 sgltk_redhat:
   stage: downstream
@@ -361,4 +486,4 @@ sgltk_redhat:
     - cmake -DCMAKE_PREFIX_PATH=$gpstk -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
     - make all -j 4
   dependencies:
-    - deploy_redhat
+    - user_install_redhat
