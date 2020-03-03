@@ -125,7 +125,7 @@ testSvXvt()
             // this stream output statement and comment out tbe break
             // statement below.
             // Just don't check it in that way, please.
-            //cerr << s << " " << fabs(computedMag - derivedMag) << endl;
+            // cerr << ii << " " << (computedMag - derivedMag) << endl;
          if (fabs(computedMag - derivedMag) > velDiffThresh)
          {
                // no sense in printing 7200 success/fail messages.
