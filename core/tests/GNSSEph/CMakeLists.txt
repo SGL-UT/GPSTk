@@ -40,6 +40,10 @@ add_executable(OrbElemLNav_valid_T OrbElemLNav_valid_T.cpp)
 target_link_libraries(OrbElemLNav_valid_T gpstk)
 add_test(GNSSEph_OrbElemLNav_valid OrbElemLNav_valid_T)
 
+add_executable(OrbElem_T OrbElem_T.cpp)
+target_link_libraries(OrbElem_T gpstk)
+add_test(GNSSEph_OrbElem OrbElem_T)
+
 add_executable(OrbElemStore_T OrbElemStore_T.cpp)
 target_link_libraries(OrbElemStore_T gpstk)
 add_test(GNSSEph_OrbElemStore OrbElemStore_T)
