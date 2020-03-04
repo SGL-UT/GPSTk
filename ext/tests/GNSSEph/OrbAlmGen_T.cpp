@@ -1,6 +1,8 @@
 #include <iostream>
 #include "TestUtil.hpp"
-#include "OrbElem.hpp"
+#include "OrbAlmGen.hpp"
+#include "CivilTime.hpp"
+#include "GPSWeekSecond.hpp"
 
 using namespace std;
 
@@ -9,70 +11,43 @@ using namespace std;
  * svXvt positions over time. */
 double velDiffThresh = 0.0008;
 
-// we have to make a class that isn't abstract to test with.
-class OrbElemNonAbstract : public gpstk::OrbElem
-{
-public:
-   OrbElemNonAbstract() = default;
-   gpstk::OrbElem* clone() const override
-   { return nullptr; }
-   std::string getName() const override
-   { return "foo"; }
-   std::string getNameLong() const override
-   { return "bar"; }
-   void adjustBeginningValidity() override
-   { GPSTK_ASSERT(false); } // don't call this.
-   void dumpTerse(std::ostream& s = std::cout) const
-      throw(gpstk::InvalidRequest)
-      override
-   { s << "terse" << endl; }
-};
 
-
-class OrbElem_T
+class OrbAlmGen_T
 {
 public:
    unsigned testSvXvt();
 };
 
 
-unsigned OrbElem_T ::
+unsigned OrbAlmGen_T ::
 testSvXvt()
 {
-   TUDEF("OrbElem", "svXvt");
+   TUDEF("OrbAlmGen", "svXvt");
       // Hard code orbital parameters mostly so we can copy and paste
       // the data into other similar tests with minimal changes.
-   OrbElemNonAbstract oe;
-   oe.Cuc    = -.324845314026e-05;
-   oe.Cus    =  .101532787085e-04;
-   oe.Crc    =  .168968750000e+03;
-   oe.Crs    = -.646250000000e+02;
-   oe.Cic    =  .320374965668e-06;
-   oe.Cis    =  .117346644402e-06;
-   oe.M0     = -.136404614938e+01;
-   oe.dn     =  .489591822036e-08;
-   oe.dndot  = 0;
-   oe.ecc    =  .146582192974e-01;
-   oe.A      =  .515359719276e+04 * .515359719276e+04;
-   oe.Adot   = 0;
-   oe.OMEGA0 = -.296605403382e+01;
-   oe.i0     =  .941587707856e+00;
-   oe.w      = -.224753761329e+01;
+   gpstk::OrbAlmGen oe;
+   oe.M0       = -.136404614938e+01;
+   oe.ecc      =  .146582192974e-01;
+   oe.A        =  .515359719276e+04 * .515359719276e+04;
+   oe.AHalf    =  .515359719276e+04;
+   oe.OMEGA0   = -.296605403382e+01;
+   oe.deltai   =  .941587707856e+00 - (0.3*gpstk::PI);
+   oe.i0       =  .941587707856e+00;
+   oe.w        = -.224753761329e+01;
    oe.OMEGAdot = -.804390648956e-08;
-   oe.idot     =  .789318592573e-10;
-   oe.ctToc    = gpstk::CivilTime(2015,7,19,1,59,28.0,gpstk::TimeSystem::GPS);
+   gpstk::CommonTime toa =
+      gpstk::CivilTime(2015,7,19,1,59,28.0,gpstk::TimeSystem::GPS);
+   oe.loadWeekNumber(toa);
    oe.af0      =  .579084269702e-03;
    oe.af1      =  .227373675443e-11;
-   oe.af2      =  .000000000000e+00;
-   oe.dataLoadedFlag = true;
-   oe.satID = gpstk::SatID(2, gpstk::SatID::systemGPS);
+   oe.health   = 0;
+   oe.subjectSV= gpstk::SatID(2, gpstk::SatID::systemGPS);
    oe.ctToe    = gpstk::GPSWeekSecond(1854,.716800000000e+04);
-   oe.setHealthy(true);
+   oe.dataLoadedFlag = true;
       // iode .700000000000e+01
       // codes on L2 .100000000000e+01
       // L2 P data .000000000000e+00
       // sv accuracy .240000000000e+01
-      // sv health .000000000000e+00
       // tgd -.204890966415e-07
       // iodc .700000000000e+01
       // xmit time .360000000000e+04
@@ -85,7 +60,7 @@ testSvXvt()
       gpstk::Xvt zeroth_array[SECONDS];
       for (unsigned ii = 0; ii < SECONDS; ii++)
       {
-         zeroth_array[ii] = oe.svXvt(oe.ctToc + ii);
+         zeroth_array[ii] = oe.svXvt(toa + ii);
       }
          // then compute first derivative of position, i.e. velocity
       gpstk::Triple deriv[SECONDS];
@@ -160,7 +135,7 @@ testSvXvt()
 int main()
 {
    unsigned total = 0;
-   OrbElem_T testClass;
+   OrbAlmGen_T testClass;
    total += testClass.testSvXvt();
 
    cout << "Total Failures for " << __FILE__ << ": " << total << endl;

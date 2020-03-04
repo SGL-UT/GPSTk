@@ -41,7 +41,14 @@
 #include "TestUtil.hpp"
 #include <iostream>
 #include <sstream>
+
+using namespace std;
 using namespace gpstk;
+
+/** Threshold for how much different our velocities can be between
+ * being computed directly via svXvt and computed via differencing
+ * svXvt positions over time. */
+double velDiffThresh = 0.0008;
 
 class AlmOrbit_T: public AlmOrbit
 {
@@ -107,7 +114,7 @@ public:
                               -0.296182, -1.31888, 2.79387, 0.000148773,
                               7.63976E-11, 466944, 250560, 797, 0);
 
-      testFramework.changeSourceMethod("Explicit Constructor");
+      TUCSM("Explicit Constructor");
          //----------------------------------------------------------------
          //Does the explicit constructor function correctly?
          //----------------------------------------------------------------
@@ -141,7 +148,7 @@ public:
 //  testMesg = "SV_health value was not initialized correctly";
 //  TUASSERTE(short, 0, AlmOrbit::SV_health);
 
-      return testFramework.countFails();
+      TURETURN();
    }
 //=============================================================================
 // Test will check the dump method for various verbosities
@@ -209,7 +216,7 @@ public:
       testMesg = "High-verbose dump method did not function correctly";
       TUASSERTE(std::string, referenceString3, outputString3);
 
-      return testFramework.countFails();
+      TURETURN();
 
    }
 //=============================================================================
@@ -217,7 +224,7 @@ public:
 //=============================================================================
    int operatorTest(void)
    {
-      TestUtil testFramework("AlmOrbit", "<< Operator", __FILE__, __LINE__);
+      TUDEF("AlmOrbit", "operator<<");
       std::string testMesg;
 
       std::stringstream outputStream;
@@ -242,7 +249,7 @@ public:
       testMesg = "The redirection operator << did not function correctly";
       TUASSERTE(std::string, referenceString, outputString);
 
-      return testFramework.countFails();
+      TURETURN();
 
    }
 //=============================================================================
@@ -250,7 +257,7 @@ public:
 //=============================================================================
    int getTest(void)
    {
-      TestUtil testFramework("AlmOrbit", "get Methods", __FILE__, __LINE__);
+      TUDEF("AlmOrbit", "get Methods");
       std::string testMesg;
 
       gpstk::AlmOrbit compare(1, 0.00346661, 0.00388718, -8.01176E-09, 5153.58,
@@ -302,18 +309,97 @@ public:
       testMesg = "getFullWeek method did not round the week up";
       TUASSERTE(short, 798, compare2.getFullWeek());
 
-      return testFramework.countFails();
+      TURETURN();
    }
 //=============================================================================
 // Test will check the svXvt method
 //=============================================================================
    int svXvtTest(void)
    {
-      TestUtil testFramework("AlmOrbit", "svXvt", __FILE__, __LINE__);
-
-      TUFAIL("svXvt IS UNVERIFIED! CALCULATIONS IN AlmOrbit.cpp NEED TO BE CHECKED!");
-
-      return testFramework.countFails();
+      TUDEF("AlmOrbit", "svXvt");
+      gpstk::AlmOrbit oe(2, .146582192974e-01,
+                         .941587707856e+00 - (0.3*gpstk::PI),
+                         -.804390648956e-08, .515359719276e+04,
+                         -.296605403382e+01, -.224753761329e+01,
+                         -.136404614938e+01, .579084269702e-03,
+                         .227373675443e-11, 7168, 3600, 1854, 0);
+      bool testFailed = false;
+      try
+      {
+            // first compute Xvt
+         static const unsigned SECONDS = 7200;
+         gpstk::Xvt zeroth_array[SECONDS];
+         for (unsigned ii = 0; ii < SECONDS; ii++)
+         {
+            zeroth_array[ii] = oe.svXvt(oe.getToaTime() + ii);
+         }
+            // then compute first derivative of position, i.e. velocity
+         gpstk::Triple deriv[SECONDS];
+         double h = 1; // time step size in seconds
+         for (unsigned ii = 0; ii < SECONDS; ii++)
+         {
+            if (ii == 0)
+            {
+               deriv[ii] = (1/h)*(-1.5*zeroth_array[ii].getPos() +
+                                  2.0*zeroth_array[ii+1].getPos() -
+                                  0.5*zeroth_array[ii+2].getPos());
+            }
+            else if ((ii == 1) || (ii == (SECONDS-2)))
+            {
+               deriv[ii] = (1/h)*(-0.5*zeroth_array[ii-1].getPos() +
+                                  0.5*zeroth_array[ii+1].getPos());
+            }
+            else if (ii == (SECONDS-1))
+            {
+               deriv[ii] = (1/h)*(0.5*zeroth_array[ii-2].getPos() -
+                                  2.0*zeroth_array[ii-1].getPos() +
+                                  1.5*zeroth_array[ii].getPos());
+            }
+            else
+            {
+               deriv[ii] = (1/h)*((1.0/12.0)*zeroth_array[ii-2].getPos() -
+                                  (2.0/3.0)*zeroth_array[ii-1].getPos() +
+                                  (2.0/3.0)*zeroth_array[ii+1].getPos() -
+                                  (1.0/12.0)*zeroth_array[ii+2].getPos());
+            }
+         }
+            // then check the difference between derived and computed velocity
+         for (unsigned ii = 0; ii < SECONDS; ii++)
+         {
+            double derivedMag = deriv[ii].mag();
+            double computedMag = zeroth_array[ii].getVel().mag();
+               // If you want to print the data e.g. to plot, uncomment
+               // this stream output statement and comment out tbe break
+               // statement below.
+               // Just don't check it in that way, please.
+               // cerr << ii << " " << (computedMag - derivedMag) << endl;
+            if (fabs(computedMag - derivedMag) > velDiffThresh)
+            {
+                  // no sense in printing 7200 success/fail messages.
+               testFailed = true;
+               break;
+            }
+         }
+         if (testFailed)
+         {
+            TUFAIL("computed velocity is significantly different from derived"
+                   " velocity");
+         }
+         else
+         {
+            TUPASS("velocity check");
+         }
+      }
+      catch (gpstk::Exception& exc)
+      {
+         cerr << exc;
+         TUFAIL("Exception");
+      }
+      catch (...)
+      {
+         TUFAIL("Exception");
+      }
+      TURETURN();
    }
 
 
@@ -331,8 +417,7 @@ int main() //Main function to initialize and run all tests above
    errorTotal += testClass.dumpTest();
    errorTotal += testClass.operatorTest();
    errorTotal += testClass.getTest();
-      // write the test before you run it
-      //errorTotal += testClass.svXvtTest();
+   errorTotal += testClass.svXvtTest();
 
    std::cout << "Total Failures for " << __FILE__ << ": " << errorTotal
              << std::endl;

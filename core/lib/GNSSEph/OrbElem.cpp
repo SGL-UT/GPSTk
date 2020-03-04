@@ -257,7 +257,8 @@ namespace gpstk
       sv.relcorr = svRelativity(t);
       sv.clkbias = svClockBias(t);
       sv.clkdrift = svClockDrift(t);
-      sv.frame = ReferenceFrame::WGS84;   // This appear to be only a string for naming
+         // This appear to be only a string for naming
+      sv.frame = ReferenceFrame::WGS84;
 
          // Compute true anomaly
       q     = SQRT( 1.0e0 - lecc*lecc);
@@ -337,6 +338,7 @@ namespace gpstk
       sv.v[0] = vxef;
       sv.v[1] = vyef;
       sv.v[2] = vzef;
+      sv.health = isHealthy() ? Xvt::Healthy : Xvt::Unhealthy;
       delete ell;
 
       return sv;

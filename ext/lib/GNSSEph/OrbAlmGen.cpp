@@ -369,8 +369,8 @@ namespace gpstk
       sv.x[2] = zef;
 
          // Compute velocity of rotation coordinates
-      dek = amm * Ak / R;            
-      dlk = SQRT(Ak) * q * sqrtgm / (R*R);  
+      dek = amm / G;
+      dlk = amm * q / (G*G);
       div = 0.0; 
       /*
       *  idot and Harmonic perturbations set to zero in almanac
@@ -407,6 +407,7 @@ namespace gpstk
       sv.v[0] = vxef;
       sv.v[1] = vyef;
       sv.v[2] = vzef;
+      sv.health = health == 0 ? Xvt::Healthy : Xvt::Unhealthy;
 
       return sv;
    }

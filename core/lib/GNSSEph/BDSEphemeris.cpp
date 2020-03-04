@@ -157,10 +157,11 @@ namespace gpstk
       if(!dataLoadedFlag)
          GPSTK_THROW(InvalidRequest("Data not loaded"));
       
-         // If the PRN ID is greatet than 5, assume this
+         // If the inclination is more than 7 degrees, this
          // is a MEO or IGSO SV and use the standard OrbitEph
          // version of svXvt
-      if (satID.id>5) return(OrbitEph::svXvt(t));
+      if (i0 > (7.0/180.0))
+         return(OrbitEph::svXvt(t));
 
          // If PRN ID is in the range 1-5, treat this as a GEO
          // 
@@ -322,12 +323,13 @@ namespace gpstk
 
       // derivatives of true anamoly and arg of latitude
       dek = amm / G; 
-      dlk =  Ahalf * q * sqrtgm / (R*R);
+      dlk =  amm * q / (G*G);
 
       // in-plane, cross-plane, and radial derivatives
-      div = tdrinc - 2.0e0 * dlk * (Cis  * c2al - Cic * s2al);
+      div = tdrinc - 2.0e0 * dlk * (Cic  * s2al - Cis * c2al);
       duv = dlk*(1.e0+ 2.e0 * (Cus*c2al - Cuc*s2al));
-      drv = A * lecc * dek * sinea + 2.e0 * dlk * (Crs * c2al - Crc * s2al);
+      drv = A * lecc * dek * sinea + 2.e0 * dlk * (Crs * c2al - Crc * s2al) +
+         Adot * G;
 
       //
       dxp = drv*cosu - R*sinu*duv;
@@ -400,7 +402,8 @@ namespace gpstk
       sv.v[0] = vresult(0,0);
       sv.v[1] = vresult(1,0);
       sv.v[2] = vresult(2,0);
-      
+      sv.health = health == 0 ? Xvt::Healthy : Xvt::Unhealthy;
+
       return sv;
    }
 
