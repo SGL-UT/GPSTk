@@ -38,7 +38,13 @@
 #include "TestUtil.hpp"
 #include "GPSWeekZcount.hpp"
 
+using namespace std;
 using namespace gpstk;
+
+/** Threshold for how much different our velocities can be between
+ * being computed directly via svXvt and computed via differencing
+ * svXvt positions over time. */
+double velDiffThresh = 0.0008;
 
 #ifdef _MSC_VER
 #define LDEXP(x,y) ldexp(x,y)
@@ -53,6 +59,7 @@ public:
    void fill(BrcKeplerOrbit& orbit);
    unsigned initializationTest();
    unsigned equalityTest();
+   unsigned svXvtTest();
 };
 
 
@@ -298,6 +305,103 @@ equalityTest()
    TURETURN();
 }
 
+unsigned BrcKeplerOrbit_T ::
+svXvtTest()
+{
+   TUDEF("BrcKeplerOrbit", "svXvt");
+   BrcKeplerOrbit orbit;
+   ObsID oi(ObsID::otNavMsg, ObsID::cbL1, ObsID::tcY);
+   gpstk::CommonTime toc = gpstk::CivilTime(2015,7,19,1,59,28.0,
+                                            gpstk::TimeSystem::GPS);
+   orbit.loadData("GPS", oi, 2, toc, toc+7200,
+                  gpstk::GPSWeekSecond(1854,.716800000000e+04), 0, true,
+                  -.324845314026e-05, .101532787085e-04, .168968750000e+03,
+                  -.646250000000e+02, .320374965668e-06, .117346644402e-06,
+                  -.136404614938e+01, .489591822036e-08, 0,
+                  .146582192974e-01, .515359719276e+04 * .515359719276e+04,
+                  .515359719276e+04, 0, -.296605403382e+01,
+                  .941587707856e+00, -.224753761329e+01, -.804390648956e-08,
+                  .789318592573e-10);
+                  
+   bool testFailed = false;
+   try
+   {
+         // first compute Xvt
+      static const unsigned SECONDS = 7200;
+      gpstk::Xvt zeroth_array[SECONDS];
+      for (unsigned ii = 0; ii < SECONDS; ii++)
+      {
+         zeroth_array[ii] = orbit.svXvt(orbit.getOrbitEpoch() + ii);
+      }
+         // then compute first derivative of position, i.e. velocity
+      gpstk::Triple deriv[SECONDS];
+      double h = 1; // time step size in seconds
+      for (unsigned ii = 0; ii < SECONDS; ii++)
+      {
+         if (ii == 0)
+         {
+            deriv[ii] = (1/h)*(-1.5*zeroth_array[ii].getPos() +
+                               2.0*zeroth_array[ii+1].getPos() -
+                               0.5*zeroth_array[ii+2].getPos());
+         }
+         else if ((ii == 1) || (ii == (SECONDS-2)))
+         {
+            deriv[ii] = (1/h)*(-0.5*zeroth_array[ii-1].getPos() +
+                               0.5*zeroth_array[ii+1].getPos());
+         }
+         else if (ii == (SECONDS-1))
+         {
+            deriv[ii] = (1/h)*(0.5*zeroth_array[ii-2].getPos() -
+                               2.0*zeroth_array[ii-1].getPos() +
+                               1.5*zeroth_array[ii].getPos());
+         }
+         else
+         {
+            deriv[ii] = (1/h)*((1.0/12.0)*zeroth_array[ii-2].getPos() -
+                               (2.0/3.0)*zeroth_array[ii-1].getPos() +
+                               (2.0/3.0)*zeroth_array[ii+1].getPos() -
+                               (1.0/12.0)*zeroth_array[ii+2].getPos());
+         }
+      }
+         // then check the difference between derived and computed velocity
+      for (unsigned ii = 0; ii < SECONDS; ii++)
+      {
+         double derivedMag = deriv[ii].mag();
+         double computedMag = zeroth_array[ii].getVel().mag();
+            // If you want to print the data e.g. to plot, uncomment
+            // this stream output statement and comment out tbe break
+            // statement below.
+            // Just don't check it in that way, please.
+            // cerr << ii << " " << (computedMag - derivedMag) << endl;
+         if (fabs(computedMag - derivedMag) > velDiffThresh)
+         {
+               // no sense in printing 7200 success/fail messages.
+            testFailed = true;
+            break;
+         }
+      }
+      if (testFailed)
+      {
+         TUFAIL("computed velocity is significantly different from derived"
+                " velocity");
+      }
+      else
+      {
+         TUPASS("velocity check");
+      }
+   }
+   catch (gpstk::Exception& exc)
+   {
+      cerr << exc;
+      TUFAIL("Exception");
+   }
+   catch (...)
+   {
+      TUFAIL("Exception");
+   }
+   TURETURN();
+}
+
 
 int main() //Main function to initialize and run all tests above
 {
@@ -305,7 +409,9 @@ int main() //Main function to initialize and run all tests above
    BrcKeplerOrbit_T testClass;
    unsigned errorTotal = 0;
 
+   errorTotal += testClass.initializationTest();
    errorTotal += testClass.equalityTest();
+   errorTotal += testClass.svXvtTest();
 
    cout << "Total Failures for " << __FILE__ << ": " << errorTotal << endl;
 

@@ -155,7 +155,7 @@ public:
          TUFAIL("Could not reopen the cleared file.");
       }
 
-      return testFramework.countFails();
+      TURETURN();
    }
 
 
@@ -350,7 +350,7 @@ public:
          //-------------------------------------------------------
          //testFramework.assert(testFramework.fileEqualTest(findEphTestOutput, findEphTestInput, 0), "Output file did not match regressive standard.", __LINE__);
 
-      return testFramework.countFails();
+      TURETURN();
    }
 
 
@@ -463,21 +463,21 @@ public:
 
       std::string comparisonOutput1  =
          "x:(1.43293e+07, -2.70658e+06, -2.19986e+07),"
-         " v:(354.696, 2812.26, -117.977),"
+         " v:(354.7, 2812.28, -117.977),"
          " clk bias:3.42039e-05,"
          " clk drift:1.93268e-12,"
          " relcorr:-1.49802e-09,"
          " health:Healthy";
       std::string comparisonOutput15 =
          "x:(1.46708e+07, 7.54272e+06, 2.07205e+07),"
-         " v:(-2147.79, 1575.58, 902.848),"
+         " v:(-2147.84, 1575.62, 902.864),"
          " clk bias:0.000558473,"
          " clk drift:5.91172e-12,"
          " relcorr:2.04148e-08,"
          " health:Healthy";
       std::string comparisonOutput32 =
          "x:(8.40859e+06, 1.71989e+07, -1.87307e+07),"
-         " v:(-2248.12, -606.201, -1577.94),"
+         " v:(-2248.19, -606.201, -1577.98),"
          " clk bias:2.12814e-05,"
          " clk drift:3.41061e-12,"
          " relcorr:-5.04954e-09,"
@@ -487,22 +487,19 @@ public:
          //-------------------------------------------------------
          // Compare data for SatID 1 with pre-determined standard
          //-------------------------------------------------------
-      testFramework.assert(fPRN1.str() == comparisonOutput1,
-                            "Xvt redirect did not match regressive standard.", __LINE__);
+      TUASSERTE(std::string, comparisonOutput1, fPRN1.str());
 
          //-------------------------------------------------------
          // Compare data for SatID 15 with pre-determined standard
          //-------------------------------------------------------
-      testFramework.assert(fPRN15.str() == comparisonOutput15,
-                            "Xvt redirect did not match regressive standard.", __LINE__);
+      TUASSERTE(std::string, comparisonOutput15, fPRN15.str());
 
          //-------------------------------------------------------
          // Compare data for SatID 32 with pre-determined standard
          //-------------------------------------------------------
-      testFramework.assert(fPRN32.str() == comparisonOutput32,
-                            "Xvt redirect did not match regressive standard.", __LINE__);
+      TUASSERTE(std::string, comparisonOutput32, fPRN32.str());
 
-      return testFramework.countFails();
+      TURETURN();
    }
 
    unsigned computeXvtTest()
@@ -741,7 +738,7 @@ public:
       testFramework.assert(fileEqualTest((char*)(filename+"/Logs/getXvt2_32.txt").c_str(),(char*)(filename+"/Checks/getPrnXvt32.chk").c_str()));
       testFramework.next();
 
-      return testFramework.countFails();
+      TURETURN();
       }
       */
 
@@ -850,7 +847,7 @@ public:
                             dumpTestInputForDetail2, 2),
                             "Dump(*,detail=3) did not match its regressive output", __LINE__);
 
-      return testFramework.countFails();
+      TURETURN();
    }
 
 //=============================================================================
@@ -952,7 +949,7 @@ public:
          cout << e;
       }
 
-      return testFramework.countFails();
+      TURETURN();
    }
 
 
@@ -1034,7 +1031,7 @@ public:
                             editTestInput, 2), "Output from edit does not match regressive standard",
                             __LINE__);
 
-      return testFramework.countFails();
+      TURETURN();
    }
 
 //=============================================================================
@@ -1129,7 +1126,7 @@ public:
       testFramework.assert(testFramework.fileEqualTest(outputTestOutput15, inputComparisonOutput15, 0));
       testFramework.next();
 
-      return testFramework.countFails();
+      TURETURN();
       }
       */
 
@@ -1198,7 +1195,7 @@ public:
       testFramework.assert(testFramework.fileEqualTest(clearTestOutput,
                             clearTestInput, 2),
                             "Output from clear does not match its regressive standard.", __LINE__);
-      return testFramework.countFails();
+      TURETURN();
    }
 
 
@@ -1326,7 +1323,7 @@ public:
       testFramework.assert(testFramework.fileEqualTest(findUserTestOutput,
                             findUserTestInput, 0),
                             "findUserOrbitEph output does not match its regressive standard", __LINE__);
-      return testFramework.countFails();
+      TURETURN();
    }
 
 //=============================================================================
@@ -1458,7 +1455,7 @@ public:
       testFramework.assert(testFramework.fileEqualTest(findNearTestOutput,
                             findNearTestInput, 0),
                             "findNearOrbitEph output does not match its regressive standard", __LINE__);
-      return testFramework.countFails();
+      TURETURN();
    }
 
 
@@ -1532,7 +1529,7 @@ public:
       {
             // cout << e;
       }
-      return testFramework.countFails();
+      TURETURN();
    }
 
 //=============================================================================
@@ -1589,21 +1586,21 @@ public:
                                       "test_input_ephemeris_dump_findNear.txt";
       comparisonOutput1  =
          "x:(1.43293e+07, -2.70658e+06, -2.19986e+07),"
-         " v:(354.696, 2812.26, -117.977),"
+         " v:(354.7, 2812.28, -117.977),"
          " clk bias:3.42039e-05,"
          " clk drift:1.93268e-12,"
          " relcorr:-1.49802e-09,"
          " health:Healthy";
       comparisonOutput15 =
          "x:(1.46708e+07, 7.54272e+06, 2.07205e+07),"
-         " v:(-2147.79, 1575.58, 902.848),"
+         " v:(-2147.84, 1575.62, 902.864),"
          " clk bias:0.000558473,"
          " clk drift:5.91172e-12,"
          " relcorr:2.04148e-08,"
          " health:Healthy";
       comparisonOutput32 =
          "x:(8.40859e+06, 1.71989e+07, -1.87307e+07),"
-         " v:(-2248.12, -606.201, -1577.94),"
+         " v:(-2248.19, -606.201, -1577.98),"
          " clk bias:2.12814e-05,"
          " clk drift:3.41061e-12,"
          " relcorr:-5.04954e-09,"

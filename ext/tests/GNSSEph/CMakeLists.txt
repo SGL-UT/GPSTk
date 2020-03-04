@@ -69,3 +69,7 @@ add_executable(OrbSysGpsC_T OrbSysGpsC_T.cpp)
 target_link_libraries(OrbSysGpsC_T gpstk)
 add_test(GNSSEph_OrbSysGpsC OrbSysGpsC_T)
 set_property(TEST GNSSEph_OrbSysGpsC PROPERTY LABELS GNSSEph OrbSysGpsC)
+
+add_executable(OrbAlmGen_T OrbAlmGen_T.cpp)
+target_link_libraries(OrbAlmGen_T gpstk)
+add_test(GNSSEph_OrbAlmGen OrbAlmGen_T)
