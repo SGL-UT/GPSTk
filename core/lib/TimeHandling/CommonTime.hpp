@@ -79,10 +79,12 @@ namespace gpstk
          //@{
 
          /// 'julian day' of earliest epoch expressible by CommonTime:
-         /// 1/1/4713 B.C.
+         /// 1/1/4713 B.C.E.
+         /// @see m_day.
       static const long BEGIN_LIMIT_JDAY;
          /// 'julian day' of latest epoch expressible by CommonTime:
-         /// 1/1/4713 A.D.
+         /// 1/1/4713 C.E.
+         /// @see m_day.
       static const long END_LIMIT_JDAY;
 
          /// earliest representable CommonTime
@@ -392,7 +394,12 @@ namespace gpstk
          /// @return true if m_day is valid, false otherwise
       bool normalize();
 
-      long m_day;     ///< days (as a Julian Day)     0 <= val < 2^31
+         /** Days since midnight -4713/01/01.  This is similar to, but
+          * not a true Julian Day as it starts at midnight instead of
+          * noon.  The time stamp is defined this way so as to avoid
+          * having to make half-day offsets every time we convert to
+          * or from CommonTime. */
+      long m_day;
       long m_msod;    ///< milliseconds-of-day        0 <= val < 86400000
       double m_fsod;  ///< fractional seconds-of-day  0 <= val < 0.001
 
