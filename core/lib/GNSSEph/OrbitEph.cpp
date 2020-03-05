@@ -53,6 +53,7 @@
 #include "BDSWeekSecond.hpp"
 #include "QZSWeekSecond.hpp"
 #include "GPSEllipsoid.hpp"
+#include "CGCS2000Ellipsoid.hpp"
 #include "TimeString.hpp"
 
 using namespace std;
@@ -248,9 +249,15 @@ namespace gpstk {
       if(!dataLoadedFlag)
          GPSTK_THROW(InvalidRequest("Data not loaded"));
 
-      GPSEllipsoid ell;
+      GPSEllipsoid gell;
+      CGCS2000Ellipsoid bell;
+      EllipsoidModel *ell;
+      if (satID.system==SatID::systemBeiDou)
+         ell = &bell;
+      else
+         ell = &gell;
       double twoPI  = 2.0 * PI;
-      double sqrtgm = SQRT(ell.gm());
+      double sqrtgm = SQRT(ell->gm());
       double elapte = t - ctToe;
 
       // Compute A at time of interest

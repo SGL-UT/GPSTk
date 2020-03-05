@@ -3,6 +3,7 @@
 #include "BDSEphemeris.hpp"
 #include "CivilTime.hpp"
 #include "BDSWeekSecond.hpp"
+#include "TimeString.hpp"
 
 using namespace std;
 
@@ -17,6 +18,13 @@ class BDSEphemeris_T
 public:
    unsigned testSvXvtMEO();
    unsigned testSvXvtGEO();
+      // call writeVel for a variety of ephemerides
+      // unsigned wut();
+      /** Write to a file the difference between the magnitude of the
+       * velocity vector as computed by svXvt and the magnitude of the
+       * position derivative as computed by this function.  For
+       * plotting. */
+   // void writeVel(const gpstk::BDSEphemeris& oe);
 };
 
 
@@ -251,12 +259,122 @@ testSvXvtGEO()
 }
 
 
+// I'm not saving all the code generated for wut().
+// Look at dump2code.pl if you need to do this again.
+// For now it's all being left in the file but #if'd out.
+#if 0
+unsigned BDSEphemeris_T ::
+wut()
+{
+   try
+   {
+      gpstk::BDSEphemeris oe;
+      oe.Cuc      = -1.08121894E-05;
+      oe.Cus      = -1.25728548E-06;
+      oe.Crc      = 3.97031250E+01;
+      oe.Crs      = -3.23656250E+02;
+      oe.Cic      = -2.02562660E-07;
+      oe.Cis      = -2.00234354E-08;
+      oe.M0       = 2.81324357E+00;
+      oe.dn       = -1.00075597E-09;
+      oe.dndot    = 0.00000000E+00;
+      oe.ecc      = 2.62024812E-04;
+      oe.A        = 4.21651139E+07;
+      oe.Adot     = 0.00000000E+00;
+      oe.OMEGA0   = -2.99944238E+00;
+      oe.i0       = 1.06909427E-01;
+      oe.w        = 2.63078773E+00;
+      oe.OMEGAdot = 2.13687472E-09;
+      oe.idot     = 1.45363198E-10;
+      oe.ctToc    = gpstk::CivilTime(2020,3,1,0,0,0,gpstk::TimeSystem::BDT);
+      oe.af0      = 2.59640510E-04;
+      oe.af1      = 4.48929782E-11;
+      oe.af2      = 0.00000000E+00;
+      oe.dataLoadedFlag = true;
+      oe.satID = gpstk::SatID(1, gpstk::SatID::systemBeiDou);
+      oe.ctToe    = gpstk::CivilTime(2020,3,1,0,0,0,gpstk::TimeSystem::BDT);
+      writeVel(oe);
+   }
+   catch(...)
+   {
+      cerr << "exception" << endl;
+   }
+}
+
+
+void BDSEphemeris_T ::
+writeVel(const gpstk::BDSEphemeris& oe)
+{
+   ostringstream ss;
+   ss << setw(2) << setfill('0') << oe.satID.id << "_"
+      << gpstk::printTime(oe.ctToc, "%04Y%02m%02d_%02H%02M%02S.dat");
+   ofstream s(ss.str().c_str());
+   try
+   {
+         // first compute Xvt
+      static const unsigned SECONDS = 7200;
+      gpstk::Xvt zeroth_array[SECONDS];
+      for (unsigned ii = 0; ii < SECONDS; ii++)
+      {
+         zeroth_array[ii] = oe.svXvt(oe.ctToc + ii);
+      }
+         // then compute first derivative of position, i.e. velocity
+      gpstk::Triple deriv[SECONDS];
+      double h = 1; // time step size in seconds
+      for (unsigned ii = 0; ii < SECONDS; ii++)
+      {
+         if (ii == 0)
+         {
+            deriv[ii] = (1/h)*(-1.5*zeroth_array[ii].getPos() +
+                               2.0*zeroth_array[ii+1].getPos() -
+                               0.5*zeroth_array[ii+2].getPos());
+         }
+         else if ((ii == 1) || (ii == (SECONDS-2)))
+         {
+            deriv[ii] = (1/h)*(-0.5*zeroth_array[ii-1].getPos() +
+                               0.5*zeroth_array[ii+1].getPos());
+         }
+         else if (ii == (SECONDS-1))
+         {
+            deriv[ii] = (1/h)*(0.5*zeroth_array[ii-2].getPos() -
+                               2.0*zeroth_array[ii-1].getPos() +
+                               1.5*zeroth_array[ii].getPos());
+         }
+         else
+         {
+            deriv[ii] = (1/h)*((1.0/12.0)*zeroth_array[ii-2].getPos() -
+                               (2.0/3.0)*zeroth_array[ii-1].getPos() +
+                               (2.0/3.0)*zeroth_array[ii+1].getPos() -
+                               (1.0/12.0)*zeroth_array[ii+2].getPos());
+         }
+      }
+         // then write the difference between derived and computed velocity
+      for (unsigned ii = 0; ii < SECONDS; ii++)
+      {
+         double derivedMag = deriv[ii].mag();
+         double computedMag = zeroth_array[ii].getVel().mag();
+         s << ii << " " << (computedMag - derivedMag) << endl;
+      }
+   }
+   catch (gpstk::Exception& exc)
+   {
+      cerr << exc;
+   }
+   catch (...)
+   {
+      cerr << "exception" << endl;
+   }
+}
+#endif
+ 
+
 int main()
 {
    unsigned total = 0;
    BDSEphemeris_T testClass;
    total += testClass.testSvXvtMEO();
    total += testClass.testSvXvtGEO();
+      //testClass.wut();
 
    cout << "Total Failures for " << __FILE__ << ": " << total << endl;
    return total;

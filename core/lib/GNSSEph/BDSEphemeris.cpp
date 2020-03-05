@@ -160,7 +160,7 @@ namespace gpstk
          // If the inclination is more than 7 degrees, this
          // is a MEO or IGSO SV and use the standard OrbitEph
          // version of svXvt
-      if (i0 > (7.0/180.0))
+      if ((i0*180./gpstk::PI) > 7.0)
          return(OrbitEph::svXvt(t));
 
          // If PRN ID is in the range 1-5, treat this as a GEO
@@ -326,7 +326,7 @@ namespace gpstk
       dlk =  amm * q / (G*G);
 
       // in-plane, cross-plane, and radial derivatives
-      div = tdrinc - 2.0e0 * dlk * (Cic  * s2al - Cis * c2al);
+      div = tdrinc - 2.0e0 * dlk * (Cic * s2al - Cis  * c2al);
       duv = dlk*(1.e0+ 2.e0 * (Cus*c2al - Cuc*s2al));
       drv = A * lecc * dek * sinea + 2.e0 * dlk * (Crs * c2al - Crc * s2al) +
          Adot * G;
