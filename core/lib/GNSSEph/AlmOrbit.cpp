@@ -128,6 +128,7 @@ namespace gpstk
       gsta = q * sinea;
       gcta = cosea  - ecc;
       ta = ::atan2(gsta,gcta);
+      g = 1.0 - ecc * cosea;
 
          /* compute argument of latitude for orbit */
       alat = ta + w;
@@ -163,8 +164,8 @@ namespace gpstk
       sv.x[2] = zef;
 
          /* compute velocity of rotation coordinates & velocity of sat. */
-      dek = n * A / r;
-      dlk = sqrtgm * Ahalf * q / (r * r);
+      dek = n / g;
+      dlk = n * q / (g*g);
       div = 0.0e0;
       domk = OMEGAdot - ell.angVelocity();
       duv = dlk;
@@ -182,6 +183,7 @@ namespace gpstk
       sv.v[0] = vxef;
       sv.v[1] = vyef;
       sv.v[2] = vzef;
+      sv.health = SV_health == 0 ? Xvt::Healthy : Xvt::Unhealthy;
 
       return sv;
    }

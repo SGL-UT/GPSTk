@@ -58,7 +58,7 @@ namespace gpstk
 
       healthy = false;     
      
-      URAoe = -16;
+      URAoe = 0;
 
       Cuc = Cus = Crc = Crs = Cic = Cis = M0 = dn = dndot = 
          ecc = A = Ahalf =Adot = OMEGA0 = i0 = w = OMEGAdot = idot = 0.0;
@@ -362,6 +362,11 @@ namespace gpstk
          ea = ea + delea;
          loop_cnt++;
       } while ( (fabs(delea) > 1.0e-11 ) && (loop_cnt <= 20) );
+
+         // Compute clock corrections
+      sv.relcorr = svRelativity(t);
+         // This appears to be only a string for naming
+      sv.frame = ReferenceFrame::WGS84;
    
          // Compute true anomaly
       q     = SQRT( 1.0e0 - lecc*lecc);
@@ -418,14 +423,14 @@ namespace gpstk
       sv.x[2] = zef;
 
          // Compute velocity of rotation coordinates
-      dek = amm * A / R;
-      dlk = Ahalf * q * sqrtgm / (R*R);
+      dek = amm / G;
+      dlk = amm * q / (G*G);
       div = tdrinc - 2.0e0 * dlk *
          ( Cic  * s2al - Cis * c2al );
       domk = OMEGAdot - ell.angVelocity();
       duv = dlk*(1.e0+ 2.e0 * (Cus*c2al - Cuc*s2al) );
       drv = A * lecc * dek * sinea - 2.e0 * dlk *
-         ( Crc * s2al - Crs * c2al );
+         ( Crc * s2al - Crs * c2al ) + Adot * G;
 
       dxp = drv*cosu - R*sinu*duv;
       dyp = drv*sinu + R*cosu*duv;
@@ -441,6 +446,7 @@ namespace gpstk
       sv.v[0] = vxef;
       sv.v[1] = vyef;
       sv.v[2] = vzef;
+      sv.health = healthy ? Xvt::Healthy : Xvt::Unhealthy;
 
       return sv;
    }
