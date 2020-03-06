@@ -90,7 +90,7 @@ namespace gpstk
       /** Return the element with smallest absolute value in the vector */
    template <class T, class BaseClass>
    inline T minabs(const ConstVectorBase<T, BaseClass>& l)
-      throw (VectorException)
+      noexcept(false)
    { 
       if (l.size() == 0)
       {
@@ -107,7 +107,7 @@ namespace gpstk
 
       /** Returns the smallest element of the vector */
    template <class T, class BaseClass>
-   inline T min(const ConstVectorBase<T, BaseClass>& l) throw (VectorException)
+   inline T min(const ConstVectorBase<T, BaseClass>& l) noexcept(false)
    { 
       if (l.size() == 0)
       {

@@ -295,7 +295,7 @@ namespace gpstk
          /// Destructor
       virtual ~CommandOptionNoArg() {}
          /// Returns true if this option was found on the command line
-      operator bool() const throw() { return (getCount() != 0); }
+      operator bool() const noexcept { return (getCount() != 0); }
 
    protected:
          /// Default Constructor

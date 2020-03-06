@@ -81,7 +81,7 @@ namespace gpstk
          /// Creates a trop model, with weather observation input
          /// @param wx the weather to use for this correction.
       GGHeightTropModel(const WxObservation& wx)
-         throw(InvalidParameter);
+         noexcept(false);
 
          /// Create a tropospheric model from explicit weather data
          /// @param T temperature in degrees Celsius
@@ -90,7 +90,7 @@ namespace gpstk
       GGHeightTropModel(const double& T,
                         const double& P,
                         const double& H)
-         throw(InvalidParameter);
+         noexcept(false);
 
          /// Create a valid model from explicit input.
          /// @param T temperature in degrees Celsius
@@ -105,7 +105,7 @@ namespace gpstk
                         const double hT,
                         const double hP,
                         const double hH)
-         throw(InvalidParameter);
+         noexcept(false);
 
          /// Return the name of the model
       virtual std::string name(void)
@@ -114,7 +114,7 @@ namespace gpstk
          /// Compute and return the full tropospheric delay
          /// @param elevation Elevation of satellite as seen at receiver, in degrees
       virtual double correction(double elevation) const
-         throw(InvalidTropModel);
+         noexcept(false);
 
          /**
           * Compute and return the full tropospheric delay, given the positions of
@@ -130,7 +130,7 @@ namespace gpstk
       virtual double correction(const Position& RX,
                                 const Position& SV,
                                 const CommonTime& tt)
-         throw(InvalidTropModel);
+         noexcept(false);
 
          /** \deprecated
           * Compute and return the full tropospheric delay, given the positions of
@@ -146,28 +146,28 @@ namespace gpstk
       virtual double correction(const Xvt& RX,
                                 const Xvt& SV,
                                 const CommonTime& tt)
-         throw(InvalidTropModel);
+         noexcept(false);
 
          /// Compute and return the zenith delay for dry component
          /// of the troposphere
       virtual double dry_zenith_delay(void) const
-         throw(InvalidTropModel);
+         noexcept(false);
 
          /// Compute and return the zenith delay for wet component of the troposphere
       virtual double wet_zenith_delay(void) const
-         throw(InvalidTropModel);
+         noexcept(false);
 
          /// Compute and return the mapping function for dry component of
          /// the troposphere.
          /// @param elevation Elevation of satellite as seen at receiver, in degrees
       virtual double dry_mapping_function(double elevation) const
-         throw(InvalidTropModel);
+         noexcept(false);
 
          /// Compute and return the mapping function for wet component of
          /// the troposphere.
          /// @param elevation Elevation of satellite as seen at receiver, in degrees
       virtual double wet_mapping_function(double elevation) const
-         throw(InvalidTropModel);
+         noexcept(false);
 
          /// Re-define the weather data.
          /// Typically called initially, and whenever the weather changes.
@@ -177,13 +177,13 @@ namespace gpstk
       virtual void setWeather(const double& T,
                               const double& P,
                               const double& H)
-         throw(InvalidParameter);
+         noexcept(false);
 
          /// Re-define the tropospheric model with explicit weather data.
          /// Typically called just before correction().
          /// @param wx the weather to use for this correction
       virtual void setWeather(const WxObservation& wx)
-         throw(InvalidParameter);
+         noexcept(false);
 
          /// Re-define the heights at which the weather parameters apply.
          /// Typically called whenever setWeather is called.

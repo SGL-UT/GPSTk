@@ -102,7 +102,7 @@ namespace gpstk
    }
    
    string FileSpec::convertFileSpecType(const FileSpecType fst)
-      throw(FileSpecException)
+      noexcept(false)
    {
       if (fst == station)          return string("n");
       else if (fst == receiver)    return string("r");
@@ -141,7 +141,7 @@ namespace gpstk
    }
 
    FileSpec::FileSpecType FileSpec::convertFileSpecType(const string& fst)
-      throw(FileSpecException)
+      noexcept(false)
    {
       if (fst == string("n"))        return station;
       else if (fst == string("r"))   return receiver;
@@ -182,7 +182,7 @@ namespace gpstk
 
 
    string FileSpec::createSearchString() const
-      throw(FileSpecException)
+      noexcept(false)
    {
       string searchString;
 
@@ -216,7 +216,7 @@ namespace gpstk
 
    string FileSpec::extractField(const string& filename, 
                                  const FileSpecType fst) const
-      throw(FileSpecException)
+      noexcept(false)
    {
          // stupidity check - is it a valid FST?
       if ((fst <= unknown) || (fst >= end))
@@ -246,7 +246,7 @@ namespace gpstk
    }
 
    bool FileSpec::hasField(const FileSpecType fst) const
-      throw(FileSpecException)
+      noexcept(false)
    {
       vector<FileSpecElement>::const_iterator itr = fileSpecList.begin();
       while (itr != fileSpecList.end())
@@ -267,7 +267,7 @@ namespace gpstk
 
 
    CommonTime FileSpec::extractCommonTime(const string& filename) const
-      throw(FileSpecException)
+      noexcept(false)
    {
          // this uses CommonTime::setToString to get the time out
       try
@@ -342,7 +342,7 @@ namespace gpstk
 
    void FileSpec::sortList(vector<string>& fileList, 
                            const FileSpecSortType fsst) const
-      throw(FileSpecException)
+      noexcept(false)
    {
       FileSpecSort q(*this, fsst);
       stable_sort(fileList.begin(), fileList.end(), q);
@@ -426,7 +426,7 @@ namespace gpstk
    }
 
    void FileSpec::init(const string& fileSpec)
-      throw(FileSpecException)
+      noexcept(false)
    {
       try
       {

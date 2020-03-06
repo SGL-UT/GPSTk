@@ -94,7 +94,7 @@ namespace gpstk
          // that are labeled with the incorrect PRN.  Remove
          // such data sets.
       void removeMisTaggedDataSets()
-         throw(InvalidRequest);
+         noexcept(false);
 
          // Return a bit-encoded count of the number of 
          // parameters that are NOT equal.
@@ -104,7 +104,7 @@ namespace gpstk
          // Examine and stored data, fix the transmit times.
          // Throws an error if it encounters data that cannot be interpreted.
       void rationalize()
-         throw(InvalidRequest);
+         noexcept(false);
 
          // Dump summary of contents of store
       void dump(std::ostream& out=std::cout) const;

@@ -80,7 +80,7 @@ namespace gpstk
 
    // -------------------------------------------------------------------------
    BinexData::UBNXI::UBNXI(unsigned long ul)
-      throw(FFStreamError)
+      noexcept(false)
    {
       if (ul < 128)
       {
@@ -119,7 +119,7 @@ namespace gpstk
       const std::string&  inBuffer,
       size_t              offset,
       bool                littleEndian)
-         throw(FFStreamError)
+         noexcept(false)
    {
       if (offset > inBuffer.size() )
       {
@@ -271,7 +271,7 @@ namespace gpstk
       size_t        offset,
       bool          reverseBytes,
       bool          littleEndian)
-         throw(FFStreamError)
+         noexcept(false)
    {
       unsigned char mask = 0;
       char          buffer [MAX_BYTES];
@@ -335,7 +335,7 @@ namespace gpstk
       size_t         offset,
       bool           reverseBytes,
       bool           littleEndian) const
-         throw(FFStreamError)
+         noexcept(false)
    {
       std::string  buffer;
       encode(buffer, 0, littleEndian);
@@ -381,7 +381,7 @@ namespace gpstk
 
    // -------------------------------------------------------------------------
    BinexData::MGFZI::MGFZI(long long ll)
-      throw(FFStreamError)
+      noexcept(false)
    {
       value = ll;
       long long absValue = llabs(ll);
@@ -437,7 +437,7 @@ namespace gpstk
       const std::string&  inBuffer,
       size_t              offset,
       bool                littleEndian)
-         throw(FFStreamError)
+         noexcept(false)
    {
       long long          absValue = 0;
       unsigned char      flags;
@@ -813,7 +813,7 @@ namespace gpstk
       size_t        offset,
       bool          reverseBytes,
       bool          littleEndian)
-         throw(FFStreamError)
+         noexcept(false)
    {
       unsigned char  buffer   [MAX_BYTES];
       unsigned char  flags;
@@ -874,7 +874,7 @@ namespace gpstk
       size_t        offset,
       bool          reverseBytes,
       bool          littleEndian) const
-         throw(FFStreamError)
+         noexcept(false)
    {
       std::string  buffer;
       encode(buffer, 0, littleEndian);
@@ -930,7 +930,7 @@ namespace gpstk
    // -------------------------------------------------------------------------
    BinexData::BinexData(RecordID recordID,
                         SyncByte recordFlags)
-      throw()
+      noexcept
    {
       setRecordFlags(recordFlags);
       setRecordID(recordID);
@@ -959,7 +959,7 @@ namespace gpstk
    // -------------------------------------------------------------------------
    BinexData&
    BinexData::setRecordID(RecordID id)
-      throw(FFStreamError)
+      noexcept(false)
    {
       if (id > UBNXI::MAX_VALUE)
       {
@@ -1023,7 +1023,7 @@ namespace gpstk
    // -------------------------------------------------------------------------
    BinexData&
    BinexData::ensureMessageCapacity(size_t cap)
-      throw(InvalidParameter)
+      noexcept(false)
    {
       if (cap > UBNXI::MAX_VALUE)
       {
@@ -1056,7 +1056,7 @@ namespace gpstk
    BinexData::updateMessageData(
       size_t&      offset,
       const UBNXI& data)
-         throw(FFStreamError, InvalidParameter)
+         noexcept(false)
    {
       bool   littleEndian  = ( (syncByte & eBigEndian) == 0) ? true : false;
       ensureMessageCapacity(offset + data.getSize() );
@@ -1070,7 +1070,7 @@ namespace gpstk
    BinexData::updateMessageData(
       size_t&      offset,
       const MGFZI& data)
-         throw(FFStreamError, InvalidParameter)
+         noexcept(false)
    {
       bool   littleEndian  = ( (syncByte & eBigEndian) == 0) ? true : false;
       ensureMessageCapacity(offset + data.getSize() );
@@ -1085,7 +1085,7 @@ namespace gpstk
       size_t&            offset,
       const std::string& data,
       size_t             size)
-         throw(FFStreamError, InvalidParameter)
+         noexcept(false)
    {
       ensureMessageCapacity(offset + size);
       if (size > data.size() )
@@ -1107,7 +1107,7 @@ namespace gpstk
       size_t&     offset,
       const char  *data,
       size_t      size)
-         throw(FFStreamError, InvalidParameter)
+         noexcept(false)
    {
       ensureMessageCapacity(offset + size);
       msg.replace(offset, size, data, size);
@@ -1120,7 +1120,7 @@ namespace gpstk
    BinexData::extractMessageData(
       size_t& offset,
       UBNXI&  data)
-         throw(FFStreamError, InvalidParameter)
+         noexcept(false)
    {
       if (offset > msg.size() )
       {
@@ -1139,7 +1139,7 @@ namespace gpstk
    BinexData::extractMessageData(
       size_t& offset,
       MGFZI&  data)
-         throw(FFStreamError, InvalidParameter)
+         noexcept(false)
    {
       if (offset > msg.size() )
       {
@@ -1159,7 +1159,7 @@ namespace gpstk
       size_t&      offset,
       std::string& data,
       size_t       size) const
-         throw(InvalidParameter)
+         noexcept(false)
    {
       if (offset + size > msg.size() )
       {
@@ -1176,8 +1176,7 @@ namespace gpstk
    // -------------------------------------------------------------------------
    void
    BinexData::reallyPutRecord(FFStream& ffs) const
-      throw(std::exception, FFStreamError,
-            StringUtils::StringException)
+      noexcept(false)
    {
       if (NULL == dynamic_cast<BinexStream*>(&ffs))
       {
@@ -1191,8 +1190,7 @@ namespace gpstk
    // -------------------------------------------------------------------------
    void
    BinexData::putRecord(std::ostream& strm) const
-      throw(std::exception, FFStreamError,
-            StringUtils::StringException)
+      noexcept(false)
    {
       try
       {
@@ -1269,7 +1267,7 @@ namespace gpstk
 
    // -------------------------------------------------------------------------
    void BinexData::reallyGetRecord(FFStream& ffs)
-      throw(std::exception, FFStreamError, StringUtils::StringException)
+      noexcept(false)
    {
       if (NULL == dynamic_cast<BinexStream*>(&ffs))
       {
@@ -1282,7 +1280,7 @@ namespace gpstk
 
    // -------------------------------------------------------------------------
    size_t BinexData::getRecord(std::istream& strm)
-      throw(std::exception, FFStreamError, StringUtils::StringException)
+      noexcept(false)
    {
       size_t        offset            = 0;
 
@@ -1658,7 +1656,7 @@ namespace gpstk
    BinexData::parseBuffer(const std::string&  buffer,
                           size_t              offset,
                           size_t              size)
-      throw(FFStreamError)
+      noexcept(false)
    {
       unsigned long long value = 0;
       if (size > sizeof(value) )

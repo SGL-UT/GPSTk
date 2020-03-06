@@ -60,7 +60,7 @@ namespace gpstk
    public:
 
       /// Default constructor
-      HelmertTransform() throw() : fromFrame(ReferenceFrame::Unknown),
+      HelmertTransform() noexcept : fromFrame(ReferenceFrame::Unknown),
                                    toFrame(ReferenceFrame::Unknown),
                                    description("Undefined")
          {};
@@ -85,17 +85,17 @@ namespace gpstk
                        const double& Tx, const double& Ty, const double& Tz,
                        const double& Scale, const std::string& Desc,
                        CommonTime epoch)
-         throw(InvalidRequest);
+         noexcept(false);
 
       /// Dump the object to a multi-line string including reference frames, the
       /// 7 parameters and description.
-      std::string asString() const throw();
+      std::string asString() const noexcept;
 
       /// Transform Position to another frame using this transform or its inverse.
       /// @param Position& pos position to be transformed; unchanged on output.
       /// @param Position& result position after transformation.
       /// @throw if transformation, or inverse, cannot act on ReferenceFrame of input.
-      void transform(const Position& pos, Position& result) throw(InvalidRequest);
+      void transform(const Position& pos, Position& result) noexcept(false);
 
       /// Transform a 3-vector, in the given frame, using this Helmert transformation.
       /// @param Vector<double>& vec 3-vector of position coordinates in "from" frame.
@@ -104,7 +104,7 @@ namespace gpstk
       /// @throw if transformation, or inverse, cannot act on ReferenceFrame of input.
       void transform(const Vector<double>& vec, const ReferenceFrame& frame,
                      Vector<double>& result)
-         throw(InvalidRequest)
+         noexcept(false)
       {
          if(vec.size() > 3) {
             InvalidRequest e("Input Vector is not of length 3");
@@ -128,7 +128,7 @@ namespace gpstk
       /// @param Triple& result with position in new frame
       /// @throw if transformation, or inverse, cannot act on ReferenceFrame of input.
       void transform(const Triple& vec, const ReferenceFrame& frame, Triple& result)
-         throw(InvalidRequest)
+         noexcept(false)
       {
          try {
             Position pos(vec, Position::Cartesian), res;
@@ -146,7 +146,7 @@ namespace gpstk
       /// @param Xvt& result with position in new frame
       /// @throw if transformation, or inverse, cannot act on ReferenceFrame of input.
       void transform(const Xvt& xvt, Xvt& result)
-         throw(InvalidRequest)
+         noexcept(false)
       {
          try {
             Position pos(xvt.x, Position::Cartesian), res;
@@ -168,7 +168,7 @@ namespace gpstk
       void transform(const double& x, const double& y, const double& z,
                      const ReferenceFrame& frame,
                      double& rx, double& ry, double& rz)
-         throw(InvalidRequest)
+         noexcept(false)
       {
          try {
             Position pos(x,y,z,Position::Cartesian), res;
@@ -182,13 +182,13 @@ namespace gpstk
       }
 
       // accessors
-      ReferenceFrame getFromFrame(void) const throw()
+      ReferenceFrame getFromFrame(void) const noexcept
       { return fromFrame; }
 
-      ReferenceFrame getToFrame(void) const throw()
+      ReferenceFrame getToFrame(void) const noexcept
       { return toFrame; }
 
-      CommonTime getEpoch(void) const throw()
+      CommonTime getEpoch(void) const noexcept
       { return Epoch; }
 
       /// Epoch at which GLONASS transitions from PZ90 to PZ90.02

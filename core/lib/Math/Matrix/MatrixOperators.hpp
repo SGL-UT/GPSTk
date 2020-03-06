@@ -58,7 +58,7 @@ namespace gpstk
    template <class T, class BaseClass1, class BaseClass2>
    inline Matrix<T> operator&&(const ConstMatrixBase<T, BaseClass1>& l, 
                                const ConstMatrixBase<T, BaseClass2>& r) 
-      throw(MatrixException)
+      noexcept(false)
    {
       if (l.cols() != r.cols())
       {
@@ -88,7 +88,7 @@ namespace gpstk
    template <class T, class BaseClass1, class BaseClass2>
    inline Matrix<T> operator&&(const ConstMatrixBase<T, BaseClass1>& t, 
                                const ConstVectorBase<T, BaseClass2>& b) 
-      throw(MatrixException)
+      noexcept(false)
    {
       if (t.cols() != b.size())
       {
@@ -117,7 +117,7 @@ namespace gpstk
    template <class T, class BaseClass1, class BaseClass2>
    inline Matrix<T> operator&&(const ConstVectorBase<T, BaseClass1>& t, 
                                const ConstMatrixBase<T, BaseClass2>& b) 
-      throw(MatrixException)
+      noexcept(false)
    {
       if (t.size() != b.cols())
       {
@@ -146,7 +146,7 @@ namespace gpstk
    template <class T, class BaseClass1, class BaseClass2>
    inline Matrix<T> operator||(const ConstMatrixBase<T, BaseClass1>& l,
                                const ConstMatrixBase<T, BaseClass2>& r)  
-      throw(MatrixException)
+      noexcept(false)
    {
       if (l.rows() != r.rows())
       {
@@ -176,7 +176,7 @@ namespace gpstk
    template <class T, class BaseClass1, class BaseClass2>
    inline Matrix<T> operator||(const ConstMatrixBase<T, BaseClass1>& l,
                                const ConstVectorBase<T, BaseClass2>& r)
-      throw(MatrixException)
+      noexcept(false)
    {
       if (l.rows() != r.size())
       {
@@ -205,7 +205,7 @@ namespace gpstk
    template <class T, class BaseClass1, class BaseClass2>
    inline Matrix<T> operator||(const ConstVectorBase<T, BaseClass1>& l,
                                const ConstMatrixBase<T, BaseClass2>& r)
-      throw(MatrixException)
+      noexcept(false)
    {
       if (l.size() != r.rows())
       {
@@ -234,7 +234,7 @@ namespace gpstk
    template <class T, class BaseClass1, class BaseClass2>
    inline Matrix<T> operator||(const ConstVectorBase<T, BaseClass1>& l,
                                const ConstVectorBase<T, BaseClass2>& r)
-      throw(MatrixException)
+      noexcept(false)
    {
       if (l.size() != r.size())
       {
@@ -262,7 +262,7 @@ namespace gpstk
    template <class T, class BaseClass>
    inline Matrix<T> minorMatrix(const ConstMatrixBase<T, BaseClass>& l,
                                 size_t row, size_t col) 
-      throw(MatrixException)
+      noexcept(false)
    {
       if ((row >= l.rows()) || (col >= l.cols()))
       {
@@ -340,7 +340,7 @@ namespace gpstk
        */
    template <class T, class BaseClass>
    inline T det(const ConstMatrixBase<T, BaseClass>& m) 
-      throw(MatrixException)
+      noexcept(false)
    {
       try
       {
@@ -360,7 +360,7 @@ namespace gpstk
        */
    template <class T, class BaseClass>
    inline T condNum(const ConstMatrixBase<T, BaseClass>& m, T& bigNum, T& smallNum) 
-      throw ()
+      noexcept
    {
       SVD<T> svd;
       svd(m);
@@ -379,7 +379,7 @@ namespace gpstk
        */
    template <class T, class BaseClass>
    inline T condNum(const ConstMatrixBase<T, BaseClass>& m) 
-      throw ()
+      noexcept
    {
       T bigNum, smallNum;
       return condNum(m, bigNum, smallNum);
@@ -390,7 +390,7 @@ namespace gpstk
        */
    template <class T>
    inline Matrix<T> ident(size_t dim)
-      throw(MatrixException)
+      noexcept(false)
    {
       if (dim == 0)
       {
@@ -409,7 +409,7 @@ namespace gpstk
        */
    template <class T, class BaseClass>
    inline Matrix<T> diag(const ConstMatrixBase<T, BaseClass>& m)
-      throw(MatrixException)
+      noexcept(false)
    {
       if ( (m.rows() != m.cols()) || (m.cols() < 1) )
       {
@@ -432,7 +432,7 @@ namespace gpstk
    template <class T, class BaseClass>
    inline Matrix<T> blkdiag(const ConstMatrixBase<T, BaseClass>& m1,
                             const ConstMatrixBase<T, BaseClass>& m2)
-      throw(MatrixException)
+      noexcept(false)
    {
       if ( (m1.rows() != m1.cols()) || (m1.cols() < 1) ||
            (m2.rows() != m2.cols()) || (m2.cols() < 1) )
@@ -467,7 +467,7 @@ namespace gpstk
    inline Matrix<T> blkdiag(const ConstMatrixBase<T, BaseClass>& m1,
                             const ConstMatrixBase<T, BaseClass>& m2,
                             const ConstMatrixBase<T, BaseClass>& m3)
-      throw(MatrixException)
+      noexcept(false)
    { return blkdiag( blkdiag(m1,m2), m3 ); }
 
    template <class T, class BaseClass>
@@ -475,7 +475,7 @@ namespace gpstk
                             const ConstMatrixBase<T, BaseClass>& m2,
                             const ConstMatrixBase<T, BaseClass>& m3,
                             const ConstMatrixBase<T, BaseClass>& m4)
-      throw(MatrixException)
+      noexcept(false)
    { return blkdiag( blkdiag(m1,m2,m3), m4 ); }
 
 
@@ -486,7 +486,7 @@ namespace gpstk
        */
    template <class T>
    inline Matrix<T> rotation(T angle, int axis)
-      throw(MatrixException)
+      noexcept(false)
    {
       if (axis < 1 || axis > 3)
       {
@@ -510,7 +510,7 @@ namespace gpstk
        */
    template <class T, class BaseClass>
    inline Matrix<T> inverse(const ConstMatrixBase<T, BaseClass>& m)
-      throw (MatrixException)
+      noexcept(false)
    {
       if ((m.rows() != m.cols()) || (m.cols() == 0))
       {
@@ -582,7 +582,7 @@ namespace gpstk
        */
    template <class T, class BaseClass>
    inline Matrix<T> inverseLUD(const ConstMatrixBase<T, BaseClass>& m)
-      throw (MatrixException)
+      noexcept(false)
    {
       if ((m.rows() != m.cols()) || (m.cols() == 0)) {
          MatrixException e("inverseLUD() requires non-trivial square matrix");
@@ -611,7 +611,7 @@ namespace gpstk
        */
    template <class T, class BaseClass>
    inline Matrix<T> inverseLUD(const ConstMatrixBase<T, BaseClass>& m, T& determ)
-      throw (MatrixException)
+      noexcept(false)
    {
       if ((m.rows() != m.cols()) || (m.cols() == 0)) {
          MatrixException e("inverseLUD() requires non-trivial square matrix");
@@ -643,7 +643,7 @@ namespace gpstk
        */
    template <class T, class BaseClass>
    inline Matrix<T> inverseSVD(const ConstMatrixBase<T, BaseClass>& m,
-                               const T tol=T(1.e-8)) throw (MatrixException)
+                               const T tol=T(1.e-8)) noexcept(false)
    {
       if ((m.rows() != m.cols()) || (m.cols() == 0)) {
          MatrixException e("inverseSVD() requires non-trivial square matrix");
@@ -681,7 +681,7 @@ namespace gpstk
        */
    template <class T, class BaseClass>
    inline Matrix<T> inverseSVD(const ConstMatrixBase<T, BaseClass>& m,
-                               T& bigNum, T& smallNum, const T tol=T(1.e-8)) throw (MatrixException)
+                               T& bigNum, T& smallNum, const T tol=T(1.e-8)) noexcept(false)
    {
       if ((m.rows() != m.cols()) || (m.cols() == 0)) {
          MatrixException e("inverseSVD() requires non-trivial square matrix");
@@ -725,7 +725,7 @@ namespace gpstk
        */
    template <class T, class BaseClass>
    inline Matrix<T> inverseSVD(const ConstMatrixBase<T, BaseClass>& m,
-                               Vector<T>& sv, const T tol=T(1.e-8)) throw (MatrixException)
+                               Vector<T>& sv, const T tol=T(1.e-8)) noexcept(false)
    {
       if ((m.rows() != m.cols()) || (m.cols() == 0)) {
          MatrixException e("inverseSVD() requires non-trivial square matrix");
@@ -770,7 +770,7 @@ namespace gpstk
        */
    template <class T, class BaseClass>
    inline Matrix<T> inverseChol(const ConstMatrixBase<T, BaseClass>& m)
-      throw (MatrixException)
+      noexcept(false)
    {
       int N = m.rows(), i, j, k;
       double sum;
@@ -803,7 +803,7 @@ namespace gpstk
    template <class T, class BaseClass1, class BaseClass2>
    inline Matrix<T> operator* (const ConstMatrixBase<T, BaseClass1>& l, 
                                const ConstMatrixBase<T, BaseClass2>& r)
-      throw (MatrixException)
+      noexcept(false)
    {
       if (l.cols() != r.rows())
       {
@@ -827,7 +827,7 @@ namespace gpstk
    template <class T, class BaseClass1, class BaseClass2>
    inline Vector<T> operator* (const ConstMatrixBase<T, BaseClass1>& m, 
                                const ConstVectorBase<T, BaseClass2>& v)
-      throw (MatrixException)
+      noexcept(false)
    {
       if (v.size() != m.cols())
       {
@@ -851,7 +851,7 @@ namespace gpstk
    template <class T, class BaseClass1, class BaseClass2>
    inline Vector<T> operator* (const ConstVectorBase<T, BaseClass1>& v, 
                                const ConstMatrixBase<T, BaseClass2>& m)
-      throw (gpstk::MatrixException)
+      noexcept(false)
    {
       if (v.size() != m.rows())
       {
@@ -876,7 +876,7 @@ namespace gpstk
    template <class T, class BaseClass1, class BaseClass2>
    inline Matrix<T> operator+ (const ConstMatrixBase<T, BaseClass1>& l,
                                const ConstMatrixBase<T, BaseClass2>& r)
-      throw (MatrixException)
+      noexcept(false)
    {
       if (l.cols() != r.cols() || l.rows() != r.rows())
       {
@@ -899,7 +899,7 @@ namespace gpstk
    template <class T, class BaseClass1, class BaseClass2>
    inline Matrix<T> operator- (const ConstMatrixBase<T, BaseClass1>& l,
                                const ConstMatrixBase<T, BaseClass2>& r)
-      throw (MatrixException)
+      noexcept(false)
    {
       if (l.cols() != r.cols() || l.rows() != r.rows())
       {
@@ -922,7 +922,7 @@ namespace gpstk
    template <class T, class BaseClass>
    inline Matrix<T> outer(const ConstVectorBase<T, BaseClass>& v,
                           const ConstVectorBase<T, BaseClass>& w)
-      throw (MatrixException)
+      noexcept(false)
    {
       if(v.size()*w.size() == 0) {
          MatrixException e("Zero length vector(s)");
@@ -940,7 +940,7 @@ namespace gpstk
        */
    template <class T, class BaseClass>
    inline T maxabs(const ConstMatrixBase<T, BaseClass>& a)
-      throw ()
+      noexcept
    {
       T m=0;
       for(int i = 0; i < a.rows(); i++)

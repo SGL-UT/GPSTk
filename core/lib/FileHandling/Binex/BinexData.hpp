@@ -116,7 +116,7 @@ namespace gpstk
              * Constructor with unsigned long initialization value.
              */
          UBNXI(unsigned long ul)
-            throw(FFStreamError);
+            noexcept(false);
 
             /**
              * Copies another UBNXI.
@@ -215,7 +215,7 @@ namespace gpstk
          decode(const std::string& inBuffer,
                 size_t             offset       = 0,
                 bool               littleEndian = false)
-            throw(FFStreamError);
+            noexcept(false);
 
             /**
              * Converts the UBNXI to a series of bytes placed in outBuffer.
@@ -252,7 +252,7 @@ namespace gpstk
               size_t        offset       = 0,
               bool          reverseBytes = false,
               bool          littleEndian = false)
-            throw(FFStreamError);
+            noexcept(false);
 
             /**
              * Attempts to write the UBNXI to the specified output stream.
@@ -273,7 +273,7 @@ namespace gpstk
                size_t        offset       = 0,
                bool          reverseBytes = false,
                bool          littleEndian = false) const
-            throw(FFStreamError);
+            noexcept(false);
 
       protected:
 
@@ -313,7 +313,7 @@ namespace gpstk
              * Constructor with a long long initialization value.
              */
          MGFZI(long long ll)
-            throw(FFStreamError);
+            noexcept(false);
 
             /**
              * Copies another MGFZI.
@@ -412,7 +412,7 @@ namespace gpstk
          decode(const std::string& inBuffer,
                 size_t             offset       = 0,
                 bool               littleEndian = false)
-            throw(FFStreamError);
+            noexcept(false);
 
             /**
              * Converts the MGFZI to a series of bytes placed in outBuffer.
@@ -446,7 +446,7 @@ namespace gpstk
               size_t      offset       = 0,
               bool        reverseBytes = false,
               bool        littleEndian = false)
-            throw(FFStreamError);
+            noexcept(false);
 
             /**
              * Attempts to write the MGFZI to the specified output stream.
@@ -465,7 +465,7 @@ namespace gpstk
                size_t      offset       = 0,
                bool        reverseBytes = false,
                bool        littleEndian = false) const
-            throw(FFStreamError);
+            noexcept(false);
 
       protected:
 
@@ -488,7 +488,7 @@ namespace gpstk
           */
       BinexData(RecordID recordID,
                 SyncByte recordFlags = DEFAULT_RECORD_FLAGS)
-         throw();
+         noexcept;
 
          /**
           * Copies another BinexData object.
@@ -566,7 +566,7 @@ namespace gpstk
           */
       BinexData&
       setRecordID(RecordID id)
-         throw(FFStreamError);
+         noexcept(false);
 
          /**
           * Returns the number of bytes required to represent the entire record
@@ -590,7 +590,7 @@ namespace gpstk
           */
       BinexData&
       ensureMessageCapacity(size_t cap)
-         throw(InvalidParameter);
+         noexcept(false);
 
          /**
           * Returns the current length of the record head, i.e. the combined
@@ -655,7 +655,7 @@ namespace gpstk
       updateMessageData(
          size_t&      offset,
          const UBNXI& data)
-         throw(FFStreamError, InvalidParameter);
+         noexcept(false);
 
          /**
           * Updates the message buffer with the specified MGFZI.  The location
@@ -672,7 +672,7 @@ namespace gpstk
       updateMessageData(
          size_t&      offset,
          const MGFZI& data)
-         throw(FFStreamError, InvalidParameter);
+         noexcept(false);
 
          /**
           * Updates the message buffer with the specified raw data.  The
@@ -691,7 +691,7 @@ namespace gpstk
          size_t&            offset,
          const std::string& data,
          size_t             size)
-         throw(FFStreamError, InvalidParameter);
+         noexcept(false);
 
          /**
           * Updates the message buffer with the specified raw data.  The
@@ -710,7 +710,7 @@ namespace gpstk
          size_t&     offset,
          const char  *data,
          size_t      size)
-         throw(FFStreamError, InvalidParameter);
+         noexcept(false);
 
          /**
           * Updates the message buffer with the specified data.  The location
@@ -732,7 +732,7 @@ namespace gpstk
          size_t&      offset,
          const T&     data,
          size_t       size)
-         throw(FFStreamError, InvalidParameter)
+         noexcept(false)
       {
          if (size > sizeof(T) )
          {
@@ -768,7 +768,7 @@ namespace gpstk
       extractMessageData(
          size_t& offset,
          UBNXI&  data)
-         throw(FFStreamError, InvalidParameter);
+         noexcept(false);
 
          /**
           * Extracts a MGFZI from the message buffer.  The location within the
@@ -784,7 +784,7 @@ namespace gpstk
       extractMessageData(
          size_t& offset,
          MGFZI&  data)
-         throw(FFStreamError, InvalidParameter);
+         noexcept(false);
 
          /**
           * Extracts raw data from the message buffer.  The location within the
@@ -804,7 +804,7 @@ namespace gpstk
          size_t&      offset,
          std::string& data,
          size_t       size) const
-         throw(InvalidParameter);
+         noexcept(false);
 
          /**
           * Extracts data from the message buffer.  The location within the
@@ -826,7 +826,7 @@ namespace gpstk
          size_t&      offset,
          T&           data,
          size_t       size) const
-         throw(FFStreamError, InvalidParameter)
+         noexcept(false)
       {
          if (size > sizeof(T) )
          {
@@ -857,8 +857,7 @@ namespace gpstk
           */
       virtual void
       putRecord(std::ostream& s) const
-         throw(std::exception, FFStreamError,
-               StringUtils::StringException);
+         noexcept(false);
 
          /**
           * Retrieves a BINEX record from the specified generic input stream.
@@ -866,8 +865,7 @@ namespace gpstk
           */
       virtual size_t
       getRecord(std::istream& s)
-         throw(std::exception, FFStreamError,
-               StringUtils::StringException);
+         noexcept(false);
 
    protected:
 
@@ -876,8 +874,7 @@ namespace gpstk
           */
       virtual void
       reallyPutRecord(FFStream& s) const
-         throw(std::exception, FFStreamError,
-               StringUtils::StringException);
+         noexcept(false);
 
          /**
           * This function retrieves a BINEX record from the given FFStream.
@@ -890,8 +887,7 @@ namespace gpstk
           */
       virtual void
       reallyGetRecord(FFStream& s)
-         throw(std::exception, FFStreamError,
-               StringUtils::StringException);
+         noexcept(false);
 
          /**
           * @param bufs    A NULL-terminated list of pointers to byte buffers
@@ -937,7 +933,7 @@ namespace gpstk
       parseBuffer(const std::string&  buffer,
                   size_t              offset,
                   size_t              size)
-         throw(FFStreamError);
+         noexcept(false);
 
          /**
           * Reverses the order of the first bufferLength bytes in the

@@ -325,7 +325,7 @@ namespace gpstk
 
 
    EngNav::EngNav()
-      throw()
+      noexcept
    {
       short i=0, n=0;
       static short initialized = 0;
@@ -361,7 +361,7 @@ namespace gpstk
    bool EngNav :: subframeConvert(const long input[10],
                                   int gpsWeek,
                                   double output[60])
-      throw()
+      noexcept
    {
       uint32_t tinput[10];
       for (int n=0;n<10;++n)
@@ -373,7 +373,7 @@ namespace gpstk
    bool EngNav :: subframeConvert(const uint32_t input[10],
                                   short gpsWeek,
                                   double output[60])
-      throw()
+      noexcept
    {
       short patId = -2, i = 2;
       struct DecodeQuant *p=NULL;
@@ -425,7 +425,7 @@ namespace gpstk
 
       // Retained for backward compatibility
    bool EngNav :: convert8bit(int gpsWeek, double *output)
-      throw()
+      noexcept
    {
       short tgpsWeek = static_cast<short>( gpsWeek );
       short toutput = static_cast<short> ( *output );
@@ -437,7 +437,7 @@ namespace gpstk
 
       // Retained for backward compatibility
    bool EngNav :: convert10bit(int gpsWeek, double *output)
-      throw()
+      noexcept
    {
       short tgpsWeek = static_cast<short>( gpsWeek );
       short toutput = static_cast<short> ( *output );
@@ -467,7 +467,7 @@ namespace gpstk
 
       // Retained for backward compatibility
    short EngNav :: getSubframePattern(const long input[10])
-      throw()
+      noexcept
    {
       uint32_t tinput[10];
       for (int n=0;n<10;++n)
@@ -476,7 +476,7 @@ namespace gpstk
    }
 
    short EngNav :: getSubframePattern(const uint32_t input[10])
-      throw()
+      noexcept
    {
       short iret, svid;
       long  itemp;
@@ -513,7 +513,7 @@ namespace gpstk
 
 
    bool EngNav :: sv2page(short svpgid, short& subframe, short& page)
-      throw()
+      noexcept
    {
       if (svpgid < 1)
          return false;
@@ -572,7 +572,7 @@ namespace gpstk
 
 
    bool EngNav :: sfpage2svid(short subframe, short page, short& svpgid)
-      throw()
+      noexcept
    {
       static const short sf4pg[25] = { 57, 25, 26, 27, 28, 57, 29, 30, 31, 32,
                                        57, 62, 52, 53, 54, 57, 55, 56, 58, 59,
@@ -598,7 +598,7 @@ namespace gpstk
 
    bool EngNav :: zcount2page(unsigned long zcount,
                               short& subframe, short& page)
-      throw()
+      noexcept
    {
       subframe = ((zcount % 20) / 4);
       if (subframe == 0)
@@ -733,7 +733,7 @@ namespace gpstk
    void EngNav :: convertQuant(const uint32_t input[10],
                                double output[60],
                                DecodeQuant *p)
-      throw()
+      noexcept
    {
       double dval;
       short i, n, bit1, nword, nbit;
@@ -853,7 +853,7 @@ namespace gpstk
                                   CommonTime &tnmct,
                                   CommonTime &toe,
                                   CommonTime &tot)
-      throw(InvalidParameter)
+      noexcept(false)
    {
       uint32_t toeSOW, offset;
       short sfid = getSFID(sf2[1]);

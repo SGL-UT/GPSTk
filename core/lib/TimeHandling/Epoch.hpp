@@ -171,12 +171,12 @@ namespace gpstk
          //@{
          /// Changes the EPOCH_TOLERANCE for all Epoch objects
       static double setEpochTolerance(double tol)
-         throw()
+         noexcept
       { return EPOCH_TOLERANCE = tol; }
 
          /// Returns the current EPOCH_TOLERANCE.
       static double getEpochTolerance()
-         throw()
+         noexcept
       { return EPOCH_TOLERANCE; }
    
          /**
@@ -187,13 +187,13 @@ namespace gpstk
           * @sa Epoch-Specific Definitions
           */
       Epoch& setTolerance(double tol)
-         throw();
+         noexcept;
 
          /** 
           * Return the tolerance value currently in use by this object.
           * @return the current tolerance value (in seconds, of course)
           */
-      double getTolerance() const throw()
+      double getTolerance() const noexcept
       { return tolerance; }
          //@}
 
@@ -211,14 +211,14 @@ namespace gpstk
           * GPS full week and second (GPSWeekSecond)
           */
       Epoch(const TimeTag& tt = SystemTime())
-         throw(EpochException);
+         noexcept(false);
 
          /**
           * CommonTime Constructor.
           * Set the time using the given CommonTime object.
           */
       Epoch(const CommonTime& ct)
-         throw();
+         noexcept;
 
          /** 
           * TimeTag + Year Constructor.
@@ -231,13 +231,13 @@ namespace gpstk
           */
       Epoch(const WeekSecond& tt,
             short year)
-         throw(EpochException);
+         noexcept(false);
 
          /** GPSZcount Constructor.
           * Set the current time using the given GPSZcount.
           */
       Epoch(const GPSZcount& gzc)
-         throw();
+         noexcept;
       
          // Other Constructors:
          // gps 29-bit zcount w/ epoch determined by current system time
@@ -245,7 +245,7 @@ namespace gpstk
 
          /// Destructor.
       ~Epoch()
-         throw()
+         noexcept
       {}
          //@}
 
@@ -253,11 +253,11 @@ namespace gpstk
          //@{
          /// Copy constructor.
       Epoch(const Epoch &right)
-         throw();
+         noexcept;
 
          /// Assignment operator.
       Epoch& operator=(const Epoch& right)
-         throw();
+         noexcept;
          //@}
       
          /// @name Arithmetic
@@ -268,7 +268,7 @@ namespace gpstk
           * @return difference in seconds.
           */
       double operator-(const Epoch& right) const
-         throw();
+         noexcept;
 
          /**
           * Add seconds to this time.
@@ -276,7 +276,7 @@ namespace gpstk
           * @return The new time incremented by \c sec.
           */
       Epoch operator+(double sec) const
-         throw(EpochException);
+         noexcept(false);
 
          /**
           * Subtract seconds from this time.
@@ -284,7 +284,7 @@ namespace gpstk
           * @return The new time decremented by \c sec.
           */
       Epoch operator-(double sec) const
-         throw(EpochException);
+         noexcept(false);
 
          /**
           * Add seconds to this time.
@@ -292,7 +292,7 @@ namespace gpstk
           * @throws EpochException on over/under-flow
           */
       Epoch& operator+=(double sec)
-         throw(EpochException);
+         noexcept(false);
 
          /**
           * Subtract seconds from this time.
@@ -300,7 +300,7 @@ namespace gpstk
           * @throws EpochException on over/under-flow
           */
       Epoch& operator-=(double sec)
-         throw(EpochException);
+         noexcept(false);
 
          /**
           * Add (double) seconds to this time.
@@ -308,7 +308,7 @@ namespace gpstk
           * @throws EpochException on over/under-flow
           */
       Epoch& addSeconds(double seconds)
-         throw(EpochException);
+         noexcept(false);
 
          /**
           * Add (integer) seconds to this time.
@@ -316,7 +316,7 @@ namespace gpstk
           * @throws EpochException on over/under-flow
           */
       Epoch& addSeconds(long seconds)
-         throw(EpochException);
+         noexcept(false);
 
          /**
           * Add (integer) milliseconds to this time.
@@ -324,7 +324,7 @@ namespace gpstk
           * @throws EpochException on over/under-flow
           */
       Epoch& addMilliSeconds(long msec)
-         throw(EpochException);
+         noexcept(false);
 
          /**
           * Add (integer) microseconds to this time.
@@ -332,23 +332,23 @@ namespace gpstk
           * @throws EpochException on over/under-flow
           */
       Epoch& addMicroSeconds(long usec)
-         throw(EpochException);
+         noexcept(false);
          //@}
 
          /// @name Comparisons
          //@{
       bool operator==(const Epoch &right) const
-         throw();
+         noexcept;
       bool operator!=(const Epoch &right) const
-         throw();
+         noexcept;
       bool operator<(const Epoch &right) const
-         throw();
+         noexcept;
       bool operator>(const Epoch &right) const
-         throw();
+         noexcept;
       bool operator<=(const Epoch &right) const
-         throw();
+         noexcept;
       bool operator>=(const Epoch &right) const
-         throw();
+         noexcept;
          //@}
 
          /// @name Accessor Methods (get and set)
@@ -358,67 +358,67 @@ namespace gpstk
          /// TimeTag type.
       template <class TimeTagType>
       TimeTagType get() const
-         throw(EpochException);
+         noexcept(false);
 
          /// Get Julian Date JD
          /// @Warning For some compilers, this result may have diminished
          ///  accuracy.
       inline long double JD() const
-         throw(EpochException);
+         noexcept(false);
 
          /// Get Modified Julian Date MJD
          /// @Warning For some compilers, this result may have diminished
          ///  accuracy.
       inline long double MJD() const
-         throw(EpochException);
+         noexcept(false);
 
          /// Get year.
       inline short year() const
-         throw(EpochException);
+         noexcept(false);
 
          /// Get month of year.
       inline short month() const
-         throw(EpochException);
+         noexcept(false);
 
          /// Get day of month.
       inline short day() const
-         throw(EpochException);
+         noexcept(false);
 
          /// Get day of week
       inline short dow() const
-         throw(EpochException);
+         noexcept(false);
 
          /// Get hour of day.
       inline short hour() const
-         throw(EpochException);
+         noexcept(false);
 
          /// Get minutes of hour.
       inline short minute() const
-         throw(EpochException);
+         noexcept(false);
 
          /// Get seconds of minute.
       inline double second() const
-         throw(EpochException);
+         noexcept(false);
 
          /// Get seconds of day.
       inline double sod() const
-         throw(EpochException);
+         noexcept(false);
 
          /// Get 10-bit GPS week
       inline short GPSModWeek() const
-         throw(EpochException);
+         noexcept(false);
 
          /// Get 10-bit GPS week, deprecated, use GPSModWeek()
       inline short GPSweek10() const
-         throw(EpochException);
+         noexcept(false);
 
          /// Get normal (19 bit) zcount.
       inline long GPSzcount() const
-         throw(EpochException);
+         noexcept(false);
 
          /// Same as GPSzcount() but without rounding to nearest zcount.
       inline long GPSzcountFloor() const
-         throw(EpochException);
+         noexcept(false);
 
          /**
           * Get time as 32 bit Z count.
@@ -426,77 +426,77 @@ namespace gpstk
           * week in Zcounts.
           */
       inline unsigned long GPSzcount32() const
-         throw(EpochException);
+         noexcept(false);
 
          /// Same as fullZcount() but without rounding to nearest zcount.
       inline unsigned long GPSzcount32Floor() const
-         throw(EpochException);
+         noexcept(false);
 
          /// Get GPS second of week.
       inline double GPSsow() const
-         throw(EpochException);
+         noexcept(false);
 
          /// Get full (>10 bits) week 
       inline short GPSweek() const
-         throw(EpochException);
+         noexcept(false);
 
          /// Get BDS second of week.
       inline double BDSsow() const
-         throw(EpochException);
+         noexcept(false);
    
          /// Get full BDS week 
       inline short BDSweek() const
-         throw(EpochException);
+         noexcept(false);
    
          /// Get mod (short) BDS week
       inline short BDSModWeek() const
-         throw(EpochException);
+         noexcept(false);
 
          /// Get QZS second of week.
       inline double QZSsow() const
-         throw(EpochException);
+         noexcept(false);
    
          /// Get full QZS week 
       inline short QZSweek() const
-         throw(EpochException);
+         noexcept(false);
    
          /// Get mod (short) QZS week
       inline short QZSModWeek() const
-         throw(EpochException);
+         noexcept(false);
 
          /// Get GAL second of week.
       inline double GALsow() const
-         throw(EpochException);
+         noexcept(false);
    
          /// Get full GAL week 
       inline short GALweek() const
-         throw(EpochException);
+         noexcept(false);
    
          /// Get mod (short) GAL week
       inline short GALModWeek() const
-         throw(EpochException);
+         noexcept(false);
 
          /// Get day of year.
       inline short doy() const
-         throw(EpochException);
+         noexcept(false);
 
          /// Get object time as a (long double) modified Julian date.
          /// @Warning For some compilers, this result may have diminished
          ///  accuracy.
       inline long double getMJDasLongDouble() const
-         throw(EpochException);
+         noexcept(false);
 
          /// Get object time in UNIX timeval structure.
       inline struct timeval unixTime() const
-         throw(EpochException);
+         noexcept(false);
 
          /// Convert this object to a GPSZcount object.
       operator GPSZcount() const
-         throw(EpochException);
+         noexcept(false);
 
          /// Convert this object to a CommonTime object.
       operator CommonTime() const
-         throw();
+         noexcept;
 
          /// @todo Could we get away with just CommonTime sets? The TimeTags
          /// can convert themselves to CommonTime objects.  That's what we
@@ -508,7 +508,7 @@ namespace gpstk
           * @return a reference to this object.
           */
       Epoch& set(const TimeTag& tt = SystemTime())
-         throw(EpochException);
+         noexcept(false);
       
          /** Set the object using a TimeTag and a year as a hint.
           * @param tt the TimeTag to which to set this object.
@@ -517,7 +517,7 @@ namespace gpstk
           */
       Epoch& set(const WeekSecond& tt,
                  short year)
-         throw(EpochException);
+         noexcept(false);
       
          /**
           * Set the object using the give CommonTime.
@@ -525,13 +525,13 @@ namespace gpstk
           * @return a reference to this object.
           */
       Epoch& set(const CommonTime& c)
-         throw();
+         noexcept;
 
          /**
           * Set the object using a GPSZcount object.
           */
       Epoch& set(const GPSZcount& z)
-         throw(EpochException);
+         noexcept(false);
 
          /**
           * Set the object's time using a CommonTime object. This operation
@@ -540,7 +540,7 @@ namespace gpstk
           * objects, this method works for them as well.
           */
       Epoch& setTime(const CommonTime& ct)
-         throw(EpochException);
+         noexcept(false);
 
          /**
           * Set the object's date using a CommonTime object. This operation
@@ -549,14 +549,14 @@ namespace gpstk
           * objects, this method works for them as well.
           */
       Epoch& setDate(const CommonTime& ct)
-         throw(EpochException);
+         noexcept(false);
 
          /**
           * Set the object time to the current local time.
           * @todo What is this?
           */
       Epoch& setLocalTime()
-         throw(EpochException);
+         noexcept(false);
 
          // other sets:
          // ymdhms
@@ -638,7 +638,7 @@ namespace gpstk
           */
       Epoch& scanf(const std::string& str, 
                    const std::string& fmt)
-         throw(StringUtils::StringException, InvalidRequest);
+         noexcept(false);
 
          // if you can see this, ignore the \'s below, as they are for
          // the nasty html-ifying of doxygen.  Browsers try and
@@ -699,7 +699,7 @@ namespace gpstk
           * representation specified by \c fmt.
           */
       std::string printf(const std::string& fmt = PRINT_FORMAT) const
-         throw(StringUtils::StringException);
+         noexcept(false);
          //@}
 
    private:
@@ -727,7 +727,7 @@ namespace gpstk
 
 
    template <class TimeTagType>
-   TimeTagType Epoch::get() const throw(EpochException)
+   TimeTagType Epoch::get() const noexcept(false)
    {
       try { return TimeTagType(core); }
       catch( Exception& e)
@@ -741,7 +741,7 @@ namespace gpstk
       /// @warning For some compilers, this result may have diminished 
       /// accuracy.
    long double Epoch::JD() const
-      throw(Epoch::EpochException)
+      noexcept(false)
    {
       return get<JulianDate>().jd;
    }
@@ -750,91 +750,91 @@ namespace gpstk
       /// @warning For some compilers, this result may have diminished 
       /// accuracy.
    long double Epoch::MJD() const
-      throw(Epoch::EpochException)
+      noexcept(false)
    {
       return get<gpstk::MJD>().mjd;    // gpstk to distinguish from Epoch::MJD
    }
    
       /// Get year.
    short Epoch::year() const
-      throw(Epoch::EpochException)
+      noexcept(false)
    {
       return static_cast<short>(get<CivilTime>().year);
    }
    
       /// Get month of year.
    short Epoch::month() const
-      throw(Epoch::EpochException)
+      noexcept(false)
    {
       return static_cast<short>(get<CivilTime>().month);
    }
    
       /// Get day of month.
    short Epoch::day() const
-      throw(Epoch::EpochException)
+      noexcept(false)
    {
       return static_cast<short>(get<CivilTime>().day);
    }
    
       /// Get day of week
    short Epoch::dow() const
-      throw(Epoch::EpochException)
+      noexcept(false)
    {
       return (((static_cast<long>(JD()) % 7) + 1) % 7) ;
    }
    
       /// Get hour of day.
    short Epoch::hour() const
-      throw(Epoch::EpochException)
+      noexcept(false)
    {
       return static_cast<short>(get<CivilTime>().hour);
    }
    
       /// Get minutes of hour.
    short Epoch::minute() const
-      throw(Epoch::EpochException)
+      noexcept(false)
    {
       return static_cast<short>(get<CivilTime>().minute);
    }
    
       /// Get seconds of minute.
    double Epoch::second() const
-      throw(Epoch::EpochException)
+      noexcept(false)
    {
       return get<CivilTime>().second;
    }
    
       /// Get seconds of day.
    double Epoch::sod() const
-      throw(Epoch::EpochException)
+      noexcept(false)
    {
       return get<YDSTime>().sod;
    }
    
       /// Get 10-bit GPS week. Deprecated, used GPSModWeek()
    short Epoch::GPSweek10() const
-      throw(Epoch::EpochException)
+      noexcept(false)
    {
       return GPSModWeek();
    }
 
       /// Get 10-bit GPS week
    short Epoch::GPSModWeek() const
-      throw(Epoch::EpochException)
+      noexcept(false)
    {
       return static_cast<short>(get<GPSWeekSecond>().getModWeek());
    }
    
       /// Get normal (19 bit) zcount.
    long Epoch::GPSzcount() const
-      throw(Epoch::EpochException)
+      noexcept(false)
    {
       return get<GPSWeekZcount>().zcount;
    }
    
       /// Same as GPSzcount() but without rounding to nearest zcount.
    long Epoch::GPSzcountFloor() const
-      throw(Epoch::EpochException)
+      noexcept(false)
    {
       Epoch e = *this + .75; // add half a zcount
       return e.get<GPSWeekZcount>().zcount;
@@ -844,14 +844,14 @@ namespace gpstk
       /// The 13 MSBs are week modulo 1024, 19 LSBs are seconds of
       /// week in Zcounts.
    unsigned long Epoch::GPSzcount32() const
-      throw(Epoch::EpochException)
+      noexcept(false)
    {
       return get<GPSWeekZcount>().getZcount32();
    }
    
       /// Same as fullZcount() but without rounding to nearest zcount.
    unsigned long Epoch::GPSzcount32Floor() const
-      throw(Epoch::EpochException)
+      noexcept(false)
    {
       Epoch e = *this + .75; // add half a zcount
       return e.get<GPSWeekZcount>().getZcount32();
@@ -859,91 +859,91 @@ namespace gpstk
    
       /// Get GPS second of week.
    double Epoch::GPSsow() const
-      throw(Epoch::EpochException)
+      noexcept(false)
    {
       return get<GPSWeekSecond>().sow;
    }
    
       /// Get full (>10 bits) week 
    short Epoch::GPSweek() const
-      throw(Epoch::EpochException)
+      noexcept(false)
    {
       return static_cast<short>(get<GPSWeekSecond>().week);
    }
    
       /// Get BDS second of week.
    double Epoch::BDSsow() const
-      throw(Epoch::EpochException)
+      noexcept(false)
    {
       return get<BDSWeekSecond>().sow;
    }
    
       /// Get full BDS week 
    short Epoch::BDSweek() const
-      throw(Epoch::EpochException)
+      noexcept(false)
    {
       return static_cast<short>(get<BDSWeekSecond>().week);
    }
    
       /// Get mod (short) BDS week
    short Epoch::BDSModWeek() const
-      throw(Epoch::EpochException)
+      noexcept(false)
    {
       return static_cast<short>(get<BDSWeekSecond>().getModWeek());
    }
    
       /// Get QZS second of week.
    double Epoch::QZSsow() const
-      throw(Epoch::EpochException)
+      noexcept(false)
    {
       return get<QZSWeekSecond>().sow;
    }
    
       /// Get full QZS week 
    short Epoch::QZSweek() const
-      throw(Epoch::EpochException)
+      noexcept(false)
    {
       return static_cast<short>(get<QZSWeekSecond>().week);
    }
    
       /// Get mod (short) QZS week
    short Epoch::QZSModWeek() const
-      throw(Epoch::EpochException)
+      noexcept(false)
    {
       return static_cast<short>(get<QZSWeekSecond>().getModWeek());
    }
    
       /// Get GAL second of week.
    double Epoch::GALsow() const
-      throw(Epoch::EpochException)
+      noexcept(false)
    {
       return get<GALWeekSecond>().sow;
    }
    
       /// Get full GAL week 
    short Epoch::GALweek() const
-      throw(Epoch::EpochException)
+      noexcept(false)
    {
       return static_cast<short>(get<GALWeekSecond>().week);
    }
    
       /// Get mod (short) GAL week
    short Epoch::GALModWeek() const
-      throw(Epoch::EpochException)
+      noexcept(false)
    {
       return static_cast<short>(get<GALWeekSecond>().getModWeek());
    }
    
       /// Get day of year.
    short Epoch::doy() const
-      throw(Epoch::EpochException)
+      noexcept(false)
    {
       return static_cast<short>(get<YDSTime>().doy);
    }
    
       /// Get object time in UNIX timeval structure.
    struct timeval Epoch::unixTime() const
-      throw(Epoch::EpochException)
+      noexcept(false)
    {
       return get<UnixTime>().tv;
    }

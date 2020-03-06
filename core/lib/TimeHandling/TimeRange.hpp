@@ -67,12 +67,12 @@ namespace gpstk
       TimeRange(const CommonTime& startDT, 
                 const CommonTime& endDT,
                 const bool startInclusive=true, 
-                const bool endInclusive=true ) throw(TimeRangeException);
+                const bool endInclusive=true ) noexcept(false);
 
          /// To cover potential use with RiseSetTimeList               
       TimeRange( DTPair dtPair,
                 const bool startInclusive=true, 
-                const bool endInclusive=true ) throw(TimeRangeException); 
+                const bool endInclusive=true ) noexcept(false); 
 
          /// Copy construtor       
       TimeRange(const TimeRange& tr); 
@@ -86,7 +86,7 @@ namespace gpstk
       void set( const CommonTime& startDT, 
                 const CommonTime& endDT,
                 const bool startInclusive=true, 
-                const bool endInclusive=true ) throw(TimeRangeException);
+                const bool endInclusive=true ) noexcept(false);
 
          /** Return true is testDT is within the TimeRange.  Whether
           * the boundaries are included is in accordance with the
@@ -131,12 +131,11 @@ namespace gpstk
           *  \li followed by an optional ']' or ')' (assume ']').  */
       TimeRange& setToString( const std::string& str, 
                               const std::string& fmt)
-         throw(TimeRangeException, 
-               StringUtils::StringException);
+         noexcept(false);
 
          /// Formatted print
       std::string printf(const std::string formatArg="%02m/%02d/%02y %02H:%02M:%02S" ) const
-        throw(gpstk::StringUtils::StringException);
+        noexcept(false);
 
          /// Dump method.   
       std::string dump(const std::string formatArg="%02m/%02d/%02y %02H:%02M:%02S" ) const;
@@ -150,7 +149,7 @@ namespace gpstk
       void init(const CommonTime& startDT, 
                 const CommonTime& endDT,
                 const bool startInclusive=true, 
-                const bool endInclusive=true ) throw(TimeRangeException);
+                const bool endInclusive=true ) noexcept(false);
 
    };
 

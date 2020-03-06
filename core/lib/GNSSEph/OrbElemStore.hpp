@@ -71,7 +71,7 @@ namespace gpstk
    public:
       
       OrbElemStore()
-         throw()
+         noexcept
         :initialTime(CommonTime::END_OF_TIME), 
          finalTime(CommonTime::BEGINNING_OF_TIME),
          timeSysForStore(TimeSystem::Any)
@@ -118,7 +118,7 @@ namespace gpstk
       ///    reason, this is thrown. The text may have additional
       ///    information as to why the request failed.
       virtual Xvt getXvt(const SatID& id, const CommonTime& t)
-         const throw( InvalidRequest );
+         const noexcept(false);
 
          /** Compute the position, velocity and clock offset of the
           * indicated object in ECEF coordinates (meters) at the
@@ -135,41 +135,41 @@ namespace gpstk
           * @param[in] t the time to look up
           * @return the Xvt of the object at the indicated time */
       virtual Xvt computeXvt(const SatID& id, const CommonTime& t) const
-         throw();
+         noexcept;
 
          /** Get the satellite health at a specific time.
           * @param[in] id the object's identifier
           * @param[in] t the time to look up
           * @return the health status of the object at the indicated time. */
       virtual Xvt::HealthStatus getSVHealth(const SatID& id,
-                                            const CommonTime& t) const throw();
+                                            const CommonTime& t) const noexcept;
 
       /// A debugging function that outputs in human readable form,
       /// all data stored in this object.
       /// @param[in] s the stream to receive the output; defaults to cout
       /// @param[in] detail the level of detail to provide
       virtual void dump(std::ostream& s = std::cout, short detail = 0)
-         const throw();
+         const noexcept;
 
       virtual bool addOrbElem(const OrbElemBase* eph)
-         throw(InvalidParameter,Exception);
+         noexcept(false);
 
       /// Edit the dataset, removing data outside the indicated time interval
       /// @param[in] tmin defines the beginning of the time interval
       /// @param[in] tmax defines the end of the time interval
       virtual void edit(const CommonTime& tmin, 
                         const CommonTime& tmax = CommonTime::END_OF_TIME)
-         throw(); 
+         noexcept; 
 
       /// Clear the dataset, meaning remove all data
-      virtual void clear(void) throw();
+      virtual void clear(void) noexcept;
 
       /// Determine the earliest time for which this object can successfully 
       /// determine the Xvt for any object.
       /// @return The initial time
       /// @throw InvalidRequest This is thrown if the object has no data.
       virtual CommonTime getInitialTime() const
-         throw()
+         noexcept
          { return initialTime; }
 
 
@@ -178,23 +178,23 @@ namespace gpstk
       /// @return The final time
       /// @throw InvalidRequest This is thrown if the object has no data.
       virtual CommonTime getFinalTime() const
-         throw()
+         noexcept
          { return finalTime; }
 
       /// Return the number of orbit/clock elements stored in this store. 
       virtual unsigned size() const
-         throw(); 
+         noexcept; 
 
       virtual bool velocityIsPresent()
-         const throw()
+         const noexcept
          { return true; }
 
       /// Return true if velocity data is present in the store
-      virtual bool hasVelocity() const throw()
+      virtual bool hasVelocity() const noexcept
          { return true; }
 
       /// Return true if the given SatID is present in the store
-      virtual bool isPresent(const SatID& id) const throw();
+      virtual bool isPresent(const SatID& id) const noexcept;
 
       /// Classes to set/access the store TimeSystem information.
       TimeSystem getTimeSystem() const { return timeSysForStore; }
@@ -204,7 +204,7 @@ namespace gpstk
       bool isSatSysPresent(const SatID::SatelliteSystem ss) const;
       void addSatSys(const SatID::SatelliteSystem ss); 
       void validSatSystem(const SatID& sat) const 
-         throw( InvalidRequest );
+         noexcept(false);
       /*
        *  Explanation of find( ) function for OrbElemStore
        *  
@@ -221,7 +221,7 @@ namespace gpstk
       /// @return a reference to the desired OrbElemBase
       /// @throw InvalidRequest object thrown when no OrbElemBase is found
       const OrbElemBase* findOrbElem( const SatID& sat, const CommonTime& t )
-         const throw( InvalidRequest );
+         const noexcept(false);
 
       /// Find an OrbElemBase for the indicated satellite at time t. The OrbElemBase
       /// chosen is the one with HOW time closest to the time t, (i.e. with
@@ -231,7 +231,7 @@ namespace gpstk
       /// @return a reference to desired OrbElemBase
       /// @throw InvalidRequest object thrown when no OrbElemBase is found
       const OrbElemBase* findNearOrbElem( const SatID& sat, const CommonTime& t )
-         const throw( InvalidRequest );
+         const noexcept(false);
 
       /// Find an OrbElemBase for the indicated satellite that has a Toe
       /// corresponding to time t.  If no such OrbElemBase exists in the store,
@@ -241,7 +241,7 @@ namespace gpstk
       /// @return a reference to desired OrbElemBase
       /// @throw InvalidRequest object thrown when no OrbElemBase is found
       const OrbElemBase* findToe(const SatID& sat, const CommonTime& t)
-         const throw(InvalidRequest);
+         const noexcept(false);
 
       /// Return a list of SatID object representing the satellites that
       /// are contained in the store.
@@ -253,7 +253,7 @@ namespace gpstk
       /// Add all ephemerides to an existing list<OrbElemBase>.
       /// @return the number of ephemerides added.
       int addToList( std::list<OrbElemBase*>& v ) const
-         throw();
+         noexcept;
 
       /// This is intended to store sets of unique orbital elements for a single SV.
       /// The key is the beginning of the period of validity for each set of elements. 
@@ -264,7 +264,7 @@ namespace gpstk
       /// const reference.  The intent is to provide "read only" access
       /// for analysis.  If the map needs to be modified, see other methods.
       const OrbElemMap& getOrbElemMap( const SatID& sat ) const
-         throw( InvalidRequest );
+         noexcept(false);
 
       protected:
      

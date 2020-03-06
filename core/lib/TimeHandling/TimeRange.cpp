@@ -56,7 +56,7 @@ namespace gpstk
                 const CommonTime& startDT, 
                 const CommonTime& endDT,
                 const bool startInclusive, 
-                const bool endInclusive ) throw(TimeRangeException)
+                const bool endInclusive ) noexcept(false)
    {
       try
       {
@@ -71,7 +71,7 @@ namespace gpstk
    
    TimeRange::TimeRange( DTPair dtPair,
                 const bool startInclusive, 
-                const bool endInclusive ) throw(TimeRangeException)
+                const bool endInclusive ) noexcept(false)
    {
       try
       {
@@ -91,7 +91,7 @@ namespace gpstk
    void TimeRange::init( const CommonTime& startDT, 
                     const CommonTime& endDT,
                     const bool startInclusive, 
-                    const bool endInclusive ) throw(TimeRangeException)
+                    const bool endInclusive ) noexcept(false)
    {
       if (endDT<startDT)
       {
@@ -118,7 +118,7 @@ namespace gpstk
    void TimeRange::set( const CommonTime& startDT, 
                 const CommonTime& endDT,
                 const bool startInclusive, 
-                const bool endInclusive ) throw(TimeRangeException)
+                const bool endInclusive ) noexcept(false)
    {
       try
       {
@@ -271,8 +271,7 @@ namespace gpstk
       // Formatted input
    TimeRange& TimeRange::setToString( const string& str, 
                                       const string& fmt)
-         throw(TimeRangeException, 
-               StringUtils::StringException)
+         noexcept(false)
    {
          // Ignore leading whitespace.  
          // See if first non-whitespace character is '[' or '('
@@ -374,7 +373,7 @@ namespace gpstk
 
       // Formatted output
    std::string TimeRange::printf(const std::string formatArg) const
-        throw(gpstk::StringUtils::StringException)
+        noexcept(false)
    {
       string out;
 

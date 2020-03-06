@@ -59,7 +59,7 @@ if (itty == almPRN.end()) \
 namespace gpstk
 {
    EngAlmanac :: EngAlmanac()
-      throw()
+      noexcept
    {
       for (int n = 0; n < 4; n++)
       {
@@ -81,7 +81,7 @@ namespace gpstk
 
    bool EngAlmanac::addSubframe(const long subframe[10],
                                 const int gpsWeek)
-      throw(InvalidParameter)
+      noexcept(false)
    {
       uint32_t tinput[10];
       for (int n=0;n<10;++n)
@@ -91,7 +91,7 @@ namespace gpstk
 
    bool EngAlmanac::addSubframe(const uint32_t subframe[10],
                                 const short gpsWeek)
-      throw(InvalidParameter)
+      noexcept(false)
    {
       double ficked[60];
 
@@ -196,7 +196,7 @@ namespace gpstk
    }
 
    double EngAlmanac::getEcc(SatID sat) const
-      throw(SVNotPresentException)
+      noexcept(false)
    {
       AlmOrbits::const_iterator i = almPRN.find(sat);
       CHECK_SV_HERE(i, sat);
@@ -206,7 +206,7 @@ namespace gpstk
    }
 
    double EngAlmanac::getIOffset(SatID sat) const
-      throw(SVNotPresentException)
+      noexcept(false)
    {
       AlmOrbits::const_iterator i = almPRN.find(sat);
       CHECK_SV_HERE(i, sat);
@@ -216,7 +216,7 @@ namespace gpstk
    }
 
    double EngAlmanac::getOmegadot(SatID sat) const
-      throw(SVNotPresentException)
+      noexcept(false)
    {
 
       AlmOrbits::const_iterator i = almPRN.find(sat);
@@ -227,7 +227,7 @@ namespace gpstk
    }
 
    short EngAlmanac::get6bitHealth(SatID sat) const
-      throw(SVNotPresentException)
+      noexcept(false)
    {
       SVBitsMap::const_iterator i = health.find(sat.id);
       if (i == health.end())
@@ -241,7 +241,7 @@ namespace gpstk
    }
 
    short EngAlmanac::getSVHealth(SatID sat) const
-      throw(SVNotPresentException)
+      noexcept(false)
    {
       AlmOrbits::const_iterator i = almPRN.find(sat);
       CHECK_SV_HERE(i, sat);
@@ -251,7 +251,7 @@ namespace gpstk
    }
 
    short EngAlmanac::getSVConfig(SatID sat) const
-      throw(SVNotPresentException)
+      noexcept(false)
    {
       SVBitsMap::const_iterator i = SV_config.find(sat.id);
       if (i == SV_config.end())
@@ -265,7 +265,7 @@ namespace gpstk
    }
 
    double EngAlmanac::getAhalf(SatID sat) const
-      throw(SVNotPresentException)
+      noexcept(false)
    {
       AlmOrbits::const_iterator i = almPRN.find(sat);
       CHECK_SV_HERE(i, sat);
@@ -275,7 +275,7 @@ namespace gpstk
    }
 
    double EngAlmanac::getA(SatID sat) const
-      throw(SVNotPresentException)
+      noexcept(false)
    {
       AlmOrbits::const_iterator i = almPRN.find(sat);
       CHECK_SV_HERE(i, sat);
@@ -285,7 +285,7 @@ namespace gpstk
    }
 
    double EngAlmanac::getOmega0(SatID sat) const
-      throw(SVNotPresentException)
+      noexcept(false)
    {
 
       AlmOrbits::const_iterator i = almPRN.find(sat);
@@ -296,7 +296,7 @@ namespace gpstk
    }
 
    double EngAlmanac::getW(SatID sat) const
-      throw(SVNotPresentException)
+      noexcept(false)
    {
       AlmOrbits::const_iterator i = almPRN.find(sat);
       CHECK_SV_HERE(i, sat);
@@ -306,7 +306,7 @@ namespace gpstk
    }
 
    double EngAlmanac::getM0(SatID sat) const
-      throw(SVNotPresentException)
+      noexcept(false)
    {
       AlmOrbits::const_iterator i = almPRN.find(sat);
       CHECK_SV_HERE(i, sat);
@@ -316,7 +316,7 @@ namespace gpstk
    }
 
    double EngAlmanac::getAf0(SatID sat) const
-      throw(SVNotPresentException)
+      noexcept(false)
    {
       AlmOrbits::const_iterator i = almPRN.find(sat);
       CHECK_SV_HERE(i, sat);
@@ -327,7 +327,7 @@ namespace gpstk
 
 
    double EngAlmanac::getAf1(SatID sat) const
-      throw(SVNotPresentException)
+      noexcept(false)
    {
       AlmOrbits::const_iterator i = almPRN.find(sat);
       CHECK_SV_HERE(i, sat);
@@ -337,13 +337,13 @@ namespace gpstk
    }
 
 
-   double EngAlmanac::getToa() const throw()
+   double EngAlmanac::getToa() const noexcept
    {
       return static_cast<double>( t_oa );
    }
 
    double EngAlmanac::getToa(SatID sat) const
-      throw(SVNotPresentException)
+      noexcept(false)
    {
       AlmOrbits::const_iterator i = almPRN.find(sat);
       CHECK_SV_HERE(i, sat);
@@ -354,7 +354,7 @@ namespace gpstk
 
 
    double EngAlmanac::getXmitTime(SatID sat) const
-      throw(SVNotPresentException)
+      noexcept(false)
    {
       AlmOrbits::const_iterator i = almPRN.find(sat);
       CHECK_SV_HERE(i, sat);
@@ -365,7 +365,7 @@ namespace gpstk
 
 
    short EngAlmanac::getFullWeek(SatID sat) const
-      throw(SVNotPresentException)
+      noexcept(false)
    {
       AlmOrbits::const_iterator i = almPRN.find(sat);
       CHECK_SV_HERE(i, sat);
@@ -374,7 +374,7 @@ namespace gpstk
    }
 
    void EngAlmanac::getIon(double a[4], double b[4]) const
-      throw(InvalidRequest)
+      noexcept(false)
    {
       if (!haveUTC)
       {
@@ -392,7 +392,7 @@ namespace gpstk
    void EngAlmanac::getUTC(double& a0, double& a1, double& deltaTLS,
                            long& tot, int& WNt, int& WNLSF,
                            int& DN, double& deltaTLSF) const
-      throw(InvalidRequest)
+      noexcept(false)
    {
       if (!haveUTC)
       {
@@ -410,13 +410,13 @@ namespace gpstk
       deltaTLSF = dt_lsf;
    }
 
-   short EngAlmanac::getAlmWeek() const throw()
+   short EngAlmanac::getAlmWeek() const noexcept
    {
       return alm_wk;
    }
 
    AlmOrbit EngAlmanac::getAlmOrbElem(SatID sat) const
-      throw(SVNotPresentException)
+      noexcept(false)
    {
       AlmOrbits::const_iterator i = almPRN.find(sat);
       CHECK_SV_HERE(i, sat);
@@ -426,7 +426,7 @@ namespace gpstk
    }
 
    Xvt EngAlmanac::svXvt(SatID sat, const CommonTime& t) const
-      throw(SVNotPresentException)
+      noexcept(false)
    {
       AlmOrbits::const_iterator i = almPRN.find(sat);
       CHECK_SV_HERE(i, sat);
@@ -435,7 +435,7 @@ namespace gpstk
       return (*i).second.svXvt(t);
    }
 
-   bool EngAlmanac::isData(SatID sat) const throw()
+   bool EngAlmanac::isData(SatID sat) const noexcept
    {
       return (almPRN.find(sat) != almPRN.end());
    }

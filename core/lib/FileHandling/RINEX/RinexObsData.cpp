@@ -54,7 +54,7 @@ namespace gpstk
    CommonTime gpstk::RinexObsData::previousTime;
 
    void RinexObsData::reallyPutRecord(FFStream& ffs) const
-      throw(std::exception, FFStreamError, StringException)
+      noexcept(false)
    {
       // is there anything to write?
       if( (epochFlag==0 || epochFlag==1 || epochFlag==6)
@@ -179,7 +179,7 @@ namespace gpstk
 
 
    void RinexObsData::reallyGetRecord(FFStream& ffs)
-      throw(std::exception, FFStreamError, gpstk::StringUtils::StringException)
+      noexcept(false)
    {
       RinexObsStream& strm = dynamic_cast<RinexObsStream&>(ffs);
 
@@ -357,7 +357,7 @@ namespace gpstk
 
    CommonTime RinexObsData::parseTime(const string& line,
                                    const RinexObsHeader& hdr) const
-      throw(FFStreamError)
+      noexcept(false)
    {
       try
       {
@@ -417,7 +417,7 @@ namespace gpstk
    }
 
    string RinexObsData::writeTime(const CommonTime& dt) const
-      throw(StringException)
+      noexcept(false)
    {
       if (dt == CommonTime::BEGINNING_OF_TIME)
       {

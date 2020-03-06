@@ -70,7 +70,7 @@ namespace gpstk
    ObsIDInitializer singleton;
 
    // Construct this object from the string specifier
-   ObsID::ObsID(const std::string& strID) throw(InvalidParameter)
+   ObsID::ObsID(const std::string& strID) noexcept(false)
    {
       int i = strID.length() - 3;
       if ( i < 0 || i > 1)
@@ -315,7 +315,7 @@ namespace gpstk
    // Rinex 3 identifier is the same as for the ObsID constructor. 
    // If there are spaces in the provided identifier, they are ignored
    ObsID ObsID::newID(const std::string& strID, const std::string& desc)
-      throw(InvalidParameter)
+      noexcept(false)
    {
       if (char2ot.count(strID[0]) && 
           char2cb.count(strID[1]) && 

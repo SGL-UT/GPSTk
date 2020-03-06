@@ -87,7 +87,7 @@ namespace gpstk
              * @returns Number of lines written
              */
          virtual size_t putBlock(Sinex::Stream& s) const
-            throw(std::exception, FFStreamError, StringUtils::StringException) = 0;
+            noexcept(false) = 0;
 
             /**
              * Reads a record from the given SinexStream; if an error
@@ -101,7 +101,7 @@ namespace gpstk
              *  stream to its pre-read position.
              */
          virtual size_t getBlock(Sinex::Stream& s)
-            throw(std::exception, FFStreamError, StringUtils::StringException) = 0;
+            noexcept(false) = 0;
 
       }; // class BlockBase
 
@@ -137,7 +137,7 @@ namespace gpstk
             /** Writes all data in the block to the specified stream
              */
          virtual size_t putBlock(Sinex::Stream& s) const
-            throw(std::exception, FFStreamError)
+            noexcept(false)
          {
             size_t  lineNum = 0;
             typename std::vector<T>::const_iterator  i = dataVec.begin();
@@ -160,7 +160,7 @@ namespace gpstk
             /** Reads all data in a block from the specified stream
              */
          virtual size_t getBlock(Sinex::Stream& s)
-            throw(std::exception, FFStreamError, StringUtils::StringException)
+            noexcept(false)
          {
             size_t  lineNum = 0;
             char    c;

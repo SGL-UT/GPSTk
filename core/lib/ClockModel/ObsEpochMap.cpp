@@ -49,7 +49,7 @@ namespace gpstk
    // These are just to facilitate debugging. The format of the data output
    // is quite ad-hoc and may change.
    std::ostream& operator<<(std::ostream& s, const SvObsEpoch& obs)
-      throw()
+      noexcept
    {
       SvObsEpoch::const_iterator i;
       for (i=obs.begin(); i != obs.end(); i++)
@@ -62,7 +62,7 @@ namespace gpstk
    }
 
    std::ostream& operator<<(std::ostream& s, const ObsEpoch& oe)
-      throw()
+      noexcept
    {
       s << oe.time << ", rxClock: " << oe.rxClock << endl;
       ObsEpoch::const_iterator i;

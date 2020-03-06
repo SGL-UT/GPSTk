@@ -66,7 +66,7 @@ namespace gpstk
       // Creates a trop model from a weather observation
       // @param wx the weather to use for this correction.
    GGHeightTropModel::GGHeightTropModel(const WxObservation& wx)
-      throw(InvalidParameter)
+      noexcept(false)
    {
       valid = validRxHeight = validHeights = false;
       setWeather(wx);
@@ -79,7 +79,7 @@ namespace gpstk
    GGHeightTropModel::GGHeightTropModel(const double& T,
                                         const double& P,
                                         const double& H)
-      throw(InvalidParameter)
+      noexcept(false)
    {
       validRxHeight = validHeights = false;
       setWeather(T,P,H);
@@ -98,7 +98,7 @@ namespace gpstk
                                         const double hT,
                                         const double hP,
                                         const double hH)
-      throw(InvalidParameter)
+      noexcept(false)
    {
       validRxHeight = false;
       setWeather(T,P,H);
@@ -107,7 +107,7 @@ namespace gpstk
 
       // re-define this to get the throws
    double GGHeightTropModel::correction(double elevation) const
-      throw(InvalidTropModel)
+      noexcept(false)
    {
       THROW_IF_INVALID_DETAILED();
       
@@ -130,7 +130,7 @@ namespace gpstk
    double GGHeightTropModel::correction(const Position& RX,
                                         const Position& SV,
                                         const CommonTime& tt)
-      throw(InvalidTropModel)
+      noexcept(false)
    {
       THROW_IF_INVALID_DETAILED();
 
@@ -154,7 +154,7 @@ namespace gpstk
    double GGHeightTropModel::correction(const Xvt& RX,
                                         const Xvt& SV,
                                         const CommonTime& tt)
-      throw(InvalidTropModel)
+      noexcept(false)
    {
       Position R(RX),S(SV);
       return GGHeightTropModel::correction(R,S,tt);
@@ -162,7 +162,7 @@ namespace gpstk
 
       // Compute and return the zenith delay for dry component of the troposphere
    double GGHeightTropModel::dry_zenith_delay(void) const
-      throw(InvalidTropModel)
+      noexcept(false)
    {
       THROW_IF_INVALID_DETAILED();
       double hrate=6.5e-3;
@@ -183,7 +183,7 @@ namespace gpstk
 
       // Compute and return the zenith delay for wet component of the troposphere
    double GGHeightTropModel::wet_zenith_delay(void) const
-      throw(InvalidTropModel)
+      noexcept(false)
    {
       THROW_IF_INVALID_DETAILED();
       
@@ -211,7 +211,7 @@ namespace gpstk
       // @param elevation Elevation of satellite as seen at receiver,
       //                  in degrees
    double GGHeightTropModel::dry_mapping_function(double elevation) const
-      throw(InvalidTropModel)
+      noexcept(false)
    {
       THROW_IF_INVALID_DETAILED();
       
@@ -258,7 +258,7 @@ namespace gpstk
       // @param elevation Elevation of satellite as seen at receiver,
       //                  in degrees
    double GGHeightTropModel::wet_mapping_function(double elevation) const
-      throw(InvalidTropModel)
+      noexcept(false)
    {
       THROW_IF_INVALID_DETAILED();
       if(elevation < 0.0) return 0.0;
@@ -309,7 +309,7 @@ namespace gpstk
    void GGHeightTropModel::setWeather(const double& T,
                                       const double& P,
                                       const double& H)
-      throw(InvalidParameter)
+      noexcept(false)
    {
       try
       {
@@ -328,7 +328,7 @@ namespace gpstk
       // Typically called just before correction().
       // @param wx the weather to use for this correction
    void GGHeightTropModel::setWeather(const WxObservation& wx)
-      throw(InvalidParameter)
+      noexcept(false)
    {
       try
       {

@@ -54,8 +54,7 @@ namespace gpstk
    const int RinexMetData::maxObsPerContinuationLine = 10;
 
    void RinexMetData::reallyPutRecord(FFStream& ffs) const
-      throw(std::exception, FFStreamError, 
-            gpstk::StringUtils::StringException)
+      noexcept(false)
    {
       RinexMetStream& strm = dynamic_cast<RinexMetStream&>(ffs);
       string line;
@@ -109,8 +108,7 @@ namespace gpstk
    }
 
    void RinexMetData::reallyGetRecord(FFStream& ffs)
-      throw(std::exception, FFStreamError, 
-            gpstk::StringUtils::StringException)
+      noexcept(false)
    {
       RinexMetStream& strm = dynamic_cast<RinexMetStream&>(ffs);
 
@@ -152,7 +150,7 @@ namespace gpstk
    void RinexMetData::processFirstLine(const string& line,
                                        const RinexMetHeader& hdr,
                                        double version)
-      throw(FFStreamError)
+      noexcept(false)
    {
       int yrLen = 18;
       if(version >= 3.02)
@@ -178,7 +176,7 @@ namespace gpstk
 
    void RinexMetData::processContinuationLine(const string& line,
                                               const RinexMetHeader& hdr)
-      throw(FFStreamError)
+      noexcept(false)
    {
       try
       {
@@ -200,7 +198,7 @@ namespace gpstk
    }
 
    CommonTime RinexMetData::parseTime(const string& line, double version) const
-      throw(FFStreamError)
+      noexcept(false)
    {
       int addYrLen = 0;
       if(version >=3.02)
@@ -258,7 +256,7 @@ namespace gpstk
    }
 
    string RinexMetData::writeTime(const CommonTime& dt, double version) const
-      throw(StringException)
+      noexcept(false)
    {
       int yrLen = 2;
       if(version >= 3.02)

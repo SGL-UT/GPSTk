@@ -80,7 +80,7 @@ namespace gpstk
 
    
    CivilTime RinexClockBase::parseTime(const string& line) const
-      throw(FFStreamError)
+      noexcept(false)
    {
       if ( line.size() != 26 )
       {

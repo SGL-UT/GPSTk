@@ -60,7 +60,7 @@ namespace gpstk
    class ClockModel
    {
    public:
-      ClockModel() throw() {};
+      ClockModel() noexcept {};
 
       virtual double getOffset(const gpstk::CommonTime& t) const = 0;
 

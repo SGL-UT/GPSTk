@@ -54,7 +54,7 @@ namespace gpstk
    using namespace std;
 
    void SP3Header::reallyGetRecord(FFStream& ffs)
-      throw(exception, FFStreamError, StringException)
+      noexcept(false)
    {
       SP3Stream& strm = dynamic_cast<SP3Stream&>(ffs);
 
@@ -292,7 +292,7 @@ namespace gpstk
 
 
    void SP3Header::reallyPutRecord(FFStream& ffs) const
-      throw(exception, FFStreamError, StringException)
+      noexcept(false)
    {
    try {
       SP3Stream& strm = dynamic_cast<SP3Stream&>(ffs);
@@ -515,7 +515,7 @@ namespace gpstk
    }
 
 
-   void SP3Header::dump(ostream& s) const throw()
+   void SP3Header::dump(ostream& s) const noexcept
    {
       s << "SP3 Header: version " << versionString() << " containing ";
       if(containsVelocity) s << "positions and velocities.";

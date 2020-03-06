@@ -45,7 +45,7 @@
 namespace gpstk
 {
 
-   std::ostream& operator<<(std::ostream& os, const gpstk::Xvt& xvt) throw()
+   std::ostream& operator<<(std::ostream& os, const gpstk::Xvt& xvt) noexcept
    {
       os << "x:" << xvt.x
          << ", v:" << xvt.v
@@ -57,7 +57,7 @@ namespace gpstk
    }
 
    std::ostream& operator<<(std::ostream& os, const Xvt::HealthStatus& health)
-      throw()
+      noexcept
    {
       switch (health)
       {
@@ -108,7 +108,7 @@ namespace gpstk
    double Xvt::preciseRho(const Triple& rxPos,
                           const EllipsoidModel& ellips,
                           double correction) const 
-      throw()
+      noexcept
    {
          // Compute initial time of flight estimate using the
          // geometric range at transmit time.  This fails to account

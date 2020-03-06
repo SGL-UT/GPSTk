@@ -255,10 +255,10 @@ namespace gpstk
           * isn't currently defined, a new one is silently
           * automatically created with a blank description for the new
           * characters. */
-      explicit ObsID(const std::string& id) throw(InvalidParameter);
+      explicit ObsID(const std::string& id) noexcept(false);
 
          /// Constructor from c-style string; see c'tor from a string.
-      explicit ObsID(const char* id) throw(InvalidParameter)
+      explicit ObsID(const char* id) noexcept(false)
       { *this=ObsID(std::string(id));}
 
          /// Equality requires all fields to be the same
@@ -301,7 +301,7 @@ namespace gpstk
           * ObsID can then be examined for the assigned values. */
       static ObsID newID(const std::string& id,
                          const std::string& desc="")
-         throw(InvalidParameter);
+         noexcept(false);
 
          // Note that these are the only data members of objects of this class.
       ObservationType  type;

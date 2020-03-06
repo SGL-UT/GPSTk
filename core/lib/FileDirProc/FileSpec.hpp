@@ -144,7 +144,7 @@ namespace gpstk
 
          /// Constructor with a string to parse
       FileSpec(const std::string& fileSpec)
-         throw(FileSpecException)
+         noexcept(false)
       {init(fileSpec);}
 
          /// Destructor
@@ -152,7 +152,7 @@ namespace gpstk
 
          /// Reinitializes this FileSpec with the new string
       virtual FileSpec& newSpec(const std::string& fileSpec)
-         throw(FileSpecException)
+         noexcept(false)
       {init(fileSpec); return *this;}
 
          /// Returns the string of the filespec
@@ -166,7 +166,7 @@ namespace gpstk
           * @throw FileSpecException when there's an error in the FileSpec
           */
       virtual std::string createSearchString() const
-         throw(FileSpecException);
+         noexcept(false);
 
          /**
           * Given a file name and a field, returns that field from the string.
@@ -178,14 +178,14 @@ namespace gpstk
           */
       virtual std::string extractField(const std::string& filename, 
                                        const FileSpecType) const
-         throw(FileSpecException);
+         noexcept(false);
 
          /**
           * Given a field type, returns true if the FileSpec has that field.
           * @throw FileSpecException when you pass in an invalid FileSpecType
           */
       virtual bool hasField(const FileSpecType) const
-         throw(FileSpecException);
+         noexcept(false);
 
          /** 
           * If possible, returns a CommonTime object with the time the file
@@ -195,7 +195,7 @@ namespace gpstk
           */
       virtual gpstk::CommonTime extractCommonTime(const std::string& filename)
          const
-         throw(FileSpecException);
+         noexcept(false);
 
          /**
           * For the given FileSpec, fills in the fields with the given
@@ -225,7 +225,7 @@ namespace gpstk
           */
       virtual void sortList(std::vector<std::string>& fileList, 
                             const FileSpecSortType fsst = ascending) const
-         throw(FileSpecException);
+         noexcept(false);
 
          /// semi-nicely print the FileSpec to the stream.
       virtual void dump(std::ostream& o) const;
@@ -233,7 +233,7 @@ namespace gpstk
    protected:
          /// Parses the string into the FileSpec object
       virtual void init(const std::string& fileSpec)
-         throw(FileSpecException);
+         noexcept(false);
 
    public:
          /**
@@ -242,7 +242,7 @@ namespace gpstk
           *  any known types
           */
       static std::string convertFileSpecType(const FileSpecType)
-      throw(FileSpecException);
+      noexcept(false);
 
          /**
           * Converts the string into its corresponding FileSpecType
@@ -250,7 +250,7 @@ namespace gpstk
           *  any known types
           */
       static FileSpecType convertFileSpecType(const std::string&)
-         throw(FileSpecException);
+         noexcept(false);
 
    protected:
          /// This is an internal, private class of FileSpec that holds

@@ -324,7 +324,7 @@ namespace gpstk
        *          to its pre-read position.
        */
    void Rinex3NavData::reallyGetRecord(FFStream& ffs)
-      throw(std::exception, FFStreamError, StringException)
+      noexcept(false)
    {
 
       try {
@@ -367,7 +367,7 @@ namespace gpstk
 
       // Outputs the record to the FFStream \a s.
    void Rinex3NavData::reallyPutRecord(FFStream& ffs) const
-      throw(std::exception, FFStreamError, StringException)
+      noexcept(false)
    {
 
       try {
@@ -474,7 +474,7 @@ namespace gpstk
 
       // Deprecated; use GPSEphemeris.
       // Converts this Rinex3NavData to an EngEphemeris object.
-   Rinex3NavData::operator EngEphemeris() const throw()
+   Rinex3NavData::operator EngEphemeris() const noexcept
    {
       EngEphemeris ee;
 
@@ -618,7 +618,7 @@ namespace gpstk
    }
 
       // Casts Rinex3NavData to a GPSEphemeris object.
-   Rinex3NavData::operator GPSEphemeris() const throw()
+   Rinex3NavData::operator GPSEphemeris() const noexcept
    {
       GPSEphemeris gpse;
 
@@ -689,7 +689,7 @@ namespace gpstk
    }
 
       // Casts this Rinex3NavData to a GloEphemeris object.
-   Rinex3NavData::operator GloEphemeris() const throw()
+   Rinex3NavData::operator GloEphemeris() const noexcept
    {
 
       GloEphemeris gloe;
@@ -712,7 +712,7 @@ namespace gpstk
    }  // End of 'Rinex3NavData::operator GloEphemeris()'
 
       // Casts Rinex3NavData to a GalEphemeris object.
-   Rinex3NavData::operator GalEphemeris() const throw()
+   Rinex3NavData::operator GalEphemeris() const noexcept
    {
       GalEphemeris gale;
 
@@ -763,7 +763,7 @@ namespace gpstk
    }
 
       // Casts Rinex3NavData to a BDSEphemeris object.
-   Rinex3NavData::operator BDSEphemeris() const throw()
+   Rinex3NavData::operator BDSEphemeris() const noexcept
    {
       BDSEphemeris bdse;
 
@@ -809,7 +809,7 @@ namespace gpstk
    }
 
       // Casts Rinex3NavData to a QZSEphemeris object.
-   Rinex3NavData::operator QZSEphemeris() const throw()
+   Rinex3NavData::operator QZSEphemeris() const noexcept
    {
       QZSEphemeris qzse;
 
@@ -914,7 +914,7 @@ namespace gpstk
        *  @param strm RINEX Nav stream
        */
    void Rinex3NavData::putPRNEpoch(Rinex3NavStream& strm) const
-      throw(StringException)
+      noexcept(false)
    {
       string line;
       CivilTime civtime(time);
@@ -972,7 +972,7 @@ namespace gpstk
       //                               after the epoch line.
       //  @param Rinex3NavStream strm  Stream to read from.
    void Rinex3NavData::putRecord(const int& nline, Rinex3NavStream& strm) const
-      throw(StringException, FFStreamError)
+      noexcept(false)
    {
 
       if(nline < 1 || nline > 7) {
@@ -1128,7 +1128,7 @@ namespace gpstk
 
 
    void Rinex3NavData::getPRNEpoch(Rinex3NavStream& strm)
-      throw(StringException, FFStreamError)
+      noexcept(false)
    {
       try {
          int i;
@@ -1232,7 +1232,7 @@ namespace gpstk
 
 
    void Rinex3NavData::getRecord(const int& nline, Rinex3NavStream& strm)
-      throw(StringException, FFStreamError)
+      noexcept(false)
    {
       if(nline < 1 || nline > 7) {
          FFStreamError fse(string("Invalid line number ") + asString(nline));

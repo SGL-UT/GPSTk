@@ -60,7 +60,7 @@ namespace gpstk
                                         double svel,
                                         double svaz,
                                         IonoModel::Frequency freq) const
-      throw(IonoModelStore::NoIonoModelFound)
+      noexcept(false)
    {
 
       IonoModelMap::const_iterator i = ims.upper_bound(time);
@@ -85,7 +85,7 @@ namespace gpstk
        * \return true if the model was added, false otherwise
        */
    bool IonoModelStore::addIonoModel(const CommonTime& mt, const IonoModel& im)
-      throw()
+      noexcept
    {
 
       if (!im.isValid())

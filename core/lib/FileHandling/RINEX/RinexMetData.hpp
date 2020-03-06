@@ -110,8 +110,7 @@ namespace gpstk
 
          /// Writes the met data to the file stream formatted correctly.
       void reallyPutRecord(FFStream& s) const
-         throw(std::exception, FFStreamError,
-               gpstk::StringUtils::StringException);
+         noexcept(false);
 
          /**
           * This function retrieves a RINEX 2 or 3 Met record from the
@@ -124,8 +123,7 @@ namespace gpstk
           *         stream to its pre-read position.
           */
       virtual void reallyGetRecord(FFStream& s)
-         throw(std::exception, FFStreamError,
-               gpstk::StringUtils::StringException);
+         noexcept(false);
 
    private:
 
@@ -134,23 +132,23 @@ namespace gpstk
       void processFirstLine(const std::string& line,
                             const RinexMetHeader& hdr,
                             double version)
-         throw(FFStreamError);
+         noexcept(false);
 
          /// Parses string \a line to get data on continuation lines.
       void processContinuationLine(const std::string& line,
                                    const RinexMetHeader& hdr)
-         throw(FFStreamError);
+         noexcept(false);
 
          /// Parses the time portion of a line into a CommonTime object.
          /// @param version of Rinex file (3.02, 3.01, 2.11, ...)
       CommonTime parseTime(const std::string& line, double version) const
-         throw(FFStreamError);
+         noexcept(false);
 
          /// Writes the CommonTime object into RINEX format. If it's a
          /// bad time, it will return blanks.
          /// @param version Rinex version, default to 2.11 for backwards compatability
       std::string writeTime(const CommonTime& dtd, double version = 2.11) const
-         throw(gpstk::StringUtils::StringException);
+         noexcept(false);
 
    };  // class RinexMetData
 

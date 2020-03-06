@@ -144,7 +144,7 @@ namespace gpstk
       /// @param elevation Elevation of satellite as seen at receiver,
       ///                  in degrees.
       virtual double correction(double elevation) const
-         throw(InvalidTropModel);
+         noexcept(false);
 
       /// Compute and return the full tropospheric delay, given the
       ///  positions of receiver and satellite.
@@ -160,7 +160,7 @@ namespace gpstk
       /// @param RX  Receiver position.
       /// @param SV  Satellite position.
       virtual double correction(const Position& RX, const Position& SV)
-         throw(InvalidTropModel);
+         noexcept(false);
 
       /// Compute and return the full tropospheric delay, given the
       ///  positions of receiver and satellite and the time tag.
@@ -176,7 +176,7 @@ namespace gpstk
       virtual double correction(const Position& RX,
                                 const Position& SV,
                                 const CommonTime& tt)
-        throw(InvalidTropModel)
+        noexcept(false)
       {
          setTime(tt);
          return correction(RX,SV);
@@ -186,18 +186,18 @@ namespace gpstk
       /// the troposphere. Use the Saastamoinen value.
       /// Ref. Davis etal 1985 and Leick, 3rd ed, pg 197.
       virtual double dry_zenith_delay(void) const
-         throw(InvalidTropModel);
+         noexcept(false);
 
       /// Compute and return the zenith delay for wet component of
       /// the troposphere. Ref. Leick, 3rd ed, pg 197.
       virtual double wet_zenith_delay(void) const
-         throw(InvalidTropModel);
+         noexcept(false);
 
       /// Compute and return the mapping function for hydrostatic (dry)
       /// component of the troposphere.
       /// @param elevation Elevation of satellite as seen at receiver, in degrees
       virtual double dry_mapping_function(double elevation) const
-         throw(InvalidTropModel);
+         noexcept(false);
 
       /// Compute and return the mapping function for wet component of
       /// the troposphere, as well as the derivative of the mapping function.
@@ -206,13 +206,13 @@ namespace gpstk
       /// @param doderiv bool if false, do NOT compute the derivative (default true);
       //double wet_mapping_function_with_derivative(double elevation,
       //                                       double& deriv, bool doderiv=true) const
-      //   throw(InvalidTropModel);
+      //   noexcept(false);
 
       /// Compute and return the mapping function for wet component of
       /// the troposphere.
       /// @param elevation Elevation of satellite as seen at receiver, in degrees
       virtual double wet_mapping_function(double elevation) const
-         throw(InvalidTropModel);
+         noexcept(false);
 
       /// Compute the pressure and temperature at height, and the undulation,
       /// for the given position and time.
@@ -221,21 +221,21 @@ namespace gpstk
       /// @param U output undulation
       /// @throw if the height is larger than 44247 meters, which is beyond the model
       void getGPT(double& P, double& T, double& U)
-         throw(InvalidTropModel);
+         noexcept(false);
 
       /// GlobalTropModel does not accept weather input, except humid
       virtual void setWeather(const double& T, const double& P, const double& H)
-         throw(InvalidParameter) { setHumidity(H); }
+         noexcept(false) { setHumidity(H); }
 
       /// GlobalTropModel does not accept weather input, except humid
       virtual void setWeather(const WxObservation& wx)
-         throw(InvalidParameter) { setHumidity(wx.humidity); }
+         noexcept(false) { setHumidity(wx.humidity); }
 
       /// GlobalTropModel does not accept weather input, except humid;
       /// thus the setWeather() routines are dummies; this sets the relative humidity.
       /// NB. humidity enters only in the wet zenith delay, which is not part of GTM.
       /// @param rh double relative humidity in percent (0 <= rh <= 100)
-      void setHumidity(const double& rh) throw(InvalidParameter)
+      void setHumidity(const double& rh) noexcept(false)
       {
          if(rh < 0.0 || rh > 100.)
             GPSTK_THROW(InvalidParameter("Invalid humidity (%)"));
@@ -309,11 +309,11 @@ namespace gpstk
       void updateGTMCoeff(void);
 
       /// Utility to test valid flags
-      void testValidity(void) const throw(InvalidTropModel);
+      void testValidity(void) const noexcept(false);
 
       /// Utility to set valid based on the other flags,
       /// and update coefficients and press, temp as needed
-      void setValid(void) throw(InvalidTropModel)
+      void setValid(void) noexcept(false)
       {
          try{
             valid = validHeight && validLat && validLon && validDay;

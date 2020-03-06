@@ -113,7 +113,7 @@ namespace gpstk
           *                using method 'Rinex3ObsHeader::getObsIndex()'.
           */
       virtual RinexDatum getObs( const RinexSatID& svID, size_t index ) const
-         throw(InvalidRequest);
+         noexcept(false);
 
 
          /** This method returns the RinexDatum of a given observation
@@ -125,7 +125,7 @@ namespace gpstk
       virtual RinexDatum getObs( const RinexSatID& svID,
                                  const std::string& obsID,
                                  const Rinex3ObsHeader& hdr ) const
-         throw(InvalidRequest);
+         noexcept(false);
 
          /** This method returns the RinexDatum of a given observation
           *
@@ -136,7 +136,7 @@ namespace gpstk
       virtual RinexDatum getObs( const RinexSatID& svID,
                                  const RinexObsID& obsID,
                                  const Rinex3ObsHeader& hdr ) const
-         throw(InvalidRequest);
+         noexcept(false);
 
          /** This sets the RinexDatum for a given observation
           *
@@ -149,7 +149,7 @@ namespace gpstk
                            const RinexSatID& svID,
                            const RinexObsID& obsID,
                            const Rinex3ObsHeader& hdr )
-         throw(InvalidRequest);
+         noexcept(false);
 
          /// A Debug output function.
          /// Dumps the time of observations and the IDs of the Sats
@@ -161,7 +161,7 @@ namespace gpstk
       void dump(std::ostream& s, Rinex3ObsHeader& head) const;
 
       std::string timeString() const
-         throw( gpstk::StringUtils::StringException );
+         noexcept(false);
 
    protected:
 
@@ -174,8 +174,7 @@ namespace gpstk
          /// Also, make sure to correctly set the epochFlag to the correct
          /// number for the type of header data you want to write.
       virtual void reallyPutRecord(FFStream& s) const
-         throw( std::exception, FFStreamError,
-                gpstk::StringUtils::StringException );
+         noexcept(false);
 
 
          /** This functions obtains a RINEX 3 Observation record from the given
@@ -192,8 +191,7 @@ namespace gpstk
           *          pre-read position.
           */
       virtual void reallyGetRecord(FFStream& s)
-         throw( std::exception, FFStreamError,
-                gpstk::StringUtils::StringException );
+         noexcept(false);
 
 
    private:
@@ -202,7 +200,7 @@ namespace gpstk
          /// Writes the CommonTime into RINEX 3 format.
          /// If it's a bad time, it will return blanks.
       std::string writeTime(const CommonTime& dt) const
-         throw( gpstk::StringUtils::StringException );
+         noexcept(false);
 
 
          /** This function constructs a CommonTime object from the given
@@ -215,7 +213,7 @@ namespace gpstk
       CommonTime parseTime( const std::string& line,
                             const Rinex3ObsHeader& hdr,
                             const TimeSystem& ts) const
-         throw( FFStreamError );
+         noexcept(false);
 
 
    }; // End of class 'Rinex3ObsData'

@@ -140,11 +140,11 @@ namespace gpstk
           *    2: above plus all invalid header strings (dumpValid) */
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Woverloaded-virtual"
-      virtual void dump(std::ostream& s=std::cout, short detail = 0) const throw();
+      virtual void dump(std::ostream& s=std::cout, short detail = 0) const noexcept;
 #pragma clang diagnostic pop
 
          /// Dump validity bits -> header strings
-      void dumpValid(std::ostream& s=std::cout) const throw();
+      void dumpValid(std::ostream& s=std::cout) const noexcept;
 
       double version;                        ///< Rinex3Clock Version or file format
       std::string program;                   ///< Program name
@@ -215,8 +215,7 @@ namespace gpstk
          /// Writes the record formatted to the FFStream \a s.
          /// @throws StringException when a StringUtils function fails
       virtual void reallyPutRecord(FFStream& s) const 
-         throw(std::exception, FFStreamError,
-               StringUtils::StringException);
+         noexcept(false);
 
          /** This function retrieves the Rinex3Clock header from the
           * given FFStream.  If an error is encountered in the
@@ -227,8 +226,7 @@ namespace gpstk
           *  a read or formatting error occurs.  This also resets the
           *  stream to its pre-read position. */
       virtual void reallyGetRecord(FFStream& s) 
-         throw(std::exception, FFStreamError,
-               StringUtils::StringException);
+         noexcept(false);
 
    }; // end class Rinex3ClockHeader
 

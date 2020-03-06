@@ -127,7 +127,7 @@ namespace gpstk
           *                    degrees.
           */
       virtual double correction(double elevation) const
-         throw(InvalidTropModel);
+         noexcept(false);
 
 
          /** Compute and return the full tropospheric delay, given the
@@ -144,7 +144,7 @@ namespace gpstk
           */
       virtual double correction( const Position& RX,
                                  const Position& SV )
-         throw(InvalidTropModel);
+         noexcept(false);
 
 
          /** Compute and return the full tropospheric delay, given the
@@ -162,7 +162,7 @@ namespace gpstk
       virtual double correction( const Position& RX,
                                  const Position& SV,
                                  const CommonTime& tt )
-         throw(InvalidTropModel);
+         noexcept(false);
 
 
          /** Compute and return the full tropospheric delay, given the
@@ -180,7 +180,7 @@ namespace gpstk
       virtual double correction( const Position& RX,
                                  const Position& SV,
                                  const int& doy )
-         throw(InvalidTropModel);
+         noexcept(false);
 
 
          /** \deprecated
@@ -195,7 +195,7 @@ namespace gpstk
           */
       virtual double correction( const Xvt& RX,
                                  const Xvt& SV )
-         throw(InvalidTropModel);
+         noexcept(false);
 
 
          /** \deprecated
@@ -215,7 +215,7 @@ namespace gpstk
       virtual double correction( const Xvt& RX,
                                  const Xvt& SV,
                                  const CommonTime& tt )
-         throw(InvalidTropModel);
+         noexcept(false);
 
 
          /** \deprecated
@@ -235,19 +235,19 @@ namespace gpstk
       virtual double correction( const Xvt& RX,
                                  const Xvt& SV,
                                  const int& doy )
-         throw(InvalidTropModel);
+         noexcept(false);
 
 
          /// Compute and return the zenith delay for dry component of the
          /// troposphere.
       virtual double dry_zenith_delay(void) const
-         throw(InvalidTropModel);
+         noexcept(false);
 
 
          /// Compute and return the zenith delay for wet component of the
          /// troposphere.
       virtual double wet_zenith_delay(void) const
-         throw(InvalidTropModel);
+         noexcept(false);
 
 
          /** This method configure the model to estimate the weather using
@@ -255,7 +255,7 @@ namespace gpstk
           *  when setting those parameters.
           */
       void setWeather()
-         throw(InvalidTropModel);
+         noexcept(false);
 
 
          /// In MOPS tropospheric model, this is a dummy method kept here just
@@ -263,13 +263,13 @@ namespace gpstk
       virtual void setWeather( const double& T,
                                const double& P,
                                const double& H )
-         throw(InvalidParameter) {};
+         noexcept(false) {};
 
 
          /// In MOPS tropospheric model, this is a dummy method kept here just
          /// for consistency.
       virtual void setWeather(const WxObservation& wx)
-         throw(InvalidParameter) {};
+         noexcept(false) {};
 
 
          /** Define the receiver height; this is required before calling
@@ -320,7 +320,7 @@ namespace gpstk
           *                   in degrees
           */
       double MOPSsigma2(double elevation)
-         throw(InvalidTropModel);
+         noexcept(false);
 
 
    private:
@@ -339,7 +339,7 @@ namespace gpstk
 
          // The MOPS tropospheric model needs to compute several extra
          // parameters
-      virtual void prepareParameters(void) throw(InvalidTropModel);
+      virtual void prepareParameters(void) noexcept(false);
 
 
          // The MOPS tropospheric model uses several predefined data tables

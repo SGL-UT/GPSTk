@@ -169,7 +169,7 @@ namespace gpstk
 
 
    void Rinex3ObsHeader::reallyPutRecord(FFStream& ffs) const
-      throw(std::exception, FFStreamError, StringException)
+      noexcept(false)
    {
       Rinex3ObsStream& strm = dynamic_cast<Rinex3ObsStream&>(ffs);
 
@@ -252,7 +252,7 @@ namespace gpstk
       // This function computes the number of valid header records
       // which writeHeaderRecords will write.
       // NB not used in Rinex3Obs....
-   int Rinex3ObsHeader::numberHeaderRecordsToBeWritten(void) const throw()
+   int Rinex3ObsHeader::numberHeaderRecordsToBeWritten(void) const noexcept
    {
       int n = 0;
 
@@ -305,7 +305,7 @@ namespace gpstk
 
       // This function writes all valid header records.
    void Rinex3ObsHeader::writeHeaderRecords(FFStream& ffs) const
-      throw(FFStreamError, StringException)
+      noexcept(false)
    {
       Rinex3ObsStream& strm = dynamic_cast<Rinex3ObsStream&>(ffs);
       string line;
@@ -1000,7 +1000,7 @@ namespace gpstk
 
       // This function parses a single header record.
    void Rinex3ObsHeader::parseHeaderRecord(string& line)
-      throw(FFStreamError)
+      noexcept(false)
    {
       int i;
       string label(line, 60, 20);
@@ -1507,8 +1507,7 @@ namespace gpstk
 
       // This function parses the entire header from the given stream
    void Rinex3ObsHeader::reallyGetRecord(FFStream& ffs)
-      throw(std::exception, FFStreamError, 
-            gpstk::StringUtils::StringException)
+      noexcept(false)
    {
       Rinex3ObsStream& strm = dynamic_cast<Rinex3ObsStream&>(ffs);
 
@@ -1737,7 +1736,7 @@ namespace gpstk
       // Since only GPS and only v2.11 are of interest, only L1/L2/L5
       // are considered.
    vector<RinexObsID> Rinex3ObsHeader::mapR2ObsToR3Obs_G()
-      throw(FFStreamError)
+      noexcept(false)
    {
       vector<RinexObsID> obsids;
        
@@ -1857,7 +1856,7 @@ namespace gpstk
       // Since only GLONASS and only v2.11 are of interest, only L1/L2
       // are considered.
    vector<RinexObsID> Rinex3ObsHeader::mapR2ObsToR3Obs_R( )
-      throw(FFStreamError)
+      noexcept(false)
    {
       vector<RinexObsID> obsids;
       
@@ -1917,7 +1916,7 @@ namespace gpstk
       // Given the current lack of experience, the code makes some 
       // guesses on what the v2.11 translations should mean.   
    vector<RinexObsID> Rinex3ObsHeader::mapR2ObsToR3Obs_E()
-      throw(FFStreamError)
+      noexcept(false)
    {
       vector<RinexObsID> obsids;
 
@@ -1980,7 +1979,7 @@ namespace gpstk
       // Since only SBAS and only v2.11 are of interest only L1/L5
       // are considered.
    vector<RinexObsID> Rinex3ObsHeader::mapR2ObsToR3Obs_S()
-      throw(FFStreamError)
+      noexcept(false)
    {
       vector<RinexObsID> obsids;
 
@@ -2405,7 +2404,7 @@ namespace gpstk
        * @param type String representing the observation type.
        */
    size_t Rinex3ObsHeader::getObsIndex( const string& type ) const
-      throw(InvalidRequest)
+      noexcept(false)
    {
       string newType(type);
 
@@ -2450,7 +2449,7 @@ namespace gpstk
    
    size_t Rinex3ObsHeader::getObsIndex(const string& sys,
                                        const RinexObsID& obsID ) const
-      throw(InvalidRequest)
+      noexcept(false)
    {
          /// typedef std::vector<RinexObsID> RinexObsVec;
          /// typedef std::map<std::string, RinexObsVec> RinexObsMap;

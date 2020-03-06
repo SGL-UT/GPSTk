@@ -124,8 +124,7 @@ namespace gpstk
    protected:
          /// Writes a correctly formatted record from this data to stream \a s.
       virtual void reallyPutRecord(FFStream& s) const
-         throw(std::exception, FFStreamError, 
-               gpstk::StringUtils::StringException);
+         noexcept(false);
 
          /**
           * This function reads the RINEX NAV header from the given FFStream.
@@ -137,8 +136,7 @@ namespace gpstk
           *  stream to its pre-read position.
           */
       virtual void reallyGetRecord(FFStream& s) 
-         throw(std::exception, FFStreamError, 
-               gpstk::StringUtils::StringException);
+         noexcept(false);
    }; // class RinexNavHeader
 
       //@}

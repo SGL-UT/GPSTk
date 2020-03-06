@@ -134,7 +134,7 @@ namespace gpstk
 
    //----------------------------------------------------------------
    void RationalizeRinexNav::rationalize()
-      throw(InvalidRequest)
+      noexcept(false)
    {
          // These items store the status of the most recently observed
          // upload cutover
@@ -634,7 +634,7 @@ namespace gpstk
 
    //----------------------------------------------------------------
    void RationalizeRinexNav::removeMisTaggedDataSets()
-         throw(InvalidRequest)
+         noexcept(false)
    {
          //  For each SV  
       SAT_NAV_DATA_LIST::iterator it1;

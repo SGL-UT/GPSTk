@@ -105,7 +105,7 @@ namespace gpstk
          /// "yyyy mm dd hh mm ss.ssssss" to a CivilTime object.
          /// If the string is blank a CommonTime::BEGINNING_OF_TIME is returned.
       CivilTime parseTime(const std::string& line) const
-         throw(FFStreamError);
+         noexcept(false);
       
    };  //  RinexClockBase
       //@}

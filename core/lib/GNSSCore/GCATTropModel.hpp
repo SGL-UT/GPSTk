@@ -110,7 +110,7 @@ namespace gpstk
           *                   degrees
           */
       virtual double correction(double elevation) const
-         throw(InvalidTropModel);
+         noexcept(false);
 
 
          /** Compute and return the full tropospheric delay, given the
@@ -125,7 +125,7 @@ namespace gpstk
           */
       virtual double correction( const Position& RX,
                                  const Position& SV )
-         throw(InvalidTropModel);
+         noexcept(false);
 
 
          /** Compute and return the full tropospheric delay, given the
@@ -143,7 +143,7 @@ namespace gpstk
       virtual double correction( const Position& RX,
                                  const Position& SV,
                                  const CommonTime& tt )
-         throw(InvalidTropModel)
+         noexcept(false)
       { return correction(RX, SV); };
 
 
@@ -164,21 +164,21 @@ namespace gpstk
       virtual double correction( const Xvt& RX,
                                  const Xvt& SV,
                                  const CommonTime& tt )
-         throw(InvalidTropModel);
+         noexcept(false);
 
 
          /** Compute and return the zenith delay for dry component of the
           *  troposphere.
           */
       virtual double dry_zenith_delay(void) const
-         throw(InvalidTropModel);
+         noexcept(false);
 
 
          /** Compute and return the zenith delay for wet component of the
           *  troposphere.
           */
       virtual double wet_zenith_delay(void) const
-         throw(InvalidTropModel)
+         noexcept(false)
       { return 0.1; };
 
 
@@ -189,7 +189,7 @@ namespace gpstk
           *                   degrees
           */
       virtual double mapping_function(double elevation) const
-         throw(InvalidTropModel);
+         noexcept(false);
 
 
          /** Compute and return the mapping function for dry component
@@ -198,7 +198,7 @@ namespace gpstk
           *                   degrees
           */
       virtual double dry_mapping_function(double elevation) const
-         throw(InvalidTropModel)
+         noexcept(false)
       { return mapping_function(elevation); };
 
 
@@ -209,7 +209,7 @@ namespace gpstk
           *                   degrees
           */
       virtual double wet_mapping_function(double elevation) const
-         throw(InvalidTropModel)
+         noexcept(false)
       { return mapping_function(elevation); };
 
 
@@ -219,14 +219,14 @@ namespace gpstk
       virtual void setWeather( const double& T,
                                const double& P,
                                const double& H )
-         throw(InvalidParameter) {};
+         noexcept(false) {};
 
 
          /** In GCAT tropospheric model, this is a dummy method kept here just
           *  for consistency.
           */
       virtual void setWeather(const WxObservation& wx)
-         throw(InvalidParameter) {};
+         noexcept(false) {};
 
 
          /** Define the receiver height; this is required before calling

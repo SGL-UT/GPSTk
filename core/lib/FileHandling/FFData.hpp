@@ -93,7 +93,7 @@ namespace gpstk
           * @param s a FFStream-based stream
           */
       void putRecord(FFStream& s) const 
-         throw(FFStreamError, gpstk::StringUtils::StringException);
+         noexcept(false);
 
          /**
           * Retrieve a "record" from the given stream.
@@ -109,7 +109,7 @@ namespace gpstk
           *  stream to its pre-read position.
           */
       void getRecord(FFStream& s) 
-         throw(FFStreamError, gpstk::StringUtils::StringException);
+         noexcept(false);
 
          /**
           * Send debug output to the given stream.
@@ -137,7 +137,7 @@ namespace gpstk
           * @return a reference to \c o
           */
       friend std::ostream& operator<<(FFStream& o, const FFData& f)
-         throw(FFStreamError, gpstk::StringUtils::StringException);
+         noexcept(false);
 
          /**
           * Generic formatted input operator.
@@ -157,20 +157,18 @@ namespace gpstk
           * class.
           */
       friend std::istream& operator>>(FFStream& i, FFData& f)
-         throw(FFStreamError, gpstk::StringUtils::StringException);
+         noexcept(false);
 
       friend class FFStream;
 
    protected:
          /// Does the actual reading from the stream into this FFData object.
       virtual void reallyGetRecord(FFStream& s)
-         throw(std::exception, gpstk::StringUtils::StringException, 
-               gpstk::FFStreamError) = 0;
+         noexcept(false) = 0;
 
          /// Does the actual writing from the stream into this FFData object.
       virtual void reallyPutRecord(FFStream& s) const
-         throw(std::exception, gpstk::StringUtils::StringException, 
-               gpstk::FFStreamError) = 0;
+         noexcept(false) = 0;
    }; // class
 
       //@}

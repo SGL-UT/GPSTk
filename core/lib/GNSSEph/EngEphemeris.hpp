@@ -86,13 +86,13 @@ namespace gpstk
    public:
          /// Default constructor
       EngEphemeris()
-      throw();
+      noexcept;
 
          /// Destructor
       virtual ~EngEphemeris() {}
 
-      bool operator==(const EngEphemeris& right) const throw();
-      bool operator!=(const EngEphemeris& right) const throw()
+      bool operator==(const EngEphemeris& right) const noexcept;
+      bool operator!=(const EngEphemeris& right) const noexcept
       { return !(operator==(right)); }
 
          /**
@@ -109,7 +109,7 @@ namespace gpstk
                        const int   gpsWeek,
                        const short PRN,
                        const short track)
-         throw( gpstk::InvalidParameter );
+         noexcept(false);
 
          /**
           * Store a subframe in this object.  This method is provided in
@@ -129,7 +129,7 @@ namespace gpstk
                                const int   gpsWeek,
                                const short PRN,
                                const short track)
-         throw( gpstk::InvalidParameter );
+         noexcept(false);
 
          /**
           * Store a subframe in this object.  This method is provided in
@@ -169,7 +169,7 @@ namespace gpstk
           * in the IS-GPS-200.
           * @return true if all values are within their effective range.
           */
-      bool isValid() const throw();
+      bool isValid() const noexcept;
 
          /**
           * Query presence of subframe in this object.
@@ -179,7 +179,7 @@ namespace gpstk
           *   ephemeris subframe number.
           */
       bool isData(short subframe) const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /**
           * Return whether the ephemeris contains a complete data set,
@@ -205,7 +205,7 @@ namespace gpstk
           * @throw InvalidParameter if the given accuracy value is invalid.
           */
       void setAccuracy(const double& acc)
-         throw( gpstk::InvalidParameter );
+         noexcept(false);
 
          /**
           * This computes and returns the fit interval for the
@@ -218,7 +218,7 @@ namespace gpstk
           * @throw InvalidRequest if data is missing.
           */
       short getFitInterval() const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /**
           * Static version of the above.
@@ -228,255 +228,255 @@ namespace gpstk
           * @throw InvalidRequest if data is missing.
           */
       static short getFitInterval(short iodc, short fiti)
-         throw(gpstk::InvalidRequest);
+         noexcept(false);
 
          /** Compute satellite position & velocity at the given time
           * using this ephemeris.
           * @throw InvalidRequest if a required subframe has not been stored.
           */
       Xvt svXvt(const CommonTime& t) const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
 
          /// Return 0x8b, the upper 5 bits of the 22-bit TLM word.
          // kinda pointless, huh?
       unsigned char getTLMPreamble() const
-         throw()
+         noexcept
       { return 0x8b; }
 
          /// Return the lower 16 bits of the TLM word for the given subframe.
       unsigned getTLMMessage(short subframe) const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /// Extracts the epoch time from this ephemeris, correcting
          /// for half weeks and HOW time
       CommonTime getEphemerisEpoch() const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /// Extracts the epoch time (time of clock) from this
          /// ephemeris, correcting for half weeks and HOW time
       CommonTime getEpochTime() const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /// Extracts the transmit time from the ephemeris using the Tot
       CommonTime getTransmitTime() const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /// used for template functions
       CommonTime getTimestamp() const
-         throw()
+         noexcept
       { return getEpochTime(); }
 
          /** This functions returns the GNSS type (satellite system code) */
       std::string getSatSys() const
-         throw()
+         noexcept
       { return satSys; }
 
          /** This function returns the PRN ID of the SV. */
       short getPRNID() const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /** This function returns the tracker number. */
       short getTracker() const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /** This function returns the time of the HOW in subframe
           * 1 or 2 or 3 in seconds of week. */
       double getHOWTime(short subframe) const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /** This function returns the A-S alert flag for either
           * subframe 1 or 2 or 3. */
       short getASAlert(short subframe) const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /** This function returns the GPS week number contained in
           * subframe 1.  this is the full GPS week (ie > 10 bits). */
       short getFullWeek() const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /** This function returns the values of the L2 codes. */
       short getCodeFlags() const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /** This function returns the value of the SV accuracy (m)
           * computed from the accuracy flag in the nav message, or
           * as set by the setAccuracy() method. */
       double getAccuracy() const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /** This function returns the flag based on the SV accuracy
           * flag as it appears in the nav message. */
       short getAccFlag() const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /** This function returns the value of the SV health flag. */
       short getHealth() const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /** This function returns the value of the L2 P-code data
           * flag. */
       short getL2Pdata() const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /** This function returns the IODC for the given PRN. */
       short getIODC() const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /** This function return the IODE for the ephemeris. */
       short getIODE() const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /** This function return the AODO for the ephemeris. */
       long getAODO() const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /** This function returns the clock epoch in GPS seconds of
           * week. */
       double getToc() const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /** This function returns the SV clock error in seconds. */
       double getAf0() const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /** This function returns the SV clock drift in
           * seconds/seconds. */
       double getAf1() const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /** This function returns the SV clock rate of change of the
           * drift in seconds/(seconds*seconds). */
       double getAf2() const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /** This function returns the value of the group delay
           * differential in seconds. */
       double getTgd() const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /** This function returns the value of the sine latitude
           * harmonic perturbation in radians. */
       double getCus() const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /** This function returns the value of the sine radius
           * harmonic perturbation in meters. */
       double getCrs() const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /** This function returns the value of the sine inclination
           * harmonic perturbation in radians. */
       double getCis() const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /** This function returns the value of the cosine radius
           * harmonic perturbation in meters. */
       double getCrc() const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /** This function returns the value of the cosine latitude
           * harmonic perturbation in radians. */
       double getCuc() const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /** This function returns the value of the cosine inclination
           * harmonic perturbation in radians. */
       double getCic() const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /** This function returns the value of the time of ephemeris
           * in GPS seconds of week. */
       double getToe() const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /** This function returns the value of the mean anomaly in
           * radians. */
       double getM0() const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /** This function returns the value of the correction to the
           * mean motion in radians/second. */
       double getDn() const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /** This function returns the value of the eccentricity. */
       double getEcc() const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /** This function returns the value of the square root of the
           * semi-major axis in square root of meters. */
       double getAhalf() const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /** This function returns the value of the semi-major axis in
           * meters. */
       double getA() const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /** This function returns the value of the right ascension of
           * the ascending node in radians. */
       double getOmega0() const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /** This function returns the value of the inclination in
           * radians. */
       double getI0() const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /** This function returns the value of the argument of
           * perigee in radians. */
       double getW() const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /** This function returns the value of the rate of the right
           * ascension of the ascending node in radians/second. */
       double getOmegaDot() const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /** This function returns the value of the rate of the
           * inclination in radians/second. */
       double getIDot() const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /** Compute satellite relativity correction (sec) at the given time
           * @throw InvalidRequest if a required subframe has not been stored.
           */
       double svRelativity(const CommonTime& t) const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /** Compute the satellite clock bias (sec) at the given time
           * @throw InvalidRequest if a required subframe has not been stored.
           */
       double svClockBias(const CommonTime& t) const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /** Compute the satellite clock drift (sec/sec) at the given time
           * @throw InvalidRequest if a required subframe has not been stored.
           */
       double svClockDrift(const CommonTime& t) const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /** This function returns the value of the fit interval
           * flag. */
       short getFitInt() const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /** This function returns the value of the ephemeris key that
           * is used to sort the ephemerides when they are stored in
           * the bcetable. */
          /** @todo Determine if this function is needed, as it is never used */
          //double getEphkey() const
-         //   throw( gpstk::InvalidRequest );
+         //   noexcept(false);
 
          /** This function returnst the value of the Time of Transmit.
           * Basically just the earliest of the HOWs. */
       long getTot() const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
-      BrcKeplerOrbit getOrbit() const throw(gpstk::InvalidRequest);
+      BrcKeplerOrbit getOrbit() const noexcept(false);
 
-      BrcClockCorrection getClock() const throw(gpstk::InvalidRequest);
+      BrcClockCorrection getClock() const noexcept(false);
 
          /** Set the values contained in SubFrame 1,2 and 3.
           *
@@ -549,34 +549,34 @@ namespace gpstk
                               const double cis, const double I0,
                               const double crc, const double W,
                               const double OmegaDot, const double IDot )
-      throw( InvalidRequest );
+      noexcept(false);
 
       EngEphemeris& setSF1( unsigned tlm, double how, short asalert,
                             short fullweek, short cflags, short acc,
                             short svhealth, short iodc,
                             short l2pdata, double tgd, double toc, double Af2,
                             double Af1, double Af0, short Tracker, short prn )
-         throw( InvalidRequest );
+         noexcept(false);
 
       EngEphemeris& setSF2( unsigned tlm, double how, short asalert,
                             short iode, double crs, double Dn, double m0,
                             double cuc, double Ecc, double cus, double ahalf,
                             double toe, short fitInt )
-         throw( InvalidRequest );
+         noexcept(false);
 
       EngEphemeris& setSF3( unsigned tlm, double how, short asalert,
                             double cic, double Omega0, double cis, double I0,
                             double crc, double W, double OmegaDot, double IDot)
-         throw( InvalidRequest );
+         noexcept(false);
 
          /// Output the contents of this ephemeris to the given stream.
       void dump(std::ostream& s = std::cout) const
-         throw( InvalidRequest );
+         noexcept(false);
 
       void setFIC(const bool arg);
 
       void dumpTerse(std::ostream& s = std::cout) const
-         throw( InvalidRequest );
+         noexcept(false);
 
 
       bool haveSubframe[3];/**< flags indicating presence of a subframe */

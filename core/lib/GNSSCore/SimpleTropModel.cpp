@@ -56,7 +56,7 @@ namespace gpstk
       // Creates a trop model from a weather observation
       // @param wx the weather to use for this correction.
    SimpleTropModel::SimpleTropModel(const WxObservation& wx)
-      throw(InvalidParameter)
+      noexcept(false)
    {
       setWeather(wx);
       valid = true;
@@ -69,7 +69,7 @@ namespace gpstk
    SimpleTropModel::SimpleTropModel(const double& T,
                                     const double& P,
                                     const double& H)
-      throw(InvalidParameter)
+      noexcept(false)
    {
       setWeather(T,P,H);
       valid = true;
@@ -83,7 +83,7 @@ namespace gpstk
    void SimpleTropModel::setWeather(const double& T,
                                     const double& P,
                                     const double& H)
-      throw(InvalidParameter)
+      noexcept(false)
    {
       TropModel::setWeather(T,P,H);
       GPSEllipsoid ell;
@@ -99,14 +99,14 @@ namespace gpstk
       // Typically called just before correction().
       // @param wx the weather to use for this correction
    void SimpleTropModel::setWeather(const WxObservation& wx)
-      throw(InvalidParameter)
+      noexcept(false)
    {
       TropModel::setWeather(wx);
    }
 
       // Compute and return the zenith delay for dry component of the troposphere
    double SimpleTropModel::dry_zenith_delay(void) const
-      throw(InvalidTropModel)
+      noexcept(false)
    {
       THROW_IF_INVALID();
       return Cdrydelay;
@@ -114,7 +114,7 @@ namespace gpstk
 
       // Compute and return the zenith delay for wet component of the troposphere
    double SimpleTropModel::wet_zenith_delay(void) const
-      throw(InvalidTropModel)
+      noexcept(false)
    {
       THROW_IF_INVALID();
       return Cwetdelay;
@@ -125,7 +125,7 @@ namespace gpstk
       // @param elevation is the Elevation of satellite as seen at receiver,
       //                  in degrees
    double SimpleTropModel::dry_mapping_function(double elevation) const
-      throw(InvalidTropModel)
+      noexcept(false)
    {
       THROW_IF_INVALID();
 
@@ -141,7 +141,7 @@ namespace gpstk
       // @param elevation is the Elevation of satellite as seen at receiver,
       //                  in degrees
    double SimpleTropModel::wet_mapping_function(double elevation) const
-      throw(InvalidTropModel)
+      noexcept(false)
    {
       THROW_IF_INVALID();
 

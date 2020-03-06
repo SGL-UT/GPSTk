@@ -91,7 +91,7 @@ namespace gpstk
           * Returns true if the time, ct, is within the period of validity of this OrbElem object.
           * @throw Invalid Request if the required data has not been stored.
           */
-      virtual bool isValid(const CommonTime& ct) const throw(InvalidRequest);
+      virtual bool isValid(const CommonTime& ct) const noexcept(false);
 
       virtual std::string getName() const = 0;
 
@@ -104,17 +104,17 @@ namespace gpstk
          /** Compute the satellite clock bias (sec) at the given time
           *  @throw Invalid Request if the required data has not been stored.
           */
-      double svClockBias(const CommonTime& t) const throw(gpstk::InvalidRequest);
+      double svClockBias(const CommonTime& t) const noexcept(false);
 
          /** Compute the satellite clock bias (meters) at the given time
           *  @throw Invalid Request if the required data has not been stored.
           */
-      double svClockBiasM(const CommonTime& t) const throw(gpstk::InvalidRequest);
+      double svClockBiasM(const CommonTime& t) const noexcept(false);
 
          /** Compute the satellite clock drift (sec/sec) at the given time
           *  @throw Invalid Request if the required data has not been stored.
           */
-      double svClockDrift(const CommonTime& t) const throw(gpstk::InvalidRequest);
+      double svClockDrift(const CommonTime& t) const noexcept(false);
 
 
          /** Compute satellite position at the given time
@@ -123,12 +123,12 @@ namespace gpstk
           * This is virtual due to need to eventually address other 
           * methods of orbit determination.
           */
-      virtual Xvt svXvt(const CommonTime& t) const throw(gpstk::InvalidRequest);
+      virtual Xvt svXvt(const CommonTime& t) const noexcept(false);
 
          /** Compute satellite relativity correction (sec) at the given time
           *  @throw Invalid Request if the required data has not been stored.
           */
-      double svRelativity(const CommonTime& t) const throw( gpstk::InvalidRequest );
+      double svRelativity(const CommonTime& t) const noexcept(false);
 
 
          /** adjustBeginningValidity is provided to support
@@ -153,19 +153,19 @@ namespace gpstk
       static void timeDisplay(std::ostream & os, const CommonTime& t);
 
       virtual void dumpTerse(std::ostream& s = std::cout) const
-         throw( InvalidRequest ) = 0;
+         noexcept(false) = 0;
 
       virtual void dumpHeader(std::ostream& s = std::cout) const
-         throw( InvalidRequest );
+         noexcept(false);
 
       virtual void dumpBody(std::ostream& s = std::cout) const
-         throw( InvalidRequest );
+         noexcept(false);
 
       virtual void dumpFooter(std::ostream& s = std::cout) const
-         throw( InvalidRequest );
+         noexcept(false);
 
       virtual void dump(std::ostream& s = std::cout) const
-	 throw( InvalidRequest );
+	 noexcept(false);
 
 	 /// Harmonic perturbations
          //@{

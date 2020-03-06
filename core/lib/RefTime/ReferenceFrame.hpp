@@ -68,7 +68,7 @@ namespace gpstk {
       };
 
       /// Constructor, including empty constructor
-      ReferenceFrame(Frames f=Unknown) throw()
+      ReferenceFrame(Frames f=Unknown) noexcept
       {
          if(f < 0 || f >= count)
             frame = Unknown;
@@ -77,11 +77,11 @@ namespace gpstk {
       }
 
       /// Constructor from string
-      ReferenceFrame(const std::string str) throw();
+      ReferenceFrame(const std::string str) noexcept;
 
       // TD is this required?
       ///// Constructor from int
-      //ReferenceFrame(int i) throw()
+      //ReferenceFrame(int i) noexcept
       //{
       //   if(i < 0 || i >= count)
       //      frame = Unknown;
@@ -92,46 +92,46 @@ namespace gpstk {
       // copy constructor and operator= defined by the compiler
 
       /// Define using input value of Frames enum.
-      void setReferenceFrame(const Frames& f) throw();
+      void setReferenceFrame(const Frames& f) noexcept;
 
       /// Return the value of Frames enum for this object.
-      Frames getReferenceFrame() const throw()
+      Frames getReferenceFrame() const noexcept
       { return frame; }
 
       /// Return std::string for each system (these strings are const and static).
       /// @return std::string description of the frame.
-      std::string asString() const throw()
+      std::string asString() const noexcept
       { return Strings[frame]; }
 
       /// define system based on input string
       /// @param str input std::string, expected to match output string for a given
       /// frame.
-      void fromString(const std::string str) throw()
+      void fromString(const std::string str) noexcept
       { frame = ReferenceFrame(str).frame; }
 
       /// boolean operator==
-      bool operator==(const ReferenceFrame& right) const throw()
+      bool operator==(const ReferenceFrame& right) const noexcept
       { return frame == right.frame; }
 
       /// boolean operator< (used by STL for sorting)
-      bool operator<(const ReferenceFrame& right) const throw()
+      bool operator<(const ReferenceFrame& right) const noexcept
       { return frame < right.frame; }
 
       // the rest follow from Boolean algebra...
       /// boolean operator!=
-      bool operator!=(const ReferenceFrame& right) const throw()
+      bool operator!=(const ReferenceFrame& right) const noexcept
       { return !operator==(right); }
 
       /// boolean operator>=
-      bool operator>=(const ReferenceFrame& right) const throw()
+      bool operator>=(const ReferenceFrame& right) const noexcept
       { return !operator<(right); }
 
       /// boolean operator<=
-      bool operator<=(const ReferenceFrame& right) const throw()
+      bool operator<=(const ReferenceFrame& right) const noexcept
       { return (operator<(right) || operator==(right)); }
 
       /// boolean operator>
-      bool operator>(const ReferenceFrame& right) const throw()
+      bool operator>(const ReferenceFrame& right) const noexcept
       { return (!operator<(right) && !operator==(right)); }
 
    private:

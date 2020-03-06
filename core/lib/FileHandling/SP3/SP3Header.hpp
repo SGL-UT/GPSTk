@@ -89,11 +89,11 @@ namespace gpstk
 
          /// access the version or file format
          /// @return the current Version
-      Version getVersion(void) const throw() { return version; }
+      Version getVersion(void) const noexcept { return version; }
 
          /// access the version or file format as a character
          /// @return a character version of the current Version
-      char versionChar(void) const throw()
+      char versionChar(void) const noexcept
       {
          return versionChar(version);
       }
@@ -101,7 +101,7 @@ namespace gpstk
          /// access the version or file format as a character
          /// @param ver SP3 version
          /// @return a character version of the current Version
-      static char versionChar(Version ver) throw()
+      static char versionChar(Version ver) noexcept
       {
          char ch;
          switch(ver) {
@@ -121,7 +121,7 @@ namespace gpstk
 
          /// access the version or file format as a string
          /// @return a string version of the current Version
-      std::string versionString(void) const throw()
+      std::string versionString(void) const noexcept
       {
          return versionString(version);
       }
@@ -129,7 +129,7 @@ namespace gpstk
          /// access the version or file format as a string
          /// @param ver SP3 version
          /// @return a string version of the current Version
-      static std::string versionString(Version ver) throw()
+      static std::string versionString(Version ver) noexcept
       {
          std::string str;
          switch(ver) {
@@ -151,7 +151,7 @@ namespace gpstk
          /// automatically sets the version in the SP3Header object that is read.
          /// @param ver the Version to be assigned to this header
          /// @return the current Version
-      Version setVersion(const Version ver) throw()
+      Version setVersion(const Version ver) noexcept
       {
          Version oldFormat = version;
          version = ver;
@@ -159,7 +159,7 @@ namespace gpstk
       }
 
          /// return a string with time system name
-      std::string timeSystemString() const throw()
+      std::string timeSystemString() const noexcept
       { return timeSystem.asString(); };
 
          // The next four lines is our common interface
@@ -167,7 +167,7 @@ namespace gpstk
       virtual bool isHeader() const { return true; }
 
          /// Dump contents to an ostream
-      virtual void dump(std::ostream& s=std::cout) const throw();
+      virtual void dump(std::ostream& s=std::cout) const noexcept;
 
          /** The SP3 version (file format) is initially undefined, but
           * it will be assigned by reallyGetRecord() while reading,
@@ -199,8 +199,7 @@ namespace gpstk
          /// Writes the record formatted to the FFStream \a s.
          /// @throws StringException when a StringUtils function fails
       virtual void reallyPutRecord(FFStream& s) const
-         throw(std::exception, FFStreamError,
-               StringUtils::StringException);
+         noexcept(false);
 
          /// This function retrieves the SP3 header from the given FFStream.
          /// If an error is encountered in the retrieval of the header, the
@@ -210,8 +209,7 @@ namespace gpstk
          ///  a read or formatting error occurs.  This also resets the
          ///  stream to its pre-read position.
       virtual void reallyGetRecord(FFStream& s)
-         throw(std::exception, FFStreamError,
-               StringUtils::StringException);
+         noexcept(false);
 
    }; // end class SP3Header
 

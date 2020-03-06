@@ -102,7 +102,7 @@ namespace gpstk
          // Singular Value Decomposition
       template <class BaseClass>
       bool operator() (const ConstMatrixBase<T, BaseClass>& mat)
-         throw (MatrixException)
+         noexcept(false)
       {
          const T eps=T(8)*std::numeric_limits<T>::epsilon();
          bool flip=false;
@@ -345,7 +345,7 @@ namespace gpstk
          // 1/0 is replaced by 0. Result is returned as b.
       template <class BaseClass>
       void backSub(RefVectorBase<T, BaseClass>& b) const 
-         throw(MatrixException)
+         noexcept(false)
       {
          if(b.size() != U.rows())
          {
@@ -367,7 +367,7 @@ namespace gpstk
 
          /// sort singular values - default in descending order
       void sort(bool descending=true)
-         throw(MatrixException)
+         noexcept(false)
       {
          size_t i;
          int j;         // j must be allowed to go negative
@@ -390,7 +390,7 @@ namespace gpstk
 
          /// compute determinant from SVD
       inline T det(void)
-         throw(MatrixException)
+         noexcept(false)
       {
          T d(1);
          for(size_t i=0; i<S.size(); i++) d *= S(i);
@@ -430,7 +430,7 @@ namespace gpstk
          /// Does the decomposition.
       template <class BaseClass>
       void operator() (const ConstMatrixBase<T, BaseClass>& m)
-         throw (MatrixException)
+         noexcept(false)
       {
          if(!m.isSquare() || m.rows()<1) {
             MatrixException e("LUDecomp requires a square, non-trivial matrix");
@@ -500,7 +500,7 @@ namespace gpstk
          /// Solution overwrites input Vector v
       template <class BaseClass2>
       void backSub(RefVectorBase<T, BaseClass2>& v) const
-         throw (MatrixException)
+         noexcept(false)
       {
          if(LU.rows() != v.size()) {
             MatrixException e("Vector size does not match dimension of LUDecomp");
@@ -533,7 +533,7 @@ namespace gpstk
 
          /// compute determinant from LUD
       inline T det(void)
-         throw(MatrixException)
+         noexcept(false)
       {
          T d(static_cast<T>(parity));
          for(size_t i=0; i<LU.rows(); i++) d *= LU(i,i);
@@ -584,7 +584,7 @@ namespace gpstk
          /// @todo potential complex number problem!
       template <class BaseClass>
       void operator() (const ConstMatrixBase<T, BaseClass>& m)
-         throw (MatrixException)
+         noexcept(false)
       {
          if(!m.isSquare()) {
             MatrixException e("Cholesky requires a square matrix");
@@ -639,7 +639,7 @@ namespace gpstk
          // LT*x=y for x. x is returned as b.
       template <class BaseClass2>
       void backSub(RefVectorBase<T, BaseClass2>& b) const
-         throw (MatrixException)
+         noexcept(false)
       {
          if (L.rows() != b.size())
          {
@@ -684,7 +684,7 @@ namespace gpstk
    {
    public:
       template <class BaseClass>
-      void operator() (const ConstMatrixBase<T, BaseClass>& m) throw(MatrixException)
+      void operator() (const ConstMatrixBase<T, BaseClass>& m) noexcept(false)
       {
          if(!m.isSquare()) {
             MatrixException e("CholeskyCrout requires a square matrix");
@@ -738,7 +738,7 @@ namespace gpstk
          // orthogonal transformation which triangularizes the matrix.
       template <class BaseClass>
       inline void operator() (const ConstMatrixBase<T, BaseClass>& m)
-         throw (MatrixException)
+         noexcept(false)
       {
          A = m;
          size_t i,j,k;

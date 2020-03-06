@@ -54,7 +54,7 @@ namespace gpstk
 
 
    ObsClockModel::SvStatus ObsClockModel::getSvStatus(const SatID& svid) const
-      throw(gpstk::ObjectNotFound)
+      noexcept(false)
    {
       SvStatusMap::const_iterator i = status.find(svid);
       if(i == status.end())
@@ -70,7 +70,7 @@ namespace gpstk
 
 
    ObsClockModel& ObsClockModel::setSvModeMap(const SvModeMap& right)
-      throw()
+      noexcept
    {
       for(int prn = 1; prn <= gpstk::MAX_PRN; prn++)
          modes[SatID(prn, SatID::systemGPS)] = IGNORE;
@@ -83,7 +83,7 @@ namespace gpstk
 
 
    ObsClockModel::SvMode ObsClockModel::getSvMode(const SatID& svid) const
-      throw(gpstk::ObjectNotFound)
+      noexcept(false)
    {
       SvModeMap::const_iterator i = modes.find(svid);
       if(i == modes.end())
@@ -99,7 +99,7 @@ namespace gpstk
 
 
    gpstk::Stats<double> ObsClockModel::simpleOrdClock(const ORDEpoch& oe)
-      throw(gpstk::InvalidValue)
+      noexcept(false)
    {
       gpstk::Stats<double> stat;
       
@@ -167,7 +167,7 @@ namespace gpstk
       return stat;
    }
 
-   void ObsClockModel::dump(ostream& s, short detail) const throw()
+   void ObsClockModel::dump(ostream& s, short detail) const noexcept
    {
       s << "min elev:" << elvmask
         << ", max sigma:" << sigmam

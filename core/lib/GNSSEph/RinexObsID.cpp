@@ -46,7 +46,7 @@
 namespace gpstk
 {
    /// Construct this object from the string specifier
-   RinexObsID::RinexObsID(const std::string& strID) throw(InvalidParameter)
+   RinexObsID::RinexObsID(const std::string& strID) noexcept(false)
    {
       if(!isValidRinexObsID(strID)) {
          InvalidParameter ip(strID + " is not a valid RinexObsID");
@@ -174,7 +174,7 @@ namespace gpstk
       return true;
    }
 
-   std::ostream& RinexObsID::dumpCheck(std::ostream& s) throw(Exception)
+   std::ostream& RinexObsID::dumpCheck(std::ostream& s) noexcept(false)
    {
       try {
          const std::string types("CLDS");

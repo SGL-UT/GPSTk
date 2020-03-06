@@ -73,7 +73,7 @@ namespace gpstk
       virtual ~SP3Stream();
 
          /// override close() to write EOF line
-      virtual void close(void) throw(Exception);
+      virtual void close(void) noexcept(false);
 
          /** override open() to reset the header
           * @param[in] filename the name of the ASCII SP3 format file

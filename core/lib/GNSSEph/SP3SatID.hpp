@@ -62,10 +62,10 @@ namespace gpstk
    public:
 
          /// empty constructor, creates an invalid object
-      SP3SatID() throw() { id=-1; system=systemGPS; }
+      SP3SatID() noexcept { id=-1; system=systemGPS; }
 
          /// explicit constructor, no defaults, SP3 systems only
-      SP3SatID(int p, SatelliteSystem s) throw()
+      SP3SatID(int p, SatelliteSystem s) noexcept
       {
          id = p; system = s;
          switch(system) {
@@ -84,23 +84,23 @@ namespace gpstk
       }
 
          /// constructor from string
-      SP3SatID(const std::string& str) throw(Exception)
+      SP3SatID(const std::string& str) noexcept(false)
       {
          try { fromString(str); }
          catch(Exception& e) { GPSTK_RETHROW(e); }
       }
 
          /// cast SatID to SP3SatID
-      SP3SatID(const SatID& sat) throw()
+      SP3SatID(const SatID& sat) noexcept
       { *this = SP3SatID(sat.id,sat.system); }
 
          /// set the fill character used in output
          /// return the current fill character
-      char setfill(char c) throw()
+      char setfill(char c) noexcept
       { char csave=fillchar; fillchar=c; return csave; }
 
          /// get the fill character used in output
-      char getfill() throw()
+      char getfill() noexcept
       { return fillchar; }
 
          // operator=, copy constructor and destructor built by compiler
@@ -146,7 +146,7 @@ namespace gpstk
          /// return a character based on the system
          /// return the single-character system descriptor
          /// @note return only SP3 types, for non-SP3 systems return '?'
-      char systemChar() const throw()
+      char systemChar() const noexcept
       {
          switch (system) {
             case systemGPS:     return 'G';
@@ -161,7 +161,7 @@ namespace gpstk
          }
       };
 
-      std::string systemString() const throw()
+      std::string systemString() const noexcept
       {
          switch (system) {
             case systemGPS:     return "GPS";
@@ -177,7 +177,7 @@ namespace gpstk
 
          /// read from string
          /// @note GPS is default system (no or unknown system char)
-      void fromString(const std::string s) throw(Exception)
+      void fromString(const std::string s) noexcept(false)
       {
          char c;
          std::istringstream iss(s);
@@ -226,7 +226,7 @@ namespace gpstk
       }
 
          /// convert to string
-      std::string toString() const throw()
+      std::string toString() const noexcept
       {
          std::ostringstream oss;
          oss.fill(fillchar);

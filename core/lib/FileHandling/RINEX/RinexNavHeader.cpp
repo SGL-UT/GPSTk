@@ -63,7 +63,7 @@ namespace gpstk
    const string RinexNavHeader::versionString = "RINEX VERSION / TYPE";
 
    void RinexNavHeader::reallyPutRecord(FFStream& ffs) const 
-      throw(std::exception, FFStreamError, StringException)
+      noexcept(false)
    {
       RinexNavStream& strm = dynamic_cast<RinexNavStream&>(ffs);
       
@@ -178,7 +178,7 @@ namespace gpstk
    }
 
    void RinexNavHeader::reallyGetRecord(FFStream& ffs) 
-      throw(std::exception, FFStreamError, StringException)
+      noexcept(false)
    {
       RinexNavStream& strm = dynamic_cast<RinexNavStream&>(ffs);
       

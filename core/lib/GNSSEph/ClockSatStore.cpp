@@ -46,7 +46,7 @@ using namespace std;
 namespace gpstk
 {
    // Output stream operator is used by dump() in TabularSatStore
-   ostream& operator<<(ostream& os, const ClockRecord& rec) throw()
+   ostream& operator<<(ostream& os, const ClockRecord& rec) noexcept
    {
       os << scientific << setprecision(12) << setw(19) << rec.bias
          << " " << setw(19) << rec.sig_bias
@@ -68,7 +68,7 @@ namespace gpstk
    //  b) checkDataGap is true and there is a data gap
    //  c) checkInterval is true and the interval is larger than maxInterval
    ClockRecord ClockSatStore::getValue(const SatID& sat, const CommonTime& ttag)
-      const throw(InvalidRequest)
+      const noexcept(false)
    {
       try {
          checkTimeSystem(ttag.getTimeSystem());
@@ -199,7 +199,7 @@ namespace gpstk
    //  b) checkDataGap is true and there is a data gap
    //  c) checkInterval is true and the interval is larger than maxInterval
    double ClockSatStore::getClockBias(const SatID& sat, const CommonTime& ttag)
-      const throw(InvalidRequest)
+      const noexcept(false)
    {
       try {
          checkTimeSystem(ttag.getTimeSystem());
@@ -248,7 +248,7 @@ namespace gpstk
    //  c) checkInterval is true and the interval is larger than maxInterval
    //  d) there is no drift data in the store
    double ClockSatStore::getClockDrift(const SatID& sat, const CommonTime& ttag)
-      const throw(InvalidRequest)
+      const noexcept(false)
    {
       try {
          checkTimeSystem(ttag.getTimeSystem());
@@ -314,7 +314,7 @@ namespace gpstk
    // Add a ClockRecord to the store.
    void ClockSatStore::addClockRecord(const SatID& sat, const CommonTime& ttag,
                                       const ClockRecord& rec)
-      throw(InvalidRequest)
+      noexcept(false)
    {
       try {
          checkTimeSystem(ttag.getTimeSystem());
@@ -346,7 +346,7 @@ namespace gpstk
    // Add clock bias (only) data to the store
    void ClockSatStore::addClockBias(const SatID& sat, const CommonTime& ttag,
                                     const double& bias, const double& sig)
-      throw(InvalidRequest)
+      noexcept(false)
    {
       try {
          checkTimeSystem(ttag.getTimeSystem());
@@ -374,7 +374,7 @@ namespace gpstk
    // Add clock drift (only) data to the store
    void ClockSatStore::addClockDrift(const SatID& sat, const CommonTime& ttag,
                                     const double& drift, const double& sig)
-      throw(InvalidRequest)
+      noexcept(false)
    {
       try {
          checkTimeSystem(ttag.getTimeSystem());
@@ -404,7 +404,7 @@ namespace gpstk
    // Add clock acceleration (only) data to the store
    void ClockSatStore::addClockAcceleration(const SatID& sat, const CommonTime& ttag,
                                     const double& accel, const double& sig)
-      throw(InvalidRequest)
+      noexcept(false)
    {
       try {
          checkTimeSystem(ttag.getTimeSystem());
