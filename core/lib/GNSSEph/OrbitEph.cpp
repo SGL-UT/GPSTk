@@ -53,6 +53,7 @@
 #include "BDSWeekSecond.hpp"
 #include "QZSWeekSecond.hpp"
 #include "GPSEllipsoid.hpp"
+#include "CGCS2000Ellipsoid.hpp"
 #include "TimeString.hpp"
 
 using namespace std;
@@ -216,12 +217,13 @@ namespace gpstk {
       sv.x[2] = zef;
 
       // Compute velocity of rotation coordinates
-      dek = amm * Ak / R;
-      dlk = Ahalf * q * sqrtgm / (R*R);
+      dek = amm / G;
+      dlk = amm * q / (G*G);
       div = tdrinc - 2.0e0 * dlk * (Cic  * s2al - Cis * c2al);
       domk = OMEGAdot - ell.angVelocity();
       duv = dlk*(1.e0+ 2.e0 * (Cus*c2al - Cuc*s2al));
-      drv = Ak * lecc * dek * sinea - 2.e0 * dlk * (Crc * s2al - Crs * c2al);
+      drv = Ak * lecc * dek * sinea - 2.e0 * dlk * (Crc * s2al - Crs * c2al) +
+         Adot * G;
       dxp = drv*cosu - R*sinu*duv;
       dyp = drv*sinu + R*cosu*duv;
 
@@ -247,9 +249,15 @@ namespace gpstk {
       if(!dataLoadedFlag)
          GPSTK_THROW(InvalidRequest("Data not loaded"));
 
-      GPSEllipsoid ell;
+      GPSEllipsoid gell;
+      CGCS2000Ellipsoid bell;
+      EllipsoidModel *ell;
+      if (satID.system==SatID::systemBeiDou)
+         ell = &bell;
+      else
+         ell = &gell;
       double twoPI  = 2.0 * PI;
-      double sqrtgm = SQRT(ell.gm());
+      double sqrtgm = SQRT(ell->gm());
       double elapte = t - ctToe;
 
       // Compute A at time of interest

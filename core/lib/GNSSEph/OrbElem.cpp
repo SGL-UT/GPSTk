@@ -257,7 +257,8 @@ namespace gpstk
       sv.relcorr = svRelativity(t);
       sv.clkbias = svClockBias(t);
       sv.clkdrift = svClockDrift(t);
-      sv.frame = ReferenceFrame::WGS84;   // This appear to be only a string for naming
+         // This appear to be only a string for naming
+      sv.frame = ReferenceFrame::WGS84;
 
          // Compute true anomaly
       q     = SQRT( 1.0e0 - lecc*lecc);
@@ -314,14 +315,14 @@ namespace gpstk
       sv.x[2] = zef;
 
          // Compute velocity of rotation coordinates
-      dek = amm * Ak / R;            
-      dlk = SQRT(Ak) * q * sqrtgm / (R*R);  
+      dek = amm / G;
+      dlk = amm * q / (G*G);
       div = tdrinc - 2.0e0 * dlk *
          ( Cic  * s2al - Cis * c2al );
       domk = OMEGAdot - ell->angVelocity();
       duv = dlk*(1.e0+ 2.e0 * (Cus*c2al - Cuc*s2al) );
       drv = Ak * lecc * dek * sinea - 2.e0 * dlk *
-         ( Crc * s2al - Crs * c2al );
+         ( Crc * s2al - Crs * c2al ) + Adot * G;
 
       dxp = drv*cosu - R*sinu*duv;
       dyp = drv*sinu + R*cosu*duv;
@@ -337,6 +338,7 @@ namespace gpstk
       sv.v[0] = vxef;
       sv.v[1] = vyef;
       sv.v[2] = vzef;
+      sv.health = isHealthy() ? Xvt::Healthy : Xvt::Unhealthy;
       delete ell;
 
       return sv;
