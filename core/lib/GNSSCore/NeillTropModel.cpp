@@ -570,9 +570,9 @@ namespace gpstk
       NeillDOY = static_cast<int>(ydst.doy);
       validDOY = true;
       NeillLat = rxPos.getGeodeticLatitude();
-      validHeight = true;
-      NeillLat = rxPos.getHeight();
       validLat = true;
+      NeillHeight = rxPos.getHeight();
+      validHeight = true;
 
          // Change the value of field "valid" if everything is already set
       valid = validHeight && validLat && validDOY;
