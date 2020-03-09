@@ -326,8 +326,8 @@ public:
    inline void setWidth(int w) { width = w; }
    inline void setBufferSize(int b) { buffsize = b; }
    inline void setTwoSample(bool b) { twoSample=b; }
-   inline bool setBalanced(bool b) { balanced = b; }
-   inline bool setFullWindows(bool b) { fullwindows = b; }
+   inline void setBalanced(bool b) { balanced = b; }
+   inline void setFullWindows(bool b) { fullwindows = b; }
    inline int getWidth(void) { return width; }
    inline int getBufferSize(void) { return buffsize; }
    inline bool isTwoSample(void) { return twoSample; }
