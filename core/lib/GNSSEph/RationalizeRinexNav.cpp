@@ -108,11 +108,8 @@ namespace gpstk
       TOC_LIST::const_iterator cit;
       for (cit=tList.begin(); cit!=tList.end(); cit++)
       {
-         const SatID& sidr = cit->first;
-         const CommonTime& ct = cit->second; 
-
          SAT_NAV_DATA_LIST::const_iterator csndl;
-         csndl = sndl.find(sidr);
+         csndl = sndl.find(cit->first);
          if (csndl==sndl.end())
             continue;
          const NAV_DATA_LIST& ndl = csndl->second;
@@ -121,7 +118,7 @@ namespace gpstk
          while (cnt!=ndl.end() && !done)
          {
             const Rinex3NavData& rnd = *cnt;
-            if (rnd.time==ct)
+            if (rnd.time == cit->second)
             {
                *rns << rnd;
                done = true;
@@ -130,6 +127,7 @@ namespace gpstk
          }
       }
       rns->close();
+      return true;
    }
 
    //----------------------------------------------------------------
