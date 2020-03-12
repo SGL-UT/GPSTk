@@ -149,7 +149,6 @@ namespace gpstk
       // any reason, this is thrown. The text may have additional
       // information as to why the request failed.
    Triple MoonPosition::getPosition(const CommonTime& t) const
-      throw(InvalidRequest)
    {
          // Test if the time interval is correct
       if ( (t < MoonPosition::initialTime) ||
@@ -176,9 +175,9 @@ namespace gpstk
        * in meters)
        *
        * @param t Epoch
+       * @throw InvalidRequest
        */
    Triple MoonPosition::getPositionCIS(const CommonTime& t) const
-      throw(InvalidRequest)
    {
          // Test if the time interval is correct
       if ( (t < MoonPosition::initialTime) ||

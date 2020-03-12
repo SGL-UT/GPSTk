@@ -76,8 +76,7 @@ namespace gpstk
    }
 
    OrbSysGpsL_63::OrbSysGpsL_63(const PackedNavBits& msg)
-      throw( InvalidParameter):
-      OrbSysGpsL()
+         : OrbSysGpsL()
    {
       loadData(msg);
    }
@@ -92,7 +91,6 @@ namespace gpstk
                                  const CommonTime& ct,
                                  const ObsID::CarrierBand cb,
                                  const ObsID::TrackingCode tc) const
-       throw (InvalidRequest)
    {
       // Verify that the object has been loaded with data.
        if (!dataLoadedFlag)
@@ -173,7 +171,6 @@ namespace gpstk
    bool OrbSysGpsL_63::hasSignal(const SatID& sidr,
                                  const CommonTime& ct,
                                  const ObsID& oidr) const
-       throw (InvalidRequest)
    {
        bool retVal = false;
        try
@@ -210,7 +207,6 @@ namespace gpstk
    }
 
    void OrbSysGpsL_63::loadData(const PackedNavBits& msg)
-      throw(InvalidParameter)
    {
       setUID(msg);
       if (UID!=63)
@@ -243,7 +239,6 @@ namespace gpstk
    } // end of loadData()
 
    void OrbSysGpsL_63::dumpTerse(std::ostream& s) const
-         throw(InvalidRequest)
    {
       if (!dataLoadedFlag)
       {
@@ -317,7 +312,6 @@ namespace gpstk
    } // end of dumpTerse()
 
    void OrbSysGpsL_63::dumpBody(ostream& s) const
-      throw( InvalidRequest )
    {
       if (!dataLoadedFlag)
       {

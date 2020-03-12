@@ -97,7 +97,7 @@ namespace gpstk
    /// IERS 2003 and 2010 conventions.
    /// param T CoordTransTime for epoch of interest
    /// param args array of 6 fundamental arguments at T, units radians
-   static void computeFundamentalArgs(const double& T, double args[6]) throw();
+   static void computeFundamentalArgs(const double& T, double args[6]) noexcept;
 
    /// Corrections to EOPs xp,yp,UT1mUTC for diurnal and semi-diurnal variations
    /// due to ocean tides. Based on IERS routine ortho_eop.f from the USNO web site
@@ -109,7 +109,7 @@ namespace gpstk
    /// param dyp correction to yp in arcseconds
    /// param dUT correction to UT1mUTC in seconds
    static void correctEOPOceanTides(const double& mjd,
-                                    double& dxp, double& dyp, double& dUT) throw();
+                                    double& dxp, double& dyp, double& dUT) noexcept;
 
    /// Corrections to Earth rotation due to zonal tides using USNO IERS2010 algorithm.
    /// param args array of 6 fundamental arguments at T, units radians
@@ -118,7 +118,7 @@ namespace gpstk
    /// param dld correction to length of day in seconds/day
    /// param dom correction to yp in radians per second
    static void correctEarthRotationZonalTides(const double args[6],
-                                    double& dUT, double& dld, double& dom) throw();
+                                    double& dUT, double& dld, double& dom) noexcept;
 
    /// Corrections to UT1 and length of day (LOD) due to zonal tides using USNO
    /// IERS2003 algorithm.
@@ -128,7 +128,7 @@ namespace gpstk
    /// param dld correction to length of day in seconds/day
    /// param dom correction to yp in radians per second
    static void correctEarthRotationZonalTides2003(const double args[6],
-                                    double& dUT, double& dld, double& dom) throw();
+                                    double& dUT, double& dld, double& dom) noexcept;
 
    /// Corrections to UT1 and length of day (LOD) due to subdiurnal librations
    /// using USNO IERS2010 algorithm.
@@ -137,7 +137,7 @@ namespace gpstk
    /// param dUT correction to UT1mUTC in seconds
    /// param dld correction to length of day in seconds/day
    static void correctEarthRotationLibrations(const double args[6],
-                                              double& dUT, double& dld) throw();
+                                              double& dUT, double& dld) noexcept;
 
    // Given parallel arrays of length four containing the values from EOPStore
    // for time (int MJD) and EOPs xp, yp, and UT1mUTC, where the time of interest
@@ -158,7 +158,6 @@ namespace gpstk
                                          const vector<double>& Y,
                                          vector<double>& dT,
                                          const IERSConvention& in_conv)
-      throw(InvalidRequest)
    {
       int i,j;
       double dxp,dyp,dUT,dlod,domega;
@@ -251,7 +250,7 @@ namespace gpstk
    }
 
    //---------------------------------------------------------------------------------
-   void computeFundamentalArgs(const double& T, double args[6]) throw()
+   void computeFundamentalArgs(const double& T, double args[6]) noexcept
    {
 
       // compute arguments and their time derivatives GMST+pi, L, Lp, F, D, Omega
@@ -302,7 +301,7 @@ namespace gpstk
 
    //---------------------------------------------------------------------------------
    void correctEOPOceanTides(const double& mjd, double& dxp, double& dyp, double& dUT)
-      throw()
+      noexcept
    {
       // compute time dependent part of second degree diurnal and semidiurnal
       // tidal potential from the dominant spectral lines of the
@@ -498,7 +497,7 @@ namespace gpstk
    // param dom correction to yp in radians per second
    void correctEarthRotationZonalTides(const double args[6],
                                        double& dUT, double& dld, double& dom)
-      throw()
+      noexcept
    {
       // constants
       static const double TWOPI(6.283185307179586476925287);
@@ -608,7 +607,7 @@ namespace gpstk
    // param dom correction to yp in radians per second
    void correctEarthRotationZonalTides2003(const double args[6],
                                            double& dUT, double& dld, double& dom)
-      throw()
+      noexcept
    {
       // constants
       static const double TWOPI(6.283185307179586476925287);
@@ -716,7 +715,7 @@ namespace gpstk
    // param dUT correction to UT1mUTC in seconds
    // param dld correction to length of day in seconds/day
    void correctEarthRotationLibrations(const double args[6], double& dUT, double& dld)
-      throw()
+      noexcept
    {
       //static const double TWOPI(6.283185307179586476925287);
       //static const double ARCSEC_TO_RAD=4.848136811095359935899141e-6;
@@ -775,7 +774,6 @@ namespace gpstk
    // transformations.
    // Throws if the TimeSystem conversion fails (if t.system==TimeSystem::Unknown)
    double EarthOrientation::CoordTransTime(EphTime ttag)
-      throw(Exception)
    {
       try {
          EphTime t(ttag);
@@ -796,7 +794,7 @@ namespace gpstk
    // given T, the CoordTransTime at the Epoch of interest. (Ref: F5 pg 23)
    // valid for IERS1996
    double EarthOrientation::Omega(double T)
-      throw()
+      noexcept
    {
       return ::fmod(  450160.398036
                + T*(-6962890.2665         // diff Omega2003 only in .2665 vs .5431
@@ -810,7 +808,7 @@ namespace gpstk
    // given T, the CoordTransTime at the Epoch of interest.
    // valid for IERS 2003, 2010
    double EarthOrientation::Omega2003(double T)
-      throw()
+      noexcept
    {
       return ::fmod(  450160.398036       // 125.04455501 * 3600
                + T*(-6962890.5431           // .2665
@@ -824,7 +822,7 @@ namespace gpstk
    // given T, the CoordTransTime at the Epoch of interest. (Ref: F3 pg 23)
    // valid for IERS1996, IERS2003, IERS2010
    double EarthOrientation::F(double T)
-      throw()
+      noexcept
    {
       return ::fmod(    335779.526232  // 93.27209062 * 3600
                + T*(1739527262.8478
@@ -838,7 +836,7 @@ namespace gpstk
    // given T, the CoordTransTime at the Epoch of interest. (Ref: F4 pg 23)
    // valid for IERS1996, IERS2003
    double EarthOrientation::D(double T)
-      throw()
+      noexcept
    {
       return ::fmod(    1072260.703692  // 297.85019547 * 3600
                 + T*(1602961601.2090
@@ -852,7 +850,7 @@ namespace gpstk
    // given T, the CoordTransTime at the Epoch of interest. (Ref: F1 pg 23)
    // valid for IERS1996, IERS2003
    double EarthOrientation::L(double T)
-      throw()
+      noexcept
    {
       return ::fmod(     485868.249036    // 134.96340251 * 3600
                 + T*(1717915923.2178
@@ -866,7 +864,7 @@ namespace gpstk
    // time of interest. (Ref: F2 pg 23)
    // valid for IERS1996, IERS2003
    double EarthOrientation::Lp(double T)
-      throw()
+      noexcept
    {
       return ::fmod(1287104.793048     // 357.52910918 * 3600
                 + T*(129596581.0481
@@ -881,7 +879,7 @@ namespace gpstk
    // param T coordinate transformation time.
    // return LMe in radians.
    double EarthOrientation::LMe(double T)
-      throw()
+      noexcept
    {
       double lme(::fmod(4.402608842 + 2608.7903141574 * T, TWOPI));
       return lme;
@@ -893,7 +891,7 @@ namespace gpstk
    // param T coordinate transformation time.
    // return LV in radians.
    double EarthOrientation::LV(double T)
-      throw()
+      noexcept
    {
       double lv(::fmod(3.176146697 + 1021.3285546211 * T, TWOPI));
       return lv;
@@ -905,7 +903,7 @@ namespace gpstk
    // param T coordinate transformation time.
    // return LE in radians.
    double EarthOrientation::LE(double T)
-      throw()
+      noexcept
    {
       double le(::fmod(1.753470314 + 628.3075849991 * T, TWOPI));
       return le;
@@ -917,7 +915,7 @@ namespace gpstk
    // param T coordinate transformation time.
    // return LMa in radians.
    double EarthOrientation::LMa(double T)
-      throw()
+      noexcept
    {
       double lma(::fmod(6.203480913 + 334.0612426700 * T, TWOPI));
       return lma;
@@ -929,7 +927,7 @@ namespace gpstk
    // param T coordinate transformation time.
    // return LJ in radians.
    double EarthOrientation::LJ(double T)
-      throw()
+      noexcept
    {
       double lj(::fmod(0.599546497 + 52.9690962641 * T, TWOPI));
       return lj;
@@ -941,7 +939,7 @@ namespace gpstk
    // param T coordinate transformation time.
    // return LS in radians.
    double EarthOrientation::LS(double T)
-      throw()
+      noexcept
    {
       double ls(::fmod(0.874016757 + 21.3299104960 * T, TWOPI));
       return ls;
@@ -953,7 +951,7 @@ namespace gpstk
    // param T coordinate transformation time.
    // return LU in radians.
    double EarthOrientation::LU(double T)
-      throw()
+      noexcept
    {
       double lu(::fmod(5.481293872 + 7.4781598567 * T, TWOPI));
       return lu;
@@ -965,7 +963,7 @@ namespace gpstk
    // param T coordinate transformation time.
    // return LN in radians.
    double EarthOrientation::LN(double T)
-      throw()
+      noexcept
    {
       double ln(::fmod(5.311886287 + 3.8133035638 * T, TWOPI));
       return ln;
@@ -978,7 +976,7 @@ namespace gpstk
    // param T coordinate transformation time.
    // return Pa in radians.
    double EarthOrientation::Pa(double T)
-      throw()
+      noexcept
    {
       double pa((0.024381750 + 0.00000538691 * T) * T);
       return pa;
@@ -988,7 +986,7 @@ namespace gpstk
    // Compute eps, the obliquity of the ecliptic, in radians,
    // given T, the CoordTransTime at the time of interest.
    // throw if convention is not defined
-   double EarthOrientation::Obliquity(double T) throw(Exception)
+   double EarthOrientation::Obliquity(double T)
    {
       if(convention == IERSConvention::IERS1996)
          return Obliquity1996(T);
@@ -1010,7 +1008,7 @@ namespace gpstk
    // param reduced, bool true when UT1mUTC is 'reduced', meaning assumes
    //                 'no tides', as is the case with the NGA EOPs (default=F).
    // throw if convention is not defined
-   double EarthOrientation::GMST(const EphTime& t, bool reduced) throw(Exception)
+   double EarthOrientation::GMST(const EphTime& t, bool reduced)
    {
       try {
          if(convention == IERSConvention::IERS1996)
@@ -1035,7 +1033,7 @@ namespace gpstk
    // param reduced, bool true when UT1mUTC is 'reduced', meaning assumes
    //                 'no tides', as is the case with the NGA EOPs (default=F).
    // throw if convention is not defined
-   double EarthOrientation::GAST(const EphTime& t, bool reduced) throw(Exception)
+   double EarthOrientation::GAST(const EphTime& t, bool reduced)
    {
       try {
          if(convention == IERSConvention::IERS1996)
@@ -1059,7 +1057,6 @@ namespace gpstk
    // param t EphTime epoch of the rotation.
    // throw if convention is not defined
    Matrix<double> EarthOrientation::PolarMotionMatrix(const EphTime& t)
-      throw(Exception)
    {
       if(convention == IERSConvention::IERS1996)
          return PolarMotionMatrix1996(xp,yp);
@@ -1078,7 +1075,6 @@ namespace gpstk
    // the coordinate transformation time at the time of interest
    // throw if convention is not defined
    Matrix<double> EarthOrientation::PrecessionMatrix(const EphTime& t)
-      throw(Exception)
    {
       double T=CoordTransTime(t);
       if(convention == IERSConvention::IERS1996)
@@ -1101,7 +1097,6 @@ namespace gpstk
    // throw if convention is not defined
    // NB this is never called internally
    //void EarthOrientation::NutationAngles(double T, double& deps, double& dpsi)
-   //   throw(Exception)
    //{
    //   if(convention == IERSConvention::IERS1996) {
    //      double om;
@@ -1119,7 +1114,7 @@ namespace gpstk
 
    //---------------------------------------------------------------------------------
    // Compute the nutation matrix, given coordinate transformation time T
-   Matrix<double> EarthOrientation::NutationMatrix(const EphTime& t) throw(Exception)
+   Matrix<double> EarthOrientation::NutationMatrix(const EphTime& t)
    {
       try {
          double T = CoordTransTime(t);
@@ -1145,7 +1140,6 @@ namespace gpstk
    // throw if the TimeSystem conversion fails (if t.system==TimeSystem::Unknown)
    // throw if convention is not defined
    Matrix<double> EarthOrientation::PreciseEarthRotation(const EphTime& t)
-      throw(Exception)
    {
       if(convention == IERSConvention::IERS1996)
          return Matrix<double>(3,3);                        // TD
@@ -1166,7 +1160,6 @@ namespace gpstk
    // xp and yp (arcseconds), and UT1-UTC (seconds) (as found in the IERS bulletin).
    // throw if convention is not defined
    Matrix<double> EarthOrientation::ECEFtoInertial(const EphTime& t, bool reduced)
-      throw(Exception)
    {
       try {
          if(convention == IERSConvention::IERS1996)
@@ -1190,7 +1183,6 @@ namespace gpstk
 
    // TD this is not right
    //Matrix<double> EarthOrientation::ECEFtoJ2000(const EphTime& t, bool reduced)
-   //   throw(Exception)
    //{
    //   try {
    //      if(convention != IERSConvention::IERS2010) {
@@ -1233,7 +1225,7 @@ namespace gpstk
    // param which, the IERS convention to be used (input)
    // return S, the parameter that positions the CIO on the CIP equator in radians.
    double EarthOrientation::S(double T, double& X, double& Y, IERSConvention which)
-      throw()
+      noexcept
    {
       int i,j;
       double s,st[6],arg;
@@ -1451,7 +1443,7 @@ namespace gpstk
    // param T Coordinate transformation time T.
    // return angle 's prime' in radians
    double EarthOrientation::Sprime(double T)
-      throw()
+      noexcept
    {
       double sp = -47.0e-6 * T * ARCSEC_TO_RAD;
       return sp;
@@ -1467,7 +1459,7 @@ namespace gpstk
    // param X, x coordinate of CIO
    // param Y, y coordinate of CIO
    void EarthOrientation::XYCIO(double& T, double& X, double& Y)
-      throw()
+      noexcept
    {
       // include data arrays : defines MAXPT
       #include "IERS2010CIOSeriesData.hpp"
@@ -1571,7 +1563,6 @@ namespace gpstk
    // throw if the TimeSystem conversion fails (if t.system==TimeSystem::Unknown)
    double EarthOrientation::EarthRotationAngle(const EphTime& t,
                                                const double& UT1mUTC)
-      throw(Exception)
    {
       try {
          EphTime tUT1(t);
@@ -1607,7 +1598,6 @@ namespace gpstk
    // Based on IERS function EECT2000.f; all planets but Venus dropped b/c their
    // contribution is zero.
    double EarthOrientation::EquationOfEquinoxes2003(EphTime t)
-      throw(Exception)
    {
       // first define the coefficients
 
@@ -1731,7 +1721,7 @@ namespace gpstk
                                                   double& UT1mUT1R,
                                                   double& dlodR,
                                                   double& domegaR)
-         throw()
+         noexcept
    {
       // Define (all doubles) and all in radians
       double o(Omega(T)); // mean longitude of lunar ascending node
@@ -1749,7 +1739,7 @@ namespace gpstk
    // Compute eps, the obliquity of the ecliptic, in radians,
    // given T, the CoordTransTime at the time of interest. IAU76 IAU80 for IERS1996,03
    double EarthOrientation::Obliquity1996(double T)
-      throw()
+      noexcept
    {
       //double eps;
       //// seconds of arc
@@ -1769,7 +1759,7 @@ namespace gpstk
    // Compute eps, the obliquity of the ecliptic, in radians,
    // given T, the CoordTransTime at the time of interest.
    double EarthOrientation::Obliquity2010(double T)
-      throw()
+      noexcept
    {
       //double eps;
       //// mean obliquity cf. sofa obl06.c
@@ -1792,7 +1782,6 @@ namespace gpstk
    // param UT1mUTC, UT1-UTC in seconds, as found in the IERS bulletin.
    // return GMST in radians
    double EarthOrientation::GMST1996(EphTime t, double UT1mUTC, bool reduced)
-      throw(Exception)
    {
       try {
          // convert to UTC first
@@ -1845,7 +1834,6 @@ namespace gpstk
    // param t EphTime epoch of the rotation.
    // param UT1mUTC, UT1-UTC in seconds, as found in the IERS bulletin.
    double EarthOrientation::GMST2003(EphTime t, double UT1mUTC)
-      throw(Exception)
    {
       try {
          // TT days since epoch
@@ -1866,7 +1854,6 @@ namespace gpstk
    // param t EphTime epoch of the rotation.
    // param UT1mUTC, UT1-UTC in seconds, as found in the IERS bulletin.
    double EarthOrientation::GMST2010(EphTime t, double UT1mUTC)
-      throw(Exception)
    {
       try {
          double era = EarthRotationAngle(t,UT1mUTC);     // radians
@@ -1895,7 +1882,6 @@ namespace gpstk
    //                in seconds of arc.
    double EarthOrientation::gast1996(EphTime t,
                                double om, double eps, double dpsi, double UT1mUTC)
-      throw(Exception)
    {
       try {
          double G = GMST1996(t,UT1mUTC,false);
@@ -1942,7 +1928,6 @@ namespace gpstk
    //
    // see pg 21 of the Reference (IERS 1996).
    double EarthOrientation::GAST1996(EphTime t, double UT1mUTC, bool reduced)
-      throw(Exception)
    {
       try {
          double T(CoordTransTime(t));
@@ -1972,7 +1957,6 @@ namespace gpstk
    // param t EphTime epoch of the rotation.
    // param UT1mUTC, UT1-UTC in seconds, as found in the IERS bulletin.
    double EarthOrientation::GAST2003(EphTime t, double UT1mUTC)
-      throw(Exception)
    {
       try {
          double omega,deps,dpsi,G;
@@ -2009,7 +1993,6 @@ namespace gpstk
    // param t EphTime epoch of the rotation.
    // param UT1mUTC, UT1-UTC in seconds, as found in the IERS bulletin.
    double EarthOrientation::GAST2010(EphTime t, double UT1mUTC)
-      throw(Exception)
    {
       try {
          Matrix<double> NutPreBias = PreciseEarthRotation2010(CoordTransTime(t));
@@ -2051,7 +2034,7 @@ namespace gpstk
    // param yp, Earth wobble in arcseconds, as found in the IERS bulletin.
    // return Matrix<double>(3,3) rotation matrix
    Matrix<double> EarthOrientation::PolarMotionMatrix1996(double xp, double yp)
-      throw()
+      noexcept
    {
       xp *= ARCSEC_TO_RAD;
       yp *= ARCSEC_TO_RAD;
@@ -2072,7 +2055,7 @@ namespace gpstk
    // return Matrix<double>(3,3) rotation matrix CIP -> TRS
    Matrix<double> EarthOrientation::PolarMotionMatrix2003(EphTime t,
                                                          double xp, double yp)
-      throw()
+      noexcept
    {
       double sp(Sprime(t));      // parameter s' provides position of TEO on CIP
       LOG(DEBUG7) << "\nsp = " << fixed << setprecision(15) << setw(18) << sp
@@ -2092,7 +2075,7 @@ namespace gpstk
    // NB. fourth angle is Obliquity.
    void EarthOrientation::FukushimaWilliams(double T, double& gamb, double& phib,
                                                        double& psib, double& eps)
-      throw()
+      noexcept
    {
       // P03 bias+precession angles cf. sofa pfw06.c
       gamb = (-0.052928 + (10.556378 + (0.4932044 + (-0.00031238 +
@@ -2127,7 +2110,7 @@ namespace gpstk
    // return 3x3 rotation matrix
    Matrix<double> EarthOrientation::FukushimaWilliams(double gamb, double phib,
                                                        double psib, double epsa)
-      throw()
+      noexcept
    {
       Matrix<double> R;
       R = rotation(-epsa,1) *
@@ -2146,7 +2129,7 @@ namespace gpstk
    // param om, longitude mean ascending node of lunar orbit, from mean equinox
    void EarthOrientation::NutationAngles1996(double T,
                                               double& deps, double& dpsi, double& om)
-      throw()
+      noexcept
    {
       // include coefficients array; defines coeff[Ncoeff]
       #include "IERS1996NutationData.hpp"
@@ -2204,7 +2187,7 @@ namespace gpstk
    // param deps, nutation of the obliquity, in radians (output)
    // param dpsi, nutation of the longitude, in radians (output)
    void EarthOrientation::NutationAngles2003(double T, double& deps, double& dpsi)
-      throw()
+      noexcept
    {
       // sin and cos coefficients have units 0.1 microarcsec = 1e-7as
       const double COEFF_TO_RAD(ARCSEC_TO_RAD*1.0e-7);
@@ -2329,7 +2312,7 @@ namespace gpstk
    // param deps, nutation of the obliquity, in radians (output)
    // param dpsi, nutation of the longitude, in radians (output)
    void EarthOrientation::NutationAngles2010(double T, double& deps, double& dpsi)
-      throw()
+      noexcept
    {
       NutationAngles2003(T,deps,dpsi);
       double fj2(-2.7774e-6 * T);
@@ -2344,7 +2327,7 @@ namespace gpstk
    // deps, the nutation in obliquity, in radians.
    Matrix<double> EarthOrientation::NutationMatrix(double eps,
                                                    double dpsi, double deps)
-      throw()
+      noexcept
    {
       Matrix<double> R1 = rotation(eps, 1);
       Matrix<double> R2 = rotation(-dpsi, 3);
@@ -2357,7 +2340,7 @@ namespace gpstk
    // param T, the coordinate transformation time at the time of interest
    // return nutation matrix Matrix<double>(3,3)
    Matrix<double> EarthOrientation::NutationMatrix1996(double T)
-      throw()
+      noexcept
    {
       double eps(Obliquity1996(T)), deps, dpsi, om;
 
@@ -2371,7 +2354,7 @@ namespace gpstk
    // param T, the coordinate transformation time at the time of interest
    // return nutation matrix Matrix<double>(3,3)
    Matrix<double> EarthOrientation::NutationMatrix2003(double T)
-      throw()
+      noexcept
    {
       double eps(Obliquity1996(T)), deps, dpsi;    // same as Obliquity2003
       NutationAngles2003(T,deps,dpsi);
@@ -2390,7 +2373,7 @@ namespace gpstk
    // cf. FukushimaWilliams().
    // return nutation matrix Matrix<double>(3,3)
    Matrix<double> EarthOrientation::NutationMatrix2010(double T)
-      throw()
+      noexcept
    {
       double deps,dpsi,eps;
 
@@ -2420,7 +2403,7 @@ namespace gpstk
    // param T, the coordinate transformation time at the time of interest
    // return precession matrix Matrix<double>(3,3)
    Matrix<double> EarthOrientation::PrecessionMatrix1996(double T)
-      throw()
+      noexcept
    {
          // IAU76 - ref McCarthy - seconds of arc
          // NB t0==0 in sofa prec76.c - TD why do they do these things?
@@ -2443,7 +2426,7 @@ namespace gpstk
    // Includes the frame bias matrix. cf sofa bp00.c
    // return precession matrix Matrix<double>(3,3)
    Matrix<double> EarthOrientation::PrecessionMatrix2003(double T)
-      throw()
+      noexcept
    {
       // obliquity at the J2000.0 epoch
       static const double eps0(84381.448 * ARCSEC_TO_RAD);
@@ -2513,7 +2496,7 @@ namespace gpstk
    // return precession, obliquity corrections in radians
    void EarthOrientation::PrecessionRateCorrections2003(double T,
                                                          double& dpsi, double& deps)
-      throw()
+      noexcept
    {
       // Precession rate contributions with respect to IAU 2000
       // Precession and obliquity corrections (radians)
@@ -2525,7 +2508,7 @@ namespace gpstk
    // IERS2010 frame bias matrix, a 3x3 rotation matrix; cf. FukushimaWilliams().
    // return frame bias matrix Matrix<double>(3,3)
    Matrix<double> EarthOrientation::BiasMatrix2010(void)
-      throw()
+      noexcept
    {
       // get F-W angles at J2000
       double gamb,phib,psib,epsa;
@@ -2541,7 +2524,7 @@ namespace gpstk
    // Does not include the frame bias matrix. Cf. FukushimaWilliams().
    // return precession matrix Matrix<double>(3,3)
    Matrix<double> EarthOrientation::PrecessionMatrix2010(double T)
-      throw()
+      noexcept
    {
       // the F-W angles
       double gamb,phib,psib,epsa;
@@ -2565,7 +2548,6 @@ namespace gpstk
    // param T CoordTransTime of interest
    // return 3x3 rotation matrix
    Matrix<double> EarthOrientation::PreciseEarthRotation2003(double T)
-      throw(Exception)
    {
       try {
          Matrix<double> N = NutationMatrix2003(T);
@@ -2587,7 +2569,6 @@ namespace gpstk
    // param T CoordTransTime of interest
    // return 3x3 rotation matrix
    Matrix<double> EarthOrientation::PreciseEarthRotation2010(double T)
-      throw(Exception)
    {
       try {
          double deps,dpsi,epsa;
@@ -2613,7 +2594,6 @@ namespace gpstk
    // see class EarthOrientation).
    Matrix<double> EarthOrientation::ECEFtoInertial1996(EphTime t,
                        double xp, double yp, double UT1mUTC, bool reduced)
-      throw(Exception)
    {
       try {
          Matrix<double> P,N,W,S;
@@ -2676,7 +2656,6 @@ namespace gpstk
    // see class EarthOrientation).
    Matrix<double> EarthOrientation::ECEFtoInertial2003(EphTime t,
                                                 double xp, double yp, double UT1mUTC)
-      throw(Exception)
    {
       try {
          Matrix<double> P,N,R,W;
@@ -2748,7 +2727,6 @@ namespace gpstk
    // see class EarthOrientation).
    Matrix<double> EarthOrientation::ECEFtoInertial2010(EphTime t,
                        double xp, double yp, double UT1mUTC)
-      throw(Exception)
    {
       try {
          double T(CoordTransTime(t));

@@ -86,7 +86,7 @@ namespace gpstk
       /// @param bool isCOM          if true, Eph is Center-of-mass,
       ///                               else antenna-phase-center, default false.
       /// @return corrected raw range
-      /// @throw if ephemeris is not found
+      /// @throw Exception if ephemeris is not found
       double ComputeAtTransmitTime(const CommonTime& nomRecTime,
                                    const double pr,
                                    const Position& Rx,
@@ -94,17 +94,16 @@ namespace gpstk
                                    const AntexData& antenna,
                                    SolarSystem& SolSys,
                                    const XvtStore<SatID>& Eph,
-                                   const bool isCOM=false)
-         throw(Exception);
+                                   const bool isCOM=false);
 
       /// Version with no antenna, and therefore no Attitude and no SolarSystem;
       /// cf. doc for other version for details.
+      /// @throw Exception
       double ComputeAtTransmitTime(const CommonTime& nomRecTime,
                                    const double pr,
                                    const Position& Rx,
                                    const SatID sat,
                                    const XvtStore<SatID>& Eph)
-         throw(Exception)
       {
          // antdummy will be invalid, so antenna computations will be skipped;
          // thus satellite attitude will not be needed.

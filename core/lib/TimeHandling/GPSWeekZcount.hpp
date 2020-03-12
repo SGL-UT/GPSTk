@@ -240,7 +240,7 @@ namespace gpstk
           * @return weeks * ZCOUNT_PER_WEEK + zcount
           */
       unsigned long getTotalZcounts() const
-         throw()
+         noexcept
       { return (unsigned long)week * ZCOUNT_PER_WEEK + zcount; }
 
          /** Add the given number of weeks to the current value.
@@ -248,8 +248,7 @@ namespace gpstk
           * @return a reference to this object
           * @throw gpstk::InvalidRequest if adding inWeeks would
           *   render this object invalid. */
-      GPSWeekZcount& addWeeks(short inWeeks)
-         throw(gpstk::InvalidRequest);
+      GPSWeekZcount& addWeeks(short inWeeks);
 
          /** Add the given number of Z-counts to the current value.
           * This may cause a roll-(over/under) of the Z-count and
@@ -259,8 +258,7 @@ namespace gpstk
           * @return a reference to this object.
           * @throw gpstk::InvalidRequest if adding inZcounts would
           *   render this object invalid. */
-      GPSWeekZcount& addZcounts(long inZcounts)
-         throw(gpstk::InvalidRequest);
+      GPSWeekZcount& addZcounts(long inZcounts);
 
          /** Postfix increment the Z-count in this object (x++).  This
           * may also cause the roll-over of the Z-count and
@@ -269,8 +267,7 @@ namespace gpstk
           *   before the increment.
           * @throw gpstk::InvalidRequest if adding inZcounts would
           *   render this object invalid. */
-      GPSWeekZcount operator++(int)
-         throw(gpstk::InvalidRequest);
+      GPSWeekZcount operator++(int);
 
          /** Prefix increment the Z-count in this object (++x). This
           * may also cause the roll-over of the Z-count and
@@ -278,8 +275,7 @@ namespace gpstk
           * @return a reference to this object.
           * @throw gpstk::InvalidRequest if adding inZcounts would
           *   render this object invalid. */
-      GPSWeekZcount& operator++()
-         throw(gpstk::InvalidRequest);
+      GPSWeekZcount& operator++();
 
          /** Postfix decrement the Z-count in this object (x--).  This
           * may also cause the roll-under of the Z-count and
@@ -288,8 +284,7 @@ namespace gpstk
           *   before the decrement.
           * @throw gpstk::InvalidRequest if a Z-count decrement would
           *   render this object invalid. */
-      GPSWeekZcount operator--(int)
-         throw(gpstk::InvalidRequest);
+      GPSWeekZcount operator--(int);
 
          /** Prefix decrement the Z-count in this object (--x). This
           * may also cause the roll-under of the Z-count and
@@ -297,8 +292,7 @@ namespace gpstk
           * @return a reference to this object.
           * @throw gpstk::InvalidRequest if a Z-count decrement would
           *   render this object invalid. */
-      GPSWeekZcount& operator--()
-         throw(gpstk::InvalidRequest);
+      GPSWeekZcount& operator--();
 
          /** Add the given number of Z-counts to the current value.
           * This may cause a roll-(over/under) of the Z-count and
@@ -308,8 +302,7 @@ namespace gpstk
           * @return a modified GPSWeekZcount object.
           * @throw gpstk::InvalidRequest if adding inZcounts would
           *   render this object invalid. */
-      GPSWeekZcount operator+(long inZcounts) const
-         throw(gpstk::InvalidRequest);
+      GPSWeekZcount operator+(long inZcounts) const;
 
          /** Subtract the given number of Z-counts to the current value.
           * This may cause a roll-(over/under) of the Z-count and
@@ -319,14 +312,13 @@ namespace gpstk
           * @return a modified GPSWeekZcount object.
           * @throw gpstk::InvalidRequest if adding inZcounts would
           *   render this object invalid. */
-      GPSWeekZcount operator-(long inZcounts) const
-         throw(gpstk::InvalidRequest);
+      GPSWeekZcount operator-(long inZcounts) const;
 
          /** Compute the time difference between this object and \a right.
           * @param[in] right the GPSWeekZcount to subtract from this object.
           * @return the number of Z-counts between this object and \a right */
       long operator-(const GPSWeekZcount& right) const
-         throw();
+         noexcept;
 
          /** Add the given number of Z-counts to the current value.
           * This may cause a roll-(over/under) of the Z-count and
@@ -336,8 +328,7 @@ namespace gpstk
           * @return a reference to this object.
           * @throw gpstk::InvalidRequest if adding inZcounts would
           *   render this object invalid. */
-      GPSWeekZcount& operator+=(long inZcounts)
-         throw(gpstk::InvalidRequest);
+      GPSWeekZcount& operator+=(long inZcounts);
 
          /** Subtract the given number of Z-counts to the current value.
           * This may cause a roll-(over/under) of the Z-count and
@@ -347,8 +338,7 @@ namespace gpstk
           * @return a reference to this object.
           * @throw gpstk::InvalidRequest if adding inZcounts would
           *   render this object invalid. */
-      GPSWeekZcount& operator-=(long inZcounts)
-         throw(gpstk::InvalidRequest);
+      GPSWeekZcount& operator-=(long inZcounts);
 
          /**
           * This is a test of whether or not this object and the given
@@ -374,7 +364,7 @@ namespace gpstk
       bool inSameTimeBlock(const GPSWeekZcount& other,
                            unsigned long inZcountBlock,
                            unsigned long inZcountOffset = 0)
-         throw();
+         noexcept;
 
       unsigned int zcount;
    };

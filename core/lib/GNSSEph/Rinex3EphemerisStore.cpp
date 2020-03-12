@@ -299,7 +299,7 @@ namespace gpstk
 
 
    Xvt Rinex3EphemerisStore ::
-   computeXvt(const SatID& sat, const CommonTime& inttag) const throw()
+   computeXvt(const SatID& sat, const CommonTime& inttag) const noexcept
    {
       Xvt rv;
       rv.health = Xvt::HealthStatus::Unavailable;
@@ -343,7 +343,7 @@ namespace gpstk
 
 
    Xvt::HealthStatus Rinex3EphemerisStore ::
-   getSVHealth(const SatID& sat, const CommonTime& inttag) const throw()
+   getSVHealth(const SatID& sat, const CommonTime& inttag) const noexcept
    {
       Xvt::HealthStatus rv = Xvt::HealthStatus::Unavailable;
       try

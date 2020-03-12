@@ -118,14 +118,14 @@ namespace gpstk
           * @param[in] t the time to look up
           * @return the Xvt of the object at the indicated time */
       virtual Xvt computeXvt(const SatID& id, const CommonTime& t) const
-         throw();
+         noexcept;
 
          /** Get the satellite health at a specific time.
           * @param[in] id the object's identifier
           * @param[in] t the time to look up
           * @return the health status of the object at the indicated time. */
       virtual Xvt::HealthStatus getSVHealth(const SatID& id,
-                                            const CommonTime& t) const throw();
+                                            const CommonTime& t) const noexcept;
 
          /** Output summary of store data in human readable form, with detail:
           *  0: Time limits and number of entries for entire store

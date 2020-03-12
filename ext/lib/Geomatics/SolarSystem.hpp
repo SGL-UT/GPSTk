@@ -153,26 +153,27 @@ public:
    /// Empty and only constructor. The IERS convention should be consistent with the
    /// SolarSystemEphemeris file when initializeWithBinaryFile() is called, otherwise
    /// a warning is issued.
-   SolarSystem(IERSConvention inputiers=IERSConvention::NONE) throw()
+   SolarSystem(IERSConvention inputiers=IERSConvention::NONE) noexcept
       { iersconv = inputiers; }
 
    /// Choose an IERS Convention. If the input IERS convention is inconsistent with
    /// the loaded ephemeris then a warning is issued.
-   void setConvention(const IERSConvention& conv) throw()
+   void setConvention(const IERSConvention& conv) noexcept
    {
       iersconv = conv;
       testIERSvsEphemeris(iersconv, EphNumber());
    }
 
    /// get the IERS Convention
-   IERSConvention getConvention(void) const throw ()
+   IERSConvention getConvention(void) const noexcept
       { return iersconv; }
 
    /// Overloaded function to load ephemeris file. A check of the ephemeris number
    /// and the IERS convention for this object is made; if the IERS convention is
    /// inconsistent with the ephemeris file then a warning is issued.
    /// Cf. SolarSystemEphemeris::initializeWithBinaryFile(std::string filename).
-   int initializeWithBinaryFile(std::string filename) throw(Exception)
+   /// @throw Exception
+   int initializeWithBinaryFile(std::string filename)
    {
       int iret = SolarSystemEphemeris::initializeWithBinaryFile(filename);
 
@@ -191,8 +192,10 @@ public:
       return iret;
    }
 
-   /// Return the start time of the Solar System ephemeris data
-   CommonTime startTime(void) const throw(Exception)
+      /** Return the start time of the Solar System ephemeris data
+       * @throw Exception
+       */
+   CommonTime startTime(void) const
    {
       EphTime t;
       t.setMJD(SolarSystemEphemeris::startTimeMJD());
@@ -200,8 +203,10 @@ public:
       return static_cast<CommonTime>(t);
    }
 
-   /// Return the end time of the Solar System ephemeris data
-   CommonTime endTime(void) const throw(Exception)
+      /** Return the end time of the Solar System ephemeris data
+       * @throw Exception
+       */
+   CommonTime endTime(void) const
    {
       EphTime t;
       t.setMJD(SolarSystemEphemeris::endTimeMJD());
@@ -209,8 +214,10 @@ public:
       return static_cast<CommonTime>(t);
    }
 
-   /// Overload EOPStore::getEOP() to use the IERS convention of this object
-   EarthOrientation getEOP(const double& mjdutc) throw(InvalidRequest)
+      /** Overload EOPStore::getEOP() to use the IERS convention of this object
+       * @throw InvalidRequest
+       */
+   EarthOrientation getEOP(const double& mjdutc)
       { return EOPStore::getEOP(mjdutc, iersconv); }
 
    /// Return the ECEF (terrestrial frame, relative to Earth's center) position of a
@@ -218,8 +225,8 @@ public:
    /// @param body  SolarSystemEphemeris::Planet of interest (input)
    /// @param tt    Time of interest (input)
    /// @return ECEF Position of the body in meters.
-   Position ECEFPosition(const SolarSystemEphemeris::Planet body, const EphTime tt)
-      throw(Exception);
+   /// @throw Exception
+   Position ECEFPosition(const SolarSystemEphemeris::Planet body, const EphTime tt);
 
    /// Return the ECEF (terrestrial frame, relative to Earth's center) position and
    /// velocity of a Solar System body at the input time, with units meters and m/s.
@@ -227,15 +234,16 @@ public:
    /// @param tt    Time of interest (input)
    /// @param Pos   Position containing result for position in m in XYZ
    /// @param Vel   Position containing result for velocity in m/s in XYZ
+   /// @throw Exception
    void ECEFPositionVelocity(const SolarSystemEphemeris::Planet body,
                              const EphTime tt,
-                             Position& Pos, Position& Vel)
-      throw(Exception);
+                             Position& Pos, Position& Vel);
 
    /// Convenience routine to get the ECEF position of the Sun
    /// @param tt    Time of interest (input)
    /// @return ECEF Position of the Sun in meters.
-   Position SolarPosition(const EphTime tt) throw(Exception)
+   /// @throw Exception
+   Position SolarPosition(const EphTime tt)
    {
       try { return ECEFPosition(SolarSystemEphemeris::idSun, tt); }
       catch(Exception& e) { GPSTK_RETHROW(e); }
@@ -244,7 +252,8 @@ public:
    /// Convenience routine to get the ECEF position of the Moon
    /// @param tt    Time of interest (input)
    /// @return ECEF Position of the Moon in meters.
-   Position LunarPosition(const EphTime tt) throw(Exception)
+   /// @throw Exception
+   Position LunarPosition(const EphTime tt)
    {
       try { return ECEFPosition(SolarSystemEphemeris::idMoon, tt); }
       catch(Exception& e) { GPSTK_RETHROW(e); }
@@ -254,8 +263,8 @@ public:
    /// @param tt    Time of interest (input)
    /// @param Pos   Position containing result for Solar position in m in XYZ
    /// @param Vel   Position containing result for Solar velocity in m/s in XYZ
+   /// @throw Exception
    void SolarPositionVelocity(const EphTime tt, Position& Pos, Position& Vel)
-      throw(Exception)
    {
       try {
          return ECEFPositionVelocity(SolarSystemEphemeris::idSun, tt, Pos, Vel);
@@ -267,8 +276,8 @@ public:
    /// @param tt    Time of interest (input)
    /// @param Pos   Position containing result for Lunar position in m in XYZ
    /// @param Vel   Position containing result for Lunar velocity in m/s in XYZ
+   /// @throw Exception
    void LunarPositionVelocity(const EphTime tt, Position& Pos, Position& Vel)
-      throw(Exception)
    {
       try {
          return ECEFPositionVelocity(SolarSystemEphemeris::idMoon, tt, Pos, Vel);
@@ -289,8 +298,8 @@ public:
    /// visible to satellite; thus sf > 0 means the satellite is in eclipse.
    /// @param SV Position          Satellite position
    /// @return Matrix<double>(3,3) Rotation matrix from XYZ to Satellite body frame.
+   /// @throw Exception
    Matrix<double> SatelliteAttitude(const EphTime& tt, const Position& SV)
-      throw(Exception)
    {
       try {
          Position Sun = SolarSystem::SolarPosition(tt);
@@ -313,9 +322,9 @@ public:
    /// @param beta double  Return angle sun to plane of satellite orbit (radians)
    /// NB. phi, beta and sesa, the satellite-earth-sun angle, form a right spherical
    /// triangle with sesa opposite the right angle. Thus cos(sesa)=cos(beta)*cos(phi).
+   /// @throw Exception
    void SunOrbitAngles(const EphTime& tt, const Position& Pos, const Position& Vel,
                        double& beta, double& phi)
-      throw(Exception)
    {
       try {
          Position Sun = SolarSystem::SolarPosition(tt);
@@ -338,8 +347,8 @@ public:
    /// @param site Position Nominal position of the site of interest.
    /// @param tt EphTime   Time of interest.
    /// @return Triple      Displacement vector, ECEF XYZ in meters.
+   /// @throw Exception
    Triple computeSolidEarthTides(const Position site, const EphTime tt)
-      throw(Exception)
    {
       try {
          const Position Sun = SolarSystem::SolarPosition(tt);
@@ -360,8 +369,8 @@ public:
    /// @param Position site  Nominal position of the site of interest.
    /// @param EphTime tt     Time of interest.
    /// @return Triple disp   Displacement vector, ECEF XYZ meters.
+   /// @throw Exception
    Triple computePolarTides(const Position site, const EphTime tt)
-      throw(Exception)
    {
       try {
          EphTime ttag(tt);
@@ -381,7 +390,7 @@ private:
    IERSConvention iersconv;
 
    /// Helper routine to keep the tests in one place
-   void testIERSvsEphemeris(const IERSConvention conv, const int ephno) throw()
+   void testIERSvsEphemeris(const IERSConvention conv, const int ephno) noexcept
    {
       if(ephno == -1) return;         // no ephemeris (yet)
 

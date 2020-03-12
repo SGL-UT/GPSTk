@@ -163,9 +163,9 @@ namespace gpstk
           * @param n       Degrees of freedom
           *
           * \warning "n" must be > 0, otherwise n = |n|.
+          * @throw InvalidParameter if n == 0
           */
-      virtual Chi2Distribution& setNDF(int n)
-         throw(InvalidParameter);
+      virtual Chi2Distribution& setNDF(int n);
 
 
    private:

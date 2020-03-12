@@ -108,9 +108,9 @@ namespace gpstk
           *
           * @param elevation  Elevation of satellite as seen at receiver, in
           *                   degrees
+          * @throw InvalidTropModel
           */
-      virtual double correction(double elevation) const
-         throw(InvalidTropModel);
+      virtual double correction(double elevation) const;
 
 
          /** Compute and return the full tropospheric delay, given the
@@ -122,10 +122,10 @@ namespace gpstk
           *
           * @param RX  Receiver position
           * @param SV  Satellite position
+          * @throw InvalidTropModel
           */
       virtual double correction( const Position& RX,
-                                 const Position& SV )
-         throw(InvalidTropModel);
+                                 const Position& SV );
 
 
          /** Compute and return the full tropospheric delay, given the
@@ -139,11 +139,11 @@ namespace gpstk
           * @param SV  Satellite position
           * @param tt  Time. In this model, tt is a dummy parameter kept just
           *            for consistency
+          * @throw InvalidTropModel
           */
       virtual double correction( const Position& RX,
                                  const Position& SV,
                                  const CommonTime& tt )
-         throw(InvalidTropModel)
       { return correction(RX, SV); };
 
 
@@ -160,25 +160,25 @@ namespace gpstk
           *            (meters)
           * @param tt  Time. In this model, tt is a dummy parameter kept just
           *            for consistency
+          * @throw InvalidTropModel
           */
       virtual double correction( const Xvt& RX,
                                  const Xvt& SV,
-                                 const CommonTime& tt )
-         throw(InvalidTropModel);
+                                 const CommonTime& tt );
 
 
          /** Compute and return the zenith delay for dry component of the
           *  troposphere.
+          * @throw InvalidTropModel
           */
-      virtual double dry_zenith_delay(void) const
-         throw(InvalidTropModel);
+      virtual double dry_zenith_delay(void) const;
 
 
          /** Compute and return the zenith delay for wet component of the
           *  troposphere.
+          * @throw InvalidTropModel
           */
       virtual double wet_zenith_delay(void) const
-         throw(InvalidTropModel)
       { return 0.1; };
 
 
@@ -187,18 +187,18 @@ namespace gpstk
           *
           * @param elevation  Elevation of satellite as seen at receiver, in
           *                   degrees
+          * @throw InvalidTropModel
           */
-      virtual double mapping_function(double elevation) const
-         throw(InvalidTropModel);
+      virtual double mapping_function(double elevation) const;
 
 
          /** Compute and return the mapping function for dry component
           *  of the troposphere.
           * @param elevation  Elevation of satellite as seen at receiver, in
           *                   degrees
+          * @throw InvalidTropModel
           */
       virtual double dry_mapping_function(double elevation) const
-         throw(InvalidTropModel)
       { return mapping_function(elevation); };
 
 
@@ -207,26 +207,28 @@ namespace gpstk
           *
           * @param elevation  Elevation of satellite as seen at receiver, in
           *                   degrees
+          * @throw InvalidTropModel
           */
       virtual double wet_mapping_function(double elevation) const
-         throw(InvalidTropModel)
       { return mapping_function(elevation); };
 
 
          /** In GCAT tropospheric model, this is a dummy method kept here just
           *  for consistency.
+          * @throw InvalidParameter
           */
       virtual void setWeather( const double& T,
                                const double& P,
                                const double& H )
-         throw(InvalidParameter) {};
+      {}
 
 
          /** In GCAT tropospheric model, this is a dummy method kept here just
           *  for consistency.
+          * @throw InvalidParameter
           */
       virtual void setWeather(const WxObservation& wx)
-         throw(InvalidParameter) {};
+      {}
 
 
          /** Define the receiver height; this is required before calling

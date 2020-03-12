@@ -81,8 +81,8 @@ namespace gpstk
 
       /// convert systems
       /// @param ts TimeSystem to be converted to
-      /// @throw if Correction does, if input system is Unknown
-      void convertSystemTo(const TimeSystem& ts) throw(Exception)
+      /// @throw Exception if Correction does, if input system is Unknown
+      void convertSystemTo(const TimeSystem& ts)
       {
          try {
             long jday(static_cast<long>(iMJD + dSOD/SEC_PER_DAY + MJD_JDAY));
@@ -110,8 +110,8 @@ namespace gpstk
 
       /// set the TimeSystem
       /// @param sys desired TimeSystem
-      /// @throw if it is not allowed (one of UTC TT TBD)
-      void setTimeSystem(TimeSystem sys) throw(Exception)
+      /// @throw Exception if it is not allowed (one of UTC TT TBD)
+      void setTimeSystem(TimeSystem sys)
       {
          if(sys != TimeSystem::UTC &&
             sys != TimeSystem::TT &&
@@ -122,7 +122,7 @@ namespace gpstk
 
       /// set to value of full MJD
       /// @param mjd long double MJD
-      void setMJD(long double mjd) throw()
+      void setMJD(long double mjd) noexcept
       {
          iMJD = long(mjd);
          dSOD = (mjd - static_cast<double>(iMJD)) * 86400.0;
@@ -130,26 +130,26 @@ namespace gpstk
 
       /// Compute MJD
       /// @return long integer MJD
-      long lMJD(void) const throw()
+      long lMJD(void) const noexcept
       {
          return iMJD;
       }
 
       /// Compute MJD
       /// @return full double MJD
-      double dMJD(void) const throw()
+      double dMJD(void) const noexcept
       {
          return (static_cast<double>(iMJD) + dSOD/86400.);
       }
 
       /// @return seconds of day
-      double secOfDay(void) const throw()
+      double secOfDay(void) const noexcept
       {
          return dSOD;
       }
 
       /// @return year
-      int year(void) const throw()
+      int year(void) const noexcept
       {
          long jday(static_cast<long>(iMJD + dSOD/SEC_PER_DAY + MJD_JDAY));
          int yy,mm,dd;
@@ -160,8 +160,8 @@ namespace gpstk
       /// constructor from CommonTime; convert to UTC if system is not UTC|TT|TDB, and
       /// change Unknown to UTC.
       /// @param dt CommonTime input
-      /// @throw if convertSystemTo does, if input system is Unknown
-      EphTime(const CommonTime& dt) throw(Exception)
+      /// @throw Exception if convertSystemTo does, if input system is Unknown
+      EphTime(const CommonTime& dt)
       {
          try {
          CommonTime ct(dt);
@@ -190,7 +190,7 @@ namespace gpstk
       }
 
       /// const cast EphTime to CommonTime
-      operator CommonTime() const throw()
+      operator CommonTime() const noexcept
       {
          MJD ctmjd;
          ctmjd.mjd = static_cast<long double>(iMJD + dSOD/SEC_PER_DAY);
@@ -201,7 +201,7 @@ namespace gpstk
 
       // no this is not a duplicate of the previous function
       /// non-const cast EphTime to CommonTime
-      operator CommonTime() throw()
+      operator CommonTime() noexcept
       {
          MJD ctmjd;
          ctmjd.mjd = static_cast<long double>(iMJD + dSOD/SEC_PER_DAY);

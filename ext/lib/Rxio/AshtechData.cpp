@@ -64,7 +64,6 @@ namespace gpstk
 
     //---------------------------------------------------------------------------
     void AshtechData::reallyGetRecord(FFStream& ffs)
-       throw(exception, FFStreamError, EndOfFile)
     {
        // Note that this will generate a bad_cast exception if it doesn't work.
        AshtechStream& stream=dynamic_cast<AshtechStream&>(ffs);
@@ -79,7 +78,6 @@ namespace gpstk
 
     //---------------------------------------------------------------------------
     void AshtechData::readHeader(AshtechStream& stream)
-       throw(FFStreamError, EndOfFile)
     {
        string& rawData = stream.rawData;
        size_t i;
@@ -121,7 +119,6 @@ namespace gpstk
 
     //---------------------------------------------------------------------------
     void AshtechData::readBody(AshtechStream& stream)
-       throw(FFStreamError, EndOfFile)
     {
        string& rawData = stream.rawData;
        const static string term = trailer+preamble;
@@ -160,7 +157,7 @@ namespace gpstk
 
 
     //---------------------------------------------------------------------------
-    void AshtechData::dump(ostream& out) const throw()
+    void AshtechData::dump(ostream& out) const noexcept
     {
        ostringstream oss;
        oss << getName() << " : id:" << id

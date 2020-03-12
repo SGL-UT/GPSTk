@@ -92,7 +92,7 @@ public:
    vector<string> cmdlineUnrecog;
 
    // ctor with defaults
-   InputConfig(void) throw() {
+   InputConfig(void) noexcept {
       fmtGPS = string("%F,%g");
       fmtCAL = string("%Y,%m,%d,%02H,%M,%f");
       fmt = string("%4F %10.3g %4Y %2m %2d %2H %2M %6.3f");
@@ -119,7 +119,10 @@ public:
 
 //------------------------------------------------------------------------------------
 // prototypes
-int GetCommandLine(int argc, char **argv) throw(Exception);
+/**
+ * @throw Exception
+ */
+int GetCommandLine(int argc, char **argv);
 
 //------------------------------------------------------------------------------------
 int main(int argc, char **argv)
@@ -454,7 +457,7 @@ catch (...) { cerr << "Unknown exception.  Abort." << endl; }
 }   // end main()
 
 //------------------------------------------------------------------------------------
-int GetCommandLine(int argc, char **argv) throw(Exception)
+int GetCommandLine(int argc, char **argv)
 {
 try {
    InputConfig& C=InputConfig::Instance();

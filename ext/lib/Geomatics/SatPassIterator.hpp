@@ -59,14 +59,14 @@ public:
    /// @param rev      If true, interate in reverse time order
    /// @param dbug     If true, print debug info in next()
    /// @return 1 for success, 0 at the end of the dataset.
-   /// @throw if input list is empty, or
+   /// @throw Exception if input list is empty, or
    ///        if elements in the list have differing data interval or obs types, or
    ///        if any observation type is not registered (cf. RinexUtilities.hpp)
    explicit SatPassIterator(std::vector<SatPass>& splist,
-      bool rev=false, bool dbug=false) throw(Exception);
+                            bool rev=false, bool dbug=false);
 
    /// Restart the iteration, i.e. return to the initial time
-   void reset(bool rev=false, bool dbug=false) throw();
+   void reset(bool rev=false, bool dbug=false) noexcept;
 
    /// Access (all of) the data for the next epoch. As long as this function
    /// returns non-zero, there is more data to be accessed.
@@ -75,8 +75,8 @@ public:
    ///                  data in the current iteration is found at
    ///                  SatPassList[i].data(j) where indexMap[i] = j.
    /// @return 1 for success, 0 at the end of the dataset.
-   /// @throw if time tags are out of order.
-   int next(std::map<unsigned int, unsigned int>& indexMap) throw(Exception);
+   /// @throw Exception if time tags are out of order.
+   int next(std::map<unsigned int, unsigned int>& indexMap);
 
    /// Access (all of) the data for the next epoch. As long as this function
    /// returns non-zero, there is more data to be accessed.
@@ -86,17 +86,17 @@ public:
    /// NB. This assumes that all the SatPasses have the same obs in the same order!!
    /// @param robs  RinexObsData in which data is returned.
    /// @return 1 for success, 0 at the end of the dataset.
-   /// @throw if time tags are out of order
-   int next(RinexObsData& robs) throw(Exception);
+   /// @throw Exception if time tags are out of order
+   int next(RinexObsData& robs);
 
    /// Get the first (earliest) time found in the SatPass list.
-   Epoch getFirstTime(void) throw() { return FirstTime; }
+   Epoch getFirstTime(void) noexcept { return FirstTime; }
 
    /// Get the last (latest) time found in the SatPass list.
-   Epoch getLastTime(void) throw() { return LastTime; }
+   Epoch getLastTime(void) noexcept { return LastTime; }
 
    /// @return the earliest time of good data in this SatPass list
-   Epoch getFirstGoodTime(void) const throw() {
+   Epoch getFirstGoodTime(void) const noexcept {
       Epoch ttag = LastTime;
       for(int i=0; i<SPList.size(); i++)
          if(SPList[i].getFirstGoodTime() < ttag)
@@ -105,7 +105,7 @@ public:
    }
 
    /// @return the latest time of good data in this SatPass list
-   Epoch getLastGoodTime(void) const throw() {
+   Epoch getLastGoodTime(void) const noexcept {
       Epoch ttag = FirstTime;
       for(int i=0; i<SPList.size(); i++)
          if(SPList[i].getLastGoodTime() > ttag)
@@ -114,12 +114,12 @@ public:
    }
 
    /// Get the time interval, which is common to all the SatPass in the list.
-   double getDT(void) throw() { return DT; }
+   double getDT(void) noexcept { return DT; }
 
    /// get a map of pairs of indexes for the current epoch. call this after calling
    /// next() to get pairs (i,j) where the data returned by next() is the same as
    /// SatPassList[i].data(j,<obstype>), for each i in the map, and j=map[i].
-   std::map<unsigned int,unsigned int> getIndexes(void) throw()
+   std::map<unsigned int,unsigned int> getIndexes(void) noexcept
       { return nextIndexMap; }
 
 private:

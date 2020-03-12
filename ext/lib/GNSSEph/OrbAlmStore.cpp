@@ -61,7 +61,6 @@ namespace gpstk
 
 //--------------------------------------------------------------------------
    Xvt OrbAlmStore::getXvt(const SatID& subjID, const CommonTime& t) const
-      throw( InvalidRequest )
    {
       try
       {
@@ -77,7 +76,7 @@ namespace gpstk
 
 
    Xvt OrbAlmStore::computeXvt(const SatID& subjID, const CommonTime& t) const
-      throw()
+      noexcept
    {
       Xvt rv;
       rv.health = Xvt::HealthStatus::Unavailable;
@@ -99,7 +98,7 @@ namespace gpstk
 
 
    Xvt::HealthStatus OrbAlmStore ::
-   getSVHealth(const SatID& subjID, const CommonTime& t) const throw()
+   getSVHealth(const SatID& subjID, const CommonTime& t) const noexcept
    {
       Xvt::HealthStatus rv = Xvt::HealthStatus::Unavailable;
       try
@@ -119,7 +118,6 @@ namespace gpstk
 
 //--------------------------------------------------------------------------
    Xvt OrbAlmStore::getXvt_WithinValidity(const SatID& subjID, const CommonTime& t) const
-      throw( InvalidRequest )
    {
       try
       {
@@ -146,7 +144,6 @@ namespace gpstk
 //--------------------------------------------------------------------------
 
    bool OrbAlmStore::isHealthy(const SatID& subjID, const CommonTime& t) const
-      throw( InvalidRequest )
    {
       bool retVal = false;
       if (!validSatSystem(subjID))
@@ -174,7 +171,7 @@ namespace gpstk
 //--------------------------------------------------------------------------
 
    void OrbAlmStore::dump(std::ostream& s, short detail) const
-      throw()
+      noexcept
    {
       dumpSubjAlm(s,detail);
       dumpXmitAlm(s,detail);
@@ -187,7 +184,6 @@ namespace gpstk
 //  Detail 1 = terse mode (one line)
 //  Datial 2 = full dump of each object. 
 void OrbAlmStore::dumpSubjAlm( std::ostream& s, short detail, const SatID& subjID) const
-         throw(InvalidRequest)
 {
       SubjectAlmMap::const_iterator it;
       static const string fmt("%02m/%02d/%04Y %02H:%02M:%02S %P");
@@ -287,7 +283,6 @@ void OrbAlmStore::dumpSubjAlm( std::ostream& s, short detail, const SatID& subjI
 //  Detail 1 = terse mode (one line)
 //  Detail 2 = full dump mode 
 void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjID ) const
-         throw(InvalidRequest)
 {
    XmitAlmMap::const_iterator   it;
    UniqueAlmMap::const_iterator it2;
@@ -384,7 +379,6 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjI
 //------------------------------------------------------------------------------------
       /// Convenience method.  Since 
    unsigned short OrbAlmStore::addMessage(const PackedNavBits& pnb)
-      throw(InvalidParameter,Exception)
    {
       unsigned short retVal = ADD_NEITHER; 
       try
@@ -419,7 +413,6 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjI
 //------------------------------------------------------------------------------------ 
    unsigned short OrbAlmStore::addOrbAlm( const OrbAlm* alm, 
                                 const bool isXmitHealthy )
-      throw(InvalidParameter,Exception)
    {
       unsigned short retVal = ADD_NEITHER; 
       bool test1 = false;
@@ -460,7 +453,6 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjI
       // question is where to add this element into that map.  
    bool OrbAlmStore::addOrbAlmToOrbAlmMap( const OrbAlm* alm, 
                                            OrbAlmMap& oem)
-         throw(InvalidParameter,Exception)
    {
    try
    {
@@ -503,7 +495,7 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjI
     
    //-----------------------------------------------------------------------------
    void OrbAlmStore::edit(const CommonTime& tmin, const CommonTime& tmax)
-      throw()
+      noexcept
    {
       for(SubjectAlmMap::iterator i = subjectAlmMap.begin(); i != subjectAlmMap.end(); i++)
       {
@@ -558,7 +550,7 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjI
 
    //-----------------------------------------------------------------------------
    void OrbAlmStore::clear()
-         throw()
+         noexcept
    {
         // First clear the subject almanac map
      SubjectAlmMap::iterator it;
@@ -600,7 +592,7 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjI
 
    //-----------------------------------------------------------------------------
    unsigned OrbAlmStore::size(unsigned short choice) const
-         throw()
+         noexcept
    {
       unsigned counter = 0;
       if (choice==0 || choice==1)
@@ -626,7 +618,7 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjI
 
    //-----------------------------------------------------------------------------
    unsigned OrbAlmStore::sizeSubjAlm(const SatID& subjID) const
-         throw()
+         noexcept
    {
       unsigned counter = 0;
       SubjectAlmMap::const_iterator i = subjectAlmMap.find(subjID);
@@ -644,7 +636,7 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjI
 
    //-----------------------------------------------------------------------------
    unsigned OrbAlmStore::sizeXmitAlm(const SatID& xmitID) const
-         throw()
+         noexcept
    {
       unsigned counter = 0; 
       XmitAlmMap::const_iterator i2 = xmitAlmMap.find(xmitID);
@@ -713,7 +705,6 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjI
    OrbAlmStore::find(const OrbAlmMap& em, 
                      const CommonTime& t,
                      const bool useEffectivity) const
-      throw( InvalidRequest )
    {
       OrbAlmMap::const_iterator cit; 
       const OrbAlm* candidate = NULL; 
@@ -788,7 +779,7 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjI
                                     const CommonTime& t,
                                     const bool useEffectivity, 
                                     const SatID& xmitID )
-         const throw( InvalidRequest )
+         const
    {
       const OrbAlm* oeb = 0;
       try
@@ -813,7 +804,7 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjI
 
 //-----------------------------------------------------------------------------
    CommonTime OrbAlmStore::deriveLastXmit(const OrbAlm* oap)
-      const throw( InvalidRequest )
+      const
    {
       bool foundAtLeastOne = false; 
       const SatID& subjID = oap->subjectSV;
@@ -879,7 +870,6 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjI
 
 //-----------------------------------------------------------------------------
    list<SatID> OrbAlmStore::xmitBySVs(const OrbAlm* oap) const
-         throw(InvalidRequest)
    {
       list<SatID> retList; 
 
@@ -915,7 +905,6 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjI
 //-----------------------------------------------------------------------------
    const OrbAlmStore::OrbAlmMap&
    OrbAlmStore::getOrbAlmMap( const SatID& subjID ) const
-      throw( InvalidRequest )
    {
       if (!validSatSystem(subjID))
       {
@@ -936,7 +925,6 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjI
    const OrbAlmStore::OrbAlmMap&
    OrbAlmStore::getOrbAlmMap(const SatID& xmitID, 
                              const SatID& subjID) const
-      throw( InvalidRequest )
    {
       if (!validSatSystem(subjID))
       {

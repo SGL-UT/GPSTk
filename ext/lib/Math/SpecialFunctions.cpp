@@ -1050,7 +1050,6 @@ namespace gpstk
        * released under a BSD license.
        */
    double regIncompleteBeta(const double x, const double a, const double b)
-      throw(InvalidParameter)
    {
 
          // Let's do some basic checks

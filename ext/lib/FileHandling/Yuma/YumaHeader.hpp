@@ -75,20 +75,26 @@ namespace gpstk
       virtual ~YumaHeader() {}
       
 
-      virtual void dump(std::ostream& s) const {};
+      virtual void dump(std::ostream& s) const {}
       
-      //! This class is a "header" so this function always returns "true". 
+         /// This class is a "header" so this function always returns "true". 
       virtual bool isHeader() const {return true;}
 
    protected:      
+         /**
+          * @throw std::exception
+          * @throw FFStreamError
+          * @throw StringUtils::StringException
+          */
       virtual void reallyPutRecord(FFStream& s) const 
-         throw(std::exception, FFStreamError, 
-               gpstk::StringUtils::StringException)
       {}
   
+         /**
+          * @throw std::exception
+          * @throw FFStreamError
+          * @throw StringUtils::StringException
+          */
       virtual void reallyGetRecord(FFStream& s) 
-         throw(std::exception, FFStreamError, 
-               gpstk::StringUtils::StringException)
       {}
       
    }; // class YumaHeader

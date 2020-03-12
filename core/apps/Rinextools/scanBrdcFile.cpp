@@ -93,9 +93,9 @@ class scanBrdcFile : public gpstk::BasicFramework
 {
 public:
    scanBrdcFile(const std::string& applName,
-              const std::string& applDesc) throw();
+              const std::string& applDesc) noexcept;
    ~scanBrdcFile() {}
-   virtual bool initialize(int argc, char *argv[]) throw();
+   virtual bool initialize(int argc, char *argv[]) noexcept;
    
 protected:
    virtual void process();
@@ -132,7 +132,7 @@ int main( int argc, char*argv[] )
 }
 
 scanBrdcFile::scanBrdcFile(const std::string& applName, 
-                       const std::string& applDesc) throw()
+                       const std::string& applDesc) noexcept
           :BasicFramework(applName, applDesc),
            inputOption('i', "input-file", "The name of the input file(s) to read.", true),
            outputOption('o', "output-file", "The name of the output file(s) to write.", true),
@@ -141,7 +141,7 @@ scanBrdcFile::scanBrdcFile(const std::string& applName,
 }
 
 bool scanBrdcFile::initialize(int argc, char *argv[])
-   throw()
+   noexcept
 {
    if (!BasicFramework::initialize(argc, argv)) return false;
    

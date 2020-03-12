@@ -47,7 +47,7 @@ namespace gpstk {
 // -------------------------------------------------------------------------------
 // only constructor
 SatPassIterator::SatPassIterator(vector<SatPass>& splist, bool rev, bool dbug)
-   throw(Exception) : SPList(splist), timeReverse(rev), debug(dbug)
+      : SPList(splist), timeReverse(rev), debug(dbug)
 {
    if(SPList.size() == 0) {
       Exception e("Empty list");
@@ -96,7 +96,7 @@ SatPassIterator::SatPassIterator(vector<SatPass>& splist, bool rev, bool dbug)
 
 // -------------------------------------------------------------------------------
 // restart the iteration
-void SatPassIterator::reset(bool rev, bool dbug) throw()
+void SatPassIterator::reset(bool rev, bool dbug) noexcept
 {
    timeReverse = rev;
    debug = dbug;
@@ -154,7 +154,7 @@ void SatPassIterator::reset(bool rev, bool dbug) throw()
 //                  SatPassList[i].data(j) where indexMap[i] = j.
 // @return 1 for success, 0 at the end of the dataset.
 // @throw if time tags are out of order.
-int SatPassIterator::next(map<unsigned int, unsigned int>& indexMap) throw(Exception)
+int SatPassIterator::next(map<unsigned int, unsigned int>& indexMap)
 {
    int i,j,k,numsvs;
    RinexSatID sat;
@@ -278,7 +278,7 @@ int SatPassIterator::next(map<unsigned int, unsigned int>& indexMap) throw(Excep
 //   it knows nothing of the obstypes in the header....
 // TD perhaps better design is to pass this (SatPassIterator) a vector of obstypes
 //   from the header and have it fill the robs parallel to that, inserting 0 as nec.
-int SatPassIterator::next(RinexObsData& robs) throw(Exception)
+int SatPassIterator::next(RinexObsData& robs)
 {
    if(listIndex.size() == 0) return 0;
 

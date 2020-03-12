@@ -141,7 +141,6 @@ namespace gpstk
       = RinexObsHeader::StandardRinexObsTypes;
 
    void RinexObsHeader::reallyPutRecord(FFStream& ffs) const
-      throw(std::exception, FFStreamError, StringException)
    {
       RinexObsStream& strm = dynamic_cast<RinexObsStream&>(ffs);
 
@@ -182,7 +181,7 @@ namespace gpstk
 
 
       // this function computes the number of valid header records which WriteHeaderRecords will write
-   int RinexObsHeader::NumberHeaderRecordsToBeWritten(void) const throw()
+   int RinexObsHeader::NumberHeaderRecordsToBeWritten(void) const noexcept
    {
       int n=0;
       if(valid & RinexObsHeader::versionValid) n++;
@@ -214,7 +213,6 @@ namespace gpstk
 
       // this function writes all valid header records
    void RinexObsHeader::WriteHeaderRecords(FFStream& ffs) const
-      throw(FFStreamError, StringException)
    {
       RinexObsStream& strm = dynamic_cast<RinexObsStream&>(ffs);
       string line;
@@ -516,7 +514,6 @@ namespace gpstk
 
       // this function parses a single header record
    void RinexObsHeader::ParseHeaderRecord(string& line)
-      throw(FFStreamError)
    {
       string label(line, 60, 20);
 
@@ -752,8 +749,6 @@ namespace gpstk
 
       // This function parses the entire header from the given stream
    void RinexObsHeader::reallyGetRecord(FFStream& ffs)
-      throw(std::exception, FFStreamError,
-            gpstk::StringUtils::StringException)
    {
       RinexObsStream& strm = dynamic_cast<RinexObsStream&>(ffs);
 
@@ -831,7 +826,6 @@ namespace gpstk
 
    RinexObsType
    RinexObsHeader::convertObsType(const string& oneObs)
-      throw(FFStreamError)
    {
       RinexObsType ot(RegisteredRinexObsTypes[0]);   // Unknown type
       for(size_t i=0; i<RegisteredRinexObsTypes.size(); i++) {
@@ -846,7 +840,6 @@ namespace gpstk
    }
    string
    RinexObsHeader::convertObsType(const RinexObsType& oneObs)
-      throw(FFStreamError)
    {
       return oneObs.type;
    }

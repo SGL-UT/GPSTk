@@ -54,7 +54,7 @@ namespace gpstk
    // Add the given name, AntexData pair. If the name already exists in the store,
    // replace the data for it with the input object.
    // throw if the AntexData is invalid.
-   void AntennaStore::addAntenna(string name, AntexData& antdata) throw(Exception)
+   void AntennaStore::addAntenna(string name, AntexData& antdata)
    {
       if(!antdata.isValid()) {
          Exception e("Invalid AntexData object");
@@ -73,7 +73,7 @@ namespace gpstk
 
    // Get the antenna data for the given name from the store.
    // return true if successful, false if input name was not found in the store
-   bool AntennaStore::getAntenna(string name, AntexData& antdata) throw()
+   bool AntennaStore::getAntenna(string name, AntexData& antdata) noexcept
    {
       map<string, AntexData>::iterator it;
       it = antennaMap.find(name);
@@ -101,7 +101,7 @@ namespace gpstk
    // return true if successful, false if satellite was not found in the store
    bool AntennaStore::getSatelliteAntenna(const char sys, const int n,
                             string& name, AntexData& data,
-                            bool inputPRN) const throw()
+                            bool inputPRN) const noexcept
    {
       map<string, AntexData>::const_iterator it;
       for(it = antennaMap.begin(); it != antennaMap.end(); it++) {
@@ -122,7 +122,7 @@ namespace gpstk
    }
 
    // Get a vector of all antenna names in the store
-   void AntennaStore::getNames(vector<string>& names) throw()
+   void AntennaStore::getNames(vector<string>& names) noexcept
    {
       names.clear();
       map<string, AntexData>::iterator it;
@@ -131,7 +131,7 @@ namespace gpstk
    }
 
    // Get a vector of all receiver antenna names in the store
-   void AntennaStore::getReceiverNames(vector<string>& names) throw()
+   void AntennaStore::getReceiverNames(vector<string>& names) noexcept
    {
       names.clear();
       map<string, AntexData>::iterator it;
@@ -145,7 +145,7 @@ namespace gpstk
    // those names will be included in the store (not applicable to satellites).
    // If there are already other names in the store, they will be removed.
    // NB. call before addAntenna() or addANTEXfile()
-   void AntennaStore::includeReceivers(vector<string>& names) throw()
+   void AntennaStore::includeReceivers(vector<string>& names) noexcept
    {
       namesToInclude = names;
       if(antennaMap.size() == 0) return;
@@ -181,7 +181,6 @@ namespace gpstk
    // throw any exception caught during reading the file.
    int AntennaStore::addANTEXfile(string filename,
                     CommonTime time)
-      throw(Exception)
    {
       try {
          int i,n=0;
@@ -283,7 +282,6 @@ namespace gpstk
                                       const CommonTime& ct,
                                       const Triple& satVector, 
                                       bool inputPRN) const
-      throw(Exception)
    {
       AntexData antenna;
       string name;
@@ -396,7 +394,6 @@ namespace gpstk
    Triple AntennaStore::ComToPcVector(const SatID& sidr, 
                                       const CommonTime& ct, 
                                       const Triple& satVector) const
-      throw(Exception)
    {
       char sys = ' ';
       Triple tp;

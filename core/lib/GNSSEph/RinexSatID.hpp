@@ -65,14 +65,14 @@ namespace gpstk
          /// Empty constructor; creates an invalid object (Unknown, ID = -1).
 
       RinexSatID()
-      throw()
+      noexcept
       { id = -1; system = systemUnknown; }
 
 
          /// Explicit constructor, no defaults, RINEX systems only.
 
       RinexSatID(int p, const SatelliteSystem& s)
-         throw()
+         noexcept
       {
          id = p; system = s;
          switch(s)
@@ -95,10 +95,10 @@ namespace gpstk
       }
 
 
-         /// Constructor from a string.
-
+         /** Constructor from a string.
+          * @throw Exception
+          */
       RinexSatID(const std::string& str)
-         throw(Exception)
       {
          try { fromString(str); }
          catch(Exception& e) { GPSTK_RETHROW(e); }
@@ -108,7 +108,7 @@ namespace gpstk
          /// Cast a SatID to a RinexSatID.
 
       RinexSatID(const SatID& sat)
-         throw()
+         noexcept
       { *this = RinexSatID(sat.id,sat.system); }
 
 
@@ -116,14 +116,14 @@ namespace gpstk
          /// return the current fill character.
 
       char setfill(char c)
-         throw()
+         noexcept
       { char csave = fillchar; fillchar = c; return csave; }
 
 
          /// Get the fill character used in output.
 
       char getfill() const
-         throw()
+         noexcept
       { return fillchar; }
 
 
@@ -134,7 +134,7 @@ namespace gpstk
          /// @note return only RINEX types, for non-RINEX systems return '?'
 
       char systemChar() const
-         throw()
+         noexcept
       {
          switch(system)
          {
@@ -154,7 +154,7 @@ namespace gpstk
          /// Return the system name as a string.
          /// @note Return only RINEX types or 'Unknown'.
       std::string systemString() const
-         throw()
+         noexcept
       {
          switch(system)
          {
@@ -173,7 +173,7 @@ namespace gpstk
          /// Return the system name as a string of length 3.
          /// @note Return only RINEX types or 'Unknown'.
       std::string systemString3() const
-         throw()
+         noexcept
       {
          switch(system)
          {
@@ -190,11 +190,12 @@ namespace gpstk
       };
 
 
-         /// Set the RinexSatID from a string (1 character plus 2-digit integer).
-         /// @note GPS is default system (no or unknown system char)
-
+         /** Set the RinexSatID from a string (1 character plus
+          * 2-digit integer).
+          * @note GPS is default system (no or unknown system char)
+          * @throw Exception
+          */
       void fromString(const std::string& s)
-         throw(Exception)
       {
          char c;
          std::istringstream iss(s);
@@ -252,7 +253,7 @@ namespace gpstk
          /// Convert the RinexSatID to string (1 character plus 2-digit integer).
 
       std::string toString() const
-         throw()
+         noexcept
       {
          std::ostringstream oss;
          oss.fill(fillchar);

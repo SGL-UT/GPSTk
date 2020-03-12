@@ -58,7 +58,10 @@ namespace gpstk
    class AllanDeviation
    {
    public:
-      AllanDeviation(std::vector<double>& phase, double tau0) throw(Exception)
+         /**
+          * @throw Exception
+          */
+      AllanDeviation(std::vector<double>& phase, double tau0)
          : N(phase.size()-1), numGaps(0)
       {
          if(N < 1 )
@@ -96,7 +99,7 @@ namespace gpstk
          }
       }
 
-      void dump(std::ostream& s = std::cout) const throw()
+      void dump(std::ostream& s = std::cout) const noexcept
       {
          std::vector<double>::const_iterator i=deviation.begin(),j=time.begin();
          for (; i != deviation.end() && j != time.end(); i++,j++)

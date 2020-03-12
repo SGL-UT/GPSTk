@@ -133,7 +133,7 @@ const map<unsigned, string> Arc::markStr = Arc::create_mark_string_map();
 //
 // convert SatPass to data arrays and call DC(arrays)
 int gdc::DiscontinuityCorrector(SatPass& SP, string& retMsg, vector<string>& cmds,
-      int GLOn) throw(Exception)
+      int GLOn)
 {
    try {
       sat = SP.getSat();
@@ -218,7 +218,7 @@ int gdc::DiscontinuityCorrector(
       vector<double> dataP1, vector<double> dataP2,
       vector<double> dt_in, vector<int> flags_in,
       string& retMsg, vector<string>& cmds,
-      int GLOn, string outfmt_in) throw(Exception)
+      int GLOn, string outfmt_in)
 {
    try {
       int iret;
@@ -373,7 +373,7 @@ int gdc::DiscontinuityCorrector(
 
 //------------------------------------------------------------------------------------
 // NB return value == nslips is not used
-int gdc::ProcessOneCombo(const unsigned which) throw(Exception)
+int gdc::ProcessOneCombo(const unsigned which)
 {
    try {
       int iret, nslips(0);
@@ -400,7 +400,7 @@ int gdc::ProcessOneCombo(const unsigned which) throw(Exception)
 //------------------------------------------------------------------------------------
 // process one combo (WL or GF) using 1st differences; called by ProcessOneCombo
 // @return return value of filter() if negative, otherwise number of slips found
-int gdc::GrossProcessing(const unsigned which) throw(Exception)
+int gdc::GrossProcessing(const unsigned which)
 {
    try {
       int i, nslips(0), iret;
@@ -450,7 +450,7 @@ int gdc::GrossProcessing(const unsigned which) throw(Exception)
 //------------------------------------------------------------------------------------
 // process one combo (WL or GF) using window filter; called by ProcessOneCombo
 // @return return value of filter() if negative, otherwise number of slips found
-int gdc::FineProcessing(const unsigned which) throw(Exception)
+int gdc::FineProcessing(const unsigned which)
 {
    try {
       int i, nslips(0), iret;
@@ -509,7 +509,6 @@ int gdc::FineProcessing(const unsigned which) throw(Exception)
 //                otherwise return number of FilterHit found (>= 1)
 int gdc::filterFirstDiff(const unsigned which, const string label,
                            const double& limit, vector< FilterHit<double> >& hits)
-   throw(Exception)
 {
    try {
       // configure first difference filter
@@ -550,7 +549,6 @@ int gdc::filterFirstDiff(const unsigned which, const string label,
 // return return value of filter() if negative, otherwise number of slips found
 int gdc::filterWindow(const unsigned which, const string label,
                       const double& limit, vector< FilterHit<double> >& hits)
-   throw(Exception)
 {
    try {
       unsigned int i;
@@ -620,7 +618,6 @@ int gdc::filterWindow(const unsigned which, const string label,
 // return the number of new Arcs in Arcs
 int gdc::mergeFilterResultsIntoArcs(vector< FilterHit<double> >& hits,
                                     const unsigned which)
-   throw(Exception)
 {
    try {
       // is this necessary? ever used?
@@ -726,7 +723,6 @@ int gdc::mergeFilterResultsIntoArcs(vector< FilterHit<double> >& hits,
 // @param hit        the FilterHit, which describes a segment to be marked
 // @param flagvalue  the value to which flags[] is set for each outlier.
 void gdc::flagBadData(const FilterHit<double>& hit, const unsigned flagvalue)
-   throw(Exception)
 {
    // loop over all the data in this segment (hit)
    for(unsigned int i=hit.index; i<hit.index+hit.npts; i++) {
@@ -744,7 +740,6 @@ void gdc::flagBadData(const FilterHit<double>& hit, const unsigned flagvalue)
 // param mark the value to assign to the new Arc's mark
 // return true if new Arc created -> fixUpArcs() should be called.
 bool gdc::addArc(const int index, const unsigned mark)
-   throw(Exception)
 {
    // find the Arc containing the given index
    map<int,Arc>::iterator ait = Arcs.begin();
@@ -777,7 +772,7 @@ bool gdc::addArc(const int index, const unsigned mark)
 //------------------------------------------------------------------------------------
 // modify Arcs: recompute npts and ngood, remove empty Arcs
 // TD also remove Arcs with slip == 0
-void gdc::fixUpArcs(void) throw(Exception)
+void gdc::fixUpArcs(void)
 {
    try {
       map<int,Arc>::iterator ait;
@@ -798,7 +793,7 @@ void gdc::fixUpArcs(void) throw(Exception)
 
 //------------------------------------------------------------------------------------
 // recompute the npts and ngood for each Arc using the indexes in the map: Arcs
-void gdc::recomputeArcs(void) throw(Exception)
+void gdc::recomputeArcs(void)
 {
    try {
       map<int,Arc>::iterator ait, cit;
@@ -828,7 +823,6 @@ void gdc::recomputeArcs(void) throw(Exception)
 // param iterator pointing to element of Arcs that contains the Arc
 // param which is either WL or GF
 void gdc::getArcStats(map<int,Arc>::iterator& ait, const unsigned which)
-   throw(Exception)
 {
    try {
       bool isWL(which == WL);
@@ -874,7 +868,7 @@ void gdc::getArcStats(map<int,Arc>::iterator& ait, const unsigned which)
 // find gaps within Arc in Arcs; if gap is larger than MaxGap, break the Arc into
 // two, adding a BEG Arc (unless its at the very end of the data).
 // param which is either WL or GF
-void gdc::findLargeGaps(void) throw(Exception)
+void gdc::findLargeGaps(void)
 {
    try {
       int limit(cfg(MaxGap));
@@ -925,7 +919,7 @@ void gdc::findLargeGaps(void) throw(Exception)
 // find gaps within the given Arc, including those at the very beginning
 // (index==Arc.index) and at the very end (index+nptsgap==Arc.index+Arc.npts).
 // return map with key=index of beginning of gap, value=number of points in gap.
-map<int,int> gdc::findGaps(const Arc& arc) throw(Exception)
+map<int,int> gdc::findGaps(const Arc& arc)
 {
    try {
       unsigned int i,count,index;// count consecutive bad pts, starting at index
@@ -960,7 +954,7 @@ map<int,int> gdc::findGaps(const Arc& arc) throw(Exception)
 // on the two segments (one-sample for WL and two-sample for GF).
 // param which is either WL or GF
 // return the number of slips fixed.
-int gdc::fixSlips(const unsigned which) throw(Exception)
+int gdc::fixSlips(const unsigned which)
 {
    try {
       int i,nslips(0);
@@ -1021,7 +1015,7 @@ int gdc::fixSlips(const unsigned which) throw(Exception)
 
 // do a final check on the pass. Look for isolated good points (< MinPts good
 // points surrounded by N(?) bad points on each side.
-int gdc::FinalCheck(void) throw(Exception)
+int gdc::FinalCheck(void)
 {
    try {
       bool fixup(false);
@@ -1131,7 +1125,7 @@ void gdc::dumpData(ostream& os, const string msg)
 
 //------------------------------------------------------------------------------------
 void gdc::DumpHits(const vector< FilterHit<double> >& filterResults,
-                     const string& tag, const string& label, int prec) throw()
+                     const string& tag, const string& label, int prec) noexcept
 {
    if(prec == -1) prec = cfg(osprec);
    for(int i=0; i<filterResults.size(); i++) {
@@ -1142,7 +1136,7 @@ void gdc::DumpHits(const vector< FilterHit<double> >& filterResults,
 }
 
 //------------------------------------------------------------------------------------
-void gdc::DumpArcs(const string& tag, const string& label, int prec) throw()
+void gdc::DumpArcs(const string& tag, const string& label, int prec) noexcept
 {
    if(prec == -1) prec = cfg(osprec);
    int i(1);
@@ -1156,7 +1150,7 @@ void gdc::DumpArcs(const string& tag, const string& label, int prec) throw()
 
 //------------------------------------------------------------------------------------
 // build the string that is returned by the discontinuity corrector
-string gdc::returnMessage(int prec, int wid) throw()
+string gdc::returnMessage(int prec, int wid) noexcept
 {
    int minpts(cfg(MinPts));
    string retmsg;
@@ -1265,7 +1259,7 @@ string gdc::returnMessage(int prec, int wid) throw()
 // param SP       SatPass object containing the input data.
 // param breaks  vector of indexes where SatPass SP must be broken into two
 // param marks   vector of indexes in SatPass SP where breaks are suspected
-void gdc::applyFixesToSatPass(SatPass& SP) throw(Exception)
+void gdc::applyFixesToSatPass(SatPass& SP)
                            //, vector<int>& breaks, vector<int>& marks)
 {
 try {
@@ -1338,7 +1332,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 // apply the results to generate editing commands; cfg(doCmds)
 // Use tk-RinEdit form for commands (--IF name, etc) since EditRinex also takes.
 // @param cmds     vector of strings giving editing commands for RINEX editor.
-void gdc::generateCmds(vector<string>& cmds) throw(Exception)
+void gdc::generateCmds(vector<string>& cmds)
 {
 try {
    unsigned int i,j,k;
@@ -1472,7 +1466,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 //------------------------------------------------------------------------------------
 // Set a parameter in the configuration; the input string 'cmd' is of the form
 // '[--DC]<id><s><value>' : separator s is one of ':=,'; leading --DC is optional.
-bool gdc::setParameter(string cmd) throw(Exception)
+bool gdc::setParameter(string cmd)
 {
    try {
       if(cmd.empty()) return false;
@@ -1499,7 +1493,7 @@ bool gdc::setParameter(string cmd) throw(Exception)
 //------------------------------------------------------------------------------------
 // Set a parameter in the configuration using the label and the value,
 // for booleans use (T,F)=(non-zero,zero).
-bool gdc::setParameter(string label, double value) throw(Exception)
+bool gdc::setParameter(string label, double value)
 {
    if(CFG.find(label) == CFG.end())
       return false; // GPSTK_THROW(Exception("Unknown configuration label " + label));
@@ -1548,13 +1542,12 @@ bool gdc::setParameter(string label, double value) throw(Exception)
    }
 
    return true;
-}  // end bool gdc::setParameter(string label, double value) throw(Exception)
+}  // end bool gdc::setParameter(string label, double value)
 
 //------------------------------------------------------------------------------------
 // Print help page, including descriptions and current values of all
 // the parameters, to the ostream.
 void gdc::DisplayParameterUsage(ostream& os, string tag, bool advanced)
-   throw(Exception)
 {
    try {
       static const unsigned name_val_width(18),adv_name_val_width(18);

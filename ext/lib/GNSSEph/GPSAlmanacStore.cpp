@@ -49,27 +49,27 @@
 namespace gpstk
 {
    Xvt GPSAlmanacStore::getXvt(const SatID& sat, const CommonTime& t)
-      const throw(InvalidRequest)
+      const
    {
       AlmOrbit a = findAlmanac(sat, t);
       return a.svXvt(t);
    }
 
    Xvt GPSAlmanacStore::getXvtMostRecentXmit(const SatID sat, const CommonTime& t) 
-         const throw(InvalidRequest)
+         const
    {
       AlmOrbit a = findMostRecentAlmanac(sat, t);
       return a.svXvt(t);
    }
    
    short GPSAlmanacStore::getSatHealth(const SatID sat, const CommonTime& t)
-      const throw(InvalidRequest)
+      const
    {
       AlmOrbit a = findAlmanac(sat, t);
       return a.getSVHealth();
    }
 
-   bool GPSAlmanacStore::addAlmanac(const AlmOrbit& alm) throw()
+   bool GPSAlmanacStore::addAlmanac(const AlmOrbit& alm) noexcept
    {
       if ((alm.getPRNID() >= 1) && (alm.getPRNID() <= MAX_PRN_GPS))
       {
@@ -87,7 +87,7 @@ namespace gpstk
       return false;
    }
 
-   bool GPSAlmanacStore::addAlmanac(const EngAlmanac& alm) throw()
+   bool GPSAlmanacStore::addAlmanac(const EngAlmanac& alm) noexcept
    {
       AlmOrbits ao = alm.getAlmOrbElems();
       AlmOrbits::const_iterator oci;
@@ -100,7 +100,7 @@ namespace gpstk
    /// gets the closest almanac for the given time and satellite,
    /// closest being in the past or future.
    AlmOrbit GPSAlmanacStore::findAlmanac(const SatID sat, const CommonTime& t) 
-      const throw(InvalidRequest)
+      const
    {
       UBAMap::const_iterator satItr = uba.find(sat);
       if (satItr == uba.end())
@@ -146,7 +146,7 @@ namespace gpstk
    }
 
    AlmOrbit GPSAlmanacStore::findMostRecentAlmanac(const SatID sat, const CommonTime& t) 
-         const throw(InvalidRequest)
+         const
    {
       UBAMap::const_iterator satItr = uba.find(sat);
       if (satItr == uba.end())
@@ -184,7 +184,7 @@ namespace gpstk
    }
 
    AlmOrbits GPSAlmanacStore::findAlmanacs(const CommonTime& t) 
-      const throw(InvalidRequest)
+      const
    {
       AlmOrbits ao;
       UBAMap::const_iterator satItr = uba.begin();
@@ -207,14 +207,14 @@ namespace gpstk
 
 
    void GPSAlmanacStore::edit(const CommonTime& tmin, const CommonTime& tmax)
-      throw()
+      noexcept
    {
       std::cout << "Not yet implimented" << std::endl;
    }
 
 
    void GPSAlmanacStore::dump(std::ostream& s, short detail)
-      const throw()
+      const noexcept
    {
       UBAMap::const_iterator i;
       EngAlmMap::const_iterator j;

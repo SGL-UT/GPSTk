@@ -74,13 +74,16 @@ public:
    unsigned test_MT32(); 
    unsigned test_MT33(); 
 
-   CommonTime exercise_getUT1(CommonTime& ct) throw(InvalidRequest);
+      /**
+       * @throw InvalidRequest */
+   CommonTime exercise_getUT1(CommonTime& ct);
 
 
    void setUpCNAV();
+      /**
+       * @throw InvalidParameter */
    gpstk::PackedNavBits getPnbCNav(const gpstk::ObsID& oidr,
-                                   const std::string& str)
-             throw(gpstk::InvalidParameter);
+                                   const std::string& str);
 
       // Methods above exist to set up the following
       // members
@@ -231,7 +234,6 @@ setUpCNAV()
    gpstk::PackedNavBits 
    OrbSysGpsC_T::
    getPnbCNav(const gpstk::ObsID& oidr, const std::string& str)
-             throw(gpstk::InvalidParameter)
    {
       try
       {
@@ -357,7 +359,6 @@ test_MT32()
 
 CommonTime OrbSysGpsC_T::
 exercise_getUT1(CommonTime& currT)
-   throw(InvalidRequest)
 {
    const OrbDataSys* odsp;
    const OrbSysGpsC_32* mt32;

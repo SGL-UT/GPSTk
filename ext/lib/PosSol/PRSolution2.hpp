@@ -68,7 +68,7 @@ namespace gpstk
    {
    public:
          /// Constructor
-      PRSolution2() throw() :
+      PRSolution2() noexcept :
          RMSLimit(6.5), SlopeLimit(1000.), Algebraic(false),
          ResidualCriterion(true), ReturnAtOnce(false), NSatsReject(-1),
          Debug(false), pDebugStream(&std::cout), MaxNIterations(10),
@@ -94,17 +94,17 @@ namespace gpstk
        * -3  not enough good data (> 4) to form a (RAIM) solution
        *     (the 4 satellite solution might be returned - check isValid())
        * -4  ephemeris is not found for one or more satellites
+       * @throw Exception
        */
       int RAIMCompute(const CommonTime& Tr,
                       std::vector<SatID>& Satellite,
                       const std::vector<double>& Pseudorange,
                       const XvtStore<SatID>& Eph,
-                      TropModel *pTropModel)
-         throw(Exception);
+                      TropModel *pTropModel);
 
          /// Return the status of solution
       bool isValid()
-         const throw() { return Valid; }
+         const noexcept { return Valid; }
 
       // input:
 
@@ -214,7 +214,7 @@ namespace gpstk
                                            const XvtStore<SatID>& Eph,
                                            Matrix<double>& SVP,
                                            std::ostream *pDebug=NULL)
-         throw();
+         noexcept;
 
       /** Compute a single autonomous pseudorange solution.
        * Input only:
@@ -252,6 +252,7 @@ namespace gpstk
        * -2  singular problem
        * -3  not enough good data to form a solution (at least 4 satellites required)
        * -4  ephemeris not found for one or more satellites
+       * @throw Exception
        */
       static int AutonomousPRSolution(const CommonTime& Tr,
                                       const std::vector<bool>& Use,
@@ -265,8 +266,7 @@ namespace gpstk
                                       Vector<double>& Resid,
                                       Vector<double>& Slope,
                                       std::ostream *pDebug=NULL,
-                                      Vector<int>* satSystems=NULL)
-            throw(Exception);
+                                      Vector<int>* satSystems=NULL);
 
    private:
 

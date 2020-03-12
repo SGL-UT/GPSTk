@@ -76,7 +76,7 @@ namespace gpstk
    public:
 
          /// Default constructor
-      SolidTides() throw() {}
+      SolidTides() noexcept {}
 
          /// Destructor
       virtual ~SolidTides() {}
@@ -96,8 +96,7 @@ namespace gpstk
           * as to why the request failed.
           */
          Triple getSolidTide(const CommonTime& t, 
-                            const Position& p) const 
-            throw(InvalidRequest);
+                             const Position& p) const;
 
 
    private:

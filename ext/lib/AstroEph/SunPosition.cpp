@@ -64,7 +64,6 @@ namespace gpstk
       //    reason, this is thrown. The text may have additional
       //    information as to why the request failed.
    Triple SunPosition::getPosition(const CommonTime& t) const
-      throw(InvalidRequest)
    {
 
          // Test if the time interval is correct
@@ -91,7 +90,6 @@ namespace gpstk
        * @param t Epoch
        */
    Triple SunPosition::getPositionCIS(const CommonTime& t) const
-      throw(InvalidRequest)
    {
 
          // Test if the time interval is correct

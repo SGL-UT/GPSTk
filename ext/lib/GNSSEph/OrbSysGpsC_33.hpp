@@ -65,9 +65,10 @@ namespace gpstk
          /// Default constructor
       OrbSysGpsC_33();
 
-        /// Constructor for creating directly from a PackedNavBits object
-      OrbSysGpsC_33(const PackedNavBits& msg)
-         throw( gpstk::InvalidParameter);
+         /** Constructor for creating directly from a PackedNavBits object
+          * @throw InvalidParameter
+          */
+      OrbSysGpsC_33(const PackedNavBits& msg);
 
          /// Destructor
       virtual ~OrbSysGpsC_33() {}
@@ -80,8 +81,7 @@ namespace gpstk
           * @param msg - 300 bits of Subframe 4, Page 18.
           * @throw InvalidParameter if message data is invalid
           */
-      virtual void loadData(const PackedNavBits& msg)
-         throw(gpstk::InvalidParameter);
+      virtual void loadData(const PackedNavBits& msg);
 
       virtual bool isSameData(const OrbData* right) const;
 
@@ -112,22 +112,27 @@ namespace gpstk
       virtual double getUtcOffset(const CommonTime& ct) const;
       virtual double getUtcOffsetModLeapSec(const CommonTime& ct) const;
 
-      virtual TimeSystemCorrection getTSC() const
-         throw(InvalidRequest);
+         /**
+          * @throw InvalidRequest
+          */
+      virtual TimeSystemCorrection getTSC() const;
 
+         /**
+          * @throw InvalidRequest
+          */
       virtual void dumpUtcTerse(std::ostream& s = std::cout,
-              const std::string tform="%02m/%02d/%04Y %03j %02H:%02M:%02S") const
-         throw( InvalidRequest );
+                                const std::string tform="%02m/%02d/%04Y %03j %02H:%02M:%02S") const;
 
          /** Output the contents of this orbit data to the given stream.
-          * @throw Invalid Request if the required data has not been stored.
+          * @throw InvalidRequest if the required data has not been stored.
           */
       virtual void dumpTerse(std::ostream& s = std::cout) const
-         throw( InvalidRequest )
       { dumpUtcTerse(s); }
 
-      virtual void dumpBody(std::ostream& s = std::cout) const
-         throw( InvalidRequest );
+         /**
+          * @throw InvalidRequest
+          */
+      virtual void dumpBody(std::ostream& s = std::cout) const;
 
          // UTC Parameters
       //double A0;

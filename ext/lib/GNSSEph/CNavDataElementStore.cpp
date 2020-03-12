@@ -182,7 +182,6 @@ namespace gpstk
    CNavDataElementStore::getDataElementMap(const SatID& satID,
                                            const CommonTime& begin,
                                            const CommonTime& end) const
-                throw(InvalidRequest)
    {
       DEMap::const_iterator cit = deMap.find(satID);
       if (cit==deMap.end())

@@ -87,7 +87,7 @@ public:
    }
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Woverloaded-virtual"
-   virtual bool initialize(int argc, char* argv[]) throw()
+   virtual bool initialize(int argc, char* argv[]) noexcept
    {
       if (!gpstk::BasicFramework::initialize(argc, argv))
          return false;

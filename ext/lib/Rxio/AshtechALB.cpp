@@ -48,7 +48,6 @@ namespace gpstk
 
    //---------------------------------------------------------------------------
    void AshtechALB::reallyGetRecord(FFStream& ffs)
-      throw(std::exception, FFStreamError, EndOfFile)
    {
       AshtechStream& stream=dynamic_cast<AshtechStream&>(ffs);
 
@@ -73,7 +72,6 @@ namespace gpstk
 
    //---------------------------------------------------------------------------
    void AshtechALB::decode(const std::string& data)
-      throw(std::exception, FFStreamError)
    {
       using BinUtils::decodeVar;
 
@@ -96,7 +94,7 @@ namespace gpstk
    }
 
    //---------------------------------------------------------------------------
-   void AshtechALB::dump(ostream& out) const throw()
+   void AshtechALB::dump(ostream& out) const noexcept
    {
       ostringstream oss;
       using gpstk::StringUtils::asString;

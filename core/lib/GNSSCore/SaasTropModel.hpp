@@ -42,162 +42,189 @@
 
 namespace gpstk
 {
-   /** Saastamoinen tropospheric model based on Saastamoinen, J., 'Atmospheric
-    * Correction for the Troposphere and Stratosphere in Radio Ranging of
-    * Satellites,' Geophysical Monograph 15, American Geophysical Union, 1972,
-    * and Ch 9 of McCarthy, D and Petit, G, IERS Conventions (2003), IERS
-    * Technical Note 32, IERS, 2004. The mapping functions are from
-    * Neill, A.E., 1996, 'Global Mapping Functions for the Atmosphere Delay of
-    * Radio Wavelengths,' J. Geophys. Res., 101, pp. 3227-3246 (also see IERS TN 32).
-    *
-    * This model includes a wet and dry component, and requires input of the
-    * geodetic latitude, day of year and height above the ellipsoid of the receiver.
-    *
-    * Usually, the caller will set the latitude and day of year at the same
-    * time the weather is set
-    *   SaasTropModel stm;
-    *   stm.setReceiverLatitude(lat);
-    *   stm.setDayOfYear(doy);
-    *   stm.setWeather(T,P,H);
-    * Then, when the correction (and/or delay and map) is computed, receiver height
-    * should be set before the call to correction(elevation):
-    *   stm.setReceiverHeight(height);
-    *   trop_corr = stm.correction(elevation);
-    *
-    * NB in this model, units of 'temp' are degrees Celsius and
-    * humid actually stores water vapor partial pressure in mbars
-    */
+      /** Saastamoinen tropospheric model based on Saastamoinen, J.,
+       * 'Atmospheric Correction for the Troposphere and Stratosphere
+       * in Radio Ranging of Satellites,' Geophysical Monograph 15,
+       * American Geophysical Union, 1972, and Ch 9 of McCarthy, D and
+       * Petit, G, IERS Conventions (2003), IERS Technical Note 32,
+       * IERS, 2004. The mapping functions are from Neill, A.E., 1996,
+       * 'Global Mapping Functions for the Atmosphere Delay of Radio
+       * Wavelengths,' J. Geophys. Res., 101, pp. 3227-3246 (also see
+       * IERS TN 32).
+       *
+       * This model includes a wet and dry component, and requires
+       * input of the geodetic latitude, day of year and height above
+       * the ellipsoid of the receiver.
+       *
+       * Usually, the caller will set the latitude and day of year at the same
+       * time the weather is set
+       *   SaasTropModel stm;
+       *   stm.setReceiverLatitude(lat);
+       *   stm.setDayOfYear(doy);
+       *   stm.setWeather(T,P,H);
+       * Then, when the correction (and/or delay and map) is computed,
+       * receiver height should be set before the call to
+       * correction(elevation):
+       *   stm.setReceiverHeight(height);
+       *   trop_corr = stm.correction(elevation);
+       *
+       * @note in this model, units of 'temp' are degrees Celsius and
+       * humid actually stores water vapor partial pressure in mbars
+       */
    class SaasTropModel : public TropModel
    {
    public:
          /// Empty constructor
       SaasTropModel(void);
 
-         /// Create a trop model using the minimum information: latitude and doy.
-         /// @param lat Latitude of the receiver in degrees.
-         /// @param day Day of year.
+         /** Create a trop model using the minimum information:
+          * latitude and doy.
+          * @param lat Latitude of the receiver in degrees.
+          * @param day Day of year.
+          */
       SaasTropModel(const double& lat,
                     const int& day);
 
-         /// Create a trop model with weather.
-         /// @param lat Latitude of the receiver in degrees.
-         /// @param day Day of year.
-         /// @param wx the weather to use for this correction.
+         /** Create a trop model with weather.
+          * @param lat Latitude of the receiver in degrees.
+          * @param day Day of year.
+          * @param wx the weather to use for this correction.
+          * @throw InvalidParameter
+          */
       SaasTropModel(const double& lat,
                     const int& day,
-                    const WxObservation& wx)
-         throw(InvalidParameter);
+                    const WxObservation& wx);
 
-         /// Create a tropospheric model from explicit weather data
-         /// @param lat Latitude of the receiver in degrees.
-         /// @param day Day of year.
-         /// @param T temperature in degrees Celsius
-         /// @param P atmospheric pressure in millibars
-         /// @param H relative humidity in percent
+         /** Create a tropospheric model from explicit weather data
+          * @param lat Latitude of the receiver in degrees.
+          * @param day Day of year.
+          * @param T temperature in degrees Celsius
+          * @param P atmospheric pressure in millibars
+          * @param H relative humidity in percent
+          * @throw InvalidParameter
+          */
       SaasTropModel(const double& lat,
                     const int& day,
                     const double& T,
                     const double& P,
-                    const double& H)
-         throw(InvalidParameter);
+                    const double& H);
 
-      /// Return the name of the model
+         /// Return the name of the model
       virtual std::string name(void)
-         { return std::string("Saas"); }
+      { return std::string("Saas"); }
 
-         /// Compute and return the full tropospheric delay
-         /// @param elevation Elevation of satellite as seen at receiver, in degrees
-      virtual double correction(double elevation) const
-         throw(InvalidTropModel);
+         /** Compute and return the full tropospheric delay
+          * @param elevation Elevation of satellite as seen at
+          *   receiver, in degrees
+          * @throw InvalidTropModel
+          */
+      virtual double correction(double elevation) const;
 
          /**
-          * Compute and return the full tropospheric delay, given the positions of
-          * receiver and satellite and the time tag. This version is most useful
-          * within positioning algorithms, where the receiver position and timetag
-          * may vary; it computes the elevation (and other receiver location
-          * information) and passes them to appropriate set...() routines and the
-          * correction(elevation) routine.
+          * Compute and return the full tropospheric delay, given the
+          * positions of receiver and satellite and the time tag. This
+          * version is most useful within positioning algorithms,
+          * where the receiver position and timetag may vary; it
+          * computes the elevation (and other receiver location
+          * information) and passes them to appropriate set...()
+          * routines and the correction(elevation) routine.
           * @param RX  Receiver position
           * @param SV  Satellite position
           * @param tt  Time tag of the signal
+          * @throw InvalidTropModel
           */
       virtual double correction(const Position& RX,
                                 const Position& SV,
-                                const CommonTime& tt)
-         throw(InvalidTropModel);
+                                const CommonTime& tt);
 
          /** \deprecated
-          * Compute and return the full tropospheric delay, given the positions of
-          * receiver and satellite and the time tag. This version is most useful
-          * within positioning algorithms, where the receiver position and timetag
-          * may vary; it computes the elevation (and other receiver location
-          * information) and passes them to appropriate set...() routines and the
-          * correction(elevation) routine.
+          * Compute and return the full tropospheric delay, given the
+          * positions of receiver and satellite and the time tag. This
+          * version is most useful within positioning algorithms,
+          * where the receiver position and timetag may vary; it
+          * computes the elevation (and other receiver location
+          * information) and passes them to appropriate set...()
+          * routines and the correction(elevation) routine.
           * @param RX  Receiver position in ECEF cartesian coordinates (meters)
           * @param SV  Satellite position in ECEF cartesian coordinates (meters)
           * @param tt  Time tag of the signal
+          * @throw InvalidTropModel
           */
       virtual double correction(const Xvt& RX,
                                 const Xvt& SV,
-                                const CommonTime& tt)
-         throw(InvalidTropModel);
+                                const CommonTime& tt);
 
-         /// Compute and return the zenith delay for dry component
-         /// of the troposphere
-      virtual double dry_zenith_delay(void) const
-         throw(InvalidTropModel);
+         /** Compute and return the zenith delay for dry component
+          * of the troposphere
+          * @throw InvalidTropModel
+          */
+      virtual double dry_zenith_delay(void) const;
 
-         /// Compute and return the zenith delay for wet component
-         /// of the troposphere
-      virtual double wet_zenith_delay(void) const
-         throw(InvalidTropModel);
+         /** Compute and return the zenith delay for wet component
+          * of the troposphere
+          * @throw InvalidTropModel
+          */
+      virtual double wet_zenith_delay(void) const;
 
-         /// Compute and return the mapping function for dry component of
-         /// the troposphere. NB this function will return infinity at zero elevation.
-         /// @param elevation Elevation of satellite as seen at receiver, in degrees
-      virtual double dry_mapping_function(double elevation) const
-         throw(InvalidTropModel);
+         /** Compute and return the mapping function for dry component of
+          * the troposphere.
+          * @note this function will return infinity at zero elevation.
+          * @param elevation Elevation of satellite as seen at
+          *   receiver, in degrees
+          * @throw InvalidTropModel
+          */
+      virtual double dry_mapping_function(double elevation) const;
 
-         /// Compute and return the mapping function for wet component of
-         /// the troposphere.
-         /// @param elevation Elevation of satellite as seen at receiver, in degrees
-      virtual double wet_mapping_function(double elevation) const
-         throw(InvalidTropModel);
+         /** Compute and return the mapping function for wet component of
+          * the troposphere.
+          * @param elevation Elevation of satellite as seen at
+          *   receiver, in degrees
+          * @throw InvalidTropModel
+          */
+      virtual double wet_mapping_function(double elevation) const;
 
-         /// Re-define the tropospheric model with explicit weather data.
-         /// Typically called just before correction().
-         /// @param wx the weather to use for this correction
-      virtual void setWeather(const WxObservation& wx)
-         throw(InvalidParameter);
+         /** Re-define the tropospheric model with explicit weather data.
+          * Typically called just before correction().
+          * @param wx the weather to use for this correction
+          * @throw InvalidParameter
+          */
+      virtual void setWeather(const WxObservation& wx);
 
-         /// Define the weather data; typically called just before correction().
-         /// @param T temperature in degrees Celsius
-         /// @param P atmospheric pressure in millibars
-         /// @param H relative humidity in percent
+         /** Define the weather data; typically called just before correction().
+          * @param T temperature in degrees Celsius
+          * @param P atmospheric pressure in millibars
+          * @param H relative humidity in percent
+          * @throw InvalidParameter
+          */
       virtual void setWeather(const double& T,
                               const double& P,
-                              const double& H)
-         throw(InvalidParameter);
+                              const double& H);
 
-         /// Define the receiver height; this required before calling
-         /// correction() or any of the zenith_delay or mapping_function routines.
-         /// @param ht Height of the receiver in meters.
+         /** Define the receiver height; this required before calling
+          * correction() or any of the zenith_delay or
+          * mapping_function routines.
+          * @param ht Height of the receiver in meters.
+          */
       void setReceiverHeight(const double& ht);
 
-         /// Define the latitude of the receiver; this is required before calling
-         /// correction() or any of the zenith_delay or mapping_function routines.
-         /// @param lat Latitude of the receiver in degrees.
+         /** Define the latitude of the receiver; this is required
+          * before calling correction() or any of the zenith_delay or
+          * mapping_function routines.
+          * @param lat Latitude of the receiver in degrees.
+          */
       void setReceiverLatitude(const double& lat);
 
-         /// Define the day of year; this is required before calling
-         /// correction() or any of the zenith_delay or mapping_function routines.
-         /// @param d Day of year.
+         /** Define the day of year; this is required before calling
+          * correction() or any of the zenith_delay or
+          * mapping_function routines.
+          * @param d Day of year.
+          */
       void setDayOfYear(const int& d);
 
    private:
-      double height;                /// height (m) of the receiver above the geoid
-      double latitude;              /// latitude (deg) of receiver
-      int doy;                      /// day of year
+      double height;             ///< height (m) of the receiver above the geoid
+      double latitude;           ///< latitude (deg) of receiver
+      int doy;                   ///< day of year
       bool validWeather;
       bool validRxLatitude;
       bool validRxHeight;

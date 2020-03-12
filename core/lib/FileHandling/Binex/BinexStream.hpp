@@ -80,7 +80,7 @@ namespace gpstk
           * data.  BINEX can be either big-endian or little-endian so
           * this isn't really useful.  As such, DO NOT USE writeData
           * or getData in the implementation of BinexData. */
-      virtual bool isStreamLittleEndian() const throw()
+      virtual bool isStreamLittleEndian() const noexcept
       { return true; }
    };
 

@@ -63,7 +63,7 @@ namespace gpstk
    public:
 
       OrbSysStore(const bool storeAllArg=false)
-         throw()
+         noexcept
         :initialTime(CommonTime::END_OF_TIME),
          finalTime(CommonTime::BEGINNING_OF_TIME),
          timeSysForStore(TimeSystem::Any),
@@ -79,11 +79,17 @@ namespace gpstk
          clear();
       }
 
-      virtual bool addMessage(const PackedNavBits& pnb)
-         throw(InvalidRequest,Exception);
+         /**
+          * @throw InvalidRequest
+          * @throw Exception
+          */
+      virtual bool addMessage(const PackedNavBits& pnb);
 
-      virtual bool addMessage(const OrbDataSys* eph)
-         throw(InvalidRequest,Exception);
+         /**
+          * @throw InvalidRequest
+          * @throw Exception
+          */
+      virtual bool addMessage(const OrbDataSys* eph);
 
       virtual void deleteMessage(const SatID& sat,
                              const NavID& navtype,
@@ -95,13 +101,13 @@ namespace gpstk
       /// @param[in] s the stream to receive the output; defaults to cout
       /// @param[in] detail the level of detail to provide
       virtual void dump(std::ostream& s = std::cout, short detail = 0)
-         const throw();
+         const noexcept;
 
       virtual void dumpTerse(std::ostream& s = std::cout)
-         const throw();
+         const noexcept;
 
       virtual void dumpTerseTimeOrder(std::ostream& s = std::cout)
-         const throw();
+         const noexcept;
 
       virtual void dumpContents(std::ostream& s = std::cout,
                                 const gpstk::SatID& sidr =
@@ -109,25 +115,23 @@ namespace gpstk
                                 const gpstk::NavID& navtype =
                                       gpstk::NavID(gpstk::NavID::ntUnknown),
                                 const unsigned long UID = 0)
-         const throw();
+         const noexcept;
 
 
       /// Clear the dataset, meaning remove all data
-      virtual void clear(void) throw();
+      virtual void clear(void) noexcept;
 
       /// Determine the earliest time for which this object can successfully
       /// determine the Xvt for any object.
       /// @return The initial time
       /// @throw InvalidRequest This is thrown if the object has no data.
-      virtual CommonTime getInitialTime() const
-         throw(gpstk::InvalidRequest);
+      virtual CommonTime getInitialTime() const;
 
       /// Determine the latest time for which this object can successfully
       /// determine the Xvt for any object.
       /// @return The final time
       /// @throw InvalidRequest This is thrown if the object has no data.
-      virtual CommonTime getFinalTime() const
-         throw(gpstk::InvalidRequest);
+      virtual CommonTime getFinalTime() const;
 
       /// Return the number of messages stored in this store.
       virtual unsigned size() const;
@@ -142,57 +146,55 @@ namespace gpstk
       /// Classes to set/test the satellite system list.
       bool isSatSysPresent(const SatID::SatelliteSystem ss) const;
       void addSatSys(const SatID::SatelliteSystem ss);
-      void validSatSystem(const SatID& sat) const
-         throw( InvalidRequest );
+         /**
+          * @throw InvalidRequest
+          */
+      void validSatSystem(const SatID& sat) const;
 
       /// Given a satellite, a system-specific message unique ID (UID),
       /// and a time, return a pointer to the message that was being
       /// broadcast by the specified satellite at the specified time.
-      /// Throws InvalidRequest if
+      /// @throw InvalidRequest if
       ///   - the satellite isn't in the store
       ///   - if the time is prior to the earliest time in the store
       ///   - if there are no message with the specified UID in the store
       const OrbDataSys* find(const SatID& sat,
                              const NavID& navtype,
                              const unsigned long UID,
-                             const CommonTime& t) const
-         throw(InvalidRequest);
+                             const CommonTime& t) const;
 
       /// Given a navigation message type, a system-specific message unique ID (UID),
       /// and a time, return a pointer to the most recent new message
       /// of that type broadcast priot to the specified time.
-      /// Throws InvalidRequest if
+      /// @throw InvalidRequest if
       ///   - the navigation message type isn't in the store
       ///   - if the time is prior to the earliest time in the store
       ///   - if there are no message with the specified UID in the store
       const OrbDataSys* find(const NavID& navtype,
                              const unsigned long UID,
-                             const CommonTime& t) const
-         throw(InvalidRequest);
+                             const CommonTime& t) const;
 
       /// Given a satellite and a time, return list of pointer to the
       /// messages that were being
       /// broadcast by the specified satellite at the specified time.
-      /// Throws InvalidRequest if
+      /// @throws InvalidRequest if
       ///   - the satellite isn't in the store
       ///   - if the time is prior to the earliest time in the store
       std::list<const OrbDataSys*> findSystemData(const SatID& sat,
                                                   const NavID& navtype,
-                                                  const CommonTime& t) const
-         throw(InvalidRequest);
+                                                  const CommonTime& t) const;
 
       /// Given a satellite, a message type and a system-specific
       /// message unique ID (UID),
       /// return a list of the messages in the store and fit the
       /// description.
-      /// Throws InvalidRequest if
+      /// @throws InvalidRequest if
       ///   - the satellite isn't in the store
       ///   - the NavID isn't in the store
       ///   - if there are no message with the specified UID in the store
       std::list<const OrbDataSys*> findList(const SatID& sat,
                                             const NavID& navtype,
-                                            const unsigned long UID) const
-         throw(InvalidRequest);
+                                            const unsigned long UID) const;
 
       /// FUrther generalization of the preceeding method.   In this case,
       /// the search is conducted across all SVs in the store.
@@ -200,12 +202,11 @@ namespace gpstk
       /// message unique ID (UID),
       /// return a list of the messages in the store and fit the
       /// description.
-      /// Throws InvalidRequest if
+      /// @throw InvalidRequest if
       ///   - the NavID isn't in the store
       ///   - if there are no message with the specified UID in the store
       std::list<const OrbDataSys*> findList(const NavID& navtype,
-                                            const unsigned long UID) const
-         throw(InvalidRequest);
+                                            const unsigned long UID) const;
 
       /// Given a satellite, a system-specific message unique ID (UID), and a
       /// time, return pointers to the two messages in the time series that
@@ -221,9 +222,11 @@ namespace gpstk
                                                                  const unsigned long UID,
                                                                  const CommonTime& t) const;
 
+         /**
+          * @throw InvalidRequest
+          */
       const OrbDataUTC* findUtcData(const NavID& nidr,
-                                    const CommonTime& ct)
-         throw(InvalidRequest);
+                                    const CommonTime& ct);
 
       /// Return a list of SatID objects representing the satellites that
       /// are contained in the store.
@@ -244,10 +247,10 @@ namespace gpstk
       /// Following methods retrieve particular data types
       /// (e.g. SV config or UTC offset information) based
       /// on system and signal type.
+      /// @throw InvalidRequest
       bool hasSignal(const gpstk::SatID& sidr,
                      const gpstk::CommonTime& ct,
-                     const gpstk::ObsID& oidr) const
-         throw (gpstk::InvalidRequest);
+                     const gpstk::ObsID& oidr) const;
 
       unsigned int setDebugLevel(const unsigned int newLevel)
          { debugLevel = newLevel; return debugLevel; }

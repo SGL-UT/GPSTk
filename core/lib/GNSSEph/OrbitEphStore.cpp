@@ -91,7 +91,7 @@ namespace gpstk
 
 
    Xvt OrbitEphStore::computeXvt(const SatID& sat, const CommonTime& t) const
-      throw()
+      noexcept
    {
       Xvt rv;
       rv.health = Xvt::HealthStatus::Unavailable;
@@ -115,7 +115,7 @@ namespace gpstk
 
 
    Xvt::HealthStatus OrbitEphStore ::
-   getSVHealth(const SatID& sat, const CommonTime& t) const throw()
+   getSVHealth(const SatID& sat, const CommonTime& t) const noexcept
    {
       Xvt::HealthStatus rv = Xvt::HealthStatus::Unavailable;
       try

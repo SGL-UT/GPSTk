@@ -85,9 +85,11 @@ namespace gpstk
              * Writes the formatted block to the SinexStream.
              * @param s Stream to which to write
              * @returns Number of lines written
+             * @throw std::exception
+             * @throw FFStreamError
+             * @throw StringUtils::StringException
              */
-         virtual size_t putBlock(Sinex::Stream& s) const
-            throw(std::exception, FFStreamError, StringUtils::StringException) = 0;
+         virtual size_t putBlock(Sinex::Stream& s) const = 0;
 
             /**
              * Reads a record from the given SinexStream; if an error
@@ -95,13 +97,13 @@ namespace gpstk
              * to its original position and its fail-bit is set.
              * @param s Stream from which to read
              * @returns Number of lines read
-             * @throws StringException when a StringUtils function fails
-             * @throws FFStreamError when exceptions(failbit) is set and
+             * @throw std::exception
+             * @throw StringException when a StringUtils function fails
+             * @throw FFStreamError when exceptions(failbit) is set and
              *  a read or formatting error occurs.  This also resets the
              *  stream to its pre-read position.
              */
-         virtual size_t getBlock(Sinex::Stream& s)
-            throw(std::exception, FFStreamError, StringUtils::StringException) = 0;
+         virtual size_t getBlock(Sinex::Stream& s) = 0;
 
       }; // class BlockBase
 
@@ -135,9 +137,10 @@ namespace gpstk
          std::vector<T>  dataVec;  // Data storage
 
             /** Writes all data in the block to the specified stream
+             * @throw std::exception
+             * @throw FFStreamError
              */
          virtual size_t putBlock(Sinex::Stream& s) const
-            throw(std::exception, FFStreamError)
          {
             size_t  lineNum = 0;
             typename std::vector<T>::const_iterator  i = dataVec.begin();
@@ -158,9 +161,11 @@ namespace gpstk
          };
 
             /** Reads all data in a block from the specified stream
+             * @throw std::exception
+             * @throw FFStreamError
+             * @throw StringUtils::StringException
              */
          virtual size_t getBlock(Sinex::Stream& s)
-            throw(std::exception, FFStreamError, StringUtils::StringException)
          {
             size_t  lineNum = 0;
             char    c;

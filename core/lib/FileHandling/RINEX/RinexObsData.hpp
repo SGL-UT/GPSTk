@@ -118,10 +118,11 @@ namespace gpstk
           * of the line and that they're the correct length (<= 80 chrs).
           * Also make sure to correctly set the epochFlag to the correct
           * number for the type of header data you want to write.
+          * @throw std::exception
+          * @throw FFStreamError
+          * @throw StringUtils::StringException
           */
-      virtual void reallyPutRecord(FFStream& s) const
-         throw(std::exception, FFStreamError,
-               gpstk::StringUtils::StringException);
+      virtual void reallyPutRecord(FFStream& s) const;
 
          /**
           * This functions obtains a RINEX Observation record from the given
@@ -131,32 +132,33 @@ namespace gpstk
           * Because of the Rinex Obs format, a RinexObsData record returned
           * might not have data in it.  Check the RinexSatMap for empty()
           * before using any data in it.
-          * @throws StringException when a StringUtils function fails
-          * @throws FFStreamError when exceptions(failbit) is set and
+          * @throw std::exception
+          * @throw StringException when a StringUtils function fails
+          * @throw FFStreamError when exceptions(failbit) is set and
           *  a read or formatting error occurs.  This also resets the
           *  stream to its pre-read position.
           */
-      virtual void reallyGetRecord(FFStream& s)
-         throw(std::exception, FFStreamError,
-               gpstk::StringUtils::StringException);
+      virtual void reallyGetRecord(FFStream& s);
 
    private:
-         ///<Time corresponding to previous set of oberservations
+         /// Time corresponding to previous set of oberservations
          /// Used in cases where epoch time of a epoch flag==0
       static gpstk::CommonTime previousTime;
 
          /// Writes the CommonTime object into RINEX format. If it's a bad time,
          /// it will return blanks.
-      std::string writeTime(const CommonTime& dt) const
-         throw(gpstk::StringUtils::StringException);
+      std::string writeTime(const CommonTime& dt) const;
 
          /**
-          * This function constructs a CommonTime object from the given parameters.
+          * This function constructs a CommonTime object from the
+          * given parameters.
           * @param line the encoded time string found in the RINEX record.
-          * @param hdr the RINEX Observation Header object for the current RINEX file.
+          * @param hdr the RINEX Observation Header object for the
+          *   current RINEX file.
+          * @throw FFStreamError
           */
-      CommonTime parseTime(const std::string& line, const RinexObsHeader& hdr) const
-         throw(FFStreamError);
+      CommonTime parseTime(const std::string& line, const RinexObsHeader& hdr)
+         const;
    }; // class RinexObsData
 
       //@}

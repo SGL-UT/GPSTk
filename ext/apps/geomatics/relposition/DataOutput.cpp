@@ -65,7 +65,7 @@ using namespace gpstk;
 
 //------------------------------------------------------------------------------------
 // called from DDBase.cpp
-int OutputRawData(void) throw(Exception)
+int OutputRawData(void)
 {
 try {
    if(CI.Verbose) oflog << "BEGIN OutputRawData()" << endl;
@@ -135,7 +135,6 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 //------------------------------------------------------------------------------------
 // called from EditDDs.cpp
 int OutputRawDData(const DDid& ddid, const DDData& dddata, const vector<int>& mark)
-   throw(Exception)
 {
 try {
    bool TripleOut=true;                      // output triple differences as well
@@ -217,7 +216,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }   // end OutputRawDData()
 
 //------------------------------------------------------------------------------------
-int OutputDDData(void) throw(Exception)
+int OutputDDData(void)
 {
 try {
    if(CI.Verbose) oflog << "BEGIN OutputDDData()" << endl;
@@ -282,7 +281,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }   // end OutputDDData()
 
 //------------------------------------------------------------------------------------
-int OutputClockData(void) throw(Exception)
+int OutputClockData(void)
 {
 try {
    if(CI.Verbose) oflog << "BEGIN OutputClockData()" << endl;

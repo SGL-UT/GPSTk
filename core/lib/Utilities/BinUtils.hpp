@@ -327,11 +327,10 @@ namespace gpstk
           *   evenly divisible by wordSize.
           * @param[in] wordSize The size of the checksum in bytes.
           * @return the calculated checksum in the same byte order as \a str.
-          * @throws gpstk::InvalidParameter if there is a partial word at 
+          * @throw gpstk::InvalidParameter if there is a partial word at 
           *  the end of \a str.
           */
-      inline std::string xorChecksum(const std::string& str, unsigned wordSize)
-         throw(gpstk::InvalidParameter);
+      inline std::string xorChecksum(const std::string& str, unsigned wordSize);
 
          //@}
 
@@ -545,7 +544,6 @@ namespace gpstk
       }
 
       std::string xorChecksum(const std::string& str, unsigned wordSize)
-         throw(gpstk::InvalidParameter)
       {
          size_t strSize = str.size();
          std::string rv(wordSize, 0);

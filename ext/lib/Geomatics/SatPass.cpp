@@ -73,7 +73,7 @@ string SatPass::outFormat = string("%4F %10.3g");  // GPS week, seconds of week
 string SatPass::longfmt = string("%04Y/%02m/%02d %02H:%02M:%06.3f = %04F %10.3g");
 
 // constructors
-SatPass::SatPass(RinexSatID insat, double indt) throw()
+SatPass::SatPass(RinexSatID insat, double indt) noexcept
 {
    vector<string> defaultObsTypes;
    defaultObsTypes.push_back("L1");
@@ -84,12 +84,12 @@ SatPass::SatPass(RinexSatID insat, double indt) throw()
    init(insat, indt, defaultObsTypes);
 }
 
-SatPass::SatPass(RinexSatID insat, double indt, vector<string> obstypes) throw()
+SatPass::SatPass(RinexSatID insat, double indt, vector<string> obstypes) noexcept
 {
    init(insat, indt, obstypes);
 }
 
-void SatPass::init(RinexSatID insat, double indt, vector<string> obstypes) throw()
+void SatPass::init(RinexSatID insat, double indt, vector<string> obstypes) noexcept
 {
    sat = insat;
    dt = indt;
@@ -104,7 +104,7 @@ void SatPass::init(RinexSatID insat, double indt, vector<string> obstypes) throw
    }
 }
 
-SatPass& SatPass::operator=(const SatPass& right) throw()
+SatPass& SatPass::operator=(const SatPass& right) noexcept
 {
    if(&right != this) {
       Status = right.Status;
@@ -124,7 +124,6 @@ SatPass& SatPass::operator=(const SatPass& right) throw()
 }
 
 int SatPass::addData(const Epoch tt, vector<string>& ots, vector<double>& data)
-   throw(Exception)
 {
    vector<unsigned short> lli(data.size(),0),ssi(data.size(),0);
    try { return addData(tt, ots, data, lli, ssi); }
@@ -139,7 +138,7 @@ int SatPass::addData(const Epoch tt,
                      const vector<double>& data,
                      const vector<unsigned short>& lli,
                      const vector<unsigned short>& ssi,
-                     const unsigned short flag) throw(Exception)
+                     const unsigned short flag)
 {
    // check that data, lli and ssi have the same length - throw
    if(data.size() != lli.size() || data.size() != ssi.size()) {
@@ -176,7 +175,7 @@ int SatPass::addData(const Epoch tt,
 //        -2 time tag out of order, data not added
 //        -1 gap is larger than MaxGap, data not added
 //       >=0 (success) index of the added data
-int SatPass::addData(const RinexObsData& robs) throw()
+int SatPass::addData(const RinexObsData& robs) noexcept
 {
    if(robs.epochFlag != 0 && robs.epochFlag != 1)
       return -4;
@@ -217,7 +216,7 @@ int SatPass::addData(const RinexObsData& robs) throw()
 // return -1 if ttag is at or before the start of this pass,
 // return +1 if ttag is at or after the end of this pass,
 // else return 0
-int SatPass::trimAfter(const Epoch ttag) throw(Exception)
+int SatPass::trimAfter(const Epoch ttag)
 {
 try {
    if(ttag <= firstTime) return -1;
@@ -251,7 +250,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 // return true if successful, false if failed; also return string msg, which is
 // FINAL sat n week sow(beg) week sow(end) npts stddev slope sl/std stddev(slope) [??]
 // NB if "??" appears at end of msg, result is questionable (stddev(slope) is high)
-bool SatPass::getGLOchannel(int& n, string& msg) throw(Exception)
+bool SatPass::getGLOchannel(int& n, string& msg)
 {
 try {
    if(sat.system != SatID::systemGlonass) return false;
@@ -447,7 +446,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 // Single frequency version: requires obs types Lf C/Pf
 // Call this ONLY after cycleslips have been removed.
 void SatPass::smoothSF(const bool smoothPR, const bool debiasPH, string& msg,
-                       const int freq, const double wl) throw(Exception)
+                       const int freq, const double wl)
 {
 try {
    if(freq != 1 && freq != 2)
@@ -557,7 +556,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 // input flag is 'true'; use real bias for pseudorange, integer (cycles) for phase.
 // Call this ONLY after cycleslips have been removed.
 void SatPass::smooth(const bool smoothPR, const bool debiasPH, string& msg,
-                     const double& wl1, const double& wl2) throw(Exception)
+                     const double& wl1, const double& wl2)
 {
 try {
    ostringstream oss;
@@ -694,7 +693,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 
 // -------------------------- get and set routines ----------------------------
 // NB may be used as rvalue or lvalue
-double& SatPass::data(unsigned int i, string type) throw(Exception)
+double& SatPass::data(unsigned int i, string type)
 {
    if(i >= spdvector.size()) {
       Exception e("Invalid index in data() " + asString(i));
@@ -708,7 +707,7 @@ double& SatPass::data(unsigned int i, string type) throw(Exception)
    return spdvector[i].data[it->second];
 }
 
-double& SatPass::timeoffset(unsigned int i) throw(Exception)
+double& SatPass::timeoffset(unsigned int i)
 {
    if(i >= spdvector.size()) {
       Exception e("Invalid index in timeoffset() " + asString(i));
@@ -717,7 +716,7 @@ double& SatPass::timeoffset(unsigned int i) throw(Exception)
    return spdvector[i].toffset;
 }
 
-unsigned short& SatPass::LLI(unsigned int i, string type) throw(Exception)
+unsigned short& SatPass::LLI(unsigned int i, string type)
 {
    if(i >= spdvector.size()) {
       Exception e("Invalid index in LLI() " + asString(i));
@@ -731,7 +730,7 @@ unsigned short& SatPass::LLI(unsigned int i, string type) throw(Exception)
    return spdvector[i].lli[it->second];
 }
 
-unsigned short& SatPass::SSI(unsigned int i, string type) throw(Exception)
+unsigned short& SatPass::SSI(unsigned int i, string type)
 {
    if(i >= spdvector.size()) {
       Exception e("Invalid index in SSI() " + asString(i));
@@ -746,7 +745,7 @@ unsigned short& SatPass::SSI(unsigned int i, string type) throw(Exception)
 }
 
 // ---------------------------------- set routines ----------------------------
-void SatPass::setFlag(unsigned int i, unsigned short f) throw(Exception)
+void SatPass::setFlag(unsigned int i, unsigned short f)
 {
    if(i >= spdvector.size()) {
       Exception e("Invalid index in setFlag() " + asString(i));
@@ -760,7 +759,7 @@ void SatPass::setFlag(unsigned int i, unsigned short f) throw(Exception)
 
 // set the userflag at one index to inflag;
 // NB SatPass does nothing w/ this member except setUserFlag() and getUserFlag();
-void SatPass::setUserFlag(unsigned int i, unsigned int f) throw(Exception)
+void SatPass::setUserFlag(unsigned int i, unsigned int f)
 {
    if(i >= spdvector.size()) {
       Exception e("Invalid index in setUserFlag() " + asString(i));
@@ -772,7 +771,7 @@ void SatPass::setUserFlag(unsigned int i, unsigned int f) throw(Exception)
 
 // ---------------------------------- get routines ----------------------------
 // get value of flag at one index
-unsigned short SatPass::getFlag(unsigned int i) const throw(Exception)
+unsigned short SatPass::getFlag(unsigned int i) const
 {
    if(i >= spdvector.size()) {
       Exception e("Invalid index in getFlag() " + asString(i));
@@ -783,7 +782,7 @@ unsigned short SatPass::getFlag(unsigned int i) const throw(Exception)
 
 // get the userflag at one index
 // NB SatPass does nothing w/ this member except setUserFlag() and getUserFlag();
-unsigned int SatPass::getUserFlag(unsigned int i) const throw(Exception)
+unsigned int SatPass::getUserFlag(unsigned int i) const
 {
    if(i >= spdvector.size()) {
       Exception e("Invalid index in getUserFlag() " + asString(i));
@@ -793,7 +792,7 @@ unsigned int SatPass::getUserFlag(unsigned int i) const throw(Exception)
 }
 
 // get one element of the count array of this SatPass
-unsigned int SatPass::getCount(unsigned int i) const throw(Exception)
+unsigned int SatPass::getCount(unsigned int i) const
 {
    if(i >= spdvector.size()) {
       Exception e("invalid in getCount() " + asString(i));
@@ -803,14 +802,13 @@ unsigned int SatPass::getCount(unsigned int i) const throw(Exception)
 }
 
 // @return the earliest time (full, including toffset) in this SatPass data
-Epoch SatPass::getFirstTime(void) const throw() { return time(0); }
+Epoch SatPass::getFirstTime(void) const noexcept { return time(0); }
 
 // @return the latest time (full, including toffset) in this SatPass data
-Epoch SatPass::getLastTime(void) const throw() { return time(spdvector.size()-1); }
+Epoch SatPass::getLastTime(void) const noexcept { return time(spdvector.size()-1); }
 
 // these allow you to get e.g. P1 or C1. NB return double not double& as above: rvalue
 double SatPass::data(unsigned int i, string type1, string type2) const
-   throw(Exception)
 {
    if(i >= spdvector.size()) {
       Exception e("Invalid index in data() " + asString(i));
@@ -828,7 +826,6 @@ double SatPass::data(unsigned int i, string type1, string type2) const
 }
 
 unsigned short SatPass::LLI(unsigned int i, string type1, string type2)
-   throw(Exception)
 {
    if(i >= spdvector.size()) {
       Exception e("Invalid index in LLI() " + asString(i));
@@ -846,7 +843,6 @@ unsigned short SatPass::LLI(unsigned int i, string type1, string type2)
 }
 
 unsigned short SatPass::SSI(unsigned int i, string type1, string type2)
-   throw(Exception)
 {
    if(i >= spdvector.size()) {
       Exception e("Invalid index in SSI() " + asString(i));
@@ -865,7 +861,7 @@ unsigned short SatPass::SSI(unsigned int i, string type1, string type2)
 
 // ---------------------------------- utils -----------------------------------
 // return the time corresponding to the given index in the data array
-Epoch SatPass::time(unsigned int i) const throw(Exception)
+Epoch SatPass::time(unsigned int i) const
 {
    if(i >= spdvector.size()) {
       Exception e("Invalid index in time() " + asString(i));
@@ -877,7 +873,7 @@ Epoch SatPass::time(unsigned int i) const throw(Exception)
 }
 
 // return true if the input time could lie within the pass
-bool SatPass::includesTime(const Epoch& tt) const throw()
+bool SatPass::includesTime(const Epoch& tt) const noexcept
 {
    if(tt < firstTime) {
       if((firstTime-tt) > maxGap) return false;
@@ -931,7 +927,7 @@ try {
 catch(Exception& e) { GPSTK_RETHROW(e); }
 }
 
-void SatPass::decimate(const int N, Epoch refTime) throw(Exception)
+void SatPass::decimate(const int N, Epoch refTime)
 {
 try {
    if(N <= 1) return;
@@ -974,7 +970,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 
 // dump all the data in the pass, one line per timetag;
 // put message msg at beginning of each line.
-void SatPass::dump(ostream& os, string msg1, string msg2) throw()
+void SatPass::dump(ostream& os, string msg1, string msg2) noexcept
 {
    int i,j,last;
    Epoch tt;
@@ -1025,7 +1021,7 @@ ostream& operator<<(ostream& os, SatPass& sp )
 // ---------------------------- private SatPassData functions --------------------
 // add data to the arrays at timetag tt (private)
 // return >=0 ok (index of added data), -1 gap, -2 timetag out of order
-int SatPass::push_back(const Epoch tt, SatPassData& spd) throw()
+int SatPass::push_back(const Epoch tt, SatPassData& spd) noexcept
 {
    unsigned int n;
       // if this is the first point, save first time
@@ -1055,7 +1051,6 @@ int SatPass::push_back(const Epoch tt, SatPassData& spd) throw()
 
 // get one element of the data array of this SatPass (private)
 struct SatPass::SatPassData SatPass::getData(unsigned int i) const
-   throw(Exception)
 {
    if(i >= spdvector.size()) {         // TD ?? keep this - its private
       Exception e("invalid in getData() " + asString(i));

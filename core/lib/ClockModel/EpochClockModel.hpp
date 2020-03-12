@@ -65,8 +65,10 @@ namespace gpstk
                       SvMode mode = ALWAYS)
             : ObsClockModel(sigma, elmask, mode), valid(false), clkc(0){}
 #pragma clang diagnostic pop
+         /**
+          * @throw InvalidArgumentException
+          */
       virtual double getOffset(const gpstk::CommonTime& t) const
-         throw(gpstk::InvalidArgumentException) 
       {
          if (t!=time)
          {
@@ -76,8 +78,10 @@ namespace gpstk
          return clkc;
       };
 
+         /**
+          * @throw InvalidArgumentException
+          */
       virtual bool isOffsetValid(const gpstk::CommonTime& t) const 
-         throw(gpstk::InvalidArgumentException)
       {
          if (t!=time) 
          {
@@ -91,12 +95,15 @@ namespace gpstk
          // An unchecked accessor for programs that don't need the generic
          // interface
       double getOffset() const
-         throw() {return clkc;};
+         noexcept {return clkc;};
 
       bool isOffsetValid() const 
-         throw() {return valid;};
+         noexcept {return valid;};
 
-      virtual void addEpoch(const ORDEpoch& oe) throw(gpstk::InvalidValue)
+         /**
+          * @throw InvalidValue
+          */
+      virtual void addEpoch(const ORDEpoch& oe)
       {
          gpstk::Stats<double> stat = simpleOrdClock(oe);
          clkc = stat.Average();

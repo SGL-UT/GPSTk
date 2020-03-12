@@ -66,7 +66,6 @@ namespace gpstk
        */
    Triple PoleTides::getPoleTide( const CommonTime& t,
                                   const Position& p )
-      throw(InvalidRequest)
    {
 
          // We will store here the results

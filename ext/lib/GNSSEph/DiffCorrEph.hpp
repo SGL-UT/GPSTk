@@ -53,9 +53,11 @@ namespace gpstk
          /// Default constructor
       DiffCorrEph();
 
+         /**
+          * @throw InvalidParameter
+          */
       DiffCorrEph(const PackedNavBits& msg, 
-                          const unsigned startBit)
-         throw(InvalidParameter); 
+                  const unsigned startBit);
         
          /// Destructor
       virtual ~DiffCorrEph() {}
@@ -71,18 +73,18 @@ namespace gpstk
        * If any of the specified messages are provided, the 
        * EDC packet starting at the specified bit index
        * (zero-based) will be cracked and stored. 
-       * An InvalidParameter exception will be thrown if a
-       * specific message is provided but the parsing of the
-       * message data is invalid.
+       * @throw InvalidParameter if a specific message is provided but
+       * the parsing of the message data is invalid.
        */
       virtual void loadData(const PackedNavBits& msg, 
-                            const unsigned startBit)
-         throw(InvalidParameter); 
+                            const unsigned startBit);
   
       virtual bool isSameData(const DiffCorrEph& right) const;
 
-      virtual void dump(std::ostream& s = std::cout) const
-         throw(InvalidRequest);
+         /**
+          * @throw InvalidRequest
+          */
+      virtual void dump(std::ostream& s = std::cout) const;
 
       double dalpha;
       double dbeta;

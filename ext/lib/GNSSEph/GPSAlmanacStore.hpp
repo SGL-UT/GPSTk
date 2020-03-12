@@ -67,7 +67,7 @@ namespace gpstk
    public:
 
       GPSAlmanacStore()
-         throw()
+         noexcept
          : initialTime(CommonTime::END_OF_TIME), 
            finalTime(CommonTime::BEGINNING_OF_TIME)
       {}
@@ -84,7 +84,7 @@ namespace gpstk
       ///    reason, this is thrown. The text may have additional
       ///    information as to why the request failed.
       virtual Xvt getXvt(const SatID& id, const CommonTime& t) 
-         const throw( gpstk::InvalidRequest );
+         const;
 
 
       /// Returns the position, velocity, and clock offset of the indicated
@@ -101,7 +101,7 @@ namespace gpstk
       ///    reason, this is thrown.  The text may have additional
       ///    information as to why the request failed.
       virtual Xvt getXvtMostRecentXmit(const SatID id, const CommonTime& t)
-         const throw( gpstk::InvalidRequest );
+         const;
       
 
       /// A debugging function that outputs in human readable form,
@@ -109,7 +109,7 @@ namespace gpstk
       /// @param[in] s the stream to receive the output; defaults to cout
       /// @param[in] detail the level of detail to provide
       virtual void dump(std::ostream& s = std::cout, short detail = 0) 
-         const throw();
+         const noexcept;
 
 
       /// Edit the dataset, removing data outside the indicated time interval
@@ -117,43 +117,41 @@ namespace gpstk
       /// @param[in] tmax defines the end of the time interval
       virtual void edit(const CommonTime& tmin, 
                         const CommonTime& tmax = CommonTime::END_OF_TIME)
-         throw();
+         noexcept;
 
       /// Clear the dataset, meaning remove all data
-      virtual void clear(void) throw()
+      virtual void clear(void) noexcept
       { uba.clear(); }
 
       /// Return time system (NB assumed always to be GPS)
-      virtual TimeSystem getTimeSystem(void) const throw()
+      virtual TimeSystem getTimeSystem(void) const noexcept
          { return TimeSystem::GPS; }
 
       /// Determine the earliest time for which this object can successfully 
       /// determine the Xvt for any object.
       /// @return The initial time
-      /// @throw InvalidRequest This is thrown if the object has no data.
       virtual CommonTime getInitialTime()
-         const throw()
+         const noexcept
       {return initialTime;}
 
       
       /// Determine the latest time for which this object can successfully 
       /// determine the Xvt for any object.
       /// @return The final time
-      /// @throw InvalidRequest This is thrown if the object has no data.
       virtual CommonTime getFinalTime()
-         const throw()
+         const noexcept
       {return finalTime;}
 
       virtual bool velocityIsPresent()
-         const throw()
+         const noexcept
       {return true;}
 
       /// Return true if velocity data is present in the store
-      virtual bool hasVelocity() const throw()
+      virtual bool hasVelocity() const noexcept
       { return true; }
 
       /// Return true if the given SatID is present in the store
-      virtual bool isPresent(const SatID& sat) const throw()
+      virtual bool isPresent(const SatID& sat) const noexcept
       {
          if(uba.find(sat) == uba.end()) return false;
          return true;
@@ -170,31 +168,35 @@ namespace gpstk
       /// @return the SV health bits
       /// @throw InvalidRequest no data found in store
       short getSatHealth(const SatID sat, const CommonTime& t) 
-         const throw( gpstk::InvalidRequest);
+         const;
 
-      bool addAlmanac(const AlmOrbit& alm) throw();
+      bool addAlmanac(const AlmOrbit& alm) noexcept;
 
-      bool addAlmanac(const EngAlmanac& alm) throw();
+      bool addAlmanac(const EngAlmanac& alm) noexcept;
 
       /// gets the closest almanac for the given time and satellite id,
       /// closest being in the past or future and "closest" being defined
       /// in terms of almanc time of epoch.
       /// @param sat the satellite's SatID
       /// @param t the time of interest
+      /// @throw InvalidRequest
       AlmOrbit findAlmanac(const SatID sat, const CommonTime& t) 
-         const throw( gpstk::InvalidRequest );
+         const;
 
       /// gets the most recent almanac for the given time and satellite id,
       /// most recent meaning it must have a transmit time before
       /// the specified time.
       /// @param sat the satellite's SatID
       /// @param t the time of interest
+      /// @throw InvalidRequest
       AlmOrbit findMostRecentAlmanac(const SatID sat, const CommonTime& t)
-         const throw( gpstk::InvalidRequest );
+         const;
 
-      /// returns all almanacs closest to t for all satellites
+         /** returns all almanacs closest to t for all satellites
+          * @throw InvalidRequest
+          */
       AlmOrbits findAlmanacs(const CommonTime& t) 
-         const throw( gpstk::InvalidRequest );
+         const;
 
    protected:
       /// This is intended to just store weekly sets of unique EngAlmanacs

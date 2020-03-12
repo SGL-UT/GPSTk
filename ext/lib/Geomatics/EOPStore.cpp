@@ -49,7 +49,7 @@ namespace gpstk
 {
    // Add to the store directly
    void EOPStore::addEOP(int mjd, EarthOrientation& eop)
-      throw()
+      noexcept
    {
       mapMJD_EOP[mjd] = eop;
 
@@ -62,7 +62,7 @@ namespace gpstk
    // Add to the store by computing using an EOPPrediction file.
    // @param MJD integer MJD(UTC) at which to add EOPs
    // @return non-0 if MJD is outside range
-   int EOPStore::addEOP(int mjd, EOPPrediction& eopp) throw(Exception)
+   int EOPStore::addEOP(int mjd, EOPPrediction& eopp)
    {
       EarthOrientation eo;
       try {
@@ -82,7 +82,6 @@ namespace gpstk
    // @param filename Name of file to read, including path.
    // @throw if the file is not found
    void EOPStore::addFile(const string& filename)
-      throw(FileMissingException)
    {
       try {
          addEOPPFile(filename);
@@ -110,7 +109,6 @@ namespace gpstk
    // @param filename Name of file to read, including path.
    // @throw if the file is not found
    void EOPStore::addEOPPFile(const string& filename)
-      throw(FileMissingException)
    {
       // read the file into an EOPPrediction
       EOPPrediction eopp;
@@ -137,7 +135,6 @@ namespace gpstk
    //---------------------------------------------------------------------------------
    // see http://maia.usno.navy.mil/readme.finals
    void EOPStore::addIERSFile(const string& filename)
-      throw(FileMissingException)
    {
       bool ok;
       int n,mjd;
@@ -185,7 +182,7 @@ namespace gpstk
    //  @param mjdmin integer MJD desired earliest store time.
    //  @param mjdmax integer MJD desired latest store time.
    void EOPStore::edit(int mjdmin, int mjdmax)
-      throw()
+      noexcept
    {
       if(mjdmin > mjdmax) {
          int m=mjdmin;
@@ -224,7 +221,7 @@ namespace gpstk
    //   0 start and stop times (MJD), and number of EOPs.
    //   1 list of all times and EOPs.
    void EOPStore::dump(short detail, ostream& os) const
-      throw()
+      noexcept
    {
       os << "EOPStore dump (" << mapMJD_EOP.size() << " entries):\n";
       os << " Time limits: [MJD " << begMJD << " - " << endMJD << "]";
@@ -263,7 +260,6 @@ namespace gpstk
    //   or if the store contains fewer than 4 entries
    // @return EarthOrientation EOPs at mjd.
    EarthOrientation EOPStore::getEOP(const double& mjd, const IERSConvention& conv)
-      throw(InvalidRequest)
    {
       if(mapMJD_EOP.size() < 4) {
          InvalidRequest ir("Store is too small for interpolation");

@@ -75,7 +75,7 @@ namespace gpstk
       };
 
          /// default constructor
-      EngNav() throw();
+      EngNav() noexcept;
 
          /// destructor
       virtual ~EngNav() {}
@@ -181,7 +181,7 @@ namespace gpstk
       static bool subframeConvert(const long input[10],
                                   int gpsWeek,
                                   double output[60])
-         throw();
+         noexcept;
 
          /**
           * Given 10 words of a navigation message subframe (as
@@ -198,7 +198,7 @@ namespace gpstk
       static bool subframeConvert(const uint32_t input[10],
                                   short gpsWeek,
                                   double output[60])
-         throw();
+         noexcept;
 
          /** Convert the week number in \c out from 8-bit to full
           * using the full week number \c gpsWeek.
@@ -208,7 +208,7 @@ namespace gpstk
           * each other.
           */
       static bool convert8bit(int gpsWeek, double *out)
-         throw();
+         noexcept;
 
          /** Convert the week number in \c out from 10-bit to full
           * using the full week number \c gpsWeek.
@@ -218,7 +218,7 @@ namespace gpstk
           * each other.
           */
       static bool convert10bit(int gpsWeek, double *out)
-         throw();
+         noexcept;
 
          /** Convert the week number in \c out from 8 or 10-bit to full
           * using the full week number \c fullGPSWeek.
@@ -258,9 +258,9 @@ namespace gpstk
           * @return the pattern ID as defined in the above table.
           */
       static short getSubframePattern(const long input[10])
-         throw();
+         noexcept;
       static short getSubframePattern(const uint32_t input[10])
-         throw();
+         noexcept;
 
          /**
           * Given an SV/Page ID (1-63), set the subframe ID and page
@@ -275,7 +275,7 @@ namespace gpstk
           * be one of the possible pages for that SV/Page ID.
           */
       static bool sv2page(short svpgid, short& subframe, short& page)
-         throw();
+         noexcept;
 
 
          /**
@@ -289,7 +289,7 @@ namespace gpstk
           * be one of the possible pages for that SV/Page ID.
           */
       static bool sfpage2svid(short subframe, short page, short& svpgid)
-         throw();
+         noexcept;
 
 
          /**
@@ -303,7 +303,7 @@ namespace gpstk
           */
       static bool zcount2page(unsigned long zcount,
                               short& subframe, short& page)
-         throw();
+         noexcept;
 
          /**
           * Emit human-readable instance data to the specified stream.
@@ -331,13 +331,24 @@ namespace gpstk
                                   uint32_t   &aodo,
                                   CommonTime &tnmct,
                                   CommonTime &toe,
-                                  CommonTime &tot)
-         throw(InvalidParameter);
+                                  CommonTime &tot);
 
+         /**
+          * Get the NMCT validity time from subframe 2.  Refer to
+          * IS-GPS-200 section 2.3.3.4.4.
+          *
+          * @param[in] sf2 The 10 words of subframe 2.
+          * @param[in] howWeek the GPS full week for the HOW time in sf2.
+          * @param[in] meta Other metadata pertaining to the NMCT.
+          * @return true if the AODO is something other than 27900,
+          *   which indicates that the NMCT is invalid (i.e. a return
+          *   value of false means that the other output data is
+          *   invalid as is the NMCT itself).
+          * @throw InvalidParameter if sf2 is not subframe 2.
+          */
       static bool getNMCTValidity(const uint32_t sf2[10],
                                   unsigned   howWeek,
                                   NMCTMeta   &meta)
-         throw(InvalidParameter)
       {
          return getNMCTValidity(sf2, howWeek, meta.aodo, meta.tnmct, meta.toe,
                                 meta.tot);
@@ -366,7 +377,7 @@ namespace gpstk
       static void convertQuant(const uint32_t input[10],
                                double output[60],
                                DecodeQuant *p)
-         throw();
+         noexcept;
    }; // class EngNav
 
       //@}

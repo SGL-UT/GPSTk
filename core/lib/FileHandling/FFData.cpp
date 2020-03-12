@@ -45,26 +45,22 @@
 namespace gpstk
 {
    void FFData::putRecord(FFStream& s) const 
-      throw(FFStreamError, gpstk::StringUtils::StringException)
    { 
       s.tryFFStreamPut(*this); 
    }
    
    void FFData::getRecord(FFStream& s)
-      throw(FFStreamError, gpstk::StringUtils::StringException)
    { 
       s.tryFFStreamGet(*this); 
    }
    
    std::ostream& operator<<(FFStream& o, const FFData& f)
-         throw(FFStreamError, gpstk::StringUtils::StringException)
    {
       f.putRecord(o);
       return o;
    }
 
    std::istream& operator>>(FFStream& i, FFData& f)
-         throw(FFStreamError, gpstk::StringUtils::StringException)
    {
       f.getRecord(i);
       return i;

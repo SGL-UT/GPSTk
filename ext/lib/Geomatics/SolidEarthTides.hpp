@@ -80,14 +80,14 @@ namespace gpstk
    /// @param double SERAT   Sun-to-Earth mass ratio (default to DE405 value)
    /// @param IERSConvention IERS convention to use (default IERS2010)
    /// @return Triple        Displacement vector, ECEF XYZ in meters.
+   /// @throw Exception
    Triple computeSolidEarthTides(const Position site,
                                  const EphTime time,
                                  const Position Sun,
                                  const Position Moon,
                                  const double EMRAT=81.30056,
                                  const double SERAT=332946.050894783285912,
-                                 const IERSConvention iers=IERSConvention::IERS2010)
-      throw(Exception);
+                                 const IERSConvention iers=IERSConvention::IERS2010);
 
    //---------------------------------------------------------------------------------
    /// Compute the site displacement due to rotational deformation due to polar motion
@@ -101,10 +101,10 @@ namespace gpstk
    /// @param double xp,yp   Polar motion angles in arcsec (cf. EarthOrientation)
    /// @param IERSConvention IERS convention to use (default IERS2010)
    /// @return Triple disp   Displacement vector, ECEF XYZ in meters.
+   /// @throw Exception
    Triple computePolarTides(const Position site, const EphTime time,
                             const double xp, const double yp,
-                            const IERSConvention iers=IERSConvention::IERS2010)
-      throw(Exception);
+                            const IERSConvention iers=IERSConvention::IERS2010);
 
 }  // end namespace gpstk
 

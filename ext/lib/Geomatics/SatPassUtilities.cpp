@@ -56,7 +56,6 @@ namespace gpstk {
 // ---------------------------- read and write SatPass lists ---------------------
 // -------------------------------------------------------------------------------
 void Dump(vector<SatPass>& SatPassList, ostream& os, bool rev, bool dbug)
-   throw(Exception)
 {
    try {
       int i,j,nep;
@@ -120,7 +119,7 @@ void Dump(vector<SatPass>& SatPassList, ostream& os, bool rev, bool dbug)
 // @param  input SatPass list for analysis
 // @param  return millisecond handler
 // @return number of ms adjusts found
-int FindMilliseconds(vector<SatPass>& SPList, msecHandler& msh) throw(Exception)
+int FindMilliseconds(vector<SatPass>& SPList, msecHandler& msh)
 {
 try {
    int i,ii,jj;
@@ -167,7 +166,6 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 // @param  input SatPass list for modification
 // @param  message returned from FindMilliseconds()
 void RemoveMilliseconds(vector<SatPass>& SPList, msecHandler& msh)
-   throw(Exception)
 {
 try {
    int i,ii,jj;
@@ -221,7 +219,6 @@ int SatPassFromRinexFiles(vector<string>& filenames,
                           vector<RinexSatID> exSats,
                           bool lenient,
                           Epoch beginTime, Epoch endTime)
-   throw(Exception)
 {
 try {
    if(filenames.size() == 0) return -1;
@@ -503,7 +500,6 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 int SatPassToRinex2File(string filename,
                         RinexObsHeader& header,
                         vector<SatPass>& SPList)
-   throw(Exception)
 {
    try {
       if(filename.empty()) return 0;
@@ -618,7 +614,6 @@ int SatPassToRinex3File(string filename,
                         Rinex3ObsHeader header_in,
                         const map<char, vector<string> >& sysobs,
                         vector<SatPass>& SPList)
-   throw(Exception)
 {
    try {
       if(filename.empty()) return 0;

@@ -77,54 +77,53 @@ namespace gpstk
 
          /**
           * Reads typed data directly from the stream in binary form.
+          * @throw EndOfFile
           * @throw FFStreamError when the size of the data read
           *   from this stream doesn't match the size of a T-object.
           * @return the decoded data
           */
-      inline void getData(uint8_t& v) throw(EndOfFile, FFStreamError);
-      inline void getData(uint16_t& v) throw(EndOfFile, FFStreamError);
-      inline void getData(uint32_t& v) throw(EndOfFile, FFStreamError);
-      inline void getData(uint64_t& v) throw(EndOfFile, FFStreamError);
-      inline void getData(int8_t& v) throw(EndOfFile, FFStreamError);
-      inline void getData(int16_t& v) throw(EndOfFile, FFStreamError);
-      inline void getData(int32_t& v) throw(EndOfFile, FFStreamError);
-      inline void getData(int64_t& v) throw(EndOfFile, FFStreamError);
-      inline void getData(float& v) throw(EndOfFile, FFStreamError);
-      inline void getData(double& v) throw(EndOfFile, FFStreamError);
+      inline void getData(uint8_t& v);
+      inline void getData(uint16_t& v);
+      inline void getData(uint32_t& v);
+      inline void getData(uint64_t& v);
+      inline void getData(int8_t& v);
+      inline void getData(int16_t& v);
+      inline void getData(int32_t& v);
+      inline void getData(int64_t& v);
+      inline void getData(float& v);
+      inline void getData(double& v);
 
          /** Read raw data into a buffer.
           * @param[out] buff the buffer to store the stream data
           *   into. Must be pre-allocated to at least length bytes.
-          * @param[in] length the number of bytes to read from the stream. */
-      void getData(char* buff, size_t length)
-         throw(EndOfFile, FFStreamError);
+          * @param[in] length the number of bytes to read from the stream.
+          * @throw EndOfFile
+          * @throw FFStreamError */
+      void getData(char* buff, size_t length);
 
          /**
           * Writes a T-object directly from the stream in binary form.
           * @param[in] data the data to be written.
           * @throw FFStreamError when the size of the data written
           *   to this stream doesn't match the size of a T-object.
-          * @return a T-object
           */
-      inline void writeData(uint8_t v) throw(FFStreamError);
-      inline void writeData(uint16_t v) throw(FFStreamError);
-      inline void writeData(uint32_t v) throw(FFStreamError);
-      inline void writeData(uint64_t v) throw(FFStreamError);
-      inline void writeData(int8_t v) throw(FFStreamError);
-      inline void writeData(int16_t v) throw(FFStreamError);
-      inline void writeData(int32_t v) throw(FFStreamError);
-      inline void writeData(int64_t v) throw(FFStreamError);
-      inline void writeData(float v) throw(FFStreamError);
-      inline void writeData(double v) throw(FFStreamError);
-
-      void writeData(const char* buff, size_t length)
-         throw(FFStreamError);
+      inline void writeData(uint8_t v);
+      inline void writeData(uint16_t v);
+      inline void writeData(uint32_t v);
+      inline void writeData(uint64_t v);
+      inline void writeData(int8_t v);
+      inline void writeData(int16_t v);
+      inline void writeData(int32_t v);
+      inline void writeData(int64_t v);
+      inline void writeData(float v);
+      inline void writeData(double v);
+      void writeData(const char* buff, size_t length);
 
          /** Child classes must defined this method to determine how
           * decodeData and encodeData behave with respect to byte
           * ordering. This defines the byte ordering of the file
           * format. */
-      virtual bool isStreamLittleEndian() const throw() = 0;
+      virtual bool isStreamLittleEndian() const noexcept = 0;
 
    };
       //@}
@@ -151,126 +150,106 @@ namespace gpstk
 
 
    inline void FFBinaryStream :: getData(uint8_t& v)
-      throw(EndOfFile, FFStreamError)
    {
       char *buf = reinterpret_cast<char*>(&v);
       getData(buf, sizeof(v));
    }
 
    inline void FFBinaryStream :: getData(uint16_t& v)
-      throw(EndOfFile, FFStreamError)
    {
       FFBIN_GET_DATA(buitohs,buntohs);
    }
 
    inline void FFBinaryStream :: getData(uint32_t& v)
-      throw(EndOfFile, FFStreamError)
    {
       FFBIN_GET_DATA(buitohl,buntohl);
    }
 
    inline void FFBinaryStream :: getData(uint64_t& v)
-      throw(EndOfFile, FFStreamError)
    {
       FFBIN_GET_DATA(buitohll,buntohll);
    }
 
    inline void FFBinaryStream :: getData(int8_t& v)
-      throw(EndOfFile, FFStreamError)
    {
       char *buf = reinterpret_cast<char*>(&v);
       getData(buf, sizeof(v));
    }
 
    inline void FFBinaryStream :: getData(int16_t& v)
-      throw(EndOfFile, FFStreamError)
    {
       FFBIN_GET_DATA(buitohss,buntohss);
    }
 
    inline void FFBinaryStream :: getData(int32_t& v)
-      throw(EndOfFile, FFStreamError)
    {
       FFBIN_GET_DATA(buitohsl,buntohsl);
    }
 
    inline void FFBinaryStream :: getData(int64_t& v)
-      throw(EndOfFile, FFStreamError)
    {
       FFBIN_GET_DATA(buitohsll,buntohsll);
    }
 
    inline void FFBinaryStream :: getData(float& v)
-      throw(EndOfFile, FFStreamError)
    {
       FFBIN_GET_DATA(buitohf,buntohf);
    }
 
    inline void FFBinaryStream :: getData(double& v)
-      throw(EndOfFile, FFStreamError)
    {
       FFBIN_GET_DATA(buitohd,buntohd);
    }
 
 
    inline void FFBinaryStream :: writeData(uint8_t v)
-      throw(FFStreamError)
    {
       char *buf = reinterpret_cast<char*>(&v);
       writeData(buf, sizeof(v));
    }
 
    inline void FFBinaryStream :: writeData(uint16_t v)
-      throw(FFStreamError)
    {
       FFBIN_WRITE_DATA(buhtois,buhtons);
    }
 
    inline void FFBinaryStream :: writeData(uint32_t v)
-      throw(FFStreamError)
    {
       FFBIN_WRITE_DATA(buhtoil,buhtonl);
    }
 
    inline void FFBinaryStream :: writeData(uint64_t v)
-      throw(FFStreamError)
    {
       FFBIN_WRITE_DATA(buhtoill,buhtonll);
    }
 
    inline void FFBinaryStream :: writeData(int8_t v)
-      throw(FFStreamError)
    {
       char *buf = reinterpret_cast<char*>(&v);
       writeData(buf, sizeof(v));
    }
 
    inline void FFBinaryStream :: writeData(int16_t v)
-      throw(FFStreamError)
    {
       FFBIN_WRITE_DATA(buhtoiss,buhtonss);
    }
 
    inline void FFBinaryStream :: writeData(int32_t v)
-      throw(FFStreamError)
    {
       FFBIN_WRITE_DATA(buhtoisl,buhtonsl);
    }
 
    inline void FFBinaryStream :: writeData(int64_t v)
-      throw(FFStreamError)
    {
       FFBIN_WRITE_DATA(buhtoisll,buhtonsll);
    }
 
    inline void FFBinaryStream :: writeData(float v)
-      throw(FFStreamError)
    {
       FFBIN_WRITE_DATA(buhtoif,buhtonf);
    }
 
    inline void FFBinaryStream :: writeData(double v)
-      throw(FFStreamError)
    {
       FFBIN_WRITE_DATA(buhtoid,buhtond);
    }

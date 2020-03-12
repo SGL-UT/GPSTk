@@ -39,14 +39,14 @@
 
 namespace gpstk
 {
-   void PowerSum::clear() throw()
+   void PowerSum::clear() noexcept
    {
       for (int i=1; i<=order; i++)
          s[i]=0.0;
       n=0;
    }
    
-   void PowerSum::add(double x) throw()
+   void PowerSum::add(double x) noexcept
    {
       n++;
       double px=x;
@@ -54,7 +54,7 @@ namespace gpstk
          s[i] += px;
    }
 
-   void PowerSum::subtract(double x) throw()
+   void PowerSum::subtract(double x) noexcept
    {
       n--;
       double px=x;
@@ -62,14 +62,14 @@ namespace gpstk
          s[i] -= px;
    }
 
-   void PowerSum::add(dlc_iterator b, dlc_iterator e) throw()
+   void PowerSum::add(dlc_iterator b, dlc_iterator e) noexcept
    {
       dlc_iterator i;
       for (i=b; i != e; i++)
          add(*i);
    }
 
-   void PowerSum::subtract(dlc_iterator b, dlc_iterator e) throw()
+   void PowerSum::subtract(dlc_iterator b, dlc_iterator e) noexcept
    {
       dlc_iterator i;
       for (i=b; i != e; i++)
@@ -78,7 +78,7 @@ namespace gpstk
 
    /// See http://mathworld.wolfram.com/SampleCentralMoment.html for
    /// computing the central moments from the power sums.
-   double PowerSum::moment(int i) const throw()
+   double PowerSum::moment(int i) const noexcept
    {
       if ( i > order || i >= n)
          return 0;
@@ -102,7 +102,7 @@ namespace gpstk
       return m;
    }
 
-   double PowerSum::average() const throw()
+   double PowerSum::average() const noexcept
    {
       if (n<1)
          return 0;
@@ -110,21 +110,21 @@ namespace gpstk
    }
 
 
-   double PowerSum::variance() const throw()
+   double PowerSum::variance() const noexcept
    {
       if (n<2)
          return 0;
       return moment(2);
    }
 
-   double PowerSum::skew() const throw()
+   double PowerSum::skew() const noexcept
    {
       if (n<3)
          return 0;
       return moment(3)/pow(moment(2),1.5);
    }
 
-   double PowerSum::kurtosis() const throw()
+   double PowerSum::kurtosis() const noexcept
    {
       if (n<4)
          return 0;
@@ -132,7 +132,7 @@ namespace gpstk
       return moment(4)/(m2*m2);
    }
 
-   void PowerSum::dump(std::ostream& str) const throw()
+   void PowerSum::dump(std::ostream& str) const noexcept
    {
       str << "n:" << n;
       for (int i=1; i<=order; i++)

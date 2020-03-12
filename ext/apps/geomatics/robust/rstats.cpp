@@ -74,27 +74,80 @@ using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
 // prototypes
-int GetCommandLine(int argc, char **argv) throw(Exception);
-int Prepare(void) throw(Exception);
-int ReadAndCompute(void) throw(Exception);
+/**
+ * @throw Exception
+ */
+int GetCommandLine(int argc, char **argv);
+/**
+ * @throw Exception
+ */
+int Prepare(void);
+/**
+ * @throw Exception
+ */
+int ReadAndCompute(void);
 
-int StemAndLeaf(void) throw(Exception);
-int QuantilePlot(void) throw(Exception);
-int FindBins(void) throw(Exception);
-int ComputeSum(void) throw(Exception);
-int FitPoly(void) throw(Exception);
-int Sequential(void) throw(Exception);
-int Discontinuity(void) throw(Exception);
-int FDFilter(void) throw(Exception);
-int WindFilter(void) throw(Exception);
-int FixFilter(void) throw(Exception);
-int WhiteNoiseJerkFilter(void) throw(Exception);
-int ComputeFFT(void) throw(Exception);
-int OutputStats(void) throw(Exception);
-int Outliers(void) throw(Exception);
+/**
+ * @throw Exception
+ */
+int StemAndLeaf(void);
+/**
+ * @throw Exception
+ */
+int QuantilePlot(void);
+/**
+ * @throw Exception
+ */
+int FindBins(void);
+/**
+ * @throw Exception
+ */
+int ComputeSum(void);
+/**
+ * @throw Exception
+ */
+int FitPoly(void);
+/**
+ * @throw Exception
+ */
+int Sequential(void);
+/**
+ * @throw Exception
+ */
+int Discontinuity(void);
+/**
+ * @throw Exception
+ */
+int FDFilter(void);
+/**
+ * @throw Exception
+ */
+int WindFilter(void);
+/**
+ * @throw Exception
+ */
+int FixFilter(void);
+/**
+ * @throw Exception
+ */
+int WhiteNoiseJerkFilter(void);
+/**
+ * @throw Exception
+ */
+int ComputeFFT(void);
+/**
+ * @throw Exception
+ */
+int OutputStats(void);
+/**
+ * @throw Exception
+ */
+int Outliers(void);
 
-// utility for develop and debug
-int DumpData(string msg=string("DUMP")) throw(Exception);
+/** utility for develop and debug
+ * @throw Exception
+ */
+int DumpData(string msg=string("DUMP"));
 
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
@@ -102,7 +155,7 @@ int DumpData(string msg=string("DUMP")) throw(Exception);
 class GlobalData : public Singleton<GlobalData> {
 public:
    // Default and only constructor, sets defaults.
-   GlobalData() throw() { SetDefaults(); }
+   GlobalData() noexcept { SetDefaults(); }
 
    // prgm housekeeping
    static const std::string Version;   // see below
@@ -195,7 +248,7 @@ public:
    std::string longfmt;                // times in error messages, etc.
 
 private:
-   void SetDefaults(void) throw()
+   void SetDefaults(void) noexcept
    {
       PrgmName = std::string("rstats");
 
@@ -391,7 +444,7 @@ catch (...) {
 
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
-int GetCommandLine(int argc, char **argv) throw(Exception)
+int GetCommandLine(int argc, char **argv)
 {
 try {
    int i;
@@ -737,7 +790,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 
 //------------------------------------------------------------------------------------
 // Title, debug output of cmdline, define GD.msg, include_path for input file
-int Prepare(void) throw(Exception)
+int Prepare(void)
 {
 try {
    int i,j;
@@ -781,7 +834,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int ReadAndCompute(void) throw(Exception)
+int ReadAndCompute(void)
 {
 try {
    GlobalData& GD=GlobalData::Instance();
@@ -917,7 +970,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int OutputStats(void) throw(Exception)
+int OutputStats(void)
 {
 try {
    GlobalData& GD=GlobalData::Instance();
@@ -1044,7 +1097,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int StemAndLeaf(void) throw(Exception)
+int StemAndLeaf(void)
 {
 try {
    GlobalData& GD=GlobalData::Instance();
@@ -1071,7 +1124,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int QuantilePlot(void) throw(Exception)
+int QuantilePlot(void)
 {
 try {
    unsigned int i;
@@ -1117,7 +1170,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 // input min,max,nbins, output the rest
 // return 0 if ok
 int Bins(const double& min, const double& max, int& nbins,
-         double& firstbin, double& binstep, int& prec) throw(Exception)
+         double& firstbin, double& binstep, int& prec)
 {
 try {
    if(nbins <= 2) GPSTK_THROW(Exception("Too few bins"));
@@ -1148,7 +1201,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int FindBins(void) throw(Exception)
+int FindBins(void)
 {
 try {
    unsigned int i,j,k;
@@ -1217,7 +1270,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int ComputeSum(void) throw(Exception)
+int ComputeSum(void)
 {
 try {
    unsigned int i,j,k;
@@ -1305,7 +1358,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int FitPoly(void) throw(Exception)
+int FitPoly(void)
 {
 try {
    unsigned int i,j;
@@ -1390,7 +1443,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int Sequential(void) throw(Exception)
+int Sequential(void)
 {
 try {
    GlobalData& GD=GlobalData::Instance();
@@ -1413,7 +1466,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int Discontinuity(void) throw(Exception)
+int Discontinuity(void)
 {
 try {
    unsigned int i,j,k;
@@ -1498,7 +1551,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int FDFilter(void) throw(Exception)
+int FDFilter(void)
 {
 try {
    unsigned int i,j,k;
@@ -1565,7 +1618,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int WindFilter(void) throw(Exception)
+int WindFilter(void)
 {
 try {
    unsigned int i;
@@ -1596,7 +1649,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int FixFilter(void) throw(Exception)
+int FixFilter(void)
 {
 try {
    int N;
@@ -1664,7 +1717,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int WhiteNoiseJerkFilter(void) throw(Exception)
+int WhiteNoiseJerkFilter(void)
 {
 try {
    unsigned int i;
@@ -1767,7 +1820,7 @@ void invDFT(const vector<double>& ampcos, const vector<double>& ampsin, const in
 }
 
 //------------------------------------------------------------------------------------
-int ComputeFFT(void) throw(Exception)
+int ComputeFFT(void)
 {
 try {
    unsigned int i;
@@ -1852,7 +1905,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int Outliers(void) throw(Exception)
+int Outliers(void)
 {
 try {
    unsigned int i,j;
@@ -1897,7 +1950,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int DumpData(string msg) throw(Exception)
+int DumpData(string msg)
 {
 try {
    unsigned int i;

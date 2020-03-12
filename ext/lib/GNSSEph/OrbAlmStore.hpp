@@ -84,7 +84,7 @@ namespace gpstk
    public:
 
       OrbAlmStore()
-         throw()
+         noexcept
          : initialTime(CommonTime::END_OF_TIME),
            finalTime(CommonTime::BEGINNING_OF_TIME)
       {
@@ -104,8 +104,7 @@ namespace gpstk
       ///    reason, this is thrown. The text may have additional
       ///    information as to why the request failed.  The most common reason
       ///    is that no orbital elements are stored for the SV.
-      virtual Xvt getXvt( const SatID& subjID, const CommonTime& t ) const
-         throw( InvalidRequest );
+      virtual Xvt getXvt( const SatID& subjID, const CommonTime& t ) const;
 
          /** Compute the position, velocity and clock offset of the
           * indicated object in ECEF coordinates (meters) at the
@@ -122,21 +121,21 @@ namespace gpstk
           * @param[in] t the time to look up
           * @return the Xvt of the object at the indicated time */
       virtual Xvt computeXvt(const SatID& id, const CommonTime& t) const
-         throw();
+         noexcept;
 
          /** Get the satellite health at a specific time.
           * @param[in] id the object's identifier
           * @param[in] t the time to look up
           * @return the health status of the object at the indicated time. */
       virtual Xvt::HealthStatus getSVHealth(const SatID& id,
-                                            const CommonTime& t) const throw();
+                                            const CommonTime& t) const noexcept;
 
 
       /// As getXvt( ) with the additional check that the elements used
       /// must have a fit interval that covers the requested time.  If not,
       /// InvalidRequest is thrown.
-      virtual Xvt getXvt_WithinValidity( const SatID& subjID, const CommonTime& t ) const
-         throw( InvalidRequest );
+      /// @throw InvalidRequest
+      virtual Xvt getXvt_WithinValidity( const SatID& subjID, const CommonTime& t ) const;
 
 
       /// A debugging function that outputs in human readable form,
@@ -144,7 +143,7 @@ namespace gpstk
       /// @param[in] s the stream to receive the output; defaults to cout
       /// @param[in] detail the level of detail to provide
       virtual void dump( std::ostream& s = std::cout, short detail = 0 ) const
-         throw();
+         noexcept;
 
       /// Edit the dataset, removing data outside the indicated time interval
       /// @param tmin defines the beginning of the time interval, included
@@ -152,39 +151,37 @@ namespace gpstk
       /// [tmin, tmax)
       virtual void edit( const CommonTime& tmin,
                          const CommonTime& tmax = CommonTime::END_OF_TIME )
-         throw();
+         noexcept;
 
       /// Return time system
-      virtual TimeSystem getTimeSystem(void) const throw()
+      virtual TimeSystem getTimeSystem(void) const noexcept
          { return TimeSystem::Any; }
 
       /// Determine the earliest time for which this object can successfully
       /// determine the Xvt for any satellite.
       /// @return The initial time
-      /// @throw InvalidRequest This is thrown if the object has no data.
       virtual CommonTime getInitialTime() const
-         throw()
-         { return initialTime; }
+         noexcept
+      { return initialTime; }
 
 
       /// Determine the latest time for which this object can successfully
       /// determine the Xvt for any satellite.
       /// @return The final time
-      /// @throw InvalidRequest This is thrown if the object has no data.
       virtual CommonTime getFinalTime() const
-         throw()
-         { return finalTime; }
+         noexcept
+      { return finalTime; }
 
       virtual bool velocityIsPresent()
-         const throw()
+         const noexcept
       { return true; }
 
       /// Return true if velocity data is present in the store
-      virtual bool hasVelocity() const throw()
+      virtual bool hasVelocity() const noexcept
       { return true; }
 
       /// Return true if the given IndexType is present in the store
-      virtual bool isPresent(const SatID& sat) const throw()
+      virtual bool isPresent(const SatID& sat) const noexcept
       {
          if(subjectAlmMap.find(sat) != subjectAlmMap.end()) return true;
          return false;
@@ -205,14 +202,14 @@ namespace gpstk
       /// @param t the time to look up
       /// @return the SV health bits
       /// @throw InvalidRequest no matching OrbElem found in the store
-      virtual bool isHealthy( const SatID& subjID, const CommonTime& t ) const
-         throw( InvalidRequest );
+      virtual bool isHealthy( const SatID& subjID, const CommonTime& t ) const;
 
       /// Convenience method.  Since navigation message data frequently
       /// is stored in PackedNavBits objects, provide a means to go
       /// directly from PNB into the map.
-      virtual unsigned short addMessage(const PackedNavBits& pnb)
-         throw(InvalidParameter,Exception);
+      /// @throw InvalidParameter
+      /// @throw Exception
+      virtual unsigned short addMessage(const PackedNavBits& pnb);
 
       /// Add an OrbAlm object to this collection.
       /// Note: There are actually TWO collections.  A collection per-SV and a
@@ -223,13 +220,14 @@ namespace gpstk
       /// @param alm the OrbAlm (OrbAlm) to add
       /// @param isXmitHealthy health status of the transmitting SV,
       /// @return true if OrbAlm was added, false otherwise
+      /// @throw InvalidParameter
+      /// @throw Exception
       virtual unsigned short addOrbAlm( const OrbAlm* alm,
-                              const bool isXmitHealthy=true )
-         throw(InvalidParameter,Exception);
+                                        const bool isXmitHealthy=true );
 
       /// Remove all data from this collection.
       virtual void clear()
-         throw();
+         noexcept;
 
       /// Get the number of OrbAlm objects in this collection.
       /// @return the number of OrbAlm records in the map
@@ -243,20 +241,24 @@ namespace gpstk
       ///        1   Return the size of the "subject almanac" store.
       ///        2   Return the size of the "transmitted almanac" store.
       virtual unsigned size(unsigned short choice = 0) const
-         throw();
+         noexcept;
       virtual unsigned sizeSubjAlm(const SatID& subjID) const
-         throw();
+         noexcept;
       virtual unsigned sizeXmitAlm(const SatID& xmitID) const
-         throw();
+         noexcept;
 
+         /**
+          * @throw InvalidRequest
+          */
       virtual void dumpSubjAlm( std::ostream& s = std::cout,
                                 short detail = 0,
-                                const SatID& subjID=SatID() ) const
-         throw(InvalidRequest);
+                                const SatID& subjID=SatID() ) const;
+         /**
+          * @throw InvalidRequest
+          */
       virtual void dumpXmitAlm( std::ostream& s = std::cout,
                                 short detail = 0,
-                                const SatID& subjID=SatID() ) const
-         throw(InvalidRequest);
+                                const SatID& subjID=SatID() ) const;
 
 
 
@@ -298,11 +300,13 @@ namespace gpstk
          // If xmitID == SatID (an invalid value), search the subject
          // almanac map instead of a transmit-SV-specific map.  That is to
          // say, use the simpler versino of find()..
+         /**
+          * @throw InvalidRequest
+          */
       const OrbAlm* find( const SatID& subjID,
                           const CommonTime& t,
                           const bool useEffectivity = true,
-                          const SatID& xmitID = SatID() )
-         const throw( InvalidRequest );
+                          const SatID& xmitID = SatID() ) const;
 
       /*
        *  Given an OrbAlm pointer, find the OrbAlm in the subject
@@ -317,16 +321,20 @@ namespace gpstk
        *   - If oap is the final item in the store for any
        *     SV, return CommonTime::END_OF_TIME.
        */
-      CommonTime deriveLastXmit(const OrbAlm* oap) const
-         throw(InvalidRequest);
+      /**
+       * @throw InvalidRequest
+       */
+      CommonTime deriveLastXmit(const OrbAlm* oap) const;
 
       /*
        *  Given an OrbAlm pointer, return a list of the SVs that
        *  transmitted an almanac data set corresponding to the
        *  data in this set.
        */
-      std::list<SatID> xmitBySVs(const OrbAlm* oap) const
-         throw(InvalidRequest);
+      /**
+       * @throw InvalidRequest
+       */
+      std::list<SatID> xmitBySVs(const OrbAlm* oap) const;
 
       /*
        * Return a list of all the subject SVs found in the set
@@ -339,13 +347,13 @@ namespace gpstk
       /// for analysis.  If the map needs to be modified, see other methods.
       ///
       /// This version works from the "subject SV map"
-      const OrbAlmMap& getOrbAlmMap( const SatID& subjID ) const
-         throw( InvalidRequest );
+      /// @throw InvalidRequest
+      const OrbAlmMap& getOrbAlmMap( const SatID& subjID ) const;
       ///
       /// This version works from the "xmit SV map of subject SV maps"
+      /// @throw InvalidRequest
       const OrbAlmMap&getOrbAlmMap(const SatID& xmitID,
-                                   const SatID& subjID) const
-         throw( InvalidRequest );
+                                   const SatID& subjID) const;
 
       void setDebugLevel(const int newLevel)
       {
@@ -362,10 +370,13 @@ namespace gpstk
       static const unsigned short ADD_SUBJ;
 
       //---------------------------------------------------------------------------
-      protected:
+   protected:
+         /**
+          * @throw InvalidParameter
+          * @throw Exception
+          */
       bool addOrbAlmToOrbAlmMap( const OrbAlm* alm,
-                                         OrbAlmMap& oem)
-         throw(gpstk::InvalidParameter, gpstk::Exception);
+                                 OrbAlmMap& oem);
 
       /// See the public find( ) methods for external access.  This version
       /// is used internally once the correct OrbAlmMap has been identifited.
@@ -375,8 +386,7 @@ namespace gpstk
       ///    @throw InvalidRequest object thrown when no OrbAlm is found
       const OrbAlm* find(const OrbAlmMap& em,
                      const CommonTime& t,
-                     const bool useEffectivity) const
-      throw( InvalidRequest );
+                         const bool useEffectivity) const;
 
       /// Returns a string that will be used as a header for
       /// tables that print out OrbAlm::dumpTerse()
@@ -419,7 +429,7 @@ namespace gpstk
       }
 
      // virtual void dumpOnePRN( std::ostream& s = std::cout, OrbElemMap& em) const
-     //    throw();
+     //    noexcept;
 
    }; // end class
 

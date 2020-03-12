@@ -91,17 +91,17 @@ namespace gpstk
 class SRIFilter : public SRI {
 public:
       /// empty constructor
-   SRIFilter(void) throw();
+   SRIFilter(void) noexcept;
 
       /// constructor given the dimension N.
       /// @param N dimension of the SRIFilter.
    SRIFilter(const unsigned int N)
-      throw();
+      noexcept;
 
       /// constructor given a Namelist; its dimension determines the SRI dimension.
       /// @param NL Namelist for the SRIFilter.
    SRIFilter(const Namelist& NL)
-      throw();
+      noexcept;
 
       /// explicit constructor - throw if the dimensions are inconsistent.
       /// @param R  Initial information matrix, an upper triangular matrix of dim N.
@@ -110,40 +110,41 @@ public:
       /// @throw MatrixException if dimensions are not consistent.
    SRIFilter(const Matrix<double>& R,
              const Vector<double>& Z,
-             const Namelist& NL)
-      throw(MatrixException);
+             const Namelist& NL);
 
       /// copy constructor
       /// @param right SRIFilter to be copied
    SRIFilter(const SRIFilter& right)
-      throw()
+      noexcept
       { *this = right; }
 
       /// operator=
       /// @param right SRIFilter to be copied
    SRIFilter& operator=(const SRIFilter& right)
-      throw();
+      noexcept;
 
       /// SRIF (Kalman) simple linear measurement update with optional weight matrix
       /// @param H  Partials matrix, dimension MxN.
       /// @param D  Data vector, length M; on output D is post-fit residuals.
       /// @param CM Measurement covariance matrix, dimension MxM.
-      /// @throw if dimension N does not match dimension of SRI, or if other
+      /// @throw SomeUnknownException if dimension N does not match dimension of SRI, or if other
       ///        dimensions are inconsistent, or if CM is singular.
+      /// @throw MatrixException
+      /// @throw VectorException
    void measurementUpdate(const Matrix<double>& H, Vector<double>& D,
-                          const Matrix<double>& CM=SRINullMatrix)
-   throw(MatrixException,VectorException);
+                          const Matrix<double>& CM=SRINullMatrix);
 
       /// SRIF (Kalman) simple linear measurement update with optional weight matrix
       /// SparseMatrix version
       /// @param H  Partials matrix, dimension MxN.
       /// @param D  Data vector, length M; on output D is post-fit residuals.
       /// @param CM Measurement covariance matrix, dimension MxM.
-      /// @throw if dimension N does not match dimension of SRI, or if other
+      /// @throw SomeUnknownException if dimension N does not match dimension of SRI, or if other
       ///        dimensions are inconsistent, or if CM is singular.
+      /// @throw MatrixException
+      /// @throw VectorException
    void measurementUpdate(const SparseMatrix<double>& H, Vector<double>& D,
-                          const SparseMatrix<double>& CM=SRINullSparseMatrix)
-   throw(MatrixException,VectorException);
+                          const SparseMatrix<double>& CM=SRINullSparseMatrix);
 
       /// SRIF (Kalman) time update
       /// This routine uses the Householder transformation to propagate the SRIFilter
@@ -232,8 +233,7 @@ public:
                    Matrix<double>& Rw,
                    Matrix<double>& G,
                    Vector<double>& zw,
-                   Matrix<double>& Rwx)
-      throw(MatrixException);
+                   Matrix<double>& Rwx);
 
       /// SRIF (Kalman) smoother update
       /// This routine uses the Householder transformation to propagate the SRIF
@@ -300,8 +300,7 @@ public:
                        Matrix<double>& Rw,
                        Matrix<double>& G,
                        Vector<double>& zw,
-                       Matrix<double>& Rwx)
-      throw(MatrixException);
+                       Matrix<double>& Rwx);
 
       /// Covariance/State version of the Kalman smoother update (Dyer-McReynolds).
       /// This routine implements the Dyer-McReynolds form of the state and covariance
@@ -362,10 +361,11 @@ public:
                                 Matrix<double>& Rw,
                                 Matrix<double>& G,
                                 Vector<double>& Zw,
-                                Matrix<double>& Rwx)
-      throw(MatrixException);
+                                Matrix<double>& Rwx);
 
-      /// Modification for case with control vector: Xj+1 = Phi*Xj + Gwj + u
+      /** Modification for case with control vector: Xj+1 = Phi*Xj + Gwj + u
+       * @throw MatrixException
+       */
    static void DMsmootherUpdateWithControl(Matrix<double>& P,
                                            Vector<double>& X,
                                            Matrix<double>& Phinv,
@@ -373,8 +373,7 @@ public:
                                            Matrix<double>& G,
                                            Vector<double>& Zw,
                                            Matrix<double>& Rwx,
-                                           Vector<double>& U)
-      throw(MatrixException);
+                                           Vector<double>& U);
 
       /// remove all stored information by setting the SRI to zero
       /// (does not re-dimension).
@@ -387,7 +386,9 @@ public:
    void Reset(const int N=0);
 
 private:
-      /// SRIF time update (non-SRI version); SRIFilter::timeUpdate for doc.
+      /** SRIF time update (non-SRI version); SRIFilter::timeUpdate for doc.
+       * @throw MatrixException
+       */
    template <class T>
    static void SrifTU(Matrix<T>& R,
                       Vector<T>& Z,
@@ -395,10 +396,12 @@ private:
                       Matrix<T>& Rw,
                       Matrix<T>& G,
                       Vector<T>& Zw,
-                      Matrix<T>& Rwx)
-      throw(MatrixException);
+                      Matrix<T>& Rwx);
 
-      /// SRIF smoother update (non-SRI version); SRIFilter::smootherUpdate for doc.
+      /** SRIF smoother update (non-SRI version);
+       * SRIFilter::smootherUpdate for doc.
+       * @throw MatrixException
+       */
    template <class T>
    static void SrifSU(Matrix<T>& R,
                       Vector<T>& Z,
@@ -406,11 +409,12 @@ private:
                       Matrix<T>& Rw,
                       Matrix<T>& G,
                       Vector<T>& Zw,
-                      Matrix<T>& Rwx)
-      throw(MatrixException);
+                      Matrix<T>& Rwx);
 
-      /// SRIF smoother update in covariance / state form;
-      /// see SRIFilter::DMsmootherUpdate() for doc.
+      /** SRIF smoother update in covariance / state form;
+       * see SRIFilter::DMsmootherUpdate() for doc.
+       * @throw MatrixException
+       */
    template <class T>
    static void SrifSU_DM(Matrix<T>& P,
                          Vector<T>& X,
@@ -418,11 +422,10 @@ private:
                          Matrix<T>& Rw,
                          Matrix<T>& G,
                          Vector<T>& Zw,
-                         Matrix<T>& Rwx)
-      throw(MatrixException);
+                         Matrix<T>& Rwx);
 
       /// initialization used by constructors
-   void defaults(void) throw()
+   void defaults(void) noexcept
    {
       //valid = false;
    }

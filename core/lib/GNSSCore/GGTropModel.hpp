@@ -55,61 +55,72 @@ namespace gpstk
          /// Empty constructor
       GGTropModel(void);
 
-         /// Creates a trop model, with weather observation input
-         /// @param wx the weather to use for this correction.
-      GGTropModel(const WxObservation& wx)
-         throw(InvalidParameter);
+         /** Creates a trop model, with weather observation input
+          * @param wx the weather to use for this correction.
+          * @throw InvalidParameter
+          */
+      GGTropModel(const WxObservation& wx);
 
-         /// Create a tropospheric model from explicit weather data
-         /// @param T temperature in degrees Celsius
-         /// @param P atmospheric pressure in millibars
-         /// @param H relative humidity in percent
+         /** Create a tropospheric model from explicit weather data
+          * @param T temperature in degrees Celsius
+          * @param P atmospheric pressure in millibars
+          * @param H relative humidity in percent
+          * @throw InvalidParameter
+          */
       GGTropModel(const double& T,
                   const double& P,
-                  const double& H)
-         throw(InvalidParameter);
+                  const double& H);
 
          /// Return the name of the model
       virtual std::string name(void)
-         { return std::string("GG"); }
+      { return std::string("GG"); }
 
-         /// Compute and return the zenith delay for dry component
-         /// of the troposphere
-      virtual double dry_zenith_delay(void) const
-         throw(InvalidTropModel);
+         /** Compute and return the zenith delay for dry component
+          * of the troposphere
+          * @throw InvalidTropModel
+          */
+      virtual double dry_zenith_delay(void) const;
 
-         /// Compute and return the zenith delay for wet component
-         /// of the troposphere
-      virtual double wet_zenith_delay(void) const
-         throw(InvalidTropModel);
+         /** Compute and return the zenith delay for wet component
+          * of the troposphere
+          * @throw InvalidTropModel
+          */
+      virtual double wet_zenith_delay(void) const;
 
-         /// Compute and return the mapping function for dry component
-         /// of the troposphere
-         /// @param elevation Elevation of satellite as seen at receiver, in degrees
-      virtual double dry_mapping_function(double elevation) const
-         throw(InvalidTropModel);
+         /** Compute and return the mapping function for dry component
+          * of the troposphere
+          * @param elevation Elevation of satellite as seen at
+          *   receiver, in degrees
+          * @throw InvalidTropModel
+          */
+      virtual double dry_mapping_function(double elevation) const;
 
-         /// Compute and return the mapping function for wet component
-         /// of the troposphere
-         /// @param elevation Elevation of satellite as seen at receiver, in degrees
-      virtual double wet_mapping_function(double elevation) const
-         throw(InvalidTropModel);
+         /** Compute and return the mapping function for wet component
+          * of the troposphere
+          * @param elevation Elevation of satellite as seen at
+          *   receiver, in degrees
+          * @throw InvalidTropModel
+          */
 
-         /// Re-define the tropospheric model with explicit weather data.
-         /// Typically called initially, and whenever the weather changes.
-         /// @param T temperature in degrees Celsius
-         /// @param P atmospheric pressure in millibars
-         /// @param H relative humidity in percent
+      virtual double wet_mapping_function(double elevation) const;
+
+         /** Re-define the tropospheric model with explicit weather data.
+          * Typically called initially, and whenever the weather changes.
+          * @param T temperature in degrees Celsius
+          * @param P atmospheric pressure in millibars
+          * @param H relative humidity in percent
+          * @throw InvalidParameter
+          */
       virtual void setWeather(const double& T,
                               const double& P,
-                              const double& H)
-         throw(InvalidParameter);
+                              const double& H);
 
-         /// Re-define the tropospheric model with explicit weather data.
-         /// Typically called just before correction().
-         /// @param wx the weather to use for this correction
-      virtual void setWeather(const WxObservation& wx)
-         throw(InvalidParameter);
+         /** Re-define the tropospheric model with explicit weather data.
+          * Typically called just before correction().
+          * @param wx the weather to use for this correction
+          * @throw InvalidParameter
+          */
+      virtual void setWeather(const WxObservation& wx);
 
    private:
       double Cdrydelay;

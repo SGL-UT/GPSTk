@@ -70,7 +70,7 @@ using namespace StringUtils;
    //---------------------------------------------------------------------------------
    // constructor given the dimension N.
    SRI::SRI(const unsigned int N)
-      throw()
+      noexcept
    {
       R = Matrix<double>(N,N,0.0);
       Z = Vector<double>(N,0.0);
@@ -80,7 +80,7 @@ using namespace StringUtils;
    // --------------------------------------------------------------------------------
    // constructor given a Namelist, its dimension determines the SRI dimension.
    SRI::SRI(const Namelist& nl)
-      throw()
+      noexcept
    {
       if(nl.size() <= 0) return;
       R = Matrix<double>(nl.size(),nl.size(),0.0);
@@ -93,7 +93,6 @@ using namespace StringUtils;
    SRI::SRI(const Matrix<double>& r,
             const Vector<double>& z,
             const Namelist& nl)
-      throw(MatrixException)
    {
       if(r.rows() != r.cols() || r.rows() != z.size() || r.rows() != nl.size()) {
          MatrixException me("Invalid dimensions in explicit SRI constructor:\n R is "
@@ -112,7 +111,7 @@ using namespace StringUtils;
    // --------------------------------------------------------------------------------
    // define from covariance and state
    void SRI::setFromCovState(const Matrix<double>& Cov, const Vector<double>& State,
-                     const Namelist& NL) throw(MatrixException)
+                     const Namelist& NL)
    {
       if(Cov.rows()!=Cov.cols() || Cov.rows()!=State.size() || Cov.rows()!=NL.size())
       {
@@ -130,7 +129,7 @@ using namespace StringUtils;
    // --------------------------------------------------------------------------------
    // copy constructor
    SRI::SRI(const SRI& s)
-      throw()
+      noexcept
    {
       R = s.R;
       Z = s.Z;
@@ -140,7 +139,7 @@ using namespace StringUtils;
    // --------------------------------------------------------------------------------
    // operator=
    SRI& SRI::operator=(const SRI& right)
-      throw()
+      noexcept
    {
       R = right.R;
       Z = right.Z;
@@ -154,7 +153,6 @@ using namespace StringUtils;
    // Permute the SRI elements to match the input Namelist, which may differ with
    // the SRI Namelist by AT MOST A PERMUTATION, throw if this is not true.
    void SRI::permute(const Namelist& nl)
-      throw(MatrixException,VectorException)
    {
       if(identical(names,nl)) return;
       if(names != nl) {
@@ -246,7 +244,6 @@ using namespace StringUtils;
    // See the test program tsri.cpp
    //
    void SRI::split(const Namelist& NL, SRI& Sleft)
-      throw(MatrixException,VectorException)
    {
       try {
          Sleft = SRI(0);
@@ -299,7 +296,6 @@ using namespace StringUtils;
    // extend this SRI to include the given Namelist, with no added information;
    // names in the input namelist which are not unique are ignored.
    SRI& SRI::operator+=(const Namelist& NL)
-      throw(MatrixException,VectorException)
    {
       try {
          Namelist B(names);
@@ -333,7 +329,6 @@ using namespace StringUtils;
    // optional - you can always keep 'dead' elements), (2) add new elements
    // (with zero information), and (3) permute to match NL.
    void SRI::reshape(const Namelist& NL)
-      throw(MatrixException,VectorException)
    {
       try {
          if(names == NL) return;
@@ -364,7 +359,6 @@ using namespace StringUtils;
    // of R and Z, all without final Householder transformation of result.
    // Do not allow a name that is already present to be added: throw.
    SRI& SRI::append(const SRI& S)
-      throw(MatrixException,VectorException)
    {
       try {
          // do not allow duplicates
@@ -404,7 +398,6 @@ using namespace StringUtils;
    // merge this SRI with the given input SRI. ? should this be operator&=() ?
    // NB may reorder the names in the resulting Namelist.
    SRI& SRI::operator+=(const SRI& S)
-      throw(MatrixException,VectorException)
    {
       try {
          Namelist all(names);
@@ -472,7 +465,6 @@ using namespace StringUtils;
    // merge two SRIs to produce a third. ? should this be operator&() ?
    SRI operator+(const SRI& Sleft,
                  const SRI& Sright)
-      throw(MatrixException,VectorException)
    {
       try {
          SRI S(Sleft);
@@ -491,7 +483,7 @@ using namespace StringUtils;
    // Zero out the nth row of R and the nth element of Z, removing all
    // information about that element.
    void SRI::zeroOne(const unsigned int n)
-      throw()
+      noexcept
    {
       if(n >= R.rows())
          return;
@@ -506,7 +498,7 @@ using namespace StringUtils;
    // information about those elements. Default value of the input is 0,
    // meaning zero out the entire SRI.
    void SRI::zeroAll(const unsigned int n)
-      throw()
+      noexcept
    {
       if(n <= 0) {
          R = 0.0;
@@ -529,7 +521,6 @@ using namespace StringUtils;
    // i.e. let R * X = Z => R * (X-X0) = Z'
    // throw on invalid input dimension
    void SRI::shift(const Vector<double>& X0)
-      throw(MatrixException)
    {
       if(X0.size() != R.cols()) {
          MatrixException me("Invalid input dimension: SRI has dimension "
@@ -546,7 +537,6 @@ using namespace StringUtils;
    // does not change information. i.e. let Z => Z-Z0
    // throw on invalid input dimension
    void SRI::shiftZ(const Vector<double>& Z0)
-      throw(MatrixException)
    {
       if(Z0.size() != R.cols()) {
          MatrixException me("Invalid input dimension: SRI has dimension "
@@ -564,7 +554,7 @@ using namespace StringUtils;
    // to retriagularize it and pull out new R and Z.
    // param A Matrix<double> which is [R || Z] to be retriangularizied.
    // throw if dimensions are wrong.
-   void SRI::retriangularize(const Matrix<double>& A) throw(MatrixException)
+   void SRI::retriangularize(const Matrix<double>& A)
    {
       const unsigned int n(R.rows());
       if(A.rows() != n || A.cols() != n+1) {
@@ -589,7 +579,6 @@ using namespace StringUtils;
    // @param Z Vector<double> input the (potentially) modified Z
    // @throw if dimensions are wrong.
    void SRI::retriangularize(Matrix<double> RR, Vector<double> ZZ)
-      throw(MatrixException)
    {
       const unsigned int n(R.rows());
       if(RR.rows() != n || RR.cols() != n || ZZ.size() != n) {
@@ -614,7 +603,6 @@ using namespace StringUtils;
    // SRI.names is set to input Namelist
    // throw MatrixException if input dimensions are wrong.
    void SRI::transform(const Matrix<double>& invT, const Namelist& NL)
-      throw(MatrixException)
    {
       const unsigned int n(R.rows());
       if(invT.rows() != n || invT.cols() != n) {
@@ -648,7 +636,6 @@ using namespace StringUtils;
    // of Z, (3) permute the first row back to in.
    void SRI::Qbump(const unsigned int& in,
                    const double& q)
-      throw(MatrixException,VectorException)
    {
       try {
          if(in >= R.rows()) return;
@@ -693,7 +680,6 @@ using namespace StringUtils;
    // param sigma (1/information) assigned to the element
    void SRI::stateFix(const string& name,
                       const double& value, const double& sigma, bool restore)
-      throw(Exception)
    {
       int index = names.index(name);
       if(index == -1) return;
@@ -709,7 +695,6 @@ using namespace StringUtils;
    // param sigma (1/information) assigned to the element
    void SRI::stateFix(const unsigned int& index,
                       const double& value, const double& sigma, bool restore)
-      throw(Exception)
    {
       if(index >= names.size()) GPSTK_THROW(Exception("Index out of range"));
       const unsigned int N(names.size());
@@ -738,7 +723,6 @@ using namespace StringUtils;
    // collapse the SRI by removing that element.
    // No effect if index is out of range.
    void SRI::stateFixAndRemove(const unsigned int& in, const double& bias)
-      throw(MatrixException,VectorException)
    {
       if(in >= R.rows()) return;
 
@@ -770,7 +754,6 @@ using namespace StringUtils;
    // --------------------------------------------------------------------------------
    // Vector version of stateFixAndRemove with several states given in a Namelist.
    void SRI::stateFixAndRemove(const Namelist& dropNL,const Vector<double>& values_in)
-      throw(MatrixException,VectorException)
    {
       try {
          if(dropNL.size() != values_in.size()) {
@@ -875,7 +858,6 @@ using namespace StringUtils;
    // Add a priori or 'constraint' information
    // Prefer addAPrioriInformation(inverse(Cov), inverse(Cov)*X);
    void SRI::addAPriori(const Matrix<double>& Cov, const Vector<double>& X)
-      throw(MatrixException)
    {
       if(Cov.rows() != Cov.cols() || Cov.rows() != R.rows() || X.size() != R.rows()) {
          MatrixException me("Invalid input dimensions:\n  SRI has dimension "
@@ -898,7 +880,6 @@ using namespace StringUtils;
    // --------------------------------------------------------------------------------
    void SRI::addAPrioriInformation(const Matrix<double>& InvCov,
                                    const Vector<double>& X)
-      throw(MatrixException)
    {
       if(InvCov.rows() != InvCov.cols() || InvCov.rows() != R.rows()
             || X.size() != R.rows()) {
@@ -924,7 +905,6 @@ using namespace StringUtils;
 
    // --------------------------------------------------------------------------------
    void SRI::getConditionNumber(double& small, double& big) const
-      throw(MatrixException)
    {
       try {
          small = big = 0.0;
@@ -947,7 +927,6 @@ using namespace StringUtils;
    // triangular. Throw if and when a zero diagonal element is found; values at larger
    // index are still valid. On output *ptr is the largest singular index
    void SRI::getState(Vector<double>& X, int *ptr) const
-      throw(MatrixException)
    {
       const int n=Z.size();
       X = Vector<double>(n,0.0);
@@ -976,7 +955,6 @@ using namespace StringUtils;
                                    Matrix<double>& C,
                                    double *ptrSmall,
                                    double *ptrBig) const
-      throw(MatrixException,VectorException)
    {
       try {
          double small,big;

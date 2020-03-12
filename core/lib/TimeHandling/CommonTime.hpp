@@ -286,7 +286,7 @@ namespace gpstk
           * Add seconds to a copy of this CommonTime.
           * @param seconds the number of seconds to add to a copy of this CommonTime
           * @return the new CommonTime object
-          * @throws InvalidRequest on over-/under-flow
+          * @throw InvalidRequest on over-/under-flow
           */
       CommonTime operator+( double seconds ) const;
 
@@ -295,7 +295,7 @@ namespace gpstk
           * @param seconds the number of seconds to subtract from a copy of this
           *  CommonTime
           * @return the new CommonTime object
-          * @throws InvalidRequest on over-/under-flow
+          * @throw InvalidRequest on over-/under-flow
           */
       CommonTime operator-( double seconds ) const;
 
@@ -303,7 +303,7 @@ namespace gpstk
           * Add seconds to this CommonTime.
           * @param seconds the number of seconds to add to this CommonTime.
           * @return a reference to this CommonTime
-          * @throws InvalidRequest on over-/under-flow
+          * @throw InvalidRequest on over-/under-flow
           */
       CommonTime& operator+=( double seconds );
 
@@ -311,7 +311,7 @@ namespace gpstk
           * Subtract seconds from this CommonTime.
           * @param seconds the number of seconds to subtract from this CommonTime
           * @return a reference to this CommonTime object
-          * @throws InvalidRequest on over-/under-flow
+          * @throw InvalidRequest on over-/under-flow
           */
       CommonTime& operator-=( double seconds );
 
@@ -320,7 +320,7 @@ namespace gpstk
           * This is the workhorse for the addition/subtraction operators.
           * @param seconds the number of seconds to add to this CommonTime
           * @return a reference to this CommonTime object
-          * @throws InvalidRequest on over-/under-flow
+          * @throw InvalidRequest on over-/under-flow
           */
       CommonTime& addSeconds( double seconds );
 
@@ -328,7 +328,7 @@ namespace gpstk
           * Add integer days to this CommonTime object.
           * param days the number of days to add to this CommonTime
           * @return a reference to this CommonTime object
-          * @throws InvalidRequest on over-/under-flow
+          * @throw InvalidRequest on over-/under-flow
           */
       CommonTime& addDays( long days );
 
@@ -336,7 +336,7 @@ namespace gpstk
           * Add integer seconds to this CommonTime object.
           * @param sec the number of seconds to add to this CommonTime
           * @return a reference to this CommonTime object
-          * @throws InvalidRequest on over-/under-flow
+          * @throw InvalidRequest on over-/under-flow
           */
       CommonTime& addSeconds( long seconds );
 
@@ -344,7 +344,7 @@ namespace gpstk
           * Add integer milliseconds to this CommonTime object.
           * @param ms the number of milliseconds to add to this CommonTime
           * @return a reference to this CommonTime object
-          * @throws InvalidRequest on over-/under-flow
+          * @throw InvalidRequest on over-/under-flow
           */
       CommonTime& addMilliseconds( long ms );
          //@}

@@ -81,7 +81,7 @@ namespace gpstk
    std::string Epoch::PRINT_FORMAT("%02m/%02d/%04Y %02H:%02M:%02S");
 
    Epoch& Epoch::setTolerance(double tol)
-      throw()
+      noexcept
    {
       tolerance = tol;
       return *this;
@@ -89,13 +89,12 @@ namespace gpstk
    
       // Default constructor; initializes to current system time.
    Epoch::Epoch(const TimeTag& tt)
-      throw(Epoch::EpochException)
          : tolerance(EPOCH_TOLERANCE)
    {
       set(tt);
    }
    Epoch::Epoch(const CommonTime& ct)
-      throw()
+      noexcept
          : core(ct),
            tolerance(EPOCH_TOLERANCE)
    {}
@@ -105,7 +104,6 @@ namespace gpstk
        */
    Epoch::Epoch(const WeekSecond& tt,
                 short year)
-      throw(Epoch::EpochException)
          : tolerance(EPOCH_TOLERANCE)
    {
       set(tt, year);
@@ -115,14 +113,13 @@ namespace gpstk
       // @param z GPSZcount object to set to
       // @param f Time frame (see #TimeFrame)
    Epoch::Epoch(const GPSZcount& z)
-      throw()
+      noexcept
          : tolerance(EPOCH_TOLERANCE)
    {
       set(z);
    }
 
    Epoch::operator GPSZcount() const
-      throw(Epoch::EpochException)
    {
       try
       {
@@ -140,14 +137,14 @@ namespace gpstk
 
       // Copy constructor
    Epoch::Epoch(const Epoch& right)
-      throw()
+      noexcept
          : core(right.core),
            tolerance(right.tolerance)
    {}
 
       // Assignment operator.
    Epoch& Epoch::operator=(const Epoch& right)
-      throw()
+      noexcept
    {
       core = right.core;
       tolerance = right.tolerance;
@@ -158,7 +155,7 @@ namespace gpstk
       // @param right Epoch to subtract from this one.
       // @return difference in seconds.
    double Epoch::operator-(const Epoch& right) const
-      throw()
+      noexcept
    {
       return core - right.core;
    }
@@ -167,7 +164,6 @@ namespace gpstk
       // @param seconds Number of seconds to increase this time by.
       // @return The new time incremented by \c seconds.
    Epoch Epoch::operator+(double seconds) const
-      throw(Epoch::EpochException)
    {
       return Epoch(*this).addSeconds(seconds);
    }
@@ -176,7 +172,6 @@ namespace gpstk
       // @param seconds Number of seconds to decrease this time by.
       // @return The new time decremented by \c seconds.
    Epoch Epoch::operator-(double seconds) const
-      throw(Epoch::EpochException)
    {
       return Epoch(*this).addSeconds(-seconds);
    }
@@ -184,7 +179,6 @@ namespace gpstk
       // Add seconds to this time.
       // @param seconds Number of seconds to increase this time by.
    Epoch& Epoch::operator+=(double seconds)
-      throw(Epoch::EpochException)
    {
       return addSeconds(seconds);
    }
@@ -192,7 +186,6 @@ namespace gpstk
       // Subtract seconds from this time.
       // @param sec Number of seconds to decrease this time by.
    Epoch& Epoch::operator-=(double seconds)
-      throw(Epoch::EpochException)
    {
       return addSeconds(-seconds);
    }
@@ -200,7 +193,6 @@ namespace gpstk
       // Add seconds to this object.
       // @param seconds Number of seconds to add
    Epoch& Epoch::addSeconds(double seconds)
-      throw(Epoch::EpochException)
    {
       try
       {
@@ -217,7 +209,6 @@ namespace gpstk
       // Add (integer) seconds to this object.
       // @param seconds Number of seconds to add.
    Epoch& Epoch::addSeconds(long seconds)
-      throw(Epoch::EpochException)
    {
       try
       {
@@ -234,7 +225,6 @@ namespace gpstk
       // Add (integer) milliseconds to this object.
       // @param msec Number of milliseconds to add.
    Epoch& Epoch::addMilliSeconds(long msec)
-      throw(Epoch::EpochException)
    {
       try
       {
@@ -251,7 +241,6 @@ namespace gpstk
       // Add (integer) microseconds to this object.
       // @param usec Number of microseconds to add.
    Epoch& Epoch::addMicroSeconds(long usec)
-      throw(Epoch::EpochException)
    {
       try
       {
@@ -271,7 +260,7 @@ namespace gpstk
 
       // Equality operator.
    bool Epoch::operator==(const Epoch &right) const 
-      throw()
+      noexcept
    {
       // use the smaller of the two tolerances for comparison
       return (ABS(operator-(right)) <=
@@ -280,14 +269,14 @@ namespace gpstk
 
       // Inequality operator.
    bool Epoch::operator!=(const Epoch &right) const 
-      throw()
+      noexcept
    {
       return !(operator==(right));
    }
 
       // Comparison operator (less-than).
    bool Epoch::operator<(const Epoch &right) const 
-      throw()
+      noexcept
    {
       return (operator-(right) <
             -((tolerance > right.tolerance) ? right.tolerance : tolerance));
@@ -295,7 +284,7 @@ namespace gpstk
 
       // Comparison operator (greater-than).
    bool Epoch::operator>(const Epoch &right) const 
-      throw()
+      noexcept
    {
       return (operator-(right) >
             ((tolerance > right.tolerance) ? right.tolerance : tolerance));
@@ -303,26 +292,25 @@ namespace gpstk
    
       // Comparison operator (less-than or equal-to).
    bool Epoch::operator<=(const Epoch &right) const 
-      throw()
+      noexcept
    {
       return !(operator>(right));
    }
 
       // Comparison operator (greater-than or equal-to).
    bool Epoch::operator>=(const Epoch &right) const 
-      throw()
+      noexcept
    {
       return !(operator<(right));
    }
 
    Epoch::operator CommonTime() const
-      throw()
+      noexcept
    {
       return core;
    }
 
    Epoch& Epoch::set(const TimeTag& tt)
-      throw(Epoch::EpochException)
    {
       try
       {
@@ -337,7 +325,6 @@ namespace gpstk
    }
 
    Epoch& Epoch::set(const WeekSecond& tt, short year)
-      throw(Epoch::EpochException)
    {
       WeekSecond& ws = const_cast<WeekSecond&>(tt);
       ws.adjustToYear(year);
@@ -346,7 +333,7 @@ namespace gpstk
    }
 
    Epoch& Epoch::set(const CommonTime& c)
-      throw()
+      noexcept
    {
       core = c;
       return *this;
@@ -359,7 +346,6 @@ namespace gpstk
       // @param f Time frame (see #TimeFrame)
       // @return a reference to this object.
    Epoch& Epoch::set(const GPSZcount& z)
-      throw(Epoch::EpochException)
    {
       try
       {
@@ -377,7 +363,6 @@ namespace gpstk
    }
 
    Epoch& Epoch::setTime(const CommonTime& ct)
-      throw(Epoch::EpochException)
    {
       try
       {
@@ -396,7 +381,6 @@ namespace gpstk
    }
    
    Epoch& Epoch::setDate(const CommonTime& ct)
-      throw(Epoch::EpochException)
    {
       try
       {
@@ -416,7 +400,6 @@ namespace gpstk
    
       // set using local time
    Epoch& Epoch::setLocalTime()
-      throw(Epoch::EpochException)
    {
       time_t t;
       time(&t);
@@ -432,7 +415,6 @@ namespace gpstk
 
    Epoch& Epoch::scanf(const string& str,
                        const string& fmt)
-      throw(StringException, InvalidRequest)
    {
       try
       {
@@ -447,7 +429,6 @@ namespace gpstk
 
       // Format this time into a string.
    string Epoch::printf(const string& fmt) const
-      throw(StringException)
    {
       try
       {

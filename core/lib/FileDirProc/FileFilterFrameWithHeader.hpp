@@ -73,23 +73,23 @@ namespace gpstk
       public FileFilterFrame<FileStream, FileData>
    {
    public:
-         /// Default constructor
+         /** Default constructor
+          * @throw Exception */
       FileFilterFrameWithHeader(const gpstk::CommonTime& start = 
                                 gpstk::CommonTime::BEGINNING_OF_TIME,
                                 const gpstk::CommonTime& end = 
                                 gpstk::CommonTime::END_OF_TIME)
-            throw(gpstk::Exception) :
-            FileFilterFrame<FileStream, FileData>(start, end)
+            : FileFilterFrame<FileStream, FileData>(start, end)
       {}
 
-         /// Takes a list of files to open in lieu of day times
+         /** Takes a list of files to open in lieu of day times
+          * @throw Exception */
       FileFilterFrameWithHeader(const std::vector<std::string>& fileList,
                                 const gpstk::CommonTime& start = 
                                 gpstk::CommonTime::BEGINNING_OF_TIME,
                                 const gpstk::CommonTime& end = 
                                 gpstk::CommonTime::END_OF_TIME)
-            throw(gpstk::Exception) :
-            FileFilterFrame<FileStream, FileData>(fileList, start, end)
+            : FileFilterFrame<FileStream, FileData>(fileList, start, end)
       {
          std::vector<std::string>::const_iterator itr = fileList.begin();
          while (itr != fileList.end())
@@ -100,20 +100,19 @@ namespace gpstk
          }
       }
 
-         /// Takes a file name for a single file filter.
-         /// This can throw an exception when there's a file error.
+         /** Takes a file name for a single file filter.
+          * @throw Exception when there's a file error. */
       FileFilterFrameWithHeader(const std::string& filename, 
                                 const gpstk::CommonTime& start = 
                                 gpstk::CommonTime::BEGINNING_OF_TIME,
                                 const gpstk::CommonTime& end = 
                                 gpstk::CommonTime::END_OF_TIME)
-            throw(gpstk::Exception) :
-            FileFilterFrame<FileStream, FileData>(filename, start, end)
+            : FileFilterFrame<FileStream, FileData>(filename, start, end)
       {init();}
 
-         /// Uses the FileSpec to retrieve files.  Use filter like you would
-         /// in FileHunter, to filter FOR stations, receivers, etc.
-         /// This can throw an exception when there's a file error.
+         /** Uses the FileSpec to retrieve files.  Use filter like you would
+          * in FileHunter, to filter FOR stations, receivers, etc.
+          * @throw Exception when there's a file error. */
       FileFilterFrameWithHeader(const FileSpec& spec, 
                                 const gpstk::CommonTime& start = 
                                 gpstk::CommonTime::BEGINNING_OF_TIME,
@@ -121,13 +120,13 @@ namespace gpstk
                                 gpstk::CommonTime::END_OF_TIME,
                                 const std::vector<FileHunter::FilterPair>& filter = 
                                 std::vector<FileHunter::FilterPair>())
-            throw(gpstk::Exception) :
-            FileFilterFrame<FileStream, FileData>(spec, start, end, filter)
+            : FileFilterFrame<FileStream, FileData>(spec, start, end, filter)
       {init(filter);}
 
-         /// Gets the files from the file spec and the time, then adds
-         /// the data to the filter. Use filter like you would
-         /// in FileHunter, to filter FOR stations, receivers, etc.
+         /** Gets the files from the file spec and the time, then adds
+          * the data to the filter. Use filter like you would
+          * in FileHunter, to filter FOR stations, receivers, etc.
+          * @throw Exception */
       FileFilterFrameWithHeader& 
       newSource(const FileSpec& filespec, 
                 const gpstk::CommonTime& start = 
@@ -136,7 +135,6 @@ namespace gpstk
                 gpstk::CommonTime::END_OF_TIME,
                 const std::vector<FileHunter::FilterPair>& filter = 
                 std::vector<FileHunter::FilterPair>())
-         throw(gpstk::Exception)
       {
          FileFilterFrame<FileStream, FileData>::newSource(filespec, start,
                                                           end, filter);
@@ -144,14 +142,14 @@ namespace gpstk
          return *this;
       }
 
-         /// Reads in the file and adds the data to the filter.
+         /** Reads in the file and adds the data to the filter.
+          * @throw Exception */
       FileFilterFrameWithHeader& 
       newSource(const std::string& filename, 
                 const gpstk::CommonTime& start = 
                 gpstk::CommonTime::BEGINNING_OF_TIME,
                 const gpstk::CommonTime& end = 
                 gpstk::CommonTime::END_OF_TIME)
-         throw(gpstk::Exception)
       {
          FileFilterFrame<FileStream, FileData>::newSource(filename, start,
                                                           end);
@@ -159,14 +157,14 @@ namespace gpstk
          return *this;
       }
 
-         /// Reads in the file and adds the data to the filter.
+         /** Reads in the file and adds the data to the filter.
+          * @throw Exception */
       FileFilterFrameWithHeader& 
       newSource(const std::vector<std::string>& fileList, 
                 const gpstk::CommonTime& start = 
                 gpstk::CommonTime::BEGINNING_OF_TIME,
                 const gpstk::CommonTime& end = 
                 gpstk::CommonTime::END_OF_TIME)
-         throw(gpstk::Exception)
       {
          FileFilterFrame<FileStream, FileData>::newSource(fileList, start,
                                                           end);
@@ -187,10 +185,10 @@ namespace gpstk
           * This can throw an exception when there's a file error.
           * @return true when it works.
           * @warning This will not write out headers for files that need them.
+          * @throw Exception
           */
       bool writeFile(const std::string& outputFile,
-                     const FileHeader& fh) const
-         throw(gpstk::Exception);
+                     const FileHeader& fh) const;
 
       /// Returns a list of the data in *this that isn't in r.
       template <class BinaryPredicate>
@@ -254,17 +252,25 @@ namespace gpstk
       typename std::list<FileHeader>::size_type getHeaderCount(void) const 
       { return headerList.size(); }
 
-      typename std::list<FileHeader>::const_iterator beginHeader() const
-         throw(gpstk::InvalidRequest);
+         /**
+          * @throw InvalidRequest
+          */
+      typename std::list<FileHeader>::const_iterator beginHeader() const;
 
-      typename std::list<FileHeader>::const_iterator endHeader() const
-         throw(gpstk::InvalidRequest);
+         /**
+          * @throw InvalidRequest
+          */
+      typename std::list<FileHeader>::const_iterator endHeader() const;
 
-      typename std::list<FileHeader>::iterator beginHeader() 
-         throw(gpstk::InvalidRequest);
+         /**
+          * @throw InvalidRequest
+          */
+      typename std::list<FileHeader>::iterator beginHeader();
 
-      typename std::list<FileHeader>::iterator endHeader() 
-         throw(gpstk::InvalidRequest);
+         /**
+          * @throw InvalidRequest
+          */
+      typename std::list<FileHeader>::iterator endHeader();
 
       bool emptyHeader() const
       { return headerList.empty(); }
@@ -272,27 +278,35 @@ namespace gpstk
       typename std::list<FileHeader>::size_type sizeHeader()
       { return headerList.size(); }
 
-      FileHeader& frontHeader()
-         throw(gpstk::InvalidRequest);
+         /**
+          * @throw InvalidRequest
+          */
+      FileHeader& frontHeader();
 
-      const FileHeader& frontHeader() const
-         throw(gpstk::InvalidRequest);
+         /**
+          * @throw InvalidRequest
+          */
+      const FileHeader& frontHeader() const;
 
-      FileHeader& backHeader()
-         throw(gpstk::InvalidRequest);
+         /**
+          * @throw InvalidRequest
+          */
+      FileHeader& backHeader();
 
-      const FileHeader& backHeader() const
-         throw(gpstk::InvalidRequest);
+         /**
+          * @throw InvalidRequest
+          */
+      const FileHeader& backHeader() const;
 
    protected:
-         ///  Run init() to load the data into the filter.  
+         /**  Run init() to load the data into the filter.
+          * @throw Exception */
       void init(const std::vector<FileHunter::FilterPair>& filter= 
-                std::vector<FileHunter::FilterPair>()) 
-         throw(gpstk::Exception);
+                std::vector<FileHunter::FilterPair>());
 
-         /// Check to make sure headerList is empty
-         /// @throw InvalidRequest if headerList is empty
-      inline void chl(const std::string& req) throw(gpstk::InvalidRequest)
+         /** Check to make sure headerList is empty
+          * @throw InvalidRequest if headerList is empty */
+      inline void chl(const std::string& req)
       {
          gpstk::InvalidRequest exc("Header list is empty attempting to"
                                    " satisfy "+req+" request.");
@@ -312,7 +326,6 @@ namespace gpstk
    bool FileFilterFrameWithHeader<FileStream,FileData,FileHeader>::
    writeFile(const std::string& outputFile,
              const FileHeader& fh) const
-      throw(gpstk::Exception)
    {
          // make the directory (if needed)
       std::string::size_type pos = outputFile.rfind('/');
@@ -334,7 +347,7 @@ namespace gpstk
    template <class FileStream, class FileData, class FileHeader>
    typename std::list<FileHeader>::const_iterator
    FileFilterFrameWithHeader<FileStream,FileData,FileHeader>::beginHeader()
-      const throw(gpstk::InvalidRequest)
+      const
    {
       try { chl("beginHeader"); }
       catch(gpstk::InvalidRequest exc)
@@ -345,7 +358,7 @@ namespace gpstk
    template <class FileStream, class FileData, class FileHeader>
    typename std::list<FileHeader>::const_iterator
    FileFilterFrameWithHeader<FileStream,FileData,FileHeader>::endHeader()
-      const throw(gpstk::InvalidRequest)
+      const
    {
       try { chl("endHeader"); }
       catch(gpstk::InvalidRequest exc)
@@ -356,7 +369,6 @@ namespace gpstk
    template <class FileStream, class FileData, class FileHeader>
    typename std::list<FileHeader>::iterator
    FileFilterFrameWithHeader<FileStream,FileData,FileHeader>::beginHeader()
-      throw(gpstk::InvalidRequest)
    {
       try { chl("beginHeader"); }
       catch(gpstk::InvalidRequest exc)
@@ -368,7 +380,6 @@ namespace gpstk
    template <class FileStream, class FileData, class FileHeader>
    typename std::list<FileHeader>::iterator
    FileFilterFrameWithHeader<FileStream,FileData,FileHeader>::endHeader()
-      throw(gpstk::InvalidRequest)
    {
       try { chl("endHeader"); }
       catch(gpstk::InvalidRequest exc)
@@ -379,7 +390,6 @@ namespace gpstk
    template <class FileStream, class FileData, class FileHeader>
    FileHeader&
    FileFilterFrameWithHeader<FileStream,FileData,FileHeader>::frontHeader()
-      throw(gpstk::InvalidRequest)
    {
       try { chl("frontHeader"); }
       catch(gpstk::InvalidRequest exc)
@@ -391,7 +401,7 @@ namespace gpstk
    template <class FileStream, class FileData, class FileHeader>
    const FileHeader&
    FileFilterFrameWithHeader<FileStream,FileData,FileHeader>::frontHeader()
-      const throw(gpstk::InvalidRequest)
+      const
    {
       try { chl("frontHeader"); }
       catch(gpstk::InvalidRequest exc)
@@ -403,7 +413,6 @@ namespace gpstk
    template <class FileStream, class FileData, class FileHeader>
    FileHeader&
    FileFilterFrameWithHeader<FileStream,FileData,FileHeader>::backHeader()
-      throw(gpstk::InvalidRequest)
    {
       try { chl("backHeader"); }
       catch(gpstk::InvalidRequest exc)
@@ -415,7 +424,7 @@ namespace gpstk
    template <class FileStream, class FileData, class FileHeader>
    const FileHeader&
    FileFilterFrameWithHeader<FileStream,FileData,FileHeader>::backHeader()
-      const throw(gpstk::InvalidRequest)
+      const
    {
       try { chl("backHeader"); }
       catch(gpstk::InvalidRequest exc)
@@ -427,7 +436,6 @@ namespace gpstk
    void
    FileFilterFrameWithHeader<FileStream,FileData,FileHeader> :: 
    init(const std::vector<FileHunter::FilterPair>& filter)
-      throw(gpstk::Exception)
    {
          // find the files
       FileHunter fh(this->fs);

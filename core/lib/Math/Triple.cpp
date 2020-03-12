@@ -74,7 +74,6 @@ namespace gpstk
    }
 
    Triple& Triple :: operator=(const valarray<double>& right)
-      throw(GeometryException)
    {
       if (right.size() != 3)
       {
@@ -104,7 +103,7 @@ namespace gpstk
 
       // returns the dot product of the two vectors
    double Triple :: dot(const Triple& right) const
-      throw()
+      noexcept
    {
       Triple z;
       z = (this->theArray)*(right.theArray);
@@ -115,7 +114,7 @@ namespace gpstk
 
       // retuns v1 x v2 , vector cross product
    Triple Triple :: cross(const Triple& right) const
-      throw()
+      noexcept
    {
       Triple cp;
       cp[0] = (*this)[1] * right[2] - (*this)[2] * right[1];
@@ -125,13 +124,12 @@ namespace gpstk
    }
 
 
-   double Triple :: mag() const throw()
+   double Triple :: mag() const noexcept
    {
       return std::sqrt(dot(*this));
    }
 
    Triple Triple::unitVector() const
-       throw(GeometryException)
    {
       double mag = std::sqrt(dot(*this));
       
@@ -147,7 +145,6 @@ namespace gpstk
 
       // function that returns the cosine of angle between this and right
    double Triple :: cosVector(const Triple& right) const
-      throw(GeometryException)
    {
       double rx, ry, cosvects;
    
@@ -172,7 +169,7 @@ namespace gpstk
 
       // Computes the slant range between two vectors
    double Triple :: slantRange(const Triple& right) const
-      throw()
+      noexcept
    {
       Triple z;
       z = right.theArray - this->theArray;
@@ -184,7 +181,6 @@ namespace gpstk
       // Finds the elevation angle of the second point with respect to
       // the first point
    double Triple :: elvAngle(const Triple& right) const
-      throw(GeometryException)
    {
       Triple z;
       z = right.theArray - this->theArray;
@@ -195,7 +191,6 @@ namespace gpstk
 
       //  Calculates a satellites azimuth from a station
    double Triple :: azAngle(const Triple& right) const
-      throw(GeometryException)
    {
       double xy, xyz, cosl, sinl, sint, xn1, xn2, xn3, xe1, xe2;
       double z1, z2, z3, p1, p2, test, alpha;
@@ -250,7 +245,7 @@ namespace gpstk
        * @return A triple which is the original triple rotated angle about X
        */
    Triple Triple::R1(const double& angle) const
-      throw()
+      noexcept
    {
       double ang(angle*DEG_TO_RAD);
       double sinangle(std::sin(ang));
@@ -268,7 +263,7 @@ namespace gpstk
        * @return A triple which is the original triple rotated angle about Y
        */
    Triple Triple::R2(const double& angle) const
-      throw()
+      noexcept
    {
       double ang(angle*DEG_TO_RAD);
       double sinangle(std::sin(ang));
@@ -286,7 +281,7 @@ namespace gpstk
        * @return A triple which is the original triple rotated angle about Z
        */
    Triple Triple::R3(const double& angle) const
-      throw()
+      noexcept
    {
       double ang(angle*DEG_TO_RAD);
       double sinangle(std::sin(ang));

@@ -82,37 +82,37 @@ class MockXvt: public gpstk::Xvt {
 
 class MockTropo: public gpstk::TropModel {
  public:
-    // It turns out that you can't mock a method with a throw() specifier.
+    // It turns out that you can't mock a method with a noexcept specifier.
     // Google test doesn't support it.
     // https://stackoverflow.com/questions/4922595/mocking-a-method-with-throw-specifier
     // The workaround is to create a wrapper method that doesn't throw.
     virtual double dry_zenith_delay() const
-        throw(gpstk::InvalidTropModel) {
+    {
         return dry_zenith_delay_wrap();
     }
     MOCK_CONST_METHOD0(dry_zenith_delay_wrap, double());
 
     virtual double wet_zenith_delay() const
-        throw(gpstk::InvalidTropModel) {
+    {
         return wet_zenith_delay_wrap();
     }
     MOCK_CONST_METHOD0(wet_zenith_delay_wrap, double());
 
     MOCK_CONST_METHOD1(dry_mapping_function_wrap, double(double elevation));
     virtual double dry_mapping_function(double elevation) const
-        throw(gpstk::InvalidTropModel) {
+    {
         return dry_mapping_function_wrap(elevation);
     }
 
     MOCK_CONST_METHOD1(wet_mapping_function_wrap, double(double elevation));
     virtual double wet_mapping_function(double elevation) const
-        throw(gpstk::InvalidTropModel) {
+    {
         return wet_mapping_function_wrap(elevation);
     }
 
     MOCK_CONST_METHOD1(correction_wrap, double(double elevation));
     virtual double correction(double elevation) const
-        throw(gpstk::InvalidTropModel) {
+    {
         return correction_wrap(elevation);
     }
 };
@@ -132,7 +132,7 @@ class MockIono: public gpstk::IonoModelStore {
             double svel,
             double svaz,
             gpstk::IonoModel::Frequency freq) const
-        throw(gpstk::IonoModelStore::NoIonoModelFound) {
+    {
         return getCorrection_wrap(time, rxgeo, svel, svaz, freq);
     }
 };

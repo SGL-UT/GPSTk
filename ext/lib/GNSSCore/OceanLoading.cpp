@@ -64,7 +64,6 @@ namespace gpstk
        */
    Triple OceanLoading::getOceanLoading( const string& name,
                                          const CommonTime& t )
-      throw(InvalidRequest)
    {
 
       const int NUM_COMPONENTS = 3;
