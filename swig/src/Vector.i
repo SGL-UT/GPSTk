@@ -371,6 +371,7 @@ namespace gpstk
    Vector& concatenate(const Vector& b)
    {
       (*$self) << b;
+      return (*$self);
    }
 
    std::string __str__() {
