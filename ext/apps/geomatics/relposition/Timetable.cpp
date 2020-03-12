@@ -60,7 +60,7 @@ using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
 // ElevationMask.cpp
-double RotatedAntennaElevation(double elevation, double azimuth) throw(Exception);
+double RotatedAntennaElevation(double elevation, double azimuth);
 
 //------------------------------------------------------------------------------------
 // Segment structure used in deducing time table functions implemented in
@@ -82,9 +82,9 @@ public:
    double metric(void) const
    { return (double(length)/100.0 + 100.0*(minelev+maxelev)/90.0); }
 
-   void findElev(void) throw(Exception);
+   void findElev(void);
 
-   friend ostream& operator<<(ostream& s, const TTSegment& t) throw(Exception);
+   friend ostream& operator<<(ostream& s, const TTSegment& t);
 
    friend bool increasingMetricSort(const TTSegment& left, const TTSegment& right);
    friend bool decreasingMetricSort(const TTSegment& left, const TTSegment& right);
@@ -98,12 +98,10 @@ map<SDid,SDData> SDmap;       // map of SD data - not full single differences
 
 //------------------------------------------------------------------------------------
 // prototypes -- this module only
-int ReadTimeTable(void) throw(Exception);
-int ComputeBaselineTimeTable(const string& bl) throw(Exception);
-int TTComputeSingleDifferences(const string& bl, const double ElevLimit)
-   throw(Exception);
-int TimeTableAlgorithm(list<TTSegment>& TTS, list<TTSegment>& TTab)
-   throw(Exception);
+int ReadTimeTable(void);
+int ComputeBaselineTimeTable(const string& bl);
+int TTComputeSingleDifferences(const string& bl, const double ElevLimit);
+int TimeTableAlgorithm(list<TTSegment>& TTS, list<TTSegment>& TTab);
 bool startSort(const TTSegment& left, const TTSegment& right);
 bool increasingMetricSort(const TTSegment& left, const TTSegment& right);
 bool decreasingMetricSort(const TTSegment& left, const TTSegment& right);
@@ -113,7 +111,7 @@ bool decreasingMetricSort(const TTSegment& left, const TTSegment& right);
 // the time tt. Set the satellite in sdid to the reference satellite, and set the
 // time tt to the time (in the future) when the reference will change again.
 // return 0 on success, 1 on failure.
-int QueryTimeTable(SDid& sdid, CommonTime& tt) throw(Exception)
+int QueryTimeTable(SDid& sdid, CommonTime& tt)
 {
 try {
    int ntt(static_cast<int>(0.5+(tt-FirstEpoch)/CI.DataInterval));
@@ -139,7 +137,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
     
 //------------------------------------------------------------------------------------
 // Find the start and stop counts in the timetable which applies to the given baseline
-int QueryTimeTable(string baseline, int& beg, int& end) throw(Exception)
+int QueryTimeTable(string baseline, int& beg, int& end)
 {
 try {
    string site1=word(baseline,0,'-');
@@ -163,7 +161,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int Timetable(void) throw(Exception)
+int Timetable(void)
 {
 try {
    if(CI.Verbose) oflog << "BEGIN Timetable()"
@@ -267,7 +265,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 //------------------------------------------------------------------------------------
 // Input the time table from a file
-int ReadTimeTable(void) throw(Exception)
+int ReadTimeTable(void)
 {
 try {
    int week;
@@ -334,7 +332,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int ComputeBaselineTimeTable(const string& bl) throw(Exception)
+int ComputeBaselineTimeTable(const string& bl)
 {
 try {
    int j;
@@ -393,7 +391,6 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 //------------------------------------------------------------------------------------
 int TTComputeSingleDifferences(const string& bl, const double ElevLimit)
-   throw(Exception)
 {
 try {
    size_t i,j;
@@ -510,7 +507,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 //------------------------------------------------------------------------------------
 // preprocess the segment list - get first and last counts
-int TimeTableAlgorithm(list<TTSegment>& TTS, list<TTSegment>& TTab) throw(Exception)
+int TimeTableAlgorithm(list<TTSegment>& TTS, list<TTSegment>& TTab)
 {
 try {
    bool keep;
@@ -799,7 +796,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-void TTSegment::findElev(void) throw(Exception)
+void TTSegment::findElev(void)
 {
    int i,k;
    double elevi;
@@ -827,7 +824,7 @@ bool decreasingMetricSort(const TTSegment& left, const TTSegment& right)
 { return (left.metric() > right.metric()); }
 
 //------------------------------------------------------------------------------------
-ostream& operator<<(ostream& os, const TTSegment& t) throw(Exception)
+ostream& operator<<(ostream& os, const TTSegment& t)
 {
 try {
    os << " " << t.site1

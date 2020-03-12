@@ -102,24 +102,24 @@ namespace gpstk
    protected:      
 	 /**
           * Writes a correctly formatted record from this header to stream \a s.
+          * @throw std::exception
+          * @throw StringUtils::StringException
+          * @throw FFStreamError
           */
-      virtual void reallyPutRecord(FFStream& s) const 
-         throw(std::exception, FFStreamError, 
-               gpstk::StringUtils::StringException);  
+      virtual void reallyPutRecord(FFStream& s) const;
   
          /**
           * This functions obtains a SEM header record from the given 
           * FFStream.
           * If there is an error in reading from the stream, it is reset
           * to its original position and its fail-bit is set.
-          * @throws StringException when a StringUtils function fails
-          * @throws FFStreamError when exceptions(failbit) is set and
+          * @throw std::exception
+          * @throw StringException when a StringUtils function fails
+          * @throw FFStreamError when exceptions(failbit) is set and
           *  a read or formatting error occurs.  This also resets the
           *  stream to its pre-read position.
           */
-      virtual void reallyGetRecord(FFStream& s) 
-         throw(std::exception, FFStreamError, 
-               gpstk::StringUtils::StringException);  
+      virtual void reallyGetRecord(FFStream& s);
       
    }; // class SEMHeader
 

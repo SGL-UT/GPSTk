@@ -63,9 +63,9 @@ class xTestRationalize : public gpstk::BasicFramework
 {
 public:
    xTestRationalize(const std::string& applName,
-              const std::string& applDesc) throw();
+              const std::string& applDesc) noexcept;
    ~xTestRationalize() {}
-   virtual bool initialize(int argc, char *argv[]) throw();
+   virtual bool initialize(int argc, char *argv[]) noexcept;
    
 protected:
    virtual void process();
@@ -98,7 +98,7 @@ int main( int argc, char*argv[] )
 }
 
 xTestRationalize::xTestRationalize(const std::string& applName, 
-                       const std::string& applDesc) throw()
+                       const std::string& applDesc) noexcept
           :BasicFramework(applName, applDesc),
            inputFileOption('i',"input-file","Input FIC file.",true),
            outputOption('o', "output-file", "The name of the output file to write.", true)
@@ -108,7 +108,7 @@ xTestRationalize::xTestRationalize(const std::string& applName,
 }
 
 bool xTestRationalize::initialize(int argc, char *argv[])
-   throw()
+   noexcept
 {
    if (!BasicFramework::initialize(argc, argv)) return false;
    

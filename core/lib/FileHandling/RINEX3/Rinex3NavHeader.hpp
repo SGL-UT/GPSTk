@@ -79,10 +79,12 @@ namespace gpstk
       IonoCorr(std::string str);
 
          /// Return string version of CorrType
-      std::string asString() const throw();
+      std::string asString() const noexcept;
 
-         /// Set type value from RINEX correction type string.
-      void fromString(const std::string str) throw(Exception);
+         /** Set type value from RINEX correction type string.
+          * @throw Exception
+          */
+      void fromString(const std::string str);
 
          /// Equality test
       bool operator==(const IonoCorr& ic) const;
@@ -123,8 +125,9 @@ namespace gpstk
          /** Change the file system, keeping fileType, fileSys, and fileSysSat
           * consistent.
           * @param[in] string str beginning with system character or
-          *   "M" for mixed */
-      void setFileSystem(const std::string& str) throw(Exception);
+          *   "M" for mixed
+          * @throw Exception */
+      void setFileSystem(const std::string& str);
 
          /** Compare this header with another.
           * @param[in] right the header to compare this with.
@@ -202,25 +205,25 @@ namespace gpstk
    protected:
 
 
-         //// Protected member functions
-         /// Write this header to stream \a s.
-      virtual void reallyPutRecord(FFStream& s) const
-         throw( std::exception,
-                FFStreamError,
-                gpstk::StringUtils::StringException );
+         /** Protected member functions
+          * Write this header to stream \a s.
+          * @throw std::exception
+          * @throw FFStreamError
+          * @throw StringUtils::StringException
+          */
+      virtual void reallyPutRecord(FFStream& s) const;
 
 
-         /// This function reads the RINEX Nav header from the given FFStream.
-         /// If an error is encountered in reading from the stream, the stream
-         /// is reset to its original position and its fail-bit is set.
-         /// @throws StringException when a StringUtils function fails
-         /// @throws FFStreamError when exceptions(failbit) is set and a read
-         ///         or formatting error occurs.  This also resets the stream
-         ///         to its pre-read position.
-      virtual void reallyGetRecord(FFStream& s)
-         throw( std::exception,
-                FFStreamError,
-                gpstk::StringUtils::StringException );
+         /** This function reads the RINEX Nav header from the given FFStream.
+          * If an error is encountered in reading from the stream, the stream
+          * is reset to its original position and its fail-bit is set.
+          * @throw std::exception
+          * @throw StringException when a StringUtils function fails
+          * @throw FFStreamError when exceptions(failbit) is set and a read
+          *         or formatting error occurs.  This also resets the stream
+          *         to its pre-read position.
+          */
+      virtual void reallyGetRecord(FFStream& s);
 
    }; // End of class 'Rinex3NavHeader'
 

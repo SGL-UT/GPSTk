@@ -79,35 +79,36 @@ namespace gpstk
 
          /** Get the ionospheric correction value.
           *
-          * \param time the time of the observation
-          * \param rxgeo the WGS84 geodetic position of the receiver
-          * \param svel the elevation angle between the rx and SV (degrees)
-          * \param svaz the azimuth angle between the rx and SV (degrees)
-          * \param freq the GPS frequency the observation was made from
-          * \return the ionospheric correction (meters)
+          * @param time the time of the observation
+          * @param rxgeo the WGS84 geodetic position of the receiver
+          * @param svel the elevation angle between the rx and SV (degrees)
+          * @param svaz the azimuth angle between the rx and SV (degrees)
+          * @param freq the GPS frequency the observation was made from
+          * @return the ionospheric correction (meters)
+          * @throw NoIonoModelFound
           */
       virtual double getCorrection(const CommonTime& time,
-                           const Position& rxgeo,
-                           double svel,
-                           double svaz,
-                           IonoModel::Frequency freq = IonoModel::L1) const
-         throw(NoIonoModelFound);
+                                   const Position& rxgeo,
+                                   double svel,
+                                   double svaz,
+                                   IonoModel::Frequency freq = IonoModel::L1)
+         const;
 
 
          /** Add an IonoModel to this collection
           *
-          * \param mt the time the model is valid from
-          * \param im the IonoModel to add
-          * \return true if the model was added, false otherwise
+          * @param mt the time the model is valid from
+          * @param im the IonoModel to add
+          * @return true if the model was added, false otherwise
           */
       bool addIonoModel( const CommonTime& mt,
                          const IonoModel& im )
-         throw();
+         noexcept;
 
          /** Edit the dataset, removing data outside the indicated time interval
           *
-          * \param tmin defines the beginning of the time interval
-          * \param tmax defines the end of the time interval
+          * @param tmin defines the beginning of the time interval
+          * @param tmax defines the end of the time interval
           */
       void edit(const CommonTime& tmin, 
                 const CommonTime& tmax = CommonTime::END_OF_TIME);

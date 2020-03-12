@@ -111,7 +111,7 @@ public:
 
    /// Constructor. Set EphemerisNumber to -1 to indicate that nothing has been
    /// read yet.
-   SolarSystemEphemeris(void) throw() : EphemerisNumber(-1) {};
+   SolarSystemEphemeris(void) noexcept : EphemerisNumber(-1) {};
 
    //------------------------------------------------------------------
    // reading and writing ASCII (JPL) files
@@ -120,10 +120,10 @@ public:
    /// routine clears the 'store' map and defines the 'constants' hash. It also
    /// sets EphemerisNumber to the constant "DENUM" if successful.
    /// @param filename the name of the ASCII header file.
-   /// @throw if the file cannot be opened.
-   /// @throw if the header ends prematurely or if it is not properly formatted.
-   /// @throw if any stream error occurs.
-   void readASCIIheader(std::string filename) throw(Exception);
+   /// @throw Exception if the file cannot be opened.
+   /// @throw Exception if the header ends prematurely or if it is not properly formatted.
+   /// @throw Exception if any stream error occurs.
+   void readASCIIheader(std::string filename);
 
    /// Read one or more ASCII data files. Call only after having read the header,
    /// and call only with data files for the same ephemeris as the header (the JPL
@@ -134,34 +134,34 @@ public:
    /// @param filenames vector containting the names of the ASCII data files
    ///                  (downloaded from JPL), in any order.
    /// @return 0 ok, -1 if a stream error occurred.
-   /// @throw if the header has not yet been read.
-   /// @throw if any file could not be opened.
-   /// @throw if any record in any file has a 'number of coefficients' that differs
+   /// @throw Exception if the header has not yet been read.
+   /// @throw Exception if any file could not be opened.
+   /// @throw Exception if any record in any file has a 'number of coefficients' that differs
    ///        from the header value.
-   int readASCIIdata(std::vector<std::string>& filenames) throw(Exception);
+   int readASCIIdata(std::vector<std::string>& filenames);
 
    /// Read only one ASCII data file. Also see the documentation for the
    /// other version of this routine.
    /// @param filename name of an ASCII data files (downloaded from JPL)
    /// @return 0 ok, -1 if a stream error occurred, -4 header has not been read.
-   /// @throw if the header has not yet been read.
-   /// @throw if the file could not be opened.
-   /// @throw if any record has a 'number of coefficients' that differs
+   /// @throw Exception if the header has not yet been read.
+   /// @throw Exception if the file could not be opened.
+   /// @throw Exception if any record has a 'number of coefficients' that differs
    ///        from the header value.
-   int readASCIIdata(std::string filename) throw(Exception);
+   int readASCIIdata(std::string filename);
 
    /// Write the header (ASCII) to an output stream
-   /// @throw if any stream error occurs
+   /// @throw Exception if any stream error occurs
    /// @return 0 success,
    ///        -4 header has not yet been read.
-   int writeASCIIheader(std::ostream& os) throw(Exception);
+   int writeASCIIheader(std::ostream& os);
 
    /// Write the stored data (ASCII) to an output stream
    /// NB. This routine does NOT clear the store - use clearStorage()
-   /// @throw if any stream error occurs
+   /// @throw Exception if any stream error occurs
    /// @return 0 success,
    ///        -4 header has not yet been read.
-   int writeASCIIdata(std::ostream& os) throw(Exception);
+   int writeASCIIdata(std::ostream& os);
 
    //------------------------------------------------------------------
    // reading and writing binary files
@@ -171,12 +171,12 @@ public:
    /// @param filename  name of binary file to be read.
    /// @return 0 ok
    ///        -4 if data has not been read into the object
-   /// @throw if any stream error occurs.
-   int writeBinaryFile(std::string filename) throw(Exception);
+   /// @throw Exception if any stream error occurs.
+   int writeBinaryFile(std::string filename);
 
    /// clear the store map containing all the data read by
    /// readASCIIdata() or readBinaryData(true).
-   void clearStorage(void) throw() { store.clear(); }
+   void clearStorage(void) noexcept { store.clear(); }
 
    /// Read header and data from a binary file, storing ALL the data in store.
    /// For use with copying, merging or editing data files. Closes the stream before
@@ -185,8 +185,8 @@ public:
    /// @return 0 success,
    ///        -3 input stream is not open or not valid
    ///        -4 header has not yet been read.
-   /// @throw if a gap in time is found between consecutive records.
-   int readBinaryFile(std::string filename) throw(Exception);
+   /// @throw Exception if a gap in time is found between consecutive records.
+   int readBinaryFile(std::string filename);
 
    /// Open the given binary file, read the header and prepare for reading data
    /// records at random using seekToJD() and computing positions and velocities
@@ -195,8 +195,8 @@ public:
    /// @return 0 success,
    ///        -3 input stream is not open or not valid
    ///        -4 header has not yet been read.
-   /// @throw if a gap in time is found between consecutive records.
-   int initializeWithBinaryFile(std::string filename) throw(Exception);
+   /// @throw Exception if a gap in time is found between consecutive records.
+   int initializeWithBinaryFile(std::string filename);
 
    //------------------------------------------------------------------
    // utilizing the ephemeris
@@ -224,42 +224,41 @@ public:
    ///                  and their rates in radians/day.
    /// @param km     boolean: if true (default), units are km, km/day; else AU, AU/day
    ///                  (but not Nutations or Librations - see above).
-   /// @throw if given time is before the first record in the file,
+   /// @throw Exception if given time is before the first record in the file,
    /// the given time is after the last record, or in a gap between records,
    /// the input stream is not open or not valid, or EOF was found prematurely, or
    /// the ephemeris is not initialized; most likely the last two happen because
    /// initializeWithBinaryFile() has not been called, or reading failed.
    void RelativeInertialPositionVelocity(const double MJD,
-                  Planet target, Planet center, double PV[6], bool kilometers = true)
-      throw(Exception);
+                                         Planet target, Planet center, double PV[6], bool kilometers = true);
 
    /// Return the value of 1 AU (Astronomical Unit) in km. If the file header has not
    /// been read, return -1.0.
    /// @return the value of 1 AU in km;
    ///                return -1 if ephemeris has not been initialized.
-   double AU(void) throw()
+   double AU(void) noexcept
       { if(EphemerisNumber == -1) return -1.0; return constants["AU"]; }
 
    /// Return the ephemeris number.
    /// @return the 'DE' ephemeris number, e.g. 403,
    ///         or -1 if ephemeris has not been initialized.
-   int EphNumber(void) const throw()
+   int EphNumber(void) const noexcept
       { return EphemerisNumber; }
 
    /// @return the value of the contant with the given name. If the header
    /// has not been read, return -1. Return zero if the constant is not found.
-   double getConstant(std::string name) throw() {
+   double getConstant(std::string name) noexcept {
       if(EphemerisNumber == -1) return -1.0;
       if(constants.find(name) != constants.end()) return constants[name];
       return 0.0;
    }
 
    /// Return the Earth-to-Moon mass ratio
-   double EarthToMoonMassRatio(void) throw()
+   double EarthToMoonMassRatio(void) noexcept
       { return getConstant(std::string("EMRAT")); }
 
    /// Return the Sun-to-Earth mass ratio
-   double SunToEarthMassRatio(void) throw() {
+   double SunToEarthMassRatio(void) noexcept {
       double em=getConstant(std::string("EMRAT"));
       double gms=getConstant(std::string("GMS"));
       double gmb=getConstant(std::string("GMB"));
@@ -267,13 +266,13 @@ public:
    }
 
    /// Return the MJD of start time of the data (system TDB)
-   double startTimeMJD(void) const throw(Exception)
+   double startTimeMJD(void) const
    {
       return (startJD - MJD_TO_JD);
    }
 
    /// Return the MJD of end time of the data (system TDB)
-   double endTimeMJD(void) const throw(Exception)
+   double endTimeMJD(void) const
    {
       return (endJD - MJD_TO_JD);
    }
@@ -283,18 +282,17 @@ public:
 
 private:
    /// Helper routine for binary writing.
-   /// @throw if there is any stream error.
-   void writeBinary(std::ofstream& strm, const char *ptr, size_t size)
-      throw(Exception);
+   /// @throw Exception if there is any stream error.
+   void writeBinary(std::ofstream& strm, const char *ptr, size_t size);
 
    /// Helper routine for binary reading.
-   /// @throw if there is any error or if EOF is found.
-   void readBinary(char *ptr, size_t size) throw(Exception);
+   /// @throw Exception if there is any error or if EOF is found.
+   void readBinary(char *ptr, size_t size);
 
    /// Read header from a binary file.
    /// @param filename  name of binary file, probably written by writeBinaryFile().
-   /// @throw if read error or premature EOF if found.
-   void readBinaryHeader(std::string filename) throw(Exception);
+   /// @throw Exception if read error or premature EOF if found.
+   void readBinaryHeader(std::string filename);
 
    /// Read data from a binary file, already opened by readBinaryHeader.
    /// Build the file position map, and store the first set of coefficients.
@@ -303,8 +301,8 @@ private:
    /// @return 0 success,
    ///        -3 input stream is not open or not valid
    ///        -4 header has not yet been read.
-   /// @throw if a gap in time is found between consecutive records.
-   int readBinaryData(bool save) throw(Exception);
+   /// @throw Exception if a gap in time is found between consecutive records.
+   int readBinaryData(bool save);
 
    /// Read a single binary record (not a header record) at the current file
    /// position, into the given vector. For use by readBinaryData() and seekToJD().
@@ -312,7 +310,7 @@ private:
    /// @return 0 success,
    ///        -2 EOF was reached
    ///        -3 input stream is not open or not valid
-   int readBinaryRecord(std::vector<double>& data_vector) throw(Exception);
+   int readBinaryRecord(std::vector<double>& data_vector);
 
    /// Search the data records of the file opened by initializeWithBinaryFile() and
    /// read the one whose time limits include the given time. May be called only
@@ -324,7 +322,7 @@ private:
    ///        -3 input stream is not open or not valid, or EOF was found prematurely,
    ///        -4 ephemeris (binary file) is not initialized
    /// -3 or -4 => initializeWithBinaryFile() has not been called, or reading failed.
-   int seekToJD(double JD) throw(Exception);
+   int seekToJD(double JD);
 
    //------------------------------------------------------------------
    // define here for use in next function
@@ -362,8 +360,7 @@ private:
    /// @param  which  computeID of the body of interest.
    /// @param  PV     double(6) array containing the inertial position and velocity
    ///                 relative to the solar system barycenter.
-   void InertialPositionVelocity(const double MJD, computeID which, double PV[6])
-      throw(Exception);
+   void InertialPositionVelocity(const double MJD, computeID which, double PV[6]);
 
    //------------------------------------------------------------------
    // member data

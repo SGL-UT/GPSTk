@@ -56,7 +56,7 @@ using namespace gpstk;
 // prototypes -- this module only
 
 //------------------------------------------------------------------------------------
-int EphemerisImprovement(void) throw(Exception)
+int EphemerisImprovement(void)
 {
 try {
    if(CI.Verbose) oflog << "BEGIN EphemerisImprovement()"

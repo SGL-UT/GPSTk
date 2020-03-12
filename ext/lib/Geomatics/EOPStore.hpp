@@ -74,36 +74,32 @@ namespace gpstk {
 
       /// Add to the store directly
       void addEOP(int MJD, EarthOrientation& eop)
-         throw();
+         noexcept;
 
       /// Add to the store by computing using an EOPPrediction
       /// @param MJD integer MJD at which to add EOPs
       /// @return non-0 if MJD is outside range
-      /// @throw if MJD is invalid
-      int addEOP(int MJD, EOPPrediction& eopp)
-         throw(Exception);
+      /// @throw Exception if MJD is invalid
+      int addEOP(int MJD, EOPPrediction& eopp);
 
       /// Add EOPs to the store via an input file: either an EOPP file
       /// or a flat file produced by the IERS and available at USNO
       /// (see http://maia.usno.navy.mil/ and get either file
       /// 'finals.data' or 'finals2000A.data').
       /// @param filename Name of file to read, including path.
-      /// @throw if file is not found.
-      void addFile(const std::string& filename)
-         throw(FileMissingException);
+      /// @throw FileMissingException if file is not found.
+      void addFile(const std::string& filename);
 
       /// Add EOPs to the store via an EOPP file using class EOPPrediction.
       /// Read the EOPP file and compute EOPs for all days within the valid range.
       /// @param filename Name of file to read, including path.
-      /// @throw if file is not found.
-      void addEOPPFile(const std::string& filename)
-         throw(FileMissingException);
+      /// @throw FileMissingException if file is not found.
+      void addEOPPFile(const std::string& filename);
 
       /// Add EOPs to the store via a flat IERS file; e.g. finals2000A.data from USNO.
       /// @param filename Name of file to read, including path.
-      /// @throw if file is not found.
-      void addIERSFile(const std::string& filename)
-         throw(FileMissingException);
+      /// @throw FileMissingException if file is not found.
+      void addIERSFile(const std::string& filename);
 
       /// Edit the store by deleting all entries before(after)
       /// the given min(max) MJDs (TimeSystem UTC).
@@ -111,14 +107,14 @@ namespace gpstk {
       /// @param mjdmin integer MJD desired earliest store time.
       /// @param mjdmax integer MJD desired latest store time.
       void edit(int mjdmin, int mjdmax)
-         throw();
+         noexcept;
 
       /// return the number of entries in the store
-      int size(void) throw()
+      int size(void) noexcept
          { return mapMJD_EOP.size(); }
 
       /// clear the store
-      void clear(void) throw()
+      void clear(void) noexcept
          { mapMJD_EOP.clear(); begMJD = endMJD = -1; }
 
       /// Dump the store to cout.
@@ -126,14 +122,14 @@ namespace gpstk {
       ///  0 start and stop times (MJD), and number of EOPs.
       ///  1 list of all times and EOPs.
       void dump(short detail=0, std::ostream& s=std::cout) const
-         throw();
+         noexcept;
 
       /// Return first time (MJD) in the store.
-      int getFirstTimeMJD(void) throw()
+      int getFirstTimeMJD(void) noexcept
          { return begMJD; }
 
       /// Return last time (MJD) in the store.
-      int getLastTimeMJD(void) throw()
+      int getLastTimeMJD(void) noexcept
          { return endMJD; }
 
       /// Get the EOP at the given epoch. This involves interpolation and corrections
@@ -146,8 +142,7 @@ namespace gpstk {
       /// @throw InvalidRequest if the integer MJD falls outside the store,
       ///   or if the store contains fewer than 4 entries
       /// @return EarthOrientation EOPs at mjd.
-      EarthOrientation getEOP(const double& mjd, const IERSConvention& conv)
-         throw(InvalidRequest);
+      EarthOrientation getEOP(const double& mjd, const IERSConvention& conv);
 
    };    // end class EOPStore
 

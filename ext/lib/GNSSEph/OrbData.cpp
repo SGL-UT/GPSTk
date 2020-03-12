@@ -101,7 +101,6 @@ namespace gpstk
       // body, and footer are called, and any output formats are
       // preserved. 
    void OrbData::dump(ostream& s) const
-      throw( InvalidRequest )
    {
       if (!dataLoaded())
       {

@@ -61,7 +61,6 @@ namespace gpstk
    }
 
    CNavEOP::CNavEOP(const PackedNavBits& message32)
-      throw( InvalidParameter)
    {
       loadData(message32);
    }
@@ -93,7 +92,6 @@ namespace gpstk
    }
    
    void CNavEOP::loadData(const PackedNavBits& message32)
-      throw(InvalidParameter)
    {
          // First, verify the correct message type is being passed in. 
       long msgType = message32.asUnsignedLong(14,6,1);
@@ -133,7 +131,6 @@ namespace gpstk
    } // end of loadData()
 
    void CNavEOP::dumpBody(ostream& s) const
-      throw( InvalidRequest )
    {
       if (!dataLoaded())
       {

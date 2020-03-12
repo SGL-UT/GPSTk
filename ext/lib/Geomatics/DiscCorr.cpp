@@ -72,7 +72,7 @@ const string GDCconfiguration::GDCVersion = string("6.3 12/15/2015");
 //------------------------------------------------------------------------------------
 // Set a parameter in the configuration; the input string 'cmd' is of the form
 // '[--DC]<id><s><value>' : separator s is one of ':=,' and leading --DC is optional.
-void GDCconfiguration::setParameter(string cmd) throw(Exception)
+void GDCconfiguration::setParameter(string cmd)
 {
 try {
    if(cmd.empty()) return;
@@ -103,7 +103,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 //------------------------------------------------------------------------------------
 // Set a parameter in the configuration using the label and the value,
 // for booleans use (T,F)=(non-zero,zero).
-void GDCconfiguration::setParameter(string label, double value) throw(Exception)
+void GDCconfiguration::setParameter(string label, double value)
 {
 try {
    if(CFG.find(label) == CFG.end())
@@ -126,7 +126,6 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // Print help page, including descriptions and current values of all
 // the parameters, to the ostream.
 void GDCconfiguration::DisplayParameterUsage(ostream& os, bool advanced)
-   throw(Exception)
 {
 try {
    os << "GPSTk Discontinuity Corrector (GDC) v." << GDCVersion
@@ -314,44 +313,53 @@ public:
    //~GDCPass(void) { };
 
    /// edit obvious outliers, divide into segments using MaxGap
-   int preprocess(void) throw(Exception);
+   /// @throw Exception
+   int preprocess(void);
 
    /// compute linear combinations and place the result in the data arrays:
    /// L1 -> L1;                     L2 -> GFP(m)
    /// P1 -> WLB(cyc)                P2 -> -GFR(m)
-   int linearCombinations(void) throw(Exception);
+   /// @throw Exception
+   int linearCombinations(void);
 
    /// detect slips in the wide lane bias
-   int detectWLslips(void) throw(Exception);
+   /// @throw Exception
+   int detectWLslips(void);
 
    /// detect obvious slips by computing the first difference (of either WL or GFP)
    /// and looking for outliers. create new segments where there are slips
    /// which is either 'WL' or 'GF'.
-   int detectObviousSlips(string which) throw(Exception);
+   /// @throw Exception
+   int detectObviousSlips(string which);
 
    /// compute first differences of data arrays for WL and GF gross slips detection.
    /// for WL difference the WLbias; for GF, the GFP and the residual GFP-GFR
    /// Store results in temporary array A1 and A2
-   int firstDifferences(string which) throw(Exception);
+   /// @throw Exception
+   int firstDifferences(string which);
 
    /// for one segment, compute conventional statistics on the
    /// WL bias and count the number of good points
-   void WLcomputeStats(list<Segment>::iterator& it) throw(Exception);
+   /// @throw Exception
+   void WLcomputeStats(list<Segment>::iterator& it);
 
    /// for one segment mark bad points that lie outside N*sigma
    /// delete segments that are too small
-   void WLsigmaStrip(list<Segment>::iterator& it) throw(Exception);
+   /// @throw Exception
+   void WLsigmaStrip(list<Segment>::iterator& it);
 
    /// for one segment, compute statistics on the WL bias using a
    /// 'two-paned sliding window', each pane of width 'width' good points.
    /// store the results in the parallel (to SatPass::data) arrays A1,A2.
-   int WLstatSweep(list<Segment>::iterator& it, int width) throw(Exception);
+   /// @throw Exception
+   int WLstatSweep(list<Segment>::iterator& it, int width);
 
    /// detect slips in all segments using the results of WLstatSweep()
    /// if close to either end (< window width), just chop off the small segment
    /// when a slip is found, create a new segment
    /// also compute conventional stats for each Segment, store in Segment.WLStats
-   int detectWLsmallSlips(void) throw(Exception);
+   /// @throw Exception
+   int detectWLsmallSlips(void);
 
    /// determine if a slip has been found at index i, in segment nseg (0..)
    /// which is associated with it.
@@ -362,37 +370,44 @@ public:
    /// 4. test must be at a local maximum (~ 2 window widths)
    /// 5. limit must be at a local minimum (")
    /// also, large limit (esp near end of a pass) means too much noise, and
-   bool foundWLsmallSlip(list<Segment>::iterator& it, int i) throw(Exception);
+   /// @throw Exception
+   bool foundWLsmallSlip(list<Segment>::iterator& it, int i);
 
    /// estimate slips in the WL bias and adjust biases appropriately - ie fix WL slips
    /// also compute stats for WL for the whole pass
-   int fixAllSlips(string which) throw(Exception);
+   /// @throw Exception
+   int fixAllSlips(string which);
 
    /// fix the slip at the beginning of the segment pointed to by kt,
    /// which is the string 'WL' or 'GF'.
-   void fixOneSlip(list<Segment>::iterator& kt, string which) throw(Exception);
+   /// @throw Exception
+   void fixOneSlip(list<Segment>::iterator& kt, string which);
 
    /// fix the slip between segments pointed to by left and right
+   /// @throw Exception
    void WLslipFix(list<Segment>::iterator& left,
-                  list<Segment>::iterator& right)
-      throw(Exception);
+                  list<Segment>::iterator& right);
 
    /// fit a polynomial to the GF range, and replace P2 (-gfr) with the residual
    /// gfp+fit(gfr); divide both P1(gfp) and P2(residual) by wlgf to convert to cycles
    /// also place the residual gfp+gfr(cycles) in L1
-   int prepareGFdata(void) throw(Exception);
+   /// @throw Exception
+   int prepareGFdata(void);
 
    /// detect slips in the geometry-free phase
-   int detectGFslips(void) throw(Exception);
+   /// @throw Exception
+   int detectGFslips(void);
 
    /// for each segment, fit a polynomial to the gfr, then compute and store the
    /// residual of fit; at the same time, compute stats on the first difference of GF
-   int GFphaseResiduals(list<Segment>::iterator& it) throw(Exception);
+   /// @throw Exception
+   int GFphaseResiduals(list<Segment>::iterator& it);
 
    /// detect small slips in the geometry-free phase using its first difference
    /// compute statistics in two windows of fixed width on either side of the point
    /// of interest and use these to find slips and outliers
-   int detectGFsmallSlips(void) throw(Exception);
+   /// @throw Exception
+   int detectGFsmallSlips(void);
 
    /// determine if there is an outlier in the GF phase, using the
    /// GFP first difference and the statistics computed in detectGFsmallSlips().
@@ -400,8 +415,8 @@ public:
    /// 1. adjacent first differences have different signs
    /// 2. they have approximately the same magnitude
    /// 3. that magnitude is large compared to the noise in the dGFP
-   bool foundGFoutlier(int i,int inew,Stats<double>& pastSt,Stats<double>& futureSt)
-      throw(Exception);
+   /// @throw Exception
+   bool foundGFoutlier(int i,int inew,Stats<double>& pastSt,Stats<double>& futureSt);
 
    /// determine if a small GF slip is found, using the first differenced gfp
    /// and statistics computed in detectGFsmallSlips()
@@ -413,57 +428,60 @@ public:
    /// Declare 'slips' that are very near the ends of the segment as outliers
    /// Conservatively, ignore small slips that are near the level of the noise,
    /// unless there was a WL slip at the same epoch.
+   /// @throw Exception
    bool foundGFsmallSlip(int i, int nseg, int iend, int ibeg,
       deque<int>& pastIn, deque<int>& futureIn,
-      Stats<double>& pastSt, Stats<double>& futureSt)
-      throw(Exception);
+                         Stats<double>& pastSt, Stats<double>& futureSt);
 
    /// fix the slip between segments pointed to by left and right
+   /// @throw Exception
    void GFslipFix(list<Segment>::iterator& left,
-                  list<Segment>::iterator& right)
-      throw(Exception);
+                  list<Segment>::iterator& right);
 
    /// estimate the size of the slip between segments left and right,
    /// using points from indexes nb to ne; n1 is the initial estimate of the slip
    /// called by GFslipFix()
+   /// @throw Exception
    long EstimateGFslipFix(list<Segment>::iterator& left,
                           list<Segment>::iterator& right,
-                          unsigned int nb, unsigned int ne, long n1)
-      throw(Exception);
+                          unsigned int nb, unsigned int ne, long n1);
 
    /// final check on consistency of WL slip fixes with GF slip detection
-   int WLconsistencyCheck(void) throw(Exception);
+   /// @throw Exception
+   int WLconsistencyCheck(void);
 
    /// last call before returning: copy edited data back into caller's SatPass,
    /// generate editing commands, and print and return the final summary.
-   string finish(int iret, SatPass& svp, vector<string>& editCmds) throw(Exception);
+   /// @throw Exception
+   string finish(int iret, SatPass& svp, vector<string>& editCmds);
 
    /// create a new segment from the given one, starting at index ibeg,
    /// and insert it after the given iterator.
    /// Return an iterator pointing to the new segment. String msg is for debug output
+   /// @throw Exception
    list<Segment>::iterator createSegment(list<Segment>::iterator sit,
                                          int ibeg,
-                                         string msg=string())
-      throw(Exception);
+                                         string msg=string());
 
    /// dump a list of the segments, detail dependent on level
    /// level=0 one line summary (number of segments)
    /// level=1 one per line list of segments
    /// level=2 dump all data, including (if extra) temporary arrays
    /// return the level 1 output as a string
-   string dumpSegments(string msg, int level=2, bool extra=false)
-      throw(Exception);
+   /// @throw Exception
+   string dumpSegments(string msg, int level=2, bool extra=false);
 
    /// delete (set all points bad) segment it, optional message
    /// is used in debug print
-   void deleteSegment(list<Segment>::iterator& it, string msg=string())
-      throw(Exception);
+   /// @throw Exception
+   void deleteSegment(list<Segment>::iterator& it, string msg=string());
 
 private:
 
    /// define this function so that invalid labels will throw, because
    /// this fails silently #define cfg(a) CFG[#a]     // stringize
-   double cfg_func(string a) throw(Exception)
+   /// @throw Exception
+   double cfg_func(string a)
    {
       if(CFGdescription[a] == string()) {
          Exception e("cfg(UNKNOWN LABEL) : " + a);
@@ -572,7 +590,6 @@ int gpstk::DiscontinuityCorrector(SatPass& svp,
                                   vector<string>& editCmds,
                                   string& retMessage,
                                   int GLOn_in)
-   throw(Exception)
 {
 try {
    unsigned int i,j;
@@ -787,7 +804,7 @@ GDCPass::GDCPass(SatPass& sp, const GDCconfiguration& gdc)
 }
 
 //------------------------------------------------------------------------------------
-int GDCPass::preprocess(void) throw(Exception)
+int GDCPass::preprocess(void)
 {
 try {
    int ilast;
@@ -922,7 +939,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
-int GDCPass::linearCombinations(void) throw(Exception)
+int GDCPass::linearCombinations(void)
 {
 try {
    unsigned int i;
@@ -978,7 +995,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
 // detect slips in the wide lane bias
-int GDCPass::detectWLslips(void) throw(Exception)
+int GDCPass::detectWLslips(void)
 {
 try {
    int iret;
@@ -1051,7 +1068,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // detect obvious slips by computing the first difference (of either WL or GFP)
 // and looking for outliers. create new segments where there are slips
 // which is either 'WL' or 'GF'.
-int GDCPass::detectObviousSlips(string which) throw(Exception)
+int GDCPass::detectObviousSlips(string which)
 {
 try {
    // TD determine from range noise // ~ 2*range noise/wl2
@@ -1164,7 +1181,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // compute first differences of data array(s) for WL and GF gross slip detection.
 // for WL difference the WLbias (P1); for GF, the GFP (L2) and the GFR (P2)
 // Store results in A1, and for GF put the range difference in A2
-int GDCPass::firstDifferences(string which) throw(Exception)
+int GDCPass::firstDifferences(string which)
 {
 try {
    //if(A1.size() != size()) return FatalProblem;
@@ -1215,7 +1232,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 //------------------------------------------------------------------------------------
 // for one segment, compute conventional statistics on the
 // WL bias and count the number of good points
-void GDCPass::WLcomputeStats(list<Segment>::iterator& it) throw(Exception)
+void GDCPass::WLcomputeStats(list<Segment>::iterator& it)
 {
 try {
    // compute WLStats
@@ -1243,7 +1260,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 //------------------------------------------------------------------------------------
 // for one segment, compute conventional statistics on the
 // WL bias, remove small segments, and mark bad points that lie outside N*sigma
-void GDCPass::WLsigmaStrip(list<Segment>::iterator& it) throw(Exception)
+void GDCPass::WLsigmaStrip(list<Segment>::iterator& it)
 {
 try {
    bool outlier,haveslip;
@@ -1389,7 +1406,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // in the given segment, compute statistics on the WL bias using a
 // 'two-paned sliding window', each pane of width 'width' good points.
 // store the results in the parallel (to SatPass::data) arrays A1,A2.
-int GDCPass::WLstatSweep(list<Segment>::iterator& it, int width) throw(Exception)
+int GDCPass::WLstatSweep(list<Segment>::iterator& it, int width)
 {
 try {
    unsigned int iminus,i,iplus,uwidth(width);
@@ -1485,7 +1502,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // look for slips in the WL using the results of WLstatSweep
 // if slip is close to either end (< window width), just chop off the small segment
 // recompute WLstats; when a slip is found, create a new segment
-int GDCPass::detectWLsmallSlips(void) throw(Exception)
+int GDCPass::detectWLsmallSlips(void)
 {
 try {
    unsigned int k,nok;
@@ -1590,7 +1607,6 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // 6. (test-limit)/limit > (WLSlipSeparation = 2.5)         // this is critical test
 // large limit (esp near end of a pass) means too much noise
 bool GDCPass::foundWLsmallSlip(list<Segment>::iterator& it, int i)
-   throw(Exception)
 {
 try {
    const unsigned int minMaxWidth=int(cfg(WLSlipEdge));
@@ -1706,7 +1722,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 //------------------------------------------------------------------------------------
 // estimate slips and adjust biases appropriately - ie fix slips - for both WL and GF
 // merge all data into one segment
-int GDCPass::fixAllSlips(string which) throw(Exception)
+int GDCPass::fixAllSlips(string which)
 {
 try {
    // find the largest segment and start there, always combine the largest with its
@@ -1782,7 +1798,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 //------------------------------------------------------------------------------------
 // called by fixAllSlips
 // assume there are no empty segments in the list
-void GDCPass::fixOneSlip(list<Segment>::iterator& kt, string which) throw(Exception)
+void GDCPass::fixOneSlip(list<Segment>::iterator& kt, string which)
 {
 try {
    if(kt->npts == 0) { kt++; return; }
@@ -1848,7 +1864,6 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // called by fixOneSlip
 void GDCPass::WLslipFix(list<Segment>::iterator& left,
                         list<Segment>::iterator& right)
-throw(Exception)
 {
 try {
    unsigned int i;
@@ -1930,7 +1945,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // fix one slip in the geometry-free phase
 // called by fixOneSlip
 void GDCPass::GFslipFix(list<Segment>::iterator& left,
-                        list<Segment>::iterator& right) throw(Exception)
+                        list<Segment>::iterator& right)
 {
 try {
       // use this number of data points on each side of slip
@@ -2072,7 +2087,6 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 long GDCPass::EstimateGFslipFix(list<Segment>::iterator& left,
                                list<Segment>::iterator& right,
                                unsigned int nb, unsigned int ne, long n1)
-throw(Exception)
 {
 try {
    bool quit;
@@ -2202,7 +2216,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 //------------------------------------------------------------------------------------
 // 07202010 not used fit a polynomial to the GF range,
 // change the units of -gfr(P2) and gfp(L2) to cycles of wlgf (=5.4cm)
-int GDCPass::prepareGFdata(void) throw(Exception)
+int GDCPass::prepareGFdata(void)
 {
 try {
    bool first;
@@ -2244,7 +2258,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
 // detect slips in the geometry-free phase
-int GDCPass::detectGFslips(void) throw(Exception)
+int GDCPass::detectGFslips(void)
 {
 try {
    unsigned int i;
@@ -2312,7 +2326,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 //------------------------------------------------------------------------------------
 // for each segment, fit a polynomial to the gfr, then compute and store the
 // residual of fit
-int GDCPass::GFphaseResiduals(list<Segment>::iterator& it) throw(Exception)
+int GDCPass::GFphaseResiduals(list<Segment>::iterator& it)
 {
 try {
    unsigned int i;
@@ -2386,7 +2400,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 //------------------------------------------------------------------------------------
 // detect small slips in the geometry-free phase
 // TD outliers at the beginning or end of the segment....
-int GDCPass::detectGFsmallSlips(void) throw(Exception)
+int GDCPass::detectGFsmallSlips(void)
 {
 try {
    const unsigned int width=static_cast<unsigned int>(cfg(GFSlipWidth));
@@ -2512,7 +2526,6 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 //------------------------------------------------------------------------------------
 bool GDCPass::foundGFoutlier(int i, int inew, 
    Stats<double>& pastSt, Stats<double>& futureSt)
-   throw(Exception)
 {
 try {
    if(i < 0 || inew < 0) return false;
@@ -2567,7 +2580,6 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 bool GDCPass::foundGFsmallSlip(int i,int nseg,int iend,int ibeg,
    deque<int>& pastIn,deque<int>& futureIn,
    Stats<double>& pastSt, Stats<double>& futureSt)
-   throw(Exception)
 {
 try {
    if(i < 0) return false;
@@ -2747,7 +2759,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
 // check the consistency of WL slips where a GF slip, but not a WL slip, was detected.
-int GDCPass::WLconsistencyCheck(void) throw(Exception)
+int GDCPass::WLconsistencyCheck(void)
 {
 try {
    int i,k;
@@ -2844,7 +2856,6 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // use editing command (slips and deletes) to modify the original SatPass data
 // print ending summary, and also return it as a string
 string GDCPass::finish(int iret, SatPass& svp, vector<string>& editCmds)
-   throw(Exception)
 {
 try {
    bool ok;
@@ -3168,7 +3179,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // and insert it after the given iterator.
 // Return an iterator pointing to the new segment. String msg is for debug output
 list<Segment>::iterator GDCPass::createSegment(list<Segment>::iterator sit,
-                                               int ibeg, string msg) throw(Exception)
+                                               int ibeg, string msg)
 {
 try {
    Segment s;
@@ -3219,7 +3230,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // level=1 one per line list of segments
 // level=2 dump all data, including (if extra) temporary arrays
 // return level 1 output as string
-string GDCPass::dumpSegments(string label, int level, bool extra) throw(Exception)
+string GDCPass::dumpSegments(string label, int level, bool extra)
 {
 try {
    unsigned int i,ifirst;
@@ -3304,7 +3315,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-void GDCPass::deleteSegment(list<Segment>::iterator& it, string msg) throw(Exception)
+void GDCPass::deleteSegment(list<Segment>::iterator& it, string msg)
 {
 try {
    unsigned int i;

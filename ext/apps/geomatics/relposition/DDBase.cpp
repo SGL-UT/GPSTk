@@ -304,7 +304,7 @@ catch (...) {
 // param axis 1,2,3 as rotation about X,Y,Z.
 // return Rotation matrix (3x3).
 // throw InvalidInput if axis is anything other than 1, 2 or 3.
-Matrix<double> SingleAxisRotation(double angle, const int axis) throw(Exception)
+Matrix<double> SingleAxisRotation(double angle, const int axis)
 {
 try {
    if(axis < 1 || axis > 3) {

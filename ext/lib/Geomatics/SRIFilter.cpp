@@ -51,7 +51,7 @@ using namespace StringUtils;
 //------------------------------------------------------------------------------------
 // empty constructor
 SRIFilter::SRIFilter(void)
-   throw()
+   noexcept
 {
    defaults();
 }
@@ -59,7 +59,7 @@ SRIFilter::SRIFilter(void)
 //------------------------------------------------------------------------------------
 // constructor given the dimension N.
 SRIFilter::SRIFilter(const unsigned int N)
-   throw()
+   noexcept
 {
    defaults();
    R = Matrix<double>(N,N,0.0);
@@ -70,7 +70,7 @@ SRIFilter::SRIFilter(const unsigned int N)
 //------------------------------------------------------------------------------------
 // constructor given a Namelist, its dimension determines the SRI dimension.
 SRIFilter::SRIFilter(const Namelist& NL)
-   throw()
+   noexcept
 {
    defaults();
    if(NL.size() <= 0) return;
@@ -84,7 +84,6 @@ SRIFilter::SRIFilter(const Namelist& NL)
 SRIFilter::SRIFilter(const Matrix<double>& Rin,
                      const Vector<double>& Zin,
                      const Namelist& NLin)
-   throw(MatrixException)
 {
    defaults();
    if(Rin.rows() != Rin.cols() ||
@@ -106,7 +105,7 @@ SRIFilter::SRIFilter(const Matrix<double>& Rin,
 //------------------------------------------------------------------------------------
 // operator=
 SRIFilter& SRIFilter::operator=(const SRIFilter& right)
-   throw()
+   noexcept
 {
    R = right.R;
    Z = right.Z;
@@ -120,7 +119,6 @@ SRIFilter& SRIFilter::operator=(const SRIFilter& right)
 // Returns unwhitened residuals in D
 void SRIFilter::measurementUpdate(const Matrix<double>& H, Vector<double>& D,
                                   const Matrix<double>& CM)
-   throw(MatrixException,VectorException)
 {
    if(H.cols() != R.cols() || H.rows() != D.size() ||
       (&CM != &SRINullMatrix && (CM.rows() != D.size() || CM.cols() != D.size())) )
@@ -165,7 +163,6 @@ void SRIFilter::measurementUpdate(const Matrix<double>& H, Vector<double>& D,
 // Returns unwhitened residuals in D
 void SRIFilter::measurementUpdate(const SparseMatrix<double>& H, Vector<double>& D,
                                   const SparseMatrix<double>& CM)
-   throw(MatrixException,VectorException)
 {
    if(H.cols() != R.cols() || H.rows() != D.size() ||
       (&CM != &SRINullSparseMatrix &&
@@ -214,7 +211,6 @@ void SRIFilter::timeUpdate(Matrix<double>& PhiInv,
                            Matrix<double>& G,
                            Vector<double>& Zw,
                            Matrix<double>& Rwx)
-   throw(MatrixException)
 {
    try { SrifTU(R, Z, PhiInv, Rw, G, Zw, Rwx); }
    catch(MatrixException& me) { GPSTK_RETHROW(me); }
@@ -227,7 +223,6 @@ void SRIFilter::smootherUpdate(Matrix<double>& Phi,
                                Matrix<double>& G,
                                Vector<double>& Zw,
                                Matrix<double>& Rwx)
-   throw(MatrixException)
 {
    try { SrifSU(R, Z, Phi, Rw, G, Zw, Rwx); }
    catch(MatrixException& me) { GPSTK_RETHROW(me); }
@@ -241,7 +236,6 @@ void SRIFilter::DMsmootherUpdate(Matrix<double>& P,
                                  Matrix<double>& G,
                                  Vector<double>& Zw,
                                  Matrix<double>& Rwx)
-   throw(MatrixException)
 {
    try { SrifSU_DM(P, X, Phinv, Rw, G, Zw, Rwx); }
    catch(MatrixException& me) { GPSTK_RETHROW(me); }
@@ -372,7 +366,6 @@ void SRIFilter::SrifTU(Matrix<T>& R,
                        Matrix<T>& G,
                        Vector<T>& Zw,
                        Matrix<T>& Rwx)
-   throw(MatrixException)
 {
    const T EPS=-T(1.e-200);
    unsigned int n=R.rows(),ns=Rw.rows();
@@ -598,7 +591,6 @@ void SRIFilter::SrifSU(Matrix<T>& R,
                        Matrix<T>& G,
                        Vector<T>& Zw,
                        Matrix<T>& Rwx)
-   throw(MatrixException)
 {
    unsigned int N=R.rows(),Ns=Rw.rows();
 
@@ -821,7 +813,6 @@ void SRIFilter::SrifSU_DM(Matrix<T>& P,
                           Matrix<T>& G,
                           Vector<T>& Zw,
                           Matrix<T>& Rwx)
-   throw(MatrixException)
 {
    unsigned int N=P.rows(),Ns=Rw.rows();
 
@@ -874,7 +865,6 @@ void DMsmootherUpdateWithControl(Matrix<double>& P,
                                  Vector<double>& Zw,
                                  Matrix<double>& Rwx,
                                  Vector<double>& U)
-      throw(MatrixException)
 {
    unsigned int N=P.rows(),Ns=Rw.rows();
 

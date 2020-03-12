@@ -130,7 +130,7 @@ namespace gpstk
           * @param[in] t the time to look up
           * @return the Xvt of the object at the indicated time */
       virtual Xvt computeXvt(const SatID& id, const CommonTime& t)
-         const throw();
+         const noexcept;
 
          /** Get the satellite health at a specific time.
           * @param[in] id the object's identifier
@@ -138,7 +138,7 @@ namespace gpstk
           * @return the health status of the object at the indicated time. */
       virtual Xvt::HealthStatus getSVHealth(const SatID& id,
                                             const CommonTime& t)
-         const throw();
+         const noexcept;
 
          /// Get integration step for Runge-Kutta algorithm.
       double getIntegrationStep() const

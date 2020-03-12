@@ -129,22 +129,24 @@ public:
    map<string, vector<string> > sysObsids;    // parallel vector of RinexObsIDs
 
    /// Constructor
-   LinCom() throw() : value(0), limit0(false), label(string("Undef")) { }
+   LinCom() noexcept : value(0), limit0(false), label(string("Undef")) { }
 
    /// parse input string
-   bool ParseAndSave(const string& str, bool save=true) throw();
+   bool ParseAndSave(const string& str, bool save=true) noexcept;
 
    /// compute the linear combination, given the satellite and RINEX data
+   /**
+    * @throw Exception */
    double Compute(const RinexSatID sat, Rinex3ObsHeader& Rhead,
-                  const vector<RinexDatum>& vrdata) throw(Exception);
+                  const vector<RinexDatum>& vrdata);
 
    /// remove a bias if jump larger than limit occurs
-   bool removeBias(const RinexSatID& sat) throw();
+   bool removeBias(const RinexSatID& sat) noexcept;
 
 }; // end class LinCom
 
 /// dump the object to an output stream
-ostream& operator<<(ostream& os, LinCom& lc) throw();
+ostream& operator<<(ostream& os, LinCom& lc) noexcept;
 
 //------------------------------------------------------------------------------------
 // Object for command line input and global data
@@ -153,22 +155,22 @@ class Configuration : public Singleton<Configuration> {
 public:
 
    // Default and only constructor
-   Configuration() throw() { SetDefaults(); }
+   Configuration() noexcept { SetDefaults(); }
 
    // Create, parse and process command line options and user input
-   int ProcessUserInput(int argc, char **argv) throw();
+   int ProcessUserInput(int argc, char **argv) noexcept;
 
    // Design the command line
-   string BuildCommandLine(void) throw();
+   string BuildCommandLine(void) noexcept;
 
    // Open the output file, and parse the strings used on the command line
    // return -4 if log file could not be opened
-   int ExtraProcessing(string& errors, string& extras) throw();
+   int ExtraProcessing(string& errors, string& extras) noexcept;
 
 private:
 
    // Define default values
-   void SetDefaults(void) throw();
+   void SetDefaults(void) noexcept;
 
 public:
 
@@ -270,12 +272,19 @@ const string Configuration::longfmt = calfmt + " = " + gpsfmt;
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
 // prototypes
-int Initialize(string& errors) throw(Exception);
-int ProcessFiles(void) throw(Exception);
+/**
+ * @throw Exception */
+int Initialize(string& errors);
+/**
+ * @throw Exception */
+int ProcessFiles(void);
+/**
+ * @throw Exception */
 double getObsData(string tag, RinexSatID sat, Rinex3ObsHeader& Rhead,
-                  const vector<RinexDatum>& vrdata) throw(Exception);
-double getNonObsData(string tag, RinexSatID sat, const CommonTime& time)
-   throw(Exception);
+                  const vector<RinexDatum>& vrdata);
+/**
+ * @throw Exception */
+double getNonObsData(string tag, RinexSatID sat, const CommonTime& time);
 
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
@@ -345,7 +354,7 @@ catch (...) { cerr << "Unknown exception.  Abort." << endl; }
 
 //------------------------------------------------------------------------------------
 // return -5 if input is not valid
-int Initialize(string& errors) throw(Exception)
+int Initialize(string& errors)
 {
 try {
    bool isValid(true);
@@ -767,7 +776,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
-void Configuration::SetDefaults(void) throw()
+void Configuration::SetDefaults(void) noexcept
 {
    defaultstartStr = string("[Beginning of dataset]");
    defaultstopStr = string("[End of dataset]");
@@ -857,7 +866,7 @@ void Configuration::SetDefaults(void) throw()
 }  // end Configuration::SetDefaults()
 
 //------------------------------------------------------------------------------------
-int Configuration::ProcessUserInput(int argc, char **argv) throw()
+int Configuration::ProcessUserInput(int argc, char **argv) noexcept
 {
    string PrgmDesc,cmdlineUsage, cmdlineErrors, cmdlineExtras;
    vector<string> cmdlineUnrecognized;
@@ -1118,7 +1127,7 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
 }  // end Configuration::CommandLine()
 
 //------------------------------------------------------------------------------------
-string Configuration::BuildCommandLine(void) throw()
+string Configuration::BuildCommandLine(void) noexcept
 {
    // Program description will appear at the top of the syntax page
    string PrgmDesc = " Program " + PrgmName +
@@ -1253,7 +1262,7 @@ string Configuration::BuildCommandLine(void) throw()
 }  // end Configuration::BuildCommandLine()
 
 //------------------------------------------------------------------------------------
-int Configuration::ExtraProcessing(string& errors, string& extras) throw()
+int Configuration::ExtraProcessing(string& errors, string& extras) noexcept
 {
    int n;
    size_t i;
@@ -1460,11 +1469,11 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
 
    return 0;
 
-} // end Configuration::ExtraProcessing(string& errors) throw()
+} // end Configuration::ExtraProcessing(string& errors) noexcept
 
 //------------------------------------------------------------------------------------
 // Return 0 ok, >0 number of files successfully read, <0 fatal error
-int ProcessFiles(void) throw(Exception)
+int ProcessFiles(void)
 {
 try {
    Configuration& C(Configuration::Instance());
@@ -1807,7 +1816,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 
 //------------------------------------------------------------------------------------
 double getObsData(string tag, RinexSatID sat, Rinex3ObsHeader& Rhead,
-                   const vector<RinexDatum>& vrdata) throw(Exception)
+                   const vector<RinexDatum>& vrdata)
 {
    try {
       double data(0);
@@ -1838,7 +1847,6 @@ double getObsData(string tag, RinexSatID sat, Rinex3ObsHeader& Rhead,
 
 //------------------------------------------------------------------------------------
 double getNonObsData(string tag, RinexSatID sat, const CommonTime& time)
-   throw(Exception)
 {
    try {
       double data(0);
@@ -1906,7 +1914,7 @@ double getNonObsData(string tag, RinexSatID sat, const CommonTime& time)
 //------------------------------------------------------------------------------------
 // TD codes ....
 // Parse combo given by lab, and if valid save in C.Combos
-bool LinCom::ParseAndSave(const string& lab, bool save) throw()
+bool LinCom::ParseAndSave(const string& lab, bool save) noexcept
 {
    size_t i,j;
    string sys,obsid;
@@ -2261,7 +2269,7 @@ bool LinCom::ParseAndSave(const string& lab, bool save) throw()
 
 //------------------------------------------------------------------------------------
 double LinCom::Compute(const RinexSatID sat, Rinex3ObsHeader& Rhead,
-                  const vector<RinexDatum>& vrdata) throw(Exception)
+                  const vector<RinexDatum>& vrdata)
 {
    Configuration& C(Configuration::Instance());
 
@@ -2358,7 +2366,7 @@ double LinCom::Compute(const RinexSatID sat, Rinex3ObsHeader& Rhead,
 // Reset bias when jump in value exceeds limit.
 // Set initial bias to 0 if initial value is < limit, otherwise to value.
 // Save previous value and debias value.
-bool LinCom::removeBias(const RinexSatID& sat) throw()
+bool LinCom::removeBias(const RinexSatID& sat) noexcept
 {
    bool reset(false);
    if(!limit0 && limit == 0.0) return reset;
@@ -2384,7 +2392,7 @@ bool LinCom::removeBias(const RinexSatID& sat) throw()
 }
 
 //------------------------------------------------------------------------------------
-ostream& operator<<(ostream& os, LinCom& lc) throw()
+ostream& operator<<(ostream& os, LinCom& lc) noexcept
 {
    ostringstream oss;
    oss << "Dump LC " << lc.label << " freq " << lc.f1 << "," << lc.f2

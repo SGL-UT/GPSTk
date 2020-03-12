@@ -114,19 +114,22 @@ namespace gpstk
           *   using this function.
           */
       void formattedGetLine( std::string& line,
-                             const bool expectEOF = false )
-         throw(EndOfFile, FFStreamError, gpstk::StringUtils::StringException);
+                             const bool expectEOF = false );
 
 
    protected:
 
-         /// calls FFStream::tryFFStreamGet and adds line number information
-      virtual void tryFFStreamGet(FFData& rec)
-         throw(FFStreamError, gpstk::StringUtils::StringException);
+         /** calls FFStream::tryFFStreamGet and adds line number information
+          * @throw FFStreamError
+          * @throw StringUtils::StringException
+          */
+      virtual void tryFFStreamGet(FFData& rec);
 
-         /// calls FFStream::tryFFStreamPut and adds line number information
-      virtual void tryFFStreamPut(const FFData& rec)
-         throw(FFStreamError, gpstk::StringUtils::StringException);
+         /** calls FFStream::tryFFStreamPut and adds line number information
+          * @throw FFStreamError
+          * @throw StringUtils::StringException
+          */
+      virtual void tryFFStreamPut(const FFData& rec);
 
    private:
          /// Initialize internal data structures

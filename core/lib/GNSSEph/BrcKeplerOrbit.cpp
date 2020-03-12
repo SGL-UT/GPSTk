@@ -48,7 +48,7 @@ namespace gpstk
    using namespace gpstk;
 
    BrcKeplerOrbit::BrcKeplerOrbit()
-      throw()
+      noexcept
    {
       dataLoaded = false;
 
@@ -99,7 +99,7 @@ namespace gpstk
    }
 
 
-   bool BrcKeplerOrbit::operator==(const BrcKeplerOrbit& right) const throw()
+   bool BrcKeplerOrbit::operator==(const BrcKeplerOrbit& right) const noexcept
    {
       return ((dataLoaded == right.dataLoaded) &&
               (satSys == right.satSys) &&
@@ -182,7 +182,6 @@ namespace gpstk
                                  const long subframe1[10],
                                  const long subframe2[10],
                                  const long subframe3[10])
-      throw(InvalidParameter)
    {
       double ficked[60];
 
@@ -281,7 +280,6 @@ namespace gpstk
    }
 
    bool BrcKeplerOrbit::isHealthy() const
-      throw(InvalidRequest)
    {
       if (!dataLoaded)
       {   
@@ -292,7 +290,6 @@ namespace gpstk
    }
 
    bool BrcKeplerOrbit::withinFitInterval(const CommonTime ct) const
-      throw(InvalidRequest)
    {
       if (!dataLoaded)
       {   
@@ -304,7 +301,6 @@ namespace gpstk
    }
 
    Xvt BrcKeplerOrbit::svXvt(const CommonTime& t) const
-      throw(InvalidRequest)
    {
       Xvt sv;
 
@@ -452,7 +448,6 @@ namespace gpstk
    }
 
    double BrcKeplerOrbit::svRelativity(const CommonTime& t) const
-      throw( InvalidRequest )
    {
       GPSEllipsoid ell;
       double twoPI  = 2.0e0 * PI;
@@ -478,13 +473,11 @@ namespace gpstk
    }
 
    CommonTime BrcKeplerOrbit::getOrbitEpoch() const
-      throw(InvalidRequest)
    {
       return Toe;
    }
    
    CommonTime BrcKeplerOrbit::getBeginningOfFitInterval() const
-      throw(InvalidRequest)
    {
       if (!dataLoaded)
       {   
@@ -495,7 +488,6 @@ namespace gpstk
    }
 
    CommonTime BrcKeplerOrbit::getEndOfFitInterval() const
-      throw(InvalidRequest)
    {
       if (!dataLoaded)
       {   
@@ -506,7 +498,6 @@ namespace gpstk
    }
 
    short BrcKeplerOrbit::getPRNID() const
-      throw(InvalidRequest)
    {
       if(!dataLoaded)
       {
@@ -517,7 +508,6 @@ namespace gpstk
    }   
   
    ObsID BrcKeplerOrbit::getObsID() const
-      throw(InvalidRequest)
    {
       if(!dataLoaded)
       {
@@ -528,7 +518,6 @@ namespace gpstk
    }
 
    short BrcKeplerOrbit::getFullWeek()  const
-      throw(InvalidRequest)
    {
       if (!dataLoaded)
       {
@@ -540,7 +529,6 @@ namespace gpstk
    }   
   
    double BrcKeplerOrbit::getAccuracy()  const
-      throw(InvalidRequest)
    {
       if (!dataLoaded)
       {
@@ -552,7 +540,6 @@ namespace gpstk
    }   
 
    void BrcKeplerOrbit::setAccuracy(const double& acc)
-      throw(InvalidRequest)
    {
       if (!dataLoaded)
       {
@@ -563,7 +550,6 @@ namespace gpstk
    }
 
    short BrcKeplerOrbit::getURAoe() const
-      throw(InvalidRequest)
    {
       if (!dataLoaded)
       {
@@ -574,7 +560,6 @@ namespace gpstk
    }
          
    double BrcKeplerOrbit::getCus() const
-      throw(InvalidRequest)
    {
       if (!dataLoaded)
       {
@@ -585,7 +570,6 @@ namespace gpstk
    }
    
    double BrcKeplerOrbit::getCrs() const
-      throw(InvalidRequest)
    {
       if (!dataLoaded)
       {
@@ -596,7 +580,6 @@ namespace gpstk
    }
    
    double BrcKeplerOrbit::getCis() const
-      throw(InvalidRequest)
    {
       if (!dataLoaded)
       {
@@ -607,7 +590,6 @@ namespace gpstk
    }
    
    double BrcKeplerOrbit::getCrc() const
-      throw(InvalidRequest)
    {
       if (!dataLoaded)
       {
@@ -618,7 +600,6 @@ namespace gpstk
    }
    
    double BrcKeplerOrbit::getCuc() const
-      throw(InvalidRequest)
    {
       if (!dataLoaded)
       {
@@ -629,7 +610,6 @@ namespace gpstk
    }
   
    double BrcKeplerOrbit::getCic() const
-      throw(InvalidRequest)
    {
       if (!dataLoaded)
       {
@@ -640,7 +620,6 @@ namespace gpstk
    }
    
    double BrcKeplerOrbit::getToe() const
-      throw(InvalidRequest)
    {
       if (!dataLoaded)
       {
@@ -652,7 +631,6 @@ namespace gpstk
    }
    
    double BrcKeplerOrbit::getM0() const
-      throw(InvalidRequest)
    {
       if (!dataLoaded)
       {
@@ -663,7 +641,6 @@ namespace gpstk
    }
    
    double BrcKeplerOrbit::getDn() const
-      throw(InvalidRequest)
    {
       if (!dataLoaded)
       {
@@ -674,7 +651,6 @@ namespace gpstk
    }
    
    double BrcKeplerOrbit::getEcc() const
-      throw(InvalidRequest)
    {
       if (!dataLoaded)
       {
@@ -685,7 +661,6 @@ namespace gpstk
    }
       
    double BrcKeplerOrbit::getA() const
-      throw(InvalidRequest)
    {
       if (!dataLoaded)
       {
@@ -696,7 +671,6 @@ namespace gpstk
    }
 
    double BrcKeplerOrbit::getAhalf() const
-      throw(InvalidRequest)
    {
       if (!dataLoaded)
       {
@@ -707,7 +681,6 @@ namespace gpstk
    }
 
    double BrcKeplerOrbit::getAdot() const
-      throw(InvalidRequest)
    {
       if (!dataLoaded)
       {
@@ -718,7 +691,6 @@ namespace gpstk
    }
 
    double BrcKeplerOrbit::getDnDot() const
-      throw(InvalidRequest)
    {
       if (!dataLoaded)
       {
@@ -729,7 +701,6 @@ namespace gpstk
    }
    
    double BrcKeplerOrbit::getOmega0() const
-      throw(InvalidRequest)
    {
       if (!dataLoaded)
       {
@@ -740,7 +711,6 @@ namespace gpstk
    }
    
    double BrcKeplerOrbit::getI0() const
-      throw(InvalidRequest)
    {
       if (!dataLoaded)
       {
@@ -751,7 +721,6 @@ namespace gpstk
    }
    
    double BrcKeplerOrbit::getW() const
-      throw(InvalidRequest)
    {
       if (!dataLoaded)
       {
@@ -762,7 +731,6 @@ namespace gpstk
    }
    
    double BrcKeplerOrbit::getOmegaDot() const
-      throw(InvalidRequest)
    {
       if (!dataLoaded)
       {
@@ -773,7 +741,6 @@ namespace gpstk
    }
    
    double BrcKeplerOrbit::getIDot() const
-      throw(InvalidRequest)
    {
       if (!dataLoaded)
       {
@@ -843,7 +810,7 @@ namespace gpstk
    }
 #pragma clang diagnostic pop
    void BrcKeplerOrbit::dump(ostream& s) const
-      throw()
+      noexcept
    {
       const ios::fmtflags oldFlags = s.flags();
       s.setf(ios::fixed, ios::floatfield);

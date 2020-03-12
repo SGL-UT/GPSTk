@@ -63,7 +63,6 @@ namespace gpstk
    }
 
    bool OrbElemBase::isValid(const CommonTime& ct) const
-      throw(InvalidRequest)
    {
       if (!dataLoaded())
       {
@@ -81,7 +80,6 @@ namespace gpstk
    }
 
    bool OrbElemBase::isHealthy() const
-      throw(InvalidRequest)
    {
       if (!dataLoaded())
       {
@@ -135,7 +133,6 @@ namespace gpstk
       // body, and footer are called, and any output formats are
       // preserved. 
    void OrbElemBase::dump(ostream& s) const
-      throw( InvalidRequest )
    {
       if (!dataLoaded())
       {
@@ -153,7 +150,6 @@ namespace gpstk
 
 
    Rinex3NavData OrbElemBase::makeRinex3NavData() const
-      throw( InvalidRequest )
    {
       InvalidRequest ir("Method makeRinex3NavData() not implemented.");
       GPSTK_THROW(ir); 

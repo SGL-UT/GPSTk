@@ -57,9 +57,11 @@ namespace gpstk
       /// Empty constructor - NB must call Initialize() before Eval().
       CubicSpline() : N(0) { }
 
-      /// Constructor given vectors of data X(N) Y(N); calls Initialize(X,Y).
-      CubicSpline(const std::vector<T>& X, const std::vector<T>& Y) throw(Exception)
-         { Initialize(X,Y); }
+         /** Constructor given vectors of data X(N) Y(N); calls Initialize(X,Y).
+          * @throw Exception
+          */
+      CubicSpline(const std::vector<T>& X, const std::vector<T>& Y)
+      { Initialize(X,Y); }
 
       /// Initialize array of second derivatives, which is used by Interpolate().
       /// Called by constructor. If the arrays are shorter than 4 points, then linear
@@ -67,8 +69,9 @@ namespace gpstk
       /// desired, call Initialize(X,Y,deriv1,derivN).
       /// @param X  Vector of data for independent variable, must parallel Y
       /// @param Y  Vector of data for dependent variable, must parallel X
+      /// @throw Exception
       void Initialize(const std::vector<T>& X, const std::vector<T>& Y)
-         throw(Exception) { build(X,Y,false); }
+      { build(X,Y,false); }
 
       /// Initialize array of second derivatives with the values of the derivative
       /// at the first and last points set by input.  Cf. Initialize(X,Y);
@@ -76,9 +79,9 @@ namespace gpstk
       /// @param Y  Vector of data for dependent variable, must parallel X
       /// @param DYDX1 Initial value of derivative dy/dx
       /// @param DYDXN Final value of derivative dy/dx
+      /// @throw Exception
       void Initialize(const std::vector<T>& X, const std::vector<T>& Y,
                                                 const T DYDX1, const T DYDXN)
-         throw(Exception)
       {
          fd1 = DYDX1;
          fdN = DYDXN;
@@ -91,8 +94,8 @@ namespace gpstk
       /// @param x  value of independent variable X at which to test limits
       /// @param y  return value of data Y at endpoint closest to x
       /// @return true if x lies within the range of the data.
-      /// @throw if the object has not been initialized by a call to Initialize().
-      bool testLimits(const T& x, T& y) throw(Exception)
+      /// @throw Exception if the object has not been initialized by a call to Initialize().
+      bool testLimits(const T& x, T& y)
       {
          if(N == 0) {
             Exception e("Must call Initialize() first");
@@ -109,9 +112,9 @@ namespace gpstk
       /// arrays X and Y.
       /// @param x  value of independent variable X at which to evaluate spline.
       /// @return y(x) the interpolated value
-      /// @throw if the object has not been initialized by a call to Initialize(), or
+      /// @throw Exception if the object has not been initialized by a call to Initialize(), or
       ///    if the given x is outside the range of the data used in Initialize().
-      T Evaluate(const T& x) throw(Exception)
+      T Evaluate(const T& x)
       {
          if(N == 0) {
             Exception e("Must call Initialize() first");
@@ -140,9 +143,9 @@ namespace gpstk
       /// Compute interpolated values of y at a vector of x's; cf. Evalute(x).
       /// @param x  vector of values of independent variable X at which to evaluate.
       /// @return y  output vector of interpolated values parallel to x.
-      /// @throw if the object has not been initialized by a call to Initialize(), or
+      /// @throw Exception if the object has not been initialized by a call to Initialize(), or
       ///    if the given x is outside the range of the data used in Initialize().
-      std::vector<T> Evaluate(const std::vector<T>& x) throw(Exception)
+      std::vector<T> Evaluate(const std::vector<T>& x)
       {
          if(N == 0) {
             Exception e("Must call Initialize() first");
@@ -181,7 +184,7 @@ namespace gpstk
       }
 
       /// Return the current size of the second derivative array.
-      int size(void) const throw()
+      int size(void) const noexcept
          { return S.size(); }
 
    private:
@@ -193,9 +196,8 @@ namespace gpstk
       /// @param y  Vector of data for dependent variable, must parallel x.
       /// @param fixEnds  if true, initial and final values of derivative dy/dx have
       ///             been set using member data fd1 and fdN.
-      /// @throw if input is invalid: arrays are empty or x not strictly increasing.
+      /// @throw Exception if input is invalid: arrays are empty or x not strictly increasing.
       void build(const std::vector<T>& x, const std::vector<T>& y, const bool fixEnds)
-         throw(Exception)
       {
          int i;
 
@@ -280,7 +282,7 @@ namespace gpstk
 
       /// Given an index k into the array S, and a value x such that
       /// X[k-1] < x < X[k], find the interpolated value y at x.
-      T interpolate(const int k, const T x) throw()
+      T interpolate(const int k, const T x) noexcept
       {
          T dxr(X[k]-x), dxl(x-X[k-1]), dx(X[k]-X[k-1]);
          return (( dxl * (Y[k] - S[k]*dx*dx/T(6))

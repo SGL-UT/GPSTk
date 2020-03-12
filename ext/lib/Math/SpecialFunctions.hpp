@@ -154,9 +154,9 @@ namespace gpstk
        * This code is a C++ implementation and adaptation from code found
        * in Cephes Math Library Release 2.8, copyright by Stephen L. Moshier,
        * released under a BSD license.
+       * @throw InvalidParameter
        */
-   double regIncompleteBeta(const double x, const double a, const double b)
-      throw(InvalidParameter);
+   double regIncompleteBeta(const double x, const double a, const double b);
 
 
       //@}

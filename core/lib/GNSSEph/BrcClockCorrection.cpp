@@ -50,7 +50,7 @@ namespace gpstk
    using namespace gpstk;
 
    BrcClockCorrection::BrcClockCorrection()
-      throw()
+      noexcept
    {
       dataLoaded = false;
 
@@ -93,7 +93,7 @@ namespace gpstk
 
 
    bool BrcClockCorrection::operator==(const BrcClockCorrection& right) const
-      throw()
+      noexcept
    {
          // EngNav has no data
       return ((dataLoaded == right.dataLoaded) &&
@@ -161,7 +161,6 @@ namespace gpstk
    void BrcClockCorrection::loadData(const ObsID obsIDArg, const short PRNIDArg,
                                      const short fullweeknum,
                                      const long subframe1[10] )
-      throw(InvalidParameter)
    {
       double ficked[60];
 
@@ -218,13 +217,11 @@ namespace gpstk
    }
 
    CommonTime BrcClockCorrection::getEpochTime() const
-      throw(InvalidRequest)
    {
       return Toc;
    }
 
    double BrcClockCorrection::svClockBias(const CommonTime& t) const
-      throw(gpstk::InvalidRequest)
    {
       double dtc,elaptc;
       elaptc = t - getEpochTime();
@@ -233,7 +230,6 @@ namespace gpstk
    }
 
    double BrcClockCorrection::svClockBiasM(const CommonTime& t) const
-      throw(gpstk::InvalidRequest)
    {
       double ret = svClockBias(t);
       ret = ret*C_MPS;
@@ -241,7 +237,6 @@ namespace gpstk
    }
 
    double BrcClockCorrection::svClockDrift(const CommonTime& t) const
-      throw(gpstk::InvalidRequest)
    {
       double drift,elaptc;
       elaptc = t - getEpochTime();
@@ -250,7 +245,6 @@ namespace gpstk
    }
 
    short BrcClockCorrection::getPRNID() const
-      throw(InvalidRequest)
    {
       if(!dataLoaded)
       {
@@ -261,7 +255,6 @@ namespace gpstk
    }
 
    ObsID BrcClockCorrection::getObsID() const
-      throw(InvalidRequest)
    {
       if(!dataLoaded)
       {
@@ -272,7 +265,6 @@ namespace gpstk
    }
 
    short BrcClockCorrection::getFullWeek()  const
-      throw(InvalidRequest)
    {
       if (!dataLoaded)
       {
@@ -284,7 +276,6 @@ namespace gpstk
    }
 
    double BrcClockCorrection::getAccuracy(const CommonTime& t)  const
-      throw(InvalidRequest)
    {
       double accuracy;
 
@@ -303,7 +294,6 @@ namespace gpstk
    }
 
    short BrcClockCorrection::getURAoc(const short& ndx) const
-      throw(InvalidRequest)
    {
       if (!dataLoaded)
       {
@@ -317,7 +307,6 @@ namespace gpstk
    }
 
    double BrcClockCorrection::getToc() const
-      throw(InvalidRequest)
    {
       if (!dataLoaded)
       {
@@ -329,7 +318,6 @@ namespace gpstk
    }
 
    double BrcClockCorrection::getAf0() const
-      throw(InvalidRequest)
    {
       if (!dataLoaded)
       {
@@ -340,7 +328,6 @@ namespace gpstk
    }
 
    double BrcClockCorrection::getAf1() const
-      throw(InvalidRequest)
    {
       if (!dataLoaded)
       {
@@ -351,7 +338,6 @@ namespace gpstk
    }
 
    double BrcClockCorrection::getAf2() const
-      throw(InvalidRequest)
    {
       if (!dataLoaded)
       {

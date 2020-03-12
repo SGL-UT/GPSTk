@@ -151,7 +151,6 @@ namespace gpstk
        * code biases".
        */
    void IonexHeader::ParseDcbRecord(std::string &line)
-      throw (FFStreamError)
    {
 
       string label(line, 60, 20);
@@ -232,7 +231,6 @@ namespace gpstk
        * Used by reallyGetRecord for both IonexHeader and IonexData.
        */
    void IonexHeader::ParseHeaderRecord(std::string &line)
-      throw (FFStreamError)
    {
 
       string label(line, 60, 20);
@@ -394,7 +392,6 @@ namespace gpstk
 
       // This function parses the entire header from the given stream
    void IonexHeader::reallyGetRecord(FFStream& ffs)
-      throw(std::exception, FFStreamError, StringException)
    {
 
       IonexStream& strm = dynamic_cast<IonexStream&> (ffs);
@@ -547,7 +544,6 @@ namespace gpstk
 
 
    void IonexHeader::reallyPutRecord(FFStream& ffs) const
-      throw(std::exception, FFStreamError, StringException)
    {
 
       IonexStream& strm = dynamic_cast<IonexStream&>(ffs);
@@ -577,7 +573,6 @@ namespace gpstk
 
       // this function writes all valid header records
    void IonexHeader::WriteHeaderRecords(FFStream& ffs) const
-      throw(FFStreamError, StringException)
    {
       IonexStream& strm = dynamic_cast<IonexStream&>(ffs);
       string line;

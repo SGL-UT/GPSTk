@@ -47,13 +47,13 @@
 
 namespace gpstk
 {
-   IonoModel::IonoModel(const double a[4], const double b[4]) throw()
+   IonoModel::IonoModel(const double a[4], const double b[4]) noexcept
    {
         setModel(a, b);
    }
 
    IonoModel::IonoModel(const EngAlmanac& engalm)
-      throw()
+      noexcept
    {
       try
       {
@@ -67,7 +67,7 @@ namespace gpstk
    }
 
 
-   void IonoModel::setModel(const double a[4], const double b[4]) throw()
+   void IonoModel::setModel(const double a[4], const double b[4]) noexcept
    {
       for (int n = 0; n < 4; n++)
       {
@@ -83,7 +83,6 @@ namespace gpstk
                                    double svel,
                                    double svaz,
                                    Frequency freq) const
-      throw(IonoModel::InvalidIonoModel)
    {
 
       if (!valid)
@@ -152,7 +151,7 @@ namespace gpstk
    }
 
    bool IonoModel::operator==(const IonoModel& right) const
-      throw()
+      noexcept
    {
       for (int n = 0; n < 4; n++)
       {
@@ -163,7 +162,7 @@ namespace gpstk
    }
 
    bool IonoModel::operator!=(const IonoModel&right) const
-      throw()
+      noexcept
    {
       return !(operator==(right));
    }

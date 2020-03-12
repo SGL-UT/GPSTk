@@ -95,7 +95,7 @@ namespace gpstk
       virtual bool isData() const {return true;}
 
          /// Debug output function.
-      virtual void dump(std::ostream& s=std::cout) const throw();
+      virtual void dump(std::ostream& s=std::cout) const noexcept;
 
       std::string datatype;   ///< Data type : AR, AS, etc
       RinexSatID sat;         ///< Satellite ID        (if AS)
@@ -110,7 +110,7 @@ namespace gpstk
       
    protected:
 
-      void clear(void) throw()
+      void clear(void) noexcept
       {
          datatype = std::string();
          sat = RinexSatID(-1,RinexSatID::systemGPS);
@@ -118,24 +118,25 @@ namespace gpstk
          bias = sig_bias = drift = sig_drift = accel = sig_accel = 0.0;
       }
 
-         /// Writes the formatted record to the FFStream \a s.
-         /// @warning This function is currently unimplemented
-      virtual void reallyPutRecord(FFStream& s) const 
-         throw(std::exception, FFStreamError,
-               gpstk::StringUtils::StringException);
+         /** Writes the formatted record to the FFStream \a s.
+          * @warning This function is currently unimplemented
+          * @throw std::exception
+          * @throw FFStreamError
+          * @throw StringUtils::StringException
+          */
+      virtual void reallyPutRecord(FFStream& s) const;
 
          /**
           * This function reads a record from the given FFStream.
           * If an error is encountered in retrieving the record, the 
           * stream is reset to its original position and its fail-bit is set.
-          * @throws StringException when a StringUtils function fails
-          * @throws FFStreamError when exceptions(failbit) is set and
+          * @throw std::exception
+          * @throw StringException when a StringUtils function fails
+          * @throw FFStreamError when exceptions(failbit) is set and
           *  a read or formatting error occurs.  This also resets the
           *  stream to its pre-read position.
           */
-      virtual void reallyGetRecord(FFStream& s) 
-         throw(std::exception, FFStreamError,
-               gpstk::StringUtils::StringException);
+      virtual void reallyGetRecord(FFStream& s);
    };
 
       //@}

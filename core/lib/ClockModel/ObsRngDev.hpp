@@ -75,7 +75,7 @@ namespace gpstk
           * Creates an empty, useless object to facilitate STL
           * containers of this object.
           */
-      ObsRngDev() throw()
+      ObsRngDev() noexcept
       : obstime(CommonTime::END_OF_TIME), wonky(0) {}
          /**
           * constructor.
@@ -218,65 +218,65 @@ namespace gpstk
                 double gamma = GAMMA_GPS);
    
          /// destructor
-      virtual ~ObsRngDev() throw() {}
+      virtual ~ObsRngDev() noexcept {}
 
          // get accessor methods ----------------------------------------------
          /**
           * returns the time of the SV observation
           * \return time of SV observation
           */
-      const CommonTime& getTime() const throw() { return obstime; }
+      const CommonTime& getTime() const noexcept { return obstime; }
 
          /**
           * returns the observed SV's identifier
           * \return svid
           */
-      SatID getSvID() const throw() { return svid; }
+      SatID getSvID() const noexcept { return svid; }
 
          /**
           * returns the SV azimuth angle (in degrees) in relation to the rx
           * \return SV azimuth angle
           */
-      vfloat getAzimuth() const throw() { return azimuth; }
+      vfloat getAzimuth() const noexcept { return azimuth; }
 
          /**
           * returns elevation (in degrees) of the SV in relation to the rx
           * \return SV elevation angle
           */
-      vfloat getElevation() const throw() { return elevation; }
+      vfloat getElevation() const noexcept { return elevation; }
 
          /**
           * returns the 6-bit SV health bitfield from epehemeris, subframe 1
           * \return SV health bitfield
           */
-      vshort getHealth() const throw() { return health; }
+      vshort getHealth() const noexcept { return health; }
 
          /**
           * returns the Issue Of Data, Clock (IODC) from ephemeris, subframe 1
           * \return ephemeris IODC
           */
-      vshort getIODC() const throw() { return iodc; }
+      vshort getIODC() const noexcept { return iodc; }
 
          /**
           * returns the observed range deviation (ORD) (in meters)
           * \returns ORD
           */
-      double getORD() const throw() { return ord; }
+      double getORD() const noexcept { return ord; }
 
          /**
           * returns the ionospheric offset (in meters)
           * \returns ionospheric offset
           */
-      vdouble getIono() const throw() { return iono; }
+      vdouble getIono() const noexcept { return iono; }
 
          /**
           * returns the tropospheric offset (in meters)
           * \returns tropospheric offset
           */
-      vdouble getTrop() const throw() { return trop; }
+      vdouble getTrop() const noexcept { return trop; }
 
       friend std::ostream& operator<<(std::ostream& s, 
-                                      const ObsRngDev& r) throw();
+                                      const ObsRngDev& r) noexcept;
 
       void applyClockOffset(double clockOffset)
       {ord -= clockOffset;}

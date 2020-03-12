@@ -98,12 +98,12 @@ namespace gpstk
 
       /// Add the given name, AntexData pair. If the name already exists in the store,
       /// replace the data for it with the input object.
-      /// @throw if the AntexData is invalid.
-      void addAntenna(std::string name, AntexData& antdata) throw(Exception);
+      /// @throw Exception if the AntexData is invalid.
+      void addAntenna(std::string name, AntexData& antdata);
 
       /// Get the antenna data for the given name from the store.
       /// @return true if successful, false if input name was not found in the store
-      bool getAntenna(std::string name, AntexData& antdata) throw();
+      bool getAntenna(std::string name, AntexData& antdata) noexcept;
 
       /// Get the antenna data for the given satellite from the store.
       /// Satellites are identified by two things:
@@ -122,19 +122,19 @@ namespace gpstk
       /// @return true if successful, false if satellite was not found in the store
       bool getSatelliteAntenna(const char sys, const int n,
                                std::string& name, AntexData& data,
-                               bool inputPRN=true) const throw();
+                               bool inputPRN=true) const noexcept;
 
       /// Get a vector of all antenna names in the store
-      void getNames(std::vector<std::string>& names) throw();
+      void getNames(std::vector<std::string>& names) noexcept;
 
       /// Get a vector of all receiver antenna names in the store
-      void getReceiverNames(std::vector<std::string>& names) throw();
+      void getReceiverNames(std::vector<std::string>& names) noexcept;
 
       /// get the number of antennas stored
-      unsigned int size(void) const throw() { return antennaMap.size(); }
+      unsigned int size(void) const noexcept { return antennaMap.size(); }
 
       /// clear the store of all information
-      void clear(void) throw() { antennaMap.clear(); }
+      void clear(void) noexcept { antennaMap.clear(); }
 
       /// call to have satellite antennas included in store
       /// NB. call before addAntenna() or addANTEXfile()
@@ -152,7 +152,7 @@ namespace gpstk
       /// those names will be included in the store (not applicable to satellites).
       /// If there are already other names in the store, they will be removed.
       /// NB. call before addAntenna() or addANTEXfile()
-      void includeReceivers(std::vector<std::string>& names) throw();
+      void includeReceivers(std::vector<std::string>& names) noexcept;
 
       /// Open and read an ANTEX format file with the given name, and read it.
       /// Add to the store all the receivers with names in the given std::vector,
@@ -165,8 +165,7 @@ namespace gpstk
       /// @return the number of antennas added.
       /// @throw any exception caught during reading the file.
       int addANTEXfile(std::string filename,
-                       CommonTime time = CommonTime::BEGINNING_OF_TIME)
-         throw(Exception);
+                       CommonTime time = CommonTime::BEGINNING_OF_TIME);
 
       /// Compute the vector from the SV Center of Mass (COM) to
       /// the phase center of the antenna. 
@@ -187,14 +186,15 @@ namespace gpstk
                            const int n,
                            const CommonTime& ct,
                            const Triple& satVector, 
-                           bool inputPRN=true) const
-         throw(Exception);
+                           bool inputPRN=true) const;
 
-      /// Same as above except with different calling sequence for convenience
+         /** Same as above except with different calling sequence for
+          * convenience
+          * @throw Exception
+          */
       Triple ComToPcVector(const SatID& sidr, 
                            const CommonTime& ct,
-                           const Triple& satVector) const
-         throw(Exception);
+                           const Triple& satVector) const;
 
       /// dump the store
       void dump(std::ostream& s = std::cout, short detail = 0);

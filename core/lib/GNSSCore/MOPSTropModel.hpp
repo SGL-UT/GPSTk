@@ -125,9 +125,9 @@ namespace gpstk
           *
           * @param elevation   Elevation of satellite as seen at receiver, in
           *                    degrees.
+          * @throw InvalidTropModel
           */
-      virtual double correction(double elevation) const
-         throw(InvalidTropModel);
+      virtual double correction(double elevation) const;
 
 
          /** Compute and return the full tropospheric delay, given the
@@ -141,10 +141,10 @@ namespace gpstk
           *
           * @param RX  Receiver position.
           * @param SV  Satellite position.
+          * @throw InvalidTropModel
           */
       virtual double correction( const Position& RX,
-                                 const Position& SV )
-         throw(InvalidTropModel);
+                                 const Position& SV );
 
 
          /** Compute and return the full tropospheric delay, given the
@@ -158,11 +158,11 @@ namespace gpstk
           * @param RX  Receiver position.
           * @param SV  Satellite position.
           * @param tt  Time (CommonTime object).
+          * @throw InvalidTropModel
           */
       virtual double correction( const Position& RX,
                                  const Position& SV,
-                                 const CommonTime& tt )
-         throw(InvalidTropModel);
+                                 const CommonTime& tt );
 
 
          /** Compute and return the full tropospheric delay, given the
@@ -176,11 +176,11 @@ namespace gpstk
           * @param RX  Receiver position.
           * @param SV  Satellite position.
           * @param doy Day of year.
+          * @throw InvalidTropModel
           */
       virtual double correction( const Position& RX,
                                  const Position& SV,
-                                 const int& doy )
-         throw(InvalidTropModel);
+                                 const int& doy );
 
 
          /** \deprecated
@@ -192,10 +192,10 @@ namespace gpstk
           *             (meters).
           * @param SV   Satellite position in ECEF cartesian coordinates
           *             (meters).
+          * @throw InvalidTropModel
           */
       virtual double correction( const Xvt& RX,
-                                 const Xvt& SV )
-         throw(InvalidTropModel);
+                                 const Xvt& SV );
 
 
          /** \deprecated
@@ -211,11 +211,11 @@ namespace gpstk
           * @param SV   Satellite position in ECEF cartesian coordinates
           *             (meters)
           * @param tt   Time (CommonTime object).
+          * @throw InvalidTropModel
           */
       virtual double correction( const Xvt& RX,
                                  const Xvt& SV,
-                                 const CommonTime& tt )
-         throw(InvalidTropModel);
+                                 const CommonTime& tt );
 
 
          /** \deprecated
@@ -231,45 +231,51 @@ namespace gpstk
           * @param SV   Satellite position in ECEF cartesian coordinates
           *             (meters)
           * @param doy  Day of year.
+          * @throw InvalidTropModel
           */
       virtual double correction( const Xvt& RX,
                                  const Xvt& SV,
-                                 const int& doy )
-         throw(InvalidTropModel);
+                                 const int& doy );
 
 
-         /// Compute and return the zenith delay for dry component of the
-         /// troposphere.
-      virtual double dry_zenith_delay(void) const
-         throw(InvalidTropModel);
+         /** Compute and return the zenith delay for dry component of the
+          * troposphere.
+          * @throw InvalidTropModel
+          */
+      virtual double dry_zenith_delay(void) const;
 
 
-         /// Compute and return the zenith delay for wet component of the
-         /// troposphere.
-      virtual double wet_zenith_delay(void) const
-         throw(InvalidTropModel);
+         /** Compute and return the zenith delay for wet component of the
+          * troposphere.
+          * @throw InvalidTropModel
+          */
+      virtual double wet_zenith_delay(void) const;
 
 
          /** This method configure the model to estimate the weather using
           *  height, latitude and day of year (DOY). It is called automatically
           *  when setting those parameters.
+          * @throw InvalidTropModel
           */
-      void setWeather()
-         throw(InvalidTropModel);
+      void setWeather();
 
 
-         /// In MOPS tropospheric model, this is a dummy method kept here just
-         /// for consistency.
+         /** In MOPS tropospheric model, this is a dummy method kept here just
+          * for consistency.
+          * @throw InvalidTropModel
+          */
       virtual void setWeather( const double& T,
                                const double& P,
                                const double& H )
-         throw(InvalidParameter) {};
+      {}
 
 
-         /// In MOPS tropospheric model, this is a dummy method kept here just
-         /// for consistency.
+         /** In MOPS tropospheric model, this is a dummy method kept here just
+          * for consistency.
+          * @throw InvalidTropModel
+          */
       virtual void setWeather(const WxObservation& wx)
-         throw(InvalidParameter) {};
+      {}
 
 
          /** Define the receiver height; this is required before calling
@@ -318,9 +324,9 @@ namespace gpstk
           *
           * @param elevation  Elevation of satellite as seen at receiver,
           *                   in degrees
+          * @throw InvalidTropModel
           */
-      double MOPSsigma2(double elevation)
-         throw(InvalidTropModel);
+      double MOPSsigma2(double elevation);
 
 
    private:
@@ -337,9 +343,11 @@ namespace gpstk
       Vector<double> MOPSParameters;
 
 
-         // The MOPS tropospheric model needs to compute several extra
-         // parameters
-      virtual void prepareParameters(void) throw(InvalidTropModel);
+         /** The MOPS tropospheric model needs to compute several extra
+          * parameters.
+          * @throw InvalidTropModel
+          */
+      virtual void prepareParameters(void);
 
 
          // The MOPS tropospheric model uses several predefined data tables

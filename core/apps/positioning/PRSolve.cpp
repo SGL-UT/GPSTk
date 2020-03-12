@@ -122,30 +122,31 @@ class Configuration : public Singleton<Configuration> {
 public:
 
    // Default and only constructor
-   Configuration() throw() { SetDefaults(); }
+   Configuration() noexcept { SetDefaults(); }
 
    // Create, parse and process command line options and user input
-   int ProcessUserInput(int argc, char **argv) throw();
+   int ProcessUserInput(int argc, char **argv) noexcept;
 
    // Create and output help message for --sol
    void SolDescHelp(void);
 
    // Design the command line
-   string BuildCommandLine(void) throw();
+   string BuildCommandLine(void) noexcept;
 
    // Open the output file, and parse the strings used on the command line
    // return -4 if log file could not be opened
-   //int ExtraProcessing(void) throw();
+   //int ExtraProcessing(void) noexcept;
    //TD on clau, this leads to the SPS algorithm failing to converge on some problems.
-   int ExtraProcessing(string& errors, string& extras) throw();
+   int ExtraProcessing(string& errors, string& extras) noexcept;
 
-   // update weather in the trop model using the Met store
-   void setWeather(const CommonTime& ttag) throw(Exception);
+      /** update weather in the trop model using the Met store
+       * @throw Exception */
+   void setWeather(const CommonTime& ttag);
 
 private:
 
    // Define default values
-   void SetDefaults(void) throw();
+   void SetDefaults(void) noexcept;
 
 public:
 
@@ -452,17 +453,17 @@ class SolutionObject {
 public:
 // member functions
    // Default and only constructor
-   SolutionObject(const string& desc) throw() { Initialize(desc); }
+   SolutionObject(const string& desc) noexcept { Initialize(desc); }
 
    // Destructor
-   ~SolutionObject() throw() { }
+   ~SolutionObject() noexcept { }
 
    // static function to determine consistency of input descriptor
    // msg returns explanation
    static bool ValidateDescriptor(string desc, string& msg);
 
    // check validity of input descriptor, set default values
-   void Initialize(const string& desc) throw()
+   void Initialize(const string& desc) noexcept
    {
       if(!ValidateDescriptor(desc, Descriptor)) {
          isValid = false;
@@ -504,38 +505,44 @@ public:
    }
 
    // parse descriptor into member data and 'sysChars'
-   void ParseDescriptor(void) throw();
+   void ParseDescriptor(void) noexcept;
 
    // Given a RINEX header, verify that the necessary ObsIDs are present, and
    // define an ordered set of ObsIDs for each component and SolutionData required.
    // Return true if enough ObsIDs are found to compute the solution.
-   bool ChooseObsIDs(map<string,vector<RinexObsID> >& mapObsTypes) throw();
+   bool ChooseObsIDs(map<string,vector<RinexObsID> >& mapObsTypes) noexcept;
 
    // dump. level 0: descriptor and all available obs types
    //       level 1: descriptor and obs types actually used
    //       level 2: level 1 plus pseudorange data
    // return string containing dump
-   string dump(int level, string msg="SOLN", string msg2="") throw();
+   string dump(int level, string msg="SOLN", string msg2="") noexcept;
 
    // reset the object before each epoch
-   void EpochReset(void) throw();
+   void EpochReset(void) noexcept;
 
    // Given a RINEX data object, pull out the data to be used, and set the flag
    // indicating whether there is sufficient good data.
    void CollectData(const RinexSatID& s,
                     const double& elev, const double& ER,
-                    const vector<RinexDatum>& v) throw();
+                    const vector<RinexDatum>& v) noexcept;
 
-   // Compute a solution for the given epoch; call after CollectData()
-   // same return value as RAIMCompute()
-   int ComputeSolution(const CommonTime& t) throw(Exception);
+      /** Compute a solution for the given epoch; call after
+       * CollectData() same return value as RAIMCompute()
+       * @throw Exception
+       */
+   int ComputeSolution(const CommonTime& t);
 
-   // Write out ORDs - call after ComputeSolution
-   // pass it iret from ComputeSolution
-   int WriteORDs(const CommonTime& t, const int iret) throw(Exception);
+      /** Write out ORDs - call after ComputeSolution pass it iret
+       * from ComputeSolution
+       * @throw Exception
+       */
+   int WriteORDs(const CommonTime& t, const int iret);
 
-   // Output final results
-   void FinalOutput(void) throw(Exception);
+      /** Output final results
+       * @throw Exception
+       */
+   void FinalOutput(void);
 
 // member data
 
@@ -580,8 +587,12 @@ public:
 
 //------------------------------------------------------------------------------------
 // prototypes
-int Initialize(string& errors) throw(Exception);
-int ProcessFiles(void) throw(Exception);
+/**
+ * @throw Exception */
+int Initialize(string& errors);
+/**
+ * @throw Exception */
+int ProcessFiles(void);
 
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
@@ -653,7 +664,7 @@ catch (...) { cerr << "Unknown exception.  Abort." << endl; }
 
 //------------------------------------------------------------------------------------
 // return -5 if input is not valid
-int Initialize(string& errors) throw(Exception)
+int Initialize(string& errors)
 {
 try {
    Configuration& C(Configuration::Instance());
@@ -1220,7 +1231,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 
 //------------------------------------------------------------------------------------
 // Return 0 ok, >0 number of files successfully read, <0 fatal error
-int ProcessFiles(void) throw(Exception)
+int ProcessFiles(void)
 {
 try {
    Configuration& C(Configuration::Instance());
@@ -1583,7 +1594,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
-int routine(void) throw(Exception)
+int routine(void)
 {
 try {
    Configuration& C(Configuration::Instance());
@@ -1595,7 +1606,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
-void Configuration::SetDefaults(void) throw()
+void Configuration::SetDefaults(void) noexcept
 {
    SPSout = ORDout = false;
    LogFile = string("prs.log");
@@ -1721,7 +1732,7 @@ void Configuration::SolDescHelp(void)
 }
 
 //------------------------------------------------------------------------------------
-int Configuration::ProcessUserInput(int argc, char **argv) throw()
+int Configuration::ProcessUserInput(int argc, char **argv) noexcept
 {
    // build the command line
    opts.DefineUsageString(PrgmName + " [options]");
@@ -1789,7 +1800,7 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
 }  // end Configuration::CommandLine()
 
 //------------------------------------------------------------------------------------
-string Configuration::BuildCommandLine(void) throw()
+string Configuration::BuildCommandLine(void) noexcept
 {
    // Program description will appear at the top of the syntax page
    string PrgmDesc = " Program " + PrgmName +
@@ -1944,7 +1955,7 @@ string Configuration::BuildCommandLine(void) throw()
 }  // end Configuration::BuildCommandLine()
 
 //------------------------------------------------------------------------------------
-int Configuration::ExtraProcessing(string& errors, string& extras) throw()
+int Configuration::ExtraProcessing(string& errors, string& extras) noexcept
 {
    int i,n;
    vector<string> fld;
@@ -2112,11 +2123,11 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
 
    return 0;
 
-} // end Configuration::ExtraProcessing() throw()
+} // end Configuration::ExtraProcessing() noexcept
 
 //------------------------------------------------------------------------------------
 // update weather in the trop model using the Met store
-void Configuration::setWeather(const CommonTime& ttag) throw(Exception)
+void Configuration::setWeather(const CommonTime& ttag)
 {
    try {
       Configuration& C(Configuration::Instance());
@@ -2241,7 +2252,7 @@ bool SolutionObject::ValidateDescriptor(const string desc, string& msg)
 // parse descriptor into member data and 'sysChars'
 // called by Initialize() which is called by c'tor
 // assumes descriptor has been validated.
-void SolutionObject::ParseDescriptor(void) throw()
+void SolutionObject::ParseDescriptor(void) noexcept
 {
    size_t i;
    vector<string> fields;
@@ -2277,7 +2288,7 @@ void SolutionObject::ParseDescriptor(void) throw()
 // define an ordered set of ObsIDs for each required SolutionData.
 // Return true if enough ObsIDs are found (in header) to compute the solution.
 bool SolutionObject::ChooseObsIDs(map<string,vector<RinexObsID> >& mapObsTypes)
-   throw()
+   noexcept
 {
    size_t i;
 
@@ -2301,7 +2312,7 @@ bool SolutionObject::ChooseObsIDs(map<string,vector<RinexObsID> >& mapObsTypes)
 }
 
 //------------------------------------------------------------------------------------
-string SolutionObject::dump(int level, string msg1, string msg2) throw()
+string SolutionObject::dump(int level, string msg1, string msg2) noexcept
 {
    int j;
    size_t i;
@@ -2346,7 +2357,7 @@ string SolutionObject::dump(int level, string msg1, string msg2) throw()
 }
 
 //------------------------------------------------------------------------------------
-void SolutionObject::EpochReset(void) throw()
+void SolutionObject::EpochReset(void) noexcept
 {
    Satellites.clear();
    PRanges.clear();
@@ -2362,7 +2373,7 @@ void SolutionObject::EpochReset(void) throw()
 void SolutionObject::CollectData(const RinexSatID& sat,
                                  const double& elev, const double& ER,
                                  const vector<RinexDatum>& vrd)
-   throw()
+   noexcept
 {
    if(!isValid) return;
 
@@ -2385,7 +2396,7 @@ void SolutionObject::CollectData(const RinexSatID& sat,
 
 //------------------------------------------------------------------------------------
 // return 0 good, negative failure - same as RAIMCompute
-int SolutionObject::ComputeSolution(const CommonTime& ttag) throw(Exception)
+int SolutionObject::ComputeSolution(const CommonTime& ttag)
 {
    try {
       int i,n,iret;
@@ -2566,7 +2577,7 @@ int SolutionObject::ComputeSolution(const CommonTime& ttag) throw(Exception)
 }
 
 //------------------------------------------------------------------------------------
-int SolutionObject::WriteORDs(const CommonTime& time, const int iret) throw(Exception)
+int SolutionObject::WriteORDs(const CommonTime& time, const int iret)
 {
    try {
       Configuration& C(Configuration::Instance());
@@ -2605,7 +2616,7 @@ int SolutionObject::WriteORDs(const CommonTime& time, const int iret) throw(Exce
 }
 
 //------------------------------------------------------------------------------------
-void SolutionObject::FinalOutput(void) throw(Exception)
+void SolutionObject::FinalOutput(void)
 {
    try {
       Configuration& C(Configuration::Instance());

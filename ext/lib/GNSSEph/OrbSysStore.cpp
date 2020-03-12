@@ -67,7 +67,6 @@ namespace gpstk
 // will likely involve PackedNavBits, we'll provide a means of
 // creating and storing a message based on a PackedNavBits.
    bool OrbSysStore::addMessage(const PackedNavBits& pnb)
-         throw(InvalidRequest,Exception)
    {
       if (debugLevel) cout << "Entering addMessage(PackedNavBits&)" << endl;
 
@@ -78,7 +77,6 @@ namespace gpstk
 
 //------------------------------------------------------------------------------
    bool OrbSysStore::addMessage(const OrbDataSys* p)
-         throw(InvalidRequest,Exception)
    {
       if (debugLevel) cout << "Entering addMessage(OrbDataSys*)" << endl;
 
@@ -240,7 +238,7 @@ namespace gpstk
 
 //--------------------------------------------------------------------------
    void OrbSysStore::dump(std::ostream& s, short detail) const
-      throw()
+      noexcept
    {
       if (debugLevel) cout << "Entering dump()" << endl;
 
@@ -379,7 +377,7 @@ namespace gpstk
 
 //-----------------------------------------------------------------------------
    void OrbSysStore::dumpTerse(std::ostream& s)
-         const throw()
+         const noexcept
    {
       s << "**********************************************************" << endl;
       s << " One-line summary of non-orbit constellation overhead data" << endl;
@@ -410,7 +408,7 @@ namespace gpstk
 
 //-----------------------------------------------------------------------------
    void OrbSysStore::dumpTerseTimeOrder(std::ostream& s)
-         const throw()
+         const noexcept
    {
       s << "**********************************************************" << endl;
       s << " One-line summary of non-orbit constellation overhead data" << endl;
@@ -499,7 +497,6 @@ namespace gpstk
 
     const OrbDataUTC* OrbSysStore::findUtcData(const NavID& nidr,
                                                const CommonTime& ct)
-       throw(InvalidRequest)
     {
           // Determine the appropriate unique ID based on the
           // navigation message type.
@@ -550,7 +547,7 @@ namespace gpstk
                                 const gpstk::SatID& sidr,
                                 const gpstk::NavID& navtype,
                                 const unsigned long UID)
-         const throw()
+         const noexcept
    {
       bool allSats = false;
       bool allNM = false;
@@ -627,7 +624,6 @@ namespace gpstk
 
 //-----------------------------------------------------------------------------
    CommonTime OrbSysStore::getInitialTime() const
-         throw(gpstk::InvalidRequest)
    {
       if (size()==0)
       {
@@ -639,7 +635,6 @@ namespace gpstk
 
 //-----------------------------------------------------------------------------
    CommonTime OrbSysStore::getFinalTime() const
-         throw(gpstk::InvalidRequest)
    {
       if (size()==0)
       {
@@ -683,7 +678,6 @@ namespace gpstk
         const NavID& navtype,
         const unsigned long UID,
         const CommonTime& t) const
-      throw(InvalidRequest)
    {
       SAT_NM_UID_MSG_MAP::const_iterator cit1;
       NM_UID_MSG_MAP::const_iterator cit2;
@@ -828,7 +822,6 @@ namespace gpstk
    OrbSysStore::find(const NavID& navtype,
                      const unsigned long UID,
                      const CommonTime& t) const
-         throw(InvalidRequest)
    {
       const OrbDataSys* retVal = 0;
 
@@ -891,7 +884,6 @@ namespace gpstk
    findSystemData(const SatID& sat,
                   const NavID& navtype,
                   const CommonTime& t) const
-      throw(InvalidRequest)
    {
       SAT_NM_UID_MSG_MAP::const_iterator cit1;
       NM_UID_MSG_MAP::const_iterator cit2;
@@ -948,7 +940,6 @@ namespace gpstk
 //-----------------------------------------------------------------------------
    std::list<const OrbDataSys*> OrbSysStore::findList(const NavID& navtype,
                                          const unsigned long UID) const
-         throw(InvalidRequest)
    {
       std::list<const OrbDataSys*> retList;
       SAT_NM_UID_MSG_MAP::const_iterator cit1;
@@ -982,7 +973,6 @@ namespace gpstk
    std::list<const OrbDataSys*> OrbSysStore::findList(const SatID& sat,
                                                       const NavID& navtype,
                                                       const unsigned long UID) const
-         throw(InvalidRequest)
    {
       SAT_NM_UID_MSG_MAP::const_iterator cit1;
       NM_UID_MSG_MAP::const_iterator cit2;
@@ -1105,7 +1095,7 @@ namespace gpstk
 //-----------------------------------------------------------------------------
 // Remove all data from this collection.
    void OrbSysStore::clear()
-         throw()
+         noexcept
    {
       SAT_NM_UID_MSG_MAP::iterator it1;
       NM_UID_MSG_MAP::iterator it2;
@@ -1205,7 +1195,6 @@ namespace gpstk
 
 //-----------------------------------------------------------------------------
    void OrbSysStore::validSatSystem(const SatID& sat) const
-      throw( InvalidRequest )
    {
       if (!isSatSysPresent(sat.system))
       {
@@ -1230,7 +1219,6 @@ namespace gpstk
    bool OrbSysStore::hasSignal(const SatID& sidr,
                                const CommonTime& ct,
                                const ObsID& oidr) const
-      throw (InvalidRequest)
    {
       bool retVal = false;
       if (sidr.system!=SatID::systemGPS)

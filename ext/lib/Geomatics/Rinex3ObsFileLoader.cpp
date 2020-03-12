@@ -377,7 +377,6 @@ string Rinex3ObsFileLoader::asString(void)
 int Rinex3ObsFileLoader::WriteSatPassList(const map<char, vector<string> >& sysSPOT,
                                           const map<char, vector<int> >& indexLoadOT,
                                           vector<SatPass>& SPList)
-   throw(Exception)
 {
 try {
    if(!dataSaved()) return -3;

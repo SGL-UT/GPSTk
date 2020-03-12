@@ -67,16 +67,15 @@ public:
 
       /// Default constructor
    Combinations(void)
-      throw()
+      noexcept
    {
       nc = n = k = 0;
       Index = NULL;
    }
    
       /// Constructor for C(n,k) = Combinations of n things taken k at a time (k <= n)
-      /// @throw on invalid input (k>n).
+      /// @throw Exception on invalid input (k>n).
    Combinations(int N, int K)
-      throw(gpstk::Exception)
    {
       try
       {
@@ -90,7 +89,7 @@ public:
    
       /// copy constructor
    Combinations(const Combinations& right)
-      throw()
+      noexcept
    {
       *this = right;
    }
@@ -105,7 +104,7 @@ public:
    
       /// Assignment operator.
    Combinations& operator=(const Combinations& right)
-      throw()
+      noexcept
    {
       this->~Combinations();
       init(right.n,right.k);
@@ -119,12 +118,12 @@ public:
    
       /// Compute the next combination, returning the number of Combinations computed
       /// so far; if there are no more Combinations, return -1.
-   int Next(void) throw();
+   int Next(void) noexcept;
    
       /// Return index i (0 <= i < n) of jth selection (0 <= j < k);
       /// if j is out of range, return -1.
    int Selection(int j)
-      throw()
+      noexcept
    {
       if (j < 0 || j >= k)
          return -1;
@@ -134,7 +133,7 @@ public:
       /// Return true if the given index j (0 <= j < n) is
       /// currently selected (i.e. if j = Selection(i) for some i)
    bool isSelected(int j)
-      throw()
+      noexcept
    {
       for (int i=0; i<k; i++)
       {
@@ -147,12 +146,11 @@ public:
 private:
 
       /// The initialization routine used by constructors.
-      /// @throw on invalid input (k>n or either n or k < 0).
-   void init(int N, int K)
-      throw(gpstk::Exception);
+      /// @throw Exception on invalid input (k>n or either n or k < 0).
+   void init(int N, int K);
    
       /// Recursive function to increment Index[j].
-   int Increment(int j) throw();
+   int Increment(int j) noexcept;
    
    int nc;         ///< number of Combinations computed so far
    int k,n;        ///< Combinations of n things taken k at a time, given at c'tor
@@ -163,7 +161,7 @@ private:
 // ----------------------------------------------------------------------------
 
 int Combinations::Next(void)
-   throw()
+   noexcept
 {
    if (k < 1)
       return -1;
@@ -173,7 +171,7 @@ int Combinations::Next(void)
 }
 
 int Combinations::Increment(int j)
-   throw()
+   noexcept
 {
    if (Index[j] < n-k+j) {        // can this index be incremented?
       Index[j]++;
@@ -190,7 +188,6 @@ int Combinations::Increment(int j)
 }
 
 void Combinations::init(int N, int K)
-   throw(gpstk::Exception)
 {
    if (K > N || N < 0 || K < 0)
    {
@@ -231,7 +228,6 @@ namespace gpstk
                                const vector<double>& Pseudorange,
                                const XvtStore<SatID>& Eph,
                                TropModel *pTropModel)
-      throw(Exception)
    {
       try
       {
@@ -516,7 +512,7 @@ namespace gpstk
                                              const XvtStore<SatID>& Eph,
                                              Matrix<double>& SVP,
                                              ostream *pDebugStream)
-      throw()
+      noexcept
    {
       int i,j,nsvs,N=Satellite.size();
       CommonTime tx;                // transmit time
@@ -690,7 +686,6 @@ namespace gpstk
                                         Vector<double>& Slope,
                                         ostream *pDebugStream,
                                         Vector<int>* satSystems)   ///Change
-   throw(Exception)
    {
       if (!pTropModel)
       {

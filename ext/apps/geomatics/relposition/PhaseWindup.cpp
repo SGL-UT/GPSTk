@@ -71,7 +71,6 @@ double PhaseWindup(double& prev,         // previous return value
                    EarthOrientation& EO, // earth orientation at tt
                    double& shadow,       // fraction of sun not visible at satellite
                    bool isBlockR)        // true for Block IIR satellites
-   throw(Exception)
 {
 try {
    double d,windup;
@@ -134,7 +133,6 @@ double PhaseWindup(double& prev,       // previous return value
                    Position& XR,       // north unit vector at receiver
                    double& shadow,     // fraction of sun not visible at satellite
                    bool isBlockR)      // true for Block IIR satellites
-   throw(Exception)
 {
 try {
    double d,windup=0.0;

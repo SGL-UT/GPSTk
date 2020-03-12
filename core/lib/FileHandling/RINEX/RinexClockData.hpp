@@ -101,16 +101,20 @@ namespace gpstk
       virtual void dump(std::ostream& s) const;
       
    protected:
-         /// Writes a correctly formatted record from this data to stream
-      virtual void reallyPutRecord(FFStream& s) const
-         throw(std::exception, FFStreamError,
-               StringUtils::StringException);
+         /** Writes a correctly formatted record from this data to stream
+          * @throw std::exception
+          * @throw FFStreamError
+          * @throw StringUtils::StringException
+          */
+      virtual void reallyPutRecord(FFStream& s) const;
       
          
-         /// This functions obtains a RINEX Clock record from the given stream
-      virtual void reallyGetRecord(FFStream& s)
-         throw(std::exception, FFStreamError,
-               StringUtils::StringException);
+         /** This function obtains a RINEX Clock record from the given stream
+          * @throw std::exception
+          * @throw FFStreamError
+          * @throw StringUtils::StringException
+          */
+      virtual void reallyGetRecord(FFStream& s);
       
    }; // class RinexClockData
    

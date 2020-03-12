@@ -51,7 +51,6 @@ namespace gpstk
        *  @throw InvalidRequest if required data has not been stored.
        */
    Xvt GloEphemeris::svXvt(const CommonTime& epoch) const
-      throw( gpstk::InvalidRequest )
    {
 
          // Check that the given epoch is within the available time limits.
@@ -231,7 +230,6 @@ namespace gpstk
 
       // Get the epoch time for this ephemeris
    CommonTime GloEphemeris::getEphemerisEpoch() const
-      throw( InvalidRequest )
    {
 
          // First, let's check if there is valid data
@@ -248,7 +246,6 @@ namespace gpstk
 
       // This function returns the PRN ID of the SV.
    short GloEphemeris::getPRNID() const
-      throw( InvalidRequest )
    {
 
          // First, let's check if there is valid data
@@ -270,7 +267,6 @@ namespace gpstk
        * @throw InvalidRequest if required data has not been stored.
        */
    double GloEphemeris::svClockBias(const CommonTime& epoch) const
-      throw( gpstk::InvalidRequest )
    {
 
          // First, let's check if there is valid data
@@ -302,7 +298,6 @@ namespace gpstk
        * @throw InvalidRequest if required data has not been stored.
        */
    double GloEphemeris::svClockDrift(const CommonTime& epoch) const
-      throw( gpstk::InvalidRequest )
    {
 
          // First, let's check if there is valid data
@@ -321,7 +316,7 @@ namespace gpstk
 
       // Output the contents of this ephemeris to the given stream as a single line.
    void GloEphemeris::dump(std::ostream& s) const
-      throw()
+      noexcept
    {
 
       s << "Sys:" << satSys << ", PRN:" << PRNID

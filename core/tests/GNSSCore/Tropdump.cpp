@@ -82,7 +82,8 @@ using namespace gpstk;
 //------------------------------------------------------------------------------------
 // prototypes in this module
 /// @return 0 success
-int Process(void) throw(Exception);
+/// @throw Exception
+int Process(void);
 
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
@@ -92,25 +93,29 @@ class GlobalData : public Singleton<GlobalData> {
 public:
 
    /// Default and only constructor, sets defaults.
-   GlobalData() throw() { SetDefaults(); }
+   GlobalData() noexcept { SetDefaults(); }
 
    /// Create, parse and process command line options and user input
    /// @param argc argv std command line arguments
    /// @return 0 ok, or error code
-   int ProcessUserInput(int argc, char **argv) throw(Exception);
+   /// @throw Exception
+   int ProcessUserInput(int argc, char **argv);
 
    /// Design the command line
    /// @return program description strng
-   string BuildCommandLine(void) throw(Exception);
+   /// @throw Exception
+   string BuildCommandLine(void);
 
    /// Parsing of the command line args beyond that of CommandLine; start and stop
    /// strings, trop model, sys codes, ObsIDs.
    /// @return 0 ok, 4 invalid input
-   int ExtraProcessing(string& errors, string& extras) throw(Exception);
+   /// @throw Exception
+   int ExtraProcessing(string& errors, string& extras);
 
    /// Open log file and assign log level
    /// @return 5 if the output file could not be opened, 0 for success
-   int OpenLogFile(void) throw(Exception);
+   /// @throw Exception
+   int OpenLogFile(void);
 
    /// destructor, clean up
    ~GlobalData() {
@@ -120,7 +125,7 @@ public:
 
 private:
    /// Define defaults for all command line input and global data
-   void SetDefaults(void) throw();
+   void SetDefaults(void) noexcept;
 
 public:
    // member data
@@ -173,7 +178,7 @@ const string GlobalData::Version(string("1.0 4/13/17"));
 
 //------------------------------------------------------------------------------------
 // Define defaults for all command line input and global data
-void GlobalData::SetDefaults(void) throw()
+void GlobalData::SetDefaults(void) noexcept
 {
    logfile = string();
 
@@ -283,7 +288,7 @@ catch (...) {
 
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
-int GlobalData::ProcessUserInput(int argc, char **argv) throw(Exception)
+int GlobalData::ProcessUserInput(int argc, char **argv)
 {
 try {
    string PrgmDesc, cmdlineUsage, cmdlineErrors, cmdlineExtras;
@@ -364,7 +369,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 }  // end GlobalData::ProcessUserInput()
 
 //------------------------------------------------------------------------------------
-string GlobalData::BuildCommandLine(void) throw(Exception)
+string GlobalData::BuildCommandLine(void)
 {
 try {
    // build the options list == syntax page
@@ -415,7 +420,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 }  // end GlobalData::BuildCommandLine()
 
 //------------------------------------------------------------------------------------
-int GlobalData::ExtraProcessing(string& errors, string& extras) throw(Exception)
+int GlobalData::ExtraProcessing(string& errors, string& extras)
 {
 try {
    // do extra parsing, define cmdlineExtras, and append errors to cmdlineErrors
@@ -546,7 +551,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int GlobalData::OpenLogFile(void) throw(Exception)
+int GlobalData::OpenLogFile(void)
 {
 try {
    // open log file, if it exists
@@ -583,7 +588,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
-int Process(void) throw(Exception)
+int Process(void)
 {
 try {
    GlobalData& GD=GlobalData::Instance();

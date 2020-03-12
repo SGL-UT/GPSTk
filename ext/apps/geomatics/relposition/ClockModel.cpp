@@ -55,11 +55,17 @@ using namespace gpstk;
 
 //------------------------------------------------------------------------------------
 // prototypes -- for this module only
-int RemoveClockJumps(void) throw(Exception);             // here
-int OutputClockData(void) throw(Exception);              // DataOutput.cpp
+/**
+ * @throw Exception
+ */
+int RemoveClockJumps(void);             // here
+/**
+ * @throw Exception
+ */
+int OutputClockData(void);              // DataOutput.cpp
 
 //------------------------------------------------------------------------------------
-int ClockModel(void) throw(Exception)
+int ClockModel(void)
 {
 try {
    int iret=0;
@@ -89,7 +95,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }   // end ClockModel()
 
 //------------------------------------------------------------------------------------
-int RemoveClockJumps(void) throw(Exception)
+int RemoveClockJumps(void)
 {
 try {
    if(CI.Verbose) oflog << "BEGIN RemoveClockJumps()" << endl;

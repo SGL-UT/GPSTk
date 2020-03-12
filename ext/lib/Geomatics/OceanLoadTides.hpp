@@ -88,12 +88,11 @@ public:
    ///                   If empty, all sites are read.
    /// @param filename   string Input ocean loading file name.
    /// @return the number of sites successfully initialized.
-   /// @throw if the file could not be opened.
-   int initializeSites(std::vector<std::string>& sites, std::string filename)
-      throw(Exception);
+   /// @throw Exception if the file could not be opened.
+   int initializeSites(std::vector<std::string>& sites, std::string filename);
 
    /// Return true if the given site name has been initialized, otherwise false.
-   bool isValid(std::string site) throw()
+   bool isValid(std::string site) noexcept
    { return (coefficientMap.find(site) != coefficientMap.end()); }
 
    /// Compute the site displacement vector at the given time for the given site.
@@ -105,8 +104,8 @@ public:
    /// @param t     EphTime Input time of interest.
    /// @return Triple containing the North, East and Up components of the site
    ///                displacement in meters.
-   /// @throw if the site has not been initialized.
-   Triple computeDisplacement11(std::string site, EphTime t) throw(Exception);
+   /// @throw Exception if the site has not been initialized.
+   Triple computeDisplacement11(std::string site, EphTime t);
 
    /// Compute the site displacement vector at the given time for the given site.
    /// The site must have been successfully initialized; if not an exception is
@@ -116,13 +115,13 @@ public:
    /// @param t     EphTime Input time of interest.
    /// @return Triple containing the North, East and Up components of the site
    ///                displacement in meters.
-   /// @throw if the site has not been initialized, if the time system is unknown,
+   /// @throw Exception if the site has not been initialized, if the time system is unknown,
    ///                if there is corruption in the static arrays, or .
-   Triple computeDisplacement(std::string site, EphTime t) throw(Exception);
+   Triple computeDisplacement(std::string site, EphTime t);
 
    /// Return the recorded latitude, longitude and ht(=0) for the given site.
    /// Return value of (0.0,0.0,0.0) probably means the position was not found.
-   Triple getPosition(std::string site) throw()
+   Triple getPosition(std::string site) noexcept
    {
       Triple t(0.0,0.0,0.0);
       std::map<std::string, std::vector<double> >::const_iterator it;
@@ -137,7 +136,7 @@ public:
 private:
    // Compute the astronomical angular arguments for each of the 11 tidal modes.
    // Ref IERS 1996 pg 53.
-   //void SchwiderskiArg(int iyear, int doy, double sod, double* angles) throw();
+   //void SchwiderskiArg(int iyear, int doy, double sod, double* angles) noexcept;
 
    /// map of (site name, coefficient array), created by call to initializeSites()
    std::map<std::string, std::vector<double> > coefficientMap;
@@ -166,11 +165,10 @@ private:
    /// @param freq      array of nout (up to 342) frequencies of the derived tides
    /// @param Nin       number of std tides (11)
    /// @return nout     number of derived tides actually computed, may be < 342
-   /// @throw if static arrays are corrupted.
+   /// @throw Exception if static arrays are corrupted.
    int deriveTides(const NVector SchTides[], const double amp[], const double phs[],
                    const double Dood[], const double freqDood[],
-                   double ampDer[], double phsDer[], double freq[], const int Nin)
-      throw(Exception);
+                   double ampDer[], double phsDer[], double freq[], const int Nin);
 
 };    // end class OceanLoadTides
 

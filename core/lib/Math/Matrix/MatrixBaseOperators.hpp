@@ -71,10 +71,10 @@ namespace gpstk
 
       /**
        * Turns the square RefMatrixBase matrix into an identity matrix
+       * @throw MatrixException
        */
    template <class T, class BaseClass>
    BaseClass& ident(RefMatrixBase<T, BaseClass>& m)
-      throw (MatrixException)
    {
       BaseClass& me = static_cast<BaseClass&>(m);
       if ( (me.rows() != me.cols()) || (me.cols() < 1) )
@@ -91,10 +91,10 @@ namespace gpstk
 
       /**
        * Returns the trace of the matrix
+       * @throw MatrixException
        */
    template <class T, class BaseClass>
    inline T trace(const ConstMatrixBase<T, BaseClass>& m)
-      throw (MatrixException)
    {
       if ((!m.isSquare()) || (m.rows() == 0))
       {
@@ -144,6 +144,7 @@ namespace gpstk
       /**
        * Uses the sum of minor determinates to calculate the whole det. 
        * Slow for large matricies, but it works.
+       * @throw MatrixException
        */
    template <class T, class BaseClass>
    inline T slowDet(const ConstMatrixBase<T, BaseClass>& l)

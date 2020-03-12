@@ -46,7 +46,6 @@ namespace gpstk
 {
    //----------------------------------------------------------------
    void SEMAlmanacStore::loadFile(const std::string& filename)
-      throw(FileMissingException)
    {
       try
       {
@@ -100,7 +99,6 @@ namespace gpstk
 
    //----------------------------------------------------------------
    bool SEMAlmanacStore::addAlmanac(const SEMData& sAlmData)
-         throw(InvalidParameter, Exception)
    {
       unsigned short retVal = OrbAlmStore::ADD_NEITHER;
       try

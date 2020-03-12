@@ -34,9 +34,10 @@
 //
 //==============================================================================
 
-/// @file PRSolution.hpp
-/// Pseudorange navigation solution, either a simple solution using all the
-/// given data, or a solution including editing via a RAIM algorithm.
+/** @file PRSolution.hpp
+ * Pseudorange navigation solution, either a simple solution using all the
+ * given data, or a solution including editing via a RAIM algorithm.
+ */
  
 #ifndef PRS_POSITION_SOLUTION_HPP
 #define PRS_POSITION_SOLUTION_HPP
@@ -54,14 +55,15 @@
 
 namespace gpstk
 {
-   /** @defgroup GPSsolutions GPS solution algorithms and Tropospheric models */
-   //@{
+      /** @defgroup GPSsolutions GPS solution algorithms and
+       * Tropospheric models */
+      //@{
 
    class WtdAveStats {
    private:
       unsigned int N;
-        //unused
-      //double APV;
+         //unused
+         //double APV;
       std::string msg;
       std::string lab[3];
       Stats<double> S[3];
@@ -70,18 +72,19 @@ namespace gpstk
 
    public:
 
-      // ctor
+         // ctor
       WtdAveStats(void)
       {
          reset();
          lab[0]="ECEF_X";  lab[1]="ECEF_Y"; lab[2]="ECEF_Z";
       }
 
-      void setMessage(std::string m) throw() { msg = m; }
-      std::string getMessage(void) const throw() { return msg; }
+      void setMessage(std::string m) noexcept { msg = m; }
+      std::string getMessage(void) const noexcept { return msg; }
 
-      void setLabels(std::string lab1, std::string lab2, std::string lab3) throw()
-         { lab[0]=lab1; lab[1]=lab2; lab[2]=lab3; }
+      void setLabels(std::string lab1, std::string lab2, std::string lab3)
+         noexcept
+      { lab[0]=lab1; lab[1]=lab2; lab[2]=lab3; }
 
       Vector<double> getSol(void) const
       {
@@ -94,7 +97,7 @@ namespace gpstk
 
       int getN(void) const { return N; }
 
-      void reset(void) throw()
+      void reset(void) noexcept
       {
          N = 0;
          sumInfo = Matrix<double>();
@@ -105,31 +108,32 @@ namespace gpstk
          S[2].Reset();
       }
 
-      // add to statistics, and to weighted average solution and covariance
+         /** add to statistics, and to weighted average solution and covariance
+          * @throw Exception
+          */
       void add(const Vector<double>& Sol, const Matrix<double>& Cov)
-         throw(Exception)
       {
          try {
-            // add to the statistics
+               // add to the statistics
             for(unsigned int i=0; i<3; i++) {
                if(N==0) Sbias(i) = Sol(i);
                S[i].Add(Sol(i)-Sbias(i));
             }
 
-            // NB do NOT include clock(s); this can ruin the position average
+               // NB do NOT include clock(s); this can ruin the position average
             Vector<double> Sol3(Sol);
             Sol3.resize(3);               // assumes position states come first
             Sol3 = Sol3 - Sbias;
             Matrix<double> Cov3(Cov,0,0,3,3);
 
-            // information matrix (position only)
+               // information matrix (position only)
             Matrix<double> Info(inverseSVD(Cov3));
-            if(N == 0) {                  // first call: dimension and set to zero
+            if(N == 0) {                // first call: dimension and set to zero
                sumInfo = Matrix<double>(3,3,0.0);
                sumInfoState = Vector<double>(3,0.0);
             }
 
-            // add to the total information
+               // add to the total information
             sumInfo += Info;
             sumInfoState += Info * Sol3;
             ++N;
@@ -137,8 +141,10 @@ namespace gpstk
          catch(Exception& e) { GPSTK_RETHROW(e); }
       }
 
-      // dump statistics and weighted average
-      void dump(std::ostream& os, std::string msg="") const throw(Exception)
+         /** dump statistics and weighted average
+          * @throw Exception
+          */
+      void dump(std::ostream& os, std::string msg="") const
       {
          try {
             os << "Simple statistics on " << msg << std::endl
@@ -169,7 +175,8 @@ namespace gpstk
                os << "Weighted average " << msg << std::endl;
                Matrix<double> Cov(inverseSVD(sumInfo));
                Vector<double> Sol(Cov * sumInfoState + Sbias);
-               os << std::setw(14) << std::setprecision(4) << Sol << "    " << N;
+               os << std::setw(14) << std::setprecision(4) << Sol << "    "
+                  << N;
             }
             else os << " No data!";
          }
@@ -188,27 +195,31 @@ namespace gpstk
       double APV;
       int ndata,nsol,ndof;
 
-      /// if true, use the given APriori position instead of the current solution
-      /// define by calling void fixAPSolution(X,Y,Z)
+         /** if true, use the given APriori position instead of the
+          * current solution define by calling void
+          * fixAPSolution(X,Y,Z) */
       bool fixedAPriori;
       Triple fixedAPrioriPos;
 
-      /// vector or systems to be used in APSolution - this must not change
-      /// define by calling setAPsystems(vector<SatID::SatelliteSystems>)
+         /** vector or systems to be used in APSolution - this must
+          * not change define by calling
+          * setAPsystems(vector<SatID::SatelliteSystems>) */
       std::vector<SatID::SatelliteSystem> APsysIDs;
 
-      /// Caller is responsible for setting APSolution before first call, if desired;
-      /// after that SimplePRSolution() and RAIMCompute() will update it.
+         /** Caller is responsible for setting APSolution before first
+          * call, if desired; after that SimplePRSolution() and
+          * RAIMCompute() will update it. */
       Vector<double> APSolution;
 
-      /// constructor
-      PRSMemory() throw() { reset(); }
+         /// constructor
+      PRSMemory() noexcept { reset(); }
 
-      /// destructor
-      ~PRSMemory() throw() { }
+         /// destructor
+      ~PRSMemory() noexcept { }
 
-      /// reset counters, etc.; call at construction and any time for 'start over'
-      void reset(void) throw()
+         /** reset counters, etc.; call at construction and any time
+          * for 'start over' */
+      void reset(void) noexcept
       {
          fixedAPriori = false;
          nsol = ndata = 0;
@@ -217,7 +228,8 @@ namespace gpstk
          APSolution = Vector<double>(4,0.0);
       }
 
-      /// Define the systems, including their order, that will be in the apriori sol
+         /** Define the systems, including their order, that will be
+          * in the apriori sol */
       void setAPsystems(std::vector<SatID::SatelliteSystem> sys)
       {
          if(sys.size() == 0) 
@@ -226,8 +238,9 @@ namespace gpstk
          APSolution.resize(3+APsysIDs.size());
       }
 
-      /// Fix the apriori solution to the given constant value (XYZ,m)
-      void fixAPSolution(const double& X, const double& Y, const double& Z) throw()
+         /// Fix the apriori solution to the given constant value (XYZ,m)
+      void fixAPSolution(const double& X, const double& Y, const double& Z)
+         noexcept
       {
          fixedAPrioriPos[0] = X;
          fixedAPrioriPos[1] = Y;
@@ -235,13 +248,14 @@ namespace gpstk
          fixedAPriori = true;
       }
 
-      /// Get the apriori solution, given the systems in the current epoch's data
+         /** Get the apriori solution, given the systems in the
+          * current epoch's data */
       Vector<double> getAprioriSolution(std::vector<SatID::SatelliteSystem> syss)
       {
          if(APSolution.size() == 3 + syss.size())
             return APSolution;
 
-         // must cut down the vector
+            // must cut down the vector
          int j;
          size_t i;
          Vector<double> aps(3+syss.size(),0.0);
@@ -253,44 +267,48 @@ namespace gpstk
          return aps;
       }
 
-      /// get the aposteriori variance of unit weight; return zero if not enough
-      /// data has been collected.
+         /** get the aposteriori variance of unit weight; return zero
+          * if not enough data has been collected. */
       inline double getAPV(void) {
          if(ndof > 0) return APV/ndof;
          return 0.0;
       }
 
-      /// get the number of degrees of freedom
+         /// get the number of degrees of freedom
       inline int getNDOF(void) { return ndof; }
 
-      /// get the average solution vector
+         /// get the average solution vector
       Vector<double> getSol(void) const { return was.getSol(); }
 
-      /// get the accumulated covariance matrix
+         /// get the accumulated covariance matrix
       Matrix<double> getCov(void) const { return was.getCov(); }
 
-      /// get the number of solutions that have been accumulated
+         /// get the number of solutions that have been accumulated
       int getN(void) const { return was.getN(); }
 
-      /// update apriori solution with a known solution; this is done at the end of
-      /// both SimplePRSolution() and RAIMCompute()
-      void updateAPSolution(const Vector<double>& Sol) throw()
+         /** update apriori solution with a known solution; this is
+          * done at the end of both SimplePRSolution() and
+          * RAIMCompute() */
+      void updateAPSolution(const Vector<double>& Sol) noexcept
       {
          APSolution = Sol;
          if(fixedAPriori)
             for(int i=0; i<3; i++) APSolution(i) = fixedAPrioriPos[i];
       }
 
-      /// add newly computed solution (must be valid); update counts, APV and apriori.
-      /// input parameters are from PRSolution after computing a solution.
+         /** Add newly computed solution (must be valid); update
+          * counts, APV and apriori.  Input parameters are from
+          * PRSolution after computing a solution.
+          * @throw Exception
+          */
       void add(const Vector<double>& Sol, const Matrix<double>& Cov,
-               const Vector<double>& PreFitResid, const Matrix<double>& Partials,
+               const Vector<double>& PreFitResid,
+               const Matrix<double>& Partials,
                const Matrix<double>& invMeasCov)
-         throw(Exception)
       {
          was.add(Sol, Cov);
 
-         // first solution: apriori solution has no clock, so PFR bad
+            // first solution: apriori solution has no clock, so PFR bad
          if(was.getN() == 1) return;
 
          try {
@@ -314,20 +332,27 @@ namespace gpstk
          }
       }
 
-      // dump statistics and weighted average
-      void dump(std::ostream& os, std::string msg="PRS") throw(Exception)
+         /** dump statistics and weighted average
+          * @throw Exception
+          */
+      void dump(std::ostream& os, std::string msg="PRS")
       {
          try {
             was.setMessage(msg);
             os << was << std::endl;
 
             if(ndof > 0) {
-               // scale covariance
+                  // scale covariance
                double sig(::sqrt(APV/ndof));
                Matrix<double> Cov(was.getCov());
-               for(size_t i=0; i<Cov.rows(); i++) for(size_t j=i; j<Cov.cols(); j++)
-                  Cov(i,j) = Cov(j,i) = Cov(i,j)*sig;
-               // print cov as labelled matrix
+               for(size_t i=0; i<Cov.rows(); i++)
+               {
+                  for(size_t j=i; j<Cov.cols(); j++)
+                  {
+                     Cov(i,j) = Cov(j,i) = Cov(i,j)*sig;
+                  }
+               }
+                  // print cov as labelled matrix
                Namelist NL;
                NL += "ECEF_X"; NL += "ECEF_Y"; NL += "ECEF_Z";
                LabeledMatrix LM(NL,Cov);
@@ -349,229 +374,277 @@ namespace gpstk
 
 
 
-   /// This class defines an interface to routines which compute a position
-   /// and time solution from pseudorange data, with a data editing algorithm
-   /// based on Receiver Autonomous Integrity Monitoring (RAIM) concepts.
-   /// RAIM ref. "A Baseline GPS RAIM Scheme and a Note on the Equivalence of
-   /// Three RAIM Methods," by R. Grover Brown, Journal of the Institute of
-   /// Navigation, Vol. 39, No. 3, Fall 1992, pg 301.
-   ///
-   /// The main point of entry is RAIMCompute(); it will compute a solution given
-   /// the pseudoranges from a number of satellites, using a RAIM-based algorithm
-   /// to detect and exclude 'bad' data from the solution. Alternately, the user
-   /// may compute a straightforward solution using all the input data, without
-   /// the RAIM algorithm; this is done by first calling PreparePRSolution()
-   /// and then SimplePRSolution().
-   ///
-   /// The class is able to use GPS and/or Glonass satellite data, and assumes that
-   /// the Glonass ephemeris is in the GPS frame but the Glonass clocks are in
-   /// the Glonass time frame. If the input data is mixed (both GPS and GLO) then
-   /// the solution has a 5th element, namely the GPS-GLO time offset, as estimated
-   /// by the algorithm. If the data is not mixed (either all-GPS or all-GLO),
-   /// this element is zero and has no meaning. An all-GLO solution will have clock
-   /// bias in Glonass time; otherwise it will be in GPS time.
-   /// 
-   /// Note that a problem can arise when processing a timeseries of mixed data by
-   /// calling RAIMCompute at each epoch; it is possible that the RAIM algorithm
-   /// may, at some epochs, happen to reject all the Glonass satellites or all the
-   /// GPS satellites. In this case the GPS-GLO timeoffset is undefined (and returned
-   /// as zero).
-
+      /** This class defines an interface to routines which compute a position
+       * and time solution from pseudorange data, with a data editing algorithm
+       * based on Receiver Autonomous Integrity Monitoring (RAIM) concepts.
+       * RAIM ref. "A Baseline GPS RAIM Scheme and a Note on the Equivalence of
+       * Three RAIM Methods," by R. Grover Brown, Journal of the Institute of
+       * Navigation, Vol. 39, No. 3, Fall 1992, pg 301.
+       *
+       * The main point of entry is RAIMCompute(); it will compute a
+       * solution given the pseudoranges from a number of satellites,
+       * using a RAIM-based algorithm to detect and exclude 'bad' data
+       * from the solution. Alternately, the user may compute a
+       * straightforward solution using all the input data, without
+       * the RAIM algorithm; this is done by first calling
+       * PreparePRSolution() and then SimplePRSolution().
+       *
+       * The class is able to use GPS and/or Glonass satellite data,
+       * and assumes that the Glonass ephemeris is in the GPS frame
+       * but the Glonass clocks are in the Glonass time frame. If the
+       * input data is mixed (both GPS and GLO) then the solution has
+       * a 5th element, namely the GPS-GLO time offset, as estimated
+       * by the algorithm. If the data is not mixed (either all-GPS or
+       * all-GLO), this element is zero and has no meaning. An all-GLO
+       * solution will have clock bias in Glonass time; otherwise it
+       * will be in GPS time.
+       * 
+       * Note that a problem can arise when processing a timeseries of
+       * mixed data by calling RAIMCompute at each epoch; it is
+       * possible that the RAIM algorithm may, at some epochs, happen
+       * to reject all the Glonass satellites or all the GPS
+       * satellites. In this case the GPS-GLO timeoffset is undefined
+       * (and returned as zero).
+       */
    class PRSolution
    {
    public:
          /// Constructor
-       PRSolution() throw() : RMSLimit(6.5),
-                             SlopeLimit(1000.),
-                             NSatsReject(-1),
-                             MaxNIterations(10),
-                             ConvergenceLimit(3.e-7),
-                             hasMemory(true),
-                             Valid(false)
-         {}
-      /// Return the status of solution
-      bool isValid() const throw() { return Valid; }
+      PRSolution() noexcept : RMSLimit(6.5),
+         SlopeLimit(1000.),
+         NSatsReject(-1),
+         MaxNIterations(10),
+         ConvergenceLimit(3.e-7),
+         hasMemory(true),
+         Valid(false)
+      {}
+         /// Return the status of solution
+      bool isValid() const noexcept { return Valid; }
 
-      // input parameters: -------------------------------------------------
+         // input parameters: -------------------------------------------------
 
-      /// RMS limit (m) on residual of fit
+         /// RMS limit (m) on residual of fit
       double RMSLimit;
 
-      /// Slope limit (dimensionless).
+         /// Slope limit (dimensionless).
       double SlopeLimit;
 
-      /// Maximum number of satellites that may be rejected in the RAIM algorithm;
-      /// if this = -1, as many as possible will be rejected (RAIM requires at least 5
-      /// satellites). A (single) non-RAIM solution can be obtained by setting this
-      /// to 0 before calling RAIMCompute().
+         /** Maximum number of satellites that may be rejected in the
+          * RAIM algorithm; if this = -1, as many as possible will be
+          * rejected (RAIM requires at least 5 satellites). A (single)
+          * non-RAIM solution can be obtained by setting this to 0
+          * before calling RAIMCompute(). */
       int NSatsReject;
 
-      /// Maximum number of iterations allowed in the linearized least squares
-      /// algorithm.
+         /** Maximum number of iterations allowed in the linearized
+          * least squares algorithm. */
       int MaxNIterations;
 
-      /// Convergence limit (m): continue iteration loop while RSS change in
-      /// solution exceeds this.
+         /** Convergence limit (m): continue iteration loop while RSS
+          * change in solution exceeds this. */
       double ConvergenceLimit;
 
-      /// vector<SatID> containing the satellite systems included in the solution. 
-      /// It should be defined before the first solution call; if it is empty at that
-      /// time it will be determined by the input SatelliteIDs. It is used to
-      /// determine which clock biases are included in the solution; ordering of this
-      /// vector determines ordering of the clock states in the RAIM solution:
-      /// Solution ~ X,Y,Z,(clks ~ SystemIDs). The SimplePRSolution is similarly
-      /// defined by the vector which is returned by that routine.
+         /** vector<SatID> containing the satellite systems included
+          * in the solution.  It should be defined before the first
+          * solution call; if it is empty at that time it will be
+          * determined by the input SatelliteIDs. It is used to
+          * determine which clock biases are included in the solution;
+          * ordering of this vector determines ordering of the clock
+          * states in the RAIM solution: Solution ~ X,Y,Z,(clks ~
+          * SystemIDs). The SimplePRSolution is similarly defined by
+          * the vector which is returned by that routine. */
       std::vector<SatID::SatelliteSystem> SystemIDs;
 
-      /// This determines whether this object will maintain a "memory" of all the
-      /// solutions it has computed. This is used for several things, including the
-      /// computation of pre-fit residuals, and thus of the aposteriori variance of
-      /// unit weight (APV), the number of data, solutions and degrees of freedom
-      /// and a combined weighted average solution.
+         /** This determines whether this object will maintain a
+          * "memory" of all the solutions it has computed. This is
+          * used for several things, including the computation of
+          * pre-fit residuals, and thus of the aposteriori variance of
+          * unit weight (APV), the number of data, solutions and
+          * degrees of freedom and a combined weighted average
+          * solution. */
       bool hasMemory;
 
-      // input and output: -------------------------------------------------
+         // input and output: -------------------------------------------------
 
-      /// vector<SatID> containing satellite IDs for all the satellites input, with
-      /// bad (excluded) ones identified by (Satellite[.] < 0). This vector is saved
-      /// after each call to the computation routines (SimplePRSolution and
-      /// RAIMCompute) and used for printing.
+         /** vector<SatID> containing satellite IDs for all the
+          * satellites input, with bad (excluded) ones identified by
+          * (Satellite[.] < 0). This vector is saved after each call to
+          * the computation routines (SimplePRSolution and RAIMCompute)
+          * and used for printing. */
       std::vector<SatID> SatelliteIDs;
 
-      // output: -------------------------------------------------
+         // output: -------------------------------------------------
 
-      /// Vector<double> containing the computed position solution (3 components,
-      /// ECEF in the frame of the ephemeris, meter), the receiver clock bias (m),
-      /// and the GPS-GLO time offset (m). In the case of GPS-only or GLO-only
-      /// data, the last element is zero and has no meaning. This vector is valid
-      /// only when isValid() is true.
-      /// If this vector is defined on input, it is used as an apriori position, both
-      /// to initialized the iterative algorithm, and to compute position residuals
-      /// after a good solution is found.
+         /** Vector<double> containing the computed position solution
+          * (3 components, ECEF in the frame of the ephemeris, meter),
+          * the receiver clock bias (m), and the GPS-GLO time offset
+          * (m). In the case of GPS-only or GLO-only data, the last
+          * element is zero and has no meaning. This vector is valid
+          * only when isValid() is true.  If this vector is defined on
+          * input, it is used as an apriori position, both to
+          * initialized the iterative algorithm, and to compute
+          * position residuals after a good solution is found. */
       Vector<double> Solution;
 
-      /// Matrix<double> containing the computed solution covariance (meter^2);
-      /// see doc. for Solution for the components; valid only when isValid() is true.
+         /** Matrix<double> containing the computed solution
+          * covariance (meter^2); see doc. for Solution for the
+          * components; valid only when isValid() is true. */
       Matrix<double> Covariance;
-
-      /// Matrix<double> containing the inverse measurement covariance matrix (m^-2)
-      /// that was used in computing the final solution.
+      
+         /** Matrix<double> containing the inverse measurement
+          * covariance matrix (m^-2) that was used in computing the
+          * final solution. */
       Matrix<double> invMeasCov;
 
-      /// Matrix<double> containing the partials matrix used in the final solution.
+         /** Matrix<double> containing the partials matrix used in the
+          * final solution. */
       Matrix<double> Partials;
 
-      /// The "memory" object, used only when hasMemory is true.
+         /// The "memory" object, used only when hasMemory is true.
       PRSMemory memory;
 
-      /// Prefit residuals; only valid if memory exists b/c it needs apriori solution.
-      /// Vector<double> of 'pre-fit' residuals, computed by the solution routines,
-      /// but only if APrioriSol is defined; equal to Partials*(Sol-APrioriSol)-Resid
-      /// where Resid is the data residual vector on the first iteration.
+         /** Prefit residuals; only valid if memory exists b/c it
+          * needs apriori solution.  Vector<double> of 'pre-fit'
+          * residuals, computed by the solution routines, but only if
+          * APrioriSol is defined; equal to
+          * Partials*(Sol-APrioriSol)-Resid where Resid is the data
+          * residual vector on the first iteration. */
       Vector<double> PreFitResidual;
 
-      /// Root mean square residual of fit (except when RMSDistanceFlag is set,
-      /// then RMS distance from apriori position); in meters.
+         /** Root mean square residual of fit (except when
+          * RMSDistanceFlag is set, then RMS distance from apriori
+          * position); in meters. */
       double RMSResidual;
 
-      /// Slope computed in the RAIM algorithm (largest of all satellite values)
-      /// for the returned solution, dimensionless.
+         /** Slope computed in the RAIM algorithm (largest of all
+          * satellite values) for the returned solution,
+          * dimensionless. */
       double MaxSlope;
 
-      /// DOPs computed in a call to DOPCompute() or outputString()
+         /// DOPs computed in a call to DOPCompute() or outputString()
       double TDOP,PDOP,GDOP;
 
-      /// the actual number of iterations used
+         /// the actual number of iterations used
       int NIterations;
 
-      /// the RSS change in solution at the end of iterations.
+         /// the RSS change in solution at the end of iterations.
       double Convergence;
 
-      /// the number of good satellites used in the final computation
+         /// the number of good satellites used in the final computation
       int Nsvs;
 
-      /// if true, the solution was constructed from a mixed dataset, including
-      /// both GPS and Glonass satellites. This means the Solution vector will have
-      /// length 5, with the last element being the estimated GPS-GLO time offset.
+         /** if true, the solution was constructed from a mixed
+          * dataset, including both GPS and Glonass satellites. This
+          * means the Solution vector will have length 5, with the
+          * last element being the estimated GPS-GLO time offset. */
       bool Mixed;
 
-      /// if true, the returned solution may be degraded because the tropospheric
-      /// correction was not applied to one or more satellites; applies after calls to
-      /// both SimplePRSolution() and RAIMCompute().
+         /** if true, the returned solution may be degraded because
+          * the tropospheric correction was not applied to one or more
+          * satellites; applies after calls to both SimplePRSolution()
+          * and RAIMCompute(). */
       bool TropFlag;
 
-      /// if true, the returned solution may be degraded because the RMS residual or
-      /// the slope is large; applies only after calls to RAIMCompute().
+         /** if true, the returned solution may be degraded because
+          * the RMS residual or the slope is large; applies only after
+          * calls to RAIMCompute(). */
       bool RMSFlag, SlopeFlag;
 
-      // member functions -------------------------------------------
+         // member functions -------------------------------------------
 
-      /// Compute the satellite position / corrected range matrix (SVP) which is used
-      /// by SimplePRSolution(). SVP is output, dimensioned (N,4) where N is the
-      /// number of satellites and the length of both Satellite and Pseudorange.
-      /// Data is ignored whenever Sats[i].id is < 0. NB caller should verify that the
-      /// number of good entries (Satellite[.] > 0) is > 4 before proceeding.
-      /// Even though this is a member function, it changes none of the member data.
-      /// @param Tr          input Measured time of reception of the data.
-      /// @param Sats        input std::vector<SatID> of satellites; satellites that
-      ///                     are to be excluded by the algorithm are marked by a
-      ///                     negative 'id' member; this call will mark satellites for
-      ///                     which there is no ephemeris.
-      /// @param Syss        std::vector<SatID::SatelliteSystem> of systems to be used
-      ///                     in the computation; determines order of clocks in Sol.
-      ///                     If empty, it will be filled with all systems in Sats.
-      /// @param Pseudorange input std::vector<double> of raw pseudoranges (parallel
-      ///                     to Sats), in meters
-      /// @param pEph        input pointer to gpstk::XvtStore<SatID> to be used
-      /// @param SVP         output gpstk::Matrix<double> of dimension (N,4), N is
-      ///                     the number of satellites in Sats[] (marked or not),
-      ///                     on output this contains the satellite positions at
-      ///                     transmit time (cols 0-2), the corrected pseudorange (1).
-      /// @return Return values:
-      ///  >= 0 number of good satellites found
-      /// -4    ephemeris not found for all the satellites
+         /** Compute the satellite position / corrected range matrix
+          * (SVP) which is used by SimplePRSolution(). SVP is output,
+          * dimensioned (N,4) where N is the number of satellites and
+          * the length of both Satellite and Pseudorange.  Data is
+          * ignored whenever Sats[i].id is < 0. NB caller should
+          * verify that the number of good entries (Satellite[.] > 0)
+          * is > 4 before proceeding.  Even though this is a member
+          * function, it changes none of the member data.
+          * @param Tr          input Measured time of reception of the data.
+          * @param Sats input std::vector<SatID> of satellites;
+          *                     satellites that are to be excluded by
+          *                     the algorithm are marked by a negative
+          *                     'id' member; this call will mark
+          *                     satellites for which there is no
+          *                     ephemeris.
+          * @param Syss std::vector<SatID::SatelliteSystem> of systems
+          *                     to be used in the computation;
+          *                     determines order of clocks in Sol.  If
+          *                     empty, it will be filled with all
+          *                     systems in Sats.
+          * @param Pseudorange input std::vector<double> of raw
+          *                     pseudoranges (parallel to Sats), in
+          *                     meters
+          * @param pEph        input pointer to gpstk::XvtStore<SatID> to be
+          *                     used
+          * @param SVP output gpstk::Matrix<double> of dimension
+          *                     (N,4), N is the number of satellites
+          *                     in Sats[] (marked or not), on output
+          *                     this contains the satellite positions
+          *                     at transmit time (cols 0-2), the
+          *                     corrected pseudorange (1).
+          * @return Return values:
+          *  >= 0 number of good satellites found
+          * -4    ephemeris not found for all the satellites */
       int PreparePRSolution(const CommonTime& Tr,
                             std::vector<SatID>& Sats,
                             std::vector<SatID::SatelliteSystem>& Syss,
                             const std::vector<double>& Pseudorange,
                             const XvtStore<SatID> *pEph,
-                            Matrix<double>& SVP) const throw();
+                            Matrix<double>& SVP) const noexcept;
 
-      /// Compute a single autonomous pseudorange solution.
-      /// On output, all the member data is filled with results.
-      /// Input only (first 3 should be just as returned from PreparePRSolution()):
-      /// @param Tr          const. Measured time of reception of the data.
-      ///                     On output member currTime set to this.
-      /// @param Sats        const std::vector<SatID> of satellites. Satellites
-      ///                     that are to be excluded by the algorithm are marked by a
-      ///                     negative 'id' member. Length N.
-      ///                     On output member SatelliteIDs set to this.
-      /// @param SVP         const Matrix<double> of dimension (N,5) contains sat.
-      ///                     direction cosines and corrected pseudorange data.
-      /// @param invMC       const gpstk::Matrix<double> NXN measurement covariance
-      ///                     matrix inverse (meter^-2) of the pseudorange data (for N
-      ///                     see Sats). If this matrix has dimension 0, no weighting
-      ///                     of the data is done.
-      /// @param pTropModel  pointer to a gpstk::TropModel for trop correction.
-      /// @param niterLimit  integer limit on the number of iterations. On output,
-      ///                     member NIterations = number of iterations actually used.
-      /// @param convLimit   double convergence criterion, = RSS change in solution,
-      ///                     in meters. On output, member Convergence = final value.
-      /// @param Syss        std::vector<SatID::SatelliteSystem> of systems to be used
-      ///                     in the computation. On output, systems actually used
-      ///                     stored in member SystemIDs; this determines order of
-      ///                     clock biases in Solution.
-      /// Output:  (these will be resized within the function)
-      /// @param Resids      gpstk::Vector<double> post-fit range residuals for each
-      ///                     satellite (m), the length of this Vector is the number
-      ///                     of satellites actually used (see Sats).
-      /// @param Slopes      gpstk::Vector<double> slope value used in RAIM for each
-      ///                     good satellite, length m.
-      /// @return Return values:
-      ///  0  ok      (but check TropFlag to see if trop. correction was not applied)
-      /// -1  failed to converge
-      /// -2  singular problem
-      /// -3  not enough good data to form a solution (at least 4 satellites required)
+         /** Compute a single autonomous pseudorange solution.  On
+          * output, all the member data is filled with results.  Input
+          * only (first 3 should be just as returned from
+          * PreparePRSolution()):
+          * @param Tr          const. Measured time of reception of the data.
+          *                     On output member currTime set to this.
+          * @param Sats const std::vector<SatID> of
+          *                     satellites. Satellites that are to be
+          *                     excluded by the algorithm are marked
+          *                     by a negative 'id' member. Length N.
+          *                     On output member SatelliteIDs set to
+          *                     this.
+          * @param SVP const Matrix<double> of dimension (N,5)
+          *                     contains sat.  direction cosines and
+          *                     corrected pseudorange data.
+          * @param invMC const gpstk::Matrix<double> NXN measurement
+          *                     covariance matrix inverse (meter^-2)
+          *                     of the pseudorange data (for N see
+          *                     Sats). If this matrix has dimension 0,
+          *                     no weighting of the data is done.
+          * @param pTropModel pointer to a gpstk::TropModel for trop
+          *                    correction.
+          * @param niterLimit integer limit on the number of
+          *                     iterations. On output, member
+          *                     NIterations = number of iterations
+          *                     actually used.
+          * @param convLimit double convergence criterion, = RSS
+          *                     change in solution, in meters. On
+          *                     output, member Convergence = final
+          *                     value.
+          * @param Syss std::vector<SatID::SatelliteSystem> of systems
+          *                     to be used in the computation. On
+          *                     output, systems actually used stored
+          *                     in member SystemIDs; this determines
+          *                     order of clock biases in Solution.
+          * Output:  (these will be resized within the function)
+          * @param Resids gpstk::Vector<double> post-fit range
+          *                     residuals for each satellite (m), the
+          *                     length of this Vector is the number of
+          *                     satellites actually used (see Sats).
+          * @param Slopes gpstk::Vector<double> slope value used in
+          *                     RAIM for each good satellite, length
+          *                     m.
+          * @return Return values:
+          *  0   ok (but check TropFlag to see if trop. correction was
+          *      not applied)
+          * -1  failed to converge
+          * -2  singular problem
+          * -3  not enough good data to form a solution (at least 4
+          *     satellites required)
+          * @throw Exception
+          */
       int SimplePRSolution(const CommonTime& Tr,
                            const std::vector<SatID>& Sats,
                            const Matrix<double>& SVP,
@@ -581,109 +654,127 @@ namespace gpstk
                            const double& convLimit,
                            const std::vector<SatID::SatelliteSystem>& Syss,
                            Vector<double>& Resids,
-                           Vector<double>& Slopes) throw(Exception);
+                           Vector<double>& Slopes);
 
-      /// Simple interface for RAIMCompute.
-      /// To be deprecated once the additional two variables are exposed in swig.
+         /** Simple interface for RAIMCompute.  To be deprecated once
+          * the additional two variables are exposed in swig.
+          * @throw Exception
+          */
       int RAIMComputeSimple(const CommonTime& Tr,
-                      std::vector<SatID>& Satellites,
-                      const std::vector<double>& Pseudorange,
-                      const XvtStore<SatID> *pEph,
-                      TropModel *pTropModel)
-         throw(Exception);
+                            std::vector<SatID>& Satellites,
+                            const std::vector<double>& Pseudorange,
+                            const XvtStore<SatID> *pEph,
+                            TropModel *pTropModel);
 
-      /// Compute a position/time solution, given satellite PRNs and pseudoranges
-      /// using a RAIM algorithm. This is the main computation done by this class.
-      /// @param Tr          Measured time of reception of the data.
-      /// @param Satellites  std::vector<SatID> of satellites; on successful
-      ///                    return, satellites that were excluded by the algorithm
-      ///                    are marked by a negative 'id' member.
-      /// @param Systems     std::vector<SatID::SatelliteSystem> of systems to be
-      ///                     allowed in the computation. On output, systems actually
-      ///                     used are stored in member SystemIDs; this determines
-      ///                     the order of clock biases in Solution and Covariance.
-      /// @param Pseudorange std::vector<double> of raw pseudoranges (parallel to
-      ///                    Satellite), in meters.
-      /// @param invMC       gpstk::Matrix<double> NXN measurement covariance matrix
-      ///                     inverse (meter^-2) of the pseudorange data (for N
-      ///                     see Sats). If this matrix has dimension 0, no weighting
-      ///                     of the data is done.
-      /// @param pEph        pointer to gpstk::XvtStore to be used in the algorithm.
-      /// @param pTropModel  pointer to gpstk::TropModel for trop correction.
-      /// @return Return values:
-      ///  1  solution is ok, but may be degraded; check TropFlag, RMSFlag, SlopeFlag
-      ///  0  ok
-      /// -1  algorithm failed to converge
-      /// -2  singular problem, no solution is possible
-      /// -3  not enough good data (> 4) to form a (RAIM) solution
-      ///     (the 4 satellite solution might be ok)
-      /// -4  ephemeris not found for all the satellites
+         /** Compute a position/time solution, given satellite PRNs
+          * and pseudoranges using a RAIM algorithm. This is the main
+          * computation done by this class.
+          * @param Tr          Measured time of reception of the data.
+          * @param Satellites std::vector<SatID> of satellites; on
+          *                    successful return, satellites that were
+          *                    excluded by the algorithm are marked by
+          *                    a negative 'id' member.
+          * @param Systems std::vector<SatID::SatelliteSystem> of
+          *                     systems to be allowed in the
+          *                     computation. On output, systems
+          *                     actually used are stored in member
+          *                     SystemIDs; this determines the order
+          *                     of clock biases in Solution and
+          *                     Covariance.
+          * @param Pseudorange std::vector<double> of raw pseudoranges
+          *                    (parallel to Satellite), in meters.
+          * @param invMC gpstk::Matrix<double> NXN measurement
+          *                     covariance matrix inverse (meter^-2)
+          *                     of the pseudorange data (for N see
+          *                     Sats). If this matrix has dimension 0,
+          *                     no weighting of the data is done.
+          * @param pEph pointer to gpstk::XvtStore to be used in the
+          *                     algorithm.
+          * @param pTropModel  pointer to gpstk::TropModel for trop correction.
+          * @return Return values:
+          *  1  solution is ok, but may be degraded; check TropFlag,
+          *     RMSFlag, SlopeFlag
+          *  0  ok
+          * -1  algorithm failed to converge
+          * -2  singular problem, no solution is possible
+          * -3  not enough good data (> 4) to form a (RAIM) solution
+          *     (the 4 satellite solution might be ok)
+          * -4  ephemeris not found for all the satellites 
+          * @throw Exception
+          */
       int RAIMCompute(const CommonTime& Tr,
                       std::vector<SatID>& Satellites,
                       std::vector<SatID::SatelliteSystem>& Systems,
                       const std::vector<double>& Pseudorange,
                       const Matrix<double>& invMC,
                       const XvtStore<SatID> *pEph,
-                      TropModel *pTropModel)
-         throw(Exception);
+                      TropModel *pTropModel);
 
-      /// Compute DOPs using the partials matrix from the last successful solution.
-      /// RAIMCompute(), if successful, calls this before returning.
-      /// Results stored in PRSolution::TDOP,PDOP,GDOP.
-      int DOPCompute(void) throw(Exception);
+         /** Compute DOPs using the partials matrix from the last
+          * successful solution.  RAIMCompute(), if successful, calls
+          * this before returning.  Results stored in
+          * PRSolution::TDOP,PDOP,GDOP.
+          * @throw Exception
+          */
+      int DOPCompute(void);
 
-      /// conveniences for printing the results of the pseudorange solution algorithm
-      /// return string of position, error code and V/NV
+         /** conveniences for printing the results of the pseudorange
+          * solution algorithm return string of position, error code
+          * and V/NV */
       std::string outputPOSString(std::string tag, int iret=-99,
-                                    const Vector<double>& Vec=PRSNullVector) throw();
+                                  const Vector<double>& Vec=PRSNullVector)
+         noexcept;
 
-      /// return string of {SYS clock} for all systems, error code and V/NV
-      std::string outputCLKString(std::string tag, int iret=-99) throw();
+         /// return string of {SYS clock} for all systems, error code and V/NV
+      std::string outputCLKString(std::string tag, int iret=-99) noexcept;
 
-      /// return string of info in POS and CLK
+         /// return string of info in POS and CLK
       std::string outputNAVString(std::string tag, int iret=-99,
-                                    const Vector<double>& Vec=PRSNullVector) throw();
+                                  const Vector<double>& Vec=PRSNullVector)
+         noexcept;
 
-      /// return string of Nsvs, RMS residual, TDOP, PDOP, GDOP, Slope, niter, conv,
-      /// satellites, error code and V/NV
-      std::string outputRMSString(std::string tag, int iret=-99) throw();
-      std::string outputValidString(int iret=-99) throw();
+         /** return string of Nsvs, RMS residual, TDOP, PDOP, GDOP,
+          * Slope, niter, conv, satellites, error code and V/NV */
+      std::string outputRMSString(std::string tag, int iret=-99) noexcept;
+      std::string outputValidString(int iret=-99) noexcept;
 
-      /// return string of NAV and RMS strings
+         /// return string of NAV and RMS strings
       std::string outputString(std::string tag, int iret=-99,
-                               const Vector<double>& Vec=PRSNullVector) throw();
-      /// return string of the form "#tag label etc" which is header for data strings
-      std::string outputStringHeader(std::string tag) throw()
-         { return outputString(tag,-999); }
+                               const Vector<double>& Vec=PRSNullVector)
+         noexcept;
+         /** return string of the form "#tag label etc" which is
+          * header for data strings */
+      std::string outputStringHeader(std::string tag) noexcept
+      { return outputString(tag,-999); }
 
-      /// A convenience for printing the error code (return value)
-      std::string errorCodeString(int iret) throw();
+         /// A convenience for printing the error code (return value)
+      std::string errorCodeString(int iret) noexcept;
 
-      /// A convenience for printing the current configuarion
-      std::string configString(std::string tag) throw();
+         /// A convenience for printing the current configuarion
+      std::string configString(std::string tag) noexcept;
 
-      /// Set current time
+         /// Set current time
 
-      void setTime(const CommonTime& ct) throw()
-         { currTime = ct; }
+      void setTime(const CommonTime& ct) noexcept
+      { currTime = ct; }
 
    private:
 
-      /// flag: output content is valid.
+         /// flag: output content is valid.
       bool Valid;
 
-      /// time tag of the current solution
+         /// time tag of the current solution
       CommonTime currTime;
 
-      /// time formats used in prints
+         /// time formats used in prints
       static const std::string calfmt,gpsfmt,timfmt;
 
-      /// empty vector used to detect default
+         /// empty vector used to detect default
       static const Vector<double> PRSNullVector;
 
    }; // end class PRSolution
 
-   //@}
+      //@}
 
 } // namespace gpstk
 

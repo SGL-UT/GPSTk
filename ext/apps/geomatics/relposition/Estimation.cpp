@@ -71,33 +71,31 @@ using namespace gpstk;
 using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
-void BuildStochasticModel(int count, Namelist& DNL, Matrix<double>& MCov)
-   throw(Exception);                                        // in StochasticModels.cpp
+void BuildStochasticModel(int count, Namelist& DNL, Matrix<double>& MCov);
+   // in StochasticModels.cpp
 
 // prototypes -- this module only
    // called by ConfigureEstimation(), which is Configure(3)
-void DefineStateVector(void) throw(Exception);
+void DefineStateVector(void);
 string ComposeName(const string& site1, const string& site2,
-                   const GSatID& sat1, const GSatID& sat2) throw(Exception);
-string ComposeName(const DDid& ddid) throw(Exception);
+                   const GSatID& sat1, const GSatID& sat2);
+string ComposeName(const DDid& ddid);
 void DecomposeName(const string& label, string& site1, string& site2,
-                    GSatID& sat1, GSatID& sat2) throw(Exception);
+                    GSatID& sat1, GSatID& sat2);
    // called by Estimation() -- inside the loop
-int EditDDdata(int n) throw(Exception);
-int ModifyState(int n) throw(Exception);
-int InitializeEstimator(void) throw(Exception);
-int aPrioriConstraints(void) throw(Exception);
-int FillDataVector(int count) throw(Exception);
-void EvaluateLSEquation(int n, Vector<double>& X,Vector<double>& f,Matrix<double>& P)
-   throw(Exception);
-int MeasurementUpdate(Matrix<double>& P, Vector<double>& f, Matrix<double>& MC)
-   throw(Exception);
-int Solve(void) throw(Exception);
-int UpdateNominalState(void) throw(Exception);
-void OutputIterationResults(bool final) throw(Exception);
-int IterationControl(int iter_n) throw(Exception);
-void OutputFinalResults(int iret) throw(Exception);
-double RMSResidualOfFit(int N, Vector<double>& dX, bool final=false) throw(Exception);
+int EditDDdata(int n);
+int ModifyState(int n);
+int InitializeEstimator(void);
+int aPrioriConstraints(void);
+int FillDataVector(int count);
+void EvaluateLSEquation(int n, Vector<double>& X,Vector<double>& f,Matrix<double>& P);
+int MeasurementUpdate(Matrix<double>& P, Vector<double>& f, Matrix<double>& MC);
+int Solve(void);
+int UpdateNominalState(void);
+void OutputIterationResults(bool final);
+int IterationControl(int iter_n);
+void OutputFinalResults(int iret);
+double RMSResidualOfFit(int N, Vector<double>& dX, bool final=false);
 
 //------------------------------------------------------------------------------------
 // local data
@@ -153,7 +151,7 @@ static Vector<double> NominalState;// save the nominal state to output with solu
 //    endif
 // end loop over data epochs
 // invert to get solution
-int Estimation(void) throw(Exception)
+int Estimation(void)
 {
 try {
    if(CI.Verbose) oflog << "BEGIN Estimation()"
@@ -283,7 +281,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 //------------------------------------------------------------------------------------
 // called by Configure(3)
-int ConfigureEstimation(void) throw(Exception)
+int ConfigureEstimation(void)
 {
 try {
    if(CI.Verbose) oflog << "BEGIN ConfigureEstimation()"
@@ -319,7 +317,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 //------------------------------------------------------------------------------------
 // called by ConfigureEstimation()
-void DefineStateVector(void) throw(Exception)
+void DefineStateVector(void)
 {
 try {
       // set up the names of the state vector
@@ -401,7 +399,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // called by Estimation() - inside the iteration loop
 // currently, n is not used...
 // currently does nothing but print stats on the residuals
-int EditDDdata(int n) throw(Exception)
+int EditDDdata(int n)
 {
 try {
    int k;
@@ -456,7 +454,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 //------------------------------------------------------------------------------------
 // called by Estimation() - inside the iteration loop
-int ModifyState(int niter) throw(Exception)
+int ModifyState(int niter)
 {
 try {
    int j,k;
@@ -515,7 +513,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 //------------------------------------------------------------------------------------
 // called by Estimation() - inside the iteration loop
 // actually fixes the biases
-int InitializeEstimator(void) throw(Exception)
+int InitializeEstimator(void)
 {
 try {
    int i;
@@ -570,7 +568,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 //------------------------------------------------------------------------------------
 // called by Estimation() - inside the iteration loop
-int aPrioriConstraints(void) throw(Exception)
+int aPrioriConstraints(void)
 {
 try {
       // add initial constraints
@@ -746,7 +744,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 //------------------------------------------------------------------------------------
 // called by Estimation() - inside the data loop, inside the iteration loop
-int FillDataVector(int count) throw(Exception)
+int FillDataVector(int count)
 {
 try {
    int i,j;
@@ -795,7 +793,6 @@ void EvaluateLSEquation(int count,              // count of current epoch
                         Vector<double>& X,      // nominal state (input)
                         Vector<double>& f,      // function f(X) at count (output)
                         Matrix<double>& P)      // partials at X at count (output)
-   throw(Exception)
 {
 try {
    int i,j,k,n,ntrop;
@@ -963,7 +960,6 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 //------------------------------------------------------------------------------------
 // called by Estimation() - inside the data loop, inside the iteration loop
 int MeasurementUpdate(Matrix<double>& P, Vector<double>& f, Matrix<double>& MC)
-   throw(Exception)
 {
 try {
 
@@ -978,7 +974,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 //------------------------------------------------------------------------------------
 // called by Estimation() - inside the iteration loop
-int Solve(void) throw(Exception)
+int Solve(void)
 {
 try {
 
@@ -999,7 +995,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 //------------------------------------------------------------------------------------
 // called by Estimation() - inside the iteration loop
-int UpdateNominalState(void) throw(Exception)
+int UpdateNominalState(void)
 {
 try {
    int i,j,k;
@@ -1048,7 +1044,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 //------------------------------------------------------------------------------------
 // called by Estimation() - inside the iteration loop
-void OutputIterationResults(bool final) throw(Exception)
+void OutputIterationResults(bool final)
 {
 try {
    int j,N=dX.size();
@@ -1130,7 +1126,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 //         1   reached convergence and don't fix biases
 //         2   reached last iteration and don't fix biases
 //         4   1 and/or 2 and fix biases, i.e. fix the biases then quit
-int IterationControl(int iter_n) throw(Exception)
+int IterationControl(int iter_n)
 {
 try {
    int done=0;
@@ -1192,7 +1188,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 string ComposeName(const string& site1,
                    const string& site2,
                    const GSatID& sat1,
-                   const GSatID& sat2) throw(Exception)
+                   const GSatID& sat2)
 {
 try {
    return ( site1 + string("-") + site2 + string("_")
@@ -1203,7 +1199,7 @@ catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_T
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 //------------------------------------------------------------------------------------
-string ComposeName(const DDid& ddid) throw(Exception)
+string ComposeName(const DDid& ddid)
 {
 try {
    if(ddid.ssite > 0) {
@@ -1228,7 +1224,7 @@ void DecomposeName(const string& label,
                    string& site1,
                    string& site2,
                    GSatID& sat1,
-                   GSatID& sat2) throw(Exception)
+                   GSatID& sat2)
 {
 try {
    string copy=label;
@@ -1248,7 +1244,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-void OutputFinalResults(int iret) throw(Exception)
+void OutputFinalResults(int iret)
 {
 try {
    int j,k,len;
@@ -1384,7 +1380,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-double RMSResidualOfFit(int N, Vector<double>& dX, bool final) throw(Exception)
+double RMSResidualOfFit(int N, Vector<double>& dX, bool final)
 {
 try {
    int i,j,nd,cnt;

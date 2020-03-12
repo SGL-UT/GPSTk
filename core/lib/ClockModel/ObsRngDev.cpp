@@ -261,7 +261,7 @@ namespace gpstk
    }
 
    std::ostream& operator<<(std::ostream& s, const ObsRngDev& ord)
-      throw()
+      noexcept
    {
       std::ios::fmtflags oldFlags = s.flags();
       s << "t=" << printTime(ord.obstime,"%Y/%03j %02H:%02M:%04.1f")

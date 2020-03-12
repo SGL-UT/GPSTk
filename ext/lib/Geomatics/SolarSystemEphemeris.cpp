@@ -56,7 +56,7 @@ using namespace gpstk::StringUtils;
 
 namespace gpstk {
 //------------------------------------------------------------------------------------
-void SolarSystemEphemeris::readASCIIheader(string filename) throw(Exception)
+void SolarSystemEphemeris::readASCIIheader(string filename)
 {
 try {
    //cout << "Reporting in SolarSystemEphemeris is "
@@ -211,10 +211,10 @@ try {
 catch(Exception& e) { GPSTK_RETHROW(e); }
 catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
-}  // end void SolarSystemEphemeris::readASCIIheader(string filename) throw(Exception)
+}  // end void SolarSystemEphemeris::readASCIIheader(string filename)
 
 //------------------------------------------------------------------------------------
-int SolarSystemEphemeris::readASCIIdata(vector<string>& filenames) throw(Exception)
+int SolarSystemEphemeris::readASCIIdata(vector<string>& filenames)
 {
 try {
    int i,n;
@@ -264,7 +264,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }  // end int SolarSystemEphemeris::readASCIIdata(vector<string>& filenames)
 
 //------------------------------------------------------------------------------------
-int SolarSystemEphemeris::readASCIIdata(string filename) throw(Exception)
+int SolarSystemEphemeris::readASCIIdata(string filename)
 {
 try {
    if(EphemerisNumber < 0) {
@@ -343,10 +343,10 @@ try {
 catch(Exception& e) { GPSTK_RETHROW(e); }
 catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
-}  // end int SolarSystemEphemeris::readASCIIdata(string filename) throw(Exception)
+}  // end int SolarSystemEphemeris::readASCIIdata(string filename)
 
 //------------------------------------------------------------------------------------
-int SolarSystemEphemeris::writeASCIIheader(ostream& os) throw(Exception)
+int SolarSystemEphemeris::writeASCIIheader(ostream& os)
 {
 try {
    if(EphemerisNumber < 0) return -4;
@@ -432,7 +432,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int SolarSystemEphemeris::writeASCIIdata(ostream& os) throw(Exception)
+int SolarSystemEphemeris::writeASCIIdata(ostream& os)
 {
 try {
    if(EphemerisNumber < 0) return -4;
@@ -475,7 +475,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int SolarSystemEphemeris::writeBinaryFile(string filename) throw(Exception)
+int SolarSystemEphemeris::writeBinaryFile(string filename)
 {
 try {
    int i,recLength;
@@ -599,7 +599,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int SolarSystemEphemeris::readBinaryFile(string filename) throw(Exception)
+int SolarSystemEphemeris::readBinaryFile(string filename)
 {
 try {
    int iret;
@@ -617,7 +617,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int SolarSystemEphemeris::initializeWithBinaryFile(string filename) throw(Exception)
+int SolarSystemEphemeris::initializeWithBinaryFile(string filename)
 {
 try {
    int iret;
@@ -649,7 +649,6 @@ void SolarSystemEphemeris::RelativeInertialPositionVelocity(const double MJD,
                                                 SolarSystemEphemeris::Planet target,
                                                 SolarSystemEphemeris::Planet center,
                                                 double pv[6], bool kilometers)
-   throw(Exception)
 {
 try {
    int iret,i;
@@ -756,7 +755,6 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 //------------------------------------------------------------------------------------
 // private
 void SolarSystemEphemeris::writeBinary(ofstream& strm, const char *ptr, size_t size)
-   throw(Exception)
 {
 try {
    strm.write(ptr,size);
@@ -772,7 +770,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 //------------------------------------------------------------------------------------
 // private
-void SolarSystemEphemeris::readBinary(char *ptr, size_t size) throw(Exception)
+void SolarSystemEphemeris::readBinary(char *ptr, size_t size)
 {
 try {
    istrm.read(ptr,size);
@@ -788,7 +786,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 //------------------------------------------------------------------------------------
 // private
-void SolarSystemEphemeris::readBinaryHeader(std::string filename) throw(Exception)
+void SolarSystemEphemeris::readBinaryHeader(std::string filename)
 {
 try {
    int i,DENUM,recLength;
@@ -936,7 +934,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 //------------------------------------------------------------------------------------
 // private
 // return 0 ok, or -4 EphemerisNumber is not defined
-int SolarSystemEphemeris ::readBinaryData(bool save) throw(Exception)
+int SolarSystemEphemeris ::readBinaryData(bool save)
 {
 try {
    // has the header been read?
@@ -994,7 +992,6 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // -4 EphemerisNumber is not defined
 // For -3,-4 : initializeWithBinaryFile() has not been called, or reading failed.
 int SolarSystemEphemeris::readBinaryRecord(vector<double>& data_vector)
-   throw(Exception)
 {
 try {
    if(!istrm) return -3;
@@ -1026,7 +1023,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // -3 stream is not open or not good, or EOF was found prematurely
 // -4 EphemerisNumber is not defined
 // For -3,-4 : initializeWithBinaryFile() has not been called, or reading failed.
-int SolarSystemEphemeris ::seekToJD(double JD) throw(Exception)
+int SolarSystemEphemeris ::seekToJD(double JD)
 {
 try {
    if(!istrm) return -3;
@@ -1063,7 +1060,6 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // private
 void SolarSystemEphemeris::InertialPositionVelocity(const double MJD,
                                   SolarSystemEphemeris::computeID which, double PV[6])
-   throw(Exception)
 {
 try {
    int i,j,i0,ncomp,offset;

@@ -56,9 +56,10 @@ namespace gpstk
          /// Default constructor
       CNavISC();
   
-        /// Need description here...
-      CNavISC(const PackedNavBits& message30)
-         throw( InvalidParameter);
+         /**
+          * @throw InvalidParameter
+          */
+      CNavISC(const PackedNavBits& message30);
       
          /// Destructor
       virtual ~CNavISC() {}
@@ -75,8 +76,7 @@ namespace gpstk
           * @param message30 - 300 bits of Message Type 30
           * @throw InvalidParameter if message data is invalid
           */
-      void loadData(const PackedNavBits& message30)
-         throw(gpstk::InvalidParameter); 
+      void loadData(const PackedNavBits& message30);
 
       virtual std::string getName() const
       {
@@ -88,8 +88,10 @@ namespace gpstk
          return "Civilian Navigation (CNAV) Group Delay and ISC";
       }
       
-      virtual void dumpBody(std::ostream& s = std::cout) const
-         throw( InvalidRequest );
+         /**
+          * @throw InvalidRequest
+          */
+      virtual void dumpBody(std::ostream& s = std::cout) const;
 
       double Tgd;
       double ISC_L1CA;

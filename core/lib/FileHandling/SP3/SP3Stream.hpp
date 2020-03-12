@@ -72,8 +72,10 @@ namespace gpstk
          /// destructor; override to force 'close'
       virtual ~SP3Stream();
 
-         /// override close() to write EOF line
-      virtual void close(void) throw(Exception);
+         /** override close() to write EOF line
+          * @throw Exception
+          */
+      virtual void close(void);
 
          /** override open() to reset the header
           * @param[in] filename the name of the ASCII SP3 format file

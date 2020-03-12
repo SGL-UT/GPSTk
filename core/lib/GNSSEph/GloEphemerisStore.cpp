@@ -167,7 +167,7 @@ namespace gpstk
 
 
    Xvt GloEphemerisStore::computeXvt(const SatID& sat,
-                                     const CommonTime& epoch) const throw()
+                                     const CommonTime& epoch) const noexcept
    {
       Xvt rv;
       rv.health = Xvt::HealthStatus::Unavailable;
@@ -247,7 +247,7 @@ namespace gpstk
 
    Xvt::HealthStatus GloEphemerisStore::getSVHealth(const SatID& sat,
                                                     const CommonTime& epoch)
-      const throw()
+      const noexcept
    {
       Xvt::HealthStatus rv = Xvt::HealthStatus::Unavailable;
       try

@@ -61,7 +61,6 @@ namespace gpstk
    //----------------------------------------------------------------
    DiffCorrBase::DiffCorrBase(const PackedNavBits& msg,
                             const unsigned startBit)
-      throw(InvalidParameter)
    {
       try
       {
@@ -76,7 +75,6 @@ namespace gpstk
    //----------------------------------------------------------------
    void DiffCorrBase::loadData(const PackedNavBits& msg, 
                             const unsigned startBit)
-         throw(InvalidParameter)
    {
       dcDataType = dtUnknown;
       dataLoadedFlag = false;
@@ -174,7 +172,6 @@ namespace gpstk
 
    //----------------------------------------------------------------
    void DiffCorrBase::dump(std::ostream& s) const
-         throw(InvalidRequest)
    {
       if (!dataLoadedFlag)
       {

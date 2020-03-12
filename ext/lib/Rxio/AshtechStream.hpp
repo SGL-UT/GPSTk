@@ -90,7 +90,7 @@ namespace gpstk
       }
 
          /// Ashtech data is always big endian
-      virtual bool isStreamLittleEndian() const throw()
+      virtual bool isStreamLittleEndian() const noexcept
       { return false; }
 
    }; // class AshtechStream

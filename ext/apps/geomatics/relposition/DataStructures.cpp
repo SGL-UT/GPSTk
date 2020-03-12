@@ -53,7 +53,7 @@ using namespace std;
 using namespace gpstk;
 
 //------------------------------------------------------------------------------------
-Station& findStationInList(map<string,Station>& SL, string& label) throw(Exception)
+Station& findStationInList(map<string,Station>& SL, string& label)
 {
 try {
    map<string,Station>::const_iterator it;
@@ -70,7 +70,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-Station::Station(void) throw()
+Station::Station(void) noexcept
 {
    fixed = usePRS = false;
    temp = press = rhumid = 0.0;
@@ -81,13 +81,13 @@ Station::Station(void) throw()
 }
 
 //------------------------------------------------------------------------------------
-Station::~Station(void) throw()
+Station::~Station(void) noexcept
 {
    delete pTropModel;
 }
 
 //------------------------------------------------------------------------------------
-ObsFile::ObsFile(void) throw()
+ObsFile::ObsFile(void) noexcept
 {
    name = string("");
    label = string("");
@@ -101,7 +101,7 @@ ObsFile::ObsFile(void) throw()
 }
 
 //------------------------------------------------------------------------------------
-ObsFile& ObsFile::operator=(const ObsFile& of) throw()
+ObsFile& ObsFile::operator=(const ObsFile& of) noexcept
 {
    name = of.name;
    label = of.label;
@@ -116,7 +116,7 @@ ObsFile& ObsFile::operator=(const ObsFile& of) throw()
 }
 
 //------------------------------------------------------------------------------------
-ObsFile::ObsFile(const ObsFile& of) throw()
+ObsFile::ObsFile(const ObsFile& of) noexcept
 {
    *this = of;
 }

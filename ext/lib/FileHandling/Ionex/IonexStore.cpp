@@ -58,7 +58,6 @@ namespace gpstk
 
       // Load the given IONEX file
    void IonexStore::loadFile( const std::string& filename )
-      throw(FileMissingException)
    {
 
       try
@@ -115,7 +114,7 @@ namespace gpstk
 
       // Insert a new IonexData object into the store
    void IonexStore::addMap(const IonexData& iod)
-      throw()
+      noexcept
    {
 
       CommonTime t(iod.time);
@@ -149,7 +148,7 @@ namespace gpstk
        */
    void IonexStore::dump( std::ostream& s,
                           short detail ) const
-      throw()
+      noexcept
    {
 
       s << "IonexStore dump() function" << std::endl;
@@ -239,7 +238,7 @@ namespace gpstk
 
       // Remove all data
    void IonexStore::clear()
-      throw()
+      noexcept
    {
 
       inxMaps.clear();
@@ -278,7 +277,6 @@ namespace gpstk
    Triple IonexStore::getIonexValue( const CommonTime& t,
                                      const Position& RX,
                                      int strategy ) const
-      throw(InvalidRequest)
    {
 
          // Here we store the necessary IONEX-extracted values 
@@ -457,7 +455,6 @@ namespace gpstk
    double IonexStore::getSTEC( const double& elevation,
                                const double& tecval,
                                const std::string& ionoMapType ) const
-      throw (InvalidParameter)
    {
 
       if (tecval < 0)
@@ -504,7 +501,6 @@ namespace gpstk
                                const double& tecval,
                                const double& freq,
                                const std::string& ionoMapType ) const
-      throw (InvalidParameter)
    {
 
       if (tecval < 0)
@@ -622,7 +618,6 @@ namespace gpstk
        */
    double IonexStore::findDCB( const SatID sat,
                                const CommonTime& time ) const
-      throw(InvalidRequest)
    {
 
          // current time check. This is passed even if there are gaps

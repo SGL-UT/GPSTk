@@ -117,22 +117,22 @@ namespace gpstk
 
          /// deprecated; use GPSEphemeris, GPS-only.
          /// Converts Rinex3NavData to an EngEphemeris object.
-      operator EngEphemeris() const throw();
+      operator EngEphemeris() const noexcept;
 
          /// Converts Rinex3NavData to a GPSEphemeris object.
-      operator GPSEphemeris() const throw();
+      operator GPSEphemeris() const noexcept;
 
          /// Converts this Rinex3NavData to a GloEphemeris object.
-      operator GloEphemeris() const throw();
+      operator GloEphemeris() const noexcept;
 
          /// Converts Rinex3NavData to a GalEphemeris object.
-      operator GalEphemeris() const throw();
+      operator GalEphemeris() const noexcept;
 
          /// Converts Rinex3NavData to a BDSEphemeris object.
-      operator BDSEphemeris() const throw();
+      operator BDSEphemeris() const noexcept;
 
          /// Converts Rinex3NavData to a QZSEphemeris object.
-      operator QZSEphemeris() const throw();
+      operator QZSEphemeris() const noexcept;
 
          /// Converts the (non-CommonTime) data to an easy list
          /// for comparison operators.
@@ -245,33 +245,36 @@ namespace gpstk
 
          /** Parses string \a currentLine to obtain PRN id and epoch.
           *  @param strm RINEX Nav stream
+          * @throw StringUtils::StringException
+          * @throw FFStreamError
           */
-      void getPRNEpoch(Rinex3NavStream& strm)
-         throw(StringUtils::StringException, FFStreamError);
+      void getPRNEpoch(Rinex3NavStream& strm);
 
 
          /**  Read and parse the nth record after the epoch record
           *   @param int n record number (1-7), for nth record after
           *     the epoch line
           *   @param Rinex3NavStream strm stream to read from
+          * @throw StringUtils::StringException
+          * @throw FFStreamError
           */
-      void getRecord(const int& n, Rinex3NavStream& strm)
-         throw(StringUtils::StringException, FFStreamError);
+      void getRecord(const int& n, Rinex3NavStream& strm);
 
          /** Generates the PRN/epoch line and outputs it to strm
           *  @param strm RINEX Nav stream
+          * @throw StringUtils::StringException
           */
-      void putPRNEpoch(Rinex3NavStream& strm) const
-         throw(StringUtils::StringException);
+      void putPRNEpoch(Rinex3NavStream& strm) const;
 
 
          /** Construct and write the nth record after the epoch record
           *  @param int n                 Record number (1-7), for nth record
           *                               after the epoch line.
           *  @param Rinex3NavStream strm  Stream to read from.
+          * @throw StringUtils::StringException
+          * @throw FFStreamError
           */
-      void putRecord(const int& n, Rinex3NavStream& strm) const
-         throw(StringUtils::StringException, FFStreamError);
+      void putRecord(const int& n, Rinex3NavStream& strm) const;
 
          /** Helper routine for constructors of this from
           * OrbitEph-based Ephemerides */
@@ -286,18 +289,21 @@ namespace gpstk
           *  FFStream.
           *  If an error is encountered in reading from the stream, the stream
           *  is returned to its original position and its fail-bit is set.
-          *  @throws StringException when a StringUtils function fails.
-          *  @throws FFStreamError when exceptions(failbit) is set and a read
+          * @throw std::exception
+          *  @throw StringException when a StringUtils function fails.
+          *  @throw FFStreamError when exceptions(failbit) is set and a read
           *          or formatting error occurs. This also resets the stream
           *          to its pre-read position.
           */
-      virtual void reallyGetRecord(FFStream& s)
-         throw(std::exception, FFStreamError, StringUtils::StringException);
+      virtual void reallyGetRecord(FFStream& s);
 
 
-         /// Outputs the record to the FFStream \a s.
-      virtual void reallyPutRecord(FFStream& s) const 
-         throw(std::exception, FFStreamError, StringUtils::StringException);
+         /** Outputs the record to the FFStream \a s.
+          * @throw std::exception
+          * @throw StringUtils::StringException
+          * @throw FFStreamError
+          */
+      virtual void reallyPutRecord(FFStream& s) const;
 
    }; // End of class 'Rinex3NavData'
 

@@ -65,17 +65,17 @@ namespace gpstk {
 class SRIleastSquares : public SRI {
 public:
    /// empty constructor
-   SRIleastSquares(void) throw();
+   SRIleastSquares(void) noexcept;
 
    /// constructor given the dimension N.
    /// @param N dimension of the SRIleastSquares.
    SRIleastSquares(const unsigned int N)
-      throw();
+      noexcept;
 
    /// constructor given a Namelist; its dimension determines the SRI dimension.
    /// @param NL Namelist for the SRIleastSquares.
    SRIleastSquares(const Namelist& NL)
-      throw();
+      noexcept;
 
    /// explicit constructor - throw if the dimensions are inconsistent.
    /// @param R  Initial information matrix, an upper triangular matrix of dim N.
@@ -84,19 +84,18 @@ public:
    /// @throw MatrixException if dimensions are not consistent.
    SRIleastSquares(const Matrix<double>& R,
              const Vector<double>& Z,
-             const Namelist& NL)
-      throw(MatrixException);
+                   const Namelist& NL);
 
    /// copy constructor
    /// @param right SRIleastSquares to be copied
    SRIleastSquares(const SRIleastSquares& right)
-      throw()
+      noexcept
       { *this = right; }
 
    /// operator=
    /// @param right SRIleastSquares to be copied
    SRIleastSquares& operator=(const SRIleastSquares& right)
-      throw();
+      noexcept;
 
    /// A general least squares update, NOT the SRIF (Kalman) measurement update.
    /// Given data and measurement covariance, compute a solution and
@@ -131,8 +130,7 @@ public:
                   void (LSF)(Vector<double>& X,
                              Vector<double>& f,
                              Matrix<double>& P)
-      )
-      throw(MatrixException);
+                  );
 
    /// output operator
    friend std::ostream& operator<<(std::ostream& s,
@@ -149,7 +147,8 @@ public:
    /// optionally change the dimension. If N is not input, the
    /// dimension is not changed.
    /// @param N new SRIleastSquares dimension (optional).
-   void Reset(const int N=0) throw(Exception);
+   /// @throw Exception
+   void Reset(const int N=0);
 
    // ------------- member functions ---------------
    /// Get the current solution vector
@@ -201,7 +200,7 @@ public:
 
 private:
    /// initialization used by constructors - leastSquaresEstimation() only
-   void defaults(void) throw()
+   void defaults(void) noexcept
    {
       iterationsLimit = 10;
       convergenceLimit = 1.e-8;

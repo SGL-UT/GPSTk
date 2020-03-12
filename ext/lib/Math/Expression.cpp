@@ -56,7 +56,6 @@ namespace gpstk
 {
    
    double Expression::BinOpNode::getValue() 
-      throw (ExpressionException) 
    {
 
       // To get the value, compute the value of the left and
@@ -75,7 +74,6 @@ namespace gpstk
    }
 
    double Expression::FuncOpNode::getValue()
-      throw (ExpressionException) 
    {
       // To get the value, compute the value of the right first
       double rightVal = right->getValue();
@@ -120,7 +118,6 @@ namespace gpstk
    };
          
    double Expression::VarNode::getValue(void) 
-      throw (ExpressionException)
    {
       if (!hasValue) 
       { 

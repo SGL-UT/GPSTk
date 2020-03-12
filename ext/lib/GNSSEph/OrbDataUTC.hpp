@@ -100,9 +100,9 @@ namespace gpstk
             /**
              * Using the data in the object, form a TimeSystemCorrection
              * object and return that to the caller.
+             * @throw InvalidRequest
              */
-          virtual TimeSystemCorrection getTSC() const
-             throw(InvalidRequest) = 0;
+       virtual TimeSystemCorrection getTSC() const = 0;
 
              // UTC Parameters
           double A0;

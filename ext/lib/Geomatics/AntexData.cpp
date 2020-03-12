@@ -100,7 +100,7 @@ namespace gpstk
    const vector<string> AntexData::SatelliteTypes(sattype,sattype+Nsattype);
 
    // ----------------------------------------------------------------------------
-   bool AntexData::isValid(CommonTime& time) const throw()
+   bool AntexData::isValid(CommonTime& time) const noexcept
    {
       if(!isValid())
          return false;
@@ -120,7 +120,7 @@ namespace gpstk
 
    // ----------------------------------------------------------------------------
    // Generate a name from type and serial number
-   string AntexData::name(void) const throw()
+   string AntexData::name(void) const noexcept
    {
       if(!isValid())
          return string("invalid");
@@ -136,7 +136,6 @@ namespace gpstk
    double AntexData::getTotalPhaseCenterOffset(const string freq,
                                                const double azim,
                                                const double elev_nadir) const
-      throw(Exception)
    {
       try {
          // these do all the checking and throwing
@@ -165,7 +164,6 @@ namespace gpstk
    // be computed using getPhaseCenterVariation() and added to the PCOs to get
    // the total phase center offset).
    Triple AntexData::getPhaseCenterOffset(const string freq) const
-      throw(Exception)
    {
       if(!isValid()) {
          gpstk::Exception e("Invalid AntexData object");
@@ -193,7 +191,6 @@ namespace gpstk
    double AntexData::getPhaseCenterVariation(const string freq,
                                              const double azimuth,
                                              const double elev_nadir) const
-      throw(Exception)
    {
       if(!isValid()) {
          Exception e("Invalid AntexData object");
@@ -429,7 +426,7 @@ namespace gpstk
                                      const zenOffsetMap& eomap,
                                      double& zen_lo, double& zen_hi,
                                      double& pco_lo, double& pco_hi) const
-      throw()
+      noexcept
    {
       map<double, double>::const_iterator kt;
 
@@ -463,7 +460,6 @@ namespace gpstk
    }
 
    void AntexData::reallyPutRecord(FFStream& ffs) const 
-      throw(std::exception, FFStreamError, StringException)
    {
       if(!isValid()) {
          FFStreamError fse(string("Cannot write invalid AntexData"));
@@ -653,7 +649,6 @@ namespace gpstk
 
 
    void AntexData::reallyGetRecord(FFStream& ffs) 
-      throw(std::exception, FFStreamError, StringUtils::StringException)
    {
       AntexStream& strm = dynamic_cast<AntexStream&>(ffs);
       
@@ -698,7 +693,6 @@ namespace gpstk
 
    // for reallyGetRecord
    void AntexData::ParseDataRecord(string& line)
-      throw(FFStreamError)
    {
    try {
       static bool hasAzim, foundRMS(false);
@@ -877,7 +871,6 @@ namespace gpstk
    }  // end AntexData::ParseDataRecord
 
    CommonTime AntexData::parseTime(const string& line) const
-      throw(FFStreamError)
    {
       try
       {
@@ -933,7 +926,6 @@ namespace gpstk
    }
 
    string AntexData::writeTime(const CommonTime& dt) const
-      throw(StringException)
    {
       if(dt == CommonTime::BEGINNING_OF_TIME || dt == CommonTime::END_OF_TIME)
          return string(43,' ');

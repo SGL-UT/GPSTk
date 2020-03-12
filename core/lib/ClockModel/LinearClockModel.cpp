@@ -49,7 +49,7 @@ namespace gpstk
 {
    using namespace std;
 
-   void LinearClockModel::reset() throw()
+   void LinearClockModel::reset() noexcept
    {
       startTime = gpstk::CommonTime::END_OF_TIME;
       endTime = gpstk::CommonTime::BEGINNING_OF_TIME;
@@ -59,8 +59,10 @@ namespace gpstk
       tossCount=0;
    }
 
+      /**
+       * @throw InvalidValue
+       */
    void LinearClockModel::addEpoch(const ORDEpoch& oe)
-      throw(gpstk::InvalidValue)
    {
       ORDEpoch::ORDMap::const_iterator itr;
       const gpstk::CommonTime t=oe.time;
@@ -137,7 +139,7 @@ namespace gpstk
       }
    }
 
-   void LinearClockModel::dump(std::ostream& s, short detail) const throw()
+   void LinearClockModel::dump(std::ostream& s, short detail) const noexcept
    {
       s << "base: " << baseTime
         << ", start: " << startTime

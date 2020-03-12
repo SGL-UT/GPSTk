@@ -86,8 +86,7 @@ namespace gpstk
          /** Assign from valarray.
           * @throw GeometryException if right.size() != 3.
           */
-      Triple& operator=(const std::valarray<double>& right)
-         throw(GeometryException);
+      Triple& operator=(const std::valarray<double>& right);
 
          
          /// Return the data as a Vector<double> object
@@ -103,7 +102,7 @@ namespace gpstk
           * @return The dot product of \c this and \c right
           */
       double dot(const Triple& right) const 
-         throw();
+         noexcept;
    
          /**
           * Computes the Cross Product of two vectors
@@ -111,27 +110,27 @@ namespace gpstk
           * @return The cross product of \c v1 and \c v2
           */
       Triple cross(const Triple& right) const
-         throw();
+         noexcept;
    
          /**
           * Computes the Magnigude of this vector
           */
       double mag() const 
-         throw();
+         noexcept;
    
          /**
           * Returns the unit vector of this vector
+          * @throw GeometryException
           */
-      Triple unitVector() const
-      	 throw(GeometryException);
+      Triple unitVector() const;
       
          /**
           * Computes the Cosine of the Angle Between this vector and another.
           * @param right the other vector
           * @return The cosine of the angle between \c this and \c right
+          * @throw GeometryException
           */
-      double cosVector(const Triple& right) const 
-         throw(GeometryException);
+      double cosVector(const Triple& right) const;
       
          /**
           * Computes the slant range between this vector and another
@@ -139,31 +138,31 @@ namespace gpstk
           * @return The slant range between \c this and \c right
           */
       double slantRange(const Triple& right) const 
-         throw();
+         noexcept;
       
          /**
           * Computes the elevation of a point with respect to this
           * point.
           * @param right The second point
           * @return The elevation of \c right relative to \c this
+          * @throw GeometryException
           */
-      double elvAngle(const Triple& right) const 
-         throw(GeometryException);
+      double elvAngle(const Triple& right) const;
       
          /**
           * Computes an azimuth from this point.
           * @param right The position to determine azimuth of.
           * @return The azimuth of \c right relative to \c this
+          * @throw GeometryException
           */ 
-      double azAngle(const Triple& right) const 
-         throw(GeometryException);
+      double azAngle(const Triple& right) const;
       
          /** Computes rotation about axis X.
           * @param angle    Angle to rotate, in degrees
           * @return A triple which is the original triple rotated angle about X
           */
       Triple R1(const double& angle) const
-         throw();
+         noexcept;
    
       
          /** Computes rotation about axis Y.
@@ -171,7 +170,7 @@ namespace gpstk
           * @return A triple which is the original triple rotated angle about Y
           */
       Triple R2(const double& angle) const
-         throw();
+         noexcept;
    
       
          /** Computes rotation about axis Z.
@@ -179,7 +178,7 @@ namespace gpstk
           * @return A triple which is the original triple rotated angle about Z
           */
       Triple R3(const double& angle) const
-         throw();
+         noexcept;
    
          /**
           * Return a reference to the element at /a index.

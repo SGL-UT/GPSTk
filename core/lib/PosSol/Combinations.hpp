@@ -55,26 +55,26 @@ namespace gpstk {
 class Combinations {
 public:
    /// Default constructor
-   Combinations(void) throw()
+   Combinations(void) noexcept
    {
       nc = n = k = 0;
       Index = std::vector<int>(0);
    }
 
    /// Constructor for C(n,k) = combinations of n things taken k at a time (k <= n)
-   /// @throw on invalid input (k>n).
-   Combinations(int N, int K) throw(Exception)
+   /// @throw Exception on invalid input (k>n).
+   Combinations(int N, int K)
    { init(N,K); }
 
    /// copy constructor
    Combinations(const Combinations& right)
-      throw()
+      noexcept
    {
       *this = right;
    }
 
    /// Assignment operator.
-   Combinations& operator=(const Combinations& right) throw()
+   Combinations& operator=(const Combinations& right) noexcept
    {
       init(right.n,right.k);
       nc = right.nc;
@@ -84,7 +84,7 @@ public:
 
    /// Compute the next combination, returning the number of combinations computed
    /// so far; if there are no more combinations, return -1.
-   int Next(void) throw() {
+   int Next(void) noexcept {
       if(k < 1) return -1;
       if(Increment(k-1) != -1) return ++nc;
       return -1;
@@ -92,7 +92,7 @@ public:
 
    /// Return index i (0 <= i < n) of jth selection (0 <= j < k);
    /// if j is out of range, return -1.
-   int Selection(int j) throw()
+   int Selection(int j) noexcept
    {
       if(j < 0 || j >= k) return -1;
       return Index[j];
@@ -100,7 +100,7 @@ public:
 
       /// Return true if the given index j (0 <= j < n) is
       /// currently selected (i.e. if j = Selection(i) for some i)
-   bool isSelected(int j) throw()
+   bool isSelected(int j) noexcept
    {
       for(int i=0; i<k; i++)
          if(Index[i] == j) return true;
@@ -110,8 +110,8 @@ public:
 private:
 
    /// The initialization routine used by constructors.
-   /// @throw on invalid input (k>n or either n or k < 0).
-   void init(int N, int K) throw(Exception)
+   /// @throw Exception on invalid input (k>n or either n or k < 0).
+   void init(int N, int K)
    {
       if(K > N || N < 0 || K < 0) {
          Exception e("Combinations(n,k) must have k <= n, with n,k >= 0");
@@ -127,7 +127,7 @@ private:
    }
 
    /// Recursive function to increment Index[j].
-   int Increment(int j) throw()
+   int Increment(int j) noexcept
    {
       if(Index[j] < n-k+j) {        // can this index be incremented?
          Index[j]++;

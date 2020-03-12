@@ -55,40 +55,40 @@ namespace gpstk
       const static int order = 5;
 
       /// Reset all sums
-      void clear() throw();
+      void clear() noexcept;
 
       /// Add a single value to the sums
-      void add(double x) throw();
+      void add(double x) noexcept;
 
       /// Remove a single value from the sums. Note that the higher order sums
       /// can get quite large in magnitude. When removing a value that is
       /// far from the average, it is possible for numerical error to creep
       /// into the sums. One way around this is to simply recompute the sums
       /// from scratch when this happens.
-      void subtract(double x) throw();
+      void subtract(double x) noexcept;
 
       typedef std::list<double>::const_iterator dlc_iterator;
 
       /// Adds all value in the list to the sums.
-      void add(dlc_iterator b, dlc_iterator e) throw();
+      void add(dlc_iterator b, dlc_iterator e) noexcept;
 
       /// Removes all values in the list from the sums. See the warning with the
       /// subtract(double) method.
-      void subtract(dlc_iterator b, dlc_iterator e) throw();
+      void subtract(dlc_iterator b, dlc_iterator e) noexcept;
 
       /// Computes the ith order central moment
-      double moment(int i) const throw();
+      double moment(int i) const noexcept;
 
       /// Reuturn the number of points in the current sum
-      long size() const throw() {return n;}
+      long size() const noexcept {return n;}
       
       /// Computes the indicated value
-      double average() const throw();
-      double variance() const throw();
-      double skew() const throw();
-      double kurtosis() const throw();
+      double average() const noexcept;
+      double variance() const noexcept;
+      double skew() const noexcept;
+      double kurtosis() const noexcept;
 
-      void dump(std::ostream& str) const throw();
+      void dump(std::ostream& str) const noexcept;
 
    private:
       double s[order+1];

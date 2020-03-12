@@ -81,22 +81,22 @@ class Configuration : public Singleton<Configuration> {
 public:
 
    // Default and only constructor
-   Configuration() throw() { SetDefaults(); }
+   Configuration() noexcept { SetDefaults(); }
 
    // Create, parse and process command line options and user input
-   int ProcessUserInput(int argc, char **argv) throw();
+   int ProcessUserInput(int argc, char **argv) noexcept;
 
    // Design the command line
-   string BuildCommandLine(void) throw();
+   string BuildCommandLine(void) noexcept;
 
    // Open the output file, and parse the strings used on the command line
    // return -4 if log file could not be opened
-   int ExtraProcessing(string& errors, string& extras) throw();
+   int ExtraProcessing(string& errors, string& extras) noexcept;
 
 private:
 
    // Define default values
-   void SetDefaults(void) throw();
+   void SetDefaults(void) noexcept;
 
 public:
 
@@ -150,8 +150,14 @@ const string Configuration::longfmt = calfmt + " = " + gpsfmt;
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
 // prototypes
-int Initialize(string& errors) throw(Exception);
-int ProcessFiles(void) throw(Exception);
+/**
+ * @throw Exception
+ */
+int Initialize(string& errors);
+/**
+ * @throw Exception
+ */
+int ProcessFiles(void);
 
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
@@ -213,7 +219,7 @@ catch (...) { cerr << "Unknown exception.  Abort." << endl; }
 
 //------------------------------------------------------------------------------------
 // return -5 if input is not valid
-int Initialize(string& errors) throw(Exception)
+int Initialize(string& errors)
 {
 try {
    bool isValid(true);
@@ -239,7 +245,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
-void Configuration::SetDefaults(void) throw()
+void Configuration::SetDefaults(void) noexcept
 {
    defaultstartStr = string("[Beginning of dataset]");
    defaultstopStr = string("[End of dataset]");
@@ -253,7 +259,7 @@ void Configuration::SetDefaults(void) throw()
 }  // end Configuration::SetDefaults()
 
 //------------------------------------------------------------------------------------
-int Configuration::ProcessUserInput(int argc, char **argv) throw()
+int Configuration::ProcessUserInput(int argc, char **argv) noexcept
 {
    string PrgmDesc,cmdlineUsage, cmdlineErrors, cmdlineExtras;
    vector<string> cmdlineUnrecognized;
@@ -348,7 +354,7 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
 }  // end Configuration::CommandLine()
 
 //------------------------------------------------------------------------------------
-string Configuration::BuildCommandLine(void) throw()
+string Configuration::BuildCommandLine(void) noexcept
 {
    // Program description will appear at the top of the syntax page
    string PrgmDesc = " Program " + PrgmName +
@@ -406,7 +412,7 @@ string Configuration::BuildCommandLine(void) throw()
 }  // end Configuration::BuildCommandLine()
 
 //------------------------------------------------------------------------------------
-int Configuration::ExtraProcessing(string& errors, string& extras) throw()
+int Configuration::ExtraProcessing(string& errors, string& extras) noexcept
 {
    int n;
    size_t i;
@@ -507,11 +513,11 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
 
    return 0;
 
-} // end Configuration::ExtraProcessing(string& errors) throw()
+} // end Configuration::ExtraProcessing(string& errors) noexcept
 
 //------------------------------------------------------------------------------------
 // Return 0 ok, >0 number of files successfully read, <0 fatal error
-int ProcessFiles(void) throw(Exception)
+int ProcessFiles(void)
 {
 try {
    Configuration& C(Configuration::Instance());

@@ -70,6 +70,7 @@ namespace gpstk {
 /// @param SolarSystem SSEph    Solar system ephemeris
 /// @param EarthOrientation EO  Earth orientation parameters appropriate for time
 /// @param double& shadow       fraction of sun visible at satellite (output)
+      /// @throw Exception
 double PhaseWindup(double& prev,
                    CommonTime& tt,
                    Position& SV,
@@ -79,10 +80,10 @@ double PhaseWindup(double& prev,
                    SolarSystem& SSEph,
                    EarthOrientation& EO,
                    double& shadow,
-                   bool isBlockR=false)
-   throw(Exception);
+                   bool isBlockR=false);
 
 /// Version without SolarSystem ephemeris; uses a lower quality solar position routine
+      /// @throw Exception
 double PhaseWindup(double& prev,
                    CommonTime& tt,
                    Position& SV,
@@ -90,8 +91,7 @@ double PhaseWindup(double& prev,
                    Position& RxW,
                    Position& RxN,
                    double& shadow,
-                   bool isBlockR=false)
-   throw(Exception);
+                   bool isBlockR=false);
 
 }  // end namespace gpstk
 
