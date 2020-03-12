@@ -110,11 +110,11 @@ namespace gpstk
       virtual void finalize(NavMsgList& msgBitsOut);
 
          /// Internal storage includes a user-specified number of epochs.
-      virtual unsigned processingDepth() const noexcept
+      virtual unsigned processingDepth() const throw()
       { return procDepth; }
 
          /// Return the filter name.
-      virtual std::string filterName() const noexcept
+      virtual std::string filterName() const throw()
       { return "Order"; }
 
       unsigned procDepth;

@@ -88,7 +88,7 @@ namespace gpstk
 
 
    Xvt OrbElemStore::computeXvt(const SatID& sat, const CommonTime& t) const
-      noexcept
+      throw()
    {
       Xvt rv;
       rv.health = Xvt::HealthStatus::Unavailable;
@@ -112,7 +112,7 @@ namespace gpstk
 
 
    Xvt::HealthStatus OrbElemStore ::
-   getSVHealth(const SatID& sat, const CommonTime& t) const noexcept
+   getSVHealth(const SatID& sat, const CommonTime& t) const throw()
    {
       Xvt::HealthStatus rv = Xvt::HealthStatus::Unavailable;
       try
@@ -160,7 +160,7 @@ namespace gpstk
 // listing behavior.
 
    void OrbElemStore::dump(std::ostream& s, short detail) const
-      noexcept
+      throw()
    {
       UBEMap::const_iterator it;
       static const string fmt("%04Y/%02m/%02d %02H:%02M:%02S %P");
@@ -366,7 +366,7 @@ namespace gpstk
 //-----------------------------------------------------------------------------
 
    void OrbElemStore::edit(const CommonTime& tmin, const CommonTime& tmax)
-      noexcept
+      throw()
    {
       for(UBEMap::iterator i = ube.begin(); i != ube.end(); i++)
       {
@@ -396,7 +396,7 @@ namespace gpstk
 //-----------------------------------------------------------------------------
 
    unsigned OrbElemStore::size() const
-      noexcept
+      throw()
    {
       unsigned counter = 0;
       for(UBEMap::const_iterator i = ube.begin(); i != ube.end(); i++)
@@ -407,7 +407,7 @@ namespace gpstk
 
 //-----------------------------------------------------------------------------
    bool OrbElemStore::isPresent(const SatID& id) const 
-      noexcept
+      throw()
    {
       UBEMap::const_iterator ci = ube.find(id);
       if (ci==ube.end()) return false;
@@ -641,7 +641,7 @@ namespace gpstk
 //-----------------------------------------------------------------------------
 
    int OrbElemStore::addToList(std::list<OrbElemBase*>& v) const
-      noexcept
+      throw()
    {
       int n = 0;
       UBEMap::const_iterator prn_i;
@@ -662,7 +662,7 @@ namespace gpstk
 
    /// Remove all data from this collection.
    void OrbElemStore::clear()
-         noexcept
+         throw()
    {
       for( UBEMap::iterator ui = ube.begin(); ui != ube.end(); ui++)
       {

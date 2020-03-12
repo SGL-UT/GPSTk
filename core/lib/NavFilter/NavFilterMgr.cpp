@@ -119,7 +119,7 @@ namespace gpstk
 
    unsigned NavFilterMgr ::
    processingDepth()
-      const noexcept
+      const throw()
    {
       FilterList::const_iterator fli;
       unsigned rv = 1;

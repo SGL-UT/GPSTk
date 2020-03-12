@@ -57,7 +57,7 @@ using namespace gpstk;
 class RollingFileWriter : public gpstk::BasicFramework
 {
 public:
-   RollingFileWriter(const std::string& applName) noexcept
+   RollingFileWriter(const std::string& applName) throw()
       : BasicFramework(applName,
                        "Reads data from a stream and writes the data out to a"
                        "TimeNamedFileStream."),
@@ -66,7 +66,7 @@ public:
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Woverloaded-virtual"
-   bool initialize(int argc, char *argv[]) noexcept
+   bool initialize(int argc, char *argv[]) throw()
    {
       CommandOptionWithAnyArg inputOpt(
          'i', "input", 

@@ -81,7 +81,7 @@ namespace gpstk
 
          /// Default constructor.
       IonexStore()
-         noexcept
+         throw()
          : initialTime(CommonTime::END_OF_TIME),
            finalTime(CommonTime::BEGINNING_OF_TIME)
       {};
@@ -99,7 +99,7 @@ namespace gpstk
 
          /// Insert a new IonexData object into the store
       void addMap(const IonexData& iod)
-         noexcept;
+         throw();
 
 
          /** Dump the store to the provided std::ostream (std::cout by default).
@@ -112,11 +112,11 @@ namespace gpstk
           */
       void dump( std::ostream& s = std::cout,
                  short detail = 0 ) const
-         noexcept;
+         throw();
 
 
          /// Remove all data
-      void clear() noexcept;
+      void clear() throw();
 
 
          /** Get IONEX TEC, RMS and ionosphere height values as a function of

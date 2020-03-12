@@ -47,13 +47,13 @@
 
 namespace gpstk
 {
-   IonoModel::IonoModel(const double a[4], const double b[4]) noexcept
+   IonoModel::IonoModel(const double a[4], const double b[4]) throw()
    {
         setModel(a, b);
    }
 
    IonoModel::IonoModel(const EngAlmanac& engalm)
-      noexcept
+      throw()
    {
       try
       {
@@ -67,7 +67,7 @@ namespace gpstk
    }
 
 
-   void IonoModel::setModel(const double a[4], const double b[4]) noexcept
+   void IonoModel::setModel(const double a[4], const double b[4]) throw()
    {
       for (int n = 0; n < 4; n++)
       {
@@ -151,7 +151,7 @@ namespace gpstk
    }
 
    bool IonoModel::operator==(const IonoModel& right) const
-      noexcept
+      throw()
    {
       for (int n = 0; n < 4; n++)
       {
@@ -162,7 +162,7 @@ namespace gpstk
    }
 
    bool IonoModel::operator!=(const IonoModel&right) const
-      noexcept
+      throw()
    {
       return !(operator==(right));
    }

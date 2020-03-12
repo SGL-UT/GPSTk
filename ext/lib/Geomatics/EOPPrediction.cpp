@@ -179,7 +179,7 @@ namespace gpstk
    //                         m=1                         m=1
    //---------------------------------------------------------------------------------
    EarthOrientation EOPPrediction::computeEOP(double& mjd) const
-      noexcept
+      throw()
    {
       double dt,arg;
       EarthOrientation eo;

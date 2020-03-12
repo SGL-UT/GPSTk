@@ -49,7 +49,7 @@ namespace gpstk
 {
    // Add to the store directly
    void EOPStore::addEOP(int mjd, EarthOrientation& eop)
-      noexcept
+      throw()
    {
       mapMJD_EOP[mjd] = eop;
 
@@ -182,7 +182,7 @@ namespace gpstk
    //  @param mjdmin integer MJD desired earliest store time.
    //  @param mjdmax integer MJD desired latest store time.
    void EOPStore::edit(int mjdmin, int mjdmax)
-      noexcept
+      throw()
    {
       if(mjdmin > mjdmax) {
          int m=mjdmin;
@@ -221,7 +221,7 @@ namespace gpstk
    //   0 start and stop times (MJD), and number of EOPs.
    //   1 list of all times and EOPs.
    void EOPStore::dump(short detail, ostream& os) const
-      noexcept
+      throw()
    {
       os << "EOPStore dump (" << mapMJD_EOP.size() << " entries):\n";
       os << " Time limits: [MJD " << begMJD << " - " << endMJD << "]";

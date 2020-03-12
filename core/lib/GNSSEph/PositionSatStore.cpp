@@ -51,7 +51,7 @@ namespace gpstk
    //@{
 
    // Output stream operator is used by dump() in TabularSatStore
-   ostream& operator<<(ostream& os, const PositionRecord& rec) noexcept
+   ostream& operator<<(ostream& os, const PositionRecord& rec) throw()
    {
       os << "Pos" << fixed << setprecision(6)
          << " " << setw(13) << rec.Pos[0]

@@ -125,7 +125,7 @@ namespace gpstk
       size_t getNumBits() const;
 
          /* Output the contents of this class to the given stream. */
-      void dump(std::ostream& s = std::cout) const noexcept;
+      void dump(std::ostream& s = std::cout) const throw();
       
          /***    UNPACKING FUNCTIONS *********************************/
          /* Unpack an unsigned long integer */

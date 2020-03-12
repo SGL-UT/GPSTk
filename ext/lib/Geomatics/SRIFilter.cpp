@@ -51,7 +51,7 @@ using namespace StringUtils;
 //------------------------------------------------------------------------------------
 // empty constructor
 SRIFilter::SRIFilter(void)
-   noexcept
+   throw()
 {
    defaults();
 }
@@ -59,7 +59,7 @@ SRIFilter::SRIFilter(void)
 //------------------------------------------------------------------------------------
 // constructor given the dimension N.
 SRIFilter::SRIFilter(const unsigned int N)
-   noexcept
+   throw()
 {
    defaults();
    R = Matrix<double>(N,N,0.0);
@@ -70,7 +70,7 @@ SRIFilter::SRIFilter(const unsigned int N)
 //------------------------------------------------------------------------------------
 // constructor given a Namelist, its dimension determines the SRI dimension.
 SRIFilter::SRIFilter(const Namelist& NL)
-   noexcept
+   throw()
 {
    defaults();
    if(NL.size() <= 0) return;
@@ -105,7 +105,7 @@ SRIFilter::SRIFilter(const Matrix<double>& Rin,
 //------------------------------------------------------------------------------------
 // operator=
 SRIFilter& SRIFilter::operator=(const SRIFilter& right)
-   noexcept
+   throw()
 {
    R = right.R;
    Z = right.Z;

@@ -188,7 +188,7 @@ namespace gpstk
                                                 T *ptrSmall=NULL,
                                                 T *ptrBig=NULL);
    // special matrices
-   template <class T> SparseMatrix<T> identSparse(const unsigned int dim) noexcept;
+   template <class T> SparseMatrix<T> identSparse(const unsigned int dim) throw();
 
       /** diag of P * C * PT
        * @throw Exception
@@ -277,7 +277,7 @@ namespace gpstk
       friend SparseMatrix<T> inverseLT<T>(const SparseMatrix<T>& LT,
                                           T *ptrSmall, T *ptrBig);
       // special matrices
-      friend SparseMatrix<T> identSparse<T>(const unsigned int dim) noexcept;
+      friend SparseMatrix<T> identSparse<T>(const unsigned int dim) throw();
 
       // diag of P * C * PT
       friend Vector<T> transformDiag<T>(const SparseMatrix<T>& P,

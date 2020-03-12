@@ -103,7 +103,7 @@ namespace gpstk
 
       /// Get the antenna data for the given name from the store.
       /// @return true if successful, false if input name was not found in the store
-      bool getAntenna(std::string name, AntexData& antdata) noexcept;
+      bool getAntenna(std::string name, AntexData& antdata) throw();
 
       /// Get the antenna data for the given satellite from the store.
       /// Satellites are identified by two things:
@@ -122,19 +122,19 @@ namespace gpstk
       /// @return true if successful, false if satellite was not found in the store
       bool getSatelliteAntenna(const char sys, const int n,
                                std::string& name, AntexData& data,
-                               bool inputPRN=true) const noexcept;
+                               bool inputPRN=true) const throw();
 
       /// Get a vector of all antenna names in the store
-      void getNames(std::vector<std::string>& names) noexcept;
+      void getNames(std::vector<std::string>& names) throw();
 
       /// Get a vector of all receiver antenna names in the store
-      void getReceiverNames(std::vector<std::string>& names) noexcept;
+      void getReceiverNames(std::vector<std::string>& names) throw();
 
       /// get the number of antennas stored
-      unsigned int size(void) const noexcept { return antennaMap.size(); }
+      unsigned int size(void) const throw() { return antennaMap.size(); }
 
       /// clear the store of all information
-      void clear(void) noexcept { antennaMap.clear(); }
+      void clear(void) throw() { antennaMap.clear(); }
 
       /// call to have satellite antennas included in store
       /// NB. call before addAntenna() or addANTEXfile()
@@ -152,7 +152,7 @@ namespace gpstk
       /// those names will be included in the store (not applicable to satellites).
       /// If there are already other names in the store, they will be removed.
       /// NB. call before addAntenna() or addANTEXfile()
-      void includeReceivers(std::vector<std::string>& names) noexcept;
+      void includeReceivers(std::vector<std::string>& names) throw();
 
       /// Open and read an ANTEX format file with the given name, and read it.
       /// Add to the store all the receivers with names in the given std::vector,

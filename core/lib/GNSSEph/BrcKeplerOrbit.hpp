@@ -81,7 +81,7 @@ namespace gpstk
    public:
          /// Constructors
          /// Default constuctor
-      BrcKeplerOrbit( ) noexcept;
+      BrcKeplerOrbit( ) throw();
 
          /**
           * All constructors and loadData methods assume weeknumArg
@@ -118,8 +118,8 @@ namespace gpstk
          /// Destructor
       virtual ~BrcKeplerOrbit() {}
 
-      bool operator==(const BrcKeplerOrbit& right) const noexcept;
-      bool operator!=(const BrcKeplerOrbit& right) const noexcept
+      bool operator==(const BrcKeplerOrbit& right) const throw();
+      bool operator!=(const BrcKeplerOrbit& right) const throw()
       { return !(operator==(right)); }
 
          /// General purpose means to load data into object
@@ -345,7 +345,7 @@ namespace gpstk
       double svRelativity(const CommonTime& t) const;
       
          /** Output the contents of this orbit data to the given stream. */
-      void dump(std::ostream& s = std::cout) const noexcept;
+      void dump(std::ostream& s = std::cout) const throw();
 
    protected:
          /// @name Overhead information

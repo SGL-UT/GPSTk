@@ -111,7 +111,7 @@ public:
 
    /// Constructor. Set EphemerisNumber to -1 to indicate that nothing has been
    /// read yet.
-   SolarSystemEphemeris(void) noexcept : EphemerisNumber(-1) {};
+   SolarSystemEphemeris(void) throw() : EphemerisNumber(-1) {};
 
    //------------------------------------------------------------------
    // reading and writing ASCII (JPL) files
@@ -176,7 +176,7 @@ public:
 
    /// clear the store map containing all the data read by
    /// readASCIIdata() or readBinaryData(true).
-   void clearStorage(void) noexcept { store.clear(); }
+   void clearStorage(void) throw() { store.clear(); }
 
    /// Read header and data from a binary file, storing ALL the data in store.
    /// For use with copying, merging or editing data files. Closes the stream before
@@ -236,29 +236,29 @@ public:
    /// been read, return -1.0.
    /// @return the value of 1 AU in km;
    ///                return -1 if ephemeris has not been initialized.
-   double AU(void) noexcept
+   double AU(void) throw()
       { if(EphemerisNumber == -1) return -1.0; return constants["AU"]; }
 
    /// Return the ephemeris number.
    /// @return the 'DE' ephemeris number, e.g. 403,
    ///         or -1 if ephemeris has not been initialized.
-   int EphNumber(void) const noexcept
+   int EphNumber(void) const throw()
       { return EphemerisNumber; }
 
    /// @return the value of the contant with the given name. If the header
    /// has not been read, return -1. Return zero if the constant is not found.
-   double getConstant(std::string name) noexcept {
+   double getConstant(std::string name) throw() {
       if(EphemerisNumber == -1) return -1.0;
       if(constants.find(name) != constants.end()) return constants[name];
       return 0.0;
    }
 
    /// Return the Earth-to-Moon mass ratio
-   double EarthToMoonMassRatio(void) noexcept
+   double EarthToMoonMassRatio(void) throw()
       { return getConstant(std::string("EMRAT")); }
 
    /// Return the Sun-to-Earth mass ratio
-   double SunToEarthMassRatio(void) noexcept {
+   double SunToEarthMassRatio(void) throw() {
       double em=getConstant(std::string("EMRAT"));
       double gms=getConstant(std::string("GMS"));
       double gmb=getConstant(std::string("GMB"));

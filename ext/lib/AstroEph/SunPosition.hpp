@@ -79,7 +79,7 @@ namespace gpstk
    public:
 
          /// Default constructor
-      SunPosition() noexcept {}
+      SunPosition() throw() {}
 
          /// Destructor
       virtual ~SunPosition() {}

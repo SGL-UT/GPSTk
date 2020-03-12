@@ -271,10 +271,10 @@ namespace gpstk
       /// @return true if the 'valid' time limits are not given.
       /// NB. useful when adding satellite antennas for processing with a dataset;
       /// pass any time tag from the dataset.
-      bool isValid(CommonTime& time) const noexcept;
+      bool isValid(CommonTime& time) const throw();
 
       /// Generate a name from type and serial number
-      std::string name(void) const noexcept;
+      std::string name(void) const throw();
 
       /// Compute the total phase center offset at the given azimuth and elev_nadir,
       /// including both nominal offset (PCO) and variation (PCV).
@@ -330,7 +330,7 @@ namespace gpstk
       void evaluateZenithMap(const double& zen,
                              const zenOffsetMap& eomap,
                              double& zen_lo, double& zen_hi,
-                             double& pco_lo, double& pco_hi) const noexcept;
+                             double& pco_lo, double& pco_hi) const throw();
 
          /** Writes a correctly formatted record from this data to stream \a s.
           * @throw std::exception

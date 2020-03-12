@@ -70,7 +70,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-Station::Station(void) noexcept
+Station::Station(void) throw()
 {
    fixed = usePRS = false;
    temp = press = rhumid = 0.0;
@@ -81,13 +81,13 @@ Station::Station(void) noexcept
 }
 
 //------------------------------------------------------------------------------------
-Station::~Station(void) noexcept
+Station::~Station(void) throw()
 {
    delete pTropModel;
 }
 
 //------------------------------------------------------------------------------------
-ObsFile::ObsFile(void) noexcept
+ObsFile::ObsFile(void) throw()
 {
    name = string("");
    label = string("");
@@ -101,7 +101,7 @@ ObsFile::ObsFile(void) noexcept
 }
 
 //------------------------------------------------------------------------------------
-ObsFile& ObsFile::operator=(const ObsFile& of) noexcept
+ObsFile& ObsFile::operator=(const ObsFile& of) throw()
 {
    name = of.name;
    label = of.label;
@@ -116,7 +116,7 @@ ObsFile& ObsFile::operator=(const ObsFile& of) noexcept
 }
 
 //------------------------------------------------------------------------------------
-ObsFile::ObsFile(const ObsFile& of) noexcept
+ObsFile::ObsFile(const ObsFile& of) throw()
 {
    *this = of;
 }

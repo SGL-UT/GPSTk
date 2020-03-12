@@ -103,7 +103,7 @@ namespace gpstk
           */
       bool addIonoModel( const CommonTime& mt,
                          const IonoModel& im )
-         noexcept;
+         throw();
 
          /** Edit the dataset, removing data outside the indicated time interval
           *

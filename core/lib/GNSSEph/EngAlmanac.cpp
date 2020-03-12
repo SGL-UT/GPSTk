@@ -59,7 +59,7 @@ if (itty == almPRN.end()) \
 namespace gpstk
 {
    EngAlmanac :: EngAlmanac()
-      noexcept
+      throw()
    {
       for (int n = 0; n < 4; n++)
       {
@@ -322,7 +322,7 @@ namespace gpstk
    }
 
 
-   double EngAlmanac::getToa() const noexcept
+   double EngAlmanac::getToa() const throw()
    {
       return static_cast<double>( t_oa );
    }
@@ -390,7 +390,7 @@ namespace gpstk
       deltaTLSF = dt_lsf;
    }
 
-   short EngAlmanac::getAlmWeek() const noexcept
+   short EngAlmanac::getAlmWeek() const throw()
    {
       return alm_wk;
    }
@@ -413,7 +413,7 @@ namespace gpstk
       return (*i).second.svXvt(t);
    }
 
-   bool EngAlmanac::isData(SatID sat) const noexcept
+   bool EngAlmanac::isData(SatID sat) const throw()
    {
       return (almPRN.find(sat) != almPRN.end());
    }

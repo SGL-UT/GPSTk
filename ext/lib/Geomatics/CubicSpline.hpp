@@ -184,7 +184,7 @@ namespace gpstk
       }
 
       /// Return the current size of the second derivative array.
-      int size(void) const noexcept
+      int size(void) const throw()
          { return S.size(); }
 
    private:
@@ -282,7 +282,7 @@ namespace gpstk
 
       /// Given an index k into the array S, and a value x such that
       /// X[k-1] < x < X[k], find the interpolated value y at x.
-      T interpolate(const int k, const T x) noexcept
+      T interpolate(const int k, const T x) throw()
       {
          T dxr(X[k]-x), dxl(x-X[k-1]), dx(X[k]-X[k-1]);
          return (( dxl * (Y[k] - S[k]*dx*dx/T(6))

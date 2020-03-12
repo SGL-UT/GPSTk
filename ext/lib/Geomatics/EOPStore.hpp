@@ -74,7 +74,7 @@ namespace gpstk {
 
       /// Add to the store directly
       void addEOP(int MJD, EarthOrientation& eop)
-         noexcept;
+         throw();
 
       /// Add to the store by computing using an EOPPrediction
       /// @param MJD integer MJD at which to add EOPs
@@ -107,14 +107,14 @@ namespace gpstk {
       /// @param mjdmin integer MJD desired earliest store time.
       /// @param mjdmax integer MJD desired latest store time.
       void edit(int mjdmin, int mjdmax)
-         noexcept;
+         throw();
 
       /// return the number of entries in the store
-      int size(void) noexcept
+      int size(void) throw()
          { return mapMJD_EOP.size(); }
 
       /// clear the store
-      void clear(void) noexcept
+      void clear(void) throw()
          { mapMJD_EOP.clear(); begMJD = endMJD = -1; }
 
       /// Dump the store to cout.
@@ -122,14 +122,14 @@ namespace gpstk {
       ///  0 start and stop times (MJD), and number of EOPs.
       ///  1 list of all times and EOPs.
       void dump(short detail=0, std::ostream& s=std::cout) const
-         noexcept;
+         throw();
 
       /// Return first time (MJD) in the store.
-      int getFirstTimeMJD(void) noexcept
+      int getFirstTimeMJD(void) throw()
          { return begMJD; }
 
       /// Return last time (MJD) in the store.
-      int getLastTimeMJD(void) noexcept
+      int getLastTimeMJD(void) throw()
          { return endMJD; }
 
       /// Get the EOP at the given epoch. This involves interpolation and corrections

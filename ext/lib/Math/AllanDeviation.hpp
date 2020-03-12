@@ -99,7 +99,7 @@ namespace gpstk
          }
       }
 
-      void dump(std::ostream& s = std::cout) const noexcept
+      void dump(std::ostream& s = std::cout) const throw()
       {
          std::vector<double>::const_iterator i=deviation.begin(),j=time.begin();
          for (; i != deviation.end() && j != time.end(); i++,j++)

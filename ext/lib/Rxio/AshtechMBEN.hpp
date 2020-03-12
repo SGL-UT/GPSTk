@@ -119,7 +119,7 @@ namespace gpstk
              *   the magnitude for those receivers is not 2.18.
              * @return the SNR in dB*Hz.
              */
-         float snr(float chipRate, float magnitude = 4.14) const noexcept;
+         float snr(float chipRate, float magnitude = 4.14) const throw();
          void dump(std::ostream& out) const;
       };
          
@@ -136,7 +136,7 @@ namespace gpstk
       virtual bool checkId(std::string hdrId) const
       {return hdrId==mpcId || hdrId==mcaId;}
 
-      void dump(std::ostream& out) const noexcept;
+      void dump(std::ostream& out) const throw();
             /**
              * @throw std::exception
              * @throw FFStreamError

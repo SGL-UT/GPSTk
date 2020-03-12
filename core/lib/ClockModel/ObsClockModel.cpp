@@ -72,7 +72,7 @@ namespace gpstk
 
 
    ObsClockModel& ObsClockModel::setSvModeMap(const SvModeMap& right)
-      noexcept
+      throw()
    {
       for(int prn = 1; prn <= gpstk::MAX_PRN; prn++)
          modes[SatID(prn, SatID::systemGPS)] = IGNORE;
@@ -173,7 +173,7 @@ namespace gpstk
       return stat;
    }
 
-   void ObsClockModel::dump(ostream& s, short detail) const noexcept
+   void ObsClockModel::dump(ostream& s, short detail) const throw()
    {
       s << "min elev:" << elvmask
         << ", max sigma:" << sigmam

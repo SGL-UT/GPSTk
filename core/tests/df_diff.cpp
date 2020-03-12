@@ -52,7 +52,7 @@ class DFDiff : public gpstk::BasicFramework
 {
 public:
    DFDiff(const string& applName)
-      noexcept
+      throw()
       : gpstk::BasicFramework(
          applName,
          "Differences two input files while allowing small differences"
@@ -75,7 +75,7 @@ public:
       return v;
    }
 
-   bool initialize(int argc, char *argv[]) noexcept
+   bool initialize(int argc, char *argv[]) throw()
    {
       gpstk::CommandOptionWithAnyArg
          input1Option('1', "input1", "First file to take the input from.", true),

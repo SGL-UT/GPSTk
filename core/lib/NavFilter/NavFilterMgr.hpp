@@ -220,7 +220,7 @@ namespace gpstk
           * SubframeBuf buf(numRx * numCode * numChl * mgr.processingDepth());
           * \endcode
           */
-      unsigned processingDepth() const noexcept;
+      unsigned processingDepth() const throw();
 
          /** This set contains any filters with rejected data after a
           * validate() or finalize() call.  The set will be cleared at

@@ -64,7 +64,7 @@ namespace gpstk
    public:
       
       GPSOrbElemStore()
-         noexcept
+         throw()
       {
          initialTime.setTimeSystem(TimeSystem::Any);
          finalTime.setTimeSystem(TimeSystem::Any);
@@ -76,7 +76,7 @@ namespace gpstk
       { clear();}
 
       void dump(std::ostream& s=std::cout, short detail=0) const
-         noexcept;
+         throw();
 
    }; // end class
 

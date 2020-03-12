@@ -48,7 +48,7 @@ public:
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Woverloaded-virtual"
    virtual bool initialize(int argc, char *argv[])
-      noexcept;
+      throw();
 #pragma clang diagnostic pop
     
 protected:
@@ -98,7 +98,7 @@ PosCvt::PosCvt(char* arg0)
 }
 
 bool PosCvt::initialize(int argc, char *argv[])
-   noexcept
+   throw()
 {
    if(!BasicFramework::initialize(argc, argv))
       return false;

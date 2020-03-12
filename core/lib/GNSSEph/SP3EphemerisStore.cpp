@@ -114,7 +114,7 @@ namespace gpstk
 
 
    Xvt SP3EphemerisStore::computeXvt(const SatID& sat, const CommonTime& ttag)
-      const noexcept
+      const throw()
    {
       Xvt rv;
       rv.health = Xvt::HealthStatus::Unavailable;
@@ -167,7 +167,7 @@ namespace gpstk
 
 
    Xvt::HealthStatus SP3EphemerisStore ::
-   getSVHealth(const SatID& sat, const CommonTime& ttag) const noexcept
+   getSVHealth(const SatID& sat, const CommonTime& ttag) const throw()
    {
          // health information is not available in SP3
       return Xvt::HealthStatus::Unused;

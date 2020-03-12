@@ -109,7 +109,7 @@ namespace gpstk
           */
       BasicFramework( const std::string& applName,
                       const std::string& applDesc )
-         noexcept;
+         throw();
 
 
          /// Destructor.
@@ -130,7 +130,7 @@ namespace gpstk
       virtual bool initialize( int argc,
                                char *argv[],
                                bool pretty = true )
-         noexcept;
+         throw();
 
 
          /** Run the program. Processes only once (refer to subclasses
@@ -138,7 +138,7 @@ namespace gpstk
           *
           * @return false if an exception occurred
           */
-      bool run() noexcept;
+      bool run() throw();
 
 
          /** A place to store the exit code for the application.

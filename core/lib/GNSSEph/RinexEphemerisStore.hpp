@@ -61,7 +61,7 @@ namespace gpstk
    {
    public:
       RinexEphemerisStore()
-      noexcept
+      throw()
       { GPSEphemerisStore(); }
 
          /// destructor
@@ -75,7 +75,7 @@ namespace gpstk
           *   2 above, plus dump all the PVT data (use judiciously).
           */
       void dump(std::ostream& s=std::cout, short detail=0)
-         const noexcept;
+         const throw();
 
          /** load the given Rinex file
           * @throw FileMissingException

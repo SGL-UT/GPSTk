@@ -62,7 +62,7 @@ namespace gpstk
          /// defines a store for each SV's ord, indexed by prn
       typedef std::map<SatID, ObsRngDev> ORDMap;
 
-      ORDEpoch& removeORD(const SatID& svid) noexcept
+      ORDEpoch& removeORD(const SatID& svid) throw()
       {
          ORDMap::iterator i = ords.find(svid);
          if(i != ords.end())
@@ -70,7 +70,7 @@ namespace gpstk
          return *this;
       }
    
-      ORDEpoch& applyClockModel(const ClockModel& cm) noexcept
+      ORDEpoch& applyClockModel(const ClockModel& cm) throw()
       {
          if (cm.isOffsetValid(time))
          {
@@ -80,7 +80,7 @@ namespace gpstk
          return *this;
       }
 
-      ORDEpoch& removeOffset(const double offset) noexcept
+      ORDEpoch& removeOffset(const double offset) throw()
       {
          ORDMap::iterator i;
          for (i = ords.begin(); i != ords.end(); i++)
@@ -96,7 +96,7 @@ namespace gpstk
 
       friend std::ostream& operator<<(std::ostream& s, 
                                       const ORDEpoch& oe)
-         noexcept
+         throw()
       {
          s << "t=" << oe.time
            << " clk=" << oe.clockOffset << std::endl;

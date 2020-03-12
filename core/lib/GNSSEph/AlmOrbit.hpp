@@ -58,7 +58,7 @@ namespace gpstk
    {
    public:
          /// Default constructor, initialize to 0.
-      AlmOrbit() noexcept;
+      AlmOrbit() throw();
 
          /// Fill constructor for all fields.
       AlmOrbit(short prn, double aEcc, double ai_offset, double aOMEGAdot,
@@ -71,15 +71,15 @@ namespace gpstk
           */
       Xvt svXvt(const CommonTime& t) const;
 
-      short getPRNID() const noexcept
+      short getPRNID() const throw()
       { return PRN; }
 
          /// returns full week of TRANSMIT TIME
-      short getFullWeek() const noexcept;
-      CommonTime getTransmitTime() const noexcept;
-      CommonTime getToaTime() const noexcept;
-      CommonTime getTimestamp() const noexcept { return getToaTime(); }
-      short getSVHealth() const noexcept { return SV_health; }
+      short getFullWeek() const throw();
+      CommonTime getTransmitTime() const throw();
+      CommonTime getToaTime() const throw();
+      CommonTime getTimestamp() const throw() { return getToaTime(); }
+      short getSVHealth() const throw() { return SV_health; }
 
       void dump(std::ostream& s = std::cout, int verbosity=1) const;
 

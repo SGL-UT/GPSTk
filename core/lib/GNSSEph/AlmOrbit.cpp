@@ -47,7 +47,7 @@
 
 namespace gpstk
 {
-   AlmOrbit :: AlmOrbit() noexcept
+   AlmOrbit :: AlmOrbit() throw()
    {
       ecc = i_offset = OMEGAdot = Ahalf = OMEGA0 = w = M0 = AF0 = AF1 = 0.0;
 
@@ -187,12 +187,12 @@ namespace gpstk
       return sv;
    }
 
-   CommonTime AlmOrbit::getTransmitTime() const noexcept
+   CommonTime AlmOrbit::getTransmitTime() const throw()
    {
       return GPSWeekSecond(getFullWeek(), xmit_time);
    }
 
-   short AlmOrbit::getFullWeek() const noexcept
+   short AlmOrbit::getFullWeek() const throw()
    {
          // return value of the transmit week for the given PRN
       short xmit_week = week;
@@ -205,7 +205,7 @@ namespace gpstk
       return xmit_week;
    }
 
-   CommonTime AlmOrbit::getToaTime() const noexcept
+   CommonTime AlmOrbit::getToaTime() const throw()
    {
       return GPSWeekSecond(week, Toa);
    }

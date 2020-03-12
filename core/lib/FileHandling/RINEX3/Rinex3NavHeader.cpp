@@ -96,7 +96,7 @@ namespace gpstk
 
 
    std::string IonoCorr ::
-   asString() const noexcept
+   asString() const throw()
    {
       switch(type)
       {

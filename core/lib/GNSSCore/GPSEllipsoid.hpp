@@ -67,27 +67,27 @@ namespace gpstk
    public:
          /// defined in ICD-GPS-200C, 20.3.3.4.3.3 and Table 20-IV
          /// @return angular velocity of Earth in radians/sec.
-      virtual double angVelocity() const noexcept
+      virtual double angVelocity() const throw()
       { return 7.2921151467e-5; }
 
          /// defined in ICD-GPS-200C, 20.3.3.4.3.3 and Table 20-IV
          /// @return geocentric gravitational constant in m**3 / s**2
-      virtual double gm() const noexcept
+      virtual double gm() const throw()
       { return 3.986005e14; }
 
          /// derived from ICD-GPS-200C, 20.3.3.4.3.3 and Table 20-IV
          /// @return geocentric gravitational constant in km**3 / s**2
-      virtual double gm_km() const noexcept
+      virtual double gm_km() const throw()
       { return 3.9860034e5; }
 
          /// defined in ICD-GPS-200C, 20.3.4.3
          /// @return Speed of light in m/s.
-      virtual double c() const noexcept
+      virtual double c() const throw()
       { return C_MPS; }
 
          /// derived from ICD-GPS-200C, 20.3.4.3
          /// @return Speed of light in km/s
-      virtual double c_km() const noexcept
+      virtual double c_km() const throw()
       { return (C_MPS / 1000); }
 
    }; // class GPSEllipsoid

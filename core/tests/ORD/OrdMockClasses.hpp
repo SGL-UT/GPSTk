@@ -82,7 +82,7 @@ class MockXvt: public gpstk::Xvt {
 
 class MockTropo: public gpstk::TropModel {
  public:
-    // It turns out that you can't mock a method with a noexcept specifier.
+    // It turns out that you can't mock a method with a throw() specifier.
     // Google test doesn't support it.
     // https://stackoverflow.com/questions/4922595/mocking-a-method-with-throw-specifier
     // The workaround is to create a wrapper method that doesn't throw.

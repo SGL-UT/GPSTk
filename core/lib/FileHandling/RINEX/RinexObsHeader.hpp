@@ -288,7 +288,7 @@ namespace gpstk
       void ParseHeaderRecord(std::string& line);
 
          /// Compute the number of valid header records which WriteHeaderRecords() will write
-      int NumberHeaderRecordsToBeWritten(void) const noexcept;
+      int NumberHeaderRecordsToBeWritten(void) const throw();
 
          /**
           * Write all valid header records to the given stream.

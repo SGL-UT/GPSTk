@@ -129,12 +129,12 @@ namespace gpstk
       void dumpTerse(std::ostream& s = std::cout) const;
 
          /// Accessor for the \c health data member.
-      short getHealth() const noexcept
+      short getHealth() const throw()
       { return health; }
 
          /** Set the \c health data member to the value of h and
           * update the \c healthy flag. */
-      virtual void setHealth(short h) noexcept
+      virtual void setHealth(short h) throw()
       {
          health = h;
          OrbElem::setHealthy(health == 0);
@@ -143,7 +143,7 @@ namespace gpstk
          /** Set the \c health data member to either 0 or non-zero,
           * depending on the requested value of h (true=0,
           * false=non-zero). */
-      virtual void setHealthy(bool h) noexcept
+      virtual void setHealthy(bool h) throw()
       {
          OrbElem::setHealthy(h);
          health = (h ? 0 : 1);

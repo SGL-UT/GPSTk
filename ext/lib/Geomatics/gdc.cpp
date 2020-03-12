@@ -1125,7 +1125,7 @@ void gdc::dumpData(ostream& os, const string msg)
 
 //------------------------------------------------------------------------------------
 void gdc::DumpHits(const vector< FilterHit<double> >& filterResults,
-                     const string& tag, const string& label, int prec) noexcept
+                     const string& tag, const string& label, int prec) throw()
 {
    if(prec == -1) prec = cfg(osprec);
    for(int i=0; i<filterResults.size(); i++) {
@@ -1136,7 +1136,7 @@ void gdc::DumpHits(const vector< FilterHit<double> >& filterResults,
 }
 
 //------------------------------------------------------------------------------------
-void gdc::DumpArcs(const string& tag, const string& label, int prec) noexcept
+void gdc::DumpArcs(const string& tag, const string& label, int prec) throw()
 {
    if(prec == -1) prec = cfg(osprec);
    int i(1);
@@ -1150,7 +1150,7 @@ void gdc::DumpArcs(const string& tag, const string& label, int prec) noexcept
 
 //------------------------------------------------------------------------------------
 // build the string that is returned by the discontinuity corrector
-string gdc::returnMessage(int prec, int wid) noexcept
+string gdc::returnMessage(int prec, int wid) throw()
 {
    int minpts(cfg(MinPts));
    string retmsg;

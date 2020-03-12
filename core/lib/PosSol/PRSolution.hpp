@@ -79,11 +79,11 @@ namespace gpstk
          lab[0]="ECEF_X";  lab[1]="ECEF_Y"; lab[2]="ECEF_Z";
       }
 
-      void setMessage(std::string m) noexcept { msg = m; }
-      std::string getMessage(void) const noexcept { return msg; }
+      void setMessage(std::string m) throw() { msg = m; }
+      std::string getMessage(void) const throw() { return msg; }
 
       void setLabels(std::string lab1, std::string lab2, std::string lab3)
-         noexcept
+         throw()
       { lab[0]=lab1; lab[1]=lab2; lab[2]=lab3; }
 
       Vector<double> getSol(void) const
@@ -97,7 +97,7 @@ namespace gpstk
 
       int getN(void) const { return N; }
 
-      void reset(void) noexcept
+      void reset(void) throw()
       {
          N = 0;
          sumInfo = Matrix<double>();
@@ -212,14 +212,14 @@ namespace gpstk
       Vector<double> APSolution;
 
          /// constructor
-      PRSMemory() noexcept { reset(); }
+      PRSMemory() throw() { reset(); }
 
          /// destructor
-      ~PRSMemory() noexcept { }
+      ~PRSMemory() throw() { }
 
          /** reset counters, etc.; call at construction and any time
           * for 'start over' */
-      void reset(void) noexcept
+      void reset(void) throw()
       {
          fixedAPriori = false;
          nsol = ndata = 0;
@@ -240,7 +240,7 @@ namespace gpstk
 
          /// Fix the apriori solution to the given constant value (XYZ,m)
       void fixAPSolution(const double& X, const double& Y, const double& Z)
-         noexcept
+         throw()
       {
          fixedAPrioriPos[0] = X;
          fixedAPrioriPos[1] = Y;
@@ -289,7 +289,7 @@ namespace gpstk
          /** update apriori solution with a known solution; this is
           * done at the end of both SimplePRSolution() and
           * RAIMCompute() */
-      void updateAPSolution(const Vector<double>& Sol) noexcept
+      void updateAPSolution(const Vector<double>& Sol) throw()
       {
          APSolution = Sol;
          if(fixedAPriori)
@@ -410,7 +410,7 @@ namespace gpstk
    {
    public:
          /// Constructor
-      PRSolution() noexcept : RMSLimit(6.5),
+      PRSolution() throw() : RMSLimit(6.5),
          SlopeLimit(1000.),
          NSatsReject(-1),
          MaxNIterations(10),
@@ -419,7 +419,7 @@ namespace gpstk
          Valid(false)
       {}
          /// Return the status of solution
-      bool isValid() const noexcept { return Valid; }
+      bool isValid() const throw() { return Valid; }
 
          // input parameters: -------------------------------------------------
 
@@ -591,7 +591,7 @@ namespace gpstk
                             std::vector<SatID::SatelliteSystem>& Syss,
                             const std::vector<double>& Pseudorange,
                             const XvtStore<SatID> *pEph,
-                            Matrix<double>& SVP) const noexcept;
+                            Matrix<double>& SVP) const throw();
 
          /** Compute a single autonomous pseudorange solution.  On
           * output, all the member data is filled with results.  Input
@@ -723,39 +723,39 @@ namespace gpstk
           * and V/NV */
       std::string outputPOSString(std::string tag, int iret=-99,
                                   const Vector<double>& Vec=PRSNullVector)
-         noexcept;
+         throw();
 
          /// return string of {SYS clock} for all systems, error code and V/NV
-      std::string outputCLKString(std::string tag, int iret=-99) noexcept;
+      std::string outputCLKString(std::string tag, int iret=-99) throw();
 
          /// return string of info in POS and CLK
       std::string outputNAVString(std::string tag, int iret=-99,
                                   const Vector<double>& Vec=PRSNullVector)
-         noexcept;
+         throw();
 
          /** return string of Nsvs, RMS residual, TDOP, PDOP, GDOP,
           * Slope, niter, conv, satellites, error code and V/NV */
-      std::string outputRMSString(std::string tag, int iret=-99) noexcept;
-      std::string outputValidString(int iret=-99) noexcept;
+      std::string outputRMSString(std::string tag, int iret=-99) throw();
+      std::string outputValidString(int iret=-99) throw();
 
          /// return string of NAV and RMS strings
       std::string outputString(std::string tag, int iret=-99,
                                const Vector<double>& Vec=PRSNullVector)
-         noexcept;
+         throw();
          /** return string of the form "#tag label etc" which is
           * header for data strings */
-      std::string outputStringHeader(std::string tag) noexcept
+      std::string outputStringHeader(std::string tag) throw()
       { return outputString(tag,-999); }
 
          /// A convenience for printing the error code (return value)
-      std::string errorCodeString(int iret) noexcept;
+      std::string errorCodeString(int iret) throw();
 
          /// A convenience for printing the current configuarion
-      std::string configString(std::string tag) noexcept;
+      std::string configString(std::string tag) throw();
 
          /// Set current time
 
-      void setTime(const CommonTime& ct) noexcept
+      void setTime(const CommonTime& ct) throw()
       { currTime = ct; }
 
    private:

@@ -144,7 +144,7 @@ namespace gpstk
             //@}
 
             /// convert DCB structure to a string
-         std::string toString() const noexcept
+         std::string toString() const throw()
          {
             std::string line(3, ' ');
             line += std::string(3, '0');

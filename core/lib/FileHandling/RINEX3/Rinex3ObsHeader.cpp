@@ -251,7 +251,7 @@ namespace gpstk
       // This function computes the number of valid header records
       // which writeHeaderRecords will write.
       // NB not used in Rinex3Obs....
-   int Rinex3ObsHeader::numberHeaderRecordsToBeWritten(void) const noexcept
+   int Rinex3ObsHeader::numberHeaderRecordsToBeWritten(void) const throw()
    {
       int n = 0;
 

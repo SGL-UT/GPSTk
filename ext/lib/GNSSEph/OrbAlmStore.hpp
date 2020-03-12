@@ -84,7 +84,7 @@ namespace gpstk
    public:
 
       OrbAlmStore()
-         noexcept
+         throw()
          : initialTime(CommonTime::END_OF_TIME),
            finalTime(CommonTime::BEGINNING_OF_TIME)
       {
@@ -121,14 +121,14 @@ namespace gpstk
           * @param[in] t the time to look up
           * @return the Xvt of the object at the indicated time */
       virtual Xvt computeXvt(const SatID& id, const CommonTime& t) const
-         noexcept;
+         throw();
 
          /** Get the satellite health at a specific time.
           * @param[in] id the object's identifier
           * @param[in] t the time to look up
           * @return the health status of the object at the indicated time. */
       virtual Xvt::HealthStatus getSVHealth(const SatID& id,
-                                            const CommonTime& t) const noexcept;
+                                            const CommonTime& t) const throw();
 
 
       /// As getXvt( ) with the additional check that the elements used
@@ -143,7 +143,7 @@ namespace gpstk
       /// @param[in] s the stream to receive the output; defaults to cout
       /// @param[in] detail the level of detail to provide
       virtual void dump( std::ostream& s = std::cout, short detail = 0 ) const
-         noexcept;
+         throw();
 
       /// Edit the dataset, removing data outside the indicated time interval
       /// @param tmin defines the beginning of the time interval, included
@@ -151,17 +151,17 @@ namespace gpstk
       /// [tmin, tmax)
       virtual void edit( const CommonTime& tmin,
                          const CommonTime& tmax = CommonTime::END_OF_TIME )
-         noexcept;
+         throw();
 
       /// Return time system
-      virtual TimeSystem getTimeSystem(void) const noexcept
+      virtual TimeSystem getTimeSystem(void) const throw()
          { return TimeSystem::Any; }
 
       /// Determine the earliest time for which this object can successfully
       /// determine the Xvt for any satellite.
       /// @return The initial time
       virtual CommonTime getInitialTime() const
-         noexcept
+         throw()
       { return initialTime; }
 
 
@@ -169,19 +169,19 @@ namespace gpstk
       /// determine the Xvt for any satellite.
       /// @return The final time
       virtual CommonTime getFinalTime() const
-         noexcept
+         throw()
       { return finalTime; }
 
       virtual bool velocityIsPresent()
-         const noexcept
+         const throw()
       { return true; }
 
       /// Return true if velocity data is present in the store
-      virtual bool hasVelocity() const noexcept
+      virtual bool hasVelocity() const throw()
       { return true; }
 
       /// Return true if the given IndexType is present in the store
-      virtual bool isPresent(const SatID& sat) const noexcept
+      virtual bool isPresent(const SatID& sat) const throw()
       {
          if(subjectAlmMap.find(sat) != subjectAlmMap.end()) return true;
          return false;
@@ -227,7 +227,7 @@ namespace gpstk
 
       /// Remove all data from this collection.
       virtual void clear()
-         noexcept;
+         throw();
 
       /// Get the number of OrbAlm objects in this collection.
       /// @return the number of OrbAlm records in the map
@@ -241,11 +241,11 @@ namespace gpstk
       ///        1   Return the size of the "subject almanac" store.
       ///        2   Return the size of the "transmitted almanac" store.
       virtual unsigned size(unsigned short choice = 0) const
-         noexcept;
+         throw();
       virtual unsigned sizeSubjAlm(const SatID& subjID) const
-         noexcept;
+         throw();
       virtual unsigned sizeXmitAlm(const SatID& xmitID) const
-         noexcept;
+         throw();
 
          /**
           * @throw InvalidRequest
@@ -429,7 +429,7 @@ namespace gpstk
       }
 
      // virtual void dumpOnePRN( std::ostream& s = std::cout, OrbElemMap& em) const
-     //    noexcept;
+     //    throw();
 
    }; // end class
 

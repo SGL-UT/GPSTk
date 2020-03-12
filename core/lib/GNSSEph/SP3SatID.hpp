@@ -62,10 +62,10 @@ namespace gpstk
    public:
 
          /// empty constructor, creates an invalid object
-      SP3SatID() noexcept { id=-1; system=systemGPS; }
+      SP3SatID() throw() { id=-1; system=systemGPS; }
 
          /// explicit constructor, no defaults, SP3 systems only
-      SP3SatID(int p, SatelliteSystem s) noexcept
+      SP3SatID(int p, SatelliteSystem s) throw()
       {
          id = p; system = s;
          switch(system) {
@@ -93,16 +93,16 @@ namespace gpstk
       }
 
          /// cast SatID to SP3SatID
-      SP3SatID(const SatID& sat) noexcept
+      SP3SatID(const SatID& sat) throw()
       { *this = SP3SatID(sat.id,sat.system); }
 
          /// set the fill character used in output
          /// return the current fill character
-      char setfill(char c) noexcept
+      char setfill(char c) throw()
       { char csave=fillchar; fillchar=c; return csave; }
 
          /// get the fill character used in output
-      char getfill() noexcept
+      char getfill() throw()
       { return fillchar; }
 
          // operator=, copy constructor and destructor built by compiler
@@ -148,7 +148,7 @@ namespace gpstk
          /// return a character based on the system
          /// return the single-character system descriptor
          /// @note return only SP3 types, for non-SP3 systems return '?'
-      char systemChar() const noexcept
+      char systemChar() const throw()
       {
          switch (system) {
             case systemGPS:     return 'G';
@@ -163,7 +163,7 @@ namespace gpstk
          }
       };
 
-      std::string systemString() const noexcept
+      std::string systemString() const throw()
       {
          switch (system) {
             case systemGPS:     return "GPS";
@@ -230,7 +230,7 @@ namespace gpstk
       }
 
          /// convert to string
-      std::string toString() const noexcept
+      std::string toString() const throw()
       {
          std::ostringstream oss;
          oss.fill(fillchar);

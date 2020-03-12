@@ -168,7 +168,7 @@ namespace gpstk
 
 
          /// Destructor.
-      virtual ~Bancroft() noexcept {};
+      virtual ~Bancroft() throw() {};
 
 
    }; // end class Bancroft

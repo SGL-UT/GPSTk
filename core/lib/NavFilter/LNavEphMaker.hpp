@@ -106,11 +106,11 @@ namespace gpstk
       virtual void finalize(NavMsgList& msgBitsOut);
 
          /// Internally stores 3 epochs worth of subframe data.
-      virtual unsigned processingDepth() const noexcept
+      virtual unsigned processingDepth() const throw()
       { return 3; }
 
          /// Return the filter name.
-      virtual std::string filterName() const noexcept
+      virtual std::string filterName() const throw()
       { return "EphMaker"; }
 
          /// Storage for the assembly of ephemerides.

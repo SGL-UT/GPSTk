@@ -122,7 +122,7 @@ namespace gpstk
 
       /// set to value of full MJD
       /// @param mjd long double MJD
-      void setMJD(long double mjd) noexcept
+      void setMJD(long double mjd) throw()
       {
          iMJD = long(mjd);
          dSOD = (mjd - static_cast<double>(iMJD)) * 86400.0;
@@ -130,26 +130,26 @@ namespace gpstk
 
       /// Compute MJD
       /// @return long integer MJD
-      long lMJD(void) const noexcept
+      long lMJD(void) const throw()
       {
          return iMJD;
       }
 
       /// Compute MJD
       /// @return full double MJD
-      double dMJD(void) const noexcept
+      double dMJD(void) const throw()
       {
          return (static_cast<double>(iMJD) + dSOD/86400.);
       }
 
       /// @return seconds of day
-      double secOfDay(void) const noexcept
+      double secOfDay(void) const throw()
       {
          return dSOD;
       }
 
       /// @return year
-      int year(void) const noexcept
+      int year(void) const throw()
       {
          long jday(static_cast<long>(iMJD + dSOD/SEC_PER_DAY + MJD_JDAY));
          int yy,mm,dd;
@@ -190,7 +190,7 @@ namespace gpstk
       }
 
       /// const cast EphTime to CommonTime
-      operator CommonTime() const noexcept
+      operator CommonTime() const throw()
       {
          MJD ctmjd;
          ctmjd.mjd = static_cast<long double>(iMJD + dSOD/SEC_PER_DAY);
@@ -201,7 +201,7 @@ namespace gpstk
 
       // no this is not a duplicate of the previous function
       /// non-const cast EphTime to CommonTime
-      operator CommonTime() noexcept
+      operator CommonTime() throw()
       {
          MJD ctmjd;
          ctmjd.mjd = static_cast<long double>(iMJD + dSOD/SEC_PER_DAY);

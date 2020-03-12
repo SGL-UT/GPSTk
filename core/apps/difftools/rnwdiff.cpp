@@ -60,7 +60,7 @@ public:
            precisionOption('p',"precision", "Ignore diffs smaller than "
               "(data * (10 ^ -ARG). Default = 13")
    {}
-   virtual bool initialize(int argc, char* argv[]) noexcept;
+   virtual bool initialize(int argc, char* argv[]) throw();
 
 protected:
    virtual void process();
@@ -71,7 +71,7 @@ private:
    static const int DEFAULT_PRECISION = 13;
 };
 
-bool RNWDiff::initialize(int argc, char* argv[]) noexcept
+bool RNWDiff::initialize(int argc, char* argv[]) throw()
 {
    if (!DiffFrame::initialize(argc, argv))
    {

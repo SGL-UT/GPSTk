@@ -247,7 +247,7 @@ namespace gpstk
 
    // special matrices
    template <class T>
-   SparseMatrix<T> identSparse(const unsigned int dim) noexcept;
+   SparseMatrix<T> identSparse(const unsigned int dim) throw();
 
       /** products MT*M, M*MT, M*C*MT etc
        * MT * M
@@ -369,7 +369,7 @@ namespace gpstk
                                           T *ptrSmall, T *ptrBig);
       friend SparseMatrix<T> inverseViaCholesky<T>(const SparseMatrix<T>& A);
       // special matrices
-      friend SparseMatrix<T> identSparse<T>(const unsigned int dim) noexcept;
+      friend SparseMatrix<T> identSparse<T>(const unsigned int dim) throw();
 
       // MT * M
       friend SparseMatrix<T> transposeTimesMatrix<T>(const SparseMatrix<T>& M);
@@ -1454,7 +1454,7 @@ namespace gpstk
    /// @param dim dimension of desired identity matrix (dim x dim)
    /// @return identity matrix
    template <class T>
-   SparseMatrix<T> identSparse(const unsigned int dim) noexcept
+   SparseMatrix<T> identSparse(const unsigned int dim) throw()
    {
       if(dim == 0) return SparseMatrix<T>();
 

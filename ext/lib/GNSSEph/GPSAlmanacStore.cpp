@@ -69,7 +69,7 @@ namespace gpstk
       return a.getSVHealth();
    }
 
-   bool GPSAlmanacStore::addAlmanac(const AlmOrbit& alm) noexcept
+   bool GPSAlmanacStore::addAlmanac(const AlmOrbit& alm) throw()
    {
       if ((alm.getPRNID() >= 1) && (alm.getPRNID() <= MAX_PRN_GPS))
       {
@@ -87,7 +87,7 @@ namespace gpstk
       return false;
    }
 
-   bool GPSAlmanacStore::addAlmanac(const EngAlmanac& alm) noexcept
+   bool GPSAlmanacStore::addAlmanac(const EngAlmanac& alm) throw()
    {
       AlmOrbits ao = alm.getAlmOrbElems();
       AlmOrbits::const_iterator oci;
@@ -207,14 +207,14 @@ namespace gpstk
 
 
    void GPSAlmanacStore::edit(const CommonTime& tmin, const CommonTime& tmax)
-      noexcept
+      throw()
    {
       std::cout << "Not yet implimented" << std::endl;
    }
 
 
    void GPSAlmanacStore::dump(std::ostream& s, short detail)
-      const noexcept
+      const throw()
    {
       UBAMap::const_iterator i;
       EngAlmMap::const_iterator j;

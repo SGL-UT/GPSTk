@@ -114,7 +114,7 @@ namespace gpstk
 
       // Insert a new IonexData object into the store
    void IonexStore::addMap(const IonexData& iod)
-      noexcept
+      throw()
    {
 
       CommonTime t(iod.time);
@@ -148,7 +148,7 @@ namespace gpstk
        */
    void IonexStore::dump( std::ostream& s,
                           short detail ) const
-      noexcept
+      throw()
    {
 
       s << "IonexStore dump() function" << std::endl;
@@ -238,7 +238,7 @@ namespace gpstk
 
       // Remove all data
    void IonexStore::clear()
-      noexcept
+      throw()
    {
 
       inxMaps.clear();

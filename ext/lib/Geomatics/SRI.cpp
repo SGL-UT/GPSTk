@@ -70,7 +70,7 @@ using namespace StringUtils;
    //---------------------------------------------------------------------------------
    // constructor given the dimension N.
    SRI::SRI(const unsigned int N)
-      noexcept
+      throw()
    {
       R = Matrix<double>(N,N,0.0);
       Z = Vector<double>(N,0.0);
@@ -80,7 +80,7 @@ using namespace StringUtils;
    // --------------------------------------------------------------------------------
    // constructor given a Namelist, its dimension determines the SRI dimension.
    SRI::SRI(const Namelist& nl)
-      noexcept
+      throw()
    {
       if(nl.size() <= 0) return;
       R = Matrix<double>(nl.size(),nl.size(),0.0);
@@ -129,7 +129,7 @@ using namespace StringUtils;
    // --------------------------------------------------------------------------------
    // copy constructor
    SRI::SRI(const SRI& s)
-      noexcept
+      throw()
    {
       R = s.R;
       Z = s.Z;
@@ -139,7 +139,7 @@ using namespace StringUtils;
    // --------------------------------------------------------------------------------
    // operator=
    SRI& SRI::operator=(const SRI& right)
-      noexcept
+      throw()
    {
       R = right.R;
       Z = right.Z;
@@ -483,7 +483,7 @@ using namespace StringUtils;
    // Zero out the nth row of R and the nth element of Z, removing all
    // information about that element.
    void SRI::zeroOne(const unsigned int n)
-      noexcept
+      throw()
    {
       if(n >= R.rows())
          return;
@@ -498,7 +498,7 @@ using namespace StringUtils;
    // information about those elements. Default value of the input is 0,
    // meaning zero out the entire SRI.
    void SRI::zeroAll(const unsigned int n)
-      noexcept
+      throw()
    {
       if(n <= 0) {
          R = 0.0;

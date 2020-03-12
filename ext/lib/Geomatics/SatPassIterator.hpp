@@ -66,7 +66,7 @@ public:
                             bool rev=false, bool dbug=false);
 
    /// Restart the iteration, i.e. return to the initial time
-   void reset(bool rev=false, bool dbug=false) noexcept;
+   void reset(bool rev=false, bool dbug=false) throw();
 
    /// Access (all of) the data for the next epoch. As long as this function
    /// returns non-zero, there is more data to be accessed.
@@ -90,13 +90,13 @@ public:
    int next(RinexObsData& robs);
 
    /// Get the first (earliest) time found in the SatPass list.
-   Epoch getFirstTime(void) noexcept { return FirstTime; }
+   Epoch getFirstTime(void) throw() { return FirstTime; }
 
    /// Get the last (latest) time found in the SatPass list.
-   Epoch getLastTime(void) noexcept { return LastTime; }
+   Epoch getLastTime(void) throw() { return LastTime; }
 
    /// @return the earliest time of good data in this SatPass list
-   Epoch getFirstGoodTime(void) const noexcept {
+   Epoch getFirstGoodTime(void) const throw() {
       Epoch ttag = LastTime;
       for(int i=0; i<SPList.size(); i++)
          if(SPList[i].getFirstGoodTime() < ttag)
@@ -105,7 +105,7 @@ public:
    }
 
    /// @return the latest time of good data in this SatPass list
-   Epoch getLastGoodTime(void) const noexcept {
+   Epoch getLastGoodTime(void) const throw() {
       Epoch ttag = FirstTime;
       for(int i=0; i<SPList.size(); i++)
          if(SPList[i].getLastGoodTime() > ttag)
@@ -114,12 +114,12 @@ public:
    }
 
    /// Get the time interval, which is common to all the SatPass in the list.
-   double getDT(void) noexcept { return DT; }
+   double getDT(void) throw() { return DT; }
 
    /// get a map of pairs of indexes for the current epoch. call this after calling
    /// next() to get pairs (i,j) where the data returned by next() is the same as
    /// SatPassList[i].data(j,<obstype>), for each i in the map, and j=map[i].
-   std::map<unsigned int,unsigned int> getIndexes(void) noexcept
+   std::map<unsigned int,unsigned int> getIndexes(void) throw()
       { return nextIndexMap; }
 
 private:

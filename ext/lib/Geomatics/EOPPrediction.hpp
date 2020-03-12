@@ -93,7 +93,7 @@ namespace gpstk {
    
       /// access the time (MJD) of validity of these parameters;
       /// the range of validity is 'this' through 'this'+7.
-      int getValidTime(void) const noexcept
+      int getValidTime(void) const throw()
          { return int(tv+0.5); }
 
       /// load the EOPPrediction in the given file
@@ -125,7 +125,7 @@ namespace gpstk {
       /// @param mjd Time (MJD) at which to compute the earth orientation parameters.
       /// @return the EarthOrientation object at mjd.
       EarthOrientation computeEOP(double& mjd) const
-         noexcept;
+         throw();
    
       /// Stream output for the EOPPrediction, in format of EOPP###.txt files.
       /// @param os stream to append formatted EOPPrediction to.

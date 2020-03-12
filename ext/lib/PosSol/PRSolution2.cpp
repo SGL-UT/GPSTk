@@ -67,7 +67,7 @@ public:
 
       /// Default constructor
    Combinations(void)
-      noexcept
+      throw()
    {
       nc = n = k = 0;
       Index = NULL;
@@ -89,7 +89,7 @@ public:
    
       /// copy constructor
    Combinations(const Combinations& right)
-      noexcept
+      throw()
    {
       *this = right;
    }
@@ -104,7 +104,7 @@ public:
    
       /// Assignment operator.
    Combinations& operator=(const Combinations& right)
-      noexcept
+      throw()
    {
       this->~Combinations();
       init(right.n,right.k);
@@ -118,12 +118,12 @@ public:
    
       /// Compute the next combination, returning the number of Combinations computed
       /// so far; if there are no more Combinations, return -1.
-   int Next(void) noexcept;
+   int Next(void) throw();
    
       /// Return index i (0 <= i < n) of jth selection (0 <= j < k);
       /// if j is out of range, return -1.
    int Selection(int j)
-      noexcept
+      throw()
    {
       if (j < 0 || j >= k)
          return -1;
@@ -133,7 +133,7 @@ public:
       /// Return true if the given index j (0 <= j < n) is
       /// currently selected (i.e. if j = Selection(i) for some i)
    bool isSelected(int j)
-      noexcept
+      throw()
    {
       for (int i=0; i<k; i++)
       {
@@ -150,7 +150,7 @@ private:
    void init(int N, int K);
    
       /// Recursive function to increment Index[j].
-   int Increment(int j) noexcept;
+   int Increment(int j) throw();
    
    int nc;         ///< number of Combinations computed so far
    int k,n;        ///< Combinations of n things taken k at a time, given at c'tor
@@ -161,7 +161,7 @@ private:
 // ----------------------------------------------------------------------------
 
 int Combinations::Next(void)
-   noexcept
+   throw()
 {
    if (k < 1)
       return -1;
@@ -171,7 +171,7 @@ int Combinations::Next(void)
 }
 
 int Combinations::Increment(int j)
-   noexcept
+   throw()
 {
    if (Index[j] < n-k+j) {        // can this index be incremented?
       Index[j]++;
@@ -512,7 +512,7 @@ namespace gpstk
                                              const XvtStore<SatID>& Eph,
                                              Matrix<double>& SVP,
                                              ostream *pDebugStream)
-      noexcept
+      throw()
    {
       int i,j,nsvs,N=Satellite.size();
       CommonTime tx;                // transmit time

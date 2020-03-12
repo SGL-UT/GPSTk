@@ -49,7 +49,7 @@ namespace gpstk
 {
    using namespace std;
 
-   void LinearClockModel::reset() noexcept
+   void LinearClockModel::reset() throw()
    {
       startTime = gpstk::CommonTime::END_OF_TIME;
       endTime = gpstk::CommonTime::BEGINNING_OF_TIME;
@@ -139,7 +139,7 @@ namespace gpstk
       }
    }
 
-   void LinearClockModel::dump(std::ostream& s, short detail) const noexcept
+   void LinearClockModel::dump(std::ostream& s, short detail) const throw()
    {
       s << "base: " << baseTime
         << ", start: " << startTime

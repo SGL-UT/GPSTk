@@ -92,7 +92,7 @@ public:
    int initializeSites(std::vector<std::string>& sites, std::string filename);
 
    /// Return true if the given site name has been initialized, otherwise false.
-   bool isValid(std::string site) noexcept
+   bool isValid(std::string site) throw()
    { return (coefficientMap.find(site) != coefficientMap.end()); }
 
    /// Compute the site displacement vector at the given time for the given site.
@@ -121,7 +121,7 @@ public:
 
    /// Return the recorded latitude, longitude and ht(=0) for the given site.
    /// Return value of (0.0,0.0,0.0) probably means the position was not found.
-   Triple getPosition(std::string site) noexcept
+   Triple getPosition(std::string site) throw()
    {
       Triple t(0.0,0.0,0.0);
       std::map<std::string, std::vector<double> >::const_iterator it;
@@ -136,7 +136,7 @@ public:
 private:
    // Compute the astronomical angular arguments for each of the 11 tidal modes.
    // Ref IERS 1996 pg 53.
-   //void SchwiderskiArg(int iyear, int doy, double sod, double* angles) noexcept;
+   //void SchwiderskiArg(int iyear, int doy, double sod, double* angles) throw();
 
    /// map of (site name, coefficient array), created by call to initializeSites()
    std::map<std::string, std::vector<double> > coefficientMap;

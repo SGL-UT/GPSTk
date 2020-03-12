@@ -75,7 +75,7 @@ namespace gpstk
       };
 
          /// default constructor
-      EngNav() noexcept;
+      EngNav() throw();
 
          /// destructor
       virtual ~EngNav() {}
@@ -181,7 +181,7 @@ namespace gpstk
       static bool subframeConvert(const long input[10],
                                   int gpsWeek,
                                   double output[60])
-         noexcept;
+         throw();
 
          /**
           * Given 10 words of a navigation message subframe (as
@@ -198,7 +198,7 @@ namespace gpstk
       static bool subframeConvert(const uint32_t input[10],
                                   short gpsWeek,
                                   double output[60])
-         noexcept;
+         throw();
 
          /** Convert the week number in \c out from 8-bit to full
           * using the full week number \c gpsWeek.
@@ -208,7 +208,7 @@ namespace gpstk
           * each other.
           */
       static bool convert8bit(int gpsWeek, double *out)
-         noexcept;
+         throw();
 
          /** Convert the week number in \c out from 10-bit to full
           * using the full week number \c gpsWeek.
@@ -218,7 +218,7 @@ namespace gpstk
           * each other.
           */
       static bool convert10bit(int gpsWeek, double *out)
-         noexcept;
+         throw();
 
          /** Convert the week number in \c out from 8 or 10-bit to full
           * using the full week number \c fullGPSWeek.
@@ -258,9 +258,9 @@ namespace gpstk
           * @return the pattern ID as defined in the above table.
           */
       static short getSubframePattern(const long input[10])
-         noexcept;
+         throw();
       static short getSubframePattern(const uint32_t input[10])
-         noexcept;
+         throw();
 
          /**
           * Given an SV/Page ID (1-63), set the subframe ID and page
@@ -275,7 +275,7 @@ namespace gpstk
           * be one of the possible pages for that SV/Page ID.
           */
       static bool sv2page(short svpgid, short& subframe, short& page)
-         noexcept;
+         throw();
 
 
          /**
@@ -289,7 +289,7 @@ namespace gpstk
           * be one of the possible pages for that SV/Page ID.
           */
       static bool sfpage2svid(short subframe, short page, short& svpgid)
-         noexcept;
+         throw();
 
 
          /**
@@ -303,7 +303,7 @@ namespace gpstk
           */
       static bool zcount2page(unsigned long zcount,
                               short& subframe, short& page)
-         noexcept;
+         throw();
 
          /**
           * Emit human-readable instance data to the specified stream.
@@ -377,7 +377,7 @@ namespace gpstk
       static void convertQuant(const uint32_t input[10],
                                double output[60],
                                DecodeQuant *p)
-         noexcept;
+         throw();
    }; // class EngNav
 
       //@}

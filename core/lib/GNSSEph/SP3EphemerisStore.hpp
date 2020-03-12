@@ -136,7 +136,7 @@ namespace gpstk
    public:
 
          /// Default constructor
-      SP3EphemerisStore() noexcept : storeTimeSystem(TimeSystem::Any),
+      SP3EphemerisStore() throw() : storeTimeSystem(TimeSystem::Any),
          useSP3clock(true),
          rejectBadPosFlag(true),
          rejectBadClockFlag(true),
@@ -180,7 +180,7 @@ namespace gpstk
           * @param[in] t the time to look up
           * @return the Xvt of the object at the indicated time */
       virtual Xvt computeXvt(const SatID& id, const CommonTime& t) const
-         noexcept;
+         throw();
 
          /** Get the satellite health at a specific time.
           * @param[in] id the object's identifier
@@ -188,7 +188,7 @@ namespace gpstk
           * @return "Unused" at all times as the SP3 format does not
           *   provide health status. */
       virtual Xvt::HealthStatus getSVHealth(const SatID& id,
-                                            const CommonTime& t) const noexcept;
+                                            const CommonTime& t) const throw();
 
          /** Dump information about the store to an ostream.
           * @param[in] os ostream to receive the output; defaults to std::cout
@@ -199,7 +199,7 @@ namespace gpstk
           *       number of data/sat
           *    2: above plus all the data tables */
       virtual void dump(std::ostream& os = std::cout, short detail = 0)
-         const noexcept
+         const throw()
       {
             // may have to re-write this...
          os << "Dump SP3EphemerisStore:" << std::endl;
@@ -226,18 +226,18 @@ namespace gpstk
           * @param[in] tmin defines the beginning of the time interval
           * @param[in] tmax defines the end of the time interval */
       virtual void edit(const CommonTime& tmin, 
-                        const CommonTime& tmax = CommonTime::END_OF_TIME) noexcept
+                        const CommonTime& tmax = CommonTime::END_OF_TIME) throw()
       {
          posStore.edit(tmin, tmax);
          clkStore.edit(tmin, tmax);
       }
 
          /// Clear the dataset, meaning remove all data
-      virtual void clear(void) noexcept
+      virtual void clear(void) throw()
       { clearPosition(); clearClock(); }
  
          /// Return time system (@note usually GPS, but CANNOT assume so)
-      virtual TimeSystem getTimeSystem(void) const noexcept
+      virtual TimeSystem getTimeSystem(void) const throw()
       { return storeTimeSystem; }
 
          /** Determine the earliest time for which this object can
@@ -253,11 +253,11 @@ namespace gpstk
       virtual CommonTime getFinalTime() const;
 
          /// Return true if IndexType=SatID is present in the data tables
-      virtual bool isPresent(const SatID& sat) const noexcept
+      virtual bool isPresent(const SatID& sat) const throw()
       { return (posStore.isPresent(sat) && clkStore.isPresent(sat)); }
 
          /// Return true if velocity is present in the data tables
-      virtual bool hasVelocity() const noexcept
+      virtual bool hasVelocity() const throw()
       {  return posStore.hasVelocity(); }
 
          // end of XvtStore interface
@@ -271,7 +271,7 @@ namespace gpstk
           *       number of data/sat
           *    2: above plus all the data tables */
       void dumpPosition(std::ostream& os = std::cout, short detail = 0)
-         const noexcept
+         const throw()
       {
          SP3Files.dump(os, detail);
          posStore.dump(os, detail);
@@ -286,7 +286,7 @@ namespace gpstk
           *       number of data/sat
           *    2: above plus all the data tables */
       void dumpClock(std::ostream& os = std::cout, short detail = 0)
-         const noexcept
+         const throw()
       {
          if(useSP3clock)
             SP3Files.dump(os, detail);
@@ -342,12 +342,12 @@ namespace gpstk
 
          /** Clear the position dataset only, meaning remove all data
           * from the tables. */
-      virtual void clearPosition(void) noexcept
+      virtual void clearPosition(void) throw()
       { posStore.clear(); }
 
          /** Clear the clock dataset only, meaning remove all data
           * from the tables. */
-      virtual void clearClock(void) noexcept
+      virtual void clearClock(void) throw()
       { clkStore.clear(); }
 
    
@@ -359,7 +359,7 @@ namespace gpstk
           * RINEX clock.
           * @note will be called by loadRinexClockFile() if clock
           * store is set to SP3. */
-      void useRinexClockData(void) noexcept
+      void useRinexClockData(void) throw()
       {
          if(!useSP3clock) return;
          useSP3clock = false;
@@ -375,7 +375,7 @@ namespace gpstk
          * @note this will also load position data into the position
          * store.  This routine has no effect if the clock store is
          * already set to SP3. */
-      void useSP3ClockData(void) noexcept
+      void useSP3ClockData(void) throw()
       {
          if(useSP3clock) return;
          useSP3clock = true;
@@ -449,50 +449,50 @@ namespace gpstk
 
          /** Get the nominal time step in seconds for the position
           * data and the given sat */
-      double getPositionTimeStep(const SatID& sat) const noexcept
+      double getPositionTimeStep(const SatID& sat) const throw()
       { return posStore.nomTimeStep(sat); }
 
          /** Get the nominal time step in seconds for the clock data
           * and the given sat */
-      double getClockTimeStep(const SatID& sat) const noexcept
+      double getClockTimeStep(const SatID& sat) const throw()
       { return clkStore.nomTimeStep(sat); }
 
 
          /// Get current interpolation order for the position table
-      unsigned int getPositionInterpOrder(void) const noexcept
+      unsigned int getPositionInterpOrder(void) const throw()
       { return posStore.getInterpolationOrder(); }
 
          /** Set the interpolation order for the position table; it is
           * forced to be even. */
-      void setPositionInterpOrder(unsigned int order) noexcept
+      void setPositionInterpOrder(unsigned int order) throw()
       { posStore.setInterpolationOrder(order); }
 
          /** Get current interpolation order for the clock data
           * (meaningless if the interpolation type is linear). */
-      unsigned int getClockInterpOrder(void) noexcept
+      unsigned int getClockInterpOrder(void) throw()
       { return clkStore.getInterpolationOrder(); }
 
          /** Set the interpolation order for the clock table; it is
           * forced to be even.  This is ignored if the clock
           * interpolation type is linear. */
-      void setClockInterpOrder(unsigned int order) noexcept
+      void setClockInterpOrder(unsigned int order) throw()
       { clkStore.setInterpolationOrder(order); }
 
          /** Set the type of clock interpolation to Lagrange (the
           * default); set the order of the interpolation with
           * setClockInterpolationOrder(order); */
-      void setClockLagrangeInterp(void) noexcept
+      void setClockLagrangeInterp(void) throw()
       { clkStore.setLagrangeInterp(); }
 
          /** Set the type of clock interpolation to linear
           * (interpolation order is ignored). */
-      void setClockLinearInterp(void) noexcept
+      void setClockLinearInterp(void) throw()
       { clkStore.setLinearInterp(); }
 
 
          /** Get a list (std::vector) of SatIDs present in both clock
           * and position stores */
-      std::vector<SatID> getSatList(void) const noexcept
+      std::vector<SatID> getSatList(void) const throw()
       {
          std::vector<SatID> posList(posStore.getSatList());
          std::vector<SatID> clkList(clkStore.getSatList());
@@ -523,55 +523,55 @@ namespace gpstk
       }
 
          /// Get a list (std::vector) of SatIDs present in the position store
-      std::vector<SatID> getPositionSatList(void) const noexcept
+      std::vector<SatID> getPositionSatList(void) const throw()
       { return posStore.getSatList(); }
 
          /// Get a list (std::vector) of SatIDs present in the clock store
-      std::vector<SatID> getClockSatList(void) const noexcept
+      std::vector<SatID> getClockSatList(void) const throw()
       { return clkStore.getSatList(); }
 
 
          /// Get the total number of (position) data records in the store
-      inline int ndata(void) const noexcept
+      inline int ndata(void) const throw()
       { return posStore.ndata(); }
 
          /// Get the number of (position) data records for the given sat
-      inline int ndata(const SatID& sat) const noexcept
+      inline int ndata(const SatID& sat) const throw()
       { return posStore.ndata(sat); }
 
          /** Get the number of (position) data records for the given
           * satellite system */
-      inline int ndata(const SatID::SatelliteSystem& sys) const noexcept
+      inline int ndata(const SatID::SatelliteSystem& sys) const throw()
       { return posStore.ndata(sys); }
 
          /// Get the total number of position data records in the store
-      inline int ndataPosition(void) const noexcept
+      inline int ndataPosition(void) const throw()
       { return posStore.ndata(); }
 
          /// Get the number of position data records for the given sat
-      inline int ndataPosition(const SatID& sat) const noexcept
+      inline int ndataPosition(const SatID& sat) const throw()
       { return posStore.ndata(sat); }
 
          /** Get the number of position data records for the given
           * satellite system */
-      inline int ndataPosition(const SatID::SatelliteSystem& sys) const noexcept
+      inline int ndataPosition(const SatID::SatelliteSystem& sys) const throw()
       { return posStore.ndata(sys); }
 
          /// Get the total number of clock data records in the store
-      inline int ndataClock(void) const noexcept
+      inline int ndataClock(void) const throw()
       { return clkStore.ndata(); }
 
          /// Get the number of clock data records for the given sat
-      inline int ndataClock(const SatID& sat) const noexcept
+      inline int ndataClock(const SatID& sat) const throw()
       { return clkStore.ndata(sat); }
 
          /** Get the number of clock data records for the given
           * satellite system */
-      inline int ndataClock(const SatID::SatelliteSystem& sys) const noexcept
+      inline int ndataClock(const SatID::SatelliteSystem& sys) const throw()
       { return clkStore.ndata(sys); }
 
          /// same as ndataPosition()
-      inline int size(void) const noexcept { return ndataPosition(); }
+      inline int size(void) const throw() { return ndataPosition(); }
 
 
          /** Load an SP3 ephemeris file; if the clock store uses RINEX
@@ -687,20 +687,20 @@ namespace gpstk
 
 
          /// Get number of files (all types) in FileStore.
-      int nfiles(void) noexcept
+      int nfiles(void) throw()
       { return (SP3Files.size() + (useSP3clock ? 0 : clkFiles.size())); }
 
          /// Get number of SP3 files in FileStore.
-      int nSP3files(void) noexcept
+      int nSP3files(void) throw()
       { return SP3Files.size(); }
 
          /// Get number of clock files in FileStore.
-      int nClockfiles(void) noexcept
+      int nClockfiles(void) throw()
       { return (useSP3clock ? SP3Files.size() : clkFiles.size()); }
 
 
          /// Return true if there is drift data in the tables
-      virtual bool hasClockDrift() const noexcept
+      virtual bool hasClockDrift() const throw()
       {  return clkStore.hasClockDrift(); }
 
 
@@ -727,100 +727,100 @@ namespace gpstk
 
 
          /// Is gap checking for position on?
-      bool isPosDataGapCheck(void) noexcept
+      bool isPosDataGapCheck(void) throw()
       { return posStore.isDataGapCheck(); }
 
          /// Is gap checking for clock on?
-      bool isClkDataGapCheck(void) noexcept
+      bool isClkDataGapCheck(void) throw()
       { return clkStore.isDataGapCheck(); }
 
          /// Disable checking of data gaps in both position and clock.
-      void disableDataGapCheck(void) noexcept
+      void disableDataGapCheck(void) throw()
       { posStore.disableDataGapCheck(); clkStore.disableDataGapCheck(); }
 
          /// Disable checking of data gaps in position store
-      void disablePosDataGapCheck(void) noexcept
+      void disablePosDataGapCheck(void) throw()
       { posStore.disableDataGapCheck(); }
 
          /// Disable checking of data gaps in clock store
-      void disableClockDataGapCheck(void) noexcept
+      void disableClockDataGapCheck(void) throw()
       { clkStore.disableDataGapCheck(); }
 
          /// Get current gap interval in the position store.
-      double getPosGapInterval(void) noexcept
+      double getPosGapInterval(void) throw()
       { return posStore.getGapInterval(); }
 
          /// Get current gap interval in the clock store.
-      double getClockGapInterval(void) noexcept
+      double getClockGapInterval(void) throw()
       { return clkStore.getGapInterval(); }
 
          /** Set gap interval and turn on gap checking in the position
           * store. There is no default. */
-      void setPosGapInterval(double interval) noexcept
+      void setPosGapInterval(double interval) throw()
       { posStore.setGapInterval(interval); }
 
          /** Set gap interval and turn on gap checking in the clock
           * store.  There is no default. */
-      void setClockGapInterval(double interval) noexcept
+      void setClockGapInterval(double interval) throw()
       { clkStore.setGapInterval(interval); }
 
 
          /// Is interval checking for position on?
-      bool isPosIntervalCheck(void) noexcept
+      bool isPosIntervalCheck(void) throw()
       { return posStore.isIntervalCheck(); }
 
          /// Is interval checking for clock on?
-      bool isClkIntervalCheck(void) noexcept
+      bool isClkIntervalCheck(void) throw()
       { return clkStore.isIntervalCheck(); }
 
          /// Disable checking of maximum interval in both position and clock.
-      void disableIntervalCheck(void) noexcept
+      void disableIntervalCheck(void) throw()
       { posStore.disableIntervalCheck(); clkStore.disableIntervalCheck(); }
 
          /// Disable checking of maximum interval in position store
-      void disablePosIntervalCheck(void) noexcept
+      void disablePosIntervalCheck(void) throw()
       { posStore.disableIntervalCheck(); }
 
          /// Disable checking of maximum interval in clock store
-      void disableClockIntervalCheck(void) noexcept
+      void disableClockIntervalCheck(void) throw()
       { clkStore.disableIntervalCheck(); }
 
          /// Get current maximum interval in the position store
-      double getPosMaxInterval(void) noexcept
+      double getPosMaxInterval(void) throw()
       { return posStore.getMaxInterval(); }
 
          /// Get current maximum interval in the clock store
-      double getClockMaxInterval(void) noexcept
+      double getClockMaxInterval(void) throw()
       { return clkStore.getMaxInterval(); }
 
          /** Set maximum interval and turn on interval checking in the
           * position store There is no default. */
-      void setPosMaxInterval(double interval) noexcept
+      void setPosMaxInterval(double interval) throw()
       { posStore.setMaxInterval(interval); }
 
          /** Set maximum interval and turn on interval checking in the
           * clock store There is no default. */
-      void setClockMaxInterval(double interval) noexcept
+      void setClockMaxInterval(double interval) throw()
       { clkStore.setMaxInterval(interval); }
 
 
          /// @deprecated
-      virtual bool velocityIsPresent() const noexcept
+      virtual bool velocityIsPresent() const throw()
       { return posStore.hasVelocity(); }
 
          /// @deprecated
-      virtual bool clockIsPresent() const noexcept
+      virtual bool clockIsPresent() const throw()
       { return true; }
 
          /** @deprecated
           * Get current (position) interpolation order */
-      unsigned int getInterpolationOrder(void) noexcept
+      unsigned int getInterpolationOrder(void) throw()
       { return getPositionInterpOrder(); }
 
          /** @deprecated
           * Set the (position) interpolation order for the position table;
           * it is forced to be even. */
-      void setInterpolationOrder(unsigned int order) noexcept
+      void setInterpolationOrder(unsigned int order) throw()
       { setPositionInterpOrder(order); }
 
    }; // end class SP3EphemerisStore

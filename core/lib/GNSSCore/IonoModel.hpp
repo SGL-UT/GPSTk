@@ -83,10 +83,10 @@ namespace gpstk
       };
       
          /// default constructor, creates an invalid model
-      IonoModel() noexcept : valid(false) {}
+      IonoModel() throw() : valid(false) {}
       
          /// destructor
-      virtual ~IonoModel() noexcept {}
+      virtual ~IonoModel() throw() {}
       
          /**
           * constructor.
@@ -95,27 +95,27 @@ namespace gpstk
           * \param a an array containing the four alpha terms
           * \param b an array containing the four beta terms
           */
-      IonoModel(const double a[4], const double b[4]) noexcept;
+      IonoModel(const double a[4], const double b[4]) throw();
       
          /**
           * EngAlmanac constructor.
           * Creates a valid model from and EngAlmanac object
           * \param engalm an EngAlmanac object
           */
-      IonoModel(const EngAlmanac& engalm) noexcept;
+      IonoModel(const EngAlmanac& engalm) throw();
       
          /** Method to feed the model with satellite transmitted alpha
           * and beta parameters provided from almanac.
           * \param a an array containing the four alpha terms
           * \param b an array containing the four beta terms
           */
-      void setModel(const double a[4], const double b[4]) noexcept;
+      void setModel(const double a[4], const double b[4]) throw();
       
          /**
           * returns the validity of the model.
           * \return model validity
           */
-      bool isValid() const noexcept { return valid; }
+      bool isValid() const throw() { return valid; }
       
          /**
           * get the ionospheric correction value.
@@ -134,10 +134,10 @@ namespace gpstk
                            Frequency freq = L1) const;
 
          /// equality operator
-      bool operator==(const IonoModel& right) const noexcept;
+      bool operator==(const IonoModel& right) const throw();
 
          /// inequality operator
-      bool operator!=(const IonoModel& right) const noexcept;     
+      bool operator!=(const IonoModel& right) const throw();     
 
    private:
 

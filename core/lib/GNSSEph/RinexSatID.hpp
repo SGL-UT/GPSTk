@@ -65,14 +65,14 @@ namespace gpstk
          /// Empty constructor; creates an invalid object (Unknown, ID = -1).
 
       RinexSatID()
-      noexcept
+      throw()
       { id = -1; system = systemUnknown; }
 
 
          /// Explicit constructor, no defaults, RINEX systems only.
 
       RinexSatID(int p, const SatelliteSystem& s)
-         noexcept
+         throw()
       {
          id = p; system = s;
          switch(s)
@@ -108,7 +108,7 @@ namespace gpstk
          /// Cast a SatID to a RinexSatID.
 
       RinexSatID(const SatID& sat)
-         noexcept
+         throw()
       { *this = RinexSatID(sat.id,sat.system); }
 
 
@@ -116,14 +116,14 @@ namespace gpstk
          /// return the current fill character.
 
       char setfill(char c)
-         noexcept
+         throw()
       { char csave = fillchar; fillchar = c; return csave; }
 
 
          /// Get the fill character used in output.
 
       char getfill() const
-         noexcept
+         throw()
       { return fillchar; }
 
 
@@ -134,7 +134,7 @@ namespace gpstk
          /// @note return only RINEX types, for non-RINEX systems return '?'
 
       char systemChar() const
-         noexcept
+         throw()
       {
          switch(system)
          {
@@ -154,7 +154,7 @@ namespace gpstk
          /// Return the system name as a string.
          /// @note Return only RINEX types or 'Unknown'.
       std::string systemString() const
-         noexcept
+         throw()
       {
          switch(system)
          {
@@ -173,7 +173,7 @@ namespace gpstk
          /// Return the system name as a string of length 3.
          /// @note Return only RINEX types or 'Unknown'.
       std::string systemString3() const
-         noexcept
+         throw()
       {
          switch(system)
          {
@@ -253,7 +253,7 @@ namespace gpstk
          /// Convert the RinexSatID to string (1 character plus 2-digit integer).
 
       std::string toString() const
-         noexcept
+         throw()
       {
          std::ostringstream oss;
          oss.fill(fillchar);

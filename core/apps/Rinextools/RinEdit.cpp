@@ -123,10 +123,10 @@ public:
        * @throw Exception */
    EditCmd(const string typestr, const string arg);
       /// parse time from string
-   bool parseTime(const string arg, CommonTime& ttag) noexcept;
+   bool parseTime(const string arg, CommonTime& ttag) throw();
 
       /// is it valid?
-   inline bool isValid(void) noexcept
+   inline bool isValid(void) throw()
    { return (type != invalidCT); }
 
       /** dump, with optional message at front
@@ -152,25 +152,25 @@ class Configuration : public Singleton<Configuration>
 public:
 
       // Default and only constructor
-   Configuration() noexcept { setDefaults(); }
+   Configuration() throw() { setDefaults(); }
 
       // Create, parse and process command line options and user input
-   int processUserInput(int argc, char **argv) noexcept;
+   int processUserInput(int argc, char **argv) throw();
 
       // Design the command line
-   string buildCommandLine(void) noexcept;
+   string buildCommandLine(void) throw();
 
       // Open the output file, and parse the strings used on the command line
       // return -4 if log file could not be opened
-   int extraProcessing(string& errors, string& extras) noexcept;
+   int extraProcessing(string& errors, string& extras) throw();
 
       // Parse one of the vector<string> of edit cmd options
-   void parseEditCmds(vector<string>& v, const string l, ostringstream& os) noexcept;
+   void parseEditCmds(vector<string>& v, const string l, ostringstream& os) throw();
 
 private:
 
       // Define default values
-   void setDefaults(void) noexcept
+   void setDefaults(void) throw()
    {
       defaultstartStr = string("[Beginning of dataset]");
       defaultstopStr = string("[End of dataset]");
@@ -241,7 +241,7 @@ const string Configuration::longfmt = calfmt + " = " + gpsfmt + " %P";
 /**
  * @throw Exception */
 int initialize(string& errors);
-void fixEditCmdList(void) noexcept;
+void fixEditCmdList(void) throw();
 /**
  * @throw Exception */
 int processFiles(void);
@@ -1028,7 +1028,7 @@ int executeEditCmd(const vector<EditCmd>::iterator& it, Rinex3ObsHeader& Rhead,
 
 
 //------------------------------------------------------------------------------
-int Configuration::processUserInput(int argc, char **argv) noexcept
+int Configuration::processUserInput(int argc, char **argv) throw()
 {
    string PrgmDesc,cmdlineUsage, cmdlineErrors, cmdlineExtras;
    vector<string> cmdlineUnrecognized;
@@ -1093,7 +1093,7 @@ int Configuration::processUserInput(int argc, char **argv) noexcept
 }  // end Configuration::CommandLine()
 
 //------------------------------------------------------------------------------
-string Configuration::buildCommandLine(void) noexcept
+string Configuration::buildCommandLine(void) throw()
 {
       // Program description will appear at the top of the syntax page
    string PrgmDesc = " Program " + prgmName +
@@ -1271,7 +1271,7 @@ string Configuration::buildCommandLine(void) noexcept
 }  // end Configuration::buildCommandLine()
 
 //------------------------------------------------------------------------------
-int Configuration::extraProcessing(string& errors, string& extras) noexcept
+int Configuration::extraProcessing(string& errors, string& extras) throw()
 {
    int n;
    size_t i;
@@ -1377,12 +1377,12 @@ int Configuration::extraProcessing(string& errors, string& extras) noexcept
 
    return 0;
 
-} // end Configuration::extraProcessing(string& errors) noexcept
+} // end Configuration::extraProcessing(string& errors) throw()
 
 //------------------------------------------------------------------------------
 // little helper routine for extraProcessing
 void Configuration::parseEditCmds(vector<string>& vec, const string lab,
-                                                           ostringstream& os) noexcept
+                                                           ostringstream& os) throw()
 {
    for(size_t i=0; i<vec.size(); i++) {
       EditCmd ec(lab,vec[i]);
@@ -1493,7 +1493,7 @@ EditCmd::EditCmd(const string intypestr, const string inarg)
 }
 
 //------------------------------------------------------------------------------
-bool EditCmd::parseTime(const string arg, CommonTime& ttag) noexcept
+bool EditCmd::parseTime(const string arg, CommonTime& ttag) throw()
 {
    static const string fmtGPS("%F,%g"),fmtCAL("%Y,%m,%d,%H,%M,%S");
    stripLeading(arg," \t");
@@ -1554,7 +1554,7 @@ string EditCmd::asString(string msg)
 }
 
 //------------------------------------------------------------------------------
-void fixEditCmdList(void) noexcept
+void fixEditCmdList(void) throw()
 {
    Configuration& C(Configuration::Instance());
    vector<EditCmd>::iterator it, jt;

@@ -55,7 +55,7 @@ namespace gpstk {
 class Combinations {
 public:
    /// Default constructor
-   Combinations(void) noexcept
+   Combinations(void) throw()
    {
       nc = n = k = 0;
       Index = std::vector<int>(0);
@@ -68,13 +68,13 @@ public:
 
    /// copy constructor
    Combinations(const Combinations& right)
-      noexcept
+      throw()
    {
       *this = right;
    }
 
    /// Assignment operator.
-   Combinations& operator=(const Combinations& right) noexcept
+   Combinations& operator=(const Combinations& right) throw()
    {
       init(right.n,right.k);
       nc = right.nc;
@@ -84,7 +84,7 @@ public:
 
    /// Compute the next combination, returning the number of combinations computed
    /// so far; if there are no more combinations, return -1.
-   int Next(void) noexcept {
+   int Next(void) throw() {
       if(k < 1) return -1;
       if(Increment(k-1) != -1) return ++nc;
       return -1;
@@ -92,7 +92,7 @@ public:
 
    /// Return index i (0 <= i < n) of jth selection (0 <= j < k);
    /// if j is out of range, return -1.
-   int Selection(int j) noexcept
+   int Selection(int j) throw()
    {
       if(j < 0 || j >= k) return -1;
       return Index[j];
@@ -100,7 +100,7 @@ public:
 
       /// Return true if the given index j (0 <= j < n) is
       /// currently selected (i.e. if j = Selection(i) for some i)
-   bool isSelected(int j) noexcept
+   bool isSelected(int j) throw()
    {
       for(int i=0; i<k; i++)
          if(Index[i] == j) return true;
@@ -127,7 +127,7 @@ private:
    }
 
    /// Recursive function to increment Index[j].
-   int Increment(int j) noexcept
+   int Increment(int j) throw()
    {
       if(Index[j] < n-k+j) {        // can this index be incremented?
          Index[j]++;

@@ -65,17 +65,17 @@ namespace gpstk {
 class SRIleastSquares : public SRI {
 public:
    /// empty constructor
-   SRIleastSquares(void) noexcept;
+   SRIleastSquares(void) throw();
 
    /// constructor given the dimension N.
    /// @param N dimension of the SRIleastSquares.
    SRIleastSquares(const unsigned int N)
-      noexcept;
+      throw();
 
    /// constructor given a Namelist; its dimension determines the SRI dimension.
    /// @param NL Namelist for the SRIleastSquares.
    SRIleastSquares(const Namelist& NL)
-      noexcept;
+      throw();
 
    /// explicit constructor - throw if the dimensions are inconsistent.
    /// @param R  Initial information matrix, an upper triangular matrix of dim N.
@@ -89,13 +89,13 @@ public:
    /// copy constructor
    /// @param right SRIleastSquares to be copied
    SRIleastSquares(const SRIleastSquares& right)
-      noexcept
+      throw()
       { *this = right; }
 
    /// operator=
    /// @param right SRIleastSquares to be copied
    SRIleastSquares& operator=(const SRIleastSquares& right)
-      noexcept;
+      throw();
 
    /// A general least squares update, NOT the SRIF (Kalman) measurement update.
    /// Given data and measurement covariance, compute a solution and
@@ -200,7 +200,7 @@ public:
 
 private:
    /// initialization used by constructors - leastSquaresEstimation() only
-   void defaults(void) noexcept
+   void defaults(void) throw()
    {
       iterationsLimit = 10;
       convergenceLimit = 1.e-8;

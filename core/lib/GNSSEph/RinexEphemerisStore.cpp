@@ -81,7 +81,7 @@ namespace gpstk
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
    void RinexEphemerisStore::dump(std::ostream& s, short detail)
-      const noexcept
+      const throw()
    {
       s << "Dump of RinexEphemerisStore:" << std::endl;
       std::vector<std::string> fileNames = getFileNames();
