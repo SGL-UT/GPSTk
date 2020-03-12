@@ -73,7 +73,7 @@ string SatPass::outFormat = string("%4F %10.3g");  // GPS week, seconds of week
 string SatPass::longfmt = string("%04Y/%02m/%02d %02H:%02M:%06.3f = %04F %10.3g");
 
 // constructors
-SatPass::SatPass(RinexSatID insat, double indt) noexcept
+SatPass::SatPass(RinexSatID insat, double indt) throw()
 {
    vector<string> defaultObsTypes;
    defaultObsTypes.push_back("L1");
@@ -84,12 +84,12 @@ SatPass::SatPass(RinexSatID insat, double indt) noexcept
    init(insat, indt, defaultObsTypes);
 }
 
-SatPass::SatPass(RinexSatID insat, double indt, vector<string> obstypes) noexcept
+SatPass::SatPass(RinexSatID insat, double indt, vector<string> obstypes) throw()
 {
    init(insat, indt, obstypes);
 }
 
-void SatPass::init(RinexSatID insat, double indt, vector<string> obstypes) noexcept
+void SatPass::init(RinexSatID insat, double indt, vector<string> obstypes) throw()
 {
    sat = insat;
    dt = indt;
@@ -104,7 +104,7 @@ void SatPass::init(RinexSatID insat, double indt, vector<string> obstypes) noexc
    }
 }
 
-SatPass& SatPass::operator=(const SatPass& right) noexcept
+SatPass& SatPass::operator=(const SatPass& right) throw()
 {
    if(&right != this) {
       Status = right.Status;
@@ -175,7 +175,7 @@ int SatPass::addData(const Epoch tt,
 //        -2 time tag out of order, data not added
 //        -1 gap is larger than MaxGap, data not added
 //       >=0 (success) index of the added data
-int SatPass::addData(const RinexObsData& robs) noexcept
+int SatPass::addData(const RinexObsData& robs) throw()
 {
    if(robs.epochFlag != 0 && robs.epochFlag != 1)
       return -4;
@@ -802,10 +802,10 @@ unsigned int SatPass::getCount(unsigned int i) const
 }
 
 // @return the earliest time (full, including toffset) in this SatPass data
-Epoch SatPass::getFirstTime(void) const noexcept { return time(0); }
+Epoch SatPass::getFirstTime(void) const throw() { return time(0); }
 
 // @return the latest time (full, including toffset) in this SatPass data
-Epoch SatPass::getLastTime(void) const noexcept { return time(spdvector.size()-1); }
+Epoch SatPass::getLastTime(void) const throw() { return time(spdvector.size()-1); }
 
 // these allow you to get e.g. P1 or C1. NB return double not double& as above: rvalue
 double SatPass::data(unsigned int i, string type1, string type2) const
@@ -873,7 +873,7 @@ Epoch SatPass::time(unsigned int i) const
 }
 
 // return true if the input time could lie within the pass
-bool SatPass::includesTime(const Epoch& tt) const noexcept
+bool SatPass::includesTime(const Epoch& tt) const throw()
 {
    if(tt < firstTime) {
       if((firstTime-tt) > maxGap) return false;
@@ -970,7 +970,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 
 // dump all the data in the pass, one line per timetag;
 // put message msg at beginning of each line.
-void SatPass::dump(ostream& os, string msg1, string msg2) noexcept
+void SatPass::dump(ostream& os, string msg1, string msg2) throw()
 {
    int i,j,last;
    Epoch tt;
@@ -1021,7 +1021,7 @@ ostream& operator<<(ostream& os, SatPass& sp )
 // ---------------------------- private SatPassData functions --------------------
 // add data to the arrays at timetag tt (private)
 // return >=0 ok (index of added data), -1 gap, -2 timetag out of order
-int SatPass::push_back(const Epoch tt, SatPassData& spd) noexcept
+int SatPass::push_back(const Epoch tt, SatPassData& spd) throw()
 {
    unsigned int n;
       // if this is the first point, save first time

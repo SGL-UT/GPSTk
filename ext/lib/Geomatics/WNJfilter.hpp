@@ -80,14 +80,14 @@ public:
    // member functions
 
    // empty c'tor - required but don't use it
-   WNJfilter(void) noexcept
+   WNJfilter(void) throw()
       : filterOutput(true), ptrx(NULL), ptrv(NULL), ptra(NULL), ptrs(NULL),
             prec(2), width(9) { }
 
    // explicit c'tor
-   WNJfilter(int dim) noexcept { Reset(dim); }
+   WNJfilter(int dim) throw() { Reset(dim); }
 
-   void Reset(int dim) noexcept
+   void Reset(int dim) throw()
    {
       // dim = NL.size() = Nstate is number of states : X, V, A, J, S, C, P
       gpstk::Namelist NL;
@@ -232,7 +232,7 @@ public:
 
    // output at each stage ... the user may override
    // if singular is true, State and Cov may or may not be good
-   virtual void output(int N) noexcept
+   virtual void output(int N) throw()
    {
       int i;
       std::ostringstream oss;

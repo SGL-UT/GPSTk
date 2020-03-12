@@ -67,7 +67,7 @@ namespace gpstk
       
       bool checkId(std::string hdrId) const {return hdrId==myId;}
 
-      void dump(std::ostream& out) const noexcept;
+      void dump(std::ostream& out) const throw();
 
          /**
           * @throw std::exception

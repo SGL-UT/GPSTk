@@ -72,7 +72,7 @@ namespace gpstk
    public:
 
       /// Default constructor
-      RinexClockStore() noexcept
+      RinexClockStore() throw()
       { }
 
       /// Destructor
@@ -86,7 +86,7 @@ namespace gpstk
       ///           gap and interval flags and values, and file information
       ///    1: number of data/sat
       ///    2: above plus all the data tables
-      virtual void dump(std::ostream& os = std::cout, int detail = 0) const noexcept
+      virtual void dump(std::ostream& os = std::cout, int detail = 0) const throw()
       {
          os << "Dump of RinexClockStore(" << detail << "):" << std::endl;
          if(detail >= 0) {

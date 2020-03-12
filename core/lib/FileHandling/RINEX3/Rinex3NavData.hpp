@@ -117,22 +117,22 @@ namespace gpstk
 
          /// deprecated; use GPSEphemeris, GPS-only.
          /// Converts Rinex3NavData to an EngEphemeris object.
-      operator EngEphemeris() const noexcept;
+      operator EngEphemeris() const throw();
 
          /// Converts Rinex3NavData to a GPSEphemeris object.
-      operator GPSEphemeris() const noexcept;
+      operator GPSEphemeris() const throw();
 
          /// Converts this Rinex3NavData to a GloEphemeris object.
-      operator GloEphemeris() const noexcept;
+      operator GloEphemeris() const throw();
 
          /// Converts Rinex3NavData to a GalEphemeris object.
-      operator GalEphemeris() const noexcept;
+      operator GalEphemeris() const throw();
 
          /// Converts Rinex3NavData to a BDSEphemeris object.
-      operator BDSEphemeris() const noexcept;
+      operator BDSEphemeris() const throw();
 
          /// Converts Rinex3NavData to a QZSEphemeris object.
-      operator QZSEphemeris() const noexcept;
+      operator QZSEphemeris() const throw();
 
          /// Converts the (non-CommonTime) data to an easy list
          /// for comparison operators.

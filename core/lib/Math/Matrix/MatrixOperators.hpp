@@ -360,7 +360,7 @@ namespace gpstk
        */
    template <class T, class BaseClass>
    inline T condNum(const ConstMatrixBase<T, BaseClass>& m, T& bigNum, T& smallNum) 
-      noexcept
+      throw()
    {
       SVD<T> svd;
       svd(m);
@@ -379,7 +379,7 @@ namespace gpstk
        */
    template <class T, class BaseClass>
    inline T condNum(const ConstMatrixBase<T, BaseClass>& m) 
-      noexcept
+      throw()
    {
       T bigNum, smallNum;
       return condNum(m, bigNum, smallNum);
@@ -947,7 +947,7 @@ namespace gpstk
        */
    template <class T, class BaseClass>
    inline T maxabs(const ConstMatrixBase<T, BaseClass>& a)
-      noexcept
+      throw()
    {
       T m=0;
       for(int i = 0; i < a.rows(); i++)

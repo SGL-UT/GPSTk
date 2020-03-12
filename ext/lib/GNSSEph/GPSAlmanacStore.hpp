@@ -67,7 +67,7 @@ namespace gpstk
    public:
 
       GPSAlmanacStore()
-         noexcept
+         throw()
          : initialTime(CommonTime::END_OF_TIME), 
            finalTime(CommonTime::BEGINNING_OF_TIME)
       {}
@@ -109,7 +109,7 @@ namespace gpstk
       /// @param[in] s the stream to receive the output; defaults to cout
       /// @param[in] detail the level of detail to provide
       virtual void dump(std::ostream& s = std::cout, short detail = 0) 
-         const noexcept;
+         const throw();
 
 
       /// Edit the dataset, removing data outside the indicated time interval
@@ -117,21 +117,21 @@ namespace gpstk
       /// @param[in] tmax defines the end of the time interval
       virtual void edit(const CommonTime& tmin, 
                         const CommonTime& tmax = CommonTime::END_OF_TIME)
-         noexcept;
+         throw();
 
       /// Clear the dataset, meaning remove all data
-      virtual void clear(void) noexcept
+      virtual void clear(void) throw()
       { uba.clear(); }
 
       /// Return time system (NB assumed always to be GPS)
-      virtual TimeSystem getTimeSystem(void) const noexcept
+      virtual TimeSystem getTimeSystem(void) const throw()
          { return TimeSystem::GPS; }
 
       /// Determine the earliest time for which this object can successfully 
       /// determine the Xvt for any object.
       /// @return The initial time
       virtual CommonTime getInitialTime()
-         const noexcept
+         const throw()
       {return initialTime;}
 
       
@@ -139,19 +139,19 @@ namespace gpstk
       /// determine the Xvt for any object.
       /// @return The final time
       virtual CommonTime getFinalTime()
-         const noexcept
+         const throw()
       {return finalTime;}
 
       virtual bool velocityIsPresent()
-         const noexcept
+         const throw()
       {return true;}
 
       /// Return true if velocity data is present in the store
-      virtual bool hasVelocity() const noexcept
+      virtual bool hasVelocity() const throw()
       { return true; }
 
       /// Return true if the given SatID is present in the store
-      virtual bool isPresent(const SatID& sat) const noexcept
+      virtual bool isPresent(const SatID& sat) const throw()
       {
          if(uba.find(sat) == uba.end()) return false;
          return true;
@@ -170,9 +170,9 @@ namespace gpstk
       short getSatHealth(const SatID sat, const CommonTime& t) 
          const;
 
-      bool addAlmanac(const AlmOrbit& alm) noexcept;
+      bool addAlmanac(const AlmOrbit& alm) throw();
 
-      bool addAlmanac(const EngAlmanac& alm) noexcept;
+      bool addAlmanac(const EngAlmanac& alm) throw();
 
       /// gets the closest almanac for the given time and satellite id,
       /// closest being in the past or future and "closest" being defined

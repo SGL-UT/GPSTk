@@ -100,7 +100,7 @@ namespace gpstk
    const vector<string> AntexData::SatelliteTypes(sattype,sattype+Nsattype);
 
    // ----------------------------------------------------------------------------
-   bool AntexData::isValid(CommonTime& time) const noexcept
+   bool AntexData::isValid(CommonTime& time) const throw()
    {
       if(!isValid())
          return false;
@@ -120,7 +120,7 @@ namespace gpstk
 
    // ----------------------------------------------------------------------------
    // Generate a name from type and serial number
-   string AntexData::name(void) const noexcept
+   string AntexData::name(void) const throw()
    {
       if(!isValid())
          return string("invalid");
@@ -426,7 +426,7 @@ namespace gpstk
                                      const zenOffsetMap& eomap,
                                      double& zen_lo, double& zen_hi,
                                      double& pco_lo, double& pco_hi) const
-      noexcept
+      throw()
    {
       map<double, double>::const_iterator kt;
 

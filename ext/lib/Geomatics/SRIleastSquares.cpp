@@ -53,13 +53,13 @@ using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
 // empty constructor
-SRIleastSquares::SRIleastSquares(void) noexcept
+SRIleastSquares::SRIleastSquares(void) throw()
 { defaults(); }
 
 //------------------------------------------------------------------------------------
 // constructor given the dimension N.
 SRIleastSquares::SRIleastSquares(const unsigned int N)
-   noexcept
+   throw()
 {
    defaults();
    R = Matrix<double>(N,N,0.0);
@@ -70,7 +70,7 @@ SRIleastSquares::SRIleastSquares(const unsigned int N)
 //------------------------------------------------------------------------------------
 // constructor given a Namelist, its dimension determines the SRI dimension.
 SRIleastSquares::SRIleastSquares(const Namelist& NL)
-   noexcept
+   throw()
 {
    defaults();
    if(NL.size() <= 0) return;
@@ -105,7 +105,7 @@ SRIleastSquares::SRIleastSquares(const Matrix<double>& Rin,
 //------------------------------------------------------------------------------------
 // operator=
 SRIleastSquares& SRIleastSquares::operator=(const SRIleastSquares& right)
-   noexcept
+   throw()
 {
    R = right.R;
    Z = right.Z;

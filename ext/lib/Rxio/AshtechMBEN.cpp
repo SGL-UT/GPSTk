@@ -215,7 +215,7 @@ namespace gpstk
 
 
    //---------------------------------------------------------------------------
-   float AshtechMBEN::code_block::snr(float chipRate, float m) const noexcept
+   float AshtechMBEN::code_block::snr(float chipRate, float m) const throw()
    {
       const float n = 20000;     // number of samples in 1 ms
       const float bw = 0.9 * chipRate; // equivalent noise bandwidth (Hz)
@@ -235,7 +235,7 @@ namespace gpstk
    }
 
    //---------------------------------------------------------------------------
-   void AshtechMBEN::dump(ostream& out) const noexcept
+   void AshtechMBEN::dump(ostream& out) const throw()
    {
       ostringstream oss;
       using gpstk::StringUtils::asString;

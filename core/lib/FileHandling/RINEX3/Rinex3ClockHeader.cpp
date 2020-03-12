@@ -491,7 +491,7 @@ namespace gpstk
    }
 
 
-   void Rinex3ClockHeader::dump(ostream& os, short detail) const noexcept
+   void Rinex3ClockHeader::dump(ostream& os, short detail) const throw()
    {
       size_t i;
       os << "Dump Rinex3Clock Header:\n";
@@ -551,7 +551,7 @@ namespace gpstk
 
    }  // end Rinex3ClockHeader::dump()
 
-   void Rinex3ClockHeader::dumpValid(ostream& os) const noexcept
+   void Rinex3ClockHeader::dumpValid(ostream& os) const throw()
    {
       if( (valid & allValid) == allValid) return;
       string tag("  Invalid or missing header line: ");

@@ -84,7 +84,7 @@ namespace gpstk
        * \return true if the model was added, false otherwise
        */
    bool IonoModelStore::addIonoModel(const CommonTime& mt, const IonoModel& im)
-      noexcept
+      throw()
    {
 
       if (!im.isValid())

@@ -307,7 +307,7 @@ public:
 
       /// Reset or recreate filter - use this after the empty constructor
       /// @param NL Namelist of the filter states (determines Nstate)
-   void Reset(const gpstk::Namelist& NL) noexcept
+   void Reset(const gpstk::Namelist& NL) throw()
    { initialize(NL); }
 
       /// destructor
@@ -534,7 +534,7 @@ public:
       /// Output at each stage ... the user may override
       /// if singular is true, State and Cov may or may not be good
       /// @param N user-defined counter that is included on each line after the tag.
-   virtual void output(int N) noexcept
+   virtual void output(int N) throw()
    {
       if(!doOutput) return;
 

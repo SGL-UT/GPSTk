@@ -49,7 +49,7 @@ public:
          : gpstk::FFBinaryStream(fn, mode)
    {}
 
-   virtual bool isStreamLittleEndian() const noexcept
+   virtual bool isStreamLittleEndian() const throw()
    { return true; }
 };
 
@@ -62,7 +62,7 @@ public:
          : gpstk::FFBinaryStream(fn, mode)
    {}
 
-   virtual bool isStreamLittleEndian() const noexcept
+   virtual bool isStreamLittleEndian() const throw()
    { return false; }
 };
 

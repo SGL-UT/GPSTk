@@ -126,9 +126,9 @@ class GenSyntheticCNAVData : public gpstk::BasicFramework
 {
 public:
    GenSyntheticCNAVData(const std::string& applName,
-              const std::string& applDesc) noexcept;
+              const std::string& applDesc) throw();
    ~GenSyntheticCNAVData() {}
-   virtual bool initialize(int argc, char *argv[]) noexcept;
+   virtual bool initialize(int argc, char *argv[]) throw();
    
 protected:
    virtual void process();
@@ -168,7 +168,7 @@ int main( int argc, char*argv[] )
 }
 
 GenSyntheticCNAVData::GenSyntheticCNAVData(const std::string& applName, 
-                       const std::string& applDesc) noexcept
+                       const std::string& applDesc) throw()
           :BasicFramework(applName, applDesc),
            inputOption('i', "input-file", "The name of the FIC file to be read.", true),
            outputOption('o', "output-file", "The name of the output file to write.", true),
@@ -181,7 +181,7 @@ GenSyntheticCNAVData::GenSyntheticCNAVData(const std::string& applName,
 }
 
 bool GenSyntheticCNAVData::initialize(int argc, char *argv[])
-   noexcept
+   throw()
 {
    if (!BasicFramework::initialize(argc, argv)) return false;
    

@@ -75,8 +75,8 @@ public:
 class BasicFrameworkHelp_T : public gpstk::BasicFramework
 {
 public:
-   BasicFrameworkHelp_T(const std::string& applName) noexcept;
-   bool initialize(int argc, char *argv[], bool pretty = true) noexcept;
+   BasicFrameworkHelp_T(const std::string& applName) throw();
+   bool initialize(int argc, char *argv[], bool pretty = true) throw();
    CommandOptionHelpTest xOpt;
    CommandOptionHelpTestArg yOpt;
    gpstk::CommandOptionHelpSimple sOpt;
@@ -86,7 +86,7 @@ public:
 
 BasicFrameworkHelp_T ::
 BasicFrameworkHelp_T(const std::string& applName)
-noexcept
+throw()
       : BasicFramework(applName, "Facilitate testing of help-like options"),
         sOpt('w', "whelp", "It was just a coincidence, I swear.",
              "Odd groups got left, even groups got right. That means 1, 3, 5,\n"
@@ -111,7 +111,7 @@ noexcept
 
 bool BasicFrameworkHelp_T ::
 initialize(int argc, char *argv[], bool pretty)
-   noexcept
+   throw()
 {
       // Change behavior slightly based on the application name.  This
       // is neither unusual nor unprecedented.

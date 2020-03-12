@@ -107,7 +107,7 @@ int Process(void);
 class GlobalData : public Singleton<GlobalData> {
 public:
    //// Default and only constructor, sets defaults.
-   GlobalData() noexcept { SetDefaults(); }
+   GlobalData() throw() { SetDefaults(); }
 
    // prgm housekeeping
    static const string Version;  ///< version string - see below
@@ -187,7 +187,7 @@ public:
 private:
 
    /// Define default values, called by c'tor
-   void SetDefaults(void) noexcept
+   void SetDefaults(void) throw()
    {
       PrgmName = string("dfix");
       logfile = string();

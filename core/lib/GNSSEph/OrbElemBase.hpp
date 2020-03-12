@@ -112,7 +112,7 @@ namespace gpstk
       bool isHealthy() const;
 
          /// Set the SV health status.  Child classes may do more.
-      virtual void setHealthy(bool h) noexcept
+      virtual void setHealthy(bool h) throw()
       { healthy = h; }
 
          /** Compute the satellite clock bias (sec) at the given time

@@ -75,7 +75,7 @@ namespace gpstk
           */
       LoopedFramework(const std::string& applName,
                       const std::string& applDesc)
-            noexcept
+            throw()
             : BasicFramework(applName, applDesc), timeToDie(false)
       { }
 

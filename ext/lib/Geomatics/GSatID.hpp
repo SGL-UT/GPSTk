@@ -49,10 +49,10 @@ namespace gpstk {
    public:
 
       /// empty constructor, creates an invalid object
-      GSatID() noexcept { id=-1; system=systemGPS; }
+      GSatID() throw() { id=-1; system=systemGPS; }
 
       /// explicit constructor, no defaults
-      GSatID(int p, SatelliteSystem s) noexcept
+      GSatID(int p, SatelliteSystem s) throw()
       {
          id = p; system = s;
          switch(system) {
@@ -87,26 +87,26 @@ namespace gpstk {
       }
 
       /// cast SatID to GSatID
-      GSatID(const SatID& sat) noexcept
+      GSatID(const SatID& sat) throw()
          { *this = GSatID(sat.id,sat.system); }
 
       /// set the fill character used in output
       /// return the current fill character
-      char setfill(char c) noexcept
+      char setfill(char c) throw()
          { char csave=fillchar; fillchar=c; return csave; }
 
       /// get the fill character used in output
-      char getfill() noexcept
+      char getfill() throw()
          { return fillchar; }
 
       // operator=, copy constructor and destructor built by compiler
 
       /// operator ==
-      bool operator==(const GSatID& right) const noexcept
+      bool operator==(const GSatID& right) const throw()
          { return ((system == right.system) && (id == right.id)); }
 
       /// operator< (used by STL to sort)
-      bool operator<(const GSatID& right) const noexcept
+      bool operator<(const GSatID& right) const throw()
       {
          if (system==right.system)
             return (id<right.id);
@@ -115,23 +115,23 @@ namespace gpstk {
 
       // the rest follow from Boolean algebra...
       /// boolean operator!=
-      bool operator!=(const GSatID& right) const noexcept
+      bool operator!=(const GSatID& right) const throw()
          { return !operator==(right); }
 
       /// boolean operator>=
-      bool operator>=(const GSatID& right) const noexcept
+      bool operator>=(const GSatID& right) const throw()
          { return !operator<(right); }
 
       /// boolean operator<=
-      bool operator<=(const GSatID& right) const noexcept
+      bool operator<=(const GSatID& right) const throw()
          { return (operator<(right) || operator==(right)); }
 
       /// boolean operator>
-      bool operator>(const GSatID& right) const noexcept
+      bool operator>(const GSatID& right) const throw()
          { return (!operator<(right) && !operator==(right)); }
 
       /// return the single-character system descriptor
-      char systemChar() const noexcept
+      char systemChar() const throw()
       {
          switch(system) {
             case systemGPS:     return 'G';
@@ -147,7 +147,7 @@ namespace gpstk {
       };
 
       /// return string describing system
-      std::string systemString() const noexcept
+      std::string systemString() const throw()
       {
          switch(system) {
             case systemGPS:     return "GPS";
@@ -217,7 +217,7 @@ namespace gpstk {
       }
 
       /// convert to string
-      std::string toString() const noexcept
+      std::string toString() const throw()
       {
          std::ostringstream oss;
          char savechar=oss.fill(fillchar);
@@ -234,7 +234,7 @@ namespace gpstk {
    }; // class GSatID
 
    /// stream output for GSatID
-   inline std::ostream& operator<<(std::ostream& s, const GSatID& sat) noexcept
+   inline std::ostream& operator<<(std::ostream& s, const GSatID& sat) throw()
    {
       s << sat.toString();
       return s;

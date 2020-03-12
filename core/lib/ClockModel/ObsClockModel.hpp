@@ -106,7 +106,7 @@ namespace gpstk
           * @param right #SvModeMap
           * @return a reference to this object
           */
-      ObsClockModel& setSvModeMap(const SvModeMap& right) noexcept;
+      ObsClockModel& setSvModeMap(const SvModeMap& right) throw();
 
          /** 
           * set the SvMode for a particular SV.
@@ -114,7 +114,7 @@ namespace gpstk
           * @param mode #SvMode for the SV
           * @return a reference to this object
           */
-      ObsClockModel& setSvMode(const SatID& svid, const SvMode& mode) noexcept
+      ObsClockModel& setSvMode(const SatID& svid, const SvMode& mode) throw()
       { modes[svid] = mode; return *this; }
       
          /** 
@@ -122,7 +122,7 @@ namespace gpstk
           * @param mode #SvMode for the SVs
           * @return a reference to this object
           */
-      ObsClockModel& setSvMode(const SvMode& mode) noexcept
+      ObsClockModel& setSvMode(const SvMode& mode) throw()
       {
          for(int prn = 1; prn <= gpstk::MAX_PRN; prn++)
          {
@@ -137,7 +137,7 @@ namespace gpstk
           * @param right sigma multiple value
           * @return a reference to this object
           */
-      ObsClockModel& setSigmaMultiplier(double right) noexcept
+      ObsClockModel& setSigmaMultiplier(double right) throw()
       { sigmam = right; return *this; }
    
          /**
@@ -145,13 +145,13 @@ namespace gpstk
           * @param right elevation mask angle value
           * @return a reference to this object
           */
-      ObsClockModel& setElevationMask(double right) noexcept
+      ObsClockModel& setElevationMask(double right) throw()
       { elvmask = right; return *this; }
 
          /** Set useWonkyData true and ords that are flagged as wonky
              will be included in any clock estimation calculations.
          **/
-      ObsClockModel& setUseWonkyData(bool right) noexcept
+      ObsClockModel& setUseWonkyData(bool right) throw()
       { useWonkyData = right; return *this; }
 
          // get accessor methods ----------------------------------------------
@@ -161,7 +161,7 @@ namespace gpstk
           * computation.
           * @return a const reference to the #SvStatusMap
           */
-      const SvStatusMap& getSvStatusMap() const noexcept
+      const SvStatusMap& getSvStatusMap() const throw()
       { return status; };
 
          /**
@@ -176,7 +176,7 @@ namespace gpstk
           * get the map indicating how to use each ORD in the bias computation.
           * @return a const reference to the #SvModeMap
           */
-      const SvModeMap& getSvModeMap() const noexcept { return modes; }
+      const SvModeMap& getSvModeMap() const throw() { return modes; }
 
          /**
           * get how a particular ORD is to be used in the bias computation.
@@ -190,19 +190,19 @@ namespace gpstk
           * returns the sigma multiple value used for ORD stripping.
           * @return sigma multiple
           */
-      double getSigmaMultiplier() const noexcept { return sigmam; } 
+      double getSigmaMultiplier() const throw() { return sigmam; } 
 
          /**
           * returns the elevation mask angle used for ORD stripping.
           * @return elevation mask angle
           */
-      double getElevationMask() const noexcept { return elvmask; }
+      double getElevationMask() const throw() { return elvmask; }
 
 
          /**
           * return the current value of the userWonkyData flag.
           */
-      bool getUseWonkyData() const noexcept
+      bool getUseWonkyData() const throw()
       { return useWonkyData; }
 
          /** Computes an average of all ORD in the epoch that pass the
@@ -213,7 +213,7 @@ namespace gpstk
           * @throw InvalidValue */
       Stats<double> simpleOrdClock(const ORDEpoch& oe);
 
-      virtual void dump(std::ostream& s, short detail=1) const noexcept;
+      virtual void dump(std::ostream& s, short detail=1) const throw();
 
       friend std::ostream& operator<<(std::ostream& s, const ObsClockModel& r)
       { r.dump(s, 0); return s; };

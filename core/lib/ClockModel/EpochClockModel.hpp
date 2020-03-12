@@ -95,10 +95,10 @@ namespace gpstk
          // An unchecked accessor for programs that don't need the generic
          // interface
       double getOffset() const
-         noexcept {return clkc;};
+         throw() {return clkc;};
 
       bool isOffsetValid() const 
-         noexcept {return valid;};
+         throw() {return valid;};
 
          /**
           * @throw InvalidValue

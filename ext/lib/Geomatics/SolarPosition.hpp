@@ -62,21 +62,21 @@ namespace gpstk {
    /// @param CommonTime t  Input epoch of interest
    /// @param double AR  Output apparent angular radius of sun as seen at Earth (deg)
    /// @return Position  Position (ECEF) of the Sun at t
-   Position SolarPosition(CommonTime t, double& AR) noexcept;
+   Position SolarPosition(CommonTime t, double& AR) throw();
 
    /// Compute the latitude and longitude of the Sun using a very simple algorithm.
    /// Adapted from sunpos by D. Coco ARL:UT 12/15/94
    /// @param CommonTime t  Input epoch of interest
    /// @param double lat Output latitude of the Sun at t
    /// @param double lon Output longitude of the Sun at t
-   void CrudeSolarPosition(CommonTime t, double& lat, double& lon) noexcept;
+   void CrudeSolarPosition(CommonTime t, double& lat, double& lon) throw();
 
    /// Compute the Position of the Moon in WGS84 ECEF coordinates.
    /// Ref. Astronomical Almanac 1990 D46
    /// @param CommonTime t  Input epoch of interest
    /// @param double AR  Output apparent angular radius of moon as seen at Earth (deg)
    /// @return Position  Position (ECEF) of the Moon at t
-   Position LunarPosition(CommonTime t, double& AR) noexcept;
+   Position LunarPosition(CommonTime t, double& AR) throw();
 
    /// Compute the fraction of the area of the Sun covered by the Earth as seen from
    /// another body (e.g. satellite).
@@ -84,7 +84,7 @@ namespace gpstk {
    /// @param double Rsun    Apparent angular radius of Sun.
    /// @param double dES     Angular separation of Sun and Earth.
    /// @return double factor Fraction (0 <= factor <= 1) of Sun area covered by Earth
-   double shadowFactor(double Rearth, double Rsun, double dES) noexcept;
+   double shadowFactor(double Rearth, double Rsun, double dES) throw();
 
 }  // end namespace gpstk
 

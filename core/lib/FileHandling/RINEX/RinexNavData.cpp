@@ -181,7 +181,7 @@ namespace gpstk
         << endl;
    }
 
-   RinexNavData::operator EngEphemeris() const noexcept
+   RinexNavData::operator EngEphemeris() const throw()
    {
       EngEphemeris ee;
 

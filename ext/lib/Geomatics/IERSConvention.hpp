@@ -82,11 +82,11 @@ namespace gpstk
       };
 
       /// Constructor, including empty constructor
-      IERSConvention(Convention conv = IERS1996) noexcept
+      IERSConvention(Convention conv = IERS1996) throw()
          { setConvention(conv); }
 
       /// constructor from int
-      IERSConvention(int i) noexcept
+      IERSConvention(int i) throw()
       {
          if(i <= 0 || i >= count)
             convention = NONE;
@@ -97,7 +97,7 @@ namespace gpstk
       // copy constructor and operator= are implemented by compiler
 
       /// choose an IERS Convention
-      void setConvention(const Convention& conv) noexcept
+      void setConvention(const Convention& conv) throw()
       {
          if(conv < 0 || conv >= count) convention = NONE;
          else                          convention = conv;
@@ -109,12 +109,12 @@ namespace gpstk
 
       /// get a std::string for each convention
       /// @return descriptive std::string
-      std::string asString(void) const noexcept
+      std::string asString(void) const throw()
          { return Strings[convention]; }
 
       /// define convention based on input string
       /// @param str input string, must match output string for given convention
-      void fromString(const std::string str) noexcept
+      void fromString(const std::string str) throw()
       {
          convention = NONE;
          for(int i=0; i<count; i++) {
@@ -126,28 +126,28 @@ namespace gpstk
       }
 
       /// boolean operator==
-      bool operator==(const IERSConvention& right) const noexcept
+      bool operator==(const IERSConvention& right) const throw()
          { return convention == right.convention; }
 
       /// boolean operator< (used by STL to sort)
-      bool operator<(const IERSConvention& right) const noexcept
+      bool operator<(const IERSConvention& right) const throw()
          { return convention < right.convention; }
 
       // the rest follow from Boolean algebra...
       /// boolean operator!=
-      bool operator!=(const IERSConvention& right) const noexcept
+      bool operator!=(const IERSConvention& right) const throw()
          { return !operator==(right); }
 
       /// boolean operator>=
-      bool operator>=(const IERSConvention& right) const noexcept
+      bool operator>=(const IERSConvention& right) const throw()
          { return !operator<(right); }
 
       /// boolean operator<=
-      bool operator<=(const IERSConvention& right) const noexcept
+      bool operator<=(const IERSConvention& right) const throw()
          { return (operator<(right) || operator==(right)); }
 
       /// boolean operator>
-      bool operator>(const IERSConvention& right) const noexcept
+      bool operator>(const IERSConvention& right) const throw()
          { return (!operator<(right) && !operator==(right)); }
 
       //------------------------------------------------------------------------------

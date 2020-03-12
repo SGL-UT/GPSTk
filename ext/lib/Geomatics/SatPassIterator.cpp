@@ -96,7 +96,7 @@ SatPassIterator::SatPassIterator(vector<SatPass>& splist, bool rev, bool dbug)
 
 // -------------------------------------------------------------------------------
 // restart the iteration
-void SatPassIterator::reset(bool rev, bool dbug) noexcept
+void SatPassIterator::reset(bool rev, bool dbug) throw()
 {
    timeReverse = rev;
    debug = dbug;

@@ -97,7 +97,7 @@ protected:
 
       // d'tor, copy c'tor and operator= are built by compiler,
       // but operator= will not work correctly, b/c a deep copy is needed.
-      SatPassData& operator=(const SatPassData& right) noexcept
+      SatPassData& operator=(const SatPassData& right) throw()
       {
          if(&right != this) {
             flag = right.flag;
@@ -148,13 +148,13 @@ protected:
    // --------------- private member functions ------------------------
 
    /// called by constructors to initialize - see doc for them.
-   void init(RinexSatID sat, double dt, std::vector<std::string> obstypes) noexcept;
+   void init(RinexSatID sat, double dt, std::vector<std::string> obstypes) throw();
 
    /// add a complete SatPassData at time tt
    /// @return n>=0 if data was added successfully, n is the index of the new data
    ///            -1 if a gap is found (no data is added),
    ///            -2 if time tag is out of order (no data is added)
-   int push_back(const Epoch tt, SatPassData& spd) noexcept;
+   int push_back(const Epoch tt, SatPassData& spd) throw();
 
       /** get a complete SatPassData at count i
        * @throw Exception
@@ -209,7 +209,7 @@ public:
    /// NB. dt MUST be correct.
    /// @param sat the satellite from which this data comes
    /// @param dt  the nominal time spacing (seconds) of the data
-   SatPass(RinexSatID sat, double dt) noexcept;
+   SatPass(RinexSatID sat, double dt) throw();
 
    /// Constructor from a list of strings <=> RINEX obs types to be read
    /// NB. The number of obstypes determines the size of the SatPass object;
@@ -221,10 +221,10 @@ public:
    /// @param dt  the nominal time spacing (seconds) of the data
    /// @param obstypes  a vector of strings, each string being a 2-character
    ///                  RINEX observation type, e.g. "L1", "P2", to be stored.
-   SatPass(RinexSatID sat, double dt, std::vector<std::string> obstypes) noexcept;
+   SatPass(RinexSatID sat, double dt, std::vector<std::string> obstypes) throw();
 
    // d'tor, copy c'tor are built by compiler; so is operator= but don't use it!
-   SatPass& operator=(const SatPass& right) noexcept;
+   SatPass& operator=(const SatPass& right) throw();
 
    // Add data to the arrays at timetag tt; calls must be made in time order.
    // Caller sets the flag to either BAD or OK later using flag().
@@ -270,7 +270,7 @@ public:
    ///        -1 if a gap is found (no data is added),
    ///        -2 if time tag is out of order (no data is added)
    ///        -3 if the satellite was not found in the RinexObsData (no data added)
-   int addData(const RinexObsData& robs) noexcept;
+   int addData(const RinexObsData& robs) throw();
 
    // -------------------------- get and set routines --------------------------
    // can change ssi, lli, data, but not times,sat,dt,ngood,count
@@ -278,10 +278,10 @@ public:
    // lvalue for the data or SSI/LLI arrays of this SatPass at index i
 
    /// Access the status; l-value may be assigned SP.status() = 1;
-   int& status(void) noexcept { return Status; }
+   int& status(void) throw() { return Status; }
 
    /// Access the status as r-value only
-   int getStatus(void) const noexcept { return Status; }
+   int getStatus(void) const throw() { return Status; }
 
    /// Access the data for one obs type at one index, as either l-value or r-value
    /// @param  i    index of the data of interest
@@ -344,11 +344,11 @@ public:
    // -------------------------------- get only --------------------------------
    /// get the max. gap limit size (seconds); for all SatPass objects
    /// @return the current value of maximum gap (sec)
-   double getMaxGap(void) const noexcept { return maxGap; }
+   double getMaxGap(void) const throw() { return maxGap; }
 
    /// get the list of obstypes
    /// @return the vector of strings giving RINEX obs types
-   std::vector<std::string> getObsTypes(void) noexcept {
+   std::vector<std::string> getObsTypes(void) throw() {
       std::vector<std::string> v;
       for(int i=0; i<labelForIndex.size(); i++) v.push_back(labelForIndex[i]);
       return v;
@@ -368,13 +368,13 @@ public:
    unsigned int getUserFlag(unsigned int i) const;
 
    /// @return the earliest time (full, including toffset) in this SatPass data
-   Epoch getFirstTime(void) const noexcept;
+   Epoch getFirstTime(void) const throw();
    
    /// @return the latest time (full, including toffset) in this SatPass data
-   Epoch getLastTime(void) const noexcept;
+   Epoch getLastTime(void) const throw();
 
    /// @return the earliest time of good data in this SatPass data
-   Epoch getFirstGoodTime(void) const noexcept {
+   Epoch getFirstGoodTime(void) const throw() {
       for(int j=0; j<spdvector.size(); j++) if(spdvector[j].flag & OK) {
          return time(j);
       }
@@ -382,7 +382,7 @@ public:
    }
 
    /// @return the latest time of good data in this SatPass data
-   Epoch getLastGoodTime(void) const noexcept {
+   Epoch getLastGoodTime(void) const throw() {
       for(int j=spdvector.size()-1; j>=0; j--) if(spdvector[j].flag & OK) {
          return time(j);
       }
@@ -391,19 +391,19 @@ public:
 
    /// get the satellite of this SatPass
    /// @return the satellite of this SatPass data
-   RinexSatID getSat(void) const noexcept { return sat; }
+   RinexSatID getSat(void) const throw() { return sat; }
 
    /// get the time interval of this SatPass
    /// @return the nominal time step (seconds) in this data
-   double getDT(void) const noexcept { return dt; }
+   double getDT(void) const throw() { return dt; }
 
    /// get the number of good points in this SatPass
    /// @return the number of good points (flag != BAD) in this object
-   int getNgood(void) const noexcept { return ngood; }
+   int getNgood(void) const throw() { return ngood; }
 
    /// get the size of (the arrays in) this SatPass
    /// @return the size of the data array in this object
-   unsigned int size(void) const noexcept { return spdvector.size(); }
+   unsigned int size(void) const throw() { return spdvector.size(); }
 
    /// get one element of the count array of this SatPass
    /// @param  i   index of the data of interest
@@ -438,7 +438,7 @@ public:
 
    /// Test whether the object has obstype type
    /// @return true if this obstype was passed to the c'tor (i.e. is in indexForLabel)
-   inline bool hasType(std::string type) const noexcept
+   inline bool hasType(std::string type) const throw()
    {
       return (indexForLabel.find(type) != indexForLabel.end());
    }
@@ -453,7 +453,7 @@ public:
 
    // -------------------------------- utils ---------------------------------
    /// clear the data (but not the obs types) from the arrays
-   void clear(void) noexcept { spdvector.clear(); }
+   void clear(void) throw() { spdvector.clear(); }
 
    /// compute the timetag associated with index i in the data array
    /// @param  i   index of the data of interest
@@ -517,7 +517,7 @@ public:
    /// @param tt        the time tag of interest
    /// @return true if the given time tag lies within the time interval covered
    /// by this object.
-   bool includesTime(const Epoch& tt) const noexcept;
+   bool includesTime(const Epoch& tt) const throw();
 
    /// Truncate all data at and after the given time.
    /// return -1 if ttag is at or before the start of this pass,
@@ -549,7 +549,7 @@ public:
    /// pttb: begin time of the overlap
    /// ptte: end time of the overlap
    bool hasOverlap(const SatPass& that, double *pdelt=NULL,
-                   Epoch *pttb=NULL, Epoch *ptte=NULL) noexcept
+                   Epoch *pttb=NULL, Epoch *ptte=NULL) throw()
    {
       if(lastTime <= that.firstTime)                           // iiiiii  aaaaaaa
          return false;
@@ -588,7 +588,7 @@ public:
    /// if the satellites match and the time limits overlap. Return the time in
    /// seconds of the overlap.
    bool hasCommonView(const SatPass& that, double *pdelt=NULL,
-                                    Epoch *pttb=NULL, Epoch *ptte=NULL) noexcept
+                                    Epoch *pttb=NULL, Epoch *ptte=NULL) throw()
    {
       if(sat != that.sat) return false;
       return hasOverlap(that, pdelt, pttb, ptte);
@@ -659,7 +659,7 @@ public:
    /// @param fmt  use time format
    /// @return string containing summary, without LF at end.
    std::string toString(std::string msg="",
-      std::string fmt="%04Y/%02m/%02d %02H:%02M:%06.3f = %04F %w %10.3g") noexcept
+      std::string fmt="%04Y/%02m/%02d %02H:%02M:%06.3f = %04F %w %10.3g") throw()
    {
       std::ostringstream os;
       os << msg << " " << sat << " N " << std::setw(4) << size()
@@ -676,7 +676,7 @@ public:
    /// @param msg1  put message msg1 at beginning of each line,
    /// @param msg2  put msg2 at the end of the first (#comment) line.
    void dump(std::ostream& os, std::string msg1, std::string msg2=std::string())
-      noexcept;
+      throw();
 
    /// Write a one-line summary of the object, consisting of total points,
    /// satellite, number of good points, status, start time, end time,

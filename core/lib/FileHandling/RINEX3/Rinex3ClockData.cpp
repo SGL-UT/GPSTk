@@ -171,7 +171,7 @@ namespace gpstk
 
    }   // end reallyGetRecord()
 
-   void Rinex3ClockData::dump(ostream& s) const noexcept
+   void Rinex3ClockData::dump(ostream& s) const throw()
    {
       // dump record type, sat id / site, current epoch, and data
       s << " " << datatype;

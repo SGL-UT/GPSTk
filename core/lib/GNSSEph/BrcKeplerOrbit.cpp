@@ -48,7 +48,7 @@ namespace gpstk
    using namespace gpstk;
 
    BrcKeplerOrbit::BrcKeplerOrbit()
-      noexcept
+      throw()
    {
       dataLoaded = false;
 
@@ -99,7 +99,7 @@ namespace gpstk
    }
 
 
-   bool BrcKeplerOrbit::operator==(const BrcKeplerOrbit& right) const noexcept
+   bool BrcKeplerOrbit::operator==(const BrcKeplerOrbit& right) const throw()
    {
       return ((dataLoaded == right.dataLoaded) &&
               (satSys == right.satSys) &&
@@ -810,7 +810,7 @@ namespace gpstk
    }
 #pragma clang diagnostic pop
    void BrcKeplerOrbit::dump(ostream& s) const
-      noexcept
+      throw()
    {
       const ios::fmtflags oldFlags = s.flags();
       s.setf(ios::fixed, ios::floatfield);

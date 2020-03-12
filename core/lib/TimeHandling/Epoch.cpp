@@ -81,7 +81,7 @@ namespace gpstk
    std::string Epoch::PRINT_FORMAT("%02m/%02d/%04Y %02H:%02M:%02S");
 
    Epoch& Epoch::setTolerance(double tol)
-      noexcept
+      throw()
    {
       tolerance = tol;
       return *this;
@@ -94,7 +94,7 @@ namespace gpstk
       set(tt);
    }
    Epoch::Epoch(const CommonTime& ct)
-      noexcept
+      throw()
          : core(ct),
            tolerance(EPOCH_TOLERANCE)
    {}
@@ -113,7 +113,7 @@ namespace gpstk
       // @param z GPSZcount object to set to
       // @param f Time frame (see #TimeFrame)
    Epoch::Epoch(const GPSZcount& z)
-      noexcept
+      throw()
          : tolerance(EPOCH_TOLERANCE)
    {
       set(z);
@@ -137,14 +137,14 @@ namespace gpstk
 
       // Copy constructor
    Epoch::Epoch(const Epoch& right)
-      noexcept
+      throw()
          : core(right.core),
            tolerance(right.tolerance)
    {}
 
       // Assignment operator.
    Epoch& Epoch::operator=(const Epoch& right)
-      noexcept
+      throw()
    {
       core = right.core;
       tolerance = right.tolerance;
@@ -155,7 +155,7 @@ namespace gpstk
       // @param right Epoch to subtract from this one.
       // @return difference in seconds.
    double Epoch::operator-(const Epoch& right) const
-      noexcept
+      throw()
    {
       return core - right.core;
    }
@@ -260,7 +260,7 @@ namespace gpstk
 
       // Equality operator.
    bool Epoch::operator==(const Epoch &right) const 
-      noexcept
+      throw()
    {
       // use the smaller of the two tolerances for comparison
       return (ABS(operator-(right)) <=
@@ -269,14 +269,14 @@ namespace gpstk
 
       // Inequality operator.
    bool Epoch::operator!=(const Epoch &right) const 
-      noexcept
+      throw()
    {
       return !(operator==(right));
    }
 
       // Comparison operator (less-than).
    bool Epoch::operator<(const Epoch &right) const 
-      noexcept
+      throw()
    {
       return (operator-(right) <
             -((tolerance > right.tolerance) ? right.tolerance : tolerance));
@@ -284,7 +284,7 @@ namespace gpstk
 
       // Comparison operator (greater-than).
    bool Epoch::operator>(const Epoch &right) const 
-      noexcept
+      throw()
    {
       return (operator-(right) >
             ((tolerance > right.tolerance) ? right.tolerance : tolerance));
@@ -292,20 +292,20 @@ namespace gpstk
    
       // Comparison operator (less-than or equal-to).
    bool Epoch::operator<=(const Epoch &right) const 
-      noexcept
+      throw()
    {
       return !(operator>(right));
    }
 
       // Comparison operator (greater-than or equal-to).
    bool Epoch::operator>=(const Epoch &right) const 
-      noexcept
+      throw()
    {
       return !(operator<(right));
    }
 
    Epoch::operator CommonTime() const
-      noexcept
+      throw()
    {
       return core;
    }
@@ -333,7 +333,7 @@ namespace gpstk
    }
 
    Epoch& Epoch::set(const CommonTime& c)
-      noexcept
+      throw()
    {
       core = c;
       return *this;

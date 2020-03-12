@@ -63,7 +63,7 @@ namespace gpstk
    public:
 
       OrbSysStore(const bool storeAllArg=false)
-         noexcept
+         throw()
         :initialTime(CommonTime::END_OF_TIME),
          finalTime(CommonTime::BEGINNING_OF_TIME),
          timeSysForStore(TimeSystem::Any),
@@ -101,13 +101,13 @@ namespace gpstk
       /// @param[in] s the stream to receive the output; defaults to cout
       /// @param[in] detail the level of detail to provide
       virtual void dump(std::ostream& s = std::cout, short detail = 0)
-         const noexcept;
+         const throw();
 
       virtual void dumpTerse(std::ostream& s = std::cout)
-         const noexcept;
+         const throw();
 
       virtual void dumpTerseTimeOrder(std::ostream& s = std::cout)
-         const noexcept;
+         const throw();
 
       virtual void dumpContents(std::ostream& s = std::cout,
                                 const gpstk::SatID& sidr =
@@ -115,11 +115,11 @@ namespace gpstk
                                 const gpstk::NavID& navtype =
                                       gpstk::NavID(gpstk::NavID::ntUnknown),
                                 const unsigned long UID = 0)
-         const noexcept;
+         const throw();
 
 
       /// Clear the dataset, meaning remove all data
-      virtual void clear(void) noexcept;
+      virtual void clear(void) throw();
 
       /// Determine the earliest time for which this object can successfully
       /// determine the Xvt for any object.

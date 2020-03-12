@@ -238,7 +238,7 @@ namespace gpstk
 
 //--------------------------------------------------------------------------
    void OrbSysStore::dump(std::ostream& s, short detail) const
-      noexcept
+      throw()
    {
       if (debugLevel) cout << "Entering dump()" << endl;
 
@@ -377,7 +377,7 @@ namespace gpstk
 
 //-----------------------------------------------------------------------------
    void OrbSysStore::dumpTerse(std::ostream& s)
-         const noexcept
+         const throw()
    {
       s << "**********************************************************" << endl;
       s << " One-line summary of non-orbit constellation overhead data" << endl;
@@ -408,7 +408,7 @@ namespace gpstk
 
 //-----------------------------------------------------------------------------
    void OrbSysStore::dumpTerseTimeOrder(std::ostream& s)
-         const noexcept
+         const throw()
    {
       s << "**********************************************************" << endl;
       s << " One-line summary of non-orbit constellation overhead data" << endl;
@@ -547,7 +547,7 @@ namespace gpstk
                                 const gpstk::SatID& sidr,
                                 const gpstk::NavID& navtype,
                                 const unsigned long UID)
-         const noexcept
+         const throw()
    {
       bool allSats = false;
       bool allNM = false;
@@ -1095,7 +1095,7 @@ namespace gpstk
 //-----------------------------------------------------------------------------
 // Remove all data from this collection.
    void OrbSysStore::clear()
-         noexcept
+         throw()
    {
       SAT_NM_UID_MSG_MAP::iterator it1;
       NM_UID_MSG_MAP::iterator it2;

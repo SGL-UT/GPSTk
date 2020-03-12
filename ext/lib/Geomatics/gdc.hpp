@@ -284,7 +284,7 @@ public:
    /// Get the parameter in the configuration corresponding to label
    /// @param label parameter label for which value is returned
    /// @return value of the 'label' parameter
-   double getParameter(std::string label) noexcept { return CFG[label]; }
+   double getParameter(std::string label) throw() { return CFG[label]; }
 
    /// Print help page, including descriptions and current values of all
    /// the parameters, to the ostream.
@@ -309,12 +309,12 @@ public:
    }
 
    /// get the unique number; note that it is incremented at start of Disc..Corr()
-   int getUniqueNumber(void) noexcept { return unique; }
+   int getUniqueNumber(void) throw() { return unique; }
 
    /// Allow caller to force unique number, before call to DiscontinuityCorrector(),
    /// which will immediately increment it.
    /// @param n integer force unique number in output to be this+1
-   void ForceUniqueNumber(int n) noexcept { unique = n; }
+   void ForceUniqueNumber(int n) throw() { unique = n; }
 
    //---------------------------------------------------------------------------
    /// GPSTK Discontinuity Corrector (GDC).
@@ -680,17 +680,17 @@ protected:
    ///#GDC  1 GFW Arc2[772] WLslip/GFslip/WLfix/GFfix good/tot=438/445=98.43%
    ///                     dWL=46.54wl 438 -0.71 +-0.32 dGF=-46.37wl 438 -0.71 +-0.32
    void DumpArcs(const std::string& tag, const std::string& label, int prec=-1)
-      noexcept;
+      throw();
 
    /// dump all FilterHits, e.g.
    ///#GDC  1 GFW Hit1[2] BOD npts=1206 ngood=1206 step 0.00
    ///                                            min 0.00 max 0.00 med 0.07 mad 0.03
    void DumpHits(const std::vector< FilterHit<double> >& filterResults,
                   const std::string& tag, const std::string& label, int prec=-1)
-      noexcept;
+      throw();
 
    /// build the string that is returned by the discontinuity corrector
-   std::string returnMessage(int prec=-1, int wid=-1) noexcept;
+   std::string returnMessage(int prec=-1, int wid=-1) throw();
 
    /// apply the results to fix the input SatPass; cf. cfg(doFix)
    /// @param SP       SatPass object containing the input data.

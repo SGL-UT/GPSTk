@@ -95,9 +95,9 @@ public:
    }
    virtual void finalize(NavMsgList& msgBitsOut)
    {}
-   virtual unsigned processingDepth() const noexcept
+   virtual unsigned processingDepth() const throw()
    { return 0; }
-   virtual std::string filterName() const noexcept
+   virtual std::string filterName() const throw()
    { return "Bunk1"; }
 };
 // filter with cache
@@ -122,9 +122,9 @@ public:
                 std::back_insert_iterator<NavMsgList>(msgBitsOut));
       cache.clear();
    }
-   virtual unsigned processingDepth() const noexcept
+   virtual unsigned processingDepth() const throw()
    { return 4; }
-   virtual std::string filterName() const noexcept
+   virtual std::string filterName() const throw()
    { return "Bunk2"; }
    NavMsgList cache;
 };

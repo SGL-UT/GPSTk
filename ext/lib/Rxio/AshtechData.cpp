@@ -157,7 +157,7 @@ namespace gpstk
 
 
     //---------------------------------------------------------------------------
-    void AshtechData::dump(ostream& out) const noexcept
+    void AshtechData::dump(ostream& out) const throw()
     {
        ostringstream oss;
        oss << getName() << " : id:" << id

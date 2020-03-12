@@ -68,7 +68,7 @@ namespace gpstk
    {
    public:
          /// Constructor
-      PRSolution2() noexcept :
+      PRSolution2() throw() :
          RMSLimit(6.5), SlopeLimit(1000.), Algebraic(false),
          ResidualCriterion(true), ReturnAtOnce(false), NSatsReject(-1),
          Debug(false), pDebugStream(&std::cout), MaxNIterations(10),
@@ -104,7 +104,7 @@ namespace gpstk
 
          /// Return the status of solution
       bool isValid()
-         const noexcept { return Valid; }
+         const throw() { return Valid; }
 
       // input:
 
@@ -214,7 +214,7 @@ namespace gpstk
                                            const XvtStore<SatID>& Eph,
                                            Matrix<double>& SVP,
                                            std::ostream *pDebug=NULL)
-         noexcept;
+         throw();
 
       /** Compute a single autonomous pseudorange solution.
        * Input only:

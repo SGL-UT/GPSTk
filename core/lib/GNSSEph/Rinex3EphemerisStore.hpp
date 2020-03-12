@@ -145,14 +145,14 @@ namespace gpstk
           * @param[in] t the time to look up
           * @return the Xvt of the object at the indicated time */
       virtual Xvt computeXvt(const SatID& id, const CommonTime& t) const
-         noexcept;
+         throw();
 
          /** Get the satellite health at a specific time.
           * @param[in] id the object's identifier
           * @param[in] t the time to look up
           * @return the health status of the object at the indicated time. */
       virtual Xvt::HealthStatus getSVHealth(const SatID& id,
-                                            const CommonTime& t) const noexcept;
+                                            const CommonTime& t) const throw();
 
          /** Dump information about the store to an ostream.
           * @param[in] os ostream to receive the output; defaults to std::cout

@@ -66,7 +66,7 @@ namespace gpstk
 
       // return string giving name of coordinate system
    string Position::getSystemName()
-      noexcept
+      throw()
    { return SystemNames[system]; }
 
    // ----------- Part  2: tolerance -----------------------------------------
@@ -85,7 +85,7 @@ namespace gpstk
       // for some easy to use tolerance values.
       // @param tol Tolerance in meters to be used by comparison operators.
    Position& Position::setTolerance(const double tol)
-      noexcept
+      throw()
    {
       tolerance = tol;
       return *this;
@@ -95,7 +95,7 @@ namespace gpstk
    //
       // Default constructor.
    Position::Position()
-      noexcept
+      throw()
    {
       WGS84Ellipsoid WGS84;
       initialize(0.0,0.0,0.0,Unknown,&WGS84);
@@ -148,7 +148,7 @@ namespace gpstk
    }
 
    Position::Position(const Xvt& xvt)
-      noexcept
+      throw()
    {
       double a=xvt.x[0];
       double b=xvt.x[1];
@@ -159,7 +159,7 @@ namespace gpstk
    // ----------- Part  4: member functions: arithmetic ----------------------
    //
    Position& Position::operator-=(const Position& right)
-      noexcept
+      throw()
    {
       Position r(right);
       CoordinateSystem savesys=system;    // save the original system
@@ -176,7 +176,7 @@ namespace gpstk
    }
 
    Position& Position::operator+=(const Position& right)
-      noexcept
+      throw()
    {
       Position r(right);
       CoordinateSystem savesys=system;    // save the original system
@@ -194,7 +194,7 @@ namespace gpstk
 
    Position operator-(const Position& left,
                             const Position& right)
-      noexcept
+      throw()
    {
       Position l(left),r(right);
          // convert both to Cartesian
@@ -208,7 +208,7 @@ namespace gpstk
 
    Position operator+(const Position& left,
                             const Position& right)
-      noexcept
+      throw()
    {
       Position l(left),r(right);
          // convert both to Cartesian
@@ -224,7 +224,7 @@ namespace gpstk
    //
       // Equality operator. Returns false if ell values differ.
    bool Position::operator==(const Position &right) const
-      noexcept
+      throw()
    {
       if(AEarth != right.AEarth || eccSquared != right.eccSquared)
          return false;
@@ -238,7 +238,7 @@ namespace gpstk
 
       // Inequality operator. Returns true if ell values differ.
    bool Position::operator!=(const Position &right) const
-      noexcept
+      throw()
    {
       return !(operator==(right));
    }
@@ -250,7 +250,7 @@ namespace gpstk
       // @param sys coordinate system into which *this is to be transformed.
       // @return *this
    Position Position::transformTo(CoordinateSystem sys)
-      noexcept
+      throw()
    {
       if(sys == Unknown || sys == system) return *this;
 
@@ -349,14 +349,14 @@ namespace gpstk
    //
    
    const ReferenceFrame& Position::getReferenceFrame() const
-      noexcept
+      throw()
    {   
       return refFrame;
    }
    
       // Get X coordinate (meters)
    double Position::X() const
-      noexcept
+      throw()
    {
       if(system == Cartesian)
          return theArray[0];
@@ -367,7 +367,7 @@ namespace gpstk
 
       // Get Y coordinate (meters)
    double Position::Y() const
-      noexcept
+      throw()
    {
       if(system == Cartesian)
          return theArray[1];
@@ -378,7 +378,7 @@ namespace gpstk
 
       // Get Z coordinate (meters)
    double Position::Z() const
-      noexcept
+      throw()
    {
       if(system == Cartesian)
          return theArray[2];
@@ -389,7 +389,7 @@ namespace gpstk
 
       // Get geodetic latitude (degrees North).
    double Position::geodeticLatitude() const
-      noexcept
+      throw()
    {
       if(system == Geodetic)
          return theArray[0];
@@ -401,7 +401,7 @@ namespace gpstk
       // Get geocentric latitude (degrees North),
       // equal to 90 degress - theta in regular spherical coordinates.
    double Position::geocentricLatitude() const
-      noexcept
+      throw()
    {
       if(system == Geocentric)
          return theArray[0];
@@ -412,7 +412,7 @@ namespace gpstk
 
       // Get spherical coordinate theta in degrees
    double Position::theta() const
-      noexcept
+      throw()
    {
       if(system == Spherical)
          return theArray[0];
@@ -423,7 +423,7 @@ namespace gpstk
 
       // Get spherical coordinate phi in degrees
    double Position::phi() const
-      noexcept
+      throw()
    {
       if(system == Spherical)
          return theArray[1];
@@ -435,7 +435,7 @@ namespace gpstk
       // Get longitude (degrees East),
       // equal to phi in regular spherical coordinates.
    double Position::longitude() const
-      noexcept
+      throw()
    {
       if(system != Cartesian)
          return theArray[1];
@@ -447,7 +447,7 @@ namespace gpstk
       // Get radius or distance from the center of Earth (meters),
       // Same as radius in spherical coordinates.
    double Position::radius() const
-      noexcept
+      throw()
    {
       if(system == Spherical || system == Geocentric)
          return theArray[2];
@@ -458,7 +458,7 @@ namespace gpstk
 
       // Get height above ellipsoid (meters) (Geodetic).
    double Position::height() const
-      noexcept
+      throw()
    {
       if(system == Geodetic)
          return theArray[2];
@@ -470,7 +470,7 @@ namespace gpstk
    // ----------- Part  8: member functions: set -----------------------------
    //
    void Position::setReferenceFrame(const ReferenceFrame& frame)
-      noexcept
+      throw()
    {
       refFrame = frame;
    }
@@ -606,7 +606,7 @@ namespace gpstk
    Position& Position::setECEF(const double X,
                                const double Y,
                                const double Z)
-      noexcept
+      throw()
    {
       theArray[0] = X;
       theArray[1] = Y;
@@ -1048,7 +1048,7 @@ namespace gpstk
       // Algorithm references: standard geometry.
    void Position::convertSphericalToCartesian(const Triple& tpr,
                                               Triple& xyz)
-      noexcept
+      throw()
    {
       double st=::sin(tpr[0]*DEG_TO_RAD);
       xyz[0] = tpr[2]*st*::cos(tpr[1]*DEG_TO_RAD);
@@ -1062,7 +1062,7 @@ namespace gpstk
       // Algorithm references: standard geometry.
    void Position::convertCartesianToSpherical(const Triple& xyz,
                                               Triple& tpr)
-      noexcept
+      throw()
    {
       tpr[2] = RSS(xyz[0],xyz[1],xyz[2]);
       if(tpr[2] <= Position::POSITION_TOLERANCE/5) { // zero-length Cartesian vector
@@ -1093,7 +1093,7 @@ namespace gpstk
                                              Triple& llh,
                                              const double A,
                                              const double eccSq)
-      noexcept
+      throw()
    {
       double p,slat,N,htold,latold;
       p = SQRT(xyz[0]*xyz[0]+xyz[1]*xyz[1]);
@@ -1132,7 +1132,7 @@ namespace gpstk
                                              Triple& xyz,
                                              const double A,
                                              const double eccSq)
-      noexcept
+      throw()
    {
       double slat = ::sin(llh[0]*DEG_TO_RAD);
       double clat = ::cos(llh[0]*DEG_TO_RAD);
@@ -1148,7 +1148,7 @@ namespace gpstk
       //            geocentric lat(deg N),lon(deg E),radius (units of input)
    void Position::convertCartesianToGeocentric(const Triple& xyz,
                                                Triple& llr)
-      noexcept
+      throw()
    {
       convertCartesianToSpherical(xyz, llr);
       llr[0] = 90 - llr[0];         // convert theta to latitude
@@ -1159,7 +1159,7 @@ namespace gpstk
       // @param xyz (output): X,Y,Z (units of radius)
    void Position::convertGeocentricToCartesian(const Triple& llr,
                                                Triple& xyz)
-      noexcept
+      throw()
    {
       Triple llh(llr);
       llh[0] = 90 - llh[0];         // convert latitude to theta
@@ -1176,7 +1176,7 @@ namespace gpstk
                                                Triple& llh,
                                                const double A,
                                                const double eccSq)
-      noexcept
+      throw()
    {
       double cl,p,sl,slat,N,htold,latold;
       llh[1] = llr[1];   // longitude is unchanged
@@ -1222,7 +1222,7 @@ namespace gpstk
                                               Triple& llr,
                                               const double A,
                                               const double eccSq)
-      noexcept
+      throw()
    {
       double slat = ::sin(llh[0]*DEG_TO_RAD);
       double N = A/SQRT(1.0-eccSq*slat*slat);
@@ -1297,7 +1297,7 @@ namespace gpstk
    double Position::radiusEarth(const double geolat,
                                 const double A,
                                 const double eccSq)
-      noexcept
+      throw()
    {
       double slat=::sin(DEG_TO_RAD*geolat);
       double e=(1.0-eccSq);
@@ -1455,7 +1455,7 @@ namespace gpstk
    Position Position::getIonosphericPiercePoint(const double elev,
                                                 const double azim,
                                                 const double ionoht) const
-      noexcept
+      throw()
    {
       Position Rx(*this);
 
@@ -1490,7 +1490,7 @@ namespace gpstk
         * @return radius of curvature of the meridian (in meters)
         */
     double Position::getCurvMeridian() const
-        noexcept
+        throw()
     {
     
         double slat = ::sin(geodeticLatitude()*DEG_TO_RAD);
@@ -1506,7 +1506,7 @@ namespace gpstk
         * @return radius of curvature in the prime vertical (in meters)
         */
     double Position::getCurvPrimeVertical() const
-        noexcept
+        throw()
     {
     
         double slat = ::sin(geodeticLatitude()*DEG_TO_RAD);

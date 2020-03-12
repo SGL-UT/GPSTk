@@ -92,7 +92,7 @@ public:
    vector<string> cmdlineUnrecog;
 
    // ctor with defaults
-   InputConfig(void) noexcept {
+   InputConfig(void) throw() {
       fmtGPS = string("%F,%g");
       fmtCAL = string("%Y,%m,%d,%02H,%M,%f");
       fmt = string("%4F %10.3g %4Y %2m %2d %2H %2M %6.3f");

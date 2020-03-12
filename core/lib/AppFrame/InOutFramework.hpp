@@ -78,7 +78,7 @@ namespace gpstk
           */
       InOutFramework( const std::string& applName,
                       const std::string& applDesc )
-            noexcept
+            throw()
             : LoopedFramework(applName, applDesc)
       {};
 
@@ -90,7 +90,7 @@ namespace gpstk
       bool initialize( int argc,
                        char *argv[],
                        bool pretty = true )
-         noexcept
+         throw()
       {
          using std::ios;
 

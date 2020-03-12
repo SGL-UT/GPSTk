@@ -69,7 +69,7 @@ namespace gpstk
       }
 
          /// Destructor.
-      ~BDSWeekSecond() noexcept {}
+      ~BDSWeekSecond() throw() {}
 
          // the rest define the week rollover and starting time
 

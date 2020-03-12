@@ -91,17 +91,17 @@ namespace gpstk
 class SRIFilter : public SRI {
 public:
       /// empty constructor
-   SRIFilter(void) noexcept;
+   SRIFilter(void) throw();
 
       /// constructor given the dimension N.
       /// @param N dimension of the SRIFilter.
    SRIFilter(const unsigned int N)
-      noexcept;
+      throw();
 
       /// constructor given a Namelist; its dimension determines the SRI dimension.
       /// @param NL Namelist for the SRIFilter.
    SRIFilter(const Namelist& NL)
-      noexcept;
+      throw();
 
       /// explicit constructor - throw if the dimensions are inconsistent.
       /// @param R  Initial information matrix, an upper triangular matrix of dim N.
@@ -115,13 +115,13 @@ public:
       /// copy constructor
       /// @param right SRIFilter to be copied
    SRIFilter(const SRIFilter& right)
-      noexcept
+      throw()
       { *this = right; }
 
       /// operator=
       /// @param right SRIFilter to be copied
    SRIFilter& operator=(const SRIFilter& right)
-      noexcept;
+      throw();
 
       /// SRIF (Kalman) simple linear measurement update with optional weight matrix
       /// @param H  Partials matrix, dimension MxN.
@@ -425,7 +425,7 @@ private:
                          Matrix<T>& Rwx);
 
       /// initialization used by constructors
-   void defaults(void) noexcept
+   void defaults(void) throw()
    {
       //valid = false;
    }

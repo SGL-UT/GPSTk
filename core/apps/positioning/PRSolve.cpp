@@ -122,22 +122,22 @@ class Configuration : public Singleton<Configuration> {
 public:
 
    // Default and only constructor
-   Configuration() noexcept { SetDefaults(); }
+   Configuration() throw() { SetDefaults(); }
 
    // Create, parse and process command line options and user input
-   int ProcessUserInput(int argc, char **argv) noexcept;
+   int ProcessUserInput(int argc, char **argv) throw();
 
    // Create and output help message for --sol
    void SolDescHelp(void);
 
    // Design the command line
-   string BuildCommandLine(void) noexcept;
+   string BuildCommandLine(void) throw();
 
    // Open the output file, and parse the strings used on the command line
    // return -4 if log file could not be opened
-   //int ExtraProcessing(void) noexcept;
+   //int ExtraProcessing(void) throw();
    //TD on clau, this leads to the SPS algorithm failing to converge on some problems.
-   int ExtraProcessing(string& errors, string& extras) noexcept;
+   int ExtraProcessing(string& errors, string& extras) throw();
 
       /** update weather in the trop model using the Met store
        * @throw Exception */
@@ -146,7 +146,7 @@ public:
 private:
 
    // Define default values
-   void SetDefaults(void) noexcept;
+   void SetDefaults(void) throw();
 
 public:
 
@@ -453,17 +453,17 @@ class SolutionObject {
 public:
 // member functions
    // Default and only constructor
-   SolutionObject(const string& desc) noexcept { Initialize(desc); }
+   SolutionObject(const string& desc) throw() { Initialize(desc); }
 
    // Destructor
-   ~SolutionObject() noexcept { }
+   ~SolutionObject() throw() { }
 
    // static function to determine consistency of input descriptor
    // msg returns explanation
    static bool ValidateDescriptor(string desc, string& msg);
 
    // check validity of input descriptor, set default values
-   void Initialize(const string& desc) noexcept
+   void Initialize(const string& desc) throw()
    {
       if(!ValidateDescriptor(desc, Descriptor)) {
          isValid = false;
@@ -505,27 +505,27 @@ public:
    }
 
    // parse descriptor into member data and 'sysChars'
-   void ParseDescriptor(void) noexcept;
+   void ParseDescriptor(void) throw();
 
    // Given a RINEX header, verify that the necessary ObsIDs are present, and
    // define an ordered set of ObsIDs for each component and SolutionData required.
    // Return true if enough ObsIDs are found to compute the solution.
-   bool ChooseObsIDs(map<string,vector<RinexObsID> >& mapObsTypes) noexcept;
+   bool ChooseObsIDs(map<string,vector<RinexObsID> >& mapObsTypes) throw();
 
    // dump. level 0: descriptor and all available obs types
    //       level 1: descriptor and obs types actually used
    //       level 2: level 1 plus pseudorange data
    // return string containing dump
-   string dump(int level, string msg="SOLN", string msg2="") noexcept;
+   string dump(int level, string msg="SOLN", string msg2="") throw();
 
    // reset the object before each epoch
-   void EpochReset(void) noexcept;
+   void EpochReset(void) throw();
 
    // Given a RINEX data object, pull out the data to be used, and set the flag
    // indicating whether there is sufficient good data.
    void CollectData(const RinexSatID& s,
                     const double& elev, const double& ER,
-                    const vector<RinexDatum>& v) noexcept;
+                    const vector<RinexDatum>& v) throw();
 
       /** Compute a solution for the given epoch; call after
        * CollectData() same return value as RAIMCompute()
@@ -1606,7 +1606,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
-void Configuration::SetDefaults(void) noexcept
+void Configuration::SetDefaults(void) throw()
 {
    SPSout = ORDout = false;
    LogFile = string("prs.log");
@@ -1732,7 +1732,7 @@ void Configuration::SolDescHelp(void)
 }
 
 //------------------------------------------------------------------------------------
-int Configuration::ProcessUserInput(int argc, char **argv) noexcept
+int Configuration::ProcessUserInput(int argc, char **argv) throw()
 {
    // build the command line
    opts.DefineUsageString(PrgmName + " [options]");
@@ -1800,7 +1800,7 @@ int Configuration::ProcessUserInput(int argc, char **argv) noexcept
 }  // end Configuration::CommandLine()
 
 //------------------------------------------------------------------------------------
-string Configuration::BuildCommandLine(void) noexcept
+string Configuration::BuildCommandLine(void) throw()
 {
    // Program description will appear at the top of the syntax page
    string PrgmDesc = " Program " + PrgmName +
@@ -1955,7 +1955,7 @@ string Configuration::BuildCommandLine(void) noexcept
 }  // end Configuration::BuildCommandLine()
 
 //------------------------------------------------------------------------------------
-int Configuration::ExtraProcessing(string& errors, string& extras) noexcept
+int Configuration::ExtraProcessing(string& errors, string& extras) throw()
 {
    int i,n;
    vector<string> fld;
@@ -2123,7 +2123,7 @@ int Configuration::ExtraProcessing(string& errors, string& extras) noexcept
 
    return 0;
 
-} // end Configuration::ExtraProcessing() noexcept
+} // end Configuration::ExtraProcessing() throw()
 
 //------------------------------------------------------------------------------------
 // update weather in the trop model using the Met store
@@ -2252,7 +2252,7 @@ bool SolutionObject::ValidateDescriptor(const string desc, string& msg)
 // parse descriptor into member data and 'sysChars'
 // called by Initialize() which is called by c'tor
 // assumes descriptor has been validated.
-void SolutionObject::ParseDescriptor(void) noexcept
+void SolutionObject::ParseDescriptor(void) throw()
 {
    size_t i;
    vector<string> fields;
@@ -2288,7 +2288,7 @@ void SolutionObject::ParseDescriptor(void) noexcept
 // define an ordered set of ObsIDs for each required SolutionData.
 // Return true if enough ObsIDs are found (in header) to compute the solution.
 bool SolutionObject::ChooseObsIDs(map<string,vector<RinexObsID> >& mapObsTypes)
-   noexcept
+   throw()
 {
    size_t i;
 
@@ -2312,7 +2312,7 @@ bool SolutionObject::ChooseObsIDs(map<string,vector<RinexObsID> >& mapObsTypes)
 }
 
 //------------------------------------------------------------------------------------
-string SolutionObject::dump(int level, string msg1, string msg2) noexcept
+string SolutionObject::dump(int level, string msg1, string msg2) throw()
 {
    int j;
    size_t i;
@@ -2357,7 +2357,7 @@ string SolutionObject::dump(int level, string msg1, string msg2) noexcept
 }
 
 //------------------------------------------------------------------------------------
-void SolutionObject::EpochReset(void) noexcept
+void SolutionObject::EpochReset(void) throw()
 {
    Satellites.clear();
    PRanges.clear();
@@ -2373,7 +2373,7 @@ void SolutionObject::EpochReset(void) noexcept
 void SolutionObject::CollectData(const RinexSatID& sat,
                                  const double& elev, const double& ER,
                                  const vector<RinexDatum>& vrd)
-   noexcept
+   throw()
 {
    if(!isValid) return;
 

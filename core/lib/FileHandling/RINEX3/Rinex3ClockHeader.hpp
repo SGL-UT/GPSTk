@@ -140,11 +140,11 @@ namespace gpstk
           *    2: above plus all invalid header strings (dumpValid) */
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Woverloaded-virtual"
-      virtual void dump(std::ostream& s=std::cout, short detail = 0) const noexcept;
+      virtual void dump(std::ostream& s=std::cout, short detail = 0) const throw();
 #pragma clang diagnostic pop
 
          /// Dump validity bits -> header strings
-      void dumpValid(std::ostream& s=std::cout) const noexcept;
+      void dumpValid(std::ostream& s=std::cout) const throw();
 
       double version;                        ///< Rinex3Clock Version or file format
       std::string program;                   ///< Program name

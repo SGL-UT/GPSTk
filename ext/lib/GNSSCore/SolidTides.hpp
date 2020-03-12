@@ -76,7 +76,7 @@ namespace gpstk
    public:
 
          /// Default constructor
-      SolidTides() noexcept {}
+      SolidTides() throw() {}
 
          /// Destructor
       virtual ~SolidTides() {}

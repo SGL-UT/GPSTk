@@ -513,7 +513,7 @@ namespace gpstk
    }
 
 
-   void SP3Header::dump(ostream& s) const noexcept
+   void SP3Header::dump(ostream& s) const throw()
    {
       s << "SP3 Header: version " << versionString() << " containing ";
       if(containsVelocity) s << "positions and velocities.";

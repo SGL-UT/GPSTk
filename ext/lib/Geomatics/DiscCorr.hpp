@@ -83,14 +83,14 @@ namespace gpstk {
       void setParameter(std::string label, double value);
 
          /// Get the parameter in the configuration corresponding to label
-      double getParameter(std::string label) noexcept
+      double getParameter(std::string label) throw()
       {
          if(CFG.find(label) == CFG.end()) return 0.0;    // TD throw?
          return CFG[label];
       }
 
          /// Get the description of a parameter
-      std::string getDescription(std::string label) noexcept
+      std::string getDescription(std::string label) throw()
       {
          if(CFGdescription.find(label) == CFGdescription.end())
             return std::string("Invalid label");
@@ -107,7 +107,7 @@ namespace gpstk {
       void DisplayParameterUsage(std::ostream& os, bool advanced=false);
 
          /// Return version string
-      std::string Version() noexcept { return GDCVersion; }
+      std::string Version() throw() { return GDCVersion; }
 
    protected:
 

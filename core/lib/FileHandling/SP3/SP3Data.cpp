@@ -408,7 +408,7 @@ namespace gpstk
 
    }  // end reallyPutRecord()
 
-   void SP3Data::dump(ostream& s, bool includeC) const noexcept
+   void SP3Data::dump(ostream& s, bool includeC) const throw()
    {
       // dump record type (PV*), sat id, and current epoch
       s << RecType << " " << static_cast<SP3SatID>(sat).toString() << " "

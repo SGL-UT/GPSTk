@@ -76,11 +76,11 @@ namespace gpstk
       virtual void finalize(NavMsgList& msgBitsOut);
 
          /// Internally stores 1 epoch's worth of subframe data.
-      virtual unsigned processingDepth() const noexcept
+      virtual unsigned processingDepth() const throw()
       { return 1; }
 
          /// Return the filter name.
-      virtual std::string filterName() const noexcept
+      virtual std::string filterName() const throw()
       { return "CrossSource"; }
 
       virtual void setMinIdentical(const unsigned value)

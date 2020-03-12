@@ -76,7 +76,7 @@ namespace gpstk
 
 
    Xvt OrbAlmStore::computeXvt(const SatID& subjID, const CommonTime& t) const
-      noexcept
+      throw()
    {
       Xvt rv;
       rv.health = Xvt::HealthStatus::Unavailable;
@@ -98,7 +98,7 @@ namespace gpstk
 
 
    Xvt::HealthStatus OrbAlmStore ::
-   getSVHealth(const SatID& subjID, const CommonTime& t) const noexcept
+   getSVHealth(const SatID& subjID, const CommonTime& t) const throw()
    {
       Xvt::HealthStatus rv = Xvt::HealthStatus::Unavailable;
       try
@@ -171,7 +171,7 @@ namespace gpstk
 //--------------------------------------------------------------------------
 
    void OrbAlmStore::dump(std::ostream& s, short detail) const
-      noexcept
+      throw()
    {
       dumpSubjAlm(s,detail);
       dumpXmitAlm(s,detail);
@@ -495,7 +495,7 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjI
     
    //-----------------------------------------------------------------------------
    void OrbAlmStore::edit(const CommonTime& tmin, const CommonTime& tmax)
-      noexcept
+      throw()
    {
       for(SubjectAlmMap::iterator i = subjectAlmMap.begin(); i != subjectAlmMap.end(); i++)
       {
@@ -550,7 +550,7 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjI
 
    //-----------------------------------------------------------------------------
    void OrbAlmStore::clear()
-         noexcept
+         throw()
    {
         // First clear the subject almanac map
      SubjectAlmMap::iterator it;
@@ -592,7 +592,7 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjI
 
    //-----------------------------------------------------------------------------
    unsigned OrbAlmStore::size(unsigned short choice) const
-         noexcept
+         throw()
    {
       unsigned counter = 0;
       if (choice==0 || choice==1)
@@ -618,7 +618,7 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjI
 
    //-----------------------------------------------------------------------------
    unsigned OrbAlmStore::sizeSubjAlm(const SatID& subjID) const
-         noexcept
+         throw()
    {
       unsigned counter = 0;
       SubjectAlmMap::const_iterator i = subjectAlmMap.find(subjID);
@@ -636,7 +636,7 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjI
 
    //-----------------------------------------------------------------------------
    unsigned OrbAlmStore::sizeXmitAlm(const SatID& xmitID) const
-         noexcept
+         throw()
    {
       unsigned counter = 0; 
       XmitAlmMap::const_iterator i2 = xmitAlmMap.find(xmitID);

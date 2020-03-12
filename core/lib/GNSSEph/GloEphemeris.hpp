@@ -114,7 +114,7 @@ namespace gpstk
 
          /** This functions returns the GNSS type (satellite system code) */
       std::string getSatSys() const
-         noexcept
+         throw()
       { return satSys; };
 
 
@@ -157,49 +157,49 @@ namespace gpstk
 
          /// Get the acceleration vector.
       Triple getAcc() const
-         noexcept
+         throw()
       { return a; }
 
 
          /// Get the TauN parameter.
       double getTauN() const
-         noexcept
+         throw()
       { return clkbias; }
 
 
          /// Get the GammaN parameter.
       double getGammaN() const
-         noexcept
+         throw()
       { return clkdrift; }
 
 
          /// Get the MFTime parameter.
       long getMFtime() const
-         noexcept
+         throw()
       { return MFtime; }
 
 
          /// Get the health value parameter.
       short getHealth() const
-         noexcept
+         throw()
       { return health; }
 
 
          /// Get the frequency number.
       short getfreqNum() const
-         noexcept
+         throw()
       { return freqNum; }
 
 
          /// Get the age of the information.
       double getAgeOfInfo() const
-         noexcept
+         throw()
       { return ageOfInfo; }
 
 
          /// Output the contents of this ephemeris to the given stream.
       void dump(std::ostream& s = std::cout) const
-         noexcept;
+         throw();
          
       void prettyDump(std::ostream& s) const;
       void terseDump(std::ostream& s) const;

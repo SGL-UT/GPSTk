@@ -94,7 +94,7 @@ namespace gpstk
    }
 
    //---------------------------------------------------------------------------
-   void AshtechEPB::dump(ostream& out) const noexcept
+   void AshtechEPB::dump(ostream& out) const throw()
    {
       ostringstream oss;
       using gpstk::StringUtils::asString;

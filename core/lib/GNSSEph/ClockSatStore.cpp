@@ -46,7 +46,7 @@ using namespace std;
 namespace gpstk
 {
    // Output stream operator is used by dump() in TabularSatStore
-   ostream& operator<<(ostream& os, const ClockRecord& rec) noexcept
+   ostream& operator<<(ostream& os, const ClockRecord& rec) throw()
    {
       os << scientific << setprecision(12) << setw(19) << rec.bias
          << " " << setw(19) << rec.sig_bias

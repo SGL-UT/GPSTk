@@ -139,8 +139,8 @@ public:
    double press;                    // pressure in mbars at sealevel
    double rhumid;                   // relative humidity in % (0-100)
 
-   Station(void) noexcept;           // empty and only constructor
-   ~Station(void) noexcept;          // destructor - free trop model
+   Station(void) throw();           // empty and only constructor
+   ~Station(void) throw();          // destructor - free trop model
 };
 
 /**
@@ -169,11 +169,11 @@ public:
    int inL1,inL2;              // indexes in RINEX header for carrier phase
    int inD1,inD2,inS1,inS2;    // needed or used ??
 
-   ObsFile(void) noexcept;                          // empty constructor
-   ObsFile(const ObsFile& of) noexcept;             // copy constructor
+   ObsFile(void) throw();                          // empty constructor
+   ObsFile(const ObsFile& of) throw();             // copy constructor
                                                    // (need for vector<ObsFile>)
    ~ObsFile(void);                                 // destructor
-   ObsFile& operator=(const ObsFile& of) noexcept;  // assignment operator
+   ObsFile& operator=(const ObsFile& of) throw();  // assignment operator
                                                    // (need for copy c'tor)
 };
 

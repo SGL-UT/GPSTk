@@ -58,7 +58,7 @@ namespace gpstk
    using namespace std;
 
    EngEphemeris::EngEphemeris()
-      noexcept
+      throw()
    {
       haveSubframe[0] = haveSubframe[1] = haveSubframe[2] = false;
 
@@ -96,7 +96,7 @@ namespace gpstk
    }
 
 
-   bool EngEphemeris::operator==(const gpstk::EngEphemeris& right) const noexcept
+   bool EngEphemeris::operator==(const gpstk::EngEphemeris& right) const throw()
    {
          // ignored as not important for eng eph comparison
          //haveSubframe
@@ -373,7 +373,7 @@ namespace gpstk
    }
 
    bool EngEphemeris :: isValid() const
-      noexcept
+      throw()
    {
       try
       {

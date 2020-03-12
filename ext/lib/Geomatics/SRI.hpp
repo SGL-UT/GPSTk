@@ -164,17 +164,17 @@ extern const SparseMatrix<double> SRINullSparseMatrix;
 class SRI {
 public:
       /// empty constructor
-   SRI(void) noexcept { }
+   SRI(void) throw() { }
 
       /// constructor given the dimension N.
       /// @param N the dimension to assign: R(N,N) Z(N) names(N)
    SRI(const unsigned int N)
-      noexcept;
+      throw();
 
       /// constructor given a Namelist, its dimension determines the SRI dimension.
       /// @param NL Namelist to give the SRI; this sets the dimension
    SRI(const Namelist& NL)
-      noexcept;
+      throw();
 
       /// explicit constructor - throw if the dimensions are inconsistent.
       /// User is responsible for ensuring the input is self-consistent.
@@ -196,11 +196,11 @@ public:
 
       /// copy constructor
    SRI(const SRI&)
-      noexcept;
+      throw();
 
       /// operator=
    SRI& operator=(const SRI& right)
-      noexcept;
+      throw();
 
    // modify SRIs
 
@@ -278,24 +278,24 @@ public:
       /// information about that element.
       /// @param n index of row or R and element of Z to be zeroed
    void zeroOne(const unsigned int n)
-      noexcept;
+      throw();
 
       /// Zero out all the first n rows of R and elements of Z, removing all
       /// information about those elements. Default value of the input is 0,
       /// meaning zero out the entire SRI.
       /// @param n last index of row or R and element of Z to be zeroed
    void zeroAll(const unsigned int n=0)
-      noexcept;
+      throw();
 
       /// Zero out (set all elements to zero) the state (Vector Z) only.
    void zeroState(void)
-      noexcept
+      throw()
    { Z = 0.0; }
 
       /// Reset the SRI, meaning zero it and optionally change the dimension to n.
       /// @param n Dimension of the new object (optional).
    //void reset(int n=0)
-   //   noexcept;
+   //   throw();
 
       /// Shift the state vector by a constant vector X0; does not change information
       /// i.e. let R * X = Z => R' * (X-X0) = Z'
@@ -475,18 +475,18 @@ public:
       /// @return the size of the SRI, which is the dimension of R(rows and columns),
       /// Z and names.
    unsigned int size(void) const
-      noexcept
+      throw()
    { return R.rows(); }
 
       /// @return a copy of the Namelist of the SRI
    Namelist getNames(void) const
-      noexcept
+      throw()
    { return names; }
 
       /// access the name of a specific state element, given its index.
       /// @return 'out-of-range' if the index is out of range.
    std::string getName(const unsigned int in) const
-      noexcept
+      throw()
    { return names.getName(in); }
 
       /// assign the name of a specific state element, given its index;
@@ -495,23 +495,23 @@ public:
       /// @param label - name at index in is set to this label
       /// @return true if successful.
    bool setName(const unsigned int in, const std::string& label)
-      noexcept
+      throw()
    { return names.setName(in,label); }
 
       /// @return the index of the name in the Namelist that matches the input, or
       /// -1 if not found.
    unsigned int index(std::string& name)
-      noexcept
+      throw()
    { return names.index(name); }
 
       /// @return copy of the R matrix
    Matrix<double> getR(void) const
-      noexcept
+      throw()
    { return R; }
 
       /// @return copy of the Z vector
    Vector<double> getZ(void) const
-      noexcept
+      throw()
    { return Z; }
 
       /// output operator

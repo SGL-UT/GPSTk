@@ -89,7 +89,7 @@ static double GMST(gpstk::CommonTime t)
 // output
 //    lat,lon,R     latitude, longitude and distance (deg,deg,m in ECEF) of sun at t.
 //    AR            apparent angular radius of sun as seen at Earth (deg) at t.
-Position SolarPosition(CommonTime t, double& AR) noexcept
+Position SolarPosition(CommonTime t, double& AR) throw()
 {
    //const double mPerAU = 149598.0e6;
    double D;     // days since J2000
@@ -145,7 +145,7 @@ Position SolarPosition(CommonTime t, double& AR) noexcept
 // Compute the position (latitude and longitude, in degrees) of the sun
 // given the day of year and the hour of the day.
 // Adapted from sunpos by D. Coco 12/15/94
-void CrudeSolarPosition(CommonTime t, double& lat, double& lon) noexcept
+void CrudeSolarPosition(CommonTime t, double& lat, double& lon) throw()
 {
    int doy = static_cast<YDSTime>(t).doy;
    int hod = int(static_cast<YDSTime>(t).sod/3600.0 + 0.5);
@@ -202,7 +202,7 @@ void CrudeSolarPosition(CommonTime t, double& lat, double& lon) noexcept
 // dES       angular distance of the sun from the earth
 // return    fraction (0 <= f <= 1) of area of sun covered by earth
 // units only need be consistent
-double shadowFactor(double Rearth, double Rsun, double dES) noexcept
+double shadowFactor(double Rearth, double Rsun, double dES) throw()
 {
    if(dES >= Rearth+Rsun) return 0.0;
    if(dES <= std::fabs(Rearth-Rsun)) return 1.0;
@@ -221,7 +221,7 @@ double shadowFactor(double Rearth, double Rsun, double dES) noexcept
 
 //------------------------------------------------------------------------------------
 // From AA 1990 D46
-Position LunarPosition(CommonTime t, double& AR) noexcept
+Position LunarPosition(CommonTime t, double& AR) throw()
 {
    // days since J2000
    double N = static_cast<JulianDate>(t).jd-2451545.0;

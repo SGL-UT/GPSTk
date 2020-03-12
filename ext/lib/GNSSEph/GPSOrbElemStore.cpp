@@ -61,7 +61,7 @@ namespace gpstk
 //--------------------------------------------------------------------------
 
    void GPSOrbElemStore::dump(std::ostream& s, short detail) const
-      noexcept
+      throw()
    {
       UBEMap::const_iterator it;
       static const string fmt("%04Y/%02m/%02d %02H:%02M:%02S %P");

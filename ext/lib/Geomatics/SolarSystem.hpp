@@ -153,19 +153,19 @@ public:
    /// Empty and only constructor. The IERS convention should be consistent with the
    /// SolarSystemEphemeris file when initializeWithBinaryFile() is called, otherwise
    /// a warning is issued.
-   SolarSystem(IERSConvention inputiers=IERSConvention::NONE) noexcept
+   SolarSystem(IERSConvention inputiers=IERSConvention::NONE) throw()
       { iersconv = inputiers; }
 
    /// Choose an IERS Convention. If the input IERS convention is inconsistent with
    /// the loaded ephemeris then a warning is issued.
-   void setConvention(const IERSConvention& conv) noexcept
+   void setConvention(const IERSConvention& conv) throw()
    {
       iersconv = conv;
       testIERSvsEphemeris(iersconv, EphNumber());
    }
 
    /// get the IERS Convention
-   IERSConvention getConvention(void) const noexcept
+   IERSConvention getConvention(void) const throw()
       { return iersconv; }
 
    /// Overloaded function to load ephemeris file. A check of the ephemeris number
@@ -390,7 +390,7 @@ private:
    IERSConvention iersconv;
 
    /// Helper routine to keep the tests in one place
-   void testIERSvsEphemeris(const IERSConvention conv, const int ephno) noexcept
+   void testIERSvsEphemeris(const IERSConvention conv, const int ephno) throw()
    {
       if(ephno == -1) return;         // no ephemeris (yet)
 

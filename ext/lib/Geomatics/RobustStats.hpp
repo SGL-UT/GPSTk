@@ -242,7 +242,7 @@ namespace gpstk {
       /// @param x input argument.
       /// @return complimentary error function of x
    template <typename T>
-   T errfc(T x) noexcept
+   T errfc(T x) throw()
    {
       T t,z,ret;
       z = ::fabs(x);
@@ -261,7 +261,7 @@ namespace gpstk {
       /// @param x value at which to compute the CDF.
       /// @return cumulative normal distribution(m,s) evaluated at x
    template <typename T>
-   T normalCDF(T m, T s, T x) noexcept
+   T normalCDF(T m, T s, T x) throw()
    {
       if(s == T(0)) return T(0);
       T arg = (x - m)/(::sqrt(T(2.0)) * s);

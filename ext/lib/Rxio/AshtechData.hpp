@@ -61,7 +61,7 @@ namespace gpstk
    class AshtechData : public FFData, public CRCDataStatus
    {
    public:
-      AshtechData() noexcept : ascii(false), checksum(0) {}
+      AshtechData() throw() : ascii(false), checksum(0) {}
       // Returns whether or not this AshtechData is valid.
       bool isValid() const {return good();}
 
@@ -71,7 +71,7 @@ namespace gpstk
       /** Encode this object to a string.
        * @return this object as a string.
        */
-      virtual std::string encode() const noexcept { return std::string(); }
+      virtual std::string encode() const throw() { return std::string(); }
          
       /** Decode this object from a string.
        * @param str the string to read from.
@@ -88,7 +88,7 @@ namespace gpstk
       /** Dump some debugging information to the given ostream.
        * @param out the ostream to write to
        */
-      void dump(std::ostream& out) const noexcept;
+      void dump(std::ostream& out) const throw();
 
       static int debugLevel;
       static bool hexDump;

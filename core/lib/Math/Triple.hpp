@@ -102,7 +102,7 @@ namespace gpstk
           * @return The dot product of \c this and \c right
           */
       double dot(const Triple& right) const 
-         noexcept;
+         throw();
    
          /**
           * Computes the Cross Product of two vectors
@@ -110,13 +110,13 @@ namespace gpstk
           * @return The cross product of \c v1 and \c v2
           */
       Triple cross(const Triple& right) const
-         noexcept;
+         throw();
    
          /**
           * Computes the Magnigude of this vector
           */
       double mag() const 
-         noexcept;
+         throw();
    
          /**
           * Returns the unit vector of this vector
@@ -138,7 +138,7 @@ namespace gpstk
           * @return The slant range between \c this and \c right
           */
       double slantRange(const Triple& right) const 
-         noexcept;
+         throw();
       
          /**
           * Computes the elevation of a point with respect to this
@@ -162,7 +162,7 @@ namespace gpstk
           * @return A triple which is the original triple rotated angle about X
           */
       Triple R1(const double& angle) const
-         noexcept;
+         throw();
    
       
          /** Computes rotation about axis Y.
@@ -170,7 +170,7 @@ namespace gpstk
           * @return A triple which is the original triple rotated angle about Y
           */
       Triple R2(const double& angle) const
-         noexcept;
+         throw();
    
       
          /** Computes rotation about axis Z.
@@ -178,7 +178,7 @@ namespace gpstk
           * @return A triple which is the original triple rotated angle about Z
           */
       Triple R3(const double& angle) const
-         noexcept;
+         throw();
    
          /**
           * Return a reference to the element at /a index.

@@ -79,7 +79,7 @@ namespace gpstk
       IonoCorr(std::string str);
 
          /// Return string version of CorrType
-      std::string asString() const noexcept;
+      std::string asString() const throw();
 
          /** Set type value from RINEX correction type string.
           * @throw Exception
