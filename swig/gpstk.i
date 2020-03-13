@@ -159,6 +159,7 @@ using namespace gpstk;
 // =============================================================
 // Renames on a few commonly used operators
 %rename (toEngEphemeris) *::operator EngEphemeris() const;
+%rename (toGPSEphemeris) *::operator GPSEphemeris() const;
 %rename (toGalEphemeris) *::operator GalEphemeris() const;
 %rename (toGloEphemeris) *::operator GloEphemeris() const;
 %rename (toAlmOrbit) *::operator AlmOrbit() const;
