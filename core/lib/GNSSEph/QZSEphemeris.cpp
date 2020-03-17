@@ -42,6 +42,7 @@
 #include <string>
 #include "Exception.hpp"
 #include "QZSWeekSecond.hpp"
+#include "TimeString.hpp"
 
 #include "QZSEphemeris.hpp"
 
@@ -119,14 +120,17 @@ namespace gpstk
 
    // adjustBeginningValidity determines the beginValid and endValid times.
    // @throw Invalid Request if the required data has not been stored.
+   //
+   // NOTE: The QZSS ICD does not make the same sort of promises about
+   // the relationship of t-sub-oe and beginning time of transmission as
+   // GPS.  Therefore, we should NOT adjust the beginValid time to be
+   // anything other than the earliest tranmit time we recorded.
    void QZSEphemeris::adjustValidity(void)
    {
       try {
          OrbitEph::adjustValidity();   // for dataLoaded check
-         // Can't guarantee this rounding for QZSS.
-         // Can only guarantee valid as of the transmit time. 
-         //beginValid = ctToe - fitDuration*1800.0;   
-         endValid = ctToe + fitDuration*1800.0;
+         beginValid = transmitTime;
+         endValid = ctToe + fitDuration*1800.0;     // hours*3600/2
       }
       catch(Exception& e) { GPSTK_RETHROW(e); }
    }

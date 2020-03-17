@@ -94,9 +94,16 @@ namespace gpstk
    //   - It appears the Toe is aligned with the beginning of transmit.
    //   - It is assumed data should not be used prior to transmit.  
    //   - The transmission period appears to be one hour.
-   //   - It is assumed that the data will be good for another hour
-   //     in order to support SV position determination for 
-   //     users that cannot collect navigation message continuously.
+   //     However, SVs set unhealthy have been observed to "coast"
+   //     on a single message for more than a day.
+   // As a result of all this:
+   //  beginValid is set to the ctToe or the actual time of receipt, 
+   //  whichever is later.
+   //  endValid is set a week in the future.  This is based on the 
+   //  fact that the ctToe is based on a a half-week assumption in the 
+   //  message, so there MUST be a new message within a half-week or
+   //  a piece of user equipmeent collectin the message fo the first 
+   //  time will not derive a correct ctToe. 
    // @throw Invalid Request if the required data has not been stored.
    void BDSEphemeris::adjustValidity()
    {
@@ -108,7 +115,7 @@ namespace gpstk
             // If elements were updated during the hour, then
             // we want to use the later time. 
          if (transmitTime>beginValid) beginValid = transmitTime;
-         endValid = ctToe + 3600.0;
+         endValid = ctToe + (SEC_PER_DAY * 7.0);
       }
       catch(Exception& e) { GPSTK_RETHROW(e); }
    }
