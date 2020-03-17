@@ -126,6 +126,7 @@ SVNumXRef::SVNumXRef( )
    NtoBMap.insert( make_pair( 72,IIF ));
    NtoBMap.insert( make_pair( 73,IIF ));
    NtoBMap.insert( make_pair( 74,III ));
+   NtoBMap.insert( make_pair( 75,III ));
 
 
       // Note: This table start with Block I values
@@ -268,9 +269,11 @@ SVNumXRef::SVNumXRef( )
                                        CivilTime( 2016, 12, 9,  0,  0,  0.0, TimeSystem::GPS),
                                        CivilTime( 2017,  1, 3, 16,  0,  0.0, TimeSystem::GPS))));
    // NANU 2018010 (start)
+   // NANU 2019xxx (DECOM)
+   // Last transmission observed on 3/9/2020 at 1929Z
    NtoPMap.insert( std::pair<const int, XRefNode>( 34, XRefNode( 18,
                                        CivilTime( 2018,  3, 8,  0,  0,  0.0, TimeSystem::GPS),
-                                       CommonTime::END_OF_TIME )));    
+                                       CivilTime( 2020,  3, 9, 22,  0,  0.0, TimeSystem::GPS))));    
 
    NtoPMap.insert( std::pair<const int, XRefNode>( 35, XRefNode(  5, 
                                        CivilTime( 1993,  8, 30,  0,  0,  0.0, TimeSystem::GPS),
@@ -519,8 +522,12 @@ SVNumXRef::SVNumXRef( )
    //NANU 2019159 (and supported CGSIC e-mail)
    NtoPMap.insert( std::pair<const int, XRefNode>( 74, XRefNode(   4,
                                        CivilTime( 2019, 10, 21, 20, 00, 0.0, TimeSystem::GPS),
+                                       CommonTime::END_OF_TIME  )));                                        
+   //NANU 2030011 LAUNCH
+   // First transmission observed on 3/12 at 2236Z
+   NtoPMap.insert( std::pair<const int, XRefNode>( 75, XRefNode(  18,
+                                       CivilTime( 2020,  3, 12, 22, 30, 0.0, TimeSystem::GPS),
                                        CommonTime::END_OF_TIME  )));
-                                         
                                        
       //Iterate through the data to produce the PtoNMap
    multimap<int,XRefNode>::const_iterator itate;
