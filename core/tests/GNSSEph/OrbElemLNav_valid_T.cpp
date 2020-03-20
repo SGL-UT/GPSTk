@@ -47,6 +47,8 @@
 
 #include "CommonTime.hpp"
 #include "CivilTime.hpp"
+#include "GNSSconstants.hpp"
+#include "SatID.hpp"
 #include "TimeString.hpp"
 
 #include "TestUtil.hpp"
@@ -71,10 +73,16 @@ int main()
 
    int fitHours = 4; 
 
+   SatID gpsSatId = SatID(1,SatID::systemGPS);
+   SatID qzsSatId = SatID(MIN_PRN_QZS,SatID::systemQZSS); 
+
       // Data set cutover without upload cutover.
    CommonTime xmit = CivilTime(2019, 1, 11, 2, 0, 0.0, TimeSystem::GPS); 
    CommonTime toe = CivilTime(2019, 1, 11, 4, 00, 0.0, TimeSystem::GPS);
-   CommonTime result = OrbElemRinex::computeBeginValid(xmit,toe);
+   CommonTime result = OrbElemRinex::computeBeginValid(gpsSatId,xmit,toe);
+   TUASSERTE( CommonTime, xmit, result );
+
+   result = OrbElemRinex::computeBeginValid(qzsSatId,xmit,toe);
    TUASSERTE( CommonTime, xmit, result );
 
    CommonTime endValid = toe + OrbElemRinex::TWO_HOURS;
@@ -85,13 +93,19 @@ int main()
    xmit = CivilTime(2019, 1, 11, 2, 12, 0.0, TimeSystem::GPS); 
    toe = CivilTime(2019, 1, 11, 4, 00, 0.0, TimeSystem::GPS);
    CommonTime expect = CivilTime(2019, 1, 11, 2, 0, 0.0, TimeSystem::GPS); 
-   result = OrbElemRinex::computeBeginValid(xmit,toe);
+   result = OrbElemRinex::computeBeginValid(gpsSatId,xmit,toe);
    TUASSERTE( CommonTime, expect, result );
+
+   result = OrbElemRinex::computeBeginValid(qzsSatId,xmit,toe);
+   TUASSERTE( CommonTime, xmit, result );
 
       // Upload cutover.  Example from prior to GPS III
    xmit = CivilTime(2019, 1, 11, 2, 36, 0.0, TimeSystem::GPS); 
    toe = CivilTime(2019, 1, 11, 3, 59, 44.0, TimeSystem::GPS);
-   result = OrbElemRinex::computeBeginValid(xmit,toe);
+   result = OrbElemRinex::computeBeginValid(gpsSatId,xmit,toe);
+   TUASSERTE( CommonTime, xmit, result );
+
+   result = OrbElemRinex::computeBeginValid(qzsSatId,xmit,toe);
    TUASSERTE( CommonTime, xmit, result );
 
    endValid = toe + OrbElemRinex::TWO_HOURS + OrbElemRinex::SIXTEEN_SECONDS;
@@ -101,7 +115,7 @@ int main()
       // Upload cutover.  Example from early GPS III L1 C/A
    xmit = CivilTime(2019, 1, 9, 22, 30, 00.0, TimeSystem::GPS); 
    toe = CivilTime(2019, 1, 10,  0, 29, 36.0, TimeSystem::GPS);
-   result = OrbElemRinex::computeBeginValid(xmit,toe);
+   result = OrbElemRinex::computeBeginValid(gpsSatId,xmit,toe);
    TUASSERTE( CommonTime, xmit, result );
 
    endValid = CivilTime(2019, 1, 10,  2, 30, 0.0, TimeSystem::GPS);
@@ -112,7 +126,7 @@ int main()
       // by Steven Brown (L-M) to 2018 Public ICWG
    xmit = CivilTime(2019, 1, 12, 1, 01, 0.0, TimeSystem::GPS); 
    toe = CivilTime(2019, 1, 12, 2, 59, 44.0, TimeSystem::GPS);
-   result = OrbElemRinex::computeBeginValid(xmit,toe);
+   result = OrbElemRinex::computeBeginValid(gpsSatId,xmit,toe);
    TUASSERTE( CommonTime, xmit, result );
 
    endValid = CivilTime(2019, 1,12, 5, 0, 0.0, TimeSystem::GPS);
@@ -120,7 +134,7 @@ int main()
    TUASSERTE( CommonTime, endValid, result );
 
    xmit = CivilTime(2019, 1, 12, 1, 16, 0.0, TimeSystem::GPS); 
-   result = OrbElemRinex::computeBeginValid(xmit,toe);
+   result = OrbElemRinex::computeBeginValid(gpsSatId,xmit,toe);
    TUASSERTE( CommonTime, xmit, result );
 
    result = OrbElemRinex::computeEndValid(toe, fitHours);
@@ -128,7 +142,7 @@ int main()
 
       //  2
    xmit = CivilTime(2019, 1, 12, 1, 31, 0.0, TimeSystem::GPS); 
-   result = OrbElemRinex::computeBeginValid(xmit,toe);
+   result = OrbElemRinex::computeBeginValid(gpsSatId,xmit,toe);
    TUASSERTE( CommonTime, xmit, result );
 
    result = OrbElemRinex::computeEndValid(toe, fitHours);
@@ -136,7 +150,7 @@ int main()
 
       //  3
    xmit = CivilTime(2019, 1, 12, 1, 46, 0.0, TimeSystem::GPS); 
-   result = OrbElemRinex::computeBeginValid(xmit,toe);
+   result = OrbElemRinex::computeBeginValid(gpsSatId,xmit,toe);
    TUASSERTE( CommonTime, xmit, result );
 
    result = OrbElemRinex::computeEndValid(toe, fitHours);
