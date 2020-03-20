@@ -205,6 +205,9 @@ namespace gpstk
       void addSatSys(const SatID::SatelliteSystem ss); 
       void validSatSystem(const SatID& sat) const 
          throw( InvalidRequest );
+      std::list<SatID::SatelliteSystem> getValidSystemList() const;
+      void dumpValidSystemList(std::ostream& out) const;  
+
       /*
        *  Explanation of find( ) function for OrbElemStore
        *  

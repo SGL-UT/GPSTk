@@ -213,8 +213,6 @@ namespace gpstk
       throw(InvalidParameter,Exception)
    {
      bool dbg = false;
-     //if (eph->satID.id==2 ||
-     //    eph->satID.id==5) dbg = true;
      
      try
      {
@@ -223,7 +221,9 @@ namespace gpstk
        // If this is the first set of elements and the valid sat system has not
        // been set, then assume the intent is to store this system in the store. 
      if (sysList.size()==0 && size()==0)
+     {
         addSatSys(sid.system); 
+     }
 
         // Find reference to map for this SV 
      OrbElemMap& oem = ube[sid];
@@ -743,6 +743,35 @@ namespace gpstk
    {
       sysList.push_back(ss);
    }
+
+   std::list<SatID::SatelliteSystem> OrbElemStore::getValidSystemList() const
+   {
+      list<SatID::SatelliteSystem> retList; 
+      list<SatID::SatelliteSystem>::const_iterator cit;
+      for (cit=sysList.begin();cit!=sysList.end();cit++)
+      {
+         SatID::SatelliteSystem ssTest = *cit;
+         retList.push_back(ssTest);
+      }
+      return retList;     
+   }
+
+   void OrbElemStore::dumpValidSystemList(std::ostream& out) const
+   {
+      out << "List of systems in OrbElemStore: "; 
+      bool first = true; 
+      list<SatID::SatelliteSystem>::const_iterator cit;
+      for (cit=sysList.begin();cit!=sysList.end();cit++)
+      {
+         if (!first)
+            out << ", ";
+         SatID::SatelliteSystem ssTest = *cit;
+         out << ssTest;
+         first = false; 
+      }
+      out << endl;
+   } 
+
 
 //------------------------------------------------------------------------------------      
 // See notes in the .hpp.  This function is designed to be called 
