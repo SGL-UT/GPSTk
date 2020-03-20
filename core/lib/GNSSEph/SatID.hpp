@@ -63,7 +63,10 @@ namespace gpstk
    class SatID
    {
    public:
-         /// Supported satellite systems
+         /** Supported satellite systems
+          * @note any additions to this enumeration list should also
+          *   be added to convertSatelliteSystemToString() and
+          *   convertStringToSatelliteSystem() and to SatID_T. */
       enum SatelliteSystem
       {
          systemGPS = 1,
@@ -90,26 +93,31 @@ namespace gpstk
 
          // operator=, copy constructor and destructor built by compiler
 
-         /// Convenience method used by dump().
-      static std::string convertSatelliteSystemToString(const SatelliteSystem& s)
-      {
-         switch(s)
-         {
-            case systemGPS:         return "GPS";           break;
-            case systemGalileo:     return "Galileo";       break;
-            case systemGlonass:     return "GLONASS";       break;
-            case systemGeosync:     return "Geostationary"; break;
-            case systemLEO:         return "LEO";           break;
-            case systemTransit:     return "Transit";       break;
-            case systemBeiDou:      return "BeiDou";        break;
-            case systemQZSS:        return "QZSS";          break;
-            case systemIRNSS:       return "IRNSS";         break;
-            case systemMixed:       return "Mixed";         break;
-            case systemUserDefined: return "UserDefined";   break;
-            case systemUnknown:     return "Unknown";       break;
-            default:                return "??";            break;
-         };
-      }
+         /** Translate system enumeration to its string representation.
+          * @note The string representation is being used in file
+          *   formats, e.g. RawNavCSVHeader.  The string values should
+          *   not be changed if at all possible, as that would break
+          *   the ability to read older files.
+          * @note Any new systems should not contain spaces in the
+          *   string values.
+          * @note The translations here should precisely match those
+          *   in convertStringToSatelliteSystem.
+          * @param[in] s The system to get the string name of.
+          * @return A space-free string containing the name of the GNSS.
+          */
+      static inline std::string convertSatelliteSystemToString(
+         const SatelliteSystem s);
+
+         /** Translate GNSS names as strings into system enumeration
+          * equivalents.
+          * @see convertSatelliteSystemToString
+          * @param[in] s The GNSS name to convert to enumeration.
+          * @return An enumeration equivalent of the given string.
+          *   systemUnknown is returned for any names that do not
+          *   exactly match known values.
+          */
+      static inline SatelliteSystem convertStringToSatelliteSystem(
+         const std::string& s);
 
          /// Convenience output method.
       void dump(std::ostream& s) const
@@ -173,6 +181,55 @@ namespace gpstk
    {
       p.dump(s);
       return s;
+   }
+
+   std::string SatID ::
+   convertSatelliteSystemToString(SatelliteSystem s)
+   {
+      switch(s)
+      {
+         case systemGPS:         return "GPS";           break;
+         case systemGalileo:     return "Galileo";       break;
+         case systemGlonass:     return "GLONASS";       break;
+         case systemGeosync:     return "Geostationary"; break;
+         case systemLEO:         return "LEO";           break;
+         case systemTransit:     return "Transit";       break;
+         case systemBeiDou:      return "BeiDou";        break;
+         case systemQZSS:        return "QZSS";          break;
+         case systemIRNSS:       return "IRNSS";         break;
+         case systemMixed:       return "Mixed";         break;
+         case systemUserDefined: return "UserDefined";   break;
+         case systemUnknown:     return "Unknown";       break;
+         default:                return "??";            break;
+      }
+   }
+
+   SatID::SatelliteSystem SatID ::
+   convertStringToSatelliteSystem(const std::string& s)
+   {
+      if (s == "GPS")
+         return systemGPS;
+      if (s == "Galileo")
+         return systemGalileo;
+      if (s == "GLONASS")
+         return systemGlonass;
+      if (s == "Geostationary")
+         return systemGeosync;
+      if (s == "LEO")
+         return systemLEO;
+      if (s == "Transit")
+         return systemTransit;
+      if (s == "BeiDou")
+         return systemBeiDou;
+      if (s == "QZSS")
+         return systemQZSS;
+      if (s == "IRNSS")
+         return systemIRNSS;
+      if (s == "Mixed")
+         return systemMixed;
+      if (s == "UserDefined")
+         return systemUserDefined;
+      return systemUnknown;
    }
 
       //@}
