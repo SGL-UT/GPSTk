@@ -99,10 +99,11 @@ namespace gpstk
    public:
       SVD() : iterationMax(30) {}
 
-         // Singular Value Decomposition
+         /** Singular Value Decomposition
+          * @throw MatrixException
+          */
       template <class BaseClass>
       bool operator() (const ConstMatrixBase<T, BaseClass>& mat)
-         throw (MatrixException)
       {
          const T eps=T(8)*std::numeric_limits<T>::epsilon();
          bool flip=false;
@@ -338,14 +339,18 @@ namespace gpstk
 
       }  // end SVD::operator() - the SVD algorithm
    
-         // Backsubstitution using SVD.
-         // Solve A*x=b for vector x where A [mxn] has been SVD'ed and is given by
-         // U,W,V (*this); that is A[mxn] = U[mxm]*W[mxn]*VT[nxn]. b has dimension m,
-         // x dimension n. Singular values are NOT edited, except that if s.v. == 0,
-         // 1/0 is replaced by 0. Result is returned as b.
+
+         /** Backsubstitution using SVD.
+          * Solve A*x=b for vector x where A [mxn] has been SVD'ed and
+          * is given by
+          * U,W,V (*this); that is A[mxn] = U[mxm]*W[mxn]*VT[nxn].
+          * b has dimension m, x dimension n.
+          * Singular values are NOT edited, except that if s.v. == 0,
+          * 1/0 is replaced by 0. Result is returned as b.
+          * @throw MatrixException
+          */
       template <class BaseClass>
       void backSub(RefVectorBase<T, BaseClass>& b) const 
-         throw(MatrixException)
       {
          if(b.size() != U.rows())
          {
@@ -354,7 +359,7 @@ namespace gpstk
          }
    
          size_t i, n=V.cols(), m=U.rows();
-         Matrix<T> W(n,m,T(0));     // build the 'inverse singular values' matrix
+         Matrix<T> W(n,m,T(0));    // build the 'inverse singular values' matrix
          for(i=0; i<S.size(); i++) W(i,i)=(S(i)==T(0)?T(0):T(1)/S(i));
          Vector<T> Y;
          Y = V*W*transpose(U)*b;
@@ -365,9 +370,10 @@ namespace gpstk
 
       }  // end SVD::backSub
 
-         /// sort singular values - default in descending order
+         /** sort singular values - default in descending order
+          * @throw MatrixException
+          */
       void sort(bool descending=true)
-         throw(MatrixException)
       {
          size_t i;
          int j;         // j must be allowed to go negative
@@ -388,9 +394,10 @@ namespace gpstk
          }
       }  // end SVD::sort
 
-         /// compute determinant from SVD
+         /** compute determinant from SVD
+          * @throw MatrixException
+          */
       inline T det(void)
-         throw(MatrixException)
       {
          T d(1);
          for(size_t i=0; i<S.size(); i++) d *= S(i);
@@ -427,10 +434,11 @@ namespace gpstk
    public:
       LUDecomp() {}        // why is there no constructor from ConstMatrixBase?
 
-         /// Does the decomposition.
+         /** Does the decomposition.
+          * @throw MatrixException
+          */
       template <class BaseClass>
       void operator() (const ConstMatrixBase<T, BaseClass>& m)
-         throw (MatrixException)
       {
          if(!m.isSquare() || m.rows()<1) {
             MatrixException e("LUDecomp requires a square, non-trivial matrix");
@@ -496,11 +504,12 @@ namespace gpstk
          }
       }  // end LUDecomp()
 
-         /// Compute inverse(m)*v, where *this is LUD(m), via back substitution
-         /// Solution overwrites input Vector v
+         /** Compute inverse(m)*v, where *this is LUD(m), via back substitution
+          * Solution overwrites input Vector v
+          * @throw MatrixException
+          */
       template <class BaseClass2>
       void backSub(RefVectorBase<T, BaseClass2>& v) const
-         throw (MatrixException)
       {
          if(LU.rows() != v.size()) {
             MatrixException e("Vector size does not match dimension of LUDecomp");
@@ -531,9 +540,10 @@ namespace gpstk
          }
       }  // end LUD::backSub
 
-         /// compute determinant from LUD
+         /** compute determinant from LUD
+          * @throw MatrixException
+          */
       inline T det(void)
-         throw(MatrixException)
       {
          T d(static_cast<T>(parity));
          for(size_t i=0; i<LU.rows(); i++) d *= LU(i,i);
@@ -581,10 +591,11 @@ namespace gpstk
    public:
       Cholesky() {}
 
-         /// @todo potential complex number problem!
+         /** @todo potential complex number problem!
+          * @throw MatrixException
+          */
       template <class BaseClass>
       void operator() (const ConstMatrixBase<T, BaseClass>& m)
-         throw (MatrixException)
       {
          if(!m.isSquare()) {
             MatrixException e("Cholesky requires a square matrix");
@@ -633,13 +644,14 @@ namespace gpstk
 
       }  // end Cholesky::operator()
 
-         // Use backsubstition to solve the equation A*x=b where *this Cholesky
-         // has been applied to A, i.e. A = L*transpose(L). The algorithm is in
-         // two steps: since A*x=L*LT*x=b, first solve L*y=b for y, then solve
-         // LT*x=y for x. x is returned as b.
+         /** Use backsubstition to solve the equation A*x=b where *this Cholesky
+          * has been applied to A, i.e. A = L*transpose(L). The algorithm is in
+          * two steps: since A*x=L*LT*x=b, first solve L*y=b for y, then solve
+          * LT*x=y for x. x is returned as b.
+          * @throw MatrixException
+          */
       template <class BaseClass2>
       void backSub(RefVectorBase<T, BaseClass2>& b) const
-         throw (MatrixException)
       {
          if (L.rows() != b.size())
          {
@@ -671,20 +683,26 @@ namespace gpstk
 
    }; // end class Cholesky
 
-      // Compute the Cholesky decomposition using the Cholesky-Crout algorithm,
-      // which is very fast; if A is the given matrix we will get L, where A = L*LT. 
-      // A must be symetric and positive definite. This is the usual case when
-      // A comes from applying a Least Mean-Square (LMS) or Weighted Least 
-      // Mean-Square (WLMS) method.
-      //
-      // NB. U here is NOT the same as U in class Cholesky (but L is the same);
-      // here m = transpose(U)*U, but there m = U * transpose(U); see doc for Cholesky.
+      /** Compute the Cholesky decomposition using the Cholesky-Crout
+       * algorithm, which is very fast; if A is the given matrix we
+       * will get L, where A = L*LT.  A must be symetric and positive
+       * definite. This is the usual case when A comes from applying a
+       * Least Mean-Square (LMS) or Weighted Least Mean-Square (WLMS)
+       * method.
+       *
+       * NB. U here is NOT the same as U in class Cholesky (but L is the same);
+       * here m = transpose(U)*U, but there m = U * transpose(U); see doc for
+       * Cholesky.
+       */
    template <class T> 
    class CholeskyCrout : public Cholesky<T>
    {
    public:
+         /**
+          * @throw MatrixException
+          */
       template <class BaseClass>
-      void operator() (const ConstMatrixBase<T, BaseClass>& m) throw(MatrixException)
+      void operator() (const ConstMatrixBase<T, BaseClass>& m)
       {
          if(!m.isSquare()) {
             MatrixException e("CholeskyCrout requires a square matrix");
@@ -727,18 +745,22 @@ namespace gpstk
    public:
       Householder() {}
 
-         // Explicitly perform the transformation, one column at a time, without
-         // actually constructing the transformation matrix. Let y be column k of the
-         // input matrix. y can be zeroed below the diagonal as follows:
-         // let sum=sign(y(k))*sqrt(y*y), and define vector u(k)=y(k)+sum,
-         // u(j)=y(j) (j.gt.k). This defines the transformation matrix as (1-bu*u),
-         // with b=2/u*u=1/sum*u(k). Redefine y(k)=u(k) and apply the transformation to
-         // elements of the input matrix below and to the right of the (k,k) element.
-         // This algorithm for each column k=0,n-1 in turn is equivalent to a single
-         // orthogonal transformation which triangularizes the matrix.
+         /** Explicitly perform the transformation, one column at a
+          * time, without actually constructing the transformation
+          * matrix. Let y be column k of the input matrix. y can be
+          * zeroed below the diagonal as follows:
+          * let sum=sign(y(k))*sqrt(y*y), and define vector u(k)=y(k)+sum,
+          * u(j)=y(j) (j.gt.k).
+          * This defines the transformation matrix as (1-bu*u), with
+          * b=2/u*u=1/sum*u(k). Redefine y(k)=u(k) and apply the
+          * transformation to elements of the input matrix below and
+          * to the right of the (k,k) element.  This algorithm for
+          * each column k=0,n-1 in turn is equivalent to a single
+          * orthogonal transformation which triangularizes the matrix.
+          * @throw MatrixException
+          */
       template <class BaseClass>
       inline void operator() (const ConstMatrixBase<T, BaseClass>& m)
-         throw (MatrixException)
       {
          A = m;
          size_t i,j,k;

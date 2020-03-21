@@ -111,9 +111,9 @@ namespace gpstk
           * @param index   Index representing the observation type. It is
           *                obtained from corresponding RINEX Observation Header
           *                using method 'Rinex3ObsHeader::getObsIndex()'.
+          * @throw InvalidRequest
           */
-      virtual RinexDatum getObs( const RinexSatID& svID, size_t index ) const
-         throw(InvalidRequest);
+      virtual RinexDatum getObs( const RinexSatID& svID, size_t index ) const;
 
 
          /** This method returns the RinexDatum of a given observation
@@ -121,22 +121,22 @@ namespace gpstk
           * @param sat  Satellite whose observation we want to fetch.
           * @param type String representing the observation type.
           * @param hdr  Rinex3ObsHeader for current RINEX file.
+          * @throw InvalidRequest
           */
       virtual RinexDatum getObs( const RinexSatID& svID,
                                  const std::string& obsID,
-                                 const Rinex3ObsHeader& hdr ) const
-         throw(InvalidRequest);
+                                 const Rinex3ObsHeader& hdr ) const;
 
          /** This method returns the RinexDatum of a given observation
           *
           * @param svID  RinexSatID of satellite
           * @param obsID RinexObsID  of the observation type.
           * @param hdr   Rinex3ObsHeader for current RINEX file.
+          * @throw InvalidRequest
           */
       virtual RinexDatum getObs( const RinexSatID& svID,
                                  const RinexObsID& obsID,
-                                 const Rinex3ObsHeader& hdr ) const
-         throw(InvalidRequest);
+                                 const Rinex3ObsHeader& hdr ) const;
 
          /** This sets the RinexDatum for a given observation
           *
@@ -144,12 +144,12 @@ namespace gpstk
           * @param svID  RinexSatID of satellite
           * @param obsID RinexObsID  of the observation type.
           * @param hdr   Rinex3ObsHeader for current RINEX file.
+          * @throw InvalidRequest
           */
       virtual void setObs( const RinexDatum& data,
                            const RinexSatID& svID,
                            const RinexObsID& obsID,
-                           const Rinex3ObsHeader& hdr )
-         throw(InvalidRequest);
+                           const Rinex3ObsHeader& hdr );
 
          /// A Debug output function.
          /// Dumps the time of observations and the IDs of the Sats
@@ -160,22 +160,26 @@ namespace gpstk
          /// Another dump, using information from the header
       void dump(std::ostream& s, Rinex3ObsHeader& head) const;
 
-      std::string timeString() const
-         throw( gpstk::StringUtils::StringException );
+         /**
+          * @throw StringUtils::StringException
+          */
+      std::string timeString() const;
 
    protected:
 
 
-         /// Writes a correctly formatted record from this data to stream \a s.
-         /// When printing comment records, you'll need to format them
-         /// correctly yourself. This means making sure that "COMMENT" is at
-         /// the end of the line and that they're the correct length
-         /// (<= 80 chrs).
-         /// Also, make sure to correctly set the epochFlag to the correct
-         /// number for the type of header data you want to write.
-      virtual void reallyPutRecord(FFStream& s) const
-         throw( std::exception, FFStreamError,
-                gpstk::StringUtils::StringException );
+         /** Writes a correctly formatted record from this data to stream \a s.
+          * When printing comment records, you'll need to format them
+          * correctly yourself. This means making sure that "COMMENT" is at
+          * the end of the line and that they're the correct length
+          * (<= 80 chrs).
+          * Also, make sure to correctly set the epochFlag to the correct
+          * number for the type of header data you want to write.
+          * @throw std::exception
+          * @throw FFStreamError
+          * @throw StringUtils::StringException
+          */
+      virtual void reallyPutRecord(FFStream& s) const;
 
 
          /** This functions obtains a RINEX 3 Observation record from the given
@@ -186,23 +190,23 @@ namespace gpstk
           *  might not have data.  Check the Rinex3SatMap for empty() before
           *  using any data in it.
           *
-          *  @throws StringException When a StringUtils function fails
-          *  @throws FFStreamError   When exceptions(failbit) is set and a read
+          * @throw std::exception
+          *  @throw StringException When a StringUtils function fails
+          *  @throw FFStreamError   When exceptions(failbit) is set and a read
           *          or formatting error occurs.  Also resets the stream to its
           *          pre-read position.
           */
-      virtual void reallyGetRecord(FFStream& s)
-         throw( std::exception, FFStreamError,
-                gpstk::StringUtils::StringException );
+      virtual void reallyGetRecord(FFStream& s);
 
 
    private:
 
 
-         /// Writes the CommonTime into RINEX 3 format.
-         /// If it's a bad time, it will return blanks.
-      std::string writeTime(const CommonTime& dt) const
-         throw( gpstk::StringUtils::StringException );
+         /** Writes the CommonTime into RINEX 3 format.
+          * If it's a bad time, it will return blanks.
+          * @throw StringUtils::StringException
+          */
+      std::string writeTime(const CommonTime& dt) const;
 
 
          /** This function constructs a CommonTime object from the given
@@ -211,11 +215,11 @@ namespace gpstk
           * @param line The encoded time string found in the RINEX record.
           * @param hdr  The RINEX Observation Header object for the current
           *             RINEX file.
+          * @throw FFStreamError
           */
       CommonTime parseTime( const std::string& line,
                             const Rinex3ObsHeader& hdr,
-                            const TimeSystem& ts) const
-         throw( FFStreamError );
+                            const TimeSystem& ts) const;
 
 
    }; // End of class 'Rinex3ObsData'

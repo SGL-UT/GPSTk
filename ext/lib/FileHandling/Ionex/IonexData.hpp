@@ -172,13 +172,12 @@ namespace gpstk
           *               (2) lower left hand grid point
           * @param out    output lat, lon and height (Triple object)
           * @return       the index within the data
-          *
+          * @throw InvalidRequest
           * @warning Keep in mind the assumptions of IONEX grid (i.e., latitude
           *          between [87.5, -87.5], longitude between [-180, 180])
           *          when you construct a Triple object.
           */
-      int getIndex( const Triple& in, const int& type, Triple& out ) const
-         throw(InvalidRequest);
+      int getIndex( const Triple& in, const int& type, Triple& out ) const;
 
 
          /** Get IONEX TEC or RMS value as a function of the position
@@ -194,22 +193,21 @@ namespace gpstk
           * @param pos             input position (Position object).
           *
           * @return                Computed TEC or RMS value.
-          *
+          * @throw InvalidRequest
+          * @throw FFStreamError
           */
-      double getValue(const Position& pos) const
-         throw(InvalidRequest,FFStreamError);
+      double getValue(const Position& pos) const;
 
 
    protected:
 
          /** Writes a correctly formatted record from this data to stream \a s.
           *
-          * @throws StringException when a StringUtils function fails
+          * @throw std::exception
+          * @throw FFStreamError
+          * @throw StringException when a StringUtils function fails
           */
-      virtual void reallyPutRecord(FFStream& s) const
-         throw( std::exception,
-                FFStreamError,
-                gpstk::StringUtils::StringException );
+      virtual void reallyPutRecord(FFStream& s) const;
 
 
          /** This function obtains a IONEX Data record from
@@ -218,15 +216,13 @@ namespace gpstk
           * If there is an error reading the stream, it is reset
           * to its original position and its fail-bit is set.
           *
-          * @throws StringException when a StringUtils function fails
-          * @throws FFStreamError when exceptions(failbit) is set and
+          * @throw std::exception
+          * @throw StringException when a StringUtils function fails
+          * @throw FFStreamError when exceptions(failbit) is set and
           *   a read or formatting error occurs.  This also resets the
           *   stream to its pre-read position.
           */
-      virtual void reallyGetRecord(FFStream& s)
-         throw( std::exception,
-                FFStreamError,
-                gpstk::StringUtils::StringException );
+      virtual void reallyGetRecord(FFStream& s);
 
 
    private:
@@ -236,9 +232,9 @@ namespace gpstk
           * it will return blanks.
           *
           * @param dt    time to be written into a IONEX data record.
+          * @throw StringUtils::StringException
           */
-      std::string writeTime(const CommonTime& dt) const
-         throw(gpstk::StringUtils::StringException);
+      std::string writeTime(const CommonTime& dt) const;
 
 
          /** This function constructs a CommonTime object from the given

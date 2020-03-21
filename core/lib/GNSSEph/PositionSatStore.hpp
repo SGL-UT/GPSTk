@@ -150,8 +150,7 @@ namespace gpstk
           *  b) checkDataGap is true and there is a data gap
           *  c) checkInterval is true and the interval is larger than
           *     maxInterval */
-      PositionRecord getValue(const SatID& sat, const CommonTime& ttag)
-         const throw(InvalidRequest);
+      PositionRecord getValue(const SatID& sat, const CommonTime& ttag) const;
 
          /** Return the position for the given satellite at the given time
           * @param[in] sat the SatID of the satellite of interest
@@ -164,8 +163,7 @@ namespace gpstk
           *  b) checkDataGap is true and there is a data gap
           *  c) checkInterval is true and the interval is larger than
           *     maxInterval */
-      Triple getPosition(const SatID& sat, const CommonTime& ttag)
-         const throw(InvalidRequest);
+      Triple getPosition(const SatID& sat, const CommonTime& ttag) const;
 
          /** Return the velocity for the given satellite at the given time
           * @param[in] sat the SatID of the satellite of interest
@@ -178,8 +176,7 @@ namespace gpstk
           *  b) checkDataGap is true and there is a data gap
           *  c) checkInterval is true and the interval is larger than
           *     maxInterval */
-      Triple getVelocity(const SatID& sat, const CommonTime& ttag)
-         const throw(InvalidRequest);
+      Triple getVelocity(const SatID& sat, const CommonTime& ttag) const;
 
          /** Return the acceleration for the given satellite at the given time
           * @param[in] sat the SatID of the satellite of interest
@@ -194,8 +191,7 @@ namespace gpstk
           *  c) checkInterval is true and the interval is larger than
           *     maxInterval
           *  d) neither velocity nor acceleration data are present */
-      Triple getAcceleration(const SatID& sat, const CommonTime& ttag)
-         const throw(InvalidRequest);
+      Triple getAcceleration(const SatID& sat, const CommonTime& ttag) const;
 
          /** Dump information about the object to an ostream.
           * @param[in] os ostream to receive the output; defaults to std::cout
@@ -205,10 +201,12 @@ namespace gpstk
           *           gap and interval flags and values, and file information
           *    1: number of data/sat
           *    2: above plus all the data tables */
-      virtual void dump(std::ostream& os = std::cout, int detail = 0) const throw()
+      virtual void dump(std::ostream& os = std::cout, int detail = 0)
+         const throw()
       {
          os << "Dump of PositionSatStore(" << detail << "):\n";
-         os << " This store " << (haveAcceleration ? "contains":"does not contain")
+         os << " This store "
+            << (haveAcceleration ? "contains":"does not contain")
             << " acceleration data." << std::endl;
          os << " Interpolation is Lagrange, of order " << interpOrder
             << " (" << Nhalf << " points on each side)" << std::endl;
@@ -223,25 +221,29 @@ namespace gpstk
           * is used as they key in a std::map, the value used must be
           * EXACTLY the same in all calls; (numerical noise could
           * cause the std::map to consider two "equal" ttags as
-          * different). */
+          * different).
+          * @throw InvalidRequest
+          */
       void addPositionRecord(const SatID& sat, const CommonTime& ttag,
-                             const PositionRecord& rec)
-         throw(InvalidRequest);
+                             const PositionRecord& rec);
 
-         /// Add position data to the store; nothing else is changed
+         /** Add position data to the store; nothing else is changed
+          * @throw InvalidRequest
+          */
       void addPositionData(const SatID& sat, const CommonTime& ttag,
-                           const Triple& Pos, const Triple& Sig=Triple())
-         throw(InvalidRequest);
+                           const Triple& Pos, const Triple& Sig=Triple());
 
-         /// Add velocity data to the store; nothing else is changed
+         /** Add velocity data to the store; nothing else is changed
+          * @throw InvalidRequest
+          */
       void addVelocityData(const SatID& sat, const CommonTime& ttag,
-                           const Triple& Vel, const Triple& Sig=Triple())
-         throw(InvalidRequest);
+                           const Triple& Vel, const Triple& Sig=Triple());
 
-         /// Add acceleration data to the store; nothing else is changed
+         /** Add acceleration data to the store; nothing else is changed
+          * @throw InvalidRequest
+          */
       void addAccelerationData(const SatID& sat, const CommonTime& ttag,
-                               const Triple& Acc, const Triple& Sig=Triple())
-         throw(InvalidRequest);
+                               const Triple& Acc, const Triple& Sig=Triple());
 
          /// Get current interpolation order.
       unsigned int getInterpolationOrder(void) const throw()

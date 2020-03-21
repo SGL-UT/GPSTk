@@ -69,18 +69,16 @@ static vector<SatID> Sats;     // used by RAIM, bad ones come back marked (id < 
 //------------------------------------------------------------------------------------
 // prototypes -- this module only
    // ComputeRAIMSolution.cpp :
-int ComputeRAIMSolution(ObsFile& of,CommonTime& tt,vector<SatID>& Sats,ofstream *pofs)
-   throw(Exception);
-void RAIMedit(ObsFile& of, vector<SatID>& Sats) throw(Exception);
+int ComputeRAIMSolution(ObsFile& of,CommonTime& tt,vector<SatID>& Sats,ofstream *pofs);
+void RAIMedit(ObsFile& of, vector<SatID>& Sats);
    // those defined here
-void FillRawData(ObsFile& of) throw(Exception);
-void GetEphemerisRange(ObsFile& obsfile, CommonTime& timetag) throw(Exception);
-void EditRawData(ObsFile& of) throw(Exception);
-int BufferRawData(ObsFile& of) throw(Exception);
+void FillRawData(ObsFile& of);
+void GetEphemerisRange(ObsFile& obsfile, CommonTime& timetag);
+void EditRawData(ObsFile& of);
+int BufferRawData(ObsFile& of);
 
 //------------------------------------------------------------------------------------
 int ProcessRawData(ObsFile& obsfile, CommonTime& timetag, ofstream *pofs)
-   throw(Exception)
 {
 try {
    int iret;
@@ -163,7 +161,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }  // end ProcessRawData
 
 //------------------------------------------------------------------------------------
-void FillRawData(ObsFile& of) throw(Exception)
+void FillRawData(ObsFile& of)
 {
 try {
    //int nsvs;
@@ -247,7 +245,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }   // end FillRawData()
 
 //------------------------------------------------------------------------------------
-void GetEphemerisRange(ObsFile& obsfile, CommonTime& timetag) throw(Exception)
+void GetEphemerisRange(ObsFile& obsfile, CommonTime& timetag)
 {
 try {
    CorrectedEphemerisRange CER;        // temp
@@ -296,7 +294,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-void EditRawData(ObsFile& obsfile) throw(Exception)
+void EditRawData(ObsFile& obsfile)
 {
 try {
    size_t i;
@@ -335,7 +333,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // add good raw data in RawDataMap to RawDataBuffers for the appropriate station
 // and satellite. Also buffer the clock solution and sigma.
 // NB these buffers must remain parallel.
-int BufferRawData(ObsFile& obsfile) throw(Exception)
+int BufferRawData(ObsFile& obsfile)
 {
 try {
    Station& st=Stations[obsfile.label];

@@ -71,8 +71,7 @@ namespace gpstk
    }
 
    OrbSysGpsC_30::OrbSysGpsC_30(const PackedNavBits& msg)
-      throw( InvalidParameter):
-       OrbSysGpsC(),
+         : OrbSysGpsC(),
        Tgd(0.0), 
        ISC_L1CA(0.0),
        ISC_L2C(0.0),
@@ -132,7 +131,6 @@ namespace gpstk
    }
    
    void OrbSysGpsC_30::loadData(const PackedNavBits& msg)
-      throw(InvalidParameter)
    {
       setUID(msg);
       if (UID!=30)
@@ -213,7 +211,6 @@ namespace gpstk
    } // end of loadData()
 
    void OrbSysGpsC_30::dumpTerse(std::ostream& s) const
-         throw(InvalidRequest)
    {
       if (!dataLoadedFlag)
       {
@@ -239,7 +236,6 @@ namespace gpstk
    } // end of dumpTerse()
 
    void OrbSysGpsC_30::dumpBody(ostream& s) const
-      throw( InvalidRequest )
    {
       if (!dataLoadedFlag)
       {

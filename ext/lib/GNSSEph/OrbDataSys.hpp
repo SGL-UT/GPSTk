@@ -71,8 +71,10 @@ namespace gpstk
 
       virtual std::list<std::string> compare(const OrbDataSys* right) const;
 
-      virtual void dumpFooter(std::ostream& s = std::cout) const
-         throw( InvalidRequest );
+         /**
+          * @throw InvalidRequest
+          */
+      virtual void dumpFooter(std::ostream& s = std::cout) const;
 
          /// Members
          /// Only member is the unique identifier.  The 

@@ -187,7 +187,6 @@ namespace gpstk
                                     const vector<SatID::SatelliteSystem>& Syss,
                                     Vector<double>& Resids,
                                     Vector<double>& Slopes)
-      throw(Exception)
    {
       if(!pTropModel) {
          Exception e("Undefined tropospheric model");
@@ -502,7 +501,6 @@ namespace gpstk
                                      const vector<double>& Pseudorange,
                                      const XvtStore<SatID> *pEph,
                                      TropModel *pTropModel)
-      throw(Exception)
    {
       try {
          // Declare the non-swig'ed variables needed by RAIMCompute;
@@ -532,7 +530,6 @@ namespace gpstk
                                const Matrix<double>& invMC,
                                const XvtStore<SatID> *pEph,
                                TropModel *pTropModel)
-      throw(Exception)
    {
       try {
          //LOGlevel = ConfigureLOG::Level("DEBUG"); // uncomment to turn on DEBUG output to stdout
@@ -822,7 +819,7 @@ namespace gpstk
 
 
    // -------------------------------------------------------------------------
-   int PRSolution::DOPCompute(void) throw(Exception)
+   int PRSolution::DOPCompute(void)
    {
       try {
          Matrix<double> PTP(transpose(Partials)*Partials);

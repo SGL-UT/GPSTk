@@ -70,16 +70,16 @@ ofstream *pofs=NULL;        // pointer to output file stream (&ofprs)
 
 //------------------------------------------------------------------------------------
 // prototypes -- others
-int OutputClockData(void) throw(Exception);              // DataOutput.cpp
-int ReadNextObs(ObsFile& of) throw(Exception);           // ReadObsFiles.cpp
+int OutputClockData(void);              // DataOutput.cpp
+int ReadNextObs(ObsFile& of);           // ReadObsFiles.cpp
 int ProcessRawData(ObsFile& obsfile, CommonTime& timetag, ofstream *pofs)
-   throw(Exception);                                     // ProcessRawData.cpp
+  ;                                     // ProcessRawData.cpp
 // prototypes -- this module only
-int FindEarliestTime(void) throw(Exception);
-void ComputeSolutionEpoch(void) throw(Exception);
+int FindEarliestTime(void);
+void ComputeSolutionEpoch(void);
 
 //------------------------------------------------------------------------------------
-int ReadAndProcessRawData(void) throw(Exception)
+int ReadAndProcessRawData(void)
 {
 try {
    int iret,ntotal;
@@ -283,7 +283,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 //------------------------------------------------------------------------------------
 // read the data for the next (earliest in future) observation epoch
-int FindEarliestTime(void) throw(Exception)
+int FindEarliestTime(void)
 {
 try {
    int iret;
@@ -336,7 +336,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-void ComputeSolutionEpoch(void) throw(Exception)
+void ComputeSolutionEpoch(void)
 {
 try {
    double dt;

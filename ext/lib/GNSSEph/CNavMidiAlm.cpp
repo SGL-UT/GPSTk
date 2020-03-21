@@ -61,7 +61,6 @@ namespace gpstk
    }
 
    CNavMidiAlm::CNavMidiAlm(const PackedNavBits& pnb)
-      throw( InvalidParameter)
       :OrbDataSys(),
        L1HEALTH(1),
        L2HEALTH(1), 
@@ -111,7 +110,6 @@ namespace gpstk
    }
 
    void CNavMidiAlm::loadData(const PackedNavBits& pnb)
-         throw(InvalidParameter)
    {
          // Verify that the PackedNavBits contains an appropriate data set
       const ObsID& oidr = pnb.getobsID();
@@ -189,7 +187,6 @@ namespace gpstk
    } // end of loadData()
 
    void CNavMidiAlm::dumpHeader(std::ostream& s) const
-         throw( InvalidRequest )
    {
       if (!dataLoadedFlag)
       {
@@ -207,7 +204,6 @@ namespace gpstk
           * @throw Invalid Request if the required data has not been stored.
           */
    void CNavMidiAlm::dumpTerse(std::ostream& s) const
-         throw( InvalidRequest )
    {
       if (!dataLoadedFlag)
       {
@@ -224,7 +220,6 @@ namespace gpstk
    }
 
    void CNavMidiAlm::dumpBody(std::ostream& s) const
-         throw( InvalidRequest )
    {
       if (!dataLoadedFlag)
       {

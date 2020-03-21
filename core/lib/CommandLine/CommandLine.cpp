@@ -71,9 +71,11 @@ using namespace StringUtils;
 
 // -----------------------------------------------------------------------------------
 // the main entry point
+/**
+ * @throw Exception
+ */
 int CommandLine::ProcessCommandLine(int argc, char** argv, string PrgmDesc,
                               string& Usage, string& Errors, vector<string>& Unrecog)
-   throw(Exception)
 {
 try {
    int i,j;
@@ -169,7 +171,10 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 // -----------------------------------------------------------------------------------
 // public
-void CommandLine::DumpConfiguration(ostream& os, string tag) throw(Exception)
+/**
+ * @throw Exception
+ */
+void CommandLine::DumpConfiguration(ostream& os, string tag)
 {
 try {
    size_t i,j;
@@ -280,7 +285,10 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 // the rest are private
 // -----------------------------------------------------------------------------------
-bool CommandLine::ValidateCommandLine(string& msg) throw(Exception)
+/**
+ * @throw Exception
+ */
+bool CommandLine::ValidateCommandLine(string& msg)
 {
 try {
    bool isValid(true);
@@ -364,7 +372,10 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 // -----------------------------------------------------------------------------------
-void CommandLine::BuildSyntaxPage(void) throw(Exception)
+/**
+ * @throw Exception
+ */
+void CommandLine::BuildSyntaxPage(void)
 {
 try {
    size_t i,j,k;
@@ -458,8 +469,11 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 // -----------------------------------------------------------------------------------
 // re-entrant!
+/**
+ * @throw Exception
+ */
 void CommandLine::PreProcessArgs(const char *in_arg, vector<string>& Args,
-   string& Errors) throw(Exception)
+   string& Errors)
 {
 try {
    static bool found_cfg_file=false;
@@ -611,8 +625,10 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 // -----------------------------------------------------------------------------------
+/**
+ * @throw Exception
+ */
 void expand_args(vector<string>& oldvalues, vector<string>& newvalues, string& msg)
-   throw(Exception)
 {
 try {
    string arg;
@@ -649,8 +665,10 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 // -----------------------------------------------------------------------------------
 // fill values for each option, and Errors and Unrecog
+/**
+ * @throw Exception
+ */
 void CommandLine::Parse(vector<string>& Args, string& Errors, vector<string>& Unrecog)
-   throw(Exception)
 {
 try {
    size_t i,j;
@@ -737,7 +755,10 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 // -----------------------------------------------------------------------------------
-string CommandLine::SyntaxPage(void) throw(Exception)
+/**
+ * @throw Exception
+ */
+string CommandLine::SyntaxPage(void)
 {
 try {
    if(syntaxPageBuilt == 2) {
@@ -768,8 +789,10 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 // -----------------------------------------------------------------------------------
+/**
+ * @throw Exception
+ */
 void CommandLine::Postprocess(string& Errors, vector<string>& Unrecog)
-   throw(Exception)
 {
 try {
    size_t i,k;

@@ -61,9 +61,11 @@ namespace gpstk
          /// Default constructor
       OrbAlmGen();
 
+         /**
+          * @throw InvalidParameter
+          */
       OrbAlmGen( const PackedNavBits& pnb,
-                    const unsigned short hArg = 0 )
-         throw( InvalidParameter );
+                 const unsigned short hArg = 0 );
 
          /// Destructor
       virtual ~OrbAlmGen() {}
@@ -78,8 +80,7 @@ namespace gpstk
            *  this is the only source of health information
            *  for BDS.    */ 
       void loadData(const gpstk::PackedNavBits& msg,
-                    const unsigned short hArg = 0)
-         throw(gpstk::InvalidParameter);
+                    const unsigned short hArg = 0);
 
        //------------------------------------------------------------
       //  When the calling program receives the following pages, 
@@ -102,61 +103,55 @@ namespace gpstk
       }
 
         /** Compute the satellite clock bias (sec) at the given time
-          *  @throw Invalid Request if the required data has not been stored.
+          *  @throw InvalidRequest if the required data has not been stored.
           */
-      virtual double svClockBias(const gpstk::CommonTime& t) const
-                     throw(gpstk::InvalidRequest);
+      virtual double svClockBias(const gpstk::CommonTime& t) const;
 
          /** Compute the satellite clock bias (meters) at the given time
-          *  @throw Invalid Request if the required data has not been stored.
+          *  @throw InvalidRequest if the required data has not been stored.
           */
-      virtual double svClockBiasM(const gpstk::CommonTime& t) const
-                     throw(gpstk::InvalidRequest);
+      virtual double svClockBiasM(const gpstk::CommonTime& t) const;
 
          /** Compute the satellite clock drift (sec/sec) at the given time
-          *  @throw Invalid Request if the required data has not been stored.
+          *  @throw InvalidRequest if the required data has not been stored.
           */
-      virtual double svClockDrift(const gpstk::CommonTime& t) const 
-                     throw(gpstk::InvalidRequest);
-
+      virtual double svClockDrift(const gpstk::CommonTime& t) const;
 
          /** Compute satellite position at the given time
           * using this orbit data.
-          * @throw Invalid Request if the required data has not been stored.
+          * @throw InvalidRequest if the required data has not been stored.
           */
-      virtual gpstk::Xvt svXvt(const gpstk::CommonTime& t) const
-                        throw(gpstk::InvalidRequest);
+      virtual gpstk::Xvt svXvt(const gpstk::CommonTime& t) const;
 
          /** Compute satellite relativity correction (sec) at the given time
-          *  @throw Invalid Request if the required data has not been stored.
+          *  @throw InvalidRequest if the required data has not been stored.
           */
-      virtual double svRelativity(const gpstk::CommonTime& t) const
-                     throw(gpstk::InvalidRequest);
+      virtual double svRelativity(const gpstk::CommonTime& t) const;
 
       virtual bool isSameData(const OrbElemBase* right) const;      
 
       virtual std::string listDifferences(const OrbElemBase* right) const;      
 
-      virtual void dumpBody(std::ostream& s = std::cout) const
-         throw( gpstk::InvalidRequest );
+         /**
+          * @throw InvalidRequest
+          */
+      virtual void dumpBody(std::ostream& s = std::cout) const;
 
       virtual void dumpFooter(std::ostream& s = std::cout) const
-         throw( gpstk::InvalidRequest ) {}
+      {}
 
          /** Generate a formatted human-readable output of the entire contents of
           *  this object and send it to the designated output stream (default to cout).
-          *  @throw Invalid Parameter if the object has been instantiated, but not loaded.
+          *  @throw InvalidRequest if the object has been instantiated, but not loaded.
           */
-      virtual void dump(std::ostream& s = std::cout) const
-         throw( gpstk::InvalidRequest );  
+      virtual void dump(std::ostream& s = std::cout) const;
 
          /** Generate a formatted human-readable one-line output that summarizes
           *  the critical times associated with this object and send it to the
           *  designated output stream (default to cout).
-          *  @throw Invalid Parameter if the object has been instantiated, but not loaded.
+          *  @throw InvalidRequest if the object has been instantiated, but not loaded.
           */   
-      virtual void dumpTerse(std::ostream& s = std::cout) const
-         throw( gpstk::InvalidRequest );     
+      virtual void dumpTerse(std::ostream& s = std::cout) const;
          //@}
  
          // GPS LNAV, GPS CNAV, BDS D1/D2, and IRNSS all have the following
@@ -192,10 +187,14 @@ namespace gpstk
       static unsigned int WNa_full;
       static double t_oa;
 
-      void loadDataGpsLNAV(const gpstk::PackedNavBits& msg)
-                throw(gpstk::InvalidParameter);
-      void loadDataGpsCNAV(const gpstk::PackedNavBits& msg)
-                throw(gpstk::InvalidParameter);
+         /**
+          * @throw InvalidParameter
+          */
+      void loadDataGpsLNAV(const gpstk::PackedNavBits& msg);
+         /**
+          * @throw InvalidParameter
+          */
+      void loadDataGpsCNAV(const gpstk::PackedNavBits& msg);
          // Used internally during startup if WNa has not been received
          // prior to first almanac data page.         
       void estimateWeekNumber(const CommonTime& currTime);

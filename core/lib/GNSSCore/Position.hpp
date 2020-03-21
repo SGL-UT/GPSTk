@@ -61,7 +61,10 @@ namespace gpstk
 
       // forward declarations
    class Position;
-   double range(const Position& A, const Position& B) throw(GeometryException);
+      /**
+       * @throw GeometryException
+       */
+   double range(const Position& A, const Position& B);
    
       /**
        * A position representation class for common 3D geographic
@@ -212,8 +215,7 @@ namespace gpstk
                const double& c,
                CoordinateSystem s = Cartesian,
                EllipsoidModel *ell = NULL,
-               ReferenceFrame frame = ReferenceFrame::Unknown)
-         throw(GeometryException);
+               ReferenceFrame frame = ReferenceFrame::Unknown);
 
          /**
           * Explicit constructor. Coordinate system may be specified
@@ -228,8 +230,7 @@ namespace gpstk
       Position(const double ABC[3],
                CoordinateSystem s = Cartesian,
                EllipsoidModel *ell = NULL,
-               ReferenceFrame frame = ReferenceFrame::Unknown)
-         throw(GeometryException);
+               ReferenceFrame frame = ReferenceFrame::Unknown);
 
          /**
           * Explicit constructor. Coordinate system may be specified
@@ -244,8 +245,7 @@ namespace gpstk
       Position(const Triple& ABC,
                CoordinateSystem s = Cartesian,
                EllipsoidModel *ell = NULL,
-               ReferenceFrame frame = ReferenceFrame::Unknown)
-         throw(GeometryException);
+               ReferenceFrame frame = ReferenceFrame::Unknown);
 
          /**
           * Explicit constructor from Xvt. The coordinate system is Cartesian,
@@ -384,7 +384,6 @@ namespace gpstk
          /// @return a reference to this.
          /// @throw GeometryException if input is NULL.
       Position asGeodetic(EllipsoidModel *ell)
-         throw(GeometryException)
       {
          try { setEllipsoidModel(ell); }
          catch(GeometryException& ge) { GPSTK_RETHROW(ge); }
@@ -527,8 +526,7 @@ namespace gpstk
           * @param ell  Pointer to the EllipsoidModel.
           * @throw      GeometryException if input is NULL.
           */
-      void setEllipsoidModel(const EllipsoidModel *ell)
-         throw(GeometryException);
+      void setEllipsoidModel(const EllipsoidModel *ell);
 
          /**
           * Set the Position given geodetic coordinates; system is set
@@ -542,8 +540,7 @@ namespace gpstk
       Position& setGeodetic(const double lat,
                             const double lon,
                             const double ht,
-                            const EllipsoidModel *ell = NULL)
-         throw(GeometryException);
+                            const EllipsoidModel *ell = NULL);
 
          /**
           * Set the Position given geocentric coordinates; system is
@@ -556,8 +553,7 @@ namespace gpstk
           */
       Position& setGeocentric(const double lat,
                               const double lon,
-                              const double rad)
-         throw(GeometryException);
+                              const double rad);
 
          /**
           * Set the Position given spherical coordinates; system is
@@ -570,8 +566,7 @@ namespace gpstk
           */
       Position& setSpherical(const double theta,
                              const double phi,
-                             const double rad)
-         throw(GeometryException);
+                             const double rad);
 
          /**
           * Set the Position given ECEF coordinates; system is set to
@@ -658,9 +653,7 @@ namespace gpstk
           * @return a reference to this object.
           */
       Position& setToString(const std::string& str,
-                            const std::string& fmt)
-         throw(GeometryException,
-               StringUtils::StringException);
+                            const std::string& fmt);
 
 
          // if you can see this, ignore the \'s below, as they are for
@@ -695,20 +688,22 @@ namespace gpstk
           *
           * @param fmt format to use for this time.
           * @return a string containing this Position in the
-          * representation specified by \c fmt.
+          *   representation specified by \c fmt.
+          * @throw StringUtils::StringException
           */
-      std::string printf(const char *fmt) const
-         throw(StringUtils::StringException);
+      std::string printf(const char *fmt) const;
 
-         /// Format this time into a string.
-         /// @see printf(const char*)
+         /** Format this time into a string.
+          * @see printf(const char*)
+          * @throw StringUtils::StringException
+          */
       std::string printf(const std::string& fmt) const
-         throw(StringUtils::StringException) 
       { return printf(fmt.c_str()); }
 
-         /// Returns the string that operator<<() would print.
-      std::string asString() const
-         throw(StringUtils::StringException);
+         /** Returns the string that operator<<() would print.
+          * @throw StringUtils::StringException
+          */
+      std::string asString() const;
 
          // ----------- Part 10: functions: fundamental conversions -----------
          // 
@@ -831,8 +826,7 @@ namespace gpstk
           *        or if transformTo(Cartesian) fails
           */
       friend double range(const Position& A,
-                          const Position& B)
-         throw(GeometryException);
+                          const Position& B);
 
          /**
           * Compute the radius of the ellipsoidal Earth, given the
@@ -864,9 +858,9 @@ namespace gpstk
           * @param Target the Position which is observed to have the
           *        computed elevation, as seen from this Position.
           * @return the elevation in degrees
+          * @throw GeometryException
           */
-      double elevation(const Position& Target) const
-         throw(GeometryException);
+      double elevation(const Position& Target) const;
 
          /**
           * A member function that computes the elevation of the input
@@ -875,9 +869,9 @@ namespace gpstk
           * @param Target the Position which is observed to have the
           *        computed elevation, as seen from this Position.
           * @return the elevation in degrees
+          * @throw GeometryException
           */
-      double elevationGeodetic(const Position& Target) const
-         throw(GeometryException);
+      double elevationGeodetic(const Position& Target) const;
 
          /**
           * A member function that computes the azimuth of the input
@@ -885,9 +879,9 @@ namespace gpstk
           * @param Target the Position which is observed to have the
           *        computed azimuth, as seen from this Position.
           * @return the azimuth in degrees
+          * @throw GeometryException
           */
-      double azimuth(const Position& Target) const
-         throw(GeometryException);
+      double azimuth(const Position& Target) const;
 
          /**
           * A member function that computes the azimuth of the input
@@ -896,9 +890,9 @@ namespace gpstk
           * @param Target the Position which is observed to have the
           *        computed azimuth, as seen from this Position.
           * @return the azimuth in degrees
+          * @throw GeometryException
           */
-      double azimuthGeodetic(const Position& Target) const
-         throw(GeometryException);
+      double azimuthGeodetic(const Position& Target) const;
 
          /**
           * A member function that computes the position at which a
@@ -954,8 +948,7 @@ namespace gpstk
                       const double c,
                       CoordinateSystem s = Cartesian,
                       EllipsoidModel *ell = NULL,
-                      ReferenceFrame frame = ReferenceFrame::Unknown)
-         throw(GeometryException);
+                      ReferenceFrame frame = ReferenceFrame::Unknown);
 
          /* Values of the coordinates, defined for each system as follows;
           *    Cartesian  : X,Y,Z in meters

@@ -114,7 +114,6 @@ namespace gpstk
        * \ warning Value "p" must be in the range (0, 1)
        */
    double GaussianDistribution::invcdf(double p)
-      throw(InvalidParameter)
    {
 
       double inf( 9.0e+99 );

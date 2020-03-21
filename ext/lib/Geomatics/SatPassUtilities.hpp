@@ -75,7 +75,7 @@ namespace gpstk {
 /// @param endTime   reject data after this time (END_OF TIME)
 /// @return -1 if the filenames list is empty, otherwise return the number of
 ///                files successfully read (may be less than the number input).
-/// @throw gpstk Exceptions if there are exceptions while reading, if the data
+/// @throw gpstk::Exception if there are exceptions while reading, if the data
 ///              in the file is out of time order.
 int SatPassFromRinexFiles(
             std::vector<std::string>& filenames,
@@ -85,7 +85,7 @@ int SatPassFromRinexFiles(
             std::vector<RinexSatID> exSats=std::vector<RinexSatID>(),
             bool lenient=true,
             gpstk::Epoch beginTime=gpstk::CommonTime::BEGINNING_OF_TIME,
-            gpstk::Epoch endTime=gpstk::CommonTime::END_OF_TIME) throw(Exception);
+            gpstk::Epoch endTime=gpstk::CommonTime::END_OF_TIME);
 
 // -------------------------------------------------------------------------------
 /// deprecated - use SatPassToRinex3File for both 3 and 2.
@@ -93,19 +93,21 @@ int SatPassFromRinexFiles(
 /// order) and write them, with the given header, to a RINEX v.2 observation file
 /// of the given filename.
 /// @return -1 if the file could not be opened, otherwise return 0.
+      /// @throw Exception
 int SatPassToRinex2File(std::string filename,
                         RinexObsHeader& header,
-                        std::vector<SatPass>& SPList) throw(Exception);
+                        std::vector<SatPass>& SPList);
 
 // -------------------------------------------------------------------------------
 /// Iterate over the input vector of SatPass objects (sorted to be in time
 /// order) and write them, with the given header, to a RINEX VER 3 observation file
 /// of the given filename.
 /// @return -1 if the file could not be opened, otherwise return 0.
+      /// @throw Exception
 int SatPassToRinex3File(std::string filename,
                         Rinex3ObsHeader header,
                         const std::map<char, std::vector<std::string> >& sysobs,
-                        std::vector<SatPass>& SPList) throw(Exception);
+                        std::vector<SatPass>& SPList);
 
 // -------------------------------------------------------------------------------
 /// Find millisecond adjusts of the time tag, pseudoranges C1 C2 P1 P2, phases L1 L2.
@@ -113,8 +115,8 @@ int SatPassToRinex3File(std::string filename,
 /// @param  input SatPass list for analysis
 /// @param  return millisecond handler
 /// @return number of ms adjusts found
-int FindMilliseconds(std::vector<SatPass>& SPList, msecHandler& msh)
-   throw(Exception);
+      /// @throw Exception
+   int FindMilliseconds(std::vector<SatPass>& SPList, msecHandler& msh);
 
 // -------------------------------------------------------------------------------
 /// remove millisecond adjusts of the time tags and pseudoranges (C1 C2 P1 P2)
@@ -122,13 +124,14 @@ int FindMilliseconds(std::vector<SatPass>& SPList, msecHandler& msh)
 /// User the handler to print messages, etc.
 /// @param  input SatPass list for modification
 /// @param  message returned from FindMilliseconds()
-void RemoveMilliseconds(std::vector<SatPass>& SPList, msecHandler& msh)
-   throw(Exception);
+      /// @throw Exception
+   void RemoveMilliseconds(std::vector<SatPass>& SPList, msecHandler& msh);
 
 // -------------------------------------------------------------------------------
 /// Dump an entire list of SatPass, in time order
+      /// @throw Exception
 void Dump(std::vector<SatPass>& SatPassList, std::ostream& os,
-   bool rev=false, bool dbug=false) throw(Exception);
+          bool rev=false, bool dbug=false);
 
 }  // end namespace
 

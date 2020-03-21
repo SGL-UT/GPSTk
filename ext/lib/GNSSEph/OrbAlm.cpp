@@ -42,7 +42,6 @@ namespace gpstk
    { }
 
    void OrbAlm::dumpHeader(std::ostream& s) const
-         throw( gpstk::InvalidRequest )
    {
      if (!dataLoaded())
       {

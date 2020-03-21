@@ -270,14 +270,16 @@ public:
    /// one of (:=,) and leading '-','--', or '--DC' are optional.
    /// @param cmd string version of assigning a parameter, e.g. 'debug=0'
    /// @return true if successful, otherwise label not valid, or parsing error
-   bool setParameter(std::string cmd) throw(Exception);
+   /// @throw Exception
+   bool setParameter(std::string cmd);
 
    /// Set a parameter in the configuration using the label and the value,
    /// for booleans use (T,F)=(non-zero,zero).
    /// @param label parameter label - cf. DisplayParameterUsage() for list of labels
    /// @param value parameter value to be assigned (0 for false)
    /// @return true if successful, otherwise the label is not a valid parameter
-   bool setParameter(std::string label, double value) throw(Exception);
+   /// @throw Exception
+   bool setParameter(std::string label, double value);
 
    /// Get the parameter in the configuration corresponding to label
    /// @param label parameter label for which value is returned
@@ -289,13 +291,15 @@ public:
    /// @param os ostream to which to write
    /// @param tag string to put at the beginning of each line of output
    /// @param advanced if true, also print advanced parameters.
+   /// @throw Exception
    void DisplayParameterUsage(std::ostream& os,
                               std::string tag=std::string(),
-                              bool advanced=false) throw(Exception);
+                              bool advanced=false);
 
    /// define this function so that invalid labels will throw, because
    /// this fails silently #define cfg(a) CFG[#a]     // stringize
-   double cfg_func(std::string a) throw(Exception)
+   /// @throw Exception
+   double cfg_func(std::string a)
    {
       if(CFGdesc[a] == std::string()) {
          Exception e("cfg(UNKNOWN LABEL) : " + a);
@@ -368,12 +372,12 @@ public:
    /// @return 0 for success, otherwise return an Error code; defined as follows.
    ///        -4 insufficient input data, or all data is bad   // TD this true?
    ///        -9 GLONASS frequency channel could not be computed.
-   /// @throw on the following:
+   /// @throw Exception on the following:
    ///    input data does not have the required obs types
    ///    DT is not set, or a memory problem was encountered
    ///    failed to find the Glonass frequency channel
    int DiscontinuityCorrector(SatPass& SP, std::string& retMsg,
-                  std::vector<std::string>& cmds, int GLOn=-99) throw(Exception);
+                              std::vector<std::string>& cmds, int GLOn=-99);
 
    //---------------------------------------------------------------------------
    /// Overloaded version that accepts input data in parallel arrays.
@@ -382,6 +386,7 @@ public:
    /// This is where the work is done; SatPass version creates arrays and calls this.
    /// Flags on input must be either 1(OK) or 0(BAD) (as in SatPass), however on
    /// output they are defined by static consts OK, BAD, etc
+   /// @throw Exception
    int DiscontinuityCorrector(const RinexSatID& sat,
                               const double& nominalDT,
                               const Epoch& beginTime,
@@ -393,8 +398,7 @@ public:
                               std::vector<int> flags,
                               std::string& retMsg, std::vector<std::string>& cmds,
                               int GLOn=-99,
-                              std::string outfmt=std::string("%4F %10.3g"))
-   throw(Exception);
+                              std::string outfmt=std::string("%4F %10.3g"));
 
 private:
    /// helper routine to initialize vectors
@@ -521,15 +525,18 @@ protected:
    /// process one combo (WL or GF) all the way through 1st diff and window filters,
    /// flagging outliers, marking and fixing slips, and dumping.
    /// @return return value of filter() if negative, otherwise number of slips found
-   int ProcessOneCombo(const unsigned which) throw(Exception);
+   /// @throw Exception
+   int ProcessOneCombo(const unsigned which);
 
    /// process one combo (WL or GF) using 1st differences; called by ProcessOneCombo
    /// @return return value of filter() if negative, otherwise number of slips found
-   int GrossProcessing(const unsigned which) throw(Exception);
+   /// @throw Exception
+   int GrossProcessing(const unsigned which);
 
    /// process one combo (WL or GF) using window filter; called by ProcessOneCombo
    /// @return return value of filter() if negative, otherwise number of slips found
-   int FineProcessing(const unsigned which) throw(Exception);
+   /// @throw Exception
+   int FineProcessing(const unsigned which);
 
    /// filter using first differences
    /// @param which is either WL or GF
@@ -537,8 +544,9 @@ protected:
    /// @param limit pass to filter.setLimit()
    /// @param return vector<FilterHit> hits containing all outliers and slips
    /// @return return value of filter() if negative, otherwise number of slips found
+   /// @throw Exception
    int filterFirstDiff(const unsigned which, const std::string label,
-      const double& limit, std::vector< FilterHit<double> >& hits) throw(Exception);
+      const double& limit, std::vector< FilterHit<double> >& hits);
 
    /// filter using window filter
    /// @param which is either WL or GF
@@ -546,8 +554,9 @@ protected:
    /// @param limit pass to filter.setLimit()
    /// @param return vector< FilterHit<T> > hits containing all outliers and slips
    /// @return return value of filter() if negative, otherwise number of slips found
+   /// @throw Exception
    int filterWindow(const unsigned which, const std::string label,
-      const double& limit, std::vector< FilterHit<double> >& hits) throw(Exception);
+      const double& limit, std::vector< FilterHit<double> >& hits);
 
    /// merge filter results (vector<FilterHit>) into the Arcs list, and set flags[].
    /// The merge will mark outliers, add new Arc's where there are slips, and call
@@ -556,8 +565,9 @@ protected:
    /// @param hits vector<FilterHit> which is results of filter
    /// @param which is either WL or GF
    /// @return the number of new Arcs in Arcs
+   /// @throw Exception
    int mergeFilterResultsIntoArcs(std::vector< FilterHit<double> >& hits,
-         const unsigned which) throw(Exception);
+         const unsigned which);
 
    // the next three are called by mergeFilterResultsIntoArcs()
 
@@ -566,20 +576,23 @@ protected:
    /// Note that flags[] is changed ONLY if flags[] currently OK....TD use bitmap?
    /// @param hit        the FilterHit, which describes a segment to be marked
    /// @param flagvalue  the value to which flags[] is set for each outlier.
-   void flagBadData(const FilterHit<double>& hit, const unsigned flagvalue)
-      throw(Exception);
+   /// @throw Exception
+   void flagBadData(const FilterHit<double>& hit, const unsigned flagvalue);
 
    /// add a new Arc to Arcs at index, using the given value for mark.
    /// @param index the index into data[] at which to add the Arc
    /// @param mark the value to assign to the new Arc's mark
    /// @return true if new Arc created -> fixUpArcs() should be called.
-   bool addArc(const int index, const unsigned mark) throw(Exception);
+   /// @throw Exception
+   bool addArc(const int index, const unsigned mark);
 
-   /// modify Arcs: recompute npts and ngood, remove empty Arcs
-   void fixUpArcs(void) throw(Exception);
+      /// modify Arcs: recompute npts and ngood, remove empty Arcs
+      /// @throw Exception
+   void fixUpArcs(void);
 
-   /// recompute the npts and ngood for each Arc using the indexes in the map: Arcs
-   void recomputeArcs(void) throw(Exception);
+      /// recompute the npts and ngood for each Arc using the indexes in the map: Arcs
+      /// @throw Exception
+   void recomputeArcs(void);
 
    /// recompute the number of good points in an Arc
    inline unsigned computeNgood(Arc& arc)
@@ -593,7 +606,8 @@ protected:
 
    /// compute stats for 'which' data (WL or GF or both: WL&GF) for all Arcs
    /// @param which is either WL or GF
-   void getArcStats(const unsigned which) throw(Exception)
+   /// @throw Exception
+   void getArcStats(const unsigned which)
    {
       try {
          for(std::map<int,Arc>::iterator ait = Arcs.begin(); ait != Arcs.end(); ++ait)
@@ -607,12 +621,13 @@ protected:
    /// NB do not confuse this with *Filter::getStats()
    /// @param iterator pointing to element of Arcs that contains the Arc
    /// @param which is either WL or GF
-   void getArcStats(std::map<int,Arc>::iterator& ait, const unsigned which)
-      throw(Exception);
+   /// @throw Exception
+   void getArcStats(std::map<int,Arc>::iterator& ait, const unsigned which);
 
    /// find gaps within Arc in Arcs; if gap is larger than MaxGap, break the Arc into
    /// two, adding a BEG Arc after the gap.
-   void findLargeGaps(void) throw(Exception);
+   /// @throw Exception
+   void findLargeGaps(void);
 
    /// Fix slips between Arcs, using info.step (NOT info.Nslip), which is defined
    /// by the filter in results(FilterHit).
@@ -624,12 +639,14 @@ protected:
    /// (one-sample for WL and two-sample for GF).
    /// @param which is either WL or GF
    /// @return the number of slips fixed.
-   int fixSlips(const unsigned which) throw(Exception);
+   /// @throw Exception
+   int fixSlips(const unsigned which);
 
    /// find gaps within the given Arc, including those at the very beginning
    /// (index==Arc.index) and at the very end (index+nptsgap==Arc.index+Arc.npts).
    /// @return map with key=index of beginning of gap, value=number of points in gap.
-   std::map<int,int> findGaps(const Arc& arc) throw(Exception);
+   /// @throw Exception
+   std::map<int,int> findGaps(const Arc& arc);
 
    /// dump the data stored in the data arrays
    void dumpData(std::ostream& os, const std::string msg=std::string());
@@ -645,9 +662,8 @@ protected:
    }
 
    /// find the Arc that contains a given index, starting with the given iterator
-   /// @throw if the index is out of range
+   /// @throw Exception if the index is out of range
    void findArc(const unsigned int ind, std::map<int, Arc>::iterator& ait)
-      throw(Exception)
    {
       if(int(ind) < ait->second.index)
          GPSTK_THROW(Exception("index before given Arc"));
@@ -680,16 +696,19 @@ protected:
    /// @param SP       SatPass object containing the input data.
    // @param breaks  vector of indexes where SatPass SP must be broken into two
    // @param marks   vector of indexes in SatPass SP where breaks are suspected
-   void applyFixesToSatPass(SatPass& SP) throw(Exception);
+   /// @throw Exception
+   void applyFixesToSatPass(SatPass& SP);
 
    /// apply the results to generate editing commands; cfg(doCmds)
    /// Use tk-RinEdit form for commands (--IF name, etc) since EditRinex also takes.
    /// @param cmds     vector of strings giving editing commands for RINEX editor.
-   void generateCmds(std::vector<std::string>& cmds) throw(Exception);
+   /// @throw Exception
+   void generateCmds(std::vector<std::string>& cmds);
 
    /// do a final check on the pass. Look for isolated good points (< MinPts good
    /// points surrounded by N(?) bad points on each side.
-   int FinalCheck(void) throw(Exception);
+   /// @throw Exception
+   int FinalCheck(void);
 
 }; // end class gdc
 

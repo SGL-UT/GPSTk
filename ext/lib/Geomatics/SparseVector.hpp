@@ -154,8 +154,11 @@ namespace gpstk
                                                 const SparseVector<T>& R);
    // SparseMatrix
    template <class T> SparseMatrix<T> transpose(const SparseMatrix<T>& M);
+      /**
+       * @throw Exception
+       */
    template <class T> SparseMatrix<T> transform(const SparseMatrix<T>& M,
-                                       const SparseMatrix<T>& C) throw(Exception);
+                                                const SparseMatrix<T>& C);
    template <class T> SparseVector<T> operator*(const SparseMatrix<T>& L,
                                                 const SparseVector<T>& V);
    template <class T> SparseVector<T> operator*(const SparseMatrix<T>& L,
@@ -170,25 +173,42 @@ namespace gpstk
                                                  const Vector<T>& V);
    template <class T> SparseMatrix<T> operator||(const SparseMatrix<T>& L,
                                                  const SparseMatrix<T>& R);
-   template <class T> SparseMatrix<T> inverse(const SparseMatrix<T>& A)
-                                                               throw(Exception);
-   template <class T> SparseMatrix<T> lowerCholesky(const SparseMatrix<T>& A)
-                                                    throw(Exception);
+      /**
+       * @throw Exception
+       */
+   template <class T> SparseMatrix<T> inverse(const SparseMatrix<T>& A);
+      /**
+       * @throw Exception
+       */
+   template <class T> SparseMatrix<T> lowerCholesky(const SparseMatrix<T>& A);
+      /**
+       * @throw Exception
+       */
    template <class T> SparseMatrix<T> inverseLT(const SparseMatrix<T>& LT,
-                             T *ptrSmall=NULL, T *ptrBig=NULL) throw(Exception);
+                                                T *ptrSmall=NULL,
+                                                T *ptrBig=NULL);
    // special matrices
    template <class T> SparseMatrix<T> identSparse(const unsigned int dim) throw();
 
-   // diag of P * C * PT
+      /** diag of P * C * PT
+       * @throw Exception
+       */
    template <class T> Vector<T> transformDiag(const SparseMatrix<T>& P,
-                                              const Matrix<T>& C) throw(Exception);
-   // Householder
-   template <class T> SparseMatrix<T> SparseHouseholder(const SparseMatrix<T>& A)
-                                                    throw(Exception);
+                                              const Matrix<T>& C);
+      /** Householder
+       * @throw Exception
+       */
+   template <class T> SparseMatrix<T> SparseHouseholder(const SparseMatrix<T>& A);
+      /**
+       * @throw Exception
+       */
    template <class T> void SrifMU(Matrix<T>& R, Vector<T>& Z, SparseMatrix<T>& A,
-                                  const unsigned int M=0) throw(Exception);
+                                  const unsigned int M=0);
+      /**
+       * @throw Exception
+       */
    template <class T> void SrifMU(Matrix<T>& R, Vector<T>& Z, SparseMatrix<T>& P,
-                             Vector<T>& D, const unsigned int M=0) throw(Exception);
+                                  Vector<T>& D, const unsigned int M=0);
 
    //---------------------------------------------------------------------------
    /// Class SparseVector. This class is designed to present an interface nearly
@@ -237,7 +257,7 @@ namespace gpstk
       // SparseMatrix
       friend SparseMatrix<T> transpose<T>(const SparseMatrix<T>& M);
       friend SparseMatrix<T> transform<T>(const SparseMatrix<T>& M,
-                                          const SparseMatrix<T>& C) throw(Exception);
+                                          const SparseMatrix<T>& C);
       friend SparseVector<T> operator*<T>(const SparseMatrix<T>& L,
                                           const SparseVector<T>& V);
       friend SparseVector<T> operator*<T>(const SparseMatrix<T>& L,
@@ -252,24 +272,22 @@ namespace gpstk
                                            const Vector<T>& V);
       friend SparseMatrix<T> operator||<T>(const SparseMatrix<T>& L,
                                            const SparseMatrix<T>& R);
-      friend SparseMatrix<T> inverse<T>(const SparseMatrix<T>& A) throw(Exception);
-      friend SparseMatrix<T> lowerCholesky<T>(const SparseMatrix<T>& A)
-                                                    throw(Exception);
+      friend SparseMatrix<T> inverse<T>(const SparseMatrix<T>& A);
+      friend SparseMatrix<T> lowerCholesky<T>(const SparseMatrix<T>& A);
       friend SparseMatrix<T> inverseLT<T>(const SparseMatrix<T>& LT,
-                             T *ptrSmall, T *ptrBig) throw(Exception);
+                                          T *ptrSmall, T *ptrBig);
       // special matrices
       friend SparseMatrix<T> identSparse<T>(const unsigned int dim) throw();
 
       // diag of P * C * PT
       friend Vector<T> transformDiag<T>(const SparseMatrix<T>& P,
-                                        const Matrix<T>& C) throw(Exception);
+                                        const Matrix<T>& C);
       // Householder
-      friend SparseMatrix<T> SparseHouseholder<T>(const SparseMatrix<T>& A)
-                                                    throw(Exception);
+      friend SparseMatrix<T> SparseHouseholder<T>(const SparseMatrix<T>& A);
       friend void SrifMU<T>(Matrix<T>& R, Vector<T>& Z, SparseMatrix<T>& A,
-                                  const unsigned int M) throw(Exception);
+                            const unsigned int M);
       friend void SrifMU<T>(Matrix<T>& R, Vector<T>& Z, SparseMatrix<T>& P,
-                            Vector<T>& D, const unsigned int M) throw(Exception);
+                            Vector<T>& D, const unsigned int M);
 
       /// tolerance in considering element to be zero is std::abs(elem) < tolerance
       /// see zeroize(), where this is the default input value

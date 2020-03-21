@@ -84,7 +84,6 @@ SRIleastSquares::SRIleastSquares(const Namelist& NL)
 SRIleastSquares::SRIleastSquares(const Matrix<double>& Rin,
                      const Vector<double>& Zin,
                      const Namelist& NLin)
-   throw(MatrixException)
 {
    defaults();
    if(Rin.rows() != Rin.cols() ||
@@ -268,7 +267,7 @@ int SRIleastSquares::dataUpdate(Vector<double>& D,
                                 Matrix<double>& Cov,
                                 void (LSF)(Vector<double>& X,
                                            Vector<double>& f,
-                                           Matrix<double>& P)) throw(MatrixException)
+                                           Matrix<double>& P))
 {
    const int M = D.size();
    const int N = R.rows();
@@ -534,7 +533,7 @@ void SRIleastSquares::zeroAll(void)
 // optionally change the dimension. If N is not input, the
 // dimension is not changed.
 // @param N new SRIleastSquares dimension (optional).
-void SRIleastSquares::Reset(const int N) throw(Exception)
+void SRIleastSquares::Reset(const int N)
 {
    try {
       if(N > 0 && N != (int)R.rows()) {

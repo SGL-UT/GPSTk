@@ -88,10 +88,11 @@ namespace gpstk
       virtual OrbElem* clone() const = 0;
 
          /**
-          * Returns true if the time, ct, is within the period of validity of this OrbElem object.
-          * @throw Invalid Request if the required data has not been stored.
+          * Returns true if the time, ct, is within the period of
+          * validity of this OrbElem object.
+          * @throw InvalidRequest if the required data has not been stored.
           */
-      virtual bool isValid(const CommonTime& ct) const throw(InvalidRequest);
+      virtual bool isValid(const CommonTime& ct) const;
 
       virtual std::string getName() const = 0;
 
@@ -102,33 +103,33 @@ namespace gpstk
       virtual std::list<std::string> compare(const OrbElem* right) const;
 
          /** Compute the satellite clock bias (sec) at the given time
-          *  @throw Invalid Request if the required data has not been stored.
+          *  @throw InvalidRequest if the required data has not been stored.
           */
-      double svClockBias(const CommonTime& t) const throw(gpstk::InvalidRequest);
+      double svClockBias(const CommonTime& t) const;
 
          /** Compute the satellite clock bias (meters) at the given time
-          *  @throw Invalid Request if the required data has not been stored.
+          *  @throw InvalidRequest if the required data has not been stored.
           */
-      double svClockBiasM(const CommonTime& t) const throw(gpstk::InvalidRequest);
+      double svClockBiasM(const CommonTime& t) const;
 
          /** Compute the satellite clock drift (sec/sec) at the given time
-          *  @throw Invalid Request if the required data has not been stored.
+          *  @throw InvalidRequest if the required data has not been stored.
           */
-      double svClockDrift(const CommonTime& t) const throw(gpstk::InvalidRequest);
+      double svClockDrift(const CommonTime& t) const;
 
 
          /** Compute satellite position at the given time
           * using this orbit data.
-          * @throw Invalid Request if the required data has not been stored.
+          * @throw InvalidRequest if the required data has not been stored.
           * This is virtual due to need to eventually address other 
           * methods of orbit determination.
           */
-      virtual Xvt svXvt(const CommonTime& t) const throw(gpstk::InvalidRequest);
+      virtual Xvt svXvt(const CommonTime& t) const;
 
          /** Compute satellite relativity correction (sec) at the given time
-          *  @throw Invalid Request if the required data has not been stored.
+          *  @throw InvalidRequest if the required data has not been stored.
           */
-      double svRelativity(const CommonTime& t) const throw( gpstk::InvalidRequest );
+      double svRelativity(const CommonTime& t) const;
 
 
          /** adjustBeginningValidity is provided to support
@@ -145,27 +146,37 @@ namespace gpstk
       virtual void adjustBeginningValidity() = 0;
 
          /** Output the contents of this orbit data to the given stream.
-          * @throw Invalid Request if the required data has not been stored.
+          * @throw InvalidRequest if the required data has not been stored.
           */
 
       static void shortcut(std::ostream & os, const long HOW);
 
       static void timeDisplay(std::ostream & os, const CommonTime& t);
 
-      virtual void dumpTerse(std::ostream& s = std::cout) const
-         throw( InvalidRequest ) = 0;
+         /**
+          * @throw InvalidRequest
+          */
+      virtual void dumpTerse(std::ostream& s = std::cout) const = 0;
 
-      virtual void dumpHeader(std::ostream& s = std::cout) const
-         throw( InvalidRequest );
+         /**
+          * @throw InvalidRequest
+          */
+      virtual void dumpHeader(std::ostream& s = std::cout) const;
 
-      virtual void dumpBody(std::ostream& s = std::cout) const
-         throw( InvalidRequest );
+         /**
+          * @throw InvalidRequest
+          */
+      virtual void dumpBody(std::ostream& s = std::cout) const;
 
-      virtual void dumpFooter(std::ostream& s = std::cout) const
-         throw( InvalidRequest );
+         /**
+          * @throw InvalidRequest
+          */
+      virtual void dumpFooter(std::ostream& s = std::cout) const;
 
-      virtual void dump(std::ostream& s = std::cout) const
-	 throw( InvalidRequest );
+         /**
+          * @throw InvalidRequest
+          */
+      virtual void dump(std::ostream& s = std::cout) const;
 
 	 /// Harmonic perturbations
          //@{

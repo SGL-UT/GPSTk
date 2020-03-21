@@ -52,8 +52,6 @@ using namespace std;
 namespace gpstk
 {
    void SEMData::reallyPutRecord(FFStream& ffs) const
-      throw(std::exception, FFStreamError,
-               gpstk::StringUtils::StringException)
    {
       string line;
 
@@ -103,8 +101,6 @@ namespace gpstk
 
 
    void SEMData::reallyGetRecord(FFStream& ffs)
-      throw(std::exception, FFStreamError,
-               gpstk::StringUtils::StringException)
    {
       string line;
 

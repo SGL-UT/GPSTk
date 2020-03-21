@@ -74,9 +74,8 @@ public:
    }
    
       /// Constructor for C(n,k) = Combinations of n things taken k at a time (k <= n)
-      /// @throw on invalid input (k>n).
+      /// @throw Exception on invalid input (k>n).
    Combinations(int N, int K)
-      throw(gpstk::Exception)
    {
       try
       {
@@ -147,9 +146,8 @@ public:
 private:
 
       /// The initialization routine used by constructors.
-      /// @throw on invalid input (k>n or either n or k < 0).
-   void init(int N, int K)
-      throw(gpstk::Exception);
+      /// @throw Exception on invalid input (k>n or either n or k < 0).
+   void init(int N, int K);
    
       /// Recursive function to increment Index[j].
    int Increment(int j) throw();
@@ -190,7 +188,6 @@ int Combinations::Increment(int j)
 }
 
 void Combinations::init(int N, int K)
-   throw(gpstk::Exception)
 {
    if (K > N || N < 0 || K < 0)
    {
@@ -231,7 +228,6 @@ namespace gpstk
                                const vector<double>& Pseudorange,
                                const XvtStore<SatID>& Eph,
                                TropModel *pTropModel)
-      throw(Exception)
    {
       try
       {
@@ -690,7 +686,6 @@ namespace gpstk
                                         Vector<double>& Slope,
                                         ostream *pDebugStream,
                                         Vector<int>* satSystems)   ///Change
-   throw(Exception)
    {
       if (!pTropModel)
       {

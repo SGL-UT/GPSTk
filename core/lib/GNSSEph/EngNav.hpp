@@ -331,13 +331,24 @@ namespace gpstk
                                   uint32_t   &aodo,
                                   CommonTime &tnmct,
                                   CommonTime &toe,
-                                  CommonTime &tot)
-         throw(InvalidParameter);
+                                  CommonTime &tot);
 
+         /**
+          * Get the NMCT validity time from subframe 2.  Refer to
+          * IS-GPS-200 section 2.3.3.4.4.
+          *
+          * @param[in] sf2 The 10 words of subframe 2.
+          * @param[in] howWeek the GPS full week for the HOW time in sf2.
+          * @param[in] meta Other metadata pertaining to the NMCT.
+          * @return true if the AODO is something other than 27900,
+          *   which indicates that the NMCT is invalid (i.e. a return
+          *   value of false means that the other output data is
+          *   invalid as is the NMCT itself).
+          * @throw InvalidParameter if sf2 is not subframe 2.
+          */
       static bool getNMCTValidity(const uint32_t sf2[10],
                                   unsigned   howWeek,
                                   NMCTMeta   &meta)
-         throw(InvalidParameter)
       {
          return getNMCTValidity(sf2, howWeek, meta.aodo, meta.tnmct, meta.toe,
                                 meta.tot);

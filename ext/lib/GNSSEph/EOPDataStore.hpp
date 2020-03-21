@@ -81,32 +81,36 @@ namespace gpstk
          /// Default deconstructor
       virtual ~EOPDataStore() {}
       
-         /// Add to the store directly
-      void addEOPData(const CommonTime& utc,const EOPData& data)
-         throw(InvalidRequest);
+         /** Add to the store directly
+          * @throw InvalidRequest
+          */
+      void addEOPData(const CommonTime& utc,const EOPData& data);
 
-         /// Get the data at the given epoch and return it.
-      EOPData getEOPData(const CommonTime& utc) const
-         throw(InvalidRequest);
-
-
-         /// Add EOPs to the store via a flat IERS file. 
-         /// get finals.data from http://maia.usno.navy.mil/
-      void loadIERSFile(std::string iersFile)
-         throw(FileMissingException);
+         /** Get the data at the given epoch and return it.
+          * @throw InvalidRequest
+          */
+      EOPData getEOPData(const CommonTime& utc) const;
 
 
-      void loadIGSFile(std::string igsFile)
-         throw(FileMissingException);
+         /** Add EOPs to the store via a flat IERS file. 
+          * get finals.data from http://maia.usno.navy.mil/
+          * @throw FileMissingException
+          */
+      void loadIERSFile(std::string iersFile);
+
+         /**
+          * @throw FileMissingException
+          */
+      void loadIGSFile(std::string igsFile);
 
          /** Add EOPs to the store via a flat STK file. 
           *  EOP-v1.1.txt
           *  http://celestrak.com/SpaceData/EOP-format.asp
           *
           *  @param stkFile  Name of file to read, including path.
+          * @throw FileMissingException
           */
-      void loadSTKFile(std::string stkFile)
-         throw(FileMissingException);
+      void loadSTKFile(std::string stkFile);
 
    protected:
 

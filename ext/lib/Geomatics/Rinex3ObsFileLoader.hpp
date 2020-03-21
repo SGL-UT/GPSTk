@@ -328,10 +328,10 @@ public:
    /// @return >0 number of passes created, -1 inconsistent input, -2 obstypes
    ///   inconsistent with existing SatPass, -3 Loader not configured to save data, 
    ///   -4 no data -5 obstypes not provided for all systems
+   /// @throw Exception
    int WriteSatPassList(const std::map<char, std::vector<std::string> >& obstypes,
                         const std::map<char, std::vector<int> >& indexLoadOT,
-                        std::vector<SatPass>& SPList)
-   throw(Exception);
+                        std::vector<SatPass>& SPList);
 
    /// Dump the SatObsCount table
    /// @param ostream s to which to write the table

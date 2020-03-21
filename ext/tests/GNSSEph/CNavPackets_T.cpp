@@ -81,8 +81,7 @@ public:
 //-------------------------------------------------------------------
    void setUpCNAV();
    gpstk::PackedNavBits getPnbCNav(const gpstk::ObsID& oidr,
-                                   const std::string& str)
-             throw(gpstk::InvalidParameter);
+                                   const std::string& str);
 
       // Methods above exist to set up the following
       // members
@@ -196,7 +195,6 @@ setUpCNAV()
    gpstk::PackedNavBits 
    CNavPackets_T::
    getPnbCNav(const gpstk::ObsID& oidr, const std::string& str)
-             throw(gpstk::InvalidParameter)
    {
       try
       {

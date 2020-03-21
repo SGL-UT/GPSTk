@@ -117,7 +117,6 @@ namespace Sinex
 
    void
    Data::reallyPutRecord(FFStream& s) const
-      throw(std::exception, FFStreamError, StringUtils::StringException)
    {
       Sinex::Stream& strm = dynamic_cast<Sinex::Stream&>(s);
       try
@@ -156,7 +155,6 @@ namespace Sinex
 
    void
    Data::reallyGetRecord(FFStream& s)
-      throw(std::exception, FFStreamError, StringUtils::StringException)
    {
       Sinex::Stream&  strm = dynamic_cast<Sinex::Stream&>(s);
       bool    terminated = false;

@@ -58,7 +58,7 @@ namespace gpstk
 // param x  argument, x must be > 0
 // return   double ln(gamma(x)), the natural log of the gamma function of x.
 // throw    if the input argument is <= 0
-double lnGamma(const double& x) throw(Exception)
+double lnGamma(const double& x)
 {
    try {
       static const double con[8] = {
@@ -84,7 +84,7 @@ double lnGamma(const double& x) throw(Exception)
 // param    x argument, x must be > 0
 // return   double Gamma(x), the gamma function of x.
 // throw    if the input argument is <= 0
-double Gamma(const double& x) throw(Exception)
+double Gamma(const double& x)
 {
    try {
       return ::exp(lnGamma(double(x)));
@@ -96,7 +96,7 @@ double Gamma(const double& x) throw(Exception)
 // param    n argument, n must be >= 0
 // return   n! or factorial(n), as a double
 // throw    if the input argument is < 0
-double factorial(const int& n) throw(Exception)
+double factorial(const int& n)
 {
    try {
       if(n < 0) GPSTK_THROW(Exception("Negative argument"));
@@ -121,7 +121,7 @@ double factorial(const int& n) throw(Exception)
 // param    n argument, n must be >= 0
 // return   ln(n!) or natural log of factorial(n), as a double
 // throw    if the input argument is < 0
-double lnFactorial(const int& n) throw(Exception)
+double lnFactorial(const int& n)
 {
    try {
       if(n < 0) GPSTK_THROW(Exception("Negative argument"));
@@ -139,7 +139,7 @@ double lnFactorial(const int& n) throw(Exception)
 // param k  int k must be >= 0 and <= n
 // return   (n k), the binomial coefficient
 // throw    if the input argument do not satisfy 0 <= k <= n
-double binomialCoeff(const int& n, const int& k) throw(Exception)
+double binomialCoeff(const int& n, const int& k)
 {
    try {
       if(n < 0 || k > n) GPSTK_THROW(Exception("Invalid arguments"));
@@ -157,7 +157,7 @@ double binomialCoeff(const int& n, const int& k) throw(Exception)
 // param y  second argument
 // return          beta(x,y)
 // throw           if either input argument is <= 0
-double beta(const double& x, const double& y) throw(Exception)
+double beta(const double& x, const double& y)
 {
    try {
       return ::exp(lnGamma(x) + lnGamma(y) - lnGamma(x+y));
@@ -171,7 +171,7 @@ double beta(const double& x, const double& y) throw(Exception)
 // param x  second argument, x >= 0
 // return          P(a,x)
 // throw           if input arguments have a <= 0 or x < 0
-double seriesIncompGamma(const double& a, const double& x) throw(Exception)
+double seriesIncompGamma(const double& a, const double& x)
 {
    try {
       if(x < 0) GPSTK_THROW(Exception("Negative first argument"));
@@ -204,7 +204,7 @@ double seriesIncompGamma(const double& a, const double& x) throw(Exception)
 // param x  second argument, x >= 0
 // return          Q(a,x)
 // throw           if input arguments have a <= 0 or x < 0
-double contfracIncompGamma(const double& a, const double& x) throw(Exception)
+double contfracIncompGamma(const double& a, const double& x)
 {
    try {
       if(x < 0) GPSTK_THROW(Exception("Negative first argument"));
@@ -246,7 +246,7 @@ double contfracIncompGamma(const double& a, const double& x) throw(Exception)
 // param x  second argument, x >= 0
 // return          P(a,x)
 // throw           if input arguments have a <= 0 or x < 0
-double incompGamma(const double& a, const double& x) throw(Exception)
+double incompGamma(const double& a, const double& x)
 {
    try {
       if(x < 0) GPSTK_THROW(Exception("Negative first argument"));
@@ -266,7 +266,7 @@ double incompGamma(const double& a, const double& x) throw(Exception)
 // param x  second argument, x >= 0
 // return          Q(a,x)
 // throw           if input arguments have a <= 0 or x < 0
-double compIncompGamma(const double& a, const double& x) throw(Exception)
+double compIncompGamma(const double& a, const double& x)
 {
    try {
       if(x < 0) GPSTK_THROW(Exception("Negative first argument"));
@@ -283,7 +283,7 @@ double compIncompGamma(const double& a, const double& x) throw(Exception)
 // Error function erf(x). erf(x) = 2/sqrt(pi) * integral (0 to x) { exp(-t^2) dt }
 // param x  input argument
 // return          erf(x)
-double errorFunc(const double& x) throw(Exception)
+double errorFunc(const double& x)
 {
    if(x < 0) GPSTK_THROW(Exception("Negative first argument"));
    try {
@@ -295,7 +295,7 @@ double errorFunc(const double& x) throw(Exception)
 // Complementary error function erfc(x). erfc(x) = 1-erf(x)
 // param x  input argument
 // return          erfc(x)
-double compErrorFunc(const double& x) throw(Exception)
+double compErrorFunc(const double& x)
 {
    if(x < 0) GPSTK_THROW(Exception("Negative first argument"));
    try {
@@ -306,7 +306,7 @@ double compErrorFunc(const double& x) throw(Exception)
 
 // Compute continued fractions portion of incomplete beta function I_x(a,b)
 // Routine used internally for Incomplete beta function I_x(a,b)
-double cfIBeta(const double& x, const double& a, const double& b) throw(Exception)
+double cfIBeta(const double& x, const double& a, const double& b)
 {
    static const int imax(1000);
    static const double eps(10*std::numeric_limits<double>().epsilon());
@@ -351,7 +351,6 @@ double cfIBeta(const double& x, const double& a, const double& b) throw(Exceptio
 // param b  input value, b > 0
 // return          Incomplete beta function I_x(a,b)
 double incompleteBeta(const double& x, const double& a, const double& b)
-   throw(Exception)
 {
    if(x < 0 || x > 1) GPSTK_THROW(Exception("Invalid x argument"));
    if(a <= 0 || b <= 0) GPSTK_THROW(Exception("Non-positive argument"));
@@ -402,7 +401,6 @@ double incompleteBeta(const double& x, const double& a, const double& b)
 // param sig std dev of the sample (scale parameter of the distribution)
 // return         Normal distribution probability density
 double NormalPDF(const double& x, const double& mu, const double& sig)
-   throw(Exception)
 {
    try {
       return (::exp(-(x-mu)*(x-mu)/(2.0*sig*sig)));
@@ -417,7 +415,6 @@ double NormalPDF(const double& x, const double& mu, const double& sig)
 // param sig std dev of the sample (scale parameter of the distribution)
 // return           Normal distribution probability
 double NormalCDF(const double& x, const double& mu, const double& sig)
-   throw(Exception)
 {
    if(sig <= 0.0) GPSTK_THROW(Exception("Non-positive sigma"));
 
@@ -438,7 +435,6 @@ double NormalCDF(const double& x, const double& mu, const double& sig)
 // param sig std dev of the sample (scale parameter of the distribution)
 // return        X the statistic at this probability
 double invNormalCDF(double prob, const double& mu, const double& sig)
-   throw(Exception)
 {
    try {
       if(prob < 0 || prob >= 1)
@@ -519,7 +515,7 @@ double invNormalCDF(double prob, const double& mu, const double& sig)
 // param x input statistic, equal to an RSS(); x >= 0
 // param n    input value for number of degrees of freedom, n > 0
 // return         probability Chi-square probability (xsq,n)
-double ChisqPDF(const double& x, const int& n) throw(Exception)
+double ChisqPDF(const double& x, const int& n)
 {
    if(x < 0) GPSTK_THROW(Exception("Negative statistic"));
    if(n <= 0)
@@ -537,7 +533,7 @@ double ChisqPDF(const double& x, const int& n) throw(Exception)
 // param x  input statistic value, the RSS of variances, X >= 0
 // param n     degrees of freedom of sample, n > 0
 // return          probability that the sample variance is less than X.
-double ChisqCDF(const double& x, const int& n) throw(Exception)
+double ChisqCDF(const double& x, const int& n)
 {
    if(x < 0) GPSTK_THROW(Exception("Negative statistic"));
    if(n <= 0)
@@ -556,7 +552,7 @@ double ChisqCDF(const double& x, const int& n) throw(Exception)
 // param alpha probability or significance level of the test, >=0 and < 1
 // param n   degrees of freedom of sample, n > 0
 // return        X the statistic (an RSS of variances) at this probability
-double invChisqCDF(double alpha, int n) throw(Exception)
+double invChisqCDF(double alpha, int n)
 {
    try {
       if(alpha < 0 || alpha >= 1)
@@ -625,7 +621,7 @@ double invChisqCDF(double alpha, int n) throw(Exception)
 // param X input statistic
 // param n    input value for number of degrees of freedom, n > 0
 // return         probability density
-double StudentsPDF(const double& X, const int& n) throw(Exception)
+double StudentsPDF(const double& X, const int& n)
 {
    if(n <= 0)
       GPSTK_THROW(Exception("Non-positive degrees of freedom"));
@@ -650,7 +646,6 @@ double StudentsPDF(const double& X, const int& n) throw(Exception)
 // param n     degrees of freedom of first sample, n > 0
 // return          probability that the sample is less than X.
 double StudentsCDF(const double& t, const int& n)
-   throw(Exception)
 {
    if(n <= 0) GPSTK_THROW(Exception("Non-positive degree of freedom"));
 
@@ -669,7 +664,7 @@ double StudentsCDF(const double& t, const int& n)
 // param prob probability or significance level of the test, >=0 and < 1
 // param n   degrees of freedom of sample, n > 0
 // return        t the statistic at this probability
-double invStudentsCDF(double prob, int n) throw(Exception)
+double invStudentsCDF(double prob, int n)
 {
    try {
       if(prob < 0 || prob >= 1)
@@ -734,7 +729,6 @@ double invStudentsCDF(double prob, int n) throw(Exception)
 // param n2    degrees of freedom of second sample, n2 > 0
 // return          probability that the sample is less than F.
 double FDistCDF(const double& F, const int& n1, const int& n2)
-   throw(Exception)
 {
    if(F < 0) GPSTK_THROW(Exception("Negative statistic"));
    if(n1 <= 0 || n2 <= 0) GPSTK_THROW(Exception("Non-positive degree of freedom"));
@@ -775,7 +769,7 @@ double FDistCDF(const double& F, const int& n1, const int& n2)
 // param n1   degrees of freedom of first sample, n1 > 0
 // param n2   degrees of freedom of second sample, n2 > 0
 // return         the statistic (a ratio variance1/variance2) at this prob
-double FDistPDF(double x, int n1, int n2) throw(Exception)
+double FDistPDF(double x, int n1, int n2)
 {
    try {
       double dn1(n1),dn2(n2);
@@ -794,7 +788,7 @@ double FDistPDF(double x, int n1, int n2) throw(Exception)
 // param n1  degrees of freedom of first sample, n1 > 0
 // param n2  degrees of freedom of second sample, n2 > 0
 // return        F the statistic (a ratio variance1/variance2) at this prob
-double invFDistCDF(double prob, int n1, int n2) throw(Exception)
+double invFDistCDF(double prob, int n1, int n2)
 {
    try {
       if(prob < 0 || prob >= 1)

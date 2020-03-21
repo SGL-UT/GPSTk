@@ -91,7 +91,7 @@ namespace gpstk
    //  b) checkDataGap is true and there is a data gap
    //  c) checkInterval is true and the interval is larger than maxInterval
    PositionRecord PositionSatStore::getValue(const SatID& sat, const CommonTime& ttag)
-      const throw(InvalidRequest)
+      const
    {
       try {
          bool isExact;
@@ -194,7 +194,7 @@ namespace gpstk
    //  b) checkDataGap is true and there is a data gap
    //  c) checkInterval is true and the interval is larger than maxInterval
    Triple PositionSatStore::getPosition(const SatID& sat, const CommonTime& ttag)
-      const throw(InvalidRequest)
+      const
    {
       try {
          int i;
@@ -239,7 +239,7 @@ namespace gpstk
    //  b) checkDataGap is true and there is a data gap
    //  c) checkInterval is true and the interval is larger than maxInterval
    Triple PositionSatStore::getVelocity(const SatID& sat, const CommonTime& ttag)
-      const throw(InvalidRequest)
+      const
    {
       try {
          int i;
@@ -293,7 +293,7 @@ namespace gpstk
    //  c) checkInterval is true and the interval is larger than maxInterval
    //  d) neither velocity nor acceleration data are present
    Triple PositionSatStore::getAcceleration(const SatID& sat, const CommonTime& ttag)
-      const throw(InvalidRequest)
+      const
    {
       if(!haveVelocity && !haveAcceleration) {
          InvalidRequest e("Neither velocity nor acceleration data are present");
@@ -345,7 +345,6 @@ namespace gpstk
    // Add a PositionRecord to the store.
    void PositionSatStore::addPositionRecord(const SatID& sat, const CommonTime& ttag,
                                             const PositionRecord& rec)
-      throw(InvalidRequest)
    {
       try {
          checkTimeSystem(ttag.getTimeSystem());
@@ -377,7 +376,6 @@ namespace gpstk
    // Add position data (only) to the store
    void PositionSatStore::addPositionData(const SatID& sat, const CommonTime& ttag,
                      const Triple& Pos, const Triple& Sig)
-      throw(InvalidRequest)
    {
       try {
          checkTimeSystem(ttag.getTimeSystem());
@@ -404,7 +402,6 @@ namespace gpstk
    // Add velocity data (only) to the store
    void PositionSatStore::addVelocityData(const SatID& sat, const CommonTime& ttag,
                         const Triple& Vel, const Triple& Sig)
-      throw(InvalidRequest)
    {
       try {
          checkTimeSystem(ttag.getTimeSystem());
@@ -433,7 +430,6 @@ namespace gpstk
    // Add acceleration data (only) to the store
    void PositionSatStore::addAccelerationData(const SatID& sat,
                         const CommonTime& ttag, const Triple& Acc, const Triple& Sig)
-       throw(InvalidRequest)
    {
       try {
          checkTimeSystem(ttag.getTimeSystem());

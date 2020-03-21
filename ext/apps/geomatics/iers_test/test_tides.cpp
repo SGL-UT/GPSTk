@@ -119,7 +119,10 @@ public:
 
 //------------------------------------------------------------------------------------
 // prototypes
-int GetCommandLine(int argc, char **argv) throw(Exception);
+/**
+ * @throw Exception
+ */
+int GetCommandLine(int argc, char **argv);
 
 //------------------------------------------------------------------------------------
 int main(int argc, char **argv)
@@ -454,7 +457,7 @@ catch (...) { cerr << "Unknown exception.  Abort." << endl; }
 }   // end main()
 
 //------------------------------------------------------------------------------------
-int GetCommandLine(int argc, char **argv) throw(Exception)
+int GetCommandLine(int argc, char **argv)
 {
 try {
    InputConfig& C=InputConfig::Instance();

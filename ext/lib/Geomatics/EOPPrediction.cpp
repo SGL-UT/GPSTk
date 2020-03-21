@@ -51,7 +51,6 @@ namespace gpstk
    // load the EOPPrediction in the given file
    // return  0 if ok, -1 if error reading file
    int EOPPrediction::loadFile(string filename)
-      throw(FileMissingException)
    {
       bool ok;
       int n;
@@ -139,7 +138,7 @@ namespace gpstk
    //---------------------------------------------------------------------------------
    // generate serial number (NGA files are named EOPP<sn>.txt) from epoch
    // SN = Year (1 digit) + week of year
-   int EOPPrediction::getSerialNumber(int imjd) throw(Exception)
+   int EOPPrediction::getSerialNumber(int imjd)
    {
       int wk((imjd-GPS_EPOCH_MJD)/7);        // current week
       int w2 = wk-1;                         // the previous week

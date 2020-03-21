@@ -71,8 +71,7 @@ namespace gpstk
    }
 
    OrbSysGpsL_51::OrbSysGpsL_51(const PackedNavBits& msg)
-      throw( InvalidParameter):
-      OrbSysGpsL()
+         : OrbSysGpsL()
    {
       loadData(msg);
    }
@@ -100,7 +99,6 @@ namespace gpstk
    }
    
    void OrbSysGpsL_51::loadData(const PackedNavBits& msg)
-      throw(InvalidParameter)
    {
       setUID(msg);
       if (UID!=51)
@@ -140,7 +138,6 @@ namespace gpstk
    } // end of loadData()
 
    void OrbSysGpsL_51::dumpTerse(std::ostream& s) const
-         throw(InvalidRequest)
    {
       if (!dataLoadedFlag)
       {
@@ -183,7 +180,6 @@ namespace gpstk
    } // end of dumpTerse()
 
    void OrbSysGpsL_51::dumpBody(ostream& s) const
-      throw( InvalidRequest )
    {
       if (!dataLoadedFlag)
       {

@@ -119,19 +119,19 @@ namespace gpstk
       
          /**
           * get the ionospheric correction value.
-          * \param time the time of the observation
-          * \param rxgeo the WGS84 geodetic position of the receiver
-          * \param svel the elevation angle between the rx and SV (degrees)
-          * \param svaz the azimuth angle between the rx and SV (degrees)
-          * \param freq the GPS frequency the observation was made from
-          * \return the ionospheric correction (meters)
+          * @param time the time of the observation
+          * @param rxgeo the WGS84 geodetic position of the receiver
+          * @param svel the elevation angle between the rx and SV (degrees)
+          * @param svaz the azimuth angle between the rx and SV (degrees)
+          * @param freq the GPS frequency the observation was made from
+          * @return the ionospheric correction (meters)
+          * @throw InvalidIonoModel
           */
       double getCorrection(const CommonTime& time,
                            const Position& rxgeo,
                            double svel,
                            double svaz,
-                           Frequency freq = L1) const
-         throw(InvalidIonoModel);
+                           Frequency freq = L1) const;
 
          /// equality operator
       bool operator==(const IonoModel& right) const throw();

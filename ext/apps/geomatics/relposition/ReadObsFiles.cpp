@@ -53,11 +53,11 @@ using namespace gpstk;
 
 //------------------------------------------------------------------------------------
 // prototypes -- this module only
-void ReadAllObsHeaders(void) throw(Exception);
-int ReadNextObs(ObsFile& of) throw(Exception);
+void ReadAllObsHeaders(void);
+int ReadNextObs(ObsFile& of);
 
 //------------------------------------------------------------------------------------
-void ReadAllObsHeaders(void) throw(Exception)
+void ReadAllObsHeaders(void)
 {
 try {
    int k;
@@ -221,7 +221,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int ReadNextObs(ObsFile& of) throw(Exception)
+int ReadNextObs(ObsFile& of)
 {
 try {
       // read the next observation epoch

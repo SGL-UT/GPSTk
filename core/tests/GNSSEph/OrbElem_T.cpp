@@ -23,7 +23,6 @@ public:
    void adjustBeginningValidity() override
    { GPSTK_ASSERT(false); } // don't call this.
    void dumpTerse(std::ostream& s = std::cout) const
-      throw(gpstk::InvalidRequest)
       override
    { s << "terse" << endl; }
 };
