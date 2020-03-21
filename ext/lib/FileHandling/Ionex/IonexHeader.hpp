@@ -248,25 +248,26 @@ namespace gpstk
          /**
           * Parse a single auxiliary header record that contains "Differential
           * code biases".
+          * @throw FFStreamError
           */
-      void ParseDcbRecord(std::string &line)
-         throw (FFStreamError);
+      void ParseDcbRecord(std::string &line);
 
 
          /** Parse a single header record, and modify 'valid' accordingly.
           *
           * Used by reallyGetRecord for both IonexHeader and IonexData.
+          * @throw FFStreamError
           */
-      void ParseHeaderRecord(std::string& line)
-         throw(FFStreamError);
+      void ParseHeaderRecord(std::string& line);
 
 
          /**
           * Write all valid header records to the given stream.
           * Used by reallyPutRecord for both IonexHeader and IonexData.
+          * @throw FFStreamError
+          * @throw StringUtils::StringException
           */
-      void WriteHeaderRecords(FFStream& s) const
-         throw(FFStreamError, gpstk::StringUtils::StringException);
+      void WriteHeaderRecords(FFStream& s) const;
 
 
 
@@ -275,10 +276,11 @@ namespace gpstk
 
          /** Writes the record formatted to the FFStream \a s.
           *
-          * @throws StringException when a StringUtils function fails
+          * @throw std::exception
+          * @throw FFStreamError
+          * @throw StringException when a StringUtils function fails
           */
-      virtual void reallyPutRecord(FFStream& s) const
-         throw( std::exception, FFStreamError, StringUtils::StringException );
+      virtual void reallyPutRecord(FFStream& s) const;
 
 
          /** This function retrieves the IONEX header from the given FFStream.
@@ -286,13 +288,13 @@ namespace gpstk
           * If an stream error is encountered, the stream is reset to its
           * original position and its fail-bit is set.
           *
-          * @throws StringException when a StringUtilis function fails
-          * @throws FFStreamError when exceptions (failbit) is set and
+          * @throw std::exception
+          * @throw StringException when a StringUtilis function fails
+          * @throw FFStreamError when exceptions (failbit) is set and
           *  a read or formatting error occurs. This also resets the stream
           *  to its pre-read position.
           */
-      virtual void reallyGetRecord(FFStream& s)
-         throw( std::exception, FFStreamError, StringUtils::StringException);
+      virtual void reallyGetRecord(FFStream& s);
 
 
          // Not sure how it helps (seen in SP3Header and RinexObsHeader)

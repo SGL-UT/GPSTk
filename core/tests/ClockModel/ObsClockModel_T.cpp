@@ -49,9 +49,9 @@ namespace gpstk
   class ObsClockModel_Child : public ObsClockModel
   {
     public:
-      virtual void addEpoch(const ORDEpoch& re) throw(gpstk::InvalidValue){};
-      virtual double getOffset(const gpstk::CommonTime& t) const {return(0.0);};
-      virtual bool isOffsetValid(const gpstk::CommonTime& t) const {return false;};
+      virtual void addEpoch(const ORDEpoch& re) {}
+      virtual double getOffset(const gpstk::CommonTime& t) const {return(0.0);}
+      virtual bool isOffsetValid(const gpstk::CommonTime& t) const {return false;}
   };
 };
 

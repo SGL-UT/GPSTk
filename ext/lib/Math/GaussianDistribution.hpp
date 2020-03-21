@@ -133,9 +133,9 @@ namespace gpstk
           * @param p    Probability value
           *
           * \ warning Value "p" must be in the range (0, 1)
+          * @throw InvalidParameter
           */
-      virtual double invcdf(double p)
-         throw(InvalidParameter);
+      virtual double invcdf(double p);
 
 
          /// Get mean

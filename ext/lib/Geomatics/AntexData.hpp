@@ -285,13 +285,12 @@ namespace gpstk
       /// @param elev_nadir elevation in deg from horizontal (North-East) plane for
       //         receivers, or nadir angle in degrees from Z axis for satellites
       /// @return total phase center offset in millimeters
-      /// @throw  if this object is invalid
+      /// @throw Exception if this object is invalid
       ///         if frequency does not exist for this data
       ///         if azimuth is out of range; azimuth is replaced with azim mod 360
       double getTotalPhaseCenterOffset(const std::string freq,
                                        const double azimuth,
-                                       const double elevation) const
-         throw(Exception);
+                                       const double elevation) const;
 
       /// Get the PC offset values in mm (only, NOT the phase center variations, which
       /// should be computed using getPhaseCenterVariations() and added to the PCOs
@@ -300,10 +299,9 @@ namespace gpstk
       /// @param freq frequency (usually G01 or G02)
       /// @return Triple containing offsets in millimeters, in appropriate coordinate
       ///                system (satellite-based XYZ or receiver-based NEU).
-      /// @throw  if this object is invalid
+      /// @throw Exception if this object is invalid
       ///         if frequency does not exist for this data
-      Triple getPhaseCenterOffset(const std::string freq) const
-         throw(Exception);
+      Triple getPhaseCenterOffset(const std::string freq) const;
 
       /// Compute the phase center variation at the given azimuth and elev_nadir
       /// NB. see documentation of the class for coordinates, signs and application.
@@ -313,13 +311,12 @@ namespace gpstk
       /// @param elev_nadir elevation in deg from horizontal (North-East) plane for
       //         receivers, or nadir angle in degrees from Z axis for satellites
       /// @return phase center offset in millimeters
-      /// @throw  if this object is invalid
+      /// @throw Exception if this object is invalid
       ///         if frequency does not exist for this data
       ///         if azimuth is out of range, azimuth is replaced with azim % 360
       double getPhaseCenterVariation(const std::string freq,
                                      const double azimuth,
-                                     const double elev_nadir) const
-         throw(Exception);
+                                     const double elev_nadir) const;
 
       /// Dump AntexData. Set detail = 0 for type, serial no., sat codes only;
       /// = 1 for all information except phase center offsets, = 2 for all data.
@@ -335,41 +332,43 @@ namespace gpstk
                              double& zen_lo, double& zen_hi,
                              double& pco_lo, double& pco_hi) const throw();
 
-      /// Writes a correctly formatted record from this data to stream \a s.
-      virtual void reallyPutRecord(FFStream& s) const 
-         throw(std::exception, FFStreamError,
-            StringUtils::StringException);
+         /** Writes a correctly formatted record from this data to stream \a s.
+          * @throw std::exception
+          * @throw FFStreamError
+          * @throw StringUtils::StringException
+          */
+      virtual void reallyPutRecord(FFStream& s) const;
 
       /// This functions obtains Antex antenna record from the given FFStream.
       /// If there is an error in reading from the stream, it is reset
       /// to its original position and its fail-bit is set.
-      /// @throws StringException when a StringUtils function fails
-      /// @throws FFStreamError when exceptions(failbit) is set and
+      /// @throw std::exception
+      /// @throw StringException when a StringUtils function fails
+      /// @throw FFStreamError when exceptions(failbit) is set and
       ///  a read or formatting error occurs.  This also resets the
       ///  stream to its pre-read position.
-      virtual void reallyGetRecord(FFStream& s) 
-         throw(std::exception, FFStreamError,
-               StringUtils::StringException);
+      virtual void reallyGetRecord(FFStream& s);
 
    private:
       /// helper routine to throw when records are out of order
       /// throws if valid contains test (test & valid), otherwise does nothing
       void throwRecordOutOfOrder(unsigned long test, std::string& label);
 
-      /// parse a line from the Antex file, filling the data object
-      void ParseDataRecord(std::string& line)
-         throw(FFStreamError);
+         /** parse a line from the Antex file, filling the data object
+          * @throw FFStreamError
+          */
+      void ParseDataRecord(std::string& line);
 
       /// Writes the CommonTime object into Antex ('VALID FROM') format.
       /// If it's a bad time, it will return blanks.
-      std::string writeTime(const CommonTime& dt) const
-         throw(StringUtils::StringException);
+      /// @throw StringUtils::StringException
+      std::string writeTime(const CommonTime& dt) const;
 
       /// This function constructs a CommonTime object from the line for VALID FROM
       /// and VALID UNTIL records; default is to return BEGINNING_OF_TIME
       /// @param line the encoded time string found in the Antex record.
-      CommonTime parseTime(const std::string& line) const
-         throw(FFStreamError);
+      /// @throw FFStreamError
+      CommonTime parseTime(const std::string& line) const;
 
    }; // class AntexData
 

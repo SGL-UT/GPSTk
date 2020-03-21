@@ -110,13 +110,14 @@ public:
       KalmanFilter::Reset(NL);                   // dim's SRIF, sets Nstate=NL.size()
    }
 
-   // get apriori state and covariance from user.
-   // if state std::vector X, and covariance Cov are defined, return 1
-   // if inverse covariance*state X, and inverse covariance Cov, return -1
-   // if no information is returned, return 0
+      /** Get apriori state and covariance from user.
+       * @return 1 if state std::vector X, and covariance Cov are defined,
+       *   -1 if inverse covariance*state X, and inverse covariance Cov,
+       *   0 if no information is returned
+       * @throw Exception
+       */
    int defineInitial(double& T0, gpstk::Vector<double>& State,
                                  gpstk::Matrix<double>& Cov)
-      throw(gpstk::Exception)
    {
       count = 0;              // index into data arrays
       T0 = ttag[0];           // initial time
@@ -143,11 +144,13 @@ public:
       return 1;      // since Cov is covariance
    }
 
+      /**
+       * @throw Exception
+       */
    void defineTimestep(const double T, const double DT,
                        const gpstk::Vector<double>& State,
                        const gpstk::Matrix<double>& Cov,
                        const bool useFlag)
-      throw(gpstk::Exception)
    {
       if(!useFlag) {
          LOG(INFO) << "Filter is singular in defineT";
@@ -184,18 +187,19 @@ public:
       LOG(DEBUG) << "defineT makes PhiInv\n" << PhiInv;
    }
 
-   // Input T,X,Cov - the current state. Output T=time of next MU
-   // Fill and return the data quantities Partials,Data,MCov.
-   // Returns Process=0,
-   // ProcessThenQuit, quit after this data
-   // SkipThisEpoch, skip this data and output
-   // SkipThenQuit, skip this data and output, then quit
-   // QuitImmediately, quit now
+      /** Input T,X,Cov - the current state. Output T=time of next MU
+       * Fill and return the data quantities Partials,Data,MCov.
+       * @return Process=0,
+       *   ProcessThenQuit, quit after this data
+       *   SkipThisEpoch, skip this data and output
+       *   SkipThenQuit, skip this data and output, then quit
+       *   QuitImmediately, quit now
+       * @throw Exception
+       */
    KalmanReturn defineMeasurements(double& T,
                                    const gpstk::Vector<double>& X,
                                    const gpstk::Matrix<double>& Cov,
                                    const bool useFlag)
-      throw(gpstk::Exception)
     {
       if(!useFlag) {
          LOG(INFO) << "Filter is singular in defineM";

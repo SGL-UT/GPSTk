@@ -70,7 +70,6 @@ namespace gpstk
    }
 
    CNavISC::CNavISC(const PackedNavBits& message30)
-      throw( InvalidParameter)
    {
       loadData(message30);
    }
@@ -115,7 +114,6 @@ namespace gpstk
    }
    
    void CNavISC::loadData(const PackedNavBits& message30)
-      throw( InvalidParameter )
    {
          // First, verify the correct message type is being passed in. 
       long msgType = message30.asUnsignedLong(14,6,1);
@@ -198,7 +196,6 @@ namespace gpstk
    } // end of loadData()
 
    void CNavISC::dumpBody(ostream& s) const
-      throw( InvalidRequest )
    {
       if (!dataLoaded())
       {

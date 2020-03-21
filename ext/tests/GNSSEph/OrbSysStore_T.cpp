@@ -72,12 +72,14 @@ public:
    void setUpCNAV();
    void setUpBDS();
    void setUpGLO();
+      /**
+       * @throw InvalidParameter */
    gpstk::PackedNavBits getPnbLNav(const gpstk::ObsID& oidr,
-                                   const std::string& str)
-             throw(gpstk::InvalidParameter);
+                                   const std::string& str);
+      /**
+       * @throw InvalidParameter */
    gpstk::PackedNavBits getPnbCNav(const gpstk::ObsID& oidr,
-                                   const std::string& str)
-             throw(gpstk::InvalidParameter);
+                                   const std::string& str);
 
       // Methods above exist to set up the following
       // members
@@ -925,7 +927,6 @@ setUpGLO()
    gpstk::PackedNavBits
    OrbSysStore_T::
    getPnbLNav(const gpstk::ObsID& oidr, const std::string& str)
-                          throw(gpstk::InvalidParameter)
    {
       try
       {
@@ -989,7 +990,6 @@ setUpGLO()
    gpstk::PackedNavBits
    OrbSysStore_T::
    getPnbCNav(const gpstk::ObsID& oidr, const std::string& str)
-             throw(gpstk::InvalidParameter)
    {
       try
       {

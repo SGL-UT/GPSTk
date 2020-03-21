@@ -119,8 +119,9 @@ public:
    ~EditCmd(void) {}                      // destructor
 
       /** constructor from strings, i.e. parser e.g. "DA+","t" or
-       * "BDp","SV,OT,t,s" */
-   EditCmd(const string typestr, const string arg) throw(Exception);
+       * "BDp","SV,OT,t,s"
+       * @throw Exception */
+   EditCmd(const string typestr, const string arg);
       /// parse time from string
    bool parseTime(const string arg, CommonTime& ttag) throw();
 
@@ -128,9 +129,9 @@ public:
    inline bool isValid(void) throw()
    { return (type != invalidCT); }
 
-      /// dump, with optional message at front
-   string asString(string msg=string())
-      throw(Exception);
+      /** dump, with optional message at front
+       * @throw Exception */
+   string asString(string msg=string());
 
 }; // end class EditCmd
 
@@ -237,14 +238,21 @@ const string Configuration::longfmt = calfmt + " = " + gpsfmt + " %P";
 
 //------------------------------------------------------------------------------
 // prototypes
-int initialize(string& errors) throw(Exception);
+/**
+ * @throw Exception */
+int initialize(string& errors);
 void fixEditCmdList(void) throw();
-int processFiles(void) throw(Exception);
+/**
+ * @throw Exception */
+int processFiles(void);
+/**
+ * @throw Exception */
 int processOneEpoch(Rinex3ObsHeader& Rhead, Rinex3ObsHeader& RHout,
-                    Rinex3ObsData& Rdata, Rinex3ObsData& RDout)
-   throw(Exception);
+                    Rinex3ObsData& Rdata, Rinex3ObsData& RDout);
+/**
+ * @throw Exception */
 int executeEditCmd(const vector<EditCmd>::iterator& it, Rinex3ObsHeader& Rhead,
-                   Rinex3ObsData& Rdata) throw(Exception);
+                   Rinex3ObsData& Rdata);
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -307,7 +315,7 @@ int main(int argc, char **argv)
 
 //------------------------------------------------------------------------------
 // return -5 if input is not valid
-int initialize(string& errors) throw(Exception)
+int initialize(string& errors)
 {
    try
    {
@@ -374,7 +382,7 @@ int initialize(string& errors) throw(Exception)
 
 //------------------------------------------------------------------------------
 // Return 0 ok, >0 number of files successfully read, <0 fatal error
-int processFiles(void) throw(Exception)
+int processFiles(void)
 {
    try
    {
@@ -693,7 +701,7 @@ int processFiles(void) throw(Exception)
 //------------------------------------------------------------------------------
 // return <0 fatal; >0 skip this epoch
 int processOneEpoch(Rinex3ObsHeader& Rhead, Rinex3ObsHeader& RHout,
-                    Rinex3ObsData& Rdata, Rinex3ObsData& RDout) throw(Exception)
+                    Rinex3ObsData& Rdata, Rinex3ObsData& RDout)
 {
    try
    {
@@ -782,7 +790,6 @@ int processOneEpoch(Rinex3ObsHeader& Rhead, Rinex3ObsHeader& RHout,
 // return <0 for fatal error
 int executeEditCmd(const vector<EditCmd>::iterator& it, Rinex3ObsHeader& Rhead,
                                                         Rinex3ObsData& Rdata)
-   throw(Exception)
 {
    Configuration& C(Configuration::Instance());
    size_t i,j;
@@ -1387,7 +1394,7 @@ void Configuration::parseEditCmds(vector<string>& vec, const string lab,
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 // constructor from strings, i.e. parser e.g. "DA+","t" or "BDp","SV,OT,t,s"
-EditCmd::EditCmd(const string intypestr, const string inarg) throw(Exception)
+EditCmd::EditCmd(const string intypestr, const string inarg)
 {
    try {
       string tag(upperCase(intypestr)), arg(inarg);
@@ -1504,7 +1511,7 @@ bool EditCmd::parseTime(const string arg, CommonTime& ttag) throw()
 
 //------------------------------------------------------------------------------
 // dump, with optional message
-string EditCmd::asString(string msg) throw(Exception)
+string EditCmd::asString(string msg)
 {
    try {
       Configuration& C(Configuration::Instance());

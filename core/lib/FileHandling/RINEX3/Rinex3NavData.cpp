@@ -318,13 +318,12 @@ namespace gpstk
        *  FFStream.
        *  If an error is encountered in reading from the stream, the stream
        *  is returned to its original position and its fail-bit is set.
-       *  @throws StringException when a StringUtils function fails.
-       *  @throws FFStreamError when exceptions(failbit) is set and a read
+       *  @throw StringException when a StringUtils function fails.
+       *  @throw FFStreamError when exceptions(failbit) is set and a read
        *          or formatting error occurs. This also resets the stream
        *          to its pre-read position.
        */
    void Rinex3NavData::reallyGetRecord(FFStream& ffs)
-      throw(std::exception, FFStreamError, StringException)
    {
 
       try {
@@ -367,7 +366,6 @@ namespace gpstk
 
       // Outputs the record to the FFStream \a s.
    void Rinex3NavData::reallyPutRecord(FFStream& ffs) const
-      throw(std::exception, FFStreamError, StringException)
    {
 
       try {
@@ -914,7 +912,6 @@ namespace gpstk
        *  @param strm RINEX Nav stream
        */
    void Rinex3NavData::putPRNEpoch(Rinex3NavStream& strm) const
-      throw(StringException)
    {
       string line;
       CivilTime civtime(time);
@@ -972,7 +969,6 @@ namespace gpstk
       //                               after the epoch line.
       //  @param Rinex3NavStream strm  Stream to read from.
    void Rinex3NavData::putRecord(const int& nline, Rinex3NavStream& strm) const
-      throw(StringException, FFStreamError)
    {
 
       if(nline < 1 || nline > 7) {
@@ -1128,7 +1124,6 @@ namespace gpstk
 
 
    void Rinex3NavData::getPRNEpoch(Rinex3NavStream& strm)
-      throw(StringException, FFStreamError)
    {
       try {
          int i;
@@ -1142,10 +1137,10 @@ namespace gpstk
          if(strm.header.version >= 3) {
             // check for spaces in the right spots...
             if(line[3] != ' ')
-               throw(FFStreamError("Badly formatted epoch line"));
+               GPSTK_THROW(FFStreamError("Badly formatted epoch line"));
             for(i = 8; i <= 20; i += 3)
                if(line[i] != ' ')
-                  throw(FFStreamError("Badly formatted epoch line"));
+                  GPSTK_THROW(FFStreamError("Badly formatted epoch line"));
 
             satSys = line.substr(0,1);
             PRNID = asInt(line.substr(1,2));
@@ -1161,7 +1156,7 @@ namespace gpstk
          else {                  // RINEX 2
             for(i=2; i <= 17; i+=3)
                if(line[i] != ' ') {
-                  throw(FFStreamError("Badly formatted epoch line"));
+                  GPSTK_THROW(FFStreamError("Badly formatted epoch line"));
                }
 
             satSys = string(1,strm.header.fileSys[0]);
@@ -1232,7 +1227,6 @@ namespace gpstk
 
 
    void Rinex3NavData::getRecord(const int& nline, Rinex3NavStream& strm)
-      throw(StringException, FFStreamError)
    {
       if(nline < 1 || nline > 7) {
          FFStreamError fse(string("Invalid line number ") + asString(nline));

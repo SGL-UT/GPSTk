@@ -90,21 +90,23 @@ namespace gpstk
                            const std::string progName,
                            const std::string agencyName="") const;
 
-         // Examine the stored data, attempt to find any data sets
-         // that are labeled with the incorrect PRN.  Remove
-         // such data sets.
-      void removeMisTaggedDataSets()
-         throw(InvalidRequest);
+         /** Examine the stored data, attempt to find any data sets
+          * that are labeled with the incorrect PRN.  Remove
+          * such data sets.
+          * @throw InvalidRequest
+          */
+      void removeMisTaggedDataSets();
 
          // Return a bit-encoded count of the number of 
          // parameters that are NOT equal.
       unsigned long countUnequal(const Rinex3NavData& left,
                                  const Rinex3NavData& right);
 
-         // Examine and stored data, fix the transmit times.
-         // Throws an error if it encounters data that cannot be interpreted.
-      void rationalize()
-         throw(InvalidRequest);
+         /** Examine and stored data, fix the transmit times.
+          * @throw InvalidRequest if it encounters data that cannot be
+          *   interpreted.
+          */
+      void rationalize();
 
          // Dump summary of contents of store
       void dump(std::ostream& out=std::cout) const;

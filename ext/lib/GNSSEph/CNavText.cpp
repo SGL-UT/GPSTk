@@ -60,7 +60,6 @@ namespace gpstk
    }
 
    CNavText::CNavText(const PackedNavBits& pnb)
-      throw( InvalidParameter)
    {
       loadData(pnb);
    }
@@ -86,7 +85,6 @@ namespace gpstk
    }
    
    void CNavText::loadData(const PackedNavBits& pnb)
-      throw(InvalidParameter)
    {
          // First, verify the correct message type is being passed in. 
       long msgType = pnb.asUnsignedLong(14,6,1);
@@ -119,7 +117,6 @@ namespace gpstk
    } // end of loadData()
 
    void CNavText::dumpBody(ostream& s) const
-      throw( InvalidRequest )
    {
       if (!dataLoaded())
       {

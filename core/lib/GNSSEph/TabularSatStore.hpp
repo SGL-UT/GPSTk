@@ -170,7 +170,7 @@ namespace gpstk
           *   will be provided by another class which inherits this one.
           */
       virtual DataRecord getValue(const SatID& sat, const CommonTime& ttag)
-         const throw(InvalidRequest) = 0;
+         const = 0;
 
          /** Locate the given time in the DataTable for the given
           * satellite.  Return two const iterators it1 and it2
@@ -213,7 +213,7 @@ namespace gpstk
                                     typename DataTable::const_iterator& it1,
                                     typename DataTable::const_iterator& it2,
                                     bool exactReturn=true)
-         const throw(InvalidRequest)
+         const
       {
          try
          {
@@ -419,7 +419,7 @@ namespace gpstk
                                                typename DataTable::const_iterator& it1,
                                                typename DataTable::const_iterator& it2,
                                                bool exactReturn=true)
-         const throw(InvalidRequest)
+         const
       {
          try
          {
@@ -692,7 +692,7 @@ namespace gpstk
           * stored TimeSystem.
           * @param[in] ts TimeSystem to compare with stored TimeSystem
           * @throw InvalidRequest if time systems are inconsistent */
-      void checkTimeSystem(const TimeSystem& ts) const throw(InvalidRequest)
+      void checkTimeSystem(const TimeSystem& ts) const
       {
          if(ts != TimeSystem::Any && storeTimeSystem != TimeSystem::Any
             && ts != storeTimeSystem)
@@ -706,7 +706,7 @@ namespace gpstk
 
          /** Get the earliest time of data in the data tables.
           * @return the earliest time
-          * @throw InvalidRequest if the store is empty. */
+          */
       CommonTime getInitialTime() const throw()
       {
          CommonTime initialTime(CommonTime::END_OF_TIME);

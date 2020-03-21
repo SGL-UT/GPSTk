@@ -49,7 +49,6 @@ namespace gpstk
 
       // Method to store satellite data in this class' data map
    void SatDataReader::loadData(void)
-      throw(FFStreamError, gpstk::StringUtils::StringException)
    {
 
          // Do this until end-of-file reached or something else happens

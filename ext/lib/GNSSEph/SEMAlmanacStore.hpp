@@ -62,11 +62,16 @@ namespace gpstk
          timeOfInterest = dtInterest;
       }
       
-      void loadFile(const std::string& filename) 
-         throw(FileMissingException);
+         /**
+          * @throw FileMissingException
+          */
+      void loadFile(const std::string& filename);
 
-      bool addAlmanac(const SEMData& sAlmData)
-         throw(InvalidParameter, Exception);
+         /**
+          * @throw InvalidParameter
+          * @throw Exception
+          */
+      bool addAlmanac(const SEMData& sAlmData);
          
       gpstk::CommonTime timeOfInterest;
    };

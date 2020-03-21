@@ -95,10 +95,10 @@ namespace gpstk
       }
 
 
-         /// Constructor from a string.
-
+         /** Constructor from a string.
+          * @throw Exception
+          */
       RinexSatID(const std::string& str)
-         throw(Exception)
       {
          try { fromString(str); }
          catch(Exception& e) { GPSTK_RETHROW(e); }
@@ -190,11 +190,12 @@ namespace gpstk
       };
 
 
-         /// Set the RinexSatID from a string (1 character plus 2-digit integer).
-         /// @note GPS is default system (no or unknown system char)
-
+         /** Set the RinexSatID from a string (1 character plus
+          * 2-digit integer).
+          * @note GPS is default system (no or unknown system char)
+          * @throw Exception
+          */
       void fromString(const std::string& s)
-         throw(Exception)
       {
          char c;
          std::istringstream iss(s);

@@ -138,7 +138,6 @@ namespace gpstk
       // @param elevation Elevation of satellite as seen at receiver, in
       // degrees
    double MOPSTropModel::correction(double elevation) const
-      throw(InvalidTropModel)
    {
       THROW_IF_INVALID_DETAILED();
 
@@ -165,7 +164,6 @@ namespace gpstk
       // @param SV  Satellite position
    double MOPSTropModel::correction( const Position& RX,
                                      const Position& SV )
-      throw(InvalidTropModel)
    {
       try
       {
@@ -206,7 +204,6 @@ namespace gpstk
    double MOPSTropModel::correction( const Position& RX,
                                      const Position& SV,
                                      const CommonTime& tt )
-      throw(InvalidTropModel)
    {
       setDayOfYear(tt);
 
@@ -226,7 +223,6 @@ namespace gpstk
    double MOPSTropModel::correction( const Position& RX,
                                      const Position& SV,
                                      const int& doy )
-      throw(InvalidTropModel)
    {
       setDayOfYear(doy);
 
@@ -244,7 +240,6 @@ namespace gpstk
       // This function is deprecated; use the Position version
    double MOPSTropModel::correction( const Xvt& RX,
                                      const Xvt& SV )
-      throw(InvalidTropModel)
    {
       Position R(RX),S(SV);
 
@@ -265,7 +260,6 @@ namespace gpstk
    double MOPSTropModel::correction( const Xvt& RX,
                                      const Xvt& SV,
                                      const CommonTime& tt )
-      throw(InvalidTropModel)
    {
       setDayOfYear(tt);
       Position R(RX),S(SV);
@@ -288,7 +282,6 @@ namespace gpstk
    double MOPSTropModel::correction( const Xvt& RX,
                                      const Xvt& SV,
                                      const int& doy )
-      throw(InvalidTropModel)
    {
       setDayOfYear(doy);
       Position R(RX),S(SV);
@@ -300,7 +293,6 @@ namespace gpstk
       // Compute and return the zenith delay for the dry component of the
       // troposphere
    double MOPSTropModel::dry_zenith_delay(void) const
-      throw(InvalidTropModel)
    {
       THROW_IF_INVALID();
 
@@ -327,7 +319,6 @@ namespace gpstk
       // Compute and return the zenith delay for the wet component of the
       // troposphere
    double MOPSTropModel::wet_zenith_delay(void) const
-      throw(InvalidTropModel)
    {
       THROW_IF_INVALID();
 
@@ -356,7 +347,6 @@ namespace gpstk
       // latitude and day of year (DOY). It is called automatically when
       // setting those parameters.
    void MOPSTropModel::setWeather()
-      throw(InvalidTropModel)
    {
       if(!validLat)
       {
@@ -498,7 +488,6 @@ namespace gpstk
       // @param elevation  Elevation of satellite as seen at receiver,
       //                   in degrees
    double MOPSTropModel::MOPSsigma2(double elevation)
-      throw(InvalidTropModel)
    {
       double map_f;
 
@@ -522,7 +511,6 @@ namespace gpstk
 
       // The MOPS tropospheric model needs to compute several extra parameters
    void MOPSTropModel::prepareParameters(void)
-      throw(InvalidTropModel)
    {
       THROW_IF_INVALID();
 

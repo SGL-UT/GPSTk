@@ -415,23 +415,25 @@ namespace gpstk
          /** This method returns the numerical index of a given observation
           *
           * @param[in] type String representing the observation type.
+          * @throw InvalidRequest
           */
-      virtual std::size_t getObsIndex(const std::string& type ) const
-         throw(InvalidRequest);
+      virtual std::size_t getObsIndex(const std::string& type ) const;
 
          /** This method returns the numerical index of a given observation
           *
           * @param[in] sys   GNSS system character for the obs
           * @param[in] obsID RinexObsID of the observation
+          * @throw InvalidRequest
           */
-      virtual std::size_t getObsIndex(const std::string& sys, const RinexObsID& obsID ) const
-         throw(InvalidRequest);
+      virtual std::size_t getObsIndex(const std::string& sys,
+                                      const RinexObsID& obsID ) const;
 
          /** Parse a single header record, and modify valid
           * accordingly.  Used by reallyGetRecord for both
-          * Rinex3ObsHeader and Rinex3ObsData. */
-      void parseHeaderRecord(std::string& line)
-         throw(FFStreamError);
+          * Rinex3ObsHeader and Rinex3ObsData. 
+          * @throw FFStreamError
+          */
+      void parseHeaderRecord(std::string& line);
 
          /** Compute number of valid header records that
           * writeHeaderRecords() will write */
@@ -439,9 +441,11 @@ namespace gpstk
 
          /** Write all valid header records to the given stream.  Used
           * by reallyPutRecord for both Rinex3ObsHeader and
-          * Rinex3ObsData. */
-      void writeHeaderRecords(FFStream& s) const
-         throw(FFStreamError, gpstk::StringUtils::StringException);
+          * Rinex3ObsData.
+          * @throw FFStreamError
+          * @throw StringUtils::StringException
+          */
+      void writeHeaderRecords(FFStream& s) const;
 
          /// Return boolean : is this a valid Rinex header?
       bool isValid() const
@@ -479,33 +483,35 @@ namespace gpstk
    protected:
 
 
-         /// outputs this record to the stream correctly formatted.
-      virtual void reallyPutRecord(FFStream& s) const
-         throw(std::exception, FFStreamError,
-               gpstk::StringUtils::StringException);
+         /** outputs this record to the stream correctly formatted.
+          * @throw std::exception
+          * @throw FFStreamError
+          * @throw StringUtils::StringException
+          */
+      virtual void reallyPutRecord(FFStream& s) const;
 
          /** This function retrieves the RINEX Header from the given FFStream.
           * If an stream error is encountered, the stream is reset to its
           *  original position and its fail-bit is set.
+          * @throw std::exception
           * @throw StringException when a StringUtils function fails
           * @throw FFStreamError when exceptions(failbit) is set and
           *  a read or formatting error occurs.  This also resets the
           *  stream to its pre-read position. */
-      virtual void reallyGetRecord(FFStream& s)
-         throw(std::exception, FFStreamError,
-               gpstk::StringUtils::StringException);
+      virtual void reallyGetRecord(FFStream& s);
 
 
-         /// Helper methods
-         /// The conversion between RINEX v2.11 to RINEX v3 observation
-         /// type is fraught with system-specific idiosyncracies.   These 
-         /// methods read the list of v2.11 obs types stored in R2ObsTypes
-         /// and attempt to build a corresponding list of v3 observation
-         /// types where appropriate.
-      std::vector<RinexObsID> mapR2ObsToR3Obs_G() throw(FFStreamError);
-      std::vector<RinexObsID> mapR2ObsToR3Obs_R() throw(FFStreamError);
-      std::vector<RinexObsID> mapR2ObsToR3Obs_E() throw(FFStreamError);
-      std::vector<RinexObsID> mapR2ObsToR3Obs_S() throw(FFStreamError);
+         /** Helper methods
+          * The conversion between RINEX v2.11 to RINEX v3 observation
+          * type is fraught with system-specific idiosyncracies.   These 
+          * methods read the list of v2.11 obs types stored in R2ObsTypes
+          * and attempt to build a corresponding list of v3 observation
+          * types where appropriate.
+          * @throw FFStreamError */
+      std::vector<RinexObsID> mapR2ObsToR3Obs_G();
+      std::vector<RinexObsID> mapR2ObsToR3Obs_R();
+      std::vector<RinexObsID> mapR2ObsToR3Obs_E();
+      std::vector<RinexObsID> mapR2ObsToR3Obs_S();
 
       friend class Rinex3ObsData;
 

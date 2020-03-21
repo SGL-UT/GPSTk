@@ -165,8 +165,8 @@ namespace gpstk
       // @param day Day of year.
    NBTropModel::NBTropModel(const double& lat,
                             const int& day)
-      throw(InvalidParameter):
-      validWeather(false), validRxLatitude(false), validDOY(false),validRxHeight(false)
+         : validWeather(false), validRxLatitude(false), validDOY(false),
+           validRxHeight(false)
    {
       setReceiverLatitude(lat);
       setDayOfYear(day);
@@ -180,8 +180,8 @@ namespace gpstk
    NBTropModel::NBTropModel(const double& lat,
                             const int& day,
                             const WxObservation& wx)
-      throw(InvalidParameter):
-      validWeather(false), validRxLatitude(false), validDOY(false),validRxHeight(false)
+         : validWeather(false), validRxLatitude(false), validDOY(false),
+           validRxHeight(false)
    {
       setReceiverLatitude(lat);
       setDayOfYear(day);
@@ -199,8 +199,8 @@ namespace gpstk
                             const double& T,
                             const double& P,
                             const double& H)
-      throw(InvalidParameter):
-      validWeather(false), validRxLatitude(false), validDOY(false),validRxHeight(false)
+         : validWeather(false), validRxLatitude(false), validDOY(false),
+           validRxHeight(false)
    {
       setReceiverLatitude(lat);
       setDayOfYear(day);
@@ -215,8 +215,8 @@ namespace gpstk
    NBTropModel::NBTropModel(const double& ht,
                             const double& lat,
                             const int& day)
-      throw(InvalidParameter):
-      validWeather(false), validRxLatitude(false), validDOY(false),validRxHeight(false)
+         : validWeather(false), validRxLatitude(false), validDOY(false),
+           validRxHeight(false)
    {
       setReceiverHeight(ht);
       setReceiverLatitude(lat);
@@ -226,7 +226,6 @@ namespace gpstk
 
       // re-define this to get the throws
    double NBTropModel::correction(double elevation) const
-      throw(InvalidTropModel)
    {
       THROW_IF_INVALID_DETAILED();
 
@@ -248,7 +247,6 @@ namespace gpstk
    double NBTropModel::correction(const Position& RX,
                                   const Position& SV,
                                   const CommonTime& tt)
-      throw(InvalidTropModel)
    {
       THROW_IF_INVALID_DETAILED();
 
@@ -275,7 +273,6 @@ namespace gpstk
    double NBTropModel::correction(const Xvt& RX,
                                   const Xvt& SV,
                                   const CommonTime& tt)
-      throw(InvalidTropModel)
    {
       Position R(RX),S(SV);
       return NBTropModel::correction(R,S,tt);
@@ -283,7 +280,6 @@ namespace gpstk
 
       // Compute and return the zenith delay for dry component of the troposphere
    double NBTropModel::dry_zenith_delay(void) const
-      throw(InvalidTropModel)
    {
       THROW_IF_INVALID_DETAILED();
       
@@ -303,7 +299,6 @@ namespace gpstk
 
       // Compute and return the zenith delay for wet component of the troposphere
    double NBTropModel::wet_zenith_delay(void) const
-      throw(InvalidTropModel)
    {
       THROW_IF_INVALID_DETAILED();
       
@@ -327,7 +322,6 @@ namespace gpstk
       // @param elevation Elevation of satellite as seen at receiver,
       //                  in degrees
    double NBTropModel::dry_mapping_function(double elevation) const
-      throw(InvalidTropModel)
    {
       THROW_IF_INVALID_DETAILED();
       
@@ -356,7 +350,6 @@ namespace gpstk
       // @param elevation Elevation of satellite as seen at receiver,
       //                  in degrees
    double NBTropModel::wet_mapping_function(double elevation) const
-      throw(InvalidTropModel)
    {
       THROW_IF_INVALID_DETAILED();
       
@@ -380,7 +373,6 @@ namespace gpstk
    void NBTropModel::setWeather(const double& T,
                                 const double& P,
                                 const double& H)
-      throw(InvalidParameter)
    {
       interpolateWeather=false;
       TropModel::setWeather(T,P,H);
@@ -396,7 +388,6 @@ namespace gpstk
       // Typically called just before correction().
       // @param wx the weather to use for this correction
    void NBTropModel::setWeather(const WxObservation& wx)
-      throw(InvalidParameter)
    {
       interpolateWeather = false;
       try
@@ -418,7 +409,6 @@ namespace gpstk
       // configure the model to estimate the weather from the internal model,
       // using lat and doy
    void NBTropModel::setWeather()
-      throw(InvalidTropModel)
    {
       interpolateWeather = true;
 

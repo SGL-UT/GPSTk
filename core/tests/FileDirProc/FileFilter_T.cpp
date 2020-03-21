@@ -92,13 +92,11 @@ private:
    private:
 
       virtual void reallyGetRecord(FFStream& s)
-         throw(std::exception, gpstk::StringUtils::StringException, 
-               gpstk::FFStreamError) { /* do nothing */ }
+      { /* do nothing */ }
 
          /// Does the actual writing from the stream into this FFData object.
       virtual void reallyPutRecord(FFStream& s) const
-         throw(std::exception, gpstk::StringUtils::StringException, 
-               gpstk::FFStreamError) { /* do nothing */ }
+      { /* do nothing */ }
 
    }; // class Dummy
 

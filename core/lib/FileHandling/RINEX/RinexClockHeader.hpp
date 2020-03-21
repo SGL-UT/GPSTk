@@ -215,22 +215,25 @@ namespace gpstk
 
 
    protected:
-         /// outputs this record to the stream correctly formatted.
-      virtual void reallyPutRecord(FFStream& s) const
-         throw(std::exception, FFStreamError, StringUtils::StringException);
+         /** outputs this record to the stream correctly formatted.
+          * @throw std::exception
+          * @throw FFStreamError
+          * @throw StringUtils::StringException
+          */
+      virtual void reallyPutRecord(FFStream& s) const;
       
          /**
           * This function retrieves the RINEX Clock Header from the 
           * given FFStream.
           * If an stream error is encountered, the stream is reset to its
           * original position and its fail-bit is set.
-          * @throws StringException when a StringUtils function fails
-          * @throws FFStreamError when exceptions(failbit) is set and
+          * @throw std::exception
+          * @throw StringException when a StringUtils function fails
+          * @throw FFStreamError when exceptions(failbit) is set and
           * a read or formatting error occurs.  This also resets the
           * stream to its pre-read position.
           */
-      virtual void reallyGetRecord(FFStream& s)
-         throw(std::exception, FFStreamError,StringUtils::StringException);
+      virtual void reallyGetRecord(FFStream& s);
 
          /// Clears all header values and lists.
       void clear();
@@ -240,9 +243,9 @@ namespace gpstk
          /**
           * Parse a single header record, and modify valid accordingly.
           * Used by reallyGetRecord
+          * @throw FFStreamError
           */
-      void ParseHeaderRecord(const std::string& line)
-         throw(FFStreamError);
+      void ParseHeaderRecord(const std::string& line);
     
    }; // RinexClockHeader
 

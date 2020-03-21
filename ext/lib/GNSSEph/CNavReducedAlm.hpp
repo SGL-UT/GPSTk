@@ -61,30 +61,37 @@ namespace gpstk
          /// Default constructor
       CNavReducedAlm();
 
-         // AlmType  - Denotes CNAV or CNAV-2
-         // ctAlm    - Epoch time of almanac (toa) as provided in full message.
-         // pnb      - CNAV MT31, CNAV 12, or CNAV-2 subframe 3, page 3. 
-         // startBit - Location within pnb where packet to be cracked starts.  
-         //            This is a zero-based index.
+         /** AlmType  - Denotes CNAV or CNAV-2
+          * ctAlm    - Epoch time of almanac (toa) as provided in full message.
+          * pnb      - CNAV MT31, CNAV 12, or CNAV-2 subframe 3, page 3. 
+          * startBit - Location within pnb where packet to be cracked starts.  
+          *            This is a zero-based index.
+          * @throw InvalidParameter
+          */
       CNavReducedAlm(const AlmType almType, const CommonTime& ctAlm, 
-                     const PackedNavBits& pnb, const unsigned int startBit)
-         throw(InvalidParameter);
+                     const PackedNavBits& pnb, const unsigned int startBit);
   
-      void loadData(const AlmType, const CommonTime& ctAlm, const PackedNavBits& pnb, const unsigned int startBit)
-         throw(InvalidParameter);
+         /**
+          * @throw InvalidParameter
+          */
+      void loadData(const AlmType, const CommonTime& ctAlm, const PackedNavBits& pnb, const unsigned int startBit);
 
       bool isSameData(const CNavReducedAlm& right) const;      
 
          /** Output the contents of this orbit data to the given stream.
-          * @throw Invalid Request if the required data has not been stored.
+          * @throw InvalidRequest if the required data has not been stored.
           */
-      virtual void dumpTerse(std::ostream& s = std::cout) const
-         throw( InvalidRequest );
+      virtual void dumpTerse(std::ostream& s = std::cout) const;
 
+         /**
+          * @throw InvalidRequest
+          */
       static void dumpHeader(std::ostream& s = std::cout);
 
-      virtual void dumpBody(std::ostream& s = std::cout) const
-         throw( InvalidRequest );
+         /**
+          * @throw InvalidRequest
+          */
+      virtual void dumpBody(std::ostream& s = std::cout) const;
 
       CommonTime ctAlmEpoch;
       SatID  subjSv;

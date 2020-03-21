@@ -92,14 +92,16 @@ namespace gpstk
       /// @return true if the file is a valid Rinex observation file.
    bool isRinex3ObsFile(const std::string& file);
 
-      /// Sort a vector of RINEX obs file names on the time of the
-      /// first observation as found in the header. Return the sorted
-      /// list in the calling argument.  Do not include files that are
-      /// found not to be RINEX obs files, or that have invalid
-      /// headers.
-      /// @param files  vector<string> containing filenames, with path
-      /// @return string containing error messages, if any
-   std::string sortRinexObsFiles(std::vector<std::string>& files) throw(Exception);
+      /** Sort a vector of RINEX obs file names on the time of the
+       * first observation as found in the header. Return the sorted
+       * list in the calling argument.  Do not include files that are
+       * found not to be RINEX obs files, or that have invalid
+       * headers.
+       * @param files  vector<string> containing filenames, with path
+       * @return string containing error messages, if any
+       * @throw Exception
+       */
+   std::string sortRinexObsFiles(std::vector<std::string>& files);
 
       /// Sort a vector of RINEX 3 obs file names on the time of the
       /// first observation as found in the header. Return the sorted

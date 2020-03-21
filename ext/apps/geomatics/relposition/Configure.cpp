@@ -70,14 +70,29 @@ SaasTropModel TropModelSaas;
 
 //------------------------------------------------------------------------------------
 // prototypes -- this module only
-int Initialize(void) throw(Exception);
-int UpdateConfig(void) throw(Exception);
+/**
+ * @throw Exception
+ */
+int Initialize(void);
+/**
+ * @throw Exception
+ */
+int UpdateConfig(void);
+/**
+ * @throw Exception
+ */
 void ReadAllObsHeaders();                            // ReadObsFiles.cpp
-int ConfigureEstimation(void) throw(Exception);      // Estimation.cpp
-int ConfigureStochasticModel(void) throw(Exception); // StochasticModels.cpp
+/**
+ * @throw Exception
+ */
+int ConfigureEstimation(void);      // Estimation.cpp
+/**
+ * @throw Exception
+ */
+int ConfigureStochasticModel(void); // StochasticModels.cpp
 
 //------------------------------------------------------------------------------------
-int Configure(int which) throw(Exception)
+int Configure(int which)
 {
 try {
    if(which == 1) return Initialize();
@@ -99,7 +114,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // Configure(1)
 // open and read navigation files
 // open and read headers of all observation files
-int Initialize(void) throw(Exception)
+int Initialize(void)
 {
 try {
    size_t i;
@@ -248,7 +263,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 //------------------------------------------------------------------------------------
 // Configure(2)
-int UpdateConfig(void) throw(Exception)
+int UpdateConfig(void)
 {
 try {
    if(CI.Verbose) oflog << "BEGIN Configure(2)"

@@ -77,7 +77,6 @@ namespace gpstk
        * @param str the string to read from.
        */
       virtual void decode(const std::string& str)
-         throw(std::exception, FFStreamError)
       {std::cout<<"AshtechData::decode()"<<std::endl;}
 
       /// Simple accessors for various static thangs.
@@ -105,22 +104,33 @@ namespace gpstk
       static const std::string trailer;
 
    protected:
+         /**
+          * @throw FFStreamError
+          */
       virtual void reallyPutRecord(FFStream& ffs) const
-         throw(std::exception, StringUtils::StringException, 
-               FFStreamError)
       {
          gpstk::FFStreamError e("Writing of AshtecData is not supported.");
          GPSTK_THROW(e);
       }
 
-      virtual void reallyGetRecord(FFStream& ffs)
-         throw(std::exception, FFStreamError, EndOfFile);
+         /**
+          * @throw std::exception
+          * @throw FFStreamError
+          * @throw EndOfFile
+          */
+      virtual void reallyGetRecord(FFStream& ffs);
 
-      virtual void readHeader(AshtechStream& stream)
-         throw(FFStreamError, EndOfFile);
+         /**
+          * @throw FFStreamError
+          * @throw EndOfFile
+          */
+      virtual void readHeader(AshtechStream& stream);
 
-      virtual void readBody(AshtechStream& stream)
-         throw(FFStreamError, EndOfFile);
+         /**
+          * @throw FFStreamError
+          * @throw EndOfFile
+          */
+      virtual void readBody(AshtechStream& stream);
       
    }; // class AshtechData
 } // namespace gpstk

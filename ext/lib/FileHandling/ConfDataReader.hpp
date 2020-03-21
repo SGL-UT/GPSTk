@@ -209,24 +209,22 @@ namespace gpstk
           *
           * @param variable   Variable name.
           * @param section    Section the variable belongs to.
-          *
+          * @throw ConfigurationException
           */
       virtual std::string getValue( std::string variable,
                                     std::string section = "DEFAULT",
-                                    std::string defaultVal = "")
-         throw(ConfigurationException);
+                                    std::string defaultVal = "");
 
 
          /** Method to get the value of a given variable as a double
           *
           * @param variable   Variable name.
           * @param section    Section the variable belongs to.
-          *
+          * @throw ConfigurationException
           */
       virtual double getValueAsDouble( std::string variable,
                                        std::string section = "DEFAULT",
                                        double defaultVal = 0.0)
-         throw(ConfigurationException)
       { 
          return StringUtils::asDouble( 
                getValue(variable, section, StringUtils::asString(defaultVal)) ); 
@@ -237,12 +235,11 @@ namespace gpstk
           *
           * @param variable   Variable name.
           * @param section    Section the variable belongs to.
-          *
+          * @throw ConfigurationException
           */
       virtual int getValueAsInt( std::string variable,
                                  std::string section = "DEFAULT",
                                  int    defaultVal = 0 )
-         throw(ConfigurationException)
       { 
          return StringUtils::asInt( 
                   getValue(variable, section, StringUtils::asString(defaultVal)) ); 
@@ -253,12 +250,11 @@ namespace gpstk
           *
           * @param variable   Variable name.
           * @param section    Section the variable belongs to.
-          *
+          * @throw ConfigurationException
           */
       virtual bool getValueAsBoolean( std::string variable,
                                       std::string section = "DEFAULT", 
-                                      bool   defaultVal = false )
-         throw(ConfigurationException);
+                                      bool   defaultVal = false );
 
 
          /** Method to fetch (as string) the first value of a given
@@ -269,14 +265,13 @@ namespace gpstk
           *
           * @param variableList   Variable list name.
           * @param section        Section the variable list belongs to.
-          *
+          * @throw ConfigurationException
           * \warning This method will MODIFY the original content of
           * 'variableList'.
           */
       virtual std::string fetchListValue( std::string variableList,
                                           std::string section = "DEFAULT",
-                                          std::string defaultVal = "" )
-         throw(ConfigurationException);
+                                          std::string defaultVal = "" );
 
 
          /** Method to fetch (as double) the first value of a given
@@ -287,14 +282,13 @@ namespace gpstk
           *
           * @param variableList   Variable list name.
           * @param section        Section the variable list belongs to.
-          *
+          * @throw ConfigurationException
           * \warning This method will MODIFY the original content of
           * 'variableList'.
           */
       virtual double fetchListValueAsDouble( std::string variableList,
                                              std::string section = "DEFAULT",
                                              double defaultVal = 0.0 )
-         throw(ConfigurationException)
       { 
          return StringUtils::asDouble( 
          fetchListValue(variableList,section,StringUtils::asString(defaultVal))); 
@@ -309,14 +303,13 @@ namespace gpstk
           *
           * @param variableList   Variable list name.
           * @param section        Section the variable list belongs to.
-          *
+          * @throw ConfigurationException
           * \warning This method will MODIFY the original content of
           * 'variableList'.
           */
       virtual int fetchListValueAsInt( std::string variableList,
                                        std::string section = "DEFAULT",
                                        int    defaultVal = 0 )
-         throw(ConfigurationException)
       { 
          return StringUtils::asInt( 
          fetchListValue(variableList,section,StringUtils::asString(defaultVal))); 
@@ -331,7 +324,7 @@ namespace gpstk
           *
           * @param variableList   Variable list name.
           * @param section        Section the variable list belongs to.
-          *
+          * @throw ConfigurationException
           * \warning This method will MODIFY the original content of
           * 'variableList'.
           *
@@ -339,8 +332,7 @@ namespace gpstk
           */
       virtual bool fetchListValueAsBoolean( std::string variableList,
                                             std::string section = "DEFAULT",
-                                            bool   defaultVal = false)
-         throw(ConfigurationException);
+                                            bool   defaultVal = false);
 
 
          /** Method to get the number of items in a given variable list.
@@ -350,11 +342,10 @@ namespace gpstk
           *
           * @param variableList   Variable list name.
           * @param section        Section the variable list belongs to.
-          *
+          * @throw ConfigurationException
           */
       virtual int getNumItem( std::string variableList,
                               std::string section = "DEFAULT" )
-         throw(ConfigurationException)
       { return StringUtils::numWords( getValue( variableList, section ) ); };
 
 
@@ -362,22 +353,20 @@ namespace gpstk
           *
           * @param variable   Variable name.
           * @param section    Section the variable belongs to.
-          *
+          * @throw ConfigurationException
           */
       virtual std::string getVariableDescription( std::string variable,
-                                                  std::string section = "DEFAULT" )
-         throw(ConfigurationException);
+                                                  std::string section = "DEFAULT" );
 
 
          /** Method to get the description of a given value
           *
           * @param variable   Variable name.
           * @param section    Section the variable belongs to.
-          *
+          * @throw ConfigurationException
           */
       virtual std::string getValueDescription( std::string variable,
-                                               std::string section = "DEFAULT" )
-         throw(ConfigurationException);
+                                               std::string section = "DEFAULT" );
 
 
          /** Method to get whether an exception will be issued
@@ -433,22 +422,20 @@ namespace gpstk
           *
           * @param variable   Variable name.
           * @param section    Section the variable belongs to.
-          *
+          * @throw ConfigurationException
           */
       virtual bool ifExist( std::string variable,
-                            std::string section = "DEFAULT" )
-         throw(ConfigurationException);
+                            std::string section = "DEFAULT" );
 
 
          /** Operator to get the value of a given variable as a string
           *
           * @param variable   Variable name.
           * @param section    Section the variable belongs to.
-          *
+          * @throw ConfigurationException
           */
       virtual std::string operator()( std::string variable,
                                       std::string section = "DEFAULT" )
-         throw(ConfigurationException)
       { return getValue(variable, section); };
 
 
@@ -504,9 +491,10 @@ namespace gpstk
       virtual bool checkName(std::string name);
 
 
-         /// Method to store conf data in this class' data map
-      virtual void loadData(void)
-         throw(ConfigurationException);
+         /** Method to store conf data in this class' data map
+          * @throw ConfigurationException
+          */
+      virtual void loadData(void);
 
 
    }; // End of class 'ConfDataReader'

@@ -270,22 +270,22 @@ namespace gpstk
 
          /**
           * This function converts the string in \a oneObs to a RinexObsType.
+          * @throw FFStreamError
           */
-      static RinexObsType convertObsType(const std::string& oneObs)
-         throw(FFStreamError);
+      static RinexObsType convertObsType(const std::string& oneObs);
 
          /**
           * This function converts the RinexObsType in \a oneObs to a string.
+          * @throw FFStreamError
           */
-      static std::string convertObsType(const RinexObsType& oneObs)
-         throw(FFStreamError);
+      static std::string convertObsType(const RinexObsType& oneObs);
 
          /**
           * Parse a single header record, and modify valid accordingly.
           * Used by reallyGetRecord for both RinexObsHeader and RinexObsData.
+          * @throw FFStreamError
           */
-      void ParseHeaderRecord(std::string& line)
-         throw(FFStreamError);
+      void ParseHeaderRecord(std::string& line);
 
          /// Compute the number of valid header records which WriteHeaderRecords() will write
       int NumberHeaderRecordsToBeWritten(void) const throw();
@@ -293,9 +293,10 @@ namespace gpstk
          /**
           * Write all valid header records to the given stream.
           * Used by reallyPutRecord for both RinexObsHeader and RinexObsData.
+          * @throw FFStreamError
+          * @throw StringUtils::StringException
           */
-      void WriteHeaderRecords(FFStream& s) const
-         throw(FFStreamError, gpstk::StringUtils::StringException);
+      void WriteHeaderRecords(FFStream& s) const;
 
          /// Return boolean : is this a valid Rinex header?
       bool isValid() const { return ((valid & allValid20) == allValid20); }
@@ -303,23 +304,23 @@ namespace gpstk
    protected:
          /**
           * outputs this record to the stream correctly formatted.
+          * @throw std::exception
+          * @throw StringUtils::StringException
+          * @throw FFStreamError
           */
-      virtual void reallyPutRecord(FFStream& s) const
-         throw(std::exception, FFStreamError,
-               gpstk::StringUtils::StringException);
+      virtual void reallyPutRecord(FFStream& s) const;
 
          /**
           * This function retrieves the RINEX Header from the given FFStream.
           * If an stream error is encountered, the stream is reset to its
           *  original position and its fail-bit is set.
-          * @throws StringException when a StringUtils function fails
-          * @throws FFStreamError when exceptions(failbit) is set and
+          * @throw std::exception
+          * @throw StringException when a StringUtils function fails
+          * @throw FFStreamError when exceptions(failbit) is set and
           *  a read or formatting error occurs.  This also resets the
           *  stream to its pre-read position.
           */
-      virtual void reallyGetRecord(FFStream& s)
-         throw(std::exception, FFStreamError,
-               gpstk::StringUtils::StringException);
+      virtual void reallyGetRecord(FFStream& s);
 
       friend class RinexObsData;
 

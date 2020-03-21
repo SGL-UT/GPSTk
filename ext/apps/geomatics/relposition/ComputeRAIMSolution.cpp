@@ -58,7 +58,6 @@ using namespace gpstk;
 //------------------------------------------------------------------------------------
 // called by ProcessRawData
 int ComputeRAIMSolution(ObsFile& of, CommonTime& tt, vector<SatID>& Sats, ofstream *pofs)
-   throw(Exception)
 {
 try {
    int nsvs,iret;
@@ -174,7 +173,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }   // end ComputeRAIMSolution()
 
 //------------------------------------------------------------------------------------
-void RAIMedit(ObsFile& of, vector<SatID>& Sats) throw(Exception)
+void RAIMedit(ObsFile& of, vector<SatID>& Sats)
 {
 try {
    size_t i;

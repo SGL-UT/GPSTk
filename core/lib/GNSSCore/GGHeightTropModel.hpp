@@ -78,43 +78,48 @@ namespace gpstk
          /// Empty constructor
       GGHeightTropModel(void);
 
-         /// Creates a trop model, with weather observation input
-         /// @param wx the weather to use for this correction.
-      GGHeightTropModel(const WxObservation& wx)
-         throw(InvalidParameter);
+         /** Creates a trop model, with weather observation input
+          * @param wx the weather to use for this correction.
+          * @throw InvalidParameter
+          */
+      GGHeightTropModel(const WxObservation& wx);
 
-         /// Create a tropospheric model from explicit weather data
-         /// @param T temperature in degrees Celsius
-         /// @param P atmospheric pressure in millibars
-         /// @param H relative humidity in percent
+         /** Create a tropospheric model from explicit weather data
+          * @param T temperature in degrees Celsius
+          * @param P atmospheric pressure in millibars
+          * @param H relative humidity in percent
+          * @throw InvalidParameter
+          */
       GGHeightTropModel(const double& T,
                         const double& P,
-                        const double& H)
-         throw(InvalidParameter);
+                        const double& H);
 
-         /// Create a valid model from explicit input.
-         /// @param T temperature in degrees Celsius
-         /// @param P atmospheric pressure in millibars
-         /// @param H relative humidity in percent
-         /// @param hT height at which temperature applies in meters.
-         /// @param hP height at which atmospheric pressure applies in meters.
-         /// @param hH height at which relative humidity applies in meters.
+         /** Create a valid model from explicit input.
+          * @param T temperature in degrees Celsius
+          * @param P atmospheric pressure in millibars
+          * @param H relative humidity in percent
+          * @param hT height at which temperature applies in meters.
+          * @param hP height at which atmospheric pressure applies in meters.
+          * @param hH height at which relative humidity applies in meters.
+          * @throw InvalidParameter
+          */
       GGHeightTropModel(const double& T,
                         const double& P,
                         const double& H,
                         const double hT,
                         const double hP,
-                        const double hH)
-         throw(InvalidParameter);
+                        const double hH);
 
          /// Return the name of the model
       virtual std::string name(void)
-         { return std::string("GGHeight"); }
+      { return std::string("GGHeight"); }
 
-         /// Compute and return the full tropospheric delay
-         /// @param elevation Elevation of satellite as seen at receiver, in degrees
-      virtual double correction(double elevation) const
-         throw(InvalidTropModel);
+         /** Compute and return the full tropospheric delay
+          * @param elevation Elevation of satellite as seen at
+          *   receiver, in degrees
+          * @throw InvalidTropModel
+          */
+      virtual double correction(double elevation) const;
 
          /**
           * Compute and return the full tropospheric delay, given the positions of
@@ -126,11 +131,11 @@ namespace gpstk
           * @param RX  Receiver position
           * @param SV  Satellite position
           * @param tt  Time tag of the signal
+          * @throw InvalidTropModel
           */
       virtual double correction(const Position& RX,
                                 const Position& SV,
-                                const CommonTime& tt)
-         throw(InvalidTropModel);
+                                const CommonTime& tt);
 
          /** \deprecated
           * Compute and return the full tropospheric delay, given the positions of
@@ -142,48 +147,56 @@ namespace gpstk
           * @param RX  Receiver position in ECEF cartesian coordinates (meters)
           * @param SV  Satellite position in ECEF cartesian coordinates (meters)
           * @param tt  Time tag of the signal
+          * @throw InvalidTropModel
           */
       virtual double correction(const Xvt& RX,
                                 const Xvt& SV,
-                                const CommonTime& tt)
-         throw(InvalidTropModel);
+                                const CommonTime& tt);
 
-         /// Compute and return the zenith delay for dry component
-         /// of the troposphere
-      virtual double dry_zenith_delay(void) const
-         throw(InvalidTropModel);
+         /** Compute and return the zenith delay for dry component
+          * of the troposphere
+          * @throw InvalidTropModel
+          */
+      virtual double dry_zenith_delay(void) const;
 
-         /// Compute and return the zenith delay for wet component of the troposphere
-      virtual double wet_zenith_delay(void) const
-         throw(InvalidTropModel);
+         /** Compute and return the zenith delay for wet component of
+          * the troposphere
+          * @throw InvalidTropModel */
+      virtual double wet_zenith_delay(void) const;
 
-         /// Compute and return the mapping function for dry component of
-         /// the troposphere.
-         /// @param elevation Elevation of satellite as seen at receiver, in degrees
-      virtual double dry_mapping_function(double elevation) const
-         throw(InvalidTropModel);
+         /** Compute and return the mapping function for dry component of
+          * the troposphere.
+          * @param elevation Elevation of satellite as seen at
+          *   receiver, in degrees
+          * @throw InvalidTropModel
+          */
+      virtual double dry_mapping_function(double elevation) const;
 
-         /// Compute and return the mapping function for wet component of
-         /// the troposphere.
-         /// @param elevation Elevation of satellite as seen at receiver, in degrees
-      virtual double wet_mapping_function(double elevation) const
-         throw(InvalidTropModel);
+         /** Compute and return the mapping function for wet component of
+          * the troposphere.
+          * @param elevation Elevation of satellite as seen at
+          *   receiver, in degrees
+          * @throw InvalidTropModel
+          */
+      virtual double wet_mapping_function(double elevation) const;
 
-         /// Re-define the weather data.
-         /// Typically called initially, and whenever the weather changes.
-         /// @param T temperature in degrees Celsius
-         /// @param P atmospheric pressure in millibars
-         /// @param H relative humidity in percent
+         /** Re-define the weather data.
+          * Typically called initially, and whenever the weather changes.
+          * @param T temperature in degrees Celsius
+          * @param P atmospheric pressure in millibars
+          * @param H relative humidity in percent
+          * @throw InvalidParameter
+          */
       virtual void setWeather(const double& T,
                               const double& P,
-                              const double& H)
-         throw(InvalidParameter);
+                              const double& H);
 
-         /// Re-define the tropospheric model with explicit weather data.
-         /// Typically called just before correction().
-         /// @param wx the weather to use for this correction
-      virtual void setWeather(const WxObservation& wx)
-         throw(InvalidParameter);
+         /** Re-define the tropospheric model with explicit weather data.
+          * Typically called just before correction().
+          * @param wx the weather to use for this correction
+          * @throw InvalidParameter
+          */
+      virtual void setWeather(const WxObservation& wx);
 
          /// Re-define the heights at which the weather parameters apply.
          /// Typically called whenever setWeather is called.

@@ -69,7 +69,6 @@ namespace gpstk
        */
    Triple SolidTides::getSolidTide(const CommonTime& t,
                                    const Position& p) const
-      throw(InvalidRequest)
    {
 
          // We will store here the results

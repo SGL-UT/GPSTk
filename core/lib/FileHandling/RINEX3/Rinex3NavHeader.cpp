@@ -111,7 +111,7 @@ namespace gpstk
 
 
    void IonoCorr ::
-   fromString(const std::string str) throw(Exception)
+   fromString(const std::string str)
    {
       std::string STR(gpstk::StringUtils::upperCase(str));
       if (STR == std::string("GAL"))
@@ -160,7 +160,6 @@ namespace gpstk
 
 
    void Rinex3NavHeader::reallyGetRecord(FFStream& ffs) 
-      throw(std::exception, FFStreamError, StringException)
    {
       Rinex3NavStream& strm = dynamic_cast<Rinex3NavStream&>(ffs);
    
@@ -416,7 +415,7 @@ namespace gpstk
          }
          else
          {
-            throw(FFStreamError("Unknown header label >" + thisLabel +
+            GPSTK_THROW(FFStreamError("Unknown header label >" + thisLabel +
                                 "< at line " +
                                 asString<size_t>(strm.lineNumber)));
          }
@@ -447,7 +446,6 @@ namespace gpstk
 
       //-----------------------------------------------------------------------
    void Rinex3NavHeader::reallyPutRecord(FFStream& ffs) const
-      throw(std::exception, FFStreamError, StringException)
    {
       Rinex3NavStream& strm = dynamic_cast<Rinex3NavStream&>(ffs);
 
@@ -784,7 +782,6 @@ namespace gpstk
 
 
    void Rinex3NavHeader::setFileSystem(const std::string& str)
-      throw(Exception)
    {
       try
       {

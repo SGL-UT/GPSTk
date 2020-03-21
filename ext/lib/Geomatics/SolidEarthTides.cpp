@@ -82,7 +82,6 @@ namespace gpstk
                                  const double EMRAT,
                                  const double SERAT,
                                  const IERSConvention iers)
-      throw(Exception)
    {
    try {
       //if(ttag.getTimeSystem() == TimeSystem::Unknown) {
@@ -607,7 +606,6 @@ namespace gpstk
    Triple computePolarTides(const Position site, const EphTime ttag,
                             const double xp, const double yp,
                             const IERSConvention iers)
-      throw(Exception)
    {
    try {
       double m1, m2, upcoef;

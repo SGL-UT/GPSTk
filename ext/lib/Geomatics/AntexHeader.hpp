@@ -114,31 +114,35 @@ namespace gpstk
 
          /// Parse a single header record, and modify valid accordingly.
          /// Used by reallyGetRecord for AntexHeader
-      void ParseHeaderRecord(std::string& line)
-         throw(FFStreamError);
+         /// @throw FFStreamError
+      void ParseHeaderRecord(std::string& line);
 
          /// Write all valid header records to the given stream.
          /// Used by reallyPutRecord for AntexHeader
-      void WriteHeaderRecords(FFStream& s) const
-         throw(FFStreamError, StringUtils::StringException);
+         /// @throw FFSTreamError
+         /// @throw StringUtils::StringException
+      void WriteHeaderRecords(FFStream& s) const;
 
          /// Return boolean : is this a valid Rinex header?
       bool isValid() const { return ((valid & allValid13) == allValid13); }
          
    protected:
-         /// outputs this record to the stream correctly formatted.
-      virtual void reallyPutRecord(FFStream& s) const
-         throw(std::exception, FFStreamError, StringUtils::StringException);
+         /** outputs this record to the stream correctly formatted.
+          * @throw std::exception
+          * @throw FFStreamError
+          * @throw StringUtils::StringException
+          */
+      virtual void reallyPutRecord(FFStream& s) const;
 
          /// This function retrieves the ANTEX Header from the given FFStream.
          /// If an stream error is encountered, the stream is reset to its
          ///  original position and its fail-bit is set.
-         /// @throws StringException when a StringUtils function fails
-         /// @throws FFStreamError when exceptions(failbit) is set and
+         /// @throw std::exception
+         /// @throw StringException when a StringUtils function fails
+         /// @throw FFStreamError when exceptions(failbit) is set and
          ///  a read or formatting error occurs.  This also resets the
          ///  stream to its pre-read position.
-      virtual void reallyGetRecord(FFStream& s) 
-         throw(std::exception, FFStreamError, StringUtils::StringException);
+      virtual void reallyGetRecord(FFStream& s) ;
 
    }; // end class AntexHeader
 

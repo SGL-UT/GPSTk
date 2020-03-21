@@ -58,27 +58,27 @@ namespace gpstk
    /// Gamma(x) = integral(0 to inf) { t^(x-1) exp(-t) dt }
    /// @param x  argument, x must be > 0
    /// @return   double ln(gamma(x)), the natural log of the gamma function of x.
-   /// @throw    if the input argument is <= 0
-   double lnGamma(const double& x) throw(Exception);
+   /// @throw Exception if the input argument is <= 0
+   double lnGamma(const double& x);
 
    /// Gamma(x) the gamma function for positive argument.
    /// Gamma(x) = integral(0 to inf) { t^(x-1) exp(-t) dt }
    /// @param    x argument, x must be > 0
    /// @return   double Gamma(x), the gamma function of x.
-   /// @throw    if the input argument is <= 0
-   double Gamma(const double& x) throw(Exception);
+   /// @throw Exception    if the input argument is <= 0
+   double Gamma(const double& x);
 
    /// Factorial of an integer, returned as a double.
    /// @param    n argument, n must be >= 0
    /// @return   n! or factorial(n), as a double
-   /// @throw    if the input argument is < 0
-   double factorial(const int& n) throw(Exception);
+   /// @throw Exception    if the input argument is < 0
+   double factorial(const int& n);
 
    /// ln of Factorial of an integer, returned as a double.
    /// @param    n argument, n must be >= 0
    /// @return   ln(n!) or natural log of factorial(n), as a double
-   /// @throw    if the input argument is < 0
-   double lnFactorial(const int& n) throw(Exception);
+   /// @throw Exception    if the input argument is < 0
+   double lnFactorial(const int& n);
 
    /// Binomial coefficient (n k) = n!/[k!(n-k)!], 0 <= k <= n.
    /// (n k) is the number of combinations of n things taken k at a time.
@@ -87,62 +87,65 @@ namespace gpstk
    /// @param n  int n must be >= 0
    /// @param k  int k must be >= 0 and <= n
    /// @return   (n k), the binomial coefficient
-   /// @throw    if the input argument do not satisfy 0 <= k <= n
-   double binomialCoeff(const int& n, const int& k) throw(Exception);
+   /// @throw Exception    if the input argument do not satisfy 0 <= k <= n
+   double binomialCoeff(const int& n, const int& k);
 
    /// Beta function. Beta(x,y)=Beta(y,x)=integral(0 to 1) {t^(x-1)*(1-t)^(y-1) dt}.
    /// Also, Beta(x,y) = gamma(x)*gamma(y)/gamma(x+y).
    /// @param x  first argument
    /// @param y  second argument
    /// @return          beta(x,y)
-   /// @throw           if either input argument is <= 0
-   double beta(const double& x, const double& y) throw(Exception);
+   /// @throw Exception           if either input argument is <= 0
+   double beta(const double& x, const double& y);
 
    /// Incomplete gamma function P(a,x), evaluated using series representation.
    /// P(a,x) = (1/gamma(a)) integral (0 to x) { exp(-t) t^(a-1) dt }
    /// @param a  first argument, a > 0
    /// @param x  second argument, x >= 0
    /// @return          P(a,x)
-   /// @throw           if input arguments have a <= 0 or x < 0
-   double seriesIncompGamma(const double& a, const double& x) throw(Exception);
+   /// @throw Exception           if input arguments have a <= 0 or x < 0
+   double seriesIncompGamma(const double& a, const double& x);
 
    /// Incomplete gamma function Q(a,x), evaluated using continued fractions.
    /// Q(a,x) = (1/gamma(a)) integral (x to inf) { exp(-t) t^(a-1) dt }
    /// @param a  first argument, a > 0
    /// @param x  second argument, x >= 0
    /// @return          Q(a,x)
-   /// @throw           if input arguments have a <= 0 or x < 0
-   double contfracIncompGamma(const double& a, const double& x) throw(Exception);
+   /// @throw Exception           if input arguments have a <= 0 or x < 0
+   double contfracIncompGamma(const double& a, const double& x);
 
    /// Incomplete gamma function P(a,x), a,x > 0.
    /// P(a,x) = (1/gamma(a)) integral (0 to x) { exp(-t) t^(a-1) dt }; a > 0, x >= 0
    /// @param a  first argument, a > 0
    /// @param x  second argument, x >= 0
    /// @return          P(a,x)
-   /// @throw           if input arguments have a <= 0 or x < 0
-   double incompGamma(const double& a, const double& x) throw(Exception);
+   /// @throw Exception           if input arguments have a <= 0 or x < 0
+   double incompGamma(const double& a, const double& x);
 
    /// Complement of incomplete gamma function Q(a,x), a > 0, x >= 0.
    /// Q(a,x) = (1/gamma(a)) integral (x to inf) { exp(-t) t^(a-1) dt }
    /// @param a  first argument, a > 0
    /// @param x  second argument, x >= 0
    /// @return          Q(a,x)
-   /// @throw           if input arguments have a <= 0 or x < 0
-   double compIncompGamma(const double& a, const double& x) throw(Exception);
+   /// @throw Exception           if input arguments have a <= 0 or x < 0
+   double compIncompGamma(const double& a, const double& x);
 
    /// Error function erf(x). erf(x) = 2/sqrt(pi) * integral (0 to x) { exp(-t^2) dt }
    /// @param x  input argument
    /// @return          erf(x)
-   double errorFunc(const double& x) throw(Exception);
+   /// @throw Exception
+   double errorFunc(const double& x);
 
    /// Complementary error function erfc(x). erfc(x) = 1-erf(x)
    /// @param x  input argument
    /// @return          erfc(x)
-   double compErrorFunc(const double& x) throw(Exception);
+   /// @throw Exception
+   double compErrorFunc(const double& x);
 
    // Compute continued fractions portion of incomplete beta function I_x(a,b)
    /// Routine used internally for Incomplete beta function I_x(a,b)
-   double cfIBeta(const double& x, const double& a, const double& b) throw(Exception);
+   /// @throw Exception
+   double cfIBeta(const double& x, const double& a, const double& b);
 
    /// Incomplete beta function I_x(a,b), 0<=x<=1, a,b>0
    /// I sub x (a,b) = (1/beta(a,b)) integral (0 to x) { t^(a-1)*(1-t)^(b-1)dt }
@@ -150,8 +153,8 @@ namespace gpstk
    /// @param a  input value, a > 0
    /// @param b  input value, b > 0
    /// @return          Incomplete beta function I_x(a,b)
-   double incompleteBeta(const double& x, const double& a, const double& b)
-      throw(Exception);
+   /// @throw Exception
+   double incompleteBeta(const double& x, const double& a, const double& b);
 
    // ----------------- probability distributions -----------------------
 
@@ -184,8 +187,8 @@ namespace gpstk
    /// @param mu  mean of the sample (location parameter of the distribution)
    /// @param sig std dev of the sample (scale parameter of the distribution)
    /// @return         Normal distribution probability density
-   double NormalPDF(const double& x, const double& mu, const double& sig)
-      throw(Exception);
+   /// @throw Exception
+   double NormalPDF(const double& x, const double& mu, const double& sig);
 
    /// Cumulative distribution function (CDF) of the Normal-distribution.
    /// Ref http://www.itl.nist.gov/div898/handbook/ 1.3.6.6.1
@@ -193,8 +196,8 @@ namespace gpstk
    /// @param mu  mean of the sample (location parameter of the distribution)
    /// @param sig std dev of the sample (scale parameter of the distribution)
    /// @return           Normal distribution probability
-   double NormalCDF(const double& x, const double& mu, const double& sig)
-      throw(Exception);
+   /// @throw Exception
+   double NormalCDF(const double& x, const double& mu, const double& sig);
 
    /// Normal-distribution percent point function, or inverse of the Normal CDF.
    /// This function(prob,mu,sig) == X where prob = NormalCDF(X,mu,sig).
@@ -203,8 +206,8 @@ namespace gpstk
    /// @param mu  mean of the sample (location parameter of the distribution)
    /// @param sig std dev of the sample (scale parameter of the distribution)
    /// @return        X the statistic at this probability
-   double invNormalCDF(double prob, const double& mu, const double& sig)
-      throw(Exception);
+   /// @throw Exception
+   double invNormalCDF(double prob, const double& mu, const double& sig);
 
    /// Probability density function (PDF) of the Chi-square distribution.
    /// The chi-square distribution results when n independent variables with
@@ -239,14 +242,16 @@ namespace gpstk
    /// @param x input statistic, equal to an RSS(); x >= 0
    /// @param n    input value for number of degrees of freedom, n > 0
    /// @return         probability Chi-square probability (xsq,n)
-   double ChisqPDF(const double& x, const int& n) throw(Exception);
+   /// @throw Exception
+   double ChisqPDF(const double& x, const int& n);
 
    /// Cumulative distribution function (CDF) of the Chi-square-distribution.
    /// Ref http://www.itl.nist.gov/div898/handbook/ 1.3.6.6.6
    /// @param x  input statistic value, the RSS of variances, X >= 0
    /// @param n     degrees of freedom of sample, n > 0
    /// @return          probability that the sample variance is less than X.
-   double ChisqCDF(const double& x, const int& n) throw(Exception);
+   /// @throw Exception
+   double ChisqCDF(const double& x, const int& n);
 
    /// Chi-square-distribution percent point function, or inverse of the Chisq CDF.
    /// This function(alpha,N) == Y where alpha = ChisqCDF(Y,N).
@@ -254,7 +259,8 @@ namespace gpstk
    /// @param alpha probability or significance level of the test, >=0 and < 1
    /// @param n   degrees of freedom of sample, n > 0
    /// @return        X the statistic (an RSS of variances) at this probability
-   double invChisqCDF(double alpha, int n) throw(Exception);
+   /// @throw Exception
+   double invChisqCDF(double alpha, int n);
 
    /// Probability density function (PDF) of the Student t distribution.
    /// The null hypotheses that test the true mean, mu, against the standard or
@@ -284,7 +290,8 @@ namespace gpstk
    /// @param X input statistic
    /// @param n    input value for number of degrees of freedom, n > 0
    /// @return         probability density
-   double StudentsPDF(const double& X, const int& n) throw(Exception);
+   /// @throw Exception
+   double StudentsPDF(const double& X, const int& n);
 
    /// Cumulative Distribution Function CDF() for Student-t-distribution CDF.
    /// If X is a random variable following a normal distribution with mean zero and
@@ -298,8 +305,8 @@ namespace gpstk
    /// @param t  input statistic value
    /// @param n     degrees of freedom of first sample, n > 0
    /// @return          probability that the sample is less than X.
-   double StudentsCDF(const double& t, const int& n)
-      throw(Exception);
+   /// @throw Exception
+   double StudentsCDF(const double& t, const int& n);
 
    /// Students-t-distribution percent point function, or inverse of the Student CDF.
    /// This function(prob,n) == Y where prob = StudentsCDF(Y,n).
@@ -307,7 +314,8 @@ namespace gpstk
    /// @param prob probability or significance level of the test, >=0 and < 1
    /// @param n   degrees of freedom of sample, n > 0
    /// @return        t the statistic at this probability
-   double invStudentsCDF(double prob, int n) throw(Exception);
+   /// @throw Exception
+   double invStudentsCDF(double prob, int n);
 
    /// F-distribution cumulative distribution function FDistCDF(F,n1,n2) F>=0 n1,n2>0.
    /// This function occurs in the statistical test of whether two observed samples
@@ -326,8 +334,8 @@ namespace gpstk
    /// @param n1    degrees of freedom of first sample, n1 > 0
    /// @param n2    degrees of freedom of second sample, n2 > 0
    /// @return          probability that the sample is less than F.
-   double FDistCDF(const double& F, const int& n1, const int& n2)
-      throw(Exception);
+   /// @throw Exception
+   double FDistCDF(const double& F, const int& n1, const int& n2);
 
    /// Probability density function for F distribution
    /// The F distribution is the ratio of two chi-square distributions with degrees
@@ -358,7 +366,8 @@ namespace gpstk
    /// @param n1   degrees of freedom of first sample, n1 > 0
    /// @param n2   degrees of freedom of second sample, n2 > 0
    /// @return         the statistic (a ratio variance1/variance2) at this prob
-   double FDistPDF(double x, int n1, int n2) throw(Exception);
+   /// @throw Exception
+   double FDistPDF(double x, int n1, int n2);
 
    /// F-distribution percent point function, or inverse of the F-dist CDF.
    /// this function(prob,N1,N2) == F where prob = FDistCDF(F,N1,N2).
@@ -367,7 +376,8 @@ namespace gpstk
    /// @param n1  degrees of freedom of first sample, n1 > 0
    /// @param n2  degrees of freedom of second sample, n2 > 0
    /// @return        F the statistic (a ratio variance1/variance2) at this prob
-   double invFDistCDF(double prob, int n1, int n2) throw(Exception);
+   /// @throw Exception
+   double invFDistCDF(double prob, int n1, int n2);
 
 }  // end namespace
 

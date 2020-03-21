@@ -68,11 +68,10 @@ using namespace gpstk;
 
 //------------------------------------------------------------------------------------
 // prototypes -- this module only -- called by Synchronization()
-void FitPhaseAndMoveData(GSatID& sat, string site, Station& st, RawData& rd, int freq)
-   throw(Exception);
+void FitPhaseAndMoveData(GSatID& sat, string site, Station& st, RawData& rd, int freq);
 
 //------------------------------------------------------------------------------------
-int Synchronization(void) throw(Exception)
+int Synchronization(void)
 {
 try {
    if(CI.Verbose) oflog << "BEGIN Synchronization()"
@@ -120,7 +119,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // length which is centered (as much as possible) about the buffer point of interest.
 // Process each buffer point using the data in the sliding window.
 void FitPhaseAndMoveData(GSatID& sat, string site, Station& statn, RawData& rawdat,
-      int freq) throw(Exception)
+      int freq)
 {
 try {
    const int N=11;   // size of the window // best odd  // TD make input
@@ -306,7 +305,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 } // end FitPhaseAndMoveData
 
 //------------------------------------------------------------------------------------
-int RecomputeFromEphemeris(void) throw(Exception)
+int RecomputeFromEphemeris(void)
 {
 try {
    if(CI.Verbose) oflog << "BEGIN RecomputeFromEphemeris()"

@@ -58,17 +58,16 @@ using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
 // prototypes -- this module only
-void ComputeSingleDifferences(string baseline, map<SDid,RawData>& SDmap)
-   throw(Exception);
-int ComputeDoubleDifferences(map<SDid,RawData>& SDmap) throw(Exception);
+void ComputeSingleDifferences(string baseline, map<SDid,RawData>& SDmap);
+int ComputeDoubleDifferences(map<SDid,RawData>& SDmap);
 
 //------------------------------------------------------------------------------------
 // other prototypes
 // ElevationMask.cpp
-bool ElevationMask(double elevation, double azimuth) throw(Exception);
+bool ElevationMask(double elevation, double azimuth);
 
 //------------------------------------------------------------------------------------
-int DoubleDifference(void) throw(Exception)
+int DoubleDifference(void)
 {
 try {
    int j,k;
@@ -160,7 +159,6 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // Compute all single differences 'site1' - 'site2', using the RawDataBuffers in
 // Stations[site], and store the results in the given map<SDid,RawData>.
 void ComputeSingleDifferences(string baseline, map<SDid,RawData>& SDmap)
-   throw(Exception)
 {
 try {
    int beg,end;
@@ -252,7 +250,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 //------------------------------------------------------------------------------------
 // Assume SDmap is all for the same baseline
-int ComputeDoubleDifferences(map<SDid,RawData>& SDmap) throw(Exception)
+int ComputeDoubleDifferences(map<SDid,RawData>& SDmap)
 {
 try {
    bool frst,ok;

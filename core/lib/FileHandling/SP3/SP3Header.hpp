@@ -196,22 +196,23 @@ namespace gpstk
       friend class SP3Data;
 
    protected:
-         /// Writes the record formatted to the FFStream \a s.
-         /// @throws StringException when a StringUtils function fails
-      virtual void reallyPutRecord(FFStream& s) const
-         throw(std::exception, FFStreamError,
-               StringUtils::StringException);
+         /** Writes the record formatted to the FFStream \a s.
+          * @throw std::exception
+          * @throw StringException when a StringUtils function fails
+          * @throw StringUtils::StringException
+          */
+      virtual void reallyPutRecord(FFStream& s) const;
 
-         /// This function retrieves the SP3 header from the given FFStream.
-         /// If an error is encountered in the retrieval of the header, the
-         /// stream is reset to its original position and its fail-bit is set.
-         /// @throws StringException when a StringUtils function fails
-         /// @throws FFStreamError when exceptions(failbit) is set and
-         ///  a read or formatting error occurs.  This also resets the
-         ///  stream to its pre-read position.
-      virtual void reallyGetRecord(FFStream& s)
-         throw(std::exception, FFStreamError,
-               StringUtils::StringException);
+         /** This function retrieves the SP3 header from the given FFStream.
+          * If an error is encountered in the retrieval of the header, the
+          * stream is reset to its original position and its fail-bit is set.
+          * @throw std::exception
+          * @throw StringException when a StringUtils function fails
+          * @throw FFStreamError when exceptions(failbit) is set and
+          *  a read or formatting error occurs.  This also resets the
+          *  stream to its pre-read position.
+          */
+      virtual void reallyGetRecord(FFStream& s);
 
    }; // end class SP3Header
 

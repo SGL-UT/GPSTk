@@ -135,8 +135,10 @@ public:
    bool ParseAndSave(const string& str, bool save=true) throw();
 
    /// compute the linear combination, given the satellite and RINEX data
+   /**
+    * @throw Exception */
    double Compute(const RinexSatID sat, Rinex3ObsHeader& Rhead,
-                  const vector<RinexDatum>& vrdata) throw(Exception);
+                  const vector<RinexDatum>& vrdata);
 
    /// remove a bias if jump larger than limit occurs
    bool removeBias(const RinexSatID& sat) throw();
@@ -270,12 +272,19 @@ const string Configuration::longfmt = calfmt + " = " + gpsfmt;
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
 // prototypes
-int Initialize(string& errors) throw(Exception);
-int ProcessFiles(void) throw(Exception);
+/**
+ * @throw Exception */
+int Initialize(string& errors);
+/**
+ * @throw Exception */
+int ProcessFiles(void);
+/**
+ * @throw Exception */
 double getObsData(string tag, RinexSatID sat, Rinex3ObsHeader& Rhead,
-                  const vector<RinexDatum>& vrdata) throw(Exception);
-double getNonObsData(string tag, RinexSatID sat, const CommonTime& time)
-   throw(Exception);
+                  const vector<RinexDatum>& vrdata);
+/**
+ * @throw Exception */
+double getNonObsData(string tag, RinexSatID sat, const CommonTime& time);
 
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
@@ -345,7 +354,7 @@ catch (...) { cerr << "Unknown exception.  Abort." << endl; }
 
 //------------------------------------------------------------------------------------
 // return -5 if input is not valid
-int Initialize(string& errors) throw(Exception)
+int Initialize(string& errors)
 {
 try {
    bool isValid(true);
@@ -1464,7 +1473,7 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
 
 //------------------------------------------------------------------------------------
 // Return 0 ok, >0 number of files successfully read, <0 fatal error
-int ProcessFiles(void) throw(Exception)
+int ProcessFiles(void)
 {
 try {
    Configuration& C(Configuration::Instance());
@@ -1807,7 +1816,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 
 //------------------------------------------------------------------------------------
 double getObsData(string tag, RinexSatID sat, Rinex3ObsHeader& Rhead,
-                   const vector<RinexDatum>& vrdata) throw(Exception)
+                   const vector<RinexDatum>& vrdata)
 {
    try {
       double data(0);
@@ -1838,7 +1847,6 @@ double getObsData(string tag, RinexSatID sat, Rinex3ObsHeader& Rhead,
 
 //------------------------------------------------------------------------------------
 double getNonObsData(string tag, RinexSatID sat, const CommonTime& time)
-   throw(Exception)
 {
    try {
       double data(0);
@@ -2261,7 +2269,7 @@ bool LinCom::ParseAndSave(const string& lab, bool save) throw()
 
 //------------------------------------------------------------------------------------
 double LinCom::Compute(const RinexSatID sat, Rinex3ObsHeader& Rhead,
-                  const vector<RinexDatum>& vrdata) throw(Exception)
+                  const vector<RinexDatum>& vrdata)
 {
    Configuration& C(Configuration::Instance());
 

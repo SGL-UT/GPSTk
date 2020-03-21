@@ -117,8 +117,7 @@ namespace gpstk
           * about the reason the request failed.
           */
       Triple getOceanLoading( const std::string& name,
-                              const CommonTime& t )
-         throw(InvalidRequest);
+                              const CommonTime& t );
 
 
          /// Returns the name of BLQ file containing ocean tides harmonics data.

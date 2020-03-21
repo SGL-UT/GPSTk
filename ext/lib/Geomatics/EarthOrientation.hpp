@@ -144,13 +144,13 @@ namespace gpstk {
       /// @param Y vector of length 4 of consecutive yp from EOPStore.
       /// @param dT vector of length 4 of consecutive UT1mUTC from EOPStore.
       /// @param conv the IERSConvention to be used.
+      /// @throw InvalidRequest
       void interpolateEOP(const EphTime& ttag,
                           const std::vector<double>& time,
                           const std::vector<double>& X,
                           const std::vector<double>& Y,
                           std::vector<double>& dT,
-                          const IERSConvention& conv)
-         throw(InvalidRequest);
+                          const IERSConvention& conv);
 
       //------------------------------------------------------------------------------
       /// 'coordinate transformation time', which is used throughout the
@@ -158,9 +158,8 @@ namespace gpstk {
       /// Valid for IERS1996, IERS2003, IERS2010
       /// @param t EphTime time of interest.
       /// @return coordinate transformation time at t.
-      /// @throw if the TimeSystem conversion fails (if TimeSystem is Unknown)
-      static double CoordTransTime(EphTime t)
-         throw(Exception);
+      /// @throw Exception if the TimeSystem conversion fails (if TimeSystem is Unknown)
+      static double CoordTransTime(EphTime t);
 
       //------------------------------------------------------------------------------
       /// mean longitude of lunar ascending node, in radians,
@@ -294,9 +293,8 @@ namespace gpstk {
       /// Valid for IERS1996 IERS2003 IERS2010
       /// @param T coordinate transformation time.
       /// @return eps in radians.
-      /// @throw if convention is not defined
-      double Obliquity(double T)
-         throw(Exception);
+      /// @throw Exception if convention is not defined
+      double Obliquity(double T);
 
       //------------------------------------------------------------------------------
       /// Compute Greenwich Mean Sidereal Time, or the Greenwich hour angle of
@@ -306,10 +304,9 @@ namespace gpstk {
       /// @param reduced, bool true when UT1mUTC is 'reduced', meaning assumes
       ///                 'no tides', as is the case with the NGA EOPs (default=F).
       /// @return GMST in radians
-      /// @throw if the TimeSystem conversion fails (if TimeSystem is Unknown)
-      /// @throw if convention is not defined
-      double GMST(const EphTime& t, bool reduced=false)
-         throw(Exception);
+      /// @throw Exception if the TimeSystem conversion fails (if TimeSystem is Unknown)
+      /// @throw Exception if convention is not defined
+      double GMST(const EphTime& t, bool reduced=false);
 
       //------------------------------------------------------------------------------
       /// Compute Greenwich Apparent Sidereal Time, or the Greenwich hour angle of
@@ -319,48 +316,47 @@ namespace gpstk {
       /// @param reduced, bool true when UT1mUTC is 'reduced', meaning assumes
       ///                 'no tides', as is the case with the NGA EOPs (default=F).
       /// @return GAST in radians
-      /// @throw if the TimeSystem conversion fails (if TimeSystem is Unknown)
-      /// @throw if convention is not defined
-      double GAST(const EphTime& t, bool reduced=false) throw(Exception);
+      /// @throw Exception if the TimeSystem conversion fails (if TimeSystem is Unknown)
+      /// @throw Exception if convention is not defined
+      double GAST(const EphTime& t, bool reduced=false);
 
       //------------------------------------------------------------------------------
       /// Generate transformation matrix (3X3 rotation) due to this object's EOPs
       /// polar motion angles xp and yp (arcseconds), as found in the IERS bulletin;
       /// @param t EphTime epoch of the rotation.
-      /// @throw if convention is not defined
-      Matrix<double> PolarMotionMatrix(const EphTime& t) throw(Exception);
+      /// @throw Exception if convention is not defined
+      Matrix<double> PolarMotionMatrix(const EphTime& t);
 
       //------------------------------------------------------------------------------
       /// Generate an Earth Precession Matrix (3X3 rotation) at the given EphTime.
       /// @param t EphTime epoch of the rotation.
       /// @return precession matrix Matrix<double>(3,3)
-      /// @throw if convention is not defined
-      Matrix<double> PrecessionMatrix(const EphTime& t) throw(Exception);
+      /// @throw Exception if convention is not defined
+      Matrix<double> PrecessionMatrix(const EphTime& t);
 
       //------------------------------------------------------------------------------
       ///// Nutation of the obliquity (deps) and of the longitude (dpsi)
       ///// @param T,    the coordinate transformation time at the time of interest
       ///// @param deps, nutation of the obliquity (output) in radians
       ///// @param dpsi, nutation of the longitude (output) in radians
-      ///// @throw if convention is not defined
+      ///// @throw Exception if convention is not defined
       //void NutationAngles(double T, double& deps, double& dpsi)
-      //   throw(Exception);
 
       //------------------------------------------------------------------------------
       /// Generate an Earth Nutation Matrix (3X3 rotation) at the given EphTime.
       /// @param t EphTime epoch of the rotation.
       /// @return nutation matrix Matrix<double>(3,3)
-      /// @throw if convention is not defined
-      Matrix<double> NutationMatrix(const EphTime& t) throw(Exception);
+      /// @throw Exception if convention is not defined
+      Matrix<double> NutationMatrix(const EphTime& t);
 
       //------------------------------------------------------------------------------
       /// Generate precise transformation matrix (3X3 rotation) for Earth motion due
       /// to precession, nutation and frame bias, at the given time of interest.
       /// @param t EphTime epoch of the rotation.
       /// @return 3x3 rotation matrix
-      /// @throw if the TimeSystem conversion fails (if TimeSystem is Unknown)
-      /// @throw if convention is not defined
-      Matrix<double> PreciseEarthRotation(const EphTime& t) throw(Exception);
+      /// @throw Exception if the TimeSystem conversion fails (if TimeSystem is Unknown)
+      /// @throw Exception if convention is not defined
+      Matrix<double> PreciseEarthRotation(const EphTime& t);
 
       //------------------------------------------------------------------------------
       /// Generate the full transformation matrix (3x3 rotation) relating the ECEF
@@ -371,18 +367,17 @@ namespace gpstk {
       /// @param reduced, bool true when UT1mUTC is 'reduced', meaning assumes
       ///                 'no tides', as is the case with the NGA EOPs (default=F).
       /// @return 3x3 rotation matrix
-      /// @throw if the TimeSystem conversion fails (if TimeSystem is Unknown)
-      /// @throw if convention is not defined
-      Matrix<double> ECEFtoInertial(const EphTime& t, bool reduced=false)
-         throw(Exception);
+      /// @throw Exception if the TimeSystem conversion fails (if TimeSystem is Unknown)
+      /// @throw Exception if convention is not defined
+      Matrix<double> ECEFtoInertial(const EphTime& t, bool reduced=false);
 
       //------------------------------------------------------------------------------
       /// Compute the transformation from ECEF to the J2000 dynamical (inertial)
       /// frame. This differs from the ECEFtoInertial transformation only by the
       /// frame bias matrix. Only available in IERS2010.
       /// *** NB currently not tested. ***
-      Matrix<double> ECEFtoJ2000(const EphTime& t, bool reduced=false)
-         throw(Exception);
+      /// @throw Exception
+      Matrix<double> ECEFtoJ2000(const EphTime& t, bool reduced=false);
 
    private:
       //------------------------------------------------------------------------------
@@ -434,18 +429,16 @@ namespace gpstk {
       /// @param t EphTime time of interest
       /// @param UT1mUTC offset UT1-UTC
       /// @return Earth rotation angle in radians
-      /// @throw if the TimeSystem conversion fails (if TimeSystem is Unknown)
-      static double EarthRotationAngle(const EphTime& t, const double& UT1mUTC)
-         throw(Exception);
+      /// @throw Exception if the TimeSystem conversion fails (if TimeSystem is Unknown)
+      static double EarthRotationAngle(const EphTime& t, const double& UT1mUTC);
 
       //------------------------------------------------------------------------------
       /// Equation of the equinoxes complementary terms, IAU 2000 (IERS 2003)
       /// Note that GAST = GMST + EquationOfEquinoxes
       /// @param t EphTime epoch of interest
       /// @return the ee in radians
-      /// @throw if the TimeSystem conversion fails (if TimeSystem is Unknown)
-      static double EquationOfEquinoxes2003(EphTime t)
-         throw(Exception);
+      /// @throw Exception if the TimeSystem conversion fails (if TimeSystem is Unknown)
+      static double EquationOfEquinoxes2003(EphTime t);
 
       //------------------------------------------------------------------------------
       /// Zonal tide terms for corrections of UT1mUTC when that quantity does not
@@ -481,9 +474,8 @@ namespace gpstk {
       /// @param reduced, bool true when UT1mUTC is 'reduced', meaning assumes
       ///                 'no tides', as is the case with the NGA EOPs (default=F).
       /// @return GMST in radians
-      /// @throw if the TimeSystem conversion fails (if TimeSystem is Unknown)
-      static double GMST1996(EphTime t, double UT1mUTC, bool reduced=false)
-         throw(Exception);
+      /// @throw Exception if the TimeSystem conversion fails (if TimeSystem is Unknown)
+      static double GMST1996(EphTime t, double UT1mUTC, bool reduced=false);
 
       //------------------------------------------------------------------------------
       /// Compute Greenwich Mean Sidereal Time, or the Greenwich hour angle of
@@ -492,9 +484,8 @@ namespace gpstk {
       /// @param t EphTime epoch of the rotation.
       /// @param UT1mUTC, UT1-UTC in seconds, as found in the IERS bulletin.
       /// @return GMST in radians
-      /// @throw if the TimeSystem conversion fails (if TimeSystem is Unknown)
-      static double GMST2003(EphTime t, double UT1mUTC)
-         throw(Exception);
+      /// @throw Exception if the TimeSystem conversion fails (if TimeSystem is Unknown)
+      static double GMST2003(EphTime t, double UT1mUTC);
 
       //------------------------------------------------------------------------------
       /// Compute Greenwich Mean Sidereal Time, or the Greenwich hour angle of
@@ -503,9 +494,8 @@ namespace gpstk {
       /// @param t EphTime epoch of the rotation.
       /// @param UT1mUTC, UT1-UTC in seconds, as found in the IERS bulletin.
       /// @return GMST in radians
-      /// @throw if the TimeSystem conversion fails (if TimeSystem is Unknown)
-      static double GMST2010(EphTime t, double UT1mUTC)
-         throw(Exception);
+      /// @throw Exception if the TimeSystem conversion fails (if TimeSystem is Unknown)
+      static double GMST2010(EphTime t, double UT1mUTC);
 
       //------------------------------------------------------------------------------
       /// Helper to compute the Greenwich hour angle of the true vernal equinox, or
@@ -542,9 +532,9 @@ namespace gpstk {
       ///                       in seconds of arc
       /// @param UT1mUTC,  UT1-UTC in seconds, as found in the IERS bulletin.
       /// @return gast in radians
+      /// @throw Exception
       static double gast1996(EphTime t, double om, double eps, double dpsi,
-                                            double UT1mUTC)
-         throw(Exception);
+                             double UT1mUTC);
 
       //------------------------------------------------------------------------------
       /// Compute Greenwich Apparent Sidereal Time, or the Greenwich hour angle of
@@ -553,9 +543,8 @@ namespace gpstk {
       /// @param t EphTime epoch of the rotation.
       /// @param UT1mUTC, UT1-UTC in seconds, as found in the IERS bulletin.
       /// @return GAST in radians
-      /// @throw if the TimeSystem conversion fails (if TimeSystem is Unknown)
-      static double GAST1996(EphTime t, double UT1mUTC, bool reduced=false)
-         throw(Exception);
+      /// @throw Exception if the TimeSystem conversion fails (if TimeSystem is Unknown)
+      static double GAST1996(EphTime t, double UT1mUTC, bool reduced=false);
 
       //------------------------------------------------------------------------------
       /// Compute Greenwich Apparent Sidereal Time, or the Greenwich hour angle of
@@ -564,9 +553,8 @@ namespace gpstk {
       /// @param t EphTime epoch of the rotation.
       /// @param UT1mUTC, UT1-UTC in seconds, as found in the IERS bulletin.
       /// @return GAST in radians
-      /// @throw if the TimeSystem conversion fails (if TimeSystem is Unknown)
-      static double GAST2003(EphTime t, double UT1mUTC)
-         throw(Exception);
+      /// @throw Exception if the TimeSystem conversion fails (if TimeSystem is Unknown)
+      static double GAST2003(EphTime t, double UT1mUTC);
 
       //------------------------------------------------------------------------------
       /// Compute Greenwich Apparent Sidereal Time, or the Greenwich hour angle of
@@ -575,9 +563,8 @@ namespace gpstk {
       /// @param t EphTime epoch of the rotation
       /// @param UT1mUTC, UT1-UTC in seconds, as found in the IERS bulletin
       /// @return GAST in radians
-      /// @throw if the TimeSystem conversion fails (if TimeSystem is Unknown)
-      static double GAST2010(EphTime t, double UT1mUTC)
-         throw(Exception);
+      /// @throw Exception if the TimeSystem conversion fails (if TimeSystem is Unknown)
+      static double GAST2010(EphTime t, double UT1mUTC);
 
       //------------------------------------------------------------------------------
       /// Generate transformation matrix (3X3 rotation) due to the polar motion
@@ -731,9 +718,8 @@ namespace gpstk {
       /// Valid only for 2010
       /// @param T CoordTransTime(EphTime t) for time of interest
       /// @return 3x3 rotation matrix
-      /// @throw if the TimeSystem conversion fails (if TimeSystem is Unknown)
-      static Matrix<double> PreciseEarthRotation2003(double T)
-         throw(Exception);
+      /// @throw Exception if the TimeSystem conversion fails (if TimeSystem is Unknown)
+      static Matrix<double> PreciseEarthRotation2003(double T);
 
       //------------------------------------------------------------------------------
       /// Generate precise transformation matrix (3X3 rotation) for Earth motion due
@@ -741,9 +727,8 @@ namespace gpstk {
       /// Valid only for 2010
       /// @param T CoordTransTime(EphTime t) for time of interest
       /// @return 3x3 rotation matrix
-      /// @throw if the TimeSystem conversion fails (if TimeSystem is Unknown)
-      static Matrix<double> PreciseEarthRotation2010(double T)
-         throw(Exception);
+      /// @throw Exception if the TimeSystem conversion fails (if TimeSystem is Unknown)
+      static Matrix<double> PreciseEarthRotation2010(double T);
 
       //------------------------------------------------------------------------------
       /// Generate the full transformation matrix (3x3 rotation) relating the ECEF
@@ -757,10 +742,9 @@ namespace gpstk {
       /// @param reduced, bool true when UT1mUTC is 'reduced', meaning assumes
       ///                 'no tides', as is the case with the NGA EOPs (default=F).
       /// @return 3x3 rotation matrix
-      /// @throw if the TimeSystem conversion fails (if TimeSystem is Unknown)
+      /// @throw Exception if the TimeSystem conversion fails (if TimeSystem is Unknown)
       Matrix<double> ECEFtoInertial1996(EphTime t, double xp, double yp,
-                           double UT1mUTC, bool reduced=false)
-         throw(Exception);
+                                        double UT1mUTC, bool reduced=false);
 
       //------------------------------------------------------------------------------
       /// Generate the full transformation matrix (3x3 rotation) relating the ECEF
@@ -772,9 +756,8 @@ namespace gpstk {
       /// @param yp, Earth wobble in arcseconds, as found in the IERS bulletin.
       /// @param UT1mUTC, UT1-UTC in seconds, as found in the IERS bulletin.
       /// @return 3x3 rotation matrix
-      /// @throw if the TimeSystem conversion fails (if TimeSystem is Unknown)
-      Matrix<double> ECEFtoInertial2003(EphTime t,double xp,double yp,double UT1mUTC)
-         throw(Exception);
+      /// @throw Exception if the TimeSystem conversion fails (if TimeSystem is Unknown)
+      Matrix<double> ECEFtoInertial2003(EphTime t,double xp,double yp,double UT1mUTC);
 
       //------------------------------------------------------------------------------
       /// Generate the full transformation matrix (3x3 rotation) relating the ECEF
@@ -788,9 +771,8 @@ namespace gpstk {
       /// @param reduced, bool true when UT1mUTC is 'reduced', meaning assumes
       ///                 'no tides', as is the case with the NGA EOPs (default=F).
       /// @return 3x3 rotation matrix
-      /// @throw if the TimeSystem conversion fails (if TimeSystem is Unknown)
-      Matrix<double> ECEFtoInertial2010(EphTime t,double xp,double yp,double UT1mUTC)
-         throw(Exception);
+      /// @throw Exception if the TimeSystem conversion fails (if TimeSystem is Unknown)
+      Matrix<double> ECEFtoInertial2010(EphTime t,double xp,double yp,double UT1mUTC);
 
    }; // end class EarthOrientation
 

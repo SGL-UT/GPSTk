@@ -57,9 +57,10 @@ namespace gpstk
          /// Default constructor
       CNavEOP();
   
-        /// Need description here...
-      CNavEOP(const PackedNavBits& message32)
-         throw( InvalidParameter);
+         /**
+          * @throw InvalidParameter
+          */
+      CNavEOP(const PackedNavBits& message32);
       
          /// Destructor
       virtual ~CNavEOP() {}
@@ -74,8 +75,7 @@ namespace gpstk
           * @param message30 - 300 bits of Message Type 33
           * @throw InvalidParameter if message data is invalid
           */
-      void loadData(const PackedNavBits& message32)
-         throw(gpstk::InvalidParameter); 
+      void loadData(const PackedNavBits& message32);
 
       virtual std::string getName() const
       {
@@ -87,8 +87,10 @@ namespace gpstk
          return "Civilian Navigation (CNAV) EOP Parameters";
       }
       
-      virtual void dumpBody(std::ostream& s = std::cout) const
-         throw( InvalidRequest );
+         /**
+          * @throw InvalidRequest
+          */
+      virtual void dumpBody(std::ostream& s = std::cout) const;
 
       double PM_X;
       double PM_X_dot;

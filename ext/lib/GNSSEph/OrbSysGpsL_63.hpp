@@ -58,9 +58,10 @@ namespace gpstk
          /// Default constructor
       OrbSysGpsL_63();
 
-        /// Constructor for creating directly from a PackedNavBits object
-      OrbSysGpsL_63(const PackedNavBits& msg)
-         throw( gpstk::InvalidParameter);
+         /** Constructor for creating directly from a PackedNavBits object
+          * @throw InvalidParameter
+          */
+      OrbSysGpsL_63(const PackedNavBits& msg);
 
          /// Destructor
       virtual ~OrbSysGpsL_63() {}
@@ -73,8 +74,7 @@ namespace gpstk
           * @param msg - 300 bits of Subframe 4, Page 18.
           * @throw InvalidParameter if message data is invalid
           */
-      virtual void loadData(const PackedNavBits& msg)
-         throw(gpstk::InvalidParameter);
+      virtual void loadData(const PackedNavBits& msg);
 
       virtual bool isSameData(const OrbData* right) const;
 
@@ -88,24 +88,29 @@ namespace gpstk
          return "GPS LNAV SV Config";
       }
 
+         /**
+          * @throw InvalidRequest
+          */
       bool hasSignal(const gpstk::SatID& sidr,
                      const gpstk::CommonTime& ct,
                      const gpstk::ObsID::CarrierBand cb,
-                     const gpstk::ObsID::TrackingCode tc) const
-         throw (gpstk::InvalidRequest);
+                     const gpstk::ObsID::TrackingCode tc) const;
+         /**
+          * @throw InvalidRequest
+          */
       bool hasSignal(const gpstk::SatID& sidr,
                      const gpstk::CommonTime& ct,
-                     const gpstk::ObsID& oidr) const
-         throw (gpstk::InvalidRequest);
+                     const gpstk::ObsID& oidr) const;
 
          /** Output the contents of this orbit data to the given stream.
-          * @throw Invalid Request if the required data has not been stored.
+          * @throw InvalidRequest if the required data has not been stored.
           */
-      virtual void dumpTerse(std::ostream& s = std::cout) const
-         throw( InvalidRequest );
+      virtual void dumpTerse(std::ostream& s = std::cout) const;
 
-      virtual void dumpBody(std::ostream& s = std::cout) const
-         throw( InvalidRequest );
+         /**
+          * @throw InvalidRequest
+          */
+      virtual void dumpBody(std::ostream& s = std::cout) const;
 
          // SV Config
          // See IS-GPS-200 Fig 20-1 Sheet 9 and

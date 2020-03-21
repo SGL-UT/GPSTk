@@ -54,7 +54,7 @@ namespace gpstk
 
    // --------------------------------------------------------------------------------
    // Same as UpEastNorth(), but with rows re-ordered.
-   Matrix<double> NorthEastUp(Position& P, bool geocentric) throw(Exception)
+   Matrix<double> NorthEastUp(Position& P, bool geocentric)
    {
       try {
          Matrix<double> R(3,3);
@@ -91,11 +91,11 @@ namespace gpstk
    }
    
    // Same as NorthEastUp(P,true).
-   Matrix<double> NorthEastUpGeocentric(Position& P) throw(Exception)
+   Matrix<double> NorthEastUpGeocentric(Position& P)
       { return NorthEastUp(P, true); }
    
    // Same as NorthEastUp(P,false).
-   Matrix<double> NorthEastUpGeodetic(Position& P) throw(Exception)
+   Matrix<double> NorthEastUpGeodetic(Position& P)
       { return NorthEastUp(P, false); }
 
    // --------------------------------------------------------------------------------
@@ -104,7 +104,7 @@ namespace gpstk
    // perpendicular to the geoid. Return the vectors in the form of a
    // 3x3 Matrix<double>, this is in fact the rotation matrix that will take an
    // ECEF vector into a local topocentric or 'up-east-north' vector.
-   Matrix<double> UpEastNorth(Position& P, bool geocentric) throw(Exception)
+   Matrix<double> UpEastNorth(Position& P, bool geocentric)
    {
       try {
          Matrix<double> R = NorthEastUp(P, geocentric);
@@ -121,11 +121,11 @@ namespace gpstk
    
    // Same as UpEastNorth, but using geocentric coordinates, so that the -Up
    // direction will meet the center of Earth.
-   Matrix<double> UpEastNorthGeocentric(Position& P) throw(Exception)
+   Matrix<double> UpEastNorthGeocentric(Position& P)
       { return UpEastNorth(P, true); }
    
    // Same as UpEastNorth, but using geodetic coordinates
-   Matrix<double> UpEastNorthGeodetic(Position& P) throw(Exception)
+   Matrix<double> UpEastNorthGeodetic(Position& P)
       { return UpEastNorth(P, false); }
 
    //---------------------------------------------------------------------------------
@@ -178,7 +178,6 @@ namespace gpstk
    // return         fraction (0 <= f <= 1) of area of sun covered by earth
    // units only need be consistent
    double ShadowFactor(double AngRadEarth, double AngRadSun, double AngSeparation)
-      throw(Exception)
    {
       try {
          if(AngSeparation >= AngRadEarth+AngRadSun) return 0.0;
@@ -205,7 +204,6 @@ namespace gpstk
    
    // --------------------------------------------------------------------------------
    double ShadowFactor(const Position& SV, const Position& Sun)
-      throw(Exception)
    {
       try {
          Position z(SV);
@@ -250,7 +248,6 @@ namespace gpstk
    // Also return the shadow factor = fraction of sun's area not visible to satellite,
    // and the angle in radians between sun and satellite as seen from Earth.
    Matrix<double> SatelliteAttitude(const Position& Sat, const Position& Sun)
-      throw(Exception)
    {
       try {
          Position PSun(Sun), PSat(Sat);
@@ -313,7 +310,6 @@ namespace gpstk
   // of the satellite, so R * (ECEF XYZ vector) = components in body frame.
   // Also, R.transpose() * (sat. body. frame vector) = ECEF XYZ components.
   Matrix<double> OrbitNormalAttitude(const Position& P, const Position& V)
-    throw(Exception)
   {
     try {
       int i;
@@ -364,7 +360,6 @@ namespace gpstk
                                     const Matrix<double>& Rot,
                                     double& nadir,
                                     double& azimuth)
-      throw(Exception)
    {
       try {
          if(Rot.rows() != 3 || Rot.cols() != 3) {
@@ -414,7 +409,6 @@ namespace gpstk
    // @param Sun Position Sun position
    // @return double angle     Angle in radians satellite-Earth-Sun
    double SatelliteEarthSunAngle(const Position& Sat, const Position& Sun)
-      throw(Exception)
    {
       try {
          Position PSun(Sun), PSat(Sat);
@@ -452,7 +446,6 @@ namespace gpstk
    // triangle with sesa opposite the right angle. Thus cos(sesa)=cos(beta)*cos(phi).
    void SunOrbitAngles(const Position& Pos, const Position& Vel, const Position& Sun,
                        double& beta, double& phi)
-      throw(Exception)
    {
       try {
          Position SatR(Pos),SatV(Vel),PSun(Sun);
@@ -519,7 +512,6 @@ namespace gpstk
    // @return double yaw    Satellite yaw angle in radians
    double SatelliteYawAngle(const Position& pos, const Position& vel,
                             const Position& Sun, const bool& blkIIRF, double& yawrate)
-      throw(Exception)
    {
       try {
          // get orbit tilt beta, and in-plane orbit angle from midnight, mu

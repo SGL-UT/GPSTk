@@ -52,7 +52,6 @@ namespace gpstk
    //-----------------------------------------------------------------------------
    //-----------------------------------------------------------------------------
    void RinexEphemerisStore::loadFile(const std::string& filename)
-      throw(FileMissingException)
    {
       try
       {

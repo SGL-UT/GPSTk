@@ -181,20 +181,18 @@ public:
       /// @param R upper triangular R matrix
       /// @param Z SRI state vector
       /// @param NL namelist to give the SRI
-      /// @throw if dimensions are not consistent
-   SRI(const Matrix<double>& R, const Vector<double>& Z, const Namelist& NL)
-      throw(MatrixException);
+      /// @throw MatrixException if dimensions are not consistent
+   SRI(const Matrix<double>& R, const Vector<double>& Z, const Namelist& NL);
 
       /// explicit constructor from covariance and state
       /// User is responsible for ensuring the input is self-consistent.
       /// @param Cov covariance matrix
       /// @param State state vector
       /// @param NL namelist to give the SRI
-      /// @throw if dimensions are not consistent
+      /// @throw MatrixException if dimensions are not consistent
    void setFromCovState(const Matrix<double>& Cov,
                         const Vector<double>& State,
-                        const Namelist& NL)
-      throw(MatrixException);
+                        const Namelist& NL);
 
       /// copy constructor
    SRI(const SRI&)
@@ -210,9 +208,10 @@ public:
       /// the SRI Namelist by AT MOST A PERMUTATION; throw if this is not true.
       /// Replaces names with NL.
       /// @param NL Namelist desired for output SRI, unchanged on output
-      /// @throw if NL != names, i.e. NL is other than a permutation of this->names
-   void permute(const Namelist& NL)
-      throw(MatrixException,VectorException);
+      /// @throw SomeUnknownException if NL != names, i.e. NL is other than a permutation of this->names
+      /// @throw MatrixException
+      /// @throw VectorException
+   void permute(const Namelist& NL);
 
       /// split an SRI into two others, this one matching the input Namelist, the
       /// other containing whatever is left. The input Namelist must be a non-trivial
@@ -224,39 +223,45 @@ public:
       /// NB output SRI S will be singular.
       /// @param NL new namelist to be given to this object
       /// @param S this SRI after the NL part has been removed
-   void split(const Namelist& NL, SRI& S)
-      throw(MatrixException,VectorException);
+      /// @throw MatrixException
+      /// @throw VectorException
+   void split(const Namelist& NL, SRI& S);
 
       /// extend this SRI to include the given Namelist, with no added information;
       /// names in the input namelist which are not unique are ignored.
       /// @param NL namelist with which to extend this SRI.
-   SRI& operator+=(const Namelist& NL)
-      throw(MatrixException,VectorException);
+      /// @throw MatrixException
+      /// @throw VectorException
+   SRI& operator+=(const Namelist& NL);
 
       /// reshape this SRI to match the input Namelist, by calling other member
       /// functions, including split(), operator+() and permute()
       /// @param NL namelist with which to reshape this SRI.
-   void reshape(const Namelist&)
-      throw(MatrixException,VectorException);
+      /// @throw MatrixException
+      /// @throw VectorException
+   void reshape(const Namelist&);
 
       /// merge an SRI into this one. NB names may be reordered in the result.
       /// NB this is just operator+=()
       /// @param S SRI to be merged into this
+      /// @throw MatrixException
+      /// @throw VectorException
    void merge(const SRI& S)
-      throw(MatrixException,VectorException)
    { *this += S; }
 
       /// merge this SRI with the given input SRI. ? should this be operator&=() ?
       /// NB may reorder the names in the resulting Namelist.
       /// @param S SRI to be merged into this
-   SRI& operator+=(const SRI& S)
-      throw(MatrixException,VectorException);
+      /// @throw MatrixException
+      /// @throw VectorException
+   SRI& operator+=(const SRI& S);
 
       /// merge two SRIs to produce a third. ? should this be operator&() ?
       /// @param S1 first SRI to be merged
       /// @param S2 second SRI to be merged
-   friend SRI operator+(const SRI& S1, const SRI& S2)
-      throw(MatrixException,VectorException);
+      /// @throw MatrixException
+      /// @throw VectorException
+   friend SRI operator+(const SRI& S1, const SRI& S2);
 
       /// append an SRI onto this SRI. Similar to opertor+= but simpler; input SRI is
       /// simply appended, first using operator+=(Namelist), then filling the new
@@ -264,9 +269,10 @@ public:
       /// Do not allow a name that is already present to be added: throw.
       /// @param S input SRI to be appended
       /// @return appended SRI
-      /// @throw if a name is repeated
-   SRI& append(const SRI& S)
-      throw(MatrixException,VectorException);
+      /// @throw SomeUnknownException if a name is repeated
+      /// @throw MatrixException
+      /// @throw VectorException
+   SRI& append(const SRI& S);
 
       /// Zero out the nth row of R and the nth element of Z, removing all
       /// information about that element.
@@ -294,24 +300,22 @@ public:
       /// Shift the state vector by a constant vector X0; does not change information
       /// i.e. let R * X = Z => R' * (X-X0) = Z'
       /// @param X0 vector by which to shift the state
-      /// @throw on invalid input dimension
-   void shift(const Vector<double>& X0)
-      throw(MatrixException);
+      /// @throw MatrixException on invalid input dimension
+   void shift(const Vector<double>& X0);
 
       /// Shift the SRI state vector (Z) by a constant vector Z0;
       /// does not change information. i.e. let Z => Z-Z0
       /// @param Z0 vector by which to shift the Z state
-      /// @throw on invalid input dimension
-   void shiftZ(const Vector<double>& Z0)
-      throw(MatrixException);
+      /// @throw MatrixException on invalid input dimension
+   void shiftZ(const Vector<double>& Z0);
 
       /// Retriangularize the SRI, when it has been modified to a non-UT
       /// matrix (e.g. by transform()). Given the matrix A=[R||Z], apply HH transforms
       /// to retriangularize it and pull out new R and Z.
       /// NB caller must modify names, if necessary
       /// @param A Matrix<double> which is [R || Z] to be retriangularizied.
-      /// @throw if dimensions are wrong.
-   void retriangularize(const Matrix<double>& A) throw(MatrixException);
+      /// @throw MatrixException if dimensions are wrong.
+   void retriangularize(const Matrix<double>& A);
 
       /// Retriangularize the SRI, that is assuming R has been modified to a non-UT
       /// matrix (e.g. by transform()). Given RR and ZZ, apply HH transforms to 
@@ -319,9 +323,8 @@ public:
       /// NB caller must modify names, if necessary
       /// @param R Matrix<double> input the modified (non-UT) R
       /// @param Z Vector<double> input the (potentially) modified Z
-      /// @throw if dimensions are wrong.
-   void retriangularize(Matrix<double> RR, Vector<double> ZZ)
-      throw(MatrixException);
+      /// @throw MatrixException if dimensions are wrong.
+   void retriangularize(Matrix<double> RR, Vector<double> ZZ);
 
       /// Transform the state by the transformation matrix T; i.e. X -> T*X;
       /// this is done by right multiplying R by inverse(T), which is the input.
@@ -330,8 +333,7 @@ public:
       /// @param invT Matrix<double> inverse of the transformation T : X->T*X
       /// @param NL Namelist of the transformed SRI, SRI.names is set to this
       /// @throw MatrixException if input dimensions are wrong.
-   void transform(const Matrix<double>& invT, const Namelist& NL)
-      throw(MatrixException);
+   void transform(const Matrix<double>& invT, const Namelist& NL);
 
       /// Decrease the information in this SRI for, or 'Q bump', the element
       /// with the input index.  This means that the uncertainty and the state
@@ -342,9 +344,9 @@ public:
       /// @param in index to bump
       /// @param q factor by which to 'de-weight' the element(in), default 0.0 which
       ///    implies all information removed.
-      /// @throw
-   void Qbump(const unsigned int& in, const double& q=0.0)
-      throw(MatrixException,VectorException);
+      /// @throw MatrixException
+      /// @throw VectorException
+   void Qbump(const unsigned int& in, const double& q=0.0);
 
       /// Fix one state element (with the given name) to a given value, and set the
       /// information for that element (== 1/sigma) to a given value.
@@ -353,9 +355,9 @@ public:
       /// @param value to which the state element is fixed
       /// @param sigma (1/information) assigned to the element
       /// @param restore if true, permute back to the original form after fixing
+      /// @throw Exception
    void stateFix(const std::string& name,
-                 const double& value, const double& sigma, bool restore)
-      throw(Exception);
+                 const double& value, const double& sigma, bool restore);
 
       /// Fix one state element (at the given index) to a given value, and set the
       /// information for that element (== 1/sigma) to a given value.
@@ -364,17 +366,18 @@ public:
       /// @param value to which the state element is fixed
       /// @param sigma (1/information) assigned to the element
       /// @param restore if true, permute back to the original form after fixing
+      /// @throw Exception
    void stateFix(const unsigned int& index,
-                 const double& value, const double& sigma, bool restore)
-      throw(Exception);
+                 const double& value, const double& sigma, bool restore);
 
       /// Fix the state element with the input index to the input value, and
       /// collapse the SRI by removing that element.
       /// No effect if index is out of range.
       /// @param index of the element to fix
       /// @param value to which the state element is fixed
-   void stateFixAndRemove(const unsigned int& index, const double& value)
-      throw(MatrixException,VectorException);
+      /// @throw MatrixException
+      /// @throw VectorException
+   void stateFixAndRemove(const unsigned int& index, const double& value);
 
       /// Vector version of stateFixAndRemove, with Namelist identifying the states.
       /// Fix the given state elements to the input value, and
@@ -382,32 +385,32 @@ public:
       /// No effect if name is not found.
       /// @param drops Namelist of states to fix
       /// @param values vector parallel to drops of values to which elements are fixed
-   void stateFixAndRemove(const Namelist& drops, const Vector<double>& values)
-      throw(MatrixException,VectorException);
+      /// @throw MatrixException
+      /// @throw VectorException
+   void stateFixAndRemove(const Namelist& drops, const Vector<double>& values);
 
       /// Add a priori or constraint information in the form of an ordinary
       /// state vector and covariance matrix. The matrix must be non-singular.
       /// @param Cov Covariance matrix of same dimension as this SRIFilter
       /// @param X   State vector of same dimension as this SRIFilter
-      /// @throw if input is invalid: dimensions are wrong or Cov is singular.
-   void addAPriori(const Matrix<double>& Cov, const Vector<double>& X)
-      throw(MatrixException);
+      /// @throw MatrixException if input is invalid: dimensions are
+      ///   wrong or Cov is singular.
+   void addAPriori(const Matrix<double>& Cov, const Vector<double>& X);
 
       /// Add a priori or constraint information in the form of an information
       /// matrix (inverse covariance) and ordinary state. ICov must be non-singular.
       /// @param ICov Inverse covariance matrix of same dimension as this SRIFilter
       /// @param X    State vector of same dimension as this SRIFilter
-      /// @throw if input is invalid: dimensions are wrong.
-   void addAPrioriInformation(const Matrix<double>& ICov, const Vector<double>& X)
-      throw(MatrixException);
+      /// @throw MatrixException if input is invalid: dimensions are wrong.
+   void addAPrioriInformation(const Matrix<double>& ICov, const Vector<double>& X);
 
       /// SRIF (Kalman) measurement update, or least squares update
       /// Call the SRI measurement update for this SRI and the given input. See doc.
       /// for SrifMU().
       /// @param Partials matrix
       /// @param Data vector
+      /// @throw Exception
    void measurementUpdate(Matrix<double>& Partials, Vector<double>& Data)
-      throw(Exception)
    {
       try {
          SrifMU(R, Z, Partials, Data);
@@ -420,8 +423,8 @@ public:
       /// for SrifMU().
       /// @param Partials matrix
       /// @param Data vector
+      /// @throw Exception
    void measurementUpdate(SparseMatrix<double>& Partials, Vector<double>& Data)
-      throw(Exception)
    {
       try {
          SrifMU(R, Z, Partials, Data);
@@ -435,8 +438,8 @@ public:
       /// matrix would be the square of the condition number of R.
       /// @param small smallest eigenvalue
       /// @param big largest eigenvalue, condition = big/small
-   void getConditionNumber(double& small, double& big) const
-      throw(MatrixException);
+      /// @throw MatrixException
+   void getConditionNumber(double& small, double& big) const;
 
       /// Compute the state X without computing the covariance matrix C.
       /// R*X=Z so X=inverse(R)*Z; in this routine the state is computed explicitly,
@@ -447,9 +450,8 @@ public:
       /// @param X                 State vector (output)
       /// @param ptrSingularIndex  if ptr is non-null, on output *ptr will be the
       ///                           largest index of singularity
-      /// @throw SingularMatrixException if R is singular.
-   void getState(Vector<double>& X, int *ptrSingularIndex=NULL) const
-      throw(MatrixException);
+      /// @throw MatrixException if R is singular.
+   void getState(Vector<double>& X, int *ptrSingularIndex=NULL) const;
 
       /// Compute the state X and the covariance matrix C of the state, where
       /// C = transpose(inverse(R))*inverse(R) and X = inverse(R) * Z.
@@ -462,12 +464,12 @@ public:
       ///                 eigenvalue of R
       /// @param ptrBig Pointer to double, on output *ptrBig set to largest
       ///                 eigenvalue of R
-      /// @throw SingularMatrixException if R is singular.
+      /// @throw MatrixException if R is singular.
+      /// @throw VectorException
    void getStateAndCovariance(Vector<double>& X,
                               Matrix<double>& C,
                               double *ptrSmall=NULL,
-                              double *ptrBig=NULL) const
-      throw(MatrixException,VectorException);
+                              double *ptrBig=NULL) const;
 
       // member access
       /// @return the size of the SRI, which is the dimension of R(rows and columns),

@@ -125,22 +125,29 @@ namespace gpstk
       virtual std::list<std::string> compare(const OrbData* right) const;
 
          /** Output the contents of this orbit data to the given stream.
-          * @throw Invalid Request if the required data has not been stored.
+          * @throw InvalidRequest if the required data has not been stored.
           */
-      virtual void dumpTerse(std::ostream& s = std::cout) const
-         throw( InvalidRequest ) = 0;
+      virtual void dumpTerse(std::ostream& s = std::cout) const = 0;
 
-      virtual void dumpHeader(std::ostream& s = std::cout) const
-         throw( InvalidRequest ) = 0;
+         /**
+          * @throw InvalidRequest
+          */
+      virtual void dumpHeader(std::ostream& s = std::cout) const = 0;
 
-      virtual void dumpBody(std::ostream& s = std::cout) const
-         throw( InvalidRequest ) = 0;
+         /**
+          * @throw InvalidRequest
+          */
+      virtual void dumpBody(std::ostream& s = std::cout) const = 0;
 
-      virtual void dumpFooter(std::ostream& s = std::cout) const
-         throw( InvalidRequest ) = 0;
+         /**
+          * @throw InvalidRequest
+          */
+      virtual void dumpFooter(std::ostream& s = std::cout) const = 0;
 
-      virtual void dump(std::ostream& s = std::cout) const
-	       throw( InvalidRequest );
+         /**
+          * @throw InvalidRequest
+          */
+      virtual void dump(std::ostream& s = std::cout) const;
 
          /// Overhead information
          //@{

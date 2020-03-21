@@ -49,7 +49,6 @@ namespace gpstk
       // Method to store load ocean tide harmonics data in this class'
       // data map
    void DCBDataReader::loadData()
-      throw( FFStreamError, gpstk::StringUtils::StringException )
    {
 
       try

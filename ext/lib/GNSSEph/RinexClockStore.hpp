@@ -157,8 +157,10 @@ namespace gpstk
       }
 
 
-      /// Load a RINEX clock file; may set the drift and accel flags.
-      bool loadFile(const std::string& filename) throw(Exception)
+         /** Load a RINEX clock file; may set the drift and accel flags.
+          * @throw Exception
+          */
+      bool loadFile(const std::string& filename)
       {
       try {
          // open the input stream

@@ -79,7 +79,6 @@ namespace gpstk {
    // @return the number of sites successfully initialized.
    // @throw if the file could not be opened.
    int OceanLoadTides::initializeSites(vector<string>& sites, string filename)
-      throw(Exception)
    {
    try {
       bool allsites = false;
@@ -216,7 +215,6 @@ namespace gpstk {
    //                displacement in meters.
    // @throw if the site has not been initialized.
    Triple OceanLoadTides::computeDisplacement11(string site, EphTime time)
-      throw(Exception)
    {
    try {
       if(!isValid(site)) {
@@ -336,7 +334,6 @@ namespace gpstk {
    // @throw if the site has not been initialized, if the time system is unknown,
    //                if there is corruption in the static arrays, or .
    Triple OceanLoadTides::computeDisplacement(string site, EphTime time)
-      throw(Exception)
    {
       try {
          ostringstream oss;      // TEMP
@@ -553,7 +550,6 @@ namespace gpstk {
                                    const double Dood[], const double freqDood[],
                                    double ampDer[], double phsDer[], double freqDer[],
                                    const int Nin)
-      throw(Exception)
    {
       // indexes for std tides: M2, S2, N2, K2, K1,  O1,  P1,  Q1,  Mf,  Mm, Ssa
       static const int stdindex[] = {

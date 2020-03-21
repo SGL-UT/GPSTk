@@ -62,8 +62,7 @@ namespace gpstk
    }
 
    OrbSysGpsC_32::OrbSysGpsC_32(const PackedNavBits& msg)
-      throw( InvalidParameter):
-      OrbSysGpsC()
+         : OrbSysGpsC()
    {
       loadData(msg);
    }
@@ -96,7 +95,6 @@ namespace gpstk
    }
    
    void OrbSysGpsC_32::loadData(const PackedNavBits& msg)
-      throw(InvalidParameter)
    {
       setUID(msg);
       if (UID!=32)
@@ -178,7 +176,6 @@ namespace gpstk
 
    CommonTime OrbSysGpsC_32::getUT1(const CommonTime& ct, 
                                 const CommonTime& tutc) const
-      throw( InvalidRequest )
    {
       if (tutc.getTimeSystem()!=TimeSystem::UTC)
       {
@@ -200,7 +197,6 @@ namespace gpstk
 
    CommonTime OrbSysGpsC_32::getUT1(const CommonTime& ct,
                                 const OrbSysGpsC_33* mt33) const
-      throw( InvalidRequest )
    {
       if (!mt33->isUtcValid(ct))
       {
@@ -247,7 +243,6 @@ namespace gpstk
    }
 
    void OrbSysGpsC_32::dumpTerse(std::ostream& s) const
-         throw(InvalidRequest)
    {
       if (!dataLoadedFlag)
       {
@@ -277,7 +272,6 @@ namespace gpstk
    } // end of dumpTerse()
 
    void OrbSysGpsC_32::dumpBody(ostream& s) const
-      throw( InvalidRequest )
    {
       if (!dataLoadedFlag)
       {

@@ -100,7 +100,6 @@ namespace gpstk
    WxObservation WxObsData::getWxObservation(const CommonTime& t,
                                              unsigned iv,
                                              bool interpolate) const
-      throw(ObjectNotFound)
    {
       if (obs.empty())
       {

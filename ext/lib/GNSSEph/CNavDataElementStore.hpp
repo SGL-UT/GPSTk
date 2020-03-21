@@ -115,13 +115,12 @@ namespace gpstk
       /// Optionally a time range of interest may be specified.  
       /// The return is specifically chosen to be a const reference.  The
       /// intent is to provide "read only" access for analysis.
-      /// If there are no elements present for the requested satellite, 
-      /// the method will throw InvalidRequest.
+      /// @throw InvalidRequest if there are no elements present for
+      /// the requested satellite.
       const DataElementMap& 
       getDataElementMap(const SatID& satID,
                         const CommonTime& begin=CommonTime::BEGINNING_OF_TIME,
-                        const CommonTime& end=CommonTime::END_OF_TIME) const
-                   throw(InvalidRequest);
+                        const CommonTime& end=CommonTime::END_OF_TIME) const;
 
    protected:
 

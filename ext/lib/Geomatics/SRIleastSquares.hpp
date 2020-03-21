@@ -84,8 +84,7 @@ public:
    /// @throw MatrixException if dimensions are not consistent.
    SRIleastSquares(const Matrix<double>& R,
              const Vector<double>& Z,
-             const Namelist& NL)
-      throw(MatrixException);
+                   const Namelist& NL);
 
    /// copy constructor
    /// @param right SRIleastSquares to be copied
@@ -131,8 +130,7 @@ public:
                   void (LSF)(Vector<double>& X,
                              Vector<double>& f,
                              Matrix<double>& P)
-      )
-      throw(MatrixException);
+                  );
 
    /// output operator
    friend std::ostream& operator<<(std::ostream& s,
@@ -149,7 +147,8 @@ public:
    /// optionally change the dimension. If N is not input, the
    /// dimension is not changed.
    /// @param N new SRIleastSquares dimension (optional).
-   void Reset(const int N=0) throw(Exception);
+   /// @throw Exception
+   void Reset(const int N=0);
 
    // ------------- member functions ---------------
    /// Get the current solution vector

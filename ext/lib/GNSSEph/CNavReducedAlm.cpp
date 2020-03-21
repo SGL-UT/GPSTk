@@ -63,7 +63,6 @@ namespace gpstk
 
    CNavReducedAlm::CNavReducedAlm(const AlmType almType, const CommonTime& ctAlm, 
                                   const PackedNavBits& pnb, const unsigned int startBit)
-      throw( InvalidParameter)
       :L1HEALTH(1),
        L2HEALTH(1), 
        L5HEALTH(1),
@@ -91,7 +90,6 @@ namespace gpstk
                                  const CommonTime& ctAlm, 
                                  const PackedNavBits& pnb, 
                                  const unsigned int startBit)
-         throw(InvalidParameter)
    {
          // Verify that the PackedNavBits contains an appropriate data set
       const ObsID& oidr = pnb.getobsID();
@@ -171,7 +169,6 @@ namespace gpstk
           * @throw Invalid Request if the required data has not been stored.
           */
    void CNavReducedAlm::dumpTerse(std::ostream& s) const
-         throw( InvalidRequest )
    {
       if (!dataLoadedFlag)
       {
@@ -191,7 +188,6 @@ namespace gpstk
 
 
    void CNavReducedAlm::dumpBody(std::ostream& s) const
-         throw( InvalidRequest )
    {
       s << setw(2) << setfill('0') << subjSv.id;
       s.setf(ios::scientific, ios::floatfield);
