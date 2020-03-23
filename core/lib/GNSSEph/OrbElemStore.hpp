@@ -205,8 +205,7 @@ namespace gpstk
          /// Classes to set/test the satellite system list.
       bool isSatSysPresent(const SatID::SatelliteSystem ss) const;
       void addSatSys(const SatID::SatelliteSystem ss); 
-      void validSatSystem(const SatID& sat) const 
-         throw( InvalidRequest );
+      void validSatSystem(const SatID& sat) const;
       std::list<SatID::SatelliteSystem> getValidSystemList() const;
       void dumpValidSystemList(std::ostream& out) const;  
 
