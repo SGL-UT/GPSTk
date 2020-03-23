@@ -76,8 +76,6 @@ namespace gpstk
 
    
    void RinexClockData::reallyPutRecord(FFStream& s) const
-      throw(std::exception, FFStreamError,
-            StringUtils::StringException)
    {      
       if ( type != AR &&
            type != AS &&
@@ -132,8 +130,6 @@ namespace gpstk
 
 
    void RinexClockData::reallyGetRecord(FFStream& ffs)
-      throw(std::exception, FFStreamError,
-            StringUtils::StringException)
    {
       RinexClockStream& strm = dynamic_cast<RinexClockStream&>(ffs);
 

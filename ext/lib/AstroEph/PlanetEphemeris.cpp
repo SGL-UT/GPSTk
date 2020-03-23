@@ -52,7 +52,6 @@ namespace gpstk
    using namespace StringUtils;
 
    void PlanetEphemeris::readASCIIheader(string filename) 
-      throw(Exception)
    {
       try 
       {
@@ -225,7 +224,6 @@ namespace gpstk
 
 
    int PlanetEphemeris::readASCIIdata(vector<string>& filenames) 
-      throw(Exception)
    {
       try 
       {
@@ -266,7 +264,6 @@ namespace gpstk
 
 
    int PlanetEphemeris::readASCIIdata(string filename) 
-      throw(Exception)
    {
       try 
       {
@@ -357,7 +354,6 @@ namespace gpstk
 
 
    int PlanetEphemeris::writeASCIIheader(ostream& os) 
-      throw(Exception)
    {
       try 
       {
@@ -453,7 +449,6 @@ namespace gpstk
 
 
    int PlanetEphemeris::writeASCIIdata(ostream& os) 
-      throw(Exception)
    {
       try 
       {
@@ -504,7 +499,6 @@ namespace gpstk
 
 
    int PlanetEphemeris::writeBinaryFile(string filename) 
-      throw(Exception)
    {
       try 
       {
@@ -633,7 +627,6 @@ namespace gpstk
 
 
    int PlanetEphemeris::readBinaryFile(string filename) 
-      throw(Exception)
    {
       try 
       {
@@ -654,7 +647,6 @@ namespace gpstk
 
    
    int PlanetEphemeris::initializeWithBinaryFile(string filename) 
-      throw(Exception)
    {
       try 
       {
@@ -691,7 +683,6 @@ namespace gpstk
                                       PlanetEphemeris::Planet center,
                                       double PV[6],
                                       bool kilometers) 
-      throw(Exception)
    {
       try 
       {
@@ -779,7 +770,6 @@ namespace gpstk
 
 
    void PlanetEphemeris::writeBinary(ofstream& strm, const char *ptr, size_t size)
-      throw(Exception)
    {
       try 
       {
@@ -798,7 +788,6 @@ namespace gpstk
 
 
    void PlanetEphemeris::readBinary(char *ptr, size_t size) 
-      throw(Exception)
    {
       try 
       {
@@ -817,7 +806,6 @@ namespace gpstk
 
 
    void PlanetEphemeris::readBinaryHeader(std::string filename) 
-      throw(Exception)
    {
       try 
       {
@@ -953,7 +941,6 @@ namespace gpstk
 
 
    int PlanetEphemeris::readBinaryData(bool save) 
-      throw(Exception)
    {
       try 
       {
@@ -1014,7 +1001,6 @@ namespace gpstk
    // -4 EphemerisNumber is not defined
    // For -3,-4 : initializeWithBinaryFile() has not been called, or reading failed.
    int PlanetEphemeris::readBinaryRecord(vector<double>& data_vector) 
-      throw(Exception)
    {
       try 
       {
@@ -1048,7 +1034,6 @@ namespace gpstk
       // -4 EphemerisNumber is not defined
       // For -3,-4 : initializeWithBinaryFile() has not been called, or reading failed.
    int PlanetEphemeris::seekToJD(double JD) 
-      throw(Exception)
    {
       try 
       {
@@ -1087,7 +1072,6 @@ namespace gpstk
    void PlanetEphemeris::computeState(double tt, 
                                       PlanetEphemeris::computeID which, 
                                       double PV[6])
-      throw(Exception)
    {
       try {
          int i,j,i0,ncomp;

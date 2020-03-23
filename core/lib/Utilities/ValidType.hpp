@@ -73,9 +73,11 @@ namespace gpstk
       ValidType& operator+=(const T& r) throw(){value+=r; return *this;}
       ValidType& operator-=(const T& r) throw(){value-=r; return *this;}
 
-         // A conversion operator, will throw an exception if the object
-         // is marked invalid
-      operator T() const throw(InvalidValue)
+         /** A conversion operator, will throw an exception if the object
+          * is marked invalid.
+          * @throw InvalidValue
+          */
+      operator T() const
       {
          if (!this->is_valid()) throw InvalidValue();
          return value;

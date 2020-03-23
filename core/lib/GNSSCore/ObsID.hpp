@@ -254,11 +254,15 @@ namespace gpstk
           * Rinex 3 specification. If the Rinex 3 style descriptor
           * isn't currently defined, a new one is silently
           * automatically created with a blank description for the new
-          * characters. */
-      explicit ObsID(const std::string& id) throw(InvalidParameter);
+          * characters.
+          * @throw InvalidParameter
+          */
+      explicit ObsID(const std::string& id);
 
-         /// Constructor from c-style string; see c'tor from a string.
-      explicit ObsID(const char* id) throw(InvalidParameter)
+         /** Constructor from c-style string; see c'tor from a string.
+          * @throw InvalidParameter
+          */
+      explicit ObsID(const char* id)
       { *this=ObsID(std::string(id));}
 
          /// Equality requires all fields to be the same
@@ -298,10 +302,10 @@ namespace gpstk
           * exception is thrown and the existing definitions are not
           * touched. If not then each character of the specification
           * is examined and the new ones are created. The returned
-          * ObsID can then be examined for the assigned values. */
+          * ObsID can then be examined for the assigned values.
+          * @throw InvalidParameter */
       static ObsID newID(const std::string& id,
-                         const std::string& desc="")
-         throw(InvalidParameter);
+                         const std::string& desc="");
 
          // Note that these are the only data members of objects of this class.
       ObservationType  type;

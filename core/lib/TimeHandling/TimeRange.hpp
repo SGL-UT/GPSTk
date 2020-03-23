@@ -64,15 +64,20 @@ namespace gpstk
    
       TimeRange();
       
+         /**
+          * @throw @TimeRangeException
+          */
       TimeRange(const CommonTime& startDT, 
                 const CommonTime& endDT,
                 const bool startInclusive=true, 
-                const bool endInclusive=true ) throw(TimeRangeException);
+                const bool endInclusive=true);
 
-         /// To cover potential use with RiseSetTimeList               
-      TimeRange( DTPair dtPair,
+         /** To cover potential use with RiseSetTimeList               
+          * @throw @TimeRangeException
+          */
+      TimeRange(DTPair dtPair,
                 const bool startInclusive=true, 
-                const bool endInclusive=true ) throw(TimeRangeException); 
+                const bool endInclusive=true);
 
          /// Copy construtor       
       TimeRange(const TimeRange& tr); 
@@ -83,10 +88,13 @@ namespace gpstk
       CommonTime getStart() const { return start; }
       CommonTime getEnd() const { return end; }
 
+         /**
+          * @throw @TimeRangeException
+          */
       void set( const CommonTime& startDT, 
                 const CommonTime& endDT,
                 const bool startInclusive=true, 
-                const bool endInclusive=true ) throw(TimeRangeException);
+                const bool endInclusive=true );
 
          /** Return true is testDT is within the TimeRange.  Whether
           * the boundaries are included is in accordance with the
@@ -128,15 +136,16 @@ namespace gpstk
           *  \li followed by a valid CommonTime string corresponding to fmt, 
           *  \li followed by a ','
           *  \li followed by a valid CommonTime string corresponding to fmt,
-          *  \li followed by an optional ']' or ')' (assume ']').  */
+          *  \li followed by an optional ']' or ')' (assume ']').
+          * @throw TimeRangeException
+          * @throw StringUtils::StringException */
       TimeRange& setToString( const std::string& str, 
-                              const std::string& fmt)
-         throw(TimeRangeException, 
-               StringUtils::StringException);
+                              const std::string& fmt);
 
-         /// Formatted print
-      std::string printf(const std::string formatArg="%02m/%02d/%02y %02H:%02M:%02S" ) const
-        throw(gpstk::StringUtils::StringException);
+         /** Formatted print
+          * @throw StringUtils::StringException
+          */
+      std::string printf(const std::string formatArg="%02m/%02d/%02y %02H:%02M:%02S" ) const;
 
          /// Dump method.   
       std::string dump(const std::string formatArg="%02m/%02d/%02y %02H:%02M:%02S" ) const;
@@ -147,10 +156,13 @@ namespace gpstk
       bool includeStartTime;
       bool includeEndTime; 
 
+         /**
+          * @throw TimeRangeException
+          */
       void init(const CommonTime& startDT, 
                 const CommonTime& endDT,
                 const bool startInclusive=true, 
-                const bool endInclusive=true ) throw(TimeRangeException);
+                const bool endInclusive=true);
 
    };
 

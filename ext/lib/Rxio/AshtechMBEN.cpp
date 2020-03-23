@@ -48,7 +48,6 @@ namespace gpstk
 
    //---------------------------------------------------------------------------
    void AshtechMBEN::reallyGetRecord(FFStream& ffs)
-      throw(std::exception, FFStreamError, EndOfFile)
    {
       AshtechStream& stream=dynamic_cast<AshtechStream&>(ffs);
 
@@ -74,7 +73,6 @@ namespace gpstk
 
    //---------------------------------------------------------------------------
    void AshtechMBEN::decode(const std::string& data)
-      throw(std::exception, FFStreamError)
    {
       using gpstk::BinUtils::decodeVar;
 
@@ -156,7 +154,6 @@ namespace gpstk
 
    //---------------------------------------------------------------------------
    void AshtechMBEN::code_block::decodeASCII(stringstream& str)
-      throw(std::exception, FFStreamError)
    {
       char c;
       str >> warning >> c
@@ -179,7 +176,6 @@ namespace gpstk
 
    //---------------------------------------------------------------------------
    void AshtechMBEN::code_block::decodeBIN(string& str)
-      throw(std::exception, FFStreamError)
    {
       using gpstk::BinUtils::decodeVar;
       uint32_t smo;

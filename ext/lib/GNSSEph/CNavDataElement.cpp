@@ -125,7 +125,6 @@ namespace gpstk
    }
 
    void CNavDataElement::dump(ostream& s) const
-      throw( InvalidRequest )
    {
       dumpHeader(s);
       dumpBody(s);
@@ -133,7 +132,6 @@ namespace gpstk
    }
 
    void CNavDataElement::dumpHeader(ostream& s) const
-      throw( InvalidRequest )
    {
       s << "****************************************************************"
         << "************" << endl
@@ -187,11 +185,9 @@ namespace gpstk
    }
 
    void CNavDataElement::dumpBody(ostream& s) const
-      throw( InvalidRequest )
    {}
 
    void CNavDataElement::dumpFooter(ostream& s) const
-      throw( InvalidRequest )
    {}
 
 }  // End namespace gpstk

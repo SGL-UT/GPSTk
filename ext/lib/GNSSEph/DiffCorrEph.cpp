@@ -65,7 +65,6 @@ namespace gpstk
    //----------------------------------------------------------------
    DiffCorrEph::DiffCorrEph(const PackedNavBits& msg,
                             const unsigned startBit)
-      throw(InvalidParameter)
    {
       try
       {
@@ -80,7 +79,6 @@ namespace gpstk
    //----------------------------------------------------------------
    void DiffCorrEph::loadData(const PackedNavBits& msg, 
                             const unsigned startBit)
-         throw(InvalidParameter)
    {
       try
       {
@@ -137,7 +135,6 @@ namespace gpstk
 
    //----------------------------------------------------------------
    void DiffCorrEph::dump(std::ostream& s) const
-         throw(InvalidRequest)
    {
       if (!dataLoadedFlag)
       {

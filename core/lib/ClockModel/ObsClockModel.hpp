@@ -94,7 +94,10 @@ namespace gpstk
          setSvMode(mode);
       }
 
-      virtual void addEpoch(const ORDEpoch& re) throw(gpstk::InvalidValue) = 0;
+         /**
+          * @throw InvalidValue
+          */
+      virtual void addEpoch(const ORDEpoch& re) = 0;
 
          // set accessor methods ----------------------------------------------   
 
@@ -165,9 +168,9 @@ namespace gpstk
           * get the status of a particular ORD in the bias computation.
           * @param prn the PRN number indicating the ORD of interest
           * @return #SvStatus
-          * @exception ObjectNotFound an ORD for that SV is not in the map
+          * @throw ObjectNotFound an ORD for that SV is not in the map
           */
-      SvStatus getSvStatus(const SatID& svid) const throw(ObjectNotFound);
+      SvStatus getSvStatus(const SatID& svid) const;
 
          /**
           * get the map indicating how to use each ORD in the bias computation.
@@ -179,9 +182,9 @@ namespace gpstk
           * get how a particular ORD is to be used in the bias computation.
           * @param prn the Sv number indicating the mode of interest
           * @return #SvMode
-          * @exception ObjectNotFound a mode for that SV is not in the map
+          * @throw ObjectNotFound a mode for that SV is not in the map
           */
-      SvMode getSvMode(const SatID& svid) const throw(ObjectNotFound);
+      SvMode getSvMode(const SatID& svid) const;
 
          /**
           * returns the sigma multiple value used for ORD stripping.
@@ -206,9 +209,9 @@ namespace gpstk
           * elevation mask, and SvModeMap tests, removes those ORDS
           * that exceede the sigmam value and returns the resulting
           * statistics. This is effectivly a simple single epoch clock
-          * model. */
-      Stats<double> simpleOrdClock(const ORDEpoch& oe)
-         throw(InvalidValue);
+          * model. 
+          * @throw InvalidValue */
+      Stats<double> simpleOrdClock(const ORDEpoch& oe);
 
       virtual void dump(std::ostream& s, short detail=1) const throw();
 

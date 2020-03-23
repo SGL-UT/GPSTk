@@ -88,8 +88,6 @@ namespace gpstk
    }
 
    void RinexMetHeader::reallyPutRecord(FFStream& ffs) const
-      throw(std::exception, FFStreamError,
-            gpstk::StringUtils::StringException)
    {
       RinexMetStream& strm = dynamic_cast<RinexMetStream&>(ffs);
 
@@ -255,8 +253,6 @@ namespace gpstk
    }
 
    void RinexMetHeader::reallyGetRecord(FFStream& ffs) 
-      throw(std::exception, FFStreamError, 
-            gpstk::StringUtils::StringException)
    {
       RinexMetStream& strm = dynamic_cast<RinexMetStream&>(ffs);
 
@@ -464,7 +460,6 @@ namespace gpstk
 
    RinexMetHeader::RinexMetType
    RinexMetHeader::convertObsType(const string& oneObs)
-      throw(FFStreamError)
    {
       if      (oneObs == "PR") return PR;
       else if (oneObs == "TD") return TD;
@@ -484,7 +479,6 @@ namespace gpstk
    }
 
    string RinexMetHeader::convertObsType(const RinexMetHeader::RinexMetType& oneObs)
-      throw(FFStreamError)
    {
       if      (oneObs == PR) return "PR";
       else if (oneObs == TD) return "TD";

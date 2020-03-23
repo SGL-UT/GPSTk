@@ -76,7 +76,6 @@ namespace gpstk
 
    OrbAlmGen::OrbAlmGen( const PackedNavBits& pnb,
                          const unsigned short hArg )
-      throw( InvalidParameter )
       : OrbAlm(),
         AHalf(0.0), A(0.0), af0(0.0), af1(0.0),
         OMEGA0(0.0), ecc(0.0), deltai(0.0), OMEGAdot(0.0),
@@ -93,7 +92,6 @@ namespace gpstk
 
    void OrbAlmGen::loadData( const PackedNavBits& pnb,
                     const unsigned short hArg)
-      throw( InvalidParameter )
    {
       const SatID& sidr = pnb.getsatSys();
       const ObsID& oidr = pnb.getobsID();
@@ -193,7 +191,6 @@ namespace gpstk
    //  have been removed. 
    //
    double OrbAlmGen::svClockBias(const gpstk::CommonTime& t) const
-                     throw(gpstk::InvalidRequest)
    {
       if (!dataLoaded())
       {
@@ -208,7 +205,6 @@ namespace gpstk
    }
 
    double OrbAlmGen::svClockBiasM(const gpstk::CommonTime& t) const
-                     throw(gpstk::InvalidRequest)
    {
       if (!dataLoaded())
       {
@@ -221,7 +217,6 @@ namespace gpstk
    }
 
    double OrbAlmGen::svClockDrift(const gpstk::CommonTime& t) const 
-                     throw(gpstk::InvalidRequest)
    {
       if (!dataLoaded())
       {
@@ -234,7 +229,6 @@ namespace gpstk
    }
 
    gpstk::Xvt OrbAlmGen::svXvt(const gpstk::CommonTime& t) const
-                        throw(gpstk::InvalidRequest)
    {
       if (!dataLoaded())
       {
@@ -413,7 +407,6 @@ namespace gpstk
    }
 
    double OrbAlmGen::svRelativity(const gpstk::CommonTime& t) const
-                     throw(gpstk::InvalidRequest)
    {
       if (!dataLoaded())
       {
@@ -536,7 +529,6 @@ namespace gpstk
 
 
    void OrbAlmGen::dumpBody(ostream& s) const
-      throw(InvalidRequest)
    {
       s  << "Parameter              Value" << endl;
 
@@ -602,7 +594,6 @@ namespace gpstk
    }
 
    void OrbAlmGen :: dumpTerse(ostream& s) const
-      throw(InvalidRequest )
    {
 
        // Check if the subframes have been loaded before attempting
@@ -635,7 +626,6 @@ namespace gpstk
     } // end of dumpTerse()
 
    void OrbAlmGen :: dump(ostream& s) const
-      throw( InvalidRequest )
    {
       ios::fmtflags oldFlags = s.flags();
       dumpHeader(s);
@@ -646,7 +636,6 @@ namespace gpstk
    } // end of dump()
 
    void OrbAlmGen::loadDataGpsLNAV(const gpstk::PackedNavBits& msg)
-               throw(gpstk::InvalidParameter)   
    {
       unsigned short subframe = (unsigned short) msg.asUnsignedLong(49, 3, 1);
       unsigned short SVID = (unsigned short) msg.asUnsignedLong(62,6,1);
@@ -750,7 +739,6 @@ namespace gpstk
    }
 
    void OrbAlmGen::loadDataGpsCNAV(const gpstk::PackedNavBits& msg)
-               throw(gpstk::InvalidParameter)
    {
       unsigned short msgType = (unsigned short) msg.asUnsignedLong(14, 6, 1);
       unsigned short SVID = (unsigned short) msg.asUnsignedLong(148,6,1);

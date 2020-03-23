@@ -56,9 +56,10 @@ namespace gpstk
          /// Default constructor
       CNavUTC();
   
-        /// Need description here...
-      CNavUTC(const PackedNavBits& message33)
-         throw( InvalidParameter);
+         /**
+          * @throw InvalidParameter
+          */
+      CNavUTC(const PackedNavBits& message33);
       
          /// Destructor
       virtual ~CNavUTC() {}
@@ -73,8 +74,7 @@ namespace gpstk
           * @param message30 - 300 bits of Message Type 33
           * @throw InvalidParameter if message data is invalid
           */
-      void loadData(const PackedNavBits& message33)
-         throw(gpstk::InvalidParameter); 
+      void loadData(const PackedNavBits& message33);
 
       virtual std::string getName() const
       {
@@ -86,8 +86,10 @@ namespace gpstk
          return "Civilian Navigation (CNAV) UTC Parameters";
       }
       
-      virtual void dumpBody(std::ostream& s = std::cout) const
-         throw( InvalidRequest );
+         /**
+          * @throw InvalidRequest
+          */
+      virtual void dumpBody(std::ostream& s = std::cout) const;
 
       double A0;
       double A1;

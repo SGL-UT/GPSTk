@@ -62,14 +62,20 @@ namespace gpstk
             ///Destructor
          ~OrbDataSysFactory() {};
 
-         static OrbDataSys* convert(const gpstk::PackedNavBits& pnb)
-               throw(gpstk::InvalidParameter);
+         /**
+          * @throw InvalidParameter
+          */
+      static OrbDataSys* convert(const gpstk::PackedNavBits& pnb);
 
             // Factory methods for each message type
-         static OrbDataSys* GPSLNAV(const gpstk::PackedNavBits& pnb)
-               throw(gpstk::InvalidParameter);
-         static OrbDataSys* GPSCNAV(const gpstk::PackedNavBits& pnb)
-               throw(gpstk::InvalidParameter);
+         /**
+          * @throw InvalidParameter
+          */
+      static OrbDataSys* GPSLNAV(const gpstk::PackedNavBits& pnb);
+         /**
+          * @throw InvalidParameter
+          */
+      static OrbDataSys* GPSCNAV(const gpstk::PackedNavBits& pnb);
 
          static int debugLevel;
 

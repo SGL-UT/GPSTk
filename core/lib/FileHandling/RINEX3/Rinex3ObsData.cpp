@@ -53,7 +53,6 @@ namespace gpstk
 {
    void reallyPutRecordVer2( Rinex3ObsStream& strm,
                              const Rinex3ObsData& rod )
-      throw(FFStreamError, StringException)
    {
          // is there anything to write?
       if( (rod.epochFlag==0 || rod.epochFlag==1 || rod.epochFlag==6)
@@ -220,7 +219,6 @@ namespace gpstk
 
 
    RinexDatum Rinex3ObsData::getObs(const RinexSatID& svID, size_t index ) const
-      throw(InvalidRequest)
    {
       DataMap::const_iterator i = obs.find(svID);
       if (i == obs.end())
@@ -241,7 +239,6 @@ namespace gpstk
    RinexDatum Rinex3ObsData::getObs(const RinexSatID& svID,
                                     const std::string& type,
                                     const Rinex3ObsHeader& hdr ) const
-      throw(InvalidRequest)
    {
       string obsID;
          // Add GNSS code if needed
@@ -257,7 +254,6 @@ namespace gpstk
    RinexDatum Rinex3ObsData::getObs(const RinexSatID& svID,
                                     const RinexObsID& obsID,
                                     const Rinex3ObsHeader& hdr ) const
-      throw(InvalidRequest)
    {
       string sys(1,svID.systemChar());
       return getObs(svID, hdr.getObsIndex(sys, obsID));
@@ -268,7 +264,6 @@ namespace gpstk
                               const RinexSatID& svID,
                               const RinexObsID& obsID,
                               const Rinex3ObsHeader& hdr )
-         throw(InvalidRequest)
    {
       size_t index = hdr.getObsIndex(string(1,svID.systemChar()), obsID);
       if (obs[svID].size() <= index)
@@ -278,7 +273,6 @@ namespace gpstk
 
    
    void Rinex3ObsData::reallyPutRecord(FFStream& ffs) const
-      throw(std::exception, FFStreamError, StringException)
    {
          // is there anything to write?
       if( (epochFlag == 0 || epochFlag == 1 || epochFlag == 6)
@@ -360,7 +354,6 @@ namespace gpstk
 
    
    void reallyGetRecordVer2(Rinex3ObsStream& strm, Rinex3ObsData& rod)
-      throw(Exception)
    {
       static CommonTime previousTime(CommonTime::BEGINNING_OF_TIME);
 
@@ -574,7 +567,6 @@ namespace gpstk
 
 
    void Rinex3ObsData::reallyGetRecord(FFStream& ffs)
-      throw(std::exception, FFStreamError, gpstk::StringUtils::StringException)
    {
       Rinex3ObsStream& strm = dynamic_cast<Rinex3ObsStream&>(ffs);
 
@@ -710,7 +702,6 @@ namespace gpstk
    CommonTime Rinex3ObsData::parseTime(const string& line,
                                        const Rinex3ObsHeader& hdr,
                                        const TimeSystem& ts) const
-      throw(FFStreamError)
    {
       try
       {
@@ -767,7 +758,6 @@ namespace gpstk
    }  // end parseTime
 
    string Rinex3ObsData::writeTime(const CommonTime& ct) const
-      throw(StringException)
    {
       if(ct == CommonTime::BEGINNING_OF_TIME)
          return string(26, ' ');
@@ -790,7 +780,7 @@ namespace gpstk
       return line;
    }  // end writeTime
 
-   string Rinex3ObsData::timeString() const throw(StringException)
+   string Rinex3ObsData::timeString() const
    {
       return writeTime(time);
    }

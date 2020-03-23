@@ -83,8 +83,7 @@ namespace gpstk
          /**  Load an existing object from a PackedNavBits object.
            *  @throw InvalidParameter if the data are not consistent.
            */ 
-      void loadData( const gpstk::PackedNavBits& pnbr )
-	       throw(gpstk::InvalidParameter); 
+      void loadData( const gpstk::PackedNavBits& pnbr );
 
       virtual std::string getName() const
       {
@@ -98,23 +97,23 @@ namespace gpstk
 
       virtual bool isSameData(const OrbElemBase* right) const = 0;      
       
-      virtual void dumpHeader(std::ostream& s = std::cout) const
-         throw( gpstk::InvalidRequest );
+         /**
+          * @throw InvalidRequest
+          */
+      virtual void dumpHeader(std::ostream& s = std::cout) const;
 
          /** Generate a formatted human-readable output of the entire contents of
           *  this object and send it to the designated output stream (default to cout).
-          *  @throw Invalid Parameter if the object has been instantiated, but not loaded.
           */
       virtual void dump(std::ostream& s = std::cout) const
-         throw( gpstk::InvalidRequest ) {} 
+      {}
 
          /** Generate a formatted human-readable one-line output that summarizes
           *  the critical times associated with this object and send it to the
           *  designated output stream (default to cout).
-          *  @throw Invalid Parameter if the object has been instantiated, but not loaded.
           */   
       virtual void dumpTerse(std::ostream& s = std::cout) const
-         throw( gpstk::InvalidRequest ) {}   
+      {}
 
          // subjectSV stores the satellite identifier for the satellite orbit which
          // is desribed in thie data set.   OrbData::satID stors the satellite 

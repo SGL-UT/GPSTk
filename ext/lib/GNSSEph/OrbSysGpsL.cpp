@@ -72,7 +72,6 @@ namespace gpstk
    }
 
    void OrbSysGpsL::dumpHeader(std::ostream& s) const
-         throw( InvalidRequest )
    {
       s << "*******************************************************" << endl;
       s << " GPS System-level navigation message data.  UID: " << UID << endl;

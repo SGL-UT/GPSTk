@@ -109,14 +109,14 @@ namespace gpstk
           * are single-purpose and the filter name is sufficient to
           * determine the cause.  This method is meant to be used by
           * complex filters with multiple pass/fail criteria. */
-      virtual std::string reasonTerse() const noexcept
+      virtual std::string reasonTerse() const throw()
       { return ""; }
          /** Return a human-readable string containing a verbose
           * description containing the detailed reasoning behind the
           * current rejected data.  As an example, reasonTerse() might
           * only return "Ahalf", while this method might return
           * "Ahalf=10" i.e. include the rejected value. */
-      virtual std::vector<std::string> reasonVerbose() const noexcept
+      virtual std::vector<std::string> reasonVerbose() const throw()
       { return std::vector<std::string>(); }
 
          /// Debug support 

@@ -91,9 +91,10 @@ namespace gpstk
       virtual ~IonexStore() {};
 
 
-         /// Load the given IONEX file
-      virtual void loadFile(const std::string& filename)
-         throw(FileMissingException);
+         /** Load the given IONEX file
+          * @throw FileMissingException
+          */
+      virtual void loadFile(const std::string& filename);
 
 
          /// Insert a new IonexData object into the store
@@ -140,11 +141,11 @@ namespace gpstk
           * @return values    TEC, RMS and ionosphere height values
           *                   (Triple object with: TEC and RMS in TECU and
           *                   the ionosphere height in meters)
+          * @throw InvalidRequest
           */
       Triple getIonexValue( const CommonTime& t,
                             const Position& RX,
-                            int strategy = 3 ) const
-         throw(InvalidRequest);
+                            int strategy = 3 ) const;
 
 
 
@@ -156,11 +157,11 @@ namespace gpstk
        *                      @sa IonexStore::iono_mapping_function
        *
        * @return              slant total electron content (TECU)
+       * @throw InvalidParameter
        */
    double getSTEC( const double& elevation,
                    const double& tecval,
-                   const std::string& ionoMapType ) const
-      throw (InvalidParameter);
+                   const std::string& ionoMapType ) const;
 
 
 
@@ -173,12 +174,12 @@ namespace gpstk
           *                      @sa IonexStore::iono_mapping_function
           *
           * @return              Ionosphere slant delay (meters)
+          * @throw InvalidParameter
           */
       double getIono( const double& elevation,
                       const double& tecval,
                       const double& freq,
-                      const std::string& ionoMapType ) const
-         throw (InvalidParameter);
+                      const std::string& ionoMapType ) const;
 
 
          // The next 6 functions define the interface for calculating
@@ -192,11 +193,11 @@ namespace gpstk
           *                      @sa IonexStore::iono_mapping_function
           *
           * @return              Ionosphere slant delay (meters)
+          * @throw InvalidParameter
           */
       double getIonoL1( const double& elevation,
                         const double& tecval,
                         const std::string& ionoMapType ) const
-         throw (InvalidParameter)
       { return getIono(elevation, tecval, L1_FREQ_GPS, ionoMapType); };
 
 
@@ -208,11 +209,11 @@ namespace gpstk
           *                      @sa IonexStore::iono_mapping_function
           *
           * @return              Ionosphere slant delay (meters)
+          * @throw InvalidParameter
           */
       double getIonoL2( const double& elevation,
                         const double& tecval,
                         const std::string& ionoMapType ) const
-         throw (InvalidParameter)
       { return getIono(elevation, tecval, L2_FREQ_GPS, ionoMapType); };
 
 
@@ -224,11 +225,11 @@ namespace gpstk
           *                      @sa IonexStore::iono_mapping_function
           *
           * @return              Ionosphere slant delay (meters)
+          * @throw InvalidParameter
           */
       double getIonoL5( const double& elevation,
                         const double& tecval,
                         const std::string& ionoMapType ) const
-         throw (InvalidParameter)
       { return getIono(elevation, tecval, L5_FREQ_GPS, ionoMapType); };
 
 
@@ -240,11 +241,11 @@ namespace gpstk
           *                      @sa IonexStore::iono_mapping_function
           *
           * @return              Ionosphere slant delay (meters)
+          * @throw InvalidParameter
           */
       double getIonoL6( const double& elevation,
                         const double& tecval,
                         const std::string& ionoMapType ) const
-         throw (InvalidParameter)
       { return getIono(elevation, tecval, L6_FREQ_GAL, ionoMapType); };
 
 
@@ -256,11 +257,11 @@ namespace gpstk
           *                      @sa IonexStore::iono_mapping_function
           *
           * @return              Ionosphere slant delay (meters)
+          * @throw InvalidParameter
           */
       double getIonoL7( const double& elevation,
                         const double& tecval,
                         const std::string& ionoMapType ) const
-         throw (InvalidParameter)
       { return getIono(elevation, tecval, L7_FREQ_GAL, ionoMapType); };
 
 
@@ -272,11 +273,11 @@ namespace gpstk
           *                      @sa IonexStore::iono_mapping_function
           *
           * @return              Ionosphere slant delay (meters)
+          * @throw InvalidParameter
           */
       double getIonoL8( const double& elevation,
                         const double& tecval,
                         const std::string& ionoMapType ) const
-         throw (InvalidParameter)
       { return getIono(elevation, tecval, L8_FREQ_GAL, ionoMapType); };
 
 
@@ -307,7 +308,6 @@ namespace gpstk
           * @throw      InvalidRequest This is thrown if the object has no data.
           */
       CommonTime getInitialTime() const
-         throw(InvalidRequest)
       { return initialTime; }
 
 
@@ -320,7 +320,6 @@ namespace gpstk
           * @throw      InvalidRequest This is thrown if the object has no data.
           */
       CommonTime getFinalTime() const
-         throw(InvalidRequest)
       { return finalTime; }
 
 
@@ -334,8 +333,7 @@ namespace gpstk
           * @throw InvalidRequest object thrown when no DCB value is found
           */
       double findDCB( const SatID sat,
-                      const CommonTime& time ) const
-         throw(InvalidRequest);
+                      const CommonTime& time ) const;
 
 
    private:

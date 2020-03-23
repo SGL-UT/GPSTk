@@ -75,8 +75,10 @@ namespace gpstk
       virtual bool isOffsetValid(const gpstk::CommonTime& t) const throw()
       {return t >= startTime && t <= endTime && clockModel.N() > 1;};
 
-         /// Add in the given ord to the clock model
-      virtual void addEpoch(const ORDEpoch& oe) throw(gpstk::InvalidValue);
+         /** Add in the given ord to the clock model.
+          * @throw InvalidValue
+          */
+      virtual void addEpoch(const ORDEpoch& oe);
 
          /// Reset the accumulated statistics on the clock
       void reset() throw();

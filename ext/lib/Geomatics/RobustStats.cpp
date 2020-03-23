@@ -66,7 +66,6 @@ inline long Stem(double x, double& scale) { return (long(x/scale)); }
 
 //------------------------------------------------------------------------------------
 void Robust::StemLeafPlot(ostream& os, double *xd, long nd, string msg)
-   throw(Exception)
 {
    long stem, l, nout=0, s, sM, sQ1, sQ3, sOH, sOL;
    int i, sign, pos, k, leaf;
@@ -256,7 +255,6 @@ void Robust::StemLeafPlot(ostream& os, double *xd, long nd, string msg)
 
 
 void Robust::Quantiles(double *xd, long nd)
-   throw(Exception)
 {
    if(!xd || nd<2) {
       Exception e("Invalid input");
@@ -275,7 +273,6 @@ void Robust::Quantiles(double *xd, long nd)
 #define SEQUENTIAL 1     // don't see much difference in timing...
 int Robust::RobustPolyFit(double *xd, const double *td, int nd,
                           int N, double *c, double *w)
-   throw(Exception)
 {
    try {
       if(!xd || !td || !c || nd < 2) {
@@ -412,7 +409,6 @@ int Robust::RobustPolyFit(double *xd, const double *td, int nd,
    //                      it will be sorted.
 double gpstk::ADtest(double *xd, const int nd,
                      double mean, double stddev, bool save_flag)
-      throw(Exception)
 {
    if(!xd || nd < 2) {
       Exception e("Invalid input");

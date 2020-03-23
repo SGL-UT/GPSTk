@@ -108,49 +108,55 @@ namespace gpstk
 
    protected:
 
-         /// Writes the met data to the file stream formatted correctly.
-      void reallyPutRecord(FFStream& s) const
-         throw(std::exception, FFStreamError,
-               gpstk::StringUtils::StringException);
+         /** Writes the met data to the file stream formatted correctly.
+          * @throw std::exception
+          * @throw FFStreamError
+          * @throw StringUtils::StringException
+          */
+      void reallyPutRecord(FFStream& s) const;
 
          /**
           * This function retrieves a RINEX 2 or 3 Met record from the
           * given FFStream.  If an error is encountered reading from
           * the stream, the stream is returned to its original
           * position and its fail-bit is set.
-          * @throws StringException when a StringUtils function fails
-          * @throws FFStreamError when exceptions(failbit) is set and a
+          * @throw std::exception
+          * @throw StringException when a StringUtils function fails
+          * @throw FFStreamError when exceptions(failbit) is set and a
           *         read or formatting error occurs.  This also resets the
           *         stream to its pre-read position.
           */
-      virtual void reallyGetRecord(FFStream& s)
-         throw(std::exception, FFStreamError,
-               gpstk::StringUtils::StringException);
+      virtual void reallyGetRecord(FFStream& s);
 
    private:
 
-         /// Parses string \a line to get time and met data
-         /// @param version of Rinex file (3.02, 3.01, 2.11, ...)
+         /** Parses string \a line to get time and met data
+          * @param version of Rinex file (3.02, 3.01, 2.11, ...)
+          * @throw FFStreamError
+          */
       void processFirstLine(const std::string& line,
                             const RinexMetHeader& hdr,
-                            double version)
-         throw(FFStreamError);
+                            double version);
 
-         /// Parses string \a line to get data on continuation lines.
+         /** Parses string \a line to get data on continuation lines.
+          * @throw FFStreamError
+          */
       void processContinuationLine(const std::string& line,
-                                   const RinexMetHeader& hdr)
-         throw(FFStreamError);
+                                   const RinexMetHeader& hdr);
 
-         /// Parses the time portion of a line into a CommonTime object.
-         /// @param version of Rinex file (3.02, 3.01, 2.11, ...)
-      CommonTime parseTime(const std::string& line, double version) const
-         throw(FFStreamError);
+         /** Parses the time portion of a line into a CommonTime object.
+          * @param version of Rinex file (3.02, 3.01, 2.11, ...)
+          * @throw FFStreamError
+          */
+      CommonTime parseTime(const std::string& line, double version) const;
 
-         /// Writes the CommonTime object into RINEX format. If it's a
-         /// bad time, it will return blanks.
-         /// @param version Rinex version, default to 2.11 for backwards compatability
-      std::string writeTime(const CommonTime& dtd, double version = 2.11) const
-         throw(gpstk::StringUtils::StringException);
+         /** Writes the CommonTime object into RINEX format. If it's a
+          * bad time, it will return blanks.
+          * @param version Rinex version, default to 2.11 for
+          *   backwards compatability
+          * @throw StringUtils::StringException
+          */
+      std::string writeTime(const CommonTime& dtd, double version = 2.11) const;
 
    };  // class RinexMetData
 

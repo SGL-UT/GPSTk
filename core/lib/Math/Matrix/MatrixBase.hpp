@@ -135,9 +135,10 @@ namespace gpstk
          return true;
       }
 
-         /// copies out column c into a vector starting with row r
+         /** copies out column c into a vector starting with row r
+          * @throw MatrixException
+          */
       Vector<T> colCopy(size_t c, size_t r = 0) const
-         throw(MatrixException)
       { 
 #ifdef RANGECHECK
          if ((c >= cols()) || (r >= rows()))
@@ -153,9 +154,10 @@ namespace gpstk
          return toReturn;
       }
 
-         /// copies out row r into a vector starting with column c
+         /** copies out row r into a vector starting with column c
+          * @throw MatrixException
+          */
       Vector<T> rowCopy(size_t r, size_t c = 0) const
-         throw(MatrixException)
       { 
 #ifdef RANGECHECK
          if ((c >= cols()) || (r >= rows()))
@@ -171,9 +173,10 @@ namespace gpstk
          return toReturn;
       }
 
-         /// copies out diagonal into a vector
+         /** copies out diagonal into a vector
+          * @throw MatrixException
+          */
       Vector<T> diagCopy(void) const
-         throw(MatrixException)
       { 
          size_t i, n(cols());
          if(rows() < n) n = rows();
@@ -184,9 +187,10 @@ namespace gpstk
       }
 
    protected:
-         /// returns the const (i,j) element from the matrix
+         /** returns the const (i,j) element from the matrix
+          * @throw MatrixException
+          */
       inline T constMatrixRef(size_t i, size_t j) const
-         throw(MatrixException)
       {
          const BaseClass& b = static_cast<const BaseClass&>(*this);
 #ifdef RANGECHECK
@@ -270,9 +274,10 @@ namespace gpstk
          //      MatBaseNewAssignOperator(assignFrom, =);
 
          /** performs = on each element of this matrix with each
-          * element of x */
+          * element of x 
+          * @throw MatrixException
+          */
       template <class E> BaseClass& assignFrom(const ConstMatrixBase<T, E>& x)
-         throw(MatrixException)
       {
             //MatBaseArrayAssignMacro(=);
          BaseClass& me = static_cast<BaseClass&>(*this);
@@ -289,9 +294,10 @@ namespace gpstk
          return me;
       }
          /** performs = on each element of this matrix with each
-          * element of x */
+          * element of x
+          * @throw MatrixException
+          */
       template <class E> BaseClass& assignFrom(const ConstVectorBase<T, E>& x)
-         throw(MatrixException)
       {
             //MatBaseArrayAssignMacroVecSource(=);
          BaseClass& me = static_cast<BaseClass&>(*this);
@@ -308,9 +314,10 @@ namespace gpstk
          return me;
       }
          /** performs = on each element of this matrix with each
-          * element of x */
+          * element of x
+          * @throw MatrixException
+          */
       BaseClass& assignFrom(const std::valarray<T>& x)
-         throw(MatrixException)
       {
             //MatBaseArrayAssignMacroVecSource(=);
          BaseClass& me = static_cast<BaseClass&>(*this);
@@ -352,9 +359,10 @@ namespace gpstk
 
          //      MatBaseNewAssignOperator(operator+=, +=);
          /** performs += on each element of this matrix with each
-          * element of x */
+          * element of x
+          * @throw MatrixException
+          */
       template <class E> BaseClass& operator+=(const ConstMatrixBase<T, E>& x)
-         throw(MatrixException)
       {
             //MatBaseArrayAssignMacro(+=);
          BaseClass& me = static_cast<BaseClass&>(*this);
@@ -371,9 +379,10 @@ namespace gpstk
          return me;
       }
          /** performs += on each element of this matrix with each
-          * element of x */
+          * element of x
+          * @throw MatrixException
+          */
       template <class E> BaseClass& operator+=(const ConstVectorBase<T, E>& x)
-         throw(MatrixException)
       {
             //MatBaseArrayAssignMacroVecSource(+=);
          BaseClass& me = static_cast<BaseClass&>(*this);
@@ -390,9 +399,10 @@ namespace gpstk
          return me;
       }
          /** performs += on each element of this matrix with each
-          * element of x */
+          * element of x
+          * @throw MatrixException
+          */
       BaseClass& operator+=(const std::valarray<T>& x)
-         throw(MatrixException)
       {
             //MatBaseArrayAssignMacroVecSource(+=);
          BaseClass& me = static_cast<BaseClass&>(*this);
@@ -435,9 +445,10 @@ namespace gpstk
 
          //#define MatBaseNewAssignOperator(operator-=, -=)
          /** performs -= on each element of this matrix with each
-          * element of x */
+          * element of x
+          * @throw MatrixException
+          */
       template <class E> BaseClass& operator-=(const ConstMatrixBase<T, E>& x)
-         throw(MatrixException)
       {
             //MatBaseArrayAssignMacro(-=);
          BaseClass& me = static_cast<BaseClass&>(*this);
@@ -454,9 +465,10 @@ namespace gpstk
          return me;
       }
          /** performs -= on each element of this matrix with each
-          * element of x */
+          * element of x
+          * @throw MatrixException
+          */
       template <class E> BaseClass& operator-=(const ConstVectorBase<T, E>& x)
-         throw(MatrixException)
       {
             //MatBaseArrayAssignMacroVecSource(-=);
          BaseClass& me = static_cast<BaseClass&>(*this);
@@ -473,9 +485,10 @@ namespace gpstk
          return me;
       }
          /** performs -= on each element of this matrix with each
-          * element of x */
+          * element of x
+          * @throw MatrixException
+          */
       BaseClass& operator-=(const std::valarray<T>& x)
-         throw(MatrixException)
       {
             //MatBaseArrayAssignMacroVecSource(-=);
          BaseClass& me = static_cast<BaseClass&>(*this);
@@ -552,9 +565,10 @@ namespace gpstk
          return me;
       }
 
-         /// swaps rows row1 and row2 in this matrix.
+         /** swaps rows row1 and row2 in this matrix.
+          * @throw MatrixException
+          */
       BaseClass& swapRows(size_t row1, size_t row2) 
-         throw(MatrixException)
       {
          BaseClass& me = static_cast<BaseClass&>(*this);
 #ifdef RANGECHECK
@@ -575,9 +589,10 @@ namespace gpstk
          return me;
       }
 
-         /// swaps columns col1 and col2 in this matrix.
+         /** swaps columns col1 and col2 in this matrix.
+          * @throw MatrixException
+          */
       BaseClass& swapCols(size_t col1, size_t col2) 
-         throw(MatrixException)
       {
          BaseClass& me = static_cast<BaseClass&>(*this);
 #ifdef RANGECHECK
@@ -624,11 +639,12 @@ namespace gpstk
       size_t colStride() const
       { return static_cast<const BaseClass*>(this)->colStride(); }
    protected:
-         /// checks this slice against the source matrix row and column size
-         /// to see if it's a valid slice.
+         /** checks this slice against the source matrix row and column size
+          * to see if it's a valid slice.
+          * @throw MatrixException
+          */
       inline void matSliceCheck(size_t sourceRowSize, 
                                 size_t sourceColSize) const
-         throw(MatrixException)
       {
             //#ifdef RANGECHECK
          if (rowSize() > 0)

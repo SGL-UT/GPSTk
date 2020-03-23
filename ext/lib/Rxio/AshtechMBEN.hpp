@@ -94,10 +94,16 @@ namespace gpstk
          double    smoothing;  // meters
          unsigned  smooth_cnt; //
 
-         virtual void decodeASCII(std::stringstream& str)
-            throw(std::exception, FFStreamError);
-         virtual void decodeBIN(std::string& str)
-            throw(std::exception, FFStreamError);
+            /**
+             * @throw std::exception
+             * @throw FFStreamError
+             */
+         virtual void decodeASCII(std::stringstream& str);
+            /**
+             * @throw std::exception
+             * @throw FFStreamError
+             */
+         virtual void decodeBIN(std::string& str);
             /** Translate the ireg value to an SNR in dB*Hz.
              * @param[in] chipRate The chipping rate of the code.
              * @param[in] mag The magnitude of the carrier estimate.
@@ -131,12 +137,19 @@ namespace gpstk
       {return hdrId==mpcId || hdrId==mcaId;}
 
       void dump(std::ostream& out) const throw();
-      virtual void decode(const std::string& data) 
-         throw(std::exception, FFStreamError);
+            /**
+             * @throw std::exception
+             * @throw FFStreamError
+             */
+      virtual void decode(const std::string& data) ;
 
    protected:
-      virtual void reallyGetRecord(FFStream& ffs)
-         throw(std::exception, FFStreamError, EndOfFile);
+            /**
+             * @throw std::exception
+             * @throw FFStreamError
+             * @throw EndOfFile
+             */
+      virtual void reallyGetRecord(FFStream& ffs);
    };
 } // namespace gpstk
 

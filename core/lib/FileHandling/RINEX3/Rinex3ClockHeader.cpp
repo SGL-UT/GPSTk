@@ -76,7 +76,6 @@ namespace gpstk
 
       // --------------------------------------------------------------------------------
    void Rinex3ClockHeader::reallyGetRecord(FFStream& ffs)
-      throw(exception, FFStreamError, StringException)
    {
       Rinex3ClockStream& strm = dynamic_cast<Rinex3ClockStream&>(ffs);
       
@@ -265,7 +264,6 @@ namespace gpstk
 
 
    void Rinex3ClockHeader::reallyPutRecord(FFStream& ffs) const
-      throw(exception, FFStreamError, StringException)
    {
       try {
          Rinex3ClockStream& strm = dynamic_cast<Rinex3ClockStream&>(ffs);

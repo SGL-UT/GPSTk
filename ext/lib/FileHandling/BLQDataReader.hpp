@@ -197,9 +197,11 @@ namespace gpstk
       { OceanTidesData.insert(make_pair(stationName, data)); };
 
 
-         /// Method to store ocean tide harmonics data in this class' data map
-      virtual void loadData(void)
-         throw( FFStreamError, gpstk::StringUtils::StringException );
+         /** Method to store ocean tide harmonics data in this class' data map
+          * @throw FFStreamError
+          * @throw StringUtils::StringException
+          */
+      virtual void loadData(void);
 
 
    }; // End of class 'BLQDataReader'

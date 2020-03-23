@@ -88,11 +88,12 @@ namespace gpstk
       virtual OrbElemBase* clone() const = 0;
 
          /**
-          * Returns true if the time, ct, is within the period of validity of this
-	  * OrbElemBase object.
-          * @throw Invalid Request if the required data has not been stored.
+          * Returns true if the time, ct, is within the period of
+	  * validity of this OrbElemBase object.
+
+          * @throw InvalidRequest if the required data has not been stored.
           */
-      virtual bool isValid(const CommonTime& ct) const throw(InvalidRequest);
+      virtual bool isValid(const CommonTime& ct) const;
 
 	 /**
           *   Return true if orbit data have been loaded.
@@ -106,40 +107,40 @@ namespace gpstk
       virtual std::string getNameLong() const = 0;
 
          /** This function returns the health status of the SV.
-          * @throw Invalid Request if the required data has not been stored.
+          * @throw InvalidRequest if the required data has not been stored.
           */
-      bool isHealthy() const throw(gpstk::InvalidRequest);
+      bool isHealthy() const;
 
          /// Set the SV health status.  Child classes may do more.
       virtual void setHealthy(bool h) throw()
       { healthy = h; }
 
          /** Compute the satellite clock bias (sec) at the given time
-          *  @throw Invalid Request if the required data has not been stored.
+          *  @throw InvalidRequest if the required data has not been stored.
           */
-      virtual double svClockBias(const CommonTime& t) const throw(gpstk::InvalidRequest) = 0;
+      virtual double svClockBias(const CommonTime& t) const = 0;
 
          /** Compute the satellite clock bias (meters) at the given time
-          *  @throw Invalid Request if the required data has not been stored.
+          *  @throw InvalidRequest if the required data has not been stored.
           */
-      virtual double svClockBiasM(const CommonTime& t) const throw(gpstk::InvalidRequest) = 0;
+      virtual double svClockBiasM(const CommonTime& t) const = 0;
 
          /** Compute the satellite clock drift (sec/sec) at the given time
-          *  @throw Invalid Request if the required data has not been stored.
+          *  @throw InvalidRequest if the required data has not been stored.
           */
-      virtual double svClockDrift(const CommonTime& t) const throw(gpstk::InvalidRequest) = 0;
+      virtual double svClockDrift(const CommonTime& t) const = 0;
 
 
          /** Compute satellite position at the given time
           * using this orbit data.
-          * @throw Invalid Request if the required data has not been stored.
+          * @throw InvalidRequest if the required data has not been stored.
           */
-      virtual Xvt svXvt(const CommonTime& t) const throw(gpstk::InvalidRequest) = 0;
+      virtual Xvt svXvt(const CommonTime& t) const = 0;
 
          /** Compute satellite relativity correction (sec) at the given time
-          *  @throw Invalid Request if the required data has not been stored.
+          *  @throw InvalidRequest if the required data has not been stored.
           */
-      virtual double svRelativity(const CommonTime& t) const throw( gpstk::InvalidRequest ) = 0;
+      virtual double svRelativity(const CommonTime& t) const = 0;
 
           /** Returns true if this two objects are 
            *   a.) same concrete type, and
@@ -165,25 +166,34 @@ namespace gpstk
       virtual std::list<std::string> compare(const OrbElemBase* right) const;
 
          /** Output the contents of this orbit data to the given stream.
-          * @throw Invalid Request if the required data has not been stored.
+          * @throw InvalidRequest if the required data has not been stored.
           */
-      virtual void dumpTerse(std::ostream& s = std::cout) const
-         throw( InvalidRequest ) = 0;
+      virtual void dumpTerse(std::ostream& s = std::cout) const = 0;
 
-      virtual void dumpHeader(std::ostream& s = std::cout) const
-         throw( InvalidRequest ) = 0;
+         /**
+          * @throw InvalidRequest
+          */
+      virtual void dumpHeader(std::ostream& s = std::cout) const = 0;
 
-      virtual void dumpBody(std::ostream& s = std::cout) const
-         throw( InvalidRequest ) = 0;
+         /**
+          * @throw InvalidRequest
+          */
+      virtual void dumpBody(std::ostream& s = std::cout) const = 0;
 
-      virtual void dumpFooter(std::ostream& s = std::cout) const
-         throw( InvalidRequest ) = 0;
+         /**
+          * @throw InvalidRequest
+          */
+      virtual void dumpFooter(std::ostream& s = std::cout) const = 0;
 
-      virtual void dump(std::ostream& s = std::cout) const
-	       throw( InvalidRequest );
+         /**
+          * @throw InvalidRequest
+          */
+      virtual void dump(std::ostream& s = std::cout) const;
 
-      virtual Rinex3NavData makeRinex3NavData() const
-         throw( InvalidRequest );
+         /**
+          * @throw InvalidRequest
+          */
+      virtual Rinex3NavData makeRinex3NavData() const;
 
          /// Overhead information
          //@{

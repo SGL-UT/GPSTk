@@ -335,7 +335,7 @@ package_conda:
     - conda-build conda_recipe_py36
   artifacts:
     paths:
-    - conda_envs/conda_builder/conda-bld/linux-64/
+      - conda_envs/conda_builder/conda-bld/linux-64/
   dependencies: []
 
 package_debian_9_wheel:

@@ -81,8 +81,8 @@ namespace gpstk
 
       /// convert systems
       /// @param ts TimeSystem to be converted to
-      /// @throw if Correction does, if input system is Unknown
-      void convertSystemTo(const TimeSystem& ts) throw(Exception)
+      /// @throw Exception if Correction does, if input system is Unknown
+      void convertSystemTo(const TimeSystem& ts)
       {
          try {
             long jday(static_cast<long>(iMJD + dSOD/SEC_PER_DAY + MJD_JDAY));
@@ -110,8 +110,8 @@ namespace gpstk
 
       /// set the TimeSystem
       /// @param sys desired TimeSystem
-      /// @throw if it is not allowed (one of UTC TT TBD)
-      void setTimeSystem(TimeSystem sys) throw(Exception)
+      /// @throw Exception if it is not allowed (one of UTC TT TBD)
+      void setTimeSystem(TimeSystem sys)
       {
          if(sys != TimeSystem::UTC &&
             sys != TimeSystem::TT &&
@@ -160,8 +160,8 @@ namespace gpstk
       /// constructor from CommonTime; convert to UTC if system is not UTC|TT|TDB, and
       /// change Unknown to UTC.
       /// @param dt CommonTime input
-      /// @throw if convertSystemTo does, if input system is Unknown
-      EphTime(const CommonTime& dt) throw(Exception)
+      /// @throw Exception if convertSystemTo does, if input system is Unknown
+      EphTime(const CommonTime& dt)
       {
          try {
          CommonTime ct(dt);

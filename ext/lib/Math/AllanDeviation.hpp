@@ -58,7 +58,10 @@ namespace gpstk
    class AllanDeviation
    {
    public:
-      AllanDeviation(std::vector<double>& phase, double tau0) throw(Exception)
+         /**
+          * @throw Exception
+          */
+      AllanDeviation(std::vector<double>& phase, double tau0)
          : N(phase.size()-1), numGaps(0)
       {
          if(N < 1 )

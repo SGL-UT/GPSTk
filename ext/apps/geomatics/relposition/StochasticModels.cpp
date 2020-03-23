@@ -61,21 +61,20 @@ using namespace gpstk;
 //------------------------------------------------------------------------------------
 // prototypes -- this module only
 // called by ConfigureEstimation(), which is Configure(3)
-int ConfigureStochasticModel(void) throw(Exception);
+int ConfigureStochasticModel(void);
 
 // called by Estimation() -- inside the loop
-void BuildStochasticModel(int count, Namelist& DNL, Matrix<double>& MCov)
-   throw(Exception);
+void BuildStochasticModel(int count, Namelist& DNL, Matrix<double>& MCov);
 
 // called by BuildStochasticModel(), inside the estimation loop
-double StochasticWeight(OWid & owid) throw(Exception);
+double StochasticWeight(OWid & owid);
 
 // called by BuildStochasticModel()
 void DecomposeName(const string& label, string& site1, string& site2,
-                    GSatID& sat1, GSatID& sat2) throw(Exception); // Estimation.cpp
+                    GSatID& sat1, GSatID& sat2); // Estimation.cpp
 
 // ElevationMask.cpp
-bool ElevationMask(double elevation, double azimuth) throw(Exception);
+bool ElevationMask(double elevation, double azimuth);
 
 //------------------------------------------------------------------------------------
 // local data
@@ -90,7 +89,7 @@ double d0;        // weight at the minimum elevation
 // Called by Configure(3) or ConfigureEstimation(), just before Estimation loop.
 // Configure the stochastic model.
 // TD MinElevation here should be a separate parameter, not necessarily the mask angle
-int ConfigureStochasticModel(void) throw(Exception)
+int ConfigureStochasticModel(void)
 {
 try {
    if(CI.Verbose) oflog << "BEGIN ConfigureStochasticModel() with model "
@@ -130,7 +129,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 //------------------------------------------------------------------------------------
 // compute the weight for a single one-way id (one site, one satellite) at count
-double StochasticWeight(OWid & owid, int count) throw(Exception)
+double StochasticWeight(OWid & owid, int count)
 {
 try {
    int j;
@@ -185,7 +184,6 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // and you have a list of double differences (DNL)
 //
 void BuildStochasticModel(int count, Namelist& DNL, Matrix<double>& MCov)
-   throw(Exception)
 {
 try {
    unsigned int m=DNL.size();

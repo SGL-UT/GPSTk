@@ -74,11 +74,13 @@ namespace gpstk {
          /// Set a parameter in the configuration; the input string 'cmd'
          /// is of the form '[--DC]<id><s><value>' where the separator s is
          /// one of (:=,) and leading '-','--', or '--DC' are optional.
-      void setParameter(std::string cmd) throw(gpstk::Exception);
+         /// @throw Exception
+      void setParameter(std::string cmd);
 
          /// Set a parameter in the configuration using the label and the value,
          /// for booleans use (T,F)=(non-zero,zero).
-      void setParameter(std::string label, double value) throw(gpstk::Exception);
+         /// @throw Exception
+      void setParameter(std::string label, double value);
 
          /// Get the parameter in the configuration corresponding to label
       double getParameter(std::string label) throw()
@@ -101,8 +103,8 @@ namespace gpstk {
          /// Print help page, including descriptions and current values of all
          /// the parameters, to the ostream. If 'advanced' is true, also print
          /// advanced parameters.
-      void DisplayParameterUsage(std::ostream& os, bool advanced=false)
-         throw(gpstk::Exception);
+         /// @throw Exception
+      void DisplayParameterUsage(std::ostream& os, bool advanced=false);
 
          /// Return version string
       std::string Version() throw() { return GDCVersion; }
@@ -258,12 +260,12 @@ namespace gpstk {
    /// const int FatalProblem = -3  DT is not set, or memory problem
    /// const int Singularity = -1   polynomial fit fails
    /// const int ReturnOK = 0       normal return
+   /// @throw Exception
    int DiscontinuityCorrector(SatPass& SP,
                               GDCconfiguration& config,
                               std::vector<std::string>& EditCmds,
                               std::string& retMsg,
-                              int GLOn=-99)
-      throw(Exception);
+                              int GLOn=-99);
 
    //@}
 

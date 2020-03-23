@@ -61,7 +61,6 @@ namespace gpstk
                                               SolarSystem& SolSys,
                                               const XvtStore<SatID>& Eph,
                                               const bool isCOM)
-      throw(Exception)
    {
    try {
       int i;

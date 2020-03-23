@@ -116,9 +116,9 @@ namespace gpstk
    /// Square root information measurement update, with new data in the form of a
    /// single matrix concatenation of H and D: A = H || D.
    /// See doc for the overloaded SrifMU().
+   /// @throw MatrixException
    template <class T>
    void SrifMU(Matrix<T>& R, Vector<T>& Z, Matrix<T>& A, unsigned int M=0)
-      throw(MatrixException)
    {
       if(A.cols() <= 1 || A.cols() != R.cols()+1 || Z.size() < R.rows()) {
          if(A.cols() > 1 && R.rows() == 0 && Z.size() == 0) {
@@ -200,7 +200,7 @@ namespace gpstk
    /// @throw MatrixException if the input has inconsistent dimensions.
    template <class T>
    void SrifMU(Matrix<T>& R, Vector<T>& Z, const Matrix<T>& H, Vector<T>& D,
-                     unsigned int M=0) throw(MatrixException)
+               unsigned int M=0)
    {
       try {
          Matrix<T> A;
@@ -241,7 +241,6 @@ namespace gpstk
    /// @throw SingularMatrixException if input Matrix is not positive definite
    template <class T>
    Matrix<T> lowerCholesky(const Matrix<T>& A, const T ztol=T(1.e-16))
-      throw(MatrixException)
    {
       if(A.rows() != A.cols() || A.rows() == 0) {
          std::ostringstream oss;
@@ -283,7 +282,6 @@ namespace gpstk
    /// @throw SingularMatrixException if input Matrix is not positive definite
    template <class T>
    Matrix<T> upperCholesky(const Matrix<T>& A, const T ztol=T(1.e-16))
-      throw(MatrixException)
    {
       if(A.rows() != A.cols() || A.rows() == 0) {
          std::ostringstream oss;
@@ -329,7 +327,7 @@ namespace gpstk
    /// @throw MatrixException if input Matrix is not square
    /// @throw SingularMatrixException if input Matrix is singular
    template <class T>
-   Matrix<T> inverseCholesky(const Matrix<T>& A) throw(MatrixException)
+   Matrix<T> inverseCholesky(const Matrix<T>& A)
    {
       try {
          Matrix<T> L(lowerCholesky(A));
@@ -360,7 +358,6 @@ namespace gpstk
    /// @throw SingularMatrixException if input is singular.
    template <class T>
    Matrix<T> inverseUT(const Matrix<T>& UT, T *ptrSmall=NULL, T *ptrBig=NULL)
-      throw(MatrixException)
    {
       if(UT.rows() != UT.cols() || UT.rows() == 0) {
          std::ostringstream oss;
@@ -427,7 +424,6 @@ namespace gpstk
    /// @throw MatrixException if input is not square (assumed upper triangular also).
    template <class T>
    Matrix<T> UTtimesTranspose(const Matrix<T>& UT)
-      throw(MatrixException)
    {
       const unsigned int n=UT.rows();
       if(n == 0 || UT.cols() != n) {
@@ -469,7 +465,6 @@ namespace gpstk
    /// @throw SingularMatrixException if input is singular.
    template <class T>
    Matrix<T> inverseLT(const Matrix<T>& LT, T *ptrSmall=NULL, T *ptrBig=NULL)
-      throw(MatrixException)
    {
       if(LT.rows() != LT.cols() || LT.rows() == 0) {
          std::ostringstream oss;
@@ -530,7 +525,7 @@ namespace gpstk
    /// @throw MatrixException if input is not square,
    /// @throw SingularMatrixException if input is not positive definite
    template <class T>
-   Matrix<T> LDL(const Matrix<T>& A, Vector<T>& D) throw(MatrixException)
+   Matrix<T> LDL(const Matrix<T>& A, Vector<T>& D)
    {
       try {
          if(A.rows() != A.cols() || A.rows() == 0) {
@@ -580,7 +575,7 @@ namespace gpstk
    /// @throw MatrixException if input is not square,
    /// @throw SingularMatrixException if input is not positive definite
    template <class T>
-   Matrix<T> UDU(const Matrix<T>& A, Vector<T>& D) throw(MatrixException)
+   Matrix<T> UDU(const Matrix<T>& A, Vector<T>& D)
    {
       try {
          if(A.rows() != A.cols() || A.rows() == 0) {

@@ -46,7 +46,6 @@ namespace gpstk
 {
    //----------------------------------------------------------------
    void YumaAlmanacStore::loadFile(const std::string& filename)
-      throw(FileMissingException)
    {
       try
       {
@@ -88,7 +87,6 @@ namespace gpstk
 
    //----------------------------------------------------------------
    bool YumaAlmanacStore::addAlmanac(const YumaData& yAlmData)
-         throw(InvalidParameter, Exception)
    {
       unsigned short retVal = OrbAlmStore::ADD_NEITHER;
       try

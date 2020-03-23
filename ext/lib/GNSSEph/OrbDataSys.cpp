@@ -67,7 +67,6 @@ namespace gpstk
    }
 
    void OrbDataSys::dumpFooter(std::ostream& s) const
-         throw( InvalidRequest )
    { }
 
    std::ostream& operator<<(std::ostream& s,

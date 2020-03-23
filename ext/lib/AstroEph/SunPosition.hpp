@@ -100,17 +100,16 @@ namespace gpstk
           *    pole movement is not taken into account, neither precession
           *    nor nutation.
           */
-      Triple getPosition(const CommonTime& t) const 
-         throw(InvalidRequest);
+      Triple getPosition(const CommonTime& t) const;
 
 
          /** Function to compute Sun position in CIS system (coordinates
           *  in meters)
           *
           * @param t Epoch
+          * @throw InvalidRequest
           */
-      Triple getPositionCIS(const CommonTime& t) const 
-         throw(InvalidRequest);
+      Triple getPositionCIS(const CommonTime& t) const;
 
 
          /** Determine the earliest time for which this object can
@@ -120,7 +119,7 @@ namespace gpstk
           *
           * @throw InvalidRequest This is thrown if the object has no data.
           */
-      CommonTime getInitialTime() const throw(InvalidRequest)
+      CommonTime getInitialTime() const
       { return initialTime; }
 
 
@@ -131,7 +130,7 @@ namespace gpstk
           *
           * @throw InvalidRequest This is thrown if the object has no data.
           */
-      CommonTime getFinalTime() const throw(InvalidRequest)
+      CommonTime getFinalTime() const
       { return finalTime; }
 
 

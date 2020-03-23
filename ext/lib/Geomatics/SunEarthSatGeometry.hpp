@@ -64,19 +64,22 @@ namespace gpstk
    /// @param geoc If true, use geocentric, else geodetic coordinates (default false).
    /// @return   3x3 rotation matrix that will transform an ECEF vector into the
    ///             local topocentric or North,East,Up frame at the position P.
-   Matrix<double> NorthEastUp(Position& P, bool geoc=false) throw(Exception);
+   /// @throw Exception
+   Matrix<double> NorthEastUp(Position& P, bool geoc=false);
 
    /// Same as NorthEastUp(P,true).
    /// @param P  Position at which the rotation matrix will be defined.
    /// @return   3x3 rotation matrix that will transform an ECEF vector into the
    ///             local topocentric or North,East,Up frame at the position P.
-   Matrix<double> NorthEastUpGeocentric(Position& P) throw(Exception);
+   /// @throw Exception
+   Matrix<double> NorthEastUpGeocentric(Position& P);
    
    /// Same as NorthEastUp(P,false).
    /// @param P  Position at which the rotation matrix will be defined.
    /// @return   3x3 rotation matrix that will transform an ECEF vector into the
    ///             local topocentric or North,East,Up frame at the position P.
-   Matrix<double> NorthEastUpGeodetic(Position& P) throw(Exception);
+   /// @throw Exception
+   Matrix<double> NorthEastUpGeodetic(Position& P);
 
    /// Given a Position, compute unit vectors in ECEF coordinates in the Up, East and
    /// North directions at that position. Use either geodetic coordinates, i.e. so
@@ -94,20 +97,23 @@ namespace gpstk
    /// @param geoc If true, use geocentric, else geodetic coordinates (default false).
    /// @return  3x3 rotation matrix that will transform an ECEF vector into the
    ///             local topocentric or North,East,Up frame at the position P.
-   Matrix<double> UpEastNorth(Position& P, bool geoc=false) throw(Exception);
+   /// @throw Exception
+   Matrix<double> UpEastNorth(Position& P, bool geoc=false);
 
    /// Same as UpEastNorth, but using geocentric coordinates, so that the -Up
    /// direction will meet the center of Earth.
    /// @param P  Position at which the rotation matrix will be defined.
    /// @return  3x3 rotation matrix that will transform an ECEF vector into the
    ///             local topocentric or North,East,Up frame at the position P.
-   Matrix<double> UpEastNorthGeocentric(Position& P) throw(Exception);
+   /// @throw Exception
+   Matrix<double> UpEastNorthGeocentric(Position& P);
    
    /// Same as UpEastNorth, but using geodetic coordinates
    /// @param P  Position at which the rotation matrix will be defined.
    /// @return  3x3 rotation matrix that will transform an ECEF vector into the
    ///             local topocentric or North,East,Up frame at the position P.
-   Matrix<double> UpEastNorthGeodetic(Position& P) throw(Exception);
+   /// @throw Exception
+   Matrix<double> UpEastNorthGeodetic(Position& P);
 
    /// Compute the fraction of the Sun covered by the earth as seen from a satellite,
    /// given the angular radii of both, and their angular separation. See code for
@@ -117,16 +123,16 @@ namespace gpstk
    /// @param AngSeparation  angular distance of the sun from the earth
    /// @return  fraction (0 <= f <= 1) of area of sun covered by earth
    /// NB. units only need be consistent.
-   double ShadowFactor(double AngRadEarth, double AngRadSun, double AngSeparation)
-      throw(Exception);
+   /// @throw Exception
+   double ShadowFactor(double AngRadEarth, double AngRadSun, double AngSeparation);
    
    /// Compute the fraction of the Sun covered by the earth as seen from a satellite,
    /// given Sun and satellite positions. Cf. the other version of this function.
    /// @param SV  Position (input) Satellite position
    /// @param Sun Position (input) Sun position
    /// @return  fraction (0 <= f <= 1) of area of sun covered by earth
-   double ShadowFactor(const Position& SV, const Position& Sun)
-      throw(Exception);
+   /// @throw Exception
+   double ShadowFactor(const Position& SV, const Position& Sun);
 
    /// Compute the satellite attitude, given the time, the satellite position SV, and
    /// a Sun position. NB. Use either class SolarSystem (high accuracy) or
@@ -145,8 +151,8 @@ namespace gpstk
    /// @param pos Position (input) Satellite position at tt
    /// @param Sun Position (input) Sun position at tt
    /// @return Matrix<double>(3,3) Rotation matrix from XYZ to Satellite body frame.
-   Matrix<double> SatelliteAttitude(const Position& pos, const Position& Sun)
-      throw(Exception);
+   /// @throw Exception
+   Matrix<double> SatelliteAttitude(const Position& pos, const Position& Sun);
 
    /// Compute the satellite attitude, given the satellite position P and velocity V,
    /// assuming an orbit-normal attitude.
@@ -161,8 +167,8 @@ namespace gpstk
    /// @param Position P           Satellite position
    /// @param Position V           Satellite velocity
    /// @return Matrix<double>(3,3) Rotation matrix from XYZ to Satellite body frame.
-   Matrix<double> OrbitNormalAttitude(const Position& P, const Position& V)
-      throw(Exception);
+   /// @throw Exception
+   Matrix<double> OrbitNormalAttitude(const Position& P, const Position& V);
 
    /// Compute the azimuth and nadir angle, in the satellite body frame,
    /// of receiver Position RX as seen at the satellite Position SV. The nadir angle
@@ -173,13 +179,12 @@ namespace gpstk
    /// @param Rot Matrix<double>    Rotation matrix (3,3), output of SatelliteAttitude
    /// @param nadir double          Output nadir angle in degrees
    /// @param azimuth double        Output azimuth angle in degrees
-   /// @throw if rotation matrix has wrong dimentions.
+   /// @throw Exception if rotation matrix has wrong dimentions.
    void SatelliteNadirAzimuthAngles(const Position& SV,
                                     const Position& RX,
                                     const Matrix<double>& Rot,
                                     double& nadir,
-                                    double& azimuth)
-      throw(Exception);
+                                    double& azimuth);
 
    /// Compute the angle from satellite to Earth to Sun; that is the angular
    /// separation of the satellite and the Sun, as seen from the center of Earth.
@@ -191,8 +196,8 @@ namespace gpstk
    /// @param SV Position        Satellite position
    /// @param Sun Position       Sun position at tt
    /// @return angle double      Angle in radians satellite-Earth-Sun
-   double SatelliteEarthSunAngle(const Position& SV, const Position& Sun)
-      throw(Exception);
+   /// @throw Exception
+   double SatelliteEarthSunAngle(const Position& SV, const Position& Sun);
 
    /// Compute the angle between the Sun and the plane of the orbit of the satellite,
    /// given the satellite position and velocity and Sun position, all at one time.
@@ -210,9 +215,9 @@ namespace gpstk
    /// @param beta double     Return angle sun to plane of satellite orbit (radians)
    /// NB. phi, beta and sesa, the satellite-earth-sun angle, form a right spherical
    /// triangle with sesa opposite the right angle. Thus cos(sesa)=cos(beta)*cos(phi).
+   /// @throw Exception
    void SunOrbitAngles(const Position& Pos, const Position& Vel, const Position& Sun,
-                       double& beta, double& phi)
-      throw(Exception);
+                       double& beta, double& phi);
 
    /// Compute the nominal yaw angle of the satellite given the satellite position and
    /// velocity and the Sun position at the given time, plus a flag for GPS Block IIR
@@ -224,9 +229,9 @@ namespace gpstk
    /// @param blkIIRF bool   True if the satellite is GPS block IIR or IIF
    /// @param yawrate double Return yaw rate in radians/second
    /// @return double yaw    Satellite yaw angle in radians
+   /// @throw Exception
    double SatelliteYawAngle(const Position& P, const Position& V, const Position& Sun,
-                            const bool& blkIIRF, double& yawrate)
-      throw(Exception);
+                            const bool& blkIIRF, double& yawrate);
 
 }  // end namespace gpstk
 

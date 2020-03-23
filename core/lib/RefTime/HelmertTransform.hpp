@@ -79,13 +79,12 @@ namespace gpstk
       /// @param std::string& Desc description of the transform, should include
       /// @param CommonTime& epoch time when transform became applicable (default=BOT)
       /// reference frames and an indication of the source (e.g. literature citation).
-      /// @throw if the transform is invalid.
+      /// @throw InvalidRequest if the transform is invalid.
       HelmertTransform(const ReferenceFrame& from, const ReferenceFrame& to,
                        const double& Rx, const double& Ry, const double& Rz,
                        const double& Tx, const double& Ty, const double& Tz,
                        const double& Scale, const std::string& Desc,
-                       CommonTime epoch)
-         throw(InvalidRequest);
+                       CommonTime epoch);
 
       /// Dump the object to a multi-line string including reference frames, the
       /// 7 parameters and description.
@@ -94,17 +93,16 @@ namespace gpstk
       /// Transform Position to another frame using this transform or its inverse.
       /// @param Position& pos position to be transformed; unchanged on output.
       /// @param Position& result position after transformation.
-      /// @throw if transformation, or inverse, cannot act on ReferenceFrame of input.
-      void transform(const Position& pos, Position& result) throw(InvalidRequest);
+      /// @throw InvalidRequest if transformation, or inverse, cannot act on ReferenceFrame of input.
+      void transform(const Position& pos, Position& result);
 
       /// Transform a 3-vector, in the given frame, using this Helmert transformation.
       /// @param Vector<double>& vec 3-vector of position coordinates in "from" frame.
       /// @param ReferenceFrame& frame Transform takes "frame" -> "new-frame"
       /// @param Vector<double>& result 3-vector in "new-frame" frame.
-      /// @throw if transformation, or inverse, cannot act on ReferenceFrame of input.
+      /// @throw InvalidRequest if transformation, or inverse, cannot act on ReferenceFrame of input.
       void transform(const Vector<double>& vec, const ReferenceFrame& frame,
                      Vector<double>& result)
-         throw(InvalidRequest)
       {
          if(vec.size() > 3) {
             InvalidRequest e("Input Vector is not of length 3");
@@ -126,9 +124,8 @@ namespace gpstk
       /// @param Triple& vec containing position and frame to be transformed.
       /// @param ReferenceFrame& frame Transform takes "frame" -> "new-frame"
       /// @param Triple& result with position in new frame
-      /// @throw if transformation, or inverse, cannot act on ReferenceFrame of input.
+      /// @throw InvalidRequest if transformation, or inverse, cannot act on ReferenceFrame of input.
       void transform(const Triple& vec, const ReferenceFrame& frame, Triple& result)
-         throw(InvalidRequest)
       {
          try {
             Position pos(vec, Position::Cartesian), res;
@@ -144,9 +141,8 @@ namespace gpstk
       /// Transform an Xvt using this Helmert transformation or its inverse.
       /// @param Xvt& vec containing position and frame to be transformed.
       /// @param Xvt& result with position in new frame
-      /// @throw if transformation, or inverse, cannot act on ReferenceFrame of input.
+      /// @throw InvalidRequest if transformation, or inverse, cannot act on ReferenceFrame of input.
       void transform(const Xvt& xvt, Xvt& result)
-         throw(InvalidRequest)
       {
          try {
             Position pos(xvt.x, Position::Cartesian), res;
@@ -164,11 +160,10 @@ namespace gpstk
       /// @param double& x,y,z 3-vector of position coordinates in "from" frame.
       /// @param ReferenceFrame& frame Transform takes "frame" -> "new-frame"
       /// @param double& rx,ry,rz result 3-vector in "new-frame" frame.
-      /// @throw if transformation, or inverse, cannot act on ReferenceFrame of input.
+      /// @throw InvalidRequest if transformation, or inverse, cannot act on ReferenceFrame of input.
       void transform(const double& x, const double& y, const double& z,
                      const ReferenceFrame& frame,
                      double& rx, double& ry, double& rz)
-         throw(InvalidRequest)
       {
          try {
             Position pos(x,y,z,Position::Cartesian), res;

@@ -173,8 +173,9 @@ namespace gpstk
           * Returns the numerical value of the expression. Note that
           * if the expression contains variables, those variables must
           * be set.
+          * @throw ExpressionException
           */
-      double evaluate(void)  throw (ExpressionException)
+      double evaluate(void)
          { return root->getValue(); }
 
          /**
@@ -189,9 +190,10 @@ namespace gpstk
 
          virtual ~ExpNode() {}
 
-         // Compute and return the numerical value of this node
-         virtual double getValue()
-            throw (ExpressionException) =0;
+            /** Compute and return the numerical value of this node
+             * @throw ExpressionException
+             */
+         virtual double getValue() = 0;
          
   
          // Write out this node to a stream
@@ -206,7 +208,10 @@ namespace gpstk
             // Constructor.  Create a node to hold val.
             ConstNode( double theNum ): number(theNum) {}
 
-            double getValue()  throw (ExpressionException)
+            /**
+             * @throw ExpressionException
+             */
+            double getValue()
                { return number; }
 
             std::ostream& print(std::ostream& ostr) {
@@ -225,7 +230,10 @@ namespace gpstk
             VarNode(std::string theName ): name(theName), hasValue(false)
                 {}
 
-            double getValue()  throw (ExpressionException);
+            /**
+             * @throw ExpressionException
+             */
+         double getValue();
 
             std::ostream& print(std::ostream& ostr) {
                ostr << name;
@@ -251,8 +259,10 @@ namespace gpstk
             BinOpNode( const std::string& theOp, ExpNode *theLeft, ExpNode *theRight ):
                     op(theOp), left(theLeft), right(theRight){}
 
-            double getValue()
-               throw (ExpressionException);
+            /**
+             * @throw ExpressionException
+             */
+         double getValue();
 
             std::ostream& print(std::ostream& ostr);
 
@@ -270,8 +280,10 @@ namespace gpstk
             FuncOpNode( const std::string& theOp, ExpNode *theRight ):
                     op(theOp), right(theRight){}
 
-            double getValue() 
-               throw (ExpressionException);
+            /**
+             * @throw ExpressionException
+             */
+         double getValue();
 
             std::ostream& print(std::ostream& ostr);
 

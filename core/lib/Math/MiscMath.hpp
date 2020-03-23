@@ -55,14 +55,15 @@ namespace gpstk
       /// @ingroup MathGroup
       //@{
 
-      /// This is a straightforward version of Lagrange Interpolation.
-      /// Y must have size at least as large as X, and X.size() must be >= 2;
-      /// x should lie within the range of X.
+      /** This is a straightforward version of Lagrange Interpolation.
+       * Y must have size at least as large as X, and X.size() must be >= 2;
+       * x should lie within the range of X.
+       * @throw Exception
+       */
    template <class T>
    T SimpleLagrangeInterpolation(const std::vector<T>& X,
                                  const std::vector<T>& Y,
                                  const T x)
-      throw(Exception)
    {
       if(Y.size() < X.size()) {
          GPSTK_THROW(Exception("Input vectors must be of same size"));
@@ -81,16 +82,19 @@ namespace gpstk
       return Yx;
    }  // end T LagrangeInterpolation(const vector, const vector, const T)
 
-      /// Lagrange interpolation on data (X[i],Y[i]), i=0,N-1 to compute Y(x).
-      /// Also return an estimate of the estimation error in 'err'.
-      /// This routine assumes that N=X.size() is even and that x is centered on the
-      /// interval, that is X[N/2-1] <= x <= X[N/2].
-      /// @note This routine will work for N as small as 4, however tests with satellite
-      /// ephemerides have shown that N=4 yields m-level errors, N=6 cm-level,
-      /// N=8 ~0.1mm level and N=10 ~numerical noise errors; best to use N>=8.
+      /** Lagrange interpolation on data (X[i],Y[i]), i=0,N-1 to compute Y(x).
+       * Also return an estimate of the estimation error in 'err'.
+       * This routine assumes that N=X.size() is even and that x is
+       * centered on the interval, that is X[N/2-1] <= x <= X[N/2].
+       * @note This routine will work for N as small as 4, however
+       *   tests with satellite ephemerides have shown that N=4 yields
+       *   m-level errors, N=6 cm-level, N=8 ~0.1mm level and N=10
+       *   ~numerical noise errors; best to use N>=8.
+       * @throw Exception
+       */
    template <class T>
    T LagrangeInterpolation(const std::vector<T>& X, const std::vector<T>& Y,
-                           const T& x, T& err) throw(Exception)
+                           const T& x, T& err)
    {
       if(Y.size() < X.size() || X.size() < 4) {
          GPSTK_THROW(Exception("Input vectors must be of same length, at least 4"));
@@ -136,14 +140,17 @@ namespace gpstk
       // Qij is symmetric, there are only N(N+1)/2 - N of them, so store them
       // in a vector of length N(N+1)/2, where Qij==Q[i+j*(j+1)/2] (ignore i=j).
 
-      /// Perform Lagrange interpolation on the data (X[i],Y[i]), i=1,N (N=X.size()),
-      /// returning the value of Y(x) and dY(x)/dX.
-      /// Assumes that x is between X[k-1] and X[k], where k=N/2 and N > 2;
-      /// Warning: for use with the precise (SP3) ephemeris only when velocity is not
-      /// available; estimates of velocity, and especially clock drift, not as accurate.
+      /** Perform Lagrange interpolation on the data (X[i],Y[i]),
+       * i=1,N (N=X.size()), returning the value of Y(x) and dY(x)/dX.
+       * Assumes that x is between X[k-1] and X[k], where k=N/2 and N > 2;
+       * @warning for use with the precise (SP3) ephemeris only when
+       * velocity is not available; estimates of velocity, and
+       * especially clock drift, not as accurate.
+       * @throw Exception
+       */
    template <class T>
    void LagrangeInterpolation(const std::vector<T>& X, const std::vector<T>& Y,
-                              const T& x, T& y, T& dydx) throw(Exception)
+                              const T& x, T& y, T& dydx)
    {
       if(Y.size() < X.size() || X.size() < 4) {
          GPSTK_THROW(Exception("Input vectors must be of same length, at least 4"));

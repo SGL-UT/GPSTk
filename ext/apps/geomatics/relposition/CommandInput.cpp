@@ -73,7 +73,7 @@ using namespace StringUtils;
 // local data
 
 //------------------------------------------------------------------------------------
-void CommandInput::SetDefaults() throw(Exception)
+void CommandInput::SetDefaults()
 {
 try {
    Debug = false;
@@ -149,7 +149,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int CommandInput::GetCmdInput(int argc, char **argv) throw(Exception)
+int CommandInput::GetCmdInput(int argc, char **argv)
 {
 try {
    help = false;
@@ -1076,7 +1076,6 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 //------------------------------------------------------------------------------------
 void CommandInput::PreProcessArgs(const char *arg, vector<string>& Args)
-   throw(Exception)
 {
 try {
    static bool found_cfg_file=false;
@@ -1159,7 +1158,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int CommandInput::ValidateCmdInput(void) throw(Exception)
+int CommandInput::ValidateCmdInput(void)
 {
 try {
    bool ok=true,flag;
@@ -1363,7 +1362,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-void CommandInput::Dump(std::ostream& ofs) const throw(Exception)
+void CommandInput::Dump(std::ostream& ofs) const
 {
 try {
    size_t i;

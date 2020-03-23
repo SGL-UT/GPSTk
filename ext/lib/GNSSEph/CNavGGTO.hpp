@@ -61,9 +61,10 @@ namespace gpstk
          /// Default constructor
       CNavGGTO();
   
-        /// Need description here...
-      CNavGGTO(const PackedNavBits& message35)
-         throw( InvalidParameter);
+         /**
+          * @throw InvalidParameter
+          */
+      CNavGGTO(const PackedNavBits& message35);
       
          /// Destructor
       virtual ~CNavGGTO() {}
@@ -78,8 +79,7 @@ namespace gpstk
           * @param message30 - 300 bits of Message Type 35
           * @throw InvalidParameter if message data is invalid
           */
-      void loadData(const PackedNavBits& message35)
-         throw(gpstk::InvalidParameter); 
+      void loadData(const PackedNavBits& message35);
 
       virtual std::string getName() const
       {
@@ -91,8 +91,7 @@ namespace gpstk
          return "Civilian Navigation (CNAV) GGTO Parameters";
       }
       
-      virtual void dumpBody(std::ostream& s = std::cout) const
-         throw( InvalidRequest );
+      virtual void dumpBody(std::ostream& s = std::cout) const;
 
       double A0GGTO;
       double A1GGTO;

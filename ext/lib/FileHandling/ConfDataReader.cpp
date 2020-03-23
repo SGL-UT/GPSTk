@@ -48,7 +48,6 @@ namespace gpstk
 
       // Method to store conf data in this class' data map
    void ConfDataReader::loadData(void)
-      throw(ConfigurationException)
    {
 
          // By default, section name is "DEFAULT"
@@ -267,7 +266,6 @@ namespace gpstk
    string ConfDataReader::getValue( string variable,
                                     string section,
                                     string defaultVal )
-      throw(ConfigurationException)
    {
 
          // Let's make sure that section and variable names are uppercase
@@ -357,7 +355,6 @@ namespace gpstk
    bool ConfDataReader::getValueAsBoolean( string variable,
                                            string section,
                                            bool   defaultVal )
-      throw(ConfigurationException)
    {
 
          // Let's make sure that section and variable names are uppercase
@@ -441,7 +438,6 @@ namespace gpstk
    string ConfDataReader::fetchListValue( string variableList,
                                           string section, 
                                           string defaultVal )
-      throw(ConfigurationException)
    {
 
       try
@@ -489,7 +485,6 @@ namespace gpstk
    bool ConfDataReader::fetchListValueAsBoolean( string variableList,
                                                  string section,
                                                  bool   defaultVal )
-      throw(ConfigurationException)
    {
 
       try
@@ -556,7 +551,6 @@ namespace gpstk
        */
    string ConfDataReader::getVariableDescription( string variable,
                                                   string section )
-      throw(ConfigurationException)
    {
 
          // Let's make sure that section and variable names are uppercase
@@ -642,7 +636,6 @@ namespace gpstk
        */
    string ConfDataReader::getValueDescription( string variable,
                                                string section )
-      throw(ConfigurationException)
    {
 
          // Let's make sure that section and variable names are uppercase
@@ -728,7 +721,6 @@ namespace gpstk
        */
    bool ConfDataReader::ifExist( string variable,
                                  string section )
-      throw(ConfigurationException)
    {
 
          // Let's make sure that section and variable names are uppercase

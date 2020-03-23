@@ -54,7 +54,7 @@ namespace gpstk
    // Add the given name, AntexData pair. If the name already exists in the store,
    // replace the data for it with the input object.
    // throw if the AntexData is invalid.
-   void AntennaStore::addAntenna(string name, AntexData& antdata) throw(Exception)
+   void AntennaStore::addAntenna(string name, AntexData& antdata)
    {
       if(!antdata.isValid()) {
          Exception e("Invalid AntexData object");
@@ -181,7 +181,6 @@ namespace gpstk
    // throw any exception caught during reading the file.
    int AntennaStore::addANTEXfile(string filename,
                     CommonTime time)
-      throw(Exception)
    {
       try {
          int i,n=0;
@@ -283,7 +282,6 @@ namespace gpstk
                                       const CommonTime& ct,
                                       const Triple& satVector, 
                                       bool inputPRN) const
-      throw(Exception)
    {
       AntexData antenna;
       string name;
@@ -396,7 +394,6 @@ namespace gpstk
    Triple AntennaStore::ComToPcVector(const SatID& sidr, 
                                       const CommonTime& ct, 
                                       const Triple& satVector) const
-      throw(Exception)
    {
       char sys = ' ';
       Triple tp;

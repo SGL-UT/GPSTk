@@ -56,9 +56,18 @@
 class CommandInput {
 public:
    // functions
-   int GetCmdInput(int argc, char **argv) throw(gpstk::Exception);
-   int ValidateCmdInput(void) throw(gpstk::Exception);
-   void Dump(std::ostream& s=std::cout) const throw(gpstk::Exception);
+   /**
+    * @throw Exception
+    */
+   int GetCmdInput(int argc, char **argv);
+   /**
+    * @throw Exception
+    */
+   int ValidateCmdInput(void);
+   /**
+    * @throw Exception
+    */
+   void Dump(std::ostream& s=std::cout) const;
 
    // member data
    bool Debug;
@@ -125,9 +134,14 @@ public:
 
 private:
    bool help;
-   void SetDefaults() throw(gpstk::Exception);
-   void PreProcessArgs(const char *arg, std::vector<std::string>& Args)
-      throw(gpstk::Exception);
+      /**
+       * @throw Exception
+       */
+   void SetDefaults();
+      /**
+       * @throw Exception
+       */
+   void PreProcessArgs(const char *arg, std::vector<std::string>& Args);
 };    // end class CommandInput
 
 //------------------------------------------------------------------------------------

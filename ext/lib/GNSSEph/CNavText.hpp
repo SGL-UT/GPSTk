@@ -57,9 +57,10 @@ namespace gpstk
          /// Default constructor
       CNavText();
   
-        /// Need description here...
-      CNavText(const PackedNavBits& pnb)
-         throw( InvalidParameter);
+         /**
+          * @throw InvalidParameter
+          */
+      CNavText(const PackedNavBits& pnb);
       
          /// Destructor
       virtual ~CNavText() {}
@@ -72,8 +73,7 @@ namespace gpstk
           * @param pnb - 300 bits of Message Type 15 or 37
           * @throw InvalidParameter if message data is invalid
           */
-      void loadData(const PackedNavBits& pnb)
-         throw(gpstk::InvalidParameter); 
+      void loadData(const PackedNavBits& pnb);
 
       virtual std::string getName() const
       {
@@ -87,8 +87,10 @@ namespace gpstk
 
       virtual bool isSameData(const CNavDataElement* right) const;
       
-      virtual void dumpBody(std::ostream& s = std::cout) const
-         throw( InvalidRequest );
+         /**
+          * @throw InvalidRequest
+          */
+      virtual void dumpBody(std::ostream& s = std::cout) const;
 
       std::string textMessage;
       int textPage;

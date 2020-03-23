@@ -68,11 +68,11 @@ namespace gpstk
       virtual ~TimeTag()
       {}
 
-         /// @throws InvalidRequest if this TimeTag cannot be correctly
+         /// @throw InvalidRequest if this TimeTag cannot be correctly
          /// represented by a CommonTime object.
       virtual CommonTime convertToCommonTime() const = 0;
 
-         /// @throws InvalidRequest if \c ct cannot be correctly represented
+         /// @throw InvalidRequest if \c ct cannot be correctly represented
          /// in this TimeTag object.
       virtual void convertFromCommonTime( const CommonTime& ct ) = 0;
 

@@ -55,7 +55,6 @@ namespace gpstk
    
    OrbAlm* OrbAlmFactory::
    convert(const gpstk::PackedNavBits& pnb)
-      throw(InvalidParameter)
    {
       OrbAlm* retVal;
       const gpstk::SatID& sidr = pnb.getsatSys();
@@ -96,7 +95,6 @@ namespace gpstk
 
    OrbAlm* OrbAlmFactory::
    GPSLNAV(const gpstk::PackedNavBits& pnb)
-      throw(InvalidParameter)
    {
       OrbAlm* retVal = 0;
 
@@ -146,7 +144,6 @@ namespace gpstk
 
    OrbAlm* OrbAlmFactory::
    GPSCNAV(const gpstk::PackedNavBits& pnb)
-      throw(InvalidParameter)
    {
       OrbAlm* retVal = 0;
       return retVal; 

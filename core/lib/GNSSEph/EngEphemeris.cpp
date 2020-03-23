@@ -144,7 +144,6 @@ namespace gpstk
    bool EngEphemeris::addSubframe(const uint32_t subframe[10],
                                   const int gpsWeek, const short PRN,
                                   const short track)
-      throw( InvalidParameter )
    {
          // Determine the subframe number
       uint32_t SFword2 = (uint32_t) subframe[1];
@@ -181,7 +180,6 @@ namespace gpstk
                                           const int  gpsWeek,
                                           const short PRN,
                                           const short track)
-      throw( InvalidParameter )
    {
       uint32_t paddedSF[10];
       short PRNArg;
@@ -394,7 +392,6 @@ namespace gpstk
    }
 
    bool EngEphemeris::isData(short subframe) const
-      throw( InvalidRequest )
    {
       if ((subframe < 1) || (subframe > 3))
       {
@@ -416,7 +413,6 @@ namespace gpstk
    }
 
    void EngEphemeris::setAccuracy(const double& acc)
-      throw( InvalidParameter )
    {
       if( acc < 0 )
       {
@@ -428,7 +424,6 @@ namespace gpstk
    }
 
    short EngEphemeris :: getFitInterval() const
-      throw(InvalidRequest)
    {
       return getFitInterval(getIODC(), getFitInt());
    }
@@ -438,7 +433,6 @@ namespace gpstk
        * Need update for Block IIR and IIF
        */
    short EngEphemeris :: getFitInterval(short iodc, short fiti)
-      throw(InvalidRequest)
    {
          /* check the IODC */
       if (iodc < 0 || iodc > 1023)
@@ -527,7 +521,6 @@ namespace gpstk
 
 
    Xvt EngEphemeris::svXvt(const CommonTime& t) const
-      throw( InvalidRequest )
    {
       Xvt sv;
 
@@ -545,25 +538,21 @@ namespace gpstk
    }
 
    double EngEphemeris::svRelativity(const CommonTime& t) const
-      throw( InvalidRequest )
    {
       return orbit.svRelativity(t);
    }
 
    double EngEphemeris::svClockBias(const CommonTime& t) const
-      throw( InvalidRequest )
    {
       return bcClock.svClockBias(t);
    }
 
    double EngEphemeris::svClockDrift(const CommonTime& t) const
-      throw( InvalidRequest )
    {
       return bcClock.svClockDrift(t);
    }
 
    unsigned EngEphemeris::getTLMMessage(short subframe) const
-      throw( InvalidRequest )
    {
       if (!haveSubframe[subframe-1])
       {
@@ -575,7 +564,6 @@ namespace gpstk
    }
 
    CommonTime EngEphemeris::getTransmitTime() const
-      throw( InvalidRequest )
    {
       CommonTime toReturn;
       try
@@ -596,19 +584,16 @@ namespace gpstk
    }
 
    CommonTime EngEphemeris::getEpochTime() const
-      throw( InvalidRequest )
    {
       return bcClock.getEpochTime();
    }
 
    CommonTime EngEphemeris::getEphemerisEpoch() const
-      throw( InvalidRequest )
    {
       return orbit.getOrbitEpoch();
    }
 
    BrcKeplerOrbit EngEphemeris::getOrbit() const
-      throw(InvalidRequest )
    {
       if(!orbit.hasData())
       {
@@ -619,7 +604,6 @@ namespace gpstk
    }
 
    BrcClockCorrection EngEphemeris::getClock() const
-      throw(InvalidRequest )
    {
       if(!bcClock.hasData())
       {
@@ -631,7 +615,6 @@ namespace gpstk
    }
 
    short EngEphemeris::getPRNID() const
-      throw( InvalidRequest )
    {
       if(!haveSubframe[0])
       {
@@ -642,7 +625,6 @@ namespace gpstk
    }
 
    short EngEphemeris::getTracker() const
-      throw( InvalidRequest )
    {
       if(!haveSubframe[0])
       {
@@ -653,7 +635,6 @@ namespace gpstk
    }
 
    double EngEphemeris::getHOWTime(short subframe) const
-      throw( InvalidRequest )
    {
       if (!haveSubframe[subframe-1])
       {
@@ -669,7 +650,6 @@ namespace gpstk
    }
 
    short EngEphemeris::getASAlert(short subframe)  const
-      throw( InvalidRequest )
    {
       if (!haveSubframe[subframe-1])
       {
@@ -681,7 +661,6 @@ namespace gpstk
    }
 
    short EngEphemeris::getFullWeek()  const
-      throw( InvalidRequest )
    {
       if (!haveSubframe[0])
       {
@@ -692,7 +671,6 @@ namespace gpstk
    }
 
    short EngEphemeris::getCodeFlags()  const
-      throw( InvalidRequest )
    {
       if (!haveSubframe[0])
       {
@@ -703,7 +681,6 @@ namespace gpstk
    }
 
    double EngEphemeris::getAccuracy()  const
-      throw( InvalidRequest )
    {
       if (!haveSubframe[0])
       {
@@ -714,7 +691,6 @@ namespace gpstk
    }
 
    short EngEphemeris::getAccFlag()  const
-      throw( InvalidRequest )
    {
       if (!haveSubframe[0])
       {
@@ -725,7 +701,6 @@ namespace gpstk
    }
 
    short EngEphemeris::getHealth() const
-      throw( InvalidRequest )
    {
       if (!haveSubframe[0])
       {
@@ -736,7 +711,6 @@ namespace gpstk
    }
 
    short EngEphemeris::getL2Pdata() const
-      throw( InvalidRequest )
    {
       if (!haveSubframe[0])
       {
@@ -747,7 +721,6 @@ namespace gpstk
    }
 
    short EngEphemeris::getIODC() const
-      throw( InvalidRequest )
    {
       if (!haveSubframe[0])
       {
@@ -758,7 +731,6 @@ namespace gpstk
    }
 
    short EngEphemeris::getIODE() const
-      throw( InvalidRequest )
    {
       if (!haveSubframe[1])
       {
@@ -769,7 +741,6 @@ namespace gpstk
    }
 
    long EngEphemeris::getAODO() const
-      throw( InvalidRequest )
    {
       if (!haveSubframe[1])
       {
@@ -780,7 +751,6 @@ namespace gpstk
    }
 
    double EngEphemeris::getToc() const
-      throw( InvalidRequest )
    {
       if (!haveSubframe[0])
       {
@@ -791,7 +761,6 @@ namespace gpstk
    }
 
    double EngEphemeris::getAf0() const
-      throw( InvalidRequest )
    {
       if (!haveSubframe[0])
       {
@@ -802,7 +771,6 @@ namespace gpstk
    }
 
    double EngEphemeris::getAf1() const
-      throw( InvalidRequest )
    {
       if (!haveSubframe[0])
       {
@@ -813,7 +781,6 @@ namespace gpstk
    }
 
    double EngEphemeris::getAf2() const
-      throw( InvalidRequest )
    {
       if (!haveSubframe[0])
       {
@@ -824,7 +791,6 @@ namespace gpstk
    }
 
    double EngEphemeris::getTgd() const
-      throw( InvalidRequest )
    {
       if (!haveSubframe[0])
       {
@@ -835,7 +801,6 @@ namespace gpstk
    }
 
    double EngEphemeris::getCus() const
-      throw( InvalidRequest )
    {
       if (!haveSubframe[1])
       {
@@ -846,7 +811,6 @@ namespace gpstk
    }
 
    double EngEphemeris::getCrs() const
-      throw( InvalidRequest )
    {
       if (!haveSubframe[1])
       {
@@ -857,7 +821,6 @@ namespace gpstk
    }
 
    double EngEphemeris::getCis() const
-      throw( InvalidRequest )
    {
       if (!haveSubframe[2])
       {
@@ -868,7 +831,6 @@ namespace gpstk
    }
 
    double EngEphemeris::getCrc() const
-      throw( InvalidRequest )
    {
       if (!haveSubframe[2])
       {
@@ -879,7 +841,6 @@ namespace gpstk
    }
 
    double EngEphemeris::getCuc() const
-      throw( InvalidRequest )
    {
       if (!haveSubframe[1])
       {
@@ -890,7 +851,6 @@ namespace gpstk
    }
 
    double EngEphemeris::getCic() const
-      throw( InvalidRequest )
    {
       if (!haveSubframe[2])
       {
@@ -901,7 +861,6 @@ namespace gpstk
    }
 
    double EngEphemeris::getToe() const
-      throw( InvalidRequest )
    {
       if (!haveSubframe[1])
       {
@@ -912,7 +871,6 @@ namespace gpstk
    }
 
    double EngEphemeris::getM0() const
-      throw( InvalidRequest )
    {
       if (!haveSubframe[1])
       {
@@ -923,7 +881,6 @@ namespace gpstk
    }
 
    double EngEphemeris::getDn() const
-      throw( InvalidRequest )
    {
       if (!haveSubframe[1])
       {
@@ -934,7 +891,6 @@ namespace gpstk
    }
 
    double EngEphemeris::getEcc() const
-      throw( InvalidRequest )
    {
       if (!haveSubframe[1])
       {
@@ -945,7 +901,6 @@ namespace gpstk
    }
 
    double EngEphemeris::getAhalf() const
-      throw( InvalidRequest )
    {
       if (!haveSubframe[1])
       {
@@ -956,7 +911,6 @@ namespace gpstk
    }
 
    double EngEphemeris::getA() const
-      throw( InvalidRequest )
    {
       if (!haveSubframe[1])
       {
@@ -967,7 +921,6 @@ namespace gpstk
    }
 
    double EngEphemeris::getOmega0() const
-      throw( InvalidRequest )
    {
       if (!haveSubframe[2])
       {
@@ -978,7 +931,6 @@ namespace gpstk
    }
 
    double EngEphemeris::getI0() const
-      throw( InvalidRequest )
    {
       if (!haveSubframe[2])
       {
@@ -989,7 +941,6 @@ namespace gpstk
    }
 
    double EngEphemeris::getW() const
-      throw( InvalidRequest )
    {
       if (!haveSubframe[2])
       {
@@ -1000,7 +951,6 @@ namespace gpstk
    }
 
    double EngEphemeris::getOmegaDot() const
-      throw( InvalidRequest )
    {
       if (!haveSubframe[2])
       {
@@ -1011,7 +961,6 @@ namespace gpstk
    }
 
    double EngEphemeris::getIDot() const
-      throw( InvalidRequest )
    {
       if (!haveSubframe[2])
       {
@@ -1022,7 +971,6 @@ namespace gpstk
    }
 
    short EngEphemeris::getFitInt() const
-      throw( InvalidRequest )
    {
       if (!haveSubframe[1])
       {
@@ -1033,7 +981,6 @@ namespace gpstk
    }
 
    long EngEphemeris::getTot() const
-      throw( InvalidRequest )
    {
       if(!haveSubframe[0])
       {
@@ -1081,7 +1028,6 @@ namespace gpstk
       const short fitInt, const double cic, const double Omega0,
       const double cis, const double I0, const double crc,
       const double W, const double OmegaDot, const double IDot )
-   throw( InvalidRequest )
    {
       PRNID = prn;
       tracker = Tracker;
@@ -1163,7 +1109,6 @@ namespace gpstk
                                        short l2pdata, double tgd, double toc,
                                        double Af2, double Af1, double Af0,
                                        short Tracker, short prn )
-      throw( InvalidRequest )
    {
       tlm_message[0] = tlm;
       HOWtime[0] = static_cast<long>( how );
@@ -1216,7 +1161,6 @@ namespace gpstk
                                        double m0, double cuc, double Ecc,
                                        double cus, double ahalf, double toe,
                                        short fitInt )
-      throw( InvalidRequest )
    {
       tlm_message[1] = tlm;
       HOWtime[1] = static_cast<long>( how );
@@ -1302,7 +1246,6 @@ namespace gpstk
                                        double cic, double Omega0, double cis,
                                        double I0, double crc, double W,
                                        double OmegaDot, double IDot )
-      throw( InvalidRequest )
    {
       tlm_message[2] = tlm;
       HOWtime[2] = static_cast<long>( how );
@@ -1448,8 +1391,9 @@ namespace gpstk
          << ":" << setw(2) << sec
          << setfill(' ');
    }
+
+
    void EngEphemeris :: dumpTerse(ostream& s) const
-      throw(InvalidRequest )
    {
 
          // Check if the subframes have been loaded before attempting
@@ -1490,7 +1434,6 @@ namespace gpstk
 
 
    void EngEphemeris :: dump(ostream& s) const
-      throw( InvalidRequest )
    {
 
 

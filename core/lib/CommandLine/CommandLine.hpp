@@ -295,51 +295,58 @@ public:
       syntaxPageBuilt = 1;
    }
 
-   /// Create the command line = list of commands; parse it
-   /// @param argc the number of command line args
-   /// @param argv command line args
-   /// @param PrgmDesc string giving program description, shown at top of syntax page
-   /// @param Usage string return syntax page
-   /// @param Errors string return all error messages
-   /// @param Unrec vector of strings not recognized by parser
-   /// @return -3 an error was found in the definition of command line options
-   ///         -2 an error occurred (e.g. new failed)
-   ///         -1 an error was found on the command line
-   ///          0 ok
-   ///          1 help was requested
+      /** Create the command line = list of commands; parse it
+       * @param argc the number of command line args
+       * @param argv command line args
+       * @param PrgmDesc string giving program description, shown at
+       *    top of syntax page
+       * @param Usage string return syntax page
+       * @param Errors string return all error messages
+       * @param Unrec vector of strings not recognized by parser
+       * @return -3 an error was found in the definition of command line options
+       *         -2 an error occurred (e.g. new failed)
+       *         -1 an error was found on the command line
+       *          0 ok
+       *          1 help was requested
+       * @throw Exception
+       */
    int ProcessCommandLine(int argc, char** argv, std::string PrgmDesc,
-             std::string& Usage, std::string& Errors, std::vector<std::string>& Unrec)
-      throw(gpstk::Exception);
+                          std::string& Usage, std::string& Errors, std::vector<std::string>& Unrec);
 
-   /// Dump the configuration. Output is of the form
-   ///   longOpt Descript : values
-   /// if tag is not empty (the default), begin each line with it.
-   void DumpConfiguration(std::ostream& os, std::string tag=std::string())
-      throw(gpstk::Exception);
+      /** Dump the configuration. Output is of the form
+       *   longOpt Descript : values
+       * if tag is not empty (the default), begin each line with it.
+       * @throw Exception */
+   void DumpConfiguration(std::ostream& os, std::string tag=std::string());
 
 private:
-   /// determine if the command line, as declared, is valid
-   bool ValidateCommandLine(std::string& msg) throw(gpstk::Exception);
+      /** Determine if the command line, as declared, is valid.
+       * @throw Exception */
+   bool ValidateCommandLine(std::string& msg);
 
-   /// Build the syntax page
-   void BuildSyntaxPage(void) throw(gpstk::Exception);
+      /** Build the syntax page.
+       * @throw Exception */
+   void BuildSyntaxPage(void);
 
-   /// Preprocess the arguments by pulling out debug, etc, replace deprecated options,
-   /// drop ignored options, open --file files, open list files (@file) and parse
-   /// comma-separated values
+      /** Preprocess the arguments by pulling out debug, etc, replace
+       * deprecated options, drop ignored options, open --file files,
+       * open list files (@file) and parse comma-separated values
+       * @throw Exception */
    void PreProcessArgs(const char *arg, std::vector<std::string>& Args,
-      std::string& Errors) throw(gpstk::Exception);
+      std::string& Errors);
 
-   /// Parse the (preprocessed) list of args
+      /** Parse the (preprocessed) list of args.
+       * @throw Exception */
    void Parse(std::vector<std::string>& Args, std::string& Errors,
-               std::vector<std::string>& Unrecog) throw(gpstk::Exception);
+               std::vector<std::string>& Unrecog);
 
-   /// Generate the usage string (syntax page)
-   std::string SyntaxPage(void) throw(gpstk::Exception);
+      /** Generate the usage string (syntax page)
+       * @throw Exception */
+   std::string SyntaxPage(void);
 
-   /// Post process - convert value strings to real values
-   void Postprocess(std::string& Errors, std::vector<std::string>& Unrecog)
-      throw(gpstk::Exception);
+      /** Post process - convert value strings to real values.
+       * @throw Exception */
+   void Postprocess(std::string& Errors, std::vector<std::string>& Unrecog);
 
 }; // end class CommandLine
 

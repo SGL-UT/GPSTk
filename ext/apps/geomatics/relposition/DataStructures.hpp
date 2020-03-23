@@ -143,8 +143,10 @@ public:
    ~Station(void) throw();          // destructor - free trop model
 };
 
-Station& findStationInList(std::map<std::string,Station>& SL, std::string& label)
-   throw(gpstk::Exception);
+/**
+ * @throw Exception
+ */
+Station& findStationInList(std::map<std::string,Station>& SL, std::string& label);
 
 // Rinex observation input files
 class ObsFile {

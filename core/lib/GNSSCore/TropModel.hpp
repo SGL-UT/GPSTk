@@ -72,29 +72,33 @@
 
 namespace gpstk
 {
-   /** @addtogroup GPSsolutions */
-   //@{
+      /** @addtogroup GPSsolutions */
+      //@{
 
-      /** Abstract base class for tropospheric models.
-       * The wet and hydrostatic (dry) components of the tropospheric delay are each
-       * the product of a zenith delay and a mapping function. Usually the zenith
-       * delay depends only on the weather (temperature, pressure and humidity),
-       * while the mapping function depends only on the satellite elevation, i.e.
-       * the geometry of satellite and receiver. This may not be true in complex
-       * models.
-       * The full tropospheric delay is the sum of the wet and hydrostatic (dry)
-       * components. A TropModel is valid only when all the necessary information
-       * (weather + whatever else the model requires) is specified;
-       * An InvalidTropModel exception will be thrown when any correction()
-       * or zenith_delay() or mapping_function() routine is called for
-       * an invalid TropModel.
+
+      /** Thrown when attempting to use a model for which all necessary
+       * parameters have not been specified.
+       * @ingroup exceptiongroup
        */
-
-   /// Thrown when attempting to use a model for which all necessary
-   /// parameters have not been specified.
-   /// @ingroup exceptiongroup
    NEW_EXCEPTION_CLASS(InvalidTropModel, gpstk::Exception);
 
+      /** Abstract base class for tropospheric models.
+       * The wet and hydrostatic (dry) components of the tropospheric
+       * delay are each the product of a zenith delay and a mapping
+       * function. Usually the zenith delay depends only on the
+       * weather (temperature, pressure and humidity), while the
+       * mapping function depends only on the satellite elevation,
+       * i.e.  the geometry of satellite and receiver. This may not be
+       * true in complex models.
+       *
+       * The full tropospheric delay is the sum of the wet and
+       * hydrostatic (dry) components. A TropModel is valid only when
+       * all the necessary information (weather + whatever else the
+       * model requires) is specified; An InvalidTropModel exception
+       * will be thrown when any correction() or zenith_delay() or
+       * mapping_function() routine is called for an invalid
+       * TropModel.
+       */
    class TropModel
    {
    public:
@@ -105,218 +109,255 @@ namespace gpstk
 
          /// Return validity of model
       bool isValid(void)
-         { return valid; }
+      { return valid; }
 
          /// Return the name of the model
       virtual std::string name(void)
-         { return std::string("Undefined"); }
+      { return std::string("Undefined"); }
 
-         /// Compute and return the full tropospheric delay
-         /// @param elevation Elevation of satellite as seen at receiver, in degrees
-      virtual double correction(double elevation) const
-         throw(InvalidTropModel);
+         /** Compute and return the full tropospheric delay
+          * @param elevation Elevation of satellite as seen at
+          *   receiver, in degrees
+          * @throw InvalidTropModel
+          */
+      virtual double correction(double elevation) const;
 
          /**
-          * Compute and return the full tropospheric delay, given the positions of
-          * receiver and satellite and the time tag. This version is most useful
-          * within positioning algorithms, where the receiver position and timetag
-          * may vary; it computes the elevation (and other receiver location
-          * information) and passes them to appropriate set...() routines and the
-          * correction(elevation) routine.
+          * Compute and return the full tropospheric delay, given the
+          * positions of receiver and satellite and the time tag. This
+          * version is most useful within positioning algorithms,
+          * where the receiver position and timetag may vary; it
+          * computes the elevation (and other receiver location
+          * information) and passes them to appropriate set...()
+          * routines and the correction(elevation) routine.
           * @param RX  Receiver position
           * @param SV  Satellite position
           * @param tt  Time tag of the signal
+          * @throw InvalidTropModel
           */
       virtual double correction(const Position& RX,
                                 const Position& SV,
-                                const CommonTime& tt)
-         throw(InvalidTropModel);
+                                const CommonTime& tt);
 
          /** \deprecated
-          * Compute and return the full tropospheric delay, given the positions of
-          * receiver and satellite and the time tag. This version is most useful
-          * within positioning algorithms, where the receiver position and timetag
-          * may vary; it computes the elevation (and other receiver location
-          * information) and passes them to appropriate set...() routines and the
-          * correction(elevation) routine.
+          * Compute and return the full tropospheric delay, given the
+          * positions of receiver and satellite and the time tag. This
+          * version is most useful within positioning algorithms,
+          * where the receiver position and timetag may vary; it
+          * computes the elevation (and other receiver location
+          * information) and passes them to appropriate set...()
+          * routines and the correction(elevation) routine.
           * @param RX  Receiver position in ECEF cartesian coordinates (meters)
           * @param SV  Satellite position in ECEF cartesian coordinates (meters)
           * @param tt  Time tag of the signal
+          * @throw InvalidTropModel
           */
       virtual double correction(const Xvt& RX,
                                 const Xvt& SV,
                                 const CommonTime& tt)
-         throw(InvalidTropModel)
       { Position R(RX),S(SV);  return TropModel::correction(R,S,tt); }
 
-         /// Compute and return the zenith delay for hydrostatic (dry)
-         /// component of the troposphere
-      virtual double dry_zenith_delay(void) const
-         throw(InvalidTropModel) = 0;
+         /** Compute and return the zenith delay for hydrostatic (dry)
+          * component of the troposphere
+          * @throw InvalidTropModel
+          */
+      virtual double dry_zenith_delay(void) const = 0;
 
-         /// Compute and return the zenith delay for wet component of the troposphere
-      virtual double wet_zenith_delay(void) const
-         throw(InvalidTropModel) = 0;
+         /** Compute and return the zenith delay for wet component of
+          * the troposphere.
+          * @throw InvalidTropModel
+          */
+      virtual double wet_zenith_delay(void) const = 0;
 
-         /// Compute and return the mapping function for hydrostatic (dry)
-         /// component of the troposphere.
-         /// @param elevation Elevation of satellite as seen at receiver, in degrees
+         /** Compute and return the mapping function for hydrostatic (dry)
+          * component of the troposphere.
+          * @param elevation Elevation of satellite as seen at
+          *   receiver, in degrees
+          * @throw InvalidTropModel
+          */
       virtual double dry_mapping_function(double elevation)
-         const throw(InvalidTropModel) = 0;
+         const = 0;
 
-         /// Compute and return the mapping function for wet component of
-         /// the troposphere.
-         /// @param elevation Elevation of satellite as seen at receiver, in degrees
+         /** Compute and return the mapping function for wet component of
+          * the troposphere.
+          * @param elevation Elevation of satellite as seen at
+          *   receiver, in degrees
+          * @throw InvalidTropModel
+          */
       virtual double wet_mapping_function(double elevation)
-         const throw(InvalidTropModel) = 0;
+         const = 0;
 
-         /// Re-define the tropospheric model with explicit weather data.
-         /// Typically called just before correction().
-         /// @param T temperature in degrees Celsius
-         /// @param P atmospheric pressure in millibars
-         /// @param H relative humidity in percent
+         /** Re-define the tropospheric model with explicit weather data.
+          * Typically called just before correction().
+          * @param T temperature in degrees Celsius
+          * @param P atmospheric pressure in millibars
+          * @param H relative humidity in percent
+          * @throw InvalidParameter
+          */
       virtual void setWeather(const double& T,
                               const double& P,
-                              const double& H)
-         throw(InvalidParameter);
+                              const double& H);
 
-         /// Re-define the tropospheric model with explicit weather data.
-         /// Typically called just before correction().
-         /// @param wx the weather to use for this correction
-      virtual void setWeather(const WxObservation& wx)
-         throw(InvalidParameter);
+         /** Re-define the tropospheric model with explicit weather data.
+          * Typically called just before correction().
+          * @param wx the weather to use for this correction
+          * @throw InvalidParameter
+          */
+      virtual void setWeather(const WxObservation& wx);
 
-         /// Define the receiver height; this required by some models before calling
-         /// correction() or any of the zenith_delay or mapping_function routines.
-         /// @param ht Height of the receiver in meters.
-      virtual void setReceiverHeight(const double& ht) {};
+         /** Define the receiver height; this required by some models
+          * before calling correction() or any of the zenith_delay or
+          * mapping_function routines.
+          * @param ht Height of the receiver in meters.
+          */
+      virtual void setReceiverHeight(const double& ht) {}
 
-         /// Define the latitude of the receiver; this is required by some models
-         /// before calling correction() or any of the zenith_delay or
-         /// mapping_function routines.
-         /// @param lat Latitude of the receiver in degrees.
-      virtual void setReceiverLatitude(const double& lat) {};
+         /** Define the latitude of the receiver; this is required by
+          * some models before calling correction() or any of the
+          * zenith_delay or mapping_function routines.
+          * @param lat Latitude of the receiver in degrees.
+          */
+      virtual void setReceiverLatitude(const double& lat) {}
 
-         /// Define the receiver longitude; this is required by some models
-         /// before calling correction() or any of the zenith_delay routines.
-         /// @param lat  Longitude of receiver, in degrees East.
-      virtual void setReceiverLongitude(const double& lon) {};
+         /** Define the receiver longitude; this is required by some models
+          * before calling correction() or any of the zenith_delay routines.
+          * @param lat  Longitude of receiver, in degrees East.
+          */
+      virtual void setReceiverLongitude(const double& lon) {}
 
-         /// Define the day of year; this is required by some models before calling
-         /// correction() or any of the zenith_delay or mapping_function routines.
-         /// @param d Day of year.
-      virtual void setDayOfYear(const int& d) {};
+         /** Define the day of year; this is required by some models
+          * before calling correction() or any of the zenith_delay or
+          * mapping_function routines.
+          * @param d Day of year.
+          */
+      virtual void setDayOfYear(const int& d) {}
 
-         /// Saastamoinen hydrostatic zenith delay as modified by Davis for gravity.
-         /// Used by multiple models.
-         /// Ref. Leick, 3rd ed, pg 197, Leick, 4th ed, pg 482, and
-         /// Saastamoinen 1973 Atmospheric correction for the troposphere and
-         /// stratosphere in radio ranging of satellites. The use of artificial
-         /// satellites for geodesy, Geophys. Monogr. Ser. 15, Amer. Geophys. Union,
-         /// pp. 274-251, 1972.
-         /// Davis, J.L, T.A. Herring, I.I. Shapiro, A.E.E. Rogers, and G. Elgered,
-         /// Geodesy by Radio Interferometry: Effects of Atmospheric Modeling Errors
-         /// on Estimates of Baseline Length, Radio Science, Vol. 20, No. 6,
-         /// pp. 1593-1607, 1985.
-         /// @param press pressure in millibars
-         /// @param lat  latitude in degrees
-         /// @param height ellipsoid height in meters
-      double SaasDryDelay(const double pr, const double lat, const double ht) const
+         /** Saastamoinen hydrostatic zenith delay as modified by
+          * Davis for gravity.
+          * Used by multiple models.
+          * Ref. Leick, 3rd ed, pg 197, Leick, 4th ed, pg 482, and
+          * Saastamoinen 1973 Atmospheric correction for the
+          * troposphere and stratosphere in radio ranging of
+          * satellites. The use of artificial satellites for geodesy,
+          * Geophys. Monogr. Ser. 15, Amer. Geophys. Union,
+          * pp. 274-251, 1972.
+          * Davis, J.L, T.A. Herring, I.I. Shapiro, A.E.E. Rogers, and
+          * G. Elgered, Geodesy by Radio Interferometry: Effects of
+          * Atmospheric Modeling Errors on Estimates of Baseline
+          * Length, Radio Science, Vol. 20, No. 6, pp. 1593-1607,
+          * 1985.
+          * @param press pressure in millibars
+          * @param lat  latitude in degrees
+          * @param height ellipsoid height in meters
+          */
+      double SaasDryDelay(const double pr, const double lat, const double ht)
+         const
       {
          return (0.0022768*pr/(1-0.00266*::cos(2*lat*DEG_TO_RAD)-0.00028*ht/1000.));
       }
 
-         /// get weather data by a standard atmosphere model
-         /// reference to white paper of Bernese 5.0, P243
-         /// @param ht     height of the receiver in meters.
-         /// @param T      temperature in degrees Celsius
-         /// @param P      atmospheric pressure in millibars
-         /// @param H      relative humidity in percent
+         /** get weather data by a standard atmosphere model
+          * reference to white paper of Bernese 5.0, P243
+          * @param ht     height of the receiver in meters.
+          * @param T      temperature in degrees Celsius
+          * @param P      atmospheric pressure in millibars
+          * @param H      relative humidity in percent
+          */
       static void weatherByStandardAtmosphereModel(
          const double& ht, double& T, double& P, double& H);
 
    protected:
-      bool valid;                 // true only if current model parameters are valid
-      double temp;                // latest value of temperature (kelvin or celsius)
-      double press;               // latest value of pressure (millibars)
-      double humid;               // latest value of relative humidity (percent)
+      bool valid;           ///< true only if current model parameters are valid
+      double temp;          ///< latest value of temperature (kelvin or celsius)
+      double press;         ///< latest value of pressure (millibars)
+      double humid;         ///< latest value of relative humidity (percent)
 
    }; // end class TropModel
 
 
-   //---------------------------------------------------------------------------------
-   /// The 'zero' trop model, meaning it always returns zero.
+      //---------------------------------------------------------------------------------
+      /// The 'zero' trop model, meaning it always returns zero.
    class ZeroTropModel : public TropModel
    {
    public:
          /// Return the name of the model
       virtual std::string name(void)
-         { return std::string("Zero"); }
+      { return std::string("Zero"); }
 
-         /// Compute and return the full tropospheric delay
-         /// @param elevation Elevation of satellite as seen at receiver, in degrees
+         /** Compute and return the full tropospheric delay
+          * @param elevation Elevation of satellite as seen at receiver, in degrees
+          * @throw InvalidTropModel
+          */
       virtual double correction(double elevation) const
-         throw(InvalidTropModel)
-         { return 0.0; }
+      { return 0.0; }
 
          /**
-          * Compute and return the full tropospheric delay, given the positions of
-          * receiver and satellite and the time tag. This version is most useful
-          * within positioning algorithms, where the receiver position and timetag
-          * may vary; it computes the elevation (and other receiver location
-          * information) and passes them to appropriate set...() routines and the
-          * correction(elevation) routine.
+          * Compute and return the full tropospheric delay, given the
+          * positions of receiver and satellite and the time tag. This
+          * version is most useful within positioning algorithms,
+          * where the receiver position and timetag may vary; it
+          * computes the elevation (and other receiver location
+          * information) and passes them to appropriate set...()
+          * routines and the correction(elevation) routine.
           * @param RX  Receiver position
           * @param SV  Satellite position
           * @param tt  Time tag of the signal
+          * @throw InvalidTropModel
           */
       virtual double correction(const Position& RX,
                                 const Position& SV,
                                 const CommonTime& tt)
-         throw(InvalidTropModel)
-         { return 0.0; }
+      { return 0.0; }
 
          /** \deprecated
-          * Compute and return the full tropospheric delay, given the positions of
-          * receiver and satellite and the time tag. This version is most useful
-          * within positioning algorithms, where the receiver position and timetag
-          * may vary; it computes the elevation (and other receiver location
-          * information) and passes them to appropriate set...() routines and the
-          * correction(elevation) routine.
+          * Compute and return the full tropospheric delay, given the
+          * positions of receiver and satellite and the time tag. This
+          * version is most useful within positioning algorithms,
+          * where the receiver position and timetag may vary; it
+          * computes the elevation (and other receiver location
+          * information) and passes them to appropriate set...()
+          * routines and the correction(elevation) routine.
           * @param RX  Receiver position in ECEF cartesian coordinates (meters)
           * @param SV  Satellite position in ECEF cartesian coordinates (meters)
           * @param tt  Time tag of the signal
+          * @throw InvalidTropModel
           */
       virtual double correction(const Xvt& RX,
                                 const Xvt& SV,
                                 const CommonTime& tt)
-         throw(InvalidTropModel)
-         { return 0.0; }
+      { return 0.0; }
 
-         /// Compute and return the zenith delay for hydrostatic (dry)
-         /// component of the troposphere
+         /** Compute and return the zenith delay for hydrostatic (dry)
+          * component of the troposphere
+          * @throw InvalidTropModel
+          */
       virtual double dry_zenith_delay(void) const
-         throw(InvalidTropModel)
-         { return 0.0; }
+      { return 0.0; }
 
-         /// Compute and return the zenith delay for wet component of the troposphere
+         /** Compute and return the zenith delay for wet component of
+          * the troposphere
+          * @throw InvalidTropModel
+          */
       virtual double wet_zenith_delay(void) const
-         throw(InvalidTropModel)
-         { return 0.0; }
+      { return 0.0; }
 
-         /// Compute and return the mapping function for hydrostatic (dry)
-         /// component of the troposphere.
-         /// @param elevation Elevation of satellite as seen at receiver, in degrees
-      virtual double dry_mapping_function(double elevation)
-         const throw(InvalidTropModel)
-         { return 0.0; }
+         /** Compute and return the mapping function for hydrostatic (dry)
+          * component of the troposphere.
+          * @param elevation Elevation of satellite as seen at
+          *   receiver, in degrees
+          * @throw InvalidTropModel
+          */
+      virtual double dry_mapping_function(double elevation) const
+      { return 0.0; }
 
-         /// Compute and return the mapping function for wet component of
-         /// the troposphere.
-         /// @param elevation Elevation of satellite as seen at receiver, in degrees
-      virtual double wet_mapping_function(double elevation)
-         const throw(InvalidTropModel)
-         { return 0.0; }
+         /** Compute and return the mapping function for wet component of
+          * the troposphere.
+          * @param elevation Elevation of satellite as seen at
+          *   receiver, in degrees
+          * @throw InvalidTropModel
+          */
+      virtual double wet_mapping_function(double elevation) const
+      { return 0.0; }
 
    }; // end class ZeroTropModel
 
