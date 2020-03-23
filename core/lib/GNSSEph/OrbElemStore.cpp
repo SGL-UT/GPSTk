@@ -134,7 +134,6 @@ namespace gpstk
 //------------------------------------------------------------------------------
 
    void OrbElemStore::validSatSystem(const SatID& sat) const
-      throw(InvalidRequest) 
    {
       if (!isSatSysPresent(sat.system))
       {
