@@ -331,11 +331,12 @@ package_conda:
   script:
     - conda activate conda_builder
     - export GIT_COMMIT=$CI_COMMIT_REF_NAME
-    - conda-build conda_recipe
     - conda-build conda_recipe_py36
+    - mkdir -p conda-bld
+    - cp -r $CONDA_PREFIX/conda-bld/* conda-bld/
   artifacts:
     paths:
-      - conda_envs/conda_builder/conda-bld/linux-64/
+      - conda-bld/linux-64/
   dependencies: []
 
 package_debian_9_wheel:
