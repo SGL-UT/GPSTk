@@ -160,11 +160,26 @@ DFConfig cfg;
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
 // prototypes
-int GetCommandLine(int argc, char **argv) throw(Exception);
-void DumpConfiguration(void) throw(Exception);
-int Initialize(void) throw(Exception);
-int ShallowCheck(void) throw(Exception);  // called by Initialize()
-int WriteToRINEX(void) throw(Exception);
+/**
+ * @throw Exception
+ */
+int GetCommandLine(int argc, char **argv);
+/**
+ * @throw Exception
+ */
+void DumpConfiguration(void);
+/**
+ * @throw Exception
+ */
+int Initialize(void);
+/**
+ * @throw Exception
+ */
+int ShallowCheck(void);  // called by Initialize()
+/**
+ * @throw Exception
+ */
+int WriteToRINEX(void);
 void PrintSPList(ostream&, string, vector<SatPass>&);
 
 //------------------------------------------------------------------------------------
@@ -386,7 +401,7 @@ int main(int argc, char **argv)
 }   // end main()
 
 //------------------------------------------------------------------------------------
-int Initialize(void) throw(Exception)
+int Initialize(void)
 {
 try {
    int i;
@@ -477,7 +492,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 
 //------------------------------------------------------------------------------------
 // open the input files, read the headers and some of the data. Determine dt0 & C1/P1.
-int ShallowCheck(void) throw(Exception)
+int ShallowCheck(void)
 {
 try {
    bool inputValid(true);
@@ -703,7 +718,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int WriteToRINEX(void) throw(Exception)
+int WriteToRINEX(void)
 {
 try {
    if(cfg.OutRinexObs.empty()) return 0;
@@ -793,7 +808,7 @@ void PrintSPList(ostream& os, string msg, vector<SatPass>& v)
 
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
-int GetCommandLine(int argc, char **argv) throw(Exception)
+int GetCommandLine(int argc, char **argv)
 {
 try {
    size_t i;
@@ -1053,7 +1068,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-void DumpConfiguration(void) throw(Exception)
+void DumpConfiguration(void)
 {
 try {
    int i,j;

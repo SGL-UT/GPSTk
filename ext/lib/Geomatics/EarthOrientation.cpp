@@ -158,7 +158,6 @@ namespace gpstk
                                          const vector<double>& Y,
                                          vector<double>& dT,
                                          const IERSConvention& in_conv)
-      throw(InvalidRequest)
    {
       int i,j;
       double dxp,dyp,dUT,dlod,domega;
@@ -775,7 +774,6 @@ namespace gpstk
    // transformations.
    // Throws if the TimeSystem conversion fails (if t.system==TimeSystem::Unknown)
    double EarthOrientation::CoordTransTime(EphTime ttag)
-      throw(Exception)
    {
       try {
          EphTime t(ttag);
@@ -988,7 +986,7 @@ namespace gpstk
    // Compute eps, the obliquity of the ecliptic, in radians,
    // given T, the CoordTransTime at the time of interest.
    // throw if convention is not defined
-   double EarthOrientation::Obliquity(double T) throw(Exception)
+   double EarthOrientation::Obliquity(double T)
    {
       if(convention == IERSConvention::IERS1996)
          return Obliquity1996(T);
@@ -1010,7 +1008,7 @@ namespace gpstk
    // param reduced, bool true when UT1mUTC is 'reduced', meaning assumes
    //                 'no tides', as is the case with the NGA EOPs (default=F).
    // throw if convention is not defined
-   double EarthOrientation::GMST(const EphTime& t, bool reduced) throw(Exception)
+   double EarthOrientation::GMST(const EphTime& t, bool reduced)
    {
       try {
          if(convention == IERSConvention::IERS1996)
@@ -1035,7 +1033,7 @@ namespace gpstk
    // param reduced, bool true when UT1mUTC is 'reduced', meaning assumes
    //                 'no tides', as is the case with the NGA EOPs (default=F).
    // throw if convention is not defined
-   double EarthOrientation::GAST(const EphTime& t, bool reduced) throw(Exception)
+   double EarthOrientation::GAST(const EphTime& t, bool reduced)
    {
       try {
          if(convention == IERSConvention::IERS1996)
@@ -1059,7 +1057,6 @@ namespace gpstk
    // param t EphTime epoch of the rotation.
    // throw if convention is not defined
    Matrix<double> EarthOrientation::PolarMotionMatrix(const EphTime& t)
-      throw(Exception)
    {
       if(convention == IERSConvention::IERS1996)
          return PolarMotionMatrix1996(xp,yp);
@@ -1078,7 +1075,6 @@ namespace gpstk
    // the coordinate transformation time at the time of interest
    // throw if convention is not defined
    Matrix<double> EarthOrientation::PrecessionMatrix(const EphTime& t)
-      throw(Exception)
    {
       double T=CoordTransTime(t);
       if(convention == IERSConvention::IERS1996)
@@ -1101,7 +1097,6 @@ namespace gpstk
    // throw if convention is not defined
    // NB this is never called internally
    //void EarthOrientation::NutationAngles(double T, double& deps, double& dpsi)
-   //   throw(Exception)
    //{
    //   if(convention == IERSConvention::IERS1996) {
    //      double om;
@@ -1119,7 +1114,7 @@ namespace gpstk
 
    //---------------------------------------------------------------------------------
    // Compute the nutation matrix, given coordinate transformation time T
-   Matrix<double> EarthOrientation::NutationMatrix(const EphTime& t) throw(Exception)
+   Matrix<double> EarthOrientation::NutationMatrix(const EphTime& t)
    {
       try {
          double T = CoordTransTime(t);
@@ -1145,7 +1140,6 @@ namespace gpstk
    // throw if the TimeSystem conversion fails (if t.system==TimeSystem::Unknown)
    // throw if convention is not defined
    Matrix<double> EarthOrientation::PreciseEarthRotation(const EphTime& t)
-      throw(Exception)
    {
       if(convention == IERSConvention::IERS1996)
          return Matrix<double>(3,3);                        // TD
@@ -1166,7 +1160,6 @@ namespace gpstk
    // xp and yp (arcseconds), and UT1-UTC (seconds) (as found in the IERS bulletin).
    // throw if convention is not defined
    Matrix<double> EarthOrientation::ECEFtoInertial(const EphTime& t, bool reduced)
-      throw(Exception)
    {
       try {
          if(convention == IERSConvention::IERS1996)
@@ -1190,7 +1183,6 @@ namespace gpstk
 
    // TD this is not right
    //Matrix<double> EarthOrientation::ECEFtoJ2000(const EphTime& t, bool reduced)
-   //   throw(Exception)
    //{
    //   try {
    //      if(convention != IERSConvention::IERS2010) {
@@ -1571,7 +1563,6 @@ namespace gpstk
    // throw if the TimeSystem conversion fails (if t.system==TimeSystem::Unknown)
    double EarthOrientation::EarthRotationAngle(const EphTime& t,
                                                const double& UT1mUTC)
-      throw(Exception)
    {
       try {
          EphTime tUT1(t);
@@ -1607,7 +1598,6 @@ namespace gpstk
    // Based on IERS function EECT2000.f; all planets but Venus dropped b/c their
    // contribution is zero.
    double EarthOrientation::EquationOfEquinoxes2003(EphTime t)
-      throw(Exception)
    {
       // first define the coefficients
 
@@ -1792,7 +1782,6 @@ namespace gpstk
    // param UT1mUTC, UT1-UTC in seconds, as found in the IERS bulletin.
    // return GMST in radians
    double EarthOrientation::GMST1996(EphTime t, double UT1mUTC, bool reduced)
-      throw(Exception)
    {
       try {
          // convert to UTC first
@@ -1845,7 +1834,6 @@ namespace gpstk
    // param t EphTime epoch of the rotation.
    // param UT1mUTC, UT1-UTC in seconds, as found in the IERS bulletin.
    double EarthOrientation::GMST2003(EphTime t, double UT1mUTC)
-      throw(Exception)
    {
       try {
          // TT days since epoch
@@ -1866,7 +1854,6 @@ namespace gpstk
    // param t EphTime epoch of the rotation.
    // param UT1mUTC, UT1-UTC in seconds, as found in the IERS bulletin.
    double EarthOrientation::GMST2010(EphTime t, double UT1mUTC)
-      throw(Exception)
    {
       try {
          double era = EarthRotationAngle(t,UT1mUTC);     // radians
@@ -1895,7 +1882,6 @@ namespace gpstk
    //                in seconds of arc.
    double EarthOrientation::gast1996(EphTime t,
                                double om, double eps, double dpsi, double UT1mUTC)
-      throw(Exception)
    {
       try {
          double G = GMST1996(t,UT1mUTC,false);
@@ -1942,7 +1928,6 @@ namespace gpstk
    //
    // see pg 21 of the Reference (IERS 1996).
    double EarthOrientation::GAST1996(EphTime t, double UT1mUTC, bool reduced)
-      throw(Exception)
    {
       try {
          double T(CoordTransTime(t));
@@ -1972,7 +1957,6 @@ namespace gpstk
    // param t EphTime epoch of the rotation.
    // param UT1mUTC, UT1-UTC in seconds, as found in the IERS bulletin.
    double EarthOrientation::GAST2003(EphTime t, double UT1mUTC)
-      throw(Exception)
    {
       try {
          double omega,deps,dpsi,G;
@@ -2009,7 +1993,6 @@ namespace gpstk
    // param t EphTime epoch of the rotation.
    // param UT1mUTC, UT1-UTC in seconds, as found in the IERS bulletin.
    double EarthOrientation::GAST2010(EphTime t, double UT1mUTC)
-      throw(Exception)
    {
       try {
          Matrix<double> NutPreBias = PreciseEarthRotation2010(CoordTransTime(t));
@@ -2565,7 +2548,6 @@ namespace gpstk
    // param T CoordTransTime of interest
    // return 3x3 rotation matrix
    Matrix<double> EarthOrientation::PreciseEarthRotation2003(double T)
-      throw(Exception)
    {
       try {
          Matrix<double> N = NutationMatrix2003(T);
@@ -2587,7 +2569,6 @@ namespace gpstk
    // param T CoordTransTime of interest
    // return 3x3 rotation matrix
    Matrix<double> EarthOrientation::PreciseEarthRotation2010(double T)
-      throw(Exception)
    {
       try {
          double deps,dpsi,epsa;
@@ -2613,7 +2594,6 @@ namespace gpstk
    // see class EarthOrientation).
    Matrix<double> EarthOrientation::ECEFtoInertial1996(EphTime t,
                        double xp, double yp, double UT1mUTC, bool reduced)
-      throw(Exception)
    {
       try {
          Matrix<double> P,N,W,S;
@@ -2676,7 +2656,6 @@ namespace gpstk
    // see class EarthOrientation).
    Matrix<double> EarthOrientation::ECEFtoInertial2003(EphTime t,
                                                 double xp, double yp, double UT1mUTC)
-      throw(Exception)
    {
       try {
          Matrix<double> P,N,R,W;
@@ -2748,7 +2727,6 @@ namespace gpstk
    // see class EarthOrientation).
    Matrix<double> EarthOrientation::ECEFtoInertial2010(EphTime t,
                        double xp, double yp, double UT1mUTC)
-      throw(Exception)
    {
       try {
          double T(CoordTransTime(t));

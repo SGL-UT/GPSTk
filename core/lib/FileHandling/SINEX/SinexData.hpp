@@ -101,22 +101,24 @@ namespace gpstk
 
             /**
              * Writes the formatted record to the FFStream.
+             * @throw std::exception
+             * @throw FFStreamError
+             * @throw StringUtils::StringException
              */
-         void reallyPutRecord(FFStream& s) const
-            throw(std::exception, FFStreamError, StringUtils::StringException);
+         void reallyPutRecord(FFStream& s) const;
 
             /**
              * This function reads a record from the given FFStream.
              * If an error is encountered in retrieving the record,
              * the stream is reset to its original position and its
              * fail-bit is set.
-             * @throws StringException when a StringUtils function fails
-             * @throws FFStreamError when exceptions(failbit) is set and
+             * @throw std::exception
+             * @throw StringException when a StringUtils function fails
+             * @throw FFStreamError when exceptions(failbit) is set and
              *  a read or formatting error occurs.  This also resets the
              *  stream to its pre-read position.
              */
-         void reallyGetRecord(FFStream& s)
-            throw(std::exception, FFStreamError, StringUtils::StringException);
+         void reallyGetRecord(FFStream& s);
 
       }; // class Data
 

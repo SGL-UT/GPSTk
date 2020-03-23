@@ -104,7 +104,6 @@ namespace gpstk
        * \warning "n" must be > 0.0, otherwise n = |n|.
        */
    Chi2Distribution& Chi2Distribution::setNDF(int n)
-      throw(InvalidParameter)
    {
 
       if( n == 0 )

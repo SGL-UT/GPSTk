@@ -70,7 +70,6 @@ namespace gpstk
        */
    int Bancroft::Compute( Matrix<double>& Data,
                           Vector<double>& X )
-      throw(Exception)
    {
 
       try
@@ -225,7 +224,6 @@ namespace gpstk
       // const Matrix B.
    int Bancroft::Compute( const Matrix<double>& Data,
                           Vector<double>& X )
-      throw(Exception) 
    {
       Matrix<double> Datanoconst(Data);
 

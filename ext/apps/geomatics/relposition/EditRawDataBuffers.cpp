@@ -53,10 +53,10 @@ using namespace gpstk;
 
 //------------------------------------------------------------------------------------
 // prototypes -- this module only
-int OutputRawData(void) throw(Exception);                     // DataOutput.cpp
+int OutputRawData(void);                     // DataOutput.cpp
 
 //------------------------------------------------------------------------------------
-int EditRawDataBuffers(void) throw(Exception)
+int EditRawDataBuffers(void)
 {
 try {
    size_t i;
@@ -172,7 +172,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int OutputRawDataBuffers(void) throw(Exception)
+int OutputRawDataBuffers(void)
 {
 try {
    int j,k;

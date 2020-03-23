@@ -116,9 +116,9 @@ namespace gpstk
 
    protected:
          /** returns the element at index i by calling the base
-          * class's operator[] */
+          * class's operator[]
+          * @throw VectorException */
       inline T constVectorRef(size_t i) const
-         throw(VectorException)
       {
          const BaseClass& b = static_cast<const BaseClass&>(*this);
 #ifdef RANGECHECK
@@ -243,9 +243,10 @@ namespace gpstk
       }
 
    protected:
-         /// Returns a modifiable object at index i.
+         /** Returns a modifiable object at index i.
+          * @throw VectorException
+          */
       inline T& vecRef(size_t i) 
-         throw(VectorException)
       {
          BaseClass& b = static_cast<BaseClass&>(*this);
 #ifdef RANGECHECK
@@ -282,9 +283,9 @@ namespace gpstk
 
    protected:
          /** Given the size of the source vector, checks that the
-          * slice is valid. */
+          * slice is valid.
+          * @throw VectorException */
       inline void vecSliceCheck(size_t sourceSize) const
-         throw(VectorException)
       {
 #ifdef RANGECHECK
             // sanity checks...

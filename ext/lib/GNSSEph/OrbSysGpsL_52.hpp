@@ -60,9 +60,10 @@ namespace gpstk
          /// Default constructor
       OrbSysGpsL_52();
   
-        /// Constructor for creating directly from a PackedNavBits object
-      OrbSysGpsL_52(const PackedNavBits& msg)
-         throw( gpstk::InvalidParameter);
+         /** Constructor for creating directly from a PackedNavBits object
+          * @throw InvalidParameter
+          */
+      OrbSysGpsL_52(const PackedNavBits& msg);
       
          /// Destructor
       virtual ~OrbSysGpsL_52() {}
@@ -75,8 +76,7 @@ namespace gpstk
           * @param msg - 300 bits of Subframe 4, Page 18.
           * @throw InvalidParameter if message data is invalid
           */
-      virtual void loadData(const PackedNavBits& msg)
-         throw(gpstk::InvalidParameter); 
+      virtual void loadData(const PackedNavBits& msg);
          
       virtual bool isSameData(const OrbData* right) const;      
 
@@ -91,22 +91,23 @@ namespace gpstk
       }
 
          /** Output the contents of this orbit data to the given stream.
-          * @throw Invalid Request if the required data has not been stored.
+          * @throw InvalidRequest if the required data has not been stored.
           */
-      virtual void dumpTerse(std::ostream& s) const
-         throw( InvalidRequest );
+      virtual void dumpTerse(std::ostream& s) const;
 
       //virtual void dumpHeader(std::ostream& s = std::cout) const
-      //   throw( InvalidRequest ) = 0;
 
-      virtual void dumpBody(std::ostream& s = std::cout) const
-         throw( InvalidRequest );
+      /**
+       * @throw InvalidRequest
+       */
+      virtual void dumpBody(std::ostream& s = std::cout) const;
 
       //virtual void dumpFooter(std::ostream& s = std::cout) const
-      //   throw( InvalidRequest ) = 0;
       
-      double getERD(const SatID& svid) const
-         throw(InvalidRequest);
+      /**
+       * @throw InvalidRequest
+       */
+      double getERD(const SatID& svid) const;
       
       unsigned short availIndicator;
       std::vector<double> erd;

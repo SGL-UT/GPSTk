@@ -77,9 +77,10 @@ namespace gpstk
       void dump(std::ostream& s=std::cout, short detail=0)
          const throw();
 
-         /// load the given Rinex file
-      void loadFile(const std::string& filename) 
-         throw(FileMissingException);
+         /** load the given Rinex file
+          * @throw FileMissingException
+          */
+      void loadFile(const std::string& filename);
    };
 
       //@}

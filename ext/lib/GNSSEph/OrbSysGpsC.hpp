@@ -64,8 +64,10 @@ namespace gpstk
 
       virtual std::list<std::string> compare(const OrbSysGpsC* right) const;
 
-      virtual void dumpHeader(std::ostream& s = std::cout) const
-         throw( InvalidRequest );
+         /**
+          * @throw Invalid Request
+          */
+      virtual void dumpHeader(std::ostream& s = std::cout) const;
 
       void setUID(const PackedNavBits& msg);  
 

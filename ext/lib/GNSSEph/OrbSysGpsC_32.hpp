@@ -62,9 +62,10 @@ namespace gpstk
          /// Default constructor
       OrbSysGpsC_32();
   
-        /// Constructor for creating directly from a PackedNavBits object
-      OrbSysGpsC_32(const PackedNavBits& msg)
-         throw( gpstk::InvalidParameter);
+         /** Constructor for creating directly from a PackedNavBits object
+          * @throw InvalidParameter
+          */
+      OrbSysGpsC_32(const PackedNavBits& msg);
       
          /// Destructor
       virtual ~OrbSysGpsC_32() {}
@@ -77,8 +78,7 @@ namespace gpstk
           * @param msg - 300 bits of Subframe 4, Page 18.
           * @throw InvalidParameter if message data is invalid
           */
-      virtual void loadData(const PackedNavBits& msg)
-         throw(gpstk::InvalidParameter); 
+      virtual void loadData(const PackedNavBits& msg);
          
       virtual bool isSameData(const OrbData* right) const;      
 
@@ -105,24 +105,27 @@ namespace gpstk
           * Compute UT1  as per IS-GPS-200 30.3.3.5 Table 30=VIII
           * NOTE: See preceding method, isUtcValid( ) to determine
           * if provided parameters are OK to use.  
+          * @throw InvalidRequest
           */
       virtual CommonTime getUT1(const CommonTime& ct, 
-                            const CommonTime& tutc) const
-        throw( InvalidRequest );
+                                const CommonTime& tutc) const;
+         /**
+          * @throw InvalidRequest
+          */
       virtual CommonTime getUT1(const CommonTime& ct,
-                            const OrbSysGpsC_33* mt33) const
-        throw( InvalidRequest );
+                                const OrbSysGpsC_33* mt33) const;
       virtual double getxp(const CommonTime& ct) const;
       virtual double getyp(const CommonTime& ct) const;
 
          /** Output the contents of this orbit data to the given stream.
-          * @throw Invalid Request if the required data has not been stored.
+          * @throw InvalidRequest if the required data has not been stored.
           */
-      virtual void dumpTerse(std::ostream& s = std::cout) const
-         throw( InvalidRequest );
+      virtual void dumpTerse(std::ostream& s = std::cout) const;
 
-      virtual void dumpBody(std::ostream& s = std::cout) const
-         throw( InvalidRequest );
+         /**
+          * @throw InvalidRequest
+          */
+      virtual void dumpBody(std::ostream& s = std::cout) const;
 
          // UTC Parameters
       gpstk::CommonTime ctEpoch; 

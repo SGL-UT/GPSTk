@@ -52,7 +52,6 @@ namespace gpstk
       // Add to the store directly
    void EOPDataStore::addEOPData(const CommonTime& utc,
                                   const EOPDataStore::EOPData& d)
-      throw(InvalidRequest)
    {
       if(!(utc.getTimeSystem()==TimeSystem::UTC)) throw Exception();
 
@@ -71,7 +70,6 @@ namespace gpstk
 
    
    EOPDataStore::EOPData EOPDataStore::getEOPData(const CommonTime& utc) const
-         throw(InvalidRequest)
    {
       if(!(utc.getTimeSystem()==TimeSystem::UTC)) throw Exception();
 	  
@@ -84,7 +82,6 @@ namespace gpstk
 
       
    void EOPDataStore::loadIERSFile(std::string iersFile)
-      throw(FileMissingException)
    {
       ifstream inpf(iersFile.c_str());
       if(!inpf) 
@@ -132,7 +129,6 @@ namespace gpstk
    }
 
    void EOPDataStore::loadIGSFile(std::string igsFile)
-      throw(FileMissingException)
    {
       ifstream inpf(igsFile.c_str());
       if(!inpf) 
@@ -204,7 +200,6 @@ namespace gpstk
        *  @param stkFile  Name of file to read, including path.
        */
    void EOPDataStore::loadSTKFile(std::string stkFile)
-      throw(FileMissingException)
    {
       std::ifstream fstk(stkFile.c_str());
 

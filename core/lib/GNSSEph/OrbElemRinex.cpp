@@ -69,14 +69,12 @@ namespace gpstk
 
    //----------------------------------------------------------------
    OrbElemRinex::OrbElemRinex( const RinexNavData& rinNav )
-      throw( InvalidParameter )
    {
       loadData( rinNav );
    }
 
    //----------------------------------------------------------------
    OrbElemRinex::OrbElemRinex( const Rinex3NavData& rinNav )
-     throw( InvalidParameter )
    {
       loadData( rinNav );
    }
@@ -90,7 +88,6 @@ namespace gpstk
 
    //----------------------------------------------------------------
    void OrbElemRinex::loadData( const RinexNavData& rinNav )
-      throw( InvalidParameter )
    {
       // Fill in the variables unique to OrbElemFIC9
       codeflags        = rinNav.codeflgs;
@@ -245,7 +242,6 @@ namespace gpstk
 
    //----------------------------------------------------------------
    void OrbElemRinex::loadData( const Rinex3NavData& rinNav )
-     throw( InvalidParameter )
    {
       // Fill in the variables unique to OrbElemFIC9
       codeflags        = rinNav.codeflgs;
@@ -329,7 +325,6 @@ namespace gpstk
 
    //----------------------------------------------------------------
    double OrbElemRinex::getAccuracy()  const
-      throw(InvalidRequest)
    {
       if (!dataLoaded())
       {
@@ -630,7 +625,6 @@ namespace gpstk
 
    //----------------------------------------------------------------
    void OrbElemRinex::dumpHeader(ostream& s) const
-      throw( InvalidRequest )
    {
       if (!dataLoaded())
       {
@@ -711,7 +705,6 @@ namespace gpstk
 
    //----------------------------------------------------------------
    void OrbElemRinex :: dumpTerse(ostream& s) const
-      throw(InvalidRequest )
    {
 
        // Check if the subframes have been loaded before attempting
@@ -771,7 +764,6 @@ namespace gpstk
 
    //----------------------------------------------------------------
    void OrbElemRinex :: dump(ostream& s) const
-      throw( InvalidRequest )
    {
       ios::fmtflags oldFlags = s.flags();
       dumpHeader(s);

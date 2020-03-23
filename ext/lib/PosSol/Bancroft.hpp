@@ -66,9 +66,11 @@ namespace gpstk
    {
    public:
 
-         /// Constructor
+         /** Constructor
+          * @throw Exception
+          */
       Bancroft()
-         throw(Exception) : SecondSolution(4,0.0)
+            : SecondSolution(4,0.0)
       { 
          testInput= true;
          ChooseOne = true;
@@ -102,18 +104,18 @@ namespace gpstk
           *    0  Ok, 
           *   -1  Not enough good data
           *   -2  Singular problem
+          * @throw Exception
           */
       int Compute( Matrix<double>& Data,
-                   Vector<double>& X )
-         throw(Exception);
+                   Vector<double>& X );
 
 
          /** Another version of Compute method allowing calls with Matrix B
           *  being const.
+          * @throw Exception
           */
       int Compute( const Matrix<double>& Data,
-                   Vector<double>& X )
-         throw(Exception);
+                   Vector<double>& X );
 
 
          /** If true, the solution closest to CloseTo criterion will be chosen.

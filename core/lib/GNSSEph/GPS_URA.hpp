@@ -164,7 +164,6 @@ namespace gpstk
 
    inline
    double ura2CNAVaccuracy(const short& ura) 
-      throw( InvalidRequest )
    {
       short ndx = ura+SV_CNAV_INDEX_OFFSET;
       if(ndx < 0 || ndx > SV_CNAV_NOMINAL_MAX_INDEX)
@@ -177,7 +176,6 @@ namespace gpstk
 
    inline
    double ura2CNAVNominalaccuracy(const short& ura)
-      throw( InvalidRequest )
    {
       short ndx = ura+SV_CNAV_INDEX_OFFSET;
       if(ndx < 0 || ndx > SV_CNAV_NOMINAL_MAX_INDEX)

@@ -94,8 +94,8 @@ namespace gpstk
          /// @param filename the name of the ASCII header file.
          /// @throw if the file cannot be opened.
          /// @throw if the header ends prematurely or if it is not properly formatted.
-         /// @throw if any stream error occurs.
-      void readASCIIheader(std::string filename) throw(gpstk::Exception);
+         /// @throw Exception if any stream error occurs.
+      void readASCIIheader(std::string filename);
 
          /// Read one or more ASCII data files. Call only after having read the header,
          /// and call only with data files for the same ephemeris as the header (the JPL
@@ -106,42 +106,43 @@ namespace gpstk
          /// @param filenames vector containting the names of the ASCII data files
          ///                  (downloaded from JPL), in any order.
          /// @return 0 ok, -1 if a stream error occurred.
-         /// @throw if the header has not yet been read.
-         /// @throw if any file could not be opened.
-         /// @throw if any record in any file has a 'number of coefficients' that differs
-         ///        from the header value.
-      int readASCIIdata(std::vector<std::string>& filenames) throw(gpstk::Exception);
+         /// @throw Exception if the header has not yet been read.
+         /// @throw Exception if any file could not be opened.
+         /// @throw Exception if any record in any file has a 'number
+         ///        of coefficients' that differs from the header
+         ///        value.
+      int readASCIIdata(std::vector<std::string>& filenames);
 
          /// Read only one ASCII data file. Also see the documentation for the
          /// other version of this routine.
          /// @param filename name of an ASCII data files (downloaded from JPL)
          /// @return 0 ok, -1 if a stream error occurred, -4 header has not been read.
-         /// @throw if the header has not yet been read.
-         /// @throw if the file could not be opened.
-         /// @throw if any record has a 'number of coefficients' that differs
+         /// @throw Exception if the header has not yet been read.
+         /// @throw Exception if the file could not be opened.
+         /// @throw Exception if any record has a 'number of coefficients' that differs
          ///        from the header value.
-      int readASCIIdata(std::string filename) throw(gpstk::Exception);
+      int readASCIIdata(std::string filename);
 
          /// Write the header (ASCII) to an output stream
-         /// @throw if any stream error occurs
+         /// @throw Exception if any stream error occurs
          /// @return 0 success,
          ///        -4 header has not yet been read.
-      int writeASCIIheader(std::ostream& os) throw(gpstk::Exception);
+      int writeASCIIheader(std::ostream& os);
 
          /// Write the stored data (ASCII) to an output stream
          /// NB. This routine does NOT clear the store - use clearStorage()
-         /// @throw if any stream error occurs
+         /// @throw Exception if any stream error occurs
          /// @return 0 success,
          ///        -4 header has not yet been read.
-      int writeASCIIdata(std::ostream& os) throw(gpstk::Exception);
+      int writeASCIIdata(std::ostream& os);
 
          /// Write the header and the stored data to a binary output file.
          /// NB. This routine does NOT clear the store - use clearStorage()
          /// @param filename  name of binary file to be read.
          /// @return 0 ok
          ///        -4 if data has not been read into the object
-         /// @throw if any stream error occurs.
-      int writeBinaryFile(std::string filename) throw(gpstk::Exception);
+         /// @throw Exception if any stream error occurs.
+      int writeBinaryFile(std::string filename);
 
          /// clear the store map containing all the data read by
          /// readASCIIdata() or readBinaryData(true).
@@ -154,8 +155,8 @@ namespace gpstk
          /// @return 0 success,
          ///        -3 input stream is not open or not valid
          ///        -4 header has not yet been read.
-         /// @throw if a gap in time is found between consecutive records.
-      int readBinaryFile(std::string filename) throw(gpstk::Exception);
+         /// @throw Exception if a gap in time is found between consecutive records.
+      int readBinaryFile(std::string filename);
 
          /// Open the given binary file, read the header and prepare for reading data
          /// records at random using seekToJD() and computing positions and velocities
@@ -164,8 +165,8 @@ namespace gpstk
          /// @return 0 success,
          ///        -3 input stream is not open or not valid
          ///        -4 header has not yet been read.
-         /// @throw if a gap in time is found between consecutive records.
-      int initializeWithBinaryFile(std::string filename) throw(gpstk::Exception);
+         /// @throw Exception if a gap in time is found between consecutive records.
+      int initializeWithBinaryFile(std::string filename);
 
          /// Compute position and velocity of given 'target' body, relative to the 'center'
          /// body, at the given time. On successful return, PV contains position
@@ -200,8 +201,7 @@ namespace gpstk
          Planet target,
          Planet center,
          double PV[6],
-         bool kilometers = true)
-         throw(gpstk::Exception);
+         bool kilometers = true);
 
          /// Return the value of 1 AU (Astronomical Unit) in km. If the file header has not
          /// been read, return -1.0.
@@ -225,28 +225,27 @@ namespace gpstk
       }
 
          /// Return the start time of the data
-      gpstk::CommonTime startTime(void) const throw(gpstk::Exception)
+      gpstk::CommonTime startTime(void) const
       { return gpstk::MJD(startJD - gpstk::MJD_TO_JD); }
 
          /// Return the end time of the data
-      gpstk::CommonTime endTime(void) const throw(gpstk::Exception)
+      gpstk::CommonTime endTime(void) const
       { return gpstk::MJD(endJD - gpstk::MJD_TO_JD); }
 
 
    private:
          /// Helper routine for binary writing.
-         /// @throw if there is any stream error.
-      void writeBinary(std::ofstream& strm, const char *ptr, size_t size)
-         throw(gpstk::Exception);
+         /// @throw Exception if there is any stream error.
+      void writeBinary(std::ofstream& strm, const char *ptr, size_t size);
 
          /// Helper routine for binary reading.
-         /// @throw if there is any error or if EOF is found.
-      void readBinary(char *ptr, size_t size) throw(gpstk::Exception);
+         /// @throw Exception if there is any error or if EOF is found.
+      void readBinary(char *ptr, size_t size);
 
          /// Read header from a binary file.
          /// @param filename  name of binary file, probably written by writeBinaryFile().
-         /// @throw if read error or premature EOF if found.
-      void readBinaryHeader(std::string filename) throw(gpstk::Exception);
+         /// @throw Exception if read error or premature EOF if found.
+      void readBinaryHeader(std::string filename);
 
          /// Read data from a binary file, already opened by readBinaryHeader.
          /// Build the file position map, and store the first set of coefficients.
@@ -255,8 +254,8 @@ namespace gpstk
          /// @return 0 success,
          ///        -3 input stream is not open or not valid
          ///        -4 header has not yet been read.
-         /// @throw if a gap in time is found between consecutive records.
-      int readBinaryData(bool save) throw(gpstk::Exception);
+         /// @throw Exception if a gap in time is found between consecutive records.
+      int readBinaryData(bool save);
 
          /// Read a single binary record (not a header record) at the current file
          /// position, into the given vector. For use by readBinaryData() and seekToJD().
@@ -264,7 +263,7 @@ namespace gpstk
          /// @return 0 success,
          ///        -2 EOF was reached
          ///        -3 input stream is not open or not valid
-      int readBinaryRecord(std::vector<double>& data_vector) throw(gpstk::Exception);
+      int readBinaryRecord(std::vector<double>& data_vector);
 
          /// These are indexes used in the actual computation, and correspond to indexes
          /// in the ephemeris file; for example computation for the SUN is done using
@@ -297,7 +296,7 @@ namespace gpstk
          ///        -3 input stream is not open or not valid, or EOF was found prematurely,
          ///        -4 ephemeris (binary file) is not initialized
          /// -3 or -4 => initializeWithBinaryFile() has not been called, or reading failed.
-      int seekToJD(double JD) throw(gpstk::Exception);
+      int seekToJD(double JD);
 
          /// Compute position and velocity of given body at given time, using the current
          /// coefficient array. NB caller MUST call seekToJD(time) BEFORE calling this.
@@ -310,8 +309,7 @@ namespace gpstk
          /// @param  tt     Time (Julian Date) of interest.
          /// @param  which  computeID of the body of interest.
          /// @param  PV     double(6) array containing the output position and velocity.
-      void computeState(double tt, computeID which, double PV[6])
-         throw(gpstk::Exception);
+      void computeState(double tt, computeID which, double PV[6]);
 
       // member data ---------------------------------------------------------
 

@@ -141,8 +141,7 @@ namespace gpstk
           *  @throw InvalidRequest if the epoch on either side of t
           *     cannot be found in the map.
           */
-      std::vector<double> getData(const CommonTime& t) const
-         throw(InvalidRequest);
+      std::vector<double> getData(const CommonTime& t) const;
 
       
          /// Object holding all the data for the vehicle

@@ -158,10 +158,12 @@ namespace gpstk
    VecBaseNewBinaryTranscendentalOperator(atan, Vector<T>)
    VecBaseNewBinaryTranscendentalOperator(pow, Vector<T>)
 
-   /** finds the cross product between l and r */
+   /** finds the cross product between l and r
+    * @throw VectorException
+    */
    template <class T, class BaseClass, class BaseClass2> 
    Vector<T> cross(const ConstVectorBase<T, BaseClass>& l, 
-                   const ConstVectorBase<T, BaseClass2>& r) throw(VectorException)
+                   const ConstVectorBase<T, BaseClass2>& r)
    { 
       if ((l.size() != 3) && (r.size() != 3))
       {

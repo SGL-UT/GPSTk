@@ -54,8 +54,6 @@ namespace gpstk
    short SEMHeader::nearFullWeek = 0;
 
    void SEMHeader::reallyPutRecord(FFStream& ffs) const
-      throw(std::exception, FFStreamError,
-               gpstk::StringUtils::StringException)
    {
       string line;
 
@@ -77,8 +75,6 @@ namespace gpstk
 
 
    void SEMHeader::reallyGetRecord(FFStream& ffs)
-      throw(std::exception, FFStreamError,
-               gpstk::StringUtils::StringException)
    {
       string line;
 

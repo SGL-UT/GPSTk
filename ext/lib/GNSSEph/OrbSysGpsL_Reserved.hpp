@@ -62,9 +62,10 @@ namespace gpstk
          /// Default constructor
       OrbSysGpsL_Reserved();
   
-        /// Constructor for creating directly from a PackedNavBits object
-      OrbSysGpsL_Reserved(const PackedNavBits& msg)
-         throw( gpstk::InvalidParameter);
+         /** Constructor for creating directly from a PackedNavBits object
+          * @throw InvalidParameter
+          */
+      OrbSysGpsL_Reserved(const PackedNavBits& msg);
       
          /// Destructor
       virtual ~OrbSysGpsL_Reserved() {}
@@ -77,8 +78,7 @@ namespace gpstk
           * @param msg - 300 bits of Subframe 5, Page 25.
           * @throw InvalidParameter if message data is invalid
           */
-      virtual void loadData(const PackedNavBits& msg)
-         throw(gpstk::InvalidParameter); 
+      virtual void loadData(const PackedNavBits& msg);
          
       virtual bool isSameData(const OrbData* right) const;      
 
@@ -93,13 +93,14 @@ namespace gpstk
       }
 
          /** Output the contents of this orbit data to the given stream.
-          * @throw Invalid Request if the required data has not been stored.
+          * @throw InvalidRequest if the required data has not been stored.
           */
-      virtual void dumpTerse(std::ostream& s = std::cout) const
-         throw( InvalidRequest );
+      virtual void dumpTerse(std::ostream& s = std::cout) const;
 
-      virtual void dumpBody(std::ostream& s = std::cout) const
-         throw( InvalidRequest );
+         /**
+          * @throw InvalidRequest
+          */
+      virtual void dumpBody(std::ostream& s = std::cout) const;
 
          // 182 reserved bits from words 3-10, without parity
       PackedNavBits pnb;

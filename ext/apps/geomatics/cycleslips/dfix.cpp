@@ -76,23 +76,29 @@ using namespace gpstk;
 //------------------------------------------------------------------------------------
 // prototypes
 /// Read and process command line
-int GetCommandLine(int argc, char **argv) throw(Exception);
+/// @throw Exception
+int GetCommandLine(int argc, char **argv);
 
 /// Validate input -- check that files exist, append path, quit if user chose validate
-int ValidateInput(void) throw(Exception);
+/// @throw Exception
+int ValidateInput(void);
 
 /// Load ephemeris stores
-int Initialize(void) throw(Exception);
+/// @throw Exception
+int Initialize(void);
 
 /// Choose R3ObsIDs given user input, read RINEX file(s) into SatPass list
 /// @return 0 success, <0 error code
-int ReadRinexFiles(void) throw(Exception);
+/// @throw Exception
+int ReadRinexFiles(void);
 
 /// Remove milliseconds, mark low elevations
-int PreProcess(void) throw(Exception);
+/// @throw Exception
+int PreProcess(void);
 
 /// Call GDC for each pass and output
-int Process(void) throw(Exception);
+/// @throw Exception
+int Process(void);
 
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
@@ -342,7 +348,7 @@ catch (...) {
 
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
-int GetCommandLine(int argc, char **argv) throw(Exception)
+int GetCommandLine(int argc, char **argv)
 {
 try {
    unsigned int i,j,k;
@@ -772,7 +778,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 //------------------------------------------------------------------------------------
 // Check input: read RINEX and generate a complete header, saving the data.
 // if not correct, set bool GD.inputIsValid
-int ValidateInput(void) throw(Exception)
+int ValidateInput(void)
 {
 try {
    int i;
@@ -829,7 +835,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int Initialize(void) throw(Exception)
+int Initialize(void)
 {
 try {
    int n;
@@ -936,7 +942,7 @@ int findIndex(const vector<string>& allR3ObsID, const char sys,
 
 //------------------------------------------------------------------------------------
 // Reads RINEX 2|3 Obs file(s) into SatPass list SPList
-int ReadRinexFiles(void) throw(Exception)
+int ReadRinexFiles(void)
 {
 try {
    int n,iret;
@@ -1091,7 +1097,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 }  // end ReadRinexFiles()
 
 //------------------------------------------------------------------------------------
-int PreProcess(void) throw(Exception)
+int PreProcess(void)
 {
 try {
    unsigned int i,j;
@@ -1141,7 +1147,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int Process(void) throw(Exception)
+int Process(void)
 {
 try {
    int iret,i,GLOn;

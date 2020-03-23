@@ -52,7 +52,6 @@ namespace gpstk
    const string AntexHeader::endOfHeaderString =   "END OF HEADER";
 
    void AntexHeader::reallyPutRecord(FFStream& ffs) const 
-      throw(std::exception, FFStreamError, StringException)
    {
       AntexStream& strm = dynamic_cast<AntexStream&>(ffs);
       
@@ -83,7 +82,6 @@ namespace gpstk
 
       // this function writes all valid header records
    void AntexHeader::WriteHeaderRecords(FFStream& ffs) const
-      throw(FFStreamError, StringException)
    {
       AntexStream& strm = dynamic_cast<AntexStream&>(ffs);
       string line;
@@ -126,7 +124,6 @@ namespace gpstk
 
       // this function parses a single header record
    void AntexHeader::ParseHeaderRecord(string& line)
-      throw(FFStreamError)
    {
       string label(line, 60, 20);
          
@@ -173,7 +170,6 @@ namespace gpstk
 
       // This function parses the entire header from the given stream
    void AntexHeader::reallyGetRecord(FFStream& ffs)
-      throw(std::exception, FFStreamError, StringException)
    {
       AntexStream& strm = dynamic_cast<AntexStream&>(ffs);
       

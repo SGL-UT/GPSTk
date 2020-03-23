@@ -123,7 +123,6 @@ namespace gpstk
        * \warning "n" must be > 0.0, otherwise n = |n|.
        */
    StudentDistribution& StudentDistribution::setNDF(int n)
-      throw(InvalidParameter)
    {
 
       if( n == 0 )

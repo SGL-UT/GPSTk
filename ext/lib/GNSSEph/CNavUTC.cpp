@@ -65,7 +65,6 @@ namespace gpstk
    }
 
    CNavUTC::CNavUTC(const PackedNavBits& message33)
-      throw( InvalidParameter)
    {
       loadData(message33);
    }
@@ -94,7 +93,6 @@ namespace gpstk
    }
    
    void CNavUTC::loadData(const PackedNavBits& message33)
-      throw(InvalidParameter)
    {
          // First, verify the correct message type is being passed in. 
       long msgType = message33.asUnsignedLong(14,6,1);
@@ -127,7 +125,6 @@ namespace gpstk
    } // end of loadData()
 
    void CNavUTC::dumpBody(ostream& s) const
-      throw( InvalidRequest )
    {
       if (!dataLoaded())
       {

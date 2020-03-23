@@ -78,8 +78,6 @@ namespace gpstk
    // Yuma format that will be successfully read by the reallyGetRecord
    // parser.
    void YumaData::reallyPutRecord(FFStream& ffs) const
-      throw(std::exception, FFStreamError,
-               gpstk::StringUtils::StringException)
    {
       YumaStream& strm = dynamic_cast<YumaStream&>(ffs);
 
@@ -151,8 +149,7 @@ namespace gpstk
    }   // end YumaData::reallyPutRecord
 
 
-   string YumaData::lineParser(const string& line, const string& s)
-      const throw(FFStreamError)
+   string YumaData::lineParser(const string& line, const string& s) const
    {
       const int i = line.find_first_of(":");
 
@@ -170,8 +167,6 @@ namespace gpstk
 
 
    void YumaData::reallyGetRecord(FFStream& ffs)
-      throw(std::exception, FFStreamError,
-               gpstk::StringUtils::StringException)
    {
       YumaStream& strm = dynamic_cast<YumaStream&>(ffs);
 

@@ -55,8 +55,8 @@
 
 namespace gpstk
 {
-   /// @ingroup ephemcalc 
-   //@{
+      /// @ingroup ephemcalc 
+      //@{
 
    class PackedNavBits
    {
@@ -71,21 +71,21 @@ namespace gpstk
          psFailed   ///< Parity/CRC check was performed and failed.
       };
 
-      /// empty constructor
+         /// empty constructor
       PackedNavBits();
 
-      /// explicit constructor
+         /// explicit constructor
       PackedNavBits(const SatID& satSysArg, 
                     const ObsID& obsIDArg,
                     const CommonTime& transmitTimeArg);
 
-      /// explicit constructor
+         /// explicit constructor
       PackedNavBits(const SatID& satSysArg, 
                     const ObsID& obsIDArg,
                     const std::string rxString,
                     const CommonTime& transmitTimeArg);
 
-      /// explicit constructor
+         /// explicit constructor
       PackedNavBits(const SatID& satSysArg, 
                     const ObsID& obsIDArg,
                     const NavID& navIDArg,
@@ -93,7 +93,7 @@ namespace gpstk
                     const CommonTime& transmitTimeArg);
 
       PackedNavBits(const PackedNavBits& right);             // Copy constructor
-      //PackedNavBits& operator=(const PackedNavBits& right); // Copy assignment
+         //PackedNavBits& operator=(const PackedNavBits& right); // Copy assignment
 
       PackedNavBits* clone() const;
 
@@ -165,23 +165,23 @@ namespace gpstk
          // for unpacking disjoint-field sign/mag quantities. 
          /* Unpack a sign/mag long */
       long asSignMagLong(const int startBit, 
-                  const int numBits, 
-                  const int scale) const;
+                         const int numBits, 
+                         const int scale) const;
                   
          /* Unpack a sign/mag double */
       double asSignMagDouble( const int startBit, 
-                             const int numBits, 
-                             const int power2) const;
+                              const int numBits, 
+                              const int power2) const;
                              
          /* Unpack a sign/mag double with units of semi-circles */
       double asSignMagDoubleSemiCircles( const int startBit, 
-                                  const int numBits, 
-                                  const int power2) const;
+                                         const int numBits, 
+                                         const int power2) const;
 
          /* Unpack mehthods that join multiple disjoint 
             navigation message areas as a single field
             NOTE: startBit1 is associated with the most significant section
-                  startBit2 is associated with the least significant section
+            startBit2 is associated with the least significant section
          */
          /* Unpack a split unsigned long integer */
       unsigned long asUnsignedLong(const unsigned startBits[],
@@ -216,48 +216,59 @@ namespace gpstk
       bool asBool( const unsigned bitNum) const;
 
          /***    PACKING FUNCTIONS *********************************/
-         /* Pack an unsigned long integer */
+         /** Pack an unsigned long integer
+          * @throw InvalidParameter
+          */
       void addUnsignedLong( const unsigned long value, 
                             const int numBits,  
-                            const int scale ) 
-         throw(InvalidParameter);
+                            const int scale );
         
-         /* Pack a signed long integer */                     
+         /** Pack a signed long integer
+          * @throw InvalidParameter
+          */
       void addLong( const long value, 
                     const int numBits, 
-                    const int scale )
-         throw(InvalidParameter);
+                    const int scale );
 
-         /* Pack an unsigned double */
+         /** Pack an unsigned double
+          * @throw InvalidParameter
+          */
       void addUnsignedDouble( const double value, 
                               const int numBits, 
-                              const int power2)
-         throw(InvalidParameter);
+                              const int power2);
 
-         /* Pack a signed double */
+         /** Pack a signed double
+          * @throw InvalidParameter
+          */
       void addSignedDouble( const double value, 
                             const int numBits, 
-                            const int power2)
-         throw(InvalidParameter);
+                            const int power2);
 
-         /* Pack a double with units of semicircles */
+         /** Pack a double with units of semicircles
+          * @throw InvalidParameter
+          */
       void addDoubleSemiCircles( const double radians, 
                                  const int numBits, 
-                                 const int power2)
-         throw(InvalidParameter);
+                                 const int power2);
 
          /**
           * Pack a string.
-          * Characters in String limited to those defined in IS-GPS-200 Section 20.3.3.5.1.8
-          * numChars represents number of chars (8 bits each) to add to PackedBits.
-          * If numChars < length of String only, chars 1..numChars will be added.
-          * If numChars > length of String, blanks will be added at the end. */
+          * Characters in String limited to those defined in
+          * IS-GPS-200 Section 20.3.3.5.1.8
+          * If numChars < length of String only, chars 1..numChars
+          * will be added.
+          * If numChars > length of String, blanks will be added at the end.
+          * @param[in] numChars represents number of chars (8 bits
+          *   each) to add to PackedBits.
+          * @throw InvalidParameter
+          */
       void addString(const std::string String, 
-                     const int numChars)
-         throw(InvalidParameter);
+                     const int numChars);
       
-      void addPackedNavBits( const PackedNavBits &pnb)
-         throw(InvalidParameter);
+         /**
+          * @throw InvalidParameter
+          */
+      void addPackedNavBits( const PackedNavBits &pnb);
    
          /*
           * Output the packed bits as a set of 32 bit
@@ -267,8 +278,8 @@ namespace gpstk
           */
       int outputPackedBits(std::ostream& s = std::cout, 
 		           const short numPerLine=4,
-		     	     const char delimiter = ' ',
-               const short numBitsPerWord=32 ) const;
+                           const char delimiter = ' ',
+                           const short numBitsPerWord=32 ) const;
 
          /* 
           * The equality operator insists that ALL the metadata
@@ -309,19 +320,19 @@ namespace gpstk
                      const short startBit=0, 
                      const short endBit=-1) const;
 
-          /*
-           *  This is the most flexible of the matching methods.
-           *  A default of match(right) will yield the same 
-           *  result as operator==( ).
-           *  However, the arguments provide the means to 
-           *  specifically check bits sequences and/or
-           *  selectively check the metadata. 
-           */
+         /*
+          *  This is the most flexible of the matching methods.
+          *  A default of match(right) will yield the same 
+          *  result as operator==( ).
+          *  However, the arguments provide the means to 
+          *  specifically check bits sequences and/or
+          *  selectively check the metadata. 
+          */
       bool match(const PackedNavBits& right, 
                  const short startBit=0, 
                  const short endBit=-1,
                  const unsigned flagBits=mmALL) const;
-          /*
+         /*
           * This version was the original equality checker.  As
           * first implemented, it checks ONLY SAT and OBS for
           * equality.  Therefore, it is maintained with that
@@ -340,11 +351,11 @@ namespace gpstk
           * The checkOverhead option allows the user to ignore
           * the associated metadata.  E.g. ObsID, SatID. 
           *
-      bool matchBits(const PackedNavBits& right, 
-                     const short startBit=0, 
-                     const short endBit=-1, 
-                     const bool checkOverhead) const;
-          */
+          bool matchBits(const PackedNavBits& right, 
+          const short startBit=0, 
+          const short endBit=-1, 
+          const bool checkOverhead) const;
+         */
 
          /** 
           * The less than operator is defined in order to support use
@@ -367,20 +378,19 @@ namespace gpstk
           *  will be changed. 
           *  This method is intended for use between two
           *  PackedNavBits objecst that are ALREADY the
-          *  same size (in bits).   It will throw an
-          *  InvalidParameter exception if called using two
-          *  objects that are NOT the same size. 
+          *  same size (in bits).
           *  Yes, we could define a copy that would account
           *  for the difference, but the pre-existing model
           *  for PNB is that the bits_used variable records
           *  the # of bits used as items are added to the end
           *  of the bit array.   I didn't want copyBits( )
           *  to confuse that model by modifying bits_used.
+          * @throw InvalidParameter if called using two
+          *   objects that are NOT the same size.
           */
       void copyBits(const PackedNavBits& from, 
                     const short startBit=0, 
-                    const short endBit=-1)
-                    throw(InvalidParameter);
+                    const short endBit=-1);
 
          /**
           * This method is not typically used in production; however it
@@ -390,12 +400,12 @@ namespace gpstk
           * It overwrites the data that is already present with
           * the provided value / scale.  If value / scale is too large to
           * fit in numBits, then an exception is thrown. 
+          * @throw InvalidParameter
           */
       void insertUnsignedLong(const unsigned long value,
                               const int startBit,
                               const int numBits,
-                              const int scale=1 )
-                              throw(InvalidParameter);
+                              const int scale=1 );
          /**
           *  Reset number of bits
           */
@@ -416,12 +426,13 @@ namespace gpstk
           *        justified.  The number of bits needs to match or
           *        exceed ###
           * The function returns if the read is succeessful.
-          * Otherwise,the function throws an exception */
-       void rawBitInput(const std::string inString )
-          throw(InvalidParameter);       
+          * Otherwise,the function throws an exception 
+          * @throw InvalidParameter
+          */
+      void rawBitInput(const std::string inString );
 
-       void setXmitCoerced(bool tf=true) {xMitCoerced=tf;}
-       bool isXmitCoerced() const {return xMitCoerced;}
+      void setXmitCoerced(bool tf=true) {xMitCoerced=tf;}
+      bool isXmitCoerced() const {return xMitCoerced;}
 
       const std::vector<bool>& getBits() const
       { return bits; }
@@ -441,12 +452,13 @@ namespace gpstk
       int bits_used;
       
       bool xMitCoerced;        /**< Used to indicate that the transmit
-                                    time is NOT directly derived from
-                                    the SOW in the message */
+                                  time is NOT directly derived from
+                                  the SOW in the message */
 
-         /** Unpack the bits */
-      uint64_t asUint64_t(const int startBit, const int numBits ) const 
-         throw(InvalidParameter);
+         /** Unpack the bits
+          * @throw InvalidParameter
+          */
+      uint64_t asUint64_t(const int startBit, const int numBits ) const;
 
          /** Pack the bits */
       void addUint64_t( const uint64_t value, const int numBits );
@@ -459,7 +471,7 @@ namespace gpstk
 
    }; // class PackedNavBits
 
-   //@}
+      //@}
    std::ostream& operator<<(std::ostream& s, const PackedNavBits& pnb);
 
 } // namespace

@@ -107,7 +107,6 @@ namespace gpstk
                       Position::CoordinateSystem s,
                       EllipsoidModel *ell,
                       ReferenceFrame frame)
-      throw(GeometryException)
    {
       try {
          initialize(a,b,c,s,ell,frame);
@@ -121,7 +120,6 @@ namespace gpstk
                       CoordinateSystem s,
                       EllipsoidModel *ell,
                       ReferenceFrame frame)
-      throw(GeometryException)
    {
       double a=ABC[0];
       double b=ABC[1];
@@ -138,7 +136,6 @@ namespace gpstk
                       CoordinateSystem s,
                       EllipsoidModel *ell,
                       ReferenceFrame frame)
-      throw(GeometryException)
    {
       double a=ABC[0];
       double b=ABC[1];
@@ -147,7 +144,6 @@ namespace gpstk
          initialize(a,b,c,s,ell,frame);
       }
       catch(GeometryException& ge) {
-         GPSTK_RETHROW(ge);
       }
    }
 
@@ -485,7 +481,6 @@ namespace gpstk
       * @throw      GeometryException if input is NULL.
       */
    void Position::setEllipsoidModel(const EllipsoidModel *ell)
-      throw(GeometryException)
    {
       if(!ell)
       {
@@ -506,7 +501,6 @@ namespace gpstk
                                    const double lon,
                                    const double ht,
                                    const EllipsoidModel *ell)
-      throw(GeometryException)
    {
       if(lat > 90 || lat < -90)
       {
@@ -542,7 +536,6 @@ namespace gpstk
    Position& Position::setGeocentric(const double lat,
                                      const double lon,
                                      const double rad)
-      throw(GeometryException)
    {
       if(lat > 90 || lat < -90)
       {
@@ -578,7 +571,6 @@ namespace gpstk
    Position& Position::setSpherical(const double theta,
                                     const double phi,
                                     const double rad)
-      throw(GeometryException)
    {
       if(theta < 0 || theta > 180)
       {
@@ -670,7 +662,6 @@ namespace gpstk
       // @return a reference to this object.
    Position& Position::setToString(const std::string& str,
                                    const std::string& fmt)
-      throw(GeometryException,StringUtils::StringException)
    {
       try {
             // make an object to return (so we don't fiddle with *this
@@ -994,7 +985,6 @@ namespace gpstk
       // @return a string containing this Position in the
       // representation specified by \c fmt.
    std::string Position::printf(const char *fmt) const
-      throw(StringUtils::StringException)
    {
       string rv = fmt;
       rv = formattedPrint(rv, string("%[ 0-]?[[:digit:]]*(\\.[[:digit:]]+)?x"),
@@ -1044,7 +1034,6 @@ namespace gpstk
 
       // Returns the string that operator<<() would print.
    string Position::asString() const
-      throw(StringUtils::StringException)
    {
       ostringstream o;
       o << *this;
@@ -1288,7 +1277,6 @@ namespace gpstk
       // @throw GeometryException if ell values differ
    double range(const Position& A,
                 const Position& B)
-      throw(GeometryException)
    {
       if(A.AEarth != B.AEarth || A.eccSquared != B.eccSquared)
       {
@@ -1323,7 +1311,6 @@ namespace gpstk
       //        computed elevation, as seen from this Position.
       // @return the elevation in degrees
    double Position::elevation(const Position& Target) const
-      throw(GeometryException)
    {
       Position R(*this),S(Target);
       R.transformTo(Cartesian);
@@ -1347,7 +1334,6 @@ namespace gpstk
       //        computed elevation, as seen from this Position.
       // @return the elevation in degrees
    double Position::elevationGeodetic(const Position& Target) const
-      throw(GeometryException)
    {
       Position R(*this),S(Target);
       double latGeodetic = R.getGeodeticLatitude()*DEG_TO_RAD;
@@ -1382,7 +1368,6 @@ namespace gpstk
       //        computed azimuth, as seen from this Position.
       // @return the azimuth in degrees
    double Position::azimuth(const Position& Target) const
-      throw(GeometryException)
    {
       Position R(*this),S(Target);
       R.transformTo(Cartesian);
@@ -1409,7 +1394,6 @@ namespace gpstk
       //        computed azimuth, as seen from this Position.
       // @return the azimuth in degrees
    double Position::azimuthGeodetic(const Position& Target) const
-      throw(GeometryException)
    {
       Position R(*this),S(Target);
       double latGeodetic = R.getGeodeticLatitude()*DEG_TO_RAD;
@@ -1546,7 +1530,6 @@ namespace gpstk
                   Position::CoordinateSystem s,
                   EllipsoidModel *ell,
                   ReferenceFrame frame)
-      throw(GeometryException)
    {
       double bb(b);
       if(s == Geodetic || s==Geocentric)

@@ -199,7 +199,7 @@ namespace gpstk
          svData() : launchDate(CommonTime::BEGINNING_OF_TIME),
                     deactivationDate(CommonTime::END_OF_TIME),
                     gpsNumber(0),
-                    block("") {};
+                    block("") {}
 
          CommonTime launchDate;         ///< SV launch date.
          CommonTime deactivationDate;   ///< SV deactivation date.
@@ -225,9 +225,11 @@ namespace gpstk
       { SatelliteData.insert(std::pair<const SatID, svData>(sat, data)); }
 
 
-         /// Method to load satellite data in this class' data map
-      virtual void loadData(void)
-         throw(FFStreamError, gpstk::StringUtils::StringException);
+         /** Method to load satellite data in this class' data map
+          * @throw FFStreamError
+          * @throw StringUtils::StringException
+          */
+      virtual void loadData(void);
 
 
    }; // End of class 'SatDataReader'

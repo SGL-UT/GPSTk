@@ -78,7 +78,6 @@ namespace gpstk
    //--------------------------------------------------------------------
    //--------------------------------------------------------------------
    void IonexData::reallyPutRecord(FFStream& ffs) const
-      throw( std::exception, FFStreamError, StringException )
    {
 
          // is there anything to write?
@@ -208,13 +207,12 @@ namespace gpstk
        * If there is an error reading the stream, it is reset
        * to its original position and its fail-bit is set.
        *
-       * @throws StringException when a StringUtils function fails
-       * @throws FFStreamError when exceptions(failbit) is set and
+       * @throw StringException when a StringUtils function fails
+       * @throw FFStreamError when exceptions(failbit) is set and
        *   a read or formatting error occurs.  This also resets the
        *   stream to its pre-read position.
        */
    void IonexData::reallyGetRecord(FFStream& ffs)
-      throw( std::exception, FFStreamError, gpstk::StringUtils::StringException )
    {
 
       IonexStream& strm = dynamic_cast<IonexStream&>(ffs);
@@ -464,7 +462,6 @@ namespace gpstk
    int IonexData::getIndex( const Triple& in,
                             const int& igp,
                             Triple& ABC ) const
-      throw(InvalidRequest)
    {
 
          // grid dimensions
@@ -595,7 +592,6 @@ namespace gpstk
        *
        */
    double IonexData::getValue( const Position& p ) const
-      throw(InvalidRequest,FFStreamError)
    {
 
          // this never should happen but just in case
@@ -644,7 +640,7 @@ namespace gpstk
       if ( (xp < 0) || (xp > 1) || (xq < 0) || (xq > 1) )
       {
 
-         throw(Exception("IonexData::getValue(): Wrong xp and xq factors!!!"));
+         GPSTK_THROW(Exception("IonexData::getValue(): Wrong xp and xq factors!!!"));
 
       }
 
@@ -720,7 +716,6 @@ namespace gpstk
        * @param dt    time to be written into a IONEX data record.
        */
    string IonexData::writeTime(const CommonTime& dt) const
-      throw(gpstk::StringUtils::StringException)
    {
 
       if (dt == CommonTime::BEGINNING_OF_TIME)

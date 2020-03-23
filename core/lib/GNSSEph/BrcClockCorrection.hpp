@@ -106,67 +106,83 @@ namespace gpstk
 
          /**
           * Returns the epoch time (time of clock) from this
-          * ephemeris, correcting for half weeks and HOW time. */
-      CommonTime getEpochTime() const throw(gpstk::InvalidRequest);
+          * ephemeris, correcting for half weeks and HOW time.
+          * @throw InvalidRequest
+          */
+      CommonTime getEpochTime() const;
 
-         /** This function returns the PRN ID of the SV. */
-      short getPRNID() const throw(gpstk::InvalidRequest);
+         /** This function returns the PRN ID of the SV.
+          * @throw InvalidRequest
+          */
+      short getPRNID() const;
 
-         /** This function returns the OBS ID of the clock correction. */
-      ObsID getObsID() const throw(gpstk::InvalidRequest);
+         /** This function returns the OBS ID of the clock correction.
+          * @throw InvalidRequest
+          */
+      ObsID getObsID() const;
 
          /**
           * This function returns the value of the SV accuracy (m)
-          * computed from the accuracy flag in the nav message. */
-      double getAccuracy(const CommonTime& t) const
-         throw(gpstk::InvalidRequest);
+          * computed from the accuracy flag in the nav message.
+          * @throw InvalidRequest
+          */
+      double getAccuracy(const CommonTime& t) const;
 
-      short getURAoc(const short& ndx) const throw(gpstk::InvalidRequest);
+         /**
+          * @throw InvalidRequest
+          */
+      short getURAoc(const short& ndx) const;
 
          /** Returns SV health status. */
          //NB Determine if this function is needed, as it is never used
-         //bool isHealthy() const throw(gpstk::InvalidRequest);
+         //bool isHealthy() const;
 
          /**
           * This function return the GPS week number for the
-          * orbit. This is the full GPS week (ie > 10 bits). */
-      short getFullWeek() const throw(gpstk::InvalidRequest);
+          * orbit. This is the full GPS week (ie > 10 bits).
+          * @throw InvalidRequest
+          */
+      short getFullWeek() const;
 
          /**
           * This function returns the clock epoch in GPS seconds of
-          * week. */
-      double getToc() const throw(gpstk::InvalidRequest);
+          * week.
+          * @throw InvalidRequest
+          */
+      double getToc() const;
 
-         /** This function returns the SV clock error in seconds. */
-      double getAf0() const throw(gpstk::InvalidRequest);
+         /** This function returns the SV clock error in seconds.
+          * @throw InvalidRequest
+          */
+      double getAf0() const;
 
          /**
           * This function returns the SV clock drift in
-          * seconds/seconds. */
-      double getAf1() const throw(gpstk::InvalidRequest);
+          * seconds/seconds.
+          * @throw InvalidRequest
+          */
+      double getAf1() const;
 
          /**
           * This function returns the SV clock rate of change of the
-          * drift in seconds/(seconds*seconds). */
-      double getAf2() const throw(gpstk::InvalidRequest);
+          * drift in seconds/(seconds*seconds).
+          * @throw InvalidRequest */
+      double getAf2() const;
 
          /** Compute the satellite clock bias (sec) at the given time
           * @throw InvalidRequest if a required subframe has not been stored.
           */
-      double svClockBias(const CommonTime& t) const
-         throw(gpstk::InvalidRequest);
+      double svClockBias(const CommonTime& t) const;
 
          /** Compute the satellite clock bias (meters) at the given time
           * @throw InvalidRequest if a required subframe has not been stored.
           */
-      double svClockBiasM(const CommonTime& t) const
-         throw(gpstk::InvalidRequest);
+      double svClockBiasM(const CommonTime& t) const;
 
          /** Compute the satellite clock drift (sec/sec) at the given time
           * @throw InvalidRequest if a required subframe has not been stored.
           */
-      double svClockDrift(const CommonTime& t) const
-         throw(gpstk::InvalidRequest);
+      double svClockDrift(const CommonTime& t) const;
 
          /** General purpose means to load data into object. */
       void loadData( const std::string satSysArg, const ObsID obsIDArg,
@@ -183,10 +199,11 @@ namespace gpstk
                     const double af0Arg, const double af1Arg,
                     const double af2Arg );
 
-         /** Load data based on the GPS Legacy message. */
+         /** Load data based on the GPS Legacy message.
+          * @throw InvalidParameter
+          */
       void loadData( const ObsID obsIDArg, const short PRNID,
-                     const short fullweeknum, const long subframe1[10] )
-         throw(InvalidParameter);
+                     const short fullweeknum, const long subframe1[10] );
 
          /** Output the contents of this ephemeris to the given stream. */
       void dump(std::ostream& s = std::cout) const;

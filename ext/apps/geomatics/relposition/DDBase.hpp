@@ -85,22 +85,67 @@ extern clock_t totaltime;        // for timing tests
 
 //------------------------------------------------------------------------------------
 // prototypes
-int Configure(int which) throw(gpstk::Exception);        // Configure.cpp
-int ReadAndProcessRawData(void) throw(gpstk::Exception); // ReadRawData.cpp
-int EditRawDataBuffers(void) throw(gpstk::Exception);    // EditRawDataBuffers.cpp
-int OutputRawDataBuffers(void) throw(gpstk::Exception);  // EditRawDataBuffers.cpp
-int EphemerisImprovement(void) throw(gpstk::Exception);  // EphemerisImprovement.cpp
-int ClockModel(void) throw(gpstk::Exception);            // ClockModel.cpp
-int Synchronization(void) throw(gpstk::Exception);       // Synchronization.cpp
-int RecomputeFromEphemeris(void) throw(gpstk::Exception);// Synchronization.cpp
-int Timetable(void) throw(gpstk::Exception);             // Timetable.cpp
-int QueryTimeTable(gpstk::SDid& sdid, gpstk::CommonTime& tt) throw(gpstk::Exception);
-int QueryTimeTable(std::string bl, int& beg, int& end) throw(gpstk::Exception);
-int DoubleDifference(void) throw(gpstk::Exception);      // DoubleDifference.cpp
-int EditDDs(void) throw(gpstk::Exception);               // EditDDs.cpp
-int Estimation(void) throw(gpstk::Exception);            // Estimation.cpp
-gpstk::Matrix<double> SingleAxisRotation(double angle, const int axis)
-   throw(gpstk::Exception);                              // DDBase.cpp
+/**
+ * @throw Exception
+ */
+int Configure(int which);        // Configure.cpp
+/**
+ * @throw Exception
+ */
+int ReadAndProcessRawData(void); // ReadRawData.cpp
+/**
+ * @throw Exception
+ */
+int EditRawDataBuffers(void);    // EditRawDataBuffers.cpp
+/**
+ * @throw Exception
+ */
+int OutputRawDataBuffers(void);  // EditRawDataBuffers.cpp
+/**
+ * @throw Exception
+ */
+int EphemerisImprovement(void);  // EphemerisImprovement.cpp
+/**
+ * @throw Exception
+ */
+int ClockModel(void);            // ClockModel.cpp
+/**
+ * @throw Exception
+ */
+int Synchronization(void);       // Synchronization.cpp
+/**
+ * @throw Exception
+ */
+int RecomputeFromEphemeris(void);// Synchronization.cpp
+/**
+ * @throw Exception
+ */
+int Timetable(void);             // Timetable.cpp
+/**
+ * @throw Exception
+ */
+int QueryTimeTable(gpstk::SDid& sdid, gpstk::CommonTime& tt);
+/**
+ * @throw Exception
+ */
+int QueryTimeTable(std::string bl, int& beg, int& end);
+/**
+ * @throw Exception
+ */
+int DoubleDifference(void);      // DoubleDifference.cpp
+/**
+ * @throw Exception
+ */
+int EditDDs(void);               // EditDDs.cpp
+/**
+ * @throw Exception
+ */
+int Estimation(void);            // Estimation.cpp
+/**
+ * @throw Exception
+ */
+gpstk::Matrix<double> SingleAxisRotation(double angle, const int axis);
+   // DDBase.cpp
 
 //------------------------------------------------------------------------------------
 // Global data -- see DDBase.cpp where these are declared and documented

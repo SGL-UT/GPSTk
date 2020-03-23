@@ -201,8 +201,12 @@ public:
 
 //-----------------------------------------------------------------------------
 // prototypes
-int Initialize(string& errors) throw(Exception);
-int ProcessFiles(void) throw(Exception);
+/**
+ * @throw Exception */
+int Initialize(string& errors);
+/**
+ * @throw Exception */
+int ProcessFiles(void);
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -280,7 +284,7 @@ int main(int argc, char **argv)
 
 //-----------------------------------------------------------------------------
 // return -5 if input is not valid
-int Initialize(string& errors) throw(Exception)
+int Initialize(string& errors)
 {
    try
    {
@@ -652,7 +656,7 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
 
 //-----------------------------------------------------------------------------
 // Return 0 ok, >0 number of files successfully read, <0 fatal error
-int ProcessFiles(void) throw(Exception)
+int ProcessFiles()
 {
    try
    {

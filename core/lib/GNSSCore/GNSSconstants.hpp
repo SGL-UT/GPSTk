@@ -106,7 +106,6 @@ namespace gpstk
 
    inline
    short getLegacyFitInterval(const short iodc, const short fiti)
-      throw(gpstk::InvalidRequest )
    {
          /* check the IODC */
       if (iodc < 0 || iodc > 1023)

@@ -169,9 +169,11 @@ namespace gpstk
       DailyDCBData allDCB;
 
 
-         /// Method to store ocean tide harmonics data in this class' data map
-      virtual void loadData()
-         throw( FFStreamError, gpstk::StringUtils::StringException );
+         /** Method to store ocean tide harmonics data in this class' data map
+          * @throw FFStreamError
+          * @throw StringUtils::StringException
+          */
+      virtual void loadData();
 
 
    };  // End of class 'DCBDataReader'

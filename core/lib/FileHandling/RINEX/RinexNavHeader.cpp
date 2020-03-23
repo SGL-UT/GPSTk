@@ -63,7 +63,6 @@ namespace gpstk
    const string RinexNavHeader::versionString = "RINEX VERSION / TYPE";
 
    void RinexNavHeader::reallyPutRecord(FFStream& ffs) const 
-      throw(std::exception, FFStreamError, StringException)
    {
       RinexNavStream& strm = dynamic_cast<RinexNavStream&>(ffs);
       
@@ -178,7 +177,6 @@ namespace gpstk
    }
 
    void RinexNavHeader::reallyGetRecord(FFStream& ffs) 
-      throw(std::exception, FFStreamError, StringException)
    {
       RinexNavStream& strm = dynamic_cast<RinexNavStream&>(ffs);
       
@@ -261,8 +259,9 @@ namespace gpstk
          }
          else
          {
-            throw(FFStreamError("Unknown header label at line " + 
-                                asString<size_t>(strm.lineNumber)));
+            FFStreamError exc("Unknown header label at line " + 
+                              asString<size_t>(strm.lineNumber));
+            GPSTK_THROW(exc);
          }
       }
       

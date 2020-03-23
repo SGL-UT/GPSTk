@@ -66,7 +66,10 @@ namespace gpstk
                double aAF0, double aAF1, long aToa, long axmit_time,
                short aweek, short aSV_health);
 
-      Xvt svXvt(const CommonTime& t) const throw(InvalidRequest);
+         /**
+          * @throw InvalidRequest
+          */
+      Xvt svXvt(const CommonTime& t) const;
 
       short getPRNID() const throw()
       { return PRN; }

@@ -54,7 +54,6 @@ namespace gpstk
    using namespace std;
 
    void SP3Header::reallyGetRecord(FFStream& ffs)
-      throw(exception, FFStreamError, StringException)
    {
       SP3Stream& strm = dynamic_cast<SP3Stream&>(ffs);
 
@@ -292,7 +291,6 @@ namespace gpstk
 
 
    void SP3Header::reallyPutRecord(FFStream& ffs) const
-      throw(exception, FFStreamError, StringException)
    {
    try {
       SP3Stream& strm = dynamic_cast<SP3Stream&>(ffs);

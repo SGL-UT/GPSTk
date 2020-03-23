@@ -63,11 +63,15 @@ namespace gpstk
          /// Default constructor
       OrbElemRinex();
 
-      OrbElemRinex( const Rinex3NavData& rinNav )
-         throw( InvalidParameter );
+         /**
+          * @throw InvalidParameter
+          */
+      OrbElemRinex( const Rinex3NavData& rinNav );
 
-      OrbElemRinex( const RinexNavData& rinNav )
-	 throw( InvalidParameter); 
+         /**
+          * @throw InvalidParameter
+          */
+      OrbElemRinex( const RinexNavData& rinNav );
 
          /// Destructor
       virtual ~OrbElemRinex() {}
@@ -78,14 +82,12 @@ namespace gpstk
          /**  Load an existing object from a RinexNavData object.
            *  @throw InvalidParameter if the data are not consistent.
            */ 
-      void loadData( const RinexNavData& rinNav )
-	       throw( InvalidParameter); 
+      void loadData( const RinexNavData& rinNav ); 
 
          /** Load an existing object from a Rinex3NavData object. 
            * @throw InvalidParameter if the data are not consistent.
            */
-      void loadData( const Rinex3NavData& rinNav )
-         throw( InvalidParameter );
+      void loadData( const Rinex3NavData& rinNav );
 
       virtual std::string getName() const
       {
@@ -97,30 +99,34 @@ namespace gpstk
          return "Rinex Navigation Message";
       }
       
-         /// Returns the upper bound of the URA range
-      double getAccuracy()  const
-         throw( InvalidRequest );
+         /** Returns the upper bound of the URA range
+          * @throw InvalidRequest
+          */
+      double getAccuracy()  const;
  
         /* Should only be used by GPSOrbElemStore::rationalize()
          */
       void adjustBeginningValidity();
 
-      virtual void dumpHeader(std::ostream& s = std::cout) const
-         throw( InvalidRequest );
-
-         /** Generate a formatted human-readable output of the entire contents of
-          *  this object and send it to the designated output stream (default to cout).
-          *  @throw Invalid Parameter if the object has been instantiated, but not loaded.
+         /**
+          * @throw InvalidRequest
           */
-      void dump(std::ostream& s = std::cout) const
-         throw( InvalidRequest );  
+      virtual void dumpHeader(std::ostream& s = std::cout) const;
+
+         /** Generate a formatted human-readable output of the entire
+          *  contents of this object and send it to the designated
+          *  output stream (default to cout).
+          *  @throw InvalidParameter if the object has been
+          *    instantiated, but not loaded.
+          */
+      void dump(std::ostream& s = std::cout) const;
          /** Generate a formatted human-readable one-line output that summarizes
           *  the critical times associated with this object and send it to the
           *  designated output stream (default to cout).
-          *  @throw Invalid Parameter if the object has been instantiated, but not loaded.
+          *  @throw InvalidParameter if the object has been
+          *    instantiated, but not loaded.
           */   
-      void dumpTerse(std::ostream& s = std::cout) const
-         throw( InvalidRequest );
+      void dumpTerse(std::ostream& s = std::cout) const;
 
          /// Accessor for the \c health data member.
       short getHealth() const throw()

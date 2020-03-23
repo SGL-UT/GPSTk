@@ -59,8 +59,10 @@ namespace gpstk
       tossCount=0;
    }
 
+      /**
+       * @throw InvalidValue
+       */
    void LinearClockModel::addEpoch(const ORDEpoch& oe)
-      throw(gpstk::InvalidValue)
    {
       ORDEpoch::ORDMap::const_iterator itr;
       const gpstk::CommonTime t=oe.time;

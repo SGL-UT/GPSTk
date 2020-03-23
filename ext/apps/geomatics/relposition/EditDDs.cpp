@@ -69,19 +69,19 @@ static ofstream tddofs;          // output stream for OutputTDDFile
 
 //------------------------------------------------------------------------------------
 // prototypes -- this module only
-int EditDDResets(const DDid& ddid, DDData& dddata) throw(Exception);
-int EditDDIsolatedPoints(const DDid& ddid, DDData& dddata) throw(Exception);
-int EditDDSlips(const DDid& ddid, DDData& dddata, int frequency) throw(Exception);
-int EditDDOutliers(const DDid& ddid, DDData& dddata, int frequency) throw(Exception);
+int EditDDResets(const DDid& ddid, DDData& dddata);
+int EditDDIsolatedPoints(const DDid& ddid, DDData& dddata);
+int EditDDSlips(const DDid& ddid, DDData& dddata, int frequency);
+int EditDDOutliers(const DDid& ddid, DDData& dddata, int frequency);
 //void LSPolyFunc(Vector<double>& X, Vector<double>& f, Matrix<double>& P)
-//   throw(Exception);
+//  ;
 // prototypes -- DataOutput.cpp
 int OutputRawDData(const DDid& ddid, const DDData& dddata, const vector<int>& mark)
-   throw(Exception);
-int OutputDDData(void) throw(Exception);
+  ;
+int OutputDDData(void);
 
 //------------------------------------------------------------------------------------
-int EditDDs(void) throw(Exception)
+int EditDDs(void)
 {
 try {
    if(CI.Verbose) oflog << "BEGIN EditDDs()"
@@ -278,7 +278,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // solving for different biases (separated in time) for the same DDid.
 // Therefore, this routine simply deletes all but the largest unbroken segment
 // separated by resets.
-int EditDDResets(const DDid& ddid, DDData& dddata) throw(Exception)
+int EditDDResets(const DDid& ddid, DDData& dddata)
 {
 try {
    int j,iend;
@@ -350,7 +350,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int EditDDIsolatedPoints(const DDid& ddid, DDData& dddata) throw(Exception)
+int EditDDIsolatedPoints(const DDid& ddid, DDData& dddata)
 {
 try {
    //if(CI.Verbose) oflog << "BEGIN EditDDIsolatedPoints()"
@@ -395,7 +395,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int EditDDSlips(const DDid& ddid, DDData& dddata, int frequency) throw(Exception)
+int EditDDSlips(const DDid& ddid, DDData& dddata, int frequency)
 {
 try {
    int j,k,n,tddt,ii,iter;
@@ -600,7 +600,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // ASWA CTRA G11 G14  T202B
 // ASWA CTRA G16 G25  T202D
 // ASWA CTRA G20 G25  T202D
-int EditDDOutliers(const DDid& ddid, DDData& dddata, int frequency) throw(Exception)
+int EditDDOutliers(const DDid& ddid, DDData& dddata, int frequency)
 {
 try {
    int i,j,n;
@@ -790,7 +790,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // compute the partials matrix P and the solution at each data point (Vector f),
 // given the solution Vector X. Called by SRIFilter::leastSquaresEstimation()
 //void LSPolyFunc(Vector<double>& X, Vector<double>& f, Matrix<double>& P)
-//   throw(Exception)
+//  
 //{
 //   try {
 //      for(int i=0; i<LScount.size(); i++) {

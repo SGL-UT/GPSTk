@@ -101,11 +101,12 @@ namespace gpstk
          /// be returned.
       std::string writeTime(const CivilTime& dt) const;
       
-         /// Converts a 26 character Rinex Clock time in the format 
-         /// "yyyy mm dd hh mm ss.ssssss" to a CivilTime object.
-         /// If the string is blank a CommonTime::BEGINNING_OF_TIME is returned.
-      CivilTime parseTime(const std::string& line) const
-         throw(FFStreamError);
+         /** Converts a 26 character Rinex Clock time in the format 
+          * "yyyy mm dd hh mm ss.ssssss" to a CivilTime object.
+          * If the string is blank a CommonTime::BEGINNING_OF_TIME is returned.
+          * @throw FFStreamError
+          */
+      CivilTime parseTime(const std::string& line) const;
       
    };  //  RinexClockBase
       //@}

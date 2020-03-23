@@ -66,8 +66,7 @@ namespace gpstk
    }
 
    OrbSysGpsL_56::OrbSysGpsL_56(const PackedNavBits& msg)
-      throw( InvalidParameter):
-      OrbSysGpsL(),
+         : OrbSysGpsL(),
       OrbDataUTC()
    {
       loadData(msg);
@@ -105,7 +104,6 @@ namespace gpstk
    }
 
    void OrbSysGpsL_56::loadData(const PackedNavBits& msg)
-      throw(InvalidParameter)
    {
       setUID(msg);
       if (UID!=56)
@@ -269,7 +267,6 @@ namespace gpstk
    } // end of getUtcOffsetModLeapSec()
 
    gpstk::TimeSystemCorrection OrbSysGpsL_56::getTSC() const
-         throw(InvalidRequest)
    {
       if (!dataLoadedFlag)
       {
@@ -287,7 +284,6 @@ namespace gpstk
    }
 
    void OrbSysGpsL_56::dumpUtcTerse(std::ostream& s, const std::string tform) const
-         throw(InvalidRequest)
    {
       if (!dataLoadedFlag)
       {
@@ -319,7 +315,6 @@ namespace gpstk
    } // end of dumpTerse()
 
    void OrbSysGpsL_56::dumpBody(ostream& s) const
-      throw( InvalidRequest )
    {
       if (!dataLoadedFlag)
       {

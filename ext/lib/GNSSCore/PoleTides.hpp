@@ -122,8 +122,7 @@ namespace gpstk
           *
           */
       Triple getPoleTide( const CommonTime& t,
-                          const Position& p )
-         throw(InvalidRequest);
+                          const Position& p );
 
 
          /** Returns the effect of pole tides (meters) on the given
@@ -144,7 +143,6 @@ namespace gpstk
                           const Position& p,
                           const double& x,
                           const double& y )
-         throw(InvalidRequest)
       { setXY(x,y); return (getPoleTide(t, p)); };
 
 

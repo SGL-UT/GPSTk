@@ -105,26 +105,30 @@ namespace gpstk
       virtual bool isSameData(const CNavDataElement* right) const = 0;
       
          /** Output the contents of this orbit data to the given stream. 
-          * @throw Invalid Request if the required data has not been stored.
+          * @throw InvalidRequest if the required data has not been stored.
           */
       static void shortcut(std::ostream & os, const long HOW);
 
       static void timeDisplay(std::ostream & os, const CommonTime& t);
-/*
-      virtual void dumpTerse(std::ostream& s = std::cout) const
-         throw( InvalidRequest ) = 0;
-*/
-      virtual void dumpHeader(std::ostream& s = std::cout) const
-         throw( InvalidRequest );
+         /**
+          * @throw InvalidRequest
+          */
+      virtual void dumpHeader(std::ostream& s = std::cout) const;
 
-      virtual void dumpBody(std::ostream& s = std::cout) const
-         throw( InvalidRequest );
+         /**
+          * @throw InvalidRequest
+          */
+      virtual void dumpBody(std::ostream& s = std::cout) const;
 
-      virtual void dumpFooter(std::ostream& s = std::cout) const
-         throw( InvalidRequest );
+         /**
+          * @throw InvalidRequest
+          */
+      virtual void dumpFooter(std::ostream& s = std::cout) const;
      
-      virtual void dump(std::ostream& s = std::cout) const 
-         throw( InvalidRequest );
+         /**
+          * @throw InvalidRequest
+          */
+      virtual void dump(std::ostream& s = std::cout) const;
      
          /// Overhead information
          //@{

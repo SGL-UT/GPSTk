@@ -62,8 +62,8 @@ public:
    }
 
    /// Constructor for C(n,k) = combinations of n things taken k at a time (k <= n)
-   /// @throw on invalid input (k>n).
-   Combinations(int N, int K) throw(Exception)
+   /// @throw Exception on invalid input (k>n).
+   Combinations(int N, int K)
    { init(N,K); }
 
    /// copy constructor
@@ -110,8 +110,8 @@ public:
 private:
 
    /// The initialization routine used by constructors.
-   /// @throw on invalid input (k>n or either n or k < 0).
-   void init(int N, int K) throw(Exception)
+   /// @throw Exception on invalid input (k>n or either n or k < 0).
+   void init(int N, int K)
    {
       if(K > N || N < 0 || K < 0) {
          Exception e("Combinations(n,k) must have k <= n, with n,k >= 0");

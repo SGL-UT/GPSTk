@@ -74,7 +74,6 @@ namespace gpstk
    // return ECEF Position of the body in meters.
    Position SolarSystem::ECEFPosition(const SolarSystemEphemeris::Planet body,
                                       const EphTime time)
-      throw(Exception)
    {
       try {
          Position Pos, Vel;
@@ -94,7 +93,6 @@ namespace gpstk
    void SolarSystem::ECEFPositionVelocity(const SolarSystemEphemeris::Planet body,
                                           const EphTime time,
                                           Position& Pos, Position& Vel)
-      throw(Exception)
    {
       try {
          int i;

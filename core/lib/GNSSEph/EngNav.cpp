@@ -853,7 +853,6 @@ namespace gpstk
                                   CommonTime &tnmct,
                                   CommonTime &toe,
                                   CommonTime &tot)
-      throw(InvalidParameter)
    {
       uint32_t toeSOW, offset;
       short sfid = getSFID(sf2[1]);

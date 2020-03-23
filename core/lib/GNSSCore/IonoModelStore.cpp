@@ -60,7 +60,6 @@ namespace gpstk
                                         double svel,
                                         double svaz,
                                         IonoModel::Frequency freq) const
-      throw(IonoModelStore::NoIonoModelFound)
    {
 
       IonoModelMap::const_iterator i = ims.upper_bound(time);

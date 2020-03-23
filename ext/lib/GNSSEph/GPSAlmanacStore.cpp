@@ -49,21 +49,21 @@
 namespace gpstk
 {
    Xvt GPSAlmanacStore::getXvt(const SatID& sat, const CommonTime& t)
-      const throw(InvalidRequest)
+      const
    {
       AlmOrbit a = findAlmanac(sat, t);
       return a.svXvt(t);
    }
 
    Xvt GPSAlmanacStore::getXvtMostRecentXmit(const SatID sat, const CommonTime& t) 
-         const throw(InvalidRequest)
+         const
    {
       AlmOrbit a = findMostRecentAlmanac(sat, t);
       return a.svXvt(t);
    }
    
    short GPSAlmanacStore::getSatHealth(const SatID sat, const CommonTime& t)
-      const throw(InvalidRequest)
+      const
    {
       AlmOrbit a = findAlmanac(sat, t);
       return a.getSVHealth();
@@ -100,7 +100,7 @@ namespace gpstk
    /// gets the closest almanac for the given time and satellite,
    /// closest being in the past or future.
    AlmOrbit GPSAlmanacStore::findAlmanac(const SatID sat, const CommonTime& t) 
-      const throw(InvalidRequest)
+      const
    {
       UBAMap::const_iterator satItr = uba.find(sat);
       if (satItr == uba.end())
@@ -146,7 +146,7 @@ namespace gpstk
    }
 
    AlmOrbit GPSAlmanacStore::findMostRecentAlmanac(const SatID sat, const CommonTime& t) 
-         const throw(InvalidRequest)
+         const
    {
       UBAMap::const_iterator satItr = uba.find(sat);
       if (satItr == uba.end())
@@ -184,7 +184,7 @@ namespace gpstk
    }
 
    AlmOrbits GPSAlmanacStore::findAlmanacs(const CommonTime& t) 
-      const throw(InvalidRequest)
+      const
    {
       AlmOrbits ao;
       UBAMap::const_iterator satItr = uba.begin();

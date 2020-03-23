@@ -91,9 +91,10 @@ namespace gpstk
          /**
           * Send a "record" to the given stream.
           * @param s a FFStream-based stream
+          * @throw FFStreamError
+          * @throw StringUtils::StringException
           */
-      void putRecord(FFStream& s) const 
-         throw(FFStreamError, gpstk::StringUtils::StringException);
+      void putRecord(FFStream& s) const;
 
          /**
           * Retrieve a "record" from the given stream.
@@ -103,13 +104,13 @@ namespace gpstk
           * filestream.exceptions(fstream::failbit);
           * \endcode
           * @param s a FFStream-based stream
-          * @throws StringException when a StringUtils function fails
-          * @throws FFStreamError when exceptions(failbit) is set and
+          * @throw StringUtils::StringException when a StringUtils
+          *   function fails
+          * @throw FFStreamError when exceptions(failbit) is set and
           *  a read or formatting error occurs.  This also resets the
           *  stream to its pre-read position.
           */
-      void getRecord(FFStream& s) 
-         throw(FFStreamError, gpstk::StringUtils::StringException);
+      void getRecord(FFStream& s);
 
          /**
           * Send debug output to the given stream.
@@ -135,9 +136,10 @@ namespace gpstk
           * @param o the stream to write to
           * @param f the data to write
           * @return a reference to \c o
+          * @throw FFStreamError
+          * @throw StringUtils::StringException
           */
-      friend std::ostream& operator<<(FFStream& o, const FFData& f)
-         throw(FFStreamError, gpstk::StringUtils::StringException);
+      friend std::ostream& operator<<(FFStream& o, const FFData& f);
 
          /**
           * Generic formatted input operator.
@@ -148,29 +150,32 @@ namespace gpstk
           * @param f formatted file data record.
           * @param i the stream to read from
           * @throw FFStreamError if the file being read is formatted
-          * incorrectly or some other file error occurs
-          * @throw StringException when StringUtils messes up.
+          *   incorrectly or some other file error occurs
+          * @throw StringUtils::StringException when StringUtils messes up.
           * @warning read the notes for getRecord() for whatever
           * class you'll be using this with.
           * @return a reference to \c i.
           * This function provides compatibility with the istream_iterator
           * class.
           */
-      friend std::istream& operator>>(FFStream& i, FFData& f)
-         throw(FFStreamError, gpstk::StringUtils::StringException);
+      friend std::istream& operator>>(FFStream& i, FFData& f);
 
       friend class FFStream;
 
    protected:
-         /// Does the actual reading from the stream into this FFData object.
-      virtual void reallyGetRecord(FFStream& s)
-         throw(std::exception, gpstk::StringUtils::StringException, 
-               gpstk::FFStreamError) = 0;
+         /** Does the actual reading from the stream into this FFData object.
+          * @throw std::exception
+          * @throw StringUtils::StringException
+          * @throw FFStreamError
+          */
+      virtual void reallyGetRecord(FFStream& s) = 0;
 
-         /// Does the actual writing from the stream into this FFData object.
-      virtual void reallyPutRecord(FFStream& s) const
-         throw(std::exception, gpstk::StringUtils::StringException, 
-               gpstk::FFStreamError) = 0;
+         /** Does the actual writing from the stream into this FFData object.
+          * @throw std::exception
+          * @throw StringUtils::StringException
+          * @throw FFStreamError
+          */
+      virtual void reallyPutRecord(FFStream& s) const = 0;
    }; // class
 
       //@}

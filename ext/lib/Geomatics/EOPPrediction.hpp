@@ -100,22 +100,21 @@ namespace gpstk {
       /// @param filename Name of file to read, including path.
       /// @return  0 ok, -1 error reading file.
       /// @throw FileMissingException if filename cannot be opened.
-      int loadFile(std::string filename)
-         throw(FileMissingException);
+      int loadFile(std::string filename);
    
       /// Generate serial number (NGA files are named EOPP<SN>.txt) from epoch.
       /// SN (3 digit) = YWW : year (1 digit), week of year (2 digit)
       /// @param mjd Time (MJD) at which to compute the serial number
       /// @return the serial number.
-      static int getSerialNumber(int mjd)
-         throw(Exception);
+      /// @throw Exception
+      static int getSerialNumber(int mjd);
 
 	   /// Compute and return the Earth orientation parameters at the given MJD.
       /// TD how to warn if input is outside limits of validity?
       /// @param imjd integer MJD at which to compute the earth orientation parameters
       /// @return the EarthOrientation at imjd.
+      /// @throw Exception
       EarthOrientation computeEOP(int& imjd) const
-         throw(Exception)
       {
          double dmjd(static_cast<double>(imjd));
          return computeEOP(dmjd);

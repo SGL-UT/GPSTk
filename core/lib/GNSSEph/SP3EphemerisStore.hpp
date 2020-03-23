@@ -128,9 +128,10 @@ namespace gpstk
          * data from SP3 files in clock and position stores. Also
          * update the FileStore with the filename and SP3 header.
          * Check time systems consistentcy, and if possible set store
-         * time system. */
-      void loadSP3Store(const std::string& filename, bool fillClockStore)
-         throw(Exception);
+         * time system.
+         * @throw Exception
+         */
+      void loadSP3Store(const std::string& filename, bool fillClockStore);
 
    public:
 
@@ -157,8 +158,7 @@ namespace gpstk
           * @throw InvalidRequest If the request can not be completed for any
           *    reason, this is thrown. The text may have additional
           *    information as to why the request failed. */
-      virtual Xvt getXvt(const SatID& sat, const CommonTime& ttag)
-         const throw(InvalidRequest);
+      virtual Xvt getXvt(const SatID& sat, const CommonTime& ttag) const;
 
          /** Compute the position, velocity and clock offset of the
           * indicated object in ECEF coordinates (meters) at the
@@ -244,13 +244,13 @@ namespace gpstk
           * successfully determine the Xvt for any object.
           * @return the earliest time in the table
           * @throw InvalidRequest if the object has no data. */
-      virtual CommonTime getInitialTime() const throw(InvalidRequest);
+      virtual CommonTime getInitialTime() const;
 
          /** Determine the latest time for which this object can
           * successfully determine the Xvt for any object.
           * @return the latest time in the table
           * @throw InvalidRequest if the object has no data. */
-      virtual CommonTime getFinalTime() const throw(InvalidRequest);
+      virtual CommonTime getFinalTime() const;
 
          /// Return true if IndexType=SatID is present in the data tables
       virtual bool isPresent(const SatID& sat) const throw()
@@ -307,7 +307,7 @@ namespace gpstk
           *  c) checkInterval is true and the interval is larger than
           *     maxInterval */
       Triple getPosition(const SatID sat, const CommonTime ttag)
-         const throw(InvalidRequest);
+         const;
 
          /** Return the velocity for the given satellite at the given time
           * @param[in] sat the SatID of the satellite of interest
@@ -321,7 +321,7 @@ namespace gpstk
           *  c) checkInterval is true and the interval is larger than
           *     maxInterval */
       Triple getVelocity(const SatID sat, const CommonTime ttag)
-         const throw(InvalidRequest);
+         const;
 
          /** Return the acceleration for the given satellite at the given time
           * @param[in] sat the SatID of the satellite of interest
@@ -336,7 +336,7 @@ namespace gpstk
           *  c) checkInterval is true and the interval is larger than
           *     maxInterval */
       Triple getAcceleration(const SatID sat, const CommonTime ttag)
-         const throw(InvalidRequest)
+         const
       { return posStore.getAcceleration(sat,ttag); }
 
 
@@ -385,25 +385,25 @@ namespace gpstk
          /** Get the earliest time of data in the position store.
           * @return CommonTime the first time
           * @throw InvalidRequest if there is no data */
-      CommonTime getPositionInitialTime(void) const throw(InvalidRequest)
+      CommonTime getPositionInitialTime(void) const
       { return posStore.getInitialTime(); }
 
          /** Get the latest time of data in the position store.
           * @return CommonTime the latest time
           * @throw InvalidRequest if there is no data */
-      CommonTime getPositionFinalTime(void) const throw(InvalidRequest)
+      CommonTime getPositionFinalTime(void) const
       { return posStore.getFinalTime(); }
 
          /** Get the earliest time of data in the clock store.
           * @return CommonTime the first time
           * @throw InvalidRequest if there is no data */
-      CommonTime getClockInitialTime(void) const throw(InvalidRequest)
+      CommonTime getClockInitialTime(void) const
       { return clkStore.getInitialTime(); }
 
          /** Get the latest time of data in the clock store.
           * @return CommonTime the latest time
           * @throw InvalidRequest if there is no data */
-      CommonTime getClockFinalTime(void) const throw(InvalidRequest)
+      CommonTime getClockFinalTime(void) const
       { return clkStore.getFinalTime(); }
 
          /** Get the earliest time of data in the position store for
@@ -411,7 +411,6 @@ namespace gpstk
           * @return CommonTime the first time
           * @throw InvalidRequest if there is no data */
       CommonTime getPositionInitialTime(const SatID& sat) const
-         throw(InvalidRequest)
       { return posStore.getInitialTime(sat); }
 
          /** Get the latest time of data in the position store for the
@@ -419,7 +418,6 @@ namespace gpstk
           * @return CommonTime the latest time
           * @throw InvalidRequest if there is no data */
       CommonTime getPositionFinalTime(const SatID& sat) const
-         throw(InvalidRequest)
       { return posStore.getFinalTime(sat); }
 
          /** Get the earliest time of data in the clock store for the
@@ -427,7 +425,6 @@ namespace gpstk
           * @return CommonTime the first time
           * @throw InvalidRequest if there is no data */
       CommonTime getClockInitialTime(const SatID& sat) const
-         throw(InvalidRequest)
       { return clkStore.getInitialTime(sat); }
 
          /** Get the latest time of data in the clock store for the
@@ -435,20 +432,19 @@ namespace gpstk
           * @return CommonTime the latest time
           * @throw InvalidRequest if there is no data */
       CommonTime getClockFinalTime(const SatID& sat) const
-         throw(InvalidRequest)
       { return clkStore.getFinalTime(sat); }
 
          /** Get the earliest time of both clock and position data in
          * the store for the given satellite.
          * @return CommonTime the first time
          * @throw InvalidRequest if there is no data */
-      CommonTime getInitialTime(const SatID& sat) const throw(InvalidRequest);
+      CommonTime getInitialTime(const SatID& sat) const;
 
          /** Get the latest time of both clock and position data in
           * the store for the given satellite.
           * @return the latest time
           * @throw InvalidRequest if there is no data */
-      CommonTime getFinalTime(const SatID& sat) const throw(InvalidRequest);
+      CommonTime getFinalTime(const SatID& sat) const;
 
 
          /** Get the nominal time step in seconds for the position
@@ -584,22 +580,25 @@ namespace gpstk
           * may set the velocity, acceleration, bias or drift 'have'
           * flags.
           * @param filename name of file (SP3 or RINEX clock format) to load 
-          * @throw if time step is inconsistent with previous value */
-      void loadFile(const std::string& filename) throw(Exception);
+          * @throw Exception if time step is inconsistent with previous value
+          */
+      void loadFile(const std::string& filename);
 
          /** Load an SP3 ephemeris file; may set the velocity and
           * acceleration flags.  If the clock store uses RINEX clock
           * data, this will ignore the clock data.
           * @param filename name of file (SP3 format) to load 
-          * @throw if time step is inconsistent with previous value */
-      void loadSP3File(const std::string& filename) throw(Exception);
+          * @throw Exception if time step is inconsistent with previous value
+          */
+      void loadSP3File(const std::string& filename);
 
          /** Load a RINEX clock file; may set the 'have' bias and
           * drift flags.  If clock store is set to use SP3 data, this
           * will call useRinexClockData()
           * @param filename name of file (RINEX clock format) to load 
-          * @throw if time step is inconsistent with previous value */
-      void loadRinexClockFile(const std::string& filename) throw(Exception);
+          * @throw Exception if time step is inconsistent with previous value
+          */
+      void loadRinexClockFile(const std::string& filename);
 
 
          /** Add a complete PositionRecord to the store; this is the
@@ -609,25 +608,31 @@ namespace gpstk
           * is used as they key in a std::map, the value used must be
           * EXACTLY the same in all calls; (numerical noise could
           * cause the std::map to consider two "equal" ttags as
-          * different). */
+          * different).
+          * @throw InvalidRequest
+          */
       void addPositionRecord(const SatID& sat, const CommonTime& ttag,
-                             const PositionRecord& data) throw(InvalidRequest)
+                             const PositionRecord& data)
       {
          try { posStore.addPositionRecord(sat,ttag,data); }
          catch(InvalidRequest& ir) { GPSTK_RETHROW(ir); }
       }
 
-         /// Add position data to the store
+         /** Add position data to the store
+          * @throw InvalidRequest
+          */
       void addPositionData(const SatID& sat, const CommonTime& ttag,
-                           const Triple& Pos, const Triple& sig) throw(InvalidRequest)
+                           const Triple& Pos, const Triple& sig)
       {
          try { posStore.addPositionData(sat,ttag,Pos,sig); }
          catch(InvalidRequest& ir) { GPSTK_RETHROW(ir); }
       }
 
-         /// Add velocity data to the store
+         /** Add velocity data to the store
+          * @throw InvalidRequest
+          */
       void addVelocityData(const SatID& sat, const CommonTime& ttag,
-                           const Triple& Vel, const Triple& sig) throw(InvalidRequest)
+                           const Triple& Vel, const Triple& sig)
       {
          try { posStore.addVelocityData(sat,ttag,Vel,sig); }
          catch(InvalidRequest& ir) { GPSTK_RETHROW(ir); }
@@ -640,37 +645,41 @@ namespace gpstk
           * is used as they key in a std::map, the value used must be
           * EXACTLY the same in all calls; (numerical noise could
           * cause the std::map to consider two "equal" ttags as
-          * different). */
+          * different).
+          * @throw InvalidRequest
+          */
       void addClockRecord(const SatID& sat, const CommonTime& ttag,
                           const ClockRecord& rec)
-         throw(InvalidRequest)
       {
          try { clkStore.addClockRecord(sat,ttag,rec); }
          catch(InvalidRequest& ir) { GPSTK_RETHROW(ir); }
       }
 
-         /// Add clock bias data (only) to the store
+         /** Add clock bias data (only) to the store
+          * @throw InvalidRequest
+          */
       void addClockBias(const SatID& sat, const CommonTime& ttag,
                         const double& bias, const double& sig=0.0)
-         throw(InvalidRequest)
       {
          try { clkStore.addClockBias(sat,ttag,bias,sig); }
          catch(InvalidRequest& ir) { GPSTK_RETHROW(ir); }
       }
 
-         /// Add clock drift data (only) to the store
+         /** Add clock drift data (only) to the store
+          * @throw InvalidRequest
+          */
       void addClockDrift(const SatID& sat, const CommonTime& ttag,
                          const double& drift, const double& sig=0.0)
-         throw(InvalidRequest)
       {
          try { clkStore.addClockDrift(sat,ttag,drift,sig); }
          catch(InvalidRequest& ir) { GPSTK_RETHROW(ir); }
       }
 
-         /// Add clock acceleration data (only) to the store
+         /** Add clock acceleration data (only) to the store
+          * @throw InvalidRequest
+          */
       void addClockAcceleration(const SatID& sat, const CommonTime& ttag,
                                 const double& accel, const double& sig=0.0)
-         throw(InvalidRequest)
       {
          try { clkStore.addClockAcceleration(sat,ttag,accel,sig); }
          catch(InvalidRequest& ir) { GPSTK_RETHROW(ir); }
