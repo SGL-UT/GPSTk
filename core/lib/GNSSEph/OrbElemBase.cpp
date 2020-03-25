@@ -52,6 +52,9 @@ namespace gpstk
 {
    using namespace std;
    using namespace gpstk;
+
+   SatMetaDataStore *OrbElemBase::satMetaDataStore = nullptr;
+
    OrbElemBase::OrbElemBase()
          : dataLoadedFlag(false),
            ctToe(CommonTime::BEGINNING_OF_TIME),

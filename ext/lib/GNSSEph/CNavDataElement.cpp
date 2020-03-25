@@ -43,12 +43,13 @@
 #include "CivilTime.hpp"
 #include "TimeSystem.hpp"
 #include "TimeString.hpp"
-#include "SVNumXRef.hpp"
 
 namespace gpstk
 {
    using namespace std;
    using namespace gpstk;
+
+   SatMetaDataStore *CNavDataElement::satMetaDataStore = nullptr;
 
    CNavDataElement::CNavDataElement()
       :dataLoadedFlag(false),
@@ -138,18 +139,15 @@ namespace gpstk
         << "Broadcast Data (Engineering Units) - " << getNameLong();
       s << endl;
 
-      SVNumXRef svNumXRef;
-      int NAVSTARNum = 0;
-
       s << endl;
       s << "PRN : " << setw(2) << satID.id << " / "
         << "SVN : " << setw(2);
-      try
+      uint32_t svn;
+      if (getSVN(satID, ctXmit, svn))
       {
-         NAVSTARNum = svNumXRef.getNAVSTAR(satID.id, ctXmit );
-         s << NAVSTARNum << "  ";
+         s << svn << "  ";
       }
-      catch(NoNAVSTARNumberFound)
+      else
       {
          s << "XX";
       }

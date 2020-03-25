@@ -50,7 +50,6 @@
 #include "IRNWeekSecond.hpp"
 #include "NavID.hpp"
 #include "StringUtils.hpp"
-#include "SVNumXRef.hpp"
 #include "TimeConstants.hpp"
 #include "TimeString.hpp"
 #include "TimeSystem.hpp"

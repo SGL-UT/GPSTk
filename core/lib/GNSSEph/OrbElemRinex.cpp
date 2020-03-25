@@ -50,7 +50,6 @@
 #include "GPSWeekSecond.hpp"
 #include "IRNWeekSecond.hpp"
 #include "QZSWeekSecond.hpp"
-#include "SVNumXRef.hpp"
 #include "TimeString.hpp"
 
 namespace gpstk
@@ -719,19 +718,10 @@ namespace gpstk
       s.precision(0);
       s.fill(' ');
 
-      SVNumXRef svNumXRef;
-      int NAVSTARNum = 0;
-      if (satID.system==SatID::systemGPS)
+      uint32_t svn;
+      if (getSVN(satID, ctToe, svn))
       {
-         try
-         {
-         	NAVSTARNum = svNumXRef.getNAVSTAR(satID.id, ctToe );
-            s << setw(2) << " " << NAVSTARNum << "  ";
-         }
-         catch(NoNAVSTARNumberFound)
-         {
-         	 s << "  XX  ";
-         }
+         s << setw(2) << " " << svn << "  ";
       }
       else
       {

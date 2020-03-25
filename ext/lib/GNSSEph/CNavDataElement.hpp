@@ -61,6 +61,7 @@
 #include "GNSSconstants.hpp"
 #include "SatID.hpp"
 #include "GPSWeekSecond.hpp"
+#include "SatMetaDataStore.hpp"
 
 namespace gpstk
 {
@@ -68,8 +69,8 @@ namespace gpstk
    {
    public:
          /// Constructors
-	      /// Default constuctor
-	   CNavDataElement( );
+         /// Default constuctor
+      CNavDataElement( );
 
          /// Destructor
       virtual ~CNavDataElement() { }
@@ -130,6 +131,25 @@ namespace gpstk
           */
       virtual void dump(std::ostream& s = std::cout) const;
      
+         /** Shortcut to SatMetaDataStore::getSVN() that obviates
+          * having to check the pointer for null.
+          * @copydetails SatMetaDataStore::getSVN()
+          * @param[in] sat The ID of the desired satellite.
+          * @param[in] when The time of interest of the desired satellite.
+          * @param[out] svn If found the satellite's vehicle number.
+          * @return true if the requested satellite mapping was found.
+          */
+      bool getSVN(const SatID& sat, const gpstk::CommonTime& when,
+                  uint32_t& svn)
+         const
+      {
+         return ((satMetaDataStore != nullptr) &&
+                 satMetaDataStore->getSVN(sat,when,svn));
+      }
+
+         /// Set this to a valid store to get PRN->SVN translations in dump().
+      static SatMetaDataStore *satMetaDataStore;
+
          /// Overhead information
          //@{
       bool    dataLoadedFlag;  /**< True if data is present, False otherwise */
