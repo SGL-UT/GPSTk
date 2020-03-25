@@ -205,25 +205,25 @@ namespace gpstk
          /// Classes to set/test the satellite system list.
       bool isSatSysPresent(const SatID::SatelliteSystem ss) const;
       void addSatSys(const SatID::SatelliteSystem ss); 
-         /**
-          * @throw InvalidRequest
-          */
       void validSatSystem(const SatID& sat) const;
-         /*
-          *  Explanation of find( ) function for OrbElemStore
-          *  
-          *  The findOrbElem( ) funtion
-          *  does the best possible job of emulating the choice
-          *  that would be made by a real-time user
-          *
-          *  It is strongly suggested that the user load ALL 
-          *  available set of orbital elements into the store, 
-          *  regardless of health status.  
-          */
-         /// @param sat SatID of satellite of interest
-         /// @param t time with which to search for OrbElemBase
-         /// @return a reference to the desired OrbElemBase
-         /// @throw InvalidRequest object thrown when no OrbElemBase is found
+      std::list<SatID::SatelliteSystem> getValidSystemList() const;
+      void dumpValidSystemList(std::ostream& out) const;  
+
+      /*
+       *  Explanation of find( ) function for OrbElemStore
+       *  
+       *  The findOrbElem( ) funtion
+       *  does the best possible job of emulating the choice
+       *  that would be made by a real-time user
+       *
+       *  It is strongly suggested that the user load ALL 
+       *  available set of orbital elements into the store, 
+       *  regardless of health status.  
+       */
+      /// @param sat SatID of satellite of interest
+      /// @param t time with which to search for OrbElemBase
+      /// @return a reference to the desired OrbElemBase
+      /// @throw InvalidRequest object thrown when no OrbElemBase is found
       const OrbElemBase* findOrbElem( const SatID& sat, const CommonTime& t )
          const;
 
