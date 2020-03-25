@@ -272,6 +272,15 @@ namespace gpstk
    const double L3_WAVELENGTH_BDS  = 0.236332464604421;
 
       // ---------------- QZSS ----------------------------------
+      // PRN range defined in QZSS ICD 5.1.1.11.1
+      // PRN 198-202 reserved for maint./test, not to be used 
+      // by users. 
+      // These need to be defined in order to differentiate
+      // QZSS from GPS in cases where QZSS is broadcasting 
+      // GPS-similar signals and navigation messages.
+      // Defined as int to be compatible with gpstk::SatID.id member.
+   const int MIN_PRN_QZS = 193;    
+   const int MAX_PRN_QZS = 202; 
       /// QZS L1 carrier frequency in Hz.
    const double L1_FREQ_QZS   = L1_FREQ_GPS;
       /// QZS L2 carrier frequency in Hz.
