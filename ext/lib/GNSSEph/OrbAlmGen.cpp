@@ -662,9 +662,19 @@ namespace gpstk
 
          // Store the transmitting SV
       satID = msg.getsatSys();
+      if (satID.id>=MIN_PRN_QZS && satID.id<=MAX_PRN_QZS)
+      {
+         satID.system = SatID::systemQZSS; 
+      }
 
          // Set the subjectSV (found in OrbAlm.hpp)
-      subjectSV = SatID(SVID, SatID::systemGPS);
+      int subjectPRN = SVID;
+      if (subjectPRN>0 && satID.system==SatID::systemQZSS)
+      {
+         subjectPRN += (MIN_PRN_QZS - 1); 
+      }
+      subjectSV = SatID(subjectPRN, satID.system);
+
 
          // Test for default nav data.  It's probably NOT default, so we want this test to 
          // terminate and move on quickly if that's the case. 

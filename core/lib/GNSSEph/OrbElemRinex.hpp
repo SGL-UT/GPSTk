@@ -178,7 +178,8 @@ namespace gpstk
          // even if the actual data were collected later than earliest transmission. However, in the
          // case of upload cutovers, we have to depend on continuous collection to properly detect
          // upload cutover times. 
-      static CommonTime computeBeginValid(const CommonTime& xmit,
+      static CommonTime computeBeginValid(const SatID& satID,
+                                          const CommonTime& xmit,
                                           const CommonTime& ctToe ); 
       static CommonTime computeEndValid(const CommonTime& ctToe,
                                         const int fitHours );

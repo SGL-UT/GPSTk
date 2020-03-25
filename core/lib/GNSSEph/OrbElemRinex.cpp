@@ -136,7 +136,11 @@ namespace gpstk
       // - - - Now work on the things that need to be calculated - - -
 
     // The system is assumed (legacy navigation message is from GPS)
-      satID.id = static_cast<short>( rinNav.PRNID );
+      satID.id     = static_cast<short>( rinNav.PRNID );
+      satID.system = SatID::systemGPS;
+      if (satID.id>=MIN_PRN_QZS && 
+          satID.id<=MAX_PRN_QZS) 
+         satID.system = SatID::systemQZSS;  
 
          // The observation ID has a type of navigation, but the
          // carrier and code types are undefined.  They could be
@@ -216,7 +220,7 @@ namespace gpstk
       ctToc = GPSWeekSecond(epochWeek, Toc, TimeSystem::GPS);
       ctToe = GPSWeekSecond(epochWeek, Toe, TimeSystem::GPS);
 
-      beginValid = computeBeginValid(transmitTime, ctToe); 
+      beginValid = computeBeginValid(satID, transmitTime, ctToe); 
       endValid = computeEndValid(ctToe,fitDuration); 
 
 	 // Semi-major axis and time-rate-of-change of semi-major axis
@@ -417,7 +421,7 @@ namespace gpstk
 
       ctToc = GPSWeekSecond(epochWeek, Toc3, TimeSystem::GPS);
       ctToe = GPSWeekSecond(epochWeek, Toe3, TimeSystem::GPS);
-      beginValid = computeBeginValid(transmitTime, ctToe); 
+      beginValid = computeBeginValid(satID, transmitTime, ctToe); 
       endValid = computeEndValid(ctToe,fitDuration);                 
    }
 
@@ -768,15 +772,18 @@ namespace gpstk
       //        xmit time of the beginning of the first bit of the earliest message
       //        of the set. 
       // toe  - The toe of the data set.
-   CommonTime OrbElemRinex::computeBeginValid(const CommonTime& xmit, 
-                                            const CommonTime& ctToe )
+   CommonTime OrbElemRinex::computeBeginValid(const SatID& satID,
+                                              const CommonTime& xmit, 
+                                              const CommonTime& ctToe )
    {
       int xmitWeek = static_cast<GPSWeekSecond>(xmit).week;
       long xmitSOW = (long) static_cast<GPSWeekSecond>(xmit).sow;
 
          // If the toe is NOT offset, then the begin valid time can be set
          // to the beginning of the two hour interval. 
-      if (isNominalToe(ctToe))
+         // NOTE: This is only true for GPS.   We can't do this
+         // for QZSS, even though it also broadcasts the LNAV message format.
+      if (satID.system==SatID::systemGPS && isNominalToe(ctToe))
       {
          xmitSOW = xmitSOW - (xmitSOW % TWO_HOURS);
       }
