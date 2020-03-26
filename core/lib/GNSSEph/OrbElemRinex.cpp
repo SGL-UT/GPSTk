@@ -722,7 +722,7 @@ namespace gpstk
       s.precision(0);
       s.fill(' ');
 
-      uint32_t svn;
+      std::string svn;
       if (getSVN(satID, ctToe, svn))
       {
          s << setw(2) << " " << svn << "  ";

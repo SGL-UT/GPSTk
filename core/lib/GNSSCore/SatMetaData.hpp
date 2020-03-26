@@ -49,7 +49,7 @@ namespace gpstk
       static ClockType asClockType(const std::string& s);
 
       uint32_t prn;    ///< Pseudo-Random Number, identifies CDMA satellites.
-      uint32_t svn;    ///< Space vehicle number, a unique GNSS satellite ID.
+      std::string svn; ///< Space vehicle number, a unique GNSS satellite ID.
       int32_t norad;   ///< NORAD-assigned ID for this satellite.
       int32_t chl;     ///< Channel ID for FDMA satellites.
       uint32_t slotID; ///< Slot ID for FDMA satellites.

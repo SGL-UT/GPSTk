@@ -43,10 +43,7 @@ namespace gpstk
             {
                sat.prn = StringUtils::asUnsigned(vals[0]);
             }
-            if (StringUtils::isDigitString(vals[1]))
-            {
-               sat.svn = StringUtils::asUnsigned(vals[1]);
-            }
+            sat.svn = vals[1];
             if (StringUtils::isDigitString(vals[2]))
             {
                sat.norad = StringUtils::asInt(vals[2]);
@@ -145,7 +142,7 @@ namespace gpstk
 
 
    bool SatMetaDataStore ::
-   findSatBySVN(SatID::SatelliteSystem sys, uint32_t svn,
+   findSatBySVN(SatID::SatelliteSystem sys, const std::string& svn,
                 const gpstk::CommonTime& when,
                 SatMetaData& sat)
       const
@@ -182,7 +179,7 @@ namespace gpstk
    bool SatMetaDataStore ::
    getSVN(SatID::SatelliteSystem sys, uint32_t prn,
           const gpstk::CommonTime& when,
-          uint32_t& svn)
+          std::string& svn)
       const
    {
       SatMetaData sat;
@@ -196,7 +193,7 @@ namespace gpstk
 
 
    bool SatMetaDataStore ::
-   getPRN(SatID::SatelliteSystem sys, uint32_t svn,
+   getPRN(SatID::SatelliteSystem sys, const std::string& svn,
           const gpstk::CommonTime& when,
           uint32_t& prn)
       const

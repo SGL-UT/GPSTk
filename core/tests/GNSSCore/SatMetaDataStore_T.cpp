@@ -39,7 +39,7 @@ findSatTest()
    TUASSERT(testObj.findSat(gpstk::SatID::systemGPS, 32,
                             gpstk::YDSTime(2020,1,0), sat));
    TUASSERTE(uint32_t, 32, sat.prn);
-   TUASSERTE(uint32_t, 70, sat.svn);
+   TUASSERTE(std::string, "70", sat.svn);
    TUASSERTE(int32_t, 41328, sat.norad);
    TUASSERTE(int32_t, 0, sat.chl);
    TUASSERTE(uint32_t, 0, sat.slotID);
@@ -66,7 +66,7 @@ findSatTest()
    TUASSERT(testObj.findSat(gpstk::SatID::systemGPS, 32,
                             gpstk::YDSTime(1991,1,0), sat));
    TUASSERTE(uint32_t, 32, sat.prn);
-   TUASSERTE(uint32_t, 23, sat.svn);
+   TUASSERTE(std::string, "23", sat.svn);
    TUASSERTE(int32_t, 28361, sat.norad);
    TUASSERTE(int32_t, 0, sat.chl);
    TUASSERTE(uint32_t, 0, sat.slotID);
@@ -112,14 +112,14 @@ getSVNTest()
                              "sat32.csv"));
       // find a satellite
    TUCSM("getSVN");
-   uint32_t svn = 999999;
+   std::string svn = "999999";
    TUASSERT(testObj.getSVN(gpstk::SatID::systemGPS, 32,
                            gpstk::YDSTime(2020,1,0), svn));
-   TUASSERTE(uint32_t, 70, svn);
+   TUASSERTE(std::string, "70", svn);
       // find an older mapping of the same PRN
    TUASSERT(testObj.getSVN(gpstk::SatID::systemGPS, 32,
                            gpstk::YDSTime(1991,1,0), svn));
-   TUASSERTE(uint32_t, 23, svn);
+   TUASSERTE(std::string, "23", svn);
       // try to find the PRN before it was launched
    TUASSERT(!testObj.getSVN(gpstk::SatID::systemGPS, 32,
                              gpstk::YDSTime(1989,1,0), svn));
@@ -143,10 +143,10 @@ findSatBySVNTest()
                              "sat32.csv"));
       // find a satellite
    TUCSM("findSatBySVN");
-   TUASSERT(testObj.findSatBySVN(gpstk::SatID::systemGPS, 70,
+   TUASSERT(testObj.findSatBySVN(gpstk::SatID::systemGPS, "70",
                                  gpstk::YDSTime(2020,1,0), sat));
    TUASSERTE(uint32_t, 32, sat.prn);
-   TUASSERTE(uint32_t, 70, sat.svn);
+   TUASSERTE(std::string, "70", sat.svn);
    TUASSERTE(int32_t, 41328, sat.norad);
    TUASSERTE(int32_t, 0, sat.chl);
    TUASSERTE(uint32_t, 0, sat.slotID);
@@ -170,10 +170,10 @@ findSatBySVNTest()
              gpstk::SatMetaData::ClockType::Unknown, sat.clocks[3]);
    TUASSERTE(uint8_t, 255, sat.activeClock);
       // find a different SVN
-   TUASSERT(testObj.findSatBySVN(gpstk::SatID::systemGPS, 23,
+   TUASSERT(testObj.findSatBySVN(gpstk::SatID::systemGPS, "23",
                                  gpstk::YDSTime(1991,1,0), sat));
    TUASSERTE(uint32_t, 32, sat.prn);
-   TUASSERTE(uint32_t, 23, sat.svn);
+   TUASSERTE(std::string, "23", sat.svn);
    TUASSERTE(int32_t, 28361, sat.norad);
    TUASSERTE(int32_t, 0, sat.chl);
    TUASSERTE(uint32_t, 0, sat.slotID);
@@ -197,13 +197,13 @@ findSatBySVNTest()
              gpstk::SatMetaData::ClockType::Cesium, sat.clocks[3]);
    TUASSERTE(uint8_t, 255, sat.activeClock);
       // try to find the SVN before it was launched
-   TUASSERT(!testObj.findSatBySVN(gpstk::SatID::systemGPS, 70,
+   TUASSERT(!testObj.findSatBySVN(gpstk::SatID::systemGPS, "70",
                                   gpstk::YDSTime(1989,1,0), sat));
       // try to find the SVN during the transition (between SV assignments)
-   TUASSERT(!testObj.findSatBySVN(gpstk::SatID::systemGPS, 70,
+   TUASSERT(!testObj.findSatBySVN(gpstk::SatID::systemGPS, "70",
                                   gpstk::YDSTime(2016,26,0), sat));   
       // find a satellite that is beyond the end of the contents of the map
-   TUASSERT(!testObj.findSatBySVN(gpstk::SatID::systemGPS, 71,
+   TUASSERT(!testObj.findSatBySVN(gpstk::SatID::systemGPS, "71",
                                   gpstk::YDSTime(2020,1,0), sat));
    TURETURN();
 }
@@ -220,22 +220,22 @@ getPRNTest()
       // find a satellite
    TUCSM("getPRN");
    uint32_t prn = 999999;
-   TUASSERT(testObj.getPRN(gpstk::SatID::systemGPS, 70,
+   TUASSERT(testObj.getPRN(gpstk::SatID::systemGPS, "70",
                            gpstk::YDSTime(2020,1,0), prn));
    TUASSERTE(uint32_t, 32, prn);
       // find a different SVN
    prn = 999999;
-   TUASSERT(testObj.getPRN(gpstk::SatID::systemGPS, 23,
+   TUASSERT(testObj.getPRN(gpstk::SatID::systemGPS, "23",
                            gpstk::YDSTime(1991,1,0), prn));
    TUASSERTE(uint32_t, 32, prn);
       // try to find the PRN before it was launched
-   TUASSERT(!testObj.getPRN(gpstk::SatID::systemGPS, 70,
+   TUASSERT(!testObj.getPRN(gpstk::SatID::systemGPS, "70",
                              gpstk::YDSTime(1989,1,0), prn));
       // try to find the PRN during the transition (between SV assignments)
-   TUASSERT(!testObj.getPRN(gpstk::SatID::systemGPS, 70,
+   TUASSERT(!testObj.getPRN(gpstk::SatID::systemGPS, "70",
                              gpstk::YDSTime(2016,26,0), prn));   
       // find a satellite that is beyond the end of the contents of the map
-   TUASSERT(!testObj.getPRN(gpstk::SatID::systemGPS, 71,
+   TUASSERT(!testObj.getPRN(gpstk::SatID::systemGPS, "71",
                              gpstk::YDSTime(2020,1,0), prn));
    TURETURN();
 }

@@ -6,7 +6,7 @@ namespace gpstk
    SatMetaData ::
    SatMetaData()
          : prn(0),
-           svn(0),
+           svn(""),
            norad(0),
            chl(0),
            slotID(0),

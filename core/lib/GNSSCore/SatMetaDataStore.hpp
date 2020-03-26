@@ -92,7 +92,7 @@ namespace gpstk
           */
       bool getSVN(SatID::SatelliteSystem sys, uint32_t prn,
                   const gpstk::CommonTime& when,
-                  uint32_t& svn)
+                  std::string& svn)
          const;
 
          /** Get the space vehicle number of a satellite in the map by
@@ -103,7 +103,7 @@ namespace gpstk
           * @return true if the requested satellite mapping was found.
           */
       bool getSVN(const SatID& sat, const gpstk::CommonTime& when,
-                  uint32_t& svn)
+                  std::string& svn)
          const
       { return getSVN(sat.system, sat.id, when, svn); }
 
@@ -115,7 +115,7 @@ namespace gpstk
           * @param[out] sat If found the satellite's metadata.
           * @return true if the requested satellite mapping was found.
           */
-      bool findSatBySVN(SatID::SatelliteSystem sys, uint32_t svn,
+      bool findSatBySVN(SatID::SatelliteSystem sys, const std::string& svn,
                         const gpstk::CommonTime& when,
                         SatMetaData& sat)
          const;
@@ -129,7 +129,7 @@ namespace gpstk
           * @param[out] prn If found the satellite's pseudo-random number.
           * @return true if the requested satellite mapping was found.
           */
-      bool getPRN(SatID::SatelliteSystem sys, uint32_t svn,
+      bool getPRN(SatID::SatelliteSystem sys, const std::string& svn,
                   const gpstk::CommonTime& when,
                   uint32_t& prn)
          const;

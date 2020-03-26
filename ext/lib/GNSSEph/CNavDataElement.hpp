@@ -140,7 +140,7 @@ namespace gpstk
           * @return true if the requested satellite mapping was found.
           */
       bool getSVN(const SatID& sat, const gpstk::CommonTime& when,
-                  uint32_t& svn)
+                  std::string& svn)
          const
       {
          return ((satMetaDataStore != nullptr) &&

@@ -533,7 +533,7 @@ namespace gpstk
       s << endl;
       s << "PRN : " << setw(2) << satID.id << " / "
         << "SVN : " << setw(2);
-      uint32_t svn;
+      std::string svn;
       if (getSVN(satID, ctToe, svn))
       {
          s << svn;
