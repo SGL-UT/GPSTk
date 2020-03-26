@@ -4,6 +4,8 @@
 # "Operational" status data in this file.  The "Decommissioned" state
 # is only used when a satellite has been formally decommissioned but
 # is still transmitting data with the given code/PRN assignment.
+#
+# prn, svn, norad, FDMA channel, FDMA slot, system, launch year, launch DOY, launch SOD, start year, start DOY, start SOD, end year, end DOY, end SOD, orbital plane, orbital slot, satellite block/type, mission number/ID, status, clock 1 type, clock 2 type, clock 3 type, clock 4 type, active clock
 4,1,-1,0,0,GPS,1978,53,0,1978,88,0,1985,198,0,Z,9,I,1,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
 7,2,-1,0,0,GPS,1978,133,0,1978,195,0,1988,43,0,Z,9,I,2,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
 6,3,-1,0,0,GPS,1978,279,0,1978,317,0,1992,139,0,Z,9,I,3,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
