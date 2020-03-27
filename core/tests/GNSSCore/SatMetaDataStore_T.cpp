@@ -50,6 +50,7 @@ findSatTest()
    TUASSERTE(std::string, "F", sat.plane);
    TUASSERTE(std::string, "1", sat.slot);
    TUASSERTE(std::string, "IIF", sat.type);
+   TUASSERTE(std::string, "GPS IIF", sat.signals);
    TUASSERTE(std::string, "12", sat.mission);
    TUASSERTE(gpstk::SatMetaData::Status,
              gpstk::SatMetaData::Status::Operational, sat.status);
@@ -77,6 +78,7 @@ findSatTest()
    TUASSERTE(std::string, "E", sat.plane);
    TUASSERTE(std::string, "5", sat.slot);
    TUASSERTE(std::string, "IIA", sat.type);
+   TUASSERTE(std::string, "GPS IIA", sat.signals);
    TUASSERTE(std::string, "10", sat.mission);
    TUASSERTE(gpstk::SatMetaData::Status,
              gpstk::SatMetaData::Status::Operational, sat.status);
@@ -157,6 +159,7 @@ findSatBySVNTest()
    TUASSERTE(std::string, "F", sat.plane);
    TUASSERTE(std::string, "1", sat.slot);
    TUASSERTE(std::string, "IIF", sat.type);
+   TUASSERTE(std::string, "GPS IIF", sat.signals);
    TUASSERTE(std::string, "12", sat.mission);
    TUASSERTE(gpstk::SatMetaData::Status,
              gpstk::SatMetaData::Status::Operational, sat.status);
@@ -184,6 +187,7 @@ findSatBySVNTest()
    TUASSERTE(std::string, "E", sat.plane);
    TUASSERTE(std::string, "5", sat.slot);
    TUASSERTE(std::string, "IIA", sat.type);
+   TUASSERTE(std::string, "GPS IIA", sat.signals);
    TUASSERTE(std::string, "10", sat.mission);
    TUASSERTE(gpstk::SatMetaData::Status,
              gpstk::SatMetaData::Status::Operational, sat.status);

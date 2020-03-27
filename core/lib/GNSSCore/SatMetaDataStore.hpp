@@ -5,6 +5,7 @@
 #include <set>
 #include "SatMetaData.hpp"
 #include "SatMetaDataSort.hpp"
+#include "NavID.hpp"
 
 namespace gpstk
 {
@@ -15,6 +16,17 @@ namespace gpstk
    class SatMetaDataStore
    {
    public:
+         /// Specifies a single GNSS signal.
+      struct Signal
+      {
+         ObsID::CarrierBand carrier; ///< Carrier frequency.
+         ObsID::TrackingCode code;   ///< Tracking code.
+         NavID::NavType nav;         ///< Navigation code.
+      };
+         /// Set of signals that may be transmitted by a satellite.
+      using SignalSet = std::set<Signal>;
+         /// Map of signal set name to signal set.
+      using SignalMap = std::map<std::string, SignalSet>;
          /// Set of satellites ordered by PRN or channel/slotID.
       using SatSet = std::multiset<SatMetaData, SatMetaDataSort>;
          /// Satellites grouped by system.
@@ -25,6 +37,7 @@ namespace gpstk
 
          /** Attempt to load satellite metadata from the store.
           * The format of the input file is CSV, the values being
+          *   \li SAT (literal)
           *   \li prn
           *   \li svn
           *   \li NORAD ID
@@ -43,6 +56,7 @@ namespace gpstk
           *   \li plane
           *   \li slot
           *   \li type/block
+          *   \li signal set name
           *   \li mission number
           *   \li satellite status
           *   \li clock type 1
@@ -50,6 +64,14 @@ namespace gpstk
           *   \li clock type 3
           *   \li clock type 4
           *   \li active clock number
+          *
+          * Signal sets are defined using multiple SIG records as follows
+          *   \li SIG (literal)
+          *   \li signal set name
+          *   \li carrier band name
+          *   \li tracking code name
+          *   \li navigation code name
+          *
           * @param[in] sourceName The path to the input CSV-format file.
           * @return true if successful, false on error.
           */
@@ -136,6 +158,20 @@ namespace gpstk
 
          /// Storage of all the satellite metadata.
       SatMetaMap satMap;
+         /// Map signal set name to the actual signals.
+      SignalMap sigMap;
+
+   protected:
+         /** Convert a SAT record to a SatMetaData record and store it.
+          * @param[in] vals SAT record in the form of an array of columns.
+          * @return true if successful, false on error.
+          */
+      bool addSat(const std::vector<std::string>& vals);
+         /** Convert a SIG record to a Signal object and store it.
+          * @param[in] vals SIG record in the form of an array of columns.
+          * @return true if successful, false on error.
+          */
+      bool addSignal(const std::vector<std::string>& vals);
    }; // class SatMetaDataStore
 
 } // namespace gpstk

@@ -9,9 +9,11 @@ namespace gpstk
 {
       /** Store information about a GNSS satellite's configuration.
        * @note This class only implements the data storage and does
-       * not implement any I/O.  The I/O is implemented in
-       * SatMetaDataStore, where polymorphism can be used to provide
-       * transparent access to other external storage mechanisms.
+       *   not implement any I/O.  The I/O is implemented in
+       *   SatMetaDataStore, where polymorphism can be used to provide
+       *   transparent access to other external storage mechanisms.
+       * @note The signals value is expected to correlate to a named
+       *   SatSignalsSet object.
        */
    class SatMetaData
    {
@@ -60,6 +62,7 @@ namespace gpstk
       std::string plane;            ///< Satellite plane identifier.
       std::string slot;             ///< Slot within the plane.
       std::string type;             ///< Typically block number.
+      std::string signals;          ///< Name of broadcast signal set.
       std::string mission;          ///< Mission number.
       Status status;                ///< Current satellite state.
       ClockType clocks[NUMCLOCKS];  ///< Types of frequency standards available.
