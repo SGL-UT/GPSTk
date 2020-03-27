@@ -41,6 +41,9 @@ build_debian_7:
     - export gpstk=`pwd`/install
     - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DBUILD_PYTHON=ON -DPIP_WHEEL_SWITCH=OFF -DCMAKE_INSTALL_PREFIX=install -DBUILD_EXT=ON -DTEST_SWITCH=ON ../
     - make all -j 4
+  artifacts:
+    paths:
+      - build/
 
 build_debian_8:
   stage: build
@@ -58,6 +61,9 @@ build_debian_8:
     - export gpstk=`pwd`/install
     - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=install $CMAKE_ARG_DEFAULT
     - make all -j 4
+  artifacts:
+    paths:
+      - build/
 
 build_debian_9:
   stage: build
@@ -74,11 +80,31 @@ build_debian_9:
     paths:
     - build/
 
+build_debian_10:
+  stage: build
+  tags:
+    - docker-executor
+  image: debian10_fai_ish
+  only:
+    refs:
+      - master
+      - /^ci_.*$/
+      - /^version_.*_prep$/
+  script:
+    - mkdir build
+    - cd build
+    - export gpstk=`pwd`/install
+    - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=install $CMAKE_ARG_DEFAULT
+    - make all -j 4
+  artifacts:
+    paths:
+      - build/
+
 build_conda_py27:
   stage: build
   tags:
     - docker-executor
-  image: centos7_conda_py27
+  image: deb9_conda_py27
   script:
     - conda activate py27
     - mkdir build
@@ -94,7 +120,7 @@ build_conda_py36:
   stage: build
   tags:
     - docker-executor
-  image: centos7_conda_py36
+  image: deb9_conda_py36
   script:
     - conda activate py36
     - mkdir build
@@ -121,21 +147,6 @@ build_redhat:
     paths:
     - build/
 
-build_redhat_py36:
-  stage: build
-  tags:
-    - docker-executor
-  image: centos7_sgl
-  script:
-    - mkdir build
-    - cd build
-    - export gpstk=`pwd`/install
-    - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=install -DPYTHON_EXECUTABLE=/usr/bin/python3.6 $CMAKE_ARG_DEFAULT
-    - make all -j 4
-  artifacts:
-    paths:
-      - build/
-
 build_windows:
   stage: build
   tags:
@@ -155,6 +166,60 @@ build_windows:
 
 # Test Stage
 # Runs all tests of GPSTK for each platform
+test_debian_7:
+  stage: test
+  tags:
+    - docker-executor
+  image: debian7_fai_ish
+  only:
+    refs:
+      - master
+      - /^ci_.*$/
+      - /^version_.*_prep$/
+  script:
+    - cd build
+    - ctest -j 4
+    - touch $CI_PROJECT_DIR/success
+  dependencies:
+    - build_debian_7
+  after_script:
+    # Only show the failure log, if there were failures.
+    # Also, the whole log is too long, so grep for lines of interest.
+    - |
+      if [ -e success ]; then
+         echo "Good. Gooooood."
+      else
+         grep "Total Failures for" $CI_PROJECT_DIR/build/Testing/Temporary/LastTest.log
+      fi
+  # Allowing failure until this can be traced down.
+  allow_failure: true
+
+test_debian_8:
+  stage: test
+  tags:
+    - docker-executor
+  image: debian8_fai_ish
+  only:
+    refs:
+      - master
+      - /^ci_.*$/
+      - /^version_.*_prep$/
+  script:
+    - cd build
+    - ctest -j 4
+    - touch $CI_PROJECT_DIR/success
+  dependencies:
+    - build_debian_8
+  after_script:
+    # Only show the failure log, if there were failures.
+    # Also, the whole log is too long, so grep for lines of interest.
+    - |
+      if [ -e success ]; then
+         echo "Good. Gooooood."
+      else
+         grep "Total Failures for" $CI_PROJECT_DIR/build/Testing/Temporary/LastTest.log
+      fi
+
 test_debian_9:
   stage: test
   tags:
@@ -166,6 +231,76 @@ test_debian_9:
     - touch $CI_PROJECT_DIR/success
   dependencies:
     - build_debian_9
+  after_script:
+    # Only show the failure log, if there were failures.
+    # Also, the whole log is too long, so grep for lines of interest.
+    - |
+      if [ -e success ]; then
+         echo "Good. Gooooood."
+      else
+         grep "Total Failures for" $CI_PROJECT_DIR/build/Testing/Temporary/LastTest.log
+      fi
+
+test_debian_10:
+  stage: test
+  tags:
+    - docker-executor
+  image: debian10_fai_ish
+  only:
+    refs:
+      - master
+      - /^ci_.*$/
+      - /^version_.*_prep$/
+  script:
+    - cd build
+    - ctest -j 4
+    - touch $CI_PROJECT_DIR/success
+  dependencies:
+    - build_debian_10
+  after_script:
+    # Only show the failure log, if there were failures.
+    # Also, the whole log is too long, so grep for lines of interest.
+    - |
+      if [ -e success ]; then
+         echo "Good. Gooooood."
+      else
+         grep "Total Failures for" $CI_PROJECT_DIR/build/Testing/Temporary/LastTest.log
+      fi
+
+test_conda_py27:
+  stage: test
+  tags:
+    - docker-executor
+  image: deb9_conda_py27
+  script:
+    - conda activate py27
+    - cd build
+    - ctest -j 4
+    - touch $CI_PROJECT_DIR/success
+  dependencies:
+    - build_conda_py27
+  after_script:
+    # Only show the failure log, if there were failures.
+    # Also, the whole log is too long, so grep for lines of interest.
+    - |
+      if [ -e success ]; then
+         echo "Good. Gooooood."
+      else
+         grep "Total Failures for" $CI_PROJECT_DIR/build/Testing/Temporary/LastTest.log
+      fi
+
+test_conda_py36:
+  stage: test
+  tags:
+    - docker-executor
+  image: deb9_conda_py36
+  script:
+    - conda activate py36
+    - cd build
+    - ctest -j 4
+    - touch $CI_PROJECT_DIR/success
+  dependencies:
+    - build_conda_py36
   after_script:
     # Only show the failure log, if there were failures.
     # Also, the whole log is too long, so grep for lines of interest.
