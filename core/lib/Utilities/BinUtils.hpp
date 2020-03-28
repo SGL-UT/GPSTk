@@ -331,7 +331,7 @@ namespace gpstk
           *  the end of \a str.
           */
       inline std::string xorChecksum(const std::string& str, unsigned wordSize)
-         throw(gpstk::InvalidParameter);
+         noexcept(false);
 
          //@}
 
@@ -545,7 +545,7 @@ namespace gpstk
       }
 
       std::string xorChecksum(const std::string& str, unsigned wordSize)
-         throw(gpstk::InvalidParameter)
+         noexcept(false)
       {
          size_t strSize = str.size();
          std::string rv(wordSize, 0);

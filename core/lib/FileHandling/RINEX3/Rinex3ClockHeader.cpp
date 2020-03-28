@@ -76,7 +76,7 @@ namespace gpstk
 
       // --------------------------------------------------------------------------------
    void Rinex3ClockHeader::reallyGetRecord(FFStream& ffs)
-      throw(exception, FFStreamError, StringException)
+      noexcept(false)
    {
       Rinex3ClockStream& strm = dynamic_cast<Rinex3ClockStream&>(ffs);
       
@@ -265,7 +265,7 @@ namespace gpstk
 
 
    void Rinex3ClockHeader::reallyPutRecord(FFStream& ffs) const
-      throw(exception, FFStreamError, StringException)
+      noexcept(false)
    {
       try {
          Rinex3ClockStream& strm = dynamic_cast<Rinex3ClockStream&>(ffs);
@@ -493,7 +493,7 @@ namespace gpstk
    }
 
 
-   void Rinex3ClockHeader::dump(ostream& os, short detail) const throw()
+   void Rinex3ClockHeader::dump(ostream& os, short detail) const noexcept
    {
       size_t i;
       os << "Dump Rinex3Clock Header:\n";
@@ -553,7 +553,7 @@ namespace gpstk
 
    }  // end Rinex3ClockHeader::dump()
 
-   void Rinex3ClockHeader::dumpValid(ostream& os) const throw()
+   void Rinex3ClockHeader::dumpValid(ostream& os) const noexcept
    {
       if( (valid & allValid) == allValid) return;
       string tag("  Invalid or missing header line: ");

@@ -99,7 +99,7 @@ namespace gpstk
       /// headers.
       /// @param files  vector<string> containing filenames, with path
       /// @return string containing error messages, if any
-   std::string sortRinexObsFiles(std::vector<std::string>& files) throw(Exception);
+   std::string sortRinexObsFiles(std::vector<std::string>& files) noexcept(false);
 
       /// Sort a vector of RINEX 3 obs file names on the time of the
       /// first observation as found in the header. Return the sorted

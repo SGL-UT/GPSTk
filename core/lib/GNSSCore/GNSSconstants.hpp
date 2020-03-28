@@ -106,7 +106,7 @@ namespace gpstk
 
    inline
    short getLegacyFitInterval(const short iodc, const short fiti)
-      throw(gpstk::InvalidRequest )
+      noexcept(false)
    {
          /* check the IODC */
       if (iodc < 0 || iodc > 1023)
@@ -300,7 +300,7 @@ namespace gpstk
        * Calls for system GLO must include the frequency channel number N
        * (-7<=N<=7). */
    inline double getWavelength(const SatID& sat, const int& n, const int N=0)
-      throw()
+      noexcept
    {
       switch(sat.system)
       {
@@ -348,7 +348,7 @@ namespace gpstk
        * either of the input n's are not valid RINEX bands
        * (n=1,2,5,6,7,or 8) for the system. */
    inline double getBeta(const SatID& sat, const int& na, const int& nb)
-      throw()
+      noexcept
    {
       double wla = getWavelength(sat,na);
       double wlb = getWavelength(sat,nb);
@@ -362,7 +362,7 @@ namespace gpstk
        * @return 0 if either of the input n's are not valid RINEX
        *   bands (n=1,2,5,6,7,8) for the satellite system. */
    inline double getAlpha(const SatID& sat, const int& na, const int& nb)
-      throw()
+      noexcept
    {
       double beta(getBeta(sat,na,nb));
       if(beta == 0.0) return 0.0;

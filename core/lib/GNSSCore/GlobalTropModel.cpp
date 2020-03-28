@@ -287,7 +287,7 @@ namespace gpstk
    // methods.
    // @param elevation Elevation of satellite as seen at receiver, in degrees
    double GlobalTropModel::correction(double elevation) const       
-      throw(InvalidTropModel)
+      noexcept(false)
    {
       try { testValidity(); }
       catch(InvalidTropModel& e) { GPSTK_RETHROW(e); }
@@ -320,7 +320,7 @@ namespace gpstk
    // @param RX  Receiver position.
    // @param SV  Satellite position.
    double GlobalTropModel::correction(const Position& RX, const Position& SV)
-      throw(InvalidTropModel)
+      noexcept(false)
    {
       try {
          double p;
@@ -350,7 +350,7 @@ namespace gpstk
    // the troposphere. Use the Saastamoinen value.
    // Ref. Davis etal 1985 and Leick, 3rd ed, pg 197.
    double GlobalTropModel::dry_zenith_delay(void) const
-      throw(InvalidTropModel)
+      noexcept(false)
    {
       try { testValidity(); } catch(InvalidTropModel& e) { GPSTK_RETHROW(e); }
       return SaasDryDelay(press,latitude,height);
@@ -360,7 +360,7 @@ namespace gpstk
    // Compute and return the zenith delay for wet component of
    // the troposphere. Ref. Leick, 3rd ed, pg 197, Leick, 4th ed, pg 482.
    double GlobalTropModel::wet_zenith_delay(void) const
-         throw(InvalidTropModel)
+         noexcept(false)
    {
       double T = temp + CELSIUS_TO_KELVIN;
       double pwv = 0.01 * humid * ::exp(-37.2465 + (0.213166-0.000256908*T)*T);
@@ -371,7 +371,7 @@ namespace gpstk
    // the troposphere.
    // @param elevation Elevation of satellite as seen at receiver, in degrees
    double GlobalTropModel::dry_mapping_function(double elevation) const
-      throw(InvalidTropModel)
+      noexcept(false)
    {
       try { testValidity(); } catch(InvalidTropModel& e) { GPSTK_RETHROW(e); }
       if(elevation < 3.0) { return 0.0; }
@@ -461,7 +461,7 @@ namespace gpstk
    //                  x^4 + x^3(2c) + x^2(2b+c^2) + x(2bc) + b^2
    //
    double GlobalTropModel::wet_mapping_function(double elevation) const
-      throw(InvalidTropModel)
+      noexcept(false)
    {
       try { testValidity(); }
       catch(InvalidTropModel& e) { GPSTK_RETHROW(e); }
@@ -505,7 +505,7 @@ namespace gpstk
    // Compute the pressure and temperature at height, and the undulation,
    // for the given position and time.
    void GlobalTropModel::getGPT(double& P, double& T, double& U)
-      throw(InvalidTropModel)
+      noexcept(false)
    {
       try { testValidity(); }
       catch(InvalidTropModel& e) { GPSTK_RETHROW(e); }
@@ -665,7 +665,7 @@ namespace gpstk
    }
 
    // Utility to test valid flags
-   void GlobalTropModel::testValidity(void) const throw(InvalidTropModel)
+   void GlobalTropModel::testValidity(void) const noexcept(false)
    {
       if(!valid) {
          if(!validLat)

@@ -109,7 +109,7 @@ namespace gpstk
 
          /// Virtual Destructor.
       virtual ~ANSITime()
-      throw()
+      noexcept
       {}
          //@}
 

@@ -286,7 +286,7 @@ namespace gpstk
 
 
    void RinexClockHeader::reallyPutRecord(FFStream& ffs) const
-      throw(std::exception, FFStreamError, StringException)
+      noexcept(false)
    {
       RinexClockStream& strm = dynamic_cast<RinexClockStream&>(ffs);
 
@@ -501,8 +501,7 @@ namespace gpstk
 
       // This function parses the entire header from the given stream
    void RinexClockHeader::reallyGetRecord(FFStream& ffs)
-      throw(std::exception, FFStreamError,
-            StringUtils::StringException)
+      noexcept(false)
    {
       RinexClockStream& strm = dynamic_cast<RinexClockStream&>(ffs);
 
@@ -550,7 +549,7 @@ namespace gpstk
 
       // this function parses a single header record
    void RinexClockHeader::ParseHeaderRecord(const string& line)
-      throw(FFStreamError)
+      noexcept(false)
    {
       string label(line, 60, 20);
 

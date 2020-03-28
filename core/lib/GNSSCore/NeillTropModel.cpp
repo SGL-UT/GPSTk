@@ -142,7 +142,7 @@ namespace gpstk
       // @param elevation Elevation of satellite as seen at receiver,
       // in degrees
    double NeillTropModel::correction(double elevation) const
-      throw(InvalidTropModel)
+      noexcept(false)
    {
       THROW_IF_INVALID_DETAILED();
 
@@ -180,7 +180,7 @@ namespace gpstk
        */
    double NeillTropModel::correction( const Position& RX,
                                       const Position& SV )
-      throw(InvalidTropModel)
+      noexcept(false)
    {
 
       try
@@ -228,7 +228,7 @@ namespace gpstk
    double NeillTropModel::correction( const Position& RX,
                                       const Position& SV,
                                       const CommonTime& tt )
-      throw(InvalidTropModel)
+      noexcept(false)
    {
       setDayOfYear(tt);
 
@@ -251,7 +251,7 @@ namespace gpstk
    double NeillTropModel::correction( const Position& RX,
                                       const Position& SV,
                                       const int& doy )
-      throw(InvalidTropModel)
+      noexcept(false)
    {
       setDayOfYear(doy);
 
@@ -270,7 +270,7 @@ namespace gpstk
       // This function is deprecated; use the Position version
    double NeillTropModel::correction( const Xvt& RX,
                                       const Xvt& SV )
-      throw(InvalidTropModel)
+      noexcept(false)
    {
       Position R(RX),S(SV);
       return NeillTropModel::correction(R,S);
@@ -291,7 +291,7 @@ namespace gpstk
    double NeillTropModel::correction( const Xvt& RX,
                                       const Xvt& SV,
                                       const CommonTime& tt )
-      throw(InvalidTropModel)
+      noexcept(false)
    {
       setDayOfYear(tt);
       Position R(RX),S(SV);
@@ -314,7 +314,7 @@ namespace gpstk
    double NeillTropModel::correction( const Xvt& RX,
                                       const Xvt& SV,
                                       const int& doy )
-      throw(InvalidTropModel)
+      noexcept(false)
    {
       setDayOfYear(doy);
       Position R(RX),S(SV);
@@ -326,7 +326,7 @@ namespace gpstk
       // Compute and return the zenith delay for the dry component of
       // the troposphere.
    double NeillTropModel::dry_zenith_delay(void) const
-      throw(InvalidTropModel)
+      noexcept(false)
    {
       THROW_IF_INVALID();
 
@@ -347,7 +347,7 @@ namespace gpstk
       // @param elevation Elevation of satellite as seen at receiver, in
       //                  degrees
    double NeillTropModel::dry_mapping_function(double elevation) const
-      throw(InvalidTropModel)
+      noexcept(false)
    {
       THROW_IF_INVALID_DETAILED();
 
@@ -413,7 +413,7 @@ namespace gpstk
       // @param elevation Elevation of satellite as seen at receiver,
       //                  in degrees.
    double NeillTropModel::wet_mapping_function(double elevation) const
-      throw(InvalidTropModel)
+      noexcept(false)
    {
       THROW_IF_INVALID_DETAILED();
 
@@ -457,7 +457,7 @@ namespace gpstk
       // latitude and day of year (DOY). It is called automatically when
       // setting those parameters.
    void NeillTropModel::setWeather()
-      throw(InvalidTropModel)
+      noexcept(false)
    {
 
       if(!validLat)

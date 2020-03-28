@@ -91,7 +91,7 @@ namespace gpstk
                            double svel,
                            double svaz,
                            IonoModel::Frequency freq = IonoModel::L1) const
-         throw(NoIonoModelFound);
+         noexcept(false);
 
 
          /** Add an IonoModel to this collection
@@ -102,7 +102,7 @@ namespace gpstk
           */
       bool addIonoModel( const CommonTime& mt,
                          const IonoModel& im )
-         throw();
+         noexcept;
 
          /** Edit the dataset, removing data outside the indicated time interval
           *

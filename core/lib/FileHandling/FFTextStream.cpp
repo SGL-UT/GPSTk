@@ -100,7 +100,7 @@ namespace gpstk
 
    void FFTextStream ::
    tryFFStreamGet(FFData& rec)
-      throw(FFStreamError, gpstk::StringUtils::StringException)
+      noexcept(false)
    {
       unsigned int initialLineNumber = lineNumber;
 
@@ -121,7 +121,7 @@ namespace gpstk
 
    void FFTextStream ::
    tryFFStreamPut(const FFData& rec)
-      throw(FFStreamError, gpstk::StringUtils::StringException)
+      noexcept(false)
    {
       unsigned int initialLineNumber = lineNumber;
 
@@ -148,7 +148,7 @@ namespace gpstk
    void FFTextStream ::
    formattedGetLine( std::string& line,
                      const bool expectEOF )
-      throw(EndOfFile, FFStreamError, gpstk::StringUtils::StringException)
+      noexcept(false)
    {
       try
       {

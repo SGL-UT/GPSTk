@@ -120,8 +120,7 @@ namespace gpstk
           * number for the type of header data you want to write.
           */
       virtual void reallyPutRecord(FFStream& s) const
-         throw(std::exception, FFStreamError,
-               gpstk::StringUtils::StringException);
+         noexcept(false);
 
          /**
           * This functions obtains a RINEX Observation record from the given
@@ -137,8 +136,7 @@ namespace gpstk
           *  stream to its pre-read position.
           */
       virtual void reallyGetRecord(FFStream& s)
-         throw(std::exception, FFStreamError,
-               gpstk::StringUtils::StringException);
+         noexcept(false);
 
    private:
          ///<Time corresponding to previous set of oberservations
@@ -148,7 +146,7 @@ namespace gpstk
          /// Writes the CommonTime object into RINEX format. If it's a bad time,
          /// it will return blanks.
       std::string writeTime(const CommonTime& dt) const
-         throw(gpstk::StringUtils::StringException);
+         noexcept(false);
 
          /**
           * This function constructs a CommonTime object from the given parameters.
@@ -156,7 +154,7 @@ namespace gpstk
           * @param hdr the RINEX Observation Header object for the current RINEX file.
           */
       CommonTime parseTime(const std::string& line, const RinexObsHeader& hdr) const
-         throw(FFStreamError);
+         noexcept(false);
    }; // class RinexObsData
 
       //@}

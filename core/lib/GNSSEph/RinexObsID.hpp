@@ -107,10 +107,10 @@ namespace gpstk
             : ObsID(ot, cb, tc) {};
       
          /// Construct this object from the string specifier
-      RinexObsID(const std::string& strID) throw(InvalidParameter);
+      RinexObsID(const std::string& strID) noexcept(false);
 
          /// Constructor from ObsID
-      RinexObsID(const ObsID& oid) throw(InvalidParameter)
+      RinexObsID(const ObsID& oid) noexcept(false)
       {
          type=oid.type; band=oid.band; code=oid.code;
          std::string str(this->asString());
@@ -144,7 +144,7 @@ namespace gpstk
          //static std::string validRinexSystems;
 
       static std::ostream& dumpCheck(std::ostream& s)
-         throw(gpstk::Exception);
+         noexcept(false);
 
    }; // end class RinexObsID
 

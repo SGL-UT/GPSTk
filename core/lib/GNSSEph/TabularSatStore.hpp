@@ -131,7 +131,7 @@ namespace gpstk
          // member functions
    public:
          /// Default constructor
-      TabularSatStore() throw()
+      TabularSatStore() noexcept
       : storeTimeSystem(TimeSystem::Any),
          havePosition(false), haveVelocity(false),
          haveClockBias(false), haveClockDrift(false),
@@ -156,21 +156,21 @@ namespace gpstk
           *
           * Derived objects can implement similar routines, for example:
           * Triple getPosition(const SatID& sat, const CommonTime& t)
-          *    throw(InvalidRequest);
+          *    noexcept(false);
           * Triple getVelocity(const SatID& sat, const CommonTime& t)
-          *    throw(InvalidRequest);
+          *    noexcept(false);
           * Triple getAccel(const SatID& sat, const CommonTime& t)
-          *    throw(InvalidRequest);
+          *    noexcept(false);
           * double getClockBias(const SatID& s, const CommonTime& t)
-          *    throw(InvalidRequest);
+          *    noexcept(false);
           * double[2] getClock(const SatID& sat, const CommonTime& t)
-          *    throw(InvalidRequest);
+          *    noexcept(false);
           * @note Xvt getXvt(const SatID& sat, const CommonTime& t)
-          *    throw(InvalidRequest);
+          *    noexcept(false);
           *   will be provided by another class which inherits this one.
           */
       virtual DataRecord getValue(const SatID& sat, const CommonTime& ttag)
-         const throw(InvalidRequest) = 0;
+         const noexcept(false) = 0;
 
          /** Locate the given time in the DataTable for the given
           * satellite.  Return two const iterators it1 and it2
@@ -213,7 +213,7 @@ namespace gpstk
                                     typename DataTable::const_iterator& it1,
                                     typename DataTable::const_iterator& it2,
                                     bool exactReturn=true)
-         const throw(InvalidRequest)
+         const noexcept(false)
       {
          try
          {
@@ -419,7 +419,7 @@ namespace gpstk
                                                typename DataTable::const_iterator& it1,
                                                typename DataTable::const_iterator& it2,
                                                bool exactReturn=true)
-         const throw(InvalidRequest)
+         const noexcept(false)
       {
          try
          {
@@ -572,7 +572,7 @@ namespace gpstk
           *    1: number of data/sat
           *    2: above plus all the data tables */
       virtual void dump(std::ostream& os = std::cout, int detail = 0) const
-         throw()
+         noexcept
       {
          os << " Dump of TabularSatStore(" << detail << "):" << std::endl;
          if(detail >= 0)
@@ -649,7 +649,7 @@ namespace gpstk
           * @param[in] tmax defines the end of the time interval */
       void edit(const CommonTime& tmin,
                 const CommonTime& tmax = CommonTime::END_OF_TIME)
-         throw()
+         noexcept
       {
             // loop over satellites
          typename SatTable::iterator it;
@@ -676,7 +676,7 @@ namespace gpstk
          // remaining functions are not virtual
 
          /// Remove all data and reset time limits
-      inline void clear() throw()
+      inline void clear() noexcept
       {
          typename std::map<SatID, DataTable>::iterator satit;
          for(satit=tables.begin(); satit!=tables.end(); ++satit)
@@ -685,14 +685,14 @@ namespace gpstk
       }
 
          /// Return true if the given SatID is present in the store
-      virtual bool isPresent(const SatID& sat) const throw()
+      virtual bool isPresent(const SatID& sat) const noexcept
       { return (tables.find(sat) != tables.end()); }
 
          /** Determine if the input TimeSystem conflicts with the
           * stored TimeSystem.
           * @param[in] ts TimeSystem to compare with stored TimeSystem
           * @throw InvalidRequest if time systems are inconsistent */
-      void checkTimeSystem(const TimeSystem& ts) const throw(InvalidRequest)
+      void checkTimeSystem(const TimeSystem& ts) const noexcept(false)
       {
          if(ts != TimeSystem::Any && storeTimeSystem != TimeSystem::Any
             && ts != storeTimeSystem)
@@ -707,7 +707,7 @@ namespace gpstk
          /** Get the earliest time of data in the data tables.
           * @return the earliest time
           * @throw InvalidRequest if the store is empty. */
-      CommonTime getInitialTime() const throw()
+      CommonTime getInitialTime() const noexcept
       {
          CommonTime initialTime(CommonTime::END_OF_TIME);
          if(tables.size() == 0) return initialTime;
@@ -731,7 +731,7 @@ namespace gpstk
 
          /** Get the latest time of data in the data tables.
           * @return the latest time */
-      CommonTime getFinalTime() const throw()
+      CommonTime getFinalTime() const noexcept
       {
          CommonTime finalTime(CommonTime::BEGINNING_OF_TIME);
          if(tables.size() == 0)
@@ -761,7 +761,7 @@ namespace gpstk
          /** Get the earliest time of data in the store for the given
           * satellite.
           * @return the first time. */
-      CommonTime getInitialTime(const SatID& sat) const throw()
+      CommonTime getInitialTime(const SatID& sat) const noexcept
       {
          CommonTime initialTime(CommonTime::END_OF_TIME);
          if(tables.size() == 0)
@@ -776,7 +776,7 @@ namespace gpstk
 
          /** Get the latest time of data in the store for the given satellite.
           * @return the last time. */
-      CommonTime getFinalTime(const SatID& sat) const throw()
+      CommonTime getFinalTime(const SatID& sat) const noexcept
       {
          CommonTime finalTime(CommonTime::BEGINNING_OF_TIME);
          if(tables.size() == 0)
@@ -795,7 +795,7 @@ namespace gpstk
           * Note that the interval includes both it1 and it2. */
       void dumpInterval(typename DataTable::const_iterator& it1,
                         typename DataTable::const_iterator& it2,
-                        std::ostream& os = std::cout) const throw()
+                        std::ostream& os = std::cout) const noexcept
       {
          const char *fmt="%4Y/%02m/%02d %2H:%02M:%02S";
          typename DataTable::const_iterator it(it1);
@@ -809,20 +809,20 @@ namespace gpstk
       }
 
          /// Does this store contain position, etc data stored in the tables?
-      bool hasPosition() const throw() { return havePosition; }
-      bool hasVelocity() const throw() { return haveVelocity; }
-      bool hasClockBias() const throw() { return haveClockBias; }
-      bool hasClockDrift() const throw() { return haveClockDrift; }
+      bool hasPosition() const noexcept { return havePosition; }
+      bool hasVelocity() const noexcept { return haveVelocity; }
+      bool hasClockBias() const noexcept { return haveClockBias; }
+      bool hasClockDrift() const noexcept { return haveClockDrift; }
 
          /// Get number of satellites available
-      inline int nsats(void) const throw() { return tables.size(); }
+      inline int nsats(void) const noexcept { return tables.size(); }
 
          /// Is the given satellite present?
-      bool hasSatellite(const SatID& sat) const throw()
+      bool hasSatellite(const SatID& sat) const noexcept
       { return isPresent(sat); }
 
          /// Get a list (std::vector) of SatIDs present in the store
-      std::vector<SatID> getSatList(void) const throw()
+      std::vector<SatID> getSatList(void) const noexcept
       {
          std::vector<SatID> satlist;
          typename SatTable::const_iterator it;
@@ -835,7 +835,7 @@ namespace gpstk
       }
 
          /// Get the total number of data records in the store
-      inline int ndata(void) const throw()
+      inline int ndata(void) const noexcept
       {
          int n(0);
          typename SatTable::const_iterator sit;
@@ -847,7 +847,7 @@ namespace gpstk
       }
 
          /// Get the number of data records for the given sat
-      inline int ndata(const SatID& sat) const throw()
+      inline int ndata(const SatID& sat) const noexcept
       {
          typename SatTable::const_iterator it(tables.find(sat));
          if(it == tables.end())
@@ -861,7 +861,7 @@ namespace gpstk
       }
 
          /// Get the number of data records for the given satellite system
-      inline int ndata(const SatID::SatelliteSystem& sys) const throw()
+      inline int ndata(const SatID::SatelliteSystem& sys) const noexcept
       {
          int n(0);
          typename SatTable::const_iterator sit;
@@ -874,13 +874,13 @@ namespace gpstk
       }
 
          /// same as ndata()
-      inline int size(void) const throw() { return ndata(); }
+      inline int size(void) const noexcept { return ndata(); }
 
          /** compute the nominal timestep of the data table for the
           * given satellite
           * @return 0 if satellite is not found, else the nominal
           *   timestep in seconds. */
-      double nomTimeStep(const SatID& sat) const throw()
+      double nomTimeStep(const SatID& sat) const noexcept
       {
             // get the table for this sat
          typename SatTable::const_iterator it(tables.find(sat));
@@ -937,39 +937,39 @@ namespace gpstk
       }
 
          /// Is gap checking on?
-      bool isDataGapCheck(void) throw() { return checkDataGap; }
+      bool isDataGapCheck(void) noexcept { return checkDataGap; }
 
          /// Disable checking of data gaps.
-      void disableDataGapCheck(void) throw() { checkDataGap = false; }
+      void disableDataGapCheck(void) noexcept { checkDataGap = false; }
 
          /// Get current gap interval.
-      double getGapInterval(void) throw() { return gapInterval; }
+      double getGapInterval(void) noexcept { return gapInterval; }
 
          /// Set gap interval and turn on gap checking
-      void setGapInterval(double interval) throw()
+      void setGapInterval(double interval) noexcept
       { checkDataGap = true; gapInterval = interval; }
 
          /// Is interval checking on?
-      bool isIntervalCheck(void) throw() { return checkInterval; }
+      bool isIntervalCheck(void) noexcept { return checkInterval; }
 
          /// Disable checking of maximum interval.
-      void disableIntervalCheck(void) throw() { checkInterval = false; }
+      void disableIntervalCheck(void) noexcept { checkInterval = false; }
 
          /// Get current maximum interval.
-      double getMaxInterval(void) throw() { return maxInterval; }
+      double getMaxInterval(void) noexcept { return maxInterval; }
 
          /// Set maximum interval and turn on interval checking
-      void setMaxInterval(double interval) throw()
+      void setMaxInterval(double interval) noexcept
       {
          checkInterval = true;
          maxInterval = interval;
       }
 
          /// get the store's time system
-      TimeSystem getTimeSystem(void) throw() { return storeTimeSystem; }
+      TimeSystem getTimeSystem(void) noexcept { return storeTimeSystem; }
 
          /// set the store's time system
-      void setTimeSystem(const TimeSystem& ts) throw()
+      void setTimeSystem(const TimeSystem& ts) noexcept
       { storeTimeSystem = ts; }
 
    };

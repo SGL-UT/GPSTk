@@ -272,30 +272,30 @@ namespace gpstk
           * This function converts the string in \a oneObs to a RinexObsType.
           */
       static RinexObsType convertObsType(const std::string& oneObs)
-         throw(FFStreamError);
+         noexcept(false);
 
          /**
           * This function converts the RinexObsType in \a oneObs to a string.
           */
       static std::string convertObsType(const RinexObsType& oneObs)
-         throw(FFStreamError);
+         noexcept(false);
 
          /**
           * Parse a single header record, and modify valid accordingly.
           * Used by reallyGetRecord for both RinexObsHeader and RinexObsData.
           */
       void ParseHeaderRecord(std::string& line)
-         throw(FFStreamError);
+         noexcept(false);
 
          /// Compute the number of valid header records which WriteHeaderRecords() will write
-      int NumberHeaderRecordsToBeWritten(void) const throw();
+      int NumberHeaderRecordsToBeWritten(void) const noexcept;
 
          /**
           * Write all valid header records to the given stream.
           * Used by reallyPutRecord for both RinexObsHeader and RinexObsData.
           */
       void WriteHeaderRecords(FFStream& s) const
-         throw(FFStreamError, gpstk::StringUtils::StringException);
+         noexcept(false);
 
          /// Return boolean : is this a valid Rinex header?
       bool isValid() const { return ((valid & allValid20) == allValid20); }
@@ -305,8 +305,7 @@ namespace gpstk
           * outputs this record to the stream correctly formatted.
           */
       virtual void reallyPutRecord(FFStream& s) const
-         throw(std::exception, FFStreamError,
-               gpstk::StringUtils::StringException);
+         noexcept(false);
 
          /**
           * This function retrieves the RINEX Header from the given FFStream.
@@ -318,8 +317,7 @@ namespace gpstk
           *  stream to its pre-read position.
           */
       virtual void reallyGetRecord(FFStream& s)
-         throw(std::exception, FFStreamError,
-               gpstk::StringUtils::StringException);
+         noexcept(false);
 
       friend class RinexObsData;
 

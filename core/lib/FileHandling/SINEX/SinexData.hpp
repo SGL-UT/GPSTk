@@ -103,7 +103,7 @@ namespace gpstk
              * Writes the formatted record to the FFStream.
              */
          void reallyPutRecord(FFStream& s) const
-            throw(std::exception, FFStreamError, StringUtils::StringException);
+            noexcept(false);
 
             /**
              * This function reads a record from the given FFStream.
@@ -116,7 +116,7 @@ namespace gpstk
              *  stream to its pre-read position.
              */
          void reallyGetRecord(FFStream& s)
-            throw(std::exception, FFStreamError, StringUtils::StringException);
+            noexcept(false);
 
       }; // class Data
 

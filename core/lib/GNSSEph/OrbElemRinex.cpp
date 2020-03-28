@@ -69,14 +69,14 @@ namespace gpstk
 
    //----------------------------------------------------------------
    OrbElemRinex::OrbElemRinex( const RinexNavData& rinNav )
-      throw( InvalidParameter )
+      noexcept(false)
    {
       loadData( rinNav );
    }
 
    //----------------------------------------------------------------
    OrbElemRinex::OrbElemRinex( const Rinex3NavData& rinNav )
-     throw( InvalidParameter )
+     noexcept(false)
    {
       loadData( rinNav );
    }
@@ -90,7 +90,7 @@ namespace gpstk
 
    //----------------------------------------------------------------
    void OrbElemRinex::loadData( const RinexNavData& rinNav )
-      throw( InvalidParameter )
+      noexcept(false)
    {
       // Fill in the variables unique to OrbElemFIC9
       codeflags        = rinNav.codeflgs;
@@ -241,7 +241,7 @@ namespace gpstk
 
    //----------------------------------------------------------------
    void OrbElemRinex::loadData( const Rinex3NavData& rinNav )
-     throw( InvalidParameter )
+     noexcept(false)
    {
       // Fill in the variables unique to OrbElemFIC9
       codeflags        = rinNav.codeflgs;
@@ -325,7 +325,7 @@ namespace gpstk
 
    //----------------------------------------------------------------
    double OrbElemRinex::getAccuracy()  const
-      throw(InvalidRequest)
+      noexcept(false)
    {
       if (!dataLoaded())
       {
@@ -626,7 +626,7 @@ namespace gpstk
 
    //----------------------------------------------------------------
    void OrbElemRinex::dumpHeader(ostream& s) const
-      throw( InvalidRequest )
+      noexcept(false)
    {
       if (!dataLoaded())
       {
@@ -707,7 +707,7 @@ namespace gpstk
 
    //----------------------------------------------------------------
    void OrbElemRinex :: dumpTerse(ostream& s) const
-      throw(InvalidRequest )
+      noexcept(false)
    {
 
        // Check if the subframes have been loaded before attempting
@@ -767,7 +767,7 @@ namespace gpstk
 
    //----------------------------------------------------------------
    void OrbElemRinex :: dump(ostream& s) const
-      throw( InvalidRequest )
+      noexcept(false)
    {
       ios::fmtflags oldFlags = s.flags();
       dumpHeader(s);

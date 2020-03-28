@@ -144,7 +144,7 @@ namespace gpstk
        *     cannot be found in the map.
        */
    std::vector<double> EpochDataStore::getData(const CommonTime& t) const
-         throw(InvalidRequest)
+         noexcept(false)
    {
       // check the time
       if( (t < initialTime) || (t > finalTime))

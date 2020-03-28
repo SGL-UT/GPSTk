@@ -142,7 +142,7 @@ namespace gpstk
           *     cannot be found in the map.
           */
       std::vector<double> getData(const CommonTime& t) const
-         throw(InvalidRequest);
+         noexcept(false);
 
       
          /// Object holding all the data for the vehicle

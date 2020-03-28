@@ -55,38 +55,38 @@ namespace gpstk
    {
    public:
          /// @return semi-major axis of Earth in meters.
-      virtual double a() const throw() = 0;
+      virtual double a() const noexcept = 0;
 
          /// @return semi-major axis of Earth in km.
-      virtual double a_km() const throw() = 0;
+      virtual double a_km() const noexcept = 0;
 
          /// @return flattening (ellipsoid parameter).
-      virtual double flattening() const throw() = 0;
+      virtual double flattening() const noexcept = 0;
 
          /// @return eccentricity (ellipsoid parameter).
-      virtual double eccentricity() const throw() = 0;
+      virtual double eccentricity() const noexcept = 0;
 
          /// @return eccentricity squared (ellipsoid parameter).
-      virtual double eccSquared() const throw()
+      virtual double eccSquared() const noexcept
       { return eccentricity() * eccentricity(); }
 
          /// @return angular velocity of Earth in radians/sec.
-      virtual double angVelocity() const throw() = 0;
+      virtual double angVelocity() const noexcept = 0;
 
          /// @return geocentric gravitational constant in m**3 / s**2
-      virtual double gm() const throw() = 0;
+      virtual double gm() const noexcept = 0;
 
          /// @return geocentric gravitational constant in m**3 / s**2
-      virtual double gm_km() const throw() = 0;
+      virtual double gm_km() const noexcept = 0;
 
          /// @return Speed of light in m/s.
-      virtual double c() const throw() = 0;
+      virtual double c() const noexcept = 0;
 
          /// @return Speed of light in km/s
-      virtual double c_km() const throw() = 0;
+      virtual double c_km() const noexcept = 0;
 
          /// Destructor.
-      virtual ~EllipsoidModel() throw() {};
+      virtual ~EllipsoidModel() noexcept {};
 
    }; // class EllipsoidModel
 

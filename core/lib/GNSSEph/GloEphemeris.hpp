@@ -86,7 +86,7 @@ namespace gpstk
           * @throw InvalidRequest if required data has not been stored.
           */
       Xvt svXvt(const CommonTime& epoch) const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
          /** Compute satellite position & velocity at the given time
           *  using this ephemeris data.  HOWEVER, DO NOT check whether
@@ -102,24 +102,24 @@ namespace gpstk
 
          /// Get the epoch time for this ephemeris
       CommonTime getEphemerisEpoch() const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
 
          /// Get the epoch time for this ephemeris
       CommonTime getEpochTime() const
-         throw( gpstk::InvalidRequest )
+         noexcept(false)
       { return getEphemerisEpoch(); };
 
 
          /** This functions returns the GNSS type (satellite system code) */
       std::string getSatSys() const
-         throw()
+         noexcept
       { return satSys; };
 
 
          /// This function returns the PRN ID of the SV.
       short getPRNID() const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
 
          /** Compute the satellite clock bias (sec) at the given time
@@ -129,7 +129,7 @@ namespace gpstk
           * @throw InvalidRequest if required data has not been stored.
           */
       double svClockBias(const CommonTime& epoch) const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
 
          /** Compute the satellite clock drift (sec/sec) at the given time
@@ -139,7 +139,7 @@ namespace gpstk
           * @throw InvalidRequest if required data has not been stored.
           */
       double svClockDrift(const CommonTime& t) const
-         throw( gpstk::InvalidRequest );
+         noexcept(false);
 
 
          /// Get integration step for Runge-Kutta algorithm.
@@ -157,49 +157,49 @@ namespace gpstk
 
          /// Get the acceleration vector.
       Triple getAcc() const
-         throw()
+         noexcept
       { return a; }
 
 
          /// Get the TauN parameter.
       double getTauN() const
-         throw()
+         noexcept
       { return clkbias; }
 
 
          /// Get the GammaN parameter.
       double getGammaN() const
-         throw()
+         noexcept
       { return clkdrift; }
 
 
          /// Get the MFTime parameter.
       long getMFtime() const
-         throw()
+         noexcept
       { return MFtime; }
 
 
          /// Get the health value parameter.
       short getHealth() const
-         throw()
+         noexcept
       { return health; }
 
 
          /// Get the frequency number.
       short getfreqNum() const
-         throw()
+         noexcept
       { return freqNum; }
 
 
          /// Get the age of the information.
       double getAgeOfInfo() const
-         throw()
+         noexcept
       { return ageOfInfo; }
 
 
          /// Output the contents of this ephemeris to the given stream.
       void dump(std::ostream& s = std::cout) const
-         throw();
+         noexcept;
          
       void prettyDump(std::ostream& s) const;
       void terseDump(std::ostream& s) const;

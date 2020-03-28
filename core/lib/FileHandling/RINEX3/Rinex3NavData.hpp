@@ -117,22 +117,22 @@ namespace gpstk
 
          /// deprecated; use GPSEphemeris, GPS-only.
          /// Converts Rinex3NavData to an EngEphemeris object.
-      operator EngEphemeris() const throw();
+      operator EngEphemeris() const;// noexcept;
 
          /// Converts Rinex3NavData to a GPSEphemeris object.
-      operator GPSEphemeris() const throw();
+      operator GPSEphemeris() const;// noexcept;
 
          /// Converts this Rinex3NavData to a GloEphemeris object.
-      operator GloEphemeris() const throw();
+      operator GloEphemeris() const;// noexcept;
 
          /// Converts Rinex3NavData to a GalEphemeris object.
-      operator GalEphemeris() const throw();
+      operator GalEphemeris() const;// noexcept;
 
          /// Converts Rinex3NavData to a BDSEphemeris object.
-      operator BDSEphemeris() const throw();
+      operator BDSEphemeris() const;// noexcept;
 
          /// Converts Rinex3NavData to a QZSEphemeris object.
-      operator QZSEphemeris() const throw();
+      operator QZSEphemeris() const;// noexcept;
 
          /// Converts the (non-CommonTime) data to an easy list
          /// for comparison operators.
@@ -247,7 +247,7 @@ namespace gpstk
           *  @param strm RINEX Nav stream
           */
       void getPRNEpoch(Rinex3NavStream& strm)
-         throw(StringUtils::StringException, FFStreamError);
+         noexcept(false);
 
 
          /**  Read and parse the nth record after the epoch record
@@ -256,13 +256,13 @@ namespace gpstk
           *   @param Rinex3NavStream strm stream to read from
           */
       void getRecord(const int& n, Rinex3NavStream& strm)
-         throw(StringUtils::StringException, FFStreamError);
+         noexcept(false);
 
          /** Generates the PRN/epoch line and outputs it to strm
           *  @param strm RINEX Nav stream
           */
       void putPRNEpoch(Rinex3NavStream& strm) const
-         throw(StringUtils::StringException);
+         noexcept(false);
 
 
          /** Construct and write the nth record after the epoch record
@@ -271,7 +271,7 @@ namespace gpstk
           *  @param Rinex3NavStream strm  Stream to read from.
           */
       void putRecord(const int& n, Rinex3NavStream& strm) const
-         throw(StringUtils::StringException, FFStreamError);
+         noexcept(false);
 
          /** Helper routine for constructors of this from
           * OrbitEph-based Ephemerides */
@@ -292,12 +292,12 @@ namespace gpstk
           *          to its pre-read position.
           */
       virtual void reallyGetRecord(FFStream& s)
-         throw(std::exception, FFStreamError, StringUtils::StringException);
+         noexcept(false);
 
 
          /// Outputs the record to the FFStream \a s.
       virtual void reallyPutRecord(FFStream& s) const 
-         throw(std::exception, FFStreamError, StringUtils::StringException);
+         noexcept(false);
 
    }; // End of class 'Rinex3NavData'
 

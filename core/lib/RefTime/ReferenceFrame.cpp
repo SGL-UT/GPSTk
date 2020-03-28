@@ -56,7 +56,7 @@ namespace gpstk
        string("CGCS2000")
      };
 
-   ReferenceFrame::ReferenceFrame(const string str) throw()
+   ReferenceFrame::ReferenceFrame(const string str) noexcept
    {
       frame = Unknown;
       for(int i=0; i<count; i++) {
@@ -68,7 +68,7 @@ namespace gpstk
    }
 
    void ReferenceFrame::setReferenceFrame(const Frames& frm)
-      throw()
+      noexcept
    {
       if(frm < 0 || frm >= count)
          frame = Unknown;

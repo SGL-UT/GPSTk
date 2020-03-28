@@ -103,14 +103,12 @@ namespace gpstk
    protected:
          /// Writes a correctly formatted record from this data to stream
       virtual void reallyPutRecord(FFStream& s) const
-         throw(std::exception, FFStreamError,
-               StringUtils::StringException);
+         noexcept(false);
       
          
          /// This functions obtains a RINEX Clock record from the given stream
       virtual void reallyGetRecord(FFStream& s)
-         throw(std::exception, FFStreamError,
-               StringUtils::StringException);
+         noexcept(false);
       
    }; // class RinexClockData
    

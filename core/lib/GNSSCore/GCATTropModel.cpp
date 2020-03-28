@@ -97,7 +97,7 @@ namespace gpstk
        *                   degrees
        */
    double GCATTropModel::correction(double elevation) const
-      throw(InvalidTropModel)
+      noexcept(false)
    {
       THROW_IF_INVALID();
 
@@ -119,7 +119,7 @@ namespace gpstk
        */
    double GCATTropModel::correction( const Position& RX,
                                      const Position& SV )
-      throw(InvalidTropModel)
+      noexcept(false)
    {
 
       try
@@ -165,7 +165,7 @@ namespace gpstk
    double GCATTropModel::correction( const Xvt& RX,
                                      const Xvt& SV,
                                      const CommonTime& tt )
-      throw(InvalidTropModel)
+      noexcept(false)
    {
 
       Position R(RX),S(SV);
@@ -178,7 +178,7 @@ namespace gpstk
        * troposphere.
        */
    double GCATTropModel::dry_zenith_delay(void) const
-      throw(InvalidTropModel)
+      noexcept(false)
    {
       THROW_IF_INVALID();
 
@@ -193,7 +193,7 @@ namespace gpstk
        *                   in degrees
        */
    double GCATTropModel::mapping_function(double elevation) const
-      throw(InvalidTropModel)
+      noexcept(false)
    {
       THROW_IF_INVALID();
 

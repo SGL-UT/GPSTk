@@ -158,7 +158,7 @@ namespace gpstk
 
 
    void FFStream::tryFFStreamGet(FFData& rec)
-      throw(FFStreamError, gpstk::StringUtils::StringException)
+      noexcept(false)
    {
          // JMK 2015/12/07 - some implementations of streams will
          // raise exceptions in tellg if eofbit is set but not
@@ -281,7 +281,7 @@ namespace gpstk
       // etc) to be retained.
    void FFStream ::
    tryFFStreamPut(const FFData& rec)
-      throw(FFStreamError, gpstk::StringUtils::StringException)
+      noexcept(false)
    {
          // Mark where we start in case there is an error.
       long initialPosition = tellg();

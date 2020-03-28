@@ -83,10 +83,10 @@ namespace gpstk
       };
       
          /// default constructor, creates an invalid model
-      IonoModel() throw() : valid(false) {}
+      IonoModel() noexcept : valid(false) {}
       
          /// destructor
-      virtual ~IonoModel() throw() {}
+      virtual ~IonoModel() noexcept {}
       
          /**
           * constructor.
@@ -95,27 +95,27 @@ namespace gpstk
           * \param a an array containing the four alpha terms
           * \param b an array containing the four beta terms
           */
-      IonoModel(const double a[4], const double b[4]) throw();
+      IonoModel(const double a[4], const double b[4]) noexcept;
       
          /**
           * EngAlmanac constructor.
           * Creates a valid model from and EngAlmanac object
           * \param engalm an EngAlmanac object
           */
-      IonoModel(const EngAlmanac& engalm) throw();
+      IonoModel(const EngAlmanac& engalm) noexcept;
       
          /** Method to feed the model with satellite transmitted alpha
           * and beta parameters provided from almanac.
           * \param a an array containing the four alpha terms
           * \param b an array containing the four beta terms
           */
-      void setModel(const double a[4], const double b[4]) throw();
+      void setModel(const double a[4], const double b[4]) noexcept;
       
          /**
           * returns the validity of the model.
           * \return model validity
           */
-      bool isValid() const throw() { return valid; }
+      bool isValid() const noexcept { return valid; }
       
          /**
           * get the ionospheric correction value.
@@ -131,13 +131,13 @@ namespace gpstk
                            double svel,
                            double svaz,
                            Frequency freq = L1) const
-         throw(InvalidIonoModel);
+         noexcept(false);
 
          /// equality operator
-      bool operator==(const IonoModel& right) const throw();
+      bool operator==(const IonoModel& right) const noexcept;
 
          /// inequality operator
-      bool operator!=(const IonoModel& right) const throw();     
+      bool operator!=(const IonoModel& right) const noexcept;     
 
    private:
 

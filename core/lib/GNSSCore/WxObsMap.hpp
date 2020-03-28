@@ -53,7 +53,7 @@ namespace gpstk
    struct WxObservation
    {
       /// Default Constructor
-      WxObservation() throw()
+      WxObservation() noexcept
          : t(CommonTime::END_OF_TIME), temperatureSource(noWx),
            pressureSource(noWx), humiditySource(noWx)
       {}
@@ -68,7 +68,7 @@ namespace gpstk
                     float temp, 
                     float pres, 
                     float humid)
-         throw()
+         noexcept
          :t(t),
           temperature(temp), pressure(pres),
           humidity(humid), temperatureSource(obsWx),
@@ -96,7 +96,7 @@ namespace gpstk
       /** Return whether all weather values in this object are valid.
        * @return whether all weather values in this object are valid
        */
-      bool isAllValid() const throw();
+      bool isAllValid() const noexcept;
 
       /** Friendly Output Operator.
        * @param s the output stream to which data is sent
@@ -104,7 +104,7 @@ namespace gpstk
        * @return a reference to the modified ostream
        */
       friend std::ostream& operator<<(std::ostream& s, 
-                                      const WxObservation& obs) throw();
+                                      const WxObservation& obs) noexcept;
    };
 
 
@@ -116,7 +116,7 @@ namespace gpstk
    struct WxObsData
    {
       /// Constructor
-      WxObsData() throw()
+      WxObsData() noexcept
          :firstTime(CommonTime::END_OF_TIME), 
           lastTime(CommonTime::BEGINNING_OF_TIME) {}
      
@@ -133,18 +133,18 @@ namespace gpstk
       /** Get the last WxObservation made before time t.
        * @return the WxObservation coming before time t
        */
-      WxObservation getMostRecent(const CommonTime& t) const throw();
+      WxObservation getMostRecent(const CommonTime& t) const noexcept;
       
       /** Insert a WxObservation.
        * @param obs the WxObservation to insert.
        */
-      void insertObservation(const WxObservation& obs) throw();
+      void insertObservation(const WxObservation& obs) noexcept;
       
       /**
        * Removes all stored #WxObservation objects older than time \a t.
        * \param t remove #WxObservation objects older than this
        */
-      void flush(const CommonTime& t) throw();
+      void flush(const CommonTime& t) noexcept;
 
       /**
        * Find a #WxObservation object for time \a t.
@@ -165,7 +165,7 @@ namespace gpstk
       WxObservation getWxObservation(const CommonTime& t,
                                      unsigned iv = 3600,
                                      bool interpolate = true) const
-         throw(ObjectNotFound);
+         noexcept(false);
    };
 } // namespace
 #endif 

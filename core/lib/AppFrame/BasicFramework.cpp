@@ -53,7 +53,7 @@ namespace gpstk
 
    BasicFramework :: BasicFramework( const string& applName,
                                      const string& applDesc )
-      throw()
+      noexcept
          : debugLevel(0),
            verboseLevel(0),
            exitCode(0),
@@ -69,7 +69,7 @@ namespace gpstk
    bool BasicFramework :: initialize( int argc,
                                       char *argv[],
                                       bool pretty )
-      throw()
+      noexcept
    {
 
          // Creating the parser here ensures that all the subclasses'
@@ -122,7 +122,7 @@ namespace gpstk
 
 
    bool BasicFramework :: run()
-      throw()
+      noexcept
    {
 
       try

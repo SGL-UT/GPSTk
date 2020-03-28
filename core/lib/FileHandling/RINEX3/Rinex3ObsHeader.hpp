@@ -417,7 +417,7 @@ namespace gpstk
           * @param[in] type String representing the observation type.
           */
       virtual std::size_t getObsIndex(const std::string& type ) const
-         throw(InvalidRequest);
+         noexcept(false);
 
          /** This method returns the numerical index of a given observation
           *
@@ -425,23 +425,23 @@ namespace gpstk
           * @param[in] obsID RinexObsID of the observation
           */
       virtual std::size_t getObsIndex(const std::string& sys, const RinexObsID& obsID ) const
-         throw(InvalidRequest);
+         noexcept(false);
 
          /** Parse a single header record, and modify valid
           * accordingly.  Used by reallyGetRecord for both
           * Rinex3ObsHeader and Rinex3ObsData. */
       void parseHeaderRecord(std::string& line)
-         throw(FFStreamError);
+         noexcept(false);
 
          /** Compute number of valid header records that
           * writeHeaderRecords() will write */
-      int numberHeaderRecordsToBeWritten(void) const throw();
+      int numberHeaderRecordsToBeWritten(void) const noexcept;
 
          /** Write all valid header records to the given stream.  Used
           * by reallyPutRecord for both Rinex3ObsHeader and
           * Rinex3ObsData. */
       void writeHeaderRecords(FFStream& s) const
-         throw(FFStreamError, gpstk::StringUtils::StringException);
+         noexcept(false);
 
          /// Return boolean : is this a valid Rinex header?
       bool isValid() const
@@ -481,8 +481,7 @@ namespace gpstk
 
          /// outputs this record to the stream correctly formatted.
       virtual void reallyPutRecord(FFStream& s) const
-         throw(std::exception, FFStreamError,
-               gpstk::StringUtils::StringException);
+         noexcept(false);
 
          /** This function retrieves the RINEX Header from the given FFStream.
           * If an stream error is encountered, the stream is reset to its
@@ -492,8 +491,7 @@ namespace gpstk
           *  a read or formatting error occurs.  This also resets the
           *  stream to its pre-read position. */
       virtual void reallyGetRecord(FFStream& s)
-         throw(std::exception, FFStreamError,
-               gpstk::StringUtils::StringException);
+         noexcept(false);
 
 
          /// Helper methods
@@ -502,10 +500,10 @@ namespace gpstk
          /// methods read the list of v2.11 obs types stored in R2ObsTypes
          /// and attempt to build a corresponding list of v3 observation
          /// types where appropriate.
-      std::vector<RinexObsID> mapR2ObsToR3Obs_G() throw(FFStreamError);
-      std::vector<RinexObsID> mapR2ObsToR3Obs_R() throw(FFStreamError);
-      std::vector<RinexObsID> mapR2ObsToR3Obs_E() throw(FFStreamError);
-      std::vector<RinexObsID> mapR2ObsToR3Obs_S() throw(FFStreamError);
+      std::vector<RinexObsID> mapR2ObsToR3Obs_G() noexcept(false);
+      std::vector<RinexObsID> mapR2ObsToR3Obs_R() noexcept(false);
+      std::vector<RinexObsID> mapR2ObsToR3Obs_E() noexcept(false);
+      std::vector<RinexObsID> mapR2ObsToR3Obs_S() noexcept(false);
 
       friend class Rinex3ObsData;
 

@@ -49,7 +49,7 @@ namespace gpstk
 {
 
    WxObservation WxObsData::getMostRecent( const CommonTime& t ) const
-      throw()
+      noexcept
    {
       if(obs.size() == 0)
          return WxObservation();
@@ -63,7 +63,7 @@ namespace gpstk
    };
 
    void WxObsData::insertObservation( const WxObservation& wx )
-      throw()
+      noexcept
    {
       obs[wx.t] = wx;
       if (wx.t > lastTime)  lastTime=wx.t;
@@ -71,14 +71,14 @@ namespace gpstk
    }
 
    bool WxObservation::isAllValid() const
-      throw()
+      noexcept
    {
       return temperatureSource != noWx
          && pressureSource != noWx
          && humiditySource != noWx;
    };
 
-   void WxObsData::flush(const CommonTime& t) throw()
+   void WxObsData::flush(const CommonTime& t) noexcept
    {
       // remove data from the WxObsMap
       // map is sorted by time, stop removing data at
@@ -100,7 +100,7 @@ namespace gpstk
    WxObservation WxObsData::getWxObservation(const CommonTime& t,
                                              unsigned iv,
                                              bool interpolate) const
-      throw(ObjectNotFound)
+      noexcept(false)
    {
       if (obs.empty())
       {
@@ -229,7 +229,7 @@ namespace gpstk
 
    // These are just to facilitate debugging.
    std::ostream& operator<<(std::ostream& s, const gpstk::WxObservation& obs)
-      throw()
+      noexcept
    {
       // Note that this does not flag where the wx data came from
       s << obs.t << ", t=" << obs.temperature

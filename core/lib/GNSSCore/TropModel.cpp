@@ -58,7 +58,7 @@ namespace gpstk
       // setWeather(T,P,H) before making this call.
       // @param elevation Elevation of satellite as seen at receiver, in degrees
    double TropModel::correction(double elevation) const
-      throw(InvalidTropModel)
+      noexcept(false)
    {
       THROW_IF_INVALID();
 
@@ -82,7 +82,7 @@ namespace gpstk
    double TropModel::correction(const Position& RX,
                                 const Position& SV,
                                 const CommonTime& tt)
-      throw(InvalidTropModel)
+      noexcept(false)
    {
       THROW_IF_INVALID();
 
@@ -106,7 +106,7 @@ namespace gpstk
    void TropModel::setWeather(const double& T,
                               const double& P,
                               const double& H)
-      throw(InvalidParameter)
+      noexcept(false)
    {
       temp = T + CELSIUS_TO_KELVIN;
       press = P;
@@ -141,7 +141,7 @@ namespace gpstk
       // Typically called just before correction().
       // @param wx the weather to use for this correction
    void TropModel::setWeather(const WxObservation& wx)
-      throw(InvalidParameter)
+      noexcept(false)
    {
       if (wx.isAllValid())
       {

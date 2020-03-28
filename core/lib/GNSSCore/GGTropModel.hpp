@@ -58,7 +58,7 @@ namespace gpstk
          /// Creates a trop model, with weather observation input
          /// @param wx the weather to use for this correction.
       GGTropModel(const WxObservation& wx)
-         throw(InvalidParameter);
+         noexcept(false);
 
          /// Create a tropospheric model from explicit weather data
          /// @param T temperature in degrees Celsius
@@ -67,7 +67,7 @@ namespace gpstk
       GGTropModel(const double& T,
                   const double& P,
                   const double& H)
-         throw(InvalidParameter);
+         noexcept(false);
 
          /// Return the name of the model
       virtual std::string name(void)
@@ -76,24 +76,24 @@ namespace gpstk
          /// Compute and return the zenith delay for dry component
          /// of the troposphere
       virtual double dry_zenith_delay(void) const
-         throw(InvalidTropModel);
+         noexcept(false);
 
          /// Compute and return the zenith delay for wet component
          /// of the troposphere
       virtual double wet_zenith_delay(void) const
-         throw(InvalidTropModel);
+         noexcept(false);
 
          /// Compute and return the mapping function for dry component
          /// of the troposphere
          /// @param elevation Elevation of satellite as seen at receiver, in degrees
       virtual double dry_mapping_function(double elevation) const
-         throw(InvalidTropModel);
+         noexcept(false);
 
          /// Compute and return the mapping function for wet component
          /// of the troposphere
          /// @param elevation Elevation of satellite as seen at receiver, in degrees
       virtual double wet_mapping_function(double elevation) const
-         throw(InvalidTropModel);
+         noexcept(false);
 
          /// Re-define the tropospheric model with explicit weather data.
          /// Typically called initially, and whenever the weather changes.
@@ -103,13 +103,13 @@ namespace gpstk
       virtual void setWeather(const double& T,
                               const double& P,
                               const double& H)
-         throw(InvalidParameter);
+         noexcept(false);
 
          /// Re-define the tropospheric model with explicit weather data.
          /// Typically called just before correction().
          /// @param wx the weather to use for this correction
       virtual void setWeather(const WxObservation& wx)
-         throw(InvalidParameter);
+         noexcept(false);
 
    private:
       double Cdrydelay;

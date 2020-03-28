@@ -79,10 +79,10 @@ namespace gpstk
       IonoCorr(std::string str);
 
          /// Return string version of CorrType
-      std::string asString() const throw();
+      std::string asString() const noexcept;
 
          /// Set type value from RINEX correction type string.
-      void fromString(const std::string str) throw(Exception);
+      void fromString(const std::string str) noexcept(false);
 
          /// Equality test
       bool operator==(const IonoCorr& ic) const;
@@ -124,7 +124,7 @@ namespace gpstk
           * consistent.
           * @param[in] string str beginning with system character or
           *   "M" for mixed */
-      void setFileSystem(const std::string& str) throw(Exception);
+      void setFileSystem(const std::string& str) noexcept(false);
 
          /** Compare this header with another.
           * @param[in] right the header to compare this with.
@@ -205,9 +205,7 @@ namespace gpstk
          //// Protected member functions
          /// Write this header to stream \a s.
       virtual void reallyPutRecord(FFStream& s) const
-         throw( std::exception,
-                FFStreamError,
-                gpstk::StringUtils::StringException );
+         noexcept(false);
 
 
          /// This function reads the RINEX Nav header from the given FFStream.
@@ -218,9 +216,7 @@ namespace gpstk
          ///         or formatting error occurs.  This also resets the stream
          ///         to its pre-read position.
       virtual void reallyGetRecord(FFStream& s)
-         throw( std::exception,
-                FFStreamError,
-                gpstk::StringUtils::StringException );
+         noexcept(false);
 
    }; // End of class 'Rinex3NavHeader'
 

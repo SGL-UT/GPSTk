@@ -92,7 +92,7 @@ namespace gpstk
           * subframe of time t+1 or later, and so on.
           * Most filters will return a value of 0, indicating an
           * immediate validation of the data. */
-      virtual unsigned processingDepth() const throw() = 0;
+      virtual unsigned processingDepth() const noexcept = 0;
 
          /** Return a simple string containing the name of the filter
           * for the purposes of providing some user feedback as to
@@ -101,7 +101,7 @@ namespace gpstk
           * using this method instead of type_id.name() is that the
           * latter often returns compiler-munged names rather than
           * human-readable ones. */
-      virtual std::string filterName() const throw() = 0;
+      virtual std::string filterName() const noexcept = 0;
 
          /// Debug support 
       virtual void dumpRejected(std::ostream& out) const; 

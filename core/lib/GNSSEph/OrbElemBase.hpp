@@ -92,7 +92,7 @@ namespace gpstk
 	  * OrbElemBase object.
           * @throw Invalid Request if the required data has not been stored.
           */
-      virtual bool isValid(const CommonTime& ct) const throw(InvalidRequest);
+      virtual bool isValid(const CommonTime& ct) const noexcept(false);
 
 	 /**
           *   Return true if orbit data have been loaded.
@@ -108,38 +108,38 @@ namespace gpstk
          /** This function returns the health status of the SV.
           * @throw Invalid Request if the required data has not been stored.
           */
-      bool isHealthy() const throw(gpstk::InvalidRequest);
+      bool isHealthy() const noexcept(false);
 
          /// Set the SV health status.  Child classes may do more.
-      virtual void setHealthy(bool h) throw()
+      virtual void setHealthy(bool h) noexcept
       { healthy = h; }
 
          /** Compute the satellite clock bias (sec) at the given time
           *  @throw Invalid Request if the required data has not been stored.
           */
-      virtual double svClockBias(const CommonTime& t) const throw(gpstk::InvalidRequest) = 0;
+      virtual double svClockBias(const CommonTime& t) const noexcept(false) = 0;
 
          /** Compute the satellite clock bias (meters) at the given time
           *  @throw Invalid Request if the required data has not been stored.
           */
-      virtual double svClockBiasM(const CommonTime& t) const throw(gpstk::InvalidRequest) = 0;
+      virtual double svClockBiasM(const CommonTime& t) const noexcept(false) = 0;
 
          /** Compute the satellite clock drift (sec/sec) at the given time
           *  @throw Invalid Request if the required data has not been stored.
           */
-      virtual double svClockDrift(const CommonTime& t) const throw(gpstk::InvalidRequest) = 0;
+      virtual double svClockDrift(const CommonTime& t) const noexcept(false) = 0;
 
 
          /** Compute satellite position at the given time
           * using this orbit data.
           * @throw Invalid Request if the required data has not been stored.
           */
-      virtual Xvt svXvt(const CommonTime& t) const throw(gpstk::InvalidRequest) = 0;
+      virtual Xvt svXvt(const CommonTime& t) const noexcept(false) = 0;
 
          /** Compute satellite relativity correction (sec) at the given time
           *  @throw Invalid Request if the required data has not been stored.
           */
-      virtual double svRelativity(const CommonTime& t) const throw( gpstk::InvalidRequest ) = 0;
+      virtual double svRelativity(const CommonTime& t) const noexcept(false) = 0;
 
           /** Returns true if this two objects are 
            *   a.) same concrete type, and
@@ -168,22 +168,22 @@ namespace gpstk
           * @throw Invalid Request if the required data has not been stored.
           */
       virtual void dumpTerse(std::ostream& s = std::cout) const
-         throw( InvalidRequest ) = 0;
+         noexcept(false) = 0;
 
       virtual void dumpHeader(std::ostream& s = std::cout) const
-         throw( InvalidRequest ) = 0;
+         noexcept(false) = 0;
 
       virtual void dumpBody(std::ostream& s = std::cout) const
-         throw( InvalidRequest ) = 0;
+         noexcept(false) = 0;
 
       virtual void dumpFooter(std::ostream& s = std::cout) const
-         throw( InvalidRequest ) = 0;
+         noexcept(false) = 0;
 
       virtual void dump(std::ostream& s = std::cout) const
-	       throw( InvalidRequest );
+	       noexcept(false);
 
       virtual Rinex3NavData makeRinex3NavData() const
-         throw( InvalidRequest );
+         noexcept(false);
 
          /// Overhead information
          //@{

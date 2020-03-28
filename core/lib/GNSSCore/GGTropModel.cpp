@@ -72,7 +72,7 @@ namespace gpstk
       // Creates a trop model from a weather observation
       // @param wx the weather to use for this correction.
    GGTropModel::GGTropModel(const WxObservation& wx)
-      throw(InvalidParameter)
+      noexcept(false)
    {
       setWeather(wx);
       valid = true;
@@ -85,28 +85,28 @@ namespace gpstk
    GGTropModel::GGTropModel(const double& T,
                             const double& P,
                             const double& H)
-      throw(InvalidParameter)
+      noexcept(false)
    {
       setWeather(T,P,H);
       valid = true;
    }
 
    double GGTropModel::dry_zenith_delay(void) const
-      throw(InvalidTropModel)
+      noexcept(false)
    {
       THROW_IF_INVALID();
       return (Cdrydelay * GGdryscale);
    }
 
    double GGTropModel::wet_zenith_delay(void) const
-      throw(InvalidTropModel)
+      noexcept(false)
    {
       THROW_IF_INVALID();
       return (Cwetdelay * GGwetscale);
    }
 
    double GGTropModel::dry_mapping_function(double elevation) const
-      throw(InvalidTropModel)
+      noexcept(false)
    {
       THROW_IF_INVALID();
 
@@ -142,7 +142,7 @@ namespace gpstk
 
       // compute wet component of the mapping function
    double GGTropModel::wet_mapping_function(double elevation) const
-      throw(InvalidTropModel)
+      noexcept(false)
    {
       THROW_IF_INVALID();
 
@@ -178,7 +178,7 @@ namespace gpstk
    void GGTropModel::setWeather(const double& T,
                                 const double& P,
                                 const double& H)
-      throw(InvalidParameter)
+      noexcept(false)
    {
       TropModel::setWeather(T,P,H);
       double th=300./temp;
@@ -197,7 +197,7 @@ namespace gpstk
       // Typically called just before correction().
       // @param wx the weather to use for this correction
    void GGTropModel::setWeather(const WxObservation& wx)
-      throw(InvalidParameter)
+      noexcept(false)
    {
       TropModel::setWeather(wx);
    }

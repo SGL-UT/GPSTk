@@ -64,10 +64,10 @@ namespace gpstk
       OrbElemRinex();
 
       OrbElemRinex( const Rinex3NavData& rinNav )
-         throw( InvalidParameter );
+         noexcept(false);
 
       OrbElemRinex( const RinexNavData& rinNav )
-	 throw( InvalidParameter); 
+	 noexcept(false); 
 
          /// Destructor
       virtual ~OrbElemRinex() {}
@@ -79,13 +79,13 @@ namespace gpstk
            *  @throw InvalidParameter if the data are not consistent.
            */ 
       void loadData( const RinexNavData& rinNav )
-	       throw( InvalidParameter); 
+	       noexcept(false); 
 
          /** Load an existing object from a Rinex3NavData object. 
            * @throw InvalidParameter if the data are not consistent.
            */
       void loadData( const Rinex3NavData& rinNav )
-         throw( InvalidParameter );
+         noexcept(false);
 
       virtual std::string getName() const
       {
@@ -99,36 +99,36 @@ namespace gpstk
       
          /// Returns the upper bound of the URA range
       double getAccuracy()  const
-         throw( InvalidRequest );
+         noexcept(false);
  
         /* Should only be used by GPSOrbElemStore::rationalize()
          */
       void adjustBeginningValidity();
 
       virtual void dumpHeader(std::ostream& s = std::cout) const
-         throw( InvalidRequest );
+         noexcept(false);
 
          /** Generate a formatted human-readable output of the entire contents of
           *  this object and send it to the designated output stream (default to cout).
           *  @throw Invalid Parameter if the object has been instantiated, but not loaded.
           */
       void dump(std::ostream& s = std::cout) const
-         throw( InvalidRequest );  
+         noexcept(false);  
          /** Generate a formatted human-readable one-line output that summarizes
           *  the critical times associated with this object and send it to the
           *  designated output stream (default to cout).
           *  @throw Invalid Parameter if the object has been instantiated, but not loaded.
           */   
       void dumpTerse(std::ostream& s = std::cout) const
-         throw( InvalidRequest );
+         noexcept(false);
 
          /// Accessor for the \c health data member.
-      short getHealth() const throw()
+      short getHealth() const noexcept
       { return health; }
 
          /** Set the \c health data member to the value of h and
           * update the \c healthy flag. */
-      virtual void setHealth(short h) throw()
+      virtual void setHealth(short h) noexcept
       {
          health = h;
          OrbElem::setHealthy(health == 0);
@@ -137,7 +137,7 @@ namespace gpstk
          /** Set the \c health data member to either 0 or non-zero,
           * depending on the requested value of h (true=0,
           * false=non-zero). */
-      virtual void setHealthy(bool h) throw()
+      virtual void setHealthy(bool h) noexcept
       {
          OrbElem::setHealthy(h);
          health = (h ? 0 : 1);

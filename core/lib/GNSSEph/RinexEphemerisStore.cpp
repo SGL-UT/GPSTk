@@ -52,7 +52,7 @@ namespace gpstk
    //-----------------------------------------------------------------------------
    //-----------------------------------------------------------------------------
    void RinexEphemerisStore::loadFile(const std::string& filename)
-      throw(FileMissingException)
+      noexcept(false)
    {
       try
       {
@@ -82,7 +82,7 @@ namespace gpstk
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
    void RinexEphemerisStore::dump(std::ostream& s, short detail)
-      const throw()
+      const noexcept
    {
       s << "Dump of RinexEphemerisStore:" << std::endl;
       std::vector<std::string> fileNames = getFileNames();

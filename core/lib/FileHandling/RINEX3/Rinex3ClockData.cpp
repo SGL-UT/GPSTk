@@ -50,7 +50,7 @@ using namespace std;
 namespace gpstk
 {
    void Rinex3ClockData::reallyPutRecord(FFStream& ffs) const 
-      throw(exception, FFStreamError, StringException)
+      noexcept(false)
    {
       // cast the stream to be an Rinex3ClockStream
       Rinex3ClockStream& strm = dynamic_cast<Rinex3ClockStream&>(ffs);
@@ -116,7 +116,7 @@ namespace gpstk
    }  // end reallyPutRecord()
 
    void Rinex3ClockData::reallyGetRecord(FFStream& ffs)
-      throw(exception, FFStreamError, StringException)
+      noexcept(false)
    {
       // cast the stream to be an Rinex3ClockStream
       Rinex3ClockStream& strm = dynamic_cast<Rinex3ClockStream&>(ffs);
@@ -173,7 +173,7 @@ namespace gpstk
 
    }   // end reallyGetRecord()
 
-   void Rinex3ClockData::dump(ostream& s) const throw()
+   void Rinex3ClockData::dump(ostream& s) const noexcept
    {
       // dump record type, sat id / site, current epoch, and data
       s << " " << datatype;

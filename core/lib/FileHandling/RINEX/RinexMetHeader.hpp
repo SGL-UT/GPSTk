@@ -105,11 +105,11 @@ namespace gpstk
 
          /// sets the obs type array given an obs type line
       static RinexMetType convertObsType(const std::string& oneObs)
-         throw(FFStreamError);
+         noexcept(false);
 
          /// Converts a RinexMetType to its string equivalent.
       static std::string convertObsType(const RinexMetType& oneObs)
-         throw(FFStreamError);
+         noexcept(false);
 
          /// Tell me, Am I valid?
       unsigned long valid;
@@ -256,8 +256,7 @@ namespace gpstk
 
          /// Writes the RINEX Met header to the stream \a s.
       virtual void reallyPutRecord(FFStream& s) const
-         throw(std::exception, FFStreamError,
-               gpstk::StringUtils::StringException);
+         noexcept(false);
 
          /**
           * This function reads the RINEX MET header from the given FFStream.
@@ -269,8 +268,7 @@ namespace gpstk
           *  stream to its pre-read position.
           */
       virtual void reallyGetRecord(FFStream& s)
-         throw(std::exception, FFStreamError,
-               gpstk::StringUtils::StringException);
+         noexcept(false);
 
    }; // class RinexMetHeader
 

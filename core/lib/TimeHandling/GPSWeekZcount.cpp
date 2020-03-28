@@ -224,7 +224,7 @@ namespace gpstk
 
 
    GPSWeekZcount& GPSWeekZcount::addWeeks(short inWeeks)
-      throw(gpstk::InvalidRequest)
+      noexcept(false)
    {
       week += inWeeks;
       if (week < 0)
@@ -237,7 +237,7 @@ namespace gpstk
 
 
    GPSWeekZcount& GPSWeekZcount::addZcounts(long inZcounts)
-      throw(gpstk::InvalidRequest)
+      noexcept(false)
    {
       if (inZcounts == 0)
          return *this;
@@ -288,7 +288,7 @@ namespace gpstk
 
 
    GPSWeekZcount GPSWeekZcount::operator++(int)
-      throw(gpstk::InvalidRequest)
+      noexcept(false)
    {
       GPSWeekZcount temp = *this;
       ++(*this);
@@ -297,14 +297,14 @@ namespace gpstk
 
 
    GPSWeekZcount& GPSWeekZcount::operator++()
-      throw(gpstk::InvalidRequest)
+      noexcept(false)
    {
       return addZcounts(1);
    }
 
 
    GPSWeekZcount GPSWeekZcount::operator--(int)
-      throw(gpstk::InvalidRequest)
+      noexcept(false)
    {
       GPSWeekZcount temp = *this;
       --(*this);
@@ -313,28 +313,28 @@ namespace gpstk
 
 
    GPSWeekZcount& GPSWeekZcount::operator--()
-      throw(gpstk::InvalidRequest)
+      noexcept(false)
    {
       return addZcounts(-1);
    }
 
 
    GPSWeekZcount GPSWeekZcount::operator+(long inZcounts) const
-      throw(gpstk::InvalidRequest)
+      noexcept(false)
    {
       return GPSWeekZcount(*this).addZcounts(inZcounts);
    }
 
 
    GPSWeekZcount GPSWeekZcount::operator-(long inZcounts) const
-      throw(gpstk::InvalidRequest)
+      noexcept(false)
    {
       return operator+(-inZcounts);
    }
 
 
    long GPSWeekZcount::operator-(const GPSWeekZcount& right) const
-      throw()
+      noexcept
    {
       return (((long(week) - long(right.week)) * ZCOUNT_PER_WEEK) +
               (long(zcount) - long(right.zcount)));
@@ -342,14 +342,14 @@ namespace gpstk
 
 
    GPSWeekZcount& GPSWeekZcount::operator+=(long inZcounts)
-      throw(gpstk::InvalidRequest)
+      noexcept(false)
    {
       return addZcounts(inZcounts);
    }
 
 
    GPSWeekZcount& GPSWeekZcount::operator-=(long inZcounts)
-      throw(gpstk::InvalidRequest)
+      noexcept(false)
    {
       return addZcounts(-inZcounts);
    }
@@ -358,7 +358,7 @@ namespace gpstk
    bool GPSWeekZcount::inSameTimeBlock(const GPSWeekZcount& other,
                                        unsigned long inZcountBlock,
                                        unsigned long inZcountOffset)
-      throw()
+      noexcept
    {
       if (inZcountBlock < ZCOUNT_PER_WEEK)
       {

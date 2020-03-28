@@ -69,7 +69,7 @@ namespace gpstk
 
 
    void SP3Stream ::
-   close(void) throw(Exception)
+   close(void) noexcept(false)
    {
       if (is_open())
       {

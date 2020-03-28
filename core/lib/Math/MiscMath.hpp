@@ -62,7 +62,7 @@ namespace gpstk
    T SimpleLagrangeInterpolation(const std::vector<T>& X,
                                  const std::vector<T>& Y,
                                  const T x)
-      throw(Exception)
+      noexcept(false)
    {
       if(Y.size() < X.size()) {
          GPSTK_THROW(Exception("Input vectors must be of same size"));
@@ -90,7 +90,7 @@ namespace gpstk
       /// N=8 ~0.1mm level and N=10 ~numerical noise errors; best to use N>=8.
    template <class T>
    T LagrangeInterpolation(const std::vector<T>& X, const std::vector<T>& Y,
-                           const T& x, T& err) throw(Exception)
+                           const T& x, T& err) noexcept(false)
    {
       if(Y.size() < X.size() || X.size() < 4) {
          GPSTK_THROW(Exception("Input vectors must be of same length, at least 4"));
@@ -143,7 +143,7 @@ namespace gpstk
       /// available; estimates of velocity, and especially clock drift, not as accurate.
    template <class T>
    void LagrangeInterpolation(const std::vector<T>& X, const std::vector<T>& Y,
-                              const T& x, T& y, T& dydx) throw(Exception)
+                              const T& x, T& y, T& dydx) noexcept(false)
    {
       if(Y.size() < X.size() || X.size() < 4) {
          GPSTK_THROW(Exception("Input vectors must be of same length, at least 4"));

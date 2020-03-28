@@ -165,7 +165,7 @@ namespace gpstk
           * @endcode
           * where \a ffstreamobject is the name of your stream object.
           */
-      inline void conditionalThrow(void) throw(FFStreamError);
+      inline void conditionalThrow(void) noexcept(false);
 
          /// Check if the input stream is the kind of RinexObsStream
       static bool isFFStream(std::istream& i);
@@ -189,13 +189,13 @@ namespace gpstk
          /// Encapsulates shared try/catch blocks for all file types
          /// to hide std::exception.
       virtual void tryFFStreamGet(FFData& rec)
-         throw(FFStreamError, gpstk::StringUtils::StringException);
+         noexcept(false);
 
 
          /// Encapsulates shared try/catch blocks for all file types
          /// to hide std::exception.
       virtual void tryFFStreamPut(const FFData& rec)
-         throw(FFStreamError, gpstk::StringUtils::StringException);
+         noexcept(false);
 
    private:
          /// Initialize internal data structures according to file name & mode
@@ -207,7 +207,7 @@ namespace gpstk
 
 
    void FFStream ::
-   conditionalThrow(void) throw(FFStreamError)
+   conditionalThrow(void) noexcept(false)
    {
       if (exceptions() & std::fstream::failbit)
       {

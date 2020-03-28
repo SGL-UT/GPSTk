@@ -104,7 +104,7 @@ namespace gpstk
    }
 
    void RinexNavData::reallyPutRecord(FFStream& ffs) const
-      throw(std::exception, FFStreamError, StringException)
+      noexcept(false)
    {
       RinexNavStream& strm = dynamic_cast<RinexNavStream&>(ffs);
 
@@ -127,7 +127,7 @@ namespace gpstk
    }
 
    void RinexNavData::reallyGetRecord(FFStream& ffs)
-      throw(std::exception, FFStreamError, StringException)
+      noexcept(false)
    {
       RinexNavStream& strm = dynamic_cast<RinexNavStream&>(ffs);
 
@@ -183,7 +183,7 @@ namespace gpstk
         << endl;
    }
 
-   RinexNavData::operator EngEphemeris() const throw()
+   RinexNavData::operator EngEphemeris() const noexcept
    {
       EngEphemeris ee;
 
@@ -317,7 +317,7 @@ namespace gpstk
    }
 
    string RinexNavData::putPRNEpoch(void) const
-      throw(StringException)
+      noexcept(false)
    {
       string line;
       line += rightJustify(asString(PRNID), 2);
@@ -332,13 +332,13 @@ namespace gpstk
    }
 
    string RinexNavData::writeTime(const CommonTime& dt) const
-      throw(StringException)
+      noexcept(false)
    {
       return printTime(dt, " %02y %2m %2d %2H %2M%5.1f");
    }
 
    string RinexNavData::putBroadcastOrbit1(void) const
-      throw(StringException)
+      noexcept(false)
    {
       string line;
       line += string(3, ' ');
@@ -354,7 +354,7 @@ namespace gpstk
    }
 
    string RinexNavData::putBroadcastOrbit2(void) const
-      throw(StringException)
+      noexcept(false)
    {
       string line;
       line += string(3, ' ');
@@ -370,7 +370,7 @@ namespace gpstk
    }
 
    string RinexNavData::putBroadcastOrbit3(void) const
-      throw(StringException)
+      noexcept(false)
    {
       string line;
       line += string(3, ' ');
@@ -386,7 +386,7 @@ namespace gpstk
    }
 
    string RinexNavData::putBroadcastOrbit4(void) const
-      throw(StringException)
+      noexcept(false)
    {
       string line;
       line += string(3, ' ');
@@ -402,7 +402,7 @@ namespace gpstk
    }
 
    string RinexNavData::putBroadcastOrbit5(void) const
-      throw(StringException)
+      noexcept(false)
    {
       string line;
       line += string(3, ' ');
@@ -418,7 +418,7 @@ namespace gpstk
    }
 
    string RinexNavData::putBroadcastOrbit6(void) const
-      throw(StringException)
+      noexcept(false)
    {
       string line;
       line += string(3, ' ');
@@ -434,7 +434,7 @@ namespace gpstk
    }
 
    string RinexNavData::putBroadcastOrbit7(const double ver) const
-      throw(StringException)
+      noexcept(false)
    {
       string line;
       line += string(3, ' ');
@@ -450,7 +450,7 @@ namespace gpstk
    }
 
    void RinexNavData::getPRNEpoch(const string& currentLine)
-      throw(StringException, FFStreamError)
+      noexcept(false)
    {
       try
       {
@@ -498,7 +498,7 @@ namespace gpstk
    }
 
    void RinexNavData::getBroadcastOrbit1(const string& currentLine)
-      throw(StringException, FFStreamError)
+      noexcept(false)
    {
       try
       {
@@ -516,7 +516,7 @@ namespace gpstk
    }
 
    void RinexNavData::getBroadcastOrbit2(const string& currentLine)
-      throw(StringException, FFStreamError)
+      noexcept(false)
    {
       try
       {
@@ -534,7 +534,7 @@ namespace gpstk
    }
 
    void RinexNavData::getBroadcastOrbit3(const string& currentLine)
-      throw(StringException, FFStreamError)
+      noexcept(false)
    {
       try
       {
@@ -552,7 +552,7 @@ namespace gpstk
    }
 
    void RinexNavData::getBroadcastOrbit4(const string& currentLine)
-      throw(StringException, FFStreamError)
+      noexcept(false)
    {
       try
       {
@@ -570,7 +570,7 @@ namespace gpstk
    }
 
    void RinexNavData::getBroadcastOrbit5(const string& currentLine)
-      throw(StringException, FFStreamError)
+      noexcept(false)
    {
       try
       {
@@ -594,7 +594,7 @@ namespace gpstk
    }
 
    void RinexNavData::getBroadcastOrbit6(const string& currentLine)
-      throw(StringException, FFStreamError)
+      noexcept(false)
    {
       try
       {
@@ -617,7 +617,7 @@ namespace gpstk
    }
 
    void RinexNavData::getBroadcastOrbit7(const string& currentLine)
-      throw(StringException, FFStreamError)
+      noexcept(false)
    {
       try
       {

@@ -76,7 +76,7 @@ namespace gpstk
                       gpstk::CommonTime::BEGINNING_OF_TIME,
                       const gpstk::CommonTime& end = 
                       gpstk::CommonTime::END_OF_TIME)
-         throw(gpstk::Exception);
+         noexcept(false);
 
          /// Takes a list of files to open in lieu of day times
       FileFilterFrame(const std::vector<std::string>& fileList,
@@ -84,7 +84,7 @@ namespace gpstk
                       gpstk::CommonTime::BEGINNING_OF_TIME,
                       const gpstk::CommonTime& end = 
                       gpstk::CommonTime::END_OF_TIME)
-         throw(gpstk::Exception);
+         noexcept(false);
 
          /// Takes a file name for a single file filter.
          /// This can throw an exception when there's a file error.
@@ -93,7 +93,7 @@ namespace gpstk
                       gpstk::CommonTime::BEGINNING_OF_TIME,
                       const gpstk::CommonTime& end = 
                       gpstk::CommonTime::END_OF_TIME)
-         throw(gpstk::Exception);
+         noexcept(false);
 
          /// Uses the FileSpec to retrieve files.  Use filter like you would
          /// in FileHunter, to filter FOR stations, receivers, etc.
@@ -105,7 +105,7 @@ namespace gpstk
                       gpstk::CommonTime::END_OF_TIME,
                       const std::vector<FileHunter::FilterPair>& filter = 
                       std::vector<FileHunter::FilterPair>())
-         throw(gpstk::Exception);
+         noexcept(false);
 
          /// Gets the files from the file spec and the time, then adds
          /// the data to the filter. Use filter like you would
@@ -118,7 +118,7 @@ namespace gpstk
                 gpstk::CommonTime::END_OF_TIME,
                 const std::vector<FileHunter::FilterPair>& filter = 
                 std::vector<FileHunter::FilterPair>())
-         throw(gpstk::Exception);
+         noexcept(false);
 
          /// Reads in the file and adds the data to the filter.
       FileFilterFrame& 
@@ -127,7 +127,7 @@ namespace gpstk
                 gpstk::CommonTime::BEGINNING_OF_TIME,
                 const gpstk::CommonTime& end = 
                 gpstk::CommonTime::END_OF_TIME)
-         throw(gpstk::Exception);
+         noexcept(false);
 
          /// Takes a list of files to open in lieu of day times
       FileFilterFrame&
@@ -136,7 +136,7 @@ namespace gpstk
                 gpstk::CommonTime::BEGINNING_OF_TIME,
                 const gpstk::CommonTime& end = 
                 gpstk::CommonTime::END_OF_TIME)
-         throw(gpstk::Exception);
+         noexcept(false);
 
       virtual ~FileFilterFrame() {}
 
@@ -152,7 +152,7 @@ namespace gpstk
           */
       bool writeFile(const std::string& outputFile,
                      const bool append = false) const
-         throw(gpstk::Exception);
+         noexcept(false);
 
          /**
           * Writes the data to the supplied stream.
@@ -164,13 +164,13 @@ namespace gpstk
           * FileFilterFrameWithHeader for those file types.
           */
       bool writeFile(FileStream& stream) const
-         throw(gpstk::Exception);
+         noexcept(false);
 
    protected:
          ///  Run init() to load the data into the filter.
       void init(const std::vector<FileHunter::FilterPair>& filter= 
                 std::vector<FileHunter::FilterPair>()) 
-         throw(gpstk::Exception);
+         noexcept(false);
 
 
    protected:   
@@ -187,7 +187,7 @@ namespace gpstk
    FileFilterFrame<FileStream,FileData> :: 
    FileFilterFrame(const gpstk::CommonTime& start,
                    const gpstk::CommonTime& end)
-         throw(gpstk::Exception)
+         noexcept(false)
          : startTime(start), endTime(end)
    {}
 
@@ -196,7 +196,7 @@ namespace gpstk
    FileFilterFrame(const std::vector<std::string>& fileList,
                    const gpstk::CommonTime& start,
                    const gpstk::CommonTime& end)
-         throw(gpstk::Exception)
+         noexcept(false)
          : startTime(start), endTime(end)
    {
       typename std::vector<std::string>::const_iterator itr;
@@ -212,7 +212,7 @@ namespace gpstk
    FileFilterFrame(const std::string& filename, 
                    const gpstk::CommonTime& start,
                    const gpstk::CommonTime& end)
-         throw(gpstk::Exception)
+         noexcept(false)
          : fs(filename), startTime(start), endTime(end)
    {
       init();
@@ -224,7 +224,7 @@ namespace gpstk
                    const gpstk::CommonTime& start,
                    const gpstk::CommonTime& end,
                    const std::vector<FileHunter::FilterPair>& filter)
-         throw(gpstk::Exception)
+         noexcept(false)
          : fs(spec), startTime(start), endTime(end)
    {
       init(filter);
@@ -237,7 +237,7 @@ namespace gpstk
              const gpstk::CommonTime& start,
              const gpstk::CommonTime& end,
              const std::vector<FileHunter::FilterPair>& filter)
-      throw(gpstk::Exception)
+      noexcept(false)
    {
       startTime = start;
       endTime = end;
@@ -253,7 +253,7 @@ namespace gpstk
    newSource(const std::string& filename, 
              const gpstk::CommonTime& start,
              const gpstk::CommonTime& end)
-      throw(gpstk::Exception)
+      noexcept(false)
    {
       startTime = start;
       endTime = end;
@@ -269,7 +269,7 @@ namespace gpstk
    newSource(const std::vector<std::string>& fileList, 
              const gpstk::CommonTime& start,
              const gpstk::CommonTime& end)
-      throw(gpstk::Exception)
+      noexcept(false)
    {
       startTime = start;
       endTime = end;
@@ -287,7 +287,7 @@ namespace gpstk
    void
    FileFilterFrame<FileStream,FileData> :: 
    init(const std::vector<FileHunter::FilterPair>& filter)
-      throw(gpstk::Exception)
+      noexcept(false)
    {
          // find the files
       FileHunter fh(fs);
@@ -322,7 +322,7 @@ namespace gpstk
    bool FileFilterFrame<FileStream,FileData> :: 
    writeFile(const std::string& str,
              const bool append) const
-      throw(gpstk::Exception)
+      noexcept(false)
    {
       if (!this->dataVec.empty())
       {
@@ -345,7 +345,7 @@ namespace gpstk
    template <class FileStream, class FileData>
    bool FileFilterFrame<FileStream,FileData> :: 
    writeFile(FileStream& stream)
-      const throw(gpstk::Exception)
+      const noexcept(false)
    {
       if (!this->dataVec.empty())
       {

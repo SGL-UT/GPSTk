@@ -70,14 +70,14 @@ namespace gpstk
       {}
 
          /// No internal storage of subframe data so return 0.
-      virtual unsigned processingDepth() const throw()
+      virtual unsigned processingDepth() const noexcept
       { return 0; }
 
          /// Turn an CNAV subframe data upright.
       static void cookSubframe(CNavFilterData* fd);
 
          /// Return the filter name.
-      virtual std::string filterName() const throw()
+      virtual std::string filterName() const noexcept
       { return "Cook"; }
    };
 

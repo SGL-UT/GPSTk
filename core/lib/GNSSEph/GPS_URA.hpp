@@ -107,7 +107,7 @@ namespace gpstk
 
 
    inline
-   short accuracy2ura(const double& acc) throw()
+   short accuracy2ura(const double& acc) noexcept
    {
       short ura = 0;
       while ( (ura <= SV_ACCURACY_GPS_MAX_INDEX_VALUE) &&
@@ -119,7 +119,7 @@ namespace gpstk
    }
    
    inline
-   double ura2accuracy(const short& ura) throw()
+   double ura2accuracy(const short& ura) noexcept
    {
       if(ura < 0)
          return SV_ACCURACY_GPS_MAX_INDEX[0];
@@ -129,7 +129,7 @@ namespace gpstk
    }
 
    inline
-   short nominalAccuracy2ura(const double& acc) throw()
+   short nominalAccuracy2ura(const double& acc) noexcept
    {
       short ura = 0;
       while ( (ura <= SV_ACCURACY_GPS_MAX_INDEX_VALUE) &&
@@ -141,7 +141,7 @@ namespace gpstk
    }
    
    inline
-   double ura2nominalAccuracy(const short& ura) throw()
+   double ura2nominalAccuracy(const short& ura) noexcept
    {
       if(ura < 0)
          return SV_ACCURACY_GPS_NOMINAL_INDEX[0];
@@ -151,7 +151,7 @@ namespace gpstk
    }
 
    inline
-   short accuracy2CNAVura(const double& acc) throw()
+   short accuracy2CNAVura(const double& acc) noexcept
    {
       short ura = -15;
       while ( (ura <= SV_CNAV_ACCURACY_GPS_MAX_INDEX_VALUE) &&
@@ -164,7 +164,7 @@ namespace gpstk
 
    inline
    double ura2CNAVaccuracy(const short& ura) 
-      throw( InvalidRequest )
+      noexcept(false)
    {
       short ndx = ura+SV_CNAV_INDEX_OFFSET;
       if(ndx < 0 || ndx > SV_CNAV_NOMINAL_MAX_INDEX)
@@ -177,7 +177,7 @@ namespace gpstk
 
    inline
    double ura2CNAVNominalaccuracy(const short& ura)
-      throw( InvalidRequest )
+      noexcept(false)
    {
       short ndx = ura+SV_CNAV_INDEX_OFFSET;
       if(ndx < 0 || ndx > SV_CNAV_NOMINAL_MAX_INDEX)

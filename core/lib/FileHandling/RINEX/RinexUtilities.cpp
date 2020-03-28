@@ -342,7 +342,7 @@ bool isRinex3ObsFile(const string& file)
 }
 
 //------------------------------------------------------------------------------------
-string sortRinexObsFiles(vector<string>& files) throw(Exception)
+string sortRinexObsFiles(vector<string>& files) noexcept(false)
 {
 try {
    string msg;
