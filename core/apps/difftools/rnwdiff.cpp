@@ -34,7 +34,7 @@
 //
 //==============================================================================
 
-#include <RINEX3/Rinex3ObsFilterOperators.hpp>
+#include "RINEX3/Rinex3ObsFilterOperators.hpp"
 #include "FileFilterFrameWithHeader.hpp"
 
 #include "Rinex3NavData.hpp"

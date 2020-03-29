@@ -43,7 +43,7 @@
 //------------------------------------------------------------------------------------
 // system includes
 #include "TimeString.hpp"
-#include <CivilTime.hpp>
+#include "CivilTime.hpp"
 #include <time.h>
 
 // GPSTk

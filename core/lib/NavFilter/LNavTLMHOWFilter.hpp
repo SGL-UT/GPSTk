@@ -37,7 +37,7 @@
 #ifndef LNAVTLMHOWFILTER_HPP
 #define LNAVTLMHOWFILTER_HPP
 
-#include <NavFilter.hpp>
+#include "NavFilter.hpp"
 
 namespace gpstk
 {

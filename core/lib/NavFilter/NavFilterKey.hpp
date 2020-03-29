@@ -38,9 +38,9 @@
 #define NAVFILTERKEY_HPP
 
 #include <ostream>
-#include <ObsID.hpp>
-#include <CommonTime.hpp>
-#include <gpstkplatform.h>
+#include "ObsID.hpp"
+#include "CommonTime.hpp"
+#include "gpstkplatform.h"
 
 namespace gpstk
 {
