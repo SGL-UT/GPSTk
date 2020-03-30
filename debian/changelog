@@ -1,3 +1,32 @@
+gpstk (4.0.0-1) stable; urgency=low
+
+  * Updated to version 4.0.0
+  * Modify RPM packages to seperate python installation from C++
+    apps/libs.
+  * Fix slight errors in svXvt velocity computation.
+  * Update svXvt to set Xvt.health when available.
+  * Fix BrcKeplerOrbit to use relativity correction and initial URE
+    value of 0.
+  * Fix AlmOrbit to add missing final value of G.
+  * Fix BDSEphemeris to use GEO equations only above 7 degrees.
+  * Change OrbitEph to use CGCS2000 ellipsoid for BeiDou when computing
+    relativity correction
+  * Fix misleading comment on CommonTime.m_day
+  * Fix test failures observed running on Debian 10.
+  * Add CI checks to ensure continued compatibility with Debian 7.
+  * Update SVNumXRef to move PRN 18 from SVN 34 to SVN 75
+  * Remove deprecated dynamic exception specifications.
+  * Add string conversions to-from SatID.SatelliteSystem
+  * Updated call signatures in OrbElemRinex to support downstream
+    callers.
+  * Update CMAKE to optimize at level O3 on linux by default.
+  * Fix bug in timeconvert app breaking after year 2038
+  * Fix incorrect interval in output header from RinEdit if thinning
+    option is used.
+  * Fix memory leak during OrbElmStore deallocation.
+
+ -- Andrew Kuck <kuck@arlut.utexas.edu>  Mon, 30 Mar 2020 15:06:22 -0500
+
 gpstk (3.1.0-1) stable; urgency=low
 
   * Updated to version 3.1.0

@@ -1,6 +1,6 @@
 %define name gpstk
-%define version 3.1.0
-%define release 2
+%define version 4.0.0
+%define release 1
 
 Summary:        GPS Toolkit
 Name:           %{name}
@@ -54,6 +54,26 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Mar 30 2020 Andrew Kuck <kuck@arlut.utexas.edu>
+- Updated for v4.0.0 release
+- Update CMAKE to optimize at level O3 on linux by default.
+- Updated call signatures in OrbElemRinex to support downstream callers.
+- Add string conversions to-from SatID.SatelliteSystem
+- Remove deprecated dynamic exception specifications.
+- Update SVNumXRef to move PRN 18 from SVN 34 to SVN 75
+- Add CI checks to ensure continued compatibility with Debian 7.
+- Fix test failures observed running on Debian 10.
+- Fix misleading comment on CommonTime.m_day
+- Change OrbitEph to use CGCS2000 ellipsoid for BeiDou when computing relativity correction
+- Fix BDSEphemeris to use GEO equations only above 7 degrees.
+- Fix AlmOrbit to add missing final value of G.
+- Fix BrcKeplerOrbit to use relativity correction and initial URE value of 0.
+- Update svXvt to set Xvt.health when available.
+- Fix slight errors in svXvt velocity computation.
+- Modify RPM packages to seperate python installation from C++ apps/libs.
+- Fix bug in timeconvert app breaking after year 2038
+- Fix incorrect interval in output header from RinEdit if thinning option is used.
+- Fix memory leak during OrbElmStore deallocation.
 * Tue Mar 03 2020 Andrew Kuck <kuck@arlut.utexas.edu>
 - Split single RPM into core and python packages for v3.1.0 release 2
 * Tue Mar 03 2020 Andrew Kuck <kuck@arlut.utexas.edu>

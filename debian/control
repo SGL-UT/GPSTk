@@ -11,7 +11,7 @@ Vcs-Browser: https://github.com/SGL-UT/GPSTk.git
 
 Package: gpstk-bin
 Architecture: any
-Depends: libgpstk3.1 (>= ${binary:Version}), python-gpstk, ${misc:Depends}, ${shlibs:Depends}, ${python:Depends}
+Depends: libgpstk4.0 (>= ${binary:Version}), python-gpstk, ${misc:Depends}, ${shlibs:Depends}, ${python:Depends}
 Description: GPS Toolkit (GPSTk) - command line tools
  The GPS Toolkit (GPSTk) is an open-source (LGPL) project sponsored by
  the Space and Geophysics Laboratory (SGL), part of the Applied Research
@@ -24,7 +24,7 @@ Description: GPS Toolkit (GPSTk) - command line tools
 Package: libgpstk-dev
 Section: libdevel
 Architecture: any
-Depends: libgpstk3.1 (= ${binary:Version}), ${misc:Depends}
+Depends: libgpstk4.0 (= ${binary:Version}), ${misc:Depends}
 Description: GPS Toolkit (GPSTk) - Headers
  The GPS Toolkit (GPSTk) is an open-source (LGPL) project sponsored by
  the Space and Geophysics Laboratory (SGL), part of the Applied Research
@@ -33,7 +33,7 @@ Description: GPS Toolkit (GPSTk) - Headers
  * provide applications for use by the GNSS and satellite navigation community.
  * provide a core library to facilitate the development of GNSS applications.
 
-Package: libgpstk3.1
+Package: libgpstk4.0
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: GPS Toolkit (GPSTk) - Shared Libraries
@@ -44,11 +44,11 @@ Description: GPS Toolkit (GPSTk) - Shared Libraries
  * provide applications for use by the GNSS and satellite navigation community.
  * provide a core library to facilitate the development of GNSS applications.
 
-Package: libgpstk3.1-dbg
+Package: libgpstk4.0-dbg
 Architecture: any
 Section: debug
 Priority: extra
-Depends: libgpstk3.1 (= ${binary:Version}), ${misc:Depends}
+Depends: libgpstk4.0 (= ${binary:Version}), ${misc:Depends}
 Description: GPS Toolkit (GPSTk) - Shared Library Debugging Symbols
  The GPS Toolkit (GPSTk) is an open-source (LGPL) project sponsored by
  the Space and Geophysics Laboratory (SGL), part of the Applied Research
