@@ -109,7 +109,7 @@ make_copy_targets(module_files ${CMAKE_CURRENT_SOURCE_DIR} ${MODULE_PATH})
 
 # Do the same for the boilerplate files
 set(meta_files "" )
-list(APPEND meta_files AUTHORS.md COPYING.md COPYING.LESSER.md ChangeLog.md INSTALL.md NEWS.md README.md )
+list(APPEND meta_files AUTHORS.md COPYING.md COPYING.LESSER.md ChangeLog.md INSTALL.md README.md )
 make_copy_targets(meta_files ${CMAKE_SOURCE_DIR} ${MODULE_PATH})
 
 
