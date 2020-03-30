@@ -1,3 +1,59 @@
+Version 4.0.0   Monday March 30, 2020
+
+   Modifications by Author
+     Andrew Kuck (3):
+           Awful hack to get inheritance back.
+           Fixed artifact path for conda package build.
+           Removed NEWS.md
+
+     Andy Kuck (21):
+           Seperate python RPM Generation in CI
+           Merge branch 'ci_seperate_rpm' into 'master'
+           Merge branch 'issue_264' into 'master'
+           Merge branch 'issue_248_must_die' into 'master'
+           Merge branch 'issue_405' into 'master'
+           Swig missing return statements
+           Merge branch 'ci_bad_return_code' into 'master'
+           Add CI Check for building on Debian 7
+           Merge branch 'ci_deb7_check' into 'master'
+           Merge branch 'issue_412_SVNumXRef' into 'master'
+           Merge branch 'issue_406' into 'master'
+           Fix versioned include directory installation.
+           Merge branch 'issue_410' into 'master'
+           Merge branch 'issue_413' into 'master'
+           Removed deprecated throw statements.
+           Update Conda Package Artifacts.
+           Merge branch 'ci_conda_package' into 'master'
+           Merge branch 'issue_402_QZSS_2' into 'master'
+           CI Updates for Completeness
+           Merge branch 'ci_uniformity' into 'master'
+           Merge branch '416-optimization-on-linux' into 'master'
+
+     Brian Tolman (1):
+           optimation O2 is 50 to 100 percent slower than O3, go back to O3, ref commit cd40eed4d5
+
+     johnk (10):
+           Correct the velocity computation in OrbElem and provide a test
+           Remove the fabs call for printing raw data
+           Add missing final setting of G value to AlmOrbit
+           BDSEphemeris: Fix test for GEO to assume i0 is in radians rather than semicircles, and fix div computation
+           Add comments to explain CommonTime's internal representation so we can finally put this blasted thing to bed
+           Eliminate unnecessary use of references that were causing seg faults under debian 10
+           Remove deprecated exception specifications from gpstk, leaving behind a minimal doxygen comment in their places
+           Merge remote-tracking branch 'origin/master' into issue_406
+           Change noexcept to throw() in hopes that the older compilers will stop complaining
+           Add conversion from string back to SatID::SatelliteSystem
+
+     renfrob (6):
+           Moving PRN 18 from SVN 34 to SVN 75
+           Tweaks to recognize QZSS PRNs.
+           Updating tests for computeBeginValid() to include QZSS
+           Adding means to inspect valid SatelliteSystems in the store.
+           Tweaking PRN numbering to accomodate QZSS
+           Merge gpstk updates
+
+   #################################################
+
 Version 3.1.0   Tuesday March 03, 2020
 
    Modifications by Author
