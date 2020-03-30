@@ -174,6 +174,8 @@ public:
       /// Tests some non-healthy cases
    void testGetSVHealth(OrbAlmStore& oas,
                         TestUtil& testFramework);
+      /// Test unhealthy satellites for GPS LNav.
+   unsigned testUnhealthyLNav();
 
    void setUpLNAV();
    void setUpCNAV();
@@ -1282,7 +1284,6 @@ testComputeXvt(OrbAlmStore& oas,
    CommonTime test2 = CivilTime(2015,12,31,12,00,00,TimeSystem::GPS);
    TUCATCH(rv = oas.computeXvt(sidXvt, test2));
    TUASSERTE(Xvt::HealthStatus, Xvt::HealthStatus::Unavailable, rv.health);
-      /// @todo add some unhealthy orbits and check
 }
 
 
@@ -1306,7 +1307,50 @@ testGetSVHealth(OrbAlmStore& oas,
    CommonTime test2 = CivilTime(2015,12,31,12,00,00,TimeSystem::GPS);
    TUCATCH(rv = oas.getSVHealth(sidXvt, test2));
    TUASSERTE(Xvt::HealthStatus, Xvt::HealthStatus::Unavailable, rv);
-      /// @todo add some unhealthy orbits and check
+}
+
+
+unsigned OrbAlmStore_T ::
+testUnhealthyLNav()
+{
+   TUDEF("OrbAlmStore", "getSVHealth");
+   gpstk::ObsID currObsID(gpstk::ObsID::otNavMsg,
+                          gpstk::ObsID::cbL1,
+                          gpstk::ObsID::tcCA);
+   OrbAlmStore oas;
+   list<PackedNavBits> unhealthyDataList;
+   gpstk::PackedNavBits msg = getPnbLNav(
+      currObsID,
+      "352,12/18/2015,00:10:54,1875,432654,32,23,522, 0x22C35330, 0x2335CD6C,"
+      " 0x158F56AC, 0x243CB9F4, 0x3F4D3FD1, 0x28461AC4, 0x11AA7811, 0x2B52BC32,"
+      " 0x238FF0AB, 0x0D800704");
+   unhealthyDataList.push_back(msg);
+   oas.setDebugLevel(debugLevel);
+   unsigned short retval = oas.addMessage(msg);
+   TUCSM("addMessage");
+   TUASSERTE(unsigned short, OrbAlmStore::ADD_XMIT + OrbAlmStore::ADD_SUBJ,
+             retval);
+   TUCSM("size()");
+   TUASSERTE(unsigned, 2, oas.size());
+   TUCSM("size(1)");
+   TUASSERTE(unsigned, 1, oas.size(1));
+   TUCSM("size(2)");
+   TUASSERTE(unsigned, 1, oas.size(2));
+
+   gpstk::Xvt rv;
+   SatID sidXvt(22, SatID::systemGPS);
+   CommonTime test2 = CivilTime(2015,12,18,00,15,00,TimeSystem::GPS);
+   TUCSM("computeXvt");
+   TUCATCH(rv = oas.computeXvt(sidXvt, test2));
+   TUASSERTE(Xvt::HealthStatus, Xvt::HealthStatus::Unhealthy, rv.health);
+   TUASSERTFEPS(10058112.743820, rv.x[0], .000001);
+   TUASSERTFEPS(-24037182.266321, rv.x[1], .000001);
+   TUASSERTFEPS(-4539136.883374, rv.x[2], .000001);
+   TUCSM("getSVHealth");
+   TUASSERTE(Xvt::HealthStatus, Xvt::HealthStatus::Unhealthy,
+             oas.getSVHealth(sidXvt, test2));
+
+   TURETURN();
 }
 
 
@@ -1320,6 +1364,7 @@ int main()
    testClass.setUpLNAV();
    errorTotal += testClass.createAndDump();
    errorTotal += testClass.findEmptyTest();
+   errorTotal += testClass.testUnhealthyLNav();
 
    testClass.setUpCNAV();
       //errorTotal += testClass.createAndDump();
