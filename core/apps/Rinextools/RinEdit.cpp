@@ -866,6 +866,11 @@ int executeEditCmd(const vector<EditCmd>::iterator& it, Rinex3ObsHeader& Rhead,
                   Rhead.commentList.push_back(C.messHDc[i]);
                Rhead.valid |= Rinex3ObsHeader::validComment;
             }
+            if (C.decimate > 0.0)
+            {
+               Rhead.interval = C.decimate;
+               Rhead.valid |= Rinex3ObsHeader::validInterval;
+            }
          }
 
          Rhead.firstObs = Rdata.time;
