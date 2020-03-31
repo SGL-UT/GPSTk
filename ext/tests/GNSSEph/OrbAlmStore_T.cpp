@@ -1340,16 +1340,66 @@ testUnhealthyLNav()
    gpstk::Xvt rv;
    SatID sidXvt(22, SatID::systemGPS);
    CommonTime test2 = CivilTime(2015,12,18,00,15,00,TimeSystem::GPS);
+      // The test almanac page has a toa of 2016/01/02 19:50:24 and an
+      // endValid time of 2016/01/05 21:50:24, which seems a little
+      // strange given its transmit time, but whatever.  This time is
+      // just to test the use of effectivity time for searching.
+   CommonTime test3 = CivilTime(2016,1,6,00,00,00,TimeSystem::GPS);
+      // test computeXvt within validity time
    TUCSM("computeXvt");
    TUCATCH(rv = oas.computeXvt(sidXvt, test2));
    TUASSERTE(Xvt::HealthStatus, Xvt::HealthStatus::Unhealthy, rv.health);
    TUASSERTFEPS(10058112.743820, rv.x[0], .000001);
    TUASSERTFEPS(-24037182.266321, rv.x[1], .000001);
    TUASSERTFEPS(-4539136.883374, rv.x[2], .000001);
+      // test computeXvt outside validity time
+   TUCATCH(rv = oas.computeXvt(sidXvt, test3));
+   TUASSERTE(Xvt::HealthStatus, Xvt::HealthStatus::Unhealthy, rv.health);
+   TUASSERTFEPS(8373799.666924, rv.x[0], .000001);
+   TUASSERTFEPS(-22312099.096857, rv.x[1], .000001);
+   TUASSERTFEPS(-11366558.861951, rv.x[2], .000001);
    TUCSM("getSVHealth");
    TUASSERTE(Xvt::HealthStatus, Xvt::HealthStatus::Unhealthy,
              oas.getSVHealth(sidXvt, test2));
-
+      // test getXvt within validity time
+   TUCSM("getXvt");
+   TUCATCH(rv = oas.getXvt(sidXvt, test2));
+   TUASSERTE(Xvt::HealthStatus, Xvt::HealthStatus::Unhealthy, rv.health);
+   TUASSERTFEPS(10058112.743820, rv.x[0], .000001);
+   TUASSERTFEPS(-24037182.266321, rv.x[1], .000001);
+   TUASSERTFEPS(-4539136.883374, rv.x[2], .000001);
+      // test getXvt outside validity time
+   TUCATCH(rv = oas.getXvt(sidXvt, test3));
+   TUASSERTE(Xvt::HealthStatus, Xvt::HealthStatus::Unhealthy, rv.health);
+   TUASSERTFEPS(8373799.666924, rv.x[0], .000001);
+   TUASSERTFEPS(-22312099.096857, rv.x[1], .000001);
+   TUASSERTFEPS(-11366558.861951, rv.x[2], .000001);
+      // test getXvt_WithinValidity within validity time
+   TUCSM("getXvt_WithinValidity");
+   TUCATCH(rv = oas.getXvt_WithinValidity(sidXvt, test2));
+   TUASSERTE(Xvt::HealthStatus, Xvt::HealthStatus::Unhealthy, rv.health);
+   TUASSERTFEPS(10058112.743820, rv.x[0], .000001);
+   TUASSERTFEPS(-24037182.266321, rv.x[1], .000001);
+   TUASSERTFEPS(-4539136.883374, rv.x[2], .000001);
+      // test getXvt_WithinValidity outside validity time
+   try
+   {
+      rv = oas.getXvt_WithinValidity(sidXvt, test3);
+      TUFAIL("No exception thrown");
+   }
+   catch (gpstk::InvalidRequest& exc)
+   {
+      TUPASS("Expected exception");
+   }
+   catch (gpstk::Exception& exc)
+   {
+      cerr << exc;
+      TUFAIL("Unexpected exception");
+   }
+   catch (...)
+   {
+      TUFAIL("Unexpected exception");
+   }
    TURETURN();
 }
 
