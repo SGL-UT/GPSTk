@@ -106,8 +106,7 @@ namespace gpstk
          ///
       void rationalize( );
 
-      virtual ~OrbElemStore()
-      {}
+      virtual ~OrbElemStore();
 
          /// Returns the position, velocity, and clock offset of the indicated
          /// object in ECEF coordinates (meters) at the indicated time.
