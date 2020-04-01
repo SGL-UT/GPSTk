@@ -79,7 +79,8 @@ namespace gpstk
          ntGalFNAV,
          ntGalINAV,
          ntIRNSS_SPS,
-         ntUnknown
+         ntUnknown,
+         ntLast
       };
    
          /// empty constructor, creates an invalid object
@@ -101,7 +102,7 @@ namespace gpstk
       NavID( const std::string& s );
 
          /// Convenience method used by dump().
-      std::string convertNavTypeToString( const NavType& s ) const
+      static std::string convertNavTypeToString( const NavType& s )
       {
             //define retVal for safety return
          std::string retVal = "";
@@ -155,6 +156,13 @@ namespace gpstk
          /// operator >= for NavID
       bool operator>=(const NavID& right) const
       { return !(operator<(right)); }
+
+         /// Convert a NavType to a whitespace-free string name.
+      static std::string asString(NavType e) throw()
+      { return convertNavTypeToString(e); }
+         /// Convert a string name to a NavType
+      static NavType asNavType(const std::string& s) throw()
+      { return NavID(s).navType; }
 
       NavType navType;   ///< navType for this satellite
       static const std::string NavTypeStrings[];

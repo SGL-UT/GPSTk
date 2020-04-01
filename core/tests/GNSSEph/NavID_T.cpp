@@ -45,6 +45,18 @@
 using namespace std;
 using namespace gpstk;
 
+namespace gpstk
+{
+      // define some stream operators so that test failures involving
+      // enums are a bit more readable.
+
+   std::ostream& operator<<(std::ostream& s, NavID::NavType e)
+   {
+      s << (long)e << " (" << NavID::asString(e) << ")";
+      return s;
+   }
+}
+
 class NavID_T
 {
 public:
@@ -61,6 +73,7 @@ public:
        */
    unsigned stringConstructorTest();
    unsigned inequalityTest();
+   unsigned asStringEnumTest();
 
    NavID testIDLNAV, testIDCNAVL2, testIDCNAVL5, testIDCNAV2, testIDMNAV,
       testIDBD1, testIDBD2, testIDGloF, testIDGloC, testIDGalOS, testIDGalOS_2,
@@ -296,6 +309,31 @@ inequalityTest()
    TURETURN();
 }
 
+
+unsigned NavID_T ::
+asStringEnumTest()
+{
+   TUDEF("NavID", "asString");
+      // These tests verify that every enum has a string
+      // representation and every string has a corresponding enum.
+      // It also implicitly verifies that the string
+      // representations aren't duplicated, since if two enums
+      // translated to string "XXX", the attempt to reverse the
+      // translation would fail.
+   for (unsigned i = 0; i < gpstk::NavID::ntLast; i++)
+   {
+      gpstk::NavID::NavType nt = (gpstk::NavID::NavType)i;
+      std::string s;
+      TUCATCH(s = gpstk::NavID::asString(nt));
+      TUASSERT(!s.empty());
+      if (nt != gpstk::NavID::ntUnknown)
+         TUASSERT(s != "Unknown");
+      gpstk::NavID::NavType nt2;
+      TUCATCH(nt2 = gpstk::NavID::asNavType(s));
+      TUASSERTE(gpstk::NavID::NavType, nt, nt2);
+   }
+   TURETURN();
+}
 
 int main()
 {
