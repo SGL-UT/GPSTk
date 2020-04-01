@@ -72,9 +72,13 @@ namespace gpstk
       static const CommonTime MIN_CT = UnixTime(0, 0, TimeSystem::Any);
          /// This is the latest CommonTime for which UnixTimes are valid.
          /// (2^31 - 1) s and 999999 us
-      static const CommonTime MAX_CT = UnixTime(2147483647, 999999, TimeSystem::Any);
+      static const CommonTime MAX_CT = UnixTime(2147483647, 999999,
+                                                TimeSystem::Any);
 
-      if ( ct < MIN_CT || ct > MAX_CT )
+         // Only check the min/max range if we're using 32-bit time_t.
+         // If we're using 64-bit, the time range of struct timeval
+         // will be well beyond what CommonTime can represent.
+      if ((sizeof(tv.tv_sec) <= 4) && ((ct < MIN_CT) || (ct > MAX_CT)))
       {
          InvalidRequest ir("Unable to convert given CommonTime to UnixTime.");
          GPSTK_THROW(ir);
