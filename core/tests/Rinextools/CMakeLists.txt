@@ -130,6 +130,13 @@ test_app_with_file(
     -l2)
 set_tests_properties(RinEdit_302merge PROPERTIES DEPENDS "RinEdit_302split1;RinEdit_302split2")
 
+# Test thinning
+test_app_with_file(
+  RinEdit_210thin
+  RinEdit
+  "Rinex2"
+  --ID\ ${GPSTK_TEST_DATA_DIR}\ --IF\ test_dfix_txau047.ed.12o\ --OF\ ${GPSTK_TEST_OUTPUT_DIR}/RinEdit_210thin.out\ --TT\ 0.005\ --TN\ 30.0
+  "-l2 -v")
 
 ###############################################################################
 # TEST RinSum
