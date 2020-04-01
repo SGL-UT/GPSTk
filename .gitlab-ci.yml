@@ -35,6 +35,7 @@ build_debian_7:
       - master
       - /^ci_.*$/
       - /^version_.*_prep$/
+      - tags
   script:
     - mkdir build
     - cd build
@@ -55,6 +56,7 @@ build_debian_8:
       - master
       - /^ci_.*$/
       - /^version_.*_prep$/
+      - tags
   script:
     - mkdir build
     - cd build
@@ -90,6 +92,7 @@ build_debian_10:
       - master
       - /^ci_.*$/
       - /^version_.*_prep$/
+      - tags
   script:
     - mkdir build
     - cd build
@@ -176,6 +179,7 @@ test_debian_7:
       - master
       - /^ci_.*$/
       - /^version_.*_prep$/
+      - tags
   script:
     - cd build
     - ctest -j 4
@@ -204,6 +208,7 @@ test_debian_8:
       - master
       - /^ci_.*$/
       - /^version_.*_prep$/
+      - tags
   script:
     - cd build
     - ctest -j 4
@@ -251,6 +256,7 @@ test_debian_10:
       - master
       - /^ci_.*$/
       - /^version_.*_prep$/
+      - tags
   script:
     - cd build
     - ctest -j 4
@@ -442,6 +448,7 @@ package_debian_9:
       - master
       - /^ci_.*$/
       - /^version_.*_prep$/
+      - tags
   script:
     - rm -rf ../*.deb
     - dpkg-buildpackage -us -uc -d
@@ -463,6 +470,7 @@ package_conda:
       - master
       - /^ci_.*$/
       - /^version_.*_prep$/
+      - tags
   script:
     - conda activate conda_builder
     - export GIT_COMMIT=$CI_COMMIT_REF_NAME
@@ -503,6 +511,7 @@ package_redhat:
       - master
       - /^ci_.*$/
       - /^version_.*_prep$/
+      - tags
   script:
     - bash rpm_files/setup_dirs.sh
     - git archive --prefix gpstk-master/ -o rpm_files/SOURCES/gpstk-master.tar.gz HEAD
@@ -524,6 +533,7 @@ package_redhat_py36:
       - master
       - /^ci_.*$/
       - /^version_.*_prep$/
+      - tags
   script:
     - bash rpm_files/setup_dirs.sh
     - git archive --prefix python3-gpstk-master/ -o rpm_files/SOURCES/python3-gpstk-master.tar.gz HEAD
@@ -545,6 +555,7 @@ package_redhat_py27:
       - master
       - /^ci_.*$/
       - /^version_.*_prep$/
+      - tags
   script:
     - bash rpm_files/setup_dirs.sh
     - git archive --prefix python-gpstk-master/ -o rpm_files/SOURCES/python-gpstk-master.tar.gz HEAD
@@ -566,6 +577,7 @@ package_redhat_wheel:
       - master
       - /^ci_.*$/
       - /^version_.*_prep$/
+      - tags
   script:
     - mkdir dist
     - mv build/swig/module/dist/* dist
@@ -588,6 +600,7 @@ deploy_debian_9:
       - master
       - /^ci_.*$/
       - /^version_.*_prep$/
+      - tags
   script:
     - cd debs
     - sudo apt-get -y install ./*.deb
@@ -606,6 +619,7 @@ deploy_redhat:
       - master
       - /^ci_.*$/
       - /^version_.*_prep$/
+      - tags
   script:
     - cd rpm_files/RPMS/x86_64/
     - sudo yum install gpstk-*.rpm -y
@@ -623,6 +637,7 @@ deploy_redhat_py27:
       - master
       - /^ci_.*$/
       - /^version_.*_prep$/
+      - tags
   script:
     - cd rpm_files/RPMS/x86_64/
     - sudo yum install gpstk-*.rpm -y
@@ -643,6 +658,7 @@ deploy_redhat_py36:
       - master
       - /^ci_.*$/
       - /^version_.*_prep$/
+      - tags
   script:
     - cd rpm_files/RPMS/x86_64/
     - sudo yum install gpstk-*.rpm -y
