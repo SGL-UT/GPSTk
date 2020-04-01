@@ -414,4 +414,373 @@ namespace gpstk
       return s;
    }
 
+
+   std::string ObsID ::
+   asString(ObservationType e) throw()
+   {
+      switch (e)
+      {
+         case otUnknown:   return "Unknown";
+         case otAny:       return "Any";
+         case otRange:     return "Range";
+         case otPhase:     return "Phase";
+         case otDoppler:   return "Doppler";
+         case otSNR:       return "SNR";
+         case otChannel:   return "Channel";
+         case otDemodStat: return "DemodStat";
+         case otIono:      return "Iono";
+         case otSSI:       return "SSI";
+         case otLLI:       return "LLI";
+         case otTrackLen:  return "TrackLen";
+         case otNavMsg:    return "NavMsg";
+         case otRngStdDev: return "RngStdDev";
+         case otPhsStdDev: return "PhsStdDev";
+         case otFreqIndx:  return "FreqIndx";
+         case otUndefined: return "Undefined";
+         default:          return "???";
+      }
+   }
+
+
+   ObsID::ObservationType ObsID ::
+   asObservationType(const std::string& s) throw()
+   {
+      if (s == "Any")
+         return otAny;
+      if (s == "Range")
+         return otRange;
+      if (s == "Phase")
+         return otPhase;
+      if (s == "Doppler")
+         return otDoppler;
+      if (s == "SNR")
+         return otSNR;
+      if (s == "Channel")
+         return otChannel;
+      if (s == "DemodStat")
+         return otDemodStat;
+      if (s == "Iono")
+         return otIono;
+      if (s == "SSI")
+         return otSSI;
+      if (s == "LLI")
+         return otLLI;
+      if (s == "TrackLen")
+         return otTrackLen;
+      if (s == "NavMsg")
+         return otNavMsg;
+      if (s == "RngStdDev")
+         return otRngStdDev;
+      if (s == "PhsStdDev")
+         return otPhsStdDev;
+      if (s == "FreqIndx")
+         return otFreqIndx;
+      if (s == "Undefined")
+         return otUndefined;
+      return otUnknown;
+   }
+
+
+   std::string ObsID ::
+   asString(CarrierBand e) throw()
+   {
+      switch (e)
+      {
+         case cbUnknown:   return "Unknown";
+         case cbAny:       return "Any";
+         case cbZero:      return "Zero";
+         case cbL1:        return "L1";
+         case cbL2:        return "L2";
+         case cbL5:        return "L5";
+         case cbG1:        return "G1";
+         case cbG2:        return "G2";
+         case cbG3:        return "G3";
+         case cbE5b:       return "E5b";
+         case cbE5ab:      return "E5ab";
+         case cbE6:        return "E6";
+         case cbB1:        return "B1";
+         case cbB2:        return "B2";
+         case cbB3:        return "B3";
+         case cbI9:        return "I9";
+         case cbL1L2:      return "L1L2";
+         case cbUndefined: return "Undefined";
+         default:          return "???";
+      }
+   }
+
+
+   ObsID::CarrierBand ObsID ::
+   asCarrierBand(const std::string& s) throw()
+   {
+      if (s == "Any")
+         return cbAny;
+      if (s == "Zero")
+         return cbZero;
+      if (s == "L1")
+         return cbL1;
+      if (s == "L2")
+         return cbL2;
+      if (s == "L5")
+         return cbL5;
+      if (s == "G1")
+         return cbG1;
+      if (s == "G2")
+         return cbG2;
+      if (s == "G3")
+         return cbG3;
+      if (s == "E5b")
+         return cbE5b;
+      if (s == "E5ab")
+         return cbE5ab;
+      if (s == "E6")
+         return cbE6;
+      if (s == "B1")
+         return cbB1;
+      if (s == "B2")
+         return cbB2;
+      if (s == "B3")
+         return cbB3;
+      if (s == "I9")
+         return cbI9;
+      if (s == "L1L2")
+         return cbL1L2;
+      if (s == "Undefined")
+         return cbUndefined;
+      return cbUnknown;
+   }
+
+
+   std::string ObsID ::
+   asString(TrackingCode e) throw()
+   {
+      switch (e)
+      {
+         case tcUnknown:   return "Unknown";
+         case tcAny:       return "Any";
+         case tcCA:        return "CA";
+         case tcP:         return "P";
+         case tcY:         return "Y";
+         case tcW:         return "W";
+         case tcN:         return "N";
+         case tcD:         return "D";
+         case tcM:         return "M";
+         case tcC2M:       return "C2M";
+         case tcC2L:       return "C2L";
+         case tcC2LM:      return "C2LM";
+         case tcI5:        return "I5";
+         case tcQ5:        return "Q5";
+         case tcIQ5:       return "IQ5";
+         case tcG1P:       return "G1P";
+         case tcG1D:       return "G1D";
+         case tcG1X:       return "G1X";
+         case tcGCA:       return "GCA";
+         case tcGP:        return "GP";
+         case tcIR3:       return "IR3";
+         case tcQR3:       return "QR3";
+         case tcIQR3:      return "IQR3";
+         case tcA:         return "A";
+         case tcB:         return "B";
+         case tcC:         return "C";
+         case tcBC:        return "BC";
+         case tcABC:       return "ABC";
+         case tcIE5:       return "IE5";
+         case tcQE5:       return "QE5";
+         case tcIQE5:      return "IQE5";
+         case tcIE5a:      return "IE5a";
+         case tcQE5a:      return "QE5a";
+         case tcIQE5a:     return "IQE5a";
+         case tcIE5b:      return "IE5b";
+         case tcQE5b:      return "QE5b";
+         case tcIQE5b:     return "IQE5b";
+         case tcSCA:       return "SCA";
+         case tcSI5:       return "SI5";
+         case tcSQ5:       return "SQ5";
+         case tcSIQ5:      return "SIQ5";
+         case tcJCA:       return "JCA";
+         case tcJD1:       return "JD1";
+         case tcJP1:       return "JP1";
+         case tcJX1:       return "JX1";
+         case tcJZ1:       return "JZ1";
+         case tcJM2:       return "JM2";
+         case tcJL2:       return "JL2";
+         case tcJX2:       return "JX2";
+         case tcJI5:       return "JI5";
+         case tcJQ5:       return "JQ5";
+         case tcJIQ5:      return "JIQ5";
+         case tcJI6:       return "JI6";
+         case tcJQ6:       return "JQ6";
+         case tcJIQ6:      return "JIQ6";
+         case tcCI1:       return "CI1";
+         case tcCQ1:       return "CQ1";
+         case tcCIQ1:      return "CIQ1";
+         case tcCI7:       return "CI7";
+         case tcCQ7:       return "CQ7";
+         case tcCIQ7:      return "CIQ7";
+         case tcCI6:       return "CI6";
+         case tcCQ6:       return "CQ6";
+         case tcCIQ6:      return "CIQ6";
+         case tcIA5:       return "IA5";
+         case tcIB5:       return "IB5";
+         case tcIC5:       return "IC5";
+         case tcIX5:       return "IX5";
+         case tcIA9:       return "IA9";
+         case tcIB9:       return "IB9";
+         case tcIC9:       return "IC9";
+         case tcIX9:       return "IX9";
+         case tcUndefined: return "Undefined";
+         default:          return "???";
+      }
+   }
+
+
+   ObsID::TrackingCode ObsID ::
+   asTrackingCode(const std::string& s) throw()
+   {
+      if (s == "Any")
+         return tcAny;
+      if (s == "CA")
+         return tcCA;
+      if (s == "P")
+         return tcP;
+      if (s == "Y")
+         return tcY;
+      if (s == "W")
+         return tcW;
+      if (s == "N")
+         return tcN;
+      if (s == "D")
+         return tcD;
+      if (s == "M")
+         return tcM;
+      if (s == "C2M")
+         return tcC2M;
+      if (s == "C2L")
+         return tcC2L;
+      if (s == "C2LM")
+         return tcC2LM;
+      if (s == "I5")
+         return tcI5;
+      if (s == "Q5")
+         return tcQ5;
+      if (s == "IQ5")
+         return tcIQ5;
+      if (s == "G1P")
+         return tcG1P;
+      if (s == "G1D")
+         return tcG1D;
+      if (s == "G1X")
+         return tcG1X;
+      if (s == "GCA")
+         return tcGCA;
+      if (s == "GP")
+         return tcGP;
+      if (s == "IR3")
+         return tcIR3;
+      if (s == "QR3")
+         return tcQR3;
+      if (s == "IQR3")
+         return tcIQR3;
+      if (s == "A")
+         return tcA;
+      if (s == "B")
+         return tcB;
+      if (s == "C")
+         return tcC;
+      if (s == "BC")
+         return tcBC;
+      if (s == "ABC")
+         return tcABC;
+      if (s == "IE5")
+         return tcIE5;
+      if (s == "QE5")
+         return tcQE5;
+      if (s == "IQE5")
+         return tcIQE5;
+      if (s == "IE5a")
+         return tcIE5a;
+      if (s == "QE5a")
+         return tcQE5a;
+      if (s == "IQE5a")
+         return tcIQE5a;
+      if (s == "IE5b")
+         return tcIE5b;
+      if (s == "QE5b")
+         return tcQE5b;
+      if (s == "IQE5b")
+         return tcIQE5b;
+      if (s == "SCA")
+         return tcSCA;
+      if (s == "SI5")
+         return tcSI5;
+      if (s == "SQ5")
+         return tcSQ5;
+      if (s == "SIQ5")
+         return tcSIQ5;
+      if (s == "JCA")
+         return tcJCA;
+      if (s == "JD1")
+         return tcJD1;
+      if (s == "JP1")
+         return tcJP1;
+      if (s == "JX1")
+         return tcJX1;
+      if (s == "JZ1")
+         return tcJZ1;
+      if (s == "JM2")
+         return tcJM2;
+      if (s == "JL2")
+         return tcJL2;
+      if (s == "JX2")
+         return tcJX2;
+      if (s == "JI5")
+         return tcJI5;
+      if (s == "JQ5")
+         return tcJQ5;
+      if (s == "JIQ5")
+         return tcJIQ5;
+      if (s == "JI6")
+         return tcJI6;
+      if (s == "JQ6")
+         return tcJQ6;
+      if (s == "JIQ6")
+         return tcJIQ6;
+      if (s == "CI1")
+         return tcCI1;
+      if (s == "CQ1")
+         return tcCQ1;
+      if (s == "CIQ1")
+         return tcCIQ1;
+      if (s == "CI7")
+         return tcCI7;
+      if (s == "CQ7")
+         return tcCQ7;
+      if (s == "CIQ7")
+         return tcCIQ7;
+      if (s == "CI6")
+         return tcCI6;
+      if (s == "CQ6")
+         return tcCQ6;
+      if (s == "CIQ6")
+         return tcCIQ6;
+      if (s == "IA5")
+         return tcIA5;
+      if (s == "IB5")
+         return tcIB5;
+      if (s == "IC5")
+         return tcIC5;
+      if (s == "IX5")
+         return tcIX5;
+      if (s == "IA9")
+         return tcIA9;
+      if (s == "IB9")
+         return tcIB9;
+      if (s == "IC9")
+         return tcIC9;
+      if (s == "IX9")
+         return tcIX9;
+      if (s == "Undefined")
+         return tcUndefined;
+      return tcUnknown;
+   }
+
 }

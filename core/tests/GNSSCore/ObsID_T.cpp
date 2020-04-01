@@ -47,17 +47,17 @@ namespace gpstk
 
    std::ostream& operator<<(std::ostream& s, ObsID::ObservationType e)
    {
-      s << ObsID::asString(e);
+      s << (long)e << " (" << ObsID::asString(e) << ")";
       return s;
    }
    std::ostream& operator<<(std::ostream& s, ObsID::CarrierBand e)
    {
-      s << ObsID::asString(e);
+      s << (long)e << " (" << ObsID::asString(e) << ")";
       return s;
    }
    std::ostream& operator<<(std::ostream& s, ObsID::TrackingCode e)
    {
-      s << ObsID::asString(e);
+      s << (long)e << " (" << ObsID::asString(e) << ")";
       return s;
    }
 }
@@ -128,6 +128,52 @@ public:
 
       TUASSERTE(std::string, referenceString, outputString);
 
+      TURETURN();
+   }
+
+
+   unsigned asStringEnumTest()
+   {
+      TUDEF("ObsID", "asString");
+         // These tests verify that every enum has a string
+         // representation and every string has a corresponding enum.
+         // It also implicitly verifies that the string
+         // representations aren't duplicated, since if two enums
+         // translated to string "XXX", the attempt to reverse the
+         // translation would fail.
+      for (unsigned i = 0; i < gpstk::ObsID::otLast; i++)
+      {
+         gpstk::ObsID::ObservationType ot = (gpstk::ObsID::ObservationType)i;
+         std::string s;
+         TUCATCH(s = gpstk::ObsID::asString(ot));
+         TUASSERT(!s.empty());
+         TUASSERT(s != "???");
+         gpstk::ObsID::ObservationType ot2;
+         TUCATCH(ot2 = gpstk::ObsID::asObservationType(s));
+         TUASSERTE(gpstk::ObsID::ObservationType, ot, ot2);
+      }
+      for (unsigned i = 0; i < gpstk::ObsID::cbLast; i++)
+      {
+         gpstk::ObsID::CarrierBand cb = (gpstk::ObsID::CarrierBand)i;
+         std::string s;
+         TUCATCH(s = gpstk::ObsID::asString(cb));
+         TUASSERT(!s.empty());
+         TUASSERT(s != "???");
+         gpstk::ObsID::CarrierBand cb2;
+         TUCATCH(cb2 = gpstk::ObsID::asCarrierBand(s));
+         TUASSERTE(gpstk::ObsID::CarrierBand, cb, cb2);
+      }
+      for (unsigned i = 0; i < gpstk::ObsID::tcLast; i++)
+      {
+         gpstk::ObsID::TrackingCode tc = (gpstk::ObsID::TrackingCode)i;
+         std::string s;
+         TUCATCH(s = gpstk::ObsID::asString(tc));
+         TUASSERT(!s.empty());
+         TUASSERT(s != "???");
+         gpstk::ObsID::TrackingCode tc2;
+         TUCATCH(tc2 = gpstk::ObsID::asTrackingCode(s));
+         TUASSERTE(gpstk::ObsID::TrackingCode, tc, tc2);
+      }
       TURETURN();
    }
 
@@ -259,6 +305,7 @@ int main()
    errorTotal += testClass.dumpTest();
    errorTotal += testClass.newIDTest();
    errorTotal += testClass.asStringTest();
+   errorTotal += testClass.asStringEnumTest();
    errorTotal += testClass.operatorTest();
 
    std::cout << "Total Failures for " << __FILE__ << ": " << errorTotal

@@ -307,6 +307,23 @@ namespace gpstk
       static ObsID newID(const std::string& id,
                          const std::string& desc="");
 
+         /** @note the methods below differ from other string
+          * conversion methods in that they have no correlation with
+          * RINEX whatsoever. */
+
+         /// Convert a ObservationType to a whitespace-free string name.
+      static std::string asString(ObservationType e) throw();
+         /// Convert a string name to an ObservationType
+      static ObservationType asObservationType(const std::string& s) throw();
+         /// Convert a CarrierBand to a whitespace-free string name.
+      static std::string asString(CarrierBand e) throw();
+         /// Convert a string name to an CarrierBand
+      static CarrierBand asCarrierBand(const std::string& s) throw();
+         /// Convert a TrackingCode to a whitespace-free string name.
+      static std::string asString(TrackingCode e) throw();
+         /// Convert a string name to a TrackingCode
+      static TrackingCode asTrackingCode(const std::string& s) throw();
+
          // Note that these are the only data members of objects of this class.
       ObservationType  type;
       CarrierBand      band;
