@@ -62,6 +62,19 @@ namespace gpstk
 
 //--------------------------------------------------------------------------
 
+   OrbElemStore ::
+   ~OrbElemStore()
+   {
+      for (auto& ubei : ube)
+      {
+         for (auto& oemi : ubei.second)
+         {
+            delete oemi.second;
+         }
+      }
+   }
+
+
    Xvt OrbElemStore::getXvt(const SatID& sat, const CommonTime& t) const
    {
       try
