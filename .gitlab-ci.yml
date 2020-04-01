@@ -454,6 +454,10 @@ package_debian_9:
     - dpkg-buildpackage -us -uc -d
     - mkdir debs
     - mv ../*.deb debs
+    - mv ../*.changes debs
+    - mv ../*.dsc debs
+    - mv ../*.git debs
+    - mv ../*.buildinfo debs
   artifacts:
     paths:
     - debs/
