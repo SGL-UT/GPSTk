@@ -45,272 +45,271 @@
 using namespace std;
 using namespace gpstk;
 
-int main()
+class NavID_T
 {
-   TUDEF( "NavID", "" );
-   
-   //==========================================================================================================================
-   // Ensure the default constructor instantiates a NavID object with type unknown.
-   //==========================================================================================================================
-   TUCSM("Default Constructor Test");
-   
+public:
+   NavID_T();
+      /** Verifies that the NavID objects constructed in NavID_T()
+       * meet expectations */
+   unsigned constructorTest();
+      /** Outputs the different NavID objects to their own
+       * stringstreams and makes sure the results are as expected */
+   unsigned streamOutputTest();
+      /** Makes sure that turning the string names of NavTypes convert
+       * back into their expected values.
+       * @pre streamOutput test must have been executed.
+       */
+   unsigned stringConstructorTest();
+   unsigned inequalityTest();
+
+   NavID testIDLNAV, testIDCNAVL2, testIDCNAVL5, testIDCNAV2, testIDMNAV,
+      testIDBD1, testIDBD2, testIDGloF, testIDGloC, testIDGalOS, testIDGalOS_2,
+      testIDGalOS_F, testID_IRNSS_SPS, testIDUnkwn;
+   stringstream ln, l2, l5, cnav2, mn, d1, d2, gf, gc, ginv, ginv_2, gfnv, is,
+      un;
+};
+
+
+NavID_T ::
+NavID_T()
+      : testIDLNAV(SatID(1, SatID::systemGPS),
+                   ObsID(ObsID::otNavMsg, ObsID::cbL1, ObsID::tcCA)),
+        testIDCNAVL2(SatID(1, SatID::systemGPS),
+                     ObsID(ObsID::otNavMsg, ObsID::cbL2, ObsID::tcC2LM)),
+        testIDCNAVL5(SatID(1, SatID::systemGPS),
+                     ObsID(ObsID::otNavMsg, ObsID::cbL5, ObsID::tcI5)),
+        testIDCNAV2(SatID(1, SatID::systemGPS),
+                    ObsID(ObsID::otNavMsg, ObsID::cbL1, ObsID::tcG1X)),
+        testIDMNAV(SatID(1, SatID::systemGPS),
+                   ObsID(ObsID::otNavMsg, ObsID::cbL2, ObsID::tcM)),
+        testIDBD1(SatID(6, SatID::systemBeiDou),
+                  ObsID(ObsID::otNavMsg, ObsID::cbB1, ObsID::tcCI1)),
+        testIDBD2(SatID(5, SatID::systemBeiDou),
+                  ObsID(ObsID::otNavMsg, ObsID::cbB2, ObsID::tcCI1)),
+        testIDGloF(SatID(2, SatID::systemGlonass),
+                   ObsID(ObsID::otNavMsg, ObsID::cbG1, ObsID::tcGCA)),
+        testIDGloC(SatID(2, SatID::systemGlonass),
+                   ObsID(ObsID::otNavMsg, ObsID::cbG3, ObsID::tcIQR3)),
+        testIDGalOS(SatID(2, SatID::systemGalileo),
+                    ObsID(ObsID::otNavMsg, ObsID::cbL1, ObsID::tcB)),
+        testIDGalOS_2(SatID(2, SatID::systemGalileo),
+                      ObsID(ObsID::otNavMsg, ObsID::cbE5b, ObsID::tcIE5b)),
+        testIDGalOS_F(SatID(2, SatID::systemGalileo),
+                      ObsID(ObsID::otNavMsg, ObsID::cbL5, ObsID::tcIE5a)),
+        testID_IRNSS_SPS(SatID(2, SatID::systemIRNSS),
+                         ObsID(ObsID::otNavMsg, ObsID::cbL5, ObsID::tcIA5)),
+        testIDUnkwn(SatID(1, SatID::systemGPS),
+                    ObsID(ObsID::otNavMsg, ObsID::cbL5, ObsID::tcM))
+{
+}
+
+
+unsigned NavID_T ::
+constructorTest()
+{
+   TUDEF("NavID", "NavID()");
+
    NavID dfltTest;
-   if ( dfltTest.navType == NavID::ntUnknown ) TUPASS( "" );
-   else TUFAIL( "Default instantiation failed." );
-   
-   //==========================================================================================================================
-   // Ensure that the explicit constructor accepts SatID and ObsID arguments and correctly instantiates NavID objects.
-   //==========================================================================================================================
-   TUCSM("Explicit Constructor Test");
-   
+   TUASSERTE(NavID::NavType, NavID::ntUnknown, dfltTest.navType);
+
       //GPS LNAV
-   NavID testIDLNAV( SatID( 1, SatID::systemGPS ), ObsID( ObsID::otNavMsg, ObsID::cbL1, ObsID::tcCA ) );
-   if ( testIDLNAV.navType == NavID::ntGPSLNAV ) TUPASS( "" );
-   else TUFAIL( "ntGPSLNAV instantiation failed." );
-      
+   TUCSM("NavID(SatID,ObsID)");
+   TUASSERTE(NavID::NavType, NavID::ntGPSLNAV, testIDLNAV.navType);
+
       //GPS CNAV L2
-   NavID testIDCNAVL2( SatID( 1, SatID::systemGPS ), ObsID( ObsID::otNavMsg, ObsID::cbL2, ObsID::tcC2LM ) );
-   if ( testIDCNAVL2.navType == NavID::ntGPSCNAVL2 ) TUPASS( "" );
-   else TUFAIL( "ntGPSCNAVL2 instantiation failed." );
-   
+   TUASSERTE(NavID::NavType, NavID::ntGPSCNAVL2, testIDCNAVL2.navType);
+
       //GPS CNAV L5
-   NavID testIDCNAVL5( SatID( 1, SatID::systemGPS ), ObsID( ObsID::otNavMsg, ObsID::cbL5, ObsID::tcI5 ) );
-   if ( testIDCNAVL5.navType == NavID::ntGPSCNAVL5 ) TUPASS( "" );
-   else TUFAIL( "ntGPSCNAVL5 instantiation failed." );
-   
+   TUASSERTE(NavID::NavType, NavID::ntGPSCNAVL5, testIDCNAVL5.navType);
+
       //GPS CNAV2
-   NavID testIDCNAV2( SatID( 1, SatID::systemGPS ), ObsID( ObsID::otNavMsg, ObsID::cbL1, ObsID::tcG1X ) );
-   if ( testIDCNAV2.navType == NavID::ntGPSCNAV2 ) TUPASS( "" );
-   else TUFAIL( "ntGPSCNAV2 instantiation failed." );
-   
+   TUASSERTE(NavID::NavType, NavID::ntGPSCNAV2, testIDCNAV2.navType);
+
       //GPS MNAV
-   NavID testIDMNAV( SatID( 1, SatID::systemGPS ), ObsID( ObsID::otNavMsg, ObsID::cbL2, ObsID::tcM ) );
-   if ( testIDMNAV.navType == NavID::ntGPSMNAV ) TUPASS( "" );
-   else TUFAIL( "ntGPSMNAV instantiation failed." );
-   
+   TUASSERTE(NavID::NavType, NavID::ntGPSMNAV, testIDMNAV.navType);
+
       //Beidou D1
-   NavID testIDBD1( SatID( 6, SatID::systemBeiDou ), ObsID( ObsID::otNavMsg, ObsID::cbB1, ObsID::tcCI1 ) );
-   if ( testIDBD1.navType == NavID::ntBeiDou_D1 ) TUPASS( "" );
-   else TUFAIL( "ntBeiDou_D1 instantiation failed." );
-   
+   TUASSERTE(NavID::NavType, NavID::ntBeiDou_D1, testIDBD1.navType);
+
       //Beidou D2
-   NavID testIDBD2( SatID( 5, SatID::systemBeiDou ), ObsID( ObsID::otNavMsg, ObsID::cbB2, ObsID::tcCI1 ) );
-   if ( testIDBD2.navType == NavID::ntBeiDou_D2 ) TUPASS( "" );
-   else TUFAIL( "ntBeiDou_D2 instantiation failed." );
+   TUASSERTE(NavID::NavType, NavID::ntBeiDou_D2, testIDBD2.navType);
    
       //Glonass Civil F
-   NavID testIDGloF( SatID( 2, SatID::systemGlonass ), ObsID( ObsID::otNavMsg, ObsID::cbG1, ObsID::tcGCA ) );
-   if ( testIDGloF.navType == NavID::ntGloCivilF ) TUPASS( "" );
-   else TUFAIL( "ntGloCivilF instantiation failed." );
+   TUASSERTE(NavID::NavType, NavID::ntGloCivilF, testIDGloF.navType);
    
       //Glonass Civil C
-   NavID testIDGloC( SatID( 2, SatID::systemGlonass ), ObsID( ObsID::otNavMsg, ObsID::cbG3, ObsID::tcIQR3 ) );
-   if ( testIDGloC.navType == NavID::ntGloCivilC ) TUPASS( "" );
-   else TUFAIL( "ntGloCivilC instantiation failed." );
+   TUASSERTE(NavID::NavType, NavID::ntGloCivilC, testIDGloC.navType);
    
       //Galileo Open Sys
-   NavID testIDGalOS( SatID( 2, SatID::systemGalileo ), ObsID( ObsID::otNavMsg, ObsID::cbL1, ObsID::tcB ) );
-   if ( testIDGalOS.navType == NavID::ntGalINAV ) TUPASS( "" );
-   else TUFAIL( "ntGalINAV instantiation failed." );
+   TUASSERTE(NavID::NavType, NavID::ntGalINAV, testIDGalOS.navType);
 
-   NavID testIDGalOS_2( SatID( 2, SatID::systemGalileo ), ObsID( ObsID::otNavMsg, ObsID::cbE5b, ObsID::tcIE5b ) );
-   if ( testIDGalOS_2.navType == NavID::ntGalINAV ) TUPASS( "" );
-   else TUFAIL( "ntGalINAV instantiation failed." );
+   TUASSERTE(NavID::NavType, NavID::ntGalINAV, testIDGalOS_2.navType);
 
-   NavID testIDGalOS_F( SatID( 2, SatID::systemGalileo ), ObsID( ObsID::otNavMsg, ObsID::cbL5, ObsID::tcIE5a ) );
-   if ( testIDGalOS_F.navType == NavID::ntGalFNAV ) TUPASS( "" );
-   else TUFAIL( "ntGalFNAV instantiation failed." );
+   TUASSERTE(NavID::NavType, NavID::ntGalFNAV, testIDGalOS_F.navType);
 
       //IRNSS L5 SPS
-   NavID testID_IRNSS_SPS( SatID( 2, SatID::systemIRNSS ), ObsID( ObsID::otNavMsg, ObsID::cbL5, ObsID::tcIA5 ) );
-   if ( testID_IRNSS_SPS.navType == NavID::ntIRNSS_SPS ) TUPASS( "" );
-   else TUFAIL( "ntIRNSS_SPS instantiation failed." );
+   TUASSERTE(NavID::NavType, NavID::ntIRNSS_SPS, testID_IRNSS_SPS.navType);
    
       //Unknown
-   NavID testIDUnkwn( SatID( 1, SatID::systemGPS ), ObsID( ObsID::otNavMsg, ObsID::cbL5, ObsID::tcM ) );
-   if ( testIDUnkwn.navType == NavID::ntUnknown) TUPASS( "" );
-   else TUFAIL( "ntUnknown instantiation failed." );
-   
+   TUASSERTE(NavID::NavType, NavID::ntUnknown, testIDUnkwn.navType);
 
-   //==========================================================================================================================
-   // Ensure that the string output of a NavID object matches the correct type.
-   //==========================================================================================================================
-   TUCSM("String Output Test");
-   
-   stringstream ln;
+   TURETURN();
+}
+
+
+unsigned NavID_T ::
+streamOutputTest()
+{
+   TUDEF("NavID", "operator<<");
+
    ln << testIDLNAV;
-   if ( ln.str() == "GPS_LNAV" ) TUPASS( "" );
-   else TUFAIL( "String does not match GPS_LNAV." );
+   TUASSERTE(std::string, "GPS_LNAV", ln.str());
    
-   stringstream l2;
    l2 << testIDCNAVL2;
-   if ( l2.str() == "GPS_CNAV_L2" ) TUPASS( "" );
-   else TUFAIL( "String does not match GPS_L2_CNAV." );
+   TUASSERTE(std::string, "GPS_CNAV_L2", l2.str());
    
-   stringstream l5;
    l5 << testIDCNAVL5;
-   if ( l5.str() == "GPS_CNAV_L5" ) TUPASS( "" );
-   else TUFAIL( "String does not match GPS_L5_CNAV." );
+   TUASSERTE(std::string, "GPS_CNAV_L5", l5.str());
 
-   stringstream cnav2;
    cnav2 << testIDCNAV2;
-   if ( cnav2.str() == "GPS_CNAV2" ) TUPASS( "" );
-   else TUFAIL( "String does not match GPS_CNAV2." );
+   TUASSERTE(std::string, "GPS_CNAV2", cnav2.str());
    
-   stringstream mn;
    mn << testIDMNAV;
-   if ( mn.str() == "GPS_MNAV" ) TUPASS( "" );
-   else TUFAIL( "String does not match GPS_MNAV." );
+   TUASSERTE(std::string, "GPS_MNAV", mn.str());
    
-   stringstream d1;
    d1 << testIDBD1;
-   if ( d1.str() == "Beidou_D1" ) TUPASS( "" );
-   else TUFAIL( "String does not match Beidou_D1." );
+   TUASSERTE(std::string, "Beidou_D1", d1.str());
    
-   stringstream d2;
    d2 << testIDBD2;
-   if ( d2.str() == "Beidou_D2" ) TUPASS( "" );
-   else TUFAIL( "String does not match Beidou_D2." );
+   TUASSERTE(std::string, "Beidou_D2", d2.str());
    
-   stringstream gf;
    gf << testIDGloF;
-   if ( gf.str() == "GloCivilF" ) TUPASS( "" );
-   else TUFAIL( "String does not match GloCivilF." );
+   TUASSERTE(std::string, "GloCivilF", gf.str());
    
-   stringstream gc;
    gc << testIDGloC;
-   if ( gc.str() == "GloCivilC" ) TUPASS( "" );
-   else TUFAIL( "String does not match GloCivilC." );
+   TUASSERTE(std::string, "GloCivilC", gc.str());
    
-   stringstream ginv;
    ginv << testIDGalOS;
-   if ( ginv.str() == "GalINAV" ) TUPASS( "" );
-   else TUFAIL( "String does not match GalINAV." );
+   TUASSERTE(std::string, "GalINAV", ginv.str());
    
-   stringstream ginv_2;
    ginv_2 << testIDGalOS_2;
-   if ( ginv_2.str() == "GalINAV" ) TUPASS( "" );
-   else TUFAIL( "String does not match GalINAV." );
+   TUASSERTE(std::string, "GalINAV", ginv_2.str());
    
-   stringstream gfnv;
    gfnv << testIDGalOS_F;
-   if ( gfnv.str() == "GalFNAV" ) TUPASS( "" );
-   else TUFAIL( "String does not match GalFNAV." );
+   TUASSERTE(std::string, "GalFNAV", gfnv.str());
 
-   stringstream is;
    is << testID_IRNSS_SPS;
-   if ( is.str() == "IRNSS_SPS" ) TUPASS( "" );
-   else TUFAIL( "String does not match IRNSS_SPS." );
+   TUASSERTE(std::string, "IRNSS_SPS", is.str());
    
-   stringstream un;
    un << testIDUnkwn;
-   if ( un.str() == "Unknown" ) TUPASS( "" );
-   else TUFAIL( "String does not match Unknown." );
+   TUASSERTE(std::string, "Unknown", un.str());
+
+   TURETURN();
+}
+
+
+unsigned NavID_T ::
+stringConstructorTest()
+{
+   TUDEF("NavID", "NavID(string)");
+
+   NavID testIDLNAVString(ln.str());
+   TUASSERTE(NavID::NavType, NavID::ntGPSLNAV, testIDLNAVString.navType);
    
-   //==========================================================================================================================
-   // Ensure that the string input constructor accepts a string and generates a NavID object that matches the correct type.
-   //==========================================================================================================================
-   TUCSM("String Input Constructor Test");
+   NavID testIDCNAVL2String(l2.str());
+   TUASSERTE(NavID::NavType, NavID::ntGPSCNAVL2, testIDCNAVL2String.navType);
    
-   NavID testIDLNAVString( ln.str() );
-   if ( testIDLNAVString.navType == NavID::ntGPSLNAV ) TUPASS( "" );
-   else TUFAIL( "String input constructor failed to insantiate NavID object." );
+   NavID testIDCNAVL5String(l5.str());
+   TUASSERTE(NavID::NavType, NavID::ntGPSCNAVL5, testIDCNAVL5String.navType);
    
-   NavID testIDCNAVL2String( l2.str() );
-   if ( testIDCNAVL2String.navType == NavID::ntGPSCNAVL2 ) TUPASS( "" );
-   else TUFAIL( "String input constructor failed to insantiate NavID object." );
+   NavID testIDCNAV2String(cnav2.str());
+   TUASSERTE(NavID::NavType, NavID::ntGPSCNAV2, testIDCNAV2String.navType);
    
-   NavID testIDCNAVL5String( l5.str() );
-   if ( testIDCNAVL5String.navType == NavID::ntGPSCNAVL5 ) TUPASS( "" );
-   else TUFAIL( "String input constructor failed to insantiate NavID object." );
+   NavID testIDMNAVString(mn.str());
+   TUASSERTE(NavID::NavType, NavID::ntGPSMNAV, testIDMNAVString.navType);
    
-   NavID testIDCNAV2String( cnav2.str() );
-   if ( testIDCNAV2String.navType == NavID::ntGPSCNAV2 ) TUPASS( "" );
-   else TUFAIL( "String input constructor failed to insantiate NavID object." );
+   NavID testIDBD1String(d1.str());
+   TUASSERTE(NavID::NavType, NavID::ntBeiDou_D1, testIDBD1String.navType);
    
-   NavID testIDMNAVString( mn.str() );
-   if ( testIDMNAVString.navType == NavID::ntGPSMNAV ) TUPASS( "" );
-   else TUFAIL( "String input constructor failed to insantiate NavID object." );
+   NavID testIDBD2String(d2.str());
+   TUASSERTE(NavID::NavType, NavID::ntBeiDou_D2, testIDBD2String.navType);
    
-   NavID testIDBD1String( d1.str() );
-   if ( testIDBD1String.navType == NavID::ntBeiDou_D1 ) TUPASS( "" );
-   else TUFAIL( "String input constructor failed to insantiate NavID object." );
+   NavID testIDGloFString(gf.str());
+   TUASSERTE(NavID::NavType, NavID::ntGloCivilF, testIDGloFString.navType);
    
-   NavID testIDBD2String( d2.str() );
-   if ( testIDBD2String.navType == NavID::ntBeiDou_D2 ) TUPASS( "" );
-   else TUFAIL( "String input constructor failed to insantiate NavID object." );
+   NavID testIDGloCString(gc.str());
+   TUASSERTE(NavID::NavType, NavID::ntGloCivilC, testIDGloCString.navType);
    
-   NavID testIDGloFString( gf.str() );
-   if ( testIDGloFString.navType == NavID::ntGloCivilF ) TUPASS( "" );
-   else TUFAIL( "String input constructor failed to insantiate NavID object." );
+   NavID testIDGalOSStringI(ginv.str());
+   TUASSERTE(NavID::NavType, NavID::ntGalINAV, testIDGalOSStringI.navType);
    
-   NavID testIDGloCString( gc.str() );
-   if ( testIDGloCString.navType == NavID::ntGloCivilC ) TUPASS( "" );
-   else TUFAIL( "String input constructor failed to insantiate NavID object." );
+   NavID testIDGalOSStringF(gfnv.str());
+   TUASSERTE(NavID::NavType, NavID::ntGalFNAV, testIDGalOSStringF.navType);
    
-   NavID testIDGalOSStringI( ginv.str() );
-   if ( testIDGalOSStringI.navType == NavID::ntGalINAV ) TUPASS( "" );
-   else TUFAIL( "String input constructor failed to insantiate NavID object." );
+   NavID testID_IRNSS_SPS_String(is.str());
+   TUASSERTE(NavID::NavType,NavID::ntIRNSS_SPS,testID_IRNSS_SPS_String.navType);
    
-   NavID testIDGalOSStringF( gfnv.str() );
-   if ( testIDGalOSStringF.navType == NavID::ntGalFNAV ) TUPASS( "" );
-   else TUFAIL( "String input constructor failed to insantiate NavID object." );
-   
-   NavID testID_IRNSS_SPS_String( is.str() );
-   if ( testID_IRNSS_SPS_String.navType == NavID::ntIRNSS_SPS ) TUPASS( "" );
-   else TUFAIL( "String input constructor failed to insantiate NavID object." );
-   
-   NavID testIDUnkwnString( un.str() );
-   if ( testIDUnkwnString.navType == NavID::ntUnknown ) TUPASS( "" );
-   else TUFAIL( "String input constructor failed to insantiate NavID object." );
-   
-   //==========================================================================================================================
-   // Ensure that the map key operators correctly reorder an out-of-order set of NavType enumerators.
-   //==========================================================================================================================
-   TUCSM("Inequality Test");
-   
+   NavID testIDUnkwnString(un.str());
+   TUASSERTE(NavID::NavType, NavID::ntUnknown, testIDUnkwnString.navType);
+
+   TURETURN();
+}
+
+
+unsigned NavID_T ::
+inequalityTest()
+{
+   TUDEF("NavID", "operator!=");
+
    set<NavID> testSet;
       //Insert NavTypes into set in backward order.
-   testSet.insert( testIDUnkwn );
-   testSet.insert( testID_IRNSS_SPS);
-   testSet.insert( testIDGalOS );
-   testSet.insert( testIDGalOS_F );
-   testSet.insert( testIDGloC );
-   testSet.insert( testIDGloF );
-   testSet.insert( testIDBD2 );
-   testSet.insert( testIDBD1 );
-   testSet.insert( testIDMNAV );
-   testSet.insert( testIDCNAV2 );
-   testSet.insert( testIDCNAVL5 );
-   testSet.insert( testIDCNAVL2 );
-   testSet.insert( testIDLNAV );
-   
-   int failCount = 0;
+      // This implicitly tests operator<
+   testSet.insert(testIDUnkwn);
+   testSet.insert(testID_IRNSS_SPS);
+   testSet.insert(testIDGalOS);
+   testSet.insert(testIDGalOS_F);
+   testSet.insert(testIDGloC);
+   testSet.insert(testIDGloF);
+   testSet.insert(testIDBD2);
+   testSet.insert(testIDBD1);
+   testSet.insert(testIDMNAV);
+   testSet.insert(testIDCNAV2);
+   testSet.insert(testIDCNAVL5);
+   testSet.insert(testIDCNAVL2);
+   testSet.insert(testIDLNAV);
+
       //Instantiate currTest as GPS_LNAV by 
       //instantiating navType as ntGPSLNAV.
    NavID currTest;
    currTest.navType = NavID::ntGPSLNAV;
-      //Define cit as iterator for NavID set.
-   set<NavID>::const_iterator cit;
-   
-      //Set nid equal to dereferenced NavID set iterator; cit should
+
+      //Set nid equal to dereferenced NavID set iterator; should
       //initially correspond to first location in set (@ value GPS_LNAV).
       //Compare to currTest which initially corresponds to NavID for first
       //location in NavType enum (ntGPSLNAV).
-   for ( cit = testSet.begin(); cit != testSet.end(); cit++ )
+   for (const auto& nid :  testSet)
    {
-      const NavID& nid = *cit;
-         //If operators in NavID work correctly, failCount = 0.
-      if ( nid != currTest )
-      {
-         failCount++;
-      }
+      TUASSERTE(gpstk::NavID, currTest, nid);
       currTest.navType = static_cast<NavID::NavType>((int)currTest.navType + 1);
    }
-   if (!failCount) TUPASS( "" );
-   else TUFAIL( "failCount != 0" );
-   
+
    TURETURN();
-   return testFramework.countFails();
+}
+
+
+int main()
+{
+   unsigned errorTotal = 0;
+   NavID_T testClass;
+
+   errorTotal += testClass.constructorTest();
+   errorTotal += testClass.streamOutputTest();
+   errorTotal += testClass.stringConstructorTest();
+   errorTotal += testClass.inequalityTest();
+
+   std::cout << "Total Failures for " << __FILE__ << ": " << errorTotal
+             << std::endl;
+
+   return errorTotal;
 }
 
