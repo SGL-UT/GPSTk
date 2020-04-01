@@ -102,8 +102,8 @@ namespace gpstk
 
          /// Convenience method used by dump().
       std::string convertNavTypeToString( const NavType& s ) const
-       {
-          //define retVal for safety return
+      {
+            //define retVal for safety return
          std::string retVal = "";
          switch(s)
          {
@@ -122,8 +122,8 @@ namespace gpstk
             case ntUnknown:
             default:             {retVal = NavTypeStrings[12];     break;}
          };
-         //return retVal in case switch isn't reached
-        return retVal;
+            //return retVal in case switch isn't reached
+         return retVal;
       }
 
          /// Convenience output method.
