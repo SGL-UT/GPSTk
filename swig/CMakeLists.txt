@@ -91,7 +91,6 @@ add_custom_target(swig-make-directory ALL
     COMMAND ${CMAKE_COMMAND} -E make_directory ${MODULE_PATH}/gpstk)
 add_dependencies("_${SWIG_MODULE}" swig-make-directory)
 add_custom_command( TARGET "_${SWIG_MODULE}" POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "_${SWIG_MODULE}.so" ${CMAKE_SWIG_OUTDIR} )
-add_custom_command( TARGET "_${SWIG_MODULE}" POST_BUILD COMMAND sed -i 's/class Exception\(_object\)/class Exception\(Exception\)/' "${SWIG_MODULE}.py" )
 add_custom_command( TARGET "_${SWIG_MODULE}" POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${SWIG_MODULE}.py" ${CMAKE_SWIG_OUTDIR} )
 
 add_custom_command( TARGET "_${SWIG_MODULE}"
