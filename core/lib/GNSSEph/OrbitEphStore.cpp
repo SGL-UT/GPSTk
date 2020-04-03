@@ -281,14 +281,18 @@ namespace gpstk
                message = string("duplicate Toe");
                return ret;
             }
-            else {
-               // Found matching beginValid but different Toe - This shouldn't happen
-               string str = "Unexpected matching beginValid time but not Toe, for "
-                  + asString(eph->satID)
-                  + ", beginValid= " + printTime(eph->beginValid,fmt)
-                  + ", Toe(map)= " + printTime(it->second->ctToe,fmt)
-                  + ", Toe(candidate)= "+ printTime(eph->ctToe,fmt);
-               InvalidParameter ir(str);
+            else
+            {
+                  // Found matching beginValid but different Toe -
+                  // This shouldn't happen
+               InvalidParameter ir("Attempted to add possibly corrupt"
+                                   " ephemeris.");
+               ir.addText("Prior add of ephemeris with matching beginValid time"
+                          " and different Toe");
+               ir.addText("Satellite= " + asString(eph->satID));
+               ir.addText("beginValid= " + printTime(eph->beginValid,fmt));
+               ir.addText("Toe(prior)= " + printTime(it->second->ctToe,fmt));
+               ir.addText("Toe(add)= "+ printTime(eph->ctToe,fmt));
                GPSTK_THROW(ir);
             }
          }
