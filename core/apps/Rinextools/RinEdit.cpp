@@ -874,7 +874,7 @@ int executeEditCmd(const vector<EditCmd>::iterator& it, Rinex3ObsHeader& Rhead,
          }
 
          Rhead.firstObs = Rdata.time;
-         Rhead.valid &= ~Rinex3ObsHeader::validLastTime;    // turn off
+         Rhead.valid.clear(Rinex3ObsHeader::validLastTime);    // turn off
 
             // write the header
          C.ostrm << Rhead;
