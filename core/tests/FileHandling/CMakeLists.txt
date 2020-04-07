@@ -59,3 +59,17 @@ add_test(FileHandling_SP3 SP3_T)
 add_executable(FFBinaryStream_T FFBinaryStream_T.cpp)
 target_link_libraries(FFBinaryStream_T gpstk)
 add_test(FileHandling_FFBinaryStream FFBinaryStream_T)
+
+set( df_diff ${GPSTK_BINDIR}/df_diff)
+
+add_executable(Yuma_T Yuma_T.cpp)
+target_link_libraries(Yuma_T gpstk)
+add_test(NAME YumaData
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:Yuma_T>
+         -DTESTBASE=test_output_Yuma_T
+         -DTESTNAME=test_output_Yuma_T
+         -DOWNOUTPUT=1
+         -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
+         -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
