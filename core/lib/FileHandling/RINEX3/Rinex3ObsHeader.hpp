@@ -244,25 +244,27 @@ namespace gpstk
          allValid303            = 0x0412058B  ///< RINEX 3.03
       };
    
-#ifndef SWIG // nested structs/classes not supported by SWIG
+//#ifndef SWIG // nested structs/classes not supported by SWIG
          /** RINEX 3 DCBS/PCVS info (for differential code bias and
           * phase center variations corr.) */
-      struct Rinex3CorrInfo
+      class Rinex3CorrInfo
       {
+      public:
          std::string satSys;  ///< 1-char SV system (G/R/E/S)
          std::string name;    ///< program name used to apply corrections
          std::string source;  ///< source of corrections (URL)
       };
 
          /// RINEX 2 extra "WAVELENGTH FACT" lines
-      struct ExtraWaveFact
+      class ExtraWaveFact
       {
+      public:
             /// List of Sats with this wavelength factor
          std::vector<SatID> satList;
             /// vector of wavelength factor values
          short wavelengthFactor[2];
       };
-#endif
+//#endif
 
          /// Commonly used vector of strings
       typedef std::vector<std::string> StringVec;
@@ -299,12 +301,12 @@ namespace gpstk
       typedef std::map<RinexObsID, double> GLOCodPhsBias;
          /// Map SysChar + R2 Obs Type to Obs ID
       typedef std::map<std::string,std::string> DisAmbMap;
-#ifndef SWIG
+//#ifndef SWIG
          /// Corrections (e.g. code bias) vector
       typedef std::vector<Rinex3CorrInfo> CorrVec;
          /// Vector of wavelength factors
       typedef std::vector<ExtraWaveFact> FactorVector;
-#endif
+//#endif
 
          /** Storage for R2 <-> R3 conversion of obstypes during
           * reallyGet/Put Vector of strings containing ver 2 obs types
@@ -360,18 +362,18 @@ namespace gpstk
       gpstk::Triple centerOfMass;      ///< vehicle CENTER OF MASS: XYZ
       RinexObsMap mapObsTypes;         ///< SYS / # / OBS TYPES
       short wavelengthFactor[2];       ///< WAVELENGTH FACT (system-wide)
-#ifndef SWIG // nested structs/classes not supported by SWIG
+//#ifndef SWIG // nested structs/classes not supported by SWIG
       FactorVector extraWaveFactList;  ///< WAVELENGTH FACT (per SV)
-#endif
+//#endif
       std::string sigStrengthUnit;     ///< SIGNAL STRENGTH UNIT
       double interval;                 ///< INTERVAL
       CivilTime firstObs;              ///< TIME OF FIRST OBS
       CivilTime lastObs;               ///< TIME OF LAST OBS
       int receiverOffset;              ///< RCV CLOCK OFFS APPL
-#ifndef SWIG // nested structs/classes not supported by SWIG
+//#ifndef SWIG // nested structs/classes not supported by SWIG
       CorrVec infoDCBS;                ///< DCBS INFO
       CorrVec infoPCVS;                ///< PCVS INFO
-#endif
+//#endif
       SysScaleFacMap sysSfacMap;       ///< SYS / SCALE FACTOR
       SysPhsShftMap sysPhaseShift;     ///< SYS / PHASE SHIFT
       GLOFreqNumMap glonassFreqNo;     ///< GLONASS SLOT / FRQ #
