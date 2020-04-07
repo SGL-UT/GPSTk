@@ -68,3 +68,6 @@ add_executable(Vector_T Vector_T.cpp)
 target_link_libraries(Vector_T gpstk)
 add_test(Math_Vector Vector_T)
 
+add_executable(PowerSum_T PowerSum_T.cpp)
+target_link_libraries(PowerSum_T gpstk)
+add_test(NAME PowerSum_T COMMAND PowerSum_T)
