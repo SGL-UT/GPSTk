@@ -40,10 +40,7 @@
 #include "Stats.hpp"
 #include "PowerSum.hpp"
 #include "Exception.hpp"
-
-#include <cppunit/TestFixture.h>
-#include <cppunit/extensions/HelperMacros.h>
-
+#include "TestUtil.hpp"
 #include <stdlib.h>
 #include <math.h>
 
@@ -75,6 +72,7 @@ double gasdev()
 
 int main(int argc, char *argv[])
 {
+   TUDEF("PowerSum", "fail");
    gpstk::PowerSum ps;
    gpstk::Stats<double> s;
 
@@ -85,43 +83,50 @@ int main(int argc, char *argv[])
       s.Add(rv);
    }
 
-   //ps.dump(cout);
+      //ps.dump(cout);
 
-   //cout << "Stats class average:" << s.Average()
-   //     << " stddev:" << s.StdDev() << endl;
+      //cout << "Stats class average:" << s.Average()
+      //     << " stddev:" << s.StdDev() << endl;
 
    double e1 = std::abs(s.Average() - ps.average());
    double e2 = std::abs(s.StdDev() - sqrt(ps.variance()));
-   //cout << "Disagreement in average: " << e1 << endl
-   //     << "Disagreement in standard deviation: " << e2 << endl;
+      //cout << "Disagreement in average: " << e1 << endl
+      //     << "Disagreement in standard deviation: " << e2 << endl;
 
    try
    {
-     CPPUNIT_ASSERT(e1 < 1e-3);
-     CPPUNIT_ASSERT(e2 < 1e-3);
-     CPPUNIT_ASSERT(std::abs(ps.average()) < 1e-3);
-     // 2e-3 : tolerance is dependent on platform and can be improved with
-     // better random number generators
-     CPPUNIT_ASSERT(std::abs(sqrt(ps.variance())-1) < 2e-3);
-     CPPUNIT_ASSERT(std::abs(ps.skew()) < 0.01);
-     CPPUNIT_ASSERT(std::abs(ps.kurtosis()-3) < 0.05);
-     
+      TUCSM("average");
+      TUASSERT(e1 < 1e-3);
+      TUCSM("variance");
+      TUASSERT(e2 < 1e-3);
+      TUCSM("average");
+      TUASSERT(std::abs(ps.average()) < 1e-3);
+         // 2e-3 : tolerance is dependent on platform and can be improved with
+         // better random number generators
+      TUCSM("variance");
+      TUASSERT(std::abs(sqrt(ps.variance())-1) < 2e-3);
+      TUCSM("skew");
+      TUASSERT(std::abs(ps.skew()) < 0.01);
+      TUCSM("kurtosis");
+      TUASSERT(std::abs(ps.kurtosis()-3) < 0.05);
    }
    catch (gpstk::Exception& e)
    {
-     cout << e;
+      cout << e;
+      TUFAIL("Exception");
    }
 
 
-   //if (e1 > 1e-3 || e2 > 1e-3 || 
-   //    std::abs(ps.average()) > 1e-3 || 
-   //    std::abs(sqrt(ps.variance())-1) > 2e-3 || 
-   //    std::abs(ps.skew()) > 0.01 ||
-   //    std::abs(ps.kurtosis()-3) > 0.05)
-   //{
-   //   cout << "Error in computed values" << endl;
-   //   return -1;
-   //}
-   //cout << "Looks good to me..." << endl;
-   //return 0;
+      //if (e1 > 1e-3 || e2 > 1e-3 || 
+      //    std::abs(ps.average()) > 1e-3 || 
+      //    std::abs(sqrt(ps.variance())-1) > 2e-3 || 
+      //    std::abs(ps.skew()) > 0.01 ||
+      //    std::abs(ps.kurtosis()-3) > 0.05)
+      //{
+      //   cout << "Error in computed values" << endl;
+      //   return -1;
+      //}
+      //cout << "Looks good to me..." << endl;
+      //return 0;
+   TURETURN();
 }
