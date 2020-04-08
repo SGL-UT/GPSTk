@@ -328,7 +328,6 @@ public:
    /// @return >0 number of passes created, -1 inconsistent input, -2 obstypes
    ///   inconsistent with existing SatPass, -3 Loader not configured to save data, 
    ///   -4 no data -5 obstypes not provided for all systems
-   /// @throw Exception
    int WriteSatPassList(const std::map<char, std::vector<std::string> >& obstypes,
                         const std::map<char, std::vector<int> >& indexLoadOT,
                         std::vector<SatPass>& SPList);
@@ -336,6 +335,10 @@ public:
    /// Dump the SatObsCount table
    /// @param ostream s to which to write the table
    void dumpSatObsTable(std::ostream& s) const;
+
+   /// Dump the stored data for one epoch - NB setTimeFormat()
+   /// @param ostream s to which to write the data
+   void dumpStoreEpoch(std::ostream& s, const gpstk::Rinex3ObsData& rod) const;
 
    /// Dump the stored data - NB setTimeFormat()
    /// @param ostream s to which to write the data
