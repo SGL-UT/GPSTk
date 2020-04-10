@@ -113,14 +113,16 @@ add_test(NAME timeconvert_CmdOpt_GPSzcount29
 
 # check Julian date
 if ( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
-  set( TIMECONVERT_CMDOPT_JULIAN "-F %26.15J -f '1854 99'" )
-else
+  set( TIMECONVERT_CMDOPT_JULIAN "-f 1854 99" )
+  set( FOOBARBAZ "-F %26.15J" )
+else()
   set( TIMECONVERT_CMDOPT_JULIAN "-j 2457222.5011458333333333" )
 endif()
 add_test(NAME timeconvert_CmdOpt_Julian
          COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:timeconvert>
          -DPROG_OPTS=${TIMECONVERT_CMDOPT_JULIAN}
+         -DPROG_OPTS_2=${FOOBARBAZ}
          -DTESTNAME=timeconvert_CmdOpt_Julian
          -DTESTBASE=timeconvert_2015_200_99
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
