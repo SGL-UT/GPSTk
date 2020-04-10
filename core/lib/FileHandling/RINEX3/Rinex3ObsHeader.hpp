@@ -298,7 +298,7 @@ namespace gpstk
          /// Vector of wavelength factors
       typedef std::vector<ExtraWaveFact> FactorVector;
 //#endif
-      using FieldSet = std::set<Field>;
+      typedef std::set<Field> FieldSet;
 
       class Fields
       {
