@@ -40,6 +40,7 @@ using namespace gpstk;
 %include "STLHelpers.i"
 
 %include "exception.i"
+%exceptionclass Exception;
 %rename(__str__) gpstk::Exception::what() const;
 %include "Exception.hpp"
 %include "FFStreamError.hpp"

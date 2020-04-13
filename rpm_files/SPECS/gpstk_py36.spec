@@ -1,6 +1,6 @@
 %define name python3-gpstk
-%define version 3.1.0
-%define release 2
+%define version 4.0.0
+%define release 1
 
 Summary:        GPS Toolkit
 Name:           %{name}
@@ -60,6 +60,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Mar 30 2020 Andrew Kuck <kuck@arlut.utexas.edu>
+- Updated for v4.0.0 release
 * Tue Mar 03 2020 Andrew Kuck <kuck@arlut.utexas.edu>
 - Split single RPM into core and python packages for v3.1.0 release 2
 * Tue Mar 03 2020 Andrew Kuck <kuck@arlut.utexas.edu>
