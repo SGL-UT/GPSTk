@@ -115,7 +115,7 @@ add_test(NAME timeconvert_CmdOpt_GPSzcount29
 # Windows doesn't support true long doubles, so the lack of precision
 # means we can't use the same test case under Windows.
 if ( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
-  set( TIMECONVERT_CMDOPT_JULIAN "-j 2457222.501157407" )
+  set( TIMECONVERT_CMDOPT_JULIAN "-j 2457222.50125" )
   set( TIMECONVERT_CMDOPT_JULIAN_BASE "timeconvert_2015_200_100" )
 else()
   set( TIMECONVERT_CMDOPT_JULIAN "-j 2457222.5011458333333333" )
