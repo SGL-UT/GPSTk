@@ -113,8 +113,9 @@ add_test(NAME timeconvert_CmdOpt_GPSzcount29
 
 # check Julian date
 if ( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
-  set( TIMECONVERT_CMDOPT_JULIAN "-f 1854 99" )
-  set( FOOBARBAZ "-F %26.15J" )
+#  set( TIMECONVERT_CMDOPT_JULIAN "-f 1854 99" )
+#  set( FOOBARBAZ "-F %26.15J" )
+  set( TIMECONVERT_CMDOPT_JULIAN "-j 2457222.501145833" )
 else()
   set( TIMECONVERT_CMDOPT_JULIAN "-j 2457222.5011458333333333" )
 endif()
