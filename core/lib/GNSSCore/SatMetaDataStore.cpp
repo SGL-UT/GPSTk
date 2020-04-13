@@ -10,6 +10,7 @@ namespace gpstk
    bool SatMetaDataStore ::
    loadData(const std::string& sourceName)
    {
+      bool rv = true;
       std::ifstream ins(sourceName);
       if (!ins)
       {
@@ -46,10 +47,11 @@ namespace gpstk
          else
          {
             cerr << "Invalid record type: " << vals[0] << endl;
+            rv = false;
             continue;
          }
       }
-      return true;
+      return rv;
    }
 
 
