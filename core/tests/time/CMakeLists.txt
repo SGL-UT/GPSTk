@@ -112,20 +112,21 @@ add_test(NAME timeconvert_CmdOpt_GPSzcount29
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testopts.cmake)
 
 # check Julian date
+# Windows doesn't support true long doubles, so the lack of precision
+# means we can't use the same test case under Windows.
 if ( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
-#  set( TIMECONVERT_CMDOPT_JULIAN "-f 1854 99" )
-#  set( FOOBARBAZ "-F %26.15J" )
-  set( TIMECONVERT_CMDOPT_JULIAN "-j 2457222.501145833171904" )
+  set( TIMECONVERT_CMDOPT_JULIAN "-j 2457222.501157407" )
+  set( TIMECONVERT_CMDOPT_JULIAN_BASE "timeconvert_2015_200_100" )
 else()
   set( TIMECONVERT_CMDOPT_JULIAN "-j 2457222.5011458333333333" )
+  set( TIMECONVERT_CMDOPT_JULIAN_BASE "timeconvert_2015_200_99" )
 endif()
 add_test(NAME timeconvert_CmdOpt_Julian
          COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:timeconvert>
          -DPROG_OPTS=${TIMECONVERT_CMDOPT_JULIAN}
-         -DPROG_OPTS_2=${FOOBARBAZ}
          -DTESTNAME=timeconvert_CmdOpt_Julian
-         -DTESTBASE=timeconvert_2015_200_99
+         -DTESTBASE=${TIMECONVERT_CMDOPT_JULIAN_BASE}
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testopts.cmake)
