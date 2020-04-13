@@ -177,7 +177,7 @@ namespace gpstk
             // cerr << "< startTime" << endl;
             continue;
          }
-         if (when <= rv->endTime)
+         if (when < rv->endTime)
          {
             // std::cerr << "found it" << std::endl;
             // cerr << *rv << endl;
@@ -212,7 +212,7 @@ namespace gpstk
       {
          if ((rv->svn == svn) &&
              (when >= rv->startTime) &&
-             (when <= rv->endTime))
+             (when < rv->endTime))
          {
             // std::cerr << "found it" << std::endl;
             // cerr << *rv << endl;
