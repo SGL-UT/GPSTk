@@ -5,7 +5,7 @@
 # is only used when a satellite has been formally decommissioned but
 # is still transmitting data with the given code/PRN assignment.
 #
-# SAT, prn, svn, norad, FDMA channel, FDMA slot, system, launch year, launch DOY, launch SOD, start year, start DOY, start SOD, end year, end DOY, end SOD, orbital plane, orbital slot, satellite block/type, signal set name, mission number/ID, status, clock 1 type, clock 2 type, clock 3 type, clock 4 type, active clock
+# SAT, system, svn, prn, norad, FDMA channel, FDMA slot, launch year, launch DOY, launch SOD, start year, start DOY, start SOD, end year, end DOY, end SOD, orbital plane, orbital slot, satellite block/type, signal set name, mission number/ID, status, clock 1 type, clock 2 type, clock 3 type, clock 4 type, active clock
 # SIG, signal set name, carrier frequency, tracking code, nav code
 SIG,GPS I,L1,CA,LNav
 SIG,GPS I,L1,P,LNav
