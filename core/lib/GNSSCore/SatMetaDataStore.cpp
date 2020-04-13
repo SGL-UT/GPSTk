@@ -64,12 +64,13 @@ namespace gpstk
          // simple way to index the columns without having to change
          // all the numbers with every little change.
       unsigned i = 1;
+      sat.sys = SatID::convertStringToSatelliteSystem(vals[i++]);
+      sat.svn = vals[i++];
       if (StringUtils::isDigitString(vals[i]))
       {
          sat.prn = StringUtils::asUnsigned(vals[i]);
       }
       i++;
-      sat.svn = vals[i++];
       if (StringUtils::isDigitString(vals[i]))
       {
          sat.norad = StringUtils::asInt(vals[i]);
@@ -85,7 +86,6 @@ namespace gpstk
          sat.slotID = StringUtils::asUnsigned(vals[i]);
       }
       i++;
-      sat.sys = SatID::convertStringToSatelliteSystem(vals[i++]);
       unsigned long y,doy;
       double sod;
          // Set all time systems to any for now, the dozen or so
