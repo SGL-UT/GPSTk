@@ -136,7 +136,7 @@ if ( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
   set( TIMECONVERT_CMDOPT_MJD "-m 57222.125" )
   set( TIMECONVERT_CMDOPT_MJD_BASE "timeconvert_2015_200_100" )
 else()
-  set( TIMECONVERT_CMDOPT_MJD "-j 57222.0011458333333333" )
+  set( TIMECONVERT_CMDOPT_MJD "-m 57222.0011458333333333" )
   set( TIMECONVERT_CMDOPT_MJD_BASE "timeconvert_2015_200_99" )
 endif()
 add_test(NAME timeconvert_CmdOpt_MJD
@@ -377,12 +377,20 @@ add_test(NAME timediff_Equal_8
 
 # tests with actual time differences
 
+# ANSI_B is used for most tests
+# ANSI_C is used for tests where Windows would fail due to lack of precision,
+# see similar tests above.
 set( TIMECONVERT_CMDOPT_ANSI_B "-A 1437264098" )
+if ( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
+  set( TIMECONVERT_CMDOPT_ANSI_C "-A 1437274799" )
+else()
+  set( TIMECONVERT_CMDOPT_ANSI_C "-A 1437264098" )
+endif()
 add_test(NAME timediff_Diff_1
          COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:timediff>
          -DEXP_RC=0
-         -DSPARG1=${TIMECONVERT_CMDOPT_ANSI_B}
+         -DSPARG1=${TIMECONVERT_CMDOPT_ANSI_C}
          -DSPARG2=${TIMECONVERT_CMDOPT_JULIAN}
          -DEXP_OUT=-1.000000
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testinout.cmake)
@@ -391,7 +399,7 @@ add_test(NAME timediff_Diff_2
          COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:timediff>
          -DEXP_RC=0
-         -DSPARG1=${TIMECONVERT_CMDOPT_ANSI_B}
+         -DSPARG1=${TIMECONVERT_CMDOPT_ANSI_C}
          -DSPARG2=${TIMECONVERT_CMDOPT_MJD}
          -DEXP_OUT=-1.000000
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testinout.cmake)
