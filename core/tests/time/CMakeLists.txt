@@ -115,7 +115,7 @@ add_test(NAME timeconvert_CmdOpt_GPSzcount29
 # Windows doesn't support true long doubles, so the lack of precision
 # means we can't use the same test case under Windows.
 if ( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
-  set( TIMECONVERT_CMDOPT_JULIAN "-j 2457222.50125" )
+  set( TIMECONVERT_CMDOPT_JULIAN "-j 2457222.625" )
   set( TIMECONVERT_CMDOPT_JULIAN_BASE "timeconvert_2015_200_100" )
 else()
   set( TIMECONVERT_CMDOPT_JULIAN "-j 2457222.5011458333333333" )
@@ -132,13 +132,19 @@ add_test(NAME timeconvert_CmdOpt_Julian
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testopts.cmake)
 
 # check MJD
-set( TIMECONVERT_CMDOPT_MJD "-m 57222.0011458333333333" )
+if ( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
+  set( TIMECONVERT_CMDOPT_MJD "-m 57222.125" )
+  set( TIMECONVERT_CMDOPT_MJD_BASE "timeconvert_2015_200_100" )
+else()
+  set( TIMECONVERT_CMDOPT_MJD "-j 57222.0011458333333333" )
+  set( TIMECONVERT_CMDOPT_MJD_BASE "timeconvert_2015_200_99" )
+endif()
 add_test(NAME timeconvert_CmdOpt_MJD
          COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:timeconvert>
          -DPROG_OPTS=${TIMECONVERT_CMDOPT_MJD}
          -DTESTNAME=timeconvert_CmdOpt_MJD
-         -DTESTBASE=timeconvert_2015_200_99
+         -DTESTBASE=${TIMECONVERT_CMDOPT_MJD_BASE}
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testopts.cmake)

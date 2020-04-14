@@ -1,10 +1,10 @@
 
-        Month/Day/Year H:M:S            07/19/2015 00:01:48
-        Modified Julian Date            57222.001250000
-        GPSweek DayOfWeek SecOfWeek     830 0    108.000000
-        FullGPSweek Zcount              1854     72
-        Year DayOfYear SecondOfDay      2015 200   108.000000
-        Unix: Second Microsecond        1437264108      0
-        Zcount: 29-bit (32-bit)         435159112 (972030024)
+        Month/Day/Year H:M:S            07/19/2015 03:00:00
+        Modified Julian Date            57222.125000000
+        GPSweek DayOfWeek SecOfWeek     830 0  10800.000000
+        FullGPSweek Zcount              1854   7200
+        Year DayOfYear SecondOfDay      2015 200  10800.000000
+        Unix: Second Microsecond        1437274800      0
+        Zcount: 29-bit (32-bit)         435166240 (972037152)
 
 
