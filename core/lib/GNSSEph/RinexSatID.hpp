@@ -59,41 +59,13 @@ namespace gpstk
 
    class RinexSatID : public SatID
    {
-
    public:
-
          /// Empty constructor; creates an invalid object (Unknown, ID = -1).
-
-      RinexSatID()
-      throw()
-      { id = -1; system = systemUnknown; }
-
+      RinexSatID() = default;
 
          /// Explicit constructor, no defaults, RINEX systems only.
-
       RinexSatID(int p, const SatelliteSystem& s)
-         throw()
-      {
-         id = p; system = s;
-         switch(s)
-         {
-            case systemGPS:
-            case systemGalileo:
-            case systemGlonass:
-            case systemGeosync:
-            case systemTransit:
-            case systemQZSS:
-            case systemBeiDou:
-            case systemIRNSS:
-            case systemMixed:
-               break;
-                  // Invalidate anything non-RINEX.
-            default:
-               system = systemUnknown;
-               id = -1;
-         }
-      }
-
+         throw();
 
          /** Constructor from a string.
           * @throw Exception
@@ -104,163 +76,56 @@ namespace gpstk
          catch(Exception& e) { GPSTK_RETHROW(e); }
       }
 
-
          /// Cast a SatID to a RinexSatID.
-
       RinexSatID(const SatID& sat)
          throw()
-      { *this = RinexSatID(sat.id,sat.system); }
-
+            : SatID(sat)
+      {}
 
          /// Set the fill character used in output and
          /// return the current fill character.
-
       char setfill(char c)
          throw()
       { char csave = fillchar; fillchar = c; return csave; }
 
 
          /// Get the fill character used in output.
-
       char getfill() const
          throw()
       { return fillchar; }
 
-
          // operator=, copy constructor and destructor built by compiler
 
 
-         /// Return the single-character system descriptor.
-         /// @note return only RINEX types, for non-RINEX systems return '?'
-
+         /** Return the single-character system descriptor.
+          * @note return only RINEX types, for non-RINEX systems return '?'
+          */
       char systemChar() const
-         throw()
-      {
-         switch(system)
-         {
-            case systemGPS:     return 'G';
-            case systemGalileo: return 'E';
-            case systemGlonass: return 'R';
-            case systemGeosync: return 'S';
-            case systemTransit: return 'T';
-            case systemQZSS:    return 'J';
-            case systemBeiDou:  return 'C';
-            case systemIRNSS:   return 'I';
-            default:            return '?';
-         }
-      };
+         throw();
 
-
-         /// Return the system name as a string.
-         /// @note Return only RINEX types or 'Unknown'.
+         /* Return the system name as a string.
+          * @note Return only RINEX types or 'Unknown'.
+          */
       std::string systemString() const
-         throw()
-      {
-         switch(system)
-         {
-            case systemGPS:     return "GPS";
-            case systemGalileo: return "Galileo";
-            case systemGlonass: return "GLONASS";
-            case systemGeosync: return "Geosync";
-            case systemTransit: return "Transit";
-            case systemQZSS:    return "QZSS";
-            case systemBeiDou:  return "BeiDou";
-            case systemIRNSS:   return "IRNSS";
-            default:            return "Unknown";
-         }
-      };
+         throw();
 
-         /// Return the system name as a string of length 3.
-         /// @note Return only RINEX types or 'Unknown'.
+         /** Return the system name as a string of length 3.
+          * @note Return only RINEX types or 'Unknown'.
+          */
       std::string systemString3() const
-         throw()
-      {
-         switch(system)
-         {
-            case systemGPS:     return "GPS";
-            case systemGalileo: return "GAL";
-            case systemGlonass: return "GLO";
-            case systemGeosync: return "GEO";
-            case systemTransit: return "TRN";     // RINEX ver 2
-            case systemQZSS:    return "QZS";
-            case systemBeiDou:  return "BDS";
-            case systemIRNSS:   return "IRN";      // RINEX ver 3.03
-            default:            return "Unk";
-         }
-      };
-
+         throw();
 
          /** Set the RinexSatID from a string (1 character plus
           * 2-digit integer).
           * @note GPS is default system (no or unknown system char)
           * @throw Exception
           */
-      void fromString(const std::string& s)
-      {
-         char c;
-         std::istringstream iss(s);
+      void fromString(const std::string& s);
 
-         id = -1; system = systemGPS;  // default
-         if(s.find_first_not_of(std::string(" \t\n"), 0) == std::string::npos)
-            return;                    // all whitespace yields the default
-
-         iss >> c;                     // read one character (non-whitespace)
-         switch(c)
-         {
-               // no leading system character
-            case '0': case '1': case '2': case '3': case '4':
-            case '5': case '6': case '7': case '8': case '9':
-               iss.putback(c);
-               system = SatID::systemGPS;
-               break;
-            case 'R': case 'r':
-               system = SatID::systemGlonass;
-               break;
-            case 'T': case 't':
-               system = SatID::systemTransit;
-               break;
-            case 'S': case 's':
-               system = SatID::systemGeosync;
-               break;
-            case 'E': case 'e':
-               system = SatID::systemGalileo;
-               break;
-            case 'M': case 'm':
-               system = SatID::systemMixed;
-               break;
-            case ' ': case 'G': case 'g':
-               system = SatID::systemGPS;
-               break;
-            case 'J': case 'j':
-               system = SatID::systemQZSS;
-               break;
-            case 'I': case 'i':
-               system = SatID::systemIRNSS;
-               break;
-            case 'C': case 'c':
-               system = SatID::systemBeiDou;
-               break;
-            default:                   // non-RINEX system character
-               Exception e(std::string("Invalid system character \"")
-                           + c + std::string("\""));
-               GPSTK_THROW(e);
-         }
-         iss >> id;
-         if(id <= 0) id = -1;
-      }
-
-
-         /// Convert the RinexSatID to string (1 character plus 2-digit integer).
-
+         /** Convert the RinexSatID to string (1 character plus
+          * 2-digit integer). */
       std::string toString() const
-         throw()
-      {
-         std::ostringstream oss;
-         oss.fill(fillchar);
-         oss << systemChar() << std::setw(2) << id;
-         return oss.str();
-      }
-
+         throw();
 
    private:
 
@@ -269,7 +134,6 @@ namespace gpstk
    }; // class RinexSatID
 
       /// Stream output for RinexSatID.
-
    inline std::ostream& operator<<(std::ostream& s, const RinexSatID& sat)
    {
       s << sat.toString();
