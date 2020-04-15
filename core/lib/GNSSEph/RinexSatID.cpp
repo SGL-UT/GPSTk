@@ -51,23 +51,7 @@ namespace gpstk
       throw()
          : SatID(p, s)
    {
-      switch(s)
-      {
-         case systemGPS:
-         case systemGalileo:
-         case systemGlonass:
-         case systemGeosync:
-         case systemTransit:
-         case systemQZSS:
-         case systemBeiDou:
-         case systemIRNSS:
-         case systemMixed:
-            break;
-               // Invalidate anything non-RINEX.
-         default:
-            system = systemUnknown;
-            id = -1;
-      }
+      validate();
    }
 
 
@@ -238,5 +222,28 @@ namespace gpstk
       }
       oss << systemChar() << std::setw(2) << rinexID;
       return oss.str();
+   }
+
+
+   void RinexSatID ::
+   validate()
+   {
+      switch(system)
+      {
+         case systemGPS:
+         case systemGalileo:
+         case systemGlonass:
+         case systemGeosync:
+         case systemTransit:
+         case systemQZSS:
+         case systemBeiDou:
+         case systemIRNSS:
+         case systemMixed:
+            break;
+               // Invalidate anything non-RINEX.
+         default:
+            system = systemUnknown;
+            id = -1;
+      }
    }
 }

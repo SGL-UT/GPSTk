@@ -80,7 +80,7 @@ namespace gpstk
       RinexSatID(const SatID& sat)
          throw()
             : SatID(sat)
-      {}
+      { validate(); }
 
          /// Set the fill character used in output and
          /// return the current fill character.
@@ -128,6 +128,8 @@ namespace gpstk
          throw();
 
    private:
+         /// If an unsupported system is used, set to unknown and PRN -1.
+      void validate();
 
       static char fillchar;  ///< Fill character used during stream output.
 
