@@ -62,26 +62,10 @@ namespace gpstk
    public:
 
          /// empty constructor, creates an invalid object
-      SP3SatID() throw() { id=-1; system=systemGPS; }
+      SP3SatID() = default;
 
          /// explicit constructor, no defaults, SP3 systems only
-      SP3SatID(int p, SatelliteSystem s) throw()
-      {
-         id = p; system = s;
-         switch(system) {
-            case systemGPS:
-            case systemGlonass:
-            case systemGalileo:
-            case systemLEO: 
-            case systemBeiDou:
-            case systemQZSS: 
-            case systemMixed: break;
-                  // invalidate anything non-SP3
-            default:
-               system = systemUnknown;
-               id = -1;
-         }
-      }
+      SP3SatID(int p, SatelliteSystem s) throw();
 
          /** constructor from string
           * @throw Exception
@@ -94,7 +78,8 @@ namespace gpstk
 
          /// cast SatID to SP3SatID
       SP3SatID(const SatID& sat) throw()
-      { *this = SP3SatID(sat.id,sat.system); }
+            : SatID(sat)
+      { validate(); }
 
          /// set the fill character used in output
          /// return the current fill character
@@ -148,98 +133,22 @@ namespace gpstk
          /// return a character based on the system
          /// return the single-character system descriptor
          /// @note return only SP3 types, for non-SP3 systems return '?'
-      char systemChar() const throw()
-      {
-         switch (system) {
-            case systemGPS:     return 'G';
-            case systemGalileo: return 'E';
-            case systemGlonass: return 'R';
-            case systemLEO:     return 'L';
-            case systemBeiDou:  return 'C';
-            case systemQZSS:    return 'J';
-            case systemMixed:   return 'M';
-                  // non-SP3
-            default: return '?';
-         }
-      };
+      char systemChar() const throw();
 
-      std::string systemString() const throw()
-      {
-         switch (system) {
-            case systemGPS:     return "GPS";
-            case systemGalileo: return "Galileo";
-            case systemGlonass: return "Glonass";
-            case systemLEO:     return "LEO";
-            case systemBeiDou:  return "BeiDou";
-            case systemQZSS:    return "QZSS";
-            case systemMixed:   return "Mixed";
-            default:            return "Unknown";
-         }
-      };
+      std::string systemString() const throw();
 
          /** read from string
           * @note GPS is default system (no or unknown system char)
           * @throw Exception
           */
-      void fromString(const std::string s)
-      {
-         char c;
-         std::istringstream iss(s);
-
-         id = -1; system = systemGPS;  // default
-         if(s.find_first_not_of(std::string(" \t\n"), 0) == std::string::npos)
-            return;                    // all whitespace yields the default
-
-         iss >> c;                     // read one character (non-whitespace)
-         switch(c)
-         {
-               // no leading system character
-            case '0': case '1': case '2': case '3': case '4':
-            case '5': case '6': case '7': case '8': case '9':
-               iss.putback(c);
-               system = SatID::systemGPS;
-               break;
-            case ' ': case 'G': case 'g':
-               system = SatID::systemGPS;
-               break;
-            case 'R': case 'r':
-               system = SatID::systemGlonass;
-               break;
-            case 'E': case 'e':
-               system = SatID::systemGalileo;
-               break;
-            case 'L': case 'l':
-               system = SatID::systemLEO;
-               break;
-            case 'C': case 'c':
-               system = SatID::systemBeiDou;
-               break;
-            case 'J': case 'j':
-               system = SatID::systemQZSS;
-               break;
-            case 'M': case 'm':
-               system = SatID::systemMixed;
-               break;
-            default:                   // non-SP3 system character
-               Exception e(std::string("Invalid system character \"")
-                           + c + std::string("\""));
-               GPSTK_THROW(e);
-         }
-         iss >> id;
-         if(id <= 0) id = -1;
-      }
+      void fromString(const std::string s);
 
          /// convert to string
-      std::string toString() const throw()
-      {
-         std::ostringstream oss;
-         oss.fill(fillchar);
-         oss << systemChar()
-             << std::setw(2) << id;
-         return oss.str();
-      }
+      std::string toString() const throw();
 
    private:
+         /// If an unsupported system is used, set to unknown and PRN -1.
+      void validate();
 
       static char fillchar;  ///< fill character used during stream output
 
