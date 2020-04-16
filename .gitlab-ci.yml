@@ -184,6 +184,10 @@ test_debian_7:
     - cd build
     - ctest -j 4
     - touch $CI_PROJECT_DIR/success
+  artifacts:
+    when: on_failure
+    paths:
+    - build/Testing/Temporary/
   dependencies:
     - build_debian_7
   after_script:
@@ -213,6 +217,10 @@ test_debian_8:
     - cd build
     - ctest -j 4
     - touch $CI_PROJECT_DIR/success
+  artifacts:
+    when: on_failure
+    paths:
+    - build/Testing/Temporary/
   dependencies:
     - build_debian_8
   after_script:
@@ -234,6 +242,10 @@ test_debian_9:
     - cd build
     - ctest -j 4
     - touch $CI_PROJECT_DIR/success
+  artifacts:
+    when: on_failure
+    paths:
+    - build/Testing/Temporary/
   dependencies:
     - build_debian_9
   after_script:
@@ -261,6 +273,10 @@ test_debian_10:
     - cd build
     - ctest -j 4
     - touch $CI_PROJECT_DIR/success
+  artifacts:
+    when: on_failure
+    paths:
+    - build/Testing/Temporary/
   dependencies:
     - build_debian_10
   after_script:
@@ -283,6 +299,10 @@ test_conda_py27:
     - cd build
     - ctest -j 4
     - touch $CI_PROJECT_DIR/success
+  artifacts:
+    when: on_failure
+    paths:
+    - build/Testing/Temporary/
   dependencies:
     - build_conda_py27
   after_script:
@@ -305,6 +325,10 @@ test_conda_py36:
     - cd build
     - ctest -j 4
     - touch $CI_PROJECT_DIR/success
+  artifacts:
+    when: on_failure
+    paths:
+    - build/Testing/Temporary/
   dependencies:
     - build_conda_py36
   after_script:
@@ -326,6 +350,10 @@ test_redhat:
     - cd build
     - ctest -j 4
     - touch $CI_PROJECT_DIR/success
+  artifacts:
+    when: on_failure
+    paths:
+    - build/Testing/Temporary/
   dependencies:
     - build_redhat
   after_script:
@@ -345,6 +373,10 @@ test_windows:
   script:
     - cd build
     - cmake --build . --target RUN_TESTS --config Release
+  artifacts:
+    when: on_failure
+    paths:
+    - build/Testing/Temporary/
   dependencies:
     - build_windows
   allow_failure: true
