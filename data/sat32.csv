@@ -1,0 +1,5 @@
+# used by SatMetaDataStore_T test
+# SAT, system, svn, prn, norad, FDMA channel, FDMA slot, launch year, launch DOY, launch SOD, start year, start DOY, start SOD, end year, end DOY, end SOD, orbital plane, orbital slot, satellite block/type, signal set name, mission number/ID, status, clock 1 type, clock 2 type, clock 3 type, clock 4 type, active clock
+# SIG, signal set name, carrier frequency, tracking code, nav code
+SAT,GPS,23,32,28361,0,0,1990,330,0,1990,344,0,2016,25,79199,E,5,IIA,GPS IIA,10,Operational,Rubidium,Rubidium,Rubidium,Cesium,255
+SAT,GPS,70,32,41328,0,0,2016,34,49620,2016,34,49620,2132,244,0,F,1,IIF,GPS IIF,12,Operational,Rubidium,Rubidium,Rubidium,Unknown,255

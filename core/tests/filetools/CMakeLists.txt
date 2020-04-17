@@ -70,3 +70,38 @@ add_test(NAME bc2sp3_Same_3
          -DARGS=${ARGS_2}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testsame.cmake)
 
+
+# tests for smdscheck
+
+add_test(NAME smdscheck_CmdOpt_1
+         COMMAND ${CMAKE_COMMAND}
+         -DTEST_PROG=$<TARGET_FILE:smdscheck>
+         -DSOURCEDIR=${SD}
+         -DTARGETDIR=${TD}
+         -P ${CMAKE_CURRENT_SOURCE_DIR}/../testhelp.cmake)
+
+set(SMDSCHECK_VALID_ARGS "-M ${SD}/sats.csv")
+add_test(NAME smdscheck_valid
+  COMMAND ${CMAKE_COMMAND}
+  -DTEST_PROG=$<TARGET_FILE:smdscheck>
+  -DSOURCEDIR=${SD}
+  -DTARGETDIR=${TD}
+  -DTESTNAME=smdscheck_valid
+  -DTESTBASE=smdscheck_valid
+  -DARGS=${SMDSCHECK_VALID_ARGS}
+  -DNODIFF=1
+  -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
+
+set(SMDSCHECK_INVALID_ARGS "-M ${SD}/TropModel_Zero.exp")
+add_test(NAME smdscheck_invalid
+  COMMAND ${CMAKE_COMMAND}
+  -DTEST_PROG=$<TARGET_FILE:smdscheck>
+  -DARGS=${SMDSCHECK_INVALID_ARGS}
+  -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
+
+set(SMDSCHECK_MISSING_ARGS "-M ${SD}/not_a_real_file.what")
+add_test(NAME smdscheck_missing
+  COMMAND ${CMAKE_COMMAND}
+  -DTEST_PROG=$<TARGET_FILE:smdscheck>
+  -DARGS=${SMDSCHECK_MISSING_ARGS}
+  -P ${CMAKE_CURRENT_SOURCE_DIR}/../testfailexp.cmake)
