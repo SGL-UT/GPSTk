@@ -136,7 +136,10 @@ namespace gpstk
          Rinex3ObsHeader::validVersion,
             Rinex3ObsHeader::validRunBy,
             Rinex3ObsHeader::validMarkerName,
-            Rinex3ObsHeader::validMarkerType,
+               /** @note MARKER TYPE is actually required but in the
+                * interest of supporting the invalid IGS data files,
+                * we make it optional */
+               //Rinex3ObsHeader::validMarkerType,
             Rinex3ObsHeader::validObserver,
             Rinex3ObsHeader::validReceiver,
             Rinex3ObsHeader::validAntennaType,
@@ -1696,6 +1699,7 @@ namespace gpstk
       if((valid & allValid) != allValid)
       {
          FFStreamError e("Incomplete or invalid header");
+         allValid.describeMissing(valid, e);
          GPSTK_THROW(e);
       }
 
