@@ -23,7 +23,7 @@ namespace gpstk
   //----------------------------------------
   inline std::string getPathSep( void )
   {
-    #ifdef _WIN32
+    #ifdef WIN32
     const std::string path_sep(";");
     #else
     const std::string path_sep(":");
@@ -38,7 +38,7 @@ namespace gpstk
   //----------------------------------------
   inline std::string getFileSep( void )
   {
-    #ifdef _WIN32
+    #ifdef WIN32
     const std::string file_sep("\\");
     #else
     const std::string file_sep("/");

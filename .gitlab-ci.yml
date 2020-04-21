@@ -12,6 +12,8 @@ stages:
 # Default cmake arguments
 variables:
   CMAKE_ARG_DEFAULT: "-DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON -DPIP_WHEEL_SWITCH=ON ../"
+# this can be used for incremental builds
+#  GIT_CLEAN_FLAGS: none
 
 # Check Stage
 # Runs static analysis on code.
@@ -162,6 +164,10 @@ build_windows:
   artifacts:
     paths:
     - build/
+# used for incremental builds
+#  cache:
+#    paths:
+#    - build/
   timeout: 30m
 # Temporarily allow failures as Windows Runner issues are resolved
   allow_failure: true
@@ -184,6 +190,10 @@ test_debian_7:
     - cd build
     - ctest -j 4
     - touch $CI_PROJECT_DIR/success
+  artifacts:
+    when: on_failure
+    paths:
+    - build/Testing/Temporary/
   dependencies:
     - build_debian_7
   after_script:
@@ -213,6 +223,10 @@ test_debian_8:
     - cd build
     - ctest -j 4
     - touch $CI_PROJECT_DIR/success
+  artifacts:
+    when: on_failure
+    paths:
+    - build/Testing/Temporary/
   dependencies:
     - build_debian_8
   after_script:
@@ -234,6 +248,10 @@ test_debian_9:
     - cd build
     - ctest -j 4
     - touch $CI_PROJECT_DIR/success
+  artifacts:
+    when: on_failure
+    paths:
+    - build/Testing/Temporary/
   dependencies:
     - build_debian_9
   after_script:
@@ -261,6 +279,10 @@ test_debian_10:
     - cd build
     - ctest -j 4
     - touch $CI_PROJECT_DIR/success
+  artifacts:
+    when: on_failure
+    paths:
+    - build/Testing/Temporary/
   dependencies:
     - build_debian_10
   after_script:
@@ -283,6 +305,10 @@ test_conda_py27:
     - cd build
     - ctest -j 4
     - touch $CI_PROJECT_DIR/success
+  artifacts:
+    when: on_failure
+    paths:
+    - build/Testing/Temporary/
   dependencies:
     - build_conda_py27
   after_script:
@@ -305,6 +331,10 @@ test_conda_py36:
     - cd build
     - ctest -j 4
     - touch $CI_PROJECT_DIR/success
+  artifacts:
+    when: on_failure
+    paths:
+    - build/Testing/Temporary/
   dependencies:
     - build_conda_py36
   after_script:
@@ -326,6 +356,10 @@ test_redhat:
     - cd build
     - ctest -j 4
     - touch $CI_PROJECT_DIR/success
+  artifacts:
+    when: on_failure
+    paths:
+    - build/Testing/Temporary/
   dependencies:
     - build_redhat
   after_script:
@@ -345,6 +379,10 @@ test_windows:
   script:
     - cd build
     - cmake --build . --target RUN_TESTS --config Release
+  artifacts:
+    when: on_failure
+    paths:
+    - build/Testing/Temporary/
   dependencies:
     - build_windows
   allow_failure: true

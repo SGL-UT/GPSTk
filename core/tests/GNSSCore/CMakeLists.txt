@@ -161,5 +161,9 @@ add_test(NAME TropModel_Zero
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
 set_property(TEST TropModel_Zero PROPERTY LABELS Tropmodel)
 
+add_executable(SatMetaDataStore_T SatMetaDataStore_T.cpp)
+target_link_libraries(SatMetaDataStore_T gpstk)
+add_test(GNSSCore_SatMetaDataStore SatMetaDataStore_T)
+
 ###############################################################################
 ###############################################################################

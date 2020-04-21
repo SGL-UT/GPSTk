@@ -8,6 +8,16 @@ add_executable(FileHunter_T FileHunter_T.cpp)
 target_link_libraries(FileHunter_T gpstk)
 add_test(FileDirProc_FileHunter FileHunter_T)
 
+add_executable(FileSpecFind_T FileSpecFind_T.cpp)
+if( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
+  target_link_libraries(FileSpecFind_T gpstk shlwapi)
+else()
+  target_link_libraries(FileSpecFind_T gpstk)
+endif()
+add_test(NAME FileDirProc_FileSpecFind
+  COMMAND FileSpecFind_T
+  WORKING_DIRECTORY ${GPSTK_TEST_DATA_DIR})
+
 add_executable(FileSpec_T FileSpec_T.cpp)
 target_link_libraries(FileSpec_T gpstk)
 add_test(FileDirProc_FileSpec FileSpec_T)
