@@ -12,6 +12,8 @@ stages:
 # Default cmake arguments
 variables:
   CMAKE_ARG_DEFAULT: "-DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON -DPIP_WHEEL_SWITCH=ON ../"
+# this can be used for incremental builds
+#  GIT_CLEAN_FLAGS: none
 
 # Check Stage
 # Runs static analysis on code.
@@ -162,6 +164,10 @@ build_windows:
   artifacts:
     paths:
     - build/
+# used for incremental builds
+#  cache:
+#    paths:
+#    - build/
   timeout: 30m
 # Temporarily allow failures as Windows Runner issues are resolved
   allow_failure: true
