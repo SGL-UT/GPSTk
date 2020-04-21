@@ -235,7 +235,6 @@ namespace gpstk
          validLast                            ///< Used for testing only.
       };
    
-//#ifndef SWIG // nested structs/classes not supported by SWIG
          /** RINEX 3 DCBS/PCVS info (for differential code bias and
           * phase center variations corr.) */
       class Rinex3CorrInfo
@@ -255,7 +254,6 @@ namespace gpstk
             /// vector of wavelength factor values
          short wavelengthFactor[2];
       };
-//#endif
 
          /// Commonly used vector of strings
       typedef std::vector<std::string> StringVec;
@@ -292,12 +290,10 @@ namespace gpstk
       typedef std::map<RinexObsID, double> GLOCodPhsBias;
          /// Map SysChar + R2 Obs Type to Obs ID
       typedef std::map<std::string,std::string> DisAmbMap;
-//#ifndef SWIG
          /// Corrections (e.g. code bias) vector
       typedef std::vector<Rinex3CorrInfo> CorrVec;
          /// Vector of wavelength factors
       typedef std::vector<ExtraWaveFact> FactorVector;
-//#endif
       typedef std::set<Field> FieldSet;
 
       class Fields
@@ -443,18 +439,14 @@ namespace gpstk
       gpstk::Triple centerOfMass;      ///< vehicle CENTER OF MASS: XYZ
       RinexObsMap mapObsTypes;         ///< SYS / # / OBS TYPES
       short wavelengthFactor[2];       ///< WAVELENGTH FACT (system-wide)
-//#ifndef SWIG // nested structs/classes not supported by SWIG
       FactorVector extraWaveFactList;  ///< WAVELENGTH FACT (per SV)
-//#endif
       std::string sigStrengthUnit;     ///< SIGNAL STRENGTH UNIT
       double interval;                 ///< INTERVAL
       CivilTime firstObs;              ///< TIME OF FIRST OBS
       CivilTime lastObs;               ///< TIME OF LAST OBS
       int receiverOffset;              ///< RCV CLOCK OFFS APPL
-//#ifndef SWIG // nested structs/classes not supported by SWIG
       CorrVec infoDCBS;                ///< DCBS INFO
       CorrVec infoPCVS;                ///< PCVS INFO
-//#endif
       SysScaleFacMap sysSfacMap;       ///< SYS / SCALE FACTOR
       SysPhsShftMap sysPhaseShift;     ///< SYS / PHASE SHIFT
       GLOFreqNumMap glonassFreqNo;     ///< GLONASS SLOT / FRQ #
