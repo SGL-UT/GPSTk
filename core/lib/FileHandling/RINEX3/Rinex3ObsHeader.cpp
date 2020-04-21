@@ -109,7 +109,10 @@ namespace gpstk
          Rinex3ObsHeader::validVersion,
             Rinex3ObsHeader::validRunBy,
             Rinex3ObsHeader::validMarkerName,
-            Rinex3ObsHeader::validMarkerType,
+               /** @note MARKER TYPE is actually required but in the
+                * interest of supporting the invalid IGS data files,
+                * we make it optional */
+               //Rinex3ObsHeader::validMarkerType,
             Rinex3ObsHeader::validObserver,
             Rinex3ObsHeader::validReceiver,
             Rinex3ObsHeader::validAntennaType,
@@ -122,7 +125,7 @@ namespace gpstk
          Rinex3ObsHeader::validVersion,
             Rinex3ObsHeader::validRunBy,
             Rinex3ObsHeader::validMarkerName,
-            Rinex3ObsHeader::validMarkerType,
+               //Rinex3ObsHeader::validMarkerType,
             Rinex3ObsHeader::validObserver,
             Rinex3ObsHeader::validReceiver,
             Rinex3ObsHeader::validAntennaType,
@@ -136,9 +139,6 @@ namespace gpstk
          Rinex3ObsHeader::validVersion,
             Rinex3ObsHeader::validRunBy,
             Rinex3ObsHeader::validMarkerName,
-               /** @note MARKER TYPE is actually required but in the
-                * interest of supporting the invalid IGS data files,
-                * we make it optional */
                //Rinex3ObsHeader::validMarkerType,
             Rinex3ObsHeader::validObserver,
             Rinex3ObsHeader::validReceiver,
@@ -153,7 +153,7 @@ namespace gpstk
          Rinex3ObsHeader::validVersion,
             Rinex3ObsHeader::validRunBy,
             Rinex3ObsHeader::validMarkerName,
-            Rinex3ObsHeader::validMarkerType,
+               //Rinex3ObsHeader::validMarkerType,
             Rinex3ObsHeader::validObserver,
             Rinex3ObsHeader::validReceiver,
             Rinex3ObsHeader::validAntennaType,
@@ -2087,6 +2087,12 @@ namespace gpstk
          version = 2.11;
       }
       valid |= Rinex3ObsHeader::validWaveFact;
+      if (valid.isSet(Rinex3ObsHeader::validSystemNumObs))
+      {
+            // change from RINEX 3 header to RINEX 2 equivalent
+         valid.clear(Rinex3ObsHeader::validSystemNumObs);
+         valid.set(Rinex3ObsHeader::validNumObs);
+      }
          // TD unset R3-specific header members?
       
          // make a list of R2 obstype strings, and a map R3ObsIDs <= R2 obstypes for each system
@@ -2282,7 +2288,7 @@ namespace gpstk
          s << "Center of Mass   (XYZ,m) : "
            << setprecision(4) << antennaPhaseCtr   << endl;
       if(valid & validSigStrengthUnit  )
-         s << "Signal Strenth Unit = " << sigStrengthUnit << endl;
+         s << "Signal Strength Unit = " << sigStrengthUnit << endl;
       if(valid & validInterval         )
          s << "Interval = "
            << fixed << setw(7) << setprecision(3) << interval << endl;
