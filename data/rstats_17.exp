@@ -1,0 +1,40 @@
+Sum = 4629.8400
+Best step = 0.4400 (3.7594%) : total 134 data, counts 1 thru 139
+Range 5.2500 thru 65.8500
+Gap at cnt 2 = data 5.6900 : size 1 cnts = 0.4400 data
+Gap at cnt 5 = data 7.0100 : size 1 cnts = 0.4400 data
+Gap at cnt 8 = data 8.3300 : size 1 cnts = 0.4400 data
+Gap at cnt 11 = data 9.6500 : size 1 cnts = 0.4400 data
+Gap at cnt 14 = data 10.9700 : size 1 cnts = 0.4400 data
+Gap at cnt 18 = data 12.7300 : size 1 cnts = 0.4400 data
+Gap at cnt 23 = data 14.9300 : size 1 cnts = 0.4400 data
+Gap at cnt 44 = data 24.1700 : size -1 cnts = -0.4400 data
+Gap at cnt 49 = data 26.3700 : size -1 cnts = -0.4400 data
+Gap at cnt 52 = data 27.6900 : size -1 cnts = -0.4400 data
+Gap at cnt 55 = data 29.0100 : size -1 cnts = -0.4400 data
+Gap at cnt 57 = data 29.8900 : size -1 cnts = -0.4400 data
+Gap at cnt 60 = data 31.2100 : size -1 cnts = -0.4400 data
+Gap at cnt 62 = data 32.0900 : size -1 cnts = -0.4400 data
+Gap at cnt 67 = data 34.2900 : size -1 cnts = -0.4400 data
+Gap at cnt 69 = data 35.1700 : size -1 cnts = -0.4400 data
+Gap at cnt 71 = data 36.0500 : size -1 cnts = -0.4400 data
+Gap at cnt 74 = data 37.3700 : size -1 cnts = -0.4400 data
+Gap at cnt 77 = data 38.6900 : size -1 cnts = -0.4400 data
+Gap at cnt 80 = data 40.0100 : size -1 cnts = -0.4400 data
+Gap at cnt 86 = data 42.6500 : size -1 cnts = -0.4400 data
+Gap at cnt 92 = data 45.2900 : size 1 cnts = 0.4400 data
+Gap at cnt 96 = data 47.0500 : size 11 cnts = 4.8400 data
+Gap at cnt 108 = data 52.3300 : size -12 cnts = -5.2800 data
+Gap at cnt 108 = data 52.3300 : size 1 cnts = 0.4400 data
+Gap at cnt 112 = data 54.0900 : size 1 cnts = 0.4400 data
+Gap at cnt 116 = data 55.8500 : size 1 cnts = 0.4400 data
+Gap at cnt 118 = data 56.7300 : size 1 cnts = 0.4400 data
+Gap at cnt 121 = data 58.0500 : size 1 cnts = 0.4400 data
+Gap at cnt 124 = data 59.3700 : size 1 cnts = 0.4400 data
+Gap at cnt 127 = data 60.6900 : size 1 cnts = 0.4400 data
+Gap at cnt 129 = data 61.5700 : size 1 cnts = 0.4400 data
+Gap at cnt 132 = data 62.8900 : size 1 cnts = 0.4400 data
+Gap at cnt 134 = data 63.7700 : size 1 cnts = 0.4400 data
+Gap at cnt 136 = data 64.6500 : size 1 cnts = 0.4400 data
+Gap at cnt 138 = data 65.5300 : size 1 cnts = 0.4400 data
+
