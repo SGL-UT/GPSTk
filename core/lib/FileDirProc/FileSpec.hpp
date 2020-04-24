@@ -48,7 +48,7 @@
 
 #include "CommonTime.hpp"
 
-#ifdef _WIN32
+#ifdef WIN32
 const char slash = '\\';
 #else
 const char slash = '/';

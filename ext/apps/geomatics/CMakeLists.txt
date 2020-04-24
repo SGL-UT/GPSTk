@@ -7,5 +7,4 @@ add_subdirectory(kalman)
 add_subdirectory(relposition)
 add_subdirectory(RinexObsLoader_test)
 add_subdirectory(robust)
-add_subdirectory(rstats_test)
 

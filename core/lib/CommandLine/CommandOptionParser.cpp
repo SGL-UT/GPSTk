@@ -125,6 +125,15 @@ namespace gpstk
       string::size_type slashPos = progName.rfind('/');
       if (slashPos != string::npos)
          progName = progName.substr(slashPos + 1);
+#ifdef WIN32
+         // remove file extension of executable under windows for
+         // consistency with other platforms
+      string::size_type p = progName.find(".exe");
+      if (p != string::npos)
+      {
+         progName.erase(p,4);
+      }
+#endif
 
       string shortOptString;
       struct option* optArray = NULL;

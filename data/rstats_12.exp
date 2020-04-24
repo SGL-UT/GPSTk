@@ -1,0 +1,4 @@
+There are 2 outliers; 0 low (< 4.9250) and 2 high (> 64.3750).
+     n  x-value   value  val/outlim  val-ave (val-ave)/sig
+ OTH 1 69060.0000 65.0300 1.0102 30.4790 1.9650
+ OTH 2 69090.0000 65.8500 1.0229 31.2990 2.0178
