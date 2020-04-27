@@ -1,0 +1,3 @@
+FIXRES  1 OUT ind=98 npts=4 x_gap=180.00000 (x=67980.00000)
+FIXRES found 1 results: 1 outlier rejecting 4 pts and 0 slip (small slips ignored) in x-interval (67980.00000 67980.00000) = 0.00000
+FIXRES    with 9 high sigmas remaining and estimated limit 0.12148

@@ -41,7 +41,7 @@
 #include <sys/types.h>
 
 // headers for directory searching interface
-#ifndef _WIN32
+#ifndef WIN32
 #include <unistd.h>
 #else
 #include <direct.h>

@@ -1,0 +1,4 @@
+rstats(con): N    134  Ave 34.5510  Std 15.5113  Var 240.5991  Min 5.2500  Max 65.8500  P2P 60.6000
+rstats(two): N    134  Int -831.9412  Slp 0.0129 +- 0.0001  CSig 1.5033  Corr 0.9953
+rstats(wtd): N    134  Ave 37.0651  Std 15.2517  Var 232.6152  Min 5.2500  Max 65.8500  P2P 60.6000
+rstats(rob): N    134  Med 34.1800  MAD 17.5760  Min 5.2500  Max 65.8500  P2P 60.6000  Q1 22.7600  Q3 46.5400  QL -12.9100  QH 82.2100
