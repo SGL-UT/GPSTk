@@ -291,11 +291,11 @@ namespace gpstk {
       ObsID::tc2char[ObsID::tcJIQ6] = 'X';
       ObsID::tc2char[ObsID::tcIA5]  = 'A';
       ObsID::tc2char[ObsID::tcIB5]  = 'B';
-      ObsID::tc2char[ObsID::tcIB5]  = 'C';
+      ObsID::tc2char[ObsID::tcIC5]  = 'C';
       ObsID::tc2char[ObsID::tcIX5]  = 'X';
       ObsID::tc2char[ObsID::tcIA9]  = 'A';
       ObsID::tc2char[ObsID::tcIB9]  = 'B';
-      ObsID::tc2char[ObsID::tcIB9]  = 'C';
+      ObsID::tc2char[ObsID::tcIC9]  = 'C';
       ObsID::tc2char[ObsID::tcIX9]  = 'X';
 
       ObsID::validRinexSystems = "GRESCJI";
