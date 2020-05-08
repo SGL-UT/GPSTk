@@ -15,6 +15,16 @@ variables:
 # this can be used for incremental builds
 #  GIT_CLEAN_FLAGS: none
 
+# Template for all "big" builds.
+.big_build:
+  only:
+    refs:
+      - master
+      - /^ci_.*$/
+      - /^version_.*_prep$/
+      - tags
+
+
 # Check Stage
 # Runs static analysis on code.
 static_analysis:
@@ -29,15 +39,10 @@ static_analysis:
 
 build_debian_7:
   stage: build
+  extends: .big_build
   tags:
     - docker-executor
   image: debian7_fai_ish
-  only:
-    refs:
-      - master
-      - /^ci_.*$/
-      - /^version_.*_prep$/
-      - tags
   script:
     - mkdir build
     - cd build
@@ -50,15 +55,10 @@ build_debian_7:
 
 build_debian_8:
   stage: build
+  extends: .big_build
   tags:
     - docker-executor
   image: debian8_fai_ish
-  only:
-    refs:
-      - master
-      - /^ci_.*$/
-      - /^version_.*_prep$/
-      - tags
   script:
     - mkdir build
     - cd build
@@ -86,15 +86,10 @@ build_debian_9:
 
 build_debian_10:
   stage: build
+  extends: .big_build
   tags:
     - docker-executor
   image: debian10_fai_ish
-  only:
-    refs:
-      - master
-      - /^ci_.*$/
-      - /^version_.*_prep$/
-      - tags
   script:
     - mkdir build
     - cd build
@@ -177,15 +172,10 @@ build_windows:
 # Runs all tests of GPSTK for each platform
 test_debian_7:
   stage: test
+  extends: .big_build
   tags:
     - docker-executor
   image: debian7_fai_ish
-  only:
-    refs:
-      - master
-      - /^ci_.*$/
-      - /^version_.*_prep$/
-      - tags
   script:
     - cd build
     - ctest -j 4
@@ -210,15 +200,10 @@ test_debian_7:
 
 test_debian_8:
   stage: test
+  extends: .big_build
   tags:
     - docker-executor
   image: debian8_fai_ish
-  only:
-    refs:
-      - master
-      - /^ci_.*$/
-      - /^version_.*_prep$/
-      - tags
   script:
     - cd build
     - ctest -j 4
@@ -266,15 +251,10 @@ test_debian_9:
 
 test_debian_10:
   stage: test
+  extends: .big_build
   tags:
     - docker-executor
   image: debian10_fai_ish
-  only:
-    refs:
-      - master
-      - /^ci_.*$/
-      - /^version_.*_prep$/
-      - tags
   script:
     - cd build
     - ctest -j 4
@@ -400,7 +380,6 @@ user_install_debian_9:
     - cd build
     - export gpstk=`pwd`/install
     - export PYTHONPATH=$gpstk/lib/python2.7/site-packages
-    - mkdir -p $PYTHONPATH
     - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=$gpstk ../
     - make install -j 4
     - python -c "import gpstk"
@@ -419,7 +398,6 @@ user_install_redhat:
     - cd build
     - export gpstk=`pwd`/install
     - export PYTHONPATH=$gpstk/lib/python2.7/site-packages
-    - mkdir -p $PYTHONPATH
     - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=$gpstk ../
     - make install -j 4
     - python -c "import gpstk"
@@ -453,12 +431,12 @@ system_install_debian_9:
     - cd build
     - export gpstk=/usr/local
     - export PYTHONPATH=$gpstk/lib/python2.7/site-packages
-    - sudo mkdir -p $PYTHONPATH
     - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=$gpstk ../
     - sudo make install -j 4
     - python -c "import gpstk"
   dependencies:
     - build_debian_9
+
 
 system_install_redhat:
   stage: install
@@ -478,15 +456,10 @@ system_install_redhat:
 # Tests packaging of GPSTk on all platforms
 package_debian_9:
   stage: package
+  extends: .big_build
   tags:
     - docker-executor
   image: debian9_fai_ish
-  only:
-    refs:
-      - master
-      - /^ci_.*$/
-      - /^version_.*_prep$/
-      - tags
   script:
     - rm -rf ../*.deb
     - dpkg-buildpackage -us -uc -d
@@ -504,15 +477,10 @@ package_debian_9:
 
 package_conda:
   stage: package
+  extends: .big_build
   tags:
     - docker-executor
   image: deb9_conda_py36
-  only:
-    refs:
-      - master
-      - /^ci_.*$/
-      - /^version_.*_prep$/
-      - tags
   script:
     - conda activate conda_builder
     - export GIT_COMMIT=$CI_COMMIT_REF_NAME
@@ -526,13 +494,10 @@ package_conda:
 
 package_debian_9_wheel:
   stage: package
+  extends: .big_build
   tags:
     - docker-executor
   image: debian9_fai_ish
-  only:
-    refs:
-      - master
-      - /^ci_.*$/
   script:
     - mkdir dist
     - mv build/swig/module/dist/* dist
@@ -545,15 +510,10 @@ package_debian_9_wheel:
 
 package_redhat:
   stage: package
+  extends: .big_build
   tags:
     - docker-executor
   image: centos7_sgl
-  only:
-    refs:
-      - master
-      - /^ci_.*$/
-      - /^version_.*_prep$/
-      - tags
   script:
     - bash rpm_files/setup_dirs.sh
     - git archive --prefix gpstk-master/ -o rpm_files/SOURCES/gpstk-master.tar.gz HEAD
@@ -567,15 +527,10 @@ package_redhat:
 
 package_redhat_py36:
   stage: package
+  extends: .big_build
   tags:
     - docker-executor
   image: centos7_sgl
-  only:
-    refs:
-      - master
-      - /^ci_.*$/
-      - /^version_.*_prep$/
-      - tags
   script:
     - bash rpm_files/setup_dirs.sh
     - git archive --prefix python3-gpstk-master/ -o rpm_files/SOURCES/python3-gpstk-master.tar.gz HEAD
@@ -589,15 +544,10 @@ package_redhat_py36:
 
 package_redhat_py27:
   stage: package
+  extends: .big_build
   tags:
     - docker-executor
   image: centos7_sgl
-  only:
-    refs:
-      - master
-      - /^ci_.*$/
-      - /^version_.*_prep$/
-      - tags
   script:
     - bash rpm_files/setup_dirs.sh
     - git archive --prefix python-gpstk-master/ -o rpm_files/SOURCES/python-gpstk-master.tar.gz HEAD
@@ -611,15 +561,10 @@ package_redhat_py27:
 
 package_redhat_wheel:
   stage: package
+  extends: .big_build
   tags:
     - docker-executor
   image: centos7_sgl
-  only:
-    refs:
-      - master
-      - /^ci_.*$/
-      - /^version_.*_prep$/
-      - tags
   script:
     - mkdir dist
     - mv build/swig/module/dist/* dist
@@ -634,15 +579,10 @@ package_redhat_wheel:
 # Tests install of GPSTk package on each platform, saves artifacts for downstream builds.
 deploy_debian_9:
   stage: deploy
+  extends: .big_build
   tags:
     - docker-executor
   image: debian9_fai_ish
-  only:
-    refs:
-      - master
-      - /^ci_.*$/
-      - /^version_.*_prep$/
-      - tags
   script:
     - cd debs
     - sudo apt-get -y install ./*.deb
@@ -653,15 +593,10 @@ deploy_debian_9:
 
 deploy_redhat:
   stage: deploy
+  extends: .big_build
   tags:
     - docker-executor
   image: centos7_sgl
-  only:
-    refs:
-      - master
-      - /^ci_.*$/
-      - /^version_.*_prep$/
-      - tags
   script:
     - cd rpm_files/RPMS/x86_64/
     - sudo yum install gpstk-*.rpm -y
@@ -671,15 +606,10 @@ deploy_redhat:
 
 deploy_redhat_py27:
   stage: deploy
+  extends: .big_build
   tags:
     - docker-executor
   image: centos7_sgl
-  only:
-    refs:
-      - master
-      - /^ci_.*$/
-      - /^version_.*_prep$/
-      - tags
   script:
     - cd rpm_files/RPMS/x86_64/
     - sudo yum install gpstk-*.rpm -y
@@ -692,15 +622,10 @@ deploy_redhat_py27:
 
 deploy_redhat_py36:
   stage: deploy
+  extends: .big_build
   tags:
     - docker-executor
   image: centos7_sgl
-  only:
-    refs:
-      - master
-      - /^ci_.*$/
-      - /^version_.*_prep$/
-      - tags
   script:
     - cd rpm_files/RPMS/x86_64/
     - sudo yum install gpstk-*.rpm -y
