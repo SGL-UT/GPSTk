@@ -69,7 +69,9 @@ namespace gpstk {
       ObsID::cbDesc[ObsID::cbL1]        = "L1";            //Rinex 1
       ObsID::cbDesc[ObsID::cbL2]        = "L2";            //Rinex 2
       ObsID::cbDesc[ObsID::cbL5]        = "L5";            //Rinex 5
+      ObsID::cbDesc[ObsID::cbG1a]       = "G1a";
       ObsID::cbDesc[ObsID::cbG1]        = "G1";            //Rinex 1
+      ObsID::cbDesc[ObsID::cbG2a]       = "G2a";
       ObsID::cbDesc[ObsID::cbG2]        = "G2";            //Rinex 2
       ObsID::cbDesc[ObsID::cbG3]        = "G3";            //Rinex 3
       ObsID::cbDesc[ObsID::cbE5b]       = "E5b";           //Rinex 7
@@ -106,6 +108,12 @@ namespace gpstk {
       ObsID::tcDesc[ObsID::tcIR3]       = "GLOIR5";        //Rinex I    // GLO L3 I code
       ObsID::tcDesc[ObsID::tcQR3]       = "GLOQR5";        //Rinex Q    // GLO L3 Q code
       ObsID::tcDesc[ObsID::tcIQR3]      = "GLOI+QR5";      //Rinex X    // GLO L3 I+Q code
+      ObsID::tcDesc[ObsID::tcL1OC]      = "GLOL1OC";
+      ObsID::tcDesc[ObsID::tcL1OCD]     = "GLOL1OCD";
+      ObsID::tcDesc[ObsID::tcL1OCP]     = "GLOL1OCP";
+      ObsID::tcDesc[ObsID::tcL2CSI]     = "GLOL2CSI";
+      ObsID::tcDesc[ObsID::tcL2CSIOCp]  = "GLOL2CSI+OCp";
+      ObsID::tcDesc[ObsID::tcL20CP]     = "GLOL2OCP";
 
       ObsID::tcDesc[ObsID::tcA]         = "GALA";          //Rinex A    // GAL
       ObsID::tcDesc[ObsID::tcB]         = "GALB";          //Rinex B    // GAL
@@ -121,6 +129,11 @@ namespace gpstk {
       ObsID::tcDesc[ObsID::tcIE5b]      = "GALI5b";        //Rinex I    // GAL
       ObsID::tcDesc[ObsID::tcQE5b]      = "GALQ5b";        //Rinex Q    // GAL
       ObsID::tcDesc[ObsID::tcIQE5b]     = "GALI+Q5b";      //Rinex X    // GAL
+      ObsID::tcDesc[ObsID::tcA6]        = "GALA6";
+      ObsID::tcDesc[ObsID::tcABC6]      = "GALABC6";
+      ObsID::tcDesc[ObsID::tcB6]        = "GALB6";
+      ObsID::tcDesc[ObsID::tcBC6]       = "GALBC6";
+      ObsID::tcDesc[ObsID::tcC6]        = "GALC6";
 
       ObsID::tcDesc[ObsID::tcSCA]       = "SBASC/A";       //Rinex C    // SBAS civil code
       ObsID::tcDesc[ObsID::tcSI5]       = "SBASI5";        //Rinex I    // SBAS L5 I code
@@ -141,6 +154,12 @@ namespace gpstk {
       ObsID::tcDesc[ObsID::tcJI6]       = "QZSSL6I";       //Rinex S    // QZSS LEX(6) I code
       ObsID::tcDesc[ObsID::tcJQ6]       = "QZSSL6Q";       //Rinex L    // QZSS LEX(6) Q code
       ObsID::tcDesc[ObsID::tcJIQ6]      = "QZSSL6I+Q";     //Rinex X    // QZSS LEX(6) I+Q code
+      ObsID::tcDesc[ObsID::tcJI5S]      = "QZSSL5SI";
+      ObsID::tcDesc[ObsID::tcJIQ5S]     = "QZSSL5SI+Q";
+      ObsID::tcDesc[ObsID::tcJQ5S]      = "QZSSL5SQ";
+      ObsID::tcDesc[ObsID::tcJD6]       = "QZSSL6D";
+      ObsID::tcDesc[ObsID::tcJDE6]      = "QZSSL6D+E";
+      ObsID::tcDesc[ObsID::tcJE6]       = "QZSSL6E";
 
       ObsID::tcDesc[ObsID::tcCI1]       = "BDSIB1";        //Rinex I    // BeiDou L1 I code
       ObsID::tcDesc[ObsID::tcCQ1]       = "BDSQB1";        //Rinex Q    // BeiDou L1 Q code
@@ -151,6 +170,21 @@ namespace gpstk {
       ObsID::tcDesc[ObsID::tcCI6]       = "BDSIB3";        //Rinex I    // BeiDou B3 I code
       ObsID::tcDesc[ObsID::tcCQ6]       = "BDSQB3";        //Rinex Q    // BeiDou B3 Q code
       ObsID::tcDesc[ObsID::tcCIQ6]      = "BDSI+QB3";      //Rinex X    // BeiDou B3 I+Q code
+      ObsID::tcDesc[ObsID::tcCA1]       = "BDS1A";
+      ObsID::tcDesc[ObsID::tcCCD1]      = "BDS1CD";
+      ObsID::tcDesc[ObsID::tcCCDP1]     = "BDS1CDP";
+      ObsID::tcDesc[ObsID::tcCCP1]      = "BDS1CP";
+      ObsID::tcDesc[ObsID::tcCodelessC] = "BDSCodeless";
+      ObsID::tcDesc[ObsID::tcCI2a]      = "BDSIB2a";
+      ObsID::tcDesc[ObsID::tcCI2ab]     = "BDSIB2ab";
+      ObsID::tcDesc[ObsID::tcCI2b]      = "BDSIB2b";
+      ObsID::tcDesc[ObsID::tcCIQ3A]     = "BDSI+Q3A";
+      ObsID::tcDesc[ObsID::tcCIQ2a]     = "BDSI+QB2a";
+      ObsID::tcDesc[ObsID::tcCIQ2ab]    = "BDSI+QB2ab";
+      ObsID::tcDesc[ObsID::tcCIQ2b]     = "BDSI+QB2b";
+      ObsID::tcDesc[ObsID::tcCQ2a]      = "BDSQB2a";
+      ObsID::tcDesc[ObsID::tcCQ2ab]     = "BDSQB2ab";
+      ObsID::tcDesc[ObsID::tcCQ2b]      = "BDSQB2b";
 
       ObsID::tcDesc[ObsID::tcIA5]       = "IRNSSL5A";      //Rinex A    // IRNSS L5 SPS
       ObsID::tcDesc[ObsID::tcIB5]       = "IRNSSL5B";      //Rinex B    // IRNSS L5 RS(D)
@@ -179,7 +213,9 @@ namespace gpstk {
       ObsID::char2ot['C'] = ObsID::otRange;
       ObsID::char2ot['L'] = ObsID::otPhase;
       ObsID::char2ot['D'] = ObsID::otDoppler;
+      ObsID::char2ot['I'] = ObsID::otIono;
       ObsID::char2ot['S'] = ObsID::otSNR;
+      ObsID::char2ot['X'] = ObsID::otChannel;
       ObsID::char2ot['-'] = ObsID::otUndefined;
 
       ObsID::char2cb[' '] = ObsID::cbUnknown;
@@ -187,6 +223,7 @@ namespace gpstk {
       ObsID::char2cb['1'] = ObsID::cbL1;
       ObsID::char2cb['2'] = ObsID::cbL2;
       ObsID::char2cb['3'] = ObsID::cbG3;
+      ObsID::char2cb['4'] = ObsID::cbG1a;
       ObsID::char2cb['5'] = ObsID::cbL5;
       ObsID::char2cb['6'] = ObsID::cbE6;
       ObsID::char2cb['7'] = ObsID::cbE5b;
@@ -211,6 +248,7 @@ namespace gpstk {
       ObsID::char2tc['A'] = ObsID::tcA;
       ObsID::char2tc['B'] = ObsID::tcB;
       ObsID::char2tc['Z'] = ObsID::tcABC;
+      ObsID::char2tc['E'] = ObsID::tcJE6;
       ObsID::char2tc['-'] = ObsID::tcUndefined;
 
       // Since some of the items in the enums don't have corresponding RINEX
