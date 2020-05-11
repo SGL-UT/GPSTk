@@ -50,6 +50,8 @@
 #include <arpa/nameser_compat.h>
 #elif defined (_AIX)
 #include <sys/machine.h>
+#elif defined(__MINGW32__) || defined(__MINGW64__)
+#include <sys/param.h>
 #endif
 
 #include "Exception.hpp"
