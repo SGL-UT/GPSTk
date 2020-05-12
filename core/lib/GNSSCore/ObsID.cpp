@@ -91,6 +91,18 @@ namespace gpstk
       band = char2cb[ cb ];
       code = char2tc[ tc ];
 
+         // special handling for iono delay and channel num pseudo-observables.
+      if ((ot == 'X') && ((cb != '1') || (tc != ' ')))
+      {
+         InvalidParameter e("Invalid channel number pseudo-obs ID " + strID);
+         GPSTK_THROW(e);
+      }
+      if ((ot == 'I') && ((cb < '1') || (cb > '9') || (tc != ' ')))
+      {
+         InvalidParameter e("Invalid ionospheric delay pseudo-obs ID " + strID);
+         GPSTK_THROW(e);
+      }
+
       /// This next block takes care of fixing up the codes that are reused
       /// between the various signals
       switch (sys)

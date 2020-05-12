@@ -358,36 +358,43 @@ namespace gpstk {
 
       // this defines the valid obs types
       // NB these tc characters are ORDERED ~best to worst
-      ObsID::validRinexTrackingCodes['G']['1'] = "PYWLMIQSXCN* ";   // except no C1N
-      ObsID::validRinexTrackingCodes['G']['2'] = "PYWLMIQSXCDN* ";  // except no C2N
+         // except no C1N
+      ObsID::validRinexTrackingCodes['G']['1'] = "PYWLMCSXN* ";
+         // except no C2N
+      ObsID::validRinexTrackingCodes['G']['2'] = "PYWLMCSXDN* ";
       ObsID::validRinexTrackingCodes['G']['5'] = "IQX* ";
 
       ObsID::validRinexTrackingCodes['R']['1'] = "PC* ";
       ObsID::validRinexTrackingCodes['R']['2'] = "PC* ";
       ObsID::validRinexTrackingCodes['R']['3'] = "IQX* ";
+      ObsID::validRinexTrackingCodes['R']['4'] = "ABX* ";
+      ObsID::validRinexTrackingCodes['R']['6'] = "ABX* ";
 
-      ObsID::validRinexTrackingCodes['E']['1'] = "ABCIQXZ* ";
+      ObsID::validRinexTrackingCodes['E']['1'] = "ABCXZ* ";
       ObsID::validRinexTrackingCodes['E']['5'] = "IQX* ";
-      ObsID::validRinexTrackingCodes['E']['6'] = "ABCIQXZ* ";
+      ObsID::validRinexTrackingCodes['E']['6'] = "ABCXZ* ";
       ObsID::validRinexTrackingCodes['E']['7'] = "IQX* ";
       ObsID::validRinexTrackingCodes['E']['8'] = "IQX* ";
 
       ObsID::validRinexTrackingCodes['S']['1'] = "C* ";
       ObsID::validRinexTrackingCodes['S']['5'] = "IQX* ";
 
-      //NB 24Jun2013 MGEX data uses 2!  RINEX 3.03: 1 for 3.02, 2 for 3.0[013]
-      ObsID::validRinexTrackingCodes['C']['1'] = "IQX* ";
+         /** @note 3.02 uses carrier "1" for "B1-2", every other RINEX
+          * version uses carrier "2", so we have to leave IQ in C1 */
+      ObsID::validRinexTrackingCodes['C']['1'] = "PAIQXDN* ";
       ObsID::validRinexTrackingCodes['C']['2'] = "IQX* ";
-      ObsID::validRinexTrackingCodes['C']['6'] = "IQX* ";
-      ObsID::validRinexTrackingCodes['C']['7'] = "IQX* ";
+      ObsID::validRinexTrackingCodes['C']['5'] = "PXD* ";
+      ObsID::validRinexTrackingCodes['C']['6'] = "AIQX* ";
+      ObsID::validRinexTrackingCodes['C']['7'] = "ZPIQXD* ";
+      ObsID::validRinexTrackingCodes['C']['8'] = "PXD* ";
 
       ObsID::validRinexTrackingCodes['J']['1'] = "CSLXZ* ";
       ObsID::validRinexTrackingCodes['J']['2'] = "SLX* ";
-      ObsID::validRinexTrackingCodes['J']['5'] = "IQX* ";
-      ObsID::validRinexTrackingCodes['J']['6'] = "SLX* ";
+      ObsID::validRinexTrackingCodes['J']['5'] = "IQDPXZ* ";
+      ObsID::validRinexTrackingCodes['J']['6'] = "ESLXZ* ";
 
-      ObsID::validRinexTrackingCodes['I']['5'] = "ABCX* " ;
-      ObsID::validRinexTrackingCodes['I']['9'] = "ABCX* " ;
+      ObsID::validRinexTrackingCodes['I']['5'] = "ABCX* ";
+      ObsID::validRinexTrackingCodes['I']['9'] = "ABCX* ";
    }
 
 

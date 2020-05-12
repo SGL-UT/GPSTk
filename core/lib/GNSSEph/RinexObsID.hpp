@@ -139,6 +139,15 @@ namespace gpstk
           * some codes are shared between satellite systems. */
       std::string asString() const;
 
+         /** This is used by Rinex3ObsHeader::getObsIndex to determine
+          * a pseudo-equality that takes into account handling of
+          * pseudo-observables like ionospheric delay and channel
+          * numbers.
+          * @return true if this and right are the same, ignoring
+          *   tracking codes for ionospheric delay, and tracking codes
+          *   and band for channel numbers. */
+      bool equalIndex(const RinexObsID& right) const;
+
          // see ObsID for definition of validRinexTrackingCodes and
          // validRinexSystems.
          //static std::map<char, std::map<char, std::string> > validRinexTrackingCodes;

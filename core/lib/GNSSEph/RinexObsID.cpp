@@ -85,6 +85,16 @@ namespace gpstk
       buff[0] = ot2char[type];
       buff[1] = cb2char[band];
       buff[2] = tc2char[code];
+         // special cases.
+      if (type == ObsID::otIono)
+      {
+         buff[2] = ' ';
+      }
+      else if (type == ObsID::otChannel)
+      {
+         buff[1] = '1';
+         buff[2] = ' ';
+      }
       buff[3] = 0;
       return std::string(buff);
    }
@@ -165,11 +175,30 @@ namespace gpstk
       char tc(strID[2]);
       std::string codes(ObsID::validRinexTrackingCodes[sys][cb]);
       if(ot == ' ' || ot == '-')
+      {
          return false;
+      }
+      if (ObsID::char2ot.find(ot) == ObsID::char2ot.end())
+      {
+         return false;
+      }
       if(codes.find(std::string(1,tc)) == std::string::npos)
+      {
          return false;
+      }
+         // special cases for iono and channel num
+      if (ot == 'I' && ((tc != ' ') || (cb < '1') || (cb > '9')))
+      {
+         return false;
+      }
+      if (ot == 'X' && ((tc != ' ') || (cb != '1')))
+      {
+         return false;
+      }
       if(sys == 'G' && ot == 'C' && tc == 'N')           // the one exception
+      {
          return false;
+      }
 
       return true;
    }
@@ -223,6 +252,26 @@ namespace gpstk
       }
 
       return s;
+   }
+
+   bool RinexObsID ::
+   equalIndex(const RinexObsID& right)
+      const
+   {
+      if (type != right.type)
+         return false;
+      if (type == otIono)
+      {
+            // only check band for ionospheric delay.
+         return band == right.band;
+      }
+      if (type == otChannel)
+      {
+            // There's only one channel type pseudo-observable
+         return true;
+      }
+         // use the default for everything else
+      return operator==(right);
    }
 
 }  // end namespace

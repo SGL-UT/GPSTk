@@ -1,0 +1,24 @@
+     3.04           OBSERVATION DATA    G (GPS)             RINEX VERSION / TYPE
+                                        20200512 181734 UTC PGM / RUN BY / DATE
+                                                            MARKER NAME
+                                                            MARKER NUMBER
+                                                            OBSERVER / AGENCY
+                                                            REC # / TYPE / VERS
+                                                            ANT # / TYPE
+        0.0000        0.0000        0.0000                  APPROX POSITION XYZ
+        0.0000        0.0000        0.0000                  ANTENNA: DELTA H/E/N
+E   20 C5I L5I D5I S5I I5  C6A L6A D6A S6A I6  C7I L7I D7I  SYS / # / OBS TYPES
+       S7I I7  C8I L8I D8I S8I I8                           SYS / # / OBS TYPES
+G   10 C1C L1C D1C S1C I1  C2C L2C D2C S2C I2               SYS / # / OBS TYPES
+I    5 C9A L9A D9A S9A I9                                   SYS / # / OBS TYPES
+R   10 C3I L3I D3I S3I I3  C4A L4A D4A S4A I4               SYS / # / OBS TYPES
+     0.000                                                  INTERVAL
+     0     0     0     0     0    0.0000000     UNK         TIME OF FIRST OBS
+G L1C 54.32100   1 G07                                      SYS / PHASE SHIFT
+ C1C    0.000 C1P    0.000 C2C    0.000 C2P    0.000        GLONASS COD/PHS/BIS
+                                                            END OF HEADER
+> 2020 03 11 12 00  0.0000000  0  1      
+G07         1.000           2.000           3.000           4.000          11.000           6.000           7.000           8.000           9.000          10.000  
+E07         1.000           2.000           3.000           4.000           5.000           6.000           7.000           8.000           9.000          10.000          11.000          12.000          13.000          14.000          15.000          16.000          17.000          18.000          19.000          20.000  
+R07         1.000           2.000           3.000           4.000           5.000           6.000           7.000           8.000           9.000          10.000  
+I07         1.000           2.000           3.000           4.000           5.000  

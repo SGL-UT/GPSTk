@@ -259,7 +259,7 @@ namespace gpstk
       typedef std::vector<std::string> StringVec;
          /// Simple vector of ints
       typedef std::vector<int> IntVec;
-         /// @todo document me
+         /// Type used to count the number of observations for each observable.
       typedef std::map<RinexSatID, IntVec> PRNNumObsMap;
          /** Scale Factor corrections for observations
           * map <ObsType, ScaleFactor> */
@@ -583,6 +583,14 @@ namespace gpstk
       std::vector<RinexObsID> mapR2ObsToR3Obs_R();
       std::vector<RinexObsID> mapR2ObsToR3Obs_E();
       std::vector<RinexObsID> mapR2ObsToR3Obs_S();
+
+         /** Because of how pseudo-observables are handled, we need
+          * this function to remap the contents of mapObsTypes such
+          * that ionospheric delay and channel pseudo-observables get
+          * the treatment they need. */
+      void remapObsTypes(RinexObsMap& remapped,
+                         std::map<std::string,unsigned>& obsCount)
+         const;
 
       friend class Rinex3ObsData;
 

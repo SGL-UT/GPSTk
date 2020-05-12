@@ -175,7 +175,7 @@ namespace gpstk
    {
       R2ObsTypes.clear();
       mapSysR2toR3ObsID.clear();
-      version = 3.03;
+      version = 3.04;
       fileType = "O";          // observation data
       fileSys = "G";           // GPS only by default
       preserveVerType = false; // let the write methods chose the above
@@ -596,9 +596,19 @@ namespace gpstk
          static const int maxObsPerLine = 13;
 
          map<string,vector<RinexObsID> >::const_iterator mapIter;
+
+            // because of the way pseudo-observables are mapped from
+            // ObsID/RinexObsID to the RINEX file, we have to manually
+            // count the observables first.
+         map<string,unsigned> obsCount;
+         RinexObsMap dummy;
+         remapObsTypes(dummy, obsCount);
+            // now do the actual writing
          for(mapIter = mapObsTypes.begin(); mapIter != mapObsTypes.end();
              mapIter++)
          {
+            bool addedChannel = false;
+            std::set<ObsID::CarrierBand> addedIono;
             int obsWritten = 0;
             line = ""; // make sure the line contents are reset
 
@@ -606,12 +616,24 @@ namespace gpstk
 
             for(size_t i = 0; i < ObsTypeList.size(); i++)
             {
+               if (ObsTypeList[i].type == ObsID::otIono)
+               {
+                  if (addedIono.count(ObsTypeList[i].band) > 0)
+                     continue; // only write this pseudo-obs once
+                  addedIono.insert(ObsTypeList[i].band);
+               }
+               else if (ObsTypeList[i].type == ObsID::otChannel)
+               {
+                  if (addedChannel)
+                     continue; // only write this pseudo-obs once
+                  addedChannel = true;
+               }
                   // the first line needs to have the GNSS type and # of obs
                if(obsWritten == 0)
                {
                   line  =  leftJustify(mapIter->first, 1);
                   line += string(2, ' ');
-                  line += rightJustify(asString(ObsTypeList.size()), 3);
+                  line += rightJustify(asString(obsCount[mapIter->first]), 3);
                }
                   // if you hit 13, write out the line and start a new one
                else if((obsWritten % maxObsPerLine) == 0)
@@ -838,6 +860,11 @@ namespace gpstk
                   RinexObsID obsid(jt->first);
                   RinexSatID sat(jt->second.begin()->first);
                   double corr(jt->second.begin()->second);
+                  if (obsid.type != ObsID::otPhase)
+                  {
+                        // Phase shift only makes sense for phase measurements.
+                     continue;
+                  }
                   line = sys + " ";
                   line += leftJustify(obsid.asString(),3) + " ";
                   line += rightJustify(asString(corr,5),8);
@@ -2478,9 +2505,12 @@ namespace gpstk
          /// RinexObsMap mapObsTypes;         ///< SYS / # / OBS TYPES
 
          // find the GNSS in the map
-      RinexObsMap::const_iterator it = mapObsTypes.find(sys);
+      RinexObsMap remapped;
+      std::map<std::string,unsigned> obsCount;
+      remapObsTypes(remapped, obsCount);
+      RinexObsMap::const_iterator it = remapped.find(sys);
 
-      if (it == mapObsTypes.end())
+      if (it == remapped.end())
       {
          InvalidRequest ir("GNSS system " + sys + " not stored.");
          GPSTK_THROW(ir);
@@ -2489,7 +2519,7 @@ namespace gpstk
       const RinexObsVec& rov = it->second;
       for (size_t i=0; i<rov.size(); i++)
       {
-         if (rov[i] == obsID)
+         if (rov[i].equalIndex(obsID))
             return i;
       }
       
@@ -2765,6 +2795,38 @@ namespace gpstk
          s << *i;
       }
       return s;
+   }
+
+
+   void Rinex3ObsHeader ::
+   remapObsTypes(RinexObsMap& remapped, map<string,unsigned>& obsCount)
+      const
+   {
+      for (const auto& mapIter : mapObsTypes)
+      {
+            // I and X pseudo-observables are special cases, and can
+            // only be listed once (or once per band in the case of
+            // the ionospheric delay) in any sane manner.
+         bool addedChannel = false;
+         std::set<ObsID::CarrierBand> addedIono;
+         for(size_t i = 0; i < mapIter.second.size(); i++)
+         {
+            if (mapIter.second[i].type == ObsID::otIono)
+            {
+               if (addedIono.count(mapIter.second[i].band) > 0)
+                  continue; // only write this pseudo-obs once
+               addedIono.insert(mapIter.second[i].band);
+            }
+            else if (mapIter.second[i].type == ObsID::otChannel)
+            {
+               if (addedChannel)
+                  continue; // only write this pseudo-obs once
+               addedChannel = true;
+            }
+            remapped[mapIter.first].push_back(mapIter.second[i]);
+            obsCount[mapIter.first]++;
+         }
+      }
    }
 
 } // namespace gpstk
