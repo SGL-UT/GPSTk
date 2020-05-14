@@ -354,7 +354,7 @@ namespace gpstk {
       ObsID::map3to1sys["QZS"] = "J";
       ObsID::map3to1sys["IRN"] = "I";
 
-      ObsID::validRinexFrequencies = "12356789";
+      ObsID::validRinexFrequencies = "123456789";
 
       // this defines the valid obs types
       // NB these tc characters are ORDERED ~best to worst

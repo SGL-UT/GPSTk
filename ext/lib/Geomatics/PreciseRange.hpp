@@ -79,9 +79,9 @@ namespace gpstk
       /// @param Position& Rx        receiver position
       /// @param SatID sat           satellite
       /// @param AntexData& antenna  satellite antenna data;
-      ///                               if not valid, no PCO/V correction is done
+      /// @param string& freq1,freq2 ANTEX frequencies to evaluate PCO/Vs eg 'G01'
       /// @param SolarSystem& SolSys SolarSystem object, to get SatelliteAttitude()
-      ///                               for use with antenna.
+      ///   if any of above 4 not valid, PCO/V correction is NOT done (silently)
       /// @param XvtStore Eph        Ephemeris store
       /// @param bool isCOM          if true, Eph is Center-of-mass,
       ///                               else antenna-phase-center, default false.
@@ -92,6 +92,8 @@ namespace gpstk
                                    const Position& Rx,
                                    const SatID sat,
                                    const AntexData& antenna,
+                                   const std::string& freq1,
+                                   const std::string& freq2,
                                    SolarSystem& SolSys,
                                    const XvtStore<SatID>& Eph,
                                    const bool isCOM=false);
@@ -105,11 +107,12 @@ namespace gpstk
                                    const SatID sat,
                                    const XvtStore<SatID>& Eph)
       {
-         // antdummy will be invalid, so antenna computations will be skipped;
+         // ant will be invalid, so antenna computations will be skipped;
          // thus satellite attitude will not be needed.
-         AntexData antdummy;
-         SolarSystem ssdummy;
-         return ComputeAtTransmitTime(nomRecTime,pr,Rx,sat,antdummy,ssdummy,Eph);
+         AntexData ant;
+         SolarSystem ss;
+         std::string s;
+         return ComputeAtTransmitTime(nomRecTime,pr,Rx,sat,ant,s,s,ss,Eph);
       }
 
       /// The computed raw (geometric) range in meters, with NO corrections applied;

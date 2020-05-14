@@ -34,10 +34,9 @@ examples:
    $ build.sh        # Just build software
    $ sudo build.sh -s -b /tmp/qwe    # Build and install core to $system_install_prefix
    $ build.sh -tue     # Build, test and install core, external, and python bindings to $gpstk
-   $ build.sh -vt  -- -DCMAKE_BUILD_TYPE=debug  # build for running debugger
-   # BWT: -O3 is forced for now (see below); or run with
-   # ./build.sh -evx -- -DCMAKE_CXX_FLAGS=-O3
-   #  which gives cmake -DCMAKE_CXX_FLAGS=-O3 -DBUILD_PYTHON=OFF -DBUILD_EXT=ON -DDEBUG_SWITCH=ON /local/Code/gpstk
+   $ build.sh -vt  -- -DCMAKE_BUILD_TYPE=debug   # build for running debugger
+   $ build.sh -vt  -- -DCMAKE_BUILD_TYPE=release # build for release
+   # MUST choose release to get -O3 optimization on linux
 
 OPTIONS:
 

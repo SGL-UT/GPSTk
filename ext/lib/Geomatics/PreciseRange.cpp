@@ -38,6 +38,8 @@
 /// Implement computation of range and associated quantities from XvtStore,
 /// given receiver position and time.
 
+// system includes
+#include <sstream>               // for ostringstream
 // GPSTk includes
 #include "MiscMath.hpp"
 #include "GPSEllipsoid.hpp"
@@ -58,6 +60,8 @@ namespace gpstk
                                               const Position& Receiver,
                                               const SatID sat,
                                               const AntexData& antenna,
+                                              const string& Freq1,
+                                              const string& Freq2,
                                               SolarSystem& SolSys,
                                               const XvtStore<SatID>& Eph,
                                               const bool isCOM)
@@ -139,12 +143,12 @@ namespace gpstk
       // ----------------------------------------------------------
       // satellite antenna pco and pcv
       if(isCOM && antenna.isValid()) {
-         static const double fact1GPS=2.5458;         // (alpha+1)/alpha GPS
-         static const double fact2GPS=-1.5458;        // -1/alpha
-         static const double fact1GLO=2.53125;        // (alpha+1)/alpha GLO
-         static const double fact2GLO=-1.53125;       // -1/alpha
-         double fact1,fact2;
-         string freq1,freq2;
+         // must combine PCO/V from freq1,2
+         unsigned int freq1(strtoul(Freq1.substr(1).c_str(),0,10));
+         unsigned int freq2(strtoul(Freq2.substr(1).c_str(),0,10));
+         double alpha(getAlpha(sat,freq1,freq2));
+         double fact1((alpha+1.0)/alpha);
+         double fact2(-1.0/alpha);
 
          // rotation matrix from satellite attitude: Rot*[XYZ]=[body frame]
          Matrix<double> SVAtt;
@@ -160,19 +164,9 @@ namespace gpstk
             SVAtt = SatelliteAttitude(SatR, Sun);
          }
 
-         // get factors and frequencies for system
-         if(sat.system == SatID::systemGlonass) {
-            fact1=fact1GLO; fact2=fact2GLO;
-            freq1="R01"; freq2="R02";
-         }
-         else {
-            fact1=fact1GPS; fact2=fact2GPS;
-            freq1="G01"; freq2="G02";
-         }
-
          // phase center offset vector in body frame
-         Triple pco1 = antenna.getPhaseCenterOffset(freq1);
-         Triple pco2 = antenna.getPhaseCenterOffset(freq2);
+         Triple pco1 = antenna.getPhaseCenterOffset(Freq1);
+         Triple pco2 = antenna.getPhaseCenterOffset(Freq2);
          Vector<double> PCO(3);
          for(i=0; i<3; i++)            // body frame, mm -> m, iono-free combo
             PCO(i) = (fact1*pco1[i]+fact2*pco2[i])/1000.0;
@@ -188,8 +182,8 @@ namespace gpstk
          // get the body frame azimuth and nadir angles
          double nadir,az;
          SatelliteNadirAzimuthAngles(SatR, Rx, SVAtt, nadir, az);
-         satLOSPCV = 0.001*(fact1 * antenna.getPhaseCenterVariation(freq1, az, nadir)
-                         + fact2 * antenna.getPhaseCenterVariation(freq2, az, nadir));
+         satLOSPCV = 0.001*(fact1 * antenna.getPhaseCenterVariation(Freq1, az, nadir)
+                         + fact2 * antenna.getPhaseCenterVariation(Freq2, az, nadir));
       }
       else {
          satLOSPCO = satLOSPCV = 0.0;

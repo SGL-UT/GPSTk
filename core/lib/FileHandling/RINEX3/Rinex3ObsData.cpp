@@ -713,6 +713,10 @@ namespace gpstk
             {
                GPSTK_RETHROW(e);
             }
+            catch (Exception& e)
+            {
+               GPSTK_RETHROW(e);
+            }
          }
       }
 

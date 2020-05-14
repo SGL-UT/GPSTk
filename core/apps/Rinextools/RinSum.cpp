@@ -342,6 +342,10 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
    if(iret == -3)
       return iret;      // invalid command line
 
+      // define verbose and debug
+   verbose = (LOGlevel >= VERBOSE);
+   debug = (LOGlevel - DEBUG);
+
       // help: print syntax page and quit
    if(opts.hasHelp())
    {
@@ -435,7 +439,9 @@ string Configuration::BuildCommandLine(void) throw()
 {
       // Program description will appear at the top of the syntax page
    string PrgmDesc = " Program " + PrgmName + " reads one or more RINEX (v.2+) "
-      + "observation files and prints a summary of content.\n Options:";
+      + "observation files and prints a summary of content."
+      + "\n  Note verbose dumps all auxiliary headers."
+      + "\n Options:";
    opts.DefineUsageString("RinSum <file> [options]");
 
       // options to appear on the syntax page, and to be accepted on command line
@@ -486,17 +492,19 @@ string Configuration::BuildCommandLine(void) throw()
 
    opts.Add(0, "ycode", "", false, false, &ycode, "# Other:",
             "Assume v2.11 P mean Y");
-   opts.Add(0, "verbose", "", false, false, &verbose, "",
-            "Print extra output information");
-   opts.Add(0, "debug", "", false, false, &debug, "",
-            "Print debug output at level 0 [debug<n> for level n=1-7]");
-   opts.Add(0, "help", "", false, false, &help, "",
-            "Print this syntax page, and quit");
    opts.Add('q', "quiet", "", false, false, &quiet, "",
             "Make output a little quieter");
 
-      // deprecated (old,new)
-      //opts.Add_deprecated("--SP3","--eph");
+   // CommandLine adds automatically
+   //opts.Add(0, "verbose", "", false, false, &verbose, "# Help:",
+   //         "Print extra output information");
+   //opts.Add(0, "debug", "", false, false, &debug, "",
+   //         "Print debug output at level 0 [debug<n> for level n=1-7]");
+   //opts.Add(0, "help", "", false, false, &help, "",
+   //         "Print this syntax page, and quit");
+
+   // deprecated (old,new) e.g.
+   //opts.Add_deprecated("--SP3","--eph");
 
    return PrgmDesc;
 
@@ -790,7 +798,7 @@ int ProcessFiles()
          }
 
             // initialize counting -------------------------------------------
-         int nepochs(0), ncommentblocks(0), nmaxobs(0);
+         int nepochs(0), nauxheads(0), nmaxobs(0);
          vector<TableData> table;            // table of counts per sat,obs
          map<char, vector<int> > totals;     // totals per system,obs
 
@@ -906,31 +914,36 @@ int ProcessFiles()
                break;
             }
 
-               // fix time systems
-            if(nepochs == 0 &&
-               Rdata.time.getTimeSystem() != Rhead.lastObs.getTimeSystem())
-            {
-               Rhead.lastObs.setTimeSystem(Rdata.time.getTimeSystem());
-               Rhead.firstObs.setTimeSystem(Rdata.time.getTimeSystem());
+               // fix time systems - only for data, not aux headers
+            if(Rdata.epochFlag == 0) {
+               if(nepochs == 0 &&
+                  Rdata.time.getTimeSystem() != Rhead.lastObs.getTimeSystem())
+               {
+                  Rhead.lastObs.setTimeSystem(Rdata.time.getTimeSystem());
+                  Rhead.firstObs.setTimeSystem(Rdata.time.getTimeSystem());
+               }
+               lastObsTime = Rdata.time;
+               lastObsTime.setTimeSystem(Rhead.lastObs.getTimeSystem());
+               firstObsTime.setTimeSystem(Rhead.lastObs.getTimeSystem());
+               prevObsTime.setTimeSystem(Rhead.lastObs.getTimeSystem());
+               if(firstObsTime == CommonTime::BEGINNING_OF_TIME)
+                  firstObsTime = lastObsTime;
             }
-            lastObsTime = Rdata.time;
-            lastObsTime.setTimeSystem(Rhead.lastObs.getTimeSystem());
-            firstObsTime.setTimeSystem(Rhead.lastObs.getTimeSystem());
-            prevObsTime.setTimeSystem(Rhead.lastObs.getTimeSystem());
-            if(firstObsTime == CommonTime::BEGINNING_OF_TIME)
-               firstObsTime = lastObsTime;
 
-               //LOG(INFO) << "";
             LOG(DEBUG) << " Read RINEX data: flag " << Rdata.epochFlag
                        << ", timetag " << printTime(Rdata.time,C.longfmt);
 
                // if aux header data, either output or skip
             if(Rdata.epochFlag > 1)
             {
-               if(C.debug > -1)
-                  for(j=0; j<Rdata.auxHeader.commentList.size(); j++)
-                     LOG(DEBUG) << "Comment: " << Rdata.auxHeader.commentList[j];
-               ncommentblocks++;
+               //if(C.debug > -1)
+               //   for(j=0; j<Rdata.auxHeader.commentList.size(); j++)
+               //      LOG(DEBUG) << "Comment: " << Rdata.auxHeader.commentList[j];
+               if(C.verbose) {
+                  LOG(INFO) << "\nDump auxiliary header information:";
+                  Rdata.auxHeader.dump(LOGstrm);
+               }
+               nauxheads++;
                continue;
             }
 
@@ -1190,7 +1203,7 @@ int ProcessFiles()
          LOG(INFO) << "There were " << nepochs << " epochs ("
                    << fixed << setprecision(2) << double(nepochs*100)/i
                    << "% of " << i << " possible epochs in this timespan) and "
-                   << ncommentblocks << " inline header blocks.";
+                   << nauxheads << " inline header blocks.";
 
             // Sort table
          if(C.sorttime)
