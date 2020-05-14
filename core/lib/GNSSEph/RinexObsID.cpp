@@ -195,6 +195,14 @@ namespace gpstk
       {
          return false;
       }
+      if (((codes == "* ") || (codes == " *")) && (ot == 'I'))
+      {
+            // channel num must always be "band" 1, but if the system
+            // doesn't have any actual data on "1" band, we don't want
+            // to accidentally say that we can get iono delay data for
+            // a band that isn't valid for the system.
+         return false;
+      }
       if(sys == 'G' && ot == 'C' && tc == 'N')           // the one exception
       {
          return false;

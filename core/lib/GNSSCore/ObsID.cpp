@@ -92,15 +92,24 @@ namespace gpstk
       code = char2tc[ tc ];
 
          // special handling for iono delay and channel num pseudo-observables.
-      if ((ot == 'X') && ((cb != '1') || (tc != ' ')))
+      if (ot == 'X')
       {
-         InvalidParameter e("Invalid channel number pseudo-obs ID " + strID);
-         GPSTK_THROW(e);
+         if ((cb != '1') || (tc != ' '))
+         {
+            InvalidParameter e("Invalid channel number pseudo-obs ID " + strID);
+            GPSTK_THROW(e);
+         }
+         code = tcUndefined;
       }
-      if ((ot == 'I') && ((cb < '1') || (cb > '9') || (tc != ' ')))
+      if (ot == 'I')
       {
-         InvalidParameter e("Invalid ionospheric delay pseudo-obs ID " + strID);
-         GPSTK_THROW(e);
+         if ((cb < '1') || (cb > '9') || (tc != ' '))
+         {
+            InvalidParameter e("Invalid ionospheric delay pseudo-obs ID " +
+                               strID);
+            GPSTK_THROW(e);
+         }
+         code = tcUndefined;
       }
 
       /// This next block takes care of fixing up the codes that are reused

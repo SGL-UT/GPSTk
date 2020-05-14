@@ -837,13 +837,14 @@ void Configuration::SetDefaults(void) throw()
    //map<string,string> mapSysCodes;   // map of system, default codes e.g. GLO,PC
    // don't use ObsID::validRinexTrackingCodes b/c order is important
    mapSysCodes.insert(make_pair(string("GPS"),string("PYWLMIQSXCN")));
-   mapSysCodes.insert(make_pair(string("GLO"),string("PC")));
+   mapSysCodes.insert(make_pair(string("GLO"),string("PCIQXAB")));
    mapSysCodes.insert(make_pair(string("GAL"),string("ABCIQXZ")));
    mapSysCodes.insert(make_pair(string("GEO"),string("CIQX")));
-   mapSysCodes.insert(make_pair(string("BDS"),string("IQX")));
-   mapSysCodes.insert(make_pair(string("QZS"),string("CSLXZ")));
+   mapSysCodes.insert(make_pair(string("BDS"),string("DPIQXZAN")));
+   mapSysCodes.insert(make_pair(string("QZS"),string("CSLXZIQXDE")));
    mapSysCodes.insert(make_pair(string("IRN"),string("ABCX")));
 
+      /// @todo use ObsID versions of these maps
    map1to3Sys["G"] = "GPS";   map3to1Sys["GPS"] = "G";
    map1to3Sys["R"] = "GLO";   map3to1Sys["GLO"] = "R";
    map1to3Sys["E"] = "GAL";   map3to1Sys["GAL"] = "E";
@@ -931,74 +932,173 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
    }  // end combohelp
 
    // print all valid RinexObsIDs
-   if(typehelp) {
+   if(typehelp)
+   {
       vector<string> goodtags;
       string syss(ObsID::validRinexSystems);
       // build a table
       map<string, map<string, map<string, map<char,string> > > > table;
       for(size_t s=0; s<syss.size(); s++)
-         for(int j=ObsID::cbAny; j<ObsID::cbUndefined; ++j)
-            for(int k=ObsID::tcAny; k<ObsID::tcUndefined; ++k)
-               for(int i=ObsID::otAny; i<ObsID::otUndefined; ++i)
-                  try {
-                     string tag(string(1,syss[s]) +
-                                string(1,ObsID::ot2char[ObsID::ObservationType(i)]) +
-                                string(1,ObsID::cb2char[ObsID::CarrierBand(j)]) +
-                                string(1,ObsID::tc2char[ObsID::TrackingCode(k)]));
+      {
+         for(int j=0; j<ObsID::cbLast; ++j)
+         {
+            ObsID::CarrierBand carrierBand = (ObsID::CarrierBand)j;
+            switch (carrierBand)
+            {
+               case ObsID::cbUnknown:
+               case ObsID::cbAny:
+               case ObsID::cbUndefined:
+               case ObsID::cbLast:
+               case ObsID::cbZero:
+                     // skip the above tracking codes
+                  continue;
+            }
+            for(int k=0; k<ObsID::tcLast; ++k)
+            {
+               ObsID::TrackingCode trackCode = (ObsID::TrackingCode)k;
+               switch (trackCode)
+               {
+                  case ObsID::tcUnknown:
+                  case ObsID::tcAny:
+                  case ObsID::tcUndefined:
+                  case ObsID::tcLast:
+                        // skip the above tracking codes
+                     continue;
+               }
+               for(int i=0; i<ObsID::otLast; ++i)
+               {
+                  ObsID::ObservationType obsType = (ObsID::ObservationType)i;
+                  switch (obsType)
+                  {
+                     case ObsID::otUnknown:
+                     case ObsID::otAny:
+                     case ObsID::otUndefined:
+                     case ObsID::otLast:
+                           // skip the above obs types
+                        continue;
+                  }
+                  try
+                  {
+                     string tag(
+                        string(1,syss[s]) +
+                        string(1,ObsID::ot2char[obsType]) +
+                        string(1,ObsID::cb2char[carrierBand]) +
+                        string(1,ObsID::tc2char[trackCode]));
                      ObsID obs(tag);
                      string name(asString(obs));
-                     if(name.find("Unknown") != string::npos ||
-                        name.find("undefined") != string::npos ||
-                        name.find("Any") != string::npos ||
-                        !isValidRinexObsID(tag)) continue;
+                     if (name.find("Unknown") != string::npos ||
+                         name.find("undefined") != string::npos ||
+                         name.find("Any") != string::npos ||
+                         !isValidRinexObsID(tag))
+                     {
+                        continue;
+                     }
 
-                     if(find(goodtags.begin(),goodtags.end(),tag) == goodtags.end()) {
+                     if (find(goodtags.begin(), goodtags.end(), tag) ==
+                         goodtags.end())
+                     {
                         goodtags.push_back(tag);
-                        string sys(RinexSatID(string(1,tag[0])).systemString3());
+                        string sys(
+                           RinexSatID(string(1,tag[0])).systemString3());
                         char type(ObsID::ot2char[ObsID::ObservationType(i)]);
-                        string id(tag); // TD keep sys char ? id(tag.substr(1));
+                           /// @todo keep sys char ? id(tag.substr(1));
+                        string id(tag);
                         string desc(asString(ObsID(tag)));
                         vector<string> fld(split(desc,' '));
-                        string codedesc(fld[1].substr(syss[s]=='S'?4:3));
+                        string codedesc = fld[1];
+                        if ((codedesc.find("GPS") == 0) ||
+                            (codedesc.find("GLO") == 0) ||
+                            (codedesc.find("GAL") == 0) ||
+                            (codedesc.find("BDS") == 0))
+                        {
+                           codedesc.erase(0,3);
+                        }
+                        else if ((codedesc.find("SBAS") == 0) ||
+                                 (codedesc.find("QZSS") == 0))
+                        {
+                           codedesc.erase(0,4);
+                        }
+                        else if (codedesc.find("IRNSS") == 0)
+                        {
+                           codedesc.erase(0,5);
+                        }
                         string band(fld[0]);
                         table[sys][band][codedesc][type] = id;
                      }
                   }
-                  catch(InvalidParameter& ir) { continue; }
+                  catch(InvalidParameter& ir)
+                  {
+                     continue;
+                  }
+               }
+            }
+         }
+      }
 
       map<string, map<string, map<string, map<char,string> > > >::iterator it;
       map<string, map<string, map<char,string> > >::iterator jt;
       map<string, map<char,string> >::iterator kt;
       // find field lengths
-      size_t len2(4),len3(5),len4(6);  // 3-char len4(7);        // 4-char
+      size_t len2(4),len3(5),len4(8);  // 3-char len4(7);        // 4-char
       for(it=table.begin(); it!=table.end(); ++it)
+      {
          for(jt=it->second.begin(); jt!=it->second.end(); ++jt)
-            for(kt=jt->second.begin(); kt!=jt->second.end(); ++kt) {
-               if(jt->first.length() > len2) len2 = jt->first.length();
-               if(kt->first.length() > len3) len3 = kt->first.length();
+         {
+            for(kt=jt->second.begin(); kt!=jt->second.end(); ++kt)
+            {
+               if(jt->first.length() > len2)
+                  len2 = jt->first.length();
+               if(kt->first.length() > len3)
+                  len3 = kt->first.length();
             }
+         }
+      }
       LOG(INFO) << "\n# All valid RINEX observation codes";
                                     // (as sys+code = 1+3 char):";
       LOG(INFO) << " Sys " << leftJustify("Freq",len2)
                 << " " << center("Track",len3)
-                << " Pseudo- Carrier Doppler  Signal";
+                << " " << center("Pseudo-",len4)
+                << " " << center("Carrier",len4)
+                << " " << center("Doppler",len4)
+                << " " << center("Signal",len4)
+                << " " << center("Ionosph.",len4)
+                << " " << center("Channel",len4);
       LOG(INFO) << "     " << leftJustify("    ",len2)
                 << " " << center("     ",len3)
-                << "  range   phase          Strength";
-      for(size_t i=0; i<syss.size(); ++i) {
+                << " " << center("range",len4)
+                << " " << center("phase",len4)
+                << " " << center("   ",len4)
+                << " " << center("Strength",len4)
+                << " " << center("Delay",len4)
+                << " " << center("Number",len4);
+         // We don't copy this from the library because this
+         // application assumes a very specific order of observation
+         // types.
+      static const std::string obsTypes("CLDSIX");
+      for(size_t i=0; i<syss.size(); ++i)
+      {
          it = table.find(RinexSatID(string(1,syss[i])).systemString3());
-         if(it == table.end()) continue;
-         if(i > 0) LOG(INFO) << "";
+         if(it == table.end())
+            continue;
+         if(i > 0)
+            LOG(INFO) << "";
          for(jt=it->second.begin(); jt!=it->second.end(); ++jt)
-            for(kt=jt->second.begin(); kt!=jt->second.end(); ++kt) {
-               LOG(INFO) << " " << it->first // GPS
-                         << " " << leftJustify(jt->first,len2) // L1
-                         << " " << center(kt->first,len3) // C/A
-                << " " << center((kt->second['C']==""?"----":kt->second['C']),len4)
-                << " " << center((kt->second['L']==""?"----":kt->second['L']),len4)
-                << " " << center((kt->second['D']==""?"----":kt->second['D']),len4)
-                << " " << center((kt->second['S']==""?"----":kt->second['S']),len4);
+         {
+            for(kt=jt->second.begin(); kt!=jt->second.end(); ++kt)
+            {
+               LOGstrm << " " << it->first // GPS
+                       << " " << leftJustify(jt->first,len2) // L1
+                       << " " << center(kt->first,len3); // C/A
+               for (unsigned j = 0; j < obsTypes.size(); j++)
+               {
+                  char ot(obsTypes[j]);
+                  LOGstrm << " " << center((kt->second[ot]==""
+                                            ? "----"
+                                            : kt->second[ot]),len4);
+               }
+               LOGstrm << endl;
             }
+         }
       }
       //return 1;
    }  // end if typehelp

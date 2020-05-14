@@ -393,6 +393,8 @@ namespace gpstk {
       ObsID::validRinexTrackingCodes['J']['5'] = "IQDPXZ* ";
       ObsID::validRinexTrackingCodes['J']['6'] = "ESLXZ* ";
 
+         // I1 is *only* for channel number
+      ObsID::validRinexTrackingCodes['I']['1'] = "* ";
       ObsID::validRinexTrackingCodes['I']['5'] = "ABCX* ";
       ObsID::validRinexTrackingCodes['I']['9'] = "ABCX* ";
    }
