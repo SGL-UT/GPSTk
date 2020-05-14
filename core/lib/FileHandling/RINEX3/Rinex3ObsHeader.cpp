@@ -1227,8 +1227,20 @@ namespace gpstk
          try
          {
             const int maxObsPerLine = 13;
-            for (int i=0; i < maxObsPerLine && mapObsTypes[satSys].size() < numObs; i++)
-               mapObsTypes[satSys].push_back(RinexObsID(satSys+line.substr(4 * i + 7, 3)));
+            for (int i=0;
+                 i < maxObsPerLine && mapObsTypes[satSys].size() < numObs; i++)
+            {
+               string obstype(line.substr(4 * i + 7, 3));
+                  // A RINEX 3.02 file is allowed to contain BDS C1x,
+                  // but it is treated as C2x.
+                  // See RINEX 3.04 spec Table 9.
+               if ((fabs(version - 3.02) < 0.005) && (satSys[0] == 'C') &&
+                   (obstype[1] == '1'))
+               {
+                  obstype[1] = '2';
+               }
+               mapObsTypes[satSys].push_back(RinexObsID(satSys+obstype));
+            }
          }
          catch(InvalidParameter& ip)
          {
@@ -1415,6 +1427,12 @@ namespace gpstk
                // obsid and correction may be blank <=> unknown: ignore this
             if(!str.empty())
             {
+                  // See RINEX 3.04 spec Table 9.
+               if ((fabs(version - 3.02) < 0.005) && (satSysTemp == "C") &&
+                   (str[1] == '1'))
+               {
+                  str[1] = '2';
+               }
                RinexObsID obsid(satSysTemp+str);
                double cor(asDouble(strip(line.substr(6,8))));
                int nsat(asInt(strip(line.substr(16,2))));
@@ -1492,6 +1510,15 @@ namespace gpstk
       else if(label == hsPrnObs)
       {
             // this assumes 'PRN / # OF OBS' comes after '# / TYPES OF OBSERV' or 'SYS / # / OBS TYPES'
+            // NOT a good assumption for auxiliary header... ignore in that case
+         if(version >= 3.0 && mapObsTypes.size() == 0)
+         {
+            commentList.push_back(
+               string("Warning - can't read PRN/OBS in auxHeader: no"
+                      " mapObsTypes"));
+            return;
+         }
+
          static const int maxObsPerLine = 9;
 
          int j,otmax;
