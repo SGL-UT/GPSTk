@@ -849,7 +849,7 @@ int ProcessFiles()
                      if(tag[0] == 'L')
                      {
                         ii = asInt(string(1,tag[1]));
-                        waves.push_back(getWavelength(sid, ii));
+                        waves.push_back(getWavelength(sid.system, ii));
                      }
                      else 
                         waves.push_back(0.0);

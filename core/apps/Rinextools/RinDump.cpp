@@ -2106,7 +2106,7 @@ bool LinCom::ParseAndSave(const string& lab, bool save) throw()
       for(i=0; i<C.InputSyss.size(); i++) {
          sys = C.map3to1Sys[C.InputSyss[i]];
          sat = RinexSatID(C.InputSyss[i]);
-         double alpha(getAlpha(sat,n1,n2));
+         double alpha(getAlpha(sat.system,n1,n2));
 
          obsid = sys+"C"+f1+"*";                         // Ci*
          LOG(DEBUG2) << "Parse obsid >" << obsid << "<";
@@ -2187,7 +2187,7 @@ bool LinCom::ParseAndSave(const string& lab, bool save) throw()
 
          // TD VI LAT LON not implemented
          if(tag == string("SI") || tag == string("VI")) {         // iono delay
-            double alpha(getAlpha(sat,n1,n2));
+            double alpha(getAlpha(sat.system,n1,n2));
             // convert to TECU
             double TECUperM(1.0);
             if(C.doTECU) {
@@ -2208,7 +2208,7 @@ bool LinCom::ParseAndSave(const string& lab, bool save) throw()
             sysConsts[sys].push_back(-TECUperM/alpha);
          }
          else if(tag == string("IF")) {                           // iono-free
-            double alpha(getAlpha(sat,n1,n2));
+            double alpha(getAlpha(sat.system,n1,n2));
             //LOG(DEBUG2) << "Parse alpha is " << fixed << setprecision(4) << alpha;
             sysConsts[sys].push_back((alpha+1.0)/alpha);
             sysConsts[sys].push_back(-1.0/alpha);
@@ -2218,13 +2218,13 @@ bool LinCom::ParseAndSave(const string& lab, bool save) throw()
             sysConsts[sys].push_back(-1.0);
          }
          else if(tag == string("WL")) {                           // widelane
-            double beta(getBeta(sat,n1,n2));
+            double beta(getBeta(sat.system,n1,n2));
             //LOG(DEBUG2) << "Parse beta is " << fixed << setprecision(4) << beta;
             sysConsts[sys].push_back(beta/(beta-1.0));
             sysConsts[sys].push_back(-1.0/(beta-1.0));
          }
          else if(tag == string("NL")) {                           // narrowlane
-            double beta(getBeta(sat,n1,n2));
+            double beta(getBeta(sat.system,n1,n2));
             //LOG(DEBUG2) << "Parse beta is " << fixed << setprecision(4) << beta;
             sysConsts[sys].push_back(beta/(beta+1.0));
             sysConsts[sys].push_back(1.0/(beta+1.0));
@@ -2451,7 +2451,7 @@ double LinCom::Compute(const RinexSatID sat, Rinex3ObsHeader& Rhead,
                return 0.0;
             }
          }
-         data *= getWavelength(sat, asInt(string(1,obsid[2])), N);
+         data *= getWavelength(sat.system, asInt(string(1,obsid[2])), N);
       }
 
       LOG(DEBUG2) << msg << msg2 << " ok, sum: " << fixed << setprecision(4)

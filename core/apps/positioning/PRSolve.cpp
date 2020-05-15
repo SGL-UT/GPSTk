@@ -383,7 +383,7 @@ public:
          int na(asInt(frs.substr(0,1)));
          int nb(asInt(frs.substr(1,1)));
          RinexSatID sat(sys1);
-         double alpha = getAlpha(sat,na,nb);
+         double alpha = getAlpha(sat.system,na,nb);
          if(alpha == 0.0) return false;
          consts[1] = -1.0/alpha;
          consts[0] = 1.0 - consts[1];

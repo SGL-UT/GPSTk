@@ -146,7 +146,7 @@ namespace gpstk
          // must combine PCO/V from freq1,2
          unsigned int freq1(strtoul(Freq1.substr(1).c_str(),0,10));
          unsigned int freq2(strtoul(Freq2.substr(1).c_str(),0,10));
-         double alpha(getAlpha(sat,freq1,freq2));
+         double alpha(getAlpha(sat.system,freq1,freq2));
          double fact1((alpha+1.0)/alpha);
          double fact2(-1.0/alpha);
 
