@@ -40,10 +40,9 @@ class GNSSconstants_test(unittest.TestCase):
 
     def test_functions(self):
         self.assertEqual(4, gpstk.getLegacyFitInterval(15, 27))
-        sat = gpstk.SatID(1, 1)
-        self.assertAlmostEqual(0.190293672798, gpstk.getWavelength(sat, 1),)
-        self.assertAlmostEqual(1.2833333333333334, gpstk.getBeta(sat, 1, 2))
-        self.assertAlmostEqual(0.6469444444444448, gpstk.getAlpha(sat, 1, 2))
+        self.assertAlmostEqual(0.190293672798, gpstk.getWavelength(1, 1),)
+        self.assertAlmostEqual(1.2833333333333334, gpstk.getBeta(1, 1, 2))
+        self.assertAlmostEqual(0.6469444444444448, gpstk.getAlpha(1, 1, 2))
 
 if __name__ == '__main__':
     run_unit_tests()

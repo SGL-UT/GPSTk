@@ -119,6 +119,8 @@ using namespace gpstk;
 %include "ObsID.i"
 %ignore gpstk::SV_ACCURACY_GLO_INDEX;  // wrapper added in GPS_URA.i
 %include "GNSSconstants.hpp"
+%include "DeprecatedConsts.hpp"
+%include "FreqConsts.hpp"
 %ignore gpstk::Triple::operator[](const size_t index);
 %ignore gpstk::Triple::operator()(const size_t index);
 %ignore gpstk::Triple::operator*(double right, const Triple& rhs);
