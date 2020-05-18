@@ -45,6 +45,7 @@
 #include <vector>
 #include <list>
 #include <map>
+#include <set>
 #include <iostream>
 #include <iomanip>
 
@@ -193,76 +194,66 @@ namespace gpstk
 
          /** Validity bits for the RINEX Observation Header - please
           * keep ordered as strings above */
-      enum validBits
+      enum Field
       {
-         validVersion           =        0x1, ///< RINEX VERSION / TYPE
-         validRunBy             =        0x2, ///< PGM / RUN BY / DATE
-         validComment           =        0x4, ///< COMMENT
-         validMarkerName        =        0x8, ///< MARKER NAME
-         validMarkerNumber      =       0x10, ///< MARKER NUMBER
-         validMarkerType        =       0x20, ///< MARKER TYPE
-         validObserver          =       0x40, ///< OBSERVER / AGENCY
-         validReceiver          =       0x80, ///< REC # / TYPE / VERS
-         validAntennaType       =      0x100, ///< ANT # / TYPE
-         validAntennaPosition   =      0x200, ///< APPROX POSITION XYZ
-         validAntennaDeltaHEN   =      0x400, ///< ANTENNA: DELTA H/E/N
-         validAntennaDeltaXYZ   =      0x800, ///< ANTENNA: DELTA X/Y/Z
-         validAntennaPhaseCtr   =     0x1000, ///< ANTENNA: PHASECENTER
-         validAntennaBsightXYZ  =     0x2000, ///< ANTENNA: B.SIGHT XYZ
-         validAntennaZeroDirAzi =     0x4000, ///< ANTENNA: ZERODIR AZI
-         validAntennaZeroDirXYZ =     0x8000, ///< ANTENNA: ZERODIR XYZ
-         validCenterOfMass      =    0x10000, ///< CENTER OF MASS: XYZ
-         validNumObs            =    0x20000, ///< # / TYPES OF OBSERV
-         validSystemNumObs      =    0x20000, ///< SYS / # / OBS TYPES
-         validWaveFact          =    0x40000, ///< WAVELENGTH FACT L1/2
-         validSigStrengthUnit   =    0x40000, ///< SIGNAL STRENGTH UNIT
-         validInterval          =    0x80000, ///< INTERVAL
-         validFirstTime         =   0x100000, ///< TIME OF FIRST OBS
-         validLastTime          =   0x200000, ///< TIME OF LAST OBS
-         validReceiverOffset    =   0x400000, ///< RCV CLOCK OFFS APPL
-         validSystemDCBSapplied =   0x800000, ///< SYSTEM DCBS APPLIED
-         validSystemPCVSapplied =  0x1000000, ///< SYSTEM PCVS APPLIED
-         validSystemScaleFac    =  0x2000000, ///< SYSTEM SCALE FACTOR
-         validSystemPhaseShift  =  0x4000000, ///< SYS / PHASE SHIFT
-         validGlonassSlotFreqNo =  0x8000000, ///< GLONASS SLOT / FRQ #
-         validGlonassCodPhsBias = 0x10000000, ///< GLONASS COD/PHS/BIS
-         validLeapSeconds       = 0x20000000, ///< LEAP SECONDS
-         validNumSats           = 0x40000000, ///< # OF SATELLITES
-         validPrnObs            = 0x80000000, ///< PRN / # OF OBS
-   
-            /// This mask is for all required valid fields - RINEX 2
-         allValid2              = 0x001207CB,
-
-            /// RINEX 3.0 for moving receivers -- make default
-         allValid30             = 0x001205CB,
-
-            // NB 19Jun2013 MGEX data does not include GLONASS SLOT
-            // and GLONASS COD/PHS/BIS records
-            // marker type is only required if the type is not GEODETIC or NON_GEODETIC
-         allValid301            = 0x0412058B, ///< RINEX 3.01
-         allValid302            = 0x0412058B, ///< RINEX 3.02
-         allValid303            = 0x0412058B  ///< RINEX 3.03
+         validInvalid = 0,                    ///< Not a valid field
+         validVersion,                        ///< RINEX VERSION / TYPE
+         validFirst = validVersion,           ///< Used fore testing only
+         validRunBy,                          ///< PGM / RUN BY / DATE
+         validComment,                        ///< COMMENT
+         validMarkerName,                     ///< MARKER NAME
+         validMarkerNumber,                   ///< MARKER NUMBER
+         validMarkerType,                     ///< MARKER TYPE
+         validObserver,                       ///< OBSERVER / AGENCY
+         validReceiver,                       ///< REC # / TYPE / VERS
+         validAntennaType,                    ///< ANT # / TYPE
+         validAntennaPosition,                ///< APPROX POSITION XYZ
+         validAntennaDeltaHEN,                ///< ANTENNA: DELTA H/E/N
+         validAntennaDeltaXYZ,                ///< ANTENNA: DELTA X/Y/Z
+         validAntennaPhaseCtr,                ///< ANTENNA: PHASECENTER
+         validAntennaBsightXYZ,               ///< ANTENNA: B.SIGHT XYZ
+         validAntennaZeroDirAzi,              ///< ANTENNA: ZERODIR AZI
+         validAntennaZeroDirXYZ,              ///< ANTENNA: ZERODIR XYZ
+         validCenterOfMass,                   ///< CENTER OF MASS: XYZ
+         validNumObs,                         ///< # / TYPES OF OBSERV
+         validSystemNumObs,                   ///< SYS / # / OBS TYPES
+         validWaveFact,                       ///< WAVELENGTH FACT L1/2
+         validSigStrengthUnit,                ///< SIGNAL STRENGTH UNIT
+         validInterval,                       ///< INTERVAL
+         validFirstTime,                      ///< TIME OF FIRST OBS
+         validLastTime,                       ///< TIME OF LAST OBS
+         validReceiverOffset,                 ///< RCV CLOCK OFFS APPL
+         validSystemDCBSapplied,              ///< SYSTEM DCBS APPLIED
+         validSystemPCVSapplied,              ///< SYSTEM PCVS APPLIED
+         validSystemScaleFac,                 ///< SYSTEM SCALE FACTOR
+         validSystemPhaseShift,               ///< SYS / PHASE SHIFT
+         validGlonassSlotFreqNo,              ///< GLONASS SLOT / FRQ #
+         validGlonassCodPhsBias,              ///< GLONASS COD/PHS/BIS
+         validLeapSeconds,                    ///< LEAP SECONDS
+         validNumSats,                        ///< # OF SATELLITES
+         validPrnObs,                         ///< PRN / # OF OBS
+         validLast                            ///< Used for testing only.
       };
    
-#ifndef SWIG // nested structs/classes not supported by SWIG
          /** RINEX 3 DCBS/PCVS info (for differential code bias and
           * phase center variations corr.) */
-      struct Rinex3CorrInfo
+      class Rinex3CorrInfo
       {
+      public:
          std::string satSys;  ///< 1-char SV system (G/R/E/S)
          std::string name;    ///< program name used to apply corrections
          std::string source;  ///< source of corrections (URL)
       };
 
          /// RINEX 2 extra "WAVELENGTH FACT" lines
-      struct ExtraWaveFact
+      class ExtraWaveFact
       {
+      public:
             /// List of Sats with this wavelength factor
          std::vector<SatID> satList;
             /// vector of wavelength factor values
          short wavelengthFactor[2];
       };
-#endif
 
          /// Commonly used vector of strings
       typedef std::vector<std::string> StringVec;
@@ -299,12 +290,100 @@ namespace gpstk
       typedef std::map<RinexObsID, double> GLOCodPhsBias;
          /// Map SysChar + R2 Obs Type to Obs ID
       typedef std::map<std::string,std::string> DisAmbMap;
-#ifndef SWIG
          /// Corrections (e.g. code bias) vector
       typedef std::vector<Rinex3CorrInfo> CorrVec;
          /// Vector of wavelength factors
       typedef std::vector<ExtraWaveFact> FactorVector;
-#endif
+      typedef std::set<Field> FieldSet;
+
+      class Fields
+      {
+      public:
+         Fields() = default;
+         Fields(const FieldSet& fields)
+               : fieldsSet(fields)
+         {}
+            /// Compare field sets.
+         bool operator==(const Fields& rhs) const
+         { return fieldsSet == rhs.fieldsSet; }
+            /// Return true if the set of fields differs between this and rhs.
+         bool operator!=(const Fields& rhs) const
+         { return !(fieldsSet == rhs.fieldsSet); }
+            /// Set a specific field.
+         Fields& set(Field f)
+         { fieldsSet.insert(f); return *this; }
+            /// Clear a specific field.
+         Fields& clear(Field f)
+         { fieldsSet.erase(f); return *this; }
+            /// Return true if the specific field is set (preferred to operator&).
+         bool isSet(Field f) const
+         { return fieldsSet.count(f) > 0; }
+            /// Clear all set fields.
+         void clear()
+         { fieldsSet.clear(); }
+            /// Return true if fieldsSet is empty, false otherwise.
+         bool empty() const
+         { return fieldsSet.empty(); }
+            /** Backwards compatibility method for code still implemented
+             * around bit flags.
+             */
+         Fields operator&(const Fields& rhs) const;
+            /** Backwards compatibility method for code still implemented
+             * around bit flags.
+             * @deprecated Please use isSet() instead. */
+         Field operator&(Field rhs) const;
+            /** Alias for set() for backwards compatibility.
+             * @deprecated Please use set() instead. */
+         Fields& operator|=(Field rhs)
+         { return set(rhs); }
+            /** Alias for clear(Field)
+             * @deprecated Please use clear(Field) instead. */
+         Fields& operator^=(Field rhs)
+         { return clear(rhs); }
+            /** Determine if a header is valid.
+             * @note This object is assumed to be a set of required
+             *   fields.  Generally you would call this method on one of
+             *   the allValid2, etc. static objects defined above.
+             * @see isValid(double,const Fields&)
+             * @code{.cpp}
+             * if (Fields::allValid2.isValid(flags))
+             * @endcode
+             * @param[in] present The set of flags present in an existing
+             *   header to be compared with this set of required flags.
+             * @return true If all the fields in fieldsSet are also
+             *   contained in present.fieldsSet.
+             */
+         bool isValid(const Fields& present) const;
+            /** Determine if a header is valid.
+             * @param[in] version The RINEX version being validated.
+             * @param[in] present The set of flags present in an existing
+             *   header to be compared with this set of required flags.
+             * @return true If all the fields in the fieldsSet value
+             *   appropriate for the specified version are also contained
+             *   in present.fieldsSet.
+             */
+         static bool isValid(double version, const Fields& present)
+         { return getRequired(version).isValid(present); }
+            /** Add descriptive information to an exception about which
+             * header fields are missing.  This object is assumed to be
+             * the set of header fields that are expected.
+             * @param[in] valid The set of present header fields.
+             * @param[out] exc The exception to add descriptive text to.
+             * @post exc will have text entries added to it for each of
+             *   the missing header fields, i.e. each field set in
+             *   allValid that is not set in valid.
+             */
+         void describeMissing(const Fields& valid, Exception& exc);
+            /** Get a reference to the set of required header fields for
+             * a given RINEX version. */
+         static Fields getRequired(double version);
+
+            /// All the header fields set in this object.
+         FieldSet fieldsSet;
+      };
+
+      static const Fields allValid2, allValid30, allValid301, allValid302,
+         allValid303;
 
          /** Storage for R2 <-> R3 conversion of obstypes during
           * reallyGet/Put Vector of strings containing ver 2 obs types
@@ -360,18 +439,14 @@ namespace gpstk
       gpstk::Triple centerOfMass;      ///< vehicle CENTER OF MASS: XYZ
       RinexObsMap mapObsTypes;         ///< SYS / # / OBS TYPES
       short wavelengthFactor[2];       ///< WAVELENGTH FACT (system-wide)
-#ifndef SWIG // nested structs/classes not supported by SWIG
       FactorVector extraWaveFactList;  ///< WAVELENGTH FACT (per SV)
-#endif
       std::string sigStrengthUnit;     ///< SIGNAL STRENGTH UNIT
       double interval;                 ///< INTERVAL
       CivilTime firstObs;              ///< TIME OF FIRST OBS
       CivilTime lastObs;               ///< TIME OF LAST OBS
       int receiverOffset;              ///< RCV CLOCK OFFS APPL
-#ifndef SWIG // nested structs/classes not supported by SWIG
       CorrVec infoDCBS;                ///< DCBS INFO
       CorrVec infoPCVS;                ///< PCVS INFO
-#endif
       SysScaleFacMap sysSfacMap;       ///< SYS / SCALE FACTOR
       SysPhsShftMap sysPhaseShift;     ///< SYS / PHASE SHIFT
       GLOFreqNumMap glonassFreqNo;     ///< GLONASS SLOT / FRQ #
@@ -386,7 +461,7 @@ namespace gpstk
       RinexObsVec obsTypeList;
 
          /// bits set when header rec.s present & valid
-      unsigned long valid;
+      Fields valid;
          /// true if found END OF HEADER
       bool validEoH;
          /// Map P to Y code observations in RINEX 2 files
@@ -449,16 +524,7 @@ namespace gpstk
 
          /// Return boolean : is this a valid Rinex header?
       bool isValid() const
-      {
-         if(!validEoH) return false;
-         unsigned long allValid;
-         if(     version < 3.00) allValid = allValid2;
-         else if(version < 3.01) allValid = allValid30;
-         else if(version < 3.02) allValid = allValid301;  
-         else if(version < 3.03) allValid = allValid302;  
-         else                    allValid = allValid303;
-         return ((valid & allValid) == allValid);
-      }
+      { return (validEoH && Fields::isValid(version, valid)); }
 
          /** Compute map of obs types for use in writing version 2
           * header and data */
@@ -479,6 +545,11 @@ namespace gpstk
                    StringVec& diffs,
                    const StringVec& inclExclList,
                    bool incl = false);
+
+         /// Return the RINEX header label for the given field enumeration.
+      static std::string asString(Field b);
+         /// Convert a RINEX header field label string into its matching enum.
+      static Field asField(const std::string& s);
 
    protected:
 
@@ -542,6 +613,8 @@ namespace gpstk
       int factor, factorPrev;
 
    }; // end class Rinex3ObsHeader
+
+   std::ostream& operator<<(std::ostream& s, const Rinex3ObsHeader::Fields& v);
 
       //@}
 

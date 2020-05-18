@@ -46,7 +46,6 @@ mapSysR2toR3ObsID[G] C1:C1C C2:C2X D1:D1C D2:D2W L1:L1C L2:L2W P1:C1W P2:C2W S1:
 Time of first obs 2015/08/27 04:58:21.000 GPS
 (This header is VALID)
 ---------------------------------- OPTIONAL ----------------------------------
-Signal Strenth Unit = 
 Interval =   1.500
 Wavelength factor L1: 1 L2: 1
 -------------------------------- END OF HEADER --------------------------------

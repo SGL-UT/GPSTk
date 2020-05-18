@@ -90,7 +90,7 @@ Time of first obs 2016/06/18 01:00:00.000 GPS
 (This header is VALID)
 ---------------------------------- OPTIONAL ----------------------------------
 Marker number : 92201M012
-Signal Strenth Unit = DBHZ
+Signal Strength Unit = DBHZ
 Interval =   1.000
 Time of Last Obs 2016/06/18 01:14:59.000 GPS
 Phase shift correction for system C:  0.00000 cycles applied to obs type L7I BeiDou
