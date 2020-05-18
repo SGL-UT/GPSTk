@@ -659,7 +659,7 @@ int SatPassToRinex3File(string filename,
          string sysstr(string(1,it->first));
          header.mapObsTypes[sysstr] = v;
          for(j=0; j<it->second.size(); j++) {
-            RinexObsID roid(it->second[j]);
+            RinexObsID roid(it->second[j], header.version);
             header.mapObsTypes[sysstr].push_back(roid);
          }
       }

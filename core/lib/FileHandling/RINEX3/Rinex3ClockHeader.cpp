@@ -135,7 +135,8 @@ namespace gpstk
                {
                   const int maxObsPerLine = 13;
                   for (int i=0; i < maxObsPerLine && sysObsTypes[satSys].size() < numObs; i++)
-                     sysObsTypes[satSys].push_back(RinexObsID(satSys+line.substr(4 * i + 7, 3)));
+                     sysObsTypes[satSys].push_back(
+                        RinexObsID(satSys+line.substr(4 * i + 7, 3), version));
                }
                catch(InvalidParameter& ip)
                {

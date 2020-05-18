@@ -155,8 +155,12 @@ try {
                      string wrot(wsrot.substr(1,3));
 
                      // if sys and rot match, and srot is not found, add it
-                     if(((wsys == "*" && RinexObsID(wrot) == RinexObsID(rot)) ||
-                         (wsys == sys && RinexObsID(wsrot) == RinexObsID(srot))) &&
+                     if(((wsys == "*" &&
+                          RinexObsID(wrot, roh.version) ==
+                          RinexObsID(rot, roh.version)) ||
+                         (wsys == sys &&
+                          RinexObsID(wsrot, roh.version) ==
+                          RinexObsID(srot, roh.version))) &&
                         vectorindex(wantedObsTypes,srot) == -1)
                      {
                         wantedObsTypes.push_back(srot);  // add it
@@ -627,7 +631,7 @@ void dumpAllRinex3ObsTypes(ostream& os)
                              string(1,ObsID::ot2char[ObsID::ObservationType(i)]) +
                              string(1,ObsID::cb2char[ObsID::CarrierBand(j)]) +
                              string(1,ObsID::tc2char[ObsID::TrackingCode(k)]));
-                  ObsID obs(tag);
+                  ObsID obs(tag, Rinex3ObsBase::currentVersion);
                   string name(asString(obs));
                   if(name.find("Unknown") != string::npos ||
                      name.find("undefined") != string::npos ||
@@ -639,7 +643,8 @@ void dumpAllRinex3ObsTypes(ostream& os)
                      string sys(RinexSatID(string(1,tag[0])).systemString3());
                      char type(ObsID::ot2char[ObsID::ObservationType(i)]);
                      string id(tag); // TD keep sys char ? id(tag.substr(1));
-                     string desc(asString(ObsID(tag)));
+                     string desc(
+                        asString(ObsID(tag, Rinex3ObsBase::currentVersion)));
                      vector<string> fld(split(desc,' '));
                      string codedesc(fld[1].substr(syss[s]=='S'?4:3));
                      string band(fld[0]);

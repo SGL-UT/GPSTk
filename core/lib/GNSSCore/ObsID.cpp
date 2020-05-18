@@ -70,7 +70,8 @@ namespace gpstk
    ObsIDInitializer singleton;
 
    // Construct this object from the string specifier
-   ObsID::ObsID(const std::string& strID)
+   ObsID::ObsID(const std::string& strID, double version)
+         : rinexVersion(version)
    {
       int i = strID.length() - 3;
       if ( i < 0 || i > 1)
@@ -391,6 +392,7 @@ namespace gpstk
    // Equality requires all fields to be the same unless the field is unknown
    bool ObsID::operator==(const ObsID& right) const
    {
+         // Version comparison is intentionally left out.
       bool ot = type == otAny || right.type == otAny || type == right.type;
       bool cb = band == cbAny || right.band == cbAny || band == right.band;
       bool tc = code == tcAny || right.code == tcAny || code == right.code;

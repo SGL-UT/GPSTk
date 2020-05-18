@@ -984,7 +984,7 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
                         string(1,ObsID::ot2char[obsType]) +
                         string(1,ObsID::cb2char[carrierBand]) +
                         string(1,ObsID::tc2char[trackCode]));
-                     ObsID obs(tag);
+                     ObsID obs(tag, Rinex3ObsBase::currentVersion);
                      string name(asString(obs));
                      if (name.find("Unknown") != string::npos ||
                          name.find("undefined") != string::npos ||
@@ -1003,7 +1003,9 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
                         char type(ObsID::ot2char[ObsID::ObservationType(i)]);
                            /// @todo keep sys char ? id(tag.substr(1));
                         string id(tag);
-                        string desc(asString(ObsID(tag)));
+                        string desc(
+                           asString(ObsID(tag,
+                                          Rinex3ObsBase::currentVersion)));
                         vector<string> fld(split(desc,' '));
                         string codedesc = fld[1];
                         if ((codedesc.find("GPS") == 0) ||
@@ -1930,7 +1932,7 @@ double getObsData(string tag, RinexSatID sat, Rinex3ObsHeader& Rhead,
             return 0;                              // system+tag is not valid
       }
 
-      RinexObsID obsid(tag);                       // ObsID for this tag
+      RinexObsID obsid(tag, Rhead.version);        // ObsID for this tag
 
       // find it in the header
       vector<RinexObsID>::const_iterator jt(
@@ -2396,7 +2398,7 @@ double LinCom::Compute(const RinexSatID sat, Rinex3ObsHeader& Rhead,
          LOG(DEBUG2) << msg << " obsid " << obsid << " not valid";
          return 0.0;                                     // obsid is not valid
       }
-      RinexObsID Obsid(obsid);                           // RinexObsID for this term
+      RinexObsID Obsid(obsid, Rhead.version); // RinexObsID for this term
 
       // find which code to use
       vector<RinexObsID> allObsIDs;
@@ -2404,7 +2406,7 @@ double LinCom::Compute(const RinexSatID sat, Rinex3ObsHeader& Rhead,
          for(size_t j=0; j<C.mapSysCodes[sys3].size(); j++) {
             string oi(obsid.substr(0,3)+string(1,C.mapSysCodes[sys3][j]));
             if(isValidRinexObsID(oi))
-               allObsIDs.push_back(RinexObsID(oi));
+               allObsIDs.push_back(RinexObsID(oi, Rhead.version));
          }
       }
       else

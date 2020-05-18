@@ -41,8 +41,8 @@ phaseShiftTest()
 
    gpstk::Rinex3ObsStream strm(outfn, std::ios::out | std::ios::trunc);
    gpstk::Rinex3ObsHeader hdr;
-   gpstk::RinexObsID roidInvalid("GC1C");
-   gpstk::RinexObsID roidValid("GL1C");
+   gpstk::RinexObsID roidInvalid("GC1C",gpstk::Rinex3ObsBase::currentVersion);
+   gpstk::RinexObsID roidValid("GL1C", gpstk::Rinex3ObsBase::currentVersion);
    gpstk::SatID sid(7, gpstk::SatID::systemGPS);
    strm.exceptions(std::fstream::failbit);
       // Not setting most of the header fields because they're not being tested.
@@ -85,50 +85,52 @@ channelNumTest()
    std::string expfn = gpstk::getPathData() + gpstk::getFileSep() +
       "rinex3ObsTest_v304_SYS_NUM_OBS_TYPES.exp";
 
+      // abbreviate.
+   double cv = gpstk::Rinex3ObsBase::currentVersion;
    gpstk::Rinex3ObsStream strm(outfn, std::ios::out | std::ios::trunc);
    gpstk::Rinex3ObsHeader hdr;
-   gpstk::RinexObsID roidValid("GL1C");
+   gpstk::RinexObsID roidValid("GL1C", cv);
    gpstk::SatID sid(7, gpstk::SatID::systemGPS);
    strm.exceptions(std::fstream::failbit);
       // Not setting most of the header fields because they're not being tested.
-   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GC1C"));
-   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GL1C"));
-   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GD1C"));
-   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GS1C"));
-   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GC1S"));
-   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GL1S"));
-   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GD1S"));
-   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GS1S"));
-   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GC1L"));
-   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GL1L"));
-   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GD1L"));
-   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GS1L"));
-   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GC1X"));
-   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GL1X"));
-   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GD1X"));
-   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GS1X"));
-   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GC1P"));
-   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GL1P"));
-   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GD1P"));
-   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GS1P"));
-   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GC1W"));
-   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GL1W"));
-   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GD1W"));
-   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GS1W"));
-   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GC1Y"));
-   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GL1Y"));
-   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GD1Y"));
-   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GS1Y"));
-   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GC1M"));
-   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GL1M"));
-   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GD1M"));
-   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GS1M"));
-   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GL1N"));
-   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GD1N"));
-   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GS1N"));
+   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GC1C", cv));
+   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GL1C", cv));
+   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GD1C", cv));
+   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GS1C", cv));
+   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GC1S", cv));
+   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GL1S", cv));
+   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GD1S", cv));
+   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GS1S", cv));
+   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GC1L", cv));
+   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GL1L", cv));
+   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GD1L", cv));
+   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GS1L", cv));
+   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GC1X", cv));
+   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GL1X", cv));
+   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GD1X", cv));
+   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GS1X", cv));
+   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GC1P", cv));
+   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GL1P", cv));
+   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GD1P", cv));
+   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GS1P", cv));
+   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GC1W", cv));
+   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GL1W", cv));
+   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GD1W", cv));
+   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GS1W", cv));
+   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GC1Y", cv));
+   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GL1Y", cv));
+   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GD1Y", cv));
+   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GS1Y", cv));
+   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GC1M", cv));
+   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GL1M", cv));
+   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GD1M", cv));
+   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GS1M", cv));
+   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GL1N", cv));
+   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GD1N", cv));
+   hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GS1N", cv));
       // now have fun with channels
-   TUCATCH(hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GX1 ")));
-   TUTHROW(hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GX2Y")));
+   TUCATCH(hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GX1 ", cv)));
+   TUTHROW(hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GX2Y", cv)));
       // This should not appear in the header as it is redundant, but
       // it is still valid as an ObsID.
    gpstk::RinexObsID forced(gpstk::ObsID::otChannel, gpstk::ObsID::cbL1,
@@ -137,7 +139,7 @@ channelNumTest()
    hdr.sysPhaseShift["G"][roidValid][sid] = 54.321;
    hdr.date = "20200512 181734 UTC";
    hdr.preserveDate = true;
-   hdr.version = 3.04;
+   hdr.version = cv;
    hdr.valid |= gpstk::Rinex3ObsHeader::validVersion;
    hdr.valid |= gpstk::Rinex3ObsHeader::validRunBy;
    hdr.valid |= gpstk::Rinex3ObsHeader::validMarkerName;
@@ -188,59 +190,61 @@ ionoDelayTest()
    std::string expfn = gpstk::getPathData() + gpstk::getFileSep() +
       "rinex3ObsTest_v304_IonoDelay.exp";
 
+      // abbreviate.
+   double cv = gpstk::Rinex3ObsBase::currentVersion;
    gpstk::Rinex3ObsStream strm(outfn, std::ios::out | std::ios::trunc);
    gpstk::Rinex3ObsHeader hdr;
-   gpstk::RinexObsID roidValid("GL1C");
+   gpstk::RinexObsID roidValid("GL1C", cv);
    gpstk::SatID sid(7, gpstk::SatID::systemGPS);
    strm.exceptions(std::fstream::failbit);
       // Not setting most of the header fields because they're not being tested.
-   TUCATCH(hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GC1C")));
-   TUCATCH(hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GL1C")));
-   TUCATCH(hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GD1C")));
-   TUCATCH(hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GS1C")));
-   TUCATCH(hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GI1 ")));
-   TUCATCH(hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GC2C")));
-   TUCATCH(hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GL2C")));
-   TUCATCH(hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GD2C")));
-   TUCATCH(hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GS2C")));
-   TUCATCH(hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GI2 ")));
-   TUCATCH(hdr.mapObsTypes["R"].push_back(gpstk::RinexObsID("RC3I")));
-   TUCATCH(hdr.mapObsTypes["R"].push_back(gpstk::RinexObsID("RL3I")));
-   TUCATCH(hdr.mapObsTypes["R"].push_back(gpstk::RinexObsID("RD3I")));
-   TUCATCH(hdr.mapObsTypes["R"].push_back(gpstk::RinexObsID("RS3I")));
-   TUCATCH(hdr.mapObsTypes["R"].push_back(gpstk::RinexObsID("RI3 ")));
-   TUCATCH(hdr.mapObsTypes["R"].push_back(gpstk::RinexObsID("RC4A")));
-   TUCATCH(hdr.mapObsTypes["R"].push_back(gpstk::RinexObsID("RL4A")));
-   TUCATCH(hdr.mapObsTypes["R"].push_back(gpstk::RinexObsID("RD4A")));
-   TUCATCH(hdr.mapObsTypes["R"].push_back(gpstk::RinexObsID("RS4A")));
-   TUCATCH(hdr.mapObsTypes["R"].push_back(gpstk::RinexObsID("RI4 ")));
-   TUCATCH(hdr.mapObsTypes["E"].push_back(gpstk::RinexObsID("EC5I")));
-   TUCATCH(hdr.mapObsTypes["E"].push_back(gpstk::RinexObsID("EL5I")));
-   TUCATCH(hdr.mapObsTypes["E"].push_back(gpstk::RinexObsID("ED5I")));
-   TUCATCH(hdr.mapObsTypes["E"].push_back(gpstk::RinexObsID("ES5I")));
-   TUCATCH(hdr.mapObsTypes["E"].push_back(gpstk::RinexObsID("EI5 ")));
-   TUCATCH(hdr.mapObsTypes["E"].push_back(gpstk::RinexObsID("EC6A")));
-   TUCATCH(hdr.mapObsTypes["E"].push_back(gpstk::RinexObsID("EL6A")));
-   TUCATCH(hdr.mapObsTypes["E"].push_back(gpstk::RinexObsID("ED6A")));
-   TUCATCH(hdr.mapObsTypes["E"].push_back(gpstk::RinexObsID("ES6A")));
-   TUCATCH(hdr.mapObsTypes["E"].push_back(gpstk::RinexObsID("EI6 ")));
-   TUCATCH(hdr.mapObsTypes["E"].push_back(gpstk::RinexObsID("EC7I")));
-   TUCATCH(hdr.mapObsTypes["E"].push_back(gpstk::RinexObsID("EL7I")));
-   TUCATCH(hdr.mapObsTypes["E"].push_back(gpstk::RinexObsID("ED7I")));
-   TUCATCH(hdr.mapObsTypes["E"].push_back(gpstk::RinexObsID("ES7I")));
-   TUCATCH(hdr.mapObsTypes["E"].push_back(gpstk::RinexObsID("EI7 ")));
-   TUCATCH(hdr.mapObsTypes["E"].push_back(gpstk::RinexObsID("EC8I")));
-   TUCATCH(hdr.mapObsTypes["E"].push_back(gpstk::RinexObsID("EL8I")));
-   TUCATCH(hdr.mapObsTypes["E"].push_back(gpstk::RinexObsID("ED8I")));
-   TUCATCH(hdr.mapObsTypes["E"].push_back(gpstk::RinexObsID("ES8I")));
-   TUCATCH(hdr.mapObsTypes["E"].push_back(gpstk::RinexObsID("EI8 ")));
-   TUCATCH(hdr.mapObsTypes["I"].push_back(gpstk::RinexObsID("IC9A")));
-   TUCATCH(hdr.mapObsTypes["I"].push_back(gpstk::RinexObsID("IL9A")));
-   TUCATCH(hdr.mapObsTypes["I"].push_back(gpstk::RinexObsID("ID9A")));
-   TUCATCH(hdr.mapObsTypes["I"].push_back(gpstk::RinexObsID("IS9A")));
-   TUCATCH(hdr.mapObsTypes["I"].push_back(gpstk::RinexObsID("II9 ")));
+   TUCATCH(hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GC1C", cv)));
+   TUCATCH(hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GL1C", cv)));
+   TUCATCH(hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GD1C", cv)));
+   TUCATCH(hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GS1C", cv)));
+   TUCATCH(hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GI1 ", cv)));
+   TUCATCH(hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GC2C", cv)));
+   TUCATCH(hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GL2C", cv)));
+   TUCATCH(hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GD2C", cv)));
+   TUCATCH(hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GS2C", cv)));
+   TUCATCH(hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GI2 ", cv)));
+   TUCATCH(hdr.mapObsTypes["R"].push_back(gpstk::RinexObsID("RC3I", cv)));
+   TUCATCH(hdr.mapObsTypes["R"].push_back(gpstk::RinexObsID("RL3I", cv)));
+   TUCATCH(hdr.mapObsTypes["R"].push_back(gpstk::RinexObsID("RD3I", cv)));
+   TUCATCH(hdr.mapObsTypes["R"].push_back(gpstk::RinexObsID("RS3I", cv)));
+   TUCATCH(hdr.mapObsTypes["R"].push_back(gpstk::RinexObsID("RI3 ", cv)));
+   TUCATCH(hdr.mapObsTypes["R"].push_back(gpstk::RinexObsID("RC4A", cv)));
+   TUCATCH(hdr.mapObsTypes["R"].push_back(gpstk::RinexObsID("RL4A", cv)));
+   TUCATCH(hdr.mapObsTypes["R"].push_back(gpstk::RinexObsID("RD4A", cv)));
+   TUCATCH(hdr.mapObsTypes["R"].push_back(gpstk::RinexObsID("RS4A", cv)));
+   TUCATCH(hdr.mapObsTypes["R"].push_back(gpstk::RinexObsID("RI4 ", cv)));
+   TUCATCH(hdr.mapObsTypes["E"].push_back(gpstk::RinexObsID("EC5I", cv)));
+   TUCATCH(hdr.mapObsTypes["E"].push_back(gpstk::RinexObsID("EL5I", cv)));
+   TUCATCH(hdr.mapObsTypes["E"].push_back(gpstk::RinexObsID("ED5I", cv)));
+   TUCATCH(hdr.mapObsTypes["E"].push_back(gpstk::RinexObsID("ES5I", cv)));
+   TUCATCH(hdr.mapObsTypes["E"].push_back(gpstk::RinexObsID("EI5 ", cv)));
+   TUCATCH(hdr.mapObsTypes["E"].push_back(gpstk::RinexObsID("EC6A", cv)));
+   TUCATCH(hdr.mapObsTypes["E"].push_back(gpstk::RinexObsID("EL6A", cv)));
+   TUCATCH(hdr.mapObsTypes["E"].push_back(gpstk::RinexObsID("ED6A", cv)));
+   TUCATCH(hdr.mapObsTypes["E"].push_back(gpstk::RinexObsID("ES6A", cv)));
+   TUCATCH(hdr.mapObsTypes["E"].push_back(gpstk::RinexObsID("EI6 ", cv)));
+   TUCATCH(hdr.mapObsTypes["E"].push_back(gpstk::RinexObsID("EC7I", cv)));
+   TUCATCH(hdr.mapObsTypes["E"].push_back(gpstk::RinexObsID("EL7I", cv)));
+   TUCATCH(hdr.mapObsTypes["E"].push_back(gpstk::RinexObsID("ED7I", cv)));
+   TUCATCH(hdr.mapObsTypes["E"].push_back(gpstk::RinexObsID("ES7I", cv)));
+   TUCATCH(hdr.mapObsTypes["E"].push_back(gpstk::RinexObsID("EI7 ", cv)));
+   TUCATCH(hdr.mapObsTypes["E"].push_back(gpstk::RinexObsID("EC8I", cv)));
+   TUCATCH(hdr.mapObsTypes["E"].push_back(gpstk::RinexObsID("EL8I", cv)));
+   TUCATCH(hdr.mapObsTypes["E"].push_back(gpstk::RinexObsID("ED8I", cv)));
+   TUCATCH(hdr.mapObsTypes["E"].push_back(gpstk::RinexObsID("ES8I", cv)));
+   TUCATCH(hdr.mapObsTypes["E"].push_back(gpstk::RinexObsID("EI8 ", cv)));
+   TUCATCH(hdr.mapObsTypes["I"].push_back(gpstk::RinexObsID("IC9A", cv)));
+   TUCATCH(hdr.mapObsTypes["I"].push_back(gpstk::RinexObsID("IL9A", cv)));
+   TUCATCH(hdr.mapObsTypes["I"].push_back(gpstk::RinexObsID("ID9A", cv)));
+   TUCATCH(hdr.mapObsTypes["I"].push_back(gpstk::RinexObsID("IS9A", cv)));
+   TUCATCH(hdr.mapObsTypes["I"].push_back(gpstk::RinexObsID("II9 ", cv)));
       // now have fun with decoding
-   TUTHROW(hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GI2Y")));
+   TUTHROW(hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GI2Y", cv)));
       // This should not appear in the header as it is redundant, but
       // it is still valid as an ObsID.
    gpstk::RinexObsID forced(gpstk::ObsID::otIono, gpstk::ObsID::cbL1,

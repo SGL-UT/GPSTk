@@ -37,6 +37,7 @@
 #include "ObsID.hpp"
 
 #include "TestUtil.hpp"
+#include "Rinex3ObsHeader.hpp"
 #include <iostream>
 #include <sstream>
 
@@ -64,7 +65,7 @@ namespace gpstk
 
 #define CONTEST(RINEXCODE, CARRIERBAND, TRACKINGCODE) {               \
       TUCSM("ObsID(\"" RINEXCODE "\")");                              \
-      gpstk::ObsID obs(RINEXCODE);                                    \
+      gpstk::ObsID obs(RINEXCODE, gpstk::Rinex3ObsBase::currentVersion); \
       TUASSERTE(gpstk::ObsID::ObservationType,                        \
                 gpstk::ObsID::otPhase,                                \
                 obs.type);                                            \
@@ -204,7 +205,7 @@ public:
          " exception gpstk::Exception, [actual] threw no exception";
       try
       {
-         gpstk::ObsID invalidID("G 10 ");
+         gpstk::ObsID invalidID("G 10 ",gpstk::Rinex3ObsBase::currentVersion);
          TUFAIL(failMesg);
       }
       catch (gpstk::Exception e)
@@ -213,7 +214,7 @@ public:
       }
 
       try {
-         gpstk::ObsID invalidID("G1");
+         gpstk::ObsID invalidID("G1",gpstk::Rinex3ObsBase::currentVersion);
          TUFAIL(failMesg);
       }
       catch (gpstk::Exception e)
@@ -222,20 +223,23 @@ public:
       }
 
          //testing base assign w/out using any of the reused codes
-      gpstk::ObsID obs1("GC1C"); // GPS L1 C/A PseudoRange
+         // GPS L1 C/A PseudoRange
+      gpstk::ObsID obs1("GC1C",gpstk::Rinex3ObsBase::currentVersion);
       TUASSERTE(gpstk::ObsID::ObservationType,gpstk::ObsID::otRange,obs1.type);
       TUASSERTE(gpstk::ObsID::CarrierBand,gpstk::ObsID::cbL1,obs1.band);
       TUASSERTE(gpstk::ObsID::TrackingCode,gpstk::ObsID::tcCA,obs1.code);
 
          //testing only case of reassinged codes for GPS
-      gpstk::ObsID obs2("GD5X"); // GPS L5 IQ Doppler
+         // GPS L5 IQ Doppler
+      gpstk::ObsID obs2("GD5X",gpstk::Rinex3ObsBase::currentVersion);
       TUASSERTE(gpstk::ObsID::ObservationType,
                 gpstk::ObsID::otDoppler, obs2.type);
       TUASSERTE(gpstk::ObsID::CarrierBand,gpstk::ObsID::cbL5,obs2.band);
       TUASSERTE(gpstk::ObsID::TrackingCode,gpstk::ObsID::tcIQ5,obs2.code);
 
          //testing completely random case
-      gpstk::ObsID obs3("JL6L"); // QZSS E6 L Carrier Phase
+         // QZSS E6 L Carrier Phase
+      gpstk::ObsID obs3("JL6L",gpstk::Rinex3ObsBase::currentVersion);
       TUASSERTE(gpstk::ObsID::ObservationType,gpstk::ObsID::otPhase,obs3.type);
       TUASSERTE(gpstk::ObsID::CarrierBand,gpstk::ObsID::cbE6,obs3.band);
       TUASSERTE(gpstk::ObsID::TrackingCode,gpstk::ObsID::tcJQ6,obs3.code);

@@ -54,6 +54,7 @@
 #include "Exception.hpp"
 #include "SatID.hpp"
 #include "ObsIDInitializer.hpp"
+#include "Rinex3ObsBase.hpp"
 
 namespace gpstk
 {
@@ -252,11 +253,15 @@ namespace gpstk
 
          /// empty constructor, creates a wildcard object.
       ObsID()
-            : type(otUnknown), band(cbUnknown), code(tcUnknown) {};
+            : type(otUnknown), band(cbUnknown), code(tcUnknown),
+              rinexVersion(Rinex3ObsBase::currentVersion)
+      {}
 
          /// Explicit constructor
       ObsID(ObservationType ot, CarrierBand cb, TrackingCode tc)
-            : type(ot), band(cb), code(tc) {};
+            : type(ot), band(cb), code(tc),
+              rinexVersion(Rinex3ObsBase::currentVersion)
+      {}
 
          /// This string contains the system characters for all RINEX systems.
       static std::string validRinexSystems;
@@ -290,13 +295,13 @@ namespace gpstk
           * characters.
           * @throw InvalidParameter
           */
-      explicit ObsID(const std::string& id);
+      explicit ObsID(const std::string& id, double version);
 
          /** Constructor from c-style string; see c'tor from a string.
           * @throw InvalidParameter
           */
-      explicit ObsID(const char* id)
-      { *this=ObsID(std::string(id));}
+      explicit ObsID(const char* id, double version)
+      { *this=ObsID(std::string(id), version);}
 
          /// Equality requires all fields to be the same
       virtual bool operator==(const ObsID& right) const;
@@ -361,6 +366,12 @@ namespace gpstk
       ObservationType  type;
       CarrierBand      band;
       TrackingCode     code;
+
+         /** Kludge for Rinex 3.02
+          * @todo move this into RinexObsID along with all the other
+          *   RINEX-specific code at some point.
+          */
+      double rinexVersion;
 
          /// These strings are for forming a somewhat verbose description
       static std::map< TrackingCode,    std::string > tcDesc;

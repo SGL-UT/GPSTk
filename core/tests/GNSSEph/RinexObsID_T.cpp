@@ -36,6 +36,7 @@
 
 #include "TestUtil.hpp"
 #include "RinexObsID.hpp"
+#include "Rinex3ObsHeader.hpp"
 #include <iostream>
 
 using namespace std;
@@ -156,7 +157,7 @@ decodeTest()
 
       // test that channel num pseudo obs is decoded properly
    TUCSM("RinexObsID(\"GX1 \")");
-   gpstk::RinexObsID roid("GX1 ");
+   gpstk::RinexObsID roid("GX1 ", gpstk::Rinex3ObsBase::currentVersion);
    TUASSERTE(gpstk::ObsID::ObservationType, gpstk::ObsID::otChannel, roid.type);
       // RINEX requires that the "band" be "1" at all times, but I'm
       // not sure it strictly makes sense to actually translate it to
@@ -166,37 +167,37 @@ decodeTest()
 
       // test that iono delay pseudo obs is decoded properly
    TUCSM("RinexObsID(\"GI1 \")");
-   gpstk::RinexObsID roidI1("GI1 ");
+   gpstk::RinexObsID roidI1("GI1 ", gpstk::Rinex3ObsBase::currentVersion);
    TUASSERTE(gpstk::ObsID::ObservationType, gpstk::ObsID::otIono, roidI1.type);
    TUASSERTE(gpstk::ObsID::CarrierBand, gpstk::ObsID::cbL1, roidI1.band);
    TUASSERTE(gpstk::ObsID::TrackingCode, gpstk::ObsID::tcUndefined,roidI1.code);
    TUCSM("RinexObsID(\"GI2 \")");
-   gpstk::RinexObsID roidI2("GI2 ");
+   gpstk::RinexObsID roidI2("GI2 ", gpstk::Rinex3ObsBase::currentVersion);
    TUASSERTE(gpstk::ObsID::ObservationType, gpstk::ObsID::otIono, roidI2.type);
    TUASSERTE(gpstk::ObsID::CarrierBand, gpstk::ObsID::cbL2, roidI2.band);
    TUASSERTE(gpstk::ObsID::TrackingCode, gpstk::ObsID::tcUndefined,roidI2.code);
    TUCSM("RinexObsID(\"RI3 \")");
-   gpstk::RinexObsID roidI3("RI3 ");
+   gpstk::RinexObsID roidI3("RI3 ", gpstk::Rinex3ObsBase::currentVersion);
    TUASSERTE(gpstk::ObsID::ObservationType, gpstk::ObsID::otIono, roidI3.type);
    TUASSERTE(gpstk::ObsID::CarrierBand, gpstk::ObsID::cbG3, roidI3.band);
    TUASSERTE(gpstk::ObsID::TrackingCode, gpstk::ObsID::tcUndefined,roidI3.code);
    TUCSM("RinexObsID(\"RI4 \")");
-   gpstk::RinexObsID roidI4("RI4 ");
+   gpstk::RinexObsID roidI4("RI4 ", gpstk::Rinex3ObsBase::currentVersion);
    TUASSERTE(gpstk::ObsID::ObservationType, gpstk::ObsID::otIono, roidI4.type);
    TUASSERTE(gpstk::ObsID::CarrierBand, gpstk::ObsID::cbG1a, roidI4.band);
    TUASSERTE(gpstk::ObsID::TrackingCode, gpstk::ObsID::tcUndefined,roidI4.code);
    TUCSM("RinexObsID(\"GI5 \")");
-   gpstk::RinexObsID roidI5("GI5 ");
+   gpstk::RinexObsID roidI5("GI5 ", gpstk::Rinex3ObsBase::currentVersion);
    TUASSERTE(gpstk::ObsID::ObservationType, gpstk::ObsID::otIono, roidI5.type);
    TUASSERTE(gpstk::ObsID::CarrierBand, gpstk::ObsID::cbL5, roidI5.band);
    TUASSERTE(gpstk::ObsID::TrackingCode, gpstk::ObsID::tcUndefined,roidI5.code);
    TUCSM("RinexObsID(\"EI6 \")");
-   gpstk::RinexObsID roidI6("EI6 ");
+   gpstk::RinexObsID roidI6("EI6 ", gpstk::Rinex3ObsBase::currentVersion);
    TUASSERTE(gpstk::ObsID::ObservationType, gpstk::ObsID::otIono, roidI6.type);
    TUASSERTE(gpstk::ObsID::CarrierBand, gpstk::ObsID::cbE6, roidI6.band);
    TUASSERTE(gpstk::ObsID::TrackingCode, gpstk::ObsID::tcUndefined,roidI6.code);
    TUCSM("RinexObsID(\"CI7 \")");
-   gpstk::RinexObsID roidI7("CI7 ");
+   gpstk::RinexObsID roidI7("CI7 ", gpstk::Rinex3ObsBase::currentVersion);
    TUASSERTE(gpstk::ObsID::ObservationType, gpstk::ObsID::otIono, roidI7.type);
       /** @bug The constructor rather unintelligently returns the same
        * band regardless of the GNSS being decoded.  Fixing this will
@@ -205,15 +206,40 @@ decodeTest()
       //TUASSERTE(gpstk::ObsID::CarrierBand, gpstk::ObsID::cbB2, roidI7.band);
    TUASSERTE(gpstk::ObsID::TrackingCode, gpstk::ObsID::tcUndefined,roidI7.code);
    TUCSM("RinexObsID(\"EI8 \")");
-   gpstk::RinexObsID roidI8("EI8 ");
+   gpstk::RinexObsID roidI8("EI8 ", gpstk::Rinex3ObsBase::currentVersion);
    TUASSERTE(gpstk::ObsID::ObservationType, gpstk::ObsID::otIono, roidI8.type);
    TUASSERTE(gpstk::ObsID::CarrierBand, gpstk::ObsID::cbE5ab, roidI8.band);
    TUASSERTE(gpstk::ObsID::TrackingCode, gpstk::ObsID::tcUndefined,roidI8.code);
    TUCSM("RinexObsID(\"II9 \")");
-   gpstk::RinexObsID roidI9("II9 ");
+   gpstk::RinexObsID roidI9("II9 ", gpstk::Rinex3ObsBase::currentVersion);
    TUASSERTE(gpstk::ObsID::ObservationType, gpstk::ObsID::otIono, roidI9.type);
    TUASSERTE(gpstk::ObsID::CarrierBand, gpstk::ObsID::cbI9, roidI9.band);
    TUASSERTE(gpstk::ObsID::TrackingCode, gpstk::ObsID::tcUndefined,roidI9.code);
+
+      // test RINEX 3.02 crapola
+   TUCSM("RinexObsID() 3.02");
+   gpstk::RinexObsID roid302("CC1I", 3.02);
+   TUASSERTE(gpstk::ObsID::ObservationType,gpstk::ObsID::otRange,roid302.type);
+   TUASSERTE(gpstk::ObsID::CarrierBand, gpstk::ObsID::cbB1, roid302.band);
+   TUASSERTE(gpstk::ObsID::TrackingCode, gpstk::ObsID::tcCI1, roid302.code);
+   TUASSERTE(std::string, "C1I", roid302.asString());
+   TUASSERTFE(3.02, roid302.rinexVersion);
+   roid302.rinexVersion = 3.04;
+   TUASSERTE(std::string, "C2I", roid302.asString());
+
+   TUCSM("RinexObsID() 3.03");
+   gpstk::RinexObsID roid303("CC2I", 3.03);
+   TUASSERTE(gpstk::ObsID::ObservationType,gpstk::ObsID::otRange,roid303.type);
+   TUASSERTE(gpstk::ObsID::CarrierBand, gpstk::ObsID::cbB1, roid303.band);
+   TUASSERTE(gpstk::ObsID::TrackingCode, gpstk::ObsID::tcCI1, roid303.code);
+   TUASSERTFE(3.03, roid303.rinexVersion);
+
+   TUCSM("RinexObsID() 3.04");
+   gpstk::RinexObsID roid304("CC2I", 3.04);
+   TUASSERTE(gpstk::ObsID::ObservationType,gpstk::ObsID::otRange,roid304.type);
+   TUASSERTE(gpstk::ObsID::CarrierBand, gpstk::ObsID::cbB1, roid304.band);
+   TUASSERTE(gpstk::ObsID::TrackingCode, gpstk::ObsID::tcCI1, roid304.code);
+   TUASSERTFE(3.04, roid304.rinexVersion);
 
    TURETURN();
 }

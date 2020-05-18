@@ -175,7 +175,7 @@ namespace gpstk
    {
       R2ObsTypes.clear();
       mapSysR2toR3ObsID.clear();
-      version = 3.04;
+      version = currentVersion;
       fileType = "O";          // observation data
       fileSys = "G";           // GPS only by default
       preserveVerType = false; // let the write methods chose the above
@@ -942,7 +942,7 @@ namespace gpstk
             GLOCodPhsBias::const_iterator it;
             const string labs[4] = {"C1C", "C1P", "C2C", "C2P"};
             for (int i = 0; i < 4; i++) {
-               RinexObsID obsid(RinexObsID("R" + labs[i]));
+               RinexObsID obsid(RinexObsID("R" + labs[i], version));
                it = glonassCodPhsBias.find(obsid);
                double bias = 0.0;
                if (it != glonassCodPhsBias.end())
@@ -1239,7 +1239,8 @@ namespace gpstk
                {
                   obstype[1] = '2';
                }
-               mapObsTypes[satSys].push_back(RinexObsID(satSys+obstype));
+               mapObsTypes[satSys].push_back(
+                  RinexObsID(satSys+obstype,version));
             }
          }
          catch(InvalidParameter& ip)
@@ -1364,7 +1365,8 @@ namespace gpstk
              (i < numObs) && ((i % maxObsPerLine) < maxObsPerLine); i++)
          {
             int position = 4*(i % maxObsPerLine) + 10 + 1;
-            RinexObsID tempType(satSysTemp+strip(line.substr(position,3)));
+            RinexObsID tempType(satSysTemp+strip(line.substr(position,3)),
+                                version);
             tempSfacMap.insert(make_pair(tempType,factor));
          }
          sysSfacMap[satSysTemp] = tempSfacMap;
@@ -1433,7 +1435,7 @@ namespace gpstk
                {
                   str[1] = '2';
                }
-               RinexObsID obsid(satSysTemp+str);
+               RinexObsID obsid(satSysTemp+str, version);
                double cor(asDouble(strip(line.substr(6,8))));
                int nsat(asInt(strip(line.substr(16,2))));
                if(nsat > 0)
@@ -1491,7 +1493,7 @@ namespace gpstk
          {
             string str(strip(line.substr(i*13+1,3)));
             if(str.empty()) continue;
-            RinexObsID obsid("R"+str);
+            RinexObsID obsid("R"+str, version);
             double bias(asDouble(strip(line.substr(i*13+5,8))));
             glonassCodPhsBias[obsid] = bias;
          }
@@ -1918,7 +1920,7 @@ namespace gpstk
                
          try
          {
-            RinexObsID OT(obsid);
+            RinexObsID OT(obsid, version);
             obsids.push_back(OT);
             mapSysR2toR3ObsID[syss][ot] = OT; //map<string, map<string, RinexObsID> >
          }
@@ -1972,7 +1974,7 @@ namespace gpstk
          
          try
          {
-            RinexObsID OT(obsid);
+            RinexObsID OT(obsid, version);
             obsids.push_back(OT);
             mapSysR2toR3ObsID[syss][ot] = OT; //map<string, map<string, RinexObsID> >
          }
@@ -2038,7 +2040,7 @@ namespace gpstk
          
          try
          {
-            RinexObsID OT(obsid);
+            RinexObsID OT(obsid, version);
             obsids.push_back(OT);
             mapSysR2toR3ObsID[syss][ot] = OT; //map<string, map<string, RinexObsID> >
          }
@@ -2082,7 +2084,7 @@ namespace gpstk
          
          try
          {
-            RinexObsID OT(obsid);
+            RinexObsID OT(obsid, version);
             obsids.push_back(OT);
             mapSysR2toR3ObsID[syss][ot] = OT; //map<string, map<string, RinexObsID> >
          }
@@ -2520,7 +2522,7 @@ namespace gpstk
 
          // Extract the GNSS from the newType
       string sys( newType, 0, 1 );
-      return getObsIndex(sys, RinexObsID(newType));
+      return getObsIndex(sys, RinexObsID(newType, version));
    }
 
    

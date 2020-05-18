@@ -42,21 +42,18 @@
 #include "RinexObsID.hpp"
 #include "RinexSatID.hpp"
 #include "StringUtils.hpp"
+#include "Rinex3ObsHeader.hpp"
 
 namespace gpstk
 {
    /// Construct this object from the string specifier
-   RinexObsID::RinexObsID(const std::string& strID)
+   RinexObsID::RinexObsID(const std::string& strID, double version)
+         : ObsID(strID, version)
    {
       if(!isValidRinexObsID(strID)) {
          InvalidParameter ip(strID + " is not a valid RinexObsID");
          GPSTK_THROW(ip);
       }
-      try {
-         ObsID obsid(strID);
-         *this = RinexObsID(obsid.type, obsid.band, obsid.code);
-      }
-      catch(InvalidParameter& ip) { GPSTK_RETHROW(ip); }
    }
 
    RinexObsID::RinexObsID(const RinexObsType& rot) : ObsID()
@@ -85,6 +82,12 @@ namespace gpstk
       buff[0] = ot2char[type];
       buff[1] = cb2char[band];
       buff[2] = tc2char[code];
+      if ((fabs(rinexVersion - 3.02) < 0.005) && (band == cbB1) &&
+          ((code == tcCI1) || (code == tcCQ1) || (code == tcCIQ1)))
+      {
+            // kludge for RINEX 3.02 BDS codes
+         buff[1] = '1';
+      }
          // special cases.
       if (type == ObsID::otIono)
       {
@@ -243,8 +246,10 @@ namespace gpstk
                      std::ostringstream oss;
                      if(!isValidRinexObsID(str,csys))
                         oss << str << " " << "-INVALID-";
-                     else {
-                        RinexObsID robsid(sys+str);
+                     else
+                     {
+                        RinexObsID robsid(sys+str,
+                                          Rinex3ObsBase::currentVersion);
                         oss << str << " " << robsid;
                      }
                      oss1 << " " << StringUtils::leftJustify(oss.str(),34);

@@ -479,7 +479,8 @@ int processFiles(void)
                {
                   if (sys != string("?") && sys != jt->first)
                      continue;
-                  RinexObsID obsid(jt->first + it->obs.asString());
+                  RinexObsID obsid(jt->first + it->obs.asString(),
+                                   Rhead.version);
 
                      // find the OT in the output header map, and delete it
                   Rinex3ObsHeader::RinexObsVec::iterator kt;
@@ -1438,8 +1439,15 @@ EditCmd::EditCmd(const string intypestr, const string inarg)
          if(arg.size() == 4)                          // get sys
             sat.fromString(string(1,arg[0]));
             // else sat sys is unknown
-         if(isValidRinexObsID(arg)) obs = RinexObsID(arg);
-         else return;
+         if(isValidRinexObsID(arg))
+         {
+               /** @bug This is kind of ugly.  If someone tries to
+                * specify 3.02 codes, they'll be interpreted
+                * incorrectly. */
+            obs = RinexObsID(arg, Rinex3ObsBase::currentVersion);
+         }
+         else
+            return;
          type = doCT;
       }
       else if(tag == "DS") {
@@ -1472,7 +1480,15 @@ EditCmd::EditCmd(const string intypestr, const string inarg)
          if(flds[1].size() == 3 && sat.systemChar() != '?')
             flds[1] = string(1,sat.systemChar()) + flds[1];
             // parse obs type
-         if(isValidRinexObsID(flds[1])) obs = RinexObsID(flds[1]); else return;
+         if(isValidRinexObsID(flds[1]))
+         {
+               /** @bug This is kind of ugly.  If someone tries to
+                * specify 3.02 codes, they'll be interpreted
+                * incorrectly. */
+            obs = RinexObsID(flds[1], Rinex3ObsBase::currentVersion);
+         }
+         else
+            return;
 
          if(tag == "DD") { type = ddCT; return; } // DD is done
 

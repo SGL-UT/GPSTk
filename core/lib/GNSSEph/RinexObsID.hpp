@@ -109,7 +109,14 @@ namespace gpstk
          /** Construct this object from the string specifier.
           * @throw InvalidParameter
           */
-      RinexObsID(const std::string& strID);
+      explicit RinexObsID(const std::string& strID, double version);
+
+         /** Construct this object from the C-style string specifier.
+          * @throw InvalidParameter
+          */
+      explicit RinexObsID(const char* id, double version)
+            : RinexObsID(std::string(id), version)
+      {}
 
          /** Constructor from ObsID.
           * @throw InvalidParameter
