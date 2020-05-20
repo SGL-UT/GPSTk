@@ -330,6 +330,10 @@ namespace gpstk
          Fields operator&(const Fields& rhs) const;
             /** Backwards compatibility method for code still implemented
              * around bit flags.
+             */
+         Fields operator|(const Fields& rhs) const;
+            /** Backwards compatibility method for code still implemented
+             * around bit flags.
              * @deprecated Please use isSet() instead. */
          Field operator&(Field rhs) const;
             /** Alias for set() for backwards compatibility.
