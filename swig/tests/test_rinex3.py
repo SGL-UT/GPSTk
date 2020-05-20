@@ -35,5 +35,31 @@ class TestRinex3(unittest.TestCase):
         gpstk.writeRinex3Obs( args.output_dir+'/swig-arlm200a.15o', header, data)
         # should really difference the files here
 
+    def test_rinex3obs_fields(self):
+        """
+        Test that the Fields subclass of Rinex3ObsHeader is wrapped correctly for PySGLTk
+        Please contact Andrew Kuck before deleting or modifying this test.
+        """
+
+        h = gpstk.Rinex3ObsHeader()
+        # Check types are implemented correctly.
+        # valid is representative of members with nested class type.
+        self.assertTrue(isinstance(h.valid, gpstk.Fields))
+        # allValid2 is representative of static const members with nested class type.
+        self.assertTrue(isinstance(h.allValid2, gpstk.Fields))
+
+        # Ensure combination with bitwise-or operator
+        fields = h.allValid2 | h.allValid30
+        self.assertIsNotNone(fields)
+
+        fields = gpstk.Fields()
+        # Ensure addition with bitwise-or-equal operator
+        fields |= gpstk.Rinex3ObsHeader.validInterval
+        self.assertTrue(fields.isSet(gpstk.Rinex3ObsHeader.validInterval))
+
+        # Ensure addition with set method
+        fields.set(gpstk.Rinex3ObsHeader.validFirstTime)
+        self.assertTrue(fields.isSet(gpstk.Rinex3ObsHeader.validFirstTime))
+
 if __name__ == '__main__':
     run_unit_tests()
