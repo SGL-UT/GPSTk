@@ -73,6 +73,10 @@ namespace gpstk
                 CARRIERBAND, obs.band);                               \
       TUASSERTE(gpstk::ObsID::TrackingCode,                           \
                 TRACKINGCODE, obs.code);                              \
+      gpstk::RinexObsID obs2(gpstk::ObsID::otPhase, CARRIERBAND,      \
+                             TRACKINGCODE);                           \
+      TUASSERTE(std::string, std::string(RINEXCODE).substr(1),        \
+                obs2.asString());                                     \
    }
 
 #define CBDESCTEST(EXP, CARRIERBAND) TUASSERTE(std::string, EXP, gpstk::ObsID::cbDesc[CARRIERBAND])
@@ -247,14 +251,32 @@ public:
       CONTEST("CL2I", gpstk::ObsID::cbB1, gpstk::ObsID::tcCI1);
       CONTEST("CL2Q", gpstk::ObsID::cbB1, gpstk::ObsID::tcCQ1);
       CONTEST("CL2X", gpstk::ObsID::cbB1, gpstk::ObsID::tcCIQ1);
-      // CONTEST("CL1N", gpstk::ObsID::cbL1, gpstk::ObsID::tcN);
-      // CONTEST("CL7I", gpstk::ObsID::cbB2, gpstk::ObsID::tcCI7);
-      // CONTEST("CL7Q", gpstk::ObsID::cbB2, gpstk::ObsID::tcCQ7);
-      // CONTEST("CL7X", gpstk::ObsID::cbB2, gpstk::ObsID::tcCIQ7);
-      // CONTEST("CL6I", gpstk::ObsID::cbB3, gpstk::ObsID::tcCI6);
-      // CONTEST("CL6Q", gpstk::ObsID::cbB3, gpstk::ObsID::tcCQ6);
-      // CONTEST("CL6X", gpstk::ObsID::cbB3, gpstk::ObsID::tcCIQ6);
-      // CONTEST("EL1A", gpstk::ObsID::cbL1, gpstk::ObsID::tcA);
+      CONTEST("CL1D", gpstk::ObsID::cbL1, gpstk::ObsID::tcCCD1);
+      CONTEST("CL1P", gpstk::ObsID::cbL1, gpstk::ObsID::tcCCP1);
+      CONTEST("CL1X", gpstk::ObsID::cbL1, gpstk::ObsID::tcCCDP1);
+      CONTEST("CL1A", gpstk::ObsID::cbL1, gpstk::ObsID::tcCA1);
+      CONTEST("CL1N", gpstk::ObsID::cbL1, gpstk::ObsID::tcCodelessC);
+         // these are only valid in rinex 3.02 and the macro defaults
+         // to the current version, which is not 3.02.
+      // CONTEST("CL1I", gpstk::ObsID::cbB1, gpstk::ObsID::tcCI1);
+      // CONTEST("CL1Q", gpstk::ObsID::cbB1, gpstk::ObsID::tcCQ1);
+      CONTEST("CL5D", gpstk::ObsID::cbL5, gpstk::ObsID::tcCI2a);
+      CONTEST("CL5P", gpstk::ObsID::cbL5, gpstk::ObsID::tcCQ2a);
+      CONTEST("CL5X", gpstk::ObsID::cbL5, gpstk::ObsID::tcCIQ2a);
+      CONTEST("CL7I", gpstk::ObsID::cbB2, gpstk::ObsID::tcCI7);
+      CONTEST("CL7Q", gpstk::ObsID::cbB2, gpstk::ObsID::tcCQ7);
+      CONTEST("CL7X", gpstk::ObsID::cbB2, gpstk::ObsID::tcCIQ7);
+      CONTEST("CL7D", gpstk::ObsID::cbB2, gpstk::ObsID::tcCI2b);
+      CONTEST("CL7P", gpstk::ObsID::cbB2, gpstk::ObsID::tcCQ2b);
+      CONTEST("CL7Z", gpstk::ObsID::cbB2, gpstk::ObsID::tcCIQ2b);
+      CONTEST("CL8D", gpstk::ObsID::cbE5ab, gpstk::ObsID::tcCI2ab);
+      CONTEST("CL8P", gpstk::ObsID::cbE5ab, gpstk::ObsID::tcCQ2ab);
+      CONTEST("CL8X", gpstk::ObsID::cbE5ab, gpstk::ObsID::tcCIQ2ab);
+      CONTEST("CL6I", gpstk::ObsID::cbB3, gpstk::ObsID::tcCI6);
+      CONTEST("CL6Q", gpstk::ObsID::cbB3, gpstk::ObsID::tcCQ6);
+      CONTEST("CL6X", gpstk::ObsID::cbB3, gpstk::ObsID::tcCIQ6);
+      CONTEST("CL6A", gpstk::ObsID::cbB3, gpstk::ObsID::tcCIQ3A);
+      CONTEST("EL1A", gpstk::ObsID::cbL1, gpstk::ObsID::tcA);
       CONTEST("EL1B", gpstk::ObsID::cbL1, gpstk::ObsID::tcB);
       CONTEST("EL1C", gpstk::ObsID::cbL1, gpstk::ObsID::tcC);
       CONTEST("EL1X", gpstk::ObsID::cbL1, gpstk::ObsID::tcBC);
@@ -268,10 +290,21 @@ public:
       CONTEST("EL8I", gpstk::ObsID::cbE5ab, gpstk::ObsID::tcIE5);
       CONTEST("EL8Q", gpstk::ObsID::cbE5ab, gpstk::ObsID::tcQE5);
       CONTEST("EL8X", gpstk::ObsID::cbE5ab, gpstk::ObsID::tcIQE5);
+      CONTEST("EL6A", gpstk::ObsID::cbE6, gpstk::ObsID::tcA6);
+      CONTEST("EL6B", gpstk::ObsID::cbE6, gpstk::ObsID::tcB6);
+      CONTEST("EL6C", gpstk::ObsID::cbE6, gpstk::ObsID::tcC6);
+      CONTEST("EL6X", gpstk::ObsID::cbE6, gpstk::ObsID::tcBC6);
+      CONTEST("EL6Z", gpstk::ObsID::cbE6, gpstk::ObsID::tcABC6);
       CONTEST("RL1C", gpstk::ObsID::cbG1, gpstk::ObsID::tcGCA);
       CONTEST("RL1P", gpstk::ObsID::cbG1, gpstk::ObsID::tcGP);
+      CONTEST("RL4A", gpstk::ObsID::cbG1a, gpstk::ObsID::tcL1OCD);
+      CONTEST("RL4B", gpstk::ObsID::cbG1a, gpstk::ObsID::tcL1OCP);
+      CONTEST("RL4X", gpstk::ObsID::cbG1a, gpstk::ObsID::tcL1OC);
       CONTEST("RL2C", gpstk::ObsID::cbG2, gpstk::ObsID::tcGCA);
       CONTEST("RL2P", gpstk::ObsID::cbG2, gpstk::ObsID::tcGP);
+      CONTEST("RL6A", gpstk::ObsID::cbG2a, gpstk::ObsID::tcL2CSI);
+      CONTEST("RL6B", gpstk::ObsID::cbG2a, gpstk::ObsID::tcL2OCP);
+      CONTEST("RL6X", gpstk::ObsID::cbG2a, gpstk::ObsID::tcL2CSIOCp);
       CONTEST("RL3I", gpstk::ObsID::cbG3, gpstk::ObsID::tcIR3);
       CONTEST("RL3Q", gpstk::ObsID::cbG3, gpstk::ObsID::tcQR3);
       CONTEST("RL3X", gpstk::ObsID::cbG3, gpstk::ObsID::tcIQR3);
@@ -297,13 +330,17 @@ public:
       CONTEST("GL5I", gpstk::ObsID::cbL5, gpstk::ObsID::tcI5);
       CONTEST("GL5Q", gpstk::ObsID::cbL5, gpstk::ObsID::tcQ5);
       CONTEST("GL5X", gpstk::ObsID::cbL5, gpstk::ObsID::tcIQ5);
-      // CONTEST("IL5A", gpstk::ObsID::cbL5, gpstk::ObsID::tcIA5);
-      // CONTEST("IL5B", gpstk::ObsID::cbL5, gpstk::ObsID::tcIB5);
-      // CONTEST("IL5C", gpstk::ObsID::cbL5, gpstk::ObsID::tcIC5);
+      CONTEST("IL5A", gpstk::ObsID::cbL5, gpstk::ObsID::tcIA5);
+      CONTEST("IL5B", gpstk::ObsID::cbL5, gpstk::ObsID::tcIB5);
+      CONTEST("IL5C", gpstk::ObsID::cbL5, gpstk::ObsID::tcIC5);
       CONTEST("IL5X", gpstk::ObsID::cbL5, gpstk::ObsID::tcIX5);
+      CONTEST("IL9A", gpstk::ObsID::cbI9, gpstk::ObsID::tcIA9);
+      CONTEST("IL9B", gpstk::ObsID::cbI9, gpstk::ObsID::tcIB9);
+      CONTEST("IL9C", gpstk::ObsID::cbI9, gpstk::ObsID::tcIC9);
+      CONTEST("IL9X", gpstk::ObsID::cbI9, gpstk::ObsID::tcIX9);
       CONTEST("JL1C", gpstk::ObsID::cbL1, gpstk::ObsID::tcJCA);
-      // CONTEST("JL1S", gpstk::ObsID::cbL1, gpstk::ObsID::tcJP1);
-      // CONTEST("JL1L", gpstk::ObsID::cbL1, gpstk::ObsID::tcJD1);
+      CONTEST("JL1L", gpstk::ObsID::cbL1, gpstk::ObsID::tcJP1);
+      CONTEST("JL1S", gpstk::ObsID::cbL1, gpstk::ObsID::tcJD1);
       CONTEST("JL1X", gpstk::ObsID::cbL1, gpstk::ObsID::tcJX1);
       CONTEST("JL1Z", gpstk::ObsID::cbL1, gpstk::ObsID::tcJZ1);
       CONTEST("JL2S", gpstk::ObsID::cbL2, gpstk::ObsID::tcJM2);
@@ -312,9 +349,19 @@ public:
       CONTEST("JL5I", gpstk::ObsID::cbL5, gpstk::ObsID::tcJI5);
       CONTEST("JL5Q", gpstk::ObsID::cbL5, gpstk::ObsID::tcJQ5);
       CONTEST("JL5X", gpstk::ObsID::cbL5, gpstk::ObsID::tcJIQ5);
+      CONTEST("JL5D", gpstk::ObsID::cbL5, gpstk::ObsID::tcJI5S);
+      CONTEST("JL5P", gpstk::ObsID::cbL5, gpstk::ObsID::tcJQ5S);
+      CONTEST("JL5Z", gpstk::ObsID::cbL5, gpstk::ObsID::tcJIQ5S);
       CONTEST("JL6S", gpstk::ObsID::cbE6, gpstk::ObsID::tcJI6);
+         // This is a duplicate of the previous one only with
+         // different expectations so we have to ignore one or the
+         // other.  I chose to ignore this one since the previous one
+         // is how we've been decoding things in the past.
+         //CONTEST("JL6S", gpstk::ObsID::cbE6, gpstk::ObsID::tcJD6);
       CONTEST("JL6L", gpstk::ObsID::cbE6, gpstk::ObsID::tcJQ6);
       CONTEST("JL6X", gpstk::ObsID::cbE6, gpstk::ObsID::tcJIQ6);
+      CONTEST("JL6E", gpstk::ObsID::cbE6, gpstk::ObsID::tcJE6);
+      CONTEST("JL6Z", gpstk::ObsID::cbE6, gpstk::ObsID::tcJDE6);
       CONTEST("SL1C", gpstk::ObsID::cbL1, gpstk::ObsID::tcSCA);
       CONTEST("SL5I", gpstk::ObsID::cbL5, gpstk::ObsID::tcSI5);
       CONTEST("SL5Q", gpstk::ObsID::cbL5, gpstk::ObsID::tcSQ5);

@@ -144,7 +144,18 @@ namespace gpstk
           * specification. Note that this always returns a three
           * character identifier so some information is lost because
           * some codes are shared between satellite systems. */
-      std::string asString() const;
+      std::string asString() const
+      { return asString(rinexVersion); }
+
+         /** This returns a representation of this object using the
+          * observation codes described in section 5.1 of the Rinex 3
+          * specification. Note that this always returns a three
+          * character identifier so some information is lost because
+          * some codes are shared between satellite systems.
+          * @param[in] version The RINEX format version to use when
+          *   generating the string (e.g. 3.02 has different codes for
+          *   BDS than other versions). */
+      std::string asString(double version) const;
 
          /** This is used by Rinex3ObsHeader::getObsIndex to determine
           * a pseudo-equality that takes into account handling of

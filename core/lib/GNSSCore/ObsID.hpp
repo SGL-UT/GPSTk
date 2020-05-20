@@ -165,7 +165,7 @@ namespace gpstk
          tcL1OC,      ///< GLONASS L1 OCd+OCp combined tracking
          tcL2CSIOCp,  ///< GLONASS L2 CSI+OCp combined tracking
          tcL2CSI,     ///< GLONASS L2 CSI code
-         tcL20CP,     ///< GLONASS L2 OCp code
+         tcL2OCP,     ///< GLONASS L2 OCp code
 
          tcA,         ///< Galileo L1 PRS code
          tcB,         ///< Galileo E1-B signal, supporting OS/HAS/SoL

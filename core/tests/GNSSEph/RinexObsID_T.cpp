@@ -227,6 +227,25 @@ decodeTest()
    roid302.rinexVersion = 3.04;
    TUASSERTE(std::string, "C2I", roid302.asString());
 
+   gpstk::RinexObsID roid302q("CC1Q", 3.02);
+   TUASSERTE(gpstk::ObsID::ObservationType,gpstk::ObsID::otRange,roid302q.type);
+   TUASSERTE(gpstk::ObsID::CarrierBand, gpstk::ObsID::cbB1, roid302q.band);
+   TUASSERTE(gpstk::ObsID::TrackingCode, gpstk::ObsID::tcCQ1, roid302q.code);
+   TUASSERTE(std::string, "C1Q", roid302q.asString());
+   TUASSERTFE(3.02, roid302q.rinexVersion);
+   roid302q.rinexVersion = 3.04;
+   TUASSERTE(std::string, "C2Q", roid302q.asString());
+
+   gpstk::RinexObsID roid302iq("CC1X", 3.02);
+   TUASSERTE(gpstk::ObsID::ObservationType, gpstk::ObsID::otRange,
+             roid302iq.type);
+   TUASSERTE(gpstk::ObsID::CarrierBand, gpstk::ObsID::cbB1, roid302iq.band);
+   TUASSERTE(gpstk::ObsID::TrackingCode, gpstk::ObsID::tcCIQ1, roid302iq.code);
+   TUASSERTE(std::string, "C1X", roid302iq.asString());
+   TUASSERTFE(3.02, roid302iq.rinexVersion);
+   roid302iq.rinexVersion = 3.04;
+   TUASSERTE(std::string, "C2X", roid302iq.asString());
+
    TUCSM("RinexObsID() 3.03");
    gpstk::RinexObsID roid303("CC2I", 3.03);
    TUASSERTE(gpstk::ObsID::ObservationType,gpstk::ObsID::otRange,roid303.type);
@@ -240,6 +259,38 @@ decodeTest()
    TUASSERTE(gpstk::ObsID::CarrierBand, gpstk::ObsID::cbB1, roid304.band);
    TUASSERTE(gpstk::ObsID::TrackingCode, gpstk::ObsID::tcCI1, roid304.code);
    TUASSERTFE(3.04, roid304.rinexVersion);
+
+   gpstk::RinexObsID roid304d("CC1D", 3.04);
+   TUASSERTE(gpstk::ObsID::ObservationType,gpstk::ObsID::otRange,roid304d.type);
+   TUASSERTE(gpstk::ObsID::CarrierBand, gpstk::ObsID::cbL1, roid304d.band);
+   TUASSERTE(gpstk::ObsID::TrackingCode, gpstk::ObsID::tcCCD1, roid304d.code);
+   TUASSERTFE(3.04, roid304d.rinexVersion);
+
+   gpstk::RinexObsID roid304p("CC1P", 3.04);
+   TUASSERTE(gpstk::ObsID::ObservationType,gpstk::ObsID::otRange,roid304p.type);
+   TUASSERTE(gpstk::ObsID::CarrierBand, gpstk::ObsID::cbL1, roid304p.band);
+   TUASSERTE(gpstk::ObsID::TrackingCode, gpstk::ObsID::tcCCP1, roid304p.code);
+   TUASSERTFE(3.04, roid304p.rinexVersion);
+
+   gpstk::RinexObsID roid304dp("CC1X", 3.04);
+   TUASSERTE(gpstk::ObsID::ObservationType, gpstk::ObsID::otRange,
+             roid304dp.type);
+   TUASSERTE(gpstk::ObsID::CarrierBand, gpstk::ObsID::cbL1, roid304dp.band);
+   TUASSERTE(gpstk::ObsID::TrackingCode, gpstk::ObsID::tcCCDP1, roid304dp.code);
+   TUASSERTFE(3.04, roid304dp.rinexVersion);
+
+   gpstk::RinexObsID roid304a("CC1A", 3.04);
+   TUASSERTE(gpstk::ObsID::ObservationType,gpstk::ObsID::otRange,roid304a.type);
+   TUASSERTE(gpstk::ObsID::CarrierBand, gpstk::ObsID::cbL1, roid304a.band);
+   TUASSERTE(gpstk::ObsID::TrackingCode, gpstk::ObsID::tcCA1, roid304a.code);
+   TUASSERTFE(3.04, roid304a.rinexVersion);
+
+   gpstk::RinexObsID roid304n("CL1N", 3.04);
+   TUASSERTE(gpstk::ObsID::ObservationType,gpstk::ObsID::otPhase,roid304n.type);
+   TUASSERTE(gpstk::ObsID::CarrierBand, gpstk::ObsID::cbL1, roid304n.band);
+   TUASSERTE(gpstk::ObsID::TrackingCode, gpstk::ObsID::tcCodelessC,
+             roid304n.code);
+   TUASSERTFE(3.04, roid304n.rinexVersion);
 
    TURETURN();
 }

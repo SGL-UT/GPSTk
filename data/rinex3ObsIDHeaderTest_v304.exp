@@ -1,0 +1,21 @@
+     3.04           OBSERVATION DATA    G (GPS)             RINEX VERSION / TYPE
+                                        20200512 181734 UTC PGM / RUN BY / DATE
+                                                            MARKER NAME
+                                                            MARKER TYPE
+                                                            OBSERVER / AGENCY
+                                                            REC # / TYPE / VERS
+                                                            ANT # / TYPE
+        0.0000        0.0000        0.0000                  APPROX POSITION XYZ
+        0.0000        0.0000        0.0000                  ANTENNA: DELTA H/E/N
+C   16 C2I L2I D2I S2I C2Q L2Q D2Q S2Q C7X L7X D7X S7X C2X  SYS / # / OBS TYPES
+       L2X D2X S2X                                          SYS / # / OBS TYPES
+     0     0     0     0     0    0.0000000     UNK         TIME OF FIRST OBS
+C    1   4 C2I C2Q C2X C7X                                  SYS / SCALE FACTOR
+C   10   4 L2I L2Q L2X L7X                                  SYS / SCALE FACTOR
+C  100   4 D2I D2Q D2X D7X                                  SYS / SCALE FACTOR
+C 1000   4 S2I S2Q S2X S7X                                  SYS / SCALE FACTOR
+C L2I  2.34500   1 C07                                      SYS / PHASE SHIFT
+C L2Q  6.78900   1 C07                                      SYS / PHASE SHIFT
+C L2X  0.12300   1 C07                                      SYS / PHASE SHIFT
+C L7X  8.76500   1 C07                                      SYS / PHASE SHIFT
+                                                            END OF HEADER

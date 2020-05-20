@@ -1,5 +1,5 @@
      3.02           OBSERVATION DATA    MIXED               RINEX VERSION / TYPE
-RinEdit                                 20170314 195428 UTC PGM / RUN BY / DATE
+RinEdit                                 20200519 225124 UTC PGM / RUN BY / DATE
 FAA1                                                        MARKER NAME
 92201M012                                                   MARKER NUMBER
 AUTOMATIC           ESA/ESOC                                OBSERVER / AGENCY
@@ -7,7 +7,7 @@ AUTOMATIC           ESA/ESOC                                OBSERVER / AGENCY
 725235              LEIAR25.R4      NONE                    ANT # / TYPE
  -5246415.0000 -3077260.0000 -1913842.0000                  APPROX POSITION XYZ
         0.1262        0.0000        0.0000                  ANTENNA: DELTA H/E/N
-C    8 C2I L2I D2I S2I C7I L7I D7I S7I                      SYS / # / OBS TYPES
+C    8 C1I L1I D1I S1I C7I L7I D7I S7I                      SYS / # / OBS TYPES
 E   16 C1C L1C D1C S1C C5Q L5Q D5Q S5Q C7Q L7Q D7Q S7Q C8Q  SYS / # / OBS TYPES
        L8Q D8Q S8Q                                          SYS / # / OBS TYPES
 G   18 C1C L1C D1C S1C C1W S1W C2W L2W D2W S2W C2L L2L D2L  SYS / # / OBS TYPES
@@ -18,8 +18,8 @@ S    4 C1C L1C D1C S1C                                      SYS / # / OBS TYPES
 DBHZ                                                        SIGNAL STRENGTH UNIT
      1.000                                                  INTERVAL
   2016     6    18     1     0    0.0000000     GPS         TIME OF FIRST OBS
+C L1I  0.00000                                              SYS / PHASE SHIFT
 C L7I  0.00000                                              SYS / PHASE SHIFT
-C L2I  0.00000                                              SYS / PHASE SHIFT
 E L1C  0.00000                                              SYS / PHASE SHIFT
 E L5Q  0.00000                                              SYS / PHASE SHIFT
 E L7Q  0.00000                                              SYS / PHASE SHIFT

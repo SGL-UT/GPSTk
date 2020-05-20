@@ -37,6 +37,7 @@
 /// @file ObsID.cpp
 /// gpstk::ObsID - Identifies types of observations
 
+#include <math.h>
 #include "ObsID.hpp"
 
 namespace gpstk
@@ -164,13 +165,42 @@ namespace gpstk
 //
          case 'E':   // Galileo
       {
-         if (band==cbL1 || band==cbE6)
+         if (band==cbL1)
          {
             switch (code)
             {
                case tcCA:   code = tcC;  break;
                case tcC2LM: code = tcBC; break;
                default: break;
+            }
+         }
+         if (band==cbE6)
+         {
+            switch (code)
+            {
+               case tcCA:
+                  code = tcC6;
+                  break;
+               case tcC2LM:
+                  code = tcBC6;
+                  break;
+               case tcA:
+                  code = tcA6;
+                  break;
+               case tcB:
+                  code = tcB6;
+                  break;
+               case tcC:
+                  code = tcC6;
+                  break;
+               case tcBC:
+                  code = tcBC6;
+                  break;
+               case tcABC:
+                  code = tcABC6;
+                  break;
+               default:
+                  break;
             }
          }
          if (band==cbL5)
@@ -207,20 +237,47 @@ namespace gpstk
       }
          case 'R': // Glonass
       {
-         switch (code)
-         {
-            case tcCA: code = tcGCA; break;
-            case tcP: code = tcGP; break;
-            case tcI5: code = tcIR3; break;
-            case tcQ5: code = tcQR3; break;
-            case tcC2LM: case tcG1X: code = tcIQR3; break;
-            default: break;
-         }
          switch (band)
          {
             case cbL1: band = cbG1; break;
             case cbL2: band = cbG2; break;
+            case cbE6: band = cbG2a; break;
             default: break;
+         }
+         switch (band)
+         {
+            case cbG1:
+            case cbG2:
+               switch (code)
+               {
+                  case tcCA: code = tcGCA; break;
+                  case tcP: code = tcGP; break;
+               }
+               break;
+            case cbG1a:
+               switch (code)
+               {
+                  case tcA: code = tcL1OCD; break;
+                  case tcB: code = tcL1OCP; break;
+                  case tcIQR3: case tcC2LM: code = tcL1OC; break;
+               }
+               break;
+            case cbG2a:
+               switch (code)
+               {
+                  case tcA: code = tcL2CSI; break;
+                  case tcB: code = tcL2OCP; break;
+                  case tcIQR3: case tcC2LM: code = tcL2CSIOCp; break;
+               }
+               break;
+            case cbG3:
+               switch (code)
+               {
+                  case tcI5: code = tcIR3; break;
+                  case tcQ5: code = tcQR3; break;
+                  case tcC2LM: case tcG1X: code = tcIQR3; break;
+               }
+               break;
          }
          break;
       }
@@ -259,6 +316,9 @@ namespace gpstk
             case tcI5: code = tcJI5; break;     // 'I'
             case tcQ5: code = tcJQ5; break;     // 'Q'
             case tcC2LM: code = tcJIQ5; break;  // 'X'
+            case tcD: code = tcJI5S; break;
+            case tcP: code = tcJQ5S; break;
+            case tcABC: code = tcJIQ5S; break;
             default: break;
          }
          if(band == cbE6) switch (code)
@@ -266,41 +326,158 @@ namespace gpstk
             case tcC2M: case tcG1D: code = tcJI6; break;    // 'S'
             case tcC2L: case tcG1P: code = tcJQ6; break;    // 'L'
             case tcC2LM: case tcG1X: code = tcJIQ6; break;  // 'X'
+            case tcABC: code = tcJDE6; break;
             default: break;
          }
          break;
       }
          case 'C':   // BeiDou
       {
-         if(band == cbL1) band = cbB1;          // RINEX 3.02
-         if(band == cbL2) band = cbB1;          // RINEX 3.0[013]
-         if(band == cbE6) band = cbB3;
-
-         if(band == cbB1) {
-            switch (code)
-            {
-               case tcI5: code = tcCI1; break;     // 'I'
-               case tcQ5: code = tcCQ1; break;     // 'Q'
-               case tcC2LM: case tcG1X: code = tcCIQ1; break;  // 'X'
-               default: break;
-            }
-         }
-         if(band == cbB3) switch (code)
+         if (fabs(rinexVersion - 3.02) < 0.005)
          {
-            case tcI5: code = tcCI7; break;     // 'I'
-            case tcQ5: code = tcCQ7; break;     // 'Q'
-            case tcC2LM: case tcG1X: code = tcCIQ7; break;  // 'X'
-            default: break;
+               // RINEX 3.02
+            if(band == cbL1)
+               band = cbB1;
          }
-         if(band == cbE5b) {
-            switch (code)
-            {
-               case tcI5: code = tcCI6; break;     // 'I'
-               case tcQ5: code = tcCQ6; break;     // 'Q'
-               case tcC2LM: case tcG1X: code = tcCIQ6; break;  // 'X'
-            default: break;
-            }
+         else
+         {
+               // RINEX 3.0[013]
+            if (band == cbL2)
+               band = cbB1;
          }
+         if (band == cbE6)
+            band = cbB3;
+         else if (band == cbE5b)
+            band = cbB2;
+
+         switch (band)
+         {
+            case cbB1: // B1-2
+               switch (code)
+               {
+                  case tcI5:     // 'I'
+                     code = tcCI1;
+                     break;
+                  case tcQ5:     // 'Q'
+                     code = tcCQ1;
+                     break;
+                  case tcC2LM:   // 'X'
+                  case tcG1X:
+                     code = tcCIQ1;
+                     break;
+                  default:
+                     break;
+               }
+               break;
+            case cbL1: // B1
+               switch (code)
+               {
+                  case tcD:
+                     code = tcCCD1;
+                     break;
+                  case tcP:
+                     code = tcCCP1;
+                     break;
+                  case tcC2LM:
+                     code = tcCCDP1;
+                     break;
+                  case tcA:
+                     code = tcCA1;
+                     break;
+                  case tcN:
+                     code = tcCodelessC;
+                     break;
+               }
+               break;
+            case cbL5: // B2a
+               switch (code)
+               {
+                  case tcD:
+                     code = tcCI2a;
+                     break;
+                  case tcP:
+                     code = tcCQ2a;
+                     break;
+                  case tcC2LM:
+                     code = tcCIQ2a;
+                     break;
+               }
+               break;
+            case cbB2: // B2b
+               switch (code)
+               {
+                  case tcI5:
+                     code = tcCI7;
+                     break;
+                  case tcQ5:
+                     code = tcCQ7;
+                     break;
+                  case tcC2LM:
+                     code = tcCIQ7;
+                     break;
+                  case tcD:
+                     code = tcCI2b;
+                     break;
+                  case tcP:
+                     code = tcCQ2b;
+                     break;
+                  case tcABC:
+                     code = tcCIQ2b;
+                     break;
+               }
+               break;
+            case cbE5ab:
+               switch (code)
+               {
+                  case tcD:
+                     code = tcCI2ab;
+                     break;
+                  case tcP:
+                     code = tcCQ2ab;
+                     break;
+                  case tcC2LM:
+                     code = tcCIQ2ab;
+                     break;
+               }
+               break;
+            case cbB3: // B3
+               switch (code)
+               {
+                  case tcI5:     // 'I'
+                     code = tcCI6;
+                     break;
+                  case tcQ5:     // 'Q'
+                     code = tcCQ6;
+                     break;
+                  case tcC2LM:   // 'X'
+                  case tcG1X:
+                     code = tcCIQ6;
+                     break;
+                  case tcA:
+                     code = tcCIQ3A;
+                     break;
+                  default:
+                     break;
+               }
+               break;
+            case cbE5b: 
+               switch (code)
+               {
+                  case tcI5:     // 'I'
+                     code = tcCI7;
+                     break;
+                  case tcQ5:     // 'Q'
+                     code = tcCQ7;
+                     break;
+                  case tcC2LM:   // 'X'
+                  case tcG1X:
+                     code = tcCIQ7;
+                     break;
+                  default:
+                     break;
+               }
+               break;
+         } // switch (band)
          break;
       }
          case 'I':  // IRNSS
@@ -309,10 +486,21 @@ namespace gpstk
          {
             switch (code)
             {
-               case tcCA:   code = tcIA5; break;   // 'A'
-               case tcA:    code = tcIB5; break;   // 'B'
-               case tcB:    code = tcIC5; break;   // 'B'
+               case tcCA:   code = tcIC5; break;   // 'C'
+               case tcA:    code = tcIA5; break;   // 'A'
+               case tcB:    code = tcIB5; break;   // 'B'
                case tcC2LM: case tcG1X: code = tcIX5; break;   // 'X'
+            default: break;
+            }
+         }
+         if(band == cbI9)
+         {
+            switch (code)
+            {
+               case tcCA:   code = tcIC9; break;   // 'C'
+               case tcA:    code = tcIA9; break;   // 'A'
+               case tcB:    code = tcIB9; break;   // 'B'
+               case tcC2LM: case tcG1X: code = tcIX9; break;   // 'X'
             default: break;
             }
          }
@@ -612,7 +800,7 @@ namespace gpstk
          case tcL1OC:      return "L1OC";
          case tcL2CSIOCp:  return "L2CSIOCp";
          case tcL2CSI:     return "L2CSI";
-         case tcL20CP:     return "L20CP";
+         case tcL2OCP:     return "L2OCP";
          case tcIR3:       return "IR3";
          case tcIQR3:      return "IQR3";
          case tcQR3:       return "QR3";
@@ -747,8 +935,8 @@ namespace gpstk
          return tcL2CSIOCp;
       if (s == "L2CSI")
          return tcL2CSI;
-      if (s == "L20CP")
-         return tcL20CP;
+      if (s == "L2OCP")
+         return tcL2OCP;
       if (s == "IR3")
          return tcIR3;
       if (s == "IQR3")

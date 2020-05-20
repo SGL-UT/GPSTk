@@ -75,14 +75,14 @@ namespace gpstk
    }
 
    // Represent this object using the Rinex3 notation
-   std::string RinexObsID::asString() const
+   std::string RinexObsID::asString(double version) const
    {
       char buff[4];
 
       buff[0] = ot2char[type];
       buff[1] = cb2char[band];
       buff[2] = tc2char[code];
-      if ((fabs(rinexVersion - 3.02) < 0.005) && (band == cbB1) &&
+      if ((fabs(version - 3.02) < 0.005) && (band == cbB1) &&
           ((code == tcCI1) || (code == tcCQ1) || (code == tcCIQ1)))
       {
             // kludge for RINEX 3.02 BDS codes
