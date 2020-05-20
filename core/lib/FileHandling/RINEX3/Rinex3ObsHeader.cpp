@@ -2636,6 +2636,16 @@ namespace gpstk
       return Rinex3ObsHeader::Fields(results);
    }
 
+   Rinex3ObsHeader::Fields Rinex3ObsHeader::Fields ::
+   operator|(const Rinex3ObsHeader::Fields& rhs) const
+   {
+      FieldSet results;
+      set_union(fieldsSet.begin(), fieldsSet.end(),
+                rhs.fieldsSet.begin(), rhs.fieldsSet.end(),
+                inserter(results, results.begin()));
+       return Rinex3ObsHeader::Fields(results);
+   }
+
 
    Rinex3ObsHeader::Field Rinex3ObsHeader::Fields ::
    operator&(Rinex3ObsHeader::Field rhs) const
