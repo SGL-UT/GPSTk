@@ -1,3 +1,17 @@
+
+// For whatever reason, swig assumes that it owns the pointers created by the operator|= function, and
+// will attempt to delete them later.  It doesn't own them, so this causes a free(): invalid pointer error.
+// This disables pointer ownership for that method.
+// See: https://github.com/swig/swig/blob/rel-3.0.12/Lib/python/pyopers.swg#L196
+#if SWIG_VERSION < 0x030000
+    %feature("del", "0") Fields::operator|=;
+    %feature("new", "0") Fields::operator|=;
+#else
+
+    %feature("del", "0") gpstk::Rinex3ObsHeader::Fields::operator|=;
+    %feature("new", "0") gpstk::Rinex3ObsHeader::Fields::operator|=;
+#endif
+
 #if SWIG_VERSION < 0x030000
     class Rinex3CorrInfo {
             public:
@@ -106,11 +120,6 @@
     %rename (Rinex3ObsHeader_ExtraWaveFact) gpstk::Rinex3ObsHeader::ExtraWaveFact;
 #endif
 
-// For whatever reason, swig assumes that it owns the pointers created by the operator|= function, and
-// will attempt to delete them later.  It doesn't own them, so this causes a free(): invalid pointer error.
-// This disables pointer ownership for that method.
-%feature("del", "0") gpstk::Rinex3ObsHeader::Fields::operator|=;
-%feature("new", "0") gpstk::Rinex3ObsHeader::Fields::operator|=;
 
 %{
 #include "Rinex3ObsHeader.hpp"
