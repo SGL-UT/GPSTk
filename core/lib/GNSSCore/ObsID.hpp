@@ -293,11 +293,37 @@ namespace gpstk
           * isn't currently defined, a new one is silently
           * automatically created with a blank description for the new
           * characters.
+          * @param[in] strID The RINEX observation identifier to
+          *   decode.  This must be a RINEX 3 ID, three or four
+          *   characters in length.  Three character obs codes are
+          *   assumed to be from GPS.  Four character obs codes use
+          *   the first character for the system.
+          * @param[in] version The RINEX version of the obs ID in
+          *   strID.  This is used for oddball special cases like CC1*
+          *   in RINEX 3.02, to make sure that the codes are properly
+          *   interpreted.  When reading the obs ID from a RINEX
+          *   header, one should use the header version here.  When
+          *   interpreting command-line options or other contexts
+          *   where a RINEX version is not specified, use
+          *   Rinex3ObsBase::currentVersion.
           * @throw InvalidParameter
           */
       explicit ObsID(const std::string& id, double version);
 
          /** Constructor from c-style string; see c'tor from a string.
+          * @param[in] strID The RINEX observation identifier to
+          *   decode.  This must be a RINEX 3 ID, three or four
+          *   characters in length.  Three character obs codes are
+          *   assumed to be from GPS.  Four character obs codes use
+          *   the first character for the system.
+          * @param[in] version The RINEX version of the obs ID in
+          *   strID.  This is used for oddball special cases like CC1*
+          *   in RINEX 3.02, to make sure that the codes are properly
+          *   interpreted.  When reading the obs ID from a RINEX
+          *   header, one should use the header version here.  When
+          *   interpreting command-line options or other contexts
+          *   where a RINEX version is not specified, use
+          *   Rinex3ObsBase::currentVersion.
           * @throw InvalidParameter
           */
       explicit ObsID(const char* id, double version)
@@ -367,7 +393,35 @@ namespace gpstk
       CarrierBand      band;
       TrackingCode     code;
 
-         /** Kludge for Rinex 3.02
+         /** Kludge for Rinex 3.02.
+          * This defaults to Rinex3ObsBase::currentVersion.
+          * When constructed from a RINEX 3 obs ID string, the version
+          * is specified in that constructor and retained here so that
+          * when returning this object to a string, it returns to its
+          * original form by default.
+          * This can be overridden in a multitude of ways:
+          *   \li Change the value of rinexVersion.  This is a little
+          *       tedious as it would need to be done for each object
+          *       being rendered (rinexVersion is not and should not
+          *       be a static data member).
+          *   \li RinexObsID::asString(double) overrides the value of
+          *       rinexVersion, allowing you to render the RINEX obs
+          *       ID as a specific version without changing the object
+          *       being rendered.
+          *   \li Rinex3ObsHeader::dump() and
+          *       Rinex3ObsHeader::operator<<() will automatically use
+          *       RinexObsID::asString(double) with the RINEX version
+          *       defined in the Rinex3ObsHeader object.  This means
+          *       when using Rinex3ObsHeader to output obs IDs, it
+          *       will automatically use the appropriate version for
+          *       the header.  The upshot of this is that if you read
+          *       a 3.02 header, you can simply change
+          *       Rinex3ObsHeader::version to 3.04 and when you output
+          *       the object, it will correctly use 3.04 obs IDs.
+          *   \li Rinex3ObsHeader::dump(double) allows you to dump the
+          *       header contents using a specific RINEX version
+          *       format (including header fields) without changing
+          *       the header object itself.
           * @todo move this into RinexObsID along with all the other
           *   RINEX-specific code at some point.
           */

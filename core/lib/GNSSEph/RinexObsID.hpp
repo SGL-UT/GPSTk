@@ -107,11 +107,37 @@ namespace gpstk
             : ObsID(ot, cb, tc) {};
       
          /** Construct this object from the string specifier.
+          * @param[in] strID The RINEX observation identifier to
+          *   decode.  This must be a RINEX 3 ID, three or four
+          *   characters in length.  Three character obs codes are
+          *   assumed to be from GPS.  Four character obs codes use
+          *   the first character for the system.
+          * @param[in] version The RINEX version of the obs ID in
+          *   strID.  This is used for oddball special cases like CC1*
+          *   in RINEX 3.02, to make sure that the codes are properly
+          *   interpreted.  When reading the obs ID from a RINEX
+          *   header, one should use the header version here.  When
+          *   interpreting command-line options or other contexts
+          *   where a RINEX version is not specified, use
+          *   Rinex3ObsBase::currentVersion.
           * @throw InvalidParameter
           */
       explicit RinexObsID(const std::string& strID, double version);
 
          /** Construct this object from the C-style string specifier.
+          * @param[in] strID The RINEX observation identifier to
+          *   decode.  This must be a RINEX 3 ID, three or four
+          *   characters in length.  Three character obs codes are
+          *   assumed to be from GPS.  Four character obs codes use
+          *   the first character for the system.
+          * @param[in] version The RINEX version of the obs ID in
+          *   strID.  This is used for oddball special cases like CC1*
+          *   in RINEX 3.02, to make sure that the codes are properly
+          *   interpreted.  When reading the obs ID from a RINEX
+          *   header, one should use the header version here.  When
+          *   interpreting command-line options or other contexts
+          *   where a RINEX version is not specified, use
+          *   Rinex3ObsBase::currentVersion.
           * @throw InvalidParameter
           */
       explicit RinexObsID(const char* id, double version)
@@ -143,7 +169,12 @@ namespace gpstk
           * observation codes described in section 5.1 of the Rinex 3
           * specification. Note that this always returns a three
           * character identifier so some information is lost because
-          * some codes are shared between satellite systems. */
+          * some codes are shared between satellite systems.
+          * @note This method defaults to using the obs ID
+          *   representation defined in the RINEX version set in
+          *   rinexVersion.
+          * @see asString(double)
+          * @see ObsID::rinexVersion */
       std::string asString() const
       { return asString(rinexVersion); }
 

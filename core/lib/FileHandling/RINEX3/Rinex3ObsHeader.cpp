@@ -2234,7 +2234,7 @@ namespace gpstk
       }
    }  // end prepareVer2Write()
 
-   void Rinex3ObsHeader::dump(ostream& s) const
+   void Rinex3ObsHeader::dump(ostream& s, double dumpVersion) const
    {
       using gpstk::StringUtils::asString;
       size_t i;
@@ -2251,7 +2251,7 @@ namespace gpstk
 
       s << "---------------------------------- REQUIRED "
         << "----------------------------------" << endl;
-      s << "Rinex Version " << fixed << setw(5) << setprecision(2) << version
+      s << "Rinex Version " << fixed << setw(5) << setprecision(2) << dumpVersion
         << ",  File type " << fileType << ",  System " << str << "." << endl;
       s << "Prgm: " << fileProgram << ",  Run: " << date
         << ",  By: " << fileAgency << endl;
@@ -2275,7 +2275,7 @@ namespace gpstk
          for(i = 0; i < iter->second.size(); i++)
          {
             s << " Type #" << setw(2) << setfill('0') << i+1 << setfill(' ')
-              << " (" << iter->second[i].asString(version) << ") "
+              << " (" << iter->second[i].asString(dumpVersion) << ") "
               << asString(static_cast<ObsID>(iter->second[i])) << endl;
          }
       }
@@ -2288,7 +2288,7 @@ namespace gpstk
       {
          s << "mapSysR2toR3ObsID[" << i->first << "] ";
          for (ObsIDMap::const_iterator j = i->second.begin(); j != i->second.end(); j++)
-            s << j->first << ":" << j->second.asString(version) << " ";
+            s << j->first << ":" << j->second.asString(dumpVersion) << " ";
          s << endl;
       }
       
@@ -2296,14 +2296,14 @@ namespace gpstk
         << printTime(firstObs,"%04Y/%02m/%02d %02H:%02M:%06.3f %P") << endl;
 
       s << "(This header is ";
-      if (Fields::isValid(version, valid))
+      if (Fields::isValid(dumpVersion, valid))
          s << "VALID)" << endl;
       else
       {
          s << "NOT VALID";
-         s << " RINEX " << setprecision(2) << version << ")" << endl;
+         s << " RINEX " << setprecision(2) << dumpVersion << ")" << endl;
          s << "valid    = " << hex << setw(8) << valid << endl;
-         s << "allValid = " << hex << setw(8) << Fields::getRequired(version)
+         s << "allValid = " << hex << setw(8) << Fields::getRequired(dumpVersion)
            << endl;
 
          s << "Invalid header records:" << endl;
@@ -2318,12 +2318,12 @@ namespace gpstk
          if(!(valid & validAntennaType)) s << " Antenna Type\n";
          if(!(valid & validAntennaPosition)) s << " Antenna Position\n";
          if(!(valid & validAntennaDeltaHEN)) s << " Antenna Delta HEN\n";
-         if(version < 3 && !(valid & validNumObs)) s << " # / TYPES OF OBSERV\n";
-         if(version >= 3 && !(valid & validSystemNumObs  )) s << " Sys / # / Obs Type\n";
+         if(dumpVersion < 3 && !(valid & validNumObs)) s << " # / TYPES OF OBSERV\n";
+         if(dumpVersion >= 3 && !(valid & validSystemNumObs  )) s << " Sys / # / Obs Type\n";
          if(!(valid & validFirstTime)) s << " Time of First Obs\n";
-         if(version >= 3.01 && !(valid & validSystemPhaseShift)) s << " SYS / PHASE SHIFT\n";
-         if(version >= 3.01 && !(valid & validGlonassSlotFreqNo)) s << " GLONASS SLOT / FRQ #\n";
-         if(version >= 3.02 && !(valid & validGlonassCodPhsBias)) s << " GLONASS COD/PHS/BIS\n";
+         if(dumpVersion >= 3.01 && !(valid & validSystemPhaseShift)) s << " SYS / PHASE SHIFT\n";
+         if(dumpVersion >= 3.01 && !(valid & validGlonassSlotFreqNo)) s << " GLONASS SLOT / FRQ #\n";
+         if(dumpVersion >= 3.02 && !(valid & validGlonassCodPhsBias)) s << " GLONASS COD/PHS/BIS\n";
          if(!(validEoH)) s << " END OF HEADER\n";
          s << "END Invalid header records." << endl;
       }
@@ -2363,7 +2363,7 @@ namespace gpstk
       if(valid & validReceiverOffset   )
          s << "Clock offset record is present and offsets "
            << (receiverOffset ? "ARE" : "are NOT") << " applied." << endl;
-      if(version < 3 && (valid & validWaveFact)) // TD extraWaveFactList
+      if(dumpVersion < 3 && (valid & validWaveFact)) // TD extraWaveFactList
          s << "Wavelength factor L1: " << wavelengthFactor[0]
            << " L2: " << wavelengthFactor[1] << endl;
       if(valid & validSystemDCBSapplied)
@@ -2400,7 +2400,7 @@ namespace gpstk
             map<RinexObsID,int>::const_iterator iter;
                // loop over scale factor map
             for(iter = mapIter->second.begin(); iter != mapIter->second.end(); iter++)
-               s << "   " << iter->first.asString(version) << " " << iter->second << endl;
+               s << "   " << iter->first.asString(dumpVersion) << " " << iter->second << endl;
          }
       }
       if(valid & validSystemPhaseShift )
@@ -2420,7 +2420,7 @@ namespace gpstk
                   s << "Phase shift correction for system " << sys << ": "
                     << fixed << setprecision(5)
                     << setw(8) << kt->second << " cycles applied to obs type "
-                    << jt->first.asString(version) << " "
+                    << jt->first.asString(dumpVersion) << " "
                     << RinexSatID(sys).systemString() << endl;
             }
          }
@@ -2442,7 +2442,7 @@ namespace gpstk
          map<RinexObsID,double>::const_iterator it;
          s << "GLONASS Code-phase biases:\n" << fixed << setprecision(3);
          for(it=glonassCodPhsBias.begin(); it!=glonassCodPhsBias.end(); ++it)
-            s << " " << it->first.asString(version) << " " << setw(8) << it->second;
+            s << " " << it->first.asString(dumpVersion) << " " << setw(8) << it->second;
          s << endl;
       }
       if(valid & validLeapSeconds)
@@ -2464,7 +2464,7 @@ namespace gpstk
                iter = mapObsTypes.find(string(1,sat.systemChar()));
                const vector<RinexObsID>& vec(iter->second);
                for(i=0; i<vec.size(); i++)
-                  s << setw(7) << vec[i].asString(version);
+                  s << setw(7) << vec[i].asString(dumpVersion);
                s << endl;
                sys = sat;
             }

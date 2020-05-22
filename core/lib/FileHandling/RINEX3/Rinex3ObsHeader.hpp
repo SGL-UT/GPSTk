@@ -485,11 +485,22 @@ namespace gpstk
       virtual bool isHeader() const
       { return true; }
 
-         /// This is a simple Debug output function.
-         /// It simply outputs the version, name and antenna number of this
-         /// RINEX header.
-      virtual void dump(std::ostream& s) const;
-
+         /** This is a debug output function which provides a lot of
+          * detail about the header contents, based on the value of \a
+          * version (RINEX format version).
+          */
+      virtual void dump(std::ostream& s) const
+      { dump(s, version); }
+         
+         /** This is a debug output function which provides a lot of
+          * detail about the header contents for a specified RINEX
+          * format version.
+          * @param[in] dumpVersion The RINEX format version to use
+          *   when dumping the contents of this header.  Potentially
+          *   affects the representation of obs IDs, as well as which
+          *   header fields are printed.
+          */
+      void dump(std::ostream& s, double dumpVersion) const;
 
          /** This method returns the numerical index of a given observation
           *
