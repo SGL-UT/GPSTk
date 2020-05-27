@@ -114,6 +114,8 @@ private:
          = dogaps = doms = ycode = quiet = false;
       debug = -1;
       dt = -1.0;
+      doCurrRversion = false;
+      Rversion = 0.0;
       vres = 0;
    }  // end Configuration::SetDefaults()
 
@@ -129,6 +131,8 @@ public:
       vistab, ycode, quiet;
    int debug, vres;
    double dt;
+   double Rversion;              // RINEX version of output (default=header.version)
+   bool doCurrRversion;          // set Rversion to Rinex3ObsBase::currentVersion
    string cfgfile, userfmt;
 
    vector<string> InputObsFiles; // RINEX obs file names
@@ -471,6 +475,14 @@ string Configuration::BuildCommandLine(void) throw()
    opts.Add(0, "onlySat", "sat", true, false, &onlySats, "",
             "Include ONLY satellites (or systems) <sat> e.g. G,R");
 
+   
+   string rvstr("# Rinex version (current, latest version is "
+                  + asString(Rinex3ObsBase::currentVersion,2) + "):");
+   opts.Add(0, "currentRinex", "", false, false, &doCurrRversion, rvstr,
+            "Output in current, not header, RINEX version");
+   opts.Add(0, "RinexVer", "V", false, false, &Rversion, "",
+            "Output in RINEX version V (default is header.version)");
+
    opts.Add(0, "timefmt", "fmt", false, false, &userfmt, "# Output:",
             "Format for time tags (see GPSTK::Epoch::printf) in output");
    opts.Add('b', "brief", "", false, false, &brief, "",
@@ -676,6 +688,11 @@ int ProcessFiles()
       RinexSatID sat;
       Rinex3ObsStream ostrm;
       ostringstream oss;
+
+      // output in header.version, unless user requests otherwise
+      double outputVersion(C.Rversion);
+      if(C.doCurrRversion) outputVersion = Rinex3ObsBase::currentVersion;
+
          // estimate time step
       const size_t ndtmax=15;
       double dt, bestdt[ndtmax];
@@ -776,7 +793,12 @@ int ProcessFiles()
          else if(!C.nohead)
          {
             LOG(DEBUG) << "RINEX header:";
-            Rhead.dump(LOGstrm);
+            if(outputVersion == 0.0)
+               outputVersion = Rhead.version;
+            else
+               LOG(INFO) << " (Header has version " << Rhead.version
+                        << "; output as version " << outputVersion << ")";
+            Rhead.dump(LOGstrm,outputVersion);
          }
 
          if(!Rhead.isValid())
@@ -1244,9 +1266,10 @@ int ProcessFiles()
                oss << " Sat\\OT:";
 
                   // print line of RINEX 3 codes
-               for(k=0; k < (sit->second).size(); k++)
-                     //oss << setw(k==0?4:7) << asString((sit->second)[k]);
-                  oss << setw(k==0?4:7) << (sit->second)[k].asString();
+               for(k=0; k < (sit->second).size(); k++) {
+                  RinexObsID rot((sit->second)[k]);
+                  oss << setw(k==0?4:7) << rot.asString(outputVersion);
+               }
                LOG(INFO) << oss.str() << "   Span             Begin time - End time";
 
                   // print the table
@@ -1299,7 +1322,7 @@ int ProcessFiles()
             for( ; sit != Rhead.mapObsTypes.end(); ++sit)
             {
                string sysCode = (sit->first);
-               vector<RinexObsID>& vec = Rhead.mapObsTypes[sysCode];
+               const vector<RinexObsID>& vec(sit->second);
 
                   // is this system found in the list of sats?
                map<char, vector<int> >::const_iterator totalsIter;
@@ -1313,7 +1336,10 @@ int ProcessFiles()
                oss << "System " << RinexSatID(sysCode).systemString3()
                    << " Obs types(" << vec.size() << "): ";
 
-               for(i=0; i<vec.size(); i++) oss << " " << vec[i].asString();
+               for(i=0; i<vec.size(); i++) {
+                  RinexObsID rot(vec[i]);
+                  oss << " " << rot.asString(outputVersion);
+               }
 
                   // if RINEX ver. 2, then add ver 2 obstypes in parentheses
                   //map<string, map<string, RinexObsID> > Rinex3ObsHeader::mapSysR2toR3ObsID

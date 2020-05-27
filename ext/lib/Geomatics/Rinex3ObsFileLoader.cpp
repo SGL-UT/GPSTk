@@ -76,6 +76,11 @@ try {
    unsigned int i,j;
    double dt;
    string str;
+
+   // current latest RINEX version
+   // critical to ObsID identification independent of RINEX version
+   const double currVer(Rinex3ObsBase::currentVersion);
+
    // Rinex3ObsHeader from Rinex3ObsHeader class GPSTk class
    // roh = rinex obs header
    Rinex3ObsHeader roh;
@@ -141,7 +146,7 @@ try {
                for(i=0; i<kt->second.size(); i++) {
                   // need 4-char string version of ObsID
                   string sys = kt->first;                // system
-                  string rot = kt->second[i].asString(); // 3-char id
+                  string rot = kt->second[i].asString(currVer); // 3-char id
                   string srot = sys + rot;               // 4-char id
 
                   // is this ObsID Wanted? and should it be added?
@@ -155,21 +160,17 @@ try {
                      string wrot(wsrot.substr(1,3));
 
                      // if sys and rot match, and srot is not found, add it
-                     if(((wsys == "*" &&
-                          RinexObsID(wrot, roh.version) ==
-                          RinexObsID(rot, roh.version)) ||
-                         (wsys == sys &&
-                          RinexObsID(wsrot, roh.version) ==
-                          RinexObsID(srot, roh.version))) &&
-                        vectorindex(wantedObsTypes,srot) == -1)
-                     {
-                        wantedObsTypes.push_back(srot);  // add it
-                        // the number of observations for each observation type
-                        countWantedObsTypes.push_back(0);
+                     if(vectorindex(wantedObsTypes,srot) == -1) { // not already there
+                        if(wsrot == srot || (wsys=="*" && wrot == rot))
+                        {
+                           wantedObsTypes.push_back(wsrot);  // add it
+                           // the number of observations for each observation type
+                           countWantedObsTypes.push_back(0);
                         
-                        ossx << " Add obs type " << srot
-                           << " =~ " << inputWantedObsTypes[j]
-                           << " from " << filename << endl;
+                           ossx << " Add obs type " << srot
+                              << " =~ " << inputWantedObsTypes[j]
+                              << " from " << filename << endl;
+                        }
                      }
                   }
                }
@@ -271,7 +272,6 @@ try {
             outrod.obs.clear();
 
             // loop over satellites, counting data per ObsID
-            //vector<SatID> toSkip;
             Rinex3ObsData::DataMap::const_iterator it;
             for(it=rod.obs.begin(); it != rod.obs.end(); ++it) {
                // Create new RinexSatID variable called sat, initialize with the
@@ -297,7 +297,7 @@ try {
                   if(it->second[i].data == 0.0) continue;   // don't count missing
 
                   // combine the system and obs type into total rinex obs ID
-                  string srot = sys + types[i].asString();  // 4-char RinexObsID
+                  string srot = sys + types[i].asString(currVer); // 4-char RinexObsID
 
                   // is it wanted? nint is the index into
                   // wantedObsTypes, SatObsCountMap and outrod.obs

@@ -129,24 +129,22 @@ public:
    map<string, vector<string> > sysObsids;    // parallel vector of RinexObsIDs
 
    /// Constructor
-   LinCom() throw() : value(0), limit0(false), label(string("Undef")) { }
+   LinCom() : value(0), limit0(false), label(string("Undef")) { }
 
    /// parse input string
-   bool ParseAndSave(const string& str, bool save=true) throw();
+   bool ParseAndSave(const string& str, bool save=true);
 
    /// compute the linear combination, given the satellite and RINEX data
-   /**
-    * @throw Exception */
    double Compute(const RinexSatID sat, Rinex3ObsHeader& Rhead,
                   const vector<RinexDatum>& vrdata);
 
    /// remove a bias if jump larger than limit occurs
-   bool removeBias(const RinexSatID& sat) throw();
+   bool removeBias(const RinexSatID& sat);
 
 }; // end class LinCom
 
 /// dump the object to an output stream
-ostream& operator<<(ostream& os, LinCom& lc) throw();
+ostream& operator<<(ostream& os, LinCom& lc);
 
 //------------------------------------------------------------------------------------
 // Object for command line input and global data
@@ -155,22 +153,22 @@ class Configuration : public Singleton<Configuration> {
 public:
 
    // Default and only constructor
-   Configuration() throw() { SetDefaults(); }
+   Configuration() { SetDefaults(); }
 
    // Create, parse and process command line options and user input
-   int ProcessUserInput(int argc, char **argv) throw();
+   int ProcessUserInput(int argc, char **argv);
 
    // Design the command line
-   string BuildCommandLine(void) throw();
+   string BuildCommandLine(void);
 
    // Open the output file, and parse the strings used on the command line
    // return -4 if log file could not be opened
-   int ExtraProcessing(string& errors, string& extras) throw();
+   int ExtraProcessing(string& errors, string& extras);
 
 private:
 
    // Define default values
-   void SetDefaults(void) throw();
+   void SetDefaults(void);
 
 public:
 
@@ -217,7 +215,14 @@ public:
    double IonoHt;             // ionospheric height
    double elevlimit;          // limit on elevation angle (degrees) requires ELE input
 
+   double Rversion;           // RINEX version of output (default=header.version)
+   double currentVersion;     // current RINEX version from Rinex3ObsBase
+   bool doCurrRversion;       // set Rversion to Rinex3ObsBase::currentVersion
+
    // end of command line input
+
+   // RINEX version to use
+   double useVersion;
 
    // list of all non-RinexObsID tags
    vector<string> NonObsTags; // satellite-dependent
@@ -272,18 +277,10 @@ const string Configuration::longfmt = calfmt + " = " + gpsfmt;
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
 // prototypes
-/**
- * @throw Exception */
 int Initialize(string& errors);
-/**
- * @throw Exception */
 int ProcessFiles(void);
-/**
- * @throw Exception */
 double getObsData(string tag, RinexSatID sat, Rinex3ObsHeader& Rhead,
                   const vector<RinexDatum>& vrdata);
-/**
- * @throw Exception */
 double getNonObsData(string tag, RinexSatID sat, const CommonTime& time);
 
 //------------------------------------------------------------------------------------
@@ -776,7 +773,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
-void Configuration::SetDefaults(void) throw()
+void Configuration::SetDefaults(void)
 {
    defaultstartStr = string("[Beginning of dataset]");
    defaultstopStr = string("[End of dataset]");
@@ -793,6 +790,10 @@ void Configuration::SetDefaults(void) throw()
       + asString(defaultPress,1) + string(",") + asString(defaultHumid,1);
    IonoHt = 400.0;
    elevlimit = 0.0;
+
+   doCurrRversion = false;
+   Rversion = 0.0;
+   currentVersion = Rinex3ObsBase::currentVersion;
 
    userfmt = gpsfmt;
    help = verbose = noHeader = dumpHeader = doTECU = false;
@@ -867,7 +868,7 @@ void Configuration::SetDefaults(void) throw()
 }  // end Configuration::SetDefaults()
 
 //------------------------------------------------------------------------------------
-int Configuration::ProcessUserInput(int argc, char **argv) throw()
+int Configuration::ProcessUserInput(int argc, char **argv)
 {
    string PrgmDesc,cmdlineUsage, cmdlineErrors, cmdlineExtras;
    vector<string> cmdlineUnrecognized;
@@ -984,7 +985,7 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
                         string(1,ObsID::ot2char[obsType]) +
                         string(1,ObsID::cb2char[carrierBand]) +
                         string(1,ObsID::tc2char[trackCode]));
-                     ObsID obs(tag, Rinex3ObsBase::currentVersion);
+                     ObsID obs(tag, useVersion);
                      string name(asString(obs));
                      if (name.find("Unknown") != string::npos ||
                          name.find("undefined") != string::npos ||
@@ -1003,9 +1004,7 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
                         char type(ObsID::ot2char[ObsID::ObservationType(i)]);
                            /// @todo keep sys char ? id(tag.substr(1));
                         string id(tag);
-                        string desc(
-                           asString(ObsID(tag,
-                                          Rinex3ObsBase::currentVersion)));
+                        string desc(asString(ObsID(tag, useVersion)));
                         vector<string> fld(split(desc,' '));
                         string codedesc = fld[1];
                         if ((codedesc.find("GPS") == 0) ||
@@ -1229,7 +1228,7 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
 }  // end Configuration::CommandLine()
 
 //------------------------------------------------------------------------------------
-string Configuration::BuildCommandLine(void) throw()
+string Configuration::BuildCommandLine(void)
 {
    // Program description will appear at the top of the syntax page
    string PrgmDesc = " Program " + PrgmName +
@@ -1328,6 +1327,13 @@ string Configuration::BuildCommandLine(void) throw()
    opts.Add(0, "elevlim", "lim", false, false, &elevlimit, "",
             "Limit output to data with elevation angle > lim degrees [ELE req'd]");
 
+   string rvstr("# Rinex version (current, latest version is "
+                              + asString(currentVersion,2) + "):");
+   opts.Add(0, "currentRinex", "", false, false, &doCurrRversion, rvstr,
+            "Process in current, not header, RINEX version");
+   opts.Add(0, "RinexVer", "V", false, false, &Rversion, "",
+            "Process in RINEX version V (default is header.version)");
+
    opts.Add(0, "ref", "p[:f]", false, false, &refPosStr, "# Other input",
             "Known position, default fmt f '%x,%y,%z', for resids, elev and ORDs");
    opts.Add(0,"GLOfreq", "sat:n", true, false, &GLOfreqStrs, "",
@@ -1364,7 +1370,7 @@ string Configuration::BuildCommandLine(void) throw()
 }  // end Configuration::BuildCommandLine()
 
 //------------------------------------------------------------------------------------
-int Configuration::ExtraProcessing(string& errors, string& extras) throw()
+int Configuration::ExtraProcessing(string& errors, string& extras)
 {
    int n;
    size_t i;
@@ -1553,15 +1559,9 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
       debLimit0[typeLimit0[i]] = !debLimit0[typeLimit0[i]];
    }
 
-   // open the log file (so warnings, configuration summary, etc can go there) -----
-   //logstrm.open(LogFile.c_str(), ios::out);
-   //if(!logstrm.is_open()) {
-      //LOG(ERROR) << "Error : Failed to open log file " << LogFile;
-      //return -4;
-   //}
-   //LOG(INFO) << "Output redirected to log file " << LogFile;
-   //pLOGstrm = &logstrm;
-   //LOG(INFO) << Title;
+   // RINEX version
+   useVersion = Rversion;
+   if(doCurrRversion) useVersion = currentVersion;
 
    // add new errors to the list
    msg = oss.str();
@@ -1571,7 +1571,7 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
 
    return 0;
 
-} // end Configuration::ExtraProcessing(string& errors) throw()
+} // end Configuration::ExtraProcessing(string& errors)
 
 //------------------------------------------------------------------------------------
 // Return 0 ok, >0 number of files successfully read, <0 fatal error
@@ -1617,9 +1617,16 @@ try {
          iret = 2;
          continue;
       }
+
+      if(C.useVersion == 0.0) C.useVersion = Rhead.version;
+      LOG(INFO) << "# RINEX version: file " << fixed << setprecision(2)
+         << Rhead.version << " / output " << C.useVersion;
+
       if(C.debug > -1) {
-         LOG(DEBUG) << "Input header for RINEX file " << filename;
-         Rhead.dump(LOGstrm);
+         LOG(DEBUG) << "Input header (ver "
+               << fixed << setprecision(2) << C.useVersion
+               << ") for RINEX file " << filename;
+         Rhead.dump(LOGstrm,C.useVersion);
       }
 
       if(!C.noHeader) {
@@ -1627,8 +1634,10 @@ try {
 
          // dump the header first
          if(C.dumpHeader) {
-            LOG(INFO) << "# Header dump follows";
-            Rhead.dump(LOGstrm);
+            LOG(INFO) << "# Header dump follows, RINEX ver. (file: "
+                     << fixed << setprecision(2) << Rhead.version
+                     << "; output: " << C.useVersion << ")";
+            Rhead.dump(LOGstrm,C.useVersion);
          }
 
          // dump the obs types
@@ -1921,6 +1930,7 @@ double getObsData(string tag, RinexSatID sat, Rinex3ObsHeader& Rhead,
                    const vector<RinexDatum>& vrdata)
 {
    try {
+      Configuration& C(Configuration::Instance());
       double data(0);
       string sys(1,sat.systemChar());              // system of this sat
 
@@ -1932,7 +1942,7 @@ double getObsData(string tag, RinexSatID sat, Rinex3ObsHeader& Rhead,
             return 0;                              // system+tag is not valid
       }
 
-      RinexObsID obsid(tag, Rhead.version);        // ObsID for this tag
+      RinexObsID obsid(tag, C.useVersion);         // ObsID for this tag
 
       // find it in the header
       vector<RinexObsID>::const_iterator jt(
@@ -2016,7 +2026,7 @@ double getNonObsData(string tag, RinexSatID sat, const CommonTime& time)
 //------------------------------------------------------------------------------------
 // TD codes ....
 // Parse combo given by lab, and if valid save in C.Combos
-bool LinCom::ParseAndSave(const string& lab, bool save) throw()
+bool LinCom::ParseAndSave(const string& lab, bool save)
 {
    size_t i,j;
    string sys,obsid;
@@ -2393,20 +2403,20 @@ double LinCom::Compute(const RinexSatID sat, Rinex3ObsHeader& Rhead,
          return 0.0;
       }
 
-      if(obsid.size() == 3) obsid = sys1 + obsid;        // add system char to obsid
-      if(!isValidRinexObsID(obsid)) {                    // TD do this earlier?
+      if(obsid.size() == 3) obsid = sys1 + obsid;  // add system char to obsid
+      if(!isValidRinexObsID(obsid)) {              // TD do this earlier?
          LOG(DEBUG2) << msg << " obsid " << obsid << " not valid";
-         return 0.0;                                     // obsid is not valid
+         return 0.0;                               // obsid is not valid
       }
-      RinexObsID Obsid(obsid, Rhead.version); // RinexObsID for this term
+      RinexObsID Obsid(obsid, C.useVersion);       // RinexObsID for this term
 
       // find which code to use
       vector<RinexObsID> allObsIDs;
-      if(obsid[3] == '*') {                              // try every possibility
+      if(obsid[3] == '*') {                        // try every possibility
          for(size_t j=0; j<C.mapSysCodes[sys3].size(); j++) {
             string oi(obsid.substr(0,3)+string(1,C.mapSysCodes[sys3][j]));
             if(isValidRinexObsID(oi))
-               allObsIDs.push_back(RinexObsID(oi, Rhead.version));
+               allObsIDs.push_back(RinexObsID(oi, C.useVersion));
          }
       }
       else
@@ -2468,7 +2478,7 @@ double LinCom::Compute(const RinexSatID sat, Rinex3ObsHeader& Rhead,
 // Reset bias when jump in value exceeds limit.
 // Set initial bias to 0 if initial value is < limit, otherwise to value.
 // Save previous value and debias value.
-bool LinCom::removeBias(const RinexSatID& sat) throw()
+bool LinCom::removeBias(const RinexSatID& sat)
 {
    bool reset(false);
    if(!limit0 && limit == 0.0) return reset;
@@ -2494,7 +2504,7 @@ bool LinCom::removeBias(const RinexSatID& sat) throw()
 }
 
 //------------------------------------------------------------------------------------
-ostream& operator<<(ostream& os, LinCom& lc) throw()
+ostream& operator<<(ostream& os, LinCom& lc)
 {
    ostringstream oss;
    oss << "Dump LC " << lc.label << " freq " << lc.f1 << "," << lc.f2
