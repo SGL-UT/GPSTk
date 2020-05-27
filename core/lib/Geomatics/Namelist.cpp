@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /**
  * @file Namelist.cpp
@@ -96,7 +96,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 Namelist& Namelist::operator+=(const string& name)
 {
 try {
-   if(this->contains(name))
+   if(contains(name))
       GPSTK_THROW(Exception("Name is not unique: " + name));
    labels.push_back(name);
    return *this;
@@ -154,7 +154,7 @@ try {
          oss << "NAME" << setw(3) << setfill('0') << N;
          s = oss.str();
          N++;
-      } while(this->contains(s));
+      } while(contains(s));
       labels.push_back(s);
    }
    while(labels.size() > n) {
@@ -169,7 +169,12 @@ void Namelist::randomize(long seed)
 {
 try {
    if(labels.size() <= 1) return;
-   random_shuffle(labels.begin(), labels.end());
+   //random_shuffle(labels.begin(), labels.end());
+   if(seed) std::srand(seed);
+   for(int i=labels.size()-1; i>0; --i) {
+      using std::swap;
+      swap(labels[i], labels[std::rand() % (i+1)]);
+   }
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
 }
@@ -190,8 +195,9 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 bool Namelist::contains(const string& name) const
 {
 try {
-   for(unsigned int i=0; i<labels.size(); i++)
+   for(unsigned int i=0; i<labels.size(); i++) {
       if(labels[i] == name) return true;
+   }
    return false;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
@@ -275,8 +281,8 @@ Namelist& Namelist::operator&=(const Namelist& N)
 {
 try {
    Namelist NAND;
-   for(unsigned int i=0; i<labels.size(); i++)
-      if(N.contains(labels[i])) NAND += labels[i];
+   for(unsigned int i=0; i<N.labels.size(); i++)
+      if(contains(N.labels[i])) NAND += N.labels[i];
    *this = NAND;
    return *this;
 }
@@ -290,7 +296,7 @@ Namelist& Namelist::operator|=(const Namelist& N)
 try {
    Namelist NOR(*this);
    for(unsigned int i=0; i<N.labels.size(); i++)
-      if(!(this->contains(N.labels[i]))) NOR += N.labels[i];
+      if(!(contains(N.labels[i]))) NOR += N.labels[i];
    *this = NOR;
    return *this;
 }
@@ -306,7 +312,7 @@ try {
    for(i=0; i<labels.size(); i++)
       if(!(N.contains(labels[i]))) NXOR += labels[i];
    for(i=0; i<N.labels.size(); i++)
-      if(!(this->contains(N.labels[i]))) NXOR += N.labels[i];
+      if(!(contains(N.labels[i]))) NXOR += N.labels[i];
    *this = NXOR;
    return *this;
 }
@@ -384,10 +390,10 @@ try {
    // print message or blanks
    os << LV.tag << " ";
    if(LV.msg.size() > 0)
-      s = LV.msg + "  ";
+      s = LV.msg;
    else
       s = rightJustify(string(""),LV.msg.size()); //LV.wid);
-   os << s << " ";
+   os << s << "   ";
 
    // print each label
    for(i=0; i<LV.NL.size(); i++) {
@@ -439,7 +445,7 @@ try {
    if(LM.rc == 0) {    // only if printing both column and row labels
       os << LM.tag << " ";                                       // tag
       if(LM.msg.size() > 0)                                      // msg
-         s = LM.msg; // + "  ";
+         s = LM.msg + "  ";
       else
          s = rightJustify(string(" "),LM.wid);
       os << s << " ";
@@ -449,13 +455,14 @@ try {
       // print column labels
    if(LM.rc != 1) { // but not if 'rows only'
       n = (LM.M.cols() < pNLcol->size() ? LM.M.cols() : pNLcol->size());
+      if(LM.rc == 2) os << " ";
       for(i=0; i<n; i++) {
          if(int(pNLcol->getName(i).size()) > LM.wid)
             s = leftJustify(pNLcol->getName(i),LM.wid);
          else
             s = rightJustify(pNLcol->getName(i),LM.wid);
-         os << s;                                                 // label
-         if(i-n+1) os << " ";
+         os << s;                                                // label
+         if(i<n-1) os << " ";
       }
       os << endl;
    }
@@ -463,12 +470,13 @@ try {
    if(LM.form == 1) os << fixed;
    if(LM.form == 2) os << scientific;
    if(int(LM.msg.size()) > LM.wid) nspace = LM.msg.size()-LM.wid+2;
+   else if(int(LM.msg.size())) nspace = 2;
    else nspace = 0;
 
       // print one row per line
    for(i=0; i<LM.M.rows(); i++) {
       os << LM.tag << " ";                                       // tag
-      if(nspace) os << rightJustify(string(" "),nspace);          // space
+      if(nspace) os << rightJustify(string(" "),nspace);         // space
          // print row labels
       if(LM.rc != 2) { // but not if 'columns only'
          if(int(pNLrow->getName(i).size()) > LM.wid)
@@ -480,11 +488,11 @@ try {
          // finally, print the data
       jlast = (LM.sym ? i+1 : LM.M.cols());
       for(j=0; j<jlast; j++) {
-         if(LM.cln && LM.M(i,j) == 0.0)                         // 'clean' print
+         if(LM.cln && ::fabs(LM.M(i,j)) < ::pow(10.0,-LM.prec))   // clean print
             os << rightJustify("0",LM.wid);
          else
             os << setw(LM.wid) << setprecision(LM.prec) << LM.M(i,j);
-         if(j-LM.M.rows()+1) os << " ";                                 // data
+         if(j<jlast-1) os << " ";                                 // data
       }
       if(i<LM.M.rows()-1) os << endl;
    }

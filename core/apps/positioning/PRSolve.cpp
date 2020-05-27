@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /// @file PRSolve.cpp
 /// Read Rinex observation files (version 2 or 3) and ephemeris store, and compute a
@@ -87,7 +87,14 @@
 #include "Rinex3EphemerisStore.hpp"
 
 #include "Position.hpp"
-#include "TropModel.hpp"
+#include "SimpleTropModel.hpp"
+#include "SaasTropModel.hpp"
+#include "NBTropModel.hpp"
+#include "GGTropModel.hpp"
+#include "GGHeightTropModel.hpp"
+#include "NeillTropModel.hpp"
+#include "GlobalTropModel.hpp"
+
 #include "EphemerisRange.hpp"
 #include "RinexUtilities.hpp"
 
@@ -351,7 +358,7 @@ public:
                // wrong GNSS system
                if(it->first != sys1)
                   continue;
-               
+
                // loop over obs types
                const vector<RinexObsID>& vecROID(it->second);
                for(k=0; k<vecROID.size(); k++)
@@ -593,7 +600,7 @@ try {
    C.Title = C.PrgmName + ", part of the GPS Toolkit, Ver " + Version
       + ", Run " + printTime(wallclkbeg,C.calfmt);
    //cout << C.Title << endl;
-   
+
    for(;;) {
       // get information from the command line
       // iret -2 -3 -4
@@ -630,9 +637,9 @@ try {
       ostringstream oss;
       oss << C.PrgmName << " timing: processing " << fixed << setprecision(3)
          << double(totaltime)/double(CLOCKS_PER_SEC) << " sec, wallclock: "
-         << setprecision(0) << (wallclkend-wallclkbeg) << " sec.";
-      LOG(INFO) << oss.str();
-      cout << oss.str() << endl;
+         << setprecision(0) << (wallclkend-wallclkbeg) << " sec.\n";
+      LOGstrm << oss.str();
+      cout << oss.str();
    }
 
    return iret;
@@ -737,7 +744,7 @@ try {
                isValid = false;
                continue;
             }
-         
+
             strm.exceptions(ios_base::failbit);
             strm >> header;
          }
@@ -769,7 +776,7 @@ try {
                << e.getText(0) << endl;
             isValid = false;
          }
-         
+
       }
    }
 
@@ -1043,7 +1050,7 @@ try {
 
             word = stripFirstWord(line);  // get sat
             if(word.empty()) continue;
-            
+
             try { sat.fromString(word); }
             catch(Exception& e) { continue; }
             if(sat.system == SatID::systemUnknown || sat.id == -1) continue;
@@ -1228,7 +1235,7 @@ try {
       Rinex3ObsHeader Rhead, Rheadout;
       Rinex3ObsData Rdata;
       string filename(C.InputObsFiles[nfile]);
-      
+
       if (C.PisY)
       {
          LOG(DEBUG) << "Converting P/W code data to Y code";
@@ -1284,7 +1291,7 @@ try {
          }
          break;
       }
-      
+
       // do on first epoch only
       if(firstepoch) {
          // if writing to output RINEX, open and write header ---------
@@ -1513,6 +1520,11 @@ try {
             ostringstream oss;
             // loop over valid descriptors
             for(k=0,i=0; i<C.SolObjs.size(); ++i) if(C.SolObjs[i].isValid) {
+               if(!C.SolObjs[i].prs.isValid())
+               {
+                  LOG(ERROR) << "Invalid soution!";
+                  break;
+               }
                oss.str("");
                oss << "XYZ" << fixed << setprecision(3)
                   << " " << setw(12) << C.SolObjs[i].prs.Solution(0)
@@ -1591,6 +1603,7 @@ void Configuration::SetDefaults(void) throw()
    decimate = elevLimit = 0.0;
    forceElev = false;
    searchUser = false;
+   weight = false;
    defaultstartStr = string("[Beginning of dataset]");
    defaultstopStr = string("[End of dataset]");
    beginTime = gpsBeginTime = GPSWeekSecond(0,0.,TimeSystem::Any);
@@ -1632,7 +1645,7 @@ void Configuration::SolDescHelp(void)
    string codes;
    string space("   ");
    size_t i,j, k;
-   
+
    // first find the length of the longest codes entry for each system
    map<char,int> syslen;
    for(i=0; i<systs.size(); i++) {
@@ -1678,7 +1691,7 @@ void Configuration::SolDescHelp(void)
    //os << " or";
    //for(i=0; i<systs.size(); i++) os <<" "<< systs[i];
    os << endl;
-   os << "   F is a frequency, one of:";
+   os << "   F is a frequency, one or two of:";
    for(i=0; i<freqs.size(); i++) os << " " << freqs[i];
    os << endl;
    os << "   C is an ordered set of one or more tracking codes, for example WPC\n"
@@ -1693,8 +1706,9 @@ void Configuration::SolDescHelp(void)
       << "   frequencies to eliminate the ionospheric delay, for example\n"
       << "   GPS:12:PC is the usual L1/L2-ionosphere-corrected GPS solution.\n"
       << " Triple frequency solutions are not supported.\n\n"
-      << " More that one tracking code may be provided, for example GPS:12:PC\n"
-      << "  This tells PRSolve to prefer P, but if it is not available, use C.\n\n"
+      << " More that one tracking code may be provided, for example GPS:12:PWC\n"
+      << "  This tells PRSolve to prefer P, but if it is not available, use W,\n"
+      << "  and if neither P nor W are available, use C.\n\n"
       << " Finally, combined solutions may be specified, in which different\n"
       << "  data types, even from different systems, are used together.\n"
       << "  The component descriptors are combined using a '+'. For example\n"
@@ -1829,21 +1843,26 @@ string Configuration::BuildCommandLine(void) throw()
             "# Input via configuration file:",
             "Name of file with more options [#->EOL = comment]");
 
+   // required
    opts.Add(0, "obs", "fn", true, true, &InputObsFiles,
-            "# Required input data and ephemeris files:",
+            "# Required input:",
             "RINEX observation file name(s)");
-   opts.Add(0, "eph", "fn", true, false, &InputSP3Files,"",
-            "Input Ephemeris+clock (SP3 format) file name(s)");
+   opts.Add(0, "sol", "S:F:C", true, true, &inSolDesc, "",
+            "Solution(s) to compute: Sys:Freqs:Codes (cf. --SOLhelp)");
+   opts.Add(0, "eph", "fn", true, false, &InputSP3Files,
+            "#   (require --eph OR --nav, but NOT both)",
+            "Ephemeris+clock (SP3 format) file name(s)");
    opts.Add(0, "nav", "fn", true, false, &InputNavFiles, "",
-            "Input RINEX nav file name(s) (also cf. --BCEpast)");
+            "RINEX nav file name(s) (also cf. --BCEpast)");
 
+   // optional
    opts.Add(0, "clk", "fn", true, false, &InputClkFiles,
-            "# Other (optional) input files",
-            "Input clock (RINEX format) file name(s)");
+            "# Optional input\n# Other input files",
+            "Clock (RINEX format) file name(s)");
    opts.Add(0, "met", "fn", true, false, &InputMetFiles, "",
-            "Input RINEX meteorological file name(s)");
+            "RINEX meteorological file name(s)");
    opts.Add(0, "dcb", "fn", true, false, &InputDCBFiles, "",
-            "Input differential code bias (P1-C1) file name(s)");
+            "Differential code bias (P1-C1) file name(s)");
 
    opts.Add(0, "obspath", "p", false, false, &Obspath,
             "# Paths of input files:", "Path of input RINEX observation file(s)");
@@ -1878,11 +1897,6 @@ string Configuration::BuildCommandLine(void) throw()
             "Use 'User' find-ephemeris-algorithm (else nearest) (--nav only)");
    opts.Add(0, "PisY", "", false, false, &PisY, "",
             "P code data is actually Y code data");
-   opts.Add(0, "sol", "S:F:C", true, false, &inSolDesc,
-            "# Solution Descriptors <S:F:C> define data used in solution algorithm",
-            "Specify data System:Freqs:Codes to be used to generate solution(s)");
-   opts.Add(0, "SOLhelp", "", false, false, &SOLhelp, "",
-            "Show more information on --sol <Solution Descriptor>");
 
    opts.Add(0, "wt", "", false, false, &weight,
             "# Solution Algorithm:",
@@ -1898,8 +1912,8 @@ string Configuration::BuildCommandLine(void) throw()
    opts.Add(0, "conv", "lim", false, false, &convLimit, "",
             "Maximum convergence criterion in estimation in meters");
    opts.Add(0, "Trop", "m,T,P,H", false, false, &TropStr, "",
-            "Trop model <m> [one of Zero,Black,Saas,NewB,Neill,GG,GGHt\n             "
-            "         with optional weather T(C),P(mb),RH(%)]");
+            "Trop model <m> [one of Zero,Black,Saas,NewB,Neill,GG,GGHt,Global\n"
+            "                      with optional weather T(C),P(mb),RH(%)]");
 
    opts.Add(0, "log", "fn", false, false, &LogFile, "# Output [for formats see "
             "GPSTK::Position (--ref) and GPSTK::Epoch (--timefmt)] :",
@@ -1919,12 +1933,8 @@ string Configuration::BuildCommandLine(void) throw()
    opts.Add(0, "timefmt", "f", false, false, &userfmt, "",
             "Format for time tags in output");
 
-   opts.Add(0, "verbose", "", false, false, &verbose, "# Diagnostic output:",
-            "Print extended output information");
-   opts.Add(0, "debug", "", false, false, &debug, "",
-            "Print debug output at level 0 [debug<n> for level n=1-7]");
-   opts.Add(0, "help", "", false, false, &help, "",
-            "Print this and quit");
+   opts.Add(0, "SOLhelp", "", false, false, &SOLhelp, "# Help",
+            "Show more information and examples for --sol <Solution Descriptor>");
 
    // deprecated (old,new)
    opts.Add_deprecated("--SP3","--eph");
@@ -1978,7 +1988,7 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
 
    // start and stop times
    for(i=0; i<2; i++) {
-      static const string fmtGPS("%F,%g"),fmtCAL("%Y,%m,%d,%H,%M,%S %P");
+      static const string fmtGPS("%F,%g"),fmtCAL("%Y,%m,%d,%H,%M,%S");
       msg = (i==0 ? startStr : stopStr);
       if(msg == (i==0 ? defaultstartStr : defaultstopStr)) continue;
 
@@ -2008,7 +2018,7 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
       }
 
       if(ok) {
-         msg = printTime((i==0 ? beginTime : endTime),fmtGPS+" = "+fmtCAL);
+         msg = printTime((i==0 ? beginTime : endTime),fmtGPS+" = "+fmtCAL+" %P");
          if(msg.find("Error") != string::npos) ok = false;
       }
 
@@ -2017,7 +2027,7 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
             << " " << (i==0 ? startStr : stopStr) << endl;
       else
          ossx << (i==0 ? "   Begin time --start" : "   End time --stop") << " is "
-            << printTime((i==0 ? beginTime : endTime), fmtGPS+" = "+fmtCAL+"\n");
+            << printTime((i==0 ? beginTime : endTime), fmtGPS+" = "+fmtCAL+" %P\n");
    }
 
    // trop model and default weather
@@ -2037,10 +2047,12 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
          else if(msg=="GG")    { pTrop = new GGTropModel(); TropType = "GG"; }
          else if(msg=="GGHT")  { pTrop = new GGHeightTropModel(); TropType = "GGht"; }
          else if(msg=="NEILL") { pTrop = new NeillTropModel(); TropType = "Neill"; }
+         else if(msg=="GLOBAL") { pTrop = new GlobalTropModel(); TropType = "Global";}
          else {
             msg = string();
             oss << "Error : invalid trop model (" << fld[0] << "); choose one of "
-               << "Zero,Black,Saas,NewB,GG,GGht,Neill (cf. gpstk::TropModel)" << endl;
+               << "Zero,Black,Saas,NewB,GG,GGht,Neill,Global (cf. gpstk::TropModel)"
+               << endl;
          }
 
          if(!msg.empty() && !pTrop) {
@@ -2067,17 +2079,28 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
    pLOGstrm = &logstrm;
    LOG(INFO) << Title;
 
+   // help, debug and verbose handeled automatically by CommandLine
+   verbose = (LOGlevel >= VERBOSE);
+   debug = (LOGlevel - DEBUG);
+
    // check consistency
    if(elevLimit>0. && knownPos.getCoordinateSystem()==Position::Unknown && !forceElev)
       oss << "Error : --elev with no --ref input requires --forceElev\n";
 
    if(forceElev && elevLimit <= 0.0)
-      ossx << "   Warning : --forceElev with no --elev <= 0 appears.";
+      ossx << "   Warning : --forceElev with no --elev <= 0 appears.\n";
    else if(forceElev && knownPos.getCoordinateSystem() == Position::Unknown)
-      ossx << "   Warning : with --ref input, --forceElev is not required.";
+      ossx << "   Warning : with --ref input, --forceElev is not required.\n";
 
    if(!OutputORDFile.empty() && knownPos.getCoordinateSystem() == Position::Unknown)
       oss << "Error : --ORDs requires --ref\n";
+
+   if(InputNavFiles.size() > 0 && InputSP3Files.size() > 0)
+      oss << "Error : Both --nav and --eph appear: provide only one.\n";
+
+   //
+   if(LOGlevel != 2)
+      ossx << "   LOG level is " << ConfigureLOG::ToString(LOGlevel) << "\n";
 
    // add new errors to the list
    msg = oss.str();
@@ -2165,7 +2188,7 @@ bool SolutionObject::ValidateDescriptor(const string desc, string& msg)
    // Now we can assumes descriptor is single system and does NOT contain +
    fields = split(desc,':');
 
-   // test system
+   // is system valid?
    string sys(fields[0]);
    string sys1(ObsID::map3to1sys[sys]);
    if(!sys1.size() || ObsID::validRinexSystems.find_first_of(sys1[0])==string::npos) {
@@ -2174,24 +2197,37 @@ bool SolutionObject::ValidateDescriptor(const string desc, string& msg)
    }
    char csys(sys1[0]);
 
-   // test freq(s) and code(s)
-   if(fields[1].size() > 2) {
+   // are there too many frequencies?
+   const unsigned int nfreq(fields[1].size());
+   if(nfreq > 2) {
       msg = desc + " : only 1 or 2 frequencies allowed";
       return false;
    }
 
-   for(i=0; i<fields[1].size(); i++) {
+   // are these frequencies valid in this system?
+   for(i=0; i<nfreq; i++) {
       if(ObsID::validRinexTrackingCodes[csys].find(fields[1][i]) ==
          ObsID::validRinexTrackingCodes[csys].end())
       {
          msg = desc + string(" : invalid frequency /") + fields[1][i] + string("/");
          return false;
       }
-      string codes = ObsID::validRinexTrackingCodes[csys][fields[1][i]];
-      // GPS C1N and C2N are not allowed
-      if(csys == 'G' && (fields[1][i] == '1'||fields[1][i] == '2')) strip(codes,'N');
-      for(j=0; j<fields[2].size(); j++) {
-         if(codes.find_first_of(fields[2][j]) == string::npos) {
+   }
+
+   // are these codes valid in this system and freq? (codes1 is blank if single freq)
+   string codes1, codes0 = ObsID::validRinexTrackingCodes[csys][fields[1][0]];
+   if(nfreq > 1)  codes1 = ObsID::validRinexTrackingCodes[csys][fields[1][1]];
+
+   // GPS C1N and C2N are not allowed
+   if(csys == 'G') {
+      if(fields[1][0] == '1' || fields[1][0] == '2') strip(codes0,'N');
+      if(nfreq > 1 && (fields[1][1] == '1' || fields[1][1] == '2')) strip(codes1,'N');
+   }
+
+   // are codes valid for sys, either freq?
+   for(j=0; j<fields[2].size(); j++) {
+      if(codes0.find_first_of(fields[2][j]) == string::npos) {
+         if(codes1.empty() || codes1.find_first_of(fields[2][j]) == string::npos) {
             msg = desc + string(" : invalid code /") + fields[2][j] + string("/");
             return false;
          }
@@ -2248,7 +2284,7 @@ bool SolutionObject::ChooseObsIDs(map<string,vector<RinexObsID> >& mapObsTypes)
    Configuration& C(Configuration::Instance());
 
    isValid = true;
-   
+
    for (i=0; i<vecSolData.size(); i++)
    {
       SolutionData& sd(vecSolData[i]);
@@ -2442,11 +2478,11 @@ int SolutionObject::ComputeSolution(const CommonTime& ttag) throw(Exception)
                //statsSPSNEUresid.add(V,Cov);
             }
          }
-      }
+      }  // end if SPSout
 
       // get the RAIM solution ------------------------------------------
       iret = prs.RAIMCompute(ttag, Satellites, satSyss, PRanges, invMCov, C.pEph,
-                              C.pTrop);
+                             C.pTrop);
 
       if(iret < 0) {
          LOG(VERBOSE) << "RAIMCompute failed "
@@ -2573,7 +2609,7 @@ void SolutionObject::FinalOutput(void) throw(Exception)
 {
    try {
       Configuration& C(Configuration::Instance());
-   
+
       if(prs.memory.getN() <= 0) {
          LOG(INFO) << " No data!";
          return;

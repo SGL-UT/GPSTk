@@ -1,3 +1,39 @@
+//==============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 3.0 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
+//  
+//  Copyright 2004-2019, The University of Texas at Austin
+//
+//==============================================================================
+
+//==============================================================================
+//
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
+//
+//  Pursuant to DoD Directive 523024 
+//
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
+//
+//==============================================================================
+
 /// @file SpecialFuncs.hpp
 /// Implementation of special functions, including log Gamma, factorial, binomial
 /// coefficients, beta, incomplete beta, and error functions, as well as
@@ -8,20 +44,6 @@
 ///    PPf(alpha,N1,N2) == F where alpha=CDF(F,N1,N2).
 /// References: the NIST Engineering Statistics Handbook, 2006
 /// http://www.itl.nist.gov/div898/handbook/ and Abramowitz and Stegun.
-
-//============================================================================
-//
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
-//
-//Pursuant to DoD Directive 523024 
-//
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
-//
-//=============================================================================
 
 #ifndef SPECIAL_FUNCTIONS_INCLUDE
 #define SPECIAL_FUNCTIONS_INCLUDE
@@ -307,7 +329,7 @@ namespace gpstk
    double FDistCDF(const double& F, const int& n1, const int& n2)
       throw(Exception);
 
-   /// Probabiliy density function for F distribution
+   /// Probability density function for F distribution
    /// The F distribution is the ratio of two chi-square distributions with degrees
    /// of freedom N1 and N2, respectively, where each chi-square has first been
    /// divided by its degrees of freedom.

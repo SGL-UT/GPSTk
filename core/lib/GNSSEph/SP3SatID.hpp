@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 #ifndef GPSTK_SP3_SATID_HPP
 #define GPSTK_SP3_SATID_HPP
@@ -72,7 +72,10 @@ namespace gpstk
             case systemGPS:
             case systemGlonass:
             case systemGalileo:
-            case systemLEO: break;
+            case systemLEO: 
+            case systemBeiDou:
+            case systemQZSS: 
+            case systemMixed: break;
                   // invalidate anything non-SP3
             default:
                system = systemUnknown;
@@ -150,6 +153,8 @@ namespace gpstk
             case systemGalileo: return 'E';
             case systemGlonass: return 'R';
             case systemLEO:     return 'L';
+            case systemBeiDou:  return 'C';
+            case systemQZSS:    return 'J';
             case systemMixed:   return 'M';
                   // non-SP3
             default: return '?';
@@ -163,6 +168,8 @@ namespace gpstk
             case systemGalileo: return "Galileo";
             case systemGlonass: return "Glonass";
             case systemLEO:     return "LEO";
+            case systemBeiDou:  return "BeiDou";
+            case systemQZSS:    return "QZSS";
             case systemMixed:   return "Mixed";
             default:            return "Unknown";
          }
@@ -199,6 +206,12 @@ namespace gpstk
                break;
             case 'L': case 'l':
                system = SatID::systemLEO;
+               break;
+            case 'C': case 'c':
+               system = SatID::systemBeiDou;
+               break;
+            case 'J': case 'j':
+               system = SatID::systemQZSS;
                break;
             case 'M': case 'm':
                system = SatID::systemMixed;

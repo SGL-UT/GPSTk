@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /**
  * @file CommandOption.cpp
@@ -40,6 +40,7 @@
  */
 
 #include "CommandOption.hpp"
+#include "CommandOptionParser.hpp"
 #include "StringUtils.hpp"
 
 #include <sstream>
@@ -61,7 +62,7 @@ namespace gpstk
       CommandOptionVec& optVectorList)
          : optFlag(of),  optType(ot),
            shortOpt(shOpt), longOpt(loOpt), description(desc),
-           required(req), count(0), maxCount(0), order(0)
+           required(req), count(0), maxCount(0), order(0), parser(NULL)
    {
       if (ot == CommandOption::stdType)
       {
@@ -384,7 +385,6 @@ namespace gpstk
          if (optionVec[i]->getCount())
          {
             rv.push_back(optionVec[i]);
-            break;
          }
       }
 
@@ -545,6 +545,13 @@ namespace gpstk
          rv += optionVec[i]->getCount();
       }
       return rv;
+   }
+
+   void CommandOptionHelpUsage::printHelp(std::ostream& out, bool pretty)
+   {
+      GPSTK_ASSERT(parser != NULL);
+      if (getCount())
+         parser->displayUsage(out, pretty);
    }
 
 } // namespace gpstk

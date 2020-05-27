@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 #include "TestUtil.hpp"
 #include "FileUtils.hpp"
@@ -146,7 +146,7 @@ int FileUtils_T :: testMakeDir()
    //         regardless of success or failure.
 
    string  dir;
-   
+   cout << "-----------------" << endl;
    try   // empty path
    {
       tester.assert( (0 == FileUtils::makeDir(dir, 0755) ), "empty (return)", __LINE__ );
@@ -162,11 +162,13 @@ int FileUtils_T :: testMakeDir()
    {
       struct stat  statbuf;
       dir = tempFilePath + getFileSep() + testPrefix + "dir2";
-      dirsToRemove.push_back(dir);
       tester.assert( (0 == FileUtils::makeDir(dir, 0755) ), "absolute (return)", __LINE__ );
       tester.assert( (0 == stat(dir.c_str(), &statbuf) ),   "absolute (exists)", __LINE__ );
       tester.assert( S_ISDIR(statbuf.st_mode),              "absolute (dir)",    __LINE__ );
-      tester.assert( ( (statbuf.st_mode & 0777) == 0755),   "absolute (mode)",   __LINE__ );
+      #ifndef WIN32 
+         tester.assert( ( (statbuf.st_mode & 0777) == 0755),   "absolute (mode)",   __LINE__ );
+      #endif
+
    }
    catch (...)
    {
@@ -196,7 +198,9 @@ int FileUtils_T :: testMakeDir()
       tester.assert( (0 == FileUtils::makeDir(dir, 0755) ), "existing (return)", __LINE__ );
       tester.assert( (0 == stat(dir.c_str(), &statbuf) ),   "existing (exists)", __LINE__ );
       tester.assert( S_ISDIR(statbuf.st_mode),              "existing (dir)",    __LINE__ );
-      tester.assert( ( (statbuf.st_mode & 0777) == 0755),   "existing (mode)",   __LINE__ );
+      #ifndef WIN32 
+         tester.assert( ( (statbuf.st_mode & 0777) == 0755),   "existing (mode)",   __LINE__ );
+      #endif
    }
    catch (...)
    {
@@ -211,7 +215,9 @@ int FileUtils_T :: testMakeDir()
       tester.assert( (0 == FileUtils::makeDir(dir, 0755) ), "trailing (return)", __LINE__ );
       tester.assert( (0 == stat(dir.c_str(), &statbuf) ),   "trailing (exists)", __LINE__ );
       tester.assert( S_ISDIR(statbuf.st_mode),              "trailing (dir)",    __LINE__ );
-      tester.assert( ( (statbuf.st_mode & 0777) == 0755),   "trailing (mode)",   __LINE__ );
+      #ifndef WIN32 
+         tester.assert( ( (statbuf.st_mode & 0777) == 0755),   "trailing (mode)",   __LINE__ );
+      #endif
    }
    catch (...)
    {
@@ -234,7 +240,9 @@ int FileUtils_T :: testMakeDir()
       tester.assert( (0 == FileUtils::makeDir(dir, 0755) ), "recursion (return)", __LINE__ );
       tester.assert( (0 == stat(dir.c_str(), &statbuf) ),   "recursion (exists)", __LINE__ );
       tester.assert( S_ISDIR(statbuf.st_mode),              "recursion (dir)",    __LINE__ );
-      tester.assert( ( (statbuf.st_mode & 0777) == 0755),   "recursion (mode)",   __LINE__ );
+      #ifndef WIN32 
+         tester.assert( ( (statbuf.st_mode & 0777) == 0755),   "recursion (mode)",   __LINE__ );
+      #endif
    }
    catch (...)
    {

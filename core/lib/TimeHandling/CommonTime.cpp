@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 #include <limits>
 #include <iomanip>
@@ -77,6 +77,12 @@ namespace gpstk
    }
 
 
+   //FUTURE DEPRECATION
+   //ALL COMMONTIME ACCESSOR/MUTATOR METHODS ARE SET FOR FUTURE DEPRECATION (PRIVATIZATION)
+   //Accessor/Mutator methods should only be used by TimeTag classes and not made public,
+   //therefore these methods will be deprecated in a future release.
+
+   //METHOD SET FOR FUTURE DEPRECATION (PRIVATIZATION)
    CommonTime& CommonTime::set( long day,
                                 long sod,
                                 double fsod,
@@ -120,6 +126,7 @@ namespace gpstk
       return *this;
    }
 
+   //METHOD SET FOR FUTURE DEPRECATION (PRIVATIZATION)
    CommonTime& CommonTime::set( long day,
                                 double sod,
                                 const TimeSystem& timeSystem )
@@ -131,6 +138,7 @@ namespace gpstk
       return set( day, sec, sod, timeSystem );
    }
 
+   //METHOD SET FOR FUTURE DEPRECATION (PRIVATIZATION)
   CommonTime& CommonTime::set( double day,
                                const TimeSystem& timeSystem )
    {
@@ -140,6 +148,7 @@ namespace gpstk
       return set( lday, sec, timeSystem );
    }
 
+   //METHOD SET FOR FUTURE DEPRECATION (PRIVATIZATION)
    CommonTime& CommonTime::setInternal( long day,
                                         long msod,
                                         double fsod,
@@ -175,6 +184,7 @@ namespace gpstk
       return *this;
    }
 
+   //METHOD SET FOR FUTURE DEPRECATION (PRIVATIZATION)
    void CommonTime::get( long& day,
                          long& sod,
                          double& fsod,
@@ -187,6 +197,7 @@ namespace gpstk
       timeSystem = m_timeSystem;
    }
 
+   //METHOD SET FOR FUTURE DEPRECATION (PRIVATIZATION)
    void CommonTime::get( long& day,
                          long& sod,
                          double& fsod ) const
@@ -195,6 +206,7 @@ namespace gpstk
       CommonTime::get( day, sod, fsod, ts );
    }
 
+   //METHOD SET FOR FUTURE DEPRECATION (PRIVATIZATION)
    void CommonTime::get( long& day,
                          double& sod,
                          TimeSystem& timeSystem ) const
@@ -204,6 +216,7 @@ namespace gpstk
       timeSystem = m_timeSystem;
    }
 
+   //METHOD SET FOR FUTURE DEPRECATION (PRIVATIZATION)
    void CommonTime::get( long& day,
                          double& sod ) const
    {
@@ -211,6 +224,7 @@ namespace gpstk
       CommonTime::get( day, sod, ts );
    }
 
+   //METHOD SET FOR FUTURE DEPRECATION (PRIVATIZATION)
   void CommonTime::get( double& day,
                         TimeSystem& timeSystem ) const
    {
@@ -221,12 +235,14 @@ namespace gpstk
       timeSystem = m_timeSystem;
    }
 
+   //METHOD SET FOR FUTURE DEPRECATION (PRIVATIZATION)
    void CommonTime::get( double& day ) const
    {
       TimeSystem ts;
       CommonTime::get( day, ts );
    }
 
+   //METHOD SET FOR FUTURE DEPRECATION (PRIVATIZATION)
    double CommonTime::getDays() const
    {
       double day;
@@ -234,6 +250,7 @@ namespace gpstk
       return day;
    }
 
+   //METHOD SET FOR FUTURE DEPRECATION (PRIVATIZATION)
    double CommonTime::getSecondOfDay() const
    {
       long day;
@@ -242,6 +259,7 @@ namespace gpstk
       return sod;
    }
 
+   //METHOD SET FOR FUTURE DEPRECATION (PRIVATIZATION)
    TimeSystem CommonTime::getTimeSystem() const
    {
       return m_timeSystem;

@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 #include "CommandOption.hpp"
 #include "TestUtil.hpp"
@@ -625,46 +625,57 @@ int CommandOption_T::testCommandOptionRest()
  */
 int CommandOption_T::testCommandOptionNOf()
 {
-   TestUtil  tester( "CommandOptionNOf", "Initialization", __FILE__, __LINE__ );
+   TUDEF("CommandOptionNOf", "Initialization");
 
    defaultCommandOptionList.clear();
+   CommandOptionNOf *cmdOpt = NULL;
+   CommandOptionWithAnyArg *cowaa1 = NULL, *cowaa2 = NULL;
 
    try
    {
-      CommandOptionNOf  cmdOpt(1);
-      tester.assert( true, "CommandOptionNOf was created successfully.", __LINE__ );
-      tester.assert( (cmdOpt.getCount() == 0), "CommandOptionNOf count should be 0.", __LINE__ );
-      tester.assert( (cmdOpt.checkArguments().size() != 0), "CommandOptionNOf checkArguments() should have returned an error", __LINE__ );
-      tester.assert( (defaultCommandOptionList.size() == 1), "CommandOptionNOf was not added to the default list.", __LINE__ );
-
-      try
-      {
-         cmdOpt.addOption(NULL);
-         tester.assert( false, "CommandOptionNOf()::addOption() succeeded but should have failed due to an valid option address.", __LINE__ );
-      }
-      catch ( ... )
-      {
-         tester.assert( true, "CommandOptionNOf::addOption() threw an exception as expected.", __LINE__ );
-      }
-
-      try
-      {
-         CommandOptionWithAnyArg  cowaa('f', "foo", "Foo", false);
-         cmdOpt.addOption(&cowaa);
-         tester.assert( true, "CommandOptionNOf()::addOption() succeeded.", __LINE__ );
-      }
-      catch ( ... )
-      {
-         tester.assert( false, "CommandOptionNOf::addOption() threw an exception but should not have.", __LINE__ );
-      }
+      cmdOpt = new CommandOptionNOf(1);
+      cowaa1 = new CommandOptionWithAnyArg('f', "foo", "Foo", false);
+      cowaa2 = new CommandOptionWithAnyArg('b', "bar", "bar", false);
+      TUPASS("CommandOptionNOf was created successfully.");
    }
    catch ( ... )
    {
-      tester.assert( false, "CommandOptionNOf() threw an exception but should not have.", __LINE__ );
+      TUFAIL("Exception in constructor");
    }
+
+   TUASSERTE(unsigned long,0,cmdOpt->getCount());
+   TUASSERT(cmdOpt->checkArguments().size() != 0);
+   TUASSERTE(unsigned long,3,defaultCommandOptionList.size());
+
+   try
+   {
+      cmdOpt->addOption(NULL);
+      TUFAIL("CommandOptionNOf()::addOption() succeeded but should have"
+             " failed due to an invalid option address.");
+   }
+   catch ( ... )
+   {
+      TUPASS("CommandOptionNOf::addOption() threw an exception as"
+             " expected.");
+   }
+
+   try
+   {
+      cmdOpt->addOption(cowaa1);
+      cmdOpt->addOption(cowaa2);
+      TUPASS("CommandOptionNOf()::addOption() succeeded.");
+   }
+   catch ( ... )
+   {
+      TUFAIL("CommandOptionNOf::addOption() threw an exception but should"
+             " not have.");
+   }
+
+   delete cowaa1;
+   delete cowaa2;
    defaultCommandOptionList.clear();
 
-   return tester.countFails();
+   TURETURN();
 }
 
 

@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /**
  * @file PackedNavBits.hpp
@@ -48,6 +48,7 @@
 #include <string>
 
 #include "ObsID.hpp"
+#include "NavID.hpp"
 #include "SatID.hpp"
 #include "CommonTime.hpp"
 #include "Exception.hpp"
@@ -60,6 +61,16 @@ namespace gpstk
    class PackedNavBits
    {
    public:
+         /** Indicate whether parity/CRC/whatever checking has been
+          * performed and whether that check passed or failed on this
+          * subframe/message. */
+      enum ParityStatus
+      {
+         psUnknown, ///< Parity/CRC check has not been performed.
+         psPassed,  ///< Parity/CRC check was performed and passed.
+         psFailed   ///< Parity/CRC check was performed and failed.
+      };
+
       /// empty constructor
       PackedNavBits();
 
@@ -74,6 +85,13 @@ namespace gpstk
                     const std::string rxString,
                     const CommonTime& transmitTimeArg);
 
+      /// explicit constructor
+      PackedNavBits(const SatID& satSysArg, 
+                    const ObsID& obsIDArg,
+                    const NavID& navIDArg,
+                    const std::string rxString,
+                    const CommonTime& transmitTimeArg);
+
       PackedNavBits(const PackedNavBits& right);             // Copy constructor
       //PackedNavBits& operator=(const PackedNavBits& right); // Copy assignment
 
@@ -81,6 +99,7 @@ namespace gpstk
 
       void setSatID(const SatID& satSysArg);
       void setObsID(const ObsID& obsIDArg);
+      void setNavID(const NavID& navIDArg);
       void setRxID(const std::string rxString); 
       void setTime(const CommonTime& transmitTimeArg);
       void clearBits();
@@ -90,6 +109,9 @@ namespace gpstk
 
          /* Returns Observation type, Carrier, and Tracking Code */
       ObsID getobsID() const;
+
+         /* Return navigation message ID */ 
+      NavID getNavID() const; 
 
          /* Returns string defining the receiver that collected the data. 
             NOTE: This was a late addition to PackedNavBits and may not  
@@ -191,6 +213,8 @@ namespace gpstk
                                   const unsigned len,
                                   const int power2) const;      
 
+      bool asBool( const unsigned bitNum) const;
+
          /***    PACKING FUNCTIONS *********************************/
          /* Pack an unsigned long integer */
       void addUnsignedLong( const unsigned long value, 
@@ -268,6 +292,7 @@ namespace gpstk
       static const unsigned int mmSAT  = 0x0002;  // Check SatID
       static const unsigned int mmOBS  = 0x0004;  // Check ObsID
       static const unsigned int mmRX   = 0x0008;  // Check Receiver ID
+      static const unsigned int mmNAV  = 0x0010;  // Check NavID
       static const unsigned int mmALL  = 0xFFFF;  // Check ALL metadata
       static const unsigned int mmNONE = 0x0000;  // NO metadata checks
       bool matchMetaData(const PackedNavBits& right,
@@ -331,6 +356,51 @@ namespace gpstk
           */
       bool operator<(const PackedNavBits& right) const; 
 
+         /**
+          *  Bitwise invert contents of this object.
+          */
+      void invert( ); 
+
+         /**
+          *  Bit wise copy from another PackecNavBits.
+          *  None of the meta-data (transmit time, SatID, ObsID)
+          *  will be changed. 
+          *  This method is intended for use between two
+          *  PackedNavBits objecst that are ALREADY the
+          *  same size (in bits).   It will throw an
+          *  InvalidParameter exception if called using two
+          *  objects that are NOT the same size. 
+          *  Yes, we could define a copy that would account
+          *  for the difference, but the pre-existing model
+          *  for PNB is that the bits_used variable records
+          *  the # of bits used as items are added to the end
+          *  of the bit array.   I didn't want copyBits( )
+          *  to confuse that model by modifying bits_used.
+          */
+      void copyBits(const PackedNavBits& from, 
+                    const short startBit=0, 
+                    const short endBit=-1)
+                    throw(InvalidParameter);
+
+         /**
+          * This method is not typically used in production; however it
+          * is used in test support.  It assumes the PNB object is already
+          * created and is already sized to hold at least (startBit+numBits) 
+          * bits.  If this is not true, an exception is thrown. 
+          * It overwrites the data that is already present with
+          * the provided value / scale.  If value / scale is too large to
+          * fit in numBits, then an exception is thrown. 
+          */
+      void insertUnsignedLong(const unsigned long value,
+                              const int startBit,
+                              const int numBits,
+                              const int scale=1 )
+                              throw(InvalidParameter);
+         /**
+          *  Reset number of bits
+          */
+      void reset_num_bits(const int new_bits_used=0);
+
          /* Resize the vector holding the packed data. */
       void trimsize();
 
@@ -353,9 +423,18 @@ namespace gpstk
        void setXmitCoerced(bool tf=true) {xMitCoerced=tf;}
        bool isXmitCoerced() const {return xMitCoerced;}
 
+      const std::vector<bool>& getBits() const
+      { return bits; }
+
+         /** Indicate the status of parity/CRC checking.  Must be
+          * explicitly set after construction, no parity checking is
+          * supported in this class. */
+      ParityStatus parityStatus;
+
    private:
       SatID satSys;            /**< System ID (based on RINEX defintions */
       ObsID obsID;             /**< Defines carrier and code tracked */
+      NavID navID;             /**< Defines the navigation message tracked */ 
       std::string rxID;        /**< Defines the receiver that collected the data */
       CommonTime transmitTime; /**< Time nav message is transmitted */
       std::vector<bool> bits;  /**< Holds the packed data */

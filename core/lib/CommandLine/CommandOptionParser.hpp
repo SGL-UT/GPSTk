@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /**
  * @file CommandOptionParser.hpp
@@ -112,6 +112,19 @@ namespace gpstk
       bool hasErrors() { return !errorStrings.empty(); }
          /// Writes the errors to \c out.
       std::ostream& dumpErrors(std::ostream& out);
+         /// Returns true if any help was requested.
+      bool helpRequested() { return !helpOptions.empty(); }
+         /** Print the requested help information.
+          * @param[in] out The stream to which the help text will be printed.
+          * @param[in] pretty If true, use "pretty print" as
+          *   appropriate (dependent on child class implementation as
+          *   to how it's used).
+          * @param[in] firstOnly If true, only print the help for the
+          *   first processed command-line option requesting help.  If
+          *   false, each specified help-like command-line option will
+          *   print its help text. */
+      std::ostream& printHelp(std::ostream& out, bool doPretty = true,
+                              bool firstOnly = true);
 
          /** Writes the arguments nicely to the output.
           * @param out ostream on which to write
@@ -140,6 +153,11 @@ namespace gpstk
 
          /// the name of this program
       std::string progName;
+
+         /** After calling parseOptions, this will contain all of the
+          * help-like options that were specified on the command
+          * line. */
+      std::vector<CommandOptionHelp*> helpOptions;
    };
       //@}
 }

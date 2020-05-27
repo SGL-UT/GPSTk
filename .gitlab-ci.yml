@@ -1,76 +1,295 @@
 #.yml file for Gitlab-CI support
 
 stages:
+- check
 - build
 - test
 - deploy
+- package
+- downstream
+
+# Default cmake arguments
+variables:
+  CMAKE_ARG_DEFAULT: "-DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON -DPIP_WHEEL_SWITCH=ON ../"
+
+# Check Stage
+# Runs static analysis on code.
+static_analysis:
+  stage: check
+  tags:
+    - debian
+  script:
+    - ./lint_test.sh
+  # Allow failures here to prevent blocking the rest of the pipeline.
+  allow_failure: true
 
 build_debian:
   stage: build
   tags:
-    - debian
+    - docker-executor
+  image: debian9_fai_ish
   script:
-    - ./build.sh -ev
+    - mkdir build
+    - cd build
+    - export gpstk=`pwd`/install
+    - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=install $CMAKE_ARG_DEFAULT
+    - make all -j 4
+  artifacts:
+    paths:
+    - build/
 
-test_debian:
-  stage: test
-  tags:
-    - debian
-  script:
-    - ./build.sh -evt
 
-build_solaris:
+build_conda_py36:
   stage: build
   tags:
-    - solaris
+    - docker-executor
+  image: centos7_conda_py36
   script:
-    - ./build.sh -evx
-
-test_solaris:
-  stage: test
-  tags:
-    - solaris
-  script:
-    - ./build.sh -evxt
+    - conda activate py36
+    - mkdir build
+    - cd build
+    - export gpstk=`pwd`/install
+    - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=install $CMAKE_ARG_DEFAULT
+    - make all -j 4
+  artifacts:
+    paths:
+      - build/
 
 build_redhat:
   stage: build
   tags:
-    - redhat
+    - docker-executor
+  image: centos7_sgl
   script:
-    - ./build.sh -ev -b ./build-gpstk-redhat
+    - mkdir build
+    - cd build
+    - export gpstk=`pwd`/install
+    - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=install $CMAKE_ARG_DEFAULT
+    - make all -j 4
+  artifacts:
+    paths:
+    - build/
+
+
+# Test Stage
+# Runs all tests of GPSTK for each platform
+test_debian:
+  stage: test
+  tags:
+    - docker-executor
+  image: debian9_fai_ish
+  script:
+    - cd build
+    - ctest -j 4
+    - touch $CI_PROJECT_DIR/success
+  dependencies:
+    - build_debian
+  after_script:
+    # Only show the failure log, if there were failures.
+    # Also, the whole log is too long, so grep for lines of interest.
+    - |
+      if [ -e success ]; then
+         echo "Good. Gooooood."
+      else
+         grep "Total Failures for" $CI_PROJECT_DIR/build/Testing/Temporary/LastTest.log
+      fi
 
 test_redhat:
   stage: test
   tags:
-    - redhat
+    - docker-executor
+  image: centos7_sgl
   script:
-    - ./build.sh -evt -b ./test-gpstk-redhat
+    - cd build
+    - ctest -j 4
+    - touch $CI_PROJECT_DIR/success
+  dependencies:
+    - build_redhat
+  after_script:
+    # Only show the failure log, if there were failures.
+    # Also, the whole log is too long, so grep for lines of interest.
+    - |
+      if [ -e success ]; then
+         echo "Good. Gooooood."
+      else
+         grep "Total Failures for" $CI_PROJECT_DIR/build/Testing/Temporary/LastTest.log
+      fi
 
-build_osx:
-  stage: build
+# Deploy Stage
+# Tests install of GPSTk on each platform, saves artifacts for downstream builds.
+deploy_debian:
+  stage: deploy
   tags:
-    - osx
+    - docker-executor
+  image: debian9_fai_ish
   script:
-    - ./build.sh -ev -b ./build-gpstk-osx
+    - cd build
+    - export gpstk=`pwd`/install
+    - export PYTHONPATH=$gpstk/lib/python2.7/site-packages
+    - mkdir -p $PYTHONPATH
+    - make install -j 4
+    - python -c "import gpstk"
+  artifacts:
+    paths:
+    - build/install
+  dependencies:
+    - build_debian
 
-test_osx:
-  stage: test
+deploy_redhat:
+  stage: deploy
   tags:
-    - osx
+    - docker-executor
+  image: centos7_sgl
   script:
-    - ./build.sh -evt -b ./test-gpstk-osx
+    - cd build
+    - export gpstk=`pwd`/install
+    - export PYTHONPATH=$gpstk/lib/python2.7/site-packages
+    - mkdir -p $PYTHONPATH
+    - make install -j 4
+    - python -c "import gpstk"
+  artifacts:
+    paths:
+    - build/install
+  dependencies:
+    - build_redhat
 
-build_windows:
-  stage: build
-  tags:
-    - windows
-  script:
-    - build.sh -evx
 
-test_windows:
-  stage: test
+# Package Stage
+# Tests packaging of GPSTk on all platforms
+package_debian:
+  stage: package
   tags:
-    - windows
+    - docker-executor
+  image: debian9_fai_ish
+  only:
+    refs:
+      - master
+      - /^ci_.*$/
   script:
-    - build.sh -evxt
+    - rm -rf ../*.deb
+    - dpkg-buildpackage -us -uc -d
+    - mkdir debs
+    - mv ../*.deb debs
+  artifacts:
+    paths:
+    - debs/
+  dependencies:
+    - build_debian
+
+package_conda:
+  stage: package
+  tags:
+    - docker-executor
+  image: deb9_conda_py36
+  only:
+    refs:
+      - master
+      - /^ci_.*$/
+  script:
+    - conda activate conda_builder
+    - export GIT_COMMIT=$CI_COMMIT_REF_NAME
+    - conda-build conda_recipe
+    - conda-build conda_recipe_py36
+  artifacts:
+    paths:
+    - conda_envs/conda_builder/conda-bld/linux-64/
+  dependencies: []
+
+package_debian_wheel:
+  stage: package
+  tags:
+    - docker-executor
+  image: debian9_fai_ish
+  only:
+    refs:
+      - master
+      - /^ci_.*$/
+  script:
+    - mkdir dist
+    - mv build/swig/module/dist/* dist
+    - echo "Saving wheel"
+  artifacts:
+    paths:
+      - dist/
+  dependencies:
+    - build_debian
+
+package_redhat:
+  stage: package
+  tags:
+    - docker-executor
+  image: centos7_sgl
+  only:
+    refs:
+      - master
+      - /^ci_.*$/
+  script:
+    - cd build
+    - git clone https://repositories.arlut.utexas.edu/sgl/rpm_files.git
+    - cd rpm_files
+    - cd SOURCES
+    - wget https://repositories.arlut.utexas.edu/sgl/gpstk/-/archive/master/gpstk-master.tar.gz
+    - cd ..
+    - rpmbuild --define "_topdir ${PWD}" --define "debug_package %{nil}" -ba SPECS/gpstk.spec
+  artifacts:
+    paths:
+      - build/rpm_files/RPMS/x86_64/gpstk-*
+      - build/rpm_files/SRPMS/gpstk-*
+  dependencies:
+    - build_redhat
+
+package_redhat_wheel:
+  stage: package
+  tags:
+    - docker-executor
+  image: centos7_sgl
+  only:
+    refs:
+      - master
+      - /^ci_.*$/
+  script:
+    - mkdir dist
+    - mv build/swig/module/dist/* dist
+    - echo "Saving wheel"
+  artifacts:
+    paths:
+      - dist/
+  dependencies:
+    - build_redhat
+
+
+sgltk_debian:
+  stage: downstream
+  tags:
+    - docker-executor
+  image: debian9_fai_ish
+  script:
+    - cd build
+    - git clone https://repositories.arlut.utexas.edu/sgl/sgltk.git
+    - export gpstk=`pwd`/install
+    - export LD_LIBRARY_PATH=$gpstk/lib:$LD_LIBRARY_PATH
+    - cd sgltk
+    - mkdir build
+    - cd build
+    - cmake -DCMAKE_PREFIX_PATH=$gpstk -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
+    - make all -j 4
+  dependencies:
+    - deploy_debian
+
+sgltk_redhat:
+  stage: downstream
+  tags:
+    - docker-executor
+  image: centos7_sgl
+  script:
+    - cd build
+    - git clone https://repositories.arlut.utexas.edu/sgl/sgltk.git
+    - export gpstk=`pwd`/install
+    - export LD_LIBRARY_PATH=$gpstk/lib:$LD_LIBRARY_PATH
+    - cd sgltk
+    - mkdir build
+    - cd build
+    - cmake -DCMAKE_PREFIX_PATH=$gpstk -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
+    - make all -j 4
+  dependencies:
+    - deploy_redhat

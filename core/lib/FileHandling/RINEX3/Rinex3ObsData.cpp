@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /** @file Rinex3ObsData.cpp
  * Encapsulate RINEX 3 observation file data, including I/O.
@@ -55,7 +55,6 @@ namespace gpstk
                              const Rinex3ObsData& rod )
       throw(FFStreamError, StringException)
    {
-
          // is there anything to write?
       if( (rod.epochFlag==0 || rod.epochFlag==1 || rod.epochFlag==6)
           && (rod.numSVs==0 || rod.obs.empty()) ) return;
@@ -129,7 +128,6 @@ namespace gpstk
          // write the epoch line
       strm << line << endl;
       strm.lineNumber++;
-
          // write the auxiliary header records, if any
       if( rod.epochFlag >= 2 && rod.epochFlag <= 5 )
       {
@@ -157,7 +155,6 @@ namespace gpstk
 
             RinexSatID sat(itr->first);               // current satellite
             string sys(string(1,sat.systemChar()));   // system
-            itr = rod.obs.find(sat);           // get data vector to be written
             int obsWritten(0);
             line = string("");
 
@@ -285,7 +282,9 @@ namespace gpstk
    {
          // is there anything to write?
       if( (epochFlag == 0 || epochFlag == 1 || epochFlag == 6)
-          && (numSVs==0 || obs.empty())) return;
+          && (numSVs==0 || obs.empty())){
+         return;
+      }
 
       Rinex3ObsStream& strm = dynamic_cast<Rinex3ObsStream&>(ffs);
 
@@ -582,6 +581,11 @@ namespace gpstk
          // If the header hasn't been read, read it.
       if(!strm.headerRead) strm >> strm.header;
 
+      Rinex3ObsData rod;
+
+         // clear out this ObsData
+      *this = rod;
+
          // call the version for RINEX ver 2
       if(strm.header.version < 3)
       {
@@ -597,10 +601,6 @@ namespace gpstk
       }
 
       string line;
-      Rinex3ObsData rod;
-
-         // clear out this ObsData
-      *this = rod;
 
          // read the first (epoch) line
       strm.formattedGetLine(line, true);
@@ -790,13 +790,17 @@ namespace gpstk
       return line;
    }  // end writeTime
 
+   string Rinex3ObsData::timeString() const throw(StringException)
+   {
+      return writeTime(time);
+   }
 
    void Rinex3ObsData::dump(ostream& s) const
    {
       if(obs.empty())
          return;
 
-      s << "Dump of Rinex3ObsData" << endl << " - time: " << writeTime(time)
+      s << "Dump of Rinex3ObsData - time: " << writeTime(time)
         << " epochFlag: " << " " << epochFlag
         << " numSVs: " << numSVs
         << fixed << setprecision(9) << " clk offset: " << clockOffset << endl;

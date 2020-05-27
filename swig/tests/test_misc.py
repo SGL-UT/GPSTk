@@ -221,9 +221,6 @@ class std_template_test(unittest.TestCase):
         list = [1, 2.2, 'c']  # mismatching types not allowed
         self.assertRaises(TypeError, gpstk.seqToVector, list)
 
-        list = [1000L, 2000L]  # PyLongs are not templated
-        self.assertRaises(TypeError, gpstk.seqToVector, list)
-
     def test_map(self):
         map = gpstk.map_int_char()
         map[1] = 'A'
@@ -278,16 +275,6 @@ class convhelp_test(unittest.TestCase):
         self.assertAlmostEqual(32.0, gpstk.cel2far(0.0))
         self.assertAlmostEqual(0.0, gpstk.far2cel(32.0))
         self.assertAlmostEqual(121.1, gpstk.cel2far(49.5))
-
-
-class Xv_test(unittest.TestCase):
-    def test(self):
-        data = gpstk.Xv()
-        data.x = gpstk.Triple(1.5, 2.5, 3.5)
-        data.v = gpstk.Triple(500, 1000, -100)
-        self.assertEqual(1.5, data.x[0])
-        expected = 'x:(1.5, 2.5, 3.5), v:(500, 1000, -100)'
-        self.assertEqual(expected, str(data))
 
 
 class Xvt_test(unittest.TestCase):
@@ -370,7 +357,7 @@ class Expression_test(unittest.TestCase):
         self.assertAlmostEqual(12.0, e.evaluate())
 
         e = gpstk.Expression('L1 + L2')
-        e.setGPSConstants();
+        e.setGPSConstants()
         self.assertAlmostEqual(2803020000.0, e.evaluate())
 
     def test_function(self):
@@ -381,7 +368,7 @@ class Expression_test(unittest.TestCase):
 
         e = gpstk.Expression('1 + 2*x')
         self.assertAlmostEqual(12.0, gpstk.eval(e, x=5.5))
- 
+
 
 if __name__ == '__main__':
     run_unit_tests()

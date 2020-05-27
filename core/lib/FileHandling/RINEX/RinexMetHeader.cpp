@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /**
  * @file RinexMetHeader.cpp
@@ -101,7 +101,7 @@ namespace gpstk
       if      (version == 2.0 ) allValid = allValid20;
       else if (version == 2.1 ) allValid = allValid21;
       else if (version == 2.11) allValid = allValid211;
-      else if (version == 3.0 ) allValid = allValid211; /// This is the R3.0 version standard.
+      else if (version >= 3.0 ) allValid = allValid211; /// This is the R3.0 version standard.
       else
       {
          FFStreamError err("Unknown RINEX version: " + asString(version,2));
@@ -134,7 +134,15 @@ namespace gpstk
          line  = leftJustify(fileProgram,20);
          line += leftJustify(fileAgency,20);
          SystemTime sysTime;
-         string curDate = (static_cast<CivilTime>(sysTime)).printf("%04Y%02m%02d %02H%02M%02S %P");
+         string curDate;
+         if(version < 3)
+         {
+            curDate = (static_cast<CivilTime>(sysTime)).printf("%02m/%02d/%04Y %02H:%02M:%02S");
+         }
+         else
+         {
+            curDate = (static_cast<CivilTime>(sysTime)).printf("%04Y%02m%02d %02H%02M%02S %P");
+         }
          line += leftJustify(curDate, 20);
          line += stringRunBy;
          strm << line << endl;
@@ -283,7 +291,8 @@ namespace gpstk
          {
             std::string verstr(strip(line.substr(0,20)));
             if ((verstr != "2.0") && (verstr != "2.1") && (verstr != "2.00") &&
-                (verstr != "2.10") && (verstr != "2.11") && (verstr != "3.0"))
+               (verstr != "2.10") && (verstr != "2.11") && (verstr != "3.0") &&
+               (verstr != "3.01") && (verstr!= "3.02"))
             {
                FFStreamError e("Unknown or unsupported RINEX version " + 
                                asString(version));
@@ -416,7 +425,7 @@ namespace gpstk
       if      (version == 2.0 ) allValid = allValid20;
       else if (version == 2.1 ) allValid = allValid21;
       else if (version == 2.11) allValid = allValid21;
-      else if (version == 3.0 ) allValid = allValid21;
+      else if (version >= 3.0 ) allValid = allValid21;
       else
       {
          FFStreamError e("Unknown or unsupported RINEX version " + 

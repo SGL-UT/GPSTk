@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 #ifndef GPSTK_NAVID_HPP
 #define GPSTK_NAVID_HPP
@@ -70,12 +70,15 @@ namespace gpstk
          ntGPSLNAV,
          ntGPSCNAVL2,
          ntGPSCNAVL5,
+         ntGPSCNAV2,
          ntGPSMNAV,
          ntBeiDou_D1,
          ntBeiDou_D2,
          ntGloCivilF,
          ntGloCivilC,
-         ntGalOS,
+         ntGalFNAV,
+         ntGalINAV,
+         ntIRNSS_SPS,
          ntUnknown
       };
    
@@ -83,6 +86,14 @@ namespace gpstk
       NavID() { navType=ntUnknown; }
 
          /// explicit constructor, no defaults
+         /// WARNING: This constructor has proven insufficient
+         /// for BeiDou.  The BDS ICD requires that PRN 1-5 
+         /// use format D2 and PRN 6-30 use format D1.  That
+         /// appears to not be followed in all cases.   Therefore
+         /// users need to differentiate D1/D2 outside NavID 
+         /// and use the explicit constructor
+         ///      NavID( NavID::nt<xxxxx> )
+         /// to instatiate a BeiDou-related NavID. 
       NavID( const SatID& sidr, const ObsID& oidr );
 
       NavID( const NavType nt) { navType = nt; }
@@ -96,16 +107,20 @@ namespace gpstk
          std::string retVal = "";
          switch(s)
          {
-            case ntGPSLNAV:      {retVal = NavTypeStrings[0];     break;}
-            case ntGPSCNAVL2:    {retVal = NavTypeStrings[1];     break;}
-            case ntGPSCNAVL5:    {retVal = NavTypeStrings[2];     break;}
-            case ntGPSMNAV:      {retVal = NavTypeStrings[3];     break;}
-            case ntBeiDou_D1:    {retVal = NavTypeStrings[4];     break;}
-            case ntBeiDou_D2:    {retVal = NavTypeStrings[5];     break;}
-            case ntGloCivilF:    {retVal = NavTypeStrings[6];     break;}
-            case ntGloCivilC:    {retVal = NavTypeStrings[7];     break;}
-            case ntGalOS:        {retVal = NavTypeStrings[8];     break;}
-            default: ntUnknown:  {retVal = NavTypeStrings[9];     break;}
+            case ntGPSLNAV:      {retVal = NavTypeStrings[ 0];     break;}
+            case ntGPSCNAVL2:    {retVal = NavTypeStrings[ 1];     break;}
+            case ntGPSCNAVL5:    {retVal = NavTypeStrings[ 2];     break;}
+            case ntGPSCNAV2:     {retVal = NavTypeStrings[ 3];     break;}
+            case ntGPSMNAV:      {retVal = NavTypeStrings[ 4];     break;}
+            case ntBeiDou_D1:    {retVal = NavTypeStrings[ 5];     break;}
+            case ntBeiDou_D2:    {retVal = NavTypeStrings[ 6];     break;}
+            case ntGloCivilF:    {retVal = NavTypeStrings[ 7];     break;}
+            case ntGloCivilC:    {retVal = NavTypeStrings[ 8];     break;}
+            case ntGalFNAV:      {retVal = NavTypeStrings[ 9];     break;}
+            case ntGalINAV:      {retVal = NavTypeStrings[10];     break;}
+            case ntIRNSS_SPS:    {retVal = NavTypeStrings[11];     break;}
+            case ntUnknown:
+            default:             {retVal = NavTypeStrings[12];     break;}
          };
          //return retVal in case switch isn't reached
         return retVal;

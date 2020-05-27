@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 //------------------------------------------------------------------------------------
 // DiscFix.cpp Read a RINEX observation file containing dual frequency
@@ -74,6 +74,7 @@
 #include "expandtilde.hpp"
 #include "CommandLine.hpp"
 #include "SatPass.hpp"
+#include "SatPassUtilities.hpp"
 #include "DiscCorr.hpp"
 
 using namespace std;
@@ -408,9 +409,9 @@ try {
    // set the DC commands now (setParameter may write to log file)
    for(i=0; i<cfg.DCcmds.size(); i++) {
       cfg.GDConfig.setParameter(cfg.DCcmds[i]);
-      if(cfg.DCcmds[i].substr(0,9) == string("--DCDebug")) {
+      if(cfg.DCcmds[i].substr(0,5) == string("Debug")) {
          string msg("DEBUG");
-         msg += asString(cfg.DCcmds[i].substr(10));
+         msg += asString(cfg.DCcmds[i].substr(6));
          LOGlevel = ConfigureLOG::Level(msg);
       }
       else if(cfg.DCcmds[i].substr(0,4) == string("--DC DT=<dt>")) {
@@ -752,7 +753,7 @@ try {
    if(rheadout.valid & RinexObsHeader::prnObsValid)
       rheadout.valid ^= RinexObsHeader::prnObsValid;
 
-   int iret = SatPassToRinexFile(cfg.OutRinexObs,rheadout,cfg.SPList);
+   int iret = SatPassToRinex2File(cfg.OutRinexObs,rheadout,cfg.SPList);
    if(iret) return -4;
 
    return 0;
@@ -797,7 +798,6 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
 try {
    size_t i;
       // defaults
-   cfg.debug = -1;
    cfg.DChelp = false;
    cfg.verbose = false;
    cfg.decimate = 0.0;
@@ -941,8 +941,8 @@ try {
 
    opts.Add(0, "verbose", "", false, false, &cfg.verbose, "# Help:",
             "print extended output information");
-   opts.Add(0, "debug", "", false, false, &cfg.debug, "",
-            "print debug output at level 0 [debug<n> for level n=1-7]");
+   //opts.Add(0, "debug", "", false, false, &cfg.debug, "",
+   //         "print debug output at level 0 [debug<n> for level n=1-7]");
    opts.Add(0, "help", "", false, false, &help, "",
             "print this and quit");
 
@@ -1030,11 +1030,10 @@ try {
 
    // --------------------------------------------------------------------
    // return
-   if(opts.hasHelp() || cfg.DChelp || cfg.debug>-1) {
+   if(opts.hasHelp() || cfg.DChelp) {
       stripTrailing(cmdlineUsage,'\n');
       LOG(INFO) << cmdlineUsage;
       if(cfg.DChelp) cfg.GDConfig.DisplayParameterUsage(LOGstrm,cfg.verbose);
-      if(cfg.debug>-1 && !cfg.cmdlineSum.empty()) LOG(DEBUG) << cfg.cmdlineSum;
       return 1;
    }
    if(opts.hasErrors()) {

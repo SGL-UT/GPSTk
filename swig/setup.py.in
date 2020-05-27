@@ -20,11 +20,17 @@ Details:
 
 """
 
-from distutils.core import setup
+import os
+
+from setuptools import setup
+
+
+MODULE_DIR = os.path.split(__file__)[0]
 
 #----------------------------------------
 # File lists
 #----------------------------------------
+
 
 scripts_list = [
     "apps/gpstk_timeconvert.py",
@@ -52,32 +58,28 @@ classifiers_list = ['License :: OSI Approved :: GNU Library or Lesser General Pu
 # Dependencies for easy_install (may not be needed)
 requirements_list = [ "python >= 2.7.3",
                       "numpy >= 1.4.4",
-                      "doxygen >= 1.8.1",
-                      "cmake >= 2.8",
-                      "make >= 3.81",
-                      "gcc >= 4.7.2",
-                      "swig >= 2.0",
                       "setuptools >= 0.6",
                       ]
 
-#----------------------------------------
 # setup() call
 #----------------------------------------
 
-setup( name              = "gpstk",
-       version           = "@GPSTK_VERSION@",
-       author            = "Space and Geophysics Lab, ARL, University of Texas at Austin",
-       author_email      = "gpstk@arlut.utexas.edu",
-       url               = "http://www.gpstk.org/",
-       license           = "LICENSE.txt",
-       description       = "GPSTk python package installer",
-       long_description  = open('README.md').read(),
-       keywords          = ('GNSS', 'GPS', 'RINEX'),
-       classifiers       = classifiers_list,
-       packages          = ['gpstk'],
-       package_data      = { 'gpstk': ['_gpstk.so'],},
-       scripts           = scripts_list,
-       )
+setup(name              = "gpstk",
+      version           = "@GPSTK_VERSION@",
+      author            = "Space and Geophysics Lab, ARL, University of Texas at Austin",
+      author_email      = "gpstk@arlut.utexas.edu",
+      url               = "http://www.gpstk.org/",
+      license           = "LICENSE.txt",
+      description       = "GPSTk python package installer",
+      long_description  = open(os.path.join(MODULE_DIR, 'README.md')).read(),
+      keywords          = ('GNSS', 'GPS', 'RINEX'),
+      classifiers       = classifiers_list,
+      packages          = ['gpstk'],
+      package_data      = { 'gpstk': ['_gpstk.so', 'libgpstk.so*'], },
+      data_files        = [('', ['README.md',]),],
+      scripts           = scripts_list,
+      zip_safe          = False,
+      )
 
 #----------------------------------------
 # The End

@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -15,24 +15,24 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
+//  
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//  Copyright 2004, The University of Texas at Austin
-//
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S.
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software.
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 #include "TestUtil.hpp"
 #include <iostream>
@@ -40,6 +40,8 @@
 #include "Rinex3ClockHeader.hpp"
 #include "Rinex3ClockData.hpp"
 #include "Rinex3ClockStream.hpp"
+#include "RinexObsID.hpp"
+#include "SatID.hpp"
 
 #include "build_config.h"
 
@@ -56,6 +58,7 @@ public:
    int hardCodeTest(void);
    int dataExceptionTest(void);
    int filterOperatorsTest(void);
+   int rinex3HeaderFormat(void);
 
 private:
    std::string dataFilePath;
@@ -68,6 +71,8 @@ private:
    std::string dataRinexClockFile;
    std::string dataUnknownHeaderLabel;
 
+   std::string testR3HeaderOutputExp;
+   std::string testR3HeaderOutput;
    std::string dataTestOutput;
 
    std::string testMesg;
@@ -101,6 +106,10 @@ void Rinex3Clock_T::init(void)
 
    dataTestOutput                       = tempFilePath + file_sep +
                                           "test_output_rinex2_clock_TestOutput.96c";
+   testR3HeaderOutput                       = tempFilePath + file_sep +
+                                            "test_output_rinex3_clock_TestR3HeaderOutput.96c";
+   testR3HeaderOutputExp                       = dataFilePath + file_sep +
+                                              "test_output_rinex3_clock_TestR3HeaderOutput.exp";
 
 
 }
@@ -364,6 +373,42 @@ int Rinex3Clock_T::hardCodeTest(void)
    return testFramework.countFails();
 }
 
+//Test that reading/writing out the file doesn't change it
+int Rinex3Clock_T::rinex3HeaderFormat(void)
+{
+   TUDEF("Rinex3ClockStream", "write to R3 file");
+
+   gpstk::Rinex3ClockHeader ch;
+
+   gpstk::Rinex3ClockStream inputStream;
+   gpstk::Rinex3ClockStream outputStream;
+
+   try
+   {
+      inputStream.open(testR3HeaderOutputExp.c_str(), std::ios::in);
+      outputStream.open(testR3HeaderOutput.c_str(), std::ios::out);
+      inputStream >> ch;
+      outputStream << ch;
+
+      TUPASS(testMesg);
+   }
+   catch (gpstk::Exception e)
+   {
+      testMesg = "Unable to read/write to file stream: " + e.what();
+      TUFAIL(testMesg);
+   }
+
+   int skipLines = 2; //First two lines of the header are not supposed to match
+
+   fileEqual = testFramework.fileEqualTest(testR3HeaderOutput,
+                                           testR3HeaderOutputExp, skipLines);
+
+   testMesg = "Headers are not consistent after input & out";
+   testFramework.assert(fileEqual, testMesg, __LINE__);
+
+   return testFramework.countFails();
+}
+
 
 int main(void) //Main function to initialize and run all tests above
 {
@@ -388,6 +433,8 @@ int main(void) //Main function to initialize and run all tests above
 
    check = testClass.headerExceptionTest();
    errorCounter += check;
+
+   errorCounter += testClass.rinex3HeaderFormat();
 
 #ifdef RINEX_3_CLOCK_ACTUALLY_IMPLEMENTED
    check = testClass.dataExceptionTest();

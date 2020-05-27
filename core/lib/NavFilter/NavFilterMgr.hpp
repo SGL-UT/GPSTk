@@ -1,3 +1,39 @@
+//==============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 3.0 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
+//  
+//  Copyright 2004-2019, The University of Texas at Austin
+//
+//==============================================================================
+
+//==============================================================================
+//
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
+//
+//  Pursuant to DoD Directive 523024 
+//
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
+//
+//==============================================================================
+
 #ifndef NAVFILTERMGR_HPP
 #define NAVFILTERMGR_HPP
 
@@ -82,6 +118,21 @@ namespace gpstk
        * | LNavEmptyFilter       |            1 | no           |
        * | LNavParityFilter      |            1 | no           |
        * | LNavTLMHOWFilter      |            1 | no           |
+       *
+       * @section GPSCNAV GPS Civil Nav Filters
+       *
+       * Filters in this group use the data class CNavFilterData,
+       * which contains a pointer to gpstk::PackedNavBits object
+       * that contains the message data.
+       *
+       * | Class                 | Filter Depth | Modifies Msg |
+       * | :-------------------- | -----------: | :----------- |
+       * | CNavFilterData        |          n/a | no           |
+       * | CNavCookFilter        |            1 | yes          |
+       * | CNavCrossSourceFilter |            2 | no           |
+       * | CNavEmptyFilter       |            1 | no           |
+       * | CNavParityFilter      |            1 | no           |
+       * | LNavTWFilter          |            1 | no           |
        */
 
       /// @ingroup NavFilter
@@ -154,6 +205,22 @@ namespace gpstk
           * @return The remaining messages successfully passing the
           *   filters. */
       virtual NavFilter::NavMsgList finalize();
+
+         /** Gets the effective buffer size in epochs required for
+          * maintaining subframe data, given the filters that have
+          * been added using addFilter().  This is the sum of
+          * NavFilter::processingDepth() return values +1.
+          *
+          * The method can be used as in this example:
+          * \code{.cpp}
+          * struct Subframe { uint32_t word[10]; };
+          * typedef vector<Subframe> SubframeBuf;
+          * NavFilterMgr mgr;
+          * mgr.addFilter(...);
+          * SubframeBuf buf(numRx * numCode * numChl * mgr.processingDepth());
+          * \endcode
+          */
+      unsigned processingDepth() const throw();
 
          /** This set contains any filters with rejected data after a
           * validate() or finalize() call.  The set will be cleared at

@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -15,28 +15,28 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
+//  
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//  Copyright 2004, The University of Texas at Austin
-//
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S.
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software.
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /**
  * @file SP3Data.hpp
- * Encapsulate SP3 file data, versions a,b,c, including I/O
+ * Encapsulate SP3 file data, versions a,b,c,d including I/O
  */
 
 #ifndef GPSTK_SP3DATA_HPP
@@ -56,7 +56,7 @@ namespace gpstk
        * This class encapsulates data for satellite orbits and clocks,
        * including positions, velocities and other orbit and
        * estimation information read as found in I/O of SP3 format
-       * (versions a, b, or c) files.
+       * (versions a, b, c, or d) files.
        *
        * This class is used in conjuction with class SP3Stream, which
        * handles the I/O, and SP3Header, which holds information from
@@ -140,7 +140,6 @@ namespace gpstk
    protected:
 
          /// Writes the formatted record to the FFStream \a s.
-         /// @warning This function is currently unimplemented
       virtual void reallyPutRecord(FFStream& s) const
          throw(std::exception, FFStreamError,
                gpstk::StringUtils::StringException);

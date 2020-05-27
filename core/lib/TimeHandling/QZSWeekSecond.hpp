@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /// @file QZSWeekSecond.hpp  Define QZS week and seconds-of-week; inherits WeekSecond
 
@@ -98,13 +98,13 @@ namespace gpstk
          /// understands when printing times.
       virtual std::string getPrintChars() const
       {
-         return "VIiwgP";
+         return "VhiwgP";
       }
 
          /// Return a string containing the default format to use in printing.
       virtual std::string getDefaultFormat() const
       {
-         return "%I %g %P";
+         return "%h %g %P";
       }
 
          /// This function formats this time to a string.  The exceptions
@@ -117,8 +117,8 @@ namespace gpstk
             std::string rv = fmt;
             rv = formattedPrint( rv, getFormatPrefixInt() + "V",
                                  "Vu", getEpoch() );
-            rv = formattedPrint( rv, getFormatPrefixInt() + "I",
-                                 "Iu", week );
+            rv = formattedPrint( rv, getFormatPrefixInt() + "h",
+                                 "hu", week );
             rv = formattedPrint( rv, getFormatPrefixInt() + "i",
                                  "iu", getModWeek() );
             rv = formattedPrint( rv, getFormatPrefixInt() + "w",
@@ -143,8 +143,8 @@ namespace gpstk
 
             rv = formattedPrint( rv, getFormatPrefixInt() + "V",
                                  "Vs", "BadQZSepoch");
-            rv = formattedPrint( rv, getFormatPrefixInt() + "I",
-                                 "Is", "BadQZSfweek");
+            rv = formattedPrint( rv, getFormatPrefixInt() + "h",
+                                 "hs", "BadQZSfweek");
             rv = formattedPrint( rv, getFormatPrefixInt() + "i",
                                  "is", "BadQZSmweek");
             rv = formattedPrint( rv, getFormatPrefixInt() + "w",
@@ -174,7 +174,7 @@ namespace gpstk
                case 'V':
                   setEpoch( gpstk::StringUtils::asInt( i->second ) );
                   break;
-               case 'I':
+               case 'h':
                   week = gpstk::StringUtils::asInt( i->second );
                   break;
                case 'i':

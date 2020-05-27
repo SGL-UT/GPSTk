@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /**
  * @file XvtStore.hpp
@@ -44,6 +44,7 @@
 #define GPSTK_XVTSTORE_INCLUDE
 
 #include <iostream>
+#include <set>
 
 #include "Exception.hpp"
 #include "CommonTime.hpp"
@@ -73,6 +74,31 @@ namespace gpstk
          ///    reason, this is thrown. The text may have additional
          ///    information as to why the request failed.
       virtual Xvt getXvt(const IndexType& id, const CommonTime& t) const = 0;
+
+         /** Compute the position, velocity and clock offset of the
+          * indicated object in ECEF coordinates (meters) at the
+          * indicated time.
+          * This method functions similarly to getXvt() except that it
+          * does not throw an exception for any reason.  Instead, the
+          * caller is expected to check the value of the "health"
+          * field of the returned Xvt and decide what to do with the
+          * data.
+          * @note This function ignores the onlyHealthy flag.  It is
+          *   up to the caller to examine the state of the health flag
+          *   and decide what to do.
+          * @param[in] id the object's identifier
+          * @param[in] t the time to look up
+          * @return the Xvt of the object at the indicated time */
+      virtual Xvt computeXvt(const IndexType& id, const CommonTime& t)
+         const throw() = 0;
+
+         /** Get the satellite health at a specific time.
+          * @param[in] id the object's identifier
+          * @param[in] t the time to look up
+          * @return the health status of the object at the indicated time. */
+      virtual Xvt::HealthStatus getSVHealth(const IndexType& id,
+                                            const CommonTime& t)
+         const throw() = 0;
 
          /// A debugging function that outputs in human readable form,
          /// all data stored in this object.
@@ -109,6 +135,24 @@ namespace gpstk
 
          /// Return true if the given IndexType is present in the store
       virtual bool isPresent(const IndexType& id) const = 0;
+
+         /// Return a set containing the indices found in this store.
+         /// For exmaple, for an XvtStore<SatID> return a set of all the unique
+         /// SatIDs available in the store. 
+      virtual std::set<IndexType> getIndexSet() const = 0; 
+
+         /** flag indicating unhealthy ephemerides should be excluded
+          * from getXvt, otherwise it will throw (default condition may vary
+          * with sub-classes) */
+      bool onlyHealthy;
+
+         /// get the flag that limits getXvt() to healthy ephemerides
+      bool getOnlyHealthyFlag(void) const
+      { return onlyHealthy; }
+
+         /// set the flag that limits getXvt() to healthy ephemerides
+      void setOnlyHealthyFlag(bool flag)
+      { onlyHealthy = flag; }
 
    }; // end class XvtStore
 

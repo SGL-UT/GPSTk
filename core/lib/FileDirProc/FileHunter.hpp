@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /**
  * @file FileHunter.hpp
@@ -53,8 +53,7 @@ namespace gpstk
       /// @ingroup exceptiongroup
    NEW_EXCEPTION_CLASS(FileHunterException, gpstk::Exception);
 
-      /**
-       * FileHunter is a class designed to find files matching specified
+      /** FileHunter is a class designed to find files matching specified
        * criteria.  The specified criteria is threefold:
        * 1.  The File Specification.  This is a path and/or file description
        *  which is the most important search criteria.  For instance, the
@@ -111,58 +110,51 @@ namespace gpstk
       typedef std::pair<FileSpec::FileSpecType, std::vector<std::string> >
       FilterPair;
 
-         /**
-          * Constructs a FileHunter using a file specification.  This
+         /** Constructs a FileHunter using a file specification.  This
           * can be a full or relative path and/or a file specification.
           * See FileSpec for details on how to format a file specification.
+          * @param[in] filespec File specification string to use
           * @throw FileHunterException when there's a problem with the filespec
           */
-      FileHunter(const std::string& filespec)
-         throw(FileHunterException);
+      FileHunter(const std::string& filespec);
 
-         /**
-          * Constructs a FileHunter using a FileSpec.
+         /** Constructs a FileHunter using a FileSpec.
+          * @param[in] filespec File specification to use
           * @throw FileHunterException when there's a problem with the filespec
           */
-      FileHunter(const FileSpec& filespec)
-         throw(FileHunterException);
+      FileHunter(const FileSpec& filespec);
 
-         /** 
-          * Rather than building a new file hunter, this lets you change
+         /** Rather than building a new file hunter, this lets you change
           * the filespec you're searching for.
+          * @param[in] filespec File specification string to use
           * @throw FileHunterException when there's a problem with the filespec
           */
-      FileHunter& newHunt(const std::string& filespec)
-         throw(FileHunterException);
+      FileHunter& newHunt(const std::string& filespec);
 
-         /**
-          * Changes the file spec you're searching for in FileHunter.
+         /** Changes the file spec you're searching for in FileHunter.
+          * @param[in] filespec File specification to use
           * @throw FileHunterException when there's an error in the filespec
           */
       FileHunter& newHunt(const FileSpec& filespec)
-         throw(FileHunterException)
-      {return newHunt(filespec.getSpecString());}
+      { return newHunt(filespec.getSpecString()); }
 
-         /** 
-          * Filters FOR the strings in \a filter in the field specified
+         /** Filters FOR the strings in \a filter in the field specified
           * by \a fst when searching.
-          * @param fst A FileSpecType you want to run a filter on.
-          * @param filter a list of strings to search for.in the filter.
+          * @param[in] fst A FileSpecType you want to run a filter on
+          * @param[in] filter a list of strings to search for.in the filter
           * @throw FileHunterException when \a fst can't be found.
           */
       FileHunter& setFilter(const FileSpec::FileSpecType fst,
-                            const std::vector<std::string>& filter)
-         throw(FileHunterException);
+                            const std::vector<std::string>& filter);
 
-         /**
-          * Does the searching for the files.  Set \a start and \a end
+         /** Search for files.  Set \a start and \a end
           * for specifying times of files (according to their file names)
           * for returning.
           * \warning This method is NOT MT-Safe.
-          * @param start the start time to limit the search
-          * @param end the end time to limit the search
-          * @param fsst set to change the order the list is returned
-          * @param chunk the type of file chunking to use to select files
+          * @param[in] start the start time to limit the search
+          * @param[in] end the end time to limit the search
+          * @param[in] fsst set to change the order the list is returned
+          * @param[in] chunk the type of file chunking to use to select files
           * @return a list of files matching the file specification,
           *   start and end times, and filters ordered according to fsst.
           *   This list can be empty if no files are found.
@@ -172,10 +164,12 @@ namespace gpstk
       find(const gpstk::CommonTime& start = gpstk::CommonTime::BEGINNING_OF_TIME,
            const gpstk::CommonTime& end = gpstk::CommonTime::END_OF_TIME,
            const FileSpec::FileSpecSortType fsst = FileSpec::ascending,
-           enum FileChunking chunk = DAY) const
-         throw(FileHunterException);
+           enum FileChunking chunk = DAY) const;
 
-         /// outputs the file spec into a semi-readable format
+         /** Output the file specification into a semi-readable format
+          *
+          * @param[in,out] o Output stream
+          */
       void dump(std::ostream& o) const;
 
    private:
@@ -185,36 +179,66 @@ namespace gpstk
       FileHunter& operator=(const FileHunter& fh);
 
    protected:
-         ///Shared code between the constructor and newHunt
-      void init(const std::string& filespec)
-         throw(FileHunterException);
 
-         /** Performs a search for the given file spec on the given directory.
+         /** Prepare the hunter for searches; share code between
+          * the constructor and newHunt()
+          *
+          * @param[in] filespec File specification for which to search
+          * @throw FileHunterException if initialization failed
+          */
+      void init(const std::string& filespec);
+
+         /** Search for the given file spec fragment in the given directory.
           * \warning This method is NOT MT-Safe.
-          * @return a list of matching directories/files */
+          *
+          * @param[in] directory Directory in which to search
+          * @param[in] fs FileSpec File specification fragment
+          *    for which to search
+          * @param[in] expectDir Whether the returned elements should be
+          *    directories based on the complete file specification
+          * @return a list of matching directories/files
+          * @throw FileHunterException if an error occurred during search
+          */
       std::vector<std::string> 
       searchHelper(const std::string& directory,
-                   const FileSpec& fs) const
-         throw(FileHunterException);
+                   const FileSpec& fs,
+                   bool expectDir) const;
 
-         /// If there is a filter set, this will find the filtered items
-         /// and set fileList to contain only those.
+         /** If a filter is set, remove items from the specified file list
+          * that do not satisfy the filter.
+          *
+          * @param[in,out] fileList List of files to filter
+          * @param[in] fs FileSpec used to locate filterable items
+          * @throw FileHunterException if an error occurs during filtering
+          */
       void filterHelper(std::vector<std::string>& fileList, 
-                        const FileSpec& fs) const
-         throw(FileHunterException);
+                        const FileSpec& fs) const;
+
+         /** Attempt to determine a year based on the supplied filename
+          * and FileSpec, and then, based on that year and on the specified
+          * year limits, decide if the filename should be filtered-out.
+          *
+          * @param[in] filename Filename to potentially filter
+          * @param[in] fs FileSpec against which to filter filename
+          * @param[in] minY Minimum valid year
+          * @param[in] maxY Maximum valid year
+          * @return true if the filename should be filtered, false otherwise
+          */
+      bool coarseTimeFilter(const std::string& filename,
+                            const FileSpec& fs,
+                            int minY,
+                            int maxY) const;
 
          /// Holds the broken down list of the file specification for searching
       std::vector<FileSpec> fileSpecList;
 
          /// Stores the list of things to filter for
       std::vector<FilterPair> filterList;
-   }; // FileHunter
+
+   }; // class FileHunter
 
       //@}
 
-} // namespace
+} // namespace gpstk
 
-
-
-
-#endif
+#endif  // GPSTK_FILEHUNTER_HPP

@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /// @file ObsIDInitializer.cpp This class exists to initialize maps for ObsID.
 /// It was initally an inner class of ObsID but has been exported
@@ -52,6 +52,7 @@ namespace gpstk {
       ObsID::otDesc[ObsID::otDoppler]   = "doppler";       //Rinex D
       ObsID::otDesc[ObsID::otSNR]       = "snr";           //Rinex S
       ObsID::otDesc[ObsID::otChannel]   = "channel";       //Rinex  
+      ObsID::otDesc[ObsID::otDemodStat] = "demodStatus";
       ObsID::otDesc[ObsID::otIono]      = "iono";          //Rinex  
       ObsID::otDesc[ObsID::otSSI]       = "ssi";           //Rinex  
       ObsID::otDesc[ObsID::otLLI]       = "lli";           //Rinex  
@@ -59,6 +60,7 @@ namespace gpstk {
       ObsID::otDesc[ObsID::otNavMsg]    = "navmsg";        //Rinex
       ObsID::otDesc[ObsID::otRngStdDev] = "rngSigma";
       ObsID::otDesc[ObsID::otPhsStdDev] = "phsSigma";
+      ObsID::otDesc[ObsID::otFreqIndx]  = "freqIndx";
       ObsID::otDesc[ObsID::otUndefined] = "undefined";     //Rinex -
 
       ObsID::cbDesc[ObsID::cbUnknown]   = "UnknownBand";   //Rinex (sp)
@@ -71,11 +73,12 @@ namespace gpstk {
       ObsID::cbDesc[ObsID::cbG2]        = "G2";            //Rinex 2
       ObsID::cbDesc[ObsID::cbG3]        = "G3";            //Rinex 3
       ObsID::cbDesc[ObsID::cbE5b]       = "E5b";           //Rinex 7
-      ObsID::cbDesc[ObsID::cbE5ab]      = "L5a+b";         //Rinex 8
+      ObsID::cbDesc[ObsID::cbE5ab]      = "E5a+b";         //Rinex 8
       ObsID::cbDesc[ObsID::cbE6]        = "E6";            //Rinex 6
-      ObsID::cbDesc[ObsID::cbB1]        = "B1";            //Rinex 1
+      ObsID::cbDesc[ObsID::cbB1]        = "B1";            //Rinex 1  2 in RINEX 3.0[013]
       ObsID::cbDesc[ObsID::cbB2]        = "B2";            //Rinex 7
       ObsID::cbDesc[ObsID::cbB3]        = "B3";            //Rinex 6
+      ObsID::cbDesc[ObsID::cbI9]        = "I9";            //Rinex 9
       ObsID::cbDesc[ObsID::cbL1L2]      = "comboL1L2";     //Rinex 3
       ObsID::cbDesc[ObsID::cbUndefined] = "undefined";     //Rinex -
 
@@ -94,6 +97,9 @@ namespace gpstk {
       ObsID::tcDesc[ObsID::tcI5]        = "GPSI5";         //Rinex I    // GPScivil_I
       ObsID::tcDesc[ObsID::tcQ5]        = "GPSQ5";         //Rinex Q    // GPScivil_Q
       ObsID::tcDesc[ObsID::tcIQ5]       = "GPSI+Q5";       //Rinex X    // GPScivil_I+Q
+      ObsID::tcDesc[ObsID::tcG1P]       = "GPSC1P";        //Rinex L    // GPScivil_L1P
+      ObsID::tcDesc[ObsID::tcG1D]       = "GPSC1D";        //Rinex S    // GPScivil_L1D
+      ObsID::tcDesc[ObsID::tcG1X]       = "GPSC1(D+P)";    //Rinex X    // GPScivil_L1D+P
 
       ObsID::tcDesc[ObsID::tcGCA]       = "GLOC/A";        //Rinex C    // GLOcivil
       ObsID::tcDesc[ObsID::tcGP]        = "GLOP";          //Rinex P    // GLOprecise
@@ -109,6 +115,12 @@ namespace gpstk {
       ObsID::tcDesc[ObsID::tcIE5]       = "GALI5";         //Rinex I    // GAL
       ObsID::tcDesc[ObsID::tcQE5]       = "GALQ5";         //Rinex Q    // GAL
       ObsID::tcDesc[ObsID::tcIQE5]      = "GALI+Q5";       //Rinex X    // GAL
+      ObsID::tcDesc[ObsID::tcIE5a]      = "GALI5a";        //Rinex I    // GAL
+      ObsID::tcDesc[ObsID::tcQE5a]      = "GALQ5a";        //Rinex Q    // GAL
+      ObsID::tcDesc[ObsID::tcIQE5a]     = "GALI+Q5a";      //Rinex X    // GAL
+      ObsID::tcDesc[ObsID::tcIE5b]      = "GALI5b";        //Rinex I    // GAL
+      ObsID::tcDesc[ObsID::tcQE5b]      = "GALQ5b";        //Rinex Q    // GAL
+      ObsID::tcDesc[ObsID::tcIQE5b]     = "GALI+Q5b";      //Rinex X    // GAL
 
       ObsID::tcDesc[ObsID::tcSCA]       = "SBASC/A";       //Rinex C    // SBAS civil code
       ObsID::tcDesc[ObsID::tcSI5]       = "SBASI5";        //Rinex I    // SBAS L5 I code
@@ -140,6 +152,15 @@ namespace gpstk {
       ObsID::tcDesc[ObsID::tcCQ6]       = "BDSQB3";        //Rinex Q    // BeiDou B3 Q code
       ObsID::tcDesc[ObsID::tcCIQ6]      = "BDSI+QB3";      //Rinex X    // BeiDou B3 I+Q code
 
+      ObsID::tcDesc[ObsID::tcIA5]       = "IRNSSL5A";      //Rinex A    // IRNSS L5 SPS
+      ObsID::tcDesc[ObsID::tcIB5]       = "IRNSSL5B";      //Rinex B    // IRNSS L5 RS(D)
+      ObsID::tcDesc[ObsID::tcIC5]       = "IRNSSL5C";      //Rinex C    // IRNSS L5 RS(P)
+      ObsID::tcDesc[ObsID::tcIX5]       = "IRNSSL5B+C";    //Rinex X    // IRNSS L5 B+C
+      ObsID::tcDesc[ObsID::tcIA9]       = "IRNSSL9A";      //Rinex A    // IRNSS S-band SPS
+      ObsID::tcDesc[ObsID::tcIB9]       = "IRNSSL9B";      //Rinex B    // IRNSS S-band RS(D)
+      ObsID::tcDesc[ObsID::tcIC9]       = "IRNSSL9C";      //Rinex C    // IRNSS S-band RS(P)
+      ObsID::tcDesc[ObsID::tcIX9]       = "IRNSSL9B+C";    //Rinex X    // IRNSS S-band B+C
+
       ObsID::tcDesc[ObsID::tcUndefined] = "undefined";
 
       if (ObsID::otDesc.size() != (int)ObsID::otLast)
@@ -170,6 +191,7 @@ namespace gpstk {
       ObsID::char2cb['6'] = ObsID::cbE6;
       ObsID::char2cb['7'] = ObsID::cbE5b;
       ObsID::char2cb['8'] = ObsID::cbE5ab;
+      ObsID::char2cb['9'] = ObsID::cbI9;
       ObsID::char2cb['-'] = ObsID::cbUndefined;
 
       ObsID::char2tc[' '] = ObsID::tcUnknown;
@@ -216,10 +238,13 @@ namespace gpstk {
       // And add the couple 'special' cases
       ObsID::cb2char[ObsID::cbG1] = '1';
       ObsID::cb2char[ObsID::cbG2] = '2';
-      ObsID::cb2char[ObsID::cbB1] = '1';
-      ObsID::cb2char[ObsID::cbB2] = '2';
-      ObsID::cb2char[ObsID::cbB3] = '3';
+      ObsID::cb2char[ObsID::cbB1] = '2';
+      ObsID::cb2char[ObsID::cbB2] = '7';
+      ObsID::cb2char[ObsID::cbB3] = '6';
 
+      ObsID::tc2char[ObsID::tcG1D]  = 'S';
+      ObsID::tc2char[ObsID::tcG1P]  = 'L';
+      ObsID::tc2char[ObsID::tcG1X]  = 'X';
       ObsID::tc2char[ObsID::tcC]    = 'C';
       ObsID::tc2char[ObsID::tcGCA]  = 'C';
       ObsID::tc2char[ObsID::tcGP]   = 'P';
@@ -229,6 +254,12 @@ namespace gpstk {
       ObsID::tc2char[ObsID::tcIE5]  = 'I';
       ObsID::tc2char[ObsID::tcQE5]  = 'Q';
       ObsID::tc2char[ObsID::tcIQE5] = 'X';
+      ObsID::tc2char[ObsID::tcIE5a]  = 'I';
+      ObsID::tc2char[ObsID::tcQE5a]  = 'Q';
+      ObsID::tc2char[ObsID::tcIQE5a] = 'X';
+      ObsID::tc2char[ObsID::tcIE5b]  = 'I';
+      ObsID::tc2char[ObsID::tcQE5b]  = 'Q';
+      ObsID::tc2char[ObsID::tcIQE5b] = 'X';
       ObsID::tc2char[ObsID::tcIQ5]  = 'X';
       ObsID::tc2char[ObsID::tcBC]   = 'X';
       ObsID::tc2char[ObsID::tcSCA]  = 'C';
@@ -258,8 +289,16 @@ namespace gpstk {
       ObsID::tc2char[ObsID::tcJI6]  = 'S';
       ObsID::tc2char[ObsID::tcJQ6]  = 'L';
       ObsID::tc2char[ObsID::tcJIQ6] = 'X';
+      ObsID::tc2char[ObsID::tcIA5]  = 'A';
+      ObsID::tc2char[ObsID::tcIB5]  = 'B';
+      ObsID::tc2char[ObsID::tcIB5]  = 'C';
+      ObsID::tc2char[ObsID::tcIX5]  = 'X';
+      ObsID::tc2char[ObsID::tcIA9]  = 'A';
+      ObsID::tc2char[ObsID::tcIB9]  = 'B';
+      ObsID::tc2char[ObsID::tcIB9]  = 'C';
+      ObsID::tc2char[ObsID::tcIX9]  = 'X';
 
-      ObsID::validRinexSystems = "GRESCJ";
+      ObsID::validRinexSystems = "GRESCJI";
 
       ObsID::map1to3sys["G"] = "GPS";
       ObsID::map1to3sys["R"] = "GLO";
@@ -267,6 +306,7 @@ namespace gpstk {
       ObsID::map1to3sys["S"] = "GEO";
       ObsID::map1to3sys["C"] = "BDS";
       ObsID::map1to3sys["J"] = "QZS";
+      ObsID::map1to3sys["I"] = "IRN";
 
       ObsID::map3to1sys["GPS"] = "G";
       ObsID::map3to1sys["GLO"] = "R";
@@ -274,8 +314,9 @@ namespace gpstk {
       ObsID::map3to1sys["GEO"] = "S";
       ObsID::map3to1sys["BDS"] = "C";
       ObsID::map3to1sys["QZS"] = "J";
+      ObsID::map3to1sys["IRN"] = "I";
 
-      ObsID::validRinexFrequencies = "1235678";
+      ObsID::validRinexFrequencies = "12356789";
 
       // this defines the valid obs types
       // NB these tc characters are ORDERED ~best to worst
@@ -296,8 +337,8 @@ namespace gpstk {
       ObsID::validRinexTrackingCodes['S']['1'] = "C* ";
       ObsID::validRinexTrackingCodes['S']['5'] = "IQX* ";
 
-      //NB 24Jun2013 MGEX data uses 2!
-      //ObsID::validRinexTrackingCodes['C']['1'] = "IQX* ";
+      //NB 24Jun2013 MGEX data uses 2!  RINEX 3.03: 1 for 3.02, 2 for 3.0[013]
+      ObsID::validRinexTrackingCodes['C']['1'] = "IQX* ";
       ObsID::validRinexTrackingCodes['C']['2'] = "IQX* ";
       ObsID::validRinexTrackingCodes['C']['6'] = "IQX* ";
       ObsID::validRinexTrackingCodes['C']['7'] = "IQX* ";
@@ -306,6 +347,9 @@ namespace gpstk {
       ObsID::validRinexTrackingCodes['J']['2'] = "SLX* ";
       ObsID::validRinexTrackingCodes['J']['5'] = "IQX* ";
       ObsID::validRinexTrackingCodes['J']['6'] = "SLX* ";
+
+      ObsID::validRinexTrackingCodes['I']['5'] = "ABCX* " ;
+      ObsID::validRinexTrackingCodes['I']['9'] = "ABCX* " ;
    }
 
 

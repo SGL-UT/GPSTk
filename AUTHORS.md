@@ -1,5 +1,7 @@
+AUTHORS
+-------
 
-GPS Toolkit Authorship
+GPS Toolkit Authorship 
 ------------------------------------------------------------------------------
     The GPSTk is sponsored by the Space and Geophysics Laboratory, within the
     Applied Research Laboratories at the University of Texas at Austin (ARL:UT).

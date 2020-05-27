@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -15,24 +15,24 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
+//  
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//  Copyright 2004, The University of Texas at Austin
-//
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S.
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software.
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 #include "BinexData.hpp"
 #include "BinexStream.hpp"
@@ -286,7 +286,7 @@ bool BinexReadWrite_T :: createRecs()
 
 int BinexReadWrite_T :: doForwardTests()
 {
-   TestUtil  tester( "BinexData", "Read/Write (Fwd)", __FILE__, __LINE__ );
+   TUDEF("BinexData", "Read/Write (Fwd)");
 
    string  tempFilePath = gpstk::getPathTestTemp();
    string  tempFileName = tempFilePath + gpstk::getFileSep() +
@@ -294,7 +294,7 @@ int BinexReadWrite_T :: doForwardTests()
    BinexStream  outStream(tempFileName.c_str(),
                           std::ios::out | std::ios::binary);
 
-   tester.assert( outStream.good(), "error creating ouput stream", __LINE__ );
+   TUASSERT(outStream.good());
 
    outStream.exceptions(ios_base::failbit | ios_base::badbit);
    RecordList::iterator  recordIter = testRecords.begin();
@@ -302,18 +302,20 @@ int BinexReadWrite_T :: doForwardTests()
    {
       try
       {
+         std::streampos posBefore = outStream.tellp();
          (*recordIter).putRecord(outStream);
-         tester.assert( true, "put record", __LINE__ );
+         std::streampos posAfter = outStream.tellp();
+         TUASSERTE(long long, (*recordIter).getRecordSize(), (posAfter - posBefore));
       }
       catch (Exception& e)
       {
          ostringstream  oss;
          oss << "exception writing record: " << e;
-         tester.assert( false, oss.str(), __LINE__ );
+         TUFAIL(oss.str());
       }
       catch (...)
       {
-         tester.assert( false, "unknown exception writing record", __LINE__ );
+         TUFAIL("unknown exception writing record");
       }
    }
    outStream.close();
@@ -322,15 +324,14 @@ int BinexReadWrite_T :: doForwardTests()
                          std::ios::in | std::ios::binary);
    inStream.exceptions(ios_base::failbit);
 
-   tester.assert( inStream.good(), "error creating input stream", __LINE__ );
+   TUASSERT(inStream.good());
 
    recordIter = testRecords.begin();
    while (inStream.good() && (EOF != inStream.peek() ) )
    {
       if (recordIter == testRecords.end() )
       {
-         tester.assert( false, "stored records exhausted before file records",
-                        __LINE__ );
+         TUFAIL("stored records exhausted before file records");
          break;
       }
       BinexData record;
@@ -339,7 +340,7 @@ int BinexReadWrite_T :: doForwardTests()
          record.getRecord(inStream);
          if (record == *recordIter)
          {
-            tester.assert( true, "get record", __LINE__ );
+            TUPASS("gotten record matches");
          }
          else
          {
@@ -349,35 +350,35 @@ int BinexReadWrite_T :: doForwardTests()
             oss << "Expected record:" << endl;
             record.dump(oss);
 
-            tester.assert( false, oss.str(), __LINE__ );
+            TUFAIL(oss.str());
          }
       }
       catch (Exception& e)
       {
          ostringstream  oss;
          oss << "stream exception reading record: " << e;
-         tester.assert( false, oss.str(), __LINE__ );
+         TUFAIL(oss.str());
       }
       catch (...)
       {
-         tester.assert( false, "unknown exception reading record", __LINE__ );
+         TUFAIL("unknown exception reading record");
       }
 
       recordIter++;
    }
    inStream.close();
 
-   return tester.countFails();
+   TURETURN();
 }
 
 
 int BinexReadWrite_T :: doReverseTests()
 {
-   TestUtil  tester( "BinexData", "Read/Write (Rev)", __FILE__, __LINE__ );
+   TUDEF("BinexData", "Read/Write (Rev)");
 
       // @todo
 
-   return tester.countFails();
+   TURETURN();
 }
 
 

@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -15,24 +15,24 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
+//  
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//  Copyright 2004, The University of Texas at Austin
-//
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S.
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software.
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /**
  * @file SP3Header.hpp
@@ -67,14 +67,15 @@ namespace gpstk
    {
    public:
 
-         /// Supported SP3 versions (file formats) : 'a' 'b' or 'c'
+         /// Supported SP3 versions (file formats) : 'a' 'b' 'c' or 'd'
          /// See the SP3 format definition documents.
       enum Version
       {
          undefined,        ///< Unknown or undefined SP3 file format
          SP3a,             ///< SP3 version a
          SP3b,             ///< SP3 version b (very similar to SP3a)
-         SP3c              ///< SP3 version c (contains a/b as a subset)
+         SP3c,             ///< SP3 version c (contains a/b as a subset)
+         SP3d              ///< SP3 version d (Expanded Satellites and Comments)
       };
 
          /// constructor
@@ -110,6 +111,8 @@ namespace gpstk
                ch = 'b'; break;
             case SP3c:
                ch = 'c'; break;
+            case SP3d:
+               ch = 'd'; break;
             case undefined: default:
                ch = 'U'; break;
          };
@@ -136,6 +139,8 @@ namespace gpstk
                str = std::string("SP3b"); break;
             case SP3c:
                str = std::string("SP3c"); break;
+            case SP3d:
+               str = std::string("SP3d"); break;
             case undefined: default:
                str = std::string("Undefined"); break;
          };

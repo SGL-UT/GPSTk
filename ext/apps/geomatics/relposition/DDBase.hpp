@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /**
  * @file DDBase.hpp
@@ -64,12 +64,14 @@
 #include "SP3EphemerisStore.hpp"
 #include "GPSEphemerisStore.hpp"
 #include "EarthOrientation.hpp"
+#include "EOPStore.hpp"
 #include "Position.hpp"
 #include "RinexObsBase.hpp"
 #include "RinexObsData.hpp"
 #include "RinexObsHeader.hpp"
 #include "RinexObsStream.hpp"
 #include "Epoch.hpp"
+#include "Matrix.hpp"
 
 // DDBase
 #include "GSatID.hpp"             // this one first
@@ -97,6 +99,8 @@ int QueryTimeTable(std::string bl, int& beg, int& end) throw(gpstk::Exception);
 int DoubleDifference(void) throw(gpstk::Exception);      // DoubleDifference.cpp
 int EditDDs(void) throw(gpstk::Exception);               // EditDDs.cpp
 int Estimation(void) throw(gpstk::Exception);            // Estimation.cpp
+gpstk::Matrix<double> SingleAxisRotation(double angle, const int axis)
+   throw(gpstk::Exception);                              // DDBase.cpp
 
 //------------------------------------------------------------------------------------
 // Global data -- see DDBase.cpp where these are declared and documented

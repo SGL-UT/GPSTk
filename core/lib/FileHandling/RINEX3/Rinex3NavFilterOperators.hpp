@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /**
  * @file Rinex3NavFilterOperators.hpp
@@ -50,6 +50,7 @@
 #include "Rinex3NavData.hpp"
 #include "Rinex3NavHeader.hpp"
 #include "GPSWeekSecond.hpp"
+#include <math.h>
 
 namespace gpstk
 {
@@ -61,11 +62,15 @@ namespace gpstk
       public std::binary_function<Rinex3NavData, Rinex3NavData, bool>
    {
    public:
+      void setPrecision(int e)
+      {
+         precision = e;
+      }
 
       bool operator()(const Rinex3NavData& l, const Rinex3NavData& r) const
       {
-         GPSWeekSecond lXmitTime(l.weeknum, (double)l.HOWtime);
-         GPSWeekSecond rXmitTime(r.weeknum, (double)r.HOWtime);
+         GPSWeekSecond lXmitTime(l.weeknum, (double)l.xmitTime);
+         GPSWeekSecond rXmitTime(r.weeknum, (double)r.xmitTime);
 
          if (lXmitTime < rXmitTime)
             return true;
@@ -86,9 +91,9 @@ namespace gpstk
 
                while (litr != llist.end())
                {
-                  if (*litr < *ritr)
+                  if ((*litr + std::abs(*litr * std::pow((long double)10, -precision))) < *ritr )
                      return true;
-                  else if (*litr > *ritr)
+                  else if (*litr > (*ritr + std::abs(*ritr * std::pow((long double)10,-precision))))
                      return false;
                   else
                   {
@@ -98,9 +103,10 @@ namespace gpstk
                }
             }
          } // if (lXmitTime == rXmitTime)
-
          return false;
       }
+   private:
+      int precision;
    };
 
       /// This compares all elements of the Rinex3NavData with equals
@@ -145,8 +151,8 @@ namespace gpstk
 
       bool operator()(const Rinex3NavData& l, const Rinex3NavData& r) const
       {
-         GPSWeekSecond lXmitTime(l.weeknum, static_cast<double>(l.HOWtime));
-         GPSWeekSecond rXmitTime(r.weeknum, static_cast<double>(r.HOWtime));
+         GPSWeekSecond lXmitTime(l.weeknum, static_cast<double>(l.xmitTime));
+         GPSWeekSecond rXmitTime(r.weeknum, static_cast<double>(r.xmitTime));
          if (lXmitTime < rXmitTime)
             return true;
          return false;

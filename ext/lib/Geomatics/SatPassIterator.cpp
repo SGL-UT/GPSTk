@@ -1,7 +1,4 @@
-/// @file SatPassIterator.cpp
-/// Iterate over a vector of SatPass in time order.
-
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -19,23 +16,26 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
+
+/// @file SatPassIterator.cpp
+/// Iterate over a vector of SatPass in time order.
 
 #include "SatPassIterator.hpp"
 #include "logstream.hpp"
@@ -57,18 +57,18 @@ SatPassIterator::SatPassIterator(vector<SatPass>& splist, bool rev, bool dbug)
    int i,j;
 
    // ensure time order
-   sort(SPList);
+   std::sort(SPList.begin(), SPList.end());
 
    // copy the list of obs types, and check that each is registered
    vector<string> otlist;
    for(i=0; i<SPList[0].labelForIndex.size(); i++) {
       otlist.push_back(SPList[0].labelForIndex[i]);
-      if(RinexObsHeader::convertObsType(SPList[0].labelForIndex[i])
-            == RinexObsHeader::UN)
-      {
-         Exception e("Unregistered observation type : " + SPList[0].labelForIndex[i]);
-         GPSTK_THROW(e);
-      }
+      //if(RinexObsHeader::convertObsType(SPList[0].labelForIndex[i])
+      //      == RinexObsHeader::UN)
+      //{
+      //   Exception e("Unregistered observation type : "+SPList[0].labelForIndex[i]);
+      //   GPSTK_THROW(e);
+      //}
    }
 
    // copy the data from the first SatPass in the list, for comparison with the rest
@@ -147,11 +147,12 @@ void SatPassIterator::reset(bool rev, bool dbug) throw()
 // -------------------------------------------------------------------------------
 // return 1 for success, 0 at end of data
 // Access (all of) the data for the next epoch. As long as this function
-// returns zero, there is more data to be accessed. Ignore passes with
+// returns non-zero, there is more data to be accessed. Ignore passes with
 // Status less than zero.
 // @param indexMap  map<unsigned int, unsigned int> defined so that all the
 //                  data in the current iteration is found at
 //                  SatPassList[i].data(j) where indexMap[i] = j.
+// @return 1 for success, 0 at the end of the dataset.
 // @throw if time tags are out of order.
 int SatPassIterator::next(map<unsigned int, unsigned int>& indexMap) throw(Exception)
 {

@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /**
  * @file FileHunter.cpp
@@ -53,6 +53,8 @@ using namespace gpstk::StringUtils;
 #include <unistd.h>
 #include <dirent.h>
 #include <limits.h>
+#include <sys/stat.h>
+
 #else
 #include <io.h>
 #include <direct.h>
@@ -61,8 +63,8 @@ using namespace gpstk::StringUtils;
 
 namespace gpstk
 {
+
    FileHunter::FileHunter(const string& filespec)
-      throw(FileHunterException)
    {
       try
       {
@@ -74,8 +76,8 @@ namespace gpstk
       }
    }
 
+
    FileHunter::FileHunter(const FileSpec& filespec)
-      throw(FileHunterException)
    {
       try
       {
@@ -87,8 +89,8 @@ namespace gpstk
       }
    }
 
+
    FileHunter& FileHunter::newHunt(const string& filespec)
-      throw(FileHunterException)
    {
       try
       {
@@ -101,9 +103,9 @@ namespace gpstk
       return *this;
    }
 
+
    FileHunter& FileHunter::setFilter(const FileSpec::FileSpecType fst,
                                      const vector<string>& filter)
-      throw(FileHunterException)
    {
       std::string  fileSpecType;
       if (filter.empty())
@@ -148,44 +150,57 @@ namespace gpstk
                                    const CommonTime& end,
                                    const FileSpec::FileSpecSortType fsst,
                                    enum FileChunking chunk) const
-      throw(FileHunterException)
    {
-      
-      // stupidity check
+         // ensure proper time order
       if (end < start)
       {
          FileHunterException fhe("The times are specified incorrectly");
          GPSTK_THROW(fhe);
       }
-
-         // move the start time back to a boundary defined by the file
-         // chunking
+         // move start time back to a boundary defined by file chunking
       CommonTime exStart;
-      switch(chunk)
+      switch (chunk)
       {
          case WEEK:
-            exStart = GPSWeekSecond(static_cast<GPSWeekSecond>(start).week,0.0);
+         {
+            GPSWeekSecond tmp(start);
+            tmp.sow = 0.0;
+            exStart = tmp;
+            YDSTime yds(end);
             break;
+         }
          case DAY:
-            exStart = YDSTime(static_cast<YDSTime>(start).year,
-                              static_cast<YDSTime>(start).doy, 0.0);
+         {
+            YDSTime tmp(start);
+            tmp.sod = 0.0;
+            exStart = tmp;
             break;
+         }
          case HOUR:
-            exStart = CivilTime(static_cast<YDSTime>(start).year,
-                                static_cast<CivilTime>(start).month,
-                                static_cast<CivilTime>(start).day,
-                                static_cast<CivilTime>(start).hour,
-                                0, 0.0);
+         {
+            CivilTime tmp(start);
+            tmp.minute = 0;
+            tmp.second = 0.0;
+            exStart = tmp;
             break;
+         }
          case MINUTE:
-            exStart = CivilTime(static_cast<YDSTime>(start).year,
-                                static_cast<CivilTime>(start).month,
-                                static_cast<CivilTime>(start).day,
-                                static_cast<CivilTime>(start).hour,
-                                static_cast<CivilTime>(start).minute, 0.0);
+         {
+            CivilTime tmp(start);
+            tmp.second = 0.0;
+            exStart = tmp;
             break;
+         }
       }
-      
+      exStart.setTimeSystem(start.getTimeSystem());
+
+         // Set min and max years for progressive coarse time filtering
+      int minY, maxY;
+      YDSTime tmpStart(start);
+      YDSTime tmpEnd(end);
+      minY = tmpStart.year;
+      maxY = tmpEnd.year;
+
       vector<string> toReturn;
          // Seed the return vector with an empty string which will be
          // appended to with the root directory or drive, depending on
@@ -198,101 +213,99 @@ namespace gpstk
 
       try
       {
-         vector<FileSpec>::const_iterator itr = fileSpecList.begin();
+         vector<FileSpec>::const_iterator fsIter = fileSpecList.begin();
 
 #ifdef _WIN32
-            // If Windows, we should seed it with the drive spec
-         if (itr != fileSpecList.end())
+         if (fsIter != fileSpecList.end())
          {
-            toReturn[0] = (*itr).getSpecString() + string(1,'\\');
-            fileSpecStr = (*itr).getSpecString() + string(1,'\\'); 
-            itr++;
+               // If Windows, we should seed it with the drive spec
+            toReturn[0] = (*fsIter).getSpecString();
+            fileSpecStr = (*fsIter).getSpecString(); 
+            fsIter++;
          }
 #endif
-#ifdef __CYGWIN__
-            // If Cygwin AND the user is attempting to use DOS file paths,
-            // need to see with the /cygdrive "head".
-         if (itr != fileSpecList.end())
-         { 
-            toReturn[0] = string(1,slash) + (*itr).getSpecString();
-            fileSpecStr = string(1,slash) + (*itr).getSpecString();
-            itr++;
-         }
-#endif
-         
-         while (itr != fileSpecList.end())
+         while (fsIter != fileSpecList.end())
          {
             vector<string> toReturnTemp;
-#ifdef _WIN32
-            fileSpecStr += string(1, '\\') + itr->getSpecString();
-#else
-            fileSpecStr += string(1, slash) + itr->getSpecString();
-#endif
-            for(size_t i = 0; i < toReturn.size(); i++)
+            vector<FileSpec>::const_iterator next = fsIter;
+            next++;
+            bool expectDir = (next != fileSpecList.end());
+
+            fileSpecStr += string(1, slash) + fsIter->getSpecString();
+            for (size_t i = 0; i < toReturn.size(); i++)
             {
-                  // search for the next entries
-               vector<string> newEntries = searchHelper(toReturn[i],*itr);
-                  // after getting the potential entries, filter
-                  // them based on the user criteria...
-               filterHelper(newEntries, *itr);
-                  // for each new entry, check the time (if possible)
+                  // Search for the next entries
+               //cerr << "Dir = " << toReturn[i] << endl;
+               vector<string> newEntries =
+                     searchHelper(toReturn[i], *fsIter, expectDir);
+
+                  // After getting the potential entries, filter
+                  // them based on the user criteria
+               filterHelper(newEntries, *fsIter);
+
+                  // For each new entry, check the time (if possible)
                   // then add it if it's in the correct time range.
                   // this is why we need to enter an empty string to 
                   // seed toReturn
-               for(size_t j = 0; j < newEntries.size(); j++)
+               vector<string>::const_iterator entryIter = newEntries.begin();
+               for ( ; entryIter != newEntries.end(); entryIter++)
                {
-#ifdef _WIN32
-                  if (toReturn[i].empty())
-                     toReturnTemp.push_back(newEntries[j]);
-                  else
+                     // To avoid extra processing, immediately attempt
+                     // to filter-out new entries whose year is not
+                     // within the valid year range
+                  if (coarseTimeFilter(*entryIter, *fsIter, minY, maxY))
                   {
-                     if ( toReturn[i][toReturn[i].size()-1]=='\\')
-                        toReturnTemp.push_back(toReturn[i] + newEntries[j]);
-                     else
-                        toReturnTemp.push_back(toReturn[i] + string(1,'\\') + 
-                                               newEntries[j]);
+                     //cerr << "Filtered out entry: " << *entryIter << endl;
+                     continue;
                   }
-#else
-                  toReturnTemp.push_back(toReturn[i] + string(1,slash) + 
-                                         newEntries[j]);
-#endif
-               } // for(size_t j = 0; j < newEntries.size(); j++)
-            } // for(size_t i = 0; i < toReturn.size(); i++)
+                  string newPath = toReturn[i] + string(1,slash) + *entryIter;
+                  //cerr << "  " << newPath << endl;
+                  toReturnTemp.push_back(newPath);
+               }
+            }
 
             toReturn = toReturnTemp;
-               // if at any time toReturn is empty, then there are no matches
-               // so just return
+
+               // If toReturn is ever empty, there are no matches
             if (toReturn.empty())
                return toReturn;
 
-            itr++;
+            fsIter = next;
          } // while (itr != fileSpecList.end())
 
-            // sort the list by the file spec of the last field
-         itr--;
-         (*itr).sortList(toReturn, fsst);
+            // Sort the list by the file spec of the last field
+         fsIter--;
+         (*fsIter).sortList(toReturn, fsst);
       }
-      catch(gpstk::Exception& exc)
+      catch (gpstk::Exception& exc)
       {
          FileHunterException nexc(exc);
          GPSTK_THROW(nexc);
       }
-         // filter by time
+         // Filter by fully-determined time
       vector<string> filtered;
-      FileSpec fullSpec(fileSpecStr);
-      for (unsigned i = 0; i < toReturn.size(); i++)
+      try
       {
-         CommonTime fileTime = fullSpec.extractCommonTime(toReturn[i]);
-         if ((fileTime >= exStart) && (fileTime <= end))
+         FileSpec fullSpec(fileSpecStr);
+         for (unsigned i = 0; i < toReturn.size(); i++)
          {
-            filtered.push_back(toReturn[i]);
+            CommonTime fileTime = fullSpec.extractCommonTime(toReturn[i]);
+            if ((fileTime >= exStart) && (fileTime <= end))
+            {
+               filtered.push_back(toReturn[i]);
+            }
          }
+      }
+      catch (gpstk::Exception& exc)
+      {
+         FileHunterException nexc(exc);
+         GPSTK_THROW(nexc);
       }
       return filtered;
    }
 
+
    void FileHunter::init(const string& filespec)
-      throw(FileHunterException)
    {
          // debug
       try
@@ -306,82 +319,14 @@ namespace gpstk
          filterList.clear();
 
          string fs(filespec);
-
-            // If working under Cygwin, then the file specification will be
-            // handled as if it's a system rooted in '/'.  HOWEVER, if the 
-            // user provided a spec that starts with a drive letter or
-            // provided a relative path, it needs to be modified to fit the
-            //
-            // /cygdrive/<drive letter>/path
-            //
-            // For example,
-            //     c:\ ->  /cygdrive/c
-            //     something -> <cwd>/something
-            //     c:\foo -> /cygdrive/c/foo
-            //
-            // form.
-#ifdef __CYGWIN__
-         //printf(" Entering 'ifdef __CYGWIN__' branch.\n");
-         char backSlash = '\\';
-         string::size_type st;
-         if (fs[1] == ':')
-         {
-            //printf("Cygwin 'if' branch.  fs = '%s'.  Size = %d\n",
-            //      fs.c_str(),fs.size());
-            char driveLetter = fs[0];
-            
-               // Change all '\' to '/'
-            while ((st = fs.find( backSlash )) != fs.npos)
-            {
-               //printf(" st = %d, ",st);
-               fs = fs.replace(st, 1, 1, slash );
-            }
-            //printf(" end of back slash replacement.\n");
-            //printf("After backslash replace.  fs = '%s'.\n",fs.c_str());
-            
-               // Remove drive letter and colon
-            fs.erase(0,2);
-            //printf("After removing draft letter and colon.  fs = '%s'.\n",fs.c_str());
-            
-               // Prepend "/cygdrive/driveLetter" to filespec
-            fs.insert(0, 1, driveLetter);
-            fs.insert(0,"/cygdrive/");
-         }
-         else
-         {
-            //printf("Cygwin 'else' branch.  fs = '%s'.\n",fs.c_str());
-               // Get current working directory.
-            char* cwd = getcwd(NULL, PATH_MAX);
-
-               // If strokes are in wrong directon, fix them
-            while ((st = fs.find( backSlash )) != fs.npos)
-            {
-               //printf(" st = %d, ",st);
-               fs = fs.replace(st, 1, 1, slash );
-            }
-            //printf("After backslash replace.  fs = '%s'.\n",fs.c_str());
-
-               // Prepend cwd to filespec
-            if (fs[0]!=slash)
-            {
-               fs.insert(0,string(1,slash));
-               fs.insert(0,cwd);
-            }
-         }
-         //printf(" Operating under Cygwin.  Filespec after modification:\n");
-         //printf(" fs = %s.\n",fs.c_str());
-#endif
          
             // first, check if the file spec has a leading '/'.  if not
             // prepend the current directory to it.
 #ifndef _WIN32
          if (fs[0] != slash)
          {
-//                                                     #ifdef _WIN32
-//          char* cwd = _getcwd(NULL, PATH_MAX);
-//                                                     #else
             char* cwd = getcwd(NULL, PATH_MAX);
-//                                                     #endif
+
             if (cwd == NULL)
             {
                FileHunterException fhe("Cannot get working directory");
@@ -433,9 +378,10 @@ namespace gpstk
                GPSTK_THROW(fhe);
             }
             else
+            {
                // erase the leading slash
-               fs.erase(0,1);
-               
+               fs.erase(0, 1);
+            }
             string::size_type slashpos = fs.find(slash);
             FileSpec tempfs(fs.substr(0, slashpos));
 
@@ -443,7 +389,10 @@ namespace gpstk
             //printf("FileHunter.init():  fs, slashpos, tempfs = '%s', %d, '%s'.\n",
             //   fs.c_str(),(int)slashpos,tempfs.getSpecString().c_str());
 
-            if (slashpos!=string::npos) fileSpecList.push_back(tempfs);
+            if (slashpos != string::npos)
+            {
+               fileSpecList.push_back(tempfs);
+            }
             fs.erase(0, slashpos);
 #else       
                // for Windows erase the leading backslash, if present
@@ -457,36 +406,37 @@ namespace gpstk
 #endif
          }
       }
-      catch(FileHunterException &e)
+      catch (FileHunterException &e)
       {
          GPSTK_RETHROW(e);
       }
-      catch(FileSpecException &e)
+      catch (FileSpecException &e)
       {
          FileHunterException fhe(e);
          fhe.addText("Error in the file spec");
          GPSTK_THROW(fhe);
       }
-      catch(Exception &e)
+      catch (Exception &e)
       {
          FileHunterException fhe(e);
          GPSTK_THROW(fhe);
       }
-      catch(std::exception &e)
+      catch (std::exception &e)
       {
          FileHunterException fhe("std::exception caught: " + string(e.what()));
          GPSTK_THROW(fhe);
       }
-      catch(...)
+      catch (...)
       {
          FileHunterException fhe("unknown exception caught");
          GPSTK_THROW(fhe);
       }
    } // init
-   
+
+
    vector<string> FileHunter::searchHelper(const string& directory,
-                                           const FileSpec& fs) const
-      throw(FileHunterException)
+                                           const FileSpec& fs,
+                                           bool expectDir) const
    {
       try
       {
@@ -498,7 +448,8 @@ namespace gpstk
             // open the dir
          DIR* theDir;
 
-         //printf(" In searchHelper(). About to call opendir.\n"); 
+         //cerr << "In searchHelper() before opendir()" << endl;
+          
             // The first clause is a special kludge for Cygwin
             // referencing DOS drive structures
          //if (searchString.compare("cygdrive")==0)
@@ -507,12 +458,13 @@ namespace gpstk
          //   theDir = opendir(tempFS.c_str());
          //}
          //else
+
          if (directory.empty())
             theDir = opendir(std::string(1,slash).c_str());
          else
             theDir = opendir(directory.c_str());
 
-         //printf(" In searchHelper().  Back from opendir call.\n");
+         //cerr << "In searchHelper() after opendir()" < endl;
          
          if (theDir == NULL)
          {
@@ -527,14 +479,36 @@ namespace gpstk
          {
             string filename(entry->d_name);
             
-               // DEBUG
-            //printf("Testing '%s'\n",filename.c_str());
+            //cerr << "Testing '" << filename << "'" << endl;
             
             if ((filename.length() == searchString.length()) &&
                 (filename != ".") && (filename != "..") && 
                 isLike(filename, searchString, '*', '+', '?'))
             {
-               toReturn.push_back(filename);
+                  // Determine if entry is a directory
+               bool isDir = false;
+               if (entry->d_type == DT_DIR)
+               {
+                  isDir = true;
+               }
+               else if ( (entry->d_type == DT_UNKNOWN)
+                         || (entry->d_type == DT_LNK))
+               {
+                  string fullname(directory + slash + filename);
+                  struct stat statBuf;
+                  int rc = stat(fullname.c_str(), &statBuf);
+                  if (0 == rc)
+                  {
+                     if (S_ISDIR(statBuf.st_mode))
+                     {
+                        isDir = true;
+                     }
+                  }
+               }
+               if (expectDir == isDir)
+               {
+                  toReturn.push_back(filename);
+               }
             }
          }
             // use filespec for extra verification?
@@ -558,16 +532,24 @@ namespace gpstk
          if ( (hFile = _findfirst( searchString.c_str(), &c_file )) != -1 )
          {
             std::string filename(c_file.name);
+            bool isDir = (c_file.attrib & _A_SUBDIR);
             if ((filename != ".") && (filename != ".."))
             {
-               toReturn.push_back(filename);
+               if (expectDir == isDir)
+               {
+                  toReturn.push_back(filename);
+               }
             }
             while( _findnext( hFile, &c_file ) == 0 )
             {
+               isDir = (c_file.attrib & _A_SUBDIR);
                filename = std::string(c_file.name);
                if ((filename != ".") && (filename != ".."))
                {
-                  toReturn.push_back(filename);
+                  if (expectDir == isDir)
+                  {
+                     toReturn.push_back(filename);
+                  }
                }
             }
          }
@@ -576,81 +558,129 @@ namespace gpstk
 #endif
          return toReturn;
       }
-      catch(Exception& e)
+      catch (Exception& e)
       {
          FileHunterException fhe(e);
          fhe.addText("Search failed");
          GPSTK_THROW(fhe);
       }
-      catch(std::exception& e)
+      catch (std::exception& e)
       {
          FileHunterException fhe("std::exception caught: " + string(e.what()));
          fhe.addText("Search failed");
          GPSTK_THROW(fhe);
       }
-      catch(...)
+      catch (...)
       {
          FileHunterException fhe("unknown exception");
          fhe.addText("Search failed");
          GPSTK_THROW(fhe);         
       }
-   }
+   }  // searchHelper()
+
 
    void FileHunter::filterHelper(vector<std::string>& fileList, 
                                  const FileSpec& fs) const
-      throw(FileHunterException)
-   {
+  {
          // go through the filterList.  If the filespec has
          // any fields to filter, remove matches from fileList
 
          // for each element in the filter....
       vector<FilterPair>::const_iterator filterItr = filterList.begin();
-      while(filterItr != filterList.end())
+      while (filterItr != filterList.end())
       {
-            // if the file spec has that element...
-         if (fs.hasField((*filterItr).first))
+         try
          {
-
-               // then search through the file list and 
-               // remove any files that don't match the filter.
-            vector<string>::iterator fileListItr = fileList.begin();
-            while (fileListItr != fileList.end())
+               // if the file spec has that element...
+            if (fs.hasField((*filterItr).first))
             {
-                  // thisField holds the part of the file name
-                  // that we're searching for
-               string thisField = fs.extractField(*fileListItr, 
-                                                  (*filterItr).first);
-               
-               vector<string>::const_iterator filterStringItr = 
-                  (*filterItr).second.begin();
-
-                  // the iterator searches each element of the filter
-                  // and compares it to thisField.  If there's a match
-                  // then keep it.  if there's no match, delete it.
-               while (filterStringItr != (*filterItr).second.end())
+                  // then search through the file list and
+                  // remove any files that don't match the filter.
+               vector<string>::iterator fileListItr = fileList.begin();
+               while (fileListItr != fileList.end())
                {
-                  if (thisField == rightJustify(*filterStringItr,
-                                               thisField.size(),
-                                                '0'))
-                     break;
-                  filterStringItr++;
+                     // thisField holds the part of the file name
+                     // that we're searching for
+                  string thisField;
+                  thisField = fs.extractField(*fileListItr,
+                                              (*filterItr).first);
+                  vector<string>::const_iterator filterStringItr =
+                        (*filterItr).second.begin();
+
+                     // the iterator searches each element of the filter
+                     // and compares it to thisField.  If there's a match
+                     // then keep it.  if there's no match, delete it.
+                  while (filterStringItr != (*filterItr).second.end())
+                  {
+                     if (thisField == rightJustify(*filterStringItr,
+                                                   thisField.size(),
+                                                   '0'))
+                     {
+                        break;
+                     }
+                     filterStringItr++;
+                  }
+
+                  if (filterStringItr == (*filterItr).second.end())
+                     fileListItr = fileList.erase(fileListItr);
+                  else
+                     fileListItr++;
                }
-               
-               if (filterStringItr == (*filterItr).second.end())
-                  fileList.erase(fileListItr);
-               else
-                  fileListItr++;
             }
+         }
+         catch (FileSpecException& fse)
+         {
+            FileHunterException fhe(fse);
+            GPSTK_THROW(fhe)
          }
          filterItr++;
       }  
+   }  // filterHelper()
+
+
+   bool FileHunter::coarseTimeFilter(
+         const string& filename,
+         const FileSpec& fs,
+         int minY,
+         int maxY) const
+   {
+      try
+      {
+         TimeTag::IdToValue tags;
+         TimeTag::getInfo(filename, fs.getSpecString(), tags);
+         TimeTag::IdToValue::const_iterator tagIter = tags.begin();
+         for ( ; tagIter != tags.end(); tagIter++)
+         {
+            switch (tagIter->first)
+            {
+               case 'Y':
+               {
+                  long year = asInt(tagIter->second);
+                  return ((year < minY) || (year > maxY));
+               }
+               case 'y':
+               {
+                  long year = asInt(tagIter->second);
+                  if (year < 1970)
+                  {
+                     year += (year >= 69) ? 1900 : 2000;
+                  }
+                  return ((year < minY) || (year > maxY));
+               }
+               //case 'F':  // Full-week filtering might also be nice
+            }
+         }
+      }
+      catch (...)
+      { }
+      return false;
    }
 
 
    void FileHunter::dump(ostream& o) const
    {
       vector<FileSpec>::const_iterator itr = fileSpecList.begin();
-      while(itr != fileSpecList.end())
+      while (itr != fileSpecList.end())
       {
          (*itr).dump(o);
          itr++;

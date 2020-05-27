@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -15,24 +15,24 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
+//  
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//  Copyright 2004, The University of Texas at Austin
-//
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S.
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software.
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /**
  * @file EngEphemeris.hpp
@@ -90,6 +90,10 @@ namespace gpstk
 
          /// Destructor
       virtual ~EngEphemeris() {}
+
+      bool operator==(const EngEphemeris& right) const throw();
+      bool operator!=(const EngEphemeris& right) const throw()
+      { return !(operator==(right)); }
 
          /**
           * Store a subframe in this object.
@@ -286,8 +290,8 @@ namespace gpstk
       short getASAlert(short subframe) const
          throw( gpstk::InvalidRequest );
 
-         /** This function return the GPS week number for the
-          * ephemeris.  this is the full GPS week (ie > 10 bits). */
+         /** This function returns the GPS week number contained in
+          * subframe 1.  this is the full GPS week (ie > 10 bits). */
       short getFullWeek() const
          throw( gpstk::InvalidRequest );
 
@@ -527,7 +531,7 @@ namespace gpstk
           */
 
       EngEphemeris& loadData( const std::string satSysArg,
-                              unsigned short tlm[3], const long how[3],
+                              const unsigned short tlm[3], const long how[3],
                               const short asalert[3],
                               const short Tracker, const short prn,
                               const short fullweek, const short cflags,

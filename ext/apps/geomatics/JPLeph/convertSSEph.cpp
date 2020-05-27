@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /**
  * @file convertSSEph.cpp
@@ -54,7 +54,7 @@
 #include "StringUtils.hpp"
 #include "CommonTime.hpp"
 #include "SystemTime.hpp"
-#include "SolarSystem.hpp"
+#include "SolarSystemEphemeris.hpp"
 #include "logstream.hpp"
 
 //------------------------------------------------------------------------------------
@@ -89,7 +89,7 @@ try {
    int i,iret=0;
    size_t j;
    CommonTime CurrEpoch = SystemTime();
-   SolarSystem eph;
+   SolarSystemEphemeris eph;
 
    // program name, title and version
    PrgmName = string("convertSSEph");
@@ -160,6 +160,7 @@ try {
 
       cout << Title << endl;
       cout << "Output logged in file " << logFilename << endl;
+      cout << "Creating output binary file " << outputFilename << endl;
    }
       // set the maximum level to be logged
    if(debug)
@@ -171,33 +172,34 @@ try {
       // = any of ERROR,WARNING,INFO,DEBUG,DEBUGn (n=1,2,3,4,5,6,7)
    //cout << "Reporting in main is "
    //   << ConfigureLOG::ToString(ConfigureLOG::ReportingLevel()) << endl;
-   ConfigureLOG::ReportLevels() = ConfigureLOG::ReportTimeTags() = true;
+   ConfigureLOG::ReportLevels() = ConfigureLOG::ReportTimeTags() = false;
 
    // display title in log file
    LOG(INFO) << Title;
+   LOG(INFO) << "Creating output binary file " << outputFilename;
 
    // read header file
    eph.readASCIIheader(headerFilename);
    LOG(VERBOSE) << "Finished reading ASCII header " << headerFilename;
-   LOG(INFO) << "Ephemeris number from header is " << eph.JPLNumber();
+   LOG(INFO) << "Ephemeris number from header is " << eph.EphNumber();
 
    // read the data files
    eph.readASCIIdata(dataFilenames);
    for(j=0; j<dataFilenames.size(); j++)
       LOG(VERBOSE) << "Finished reading ASCII data " << dataFilenames[j];
-   LOG(INFO) << "Ephemeris number from data is " << eph.JPLNumber();
+   LOG(INFO) << "Ephemeris number from data is " << eph.EphNumber();
 
    // dump to a file
-   LOG(INFO) << "Dump ASCII header to csse.header.asc";
-   ofstream ofs;
-   ofs.open("csse.header.asc",ios_base::out);
-   eph.writeASCIIheader(ofs);
-   ofs.close();
+   //LOG(INFO) << "Dump ASCII header to log";  //csse.header.asc";
+   //ofstream ofs;
+   //ofs.open("csse.header.asc",ios_base::out);
+   //eph.writeASCIIheader(ofs);
+   //ofs.close();
 
-   LOG(INFO) << "Dump ASCII data to csse.data.asc";
-   ofs.open("csse.data.asc",ios_base::out);
-   eph.writeASCIIdata(ofs);
-   ofs.close();
+   //LOG(INFO) << "Dump ASCII data to csse.data.asc";
+   //ofs.open("csse.data.asc",ios_base::out);
+   //eph.writeASCIIdata(ofs);
+   //ofs.close();
 
    // write the whole thing out to a binary file
    LOG(INFO) << "Write to binary file " << outputFilename;
@@ -210,25 +212,23 @@ try {
    LOG(INFO) << "Finished reading binary file " << outputFilename;
 
    // dump to a file
-   LOG(INFO) << "Dump ASCII header to csse.header.bin.asc";
-   ofs.open("csse.header.bin.asc",ios_base::out);
-   eph.writeASCIIheader(ofs);
-   ofs.close();
+   LOG(INFO) << "Dump ASCII header to log";  //csse.header.bin.asc";
+   //ofs.open("csse.header.bin.asc",ios_base::out);
+   eph.writeASCIIheader(LOGstrm);   //ofs);
+   //ofs.close();
 
-   LOG(INFO) << "Dump ASCII data to csse.data.bin.asc";
-   ofs.open("csse.data.bin.asc",ios_base::out);
-   eph.writeASCIIdata(ofs);
-   ofs.close();
-   LOG(INFO) << "Now compare the outputs by differencing";
-   LOG(INFO) << " Try 'diff csse.data.asc csse.data.bin.asc'";
-   LOG(INFO) << " and 'diff csse.data.asc csse.data.bin.asc'";
+   LOG(INFO) << "Dump ASCII data to log";    //csse.data.bin.asc";
+   //ofs.open("csse.data.bin.asc",ios_base::out);
+   eph.writeASCIIdata(LOGstrm);  //ofs);
+   //ofs.close();
+   //LOG(INFO) << "Now compare the outputs by differencing";
+   //LOG(INFO) << " Try 'diff csse.data.asc csse.data.bin.asc'";
+   //LOG(INFO) << " and 'diff csse.data.asc csse.data.bin.asc'";
 
       // compute run time
    totaltime = clock()-totaltime;
    LOG(INFO) << PrgmName << " timing: " << fixed << setprecision(9)
       << double(totaltime)/double(CLOCKS_PER_SEC) << " seconds.";
-   //if(LOGstrm != cout) cout << PrgmName << " timing: " << fixed << setprecision(9)
-   //   << double(totaltime)/double(CLOCKS_PER_SEC) << " seconds." << endl;
 
    return iret;
 }

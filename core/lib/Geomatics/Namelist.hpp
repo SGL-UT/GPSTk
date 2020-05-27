@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /**
  * @file Namelist.hpp
@@ -101,8 +101,8 @@ public:
    LabeledMatrix& setprecision(int p) { prec = p; return *this; }
    LabeledMatrix& fixed(void) { form = 1; return *this; }
    LabeledMatrix& scientific(void) { form = 2; return *this; }
-   LabeledMatrix& symmetric(bool s) { sym = s; return *this; }
-   LabeledMatrix& clean(bool s) { cln = s; return *this; }
+   LabeledMatrix& symmetric(bool s=true) { sym = s; return *this; }
+   LabeledMatrix& clean(bool s=true) { cln = s; return *this; }
    LabeledMatrix& both(void) { rc=0; return *this; }
    LabeledMatrix& rows(void) { rc=1; return *this; }
    LabeledMatrix& cols(void) { rc=2; return *this; }
@@ -145,6 +145,15 @@ public:
       /// add a single name to the Namelist
       /// @throw if the name is not unique
    Namelist& operator+=(const std::string&);
+      /// add entire Namelist to this using operator+=(string)
+   Namelist& operator+=(const Namelist& right)
+   {
+      try {
+         for(unsigned int i=0; i<right.size(); i++)
+            this->operator+=(right.getName(i));
+      } catch(gpstk::Exception& e) { GPSTK_RETHROW(e); }
+      return *this;
+   }
       /// remove a name from the Namelist; does nothing if the name is not found.
    Namelist& operator-=(const std::string&);
 

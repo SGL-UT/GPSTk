@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /**
  * @file TimeNamedFileStream.hpp
@@ -49,6 +49,7 @@
 #include "SystemTime.hpp"
 #include "FFStream.hpp"
 #include "TimeString.hpp"
+#include "FileUtils.hpp"
 
 namespace gpstk
 {
@@ -101,36 +102,36 @@ namespace gpstk
       // Update the file name, returns true if the file name changed
       bool updateFileName(const CommonTime& t=SystemTime())
       {
-         bool openedNewFile = false;
          const std::string newFilename=printTime(t,filespec);
-         if (currentFilename.size() == 0 && newFilename.size() > 0)
-         {
-            currentFilename = newFilename;
-            currentTime = t;
-            BaseStream::open(currentFilename.c_str(), omode);
-            if (debugLevel)
-               std::cout << "Opened " << currentFilename << std::endl;
-            openedNewFile=true;
-         }
-         else if (newFilename == currentFilename)
+         if (currentFilename.size() > 0 and newFilename == currentFilename)
          {
             currentTime = t;
-            openedNewFile=false;
+            return false;
          }
-         else
+         
+         if (currentFilename.size() > 0)
          {
             if (debugLevel)
                std::cout << "Closing " << currentFilename << std::endl;
             BaseStream::close();
-            currentFilename = newFilename;
-            currentTime = t;
-            BaseStream::open(currentFilename.c_str(), omode);
-            if (debugLevel)
-               std::cout << "Opened " << currentFilename << std::endl;
-            openedNewFile=true;
          }
-
-         return openedNewFile;
+         currentFilename = newFilename;
+         currentTime = t;
+         
+         std::string::size_type i = newFilename.rfind('/');
+         std::string dir(newFilename.substr(0, i));
+         if (dir.size())
+         {
+            if (debugLevel)
+               std::cout << "Creating directory " << dir << std::endl;
+            gpstk::FileUtils::makeDir(dir, 0755);
+         }
+         
+         BaseStream::open(currentFilename.c_str(), omode);
+         if (debugLevel)
+            std::cout << "Opened " << currentFilename << std::endl;
+         
+         return true;
       }
 
       int debugLevel;

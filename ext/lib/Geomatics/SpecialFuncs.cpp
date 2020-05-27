@@ -1,3 +1,39 @@
+//==============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 3.0 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
+//  
+//  Copyright 2004-2019, The University of Texas at Austin
+//
+//==============================================================================
+
+//==============================================================================
+//
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
+//
+//  Pursuant to DoD Directive 523024 
+//
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
+//
+//==============================================================================
+
 /// @file SpecialFuncs.cpp
 /// Implementation of special functions, including log Gamma, factorial, binomial
 /// coefficients, beta, incomplete beta, and error functions, as well as
@@ -8,20 +44,6 @@
 ///    PPf(alpha,N1,N2) == F where alpha=CDF(F,N1,N2).
 /// References: the NIST Engineering Statistics Handbook, 2006
 /// http://www.itl.nist.gov/div898/handbook/ and Abramowitz and Stegun.
-
-//============================================================================
-//
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
-//
-//Pursuant to DoD Directive 523024 
-//
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
-//
-//=============================================================================
 
 #include <cmath>
 #include <limits>
@@ -155,7 +177,7 @@ double seriesIncompGamma(const double& a, const double& x) throw(Exception)
       if(x < 0) GPSTK_THROW(Exception("Negative first argument"));
       if(a <= 0) GPSTK_THROW(Exception("Non-positive second argument"));
 
-      static const int imax(600);
+      static const int imax(1000);
       static const double eps(10*std::numeric_limits<double>().epsilon());
 
       double lngamma(lnGamma(a));
@@ -188,7 +210,7 @@ double contfracIncompGamma(const double& a, const double& x) throw(Exception)
       if(x < 0) GPSTK_THROW(Exception("Negative first argument"));
       if(a <= 0) GPSTK_THROW(Exception("Non-positive second argument"));
 
-      static const int imax(600);
+      static const int imax(1000);
       static const double eps(10*std::numeric_limits<double>().epsilon());
       static const double fpmin(10*std::numeric_limits<double>().min());
 
@@ -286,7 +308,7 @@ double compErrorFunc(const double& x) throw(Exception)
 // Routine used internally for Incomplete beta function I_x(a,b)
 double cfIBeta(const double& x, const double& a, const double& b) throw(Exception)
 {
-   static const int imax(100);
+   static const int imax(1000);
    static const double eps(10*std::numeric_limits<double>().epsilon());
    static const double fpmin(10*std::numeric_limits<double>().min());
    const double qab(a+b);
@@ -456,7 +478,7 @@ double invNormalCDF(double prob, const double& mu, const double& sig)
          //<< " fabs(a-alpha)-eps " << ::fabs(alpha-a)-eps;
          if(::fabs(alpha-a) < eps) break;
          if(a > alpha) { X1 = X; } else { X0 = X; }
-         if(++niter > 100) GPSTK_THROW(Exception("Failed to converge"));
+         if(++niter > 1000) GPSTK_THROW(Exception("Failed to converge"));
       }
 
       return (swap ? 2.0*mu-X : X);
@@ -567,7 +589,7 @@ double invChisqCDF(double alpha, int n) throw(Exception)
          //<< " fabs(a-alpha)-eps " << ::fabs(alpha-a)-eps;
          if(::fabs(alpha-a) < eps) break;
          if(a > alpha) { X1 = X; } else { X0 = X; }
-         if(++niter > 100) GPSTK_THROW(Exception("Failed to converge"));
+         if(++niter > 1000) GPSTK_THROW(Exception("Failed to converge"));
       }
 
       return X;
@@ -686,7 +708,7 @@ double invStudentsCDF(double prob, int n) throw(Exception)
          //<< " fabs(a-alpha)-eps " << ::fabs(alpha-a)-eps;
          if(::fabs(alpha-a) < eps) break;
          if(a > alpha) { t1 = t; } else { t0 = t; }
-         if(++niter > 100) GPSTK_THROW(Exception("Failed to converge"));
+         if(++niter > 1000) GPSTK_THROW(Exception("Failed to converge"));
       }
 
       return (swap ? -t : t);
@@ -724,7 +746,7 @@ double FDistCDF(const double& F, const int& n1, const int& n2)
    catch(Exception& e) { GPSTK_RETHROW(e); }
 }
 
-// Probabiliy density function for F distribution
+// Probability density function for F distribution
 // The F distribution is the ratio of two chi-square distributions with degrees
 // of freedom N1 and N2, respectively, where each chi-square has first been
 // divided by its degrees of freedom.
@@ -813,7 +835,7 @@ double invFDistCDF(double prob, int n1, int n2) throw(Exception)
          if(::fabs(alpha-a) < eps) break;
          if(a > alpha) { F1 = F; } else { F0 = F; }
          n++;
-         if(n > 100) GPSTK_THROW(Exception("Failed to converge"));
+         if(n > 1000) GPSTK_THROW(Exception("Failed to converge"));
       }
 
       return (swap ? 1.0/F : F);

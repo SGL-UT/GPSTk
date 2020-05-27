@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,29 +16,27 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
-/**
- * @file PreciseRange.hpp
- * Include file defining class PreciseRange: computation of range and associated
- * quantities from XvtStore, given receiver position and time.
- */
+/// @file PreciseRange.hpp
+/// Include file defining class PreciseRange: computation of range and associated
+/// quantities from XvtStore, given receiver position and time.
  
 //------------------------------------------------------------------------------------
 #ifndef PRECISE_EPHEMERIS_RANGE_INCLUDE
@@ -55,7 +53,6 @@
 // geomatics
 #include "AntexData.hpp"
 #include "SolarSystem.hpp"
-#include "EarthOrientation.hpp"
 
 //------------------------------------------------------------------------------------
 namespace gpstk
@@ -83,8 +80,8 @@ namespace gpstk
       /// @param SatID sat           satellite
       /// @param AntexData& antenna  satellite antenna data;
       ///                               if not valid, no PCO/V correction is done
-      /// @param SolarSystem SSEph   Solar system ephemeris
-      /// @param EarthOrientation EO Earth orientation parameters appropriate for time
+      /// @param SolarSystem& SolSys SolarSystem object, to get SatelliteAttitude()
+      ///                               for use with antenna.
       /// @param XvtStore Eph        Ephemeris store
       /// @param bool isCOM          if true, Eph is Center-of-mass,
       ///                               else antenna-phase-center, default false.
@@ -95,13 +92,13 @@ namespace gpstk
                                    const Position& Rx,
                                    const SatID sat,
                                    const AntexData& antenna,
-                                   const SolarSystem& SSEph,
-                                   const EarthOrientation& EO,
+                                   SolarSystem& SolSys,
                                    const XvtStore<SatID>& Eph,
                                    const bool isCOM=false)
          throw(Exception);
 
-      /// Version with no antenna; cf. doc for other version.
+      /// Version with no antenna, and therefore no Attitude and no SolarSystem;
+      /// cf. doc for other version for details.
       double ComputeAtTransmitTime(const CommonTime& nomRecTime,
                                    const double pr,
                                    const Position& Rx,
@@ -110,27 +107,10 @@ namespace gpstk
          throw(Exception)
       {
          // antdummy will be invalid, so antenna computations will be skipped;
-         // thus SolarSystem and EarthOrientation will never be needed.
-         SolarSystem ssdum;
-         EarthOrientation eodum;
+         // thus satellite attitude will not be needed.
          AntexData antdummy;
-         return ComputeAtTransmitTime(nomRecTime,pr,Rx,sat,antdummy,ssdum,eodum,Eph);
-      }
-
-      /// Version without high-accuracy SolarSystem; cf. doc for other version.
-      double ComputeAtTransmitTime(const CommonTime& nomRecTime,
-                                   const double pr,
-                                   const Position& Rx,
-                                   const SatID sat,
-                                   const AntexData& antenna,
-                                   const XvtStore<SatID>& Eph)
-         throw(Exception)
-      {
-         // ssdummy will be invalid, so SolarPosition will be used;
-         // thus EarthOrientation will never be needed.
          SolarSystem ssdummy;
-         EarthOrientation eodum;
-         return ComputeAtTransmitTime(nomRecTime,pr,Rx,sat,antenna,ssdummy,eodum,Eph);
+         return ComputeAtTransmitTime(nomRecTime,pr,Rx,sat,antdummy,ssdummy,Eph);
       }
 
       /// The computed raw (geometric) range in meters, with NO corrections applied;
@@ -177,9 +157,6 @@ namespace gpstk
 
 
    }; // end class PreciseRange
-
-   // Compute relativity correction (meters) from the satellite position and velocity
-   //double RelativityCorrection(const Position& R, const Position& V);
 
    //@}
 

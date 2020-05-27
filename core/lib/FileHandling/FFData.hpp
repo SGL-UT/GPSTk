@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /**
  * @file FFData.hpp
@@ -135,9 +135,8 @@ namespace gpstk
           * @param o the stream to write to
           * @param f the data to write
           * @return a reference to \c o
-          * @warning The ostream provided MUST be an FFStream.
           */
-      friend std::ostream& operator<<(std::ostream& o, const FFData& f)
+      friend std::ostream& operator<<(FFStream& o, const FFData& f)
          throw(FFStreamError, gpstk::StringUtils::StringException);
 
          /**
@@ -156,9 +155,8 @@ namespace gpstk
           * @return a reference to \c i.
           * This function provides compatibility with the istream_iterator
           * class.
-          * @warning The istream provided MUST be an FFStream.
           */
-      friend std::istream& operator>>(std::istream& i, FFData& f)
+      friend std::istream& operator>>(FFStream& i, FFData& f)
          throw(FFStreamError, gpstk::StringUtils::StringException);
 
       friend class FFStream;

@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /// @file OrbitEphStore.cpp
 /// Class for storing and/or computing position, velocity, and clock data using
@@ -59,28 +59,82 @@ using namespace gpstk::StringUtils;
 
 namespace gpstk
 {
-   //---------------------------------------------------------------------------------
    Xvt OrbitEphStore::getXvt(const SatID& sat, const CommonTime& t) const
    {
-      try {
-         // get the appropriate OrbitEph
+      try
+      {
+            // get the appropriate OrbitEph
          const OrbitEph *eph = findOrbitEph(sat,t);
-         if(!eph)
-            GPSTK_THROW(InvalidRequest("No OrbitEph for satellite " + asString(sat)));
+         if (!eph)
+         {
+            InvalidRequest exc("No OrbitEph for satellite " + asString(sat));
+            GPSTK_THROW(exc);
+         }
 
-         // no consideration is given to health here (OrbitEph does not have health);
-         // derived classes should override isHealthy()
-         if(onlyHealthy && !eph->isHealthy())
+            // no consideration is given to health here (OrbitEph does
+            // not have health);
+            // derived classes should override isHealthy()
+         if (onlyHealthy && !eph->isHealthy())
             GPSTK_THROW(InvalidRequest("Not healthy"));
 
-         // compute the position, velocity and time
+            // compute the position, velocity and time
          Xvt sv = eph->svXvt(t);
+         sv.health = (eph->isHealthy() ? Xvt::HealthStatus::Healthy
+                      : Xvt::HealthStatus::Unhealthy);
          return sv;
       }
-      catch(InvalidRequest& ir) { GPSTK_RETHROW(ir); }
+      catch(InvalidRequest& ir)
+      {
+         GPSTK_RETHROW(ir);
+      }
    }
 
-   //---------------------------------------------------------------------------------
+
+   Xvt OrbitEphStore::computeXvt(const SatID& sat, const CommonTime& t) const
+      throw()
+   {
+      Xvt rv;
+      rv.health = Xvt::HealthStatus::Unavailable;
+      try
+      {
+            // get the appropriate OrbitEph
+         const OrbitEph *eph = findOrbitEph(sat,t);
+         if (eph != nullptr)
+         {
+               // compute the position, velocity and time
+            rv = eph->svXvt(t);
+            rv.health = (eph->isHealthy() ? Xvt::HealthStatus::Healthy
+                         : Xvt::HealthStatus::Unhealthy);
+         }
+      }
+      catch (...)
+      {
+      }
+      return rv;
+   }
+
+
+   Xvt::HealthStatus OrbitEphStore ::
+   getSVHealth(const SatID& sat, const CommonTime& t) const throw()
+   {
+      Xvt::HealthStatus rv = Xvt::HealthStatus::Unavailable;
+      try
+      {
+            // get the appropriate OrbitEph
+         const OrbitEph *eph = findOrbitEph(sat,t);
+         if (eph != nullptr)
+         {
+            rv = (eph->isHealthy() ? Xvt::HealthStatus::Healthy
+                  : Xvt::HealthStatus::Unhealthy);
+         }
+      }
+      catch (...)
+      {
+      }
+      return rv;
+   }
+
+
    void OrbitEphStore::dump(ostream& os, short detail) const
    {
       SatTableMap::const_iterator it;
@@ -202,10 +256,17 @@ namespace gpstk
 
          TimeOrbitEphTable& toet = satTables[eph->satID];
 
+            // Determine the time to use as the key.   
+            // If strictMethod==true, the key is the beginning of validity (earliest transmit). 
+            // If strictMethod==false, the key is the t-sub-oe. 
+         CommonTime keyVal = eph->beginValid;
+         if (!strictMethod)
+            keyVal = eph->ctToe;
+
             // if map is empty, load object and return
          if(toet.size() == 0) {
             ret = eph->clone();
-            toet[eph->beginValid] = ret;
+            toet[keyVal] = ret;
             updateTimeLimits(ret);
             return ret;
          }
@@ -213,7 +274,7 @@ namespace gpstk
          // Search for beginValid in current keys.
          // If found candidate, should be same data
          // as already in table. Test this by comparing Toe values.
-         TimeOrbitEphTable::iterator it = toet.find(eph->beginValid);
+         TimeOrbitEphTable::iterator it = toet.find(keyVal);
          if(it != toet.end()) {
             // is a duplicate found in the table?
             if(it->second->ctToe == eph->ctToe) {
@@ -234,7 +295,7 @@ namespace gpstk
 
          // Did not find eph->beginValid in map
          // N.B:: lower_bound will return element beyond key since there is no match
-         it = toet.lower_bound(eph->beginValid);
+         it = toet.lower_bound(keyVal);
 
          if(it==toet.begin()) {
             // candidate is before beginning of map
@@ -242,7 +303,7 @@ namespace gpstk
                toet.erase(it);
             }
             ret = eph->clone();
-            toet[eph->beginValid] = ret;
+            toet[keyVal] = ret;
             updateTimeLimits(ret);
             return ret;
          }
@@ -253,7 +314,7 @@ namespace gpstk
             TimeOrbitEphTable::reverse_iterator rit = toet.rbegin();
             if(rit->second->ctToe != eph->ctToe) {
                ret = eph->clone();
-               toet[eph->beginValid] = ret;
+               toet[keyVal] = ret;
                updateTimeLimits(ret);
             }
             else message = string("Toe matches last");
@@ -266,7 +327,7 @@ namespace gpstk
          if(it->second->ctToe == eph->ctToe) {
             toet.erase(it);
             ret = eph->clone();
-            toet[eph->beginValid] = ret;
+            toet[keyVal] = ret;
             updateTimeLimits(ret);
             return ret;
          }
@@ -279,7 +340,7 @@ namespace gpstk
          it--;
          if(it->second->ctToe != eph->ctToe) {
             ret = eph->clone();
-            toet[eph->beginValid] = ret;
+            toet[keyVal] = ret;
             updateTimeLimits(ret);
          }
          else message = string("Late transmit copy");
@@ -315,6 +376,25 @@ namespace gpstk
 
       initialTime = tmin;
       finalTime   = tmax;
+   }
+
+   //---------------------------------------------------------------------------------
+   void OrbitEphStore::clear(void)
+   {
+      for(SatTableMap::iterator ui=satTables.begin(); ui!=satTables.end(); ui++) {
+         TimeOrbitEphTable& toet = ui->second;
+         for(TimeOrbitEphTable::iterator toeti = toet.begin(); toeti != toet.end(); toeti++) {
+            delete toeti->second;
+         }
+         toet.clear();
+      }
+
+      satTables.clear();
+
+      initialTime = CommonTime::END_OF_TIME;
+      initialTime.setTimeSystem(timeSystem);
+      finalTime = CommonTime::BEGINNING_OF_TIME;
+      finalTime.setTimeSystem(timeSystem);
    }
 
    //---------------------------------------------------------------------------------
@@ -358,7 +438,6 @@ namespace gpstk
       // Is this satellite found in the table?
       if(satTables.find(sat) == satTables.end())
          return NULL;
-
       // Define reference to the relevant map of orbital elements
       const TimeOrbitEphTable& table = getTimeOrbitEphMap(sat);
 
@@ -366,6 +445,9 @@ namespace gpstk
       // is another way of saying "earliest transmit time".  A call
       // to table.lower_bound(t) will return the element of the map
       // with a key "just beyond t" assuming the t is NOT a direct match for any key.
+
+      if (table.empty())
+         return NULL;
 
       TimeOrbitEphTable::const_iterator it = table.find(t);
       if(it == table.end()) {                   // not a direct match
@@ -380,7 +462,9 @@ namespace gpstk
          if(it == table.end()) {
             TimeOrbitEphTable::const_reverse_iterator rit = table.rbegin();
             if(rit->second->isValid(t))         // Last element in map works
+            {
                return rit->second;
+            }
 
             // have nothing
             //string mess = "Time is beyond table for satellite " + asString(sat)
@@ -399,6 +483,10 @@ namespace gpstk
       // The exception is if it is pointing to table.begin( ),
       // then all of the elements in the map are too late.
       if(it == table.begin()) {
+         if (it->second->isValid(t))
+         {
+            return it->second;
+         }
          //string mess = "Time is before table for satellite " + asString(sat)
          //      + " for time " + printTime(t,fmt);
          //InvalidRequest e(mess);
@@ -412,6 +500,10 @@ namespace gpstk
       // not overlap. That's OK, the key represents the EARLIEST
       // time the elements should be used.  Therefore, we can
       // decrement the counter and test to see if the element is valid.
+      if (it->second->isValid(t))
+      {
+         return it->second;
+      }
       it--;
       if(!(it->second->isValid(t))) {
          //// there is a "hole" in the middle of a map.
@@ -431,7 +523,6 @@ namespace gpstk
    const OrbitEph* OrbitEphStore::findNearOrbitEph(const SatID& sat,
                                                    const CommonTime& t) const
    {
-
         // Check for any OrbitEph for this SV
       if(satTables.find(sat) == satTables.end())
          return NULL;
@@ -439,6 +530,9 @@ namespace gpstk
       // No OrbitEph in store for requested sat time
       // Define reference to the relevant map of orbital elements
       const TimeOrbitEphTable& table = getTimeOrbitEphMap(sat);
+
+      if (table.empty())
+         return NULL;
 
       TimeOrbitEphTable::const_iterator itNext = table.find(t);
       if(itNext != table.end())               // exact match
@@ -452,12 +546,29 @@ namespace gpstk
       // lower_bound returns the first element with key >= t
       itNext = table.lower_bound(t);
       if(itNext == table.begin())             // Test for case 2
-         return itNext->second;
+      {
+            // Verify the first item in the table has a fit interval that
+            // covers the time of interest.   If not, then there are no
+            // data sets available that cover the time of interest, so return
+            // NULL. 
+         if (itNext->second->isValid(t))
+            return itNext->second;
+         else 
+            return NULL;
+      }
 
        // Test for case 3
-      if(itNext == table.end()) {
+      if(itNext == table.end()) 
+      {
          TimeOrbitEphTable::const_reverse_iterator rit = table.rbegin();
-         return rit->second;
+            // Verify the last item in the table has a fit interval that
+            // covers the time of interest.   If not, then there are no
+            // data sets available that cover the time of interest, so return
+            // NULL. 
+         if (rit->second->isValid(t))
+            return rit->second;
+         else
+            return NULL; 
       }
 
       // case 1: it is not the beginning, so safe to decrement
@@ -467,10 +578,34 @@ namespace gpstk
       CommonTime lastTOE = itPrior->second->ctToe;
       double diffToNext = nextTOE - t;
       double diffFromLast = t - lastTOE;
-      if(diffToNext > diffFromLast)
-         return itPrior->second;
 
-      return itNext->second;
+         // Determine which is closer to Toe and assign temporary
+         // pointers accordingly.  
+      TimeOrbitEphTable::const_iterator itSelect;
+      TimeOrbitEphTable::const_iterator itUnSelect;
+      if(diffToNext > diffFromLast)
+      {
+         itSelect = itPrior;
+         itUnSelect = itNext;
+      }
+      else
+      {
+         itSelect = itNext;
+         itUnSelect = itPrior;
+      }
+
+         // If the selected item is valid return it.
+         // If not, check to see if the unselected item is valid; if so return that one. 
+         // Otherwise, there is no data set with a valid fit interval. 
+      if (itSelect->second->isValid(t))
+      {
+         return itSelect->second;
+      }
+      else if (itUnSelect->second->isValid(t))
+      {
+         return itUnSelect->second;
+      }
+      return NULL;
    }
 
    //---------------------------------------------------------------------------------
@@ -513,5 +648,18 @@ namespace gpstk
 
    //---------------------------------------------------------------------------------
    const string OrbitEphStore::fmt("%Y/%02m/%02d %02H:%02M:%02S %P");
+
+   //---------------------------------------------------------------------------------
+   set<SatID> OrbitEphStore::getIndexSet() const
+   {
+      set<SatID> retSet;
+      SatTableMap::const_iterator cit;
+      for (cit=satTables.begin();cit!=satTables.end();cit++)
+      {
+         const SatID& sidr = cit->first;
+         retSet.insert(sidr);
+      }
+      return retSet;
+   }
 
 } // namespace

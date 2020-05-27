@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /// @file ObsID.hpp
 /// gpstk::ObsID - navigation system, receiver, and file specification
@@ -78,17 +78,19 @@ namespace gpstk
          otUnknown,
          otAny,       ///< Used to match any observation type
          otRange,     ///< pseudorange, in meters
-         otPhase,     ///< accumulated phase, in meters
+         otPhase,     ///< accumulated phase, in cycles
          otDoppler,   ///< Doppler, in Hz
          otSNR,       ///< Signal strength, in dB-Hz
          otChannel,   ///< Channel number
+         otDemodStat, ///< Demodulator status
          otIono,      ///< Ionospheric delay (see RINEX3 section 5.12)
          otSSI,       ///< Signal Strength Indicator (RINEX)
          otLLI,       ///< Loss of Lock Indicator (RINEX)
          otTrackLen,  ///< Number of continuous epochs of 'good' tracking
          otNavMsg,    ///< Navigation Message data
          otRngStdDev, ///< pseudorange standard deviation, in meters
-         otPhsStdDev, ///< phase standard deviation, in meters
+         otPhsStdDev, ///< phase standard deviation, in cycles
+         otFreqIndx,  ///< GLONASS frequency offset index [-6..7]
          otUndefined, ///< Undefined
          otLast       ///< Used to verify that all items are described at compile time
       };
@@ -102,7 +104,7 @@ namespace gpstk
          cbZero, ///< Used with the channel observation type (see RINEx3 section 5.13)
          cbL1,   ///< GPS L1, Galileo E2-L1-E1, SBAS L1, QZSS L1
          cbL2,   ///< GPS L2, QZSS L2
-         cbL5,   ///< GPS L5, Galileo E5a, SBAS L5, QZSS L5
+         cbL5,   ///< GPS L5, Galileo E5a, SBAS L5, QZSS L5, INRSS L5
          cbG1,   ///< Glonass G1
          cbG2,   ///< Glonass G2
          cbG3,   ///< Glonass G3
@@ -112,6 +114,7 @@ namespace gpstk
          cbB1,   ///< BeiDou L1
          cbB2,   ///< BeiDou L7
          cbB3,   ///< BeiDou L6
+         cbI9,   ///< IRNSS S-band (RINEX '9')
          cbL1L2, ///< Combined L1L2 (like an ionosphere free obs)
          cbUndefined,
          cbLast  ///< Used to verify that all items are described at compile time
@@ -145,6 +148,9 @@ namespace gpstk
          tcI5,      ///< Modernized GPS L5 civil in-phase
          tcQ5,      ///< Modernized GPS L5 civil quadrature
          tcIQ5,     ///< Modernized GPS L5 civil I+Q combined tracking
+         tcG1P,     ///< Modernized GPS L1C civil code tracking (pilot)
+         tcG1D,     ///< Modernized GPS L1C civil code tracking (data)
+         tcG1X,     ///< Modernized GPS L1C civil code tracking (pilot + data)
 
          tcGCA,     ///< Legacy Glonass civil signal
          tcGP,      ///< Legacy Glonass precise signal
@@ -157,9 +163,15 @@ namespace gpstk
          tcC,       ///< Galileo Dataless code
          tcBC,      ///< Galileo B+C combined tracking
          tcABC,     ///< Galileo A+B+C combined tracking
-         tcIE5,     ///< Galileo L5 I code
-         tcQE5,     ///< Galileo L5 Q code
-         tcIQE5,    ///< Galileo L5 I+Q combined tracking
+         tcIE5,     ///< Galileo E5 I code
+         tcQE5,     ///< Galileo E5 Q code
+         tcIQE5,    ///< Galileo E5 I+Q combined tracking
+         tcIE5a,    ///< Galileo E5a I code
+         tcQE5a,    ///< Galileo E5a Q code
+         tcIQE5a,   ///< Galileo E5a I+Q combined tracking
+         tcIE5b,    ///< Galileo E5b I code
+         tcQE5b,    ///< Galileo E5b Q code
+         tcIQE5b,   ///< Galileo E5b I+Q combined tracking
 
          tcSCA,     ///< SBAS civil code
          tcSI5,     ///< SBAS L5 I code
@@ -190,6 +202,16 @@ namespace gpstk
          tcCI6,     ///< BeiDou B3 I code
          tcCQ6,     ///< BeiDou B3 Q code
          tcCIQ6,    ///< BeiDou B3 I+Q code
+
+                    ///  Nomenclature follows RiNEX 3.03 Table 10
+         tcIA5,     ///< IRNSS L5 SPS
+         tcIB5,     ///< IRNSS L5 RS(D)
+         tcIC5,     ///< IRNSS L5 RS(P)
+         tcIX5,     ///< IRNSS L5 B+C
+         tcIA9,     ///< IRNSS S-band SPS
+         tcIB9,     ///< IRNSS S=band RS(D)
+         tcIC9,     ///< INRSS S-band RS(P)
+         tcIX9,     ///< IRNSS S-band B+C
 
          tcUndefined,
          tcLast     ///< Used to verify that all items are described at compile time

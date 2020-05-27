@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /**
  * @file YumaData.cpp
@@ -120,8 +120,15 @@ namespace gpstk
 
       string line;
 
-      // We don't need first line as we will get all the information from the others
-      strm.formattedGetLine(line, true);
+      xmit_time = 0;
+      // Find next header line.
+      // We don't need the header line as we will get all the information from the others
+      bool found = false;
+      while (!found)
+      {
+          strm.formattedGetLine(line, true);
+          if (line.substr(0,2).compare("**")==0) found = true;
+      }
 
       //Second Line - PRN
       strm.formattedGetLine(line, true);
@@ -188,9 +195,6 @@ namespace gpstk
          else if(diff < -512)
             week -= 512;
       }
-
-      xmit_time = 0;
-      strm.formattedGetLine(line,true);
 
    } // end of reallyGetRecord()
 

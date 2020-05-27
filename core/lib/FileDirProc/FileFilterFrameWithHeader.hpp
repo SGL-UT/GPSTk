@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /**
  * @file FileFilterFrameWithHeader.hpp
@@ -43,7 +43,9 @@
 #ifndef GPSTK_FILEFILTERFRAMEWITHHEADER_HPP
 #define GPSTK_FILEFILTERFRAMEWITHHEADER_HPP
 
+#include "Rinex3ObsData.hpp"
 #include "FileFilterFrame.hpp"
+#include <math.h>
 
 namespace gpstk
 {
@@ -190,6 +192,43 @@ namespace gpstk
                      const FileHeader& fh) const
          throw(gpstk::Exception);
 
+      /// Returns a list of the data in *this that isn't in r.
+      template <class BinaryPredicate>
+      std::list<FileData>
+      halfDiff(const FileFilterFrameWithHeader<FileStream,FileData,FileHeader>& r,
+               BinaryPredicate p,
+               int precision) const
+      {
+         long double epsilon = 1 / std::pow((long double)10,precision);
+         std::list<FileData> toReturn;
+
+         typename std::list<FileData>::const_iterator dvIt = this->dataVec.begin();
+         typename std::list<FileData>::const_iterator rdvIt = r.dataVec.begin();
+         while(dvIt != this->dataVec.end())
+         {
+            if (rdvIt == r.dataVec.end() ||
+                p( *dvIt, this->headerList.front(),
+                   *rdvIt, r.headerList.front(),
+                   epsilon)) //dv less than
+            {
+               toReturn.push_back(*dvIt);
+               dvIt++;
+            }
+            else if (p(*rdvIt, r.headerList.front(),
+                       *dvIt, this->headerList.front(),
+                       epsilon)) //rdv less than
+            {
+               rdvIt++;
+            }
+            else //equal
+            {
+               dvIt++;
+               rdvIt++;
+            }
+         }
+         return toReturn;
+      }
+
          /** performs the operation op on the header list. */
       template <class Operation>
       FileFilterFrameWithHeader& touchHeader(Operation& op)
@@ -277,6 +316,7 @@ namespace gpstk
    {
          // make the directory (if needed)
       std::string::size_type pos = outputFile.rfind('/');
+
       if (pos != std::string::npos)
          gpstk::FileUtils::makeDir(outputFile.substr(0,pos).c_str(), 0755);
       
@@ -418,7 +458,7 @@ namespace gpstk
             headerList.push_back(header);
          }
       }
-   }  
+   }
 
 } // namespace gpstk
 

@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,24 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2011
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /**
  * @file GloEphemerisStore.cpp
@@ -48,13 +47,12 @@ using namespace std;
 namespace gpstk
 {
 
-
       // Add ephemeris information from a Rinex3NavData object.
    bool GloEphemerisStore::addEphemeris(const Rinex3NavData& data)
    {
 
          // If enabled, check SV health before entering here (health = 0 -> OK)
-      if( (data.health == 0) || (!checkHealthFlag) )
+      if( (data.health == 0) || (!onlyHealthy) )
       {
             // Get a GloEphemeris object from Rinex3NavData object
          GloEphemeris gloEphem(data);
@@ -67,12 +65,12 @@ namespace gpstk
 
          if (t < initialTime)
             initialTime = t;
-         else if (t > finalTime)
+         if (t > finalTime)
             finalTime = t;
 
          return true;
 
-      }  // End of 'if( (data.health == 0) || (!checkHealthFlag) )'
+      }  // End of 'if( (data.health == 0) || (!onlyHealthy) )'
 
       return false;
 
@@ -168,6 +166,162 @@ namespace gpstk
    }; // End of method 'GloEphemerisStore::getXvt()'
 
 
+   Xvt GloEphemerisStore::computeXvt(const SatID& sat,
+                                     const CommonTime& epoch) const throw()
+   {
+      Xvt rv;
+      rv.health = Xvt::HealthStatus::Unavailable;
+      try
+      {
+            // TD is this too strict?
+         if (epoch.getTimeSystem() != initialTime.getTimeSystem())
+         {
+               // Not valid, but we don't have a specific "health" state
+               // of "wrong time system"
+            return rv;
+         }
+      
+            // Check that the given epoch is within the available time limits.
+            // We have to add a margin of 15 minutes (900 seconds).
+         if ((epoch <  (initialTime - 900.0)) ||
+             (epoch >  (finalTime   + 900.0)))
+         {
+            return rv;
+         }
+
+            // Look for the satellite in the 'pe' (EphMap) data structure.
+         GloEphMap::const_iterator svmap = pe.find(sat);
+
+            // If satellite was not found, say so
+         if (svmap == pe.end())
+         {
+            return rv;
+         }
+
+            // Let's take the second part of the EphMap
+         const TimeGloMap& sem = svmap->second;
+
+            // Look for 'i': the first element whose key >= epoch.
+         TimeGloMap::const_iterator i = sem.lower_bound(epoch);;
+
+            // If we reached the end, the requested time is beyond the last
+            // ephemeris record, but it may still be within the allowable time
+            // span, so we can use the last record.
+         if (i == sem.end())
+         {
+            i = --i;
+         }
+
+            // If key > (epoch+900), we must use the previous record
+            // if possible.
+         if ((i->first > (epoch+900.0)) && (i != sem.begin()))
+         {
+            i = --i;
+         }
+
+            // Check that the given epoch is within the available time
+            // limits for this specific satellite, with a margin of 15
+            // minutes (900 seconds).
+         if ((epoch <  (i->first - 900.0)) ||
+             (epoch >= (i->first + 900.0)))
+         {
+            return rv;
+         }
+
+            // We now have the proper reference data record. Let's use it
+         GloEphemeris data(i->second);
+
+            // Compute the satellite position, velocity and clock offset
+         rv = data.svXvt(epoch);
+         rv.health = (data.getHealth() == 0 ? Xvt::HealthStatus::Healthy
+                      : Xvt::HealthStatus::Unhealthy);
+      }
+      catch (...)
+      {
+      }
+
+         // We are done, let's return
+      return rv;
+   }
+
+
+   Xvt::HealthStatus GloEphemerisStore::getSVHealth(const SatID& sat,
+                                                    const CommonTime& epoch)
+      const throw()
+   {
+      Xvt::HealthStatus rv = Xvt::HealthStatus::Unavailable;
+      try
+      {
+            // TD is this too strict?
+         if (epoch.getTimeSystem() != initialTime.getTimeSystem())
+         {
+               // Not valid, but we don't have a specific "health" state
+               // of "wrong time system"
+            return rv;
+         }
+      
+            // Check that the given epoch is within the available time limits.
+            // We have to add a margin of 15 minutes (900 seconds).
+         if ((epoch <  (initialTime - 900.0)) ||
+             (epoch >  (finalTime   + 900.0)))
+         {
+            return rv;
+         }
+
+            // Look for the satellite in the 'pe' (EphMap) data structure.
+         GloEphMap::const_iterator svmap = pe.find(sat);
+
+            // If satellite was not found, say so
+         if (svmap == pe.end())
+         {
+            return rv;
+         }
+
+            // Let's take the second part of the EphMap
+         const TimeGloMap& sem = svmap->second;
+
+            // Look for 'i': the first element whose key >= epoch.
+         TimeGloMap::const_iterator i = sem.lower_bound(epoch);;
+
+            // If we reached the end, the requested time is beyond the last
+            // ephemeris record, but it may still be within the allowable time
+            // span, so we can use the last record.
+         if (i == sem.end())
+         {
+            i = --i;
+         }
+
+            // If key > (epoch+900), we must use the previous record
+            // if possible.
+         if ((i->first > (epoch+900.0)) && (i != sem.begin()))
+         {
+            i = --i;
+         }
+
+            // Check that the given epoch is within the available time
+            // limits for this specific satellite, with a margin of 15
+            // minutes (900 seconds).
+         if ((epoch <  (i->first - 900.0)) ||
+             (epoch >= (i->first + 900.0)))
+         {
+            return rv;
+         }
+
+            // We now have the proper reference data record. Let's use it
+         GloEphemeris data(i->second);
+         rv = (data.getHealth() == 0 ? Xvt::HealthStatus::Healthy
+               : Xvt::HealthStatus::Unhealthy);
+      }
+      catch (...)
+      {
+      }
+
+         // We are done, let's return
+      return rv;
+
+   }
+
+
       /* A debugging function that outputs in human readable form,
        * all data stored in this object.
        *
@@ -188,7 +342,7 @@ namespace gpstk
         << " to " << (finalTime == CommonTime::BEGINNING_OF_TIME
                                     ? "Begin_time" : printTime(finalTime, fmt))
         << " with " << pe.size() << " entries; checkHealthFlag is "
-        << (checkHealthFlag ? "T":"F") << std::endl;
+        << (onlyHealthy ? "T":"F") << std::endl;
 
       //}
       //else
@@ -375,6 +529,18 @@ namespace gpstk
       return ret;
    }
 
+   set<SatID> GloEphemerisStore::getIndexSet() const
+   {
+      set<SatID> retSet;
+      GloEphMap::const_iterator cit;
+      for (cit=pe.begin();cit!=pe.end();cit++)
+      {
+        const SatID& sidr = cit->first;
+        retSet.insert(sidr);
+      }
+      return retSet; 
+   }
+
       /* Find the corresponding GLONASS ephemeris for the given epoch.
        *
        * @param sat SatID of satellite of interest.
@@ -383,8 +549,8 @@ namespace gpstk
        * @return a reference to the desired ephemeris.
        * @throw InvalidRequest object thrown when no ephemeris is found.
        */
-   const GloEphemeris& GloEphemerisStore::findEphemeris( const SatID& sat,
-                                                const CommonTime& epoch ) const
+   const GloEphemeris& GloEphemerisStore ::
+   findEphemeris( const SatID& sat, const CommonTime& epoch ) const
    {
          // Check that the given epoch is within the available time limits.
          // We have to add a margin of 15 minutes (900 seconds).

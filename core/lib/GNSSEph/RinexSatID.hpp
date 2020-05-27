@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 #ifndef GPSTK_RINEX_SATID_HPP
 #define GPSTK_RINEX_SATID_HPP
@@ -84,6 +84,7 @@ namespace gpstk
             case systemTransit:
             case systemQZSS:
             case systemBeiDou:
+            case systemIRNSS:
             case systemMixed:
                break;
                   // Invalidate anything non-RINEX.
@@ -144,6 +145,7 @@ namespace gpstk
             case systemTransit: return 'T';
             case systemQZSS:    return 'J';
             case systemBeiDou:  return 'C';
+            case systemIRNSS:   return 'I';
             default:            return '?';
          }
       };
@@ -163,6 +165,7 @@ namespace gpstk
             case systemTransit: return "Transit";
             case systemQZSS:    return "QZSS";
             case systemBeiDou:  return "BeiDou";
+            case systemIRNSS:   return "IRNSS";
             default:            return "Unknown";
          }
       };
@@ -181,6 +184,7 @@ namespace gpstk
             case systemTransit: return "TRN";     // RINEX ver 2
             case systemQZSS:    return "QZS";
             case systemBeiDou:  return "BDS";
+            case systemIRNSS:   return "IRN";      // RINEX ver 3.03
             default:            return "Unk";
          }
       };
@@ -228,6 +232,9 @@ namespace gpstk
                break;
             case 'J': case 'j':
                system = SatID::systemQZSS;
+               break;
+            case 'I': case 'i':
+               system = SatID::systemIRNSS;
                break;
             case 'C': case 'c':
                system = SatID::systemBeiDou;

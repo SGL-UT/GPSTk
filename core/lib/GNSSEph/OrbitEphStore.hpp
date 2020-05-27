@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /** @file OrbitEphStore.hpp Class for storing and/or computing
  * position, velocity, and clock data using tables of <SatID, <time,
@@ -48,6 +48,7 @@
 
 #include <iostream>
 #include <list>
+#include <set>
 
 #include "OrbitEph.hpp"
 #include "Exception.hpp"
@@ -67,7 +68,7 @@ namespace gpstk
    class OrbitEphStore : public XvtStore<SatID>
    {
    public:
-      
+
          /** Default empty constructor. Derived classes may want to
           * override this constructor in order to set the store's time
           * system. If the store will be used only for satellites of a
@@ -75,13 +76,14 @@ namespace gpstk
           * that system; TimeSystem::Any is used here to allow store
           * to hold satellites with differing time systems. */
       OrbitEphStore()
-            : initialTime(CommonTime::END_OF_TIME), 
+            : initialTime(CommonTime::END_OF_TIME),
               finalTime(CommonTime::BEGINNING_OF_TIME),
-              strictMethod(true), onlyHealthy(false)
+              strictMethod(true)
       {
          timeSystem = TimeSystem::Any;
          initialTime.setTimeSystem(timeSystem);
          finalTime.setTimeSystem(timeSystem);
+         setOnlyHealthyFlag(false);
       }
 
          /// Destructor
@@ -100,6 +102,30 @@ namespace gpstk
           * @throw InvalidRequest if the satellite is not stored or
           *   there are no orbit elements at time t. */
       virtual Xvt getXvt(const SatID& id, const CommonTime& t) const;
+
+         /** Compute the position, velocity and clock offset of the
+          * indicated object in ECEF coordinates (meters) at the
+          * indicated time.
+          * This method functions similarly to getXvt() except that it
+          * does not throw an exception for any reason.  Instead, the
+          * caller is expected to check the value of the "health"
+          * field of the returned Xvt and decide what to do with the
+          * data.
+          * @note This function ignores the onlyHealthy flag.  It is
+          *   up to the caller to examine the state of the health flag
+          *   and decide what to do.
+          * @param[in] id the object's identifier
+          * @param[in] t the time to look up
+          * @return the Xvt of the object at the indicated time */
+      virtual Xvt computeXvt(const SatID& id, const CommonTime& t) const
+         throw();
+
+         /** Get the satellite health at a specific time.
+          * @param[in] id the object's identifier
+          * @param[in] t the time to look up
+          * @return the health status of the object at the indicated time. */
+      virtual Xvt::HealthStatus getSVHealth(const SatID& id,
+                                            const CommonTime& t) const throw();
 
          /** Output summary of store data in human readable form, with detail:
           *  0: Time limits and number of entries for entire store
@@ -122,24 +148,11 @@ namespace gpstk
           * time interval
           * @param[in] tmin defines the beginning of the time interval
           * @param[in] tmax defines the end of the time interval */
-      virtual void edit(const CommonTime& tmin, 
+      virtual void edit(const CommonTime& tmin,
                         const CommonTime& tmax = CommonTime::END_OF_TIME);
 
          /// Clear the dataset, meaning remove all data
-      virtual void clear(void)
-      {
-         for(SatTableMap::iterator ui=satTables.begin(); ui!=satTables.end(); ui++) {
-            TimeOrbitEphTable& toet = ui->second;
-            toet.clear();
-         } 
-
-         satTables.clear();
-
-         initialTime = CommonTime::END_OF_TIME;
-         initialTime.setTimeSystem(timeSystem);
-         finalTime = CommonTime::BEGINNING_OF_TIME;
-         finalTime.setTimeSystem(timeSystem);
-      }
+      virtual void clear(void);
 
          /** Return the earliest time in the store.
           * @return The store initial time */
@@ -254,6 +267,8 @@ namespace gpstk
          return true;
       }
 
+      virtual std::set<SatID> getIndexSet() const; 
+
          /** Explanation of find() function for OrbitEphStore The
           * findUserOrbitEph() funtion does the best possible job of
           * emulating the choice that would be made by a real-time
@@ -304,39 +319,34 @@ namespace gpstk
          /** Add all ephemerides to an existing list<OrbitEph>.  If
           * SatID sat is given, limit selections to sat's satellite
           * system, plus if sat's id is not -1, limit to sat's id as
-          * well.
+          * well.  The caller owns any added ephemerides and must delete them.
           * @return the number of ephemerides added. */
       virtual int addToList(std::list<OrbitEph*>& v,
                             SatID sat=SatID(-1,SatID::systemUnknown)) const;
 
-         /// use findNearOrbitEph() in getXvt() and getSatHealth()
-      void SearchNear(void)
-      { strictMethod = false; }
+         /// use findNearOrbitEph() in getXvt()
+         // MUST be done prior to starting to load nav data sets.
+      bool SearchNear(void)
+      { 
+         if (size()==0)
+         {
+            strictMethod = false; 
+            return true;
+         }
+         return false; 
+      }
 
-         /** use findUserOrbitEph() in getXvt() and getSatHealth()
+         /** use findUserOrbitEph() in getXvt()
           * (the default) */
-      void SearchUser(void)
-      { strictMethod = true; }
-
-         /// get the flag that limits getXvt() to healthy ephemerides
-      bool getOnlyHealthyFlag(void) const
-      { return onlyHealthy; }
-
-         /// set the flag that limits getXvt() to healthy ephemerides
-      void setOnlyHealthyFlag(bool flag)
-      { onlyHealthy = flag; }
-
-         /** Return the satellite health at the given time.
-          * @param SatID sat satellite of interest
-          * @param CommonTime t time of interest
-          * @return true if the satellite is healthy */
-      bool getSatHealth(const SatID& sat, const CommonTime& t) const
-      {
-            // get the appropriate OrbitEph
-         const OrbitEph *eph = findOrbitEph(sat,t);
-         if (eph == NULL)
-            return false;
-         return eph->isHealthy();
+         // MUST be done prior to starting to load nav data sets.
+      bool SearchUser(void)
+      { 
+         if (size()==0)
+         {
+            strictMethod = true; 
+            return true;
+         }
+         return false; 
       }
 
          /** This map stores sets of unique orbital elements for a
@@ -373,13 +383,8 @@ namespace gpstk
 
       TimeSystem timeSystem;  ///< Time system of store i.e. initial and final times
 
-         /** flag indicating search method (find...Eph) to use in
-          *  getSatXvt and getSatHealth */
+         /// flag indicating search method (find...Eph) to use.
       bool strictMethod;
-
-         /** flag indicating unhealthy ephemerides should be excluded
-          * from getXvt, otherwise it will throw (default false) */
-      bool onlyHealthy;
 
          /// Convenience routines
       void updateTimeLimits(const OrbitEph* eph)
@@ -400,7 +405,7 @@ namespace gpstk
          if(beg < initialTime) initialTime = beg;
          if(end > finalTime) finalTime = end;
       }
-      
+
    }; // end class OrbitEphStore
 
       //@}

@@ -1,3 +1,39 @@
+//==============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 3.0 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
+//  
+//  Copyright 2004-2019, The University of Texas at Austin
+//
+//==============================================================================
+
+//==============================================================================
+//
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
+//
+//  Pursuant to DoD Directive 523024 
+//
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
+//
+//==============================================================================
+
 #include "TimeSystem.hpp"
 #include "TestUtil.hpp"
 #include <iostream>
@@ -188,10 +224,11 @@ public:
       gpstk::TimeSystem GALtime(4);
       gpstk::TimeSystem QZStime(5);
       gpstk::TimeSystem BDTtime(6);
-      gpstk::TimeSystem UTCtime(7);
-      gpstk::TimeSystem TAItime(8);
-      gpstk::TimeSystem TTtime(9);
-      gpstk::TimeSystem TDBtime(10);
+      gpstk::TimeSystem IRNtime(7);
+      gpstk::TimeSystem UTCtime(8);
+      gpstk::TimeSystem TAItime(9);
+      gpstk::TimeSystem TTtime(10);
+      gpstk::TimeSystem TDBtime(11);
 
 
          //-------------------------------------------------------------------------
@@ -217,9 +254,15 @@ public:
          //testFramework.assert(std::abs(gpstk::TimeSystem::Correction(QZStime, UTCtime, 2010, 2, 14) - 15) < eps, testMesg, __LINE__);
 		
       testMesg = "Conversion from UTC time to BDT time was incorrect";
-      testFramework.assert(std::abs(gpstk::TimeSystem::Correction(UTCtime, BDTtime, 2001, 9, 21) - 0) < eps, testMesg, __LINE__);
+      testFramework.assert(std::abs(gpstk::TimeSystem::Correction(UTCtime, BDTtime, 2006, 9, 21) - 0) < eps, testMesg, __LINE__);
       testMesg = "Conversion from BDT time to UTC time was incorrect";
-      testFramework.assert(std::abs(gpstk::TimeSystem::Correction(BDTtime, UTCtime, 2012, 8, 27) - 0) < eps, testMesg, __LINE__);
+      testFramework.assert(std::abs(gpstk::TimeSystem::Correction(BDTtime, UTCtime, 2012, 8, 27) + 2) < eps, testMesg, __LINE__);
+
+      testMesg = "Conversion from UTC time to IRN time was incorrect";
+      testFramework.assert(std::abs(gpstk::TimeSystem::Correction(UTCtime, IRNtime, 2004, 11, 16) - 13) < eps, testMesg, __LINE__);
+      testMesg = "Conversion from IRN time to UTC time was incorrect";
+      testFramework.assert(std::abs(gpstk::TimeSystem::Correction(IRNtime, UTCtime, 2004, 11, 16) + 13) < eps, testMesg, __LINE__);
+
       testMesg = "Conversion from UTC time to TAI time was incorrect";
       testFramework.assert(std::abs(gpstk::TimeSystem::Correction(UTCtime, TAItime, 2014, 6, 1) - 35) < eps, testMesg, __LINE__);
       testMesg = "Conversion from TAI time to UTC time was incorrect";

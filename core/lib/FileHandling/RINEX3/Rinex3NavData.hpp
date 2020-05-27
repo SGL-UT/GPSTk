@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /// @file Rinex3NavData.hpp
 /// Encapsulates RINEX ver 3.02 Navigation data
@@ -148,6 +148,9 @@ namespace gpstk
          return (t < r);
       }
 
+      static long fixSF1xmitSOW(unsigned long sow)
+      { return sow - (sow % 30); }
+
 
          /** @name General Data */
          //@{
@@ -155,7 +158,7 @@ namespace gpstk
       std::string satSys;  ///< Satellite system of Epoch: G,R,E,S,C
       short PRNID;         ///< SV PRN ID
       RinexSatID sat;      ///< RinexSatID (from PRNID & satSys)
-      long HOWtime;        ///< Time of subframe 1-3 (sec of week)
+      long xmitTime;        ///< Time of subframe 1-3 (sec of week)
       short weeknum;       ///< GPS full week corresponding to HOWtime of SF1
                            ///< (N.B.:in RINEX files, week number corresponds
                            /// >to ToE, not GLO)
@@ -227,6 +230,7 @@ namespace gpstk
       double  OMEGAdot;    ///< Rate of Rt ascension (rad/sec)
       double  idot;        ///< Rate of inclination angle (rad/sec)
       double  fitint;      ///< Fit interval
+
          //@}
 
          /** @name Tabular Ephemeris Parameters */

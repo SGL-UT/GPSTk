@@ -4,9 +4,8 @@ _namefixes = {'str': 'string', 'float' : 'double'}
 %}
 
 
-/////////////////////////////////////////////////////
-//            std::map <-> dict conversions
-/////////////////////////////////////////////////////
+
+// std::map <-> dict conversions
 %pythoncode %{
 def dictToMap(dict, outtype=''):
     """Translates a python dict type to a std::map backed type.
@@ -22,14 +21,18 @@ def dictToMap(dict, outtype=''):
     the function will attempt to discover what the appropriate type is. For example, you
     might use outType=\'map_string_int\'.
     """
-    import __builtin__
+    import sys
+    if sys.version_info[0] < 3:
+        import __builtin__ as builtins
+    else:
+        import builtins
     if len(dict) == 0:
         return None
-    first_key = dict.keys()[0]
+    first_key = builtins.list(dict.keys())[0]
     t_key = first_key.__class__.__name__
     t_value = dict[first_key].__class__.__name__
 
-    # some python names don't map to the vector wrap names perfectly, so they get fixed:
+    # some python names dont map to the vector wrap names perfectly, so they get fixed:
     if t_key in _namefixes:
         t_key = _namefixes[t_key]
     if t_value in _namefixes:
@@ -50,7 +53,7 @@ def dictToMap(dict, outtype=''):
 
     t_key = type(first_key)
     t_value = type(dict[first_key])
-    for key, value in dict.iteritems():
+    for key, value in dict.items():
         if type(key) != t_key or type(value) != t_value:
             raise TypeError('Type mismatch in dict: ({0}, {1}) vs. ({2}, {3})'
                             .format(t_key, t_value, type(key), type(value)))
@@ -59,19 +62,17 @@ def dictToMap(dict, outtype=''):
 
 def mapToDict(map):
     """Translates a std::map backed type (from gpstk.cpp) to a python dict.
-
     Note that this recopies the contents of the map and is a linear time operation.
     """
     dict = {}
-    for key, value in map.iteritems():
+    for key, value in map.items():
         dict[key] = value
     return dict
 %}
 
 
-/////////////////////////////////////////////////////
-//         std::vector <-> list conversions
-/////////////////////////////////////////////////////
+// std::vector <-> list conversions
+
 %pythoncode %{
 def seqToVector(seq, outtype=''):
     """Translates a python iterable type to a std::vector backed type.
@@ -87,7 +88,11 @@ def seqToVector(seq, outtype=''):
     the function will attempt to discover what the appropriate type is. For example, you
     might use outtype=\'vector_double\'.
     """
-    import __builtin__
+    import sys
+    if sys.version_info[0] < 3:
+        import __builtin__ as builtins
+    else:
+        import builtins
 
     if outtype == '':
         if len(seq) == 0:
@@ -107,7 +112,7 @@ def seqToVector(seq, outtype=''):
             raise TypeError('The type ' + outtype + ' does not exist')
 
     first_type = type(seq[0])
-    for i in __builtin__.range(len(seq)):
+    for i in builtins.range(len(seq)):
         if type(seq[i]) != first_type:
             raise TypeError('Type mismatch in sequence: {0} vs. {1}'
                             .format(first_type, type(seq[i])))
@@ -120,8 +125,12 @@ def vectorToSeq(vector):
     Note that this recopies the contents of the vector and is a linear time operation.
     """
     list = [None] * vector.size()  # pre-allocates size to help efficiency
-    import __builtin__
-    for i in __builtin__.range(vector.size()):
+    import sys
+    if sys.version_info[0] < 3:
+        import __builtin__ as builtins
+    else:
+        import builtins
+    for i in builtins.range(vector.size()):
         list[i] = vector[i]
     return list
 %}

@@ -1,0 +1,49 @@
+INTERNAL FORMAT OF THE EPHEMERIS FILES
+--------------------------------------
+
+On the first record of an export binary file or in the "GROUP 1050 of the ascii
+"header", there are 3 sets of 13 integers each.  (In the binary version, the
+13th of each set is stored away from the first 12.)
+
+The 13 triplets give information about the location, order and time-coverage of
+the chebychev polynomials corresponding to the following 13 items:
+
+       Mercury
+       Venus
+       Earth-Moon barycenter
+       Mars 
+       Jupiter 
+       Saturn
+       Uranus
+       Neptune
+       Pluto
+       Moon (geocentric)
+       Sun
+       Nutations
+       Librations
+
+Word (1,i) is the starting location in each data record of the chebychev 
+coefficients belonging to the ith item.  Word (2,i) is the number of chebychev 
+coefficients per component of the ith item, and Word (3,i) is the number of 
+complete sets of coefficients in each data record for the ith item.
+
+Data Records ("GROUP 1070")
+
+These records contain the actual ephemeris data in the form of chebychev 
+polynomials.
+
+The first two double precision words in each data record contain
+
+         Julian date of earliest data in record.
+         Julian date of latest data in record.
+
+The remaining data are chebychev position coefficients for each component of 
+each body on the tape.  The chebychev coefficients for the planets represent 
+the solar system barycentric positions of the centers of the planetary systems.
+
+There are three Cartesian components (x, y, z), for each of the items #1-11; 
+there are two components for the 12th item, nutations : d(psi) and d(epsilon);
+there are three components for the 13th item, librations : three Euler angles.
+
+Planetary positions are stored in units of kilometers (TDB-compatible).
+The nutations and librations are stored in units of radians.

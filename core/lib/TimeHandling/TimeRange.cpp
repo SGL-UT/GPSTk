@@ -1,3 +1,39 @@
+//==============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 3.0 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
+//  
+//  Copyright 2004-2019, The University of Texas at Austin
+//
+//==============================================================================
+
+//==============================================================================
+//
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
+//
+//  Pursuant to DoD Directive 523024 
+//
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
+//
+//==============================================================================
+
 #include "TimeRange.hpp"
 #include "TimeString.hpp"
 
@@ -134,6 +170,32 @@ namespace gpstk
      return false;
    }
    
+   bool TimeRange::operator<(const TimeRange& right) const
+   {
+        // If both are inclusive, then simply return true
+        // if left start < right start.
+      if (includeStartTime==right.includeStartTime)
+      {
+         if (start<right.start) 
+         {
+            return true;
+         }
+         return false;
+      }  
+
+        // If right is NOT inclusive, that implies left
+        // IS inclusive.  In this case, return true if
+        // left is <= right
+     if (!right.includeStartTime)
+     {
+        if (start<=right.start)
+        {
+          return true; 
+        }
+     }
+     return false;
+   }
+
       // True if start/end of this object are both prior
       // to start of "right"
       // Note that the constructor verifies start<end. 
@@ -216,8 +278,16 @@ namespace gpstk
          // See if first non-whitespace character is '[' or '('
       std::string whitespace(" \t\n"); 
       std::string::size_type n = str.find_first_not_of(whitespace);
+         // Helps when given invalid strings
+      if (n == string::npos)
+      {
+         TimeRangeException tre;
+         tre.addText("TimeRange:Failure finding first non-whitespace character");
+         GPSTK_THROW(tre);
+      }
       includeStartTime = true;    // default case
       string leadChar = str.substr(n,1);
+
 //      std::cout << "leadChar :'" << leadChar << "'" << endl;
       if (leadChar.compare("[")==0)
       {

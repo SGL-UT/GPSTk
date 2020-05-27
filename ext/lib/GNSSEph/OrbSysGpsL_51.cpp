@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,24 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
+
 /**
  * @file OrbSysGpsL_51.cpp
  * OrbSysGpsL_51 data encapsulated in engineering terms
@@ -131,8 +132,8 @@ namespace gpstk
       unsigned short currXMitWeekMSBs = currXMitWeek & 0xFF00;
       unsigned short WNaFull = currXMitWeekMSBs + WNa; 
       short diff8 = (short) WNa - (short) currXMitWeek8bit;
-      if (diff8 < -127) WNaFull += 128; 
-      if (diff8 >  127) WNaFull -= 128;
+      if (diff8 < -127) WNaFull += 256; 
+      if (diff8 >  127) WNaFull -= 256;
       ctToa = GPSWeekSecond(WNaFull, toa, TimeSystem::GPS);
 
       dataLoadedFlag = true;   
@@ -151,7 +152,7 @@ namespace gpstk
       s << setw(7) << ssys;
       s << " " << setw(2) << satID.id;
 
-      string tform="%02m/%02d/%04Y %02H:%02M:%02S";
+      string tform="%02m/%02d/%04Y %03j %02H:%02M:%02S";
       s << "  51";      // UID
       s << " " << printTime(beginValid,tform) << "  ";
       s << "toa: " << printTime(ctToa,tform) << "  ";

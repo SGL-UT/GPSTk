@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /// TimeSystem.cpp
 
@@ -57,10 +57,11 @@ namespace gpstk
        string("GAL"),
        string("QZS"),
        string("BDT"),
+       string("IRN"),
        string("UTC"),
        string("TAI"),
        string("TT"),
-       string("TRT"),
+       string("TDB"),
      };
 
    void TimeSystem::setTimeSystem(const Systems& sys)
@@ -153,7 +154,8 @@ namespace gpstk
          { 2006,  1, 33 },
          { 2009,  1, 34 },
          { 2012,  7, 35 },
-         { 2015,  7, 36 }, // leave the last comma!
+         { 2015,  7, 36 }, 
+         { 2017,  1, 37 }, // leave the last comma!
          // add new entry here, of the form:
          // { year, month(1-12), leap_sec }, // leave the last comma!
       };
@@ -241,26 +243,31 @@ namespace gpstk
          TDBmTT += 0.000022  * ::sin(4.295429822 + frac);
       }
 
+      // Time system conversions constants
+      static const double TAI_minus_GPSGAL_EPOCH = 19.;
+      static const double TAI_minus_BDT_EPOCH = 33.;
+      static const double TAI_minus_TT_EPOCH = -32.184;
+      
       // -----------------------------------------------------------
       // conversions: first convert inTS->TAI ...
       // TAI = GPS + 19s
       // TAI = UTC + getLeapSeconds()
       // TAI = TT - 32.184s
       if(inTS == GPS ||       // GPS -> TAI
-         inTS == GAL)         // GAL -> TAI
-         dt = 19.;
+         inTS == GAL ||       // GAL -> TAI
+         inTS == IRN )        // IRN -> TAI 
+         dt = TAI_minus_GPSGAL_EPOCH;
       else if(inTS == UTC ||  // UTC -> TAI
-              inTS == BDT ||  // BDT -> TAI           // TD is this right?
               inTS == GLO)    // GLO -> TAI
          dt = getLeapSeconds(year, month, day);
-      //else if(inTS == BDT)    // BDT -> TAI         // RINEX 3.02 seems to say this
-      //   dt = 34.;
+      else if(inTS == BDT)    // BDT -> TAI
+         dt = TAI_minus_BDT_EPOCH;
       else if(inTS == TAI)    // TAI
          ;
       else if(inTS == TT)     // TT -> TAI
-         dt = -32.184;
+         dt = TAI_minus_TT_EPOCH;
       else if(inTS == TDB)    // TDB -> TAI
-         dt = -32.184 + TDBmTT;
+         dt = TAI_minus_TT_EPOCH + TDBmTT;
       else {                              // other
          Exception e("Invalid input TimeSystem " + inTS.asString());
          GPSTK_THROW(e);
@@ -272,22 +279,20 @@ namespace gpstk
       // UTC = TAI - getLeapSeconds()
       // TT = TAI + 32.184s
       if(outTS == GPS ||      // TAI -> GPS
-         outTS == GAL)        // TAI -> GAL
-         dt -= 19.;
+         outTS == GAL ||      // TAI -> GAL
+         outTS == IRN )       // TAI -> IRN
+         dt -= TAI_minus_GPSGAL_EPOCH;
       else if(outTS == UTC || // TAI -> UTC
-              outTS == BDT || // TAI -> BDT
               outTS == GLO)   // TAI -> GLO
          dt -= getLeapSeconds(year, month, day);
-      //else if(outTS == BDT)   // TAI -> BDT
-      //   dt -= 34.;
+      else if(outTS == BDT)   // TAI -> BDT
+         dt -= TAI_minus_BDT_EPOCH;
       else if(outTS == TAI)   // TAI
          ;
       else if(outTS == TT)    // TAI -> TT
-         dt += 32.184;
+         dt -= TAI_minus_TT_EPOCH;
       else if(outTS == TDB)   // TAI -> TDB
-         dt += 32.184 - TDBmTT;
-      else if(outTS == GAL)   // TD
-         dt = 0.0;
+         dt -= TAI_minus_TT_EPOCH + TDBmTT;
       else {                              // other
          Exception e("Invalid output TimeSystem " + outTS.asString());
          GPSTK_THROW(e);

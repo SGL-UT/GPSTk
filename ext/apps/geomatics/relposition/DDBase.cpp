@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /**
  * @file DDBase.cpp
@@ -297,4 +297,38 @@ catch (...) {
    return -1;
 }   // end main()
 
+//------------------------------------------------------------------------------------
+// Generate a 3x3 rotation Matrix, for direct rotations about one axis
+// (for XYZ, axis=123), given the rotation angle in radians;
+// param angle in radians.
+// param axis 1,2,3 as rotation about X,Y,Z.
+// return Rotation matrix (3x3).
+// throw InvalidInput if axis is anything other than 1, 2 or 3.
+Matrix<double> SingleAxisRotation(double angle, const int axis) throw(Exception)
+{
+try {
+   if(axis < 1 || axis > 3) {
+      Exception e(string("Invalid axis (1,2,3 <=> X,Y,Z): ")
+                         + StringUtils::asString(axis));
+      GPSTK_THROW(e);
+   }
+   Matrix<double> R(3,3,0.0);
+
+   int i1=axis-1;                      // axis = 1 : 0,1,2
+   int i2=i1+1; if(i2 == 3) i2=0;      // axis = 2 : 1,2,0
+   int i3=i2+1; if(i3 == 3) i3=0;      // axis = 3 : 2,0,1
+
+   R(i1,i1) = 1.0;
+   R(i2,i2) = R(i3,i3) = ::cos(angle);
+   R(i3,i2) = -(R(i2,i3) = ::sin(angle));
+
+   return R;
+}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(std::exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+}
+
+//------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------

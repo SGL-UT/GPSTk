@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /**
  * @file FileUtils.hpp
@@ -45,18 +45,21 @@
 // #ifdef __sun
 // #include <libgen.h>
 // #else
-#include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <iostream>
 // #endif
 
 #include <fstream>
 #include <string>
 #include "StringUtils.hpp"
 
-#ifdef _MSC_VER
+#ifdef WIN32
 #include <direct.h>
+#include <io.h>
 #endif
 
+using namespace std;
 namespace gpstk
 {
       /// @ingroup FileDirProc
@@ -77,23 +80,24 @@ namespace gpstk
           * @return always 0
           */
      
-#ifdef _MSC_VER
+#ifdef WIN32
       inline int makeDir(const std::string& path, unsigned mode)
       {
+        std::string temppath = path;
+        
+        //Clean up windows file path 
+        std::replace(temppath.begin(), temppath.end(), '\\', '/');
+        std::string::size_type i = 0;
 
-         std::string::size_type i = 0;
-
-         while ((i = path.find('/',i+1)) != std::string::npos)
+         while ((i = temppath.find('/',i+1)) != std::string::npos)
          {
-            std::string thispath(path.substr(0,i));
+            std::string thispath(temppath.substr(0,i));
             if (thispath[thispath.length() - 1] == '/')
                thispath.erase(thispath.length() - 1);
-
-            _mkdir(path.c_str());
-
+            _mkdir(thispath.c_str());
 
          }
-         _mkdir(path.c_str());
+         _mkdir(temppath.c_str());
          return 0;
       }
 #else

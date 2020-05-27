@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -15,25 +15,24 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
+//  
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//  Copyright 2015, The University of Texas at Austin
-//
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-// This software developed by Applied Research Laboratories at the
-// University of Texas at Austin, under contract to an agency or
-// agencies within the U.S.  Department of Defense. The
-// U.S. Government retains all rights to use, duplicate, distribute,
-// disclose, or release this software.
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-// Pursuant to DoD Directive 523024
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 #include <typeinfo>
 #include <iostream>
@@ -50,22 +49,135 @@
 
 // Define a TestUtil object named testFramework
 #define TUDEF(CLASS,METHOD) gpstk::TestUtil testFramework(CLASS, METHOD, __FILE__, __LINE__)
+
 // Macro to make test code look nice...
 #define TUCSM(METHOD) testFramework.changeSourceMethod(METHOD)
+
+
 // Macro to be short form of TestUtil::assert()
-#define TUASSERT(EXPR) testFramework.assert(EXPR, "Assertion failure: "#EXPR, __LINE__)
+#define TUASSERT(EXPR)                                                  \
+   try                                                                  \
+   {                                                                    \
+      testFramework.assert(EXPR, "Assertion failure: "#EXPR, __LINE__); \
+   }                                                                    \
+   catch (gpstk::Exception &exc)                                        \
+   {                                                                    \
+      std::cerr << exc << std::endl;                                    \
+      testFramework.assert(false, "Exception during "#EXPR, __LINE__);  \
+   }                                                                    \
+   catch (...)                                                          \
+   {                                                                    \
+      testFramework.assert(false, "Exception during "#EXPR, __LINE__);  \
+   }
+
+
 // Basic macro for doing equality tests.  Expects a TestUtil instance
 // named testFramework.
-#define TUASSERTE(TYPE,EXP,GOT) testFramework.assert_equals<TYPE>(EXP,GOT,__LINE__)
+#define TUASSERTE(TYPE,EXP,GOT)                                         \
+   try                                                                  \
+   {                                                                    \
+      testFramework.assert_equals<TYPE>(EXP, GOT, __LINE__);            \
+   }                                                                    \
+   catch (gpstk::Exception &exc)                                        \
+   {                                                                    \
+      std::cerr << exc << std::endl;                                    \
+      testFramework.assert(false,                                       \
+                           "Exception evaluating " #EXP " or " #GOT,    \
+                           __LINE__);                                   \
+   }                                                                    \
+   catch (...)                                                          \
+   {                                                                    \
+      testFramework.assert(false,                                       \
+                           "Exception evaluating " #EXP " or " #GOT,    \
+                           __LINE__);                                   \
+   }
+
+
 // Macro for doing equality tests of double/float values.  Expects a
 // TestUtil instance named testFramework.
-#define TUASSERTFE(EXP,GOT) testFramework.assert_equals(EXP,GOT,__LINE__)
+#define TUASSERTFE(EXP,GOT)                                             \
+   try                                                                  \
+   {                                                                    \
+      testFramework.assert_equals(EXP, GOT, __LINE__);                  \
+   }                                                                    \
+   catch (gpstk::Exception &exc)                                        \
+   {                                                                    \
+      std::cerr << exc << std::endl;                                    \
+      testFramework.assert(false,                                       \
+                           "Exception evaluating " #EXP " or " #GOT,    \
+                           __LINE__);                                   \
+   }                                                                    \
+   catch (...)                                                          \
+   {                                                                    \
+      testFramework.assert(false,                                       \
+                           "Exception evaluating " #EXP " or " #GOT,    \
+                           __LINE__);                                   \
+   }
+
+
 // Macro for doing equality tests of double/float values with a
 // specified epsilon.  Expects a TestUtil instance named
 // testFramework.
-#define TUASSERTFEPS(EXP,GOT,EPS) testFramework.assert_equals(EXP,GOT,__LINE__,"", EPS)
+#define TUASSERTFEPS(EXP,GOT,EPS)                                       \
+   try                                                                  \
+   {                                                                    \
+      testFramework.assert_equals(EXP, GOT, __LINE__, "", EPS);         \
+   }                                                                    \
+   catch (gpstk::Exception &exc)                                        \
+   {                                                                    \
+      std::cerr << exc << std::endl;                                    \
+      testFramework.assert(false,                                       \
+                           "Exception evaluating " #EXP " or " #GOT,    \
+                           __LINE__);                                   \
+   }                                                                    \
+   catch (...)                                                          \
+   {                                                                    \
+      testFramework.assert(false,                                       \
+                           "Exception evaluating " #EXP " or " #GOT,    \
+                           __LINE__);                                   \
+   }
+
 // Macro for doing comparisons of test files
-#define TUCMPFILE(F1,F2,SKIP) testFramework.assert_files_equal(__LINE__, F1, F2, "File mismatch: "+F1+" "+F2, SKIP)
+#define TUCMPFILE(F1,F2,SKIP)                                           \
+   try                                                                  \
+   {                                                                    \
+      testFramework.assert_files_equal(__LINE__, F1, F2,                \
+                                       "File mismatch: "+F1+" "+F2,     \
+                                       SKIP);                           \
+   }                                                                    \
+   catch (gpstk::Exception &exc)                                        \
+   {                                                                    \
+      std::cerr << exc << std::endl;                                    \
+      testFramework.assert(false,                                       \
+                           "Exception comparing " #F1 " and " #F2,      \
+                           __LINE__);                                   \
+   }                                                                    \
+   catch (...)                                                          \
+   {                                                                    \
+      testFramework.assert(false,                                       \
+                           "Exception comparing " #F1 " and " #F2,      \
+                           __LINE__);                                   \
+   }
+
+// Macro for executing a statement inside a try/catch block with PASS/FAIL.
+// e.g. TUCATCH(object.methodShouldNotThrow());
+#define TUCATCH(STATEMENT)                      \
+   try                                          \
+   {                                            \
+      STATEMENT;                                \
+      TUPASS(#STATEMENT);                       \
+   }                                            \
+   catch (gpstk::Exception &exc)                \
+   {                                            \
+      std::cerr << exc << std::endl;            \
+      TUFAIL("Exception");                      \
+   }                                            \
+   catch (...)                                  \
+   {                                            \
+      TUFAIL("Exception");                      \
+   }
+
+
 // Fail the test with a message.
 #define TUFAIL(MSG) testFramework.assert(false, MSG, __LINE__)
 // Pass the test with a (unprinted) message.

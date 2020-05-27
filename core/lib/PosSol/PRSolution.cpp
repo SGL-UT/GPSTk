@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /// @file PRSolution.cpp
 /// Pseudorange navigation solution, either a simple solution using all the
@@ -345,7 +345,8 @@ namespace gpstk
                   // trop
                   double tc(R.getHeight());  // tc is a dummy here
                   // must test R for reasonableness to avoid corrupting TropModel
-                  if(R.elevation(S) < 0.0 || tc > 100000.0 || tc < -1000.0) {
+                  // Global model sets the upper limit
+                  if(R.elevation(S) < 0.0 || tc > 44247. || tc < -1000.0) {
                      tc = 0.0;
                      TropFlag = true;        // true means failed to apply trop corr
                   }
@@ -457,13 +458,16 @@ namespace gpstk
             if(Slopes(j) > MaxSlope) MaxSlope = Slopes(j);
             j++;
          }
+         LOG(DEBUG) << "Computed slopes, found max member";
 
          // compute pre-fit residuals
          if(hasMemory)
             PreFitResidual = P*(Solution-APSolution) - Resids;
+         LOG(DEBUG) << "Computed pre-fit residuals";
 
          // Compute RMS residual (member)
          RMSResidual = RMS(Resids);
+         LOG(DEBUG) << "Computed RMS residual";
 
          // Find the maximum slope (member)
          //MaxSlope = 0.0;
@@ -489,6 +493,37 @@ namespace gpstk
 
 
    // -------------------------------------------------------------------------
+   // Simple interface to RAIMCompute.
+   // Builds vector<SatID::SatelliteSystem> and Matrix<double> for you.
+   // ** TEMPORARY ** -- to be deprecated when the above two data types
+   // are exposed in swig.
+   int PRSolution::RAIMComputeSimple(const CommonTime& Tr,
+                                     vector<SatID>& Sats,
+                                     const vector<double>& Pseudorange,
+                                     const XvtStore<SatID> *pEph,
+                                     TropModel *pTropModel)
+      throw(Exception)
+   {
+      try {
+         // Declare the non-swig'ed variables needed by RAIMCompute;
+         // it will do the actual filling.
+         vector<SatID::SatelliteSystem> Syss; // needed if not in routine's signature
+         Matrix<double> invMC;                // needed if not in routine's signature
+
+         int iret;
+
+         // Call RAIMCompute.
+         iret = RAIMCompute(Tr, Sats, Syss, Pseudorange, invMC, pEph, pTropModel);
+
+         return iret;
+      }
+      catch(Exception& e) {
+         GPSTK_RETHROW(e);
+      }
+   }  // end PRSolution::RAIMComputeSimple()
+
+
+   // -------------------------------------------------------------------------
    // Compute a solution using RAIM.
    int PRSolution::RAIMCompute(const CommonTime& Tr,
                                vector<SatID>& Sats,
@@ -500,6 +535,8 @@ namespace gpstk
       throw(Exception)
    {
       try {
+         //LOGlevel = ConfigureLOG::Level("DEBUG"); // uncomment to turn on DEBUG output to stdout
+
          LOG(DEBUG) << "RAIMCompute at time " << printTime(Tr,gpsfmt);
 
          int iret,N;
@@ -823,6 +860,19 @@ namespace gpstk
    {
       ostringstream oss;
 
+      // output header describing regular output
+      if(iret==-999) {
+         oss << printTime(currTime,gpsfmt);
+         int len = oss.str().size();
+         oss.str("");
+         oss << "#" << tag << " NAV " << setw(len) << "time"
+            << " " << setw(16) << "Sol-X(m)"
+            << " " << setw(16) << "Sol-Y(m)"
+            << " " << setw(16) << "Sol-Z(m)"
+            << " sys " << setw(11) << "clock" << " ...";
+         return oss.str();
+      }
+
       // tag NAV timetag X Y Z clks endtag
       oss << tag << " NAV " << printTime(currTime,gpsfmt)
          << fixed << setprecision(6)
@@ -844,6 +894,20 @@ namespace gpstk
    {
       ostringstream oss;
 
+      // output header describing regular output
+      if(iret==-999) {
+         oss << printTime(currTime,gpsfmt);
+         int len = oss.str().size();
+         if(len > 3) len -= 3;
+         oss.str("");
+         oss << "#" << tag << " POS " << setw(len) << "time"
+            << " " << setw(16) << "Sol-X(m)"
+            << " " << setw(16) << "Sol-Y(m)"
+            << " " << setw(16) << "Sol-Z(m)"
+            << " (ret code) Valid/Not";
+         return oss.str();
+      }
+
       // tag POS timetag X Y Z endtag
       oss << tag << " POS " << printTime(currTime,gpsfmt)
          << fixed << setprecision(6)
@@ -858,6 +922,17 @@ namespace gpstk
    string PRSolution::outputCLKString(string tag, int iret) throw()
    {
       ostringstream oss;
+
+      // output header describing regular output
+      if(iret==-999) {
+         oss << printTime(currTime,gpsfmt);
+         int len = oss.str().size();
+         if(len > 3) len -= 3;
+         oss.str("");
+         oss << "#" << tag << " CLK " << setw(len) << "time"
+            << " sys " << setw(11) << "clock" << " ...";
+         return oss.str();
+      }
 
       // tag CLK timetag SYS clk [SYS clk SYS clk ...] endtag
       oss << tag << " CLK " << printTime(currTime,gpsfmt)
@@ -875,6 +950,25 @@ namespace gpstk
    string PRSolution::outputRMSString(string tag, int iret) throw()
    {
       ostringstream oss;
+
+      // output header describing regular output
+      if(iret==-999) {
+         oss << printTime(currTime,gpsfmt);
+         int len = oss.str().size();
+         if(len > 3) len -= 3;
+         oss.str("");
+         oss << "#" << tag << " RMS " << setw(len) << "time"
+            << " " << setw(2) << "Ngood"
+            << " " << setw(8) << "resid"
+            << " " << setw(7) << "TDOP"
+            << " " << setw(7) << "PDOP"
+            << " " << setw(7) << "GDOP"
+            << " " << setw(5) << "Slope"
+            << " " << setw(2) << "nit"
+            << " " << setw(8) << "converge"
+            << " sats(-rej)... (ret code) Valid/Not";
+         return oss.str();
+      }
 
       // remove duplicates from satellite list, and find "any good data" ones
       // this gets tricky since there may be >1 datum from one satellite

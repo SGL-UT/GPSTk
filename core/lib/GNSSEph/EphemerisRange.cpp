@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /**
  * @file EphemerisRange.cpp
@@ -175,7 +175,11 @@ namespace gpstk
       const SatID sat,
       const XvtStore<SatID>& eph)
    {
-      try {
+      try
+      {
+         Position trx(rx);
+         trx.asECEF();
+
          svPosVel = eph.getXvt(sat, tt_nom);
 
          // compute rotation angle in the time of signal transit
@@ -194,8 +198,8 @@ namespace gpstk
          svPosVel.x[1] = svPosVel.x[1] + svPosVel.x[0] * rotation_angle;
          svPosVel.x[2] = svPosVel.x[2];
 
-         rawrange =rx.slantRange(svPosVel.x);
-         updateCER(rx);
+         rawrange = trx.slantRange(svPosVel.x);
+         updateCER(trx);
 
          return rawrange - svclkbias - relativity;
       }

@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /// @file TimeConstants.hpp Define constants related to time, both in
 ///    general and for the different GNSS.
@@ -90,6 +90,10 @@ namespace gpstk
    const long ZCOUNT_PER_WEEK = 403200L;
       /// Weeks in a Zcount.
    const double WEEK_PER_ZCOUNT = 1.0/ZCOUNT_PER_WEEK;
+      /// Z-counts per minute.
+   const long ZCOUNT_PER_MINUTE = 40;
+      /// Z-counts per hour.
+   const long ZCOUNT_PER_HOUR = 2400;
 
    // GAL -------------------------------------------
       /// 'Julian day' of GAL epoch (Aug 22 1999)
@@ -114,6 +118,15 @@ namespace gpstk
    const long BDS_EPOCH_MJD = 53736L;
       /// Weeks per BDS Epoch
    const long BDS_WEEK_PER_EPOCH = 8192L;
+
+   // IRN -------------------------------------------
+      /// 'Julian day' of IRN epoch (Aug 22, 1999).
+   const double IRN_EPOCH_JD = 2451412.5;
+      /// Modified Julian Date of BDS epoch (Aug 22, 1999).
+   const long IRN_EPOCH_MJD = 51412L;
+      /// Weeks per BDS Epoch
+   const long IRN_WEEK_PER_EPOCH = 1024L;
+
 
       //@}
 

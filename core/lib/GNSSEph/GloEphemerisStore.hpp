@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,24 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2011
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /// @file GloEphemerisStore.hpp
 /// Get GLONASS broadcast ephemeris data information
@@ -42,6 +41,8 @@
 #define GPSTK_GLOEPHEMERISSTORE_HPP
 
 #include <iostream>
+#include <set>
+
 #include "XvtStore.hpp"
 #include "GloEphemeris.hpp"
 #include "Rinex3NavData.hpp"
@@ -72,8 +73,10 @@ namespace gpstk
       GloEphemerisStore()
             : initialTime(CommonTime::END_OF_TIME),
               finalTime(CommonTime::BEGINNING_OF_TIME),
-              step(1.0), checkHealthFlag(false)
-      { };
+              step(1.0)
+      {
+            setCheckHealthFlag(false);
+      }
 
          /** Common constructor
           *
@@ -81,11 +84,13 @@ namespace gpstk
           * @param checkHealth   Enable or disable the use of the health bit.
           */
       GloEphemerisStore( double rkStep,
-                         double checkHealth )
+                         bool checkHealth )
             : initialTime(CommonTime::END_OF_TIME),
               finalTime(CommonTime::BEGINNING_OF_TIME),
-              step(rkStep), checkHealthFlag(checkHealth)
-      { };
+              step(rkStep)
+      {
+            setCheckHealthFlag(false);
+      }
 
          /// Destructor
       virtual ~GloEphemerisStore() {};
@@ -110,6 +115,31 @@ namespace gpstk
       Xvt getXvt( const SatID& sat,
                   const CommonTime& epoch ) const;
 
+         /** Compute the position, velocity and clock offset of the
+          * indicated object in ECEF coordinates (meters) at the
+          * indicated time.
+          * This method functions similarly to getXvt() except that it
+          * does not throw an exception for any reason.  Instead, the
+          * caller is expected to check the value of the "health"
+          * field of the returned Xvt and decide what to do with the
+          * data.
+          * @note This function ignores the onlyHealthy flag.  It is
+          *   up to the caller to examine the state of the health flag
+          *   and decide what to do.
+          * @param[in] id the object's identifier
+          * @param[in] t the time to look up
+          * @return the Xvt of the object at the indicated time */
+      virtual Xvt computeXvt(const SatID& id, const CommonTime& t)
+         const throw();
+
+         /** Get the satellite health at a specific time.
+          * @param[in] id the object's identifier
+          * @param[in] t the time to look up
+          * @return the health status of the object at the indicated time. */
+      virtual Xvt::HealthStatus getSVHealth(const SatID& id,
+                                            const CommonTime& t)
+         const throw();
+
          /// Get integration step for Runge-Kutta algorithm.
       double getIntegrationStep() const
       { return step; };
@@ -123,14 +153,14 @@ namespace gpstk
 
          /// Get whether satellite health bit will be used or not.
       bool getCheckHealthFlag() const
-      { return checkHealthFlag; };
+      { return onlyHealthy; };
 
          /** Set whether satellite health bit will be used or not.
           *
           * @param checkHealth   Enable or disable the use of the health bit.
           */
       GloEphemerisStore& setCheckHealthFlag( bool checkHealth )
-      { checkHealthFlag = checkHealth; return (*this); };
+      { onlyHealthy = checkHealth; return (*this); };
 
          /** A debugging function that outputs in human readable form,
           *  all data stored in this object.
@@ -249,6 +279,8 @@ namespace gpstk
          /// @return the number of ephemerides added.
       int addToList( std::list<GloEphemeris>& v ) const;
 
+      virtual std::set<gpstk::SatID> getIndexSet() const; 
+
    private:
 
          /// The map of SVs and Xvt's
@@ -262,10 +294,6 @@ namespace gpstk
 
          /// Integration step for Runge-Kutta algorithm (1 second by default)
       double step;
-
-         /// Flag signaling if satellites will be screened out according to
-         /// their health bit (by default it is false)
-      bool checkHealthFlag;
 
    };  // End of class 'GloEphemerisStore'
 

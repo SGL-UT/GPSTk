@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /**
  * @file BinexData.hpp
@@ -43,7 +43,7 @@
 #define GPSTK_BINEXDATA_HPP
 
 #include "gpstkplatform.h"
- 
+
 #include "BinUtils.hpp"
 #include "FFData.hpp"
 #include "FFStream.hpp"
@@ -64,20 +64,16 @@ namespace gpstk
    {
    public:
 
-         // Establish the endianness of the native platform
-#if BYTE_ORDER == LITTLE_ENDIAN
-      static const bool nativeLittleEndian = true;
-#else
-      static const bool nativeLittleEndian = false;
-#endif
+         // The endianness of the native platform
+      static const bool nativeLittleEndian;
 
       typedef uint32_t  RecordID;  ///< Record ID type
       typedef uint8_t   SyncByte;  ///< Synchronization byte (record flags)
 
-      static const RecordID  INVALID_RECORD_ID    = 0xFFFFFFFF;
+      static const RecordID  INVALID_RECORD_ID;     /// 0xFFFFFFFF
 
-      static const SyncByte  DEFAULT_RECORD_FLAGS = 0x20;
-      static const SyncByte  VALID_RECORD_FLAGS   = 0x38;
+      static const SyncByte  DEFAULT_RECORD_FLAGS;  /// 0x20
+      static const SyncByte  VALID_RECORD_FLAGS;    /// 0x38
 
          // Flags indicating whether a record is reversed, whether a record
          // is big endian, and whether a record contains an enhanced CRC.
@@ -99,9 +95,9 @@ namespace gpstk
       {
       public:
 
-         static const unsigned long  MIN_VALUE = 0;
-         static const unsigned long  MAX_VALUE = 536870911;
-         static const unsigned char  MAX_BYTES = 4;
+         static const unsigned long  MIN_VALUE;  /// 0
+         static const unsigned long  MAX_VALUE;  /// 536870911
+         static const unsigned char  MAX_BYTES;  /// 4
 
             /**
              * Default constructor - sets value to 0.
@@ -296,9 +292,9 @@ namespace gpstk
       {
       public:
 
-         static const long long      MIN_VALUE = -1157442765409226759LL;
-         static const long long      MAX_VALUE =  1157442765409226759LL;
-         static const unsigned char  MAX_BYTES =  8;
+         static const long long      MIN_VALUE;  /// -1157442765409226759LL
+         static const long long      MAX_VALUE;  ///  1157442765409226759LL
+         static const unsigned char  MAX_BYTES;  ///  8
 
             /**
              * Default constructor - sets value to 0.

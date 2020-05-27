@@ -1,0 +1,13 @@
+# RinDump, part of the GPS Toolkit, Ver 2.3 8/26/15, Run 2017/03/22 14:28:01
+# Allow systems BDS
+# Input file(s) /home/jhprice/Documents/git/gpstk/data/inputs/igs/sptu0150.16o
+# Satellites All
+# Data C1I C2I C6I C7I
+# RinDump output for file /home/jhprice/Documents/git/gpstk/data/inputs/igs/sptu0150.16o
+# wk secs-of-wk sat      C1I           C2I           C6I           C7I     
+1879 436950.000 C12  26878673.578  26878673.578  26878664.137  26878672.859
+1879 436980.000 C12  26862612.078  26862612.078  26862602.133  26862611.566
+1879 437010.000 C12  26846588.750  26846588.750  26846578.648  26846587.996
+1879 437040.000 C12  26830603.164  26830603.164  26830592.789  26830601.441
+1879 437070.000 C12  26814653.906  26814653.906  26814645.695  26814654.672
+# RinDump timing: processing 0.010 sec, wallclock: 0 sec.

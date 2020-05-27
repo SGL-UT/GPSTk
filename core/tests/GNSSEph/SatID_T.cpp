@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -15,24 +15,25 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
+//  
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//  Copyright 2004, The University of Texas at Austin
-//
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S.
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software.
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
+
 #include "SatID.hpp"
 
 #include "TestUtil.hpp"
@@ -104,7 +105,7 @@ public:
          //---------------------------------------------------------------------
          //Output for invalid UserDefined satellite and triple digit ID
          //---------------------------------------------------------------------
-      gpstk::SatID sat2(110, gpstk::SatID::SatelliteSystem (10));
+      gpstk::SatID sat2(110, gpstk::SatID::SatelliteSystem (11));
       std::string outputString2, compareString2;
       std::stringstream outputStream2;
 
@@ -156,7 +157,7 @@ public:
          //---------------------------------------------------------------------
          //Output for invalid UserDefined satellite and triple digit ID
          //---------------------------------------------------------------------
-      gpstk::SatID sat2(110, gpstk::SatID::SatelliteSystem (10));
+      gpstk::SatID sat2(110, gpstk::SatID::SatelliteSystem (11));
       compareString2 = "UserDefined 110";
       testFramework.assert(gpstk::StringUtils::asString(sat2) == compareString2,
                            "asString did not produce the expected result", __LINE__);
@@ -394,7 +395,7 @@ public:
 
 
       gpstk::SatID Compare1(5  , gpstk::SatID::SatelliteSystem(1) );
-      gpstk::SatID Compare2(1  , gpstk::SatID::SatelliteSystem(14));
+      gpstk::SatID Compare2(1  , gpstk::SatID::SatelliteSystem(15));
       gpstk::SatID Compare3(-1 , gpstk::SatID::SatelliteSystem(-1));
       gpstk::SatID Compare4(100, gpstk::SatID::SatelliteSystem(-1));
       gpstk::SatID Compare5(0  , gpstk::SatID::SatelliteSystem(1) );

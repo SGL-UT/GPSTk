@@ -44,11 +44,9 @@
 #include "Xvt.hpp"
 #include "StringUtils.hpp"
 #include "Position.hpp"
-#include "Xv.hpp"
 #include "convhelp.hpp"
 #include "VectorBase.hpp"
 #include "Vector.hpp"
-#include "Antenna.hpp"
 #include "DataStatus.hpp"
 
 // more specific almanac/ephemeris files:
@@ -92,6 +90,7 @@
 
 // RINEX format:
 #include "RinexSatID.hpp"
+#include "RinexDatum.hpp"
 #include "RinexObsBase.hpp"
 #include "RinexObsHeader.hpp"
 #include "RinexObsData.hpp"
@@ -154,12 +153,25 @@
 #include "ObsEpochMap.hpp"
 #include "WxObsMap.hpp"
 #include "TropModel.hpp"
-#include "CheckPRData.hpp"
+#include "GCATTropModel.hpp"
+#include "GGHeightTropModel.hpp"
+#include "GGTropModel.hpp"
+#include "MOPSTropModel.hpp"
+#include "NBTropModel.hpp"
+#include "NeillTropModel.hpp"
+#include "SaasTropModel.hpp"
+#include "SimpleTropModel.hpp"
 #include "PRSolution2.hpp"
-#include "ExtractData.hpp"
 #include "Expression.hpp"
 
+// Ashtech serial data
 #include "FFBinaryStream.hpp"
+#include "AshtechStream.hpp"
+#include "AshtechData.hpp"
+#include "AshtechALB.hpp"
+#include "AshtechEPB.hpp"
+#include "AshtechMBEN.hpp"
+#include "AshtechPBEN.hpp"
 
 // Positioning/Tides
 #include "MoonPosition.hpp"
@@ -167,7 +179,17 @@
 #include "PoleTides.hpp"
 #include "SolidTides.hpp"
 
+// PosSol
+#include "Combinations.hpp"
+#include "PRSolution.hpp"
+
 // Geomatics:
 #include "SunEarthSatGeometry.hpp"
+
+// ORD
+#include "ord.hpp"
+
+// So the python examples can find the test data
+#include "build_config.h"
 
 #endif

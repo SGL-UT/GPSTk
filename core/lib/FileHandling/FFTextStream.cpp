@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /**
  * @file FFTextStream.cpp
@@ -152,27 +152,25 @@ namespace gpstk
    {
       try
       {
-            // The following constant used to be 256, but with the change to
-            // RINEX3 formats the possible length of a line increased
-            // considerably. A RINEX3 observation file line for Galileo may
-            // be 1277 characters long (taking into account all the possible
-            // types of observations available, plus the end of line
-            // characters), so this constant was conservatively set to
-            // 1500 characters. Dagoberto Salazar.
-         const int MAX_LINE_LENGTH = 1500;
-         char templine[MAX_LINE_LENGTH + 1];
-         getline(templine, MAX_LINE_LENGTH);
+         std::getline(*this, line);
+            // Remove CR characters left over in the buffer from windows files
+         while (*line.rbegin() == '\r')
+            line.erase(line.end()-1);
+         for (int i=0; i<line.length(); i++)
+            if (!isprint(line[i]))
+               {
+                  FFStreamError err("Non-text data in file.");
+                  GPSTK_THROW(err);
+               }
+            
          lineNumber++;
-            //check if line was longer than 256 characters, if so error
          if(fail() && !eof())
          {
             FFStreamError err("Line too long");
             GPSTK_THROW(err);
          }
-         line = templine;
-         gpstk::StringUtils::stripTrailing(line, '\r');
             // catch EOF when stream exceptions are disabled
-         if ((gcount() == 0) && eof())
+         if ((line.size() == 0) && eof())
          {
             if (expectEOF)
             {
@@ -189,7 +187,7 @@ namespace gpstk
       catch(std::exception &e)
       {
             // catch EOF when exceptions are enabled
-         if ( (gcount() == 0) && eof())
+         if ( (line.size() == 0) && eof())
          {
             if (expectEOF)
             {
@@ -207,9 +205,8 @@ namespace gpstk
             FFStreamError err("Critical file error: " +
                               std::string(e.what()));
             GPSTK_THROW(err);
-         }  // End of 'if ( (gcount() == 0) && eof())'
-
-      }  // End of 'try-catch' block
-
+         }
+      }
    }  // End of method 'FFTextStream::formattedGetLine()'
+   
 }  // End of namespace gpstk

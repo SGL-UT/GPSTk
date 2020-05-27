@@ -1,9 +1,11 @@
 # apps/geomatics/CMakeLists.txt
 
-add_subdirectory(cycleslips)
 add_subdirectory(JPLeph)
+add_subdirectory(cycleslips)
+add_subdirectory(iers_test)
 add_subdirectory(kalman)
 add_subdirectory(relposition)
+add_subdirectory(RinexObsLoader_test)
 add_subdirectory(robust)
-
+add_subdirectory(rstats_test)
 

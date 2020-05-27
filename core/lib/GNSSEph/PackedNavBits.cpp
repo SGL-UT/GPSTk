@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /**
  * @file PackedNavBits.cpp
@@ -54,6 +54,7 @@ namespace gpstk
    using namespace std;
    PackedNavBits::PackedNavBits()
                  : transmitTime(CommonTime::BEGINNING_OF_TIME),
+                   parityStatus(psUnknown),
                    bits(900),
                    bits_used(0),
                    rxID(""),
@@ -65,6 +66,7 @@ namespace gpstk
                                 const ObsID& obsIDArg,
                                 const CommonTime& transmitTimeArg)
                                 : bits(900),
+                                  parityStatus(psUnknown),
                                   bits_used(0),
                                   rxID(""),
                                   xMitCoerced(false)
@@ -80,6 +82,7 @@ namespace gpstk
                                 const std::string rxString,
                                 const CommonTime& transmitTimeArg)
                                 : bits(900),
+                                  parityStatus(psUnknown),
                                   bits_used(0),
                                   rxID(""),
                                   xMitCoerced(false)
@@ -91,15 +94,36 @@ namespace gpstk
       xMitCoerced = false;
    }
 
+   PackedNavBits::PackedNavBits(const SatID& satSysArg, 
+                                const ObsID& obsIDArg,
+                                const NavID& navIDArg,
+                                const std::string rxString,
+                                const CommonTime& transmitTimeArg)
+                                : bits(900),
+                                  parityStatus(psUnknown),
+                                  bits_used(0),
+                                  rxID(""),
+                                  xMitCoerced(false)
+   {
+      satSys = satSysArg;
+      obsID = obsIDArg;
+      navID = navIDArg;
+      rxID = rxString;
+      transmitTime = transmitTimeArg;
+      xMitCoerced = false;
+   }
+
       // Copy constructor
    PackedNavBits::PackedNavBits(const PackedNavBits& right)
    {
       satSys = right.satSys; 
       obsID  = right.obsID;
+      navID  = right.navID; 
       rxID   = right.rxID;
       transmitTime = right.transmitTime;
       bits_used = right.bits_used;
       bits.resize(bits_used);
+      parityStatus = right.parityStatus;
       for (int i=0;i<bits_used;i++)
       {
          bits[i] = right.bits[i];
@@ -141,6 +165,12 @@ namespace gpstk
       return;
    }
    
+   void PackedNavBits::setNavID(const NavID& navIDArg)
+   {
+      navID = navIDArg;
+      return;
+   }
+
    void PackedNavBits::setRxID(const std::string rxString)
    {
       rxID = rxString; 
@@ -168,7 +198,12 @@ namespace gpstk
    {
       return(satSys);
    }
-   
+  
+   NavID PackedNavBits::getNavID() const
+   {
+      return(navID);
+   } 
+
    std::string PackedNavBits::getRxID() const
    {
       return(rxID); 
@@ -419,6 +454,11 @@ namespace gpstk
       return (drad*PI);
    }      
 
+   bool PackedNavBits::asBool( const unsigned bitNum) const
+   {
+      return bits[bitNum]; 
+   }
+
 
          /***    PACKING FUNCTIONS *********************************/
    void PackedNavBits::addUnsignedLong( const unsigned long value, 
@@ -571,6 +611,7 @@ namespace gpstk
       size_t ndx = bits_used;
       uint64_t mask = 0x0000000000000001L;
       mask <<= (numBits-1);
+
       for (int i=0; i<numBits; ++i)
       {
          bits[ndx] = false;
@@ -589,7 +630,8 @@ namespace gpstk
    // Used in NavFilter implementations.   This method ASSUMES the meta-date
    // matches have already been done.  It is simply comparing contents of the
    // bit array bit-for-bit and returning "less than" if it finds an occasion
-   // in which left has a '0' whereas right has a '1'.
+   // in which left has a FALSE whereas right has a TRUE starting at the 
+   // lowest index and scanning to the maximum index.
    //
    // NOTE: This is one of the cases in which the PackedNavBits implementation 
    // is probably not the fastest.  Since we are scanning a bit array rather 
@@ -609,14 +651,116 @@ namespace gpstk
 
       for (int i=0;i<bits.size();i++)
       {
-         if (bits[i]<right.bits[i])
+         if (bits[i]==false && right.bits[i]==true)
+         //if (bits[i]<right.bits[i])
          {
             return true;
+         }
+         if (bits[i]==true && right.bits[i]==false)
+         {
+            return false;
          }
       }
       return false;
    }
 
+   void PackedNavBits::invert( )
+   {
+         // Each bit is either 1 or 0.
+         // Starting with 1 and subtracting the 
+         // current value will yield the inverse
+         //   
+         //  Input    Equation     Result
+         //    1       1 - 1          0
+         //    0       1 - 0          1
+         //
+         // This accomplishes the purpose without incurring
+         // the cost of a conditional statement.
+      for (int i=0;i<bits.size();i++)
+      {
+         bits[i] = 1 - bits[i];
+      }
+   } 
+
+      /**
+       *  Bit wise copy from another PackecNavBits.
+       *  None of the meta-data (transmit time, SatID, ObsID)
+       *  will be changed. 
+       */
+   void PackedNavBits::copyBits(const PackedNavBits& from, 
+                                const short startBit, 
+                                const short endBit)
+                                throw(InvalidParameter)
+   {
+      if (bits_used != from.bits_used)
+      {
+         stringstream ss;
+         ss << "PackedNavBits::copyBits( ) may only be called on two";
+         ss << " objects with the same number of packed bits.";
+         InvalidParameter ip(ss.str());
+         GPSTK_THROW(ip); 
+      }
+
+      short finalBit = endBit;
+      if (finalBit==-1) finalBit = bits_used - 1;
+
+      for (short i=startBit; i<=finalBit; i++)
+      {
+         bits[i] = from.bits[i];
+      }
+   }
+
+
+   //--------------------------------------------------------------------------
+   // Not typically used in production.  See comments in header. 
+   void PackedNavBits::insertUnsignedLong(const unsigned long value,
+                           const int startBit,
+                           const int numBits,
+                           const int scale)
+                           throw(InvalidParameter)
+   {
+      if ((startBit+numBits)>bits_used)
+      {
+         stringstream ss;
+         ss << "insertUnsignedLong called with startBit+numBits > bits_used.";
+         InvalidParameter ip(ss.str());
+         GPSTK_THROW(ip);
+      }
+
+      uint64_t out = (uint64_t) value;
+      out /= scale;
+
+      uint64_t test = pow(static_cast<double>(2),numBits) - 1; 
+      if ( out > test )
+      {
+         InvalidParameter exc("Scaled value too large for specifed bit length");
+         GPSTK_THROW(exc);
+      }
+
+      size_t ndx = startBit;
+      uint64_t mask = 0x0000000000000001L; 
+
+      mask <<= (numBits-1);
+      for (int i=0; i<numBits; i++)
+      {
+         bits[ndx] = false;
+         if (out & mask)
+         {
+            bits[ndx] = true;
+         }
+         mask >>= 1;
+         ndx++;
+      }
+   }
+
+
+   //--------------------------------------------------------------------------
+   // Method allows one to "back up" and re-add bits w/o resizing
+   // the bits array.
+   void PackedNavBits::reset_num_bits(const int new_bits_used)
+   {
+      bits_used = new_bits_used;       
+   }
 
    //--------------------------------------------------------------------------
    void PackedNavBits::trimsize()
@@ -662,10 +806,11 @@ namespace gpstk
         << "************" << endl
         << "Packed Nav Bits" << endl
         << endl
-        << "SatID: " << setw(4) << getsatSys() << endl
+        << "SatID: " << getsatSys() << endl
         << endl
         << "Carrier: " << ObsID::cbDesc[obsID.band] << "      "
-        << "Code: " << ObsID::tcDesc[obsID.code] << endl;
+        << "Code: " << ObsID::tcDesc[obsID.code] 
+        << "NavID: " << navID << endl;
       if (rxID.size()>0) 
          s << " RxID: " << rxID << endl;
       s << endl
@@ -691,7 +836,7 @@ namespace gpstk
          numBitInWord++;
          if (numBitInWord >= 32)
          {
-            s << "  0x" << setw(8) << setfill('0') << hex << word;
+            s << "  0x" << setw(8) << setfill('0') << hex << word << dec << setfill(' ');
             numBitInWord = 0;
             word_count++;
             //Print four words per line 
@@ -699,7 +844,7 @@ namespace gpstk
          }
       }
       word <<= 32 - numBitInWord;
-      if (numBitInWord > 0 ) s << "  0x" << setw(8) << setfill('0') << hex << word;
+      if (numBitInWord > 0 ) s << "  0x" << setw(8) << setfill('0') << hex << word << dec << setfill(' ');
       s.setf(ios::fixed, ios::floatfield);
       s.precision(3);
       s.flags(oldFlags);      // Reset whatever conditions pertained on entry
@@ -730,7 +875,7 @@ namespace gpstk
          numBitInWord++;
          if (numBitInWord >= numBitsPerWord)
          {
-            s << delimiter << " 0x" << setw(8) << setfill('0') << hex << word;
+            s << delimiter << " 0x" << setw(8) << setfill('0') << hex << word << dec << setfill(' ');
             word = 0;
             numBitInWord = 0;
             word_count++;
@@ -746,7 +891,7 @@ namespace gpstk
       word <<= 32 - numBitInWord;
       if (numBitInWord>0)
       {
-         s << delimiter << " 0x" << setw(8) << setfill('0') << hex << word;
+         s << delimiter << " 0x" << setw(8) << setfill('0') << hex << word << dec << setfill(' ');
       }
       s.flags(oldFlags);      // Reset whatever conditions pertained on entry
       return(bits.size()); 
@@ -791,6 +936,8 @@ namespace gpstk
          // If not the same receiver return false.
       if ((flagBits & mmRX) && rxID.compare(right.rxID)!=0) return false;
 
+      if ((flagBits & mmNAV) && navID.navType!=(right.navID.navType)) return false;
+
       return true;
    }
 
@@ -824,7 +971,6 @@ namespace gpstk
       throw(InvalidParameter)
    {
          // Debug
-      //cout << " ENTERING rawBitInput( )-------------------------------------------------" << endl;
          //  Find first non-white space string.   
          //  Should translate as a decimal value.
          //  If so, assume this is the number of bits that follow, but do not 

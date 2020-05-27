@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /// @file TimeString.hpp  print and scan using all TimeTag derived classes.
 
@@ -80,8 +80,11 @@ namespace gpstk
        *   - L     integer full GAL Week
        *   - l     integer mod GAL Week
        *   - V     integer QZS Epoch
-       *   - I     integer full QZS Week
+       *   - h     integer full QZS Week
        *   - i     integer mod QZS Week - same as I
+       *   - X     integer IRNSS Epoch
+       *   - O     integer IRNSS week
+       *   - o     integer mod INRSS Week 
        *
        * - WeekSecond (GPS/BDS/GAL/QZS):
        *   - w     integer GPS day-of-week
@@ -103,6 +106,10 @@ namespace gpstk
        * - UnixTime:
        *   - U     integer seconds since Unix Epoch (00:00, Jan 1, 1970 UTC)
        *   - u     integer microseconds
+       *
+       * - PosixTime:
+       *   - W     integer seconds
+       *   - N     integer nanoseconds
        *
        * - YDSTime:
        *   - Y     integer 4-digit year
@@ -136,9 +143,10 @@ namespace gpstk
       }
    }
 
-      /// This function determines if the given format includes items that would
-      /// be printed by the TimeTag's printf(fmt); NB except 'P' (system).
-      /// In other words, determine if printAs<T>(t,fmt) will not modify the string.
+      /// This function determines if the given format includes items
+      /// that would be printed by the TimeTag's printf(fmt); NB
+      /// except 'P' (system).  In other words, determine if
+      /// printAs<T>(t,fmt) will not modify the string.
    template <class TimeTagType>
    bool willPrintAs( const std::string& fmt )
    {

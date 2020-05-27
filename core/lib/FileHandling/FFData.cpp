@@ -1,4 +1,4 @@
-//============================================================================
+//==============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
@@ -16,23 +16,23 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2004-2019, The University of Texas at Austin
 //
-//============================================================================
+//==============================================================================
 
-//============================================================================
+//==============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//  This software developed by Applied Research Laboratories at the University of
+//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
 //
-//=============================================================================
+//==============================================================================
 
 /**
  * @file FFData.cpp
@@ -56,37 +56,17 @@ namespace gpstk
       s.tryFFStreamGet(*this); 
    }
    
-   std::ostream& operator<<(std::ostream& o, const FFData& f)
+   std::ostream& operator<<(FFStream& o, const FFData& f)
          throw(FFStreamError, gpstk::StringUtils::StringException)
    {
-      FFStream* ffs = dynamic_cast<FFStream*>(&o);
-      if (ffs)
-      {
-         f.putRecord(*ffs);
-         return o;
-      }
-      else
-      {
-         FFStreamError e("operator<< stream argument must be an FFStream");
-         GPSTK_THROW(e);
-      }
-
+      f.putRecord(o);
+      return o;
    }
 
-   std::istream& operator>>(std::istream& i, FFData& f)
+   std::istream& operator>>(FFStream& i, FFData& f)
          throw(FFStreamError, gpstk::StringUtils::StringException)
    {
-      FFStream* ffs = dynamic_cast<FFStream*>(&i);
-      if (ffs)
-      {
-         f.getRecord(*ffs);
-         return i;
-      }
-      else
-      {
-         FFStreamError e("operator<< stream argument must be an FFStream");
-         GPSTK_THROW(e);
-      }
-
+      f.getRecord(i);
+      return i;
    }
 }
