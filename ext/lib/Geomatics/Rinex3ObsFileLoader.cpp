@@ -145,33 +145,41 @@ try {
             for(kt = roh.mapObsTypes.begin(); kt != roh.mapObsTypes.end(); kt++) {
                for(i=0; i<kt->second.size(); i++) {
                   // need 4-char string version of ObsID
-                  string sys = kt->first;                // system
-                  string rot = kt->second[i].asString(currVer); // 3-char id
-                  string srot = sys + rot;               // 4-char id
+                  string sys = kt->first;                      // system
+                  string rot = kt->second[i].asString(currVer);// 3-char id
+                  string srot = sys + rot;                     // 4-char id
+                  string code = rot.substr(2,1);               // tracking code
 
                   // is this ObsID Wanted? and should it be added?
                   // NB RinexObsID::operator==() handles '*' but does not compare sys
                   // NB input (loadObsID()) checks validity of ObsIDs
 
                   for(j=0; j<inputWantedObsTypes.size(); j++) {
-                     // Guessing wsrot = wanted string rinex obs type
-                     string wsrot(inputWantedObsTypes[j]);
-                     string wsys(wsrot.substr(0,1));
-                     string wrot(wsrot.substr(1,3));
+                     if(vectorindex(wantedObsTypes,srot) != -1)
+                        continue;                                 // already there
 
-                     // if sys and rot match, and srot is not found, add it
-                     if(vectorindex(wantedObsTypes,srot) == -1) { // not already there
-                        if(wsrot == srot || (wsys=="*" && wrot == rot))
-                        {
-                           wantedObsTypes.push_back(wsrot);  // add it
-                           // the number of observations for each observation type
-                           countWantedObsTypes.push_back(0);
+                     // wsrot = wanted string rinex obs type
+                     string wsrot(inputWantedObsTypes[j]);
+                     
+                     string wsys(wsrot.substr(0,1));
+                     if(wsys != "*" && wsys != sys)               // different systems
+                        continue;
+
+                     string wcode(wsrot.substr(3,1));
+                     if(wcode != "*" && wcode != code)            // different codes
+                        continue;
+
+                     if(wsrot.substr(1,2) != rot.substr(0,2))     // diff type-freq
+                        continue;
+
+                     // ok add it
+                     wantedObsTypes.push_back(srot);              // add it
+                     // the number of observations for each observation type
+                     countWantedObsTypes.push_back(0);
                         
-                           ossx << " Add obs type " << srot
-                              << " =~ " << inputWantedObsTypes[j]
-                              << " from " << filename << endl;
-                        }
-                     }
+                     ossx << " Add obs type " << srot
+                           << " =~ " << inputWantedObsTypes[j]
+                           << " from " << filename << endl;
                   }
                }
             }  // end loop over obs types in header
