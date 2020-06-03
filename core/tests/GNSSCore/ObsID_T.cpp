@@ -63,6 +63,10 @@ namespace gpstk
    }
 }
 
+// This makes sure that
+// 1) The RINEX obs ID decodes as expected
+// 2) The RINEX obs ID encodes as expected
+// 3) The wildcard (Any) ObsID enums match
 #define CONTEST(RINEXCODE, CARRIERBAND, TRACKINGCODE) {               \
       TUCSM("ObsID(\"" RINEXCODE "\")");                              \
       gpstk::ObsID obs(RINEXCODE, gpstk::Rinex3ObsBase::currentVersion); \
@@ -77,6 +81,8 @@ namespace gpstk
                              TRACKINGCODE);                           \
       TUASSERTE(std::string, std::string(RINEXCODE).substr(1),        \
                 obs2.asString());                                     \
+      gpstk::ObsID wildcard("****", gpstk::Rinex3ObsBase::currentVersion); \
+      TUASSERTE(gpstk::ObsID, wildcard, obs);                         \
    }
 
 #define CBDESCTEST(EXP, CARRIERBAND) TUASSERTE(std::string, EXP, gpstk::ObsID::cbDesc[CARRIERBAND])
@@ -366,6 +372,11 @@ public:
       CONTEST("SL5I", gpstk::ObsID::cbL5, gpstk::ObsID::tcSI5);
       CONTEST("SL5Q", gpstk::ObsID::cbL5, gpstk::ObsID::tcSQ5);
       CONTEST("SL5X", gpstk::ObsID::cbL5, gpstk::ObsID::tcSIQ5);
+
+      gpstk::ObsID wild("****", gpstk::Rinex3ObsBase::currentVersion);
+      TUASSERTE(gpstk::ObsID::ObservationType, gpstk::ObsID::otAny, wild.type);
+      TUASSERTE(gpstk::ObsID::CarrierBand, gpstk::ObsID::cbAny, wild.band);
+      TUASSERTE(gpstk::ObsID::TrackingCode, gpstk::ObsID::tcAny, wild.code);
 
       TURETURN();
    }
