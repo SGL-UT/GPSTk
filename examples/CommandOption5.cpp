@@ -63,13 +63,11 @@ CommandOption5Example(const string& applName)
         hushOpt(0, "hush", "don't print a message very loudly"),
         hushAndXYZOpt(&xyzOpts, &hushOpt)
 {
-      // Define the options that must be used together.
+      // One of these options must be used if hush is used
    xyzOpts.addOption(&xOpt);
    xyzOpts.addOption(&yOpt);
    xyzOpts.addOption(&zOpt);
-      // At least one of these options must be specified, but there is
-      // no restriction on whether more than one is specified
-      // (setMaxCount has no effect on CommandOptionOneOf).
+      // Only one of these options may be specified.
    hushOrScreamOpt.addOption(&screamOpt);
    hushOrScreamOpt.addOption(&hushOpt);
 }
@@ -88,9 +86,7 @@ initialize(int argc, char *argv[], bool pretty) throw()
    {
       cout << "ok i'll be quiet x" << hushOpt.getCount() << endl;
    }
-      // whichOne returns the option that was used, which is a little
-      // strange given multiple can be used (CommandOptionMutex is
-      // better for a "one and only one" relation).
+      // whichOne returns the option that was used
    CommandOption *which = hushOrScreamOpt.whichOne();
    if (which != nullptr)
    {

@@ -67,9 +67,7 @@ CommandOption4Example(const string& applName)
    xyzOpts.addOption(&xOpt);
    xyzOpts.addOption(&yOpt);
    xyzOpts.addOption(&zOpt);
-      // At least one of these options must be specified, but there is
-      // no restriction on whether more than one is specified
-      // (setMaxCount has no effect on CommandOptionOneOf).
+      // Only one of these options may be specified.
    hushOrScreamOpt.addOption(&screamOpt);
    hushOrScreamOpt.addOption(&hushOpt);
 }
@@ -88,9 +86,7 @@ initialize(int argc, char *argv[], bool pretty) throw()
    {
       cout << "ok i'll be quiet x" << hushOpt.getCount() << endl;
    }
-      // whichOne returns the option that was used, which is a little
-      // strange given multiple can be used (CommandOptionMutex is
-      // better for a "one and only one" relation).
+      // whichOne returns the option that was used
    CommandOption *which = hushOrScreamOpt.whichOne();
    if (which != nullptr)
    {
