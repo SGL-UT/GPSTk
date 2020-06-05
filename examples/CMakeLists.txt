@@ -29,3 +29,9 @@ target_link_libraries(CommandOption2 gpstk)
 
 add_executable(CommandOption3 CommandOption3.cpp)
 target_link_libraries(CommandOption3 gpstk)
+
+add_executable(CommandOption4 CommandOption4.cpp)
+target_link_libraries(CommandOption4 gpstk)
+
+add_executable(CommandOption5 CommandOption5.cpp)
+target_link_libraries(CommandOption5 gpstk)

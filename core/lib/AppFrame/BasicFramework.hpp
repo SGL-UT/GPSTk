@@ -69,6 +69,8 @@ namespace gpstk
        * program.  The methods to be overridden depend on the
        * framework being used and what the program is intended to
        * do.
+       *
+       * For information on how to use the frameworks, see \ref appbuilding.
        */
 
       /** @page appbuilding Building Up Applications Using Frameworks
@@ -259,47 +261,55 @@ namespace gpstk
        * - RequiredOption
        * - CommandOptionWithArg
        *
-       * Command-line options that tage an argument of some sort,
+       * Command-line options that take an argument of some sort,
        * usually with format checking of that argument:
-       * - CommandOptionNoArg
-       * - CommandOptionWithAnyArg - no format checking
-       * - CommandOptionWithStringArg
-       * - CommandOptionWithNumberArg - integer argument
-       * - CommandOptionWithDecimalArg - decimal argument
-       * - CommandOptionWithTimeArg - multi-format time argument
-       * - CommandOptionWithSimpleTimeArg - pre-defined multi-format
-       *   time argument
-       * - CommandOptionWithCommonTimeArg - formatted time argument
-       * - CommandOptionWithPositionArg - formatted position argument
-       * - CommandOptionRest - command-line arguments with no specified option.
+       * | Class          | Description              | Example |
+       * | -------------- | ------------------------ | ----------------------- |
+       * | NoArg          | Boolean or with count    | \ref CommandOption1.cpp |
+       * | WithAnyArg     | No arg format checking   | \ref CommandOption1.cpp |
+       * | WithStringArg  | Alpha chars only in arg  | |
+       * | WithNumberArg  | +/- integer arg          | \ref CommandOption2.cpp |
+       * | WithDecimalArg | decimal argument         | \ref CommandOption2.cpp |
+       * | WithTimeArg    | multi-format time arg    | |
+       * | WithSimpleTimeArg | pre-defined multi-format time arg | |
+       * | WithCommonTimeArg | formatted time arg    | \ref CommandOption2.cpp |
+       * | WithPositionArg   | formatted position arg | |
+       * | Rest           | args with no option      | \ref CommandOption1.cpp |
        *
        * Classes for defining relationships between real command-line arguments:
-       * - CommandOptionNOf - Define a set of options of which some
-       *   number must be used.
-       * - CommandOptionOneOf - Define a set of options of which at least
-       *   one must be used.
-       * - CommandOptionAllOf - Define a set of options, all of which
-       *   must be used.
-       * - CommandOptionMutex - Define a set of options of which only
-       *   one may be used.
-       * - CommandOptionDependent - Define a pair of options where if
-       *   one is specified, the other must be.
+       * | Class     | Example                 | Requires                  |
+       * | --------- | ----------------------- | ------------------------- |
+       * | NOf       | \ref CommandOption3.cpp | exactly N uses of x, y, z |
+       * | OneOf     | \ref CommandOption3.cpp | at least one usage of x, y, z |
+       * | AllOf     | \ref CommandOption4.cpp | all or none of x, y, z must be used |
+       * | Mutex     | \ref CommandOption4.cpp | ONLY one of x, y, or z |
+       * | Dependent | \ref CommandOption4.cpp | e.g. if x is used, then y must be used |
        *
        * Classes for implementing logical checks in conjunction
        * (i.e. as one of the "options") in the above classes:
-       * - CommandOptionGroupOr - Define a set of options, without
-       *   checking, that can be grouped together.
-       * - CommandOptionGroupAnd - Define a set of options, without
-       *   checking, that must be grouped together.
+       * | Class     | Example                 | Virtually set if          |
+       * | --------- | ----------------------- | ------------------------- |
+       * | GroupOr   | \ref CommandOption5.cpp | any of x, y or z are used |
+       * | GroupAnd  |                         | all of x, y and z are used |
        *
        * Help options.  These are handled specially by BasicFramework such that
        * - CommandOptionHelp is the parent class for all help
-       *   requested on the command-line,
+       *   requested on the command-line.  The use (on the
+       *   command-line) of any instances of objects derived from this
+       *   class will result in the frameworks terminating after the
+       *   initialize() method completes.
+       *
        * - CommandOptionHelpUsage is the command-line option help,
        *   that prints out the standard usage information (in
-       *   conjunction with -h or --help arguments).
+       *   conjunction with -h or --help arguments).  An instance of
+       *   this is already used in BasicFramework so you shouldn't
+       *   ever need to directly use this class.
+       *
        * - CommandOptionHelpSimple provides a very basic help feature
-       *   that prints a pre-defined message.
+       *   that prints a pre-defined message.  If you want to add a
+       *   command-line option that prints out a simple text message
+       *   and exits without further processing, this just might be
+       *   the class for you.
        *
        * BasicFramework will exit after printing the appropriate help
        * information when any of the above command-line option types
@@ -341,6 +351,14 @@ namespace gpstk
        * Example use of CommandOptionNOf where two options are
        * expected out of a set of various time options, and
        * CommandOptionOneOf. */
+
+      /** @example CommandOption4.cpp
+       * Example use of CommandOptionNOf where two options are
+       * expected out of a set of various time options, and
+       * CommandOptionOneOf. */
+
+      /** @example CommandOption5.cpp
+       * Examples of logical command-line option groups. */
 
       /// @ingroup AppFrame
       //@{

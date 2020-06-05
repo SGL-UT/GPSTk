@@ -47,7 +47,7 @@ public:
    CommandOptionNoArg screamOpt;
       /// Option for demonstrating CommandOptionOneOf
    CommandOptionNoArg hushOpt;
-      /// Make sure only one of hushOpt or screamOpt are used
+      /// Make sure at least one of hushOpt or screamOpt are used
    CommandOptionOneOf hushScreamOpt;
 };
 
