@@ -91,7 +91,7 @@ namespace gpstk
       virtual std::string checkArguments();
 
          /// Return the times scanned in from the command line.
-      std::vector<CommonTime> getTime() const { return times; }
+      const std::vector<CommonTime>& getTime() const { return times; }
       
    protected:
          /// Collection of times scanned in from the command line.
