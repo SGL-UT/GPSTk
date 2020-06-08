@@ -32,6 +32,12 @@
    $1 = &temp[0];
 }
 
+// Needed for typechecking parameters of overloaded functions and methods
+// See "Typemaps and Overloading" in Swig documentation
+%typemap(typecheck, precedence=SWIG_TYPECHECK_INT64_ARRAY) long[ANY] {
+   $1 = PySequence_Check($input) ? 1 : 0;
+}
+
 //     [PyFloat] -> [double]
 %typemap(in) double[ANY](double temp[$1_dim0]) {
    int i;
@@ -60,6 +66,11 @@
    $1 = &temp[0];
 }
 
+// Needed for typechecking parameters of overloaded functions and methods
+// See "Typemaps and Overloading" in Swig documentation
+%typemap(typecheck, precedence=SWIG_TYPECHECK_DOUBLE_ARRAY) double[ANY] {
+   $1 = PySequence_Check($input) ? 1 : 0;
+} 
 
 // C arrays -> Python lists:
 //     [int] -> [PyInt]
