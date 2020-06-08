@@ -75,7 +75,7 @@ initialize(int argc, char *argv[], bool pretty) throw()
       const std::vector<std::string>& vals(floatOpt.getValue());
          // make our target storage the same size as the source so we
          // don't have to reallocate over and over.
-      dub.resize(vals.size(), 0./0.);
+      dub.resize(vals.size(), 0.);
       for (unsigned i = 0; i < vals.size(); i++)
       {
          dub[i] = gpstk::StringUtils::asDouble(vals[i]);
