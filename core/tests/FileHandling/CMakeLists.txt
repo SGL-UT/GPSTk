@@ -67,6 +67,7 @@ target_link_libraries(Yuma_T gpstk)
 add_test(NAME YumaData
          COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:Yuma_T>
+         -DDIFF_PROG=$<TARGET_FILE:df_diff>
          -DTESTBASE=test_output_Yuma_T
          -DTESTNAME=test_output_Yuma_T
          -DOWNOUTPUT=1
