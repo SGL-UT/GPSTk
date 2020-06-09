@@ -37,6 +37,7 @@
 #include "BrcKeplerOrbit.hpp"
 #include "TestUtil.hpp"
 #include "GPSWeekZcount.hpp"
+#include "TimeString.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -60,6 +61,8 @@ public:
    unsigned initializationTest();
    unsigned equalityTest();
    unsigned svXvtTest();
+   unsigned relativityTest();
+   unsigned fitIntTest();
 };
 
 
@@ -403,6 +406,39 @@ svXvtTest()
 }
 
 
+unsigned BrcKeplerOrbit_T ::
+relativityTest()
+{
+   TUDEF("BrcKeplerOrbit", "svRelativity");
+   BrcKeplerOrbit orbit;
+   fill(orbit);
+   TUASSERTFE(-1.7274634252517538304e-08,
+              orbit.svRelativity(GPSWeekZcount(1886, 398400)));
+   TURETURN();
+}
+
+
+unsigned BrcKeplerOrbit_T ::
+fitIntTest()
+{
+   TUDEF("BrcKeplerOrbit", "getBeginningOfFitInterval");
+   BrcKeplerOrbit orbit;
+   fill(orbit);
+   CommonTime beg(GPSWeekZcount(1886, 398400));
+   CommonTime end(GPSWeekZcount(1887, 0));
+   CommonTime before(beg-1), after(end+1);
+   TUASSERTE(CommonTime, beg, orbit.getBeginningOfFitInterval());
+   TUCSM("getEndOfFitInterval");
+   TUASSERTE(CommonTime, end, orbit.getEndOfFitInterval());
+   TUCSM("withinFitInterval");
+   TUASSERT(!orbit.withinFitInterval(before));
+   TUASSERT(orbit.withinFitInterval(beg));
+   TUASSERT(orbit.withinFitInterval(end));
+   TUASSERT(!orbit.withinFitInterval(after));
+   TURETURN();
+}
+
+
 int main() //Main function to initialize and run all tests above
 {
    using namespace std;
@@ -412,6 +448,8 @@ int main() //Main function to initialize and run all tests above
    errorTotal += testClass.initializationTest();
    errorTotal += testClass.equalityTest();
    errorTotal += testClass.svXvtTest();
+   errorTotal += testClass.relativityTest();
+   errorTotal += testClass.fitIntTest();
 
    cout << "Total Failures for " << __FILE__ << ": " << errorTotal << endl;
 
