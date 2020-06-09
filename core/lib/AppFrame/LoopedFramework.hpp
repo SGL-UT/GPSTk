@@ -69,9 +69,9 @@ namespace gpstk
    public:
          /**
           * Constructor for LoopedFramework.
-          * @param applName name of the program (argv[0]).
-          * @param applDesc text description of program's function
-          * (used by CommandOption help).
+          * @param[in] applName name of the program (argv[0]).
+          * @param[in] applDesc text description of program's function
+          *   (used by CommandOption help).
           */
       LoopedFramework(const std::string& applName,
                       const std::string& applDesc)
