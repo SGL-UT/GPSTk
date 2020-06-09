@@ -98,10 +98,6 @@ namespace gpstk
          /// @ingroup stringutilsgroup
          //@{
 
-         /** @example StringUtils_T.cpp
-          * Some tests for StringUtils which may also serve as example code.
-          */
-
          /// This is thrown instread of a std::exception when a
          /// gpstk::StringUtils function fails.
          /// @ingroup exceptiongroup
