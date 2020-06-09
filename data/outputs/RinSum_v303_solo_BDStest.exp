@@ -61,7 +61,7 @@ Time of first obs 2016/01/15 00:00:00.000 GPS
 ---------------------------------- OPTIONAL ----------------------------------
 Marker number : 51202M001
 Marker type : GEODETIC
-Signal Strenth Unit = DBHZ
+Signal Strength Unit = DBHZ
 Interval =  30.000
 Time of Last Obs 2016/01/15 23:59:30.000 GPS
 Phase shift correction for system C is empty.

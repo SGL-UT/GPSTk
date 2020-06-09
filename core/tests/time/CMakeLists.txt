@@ -112,25 +112,39 @@ add_test(NAME timeconvert_CmdOpt_GPSzcount29
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testopts.cmake)
 
 # check Julian date
-set( TIMECONVERT_CMDOPT_JULIAN "-j 2457222.5011458333333333" )
+# Windows doesn't support true long doubles, so the lack of precision
+# means we can't use the same test case under Windows.
+if ( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
+  set( TIMECONVERT_CMDOPT_JULIAN "-j 2457222.625" )
+  set( TIMECONVERT_CMDOPT_JULIAN_BASE "timeconvert_2015_200_10800" )
+else()
+  set( TIMECONVERT_CMDOPT_JULIAN "-j 2457222.5011458333333333" )
+  set( TIMECONVERT_CMDOPT_JULIAN_BASE "timeconvert_2015_200_99" )
+endif()
 add_test(NAME timeconvert_CmdOpt_Julian
          COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:timeconvert>
          -DPROG_OPTS=${TIMECONVERT_CMDOPT_JULIAN}
          -DTESTNAME=timeconvert_CmdOpt_Julian
-         -DTESTBASE=timeconvert_2015_200_99
+         -DTESTBASE=${TIMECONVERT_CMDOPT_JULIAN_BASE}
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testopts.cmake)
 
 # check MJD
-set( TIMECONVERT_CMDOPT_MJD "-m 57222.0011458333333333" )
+if ( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
+  set( TIMECONVERT_CMDOPT_MJD "-m 57222.125" )
+  set( TIMECONVERT_CMDOPT_MJD_BASE "timeconvert_2015_200_10800" )
+else()
+  set( TIMECONVERT_CMDOPT_MJD "-m 57222.0011458333333333" )
+  set( TIMECONVERT_CMDOPT_MJD_BASE "timeconvert_2015_200_99" )
+endif()
 add_test(NAME timeconvert_CmdOpt_MJD
          COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:timeconvert>
          -DPROG_OPTS=${TIMECONVERT_CMDOPT_MJD}
          -DTESTNAME=timeconvert_CmdOpt_MJD
-         -DTESTBASE=timeconvert_2015_200_99
+         -DTESTBASE=${TIMECONVERT_CMDOPT_MJD_BASE}
          -DSOURCEDIR=${GPSTK_TEST_DATA_DIR}
          -DTARGETDIR=${GPSTK_TEST_OUTPUT_DIR}
          -P ${CMAKE_CURRENT_SOURCE_DIR}/testopts.cmake)
@@ -363,12 +377,20 @@ add_test(NAME timediff_Equal_8
 
 # tests with actual time differences
 
+# ANSI_B is used for most tests
+# ANSI_C is used for tests where Windows would fail due to lack of precision,
+# see similar tests above.
 set( TIMECONVERT_CMDOPT_ANSI_B "-A 1437264098" )
+if ( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
+  set( TIMECONVERT_CMDOPT_ANSI_C "-A 1437274799" )
+else()
+  set( TIMECONVERT_CMDOPT_ANSI_C "-A 1437264098" )
+endif()
 add_test(NAME timediff_Diff_1
          COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:timediff>
          -DEXP_RC=0
-         -DSPARG1=${TIMECONVERT_CMDOPT_ANSI_B}
+         -DSPARG1=${TIMECONVERT_CMDOPT_ANSI_C}
          -DSPARG2=${TIMECONVERT_CMDOPT_JULIAN}
          -DEXP_OUT=-1.000000
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testinout.cmake)
@@ -377,7 +399,7 @@ add_test(NAME timediff_Diff_2
          COMMAND ${CMAKE_COMMAND}
          -DTEST_PROG=$<TARGET_FILE:timediff>
          -DEXP_RC=0
-         -DSPARG1=${TIMECONVERT_CMDOPT_ANSI_B}
+         -DSPARG1=${TIMECONVERT_CMDOPT_ANSI_C}
          -DSPARG2=${TIMECONVERT_CMDOPT_MJD}
          -DEXP_OUT=-1.000000
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testinout.cmake)

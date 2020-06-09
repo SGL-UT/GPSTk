@@ -62,7 +62,6 @@
 #include "ObsID.hpp"
 #include "MathBase.hpp"
 #include "GPSWeekSecond.hpp"
-#include "SVNumXRef.hpp"
 
 namespace gpstk
 {

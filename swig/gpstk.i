@@ -258,7 +258,9 @@ namespace std { class fstream {}; }
 %include "RinexDatum.hpp"
 %include "Rinex3ClockBase.hpp"
 %include "Rinex3ObsBase.hpp"
-%include "Rinex3ObsHeader.hpp"
+
+%include "Rinex3ObsHeader.i"
+
 %include "Rinex3ObsData.hpp"
 %include "Rinex3ObsStream.hpp"
 %include "Rinex3ClockHeader.hpp"

@@ -4,9 +4,23 @@ add_executable(FileFilter_T FileFilter_T.cpp)
 target_link_libraries(FileFilter_T gpstk)
 add_test(FileDirProc_FileFilter FileFilter_T)
 
-add_executable(FileHunter_T FileHunter_T.cpp)
-target_link_libraries(FileHunter_T gpstk)
-add_test(FileDirProc_FileHunter FileHunter_T)
+if ( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
+  message(STATUS "Cowardly refusing to test FileHunter under Windows")
+else()
+  add_executable(FileHunter_T FileHunter_T.cpp)
+  target_link_libraries(FileHunter_T gpstk)
+  add_test(FileDirProc_FileHunter FileHunter_T)
+endif()
+
+add_executable(FileSpecFind_T FileSpecFind_T.cpp)
+if( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
+  target_link_libraries(FileSpecFind_T gpstk shlwapi)
+else()
+  target_link_libraries(FileSpecFind_T gpstk)
+endif()
+add_test(NAME FileDirProc_FileSpecFind
+  COMMAND FileSpecFind_T
+  WORKING_DIRECTORY ${GPSTK_TEST_DATA_DIR})
 
 add_executable(FileSpec_T FileSpec_T.cpp)
 target_link_libraries(FileSpec_T gpstk)

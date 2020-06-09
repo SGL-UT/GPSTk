@@ -332,7 +332,7 @@ public:
       gpstk::TestUtil testFramework("SP3SatID", "fromString", __FILE__, __LINE__);
 
       std::string inputStringArray[12] = {"7", "07", "30", "E10", "E100", "G08", "E08", "R08", "L08", "C08", "J08", "M08"};
-      int         expectedID[12]       = {  7,    7,   30,    10,    100,     8,     8,     8,     8,     8,     8,     8};
+      int         expectedID[12]       = {  7,    7,   30,    10,    100,     8,     8,     8,     8,     8,    200,     8};
       gpstk::SatID::SatelliteSystem expectedSatSysArray[12] =
          {
             gpstk::SatID::systemGPS,
@@ -521,7 +521,7 @@ public:
 
       try
       {
-         gpstk::SP3SatID Compare7(1, gpstk::SatID::systemQZSS);
+         gpstk::SP3SatID Compare7(193, gpstk::SatID::systemQZSS);
          outputString7 = Compare7.toString();
          compareString7 = "J01";
          s.str("");

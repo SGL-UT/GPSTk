@@ -124,6 +124,8 @@ private:
    string dataOutputRinex2ObsFile;
 
    string testMesg;
+
+   Rinex3ObsHeader::Fields empty;
 };
 
 //============================================================
@@ -796,22 +798,23 @@ embeddedHeadersTest()
       ros >> ros.header;
       TUASSERTE(bool, true, ros.good());
          // make sure we read all of the header info, nothing more, nothing less
-      TUASSERTE(unsigned long,
-                gpstk::Rinex3ObsHeader::validVersion |
-                gpstk::Rinex3ObsHeader::validComment |
-                gpstk::Rinex3ObsHeader::validRunBy |
-                gpstk::Rinex3ObsHeader::validMarkerName |
-                gpstk::Rinex3ObsHeader::validMarkerNumber |
-                gpstk::Rinex3ObsHeader::validObserver |
-                gpstk::Rinex3ObsHeader::validReceiver |
-                gpstk::Rinex3ObsHeader::validAntennaType |
-                gpstk::Rinex3ObsHeader::validAntennaPosition |
-                gpstk::Rinex3ObsHeader::validAntennaDeltaHEN |
-                gpstk::Rinex3ObsHeader::validWaveFact |
-                gpstk::Rinex3ObsHeader::validReceiverOffset |
-                gpstk::Rinex3ObsHeader::validNumObs |
-                gpstk::Rinex3ObsHeader::validInterval |
-                gpstk::Rinex3ObsHeader::validFirstTime,
+      TUASSERTE(Rinex3ObsHeader::Fields,
+                Rinex3ObsHeader::Fields({
+                      gpstk::Rinex3ObsHeader::validVersion,
+                         gpstk::Rinex3ObsHeader::validComment,
+                         gpstk::Rinex3ObsHeader::validRunBy,
+                         gpstk::Rinex3ObsHeader::validMarkerName,
+                         gpstk::Rinex3ObsHeader::validMarkerNumber,
+                         gpstk::Rinex3ObsHeader::validObserver,
+                         gpstk::Rinex3ObsHeader::validReceiver,
+                         gpstk::Rinex3ObsHeader::validAntennaType,
+                         gpstk::Rinex3ObsHeader::validAntennaPosition,
+                         gpstk::Rinex3ObsHeader::validAntennaDeltaHEN,
+                         gpstk::Rinex3ObsHeader::validWaveFact,
+                         gpstk::Rinex3ObsHeader::validReceiverOffset,
+                         gpstk::Rinex3ObsHeader::validNumObs,
+                         gpstk::Rinex3ObsHeader::validInterval,
+                         gpstk::Rinex3ObsHeader::validFirstTime}),
                 ros.header.valid);
          // Go through each record in the source file (there aren't
          // many) and verify that the contents are reasonable,
@@ -832,7 +835,7 @@ embeddedHeadersTest()
                 rod.time);
       TUASSERTE(short, 4, rod.numSVs);
       TUASSERTE(size_t, 4, rod.obs.size());
-      TUASSERTE(unsigned long, 0, rod.auxHeader.valid);
+      TUASSERTE(Rinex3ObsHeader::Fields, empty, rod.auxHeader.valid);
 
 /*
  05  3 24 13 10 50.0000000  4  4
@@ -849,9 +852,10 @@ embeddedHeadersTest()
                 rod.time);
       TUASSERTE(short, 4, rod.numSVs);
       TUASSERTE(size_t, 0, rod.obs.size());
-      TUASSERTE(unsigned long,
-                gpstk::Rinex3ObsHeader::validWaveFact |
-                gpstk::Rinex3ObsHeader::validComment,
+      TUASSERTE(Rinex3ObsHeader::Fields,
+                Rinex3ObsHeader::Fields({
+                      gpstk::Rinex3ObsHeader::validWaveFact,
+                         gpstk::Rinex3ObsHeader::validComment}),
                 rod.auxHeader.valid);
       TUASSERTE(size_t, 3, rod.auxHeader.commentList.size());
 
@@ -872,7 +876,7 @@ embeddedHeadersTest()
                 rod.time);
       TUASSERTE(short, 6, rod.numSVs);
       TUASSERTE(size_t, 6, rod.obs.size());
-      TUASSERTE(unsigned long, 0, rod.auxHeader.valid);
+      TUASSERTE(Rinex3ObsHeader::Fields, empty, rod.auxHeader.valid);
 
 /*
  05  3 24 13 11  0.0000000  2  1
@@ -886,8 +890,9 @@ embeddedHeadersTest()
                 rod.time);
       TUASSERTE(short, 1, rod.numSVs);
       TUASSERTE(size_t, 0, rod.obs.size());
-      TUASSERTE(unsigned long,
-                gpstk::Rinex3ObsHeader::validComment,
+      TUASSERTE(Rinex3ObsHeader::Fields,
+                Rinex3ObsHeader::Fields({
+                      gpstk::Rinex3ObsHeader::validComment}),
                 rod.auxHeader.valid);
       TUASSERTE(size_t, 1, rod.auxHeader.commentList.size());
 
@@ -906,7 +911,7 @@ embeddedHeadersTest()
                 rod.time);
       TUASSERTE(short, 4, rod.numSVs);
       TUASSERTE(size_t, 4, rod.obs.size());
-      TUASSERTE(unsigned long, 0, rod.auxHeader.valid);
+      TUASSERTE(Rinex3ObsHeader::Fields, empty, rod.auxHeader.valid);
 
 /*
                             3  4
@@ -923,11 +928,12 @@ A 9080                                                      MARKER NAME
                 rod.time);
       TUASSERTE(short, 4, rod.numSVs);
       TUASSERTE(size_t, 0, rod.obs.size());
-      TUASSERTE(unsigned long,
-                gpstk::Rinex3ObsHeader::validMarkerName |
-                gpstk::Rinex3ObsHeader::validMarkerNumber |
-                gpstk::Rinex3ObsHeader::validAntennaDeltaHEN |
-                gpstk::Rinex3ObsHeader::validComment,
+      TUASSERTE(Rinex3ObsHeader::Fields,
+                Rinex3ObsHeader::Fields({
+                      gpstk::Rinex3ObsHeader::validMarkerName,
+                         gpstk::Rinex3ObsHeader::validMarkerNumber,
+                         gpstk::Rinex3ObsHeader::validAntennaDeltaHEN,
+                         gpstk::Rinex3ObsHeader::validComment}),
                 rod.auxHeader.valid);
       TUASSERTE(size_t, 1, rod.auxHeader.commentList.size());
 
@@ -946,7 +952,7 @@ A 9080                                                      MARKER NAME
                 rod.time);
       TUASSERTE(short, 4, rod.numSVs);
       TUASSERTE(size_t, 4, rod.obs.size());
-      TUASSERTE(unsigned long, 0, rod.auxHeader.valid);
+      TUASSERTE(Rinex3ObsHeader::Fields, empty, rod.auxHeader.valid);
 
 /*
  05  3 24 13 13  1.2345678  5  0
@@ -960,7 +966,7 @@ A 9080                                                      MARKER NAME
                 rod.time);
       TUASSERTE(short, 0, rod.numSVs);
       TUASSERTE(size_t, 0, rod.obs.size());
-      TUASSERTE(unsigned long, 0, rod.auxHeader.valid);
+      TUASSERTE(Rinex3ObsHeader::Fields, empty, rod.auxHeader.valid);
 
 /*
                             4  1
@@ -975,8 +981,9 @@ A 9080                                                      MARKER NAME
                 rod.time);
       TUASSERTE(short, 1, rod.numSVs);
       TUASSERTE(size_t, 0, rod.obs.size());
-      TUASSERTE(unsigned long,
-                gpstk::Rinex3ObsHeader::validComment,
+      TUASSERTE(Rinex3ObsHeader::Fields,
+                Rinex3ObsHeader::Fields({
+                      gpstk::Rinex3ObsHeader::validComment}),
                 rod.auxHeader.valid);
       TUASSERTE(size_t, 1, rod.auxHeader.commentList.size());
 
@@ -995,7 +1002,7 @@ A 9080                                                      MARKER NAME
                 rod.time);
       TUASSERTE(short, 4, rod.numSVs);
       TUASSERTE(size_t, 4, rod.obs.size());
-      TUASSERTE(unsigned long, 0, rod.auxHeader.valid);
+      TUASSERTE(Rinex3ObsHeader::Fields, empty, rod.auxHeader.valid);
 
 /*
                             4  1
@@ -1009,8 +1016,9 @@ A 9080                                                      MARKER NAME
                 rod.time);
       TUASSERTE(short, 1, rod.numSVs);
       TUASSERTE(size_t, 0, rod.obs.size());
-      TUASSERTE(unsigned long,
-                gpstk::Rinex3ObsHeader::validComment,
+      TUASSERTE(Rinex3ObsHeader::Fields,
+                Rinex3ObsHeader::Fields({
+                      gpstk::Rinex3ObsHeader::validComment}),
                 rod.auxHeader.valid);
       TUASSERTE(size_t, 1, rod.auxHeader.commentList.size());
 
@@ -1027,7 +1035,7 @@ A 9080                                                      MARKER NAME
                 rod.time);
       TUASSERTE(short, 2, rod.numSVs);
       TUASSERTE(size_t, 2, rod.obs.size());
-      TUASSERTE(unsigned long, 0, rod.auxHeader.valid);
+      TUASSERTE(Rinex3ObsHeader::Fields, empty, rod.auxHeader.valid);
 
 /*
                             4  2
@@ -1042,8 +1050,9 @@ A 9080                                                      MARKER NAME
                 rod.time);
       TUASSERTE(short, 2, rod.numSVs);
       TUASSERTE(size_t, 0, rod.obs.size());
-      TUASSERTE(unsigned long,
-                gpstk::Rinex3ObsHeader::validComment,
+      TUASSERTE(Rinex3ObsHeader::Fields,
+                Rinex3ObsHeader::Fields({
+                      gpstk::Rinex3ObsHeader::validComment}),
                 rod.auxHeader.valid);
       TUASSERTE(size_t, 2, rod.auxHeader.commentList.size());
 
@@ -1062,7 +1071,7 @@ A 9080                                                      MARKER NAME
                 rod.time);
       TUASSERTE(short, 4, rod.numSVs);
       TUASSERTE(size_t, 4, rod.obs.size());
-      TUASSERTE(unsigned long, 0, rod.auxHeader.valid);
+      TUASSERTE(Rinex3ObsHeader::Fields, empty, rod.auxHeader.valid);
 
 /*
                             4  3
@@ -1078,8 +1087,9 @@ A 9080                                                      MARKER NAME
                 rod.time);
       TUASSERTE(short, 3, rod.numSVs);
       TUASSERTE(size_t, 0, rod.obs.size());
-      TUASSERTE(unsigned long,
-                gpstk::Rinex3ObsHeader::validComment,
+      TUASSERTE(Rinex3ObsHeader::Fields,
+                Rinex3ObsHeader::Fields({
+                      gpstk::Rinex3ObsHeader::validComment}),
                 rod.auxHeader.valid);
       TUASSERTE(size_t, 3, rod.auxHeader.commentList.size());
    }

@@ -530,29 +530,15 @@ namespace gpstk
         << "Broadcast Ephemeris (Engineering Units) - " << getNameLong();
       s << endl;
 
-      SVNumXRef svNumXRef;
-      int NAVSTARNum = 0;
-
       s << endl;
       s << "PRN : " << setw(2) << satID.id << " / "
         << "SVN : " << setw(2);
-      if (satID.system==SatID::systemGPS)
+      std::string svn;
+      if (getSVN(satID, ctToe, svn))
       {
-         try
-         {
-            NAVSTARNum = svNumXRef.getNAVSTAR(satID.id, ctToe );
-            s << NAVSTARNum << "  ";
-         }
-         catch(NoNAVSTARNumberFound)
-         {
-            s << "XX";
-         }
+         s << svn;
       }
-      else
-      {
-         s << "  ";
-      }
-      s << endl
+      s << "  " << endl
         << endl;
    }
 

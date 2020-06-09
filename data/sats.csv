@@ -1,0 +1,113 @@
+# The SV state in a given line refers to the state of the satellite
+# during the period from start time to end time, not the last known
+# state.  As such, satellites that have been decommissioned will have
+# "Operational" status data in this file.  The "Decommissioned" state
+# is only used when a satellite has been formally decommissioned but
+# is still transmitting data with the given code/PRN assignment.
+#
+# SAT, system, svn, prn, norad, FDMA channel, FDMA slot, launch year, launch DOY, launch SOD, start year, start DOY, start SOD, end year, end DOY, end SOD, orbital plane, orbital slot, satellite block/type, signal set name, mission number/ID, status, clock 1 type, clock 2 type, clock 3 type, clock 4 type, active clock
+# SIG, signal set name, carrier frequency, tracking code, nav code
+SIG,GPS I,L1,CA,LNav
+SIG,GPS I,L1,P,LNav
+SIG,GPS I,L1,Y,LNav
+SIG,GPS I,L2,P,LNav
+SIG,GPS I,L2,Y,LNav
+SAT,GPS,1,4,-1,0,0,1978,53,0,1978,88,0,1985,198,0,Z,9,I,GPS I,1,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,2,7,-1,0,0,1978,133,0,1978,195,0,1988,43,0,Z,9,I,GPS I,2,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,3,6,-1,0,0,1978,279,0,1978,317,0,1992,139,0,Z,9,I,GPS I,3,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,4,8,-1,0,0,1978,344,0,1979,8,0,1990,151,0,Z,9,I,GPS I,4,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,5,5,-1,0,0,1980,40,0,1980,58,0,1984,132,0,Z,9,I,GPS I,5,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,6,9,-1,0,0,1980,117,0,1980,137,0,1991,126,0,Z,9,I,GPS I,6,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,7,7,-1,0,0,1981,352,0,1981,352,0,1981,352,0,Z,9,I,GPS I,7,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,8,11,-1,0,0,1983,195,0,1983,222,0,1993,124,0,Z,9,I,GPS I,8,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,9,13,-1,0,0,1984,165,0,1984,201,0,1994,171,0,C,4,I,GPS I,9,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,10,12,-1,0,0,1984,252,0,1984,277,0,1996,86,0,A,1,I,GPS I,10,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,11,3,-1,0,0,1985,282,0,1985,303,0,1994,104,0,C,1,I,GPS I,11,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,13,2,-1,0,0,1989,161,0,1989,222,0,2004,53,0,B,5,II,GPS II,2,Operational,Rubidium,Rubidium,Rubidium,Cesium,255
+SAT,GPS,14,14,-1,0,0,1989,45,0,1989,105,0,2000,105,0,E,1,II,GPS II,1,Operational,Rubidium,Rubidium,Rubidium,Cesium,255
+SAT,GPS,15,15,-1,0,0,1990,274,0,1990,288,0,2007,134,0,D,5,II,GPS II,9,Operational,Rubidium,Rubidium,Rubidium,Cesium,255
+SAT,GPS,16,16,-1,0,0,1989,230,0,1989,287,0,2000,287,0,E,5,II,GPS II,3,Operational,Rubidium,Rubidium,Rubidium,Cesium,255
+SAT,GPS,17,17,-1,0,0,1989,345,0,1990,6,0,2005,55,0,D,6,II,GPS II,5,Operational,Rubidium,Rubidium,Rubidium,Cesium,255
+SAT,GPS,18,18,-1,0,0,1990,24,0,1990,45,0,2000,231,0,F,3,II,GPS II,6,Operational,Rubidium,Rubidium,Rubidium,Cesium,255
+SAT,GPS,19,19,-1,0,0,1989,294,0,1989,327,0,2001,254,0,A,4,II,GPS II,4,Operational,Rubidium,Rubidium,Rubidium,Cesium,255
+SAT,GPS,20,20,-1,0,0,1990,85,0,1990,108,0,1996,348,0,B,5,II,GPS II,7,Operational,Rubidium,Rubidium,Rubidium,Cesium,255
+SAT,GPS,21,21,-1,0,0,1990,214,0,1990,234,0,2003,27,0,E,2,II,GPS II,8,Operational,Rubidium,Rubidium,Rubidium,Cesium,255
+SAT,GPS,22,22,-1,0,0,1993,34,0,1993,94,0,2003,218,0,B,6,IIA,GPS IIA,18,Operational,Rubidium,Rubidium,Rubidium,Cesium,255
+SAT,GPS,23,32,-1,0,0,1990,330,0,1990,344,0,2016,25,79199,E,5,IIA,GPS IIA,10,Operational,Rubidium,Rubidium,Rubidium,Cesium,255
+SAT,GPS,24,24,-1,0,0,1991,185,0,1991,242,0,2011,308,0,D,1,IIA,GPS IIA,11,Operational,Rubidium,Rubidium,Rubidium,Cesium,255
+SAT,GPS,25,25,-1,0,0,1992,54,0,1992,84,0,2010,142,0,A,2,IIA,GPS IIA,12,Operational,Rubidium,Rubidium,Rubidium,Cesium,255
+SAT,GPS,26,26,-1,0,0,1992,189,0,1992,205,0,2015,4,86399,F,2,IIA,GPS IIA,14,Operational,Rubidium,Rubidium,Rubidium,Cesium,255
+SAT,GPS,27,27,-1,0,0,1992,253,0,1992,274,0,2012,302,86399,A,4,IIA,GPS IIA,15,Operational,Rubidium,Rubidium,Rubidium,Cesium,255
+SAT,GPS,28,28,-1,0,0,1992,101,0,1992,116,0,1997,227,0,C,5,IIA,GPS IIA,13,Operational,Rubidium,Rubidium,Rubidium,Cesium,255
+SAT,GPS,30,30,-1,0,0,1996,256,0,1996,275,0,2011,216,0,B,2,IIA,GPS IIA,27,Operational,Rubidium,Rubidium,Rubidium,Cesium,255
+SAT,GPS,31,31,-1,0,0,1993,89,0,1993,103,0,2005,297,0,C,3,IIA,GPS IIA,19,Operational,Rubidium,Rubidium,Rubidium,Cesium,255
+SAT,GPS,32,1,-1,0,0,1992,327,0,1992,346,0,2008,77,0,F,4,IIA,GPS IIA,16,Operational,Rubidium,Rubidium,Rubidium,Cesium,255
+SAT,GPS,32,24,-1,0,0,2012,78,0,2012,78,0,2012,117,0,F,6,IIA,GPS IIA,16,Operational,Rubidium,Rubidium,Rubidium,Cesium,255
+SAT,GPS,33,3,-1,0,0,1996,88,0,1996,100,0,2013,163,86399,C,2,IIA,GPS IIA,25,Operational,Rubidium,Rubidium,Rubidium,Cesium,255
+SAT,GPS,34,4,-1,0,0,1993,299,0,1993,326,0,2015,306,80999,D,4,IIA,GPS IIA,23,Operational,Rubidium,Rubidium,Rubidium,Cesium,255
+SAT,GPS,35,5,-1,0,0,1993,242,0,1993,271,0,2009,95,0,B,5,IIA,GPS IIA,22,Operational,Rubidium,Rubidium,Rubidium,Cesium,255
+SAT,GPS,35,1,-1,0,0,2011,153,0,2011,153,0,2011,195,0,B,5,IIA,GPS IIA,22,Operational,Rubidium,Rubidium,Rubidium,Cesium,255
+SAT,GPS,35,30,-1,0,0,2011,217,0,2011,217,0,2013,128,75599,B,5,IIA,GPS IIA,22,Operational,Rubidium,Rubidium,Rubidium,Cesium,255
+SAT,GPS,36,6,-1,0,0,1994,69,0,1994,87,0,2014,51,86399,C,1,IIA,GPS IIA,24,Operational,Rubidium,Rubidium,Rubidium,Cesium,255
+SAT,GPS,37,7,-1,0,0,1993,133,0,1993,163,0,2007,354,0,C,4,IIA,GPS IIA,20,Operational,Rubidium,Rubidium,Rubidium,Cesium,255
+SAT,GPS,37,1,-1,0,0,2008,297,0,2008,297,0,2009,6,0,C,4,IIA,GPS IIA,20,Operational,Rubidium,Rubidium,Rubidium,Cesium,255
+SAT,GPS,37,24,-1,0,0,2012,118,0,2012,118,0,2012,134,0,C,6,IIA,GPS IIA,20,Operational,Rubidium,Rubidium,Rubidium,Cesium,255
+SAT,GPS,38,8,-1,0,0,1997,310,0,1997,352,0,2015,119,86399,A,3,IIA,GPS IIA,28,Operational,Rubidium,Rubidium,Rubidium,Cesium,255
+SAT,GPS,39,9,-1,0,0,1993,177,0,1993,201,0,2014,217,86399,A,1,IIA,GPS IIA,21,Operational,Rubidium,Rubidium,Rubidium,Cesium,255
+# This is the official decommission time
+SAT,GPS,40,10,-1,0,0,1996,198,0,1996,228,0,2015,197,2227,E,3,IIA,GPS IIA,26,Operational,Rubidium,Rubidium,Rubidium,Cesium,255
+SAT,GPS,40,10,-1,0,0,1996,198,0,2015,197,2228,2015,215,86399,E,3,IIA,GPS IIA,26,Decommissioned,Rubidium,Rubidium,Rubidium,Cesium,255
+SAT,GPS,41,14,-1,0,0,2000,315,0,2000,345,0,2132,244,0,F,1,IIR,GPS IIR,6,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,42,12,-1,0,0,1997,17,0,1997,17,0,1997,17,0,F,5,IIR,GPS IIR,1,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,43,13,-1,0,0,1997,204,0,1998,31,0,2132,244,0,F,2,IIR,GPS IIR,2,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,44,28,-1,0,0,2000,198,0,2000,230,0,2132,244,0,B,3,IIR,GPS IIR,5,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,45,21,-1,0,0,2003,90,0,2003,102,0,2132,244,0,D,3,IIR,GPS IIR,9,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,46,11,-1,0,0,1999,280,0,2000,3,0,2132,244,0,D,2,IIR,GPS IIR,3,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,47,22,-1,0,0,2003,355,0,2004,12,0,2132,244,0,E,2,IIR,GPS IIR,10,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,48,7,-1,0,0,2008,75,0,2008,84,0,2132,244,0,A,4,IIR-M,GPS IIR-M,19,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,49,1,-1,0,0,2009,83,0,2009,83,0,2011,126,0,B,2,IIR-M,GPS IIR-M,20,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,49,24,-1,0,0,2012,32,0,2012,32,0,2012,76,0,B,6,IIR-M,GPS IIR-M,20,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,49,24,-1,0,0,2012,222,0,2012,222,0,2012,241,86399,B,6,IIR-M,GPS IIR-M,20,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,50,5,-1,0,0,2009,229,0,2009,239,0,2132,244,0,E,6,IIR-M,GPS IIR-M,21,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,51,20,-1,0,0,2000,132,0,2000,153,0,2132,244,0,E,1,IIR,GPS IIR,4,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,52,31,-1,0,0,2006,267,0,2006,267,0,2132,244,0,A,2,IIR-M,GPS IIR-M,15,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,53,17,-1,0,0,2005,269,0,2005,350,0,2132,244,0,C,4,IIR-M,GPS IIR-M,14,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,54,18,-1,0,0,2001,30,0,2001,46,0,2018,65,86399,E,4,IIR,GPS IIR,7,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,55,15,-1,0,0,2007,290,0,2007,297,0,2132,244,0,F,2,IIR-M,GPS IIR-M,17,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,56,16,-1,0,0,2003,29,0,2003,49,0,2132,244,0,B,1,IIR,GPS IIR,8,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,57,29,-1,0,0,2007,354,0,2008,2,0,2132,244,0,C,1,IIR-M,GPS IIR-M,18,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,58,12,-1,0,0,2006,320,0,2006,320,0,2132,244,0,B,4,IIR-M,GPS IIR-M,16,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,59,19,-1,0,0,2004,80,0,2004,96,0,2132,244,0,C,3,IIR,GPS IIR,11,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,60,23,-1,0,0,2004,175,0,2004,191,0,2132,244,0,A,1,IIR,GPS IIR,12,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,61,2,-1,0,0,2004,311,0,2004,327,0,2132,244,0,A,5,IIR,GPS IIR,13,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,62,25,-1,0,0,2010,142,0,2010,142,0,2132,244,0,B,5,IIF,GPS IIF,1,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,63,1,-1,0,0,2011,196,0,2011,196,0,2132,244,0,D,2,IIF,GPS IIF,2,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,49,27,-1,0,0,2012,303,0,2012,303,0,2013,128,75599,B,6,IIR-M,GPS IIR-M,20,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,65,24,-1,0,0,2012,283,0,2012,283,0,2132,244,0,A,1,IIF,GPS IIF,3,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,49,30,-1,0,0,2012,303,0,2013,128,79200,2013,233,86399,B,6,IIR-M,GPS IIR-M,20,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,66,27,-1,0,0,2013,135,0,2013,136,0,2132,244,0,C,2,IIF,GPS IIF,4,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,33,3,-1,0,0,1996,88,0,2013,164,0,2014,214,2199,C,5,IIA,GPS IIA,25,Operational,Rubidium,Rubidium,Rubidium,Cesium,255
+SAT,GPS,32,30,-1,0,0,2013,235,0,2013,235,0,2013,264,86399,F,6,IIA,GPS IIA,16,Operational,Cesium,Cesium,Cesium,Unknown,255
+SAT,GPS,37,30,-1,0,0,2013,265,0,2013,265,0,2013,351,86399,C,6,IIA,GPS IIA,20,Operational,Cesium,Cesium,Cesium,Unknown,255
+SAT,GPS,49,30,-1,0,0,2013,353,0,2013,353,0,2014,40,86399,B,6,IIR-M,GPS IIR-M,20,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,64,30,-1,0,0,2014,52,0,2014,52,0,2132,244,0,A,3,IIF,GPS IIF,5,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,49,6,-1,0,0,2014,93,0,2014,90,0,2014,133,86399,B,6,IIR-M,GPS IIR-M,20,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,67,6,-1,0,0,2014,134,0,2014,134,0,2132,244,0,D,4,IIF,GPS IIF,6,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,68,9,-1,0,0,2014,213,0,2014,218,0,2132,244,0,F,3,IIF,GPS IIF,7,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,35,3,-1,0,0,2014,248,0,2014,246,0,2014,300,86399,B,1,IIA,GPS IIA,22,Operational,Rubidium,ff:ff:ff:ff,ff:ff:ff:ff,ff:ff:ff:ff,255
+SAT,GPS,69,3,-1,0,0,2014,302,1721,2014,302,0,2132,244,0,E,1,IIF,GPS IIF,8,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,71,26,-1,0,0,2015,84,1836,2015,89,0,2132,244,0,B,5,IIF,GPS IIF,9,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,49,8,-1,0,0,2015,120,0,2015,120,0,2015,182,55799,B,6,IIR-M,GPS IIR-M,20,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,72,8,-1,0,0,2015,196,0,2015,196,0,2132,244,0,C,3,IIF,GPS IIF,10,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,36,10,-1,0,0,1994,69,0,2015,259,0,2015,299,1754,C,1,IIA,GPS IIA,24,ff:ff:ff:ff,Rubidium,Rubidium,Rubidium,Cesium,255
+SAT,GPS,73,10,-1,0,0,2015,303,1615,2015,303,1615,2132,244,0,E,2,IIF,GPS IIF,11,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,70,32,-1,0,0,2016,34,49620,2016,34,49620,2132,244,0,F,1,IIF,GPS IIF,12,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,49,4,-1,0,0,2012,32,0,2016,33,0,2016,320,86399,B,6,IIR,GPS IIR,20,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,32,4,-1,0,0,2016,321,0,2016,321,0,2017,9,86399,F,6,IIA,GPS IIA,16,Operational,Cesium,Cesium,Cesium,Rubidium,255
+SAT,GPS,49,4,-1,0,0,2017,10,0,2017,10,0,2017,137,86399,B,6,IIR,GPS IIR,20,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,38,4,-1,0,0,2017,138,0,2017,138,0,2017,200,86399,A,3,IIA,GPS IIA,28,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,36,4,-1,0,0,1994,69,0,2017,201,0,2017,334,86399,C,1,IIA,GPS IIA,24,Operational,Rubidium,Unknown,Unknown,Unknown,255
+SAT,GPS,49,4,-1,0,0,2017,335,0,2017,335,0,2018,283,86399,B,6,IIR,GPS IIR,20,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+SAT,GPS,34,18,-1,0,0,1993,299,0,2018,66,0,2132,244,0,D,4,IIA,GPS IIA,23,Operational,Rubidium,Cesium,Cesium,Unknown,255
+SAT,GPS,36,4,-1,0,0,1994,69,0,2018,284,0,2019,4,86399,C,1,IIA,GPS IIA,24,Operational,Rubidium,Unknown,Unknown,Unknown,255
+SAT,GPS,74,4,-1,0,0,2018,357,1351,2019,5,0,2132,244,0,F,0,III,GPS III,1,Operational,Rubidium,Rubidium,Rubidium,Unknown,255

@@ -63,6 +63,7 @@
 #include "ObsID.hpp"
 #include "Rinex3NavData.hpp"
 //#include "MathBase.hpp"
+#include "SatMetaDataStore.hpp"
 
 namespace gpstk
 {
@@ -186,6 +187,9 @@ namespace gpstk
       virtual void dumpFooter(std::ostream& s = std::cout) const = 0;
 
          /**
+          * @note for dump methods to properly map from PRN to SVN,
+          *   the "global" satMetaDataStore pointer must be set to a
+          *   store that has data loaded.
           * @throw InvalidRequest
           */
       virtual void dump(std::ostream& s = std::cout) const;
@@ -194,6 +198,22 @@ namespace gpstk
           * @throw InvalidRequest
           */
       virtual Rinex3NavData makeRinex3NavData() const;
+
+         /** Shortcut to SatMetaDataStore::getSVN() that obviates
+          * having to check the pointer for null.
+          * @copydetails SatMetaDataStore::getSVN()
+          * @param[in] sat The ID of the desired satellite.
+          * @param[in] when The time of interest of the desired satellite.
+          * @param[out] svn If found the satellite's vehicle number.
+          * @return true if the requested satellite mapping was found.
+          */
+      bool getSVN(const SatID& sat, const gpstk::CommonTime& when,
+                  std::string& svn)
+         const
+      {
+         return ((satMetaDataStore != nullptr) &&
+                 satMetaDataStore->getSVN(sat,when,svn));
+      }
 
          /// Overhead information
          //@{
@@ -209,6 +229,10 @@ namespace gpstk
       bool    healthy;         /**< SV health (healthy=true, other=false */
    public:
               //@}
+
+         /// Set this to a valid store to get PRN->SVN translations in dump().
+      static SatMetaDataStore *satMetaDataStore;
+
 
          // Fit Interval Definition
          // The beginning and end of validity are derived quantities that specify

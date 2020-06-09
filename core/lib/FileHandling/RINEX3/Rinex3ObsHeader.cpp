@@ -93,6 +93,77 @@ namespace gpstk
 
    int Rinex3ObsHeader::debug = 0;
 
+  const Rinex3ObsHeader::Fields Rinex3ObsHeader::allValid2({
+         Rinex3ObsHeader::validVersion,
+            Rinex3ObsHeader::validRunBy,
+            Rinex3ObsHeader::validMarkerName,
+            Rinex3ObsHeader::validObserver,
+            Rinex3ObsHeader::validReceiver,
+            Rinex3ObsHeader::validAntennaType,
+            Rinex3ObsHeader::validAntennaPosition,
+            Rinex3ObsHeader::validAntennaDeltaHEN,
+            Rinex3ObsHeader::validNumObs,
+            Rinex3ObsHeader::validFirstTime
+            });
+   const Rinex3ObsHeader::Fields Rinex3ObsHeader::allValid30({
+         Rinex3ObsHeader::validVersion,
+            Rinex3ObsHeader::validRunBy,
+            Rinex3ObsHeader::validMarkerName,
+               /** @note MARKER TYPE is actually required but in the
+                * interest of supporting the invalid IGS data files,
+                * we make it optional */
+               //Rinex3ObsHeader::validMarkerType,
+            Rinex3ObsHeader::validObserver,
+            Rinex3ObsHeader::validReceiver,
+            Rinex3ObsHeader::validAntennaType,
+            Rinex3ObsHeader::validAntennaPosition,
+            Rinex3ObsHeader::validAntennaDeltaHEN,
+            Rinex3ObsHeader::validSystemNumObs,
+            Rinex3ObsHeader::validFirstTime
+            });
+   const Rinex3ObsHeader::Fields Rinex3ObsHeader::allValid301({
+         Rinex3ObsHeader::validVersion,
+            Rinex3ObsHeader::validRunBy,
+            Rinex3ObsHeader::validMarkerName,
+               //Rinex3ObsHeader::validMarkerType,
+            Rinex3ObsHeader::validObserver,
+            Rinex3ObsHeader::validReceiver,
+            Rinex3ObsHeader::validAntennaType,
+            Rinex3ObsHeader::validAntennaPosition,
+            Rinex3ObsHeader::validAntennaDeltaHEN,
+            Rinex3ObsHeader::validSystemNumObs,
+            Rinex3ObsHeader::validFirstTime,
+            Rinex3ObsHeader::validSystemPhaseShift
+            });
+   const Rinex3ObsHeader::Fields Rinex3ObsHeader::allValid302({
+         Rinex3ObsHeader::validVersion,
+            Rinex3ObsHeader::validRunBy,
+            Rinex3ObsHeader::validMarkerName,
+               //Rinex3ObsHeader::validMarkerType,
+            Rinex3ObsHeader::validObserver,
+            Rinex3ObsHeader::validReceiver,
+            Rinex3ObsHeader::validAntennaType,
+            Rinex3ObsHeader::validAntennaPosition,
+            Rinex3ObsHeader::validAntennaDeltaHEN,
+            Rinex3ObsHeader::validSystemNumObs,
+            Rinex3ObsHeader::validFirstTime,
+            Rinex3ObsHeader::validSystemPhaseShift
+            });
+   const Rinex3ObsHeader::Fields Rinex3ObsHeader::allValid303({
+         Rinex3ObsHeader::validVersion,
+            Rinex3ObsHeader::validRunBy,
+            Rinex3ObsHeader::validMarkerName,
+               //Rinex3ObsHeader::validMarkerType,
+            Rinex3ObsHeader::validObserver,
+            Rinex3ObsHeader::validReceiver,
+            Rinex3ObsHeader::validAntennaType,
+            Rinex3ObsHeader::validAntennaPosition,
+            Rinex3ObsHeader::validAntennaDeltaHEN,
+            Rinex3ObsHeader::validSystemNumObs,
+            Rinex3ObsHeader::validFirstTime,
+            Rinex3ObsHeader::validSystemPhaseShift
+            });
+
    Rinex3ObsHeader::Rinex3ObsHeader()
          : PisY(false)
    {
@@ -152,7 +223,7 @@ namespace gpstk
       numSVs = 0;
       numObsForSat.clear();
       obsTypeList.clear();
-      valid  = 0;
+      valid.clear();
       validEoH = false;
          // Only do this in the constructor so the desired handling of
          // "P" code in RINEX 2 stays the same.
@@ -170,65 +241,26 @@ namespace gpstk
 
    void Rinex3ObsHeader::reallyPutRecord(FFStream& ffs) const
    {
+      using gpstk::StringUtils::asString;
       Rinex3ObsStream& strm = dynamic_cast<Rinex3ObsStream&>(ffs);
 
       strm.header = *this;
 
-      unsigned long allValid;
-      if     (version == 3.00)  allValid = allValid30;
-      else if(version == 3.01)  allValid = allValid301;
-      else if(version == 3.02)  allValid = allValid302;
-      else if(version == 3.03)  allValid = allValid303;
-      else if(version <  3)     allValid = allValid2;
-      else
+      Fields allValid = Fields::getRequired(version);
+      if (allValid.empty())
       {
-         FFStreamError err("Unknown RINEX version: " + asString(version,2));
+         FFStreamError err("Unknown RINEX version: " +
+                           gpstk::StringUtils::asString(version,2));
          err.addText("Make sure to set the version correctly.");
          GPSTK_THROW(err);
       }
 
       if((valid & allValid) != allValid)
       {
-         ostringstream msg;
-         msg << endl;
-         msg << "Version = " << version << hex << endl;
-         if(version == 3.03)
-            msg << "allValid303 = 0x" << setw(8) << nouppercase << allValid303 << endl;
-         else if(version == 3.02)
-            msg << "allValid302 = 0x" << setw(8) << nouppercase << allValid302 << endl;
-         else if(version == 3.01)
-            msg << "allValid301 = 0x" << setw(8) << nouppercase << allValid301 << endl;
-         else if(version == 3.00)
-            msg << " allValid30 = 0x" << setw(8) << nouppercase << allValid30 << endl;
-         else
-            msg << "  allValid2 = 0x" << setw(8) << nouppercase << allValid2 << endl;
-         msg << "      valid = 0x" << setw(8) << nouppercase << valid << endl;
-         msg << "Version         " << setw(8) << (valid & validVersion        ) << endl;
-         msg << "Run By          " << setw(8) << (valid & validRunBy          ) << endl;
-         msg << "Marker Name     " << setw(8) << (valid & validMarkerName     ) << endl;
-            //msg << "Marker Type     " << setw(8) << (valid & validMarkerType     ) << endl;
-         msg << "Observer        " << setw(8) << (valid & validObserver       ) << endl;
-         msg << "Receiver        " << setw(8) << (valid & validReceiver       ) << endl;
-         msg << "Antenna Type    " << setw(8) << (valid & validAntennaType    ) << endl;
-         msg << "Antenna DHEN    " << setw(8) << (valid & validAntennaDeltaHEN) << endl;
-         if(version <  3)
-            msg << "# Obs Type      " << setw(8) << (valid & validNumObs) << endl;
-         if(version >= 3)
-            msg << "Sys Obs Type    " << setw(8) << (valid & validSystemNumObs  ) << endl;
-         if(version <  3)
-            msg << "Wave Fact       " << setw(8) << (valid & validWaveFact) << endl;
-         if(version >= 3.01)
-            msg << "Sys Phs Shft    " << setw(8) << (valid & validSystemPhaseShift)<< endl;
-         if(version >= 3.01)
-            msg << "GLO Freq No     " << setw(8) << (valid & validGlonassSlotFreqNo  ) << endl;
-         if(version >= 3.02)
-            msg << "GLO Cod-Phs Bias" << setw(8) << (valid & validGlonassCodPhsBias) << endl;
-         msg << "Interval        " << setw(8) << (valid & validInterval       ) << endl;
-         msg << "First Time      " << setw(8) << (valid & validFirstTime      ) << endl;
-         msg << "End Header      " << setw(8) << (validEoH ? "true":"false"   );    // no endl
          FFStreamError err("Incomplete or invalid header.");
-         err.addText("Make sure you set all header valid bits for all of the available data.");
-         err.addText(msg.str());
+         err.addText("Make sure you set all header valid bits for all of the"
+                     " available data.");
+         allValid.describeMissing(valid, err);
          GPSTK_THROW(err);
       }
 
@@ -305,6 +337,7 @@ namespace gpstk
       // This function writes all valid header records.
    void Rinex3ObsHeader::writeHeaderRecords(FFStream& ffs) const
    {
+      using gpstk::StringUtils::asString;
       Rinex3ObsStream& strm = dynamic_cast<Rinex3ObsStream&>(ffs);
       string line;
 
@@ -1505,6 +1538,7 @@ namespace gpstk
       // This function parses the entire header from the given stream
    void Rinex3ObsHeader::reallyGetRecord(FFStream& ffs)
    {
+      using gpstk::StringUtils::asString;
       Rinex3ObsStream& strm = dynamic_cast<Rinex3ObsStream&>(ffs);
 
          // If already read, just return.
@@ -1654,13 +1688,8 @@ namespace gpstk
       }
 
          // is the header valid?
-      unsigned long allValid;
-      if     (version <  3  )  allValid = allValid2;
-      else if(version == 3.0)  allValid = allValid30;
-      else if(version == 3.01) allValid = allValid301;
-      else if(version == 3.02) allValid = allValid302;
-      else if(version == 3.03) allValid = allValid303;
-      else
+      Fields allValid = Fields::getRequired(version);
+      if (allValid.empty())
       {
          FFStreamError e("Unknown or unsupported RINEX version " + 
                          asString(version,2));
@@ -1670,6 +1699,7 @@ namespace gpstk
       if((valid & allValid) != allValid)
       {
          FFStreamError e("Incomplete or invalid header");
+         allValid.describeMissing(valid, e);
          GPSTK_THROW(e);
       }
 
@@ -2035,6 +2065,7 @@ namespace gpstk
 
    string Rinex3ObsHeader::writeTime(const CivilTime& civtime) const
    {
+      using gpstk::StringUtils::asString;
       string line;
 
       line  = rightJustify(asString<short>(civtime.year    )   ,  6);
@@ -2056,6 +2087,12 @@ namespace gpstk
          version = 2.11;
       }
       valid |= Rinex3ObsHeader::validWaveFact;
+      if (valid.isSet(Rinex3ObsHeader::validSystemNumObs))
+      {
+            // change from RINEX 3 header to RINEX 2 equivalent
+         valid.clear(Rinex3ObsHeader::validSystemNumObs);
+         valid.set(Rinex3ObsHeader::validNumObs);
+      }
          // TD unset R3-specific header members?
       
          // make a list of R2 obstype strings, and a map R3ObsIDs <= R2 obstypes for each system
@@ -2136,6 +2173,7 @@ namespace gpstk
 
    void Rinex3ObsHeader::dump(ostream& s) const
    {
+      using gpstk::StringUtils::asString;
       size_t i;
 
       string str;
@@ -2192,22 +2230,16 @@ namespace gpstk
       s << "Time of first obs "
         << printTime(firstObs,"%04Y/%02m/%02d %02H:%02M:%06.3f %P") << endl;
 
-      unsigned long allValid = 0;
-      if     (version == 3.0)   allValid = allValid30;
-      else if(version == 3.01)  allValid = allValid301;
-      else if(version == 3.02)  allValid = allValid302;
-      else if(version == 3.03)  allValid = allValid303;
-
       s << "(This header is ";
-      if((valid & allValid) == allValid)
+      if (Fields::isValid(version, valid))
          s << "VALID)" << endl;
       else
       {
          s << "NOT VALID";
          s << " RINEX " << setprecision(2) << version << ")" << endl;
          s << "valid    = " << hex << setw(8) << valid << endl;
-         s << "allValid = " << hex << setw(8) << allValid << endl;
-         s << "~v & aV  = " << hex << setw(8) << (~valid & allValid) << endl << dec;
+         s << "allValid = " << hex << setw(8) << Fields::getRequired(version)
+           << endl;
 
          s << "Invalid header records:" << endl;
          if(!(valid & validVersion)) s << " Version / Type\n";
@@ -2256,7 +2288,7 @@ namespace gpstk
          s << "Center of Mass   (XYZ,m) : "
            << setprecision(4) << antennaPhaseCtr   << endl;
       if(valid & validSigStrengthUnit  )
-         s << "Signal Strenth Unit = " << sigStrengthUnit << endl;
+         s << "Signal Strength Unit = " << sigStrengthUnit << endl;
       if(valid & validInterval         )
          s << "Interval = "
            << fixed << setw(7) << setprecision(3) << interval << endl;
@@ -2580,5 +2612,169 @@ namespace gpstk
       return rv;
    } // bool Rinex3ObsHeader::compare
 
+
+   Rinex3ObsHeader::Fields Rinex3ObsHeader::Fields ::
+   getRequired(double version)
+   {
+      if (version < 3.00)     return allValid2;
+      else if(version < 3.01) return allValid30;
+      else if(version < 3.02) return allValid301;
+      else if(version < 3.03) return allValid302;
+      else if(version < 3.04) return allValid303;
+      else if(version < 3.05) return allValid303;
+      return Fields();
+   }
+
+
+   Rinex3ObsHeader::Fields Rinex3ObsHeader::Fields ::
+   operator&(const Rinex3ObsHeader::Fields& rhs) const
+   {
+      FieldSet results;
+      set_intersection(fieldsSet.begin(), fieldsSet.end(),
+                       rhs.fieldsSet.begin(), rhs.fieldsSet.end(),
+                       inserter(results, results.begin()));
+      return Rinex3ObsHeader::Fields(results);
+   }
+
+   Rinex3ObsHeader::Fields Rinex3ObsHeader::Fields ::
+   operator|(const Rinex3ObsHeader::Fields& rhs) const
+   {
+      FieldSet results;
+      set_union(fieldsSet.begin(), fieldsSet.end(),
+                rhs.fieldsSet.begin(), rhs.fieldsSet.end(),
+                inserter(results, results.begin()));
+       return Rinex3ObsHeader::Fields(results);
+   }
+
+
+   Rinex3ObsHeader::Field Rinex3ObsHeader::Fields ::
+   operator&(Rinex3ObsHeader::Field rhs) const
+   {
+      if (fieldsSet.count(rhs))
+         return rhs;
+      return validInvalid;
+   }
+
+
+   bool Rinex3ObsHeader::Fields ::
+   isValid(const Rinex3ObsHeader::Fields& present) const
+   {
+      FieldSet results;
+      set_difference(fieldsSet.begin(), fieldsSet.end(),
+                     present.fieldsSet.begin(), present.fieldsSet.end(),
+                     inserter(results, results.begin()));
+      return results.empty();
+   }
+
+
+   void Rinex3ObsHeader::Fields ::
+   describeMissing(const Rinex3ObsHeader::Fields& valid,
+                   Exception& exc)
+   {
+      for (const auto& f : fieldsSet)
+      {
+         if (!valid.isSet(f))
+         {
+            exc.addText("Missing required header field: " + asString(f));
+         }
+      }
+   }
+
+
+   std::string Rinex3ObsHeader ::
+   asString(Rinex3ObsHeader::Field b)
+   {
+      switch (b)
+      {
+         case validVersion:           return hsVersion;
+         case validRunBy:             return hsRunBy;
+         case validComment:           return hsComment;
+         case validMarkerName:        return hsMarkerName;
+         case validMarkerNumber:      return hsMarkerNumber;
+         case validMarkerType:        return hsMarkerType;
+         case validObserver:          return hsObserver;
+         case validReceiver:          return hsReceiver;
+         case validAntennaType:       return hsAntennaType;
+         case validAntennaPosition:   return hsAntennaPosition;
+         case validAntennaDeltaHEN:   return hsAntennaDeltaHEN;
+         case validAntennaDeltaXYZ:   return hsAntennaDeltaXYZ;
+         case validAntennaPhaseCtr:   return hsAntennaPhaseCtr;
+         case validAntennaBsightXYZ:  return hsAntennaBsightXYZ;
+         case validAntennaZeroDirAzi: return hsAntennaZeroDirAzi;
+         case validAntennaZeroDirXYZ: return hsAntennaZeroDirXYZ;
+         case validCenterOfMass:      return hsCenterOfMass;
+         case validNumObs:            return hsNumObs;
+         case validSystemNumObs:      return hsSystemNumObs;
+         case validWaveFact:          return hsWaveFact;
+         case validSigStrengthUnit:   return hsSigStrengthUnit;
+         case validInterval:          return hsInterval;
+         case validFirstTime:         return hsFirstTime;
+         case validLastTime:          return hsLastTime;
+         case validReceiverOffset:    return hsReceiverOffset;
+         case validSystemDCBSapplied: return hsSystemDCBSapplied;
+         case validSystemPCVSapplied: return hsSystemPCVSapplied;
+         case validSystemScaleFac:    return hsSystemScaleFac;
+         case validSystemPhaseShift:  return hsSystemPhaseShift;
+         case validGlonassSlotFreqNo: return hsGlonassSlotFreqNo;
+         case validGlonassCodPhsBias: return hsGlonassCodPhsBias;
+         case validLeapSeconds:       return hsLeapSeconds;
+         case validNumSats:           return hsNumSats;
+         case validPrnObs:            return hsPrnObs;
+         default: return "???";
+      }
+   }
+
+
+   Rinex3ObsHeader::Field Rinex3ObsHeader ::
+   asField(const std::string& s)
+   {
+      if (s == hsVersion)           return validVersion;
+      if (s == hsRunBy)             return validRunBy;
+      if (s == hsComment)           return validComment;
+      if (s == hsMarkerName)        return validMarkerName;
+      if (s == hsMarkerNumber)      return validMarkerNumber;
+      if (s == hsMarkerType)        return validMarkerType;
+      if (s == hsObserver)          return validObserver;
+      if (s == hsReceiver)          return validReceiver;
+      if (s == hsAntennaType)       return validAntennaType;
+      if (s == hsAntennaPosition)   return validAntennaPosition;
+      if (s == hsAntennaDeltaHEN)   return validAntennaDeltaHEN;
+      if (s == hsAntennaDeltaXYZ)   return validAntennaDeltaXYZ;
+      if (s == hsAntennaPhaseCtr)   return validAntennaPhaseCtr;
+      if (s == hsAntennaBsightXYZ)  return validAntennaBsightXYZ;
+      if (s == hsAntennaZeroDirAzi) return validAntennaZeroDirAzi;
+      if (s == hsAntennaZeroDirXYZ) return validAntennaZeroDirXYZ;
+      if (s == hsCenterOfMass)      return validCenterOfMass;
+      if (s == hsNumObs)            return validNumObs;
+      if (s == hsSystemNumObs)      return validSystemNumObs;
+      if (s == hsWaveFact)          return validWaveFact;
+      if (s == hsSigStrengthUnit)   return validSigStrengthUnit;
+      if (s == hsInterval)          return validInterval;
+      if (s == hsFirstTime)         return validFirstTime;
+      if (s == hsLastTime)          return validLastTime;
+      if (s == hsReceiverOffset)    return validReceiverOffset;
+      if (s == hsSystemDCBSapplied) return validSystemDCBSapplied;
+      if (s == hsSystemPCVSapplied) return validSystemPCVSapplied;
+      if (s == hsSystemScaleFac)    return validSystemScaleFac;
+      if (s == hsSystemPhaseShift)  return validSystemPhaseShift;
+      if (s == hsGlonassSlotFreqNo) return validGlonassSlotFreqNo;
+      if (s == hsGlonassCodPhsBias) return validGlonassCodPhsBias;
+      if (s == hsLeapSeconds)       return validLeapSeconds;
+      if (s == hsNumSats)           return validNumSats;
+      if (s == hsPrnObs)            return validPrnObs;
+      return validInvalid;
+   }
+
+   std::ostream& operator<<(std::ostream& s, const Rinex3ObsHeader::Fields& v)
+   {
+      Rinex3ObsHeader::FieldSet::const_iterator i;
+      for (i = v.fieldsSet.begin(); i != v.fieldsSet.end(); i++)
+      {
+         if (i != v.fieldsSet.begin())
+            s << ",";
+         s << *i;
+      }
+      return s;
+   }
 
 } // namespace gpstk

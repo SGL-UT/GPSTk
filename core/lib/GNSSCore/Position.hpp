@@ -371,19 +371,19 @@ namespace gpstk
           * 'system'.
           * @param sys CoordinateSystem into which this Position is transformed
           */
-      Position transformTo(CoordinateSystem sys)
+      Position& transformTo(CoordinateSystem sys)
          throw();
   
          /// Convert to geodetic coordinates (does nothing if
          /// system == Geodetic already).
-      Position asGeodetic()
+      Position& asGeodetic()
          throw()
       { transformTo(Geodetic); return *this; }
 
          /// Convert to another ell, then to geodetic coordinates.
          /// @return a reference to this.
          /// @throw GeometryException if input is NULL.
-      Position asGeodetic(EllipsoidModel *ell)
+      Position& asGeodetic(EllipsoidModel *ell)
       {
          try { setEllipsoidModel(ell); }
          catch(GeometryException& ge) { GPSTK_RETHROW(ge); }
@@ -393,7 +393,7 @@ namespace gpstk
 
          /// Convert to cartesian coordinates (does nothing if
          /// system == Cartesian already).
-      Position asECEF()
+      Position& asECEF()
          throw()
       { transformTo(Cartesian); return *this; }
 
