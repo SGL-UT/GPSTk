@@ -249,7 +249,7 @@ namespace gpstk
       // current value of member CoordinateSystem 'system'.
       // @param sys coordinate system into which *this is to be transformed.
       // @return *this
-   Position Position::transformTo(CoordinateSystem sys)
+   Position& Position::transformTo(CoordinateSystem sys)
       throw()
    {
       if(sys == Unknown || sys == system) return *this;
