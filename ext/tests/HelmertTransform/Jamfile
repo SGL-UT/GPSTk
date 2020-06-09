@@ -1,2 +1,0 @@
-SubDir TOP HelmertTransform ;
-TestMain HelmertTransform/HelmertTransform.tst : HelmertTransform/xHelmertTransformM.cpp HelmertTransform/xHelmertTransform.cpp HelmertTransform/HelmertTransform.cpp ;
