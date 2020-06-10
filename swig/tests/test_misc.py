@@ -76,8 +76,8 @@ class Triple_test(unittest.TestCase):
 
 class Position_test(unittest.TestCase):
     def test(self):
-        p1 = gpstk.Position(1.5, 6.2, 3.5)
-        p2 = gpstk.Position(1.0, 1.8, 0.5)
+        p1 = gpstk.Position(1.5, 6.2, 3.5)   # constructor with 3 floats
+        p2 = gpstk.Position([1.0, 1.8, 0.5]) # constructor with a list-like of 3 floats
         self.assertAlmostEqual(5.348831648126533, gpstk.range(p1, p2))
 
     def test_spherical_cartesian(self):
