@@ -137,8 +137,13 @@ namespace gpstk
          /**
           * Returns true if the file exists. Only readability is
           * verified unless the user inputs the openmode of interest.
-          * @param fname Name of the file to check
-          * @param mode  Mode of access to check (default is readable, std::ios::in)
+          * @param[in] fname Name of the file to check
+          * @param[in] mode Mode of access to check (default is
+          *   readable, std::ios::in)
+          * @warning This method fails to work correctly under Debian
+          *   7, which seems to have a bug in the OS/system calls that
+          *   erroneously allow opening read-only files with write
+          *   access.  There's nothing we can do about this.
           * @return true if the file can be accessed
           */
       inline bool fileAccessCheck(const char* fname, 
