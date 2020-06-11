@@ -312,6 +312,10 @@ int FileUtils_T :: testFileAccessCheck()
             filesToRemove.push_back(filename);
             tester.assert( FileUtils::fileAccessCheck(filename),            "read access failed",         __LINE__ );
             tester.assert( FileUtils::fileAccessCheck(filename, ios::in),   "mode test failed",           __LINE__ );
+               /** @note This test fails under Debian 7, which seems
+                * to have a bug in the OS/system calls that
+                * erroneously allow opening read-only files with write
+                * access.  There's nothing we can do about this. */
             tester.assert( !FileUtils::fileAccessCheck(filename, ios::out), "expected mode test failure", __LINE__ );
          }
          #endif
